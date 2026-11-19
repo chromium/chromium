@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -20,6 +21,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate_factory.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
+#include "chrome/browser/webauthn/shared_types.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
 #include "components/password_manager/core/browser/webauthn_credentials_delegate.h"
@@ -45,6 +47,7 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/webauthn/android/webauthn_request_delegate_android.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/webauthn/android/webauthn_client_android.h"
 #endif
 
@@ -196,6 +199,27 @@ class ChromeWebAuthnCredentialsDelegateTest
   std::optional<std::vector<uint8_t>> selected_id_;
 #endif
 };
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(ChromeWebAuthnCredentialsDelegateTest,
+       ForwardsProtectedPasswordSelectionUntilCleanup) {
+  base::MockRepeatingCallback<void(std::u16string_view, std::u16string_view)>
+      callback;
+  delegate_->OnWebAuthnRequestPending(
+      main_rfh(), {}, webauthn::AssertionMediationType::kConditional,
+      base::DoNothing(), callback.Get(), base::RepeatingClosure(),
+      base::DoNothing());
+  const PasswordCredentialPair credential = {
+      u"username",
+      password_manager::PasswordString(std::u16string(u"p\u00e4ss\0word", 9))};
+  EXPECT_CALL(callback, Run(std::u16string_view(u"username"),
+                            std::u16string_view(u"p\u00e4ss\0word", 9)));
+
+  delegate_->OnPasswordCredentialSelected(credential);
+  delegate_->CleanupWebAuthnRequest();
+  delegate_->OnPasswordCredentialSelected(credential);
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Testing retrieving passkeys when there are 2 public key credentials
 // present.

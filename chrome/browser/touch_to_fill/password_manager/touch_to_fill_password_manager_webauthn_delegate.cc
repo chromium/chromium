@@ -119,7 +119,7 @@ void TouchToFillPasswordManagerWebAuthnDelegate::FillCredential(
     const password_manager::UiCredential& credential) {
   if (credential_receiver_) {
     credential_receiver_->OnPasswordCredentialSelected(
-        {credential.username(), credential.password().value()});
+        {credential.username(), credential.password()});
   }
 }
 

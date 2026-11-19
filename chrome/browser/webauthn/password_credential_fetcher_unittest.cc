@@ -14,6 +14,7 @@
 #include "components/password_manager/core/browser/fake_form_fetcher.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
+#include "components/password_manager/core/browser/password_store/stored_credential.h"
 #include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "content/public/browser/web_contents.h"
@@ -163,10 +164,17 @@ TEST_F(PasswordCredentialFetcherTest, UpdateDateLastUsed) {
   form_fetcher_->SetBestMatches({form});
 
   // Expect UpdateLogin to be called on both stores.
-  EXPECT_CALL(*profile_store_, UpdateLogin);
-  EXPECT_CALL(*account_store_, UpdateLogin);
+  const auto updated_form = testing::AllOf(
+      testing::Field(&password_manager::StoredCredential::username_value,
+                     form.username_value),
+      testing::Field(&password_manager::StoredCredential::password_value,
+                     form.password_value),
+      testing::Field(&password_manager::StoredCredential::date_last_used,
+                     testing::Gt(form.date_last_used)));
+  EXPECT_CALL(*profile_store_, UpdateLogin(updated_form, _));
+  EXPECT_CALL(*account_store_, UpdateLogin(updated_form, _));
 
-  fetcher_->UpdateDateLastUsed(u"user", u"password");
+  fetcher_->UpdateDateLastUsed(u"user", PasswordString(u"password"));
 }
 
 TEST_F(PasswordCredentialFetcherTest, UpdateDateLastUsed_ProfileStoreOnly) {
@@ -178,5 +186,5 @@ TEST_F(PasswordCredentialFetcherTest, UpdateDateLastUsed_ProfileStoreOnly) {
   EXPECT_CALL(*profile_store_, UpdateLogin);
   EXPECT_CALL(*account_store_, UpdateLogin).Times(0);
 
-  fetcher_->UpdateDateLastUsed(u"user", u"password");
+  fetcher_->UpdateDateLastUsed(u"user", PasswordString(u"password"));
 }

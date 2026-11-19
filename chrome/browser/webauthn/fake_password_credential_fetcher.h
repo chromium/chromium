@@ -26,8 +26,9 @@ class FakePasswordCredentialFetcher : public PasswordCredentialFetcher {
   void SetCallCallbackImmediately(bool call_immediately);
   void InvokeCallback();
 
-  void UpdateDateLastUsed(const std::u16string& username,
-                          const std::u16string& password) override;
+  void UpdateDateLastUsed(
+      const std::u16string& username,
+      const password_manager::PasswordString& password) override;
   void set_update_date_last_used_called_ptr(bool* ptr) {
     // PasswordCredentialFetcher is owned by the
     // ChromeAuthenticatorRequestDelegate. The pointer is used to set the value

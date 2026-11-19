@@ -383,7 +383,8 @@ TEST_F(TouchToFillPasswordManagerWebAuthnDelegateTest,
                         /*should_show_hybrid_option=*/false,
                         /*is_immediate=*/true, SortingCallback()));
 
-  PasswordCredentialPair expected = {kUserName2, kPassword};
+  PasswordCredentialPair expected = {
+      kUserName2, password_manager::PasswordString(std::u16string(kPassword))};
   EXPECT_CALL(request_delegate(), OnPasswordCredentialSelected(expected));
   touch_to_fill_controller().OnCredentialSelected(password_credential);
 }
@@ -423,7 +424,8 @@ TEST_P(TouchToFillPasswordManagerWebAuthnDelegateReauthTest,
   EXPECT_CALL(*authenticator(), AuthenticateWithMessage)
       .WillOnce(RunOnceCallback<1>(true));
 
-  PasswordCredentialPair expected = {kUserName2, kPassword};
+  PasswordCredentialPair expected = {
+      kUserName2, password_manager::PasswordString(std::u16string(kPassword))};
   EXPECT_CALL(request_delegate(), OnPasswordCredentialSelected(expected));
   touch_to_fill_controller().OnCredentialSelected(password_credential);
 }
@@ -481,7 +483,8 @@ TEST_P(TouchToFillPasswordManagerWebAuthnDelegateReauthTest,
   EXPECT_CALL(*authenticator(), AuthenticateWithMessage).Times(0);
   EXPECT_CALL(*authenticator(), Cancel).Times(0);
 
-  PasswordCredentialPair expected = {kUserName2, kPassword};
+  PasswordCredentialPair expected = {
+      kUserName2, password_manager::PasswordString(std::u16string(kPassword))};
   EXPECT_CALL(request_delegate(), OnPasswordCredentialSelected(expected));
   touch_to_fill_controller().OnCredentialSelected(password_credential);
 }
@@ -509,7 +512,8 @@ TEST_P(TouchToFillPasswordManagerWebAuthnDelegateReauthTest,
       .WillRepeatedly(Return(ByMove(nullptr)));
   EXPECT_CALL(client(), IsReauthBeforeFillingRequiredLegacy).Times(0);
 
-  PasswordCredentialPair expected = {kUserName2, kPassword};
+  PasswordCredentialPair expected = {
+      kUserName2, password_manager::PasswordString(std::u16string(kPassword))};
   EXPECT_CALL(request_delegate(), OnPasswordCredentialSelected(expected));
   touch_to_fill_controller().OnCredentialSelected(password_credential);
 }

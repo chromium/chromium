@@ -13,14 +13,17 @@
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/browser/webauthn/shared_types.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "components/password_manager/core/browser/credential_manager_utils.h"
 #include "components/password_manager/core/browser/mock_password_feature_manager.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
+#include "components/password_manager/core/common/credential_manager_types.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
+#include "url/scheme_host_port.h"
 
 namespace {
 
@@ -100,8 +103,12 @@ TEST_F(PasswordCredentialUIControllerTest,
       callback;
   controller_->SetPasswordSelectedCallback(callback.Get());
 
-  PasswordCredentialPair password = {u"user", u"pass"};
-  EXPECT_CALL(callback, Run).Times(1);
+  PasswordCredentialPair password = {u"user",
+                                     password_manager::PasswordString(u"pass")};
+  password_manager::CredentialInfo expected(
+      password_manager::CredentialType::CREDENTIAL_TYPE_PASSWORD, u"user",
+      u"user", GURL(), u"pass", url::SchemeHostPort());
+  EXPECT_CALL(callback, Run(expected));
   controller_->OnPasswordCredentialSelected(password);
 }
 
@@ -115,7 +122,8 @@ TEST_F(PasswordCredentialUIControllerTest,
       callback;
   controller_->SetPasswordSelectedCallback(callback.Get());
 
-  PasswordCredentialPair password = {u"user", u"pass"};
+  PasswordCredentialPair password = {u"user",
+                                     password_manager::PasswordString(u"pass")};
   EXPECT_CALL(callback, Run).Times(0);
   controller_->OnPasswordCredentialSelected(password);
   EXPECT_EQ(model_->step(),
@@ -125,13 +133,12 @@ TEST_F(PasswordCredentialUIControllerTest,
 TEST_F(PasswordCredentialUIControllerTest, OnStepTransition_OsAuth) {
   EXPECT_CALL(feature_manager_, IsBiometricAuthenticationBeforeFillingEnabled())
       .WillOnce(testing::Return(true));
-  PasswordCredentialPair password = {u"user", u"pass"};
+  PasswordCredentialPair password = {u"user",
+                                     password_manager::PasswordString(u"pass")};
+  EXPECT_CALL(mock_ui_controller(), AuthenticateUserWithMessage).Times(1);
   controller_->OnPasswordCredentialSelected(password);
   ASSERT_EQ(model_->step(),
             AuthenticatorRequestDialogModel::Step::kPasswordOsAuth);
-
-  EXPECT_CALL(mock_ui_controller(), AuthenticateUserWithMessage).Times(1);
-  controller_->OnStepTransition();
 }
 
 TEST_F(PasswordCredentialUIControllerTest, OnAuthenticationCompleted_Success) {
@@ -139,10 +146,8 @@ TEST_F(PasswordCredentialUIControllerTest, OnAuthenticationCompleted_Success) {
       .WillByDefault(testing::Return(&feature_manager_));
   EXPECT_CALL(feature_manager_, IsBiometricAuthenticationBeforeFillingEnabled())
       .WillOnce(testing::Return(true));
-  PasswordCredentialPair password = {u"user", u"pass"};
-  controller_->OnPasswordCredentialSelected(password);
-  ASSERT_EQ(model_->step(),
-            AuthenticatorRequestDialogModel::Step::kPasswordOsAuth);
+  PasswordCredentialPair password = {u"user",
+                                     password_manager::PasswordString(u"pass")};
 
   base::MockCallback<
       content::AuthenticatorRequestClientDelegate::PasswordSelectedCallback>
@@ -154,9 +159,15 @@ TEST_F(PasswordCredentialUIControllerTest, OnAuthenticationCompleted_Success) {
       .WillOnce([&](const std::u16string&, base::OnceCallback<void(bool)> cb) {
         auth_callback = std::move(cb);
       });
-  controller_->OnStepTransition();
+  controller_->OnPasswordCredentialSelected(password);
+  ASSERT_EQ(model_->step(),
+            AuthenticatorRequestDialogModel::Step::kPasswordOsAuth);
+  ASSERT_TRUE(auth_callback);
 
-  EXPECT_CALL(callback, Run).Times(1);
+  password_manager::CredentialInfo expected(
+      password_manager::CredentialType::CREDENTIAL_TYPE_PASSWORD, u"user",
+      u"user", GURL(), u"pass", url::SchemeHostPort());
+  EXPECT_CALL(callback, Run(expected));
   std::move(auth_callback).Run(true);
 }
 
@@ -165,10 +176,8 @@ TEST_F(PasswordCredentialUIControllerTest, OnAuthenticationCompleted_Failure) {
       .WillByDefault(testing::Return(&feature_manager_));
   EXPECT_CALL(feature_manager_, IsBiometricAuthenticationBeforeFillingEnabled())
       .WillOnce(testing::Return(true));
-  PasswordCredentialPair password = {u"user", u"pass"};
-  controller_->OnPasswordCredentialSelected(password);
-  ASSERT_EQ(model_->step(),
-            AuthenticatorRequestDialogModel::Step::kPasswordOsAuth);
+  PasswordCredentialPair password = {u"user",
+                                     password_manager::PasswordString(u"pass")};
 
   base::MockCallback<
       content::AuthenticatorRequestClientDelegate::PasswordSelectedCallback>
@@ -180,7 +189,10 @@ TEST_F(PasswordCredentialUIControllerTest, OnAuthenticationCompleted_Failure) {
       .WillOnce([&](const std::u16string&, base::OnceCallback<void(bool)> cb) {
         auth_callback = std::move(cb);
       });
-  controller_->OnStepTransition();
+  controller_->OnPasswordCredentialSelected(password);
+  ASSERT_EQ(model_->step(),
+            AuthenticatorRequestDialogModel::Step::kPasswordOsAuth);
+  ASSERT_TRUE(auth_callback);
 
   EXPECT_CALL(callback, Run).Times(0);
   std::move(auth_callback).Run(false);

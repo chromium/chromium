@@ -34,7 +34,7 @@ void FakePasswordCredentialFetcher::SetCallCallbackImmediately(
 
 void FakePasswordCredentialFetcher::UpdateDateLastUsed(
     const std::u16string& username,
-    const std::u16string& password) {
+    const password_manager::PasswordString& password) {
   if (update_date_last_used_called_ptr_) {
     *update_date_last_used_called_ptr_ = true;
   }

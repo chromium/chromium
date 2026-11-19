@@ -2412,7 +2412,7 @@ void AuthenticatorRequestDialogController::PopulatePasswords() {
             &AuthenticatorRequestDialogModel::OnPasswordCredentialSelected,
             base::Unretained(model_.get()),
             std::make_pair(password->username_value,
-                           password->password_value.value())));
+                           password->password_value)));
     mechanism.description = l10n_util::GetStringUTF16(
         IDS_PASSWORD_MANAGER_PASSWORD_FROM_GOOGLE_PASSWORD_MANAGER);
 

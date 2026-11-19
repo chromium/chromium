@@ -18,6 +18,7 @@
 #include "components/password_manager/core/browser/credential_manager_pending_request_task.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_check_factory.h"
 #include "components/password_manager/core/browser/leak_detection_delegate.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
 #include "components/prefs/pref_member.h"
 
@@ -80,7 +81,7 @@ class CredentialManagerImpl
 
   void CancelBiometricReauthIfOngoing();
   void OnReauthCompleted(SendCredentialCallback send_callback,
-                         CredentialInfo info,
+                         PasswordForm form,
                          bool auth_succeeded);
 
   // CredentialManagerPendingPreventSilentAccessTaskDelegate:

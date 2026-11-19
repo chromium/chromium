@@ -19,6 +19,7 @@ class RenderFrameHost;
 
 namespace password_manager {
 class PasswordManagerClient;
+class PasswordString;
 }
 
 // Fetches password credentials for a given RenderFrameHost and URL.
@@ -51,8 +52,9 @@ class PasswordCredentialFetcher
   // Updates the `date_last_used` field of the password form matching `username`
   // and `password` to the current time. The update is persisted to the
   // password store.
-  virtual void UpdateDateLastUsed(const std::u16string& username,
-                                  const std::u16string& password);
+  virtual void UpdateDateLastUsed(
+      const std::u16string& username,
+      const password_manager::PasswordString& password);
 
   static void SetInstanceForTesting(PasswordCredentialFetcher* instance);
 

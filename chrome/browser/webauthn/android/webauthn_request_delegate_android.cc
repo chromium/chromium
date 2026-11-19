@@ -28,6 +28,7 @@
 #include "components/password_manager/content/browser/keyboard_replacing_surface_visibility_controller_impl.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/webauthn/android/webauthn_cred_man_delegate.h"
 #include "components/webauthn/android/webauthn_cred_man_delegate_factory.h"
 #include "content/public/browser/render_frame_host.h"
@@ -234,7 +235,7 @@ void WebAuthnRequestDelegateAndroid::OnPasswordCredentialSelected(
   }
   if (password_callback_) {
     password_callback_.Run(password_credential.first,
-                           password_credential.second);
+                           password_credential.second.secure_value());
   }
 }
 

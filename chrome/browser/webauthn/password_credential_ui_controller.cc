@@ -78,7 +78,7 @@ void PasswordCredentialUIController::OnPasswordCredentialSelected(
       model_observer_.GetSource()->local_auth_token.has_value()) {
     password_selected_callback_.Run(password_manager::CredentialInfo(
         password_manager::CredentialType::CREDENTIAL_TYPE_PASSWORD,
-        password.first, password.first, GURL(), password.second,
+        password.first, password.first, GURL(), password.second.value(),
         url::SchemeHostPort()));
     return;
   }
@@ -129,7 +129,7 @@ void PasswordCredentialUIController::OnAuthenticationCompleted(
   }
   password_selected_callback_.Run(password_manager::CredentialInfo(
       password_manager::CredentialType::CREDENTIAL_TYPE_PASSWORD,
-      password.first, password.first, GURL(), password.second,
+      password.first, password.first, GURL(), password.second.value(),
       url::SchemeHostPort()));
 }
 

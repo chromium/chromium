@@ -58,6 +58,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/device_event_log/device_event_log.h"
 #include "components/password_manager/core/browser/features/password_features.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
@@ -1437,7 +1438,8 @@ void ChromeAuthenticatorRequestDelegate::OnPasswordSelected(
   if (password_fetcher_) {
     password_fetcher_->UpdateDateLastUsed(
         info.id.value_or(std::u16string()),
-        info.password.value_or(std::u16string()));
+        password_manager::PasswordString(
+            info.password.value_or(std::u16string())));
     password_fetcher_.reset();
   }
   if (password_selected_callback_) {

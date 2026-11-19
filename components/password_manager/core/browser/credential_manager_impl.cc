@@ -238,7 +238,6 @@ void CredentialManagerImpl::SendPasswordForm(
     const PasswordForm* form) {
   CredentialInfo info;
   if (form) {
-    info = PasswordFormToCredentialInfo(*form);
     PasswordStoreInterface* store = form->IsUsingAccountStore()
                                         ? GetAccountPasswordStore()
                                         : GetProfilePasswordStore();
@@ -295,7 +294,7 @@ void CredentialManagerImpl::SendPasswordForm(
 #endif
       auto on_reauth_completed = base::BindOnce(
           &CredentialManagerImpl::OnReauthCompleted,
-          weak_ptr_factory_.GetWeakPtr(), std::move(send_callback), info);
+          weak_ptr_factory_.GetWeakPtr(), std::move(send_callback), *form);
 
       authenticator_->AuthenticateWithMessage(
           message, metrics_util::TimeCallbackMediumTimes(
@@ -303,6 +302,8 @@ void CredentialManagerImpl::SendPasswordForm(
                        "PasswordManager.PasswordFilling.AuthenticationTime2"));
       return;
     }
+
+    info = PasswordFormToCredentialInfo(*form);
   } else {
     base::RecordAction(
         base::UserMetricsAction("CredentialManager_AccountChooser_Dismissed"));
@@ -334,14 +335,14 @@ void CredentialManagerImpl::CancelBiometricReauthIfOngoing() {
 
 void CredentialManagerImpl::OnReauthCompleted(
     SendCredentialCallback send_callback,
-    CredentialInfo info,
+    PasswordForm form,
     bool auth_succeeded) {
   authenticator_.reset();
   if (!auth_succeeded) {
     SendCredential(std::move(send_callback), CredentialInfo());
     return;
   }
-  SendCredential(std::move(send_callback), info);
+  SendCredential(std::move(send_callback), PasswordFormToCredentialInfo(form));
 }
 
 void CredentialManagerImpl::DoneRequiringUserMediation() {

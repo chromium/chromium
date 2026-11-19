@@ -15,6 +15,7 @@
 #include "components/password_manager/core/browser/password_form_digest.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 
@@ -67,7 +68,7 @@ void PasswordCredentialFetcher::FetchPasswords(
 
 void PasswordCredentialFetcher::UpdateDateLastUsed(
     const std::u16string& username,
-    const std::u16string& password) {
+    const password_manager::PasswordString& password) {
   CHECK(form_fetcher_);
 
   password_manager::PasswordManagerClient* client = GetPasswordManagerClient();

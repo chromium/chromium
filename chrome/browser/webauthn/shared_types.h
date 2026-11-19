@@ -6,7 +6,11 @@
 #define CHROME_BROWSER_WEBAUTHN_SHARED_TYPES_H_
 
 #include <string>
+#include <utility>
 
-using PasswordCredentialPair = std::pair<std::u16string, std::u16string>;
+#include "components/password_manager/core/browser/password_string.h"
+
+using PasswordCredentialPair =
+    std::pair<std::u16string, password_manager::PasswordString>;
 
 #endif  // CHROME_BROWSER_WEBAUTHN_SHARED_TYPES_H_
