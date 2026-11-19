@@ -7,60 +7,6 @@
 
 agentic_review {
   capability_groups {
-    path_expression: "ios/(?:.*/)?(?:ui|ui_bundled)/(?:.*/)?[^/]*\\.h"
-    path_expression_exclusion: "ios/third_party/.*"
-    content_patterns: "@protocol\\s+\\w*ConsumerDataSource\\b"
-    content_patterns: "-\\s*\\([^)]+\\)\\s*\\w*[Dd]ataSource\\s*:\\s*\\([^)]+\\)"
-    content_patterns: ":\\s*\\([^)]*\\b\\w*(?:DataSource|Mediator)\\s*\\*?\\s*\\)"
-    content_patterns: ":\\s*\\([^)]*\\bid\\b[^)]*\\)\\s*(?:dataSource|consumerDataSource)\\b"
-    rules: "ios/chrome/browser/intelligence/kb/chrome/consumer-data-source-only-for-interaction-queries.md"
-  }
-  capability_groups {
-    path_expression: "ios/(?:.*/)?(?:ui|ui_bundled)/(?:.*/)?[^/]*\\.h"
-    path_expression_exclusion: "ios/third_party/.*"
-    content_patterns: "-\\s*\\([^)]+\\)\\s*(?:remove|update|delete|insert|reload|replace)\\w*\\s*:\\s*\\([^)]*\\b(?:NSU?Integer|int|size_t)\\b"
-    content_patterns: "\\b\\w*[Aa]t(?:Index|Indexes|IndexPath|Row)s?\\s*:\\s*\\([^)]*\\b(?:NSU?Integer|int|size_t|NSIndexSet|NSIndexPath)\\b"
-    content_patterns: "\\b(?:remove|update|delete|insert|reload|replace)\\w*At(?:Index|Row)\\s*:"
-    content_patterns: "\\b(?:index|itemIndex|rowIndex)\\s*:\\s*\\([^)]*\\b(?:NSU?Integer|int|size_t)\\b"
-    rules: "ios/chrome/browser/intelligence/kb/chrome/consumer-protocol-identify-items-by-stable-id-not-index.md"
-  }
-  capability_groups {
-    path_expression: "ios/(?:.*/)?(?:ui|ui_bundled)/(?:.*/)?[^/]*\\.h"
-    path_expression_exclusion: "ios/third_party/.*"
-    content_patterns: "-\\s*\\([^)]+\\)\\s*\\w*[Mm]ediator\\s*:\\s*\\([^)]+\\)"
-    content_patterns: ":\\s*\\([^)]*\\b\\w*Mediator\\s*\\*?\\s*\\)"
-    content_patterns: ":\\s*\\([^)]*\\)\\s*mediator\\b"
-    content_patterns: "\\b\\w*[Mm]ediator\\s*:\\s*\\([^)]*\\b(?:id|\\w*Mediator)\\b"
-    rules: "ios/chrome/browser/intelligence/kb/chrome/consumer-protocol-no-mediator-sender-parameter.md"
-  }
-  capability_groups {
-    path_expression: "ios/(?:.*/)?(?:ui|ui_bundled)/(?:.*/)?[^/]*\\.h"
-    path_expression_exclusion: "ios/third_party/.*"
-    content_patterns: "-\\s*\\([^)]+\\)\\s*(?:add|increment|append|adjust)\\w*\\s*:\\s*\\([^)]*\\b(?:int\\w*|uint\\w*|float|double|NSInteger|NSUInteger|CGFloat)\\b"
-    content_patterns: "-\\s*\\([^)]+\\)\\s*(?:add|increment)\\w*(?:Bytes|Count|Size|Progress|Offset|Amount|Value)\\s*:"
-    content_patterns: "-\\s*\\([^)]+\\)\\s*\\w*(?:Delta|Increment|Relative)\\w*\\s*:"
-    content_patterns: ":\\s*\\([^)]+\\)\\s*\\w*(?:Delta|Increment)\\b"
-    rules: "ios/chrome/browser/intelligence/kb/chrome/consumer-protocol-state-independence-complete-values.md"
-  }
-  capability_groups {
-    path_expression: "ios/(?:.*/)?(?:ui|ui_bundled)/(?:.*/)?[^/]*\\.h"
-    path_expression_exclusion: "ios/third_party/.*"
-    content_patterns: ":\\s*\\([^)]*\\bstd::(?:u16)?string(?:_view)?\\b"
-    content_patterns: "-\\s*\\([^)]*\\bstd::(?:u16)?string(?:_view)?\\b[^)]*\\)"
-    content_patterns: "@property\\s*\\([^)]*\\)\\s*[^;]*\\bstd::(?:u16)?string(?:_view)?\\b"
-    rules: "ios/chrome/browser/intelligence/kb/chrome/consumer-protocols-no-cpp-strings.md"
-  }
-  capability_groups {
-    path_expression: "ios/(?:.*/)?(?:ui|ui_bundled)/(?:.*/)?[^/]*\\.h"
-    path_expression_exclusion: "ios/third_party/.*"
-    content_patterns: "\\b(?:TabGroupInfo|TabSwitcherItem|TabInfo|TabGroupItem)\\s*\\*"
-    content_patterns: "\\b(?:const\\s+)?(?:TabGroup|BookmarkNode|WebState)\\s*\\*"
-    content_patterns: "\\b(?:bookmarks|syncer|web)::[A-Za-z0-9_]+"
-    content_patterns: "#\\s*ifdef\\s+__cplusplus\\b"
-    content_patterns: "@class\\s+(?:TabGroupInfo|TabSwitcherItem|TabInfo|TabGroupItem)\\b"
-    rules: "ios/chrome/browser/intelligence/kb/chrome/consumer-protocols-pass-simple-value-types-not-model-objects.md"
-  }
-  capability_groups {
     path_expression: "ios/(?:.*/)?BUILD\\.gn"
     path_expression_exclusion: "ios/third_party/.*"
     content_patterns: "source_set\\s*\\(\\s*\"eg2_tests\"\\s*\\)"
@@ -506,16 +452,6 @@ agentic_review {
   capability_groups {
     path_expression: "ios/(?:.*/)?[^/]*\\.(?:cc|h|mm)"
     path_expression_exclusion: "ios/third_party/.*"
-    content_patterns: "\\b(?:weakSelf|strongSelf|weak_self|strong_self|self)\\s*->"
-    content_patterns: "\\b(?:strongSelf|strong_self)\\s*=\\s*(?:weakSelf|weak_self)\\b"
-    content_patterns: "\\[(?:weakSelf|weak_self)\\s+[a-zA-Z0-9_]+"
-    content_patterns: "\\b(?:__strong\\s+)?(?:__)?typeof(?:__)?\\s*\\([^)]*weakSelf[^)]*\\)\\s*strongSelf\\b"
-    content_patterns: "\\b[A-Za-z0-9_]*(?:[Cc]ompletion|[Cc]allback|[Hh]andler|[Bb]lock)\\w*\\s*[:=]\\s*(?:\\([^)]*\\)\\s*)?\\^"
-    rules: "ios/chrome/browser/intelligence/kb/general/blocks-must-be-kept-short-single-method-call.md"
-  }
-  capability_groups {
-    path_expression: "ios/(?:.*/)?[^/]*\\.(?:cc|h|mm)"
-    path_expression_exclusion: "ios/third_party/.*"
     content_patterns: "\\burl::Origin::Create\\b"
     content_patterns: "\\bIsSameOriginWith\\s*\\("
     content_patterns: "\\bShouldHandleMessage\\w*\\b"
@@ -616,16 +552,6 @@ agentic_review {
   capability_groups {
     path_expression: "ios/(?:.*/)?[^/]*\\.(?:cc|h|mm)"
     path_expression_exclusion: "ios/third_party/.*"
-    content_patterns: "\\bid<[A-Za-z0-9_]*Commands>\\b"
-    content_patterns: "\\bOCM(?:Strict)?ProtocolMock\\(@protocol\\([A-Za-z0-9_]+Commands\\)\\)"
-    content_patterns: "\\bHandlerForProtocol\\s*\\("
-    content_patterns: "@protocol\\s+[A-Za-z0-9_]+Handler\\b"
-    content_patterns: "\\b[a-zA-Z0-9_]*(?:[cC]ommand|[cC]ommands)[_]?[hH]andler\\b"
-    rules: "ios/chrome/browser/intelligence/kb/chrome/command-handler-property-naming-convention.md"
-  }
-  capability_groups {
-    path_expression: "ios/(?:.*/)?[^/]*\\.(?:cc|h|mm)"
-    path_expression_exclusion: "ios/third_party/.*"
     content_patterns: "\\b(?:NOTIMPLEMENTED|NOTREACHED)\\s*\\(\\s*\\)"
     content_patterns: "[-+]\\s*\\([^)]*\\)\\s*[a-zA-Z0-9_:]+.*\\{\\s*\\}"
     content_patterns: "\\bvoid\\s+(?:[A-Za-z0-9_]+::)?[A-Za-z0-9_]+\\s*\\([^)]*\\)\\s*(?:override\\s*)?\\{\\s*\\}"
@@ -672,16 +598,6 @@ agentic_review {
     content_patterns: "\\b(?:animate(?:Keyframes)?WithDuration|transitionWithView):"
     content_patterns: "(?:constexpr|const)\\s+[\\w:<>,*& ]+\\s+k[A-Z]\\w*\\s*=\\s*[A-Za-z0-9_:]*k[A-Z]"
     rules: "ios/chrome/browser/intelligence/kb/general/consolidate-repeated-constants-in-anonymous-namespace.md"
-  }
-  capability_groups {
-    path_expression: "ios/(?:.*/)?[^/]*\\.(?:cc|h|mm)"
-    path_expression_exclusion: "ios/third_party/.*"
-    content_patterns: "-\\s*\\(void\\)\\s*stop(?:Animated:)?\\b"
-    content_patterns: "\\[(?:_?[A-Za-z0-9_]*Coordinator|self)\\s+stop(?:Animated:)?\\]"
-    content_patterns: "\\[_?[A-Za-z0-9_]*(?:mediator|StateManager|Manager)\\s+disconnect\\]"
-    content_patterns: "\\b_?[A-Za-z0-9_]+\\.(?:delegate|consumer|dataSource|observer)\\s*=\\s*nil\\b"
-    content_patterns: "\\belse\\s+if\\s*\\(\\s*_[a-zA-Z0-9_]*(?:Coordinator|ViewController|Mediator)\\b"
-    rules: "ios/chrome/browser/intelligence/kb/chrome/coordinator-teardown-disconnects-mediator-in-stop.md"
   }
   capability_groups {
     path_expression: "ios/(?:.*/)?[^/]*\\.(?:cc|h|mm)"
@@ -1698,16 +1614,6 @@ agentic_review {
     rules: "ios/chrome/browser/intelligence/kb/general/combine-guard-and-predicate-in-boolean-return.md"
   }
   capability_groups {
-    path_expression: "ios/(?:.*/)?[^/]*\\.(?:cc|m)"
-    path_expression_exclusion: "ios/third_party/.*"
-    content_patterns: "@implementation\\b"
-    content_patterns: "@interface\\b"
-    content_patterns: "\\bGetApplicationContext\\s*[(]"
-    content_patterns: "\\bapplication_context\\.h\\b"
-    content_patterns: "#\\s*(?:include|import)\\s+[<\"][A-Z][A-Za-z0-9_]*/"
-    rules: "ios/chrome/browser/intelligence/kb/general/all-ios-source-files-must-be-objective-cpp.md"
-  }
-  capability_groups {
     path_expression: "ios/(?:.*/)?[^/]*\\.(?:cc|mm)"
     path_expression_exclusion: "ios/third_party/.*"
     content_patterns: "\\s*(?:static\\s+)?(?:bool|int|size_t|uint\\d+_t|double|float|CGFloat|auto|void)\\s+[A-Z]\\w*\\s*\\([^;{()]*\\)\\s*\\{?"
@@ -1756,21 +1662,6 @@ agentic_review {
     content_patterns: "\\b(?:Default|Custom)SymbolWith(?:PointSize|Configuration)\\s*[(]"
     content_patterns: "\\bSymbol[A-Z][a-zA-Z0-9]+\\b"
     rules: "ios/chrome/browser/intelligence/kb/chrome/use-centralized-symbol-enum-for-icons.md"
-  }
-  capability_groups {
-    path_expression: "ios/(?:.*/)?[^/]*\\.(?:h|mm)"
-    path_expression_exclusion: "ios/third_party/.*"
-    content_patterns: "\\b(?:AppLaunchConfiguration|appConfigurationForTestCase)\\b"
-    content_patterns: "\\bfeatures_(?:enabled|disabled)\\b"
-    content_patterns: "\\b(?:base::test::)?ScopedFeatureList\\b"
-    content_patterns: "\\b(?:base::)?FeatureList::IsEnabled\\b"
-    content_patterns: "(?:\\badditional_args\\b|--(?:enable|disable)-features=)"
-    content_patterns: "\\bensureAppLaunchedWith(?:Configuration|FeaturesEnabled)\\b"
-    content_patterns: "\\bAppLaunchManager\\b"
-    content_patterns: "\\bappConfigurationForTestCase\\b"
-    content_patterns: "\\bisRunningTest:\\s*@selector\\b"
-    content_patterns: "\\b(?:relaunchApp|relaunchForTestCase|relaunchWithAppConfiguration)\\b"
-    rules: "ios/chrome/browser/intelligence/kb/general/app-configuration-for-egtest-feature-flags.md"
   }
   capability_groups {
     path_expression: "ios/(?:.*/)?[^/]*\\.(?:h|mm)"
@@ -1855,16 +1746,6 @@ agentic_review {
   capability_groups {
     path_expression: "ios/(?:.*/)?[^/]*\\.(?:h|mm)"
     path_expression_exclusion: "ios/third_party/.*"
-    content_patterns: "\\b(?:weakSelf|weak_self)\\s*=\\s*self\\b"
-    content_patterns: "\\b__weak\\s+[A-Za-z0-9_<>]+"
-    content_patterns: "\\b[A-Za-z0-9_]*(?:[Cc]ompletion|[Hh]andler|[Cc]allback|[Aa]ction|[Bb]lock)\\w*\\s*[:=]\\s*(?:\\([^)]*\\)\\s*)?\\^"
-    content_patterns: "\\b[A-Za-z0-9_]+\\s*\\*\\s*[a-z][A-Za-z0-9_]*\\s*=\\s*_[a-z][A-Za-z0-9_]*"
-    content_patterns: "\\bbase::Bind(?:Once|Repeating)\\s*\\(\\s*\\^"
-    rules: "ios/chrome/browser/intelligence/kb/general/blocks-must-not-capture-strong-self.md"
-  }
-  capability_groups {
-    path_expression: "ios/(?:.*/)?[^/]*\\.(?:h|mm)"
-    path_expression_exclusion: "ios/third_party/.*"
     content_patterns: "\\bUIBarButtonItem\\s*\\*?\\s*_[a-zA-Z0-9_]+"
     content_patterns: "-\\s*\\(\\s*UIBarButtonItem\\s*\\*?\\s*\\)[a-zA-Z0-9_]+"
     content_patterns: "\\[\\[UIBarButtonItem\\s+alloc\\]\\s+init"
@@ -1901,16 +1782,6 @@ agentic_review {
     content_patterns: "\\bdismissViewControllerAnimated:[^;]+completion:"
     content_patterns: "\\b__weak\\s+id<[A-Za-z0-9_]+Delegate>\\b"
     rules: "ios/chrome/browser/intelligence/kb/chrome/capture-weak-delegate-in-completion-blocks.md"
-  }
-  capability_groups {
-    path_expression: "ios/(?:.*/)?[^/]*\\.(?:h|mm)"
-    path_expression_exclusion: "ios/third_party/.*"
-    content_patterns: "@interface\\s+\\w+Coordinator\\b[^<\\n]*<[^>\\n]*(?:Consumer|Loader|URLLoader|Handler|Policy|Allowing|Authorizer)>"
-    content_patterns: "\\.consumer\\s*=\\s*(?:self|_?[A-Za-z0-9_]*[Cc]oordinator\\b)"
-    content_patterns: "\\b(?:_|self\\.)viewController\\.(?:hide|hidden|show|is|should|has|set|may|enable|disable)[A-Za-z0-9_]*\\s*="
-    content_patterns: "\\[(?:_|self\\.)[a-zA-Z0-9_]*mediator\\s+(?:can|is|should)[A-Z]\\w*"
-    content_patterns: "\\b\\w*(?:Selection|State|Model|Payload|Config)\\s*\\*\\s*_?\\w*"
-    rules: "ios/chrome/browser/intelligence/kb/chrome/coordinator-does-not-drive-mediator-business-logic.md"
   }
   capability_groups {
     path_expression: "ios/(?:.*/)?[^/]*\\.(?:h|mm)"
@@ -2479,45 +2350,6 @@ agentic_review {
     rules: "ios/chrome/browser/intelligence/kb/general/evaluate-earl-grey-skip-guards-before-setup.md"
   }
   capability_groups {
-    path_expression: "ios/(?:.*/)?[^/]*commands[^/]*\\.(?:h|mm)"
-    path_expression: "ios/chrome/browser/shared/public/commands/(?:.*/)?[^/]*\\.(?:h|mm)"
-    path_expression_exclusion: "ios/third_party/.*"
-    content_patterns: "-\\s*\\(\\s*void\\s*\\)\\s*showQRCodeWithURL\\b"
-    content_patterns: "-\\s*\\(\\s*void\\s*\\)\\s*\\w+:[^:]+:[^:]+:[^:]+:[^:]+:"
-    rules: "ios/chrome/browser/intelligence/kb/chrome/bundle-complex-command-parameters-into-command-objects.md"
-  }
-  capability_groups {
-    path_expression: "ios/(?:.*/)?[^/]*commands[^/]*\\.h"
-    path_expression: "ios/chrome/browser/shared/public/commands/(?:.*/)?[^/]*\\.h"
-    path_expression_exclusion: "ios/third_party/.*"
-    content_patterns: "-\\s*\\(\\s*\\w+\\s*\\*?\\s*\\)\\s*is[A-Z]\\w*"
-    content_patterns: "-\\s*\\(\\s*BOOL\\s*\\)\\s*\\w+"
-    rules: "ios/chrome/browser/intelligence/kb/chrome/command-methods-must-return-void.md"
-  }
-  capability_groups {
-    path_expression: "ios/(?:.*/)?[^/]*commands[^/]*\\.h"
-    path_expression: "ios/chrome/browser/shared/public/commands/(?:.*/)?[^/]*\\.h"
-    path_expression_exclusion: "ios/third_party/.*"
-    content_patterns: "@protocol\\s+\\w+Commands\\s*<\\s*\\w+Commands\\s*>"
-    rules: "ios/chrome/browser/intelligence/kb/chrome/command-protocols-flat-no-protocol-inheritance.md"
-  }
-  capability_groups {
-    path_expression: "ios/(?:.*/)?[^/]*commands[^/]*\\.h"
-    path_expression: "ios/chrome/browser/shared/public/commands/(?:.*/)?[^/]*\\.h"
-    path_expression_exclusion: "ios/third_party/.*"
-    content_patterns: "\\binViewController\\s*:\\s*\\(\\s*UIViewController"
-    content_patterns: "\\batPoint\\s*:\\s*\\(\\s*CGPoint"
-    rules: "ios/chrome/browser/intelligence/kb/chrome/commands-pass-minimal-context-not-ui-or-geometry.md"
-  }
-  capability_groups {
-    path_expression: "ios/(?:.*/)?[^/]*commands[^/]*\\.h"
-    path_expression: "ios/chrome/browser/shared/public/commands/(?:.*/)?[^/]*\\.h"
-    path_expression_exclusion: "ios/third_party/.*"
-    content_patterns: "-\\s*\\(\\s*void\\s*\\)\\s*loadURL\\b"
-    content_patterns: "-\\s*\\(\\s*void\\s*\\)\\s*delete\\w+"
-    rules: "ios/chrome/browser/intelligence/kb/chrome/commands-strictly-for-ui-transitions-not-model-mutations.md"
-  }
-  capability_groups {
     path_expression: "ios/(?:.*/)?[^/]*flag_description[^/]*"
     path_expression_exclusion: "ios/third_party/.*"
     content_patterns: "(?:inline\\s+)?(?:constexpr|const|extern\\s+const)\\s+char(?:16_t)?\\s+k[A-Za-z0-9_]*Description"
@@ -2664,16 +2496,6 @@ agentic_review {
     content_patterns: "\\bAddSameConstraints(?:WithInsets?|ToSides(?:WithInsets)?)?\\b"
     content_patterns: "\\b(?:PinToSafeArea|AddSameCenter(?:X|Y)?Constraints?)\\b"
     rules: "ios/chrome/browser/intelligence/kb/chrome/prefer-add-same-constraints.md"
-  }
-  capability_groups {
-    path_expression: "ios/chrome/(?:.*/)?[^/]*\\.(?:cc|h|mm)"
-    path_expression_exclusion: "ios/third_party/.*"
-    content_patterns: "\\[\\s*(?:self|weakSelf)\\s+(?:stop|start|workflowEnded)\\b"
-    content_patterns: "\\bstop[A-Za-z0-9_]*Coordinator\\b"
-    content_patterns: "\\[_[a-zA-Z0-9_]*Coordinator\\s+(?:stop|start)\\b"
-    content_patterns: "\\bstopChildCoordinators\\b"
-    content_patterns: "\\b(?:destroyViewControllersAndMediators|cleanUpSettings)\\b"
-    rules: "ios/chrome/browser/intelligence/kb/chrome/coordinators-do-not-own-lifecycle.md"
   }
   capability_groups {
     path_expression: "ios/chrome/(?:.*/)?[^/]*\\.(?:cc|h|mm)"
@@ -2896,16 +2718,6 @@ agentic_review {
     content_patterns: "\"[^\"]*(?:view_controller|table_view_controller|consumer|mutator|view|cell)\\.(?:h|mm)\""
     content_patterns: "\\b(?:source_set|static_library)\\s*\\(\\s*[\"'](?:coordinator|ui|model)[\"']\\s*\\)"
     rules: "ios/chrome/browser/intelligence/kb/chrome/avoid-legacy-ui-bundled-directories.md"
-  }
-  capability_groups {
-    path_expression: "ios/chrome/browser/(?:.*/)?[^/]*\\.(?:h|mm)"
-    path_expression_exclusion: "ios/third_party/.*"
-    content_patterns: "\\b(?:_|self\\.)[A-Za-z0-9_]*Coordinator\\.(?:viewController|baseViewController)\\.[a-zA-Z0-9_]+\\s*="
-    content_patterns: "\\b(?:_|self\\.)[A-Za-z0-9_]*Coordinator\\.[A-Za-z0-9_]*(?:ViewController|Controller|BVC)\\s*="
-    content_patterns: "\\[\\[[A-Z][A-Za-z0-9_]*ViewController\\s+alloc\\]\\s*init"
-    content_patterns: "@property\\s*\\([^)]*(?:strong|retain|weak)[^)]*\\)\\s*[A-Z][A-Za-z0-9_]*(?:Container|ViewController)\\s*\\*"
-    content_patterns: "\\bObjCCast(?:Strict)?<[A-Z][A-Za-z0-9_]*ViewController>"
-    rules: "ios/chrome/browser/intelligence/kb/chrome/coordinator-view-controller-property-for-containment-only.md"
   }
   capability_groups {
     path_expression: "ios/chrome/browser/(?:.*/)?[^/]*\\.(?:h|mm)"
