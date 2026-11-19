@@ -5,6 +5,7 @@
 #include "chrome/browser/signin/signin_hats_util.h"
 
 #include <algorithm>
+#include <cstddef>
 #include <optional>
 #include <ranges>
 #include <string>
@@ -14,21 +15,21 @@
 #include "base/check.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/i18n/language_tag.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/version.h"
 #include "base/version_info/channel.h"
 #include "base/version_info/version_info.h"
-#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/global_features.h"
-#include "chrome/browser/profiles/chrome_version_service.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_util.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
@@ -39,12 +40,6 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-#include "chrome/browser/profiles/profile_window.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 namespace {
 
 constexpr char kChannel[] = "Channel";
@@ -273,7 +268,6 @@ void LaunchHatsSurveyForProfileInternal(
 }
 
 }  // namespace
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 namespace signin {
 
@@ -282,24 +276,20 @@ void LaunchHatsSurveyForProfile(const std::string& trigger,
                                 bool defer_if_no_browser,
                                 std::optional<signin_metrics::AccessPoint>
                                     access_point_for_data_type_promo) {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   LaunchHatsSurveyForProfileInternal(
       trigger, profile, defer_if_no_browser,
       base::BindOnce(&GetSurveyStringData, trigger,
                      access_point_for_data_type_promo));
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 }
 
 void LaunchHatsSurveyForProfile(const std::string& trigger,
                                 Profile* profile,
                                 bool defer_if_no_browser,
                                 SurveyStringData data) {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   LaunchHatsSurveyForProfileInternal(
       trigger, profile, defer_if_no_browser,
       base::BindOnce([](SurveyStringData data, Profile&) { return data; },
                      std::move(data)));
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 }
 
 }  // namespace signin

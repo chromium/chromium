@@ -27,7 +27,6 @@ source_set("signin") {
     "header_modification_delegate_impl.h",
     "identity_manager_factory.h",
     "signin_error_controller_factory.h",
-    "signin_hats_util.h",
     "signin_metrics_service_factory.h",
     "signin_policy_service.h",
     "signin_policy_service_factory.h",
@@ -128,6 +127,7 @@ source_set("signin") {
     public += [
       "accounts_policy_manager.h",
       "accounts_policy_manager_factory.h",
+      "signin_hats_util.h",
     ]
   }
 
@@ -203,7 +203,6 @@ source_set("impl") {
     "header_modification_delegate_impl.cc",
     "identity_manager_factory.cc",
     "signin_error_controller_factory.cc",
-    "signin_hats_util.cc",
     "signin_metrics_service_factory.cc",
     "signin_policy_service.cc",
     "signin_policy_service_factory.cc",
@@ -401,6 +400,7 @@ source_set("impl") {
     sources += [
       "accounts_policy_manager.cc",
       "accounts_policy_manager_factory.cc",
+      "signin_hats_util.cc",
     ]
     deps += [
       "//chrome/browser/ui:browser_manager_service",
