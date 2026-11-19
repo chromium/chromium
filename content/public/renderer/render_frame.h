@@ -89,8 +89,7 @@ class AXTreeSnapshotter {
 // This interface wraps functionality, which is specific to frames, such as
 // navigation. It provides communication with a corresponding RenderFrameHost
 // in the browser process.
-class CONTENT_EXPORT RenderFrame :
-    public base::SupportsUserData {
+class CONTENT_EXPORT RenderFrame : public base::SupportsUserData {
  public:
   // Returns the RenderFrame given a WebLocalFrame.
   static RenderFrame* FromWebFrame(blink::WebLocalFrame* web_frame);
@@ -222,18 +221,6 @@ class CONTENT_EXPORT RenderFrame :
   // this RenderFrame.
   virtual blink::scheduler::WebAgentGroupScheduler&
   GetAgentGroupScheduler() = 0;
-
-  // Sets the callback which is called when the renderer observes a new use
-  // counter usage. This is used for UseCounter metrics.
-  using NewFeatureUsageCallback =
-      base::RepeatingCallback<void(const blink::UseCounterFeature&)>;
-  virtual void SetNewFeatureUsageCallback(NewFeatureUsageCallback callback) = 0;
-
-  // Sets the callback which is called when the renderer observes a new
-  // subresource load. This is used for subresource loading metrics.
-  using SubresourceLoadCallback =
-      base::RepeatingCallback<void(const blink::SubresourceLoadMetrics&)>;
-  virtual void SetSubresourceLoadCallback(SubresourceLoadCallback callback) = 0;
 
   using LoadFromMemoryCacheCallback =
       base::RepeatingCallback<void(const GURL& response_url,

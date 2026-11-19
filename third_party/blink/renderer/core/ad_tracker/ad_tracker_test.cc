@@ -15,7 +15,7 @@
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/web/web_local_frame_observer.h"
+#include "third_party/blink/public/web/web_local_frame_metrics_observer.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -5201,12 +5201,11 @@ TEST_F(AdTrackerSimTest, FormSubmissionTriggeredByVanillaScript_IsNotAd) {
   dest_resource.Complete("<body></body>");
 }
 
-class TestCpuTimingObserver : public WebLocalFrameObserver {
+class TestCpuTimingObserver : public WebLocalFrameMetricsObserver {
  public:
   explicit TestCpuTimingObserver(WebLocalFrame* frame)
-      : WebLocalFrameObserver(frame) {}
+      : WebLocalFrameMetricsObserver(frame) {}
 
-  void OnFrameDetached() override {}
   void DidChangeCpuTiming(base::TimeDelta time,
                           base::TimeDelta ad_time) override {
     total_cpu_time_ += time;

@@ -566,19 +566,6 @@ class BLINK_EXPORT WebLocalFrameClient {
       base::TimeDelta first_scroll_delay,
       base::TimeTicks first_scroll_timestamp) {}
 
-  // UseCounter ----------------------------------------------------------
-  // A subresource load is observed.
-  // It is called when there is a subresouce load. The reported values via
-  // arguments are cumulative. They are NOT a difference from the previous call.
-  virtual void DidObserveSubresourceLoad(
-      const SubresourceLoadMetrics& subresource_load_metrics) {}
-
-  // Blink hits the code path for a certain UseCounterFeature for the first time
-  // on this frame. As a performance optimization, features already hit on other
-  // frames associated with the same page in the renderer are not currently
-  // reported.
-  virtual void DidObserveNewFeatureUsage(const UseCounterFeature&) {}
-
   // Script notifications ------------------------------------------------
 
   // Notifies that a new script context has been created for this frame.
@@ -792,7 +779,6 @@ class BLINK_EXPORT WebLocalFrameClient {
       const WebURL& base_url) {
     return nullptr;
   }
-
 
   virtual base::ScopedClosureRunner CreateScopedClientNavigationThrottler() {
     return {};

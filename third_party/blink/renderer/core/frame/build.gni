@@ -236,6 +236,7 @@ blink_core_sources_frame = [
   "web_local_frame_client.cc",
   "web_local_frame_impl.cc",
   "web_local_frame_impl.h",
+  "web_local_frame_metrics_observer.cc",
   "web_local_frame_observer.cc",
   "web_remote_frame_impl.cc",
   "web_remote_frame_impl.h",

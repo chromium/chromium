@@ -4693,27 +4693,6 @@ void RenderFrameImpl::DidReceiveTransferSizeUpdate(
   }
 }
 
-void RenderFrameImpl::DidObserveSubresourceLoad(
-    const blink::SubresourceLoadMetrics& subresource_load_metrics) {
-  if (subresource_load_callback_) {
-    subresource_load_callback_.Run(subresource_load_metrics);
-  } else {
-    for (auto& observer : observers_) {
-      observer.DidObserveSubresourceLoad(subresource_load_metrics);
-    }
-  }
-}
-
-void RenderFrameImpl::SetNewFeatureUsageCallback(
-    NewFeatureUsageCallback callback) {
-  new_feature_usage_callback_ = std::move(callback);
-}
-
-void RenderFrameImpl::SetSubresourceLoadCallback(
-    SubresourceLoadCallback callback) {
-  subresource_load_callback_ = std::move(callback);
-}
-
 void RenderFrameImpl::SetLoadFromMemoryCacheCallback(
     LoadFromMemoryCacheCallback callback) {
   load_from_memory_cache_callback_ = std::move(callback);
@@ -4732,19 +4711,6 @@ void RenderFrameImpl::SetDidCompleteResponseCallback(
 void RenderFrameImpl::SetDidCancelResponseCallback(
     DidCancelResponseCallback callback) {
   did_cancel_response_callback_ = std::move(callback);
-}
-
-void RenderFrameImpl::DidObserveNewFeatureUsage(
-    const blink::UseCounterFeature& feature) {
-  TRACE_EVENT("navigation", "RenderFrameImpl::DidObserveNewFeatureUsage",
-              perfetto::Flow::FromPointer(this));
-  if (new_feature_usage_callback_) {
-    new_feature_usage_callback_.Run(feature);
-  } else {
-    for (auto& observer : observers_) {
-      observer.DidObserveNewFeatureUsage(feature);
-    }
-  }
 }
 
 void RenderFrameImpl::DidCreateScriptContext(v8::Local<v8::Context> context,

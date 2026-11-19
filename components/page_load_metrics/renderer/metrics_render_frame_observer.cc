@@ -141,20 +141,12 @@ MetricsRenderFrameObserver::MetricsRenderFrameObserver(
     content::RenderFrame* render_frame)
     : content::RenderFrameObserver(render_frame),
       blink::WebLocalFrameObserver(render_frame ? render_frame->GetWebFrame()
-                                                : nullptr) {
+                                                : nullptr),
+      blink::WebLocalFrameMetricsObserver(
+          render_frame ? render_frame->GetWebFrame() : nullptr) {
   if (base::FeatureList::IsEnabled(
           features::kMetricsRenderFrameObserverImprovement) &&
       render_frame) {
-    // If the optimization is enabled, `DidObserveNewFeatureUsage()` will be
-    // called as a callback instead of the observer interface.
-    render_frame->SetNewFeatureUsageCallback(base::BindRepeating(
-        &MetricsRenderFrameObserver::DidObserveNewFeatureUsage,
-        weak_factory_.GetWeakPtr()));
-    // If the optimization is enabled, `DidObserveSubresourceLoad()` will be
-    // called as a callback instead of the observer interface.
-    render_frame->SetSubresourceLoadCallback(base::BindRepeating(
-        &MetricsRenderFrameObserver::DidObserveSubresourceLoad,
-        weak_factory_.GetWeakPtr()));
     // If the optimization is enabled, `DidLoadResourceFromMemoryCache()` will
     // be called as a callback instead of the observer interface.
     render_frame->SetLoadFromMemoryCacheCallback(base::BindRepeating(

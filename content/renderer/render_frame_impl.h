@@ -577,10 +577,6 @@ class CONTENT_EXPORT RenderFrameImpl
   void DidLoadResourceFromMemoryCache(
       const blink::WebURLRequest& request,
       const blink::WebURLResponse& response) override;
-  void DidObserveSubresourceLoad(
-      const blink::SubresourceLoadMetrics& subresource_load_metrics) override;
-  void DidObserveNewFeatureUsage(
-      const blink::UseCounterFeature& feature) override;
   void DidCreateScriptContext(v8::Local<v8::Context> context,
                               int world_id) override;
   void WillReleaseScriptContext(v8::Local<v8::Context> context,
@@ -754,8 +750,6 @@ class CONTENT_EXPORT RenderFrameImpl
   // document) it may be inherited from the parent or opener.
   blink::ChildURLLoaderFactoryBundle* GetLoaderFactoryBundle() override;
 
-  void SetNewFeatureUsageCallback(NewFeatureUsageCallback callback) override;
-  void SetSubresourceLoadCallback(SubresourceLoadCallback callback) override;
   void SetLoadFromMemoryCacheCallback(
       LoadFromMemoryCacheCallback callback) override;
   void SetDidStartResponseCallback(DidStartResponseCallback callback) override;
@@ -807,7 +801,7 @@ class CONTENT_EXPORT RenderFrameImpl
   class AutoResetMember {
    public:
     AutoResetMember(RenderFrameImpl* frame,
-                    T RenderFrameImpl::*member,
+                    T RenderFrameImpl::* member,
                     T new_value)
         : weak_frame_(frame->weak_factory_.GetWeakPtr()),
           scoped_variable_(&(frame->*member)),
@@ -816,8 +810,9 @@ class CONTENT_EXPORT RenderFrameImpl
     }
 
     ~AutoResetMember() {
-      if (weak_frame_)
+      if (weak_frame_) {
         *scoped_variable_ = original_value_;
+      }
     }
 
    private:
@@ -1219,12 +1214,6 @@ class CONTENT_EXPORT RenderFrameImpl
       base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>::Unchecked
       observers_;
 
-  // The callback to send the feature usage to the browser process through
-  // PageLoadMetrics.
-  NewFeatureUsageCallback new_feature_usage_callback_;
-  // The callback to send the loaded subresource info to the browser process
-  // through PageLoadMetrics.
-  SubresourceLoadCallback subresource_load_callback_;
   // The callback to send the loaded resource info from memory cache to the
   // browser process through PageLoadMetrics.
   LoadFromMemoryCacheCallback load_from_memory_cache_callback_;

@@ -880,16 +880,12 @@ void LocalFrameClientImpl::DidObserveJavaScriptFrameworks(
 
 void LocalFrameClientImpl::DidObserveSubresourceLoad(
     const SubresourceLoadMetrics& subresource_load_metrics) {
-  if (web_frame_->Client()) {
-    web_frame_->Client()->DidObserveSubresourceLoad(subresource_load_metrics);
-  }
+  web_frame_->DidObserveSubresourceLoad(subresource_load_metrics);
 }
 
 void LocalFrameClientImpl::DidObserveNewFeatureUsage(
     const UseCounterFeature& feature) {
-  if (web_frame_->Client()) {
-    web_frame_->Client()->DidObserveNewFeatureUsage(feature);
-  }
+  web_frame_->DidObserveNewFeatureUsage(feature);
 }
 
 // A new soft navigation was observed.

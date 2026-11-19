@@ -66,6 +66,7 @@
 #include "third_party/blink/public/platform/web_file_system_type.h"
 #include "third_party/blink/public/web/web_history_commit_type.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "third_party/blink/public/web/web_local_frame_metrics_observer.h"
 #include "third_party/blink/public/web/web_local_frame_observer.h"
 #include "third_party/blink/public/web/web_navigation_control.h"
 #include "third_party/blink/public/web/web_performance_metrics_for_nested_contexts.h"
@@ -309,10 +310,9 @@ class CORE_EXPORT WebLocalFrameImpl final
   void UsageCountChromeCSI(const WebString& metric) override;
   bool DispatchedPagehideAndStillHidden() const override;
 #if BUILDFLAG(IS_ANDROID)
-  void PostEmbedderMessageEvent(
-      const WebSecurityOrigin& target_origin,
-      std::vector<MessagePortDescriptor> ports,
-      base::UnsafeSharedMemoryRegion region) override;
+  void PostEmbedderMessageEvent(const WebSecurityOrigin& target_origin,
+                                std::vector<MessagePortDescriptor> ports,
+                                base::UnsafeSharedMemoryRegion region) override;
 #endif
   FrameScheduler* Scheduler() const override;
   scheduler::WebAgentGroupScheduler* GetAgentGroupScheduler() const override;
@@ -594,6 +594,8 @@ class CORE_EXPORT WebLocalFrameImpl final
   // Functions to add and remove observers for this object.
   void AddObserver(WebLocalFrameObserver* observer);
   void RemoveObserver(WebLocalFrameObserver* observer);
+  void AddMetricsObserver(WebLocalFrameMetricsObserver* observer);
+  void RemoveMetricsObserver(WebLocalFrameMetricsObserver* observer);
 
   void WillSendSubmitEvent(const WebFormElement& form);
   void WasHidden();
@@ -612,6 +614,9 @@ class CORE_EXPORT WebLocalFrameImpl final
   void DidObserveLoadingBehavior(LoadingBehaviorFlag behavior);
   void DidObserveJavaScriptFrameworks(
       const JavaScriptFrameworkDetectionResult& result);
+  void DidObserveSubresourceLoad(
+      const SubresourceLoadMetrics& subresource_load_metrics);
+  void DidObserveNewFeatureUsage(const UseCounterFeature& feature);
   void DidObserveSoftNavigation(SoftNavigationMetricsForReporting metrics);
   void DidObserveSoftNavigationFirstContentfulPaint(
       uint64_t performance_timeline_navigation_id,
@@ -781,6 +786,7 @@ class CORE_EXPORT WebLocalFrameImpl final
 
   // All the registered observers.
   base::ObserverList<WebLocalFrameObserver, true> observers_;
+  base::ObserverList<WebLocalFrameMetricsObserver, true> metrics_observers_;
 };
 
 template <>
