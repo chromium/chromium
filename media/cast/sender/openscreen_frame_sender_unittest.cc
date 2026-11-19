@@ -69,8 +69,10 @@ class OpenscreenFrameSenderTest : public TestWithCastEnvironment,
                                   public FrameSender::Client {
  public:
   // FrameSender::Client overrides.
-  int GetNumberOfFramesInEncoder() const override { return 0; }
-  base::TimeDelta GetEncoderBacklogDuration() const override { return {}; }
+  int GetNumberOfFramesInEncoder() const override { return frames_in_encoder_; }
+  base::TimeDelta GetEncoderBacklogDuration() const override {
+    return encoder_backlog_duration_;
+  }
   void OnFrameCanceled(FrameId frame_id) override {}
 
  protected:
@@ -93,6 +95,12 @@ class OpenscreenFrameSenderTest : public TestWithCastEnvironment,
 
   void set_suggested_bitrate(uint32_t bitrate) { suggested_bitrate_ = bitrate; }
 
+  void set_encoder_backlog(int frames_in_encoder,
+                           base::TimeDelta backlog_duration) {
+    frames_in_encoder_ = frames_in_encoder;
+    encoder_backlog_duration_ = backlog_duration;
+  }
+
   OpenscreenFrameSender& audio_sender() { return *audio_sender_; }
 
   OpenscreenFrameSender& video_sender() { return *video_sender_; }
@@ -107,6 +115,8 @@ class OpenscreenFrameSenderTest : public TestWithCastEnvironment,
   std::unique_ptr<OpenscreenFrameSender> video_sender_;
 
   uint32_t suggested_bitrate_ = 0;
+  int frames_in_encoder_ = 0;
+  base::TimeDelta encoder_backlog_duration_;
 };
 
 TEST_F(OpenscreenFrameSenderTest, RespectsTargetPlayoutDelay) {
@@ -414,7 +424,9 @@ TEST_F(OpenscreenFrameSenderTest, RejectedFrameDoesNotCorruptState) {
   EXPECT_CALL(mock_video_sender(), GetInFlightMediaDuration(kFrame0Rtp))
       .WillOnce(testing::Return(std::chrono::milliseconds(0)));
   EXPECT_EQ(CastStreamingFrameDropReason::kNotDropped,
-            video_sender().ShouldDropNextFrame(base::Milliseconds(33)));
+            video_sender().ShouldDropNextFrame(
+                base::Milliseconds(33),
+                /*next_frame_rtp_timestamp=*/std::nullopt));
 
   // A subsequent dependent frame referencing the rejected Frame 1 must be
   // dropped with kInvalidReferencedFrameId.
@@ -510,7 +522,146 @@ TEST_F(OpenscreenFrameSenderTest,
               GetInFlightMediaDuration(RtpTimeTicks{18900}))
       .WillOnce(testing::Return(std::chrono::seconds(2)));
   EXPECT_EQ(CastStreamingFrameDropReason::kNotDropped,
-            video_sender().ShouldDropNextFrame(base::Milliseconds(33)));
+            video_sender().ShouldDropNextFrame(
+                base::Milliseconds(33),
+                /*next_frame_rtp_timestamp=*/std::nullopt));
+}
+
+namespace {
+
+// Returns an RTP timestamp `offset` after zero, in kVideoConfig's timebase.
+RtpTimeTicks VideoRtpTimestampAt(base::TimeDelta offset) {
+  return ToRtpTimeTicks(offset, kRtpTimebase);
+}
+
+}  // namespace
+
+// When frames are waiting for an ACK, none are in the encoder, and the next
+// frame's RTP timestamp is known, ShouldDropNextFrame() must use the in-flight
+// duration the Sender computes for that timestamp, which is what
+// Sender::EnqueueFrame() checks after encoding.
+TEST_F(OpenscreenFrameSenderTest,
+       DropsNextFrameWhenSenderDurationExceedsWindow) {
+  ON_CALL(mock_video_sender(), GetMaxInFlightMediaDuration)
+      .WillByDefault(testing::Return(std::chrono::microseconds(81667)));
+
+  const RtpTimeTicks frame0_rtp = VideoRtpTimestampAt(base::TimeDelta());
+  auto frame0 = std::make_unique<SenderEncodedFrame>();
+  frame0->is_key_frame = true;
+  frame0->frame_id = FrameId::first();
+  frame0->referenced_frame_id = frame0->frame_id;
+  frame0->reference_time = base::TimeTicks::Now();
+  frame0->rtp_timestamp = frame0_rtp;
+  frame0->data = base::HeapArray<uint8_t>::WithSize(10);
+  ASSERT_EQ(CastStreamingFrameDropReason::kNotDropped,
+            video_sender().EnqueueFrame(std::move(frame0)));
+  ASSERT_EQ(1, video_sender().GetUnacknowledgedFrameCount());
+
+  // With one frame unACKed, the span to the last enqueued frame is 0 ms, so the
+  // estimate is 0 + 33 ms, well under the window. The Sender's duration for a
+  // frame 90 ms later is over it, so the Sender would reject that frame after
+  // encoding.
+  const RtpTimeTicks next_frame_rtp =
+      VideoRtpTimestampAt(base::Milliseconds(90));
+  EXPECT_CALL(mock_video_sender(), GetInFlightMediaDuration(frame0_rtp))
+      .WillRepeatedly(testing::Return(std::chrono::milliseconds(0)));
+  EXPECT_CALL(mock_video_sender(), GetInFlightMediaDuration(next_frame_rtp))
+      .WillOnce(testing::Return(std::chrono::milliseconds(90)));
+  EXPECT_EQ(CastStreamingFrameDropReason::kInFlightDurationTooHigh,
+            video_sender().ShouldDropNextFrame(base::Milliseconds(33),
+                                               next_frame_rtp));
+}
+
+// When the Sender's duration is available, it is used instead of the estimate,
+// which adds a capped frame duration and can over-count, e.g. between refresh
+// frames.
+TEST_F(OpenscreenFrameSenderTest, UsesSenderDurationInsteadOfEstimate) {
+  ON_CALL(mock_video_sender(), GetMaxInFlightMediaDuration)
+      .WillByDefault(testing::Return(std::chrono::microseconds(81667)));
+
+  const RtpTimeTicks frame0_rtp = VideoRtpTimestampAt(base::TimeDelta());
+  auto frame0 = std::make_unique<SenderEncodedFrame>();
+  frame0->is_key_frame = true;
+  frame0->frame_id = FrameId::first();
+  frame0->referenced_frame_id = frame0->frame_id;
+  frame0->reference_time = base::TimeTicks::Now();
+  frame0->rtp_timestamp = frame0_rtp;
+  frame0->data = base::HeapArray<uint8_t>::WithSize(10);
+  ASSERT_EQ(CastStreamingFrameDropReason::kNotDropped,
+            video_sender().EnqueueFrame(std::move(frame0)));
+
+  // The estimate (0 ms in flight + 100 ms frame duration) is over the window,
+  // but the Sender's duration for a frame 50 ms later is not.
+  const RtpTimeTicks next_frame_rtp =
+      VideoRtpTimestampAt(base::Milliseconds(50));
+  EXPECT_CALL(mock_video_sender(), GetInFlightMediaDuration(frame0_rtp))
+      .WillRepeatedly(testing::Return(std::chrono::milliseconds(0)));
+  EXPECT_CALL(mock_video_sender(), GetInFlightMediaDuration(next_frame_rtp))
+      .WillOnce(testing::Return(std::chrono::milliseconds(50)));
+  EXPECT_EQ(CastStreamingFrameDropReason::kNotDropped,
+            video_sender().ShouldDropNextFrame(base::Milliseconds(100),
+                                               next_frame_rtp));
+
+  // Without a timestamp, the estimate is still used.
+  EXPECT_EQ(CastStreamingFrameDropReason::kInFlightDurationTooHigh,
+            video_sender().ShouldDropNextFrame(
+                base::Milliseconds(100),
+                /*next_frame_rtp_timestamp=*/std::nullopt));
+}
+
+// With nothing waiting for an ACK, the Sender's duration is zero, so the
+// estimate (which includes the encoder backlog) is used even when the timestamp
+// is known.
+TEST_F(OpenscreenFrameSenderTest, UsesEstimateWhenNoFramesAreUnacknowledged) {
+  ON_CALL(mock_video_sender(), GetMaxInFlightMediaDuration)
+      .WillByDefault(testing::Return(std::chrono::microseconds(81667)));
+  ASSERT_EQ(0, video_sender().GetUnacknowledgedFrameCount());
+
+  EXPECT_CALL(mock_video_sender(), GetInFlightMediaDuration(testing::_))
+      .Times(0);
+  const RtpTimeTicks next_frame_rtp = VideoRtpTimestampAt(base::Seconds(1));
+  EXPECT_EQ(CastStreamingFrameDropReason::kInFlightDurationTooHigh,
+            video_sender().ShouldDropNextFrame(base::Milliseconds(100),
+                                               next_frame_rtp));
+  EXPECT_EQ(CastStreamingFrameDropReason::kNotDropped,
+            video_sender().ShouldDropNextFrame(base::Milliseconds(33),
+                                               next_frame_rtp));
+}
+
+// Frames still in the encoder are not known to the Sender, which also caps the
+// step from its last frame to the next one, so it would undercount them. When
+// frames are in the encoder, the estimate (which includes the encoder backlog)
+// must be used.
+TEST_F(OpenscreenFrameSenderTest, UsesEstimateWhenFramesAreInEncoder) {
+  ON_CALL(mock_video_sender(), GetMaxInFlightMediaDuration)
+      .WillByDefault(testing::Return(std::chrono::microseconds(81667)));
+
+  const RtpTimeTicks frame0_rtp = VideoRtpTimestampAt(base::TimeDelta());
+  auto frame0 = std::make_unique<SenderEncodedFrame>();
+  frame0->is_key_frame = true;
+  frame0->frame_id = FrameId::first();
+  frame0->referenced_frame_id = frame0->frame_id;
+  frame0->reference_time = base::TimeTicks::Now();
+  frame0->rtp_timestamp = frame0_rtp;
+  frame0->data = base::HeapArray<uint8_t>::WithSize(10);
+  ASSERT_EQ(CastStreamingFrameDropReason::kNotDropped,
+            video_sender().EnqueueFrame(std::move(frame0)));
+  ASSERT_EQ(1, video_sender().GetUnacknowledgedFrameCount());
+
+  // Two frames, 43 ms apart, are in the encoder. The Sender only knows about
+  // frame 0, so for the next frame (129 ms) it would report the step from
+  // frame 0 capped at 50 ms, under the window. Counting the encoder backlog,
+  // the frame is over it.
+  set_encoder_backlog(/*frames_in_encoder=*/2, base::Milliseconds(86));
+  const RtpTimeTicks next_frame_rtp =
+      VideoRtpTimestampAt(base::Milliseconds(129));
+  EXPECT_CALL(mock_video_sender(), GetInFlightMediaDuration(frame0_rtp))
+      .WillRepeatedly(testing::Return(std::chrono::milliseconds(0)));
+  EXPECT_CALL(mock_video_sender(), GetInFlightMediaDuration(next_frame_rtp))
+      .Times(0);
+  EXPECT_EQ(CastStreamingFrameDropReason::kInFlightDurationTooHigh,
+            video_sender().ShouldDropNextFrame(base::Milliseconds(33),
+                                               next_frame_rtp));
 }
 
 }  // namespace media::cast

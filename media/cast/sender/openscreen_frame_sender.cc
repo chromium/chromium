@@ -307,7 +307,8 @@ void OpenscreenFrameSender::ReportFrameDroppedByEncoder(
 }
 
 CastStreamingFrameDropReason OpenscreenFrameSender::ShouldDropNextFrame(
-    base::TimeDelta frame_duration) {
+    base::TimeDelta frame_duration,
+    std::optional<RtpTimeTicks> next_frame_rtp_timestamp) {
   // Check that accepting the next frame won't cause more frames to become
   // in-flight than the system's design limit.
   const int count_frames_in_flight =
@@ -326,11 +327,25 @@ CastStreamingFrameDropReason OpenscreenFrameSender::ShouldDropNextFrame(
   }
 
   // At this point, we know we don't have too many frames, but we still need
-  // to ensure we don't have too much duration in flight. This case should
-  // not be hit very often, unless some frames have a higher duration than
-  // expected.
+  // to ensure we don't have too much duration in flight.
+  //
+  // When frames are waiting for an ACK, none are in the encoder, and the next
+  // frame's RTP timestamp is known, ask the Sender for the in-flight duration
+  // it will compute in Sender::EnqueueFrame() for that frame. ACKs that arrive
+  // while the frame is being encoded can only lower it. The estimate can let a
+  // frame through that the Sender then rejects after encoding, which breaks
+  // the encoder's reference chain and forces a key frame.
+  //
+  // Frames still in the encoder are not known to the Sender yet, and the
+  // Sender caps each step between frames, so it would undercount them. In that
+  // case, keep using the estimate, which includes the encoder backlog.
+  const bool use_sender_duration = next_frame_rtp_timestamp.has_value() &&
+                                   GetUnacknowledgedFrameCount() > 0 &&
+                                   client_->GetNumberOfFramesInEncoder() == 0;
   const base::TimeDelta duration_would_be_in_flight =
-      duration_in_flight + frame_duration;
+      use_sender_duration ? ToTimeDelta(sender_->GetInFlightMediaDuration(
+                                *next_frame_rtp_timestamp))
+                          : duration_in_flight + frame_duration;
   const base::TimeDelta allowed_in_flight = GetAllowedInFlightMediaDuration();
   if (VLOG_IS_ON(1)) {
     const int64_t percent =
@@ -340,11 +355,10 @@ CastStreamingFrameDropReason OpenscreenFrameSender::ShouldDropNextFrame(
             : std::numeric_limits<int64_t>::max();
 
     if (percent > 50) {
-      VLOG_WITH_SSRC(1) << duration_in_flight.InMicroseconds()
-                        << " usec in-flight + "
-                        << frame_duration.InMicroseconds()
-                        << " usec for next frame --> " << percent
-                        << "% of allowed in-flight.";
+      VLOG_WITH_SSRC(1) << duration_would_be_in_flight.InMicroseconds()
+                        << " usec would be in-flight"
+                        << (use_sender_duration ? " (from sender)" : "")
+                        << " --> " << percent << "% of allowed in-flight.";
     }
   }
   if (duration_would_be_in_flight > allowed_in_flight) {

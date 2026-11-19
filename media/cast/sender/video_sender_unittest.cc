@@ -7,6 +7,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
+#include <map>
 #include <memory>
 #include <optional>
 #include <vector>
@@ -18,6 +20,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/thread_pool.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -265,6 +268,20 @@ class VideoSenderTest : public ::testing::Test, public WithCastEnvironment {
 
   void EncodeOneFrameAndDestroySender(double encoder_utilization,
                                       std::optional<double> lossiness = 0.1);
+
+  // Results of RunInFlightWindowSimulation().
+  struct InFlightWindowSimulationResult {
+    int frames_dropped_before_encoding = 0;
+    int frames_dropped_after_encoding = 0;
+    int key_frame_requests = 0;
+  };
+
+  // Streams 300 frames through a VideoSender over a simulated lossless link
+  // with a 110 ms round-trip time and a fixed 81.67 ms in-flight window. The
+  // encoder takes `encode_latency` per frame. Capture runs at about 23 FPS
+  // (43 ms apart) for 100 frames, then at 30 FPS.
+  InFlightWindowSimulationResult RunInFlightWindowSimulation(
+      base::TimeDelta encode_latency);
 
  private:
   scoped_refptr<base::SingleThreadTaskRunner> accelerator_task_runner_;
@@ -782,6 +799,227 @@ TEST_F(VideoSenderTest, SetMaxFrameRateUpdatesFrameSenderAndEncoder) {
   EXPECT_CALL(mock_encoder(), SetMaxFrameRate(30.0));
   video_sender().SetMaxFrameRate(30.0);
   EXPECT_DOUBLE_EQ(video_sender().GetMaxFrameRate(), 30.0);
+}
+
+VideoSenderTest::InFlightWindowSimulationResult
+VideoSenderTest::RunInFlightWindowSimulation(base::TimeDelta encode_latency) {
+  FrameSenderConfig video_config = GetDefaultVideoSenderConfig();
+  video_config.min_playout_delay = base::Milliseconds(200);
+  video_config.max_playout_delay = base::Milliseconds(200);
+
+  auto test_senders =
+      std::make_unique<OpenscreenTestSenders>(OpenscreenTestSenders::Config(
+          GetMainThreadTaskRunner(), GetMockTickClock(), std::nullopt,
+          openscreen::cast::RtpPayloadType::kVideoVp8, std::nullopt,
+          video_config));
+  MockSender* mock_sender = test_senders->video_sender.get();
+
+  constexpr auto kMaxInFlight = std::chrono::microseconds(81667);
+  constexpr base::TimeDelta kRoundTripTime = base::Milliseconds(110);
+  // Matches kMaxUnpausedFrameDuration in Open Screen's sender_impl.cc.
+  constexpr auto kMaxStepDuration = std::chrono::milliseconds(50);
+
+  // Tracks the frames the simulated Sender has accepted, and ACKs each one a
+  // round trip after it is enqueued. With a constant round-trip time, frames
+  // are ACKed in order.
+  struct SimulatedSender {
+    explicit SimulatedSender(base::WeakPtr<MockSender> sender)
+        : sender(std::move(sender)) {}
+
+    void AckFrame(openscreen::cast::FrameId frame_id) {
+      unacked_frames.erase(frame_id);
+      if (sender && sender->observer()) {
+        sender->observer()->OnFrameCanceled(frame_id);
+      }
+    }
+
+    base::WeakPtr<MockSender> sender;
+    openscreen::cast::FrameId next_frame_id =
+        openscreen::cast::FrameId::first();
+    bool has_enqueued_key_frame = false;
+    std::map<openscreen::cast::FrameId, openscreen::cast::RtpTimeTicks>
+        unacked_frames;
+    base::WeakPtrFactory<SimulatedSender> weak_factory{this};
+  } simulated_sender(mock_sender->AsWeakPtr());
+
+  EXPECT_CALL(*mock_sender, SetObserver(_))
+      .WillRepeatedly([mock_sender](openscreen::cast::Sender::Observer* o) {
+        mock_sender->set_observer(o);
+      });
+  EXPECT_CALL(*mock_sender, GetMaxInFlightMediaDuration)
+      .WillRepeatedly(testing::Return(kMaxInFlight));
+  EXPECT_CALL(*mock_sender, GetCurrentRoundTripTime)
+      .WillRepeatedly(testing::Return(std::chrono::milliseconds(110)));
+  EXPECT_CALL(*mock_sender, NeedsKeyFrame).WillRepeatedly([&]() {
+    return !simulated_sender.has_enqueued_key_frame;
+  });
+  EXPECT_CALL(*mock_sender, GetNextFrameId).WillRepeatedly([&]() {
+    return simulated_sender.next_frame_id;
+  });
+  EXPECT_CALL(*mock_sender, GetInFlightFrameCount).WillRepeatedly([&]() {
+    return simulated_sender.unacked_frames.size();
+  });
+  // Mirrors SenderImpl::GetInFlightMediaDuration(): sums the steps between
+  // consecutive unACKed frames and from the newest one to `next_rtp`, capping
+  // each step at kMaxStepDuration.
+  EXPECT_CALL(*mock_sender, GetInFlightMediaDuration)
+      .WillRepeatedly([&](openscreen::cast::RtpTimeTicks next_rtp)
+                          -> openscreen::Clock::duration {
+        if (simulated_sender.unacked_frames.empty()) {
+          return openscreen::Clock::duration::zero();
+        }
+        const auto capped_step = [&](openscreen::cast::RtpTimeTicks from,
+                                     openscreen::cast::RtpTimeTicks to) {
+          return std::min<openscreen::Clock::duration>(
+              (to - from).ToDuration<openscreen::Clock::duration>(
+                  video_config.rtp_timebase),
+              kMaxStepDuration);
+        };
+        openscreen::Clock::duration total{};
+        openscreen::cast::RtpTimeTicks previous =
+            simulated_sender.unacked_frames.begin()->second;
+        for (const auto& [frame_id, rtp_timestamp] :
+             simulated_sender.unacked_frames) {
+          total += capped_step(previous, rtp_timestamp);
+          previous = rtp_timestamp;
+        }
+        return total + capped_step(previous, next_rtp);
+      });
+  // Mirrors the MAX_DURATION_IN_FLIGHT check in SenderImpl::EnqueueFrame().
+  EXPECT_CALL(*mock_sender, EnqueueFrame)
+      .WillRepeatedly([&](const openscreen::cast::EncodedFrame& frame) {
+        if (mock_sender->GetInFlightMediaDuration(frame.rtp_timestamp) >
+            kMaxInFlight) {
+          return openscreen::cast::Sender::EnqueueFrameResult::
+              MAX_DURATION_IN_FLIGHT;
+        }
+        simulated_sender.unacked_frames[frame.frame_id] = frame.rtp_timestamp;
+        simulated_sender.next_frame_id = frame.frame_id + 1;
+        if (frame.dependency ==
+            openscreen::cast::EncodedFrame::Dependency::kKeyFrame) {
+          simulated_sender.has_enqueued_key_frame = true;
+        }
+        GetMainThreadTaskRunner()->PostDelayedTask(
+            FROM_HERE,
+            base::BindOnce(&SimulatedSender::AckFrame,
+                           simulated_sender.weak_factory.GetWeakPtr(),
+                           frame.frame_id),
+            kRoundTripTime);
+        return openscreen::cast::Sender::EnqueueFrameResult::OK;
+      });
+
+  // Simulates an encoder that finishes each frame `encode_latency` after it
+  // receives it, so frames can queue up in the encoder.
+  auto mock_encoder = std::make_unique<MockVideoEncoder>();
+  InFlightWindowSimulationResult result;
+  bool force_next_key_frame = true;
+  FrameId next_encoder_frame_id = FrameId::first();
+  EXPECT_CALL(*mock_encoder, GenerateKeyFrame()).WillRepeatedly([&]() {
+    ++result.key_frame_requests;
+    force_next_key_frame = true;
+  });
+  EXPECT_CALL(*mock_encoder, SetBitRate(_)).Times(AtLeast(1));
+  EXPECT_CALL(*mock_encoder, EncodeVideoFrame(_, _, _))
+      .WillRepeatedly(
+          [&](scoped_refptr<media::VideoFrame> video_frame,
+              base::TimeTicks reference_time,
+              VideoEncoder::FrameEncodedCallback frame_encoded_callback) {
+            auto encoded = std::make_unique<SenderEncodedFrame>();
+            encoded->encoder_utilization = 0.15;
+            encoded->lossiness = 0.05;
+            encoded->encode_completion_time = reference_time + encode_latency;
+            encoded->is_key_frame = force_next_key_frame;
+            encoded->frame_id = next_encoder_frame_id++;
+            encoded->referenced_frame_id = encoded->is_key_frame
+                                               ? encoded->frame_id
+                                               : encoded->frame_id - 1;
+            encoded->rtp_timestamp =
+                ToRtpTimeTicks(video_frame->timestamp(), kVideoFrequency);
+            encoded->reference_time = reference_time;
+            encoded->data = base::HeapArray<uint8_t>::WithSize(64);
+            force_next_key_frame = false;
+            GetMainThreadTaskRunner()->PostDelayedTask(
+                FROM_HERE,
+                base::BindOnce(std::move(frame_encoded_callback),
+                               std::move(encoded)),
+                encode_latency);
+            return true;
+          });
+
+  VideoSender sender(std::move(mock_encoder), cast_environment(), video_config,
+                     std::move(test_senders->video_sender),
+                     base::BindRepeating(&IgnorePlayoutDelayChanges),
+                     base::DoNothing(),
+                     base::BindRepeating([]() -> uint32_t { return 5000000; }));
+
+  scoped_refptr<VideoFrame> black_frame =
+      VideoFrame::CreateBlackFrame(gfx::Size(kWidth, kHeight));
+  const base::TimeTicks start_time = NowTicks();
+  for (int i = 0; i < 300; ++i) {
+    scoped_refptr<VideoFrame> frame = VideoFrame::WrapVideoFrame(
+        black_frame, black_frame->format(), black_frame->visible_rect(),
+        black_frame->natural_size());
+    frame->set_timestamp(NowTicks() - start_time);
+    sender.InsertRawVideoFrame(std::move(frame), NowTicks());
+    task_environment().FastForwardBy(i < 100 ? base::Milliseconds(43)
+                                             : base::Milliseconds(33));
+  }
+  // Let outstanding encodes and ACKs finish.
+  task_environment().FastForwardBy(encode_latency + kRoundTripTime);
+
+  result.frames_dropped_before_encoding =
+      sender.GetFramesDroppedBeforeEncoding();
+  result.frames_dropped_after_encoding = sender.GetFramesDroppedAfterEncoding();
+  return result;
+}
+
+// Frames that would exceed the Open Screen Sender's in-flight window must be
+// dropped before encoding, not rejected after it. A frame rejected after
+// encoding has already updated the encoder's reference buffer, so the next
+// frame can't be decoded and VideoSender has to request a key frame. See
+// b/555393284.
+//
+// With a 4 ms encoder, the encoder is empty whenever a new frame arrives. At
+// 23 FPS, the third unACKed frame is 86 ms after the first, which used to pass
+// the estimate in ShouldDropNextFrame() (43 + 33.3 = 76.3 ms) and then fail
+// Sender::EnqueueFrame().
+TEST_F(VideoSenderTest, DropsFramesBeforeEncodingWhenInFlightWindowIsFull) {
+  base::HistogramTester histogram_tester;
+  const InFlightWindowSimulationResult result =
+      RunInFlightWindowSimulation(base::Milliseconds(4));
+
+  // With a 110 ms round trip, some frames must still be dropped to fit the
+  // in-flight window, but only before encoding.
+  EXPECT_GT(result.frames_dropped_before_encoding, 0);
+  EXPECT_EQ(result.frames_dropped_after_encoding, 0);
+  EXPECT_EQ(
+      histogram_tester.GetBucketCount(
+          "CastStreaming.Sender.Video.FrameDropped",
+          CastStreamingFrameDropReason::kInFlightDurationTooHighAfterEncoding),
+      0);
+  // Only the initial key frame is requested.
+  EXPECT_EQ(result.key_frame_requests, 1);
+}
+
+// Same as above, but the encoder takes 120 ms, so two or more frames are still
+// in the encoder when the next one arrives. The Sender doesn't know about those
+// frames yet and caps the step from its newest frame at 50 ms, so it would
+// undercount them. ShouldDropNextFrame() must keep counting the encoder backlog
+// instead.
+TEST_F(VideoSenderTest,
+       DropsFramesBeforeEncodingWhenInFlightWindowIsFullWithEncoderBacklog) {
+  base::HistogramTester histogram_tester;
+  const InFlightWindowSimulationResult result =
+      RunInFlightWindowSimulation(base::Milliseconds(120));
+
+  EXPECT_GT(result.frames_dropped_before_encoding, 0);
+  EXPECT_EQ(result.frames_dropped_after_encoding, 0);
+  EXPECT_EQ(
+      histogram_tester.GetBucketCount(
+          "CastStreaming.Sender.Video.FrameDropped",
+          CastStreamingFrameDropReason::kInFlightDurationTooHighAfterEncoding),
+      0);
+  EXPECT_EQ(result.key_frame_requests, 1);
 }
 
 }  // namespace media::cast

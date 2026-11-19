@@ -314,7 +314,8 @@ void VideoSender::InsertRawVideoFrame(
 
   number_of_frames_inserted_++;
   const CastStreamingFrameDropReason reason =
-      frame_sender_->ShouldDropNextFrame(duration_added_by_next_frame);
+      frame_sender_->ShouldDropNextFrame(duration_added_by_next_frame,
+                                         rtp_timestamp);
   const bool should_drop_frame =
       reason != CastStreamingFrameDropReason::kNotDropped;
   if (should_drop_frame) {

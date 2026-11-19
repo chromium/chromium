@@ -4,6 +4,7 @@
 
 #include "media/cast/sender/audio_sender.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/check_op.h"
@@ -79,8 +80,12 @@ void AudioSender::InsertAudio(std::unique_ptr<AudioBus> audio_bus,
   number_of_frames_inserted_++;
   const base::TimeDelta next_frame_duration =
       ToTimeDelta(RtpTimeDelta::FromTicks(audio_bus->frames()), rtp_timebase_);
+  // The audio encoder assigns RTP timestamps, so the next frame's timestamp
+  // isn't known here.
   const CastStreamingFrameDropReason reason =
-      frame_sender_->ShouldDropNextFrame(next_frame_duration);
+      frame_sender_->ShouldDropNextFrame(next_frame_duration,
+                                         /*next_frame_rtp_timestamp=*/
+                                         std::nullopt);
   if (reason != CastStreamingFrameDropReason::kNotDropped) {
     number_of_frames_dropped_++;
     base::UmaHistogramEnumeration(kHistogramFrameDropped, reason);

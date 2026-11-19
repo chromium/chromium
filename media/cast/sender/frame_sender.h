@@ -7,11 +7,14 @@
 
 #include <stdint.h>
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "media/cast/cast_config.h"
 #include "media/cast/cast_environment.h"
+#include "media/cast/common/rtp_time.h"
 #include "media/cast/constants.h"
 
 namespace openscreen::cast {
@@ -85,8 +88,16 @@ class FrameSender {
   // difference between the next and last frames' reference times, or the period
   // between frames of the configured max frame rate if the reference times are
   // unavailable.
+  //
+  // `next_frame_rtp_timestamp` is the RTP timestamp the next frame will be
+  // sent with, or std::nullopt if the caller doesn't know it. When it is set,
+  // frames are waiting for an ACK, and none are in the encoder, the frame is
+  // checked against the in-flight duration the sender will compute when the
+  // encoded frame is enqueued. That way the frame is dropped before encoding
+  // instead of being rejected after it.
   virtual CastStreamingFrameDropReason ShouldDropNextFrame(
-      base::TimeDelta frame_duration) = 0;
+      base::TimeDelta frame_duration,
+      std::optional<RtpTimeTicks> next_frame_rtp_timestamp) = 0;
 
   // Reports that the encoder dropped the frame with `rtp_timestamp` (e.g., due
   // to rate control), so that it is included in the sender's statistics.

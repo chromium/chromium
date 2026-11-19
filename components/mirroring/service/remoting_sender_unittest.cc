@@ -4,6 +4,7 @@
 
 #include "components/mirroring/service/remoting_sender.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -15,6 +16,7 @@
 #include "base/time/default_tick_clock.h"
 #include "media/cast/common/encoded_frame.h"
 #include "media/cast/common/frame_id.h"
+#include "media/cast/common/rtp_time.h"
 #include "media/cast/common/sender_encoded_frame.h"
 #include "media/cast/constants.h"
 #include "media/cast/openscreen/remoting_proto_utils.h"
@@ -86,7 +88,7 @@ class FakeSender : public media::cast::FrameSender {
               (override));
   MOCK_METHOD(media::cast::CastStreamingFrameDropReason,
               ShouldDropNextFrame,
-              (base::TimeDelta),
+              (base::TimeDelta, std::optional<media::cast::RtpTimeTicks>),
               (override));
   MOCK_METHOD(void,
               ReportFrameDroppedByEncoder,

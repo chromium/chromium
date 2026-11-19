@@ -59,7 +59,8 @@ class OpenscreenFrameSender : public FrameSender,
   CastStreamingFrameDropReason EnqueueFrame(
       std::unique_ptr<SenderEncodedFrame> encoded_frame) override;
   CastStreamingFrameDropReason ShouldDropNextFrame(
-      base::TimeDelta frame_duration) override;
+      base::TimeDelta frame_duration,
+      std::optional<RtpTimeTicks> next_frame_rtp_timestamp) override;
   void ReportFrameDroppedByEncoder(RtpTimeTicks rtp_timestamp) override;
   RtpTimeTicks GetRecordedRtpTimestamp(FrameId frame_id) const override;
   int GetUnacknowledgedFrameCount() const override;
