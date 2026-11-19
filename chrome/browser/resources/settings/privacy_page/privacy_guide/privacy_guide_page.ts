@@ -485,8 +485,7 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
       return false;
     }
     return this.syncStatus_.signedInState === SignedInState.SYNCING ||
-        (loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos') &&
-         this.syncStatus_.signedInState === SignedInState.SIGNED_IN);
+        this.syncStatus_.signedInState === SignedInState.SIGNED_IN;
   }
 
   private shouldShowCookiesCard_(): boolean {

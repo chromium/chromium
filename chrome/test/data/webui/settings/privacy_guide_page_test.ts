@@ -745,9 +745,7 @@ suite('HistorySyncCardNavigations', function() {
         testMetricsBrowserProxy.getArgs('recordAction')[0]);
   });
 
-  test('ShownForSignedInUsersWhenFlagEnabled', async function() {
-    loadTimeData.overrideValues({'replaceSyncPromosWithSignInPromos': true});
-
+  test('ShownForSignedInUsers', async function() {
     setupSync({
       syncBrowserProxy: syncBrowserProxy,
       signedInState: SignedInState.SIGNED_IN,
@@ -758,23 +756,6 @@ suite('HistorySyncCardNavigations', function() {
     await navigateToStep(PrivacyGuideStep.HISTORY_SYNC);
     assertHistorySyncCardVisible(page, syncBrowserProxy);
   });
-
-  // <if expr="is_chromeos">
-  test('NotShownForSignedInUsersWhenFlagDisabled', async function() {
-    loadTimeData.overrideValues({'replaceSyncPromosWithSignInPromos': false});
-
-    await navigateToStep(PrivacyGuideStep.HISTORY_SYNC);
-    setupSync({
-      syncBrowserProxy: syncBrowserProxy,
-      signedInState: SignedInState.SIGNED_IN,
-      syncAllDataTypes: true,
-      typedUrlsSynced: true,
-    });
-    // The history sync card is removed/not shown anymore and the next card is
-    // shown instead.
-    assertSafeBrowsingCardVisible(page, syncBrowserProxy);
-  });
-  // </if>
 });
 
 suite('SafeBrowsingCardNavigations', function() {

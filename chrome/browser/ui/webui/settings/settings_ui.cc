@@ -701,9 +701,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   html_source->AddBoolean("showAiPageAiFeatureSection",
                           show_ai_features_section);
 
-  html_source->AddBoolean("replaceSyncPromosWithSignInPromos",
-                          syncer::IsReplaceSyncPromosWithSignInPromosEnabled());
-
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   html_source->AddBoolean("unoPhase2FollowUp", base::FeatureList::IsEnabled(
                                                    syncer::kUnoPhase2FollowUp));

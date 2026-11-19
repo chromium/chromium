@@ -2322,10 +2322,7 @@ void AddSignOutDialogStrings(content::WebUIDataSource* html_source,
 
 void AddSyncAccountControlStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
-      {"signedInTo", IDS_SETTINGS_PEOPLE_SIGNED_IN_TO_ACCOUNT},
       {"syncingTo", IDS_SETTINGS_PEOPLE_SYNCING_TO_ACCOUNT},
-      {"turnOnSync",
-       IDS_SETTINGS_TURN_ON_SYNC_BUTTON_UPDATE_SETTINGS_UI_ENABLED},
       {"peopleSignInNoAccountAwareness", IDS_PROFILE_MENU_SIGNIN_PROMO_BUTTON},
       {"syncPaused", IDS_SETTINGS_PEOPLE_SYNC_PAUSED},
       {"turnOffSync", IDS_SETTINGS_PEOPLE_SYNC_TURN_OFF},
@@ -2343,17 +2340,13 @@ void AddSyncAccountControlStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_ACCOUNT_AWARE_SIGNIN_BUTTON_LABEL},
       {"accountAwareRowTitle",
        IDS_SETTINGS_PEOPLE_ACCOUNT_AWARE_SIGNIN_ACCOUNT_ROW_TITLE},
+      {"accountAwareRowSubtitle",
+       IDS_SETTINGS_PEOPLE_ACCOUNT_AWARE_SIGNIN_ACCOUNT_ROW_SUBTITLE_WITH_EMAIL_SIMPLE},
       {"pendingStateAvatarRowSubtitle", IDS_SETTINGS_PENDING_STATE_DESCRIPTION},
       {"pendingSecondaryButton", IDS_PROFILES_ACCOUNT_REMOVAL_TITLE},
   };
 
   html_source->AddLocalizedStrings(kLocalizedStrings);
-
-  html_source->AddLocalizedString(
-      "accountAwareRowSubtitle",
-      syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
-          ? IDS_SETTINGS_PEOPLE_ACCOUNT_AWARE_SIGNIN_ACCOUNT_ROW_SUBTITLE_WITH_EMAIL_SIMPLE
-          : IDS_SETTINGS_PEOPLE_ACCOUNT_AWARE_SIGNIN_ACCOUNT_ROW_SUBTITLE_WITH_EMAIL);
 }
 
 void AddPersonalizationOptionsStrings(content::WebUIDataSource* html_source) {
@@ -2365,6 +2358,7 @@ void AddPersonalizationOptionsStrings(content::WebUIDataSource* html_source) {
       {"spellingPref", IDS_SETTINGS_SPELLING_PREF},
 #if !BUILDFLAG(IS_CHROMEOS)
       {"signinAllowedTitle", IDS_SETTINGS_SIGNIN_ALLOWED},
+      {"signinAllowedDescription", IDS_SETTINGS_SIGNIN_ALLOWED_DESC_2},
 #endif
       {"enablePersonalizationLogging", IDS_SETTINGS_ENABLE_LOGGING_PREF},
       {"enablePersonalizationLoggingDesc",
@@ -2394,14 +2388,6 @@ void AddPersonalizationOptionsStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_CHROME_SIGNIN_OPTION_SAVED_TOAST_LABEL},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
-
-#if !BUILDFLAG(IS_CHROMEOS)
-  html_source->AddLocalizedString(
-      "signinAllowedDescription",
-      syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
-          ? IDS_SETTINGS_SIGNIN_ALLOWED_DESC_2
-          : IDS_SETTINGS_SIGNIN_ALLOWED_DESC);
-#endif
 }
 
 void AddBrowserSyncPageStrings(content::WebUIDataSource* html_source) {
@@ -2434,19 +2420,14 @@ void AddBrowserSyncPageStrings(content::WebUIDataSource* html_source) {
       {"cookiesCheckboxLabel", IDS_SETTINGS_COOKIES_CHECKBOX_LABEL},
       {"peopleSignInSyncPagePromptSecondaryWithNoAccount",
        IDS_SETTINGS_PEOPLE_SIGN_IN_PROMPT_SECONDARY_WITH_ACCOUNT},
+#else
+      {"peopleSignInSyncPagePromptSecondaryWithNoAccount",
+       IDS_SETTINGS_PEOPLE_EXPLICIT_SIGN_IN_PROMPT_SECONDARY_WITH_NO_ACCOUNT_WITH_BOOKMARKS},
 #endif
       {"passwordsCheckboxLabel",
        IDS_SETTINGS_PASSWORDS_AND_PASSKEYS_CHECKBOX_LABEL},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
-
-#if !BUILDFLAG(IS_CHROMEOS)
-  html_source->AddLocalizedString(
-      "peopleSignInSyncPagePromptSecondaryWithNoAccount",
-      syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
-          ? IDS_SETTINGS_PEOPLE_EXPLICIT_SIGN_IN_PROMPT_SECONDARY_WITH_NO_ACCOUNT_WITH_BOOKMARKS
-          : IDS_SETTINGS_PEOPLE_EXPLICIT_SIGN_IN_PROMPT_SECONDARY_WITH_NO_ACCOUNT);
-#endif
 
   html_source->AddString("activityControlsUrl",
                          chrome::kGoogleAccountActivityControlsURL);
@@ -2530,9 +2511,7 @@ std::string GetPeopleSignInPromptSecondaryWithAccount(Profile* profile) {
   }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
   return l10n_util::GetStringUTF8(
-      syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
-          ? IDS_SETTINGS_PEOPLE_EXPLICIT_SIGN_IN_PROMPT_SECONDARY_WITH_NO_ACCOUNT_WITH_BOOKMARKS
-          : IDS_SETTINGS_PEOPLE_SIGN_IN_PROMPT_SECONDARY_WITH_ACCOUNT);
+      IDS_SETTINGS_PEOPLE_EXPLICIT_SIGN_IN_PROMPT_SECONDARY_WITH_NO_ACCOUNT_WITH_BOOKMARKS);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
@@ -2566,6 +2545,11 @@ void AddPeopleStrings(content::WebUIDataSource* html_source, Profile* profile) {
        IDS_SETTINGS_PEOPLE_SIGN_IN_PROMPT_SECONDARY_WITH_ACCOUNT},
 #else
       {"editPerson", IDS_SETTINGS_CUSTOMIZE_PROFILE},
+      {"profileNameAndPicture", IDS_SETTINGS_CUSTOMIZE_PROFILE},
+      {"peopleSignInPrompt",
+       IDS_SETTINGS_PEOPLE_SIGNIN_SECTION_SIGNED_OUT_TITLE},
+      {"peopleSignInPromptSecondaryWithNoAccount",
+       IDS_SETTINGS_PEOPLE_EXPLICIT_SIGN_IN_PROMPT_SECONDARY_WITH_NO_ACCOUNT_WITH_BOOKMARKS},
 #endif
 
   // Manage profile strings:
@@ -2618,25 +2602,10 @@ void AddPeopleStrings(content::WebUIDataSource* html_source, Profile* profile) {
       base::FeatureList::IsEnabled(syncer::kDeviceTabVisibilitySettings));
 
 #if !BUILDFLAG(IS_CHROMEOS)
-  html_source->AddLocalizedString(
-      "peopleSignInPrompt",
-      syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
-          ? IDS_SETTINGS_PEOPLE_SIGNIN_SECTION_SIGNED_OUT_TITLE
-          : IDS_SETTINGS_PEOPLE_SIGN_IN_PROMPT);
   // Provided as a static string since it should not change when switching
   // accounts in the dropdown.
   html_source->AddString("peopleSignInPromptSecondaryWithAccount",
                          GetPeopleSignInPromptSecondaryWithAccount(profile));
-  html_source->AddLocalizedString(
-      "peopleSignInPromptSecondaryWithNoAccount",
-      syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
-          ? IDS_SETTINGS_PEOPLE_EXPLICIT_SIGN_IN_PROMPT_SECONDARY_WITH_NO_ACCOUNT_WITH_BOOKMARKS
-          : IDS_SETTINGS_PEOPLE_EXPLICIT_SIGN_IN_PROMPT_SECONDARY_WITH_NO_ACCOUNT);
-  html_source->AddLocalizedString(
-      "profileNameAndPicture",
-      syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
-          ? IDS_SETTINGS_CUSTOMIZE_PROFILE
-          : IDS_SETTINGS_CUSTOMIZE_YOUR_CHROME_PROFILE);
 #endif
 
   // Add Google Account URL and include UTM parameter to signal the source of

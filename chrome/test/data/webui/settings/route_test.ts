@@ -383,31 +383,25 @@ suite('Basic', function() {
         routes.SITE_SETTINGS_WEB_APP_INSTALLATION.getAbsolutePath());
   });
 
-  // <if expr="not is_chromeos">
   test('account route existence', function() {
-    resetPageVisibilityForTesting({people: true});
-
-    loadTimeData.overrideValues({replaceSyncPromosWithSignInPromos: false});
+    resetPageVisibilityForTesting({people: false});
     resetRouterForTesting();
     assertFalse(!!routes.ACCOUNT);
 
-    loadTimeData.overrideValues({replaceSyncPromosWithSignInPromos: true});
+    resetPageVisibilityForTesting({people: true});
     resetRouterForTesting();
     assertTrue(!!routes.ACCOUNT);
   });
 
   test('google services route existence', function() {
-    resetPageVisibilityForTesting({people: true});
-
-    loadTimeData.overrideValues({replaceSyncPromosWithSignInPromos: false});
+    resetPageVisibilityForTesting({people: false});
     resetRouterForTesting();
     assertFalse(!!routes.GOOGLE_SERVICES);
 
-    loadTimeData.overrideValues({replaceSyncPromosWithSignInPromos: true});
+    resetPageVisibilityForTesting({people: true});
     resetRouterForTesting();
     assertTrue(!!routes.GOOGLE_SERVICES);
   });
-  // </if>
 
   test('search engines route existence', function() {
     loadTimeData.overrideValues({searchSettingsUpdate: false});
@@ -472,14 +466,12 @@ suite('Basic', function() {
     resetPageVisibilityForTesting({people: true});
 
     loadTimeData.overrideValues({
-      replaceSyncPromosWithSignInPromos: true,
       enableDeviceTabVisibilitySettings: false,
     });
     resetRouterForTesting();
     assertFalse(!!routes.DEVICE_TAB_VISIBILITY);
 
     loadTimeData.overrideValues({
-      replaceSyncPromosWithSignInPromos: true,
       enableDeviceTabVisibilitySettings: true,
     });
     resetRouterForTesting();

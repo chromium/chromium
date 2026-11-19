@@ -12,10 +12,6 @@ import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
 
-// <if expr="is_chromeos">
-import {loadTimeData, resetRouterForTesting} from 'chrome://settings/settings.js';
-// </if>
-
 
 suite('GoogleServicesPage', function() {
   let googleServicesPage: SettingsGoogleServicesPageElement;
@@ -23,11 +19,6 @@ suite('GoogleServicesPage', function() {
 
   setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-
-    // <if expr="is_chromeos">
-    loadTimeData.overrideValues({replaceSyncPromosWithSignInPromos: true});
-    resetRouterForTesting();
-    // </if>
 
     testSyncBrowserProxy = new TestSyncBrowserProxy();
     SyncBrowserProxyImpl.setInstance(testSyncBrowserProxy);

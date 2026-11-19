@@ -206,11 +206,8 @@ export class SettingsPersonalizationOptionsElement extends
       return false;
     }
     // Only show the toggle when the user signed in.
-    if (loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos') &&
-        this.syncStatus.signedInState === SignedInState.SIGNED_IN) {
-      return true;
-    }
-    return this.syncStatus.signedInState === SignedInState.SYNCING;
+    return this.syncStatus.signedInState === SignedInState.SIGNED_IN ||
+        this.syncStatus.signedInState === SignedInState.SYNCING;
   }
 
   protected getPriceEmailNotificationsPrefDesc_(): string {

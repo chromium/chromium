@@ -188,14 +188,12 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
  * Add all of the child routes that originate from the people/home route.
  */
 function addSharedPeopleRoutes(r: Partial<SettingsRoutes>, parent: Route) {
-  if (loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos')) {
-    r.ACCOUNT = parent.createChild('/account');
-    r.GOOGLE_SERVICES = parent.createChild('/googleServices');
-    if (loadTimeData.getBoolean('enableDeviceTabVisibilitySettings')) {
-      // TODO(crbug.com/570417844): Finalize the settings URL path with UX/PM
-      // before launch.
-      r.DEVICE_TAB_VISIBILITY = r.ACCOUNT.createChild('/deviceTabVisibility');
-    }
+  r.ACCOUNT = parent.createChild('/account');
+  r.GOOGLE_SERVICES = parent.createChild('/googleServices');
+  if (loadTimeData.getBoolean('enableDeviceTabVisibilitySettings')) {
+    // TODO(crbug.com/570417844): Finalize the settings URL path with UX/PM
+    // before launch.
+    r.DEVICE_TAB_VISIBILITY = r.ACCOUNT.createChild('/deviceTabVisibility');
   }
   // <if expr="not is_chromeos">
   r.SIGN_OUT = parent.createChild('/signOut');

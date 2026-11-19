@@ -6,7 +6,7 @@
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import type {SettingsPrivacyGuidePageElement} from 'chrome://settings/lazy_load.js';
 import {ContentSetting, CookieControlsMode, PrivacyGuideStep, SafeBrowsingSetting, ThirdPartyCookieBlockingSetting} from 'chrome://settings/lazy_load.js';
-import {loadTimeData, PrefService, PrefsBrowserProxy, Router, routes, SignedInState, StatusAction} from 'chrome://settings/settings.js';
+import {PrefService, PrefsBrowserProxy, Router, routes, SignedInState, StatusAction} from 'chrome://settings/settings.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -152,9 +152,7 @@ export function shouldShowHistorySyncCard(
   }
   return syncBrowserProxy.testSyncStatus.signedInState ===
       SignedInState.SYNCING ||
-      (loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos') &&
-       syncBrowserProxy.testSyncStatus.signedInState ===
-           SignedInState.SIGNED_IN);
+      syncBrowserProxy.testSyncStatus.signedInState === SignedInState.SIGNED_IN;
 }
 
 // Bundles functionality to create the page object for tests.
