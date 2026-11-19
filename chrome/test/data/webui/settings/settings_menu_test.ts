@@ -5,6 +5,7 @@
 /** @fileoverview Runs tests for the settings menu. */
 
 // clang-format off
+import type {CrIconElement} from 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import type {SettingsMenuElement, SettingsRoutes} from 'chrome://settings/settings.js';
 import {AutofillSettingsReferrer, resetRouterForTesting, loadTimeData, MetricsBrowserProxyImpl, resetPageVisibilityForTesting, Router} from 'chrome://settings/settings.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -13,6 +14,23 @@ import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
 // clang-format on
+
+// Asserts that each visible menu item shows the icon of the route it links to.
+function assertMenuIconsMatchRoutes(menu: SettingsMenuElement) {
+  const links = menu.shadowRoot.querySelectorAll<HTMLAnchorElement>(
+      'cr-menu-selector a[role=menuitem]:not(#extensionsLink):not([hidden])');
+  assertTrue(links.length > 0);
+  for (const link of links) {
+    const path = link.getAttribute('href')!;
+    const route = Router.getInstance().getRouteForPath(path);
+    assertTrue(!!route, path);
+    const icon = link.querySelector<CrIconElement>('cr-icon');
+    assertTrue(!!icon, path);
+    assertEquals(route.getIcon(), icon.icon, path);
+    // No <svg> is rendered if the iconset doesn't have an icon of that name.
+    assertTrue(!!icon.shadowRoot.querySelector('svg'), path);
+  }
+}
 
 suite('SettingsMenu', function() {
   let settingsMenu: SettingsMenuElement;
@@ -94,6 +112,11 @@ suite('SettingsMenu', function() {
     Router.getInstance().navigateTo(routes.BASIC);
     await microtasksFinished();
     assertFalse(!!selector.selected);
+  });
+
+  test('menuIconsMatchRoutes', async function() {
+    await microtasksFinished();
+    assertMenuIconsMatchRoutes(settingsMenu);
   });
 
   test('noExperimental', async function() {
@@ -381,6 +404,10 @@ suite('SettingsMenuRefresh2026', () => {
     settingsMenu = document.createElement('settings-menu');
     document.body.appendChild(settingsMenu);
     return microtasksFinished();
+  });
+
+  test('menuIconsMatchRoutes', () => {
+    assertMenuIconsMatchRoutes(settingsMenu);
   });
 
   test('menuItemsOrderAndNavigation', async () => {

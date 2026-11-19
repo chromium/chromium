@@ -30,9 +30,12 @@ suite('SettingsSubpage', function() {
 
   setup(function() {
     const basicRoute = new Route('/');
-    const searchRoute = basicRoute.createSection('/search', 'search');
-    const peopleRoute = basicRoute.createSection('/people', 'people');
-    const privacyRoute = basicRoute.createSection('/privacy', 'privacy');
+    const searchRoute =
+        basicRoute.createSection('/search', 'search', '', 'icon');
+    const peopleRoute =
+        basicRoute.createSection('/people', 'people', '', 'icon');
+    const privacyRoute =
+        basicRoute.createSection('/privacy', 'privacy', '', 'icon');
     const siteDataRoute = basicRoute.createChild('/siteData');
 
     testRoutes = {

@@ -29,9 +29,10 @@
 }
 
 .result {
+  align-items: center;
   cursor: pointer;
   display: flex;
-  flex-direction: column;
+  gap: 16px;
   padding: 16px var(--cr-section-padding);
 }
 
@@ -41,6 +42,19 @@
 
 .result:active {
   background-color: var(--cr-active-background-color);
+}
+
+.result-icon {
+  --iron-icon-fill-color: var(--cr-secondary-text-color);
+  /* Match the size of the side nav icons. */
+  --iron-icon-height: 20px;
+  --iron-icon-width: 20px;
+  flex-shrink: 0;
+}
+
+.result-text {
+  display: flex;
+  flex-direction: column;
 }
 
 .result-title {

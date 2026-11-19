@@ -8,9 +8,19 @@
  * toolbar search field (behind the enableSettingsSearch2026 flag).
  */
 
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
+import 'chrome://resources/cr_elements/icons.html.js';
+import '../icons.html.js';
+// <if expr="_google_chrome">
+import '../internal/icons.html.js';
+// </if>
+import '../privacy_icons.html.js';
+
+import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
+import {Router} from '../router.js';
 import type {SearchResult} from '../settings_search.mojom-webui.js';
 
 import {getCss} from './settings_search_dropdown.css.js';
@@ -67,7 +77,18 @@ export class SettingsSearchDropdownElement extends CrLitElement {
       // then.
       return;
     }
-    this.results_ = request.results;
+    // A result whose route doesn't exist (e.g. its page is hidden) can't be
+    // navigated to, so don't show it.
+    const router = Router.getInstance();
+    this.results_ = request.results.filter(
+        result => router.getRouteForPath(result.route) !== null);
+  }
+
+  /** Returns the icon of the route that contains `item`. */
+  protected getResultIcon_(item: SearchResult): string {
+    const route = Router.getInstance().getRouteForPath(item.route);
+    assert(route);
+    return route.getIcon();
   }
 }
 

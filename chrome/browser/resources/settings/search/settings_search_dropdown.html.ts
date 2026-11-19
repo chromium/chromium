@@ -11,12 +11,16 @@ export function getHtml(this: SettingsSearchDropdownElement) {
 <div id="dropdown" ?hidden="${!this.results_.length}">
   ${this.results_.map(item => html`
     <div class="result">
-      <div class="result-title">${item.title}</div>
-      ${item.breadcrumbs.length ? html`
-        <div class="result-breadcrumbs cr-secondary-text">
-          ${item.breadcrumbs.join(' > ')}
-        </div>
-      ` : ''}
+      <cr-icon class="result-icon" icon="${this.getResultIcon_(item)}"
+          aria-hidden="true"></cr-icon>
+      <div class="result-text">
+        <div class="result-title">${item.title}</div>
+        ${item.breadcrumbs.length ? html`
+          <div class="result-breadcrumbs cr-secondary-text">
+            ${item.breadcrumbs.join(' > ')}
+          </div>
+        ` : ''}
+      </div>
     </div>
   `)}
 </div>

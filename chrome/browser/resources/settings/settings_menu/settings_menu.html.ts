@@ -4,6 +4,8 @@
 
 import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
+import {routes} from '../route.js';
+
 import type {SettingsMenuElement} from './settings_menu.js';
 
 export function getHtml(this: SettingsMenuElement) {
@@ -17,7 +19,7 @@ export function getHtml(this: SettingsMenuElement) {
       <a role="menuitem" id="home" href="/"
           ?hidden="${this.shouldHideMenuItem_(this.pageVisibility_?.home)}"
           class="cr-nav-menu-item menu-item">
-        <cr-icon icon="settings20:home"></cr-icon>
+        <cr-icon icon="${this.getRouteIcon_(routes.BASIC)}"></cr-icon>
         <!-- TODO(b/574662686): Update "Home" string -->
         <span class="menu-label">Home</span>
         <cr-ripple></cr-ripple>
@@ -26,12 +28,7 @@ export function getHtml(this: SettingsMenuElement) {
       <a role="menuitem" id="people" href="/people"
           ?hidden="${this.shouldHideMenuItem_(this.pageVisibility_?.people)}"
           class="cr-nav-menu-item menu-item">
-<if expr="not _google_chrome">
-        <cr-icon icon="settings:person"></cr-icon>
-</if>
-<if expr="_google_chrome">
-        <cr-icon icon="settings-internal:google-g"></cr-icon>
-</if>
+        <cr-icon icon="${this.getRouteIcon_(routes.PEOPLE)}"></cr-icon>
         <span class="menu-label">$i18n{peoplePageTitle}</span>
         <cr-ripple></cr-ripple>
       </a>
@@ -40,42 +37,42 @@ export function getHtml(this: SettingsMenuElement) {
         @click="${this.onAutofillClick_}" class="cr-nav-menu-item menu-item"
         ?hidden="${
             this.shouldHideMenuItem_(this.pageVisibility_?.yourSavedInfo)}">
-      <cr-icon icon="settings:password-manager"></cr-icon>
+      <cr-icon icon="${this.getRouteIcon_(routes.AUTOFILL)}"></cr-icon>
       <span class="menu-label">$i18n{autofillPageTitle}</span>
       <cr-ripple></cr-ripple>
     </a>
     <a role="menuitem" id="privacy" href="/privacy"
         ?hidden="${this.shouldHideMenuItem_(this.pageVisibility_?.privacy)}"
         class="cr-nav-menu-item menu-item">
-      <cr-icon icon="settings:security"></cr-icon>
+      <cr-icon icon="${this.getRouteIcon_(routes.PRIVACY)}"></cr-icon>
       <span class="menu-label">$i18n{privacyPageTitle}</span>
       <cr-ripple></cr-ripple>
     </a>
     <a role="menuitem" id="performance" href="/performance"
         class="cr-nav-menu-item menu-item" ?hidden="${
             this.shouldHideMenuItem_(this.pageVisibility_?.performance)}">
-      <cr-icon icon="settings:speed"></cr-icon>
+      <cr-icon icon="${this.getRouteIcon_(routes.PERFORMANCE)}"></cr-icon>
       <span class="menu-label">$i18n{performancePageTitle}</span>
       <cr-ripple></cr-ripple>
     </a>
     <a role="menuitem" id="ai" href="/ai"
         ?hidden="${!this.showAiPageMenuItem_()}"
         class="cr-nav-menu-item menu-item">
-      <cr-icon icon="settings20:button-magic"></cr-icon>
+      <cr-icon icon="${this.getRouteIcon_(routes.AI)}"></cr-icon>
       <span class="menu-label">$i18n{aiPageTitle}</span>
       <cr-ripple></cr-ripple>
     </a>
     <a role="menuitem" id="appearance" href="/appearance"
         ?hidden="${this.shouldHideMenuItem_(this.pageVisibility_?.appearance)}"
         class="cr-nav-menu-item menu-item">
-      <cr-icon icon="settings:palette"></cr-icon>
+      <cr-icon icon="${this.getRouteIcon_(routes.APPEARANCE)}"></cr-icon>
       <span class="menu-label">$i18n{appearancePageTitle}</span>
       <cr-ripple></cr-ripple>
     </a>
     ${!this.settingsRefresh2026Enabled_ ? html`
       <a role="menuitem" id="search" href="/search"
           class="cr-nav-menu-item menu-item">
-        <cr-icon icon="settings:search"></cr-icon>
+        <cr-icon icon="${this.getRouteIcon_(routes.SEARCH)}"></cr-icon>
         <span class="menu-label">$i18n{searchPageTitle}</span>
         <cr-ripple></cr-ripple>
       </a>
@@ -83,7 +80,7 @@ export function getHtml(this: SettingsMenuElement) {
       <a role="menuitem" id="defaultBrowser" class="cr-nav-menu-item menu-item"
           href="/defaultBrowser" ?hidden="${
               this.shouldHideMenuItem_(this.pageVisibility_?.defaultBrowser)}">
-        <cr-icon icon="settings:web-asset"></cr-icon>
+        <cr-icon icon="${this.getRouteIcon_(routes.DEFAULT_BROWSER)}"></cr-icon>
         <span class="menu-label">$i18n{defaultBrowser}</span>
         <cr-ripple></cr-ripple>
       </a>
@@ -91,7 +88,7 @@ export function getHtml(this: SettingsMenuElement) {
       <a role="menuitem" id="onStartup" href="/onStartup"
           class="cr-nav-menu-item menu-item" ?hidden="${
               this.shouldHideMenuItem_(this.pageVisibility_?.onStartup)}">
-        <cr-icon icon="settings:power-settings-new"></cr-icon>
+        <cr-icon icon="${this.getRouteIcon_(routes.ON_STARTUP)}"></cr-icon>
         <span class="menu-label">$i18n{onStartup}</span>
         <cr-ripple></cr-ripple>
       </a>
@@ -100,7 +97,7 @@ export function getHtml(this: SettingsMenuElement) {
     <a role="menuitem" id="languages" href="/languages"
         class="cr-nav-menu-item menu-item"
         ?hidden="${this.shouldHideMenuItem_(this.pageVisibility_?.languages)}">
-      <cr-icon icon="settings:translate"></cr-icon>
+      <cr-icon icon="${this.getRouteIcon_(routes.LANGUAGES)}"></cr-icon>
       <span class="menu-label">$i18n{languagesPageTitle}</span>
       <cr-ripple></cr-ripple>
     </a>
@@ -108,7 +105,7 @@ export function getHtml(this: SettingsMenuElement) {
       <a role="menuitem" id="downloads" href="/downloads"
           class="cr-nav-menu-item menu-item" ?hidden="${
               this.shouldHideMenuItem_(this.pageVisibility_?.downloads)}">
-        <cr-icon icon="settings:download"></cr-icon>
+        <cr-icon icon="${this.getRouteIcon_(routes.DOWNLOADS)}"></cr-icon>
         <span class="menu-label">$i18n{downloadsPageTitle}</span>
         <cr-ripple></cr-ripple>
       </a>
@@ -116,21 +113,21 @@ export function getHtml(this: SettingsMenuElement) {
     <a role="menuitem" id="accessibility" href="/accessibility"
         class="cr-nav-menu-item menu-item"
         ?hidden="${this.shouldHideMenuItem_(this.pageVisibility_?.a11y)}">
-      <cr-icon icon="settings:accessibility"></cr-icon>
+      <cr-icon icon="${this.getRouteIcon_(routes.ACCESSIBILITY)}"></cr-icon>
       <span class="menu-label">$i18n{a11yPageTitle}</span>
       <cr-ripple></cr-ripple>
     </a>
     ${this.settingsRefresh2026Enabled_ ? html`
       <a role="menuitem" id="search" href="/search"
           class="cr-nav-menu-item menu-item">
-        <cr-icon icon="settings:search"></cr-icon>
+        <cr-icon icon="${this.getRouteIcon_(routes.SEARCH)}"></cr-icon>
         <span class="menu-label">$i18n{searchPageTitle}</span>
         <cr-ripple></cr-ripple>
       </a>
       <a role="menuitem" id="general" href="/general"
           class="cr-nav-menu-item menu-item"
           ?hidden="${this.shouldHideMenuItem_(this.pageVisibility_?.general)}">
-        <cr-icon icon="cr:settings-filled"></cr-icon>
+        <cr-icon icon="${this.getRouteIcon_(routes.GENERAL)}"></cr-icon>
         <span class="menu-label">$i18n{generalPageTitle}</span>
         <cr-ripple></cr-ripple>
       </a>
@@ -139,7 +136,7 @@ export function getHtml(this: SettingsMenuElement) {
       <a role="menuitem" id="system" href="/system"
           class="cr-nav-menu-item menu-item"
           ?hidden="${this.shouldHideMenuItem_(this.pageVisibility_?.system)}">
-        <cr-icon icon="settings:build"></cr-icon>
+        <cr-icon icon="${this.getRouteIcon_(routes.SYSTEM)}"></cr-icon>
         <span class="menu-label">$i18n{systemPageTitle}</span>
         <cr-ripple></cr-ripple>
       </a>
@@ -147,7 +144,7 @@ export function getHtml(this: SettingsMenuElement) {
       <a role="menuitem" id="reset" href="/reset"
           ?hidden="${this.shouldHideMenuItem_(this.pageVisibility_?.reset)}"
           class="cr-nav-menu-item menu-item">
-        <cr-icon icon="settings:restart-alt"></cr-icon>
+        <cr-icon icon="${this.getRouteIcon_(routes.RESET)}"></cr-icon>
         <span class="menu-label">$i18n{resetPageTitle}</span>
         <cr-ripple></cr-ripple>
       </a>
@@ -166,7 +163,7 @@ export function getHtml(this: SettingsMenuElement) {
     </a>
     <a role="menuitem" id="about-menu" href="/help"
         class="cr-nav-menu-item menu-item">
-      <cr-icon icon="cr:chrome-product"></cr-icon>
+      <cr-icon icon="${this.getRouteIcon_(routes.ABOUT)}"></cr-icon>
       <span class="menu-label">$i18n{aboutPageTitle}</span>
       <cr-ripple></cr-ripple>
     </a>

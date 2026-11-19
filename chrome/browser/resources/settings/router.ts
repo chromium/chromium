@@ -141,6 +141,10 @@ export class Route {
   depth: number = 0;
   title: string|undefined;
 
+  // Icon shown for this route in the side nav and in search dropdown results.
+  // Undefined if the route uses its parent's icon; see getIcon().
+  private icon_: string|undefined;
+
   /**
    * Whether this route corresponds to a navigable dialog. Those routes must
    * belong to a "section".
@@ -150,24 +154,26 @@ export class Route {
   // Legacy property to provide compatibility with the old routing system.
   section: string = '';
 
-  constructor(path: string, title?: string) {
+  constructor(path: string, title?: string, icon?: string) {
     this.path = path;
     this.title = title;
+    this.icon_ = icon;
   }
 
   /**
    * Returns a new Route instance that's a child of this route.
    * @param path Extends this route's path if it doesn't contain a
    *     leading slash.
+   * @param icon This route's icon. Omit to use its parent's.
    */
-  createChild(path: string): Route {
+  createChild(path: string, icon?: string): Route {
     assert(path);
 
     // |path| extends this route's path if it doesn't have a leading slash.
     // If it does have a leading slash, it's just set as the new route's URL.
     const newUrl = path[0] === '/' ? path : `${this.path}/${path}`;
 
-    const route = new Route(newUrl);
+    const route = new Route(newUrl, undefined, icon);
     route.parent = this;
     route.section = this.section;
     route.depth = this.depth + 1;
@@ -179,11 +185,25 @@ export class Route {
    * Returns a new Route instance that's a child section of this route.
    * TODO(tommycli): Remove once we've obsoleted the concept of sections.
    */
-  createSection(path: string, section: string, title?: string): Route {
-    const route = this.createChild(path);
+  createSection(path: string, section: string, title: string, icon: string):
+      Route {
+    const route = this.createChild(path, icon);
     route.title = title;
     route.section = section;
     return route;
+  }
+
+  /**
+   * Returns the icon of this route, or of its closest ancestor that has one.
+   * Every route is under a section, and every section has an icon.
+   */
+  getIcon(): string {
+    for (let r: Route|null = this; r; r = r.parent) {
+      if (r.icon_) {
+        return r.icon_;
+      }
+    }
+    assertNotReached(`No icon for route ${this.path}`);
   }
 
   /**

@@ -93,7 +93,7 @@ suite('Basic', function() {
     assertEquals(0, ADVANCED.depth);
 
     // Test a section route.
-    const PRIVACY = ADVANCED.createSection('/privacy', 'privacy');
+    const PRIVACY = ADVANCED.createSection('/privacy', 'privacy', '', 'icon');
     assertEquals(ADVANCED, PRIVACY.parent);
     assertEquals(1, PRIVACY.depth);
     assertFalse(PRIVACY.isSubpage());
@@ -132,6 +132,44 @@ suite('Basic', function() {
       assertFalse(paths.has(route.path), route.path);
       paths.add(route.path);
     });
+  });
+
+  test('getIcon uses the closest ancestor icon', function() {
+    const root = new Route('/');
+    const section = root.createSection('/section', 'section', '', 'icon:a');
+    const child = section.createChild('/child');
+    const grandchild = child.createChild('/grandchild');
+
+    assertEquals('icon:a', section.getIcon());
+    assertEquals('icon:a', child.getIcon());
+    assertEquals('icon:a', grandchild.getIcon());
+
+    const childWithIcon = section.createChild('/childWithIcon', 'icon:b');
+    const grandchildOfIcon = childWithIcon.createChild('/grandchild');
+    assertEquals('icon:b', childWithIcon.getIcon());
+    assertEquals('icon:b', grandchildOfIcon.getIcon());
+  });
+
+  // Asserts that getIcon() finds an icon for every route, other than the root
+  // routes in `rootsWithoutIcon`, which are not under a section.
+  function assertEveryRouteHasIcon(rootsWithoutIcon: Route[]) {
+    Object.values(routes).forEach(function(route) {
+      if (!rootsWithoutIcon.includes(route)) {
+        assertTrue(!!route.getIcon(), route.path);
+      }
+    });
+  }
+
+  test('every route has an icon', function() {
+    assertEveryRouteHasIcon([routes.BASIC, routes.ADVANCED]);
+  });
+
+  test('every route has an icon with SettingsRefresh2026', function() {
+    loadTimeData.overrideValues({settingsRefresh2026: 'settings-refresh-2026'});
+    resetPageVisibilityForTesting();
+    resetRouterForTesting();
+    // BASIC hosts the Home section, so it has an icon.
+    assertEveryRouteHasIcon([routes.ADVANCED]);
   });
 
   test('navigate back to parent previous route', function() {

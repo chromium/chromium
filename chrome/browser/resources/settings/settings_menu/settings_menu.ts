@@ -121,6 +121,12 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
     return visibility === false;
   }
 
+  // `route` is undefined when its page is hidden, in which case so is its
+  // menu item.
+  protected getRouteIcon_(route: Route|undefined): string {
+    return route?.getIcon() ?? '';
+  }
+
   protected showAiPageMenuItem_(): boolean {
     return this.showAiPage_ &&
         (!this.pageVisibility_ || this.pageVisibility_.ai !== false);

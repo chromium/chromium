@@ -5,7 +5,7 @@
 // clang-format off
 import {COLORS_CSS_SELECTOR} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import type {CrDrawerElement, CrToolbarElement, CrToolbarSearchFieldElement, SettingsUiElement} from 'chrome://settings/settings.js';
-import {loadTimeData, MAX_QUERY_LENGTH, MAX_SEARCH_RESULTS, Router, routes, settingsSearchBrowserProxyFactory, SettingsSearchManagerImpl} from 'chrome://settings/settings.js';
+import {loadTimeData, MAX_QUERY_LENGTH, MAX_SEARCH_RESULTS, resetRouterForTesting, Router, routes, settingsSearchBrowserProxyFactory, SettingsSearchManagerImpl} from 'chrome://settings/settings.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -195,6 +195,7 @@ suite('SettingsRefresh2026', () => {
 
   test('NavMenuCollapseEnabled', async () => {
     loadTimeData.overrideValues({settingsRefresh2026: 'settings-refresh-2026'});
+    resetRouterForTesting();
     createSettingsUi();
 
     ui.$.toolbar.narrow = false;
@@ -225,6 +226,7 @@ suite('SettingsRefresh2026', () => {
 
   test('NavMenuCollapseDisabled', async () => {
     loadTimeData.overrideValues({settingsRefresh2026: ''});
+    resetRouterForTesting();
     createSettingsUi();
 
     // When not in settings refresh and in narrow mode, the left nav
