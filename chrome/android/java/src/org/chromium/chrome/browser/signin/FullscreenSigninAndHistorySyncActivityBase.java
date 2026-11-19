@@ -105,7 +105,8 @@ public abstract class FullscreenSigninAndHistorySyncActivityBase extends AsyncIn
     protected void onPolicyLoadListenerAvailable(boolean onDevicePolicyFound) {}
 
     /**
-     * @return PolicyLoadListener used to indicate if policy initialization is complete.
+     * Returns the PolicyLoadListener used to indicate if policy initialization is complete.
+     *
      * @see PolicyLoadListener for return value expectation.
      */
     public OneshotSupplier<Boolean> getPolicyLoadListener() {

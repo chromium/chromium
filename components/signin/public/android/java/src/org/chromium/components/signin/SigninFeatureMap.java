@@ -76,9 +76,7 @@ public final class SigninFeatureMap extends FeatureMap {
         return isEnabledInNative(SigninFeatures.GAIA_AND_AVATAR_CUSTOMIZATION);
     }
 
-    /**
-     * @return the singleton SigninFeatureMap.
-     */
+    /** Returns the singleton SigninFeatureMap. */
     public static SigninFeatureMap getInstance() {
         return sInstance;
     }

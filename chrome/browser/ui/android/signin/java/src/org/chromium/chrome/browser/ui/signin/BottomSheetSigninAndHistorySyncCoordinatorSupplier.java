@@ -62,6 +62,8 @@ public class BottomSheetSigninAndHistorySyncCoordinatorSupplier {
      * Attach to the specified host.
      *
      * @param host The host to attach the supplier to.
+     * @param supplier The coordinator supplier to attach to the host.
+     * @param flow The {@link SupplierFlow} whose key is used to attach the supplier.
      */
     public static void attachForFlow(
             UnownedUserDataHost host,

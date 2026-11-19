@@ -23,6 +23,7 @@ public class AuthException extends Exception {
     /**
      * Wraps exception that caused auth failure along with transience flag.
      *
+     * @param isTransient Whether the auth failure is transient (e.g. a connection failure).
      * @param cause Exception that caused auth failure.
      */
     // TODO(crbug.com/404745044): Remove this method.
@@ -33,6 +34,7 @@ public class AuthException extends Exception {
     /**
      * Wraps exception that caused auth failure along with transience flag and message.
      *
+     * @param isTransient Whether the auth failure is transient (e.g. a connection failure).
      * @param message Message describing context in which auth failure happened.
      * @param ex Exception that caused auth failure.
      */

@@ -68,190 +68,143 @@ public class AccountCapabilities {
     }
 
     /** keep-sorted start block=yes sticky_prefixes=/**,* newline_separated=yes */
-    /**
-     * @return canFetchFamilyMemberInfo capability value.
-     */
+    /** Returns the canFetchFamilyMemberInfo capability value. */
     public @Tribool int canFetchFamilyMemberInfo() {
         return getCapabilityByName(
                 AccountCapabilitiesConstants.CAN_FETCH_FAMILY_MEMBER_INFO_CAPABILITY_NAME);
     }
 
-    /**
-     * @return canHaveEmailAddressDisplayed capability value.
-     */
+    /** Returns the canHaveEmailAddressDisplayed capability value. */
     public @Tribool int canHaveEmailAddressDisplayed() {
         return getCapabilityByName(
                 AccountCapabilitiesConstants.CAN_HAVE_EMAIL_ADDRESS_DISPLAYED_CAPABILITY_NAME);
     }
 
-    /**
-     * @return canOverrideAccountInfo capability value.
-     */
+    /** Returns the canOverrideAccountInfo capability value. */
     public @Tribool int canOverrideAccountInfo() {
         return getCapabilityByName(
                 AccountCapabilitiesConstants.CAN_OVERRIDE_ACCOUNT_INFO_CAPABILITY_NAME);
     }
 
-    /**
-     * @return canShowHistorySyncOptInsWithoutMinorModeRestrictions capability value.
-     */
+    /** Returns the canShowHistorySyncOptInsWithoutMinorModeRestrictions capability value. */
     public @Tribool int canShowHistorySyncOptInsWithoutMinorModeRestrictions() {
         return getCapabilityByName(
                 AccountCapabilitiesConstants
                         .CAN_SHOW_HISTORY_SYNC_OPT_INS_WITHOUT_MINOR_MODE_RESTRICTIONS_CAPABILITY_NAME);
     }
 
-    /**
-     * @return canUseDevToolsGenerativeAiFeatures capability value.
-     */
+    /** Returns the canUseDevToolsGenerativeAiFeatures capability value. */
     public @Tribool int canUseDevToolsGenerativeAiFeatures() {
         return getCapabilityByName(
                 AccountCapabilitiesConstants
                         .CAN_USE_DEVTOOLS_GENERATIVE_AI_FEATURES_CAPABILITY_NAME);
     }
 
-    /**
-     * @return canUseEduFeatures capability value.
-     */
+    /** Returns the canUseEduFeatures capability value. */
     public @Tribool int canUseEduFeatures() {
         return getCapabilityByName(
                 AccountCapabilitiesConstants.CAN_USE_EDU_FEATURES_CAPABILITY_NAME);
     }
 
-    /**
-     * @return canUseGeminiInChromeCapability capability value.
-     */
+    /** Returns the canUseGeminiInChromeCapability capability value. */
     public @Tribool int canUseGeminiInChromeCapability() {
         return getCapabilityByName(
                 AccountCapabilitiesConstants.CAN_USE_GEMINI_IN_CHROME_CAPABILITY_NAME);
     }
 
-    /**
-     * @return canUseMantaService capability value.
-     */
+    /** Returns the canUseMantaService capability value. */
     public @Tribool int canUseMantaService() {
         return getCapabilityByName(AccountCapabilitiesConstants.CAN_USE_MANTA_SERVICE_NAME);
     }
 
-    /**
-     * @return canUseModelExecutionFeatures capability value.
-     */
+    /** Returns the canUseModelExecutionFeatures capability value. */
     public @Tribool int canUseModelExecutionFeatures() {
         return getCapabilityByName(
                 AccountCapabilitiesConstants.CAN_USE_MODEL_EXECUTION_FEATURES_NAME);
     }
 
-    /**
-     * @return canUseSpeakerLabelInRecorderApp capability value.
-     */
+    /** Returns the canUseSpeakerLabelInRecorderApp capability value. */
     public @Tribool int canUseSpeakerLabelInRecorderApp() {
         return getCapabilityByName(
                 AccountCapabilitiesConstants.CAN_USE_SPEAKER_LABEL_IN_RECORDER_APP);
     }
 
-    /**
-     * @return isAllowedForMachineLearning capability value.
-     */
+    /** Returns the isAllowedForMachineLearning capability value. */
     public @Tribool int isAllowedForMachineLearning() {
         return getCapabilityByName(
                 AccountCapabilitiesConstants.IS_ALLOWED_FOR_MACHINE_LEARNING_CAPABILITY_NAME);
     }
 
-    /**
-     * @return isOptedInToParentalSupervision capability value.
-     */
+    /** Returns the isOptedInToParentalSupervision capability value. */
     public @Tribool int isOptedInToParentalSupervision() {
         return getCapabilityByName(
                 AccountCapabilitiesConstants.IS_OPTED_IN_TO_PARENTAL_SUPERVISION_CAPABILITY_NAME);
     }
 
-    /**
-     * @return isSubjectToAccountLevelEnterprisePolicies capability value.
-     */
+    /** Returns the isSubjectToAccountLevelEnterprisePolicies capability value. */
     public @Tribool int isSubjectToAccountLevelEnterprisePolicies() {
         return getCapabilityByName(
                 AccountCapabilitiesConstants
                         .IS_SUBJECT_TO_ACCOUNT_LEVEL_ENTERPRISE_POLICIES_CAPABILITY_NAME);
     }
 
-    /**
-     * @return isSubjectToEnterpriseFeatures capability value.
-     */
+    /** Returns the isSubjectToEnterpriseFeatures capability value. */
     public @Tribool int isSubjectToEnterpriseFeatures() {
         return getCapabilityByName(
                 AccountCapabilitiesConstants.IS_SUBJECT_TO_ENTERPRISE_POLICIES_CAPABILITY_NAME);
     }
 
-    /**
-     * @return isSubjectToParentalControls capability value.
-     */
+    /** Returns the isSubjectToParentalControls capability value. */
     public @Tribool int isSubjectToParentalControls() {
         return getCapabilityByName(
                 AccountCapabilitiesConstants.IS_SUBJECT_TO_PARENTAL_CONTROLS_CAPABILITY_NAME);
     }
 
-    /**
-     * @return isSubjectToParentalControlsViaBundle capability value.
-     */
+    /** Returns the isSubjectToParentalControlsViaBundle capability value. */
     public @Tribool int isSubjectToParentalControlsViaBundle() {
         return getCapabilityByName(
                 AccountCapabilitiesConstants
                         .IS_SUBJECT_TO_PARENTAL_CONTROLS_VIA_BUNDLE_CAPABILITY_NAME);
     }
 
-    /**
-     * @return isSubjectToUniversalOptOut capability value.
-     */
+    /** Returns the isSubjectToUniversalOptOut capability value. */
     public @Tribool int isSubjectToUniversalOptOut() {
         return getCapabilityByName(
-                AccountCapabilitiesConstants
-                        .IS_SUBJECT_TO_UNIVERSAL_OPT_OUT_CAPABILITY_NAME);
+                AccountCapabilitiesConstants.IS_SUBJECT_TO_UNIVERSAL_OPT_OUT_CAPABILITY_NAME);
     }
 
-    /**
-     * @return isTrustedVaultPassphraseEligible capability value.
-     */
+    /** Returns the isTrustedVaultPassphraseEligible capability value. */
     public @Tribool int isTrustedVaultPassphraseEligible() {
         return getCapabilityByName(
                 AccountCapabilitiesConstants.IS_TRUSTED_VAULT_PASSPHRASE_ELIGIBLE_CAPABILITY_NAME);
     }
 
-    /**
-     * @return mustShowEquallyWeightedButtonsForPrivatePassesInAutofill capability value.
-     */
+    /** Returns the mustShowEquallyWeightedButtonsForPrivatePassesInAutofill capability value. */
     public @Tribool int mustShowEquallyWeightedButtonsForPrivatePassesInAutofill() {
         return getCapabilityByName(
                 AccountCapabilitiesConstants
                         .MUST_SHOW_EQUALLY_WEIGHTED_BUTTONS_FOR_PRIVATE_PASSES_IN_AUTOFILL_CAPABILITY_NAME);
     }
 
-    /**
-     * @return shouldBeAddressedInFeminineGrammaticalGender capability value.
-     */
+    /** Returns the shouldBeAddressedInFeminineGrammaticalGender capability value. */
     public @Tribool int shouldBeAddressedInFeminineGrammaticalGender() {
         return getCapabilityByName(
                 AccountCapabilitiesConstants.SHOULD_BE_ADDRESSED_IN_FEMININE_GRAMMATICAL_GENDER);
     }
 
-    /**
-     * @return shouldBeAddressedInMasculineGrammaticalGender capability value.
-     */
+    /** Returns the shouldBeAddressedInMasculineGrammaticalGender capability value. */
     public @Tribool int shouldBeAddressedInMasculineGrammaticalGender() {
         return getCapabilityByName(
                 AccountCapabilitiesConstants.SHOULD_BE_ADDRESSED_IN_MASCULINE_GRAMMATICAL_GENDER);
     }
 
-    /**
-     * @return shouldBeAddressedInNeuterGrammaticalGender capability value.
-     */
+    /** Returns the shouldBeAddressedInNeuterGrammaticalGender capability value. */
     public @Tribool int shouldBeAddressedInNeuterGrammaticalGender() {
         return getCapabilityByName(
                 AccountCapabilitiesConstants.SHOULD_BE_ADDRESSED_IN_NEUTER_GRAMMATICAL_GENDER);
     }
 
-    /**
-     * @return supportsWalletPrivatePassesInAutofill capability value.
-     */
+    /** Returns the supportsWalletPrivatePassesInAutofill capability value. */
     public @Tribool int supportsWalletPrivatePassesInAutofill() {
         return getCapabilityByName(
                 AccountCapabilitiesConstants.SUPPORTS_WALLET_PRIVATE_PASSES_IN_AUTOFILL_NAME);

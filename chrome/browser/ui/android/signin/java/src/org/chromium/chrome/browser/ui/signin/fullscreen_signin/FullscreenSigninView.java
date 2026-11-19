@@ -117,7 +117,7 @@ public class FullscreenSigninView extends RelativeLayout {
     }
 
     /**
-     * @return The {@link LottieAnimationView} that is shown when the user proceeds with sign-in.
+     * Returns the {@link LottieAnimationView} that is shown when the user proceeds with sign-in.
      */
     LottieAnimationView getAnimationView() {
         return mAnimationView;

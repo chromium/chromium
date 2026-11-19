@@ -203,9 +203,10 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
      * @param delegate The delegate for this coordinator.
      * @param deviceLockActivityLauncher The launcher to start up the device lock page.
      * @param profileSupplier The supplier of the current profile.
-     * @param bottomSheetController The controller of the sign-in bottomsheet.
+     * @param bottomSheetControllerSupplier The supplier of the sign-in bottomsheet controller.
      * @param modalDialogManagerSupplier The supplier of the {@link ModalDialogManager}
-     * @param snackbarManager The manager for displaying snackbars at the bottom of the activity.
+     * @param snackbarManagerSupplier The supplier of the manager for displaying snackbars at the
+     *     bottom of the activity.
      * @param signinAccessPoint The entry point for the sign-in.
      */
     public static BottomSheetSigninAndHistorySyncCoordinator createAndObserveAddAccountResult(
@@ -276,8 +277,8 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
      *     sign-in flow.
      * @param delegate The delegate for this coordinator.
      * @param deviceLockActivityLauncher The launcher to start up the device lock page.
-     * @param profileSupplier The supplier of the current profile.
-     * @param bottomSheetController The controller of the sign-in bottomsheet.
+     * @param profileProviderSupplier The supplier of the current {@link ProfileProvider}.
+     * @param bottomSheetControllerSupplier The controller of the sign-in bottomsheet.
      * @param modalDialogManagerSupplier The supplier of the {@link ModalDialogManager}
      * @param config The configuration for the bottom sheet.
      * @param signinAccessPoint The entry point for the sign-in.

@@ -543,6 +543,7 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
     /**
      * Open the account management UI.
      *
+     * @param context The context used to open the account management settings screen.
      * @param serviceType A signin::GAIAServiceType that triggered the dialog.
      */
     public static void openAccountManagementScreen(

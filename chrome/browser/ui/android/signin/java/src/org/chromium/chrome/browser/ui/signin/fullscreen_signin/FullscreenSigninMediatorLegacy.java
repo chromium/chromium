@@ -872,8 +872,8 @@ class FullscreenSigninMediatorLegacy
     }
 
     /**
-     * @return The original {@link Profile} of the user. Must only be called after native is
-     *     initialized, as the profile is available by then.
+     * Returns the original {@link Profile} of the user. Must only be called after native is
+     * initialized, as the profile is available by then.
      */
     private Profile getProfile() {
         return assertNonNull(mDelegate.getProfileSupplier().get()).getOriginalProfile();
@@ -884,7 +884,7 @@ class FullscreenSigninMediatorLegacy
     }
 
     /**
-     * @return The signed-in {@link AccountInfo} of the user, or null if the user isn't signed in.
+     * Returns the signed-in {@link AccountInfo} of the user, or null if the user isn't signed in.
      */
     private @Nullable AccountInfo getSignedInAccount() {
         return getIdentityManager().getPrimaryAccountInfo();

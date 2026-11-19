@@ -193,6 +193,8 @@ public class FullscreenSigninCoordinator implements IdentityManager.Observer {
      * @param delegate is invoked to interact with classes outside the module.
      * @param privacyPreferencesManager is used to check whether metrics and crash reporting are
      *     disabled by policy and set the footer string accordingly.
+     * @param config is used to configure the fullscreen sign-in UI.
+     * @param accessPoint is the access point that initiated the sign-in flow.
      */
     public FullscreenSigninCoordinator(
             Context context,

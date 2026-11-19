@@ -469,8 +469,8 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
     }
 
     /**
-     * @param account The account used to look up capabilities.
-     * @return Set of supported account capability values.
+     * @param coreAccountInfo The account used to look up capabilities.
+     * @return A {@link Promise} for the {@link AccountCapabilities} of the given account.
      */
     @Override
     public Promise<AccountCapabilities> getAccountCapabilities(CoreAccountInfo coreAccountInfo) {
@@ -566,6 +566,8 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
      * Creates an intent that will ask the user to add a new account to the device. See {@link
      * AccountManager#addAccount} for details.
      *
+     * @param prefilledEmail The email address to prefill in the add account flow, or null if no
+     *     email should be prefilled.
      * @param callback The callback to get the created intent. Will be invoked on the main thread.
      *     If there is an issue while creating the intent, callback will receive null.
      */

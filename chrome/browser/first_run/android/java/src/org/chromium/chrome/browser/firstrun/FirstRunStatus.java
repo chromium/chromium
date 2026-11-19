@@ -22,7 +22,7 @@ public class FirstRunStatus {
         sFirstRunTriggered = triggered;
     }
 
-    /** @return whether first run flow is triggered in the current browser session. */
+    /** Returns whether first run flow is triggered in the current browser session. */
     public static boolean isFirstRunTriggered() {
         return sFirstRunTriggered;
     }
@@ -105,7 +105,8 @@ public class FirstRunStatus {
     }
 
     /**
-     * @return Whether the First Run Experience is skipped by policy.
+     * Returns whether the First Run Experience is skipped by policy.
+     *
      * @see #setFirstRunSkippedByPolicy
      */
     public static boolean isFirstRunSkippedByPolicy() {

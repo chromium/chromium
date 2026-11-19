@@ -55,6 +55,7 @@ public class HistorySyncCoordinator {
      * @param activity The Android {@link Activity} holding the fragment.
      * @param delegate The delegate for this coordinator.
      * @param profile The current profile.
+     * @param config The configuration for the history sync UI.
      * @param accessPoint The entry point for the opt-in.
      * @param showEmailInFooter Whether the user's email should be shown in the UI footer. If the
      *     email is non-displayable, it won't be shown regardless of this value.
