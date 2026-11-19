@@ -60,4 +60,8 @@ GURL GetPrivateMetricsServerUrl() {
   return GetUrl(IDS_PRIVATE_METRICS_SERVER_URL);
 }
 
+GURL GetFcpServerUrl() {
+  return GetUrl(IDS_FCP_SERVER_URL);
+}
+
 }  // namespace metrics

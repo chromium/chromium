@@ -6,6 +6,7 @@
 
 #include <cstddef>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -21,6 +22,7 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "components/metrics/metrics_pref_names.h"
+#include "components/metrics/server_urls.h"
 #include "components/prefs/pref_service.h"
 #include "components/private_insights/fcp_event_publisher.h"
 #include "components/private_insights/fcp_files.h"
@@ -38,6 +40,7 @@
 #include "third_party/abseil-cpp/absl/status/statusor.h"
 #include "third_party/federated_compute/src/fcp/client/example_query_result.pb.h"
 #include "third_party/federated_compute/src/fcp/client/fl_runner.h"
+#include "url/gurl.h"
 
 namespace private_insights {
 
@@ -286,7 +289,7 @@ PrivateInsightsService::UploadTask PrivateInsightsService::MakeUploadTask(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   UploadTask task;
   task.task_env = fcp_task_env_;
-  task.server_uri = kFcpServerUri.Get();
+  task.server_uri = GetServerUri();
   task.population_name = population.population_name();
   task.trigger_time = base::TimeTicks::Now();
   task.batch = population.TakePendingEvents();
@@ -355,6 +358,10 @@ void PrivateInsightsService::UploadLegacyContextualCues() {
   SerializeEventsToQueryResult<events::ContextualCueLogEvent>(
       pending_events, &fcp_task_env_->result());
 
+  // Resolve the server URI on this sequence so that the test override and the
+  // resource bundle lookup are never read from the thread pool.
+  std::string server_uri = GetServerUri();
+
   is_upload_running_ = true;
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
@@ -362,7 +369,7 @@ void PrivateInsightsService::UploadLegacyContextualCues() {
        base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
       base::BindOnce(&PrivateInsightsService::UploadBlocking, fcp_task_env_,
-                     base::TimeTicks::Now()),
+                     std::move(server_uri), base::TimeTicks::Now()),
       base::BindOnce(&PrivateInsightsService::OnUploadComplete,
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(pending_events)));
@@ -375,10 +382,10 @@ void PrivateInsightsService::UploadLegacyContextualCues() {
 PrivateInsightsService::FederatedComputationResult
 PrivateInsightsService::UploadBlocking(
     scoped_refptr<FcpSimpleTaskEnvironment> task_env,
+    std::string server_uri,
     base::TimeTicks trigger_time) {
   base::UmaHistogramTimes(kUploadPendingTimeHistogram,
                           base::TimeTicks::Now() - trigger_time);
-  const std::string server_uri = kFcpServerUri.Get();
   if (server_uri.empty()) {
     return {
         .outcome = FederatedComputationOutcome::kErrorNoServerUri,
@@ -398,7 +405,7 @@ PrivateInsightsService::UploadBlocking(
       .files = &fcp_files,
       .log_manager = &fcp_log_manager,
       .flags = &fcp_flags,
-      .federated_service_uri = server_uri,
+      .federated_service_uri = std::move(server_uri),
       .api_key = google_apis::GetAPIKey(),
       .population_name = kFcpPopulationNameContextualCues.Get(),
   };
@@ -535,6 +542,28 @@ void PrivateInsightsService::SetRunFederatedComputationForTesting(  // IN-TEST
       func ? std::move(func)
            : base::BindRepeating(
                  &PrivateInsightsService::RunFederatedComputation);
+}
+
+// static
+std::string PrivateInsightsService::GetServerUri() {
+  if (const auto& server_uri_override = GetServerUriOverride();
+      server_uri_override.has_value()) {
+    return *server_uri_override;
+  }
+  const GURL url = metrics::GetFcpServerUrl();
+  return url.is_valid() ? url.spec() : std::string();
+}
+
+// static
+std::optional<std::string>& PrivateInsightsService::GetServerUriOverride() {
+  static base::NoDestructor<std::optional<std::string>> server_uri_override;
+  return *server_uri_override;
+}
+
+// static
+void PrivateInsightsService::SetServerUriForTesting(  // IN-TEST
+    std::optional<std::string> server_uri) {
+  GetServerUriOverride() = std::move(server_uri);
 }
 
 void PrivateInsightsService::OnUploadComplete(

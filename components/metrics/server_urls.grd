@@ -2,8 +2,9 @@
 
 <!--
 The URL strings in this file are intentionally empty to prevent Chromium forks from
-accidentally sending metrics to Google servers. The values for Chrome-branded builds can
-be found here:
+accidentally sending metrics to Google servers. This covers the metrics endpoints as well
+as the Private Insights (Federated Compute Platform) server endpoint. The values for
+Chrome-branded builds can be found here:
 https://chrome-internal.googlesource.com/chrome/components/metrics/internal/+/main/server_urls.grd
 
 Note that for LGPL compliance reasons, these URL strings are stored in resource files
@@ -38,6 +39,9 @@ rather than the code.
           -
       </message>
       <message name="IDS_PRIVATE_METRICS_SERVER_URL" translateable="false">
+          -
+      </message>
+      <message name="IDS_FCP_SERVER_URL" translateable="false">
           -
       </message>
     </messages>

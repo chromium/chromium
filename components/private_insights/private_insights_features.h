@@ -44,9 +44,6 @@ extern const base::FeatureParam<base::TimeDelta> kPrivateInsightsUploadInterval;
 // FCP client configuration parameters.
 
 COMPONENT_EXPORT(PRIVATE_INSIGHTS)
-extern const base::FeatureParam<std::string> kFcpServerUri;
-
-COMPONENT_EXPORT(PRIVATE_INSIGHTS)
 extern const base::FeatureParam<std::string> kFcpPopulationNameContextualCues;
 
 COMPONENT_EXPORT(PRIVATE_INSIGHTS)

@@ -21,6 +21,8 @@ TEST(MetricsServerUrls, GetUrls) {
   EXPECT_EQ(GetCastMetricsServerUrl().is_valid(), should_have_url);
   EXPECT_EQ(GetUkmServerUrl().is_valid(), should_have_url);
   EXPECT_EQ(GetDwaServerUrl().is_valid(), should_have_url);
+  EXPECT_EQ(GetPrivateMetricsServerUrl().is_valid(), should_have_url);
+  EXPECT_EQ(GetFcpServerUrl().is_valid(), should_have_url);
 }
 
 }  // namespace

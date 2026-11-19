@@ -11992,7 +11992,6 @@
                     "name": "Enabled",
                     "params": {
                         "fcp_population_name_contextual_cues": "chrome/private_insights/contextual_cues",
-                        "fcp_server_uri": "https://federatedcompute-pa.googleapis.com/",
                         "upload_interval": "30s"
                     },
                     "enable_features": [
@@ -16853,7 +16852,6 @@
                         "fcp_enable_privacy_id_v2": "true",
                         "fcp_population_name_contextual_cues": "chrome/private_insights/contextual_cues",
                         "fcp_population_name_storage_access": "chrome/private_insights/storage_access",
-                        "fcp_server_uri": "https://federatedcompute-pa.googleapis.com/",
                         "fcp_use_attestation_transparency_verifier": "true",
                         "upload_interval": "10m"
                     },

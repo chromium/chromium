@@ -37,6 +37,7 @@ component("private_insights") {
     "//components/version_info",
     "//google_apis",
     "//third_party/federated_compute:fl_runner",
+    "//url",
   ]
 }
 
@@ -146,6 +147,7 @@ source_set("unit_tests") {
     "//base",
     "//base:i18n",
     "//base/test:test_support",
+    "//build:branding_buildflags",
     "//components/metrics",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/prefs:test_support",

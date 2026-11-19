@@ -33,6 +33,9 @@ GURL GetDwaServerUrl();
 // The Private Metrics server's URL.
 GURL GetPrivateMetricsServerUrl();
 
+// The Federated Compute Platform (FCP) server's URL.
+GURL GetFcpServerUrl();
+
 }  // namespace metrics
 
 #endif  // COMPONENTS_METRICS_SERVER_URLS_H_

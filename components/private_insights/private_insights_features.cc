@@ -18,9 +18,6 @@ BASE_FEATURE(kPrivateInsightsStorageAccess, base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<base::TimeDelta> kPrivateInsightsUploadInterval{
     &kPrivateInsightsFeature, "upload_interval", base::Minutes(30)};
 
-const base::FeatureParam<std::string> kFcpServerUri{&kPrivateInsightsFeature,
-                                                    "fcp_server_uri", ""};
-
 const base::FeatureParam<std::string> kFcpPopulationNameContextualCues{
     &kPrivateInsightsFeature, "fcp_population_name_contextual_cues",
     "private_insights/contextual_cues"};

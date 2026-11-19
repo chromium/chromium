@@ -23,6 +23,8 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "build/branding_buildflags.h"
+#include "build/buildflag.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_reporting_choice_service.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -35,6 +37,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/federated_compute/src/fcp/client/example_query_result.pb.h"
+#include "url/gurl.h"
+#include "url/url_constants.h"
 
 namespace private_insights {
 
@@ -68,9 +72,9 @@ class PrivateInsightsServiceTestBase : public testing::Test {
     GetLastServerUri() = "";
     PrivateInsightsService::SetRunFederatedComputationForTesting(
         base::BindRepeating(&MockRunFederatedComputation));
+    PrivateInsightsService::SetServerUriForTesting("https://example.com/test");
     std::vector<base::test::FeatureRefAndParams> enabled = {
-        {kPrivateInsightsFeature,
-         {{"fcp_server_uri", "https://example.com/test"}}}};
+        {kPrivateInsightsFeature, {}}};
     std::vector<base::test::FeatureRef> disabled;
     if (upload_task_pipeline_enabled) {
       enabled.push_back({kPrivateInsightsUploadTaskPipeline, {}});
@@ -84,6 +88,7 @@ class PrivateInsightsServiceTestBase : public testing::Test {
   }
 
   void TearDown() override {
+    PrivateInsightsService::SetServerUriForTesting(std::nullopt);
     PrivateInsightsService::SetRunFederatedComputationForTesting({});
   }
 
@@ -313,9 +318,7 @@ TEST_P(PrivateInsightsServiceTest, MetricsChoiceRespectedOnStartup) {
 }
 
 TEST_P(PrivateInsightsServiceTest, UploadSkippedWhenServerUriEmpty) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      kPrivateInsightsFeature, {{"fcp_server_uri", ""}});
+  PrivateInsightsService::SetServerUriForTesting("");
 
   base::HistogramTester histogram_tester;
   TestingPrefServiceSimple local_state;
@@ -362,8 +365,7 @@ TEST_P(PrivateInsightsServiceTest, PopulationNameFinchParam) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       kPrivateInsightsFeature,
-      {{"fcp_server_uri", "https://example.com/test"},
-       {"fcp_population_name_contextual_cues", "custom_population_name"}});
+      {{"fcp_population_name_contextual_cues", "custom_population_name"}});
 
   TestingPrefServiceSimple local_state;
   PrivateInsightsService service(&local_state, tmp_profile_dir_.GetPath(),
@@ -380,6 +382,61 @@ TEST_P(PrivateInsightsServiceTest, PopulationNameFinchParam) {
   EXPECT_EQ(mock_run_federated_computation_call_count_, 1);
   EXPECT_EQ(GetLastPopulationName(), "custom_population_name");
   EXPECT_EQ(GetLastServerUri(), "https://example.com/test");
+}
+
+// Verifies the server URI built into the binary is used when no test override
+// is set: Chrome-branded builds get a valid HTTPS URI, while non-branded builds
+// have no URI and skip the upload.
+TEST_P(PrivateInsightsServiceTest, DefaultServerUriMatchesBranding) {
+  PrivateInsightsService::SetServerUriForTesting(std::nullopt);
+
+  base::HistogramTester histogram_tester;
+  TestingPrefServiceSimple local_state;
+  PrivateInsightsService service(&local_state, tmp_profile_dir_.GetPath(),
+                                 test_shared_url_loader_factory_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(service.sequence_checker_);
+
+  events::ContextualCueLogEvent event;
+  service.LogContextualCueEvent(event);
+
+  service.TriggerUpload();
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(service.sequence_checker_);
+    return !service.is_upload_running_;
+  }));
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  EXPECT_EQ(mock_run_federated_computation_call_count_, 1);
+  const GURL server_url(GetLastServerUri());
+  EXPECT_TRUE(server_url.is_valid());
+  EXPECT_TRUE(server_url.SchemeIs(url::kHttpsScheme));
+  histogram_tester.ExpectUniqueSample(
+      kTriggerUploadOutcomeHistogram,
+      PrivateInsightsService::TriggerUploadOutcome::kTaskPosted, 1);
+  histogram_tester.ExpectTotalCount(kUploadPendingTimeHistogram, 1);
+  histogram_tester.ExpectUniqueSample(
+      kFederatedComputationOutcomeHistogram,
+      PrivateInsightsService::FederatedComputationOutcome::kSuccess, 1);
+#else
+  EXPECT_EQ(mock_run_federated_computation_call_count_, 0);
+  if (upload_task_pipeline_enabled()) {
+    histogram_tester.ExpectUniqueSample(
+        kTriggerUploadOutcomeHistogram,
+        PrivateInsightsService::TriggerUploadOutcome::kSkippedNoServerUri, 1);
+    histogram_tester.ExpectTotalCount(kUploadPendingTimeHistogram, 0);
+  } else {
+    histogram_tester.ExpectUniqueSample(
+        kTriggerUploadOutcomeHistogram,
+        PrivateInsightsService::TriggerUploadOutcome::kTaskPosted, 1);
+    histogram_tester.ExpectTotalCount(kUploadPendingTimeHistogram, 1);
+  }
+  histogram_tester.ExpectUniqueSample(
+      kFederatedComputationOutcomeHistogram,
+      PrivateInsightsService::FederatedComputationOutcome::kErrorNoServerUri,
+      1);
+  EXPECT_TRUE(service.ContextualCueEventsForTesting().empty());
+#endif
 }
 
 TEST_P(PrivateInsightsServiceTest, LogContextualCueEvent) {
@@ -585,8 +642,7 @@ TEST_P(PrivateInsightsServiceTest, RequeueEventsExceedsMaxEvents) {
   base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
-      kPrivateInsightsFeature, {{"fcp_server_uri", "https://example.com/test"},
-                                {"max_contextual_cue_events", "2"}});
+      kPrivateInsightsFeature, {{"max_contextual_cue_events", "2"}});
 
   TestingPrefServiceSimple local_state;
   PrivateInsightsService service(&local_state, tmp_profile_dir_.GetPath(),

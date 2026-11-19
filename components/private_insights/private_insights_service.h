@@ -144,6 +144,10 @@ class COMPONENT_EXPORT(PRIVATE_INSIGHTS) PrivateInsightsService
   static void SetRunFederatedComputationForTesting(
       RunFederatedComputationFunc func);
 
+  // Overrides the FCP server URI. Pass `std::nullopt` to use the default URI
+  // built into the binary.
+  static void SetServerUriForTesting(std::optional<std::string> server_uri);
+
   virtual void LogContextualCueEvent(events::ContextualCueLogEvent event);
 
   // Returns whether Storage Access events may be logged and uploaded.
@@ -224,6 +228,7 @@ class COMPONENT_EXPORT(PRIVATE_INSIGHTS) PrivateInsightsService
   // Runs on a background thread pool sequence (allows blocking).
   static FederatedComputationResult UploadBlocking(
       scoped_refptr<FcpSimpleTaskEnvironment> task_env,
+      std::string server_uri,
       base::TimeTicks trigger_time);
 
   // `UploadTask` pipeline: serializes `population`'s batch on the thread pool
@@ -239,6 +244,12 @@ class COMPONENT_EXPORT(PRIVATE_INSIGHTS) PrivateInsightsService
       const FederatedComputationParams& params);
 
   static RunFederatedComputationFunc& GetRunFederatedComputationFunc();
+
+  // Returns the FCP server URI, or an empty string if none is available (e.g.
+  // in non-Chrome-branded builds). Must be called on the UI sequence.
+  static std::string GetServerUri();
+
+  static std::optional<std::string>& GetServerUriOverride();
 
   void OnUploadComplete(ContextualCueEventQueue::Entries pending_events,
                         FederatedComputationResult result);
@@ -302,6 +313,8 @@ class COMPONENT_EXPORT(PRIVATE_INSIGHTS) PrivateInsightsService
                            UploadSkippedWhenServerUriEmpty);
   FRIEND_TEST_ALL_PREFIXES(PrivateInsightsServiceTest,
                            PopulationNameFinchParam);
+  FRIEND_TEST_ALL_PREFIXES(PrivateInsightsServiceTest,
+                           DefaultServerUriMatchesBranding);
   FRIEND_TEST_ALL_PREFIXES(PrivateInsightsServiceTest, LogContextualCueEvent);
   FRIEND_TEST_ALL_PREFIXES(PrivateInsightsServiceTest,
                            SerializeEventsToQueryResult);
