@@ -212,6 +212,9 @@ void MultiBufferDataSource::OnRedirected(
       StopInternal_Locked();
     }
     StopLoader();
+    if (notify_tainted_cb_ && WouldTaintOrigin()) {
+      std::move(notify_tainted_cb_).Run(this);
+    }
     return;
   }
   SetReader(nullptr);
@@ -616,10 +619,10 @@ void MultiBufferDataSource::StartCallback() {
 
     media_log_->SetProperty<media::MediaLogProperty::kIsRangeHeaderSupported>(
         url_data_->range_supported());
+  }
 
-    if (notify_tainted_cb_ && WouldTaintOrigin()) {
-      std::move(notify_tainted_cb_).Run(this);
-    }
+  if (notify_tainted_cb_ && WouldTaintOrigin()) {
+    std::move(notify_tainted_cb_).Run(this);
   }
 
   PostCrossThreadTask(*render_task_runner_, FROM_HERE,

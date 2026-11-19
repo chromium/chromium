@@ -596,10 +596,15 @@ TEST_F(MultiBufferDataSourceTest, Range_NotSatisfiable) {
 }
 
 TEST_F(MultiBufferDataSourceTest, Range_NotSatisfiableOpaque) {
+  bool tainted_called = false;
   Initialize(kHttpUrl, false);
+  data_source_->SetTaintedCallback(base::BindRepeating(
+      [](bool* called, const media::DataSource*) { *called = true; },
+      base::Unretained(&tainted_called)));
   WebURLResponse response = response_generator_->GenerateResponse(416);
   response.SetType(network::mojom::blink::FetchResponseType::kOpaque);
   Respond(response);
+  EXPECT_TRUE(tainted_called);
   EXPECT_TRUE(data_source_->WouldTaintOrigin());
   EXPECT_FALSE(loading());
   Stop();
