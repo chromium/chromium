@@ -47,6 +47,9 @@ bool IsGoogleCorpCrdOrigin(content::BrowserContext* browser_context,
   constexpr const char* const kGoogleCorpCrdOrigins[] = {
       "https://remotedesktop.corp.google.com",
       "https://remotedesktop-autopush.corp.google.com/",
+      "https://remotedesktop-staging.corp.google.com/",
+      // TODO(crbug.com/559634151): Remove daily-6 after CRD staging transition
+      // is complete.
       "https://remotedesktop-daily-6.corp.google.com/",
   };
   for (const char* corp_crd_origin : kGoogleCorpCrdOrigins) {

@@ -30,11 +30,16 @@ class OriginMayUseRemoteDesktopClientOverrideTest
       "https://remotedesktop.corp.google.com";
   static constexpr char kCorpCrdAutopushOrigin[] =
       "https://remotedesktop-autopush.corp.google.com/";
+  static constexpr char kCorpCrdStagingOrigin[] =
+      "https://remotedesktop-staging.corp.google.com/";
+  // TODO(crbug.com/559634151): Remove daily-6 after CRD staging transition is
+  // complete.
   static constexpr char kCorpCrdDailyOrigin[] =
       "https://remotedesktop-daily-6.corp.google.com/";
 
-  const std::array<const char*, 3> kCorpCrdOrigins = {
-      kCorpCrdOrigin, kCorpCrdAutopushOrigin, kCorpCrdDailyOrigin};
+  const std::array<const char*, 4> kCorpCrdOrigins = {
+      kCorpCrdOrigin, kCorpCrdAutopushOrigin, kCorpCrdStagingOrigin,
+      kCorpCrdDailyOrigin};
 
   static constexpr char kExampleOrigin[] = "https://example.com";
   static constexpr char kAnotherExampleOrigin[] = "https://another.example.com";
@@ -102,6 +107,9 @@ TEST_F(OriginMayUseRemoteDesktopClientOverrideTest,
       constexpr const char* const crd_origins[] = {
           kCorpCrdOrigin,
           kCorpCrdAutopushOrigin,
+          kCorpCrdStagingOrigin,
+          // TODO(crbug.com/559634151): Remove daily-6 after CRD staging
+          // transition is complete.
           kCorpCrdDailyOrigin,
       };
       EXPECT_EQ(delegate.OriginMayUseRemoteDesktopClientOverride(
