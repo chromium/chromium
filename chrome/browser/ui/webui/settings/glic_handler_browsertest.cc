@@ -122,14 +122,34 @@ class GlicHandlerSubscriptionTierBrowserTest : public GlicHandlerBrowserTest {
  public:
   GlicHandlerSubscriptionTierBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
-        {{features::kGlicActor, {}},
+        {{features::kGlicActor,
+          {{features::kGlicActorEligibleTiers.name, "1,2"}}},
          {features::kGlicActorPolicyControlExemption, {}},
-         {features::kGlicWebActuationSetting, {}}},
-        /*disabled_features=*/{});
+         {features::kGlicIgnoreDogfoodClient, {}},
+         {features::kGlicWebActuationSetting, {}},
+         {features::kGlicWebActuationSettingsToggle, {}}},
+        /*disabled_features=*/{
+            features::kGlicSubscriptionBenefitsEligibility});
+  }
+
+  void SetUpOnMainThread() override {
+    GlicHandlerBrowserTest::SetUpOnMainThread();
+    browser_management_override_ =
+        std::make_unique<policy::ScopedManagementServiceOverrideForTesting>(
+            policy::ManagementServiceFactory::GetForProfile(
+                browser()->GetProfile()),
+            policy::EnterpriseManagementAuthority::NONE);
+  }
+
+  void TearDownOnMainThread() override {
+    browser_management_override_.reset();
+    GlicHandlerBrowserTest::TearDownOnMainThread();
   }
 
  private:
   base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<policy::ScopedManagementServiceOverrideForTesting>
+      browser_management_override_;
 };
 
 class GlicHandlerExperimentalTriggeringBrowserTest
@@ -527,10 +547,9 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(data.arg3()->GetBool());
 }
 
-// TODO(crbug.com/496712339): Re-enable this test.
 IN_PROC_BROWSER_TEST_F(
     GlicHandlerSubscriptionTierBrowserTest,
-    DISABLED_GetWebActuationToggleVisibility_SubscriptionTierEligible) {
+    GetWebActuationToggleVisibility_SubscriptionTierEligible) {
   browser()->GetProfile()->GetPrefs()->SetInteger(
       subscription_eligibility::prefs::kAiSubscriptionTier, 1);
 
@@ -543,10 +562,9 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(data.arg3()->GetBool());
 }
 
-// TODO(crbug.com/496712339): Re-enable this test.
 IN_PROC_BROWSER_TEST_F(
     GlicHandlerSubscriptionTierBrowserTest,
-    DISABLED_FireWebActuationToggleVisibilityChanged_SubscriptionTierBecomesEligible) {
+    FireWebActuationToggleVisibilityChanged_SubscriptionTierBecomesEligible) {
   browser()->GetProfile()->GetPrefs()->SetInteger(
       subscription_eligibility::prefs::kAiSubscriptionTier, 0);
   glic_handler()->AllowJavascript();
