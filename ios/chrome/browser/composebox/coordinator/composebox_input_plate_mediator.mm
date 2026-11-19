@@ -805,7 +805,8 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
       _userRemovedWebStateIDs.insert(webStateID);
     }
   }
-  [self removeItemInternal:item];
+  [self removeItemFromSession:item];
+  [self removeItemFromUI:item];
 }
 
 - (void)sendText:(NSString*)text {
@@ -1157,9 +1158,23 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
 
 #pragma mark - Private
 
-// Internal helper to remove an item from the collection and session without
-// marking it as explicitly user-removed.
-- (void)removeItemInternal:(ComposeboxInputItem*)item {
+// Removes `item`'s uploaded file token from `_contextualSearchSession`, if
+// any, and clears `item.serverToken`. Must be called before
+// `-removeItemFromUI:`, as removing `item` from `_items` can synchronously
+// dispatch a pending query.
+- (void)removeItemFromSession:(ComposeboxInputItem*)item {
+  if (!item || item.serverToken.is_empty()) {
+    return;
+  }
+  if (_contextualSearchSession) {
+    _contextualSearchSession->DeleteFile(item.serverToken);
+  }
+  item.serverToken = base::UnguessableToken();
+}
+
+// Internal helper to remove an item from the UI collection and tracking maps
+// without marking it as explicitly user-removed.
+- (void)removeItemFromUI:(ComposeboxInputItem*)item {
   // `item` can be nil if an asynchronous operation finishes after the item has
   // already been deleted by the user or closed. Early return to prevent null
   // pointer dereferencing or double deletion.
@@ -1179,14 +1194,12 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
                                   title:[self
                                             attachmentEventTitleForItem:item]]];
 
-  // Delete the item's server-side file before removing the item, as removing it
-  // can synchronously send a pending query (see
-  // `-composeboxInputItemCollectionDidUpdateItems:`), which must not reference
-  // the file. Attachments removed before their server upload starts have no
-  // server token, and so no server-side file to delete.
-  if (_contextualSearchSession && !item.serverToken.is_empty()) {
-    _contextualSearchSession->DeleteFile(item.serverToken);
-  }
+  // Callers must update `_contextualSearchSession` (via
+  // `-removeItemFromSession:` or `OnTabClosedOrNavigated()`) and clear
+  // `item.serverToken` before removing `item`, as
+  // `-composeboxInputItemCollectionDidUpdateItems:` can synchronously send a
+  // pending query.
+  CHECK(!_contextualSearchSession || item.serverToken.is_empty());
 
   [_items removeItem:item];
 
@@ -1236,16 +1249,23 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
   }
 }
 
-// Removes input items associated with a detached `detachedWebState`.
+// Notifies `_contextualSearchSession` and removes UI items associated with a
+// detached `detachedWebState`.
 - (void)handleDetachedWebState:(web::WebState*)detachedWebState {
   if (!detachedWebState) {
     return;
   }
   web::WebStateID detachedID = detachedWebState->GetUniqueIdentifier();
+  if (_contextualSearchSession && detachedID.valid()) {
+    _contextualSearchSession->OnTabClosedOrNavigated(
+        detachedID.ToSessionID(), /*current_url=*/std::nullopt,
+        /*current_title=*/std::nullopt);
+  }
   for (ComposeboxInputItem* item in [_items.containedItems copy]) {
     if (_latestTabSelectionMapping[item.identifier] == detachedID &&
         item.tabURL == detachedWebState->GetVisibleURL()) {
-      [self removeItemInternal:item];
+      item.serverToken = base::UnguessableToken();
+      [self removeItemFromUI:item];
     }
   }
 }
@@ -1603,7 +1623,8 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
   NSArray<ComposeboxInputItem*>* items = [_items.containedItems copy];
   for (ComposeboxInputItem* item in items) {
     if (item.isAutoAdded) {
-      [self removeItemInternal:item];
+      [self removeItemFromSession:item];
+      [self removeItemFromUI:item];
     }
   }
 }
@@ -2652,7 +2673,8 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
                                   title:[self
                                             attachmentEventTitleForItem:item]]];
 
-  [self removeItemInternal:item];
+  [self removeItemFromSession:item];
+  [self removeItemFromUI:item];
 }
 
 /// Updates the consumer items.
@@ -2800,11 +2822,12 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
 
   for (ComposeboxInputItem* item in invalidatedItems) {
+    // Cancels the page context extraction of the item's tab, if in flight.
     _pageContextWrappers.erase(item.identifier);
     _latestTabSelectionMapping.erase(item.identifier);
-    if (_contextualSearchSession && !item.serverToken.is_empty()) {
-      _contextualSearchSession->DeleteFile(item.serverToken);
-    }
+    // Removes the invalidated item's server-side context before removing it
+    // from `_items`.
+    [self removeItemFromSession:item];
   }
   [_items removeItems:invalidatedItems];
   if (mode == ComposeboxMode::kRegularSearch) {
