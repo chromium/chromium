@@ -17,14 +17,21 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/contextual_tasks/entry_point_eligibility_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/browser_ui/util/android/url_constants.h"
+#include "components/contextual_tasks/public/features.h"
+#include "components/lens/lens_overlay_invocation_source.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/jni_zero/jni_zero.h"
+#include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 
@@ -34,6 +41,47 @@
 namespace contextual_tasks {
 
 namespace {
+
+using AimEntryPoint = omnibox::ChromeAimEntryPoint;
+using InvocationSource = lens::LensOverlayInvocationSource;
+
+// Maps the invocation source of an "Ask Google" entry point to the AIM entry
+// point reported to the side panel. Desktop values are reused until dedicated
+// Android values are added to the proto.
+AimEntryPoint AimEntryPointForInvocationSource(InvocationSource source) {
+  switch (source) {
+    case InvocationSource::kAppMenu:
+    case InvocationSource::kAppMenuAskGoogle:
+      return AimEntryPoint::DESKTOP_CHROME_APP_MENU_ASK_GOOGLE;
+    case InvocationSource::kContentAreaContextMenuPage:
+    case InvocationSource::kContentAreaContextMenuPageAskGoogle:
+    case InvocationSource::kContentAreaContextMenuImage:
+      return AimEntryPoint::DESKTOP_CHROME_PAGE_CONTEXT_MENU_ASK_GOOGLE;
+    case InvocationSource::kOmnibox:
+    case InvocationSource::kOmniboxPageAction:
+    case InvocationSource::kOmniboxContextualSuggestion:
+      return AimEntryPoint::DESKTOP_CHROME_COBROWSE_OMNIBOX_ACTION;
+    case InvocationSource::kToolbar:
+    case InvocationSource::kCobrowseToolbarButton:
+      return AimEntryPoint::DESKTOP_CHROME_COBROWSE_TOOLBAR_BUTTON;
+    case InvocationSource::kCobrowsePinnedToolbarButton:
+      return AimEntryPoint::DESKTOP_CHROME_COBROWSE_PINNED_TOOLBAR_BUTTON;
+    default:
+      return AimEntryPoint::UNKNOWN_AIM_ENTRY_POINT;
+  }
+}
+
+// Returns the window-scoped panel controller for `web_contents`, if any.
+ContextualTasksPanelController* GetPanelController(
+    content::WebContents* web_contents) {
+  tabs::TabInterface* tab =
+      web_contents ? tabs::TabInterface::MaybeGetFromContents(web_contents)
+                   : nullptr;
+  BrowserWindowInterface* browser_window =
+      tab ? tab->GetBrowserWindowInterface() : nullptr;
+  return browser_window ? ContextualTasksPanelController::From(browser_window)
+                        : nullptr;
+}
 
 // Holds resolved task reference, ID, and optional task state.
 struct ResolvedTaskInfo {
@@ -122,6 +170,73 @@ ContextualTasksBridge::ContextualTasksBridge(
 }
 
 ContextualTasksBridge::~ContextualTasksBridge() = default;
+
+// static
+bool ContextualTasksBridge::ShouldShowAskGoogleEntryPoints(
+    content::WebContents* web_contents) {
+  if (!web_contents) {
+    return false;
+  }
+  if (!IsContextualTasksUIEnabled()) {
+    return false;
+  }
+  // Native pages (e.g. the NTP) have no shareable page content.
+  const GURL& url = web_contents->GetLastCommittedURL();
+  if (!IsUrlValidForContextSharing(url) ||
+      url.SchemeIs(browser_ui::kChromeUINativeScheme)) {
+    return false;
+  }
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  if (!profile || profile->IsOffTheRecord()) {
+    return false;
+  }
+  if (!search::DefaultSearchProviderIsGoogle(profile)) {
+    return false;
+  }
+  if (!IsContextualTasksEntryPointsEnabled() &&
+      !AreContextualTasksUpdatedEntryPointsEnabled(profile)) {
+    return false;
+  }
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents);
+  if (!tab || !tab->GetBrowserWindowInterface()) {
+    return false;
+  }
+  auto* eligibility_manager =
+      EntryPointEligibilityManager::From(tab->GetBrowserWindowInterface());
+  if (!eligibility_manager || !eligibility_manager->AreEntryPointsEligible()) {
+    return false;
+  }
+  return true;
+}
+
+// static
+void ContextualTasksBridge::OpenAskGoogleAboutThisPage(
+    content::WebContents* web_contents,
+    InvocationSource invocation_source) {
+  if (!ShouldShowAskGoogleEntryPoints(web_contents)) {
+    return;
+  }
+  auto* controller = GetPanelController(web_contents);
+  if (!controller) {
+    return;
+  }
+  controller->Show(/*transition_from_tab=*/false,
+                   AimEntryPointForInvocationSource(invocation_source));
+}
+
+// static
+void ContextualTasksBridge::ToggleAskGoogleSidePanel(
+    content::WebContents* web_contents,
+    InvocationSource invocation_source) {
+  auto* controller = GetPanelController(web_contents);
+  if (controller && controller->IsPanelOpenForContextualTask()) {
+    controller->Close();
+    return;
+  }
+  OpenAskGoogleAboutThisPage(web_contents, invocation_source);
+}
 
 void ContextualTasksBridge::Destroy() {
   delete this;

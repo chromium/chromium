@@ -1084,9 +1084,13 @@ void ContextualTasksUI::CreatePageHandler(
   }
 
   // Sync the initial auto-suggestion state.
-  if (composebox_handler_ && auto_suggestion_manager_->GetCurrentSuggestion()) {
-    composebox_handler_->UpdateSuggestedTabContext(
-        auto_suggestion_manager_->GetCurrentSuggestion());
+  if (composebox_handler_) {
+    if (auto_suggestion_manager_->GetCurrentSuggestion()) {
+      composebox_handler_->UpdateSuggestedTabContext(
+          auto_suggestion_manager_->GetCurrentSuggestion());
+    } else if (!IsShownInTab()) {
+      OnActiveTabContextStatusChanged();
+    }
   }
 }
 
