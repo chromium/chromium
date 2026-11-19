@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {DisableModuleEvent, LaunchpadWidgetElement} from 'chrome://new-tab-page/lazy_load.js';
-import {launchpadDescriptor} from 'chrome://new-tab-page/lazy_load.js';
+import {launchpadDescriptor, ModuleRegistry} from 'chrome://new-tab-page/lazy_load.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -50,5 +50,13 @@ suite('NewTabPageModulesLaunchpadWidgetTest', () => {
             'disableModuleToastMessage',
             loadTimeData.getString('modulesLaunchpadTitle')),
         event.detail.message);
+  });
+
+  test('registers descriptor in module registry', async () => {
+    const module =
+        await ModuleRegistry.getInstance().initializeModuleById('launchpad', 0);
+    assertTrue(!!module);
+    assertEquals(launchpadDescriptor, module.descriptor);
+    assertEquals(1, module.elements.length);
   });
 });

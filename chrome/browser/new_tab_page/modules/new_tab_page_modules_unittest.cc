@@ -102,7 +102,8 @@ TEST_F(NewTabPageModulesTest, MakeModuleIdDetails_PopulatesStructCorrectly) {
   features.InitWithFeatures(
       /*enabled_features=*/{ntp_features::kNtpMicrosoftAuthenticationModule,
                             ntp_features::kNtpSharepointModule,
-                            ntp_features::kNtpMostRelevantTabResumptionModule},
+                            ntp_features::kNtpMostRelevantTabResumptionModule,
+                            ntp_features::kNtpLaunchpadWidget},
       /*disabled_features=*/{});
   identity_test_env().SetCookieAccounts(
       {{kSampleUserEmail, signin::GetTestGaiaIdForEmail(kSampleUserEmail)}});
@@ -110,7 +111,7 @@ TEST_F(NewTabPageModulesTest, MakeModuleIdDetails_PopulatesStructCorrectly) {
   const std::vector<ntp::ModuleIdDetail> module_id_details =
       ntp::MakeModuleIdDetails(/*is_managed_profile=*/false,
                                /*profile=*/&profile());
-  EXPECT_EQ(3u, module_id_details.size());
+  EXPECT_EQ(4u, module_id_details.size());
   const auto& microsoft_files_details = module_id_details[0];
   EXPECT_EQ(ntp_modules::kMicrosoftFilesModuleId, microsoft_files_details.id_);
   EXPECT_EQ(IDS_NTP_MODULES_MICROSOFT_FILES_NAME,
@@ -129,13 +130,18 @@ TEST_F(NewTabPageModulesTest, MakeModuleIdDetails_PopulatesStructCorrectly) {
   EXPECT_EQ(IDS_NTP_MODULES_MOST_RELEVANT_TAB_RESUMPTION_TITLE,
             tab_resumption_details.name_message_id_);
   EXPECT_EQ(std::nullopt, tab_resumption_details.description_message_id_);
+  const auto& launchpad_details = module_id_details[3];
+  EXPECT_EQ(ntp_modules::kLaunchpadModuleId, launchpad_details.id_);
+  EXPECT_EQ(IDS_NTP_MODULES_LAUNCHPAD_TITLE,
+            launchpad_details.name_message_id_);
+  EXPECT_EQ(std::nullopt, launchpad_details.description_message_id_);
 }
 
 TEST_F(NewTabPageModulesTest, MakeModuleIdDetails_OnlyPopulatesEnabledModules) {
   identity_test_env().SetCookieAccounts(
       {{kSampleUserEmail, signin::GetTestGaiaIdForEmail(kSampleUserEmail)}});
   const std::vector<base::test::FeatureRef>& some_module_features = {
-      ntp_features::kNtpTabGroupsModule,
+      ntp_features::kNtpLaunchpadWidget, ntp_features::kNtpTabGroupsModule,
       ntp_features::kNtpMostRelevantTabResumptionModule};
   for (auto& feature : some_module_features) {
     base::test::ScopedFeatureList features;
@@ -149,6 +155,21 @@ TEST_F(NewTabPageModulesTest, MakeModuleIdDetails_OnlyPopulatesEnabledModules) {
                                  /*profile=*/&profile());
     ASSERT_EQ(1u, module_id_details.size());
   }
+}
+
+TEST_F(NewTabPageModulesTest, MakeModuleIdDetails_LaunchpadSignedOut) {
+  base::test::ScopedFeatureList features;
+  const std::vector<base::test::FeatureRef>& enabled_features = {
+      ntp_features::kNtpLaunchpadWidget};
+  features.InitWithFeatures(
+      /*enabled_features=*/enabled_features,
+      /*disabled_features=*/ntp::ComputeDisabledFeaturesList(
+          ntp::kAllModuleFeatures, enabled_features));
+
+  const std::vector<ntp::ModuleIdDetail> module_id_details =
+      ntp::MakeModuleIdDetails(/*is_managed_profile=*/false,
+                               /*profile=*/&profile());
+  ASSERT_EQ(0u, module_id_details.size());
 }
 
 TEST_F(NewTabPageModulesTest, MakeModuleIdDetails_WithDriveModule) {

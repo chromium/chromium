@@ -14,6 +14,7 @@ import {dummyV2Descriptor} from './dummy/module.js';
 // </if>
 import {driveModuleDescriptor} from './file_suggestion/drive_module.js';
 import {microsoftFilesModuleDescriptor} from './file_suggestion/microsoft_files_module.js';
+import {launchpadDescriptor} from './launchpad/launchpad_widget.js';
 import type {ModuleDescriptor} from './module_descriptor.js';
 import {mostRelevantTabResumptionDescriptor} from './most_relevant_tab_resumption/module.js';
 import {tabGroupsDescriptor} from './tab_groups/module.js';
@@ -26,6 +27,7 @@ descriptors.push(microsoftAuthModuleDescriptor);
 descriptors.push(outlookCalendarDescriptor);
 descriptors.push(microsoftFilesModuleDescriptor);
 descriptors.push(tabGroupsDescriptor);
+descriptors.push(launchpadDescriptor);
 
 // <if expr="not is_official_build">
 descriptors.push(dummyV2Descriptor);

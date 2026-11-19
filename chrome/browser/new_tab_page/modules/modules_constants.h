@@ -13,6 +13,7 @@ inline constexpr char kAllModulesId[] = "all";
 inline constexpr char kDriveModuleId[] = "drive";
 inline constexpr char kDummyModuleId[] = "dummy";
 inline constexpr char kGoogleCalendarModuleId[] = "google_calendar";
+inline constexpr char kLaunchpadModuleId[] = "launchpad";
 inline constexpr char kMostRelevantTabResumptionModuleId[] = "tab_resumption";
 inline constexpr char kMicrosoftAuthenticationModuleId[] =
     "microsoft_authentication";
