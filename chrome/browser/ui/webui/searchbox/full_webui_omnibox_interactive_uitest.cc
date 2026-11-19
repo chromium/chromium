@@ -5012,8 +5012,10 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
 
 // Verifies that the popup stays over the location bar as the immersive reveal
 // slides top chrome out and back in.
+// TODO(crbug.com/587117044): Flaky/failing on ChromeOS with WebUIToolbarEnabled
+// due to WaitForPopupAlignedAfterHide timing out.
 IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
-                       PopupFollowsLocationBarDuringImmersiveReveal) {
+                       DISABLED_PopupFollowsLocationBarDuringImmersiveReveal) {
   // The popup widget's offset from the location bar, if the popup is open.
   auto get_popup_offset = [this]() -> std::optional<gfx::Vector2d> {
     views::Widget* popup_widget = GetPopupWidget(browser());
