@@ -53,6 +53,7 @@ import org.chromium.chrome.browser.KeyboardShortcuts;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.app.tabmodel.AllTabObserver;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
+import org.chromium.chrome.browser.app.tabmodel.CustomTabAppTabModelOrchestrator;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.browserservices.InstalledWebappDataRegister;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
@@ -187,6 +188,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
     private @MonotonicNonNull CustomTabActivityTabProvider mTabProvider;
     private @Nullable CustomTabStatusBarColorProvider mStatusBarColorProvider;
     private @Nullable CustomTabActivityTabFactory mTabFactory;
+    private @Nullable CustomTabAppTabModelOrchestrator mAppTabModelOrchestrator;
     private @MonotonicNonNull CustomTabIntentHandler mCustomTabIntentHandler;
     private @Nullable CustomTabResumeManager mResumeManager;
     private @Nullable CustomTabNightModeStateController mNightModeStateController;
@@ -1179,6 +1181,10 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
 
     @Override
     protected @TabDestroyStatus int destroyTabModels() {
+        if (mAppTabModelOrchestrator != null) {
+            mAppTabModelOrchestrator.releaseActivity(this);
+            mAppTabModelOrchestrator = null;
+        }
         @TabDestroyStatus int status = TabDestroyStatus.NO_SHUTDOWN;
         if (mTabFactory != null) {
             status = mTabFactory.destroyTabModelOrchestrator();
@@ -1844,10 +1850,11 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
         if (mTabFactory == null) {
             var windowAndroid = assertNonNull(getWindowAndroid());
             assert mIntentDataProvider != null;
+            CustomTabTabPersistencePolicy persistencePolicy = getCustomTabTabPersistencePolicy();
             mTabFactory =
                     new CustomTabActivityTabFactory(
                             this,
-                            getCustomTabTabPersistencePolicy(),
+                            persistencePolicy,
                             windowAndroid,
                             getProfileProviderSupplier(),
                             getCustomTabDelegateFactory(),
@@ -1856,6 +1863,16 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
                             getTabModelSelectorSupplier(),
                             getCompositorViewHolderSupplier(),
                             getCipherFactory());
+            if (mIntentDataProvider.isTabbedCctEnabled()) {
+                // TODO(crbug.com/586466888): Instantiate CustomTabAppTabModelOrchestrator lazily
+                // upon tab switcher launch instead of eagerly on activity startup, and handle
+                // account ID changes if an embedder reuses a session via onNewIntent().
+                String clientPackageName = assertNonNull(persistencePolicy.getClientPackageName());
+                mAppTabModelOrchestrator =
+                        CustomTabAppTabModelOrchestrator.getOrCreate(
+                                this, clientPackageName, persistencePolicy.getAccountId());
+                persistencePolicy.setTaskRunner(mAppTabModelOrchestrator.getTaskRunner());
+            }
         }
         return mTabFactory;
     }

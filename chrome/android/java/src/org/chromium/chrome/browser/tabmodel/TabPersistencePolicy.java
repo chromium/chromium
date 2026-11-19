@@ -133,6 +133,14 @@ public interface TabPersistencePolicy {
     default void setTaskRunner(SequencedTaskRunner taskRunner) {}
 
     /**
+     * Returns the {@link SequencedTaskRunner} for this policy if one was pre-configured, or null to
+     * let {@link TabPersistentStore} create its own.
+     */
+    default @Nullable SequencedTaskRunner getTaskRunner() {
+        return null;
+    }
+
+    /**
      * Acquire all {@link Tab} identifiers across all windows.
      *
      * @param tabIdsCallback callback to pass {@link Tab} identifiers back in.

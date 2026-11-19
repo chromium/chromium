@@ -330,6 +330,34 @@ public class CustomTabTabPersistencePolicyTest {
         assertThat(
                 tabDataToDelete.get().getMetadataFiles(),
                 Matchers.containsInAnyOrder(metadataFile.getName()));
+        assertTrue(metadataFile.delete());
+        assertTrue(tab111File.delete());
+        assertTrue(tab222File.delete());
+        assertTrue(tab333File.delete());
+
+        // Ensure the canonical per-app metadata file (tab_state_app) and its referenced tab state
+        // files are never marked for deletion even when expired.
+        TabModelSelectorMetadata appData =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            TabModelSelectorImpl selectorImpl =
+                                    buildTestTabModelSelector(new int[] {444}, null);
+                            return TabPersistentStoreImpl.extractTabMetadataFromSelector(
+                                    selectorImpl, null, /* isRecreating= */ false);
+                        });
+        File appMetadataFile =
+                new File(stateDirectory, CustomTabTabPersistencePolicy.APP_METADATA_FILE_NAME);
+        assertTrue(TabMetadataFileManager.saveListToFile(appMetadataFile, appData));
+        assertTrue(appMetadataFile.setLastModified(1234));
+        File tab444File =
+                TabStateFileManager.getTabStateFile(
+                        stateDirectory, 444, false, /* isFlatbuffer= */ false);
+        assertTrue(tab444File.createNewFile());
+
+        policy.cleanupUnusedFiles(tabDataToDeleteCallback);
+        callbackSignal.waitForCallback(5);
+        assertThat(tabDataToDelete.get().getMetadataFiles(), Matchers.emptyIterable());
+        assertThat(tabDataToDelete.get().getTabStateFileInfos(), Matchers.emptyIterable());
     }
 
     /** Ensure that the metadata file's last modified timestamp is updated on initialization. */

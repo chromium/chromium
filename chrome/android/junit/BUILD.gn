@@ -502,6 +502,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/app/tabmodel/ActiveTabCacheUnitTest.java",
       "src/org/chromium/chrome/browser/app/tabmodel/ArchivedTabModelOrchestratorUnitTest.java",
       "src/org/chromium/chrome/browser/app/tabmodel/CombinedTabRestorerUnitTest.java",
+      "src/org/chromium/chrome/browser/app/tabmodel/CustomTabAppTabModelOrchestratorUnitTest.java",
       "src/org/chromium/chrome/browser/app/tabmodel/HeadlessTabCreatorUnitTest.java",
       "src/org/chromium/chrome/browser/app/tabmodel/ModelTrackingOrchestratorUnitTest.java",
       "src/org/chromium/chrome/browser/app/tabmodel/PersistentStoreCleanerUnitTest.java",

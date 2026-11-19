@@ -266,7 +266,11 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
         mTabIdsToRestore = new HashSet<>();
         mObservers = new ObserverList<>();
         @TaskTraits int taskTraits = TaskTraits.USER_BLOCKING_MAY_BLOCK;
-        mSequencedTaskRunner = PostTask.createSequencedTaskRunner(taskTraits);
+        SequencedTaskRunner policyTaskRunner = mPersistencePolicy.getTaskRunner();
+        mSequencedTaskRunner =
+                policyTaskRunner != null
+                        ? policyTaskRunner
+                        : PostTask.createSequencedTaskRunner(taskTraits);
         mPrefetchTabListToMergeTasks = new ArrayList<>();
         mMergedFileNames = new HashSet<>();
 

@@ -74,7 +74,7 @@ public class TabMetadataFileManagerUnitTest {
 
         TabModelSelectorMetadata metadata =
                 new TabModelSelectorMetadata(normalModel, incognitoModel);
-        TabMetadataFileManager.saveListToFile(file, metadata);
+        assertTrue(TabMetadataFileManager.saveListToFile(file, metadata));
 
         List<TabReadDetails> readDetails = new ArrayList<>();
         OnTabStateReadCallback callback =
