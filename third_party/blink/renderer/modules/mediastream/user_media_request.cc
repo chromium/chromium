@@ -556,15 +556,6 @@ UserMediaRequest* UserMediaRequest::Create(
     return nullptr;
   }
   result->set_exclude_self_browser_surface(exclude_self_browser_surface);
-  if (media_type == UserMediaRequestType::kDisplayMedia) {
-    std::optional<V8DisplayMediaIncludeOrExclude::Enum> include_or_exclude;
-    if (options->hasSelfBrowserSurface()) {
-      include_or_exclude = options->selfBrowserSurface().AsEnum();
-    }
-    RecordGetDisplayMediaIncludeExcludeConstraintUma(
-        include_or_exclude,
-        "Media.GetDisplayMedia.Constraints.SelfBrowserSurface");
-  }
 
   mojom::blink::PreferredDisplaySurface preferred_display_surface =
       mojom::blink::PreferredDisplaySurface::NO_PREFERENCE;
@@ -582,15 +573,6 @@ UserMediaRequest* UserMediaRequest::Create(
       !options->hasSurfaceSwitching() ||
       options->surfaceSwitching().AsEnum() ==
           V8DisplayMediaIncludeOrExclude::Enum::kInclude);
-  if (media_type == UserMediaRequestType::kDisplayMedia) {
-    std::optional<V8DisplayMediaIncludeOrExclude::Enum> include_or_exclude;
-    if (options->hasSurfaceSwitching()) {
-      include_or_exclude = options->surfaceSwitching().AsEnum();
-    }
-    RecordGetDisplayMediaIncludeExcludeConstraintUma(
-        include_or_exclude,
-        "Media.GetDisplayMedia.Constraints.SurfaceSwitching");
-  }
 
   // The default is to include.
   const bool exclude_monitor_type_surfaces =
