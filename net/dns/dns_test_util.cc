@@ -765,8 +765,7 @@ bool MockDnsTransactionFactory::CompleteOneDelayedTransactionOfType(
     DnsQueryType type) {
   for (base::WeakPtr<MockTransaction>& t : delayed_transactions_) {
     if (t && t->GetType() == DnsQueryTypeToQtype(type)) {
-      t->FinishDelayedTransaction();
-      t.reset();
+      std::exchange(t, nullptr)->FinishDelayedTransaction();
       return true;
     }
   }

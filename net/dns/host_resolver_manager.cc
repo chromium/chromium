@@ -331,6 +331,37 @@ void RecordDnsClientCapabilityMetrics(const DnsClient* dns_client) {
   base::UmaHistogramEnumeration("Net.DNS.DnsConfig.DnsClientCapability",
                                 capability);
 }
+
+// Returns true if `dns_client` can currently create DNS transactions whose
+// behavior depends on `DnsConfig`.
+bool CanUseConfigDependentDnsTransactions(const DnsClient& dns_client) {
+  if (dns_client.CanUseSecureDnsTransactions()) {
+    // DoH servers and mode are configured via `DnsConfig`.
+    return true;
+  }
+  if (!dns_client.CanUseInsecureDnsTransactions(/*ech_mode=*/std::nullopt)) {
+    return false;
+  }
+  switch (dns_client.GetInsecureDnsMode(/*ech_mode=*/std::nullopt)) {
+    case InsecureDnsMode::kEnabledBuiltIn:
+      // Built-in classic DNS reads nameservers and query options from
+      // `DnsConfig`.
+      return true;
+    case InsecureDnsMode::kEnabledPlatform:
+    case InsecureDnsMode::kEnabledPlatformNoSystem:
+      // Platform DNS delegates nameserver selection and Private DNS handling to
+      // the OS resolver rather than `DnsConfig`.
+      //
+      // Although `DnsConfig` search domains are still used, lookups that rely
+      // on them are rare, so we trade off a potential transient lookup failure
+      // for the ability to perform lookups without a `DnsConfig`. Once
+      // `DnsConfig` is updated, caches are invalidated and subsequent lookups
+      // will pick up the new search domains.
+      return false;
+    case InsecureDnsMode::kDisabled:
+      NOTREACHED();
+  }
+}
 }  // namespace
 
 //-----------------------------------------------------------------------------
@@ -690,9 +721,8 @@ void HostResolverManager::SetDnsConfigOverrides(DnsConfigOverrides overrides) {
   // Not allowed to set overrides if compiled without DnsClient.
   DCHECK(dns_client_);
 
-  bool transactions_allowed_before =
-      dns_client_->CanUseSecureDnsTransactions() ||
-      dns_client_->CanUseInsecureDnsTransactions(/*ech_mode=*/std::nullopt);
+  bool pending_transactions_may_depend_on_config =
+      CanUseConfigDependentDnsTransactions(*dns_client_);
   bool changed = dns_client_->SetConfigOverrides(std::move(overrides));
 
   if (changed) {
@@ -701,9 +731,15 @@ void HostResolverManager::SetDnsConfigOverrides(DnsConfigOverrides overrides) {
     // Only invalidate cache if new overrides have resulted in a config change.
     InvalidateCaches();
 
-    // Need to update jobs iff transactions were previously allowed because
-    // in-progress jobs may be running using a now-invalid configuration.
-    if (transactions_allowed_before) {
+    // Need to update jobs iff config-dependent transactions were previously
+    // allowed because in-progress jobs may be running using a now-invalid
+    // configuration.
+    if (pending_transactions_may_depend_on_config ||
+        // This extra check is necessary to handle transitions into kSecure when
+        // pending_transactions_may_depend_on_config happened to be false (e.g.,
+        // built-in resolver disabled into DoH enabled).
+        dns_client_->GetEffectiveConfig().secure_dns_mode ==
+            SecureDnsMode::kSecure) {
       UpdateJobsForChangedConfig();
     }
   }
@@ -1836,11 +1872,10 @@ void HostResolverManager::OnSystemDnsConfigChanged(const DnsConfig& config) {
   }
 
   bool changed = false;
-  bool transactions_allowed_before = false;
+  bool pending_transactions_may_depend_on_config = false;
   if (dns_client_) {
-    transactions_allowed_before =
-        dns_client_->CanUseSecureDnsTransactions() ||
-        dns_client_->CanUseInsecureDnsTransactions(/*ech_mode=*/std::nullopt);
+    pending_transactions_may_depend_on_config =
+        CanUseConfigDependentDnsTransactions(*dns_client_);
     changed = dns_client_->SetSystemConfig(config);
   }
 
@@ -1848,10 +1883,17 @@ void HostResolverManager::OnSystemDnsConfigChanged(const DnsConfig& config) {
   InvalidateCaches();
 
   if (changed) {
-    // Need to update jobs iff transactions were previously allowed because
-    // in-progress jobs may be running using a now-invalid configuration.
-    if (transactions_allowed_before)
+    // Need to update jobs iff config-dependent transactions were previously
+    // allowed because in-progress jobs may be running using a now-invalid
+    // configuration.
+    if (pending_transactions_may_depend_on_config ||
+        // This extra check is necessary to handle transitions into kSecure when
+        // pending_transactions_may_depend_on_config happened to be false (e.g.,
+        // built-in resolver disabled into DoH enabled).
+        dns_client_->GetEffectiveConfig().secure_dns_mode ==
+            SecureDnsMode::kSecure) {
       UpdateJobsForChangedConfig();
+    }
   }
 }
 

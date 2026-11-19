@@ -5173,6 +5173,366 @@ TEST_F(HostResolverManagerDnsTest,
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
+TEST_F(HostResolverManagerDnsTest,
+       DnsPlatform_NotAbortedOnInitialSystemDnsConfigChanged) {
+  if (!features::IsDnsPlatformSupported()) {
+    GTEST_SKIP() << "Platform DNS is not supported.";
+  }
+
+  for (InsecureDnsMode mode : {InsecureDnsMode::kEnabledPlatformNoSystem,
+                               InsecureDnsMode::kEnabledPlatform}) {
+    SCOPED_TRACE(static_cast<int>(mode));
+
+    // Limit concurrency to 2 so the first dual-stack job occupies both
+    // dispatcher slots while the second job remains queued in the dispatcher
+    // across initial DnsConfig hydration.
+    CreateResolverWithLimitsAndParams(2u, DefaultParams(proc_),
+                                      /*ipv6_reachable=*/true,
+                                      /*check_ipv6_on_wifi=*/true);
+    MockDnsClientRuleList rules;
+    AddDnsRule(&rules, "slow_ok_1", dns_protocol::kTypeA,
+               MockDnsClientRule::ResultType::kOk, /*delay=*/true);
+    AddDnsRule(&rules, "slow_ok_1", dns_protocol::kTypeAAAA,
+               MockDnsClientRule::ResultType::kOk, /*delay=*/true);
+    AddDnsRule(&rules, "slow_ok_2", dns_protocol::kTypeA,
+               MockDnsClientRule::ResultType::kOk, /*delay=*/true);
+    AddDnsRule(&rules, "slow_ok_2", dns_protocol::kTypeAAAA,
+               MockDnsClientRule::ResultType::kOk, /*delay=*/true);
+    auto dns_client =
+        std::make_unique<MockDnsClient>(DnsConfig(), std::move(rules));
+    mock_dns_client_ = dns_client.get();
+    resolver_->SetDnsClientForTesting(std::move(dns_client));
+    resolver_->SetInsecureDnsClientEnabled(
+        mode, /*additional_dns_types_enabled=*/true);
+
+    // Do not call ChangeDnsConfig() initially (`system_config_` starts empty).
+    ResolveHostResponseHelper in_flight_response(resolver_->CreateRequest(
+        HostPortPair("slow_ok_1", 80), NetworkAnonymizationKey(),
+        handles::kInvalidNetworkHandle, NetLogWithSource(), std::nullopt,
+        resolve_context_.get()));
+    ResolveHostResponseHelper queued_response(resolver_->CreateRequest(
+        HostPortPair("slow_ok_2", 80), NetworkAnonymizationKey(),
+        handles::kInvalidNetworkHandle, NetLogWithSource(), std::nullopt,
+        resolve_context_.get()));
+    ASSERT_FALSE(in_flight_response.complete());
+    ASSERT_FALSE(queued_response.complete());
+    EXPECT_EQ(2u, num_running_dispatcher_jobs());
+    EXPECT_EQ(1u, num_queued_dispatcher_jobs());
+
+    // Simulate asynchronous initial system DnsConfig delivery from
+    // DnsConfigServiceAndroid (which populates nameservers without DoH).
+    DnsConfig initial_config;
+    initial_config.nameservers.emplace_back(IPAddress(192, 168, 1, 1),
+                                            dns_protocol::kDefaultPort);
+    ChangeDnsConfig(initial_config);
+
+    // Neither the in-flight nor the queued DNS_PLATFORM job should be aborted.
+    EXPECT_FALSE(in_flight_response.complete());
+    EXPECT_FALSE(queued_response.complete());
+
+    // Completing the in-flight job's transactions frees the dispatcher slots
+    // and synchronously starts `queued_response`'s delayed transactions.
+    mock_dns_client_->CompleteDelayedTransactions();
+    EXPECT_THAT(in_flight_response.result_error(), IsOk());
+    EXPECT_THAT(in_flight_response.request()->GetAddressResults(),
+                testing::UnorderedElementsAre(CreateExpected("127.0.0.1", 80),
+                                              CreateExpected("::1", 80)));
+
+    ASSERT_FALSE(queued_response.complete());
+    mock_dns_client_->CompleteDelayedTransactions();
+    EXPECT_THAT(queued_response.result_error(), IsOk());
+    EXPECT_THAT(queued_response.request()->GetAddressResults(),
+                testing::UnorderedElementsAre(CreateExpected("127.0.0.1", 80),
+                                              CreateExpected("::1", 80)));
+
+    InvalidateDnsConfig();
+  }
+}
+
+TEST_F(HostResolverManagerDnsTest,
+       DnsPlatform_NotAbortedOnSubsequentSystemDnsConfigChanged) {
+  if (!features::IsDnsPlatformSupported()) {
+    GTEST_SKIP() << "Platform DNS is not supported.";
+  }
+
+  resolver_->SetInsecureDnsClientEnabled(
+      InsecureDnsMode::kEnabledPlatformNoSystem,
+      /*additional_dns_types_enabled=*/true);
+
+  DnsConfig initial_config;
+  initial_config.nameservers.emplace_back(IPAddress(192, 168, 1, 1),
+                                          dns_protocol::kDefaultPort);
+  ChangeDnsConfig(initial_config);
+
+  ResolveHostResponseHelper response(resolver_->CreateRequest(
+      HostPortPair("4slow_ok", 80), NetworkAnonymizationKey(),
+      handles::kInvalidNetworkHandle, NetLogWithSource(), std::nullopt,
+      resolve_context_.get()));
+  ASSERT_FALSE(response.complete());
+
+  // Simulate DnsConfigServiceAndroid's delayed refresh delivering updated
+  // nameservers while DoH is not active.
+  DnsConfig refreshed_config;
+  refreshed_config.nameservers.emplace_back(IPAddress(192, 168, 1, 2),
+                                            dns_protocol::kDefaultPort);
+  ChangeDnsConfig(refreshed_config);
+  EXPECT_FALSE(response.complete());
+
+  // Non-DoH config overrides should likewise not abort DNS_PLATFORM jobs.
+  DnsConfigOverrides overrides;
+  overrides.attempts = 123;
+  resolver_->SetDnsConfigOverrides(overrides);
+  EXPECT_FALSE(response.complete());
+
+  mock_dns_client_->CompleteDelayedTransactions();
+  EXPECT_THAT(response.result_error(), IsOk());
+  EXPECT_THAT(response.request()->GetAddressResults(),
+              testing::UnorderedElementsAre(CreateExpected("127.0.0.1", 80),
+                                            CreateExpected("::1", 80)));
+}
+
+TEST_F(HostResolverManagerDnsTest,
+       DnsPlatform_OverridesChange_AbortsActiveSecureDns) {
+  if (!features::IsDnsPlatformSupported()) {
+    GTEST_SKIP() << "Platform DNS is not supported.";
+  }
+
+  MockDnsClientRuleList rules = CreateDefaultDnsRules();
+  AddSecureDnsRule(&rules, "slow_secure_1", dns_protocol::kTypeA,
+                   MockDnsClientRule::ResultType::kOk, /*delay=*/true);
+  AddSecureDnsRule(&rules, "slow_secure_1", dns_protocol::kTypeAAAA,
+                   MockDnsClientRule::ResultType::kOk, /*delay=*/false);
+  AddSecureDnsRule(&rules, "slow_secure_2", dns_protocol::kTypeA,
+                   MockDnsClientRule::ResultType::kOk, /*delay=*/true);
+  AddSecureDnsRule(&rules, "slow_secure_2", dns_protocol::kTypeAAAA,
+                   MockDnsClientRule::ResultType::kOk, /*delay=*/false);
+  auto dns_client =
+      std::make_unique<MockDnsClient>(DnsConfig(), std::move(rules));
+  mock_dns_client_ = dns_client.get();
+  resolver_->SetDnsClientForTesting(std::move(dns_client));
+  resolver_->SetInsecureDnsClientEnabled(
+      InsecureDnsMode::kEnabledPlatformNoSystem,
+      /*additional_dns_types_enabled=*/true);
+
+  DnsConfigOverrides overrides;
+  overrides.secure_dns_mode = SecureDnsMode::kSecure;
+  overrides.dns_over_https_config =
+      *DnsOverHttpsConfig::FromString("https://dns1.example.com/");
+  resolver_->SetDnsConfigOverrides(overrides);
+
+  ResolveHostResponseHelper response_1(resolver_->CreateRequest(
+      HostPortPair("slow_secure_1", 80), NetworkAnonymizationKey(),
+      handles::kInvalidNetworkHandle, NetLogWithSource(), std::nullopt,
+      resolve_context_.get()));
+  ASSERT_FALSE(response_1.complete());
+
+  // Changing DoH servers while in `kSecure` aborts active secure jobs.
+  overrides.dns_over_https_config =
+      *DnsOverHttpsConfig::FromString("https://dns2.example.com/");
+  resolver_->SetDnsConfigOverrides(overrides);
+  EXPECT_THAT(response_1.result_error(), IsError(ERR_NETWORK_CHANGED));
+
+  // Transitioning `kSecure` -> `kOff` also aborts active secure jobs.
+  ResolveHostResponseHelper response_2(resolver_->CreateRequest(
+      HostPortPair("slow_secure_2", 80), NetworkAnonymizationKey(),
+      handles::kInvalidNetworkHandle, NetLogWithSource(), std::nullopt,
+      resolve_context_.get()));
+  ASSERT_FALSE(response_2.complete());
+
+  overrides.secure_dns_mode = SecureDnsMode::kOff;
+  overrides.dns_over_https_config = DnsOverHttpsConfig();
+  resolver_->SetDnsConfigOverrides(overrides);
+  EXPECT_THAT(response_2.result_error(), IsError(ERR_NETWORK_CHANGED));
+}
+
+TEST_F(HostResolverManagerDnsTest,
+       DnsPlatform_OverridesChange_TransitionToSecureAbortsPlaintextJobs) {
+  if (!features::IsDnsPlatformSupported()) {
+    GTEST_SKIP() << "Platform DNS is not supported.";
+  }
+
+  for (InsecureDnsMode mode : {InsecureDnsMode::kEnabledPlatformNoSystem,
+                               InsecureDnsMode::kEnabledPlatform}) {
+    SCOPED_TRACE(static_cast<int>(mode));
+
+    // Limit concurrency to 2 so `in_flight_response` occupies both dispatcher
+    // slots while `queued_response` stays queued when overrides switch `kOff`
+    // -> `kSecure`.
+    CreateResolverWithLimitsAndParams(2u, DefaultParams(proc_),
+                                      /*ipv6_reachable=*/true,
+                                      /*check_ipv6_on_wifi=*/true);
+    MockDnsClientRuleList rules;
+    AddDnsRule(&rules, "slow_ok_1", dns_protocol::kTypeA,
+               MockDnsClientRule::ResultType::kOk, /*delay=*/true);
+    AddDnsRule(&rules, "slow_ok_1", dns_protocol::kTypeAAAA,
+               MockDnsClientRule::ResultType::kOk, /*delay=*/true);
+    AddDnsRule(&rules, "slow_ok_2", dns_protocol::kTypeA,
+               MockDnsClientRule::ResultType::kOk, /*delay=*/true);
+    AddDnsRule(&rules, "slow_ok_2", dns_protocol::kTypeAAAA,
+               MockDnsClientRule::ResultType::kOk, /*delay=*/true);
+    auto dns_client =
+        std::make_unique<MockDnsClient>(DnsConfig(), std::move(rules));
+    mock_dns_client_ = dns_client.get();
+    resolver_->SetDnsClientForTesting(std::move(dns_client));
+    resolver_->SetInsecureDnsClientEnabled(
+        mode, /*additional_dns_types_enabled=*/true);
+
+    ResolveHostResponseHelper in_flight_response(resolver_->CreateRequest(
+        HostPortPair("slow_ok_1", 80), NetworkAnonymizationKey(),
+        handles::kInvalidNetworkHandle, NetLogWithSource(), std::nullopt,
+        resolve_context_.get()));
+    ResolveHostResponseHelper queued_response(resolver_->CreateRequest(
+        HostPortPair("slow_ok_2", 80), NetworkAnonymizationKey(),
+        handles::kInvalidNetworkHandle, NetLogWithSource(), std::nullopt,
+        resolve_context_.get()));
+    ASSERT_FALSE(in_flight_response.complete());
+    ASSERT_FALSE(queued_response.complete());
+    EXPECT_EQ(2u, num_running_dispatcher_jobs());
+    EXPECT_EQ(1u, num_queued_dispatcher_jobs());
+
+    // Transitioning from `kOff` (empty `doh_config`) to `kSecure` must abort
+    // both in-flight and queued plaintext platform DNS jobs.
+    DnsConfigOverrides overrides;
+    overrides.secure_dns_mode = SecureDnsMode::kSecure;
+    overrides.dns_over_https_config =
+        *DnsOverHttpsConfig::FromString("https://dns1.example.com/");
+    resolver_->SetDnsConfigOverrides(overrides);
+
+    EXPECT_THAT(in_flight_response.result_error(),
+                IsError(ERR_NETWORK_CHANGED));
+    EXPECT_THAT(queued_response.result_error(), IsError(ERR_NETWORK_CHANGED));
+  }
+}
+
+TEST_F(HostResolverManagerDnsTest,
+       DnsPlatform_SystemDnsConfigChanged_AbortsActiveSecureDns) {
+  if (!features::IsDnsPlatformSupported()) {
+    GTEST_SKIP() << "Platform DNS is not supported.";
+  }
+
+  MockDnsClientRuleList rules = CreateDefaultDnsRules();
+  AddSecureDnsRule(&rules, "slow_secure", dns_protocol::kTypeA,
+                   MockDnsClientRule::ResultType::kOk, /*delay=*/true);
+  AddSecureDnsRule(&rules, "slow_secure", dns_protocol::kTypeAAAA,
+                   MockDnsClientRule::ResultType::kOk, /*delay=*/false);
+  auto dns_client =
+      std::make_unique<MockDnsClient>(DnsConfig(), std::move(rules));
+  mock_dns_client_ = dns_client.get();
+  resolver_->SetDnsClientForTesting(std::move(dns_client));
+  resolver_->SetInsecureDnsClientEnabled(
+      InsecureDnsMode::kEnabledPlatformNoSystem,
+      /*additional_dns_types_enabled=*/true);
+
+  // Use `kAutomatic` so `OnSystemDnsConfigChanged()` aborts via
+  // `pending_transactions_may_depend_on_config` rather than the `kSecure`
+  // check.
+  DnsConfig initial_config;
+  initial_config.secure_dns_mode = SecureDnsMode::kAutomatic;
+  initial_config.doh_config =
+      *DnsOverHttpsConfig::FromString("https://dns1.example.com/");
+  ChangeDnsConfig(initial_config);
+
+  ResolveHostResponseHelper response(resolver_->CreateRequest(
+      HostPortPair("slow_secure", 80), NetworkAnonymizationKey(),
+      handles::kInvalidNetworkHandle, NetLogWithSource(), std::nullopt,
+      resolve_context_.get()));
+  ASSERT_FALSE(response.complete());
+
+  DnsConfig updated_config = initial_config;
+  updated_config.doh_config =
+      *DnsOverHttpsConfig::FromString("https://dns2.example.com/");
+  ChangeDnsConfig(updated_config);
+
+  EXPECT_THAT(response.result_error(), IsError(ERR_NETWORK_CHANGED));
+}
+
+TEST_F(HostResolverManagerDnsTest,
+       DnsPlatform_MultiTransactionInFlightOnSystemDnsConfigChanged) {
+  if (!features::IsDnsPlatformSupported()) {
+    GTEST_SKIP() << "Platform DNS is not supported.";
+  }
+
+  constexpr char kHost[] = "https.test";
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
+      features::kUseDnsHttpsSvcb,
+      {{"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"}});
+
+  // Limit concurrency to 2 so two of {HTTPS, AAAA, A} are in flight in
+  // `HostResolverDnsTask` while the third stays queued across
+  // `OnSystemDnsConfigChanged()` (which swaps `DnsClient`'s current session and
+  // runs `InvalidateCaches()`). Note that `MockDnsClient` reuses a single
+  // `MockDnsTransactionFactory` across sessions.
+  CreateResolverWithLimitsAndParams(2u, DefaultParams(proc_),
+                                    /*ipv6_reachable=*/true,
+                                    /*check_ipv6_on_wifi=*/true);
+
+  MockDnsClientRuleList rules;
+  std::vector<DnsResourceRecord> https_records = {BuildTestHttpsServiceRecord(
+      kHost, /*priority=*/1, /*service_name=*/".",
+      /*params=*/{BuildTestHttpsServiceAlpnParam({"h3"})})};
+  rules.emplace_back(kHost, dns_protocol::kTypeHttps, /*secure=*/false,
+                     MockDnsClientRule::Result(BuildTestDnsResponse(
+                         kHost, dns_protocol::kTypeHttps, https_records)),
+                     /*delay=*/true);
+  AddDnsRule(&rules, kHost, dns_protocol::kTypeA,
+             MockDnsClientRule::ResultType::kOk, /*delay=*/true);
+  AddDnsRule(&rules, kHost, dns_protocol::kTypeAAAA,
+             MockDnsClientRule::ResultType::kOk, /*delay=*/true);
+
+  auto dns_client =
+      std::make_unique<MockDnsClient>(DnsConfig(), std::move(rules));
+  mock_dns_client_ = dns_client.get();
+  resolver_->SetDnsClientForTesting(std::move(dns_client));
+  resolver_->SetInsecureDnsClientEnabled(
+      InsecureDnsMode::kEnabledPlatformNoSystem,
+      /*additional_dns_types_enabled=*/true);
+
+  DnsSession* session_before = mock_dns_client_->GetCurrentSession();
+
+  ResolveHostResponseHelper response(resolver_->CreateRequest(
+      url::SchemeHostPort(url::kHttpsScheme, kHost, 443),
+      NetworkAnonymizationKey(), handles::kInvalidNetworkHandle,
+      NetLogWithSource(), std::nullopt, resolve_context_.get()));
+  ASSERT_FALSE(response.complete());
+  EXPECT_EQ(2u, num_running_dispatcher_jobs());
+
+  DnsConfig hydrated_config;
+  hydrated_config.nameservers.emplace_back(IPAddress(192, 168, 1, 1),
+                                           dns_protocol::kDefaultPort);
+  ChangeDnsConfig(hydrated_config);
+
+  DnsSession* session_after = mock_dns_client_->GetCurrentSession();
+  EXPECT_NE(session_before, session_after);
+  ASSERT_FALSE(response.complete());
+
+  // Completing AAAA frees a dispatcher slot so `HostResolverDnsTask` creates
+  // and starts the remaining queued transaction after the session swap.
+  ASSERT_TRUE(mock_dns_client_->CompleteOneDelayedTransactionOfType(
+      DnsQueryType::AAAA));
+  ASSERT_FALSE(response.complete());
+
+  mock_dns_client_->CompleteDelayedTransactions();
+  EXPECT_THAT(response.result_error(), IsOk());
+  EXPECT_THAT(response.request()->GetAddressResults(),
+              testing::UnorderedElementsAre(CreateExpected("127.0.0.1", 443),
+                                            CreateExpected("::1", 443)));
+  EXPECT_THAT(
+      response.request()->GetEndpointResults(),
+      testing::ElementsAre(
+          ExpectEndpointResult(
+              testing::UnorderedElementsAre(CreateExpected("127.0.0.1", 443),
+                                            CreateExpected("::1", 443)),
+              ExpectConnectionEndpointMetadata(testing::Contains("h3"),
+                                               testing::IsEmpty(), kHost)),
+          ExpectEndpointResult(testing::UnorderedElementsAre(
+              CreateExpected("127.0.0.1", 443), CreateExpected("::1", 443)))));
+}
+
 TEST_F(HostResolverManagerDnsTest, StrictEch_NoSystemFallback) {
   // Add a rule to `proc_` (the system resolver) for "nx", which fails in
   // MockDnsClient. If fallback to the system resolver were allowed, this query
