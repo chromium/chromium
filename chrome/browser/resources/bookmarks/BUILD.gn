@@ -7,8 +7,21 @@ import("//ui/webui/webui_features.gni")
 
 assert(enable_webui_bookmarks)
 
+# TODO(b/587475184): Support <promo-card> (Sign-In and Batch Upload promos) on
+# Android.
+enable_bookmarks_promo = !is_android
+
+# Per-item account upload (`ShowBookmarkAccountStorageUploadDialog()`) is a
+# Desktop Views-only feature with no Android counterpart.
+enable_bookmarks_single_upload = !is_android
+
 build_webui("build") {
   grd_prefix = "bookmarks"
+
+  preprocessor_defines = [
+    "enable_bookmarks_promo=$enable_bookmarks_promo",
+    "enable_bookmarks_single_upload=$enable_bookmarks_single_upload",
+  ]
 
   static_files = [
     "bookmarks.html",
