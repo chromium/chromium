@@ -82,13 +82,9 @@ LinkModuleImport::~LinkModuleImport() = default;
 void LinkModuleImport::Process(LinkLoadParameters::Reason reason) {
   // If this link is no longer a module stylesheet (e.g. rel or import changed),
   // clear the association when reprocessed.
-  // TODO(448174611): Have HTMLLinkElement reach this cleanup even when
-  // ShouldLoadLink() is false, and switch the resource type when needed.
+  // TODO(448174611): Switch the resource type when needed.
   if (!owner_->IsModuleStyleSheetLink()) {
-    CancelPendingRequest();
-    SetSheet(nullptr);
-    resolved_url_ = KURL();
-    loaded_ = false;
+    Reset();
     return;
   }
 
@@ -99,6 +95,11 @@ void LinkModuleImport::Process(LinkLoadParameters::Reason reason) {
 
   CancelPendingRequest();
   loaded_ = false;
+
+  if (owner_->IsDisabled()) {
+    SetSheet(nullptr);
+    return;
+  }
 
   // The `import` attribute value is resolved as a module specifier.
   // TODO(448174611): Use href without import-map resolution for an empty
@@ -174,7 +175,20 @@ void LinkModuleImport::Process(LinkLoadParameters::Reason reason) {
   SetSheet(GetModuleStyleSheet(module_script));
 }
 
+void LinkModuleImport::DisabledStateChanged() {
+  if (!owner_->IsDisabled() && owner_->isConnected() && !pending_) {
+    owner_->Process();
+  } else {
+    // Update the connection without replacing the pending completion.
+    SetSheet(sheet_.Get());
+  }
+}
+
 void LinkModuleImport::OwnerRemoved() {
+  Reset();
+}
+
+void LinkModuleImport::Reset() {
   CancelPendingRequest();
   SetSheet(nullptr);
   resolved_url_ = KURL();
@@ -200,20 +214,25 @@ void LinkModuleImport::ScheduleFailure() {
 }
 
 void LinkModuleImport::SetSheet(CSSStyleSheet* sheet) {
-  TreeScope* new_scope =
-      sheet && owner_->isConnected() ? &owner_->GetTreeScope() : nullptr;
+  TreeScope* new_scope = nullptr;
+  if (sheet && !owner_->IsDisabled() && owner_->isConnected()) {
+    new_scope = &owner_->GetTreeScope();
+  }
   if (sheet_ == sheet && sheet_tree_scope_ == new_scope) {
     return;
   }
-  if (sheet_ && sheet_tree_scope_) {
+  const bool was_associated = sheet_tree_scope_ != nullptr;
+  if (was_associated) {
     sheet_->RemovedReferenceFromTreeScope(*sheet_tree_scope_);
   }
   sheet_ = sheet;
   sheet_tree_scope_ = new_scope;
-  if (sheet_ && sheet_tree_scope_) {
-    sheet_->AddedReferenceToTreeScope(*sheet_tree_scope_);
+  if (new_scope) {
+    sheet_->AddedReferenceToTreeScope(*new_scope);
   }
-  GetDocument().GetStyleEngine().ModifiedStyleSheetCandidateNode(*owner_);
+  if (was_associated || new_scope) {
+    GetDocument().GetStyleEngine().ModifiedStyleSheetCandidateNode(*owner_);
+  }
 }
 
 void LinkModuleImport::NotifyModuleLoadFinished(ModuleClient* client,

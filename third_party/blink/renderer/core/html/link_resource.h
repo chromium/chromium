@@ -65,8 +65,6 @@ class CORE_EXPORT LinkResource : public GarbageCollected<LinkResource> {
 
   virtual CSSStyleSheet* Sheet() const { return nullptr; }
   virtual bool StyleSheetIsLoading() const { return false; }
-  virtual bool IsDisabled() const { return false; }
-  virtual bool IsEnabledViaScript() const { return false; }
 
   virtual void Trace(Visitor*) const;
 

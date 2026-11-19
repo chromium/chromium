@@ -233,14 +233,22 @@ void HTMLLinkElement::ParseAttribute(
     fetch_priority_hint_ = value;
   } else if (name == html_names::kDisabledAttr) {
     UseCounter::Count(GetDocument(), WebFeature::kHTMLLinkElementDisabled);
-    if (params.reason == AttributeModificationReason::kByParser)
-      UseCounter::Count(GetDocument(), WebFeature::kHTMLLinkElementDisabledByParser);
-    LinkStyle* link = GetLinkStyle();
-    if (!link) {
-      link = MakeGarbageCollected<LinkStyle>(this);
-      link_ = link;
+    if (params.reason == AttributeModificationReason::kByParser) {
+      UseCounter::Count(GetDocument(),
+                        WebFeature::kHTMLLinkElementDisabledByParser);
     }
-    link->SetDisabledState(!value.IsNull());
+    const DisabledState old_disabled_state = disabled_state_;
+    disabled_state_ = value.IsNull() ? DisabledState::kEnabledViaScript
+                                     : DisabledState::kDisabled;
+    if (old_disabled_state == disabled_state_) {
+      return;
+    }
+    if (LinkStyle* link = GetLinkStyle()) {
+      link->DisabledStateChanged(old_disabled_state ==
+                                 DisabledState::kDisabled);
+    } else if (auto* module_import = GetLinkModuleImport()) {
+      module_import->DisabledStateChanged();
+    }
   } else {
     if (name == html_names::kTitleAttr) {
       if (LinkStyle* link = GetLinkStyle())
@@ -322,18 +330,18 @@ LinkResource* HTMLLinkElement::LinkResourceToProcess() {
     return nullptr;
   }
 
+  // Replace an idle classic resource when this link becomes a module link.
+  if (IsModuleStyleSheetLink() && GetLinkStyle() &&
+      !GetLinkStyle()->HasSheet() && !GetLinkStyle()->StyleSheetIsLoading()) {
+    link_ = nullptr;
+  }
   if (!link_) {
     if (IsModuleStyleSheetLink()) {
       link_ = MakeGarbageCollected<LinkModuleImport>(this);
     } else if (rel_attribute_.IsManifest()) {
       link_ = MakeGarbageCollected<LinkManifest>(this);
     } else {
-      auto* link = MakeGarbageCollected<LinkStyle>(this);
-      if (FastHasAttribute(html_names::kDisabledAttr)) {
-        UseCounter::Count(GetDocument(), WebFeature::kHTMLLinkElementDisabled);
-        link->SetDisabledState(true);
-      }
-      link_ = link;
+      link_ = MakeGarbageCollected<LinkStyle>(this);
     }
   }
 
@@ -357,12 +365,16 @@ LinkModuleImport* HTMLLinkElement::GetLinkModuleImport() const {
   if (!link_ || link_->GetType() != LinkResource::kStyleModule) {
     return nullptr;
   }
+  CHECK(RuntimeEnabledFeatures::ModuleLinkStyleSheetEnabled(
+      GetExecutionContext()));
   return static_cast<LinkModuleImport*>(link_.Get());
 }
 
 void HTMLLinkElement::Process(LinkLoadParameters::Reason reason) {
   if (LinkResource* link = LinkResourceToProcess()) {
     link->Process(reason);
+  } else if (auto* module_import = GetLinkModuleImport()) {
+    module_import->Reset();
   }
 }
 
@@ -449,13 +461,11 @@ CSSStyleSheet* HTMLLinkElement::sheet() const {
 }
 
 bool HTMLLinkElement::IsDisabled() const {
-  const LinkResource* resource = GetStyleSheetResource();
-  return resource && resource->IsDisabled();
+  return disabled_state_ == DisabledState::kDisabled;
 }
 
 bool HTMLLinkElement::IsEnabledViaScript() const {
-  const LinkResource* resource = GetStyleSheetResource();
-  return resource && resource->IsEnabledViaScript();
+  return disabled_state_ == DisabledState::kEnabledViaScript;
 }
 
 bool HTMLLinkElement::HasStyleModuleResource() const {

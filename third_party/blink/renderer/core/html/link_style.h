@@ -40,19 +40,11 @@ class LinkStyle final : public LinkResource, ResourceClient {
       Node::LoadedSheetErrorStatus);
   bool SheetLoaded();
 
-  void SetDisabledState(bool);
+  void DisabledStateChanged(bool was_disabled);
   void SetSheetTitle(const String&);
 
   bool StyleSheetIsLoading() const override;
   bool HasSheet() const { return sheet_ != nullptr; }
-  bool IsDisabled() const override { return disabled_state_ == kDisabled; }
-  bool IsEnabledViaScript() const override {
-    return disabled_state_ == kEnabledViaScript;
-  }
-  bool IsUnset() const { return disabled_state_ == kUnset; }
-
-  bool IsExplicitlyEnabled() const { return explicitly_enabled_; }
-
   CSSStyleSheet* Sheet() const override { return sheet_.Get(); }
 
   void UnblockRenderingForPendingSheet();
@@ -65,17 +57,13 @@ class LinkStyle final : public LinkResource, ResourceClient {
   LoadReturnValue LoadStylesheetIfNeeded(const LinkLoadParameters&,
                                          const TextEncoding&);
 
-  enum DisabledState { kUnset, kEnabledViaScript, kDisabled };
-
   void ClearSheet();
   void AddPendingSheet(PendingSheetType);
   void RemovePendingSheet();
 
   Member<CSSStyleSheet> sheet_;
-  DisabledState disabled_state_;
   PendingSheetType pending_sheet_type_;
   RenderBlockingBehavior render_blocking_behavior_;
-  bool explicitly_enabled_;
   bool loading_;
   bool fired_load_;
   bool loaded_sheet_;

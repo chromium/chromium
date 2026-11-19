@@ -40,7 +40,6 @@ static bool StyleSheetTypeIsSupported(const String& type) {
 
 LinkStyle::LinkStyle(HTMLLinkElement* owner)
     : LinkResource(owner),
-      disabled_state_(kUnset),
       pending_sheet_type_(PendingSheetType::kNone),
       render_blocking_behavior_(RenderBlockingBehavior::kUnset),
       loading_(false),
@@ -209,36 +208,29 @@ void LinkStyle::RemovePendingSheet() {
   GetDocument().GetStyleEngine().RemovePendingBlockingSheet(*owner_, type);
 }
 
-void LinkStyle::SetDisabledState(bool disabled) {
-  LinkStyle::DisabledState old_disabled_state = disabled_state_;
-  disabled_state_ = disabled ? kDisabled : kEnabledViaScript;
-  // Whenever the disabled attribute is removed, set the link element's
-  // explicitly enabled attribute to true.
-  if (!disabled)
-    explicitly_enabled_ = true;
-  if (old_disabled_state == disabled_state_)
-    return;
-
+void LinkStyle::DisabledStateChanged(bool was_disabled) {
+  const bool disabled = owner_->IsDisabled();
   // If we change the disabled state while the sheet is still loading, then we
   // have to perform three checks:
   if (StyleSheetIsLoading()) {
     // Check #1: The sheet becomes disabled while loading.
-    if (disabled_state_ == kDisabled)
+    if (disabled) {
       RemovePendingSheet();
+    }
 
     // Check #2: An alternate sheet becomes enabled while it is still loading.
-    if (owner_->RelAttribute().IsAlternate() &&
-        disabled_state_ == kEnabledViaScript)
+    if (owner_->RelAttribute().IsAlternate() && !disabled) {
       AddPendingSheet(PendingSheetType::kBlocking);
+    }
 
     // Check #3: A main sheet becomes enabled while it was still loading and
     // after it was disabled via script. It takes really terrible code to make
     // this happen (a double toggle for no reason essentially). This happens
     // on virtualplastic.net, which manages to do about 12 enable/disables on
     // only 3 sheets. :)
-    if (!owner_->RelAttribute().IsAlternate() &&
-        disabled_state_ == kEnabledViaScript && old_disabled_state == kDisabled)
+    if (!owner_->RelAttribute().IsAlternate() && !disabled && was_disabled) {
       AddPendingSheet(PendingSheetType::kBlocking);
+    }
 
     // If the sheet is already loading just bail.
     return;
@@ -252,17 +244,19 @@ void LinkStyle::SetDisabledState(bool disabled) {
     return;
   }
 
-  if (disabled_state_ == kEnabledViaScript && owner_->ShouldProcessStyle())
-    Process(LinkLoadParameters::Reason::kDefault);
+  if (!disabled) {
+    owner_->Process();
+  }
 }
 
 LinkStyle::LoadReturnValue LinkStyle::LoadStylesheetIfNeeded(
     const LinkLoadParameters& params,
     const TextEncoding& charset) {
-  if (disabled_state_ == kDisabled || !owner_->RelAttribute().IsStyleSheet() ||
+  if (owner_->IsDisabled() || !owner_->RelAttribute().IsStyleSheet() ||
       !StyleSheetTypeIsSupported(params.type) || !ShouldLoadResource() ||
-      !params.href.IsValid())
+      !params.href.IsValid()) {
     return kNotNeeded;
+  }
 
   if (GetResource() && !GetDocument().StatePreservingAtomicMoveInProgress()) {
     RemovePendingSheet();
@@ -276,7 +270,7 @@ LinkStyle::LoadReturnValue LinkStyle::LoadStylesheetIfNeeded(
 
   String title = owner_->title();
   if (!title.empty() && !owner_->IsAlternate() &&
-      disabled_state_ != kEnabledViaScript && owner_->IsInDocumentTree()) {
+      !owner_->IsEnabledViaScript() && owner_->IsInDocumentTree()) {
     GetDocument().GetStyleEngine().SetPreferredStylesheetSetNameIfNotSet(title);
   }
 
@@ -391,15 +385,19 @@ void LinkStyle::SetSheetTitle(const String& title) {
   if (!owner_->IsInDocumentTree() || !owner_->RelAttribute().IsStyleSheet())
     return;
 
-  if (sheet_)
+  if (sheet_) {
     sheet_->SetTitle(title);
+  }
 
-  if (title.empty() || !IsUnset() || owner_->IsAlternate())
+  if (title.empty() || owner_->IsDisabled() || owner_->IsEnabledViaScript() ||
+      owner_->IsAlternate()) {
     return;
+  }
 
   const KURL& href = owner_->GetNonEmptyURLAttribute(html_names::kHrefAttr);
-  if (href.IsValid() && !href.IsEmpty())
+  if (href.IsValid() && !href.IsEmpty()) {
     GetDocument().GetStyleEngine().SetPreferredStylesheetSetNameIfNotSet(title);
+  }
 }
 
 void LinkStyle::OwnerRemoved() {

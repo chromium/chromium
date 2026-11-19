@@ -27,9 +27,14 @@ class LinkModuleImport final : public LinkResource {
   bool HasLoaded() const override { return loaded_; }
   void Trace(Visitor*) const override;
 
-  CSSStyleSheet* Sheet() const override { return sheet_.Get(); }
+  CSSStyleSheet* Sheet() const override {
+    return sheet_tree_scope_ ? sheet_.Get() : nullptr;
+  }
   bool StyleSheetIsLoading() const override { return pending_ != nullptr; }
   const KURL& ResolvedURL() const { return resolved_url_; }
+
+  void DisabledStateChanged();
+  void Reset();
 
  private:
   class ModuleClient;
@@ -39,6 +44,7 @@ class LinkModuleImport final : public LinkResource {
   void SetSheet(CSSStyleSheet*);
   void NotifyModuleLoadFinished(ModuleClient*, ModuleScript*);
 
+  // The current request's sheet, even when not connected to a tree scope.
   Member<CSSStyleSheet> sheet_;
   Member<TreeScope> sheet_tree_scope_;
   Member<ModuleClient> pending_;

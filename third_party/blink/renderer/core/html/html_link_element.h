@@ -119,24 +119,24 @@ class CORE_EXPORT HTMLLinkElement final : public HTMLElement,
                       ResourceClient*,
                       RenderBlockingBehavior render_blocking);
   bool IsAlternate() const {
-    return GetLinkStyle()->IsUnset() && rel_attribute_.IsAlternate() &&
-           !GetLinkStyle()->IsExplicitlyEnabled();
+    return disabled_state_ == DisabledState::kUnset &&
+           rel_attribute_.IsAlternate();
   }
-  bool ShouldProcessStyle() {
-    return LinkResourceToProcess() && GetLinkStyle();
-  }
+  bool ShouldProcessStyle() const { return GetLinkStyle(); }
+  void Process(
+      LinkLoadParameters::Reason reason = LinkLoadParameters::Reason::kDefault);
   bool IsCreatedByParser() const { return created_by_parser_; }
 
   void Trace(Visitor*) const override;
 
  private:
+  enum class DisabledState { kUnset, kDisabled, kEnabledViaScript };
+
   LinkStyle* GetLinkStyle() const;
   LinkModuleImport* GetLinkModuleImport() const;
   LinkResource* GetStyleSheetResource() const;
   LinkResource* LinkResourceToProcess();
 
-  void Process(
-      LinkLoadParameters::Reason reason = LinkLoadParameters::Reason::kDefault);
   static void ProcessCallback(Node*);
 
   // Always call this asynchronously because this can cause synchronous
@@ -214,6 +214,7 @@ class CORE_EXPORT HTMLLinkElement final : public HTMLElement,
   Member<scheduler::TaskAttributionInfo> load_initiator_task_state_;
 
   bool created_by_parser_;
+  DisabledState disabled_state_ = DisabledState::kUnset;
 };
 
 }  // namespace blink
