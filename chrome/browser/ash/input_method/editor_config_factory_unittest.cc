@@ -4,11 +4,8 @@
 
 #include "chrome/browser/ash/input_method/editor_config_factory.h"
 
-#include "ash/constants/ash_features.h"
-#include "base/feature_list.h"
 #include "base/i18n/language_tag.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -18,7 +15,6 @@ namespace {
 constexpr base::i18n::LanguageTag kDefaultLocale =
     base::i18n::GetKnownLanguageTag("en-US");
 
-using base::test::ScopedFeatureList;
 using orca::mojom::PresetTextQueryType;
 using testing::UnorderedElementsAre;
 
@@ -86,107 +82,6 @@ TEST_P(InternationalizedCases, WithNothingDisabled) {
                            orca::mojom::PresetTextQueryType::kFormalize,
                            orca::mojom::PresetTextQueryType::kEmojify,
                            orca::mojom::PresetTextQueryType::kProofread));
-}
-
-TEST_P(InternationalizedCases, WithShortenDisabled) {
-  const LanguageCategory& language_category = GetParam();
-  ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({}, {features::kOrcaInternationalizeShorten});
-
-  orca::mojom::EditorConfigPtr config =
-      BuildConfigFor(language_category, kDefaultLocale);
-
-  EXPECT_THAT(
-      config->allowed_query_types,
-      UnorderedElementsAre(orca::mojom::PresetTextQueryType::kElaborate,
-                           orca::mojom::PresetTextQueryType::kRephrase,
-                           orca::mojom::PresetTextQueryType::kFormalize,
-                           orca::mojom::PresetTextQueryType::kEmojify,
-                           orca::mojom::PresetTextQueryType::kProofread));
-}
-
-TEST_P(InternationalizedCases, WithElaborateDisabled) {
-  const LanguageCategory& language_category = GetParam();
-  ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({}, {features::kOrcaInternationalizeElaborate});
-
-  orca::mojom::EditorConfigPtr config =
-      BuildConfigFor(language_category, kDefaultLocale);
-
-  EXPECT_THAT(
-      config->allowed_query_types,
-      UnorderedElementsAre(orca::mojom::PresetTextQueryType::kShorten,
-                           orca::mojom::PresetTextQueryType::kRephrase,
-                           orca::mojom::PresetTextQueryType::kFormalize,
-                           orca::mojom::PresetTextQueryType::kEmojify,
-                           orca::mojom::PresetTextQueryType::kProofread));
-}
-
-TEST_P(InternationalizedCases, WithRephraseDisabled) {
-  const LanguageCategory& language_category = GetParam();
-  ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({}, {features::kOrcaInternationalizeRephrase});
-
-  orca::mojom::EditorConfigPtr config =
-      BuildConfigFor(language_category, kDefaultLocale);
-
-  EXPECT_THAT(
-      config->allowed_query_types,
-      UnorderedElementsAre(orca::mojom::PresetTextQueryType::kShorten,
-                           orca::mojom::PresetTextQueryType::kElaborate,
-                           orca::mojom::PresetTextQueryType::kFormalize,
-                           orca::mojom::PresetTextQueryType::kEmojify,
-                           orca::mojom::PresetTextQueryType::kProofread));
-}
-
-TEST_P(InternationalizedCases, WithFormalizeDisabled) {
-  const LanguageCategory& language_category = GetParam();
-  ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({}, {features::kOrcaInternationalizeFormalize});
-
-  orca::mojom::EditorConfigPtr config =
-      BuildConfigFor(language_category, kDefaultLocale);
-
-  EXPECT_THAT(
-      config->allowed_query_types,
-      UnorderedElementsAre(orca::mojom::PresetTextQueryType::kShorten,
-                           orca::mojom::PresetTextQueryType::kElaborate,
-                           orca::mojom::PresetTextQueryType::kRephrase,
-                           orca::mojom::PresetTextQueryType::kEmojify,
-                           orca::mojom::PresetTextQueryType::kProofread));
-}
-
-TEST_P(InternationalizedCases, WithEmojifyDisabled) {
-  const LanguageCategory& language_category = GetParam();
-  ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({}, {features::kOrcaInternationalizeEmojify});
-
-  orca::mojom::EditorConfigPtr config =
-      BuildConfigFor(language_category, kDefaultLocale);
-
-  EXPECT_THAT(
-      config->allowed_query_types,
-      UnorderedElementsAre(orca::mojom::PresetTextQueryType::kShorten,
-                           orca::mojom::PresetTextQueryType::kElaborate,
-                           orca::mojom::PresetTextQueryType::kRephrase,
-                           orca::mojom::PresetTextQueryType::kFormalize,
-                           orca::mojom::PresetTextQueryType::kProofread));
-}
-
-TEST_P(InternationalizedCases, WithProofreadDisabled) {
-  const LanguageCategory& language_category = GetParam();
-  ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({}, {features::kOrcaInternationalizeProofread});
-
-  orca::mojom::EditorConfigPtr config =
-      BuildConfigFor(language_category, kDefaultLocale);
-
-  EXPECT_THAT(config->allowed_query_types,
-              UnorderedElementsAre(orca::mojom::PresetTextQueryType::kShorten,
-                                   orca::mojom::PresetTextQueryType::kElaborate,
-                                   orca::mojom::PresetTextQueryType::kRephrase,
-                                   orca::mojom::PresetTextQueryType::kFormalize,
-                                   orca::mojom::PresetTextQueryType::kEmojify));
 }
 
 }  // namespace

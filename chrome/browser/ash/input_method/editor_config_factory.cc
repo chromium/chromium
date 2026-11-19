@@ -7,7 +7,6 @@
 #include <string>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "base/i18n/language_tag.h"
 #include "base/metrics/field_trial_params.h"
 #include "chrome/browser/ash/input_method/input_methods_by_language.h"
@@ -33,25 +32,14 @@ orca::mojom::EditorConfigPtr EnglishConfig(
 
 orca::mojom::EditorConfigPtr InternationalizedConfig(
     const base::i18n::LanguageTag& locale) {
-  std::vector<orca::mojom::PresetTextQueryType> allowed;
-  if (base::FeatureList::IsEnabled(features::kOrcaInternationalizeElaborate)) {
-    allowed.push_back(orca::mojom::PresetTextQueryType::kElaborate);
-  }
-  if (base::FeatureList::IsEnabled(features::kOrcaInternationalizeEmojify)) {
-    allowed.push_back(orca::mojom::PresetTextQueryType::kEmojify);
-  }
-  if (base::FeatureList::IsEnabled(features::kOrcaInternationalizeFormalize)) {
-    allowed.push_back(orca::mojom::PresetTextQueryType::kFormalize);
-  }
-  if (base::FeatureList::IsEnabled(features::kOrcaInternationalizeProofread)) {
-    allowed.push_back(orca::mojom::PresetTextQueryType::kProofread);
-  }
-  if (base::FeatureList::IsEnabled(features::kOrcaInternationalizeRephrase)) {
-    allowed.push_back(orca::mojom::PresetTextQueryType::kRephrase);
-  }
-  if (base::FeatureList::IsEnabled(features::kOrcaInternationalizeShorten)) {
-    allowed.push_back(orca::mojom::PresetTextQueryType::kShorten);
-  }
+  std::vector<orca::mojom::PresetTextQueryType> allowed = {
+      orca::mojom::PresetTextQueryType::kElaborate,
+      orca::mojom::PresetTextQueryType::kEmojify,
+      orca::mojom::PresetTextQueryType::kFormalize,
+      orca::mojom::PresetTextQueryType::kProofread,
+      orca::mojom::PresetTextQueryType::kRephrase,
+      orca::mojom::PresetTextQueryType::kShorten,
+  };
   return orca::mojom::EditorConfig::New(
       /*allowed_types=*/std::move(allowed),
       /*language_code=*/std::string(locale.tag_string()));

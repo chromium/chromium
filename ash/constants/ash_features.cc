@@ -1168,24 +1168,6 @@ BASE_FEATURE(kOrcaForManagedUsers,
              "kOrcaForManagedUsers",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables or disables elaborate for internationalized Orca.
-BASE_FEATURE(kOrcaInternationalizeElaborate, base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables or disables emojify for internationalized Orca.
-BASE_FEATURE(kOrcaInternationalizeEmojify, base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables or disables formalize for internationalized Orca.
-BASE_FEATURE(kOrcaInternationalizeFormalize, base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables or disables proofread for internationalized Orca.
-BASE_FEATURE(kOrcaInternationalizeProofread, base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables or disables rephrase for internationalized Orca.
-BASE_FEATURE(kOrcaInternationalizeRephrase, base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables or disables shorten for internationalized Orca.
-BASE_FEATURE(kOrcaInternationalizeShorten, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables or disables Africaans support for Orca.
 BASE_FEATURE(kOrcaAfrikaans, base::FEATURE_ENABLED_BY_DEFAULT);
 
