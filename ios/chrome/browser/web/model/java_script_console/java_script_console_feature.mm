@@ -10,6 +10,8 @@
 #import "ios/chrome/browser/web/model/java_script_console/java_script_console_message.h"
 #import "ios/web/public/js_messaging/java_script_feature_util.h"
 #import "ios/web/public/js_messaging/script_message.h"
+#import "ios/web/public/js_messaging/script_message_dict_value.h"
+#import "ios/web/public/js_messaging/script_message_value.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
 
@@ -53,14 +55,14 @@ void JavaScriptConsoleFeature::ScriptMessageReceived(
     return;
   }
 
-  const base::DictValue* script_dict =
-      script_message.legacy_body() ? script_message.legacy_body()->GetIfDict()
-                                   : nullptr;
+  const web::ScriptMessageValue& body = script_message.body();
+  const web::ScriptMessageDictValue* script_dict = body.GetIfDict();
   if (!script_dict) {
     return;
   }
 
-  const std::string* frame_id = script_dict->FindString(kSenderFrameIdKey);
+  std::optional<std::string> frame_id =
+      script_dict->FindString(kSenderFrameIdKey);
   if (!frame_id) {
     return;
   }
@@ -71,12 +73,13 @@ void JavaScriptConsoleFeature::ScriptMessageReceived(
     return;
   }
 
-  const std::string* log_message = script_dict->FindString(kConsoleMessageKey);
+  std::optional<std::string> log_message =
+      script_dict->FindString(kConsoleMessageKey);
   if (!log_message) {
     return;
   }
 
-  const std::string* log_level =
+  std::optional<std::string> log_level =
       script_dict->FindString(kConsoleMessageLogLevelKey);
   if (!log_level) {
     return;
@@ -88,7 +91,7 @@ void JavaScriptConsoleFeature::ScriptMessageReceived(
   frame_message.level = base::SysUTF8ToNSString(*log_level);
   frame_message.message = base::SysUTF8ToNSString(*log_message);
 
-  const std::string* url_string =
+  std::optional<std::string> url_string =
       script_dict->FindString(kConsoleMessageUrlKey);
   if (url_string && !url_string->empty()) {
     frame_message.url = GURL(*url_string);
