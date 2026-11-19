@@ -701,15 +701,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ContentSuggestions.Feed.UploadVisibilityLog" enum="Boolean"
-    expires_after="2023-07-23">
-  <owner>freedjm@google.com</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: Reports whether the visibility log was uploaded successfully.
-  </summary>
-</histogram>
-
 <histogram name="ContentSuggestions.Feed.UploadVisibilityLog.{LogType}"
     enum="Boolean" expires_after="2024-09-29">
   <owner>freedjm@google.com</owner>
@@ -831,16 +822,6 @@ chromium-metrics-reviews@google.com.
     percentage of cards that are viewed (2/3rds of card is in the viewport)
     since last time when the feed is refreshed (background refresh or
     pull-to-refresh).
-  </summary>
-</histogram>
-
-<histogram name="ContentSuggestions.Feed.VisibilityLoggingEnabled"
-    enum="Boolean" expires_after="2023-07-23">
-  <owner>freedjm@google.com</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: Reports whether visibility logging is enabled when logging is
-    attempted.
   </summary>
 </histogram>
 

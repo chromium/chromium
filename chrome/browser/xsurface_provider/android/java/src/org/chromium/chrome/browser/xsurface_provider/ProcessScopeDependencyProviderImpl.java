@@ -180,18 +180,9 @@ public class ProcessScopeDependencyProviderImpl extends FeedProcessScopeDependen
                         "ContentSuggestions.Feed.UploadVisibilityLog.Click", success);
                 break;
             case VisibilityLogType.UNSPECIFIED:
-                // UNSPECIFIED deliberately not reported independently, but will be
-                // included in the base UploadVisibilityLog histogram below.
+                // UNSPECIFIED deliberately not reported independently.
                 break;
         }
-        RecordHistogram.recordBooleanHistogram(
-                "ContentSuggestions.Feed.UploadVisibilityLog", success);
-    }
-
-    @Override
-    public void reportVisibilityLoggingEnabled(boolean enabled) {
-        RecordHistogram.recordBooleanHistogram(
-                "ContentSuggestions.Feed.VisibilityLoggingEnabled", enabled);
     }
 
     @Override
