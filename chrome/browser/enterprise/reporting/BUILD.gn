@@ -37,6 +37,7 @@ source_set("unit_tests") {
     "//components/enterprise/common/proto:extensions_workflow_events_proto_gen",
     "//components/policy/core/common:test_support",
     "//components/prefs:test_support",
+    "//components/profile_metrics",
     "//components/sync_preferences",
     "//components/sync_preferences:test_support",
     "//testing/gtest",
