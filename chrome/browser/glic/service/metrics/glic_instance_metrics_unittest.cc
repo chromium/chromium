@@ -4345,6 +4345,14 @@ TEST_F(GlicInstanceMetricsTest,
        StructuredReason::GUEST_PROCESS_LAUNCH_FAILED},
       {ClientLoadErrorReason::kGuestProcessIntegrityFailure,
        StructuredReason::GUEST_PROCESS_INTEGRITY_FAILURE},
+      {ClientLoadErrorReason::kClientLoadTimeoutNavigationInProgress,
+       StructuredReason::CLIENT_LOAD_TIMEOUT_NAVIGATION_IN_PROGRESS},
+      {ClientLoadErrorReason::kClientLoadTimeoutNavigationNotCommitted,
+       StructuredReason::CLIENT_LOAD_TIMEOUT_NAVIGATION_NOT_COMMITTED},
+      {ClientLoadErrorReason::kClientLoadTimeoutBeforeOnload,
+       StructuredReason::CLIENT_LOAD_TIMEOUT_BEFORE_ONLOAD},
+      {ClientLoadErrorReason::kClientLoadTimeoutAfterOnload,
+       StructuredReason::CLIENT_LOAD_TIMEOUT_AFTER_ONLOAD},
   };
 
   constexpr uint64_t kInvocationId = 42;

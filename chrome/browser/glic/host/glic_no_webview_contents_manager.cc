@@ -1420,11 +1420,12 @@ void GlicNoWebviewContentsManager::UpdateLoadingTimer() {
 }
 
 void GlicNoWebviewContentsManager::OnLoadingTimeout() {
+  const ClientLoadErrorReason reason =
+      web_client_manager_.ReasonForClientLoadTimeout();
   if (!is_visible_ && guest_contents()) {
     guest_contents()->Stop();
   }
-  SetErrorState(mojom::ErrorPanelType::kError,
-                ClientLoadErrorReason::kClientLoadTimeout);
+  SetErrorState(mojom::ErrorPanelType::kError, reason);
 }
 
 void GlicNoWebviewContentsManager::OnHibernationTimerExpired() {

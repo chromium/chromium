@@ -293,6 +293,10 @@ TEST(GlicInvokeMetricsTest, InvokeTerminatedHasClientLoadErrorReason) {
       {ClientLoadErrorReason::kGuestProcessOom, 20},
       {ClientLoadErrorReason::kGuestProcessLaunchFailed, 21},
       {ClientLoadErrorReason::kGuestProcessIntegrityFailure, 22},
+      {ClientLoadErrorReason::kClientLoadTimeoutNavigationInProgress, 23},
+      {ClientLoadErrorReason::kClientLoadTimeoutNavigationNotCommitted, 24},
+      {ClientLoadErrorReason::kClientLoadTimeoutBeforeOnload, 25},
+      {ClientLoadErrorReason::kClientLoadTimeoutAfterOnload, 26},
   };
   static_assert(std::size(kCases) ==
                 static_cast<size_t>(ClientLoadErrorReason::kMaxValue) + 1);

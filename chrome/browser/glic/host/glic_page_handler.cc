@@ -90,6 +90,8 @@ ClientLoadErrorReason ToClientLoadErrorReason(
     case mojom::ClientLoadErrorReason::kClientError:
       return ClientLoadErrorReason::kClientError;
     case mojom::ClientLoadErrorReason::kClientLoadTimeout:
+      // Stage-specific kClientLoadTimeout* values (23..26) are browser-only and
+      // reported only by GlicNoWebviewContentsManager.
       return ClientLoadErrorReason::kClientLoadTimeout;
     case mojom::ClientLoadErrorReason::kWarmedTimeout:
       return ClientLoadErrorReason::kWarmedTimeout;

@@ -170,6 +170,14 @@ std::string_view ClientLoadErrorReasonToDiagnosticString(
       return "GUEST_PROCESS_LAUNCH_FAILED";
     case ClientLoadErrorReason::kGuestProcessIntegrityFailure:
       return "GUEST_PROCESS_INTEGRITY_FAILURE";
+    case ClientLoadErrorReason::kClientLoadTimeoutNavigationInProgress:
+      return "CLIENT_LOAD_TIMEOUT_NAVIGATION_IN_PROGRESS";
+    case ClientLoadErrorReason::kClientLoadTimeoutNavigationNotCommitted:
+      return "CLIENT_LOAD_TIMEOUT_NAVIGATION_NOT_COMMITTED";
+    case ClientLoadErrorReason::kClientLoadTimeoutBeforeOnload:
+      return "CLIENT_LOAD_TIMEOUT_BEFORE_ONLOAD";
+    case ClientLoadErrorReason::kClientLoadTimeoutAfterOnload:
+      return "CLIENT_LOAD_TIMEOUT_AFTER_ONLOAD";
   }
   NOTREACHED();
 }

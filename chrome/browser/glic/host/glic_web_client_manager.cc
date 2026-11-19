@@ -374,6 +374,49 @@ class GlicWebClientManager::GuestPresentationTracker {
       this};
 };
 
+PrimaryMainFrameNavigationTracker::PrimaryMainFrameNavigationTracker() =
+    default;
+
+PrimaryMainFrameNavigationTracker::~PrimaryMainFrameNavigationTracker() =
+    default;
+
+void PrimaryMainFrameNavigationTracker::ObservePrimaryContents(
+    content::WebContents* web_contents) {
+  in_flight_ids_.clear();
+  Observe(web_contents);
+}
+
+// static
+bool PrimaryMainFrameNavigationTracker::IsTracked(
+    const content::NavigationHandle* navigation_handle) {
+  return navigation_handle && navigation_handle->IsInPrimaryMainFrame() &&
+         !navigation_handle->IsSameDocument();
+}
+
+void PrimaryMainFrameNavigationTracker::DidStartNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (!IsTracked(navigation_handle)) {
+    return;
+  }
+  in_flight_ids_.insert(navigation_handle->GetNavigationId());
+  OnPrimaryNavigationStarted(navigation_handle);
+}
+
+void PrimaryMainFrameNavigationTracker::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (!IsTracked(navigation_handle)) {
+    return;
+  }
+  in_flight_ids_.erase(navigation_handle->GetNavigationId());
+  OnPrimaryNavigationFinished(navigation_handle);
+}
+
+void PrimaryMainFrameNavigationTracker::PrimaryMainFrameRenderProcessGone(
+    base::TerminationStatus status) {
+  in_flight_ids_.clear();
+  OnPrimaryRenderProcessGone(status);
+}
+
 GlicWebClientManager::GlicWebClientManager()
     : metrics_(std::make_unique<Metrics>()),
       guest_presentation_tracker_(
@@ -400,9 +443,9 @@ void GlicWebClientManager::AttachGuestContents(
   CHECK(guest_contents);
   DVLOG(1) << "Glic [WebClientManager] AttachGuestContents " << guest_contents;
   has_navigation_committed_ = false;
-  current_navigation_blocked_ = false;
+  blocked_navigation_ids_.clear();
+  guest_load_stage_ = GuestLoadStage::kNotStarted;
   last_committed_page_type_.reset();
-  last_committed_is_api_allowed_ = false;
   guest_main_page_loaded_ = false;
   if (base::FeatureList::IsEnabled(kGlicShowSecurityInterstitials)) {
     // Ensure SecurityInterstitialTabHelper is registered as a
@@ -411,8 +454,24 @@ void GlicWebClientManager::AttachGuestContents(
     security_interstitials::SecurityInterstitialTabHelper::CreateForWebContents(
         guest_contents);
   }
-  Observe(guest_contents);
+  ObservePrimaryContents(guest_contents);
   guest_presentation_tracker_->ObserveGuestContents(*guest_contents);
+}
+
+ClientLoadErrorReason GlicWebClientManager::ReasonForClientLoadTimeout() const {
+  switch (guest_load_stage_) {
+    case GuestLoadStage::kNavigationInProgress:
+      return ClientLoadErrorReason::kClientLoadTimeoutNavigationInProgress;
+    case GuestLoadStage::kNavigationNotCommitted:
+      return ClientLoadErrorReason::kClientLoadTimeoutNavigationNotCommitted;
+    case GuestLoadStage::kCommittedRegularBeforeOnload:
+      return ClientLoadErrorReason::kClientLoadTimeoutBeforeOnload;
+    case GuestLoadStage::kCommittedRegularAfterOnload:
+      return ClientLoadErrorReason::kClientLoadTimeoutAfterOnload;
+    case GuestLoadStage::kNotStarted:
+    case GuestLoadStage::kCommittedNonRegularOrDisallowed:
+      return ClientLoadErrorReason::kClientLoadTimeout;
+  }
 }
 
 void GlicWebClientManager::SetGuestMounted(bool mounted) {
@@ -420,6 +479,7 @@ void GlicWebClientManager::SetGuestMounted(bool mounted) {
 }
 
 void GlicWebClientManager::OnGuestNavigationBlocked(
+    int64_t navigation_id,
     mojom::GuestPageType page_type,
     const GURL& blocked_url) {
   if (page_type != mojom::GuestPageType::kSignInRequired &&
@@ -431,12 +491,11 @@ void GlicWebClientManager::OnGuestNavigationBlocked(
   // A single blocked navigation can be observed by both
   // `GlicGuestNavigationThrottle` (during `WillStartRequest`) and
   // `DidFinishNavigation` (when `PwcNavigationThrottle` cancels the request).
-  // Deduplicate so metrics and delegate notifications fire at most once per
-  // navigation.
-  if (current_navigation_blocked_) {
+  // Deduplicate by navigation ID so metrics and delegate notifications fire at
+  // most once per navigation without colliding across overlapping navigations.
+  if (!blocked_navigation_ids_.insert(navigation_id).second) {
     return;
   }
-  current_navigation_blocked_ = true;
   DVLOG(1) << "Glic [WebClientManager] OnGuestNavigationBlocked " << page_type;
   // If a web client is already connected (or warmed) on the currently committed
   // page, a cancelled navigation (e.g. a subframe attempting to navigate the
@@ -447,6 +506,7 @@ void GlicWebClientManager::OnGuestNavigationBlocked(
   if ((web_client_owned_ || pending_web_client_receiver_.is_valid()) &&
       page_type != mojom::GuestPageType::kDisabledByAdmin &&
       page_type != mojom::GuestPageType::kSignInRequired) {
+    last_committed_page_type_ = mojom::GuestPageType::kRegular;
     if (delegate_) {
       // Restore the delegate's ready state that `DidStartNavigation()` cleared
       // to `GuestState::kLoading` when the cancelled navigation began.
@@ -467,10 +527,11 @@ void GlicWebClientManager::OnGuestNavigationBlocked(
   // (`kSignInRequired`), mirror `DidFinishNavigation` for a failed navigation:
   // reset state, record the navigation metric, notify the delegate to
   // transition the panel to the error UI, and disconnect any active web client.
+  // `DidFinishNavigation` updates `guest_load_stage_` once all in-flight
+  // primary-main-frame navigations finish.
   guest_presentation_tracker_->Reset();
   pending_web_client_receiver_.reset();
   last_committed_page_type_ = page_type;
-  last_committed_is_api_allowed_ = false;
   guest_main_page_loaded_ = false;
   if (page_type == mojom::GuestPageType::kSignInRequired && web_contents()) {
     if (Profile* profile =
@@ -567,15 +628,10 @@ void GlicWebClientManager::UnsetWebClient(
   }
 }
 
-void GlicWebClientManager::DidStartNavigation(
+void GlicWebClientManager::OnPrimaryNavigationStarted(
     content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInPrimaryMainFrame() ||
-      navigation_handle->IsSameDocument()) {
-    return;
-  }
-  current_navigation_blocked_ = false;
+  guest_load_stage_ = GuestLoadStage::kNavigationInProgress;
   last_committed_page_type_.reset();
-  last_committed_is_api_allowed_ = false;
   guest_main_page_loaded_ = false;
   if (!base::FeatureList::IsEnabled(kGlicShowSecurityInterstitials)) {
     pending_web_client_receiver_.reset();
@@ -588,13 +644,9 @@ void GlicWebClientManager::DidStartNavigation(
   }
 }
 
-void GlicWebClientManager::DidFinishNavigation(
+void GlicWebClientManager::OnPrimaryNavigationFinished(
     content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInPrimaryMainFrame() ||
-      navigation_handle->IsSameDocument()) {
-    return;
-  }
-
+  const int64_t navigation_id = navigation_handle->GetNavigationId();
   if (!navigation_handle->HasCommitted()) {
     // In NoWebview mode, PwcNavigationThrottle cancels navigations to
     // disallowed origins (e.g. when a user clicks "Go back" on a security
@@ -607,11 +659,28 @@ void GlicWebClientManager::DidFinishNavigation(
       if (!privileged->policy().IsNavigationAllowed(url::Origin::Create(url))) {
         const BlockedGuestNavigation blocked =
             ClassifyBlockedGuestNavigation(*navigation_handle);
-        OnGuestNavigationBlocked(blocked.page_type, blocked.blocked_url);
+        OnGuestNavigationBlocked(navigation_id, blocked.page_type,
+                                 blocked.blocked_url);
+      }
+    }
+    const bool was_blocked = blocked_navigation_ids_.erase(navigation_id) > 0;
+    if (!HasInFlightNavigation()) {
+      if (!was_blocked) {
+        guest_load_stage_ = GuestLoadStage::kNavigationNotCommitted;
+      } else if (web_client_owned_ || pending_web_client_receiver_.is_valid()) {
+        if (web_contents() &&
+            web_contents()->IsDocumentOnLoadCompletedInPrimaryMainFrame()) {
+          MaybeMarkGuestMainPageLoaded();
+        } else {
+          guest_load_stage_ = GuestLoadStage::kCommittedRegularBeforeOnload;
+        }
+      } else {
+        guest_load_stage_ = GuestLoadStage::kCommittedNonRegularOrDisallowed;
       }
     }
     return;
   }
+  blocked_navigation_ids_.erase(navigation_id);
   guest_presentation_tracker_->Reset();
   // Only drop a warmed guest's pending receiver once a new navigation commits
   // (or fails fatally in `OnGuestNavigationBlocked`), so a navigation cancelled
@@ -619,7 +688,7 @@ void GlicWebClientManager::DidFinishNavigation(
   pending_web_client_receiver_.reset();
   content::RenderFrameHost* guest_main_frame =
       navigation_handle->GetRenderFrameHost();
-  DVLOG(1) << "Glic [WebClientManager] DidFinishNavigation, url="
+  DVLOG(1) << "Glic [WebClientManager] OnPrimaryNavigationFinished, url="
            << guest_main_frame->GetLastCommittedURL();
   bool is_api_allowed =
       IsOriginAllowedGlicApi(guest_main_frame->GetLastCommittedOrigin(),
@@ -654,7 +723,12 @@ void GlicWebClientManager::DidFinishNavigation(
             : mojom::GuestPageType::kLoadError;
   }
   last_committed_page_type_ = page_type;
-  last_committed_is_api_allowed_ = is_api_allowed;
+  if (!HasInFlightNavigation()) {
+    guest_load_stage_ =
+        (page_type == mojom::GuestPageType::kRegular && is_api_allowed)
+            ? GuestLoadStage::kCommittedRegularBeforeOnload
+            : GuestLoadStage::kCommittedNonRegularOrDisallowed;
+  }
   guest_main_page_loaded_ = false;
   metrics_->OnGuestNavigation(page_type, is_api_allowed);
   bool is_initial_commit = !has_navigation_committed_;
@@ -675,12 +749,21 @@ void GlicWebClientManager::DidFinishNavigation(
 }
 
 void GlicWebClientManager::DocumentOnLoadCompletedInPrimaryMainFrame() {
+  if (guest_load_stage_ != GuestLoadStage::kCommittedRegularBeforeOnload) {
+    return;
+  }
+  MaybeMarkGuestMainPageLoaded();
+}
+
+void GlicWebClientManager::MaybeMarkGuestMainPageLoaded() {
+  guest_load_stage_ = GuestLoadStage::kCommittedRegularAfterOnload;
+  if (!web_contents()) {
+    return;
+  }
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
   if (GetGlicProviderSpec(profile).SupportsSsr() &&
-      features::kGlicShowLoaderUntilMainPageOnload.Get() &&
-      last_committed_page_type_ == mojom::GuestPageType::kRegular &&
-      last_committed_is_api_allowed_) {
+      features::kGlicShowLoaderUntilMainPageOnload.Get()) {
     guest_main_page_loaded_ = true;
     if (delegate_) {
       delegate_->OnGuestMainPageLoaded();
@@ -691,15 +774,15 @@ void GlicWebClientManager::DocumentOnLoadCompletedInPrimaryMainFrame() {
   }
 }
 
-void GlicWebClientManager::PrimaryMainFrameRenderProcessGone(
+void GlicWebClientManager::OnPrimaryRenderProcessGone(
     base::TerminationStatus status) {
+  blocked_navigation_ids_.clear();
+  guest_load_stage_ = GuestLoadStage::kNotStarted;
   last_committed_page_type_.reset();
-  last_committed_is_api_allowed_ = false;
   guest_main_page_loaded_ = false;
   metrics_->OnProcessGone(status);
-  DVLOG(1)
-      << "Glic [WebClientManager] PrimaryMainFrameRenderProcessGone, status="
-      << std::to_underlying(status);
+  DVLOG(1) << "Glic [WebClientManager] OnPrimaryRenderProcessGone, status="
+           << std::to_underlying(status);
   guest_presentation_tracker_->Reset();
   pending_web_client_receiver_.reset();
   if (web_client_owned_) {

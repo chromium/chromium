@@ -3360,6 +3360,8 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testNoClientCreated) {
     auto* manager = static_cast<GlicNoWebviewContentsManager*>(
         instance->host().contents_manager());
     ASSERT_TRUE(manager);
+    ASSERT_TRUE(
+        content::WaitForLoadStop(instance->host().web_client_contents()));
     ASSERT_TRUE(manager->loading_timer_for_testing().IsRunning());
     manager->loading_timer_for_testing().FireNow();
     ASSERT_OK(WaitForErrorPanelType(mojom::ErrorPanelType::kError));
@@ -3375,10 +3377,12 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testNoClientCreated) {
     EXPECT_THAT(histogram_tester.GetAllSamples("Glic.PanelWebUiState.Error"),
                 BucketsAre(Bucket(4 /*TIMEOUT_LOADING_CLIENT*/, 1)));
   }
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return instance->host().client_load_error_reason() ==
-           ClientLoadErrorReason::kClientLoadTimeout;
-  }));
+  const ClientLoadErrorReason expected_reason =
+      ExpectsNoWebview() ? ClientLoadErrorReason::kClientLoadTimeoutAfterOnload
+                         : ClientLoadErrorReason::kClientLoadTimeout;
+  ASSERT_OK(RunUntilEqual(
+      [&]() { return instance->host().client_load_error_reason(); },
+      std::optional<ClientLoadErrorReason>(expected_reason)));
 }
 
 // TODO(crbug.com/565561978): Failing on ChromeOS, too.

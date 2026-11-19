@@ -62,6 +62,14 @@ ToStructuredClientLoadErrorReason(ClientLoadErrorReason reason) {
       return Reason::GUEST_PROCESS_LAUNCH_FAILED;
     case ClientLoadErrorReason::kGuestProcessIntegrityFailure:
       return Reason::GUEST_PROCESS_INTEGRITY_FAILURE;
+    case ClientLoadErrorReason::kClientLoadTimeoutNavigationInProgress:
+      return Reason::CLIENT_LOAD_TIMEOUT_NAVIGATION_IN_PROGRESS;
+    case ClientLoadErrorReason::kClientLoadTimeoutNavigationNotCommitted:
+      return Reason::CLIENT_LOAD_TIMEOUT_NAVIGATION_NOT_COMMITTED;
+    case ClientLoadErrorReason::kClientLoadTimeoutBeforeOnload:
+      return Reason::CLIENT_LOAD_TIMEOUT_BEFORE_ONLOAD;
+    case ClientLoadErrorReason::kClientLoadTimeoutAfterOnload:
+      return Reason::CLIENT_LOAD_TIMEOUT_AFTER_ONLOAD;
   }
 }
 // LINT.ThenChange(//chrome/browser/glic/glic_enums.h:ClientLoadErrorReason)

@@ -243,7 +243,9 @@ enum class ClientLoadErrorReason {
   // In the no-webview world, GlicNoWebviewContentsManager owns the load
   // timeout.
 
-  // The host page or manager gave up waiting for the web client to connect.
+  // The host page or manager gave up waiting for the web client to connect
+  // before a guest navigation started (or when no more specific timeout stage
+  // applies). Before M160, also covered all guest load timeouts.
   kClientLoadTimeout = 11,
 
   // A warmed client never became ready after the panel was shown.
@@ -291,7 +293,28 @@ enum class ClientLoadErrorReason {
   // The guest renderer process was terminated due to a code integrity failure.
   kGuestProcessIntegrityFailure = 22,
 
-  kMaxValue = kGuestProcessIntegrityFailure,
+  // More specific client load timeout stages in NoWebview mode (see
+  // kClientLoadTimeout), reported as kClientLoadTimeout before M160 (and in
+  // legacy webview mode).
+
+  // Timed out while a guest primary-main-frame navigation was still in
+  // progress (started, not yet committed or finished).
+  kClientLoadTimeoutNavigationInProgress = 23,
+
+  // Timed out after the most recent guest primary-main-frame navigation
+  // finished without committing (for example HTTP 204, download, or aborted
+  // navigation).
+  kClientLoadTimeoutNavigationNotCommitted = 24,
+
+  // Timed out after a regular API-allowed guest page committed, before its
+  // primary main frame completed onload.
+  kClientLoadTimeoutBeforeOnload = 25,
+
+  // Timed out after a regular API-allowed guest page committed and completed
+  // onload, before creating the web client.
+  kClientLoadTimeoutAfterOnload = 26,
+
+  kMaxValue = kClientLoadTimeoutAfterOnload,
 };
 // LINT.ThenChange(//tools/metrics/structured/sync/structured.xml,//chrome/browser/glic/host/glic_page_handler.cc:ToClientLoadErrorReason,//chrome/browser/glic/service/metrics/glic_structured_metrics_conversions.cc:ToStructuredClientLoadErrorReason,//chrome/browser/glic/service/glic_invoke_handler.cc:ClientLoadErrorReasonToDiagnosticString)
 

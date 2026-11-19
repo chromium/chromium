@@ -3738,6 +3738,10 @@
     <variant value="20">GUEST_PROCESS_OOM</variant>
     <variant value="21">GUEST_PROCESS_LAUNCH_FAILED</variant>
     <variant value="22">GUEST_PROCESS_INTEGRITY_FAILURE</variant>
+    <variant value="23">CLIENT_LOAD_TIMEOUT_NAVIGATION_IN_PROGRESS</variant>
+    <variant value="24">CLIENT_LOAD_TIMEOUT_NAVIGATION_NOT_COMMITTED</variant>
+    <variant value="25">CLIENT_LOAD_TIMEOUT_BEFORE_ONLOAD</variant>
+    <variant value="26">CLIENT_LOAD_TIMEOUT_AFTER_ONLOAD</variant>
   </enum>
 
   <enum name="GlicEmbedderType">

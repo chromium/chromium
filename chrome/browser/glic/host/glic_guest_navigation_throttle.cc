@@ -60,8 +60,9 @@ GlicGuestNavigationThrottle::WillProcessResponse() {
     if (navigation_handle()->IsInPrimaryMainFrame()) {
       if (GlicWebClientManager* manager = GetWebClientManagerForWebContents(
               navigation_handle()->GetWebContents())) {
-        manager->OnGuestNavigationBlocked(mojom::GuestPageType::kSignInRequired,
-                                          url);
+        manager->OnGuestNavigationBlocked(
+            navigation_handle()->GetNavigationId(),
+            mojom::GuestPageType::kSignInRequired, url);
       }
     }
     return CANCEL_AND_IGNORE;
@@ -99,7 +100,8 @@ GlicGuestNavigationThrottle::CheckUrl() {
 
   if (IsAdminBlockedUrl(url)) {
     if (manager) {
-      manager->OnGuestNavigationBlocked(mojom::GuestPageType::kDisabledByAdmin);
+      manager->OnGuestNavigationBlocked(navigation_handle()->GetNavigationId(),
+                                        mojom::GuestPageType::kDisabledByAdmin);
     }
     return CANCEL_AND_IGNORE;
   }
@@ -108,8 +110,9 @@ GlicGuestNavigationThrottle::CheckUrl() {
       IsPairedWorkforceAuthOrigin(origin, browser_context)) {
     if (geic::IsWorkforceAuthPortalInteractiveSignInPath(url.path())) {
       if (manager) {
-        manager->OnGuestNavigationBlocked(mojom::GuestPageType::kSignInRequired,
-                                          url);
+        manager->OnGuestNavigationBlocked(
+            navigation_handle()->GetNavigationId(),
+            mojom::GuestPageType::kSignInRequired, url);
       }
       return CANCEL_AND_IGNORE;
     }
@@ -127,7 +130,8 @@ GlicGuestNavigationThrottle::CheckUrl() {
     if (manager) {
       const BlockedGuestNavigation blocked =
           ClassifyBlockedGuestNavigation(*navigation_handle());
-      manager->OnGuestNavigationBlocked(blocked.page_type, blocked.blocked_url);
+      manager->OnGuestNavigationBlocked(navigation_handle()->GetNavigationId(),
+                                        blocked.page_type, blocked.blocked_url);
     }
     return CANCEL_AND_IGNORE;
   }

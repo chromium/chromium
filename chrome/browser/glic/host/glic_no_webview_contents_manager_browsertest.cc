@@ -43,6 +43,7 @@
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_throttle_registry.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -221,6 +222,24 @@ class GlicNoWebviewContentsManagerBrowserTest : public GlicBrowserTest {
             auto http_response =
                 std::make_unique<net::test_server::BasicHttpResponse>();
             http_response->set_code(net::HTTP_INTERNAL_SERVER_ERROR);
+            return http_response;
+          }
+          if (request.relative_url == "/timeout/204") {
+            auto http_response =
+                std::make_unique<net::test_server::BasicHttpResponse>();
+            http_response->set_code(net::HTTP_NO_CONTENT);
+            return http_response;
+          }
+          if (request.relative_url == "/timeout/hung") {
+            return std::make_unique<net::test_server::HungResponse>();
+          }
+          if (request.relative_url == "/timeout/hung-subresource") {
+            auto http_response =
+                std::make_unique<net::test_server::BasicHttpResponse>();
+            http_response->set_code(net::HTTP_OK);
+            http_response->set_content_type("text/html");
+            http_response->set_content(
+                "<html><body><img src='/timeout/hung'></body></html>");
             return http_response;
           }
           return nullptr;
@@ -524,6 +543,122 @@ IN_PROC_BROWSER_TEST_F(GlicNoWebviewOverlayBrowserTest,
                            StructuredErrorReason::GUEST_HTTP_SERVER_ERROR,
                            StructuredErrorReason::GUEST_ORIGIN_BLOCKED,
                            StructuredErrorReason::GUEST_API_NOT_ALLOWED));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicNoWebviewOverlayBrowserTest,
+                       LoadingTimeoutStagesReportDistinctCauses) {
+  metrics::structured::TestStructuredMetricsRecorder recorder;
+  recorder.Initialize();
+
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
+  auto* manager = GetNoWebviewContentsManager(instance);
+  ASSERT_TRUE(manager);
+  ASSERT_TRUE(content::WaitForLoadStop(manager->guest_contents()));
+
+  // 1. Committed regular page that completed onload without connecting a web
+  // client.
+  ASSERT_TRUE(manager->loading_timer_for_testing().IsRunning());
+  manager->loading_timer_for_testing().FireNow();
+  EXPECT_EQ(instance->host().client_load_error_reason(),
+            ClientLoadErrorReason::kClientLoadTimeoutAfterOnload);
+  EXPECT_THAT(GetRecordedClientLoadErrors(recorder),
+              testing::ElementsAre(
+                  StructuredErrorReason::CLIENT_LOAD_TIMEOUT_AFTER_ONLOAD));
+
+  // 2. Primary-main-frame navigation still in progress (both visible and while
+  // hidden, where OnLoadingTimeout() stops the guest navigation).
+  const GURL title_url = embedded_https_test_server().GetURL("/title1.html");
+  {
+    manager->ClearErrorState();
+    content::TestNavigationManager in_progress_nav(manager->guest_contents(),
+                                                   title_url);
+    manager->guest_contents()->GetController().LoadURLWithParams(
+        content::NavigationController::LoadURLParams(title_url));
+    ASSERT_TRUE(in_progress_nav.WaitForRequestStart());
+    ASSERT_TRUE(manager->loading_timer_for_testing().IsRunning());
+    manager->loading_timer_for_testing().FireNow();
+    manager->guest_contents()->Stop();
+    EXPECT_EQ(instance->host().client_load_error_reason(),
+              ClientLoadErrorReason::kClientLoadTimeoutNavigationInProgress);
+  }
+  {
+    manager->ClearErrorState();
+    manager->SetVisibility(content::Visibility::HIDDEN);
+    content::TestNavigationManager hidden_nav(manager->guest_contents(),
+                                              title_url);
+    manager->guest_contents()->GetController().LoadURLWithParams(
+        content::NavigationController::LoadURLParams(title_url));
+    ASSERT_TRUE(hidden_nav.WaitForRequestStart());
+    ASSERT_TRUE(manager->loading_timer_for_testing().IsRunning());
+    manager->loading_timer_for_testing().FireNow();
+    EXPECT_EQ(instance->host().client_load_error_reason(),
+              ClientLoadErrorReason::kClientLoadTimeoutNavigationInProgress);
+    manager->SetVisibility(content::Visibility::VISIBLE);
+  }
+  EXPECT_THAT(
+      GetRecordedClientLoadErrors(recorder),
+      testing::ElementsAre(
+          StructuredErrorReason::CLIENT_LOAD_TIMEOUT_AFTER_ONLOAD,
+          StructuredErrorReason::CLIENT_LOAD_TIMEOUT_NAVIGATION_IN_PROGRESS,
+          StructuredErrorReason::CLIENT_LOAD_TIMEOUT_NAVIGATION_IN_PROGRESS));
+
+  // 3. Primary-main-frame navigation that finished without committing (HTTP
+  // 204).
+  {
+    manager->ClearErrorState();
+    const GURL no_content_url =
+        embedded_https_test_server().GetURL("/timeout/204");
+    content::TestNavigationManager uncommitted_nav(manager->guest_contents(),
+                                                   no_content_url);
+    manager->guest_contents()->GetController().LoadURLWithParams(
+        content::NavigationController::LoadURLParams(no_content_url));
+    ASSERT_TRUE(uncommitted_nav.WaitForNavigationFinished());
+    EXPECT_FALSE(uncommitted_nav.was_committed());
+    EXPECT_NE(
+        manager->guest_contents()->GetPrimaryMainFrame()->GetLastCommittedURL(),
+        no_content_url);
+    ASSERT_TRUE(manager->loading_timer_for_testing().IsRunning());
+    manager->loading_timer_for_testing().FireNow();
+    EXPECT_EQ(instance->host().client_load_error_reason(),
+              ClientLoadErrorReason::kClientLoadTimeoutNavigationNotCommitted);
+  }
+  EXPECT_THAT(
+      GetRecordedClientLoadErrors(recorder),
+      testing::ElementsAre(
+          StructuredErrorReason::CLIENT_LOAD_TIMEOUT_AFTER_ONLOAD,
+          StructuredErrorReason::CLIENT_LOAD_TIMEOUT_NAVIGATION_IN_PROGRESS,
+          StructuredErrorReason::CLIENT_LOAD_TIMEOUT_NAVIGATION_IN_PROGRESS,
+          StructuredErrorReason::CLIENT_LOAD_TIMEOUT_NAVIGATION_NOT_COMMITTED));
+
+  // 4. Committed regular page whose primary main frame has not completed onload
+  // (subresource still loading).
+  {
+    manager->ClearErrorState();
+    const GURL hung_subresource_url =
+        embedded_https_test_server().GetURL("/timeout/hung-subresource");
+    content::TestNavigationObserver commit_observer(manager->guest_contents());
+    manager->guest_contents()->GetController().LoadURLWithParams(
+        content::NavigationController::LoadURLParams(hung_subresource_url));
+    commit_observer.WaitForNavigationFinished();
+    ASSERT_EQ(
+        manager->guest_contents()->GetPrimaryMainFrame()->GetLastCommittedURL(),
+        hung_subresource_url);
+    ASSERT_TRUE(manager->guest_contents()->IsLoading());
+    ASSERT_TRUE(manager->loading_timer_for_testing().IsRunning());
+    manager->loading_timer_for_testing().FireNow();
+    manager->guest_contents()->Stop();
+    EXPECT_EQ(instance->host().client_load_error_reason(),
+              ClientLoadErrorReason::kClientLoadTimeoutBeforeOnload);
+  }
+  ASSERT_TRUE(content::WaitForLoadStop(manager->guest_contents()));
+  EXPECT_THAT(
+      GetRecordedClientLoadErrors(recorder),
+      testing::ElementsAre(
+          StructuredErrorReason::CLIENT_LOAD_TIMEOUT_AFTER_ONLOAD,
+          StructuredErrorReason::CLIENT_LOAD_TIMEOUT_NAVIGATION_IN_PROGRESS,
+          StructuredErrorReason::CLIENT_LOAD_TIMEOUT_NAVIGATION_IN_PROGRESS,
+          StructuredErrorReason::CLIENT_LOAD_TIMEOUT_NAVIGATION_NOT_COMMITTED,
+          StructuredErrorReason::CLIENT_LOAD_TIMEOUT_BEFORE_ONLOAD));
 }
 #endif  // BUILDFLAG(STRUCTURED_METRICS_ENABLED)
 
@@ -1327,6 +1462,7 @@ IN_PROC_BROWSER_TEST_F(GlicNoWebviewOverlayBrowserTest,
   auto* manager = GetNoWebviewContentsManager(instance);
   ASSERT_TRUE(manager);
   ASSERT_TRUE(manager->overlay_contents());
+  ASSERT_TRUE(content::WaitForLoadStop(manager->guest_contents()));
 
   TestHostObserver observer(instance->host());
   EXPECT_FALSE(observer.last_error_reason().has_value());
@@ -1335,7 +1471,7 @@ IN_PROC_BROWSER_TEST_F(GlicNoWebviewOverlayBrowserTest,
   manager->loading_timer_for_testing().FireNow();
 
   EXPECT_EQ(observer.last_error_reason(),
-            ClientLoadErrorReason::kClientLoadTimeout);
+            ClientLoadErrorReason::kClientLoadTimeoutAfterOnload);
   EXPECT_EQ(observer.error_count(), 1);
   EXPECT_EQ(manager->error_type(), mojom::ErrorPanelType::kError);
   ASSERT_OK(WaitForErrorPanelType(mojom::ErrorPanelType::kError));
