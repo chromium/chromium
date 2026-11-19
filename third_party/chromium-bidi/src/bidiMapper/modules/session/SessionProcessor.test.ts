@@ -21,7 +21,10 @@ import {assert} from 'chai';
 import sinon from 'sinon';
 
 import type {CdpClient} from '../../../cdp/CdpClient.js';
-import {InvalidArgumentException} from '../../../protocol/protocol.js';
+import {
+  InvalidArgumentException,
+  SessionNotCreatedException,
+} from '../../../protocol/protocol.js';
 import type {MapperOptions} from '../../MapperOptions.js';
 import type {BrowsingContextImpl} from '../context/BrowsingContextImpl.js';
 import {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
@@ -32,7 +35,6 @@ import {SessionProcessor} from './SessionProcessor.js';
 
 const TOP_LEVEL_CONTEXT = 'context-1';
 const CHILD_CONTEXT = 'child-context';
-const UNKNOWN_CONTEXT = 'unknown-context';
 
 describe('SessionProcessor', () => {
   let eventManager: EventManager;
@@ -73,141 +75,117 @@ describe('SessionProcessor', () => {
   });
 
   describe('new', () => {
-    it('sets goog:acl to undefined in capabilities when not requested', async () => {
+    it('omits goog:sessionType and keeps ACL disabled when not requested', async () => {
       const result = await sessionProcessor.new({
         capabilities: {},
       });
 
-      assert.isUndefined(result.capabilities['goog:acl']);
+      assert.notProperty(result.capabilities, 'goog:sessionType');
+      assert.notProperty(result.capabilities, 'goog:acl');
+      assert.isFalse(aclManager.isEnabled());
       assert.isTrue(aclManager.isCommandAllowed('network.addIntercept'));
     });
 
-    it('interprets invalid goog:acl as no access', async () => {
+    it('enables empty ACL when goog:sessionType is restricted in alwaysMatch', async () => {
       const result = await sessionProcessor.new({
         capabilities: {
           alwaysMatch: {
-            'goog:acl': null,
+            'goog:sessionType': 'restricted',
           },
         },
       });
 
-      const expectedActualAcl = {
-        default: {
-          commands: [],
-        },
+      assert.strictEqual(result.capabilities['goog:sessionType'], 'restricted');
+      assert.notProperty(result.capabilities, 'goog:acl');
+      assert.isTrue(aclManager.isEnabled());
+      assert.deepEqual(aclManager.getAcl(), {
+        default: {commands: []},
         perNavigable: {},
-      };
-      assert.deepEqual(result.capabilities['goog:acl'], expectedActualAcl);
-      assert.deepEqual(aclManager.getAcl(), expectedActualAcl);
+      });
       assert.isFalse(aclManager.isCommandAllowed('browsingContext.getTree'));
     });
 
-    it('stores goog:acl from alwaysMatch and returns actual ACL in capabilities', async () => {
-      const requestedAcl = {
-        default: {
-          commands: [
-            'browsingContext.getTree',
-            // Disallowed command should be filtered out.
-            'network.addIntercept',
-          ],
-        },
-      };
-
-      const result = await sessionProcessor.new({
-        capabilities: {
-          alwaysMatch: {
-            'goog:acl': requestedAcl,
-          },
-        },
-      });
-
-      const expectedActualAcl = {
-        default: {
-          commands: ['browsingContext.getTree'],
-        },
-        perNavigable: {},
-      };
-      assert.deepEqual(result.capabilities['goog:acl'], expectedActualAcl);
-      assert.deepEqual(aclManager.getAcl(), expectedActualAcl);
-    });
-
-    it('stores goog:acl from firstMatch and returns actual ACL in capabilities', async () => {
-      const requestedAcl = {
-        default: {
-          commands: ['browsingContext.getTree'],
-        },
-      };
-
+    it('enables empty ACL when goog:sessionType is restricted in firstMatch', async () => {
       const result = await sessionProcessor.new({
         capabilities: {
           firstMatch: [
             {
-              'goog:acl': requestedAcl,
+              'goog:sessionType': 'restricted',
             },
           ],
         },
       });
 
-      const expectedActualAcl = {
-        default: {
-          commands: ['browsingContext.getTree'],
-        },
+      assert.strictEqual(result.capabilities['goog:sessionType'], 'restricted');
+      assert.notProperty(result.capabilities, 'goog:acl');
+      assert.isTrue(aclManager.isEnabled());
+      assert.deepEqual(aclManager.getAcl(), {
+        default: {commands: []},
         perNavigable: {},
-      };
-      assert.deepEqual(result.capabilities['goog:acl'], expectedActualAcl);
-      assert.deepEqual(aclManager.getAcl(), expectedActualAcl);
+      });
+      assert.isFalse(aclManager.isCommandAllowed('browsingContext.getTree'));
     });
 
-    it('ignores perNavigable in goog:acl', async () => {
-      const result = await sessionProcessor.new({
+    it('ignores goog:acl in session.new', async () => {
+      await sessionProcessor.new({
         capabilities: {
           alwaysMatch: {
             'goog:acl': {
               default: {
                 commands: ['browsingContext.getTree'],
               },
-              perNavigable: {
-                [TOP_LEVEL_CONTEXT]: {
-                  commands: ['browsingContext.navigate'],
-                },
-                [CHILD_CONTEXT]: {
-                  commands: ['browsingContext.navigate'],
-                },
-                [UNKNOWN_CONTEXT]: {
-                  commands: ['browsingContext.navigate'],
-                },
-              },
             },
           },
         },
       });
 
-      const expectedActualAcl = {
-        default: {
-          commands: ['browsingContext.getTree'],
-        },
-        perNavigable: {},
-      };
-      assert.deepEqual(result.capabilities['goog:acl'], expectedActualAcl);
-      assert.deepEqual(aclManager.getAcl(), expectedActualAcl);
-      assert.isFalse(
-        aclManager.isCommandAllowed(
-          'browsingContext.navigate',
-          TOP_LEVEL_CONTEXT,
-        ),
-      );
+      assert.isFalse(aclManager.isEnabled());
+      assert.isTrue(aclManager.isCommandAllowed('network.addIntercept'));
     });
 
-    it('throws InvalidArgumentException if goog:acl is in both alwaysMatch and firstMatch', async () => {
+    it('ignores null goog:sessionType and omits it from capabilities', async () => {
+      const result = await sessionProcessor.new({
+        capabilities: {
+          alwaysMatch: {
+            'goog:sessionType': null,
+          },
+        },
+      });
+
+      assert.notProperty(result.capabilities, 'goog:sessionType');
+      assert.isFalse(aclManager.isEnabled());
+    });
+
+    for (const invalidSessionType of [123, 'unrestricted']) {
+      it(`throws InvalidArgumentException for invalid goog:sessionType ${JSON.stringify(invalidSessionType)}`, async () => {
+        try {
+          await sessionProcessor.new({
+            capabilities: {
+              alwaysMatch: {
+                'goog:sessionType': invalidSessionType,
+              },
+            },
+          });
+        } catch (err) {
+          assert.instanceOf(err, InvalidArgumentException);
+          sinon.assert.notCalled(initConnection);
+          assert.isFalse(aclManager.isEnabled());
+          return;
+        }
+        assert.fail('Should have thrown');
+      });
+    }
+
+    it('throws InvalidArgumentException if goog:sessionType is in both alwaysMatch and firstMatch', async () => {
       try {
         await sessionProcessor.new({
           capabilities: {
             alwaysMatch: {
-              'goog:acl': {},
+              'goog:sessionType': 'restricted',
             },
             firstMatch: [
               {
-                'goog:acl': {},
+                'goog:sessionType': 'restricted',
               },
             ],
           },
@@ -215,10 +193,79 @@ describe('SessionProcessor', () => {
       } catch (err) {
         assert.instanceOf(err, InvalidArgumentException);
         sinon.assert.notCalled(initConnection);
-        assert.isTrue(aclManager.isCommandAllowed('network.addIntercept'));
+        assert.isFalse(aclManager.isEnabled());
         return;
       }
       assert.fail('Should have thrown');
+    });
+
+    describe('restrictedMode', () => {
+      let restrictedSessionProcessor: SessionProcessor;
+
+      beforeEach(() => {
+        aclManager.setEnabled(true);
+        restrictedSessionProcessor = new SessionProcessor(
+          eventManager,
+          browserCdpClient,
+          initConnection,
+          aclManager,
+          true,
+        );
+      });
+
+      it('throws SessionNotCreatedException when goog:sessionType is omitted', async () => {
+        try {
+          await restrictedSessionProcessor.new({
+            capabilities: {},
+          });
+        } catch (err) {
+          assert.instanceOf(err, SessionNotCreatedException);
+          sinon.assert.notCalled(initConnection);
+          return;
+        }
+        assert.fail('Should have thrown');
+      });
+
+      it('throws SessionNotCreatedException when goog:sessionType is null', async () => {
+        try {
+          await restrictedSessionProcessor.new({
+            capabilities: {
+              alwaysMatch: {
+                'goog:sessionType': null,
+              },
+            },
+          });
+        } catch (err) {
+          assert.instanceOf(err, SessionNotCreatedException);
+          sinon.assert.notCalled(initConnection);
+          return;
+        }
+        assert.fail('Should have thrown');
+      });
+
+      it('allows retrying session.new with restricted capability after rejection', async () => {
+        try {
+          await restrictedSessionProcessor.new({
+            capabilities: {},
+          });
+          assert.fail('Should have thrown');
+        } catch (err) {
+          assert.instanceOf(err, SessionNotCreatedException);
+        }
+
+        const result = await restrictedSessionProcessor.new({
+          capabilities: {
+            firstMatch: [{}, {'goog:sessionType': 'restricted'}],
+          },
+        });
+
+        assert.strictEqual(
+          result.capabilities['goog:sessionType'],
+          'restricted',
+        );
+        assert.isTrue(aclManager.isEnabled());
+        sinon.assert.calledOnce(initConnection);
+      });
     });
   });
 

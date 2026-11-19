@@ -13,17 +13,46 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Tests for restricted sessions: with the `goog:acl` capability, a session can
-# run only the commands that its ACL grants.
+# Tests for restricted sessions: with `"goog:sessionType": "restricted"`, a
+# session starts with an empty ACL (`{}`) and can run only the commands that its
+# ACL grants via `goog:session.setAcl`.
 
 import pytest
+import pytest_asyncio
 from test_helpers import AnyExtending, execute_command
 
-GET_TREE_ACL = {"goog:acl": {"default": {"commands": ["browsingContext.getTree"]}}}
+RESTRICTED_SESSION = {"goog:sessionType": "restricted"}
+GET_TREE_ACL = {"default": {"commands": ["browsingContext.getTree"]}}
+
+
+@pytest_asyncio.fixture(autouse=True)
+async def initial_acl(request, websocket):
+    # Runs before `context_id`/`sandbox_realm` fixtures so tests can seed required ACLs.
+    acl = getattr(request, "param", None)
+    if acl is not None:
+        await execute_command(
+            websocket,
+            {"method": "goog:session.setAcl", "params": {"acl": acl}},
+        )
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("capabilities", [GET_TREE_ACL], indirect=True)
+@pytest.mark.parametrize("capabilities", [RESTRICTED_SESSION], indirect=True)
+async def test_acl_starts_empty(websocket):
+    with pytest.raises(Exception) as exception_info:
+        await execute_command(
+            websocket, {"method": "browsingContext.getTree", "params": {}}
+        )
+
+    assert exception_info.value.args[0] == {
+        "error": "unsupported operation",
+        "message": "Command 'browsingContext.getTree' is not allowed by the session ACL.",
+    }
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("capabilities", [RESTRICTED_SESSION], indirect=True)
+@pytest.mark.parametrize("initial_acl", [GET_TREE_ACL], indirect=True)
 async def test_acl_granted_command_allowed(websocket):
     result = await execute_command(
         websocket, {"method": "browsingContext.getTree", "params": {}}
@@ -33,7 +62,8 @@ async def test_acl_granted_command_allowed(websocket):
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("capabilities", [GET_TREE_ACL], indirect=True)
+@pytest.mark.parametrize("capabilities", [RESTRICTED_SESSION], indirect=True)
+@pytest.mark.parametrize("initial_acl", [GET_TREE_ACL], indirect=True)
 async def test_acl_not_granted_command_rejected(websocket):
     with pytest.raises(Exception) as exception_info:
         await execute_command(
@@ -48,7 +78,8 @@ async def test_acl_not_granted_command_rejected(websocket):
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("capabilities", [GET_TREE_ACL], indirect=True)
+@pytest.mark.parametrize("capabilities", [RESTRICTED_SESSION], indirect=True)
+@pytest.mark.parametrize("initial_acl", [GET_TREE_ACL], indirect=True)
 async def test_acl_not_granted_command_rejected_for_context(websocket, context_id):
     with pytest.raises(Exception) as exception_info:
         await execute_command(
@@ -70,7 +101,8 @@ async def test_acl_not_granted_command_rejected_for_context(websocket, context_i
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("capabilities", [GET_TREE_ACL], indirect=True)
+@pytest.mark.parametrize("capabilities", [RESTRICTED_SESSION], indirect=True)
+@pytest.mark.parametrize("initial_acl", [GET_TREE_ACL], indirect=True)
 async def test_acl_checked_before_params_validation(websocket, context_id):
     with pytest.raises(Exception) as exception_info:
         # Invalid parameters: `url` is required.
@@ -86,17 +118,16 @@ async def test_acl_checked_before_params_validation(websocket, context_id):
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize("capabilities", [RESTRICTED_SESSION], indirect=True)
 @pytest.mark.parametrize(
-    "capabilities",
+    "initial_acl",
     [
         {
-            "goog:acl": {
-                "default": {
-                    "commands": [
-                        "browsingContext.getTree",
-                        "browsingContext.navigate",
-                    ]
-                }
+            "default": {
+                "commands": [
+                    "browsingContext.getTree",
+                    "browsingContext.navigate",
+                ]
             }
         }
     ],
@@ -115,19 +146,18 @@ async def test_acl_default_command_allowed_for_context(websocket, context_id):
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize("capabilities", [RESTRICTED_SESSION], indirect=True)
 @pytest.mark.parametrize(
-    "capabilities",
+    "initial_acl",
     [
         {
-            "goog:acl": {
-                "default": {
-                    # An ACL can't grant these commands.
-                    "commands": [
-                        "browser.getUserContexts",
-                        "goog:cdp.sendCommand",
-                        "script.getRealms",
-                    ]
-                }
+            "default": {
+                # An ACL can't grant these commands.
+                "commands": [
+                    "browser.getUserContexts",
+                    "goog:cdp.sendCommand",
+                    "script.getRealms",
+                ]
             }
         }
     ],
@@ -154,7 +184,7 @@ async def test_acl_unsupported_command_rejected(websocket, command):
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("capabilities", [{"goog:acl": {}}], indirect=True)
+@pytest.mark.parametrize("capabilities", [RESTRICTED_SESSION], indirect=True)
 async def test_acl_session_status_allowed(websocket):
     status = await execute_command(
         websocket, {"method": "session.status", "params": {}}
@@ -164,7 +194,8 @@ async def test_acl_session_status_allowed(websocket):
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("capabilities", [GET_TREE_ACL], indirect=True)
+@pytest.mark.parametrize("capabilities", [RESTRICTED_SESSION], indirect=True)
+@pytest.mark.parametrize("initial_acl", [GET_TREE_ACL], indirect=True)
 async def test_acl_not_granted_script_rejected_for_target_context(
     websocket, context_id
 ):
@@ -188,15 +219,10 @@ async def test_acl_not_granted_script_rejected_for_target_context(
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize("capabilities", [RESTRICTED_SESSION], indirect=True)
 @pytest.mark.parametrize(
-    "capabilities",
-    [
-        {
-            "goog:acl": {
-                "default": {"commands": ["browsingContext.getTree", "script.evaluate"]}
-            }
-        }
-    ],
+    "initial_acl",
+    [{"default": {"commands": ["browsingContext.getTree", "script.evaluate"]}}],
     indirect=True,
 )
 @pytest.mark.parametrize(
@@ -231,18 +257,17 @@ async def test_acl_script_requires_non_empty_sandbox(
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize("capabilities", [RESTRICTED_SESSION], indirect=True)
 @pytest.mark.parametrize(
-    "capabilities",
+    "initial_acl",
     [
         {
-            "goog:acl": {
-                "default": {
-                    "commands": [
-                        "browsingContext.getTree",
-                        "browsingContext.navigate",
-                        "script.evaluate",
-                    ]
-                }
+            "default": {
+                "commands": [
+                    "browsingContext.getTree",
+                    "browsingContext.navigate",
+                    "script.evaluate",
+                ]
             }
         }
     ],

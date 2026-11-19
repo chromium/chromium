@@ -37,6 +37,7 @@ declare global {
           selfTargetId: string,
           bidiTransport?: BidiTransport,
           cdpTransport?: Transport,
+          restrictedMode?: boolean,
         ) => Promise<BidiServer>)
       | null;
 
@@ -71,11 +72,13 @@ function getWindowCdpConnection(): MapperCdpConnection {
  * @param bidiTransport Optional custom BiDi transport for additional Mapper
  * instances; the default WindowBidiTransport can only be used once.
  * @param cdpTransport Optional custom CDP transport for additional Mapper instances.
+ * @param restrictedMode Optional flag requiring restricted sessions.
  */
 async function runMapperInstance(
   selfTargetId: string,
   bidiTransport: BidiTransport = windowBidiTransport,
   cdpTransport: Transport = windowCdpTransport,
+  restrictedMode = false,
 ): Promise<BidiServer> {
   const usesWindowBidi = bidiTransport === windowBidiTransport;
   if (usesWindowBidi) {
@@ -129,6 +132,7 @@ async function runMapperInstance(
       selfTargetId,
       new BidiParser(),
       log,
+      restrictedMode === true,
     );
   } catch (error) {
     if (usesWindowBidi) {
@@ -152,11 +156,18 @@ async function runMapperInstance(
  * @param bidiTransport Optional custom BiDi transport for additional Mapper
  * instances; the default WindowBidiTransport can only be used once.
  * @param cdpTransport Optional custom CDP transport for additional Mapper instances.
+ * @param restrictedMode Optional flag requiring restricted sessions.
  */
 window.runMapperInstance = async (
   selfTargetId,
   bidiTransport,
   cdpTransport,
+  restrictedMode,
 ) => {
-  return await runMapperInstance(selfTargetId, bidiTransport, cdpTransport);
+  return await runMapperInstance(
+    selfTargetId,
+    bidiTransport,
+    cdpTransport,
+    restrictedMode,
+  );
 };

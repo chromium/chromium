@@ -96,6 +96,7 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
     defaultUserAgent: string,
     parser?: BidiCommandParameterParser,
     logger?: LoggerFn,
+    restrictedMode = false,
   ) {
     super();
     this.#logger = logger;
@@ -133,6 +134,11 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
       contextConfigStorage,
     );
     const aclManager = new AclManager(this.#browsingContextStorage);
+    if (restrictedMode === true) {
+      // In restricted mode, start with an empty ACL before `session.new`.
+      aclManager.setEnabled(true);
+      aclManager.setAcl({});
+    }
     this.#commandProcessor = new CommandProcessor(
       cdpConnection,
       browserCdpClient,
@@ -210,6 +216,7 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
 
         await this.#topLevelContextsLoaded();
       },
+      restrictedMode,
       this.#logger,
     );
     this.#eventManager.on(EventManagerEvents.Event, ({message, event}) => {
@@ -233,6 +240,7 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
     selfTargetId: string,
     parser?: BidiCommandParameterParser,
     logger?: LoggerFn,
+    restrictedMode = false,
   ): Promise<BidiServer> {
     const [defaultUserContextId, version] = await Promise.all([
       this.#getDefaultUserContextId(browserCdpClient),
@@ -255,6 +263,7 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
       version.userAgent,
       parser,
       logger,
+      restrictedMode,
     );
 
     return server;

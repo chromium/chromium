@@ -16,7 +16,7 @@
 import pytest
 from test_helpers import AnyExtending, execute_command
 
-GET_TREE_ACL = {"goog:acl": {"default": {"commands": ["browsingContext.getTree"]}}}
+RESTRICTED_SESSION = {"goog:sessionType": "restricted"}
 REASON = "Fill in the checkout form."
 
 
@@ -80,8 +80,16 @@ async def test_set_acl_is_idempotent(websocket, context_id):
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("capabilities", [GET_TREE_ACL], indirect=True)
-async def test_set_acl_grants_and_retracts_access(websocket, context_id):
+@pytest.mark.parametrize("capabilities", [RESTRICTED_SESSION], indirect=True)
+async def test_set_acl_grants_and_retracts_access(websocket):
+    # A restricted session starts with an empty ACL, so request `getTree` before querying `context_id`.
+    await set_acl(
+        websocket, {"acl": {"default": {"commands": ["browsingContext.getTree"]}}}
+    )
+    tree = await execute_command(
+        websocket, {"method": "browsingContext.getTree", "params": {}}
+    )
+    context_id = tree["contexts"][0]["context"]
     navigate_command = {
         "method": "browsingContext.navigate",
         "params": {"context": context_id, "url": "about:blank", "wait": "complete"},

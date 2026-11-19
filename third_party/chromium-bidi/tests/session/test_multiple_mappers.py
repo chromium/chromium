@@ -340,9 +340,15 @@ class InTabMapperConnection:
             self._bidi_queue.put_nowait(e)
             raise
 
-    async def start(self, mapper_target_id: str, capabilities: dict) -> None:
+    async def start(
+        self,
+        mapper_target_id: str,
+        capabilities: dict | None,
+        *,
+        restricted_mode: bool | None = None,
+    ) -> None:
         """Creates the transports in the Mapper tab, starts a Mapper instance
-        with them and creates a BiDi session.
+        with them and creates a BiDi session when `capabilities` is provided.
         """
         # Bindings let the in-tab Mapper send messages to the test: calling
         # `window.<binding>(payload)` emits `Runtime.bindingCalled` on the
@@ -359,6 +365,9 @@ class InTabMapperConnection:
                 session_id=self._mapper_session_id,
             )
 
+        restricted_mode_arg = (
+            f", {json.dumps(restricted_mode)}" if restricted_mode is not None else ""
+        )
         # The JS snippets below are combined into `init_expression`. They are
         # f-strings, so `{{` and `}}` are literal JS braces.
         if self._mapper_cdp_ws is not None:
@@ -390,7 +399,7 @@ class InTabMapperConnection:
                 await window.runMapperInstance(
                     {json.dumps(mapper_target_id)},
                     bidiTransport,
-                    cdpTransport,
+                    cdpTransport{restricted_mode_arg},
                 )
             """
             # Used by `closeMapper_<id>` if `runMapperInstance` failed.
@@ -399,10 +408,11 @@ class InTabMapperConnection:
             # No custom CDP transport: `runMapperInstance` uses the shared
             # default `window.cdp` transport.
             cdp_setup_js = ""
+            cdp_transport_arg = ", undefined" if restricted_mode is not None else ""
             run_call_js = f"""
                 await window.runMapperInstance(
                     {json.dumps(mapper_target_id)},
-                    bidiTransport,
+                    bidiTransport{cdp_transport_arg}{restricted_mode_arg},
                 )
             """
             fallback_close_js = "bidiTransport.close();"
@@ -497,13 +507,14 @@ class InTabMapperConnection:
         )
         assert "exceptionDetails" not in res, res
 
-        await execute_command(
-            self,
-            {
-                "method": "session.new",
-                "params": {"capabilities": {"alwaysMatch": capabilities}},
-            },
-        )
+        if capabilities is not None:
+            await execute_command(
+                self,
+                {
+                    "method": "session.new",
+                    "params": {"capabilities": {"alwaysMatch": capabilities}},
+                },
+            )
 
     async def send(self, message: str) -> None:
         """Sends a BiDi message to the in-tab Mapper. Used by `test_helpers`."""
@@ -765,6 +776,8 @@ async def create_mapper(browser_ws_url, mapper_tab_cdp, capabilities):
         custom_capabilities: dict | None = None,
         *,
         custom_cdp_transport: bool = True,
+        restricted_mode: bool | None = None,
+        create_session: bool = True,
     ) -> InTabMapperConnection:
         instance_id = f"mapper_{next(counter)}"
         cdp_ws = (
@@ -775,9 +788,15 @@ async def create_mapper(browser_ws_url, mapper_tab_cdp, capabilities):
         )
         # Register before `start()`, so a partly started Mapper is closed too.
         mappers.append(mapper)
+        session_capabilities = (
+            None
+            if not create_session
+            else (capabilities if custom_capabilities is None else custom_capabilities)
+        )
         await mapper.start(
             mapper_target_id,
-            capabilities if custom_capabilities is None else custom_capabilities,
+            session_capabilities,
+            restricted_mode=restricted_mode,
         )
         return mapper
 
@@ -1595,3 +1614,59 @@ async def test_multiple_mappers_no_cdp_errors(
             },
             session_id=mapper_session_id,
         )
+
+
+@pytest.mark.asyncio
+async def test_restricted_mode_mapper(create_mapper):
+    mapper = await create_mapper(create_session=False, restricted_mode=True)
+
+    # In restricted mode, the Mapper starts with an empty ACL before `session.new`.
+    with pytest.raises(Exception) as exception_info:
+        await execute_command(
+            mapper, {"method": "browsingContext.getTree", "params": {}}
+        )
+    assert exception_info.value.args[0] == {
+        "error": "unsupported operation",
+        "message": "Command 'browsingContext.getTree' is not allowed by the session ACL.",
+    }
+
+    with pytest.raises(Exception) as exception_info:
+        await execute_command(
+            mapper, {"method": "session.new", "params": {"capabilities": {}}}
+        )
+    assert exception_info.value.args[0] == {
+        "error": "session not created",
+        "message": 'Only restricted sessions are allowed. Request capability "goog:sessionType": "restricted".',
+    }
+
+    session_result = await execute_command(
+        mapper,
+        {
+            "method": "session.new",
+            "params": {
+                "capabilities": {"alwaysMatch": {"goog:sessionType": "restricted"}}
+            },
+        },
+    )
+    assert session_result["capabilities"]["goog:sessionType"] == "restricted"
+
+    with pytest.raises(Exception) as exception_info:
+        await execute_command(
+            mapper, {"method": "browsingContext.getTree", "params": {}}
+        )
+    assert exception_info.value.args[0] == {
+        "error": "unsupported operation",
+        "message": "Command 'browsingContext.getTree' is not allowed by the session ACL.",
+    }
+
+    await execute_command(
+        mapper,
+        {
+            "method": "goog:session.setAcl",
+            "params": {"acl": {"default": {"commands": ["browsingContext.getTree"]}}},
+        },
+    )
+    tree = await execute_command(
+        mapper, {"method": "browsingContext.getTree", "params": {}}
+    )
+    assert tree == {"contexts": [AnyExtending({"url": "about:blank"})]}

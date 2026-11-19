@@ -106,6 +106,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
     aclManager: AclManager,
     parser: BidiCommandParameterParser = new BidiNoOpParser(),
     initConnection: (options: MapperOptions) => Promise<void>,
+    restrictedMode: boolean,
     logger?: LoggerFn,
   ) {
     super();
@@ -159,6 +160,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
       browserCdpClient,
       initConnection,
       this.#aclManager,
+      restrictedMode,
     );
     this.#storageProcessor = new StorageProcessor(
       browserCdpClient,
