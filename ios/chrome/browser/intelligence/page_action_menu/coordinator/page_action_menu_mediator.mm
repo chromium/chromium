@@ -10,7 +10,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"
 #import "components/content_settings/core/common/content_settings.h"
-#import "components/content_settings/core/common/content_settings_pattern.h"
 #import "components/prefs/pref_service.h"
 #import "components/search/search.h"
 #import "components/search_engines/template_url_service.h"
@@ -47,13 +46,11 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
-#import "ios/chrome/browser/web/model/blocked_popup_tab_helper.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/permissions/permissions.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "ui/base/l10n/l10n_util.h"
-#import "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 namespace {
 
@@ -303,22 +300,6 @@ IOSPermissionSetting IOSPermissionSettingForPageActionMenuPermissionSetting(
       return [self isPermissionRowAvailable:web::PermissionCamera];
     case PageActionMenuMicrophonePermission:
       return [self isPermissionRowAvailable:web::PermissionMicrophone];
-    case PageActionMenuPopupBlocker: {
-      if (!IsProactiveSuggestionsFrameworkPopupBlockerEnabled() ||
-          !_hostContentSettingsMap) {
-        return NO;
-      }
-      GURL url = _webState->GetLastCommittedURL();
-      ContentSetting setting = _hostContentSettingsMap->GetContentSetting(
-          url, url, ContentSettingsType::POPUPS);
-
-      // Show row only if blocking is active AND there are blocked popups.
-      BlockedPopupTabHelper* helper =
-          BlockedPopupTabHelper::FromWebState(_webState);
-      bool hasBlockedPopups = helper && helper->GetBlockedPopupCount() > 0;
-
-      return setting == CONTENT_SETTING_BLOCK && hasBlockedPopups;
-    }
   }
 }
 
@@ -355,15 +336,6 @@ IOSPermissionSetting IOSPermissionSettingForPageActionMenuPermissionSetting(
   return [NSString stringWithFormat:@"%@ to %@", sourceName, targetName];
 }
 
-- (NSInteger)blockedPopupCount {
-  if (!_webState) {
-    return 0;
-  }
-  BlockedPopupTabHelper* helper =
-      BlockedPopupTabHelper::FromWebState(_webState);
-  return helper ? helper->GetBlockedPopupCount() : 0;
-}
-
 - (NSString*)currentSiteDomain {
   if (!_webState) {
     return nil;
@@ -394,7 +366,6 @@ IOSPermissionSetting IOSPermissionSettingForPageActionMenuPermissionSetting(
       break;
     // Only permission rows have a toggle.
     case PageActionMenuTranslate:
-    case PageActionMenuPopupBlocker:
       return;
   }
 
@@ -421,7 +392,6 @@ IOSPermissionSetting IOSPermissionSettingForPageActionMenuPermissionSetting(
       permission = web::PermissionMicrophone;
       break;
     case PageActionMenuTranslate:
-    case PageActionMenuPopupBlocker:
       // Only handle permissions with domain-level state.
       return;
   }
@@ -465,30 +435,6 @@ IOSPermissionSetting IOSPermissionSettingForPageActionMenuPermissionSetting(
     [features addObject:translateFeature];
   }
 
-  // Popup blocker feature.
-  if (IsProactiveSuggestionsFrameworkPopupBlockerEnabled() &&
-      [self isFeatureAvailable:PageActionMenuPopupBlocker]) {
-    RecordPageActionMenuFeatureRowShown(
-        IOSPageActionMenuFeatureType::kPopupBlocker);
-    PageActionMenuFeature* popupFeature = [[PageActionMenuFeature alloc]
-        initWithFeatureType:PageActionMenuPopupBlocker
-                      title:l10n_util::GetNSString(
-                                IDS_IOS_AI_HUB_POPUP_BLOCKER_LABEL)
-                       icon:SymbolWithPointSize(SymbolPopupBadgeMinus,
-                                                kFeatureRowIconSize)
-                 actionType:PageActionMenuButtonAction];
-
-    NSInteger blockedCount = [self blockedPopupCount];
-    NSString* countString =
-        [NSString stringWithFormat:@"%ld", (long)blockedCount];
-    popupFeature.subtitle =
-        l10n_util::GetNSStringF(IDS_IOS_AI_HUB_POPUP_BLOCKER_COUNT_SUBTITLE,
-                                base::SysNSStringToUTF16(countString));
-    popupFeature.actionText =
-        l10n_util::GetNSString(IDS_IOS_AI_HUB_POPUP_ALWAYS_SHOW_BUTTON_LABEL);
-    [features addObject:popupFeature];
-  }
-
   // Camera permission feature.
   if ([self isFeatureAvailable:PageActionMenuCameraPermission]) {
     RecordPageActionMenuFeatureRowShown(
@@ -522,41 +468,6 @@ IOSPermissionSetting IOSPermissionSettingForPageActionMenuPermissionSetting(
   }
 
   return features;
-}
-
-- (void)allowBlockedPopups {
-  if (!_webState || !_hostContentSettingsMap) {
-    return;
-  }
-
-  BlockedPopupTabHelper* helper =
-      BlockedPopupTabHelper::FromWebState(_webState);
-  if (!helper) {
-    return;
-  }
-
-  // Get the blocked popups.
-  std::vector<BlockedPopupTabHelper::Popup> popups = helper->GetBlockedPopups();
-
-  GURL currentUrl = _webState->GetLastCommittedURL();
-
-  RecordPageActionMenuFeatureRowUsed(
-      IOSPageActionMenuFeatureType::kPopupBlocker);
-
-  // Open each blocked popup and allow future popups from this site.
-  for (const auto& popup : popups) {
-    web::WebState::OpenURLParams params(
-        popup.popup_url, popup.referrer,
-        ui::mojom::WindowOpenDisposition::kNewPopup, ui::PAGE_TRANSITION_LINK,
-        true);
-    _webState->OpenURL(params);
-
-    // Set popup permission to ALLOW for the referrer site.
-    _hostContentSettingsMap->SetContentSettingCustomScope(
-        ContentSettingsPattern::FromURL(popup.referrer.url),
-        ContentSettingsPattern::Wildcard(), ContentSettingsType::POPUPS,
-        CONTENT_SETTING_ALLOW);
-  }
 }
 
 - (void)revertTranslation {

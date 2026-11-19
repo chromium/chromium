@@ -506,9 +506,6 @@
       <message name="IDS_IOS_AIM_SNACKBAR_UNDO_BUTTON" desc="Title of the undo button in the close snackbar in AIM assistant.">
         Undo
       </message>
-      <message name="IDS_IOS_AI_HUB_ALWAYS_SHOW_POPUPS_ACCESSIBILITY_LABEL" desc="The accessibility label for the button to always show pop-ups on this site in the AI hub.">
-        Always show pop-ups on this site
-      </message>
       <message name="IDS_IOS_AI_HUB_CAMERA_PERMISSION_ALWAYS_ALLOWED_EXPLANATION" desc="Explanation text shown under the camera permission row of the AI hub when the site is always allowed to use the camera.">
         <ph name="SITE_DOMAIN">$1<ex>camera.com</ex></ph> is allowed to use your camera whenever you visit this site
       </message>
@@ -568,15 +565,6 @@
       </message>
       <message name="IDS_IOS_AI_HUB_PERMISSION_SITE_EXPLANATION" desc="Explanation text for site permissions in the AI hub showing which site the permissions apply to.">
         <ph name="SITE_DOMAIN">$1<ex>camera.com</ex></ph> permissions will reset to off when you leave this site
-      </message>
-      <message name="IDS_IOS_AI_HUB_POPUP_ALWAYS_SHOW_BUTTON_LABEL" desc="The button label for always showing pop-ups in the Pop-up blocker feature of the AI hub.">
-        Always show
-      </message>
-      <message name="IDS_IOS_AI_HUB_POPUP_BLOCKER_COUNT_SUBTITLE" desc="A subtitle showing the number of blocked pop-ups in the AI hub. The number shows how many pop-ups were blocked.">
-        (<ph name="COUNT">$1<ex>2</ex></ph>)
-      </message>
-      <message name="IDS_IOS_AI_HUB_POPUP_BLOCKER_LABEL" desc="The button label for the Pop-up blocker feature of the AI hub.">
-        Pop-ups blocked
       </message>
       <message name="IDS_IOS_AI_HUB_READER_MODE_LABEL" desc="The button label for the Reader mode entry point of the AI hub.">
         Reading Mode

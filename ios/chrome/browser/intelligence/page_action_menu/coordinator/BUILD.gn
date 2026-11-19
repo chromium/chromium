@@ -63,12 +63,10 @@ source_set("coordinator") {
     "//ios/chrome/browser/signin/model:authentication_service",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/translate/model",
-    "//ios/chrome/browser/web/model",
     "//ios/chrome/browser/web_distiller/model",
     "//ios/public/provider/chrome/browser/bwg:gemini_api",
     "//ios/web/public",
     "//ios/web/public/permissions",
-    "//ui/base/mojom",
   ]
 }
 
@@ -118,7 +116,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/signin/model:test_support",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/sync/model:test_support",
-    "//ios/chrome/browser/web/model",
     "//ios/chrome/test:test_support",
     "//ios/web/public/permissions",
     "//ios/web/public/test",

@@ -918,14 +918,6 @@ constexpr FeatureEntry::FeatureVariation kPageActionMenuVariations[] = {
     {"Direct Entry Point", kPageActionMenuDirectEntryPoint, nullptr},
 };
 
-constexpr FeatureEntry::FeatureParam
-    kProactiveSuggestionsFrameworkPopupBlockerParam[] = {
-        {kProactiveSuggestionsFrameworkPopupBlocker, "true"}};
-constexpr FeatureEntry::FeatureVariation
-    kProactiveSuggestionsFrameworkVariations[] = {
-        {"Popup Blocker", kProactiveSuggestionsFrameworkPopupBlockerParam,
-         nullptr}};
-
 // LINT.IfChange(DataSharingVersioningChoices)
 constexpr FeatureEntry::Choice kDataSharingVersioningStateChoices[] = {
     {"Default", "", ""},
@@ -2088,10 +2080,7 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
     {"proactive-suggestions-framework",
      flag_descriptions::kProactiveSuggestionsFrameworkName,
      flag_descriptions::kProactiveSuggestionsFrameworkDescription,
-     flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kProactiveSuggestionsFramework,
-                                    kProactiveSuggestionsFrameworkVariations,
-                                    "ProactiveSuggestionsFramework")},
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kProactiveSuggestionsFramework)},
     {"ask-gemini-chip-ignore-criteria",
      flag_descriptions::kAskGeminiChipIgnoreCriteriaName,
      flag_descriptions::kAskGeminiChipIgnoreCriteriaDescription,

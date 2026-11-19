@@ -1700,7 +1700,7 @@ chromium-metrics-reviews@google.com.
 
 <enum name="IOSPageActionMenuFeatureType">
   <int value="0" label="Translate"/>
-  <int value="1" label="PopupBlocker"/>
+  <int value="1" label="(Obsolete) PopupBlocker"/>
   <int value="2" label="CameraPermission"/>
   <int value="3" label="MicrophonePermission"/>
   <int value="4" label="(Obsolete) PriceTracking"/>

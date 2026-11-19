@@ -23,7 +23,7 @@ enum class IOSAIHubAction {
 // LINT.IfChange(IOSPageActionMenuFeatureType)
 enum class IOSPageActionMenuFeatureType {
   kTranslate = 0,
-  kPopupBlocker = 1,
+  // kPopupBlocker = 1,  // Obsolete.
   kCameraPermission = 2,
   kMicrophonePermission = 3,
   // kPriceTracking = 4,  // Obsolete.

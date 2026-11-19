@@ -144,17 +144,6 @@ bool IsProactiveSuggestionsFrameworkEnabled() {
   return base::FeatureList::IsEnabled(kProactiveSuggestionsFramework);
 }
 
-const char kProactiveSuggestionsFrameworkPopupBlocker[] = "PopupBlocker";
-
-bool IsProactiveSuggestionsFrameworkPopupBlockerEnabled() {
-  if (!IsProactiveSuggestionsFrameworkEnabled()) {
-    return false;
-  }
-  return base::GetFieldTrialParamByFeatureAsBool(
-      kProactiveSuggestionsFramework,
-      kProactiveSuggestionsFrameworkPopupBlocker, false);
-}
-
 BASE_FEATURE(kAskGeminiChipIgnoreCriteria, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsAskGeminiChipIgnoreCriteriaEnabled() {

@@ -118,7 +118,6 @@ NSString* PermissionDropdownAccessibilityLabel(
       return l10n_util::GetNSString(
           IDS_IOS_AI_HUB_MICROPHONE_PERMISSION_DROPDOWN_ACCESSIBILITY_LABEL);
     case PageActionMenuTranslate:
-    case PageActionMenuPopupBlocker:
       NOTREACHED();
   }
 }
@@ -144,7 +143,6 @@ int PermissionDisclaimerMessageID(PageActionMenuFeatureType feature_type,
                  : IDS_IOS_AI_HUB_MICROPHONE_PERMISSION_BLOCKED_EXPLANATION;
 
     case PageActionMenuTranslate:
-    case PageActionMenuPopupBlocker:
       NOTREACHED();
   }
 }
@@ -295,8 +293,7 @@ int PermissionDisclaimerMessageID(PageActionMenuFeatureType feature_type,
 }
 
 - (void)permissionStateChanged {
-  if (!IsProactiveSuggestionsFrameworkEnabled() ||
-      !IsDomainLevelSitePermissionsEnabled()) {
+  if (!IsDomainLevelSitePermissionsEnabled()) {
     return;
   }
   for (PageActionMenuFeature* feature in [self.mutator activeFeatures]) {
@@ -759,7 +756,6 @@ int PermissionDisclaimerMessageID(PageActionMenuFeatureType feature_type,
 
 // Handles toggle switch changes for permission-based features.
 - (void)handleFeatureToggle:(UISwitch*)toggleSwitch {
-  CHECK(IsProactiveSuggestionsFrameworkEnabled());
   PageActionMenuFeatureType featureType =
       (PageActionMenuFeatureType)toggleSwitch.tag;
 
@@ -767,19 +763,13 @@ int PermissionDisclaimerMessageID(PageActionMenuFeatureType feature_type,
   [self updateAccessibilityLabelForSwitch:toggleSwitch featureType:featureType];
 }
 
-// Handles button taps for action-based features like translate and popup
-// blocker.
+// Handles button taps for action-based features like translate.
 - (void)handleFeatureButton:(UIButton*)button {
-  CHECK(IsProactiveSuggestionsFrameworkEnabled());
   PageActionMenuFeatureType featureType = (PageActionMenuFeatureType)button.tag;
 
   switch (featureType) {
     case PageActionMenuTranslate:
       [self.mutator revertTranslation];
-      [self.pageActionMenuHandler dismissPageActionMenuWithCompletion:nil];
-      break;
-    case PageActionMenuPopupBlocker:
-      [self.mutator allowBlockedPopups];
       [self.pageActionMenuHandler dismissPageActionMenuWithCompletion:nil];
       break;
     default:
@@ -789,7 +779,6 @@ int PermissionDisclaimerMessageID(PageActionMenuFeatureType feature_type,
 
 // Handles taps on the left side of split action feature rows.
 - (void)handleFeatureRowTap:(UIButton*)sender {
-  CHECK(IsProactiveSuggestionsFrameworkEnabled());
   PageActionMenuFeatureType featureType = (PageActionMenuFeatureType)sender.tag;
 
   switch (featureType) {
@@ -883,14 +872,12 @@ int PermissionDisclaimerMessageID(PageActionMenuFeatureType feature_type,
   }
 
   // Create dedicated feature rows container.
-  if (IsProactiveSuggestionsFrameworkEnabled()) {
-    _featureRowsStackView = [[UIStackView alloc] init];
-    _featureRowsStackView.axis = UILayoutConstraintAxisVertical;
-    _featureRowsStackView.translatesAutoresizingMaskIntoConstraints = NO;
-    [_contentStackView addArrangedSubview:_featureRowsStackView];
+  _featureRowsStackView = [[UIStackView alloc] init];
+  _featureRowsStackView.axis = UILayoutConstraintAxisVertical;
+  _featureRowsStackView.translatesAutoresizingMaskIntoConstraints = NO;
+  [_contentStackView addArrangedSubview:_featureRowsStackView];
 
-    [self rebuildFeatureRows];
-  }
+  [self rebuildFeatureRows];
 
   // Horizontal stack view for the side-by-side buttons.
   if ([self.mutator shouldShowFeatureEntryPoints]) {
@@ -1009,8 +996,6 @@ int PermissionDisclaimerMessageID(PageActionMenuFeatureType feature_type,
 
 // Rebuilds feature rows based on current availability state.
 - (void)rebuildFeatureRows {
-  CHECK(IsProactiveSuggestionsFrameworkEnabled());
-
   // Clear existing feature rows.
   for (UIView* view in _featureRowsStackView.arrangedSubviews) {
     [_featureRowsStackView removeArrangedSubview:view];
@@ -1189,11 +1174,6 @@ int PermissionDisclaimerMessageID(PageActionMenuFeatureType feature_type,
                          action:@selector(handleFeatureButton:)
                forControlEvents:UIControlEventTouchUpInside];
         [stackView addArrangedSubview:actionButton];
-
-        if (feature.featureType == PageActionMenuPopupBlocker) {
-          actionButton.accessibilityLabel = l10n_util::GetNSString(
-              IDS_IOS_AI_HUB_ALWAYS_SHOW_POPUPS_ACCESSIBILITY_LABEL);
-        }
       }
       break;
     }
@@ -1233,7 +1213,6 @@ int PermissionDisclaimerMessageID(PageActionMenuFeatureType feature_type,
 
 // Creates explanation label for site-specific permission context.
 - (UILabel*)createPermissionExplanationLabel {
-  CHECK(IsProactiveSuggestionsFrameworkEnabled());
   UILabel* label = [self secondaryLabel];
   NSString* domain = [self.mutator currentSiteDomain];
   label.text =
@@ -1386,7 +1365,6 @@ int PermissionDisclaimerMessageID(PageActionMenuFeatureType feature_type,
     case PageActionMenuMicrophonePermission:
       return YES;
     case PageActionMenuTranslate:
-    case PageActionMenuPopupBlocker:
       return NO;
   }
 }

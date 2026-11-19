@@ -380,10 +380,8 @@ TEST_F(PageActionMenuViewControllerTest, FooterRowNotShownMetric) {
 TEST_F(PageActionMenuViewControllerTest,
        PermissionDropdownSelectionUpdatesMutatorAndUI) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {kPageActionMenu, kProactiveSuggestionsFramework,
-       kDomainLevelSitePermissions},
-      {});
+  feature_list.InitWithFeatures({kPageActionMenu, kDomainLevelSitePermissions},
+                                {});
 
   PageActionMenuFeature* cameraFeature = [[PageActionMenuFeature alloc]
       initWithFeatureType:PageActionMenuCameraPermission
@@ -452,10 +450,8 @@ TEST_F(PageActionMenuViewControllerTest,
 // place when the underlying permission state changes.
 TEST_F(PageActionMenuViewControllerTest, PermissionStateChangedUpdatesUI) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {kPageActionMenu, kProactiveSuggestionsFramework,
-       kDomainLevelSitePermissions},
-      {});
+  feature_list.InitWithFeatures({kPageActionMenu, kDomainLevelSitePermissions},
+                                {});
 
   PageActionMenuFeature* cameraFeature = [[PageActionMenuFeature alloc]
       initWithFeatureType:PageActionMenuCameraPermission

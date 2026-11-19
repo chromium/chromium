@@ -43,9 +43,6 @@ enum class PageActionMenuPermissionSetting;
 // Returns the current translate language pair.
 - (NSString*)translateLanguagePair;
 
-// Returns the number of blocked popups.
-- (NSInteger)blockedPopupCount;
-
 // Returns the current site domain for permission context.
 - (NSString*)currentSiteDomain;
 
@@ -61,9 +58,6 @@ enum class PageActionMenuPermissionSetting;
 
 // Returns array of currently active features to display.
 - (NSArray<PageActionMenuFeature*>*)activeFeatures;
-
-// Allows all blocked popups for the current site.
-- (void)allowBlockedPopups;
 
 // Reverts the page translation to show the original language.
 - (void)revertTranslation;

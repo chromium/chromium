@@ -48,7 +48,6 @@
 #import "ios/chrome/browser/signin/model/identity_test_environment_browser_state_adaptor.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/test_sync_service_utils.h"
-#import "ios/chrome/browser/web/model/blocked_popup_tab_helper.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/permissions/permissions.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -287,77 +286,6 @@ TEST_F(PageActionMenuMediatorTest, LensEntryPoint) {
 
   EXPECT_FALSE(
       [mediator_ lensEntryPointForTraitCollection:portrait_traits].enabled);
-}
-
-// Tests that Popup Blocker availability and action work correctly.
-TEST_F(PageActionMenuMediatorTest, PopupBlocker) {
-  scoped_feature_list_.InitWithFeaturesAndParameters(
-      {{kPageActionMenu, {}},
-       {kProactiveSuggestionsFramework, {{"PopupBlocker", "true"}}}},
-      {});
-
-  // BlockedPopupTabHelper requires a real WebState to function properly (it
-  // relies on WebStateImpl internals that FakeWebState doesn't mock).
-  web::WebState::CreateParams params(browser_state_.get());
-  std::unique_ptr<web::WebState> real_web_state = web::WebState::Create(params);
-
-  BlockedPopupTabHelper::CreateForWebState(real_web_state.get());
-  BlockedPopupTabHelper* helper =
-      BlockedPopupTabHelper::FromWebState(real_web_state.get());
-  ASSERT_TRUE(helper);
-
-  GeminiTabHelper::CreateForWebState(real_web_state.get());
-
-  // We instantiate the mediator directly in the test scope rather than using a
-  // helper method. This ensures ARC owns the object and releases it immediately
-  // at the end of the scope, before `real_web_state` is destroyed. This
-  // prevents dangling pointers in the mediator pointing to destroyed
-  // TabHelpers.
-  TemplateURLService* template_url_service =
-      search_engines_test_environment_.template_url_service();
-  PageActionMenuMediator* local_mediator = [[PageActionMenuMediator alloc]
-            initWithWebState:real_web_state.get()
-       authenticationService:auth_service_
-          profilePrefService:pref_service_
-          templateURLService:template_url_service
-               geminiService:fake_gemini_service_.get()
-             geminiTabHelper:GeminiTabHelper::FromWebState(real_web_state.get())
-         readerModeTabHelper:nil
-      readerModeBrowserAgent:nil
-      hostContentSettingsMap:settings_map_];
-
-  FakePageActionMenuConsumer* local_consumer =
-      [[FakePageActionMenuConsumer alloc] init];
-  local_mediator.consumer = local_consumer;
-
-  // 1. Default state: No popups blocked.
-  EXPECT_FALSE([local_mediator isFeatureAvailable:PageActionMenuPopupBlocker]);
-  EXPECT_EQ([local_mediator blockedPopupCount], 0U);
-
-  // 2. Add a blocked popup.
-  GURL source_url("https://example.com");
-
-  settings_map_->SetContentSettingCustomScope(
-      ContentSettingsPattern::FromURL(source_url),
-      ContentSettingsPattern::Wildcard(), ContentSettingsType::POPUPS,
-      CONTENT_SETTING_BLOCK);
-
-  GURL popup_url("https://popup.com");
-  helper->HandlePopup(popup_url,
-                      web::Referrer(source_url, web::ReferrerPolicyDefault));
-
-  EXPECT_TRUE([local_mediator isFeatureAvailable:PageActionMenuPopupBlocker]);
-  EXPECT_EQ([local_mediator blockedPopupCount], 1U);
-
-  // 3. Test allowBlockedPopups action.
-  [local_mediator allowBlockedPopups];
-
-  // Verify content setting changed to ALLOW.
-  ContentSetting setting = settings_map_->GetContentSetting(
-      source_url, source_url, ContentSettingsType::POPUPS);
-  EXPECT_EQ(setting, CONTENT_SETTING_ALLOW);
-
-  [local_mediator disconnect];
 }
 
 // Tests that updatePermission updates WebState state correctly.

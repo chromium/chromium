@@ -1778,11 +1778,6 @@ inline constexpr char kProactiveSuggestionsFrameworkDescription[] =
     "Translate, Price History, etc.) into a unified badge system with "
     "centralized settings access through the AI Hub Page Tools.";
 
-inline constexpr char kProactiveSuggestionsFrameworkPopupBlockerName[] =
-    "Popup Blocker";
-inline constexpr char kProactiveSuggestionsFrameworkPopupBlockerDescription[] =
-    "Enables the popup blocker feature row in the Page Action Menu.";
-
 inline constexpr char kRecoverTabsOfLastClosedWindowName[] =
     "Recover Tabs of last closed window";
 inline constexpr char kRecoverTabsOfLastClosedWindowDescription[] =

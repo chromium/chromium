@@ -10,7 +10,6 @@
 // Types of features that can appear in the Page Action Menu.
 typedef NS_ENUM(NSInteger, PageActionMenuFeatureType) {
   PageActionMenuTranslate,
-  PageActionMenuPopupBlocker,
   PageActionMenuCameraPermission,
   PageActionMenuMicrophonePermission,
 };
