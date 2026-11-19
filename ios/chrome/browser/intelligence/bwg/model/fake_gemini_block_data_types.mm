@@ -4,6 +4,9 @@
 
 #import "ios/chrome/browser/intelligence/bwg/model/fake_gemini_block_data_types.h"
 
+@implementation FakeGeminiBrowserActuationConfirmationCard
+@end
+
 @implementation FakeGeminiBlockNode
 @end
 

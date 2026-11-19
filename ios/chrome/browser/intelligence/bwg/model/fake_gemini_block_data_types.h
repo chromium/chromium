@@ -8,9 +8,24 @@
 #import <Foundation/Foundation.h>
 
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_block_data_types.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_browser_actuation_confirmation_card.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_browser_actuations_block.h"
 
-// Fake block node for tests.
-@interface FakeGeminiBlockNode : NSObject <GeminiBlockNode>
+// Fake confirmation card with a settable task for tests.
+@interface FakeGeminiBrowserActuationConfirmationCard
+    : NSObject <GeminiBrowserActuationConfirmationCard>
+@property(nonatomic, copy) NSString* task;
+@end
+
+// Fake block node for tests. Leave a block property nil to model a node of
+// another type.
+@interface FakeGeminiBlockNode
+    : NSObject <GeminiBrowserActuationConfirmationCardBlockNode,
+                GeminiBrowserActuationsBlockNode>
+@property(nonatomic, strong) FakeGeminiBrowserActuationConfirmationCard*
+    browserActuationConfirmationCard;
+@property(nonatomic, strong) id<GeminiBrowserActuationsBlock>
+    browserActuationsBlock;
 @end
 
 // Fake block context with settable response metadata. Defaults to a completed
