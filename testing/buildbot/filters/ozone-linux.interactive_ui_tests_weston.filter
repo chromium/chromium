@@ -90,3 +90,7 @@
 # TODO(crbug.com/587583567): Wayland does not support programmatic window
 # activation via BringBrowserWindowToFront() after opening the incognito window.
 -CommandsApiTest.IncognitoShortcutsIgnoredWhenNotAllowed
+
+# TODO(crbug.com/586671479): Times out waiting for the target window to become
+# active.
+-All/FullWebUIOmniboxInteractiveTest.SwitchToTabFromClosingNtpActivatesOtherWindow/*
