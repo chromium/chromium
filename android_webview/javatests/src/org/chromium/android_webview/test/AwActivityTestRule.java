@@ -143,6 +143,8 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
     @Override
     protected void before() throws Throwable {
         super.before();
+        // The cached flags are reset after every test, while the browser process is only started
+        // once per batch, so they need to be set up again before each test.
         WebViewCachedFlags.initForTesting(new InMemorySharedPreferences());
         if (needsNativeInitialized()) {
             // The Activity must be launched in order to load native code
@@ -265,7 +267,6 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
         if (sBrowserContext == null) {
             ThreadUtils.runOnUiThreadBlocking(
                     () -> {
-                        WebViewCachedFlags.initForTesting(new InMemorySharedPreferences());
                         TestStartupUtils.startForTesting(useVulkan);
                         sBrowserContext = AwBrowserContext.getDefault();
                     });

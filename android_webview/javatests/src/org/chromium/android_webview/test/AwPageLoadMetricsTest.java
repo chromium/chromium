@@ -20,7 +20,6 @@ import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.common.PlatformServiceBridge;
-import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
@@ -46,13 +45,9 @@ public class AwPageLoadMetricsTest extends AwParameterizedTest {
 
     @BeforeClass
     public static void setUpClass() {
-        PlatformServiceBridge.injectInstance(
-                new PlatformServiceBridge() {
-                    @Override
-                    public void queryMetricsSetting(Callback<Boolean> callback) {
-                        ThreadUtils.postOnUiThread(callback.bind(true));
-                    }
-                });
+        // Injected before the batch's first test starts the browser process, so the single
+        // metrics consent query is answered by this bridge.
+        PlatformServiceBridge.injectInstance(new MetricsTestPlatformServiceBridge());
     }
 
     public AwPageLoadMetricsTest(AwSettingsMutation param) {
