@@ -15,6 +15,8 @@ source_set("icubridge") {
     "icu_bridge.cc",
     "icu_bridge.h",
     "icu_bridge_helpers.h",
+    "list_formatter.cc",
+    "list_formatter.h",
     "normalizer.cc",
     "normalizer.h",
     "supported_locales.cc",
@@ -49,6 +51,7 @@ source_set("unittests") {
     "calendar_unittest.cc",
     "date_time_formatter_unittest.cc",
     "default_icu_locale_unittest.cc",
+    "list_formatter_unittest.cc",
     "normalizer_unittest.cc",
     "supported_locales_unittest.cc",
   ]
