@@ -61,9 +61,7 @@ class DisableablePromoTapCounter {
                         ChromePreferenceKeys.CONTEXTUAL_SEARCH_TAP_TRIGGERED_PROMO_COUNT));
     }
 
-    /**
-     * @return whether the counter is currently enabled.
-     */
+    /** Returns whether the counter is currently enabled. */
     boolean isEnabled() {
         return mCounter >= 0;
     }
@@ -73,9 +71,7 @@ class DisableablePromoTapCounter {
         if (isEnabled()) setRawCounter(getToggledCounter(mCounter));
     }
 
-    /**
-     * @return The current count (always non-negative).
-     */
+    /** Returns the current count (always non-negative). */
     int getCount() {
         if (isEnabled()) return mCounter;
 

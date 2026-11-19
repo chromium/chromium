@@ -28,23 +28,17 @@ class ContextualSearchTapState {
         mTapTimeNanoseconds = tapTimeNanoseconds;
     }
 
-    /**
-     * @return The x coordinate of the Tap.
-     */
+    /** Returns the x coordinate of the Tap. */
     float getX() {
         return mX;
     }
 
-    /**
-     * @return The y coordinate of the Tap.
-     */
+    /** Returns the y coordinate of the Tap. */
     float getY() {
         return mY;
     }
 
-    /**
-     * @return The time of the Tap in nanoseconds.
-     */
+    /** Returns the time of the Tap in nanoseconds. */
     long tapTimeNanoseconds() {
         return mTapTimeNanoseconds;
     }

@@ -165,46 +165,38 @@ public abstract class ContextualSearchContext {
         setTranslationLanguages(getDetectedLanguage(), mTargetLanguage, mFluentLanguages);
     }
 
-    /**
-     * @return The text that surrounds the selection, or {@code null} if none yet known.
-     */
+    /** Returns the text that surrounds the selection, or {@code null} if none yet known. */
     String getSurroundingText() {
         return mSurroundingText;
     }
 
     /**
-     * @return The offset into the surrounding text of the start of the selection, or
-     *         {@link #INVALID_OFFSET} if not yet established.
+     * Returns the offset into the surrounding text of the start of the selection, or {@link
+     * #INVALID_OFFSET} if not yet established.
      */
     int getSelectionStartOffset() {
         return mSelectionStartOffset;
     }
 
     /**
-     * @return The offset into the surrounding text of the end of the selection, or
-     *         {@link #INVALID_OFFSET} if not yet established.
+     * Returns the offset into the surrounding text of the end of the selection, or {@link
+     * #INVALID_OFFSET} if not yet established.
      */
     int getSelectionEndOffset() {
         return mSelectionEndOffset;
     }
 
-    /**
-     * @return The original encoding of the base page.
-     */
+    /** Returns the original encoding of the base page. */
     String getEncoding() {
         return mEncoding;
     }
 
-    /**
-     * @return The selection being resolved, or {@code null} if no resolve has been requested.
-     */
+    /** Returns the selection being resolved, or {@code null} if no resolve has been requested. */
     @Nullable String getSelectionBeingResolved() {
         return mSelectionBeingResolved;
     }
 
-    /**
-     * @return The text content that follows the selection (one side of the surrounding text).
-     */
+    /** Returns the text content that follows the selection (one side of the surrounding text). */
     String getTextContentFollowingSelection() {
         if (!TextUtils.isEmpty(mSurroundingText)
                 && mSelectionEndOffset > 0
@@ -215,22 +207,21 @@ public abstract class ContextualSearchContext {
         }
     }
 
-    /**
-     * @return Whether this context can Resolve the Search Term.
-     */
+    /** Returns whether this context can Resolve the Search Term. */
     boolean canResolve() {
         return mHasSetResolveProperties && hasValidSelection();
     }
 
     /**
-     * Prepares the Context to be used in a Resolve request by supplying last minute parameters.
-     * If this call is not made before a Resolve then defaults are used (not exact and not a
-     * Related Search).
+     * Prepares the Context to be used in a Resolve request by supplying last minute parameters. If
+     * this call is not made before a Resolve then defaults are used (not exact and not a Related
+     * Search).
+     *
      * @param isExactSearch Specifies whether this search must be exact -- meaning the resolve must
-     *        return a non-expanding result that matches the selection exactly.
+     *     return a non-expanding result that matches the selection exactly.
      * @param relatedSearchesStamp Information to be attached to the Resolve request that is needed
-     *        for Related Searches. If this string is empty then no Related Searches results will
-     *        be requested.
+     *     for Related Searches. If this string is empty then no Related Searches results will be
+     *     requested.
      */
     void prepareToResolve(boolean isExactSearch, String relatedSearchesStamp) {
         mSelectionBeingResolved = getCurrentSelection();
@@ -242,10 +233,11 @@ public abstract class ContextualSearchContext {
 
     /**
      * Notifies of an adjustment that has been applied to the start and end of the selection.
+     *
      * @param startAdjust A signed value indicating the direction of the adjustment to the start of
-     *        the selection (typically a negative value when the selection expands).
-     * @param endAdjust A signed value indicating the direction of the adjustment to the end of
-     *        the selection (typically a positive value when the selection expands).
+     *     the selection (typically a negative value when the selection expands).
+     * @param endAdjust A signed value indicating the direction of the adjustment to the end of the
+     *     selection (typically a positive value when the selection expands).
      */
     void onSelectionAdjusted(int startAdjust, int endAdjust) {
         // Fully track the selection as it changes.
@@ -268,7 +260,7 @@ public abstract class ContextualSearchContext {
         return mSurroundingText.substring(mSelectionStartOffset, mSelectionEndOffset);
     }
 
-    /** @return the current selection, or an empty string if data is invalid or nothing selected. */
+    /** Returns the current selection, or an empty string if data is invalid or nothing selected. */
     String getSelection() {
         if (TextUtils.isEmpty(mSurroundingText)
                 || mSelectionEndOffset < mSelectionStartOffset
@@ -324,9 +316,7 @@ public abstract class ContextualSearchContext {
     // Content Analysis.
     // ============================================================================================
 
-    /**
-     * @return Whether this context has valid Surrounding text and initial Tap offset.
-     */
+    /** Returns whether this context has valid Surrounding text and initial Tap offset. */
     @VisibleForTesting
     boolean hasValidTappedText() {
         return !TextUtils.isEmpty(mSurroundingText)
@@ -334,9 +324,7 @@ public abstract class ContextualSearchContext {
                 && mTapOffset <= mSurroundingText.length();
     }
 
-    /**
-     * @return Whether this context has a valid selection, which may be an insertion point.
-     */
+    /** Returns whether this context has a valid selection, which may be an insertion point. */
     @VisibleForTesting
     boolean hasValidSelection() {
         return !TextUtils.isEmpty(mSurroundingText)
@@ -346,17 +334,16 @@ public abstract class ContextualSearchContext {
                 && mSelectionEndOffset < mSurroundingText.length();
     }
 
-    /**
-     * @return Whether a Tap gesture has occurred and been analyzed.
-     */
+    /** Returns whether a Tap gesture has occurred and been analyzed. */
     @VisibleForTesting
     boolean hasAnalyzedTap() {
         return mTapOffset >= 0;
     }
 
     /**
-     * @return The word tapped, or {@code null} if the word that was tapped cannot be identified by
-     *     the current limited parsing capability.
+     * Returns the word tapped, or {@code null} if the word that was tapped cannot be identified by
+     * the current limited parsing capability.
+     *
      * @see #analyzeTap(int)
      */
     @Nullable String getWordTapped() {
@@ -364,8 +351,9 @@ public abstract class ContextualSearchContext {
     }
 
     /**
-     * @return The offset of the tap within the tapped word, or {@code INVALID_OFFSET} if the tapped
-     *         word cannot be identified by the current parsing capability.
+     * Returns the offset of the tap within the tapped word, or {@code INVALID_OFFSET} if the tapped
+     * word cannot be identified by the current parsing capability.
+     *
      * @see #analyzeTap(int)
      */
     int getTapOffsetWithinTappedWord() {
@@ -395,8 +383,8 @@ public abstract class ContextualSearchContext {
     }
 
     /**
-     * @return The start of the word that contains the given initial offset, within the surrounding
-     *         text, or {@code INVALID_OFFSET} if not found.
+     * Returns the start of the word that contains the given initial offset, within the surrounding
+     * text, or {@code INVALID_OFFSET} if not found.
      */
     private int findWordStartOffset(int initial) {
         // Scan before, aborting if we hit any ideographic letter.
@@ -411,14 +399,15 @@ public abstract class ContextualSearchContext {
     }
 
     /**
-     * Finds the offset of the end of the word that includes the given initial offset.
-     * NOTE: this is the index of the character just past the last character of the word,
-     * so a 3 character word "who" has start index 0 and end index 3.
-     * The character at the initial offset is examined and each one after that too until a non-word
-     * character is encountered, and that offset will be returned.
+     * Finds the offset of the end of the word that includes the given initial offset. NOTE: this is
+     * the index of the character just past the last character of the word, so a 3 character word
+     * "who" has start index 0 and end index 3. The character at the initial offset is examined and
+     * each one after that too until a non-word character is encountered, and that offset will be
+     * returned.
+     *
      * @param initial The initial offset to scan from.
      * @return The end of the word that contains the given initial offset, within the surrounding
-     *         text.
+     *     text.
      */
     private int findWordEndOffset(int initial) {
         // Scan after, aborting if we hit any CJKV letter.
@@ -431,9 +420,7 @@ public abstract class ContextualSearchContext {
         return INVALID_OFFSET;
     }
 
-    /**
-     * @return Whether the character at the given index is a word-break.
-     */
+    /** Returns whether the character at the given index is a word-break. */
     private boolean isWordBreakAtIndex(int index) {
         return !Character.isLetterOrDigit(mSurroundingText.charAt(index))
                 && mSurroundingText.charAt(index) != SOFT_HYPHEN_CHAR;

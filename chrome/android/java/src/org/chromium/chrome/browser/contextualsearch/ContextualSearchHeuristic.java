@@ -37,17 +37,17 @@ abstract class ContextualSearchHeuristic {
     protected void logResultsSeen(boolean wasSearchContentViewSeen, boolean wasActivatedByTap) {}
 
     /**
-     * @return Whether this heuristic should be considered when logging aggregate metrics for Tap
-     *         suppression.
+     * Returns whether this heuristic should be considered when logging aggregate metrics for Tap
+     * suppression.
      */
     protected boolean shouldAggregateLogForTapSuppression() {
         return false;
     }
 
     /**
-     * @return Whether this heuristic's condition would have been satisfied, causing a tap
-     *         suppression, if it were enabled through VariationsAssociatedData. If the feature is
-     *         enabled through VariationsAssociatedData then this method should return false.
+     * Returns whether this heuristic's condition would have been satisfied, causing a tap
+     * suppression, if it were enabled through VariationsAssociatedData. If the feature is enabled
+     * through VariationsAssociatedData then this method should return false.
      */
     protected boolean isConditionSatisfiedForAggregateLogging() {
         return false;

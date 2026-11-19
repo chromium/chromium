@@ -51,7 +51,7 @@ public class TapSuppressionHeuristics extends ContextualSearchHeuristics {
     }
 
     /**
-     * @return Whether the Tap should be suppressed (due to a heuristic condition being satisfied).
+     * Returns whether the Tap should be suppressed (due to a heuristic condition being satisfied).
      */
     boolean shouldSuppressTap() {
         for (ContextualSearchHeuristic heuristic : mHeuristics) {

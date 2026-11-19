@@ -33,6 +33,7 @@ public class ContextualSearchManagerSupplier {
      * Attach to the specified host.
      *
      * @param host The host to attach the supplier to.
+     * @param supplier The {@link ContextualSearchManager} supplier to attach.
      */
     public static void attach(
             UnownedUserDataHost host,

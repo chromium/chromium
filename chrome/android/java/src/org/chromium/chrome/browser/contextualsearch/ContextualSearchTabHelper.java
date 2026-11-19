@@ -426,9 +426,7 @@ public class ContextualSearchTabHelper
         }
     }
 
-    /**
-     * @return whether Contextual Search is enabled and active in this tab.
-     */
+    /** Returns whether Contextual Search is enabled and active in this tab. */
     private boolean isContextualSearchActive(WebContents webContents) {
         if (CommandLine.getInstance().hasSwitch(ChromeSwitches.DISABLE_CONTEXTUAL_SEARCH)) {
             return false;
@@ -507,9 +505,7 @@ public class ContextualSearchTabHelper
         return true;
     }
 
-    /**
-     * @return Whether the device is online, or we have disabled online-detection.
-     */
+    /** Returns whether the device is online, or we have disabled online-detection. */
     private boolean isDeviceOnline(ContextualSearchManager manager) {
         return ChromeFeatureList.isEnabled(
                         ChromeFeatureList.CONTEXTUAL_SEARCH_DISABLE_ONLINE_DETECTION)

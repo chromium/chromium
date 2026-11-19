@@ -66,8 +66,8 @@ public class SelectionClientManager {
     }
 
     /**
-     * @return the current {@link SelectionClient} or {@code null} if there is none currently
-     *     active.
+     * Returns the current {@link SelectionClient} or {@code null} if there is none currently
+     * active.
      */
     @Nullable SelectionClient getSelectionClient() {
         return mOptionalSelectionClient;
@@ -76,8 +76,9 @@ public class SelectionClientManager {
     /**
      * Adds the given {@link SelectionClient} as an additional temporary instance that will be
      * notified of method calls.
+     *
      * @param contextualSearchSelectionClient An additional {@link SelectionClient} that should be
-     *        notified of requests going forward, used by Contextual Search.
+     *     notified of requests going forward, used by Contextual Search.
      * @return The resulting {@link SelectionClient} that should be active after the addition.
      */
     SelectionClient addContextualSearchSelectionClient(
@@ -125,15 +126,16 @@ public class SelectionClientManager {
         private final SelectionClient mContextualSearchSelectionClient;
 
         /**
-         * Constructs a bridge between the {@code smartSelectionClient} and the given
-         * {@code contextualSearchSelectionClient}.  Method calls to this class are repeated to both
-         * instances, with some exceptions: calls that return a value are only routed to the
-         * {@code smartSelectionClient}.
+         * Constructs a bridge between the {@code smartSelectionClient} and the given {@code
+         * contextualSearchSelectionClient}. Method calls to this class are repeated to both
+         * instances, with some exceptions: calls that return a value are only routed to the {@code
+         * smartSelectionClient}.
+         *
          * @param smartSelectionClient The platform-dependent {@link SelectionClient}, which will be
-         *        used as the dominant client, responsible for any results that need to be returned
-         *        from method calls (typically a {@code SmartSelectionClient}).
-         * @param contextualSearchSelectionClient A {@link SelectionClient} based on the
-         *        {@code ContextualSearchManager}.
+         *     used as the dominant client, responsible for any results that need to be returned
+         *     from method calls (typically a {@code SmartSelectionClient}).
+         * @param contextualSearchSelectionClient A {@link SelectionClient} based on the {@code
+         *     ContextualSearchManager}.
          */
         private SelectionClientBridge(
                 SelectionClient smartSelectionClient,
@@ -142,9 +144,7 @@ public class SelectionClientManager {
             mContextualSearchSelectionClient = contextualSearchSelectionClient;
         }
 
-        /**
-         * @return The current Smart Selection client.
-         */
+        /** Returns the current Smart Selection client. */
         private SelectionClient getSmartSelectionClient() {
             return mSmartSelectionClient;
         }
