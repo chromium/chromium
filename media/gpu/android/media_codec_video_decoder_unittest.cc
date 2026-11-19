@@ -4,14 +4,18 @@
 
 #include "media/gpu/android/media_codec_video_decoder.h"
 
+#include <string>
+
 #include "base/android/android_info.h"
 #include "base/android/jni_android.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/field_trial.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
@@ -27,6 +31,7 @@
 #include "media/base/decoder_buffer.h"
 #include "media/base/media_switches.h"
 #include "media/base/media_util.h"
+#include "media/base/mock_media_log.h"
 #include "media/base/supported_video_decoder_config.h"
 #include "media/base/test_helpers.h"
 #include "media/base/video_codecs.h"
@@ -35,12 +40,16 @@
 #include "media/gpu/android/fake_codec_allocator.h"
 #include "media/gpu/android/mock_android_video_surface_chooser.h"
 #include "media/gpu/android/mock_device_info.h"
+#include "media/gpu/android/output_frame_metrics.h"
 #include "media/gpu/android/video_accelerator_util.h"
 #include "media/gpu/android/video_frame_factory.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::test::RunCallback;
 using testing::_;
+using testing::AnyNumber;
+using testing::HasSubstr;
 using testing::NiceMock;
 using testing::NotNull;
 using testing::Return;
@@ -95,6 +104,9 @@ class FakeCdmContextRef final : public CdmContextRef {
   raw_ptr<bool> destroyed_;
   base::OnceClosure on_destroyed_;
 };
+
+constexpr char kOutputFrameEligibilityHistogram[] =
+    "Media.Android.MediaCodec.OutputFrame.Eligibility";
 
 }  // namespace
 
@@ -202,11 +214,13 @@ class MediaCodecVideoDecoderTest : public testing::TestWithParam<VideoCodec> {
     ON_CALL(*video_frame_factory_, Initialize(ExpectedOverlayMode(), _))
         .WillByDefault(RunCallback<1>(texture_owner));
 
-    bool is_surface_control_enabled = false;
+    std::unique_ptr<MediaLog> media_log = std::move(media_log_);
+    if (!media_log) {
+      media_log = std::make_unique<NullMediaLog>();
+    }
     auto* mcvd = new MediaCodecVideoDecoder(
-        gpu_preferences_, is_surface_control_enabled,
-        std::make_unique<NullMediaLog>(), device_info_.get(),
-        codec_allocator_.get(), std::move(surface_chooser),
+        gpu_preferences_, is_surface_control_enabled_, std::move(media_log),
+        device_info_.get(), codec_allocator_.get(), std::move(surface_chooser),
         base::BindRepeating(&CreateAndroidOverlayCb),
         base::BindRepeating(&MediaCodecVideoDecoderTest::RequestOverlayInfoCb,
                             base::Unretained(this)),
@@ -220,6 +234,11 @@ class MediaCodecVideoDecoderTest : public testing::TestWithParam<VideoCodec> {
   }
 
   VideoFrameFactory::OverlayMode ExpectedOverlayMode() const {
+    if (is_surface_control_enabled_) {
+      return require_secure_video_decoder_
+                 ? VideoFrameFactory::OverlayMode::kSurfaceControlSecure
+                 : VideoFrameFactory::OverlayMode::kSurfaceControlInsecure;
+    }
     return VideoFrameFactory::OverlayMode::kRequestPromotionHints;
   }
 
@@ -330,6 +349,36 @@ class MediaCodecVideoDecoderTest : public testing::TestWithParam<VideoCodec> {
     }
   }
 
+  // Enables block model and, if |enable_output|, kMediaCodecBlockModelOutput.
+  // Call before Initialize(): MCVD reads the features when it is created.
+  void EnableBlockModel(bool enable_output) {
+    if (enable_output) {
+      block_model_feature_list_.InitWithFeatures(
+          {kMediaCodecBlockModel, kMediaCodecBlockModelOutput}, {});
+    } else {
+      block_model_feature_list_.InitWithFeatures({kMediaCodecBlockModel},
+                                                 {kMediaCodecBlockModelOutput});
+    }
+    ON_CALL(*device_info_, SdkVersionFull())
+        .WillByDefault(Return(
+            base::android::android_info::SDK_VERSION_FULL_CINNAMON_BUN_2));
+  }
+
+  // Makes CreateMcvd() give MCVD a MockMediaLog instead of a NullMediaLog.
+  // CreateMcvd() moves |media_log_| into MCVD, so set all expectations on it
+  // before Initialize().
+  void UseMockMediaLog() {
+    media_log_ = std::make_unique<NiceMock<MockMediaLog>>();
+    EXPECT_CALL(*media_log_, DoAddLogRecordLogString(_)).Times(AnyNumber());
+  }
+
+  // Expects exactly one MediaCodec OutputFrame MediaLog entry with |value|.
+  // Call after UseMockMediaLog().
+  void ExpectOutputFrameLog(const std::string& value) {
+    EXPECT_CALL(*media_log_, DoAddLogRecordLogString(HasSubstr(
+                                 "\"MediaCodec OutputFrame: " + value + "\"")));
+  }
+
   void RequestOverlayInfoCb(ProvideOverlayInfoCB provide_overlay_info_cb) {
     provide_overlay_info_cb_ = std::move(provide_overlay_info_cb);
   }
@@ -359,6 +408,8 @@ class MediaCodecVideoDecoderTest : public testing::TestWithParam<VideoCodec> {
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
+  // Declared after |scoped_feature_list_| so it is destroyed first.
+  base::test::ScopedFeatureList block_model_feature_list_;
   const VideoCodec codec_;
   base::test::SingleThreadTaskEnvironment task_environment_;
   base::android::ScopedJavaGlobalRef<jobject> java_surface_;
@@ -371,6 +422,8 @@ class MediaCodecVideoDecoderTest : public testing::TestWithParam<VideoCodec> {
   NiceMock<base::MockCallback<VideoDecoder::DecodeCB>> decode_cb_;
   ProvideOverlayInfoCB provide_overlay_info_cb_;
   gpu::GpuPreferences gpu_preferences_;
+  bool is_surface_control_enabled_ = false;
+  std::unique_ptr<MockMediaLog> media_log_;
   scoped_refptr<VideoFrame> most_recent_frame_;
 
   // This is not an actual media crypto object.
@@ -1317,6 +1370,237 @@ TEST_P(MediaCodecVideoDecoderTest,
       InitializeWithOverlay_OneDecodePending(TestVideoConfig::Large(codec_)));
   ASSERT_TRUE(codec_allocator_->most_recent_config->media_crypto);
   EXPECT_FALSE(codec_allocator_->most_recent_config->use_block_model);
+}
+
+TEST_P(MediaCodecVideoDecoderTest, OutputFrameEligibility_Eligible) {
+  base::HistogramTester histogram_tester;
+  EnableBlockModel(/*enable_output=*/true);
+  is_surface_control_enabled_ = true;
+  gpu_preferences_.gr_context_type = gpu::GrContextType::kVulkan;
+  UseMockMediaLog();
+  ExpectOutputFrameLog("eligible/GaneshVulkan");
+
+  ASSERT_TRUE(InitializeFully_OneDecodePending(TestVideoConfig::Large(codec_)));
+
+  histogram_tester.ExpectUniqueSample(kOutputFrameEligibilityHistogram,
+                                      OutputFrameEligibility::kEligible, 1);
+}
+
+TEST_P(MediaCodecVideoDecoderTest, OutputFrameEligibility_FeatureDisabled) {
+  base::HistogramTester histogram_tester;
+  EnableBlockModel(/*enable_output=*/false);
+  is_surface_control_enabled_ = true;
+  UseMockMediaLog();
+  ExpectOutputFrameLog("off: feature_disabled");
+
+  ASSERT_TRUE(InitializeFully_OneDecodePending(TestVideoConfig::Large(codec_)));
+
+  histogram_tester.ExpectUniqueSample(kOutputFrameEligibilityHistogram,
+                                      OutputFrameEligibility::kFeatureDisabled,
+                                      1);
+}
+
+TEST_P(MediaCodecVideoDecoderTest, OutputFrameEligibility_NoSurfaceControl) {
+  base::HistogramTester histogram_tester;
+  EnableBlockModel(/*enable_output=*/true);
+  UseMockMediaLog();
+  ExpectOutputFrameLog("off: no_surface_control");
+
+  ASSERT_TRUE(InitializeFully_OneDecodePending(TestVideoConfig::Large(codec_)));
+
+  histogram_tester.ExpectUniqueSample(kOutputFrameEligibilityHistogram,
+                                      OutputFrameEligibility::kNoSurfaceControl,
+                                      1);
+}
+
+TEST_P(MediaCodecVideoDecoderTest, OutputFrameEligibility_SecureCodec) {
+  base::HistogramTester histogram_tester;
+  // Block model with a MediaCrypto requires kMediaCodecBlockModelEncrypted.
+  block_model_feature_list_.InitWithFeatures(
+      {kMediaCodecBlockModel, kMediaCodecBlockModelEncrypted,
+       kMediaCodecBlockModelOutput},
+      {});
+  ON_CALL(*device_info_, SdkVersionFull())
+      .WillByDefault(
+          Return(base::android::android_info::SDK_VERSION_FULL_CINNAMON_BUN_2));
+  is_surface_control_enabled_ = true;
+  CreateCdm(/*has_media_crypto_context=*/true,
+            /*require_secure_video_decoder=*/true);
+  UseMockMediaLog();
+  ExpectOutputFrameLog("off: secure_codec");
+
+  ASSERT_TRUE(InitializeWithOverlay_OneDecodePending(
+      TestVideoConfig::NormalEncrypted(codec_)));
+  ASSERT_TRUE(codec_allocator_->ProvideMockCodecAsync());
+
+  histogram_tester.ExpectUniqueSample(kOutputFrameEligibilityHistogram,
+                                      OutputFrameEligibility::kSecureCodec, 1);
+}
+
+TEST_P(MediaCodecVideoDecoderTest,
+       OutputFrameEligibility_ThreadedTextureMailboxes) {
+  base::HistogramTester histogram_tester;
+  EnableBlockModel(/*enable_output=*/true);
+  is_surface_control_enabled_ = true;
+  gpu_preferences_.enable_threaded_texture_mailboxes = true;
+  UseMockMediaLog();
+  ExpectOutputFrameLog("off: threaded_texture_mailboxes");
+
+  // With threaded texture mailboxes, MCVD doesn't ask for overlay info. It
+  // creates the codec on the TextureOwner right after the first Decode().
+  ASSERT_TRUE(Initialize(TestVideoConfig::Large(codec_)));
+  mcvd_->Decode(fake_decoder_buffer_, decode_cb_.Get());
+  ASSERT_TRUE(codec_allocator_->most_recent_config);
+  codec_allocator_->most_recent_config->on_buffers_available_cb.Run();
+  ASSERT_TRUE(codec_allocator_->ProvideMockCodecAsync());
+
+  histogram_tester.ExpectUniqueSample(
+      kOutputFrameEligibilityHistogram,
+      OutputFrameEligibility::kThreadedTextureMailboxes, 1);
+}
+
+TEST_P(MediaCodecVideoDecoderTest, OutputFrameEligibility_NotTextureOwner) {
+  base::HistogramTester histogram_tester;
+  EnableBlockModel(/*enable_output=*/true);
+  is_surface_control_enabled_ = true;
+  UseMockMediaLog();
+  ExpectOutputFrameLog("off: not_texture_owner");
+
+  ASSERT_TRUE(
+      InitializeWithOverlay_OneDecodePending(TestVideoConfig::Large(codec_)));
+  ASSERT_TRUE(codec_allocator_->ProvideMockCodecAsync());
+
+  histogram_tester.ExpectUniqueSample(kOutputFrameEligibilityHistogram,
+                                      OutputFrameEligibility::kNotTextureOwner,
+                                      1);
+}
+
+TEST_P(MediaCodecVideoDecoderTest, OutputFrameEligibility_SoftwareCodec) {
+  base::HistogramTester histogram_tester;
+  EnableBlockModel(/*enable_output=*/true);
+  is_surface_control_enabled_ = true;
+  UseMockMediaLog();
+  ExpectOutputFrameLog("off: software_codec");
+
+  ASSERT_TRUE(InitializeWithTextureOwner_OneDecodePending(
+      TestVideoConfig::Large(codec_)));
+  // FakeCodecAllocator builds the mock codec from this config, and a
+  // kSoftware config gives a codec whose IsSoftwareCodec() is true.
+  codec_allocator_->most_recent_config->codec_type = CodecType::kSoftware;
+  codec_allocator_->most_recent_config->on_buffers_available_cb.Run();
+  ASSERT_TRUE(codec_allocator_->ProvideMockCodecAsync());
+
+  histogram_tester.ExpectUniqueSample(kOutputFrameEligibilityHistogram,
+                                      OutputFrameEligibility::kSoftwareCodec,
+                                      1);
+}
+
+TEST_P(MediaCodecVideoDecoderTest,
+       OutputFrameEligibility_ConfigBlockerWinsOverFeatureDisabled) {
+  base::HistogramTester histogram_tester;
+  EnableBlockModel(/*enable_output=*/false);
+  is_surface_control_enabled_ = true;
+  UseMockMediaLog();
+  ExpectOutputFrameLog("off: software_codec");
+
+  ASSERT_TRUE(InitializeWithTextureOwner_OneDecodePending(
+      TestVideoConfig::Large(codec_)));
+  codec_allocator_->most_recent_config->codec_type = CodecType::kSoftware;
+  codec_allocator_->most_recent_config->on_buffers_available_cb.Run();
+  ASSERT_TRUE(codec_allocator_->ProvideMockCodecAsync());
+
+  histogram_tester.ExpectUniqueSample(kOutputFrameEligibilityHistogram,
+                                      OutputFrameEligibility::kSoftwareCodec,
+                                      1);
+}
+
+TEST_P(MediaCodecVideoDecoderTest,
+       OutputFrameEligibility_NotRecordedWithoutBlockModel) {
+  base::HistogramTester histogram_tester;
+  // kMediaCodecBlockModelOutput alone does nothing without block model and
+  // must not activate its field trial.
+  block_model_feature_list_.InitWithFeaturesAndParameters(
+      {{kMediaCodecBlockModelOutput, {}}}, {kMediaCodecBlockModel});
+  auto* output_trial =
+      base::FeatureList::GetFieldTrial(kMediaCodecBlockModelOutput);
+  ASSERT_TRUE(output_trial);
+  ASSERT_FALSE(base::FieldTrialList::IsTrialActive(output_trial->trial_name()));
+
+  ON_CALL(*device_info_, SdkVersionFull())
+      .WillByDefault(
+          Return(base::android::android_info::SDK_VERSION_FULL_CINNAMON_BUN_2));
+  is_surface_control_enabled_ = true;
+  UseMockMediaLog();
+  EXPECT_CALL(*media_log_,
+              DoAddLogRecordLogString(HasSubstr("MediaCodec OutputFrame:")))
+      .Times(0);
+
+  ASSERT_TRUE(InitializeFully_OneDecodePending(TestVideoConfig::Large(codec_)));
+
+  histogram_tester.ExpectTotalCount(kOutputFrameEligibilityHistogram, 0);
+  EXPECT_FALSE(base::FieldTrialList::IsTrialActive(output_trial->trial_name()));
+}
+
+TEST_P(MediaCodecVideoDecoderTest,
+       OutputFrameEligibility_NoBlockModelWithMediaCrypto) {
+  base::HistogramTester histogram_tester;
+  // Without kMediaCodecBlockModelEncrypted, a MediaCrypto disables block model.
+  block_model_feature_list_.InitWithFeatures(
+      {kMediaCodecBlockModel, kMediaCodecBlockModelOutput},
+      {kMediaCodecBlockModelEncrypted});
+  ON_CALL(*device_info_, SdkVersionFull())
+      .WillByDefault(
+          Return(base::android::android_info::SDK_VERSION_FULL_CINNAMON_BUN_2));
+  is_surface_control_enabled_ = true;
+  CreateCdm(/*has_media_crypto_context=*/true,
+            /*require_secure_video_decoder=*/false);
+  UseMockMediaLog();
+  ExpectOutputFrameLog("off: no_block_model");
+
+  ASSERT_TRUE(InitializeWithTextureOwner_OneDecodePending(
+      TestVideoConfig::Large(codec_)));
+  ASSERT_TRUE(codec_allocator_->most_recent_config->media_crypto);
+  codec_allocator_->most_recent_config->on_buffers_available_cb.Run();
+  ASSERT_TRUE(codec_allocator_->ProvideMockCodecAsync());
+
+  histogram_tester.ExpectUniqueSample(kOutputFrameEligibilityHistogram,
+                                      OutputFrameEligibility::kNoBlockModel, 1);
+}
+
+TEST_P(MediaCodecVideoDecoderTest,
+       OutputFrameEligibility_DoesNotActivateTrialWhenIneligible) {
+  block_model_feature_list_.InitWithFeaturesAndParameters(
+      {{kMediaCodecBlockModel, {}}, {kMediaCodecBlockModelOutput, {}}}, {});
+  auto* output_trial =
+      base::FeatureList::GetFieldTrial(kMediaCodecBlockModelOutput);
+  ASSERT_TRUE(output_trial);
+  ASSERT_FALSE(base::FieldTrialList::IsTrialActive(output_trial->trial_name()));
+
+  ON_CALL(*device_info_, SdkVersionFull())
+      .WillByDefault(
+          Return(base::android::android_info::SDK_VERSION_FULL_CINNAMON_BUN_2));
+  // SurfaceControl is off, so the feature must not be queried.
+  ASSERT_TRUE(InitializeFully_OneDecodePending(TestVideoConfig::Large(codec_)));
+
+  EXPECT_FALSE(base::FieldTrialList::IsTrialActive(output_trial->trial_name()));
+}
+
+TEST_P(MediaCodecVideoDecoderTest,
+       OutputFrameEligibility_ActivatesTrialWhenEligible) {
+  block_model_feature_list_.InitWithFeaturesAndParameters(
+      {{kMediaCodecBlockModel, {}}, {kMediaCodecBlockModelOutput, {}}}, {});
+  auto* output_trial =
+      base::FeatureList::GetFieldTrial(kMediaCodecBlockModelOutput);
+  ASSERT_TRUE(output_trial);
+  ASSERT_FALSE(base::FieldTrialList::IsTrialActive(output_trial->trial_name()));
+
+  ON_CALL(*device_info_, SdkVersionFull())
+      .WillByDefault(
+          Return(base::android::android_info::SDK_VERSION_FULL_CINNAMON_BUN_2));
+  is_surface_control_enabled_ = true;
+  ASSERT_TRUE(InitializeFully_OneDecodePending(TestVideoConfig::Large(codec_)));
+
+  EXPECT_TRUE(base::FieldTrialList::IsTrialActive(output_trial->trial_name()));
 }
 
 static std::vector<VideoCodec> GetTestList() {

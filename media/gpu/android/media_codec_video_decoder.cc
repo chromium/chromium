@@ -277,7 +277,8 @@ MediaCodecVideoDecoder::MediaCodecVideoDecoder(
           base::FeatureList::IsEnabled(kMediaCodecBlockModel)),
       use_block_model_for_encrypted_(
           use_block_model_ &&
-          base::FeatureList::IsEnabled(kMediaCodecBlockModelEncrypted)) {
+          base::FeatureList::IsEnabled(kMediaCodecBlockModelEncrypted)),
+      gr_context_type_(gpu_preferences.gr_context_type) {
   DVLOG(2) << __func__;
   surface_chooser_helper_.chooser()->SetClientCallbacks(
       base::BindRepeating(&MediaCodecVideoDecoder::OnSurfaceChosen,
@@ -828,6 +829,8 @@ void MediaCodecVideoDecoder::OnCodecConfigured(
       << ", use_block_model_=" << ShouldUseBlockModel() << ", low_delay_="
       << (base::FeatureList::IsEnabled(kMediaCodecLowDelayMode) && low_delay_);
 
+  UpdateOutputFrameEligibility(codec.get(), surface_bundle);
+
   // Since we can't get the coded size w/o rendering the frame, we try to guess
   // in cases where we are unable to render the frame (resolution changes). If
   // we can't guess, there will be a visible rendering glitch.
@@ -862,6 +865,60 @@ void MediaCodecVideoDecoder::OnCodecConfigured(
     TransitionToTargetSurface();
 
   PumpCodec();
+}
+
+OutputFrameEligibility MediaCodecVideoDecoder::GetOutputFrameEligibility(
+    MediaCodecBridge* codec,
+    const scoped_refptr<CodecSurfaceBundle>& surface_bundle) const {
+  // MediaCodec.getOutputFrame() requires block model.
+  if (!ShouldUseBlockModel()) {
+    return OutputFrameEligibility::kNoBlockModel;
+  }
+  if (!is_surface_control_enabled_) {
+    return OutputFrameEligibility::kNoSurfaceControl;
+  }
+  if (requires_secure_codec_) {
+    return OutputFrameEligibility::kSecureCodec;
+  }
+  if (enable_threaded_texture_mailboxes_) {
+    return OutputFrameEligibility::kThreadedTextureMailboxes;
+  }
+  if (surface_bundle != texture_owner_bundle_) {
+    return OutputFrameEligibility::kNotTextureOwner;
+  }
+  if (codec->IsSoftwareCodec()) {
+    return OutputFrameEligibility::kSoftwareCodec;
+  }
+  // Checked last: querying the feature reports this client as part of its
+  // field trial, and only decoders that could use OutputFrames should be.
+  if (!base::FeatureList::IsEnabled(kMediaCodecBlockModelOutput)) {
+    return OutputFrameEligibility::kFeatureDisabled;
+  }
+  return OutputFrameEligibility::kEligible;
+}
+
+void MediaCodecVideoDecoder::UpdateOutputFrameEligibility(
+    MediaCodecBridge* codec,
+    const scoped_refptr<CodecSurfaceBundle>& surface_bundle) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  output_frame_eligibility_ = GetOutputFrameEligibility(codec, surface_bundle);
+  // Devices below Android 17 26Q4, or with kMediaCodecBlockModel disabled,
+  // would make up nearly all samples, so they aren't recorded.
+  if (!use_block_model_) {
+    return;
+  }
+
+  base::UmaHistogramEnumeration(
+      "Media.Android.MediaCodec.OutputFrame.Eligibility",
+      output_frame_eligibility_);
+  if (output_frame_eligibility_ == OutputFrameEligibility::kEligible) {
+    MEDIA_LOG(INFO, media_log_) << "MediaCodec OutputFrame: eligible/"
+                                << gpu::GrContextTypeToString(gr_context_type_);
+  } else {
+    MEDIA_LOG(INFO, media_log_)
+        << "MediaCodec OutputFrame: off: "
+        << OutputFrameEligibilityToString(output_frame_eligibility_);
+  }
 }
 
 void MediaCodecVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,

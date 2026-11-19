@@ -914,6 +914,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.Android.MediaCodec.OutputFrame.Eligibility"
+    enum="MediaCodecOutputFrameEligibility" expires_after="2027-09-01">
+  <owner>philyan@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Android: whether a MediaCodec video decoder instance can use OutputFrames
+    (block model output), or the first reason it can't. Recorded once per codec
+    instance when the codec is configured, only on Android 17 26Q4+ with the
+    MediaCodecBlockModel feature enabled. NoBlockModel then means that the
+    decoder uses a MediaCrypto while MediaCodecBlockModelEncrypted is disabled.
+  </summary>
+</histogram>
+
 <histogram name="Media.Android.MediaCodec.VideoInputExceedsMaxCapacity"
     enum="Boolean" expires_after="2027-03-24">
   <owner>sobek@google.com</owner>

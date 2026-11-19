@@ -29,6 +29,7 @@
 #include "media/gpu/android/codec_allocator.h"
 #include "media/gpu/android/codec_wrapper.h"
 #include "media/gpu/android/device_info.h"
+#include "media/gpu/android/output_frame_metrics.h"
 #include "media/gpu/android/surface_chooser_helper.h"
 #include "media/gpu/android/video_frame_factory.h"
 #include "media/gpu/media_gpu_export.h"
@@ -187,6 +188,20 @@ class MEDIA_GPU_EXPORT MediaCodecVideoDecoder final
       std::unique_ptr<MediaCodecBridge> codec);
   void OnCodecConfigured(scoped_refptr<CodecSurfaceBundle> surface_bundle,
                          std::unique_ptr<MediaCodecBridge> media_codec);
+
+  // Returns whether |codec| rendering to |surface_bundle| can use OutputFrames,
+  // or the first reason it can't.
+  OutputFrameEligibility GetOutputFrameEligibility(
+      MediaCodecBridge* codec,
+      const scoped_refptr<CodecSurfaceBundle>& surface_bundle) const;
+
+  // Sets |output_frame_eligibility_| for a newly configured |codec| that
+  // renders to |surface_bundle|. If block model is enabled on this device,
+  // also records Media.Android.MediaCodec.OutputFrame.Eligibility and logs the
+  // result to MediaLog.
+  void UpdateOutputFrameEligibility(
+      MediaCodecBridge* codec,
+      const scoped_refptr<CodecSurfaceBundle>& surface_bundle);
 
   // Flushes the codec, or if flush() is not supported, releases it and creates
   // a new one.
@@ -373,9 +388,18 @@ class MEDIA_GPU_EXPORT MediaCodecVideoDecoder final
   std::string codec_name_;
 
   // Whether block model (LinearBlock) is enabled for codecs without and with a
-  // MediaCrypto. Use ShouldUseBlockModel() instead of reading these directly.
+  // MediaCrypto. Use ShouldUseBlockModel() to check whether the current codec
+  // uses block model.
   const bool use_block_model_;
   const bool use_block_model_for_encrypted_;
+
+  // Skia backend of the GPU process. Shown in MediaLog output.
+  const gpu::GrContextType gr_context_type_;
+
+  // Whether the current codec could use OutputFrames, or the first reason
+  // it can't. Latched per codec instance in OnCodecConfigured().
+  OutputFrameEligibility output_frame_eligibility_ =
+      OutputFrameEligibility::kFeatureDisabled;
 
   HdrMetadataReorderingMap hdr_metadata_reordering_map_;
 

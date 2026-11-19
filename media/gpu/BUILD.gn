@@ -148,6 +148,8 @@ component("gpu") {
       "android/ndk_media_codec_wrapper.h",
       "android/ndk_video_encode_accelerator.cc",
       "android/ndk_video_encode_accelerator.h",
+      "android/output_frame_metrics.cc",
+      "android/output_frame_metrics.h",
       "android/pooled_shared_image_video_provider.cc",
       "android/pooled_shared_image_video_provider.h",
       "android/promotion_hint_aggregator.h",

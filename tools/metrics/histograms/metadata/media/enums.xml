@@ -1661,6 +1661,25 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//media/base/android/media_codec_bridge.h:MediaCodecStatus) -->
 
+<!-- LINT.IfChange(MediaCodecOutputFrameEligibility) -->
+
+<enum name="MediaCodecOutputFrameEligibility">
+  <summary>
+    Whether a MediaCodec video decoder can use OutputFrames, or the first reason
+    it can't.
+  </summary>
+  <int value="0" label="Eligible"/>
+  <int value="1" label="FeatureDisabled"/>
+  <int value="2" label="NoSurfaceControl"/>
+  <int value="3" label="SecureCodec"/>
+  <int value="4" label="ThreadedTextureMailboxes"/>
+  <int value="5" label="NotTextureOwner"/>
+  <int value="6" label="SoftwareCodec"/>
+  <int value="7" label="NoBlockModel"/>
+</enum>
+
+<!-- LINT.ThenChange(//media/gpu/android/output_frame_metrics.h:OutputFrameEligibility) -->
+
 <!-- LINT.IfChange(MediaContainers) -->
 
 <enum name="MediaContainers">
