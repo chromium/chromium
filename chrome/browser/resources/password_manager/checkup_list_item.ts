@@ -25,10 +25,11 @@ import {ShowPasswordMixin} from './show_password_mixin.js';
 
 export interface CheckupListItemElement extends ShowPasswordMixinInterface {
   $: {
-    shownUrl: HTMLElement,
-    username: HTMLElement,
     insecurePassword: HTMLInputElement,
     more: CrIconButtonElement,
+    openInNew: CrIconButtonElement,
+    shownUrl: HTMLElement,
+    username: HTMLElement,
   };
 }
 

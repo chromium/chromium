@@ -11,6 +11,7 @@ import './checkup_list_item.js';
 
 import {PrefServiceObserverMixinLit} from '/shared/settings/prefs2/pref_service_observer_mixin_lit.js';
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
@@ -42,7 +43,7 @@ export class ReusedPasswordInfo {
 
 export interface CheckupDetailsSectionElement {
   $: {
-    backButton: HTMLElement,
+    backButton: CrIconButtonElement,
     description: HTMLElement,
     moreActionsMenu: CrActionMenuElement,
     menuShowPassword: HTMLButtonElement,

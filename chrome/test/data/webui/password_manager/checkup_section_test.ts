@@ -295,10 +295,7 @@ suite('CheckupSectionTest', function() {
                 await passwordManager.whenCalled('getPasswordCheckStatus');
                 await microtasksFinished();
 
-                const listRow = section.shadowRoot.querySelector<HTMLElement>(
-                    `#${type}Row`);
-                assertTrue(!!listRow);
-                listRow.click();
+                section.$[`${type}Row`].click();
 
                 assertEquals(
                     Page.CHECKUP_DETAILS,
@@ -322,10 +319,7 @@ suite('CheckupSectionTest', function() {
                 await passwordManager.whenCalled('getPasswordCheckStatus');
                 await microtasksFinished();
 
-                const listRow = section.shadowRoot.querySelector<HTMLElement>(
-                    `#${type}Row`);
-                assertTrue(!!listRow);
-                listRow.click();
+                section.$[`${type}Row`].click();
 
                 assertEquals(
                     Page.CHECKUP, Router.getInstance().currentRoute.page);

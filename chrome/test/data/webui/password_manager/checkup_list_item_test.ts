@@ -144,13 +144,8 @@ suite('CheckupListItemTest', function() {
         ]) {
           const element = await createCheckupListItem(state);
 
-          const openInNew =
-              element.shadowRoot.querySelector<HTMLElement>('#openInNew');
-          assertTrue(!!openInNew);
-          assertTrue(isVisible(openInNew));
-
-          const more = element.$.more;
-          assertFalse(isVisible(more));
+          assertTrue(isVisible(element.$.openInNew));
+          assertFalse(isVisible(element.$.more));
         }
       });
 
@@ -160,10 +155,7 @@ suite('CheckupListItemTest', function() {
         const element =
             await createCheckupListItem(PasswordAutomaticChangeState.kError);
 
-        const openInNew =
-            element.shadowRoot.querySelector<HTMLElement>('#openInNew');
-        assertTrue(!!openInNew);
-        openInNew.click();
+        element.$.openInNew.click();
         assertEquals(1, passwordManager.getCallCount('openPasswordChangeTab'));
         const credentialId =
             passwordManager.getArgs('openPasswordChangeTab')[0];
@@ -179,13 +171,8 @@ suite('CheckupListItemTest', function() {
         ]) {
           const element = await createCheckupListItem(state);
 
-          const openInNew =
-              element.shadowRoot.querySelector<HTMLElement>('#openInNew');
-          assertFalse(isVisible(openInNew));
-
-          const more = element.$.more;
-          assertTrue(!!more);
-          assertTrue(isVisible(more));
+          assertFalse(isVisible(element.$.openInNew));
+          assertTrue(isVisible(element.$.more));
         }
       });
 

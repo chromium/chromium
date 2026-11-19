@@ -139,10 +139,7 @@ suite('PasswordManagerAppTest', function() {
                 app.setNarrowForTesting(false);
                 await microtasksFinished();
 
-                const listRow =
-                    app.$.checkup.shadowRoot.querySelector<HTMLElement>(
-                        `#${type}Row`);
-                assertTrue(!!listRow);
+                const listRow = app.$.checkup.$[`${type}Row`];
                 listRow.click();
                 await microtasksFinished();
                 await microtasksFinished();
