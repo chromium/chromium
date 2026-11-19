@@ -5,11 +5,13 @@
 #include "components/stream_transport/internal/transport_service_impl.h"
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notimplemented.h"
 #include "base/sequence_checker.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/oauth_consumer_id.h"
@@ -19,6 +21,7 @@
 #include "components/stream_transport/internal/session_stream_recorder.h"
 #include "components/stream_transport/internal/transport_channel_impl.h"
 #include "components/stream_transport/internal/upstream_message_client/upstream_message_client.h"
+#include "components/stream_transport/public/common.h"
 #include "components/stream_transport/public/proto_stream/message_stream_client.h"
 #include "components/stream_transport/public/proto_stream/oauth_stream_connection_delegate.h"
 #include "components/stream_transport/public/proto_stream/stream_client.h"
@@ -242,6 +245,15 @@ TransportSession* TransportServiceImpl::GetSession(
   if (channel && channel->GetSessionRegistry()) {
     return channel->GetSessionRegistry()->GetSession(session_id);
   }
+  return nullptr;
+}
+
+TransportSession* TransportServiceImpl::StartClientSession(
+    std::string_view session_id,
+    PayloadType payload_type,
+    const google::protobuf::MessageLite& message,
+    StartClientSessionCallback callback) {
+  NOTIMPLEMENTED();
   return nullptr;
 }
 

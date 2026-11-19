@@ -7,8 +7,14 @@
 
 #include <string_view>
 
+#include "base/functional/callback.h"
+#include "components/stream_transport/public/common.h"
 #include "components/stream_transport/public/transport_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
+
+namespace google::protobuf {
+class MessageLite;
+}  // namespace google::protobuf
 
 namespace stream_transport {
 
@@ -25,6 +31,13 @@ class MockTransportService : public TransportService {
   MOCK_METHOD(TransportSession*,
               GetSession,
               (std::string_view session_id),
+              (override));
+  MOCK_METHOD(TransportSession*,
+              StartClientSession,
+              (std::string_view session_id,
+               PayloadType payload_type,
+               const google::protobuf::MessageLite& message,
+               StartClientSessionCallback callback),
               (override));
   MOCK_METHOD(SessionStreamRecorderFactory*,
               GetStreamRecorderFactory,

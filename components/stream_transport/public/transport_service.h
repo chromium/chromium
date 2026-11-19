@@ -7,9 +7,15 @@
 
 #include <string_view>
 
+#include "base/functional/callback_forward.h"
+#include "base/types/expected.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/stream_transport/public/common.h"
 #include "url/gurl.h"
+
+namespace google::protobuf {
+class MessageLite;
+}  // namespace google::protobuf
 
 namespace stream_transport {
 
@@ -52,6 +58,9 @@ struct TransportServiceConfig {
 // Lives on the UI thread. Created by `TransportServiceFactory` in //chrome.
 class TransportService : public KeyedService {
  public:
+  using StartClientSessionCallback = base::OnceCallback<void(
+      base::expected<TransportSession*, StartClientSessionError>)>;
+
   ~TransportService() override;
 
   TransportService(const TransportService&) = delete;
@@ -68,6 +77,36 @@ class TransportService : public KeyedService {
 
   // Returns the session for `session_id`, or nullptr if there is none.
   virtual TransportSession* GetSession(std::string_view session_id) = 0;
+
+  // Starts a client-initiated session.
+  //
+  // Synchronously returns a pending `TransportSession*` handle while
+  // dispatching `message` upstream as client sequence 1, or returns `nullptr`
+  // synchronously (posting `kChannelUnavailable` or the validation error
+  // asynchronously to `callback`) if the channel is disabled, unavailable, or
+  // local pre-flight checks fail. While pending, `GetSession(session_id)`
+  // returns `nullptr` until server acknowledgement graduates the session.
+  //
+  // Calling `Close()` on the returned pending `TransportSession*` before
+  // `callback` runs cancels the in-flight start, suppresses `callback`, and
+  // tears down any server session if sequence 1 already succeeded.
+  //
+  // The returned pending `TransportSession*` handle is destroyed immediately
+  // when `callback` finishes executing (including `kChannelUnavailable`
+  // delivered on channel teardown or account reset) or when `Close()`
+  // completes. Callers holding `raw_ptr<TransportSession>` must clear or
+  // overwrite it inside `callback` and before calling `Close()`.
+  //
+  // Once sequence 1 is acknowledged by the server, the pending session
+  // graduates into a matured `TransportSession` registered on the downstream
+  // stream, and `callback` is invoked asynchronously on the UI sequence with
+  // the matured `TransportSession*` (or a `StartClientSessionError` on
+  // failure).
+  virtual TransportSession* StartClientSession(
+      std::string_view session_id,
+      PayloadType payload_type,
+      const google::protobuf::MessageLite& message,
+      StartClientSessionCallback callback) = 0;
 
   // Returns the recorder of every session's messages, used by
   // chrome://browser-actuator-internals, or nullptr if recording is off.

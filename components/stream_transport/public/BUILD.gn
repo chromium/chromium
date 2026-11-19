@@ -40,7 +40,10 @@ source_set("payload_type_mapping") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "payload_type_mapping_unittest.cc" ]
+  sources = [
+    "common_unittest.cc",
+    "payload_type_mapping_unittest.cc",
+  ]
 
   deps = [
     ":payload_type_mapping",

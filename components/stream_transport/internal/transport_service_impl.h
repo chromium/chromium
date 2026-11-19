@@ -19,6 +19,10 @@ namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
 
+namespace google::protobuf {
+class MessageLite;
+}  // namespace google::protobuf
+
 namespace stream_transport {
 
 class SessionStreamRecorderFactory;
@@ -46,6 +50,11 @@ class TransportServiceImpl : public TransportService,
   TransportSession* CreateSession(std::string_view session_id,
                                   InitIngressSource ingress_source) override;
   TransportSession* GetSession(std::string_view session_id) override;
+  TransportSession* StartClientSession(
+      std::string_view session_id,
+      PayloadType payload_type,
+      const google::protobuf::MessageLite& message,
+      StartClientSessionCallback callback) override;
   SessionStreamRecorderFactory* GetStreamRecorderFactory() override;
 
   // signin::IdentityManager::Observer:
