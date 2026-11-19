@@ -90,7 +90,7 @@ public class PermissionInfoTest {
         return ThreadUtils.runOnUiThreadBlocking(
                 (Callable<Profile>)
                         () -> {
-                            OtrProfileId otrProfileId = OtrProfileId.createUnique("CCT:Incognito");
+                            OtrProfileId otrProfileId = OtrProfileId.createUniqueIncognitoCctId();
                             return ProfileManager.getLastUsedRegularProfile()
                                     .getOffTheRecordProfile(
                                             otrProfileId, /* createIfNeeded= */ true);

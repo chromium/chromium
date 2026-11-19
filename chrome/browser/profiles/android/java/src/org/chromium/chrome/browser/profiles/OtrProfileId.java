@@ -20,7 +20,6 @@ public class OtrProfileId {
     // OtrProfileId value should be same with Profile::OtrProfileId::PrimaryID in native.
     private static final OtrProfileId sPrimaryOtrProfileId =
             new OtrProfileId("profile::primary_otr");
-    private static final String INCOGNITO_CCT_OTR_PROFILE_ID_PREFIX = "CCT:Incognito";
 
     @CalledByNative
     public OtrProfileId(@JniType("std::string") String profileId) {
@@ -38,12 +37,9 @@ public class OtrProfileId {
         return OtrProfileIdJni.get().createUniqueOtrProfileId(profileIdPrefix);
     }
 
-    /**
-     * Creates a new unique Incognito CCT profile id by appending a unique serial number to the iCCT
-     * OTR profile id prefix {@link #INCOGNITO_CCT_OTR_PROFILE_ID_PREFIX}.
-     */
+    /** Creates a new unique Incognito CCT profile id. */
     public static OtrProfileId createUniqueIncognitoCctId() {
-        return OtrProfileIdJni.get().createUniqueOtrProfileId(INCOGNITO_CCT_OTR_PROFILE_ID_PREFIX);
+        return OtrProfileIdJni.get().createUniqueIncognitoCctId();
     }
 
     /**
@@ -116,11 +112,9 @@ public class OtrProfileId {
         return this.equals(sPrimaryOtrProfileId);
     }
 
-    /**
-     * Returns true if the OTR profile id starts with {@link #INCOGNITO_CCT_OTR_PROFILE_ID_PREFIX}.
-     */
+    /** Returns true if this id was created by {@link #createUniqueIncognitoCctId()}. */
     public boolean isIncognitoCCId() {
-        return this.getProfileId().startsWith(INCOGNITO_CCT_OTR_PROFILE_ID_PREFIX);
+        return OtrProfileIdJni.get().isIncognitoCctId(mProfileId);
     }
 
     /**
@@ -193,5 +187,9 @@ public class OtrProfileId {
         OtrProfileId createUniqueOtrProfileId(@JniType("std::string") String profileIdPrefix);
 
         OtrProfileId getPrimaryId();
+
+        OtrProfileId createUniqueIncognitoCctId();
+
+        boolean isIncognitoCctId(@JniType("std::string") String profileId);
     }
 }

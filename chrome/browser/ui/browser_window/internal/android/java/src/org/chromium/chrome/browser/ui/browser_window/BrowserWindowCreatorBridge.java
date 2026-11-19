@@ -84,8 +84,8 @@ final class BrowserWindowCreatorBridge {
         }
 
         var profile = createParams.getProfile();
-        boolean isIncognito = profile.isIncognitoBranded();
-        // If incognito mode is disabled, it is disallowed to create an incognito window.
-        return !isIncognito || IncognitoUtils.isIncognitoModeEnabled(profile);
+        boolean isOffTheRecord = profile.isOffTheRecord();
+        // If incognito mode is disabled, it is disallowed to create an off-the-record window.
+        return !isOffTheRecord || IncognitoUtils.isIncognitoModeEnabled(profile);
     }
 }

@@ -133,7 +133,7 @@ public class RequestCoordinatorBridgeTest {
     @Test
     @MediumTest
     public void testRequestCoordinatorBridgeDisabledInIncognitoCct() throws Exception {
-        OtrProfileId otrProfileId = OtrProfileId.createUnique("CCT:Incognito");
+        OtrProfileId otrProfileId = OtrProfileId.createUniqueIncognitoCctId();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mProfile =

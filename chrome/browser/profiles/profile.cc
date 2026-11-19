@@ -114,6 +114,13 @@ constexpr char kTestOTRProfileIDPrefix[] = "Test::OTR";
 
 #if BUILDFLAG(IS_CHROMEOS)
 constexpr char kCaptivePortalOTRProfileIDPrefix[] = "CaptivePortal::Signin";
+#elif BUILDFLAG(IS_ANDROID)
+constexpr char kIncognitoCctOTRProfileIDPrefix[] = "CCT:Incognito";
+
+bool IsIncognitoCctProfileId(const std::string& profile_id) {
+  return base::StartsWith(profile_id, kIncognitoCctOTRProfileIDPrefix,
+                          base::CompareCase::SENSITIVE);
+}
 #endif
 
 using perfetto::protos::pbzero::ChromeTrackEvent;
@@ -201,6 +208,15 @@ std::ostream& operator<<(std::ostream& out,
 }
 
 #if BUILDFLAG(IS_ANDROID)
+bool Profile::OTRProfileID::IsIncognitoCct() const {
+  return IsIncognitoCctProfileId(profile_id_);
+}
+
+// static
+Profile::OTRProfileID Profile::OTRProfileID::CreateUniqueForIncognitoCct() {
+  return CreateUnique(kIncognitoCctOTRProfileIDPrefix);
+}
+
 base::android::ScopedJavaLocalRef<jobject>
 Profile::OTRProfileID::ConvertToJavaOTRProfileID(JNIEnv* env) const {
   return Java_OtrProfileId_Constructor(env, profile_id_);
@@ -229,6 +245,16 @@ static base::android::ScopedJavaLocalRef<jobject> JNI_OtrProfileId_GetPrimaryId(
   return Profile::OTRProfileID::PrimaryID().ConvertToJavaOTRProfileID(env);
 }
 
+static jni_zero::ScopedJavaLocalRef<jobject>
+JNI_OtrProfileId_CreateUniqueIncognitoCctId(JNIEnv* env) {
+  return Profile::OTRProfileID::CreateUniqueForIncognitoCct()
+      .ConvertToJavaOTRProfileID(env);
+}
+
+static bool JNI_OtrProfileId_IsIncognitoCctId(const std::string& profile_id) {
+  return IsIncognitoCctProfileId(profile_id);
+}
+
 // static
 Profile::OTRProfileID Profile::OTRProfileID::Deserialize(
     const std::string& value) {
@@ -253,10 +279,6 @@ Profile::Profile(const OTRProfileID* otr_profile_id)
 #endif  // DCHECK_IS_ON()
 
   BrowserContextDependencyManager::GetInstance()->MarkBrowserContextLive(this);
-
-#if BUILDFLAG(IS_ANDROID)
-  InitJavaObject();
-#endif
 }
 
 Profile::~Profile() {
@@ -425,6 +447,15 @@ bool Profile::IsRegularProfile() const {
 bool Profile::IsIncognitoProfile() const {
   return profile_metrics::GetBrowserProfileType(this) ==
          profile_metrics::BrowserProfileType::kIncognito;
+}
+
+bool Profile::IsIncognitoBranded() const {
+#if BUILDFLAG(IS_ANDROID)
+  if (otr_profile_id_ && otr_profile_id_->IsIncognitoCct()) {
+    return true;
+  }
+#endif
+  return IsIncognitoProfile();
 }
 
 bool Profile::IsEnterpriseIsolatedModeProfile() const {

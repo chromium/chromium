@@ -24,6 +24,8 @@ public class Profile implements BrowserContextHandle {
 
     private final @Nullable OtrProfileId mOtrProfileId;
 
+    private final boolean mIsIncognitoBranded;
+
     /** Pointer to the Native-side Profile. */
     private long mNativeProfile;
 
@@ -31,9 +33,11 @@ public class Profile implements BrowserContextHandle {
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     @CalledByNative
-    Profile(long nativeProfile, @Nullable OtrProfileId otrProfileId) {
+    Profile(long nativeProfile, @Nullable OtrProfileId otrProfileId, boolean isIncognitoBranded) {
         mNativeProfile = nativeProfile;
         mOtrProfileId = otrProfileId;
+        mIsIncognitoBranded = isIncognitoBranded;
+        assert !mIsIncognitoBranded || mOtrProfileId != null;
     }
 
     /**
@@ -163,17 +167,19 @@ public class Profile implements BrowserContextHandle {
     }
 
     /**
-     * Returns if the profile is a primary OTR Profile or an Incognito CCT. The primary OTR profile
-     * is the OffTheRecord profile for incognito tabs in the main Chrome App. All Incognito branded
-     * profiles return true for {@link #isOffTheRecord()} but not all OffTheRecord profiles are
-     * Incognito themed. Use this to evaluate features that should appear exclusively for Incognito
-     * themed profiles (Incognito lock, Incognito snapshot controller..) or for usages that force
-     * the Incognito theme (Dark colors, Incognito logo..). If you are unsure whether this fits your
+     * Returns if the profile is the primary Incognito profile or an Incognito CCT. The primary
+     * Incognito profile is the OffTheRecord profile for incognito tabs in the main Chrome App. All
+     * Incognito branded profiles return true for {@link #isOffTheRecord()} but not all OffTheRecord
+     * profiles are Incognito themed (e.g. Ephemeral CCTs and Enterprise Isolated Mode profiles are
+     * not). Use this to evaluate features that should appear exclusively for Incognito themed
+     * profiles (Incognito lock, Incognito snapshot controller, etc.) or for usages that force the
+     * Incognito theme (Dark colors, Incognito logo, etc.). If you are unsure whether this fits your
      * usage, reach out to incognito/OWNERS.
+     *
+     * <p>Returns the value of native Profile::IsIncognitoBranded().
      */
     public boolean isIncognitoBranded() {
-        boolean isIncognitoCct = mOtrProfileId != null && mOtrProfileId.isIncognitoCCId();
-        return isPrimaryOtrProfile() || isIncognitoCct;
+        return mIsIncognitoBranded;
     }
 
     /**

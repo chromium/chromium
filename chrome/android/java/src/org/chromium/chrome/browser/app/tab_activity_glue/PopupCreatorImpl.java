@@ -194,7 +194,7 @@ public class PopupCreatorImpl implements PopupCreator {
 
         final Intent intent =
                 createTrustedPopupIntent(
-                        windowFeatures, tab.isIncognitoBranded(), additionalIntentExtras);
+                        windowFeatures, tab.isOffTheRecord(), additionalIntentExtras);
         intent.putExtra(IntentHandler.EXTRA_SKIP_LOAD_ON_REPARENTING, true);
 
         boolean success =
@@ -238,9 +238,7 @@ public class PopupCreatorImpl implements PopupCreator {
 
         final Intent intent =
                 createTrustedPopupIntent(
-                        windowFeatures,
-                        tab.isIncognitoBranded(),
-                        /* additionalIntentExtras= */ null);
+                        windowFeatures, tab.isOffTheRecord(), /* additionalIntentExtras= */ null);
         intent.putExtra(IntentHandler.EXTRA_SKIP_LOAD_ON_REPARENTING, true);
 
         return launchPopup(
@@ -492,7 +490,7 @@ public class PopupCreatorImpl implements PopupCreator {
 
     private static Intent createTrustedPopupIntent(
             @Nullable WindowFeatures windowFeatures,
-            boolean isIncognitoBranded,
+            boolean isOffTheRecord,
             @Nullable Bundle additionalIntentExtras) {
         Intent intent = new Intent();
         intent.setClass(ContextUtils.getApplicationContext(), CustomTabActivity.class);
@@ -504,7 +502,7 @@ public class PopupCreatorImpl implements PopupCreator {
         if (additionalIntentExtras != null) {
             intent.putExtras(additionalIntentExtras);
         }
-        if (isIncognitoBranded) {
+        if (isOffTheRecord) {
             IncognitoCustomTabIntentDataProvider.addIncognitoExtrasForChromeFeatures(
                     intent, IncognitoCctCallerId.CONTEXTUAL_POPUP);
         }

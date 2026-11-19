@@ -122,6 +122,12 @@ class Profile : public content::BrowserContext {
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+    // Creates a unique OTR profile id to be used for an Incognito Custom Tab.
+    static OTRProfileID CreateUniqueForIncognitoCct();
+
+    // Returns true if the OTR Profile was created for an Incognito Custom Tab.
+    bool IsIncognitoCct() const;
+
     // Constructs a Java OTRProfileID from the provided C++ OTRProfileID
     base::android::ScopedJavaLocalRef<jobject> ConvertToJavaOTRProfileID(
         JNIEnv* env) const;
@@ -407,6 +413,15 @@ class Profile : public content::BrowserContext {
   // off-the-record profile that is used for incognito mode.
   bool IsIncognitoProfile() const;
 
+  // Returns whether this profile uses Incognito branding: either the primary
+  // Incognito profile or (on Android) an Incognito Custom Tab profile. All
+  // Incognito-branded profiles return true for `IsOffTheRecord()`, but not
+  // every off-the-record profile (e.g. Ephemeral Custom Tabs) is Incognito
+  // branded. Use this for features or UI that should apply exclusively to
+  // Incognito-themed sessions. On Android, Java `Profile.isIncognitoBranded()`
+  // returns the same value.
+  bool IsIncognitoBranded() const;
+
   // Returns whether this profile is an Enterprise Isolated Mode session.
   bool IsEnterpriseIsolatedModeProfile() const;
 
@@ -589,11 +604,13 @@ class Profile : public content::BrowserContext {
   std::unique_ptr<variations::VariationsClient> chrome_variations_client_;
 
 #if BUILDFLAG(IS_ANDROID)
-  void InitJavaObject();
   void NotifyJavaOnProfileWillBeDestroyed();
   void DestroyJavaObject();
 
-  jni_zero::ScopedJavaGlobalRef<jobject> j_obj_;
+  bool notified_java_will_be_destroyed_ = false;
+  // Created lazily by GetJavaObject() so that subclasses have set the profile
+  // type (and thus `IsIncognitoBranded()`) before it is passed to Java.
+  mutable jni_zero::ScopedJavaGlobalRef<jobject> j_obj_;
 #endif
   base::WeakPtrFactory<Profile> weak_factory_{this};
 };

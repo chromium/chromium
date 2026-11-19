@@ -265,7 +265,7 @@ public class PopupCreatorImplUnitTest {
     @Test
     public void testIntentParams_incognitoOpener() {
         final WindowFeatures windowFeatures = new WindowFeatures(12, 34, 56, null);
-        doReturn(true).when(mTab).isIncognitoBranded();
+        doReturn(true).when(mTab).isOffTheRecord();
         mPopupCreator.moveTabToNewPopup(mTab, windowFeatures);
 
         final ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);

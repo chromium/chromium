@@ -99,7 +99,7 @@ public class DownloadDialogIncognitoTest {
     @LargeTest
     public void testDuplicateDownloadForIncognitoCct() throws Exception {
         // Showing a duplicate download dialog with a non-primary off-the-record profile.
-        OtrProfileId nonPrimaryOtrId = OtrProfileId.createUnique("CCT:Incognito");
+        OtrProfileId nonPrimaryOtrId = OtrProfileId.createUniqueIncognitoCctId();
         showDuplicateDialog(nonPrimaryOtrId);
 
         // Verify the Incognito warning message is shown (2 paragraphs).

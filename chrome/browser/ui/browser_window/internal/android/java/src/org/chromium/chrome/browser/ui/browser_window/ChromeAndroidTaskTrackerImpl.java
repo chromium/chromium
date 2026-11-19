@@ -384,7 +384,7 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
         return MultiInstanceOrchestratorFactory.getInstance()
                 .createNewWindow(
                         sourceActivity,
-                        createParams.getProfile().isIncognitoBranded(),
+                        createParams.getProfile().isOffTheRecord(),
                         extrasBundle,
                         options != null ? options.toBundle() : null,
                         NewWindowAppSource.BROWSER_WINDOW_CREATOR);
@@ -423,7 +423,7 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
         return PopupCreatorFactory.getInstance()
                 .createNewPopup(
                         context,
-                        createParams.getProfile().isIncognitoBranded(),
+                        createParams.getProfile().isOffTheRecord(),
                         features,
                         extrasBundle);
     }

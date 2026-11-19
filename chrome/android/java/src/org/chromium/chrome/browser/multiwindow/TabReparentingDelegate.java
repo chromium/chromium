@@ -86,7 +86,7 @@ import java.util.List;
 
         Intent intent =
                 MultiWindowUtils.createNewWindowIntent(
-                        sourceActivity, profile.isIncognitoBranded(), source);
+                        sourceActivity, profile.isOffTheRecord(), source);
         if (intent == null) {
             tab.destroy();
             return false;

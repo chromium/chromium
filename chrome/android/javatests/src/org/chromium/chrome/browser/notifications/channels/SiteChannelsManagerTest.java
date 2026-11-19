@@ -281,7 +281,7 @@ public class SiteChannelsManagerTest {
                         /* isEmbargoed= */ true);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    OtrProfileId otrProfileId = OtrProfileId.createUnique("CCT:Incognito");
+                    OtrProfileId otrProfileId = OtrProfileId.createUniqueIncognitoCctId();
                     Profile nonPrimaryOtrProfile =
                             ProfileManager.getLastUsedRegularProfile()
                                     .getOffTheRecordProfile(

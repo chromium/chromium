@@ -51,6 +51,7 @@ import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.customtabs.PopupCreatorFactory;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
 import org.chromium.chrome.browser.tabmodel.AsyncTabParams;
@@ -224,6 +225,25 @@ public class ReparentingTaskUnitTest {
                 "#begin(...) should not set EXTRA_OPEN_NEW_INCOGNITO_TAB extra for"
                         + " non-incognito-branded OTR Tab",
                 sentIntent.hasExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB));
+    }
+
+    @Test
+    public void testBegin_setsIntentParameters_primaryOtrNonIncognito() {
+        Profile primaryOtrProfile = mock(Profile.class);
+        when(primaryOtrProfile.isPrimaryOtrProfile()).thenReturn(true);
+        when(mTab.getProfile()).thenReturn(primaryOtrProfile);
+        when(mTab.isOffTheRecord()).thenReturn(true);
+        when(mTab.isIncognitoBranded()).thenReturn(false);
+        ReparentingTask task = ReparentingTask.from(mTab);
+        Intent intent = new Intent();
+
+        task.begin(mContext, intent, null, null);
+
+        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
+        verify(mContext).startActivity(captor.capture(), any());
+        Intent sentIntent = captor.getValue();
+
+        assertTrue(sentIntent.getBooleanExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, false));
     }
 
     @Test

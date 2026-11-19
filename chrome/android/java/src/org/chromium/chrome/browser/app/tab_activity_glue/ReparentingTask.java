@@ -111,7 +111,7 @@ public class ReparentingTask implements UserData {
         if (TextUtils.isEmpty(intent.getDataString())) {
             intent.setData(Uri.parse(mTab.getUrl().getSpec()));
         }
-        if (mTab.isIncognitoBranded()) {
+        if (isIncognitoOrPrimaryOtr(mTab)) {
             intent.putExtra(
                     Browser.EXTRA_APPLICATION_ID,
                     ContextUtils.getApplicationContext().getPackageName());
@@ -206,6 +206,11 @@ public class ReparentingTask implements UserData {
                 originalWindow,
                 /* tabDelegateFactory= */ null,
                 /* finalizeCallback= */ null);
+    }
+
+    static boolean isIncognitoOrPrimaryOtr(Tab tab) {
+        var profile = tab.getProfile();
+        return tab.isIncognitoBranded() || (profile != null && profile.isPrimaryOtrProfile());
     }
 
     public Tab getTabForTesting() {

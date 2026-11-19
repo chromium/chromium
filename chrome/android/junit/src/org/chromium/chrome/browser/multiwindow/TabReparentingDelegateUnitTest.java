@@ -301,7 +301,7 @@ public class TabReparentingDelegateUnitTest {
     @Test
     public void testCreateNewWindowFromWebContents_success_withExtrasAndOptions() {
         // Setup.
-        when(mProfile.isIncognitoBranded()).thenReturn(true);
+        when(mProfile.isOffTheRecord()).thenReturn(true);
 
         Bundle extras = new Bundle();
         extras.putInt("extra", 1);
