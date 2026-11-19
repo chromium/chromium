@@ -1014,6 +1014,7 @@ source_set("core") {
     "chrome_content_browser_client_receiver_bindings.cc",
     "chrome_resource_bundle_helper.cc",
     "chrome_resource_bundle_helper.h",
+    "chrome_runtime_mutable_features.cc",
     "expired_flags_list.h",
     "file_select_helper.cc",
     "font_family_cache.cc",

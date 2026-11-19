@@ -2,3 +2,6 @@
 per-file BUILD.gn=*
 per-file about_flags.*=*
 per-file ios_chrome_flag_descriptions.*=*
+
+# For enabling runtime mutability of features (go/finch-runtime-mutability).
+per-file ios_chrome_runtime_mutable_features.*=file://components/variations/RUNTIME_MUTABLE_FEATURES_OWNERS

@@ -41,6 +41,9 @@ per-file chrome_content_browser_client_unittest.cc=*
 per-file chrome_browser_field_trials.cc=file://chrome/android/OWNERS
 per-file chrome_browser_field_trials*=file://components/variations/OWNERS
 
+# For enabling runtime mutability of features (go/finch-runtime-mutability).
+per-file chrome_runtime_mutable_features.*=file://components/variations/RUNTIME_MUTABLE_FEATURES_OWNERS
+
 per-file chrome_navigation_browsertest.cc=file://content/OWNERS
 
 per-file chrome_origin_trials_browsertest.cc=file://third_party/blink/common/origin_trials/OWNERS

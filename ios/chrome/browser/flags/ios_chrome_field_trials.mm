@@ -40,10 +40,3 @@ void IOSChromeFieldTrials::SetUpClientSideFieldTrials(
     return;
   }
 }
-
-void IOSChromeFieldTrials::EnableRuntimeMutableFeatures(
-    base::FeatureList* feature_list) {
-  variations::PlatformFieldTrials::EnableRuntimeMutableFeatures(feature_list);
-
-  // Add calls to enable runtime-mutable features here.
-}

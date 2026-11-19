@@ -10,7 +10,6 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/features.h"
-#include "base/functional/callback_helpers.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/path_service.h"
@@ -26,8 +25,6 @@
 #include "components/metrics/metrics_features.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/persistent_histograms.h"
-#include "components/password_manager/core/browser/features/password_features.h"
-#include "components/performance_manager/public/features.h"
 #include "components/site_isolation/features.h"
 #include "components/variations/feature_overrides.h"
 #include "components/version_info/version_info.h"
@@ -397,27 +394,5 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
 #endif  // BUILDFLAG(IS_DESKTOP_ANDROID)
   // Desktop-first features which are past incubation should either end up here,
   // or to a finch trial that enables it for all form factors.
-#endif  // BUILDFLAG(IS_ANDROID)
-}
-
-void ChromeBrowserFieldTrials::EnableRuntimeMutableFeatures(
-    base::FeatureList* feature_list) {
-  variations::PlatformFieldTrials::EnableRuntimeMutableFeatures(feature_list);
-
-  // Add calls to enable runtime-mutable features here.
-#if !BUILDFLAG(IS_ANDROID)
-  // Defined on desktop only (see password_features.h).
-  feature_list->EnableRuntimeMutability(
-      password_manager::features::kPasskeyUnlockPromo, base::DoNothing());
-#endif  // !BUILDFLAG(IS_ANDROID)
-  feature_list->EnableRuntimeMutability(
-      performance_manager::features::kPMWithheldFromViewVoter,
-      base::DoNothing());
-  feature_list->EnableRuntimeMutability(
-      performance_manager::features::kPMSidePanelLoadingVoter,
-      base::DoNothing());
-#if BUILDFLAG(IS_ANDROID)
-  feature_list->EnableRuntimeMutability(chrome::android::kAvoidTaskTrampolines,
-                                        base::DoNothing());
 #endif  // BUILDFLAG(IS_ANDROID)
 }

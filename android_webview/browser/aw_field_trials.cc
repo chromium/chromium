@@ -423,10 +423,3 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   aw_feature_overrides.DisableFeature(
       blink::features::kAndroidKeyboardContextMenu);
 }
-
-void AwFieldTrials::EnableRuntimeMutableFeatures(
-    base::FeatureList* feature_list) {
-  variations::PlatformFieldTrials::EnableRuntimeMutableFeatures(feature_list);
-
-  // Add calls to enable runtime-mutable features here.
-}

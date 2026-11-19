@@ -144,6 +144,7 @@ source_set("client_side") {
   sources = [
     "ios_chrome_field_trials.h",
     "ios_chrome_field_trials.mm",
+    "ios_chrome_runtime_mutable_features.mm",
   ]
   deps = [
     "//base",

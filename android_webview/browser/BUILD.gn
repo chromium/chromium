@@ -129,6 +129,7 @@ source_set("browser") {
     "aw_quota_manager_bridge.h",
     "aw_render_process_gone_delegate.h",
     "aw_renderer_priority.h",
+    "aw_runtime_mutable_features.cc",
     "aw_settings.cc",
     "aw_settings.h",
     "aw_speech_recognition_manager_delegate.cc",

@@ -1,0 +1,10 @@
+# OWNERS for the per-platform lists of runtime-mutable features, i.e. the files
+# that call base::FeatureList::EnableRuntimeMutability():
+#   //chrome/browser/chrome_runtime_mutable_features.cc
+#   //ios/chrome/browser/flags/ios_chrome_runtime_mutable_features.mm
+#   //android_webview/browser/aw_runtime_mutable_features.cc
+#
+# TODO: Replace with "*" once runtime mutability is out of its pilot phase.
+asvitkine@chromium.org
+lucnguyen@google.com
+rogerm@chromium.org
