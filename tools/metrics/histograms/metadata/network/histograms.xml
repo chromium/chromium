@@ -2188,7 +2188,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Multicast.ARC.ActiveTime" units="%"
-    expires_after="2026-12-31">
+    expires_after="2027-11-15">
   <owner>chuweih@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -2200,7 +2200,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Multicast.ARC.WiFi.{Protocol}.ActiveCount"
-    units="packets" expires_after="2026-12-31">
+    units="packets" expires_after="2027-11-15">
   <owner>jasongustaman@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -2216,7 +2216,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Multicast.ARC.WiFi.{Protocol}.InactiveCount"
-    units="packets" expires_after="2026-12-31">
+    units="packets" expires_after="2027-11-15">
   <owner>jasongustaman@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -2232,7 +2232,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Multicast.TotalCount" units="packets"
-    expires_after="2026-12-31">
+    expires_after="2027-11-15">
   <owner>jasongustaman@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -2243,7 +2243,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Multicast.{Technology}.ConnectedCount" units="packets"
-    expires_after="2026-12-31">
+    expires_after="2027-11-15">
   <owner>jasongustaman@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -2260,7 +2260,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Multicast.{Technology}.{Protocol}.ConnectedCount"
-    units="packets" expires_after="2026-12-31">
+    units="packets" expires_after="2027-11-15">
   <owner>jasongustaman@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
