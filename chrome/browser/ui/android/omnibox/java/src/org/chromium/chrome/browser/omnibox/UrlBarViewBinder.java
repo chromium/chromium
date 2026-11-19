@@ -68,8 +68,8 @@ class UrlBarViewBinder {
         } else if (propertyKey == UrlBarProperties.HINT_TEXT_COLOR) {
             view.setHintTextColor(model.get(UrlBarProperties.HINT_TEXT_COLOR));
         } else if (propertyKey == UrlBarProperties.INCOGNITO_COLORS_ENABLED) {
-            final boolean incognitoColorsEnabled =
-                    model.get(UrlBarProperties.INCOGNITO_COLORS_ENABLED);
+            boolean incognitoColorsEnabled = model.get(UrlBarProperties.INCOGNITO_COLORS_ENABLED);
+            view.setIncognitoColorsEnabled(incognitoColorsEnabled);
             updateHighlightColor(view, incognitoColorsEnabled);
             updateCursorAndSelectHandleColor(view, incognitoColorsEnabled);
         } else if (propertyKey == UrlBarProperties.KEY_DOWN_LISTENER) {

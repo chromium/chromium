@@ -120,6 +120,13 @@ public class IncognitoColors {
                 : SemanticColorUtils.getColorOnPrimary(context);
     }
 
+    /** {@link SemanticColorUtils#getDefaultTextColorLink} */
+    public static @ColorInt int getDefaultTextColorLink(Context context, boolean isIncognito) {
+        return isIncognito
+                ? context.getColor(R.color.default_text_color_link_light)
+                : SemanticColorUtils.getDefaultTextColorLink(context);
+    }
+
     /** Returns the correct text appearance style res for primary colored headline text. */
     public static @StyleRes int getHeadlinePrimary(boolean isIncognito) {
         return isIncognito

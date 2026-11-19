@@ -64,6 +64,9 @@ public class AutocompleteEditText extends EditTextWithLeading
     /** Whether {@link #beginReparenting()} put the view into the temporarily-detached state. */
     private boolean mTemporarilyDetachedForReparenting;
 
+    private boolean mIncognitoColorsEnabled;
+    private @Nullable SiteSearchChipDrawable mSiteSearchChipDrawable;
+
     public AutocompleteEditText(Context context, AttributeSet attrs) {
         super(context, attrs);
         addTextWatcherForPaste();
@@ -493,16 +496,34 @@ public class AutocompleteEditText extends EditTextWithLeading
     @Override
     public void setInputIsMultilineEligible(boolean isMultilineEligible) {}
 
+    /** Sets whether to use incognito colors. */
+    public void setIncognitoColorsEnabled(boolean incognitoColorsEnabled) {
+        if (mIncognitoColorsEnabled == incognitoColorsEnabled) return;
+        mIncognitoColorsEnabled = incognitoColorsEnabled;
+        if (mSiteSearchChipDrawable != null) {
+            mSiteSearchChipDrawable.setIncognitoColorsEnabled(
+                    getContext(), mIncognitoColorsEnabled);
+        }
+    }
+
     @Override
     public void setSiteSearchChip(@Nullable String keyword) {
-        SiteSearchChipDrawable drawable = null;
         if (keyword != null) {
             // TODO(crbug.com/459590224): convert keyword to templateUrl.FullName() or equivalent.
-            drawable = new SiteSearchChipDrawable(getContext(), keyword);
-            drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
+            mSiteSearchChipDrawable =
+                    new SiteSearchChipDrawable(getContext(), keyword, mIncognitoColorsEnabled);
+            mSiteSearchChipDrawable.setLayoutDirection(getLayoutDirection());
+            mSiteSearchChipDrawable.setBounds(
+                    0,
+                    0,
+                    mSiteSearchChipDrawable.getIntrinsicWidth(),
+                    mSiteSearchChipDrawable.getIntrinsicHeight());
+        } else {
+            mSiteSearchChipDrawable = null;
         }
         Drawable[] drawables = getCompoundDrawablesRelative();
-        setCompoundDrawablesRelative(drawable, drawables[1], drawables[2], drawables[3]);
+        setCompoundDrawablesRelative(
+                mSiteSearchChipDrawable, drawables[1], drawables[2], drawables[3]);
     }
 
     public void maybeAcceptInlineSuggestion(KeyEvent event) {

@@ -39,4 +39,7 @@ found in the LICENSE file.
     <color name="search_suggestion_bg_color_incognito">@color/gm3_baseline_surface_container_low_dark</color>
     <color name="omnibox_dropdown_bg_incognito">@color/gm3_baseline_surface_container_high_dark</color>
     <color name="omnibox_scrolled_bg_incognito">@color/gm3_baseline_surface_container_dark</color>
+
+    <color name="site_search_chip_separator_color">@color/material_primary_80</color>
+    <color name="site_search_chip_separator_color_incognito">@color/baseline_secondary_50</color>
 </resources>
