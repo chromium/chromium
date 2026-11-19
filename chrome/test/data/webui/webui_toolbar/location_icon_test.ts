@@ -801,8 +801,12 @@ suite('LocationIconTest', function() {
         locationIcon.hasHelpBubble = true;
         const pressedGradient = (color: string) => `linear-gradient(${color})`;
 
+        const prefersReducedMotion =
+            window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         await setState(/*isClickable=*/ true, /*isTextDangerous=*/ false);
-        assertEquals('pulse', getPulseStyle().animationName);
+        assertEquals(
+            prefersReducedMotion ? 'none' : 'pulse',
+            getPulseStyle().animationName);
         assertEquals(ATTENTION_COLOR, getPulseStyle().backgroundColor);
         assertEquals(
             pressedGradient(PRESSED_COLOR), getPulseStyle().backgroundImage);

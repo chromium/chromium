@@ -8,6 +8,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {AnimationTracker} from 'chrome://webui-toolbar.top-chrome/lazy_load.js';
 import {BrowserProxyImpl} from 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
 import type {BackForwardButtonElement, BrowserProxy} from 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
 
@@ -72,6 +73,10 @@ suite('BackForwardButtonTest', function() {
     backForwardButton.id = 'back';
     document.body.appendChild(backForwardButton);
     await microtasksFinished();
+  });
+
+  teardown(function() {
+    AnimationTracker.resetForTesting();
   });
 
   test('Window State Margin', async function() {
@@ -399,6 +404,7 @@ suite('BackForwardButtonTest', function() {
   // 3. Once the animation finishes (simulated by dispatching 'endEvent'),
   //    reverts back to the static fallback icon.
   test('GlowUp Animation Flow', async function() {
+    AnimationTracker.showAnimations = true;
     backForwardButton.glowUpEnabled = true;
     backForwardButton.state = {
       enabled: true,
@@ -586,5 +592,100 @@ suite('BackForwardButtonTest', function() {
     // Should NOT be animating.
     assertFalse((backForwardButton as any).animating_);
     assertEquals('webui-toolbar:arrow_back', button.getAttribute('iron-icon'));
+  });
+
+  test('GlowUp Respects Reduced Motion and AnimationTracker', async function() {
+    const prefersReducedMotion =
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    assertEquals(!prefersReducedMotion, AnimationTracker.showAnimations);
+
+    let beginElementCalls = 0;
+    const prevBeginElement = SVGAnimationElement.prototype.beginElement;
+    SVGAnimationElement.prototype.beginElement = () => {
+      ++beginElementCalls;
+    };
+    try {
+      backForwardButton.glowUpEnabled = true;
+      backForwardButton.state = {
+        enabled: true,
+        shouldBeShown: true,
+        isContextMenuVisible: false,
+      };
+      backForwardButton.direction = 'back';
+      await backForwardButton.updateComplete;
+
+      const button =
+          backForwardButton.shadowRoot.querySelector('cr-icon-button')!;
+      const rect = button.getBoundingClientRect();
+      const clickMouse = () => {
+        const opts = {
+          button: 0,
+          pointerType: 'mouse',
+          clientX: rect.left + rect.width / 2,
+          clientY: rect.top + rect.height / 2,
+          bubbles: true,
+          composed: true,
+        };
+        button.dispatchEvent(new PointerEvent('pointerdown', opts));
+        button.dispatchEvent(new PointerEvent('pointerup', opts));
+      };
+
+      // Default behavior follows @media (prefers-reduced-motion).
+      clickMouse();
+      await browserControlsHandler.whenCalled('back');
+      await backForwardButton.updateComplete;
+      await button.updateComplete;
+      if (prefersReducedMotion) {
+        assertFalse((backForwardButton as any).animating_);
+        assertEquals(
+            'webui-toolbar:arrow_back', button.getAttribute('iron-icon'));
+        assertEquals(0, beginElementCalls);
+      } else {
+        const crIcon = button.shadowRoot.querySelector('cr-icon')!;
+        await (crIcon as any).updateComplete;
+        assertTrue((backForwardButton as any).animating_);
+        assertEquals(
+            'webui-toolbar:back_arrow_glow_up',
+            button.getAttribute('iron-icon'));
+        assertTrue(beginElementCalls > 0);
+        const animate = crIcon.shadowRoot.querySelector(
+            'animate[begin="indefinite"], ' +
+            'animateTransform[begin="indefinite"]')!;
+        animate.dispatchEvent(new CustomEvent('endEvent'));
+        await backForwardButton.updateComplete;
+        assertFalse((backForwardButton as any).animating_);
+      }
+
+      // Disabling animations via AnimationTracker suppresses glow-up.
+      AnimationTracker.showAnimations = false;
+      beginElementCalls = 0;
+      browserControlsHandler.resetResolver('back');
+      clickMouse();
+      await browserControlsHandler.whenCalled('back');
+      await backForwardButton.updateComplete;
+      await button.updateComplete;
+      assertFalse((backForwardButton as any).animating_);
+      assertEquals(
+          'webui-toolbar:arrow_back', button.getAttribute('iron-icon'));
+      assertEquals(0, beginElementCalls);
+
+      // Enabling animations via AnimationTracker forces glow-up on even
+      // when prefers-reduced-motion: reduce is active.
+      AnimationTracker.showAnimations = true;
+      browserControlsHandler.resetResolver('back');
+      clickMouse();
+      await browserControlsHandler.whenCalled('back');
+      await backForwardButton.updateComplete;
+      await button.updateComplete;
+      const crIcon = button.shadowRoot.querySelector('cr-icon')!;
+      await (crIcon as any).updateComplete;
+
+      assertTrue((backForwardButton as any).animating_);
+      assertEquals(
+          'webui-toolbar:back_arrow_glow_up', button.getAttribute('iron-icon'));
+      assertTrue(beginElementCalls > 0);
+    } finally {
+      SVGAnimationElement.prototype.beginElement = prevBeginElement;
+    }
   });
 });

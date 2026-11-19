@@ -796,9 +796,11 @@ suite('ToolbarAppTest', () => {
     avatarButton.hasHelpBubble = true;
     await microtasksFinished();
 
+    const prefersReducedMotion =
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     assertTrue(innerChip.classList.contains('help-anchor-highlight'));
     assertEquals(
-        'pulse',
+        prefersReducedMotion ? 'none' : 'pulse',
         window.getComputedStyle(visualTarget, '::before').animationName);
     assertEquals(
         '1', window.getComputedStyle(visualTarget, '::before').opacity);

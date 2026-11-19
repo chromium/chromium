@@ -154,7 +154,9 @@ pinned-toolbar-action.drag-placeholder,
 webui-toolbar-extension.drag-placeholder {
   opacity: 0 !important;
 }
+
 @media (prefers-reduced-motion: reduce) {
+  :host(webui-toolbar-extensions)::after,
   pinned-toolbar-action,
   webui-toolbar-extension,
   toolbar-divider {

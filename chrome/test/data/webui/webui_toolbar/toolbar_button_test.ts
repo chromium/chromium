@@ -373,4 +373,51 @@ suite('MediaButton', function() {
         mediaButton.shadowRoot.querySelector('cr-icon-button')!;
     assertEquals('dialog', crIconButton.getAttribute('aria-haspopup'));
   });
+
+  test('RespectsReducedMotion', async () => {
+    const prefersReducedMotion =
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const backForward = document.createElement('back-forward-button');
+    const reloadButton = document.createElement('reload-button');
+    const overflowButton = document.createElement('overflow-button');
+    const batterySaver = document.createElement('battery-saver-button');
+    const homeButton = document.createElement('home-button');
+    const splitTabs = document.createElement('split-tabs-button');
+    const perfButton =
+        document.createElement('performance-intervention-button');
+    const extraButtons = [
+      backForward,
+      reloadButton,
+      overflowButton,
+      batterySaver,
+      homeButton,
+      splitTabs,
+      perfButton,
+    ];
+    const buttons = [mediaButton, ...extraButtons];
+    for (const el of extraButtons) {
+      document.body.appendChild(el);
+    }
+    try {
+      await microtasksFinished();
+
+      for (const host of buttons) {
+        const crIconButton = host.shadowRoot.querySelector('cr-icon-button')!;
+        assertEquals(
+            prefersReducedMotion ? '0s' : '150ms ease-in-out',
+            window.getComputedStyle(crIconButton)
+                .getPropertyValue('--cr-icon-button-transition')
+                .trim());
+        const crIcon = crIconButton.shadowRoot.querySelector('cr-icon')!;
+        assertEquals(
+            prefersReducedMotion ? '0s, 0s' : '0.15s, 0.15s',
+            window.getComputedStyle(crIcon).transitionDuration);
+      }
+    } finally {
+      for (const el of extraButtons) {
+        el.remove();
+      }
+    }
+  });
 });

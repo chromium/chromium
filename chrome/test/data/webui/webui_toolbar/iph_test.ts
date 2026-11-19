@@ -104,14 +104,18 @@ suite('IPH', function() {
     hostWithHighlight.classList.add('help-anchor-highlight');
     await microtasksFinished();
 
+    const prefersReducedMotion =
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     assertEquals(
         'rgba(0, 0, 0, 0)',
         window.getComputedStyle(visualTarget).backgroundColor,
         `Button ${tagName} should suppress its background during the IPH`);
     assertEquals(
-        'pulse',
+        prefersReducedMotion ? 'none' : 'pulse',
         window.getComputedStyle(visualTarget, '::before').animationName,
-        `Button ${tagName} should pulse when help-anchor-highlight is active`);
+        `Button ${tagName} should ${
+            prefersReducedMotion ? 'suppress pulse' : 'pulse'} when ` +
+            `help-anchor-highlight is active`);
     assertEquals(
         '1', window.getComputedStyle(visualTarget, '::before').opacity,
         `Button ${tagName} pulse layer should have opacity: 1`);

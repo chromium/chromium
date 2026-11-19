@@ -11,6 +11,7 @@ import {TrackedElementManager} from '//resources/js/tracked_element/tracked_elem
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import type {MenuSourceType} from '//resources/mojo/ui/base/mojom/menu_source_type.mojom-webui.js';
+import {AnimationTracker} from '/shared/animation_tracker.js';
 import {getContextMenuPosition, getEventDispositionFlags, HelpBubbleAnchorMixin, playIconAnimation, PressHandler, roundedIconsEnabled} from '/shared/toolbar_button.js';
 import {ContextMenuType} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 import type {BackForwardButtonState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
@@ -114,7 +115,7 @@ export class BackForwardButtonElement extends BackForwardButtonElementBase {
     } else {
       this.browserProxy_.browserControlsHandler.forward(flags);
     }
-    if (this.glowUpEnabled) {
+    if (this.glowUpEnabled && AnimationTracker.showAnimations) {
       // The glow up animation should only trigger for physical mouse clicks.
       // - Keyboard interactions trigger a synthetic 'click' event (handled via
       // onClick_ -> onShortPress_).

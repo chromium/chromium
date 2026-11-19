@@ -64,7 +64,11 @@ class WebUiToolbarReducedMotionJsTest : public WebUiToolbarJsTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(WebUiToolbarJsTest, AppMenuButton) {
+IN_PROC_BROWSER_TEST_F(WebUiToolbarNoReducedMotionJsTest, AppMenuButton) {
+  RunTest("webui_toolbar/app_menu_button_test.js", "mocha.run();");
+}
+
+IN_PROC_BROWSER_TEST_F(WebUiToolbarReducedMotionJsTest, AppMenuButton) {
   RunTest("webui_toolbar/app_menu_button_test.js", "mocha.run();");
 }
 
@@ -76,7 +80,11 @@ IN_PROC_BROWSER_TEST_F(WebUiToolbarReducedMotionJsTest, AvatarButton) {
   RunTest("webui_toolbar/avatar_button_test.js", "mocha.run();");
 }
 
-IN_PROC_BROWSER_TEST_F(WebUiToolbarJsTest, BackForwardButton) {
+IN_PROC_BROWSER_TEST_F(WebUiToolbarNoReducedMotionJsTest, BackForwardButton) {
+  RunTest("webui_toolbar/back_forward_button_test.js", "mocha.run();");
+}
+
+IN_PROC_BROWSER_TEST_F(WebUiToolbarReducedMotionJsTest, BackForwardButton) {
   RunTest("webui_toolbar/back_forward_button_test.js", "mocha.run();");
 }
 
@@ -134,7 +142,11 @@ IN_PROC_BROWSER_TEST_F(WebUiToolbarJsTest, PermissionDashboard) {
   RunTest("webui_toolbar/permission_dashboard_test.js", "mocha.run();");
 }
 
-IN_PROC_BROWSER_TEST_F(WebUiToolbarJsTest, ReloadButton) {
+IN_PROC_BROWSER_TEST_F(WebUiToolbarNoReducedMotionJsTest, ReloadButton) {
+  RunTest("webui_toolbar/reload_button_test.js", "mocha.run();");
+}
+
+IN_PROC_BROWSER_TEST_F(WebUiToolbarReducedMotionJsTest, ReloadButton) {
   RunTest("webui_toolbar/reload_button_test.js", "mocha.run();");
 }
 
@@ -148,12 +160,23 @@ IN_PROC_BROWSER_TEST_F(WebUiToolbarJsTest, ToolbarActionMixin) {
   RunTest("webui_toolbar/toolbar_action_mixin_test.js", "mocha.run();");
 }
 
-IN_PROC_BROWSER_TEST_F(WebUiToolbarJsTest, ToolbarActionContainerMixin) {
+IN_PROC_BROWSER_TEST_F(WebUiToolbarNoReducedMotionJsTest,
+                       ToolbarActionContainerMixin) {
   RunTest("webui_toolbar/toolbar_action_container_mixin_test.js",
           "mocha.run();");
 }
 
-IN_PROC_BROWSER_TEST_F(WebUiToolbarJsTest, ToolbarButton) {
+IN_PROC_BROWSER_TEST_F(WebUiToolbarReducedMotionJsTest,
+                       ToolbarActionContainerMixin) {
+  RunTest("webui_toolbar/toolbar_action_container_mixin_test.js",
+          "mocha.run();");
+}
+
+IN_PROC_BROWSER_TEST_F(WebUiToolbarNoReducedMotionJsTest, ToolbarButton) {
+  RunTest("webui_toolbar/toolbar_button_test.js", "mocha.run();");
+}
+
+IN_PROC_BROWSER_TEST_F(WebUiToolbarReducedMotionJsTest, ToolbarButton) {
   RunTest("webui_toolbar/toolbar_button_test.js", "mocha.run();");
 }
 
@@ -169,7 +192,11 @@ IN_PROC_BROWSER_TEST_F(WebUiToolbarJsTest, ToolbarAppLazyLoad) {
   RunTest("webui_toolbar/toolbar_app_lazy_load_test.js", "mocha.run();");
 }
 
-IN_PROC_BROWSER_TEST_F(WebUiToolbarJsTest, IPH) {
+IN_PROC_BROWSER_TEST_F(WebUiToolbarNoReducedMotionJsTest, IPH) {
+  RunTest("webui_toolbar/iph_test.js", "mocha.run();");
+}
+
+IN_PROC_BROWSER_TEST_F(WebUiToolbarReducedMotionJsTest, IPH) {
   RunTest("webui_toolbar/iph_test.js", "mocha.run();");
 }
 

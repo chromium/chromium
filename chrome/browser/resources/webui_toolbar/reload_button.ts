@@ -12,6 +12,7 @@ import {TrackedElementManager} from '//resources/js/tracked_element/tracked_elem
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import type {MenuSourceType} from '//resources/mojo/ui/base/mojom/menu_source_type.mojom-webui.js';
+import {AnimationTracker} from '/shared/animation_tracker.js';
 import {ReloadInputType} from '/shared/browser_controls_api.mojom-webui.js';
 import type {ReloadInteractionMetadata} from '/shared/browser_controls_api.mojom-webui.js';
 import {TimerHelper} from '/shared/timer_helper.js';
@@ -325,13 +326,13 @@ export class ReloadButtonElement extends ReloadButtonElementBase {
 
     // Determine if we should play animation
     // Normal transition if state changed.
-    let playAnimation = this.glowUpEnabled && this.animateTransitions_ &&
-        oldShowStopIcon !== this.showStopIcon;
+    const canAnimate = this.glowUpEnabled && AnimationTracker.showAnimations &&
+        this.animateTransitions_;
+    let playAnimation = canAnimate && oldShowStopIcon !== this.showStopIcon;
 
     // Double animation if we clicked reload but stayed in reload (fast load).
-    const playDoubleAnimation = this.glowUpEnabled &&
-        this.animateTransitions_ && !this.showStopIcon && !oldShowStopIcon &&
-        this.activeAnimation_ === 'none';
+    const playDoubleAnimation = canAnimate && !this.showStopIcon &&
+        !oldShowStopIcon && this.activeAnimation_ === 'none';
 
     if (playDoubleAnimation) {
       playAnimation = true;
@@ -469,7 +470,7 @@ export class ReloadButtonElement extends ReloadButtonElementBase {
     }
     if (this.pendingAnimation_ === 'end') {
       this.pendingAnimation_ = 'none';
-      if (!this.state.isNavigationLoading) {
+      if (!this.state.isNavigationLoading && AnimationTracker.showAnimations) {
         this.activeAnimation_ = 'end';
         this.requestUpdate();
         this.playAnimation_();

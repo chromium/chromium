@@ -10,6 +10,7 @@ import '//resources/cr_elements/icons.html.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
+import {AnimationTracker} from '/shared/animation_tracker.js';
 import {TimerHelper} from '/shared/timer_helper.js';
 import {BUTTON_LEFT, getClickSourceType, getContextMenuPosition, HelpBubbleAnchorMixin} from '/shared/toolbar_button.js';
 import {AppMenuIconType, AppMenuSeverity, ContextMenuType, FocusRequestTarget} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
@@ -133,22 +134,24 @@ export class AppMenuButtonElement extends AppMenuButtonElementBase {
 
   private computeGlowUpActive_(changedProperties: PropertyValues<this>):
       boolean {
-    if (!this.glowUpEnabled) {
+    if (!this.glowUpEnabled || !AnimationTracker.showAnimations) {
       return false;
     }
 
     const oldState = changedProperties.get('state');
     const wasContextMenuVisible =
         oldState ? oldState.isContextMenuVisible : false;
-    const isContextMenuClosing =
-        wasContextMenuVisible && !this.state.isContextMenuVisible;
+    const isContextMenuClosing = wasContextMenuVisible &&
+        !this.state.isContextMenuVisible && this.glowUpActive;
 
     return this.state.isContextMenuVisible || this.isAnimating_ ||
         isContextMenuClosing;
   }
 
   private onContextMenuVisibleChanged_() {
-    if (!this.glowUpEnabled) {
+    if (!this.glowUpEnabled || !AnimationTracker.showAnimations ||
+        !this.glowUpActive) {
+      this.finishAnimation_();
       return;
     }
 

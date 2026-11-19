@@ -9,6 +9,7 @@ import {MenuSourceType} from 'chrome://resources/mojo/ui/base/mojom/menu_source_
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {AnimationTracker} from 'chrome://webui-toolbar.top-chrome/lazy_load.js';
 import type {AppMenuButtonElement} from 'chrome://webui-toolbar.top-chrome/lazy_load.js';
 import {AppMenuIconType, AppMenuSeverity, BrowserProxyImpl, ContextMenuType, FocusRequestTarget} from 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
 import type {BrowserProxy, FocusRequestListener} from 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
@@ -69,6 +70,7 @@ suite('AppMenuButtonTest', function() {
   });
 
   teardown(function() {
+    AnimationTracker.resetForTesting();
     document.documentElement.style.removeProperty(
         '--toolbar-interior-margin-end');
     document.documentElement.style.removeProperty(
@@ -374,6 +376,8 @@ suite('AppMenuButtonTest', function() {
   });
 
   test('Help Bubble Activates Pulse Animation', async function() {
+    const prefersReducedMotion =
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const visualTarget =
         appMenuButton.$.button.shadowRoot.querySelector('.iph-visual-target')!;
     assertTrue(!!visualTarget);
@@ -384,8 +388,13 @@ suite('AppMenuButtonTest', function() {
     assertTrue(
         appMenuButton.$.button.classList.contains('help-anchor-highlight'));
     assertEquals(
-        'pulse',
+        prefersReducedMotion ? 'none' : 'pulse',
         window.getComputedStyle(visualTarget, '::before').animationName);
+    if (!prefersReducedMotion) {
+      assertEquals(
+          '1.6s',
+          window.getComputedStyle(visualTarget, '::before').animationDuration);
+    }
     assertEquals(
         '1', window.getComputedStyle(visualTarget, '::before').opacity);
 
@@ -466,6 +475,7 @@ suite('AppMenuButtonTest', function() {
   });
 
   test('Glow Up Animation Lifecycle and Ripple Suppression', async function() {
+    AnimationTracker.showAnimations = true;
     // Intercept window.setTimeout to capture and manually trigger animation
     // timer callbacks (matching the 250ms glow-up duration) without leaking
     // test-only hooks into production code.
@@ -565,6 +575,7 @@ suite('AppMenuButtonTest', function() {
   });
 
   test('Glow Up Disconnect Cleans Up Timers and State', async function() {
+    AnimationTracker.showAnimations = true;
     // Intercept window.clearTimeout to verify that removing the element from
     // the DOM properly cancels any pending animation timers.
     const originalClearTimeout = window.clearTimeout;
@@ -652,4 +663,90 @@ suite('AppMenuButtonTest', function() {
     assertEquals(
         expandedWidth, appMenuButton.$.button.getBoundingClientRect().width);
   });
+
+  test(
+      'Glow Up Respects Reduced Motion and AnimationTracker', async function() {
+        const prefersReducedMotion =
+            window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        assertEquals(!prefersReducedMotion, AnimationTracker.showAnimations);
+
+        appMenuButton.glowUpEnabled = true;
+        const crIcon = appMenuButton.shadowRoot.querySelector('cr-icon')!;
+
+        // Default behavior follows @media (prefers-reduced-motion).
+        appMenuButton.state = {
+          ...appMenuButton.state,
+          isContextMenuVisible: true,
+        };
+        await microtasksFinished();
+        assertEquals(
+            prefersReducedMotion ? '0s' : '0.25s',
+            window.getComputedStyle(appMenuButton.$.button.$.button, '::before')
+                .transitionDuration);
+        if (prefersReducedMotion) {
+          assertFalse(appMenuButton.glowUpActive);
+          assertFalse(appMenuButton.isAnimating);
+          assertEquals('webui-toolbar:more_vert', crIcon.getAttribute('icon'));
+        } else {
+          assertTrue(appMenuButton.glowUpActive);
+          assertTrue(appMenuButton.isAnimating);
+          assertEquals(
+              'webui-toolbar:app_menu_glow_up', crIcon.getAttribute('icon'));
+        }
+
+        // Disabling animations via AnimationTracker suppresses the JS-gated
+        // glow-up animation.
+        appMenuButton.state = {
+          ...appMenuButton.state,
+          isContextMenuVisible: false,
+        };
+        await microtasksFinished();
+        AnimationTracker.showAnimations = false;
+        appMenuButton.state = {
+          ...appMenuButton.state,
+          isContextMenuVisible: true,
+        };
+        await microtasksFinished();
+
+        assertFalse(appMenuButton.glowUpActive);
+        assertFalse(appMenuButton.hasAttribute('glow-up-active'));
+        assertFalse(appMenuButton.isAnimating);
+        assertEquals('webui-toolbar:more_vert', crIcon.getAttribute('icon'));
+
+        // Closing menu after opening without glow-up does not play closing
+        // glow-up even if AnimationTracker is re-enabled first.
+        AnimationTracker.showAnimations = true;
+        appMenuButton.state = {
+          ...appMenuButton.state,
+          isContextMenuVisible: false,
+        };
+        await microtasksFinished();
+        assertFalse(appMenuButton.glowUpActive);
+        assertFalse(appMenuButton.isAnimating);
+        assertEquals('webui-toolbar:more_vert', crIcon.getAttribute('icon'));
+
+        // Enabling animations via AnimationTracker forces the JS-gated glow-up
+        // on even when prefers-reduced-motion: reduce is active.
+        appMenuButton.state = {
+          ...appMenuButton.state,
+          isContextMenuVisible: true,
+        };
+        await microtasksFinished();
+        assertTrue(appMenuButton.glowUpActive);
+        assertTrue(appMenuButton.isAnimating);
+        assertEquals(
+            'webui-toolbar:app_menu_glow_up', crIcon.getAttribute('icon'));
+
+        // Disabling animations mid-animation and closing the menu immediately
+        // cancels the running glow-up timer and resets state.
+        AnimationTracker.showAnimations = false;
+        appMenuButton.state = {
+          ...appMenuButton.state,
+          isContextMenuVisible: false,
+        };
+        await microtasksFinished();
+        assertFalse(appMenuButton.glowUpActive);
+        assertFalse(appMenuButton.isAnimating);
+        assertEquals('webui-toolbar:more_vert', crIcon.getAttribute('icon'));
+      });
 });

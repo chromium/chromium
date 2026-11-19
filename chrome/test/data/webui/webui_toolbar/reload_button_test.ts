@@ -7,6 +7,7 @@ import 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+import {AnimationTracker} from 'chrome://webui-toolbar.top-chrome/lazy_load.js';
 import {BrowserProxyImpl} from 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
 import type {BrowserProxy, ReloadButtonElement} from 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
 
@@ -70,6 +71,10 @@ suite('ReloadButtonTest', function() {
     await reloadButton.updateComplete;
   });
 
+  teardown(function() {
+    AnimationTracker.resetForTesting();
+  });
+
   function clickButton() {
     const button = reloadButton.shadowRoot.querySelector('cr-icon-button')!;
     const rect = button.getBoundingClientRect();
@@ -97,6 +102,7 @@ suite('ReloadButtonTest', function() {
   // when Glow Up is enabled, since Glow Up defines its own interactive
   // hover/click animations.
   test('GlowUp Disables Ripple', async function() {
+    AnimationTracker.showAnimations = true;
     // 1. Verify standard ripple is enabled by default (when glowUp is disabled)
     reloadButton.glowUpEnabled = false;
     await reloadButton.updateComplete;
@@ -141,6 +147,7 @@ suite('ReloadButtonTest', function() {
   });
 
   test('GlowUp Reload Animation Flow', async function() {
+    AnimationTracker.showAnimations = true;
     reloadButton.glowUpEnabled = true;
     await reloadButton.updateComplete;
 
@@ -192,6 +199,7 @@ suite('ReloadButtonTest', function() {
   });
 
   test('GlowUp Stop Animation Flow', async function() {
+    AnimationTracker.showAnimations = true;
     reloadButton.glowUpEnabled = true;
     // Start in loading state (showing Stop icon).
     (reloadButton as any).state = {
@@ -234,6 +242,7 @@ suite('ReloadButtonTest', function() {
   });
 
   test('GlowUp Double Animation Flow', async function() {
+    AnimationTracker.showAnimations = true;
     reloadButton.glowUpEnabled = true;
     await reloadButton.updateComplete;
 
@@ -284,5 +293,143 @@ suite('ReloadButtonTest', function() {
     // Should return to idle reload state.
     assertEquals('none', (reloadButton as any).activeAnimation_);
     assertEquals('webui-toolbar:refresh', button.getAttribute('iron-icon'));
+  });
+
+  test('GlowUp Respects Reduced Motion and AnimationTracker', async function() {
+    const prefersReducedMotion =
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    assertEquals(!prefersReducedMotion, AnimationTracker.showAnimations);
+
+    let beginElementCalls = 0;
+    const prevBeginElement = SVGAnimationElement.prototype.beginElement;
+    SVGAnimationElement.prototype.beginElement = () => {
+      ++beginElementCalls;
+    };
+    try {
+      reloadButton.glowUpEnabled = true;
+      await reloadButton.updateComplete;
+
+      const button = reloadButton.shadowRoot.querySelector('cr-icon-button')!;
+      assertEquals('webui-toolbar:refresh', button.getAttribute('iron-icon'));
+
+      // Default behavior follows @media (prefers-reduced-motion).
+      clickButton();
+      await browserControlsHandler.whenCalled('reloadFromClick');
+      (reloadButton as any).state = {
+        ...(reloadButton as any).state,
+        isNavigationLoading: true,
+        stateToken: 1,
+      };
+      await reloadButton.updateComplete;
+      await new Promise(resolve => setTimeout(resolve, 0));
+
+      if (prefersReducedMotion) {
+        assertEquals('none', (reloadButton as any).activeAnimation_);
+        assertEquals('none', (reloadButton as any).pendingAnimation_);
+        assertEquals('webui-toolbar:close', button.getAttribute('iron-icon'));
+        assertEquals(0, beginElementCalls);
+      } else {
+        assertEquals('start', (reloadButton as any).activeAnimation_);
+        assertEquals(
+            'webui-toolbar:reload_start_glow_up',
+            button.getAttribute('iron-icon'));
+        assertTrue(beginElementCalls > 0);
+        const animate = button.shadowRoot.querySelector('cr-icon')!.shadowRoot
+                            .querySelector('animate[begin="indefinite"]')!;
+        animate.dispatchEvent(new CustomEvent('endEvent'));
+        await reloadButton.updateComplete;
+      }
+
+      // Disabling animations via AnimationTracker suppresses stop -> reload
+      // and fast-load double animations.
+      AnimationTracker.showAnimations = false;
+      beginElementCalls = 0;
+      clickButton();
+      await browserControlsHandler.whenCalled('stopLoad');
+      await reloadButton.updateComplete;
+      await new Promise(resolve => setTimeout(resolve, 0));
+
+      assertEquals('none', (reloadButton as any).activeAnimation_);
+      assertEquals('webui-toolbar:refresh', button.getAttribute('iron-icon'));
+      assertEquals(0, beginElementCalls);
+
+      browserControlsHandler.resetResolver('reloadFromClick');
+      clickButton();
+      await browserControlsHandler.whenCalled('reloadFromClick');
+      (reloadButton as any).state = {
+        ...(reloadButton as any).state,
+        isNavigationLoading: false,
+        stateToken: 2,
+      };
+      await reloadButton.updateComplete;
+      await new Promise(resolve => setTimeout(resolve, 0));
+      assertEquals('none', (reloadButton as any).activeAnimation_);
+      assertEquals('none', (reloadButton as any).pendingAnimation_);
+      assertEquals(0, beginElementCalls);
+
+      // Enabling animations via AnimationTracker forces glow-up on even
+      // when prefers-reduced-motion: reduce is active.
+      AnimationTracker.showAnimations = true;
+      browserControlsHandler.resetResolver('reloadFromClick');
+      clickButton();
+      await browserControlsHandler.whenCalled('reloadFromClick');
+      (reloadButton as any).state = {
+        ...(reloadButton as any).state,
+        isNavigationLoading: true,
+        stateToken: 3,
+      };
+      await reloadButton.updateComplete;
+      await new Promise(resolve => setTimeout(resolve, 0));
+      assertEquals('start', (reloadButton as any).activeAnimation_);
+      assertEquals(
+          'webui-toolbar:reload_start_glow_up',
+          button.getAttribute('iron-icon'));
+      assertTrue(beginElementCalls > 0);
+
+      // Reset to idle reload state before testing mid-flight cancellation.
+      const firstStartAnimate =
+          button.shadowRoot.querySelector('cr-icon')!.shadowRoot.querySelector(
+              'animate[begin="indefinite"]')!;
+      firstStartAnimate.dispatchEvent(new CustomEvent('endEvent'));
+      await reloadButton.updateComplete;
+      AnimationTracker.showAnimations = false;
+      (reloadButton as any).state = {
+        ...(reloadButton as any).state,
+        isNavigationLoading: false,
+        stateToken: 4,
+      };
+      await reloadButton.updateComplete;
+
+      // Disabling animations mid-double-animation suppresses the queued 'end'
+      // animation when 'start' finishes.
+      AnimationTracker.showAnimations = true;
+      browserControlsHandler.resetResolver('reloadFromClick');
+      clickButton();
+      await browserControlsHandler.whenCalled('reloadFromClick');
+      (reloadButton as any).state = {
+        ...(reloadButton as any).state,
+        isNavigationLoading: false,
+        stateToken: 5,
+      };
+      await reloadButton.updateComplete;
+      await new Promise(resolve => setTimeout(resolve, 0));
+      assertEquals('start', (reloadButton as any).activeAnimation_);
+      assertEquals('end', (reloadButton as any).pendingAnimation_);
+
+      AnimationTracker.showAnimations = false;
+      beginElementCalls = 0;
+      const doubleStartAnimate =
+          button.shadowRoot.querySelector('cr-icon')!.shadowRoot.querySelector(
+              'animate[begin="indefinite"]')!;
+      doubleStartAnimate.dispatchEvent(new CustomEvent('endEvent'));
+      await reloadButton.updateComplete;
+      await new Promise(resolve => setTimeout(resolve, 0));
+      assertEquals('none', (reloadButton as any).activeAnimation_);
+      assertEquals('none', (reloadButton as any).pendingAnimation_);
+      assertEquals('webui-toolbar:refresh', button.getAttribute('iron-icon'));
+      assertEquals(0, beginElementCalls);
+    } finally {
+      SVGAnimationElement.prototype.beginElement = prevBeginElement;
+    }
   });
 });

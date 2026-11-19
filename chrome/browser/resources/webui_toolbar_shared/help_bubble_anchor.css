@@ -48,6 +48,12 @@
   transition: none !important;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  :host(.help-anchor-highlight) .iph-visual-target::before {
+    animation: none !important;
+  }
+}
+
 @keyframes pulse {
   0% {
     inset: 0;

@@ -135,3 +135,9 @@ icon-from-table {
   height: var(--toolbar-button-icon-size);
   --icon-size: var(--toolbar-button-icon-size);
 }
+
+@media (prefers-reduced-motion: reduce) {
+  cr-icon-button {
+    --cr-icon-button-transition: 0s;
+  }
+}
