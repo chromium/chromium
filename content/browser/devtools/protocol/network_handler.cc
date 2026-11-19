@@ -2098,6 +2098,10 @@ String BuildProtocolDeviceBoundSessionFetchResult(
         kFederatedRegistrationRedirected:
       return protocol::Network::DeviceBoundSessionFetchResultEnum::
           FederatedRegistrationRedirected;
+    case net::device_bound_sessions::SessionError::ErrorType::
+        kCrossSiteRefreshSessionConfig:
+      return protocol::Network::DeviceBoundSessionFetchResultEnum::
+          CrossSiteRefreshSessionConfig;
   }
 }
 // LINT.ThenChange(//third_party/blink/public/devtools_protocol/domains/Network.pdl:DeviceBoundSessionFetchResult)

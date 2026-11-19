@@ -112,7 +112,8 @@ struct NET_EXPORT SessionError {
     kAttestationCertificationError = 88,
     kAttestationSigningError = 89,
     kFederatedRegistrationRedirected = 90,
-    kMaxValue = kFederatedRegistrationRedirected,
+    kCrossSiteRefreshSessionConfig = 91,
+    kMaxValue = kCrossSiteRefreshSessionConfig,
   };
   // LINT.ThenChange(//tools/metrics/histograms/enums.xml:DeviceBoundSessionError,//services/network/public/mojom/device_bound_sessions.mojom:DeviceBoundSessionError)
 

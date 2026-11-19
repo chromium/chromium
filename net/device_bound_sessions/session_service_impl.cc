@@ -40,6 +40,7 @@
 #include "net/device_bound_sessions/dbsc_request.h"
 #include "net/device_bound_sessions/generate_key_param.h"
 #include "net/device_bound_sessions/jwk_utils.h"
+#include "net/device_bound_sessions/registration_fetcher.h"
 #include "net/device_bound_sessions/registration_request_param.h"
 #include "net/device_bound_sessions/session_binding_utils.h"
 #include "net/device_bound_sessions/session_display.h"
@@ -1577,6 +1578,9 @@ SessionError::ErrorType SessionServiceImpl::OnRefreshRequestCompletionInternal(
                 new_session->set_unexportable_attestation_key_id(
                     existing_session->maybe_unexportable_attestation_key_id());
                 SchemefulSite new_site(new_session->origin());
+                CHECK(new_site == session_key.site ||
+                      !base::FeatureList::IsEnabled(
+                          kDeviceBoundSessionsRequireSameSiteRefresh));
                 // Don't bother creating the SessionDisplay if there are no
                 // observers that want to know about it.
                 std::optional<SessionDisplay> new_session_display =
