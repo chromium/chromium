@@ -19,6 +19,7 @@ specific_include_rules = {
   "system_web_dialog_browsertest\\.cc": [
     "+chrome/browser/ash/login",
     "+chrome/browser/ui/browser_window/public",
+    "+chrome/browser/ui/webui/constrained_web_dialog_ui.h",
     "+chrome/browser/ui/zoom",
     "+chrome/common",
     "+chrome/test",

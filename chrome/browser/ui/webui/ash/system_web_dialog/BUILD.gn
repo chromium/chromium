@@ -12,7 +12,10 @@ static_library("system_web_dialog") {
     "system_web_dialog_view.h",
   ]
 
-  public_deps = [ "//components/captive_portal/core" ]
+  public_deps = [
+    "//components/captive_portal/core",
+    "//components/web_modal",
+  ]
 
   deps = [
     "//ash/public/cpp",
@@ -45,6 +48,7 @@ source_set("browser_tests") {
     "//chrome/browser/ash/login:test_support",
     "//chrome/browser/ash/login/test:test_support",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/webui",
     "//chrome/browser/ui/zoom",
     "//chrome/common",
     "//chrome/test:test_support",
@@ -53,6 +57,10 @@ source_set("browser_tests") {
     "//content/public/browser",
     "//content/test:test_support",
     "//ui/aura",
+    "//ui/views",
+    "//ui/views:test_support",
+    "//ui/views/controls/webview",
+    "//ui/web_dialogs",
     "//url",
   ]
 }

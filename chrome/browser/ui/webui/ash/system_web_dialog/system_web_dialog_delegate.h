@@ -114,6 +114,7 @@ class SystemWebDialogDelegate : public ui::WebDialogDelegate {
 
  protected:
   FRIEND_TEST_ALL_PREFIXES(SystemWebDialogLoginTest, NonModalTest);
+  FRIEND_TEST_ALL_PREFIXES(SystemWebDialogTest, ShowConstrainedWebDialog);
   FRIEND_TEST_ALL_PREFIXES(SystemWebDialogTest, StackAtTop);
   FRIEND_TEST_ALL_PREFIXES(SystemWebDialogTest, ShowBeforeFocus);
 

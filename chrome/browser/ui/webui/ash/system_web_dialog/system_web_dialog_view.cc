@@ -4,12 +4,24 @@
 
 #include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_view.h"
 
+#include <algorithm>
+#include <utility>
+
+#include "base/check.h"
+#include "base/check_deref.h"
 #include "base/check_op.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/aura/window.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/webview/web_dialog_view.h"
+#include "ui/views/view.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash {
 
@@ -22,6 +34,10 @@ SystemWebDialogView::SystemWebDialogView(
                            delegate,
                            std::move(handler),
                            web_contents) {}
+
+SystemWebDialogView::~SystemWebDialogView() {
+  ResetModalDialogHost();
+}
 
 void SystemWebDialogView::UpdateWindowRoundedCorners(
     const gfx::RoundedCornersF& window_radii) {
@@ -64,6 +80,85 @@ void SystemWebDialogView::UpdateWindowRoundedCorners(
   }
 
   SetWebViewCornersRadii(radii);
+}
+
+void SystemWebDialogView::AddedToWidget() {
+  views::WebDialogView::AddedToWidget();
+  CHECK(web_contents());
+  web_modal::WebContentsModalDialogManager::CreateForWebContents(
+      web_contents());
+  auto* manager =
+      web_modal::WebContentsModalDialogManager::FromWebContents(web_contents());
+  if (!manager->delegate()) {
+    manager->SetDelegate(this);
+  }
+}
+
+void SystemWebDialogView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
+  views::WebDialogView::OnBoundsChanged(previous_bounds);
+  modal_dialog_host_observer_list_.Notify(
+      &web_modal::ModalDialogHostObserver::OnPositionRequiresUpdate);
+}
+
+void SystemWebDialogView::WindowClosing() {
+  ResetModalDialogHost();
+  views::WebDialogView::WindowClosing();
+}
+
+web_modal::WebContentsModalDialogHost*
+SystemWebDialogView::GetWebContentsModalDialogHost(
+    content::WebContents* web_contents) {
+  return this;
+}
+
+bool SystemWebDialogView::IsWebContentsVisible(
+    content::WebContents* web_contents) {
+  return CHECK_DEREF(web_contents->GetNativeView()).IsVisible();
+}
+
+gfx::NativeView SystemWebDialogView::GetHostView() const {
+  return CHECK_DEREF(GetWidget()).GetNativeView();
+}
+
+gfx::Point SystemWebDialogView::GetDialogPosition(
+    const gfx::Size& dialog_size) {
+  const gfx::Size host_size = GetMaximumDialogSize();
+  gfx::Point position(
+      std::max(0, (host_size.width() - dialog_size.width()) / 2),
+      std::max(0, (host_size.height() - dialog_size.height()) / 2));
+  views::View::ConvertPointToWidget(this, &position);
+  return position;
+}
+
+gfx::Size SystemWebDialogView::GetMaximumDialogSize() {
+  return size().IsEmpty() ? CalculatePreferredSize({}) : size();
+}
+
+void SystemWebDialogView::AddObserver(
+    web_modal::ModalDialogHostObserver* observer) {
+  modal_dialog_host_observer_list_.AddObserver(observer);
+}
+
+void SystemWebDialogView::RemoveObserver(
+    web_modal::ModalDialogHostObserver* observer) {
+  modal_dialog_host_observer_list_.RemoveObserver(observer);
+}
+
+void SystemWebDialogView::ResetModalDialogHost() {
+  if (modal_dialog_host_reset_) {
+    return;
+  }
+  modal_dialog_host_reset_ = true;
+  modal_dialog_host_observer_list_.Notify(
+      &web_modal::ModalDialogHostObserver::OnHostDestroying);
+  if (web_contents()) {
+    if (auto* manager =
+            web_modal::WebContentsModalDialogManager::FromWebContents(
+                web_contents());
+        manager && manager->delegate() == this) {
+      manager->SetDelegate(nullptr);
+    }
+  }
 }
 
 }  // namespace ash

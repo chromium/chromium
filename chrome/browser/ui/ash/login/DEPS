@@ -60,6 +60,7 @@ specific_include_rules = {
     "+chrome/browser/global_features.h",
     "+chrome/browser/ui/browser_window.h",
     "+chrome/browser/ui/chrome_pages.h",
+    "+chrome/browser/ui/webui/constrained_web_dialog_ui.h",
     "+chrome/test/base",
   ],
   "fake_.*\\.cc": [

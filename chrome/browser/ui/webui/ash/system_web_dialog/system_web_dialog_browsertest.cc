@@ -10,6 +10,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h"
+#include "chrome/browser/ui/webui/constrained_web_dialog_ui.h"
 #include "chrome/browser/ui/zoom/chrome_zoom_level_prefs.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -23,7 +24,12 @@
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/views/controls/webview/web_dialog_view.h"
+#include "ui/views/test/widget_test.h"
+#include "ui/views/widget/widget.h"
+#include "ui/web_dialogs/web_dialog_delegate.h"
 #include "url/gurl.h"
+#include "url/url_constants.h"
 
 namespace ash {
 
@@ -184,6 +190,37 @@ IN_PROC_BROWSER_TEST_F(SystemWebDialogTest, ShowBeforeFocus) {
 
   dialog->Focus();
   EXPECT_TRUE(dialog_window->IsVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(SystemWebDialogTest, ShowConstrainedWebDialog) {
+  auto* dialog = new MockSystemWebDialog();
+  dialog->ShowSystemDialog();
+
+  views::Widget* host_widget =
+      views::Widget::GetWidgetForNativeWindow(dialog->dialog_window());
+  ASSERT_TRUE(host_widget);
+  content::WebContents* web_contents =
+      static_cast<views::WebDialogView*>(host_widget->widget_delegate())
+          ->web_contents();
+  ASSERT_TRUE(web_contents);
+
+  auto delegate = std::make_unique<ui::WebDialogDelegate>();
+  delegate->set_can_close(true);
+  delegate->set_delete_on_close(false);
+  delegate->set_dialog_content_url(GURL(url::kAboutBlankURL));
+  ConstrainedWebDialogDelegate* constrained_delegate = ShowConstrainedWebDialog(
+      browser()->GetProfile(), std::move(delegate), web_contents);
+  ASSERT_TRUE(constrained_delegate);
+  ASSERT_TRUE(constrained_delegate->GetNativeDialog());
+
+  views::Widget* child_widget = views::Widget::GetWidgetForNativeWindow(
+      constrained_delegate->GetNativeDialog());
+  ASSERT_TRUE(child_widget);
+  views::test::WidgetDestroyedWaiter child_waiter(child_widget);
+  views::test::WidgetDestroyedWaiter host_waiter(host_widget);
+  dialog->Close();
+  child_waiter.Wait();
+  host_waiter.Wait();
 }
 
 }  // namespace ash
