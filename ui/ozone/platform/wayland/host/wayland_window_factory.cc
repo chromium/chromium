@@ -37,11 +37,21 @@ std::unique_ptr<WaylandWindow> WaylandWindow::Create(
       }
       break;
     case PlatformWindowType::kTooltip:
-    case PlatformWindowType::kMenu:
       if (auto* parent = connection->window_manager()->GetWindow(
               properties.parent_widget)) {
-        if (properties.type == PlatformWindowType::kTooltip &&
-            parent->AsWaylandBubble()) {
+        WaylandWindow* root_parent = parent->GetRootParentWindow();
+        if (!parent->AsWaylandPopup() &&
+            root_parent->HasVisibleSecuritySurfaceBubble()) {
+          // Wayland compositors always stack xdg_popups above wl_subsurfaces of
+          // the parent toplevel. Back the tooltip with a sibling wl_subsurface
+          // while a security-surface bubble (e.g. Autofill popup) is visible so
+          // the security surface stays stacked above the tooltip. As a
+          // subsurface, the tooltip loses xdg_positioner constraint adjustment
+          // and may be partly off screen near the window edges, the same as
+          // the security surface itself.
+          window = std::make_unique<WaylandBubble>(delegate, connection,
+                                                   root_parent);
+        } else if (parent->AsWaylandBubble()) {
           // A bubble is a wl_subsurface, so an xdg_popup for its tooltip would
           // have to use the bubble's xdg_toplevel as its parent. xdg_positioner
           // doesn't allow the anchor rect to extend outside the parent's window
@@ -50,11 +60,20 @@ std::unique_ptr<WaylandWindow> WaylandWindow::Create(
           // grab, so make them subsurfaces of the bubble instead.
           window =
               std::make_unique<WaylandBubble>(delegate, connection, parent);
-          break;
+        } else {
+          window = std::make_unique<WaylandPopup>(delegate, connection, parent);
         }
+      } else {
+        DLOG(WARNING) << "Failed to determine parent for tooltip window.";
+        window = std::make_unique<WaylandToplevelWindow>(delegate, connection);
+      }
+      break;
+    case PlatformWindowType::kMenu:
+      if (auto* parent = connection->window_manager()->GetWindow(
+              properties.parent_widget)) {
         window = std::make_unique<WaylandPopup>(delegate, connection, parent);
       } else {
-        DLOG(WARNING) << "Failed to determine parent for menu/tooltip window.";
+        DLOG(WARNING) << "Failed to determine parent for menu window.";
         window = std::make_unique<WaylandToplevelWindow>(delegate, connection);
       }
       break;

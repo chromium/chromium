@@ -169,6 +169,11 @@ class WaylandWindow : public PlatformWindow,
   // popups parented to bubbles are tracked by the bubble.
   void HideChildPopups();
 
+  // Returns true if one of this window's direct child bubbles is a visible
+  // security surface. Nested bubbles are not considered, matching the sibling
+  // restacking done by `WaylandBubble`.
+  bool HasVisibleSecuritySurfaceBubble() const;
+
   // Called only by `WaylandBubble`s that are managed in this instance's
   // `child_bubbles_` list.
   void AddBubble(WaylandBubble* window);
@@ -176,6 +181,9 @@ class WaylandWindow : public PlatformWindow,
   void ActivateBubble(WaylandBubble* window);
 
   WaylandBubble* active_bubble() { return active_bubble_; }
+  const std::vector<raw_ptr<WaylandBubble>>& child_bubbles() const {
+    return child_bubbles_;
+  }
 
   // Takes over a child bubble's `subsurface` and/or `surface`, deferring their
   // destruction until this window's in-flight applied state request commits:
@@ -448,9 +456,6 @@ class WaylandWindow : public PlatformWindow,
 
   WaylandConnection* connection() { return connection_; }
   const WaylandConnection* connection() const { return connection_; }
-  const std::vector<raw_ptr<WaylandBubble>>& child_bubbles() {
-    return child_bubbles_;
-  }
 
   // Update the bounds of the window in DIP. Unlike SetBoundInDIP, it will not
   // send a request to the compositor even if the screen coordinate is enabled.

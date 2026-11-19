@@ -1303,6 +1303,12 @@ void WaylandWindow::HideChildPopups() {
   }
 }
 
+bool WaylandWindow::HasVisibleSecuritySurfaceBubble() const {
+  return std::ranges::any_of(child_bubbles_, [](const WaylandBubble* bubble) {
+    return bubble->is_security_surface() && bubble->IsVisible();
+  });
+}
+
 bool WaylandWindow::IsOpaqueWindow() const {
   return opacity_ == ui::PlatformWindowOpacity::kOpaqueWindow;
 }

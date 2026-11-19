@@ -26,6 +26,8 @@ class WaylandBubble final : public WaylandWindow {
   ~WaylandBubble() override;
 
   bool activatable() { return activatable_; }
+  bool is_security_surface() const { return is_security_surface_; }
+  wl_subsurface* subsurface() { return subsurface_.get(); }
 
   // PlatformWindow overrides:
   void Show(bool inactive) override;
@@ -84,6 +86,9 @@ class WaylandBubble final : public WaylandWindow {
   // Copied from Widget::InitParams::accept_events, indicates whether this
   // bubble traps inputs.
   bool accept_events_ = true;
+  // Copied from PlatformWindowInitProperties::is_security_surface, indicates
+  // whether this bubble must remain stacked above non-security sibling bubbles.
+  bool is_security_surface_ = false;
 
   base::WeakPtrFactory<WaylandBubble> weak_ptr_factory_{this};
 };

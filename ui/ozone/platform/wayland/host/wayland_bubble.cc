@@ -199,6 +199,22 @@ void WaylandBubble::AddToParentAsSubsurface() {
       root_surface()->CreateSubsurface(parent_window()->root_surface());
   CHECK(subsurface_, base::NotFatalUntil::M163);
 
+  // Newly created wl_subsurfaces are placed at the top of the parent's stack.
+  // Restack any visible security-surface siblings back above `this` before
+  // `UpdateSubsurfacePosition()` commits the parent surface. `child_bubbles()`
+  // is in creation order rather than stacking order, so multiple visible
+  // security surfaces end up stacked in creation order.
+  if (!is_security_surface_) {
+    wl_surface* reference_surface = root_surface()->surface();
+    for (WaylandBubble* sibling : parent_window()->child_bubbles()) {
+      if (sibling != this && sibling->is_security_surface() &&
+          sibling->subsurface()) {
+        wl_subsurface_place_above(sibling->subsurface(), reference_surface);
+        reference_surface = sibling->root_surface()->surface();
+      }
+    }
+  }
+
   subsurface_position_.reset();
   position_pending_parent_commit_ = false;
   UpdateSubsurfacePosition(/*sync_with_frame=*/false);
@@ -290,6 +306,7 @@ bool WaylandBubble::OnInitialize(PlatformWindowInitProperties properties,
   state->ui_scale = parent_window()->applied_state().ui_scale;
   activatable_ = properties.activatable;
   accept_events_ = properties.accept_events;
+  is_security_surface_ = properties.is_security_surface;
 
   // For now kBubbles draw their own shadow, not setting input_region means
   // shadow trap input as well.

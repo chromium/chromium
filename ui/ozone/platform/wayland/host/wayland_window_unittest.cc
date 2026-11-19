@@ -8047,6 +8047,197 @@ TEST_P(WaylandWindowTest, UiScale_InitializeBeforeFrameInsetsReady) {
   VerifyAndClearExpectations(init_delegate, new_surface_id);
 }
 
+TEST_P(WaylandWindowTest, SecuritySurfaceBubbleStacksAboveTooltips) {
+  testing::NiceMock<MockWaylandPlatformWindowDelegate> sec_delegate(
+      connection_.get());
+  PlatformWindowInitProperties sec_props;
+  sec_props.bounds = gfx::Rect(20, 20, 120, 80);
+  sec_props.type = PlatformWindowType::kPopup;
+  sec_props.parent_widget = window_->GetWidget();
+  sec_props.is_security_surface = true;
+  auto sec_bubble =
+      sec_delegate.CreateWaylandWindow(connection_.get(), std::move(sec_props));
+  ASSERT_TRUE(sec_bubble);
+  ASSERT_TRUE(sec_bubble->AsWaylandBubble());
+  sec_bubble->Show(false);
+  connection_->Flush();
+
+  const uint32_t toplevel_surface_id =
+      window_->root_surface()->get_surface_id();
+  const uint32_t sec_surface_id = sec_bubble->root_surface()->get_surface_id();
+
+  // Both tooltips parented to the security bubble (e.g. inline Autofill popup
+  // controls) and tooltips parented to the toplevel window must become
+  // wl_subsurface siblings stacked below the security bubble.
+  for (gfx::AcceleratedWidget parent_widget :
+       {sec_bubble->GetWidget(), window_->GetWidget()}) {
+    testing::NiceMock<MockWaylandPlatformWindowDelegate> tooltip_delegate(
+        connection_.get());
+    PlatformWindowInitProperties tooltip_props;
+    tooltip_props.bounds = gfx::Rect(30, 30, 60, 20);
+    tooltip_props.type = PlatformWindowType::kTooltip;
+    tooltip_props.parent_widget = parent_widget;
+    auto tooltip = tooltip_delegate.CreateWaylandWindow(
+        connection_.get(), std::move(tooltip_props));
+    ASSERT_TRUE(tooltip);
+    EXPECT_TRUE(tooltip->AsWaylandBubble());
+    EXPECT_EQ(tooltip->parent_window(), window_.get());
+
+    const uint32_t tooltip_surface_id =
+        tooltip->root_surface()->get_surface_id();
+    PostToServerAndWait([sec_surface_id, tooltip_surface_id](
+                            wl::TestWaylandServerThread* server) {
+      auto* sec_surface = server->GetObject<wl::MockSurface>(sec_surface_id);
+      auto* tooltip_surface =
+          server->GetObject<wl::MockSurface>(tooltip_surface_id);
+      ASSERT_TRUE(sec_surface && sec_surface->sub_surface());
+      ASSERT_TRUE(tooltip_surface);
+      EXPECT_CALL(*sec_surface->sub_surface(),
+                  PlaceAbove(tooltip_surface->resource()))
+          .Times(1);
+    });
+
+    tooltip->Show(false);
+    connection_->Flush();
+
+    PostToServerAndWait([toplevel_surface_id, sec_surface_id,
+                         tooltip_surface_id](
+                            wl::TestWaylandServerThread* server) {
+      auto* toplevel_surface =
+          server->GetObject<wl::MockSurface>(toplevel_surface_id);
+      auto* sec_surface = server->GetObject<wl::MockSurface>(sec_surface_id);
+      auto* tooltip_surface =
+          server->GetObject<wl::MockSurface>(tooltip_surface_id);
+      ASSERT_TRUE(toplevel_surface);
+      ASSERT_TRUE(sec_surface && sec_surface->sub_surface());
+      ASSERT_TRUE(tooltip_surface && tooltip_surface->sub_surface());
+      EXPECT_FALSE(tooltip_surface->xdg_surface());
+      EXPECT_EQ(tooltip_surface->sub_surface()->parent_resource(),
+                toplevel_surface->resource());
+      Mock::VerifyAndClearExpectations(sec_surface->sub_surface());
+    });
+  }
+
+  // Once the security surface is hidden, tooltips resume using xdg_popup.
+  sec_bubble->Hide();
+  testing::NiceMock<MockWaylandPlatformWindowDelegate> popup_tooltip_delegate(
+      connection_.get());
+  auto popup_tooltip = CreateWaylandWindowWithParams(
+      PlatformWindowType::kTooltip, gfx::Rect(30, 30, 60, 20),
+      &popup_tooltip_delegate, window_->GetWidget());
+  ASSERT_TRUE(popup_tooltip);
+  EXPECT_TRUE(popup_tooltip->AsWaylandPopup());
+  const uint32_t popup_tooltip_id =
+      popup_tooltip->root_surface()->get_surface_id();
+  PostToServerAndWait([popup_tooltip_id](wl::TestWaylandServerThread* server) {
+    auto* surface = server->GetObject<wl::MockSurface>(popup_tooltip_id);
+    ASSERT_TRUE(surface && surface->xdg_surface());
+    EXPECT_TRUE(surface->xdg_surface()->xdg_popup());
+  });
+}
+
+TEST_P(WaylandWindowTest, SecuritySurfaceBubblesStayAboveNonSecurityBubble) {
+  auto create_security_bubble = [&](MockWaylandPlatformWindowDelegate& delegate,
+                                    const gfx::Rect& bounds) {
+    PlatformWindowInitProperties props;
+    props.bounds = bounds;
+    props.type = PlatformWindowType::kPopup;
+    props.parent_widget = window_->GetWidget();
+    props.is_security_surface = true;
+    auto bubble =
+        delegate.CreateWaylandWindow(connection_.get(), std::move(props));
+    bubble->Show(false);
+    return bubble;
+  };
+
+  testing::NiceMock<MockWaylandPlatformWindowDelegate> sec1_delegate(
+      connection_.get());
+  auto sec1 = create_security_bubble(sec1_delegate, gfx::Rect(10, 10, 50, 50));
+  testing::NiceMock<MockWaylandPlatformWindowDelegate> sec2_delegate(
+      connection_.get());
+  auto sec2 = create_security_bubble(sec2_delegate, gfx::Rect(20, 20, 50, 50));
+  connection_->Flush();
+
+  testing::NiceMock<MockWaylandPlatformWindowDelegate> normal_delegate(
+      connection_.get());
+  PlatformWindowInitProperties normal_props;
+  normal_props.bounds = gfx::Rect(15, 15, 50, 50);
+  normal_props.type = PlatformWindowType::kBubble;
+  normal_props.parent_widget = window_->GetWidget();
+  auto normal_bubble = normal_delegate.CreateWaylandWindow(
+      connection_.get(), std::move(normal_props));
+  ASSERT_TRUE(normal_bubble);
+
+  const uint32_t sec1_id = sec1->root_surface()->get_surface_id();
+  const uint32_t sec2_id = sec2->root_surface()->get_surface_id();
+  const uint32_t normal_id = normal_bubble->root_surface()->get_surface_id();
+  PostToServerAndWait(
+      [sec1_id, sec2_id, normal_id](wl::TestWaylandServerThread* server) {
+        auto* sec1_surface = server->GetObject<wl::MockSurface>(sec1_id);
+        auto* sec2_surface = server->GetObject<wl::MockSurface>(sec2_id);
+        auto* normal_surface = server->GetObject<wl::MockSurface>(normal_id);
+        ASSERT_TRUE(sec1_surface && sec1_surface->sub_surface());
+        ASSERT_TRUE(sec2_surface && sec2_surface->sub_surface());
+        ASSERT_TRUE(normal_surface);
+        testing::InSequence seq;
+        EXPECT_CALL(*sec1_surface->sub_surface(),
+                    PlaceAbove(normal_surface->resource()))
+            .Times(1);
+        EXPECT_CALL(*sec2_surface->sub_surface(),
+                    PlaceAbove(sec1_surface->resource()))
+            .Times(1);
+      });
+
+  normal_bubble->Show(false);
+  connection_->Flush();
+
+  PostToServerAndWait([sec1_id, sec2_id](wl::TestWaylandServerThread* server) {
+    Mock::VerifyAndClearExpectations(
+        server->GetObject<wl::MockSurface>(sec1_id)->sub_surface());
+    Mock::VerifyAndClearExpectations(
+        server->GetObject<wl::MockSurface>(sec2_id)->sub_surface());
+  });
+}
+
+// Only direct child security surfaces of the root window cause tooltips to be
+// created as wl_subsurfaces, since `WaylandBubble` can only restack siblings.
+TEST_P(WaylandWindowTest, NestedSecuritySurfaceBubbleKeepsTooltipPopup) {
+  testing::NiceMock<MockWaylandPlatformWindowDelegate> dialog_delegate(
+      connection_.get());
+  PlatformWindowInitProperties dialog_props;
+  dialog_props.bounds = gfx::Rect(10, 10, 200, 150);
+  dialog_props.type = PlatformWindowType::kBubble;
+  dialog_props.parent_widget = window_->GetWidget();
+  auto dialog = dialog_delegate.CreateWaylandWindow(connection_.get(),
+                                                    std::move(dialog_props));
+  ASSERT_TRUE(dialog && dialog->AsWaylandBubble());
+  dialog->Show(false);
+
+  testing::NiceMock<MockWaylandPlatformWindowDelegate> sec_delegate(
+      connection_.get());
+  PlatformWindowInitProperties sec_props;
+  sec_props.bounds = gfx::Rect(20, 20, 120, 80);
+  sec_props.type = PlatformWindowType::kPopup;
+  sec_props.parent_widget = dialog->GetWidget();
+  sec_props.is_security_surface = true;
+  auto sec_bubble =
+      sec_delegate.CreateWaylandWindow(connection_.get(), std::move(sec_props));
+  ASSERT_TRUE(sec_bubble && sec_bubble->AsWaylandBubble());
+  sec_bubble->Show(false);
+  connection_->Flush();
+
+  EXPECT_FALSE(window_->HasVisibleSecuritySurfaceBubble());
+  EXPECT_TRUE(dialog->HasVisibleSecuritySurfaceBubble());
+
+  testing::NiceMock<MockWaylandPlatformWindowDelegate> tooltip_delegate(
+      connection_.get());
+  auto tooltip = CreateWaylandWindowWithParams(
+      PlatformWindowType::kTooltip, gfx::Rect(30, 30, 60, 20),
+      &tooltip_delegate, window_->GetWidget());
+  ASSERT_TRUE(tooltip);
+  EXPECT_TRUE(tooltip->AsWaylandPopup());
+}
+
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          WaylandWindowTest,
                          Values(wl::ServerConfig{}));
