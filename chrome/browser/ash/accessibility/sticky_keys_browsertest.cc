@@ -13,6 +13,7 @@
 #include "ash/shell.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/unified/unified_system_tray.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/run_until.h"
 #include "chrome/browser/ash/accessibility/accessibility_feature_browsertest.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
@@ -20,8 +21,11 @@
 #include "chrome/browser/ash/accessibility/select_to_speak_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -29,12 +33,15 @@
 #include "components/prefs/pref_service.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "ui/aura/window_event_dispatcher.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/test/event_generator.h"
-#include "ui/views/test/views_test_utils.h"
+#include "ui/views/controls/webview/webview.h"
 #include "ui/views/widget/widget.h"
+#include "ui/webui/tracked_element/tracked_element_web_ui.h"
 
 namespace ash {
 
@@ -152,19 +159,55 @@ IN_PROC_BROWSER_TEST_F(StickyKeysBrowserTest, OpenNewTabs) {
 IN_PROC_BROWSER_TEST_F(StickyKeysBrowserTest, CtrlClickHomeButton) {
   // Show home page button.
   browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kShowHomeButton, true);
-  // Showing the home button only schedules a layout.
-  views::test::RunScheduledLayout(views::Widget::GetWidgetForNativeWindow(
-      browser()->GetWindow()->GetNativeWindow()));
-  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  views::Widget* const widget = views::Widget::GetWidgetForNativeWindow(
+      browser()->GetWindow()->GetNativeWindow());
+  ui::TrackedElement* home_button = nullptr;
+  // Showing the home button schedules a layout, and with WebUIHomeButton on
+  // the TrackedElement registers asynchronously after the WebUI lays out.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    widget->LayoutRootViewIfNecessary();
+    home_button = BrowserElements::From(browser())->GetElement(
+        kToolbarHomeButtonElementId);
+    return home_button && !home_button->GetScreenBounds().IsEmpty();
+  }));
+
+  // `kToolbarHomeButtonElementId` resolves to a `views::TrackedElementViews`
+  // by default, or a `ui::TrackedElementWebUI` when WebUIHomeButton is
+  // enabled. Wait for the WebContents frame to settle before sending mouse
+  // events.
+  if (::features::IsWebUIHomeButtonEnabled()) {
+    auto* const webui_element = home_button->AsA<ui::TrackedElementWebUI>();
+    ASSERT_TRUE(webui_element);
+    content::WaitForCopyableViewInWebContents(
+        webui_element->GetWebView()->GetWebContents());
+  }
+
+  TabStripModel* const tab_strip_model = browser()->tab_strip_model();
   int tab_count = 1;
   EXPECT_EQ(tab_count, tab_strip_model->count());
+
+  auto click_home_button = [&]() {
+    ui::TrackedElement* const el = BrowserElements::From(browser())->GetElement(
+        kToolbarHomeButtonElementId);
+    ASSERT_TRUE(el);
+    base::UserActionTester user_action_tester;
+    ASSERT_TRUE(
+        ui_test_utils::SendMouseMoveSync(el->GetScreenBounds().CenterPoint()));
+    ASSERT_TRUE(ui_test_utils::SendMouseEventsSync(
+        ui_controls::LEFT, ui_controls::DOWN | ui_controls::UP));
+    // WebUI button clicks round-trip asynchronously over Mojo before running
+    // the browser's Home command, so wait for the action regardless of
+    // whether the click opened a new tab.
+    ASSERT_TRUE(base::test::RunUntil(
+        [&]() { return user_action_tester.GetActionCount("Home") == 1; }));
+  };
 
   // Test sticky keys with modified mouse click action.
   SetStickyKeysEnabled(true);
   SendKeyPress(ui::VKEY_CONTROL);
-  ui_test_utils::ClickOnView(browser(), VIEW_ID_HOME_BUTTON);
+  click_home_button();
   EXPECT_EQ(++tab_count, tab_strip_model->count());
-  ui_test_utils::ClickOnView(browser(), VIEW_ID_HOME_BUTTON);
+  click_home_button();
   EXPECT_EQ(tab_count, tab_strip_model->count());
 
   // Test locked modifier key with mouse click.
@@ -172,16 +215,16 @@ IN_PROC_BROWSER_TEST_F(StickyKeysBrowserTest, CtrlClickHomeButton) {
   SendKeyPress(ui::VKEY_CONTROL);
   for (; tab_count < 5; ++tab_count) {
     EXPECT_EQ(tab_count, tab_strip_model->count());
-    ui_test_utils::ClickOnView(browser(), VIEW_ID_HOME_BUTTON);
+    click_home_button();
   }
   SendKeyPress(ui::VKEY_CONTROL);
-  ui_test_utils::ClickOnView(browser(), VIEW_ID_HOME_BUTTON);
+  click_home_button();
   EXPECT_EQ(tab_count, tab_strip_model->count());
 
   // Test disabling sticky keys prevent modified mouse click.
   SetStickyKeysEnabled(false);
   SendKeyPress(ui::VKEY_CONTROL);
-  ui_test_utils::ClickOnView(browser(), VIEW_ID_HOME_BUTTON);
+  click_home_button();
   EXPECT_EQ(tab_count, tab_strip_model->count());
 }
 

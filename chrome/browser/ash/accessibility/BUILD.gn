@@ -214,6 +214,7 @@ source_set("browser_tests") {
     "//chrome/browser/extensions/api/braille_display_private:controller",
     "//chrome/browser/speech",
     "//chrome/browser/speech:test_support",
+    "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui:browser_window_header",
     "//chrome/browser/ui:settings_window_manager_chromeos",
     "//chrome/browser/ui:ui_features",
@@ -223,6 +224,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui/ash/shelf",
     "//chrome/browser/ui/aura/accessibility",
     "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/interaction",
     "//chrome/test:test_support",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/experiences/extensions/browser/speech:speech_recognition_constants",
@@ -232,6 +234,8 @@ source_set("browser_tests") {
     "//ui/base/clipboard:clipboard_test_support",
     "//ui/base/mojom:ui_base_types",
     "//ui/events:test_support",
+    "//ui/views/controls/webview",
+    "//ui/webui/tracked_element",
   ]
 }
 
