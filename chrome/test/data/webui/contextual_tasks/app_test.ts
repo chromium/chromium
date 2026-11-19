@@ -321,6 +321,27 @@ suite('ContextualTasksAppTest', function() {
         assertFalse(appElement.hasAttribute('is-error-page-visible_'));
       });
 
+  // Regression test for crbug.com/481763884. The error dialog is only added to
+  // the DOM once it is needed, so showing it must not rely on the dialog
+  // already being present.
+  test('oauth error dialog is shown when requested', async () => {
+    const {appElement, callbackRouterRemote} =
+        await createContextualTasksAppElement(/*url=*/ fixtureUrl);
+
+    assertFalse(!!appElement.shadowRoot.querySelector(
+        'contextual-tasks-error-dialog'));
+
+    callbackRouterRemote.showOauthErrorDialog();
+    await callbackRouterRemote.$.flushForTesting();
+    await microtasksFinished();
+
+    const errorDialog =
+        appElement.shadowRoot.querySelector('contextual-tasks-error-dialog');
+    assertTrue(!!errorDialog);
+    await microtasksFinished();
+    assertTrue(errorDialog.$.dialog.open);
+  });
+
   test('toolbar visibility changes for tab and side panel', async () => {
     const {appElement, handler, callbackRouterRemote} =
         await createContextualTasksAppElement(
