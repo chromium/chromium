@@ -2,18 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
 import 'chrome://settings/lazy_load.js';
 
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import type {FileSystemSiteListElement, FileSystemGrant, OriginFileSystemGrants} from 'chrome://settings/lazy_load.js';
+import type {FileSystemGrant, FileSystemSiteListElement, OriginFileSystemGrants} from 'chrome://settings/lazy_load.js';
 import {SiteSettingsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {loadTimeData, Router, routes} from 'chrome://settings/settings.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestSiteSettingsBrowserProxy} from './test_site_settings_browser_proxy.js';
 
-// clang-format on
 suite('FileSystemSettings_EnablePersistentPermissions', function() {
   let testElement: FileSystemSiteListElement;
   let browserProxy: TestSiteSettingsBrowserProxy;
@@ -69,9 +67,9 @@ suite('FileSystemSettings_EnablePersistentPermissions', function() {
     browserProxy.setFileSystemGrants(FILE_SYSTEM_GRANTS);
     Router.getInstance().navigateTo(routes.SITE_SETTINGS_FILE_SYSTEM_WRITE);
     await browserProxy.whenCalled('getFileSystemGrants');
-    flush();
+    await microtasksFinished();
     const fileSystemSiteEntries =
-        testElement.shadowRoot!.querySelectorAll('file-system-site-entry');
+        testElement.shadowRoot.querySelectorAll('file-system-site-entry');
     assertEquals(fileSystemSiteEntries.length, 2);
   });
 });
