@@ -1136,13 +1136,10 @@ const FeatureEntry::FeatureParam
         {"Omnibox_HostUnboundedInLocationBar", "true"}};
 const FeatureEntry::FeatureParam kWebUIOmniboxFullPopupMultiline[] = {
     {"Omnibox_Multiline", "true"}};
-const FeatureEntry::FeatureParam kWebUIOmniboxFullPopupDogfoodFeedback[] = {
-    {"Omnibox_DogfoodFeedback", "true"}};
 
 const FeatureEntry::FeatureVariation kWebUIOmniboxFullPopupVariations[] = {
     {"- Use BrowserView", kWebUIOmniboxFullPopupUseBrowserView, nullptr},
     {"- with Multiline", kWebUIOmniboxFullPopupMultiline, nullptr},
-    {"- with Dogfood Feedback", kWebUIOmniboxFullPopupDogfoodFeedback, nullptr},
     {"- Host unbounded in LocationBar",
      kWebUIOmniboxFullPopupHostUnboundedInLocationBar, nullptr},
 };
