@@ -46,9 +46,11 @@ namespace {
 constexpr base::TimeDelta kInstallationTimeout = base::Minutes(5);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-// Returns whether the management environment for the profile is low-trust.
-bool IsLowTrustEnvironment(Profile* profile) {
-  switch (GetHigherManagementAuthorityTrustworthiness(profile)) {
+// Returns whether the management environment for the `trustworthiness` is `LOW`
+// or `NONE`.
+bool IsLowTrustEnvironment(
+    policy::ManagementAuthorityTrustworthiness trustworthiness) {
+  switch (trustworthiness) {
     case policy::ManagementAuthorityTrustworthiness::NONE:
     case policy::ManagementAuthorityTrustworthiness::LOW:
       return true;
@@ -482,19 +484,27 @@ void ForceInstalledMetrics::ReportDisableReason(
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 void ForceInstalledMetrics::ReportGreylistedStateByTrustLevel(
     const ExtensionId& extension_id,
+    bool legacy_is_low_trust_environment,
     bool is_low_trust_environment) {
   if (!blocklist_prefs::IsExtensionGreylisted(extension_id,
                                               ExtensionPrefs::Get(profile_))) {
     return;
   }
-  if (is_low_trust_environment) {
+  const bool is_enabled =
+      registry_->enabled_extensions().Contains(extension_id);
+  if (legacy_is_low_trust_environment) {
     base::UmaHistogramBoolean(
-        "Extensions.GreylistedForceInstalled.LowTrust.Enabled",
-        registry_->enabled_extensions().Contains(extension_id));
+        "Extensions.GreylistedForceInstalled.LowTrust.Enabled", is_enabled);
   } else {
     base::UmaHistogramBoolean(
-        "Extensions.GreylistedForceInstalled.HighTrust.Enabled",
-        registry_->enabled_extensions().Contains(extension_id));
+        "Extensions.GreylistedForceInstalled.HighTrust.Enabled", is_enabled);
+  }
+  if (is_low_trust_environment) {
+    base::UmaHistogramBoolean(
+        "Extensions.GreylistedForceInstalledV2.LowTrust.Enabled", is_enabled);
+  } else {
+    base::UmaHistogramBoolean(
+        "Extensions.GreylistedForceInstalledV2.HighTrust.Enabled", is_enabled);
   }
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
@@ -519,9 +529,13 @@ void ForceInstalledMetrics::ReportMetrics() {
                               tracker_->extensions().size());
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  const bool is_low_trust_environment = IsLowTrustEnvironment(profile_);
+  const bool legacy_is_low_trust_environment = IsLowTrustEnvironment(
+      GetHigherManagementAuthorityTrustworthiness(profile_));
+  const bool is_low_trust_environment = IsLowTrustEnvironment(
+      GetHigherManagementAuthorityTrustworthinessForPolicyLoading(profile_));
   for (const auto& extension : tracker_->extensions()) {
     ReportGreylistedStateByTrustLevel(extension.first,
+                                      legacy_is_low_trust_environment,
                                       is_low_trust_environment);
   }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)

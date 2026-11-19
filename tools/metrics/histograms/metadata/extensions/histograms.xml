@@ -2851,6 +2851,29 @@ This is emitted for two scenarios when a worker may be unregistered:
   </token>
 </histogram>
 
+<histogram name="Extensions.GreylistedForceInstalledV2.{TrustLevel}.Enabled"
+    enum="Boolean" expires_after="2027-08-31">
+  <owner>anunoy@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the enabled state of a greylisted force-installed extension in a
+    {TrustLevel} management environment. A greylisted extension is one that has
+    been taken down by the Chrome Web Store for non-malware reasons such as
+    store policy violations or unwanted software categorization. Recorded once
+    per extension at profile startup on Windows and macOS. Only applicable for
+    &quot;user profiles&quot; (profiles where people can install extensions,
+    specifically profiles that can have non-component extensions installed).
+
+    This supersedes Extensions.GreylistedForceInstalled.{TrustLevel}.Enabled,
+    using policy-loading-specific management authority trustworthiness to
+    determine the trust level.
+  </summary>
+  <token key="TrustLevel">
+    <variant name="HighTrust" summary="high-trust"/>
+    <variant name="LowTrust" summary="low-trust"/>
+  </token>
+</histogram>
+
 <histogram name="Extensions.HasPermissions_Install4" enum="Boolean"
     expires_after="never">
 <!-- expires-never: Monitoring extension usage. -->

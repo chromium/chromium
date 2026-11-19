@@ -49,6 +49,12 @@
 #include "components/user_manager/user_names.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_WIN)
+#include "base/functional/callback_helpers.h"
+#include "base/test/test_future.h"
+#include "base/win/win_util.h"
+#endif  // BUILDFLAG(IS_WIN)
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "components/policy/core/common/management/management_service.h"
@@ -1651,20 +1657,32 @@ TEST_P(GreylistedForceInstalledMetricsTest,
   fake_timer_->Fire();
 
   std::string trust_level;
+  std::string other_trust_level;
   switch (management_authority_) {
     case policy::EnterpriseManagementAuthority::NONE:
     case policy::EnterpriseManagementAuthority::COMPUTER_LOCAL:
       trust_level = "LowTrust";
+      other_trust_level = "HighTrust";
       break;
     case policy::EnterpriseManagementAuthority::DOMAIN_LOCAL:
     case policy::EnterpriseManagementAuthority::CLOUD:
     case policy::EnterpriseManagementAuthority::CLOUD_DOMAIN:
       trust_level = "HighTrust";
+      other_trust_level = "LowTrust";
       break;
   }
   histogram_tester_.ExpectUniqueSample(
       "Extensions.GreylistedForceInstalled." + trust_level + ".Enabled",
       enabled_, 1);
+  histogram_tester_.ExpectTotalCount(
+      "Extensions.GreylistedForceInstalled." + other_trust_level + ".Enabled",
+      0);
+  histogram_tester_.ExpectUniqueSample(
+      "Extensions.GreylistedForceInstalledV2." + trust_level + ".Enabled",
+      enabled_, 1);
+  histogram_tester_.ExpectTotalCount(
+      "Extensions.GreylistedForceInstalledV2." + other_trust_level + ".Enabled",
+      0);
 }
 
 // Note: It should not be possible for greylisted force installed extensions
@@ -1679,6 +1697,110 @@ INSTANTIATE_TEST_SUITE_P(
                         policy::EnterpriseManagementAuthority::CLOUD,
                         policy::EnterpriseManagementAuthority::CLOUD_DOMAIN),
         testing::Bool()));
-#endif
+
+#if BUILDFLAG(IS_WIN)
+class GreylistedForceInstalledAzureADMetricsTest
+    : public ForceInstalledMetricsTest,
+      public testing::WithParamInterface<std::tuple<
+          base::win::ScopedAzureADJoinStateForTesting::AzureADJoinType,
+          bool>> {
+ public:
+  GreylistedForceInstalledAzureADMetricsTest() {
+    std::tie(join_type_, enabled_) = GetParam();
+  }
+
+ protected:
+  base::win::ScopedAzureADJoinStateForTesting::AzureADJoinType join_type_;
+  bool enabled_;
+};
+
+TEST_P(GreylistedForceInstalledAzureADMetricsTest,
+       ReportsEnabledStateForGreylistedExtension) {
+  base::win::ScopedDomainStateForTesting scoped_domain_state(false);
+  base::win::ScopedAzureADJoinStateForTesting scoped_azure_ad_join_state(
+      join_type_);
+  base::win::ScopedDeviceRegisteredWithManagementForTesting
+      scoped_device_registered(false);
+
+  policy::ManagementService* platform_management =
+      policy::ManagementServiceFactory::GetForPlatform();
+  platform_management->UsePrefServiceAsCache(
+      TestingBrowserProcess::GetGlobal()->local_state());
+  base::ScopedClosureRunner cleanup(base::BindOnce(
+      [](policy::ManagementService* service) {
+        service->UsePrefServiceAsCache(nullptr);
+      },
+      platform_management));
+
+  base::test::TestFuture<policy::ManagementAuthorityTrustworthiness,
+                         policy::ManagementAuthorityTrustworthiness>
+      test_future;
+  platform_management->RefreshCache(test_future.GetCallback());
+  ASSERT_TRUE(test_future.Wait());
+
+  SetupForceList(ExtensionOrigin::kWebStore);
+  scoped_refptr<const Extension> extension = CreateNewExtension(
+      kExtensionName1, kExtensionId1, ExtensionStatus::kPending);
+  // Greylist the extension by setting a non-malware blocklist state.
+  blocklist_prefs::SetSafeBrowsingExtensionBlocklistState(
+      kExtensionId1, BitMapBlocklistState::BLOCKLISTED_CWS_POLICY_VIOLATION,
+      ExtensionPrefs::Get(profile()));
+  if (enabled_) {
+    registry()->AddEnabled(extension.get());
+  } else {
+    registry()->AddDisabled(extension.get());
+  }
+
+  // Create a second extension with loaded status to trigger the
+  // OnForceInstalledExtensionsLoaded() callback which invokes the
+  // ReportMetrics() that logs the greylist histograms.
+  scoped_refptr<const Extension> extension2 = CreateNewExtension(
+      kExtensionName2, kExtensionId2, ExtensionStatus::kLoaded);
+
+  // ForceInstalledMetrics should still keep running as kExtensionId1 is
+  // installed but not loaded.
+  EXPECT_TRUE(fake_timer_->IsRunning());
+  fake_timer_->Fire();
+
+  // The legacy API considers both workplace and device Azure AD join as
+  // HighTrust.
+  histogram_tester_.ExpectUniqueSample(
+      "Extensions.GreylistedForceInstalled.HighTrust.Enabled", enabled_, 1);
+  histogram_tester_.ExpectTotalCount(
+      "Extensions.GreylistedForceInstalled.LowTrust.Enabled", 0);
+
+  // The V2 policy-loading API considers only device Azure AD join as HighTrust,
+  // treating workplace join (without AD domain enrollment) as LowTrust.
+  const std::string v2_trust_level =
+      join_type_ == base::win::ScopedAzureADJoinStateForTesting::
+                        AzureADJoinType::kDevice
+          ? "HighTrust"
+          : "LowTrust";
+  const std::string v2_other_trust_level =
+      join_type_ == base::win::ScopedAzureADJoinStateForTesting::
+                        AzureADJoinType::kDevice
+          ? "LowTrust"
+          : "HighTrust";
+  histogram_tester_.ExpectUniqueSample(
+      "Extensions.GreylistedForceInstalledV2." + v2_trust_level + ".Enabled",
+      enabled_, 1);
+  histogram_tester_.ExpectTotalCount(
+      "Extensions.GreylistedForceInstalledV2." + v2_other_trust_level +
+          ".Enabled",
+      0);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    GreylistedForceInstalledAzureADMetricsTest,
+    testing::Combine(
+        testing::Values(
+            base::win::ScopedAzureADJoinStateForTesting::AzureADJoinType::
+                kWorkplace,
+            base::win::ScopedAzureADJoinStateForTesting::AzureADJoinType::
+                kDevice),
+        testing::Bool()));
+#endif  // BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 }  // namespace extensions

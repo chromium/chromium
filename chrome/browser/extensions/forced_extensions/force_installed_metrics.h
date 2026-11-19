@@ -87,6 +87,7 @@ class ForceInstalledMetrics : public ForceInstalledTracker::Observer {
   // Reports whether the greylisted force-installed extensions are enabled in
   // high/low trust environments.
   void ReportGreylistedStateByTrustLevel(const ExtensionId& extension_id,
+                                         bool legacy_is_low_trust_environment,
                                          bool is_low_trust_environment);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
