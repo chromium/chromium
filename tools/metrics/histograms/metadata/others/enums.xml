@@ -159,23 +159,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/finds/core/finds_service.h:Status) -->
 
-<enum name="FreedesktopSecretKeyProviderInitStatus">
-  <summary>
-    High-level error categories for FreedesktopSecretKeyProvider.
-  </summary>
-  <int value="0" label="Success"/>
-  <int value="1" label="CreateCollectionFailed"/>
-  <int value="2" label="CreateItemFailed"/>
-  <int value="3" label="EmptySecret"/>
-  <int value="4" label="GetSecretFailed"/>
-  <int value="5" label="GnomeKeyringDeadlock"/>
-  <int value="6" label="NoService"/>
-  <int value="7" label="ReadAliasFailed"/>
-  <int value="8" label="SearchItemsFailed"/>
-  <int value="9" label="SessionFailure"/>
-  <int value="10" label="UnlockFailed"/>
-</enum>
-
 <!-- LINT.IfChange(GameControllerMacOutcome) -->
 
 <enum name="GameControllerMacOutcome">

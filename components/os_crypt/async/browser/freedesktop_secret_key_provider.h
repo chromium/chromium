@@ -36,34 +36,6 @@ namespace os_crypt_async {
 // D-Bus services fails, this class will fallback to using PosixKeyProvider.
 class FreedesktopSecretKeyProvider : public KeyProvider {
  public:
-  enum class InitStatus {
-    // These values are persisted to logs. Do not renumber or reuse.
-    kSuccess = 0,
-    kCreateCollectionFailed = 1,
-    kCreateItemFailed = 2,
-    kEmptySecret = 3,
-    kGetSecretFailed = 4,
-    kGnomeKeyringDeadlock = 5,
-    kNoService = 6,
-    kReadAliasFailed = 7,
-    kSearchItemsFailed = 8,
-    kSessionFailure = 9,
-    kUnlockFailed = 10,
-    kDisabled = 11,
-    kKWalletNoService = 12,
-    kKWalletDisabled = 13,
-    kKWalletNoNetworkWallet = 14,
-    kKWalletOpenFailed = 15,
-    kKWalletNoSecret = 16,
-    kKWalletFolderCheckFailed = 17,
-    kKWalletFolderCreationFailed = 18,
-    kKWalletEntryCheckFailed = 19,
-    kKWalletReadFailed = 20,
-    kKWalletWriteFailed = 21,
-    kBackendUnresponsive = 22,
-    kMaxValue = kBackendUnresponsive,
-  };
-
   FreedesktopSecretKeyProvider(const std::string& password_store,
                                const std::string& product_name,
                                scoped_refptr<dbus::Bus> bus);
@@ -223,12 +195,12 @@ class FreedesktopSecretKeyProvider : public KeyProvider {
                     std::optional<dbus::ObjectPath> created_item);
   void DeriveKeyFromSecret(base::span<const uint8_t> secret);
   void FinalizeSuccess(Encryptor::Key key);
-  void FinalizeFailure(InitStatus status);
+  void FinalizeFailure(KeyError error = KeyError::kPermanentlyUnavailable);
   void CloseSession();
 
   // Calls a method with `kMethodCallTimeout`. If the backend doesn't reply in
-  // time, initialization fails with `kBackendUnresponsive` and `callback` is
-  // not run.
+  // time, initialization fails with `KeyError::kTemporarilyUnavailable` and
+  // `callback` is not run.
   template <dbus_utils::SignatureLiteral ArgsSignature,
             dbus_utils::SignatureLiteral RetsSignature>
   void CallMethod(
