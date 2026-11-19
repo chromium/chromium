@@ -265,6 +265,10 @@ message TabContext {
 
   // Page title of the active browser tab.
   string title = 2;
+
+  // MIME type of the active browser tab's main document (e.g. "text/html",
+  // "application/pdf").
+  string mime_type = 3;
 }
 
 // Dynamic browser tool manifest update.
@@ -275,14 +279,9 @@ message ToolsetUpdate {
 
 // Single tool definition.
 message ToolDefinition {
-  // Unique name identifying the tool (e.g. "open_tab", "get_pointer").
-  string name = 1;
-
-  // Natural language description of the tool's purpose and functionality.
-  string description = 2;
-
-  // JSON Schema specifying the arguments accepted by the tool.
-  string parameters_json_schema = 3;
+  // Deprecated in favor of tool_declaration below.
+  reserved 1, 2, 3;
+  reserved name, description, parameters_json_schema;
 
   enum ExecutionBehavior {
     EXECUTION_BEHAVIOR_UNSPECIFIED = 0;
