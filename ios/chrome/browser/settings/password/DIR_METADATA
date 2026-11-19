@@ -1,0 +1,14 @@
+monorail: {
+  component: "UI>Browser>Passwords"
+}
+team_email: "bling-transactions@google.com"
+os: IOS
+buganizer_public: {
+  component_id: 1457410
+}
+agentic_review: {}
+
+# TODO(crbug.com/576358854): Remove //ios/chrome/browser/intelligence/kb/COMMON_METADATA
+# once the knowledge base has fully landed in //ios/agents/knowledge_base/.
+mixins: "//ios/agents/knowledge_base/COMMON_METADATA"
+mixins: "//ios/chrome/browser/intelligence/kb/COMMON_METADATA"

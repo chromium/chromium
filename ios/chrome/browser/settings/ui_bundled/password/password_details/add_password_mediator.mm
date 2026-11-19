@@ -25,11 +25,11 @@
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "ios/chrome/browser/passwords/model/password_check_observer_bridge.h"
+#import "ios/chrome/browser/settings/password/public/password_manager_ui_features.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_details/add_password_details_consumer.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_details/add_password_mediator_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_details/add_password_metrics.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_details/add_password_view_controller_delegate.h"
-#import "ios/chrome/browser/settings/ui_bundled/password/password_manager_ui_features.h"
 #import "net/base/apple/url_conversions.h"
 
 using base::SysNSStringToUTF16;

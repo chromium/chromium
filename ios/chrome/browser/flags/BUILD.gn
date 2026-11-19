@@ -113,7 +113,7 @@ source_set("flags") {
     "//ios/chrome/browser/policy/model:constants",
     "//ios/chrome/browser/policy/model:policy_util",
     "//ios/chrome/browser/popup_menu/overflow_menu/public:features",
-    "//ios/chrome/browser/settings/ui_bundled/password:features",
+    "//ios/chrome/browser/settings/password/public:features",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/snapshots/model:features",
