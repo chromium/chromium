@@ -232,6 +232,8 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Link"/>
   <int value="3" label="Other"/>
   <int value="4" label="Network Error Page"/>
+  <int value="5" label="Bookmark"/>
+  <int value="6" label="Bookmark Saved via Promo"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/dino/dino_metrics.h:DinoImpressionSource) -->

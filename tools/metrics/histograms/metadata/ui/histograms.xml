@@ -1423,6 +1423,18 @@ features through Chrome Labs. -->
   <summary>URLs for which Chrome creates WebUIControllers.</summary>
 </histogram>
 
+<histogram name="WebUI.Dino.HasBookmark" enum="Boolean"
+    expires_after="2027-05-01">
+  <owner>musalmaan@chromium.org</owner>
+  <owner>amyhwang@chromium.org</owner>
+  <owner>yeroshkin@chromium.org</owner>
+  <summary>
+    Records whether the user profile has chrome://dino saved in its bookmark
+    model. Emitted once per profile load when the BookmarkModel finishes
+    loading.
+  </summary>
+</histogram>
+
 <histogram name="WebUI.Dino.ImpressionSource" enum="DinoImpressionSource"
     expires_after="2027-05-01">
   <owner>musalmaan@chromium.org</owner>

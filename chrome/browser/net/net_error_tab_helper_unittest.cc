@@ -485,6 +485,8 @@ TEST_F(NetErrorTabHelperTest, DinoImpressionSourceFromChromeDinoTransitions) {
     ui::PageTransition transition;
     dino::DinoImpressionSource expected_source;
   } const kCases[] = {
+      {ui::PAGE_TRANSITION_AUTO_BOOKMARK,
+       dino::DinoImpressionSource::kBookmark},
       {ui::PAGE_TRANSITION_TYPED, dino::DinoImpressionSource::kTyped},
       {ui::PAGE_TRANSITION_GENERATED,
        dino::DinoImpressionSource::kOmniboxGenerated},

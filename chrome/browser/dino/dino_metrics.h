@@ -9,6 +9,7 @@
 
 namespace dino {
 
+inline constexpr char kDinoHasBookmarkHistogram[] = "WebUI.Dino.HasBookmark";
 inline constexpr char kDinoImpressionSourceHistogram[] =
     "WebUI.Dino.ImpressionSource";
 
@@ -22,9 +23,14 @@ enum class DinoImpressionSource {
   kLink = 2,
   kOther = 3,
   kNetworkErrorPage = 4,
-  kMaxValue = kNetworkErrorPage,
+  kBookmark = 5,
+  kBookmarkSavedViaPromo = 6,
+  kMaxValue = kBookmarkSavedViaPromo,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/ui/enums.xml:DinoImpressionSource)
+
+// Records whether the profile currently has `chrome://dino` bookmarked.
+void RecordDinoHasBookmark(bool has_bookmark);
 
 // Records the impression source for a Dino game page load.
 void RecordDinoImpressionSource(DinoImpressionSource source);

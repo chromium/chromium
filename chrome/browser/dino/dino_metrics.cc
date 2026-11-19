@@ -8,12 +8,20 @@
 
 namespace dino {
 
+void RecordDinoHasBookmark(bool has_bookmark) {
+  base::UmaHistogramBoolean(kDinoHasBookmarkHistogram, has_bookmark);
+}
+
 void RecordDinoImpressionSource(DinoImpressionSource source) {
   base::UmaHistogramEnumeration(kDinoImpressionSourceHistogram, source);
 }
 
 DinoImpressionSource GetDinoImpressionSourceFromTransition(
     ui::PageTransition transition) {
+  if (ui::PageTransitionCoreTypeIs(transition,
+                                   ui::PAGE_TRANSITION_AUTO_BOOKMARK)) {
+    return DinoImpressionSource::kBookmark;
+  }
   if (ui::PageTransitionCoreTypeIs(transition, ui::PAGE_TRANSITION_TYPED)) {
     return DinoImpressionSource::kTyped;
   }

@@ -10,21 +10,42 @@
 
 namespace dino {
 
+TEST(DinoMetricsTest, RecordDinoHasBookmark) {
+  base::HistogramTester histogram_tester;
+
+  RecordDinoHasBookmark(true);
+  RecordDinoHasBookmark(false);
+
+  histogram_tester.ExpectBucketCount(kDinoHasBookmarkHistogram, true, 1);
+  histogram_tester.ExpectBucketCount(kDinoHasBookmarkHistogram, false, 1);
+  histogram_tester.ExpectTotalCount(kDinoHasBookmarkHistogram, 2);
+}
+
 TEST(DinoMetricsTest, RecordDinoImpressionSource) {
   base::HistogramTester histogram_tester;
 
   RecordDinoImpressionSource(DinoImpressionSource::kTyped);
   RecordDinoImpressionSource(DinoImpressionSource::kNetworkErrorPage);
+  RecordDinoImpressionSource(DinoImpressionSource::kBookmark);
+  RecordDinoImpressionSource(DinoImpressionSource::kBookmarkSavedViaPromo);
 
   histogram_tester.ExpectBucketCount(kDinoImpressionSourceHistogram,
                                      DinoImpressionSource::kTyped, 1);
   histogram_tester.ExpectBucketCount(kDinoImpressionSourceHistogram,
                                      DinoImpressionSource::kNetworkErrorPage,
                                      1);
-  histogram_tester.ExpectTotalCount(kDinoImpressionSourceHistogram, 2);
+  histogram_tester.ExpectBucketCount(kDinoImpressionSourceHistogram,
+                                     DinoImpressionSource::kBookmark, 1);
+  histogram_tester.ExpectBucketCount(
+      kDinoImpressionSourceHistogram,
+      DinoImpressionSource::kBookmarkSavedViaPromo, 1);
+  histogram_tester.ExpectTotalCount(kDinoImpressionSourceHistogram, 4);
 }
 
 TEST(DinoMetricsTest, GetDinoImpressionSourceFromTransition) {
+  EXPECT_EQ(
+      DinoImpressionSource::kBookmark,
+      GetDinoImpressionSourceFromTransition(ui::PAGE_TRANSITION_AUTO_BOOKMARK));
   EXPECT_EQ(DinoImpressionSource::kTyped,
             GetDinoImpressionSourceFromTransition(ui::PAGE_TRANSITION_TYPED));
   EXPECT_EQ(
