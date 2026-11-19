@@ -32,7 +32,6 @@
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
 #include "components/autofill/core/browser/payments/test_credit_card_fido_authenticator.h"
-#include "components/autofill/core/browser/payments/test_internal_authenticator.h"
 #include "components/autofill/core/browser/strike_databases/payments/fido_authentication_strike_database.h"
 #endif
 
@@ -106,7 +105,6 @@ void CreditCardAccessManagerTestBase::SetUp() {
   CreateAutofillDriver();
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
-  autofill_driver().SetAuthenticator(new TestInternalAuthenticator());
   test_api(credit_card_access_manager())
       .set_fido_authenticator(std::make_unique<TestCreditCardFidoAuthenticator>(
           &autofill_driver(), &autofill_client()));

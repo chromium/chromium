@@ -17,7 +17,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
-#include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/foundations/autofill_driver.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
@@ -27,10 +26,6 @@
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "url/origin.h"
-
-#if !BUILDFLAG(IS_IOS)
-#include "components/webauthn/core/browser/internal_authenticator.h"
-#endif
 
 namespace autofill::mojom {
 class AutofillVisibilityObserver;
@@ -182,15 +177,6 @@ class TestAutofillDriverTemplate : public T {
     isolation_info_ = isolation_info;
   }
 
-  void SetSharedURLLoaderFactory(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
-
-#if !BUILDFLAG(IS_IOS)
-  void SetAuthenticator(webauthn::InternalAuthenticator* authenticator_) {
-    test_authenticator_.reset(authenticator_);
-  }
-#endif
-
  private:
   std::map<RemoteFrameToken, LocalFrameToken> remote_frame_tokens_;
   raw_ptr<TestAutofillDriverTemplate> parent_ = nullptr;
@@ -199,10 +185,6 @@ class TestAutofillDriverTemplate : public T {
   bool policy_controlled_feature_autofill_enabled_ = false;
   bool policy_controlled_feature_manual_text_enabled_ = false;
   net::IsolationInfo isolation_info_;
-
-#if !BUILDFLAG(IS_IOS)
-  std::unique_ptr<webauthn::InternalAuthenticator> test_authenticator_;
-#endif
 };
 
 // A simple `AutofillDriver` for tests. Consider `TestContentAutofillDriver` as

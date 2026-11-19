@@ -42,7 +42,6 @@
 #include "components/autofill/core/browser/payments/payments_service_url.h"
 #include "components/autofill/core/browser/payments/test_authentication_requester.h"
 #include "components/autofill/core/browser/payments/test_credit_card_fido_authenticator.h"
-#include "components/autofill/core/browser/payments/test_internal_authenticator.h"
 #include "components/autofill/core/browser/payments/test_payments_network_interface.h"
 #include "components/autofill/core/browser/single_field_fillers/autocomplete/autocomplete_history_manager.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
@@ -105,7 +104,6 @@ class CreditCardFidoAuthenticatorTest
     InitAutofillClient();
 
     CreateAutofillDriver();
-    autofill_driver().SetAuthenticator(new TestInternalAuthenticator());
 
     payments_autofill_client().set_payments_network_interface(
         std::make_unique<payments::TestPaymentsNetworkInterface>(
