@@ -9,11 +9,12 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/no_destructor.h"
 #import "base/strings/utf_string_conversions.h"
-#import "base/values.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_event.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_tab_helper.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_util.h"
 #import "ios/web/public/js_messaging/script_message.h"
+#import "ios/web/public/js_messaging/script_message_dict_value.h"
+#import "ios/web/public/js_messaging/script_message_value.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
 #import "ios/web/public/web_state.h"
@@ -111,10 +112,11 @@ ChooseFileAccept BucketForChooseFileEvent(int accept_type,
 // an empty vector.
 using ParseFunction = std::vector<std::string> (*)(std::string_view);
 std::vector<std::string> ParseAttributeFromValue(
-    const base::DictValue& dict,
+    const web::ScriptMessageDictValue& dict,
     std::string_view attribute_name,
     ParseFunction parse_function) {
-  if (const std::string* attribute_value = dict.FindString(attribute_name)) {
+  if (std::optional<std::string> attribute_value =
+          dict.FindString(attribute_name)) {
     return parse_function(*attribute_value);
   }
   return {};
@@ -147,17 +149,19 @@ void ChooseFileJavaScriptFeature::ScriptMessageReceived(
   DCHECK(web_state);
 
   // Verify that the message is well-formed before using it
-  if (!message.legacy_body()->is_dict()) {
+  const web::ScriptMessageValue& body = message.body();
+  const web::ScriptMessageDictValue* body_dict = body.GetIfDict();
+  if (!body_dict) {
     return;
   }
-  base::DictValue& body_dict = message.legacy_body()->GetDict();
 
-  std::optional<double> accept_type = body_dict.FindDouble("acceptType");
-  std::optional<bool> has_multiple = body_dict.FindBool("hasMultiple");
+  std::optional<double> accept_type = body_dict->FindDouble("acceptType");
+  std::optional<bool> has_multiple = body_dict->FindBool("hasMultiple");
   std::optional<bool> has_webkitdirectory =
-      body_dict.FindBool("hasWebkitdirectory");
-  std::optional<bool> has_selected_file = body_dict.FindBool("hasSelectedFile");
-  std::optional<double> capture = body_dict.FindDouble("capture");
+      body_dict->FindBool("hasWebkitdirectory");
+  std::optional<bool> has_selected_file =
+      body_dict->FindBool("hasSelectedFile");
+  std::optional<double> capture = body_dict->FindDouble("capture");
   if (!accept_type || !has_multiple || !has_webkitdirectory ||
       !has_selected_file || !capture) {
     return;
@@ -178,17 +182,17 @@ void ChooseFileJavaScriptFeature::ScriptMessageReceived(
   LogChooseFileEvent(accept_type_int, *has_multiple, *has_selected_file);
 
   std::vector<std::string> accept_file_extensions = ParseAttributeFromValue(
-      body_dict, "fileExtensions", ParseAcceptAttributeFileExtensions);
+      *body_dict, "fileExtensions", ParseAcceptAttributeFileExtensions);
   std::vector<std::string> accept_mime_types = ParseAttributeFromValue(
-      body_dict, "mimeTypes", ParseAcceptAttributeMimeTypes);
+      *body_dict, "mimeTypes", ParseAcceptAttributeMimeTypes);
   CGPoint screen_location = CGPointZero;
-  if (const base::DictValue* screen_location_dict =
-          body_dict.FindDict("screenLocation")) {
+  if (std::optional<web::ScriptMessageDictValue> screen_location_dict =
+          body_dict->FindDict("screenLocation")) {
     screen_location.x = screen_location_dict->FindDouble("x").value_or(0);
     screen_location.y = screen_location_dict->FindDouble("y").value_or(0);
   }
-  if (const std::string* attribute_value =
-          body_dict.FindString("pointerType")) {
+  if (std::optional<std::string> attribute_value =
+          body_dict->FindString("pointerType")) {
     if (*attribute_value == "mouse" &&
         !CGPointEqualToPoint(screen_location, CGPointZero)) {
       // If seems that if the pointer type associated with the event is
