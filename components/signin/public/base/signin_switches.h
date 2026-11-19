@@ -904,18 +904,6 @@ COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kSigninWindows10DepreciationStateForTesting);
 COMPONENT_EXPORT(SIGNIN_SWITCHES) bool IsSigninWindows10DepreciationState();
 
-#if BUILDFLAG(IS_ANDROID)
-// Feature to allow deleting browser data to android desktop users.
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE(kSignOutDeletesBrowsingData);
-#endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_ANDROID)
-// Feature to show "Sign out of Chrome" string to android desktop users.
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE(kSignOutOfChrome);
-#endif  // BUILDFLAG(IS_ANDROID)
-
 // When enabled, /ListAccounts is not sent if there are no cookies for the Gaia
 // origin, as the response would contain no accounts.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
@@ -956,11 +944,6 @@ BASE_DECLARE_FEATURE(kSupportSigninInterceptionInPopups);
 #if BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kSupportWebSigninAddSession);
-#endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_ANDROID)
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE(kSwitchToIncognitoInSettings);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // This gates the new single-model approach where account bookmarks are stored

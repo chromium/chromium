@@ -75,7 +75,6 @@ import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.components.regional_capabilities.RegionalCapabilitiesService;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.SigninFeatureMap;
-import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
@@ -564,9 +563,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
     }
 
     private static boolean shouldShowSwitchToIncognitoPref(Profile profile) {
-        return SigninFeatureMap.isEnabled(SigninFeatures.SWITCH_TO_INCOGNITO_IN_SETTINGS)
-                && DeviceInfo.isDesktop()
-                && IncognitoUtils.isIncognitoModeEnabled(profile);
+        return DeviceInfo.isDesktop() && IncognitoUtils.isIncognitoModeEnabled(profile);
     }
 
     private void openIncognitoSession() {
@@ -601,7 +598,6 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
 
     private static @StringRes int getSignOutTitle() {
         return DeviceInfo.isDesktop()
-                        && SigninFeatureMap.isEnabled(SigninFeatures.SIGN_OUT_OF_CHROME)
                 ? R.string.manage_sync_settings_sign_out_of_chrome
                 : R.string.sign_out;
     }

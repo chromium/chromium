@@ -9220,14 +9220,6 @@
     "expiry_milestone": 165
   },
   {
-    "name": "switch-to-incognito-in-settings",
-    "owners": [
-      "crowleso@google.com",
-      "chrome-signin-mobile@google.com"
-    ],
-    "expiry_milestone": 160
-  },
-  {
     "name": "symphonia-demuxing",
     "owners": [ "jophba@google.com", "media-dev@chromium.org" ],
     "expiry_milestone": 177

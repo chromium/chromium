@@ -24,8 +24,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.widget.containment.ContainmentItem;
-import org.chromium.components.signin.SigninFeatureMap;
-import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.widget.ButtonCompat;
@@ -75,19 +73,15 @@ public class SignoutButtonPreference extends Preference implements ContainmentIt
                     // Snackbar won't be visible in the context of this activity, but there's
                     // special handling for it in MainSettings.
                     assumeNonNull(mSnackbarManagerSupplier);
-                    boolean showConfirmDialog =
-                            DeviceInfo.isDesktop()
-                                    && SigninFeatureMap.isEnabled(
-                                            SigninFeatures.SIGN_OUT_DELETES_BROWSING_DATA);
-                    boolean offerDataDeletionChoice = showConfirmDialog;
+                    boolean isDesktop = DeviceInfo.isDesktop();
                     SignOutCoordinator.startSignOutFlow(
                             mContext,
                             mProfile,
                             mDialogManager,
                             assertNonNull(mSnackbarManagerSupplier.get()),
                             SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS,
-                            showConfirmDialog,
-                            offerDataDeletionChoice,
+                            /* showConfirmDialog= */ isDesktop,
+                            /* offerDataDeletionChoice= */ isDesktop,
                             CallbackUtils.emptyRunnable());
                 });
     }

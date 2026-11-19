@@ -13552,11 +13552,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-    {"switch-to-incognito-in-settings",
-     flag_descriptions::kSwitchToIncognitoInSettingsName,
-     flag_descriptions::kSwitchToIncognitoInSettingsDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(switches::kSwitchToIncognitoInSettings)},
-
     {"xplat-synced-setup-themes",
      flag_descriptions::kXplatSyncedSetupThemesName,
      flag_descriptions::kXplatSyncedSetupThemesDescription, kOsAndroid,

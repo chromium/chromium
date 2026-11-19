@@ -46,7 +46,6 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridgeJni;
@@ -59,7 +58,6 @@ import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.components.sync.DataType;
@@ -470,7 +468,6 @@ public class SignOutCoordinatorTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(SigninFeatures.SIGN_OUT_DELETES_BROWSING_DATA)
     public void testSignOutConfirmDialog_withExtensions_isDesktop() {
         DeviceInfo.setIsDesktopForTesting(true);
         setUpMocks();
@@ -488,7 +485,6 @@ public class SignOutCoordinatorTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(SigninFeatures.SIGN_OUT_DELETES_BROWSING_DATA)
     public void testSignOutConfirmDialog_withExtensions_isNotDesktop() {
         DeviceInfo.setIsDesktopForTesting(false);
         setUpMocks();
@@ -506,7 +502,6 @@ public class SignOutCoordinatorTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(SigninFeatures.SIGN_OUT_DELETES_BROWSING_DATA)
     public void testSignOutConfirmDialog_withoutExtensions_isDesktop() {
         DeviceInfo.setIsDesktopForTesting(true);
         setUpMocks();
@@ -523,7 +518,6 @@ public class SignOutCoordinatorTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(SigninFeatures.SIGN_OUT_DELETES_BROWSING_DATA)
     public void testSignOutConfirmDialog_withoutExtensions_isNotDesktop() {
         DeviceInfo.setIsDesktopForTesting(false);
         setUpMocks();
@@ -540,7 +534,6 @@ public class SignOutCoordinatorTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(SigninFeatures.SIGN_OUT_DELETES_BROWSING_DATA)
     public void testSignOutConfirmDialogPrimaryButtonClick_deleteBrowsingData_checkboxChecked() {
         DeviceInfo.setIsDesktopForTesting(true);
         setUpMocks();
@@ -588,7 +581,6 @@ public class SignOutCoordinatorTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(SigninFeatures.SIGN_OUT_DELETES_BROWSING_DATA)
     public void testSignOutConfirmDialogPrimaryButtonClick_deleteBrowsingData_checkboxUnchecked() {
         DeviceInfo.setIsDesktopForTesting(true);
         setUpMocks();

@@ -30,8 +30,6 @@ import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.widget.CheckBoxWithDescription;
-import org.chromium.components.signin.SigninFeatureMap;
-import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.components.sync.SyncService;
@@ -432,8 +430,7 @@ public class SignOutCoordinator {
                 customView.findViewById(R.id.remove_extensions_checkbox);
 
         if (offerDataDeletionChoice) {
-            assert DeviceInfo.isDesktop()
-                    && SigninFeatureMap.isEnabled(SigninFeatures.SIGN_OUT_DELETES_BROWSING_DATA);
+            assert DeviceInfo.isDesktop();
             deleteDataCheckBox.setVisibility(View.VISIBLE);
             deleteDataCheckBox.setPrimaryText(
                     context.getString(R.string.sign_out_delete_browsing_data_checkbox_title));
@@ -444,8 +441,7 @@ public class SignOutCoordinator {
             removeExtensionsCheckBox.setVisibility(View.VISIBLE);
             removeExtensionsCheckBox.setPrimaryText(
                     context.getString(R.string.sign_out_remove_extensions_checkbox_title));
-            if (DeviceInfo.isDesktop()
-                    && SigninFeatureMap.isEnabled(SigninFeatures.SIGN_OUT_DELETES_BROWSING_DATA)) {
+            if (DeviceInfo.isDesktop()) {
                 removeExtensionsCheckBox.setDescriptionText(
                         context.getString(R.string.sign_out_remove_extensions_checkbox_subtitle));
             }
@@ -505,8 +501,7 @@ public class SignOutCoordinator {
     }
 
     private static void clearBrowsingData(BrowsingDataBridge browsingDataBridge) {
-        assert DeviceInfo.isDesktop()
-                && SigninFeatureMap.isEnabled(SigninFeatures.SIGN_OUT_DELETES_BROWSING_DATA);
+        assert DeviceInfo.isDesktop();
         int[] browsingDatatypes = {
             BrowsingDataType.HISTORY,
             BrowsingDataType.CACHE,

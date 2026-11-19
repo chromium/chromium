@@ -482,11 +482,8 @@ public class MainSettingsFragmentTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
+    @Restriction(DeviceFormFactor.PHONE_OR_TABLET)
     public void testPressingSignOut() {
-        FeatureOverrides.newBuilder()
-                .disable(SigninFeatures.SIGN_OUT_OF_CHROME)
-                .disable(SigninFeatures.SIGN_OUT_DELETES_BROWSING_DATA)
-                .apply();
         CoreAccountInfo accountInfo = mSyncTestRule.setUpAccountAndSignInForTesting();
 
         startSettings();
@@ -522,10 +519,6 @@ public class MainSettingsFragmentTest {
     @Feature({"Sync"})
     @Restriction(DeviceFormFactor.DESKTOP)
     public void testPressingSignOut_desktopSignOut() {
-        FeatureOverrides.newBuilder()
-                .enable(SigninFeatures.SIGN_OUT_OF_CHROME)
-                .enable(SigninFeatures.SIGN_OUT_DELETES_BROWSING_DATA)
-                .apply();
         CoreAccountInfo accountInfo = mSyncTestRule.setUpAccountAndSignInForTesting();
 
         startSettings();
@@ -561,11 +554,8 @@ public class MainSettingsFragmentTest {
     @LargeTest
     @Feature({"Sync"})
     @Policies.Add(@Policies.Item(key = "SyncDisabled", string = "true"))
+    @Restriction(DeviceFormFactor.PHONE_OR_TABLET)
     public void testPressingSignOutSyncDisabled() {
-        FeatureOverrides.newBuilder()
-                .disable(SigninFeatures.SIGN_OUT_OF_CHROME)
-                .disable(SigninFeatures.SIGN_OUT_DELETES_BROWSING_DATA)
-                .apply();
         CoreAccountInfo accountInfo = mSyncTestRule.setUpAccountAndSignInWithoutWaitingForTesting();
 
         startSettings();
@@ -603,10 +593,6 @@ public class MainSettingsFragmentTest {
     @Policies.Add(@Policies.Item(key = "SyncDisabled", string = "true"))
     @Restriction(DeviceFormFactor.DESKTOP)
     public void testPressingSignOutSyncDisabled_desktopSignOut() {
-        FeatureOverrides.newBuilder()
-                .enable(SigninFeatures.SIGN_OUT_OF_CHROME)
-                .enable(SigninFeatures.SIGN_OUT_DELETES_BROWSING_DATA)
-                .apply();
         CoreAccountInfo accountInfo = mSyncTestRule.setUpAccountAndSignInWithoutWaitingForTesting();
 
         startSettings();

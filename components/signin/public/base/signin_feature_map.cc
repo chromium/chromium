@@ -42,8 +42,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &switches::kHandleMdmErrorsForDasherAccountsOnAndroid,
     &switches::kSmartEmailLineBreaking,
     &switches::kSupportWebSigninAddSession,
-    &switches::kSignOutDeletesBrowsingData,
-    &switches::kSignOutOfChrome,
     &switches::kSkipRefreshTokenCheckInIdentityManager,
     &switches::kChromeAndroidIdentitySurveyFirstRun,
     &switches::kChromeAndroidIdentitySurveyWeb,
@@ -57,7 +55,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &switches::kSigninButtonProfileMenuErrorCard,
     &switches::kSigninButtonProfileMenuRefinements,
     &switches::kSigninLevelUpButton,
-    &switches::kSwitchToIncognitoInSettings,
 };
 
 // static

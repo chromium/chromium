@@ -441,10 +441,7 @@ public class ManageSyncSettingsTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
-    @DisableFeatures({
-        SigninFeatures.SIGN_OUT_OF_CHROME,
-        SigninFeatures.SIGN_OUT_DELETES_BROWSING_DATA
-    })
+    @Restriction(DeviceFormFactor.PHONE_OR_TABLET)
     public void testPressingSignOut() {
         mSyncTestRule.setUpAccountAndSignInForTesting();
 
@@ -461,10 +458,6 @@ public class ManageSyncSettingsTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
-    @EnableFeatures({
-        SigninFeatures.SIGN_OUT_OF_CHROME,
-        SigninFeatures.SIGN_OUT_DELETES_BROWSING_DATA
-    })
     @Restriction(DeviceFormFactor.DESKTOP)
     public void testPressingSignOut_desktopSignOut() {
         mSyncTestRule.setUpAccountAndSignInForTesting();
@@ -1786,7 +1779,6 @@ public class ManageSyncSettingsTest {
     @Test
     @SmallTest
     @Feature({"Sync"})
-    @EnableFeatures(SigninFeatures.SWITCH_TO_INCOGNITO_IN_SETTINGS)
     public void testSwitchToIncognitoPreferenceVisibleOnDesktop() {
         DeviceInfo.setIsDesktopForTesting(true);
         mSyncTestRule.setUpAccountAndSignInForTesting();
@@ -1801,7 +1793,6 @@ public class ManageSyncSettingsTest {
     @Test
     @SmallTest
     @Feature({"Sync"})
-    @EnableFeatures(SigninFeatures.SWITCH_TO_INCOGNITO_IN_SETTINGS)
     public void testSwitchToIncognitoPreferenceHiddenOnNonDesktop() {
         DeviceInfo.setIsDesktopForTesting(false);
         mSyncTestRule.setUpAccountAndSignInForTesting();
@@ -1816,7 +1807,6 @@ public class ManageSyncSettingsTest {
     @Test
     @SmallTest
     @Feature({"Sync"})
-    @EnableFeatures(SigninFeatures.SWITCH_TO_INCOGNITO_IN_SETTINGS)
     public void testSwitchToIncognitoPreferenceHiddenWhenIncognitoDisabledByPolicy() {
         DeviceInfo.setIsDesktopForTesting(true);
         IncognitoUtils.setEnabledForTesting(false);
@@ -1832,7 +1822,6 @@ public class ManageSyncSettingsTest {
     @Test
     @SmallTest
     @Feature({"Sync"})
-    @EnableFeatures(SigninFeatures.SWITCH_TO_INCOGNITO_IN_SETTINGS)
     public void testSwitchToIncognitoPreferenceClickOpensIncognitoTab() {
         assertOpensIncognitoSession(
                 /* openAsWindow= */ false,
@@ -1844,7 +1833,6 @@ public class ManageSyncSettingsTest {
     @Test
     @SmallTest
     @Feature({"Sync"})
-    @EnableFeatures(SigninFeatures.SWITCH_TO_INCOGNITO_IN_SETTINGS)
     public void testSwitchToIncognitoPreferenceClickOpensIncognitoWindow() {
         assertOpensIncognitoSession(
                 /* openAsWindow= */ true,
@@ -1859,7 +1847,6 @@ public class ManageSyncSettingsTest {
     @Test
     @SmallTest
     @Feature({"Sync"})
-    @EnableFeatures(SigninFeatures.SWITCH_TO_INCOGNITO_IN_SETTINGS)
     public void testSwitchToIncognitoPreferenceLearnMoreLinkClickOpensHelpPage() {
         DeviceInfo.setIsDesktopForTesting(true);
         mSyncTestRule.setUpAccountAndSignInForTesting();
@@ -1955,14 +1942,31 @@ public class ManageSyncSettingsTest {
     @Test
     @MediumTest
     @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
-    // On desktop these flags put a confirmation dialog between the click and the sign-out. The
-    // supplier is read on the click, before that, so sign out directly as testPressingSignOut does.
-    @DisableFeatures({
-        SigninFeatures.SIGN_OUT_OF_CHROME,
-        SigninFeatures.SIGN_OUT_DELETES_BROWSING_DATA
-    })
-    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
+    @Restriction(DeviceFormFactor.ONLY_TABLET)
     public void testSettingsInTabThemeChange_signOut() {
+        clickSignOutAfterSettingsInTabThemeChange();
+
+        assertNull(mSyncTestRule.getSigninTestRule().getPrimaryAccount());
+    }
+
+    /**
+     * Same as {@link #testSettingsInTabThemeChange_signOut()}, but on desktop, where a confirmation
+     * dialog is shown before signing out. The snackbar supplier is read on the button click, before
+     * that dialog.
+     */
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
+    @Restriction(DeviceFormFactor.DESKTOP)
+    public void testSettingsInTabThemeChange_signOut_desktop() {
+        clickSignOutAfterSettingsInTabThemeChange();
+        onView(withText(R.string.sign_out)).inRoot(isDialog()).perform(click());
+
+        assertNull(mSyncTestRule.getSigninTestRule().getPrimaryAccount());
+    }
+
+    /** Opens account settings in a tab, recreates the activity and clicks the sign-out button. */
+    private void clickSignOutAfterSettingsInTabThemeChange() {
         mSyncTestRule.setUpAccountAndSignInForTesting();
         mSyncTestRule.loadUrl("chrome-native://settings/account");
         waitForView(withText(R.string.account_section_header));
@@ -1973,8 +1977,6 @@ public class ManageSyncSettingsTest {
         onView(allOf(withId(R.id.recycler_view), isDescendantOfA(withId(R.id.preferences_detail))))
                 .perform(RecyclerViewActions.scrollToLastPosition());
         onView(withId(R.id.sign_out_button)).perform(click());
-
-        assertNull(mSyncTestRule.getSigninTestRule().getPrimaryAccount());
     }
 
     /** Recreates the activity the way a theme change does, which detaches the tab first. */
@@ -2009,7 +2011,6 @@ public class ManageSyncSettingsTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(SigninFeatures.SIGN_OUT_OF_CHROME)
     public void testPreferenceScreenMatchesSearchIndex_signedIn_desktop() {
         DeviceInfo.setIsDesktopForTesting(true);
         mSyncTestRule.setUpAccountAndSignInForTesting();
