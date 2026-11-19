@@ -21,6 +21,7 @@
 #include "build/branding_buildflags.h"
 #include "components/component_updater/component_installer.h"
 #include "components/component_updater/component_updater_service.h"
+#include "components/update_client/cancellation.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace component_updater {
@@ -58,7 +59,10 @@ class MockComponentUpdateService : public ComponentUpdateService {
               GetComponentDetails,
               (const std::string& id, CrxUpdateItem* item),
               (const, override));
-  MOCK_METHOD(bool, Cancel, (const std::string& id), (override));
+  MOCK_METHOD(bool,
+              Cancel,
+              (const std::string& id, update_client::CancelMode mode),
+              (override));
 #if BUILDFLAG(CHROME_FOR_TESTING)
   MOCK_METHOD(void,
               EnsureRequiredComponentsReady,

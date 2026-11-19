@@ -25,6 +25,7 @@
 #include "net/base/network_change_notifier.h"
 
 namespace update_client {
+enum class CancelMode;
 enum class Error;
 }
 
@@ -65,7 +66,7 @@ class CrxUpdateService
                      base::OnceClosure callback) override;
   bool GetComponentDetails(const std::string& id,
                            CrxUpdateItem* item) const override;
-  bool Cancel(const std::string& id) override;
+  bool Cancel(const std::string& id, update_client::CancelMode mode) override;
   base::Version GetRegisteredVersion(const std::string& app_id) override;
   base::Version GetMaxPreviousProductVersion(
       const std::string& app_id) override;

@@ -41,6 +41,7 @@ class SodaInstallerImpl;
 }
 
 namespace update_client {
+enum class CancelMode;
 class Configurator;
 struct CrxComponent;
 struct CrxUpdateItem;
@@ -172,11 +173,16 @@ class ComponentUpdateService {
 
   // Cancels the update of the component with the given `id`, whether the
   // update is queued or in progress. Other components in the same update task
-  // are not affected. A download in progress is aborted; an update that is
-  // past the point where it can be cancelled runs to completion. The component
-  // ends in `ComponentState::kUpdateError` with `ServiceError::CANCELLED`.
-  // Returns true if an active or queued update for `id` was found.
-  virtual bool Cancel(const std::string& id) = 0;
+  // are not affected. A download in progress is aborted, and an update that is
+  // past the point where it can be cancelled runs to completion. `mode` applies
+  // only to a download in progress and controls whether its partial state is
+  // kept for reuse (see `update_client::CancelMode`). If `Cancel()` is called
+  // again for the same update, only the first call's `mode` applies. The
+  // component ends in `ComponentState::kUpdateError` with
+  // `ServiceError::CANCELLED`. Returns true if an active or queued update for
+  // `id` was found.
+  virtual bool Cancel(const std::string& id,
+                      update_client::CancelMode mode) = 0;
 #if BUILDFLAG(CHROME_FOR_TESTING)
   // Runs local loop delaying the caller's execution until all the registered
   // required components are up to date.

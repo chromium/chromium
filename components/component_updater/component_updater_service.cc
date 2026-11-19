@@ -451,10 +451,10 @@ void CrxUpdateService::StartOnDemandUpdate(const std::string& id,
                      std::move(callback), base::TimeTicks::Now()));
 }
 
-bool CrxUpdateService::Cancel(const std::string& id) {
+bool CrxUpdateService::Cancel(const std::string& id,
+                              update_client::CancelMode mode) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return update_client_->Cancel(
-      id, update_client::CancelMode::kDeletePartialDownload);
+  return update_client_->Cancel(id, mode);
 }
 
 void CrxUpdateService::CheckForUpdates() {
@@ -648,13 +648,21 @@ void CrxUpdateService::CancelMeteredDownloads() {
     if (component.allow_updates_on_metered_connection) {
       continue;
     }
+    const bool will_defer =
+        !is_stopped_ &&
+        !std::ranges::contains(components_pending_unregistration_, id);
+    const auto cancel_mode =
+        will_defer ? update_client::CancelMode::kKeepPartialDownload
+                   : update_client::CancelMode::kDeletePartialDownload;
     CrxUpdateItem item;
     if (update_client_->GetCrxUpdateState(id, &item) &&
         item.state == update_client::ComponentState::kDownloading &&
-        Cancel(id)) {
+        Cancel(id, cancel_mode)) {
       VLOG(1) << "Cancelled the download of " << id
               << ": the connection is metered.";
-      DeferUpdate(id, GetOnDemandPriority(id));
+      if (will_defer) {
+        DeferUpdate(id, GetOnDemandPriority(id));
+      }
     }
   }
 }

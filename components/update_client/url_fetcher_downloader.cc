@@ -76,7 +76,7 @@ void UrlFetcherDownloader::StartURLFetch(const GURL& url) {
 
 void UrlFetcherDownloader::Cancel(CancelMode /*mode*/) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(crbug.com/584520488): Keep the partial download for
+  // TODO(crbug.com/584520346): Keep the partial download for
   // kKeepPartialDownload.
   if (cancelled_) {
     return;

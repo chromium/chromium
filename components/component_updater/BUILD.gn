@@ -75,6 +75,7 @@ static_library("test_support") {
     ":component_updater",
     "//base",
     "//build:branding_buildflags",
+    "//components/update_client",
     "//testing/gmock",
   ]
 }
