@@ -780,42 +780,34 @@ suite('TabPickerTest', () => {
   });
 
   test(
-      'Flips unbounded flyout menu to the left when near right screen edge',
+      'Anchors unbounded flyout menu to trigger via CSS anchor positioning',
       async () => {
-        app.style.width = '200px';
-        const availLeft =
-            (window.screen as Screen & {availLeft?: number}).availLeft ?? 0;
-        const availTop =
-            (window.screen as Screen & {availTop?: number}).availTop ?? 0;
-        const dialog = app.$.tabMenu.getDialog();
+        const dialog = app.$.tabMenu.getDialog() as UnboundedDialogElement;
+        let passedSource: Element|null|undefined;
+        dialog.showUnboundedElement = function(
+            this: HTMLElement, options?: ShowUnboundedElementOptions) {
+          passedSource = options?.source;
+          this.style.visibility = 'visible';
+          return Promise.resolve();
+        };
 
-        // Simulate trigger near the left side of the screen: menu opens to the
-        // right of the trigger.
-        app.$.shareTabsTrigger.dispatchEvent(new PointerEvent('pointerenter', {
-          screenX: availLeft + 100,
-          clientX: 50,
-          screenY: availTop + 200,
-          clientY: 10,
-        }));
+        app.$.shareTabsTrigger.dispatchEvent(new PointerEvent('pointerenter'));
+        await microtasksFinished();
+
+        assertTrue(app.$.tabMenu.open);
+        assertEquals(app.$.shareTabsTrigger, passedSource);
+        assertEquals('auto', dialog.style.positionAnchor);
+        assertEquals(
+            'span-self-block-end self-inline-end', dialog.style.positionArea);
+        assertTrue(
+            window.getComputedStyle(dialog).positionTryFallbacks.includes(
+                'flip-inline'));
+
+        // Host window/iframe resize (e.g. browser zoom or requestResize) must
+        // not close the open unbounded flyout.
+        window.dispatchEvent(new CustomEvent('resize'));
         await microtasksFinished();
         assertTrue(app.$.tabMenu.open);
-        assertTrue(parseFloat(dialog.style.left) >= 0);
-
-        app.$.tabMenu.close();
-        await microtasksFinished();
-        assertFalse(app.$.tabMenu.open);
-
-        // Simulate trigger near the right edge of the screen (side panel docked
-        // on the right): menu flips to the left of the trigger.
-        app.$.shareTabsTrigger.dispatchEvent(new PointerEvent('pointerenter', {
-          screenX: availLeft + window.screen.availWidth - 50,
-          clientX: 50,
-          screenY: availTop + 200,
-          clientY: 10,
-        }));
-        await microtasksFinished();
-        assertTrue(app.$.tabMenu.open);
-        assertTrue(parseFloat(dialog.style.left) < 0);
       });
 
   test(

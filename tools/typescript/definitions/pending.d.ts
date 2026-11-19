@@ -29,15 +29,24 @@ interface HTMLDialogElement {
   showModal(): void;
 }
 
-/**
- * Extends HTMLDialogElement with optional methods provided at runtime when
- * the Blink UnboundedElement feature is enabled.
- */
-interface UnboundedDialogElement extends HTMLDialogElement {
+interface ShowUnboundedElementOptions {
+  source?: Element|null;
+}
+
+interface UnboundedElementMethods {
   hideUnboundedElement(): Promise<void>;
-  showUnboundedElement(): Promise<void>;
+  showUnboundedElement(options?: ShowUnboundedElementOptions): Promise<void>;
   unbounded: boolean;
 }
+
+/**
+ * Extends HTMLElement and HTMLDialogElement with methods provided at runtime
+ * when the Blink UnboundedElement feature is enabled.
+ */
+interface UnboundedElement extends HTMLElement, UnboundedElementMethods {}
+
+interface UnboundedDialogElement extends HTMLDialogElement,
+                                         UnboundedElementMethods {}
 
 // https://developer.mozilla.org/en-US/docs/Web/API/UIEvent/sourceCapabilities
 interface UIEvent extends Event {

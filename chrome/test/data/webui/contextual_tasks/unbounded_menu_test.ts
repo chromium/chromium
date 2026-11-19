@@ -9,7 +9,6 @@ import 'chrome://contextual-tasks/overflow_menu.js';
 import {ToolbarBrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_toolbar_browser_proxy.js';
 import type {SourcesMenuElement} from 'chrome://contextual-tasks/sources_menu.js';
 import type {TopToolbarElement} from 'chrome://contextual-tasks/top_toolbar.js';
-import type {UnboundedDialog, UnboundedElement} from 'chrome://contextual-tasks/utils.js';
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -60,7 +59,8 @@ suite('UnboundedMenuTest', () => {
           topToolbar.$.sourcesMenu.get();
       let showUnboundedCalled = false;
       let hideUnboundedCalled = false;
-      const dialogEl = sourcesMenuElement.$.menu.getDialog() as UnboundedDialog;
+      const dialogEl =
+          sourcesMenuElement.$.menu.getDialog() as UnboundedDialogElement;
       dialogEl.showUnboundedElement = () => {
         showUnboundedCalled = true;
         return Promise.resolve();
@@ -113,7 +113,7 @@ suite('UnboundedMenuTest', () => {
 
       const menu = topToolbar.$.overflowMenu.get();
       let showUnboundedCalled = false;
-      const dialogEl = menu.$.menu.getDialog() as UnboundedDialog;
+      const dialogEl = menu.$.menu.getDialog() as UnboundedDialogElement;
       dialogEl.showUnboundedElement = () => {
         showUnboundedCalled = true;
         return Promise.resolve();
@@ -149,7 +149,7 @@ suite('UnboundedMenuTest', () => {
       const menu = topToolbar.$.overflowMenu.get();
       let showUnboundedCalled = false;
       let hideUnboundedCalled = false;
-      const dialogEl = menu.$.menu.getDialog() as UnboundedDialog;
+      const dialogEl = menu.$.menu.getDialog() as UnboundedDialogElement;
       dialogEl.showUnboundedElement = () => {
         showUnboundedCalled = true;
         return Promise.resolve();
@@ -235,7 +235,7 @@ suite('UnboundedMenuTest', () => {
       const menu = topToolbar.$.accountMenu.get();
       let showUnboundedCalled = false;
       let hideUnboundedCalled = false;
-      const dialogEl = menu.$.menu.getDialog() as UnboundedDialog;
+      const dialogEl = menu.$.menu.getDialog() as UnboundedDialogElement;
       dialogEl.showUnboundedElement = () => {
         showUnboundedCalled = true;
         return Promise.resolve();

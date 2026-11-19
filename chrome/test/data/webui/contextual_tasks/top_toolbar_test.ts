@@ -9,7 +9,6 @@ import {ToolbarBrowserProxyImpl} from 'chrome://contextual-tasks/contextual_task
 import type {ContextualTasksFaviconGroupElement} from 'chrome://contextual-tasks/favicon_group.js';
 import type {ProfileTooltipElement} from 'chrome://contextual-tasks/profile_tooltip.js';
 import type {TopToolbarElement} from 'chrome://contextual-tasks/top_toolbar.js';
-import type {UnboundedDialog} from 'chrome://contextual-tasks/utils.js';
 import type {CrIconElement} from 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -1087,7 +1086,7 @@ suite('TopToolbarTest', () => {
     const menu = topToolbar.$.overflowMenu.get();
     // Stubbed so the test never depends on real platform surface support.
     // The unbounded lifecycle itself is covered by unbounded_menu_test.ts.
-    const dialogEl = menu.$.menu.getDialog() as UnboundedDialog;
+    const dialogEl = menu.$.menu.getDialog() as UnboundedDialogElement;
     dialogEl.showUnboundedElement = () => Promise.resolve();
     dialogEl.hideUnboundedElement = () => Promise.resolve();
 

@@ -35,15 +35,27 @@
   position: absolute;
 }
 
+/* Clears the negative 'margin-block-start' offset applied for default
+ * 'AFTER_END' alignment whenever 'flip-block' flips the menu above the anchor,
+ * matching the bounded flip behavior ('start - menuLength' with no overlap). */
+@position-try --reset-after-end-offset {
+  margin-block: 0;
+}
+
 /* In unbounded mode, the dialog renders in an external OS window that can
  * extend beyond the host WebContents.
- * 1. 'max-height: none' overrides Blink UA dialog styles that constrain height
- *    to the host document viewport.
- * 2. 'position: fixed' positions the dialog relative to screen/viewport
- *    coordinates rather than the scrolling document layout. */
-:host([use-unbounded]) dialog {
+ * 1. 'inset: auto' and 'max-height/max-width: none' override Blink UA dialog
+ *    styles that center and constrain the dialog to the host viewport.
+ * 2. 'position: fixed' with 'position-try-fallbacks' positions the dialog via
+ *    CSS anchor positioning and lets Blink flip/clamp against the unbounded
+ *    screen bounds. */
+:host dialog[unbounded] {
+  inset: auto;
   max-height: none;
+  max-width: none;
   position: fixed;
+  position-try-fallbacks: flip-inline, --reset-after-end-offset flip-block,
+      --reset-after-end-offset flip-inline flip-block;
 }
 
 @media (forced-colors: active) {

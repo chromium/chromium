@@ -75,6 +75,22 @@ const SELECTABLE_DROPDOWN_ITEM_QUERY: string =
 
 const AFTER_END_OFFSET: number = 10;
 
+const ANCHOR_ALIGNMENT_TO_BLOCK_AREA: Record<AnchorAlignment, string> = {
+  [AnchorAlignment.BEFORE_START]: 'self-block-start',
+  [AnchorAlignment.AFTER_START]: 'span-self-block-end',
+  [AnchorAlignment.CENTER]: 'span-all',
+  [AnchorAlignment.BEFORE_END]: 'span-self-block-start',
+  [AnchorAlignment.AFTER_END]: 'self-block-end',
+};
+
+const ANCHOR_ALIGNMENT_TO_INLINE_AREA: Record<AnchorAlignment, string> = {
+  [AnchorAlignment.BEFORE_START]: 'self-inline-start',
+  [AnchorAlignment.AFTER_START]: 'span-self-inline-end',
+  [AnchorAlignment.CENTER]: 'span-all',
+  [AnchorAlignment.BEFORE_END]: 'span-self-inline-start',
+  [AnchorAlignment.AFTER_END]: 'self-inline-end',
+};
+
 /**
  * Returns the point to start along the X or Y axis given a start and end
  * point to anchor to, the length of the target and the direction to anchor
@@ -83,8 +99,7 @@ const AFTER_END_OFFSET: number = 10;
  */
 function getStartPointWithAnchor(
     start: number, end: number, menuLength: number,
-    anchorAlignment: AnchorAlignment, min: number, max: number,
-    unbounded: boolean = false): number {
+    anchorAlignment: AnchorAlignment, min: number, max: number): number {
   let startPoint = 0;
   switch (anchorAlignment) {
     case AnchorAlignment.BEFORE_START:
@@ -106,46 +121,6 @@ function getStartPointWithAnchor(
       assertNotReachedCase(anchorAlignment);
   }
 
-  // Unbounded case clamping: Clamps to screen size as well as max/min.
-  if (unbounded) {
-    const isForward =
-        (anchorAlignment === AnchorAlignment.AFTER_END ||
-         anchorAlignment === AnchorAlignment.AFTER_START);
-    const isBackward =
-        (anchorAlignment === AnchorAlignment.BEFORE_START ||
-         anchorAlignment === AnchorAlignment.BEFORE_END);
-
-    const spaceForward = max - end;
-    const spaceBackward = start - min;
-
-    // If opening Forward (DOWN / RIGHT) overflows the screen limit:
-    if (isForward && Number.isFinite(max) && (startPoint + menuLength > max)) {
-      if (spaceBackward >= menuLength || spaceBackward > spaceForward) {
-        // Flip to Backward (UP / LEFT)
-        startPoint = (anchorAlignment === AnchorAlignment.AFTER_END) ?
-            start - menuLength :
-            end - menuLength;
-      }
-    } else if (isBackward && Number.isFinite(min) && (startPoint < min)) {
-      // If opening Backward (UP / LEFT) underflows the screen limit:
-      if (spaceForward >= menuLength || spaceForward > spaceBackward) {
-        // Flip to Forward (DOWN / RIGHT)
-        startPoint =
-            (anchorAlignment === AnchorAlignment.BEFORE_START) ? end : start;
-      }
-    } else if (anchorAlignment === AnchorAlignment.CENTER) {
-      if (Number.isFinite(max) && startPoint + menuLength > max) {
-        startPoint = max - menuLength;
-      }
-      if (Number.isFinite(min) && startPoint < min) {
-        startPoint = min;
-      }
-    }
-
-    return startPoint;
-  }
-
-  // Non-unbounded case clamping.
   if (startPoint + menuLength > max) {
     startPoint = end - menuLength;
   }
@@ -226,8 +201,9 @@ export class CrActionMenuElement extends CrLitElement {
 
       // Enables Unbounded Element support on the internal <dialog>, allowing
       // the action menu to render into an external OS surface outside the host
-      // window/WebContents. Position calculations use screen coordinates, and
-      // the menu does not automatically close on host window resize.
+      // window/WebContents. Positioning uses CSS anchor positioning against the
+      // display's work area, and the menu does not automatically close on host
+      // window resize.
       useUnbounded_: {type: Boolean},
     };
   }
@@ -295,9 +271,9 @@ export class CrActionMenuElement extends CrLitElement {
     return this.$.dialog as UnboundedDialogElement;
   }
 
-  private showUnboundedDialog_() {
+  private showUnboundedDialog_(source: HTMLElement) {
     this.getUnboundedDialog_()
-        .showUnboundedElement()
+        .showUnboundedElement({source})
         .then(() => {
           this.fire('unbounded-shown');
         })
@@ -464,13 +440,27 @@ export class CrActionMenuElement extends CrLitElement {
   }
 
   /**
-   * Shows the menu anchored to the given element.
+   * Shows the menu anchored to the given element. In unbounded mode, only
+   * `anchorAlignmentX`, `anchorAlignmentY`, and `noOffset` are supported on
+   * `config` (coordinate and clamping overrides are not supported because
+   * Blink CSS anchor positioning computes geometry and screen clamping).
    */
   showAt(anchorElement: HTMLElement, config?: ShowAtConfig) {
     this.anchorElement_ = anchorElement;
     // Scroll the anchor element into view so that the bounding rect will be
     // accurate for where the menu should be shown.
     this.anchorElement_.scrollIntoViewIfNeeded();
+
+    if (this.useUnbounded_) {
+      assert(
+          config?.top === undefined && config?.left === undefined &&
+          config?.width === undefined && config?.height === undefined &&
+          config?.minX === undefined && config?.minY === undefined &&
+          config?.maxX === undefined && config?.maxY === undefined);
+      this.openDialog_(undefined, config);
+      this.focusElement_(this.$.wrapper);
+      return;
+    }
 
     const rect = this.anchorElement_.getBoundingClientRect();
 
@@ -521,14 +511,27 @@ export class CrActionMenuElement extends CrLitElement {
    * the anchor, extending towards the bottom-left would use a alignment of
    * (BEFORE_END, AFTER_START), whereas centering the menu below the bottom
    * edge of the anchor would use (CENTER, AFTER_END).
+   *
+   * Note: Not supported when unbounded mode is enabled (`setUnbounded()`).
+   * Unbounded menus rely on Blink CSS anchor positioning (`position-anchor:
+   * auto`) anchored to a DOM element via `showAt()` rather than manual viewport
+   * coordinates.
    */
   showAtPosition(config: ShowAtPositionConfig) {
+    assert(!this.useUnbounded_);
+    this.openDialog_(config);
+  }
+
+  private openDialog_(
+      positionConfig?: ShowAtPositionConfig, unboundedConfig?: ShowAtConfig) {
+    assert(this.useUnbounded_ === (positionConfig === undefined));
+
     // Save the scroll position of the viewport.
     const doc = document.scrollingElement!;
     const scrollLeft = doc.scrollLeft;
     const scrollTop = doc.scrollTop;
 
-    // Reset position so that layout isn't affected by the previous position,
+    // Reset position so that layout is not affected by the previous position,
     // and so that the dialog is positioned at the top-start corner of the
     // document.
     this.resetStyle_();
@@ -536,11 +539,12 @@ export class CrActionMenuElement extends CrLitElement {
     this.open = true;
 
     if (this.useUnbounded_) {
-      this.positionDialog_(config);
-      this.showUnboundedDialog_();
+      assert(this.anchorElement_);
+      this.positionUnboundedDialog_(unboundedConfig);
+      this.showUnboundedDialog_(this.anchorElement_);
     } else {
-      config.top += scrollTop;
-      config.left += scrollLeft;
+      positionConfig!.top += scrollTop;
+      positionConfig!.left += scrollLeft;
 
       this.positionDialog_(Object.assign(
           {
@@ -549,7 +553,7 @@ export class CrActionMenuElement extends CrLitElement {
             maxX: scrollLeft + doc.clientWidth,
             maxY: scrollTop + doc.clientHeight,
           },
-          config));
+          positionConfig));
     }
 
     // Restore the scroll position.
@@ -574,7 +578,22 @@ export class CrActionMenuElement extends CrLitElement {
   private resetStyle_() {
     this.$.dialog.style.left = '';
     this.$.dialog.style.right = '';
-    this.$.dialog.style.top = '0';
+    this.$.dialog.style.top = this.useUnbounded_ ? '' : '0';
+    this.$.dialog.style.marginBlockStart = '';
+    this.$.dialog.style.positionAnchor = '';
+    this.$.dialog.style.positionArea = '';
+  }
+
+  private positionUnboundedDialog_(config?: ShowAtConfig) {
+    const alignmentX = config?.anchorAlignmentX ?? AnchorAlignment.BEFORE_END;
+    const alignmentY = config?.anchorAlignmentY ?? AnchorAlignment.AFTER_START;
+    this.$.dialog.style.positionAnchor = 'auto';
+    this.$.dialog.style.positionArea =
+        `${ANCHOR_ALIGNMENT_TO_BLOCK_AREA[alignmentY]} ` +
+        `${ANCHOR_ALIGNMENT_TO_INLINE_AREA[alignmentX]}`;
+    if (!config?.noOffset && alignmentY === AnchorAlignment.AFTER_END) {
+      this.$.dialog.style.marginBlockStart = `-${AFTER_END_OFFSET}px`;
+    }
   }
 
   /**
@@ -584,30 +603,6 @@ export class CrActionMenuElement extends CrLitElement {
   private positionDialog_(config: ShowAtPositionConfig) {
     this.lastConfig_ = config;
     const c = Object.assign(getDefaultShowConfig(), config);
-
-    if (this.useUnbounded_) {
-      // In unbounded mode, the menu can render outside the host window.
-      // Compute boundary coordinates relative to the physical screen origin so
-      // the dialog is clamped to the visible monitor rather than the host
-      // document.
-      const screenLeft = window.screenX;
-      const screenTop = window.screenY;
-      const screenWidth = window.screen.availWidth;
-      const screenHeight = window.screen.availHeight;
-
-      if (config.minX === undefined) {
-        c.minX = -screenLeft;
-      }
-      if (config.minY === undefined) {
-        c.minY = -screenTop;
-      }
-      if (config.maxX === undefined) {
-        c.maxX = screenWidth - screenLeft;
-      }
-      if (config.maxY === undefined) {
-        c.maxY = screenHeight - screenTop;
-      }
-    }
 
     const top = c.top;
     const left = c.left;
@@ -622,8 +617,7 @@ export class CrActionMenuElement extends CrLitElement {
 
     const offsetWidth = this.$.dialog.offsetWidth;
     const menuLeft = getStartPointWithAnchor(
-        left, right, offsetWidth, c.anchorAlignmentX!, c.minX!, c.maxX!,
-        this.useUnbounded_);
+        left, right, offsetWidth, c.anchorAlignmentX!, c.minX!, c.maxX!);
 
     if (rtl) {
       const menuRight =
@@ -635,7 +629,7 @@ export class CrActionMenuElement extends CrLitElement {
 
     const menuTop = getStartPointWithAnchor(
         top, bottom, this.$.dialog.offsetHeight, c.anchorAlignmentY!, c.minY!,
-        c.maxY!, this.useUnbounded_);
+        c.maxY!);
     this.$.dialog.style.top = menuTop + 'px';
   }
 
@@ -671,8 +665,15 @@ export class CrActionMenuElement extends CrLitElement {
                            this.close();
                          }
                        });
-    window.addEventListener('resize', this.boundClose_);
     window.addEventListener('popstate', this.boundClose_);
+    if (this.useUnbounded_) {
+      // Unbounded menus stay open across host window/zoom resizes, and Blink
+      // CSS anchor positioning automatically repositions and flips the dialog
+      // when its size changes without needing `autoReposition`'s JS
+      // ResizeObserver.
+      return;
+    }
+    window.addEventListener('resize', this.boundClose_);
 
     if (this.autoReposition) {
       this.resizeObserver_ = new ResizeObserver(() => {

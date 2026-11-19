@@ -8,7 +8,6 @@ import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './profile_tooltip.css.js';
 import {getHtml} from './profile_tooltip.html.js';
-import type {UnboundedElement} from './utils.js';
 
 // Hover delays matching the OneGoogle Bar account tooltip (`ogb.ui.Tooltip`,
 // which keeps the `goog.ui.Tooltip` 500ms show delay and sets a 100ms hide

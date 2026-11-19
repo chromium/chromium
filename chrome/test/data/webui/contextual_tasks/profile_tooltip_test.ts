@@ -5,7 +5,6 @@
 import 'chrome://contextual-tasks/profile_tooltip.js';
 
 import type {ProfileTooltipElement} from 'chrome://contextual-tasks/profile_tooltip.js';
-import type {UnboundedElement} from 'chrome://contextual-tasks/utils.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome://webui-test/mock_timer.js';

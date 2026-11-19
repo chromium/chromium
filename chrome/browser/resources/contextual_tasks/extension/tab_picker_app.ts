@@ -13,7 +13,7 @@ import type {SmartTabSharingState} from 'chrome://contextual-tasks/contextual_ta
 import {ExtensionBrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_browser_proxy.js';
 import {recordEnumerationValue, recordSingleTabMenuItemAction, recordTabPickerTabSelected, SingleTabMenuItemAction, SmartTabSharingSurface, TabPickerSurface} from 'chrome://resources/cr_components/composebox/common.js';
 import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import type {CrActionMenuElement, ShowAtConfig} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
@@ -103,7 +103,6 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
       this.isSingleTabMenuItemEnabled_();
   private resizeObserver_: ResizeObserver|null = null;
   private closeTimer_: number|null = null;
-  private frameScreenOffset_: {x: number, y: number}|null = null;
   private pointerDownOnTrigger_: boolean = false;
   private shouldOpenMenu_: boolean = false;
   // Tracks the latest open request so an in-flight async fetch does not open
@@ -482,8 +481,7 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
     }
   }
 
-  protected onShareTabsRowPointerenter_(e: PointerEvent) {
-    this.updateFrameScreenOffset_(e);
+  protected onShareTabsRowPointerenter_() {
     this.pointerDownOnTrigger_ = false;
     this.setFocusOutlineVisible_(false);
     if (this.smartTabSharingVisible && this.smartTabSharingActive) {
@@ -517,8 +515,7 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
     }
   }
 
-  protected onShareTabsRowClick_(e: MouseEvent) {
-    this.updateFrameScreenOffset_(e);
+  protected onShareTabsRowClick_() {
     this.setFocusOutlineVisible_(false);
     this.cancelCloseTimer_();
     if (this.smartTabSharingVisible && this.smartTabSharingActive) {
@@ -709,16 +706,6 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
     this.fire('tab-selected', {tab, selected: !isSelected});
   }
 
-  private updateFrameScreenOffset_(e: MouseEvent) {
-    if (e.screenX !== 0 || e.clientX !== 0 || e.screenY !== 0 ||
-        e.clientY !== 0) {
-      this.frameScreenOffset_ = {
-        x: e.screenX - e.clientX,
-        y: e.screenY - e.clientY,
-      };
-    }
-  }
-
   private async openTabMenu_(focusFirstItem: boolean = false) {
     const wasOpen = this.$.tabMenu.open;
     const startTime = performance.now();
@@ -756,28 +743,11 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
 
     this.menuOpenStartTime_ = startTime;
     this.tabMenuOpen = true;
-    const config: ShowAtConfig = {
+    this.$.tabMenu.showAt(this.$.shareTabsTrigger, {
       anchorAlignmentX: AnchorAlignment.AFTER_END,
       anchorAlignmentY: AnchorAlignment.AFTER_START,
       noOffset: true,
-    };
-    if (this.isUnboundedMenuEnabled_() && this.frameScreenOffset_) {
-      // window.screenX/screenY reports the top-level browser window origin
-      // rather than the extension iframe's screen origin. Compute screen
-      // bounds relative to the iframe viewport so cr-action-menu flips the
-      // flyout when the side panel is docked near the right screen edge.
-      const availLeft =
-          (window.screen as Screen & {availLeft?: number}).availLeft ?? 0;
-      const availTop =
-          (window.screen as Screen & {availTop?: number}).availTop ?? 0;
-      config.minX = availLeft - this.frameScreenOffset_.x;
-      config.minY = availTop - this.frameScreenOffset_.y;
-      config.maxX =
-          availLeft + window.screen.availWidth - this.frameScreenOffset_.x;
-      config.maxY =
-          availTop + window.screen.availHeight - this.frameScreenOffset_.y;
-    }
-    this.$.tabMenu.showAt(this.$.shareTabsTrigger, config);
+    });
     if (focusFirstItem) {
       this.focusFirstTabItem_();
       requestAnimationFrame(() => {
