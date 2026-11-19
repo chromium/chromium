@@ -26,10 +26,8 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fonts.FontPreloader;
 import org.chromium.chrome.browser.night_mode.SystemNightModeMonitor;
 import org.chromium.chrome.browser.notifications.chime.ChimeDelegate;
-import org.chromium.chrome.browser.profiles.ProfileResolver;
 import org.chromium.components.browser_ui.util.BrowserUiUtilsCachedFlags;
 import org.chromium.components.browser_ui.util.GlobalDiscardableReferencePool;
-import org.chromium.components.embedder_support.browser_context.PartitionResolverSupplier;
 import org.chromium.components.module_installer.util.ModuleUtil;
 import org.chromium.url.GURL;
 
@@ -86,7 +84,6 @@ public class ChromeApplicationImpl extends SplitCompatApplication.Impl {
         // Set Chrome factory for mapping BackgroundTask classes to TaskIds.
         ChromeBackgroundTaskFactory.setAsDefault();
         ContextualNotificationPermissionRequesterImpl.initialize();
-        PartitionResolverSupplier.setInstance(new ProfileResolver());
 
         new ChimeDelegate().initialize();
 

@@ -21,35 +21,24 @@ import org.chromium.content_public.browser.BrowserStartupController;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * Custom  {@link TestRule} for test using native in reduced mode. This also enables the flags
+ * Custom {@link TestRule} for test using native in reduced mode. This also enables the flags
  * required for reduced mode to work.
  */
 public class ReducedModeNativeTestRule implements TestRule {
     private final AtomicBoolean mNativeLoaded = new AtomicBoolean();
-    private final boolean mAutoLoadNative;
-
-    public ReducedModeNativeTestRule() {
-        this(/* autoLoadNative= */ true);
-    }
-
-    public ReducedModeNativeTestRule(boolean autoLoadNative) {
-        mAutoLoadNative = autoLoadNative;
-    }
 
     @Override
     public Statement apply(final Statement base, final Description description) {
         return new Statement() {
             @Override
             public void evaluate() throws Throwable {
-                if (mAutoLoadNative) {
-                    loadNative();
-                }
+                loadNative();
                 base.evaluate();
             }
         };
     }
 
-    public void loadNative() {
+    private void loadNative() {
         final BrowserParts parts =
                 new EmptyBrowserParts() {
                     @Override

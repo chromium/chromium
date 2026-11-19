@@ -13,68 +13,37 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.components.embedder_support.browser_context.PartitionResolver;
-import org.chromium.components.embedder_support.simple_factory_key.SimpleFactoryKeyHandle;
-import org.chromium.content_public.browser.BrowserContextHandle;
 
 /**
- * Profile specific implementation for resolving various partition objects, such as {@link
- * BrowserContextHandle}. This class requires native to be initialized in order to work properly.
+ * Serializes and resolves {@link Profile} references across native and Java. This class requires
+ * native to be initialized in order to work properly.
  */
 @JNINamespace("profile_resolver")
 @NullMarked
-public class ProfileResolver implements PartitionResolver {
-    @Override
-    public String tokenize(@Nullable BrowserContextHandle handle) {
-        return ProfileResolverJni.get().tokenizeProfile((Profile) handle);
-    }
-
-    @Override
-    public String tokenize(@Nullable SimpleFactoryKeyHandle handle) {
-        return ProfileResolverJni.get().tokenizeProfileKey((ProfileKey) handle);
-    }
-
-    @Override
-    public void resolveBrowserContext(
-            @Nullable String token, Callback<@Nullable BrowserContextHandle> callback) {
-        ProfileResolverJni.get()
-                .resolveProfile(token, (@Nullable Profile profile) -> callback.onResult(profile));
-    }
-
-    @Override
-    public void resolveSimpleFactoryKey(
-            @Nullable String token, Callback<@Nullable SimpleFactoryKeyHandle> callback) {
-        ProfileResolverJni.get()
-                .resolveProfileKey(token, (@Nullable ProfileKey key) -> callback.onResult(key));
+public class ProfileResolver {
+    // TODO(crbug.com/40254448): Remove once BackgroundTabPoolManager uses the encoded token from
+    // ProfileTokenUtils.
+    public String tokenize(@Nullable Profile profile) {
+        return ProfileResolverJni.get().tokenizeProfile(profile);
     }
 
     /**
-     * Profile specific resolve method. Often more convenient to call from //chrome/ code. Callers
-     * should be careful to be able to handle both inline/renterant and asynchronous invocations of
-     * the passed callback.
+     * Resolves a {@link Profile} from a token previously provided by {@link #tokenize(Profile)}.
+     * Callers should be careful to be able to handle both inline/reentrant and asynchronous
+     * invocations of the passed callback.
      *
      * @param token A value previously provided by a tokenize call.
      * @param callback A callback to pass the resolved profile on success, otherwise null.
      */
+    // TODO(crbug.com/40254448): Remove once BackgroundTabPoolManager uses the encoded token from
+    // ProfileTokenUtils and legacy intents have expired (crbug.com/585922618).
     public void resolveProfile(@Nullable String token, Callback<@Nullable Profile> callback) {
         ProfileResolverJni.get().resolveProfile(token, callback);
     }
 
     /**
-     * Profile specific resolve method. Often more convenient to call from //chrome/ code. Callers
-     * should be careful to be able to handle both inline/renterant and asynchronous invocations of
-     * the passed callback.
-     *
-     * @param token A value previously provided by a tokenize call.
-     * @param callback A callback to pass the resolved profile key on success, otherwise null.
-     */
-    public void resolveProfileKey(@Nullable String token, Callback<@Nullable ProfileKey> callback) {
-        ProfileResolverJni.get().resolveProfileKey(token, callback);
-    }
-
-    /**
-     * Like {@link #tokenize(BrowserContextHandle)}, but returns the token's bytes unchanged rather
-     * than converting them to a String.
+     * Like {@link #tokenize(Profile)}, but returns the token's bytes unchanged rather than
+     * converting them to a String.
      */
     /* package */ byte[] tokenizeToBytes(Profile profile) {
         return ProfileResolverJni.get().tokenizeProfileToBytes(profile);
@@ -88,24 +57,15 @@ public class ProfileResolver implements PartitionResolver {
     @VisibleForTesting
     @NativeMethods
     public interface Natives {
-        // TODO(crbug.com/40254448): Remove once PartitionResolver and BackgroundTabPoolManager use
-        // the encoded token from ProfileTokenUtils and legacy intents have expired
-        // (crbug.com/585922618).
+        // TODO(crbug.com/40254448): Remove once BackgroundTabPoolManager uses the encoded token
+        // from ProfileTokenUtils and legacy intents have expired (crbug.com/585922618).
         @JniType("std::string")
         String tokenizeProfile(@JniType("Profile*") @Nullable Profile profile);
-
-        @JniType("std::string")
-        String tokenizeProfileKey(@JniType("ProfileKey*") @Nullable ProfileKey profileKey);
 
         void resolveProfile(
                 @JniType("std::optional<std::string>") @Nullable String token,
                 @JniType("base::OnceCallback<void(Profile*)>")
                         Callback<@Nullable Profile> callback);
-
-        void resolveProfileKey(
-                @JniType("std::optional<std::string>") @Nullable String token,
-                @JniType("base::OnceCallback<void(ProfileKey*)>")
-                        Callback<@Nullable ProfileKey> callback);
 
         @JniType("std::vector<uint8_t>")
         byte[] tokenizeProfileToBytes(@JniType("Profile*") Profile profile);

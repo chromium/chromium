@@ -153,19 +153,6 @@ static_library("context_menu") {
 }
 
 if (current_toolchain == default_toolchain) {
-  android_library("browser_context_java") {
-    sources = [
-      "java/src/org/chromium/components/embedder_support/browser_context/PartitionResolver.java",
-      "java/src/org/chromium/components/embedder_support/browser_context/PartitionResolverSupplier.java",
-    ]
-    deps = [
-      ":simple_factory_key_java",
-      "//base:base_java",
-      "//content/public/android:content_full_java",
-      "//third_party/androidx:androidx_annotation_annotation_java",
-    ]
-  }
-
   android_library("simple_factory_key_java") {
     sources = [ "java/src/org/chromium/components/embedder_support/simple_factory_key/SimpleFactoryKeyHandle.java" ]
     deps = [ "//third_party/jni_zero:jni_zero_java" ]

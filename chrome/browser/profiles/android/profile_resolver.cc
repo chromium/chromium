@@ -15,12 +15,9 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/path_service.h"
-#include "chrome/browser/android/profile_key_startup_accessor.h"
 #include "chrome/browser/android/proto/profile_token.pb.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_key.h"
-#include "chrome/browser/profiles/profile_key_android.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_paths.h"
 #include "third_party/jni_zero/default_conversions.h"
@@ -74,52 +71,12 @@ void LookupProfileByToken(ProfileToken token_proto, ProfileCallback callback) {
                      std::move(callback)));
 }
 
-void ProfileToProfileKey(ProfileKeyCallback callback, Profile* profile) {
-  std::move(callback).Run(profile ? profile->GetProfileKey() : nullptr);
-}
-
 }  // namespace
 
 void ResolveProfile(std::string token, ProfileCallback callback) {
   ProfileToken token_proto;
   token_proto.ParseFromString(token);
   return LookupProfileByToken(std::move(token_proto), std::move(callback));
-}
-
-void ResolveProfileKey(std::string token, ProfileKeyCallback callback) {
-  ProfileToken token_proto;
-  token_proto.ParseFromString(token);
-
-  // This will be null if the profile infra has started up. It will be non null
-  // when we're in reduced mode and can only use ProfileKey/SimpleFactoryKey.
-  ProfileKey* startup_profile_key =
-      ProfileKeyStartupAccessor::GetInstance()->profile_key();
-
-  if (startup_profile_key) {
-    // TODO(crbug.com/40753680): Does not currently support OTR
-    // resolution without profile infra.
-    if (!token_proto.otr_profile_id().empty()) {
-      std::move(callback).Run(nullptr);
-      return;
-    }
-
-    // In reduced mode only the main profile's key can be returned. Other
-    // profiles will resolve to null.
-    std::string relative_path =
-        GetRelativeProfilePath(startup_profile_key->GetPath()).value();
-    if (relative_path != token_proto.relative_path()) {
-      std::move(callback).Run(nullptr);
-      return;
-    }
-
-    std::move(callback).Run(startup_profile_key);
-  } else {
-    // Profile infra has already initialized, get it from the Profile instead
-    // because this supports more general resolution.
-    LookupProfileByToken(
-        std::move(token_proto),
-        base::BindOnce(&ProfileToProfileKey, std::move(callback)));
-  }
 }
 
 // The returned token is persisted (e.g. in PendingIntents); see the comment on
@@ -141,27 +98,9 @@ std::string TokenizeProfile(Profile* profile) {
   return token_string;
 }
 
-std::string TokenizeProfileKey(ProfileKey* profile_key) {
-  if (!profile_key) {
-    return std::string();
-  }
-
-  // TODO(crbug.com/40753680): Does not currently support tokenization of
-  // OTR ProfileKeys. They don't hold a OTRProfileID value.
-  CHECK(!profile_key->IsOffTheRecord(), base::NotFatalUntil::M162);
-
-  ProfileToken token_proto;
-  token_proto.set_relative_path(
-      GetRelativeProfilePath(profile_key->GetPath()).value());
-
-  std::string token_string;
-  token_proto.SerializeToString(&token_string);
-  return token_string;
-}
-
-// TODO(crbug.com/40254448): Remove once PartitionResolver and
-// BackgroundTabPoolManager use the encoded token from ProfileTokenUtils and
-// legacy intents have expired (crbug.com/585922618).
+// TODO(crbug.com/40254448): Remove once BackgroundTabPoolManager uses the
+// encoded token from ProfileTokenUtils and legacy intents have expired
+// (crbug.com/585922618).
 static void JNI_ProfileResolver_ResolveProfile(
     std::optional<std::string> token,
     base::OnceCallback<void(Profile*)> callback) {
@@ -173,24 +112,8 @@ static void JNI_ProfileResolver_ResolveProfile(
   ResolveProfile(std::move(*token), std::move(callback));
 }
 
-static void JNI_ProfileResolver_ResolveProfileKey(
-    std::optional<std::string> token,
-    base::OnceCallback<void(ProfileKey*)> callback) {
-  if (!token) {
-    std::move(callback).Run(nullptr);
-    return;
-  }
-
-  ResolveProfileKey(std::move(*token), std::move(callback));
-}
-
 static std::string JNI_ProfileResolver_TokenizeProfile(Profile* profile) {
   return TokenizeProfile(profile);
-}
-
-static std::string JNI_ProfileResolver_TokenizeProfileKey(
-    ProfileKey* profile_key) {
-  return TokenizeProfileKey(profile_key);
 }
 
 // Like JNI_ProfileResolver_TokenizeProfile(), but passes the token's bytes to
