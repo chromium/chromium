@@ -31,7 +31,7 @@
 #import "components/safe_browsing/core/common/safebrowsing_switches.h"
 #import "components/safe_browsing/core/common/threat_enums.h"
 #import "components/safe_browsing/core/common/visual_utils.h"
-#import "components/safe_browsing/ios/browser/client_side_detection_feature_cache.h"
+#import "components/safe_browsing/ios/browser/client_side_detection/client_side_detection_feature_cache.h"
 #import "components/safe_browsing/ios/browser/safe_browsing_url_allow_list.h"
 #import "components/security_interstitials/core/unsafe_resource.h"
 #import "components/signin/public/identity_manager/identity_manager.h"

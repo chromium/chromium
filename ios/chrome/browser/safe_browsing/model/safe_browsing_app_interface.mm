@@ -14,7 +14,7 @@
 #import "components/safe_browsing/core/common/hashprefix_realtime/hash_realtime_utils.h"
 #import "components/safe_browsing/core/common/phishing_classifier/scorer.h"
 #import "components/safe_browsing/core/common/proto/csd.pb.h"
-#import "components/safe_browsing/ios/browser/client_side_detection_feature_cache.h"
+#import "components/safe_browsing/ios/browser/client_side_detection/client_side_detection_feature_cache.h"
 #import "ios/chrome/browser/safe_browsing/model/client_side_detection/client_side_detection_host_ios.h"
 #import "ios/chrome/browser/safe_browsing/model/client_side_detection/client_side_detection_service.h"
 #import "ios/chrome/browser/safe_browsing/model/client_side_detection/client_side_detection_service_factory.h"

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/safe_browsing/ios/browser/client_side_detection_feature_cache.h"
+#include "components/safe_browsing/ios/browser/client_side_detection/client_side_detection_feature_cache.h"
 
 #include "ios/web/public/web_state.h"
 

@@ -222,7 +222,7 @@ source_set("eg_app_support+eg2") {
     "//components/safe_browsing/core/common/hashprefix_realtime:hash_realtime_utils",
     "//components/safe_browsing/core/common/phishing_classifier",
     "//components/safe_browsing/core/common/proto:csd_proto",
-    "//components/safe_browsing/ios/browser:client_side_detection_images_cache",
+    "//components/safe_browsing/ios/browser/client_side_detection",
     "//ios/chrome/browser/safe_browsing/model/client_side_detection",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/test/app:test_support",

@@ -16,32 +16,13 @@ source_set("allow_list") {
   ]
 }
 
-source_set("client_side_detection_images_cache") {
-  sources = [
-    "client_side_detection_feature_cache.h",
-    "client_side_detection_feature_cache.mm",
-  ]
-
-  deps = [
-    "//components/safe_browsing/core/browser/client_side_detection:client_side_detection_service_base",
-    "//components/safe_browsing/core/common/proto:csd_proto",
-    "//ios/web/public",
-    "//url",
-  ]
-}
-
 # As parts of components/safe_browsing become buildable on iOS, they will
 # be added here.
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "client_side_detection_feature_cache_unittest.mm",
-    "safe_browsing_url_allow_list_unittest.mm",
-  ]
+  sources = [ "safe_browsing_url_allow_list_unittest.mm" ]
   deps = [
     ":allow_list",
-    ":client_side_detection_images_cache",
-    "//components/safe_browsing/core/browser",
     "//components/safe_browsing/core/browser:ping_manager_unittest",
     "//components/safe_browsing/core/browser:safe_browsing_url_checker_unittest",
     "//components/safe_browsing/core/browser:suspicious_site_warning_allowlist_unittest",
@@ -49,12 +30,10 @@ source_set("unit_tests") {
     "//components/safe_browsing/core/browser:verdict_cache_manager_unittest",
     "//components/safe_browsing/core/browser/client_side_detection:unit_tests",
     "//components/safe_browsing/core/browser/db:unit_tests_local_db",
-    "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:unit_tests",
     "//components/safe_browsing/core/common/phishing_classifier:unit_tests",
-    "//components/safe_browsing/core/common/proto:csd_proto",
+    "//components/safe_browsing/ios/browser/client_side_detection:unit_tests",
     "//ios/web/public",
-    "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//testing/gmock",
     "//testing/gtest",
