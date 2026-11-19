@@ -24246,4 +24246,118 @@ TEST_P(QuicSessionPoolTest, OnNetworkMadeDefaultIgnoresClosingSession) {
   socket_data.ExpectAllWriteDataConsumed();
 }
 
+TEST_P(QuicSessionPoolTest,
+       AssumeQuicBrokenUntilVerifiedOnCurrentNetwork_StartupAndHandshake) {
+  AddScopedFeatureList().InitAndEnableFeature(
+      features::kAssumeQuicBrokenUntilVerifiedOnCurrentNetwork);
+
+  crypto_client_stream_factory_.set_handshake_mode(
+      MockCryptoClientStream::ZERO_RTT);
+  host_resolver_->set_synchronous_mode(true);
+  host_resolver_->rules()->AddIPLiteralRule(kDefaultServerHostName,
+                                            "192.168.0.1", "");
+  http_server_properties_->SetLastLocalAddressWhenQuicWorked(
+      IPAddress(192, 0, 2, 33));
+
+  Initialize();
+
+  QuicSessionKey session_key(
+      kDefaultServerHostName, kDefaultServerPort, PRIVACY_MODE_DISABLED,
+      ProxyChain::Direct(), SessionUsage::kDestination, SocketTag(),
+      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+      /*require_dns_https_alpn=*/false,
+      /*disable_cert_verification_network_fetches=*/false,
+      handles::kInvalidNetworkHandle);
+
+  // The persisted address is ignored: the main job is not delayed.
+  EXPECT_TRUE(http_server_properties_->HasLastLocalAddressWhenQuicWorked());
+  EXPECT_FALSE(pool_->has_quic_ever_worked_on_current_network());
+  EXPECT_EQ(base::TimeDelta(), pool_->GetTimeDelayForWaitingJob(session_key));
+
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+
+  MockQuicData socket_data(version_);
+  socket_data.AddReadPauseForever();
+  client_maker_.SetEncryptionLevel(quic::ENCRYPTION_ZERO_RTT);
+  socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+  socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  // 0-RTT is not used: the request waits for the handshake to be confirmed.
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
+  ASSERT_TRUE(
+      base::test::RunUntil([&] { return socket_data.AllWriteDataConsumed(); }));
+
+  EXPECT_FALSE(callback_.have_result());
+  EXPECT_FALSE(pool_->has_quic_ever_worked_on_current_network());
+  EXPECT_EQ(base::TimeDelta(), pool_->GetTimeDelayForWaitingJob(session_key));
+
+  crypto_client_stream_factory_.last_stream()
+      ->NotifySessionOneRttKeyAvailable();
+
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
+  EXPECT_TRUE(stream.get());
+
+  QuicChromiumClientSession* session = GetActiveSession(kDefaultDestination);
+  ASSERT_TRUE(session);
+  EXPECT_TRUE(session->require_confirmation());
+  EXPECT_TRUE(pool_->has_quic_ever_worked_on_current_network());
+  EXPECT_GT(pool_->GetTimeDelayForWaitingJob(session_key), base::TimeDelta());
+
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
+}
+
+TEST_P(
+    QuicSessionPoolTest,
+    AssumeQuicBrokenUntilVerifiedOnCurrentNetwork_ResetsOnDefaultNetworkChange) {
+  AddScopedFeatureList().InitAndEnableFeature(
+      features::kAssumeQuicBrokenUntilVerifiedOnCurrentNetwork);
+
+  scoped_mock_network_change_notifier_ =
+      std::make_unique<ScopedMockNetworkChangeNotifier>();
+  MockNetworkChangeNotifier* mock_ncn =
+      scoped_mock_network_change_notifier_->mock_network_change_notifier();
+  mock_ncn->ForceNetworkHandlesSupported();
+  mock_ncn->SetConnectedNetworksList(
+      {kDefaultNetworkForTests, kNewNetworkForTests});
+  mock_ncn->SetDefaultNetwork(kDefaultNetworkForTests);
+
+  quic_params_->migrate_sessions_on_network_change_v2 = false;
+  Initialize();
+
+  pool_->set_has_quic_ever_worked_on_current_network(true);
+
+  // A redundant notification for the current default network is ignored.
+  mock_ncn->NotifyNetworkMadeDefault(kDefaultNetworkForTests);
+  EXPECT_TRUE(pool_->has_quic_ever_worked_on_current_network());
+
+  mock_ncn->NotifyNetworkMadeDefault(kNewNetworkForTests);
+  EXPECT_FALSE(pool_->has_quic_ever_worked_on_current_network());
+}
+
+TEST_P(QuicSessionPoolTest,
+       AssumeQuicBrokenUntilVerifiedOnCurrentNetwork_ResetsOnIpAddressChange) {
+  AddScopedFeatureList().InitAndEnableFeature(
+      features::kAssumeQuicBrokenUntilVerifiedOnCurrentNetwork);
+
+  scoped_mock_network_change_notifier_ =
+      std::make_unique<ScopedMockNetworkChangeNotifier>();
+  ASSERT_FALSE(NetworkChangeNotifier::AreNetworkHandlesSupported());
+
+  quic_params_->close_sessions_on_ip_change = false;
+  quic_params_->goaway_sessions_on_ip_change = false;
+  quic_params_->migrate_sessions_on_network_change_v2 = false;
+  Initialize();
+
+  pool_->set_has_quic_ever_worked_on_current_network(true);
+
+  NetworkChangeNotifier::NotifyObserversOfIPAddressChangeForTests();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return !pool_->has_quic_ever_worked_on_current_network(); }));
+}
+
 }  // namespace net::test

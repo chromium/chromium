@@ -1235,6 +1235,14 @@ NET_EXPORT BASE_DECLARE_FEATURE(kValidateNegotiateTargetPrincipalHost);
 // while one that passes has delegation clamped to what it allows. Disabling it
 // skips validation altogether.
 NET_EXPORT BASE_DECLARE_FEATURE(kValidateNegotiateCnameAllowlist);
+
+// When enabled, `QuicSessionPool` does not trust persisted `supports_quic`
+// state across restarts and resets `has_quic_ever_worked_on_current_network_`
+// across default-network and IP-address changes, so QUIC races immediately
+// with TCP (0ms main-job delay) and disables 0-RTT until a QUIC handshake
+// succeeds on the current network.
+NET_EXPORT BASE_DECLARE_FEATURE(kAssumeQuicBrokenUntilVerifiedOnCurrentNetwork);
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_

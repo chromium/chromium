@@ -1056,9 +1056,13 @@ class NET_EXPORT_PRIVATE QuicSessionPool
   // Local address of socket that was created in CreateSession, or learned from
   // the first received datagram when `emulated_connect_for_quic_` is true.
   IPEndPoint local_address_;
+
+  // Caches `features::kAssumeQuicBrokenUntilVerifiedOnCurrentNetwork`.
+  const bool assume_quic_broken_until_verified_;
+
   // True if we need to check HttpServerProperties if QUIC was supported last
   // time.
-  bool need_to_check_persisted_supports_quic_ = true;
+  bool need_to_check_persisted_supports_quic_;
   // Incremented on each IP address change, so that sessions whose socket was
   // created before the change can be identified. Only used when emulated
   // connect is enabled for QUIC.

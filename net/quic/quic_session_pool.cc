@@ -784,6 +784,10 @@ QuicSessionPool::QuicSessionPool(
       yield_after_duration_(quic::QuicTime::Delta::FromMilliseconds(
           kQuicYieldAfterDurationMilliseconds)),
       default_network_(handles::kInvalidNetworkHandle),
+      assume_quic_broken_until_verified_(base::FeatureList::IsEnabled(
+          features::kAssumeQuicBrokenUntilVerifiedOnCurrentNetwork)),
+      need_to_check_persisted_supports_quic_(
+          !assume_quic_broken_until_verified_),
       emulated_connect_for_quic_(IsEmulatedConnectForQuicEnabled()),
       connectivity_monitor_(default_network_),
       task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
@@ -837,10 +841,8 @@ QuicSessionPool::~QuicSessionPool() {
   CertDatabase::GetInstance()->RemoveObserver(this);
   cert_verifier_->RemoveObserver(this);
   ssl_config_service_->RemoveObserver(this);
-  if (params_.close_sessions_on_ip_change ||
-      params_.goaway_sessions_on_ip_change) {
-    NetworkChangeNotifier::RemoveIPAddressObserver(this);
-  }
+  // No-op if `this` was never added as an observer.
+  NetworkChangeNotifier::RemoveIPAddressObserver(this);
   if (NetworkChangeNotifier::AreNetworkHandlesSupported()) {
     NetworkChangeNotifier::RemoveNetworkObserver(this);
   }
@@ -1597,14 +1599,13 @@ void QuicSessionPool::OnIPAddressChanged(
     return;
   }
 
-  connectivity_monitor_.OnIPAddressChanged();
-
   ++ip_address_change_count_;
   set_has_quic_ever_worked_on_current_network(false);
   if (params_.close_sessions_on_ip_change) {
+    connectivity_monitor_.OnIPAddressChanged();
     CloseAllSessions(ERR_NETWORK_CHANGED, quic::QUIC_IP_ADDRESS_CHANGED);
-  } else {
-    DCHECK(params_.goaway_sessions_on_ip_change);
+  } else if (params_.goaway_sessions_on_ip_change) {
+    connectivity_monitor_.OnIPAddressChanged();
     MarkAllActiveSessionsGoingAway(kIPAddressChanged);
   }
 }
@@ -1676,6 +1677,8 @@ void QuicSessionPool::OnNetworkMadeDefault(handles::NetworkHandle network) {
   CollectDataOnPlatformNotification(NETWORK_MADE_DEFAULT, network);
   connectivity_monitor_.OnDefaultNetworkUpdated(network);
 
+  const bool default_network_changed = network != default_network_;
+
   // Clear alternative services that were marked as broken until default
   // network changes, or all broken alternative services if
   // `kClearBrokenAlternativeServicesOnDefaultNetworkChange` is enabled.
@@ -1683,7 +1686,7 @@ void QuicSessionPool::OnNetworkMadeDefault(handles::NetworkHandle network) {
        base::FeatureList::IsEnabled(
            features::kClearBrokenAlternativeServicesOnDefaultNetworkChange)) &&
       default_network_ != handles::kInvalidNetworkHandle &&
-      network != default_network_) {
+      default_network_changed) {
     http_server_properties_->OnDefaultNetworkChanged();
   }
 
@@ -1707,7 +1710,9 @@ void QuicSessionPool::OnNetworkMadeDefault(handles::NetworkHandle network) {
       session->OnNetworkMadeDefault(network);
     }
   }
-  if (params_.migrate_sessions_on_network_change_v2) {
+  if (assume_quic_broken_until_verified_
+          ? default_network_changed
+          : params_.migrate_sessions_on_network_change_v2) {
     set_has_quic_ever_worked_on_current_network(false);
   }
   NotifyOnNetworkEvent(net::NetworkChangeEvent::kDefaultNetworkChanged);
@@ -1746,14 +1751,17 @@ void QuicSessionPool::set_has_quic_ever_worked_on_current_network(
   has_quic_ever_worked_on_current_network_ =
       has_quic_ever_worked_on_current_network;
   if (has_local_address()) {
-    if (has_quic_ever_worked_on_current_network_) {
-      http_server_properties_->SetLastLocalAddressWhenQuicWorked(
-          local_address_.address());
-    } else {
-      http_server_properties_->ClearLastLocalAddressWhenQuicWorked();
-      if (emulated_connect_for_quic_) {
-        local_address_ = IPEndPoint();
+    if (!assume_quic_broken_until_verified_) {
+      if (has_quic_ever_worked_on_current_network_) {
+        http_server_properties_->SetLastLocalAddressWhenQuicWorked(
+            local_address_.address());
+      } else {
+        http_server_properties_->ClearLastLocalAddressWhenQuicWorked();
       }
+    }
+    if (!has_quic_ever_worked_on_current_network_ &&
+        emulated_connect_for_quic_) {
+      local_address_ = IPEndPoint();
     }
   }
 }
@@ -1765,7 +1773,8 @@ void QuicSessionPool::OnDatagramReceived(
     return;
   }
   local_address_ = ToIPEndPoint(local_address);
-  if (has_quic_ever_worked_on_current_network_) {
+  if (!assume_quic_broken_until_verified_ &&
+      has_quic_ever_worked_on_current_network_) {
     http_server_properties_->SetLastLocalAddressWhenQuicWorked(
         local_address_.address());
   }
@@ -2940,7 +2949,9 @@ void QuicSessionPool::InitializeMigrationOptions() {
   // not be set.
   DCHECK(!(handle_ip_change && migrate_sessions_on_network_change));
 
-  if (handle_ip_change) {
+  if (handle_ip_change ||
+      (assume_quic_broken_until_verified_ &&
+       !NetworkChangeNotifier::AreNetworkHandlesSupported())) {
     NetworkChangeNotifier::AddIPAddressObserver(this);
   }
 
@@ -2957,8 +2968,9 @@ void QuicSessionPool::InitializeMigrationOptions() {
 
   NetworkChangeNotifier::AddNetworkObserver(this);
 
-  if (base::FeatureList::IsEnabled(
-          features::kClearBrokenAlternativeServicesOnDefaultNetworkChange) &&
+  if ((base::FeatureList::IsEnabled(
+           features::kClearBrokenAlternativeServicesOnDefaultNetworkChange) ||
+       assume_quic_broken_until_verified_) &&
       default_network_ == handles::kInvalidNetworkHandle) {
     default_network_ = NetworkChangeNotifier::GetDefaultNetwork();
     if (default_network_ != handles::kInvalidNetworkHandle) {

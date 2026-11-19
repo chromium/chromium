@@ -1273,4 +1273,8 @@ BASE_FEATURE(kValidateNegotiateTargetPrincipalHost,
 
 BASE_FEATURE(kValidateNegotiateCnameAllowlist,
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAssumeQuicBrokenUntilVerifiedOnCurrentNetwork,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace net::features
