@@ -11,8 +11,11 @@
 #include "base/android/jni_array.h"
 #include "base/containers/span.h"
 #include "base/memory/ref_counted_memory.h"
-#include "services/device/hid/jni_headers/ChromeHidConnection_jni.h"
 #include "third_party/jni_zero/default_conversions.h"
+#include "third_party/jni_zero/jni_zero.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "services/device/hid/jni_headers/ChromeHidConnection_jni.h"
 
 DEFINE_JNI(ChromeHidConnection)
 
@@ -33,8 +36,8 @@ HidConnectionAndroid::HidConnectionAndroid(
       j_connection_(std::move(j_connection)) {
   CHECK(!j_connection_.is_null());
   JNIEnv* env = AttachCurrentThread();
-  Java_ChromeHidConnection_setNativeConnection(
-      env, j_connection_, reinterpret_cast<intptr_t>(this));
+  Java_ChromeHidConnection_setNativeConnection(env, j_connection_,
+                                               jni_zero::MakeRaw(this));
 }
 
 HidConnectionAndroid::~HidConnectionAndroid() {

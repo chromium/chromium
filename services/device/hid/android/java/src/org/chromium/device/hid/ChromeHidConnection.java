@@ -11,7 +11,10 @@ import androidx.annotation.RequiresApi;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Log;
@@ -31,11 +34,14 @@ import org.chromium.build.annotations.Nullable;
 @JNINamespace("device")
 @NullMarked
 public class ChromeHidConnection {
+    @JniType("::device::HidConnectionAndroid")
+    interface NativeHidConnectionAndroid extends JniTypeToken {}
+
     private static final String TAG = "HidConn";
     private final HidDevice mDevice;
     private final SequencedTaskRunner mUiTaskRunner =
             PostTask.createSequencedTaskRunner(TaskTraits.UI_DEFAULT);
-    private long mNativeConnectionPointer;
+    private @Nullable JniRawPtr<NativeHidConnectionAndroid> mNativeConnectionPointer;
     private @Nullable HidEventListener mEventListener;
 
     public ChromeHidConnection(HidDevice device) {
@@ -48,33 +54,32 @@ public class ChromeHidConnection {
     }
 
     @CalledByNative
-    private void setNativeConnection(long nativeConnectionPointer) {
+    void setNativeConnection(JniRawPtr<NativeHidConnectionAndroid> nativeConnectionPointer) {
+        assert mNativeConnectionPointer == null;
         mNativeConnectionPointer = nativeConnectionPointer;
-        if (nativeConnectionPointer == 0 && mEventListener != null) {
-            mDevice.unregisterEventListener(mEventListener);
-            mEventListener = null;
-        } else if (nativeConnectionPointer != 0 && mEventListener == null) {
-            mEventListener =
-                    new HidEventListener() {
-                        @Override
-                        public void onInputReport(int reportId, byte[] data) {
-                            if (mNativeConnectionPointer != 0) {
-                                ChromeHidConnectionJni.get()
-                                        .onInputReport(mNativeConnectionPointer, reportId, data);
-                            }
+        mEventListener =
+                new HidEventListener() {
+                    @Override
+                    public void onInputReport(int reportId, byte[] data) {
+                        if (mNativeConnectionPointer != null) {
+                            ChromeHidConnectionJni.get()
+                                    .onInputReport(mNativeConnectionPointer, reportId, data);
                         }
-                    };
-            try {
-                mDevice.registerEventListener(mUiTaskRunner, mEventListener);
-            } catch (IllegalStateException e) {
-                Log.w(TAG, "Failed to register HID event listener", e);
-            }
+                    }
+                };
+        try {
+            mDevice.registerEventListener(mUiTaskRunner, mEventListener);
+        } catch (IllegalStateException e) {
+            Log.w(TAG, "Failed to register HID event listener", e);
         }
     }
 
     @CalledByNative
     private void close() {
-        mNativeConnectionPointer = 0;
+        if (mNativeConnectionPointer != null) {
+            mNativeConnectionPointer.release();
+            mNativeConnectionPointer = null;
+        }
         mEventListener = null;
         if (mDevice.isOpen()) {
             // Note: We catch SecurityException here because on Android 17+, if the user revokes
@@ -101,7 +106,7 @@ public class ChromeHidConnection {
                     new OutcomeReceiver<Void, Exception>() {
                         @Override
                         public void onResult(@Nullable Void result) {
-                            if (mNativeConnectionPointer != 0) {
+                            if (mNativeConnectionPointer != null) {
                                 ChromeHidConnectionJni.get()
                                         .onWriteComplete(
                                                 mNativeConnectionPointer, callbackId, true);
@@ -110,7 +115,7 @@ public class ChromeHidConnection {
 
                         @Override
                         public void onError(Exception e) {
-                            if (mNativeConnectionPointer != 0) {
+                            if (mNativeConnectionPointer != null) {
                                 ChromeHidConnectionJni.get()
                                         .onWriteComplete(
                                                 mNativeConnectionPointer, callbackId, false);
@@ -119,7 +124,7 @@ public class ChromeHidConnection {
                     });
         } catch (SecurityException | IllegalStateException e) {
             Log.e(TAG, "Error sending output report", e);
-            if (mNativeConnectionPointer != 0) {
+            if (mNativeConnectionPointer != null) {
                 ChromeHidConnectionJni.get()
                         .onWriteComplete(mNativeConnectionPointer, callbackId, false);
             }
@@ -139,7 +144,7 @@ public class ChromeHidConnection {
                     new OutcomeReceiver<Void, Exception>() {
                         @Override
                         public void onResult(@Nullable Void result) {
-                            if (mNativeConnectionPointer != 0) {
+                            if (mNativeConnectionPointer != null) {
                                 ChromeHidConnectionJni.get()
                                         .onWriteComplete(
                                                 mNativeConnectionPointer, callbackId, true);
@@ -148,7 +153,7 @@ public class ChromeHidConnection {
 
                         @Override
                         public void onError(Exception e) {
-                            if (mNativeConnectionPointer != 0) {
+                            if (mNativeConnectionPointer != null) {
                                 ChromeHidConnectionJni.get()
                                         .onWriteComplete(
                                                 mNativeConnectionPointer, callbackId, false);
@@ -157,7 +162,7 @@ public class ChromeHidConnection {
                     });
         } catch (SecurityException | IllegalStateException e) {
             Log.e(TAG, "Error sending feature report", e);
-            if (mNativeConnectionPointer != 0) {
+            if (mNativeConnectionPointer != null) {
                 ChromeHidConnectionJni.get()
                         .onWriteComplete(mNativeConnectionPointer, callbackId, false);
             }
@@ -176,7 +181,7 @@ public class ChromeHidConnection {
                     new OutcomeReceiver<byte[], Exception>() {
                         @Override
                         public void onResult(byte[] data) {
-                            if (mNativeConnectionPointer != 0) {
+                            if (mNativeConnectionPointer != null) {
                                 ChromeHidConnectionJni.get()
                                         .onReadFeatureComplete(
                                                 mNativeConnectionPointer,
@@ -189,7 +194,7 @@ public class ChromeHidConnection {
 
                         @Override
                         public void onError(Exception e) {
-                            if (mNativeConnectionPointer != 0) {
+                            if (mNativeConnectionPointer != null) {
                                 ChromeHidConnectionJni.get()
                                         .onReadFeatureComplete(
                                                 mNativeConnectionPointer,
@@ -202,7 +207,7 @@ public class ChromeHidConnection {
                     });
         } catch (SecurityException | IllegalStateException e) {
             Log.e(TAG, "Error getting feature report", e);
-            if (mNativeConnectionPointer != 0) {
+            if (mNativeConnectionPointer != null) {
                 ChromeHidConnectionJni.get()
                         .onReadFeatureComplete(
                                 mNativeConnectionPointer, callbackId, false, 0, null);
@@ -212,15 +217,16 @@ public class ChromeHidConnection {
 
     @NativeMethods
     interface Interface {
-        void onWriteComplete(long nativeHidConnectionAndroid, int callbackId, boolean success);
+        void onWriteComplete(
+                JniPtr<NativeHidConnectionAndroid> self, int callbackId, boolean success);
 
         void onReadFeatureComplete(
-                long nativeHidConnectionAndroid,
+                JniPtr<NativeHidConnectionAndroid> self,
                 int callbackId,
                 boolean success,
                 int reportId,
                 @JniType("std::vector<uint8_t>") byte @Nullable [] data);
 
-        void onInputReport(long nativeHidConnectionAndroid, int reportId, byte[] data);
+        void onInputReport(JniPtr<NativeHidConnectionAndroid> self, int reportId, byte[] data);
     }
 }
