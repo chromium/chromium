@@ -601,11 +601,6 @@ void RequestHandler::OnAccountsResultsReceived(
   }
 
   for (auto& result : results) {
-    if (result.idp_info) {
-      SetIdpLoginInfo(result.idp_info->metadata.idp_login_url,
-                      result.idp_info->provider->login_hint,
-                      result.idp_info->provider->domain_hint);
-    }
     if (result.accounts_fetched_time != base::TimeTicks()) {
       SetAccountsFetchedTime(result.accounts_fetched_time);
     }
@@ -707,12 +702,6 @@ void RequestHandler::OnFetchDataForIdpSucceeded(
 
   fetch_data_.pending_idps.erase(idp_config_url);
   MaybeShowAccountsDialog();
-}
-
-void RequestHandler::SetIdpLoginInfo(const GURL& idp_login_url,
-                                     const std::string& login_hint,
-                                     const std::string& domain_hint) {
-  idp_login_infos_[idp_login_url] = {login_hint, domain_hint};
 }
 
 void RequestHandler::SetWellKnownAndConfigFetchedTime(base::TimeTicks time) {
@@ -2587,13 +2576,15 @@ void RequestHandler::SetRequiresUserMediation(bool requires_user_mediation,
 void RequestHandler::LoginToIdP(bool can_append_hints,
                                 const GURL& idp_config_url,
                                 GURL login_url) {
-  const auto& it = idp_login_infos_.find(login_url);
-  CHECK(it != idp_login_infos_.end());
+  const auto it = token_request_get_infos_.find(idp_config_url);
+  CHECK(it != token_request_get_infos_.end());
   login_url_ = login_url;
   if (can_append_hints) {
     // Before invoking UI, append the query parameters to the `idp_login_url` if
     // needed.
-    MaybeAppendQueryParameters(it->second, &login_url);
+    MaybeAppendQueryParameters(
+        {it->second.provider->login_hint, it->second.provider->domain_hint},
+        &login_url);
   }
 
   if (dialog_type_ == DialogType::kLoginToIdpPopup) {

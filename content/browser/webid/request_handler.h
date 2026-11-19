@@ -28,7 +28,6 @@
 #include "content/browser/webid/idp_registration_handler.h"
 #include "content/browser/webid/metrics.h"
 #include "content/browser/webid/request.h"
-#include "content/browser/webid/url_computations.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/document_user_data.h"
 #include "content/public/browser/navigation_ui_data.h"
@@ -209,9 +208,6 @@ class CONTENT_EXPORT RequestHandler
       const GURL& idp_login_url,
       std::vector<scoped_refptr<IdentityRequestAccount>>& accounts);
 
-  void SetIdpLoginInfo(const GURL& idp_login_url,
-                       const std::string& login_hint,
-                       const std::string& domain_hint);
   void SetWellKnownAndConfigFetchedTime(base::TimeTicks time);
 
   // Called when there is an error in fetching information to show the prompt
@@ -249,11 +245,7 @@ class CONTENT_EXPORT RequestHandler
 
   url::Origin GetEmbeddingOrigin() const;
 
-  GURL login_url() { return login_url_; }
   const std::vector<GURL>& idp_order() const { return req_->idp_order(); }
-  bool HadAccountIdBeforeLogin(const std::string& account_id) {
-    return account_ids_before_login_.contains(account_id);
-  }
 
   // Called for an IdP that has no accounts to show but must still be shown, so
   // that the user can log in to it. This is either because of a login status
@@ -494,10 +486,6 @@ class CONTENT_EXPORT RequestHandler
   // logs in to. Populated by LoginToIdP().
   base::flat_set<std::string> account_ids_before_login_;
 
-  // Maps the login URL to the info that may be added as query parameters to
-  // that URL. Populated by OnAllConfigAndWellKnownFetched().
-  base::flat_map<GURL, IdentityProviderLoginUrlInfo> idp_login_infos_;
-
   raw_ptr<RenderFrameHost> render_frame_host_;
   // RequestService owns `this`, so it is expected to outlive it.
   const raw_ref<RequestService> request_service_;
@@ -581,10 +569,6 @@ class CONTENT_EXPORT RequestHandler
 
   // Type of error URL for metrics and devtools issue purposes.
   std::optional<IdpNetworkRequestManager::FedCmErrorUrlType> error_url_type_;
-
-  // Keeps track of the state of the use other account flow. Is std::nullopt
-  // when the flow is not active.
-  std::optional<UseOtherAccountResult> use_other_account_account_result_;
 
   // Whether a token request has been sent.
   bool has_sent_token_request_{false};

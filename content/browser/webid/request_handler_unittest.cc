@@ -2096,8 +2096,8 @@ class RequestHandlerTest : public RenderViewHostImplTestHarness {
   }
 
   void SimulateLoginToIdP(std::string login_url = kIdpLoginUrl) {
-    request_handler_->LoginToIdP(/*can_append_hints=*/true, GURL(kIdpUrl),
-                                 GURL(login_url));
+    request_handler_->LoginToIdP(/*can_append_hints=*/true,
+                                 GURL(kProviderUrlFull), GURL(login_url));
   }
 
   void ExpectSuccessfulActiveFlow() {
