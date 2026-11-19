@@ -5,7 +5,9 @@
 #include "chrome/browser/speech/cros_speech_recognition_service.h"
 
 #include <memory>
+#include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
@@ -13,6 +15,8 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/notimplemented.h"
+#include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/types/optional_util.h"
 #include "chrome/services/speech/audio_source_fetcher_impl.h"
 #include "chrome/services/speech/buildflags/buildflags.h"
@@ -20,6 +24,7 @@
 #include "components/live_caption/pref_names.h"
 #include "components/soda/constants.h"
 #include "components/soda/soda_installer.h"
+#include "components/soda/soda_util.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -41,15 +46,54 @@ namespace {
 constexpr char kInvalidSpeechRecogntionOptions[] =
     "Invalid SpeechRecognitionOptions provided";
 
+std::string_view PrimaryLanguageSubtag(std::string_view locale) {
+  if (const auto split = base::SplitStringOnce(locale, '-')) {
+    return split->first;
+  }
+  return locale;
+}
+
 void PopulateFilePaths(
     base::FilePath& binary_path,
     base::flat_map<std::string, base::FilePath>& config_paths) {
+  if (!speech::IsOnDeviceSpeechRecognitionSupported()) {
+    return;
+  }
   speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
+  if (!soda_installer) {
+    return;
+  }
 
   binary_path = soda_installer->GetSodaBinaryPath();
+  bool has_unmapped_installed_language = false;
   for (const auto& language_code : soda_installer->InstalledLanguages()) {
-    config_paths[GetLanguageName(language_code)] =
-        soda_installer->GetLanguagePath(GetLanguageName(language_code));
+    std::string language_name = GetLanguageName(language_code);
+    if (language_name.empty()) {
+      has_unmapped_installed_language = true;
+      continue;
+    }
+    base::FilePath language_path =
+        soda_installer->GetLanguagePath(language_name);
+    if (!language_path.empty()) {
+      config_paths[language_name] = std::move(language_path);
+    }
+  }
+  if (has_unmapped_installed_language) {
+    // Regional ChromeOS DLCs (such as `en-GB` or `es-US`) are absent from
+    // desktop `kLanguageComponentConfigs`, so `GetLanguageName()` returns an
+    // empty string for their `LanguageCode`. Query `GetAvailableLanguages()`
+    // and record any regional pack with a non-empty installed path.
+    for (const std::string& language_name :
+         soda_installer->GetAvailableLanguages()) {
+      if (config_paths.contains(language_name)) {
+        continue;
+      }
+      base::FilePath language_path =
+          soda_installer->GetLanguagePath(language_name);
+      if (!language_path.empty()) {
+        config_paths[language_name] = std::move(language_path);
+      }
+    }
   }
 }
 
@@ -93,17 +137,29 @@ void CrosSpeechRecognitionService::BindRecognizer(
     mojo::PendingRemote<media::mojom::SpeechRecognitionRecognizerClient> client,
     media::mojom::SpeechRecognitionOptionsPtr options,
     BindRecognizerCallback callback) {
-  // This binding is used by LiveCaption and it can't be server based
+  // This binding is used by LiveCaption and TTC, and it can't be server based
   // recognition.
   if (options->is_server_based ||
-      options->recognizer_client_type !=
-          media::mojom::RecognizerClientType::kLiveCaption) {
-    mojo::ReportBadMessage(kInvalidSpeechRecogntionOptions);
+      (options->recognizer_client_type !=
+           media::mojom::RecognizerClientType::kLiveCaption &&
+       options->recognizer_client_type !=
+           media::mojom::RecognizerClientType::kTtc)) {
+    // Report through the receiver set so it closes the offending receiver
+    // before `callback` is dropped. A dropped reply callback on an open pipe
+    // triggers a DCHECK.
+    speech_recognition_contexts_.ReportBadMessage(
+        kInvalidSpeechRecogntionOptions);
     return;
   }
 
   base::FilePath binary_path;
   base::flat_map<std::string, base::FilePath> config_paths;
+  PopulateFilePaths(binary_path, config_paths);
+  if (binary_path.empty() || config_paths.empty()) {
+    std::move(callback).Run(/*is_multichannel_supported=*/false);
+    return;
+  }
+
   // The options should have locale set, but if they don't, pull from the prefs.
   std::string language_name;
   if (options->language) {
@@ -115,7 +171,36 @@ void CrosSpeechRecognitionService::BindRecognizer(
 
   language_name = speech::MaybeMapToChineseLocale(language_name);
 
-  PopulateFilePaths(binary_path, config_paths);
+  if (options->recognizer_client_type ==
+          media::mojom::RecognizerClientType::kTtc &&
+      !config_paths.contains(language_name)) {
+    if (std::optional<speech::SodaLanguagePackComponentConfig> config =
+            speech::GetLanguageComponentConfigMatchingLanguageSubtag(
+                language_name);
+        config && config_paths.contains(config->language_name)) {
+      language_name = std::string(config->language_name);
+    } else {
+      const std::string_view requested_subtag =
+          PrimaryLanguageSubtag(language_name);
+      if (!requested_subtag.empty() &&
+          !base::EqualsCaseInsensitiveASCII(requested_subtag, "zh") &&
+          !base::EqualsCaseInsensitiveASCII(requested_subtag, "cmn")) {
+        for (const auto& [installed_locale, path] : config_paths) {
+          if (!path.empty() &&
+              base::EqualsCaseInsensitiveASCII(
+                  PrimaryLanguageSubtag(installed_locale), requested_subtag)) {
+            language_name = installed_locale;
+            break;
+          }
+        }
+      }
+    }
+  }
+  auto config_it = config_paths.find(language_name);
+  if (config_it == config_paths.end() || config_it->second.empty()) {
+    std::move(callback).Run(/*is_multichannel_supported=*/false);
+    return;
+  }
 
   // TODO(crbug.com/40924425): Implement offensive word mask on ChromeOS so that
   // mask_offensive_words is not hard-coded.

@@ -12,7 +12,7 @@ import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
-// Next MinVersion: 13
+// Next MinVersion: 14
 
 // Corresponds to the LangIdEvent.ConfidenceInterval defined in
 // http://google3/speech/soda/public/soda_event.proto.
@@ -35,9 +35,9 @@ enum AsrSwitchResult {
 // The main interface a client uses to interact with a speech
 // recognition service process. For Live Caption, every renderer can own one
 // or more Remote<SpeechRecognitionContext>, with the receiver bound through the
-// BrowserInterfaceBroker. For the Web Speech API, the browser is the client and
-// can own one or more Remote<SpeechRecognitionContext>. This is a stable
-// interface that is used across the LaCrOS/Ash boundary.
+// BrowserInterfaceBroker. For the Web Speech API and TTC, the browser is the
+// client and can own one or more Remote<SpeechRecognitionContext>. This is a
+// stable interface that is used across the LaCrOS/Ash boundary.
 interface SpeechRecognitionContext {
   // Bind the recognizers to the speech recognition service. Returns a flag
   // indicating whether multichannel audio is supported by the speech
@@ -59,11 +59,11 @@ interface SpeechRecognitionContext {
       bool continuous);
 };
 
-// The interface used to pass raw audio from the renderer to the speech
-// recognition service. The remote lives either in the renderer process (for web
-// Live Caption) or the browser process (for CrOS features like system Live
-// Caption and dictation) and the receiver lives in the speech recognition
-// process.
+// The interface used to pass raw audio from the renderer or browser to the
+// speech recognition service. The remote lives either in the renderer process
+// (for web Live Caption) or the browser process (for TTC and CrOS features like
+// system Live Caption and dictation) and the receiver lives in the speech
+// recognition process (or Ash browser process on ChromeOS).
 interface SpeechRecognitionRecognizer {
   // Initialize the speech recognition instance. The speech recognition client
   // will return the recognition events containing the transcribed audio back
@@ -288,6 +288,11 @@ enum RecognizerClientType {
   kCastModerator,
   // SchoolTools on ChromeOS.
   [MinVersion=9] kSchoolTools,
+  // Browser-initiated TTC voice confirmation on Desktop Chrome and ChromeOS.
+  // Both the SpeechRecognitionRecognizer remote and
+  // SpeechRecognitionRecognizerClient receiver live in the browser process,
+  // streaming browser-captured mic audio with no renderer involvement.
+  [MinVersion=13] kTtc,
 };
 
 // Options for speech recognition.

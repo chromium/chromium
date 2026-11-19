@@ -254,10 +254,13 @@ SpeechRecognitionRecognizerImpl::~SpeechRecognitionRecognizerImpl() {
     SodaClientRegistry::GetInstance()->Unregister(soda_client_id_);
   }
 
-  base::UmaHistogramBoolean(
-      base::StrCat({"Accessibility.LiveCaption.", primary_language_name_,
-                    ".SessionContainsRecognizedSpeech"}),
-      session_contains_speech_);
+  if (options_->recognizer_client_type ==
+      media::mojom::RecognizerClientType::kLiveCaption) {
+    base::UmaHistogramBoolean(
+        base::StrCat({"Accessibility.LiveCaption.", primary_language_name_,
+                      ".SessionContainsRecognizedSpeech"}),
+        session_contains_speech_);
+  }
   RecordDuration();
   soda_client_.reset();
 
@@ -488,11 +491,10 @@ void SpeechRecognitionRecognizerImpl::SendAudioToSpeechRecognitionService(
       caption_bubble_visible_duration_ += duration;
     } else {
       caption_bubble_hidden_duration_ += duration;
-      if (soda_client_) {
-        soda_client_->Destroy();
-      }
-      return;
     }
+  }
+  if (!is_client_requesting_speech_recognition_) {
+    return;
   }
 
   // Verify the channel count.
@@ -633,8 +635,10 @@ void SpeechRecognitionRecognizerImpl::
     ResetSoda();
   }
 
-  soda_client_->AddAudio(reinterpret_cast<char*>(buffer->data.data()),
-                         buffer_size);
+  if (soda_client_->IsInitialized()) {
+    soda_client_->AddAudio(reinterpret_cast<char*>(buffer->data.data()),
+                           buffer_size);
+  }
 }
 
 void SpeechRecognitionRecognizerImpl::OnLanguageChanged(

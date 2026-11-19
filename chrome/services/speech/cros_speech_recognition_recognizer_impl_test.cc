@@ -9,7 +9,9 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -160,6 +162,68 @@ INSTANTIATE_TEST_SUITE_P(
     CrosSpeechRecognitionRecognizerImplMaskOffensiveWordsTestSuite,
     CrosSpeechRecognitionRecognizerImplMaskOffensiveWordsTest,
     testing::Bool());
+
+TEST_F(CrosSpeechRecognitionRecognizerImplTest, RespectsAllowMultiLanguage) {
+  base::test::TaskEnvironment task_environment;
+  base::test::ScopedFeatureList features{
+      ash::features::kOnDeviceSpeechRecognition};
+  testing::NiceMock<speech::MockSodaInstaller> soda_installer;
+
+  // `CrosSpeechRecognitionRecognizerImpl` builds `multi_lang_config` from
+  // `GetLiveCaptionEnabledLanguages()`, which includes "es-ES" by default.
+  base::flat_map<std::string, base::FilePath> config_paths;
+  config_paths["en-US"] = base::FilePath::FromASCII("/fake/en-us");
+  config_paths["es-ES"] = base::FilePath::FromASCII("/fake/es-es");
+
+  auto run_with_options = [&](bool allow_multi_language,
+                              media::mojom::RecognizerClientType client_type) {
+    base::test::TestFuture<chromeos::machine_learning::mojom::SodaConfigPtr>
+        test_future;
+    FakeMachineLearningServiceConnection fake_service_connection(
+        test_future.GetCallback());
+    fake_service_connection.Initialize();
+    chromeos::machine_learning::ServiceConnection::
+        UseFakeServiceConnectionForTesting(&fake_service_connection);
+    // Clear the global fake before `fake_service_connection` goes out of
+    // scope.
+    base::ScopedClosureRunner reset_fake_service_connection(base::BindOnce([] {
+      chromeos::machine_learning::ServiceConnection::
+          UseFakeServiceConnectionForTesting(nullptr);
+    }));
+
+    FakeSpeechRecognitionRecognizerClient recognizer_client;
+    mojo::Receiver<media::mojom::SpeechRecognitionRecognizerClient> receiver(
+        &recognizer_client);
+    auto options = media::mojom::SpeechRecognitionOptions::New(
+        media::mojom::SpeechRecognitionMode::kCaption,
+        /*enable_formatting=*/false, /*language=*/"en-US",
+        /*is_server_based=*/false, client_type);
+    options->allow_multi_language = allow_multi_language;
+
+    CrosSpeechRecognitionRecognizerImpl recognizer(
+        receiver.BindNewPipeAndPassRemote(), std::move(options),
+        base::FilePath::FromASCII("/fake/libsoda"), config_paths, "en-US",
+        /*mask_offensive_words=*/false);
+    recognizer.AddAudio(
+        media::mojom::AudioDataS16::New(/*channel_count=*/1,
+                                        /*sample_rate=*/16000,
+                                        /*frame_count=*/1,
+                                        /*data=*/std::vector<int16_t>{1}));
+    return test_future.Take();
+  };
+
+  auto multilang_config = run_with_options(
+      /*allow_multi_language=*/true,
+      media::mojom::RecognizerClientType::kLiveCaption);
+  ASSERT_FALSE(multilang_config->multi_lang_config.is_null());
+  EXPECT_TRUE(
+      multilang_config->multi_lang_config->locale_to_language_pack_map.contains(
+          "es-ES"));
+
+  auto single_lang_ttc_config = run_with_options(
+      /*allow_multi_language=*/false, media::mojom::RecognizerClientType::kTtc);
+  EXPECT_TRUE(single_lang_ttc_config->multi_lang_config.is_null());
+}
 
 }  // namespace
 }  // namespace speech

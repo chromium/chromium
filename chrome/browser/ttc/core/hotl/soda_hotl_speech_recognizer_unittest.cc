@@ -209,7 +209,7 @@ TEST_F(SodaHotlSpeechRecognizerTest,
   EXPECT_EQ(fake_.last_options()->recognition_mode,
             media::mojom::SpeechRecognitionMode::kCaption);
   EXPECT_EQ(fake_.last_options()->recognizer_client_type,
-            media::mojom::RecognizerClientType::kLiveCaption);
+            media::mojom::RecognizerClientType::kTtc);
 
   // Empty spans are ignored before valid audio arrives.
   recognizer.PushAudioChunk({}, mono_params_);

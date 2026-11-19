@@ -16,6 +16,7 @@
 #include "base/functional/bind.h"
 #include "base/native_library.h"
 #include "base/path_service.h"
+#include "base/run_loop.h"
 #include "base/scoped_native_library.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/thread_pool.h"
@@ -23,11 +24,16 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "chrome/services/speech/soda/mock_soda_client.h"
+#include "chrome/services/speech/speech_recognition_service_impl.h"
 #include "components/soda/buildflags.h"
 #include "media/base/media_switches.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(ENABLE_SODA_INTEGRATION_TESTS)
@@ -1001,6 +1007,135 @@ TEST_F(SpeechRecognitionRecognizerImplTest,
   FlushSodaAndClientEvents();
   EXPECT_EQ(1, stopped_count_);
 }
+
+TEST_F(SpeechRecognitionRecognizerImplTest,
+       DropsAudioAfterClientDisconnectForTtcClient) {
+  media::mojom::SpeechRecognitionOptionsPtr options = CreateOptions();
+  options->recognizer_client_type = media::mojom::RecognizerClientType::kTtc;
+  CreateRecognizer(std::move(options), kPrimaryLanguageName);
+
+  // Client disconnect can arrive before queued audio on the unassociated pipe.
+  ON_CALL(*soda_client_, IsInitialized()).WillByDefault(testing::Return(false));
+  base::RunLoop disconnect_loop;
+  EXPECT_CALL(*soda_client_, Destroy()).WillOnce([&]() {
+    disconnect_loop.Quit();
+  });
+  receiver_.reset();
+  disconnect_loop.Run();
+
+  EXPECT_CALL(*soda_client_, Destroy()).Times(0);
+  EXPECT_CALL(*soda_client_, Reset(_, _, _)).Times(0);
+  EXPECT_CALL(*soda_client_, AddAudio(_, _)).Times(0);
+  SendNonEmptyAudio();
+
+  // Clear `soda_client_` (`raw_ptr`) before destroying `recognizer_`.
+  soda_client_ = nullptr;
+  recognizer_.reset();
+}
+
+TEST_F(SpeechRecognitionRecognizerImplTest,
+       GatesLiveCaptionSessionHistogramOnLiveCaptionClient) {
+  {
+    base::HistogramTester histogram_tester;
+    media::mojom::SpeechRecognitionOptionsPtr ttc_options = CreateOptions();
+    ttc_options->recognizer_client_type =
+        media::mojom::RecognizerClientType::kTtc;
+    CreateRecognizer(std::move(ttc_options), kPrimaryLanguageName);
+    soda_client_ = nullptr;
+    recognizer_.reset();
+    receiver_.reset();
+    histogram_tester.ExpectTotalCount(
+        "Accessibility.LiveCaption.en-US.SessionContainsRecognizedSpeech", 0);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+    CreateRecognizer(CreateOptions(), kPrimaryLanguageName);
+    soda_client_ = nullptr;
+    recognizer_.reset();
+    receiver_.reset();
+    histogram_tester.ExpectUniqueSample(
+        "Accessibility.LiveCaption.en-US.SessionContainsRecognizedSpeech",
+        false, 1);
+  }
+}
+
+#if !BUILDFLAG(IS_CHROMEOS)
+TEST_F(SpeechRecognitionRecognizerImplTest,
+       ServiceImplRequiresInstalledLanguagePackAndValidClientType) {
+  base::FilePath exe_dir;
+  ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_dir));
+  base::FilePath fake_lib_path = exe_dir.AppendASCII(
+      base::GetNativeLibraryName("fake_soda_library_for_testing"));
+  ASSERT_TRUE(base::PathExists(fake_lib_path));
+
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  const base::FilePath fr_pack = temp_dir.GetPath().AppendASCII("fr-FR");
+  const base::FilePath en_pack = temp_dir.GetPath().AppendASCII("en-US");
+  ASSERT_TRUE(base::CreateDirectory(fr_pack));
+  ASSERT_TRUE(base::CreateDirectory(en_pack));
+
+  mojo::Remote<media::mojom::SpeechRecognitionService> service_remote;
+  SpeechRecognitionServiceImpl service(
+      service_remote.BindNewPipeAndPassReceiver());
+  base::flat_map<std::string, base::FilePath> installed_packs;
+  installed_packs["fr-FR"] = fr_pack;
+  service.SetSodaPaths(fake_lib_path, installed_packs, "fr-FR");
+
+  auto try_bind = [&](mojo::Remote<media::mojom::SpeechRecognitionContext>& ctx,
+                      media::mojom::RecognizerClientType client_type,
+                      const std::string& language) {
+    mojo::Remote<media::mojom::SpeechRecognitionRecognizer> recognizer;
+    mojo::PendingRemote<media::mojom::SpeechRecognitionRecognizerClient>
+        client_remote;
+    auto client_receiver = client_remote.InitWithNewPipeAndPassReceiver();
+    auto options = CreateOptions();
+    options->language = language;
+    options->recognizer_client_type = client_type;
+
+    base::test::TestFuture<bool> future;
+    ctx->BindRecognizer(recognizer.BindNewPipeAndPassReceiver(),
+                        std::move(client_remote), std::move(options),
+                        future.GetCallback());
+    EXPECT_FALSE(future.Get());
+    recognizer.FlushForTesting();
+    return recognizer.is_connected();
+  };
+
+  mojo::Remote<media::mojom::SpeechRecognitionContext> context;
+  service.BindSpeechRecognitionContext(context.BindNewPipeAndPassReceiver());
+
+  // Missing `en-US` pack drops the receiver cleanly instead of hanging.
+  EXPECT_FALSE(
+      try_bind(context, media::mojom::RecognizerClientType::kTtc, "en-US"));
+
+  // Once `en-US` is registered, both exact (`en-US`) and subtag (`en-GB`) bind.
+  installed_packs[kPrimaryLanguageName] = en_pack;
+  service.SetSodaConfigPaths(installed_packs);
+  EXPECT_TRUE(
+      try_bind(context, media::mojom::RecognizerClientType::kTtc, "en-US"));
+  EXPECT_TRUE(
+      try_bind(context, media::mojom::RecognizerClientType::kTtc, "en-GB"));
+
+  // Disallowed client types report a bad Mojo message.
+  mojo::test::BadMessageObserver bad_message;
+  mojo::Remote<media::mojom::SpeechRecognitionRecognizer> bad_recognizer;
+  mojo::PendingRemote<media::mojom::SpeechRecognitionRecognizerClient>
+      bad_client;
+  auto bad_client_receiver = bad_client.InitWithNewPipeAndPassReceiver();
+  auto bad_options = CreateOptions();
+  bad_options->language = "en-US";
+  bad_options->recognizer_client_type =
+      media::mojom::RecognizerClientType::kDictation;
+  base::test::TestFuture<bool> ignored_future;
+  context->BindRecognizer(bad_recognizer.BindNewPipeAndPassReceiver(),
+                          std::move(bad_client), std::move(bad_options),
+                          ignored_future.GetCallback());
+  EXPECT_EQ("Invalid SpeechRecognitionOptions provided",
+            bad_message.WaitForBadMessage());
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(SpeechRecognitionRecognizerImplTest,
        MarkDoneAfterInitialSilenceNotifiesClient) {

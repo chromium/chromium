@@ -105,12 +105,7 @@ void SodaHotlSpeechRecognizer::Start(std::string_view locale,
   options->language = std::string(locale);
   options->is_server_based = false;
   options->allow_multi_language = false;
-  // TODO(crbug.com/560229926): Introduce RecognizerClientType::kTtc in
-  // media/mojo/mojom/ with speech OWNERS approval. SpeechRecognitionServiceImpl
-  // on desktop currently requires kLiveCaption and calls
-  // mojo::ReportBadMessage() for other client types.
-  options->recognizer_client_type =
-      media::mojom::RecognizerClientType::kLiveCaption;
+  options->recognizer_client_type = media::mojom::RecognizerClientType::kTtc;
 
   // TODO(crbug.com/560229926): Validate SODA platform support across rollout
   // hardware tiers; fallback to UI button click on unsupported platforms.

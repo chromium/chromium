@@ -132,7 +132,9 @@ void CrosSpeechRecognitionRecognizerImpl::
         GetSodaSpeechRecognitionMode(options_->recognition_mode);
     config->mask_offensive_words = mask_offensive_words();
     if (options_->recognition_mode ==
-        media::mojom::SpeechRecognitionMode::kCaption) {
+            media::mojom::SpeechRecognitionMode::kCaption &&
+        options_->allow_multi_language &&
+        speech::SodaInstaller::GetInstance()) {
       config->multi_lang_config = AddLiveCaptionLanguagesToConfig(
           primary_language_name(), config_paths(),
           speech::SodaInstaller::GetInstance()

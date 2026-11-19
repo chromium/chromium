@@ -4,7 +4,9 @@
 
 #include "chrome/services/speech/speech_recognition_service_impl.h"
 
+#include <optional>
 #include <string>
+#include <utility>
 
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
@@ -13,6 +15,7 @@
 #include "chrome/services/speech/audio_source_fetcher_impl.h"
 #include "chrome/services/speech/soda_speech_recognizer_impl.h"
 #include "chrome/services/speech/speech_recognition_recognizer_impl.h"
+#include "components/soda/constants.h"
 #include "media/mojo/mojom/speech_recognition.mojom.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -79,7 +82,9 @@ void SpeechRecognitionServiceImpl::BindRecognizer(
                        std::move(options))) {
     std::move(callback).Run(
         SpeechRecognitionRecognizerImpl::IsMultichannelSupported());
+    return;
   }
+  std::move(callback).Run(/*is_multichannel_supported=*/false);
 }
 
 void SpeechRecognitionServiceImpl::BindWebSpeechRecognizer(
@@ -162,12 +167,14 @@ void SpeechRecognitionServiceImpl::RemoveObserver(Observer* observer) {
 }
 
 bool SpeechRecognitionServiceImpl::FilePathsExist() {
-  if (!base::PathExists(binary_path_))
+  if (!base::PathExists(binary_path_)) {
     return false;
+  }
 
   for (const auto& config : config_paths_) {
-    if (!base::PathExists(config.second))
+    if (!base::PathExists(config.second)) {
       return false;
+    }
   }
 
   return true;
@@ -177,11 +184,13 @@ bool SpeechRecognitionServiceImpl::CreateRecognizer(
     mojo::PendingReceiver<media::mojom::SpeechRecognitionRecognizer> receiver,
     mojo::PendingRemote<media::mojom::SpeechRecognitionRecognizerClient> client,
     media::mojom::SpeechRecognitionOptionsPtr options) {
-  // This is currently only used by Live Caption and server side
-  // speech recognition is not available to it.
+  // This is currently only used by Live Caption and TTC, and server side
+  // speech recognition is not available to them.
   if (options->is_server_based ||
-      options->recognizer_client_type !=
-          media::mojom::RecognizerClientType::kLiveCaption) {
+      (options->recognizer_client_type !=
+           media::mojom::RecognizerClientType::kLiveCaption &&
+       options->recognizer_client_type !=
+           media::mojom::RecognizerClientType::kTtc)) {
     mojo::ReportBadMessage(kInvalidSpeechRecogntionOptions);
     return false;
   }
@@ -194,9 +203,19 @@ bool SpeechRecognitionServiceImpl::CreateRecognizer(
     return false;
   }
 
-  auto language = options->language.has_value()
-                      ? options->language.value()
-                      : default_live_caption_language_;
+  std::string language = options->language.has_value()
+                             ? options->language.value()
+                             : default_live_caption_language_;
+  std::optional<speech::SodaLanguagePackComponentConfig> language_config =
+      speech::GetLanguageComponentConfigMatchingLanguageSubtag(language);
+  const std::string resolved_language =
+      language_config.has_value() ? std::string(language_config->language_name)
+                                  : language;
+  if (!config_paths_.contains(language) &&
+      !config_paths_.contains(resolved_language)) {
+    return false;
+  }
+
   SpeechRecognitionRecognizerImpl::Create(
       std::move(receiver), std::move(client), std::move(options), binary_path_,
       config_paths_, language, mask_offensive_words_,

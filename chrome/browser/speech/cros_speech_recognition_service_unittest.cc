@@ -6,9 +6,12 @@
 
 #include <memory>
 #include <optional>
+#include <string>
+#include <string_view>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
@@ -16,12 +19,15 @@
 #include "base/test/test_future.h"
 #include "chrome/services/speech/cros_speech_recognition_recognizer_impl.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/soda/constants.h"
 #include "components/soda/mock_soda_installer.h"
 #include "content/browser/speech/fake_speech_recognition_manager_delegate.h"
 #include "content/public/test/browser_task_environment.h"
+#include "media/mojo/mojom/speech_recognition.mojom.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -111,6 +117,153 @@ INSTANTIATE_TEST_SUITE_P(
         CrosSpeechRecognitionServiceTest::ParamType>& info) {
       return info.param.test_name;
     });
+
+bool TryBindRecognizer(
+    mojo::Remote<media::mojom::SpeechRecognitionContext>& context,
+    media::mojom::RecognizerClientType client_type,
+    std::string_view language,
+    bool is_server_based = false) {
+  mojo::Remote<media::mojom::SpeechRecognitionRecognizer> recognizer;
+  SpeechRecognitionRecognizerClient client;
+  mojo::Receiver<media::mojom::SpeechRecognitionRecognizerClient>
+      client_receiver(&client);
+  auto options = media::mojom::SpeechRecognitionOptions::New();
+  options->recognition_mode = media::mojom::SpeechRecognitionMode::kCaption;
+  options->enable_formatting = false;
+  options->language = std::string(language);
+  options->is_server_based = is_server_based;
+  options->recognizer_client_type = client_type;
+
+  base::test::TestFuture<bool> future;
+  context->BindRecognizer(recognizer.BindNewPipeAndPassReceiver(),
+                          client_receiver.BindNewPipeAndPassRemote(),
+                          std::move(options), future.GetCallback());
+  EXPECT_FALSE(future.Get());
+  recognizer.FlushForTesting();
+  return recognizer.is_connected();
+}
+
+TEST(CrosSpeechRecognitionServiceBindRecognizerTest,
+     FailsCleanlyWhenOnDeviceSpeechDisabledOrInstallerMissing) {
+  {
+    base::test::ScopedFeatureList disabled_features;
+    disabled_features.InitAndDisableFeature(
+        ash::features::kOnDeviceSpeechRecognition);
+    content::BrowserTaskEnvironment task_environment;
+    TestingProfile profile;
+    testing::NiceMock<speech::MockSodaInstaller> soda_installer;
+    speech::CrosSpeechRecognitionService service(profile.GetOriginalProfile());
+
+    mojo::Remote<media::mojom::SpeechRecognitionContext> context;
+    service.BindSpeechRecognitionContext(context.BindNewPipeAndPassReceiver());
+    EXPECT_FALSE(TryBindRecognizer(
+        context, media::mojom::RecognizerClientType::kTtc, "en-US"));
+  }
+
+  {
+    base::test::ScopedFeatureList enabled_features(
+        ash::features::kOnDeviceSpeechRecognition);
+    content::BrowserTaskEnvironment task_environment;
+    TestingProfile profile;
+    speech::CrosSpeechRecognitionService service(profile.GetOriginalProfile());
+
+    mojo::Remote<media::mojom::SpeechRecognitionContext> context;
+    service.BindSpeechRecognitionContext(context.BindNewPipeAndPassReceiver());
+    EXPECT_FALSE(TryBindRecognizer(
+        context, media::mojom::RecognizerClientType::kTtc, "en-US"));
+  }
+}
+
+TEST(CrosSpeechRecognitionServiceBindRecognizerTest,
+     RequiresInstalledSodaPathsAndSupportsRegionalDlcPacks) {
+  base::test::ScopedFeatureList enabled_features(
+      ash::features::kOnDeviceSpeechRecognition);
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  testing::NiceMock<speech::MockSodaInstaller> soda_installer;
+  speech::CrosSpeechRecognitionService service(profile.GetOriginalProfile());
+
+  mojo::Remote<media::mojom::SpeechRecognitionContext> context;
+  service.BindSpeechRecognitionContext(context.BindNewPipeAndPassReceiver());
+
+  EXPECT_FALSE(TryBindRecognizer(
+      context, media::mojom::RecognizerClientType::kTtc, "en-US"));
+
+  ON_CALL(soda_installer, GetSodaBinaryPath())
+      .WillByDefault(testing::Return(base::FilePath("/fake/libsoda")));
+  soda_installer.NotifySodaInstalledForTesting();
+
+  // Regional ChromeOS DLC installed (`en-GB`, not in desktop component list).
+  ON_CALL(soda_installer, GetAvailableLanguages())
+      .WillByDefault(testing::Return(std::vector<std::string>{"en-GB"}));
+  ON_CALL(soda_installer, GetLanguagePath(std::string_view("en-GB")))
+      .WillByDefault(testing::Return(base::FilePath("/fake/en-gb")));
+  soda_installer.NotifySodaInstalledForTesting(speech::LanguageCode::kEnGb);
+
+  EXPECT_TRUE(TryBindRecognizer(
+      context, media::mojom::RecognizerClientType::kLiveCaption, "en-GB"));
+  EXPECT_TRUE(TryBindRecognizer(
+      context, media::mojom::RecognizerClientType::kTtc, "en-GB"));
+  EXPECT_TRUE(TryBindRecognizer(
+      context, media::mojom::RecognizerClientType::kTtc, "en-AU"));
+  EXPECT_FALSE(TryBindRecognizer(
+      context, media::mojom::RecognizerClientType::kLiveCaption, "en-AU"));
+
+  // Desktop-mapped language pack (`en-US`) also supports subtag fallback.
+  ON_CALL(soda_installer, GetLanguagePath(std::string_view("en-US")))
+      .WillByDefault(testing::Return(base::FilePath("/fake/en-us")));
+  soda_installer.NotifySodaInstalledForTesting(speech::LanguageCode::kEnUs);
+  EXPECT_TRUE(TryBindRecognizer(
+      context, media::mojom::RecognizerClientType::kTtc, "en-CA"));
+}
+
+TEST(CrosSpeechRecognitionServiceBindRecognizerTest,
+     RejectsDisallowedClientTypesAndServerBasedOptions) {
+  base::test::ScopedFeatureList enabled_features(
+      ash::features::kOnDeviceSpeechRecognition);
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  testing::NiceMock<speech::MockSodaInstaller> soda_installer;
+  speech::CrosSpeechRecognitionService service(profile.GetOriginalProfile());
+
+  {
+    mojo::Remote<media::mojom::SpeechRecognitionContext> context;
+    service.BindSpeechRecognitionContext(context.BindNewPipeAndPassReceiver());
+    mojo::test::BadMessageObserver bad_message;
+    mojo::Remote<media::mojom::SpeechRecognitionRecognizer> recognizer;
+    SpeechRecognitionRecognizerClient client;
+    mojo::Receiver<media::mojom::SpeechRecognitionRecognizerClient>
+        client_receiver(&client);
+    auto options = media::mojom::SpeechRecognitionOptions::New(
+        media::mojom::SpeechRecognitionMode::kCaption,
+        /*enable_formatting=*/false, "en-US", /*is_server_based=*/false,
+        media::mojom::RecognizerClientType::kDictation);
+    context->BindRecognizer(recognizer.BindNewPipeAndPassReceiver(),
+                            client_receiver.BindNewPipeAndPassRemote(),
+                            std::move(options), base::DoNothing());
+    EXPECT_EQ("Invalid SpeechRecognitionOptions provided",
+              bad_message.WaitForBadMessage());
+  }
+
+  {
+    mojo::Remote<media::mojom::SpeechRecognitionContext> context;
+    service.BindSpeechRecognitionContext(context.BindNewPipeAndPassReceiver());
+    mojo::test::BadMessageObserver bad_message;
+    mojo::Remote<media::mojom::SpeechRecognitionRecognizer> recognizer;
+    SpeechRecognitionRecognizerClient client;
+    mojo::Receiver<media::mojom::SpeechRecognitionRecognizerClient>
+        client_receiver(&client);
+    auto options = media::mojom::SpeechRecognitionOptions::New(
+        media::mojom::SpeechRecognitionMode::kCaption,
+        /*enable_formatting=*/false, "en-US", /*is_server_based=*/true,
+        media::mojom::RecognizerClientType::kTtc);
+    context->BindRecognizer(recognizer.BindNewPipeAndPassReceiver(),
+                            client_receiver.BindNewPipeAndPassRemote(),
+                            std::move(options), base::DoNothing());
+    EXPECT_EQ("Invalid SpeechRecognitionOptions provided",
+              bad_message.WaitForBadMessage());
+  }
+}
 
 }  // namespace
 }  // namespace speech
