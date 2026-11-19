@@ -261,8 +261,7 @@ TEST_F(InlineNodeTest, ShareInlineTextContentLargeNotSharedWhenCollapsed) {
     }
     builder.Append("word");
   }
-  String content = builder.ToString();
-  SetupHtml("t", WrapInDiv(/*style=*/"", content));
+  SetupHtml("t", WrapInDiv(/*style=*/"", builder));
   InlineNodeForTest node = CreateInlineNode();
   node.CollectInlines();
   const auto* layout_text = To<LayoutText>(layout_object_.Get());

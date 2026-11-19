@@ -8637,8 +8637,8 @@ TEST_F(WebViewTest, PopupConstrainedByLineOfDeathAndWorkArea) {
     html.Append("<option>Option</option>");
   }
   html.Append("</select>");
-  frame_test_helpers::LoadHTMLString(web_view->MainFrameImpl(),
-                                     html.ToString().Utf8(), base_url);
+  frame_test_helpers::LoadHTMLString(web_view->MainFrameImpl(), html.Utf8(),
+                                     base_url);
 
   // Set up an 800x600 screen with a 40px taskbar at the bottom (work area
   // height 560) and position the main frame widget near the bottom of the
@@ -8701,8 +8701,8 @@ TEST_F(WebViewTest, PopupBrowserConstrainedResize) {
                        : "<option>Long option text</option>");
   }
   html.Append("</select>");
-  frame_test_helpers::LoadHTMLString(web_view->MainFrameImpl(),
-                                     html.ToString().Utf8(), base_url);
+  frame_test_helpers::LoadHTMLString(web_view->MainFrameImpl(), html.Utf8(),
+                                     base_url);
 
   blink::VisualProperties visual_properties;
   visual_properties.screen_infos = display::ScreenInfos(display::ScreenInfo());

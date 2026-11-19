@@ -51,7 +51,7 @@ TEST_F(FrameContentAsTextTest, RenderedDocumentsOnly) {
   FrameContentAsText(
       /*max_chars=*/100, To<WebLocalFrameImpl>(local_frame)->GetFrame(), text);
 
-  EXPECT_EQ(String(""), text.ToString());
+  EXPECT_EQ(String(""), text);
 }
 
 }  // namespace blink

@@ -292,7 +292,7 @@ TEST(CSSTokenizerTest, Escapes) {
     for (int i = 0; i < 3000; ++i) {
       many.Append(".w-\\[24px\\] ");
     }
-    CSSParserTokenStream stream(many.ToString());
+    CSSParserTokenStream stream(many);
     int count = 0;
     while (!stream.AtEnd()) {
       const CSSParserToken& token = stream.ConsumeRaw();

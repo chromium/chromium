@@ -4022,7 +4022,7 @@ TEST_F(StyleCascadeTest, MaxVariableBytes) {
   }
 
   String at_limit = builder.ToString();
-  String above_limit = builder.ToString() + ":";
+  String above_limit = StringView(builder) + ":";
 
   TestCascade cascade(GetDocument());
   cascade.Add("--at-limit", at_limit);

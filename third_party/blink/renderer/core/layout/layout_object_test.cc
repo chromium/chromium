@@ -1119,7 +1119,7 @@ lime'>
   result.Clear();
   text->DumpLayoutObject(result, false, 0);
   EXPECT_EQ(
-      result.ToString(),
+      StringView(result),
       String("LayoutText\t#text \"\\n      testing "
              "\\u0421\\u0440\\u0435\\u045C\\u0435\\u043D "
              "\\u0440\\u043E\\u0434\\u0435\\u043D\\u0434\\u0435\\u043D\\n\""));
@@ -1134,15 +1134,13 @@ TEST_F(LayoutObjectTest, DumpDestroyedLayoutObject) {
   LayoutObject* layout_object = element->GetLayoutObject();
   StringBuilder builder;
   layout_object->DumpLayoutObject(builder, false, 0);
-  String result = builder.ToString();
-  EXPECT_FALSE(result.starts_with("[DESTROYED] "));
+  EXPECT_FALSE(StringView(builder).starts_with("[DESTROYED] "));
 
   element->remove();
   UpdateAllLifecyclePhasesForTest();
   builder.Clear();
   layout_object->DumpLayoutObject(builder, false, 0);
-  result = builder.ToString();
-  EXPECT_TRUE(result.starts_with("[DESTROYED] "));
+  EXPECT_TRUE(StringView(builder).starts_with("[DESTROYED] "));
 }
 #endif  // DCHECK_IS_ON()
 

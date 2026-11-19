@@ -670,7 +670,7 @@ TEST_P(CollectDashedFunctionsTest, CollectionTest) {
     actual_joined.Append(a);
   }
 
-  EXPECT_EQ(String(param.expected_names), actual_joined.ToString());
+  EXPECT_EQ(String(param.expected_names), actual_joined);
 }
 
 TEST(CSSVariableParserTest, ParseDeclarationValueWithInheritDisabled) {

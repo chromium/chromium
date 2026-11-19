@@ -140,13 +140,12 @@ void StyledMarkupAccumulator::AppendTextWithInlineStyle(
                                                end_.GetText() == &text);
     // Keep collapsible white spaces as is during markup sanitization or inside
     // foreign content.
-    const String text_to_append =
-        (IsForMarkupSanitization() || skip_interchange_and_style)
-            ? buffer.ToString()
-            : ConvertHtmlTextToInterchangeFormat(buffer.ToString(), text,
-                                                 is_at_selection_start,
-                                                 is_at_selection_end);
-    result_.Append(text_to_append);
+    if (IsForMarkupSanitization() || skip_interchange_and_style) {
+      result_.Append(buffer);
+    } else {
+      result_.Append(ConvertHtmlTextToInterchangeFormat(
+          buffer.ToString(), text, is_at_selection_start, is_at_selection_end));
+    }
   }
   if (inline_style && !skip_interchange_and_style) {
     result_.Append("</span>");

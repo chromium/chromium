@@ -196,7 +196,7 @@ TEST_F(ModuleTreeLinkerTest, FetchTreeWith3Deps) {
     url_dep_str.AppendNumber(i);
     url_dep_str.Append(".js");
 
-    KURL url_dep(url_dep_str.ToString());
+    KURL url_dep(url_dep_str);
     sim_module_deps.push_back(std::make_unique<SimModuleRequest>(url_dep));
   }
 
@@ -237,7 +237,7 @@ TEST_F(ModuleTreeLinkerTest, FetchTreeWith3Deps1Fail) {
     url_dep_str.AppendNumber(i);
     url_dep_str.Append(".js");
 
-    KURL url_dep(url_dep_str.ToString());
+    KURL url_dep(url_dep_str);
     sim_module_deps.push_back(std::make_unique<SimModuleRequest>(url_dep));
   }
 

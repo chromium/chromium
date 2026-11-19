@@ -39,7 +39,7 @@ void PaintPropertyTreeBuilderTest::LoadTestData(const char* file_name) {
   full_path.Append(test::BlinkRootDir());
   full_path.Append("/renderer/core/paint/test_data/");
   full_path.Append(file_name);
-  const Vector<char> input_buffer = *test::ReadFromFile(full_path.ToString());
+  const Vector<char> input_buffer = *test::ReadFromFile(full_path);
   SetBodyInnerHTML(String(input_buffer));
 }
 

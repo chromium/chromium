@@ -2977,15 +2977,14 @@ HitTestResult LayoutObject::HitTestForOcclusion(
 }
 
 std::ostream& operator<<(std::ostream& out, const LayoutObject& object) {
-  String info;
+  out << static_cast<const void*>(&object) << ":";
 #if DCHECK_IS_ON()
   StringBuilder string_builder;
   object.DumpLayoutObject(string_builder, false, 0);
-  info = string_builder.ToString();
+  return out << string_builder.Utf8();
 #else
-  info = object.DebugName();
+  return out << object.DebugName().Utf8();
 #endif
-  return out << static_cast<const void*>(&object) << ":" << info.Utf8();
 }
 
 std::ostream& operator<<(std::ostream& out, const LayoutObject* object) {

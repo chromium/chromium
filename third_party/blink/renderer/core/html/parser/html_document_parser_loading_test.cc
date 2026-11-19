@@ -96,7 +96,7 @@ TEST_P(HTMLDocumentParserLoadingTest,
     <script src="deferred-script.js" defer></script>
   )HTML");
   // Next, chop up the StringBuilder into realistic chunks.
-  String s = sb.ToString();
+  StringView s(sb);
   int testing_phase = 0;
   ASSERT_GT(s.length(), 1u);
   for (unsigned i = 0; i < s.length(); i += kPumpSize) {

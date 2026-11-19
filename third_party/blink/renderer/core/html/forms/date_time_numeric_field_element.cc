@@ -229,7 +229,7 @@ int DateTimeNumericFieldElement::ValueAsInteger() const {
 
 int DateTimeNumericFieldElement::TypeAheadValue() const {
   if (type_ahead_buffer_.length()) {
-    return StringToIntLoose(type_ahead_buffer_.ToString()).value_or(0);
+    return StringToIntLoose(type_ahead_buffer_).value_or(0);
   }
   return -1;
 }

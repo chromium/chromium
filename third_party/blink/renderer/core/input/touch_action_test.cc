@@ -284,7 +284,7 @@ void TouchActionTest::RunTestOnTree(ContainerNode* root, WebView* web_view) {
     // the first border box (which we can easily visualize in a browser for
     // debugging).
     Persistent<DOMRectList> rects = element->getClientRects();
-    ASSERT_GE(rects->length(), 0u) << failure_context.ToString();
+    ASSERT_GE(rects->length(), 0u) << StringView(failure_context);
     if (!rects->length())
       continue;
     Persistent<DOMRect> r = rects->item(0);
@@ -294,7 +294,7 @@ void TouchActionTest::RunTestOnTree(ContainerNode* root, WebView* web_view) {
     for (int loc_idx = 0; loc_idx < 3; loc_idx++) {
       gfx::Point frame_point;
       std::stringstream context_stream;
-      context_stream << failure_context.ToString() << " (";
+      context_stream << StringView(failure_context) << " (";
       switch (loc_idx) {
         case 0:
           frame_point = client_rect.CenterPoint();

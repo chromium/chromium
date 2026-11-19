@@ -39,9 +39,9 @@ static void TestMediaQuery(const char* input,
     actual.Append(", ");
   }
   if (output) {
-    ASSERT_EQ(String(output), actual.ToString());
+    ASSERT_EQ(String(output), actual);
   } else {
-    ASSERT_EQ(String(input), actual.ToString());
+    ASSERT_EQ(String(input), actual);
   }
 }
 

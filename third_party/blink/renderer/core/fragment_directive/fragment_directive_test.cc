@@ -114,7 +114,7 @@ TEST_F(FragmentDirectiveTest, ParseTextDirectivesUpToCountLimit) {
     url_string.Append("&text=t");
     url_string.AppendNumber(i);
   }
-  KURL url(url_string.ToString());
+  KURL url(url_string);
   fragment_directive->ConsumeFragmentDirective(url);
 
   HeapVector<Member<TextDirective>> text_directives =
@@ -139,7 +139,7 @@ TEST_F(FragmentDirectiveTest, ParseTextDirectivesBeyondCountLimit) {
     url_string.Append("&text=t");
     url_string.AppendNumber(i);
   }
-  KURL url(url_string.ToString());
+  KURL url(url_string);
   fragment_directive->ConsumeFragmentDirective(url);
 
   HeapVector<Member<TextDirective>> text_directives =
@@ -165,7 +165,7 @@ TEST_F(FragmentDirectiveTest, ParseDuplicatesDoNotCountTowardLimit) {
     url_string.Append("&text=dup");
   }
   url_string.Append("&text=foo&text=bar");
-  KURL url(url_string.ToString());
+  KURL url(url_string);
   fragment_directive->ConsumeFragmentDirective(url);
 
   HeapVector<Member<TextDirective>> text_directives =
@@ -195,7 +195,7 @@ TEST_F(FragmentDirectiveTest, ParseInvalidDirectivesDoNotCountTowardLimit) {
     url_string.Append(",b,c,d,e");
   }
   url_string.Append("&text=foo");
-  KURL url(url_string.ToString());
+  KURL url(url_string);
   fragment_directive->ConsumeFragmentDirective(url);
 
   HeapVector<Member<TextDirective>> text_directives =
@@ -219,7 +219,7 @@ TEST_F(FragmentDirectiveTest, ParseTextDirectivesCountLimitDisabled) {
     url_string.Append("&text=t");
     url_string.AppendNumber(i);
   }
-  KURL url(url_string.ToString());
+  KURL url(url_string);
   fragment_directive->ConsumeFragmentDirective(url);
 
   HeapVector<Member<TextDirective>> text_directives =

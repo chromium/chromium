@@ -87,14 +87,14 @@ int TypeAhead::HandleEvent(const KeyboardEvent& event,
     return -1;
 
   int search_start_offset = 1;
-  String prefix;
+  StringView prefix;
   if (match_mode & kCycleFirstChar && charCode == repeating_char_) {
     // The user is likely trying to cycle through all the items starting
     // with this character, so just search on the character.
-    prefix = String(base::span_from_ref(charCode));
+    prefix = StringView(base::span_from_ref(charCode));
     repeating_char_ = charCode;
   } else if (match_mode & kMatchPrefix) {
-    prefix = buffer_.ToString();
+    prefix = buffer_;
     if (buffer_.length() > 1) {
       repeating_char_ = 0;
       search_start_offset = 0;
@@ -117,7 +117,7 @@ int TypeAhead::HandleEvent(const KeyboardEvent& event,
   }
 
   if (match_mode & kMatchIndex) {
-    int index = StringToIntLoose(buffer_.ToString()).value_or(0);
+    int index = StringToIntLoose(buffer_).value_or(0);
     if (index > 0 && index <= option_count) {
       return index - 1;
     }

@@ -193,7 +193,7 @@ class CORE_EXPORT CSSParserToken {
     } else {
       StringBuilder sb;
       token.Serialize(sb);
-      return stream << sb.ToString();
+      return stream << StringView(sb);
     }
   }
 
