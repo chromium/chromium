@@ -42,4 +42,3 @@ TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.EditText [contentTypes=SUB
 
 
 ] class_name=android.widget.EditText
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.webkit.WebView [contentTypes=SUBTREE] on class_name=android.webkit.WebView

@@ -8,4 +8,3 @@ TYPE_WINDOW_CONTENT_CHANGED class_name=android.webkit.WebView [contentTypes=SUBT
 TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=SUBTREE] on [Toggle] class_name=android.view.View
 TYPE_WINDOW_CONTENT_CHANGED [contentTypes=EXPANDED] on [Toggle] class_name=android.view.View
 TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=SUBTREE] on [Toggle] class_name=android.view.View
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=SUBTREE] on [Toggle] class_name=android.view.View

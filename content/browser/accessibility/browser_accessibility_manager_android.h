@@ -125,6 +125,8 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAndroid
   void FireSourceEvent(ax::mojom::Event event_type,
                        ui::BrowserAccessibility* node,
                        int action_request_id) override;
+  bool ShouldFireGeneratedEvent(
+      ui::AXEventGenerator::Event event_type) const override;
   void FireGeneratedEvent(ui::AXEventGenerator::Event event_type,
                           const ui::AXNode* node) override;
 

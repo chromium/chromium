@@ -12,9 +12,3 @@ TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.SeekBar [contentTypes=SUBT
 TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.SeekBar [contentTypes=SUBTREE] on class_name=android.widget.SeekBar
 TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.SeekBar [contentTypes=SUBTREE] on class_name=android.widget.SeekBar
 TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.SeekBar [contentTypes=SUBTREE] on class_name=android.widget.SeekBar
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.SeekBar [contentTypes=SUBTREE] on class_name=android.widget.SeekBar
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.SeekBar [contentTypes=SUBTREE] on class_name=android.widget.SeekBar
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.SeekBar [contentTypes=SUBTREE] on class_name=android.widget.SeekBar
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.SeekBar [contentTypes=SUBTREE] on class_name=android.widget.SeekBar
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.SeekBar [contentTypes=SUBTREE] on class_name=android.widget.SeekBar
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.SeekBar [contentTypes=SUBTREE] on class_name=android.widget.SeekBar

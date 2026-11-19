@@ -7,5 +7,4 @@ TYPE_VIEW_ACCESSIBILITY_FOCUSED class_name=android.view.View on [Minor Ninth] cl
 TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=SUBTREE] on class_name=android.view.View
 TYPE_VIEW_FOCUSED class_name=android.view.View on [Minor Ninth] class_name=android.view.View
 TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=SUBTREE] on [Major] class_name=android.view.View
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=SUBTREE] on [Major] class_name=android.view.View
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.webkit.WebView [contentTypes=SUBTREE] on class_name=android.webkit.WebView
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=SUBTREE] on [Minor Ninth] class_name=android.view.View

@@ -5,7 +5,7 @@ TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.EditText [contentTypes=SUB
 TYPE_WINDOW_CONTENT_CHANGED class_name=android.webkit.WebView [contentTypes=SUBTREE] on class_name=android.webkit.WebView
 === END INITIAL PAGE LOAD ===
 TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.EditText [contentTypes=SUBTREE] on [input2] class_name=android.widget.EditText
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.EditText [contentTypes=SUBTREE] on [input2] class_name=android.widget.EditText
 TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.EditText [contentTypes=SUBTREE] on [input3] class_name=android.widget.EditText
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.EditText [contentTypes=SUBTREE] on [input3] class_name=android.widget.EditText
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.EditText [contentTypes=SUBTREE] on [input4] class_name=android.widget.EditText
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.EditText [contentTypes=SUBTREE] on [input5] class_name=android.widget.EditText
 TYPE_WINDOW_CONTENT_CHANGED class_name=android.webkit.WebView [contentTypes=SUBTREE] on class_name=android.webkit.WebView

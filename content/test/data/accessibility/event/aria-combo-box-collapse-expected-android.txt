@@ -12,4 +12,3 @@ TYPE_VIEW_ACCESSIBILITY_FOCUSED class_name=android.widget.EditText on class_name
 TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.EditText [contentTypes=SUBTREE] on class_name=android.widget.EditText
 TYPE_WINDOW_CONTENT_CHANGED [contentTypes=EXPANDED] on class_name=android.widget.EditText
 TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.EditText [contentTypes=SUBTREE] on class_name=android.widget.EditText
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.EditText [contentTypes=SUBTREE] on class_name=android.widget.EditText

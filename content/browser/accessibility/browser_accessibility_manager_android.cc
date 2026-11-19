@@ -466,6 +466,21 @@ bool isNodeLikelyKnownForExperiment(WebContentsAccessibilityBase* wcax,
   return true;
 }
 
+bool BrowserAccessibilityManagerAndroid::ShouldFireGeneratedEvent(
+    ui::AXEventGenerator::Event event_type) const {
+  switch (event_type) {
+    // Always generated together with another event on the same node.
+    case ui::AXEventGenerator::Event::ATK_TEXT_OBJECT_ATTRIBUTE_CHANGED:
+    case ui::AXEventGenerator::Event::WIN_IACCESSIBLE_STATE_CHANGED:
+    // Only generated for the busy flag, which isn't exposed on Android.
+    case ui::AXEventGenerator::Event::BUSY_CHANGED:
+    case ui::AXEventGenerator::Event::LAYOUT_INVALIDATED:
+      return false;
+    default:
+      return BrowserAccessibilityManager::ShouldFireGeneratedEvent(event_type);
+  }
+}
+
 void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
     ui::AXEventGenerator::Event event_type,
     const ui::AXNode* node) {

@@ -19,16 +19,10 @@ TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.EditText [contentTypes=SUB
 TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.EditText [contentTypes=SUBTREE] on class_name=android.widget.EditText
 TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.EditText [contentTypes=SUBTREE] on class_name=android.widget.EditText
 TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.EditText [contentTypes=SUBTREE] on class_name=android.widget.EditText
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.EditText [contentTypes=SUBTREE] on class_name=android.widget.EditText
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.EditText [contentTypes=SUBTREE] on class_name=android.widget.EditText
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.EditText [contentTypes=SUBTREE] on class_name=android.widget.EditText
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.EditText [contentTypes=SUBTREE] on class_name=android.widget.EditText
 TYPE_WINDOW_CONTENT_CHANGED [contentTypes=UNDEFINED] on class_name=android.widget.EditText
 TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.EditText [contentTypes=SUBTREE] on class_name=android.widget.EditText
 TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.EditText [contentTypes=SUBTREE] on class_name=android.widget.EditText
 TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.EditText [contentTypes=SUBTREE] on class_name=android.widget.EditText
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.EditText [contentTypes=SUBTREE] on class_name=android.widget.EditText
 TYPE_WINDOW_CONTENT_CHANGED [contentTypes=UNDEFINED] on class_name=android.widget.EditText
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.EditText [contentTypes=SUBTREE] on class_name=android.widget.EditText
 TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.EditText [contentTypes=SUBTREE] on class_name=android.widget.EditText
 TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.EditText [contentTypes=SUBTREE] on class_name=android.widget.EditText

@@ -2305,6 +2305,29 @@ TEST_F(BrowserAccessibilityAndroidTest, TestIsNodeLikelyKnownFilter) {
                                       b_unknown_node->node());
 }
 
+TEST_F(BrowserAccessibilityAndroidTest, TestBusyAndDuplicateEventsNotFired) {
+  ui::AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+
+  std::unique_ptr<ui::BrowserAccessibilityManager> manager(
+      BrowserAccessibilityManagerAndroid::Create(
+          MakeAXTreeUpdateForTesting(root), node_id_delegate_,
+          test_browser_accessibility_delegate_.get()));
+
+  // Busy flag events, and events always generated together with another
+  // event on the same node.
+  for (ui::AXEventGenerator::Event event :
+       {ui::AXEventGenerator::Event::ATK_TEXT_OBJECT_ATTRIBUTE_CHANGED,
+        ui::AXEventGenerator::Event::WIN_IACCESSIBLE_STATE_CHANGED,
+        ui::AXEventGenerator::Event::BUSY_CHANGED,
+        ui::AXEventGenerator::Event::LAYOUT_INVALIDATED}) {
+    EXPECT_FALSE(manager->ShouldFireGeneratedEvent(event));
+  }
+  EXPECT_TRUE(manager->ShouldFireGeneratedEvent(
+      ui::AXEventGenerator::Event::CHILDREN_CHANGED));
+}
+
 TEST_F(BrowserAccessibilityAndroidTest, TestSwitchStateDescription) {
   ui::AXNodeData switch_a;
   switch_a.id = 2;
