@@ -91,11 +91,6 @@ class ChromeAccountManagerService : public KeyedService,
         id<RefreshAccessTokenError> error,
         const std::set<std::string>& scopes) {}
 
-    // Called on Shutdown(), for observers that aren't KeyedServices to remove
-    // their observers.
-    virtual void OnChromeAccountManagerServiceShutdown(
-        ChromeAccountManagerService* chrome_account_manager_service) {}
-
    private:
     // Only internal signin classes may observe `ChromeAccountManagerService`.
     // Feature and UI code must observe `signin::IdentityManager` instead.
