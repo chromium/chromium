@@ -290,7 +290,7 @@ BASE_FEATURE(kAutofillEnableWalletGmailOffers,
 // form submission if higher-priority Autofill features (such as mandatory
 // re-auth, VCN, or card save) do not take precedence.
 BASE_FEATURE(kAutofillEnableWalletReminderNotice,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_IOS)
 // When enabled, skips empty CVCs in AutofillWalletCredentialSyncBridge instead
