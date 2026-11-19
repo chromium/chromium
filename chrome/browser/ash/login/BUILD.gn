@@ -161,6 +161,7 @@ static_library("login") {
     "//chrome/browser/ash/login/oobe_quick_start:oobe_quick_start_pref_names",
     "//chrome/browser/ash/login/quick_unlock",
     "//chrome/browser/ash/login/users/avatar",
+    "//chrome/browser/ash/multidevice_setup",
     "//chrome/browser/ash/net",
     "//chrome/browser/ash/net/rollback_network_config",
     "//chrome/browser/ash/policy/core",

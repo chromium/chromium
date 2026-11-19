@@ -23,7 +23,6 @@ static_library("multidevice_setup") {
     "//base",
     "//chrome/browser/ash/cryptauth",
     "//chrome/browser/ash/device_sync",
-    "//chrome/browser/ash/login",
     "//chrome/browser/ash/login/quick_unlock",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
@@ -36,9 +35,8 @@ static_library("multidevice_setup") {
     "//chromeos/ash/services/multidevice_setup/public/cpp:prefs",
     "//components/keyed_service/core",
     "//components/prefs",
+    "//components/session_manager/core",
     "//components/user_manager",
     "//content/public/browser",
   ]
-
-  allow_circular_includes_from = [ "//chrome/browser/ash/login" ]
 }

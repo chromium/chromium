@@ -72,7 +72,6 @@ allow_circular_includes_from_untriaged = [
   "//chrome/browser/ash/login/test:test_support",
   "//chrome/browser/ash/login/users:users",
   "//chrome/browser/ash/login:login",
-  "//chrome/browser/ash/multidevice_setup:multidevice_setup",
   "//chrome/browser/ash/net:net",
   "//chrome/browser/ash/notifications:notifications",
   "//chrome/browser/ash/os_feedback:os_feedback",
