@@ -14,7 +14,7 @@ source_set("eg2_tests") {
     "//base/test:test_support",
     "//components/strings",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/autofill/ui_bundled:eg_test_support+eg2",
+    "//ios/chrome/browser/autofill/test:eg_test_support+eg2",
     "//ios/chrome/browser/settings/ui_bundled:constants",
     "//ios/chrome/browser/settings/ui_bundled:settings_root_constants",
     "//ios/chrome/browser/settings/ui_bundled/autofill:constants",

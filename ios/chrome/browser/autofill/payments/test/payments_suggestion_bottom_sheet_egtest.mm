@@ -18,7 +18,7 @@
 #import "ios/chrome/browser/autofill/manual_fill/test/manual_fill_matchers.h"
 #import "ios/chrome/browser/autofill/model/features.h"
 #import "ios/chrome/browser/autofill/payments/coordinator/payments_suggestion_bottom_sheet_exit_reason.h"
-#import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
+#import "ios/chrome/browser/autofill/test/autofill_app_interface.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_ui_constants.h"
 #import "ios/chrome/browser/device_reauth/test/reauthentication_app_interface.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"

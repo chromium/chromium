@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
+#import "ios/chrome/browser/autofill/test/autofill_app_interface.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_storage_type.h"
 #import "ios/chrome/browser/bookmarks/test/bookmark_earl_grey.h"
 #import "ios/chrome/browser/data_import/public/accessibility_utils.h"

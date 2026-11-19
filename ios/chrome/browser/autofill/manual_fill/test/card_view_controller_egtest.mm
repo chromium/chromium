@@ -13,7 +13,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/manual_fill/public/manual_fill_constants.h"
 #import "ios/chrome/browser/autofill/manual_fill/test/manual_fill_matchers.h"
-#import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
+#import "ios/chrome/browser/autofill/test/autofill_app_interface.h"
 #import "ios/chrome/browser/device_reauth/test/reauthentication_app_interface.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/common/ui/elements/form_input_accessory_view.h"

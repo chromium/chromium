@@ -1,0 +1,6 @@
+include_rules = [
+  # keep-sorted start
+  "+ios/chrome/browser/autofill",
+  "+ios/chrome/browser/passwords/model",
+  # keep-sorted end
+]

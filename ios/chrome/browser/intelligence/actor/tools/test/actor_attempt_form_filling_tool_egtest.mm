@@ -9,7 +9,7 @@
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
-#import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
+#import "ios/chrome/browser/autofill/test/autofill_app_interface.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
 #import "ios/chrome/browser/intelligence/actor/tools/test/actor_app_interface.h"
 #import "ios/chrome/browser/intelligence/actor/tools/test/actor_tools_base_test_case.h"

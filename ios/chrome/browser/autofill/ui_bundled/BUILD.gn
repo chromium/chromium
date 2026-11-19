@@ -173,6 +173,7 @@ source_set("eg2_tests") {
     "//components/sync/base:features",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/authentication/test:eg_test_support+eg2",
+    "//ios/chrome/browser/autofill/test:eg_test_support+eg2",
     "//ios/chrome/browser/autofill/ui_bundled/address_editor:constants",
     "//ios/chrome/browser/autofill/ui_bundled/bottom_sheet:constants",
     "//ios/chrome/browser/badges/ui_bundled:public",
@@ -197,51 +198,17 @@ source_set("eg2_tests") {
   frameworks = [ "UIKit.framework" ]
 }
 
-source_set("eg_app_support+eg2") {
-  configs += [ "//build/config/ios:xctest_config" ]
-  testonly = true
-  sources = [
-    "autofill_app_interface.h",
-    "autofill_app_interface.mm",
-  ]
-  deps = [
-    ":coordinator",
-    "//base",
-    "//base/test:test_support",
-    "//components/application_locale_storage",
-    "//components/autofill/core/browser",
-    "//components/autofill/core/browser:test_support",
-    "//components/autofill/ios/browser",
-    "//components/autofill/ios/browser:test_support",
-    "//components/autofill/ios/common",
-    "//components/password_manager/core/browser",
-    "//ios/chrome/browser/autofill/model",
-    "//ios/chrome/browser/passwords/model",
-    "//ios/chrome/browser/shared/model/application_context",
-    "//ios/chrome/browser/shared/model/browser",
-    "//ios/chrome/browser/shared/model/profile",
-    "//ios/chrome/browser/shared/public/commands",
-    "//ios/chrome/test/app:test_support",
-    "//ios/public/provider/chrome/browser/risk_data:risk_data_api",
-    "//ios/web/public",
-    "//ios/web/public/js_messaging",
-    "//net:test_support",
-    "//services/network:test_support",
-  ]
-}
-
 source_set("eg_test_support+eg2") {
   configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
-    "autofill_app_interface.h",
-    "autofill_app_interface_stub.mm",
     "autofill_egtest_util.h",
     "autofill_egtest_util.mm",
   ]
   deps = [
     "//base",
     "//base/test:test_support",
+    "//ios/chrome/browser/autofill/test:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ios/web/public/test:element_selector",

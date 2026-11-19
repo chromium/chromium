@@ -17,7 +17,7 @@ source_set("eg2_tests") {
     "//components/sync/base",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/authentication/test:eg_test_support+eg2",
-    "//ios/chrome/browser/autofill/ui_bundled:eg_test_support+eg2",
+    "//ios/chrome/browser/autofill/test:eg_test_support+eg2",
     "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
     "//ios/chrome/browser/recent_tabs/public:ui_constants",
     "//ios/chrome/browser/settings/clear_browsing_data/public:constants",
