@@ -56,7 +56,7 @@ bool CanUseRgbReadback(const media::VideoFrame& frame,
 // Disabled by default because ReadbackYUVPixelsAsync() currently performs slow
 // YUVA->RGB->I420 shader passes and requires main-thread UV interleaving for
 // NV12 frames (see crbug.com/565210897).
-BASE_FEATURE(kWebCodecsAsyncYuvReadback, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kWebCodecsAsyncYuvReadback, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool CanUseYuvReadback(const media::VideoFrame& frame,
                        const media::VideoFrame& dest_frame) {
