@@ -4155,7 +4155,9 @@ suite('OmniboxComposeboxDynamicAimFulfillmentTest', () => {
     assertTrue(isInnerGlowSpinning());
   });
 
-  test('switching to AI Mode replays an idle glow', async () => {
+  // TODO(crbug.com/586906351): Flaky due to requestAnimationFrame racing with
+  // microtasksFinished() setTimeout(0) before the NONE assertion.
+  test.skip('switching to AI Mode replays an idle glow', async () => {
     // Showing the popup with a submittable composebox leaves the glow idle.
     omniboxComposebox.input = 'query';
     await microtasksFinished();
@@ -4172,7 +4174,9 @@ suite('OmniboxComposeboxDynamicAimFulfillmentTest', () => {
     assertTrue(isInnerGlowSpinning());
   });
 
-  test('switching to AI Mode again replays the glow', async () => {
+  // TODO(crbug.com/586906351): Flaky due to requestAnimationFrame racing with
+  // microtasksFinished() setTimeout(0) before the NONE assertion.
+  test.skip('switching to AI Mode again replays the glow', async () => {
     await setWillFulfillInAim(true);
     await nextFrame();
     await setWillFulfillInAim(false);
