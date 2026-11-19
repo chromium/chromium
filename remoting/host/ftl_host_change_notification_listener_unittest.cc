@@ -84,8 +84,7 @@ class FtlHostChangeNotificationListenerTest : public testing::Test {
   MockFtlSignalStrategy signal_strategy_;
   SignalingAddress system_sender_address_;
   SignalingAddress peer_sender_address_;
-  std::set<raw_ptr<FtlSignalStrategy::FtlListener, SetExperimental>>
-      ftl_listeners_;
+  std::set<raw_ptr<FtlSignalStrategy::FtlListener>> ftl_listeners_;
   std::unique_ptr<FtlHostChangeNotificationListener>
       ftl_host_change_notification_listener_;
 };

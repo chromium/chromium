@@ -54,8 +54,7 @@ class IqSender : public SignalStrategy::Listener {
                         const JingleMessageReply& message) override;
 
  private:
-  typedef std::map<std::string, raw_ptr<IqRequest, CtnExperimental>>
-      IqRequestMap;
+  typedef std::map<std::string, raw_ptr<IqRequest>> IqRequestMap;
   friend class IqRequest;
 
   // Removes |request| from the list of pending requests. Called by IqRequest.

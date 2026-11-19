@@ -60,8 +60,7 @@ class JingleSessionManager : public SessionManager,
   bool OnSignalingMessage(const SignalingAddress& sender_address,
                           const JingleMessage& message) override;
 
-  typedef std::map<std::string, raw_ptr<JingleSession, CtnExperimental>>
-      SessionsMap;
+  typedef std::map<std::string, raw_ptr<JingleSession>> SessionsMap;
 
   IqSender* iq_sender() { return iq_sender_.get(); }
   void SendReply(

@@ -93,8 +93,7 @@ class FtlEchoMessageListenerTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
 
   MockFtlSignalStrategy signal_strategy_;
-  std::set<raw_ptr<FtlSignalStrategy::FtlListener, SetExperimental>>
-      ftl_listeners_;
+  std::set<raw_ptr<FtlSignalStrategy::FtlListener>> ftl_listeners_;
   std::unique_ptr<FtlEchoMessageListener> ftl_echo_message_listener_;
 };
 

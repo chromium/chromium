@@ -60,7 +60,7 @@ class FakeNetworkDispatcher
                      int data_size);
 
  private:
-  typedef std::map<webrtc::IPAddress, raw_ptr<Node, CtnExperimental>> NodesMap;
+  typedef std::map<webrtc::IPAddress, raw_ptr<Node>> NodesMap;
 
   friend class base::RefCountedThreadSafe<FakeNetworkDispatcher>;
   virtual ~FakeNetworkDispatcher();
