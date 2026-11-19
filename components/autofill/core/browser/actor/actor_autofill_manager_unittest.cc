@@ -91,6 +91,21 @@ class ActorAutofillManagerTest
     return *mock_critical_service_;
   }
 
+  // Fills a single-field form through both the form and the field fill paths.
+  void FillSingleFieldForm() {
+    FormData form = test::GetFormData({NAME_FIRST});
+    autofill_manager().AddSeenForm(form, {NAME_FIRST});
+    FormGlobalId form_id = form.global_id();
+    FieldGlobalId field_id = form.fields()[0].global_id();
+
+    manager().OnFillOrPreviewForm(
+        autofill_manager(), form_id, field_id, mojom::ActionPersistence::kFill,
+        {field_id}, {}, static_cast<const AutofillProfile*>(nullptr));
+    manager().OnFillOrPreviewField(autofill_manager(), form_id, field_id,
+                                   mojom::ActionPersistence::kFill, u"value",
+                                   NAME_FIRST);
+  }
+
  private:
   base::test::TaskEnvironment task_environment_;
   test::AutofillUnitTestEnvironment autofill_test_environment_;
@@ -108,6 +123,7 @@ TEST_F(ActorAutofillManagerTest, OnFillOrPreviewFormLogsCriticalAction) {
   manager().OnActorTaskStateChanged(ActorAutofillManager::ActorTaskInfo{
       .conversation_id = "test-conv-id",
       .task_id = ::actor::TaskId(42),
+      .critical_action_logger_supports_task_source = true,
   });
 
   FormData form = test::GetFormData({NAME_FIRST, EMAIL_ADDRESS});
@@ -144,6 +160,7 @@ TEST_F(ActorAutofillManagerTest, OnFillOrPreviewFieldLogsCriticalAction) {
   manager().OnActorTaskStateChanged(ActorAutofillManager::ActorTaskInfo{
       .conversation_id = "test-conv-id",
       .task_id = ::actor::TaskId(42),
+      .critical_action_logger_supports_task_source = true,
   });
 
   FormData form = test::GetFormData({NAME_FIRST});
@@ -179,6 +196,7 @@ TEST_F(ActorAutofillManagerTest, ConsecutiveFillsKeepConversationId) {
   manager().OnActorTaskStateChanged(ActorAutofillManager::ActorTaskInfo{
       .conversation_id = "test-conv-id",
       .task_id = ::actor::TaskId(42),
+      .critical_action_logger_supports_task_source = true,
   });
 
   FormData form = test::GetFormData({NAME_FIRST, EMAIL_ADDRESS});
@@ -234,23 +252,34 @@ TEST_F(ActorAutofillManagerTest, NoCriticalActionLoggedWhileUserControlsTask) {
       .conversation_id = "test-conv-id",
       .task_id = ::actor::TaskId(42),
       .is_under_user_control = true,
+      .critical_action_logger_supports_task_source = true,
   });
-
-  FormData form = test::GetFormData({NAME_FIRST});
-  autofill_manager().AddSeenForm(form, {NAME_FIRST});
-  FormGlobalId form_id = form.global_id();
-  FieldGlobalId field_id = form.fields()[0].global_id();
 
   EXPECT_CALL(mock_critical_service(), AddCriticalAction).Times(0);
   EXPECT_CALL(mock_critical_service(), AddCriticalActionWithNavigationId)
       .Times(0);
 
-  manager().OnFillOrPreviewForm(autofill_manager(), form_id, field_id,
-                                mojom::ActionPersistence::kFill, {field_id}, {},
-                                static_cast<const AutofillProfile*>(nullptr));
-  manager().OnFillOrPreviewField(autofill_manager(), form_id, field_id,
-                                 mojom::ActionPersistence::kFill, u"value",
-                                 NAME_FIRST);
+  FillSingleFieldForm();
+
+  // Other actor-specific Autofill behavior is unchanged.
+  EXPECT_TRUE(manager().IsTabInActorMode());
+}
+
+// Test that fills for a task whose source doesn't support critical action
+// logging (e.g. a non-Glic task) are not logged, while the tab stays in actor
+// mode.
+TEST_F(ActorAutofillManagerTest,
+       NoCriticalActionLoggedForUnsupportedTaskSource) {
+  manager().OnActorTaskStateChanged(ActorAutofillManager::ActorTaskInfo{
+      .task_id = ::actor::TaskId(42),
+      .critical_action_logger_supports_task_source = false,
+  });
+
+  EXPECT_CALL(mock_critical_service(), AddCriticalAction).Times(0);
+  EXPECT_CALL(mock_critical_service(), AddCriticalActionWithNavigationId)
+      .Times(0);
+
+  FillSingleFieldForm();
 
   // Other actor-specific Autofill behavior is unchanged.
   EXPECT_TRUE(manager().IsTabInActorMode());

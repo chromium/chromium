@@ -29,6 +29,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/account_settings/account_setting_service_factory.h"
+#include "chrome/browser/actor/actor_critical_action_logger.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/affiliations/affiliation_service_factory.h"
@@ -1930,6 +1931,9 @@ void ChromeAutofillClient::OnActorTaskStateChange(actor::ActorTask& task) {
           .conversation_id = task.source_info().id.value_or(""),
           .task_id = task_id,
           .is_under_user_control = task.IsUnderUserControl(),
+          .critical_action_logger_supports_task_source =
+              actor::ActorCriticalActionLogger::IsTaskSourceSupported(
+                  task.source_info().type),
       });
 
   // If the task was just created, known forms should be reparsed to ensure that

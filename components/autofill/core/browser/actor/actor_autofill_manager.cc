@@ -115,6 +115,10 @@ void ActorAutofillManager::MaybeLogCriticalAction(
     return;  // The user is filling the form, not the actor.
   }
 
+  if (!active_actor_task_->critical_action_logger_supports_task_source) {
+    return;
+  }
+
   if (!critical_action_service_) {
     return;
   }

@@ -147,6 +147,7 @@
 #include "chrome/browser/ui/hats/mock_hats_service.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/actor/core/task_source_info.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "components/tabs/public/tab_interface.h"
 #endif  //   BUILDFLAG(IS_ANDROID)
@@ -914,6 +915,63 @@ TEST_F(ChromeAutofillClientTestWithMockWindow,
                   ->GetActorAutofillManager()
                   ->active_actor_task()
                   ->is_under_user_control);
+  EXPECT_TRUE(client()->IsTabInActorMode());
+}
+
+class ChromeAutofillClientActorTaskSourceTest
+    : public ChromeAutofillClientTestWithMockWindow {
+ protected:
+  // Starts a task created by `source_info`, adds it to the tab and notifies
+  // the client about the task state.
+  void StartTaskOnTab(const actor::TaskSourceInfo& source_info) {
+    auto* actor_service = static_cast<actor::ActorKeyedServiceFake*>(
+        actor::ActorKeyedService::Get(profile()));
+    ASSERT_TRUE(actor_service);
+
+    MockContentAutofillDriver* mock_driver =
+        (*driver_injector_)[web_contents()];
+    ASSERT_TRUE(mock_driver);
+    EXPECT_CALL(*mock_driver, TriggerFormExtractionInAllFrames)
+        .Times(::testing::AnyNumber());
+
+    actor::TaskId task_id =
+        actor_service->CreateTaskWithSourceInfoForTesting(source_info);
+    actor::ActorTask* task = actor_service->GetTask(task_id);
+    ASSERT_TRUE(task);
+    actor_service->GetSurfaceRegistry().OnTabCreated(mock_tab_interface());
+    task->AddTab(mock_tab_interface().GetHandle(),
+                 /*stop_task_on_detach=*/true, base::DoNothing());
+
+    actor_service->NotifyTaskStateChanged(*task);
+  }
+
+  std::optional<ActorAutofillManager::ActorTaskInfo> active_actor_task() {
+    return client()->GetActorAutofillManager()->active_actor_task();
+  }
+};
+
+// Tests that `OnActorTaskStateChange()` marks a Glic task's source as
+// supported, so that its fills are logged as critical actions.
+TEST_F(ChromeAutofillClientActorTaskSourceTest,
+       OnActorTaskStateChange_GlicTaskSourceIsSupported) {
+  StartTaskOnTab(actor::TaskSourceInfo(actor::TaskSourceInfo::Client::kGlic,
+                                       "conversation-123"));
+
+  ASSERT_TRUE(active_actor_task());
+  EXPECT_TRUE(active_actor_task()->critical_action_logger_supports_task_source);
+}
+
+// Tests that `OnActorTaskStateChange()` marks a non-Glic task's source as
+// unsupported, so that its fills are not logged as critical actions, while the
+// tab stays in actor mode.
+TEST_F(ChromeAutofillClientActorTaskSourceTest,
+       OnActorTaskStateChange_NonGlicTaskSourceIsNotSupported) {
+  StartTaskOnTab(actor::TaskSourceInfo(
+      actor::TaskSourceInfo::Client::kExperimentalActor, std::nullopt));
+
+  ASSERT_TRUE(active_actor_task());
+  EXPECT_FALSE(
+      active_actor_task()->critical_action_logger_supports_task_source);
   EXPECT_TRUE(client()->IsTabInActorMode());
 }
 

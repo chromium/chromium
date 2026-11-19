@@ -31,6 +31,9 @@ class ActorAutofillManager : public AutofillManager::Observer {
     ::actor::TaskId task_id;
     // Fills made while the user controls the task are not logged.
     bool is_under_user_control = false;
+    // Fills are only logged if the critical action logger supports the task's
+    // source.
+    bool critical_action_logger_supports_task_source = false;
   };
 
   explicit ActorAutofillManager(
