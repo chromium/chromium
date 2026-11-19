@@ -156,7 +156,9 @@ export class HighlightTracker {
 // menu.
 //
 // A press may be determined to be long based on either press duration or
-// vertical mouse movement.
+// vertical mouse movement. If long presses are not allowed at that point, long
+// press detection stops, but the press continues to be tracked, so releasing
+// the pointer results in a short press.
 interface ContextMenuState {
   // True as long as the pointer is down, and the interaction has not been
   // passed along as a long or short press.
@@ -189,6 +191,11 @@ function isMouseEventOverTarget(e: MouseEvent, target: HTMLElement) {
  * interaction should result in a short press, a long press (often used to show
  * a context menu), or a direct context menu trigger (e.g., right-click or Mac
  * Ctrl+LeftClick).
+ *
+ * Consumers that can't always show a context menu should pass a `canLongPress`
+ * predicate to the constructor, rather than ignoring calls to `onLongPress`, so
+ * that holding or dragging the pointer still results in a short press on
+ * release when a menu can't be shown.
  *
  * Safe usage of this class requires the caller to route all relevant pointer
  * events (pointerdown, pointerup, pointercancel) and the contextmenu event
@@ -223,13 +230,14 @@ function isMouseEventOverTarget(e: MouseEvent, target: HTMLElement) {
  * ```
  */
 export class PressHandler {
-  // This follows what is done in the views' ToolbarButton.
-  private static readonly LONG_PRESS_TIMER_THRESHOLD_MS = 500;
-  private static readonly DRAG_THRESHOLD_PX = 8;
+  // This follows what is done in the views' ToolbarButton. Public for tests.
+  static readonly LONG_PRESS_TIMER_THRESHOLD_MS = 500;
+  static readonly DRAG_THRESHOLD_PX = 8;
   private static readonly NO_ACTIVE_POINTER_ID = -1;
 
   private onLongPress_: (source: MenuSourceType) => void;
   private onShortPress_: (e: PointerEvent) => void;
+  private canLongPress_: () => boolean;
 
   private contextMenuState_: ContextMenuState|null = null;
 
@@ -237,12 +245,18 @@ export class PressHandler {
   // Mostly true, but false for screen reader synthetic mouse clicks.
   private expectPointerCapture_: boolean = true;
 
+  // `canLongPress` is queried whenever a long press would otherwise be
+  // triggered. If it returns false, `onLongPress` is not called. Long presses
+  // detected from a held or dragged pointer are then treated as short presses
+  // if the pointer is released over the button.
   constructor(
       onLongPress: (source: MenuSourceType) => void,
       onShortPress: (e: PointerEvent) => void,
-      enableContextMenu: boolean = true) {
+      enableContextMenu: boolean = true,
+      canLongPress: () => boolean = () => true) {
     this.onLongPress_ = onLongPress;
     this.onShortPress_ = onShortPress;
+    this.canLongPress_ = canLongPress;
     if (enableContextMenu) {
       this.contextMenuState_ = {
         isListening: false,
@@ -262,10 +276,26 @@ export class PressHandler {
     // Detect downward drag.
     if (e.clientY - this.contextMenuState_.initialY >
         PressHandler.DRAG_THRESHOLD_PX) {
-      this.onLongPress_(getContextMenuSourceType(e));
-      this.resetContextMenuState_();
+      this.onLongPressDetected_(getContextMenuSourceType(e));
     }
   };
+
+  // Called when the tracked press is held or dragged long enough to become a
+  // long press. If long presses are allowed, stops tracking the press and
+  // invokes `onLongPress_`. Otherwise, stops long press detection, but keeps
+  // tracking the press, so it will be treated as a short press on release.
+  private onLongPressDetected_(source: MenuSourceType) {
+    assert(this.contextMenuState_?.isListening);
+    if (this.canLongPress_()) {
+      // Have to release capture so that a short press will not be triggered.
+      this.resetContextMenuState_();
+      this.onLongPress_(source);
+      return;
+    }
+    this.contextMenuState_.longPressTimer.clearTimeout();
+    this.contextMenuState_.activeElement?.removeEventListener(
+        'pointermove', this.onPointermove_);
+  }
 
   private resetContextMenuState_() {
     if (this.contextMenuState_?.isListening) {
@@ -302,7 +332,7 @@ export class PressHandler {
         e.clientY < rect.top || e.clientY > rect.bottom;
   }
 
-  onPointerdown = (e: PointerEvent, skipLongPress: boolean = false) => {
+  onPointerdown = (e: PointerEvent) => {
     // Ignore secondary pointers if we are actively listening to a primary
     // pointer.
     if (this.contextMenuState_?.isListening) {
@@ -329,12 +359,13 @@ export class PressHandler {
       return;
     }
 
-    if (skipLongPress || !this.contextMenuState_) {
+    if (!this.contextMenuState_) {
       return;
     }
 
     // If can show a context menu, need to initialize `contextMenuState_` and
-    // start a timer.
+    // start a timer. Whether a long press is currently allowed is only checked
+    // when a long press is detected, since that may change during the press.
 
     this.contextMenuState_.isListening = true;
     // Use currentTarget to ensure we are capturing the button element that
@@ -344,9 +375,7 @@ export class PressHandler {
     this.contextMenuState_.activePointerId = e.pointerId;
 
     this.contextMenuState_.longPressTimer.setTimeout(() => {
-      // Have to release capture so that a short press will not be triggered.
-      this.resetContextMenuState_();
-      this.onLongPress_(MenuSourceType.kLongPress);
+      this.onLongPressDetected_(MenuSourceType.kLongPress);
     }, PressHandler.LONG_PRESS_TIMER_THRESHOLD_MS);
 
     this.contextMenuState_.initialY = e.clientY;
@@ -416,7 +445,9 @@ export class PressHandler {
     // For Mac Ctrl+LeftClick, the browser natively fires this event immediately
     // after pointerdown (no wait for pointerup), perfectly matching Views'
     // context menu timing.
-    this.onLongPress_(getContextMenuSourceType(e));
+    if (this.canLongPress_()) {
+      this.onLongPress_(getContextMenuSourceType(e));
+    }
   };
 }
 

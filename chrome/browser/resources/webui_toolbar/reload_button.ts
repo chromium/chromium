@@ -146,7 +146,8 @@ export class ReloadButtonElement extends ReloadButtonElementBase {
     super();
     this.browserProxy_ = BrowserProxyImpl.getInstance();
     this.pressHandler_ = new PressHandler(
-        this.onLongPress_.bind(this), this.onShortPress_.bind(this));
+        this.onLongPress_.bind(this), this.onShortPress_.bind(this),
+        /*enableContextMenu=*/ true, this.canShowMenu_.bind(this));
     ColorChangeUpdater.forDocument().start();
   }
 
@@ -169,12 +170,21 @@ export class ReloadButtonElement extends ReloadButtonElementBase {
     this.removeEventListener('pointerleave', this.boundOnPointerleave_);
   }
 
+  // Whether the context menu may currently be shown. `state.canShowMenu` is
+  // false when the browser is in stop mode, but the displayed icon can lag
+  // behind that state due to the debounce timers. Matching Views, which icon is
+  // displayed is what matters. In particular, if loading stops while the stop
+  // icon is being pressed, the stop icon remains visible, and the menu should
+  // not be shown when the long press timer fires.
+  private canShowMenu_(): boolean {
+    return this.state.canShowMenu && !this.showStopIcon;
+  }
+
+  // Only called by `pressHandler_` when `canShowMenu_()` returns true.
   private onLongPress_(source: MenuSourceType) {
-    if (this.state.canShowMenu) {
-      this.browserProxy_.toolbarUIHandler.showContextMenu(
-          ContextMenuType.kReload, getContextMenuPosition(this), source,
-          /*showMenuToken=*/ null);
-    }
+    this.browserProxy_.toolbarUIHandler.showContextMenu(
+        ContextMenuType.kReload, getContextMenuPosition(this), source,
+        /*showMenuToken=*/ null);
   }
 
   private onShortPress_(e: PointerEvent) {
@@ -510,7 +520,7 @@ export class ReloadButtonElement extends ReloadButtonElementBase {
     if (this.isDisabled) {
       return;
     }
-    this.pressHandler_.onPointerdown(e, this.state.isNavigationLoading);
+    this.pressHandler_.onPointerdown(e);
   }
 
   /**

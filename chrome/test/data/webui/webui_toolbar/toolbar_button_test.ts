@@ -7,6 +7,7 @@ import 'chrome://webui-toolbar.top-chrome/lazy_load.js';
 import {isMac} from 'chrome://resources/js/platform.js';
 import {MenuSourceType} from 'chrome://resources/mojo/ui/base/mojom/menu_source_type.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 import type {MediaButtonElement} from 'chrome://webui-toolbar.top-chrome/lazy_load.js';
 import {getClickSourceType, getContextMenuSourceType, HighlightTracker, PressHandler} from 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
@@ -196,10 +197,12 @@ suite('ToolbarButtonTest', function() {
   }
 
   // Dispatches a PointerEvent (pointerdown or pointerup) targeting the mock
-  // element with coordinates pointing to its center.
+  // element with coordinates pointing to its center, unless `clientY` is
+  // specified.
   function dispatchPointerEvent(
       handler: PressHandler, eventType: 'pointerdown'|'pointerup',
-      target: HTMLElement, pointerId: number, ctrlKey: boolean = false) {
+      target: HTMLElement, pointerId: number, ctrlKey: boolean = false,
+      clientY: number = TARGET_MIDDLE) {
     const event = new PointerEvent(eventType, {
       bubbles: true,
       cancelable: true,
@@ -207,7 +210,7 @@ suite('ToolbarButtonTest', function() {
       button: 0,
       ctrlKey,
       clientX: TARGET_MIDDLE,
-      clientY: TARGET_MIDDLE,
+      clientY,
     });
     Object.defineProperty(
         event, 'currentTarget', {value: target, writable: false});
@@ -220,19 +223,22 @@ suite('ToolbarButtonTest', function() {
 
   let shortPressCount: number;
   let longPressCount: number;
+  let canLongPress: boolean;
   let handler: PressHandler;
   let target: HTMLElement;
 
   setup(() => {
     shortPressCount = 0;
     longPressCount = 0;
+    canLongPress = true;
     handler = new PressHandler(
         (_source) => {
           longPressCount++;
         },
         (_e) => {
           shortPressCount++;
-        });
+        },
+        /*enableContextMenu=*/ true, () => canLongPress);
     target = createMockTarget();
   });
 
@@ -354,6 +360,197 @@ suite('ToolbarButtonTest', function() {
     // Short press should be triggered.
     assertEquals(1, shortPressCount);
     assertEquals(0, longPressCount);
+  });
+
+  suite('LongPress', function() {
+    const LONG_PRESS_MS = PressHandler.LONG_PRESS_TIMER_THRESHOLD_MS;
+    const DRAG_DISTANCE_PX = PressHandler.DRAG_THRESHOLD_PX + 1;
+
+    let mockTimer: MockTimer;
+
+    setup(() => {
+      mockTimer = new MockTimer();
+      mockTimer.install();
+
+      let hasCapture = false;
+      target.setPointerCapture = (_id) => {
+        hasCapture = true;
+      };
+      target.releasePointerCapture = (_id) => {
+        hasCapture = false;
+      };
+      target.hasPointerCapture = (_id) => hasCapture;
+    });
+
+    teardown(() => {
+      mockTimer.uninstall();
+    });
+
+    function dragDown(clientY: number = TARGET_MIDDLE + DRAG_DISTANCE_PX) {
+      target.dispatchEvent(new PointerEvent('pointermove', {
+        pointerId: 1,
+        clientX: TARGET_MIDDLE,
+        clientY,
+      }));
+    }
+
+    test('Timer', function() {
+      dispatchPointerEvent(handler, 'pointerdown', target, 1);
+      mockTimer.tick(LONG_PRESS_MS - 1);
+      assertEquals(0, longPressCount);
+      mockTimer.tick(1);
+      assertEquals(1, longPressCount);
+
+      dispatchPointerEvent(handler, 'pointerup', target, 1);
+      assertEquals(0, shortPressCount);
+      assertEquals(1, longPressCount);
+    });
+
+    test('Drag', function() {
+      dispatchPointerEvent(handler, 'pointerdown', target, 1);
+      dragDown();
+      assertEquals(1, longPressCount);
+
+      dispatchPointerEvent(handler, 'pointerup', target, 1);
+      assertEquals(0, shortPressCount);
+      assertEquals(1, longPressCount);
+
+      // The timer should have been stopped.
+      mockTimer.tick(LONG_PRESS_MS);
+      assertEquals(1, longPressCount);
+    });
+
+    // If long presses aren't allowed when the timer fires, the press should be
+    // treated as a short press on release.
+    test('TimerNotAllowed', function() {
+      canLongPress = false;
+      dispatchPointerEvent(handler, 'pointerdown', target, 1);
+      mockTimer.tick(LONG_PRESS_MS);
+      assertEquals(0, longPressCount);
+
+      // Once the timer has fired, dragging should not trigger a long press,
+      // even if long presses are now allowed.
+      canLongPress = true;
+      dragDown();
+      assertEquals(0, longPressCount);
+
+      dispatchPointerEvent(handler, 'pointerup', target, 1);
+      assertEquals(1, shortPressCount);
+      assertEquals(0, longPressCount);
+    });
+
+    // If long presses aren't allowed when dragging, the press should be treated
+    // as a short press on release.
+    test('DragNotAllowed', function() {
+      canLongPress = false;
+      dispatchPointerEvent(handler, 'pointerdown', target, 1);
+      dragDown();
+      assertEquals(0, longPressCount);
+
+      // Once a drag has been detected, the timer should not trigger a long
+      // press, even if long presses are now allowed.
+      canLongPress = true;
+      mockTimer.tick(LONG_PRESS_MS);
+      assertEquals(0, longPressCount);
+
+      dispatchPointerEvent(handler, 'pointerup', target, 1);
+      assertEquals(1, shortPressCount);
+      assertEquals(0, longPressCount);
+    });
+
+    // Whether long presses are allowed should be checked when the timer fires,
+    // not when the pointer is pressed.
+    test('AllowedChangesDuringPress', function() {
+      canLongPress = false;
+      dispatchPointerEvent(handler, 'pointerdown', target, 1);
+      canLongPress = true;
+      mockTimer.tick(LONG_PRESS_MS);
+      assertEquals(1, longPressCount);
+      dispatchPointerEvent(handler, 'pointerup', target, 1);
+      assertEquals(0, shortPressCount);
+
+      dispatchPointerEvent(handler, 'pointerdown', target, 1);
+      canLongPress = false;
+      mockTimer.tick(LONG_PRESS_MS);
+      dispatchPointerEvent(handler, 'pointerup', target, 1);
+      assertEquals(1, shortPressCount);
+      assertEquals(1, longPressCount);
+    });
+
+    // A press that couldn't become a long press should be fully reset on
+    // release, so subsequent presses work normally.
+    test('NotAllowedThenAllowed', function() {
+      canLongPress = false;
+      dispatchPointerEvent(handler, 'pointerdown', target, 1);
+      mockTimer.tick(LONG_PRESS_MS);
+      dispatchPointerEvent(handler, 'pointerup', target, 1);
+      assertEquals(1, shortPressCount);
+      assertEquals(0, longPressCount);
+
+      canLongPress = true;
+      dispatchPointerEvent(handler, 'pointerdown', target, 1);
+      mockTimer.tick(LONG_PRESS_MS);
+      assertEquals(1, longPressCount);
+      dispatchPointerEvent(handler, 'pointerup', target, 1);
+      assertEquals(1, shortPressCount);
+    });
+
+    // A press that couldn't become a long press should do nothing if released
+    // outside the target.
+    test('NotAllowedReleasedOutside', function() {
+      canLongPress = false;
+      const outsideY = TARGET_SIZE + DRAG_DISTANCE_PX;
+      dispatchPointerEvent(handler, 'pointerdown', target, 1);
+      dragDown(outsideY);
+      dispatchPointerEvent(
+          handler, 'pointerup', target, 1, /*ctrlKey=*/ false, outsideY);
+      assertEquals(0, shortPressCount);
+      assertEquals(0, longPressCount);
+    });
+
+    // A press that couldn't become a long press should do nothing if
+    // cancelled, and subsequent presses should work normally.
+    test('NotAllowedCancelled', function() {
+      canLongPress = false;
+      dispatchPointerEvent(handler, 'pointerdown', target, 1);
+      mockTimer.tick(LONG_PRESS_MS);
+      handler.onPointercancel(
+          new PointerEvent('pointercancel', {pointerId: 1}));
+      assertEquals(0, shortPressCount);
+      assertEquals(0, longPressCount);
+
+      simulateClick();
+      assertEquals(1, shortPressCount);
+      assertEquals(0, longPressCount);
+    });
+
+    test('ContextmenuAllowed', function() {
+      const contextMenuEvent = new PointerEvent('contextmenu', {
+        bubbles: true,
+        cancelable: true,
+        button: 2,
+        clientX: TARGET_MIDDLE,
+        clientY: TARGET_MIDDLE,
+      });
+      handler.onContextmenu(contextMenuEvent);
+      assertTrue(contextMenuEvent.defaultPrevented);
+      assertEquals(1, longPressCount);
+    });
+
+    test('ContextmenuNotAllowed', function() {
+      canLongPress = false;
+      const contextMenuEvent = new PointerEvent('contextmenu', {
+        bubbles: true,
+        cancelable: true,
+        button: 2,
+        clientX: TARGET_MIDDLE,
+        clientY: TARGET_MIDDLE,
+      });
+      handler.onContextmenu(contextMenuEvent);
+      // The native context menu should still be suppressed.
+      assertTrue(contextMenuEvent.defaultPrevented);
+      assertEquals(0, longPressCount);
+    });
   });
 });
 
