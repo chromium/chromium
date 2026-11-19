@@ -667,6 +667,42 @@ INSTANTIATE_TEST_SUITE_P(All,
                            return std::string(AudioBackendName(info.param));
                          });
 
+class AudioMidStreamConfigChangeTest
+    : public PipelineIntegrationTest,
+      public testing::WithParamInterface<AudioBackend> {
+ public:
+  AudioMidStreamConfigChangeTest() {
+    ConfigureAudioBackend(GetParam(), scoped_feature_list_);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// midstream_config_change.mp3 changes from 1 to 2 channels partway through.
+// Neither demuxer supports that, so playback must fail with a decode error.
+// `FFmpegDemuxer` reads into the 2-channel section while probing and fails to
+// start. `SymphoniaDemuxer` starts from the 1-channel header and fails when
+// the channel count changes.
+TEST_P(AudioMidStreamConfigChangeTest, Fails) {
+  const PipelineStatus start_status = Start("midstream_config_change.mp3");
+  if (GetParam() == AudioBackend::kFFmpegDemuxer) {
+    EXPECT_EQ(start_status, PIPELINE_ERROR_DECODE);
+    return;
+  }
+  ASSERT_EQ(start_status, PIPELINE_OK);
+  EXPECT_EQ(demuxer_->GetDemuxerType(), ExpectedDemuxerType(GetParam()));
+  Play();
+  EXPECT_EQ(WaitUntilEndedOrError(), PIPELINE_ERROR_DECODE);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         AudioMidStreamConfigChangeTest,
+                         testing::ValuesIn(kAudioBackends),
+                         [](const testing::TestParamInfo<AudioBackend>& info) {
+                           return std::string(AudioBackendName(info.param));
+                         });
+
 struct MSEChangeTypeTestData {
   const MSEPlaybackTestData file_one;
   const MSEPlaybackTestData file_two;
@@ -2459,11 +2495,6 @@ TEST_F(PipelineIntegrationTest, StereoAACMarkedAsMono) {
   ASSERT_TRUE(WaitUntilOnEnded());
 }
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
-
-// Verify files which change configuration midstream fail gracefully.
-TEST_F(PipelineIntegrationTest, MidStreamConfigChangesFail) {
-  ASSERT_EQ(PIPELINE_ERROR_DECODE, Start("midstream_config_change.mp3"));
-}
 
 TEST_F(PipelineIntegrationTest, BasicPlayback_16x9AspectRatio) {
   ASSERT_EQ(PIPELINE_OK, Start("bear-320x240-16x9-aspect.webm"));
