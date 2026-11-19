@@ -890,23 +890,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="ContentSuggestions.{FeedType}.LoadedCardCount" units="index"
-    expires_after="2024-09-29">
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: Reports the total number of cards when the {FeedType} data is
-    successfully loaded to be presented to the user. Reported after an initial
-    load. Not reported after a NextPage request. When loading data from local
-    storage, previously fetched NextPage cards are counted though.
-  </summary>
-  <token key="FeedType">
-    <variant name="Feed" summary="For-You Feed"/>
-    <variant name="Feed.SupervisedFeed" summary="the supervised Feed"/>
-    <variant name="Feed.WebFeed" summary="Web Feed"/>
-  </token>
-</histogram>
-
 <histogram
     name="ContentSuggestions.{FeedType}.LoadMoreTrigger.OffsetFromEndOfStream"
     units="cards" expires_after="2024-01-31">

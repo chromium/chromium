@@ -772,12 +772,6 @@ void MetricsReporter::OnLoadStream(
         load_from_store_status);
   }
 
-  if (IsLoadingSuccessfulAndFresh(final_status)) {
-    base::UmaHistogramSparse(
-        base::StrCat({"ContentSuggestions.", HistogramReplacement(stream_type),
-                      "LoadedCardCount"}),
-        content_stats.card_count);
-  }
   LogContentStats(stream_type, content_stats);
 }
 

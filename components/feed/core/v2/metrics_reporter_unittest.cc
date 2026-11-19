@@ -243,8 +243,6 @@ TEST_F(MetricsReporterTest, ReportsLoadStreamStatus) {
   histogram_.ExpectUniqueSample(
       "ContentSuggestions.Feed.LoadStreamStatus.InitialFromStore",
       LoadStreamStatus::kDataInStoreIsStale, 1);
-  histogram_.ExpectUniqueSample("ContentSuggestions.Feed.LoadedCardCount",
-                                kContentStats.card_count, 1);
   histogram_.ExpectUniqueSample(
       "ContentSuggestions.Feed.StreamContentSizeKB",
       kContentStats.total_content_frame_size_bytes / 1024, 1);
@@ -263,15 +261,6 @@ TEST_F(MetricsReporterTest, ReportsLoadStreamStatusWhenDisabled) {
   histogram_.ExpectUniqueSample(
       "ContentSuggestions.Feed.LoadStreamStatus.InitialFromStore",
       LoadStreamStatus::kDataInStoreIsStale, 1);
-}
-
-TEST_F(MetricsReporterTest, OnLoadStreamDoesNotReportLoadedCardCountOnFailure) {
-  MetricsReporter::LoadStreamResultSummary result_summary =
-      LoadFailureResults(LoadStreamStatus::kDataInStoreIsExpired);
-
-  reporter_->OnLoadStream(StreamType(StreamKind::kForYou), result_summary,
-                          kContentStats, std::make_unique<LoadLatencyTimes>());
-  histogram_.ExpectTotalCount("ContentSuggestions.Feed.LoadedCardCount", 0);
 }
 
 TEST_F(MetricsReporterTest, ReportsLoadStreamStatusForManualRefresh) {

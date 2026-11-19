@@ -96,10 +96,6 @@ enum class LoadStreamStatus {
   kMaxValue = kNoCardReceived,
 };
 
-// Were we able to load fresh Feed data. This should be 'true' unless some kind
-// of error occurred.
-bool IsLoadingSuccessfulAndFresh(LoadStreamStatus status);
-
 std::ostream& operator<<(std::ostream& out, LoadStreamStatus value);
 
 // Keep this in sync with FeedUploadActionsStatus in enums.xml.
