@@ -6,10 +6,10 @@
 
 #include <algorithm>
 
+#include "ash/strings/grit/ash_strings.h"
 #include "base/strings/string_util.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ash/arc/intent_helper/arc_intent_helper_mojo_ash.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/renderer_context_menu/render_view_context_menu_proxy.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/context_menu_params.h"

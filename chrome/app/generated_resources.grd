@@ -1017,12 +1017,6 @@ are declared in tools/grit/grit_args.gni.
           <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_USE_PASSKEY_FROM_ANOTHER_DEVICE" desc="The name of the Use passkey from another device command in the content area context menu">
             Use passkey from another device
           </message>
-          <message name="IDS_CONTENT_CONTEXT_MORE_APPS" desc="The label for the parent item of the submenu in the content area context menu.">
-            More
-          </message>
-          <message name="IDS_CONTENT_CONTEXT_OPEN_WITH_APP" desc="The label for an item in the content area context menu for opening a link with an app.">
-            Open with <ph name="APP">$1<ex>Hangouts</ex></ph>
-          </message>
           <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FEEDBACK" desc="The name of the Autofill Feedback command in the content area context menu">
             Help improve autofill
           </message>

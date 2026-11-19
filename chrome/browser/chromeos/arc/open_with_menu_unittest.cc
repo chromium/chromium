@@ -8,12 +8,12 @@
 #include <utility>
 #include <vector>
 
+#include "ash/strings/grit/ash_strings.h"
 #include "base/format_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/renderer_context_menu/mock_render_view_context_menu.h"
-#include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/experiences/arc/intent_helper/link_handler_model.h"
 #include "components/renderer_context_menu/render_view_context_menu_observer.h"
 #include "components/renderer_context_menu/render_view_context_menu_proxy.h"

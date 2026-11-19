@@ -28,8 +28,8 @@ static_library("arc") {
   ]
 
   deps = [
+    "//ash/strings",
     "//chrome/app:command_ids",
-    "//chrome/app:generated_resources",
     "//chrome/browser/apps/app_service/app_icon",
     "//chrome/browser/ash/arc/intent_helper",
     "//chrome/browser/profiles:profile",
@@ -50,9 +50,9 @@ source_set("unit_tests") {
 
   deps = [
     ":arc",
+    "//ash/strings",
     "//base",
     "//chrome/app:command_ids",
-    "//chrome/app:generated_resources",
     "//chrome/browser",
     "//chrome/browser/ash/browser_delegate:impl",
     "//chrome/browser/renderer_context_menu:mock_test_support",

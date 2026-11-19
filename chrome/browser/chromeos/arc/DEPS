@@ -1,4 +1,5 @@
 include_rules = [
+  "+ash/strings",
   "+chromeos/ash/experiences/arc/intent_helper",
 
   # Existing dependencies within //chrome. There is an active effort to
@@ -10,7 +11,6 @@ include_rules = [
   "+chrome/browser/apps/link_capturing",
   "+chrome/browser/ash/arc/intent_helper",
   "+chrome/browser/profiles/profile.h",
-  "+chrome/grit",
   "+chrome/test",
 ]
 

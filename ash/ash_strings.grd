@@ -12411,6 +12411,14 @@ You can manage this account’s settings by installing the Family Link app on yo
           </message>
         </else>
       </if>
+
+      <!-- ARC Open With context menu -->
+      <message name="IDS_CONTENT_CONTEXT_MORE_APPS" desc="The label for the parent item of the submenu in the content area context menu.">
+        More
+      </message>
+      <message name="IDS_CONTENT_CONTEXT_OPEN_WITH_APP" desc="The label for an item in the content area context menu for opening a link with an app.">
+        Open with <ph name="APP">$1<ex>Hangouts</ex></ph>
+      </message>
     </messages>
   </release>
 </grit>
