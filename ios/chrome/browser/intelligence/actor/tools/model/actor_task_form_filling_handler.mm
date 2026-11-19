@@ -69,8 +69,8 @@ void ActorTaskFormFillingHandler::PromptToSelectCredential(
   CHECK(!autofill_suggestion_selected_callback_);
   CHECK(!credentials.empty());
 
-  // TODO(crbug.com/496195979): This will be converted into a CHECK when the UI
-  // stabilizes.
+  // TODO(crbug.com/501043031): Drop the `respondsToSelector:` check once the
+  // selector is no longer `@optional`.
   if (!intervention_delegate_ ||
       ![intervention_delegate_
           respondsToSelector:
@@ -153,8 +153,8 @@ void ActorTaskFormFillingHandler::PromptToSelectAutofillSuggestion(
     return;
   }
 
-  // TODO(crbug.com/496195979): This will be converted into a CHECK when the UI
-  // stabilizes.
+  // TODO(crbug.com/501043031): Drop the `respondsToSelector:` check once the
+  // selector is no longer `@optional`.
   if (!intervention_delegate_ ||
       ![intervention_delegate_
           respondsToSelector:

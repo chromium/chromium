@@ -534,7 +534,6 @@ void ActorEngine::FinishedToolInvoke(ActionResult result) {
     action_results_.push_back(std::move(result));
   }
 
-  // TODO(crbug.com/496195979): Add UI post-invoke.
   SetState(State::kUiPostInvoke);
   FinishedUiPostInvoke(ActionResult(ToolExecutionResult::Ok()));
 }
@@ -618,7 +617,6 @@ void ActorEngine::OnPreExecutionChecksComplete() {
   // TODO(crbug.com/503072595): Add tool verification.
   SetState(State::kToolVerify);
 
-  // TODO(crbug.com/496195979): Add UI pre-invoke.
   UiPreInvoke();
 }
 
