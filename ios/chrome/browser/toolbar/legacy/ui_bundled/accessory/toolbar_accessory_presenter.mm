@@ -140,6 +140,7 @@ const CGFloat kAnimationDuration = 0.15;
     [weakSelf.presentedViewController removeFromParentViewController];
     [weakSelf.backgroundView removeFromSuperview];
     weakSelf.backgroundView = nil;
+    [weakSelf removeToolbarLayoutGuides];
     weakSelf.presenting = NO;
     if ([weakSelf.delegate
             respondsToSelector:@selector(containedPresenterDidDismiss:)]) {
@@ -176,6 +177,15 @@ const CGFloat kAnimationDuration = 0.15;
 }
 
 #pragma mark - Private Helpers
+
+// Removes the toolbar layout guides added for the presentation. They are only
+// needed while presenting, and otherwise would be repositioned whenever the
+// referenced toolbar moves (e.g. every fullscreen scroll frame).
+- (void)removeToolbarLayoutGuides {
+  [_topToolbarLayoutGuide.owningView removeLayoutGuide:_topToolbarLayoutGuide];
+  [_bottomToolbarLayoutGuide.owningView
+      removeLayoutGuide:_bottomToolbarLayoutGuide];
+}
 
 // Positions the view into its initial, pre-animation position on iPhone.
 - (void)prepareForPresentationOnIPhone {
