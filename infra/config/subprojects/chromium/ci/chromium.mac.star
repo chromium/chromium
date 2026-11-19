@@ -1452,7 +1452,6 @@ ios_builder(
             "all",
         ],
         mixins = [
-            "disable-ios-simulator-daemons",
             "expand-as-isolated-script",
             "has_native_resultdb_integration",
             "mac_default_arm64",

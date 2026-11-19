@@ -468,13 +468,6 @@ targets.mixin(
 )
 
 targets.mixin(
-    name = "disable-ios-simulator-daemons",
-    args = [
-        "--disable-simulator-daemons",
-    ],
-)
-
-targets.mixin(
     name = "disable_field_trial_config_for_earl_grey",
     args = [
         "--extra-app-args=--disable-field-trial-config",
