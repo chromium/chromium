@@ -4849,6 +4849,7 @@ if (!is_robolectric && enable_java_templates) {
 
     _all_create_module_targets = []
     _all_module_zip_paths = []
+    _all_module_spec_paths = []
     _all_module_build_configs = []
     _all_module_unused_resources_deps = []
     foreach(_module, _modules) {
@@ -4905,25 +4906,23 @@ if (!is_robolectric && enable_java_templates) {
         }
       }
 
-      #
-      # Important: the bundle tool uses the module's zip filename as
-      # the internal module name inside the final bundle, in other words,
-      # this file *must* be named ${_module.name}.zip
       _create_module_target = "${_target_name}__${_module.name}__create"
-      _module_zip_path = "$target_out_dir/$target_name/${_module.name}.zip"
+      _module_zip_path =
+          "$target_out_dir/$target_name/${_module.name}.skeleton.zip"
+      _module_spec_path = "$target_out_dir/$target_name/${_module.name}.zipspec"
 
       create_android_app_bundle_module(_create_module_target) {
         forward_variables_from(invoker,
                                [
                                  "add_64_bit_abi_placeholder",
                                  "is_multi_abi",
-                                 "uncompress_dex",
                                ])
         module_name = _module.name
         min_sdk_version = _min_sdk_version
         build_config = _module_build_config
         app_bundle_build_config = _build_config
         module_zip_path = _module_zip_path
+        module_spec_path = _module_spec_path
         if (!_proguard_enabled) {
           dex_path = _dex_path
           # dex_path is read from the build_config in the proguard case.
@@ -4960,6 +4959,7 @@ if (!is_robolectric && enable_java_templates) {
         "${_module_target}__compile_resources",
       ]
       _all_module_zip_paths += [ _module_zip_path ]
+      _all_module_spec_paths += [ _module_spec_path ]
       _all_module_build_configs += [ _module_build_config ]
       _all_module_unused_resources_deps += [
         "${_module_target}__compile_resources",
@@ -4970,6 +4970,8 @@ if (!is_robolectric && enable_java_templates) {
 
     _all_rebased_module_zip_paths =
         rebase_path(_all_module_zip_paths, root_build_dir)
+    _all_rebased_module_spec_paths =
+        rebase_path(_all_module_spec_paths, root_build_dir)
 
     _enable_language_splits = defined(invoker.enable_language_splits) &&
                               invoker.enable_language_splits
@@ -4995,15 +4997,20 @@ if (!is_robolectric && enable_java_templates) {
 
     action_with_pydeps(_bundle_target_name) {
       script = "//build/android/gyp/create_app_bundle.py"
-      inputs = _all_module_zip_paths + _all_module_build_configs +
-               [ _BUNDLETOOL_JAR_PATH ] + java_paths_for_inputs
+      inputs = _all_module_zip_paths + _all_module_spec_paths +
+               _all_module_build_configs + [ _BUNDLETOOL_JAR_PATH ] +
+               signflinger_inputs
       outputs = [ _bundle_path ]
+      depfile = "$target_gen_dir/$_bundle_target_name.d"
       deps = _all_create_module_targets + [ _build_config_target ]
       args = [
+        "--depfile",
+        rebase_path(depfile, root_build_dir),
         "--out-bundle=$_rebased_bundle_path",
         "--rtxt-out-path=$_rebased_bundle_path.R.txt",
         "--pathmap-out-path=$_rebased_bundle_path.pathmap.txt",
         "--module-zips=$_all_rebased_module_zip_paths",
+        "--module-specs=$_all_rebased_module_spec_paths",
       ]
       if (_split_dimensions != []) {
         args += [ "--split-dimensions=$_split_dimensions" ]
@@ -5021,6 +5028,7 @@ if (!is_robolectric && enable_java_templates) {
       }
 
       if (defined(invoker.rotation_config)) {
+        inputs += [ invoker.rotation_config ]
         args += [
           "--rotation-config",
           rebase_path(invoker.rotation_config, root_build_dir),

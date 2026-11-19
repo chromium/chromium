@@ -33,6 +33,7 @@ def GetScopedUnitTests(input_api, build_android_dir, *, is_upload):
         J('gyp', 'util', 'md5_check_test.py'),
         J('gyp', 'util', 'params_json_util_test.py'),
         J('gyp', 'util', 'resource_utils_test.py'),
+        J('gyp', 'util', 'zipbuilder_test.py'),
     ]
     pylib_tests = [
         J('pylib', 'base', 'output_manager_test_case.py'),

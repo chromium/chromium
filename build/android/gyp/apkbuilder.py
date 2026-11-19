@@ -19,6 +19,7 @@ from util import diff_utils
 from util import zipbuilder
 import action_helpers  # build_utils adds //build to sys.path.
 import dex
+import zip_helpers
 
 
 # Taken from aapt's Package.cpp:
@@ -94,6 +95,11 @@ def _ParseArgs(args):
     )
     parser.add_argument(
         '--output-apk', help='Path to the output file', required=True
+    )
+    parser.add_argument(
+        '--output-spec',
+        help='Path to the output ZipBuilder spec file (required for '
+        '--format=bundle-module).',
     )
     parser.add_argument(
         '--format',
@@ -212,6 +218,13 @@ def _ParseArgs(args):
             'Must specify --is-multi-abi with both --android-abi '
             'and --secondary-android-abi.'
         )
+    if options.format == 'bundle-module':
+        if options.key_path:
+            parser.error('Bundle modules cannot be signed.')
+        if not options.output_spec:
+            parser.error('--output-spec is required for --format=bundle-module')
+    elif options.output_spec:
+        parser.error('--output-spec is only valid for --format=bundle-module')
     return options
 
 
@@ -324,26 +337,69 @@ def _CreateExpectationsData(native_libs, assets):
     return ''.join(ret)
 
 
+def _WriteSkeletonModuleZip(output_path, resource_apk, zip_builder):
+    """Writes a lightweight skeleton module zip for bundletool build-bundle.
+
+    Contains AndroidManifest.xml, any inline data entries (merged
+    META-INF/services/* and native library placeholders), a 0-byte
+    dex/classes.dex placeholder when dex is present, and one 0-byte placeholder
+    per unique directory under assets/ and lib/. Validation of omitted entries
+    is performed by bundletool validate on official builds and deferred to
+    bundletool build-apks on --uncompressed builds.
+    """
+    seen_dirs = set()
+    with (
+        action_helpers.atomic_output(output_path) as f,
+        zipfile.ZipFile(resource_apk) as res_zip,
+        zipfile.ZipFile(f, 'w') as dst_zip,
+    ):
+        zip_helpers.add_to_zip_hermetic(
+            dst_zip,
+            'manifest/AndroidManifest.xml',
+            data=res_zip.read('AndroidManifest.xml'),
+        )
+        if 'dex/classes.dex' in zip_builder.names:
+            zip_helpers.add_to_zip_hermetic(
+                dst_zip, 'dex/classes.dex', data=b''
+            )
+
+        for entry_name, data in sorted(zip_builder.inline_data.items()):
+            zip_helpers.add_to_zip_hermetic(dst_zip, entry_name, data=data)
+            if entry_name.startswith(('assets/', 'lib/')):
+                seen_dirs.add(posixpath.dirname(entry_name))
+
+        for entry_name in sorted(zip_builder.names):
+            if entry_name.startswith(('assets/', 'lib/')):
+                parent_dir = posixpath.dirname(entry_name)
+                if parent_dir not in seen_dirs:
+                    seen_dirs.add(parent_dir)
+                    zip_helpers.add_to_zip_hermetic(
+                        dst_zip, entry_name, data=b''
+                    )
+
+
 def main(args):
     build_utils.InitLogging('APKBUILDER_DEBUG')
     args = build_utils.ExpandFileArgs(args)
     options = _ParseArgs(args)
+    is_bundle_module = options.format == 'bundle-module'
     native_libs = sorted(options.native_libs)
+    secondary_native_libs = sorted(options.secondary_native_libs)
 
-    # Include native libs in the depfile_deps since GN doesn't know about the
-    # dependencies when is_component_build=true.
-    depfile_deps = list(native_libs)
+    # Include native libs in depfile_deps since GN doesn't know about the
+    # dependencies when is_component_build=true. Bundle module mode only records
+    # paths in the zipspec without reading .so files; create_app_bundle.py
+    # tracks them in its own depfile.
+    depfile_deps = []
+    if not is_bundle_module:
+        depfile_deps += native_libs
+        depfile_deps += secondary_native_libs
 
     # For targets that depend on static library APKs, dex paths are created by
     # the static library's dexsplitter target and GN doesn't know about these
     # paths.
     if options.dex_files:
         depfile_deps.extend(options.dex_files)
-
-    secondary_native_libs = []
-    if options.secondary_native_libs:
-        secondary_native_libs = sorted(options.secondary_native_libs)
-        depfile_deps += secondary_native_libs
 
     if options.java_resources:
         # Included via .build_config.json, so need to write it to depfile.
@@ -368,7 +424,7 @@ def main(args):
     #
     # Hence, the following variables are used to control the location of files in
     # the final archive.
-    if options.format == 'bundle-module':
+    if is_bundle_module:
         apk_manifest_dir = 'manifest/'
         apk_root_dir = 'root/'
         apk_dex_dir = 'dex/'
@@ -424,13 +480,9 @@ def main(args):
     # based on the size of the files on disk.
     assets_to_add = _GetAssetDetails(assets, uncompressed_assets)
 
-    # Targets generally do not depend on apks, so no need for only_if_changed.
-    with (
-        action_helpers.atomic_output(
-            options.output_apk, only_if_changed=False
-        ) as f,
-        zipbuilder.ZipBuilder() as zip_builder,
-    ):
+    with zipbuilder.ZipBuilder(
+        inline_data_zip_path=options.output_apk if is_bundle_module else None
+    ) as zip_builder:
         # 1. AndroidManifest.xml
         logging.debug('Adding AndroidManifest.xml')
         zip_builder.add_from_zip(
@@ -531,22 +583,37 @@ def main(args):
                     compress_level=_COMPRESS_LEVEL,
                 )
 
-        logging.debug('Writing zip')
-        if options.key_path:
-            assert options.format == 'apk', 'Bundle modules are not signed.'
-        # ZipBuilder deletes and recreates f.name (only the temp path is used),
-        # and atomic_output then moves it into place.
-        zip_builder.write(
-            f.name,
-            key_path=options.key_path,
-            key_passwd=options.key_passwd,
-            key_name=options.key_name,
-            min_sdk_version=options.min_sdk_version,
-            warnings_as_errors=options.warnings_as_errors,
-        )
-        if options.key_path:
-            shutil.move(f'{f.name}.idsig', f'{options.output_apk}.idsig')
-        logging.debug('Moving file into place')
+        if is_bundle_module:
+            logging.debug('Writing skeleton module zip and spec')
+            _WriteSkeletonModuleZip(
+                options.output_apk, options.resource_apk, zip_builder
+            )
+            with action_helpers.atomic_output(
+                options.output_spec, encoding='utf8'
+            ) as spec_file:
+                zip_builder.write_spec(spec_file)
+        else:
+            logging.debug('Writing zip')
+            # Targets generally do not depend on apks, so no need for
+            # only_if_changed.
+            with action_helpers.atomic_output(
+                options.output_apk, only_if_changed=False
+            ) as f:
+                # ZipBuilder deletes and recreates f.name (only the temp path is
+                # used), and atomic_output then moves it into place.
+                zip_builder.write(
+                    f.name,
+                    key_path=options.key_path,
+                    key_passwd=options.key_passwd,
+                    key_name=options.key_name,
+                    min_sdk_version=options.min_sdk_version,
+                    warnings_as_errors=options.warnings_as_errors,
+                )
+                if options.key_path:
+                    shutil.move(
+                        f'{f.name}.idsig', f'{options.output_apk}.idsig'
+                    )
+                logging.debug('Moving file into place')
 
         if options.depfile:
             action_helpers.write_depfile(

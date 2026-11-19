@@ -8,6 +8,9 @@ APK (v2 + v4 signatures) in the same pass. See:
 //third_party/android_build_tools/signflinger/
 """
 
+from __future__ import annotations
+
+import dataclasses
 import functools
 import os
 import platform
@@ -67,6 +70,42 @@ def _can_use_binary():
     return False
 
 
+@dataclasses.dataclass(frozen=True)
+class SpecEntry:
+    dest_name: str
+    compress_level: int
+    alignment: int
+    src_path: str
+    src_entry_name: str | None = None
+
+
+def parse_spec(spec_path):
+    """Parses a ZipBuilder spec file into a list of SpecEntry objects.
+
+    For loose files, src_entry_name is None. For zip entries, src_entry_name is
+    the entry name inside src_path, or '' for all remaining entries.
+    """
+    entries = []
+    with open(spec_path, encoding='utf8') as f:
+        lines = f.read().splitlines()
+    for line in lines:
+        if not line:
+            continue
+        fields = line.split('\t')
+        if len(fields) not in (4, 5):
+            raise ValueError(f'Invalid spec line: {line}')
+        entries.append(
+            SpecEntry(
+                dest_name=fields[0],
+                compress_level=int(fields[1]),
+                alignment=int(fields[2]),
+                src_path=fields[3],
+                src_entry_name=fields[4] if len(fields) == 5 else None,
+            )
+        )
+    return entries
+
+
 class ZipBuilder:
     """Collects entries and then runs ZipBuilder to write them to a zip.
 
@@ -74,10 +113,29 @@ class ZipBuilder:
     manager so any temporary files created by add_data() are cleaned up.
     """
 
-    def __init__(self):
+    def __init__(self, *, inline_data_zip_path=None):
+        """Creates a ZipBuilder.
+
+        Args:
+          inline_data_zip_path: Optional path to a zip archive that will hold
+            entries added via add_data(). When set, add_data() stores bytes in
+            self.inline_data and records a from-zip spec line referencing
+            inline_data_zip_path instead of writing temporary files, allowing
+            the spec to outlive this ZipBuilder instance.
+        """
         self._tmp_dir = None
         self._lines = []
         self._names = set()
+        self._inline_data_zip_path = inline_data_zip_path
+        self._inline_data = {}
+
+    @property
+    def names(self):
+        return self._names
+
+    @property
+    def inline_data(self):
+        return self._inline_data
 
     def __enter__(self):
         return self
@@ -117,6 +175,16 @@ class ZipBuilder:
         """Adds an entry with the given bytes (or str) as contents."""
         if isinstance(data, str):
             data = data.encode('utf8')
+        if self._inline_data_zip_path is not None:
+            self.add_from_zip(
+                zip_path,
+                self._inline_data_zip_path,
+                zip_path,
+                compress_level=compress_level,
+                alignment=alignment,
+            )
+            self._inline_data[zip_path] = data
+            return
         if not self._tmp_dir:
             self._tmp_dir = tempfile.TemporaryDirectory()
         src_path = os.path.join(self._tmp_dir.name, str(len(self._lines)))
@@ -169,6 +237,48 @@ class ZipBuilder:
             dst_prefix, compress_level, alignment, src_zip_path, ''
         )
 
+    def add_spec_entries(self, entries, *, compress_level, dst_prefix=''):
+        """Adds parsed spec entries (from parse_spec()) without alignment.
+
+        When compress_level is KEEP_COMPRESSION, zip entries keep their existing
+        compression and loose files are stored uncompressed (0).
+        """
+        if dst_prefix:
+            assert dst_prefix.endswith('/'), dst_prefix
+        for entry in entries:
+            if entry.src_entry_name is None:
+                self.add_file(
+                    dst_prefix + entry.dest_name,
+                    entry.src_path,
+                    compress_level=max(compress_level, 0),
+                )
+            elif entry.src_entry_name:
+                self.add_from_zip(
+                    dst_prefix + entry.dest_name,
+                    entry.src_path,
+                    entry.src_entry_name,
+                    compress_level=compress_level,
+                )
+            else:
+                self.add_all_from_zip(
+                    entry.src_path,
+                    dst_prefix=dst_prefix + entry.dest_name,
+                    compress_level=compress_level,
+                )
+
+    def _write_spec_lines(self, file_obj):
+        if self._lines:
+            file_obj.write('\n'.join(self._lines))
+            file_obj.write('\n')
+
+    def write_spec(self, file_obj):
+        """Writes the collected spec lines to an open text file object."""
+        assert self._tmp_dir is None, (
+            'Cannot persist spec referencing temporary files from add_data(); '
+            'pass inline_data_zip_path to ZipBuilder()'
+        )
+        self._write_spec_lines(file_obj)
+
     def write(
         self,
         output_path,
@@ -177,23 +287,26 @@ class ZipBuilder:
         key_passwd=None,
         key_name=None,
         min_sdk_version=None,
+        xmx='1G',
         warnings_as_errors=False,
     ):
         """Writes the zip. Signs it as an APK when key_path is given.
 
         When signing, the v4 signature is written to <output_path>.idsig.
         """
+        assert self._inline_data_zip_path is None, (
+            'Cannot call write() when inline_data_zip_path is set'
+        )
         with tempfile.NamedTemporaryFile(
             'w', encoding='utf8', suffix='.txt'
         ) as spec_file:
-            spec_file.write('\n'.join(self._lines))
-            spec_file.write('\n')
+            self._write_spec_lines(spec_file)
             spec_file.flush()
 
             if _can_use_binary():
-                cmd = [_SIGNFLINGER_BINARY_PATH, '-Xmx1G']
+                cmd = [_SIGNFLINGER_BINARY_PATH, f'-Xmx{xmx}']
             else:
-                cmd = build_utils.JavaCmd() + [
+                cmd = build_utils.JavaCmd(xmx=xmx) + [
                     '-cp',
                     _SIGNFLINGER_JAR_PATH,
                     _MAIN_CLASS,

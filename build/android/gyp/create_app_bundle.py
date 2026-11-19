@@ -6,6 +6,7 @@
 """Create an Android application bundle from one or more bundle modules."""
 
 import argparse
+import collections
 import concurrent.futures
 import json
 import logging
@@ -23,10 +24,14 @@ import bundletool
 from util import build_utils
 from util import manifest_utils
 from util import protoresources
+from util import zipbuilder
 import action_helpers  # build_utils adds //build to sys.path.
 
 # List of split dimensions recognized by this tool.
 _ALL_SPLIT_DIMENSIONS = ['ABI', 'SCREEN_DENSITY', 'LANGUAGE']
+
+# Matches bundletool's Deflater.DEFAULT_COMPRESSION for official builds.
+_DEFAULT_COMPRESS_LEVEL = 6
 
 # A list of extensions corresponding to files that should never be compressed
 # in the bundle. This used to be handled by bundletool automatically until
@@ -92,11 +97,19 @@ _ALLOWLISTED_NON_BASE_SERVICES = {
 
 def _ParseArgs(args):
     parser = argparse.ArgumentParser()
+    action_helpers.add_depfile_arg(parser)
     parser.add_argument(
         '--out-bundle', required=True, help='Output bundle zip archive.'
     )
     parser.add_argument(
-        '--module-zips', required=True, help='GN-list of module zip archives.'
+        '--module-zips',
+        required=True,
+        help='GN-list of skeleton module zip archives.',
+    )
+    parser.add_argument(
+        '--module-specs',
+        required=True,
+        help='GN-list of module ZipBuilder spec files.',
     )
     parser.add_argument(
         '--pathmap-in-paths',
@@ -131,7 +144,8 @@ def _ParseArgs(args):
     parser.add_argument(
         '--uncompressed',
         action='store_true',
-        help='Store entries uncompressed in the output .aab.',
+        help='Assemble the .aab without recompressing module entries (faster, '
+        'larger).',
     )
     parser.add_argument(
         '--split-dimensions', help="GN-list of split dimensions to support."
@@ -153,11 +167,14 @@ def _ParseArgs(args):
 
     options = parser.parse_args(args)
     options.module_zips = action_helpers.parse_gn_list(options.module_zips)
+    options.module_specs = action_helpers.parse_gn_list(options.module_specs)
 
     if len(options.module_zips) == 0:
         parser.error('The module zip list cannot be empty.')
     if len(options.module_zips) != len(options.module_names):
         parser.error('# module zips != # names.')
+    if len(options.module_specs) != len(options.module_names):
+        parser.error('# module specs != # names.')
     if 'base' not in options.module_names:
         parser.error('Missing base module.')
 
@@ -166,6 +183,7 @@ def _ParseArgs(args):
         zip(
             options.module_names,
             options.module_zips,
+            options.module_specs,
             options.uncompressed_assets,
             options.rtxt_in_paths,
             options.pathmap_in_paths,
@@ -174,9 +192,10 @@ def _ParseArgs(args):
     per_module_values.sort(key=lambda x: (x[0] != 'base', x[0]))
     options.module_names = [x[0] for x in per_module_values]
     options.module_zips = [x[1] for x in per_module_values]
-    options.uncompressed_assets = [x[2] for x in per_module_values]
-    options.rtxt_in_paths = [x[3] for x in per_module_values]
-    options.pathmap_in_paths = [x[4] for x in per_module_values]
+    options.module_specs = [x[2] for x in per_module_values]
+    options.uncompressed_assets = [x[3] for x in per_module_values]
+    options.rtxt_in_paths = [x[4] for x in per_module_values]
+    options.pathmap_in_paths = [x[5] for x in per_module_values]
 
     options.rtxt_in_paths = action_helpers.parse_gn_list(options.rtxt_in_paths)
     options.pathmap_in_paths = action_helpers.parse_gn_list(
@@ -373,12 +392,20 @@ def _GetComponentNames(manifest, tag_name):
     return names
 
 
-def _ClassesFromZip(module_zip):
+def _ClassesFromSpec(spec_entries):
+    dex_by_jar = collections.defaultdict(list)
+    for entry in spec_entries:
+        if (
+            entry.src_entry_name
+            and entry.dest_name.startswith('dex/classes')
+            and entry.dest_name.endswith('.dex')
+        ):
+            dex_by_jar[entry.src_path].append(entry.src_entry_name)
     classes = set()
-    with zipfile.ZipFile(module_zip) as z:
-        for subpath in z.namelist():
-            if subpath.startswith('dex/classes') and subpath.endswith('.dex'):
-                dexfile = dex_parser.DexFile(z.read(subpath))
+    for jar_path, entry_names in dex_by_jar.items():
+        with zipfile.ZipFile(jar_path) as z:
+            for entry_name in entry_names:
+                dexfile = dex_parser.DexFile(z.read(entry_name))
                 for item in dexfile.class_def_item_list:
                     desc = dexfile.GetTypeString(item.class_idx)
                     classes.add(desc[1:-1].replace('/', '.'))
@@ -389,14 +416,48 @@ def _IsJavalessService(service_name):
     return service_name.startswith(_JAVALESS_SERVICE_NAME)
 
 
-def _ValidateSplits(module_zips):
+def _IsIsolatedSplits(manifest):
+    return any(
+        a.namespace_uri == manifest_utils.ANDROID_NAMESPACE
+        and a.name == 'isolatedSplits'
+        and (a.value == 'true' or a.compiled_item.prim.boolean_value)
+        for a in manifest.attribute
+    )
+
+
+def _AddBaseResourcesToSkeleton(base_skeleton_zip, base_resource_apk, tmp_dir):
+    """Returns a copy of base's skeleton zip with resources.pb and res/* added.
+
+    bundletool needs base's resources.pb (and res/* entries to satisfy
+    ResourceTableValidator) when validating split module titles (multi-module
+    bundles without isolatedSplits).
+    """
+    out_zip = os.path.join(tmp_dir, os.path.basename(base_skeleton_zip))
+    with zipfile.ZipFile(base_skeleton_zip) as z:
+        skeleton_names = z.namelist()
+    with zipbuilder.ZipBuilder() as zip_builder:
+        # The skeleton's manifest is a copy of the resource apk's. Adding it
+        # from the resource apk excludes it from add_all_from_zip().
+        zip_builder.add_from_zip(
+            'manifest/AndroidManifest.xml',
+            base_resource_apk,
+            'AndroidManifest.xml',
+        )
+        zip_builder.add_all_from_zip(base_resource_apk)
+        for name in skeleton_names:
+            if name != 'manifest/AndroidManifest.xml':
+                zip_builder.add_from_zip(name, base_skeleton_zip, name)
+        zip_builder.write(out_zip)
+    return out_zip
+
+
+def _ValidateSplits(module_names, module_zips, base_spec):
     logging.info('Reading manifests and running dex_parser')
-    base_zip = next(p for p in module_zips if os.path.basename(p) == 'base.zip')
-    manifests_by_name = {}
-    for module_zip in sorted(module_zips, key=os.path.basename):
-        module_name = os.path.basename(module_zip)[: -len('.zip')]
-        manifests_by_name[module_name] = _GetManifestForModule(module_zip)
-    base_classes = _ClassesFromZip(base_zip)
+    manifests_by_name = {
+        module_name: _GetManifestForModule(module_zip)
+        for module_name, module_zip in zip(module_names, module_zips)
+    }
+    base_classes = _ClassesFromSpec(base_spec)
 
     # Collect service names from all split manifests.
     logging.info('Performing checks')
@@ -432,13 +493,7 @@ def _ValidateSplits(module_zips):
                 )
 
     # Remaining checks apply only when isolatedSplits="true".
-    isolated_splits = any(
-        a.namespace_uri == manifest_utils.ANDROID_NAMESPACE
-        and a.name == 'isolatedSplits'
-        and (a.value == 'true' or a.compiled_item.prim.boolean_value)
-        for a in manifests_by_name['base'].attribute
-    )
-    if not isolated_splits:
+    if not _IsIsolatedSplits(manifests_by_name['base']):
         return errors
 
     # Ensure all providers are present in base module. We enforce this because
@@ -475,6 +530,19 @@ def _ValidateSplits(module_zips):
     return errors
 
 
+def _IsBundletoolMetadataEntry(entry_name):
+    if entry_name.endswith('/'):
+        return False
+    return (
+        entry_name == 'BundleConfig.pb'
+        or entry_name.startswith('BUNDLE-METADATA/')
+        or (
+            entry_name.count('/') == 1
+            and entry_name.endswith(('/assets.pb', '/native.pb'))
+        )
+    )
+
+
 def main(args):
     build_utils.InitLogging('AAB_DEBUG')
     args = build_utils.ExpandFileArgs(args)
@@ -507,23 +575,43 @@ def main(args):
         with open(tmp_bundle_config, 'w', encoding='utf-8') as f:
             f.write(bundle_config)
 
+        module_specs = [zipbuilder.parse_spec(p) for p in options.module_specs]
+
         if options.validate_services:
             validate_future = executor.submit(
-                _ValidateSplits, options.module_zips
+                _ValidateSplits,
+                options.module_names,
+                options.module_zips,
+                module_specs[0],
             )
+
+        bundletool_modules = list(options.module_zips)
+        if len(options.module_zips) > 1 and not _IsIsolatedSplits(
+            _GetManifestForModule(options.module_zips[0])
+        ):
+            logging.info('Adding base resources.pb to skeleton module')
+            base_resource_apk = next(
+                e.src_path
+                for e in module_specs[0]
+                if e.src_entry_name
+                and e.dest_name == 'manifest/AndroidManifest.xml'
+            )
+            bundletool_modules[0] = _AddBaseResourcesToSkeleton(
+                options.module_zips[0], base_resource_apk, tmp_dir
+            )
+        bundletool_out = os.path.join(tmp_dir, 'skeleton_bundle.aab')
 
         logging.info('Running bundletool')
         cmd_args = build_utils.JavaCmd() + [
             '-jar',
             bundletool.BUNDLETOOL_JAR_PATH,
             'build-bundle',
-            '--modules=' + ','.join(options.module_zips),
-            '--output=' + tmp_bundle,
+            '--modules=' + ','.join(bundletool_modules),
+            '--output=' + bundletool_out,
             '--overwrite',
             '--config=' + tmp_bundle_config,
+            '--uncompressed=true',
         ]
-        if options.uncompressed:
-            cmd_args += ['--uncompressed=true']
 
         if options.rotation_config:
             cmd_args += [
@@ -547,6 +635,42 @@ def main(args):
                 sys.stderr.write('\n')
                 sys.exit(1)
 
+        logging.info('Writing output bundle with zipbuilder')
+        compress_level = (
+            zipbuilder.KEEP_COMPRESSION
+            if options.uncompressed
+            else _DEFAULT_COMPRESS_LEVEL
+        )
+        with zipbuilder.ZipBuilder() as zip_builder:
+            for module_name, spec_entries in zip(
+                options.module_names, module_specs
+            ):
+                zip_builder.add_spec_entries(
+                    spec_entries,
+                    dst_prefix=f'{module_name}/',
+                    compress_level=compress_level,
+                )
+            with zipfile.ZipFile(bundletool_out) as z:
+                for entry_name in z.namelist():
+                    if _IsBundletoolMetadataEntry(entry_name):
+                        zip_builder.add_from_zip(
+                            entry_name,
+                            bundletool_out,
+                            entry_name,
+                            compress_level=compress_level,
+                        )
+            zip_builder.write(
+                tmp_bundle,
+                # Compressing full bundles buffers deflated entries in parallel
+                # across workers; match bundletool's 4G heap on official builds.
+                xmx='1G' if options.uncompressed else '4G',
+                warnings_as_errors=options.warnings_as_errors,
+            )
+
+        if not options.uncompressed:
+            logging.info('Validating output bundle')
+            bundletool.RunBundleTool(['validate', f'--bundle={tmp_bundle}'])
+
     if options.rtxt_out_path:
         _ConcatTextFiles(options.rtxt_in_paths, options.rtxt_out_path)
 
@@ -555,6 +679,17 @@ def main(args):
             options.pathmap_in_paths,
             options.module_names,
             options.pathmap_out_path,
+        )
+
+    if options.depfile:
+        depfile_deps = {
+            entry.src_path for spec in module_specs for entry in spec
+        } - set(options.module_zips)
+        for path in options.rtxt_in_paths + options.pathmap_in_paths:
+            if path and os.path.exists(path):
+                depfile_deps.add(path)
+        action_helpers.write_depfile(
+            options.depfile, options.out_bundle, inputs=list(depfile_deps)
         )
 
 

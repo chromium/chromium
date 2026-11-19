@@ -316,6 +316,14 @@ def __step_config(ctx, step_config):
             "remote_command": platform.remote_python_bin,
         },
         {
+            # Runs locally to avoid transferring large .aab outputs. The
+            # handler ensures the .zipspec inputs are materialized locally.
+            "name": "android/create_app_bundle",
+            "command_prefix": platform.python_bin + " ../../build/android/gyp/create_app_bundle.py",
+            "handler": "android_create_app_bundle",
+            "remote": False,
+        },
+        {
             "name": "android/create_size_info_files",
             "command_prefix": platform.python_bin + " ../../build/android/gyp/create_size_info_files.py",
             "handler": "android_create_size_info_files",
@@ -639,9 +647,14 @@ def __android_write_build_config_handler(ctx, cmd):
     ctx.actions.fix(inputs = cmd.inputs + inputs)
 
 def __android_apkbuilder_handler(ctx, cmd):
+    flags = ["--assets=", "--uncompressed-assets=", "--java-resources=", "--dex-file="]
+    if "--output-spec" not in cmd.args:
+        # With --output-spec, apkbuilder.py only records .so paths in the
+        # zipspec without reading them; create_app_bundle.py reads them instead.
+        flags += ["--native-libs=", "--secondary-native-libs="]
     inputs = []
     for i, arg in enumerate(cmd.args):
-        for k in ["--assets=", "--uncompressed-assets=", "--java-resources=", "--native-libs=", "--secondary-native-libs=", "--dex-file="]:
+        for k in flags:
             if arg.startswith(k):
                 arg = arg.removeprefix(k)
                 fn, v = __filearg(ctx, arg)
@@ -653,6 +666,28 @@ def __android_apkbuilder_handler(ctx, cmd):
                 break
 
     ctx.actions.fix(inputs = cmd.inputs + inputs)
+
+def __android_create_app_bundle_handler(ctx, cmd):
+    inputs = {}
+    for arg in cmd.args:
+        if arg.startswith("--module-specs="):
+            _, specs = __filearg(ctx, arg.removeprefix("--module-specs="))
+            for spec in specs:
+                for line in str(ctx.fs.read(ctx.fs.canonpath(spec))).splitlines():
+                    if line:
+                        # Columns: dest_name, compress_level, alignment,
+                        # src_path[, src_entry_name]
+                        inputs[ctx.fs.canonpath(line.split("\t")[3])] = True
+        elif arg.startswith(("--rtxt-in-paths=", "--pathmap-in-paths=")):
+            _, v = __filearg(ctx, arg.partition("=")[2])
+            for f in v:
+                if not f:
+                    continue
+                p = ctx.fs.canonpath(f)
+                if ctx.fs.exists(p):
+                    inputs[p] = True
+
+    ctx.actions.fix(inputs = cmd.inputs + inputs.keys())
 
 def __android_create_size_info_files_handler(ctx, cmd):
     inputs = []
@@ -707,6 +742,7 @@ def __android_create_size_info_files_handler(ctx, cmd):
 
 __handlers = {
     "android_apkbuilder": __android_apkbuilder_handler,
+    "android_create_app_bundle": __android_create_app_bundle_handler,
     "android_compile_java": __android_compile_java_handler,
     "android_compile_resources": __android_compile_resources_handler,
     "android_dex": __android_dex_handler,

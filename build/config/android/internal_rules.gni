@@ -112,10 +112,10 @@ _signflinger_binary_path =
 
 # zipbuilder.py falls back to the .jar on hosts (including some remote workers)
 # that lack the CPU features the native-image requires.
-_signflinger_inputs = java_paths_for_inputs + [
-                        _signflinger_binary_path,
-                        _signflinger_jar_path,
-                      ]
+signflinger_inputs = java_paths_for_inputs + [
+                       _signflinger_binary_path,
+                       _signflinger_jar_path,
+                     ]
 _global_synthetics_dex_path =
     "//third_party/r8/cipd/lib/global_synthetics.dex.jar"
 _default_lint_jar_path = "//third_party/android_build_tools/lint/cipd/lint.jar"
@@ -1952,12 +1952,12 @@ if (enable_java_templates) {
         depfile = "$target_gen_dir/$target_name.d"
         outputs = [ invoker.output ]
         inputs = native_image_java_paths_for_inputs +
-                 [ _chrome_d8_binary_path ] + _signflinger_inputs
+                 [ _chrome_d8_binary_path ] + signflinger_inputs
         if (_allow_chrome_r8) {
           inputs += [ _chrome_r8_binary_path ]
         }
         if (!use_native_image_inputs) {
-          # Local actions on other hosts run D8 on the JVM. _signflinger_inputs
+          # Local actions on other hosts run D8 on the JVM. signflinger_inputs
           # already includes java_paths_for_inputs.
           inputs += [
             _custom_d8_path,
@@ -2987,7 +2987,7 @@ if (enable_java_templates) {
 
     _script = "//build/android/gyp/apkbuilder.py"
 
-    _inputs = [ invoker.packaged_resources_path ] + _signflinger_inputs
+    _inputs = [ invoker.packaged_resources_path ] + signflinger_inputs
 
     _outputs = [ invoker.output_apk_path ]
     _data = [ invoker.output_apk_path ]
@@ -5031,20 +5031,17 @@ if (enable_java_templates) {
   }
 }
 
-# Create a zip archive corresponding to an application bundle module.
+# Create a skeleton module zip and ZipBuilder spec for an app bundle module.
 #
-# Compile all the components of a given android_apk_or_module() target into a
-# zip archive suitable to later create an android_app_bundle() target. This
-# archive's format is very similar to that on an APK, except for a few
-# differences in internal directory layouts, and the fact that resources, as
-# well as xml files, are compiled using a protocol-buffer based format (instead
-# of the regular binary xml + resources.arsc).
-#
-# A final application bundle is built from one or more module bundle modules,
-# plus some configuration file.
+# Emits a lightweight skeleton zip (manifest, inline data, and directory
+# placeholders for bundletool) alongside a ZipBuilder spec referencing all
+# module inputs. create_app_bundle.py uses both to assemble the final
+# android_app_bundle() target without materializing full intermediate module
+# zips.
 #
 # Variables:
-#   module_zip_path: Output module path.
+#   module_zip_path: Output skeleton module zip path.
+#   module_spec_path: Output ZipBuilder spec path.
 #   build_config: Path to build_config of the android_apk_or_module() target.
 #   dex_path: If module is proguarded separately from the base module, dex_path
 #     is the path to its dex file and is passed directly to the creation script.
@@ -5075,20 +5072,25 @@ template("create_android_app_bundle_module") {
   _script = "//build/android/gyp/apkbuilder.py"
 
   # NOTE: Compared to the inputs of the "package_apk" template action,
-  #       this list is much smaller, since signing is never done by
-  #       apkbuilder.py --format=bundle-module. Other dependencies like
-  #       extra native libraries are all pulled from the .build_config.json
-  #       through @FileArg() references (see below) and will be listed in the
-  #       generated depfile instead.
+  #       this list is much smaller, since apkbuilder.py --format=bundle-module
+  #       neither signs nor invokes signflinger. Native library paths are only
+  #       recorded in the zipspec (tracked in create_app_bundle.py's depfile);
+  #       other @FileArg() inputs (resources, dex, assets, java resources) are
+  #       listed in this action's depfile instead.
   _inputs = [
-              invoker.build_config,
-              invoker.app_bundle_build_config,
-            ] + _signflinger_inputs
-  _outputs = [ invoker.module_zip_path ]
+    invoker.build_config,
+    invoker.app_bundle_build_config,
+  ]
+  _outputs = [
+    invoker.module_zip_path,
+    invoker.module_spec_path,
+  ]
   _args = [
     "--format=bundle-module",
     "--output-apk",
     rebase_path(invoker.module_zip_path, root_build_dir),
+    "--output-spec",
+    rebase_path(invoker.module_spec_path, root_build_dir),
   ]
   if (defined(invoker.proto_resources_path)) {
     _args += [
@@ -5133,9 +5135,6 @@ template("create_android_app_bundle_module") {
   if (_is_multi_abi) {
     _args += [ "--is-multi-abi" ]
   }
-  if (defined(invoker.uncompress_dex) && invoker.uncompress_dex) {
-    _args += [ "--uncompress-dex" ]
-  }
   if (defined(invoker.extra_assets)) {
     _args += [ "--assets=${invoker.extra_assets}" ]
   }
@@ -5147,10 +5146,6 @@ template("create_android_app_bundle_module") {
     _args += [ "--dex-file=$_rebased_dex_path" ]
   } else {
     _args += [ "--dex-file=@FileArg($_rebased_build_config:final_dex_path)" ]
-  }
-
-  if (treat_warnings_as_errors) {
-    _args += [ "--warnings-as-errors" ]
   }
 
   if (defined(invoker.expected_libs_and_assets)) {
