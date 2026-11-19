@@ -4,6 +4,10 @@
 
 #include "ui/color/color_provider.h"
 
+#include <stdint.h>
+
+#include <set>
+
 #include "base/functional/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -158,6 +162,44 @@ TEST(ColorProviderTest, PostprocessingDoesNotPolluteMemoizedRegularCache) {
             provider_post_first.GetColor(kColorTest0));
   provider_post_first.AddMixer()[kColorTest0] = {SK_ColorBLACK};
   EXPECT_EQ(SK_ColorWHITE, provider_post_first.GetColor(kColorTest0));
+}
+
+// Tests that every provider has its own id, that requesting colors does not
+// change it and that ids of destroyed providers are not reused.
+TEST(ColorProviderTest, UniqueId) {
+  ColorProvider provider1;
+  provider1.AddMixer()[kColorTest0] = {SK_ColorGREEN};
+  ColorProvider provider2;
+  provider2.AddMixer()[kColorTest0] = {SK_ColorGREEN};
+
+  const uint64_t id1 = provider1.unique_id();
+  const uint64_t id2 = provider2.unique_id();
+  EXPECT_NE(id1, id2);
+
+  EXPECT_EQ(SK_ColorGREEN, provider1.GetColor(kColorTest0));
+  EXPECT_EQ(gfx::kPlaceholderColor, provider1.GetColor(kColorTest1));
+  EXPECT_EQ(id1, provider1.unique_id());
+  EXPECT_EQ(id2, provider2.unique_id());
+
+  std::set<uint64_t> ids = {id1, id2};
+  for (int i = 0; i < 3; ++i) {
+    ColorProvider temporary_provider;
+    EXPECT_TRUE(ids.insert(temporary_provider.unique_id()).second);
+  }
+}
+
+// Tests that SetColorForTesting(), which changes the colors returned by a
+// provider, assigns an id that has not been used before.
+TEST(ColorProviderTest, SetColorForTestingAssignsNewUniqueId) {
+  ColorProvider provider;
+  ColorProvider other_provider;
+  std::set<uint64_t> ids = {provider.unique_id(), other_provider.unique_id()};
+
+  provider.SetColorForTesting(kColorTest0, SK_ColorGREEN);
+  EXPECT_TRUE(ids.insert(provider.unique_id()).second);
+
+  provider.SetColorForTesting(kColorTest0, SK_ColorBLUE);
+  EXPECT_TRUE(ids.insert(provider.unique_id()).second);
 }
 
 }  // namespace

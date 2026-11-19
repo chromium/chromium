@@ -8,6 +8,7 @@
 #include <set>
 #include <utility>
 
+#include "base/atomic_sequence_num.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -19,7 +20,17 @@
 
 namespace ui {
 
-ColorProvider::ColorProvider() = default;
+namespace {
+
+// Generates the ids returned by ColorProvider::unique_id(). This is thread-safe
+// since the ColorProviders of a process are not all constructed on the same
+// thread, e.g. in single-process mode both the browser's UI thread and the
+// renderer's main thread construct ColorProviders.
+base::AtomicSequenceNumberT<uint64_t> g_next_unique_id;
+
+}  // namespace
+
+ColorProvider::ColorProvider() : unique_id_(g_next_unique_id.GetNext()) {}
 
 ColorProvider::~ColorProvider() = default;
 
@@ -101,6 +112,7 @@ SkColor ColorProvider::GetColor(ColorId id) const {
 
 void ColorProvider::SetColorForTesting(ColorId id, SkColor color) {
   color_map_[id] = color;
+  unique_id_ = g_next_unique_id.GetNext();
 }
 
 void ColorProvider::GenerateColorMapForTesting() {

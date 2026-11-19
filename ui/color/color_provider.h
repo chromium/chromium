@@ -5,6 +5,8 @@
 #ifndef UI_COLOR_COLOR_PROVIDER_H_
 #define UI_COLOR_COLOR_PROVIDER_H_
 
+#include <stdint.h>
+
 #include <forward_list>
 #include <memory>
 #include <optional>
@@ -47,6 +49,15 @@ class COMPONENT_EXPORT(COLOR) ColorProvider {
   // |id|.
   SkColor GetColor(ColorId id) const;
 
+  // Returns an id that identifies this provider among all ColorProviders
+  // created in this process, including ones that have since been destroyed.
+  // Clients can use the id to cache data derived from a provider's colors. This
+  // relies on the provider's mixers not being modified once the provider is in
+  // use (see above): adding mixers or changing their recipes does not change
+  // the id. SetColorForTesting() does assign a new id, since tests call it on
+  // providers that are already in use.
+  uint64_t unique_id() const { return unique_id_; }
+
   void SetColorForTesting(ColorId id, SkColor color);
   void GenerateColorMapForTesting();
   const ColorMap& color_map_for_testing() { return color_map_; }
@@ -72,6 +83,9 @@ class COMPONENT_EXPORT(COLOR) ColorProvider {
 
   // The first mixer in the chain that is a "postprocessing" mixer.
   Mixers::iterator first_postprocessing_mixer_ = mixers_.before_begin();
+
+  // See unique_id().
+  uint64_t unique_id_;
 };
 
 }  // namespace ui
