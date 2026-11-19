@@ -34,8 +34,12 @@ namespace blink {
 
 namespace {
 
-bool IsBlockFragmentationRoot(const LayoutBlockFlow* block_flow) {
-  return block_flow && block_flow->IsFragmentationContextRoot();
+// Return true if this is a block fragmentation context root whose
+// fragmentainers are direct parents of any OOFs participating in the
+// fragmentation context.
+bool IsSpecialBlockFragmentationRoot(const LayoutBlockFlow* block_flow) {
+  return !RuntimeEnabledFeatures::FragmentedOofInCbEnabled() && block_flow &&
+         block_flow->IsFragmentationContextRoot();
 }
 
 gfx::Vector2d ToRoundedVector2d(const LogicalOffset& o) {
@@ -507,8 +511,8 @@ ScrollAnchor::WalkStatus ScrollAnchor::FindAnchorRecursive(
   if (status == kReturn || status == kSkip)
     return status;
 
-  bool is_block_fragmentation_context_root =
-      IsBlockFragmentationRoot(DynamicTo<LayoutBlockFlow>(candidate));
+  bool is_special_block_fragmentation_context_root =
+      IsSpecialBlockFragmentationRoot(DynamicTo<LayoutBlockFlow>(candidate));
 
   for (LayoutObject* child = candidate->SlowFirstChild(); child;
        child = child->NextSibling()) {
@@ -520,7 +524,7 @@ ScrollAnchor::WalkStatus ScrollAnchor::FindAnchorRecursive(
       // viewport. If this is an NG block fragmentation context root, break now
       // to search for OOFs inside the fragmentainers, which may provide a
       // better anchor.
-      if (is_block_fragmentation_context_root) {
+      if (is_special_block_fragmentation_context_root) {
         status = child_status;
         break;
       }
@@ -554,13 +558,17 @@ ScrollAnchor::WalkStatus ScrollAnchor::FindAnchorInOOFs(
   // may have been deleted (but the fragment may still be around). In such cases
   // the LayoutObject associated with the fragment will be set to nullptr, so we
   // need to check for that.
-  bool is_block_fragmentation_context_root =
-      IsBlockFragmentationRoot(DynamicTo<LayoutBlockFlow>(layout_block));
+  //
+  // TODO(crbug.com/40267498): Remove most of the above comment when the feature
+  // flag is removed. And make sure that what's left of the code here is needed.
+  bool is_special_block_fragmentation_context_root =
+      IsSpecialBlockFragmentationRoot(DynamicTo<LayoutBlockFlow>(layout_block));
   for (const PhysicalBoxFragment& fragment :
        layout_block->PhysicalFragments()) {
     if (!fragment.HasOutOfFlowFragmentChild() &&
-        !is_block_fragmentation_context_root)
+        !is_special_block_fragmentation_context_root) {
       continue;
+    }
 
     for (const PhysicalFragmentLink& child : fragment.Children()) {
       if (child->IsOutOfFlowPositioned()) {
@@ -572,9 +580,10 @@ ScrollAnchor::WalkStatus ScrollAnchor::FindAnchorInOOFs(
         }
         continue;
       }
-      if (!is_block_fragmentation_context_root ||
-          !child->IsFragmentainerBox() || !child->HasOutOfFlowFragmentChild())
+      if (!is_special_block_fragmentation_context_root ||
+          !child->IsFragmentainerBox() || !child->HasOutOfFlowFragmentChild()) {
         continue;
+      }
 
       // Look for OOFs inside a fragmentainer.
       for (const PhysicalFragmentLink& grandchild :
