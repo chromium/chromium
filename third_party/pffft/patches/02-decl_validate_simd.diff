@@ -1,7 +1,7 @@
-diff --git a/third_party/pffft/src/pffft.h b/third_party/pffft/src/pffft.h
+diff --git a/src/pffft.h b/src/pffft.h
 index 2bfa7b3ebcfb..bb6f78d4b795 100644
---- a/third_party/pffft/src/pffft.h
-+++ b/third_party/pffft/src/pffft.h
+--- a/src/pffft.h
++++ b/src/pffft.h
 @@ -83,6 +83,11 @@
  extern "C" {
  #endif
@@ -14,10 +14,10 @@ index 2bfa7b3ebcfb..bb6f78d4b795 100644
    /* opaque struct holding internal stuff (precomputed twiddle factors)
       this struct can be shared by many threads as it contains only
       read-only data.  
-diff --git a/third_party/pffft/src/test_pffft.c b/third_party/pffft/src/test_pffft.c
+diff --git a/src/test_pffft.c b/src/test_pffft.c
 index 512f0ae..ab78b4d 100644
---- a/third_party/pffft/src/test_pffft.c
-+++ b/third_party/pffft/src/test_pffft.c
+--- a/src/test_pffft.c
++++ b/src/test_pffft.c
 @@ -361,10 +361,6 @@ void benchmark_ffts(int N, int cplx) {
    pffft_aligned_free(Z);
  }

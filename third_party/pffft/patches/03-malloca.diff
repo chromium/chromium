@@ -1,7 +1,7 @@
-diff --git a/third_party/pffft/src/pffft.c b/third_party/pffft/src/pffft.c
+diff --git a/src/pffft.c b/src/pffft.c
 index 776f564aa28c..643836626c0f 100644
---- a/third_party/pffft/src/pffft.c
-+++ b/third_party/pffft/src/pffft.c
+--- a/src/pffft.c
++++ b/src/pffft.c
 @@ -59,7 +59,6 @@
  
  #include "pffft.h"

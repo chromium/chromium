@@ -1,0 +1,15 @@
+upstream {
+  commit: "16490be31ba96c11eae52bde754351c05f604cda"
+  artifacts {
+    git {
+      repository: "https://bitbucket.org/jpommier/pffft.git"
+      commit: "16490be31ba96c11eae52bde754351c05f604cda"
+    }
+  }
+}
+stages {
+  input {
+    patch { copybara {} }
+  }
+  publish { git {} }
+}
