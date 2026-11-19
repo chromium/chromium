@@ -10,7 +10,9 @@ import {getHtml} from './cr_a11y_announcer.html.js';
 
 /**
  * The CrA11yAnnouncerElement is a visually hidden element that reads out
- * messages to a screen reader. This is preferred over IronA11yAnnouncer.
+ * messages to a screen reader. Messages are announced with ariaNotify() where
+ * available, falling back to a live region otherwise. This is preferred over
+ * IronA11yAnnouncer.
  * @fileoverview
  */
 
@@ -45,6 +47,12 @@ export function getInstance(container: HTMLElement = document.body):
   container.appendChild(instance);
   instances.set(container, instance);
   return instance;
+}
+
+export interface CrA11yAnnouncerElement {
+  $: {
+    messages: HTMLDivElement,
+  };
 }
 
 export class CrA11yAnnouncerElement extends CrLitElement {
@@ -87,21 +95,21 @@ export class CrA11yAnnouncerElement extends CrLitElement {
     this.messages_.push(message);
 
     this.currentTimeout_ = setTimeout(() => {
-      const messagesDiv = this.shadowRoot.querySelector('#messages')!;
-      messagesDiv.innerHTML = window.trustedTypes!.emptyHTML;
+      const messagesDiv = this.$.messages;
 
-      // <if expr="is_macosx">
-      // VoiceOver on Mac does not seem to consistently read out the contents of
-      // a static alert element. Toggling the role of alert seems to force VO
-      // to consistently read out the messages.
-      messagesDiv.removeAttribute('role');
-      messagesDiv.setAttribute('role', 'alert');
-      // </if>
-
-      for (const message of this.messages_) {
-        const div = document.createElement('div');
-        div.textContent = message;
-        messagesDiv.appendChild(div);
+      // Prefer ariaNotify(), which reliably announces every message, including
+      // consecutive identical ones, without relying on live region heuristics.
+      // ariaNotify() is gated by the Blink AriaNotify runtime feature, which is
+      // not enabled on ChromeOS yet, so fall back to updating the live region
+      // where it is unavailable. The notification is posted on #messages since
+      // its explicit role guarantees it is included in the accessibility tree;
+      // notifications posted on nodes outside of the tree are dropped.
+      if (messagesDiv.ariaNotify) {
+        for (const message of this.messages_) {
+          messagesDiv.ariaNotify(message);
+        }
+      } else {
+        this.updateLiveRegion_();
       }
 
       // Dispatch a custom event to allow consumers to know when certain alerts
@@ -113,6 +121,25 @@ export class CrA11yAnnouncerElement extends CrLitElement {
       this.messages_.length = 0;
       this.currentTimeout_ = null;
     }, timeout);
+  }
+
+  private updateLiveRegion_() {
+    const messagesDiv = this.$.messages;
+    messagesDiv.innerHTML = window.trustedTypes!.emptyHTML;
+
+    // <if expr="is_macosx">
+    // VoiceOver on Mac does not seem to consistently read out the contents of
+    // a static alert element. Toggling the role of alert seems to force VO
+    // to consistently read out the messages.
+    messagesDiv.removeAttribute('role');
+    messagesDiv.setAttribute('role', 'alert');
+    // </if>
+
+    for (const message of this.messages_) {
+      const div = document.createElement('div');
+      div.textContent = message;
+      messagesDiv.appendChild(div);
+    }
   }
 }
 
