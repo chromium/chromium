@@ -9,6 +9,7 @@ import './share_password_dialog_header.js';
 import './share_password_group_avatar.js';
 import '../site_favicon.js';
 
+import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
@@ -22,16 +23,15 @@ import {UserUtilMixin} from '../user_utils_mixin.js';
 import {PasswordSharingActions, recordPasswordSharingInteraction} from './metrics_utils.js';
 import {getCss} from './share_password_confirmation_dialog.css.js';
 import {getHtml} from './share_password_confirmation_dialog.html.js';
+import type {SharePasswordDialogHeaderElement} from './share_password_dialog_header.js';
 
 export interface SharePasswordConfirmationDialogElement {
   $: {
     animation: HTMLElement,
-    header: HTMLElement,
-    cancel: HTMLElement,
-    done: HTMLElement,
+    header: SharePasswordDialogHeaderElement,
+    cancel: CrButtonElement,
+    done: CrButtonElement,
     dialog: CrDialogElement,
-    senderAvatar: HTMLImageElement,
-    recipientAvatar: HTMLElement,
     description: HTMLElement,
     footerDescription: HTMLElement,
   };

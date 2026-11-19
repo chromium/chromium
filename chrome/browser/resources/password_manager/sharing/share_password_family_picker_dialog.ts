@@ -8,6 +8,7 @@ import './metrics_utils.js';
 import './share_password_dialog_header.js';
 import './share_password_recipient.js';
 
+import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -15,15 +16,16 @@ import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {UserUtilMixin} from '../user_utils_mixin.js';
 
 import {PasswordSharingActions, recordPasswordSharingInteraction} from './metrics_utils.js';
+import type {SharePasswordDialogHeaderElement} from './share_password_dialog_header.js';
 import {getCss} from './share_password_family_picker_dialog.css.js';
 import {getHtml} from './share_password_family_picker_dialog.html.js';
 
 export interface SharePasswordFamilyPickerDialogElement {
   $: {
-    header: HTMLElement,
+    header: SharePasswordDialogHeaderElement,
     description: HTMLElement,
-    action: HTMLButtonElement,
-    cancel: HTMLElement,
+    action: CrButtonElement,
+    cancel: CrButtonElement,
     avatar: HTMLImageElement,
     viewFamily: HTMLAnchorElement,
     footerDescription: HTMLElement,
