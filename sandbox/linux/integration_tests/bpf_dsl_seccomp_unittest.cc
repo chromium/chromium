@@ -26,6 +26,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/rand_util.h"
 
 #if defined(ANDROID)
 // Work-around for buggy headers in Android's NDK
@@ -890,7 +891,8 @@ class EqualityStressTest {
         arg_values_.push_back(nullptr);
       } else {
         arg_values_.push_back(
-            RandomArgValue(rand() % kMaxArgs, 0, rand() % kMaxArgs));
+            RandomArgValue(base::RandIntInclusive(0, kMaxArgs - 1), 0,
+                           base::RandIntInclusive(0, kMaxArgs - 1)));
       }
     }
   }
@@ -986,12 +988,12 @@ class EqualityStressTest {
 
     // Create a couple of different test cases with randomized values that
     // we want to use when comparing system call parameter number "argno".
-    arg_value->tests.resize(rand() % fan_out + 1);
+    arg_value->tests.resize(base::RandIntInclusive(0, fan_out - 1) + 1);
 
-    uint32_t k_value = rand();
+    uint32_t k_value = base::RandIntInclusive(0, RAND_MAX);
     for (auto& test : arg_value->tests) {
       // Ensure that we have unique values
-      k_value += rand() % (RAND_MAX / (kMaxFanOut + 1)) + 1;
+      k_value += base::RandIntInclusive(0, RAND_MAX / (kMaxFanOut + 1) - 1) + 1;
       test.k_value = k_value;
 
       // There are two possible types of nodes. Either this is a leaf node;
@@ -1001,8 +1003,8 @@ class EqualityStressTest {
       // expression; in that case, we have to recursively add tests for some
       // of system call parameters that we have not yet included in our
       // tests.
-      if (!remaining_args || (rand() & 1)) {
-        test.err = 1 + (rand() % 1000);
+      if (!remaining_args || base::RandBool()) {
+        test.err = 1 + base::RandIntInclusive(0, 999);
         test.arg_value = nullptr;
       } else {
         test.err = 0;
@@ -1013,8 +1015,8 @@ class EqualityStressTest {
     // Finally, we have to define what we should return if none of the
     // previous equality tests pass. Again, we can either deal with a leaf
     // node, or we can randomly add another couple of tests.
-    if (!remaining_args || (rand() & 1)) {
-      arg_value->err = (rand() % 1000) + 1;
+    if (!remaining_args || base::RandBool()) {
+      arg_value->err = base::RandIntInclusive(0, 999) + 1;
       arg_value->next = nullptr;
     } else {
       arg_value->err = 0;
@@ -1029,7 +1031,7 @@ class EqualityStressTest {
 
   int RandomArg(int args_mask) {
     // Compute a random system call parameter number.
-    int argno = rand() % kMaxArgs;
+    int argno = base::RandIntInclusive(0, kMaxArgs - 1);
 
     // Make sure that this same parameter number has not previously been
     // used. Otherwise, we could end up with a test that is impossible to
