@@ -153,7 +153,7 @@ std::optional<Dictionary> ParseDictionaryInternal(std::string_view str,
   if (!ok) {
     return std::nullopt;
   }
-  return Dictionary(std::move(dictionary.members));
+  return Dictionary(Dictionary::unique_keys, std::move(dictionary.members));
 }
 
 }  // namespace

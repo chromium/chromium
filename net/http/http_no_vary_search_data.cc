@@ -375,8 +375,8 @@ std::optional<std::string> HttpNoVarySearchData::SerializeToString() const {
     }
   }
 
-  return structured_headers::SerializeDictionary(
-      structured_headers::Dictionary(std::move(members)));
+  return structured_headers::SerializeDictionary(structured_headers::Dictionary(
+      structured_headers::Dictionary::unique_keys, std::move(members)));
 }
 
 }  // namespace net
