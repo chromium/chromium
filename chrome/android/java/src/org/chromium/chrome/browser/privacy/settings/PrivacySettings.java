@@ -49,10 +49,13 @@ import org.chromium.chrome.browser.safe_browsing.AdvancedProtectionStatusManager
 import org.chromium.chrome.browser.safe_browsing.metrics.SettingsAccessPoint;
 import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment;
 import org.chromium.chrome.browser.safety_hub.SafetyHubExpandablePreference;
+import org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils;
 import org.chromium.chrome.browser.safety_hub.SafetyHubModuleProperties;
 import org.chromium.chrome.browser.safety_hub.SafetyHubModuleViewBinder;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
+import org.chromium.chrome.browser.settings.MainSettings;
+import org.chromium.chrome.browser.settings.SettingsIaArmHelper;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -286,7 +289,38 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
         }
         recordUniversalOptOutSettingsVisibility(universalOptOutSettingsVisible);
 
+        setUpNestedRows();
         updatePreferences();
+    }
+
+    // TODO(crbug.com/581503633): Clean up after the SettingsIaReorganization experiment has run.
+    /**
+     * Shows the rows that SettingsIaReorganization moves here from the top level, and removes the
+     * others.
+     */
+    private void setUpNestedRows() {
+        if (!SettingsIaArmHelper.isNestedInPrivacy(MainSettings.PREF_CONTENT_SETTINGS)) {
+            getPreferenceScreen()
+                    .removePreference(findPreference(MainSettings.PREF_CONTENT_SETTINGS));
+        }
+
+        Preference safetyHub = findPreference(MainSettings.PREF_SAFETY_HUB);
+        if (!shouldShowNestedSafetyHub()) {
+            getPreferenceScreen().removePreference(safetyHub);
+            return;
+        }
+        // Same metric as the top-level row, so the arms stay comparable.
+        safetyHub.setOnPreferenceClickListener(
+                preference -> {
+                    SafetyHubMetricUtils.recordExternalInteractions(
+                            SafetyHubMetricUtils.ExternalInteractions.OPEN_FROM_SETTINGS_PAGE);
+                    return false;
+                });
+    }
+
+    private static boolean shouldShowNestedSafetyHub() {
+        return MainSettings.shouldShowSafetyHubPref()
+                && SettingsIaArmHelper.isNestedInPrivacy(MainSettings.PREF_SAFETY_HUB);
     }
 
     private void recordUniversalOptOutSettingsVisibility(boolean universalOptOutSettingsVisible) {
@@ -642,6 +676,16 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
 
                     if (shouldHideAdvancedProtectionInfoPref()) {
                         indexData.removeEntry(getUniqueId(PREF_ADVANCED_PROTECTION_INFO));
+                    }
+
+                    // TODO(crbug.com/581503633): Clean up after the SettingsIaReorganization
+                    // experiment has run.
+                    if (!SettingsIaArmHelper.isNestedInPrivacy(
+                            MainSettings.PREF_CONTENT_SETTINGS)) {
+                        indexData.removeEntry(getUniqueId(MainSettings.PREF_CONTENT_SETTINGS));
+                    }
+                    if (!shouldShowNestedSafetyHub()) {
+                        indexData.removeEntry(getUniqueId(MainSettings.PREF_SAFETY_HUB));
                     }
 
                     // The summary in 'Safe Browsing' is a template string. Removes it.

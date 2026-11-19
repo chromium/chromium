@@ -54,6 +54,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.Espresso;
@@ -91,6 +92,7 @@ import org.chromium.chrome.browser.native_page.NativePageAssassin;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
 import org.chromium.chrome.browser.night_mode.GlobalNightModeStateProviderHolder;
 import org.chromium.chrome.browser.privacy.settings.PrivacySettings;
+import org.chromium.chrome.browser.safety_hub.SafetyHubFragment;
 import org.chromium.chrome.browser.settings.search.SearchResultsPreferenceFragment;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -99,6 +101,7 @@ import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.ChromeTriggers;
 import org.chromium.chrome.test.util.ActivityTestUtils;
+import org.chromium.components.browser_ui.site_settings.SiteSettings;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -781,11 +784,38 @@ public class SettingsPageTest {
     }
 
     /**
+     * Site settings and Safety check are nested in privacy and security, so their pages highlight
+     * that row.
+     */
+    // TODO(crbug.com/581503633): Clean up after the SettingsIaReorganization experiment has run.
+    @Test
+    @MediumTest
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
+    @EnableFeatures(ChromeFeatureList.SETTINGS_IA_REORGANIZATION + ":arm/direction_1")
+    public void testNestedInPrivacyPagesUrlHighlightPrivacy_urlNav() {
+        FeatureOverrides.enable(ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV);
+        assertUrlHighlightsMainMenuRow(
+                "/siteSettings", SiteSettings.class, R.string.prefs_privacy_security);
+        assertUrlHighlightsMainMenuRow(
+                "/safetyCheck", SafetyHubFragment.class, R.string.prefs_privacy_security);
+    }
+
+    /**
      * Loads {@code path} under chrome-native://settings, waits for {@code fragmentClass} to show in
      * the detail pane, and checks that Autofill and passwords is highlighted in the main menu.
      */
     private void assertUrlHighlightsAutofillAndPasswords(
             String path, Class<? extends Fragment> fragmentClass) {
+        assertUrlHighlightsMainMenuRow(
+                path, fragmentClass, R.string.autofill_and_passwords_settings_title);
+    }
+
+    /**
+     * Loads {@code path} under chrome-native://settings, waits for {@code fragmentClass} to show in
+     * the detail pane, and checks that the main menu row titled {@code rowTitle} is highlighted.
+     */
+    private void assertUrlHighlightsMainMenuRow(
+            String path, Class<? extends Fragment> fragmentClass, @StringRes int rowTitle) {
         assumeTwoColumnScreenWidth();
 
         mActivityTestRule.loadUrl("chrome-native://settings" + path);
@@ -797,11 +827,10 @@ public class SettingsPageTest {
                     Criteria.checkThat(hostFragment.getMainFragment(), instanceOf(fragmentClass));
                 });
 
-        int autofillTitle = R.string.autofill_and_passwords_settings_title;
         var headerRecyclerViewMatcher =
                 allOf(withId(R.id.recycler_view), isDescendantOfA(withId(R.id.preferences_header)));
-        onView(headerRecyclerViewMatcher).perform(scrollTo(hasDescendant(withText(autofillTitle))));
-        onView(allOf(isDescendantOfA(withId(R.id.preferences_header)), withText(autofillTitle)))
+        onView(headerRecyclerViewMatcher).perform(scrollTo(hasDescendant(withText(rowTitle))));
+        onView(allOf(isDescendantOfA(withId(R.id.preferences_header)), withText(rowTitle)))
                 .check(matches(isHighlighted()));
     }
 

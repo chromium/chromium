@@ -1340,6 +1340,19 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
         }
 
         private @Nullable String getMainMenuKey(EmbeddableSettingsPage page) {
+            String mainMenuKey = resolveMainMenuKey(page);
+            // TODO(crbug.com/581503633): Clean up after the SettingsIaReorganization experiment has
+            // run.
+            // Pages of rows that SettingsIaReorganization moves into privacy and security still
+            // declare their own row, which is no longer on the main menu. Highlight privacy and
+            // security instead.
+            if (mainMenuKey != null && SettingsIaArmHelper.isNestedInPrivacy(mainMenuKey)) {
+                return MainSettings.PREF_PRIVACY;
+            }
+            return mainMenuKey;
+        }
+
+        private @Nullable String resolveMainMenuKey(EmbeddableSettingsPage page) {
             String mainMenuKey = page.getMainMenuKey();
 
             // Building the index is expensive, so only consult the breadcrumb trail when the page

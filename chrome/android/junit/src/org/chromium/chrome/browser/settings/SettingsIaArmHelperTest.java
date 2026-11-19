@@ -21,6 +21,7 @@ import org.junit.runner.RunWith;
 import org.xmlpull.v1.XmlPullParser;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -168,6 +169,21 @@ public class SettingsIaArmHelperTest {
         assertTrue(
                 SettingsIaArmHelper.getRowsNestedInPrivacy(SettingsIaArmHelper.Arm.DIRECTION_3)
                         .isEmpty());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.SETTINGS_IA_REORGANIZATION)
+    public void testIsNestedInPrivacy_featureDisabled() {
+        assertFalse(SettingsIaArmHelper.isNestedInPrivacy(MainSettings.PREF_CONTENT_SETTINGS));
+        assertFalse(SettingsIaArmHelper.isNestedInPrivacy(MainSettings.PREF_SAFETY_HUB));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SETTINGS_IA_REORGANIZATION + ":arm/direction_2")
+    public void testIsNestedInPrivacy_followsArm() {
+        assertFalse(SettingsIaArmHelper.isNestedInPrivacy(MainSettings.PREF_CONTENT_SETTINGS));
+        assertTrue(SettingsIaArmHelper.isNestedInPrivacy(MainSettings.PREF_SAFETY_HUB));
+        assertFalse(SettingsIaArmHelper.isNestedInPrivacy(MainSettings.PREF_PRIVACY));
     }
 
     @Test

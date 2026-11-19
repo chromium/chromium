@@ -132,7 +132,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
     public static final String PREF_GLIC = "glic";
     public static final String PREF_ON_STARTUP = "on_startup";
     static final String PREF_ACCESSIBILITY = "accessibility";
-    static final String PREF_CONTENT_SETTINGS = "content_settings";
+    public static final String PREF_CONTENT_SETTINGS = "content_settings";
     static final String PREF_LANGUAGES = "languages";
     static final String PREF_ABOUT_CHROME = "about_chrome";
 
@@ -521,7 +521,8 @@ public class MainSettings extends ChromeBaseSettingsFragment
         notifyPreferencesUpdated();
     }
 
-    private static boolean shouldShowSafetyHubPref() {
+    /** Returns whether safety check is shown, on the top level or in privacy and security. */
+    public static boolean shouldShowSafetyHubPref() {
         return !DeviceInfo.isAutomotive();
     }
 

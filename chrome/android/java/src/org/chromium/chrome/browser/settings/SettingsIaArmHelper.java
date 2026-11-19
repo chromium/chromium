@@ -176,6 +176,15 @@ public final class SettingsIaArmHelper {
     }
 
     /**
+     * Returns whether privacy and security shows the row of {@code mainSettingsKey}, a key of
+     * {@link MainSettings}, instead of the top level.
+     */
+    public static boolean isNestedInPrivacy(String mainSettingsKey) {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.SETTINGS_IA_REORGANIZATION)
+                && getRowsNestedInPrivacy().contains(mainSettingsKey);
+    }
+
+    /**
      * Updates the top-level settings search entries for the current arm: each row is shown under
      * its group's name, since the old category headers are no longer on the page, and rows nested
      * in privacy and security are removed from the top level.

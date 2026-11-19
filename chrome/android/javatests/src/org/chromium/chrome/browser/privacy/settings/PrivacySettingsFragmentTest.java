@@ -49,6 +49,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.util.ApplicationTestUtils;
@@ -73,6 +74,7 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.privacy_guide.PrivacyGuideInteractions;
 import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.settings.MainSettings;
 import org.chromium.chrome.browser.settings.SettingsInTab;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.settings.SettingsTestRule;
@@ -392,6 +394,48 @@ public class PrivacySettingsFragmentTest {
         mSigninTestRule.addChildTestAccountThenWaitForSignin();
         mSettingsActivityTestRule.startSettingsActivity();
         onView(withText(R.string.privacy_guide_pref_summary)).check(doesNotExist());
+    }
+
+    @Test
+    @LargeTest
+    @DisableFeatures(ChromeFeatureList.SETTINGS_IA_REORGANIZATION)
+    public void testSettingsIaReorganizationDisabled_noNestedRows() {
+        mSettingsActivityTestRule.startSettingsActivity();
+        assertNestedRows(/* siteSettings= */ false, /* safetyCheck= */ false);
+    }
+
+    @Test
+    @LargeTest
+    @EnableFeatures(ChromeFeatureList.SETTINGS_IA_REORGANIZATION + ":arm/direction_1")
+    public void testSettingsIaReorganization_direction1NestsSiteSettingsAndSafetyCheck() {
+        mSettingsActivityTestRule.startSettingsActivity();
+        assertNestedRows(/* siteSettings= */ true, /* safetyCheck= */ true);
+    }
+
+    @Test
+    @LargeTest
+    @EnableFeatures(ChromeFeatureList.SETTINGS_IA_REORGANIZATION + ":arm/direction_2")
+    public void testSettingsIaReorganization_direction2NestsSafetyCheck() {
+        mSettingsActivityTestRule.startSettingsActivity();
+        assertNestedRows(/* siteSettings= */ false, /* safetyCheck= */ true);
+    }
+
+    @Test
+    @LargeTest
+    @EnableFeatures(ChromeFeatureList.SETTINGS_IA_REORGANIZATION + ":arm/direction_3")
+    public void testSettingsIaReorganization_direction3NestsNothing() {
+        mSettingsActivityTestRule.startSettingsActivity();
+        assertNestedRows(/* siteSettings= */ false, /* safetyCheck= */ false);
+    }
+
+    private void assertNestedRows(boolean siteSettings, boolean safetyCheck) {
+        PrivacySettings fragment = mSettingsActivityTestRule.getFragment();
+        assertEquals(
+                siteSettings, fragment.findPreference(MainSettings.PREF_CONTENT_SETTINGS) != null);
+        // Safety check is never shown on automotive.
+        assertEquals(
+                safetyCheck && !DeviceInfo.isAutomotive(),
+                fragment.findPreference(MainSettings.PREF_SAFETY_HUB) != null);
     }
 
     @Test
