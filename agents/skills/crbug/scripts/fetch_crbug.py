@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import argparse
 from datetime import datetime, timezone
+import http.client
 import json
 import re
 import sys
@@ -135,9 +136,12 @@ def strip_xssi_prefix(text: str) -> str:
 
 def format_timestamp(ts: Any) -> str | None:
     """Formats a JSPB [seconds, nanos] timestamp as an ISO-8601 UTC string."""
-    if not isinstance(ts, list) or not ts or not isinstance(ts[0], int):
+    if not isinstance(ts, list) or not ts or type(ts[0]) is not int:
         return None
-    dt = datetime.fromtimestamp(ts[0], tz=timezone.utc)
+    try:
+        dt = datetime.fromtimestamp(ts[0], tz=timezone.utc)
+    except (OverflowError, OSError, ValueError):
+        return None
     return dt.strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
@@ -352,6 +356,22 @@ def parse_issue_jspb(data: Any, issue_id: str) -> dict[str, Any]:
         "issueComment": {"comment": description_text},
     }
 
+    status_update_raw = _safe_get(model, 42)
+    if status_update_raw is None:
+        issue["statusUpdate"] = None
+    elif (
+        isinstance(text := _safe_get(status_update_raw, 1), str)
+        and text.strip()
+    ):
+        status_update: dict[str, Any] = {"text": text}
+        if author := _parse_user(_safe_get(status_update_raw, 4)):
+            status_update["author"] = author
+        if timestamp := format_timestamp(_safe_get(status_update_raw, 5)):
+            status_update["timestamp"] = timestamp
+        issue["statusUpdate"] = status_update
+    else:
+        sys.stderr.write("Warning: Unrecognized status update record.\n")
+
     if created := format_timestamp(_safe_get(model, 4)):
         issue["createdTime"] = created
     if modified := format_timestamp(_safe_get(model, 5)):
@@ -398,6 +418,78 @@ def parse_comments_jspb(data: Any) -> list[dict[str, Any]]:
     return comments
 
 
+def parse_attachments_jspb(data: Any, issue_id: int) -> list[dict[str, Any]]:
+    """Converts a complete ListIssueUpdatesResponse into metadata only."""
+    envelope = _safe_get(data, 0)
+    body = _safe_get(envelope, 1)
+    if _safe_get(envelope, 0) != "b.ListIssueUpdatesResponse" or not isinstance(
+        body, list
+    ):
+        raise ValueError("Unrecognized updates response.")
+
+    updates = _safe_get(body, 0)
+    next_page_token = _safe_get(body, 1)
+    total_size = _safe_get(body, 2)
+    if updates is None and type(total_size) is int and total_size == 0:
+        updates = []
+    if not isinstance(updates, list):
+        raise ValueError("Missing issue updates list.")
+    if (
+        next_page_token not in (None, "")
+        or type(total_size) is not int
+        or total_size != len(updates)
+    ):
+        raise ValueError("Incomplete issue updates list.")
+
+    attachments: dict[int, dict[str, Any]] = {}
+    enclosing_comments: dict[int, set[int]] = {}
+    for update in updates:
+        if not isinstance(update, list) or not update:
+            raise ValueError("Unrecognized issue update record.")
+        comment = _safe_get(update, 2)
+        if comment is not None and not isinstance(comment, list):
+            raise ValueError("Unrecognized issue comment record.")
+        comment_number = _safe_get(update, 3)
+        if type(comment_number) is not int or comment_number <= 0:
+            comment_number = None
+        # A comment can carry the same attachments as its enclosing update.
+        for records in (
+            _safe_get(update, 7, []),
+            _safe_get(comment, 1, []),
+        ):
+            if not isinstance(records, list):
+                raise ValueError("Unrecognized attachment list.")
+            for record in records:
+                attachment_id = _safe_get(record, 0)
+                if type(attachment_id) is not int or attachment_id <= 0:
+                    raise ValueError("Unrecognized attachment ID.")
+                attachment = attachments.setdefault(
+                    attachment_id, {"attachmentId": str(attachment_id)}
+                )
+                for key, index in (("filename", 3), ("contentType", 1)):
+                    value = _safe_get(record, index)
+                    if isinstance(value, str) and value.strip():
+                        attachment.setdefault(key, value)
+                size = _safe_get(record, 2)
+                if type(size) is int and size >= 0:
+                    attachment.setdefault("sizeBytes", size)
+                if comment_number is not None:
+                    enclosing_comments.setdefault(attachment_id, set()).add(
+                        comment_number
+                    )
+
+    for attachment_id, attachment in attachments.items():
+        numbers = enclosing_comments.get(attachment_id)
+        if numbers and len(numbers) == 1:
+            (number,) = numbers
+            attachment["commentNumber"] = number
+        attachment["url"] = (
+            f"{ISSUES_BASE_URL}/action/issues/{issue_id}"
+            f"/attachments/{attachment_id}?download=false"
+        )
+    return list(attachments.values())
+
+
 def fetch_issue(raw_id: str, expand_details: bool = False) -> dict[str, Any]:
     """Fetches full issue details and comments from issues.chromium.org.
 
@@ -416,27 +508,46 @@ def fetch_issue(raw_id: str, expand_details: bool = False) -> dict[str, Any]:
         f"{ISSUES_BASE_URL}/action/issues/{issue_id}/updates"
         f"?currentTrackerId={CHROMIUM_TRACKER_ID}"
     )
+    result: dict[str, Any] = {"issue": issue_data, "comments": []}
     try:
-        comments_jspb = http_request_jspb(
+        numeric_issue_id = int(issue_id)
+        updates_jspb = http_request_jspb(
             comments_url,
             method="POST",
-            json_body=[int(issue_id)],
+            json_body=[numeric_issue_id],
         )
-        comments = parse_comments_jspb(comments_jspb)
-    except Exception as e:
-        sys.stderr.write(f"Warning: Failed to fetch comments: {e}\n")
-        comments = []
+        result["comments"] = parse_comments_jspb(updates_jspb)
+    except (
+        http.client.HTTPException,
+        LookupError,
+        OSError,
+        RuntimeError,
+        TypeError,
+        ValueError,
+    ) as e:
+        sys.stderr.write(
+            "Warning: Attachment inventory unavailable. "
+            f"Failed to fetch or parse issue updates: {e}\n"
+        )
+    else:
+        try:
+            result["attachments"] = parse_attachments_jspb(
+                updates_jspb, numeric_issue_id
+            )
+        except ValueError as e:
+            sys.stderr.write(
+                f"Warning: Attachment inventory unavailable: {e}\n"
+            )
 
     if not expand_details:
         description = issue_data["issueComment"]
         description["comment"] = elide_details_blocks(description["comment"])
-        for comment in comments:
+        if status_update := issue_data.get("statusUpdate"):
+            status_update["text"] = elide_details_blocks(status_update["text"])
+        for comment in result["comments"]:
             comment["comment"] = elide_details_blocks(comment["comment"])
 
-    return {
-        "issue": issue_data,
-        "comments": comments,
-    }
+    return result
 
 
 def main() -> None:

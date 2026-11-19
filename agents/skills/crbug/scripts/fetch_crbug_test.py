@@ -7,6 +7,7 @@
 from __future__ import annotations
 
 import copy
+import http.client
 import io
 import json
 import os
@@ -73,7 +74,7 @@ def _make_sample_updates_jspb() -> list:
             1,
         ],
     ]
-    return [["b.ListIssueUpdatesResponse", [updates]]]
+    return [["b.ListIssueUpdatesResponse", [updates, None, len(updates)]]]
 
 
 class ExtractIssueIdTest(unittest.TestCase):
@@ -345,6 +346,7 @@ class ParseJspbTest(unittest.TestCase):
         self.assertEqual(issue["modifiedTime"], "2023-11-14T23:13:20Z")
         self.assertEqual(issue["resolvedTime"], "2023-11-15T00:13:20Z")
         self.assertEqual(issue["verifiedTime"], "2023-11-15T01:13:20Z")
+        self.assertIsNone(issue["statusUpdate"])
 
         state = issue["issueState"]
         self.assertEqual(state["componentId"], "1456128")
@@ -463,12 +465,131 @@ class FetchIssueTest(unittest.TestCase):
         self.assertEqual(len(result["comments"]), 2)
 
     @mock.patch("fetch_crbug.http_request_jspb")
+    def test_fetch_issue_reports_explicit_status_separately(self, mock_http):
+        issue_jspb = _make_sample_issue_jspb()
+        issue_jspb[0][1][22][42] = [
+            40256175,
+            "Launched on Stable",
+            None,
+            1,
+            [None, "release@example.test"],
+            [1700000900, 0],
+        ]
+        updates_jspb = _make_sample_updates_jspb()
+        older_update = [
+            40256175,
+            "Testing on Canary",
+            None,
+            1,
+            None,
+            [1700000300, 0],
+        ]
+        rows = updates_jspb[0][1][0]
+        rows.extend(
+            [
+                [None, older_update[5]] + [None] * 6 + [older_update],
+                [None, [1700002700], None, None, None, [[3, 4]]],
+            ]
+        )
+        updates_jspb[0][1][2] = len(rows)
+        mock_http.side_effect = [issue_jspb, updates_jspb]
+
+        result = fetch_crbug.fetch_issue("40256175")
+        self.assertEqual(result["issue"]["issueState"]["status"], "FIXED")
+        self.assertEqual(
+            result["issue"]["statusUpdate"],
+            {
+                "text": "Launched on Stable",
+                "timestamp": "2023-11-14T22:28:20Z",
+                "author": {"emailAddress": "release@example.test"},
+            },
+        )
+        self.assertEqual(
+            [comment["commentNumber"] for comment in result["comments"]],
+            [1, 2],
+        )
+
+    @mock.patch("fetch_crbug.http_request_jspb")
+    def test_fetch_issue_deduplicates_attachment_metadata(self, mock_http):
+        attachment = [123, "text/plain", 12, "sample.txt"]
+        reference = [None, None, ["Example files", [attachment, [789]]], 2]
+        second_reference = [None, None, ["Also mentioned here", [[789]]], 3]
+        # Issue versions need not match comment numbers.
+        original = [123] + [None] * 12 + [12]
+        standalone = [456] + [None] * 12 + [13]
+        upload = [None] * 7 + [[original, standalone]]
+        rows = [reference, second_reference, upload]
+        updates = [["b.ListIssueUpdatesResponse", [rows, None, len(rows)]]]
+        mock_http.side_effect = [_make_sample_issue_jspb(), updates]
+
+        result = fetch_crbug.fetch_issue("40256175")
+        base_url = (
+            "https://issues.chromium.org/action/issues/40256175/attachments"
+        )
+        self.assertCountEqual(
+            result["attachments"],
+            [
+                {
+                    "attachmentId": "123",
+                    "filename": "sample.txt",
+                    "contentType": "text/plain",
+                    "sizeBytes": 12,
+                    "commentNumber": 2,
+                    "url": f"{base_url}/123?download=false",
+                },
+                {
+                    "attachmentId": "456",
+                    "url": f"{base_url}/456?download=false",
+                },
+                {
+                    "attachmentId": "789",
+                    "url": f"{base_url}/789?download=false",
+                },
+            ],
+        )
+        self.assertEqual(
+            [call.args[0] for call in mock_http.call_args_list],
+            [
+                "https://issues.chromium.org/action/issues/40256175",
+                "https://issues.chromium.org/action/issues/40256175/updates"
+                "?currentTrackerId=157",
+            ],
+        )
+
+    @mock.patch("fetch_crbug.http_request_jspb")
+    def test_attachment_inventory_requires_complete_updates(self, mock_http):
+        comment = [None, None, ["Comment on first page"], 1]
+        for token in (None, "next-page"):
+            with self.subTest(token=token):
+                mock_http.side_effect = [
+                    _make_sample_issue_jspb(),
+                    [["b.ListIssueUpdatesResponse", [[comment], token, 1]]],
+                ]
+                with mock.patch(
+                    "sys.stderr", new_callable=io.StringIO
+                ) as stderr:
+                    result = fetch_crbug.fetch_issue("40256175")
+                self.assertEqual(
+                    result["comments"],
+                    [{"commentNumber": 1, "comment": "Comment on first page"}],
+                )
+                if token is None:
+                    self.assertEqual(result["attachments"], [])
+                    self.assertEqual(stderr.getvalue(), "")
+                else:
+                    self.assertNotIn("attachments", result)
+                    self.assertIn(
+                        "Attachment inventory unavailable", stderr.getvalue()
+                    )
+
+    @mock.patch("fetch_crbug.http_request_jspb")
     def test_fetch_issue_elides_details_unless_expanded(self, mock_http):
         details = "<details>\n<summary>S</summary>\nBody\n</details>"
         issue_jspb = _make_sample_issue_jspb()
         issue_jspb[0][1][22][43] = [details]
         updates_jspb = _make_sample_updates_jspb()
         updates_jspb[0][1][0][0][2] = [details]
+        issue_jspb[0][1][22][42] = [40256175, details]
 
         for expand_details in (False, True):
             mock_http.side_effect = [
@@ -480,27 +601,59 @@ class FetchIssueTest(unittest.TestCase):
             )
             texts = [
                 result["issue"]["issueComment"]["comment"],
+                result["issue"]["statusUpdate"]["text"],
                 result["comments"][1]["comment"],
             ]
             for text in texts:
                 self.assertEqual("Body" in text, expand_details)
 
-    @mock.patch("fetch_crbug.resolve_monorail_id", return_value="40256175")
+    @mock.patch(
+        "fetch_crbug.parse_comments_jspb",
+        side_effect=IndexError("Invalid comment data"),
+    )
     @mock.patch("fetch_crbug.http_request_jspb")
-    def test_fetch_issue_comments_failure_graceful_fallback(
-        self, mock_http, _mock_resolve
+    def test_comment_parse_failure_preserves_issue(
+        self, mock_http, _mock_parse
     ):
         mock_http.side_effect = [
             _make_sample_issue_jspb(),
-            RuntimeError("Updates endpoint timeout"),
+            _make_sample_updates_jspb(),
         ]
-        with mock.patch("sys.stderr", new_callable=io.StringIO) as mock_stderr:
+        with mock.patch("sys.stderr", new_callable=io.StringIO) as stderr:
             result = fetch_crbug.fetch_issue("40256175")
         self.assertEqual(result["issue"]["issueId"], "40256175")
         self.assertEqual(result["comments"], [])
-        self.assertIn(
-            "Warning: Failed to fetch comments", mock_stderr.getvalue()
-        )
+        self.assertNotIn("attachments", result)
+        self.assertIn("Attachment inventory unavailable", stderr.getvalue())
+        self.assertIn("Invalid comment data", stderr.getvalue())
+
+    @mock.patch("urllib.request.urlopen")
+    def test_updates_request_failure_preserves_issue(self, mock_urlopen):
+        issue_jspb = _make_sample_issue_jspb()
+        issue_jspb[0][1][22][42] = [40256175, "Rolled out"]
+        response = mock_urlopen.return_value.__enter__.return_value
+        for error in (
+            urllib.error.URLError("Updates endpoint timeout"),
+            http.client.IncompleteRead(b"[", 100),
+        ):
+            with self.subTest(error=error):
+                response.read.side_effect = [
+                    json.dumps(issue_jspb).encode("utf-8"),
+                    error,
+                ]
+                with mock.patch(
+                    "sys.stderr", new_callable=io.StringIO
+                ) as stderr:
+                    result = fetch_crbug.fetch_issue("40256175")
+                self.assertEqual(result["issue"]["issueId"], "40256175")
+                self.assertEqual(
+                    result["issue"]["statusUpdate"], {"text": "Rolled out"}
+                )
+                self.assertEqual(result["comments"], [])
+                self.assertNotIn("attachments", result)
+                self.assertIn(
+                    "Attachment inventory unavailable", stderr.getvalue()
+                )
 
 
 class MainTest(unittest.TestCase):
