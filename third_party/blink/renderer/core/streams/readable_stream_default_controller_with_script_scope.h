@@ -30,6 +30,9 @@ class CORE_EXPORT ReadableStreamDefaultControllerWithScriptScope
   double DesiredSize() const;
   // https://streams.spec.whatwg.org/#readable-stream-default-controller-can-close-or-enqueue
   bool CanCloseOrEnqueue() const;
+  // Number of pending read requests on the stream, or 0 if the controller
+  // has been deactivated or the stream has no default reader.
+  int GetNumReadRequests() const;
   void Enqueue(v8::Local<v8::Value> js_chunk) const;
   void Error(v8::Local<v8::Value> js_error);
 

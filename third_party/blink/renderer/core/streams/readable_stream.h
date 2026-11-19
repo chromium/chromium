@@ -302,6 +302,7 @@ class CORE_EXPORT ReadableStream
   friend class ReadableByteStreamController;
   friend class ReadableStreamBYOBReader;
   friend class ReadableStreamDefaultController;
+  friend class ReadableStreamDefaultControllerWithScriptScope;
   friend class ReadableStreamDefaultReader;
   friend class ReadableStreamGenericReader;
   friend class TeeEngine;

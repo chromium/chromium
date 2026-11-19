@@ -75,6 +75,11 @@ class FrameQueue : public ThreadSafeRefCounted<FrameQueue<NativeFrameType>> {
     return queue_.size();
   }
 
+  wtf_size_t Size() const {
+    base::AutoLock locker(GetLock());
+    return SizeLocked();
+  }
+
   wtf_size_t MaxSize() const { return max_size_; }
 
   void IncrementTotalFramesLocked() EXCLUSIVE_LOCKS_REQUIRED(GetLock()) {

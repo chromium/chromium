@@ -234,6 +234,146 @@ TEST_F(MediaStreamVideoTrackUnderlyingSourceTest,
 }
 
 TEST_F(MediaStreamVideoTrackUnderlyingSourceTest,
+       QueuedFrameClosedWhenStreamCancelledAfterReleaseLock) {
+  const std::string device_id = "window:test-window";
+  auto* media_stream_source = CreateDevicePushableSource(device_id);
+  auto* platform_video_source = static_cast<PushableMediaStreamVideoSource*>(
+      media_stream_source->GetPlatformSource());
+  V8TestingScope v8_scope;
+  ScriptState* script_state = v8_scope.GetScriptState();
+  auto* track = MakeGarbageCollected<MediaStreamTrackImpl>(
+      v8_scope.GetExecutionContext(),
+      MediaStreamVideoTrack::CreateVideoTrack(
+          platform_video_source,
+          MediaStreamVideoSource::ConstraintsOnceCallback(),
+          /*enabled=*/true));
+  auto* source = CreateSource(script_state, track);
+  VideoFrameMonitor& monitor = VideoFrameMonitor::Instance();
+  auto* stream =
+      ReadableStream::CreateWithCountQueueingStrategy(script_state, source, 0);
+  NonThrowableExceptionState exception_state;
+  auto* reader =
+      stream->GetDefaultReaderForTesting(script_state, exception_state);
+
+  ScriptPromiseTester read_tester(script_state,
+                                  reader->read(script_state, exception_state));
+  v8_scope.PerformMicrotaskCheckpoint();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return source->NumPendingPullsForTesting() == 1; }));
+
+  auto frame = media::VideoFrame::CreateBlackFrame(gfx::Size(10, 10));
+  const media::VideoFrame::ID frame_id = frame->unique_id();
+  source->QueueFrame(std::move(frame));
+  EXPECT_EQ(monitor.NumFrames(device_id), 1u);
+
+  // Release the lock before the delivery task runs: the pending read is
+  // rejected, so the delivery task leaves the frame in the queue.
+  auto realm_task_runner = v8_scope.GetExecutionContext()->GetTaskRunner(
+      TaskType::kInternalMediaRealTime);
+  realm_task_runner->PostTask(
+      FROM_HERE,
+      BindOnce(
+          [](ReadableStreamDefaultReader* reader, ScriptState* script_state) {
+            NonThrowableExceptionState exception_state;
+            reader->releaseLock(script_state, exception_state);
+          },
+          WrapPersistent(reader), WrapPersistent(script_state)));
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return read_tester.IsFulfilled() || read_tester.IsRejected(); }));
+  EXPECT_TRUE(read_tester.IsRejected());
+  // The frame was not popped from the queue, and the stale pending pull was
+  // cleared.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return source->NumPendingPullsForTesting() == 0; }));
+  EXPECT_EQ(monitor.NumFrames(device_id), 1u);
+  EXPECT_EQ(source->DiscardedFrames(), 0u);
+  EXPECT_EQ(source->DiscardedAndQueuedFrames(), 1u);
+
+  // Cancelling closes the source, which must close the frame left in the
+  // queue.
+  realm_task_runner->PostTask(
+      FROM_HERE, BindOnce(
+                     [](ReadableStream* stream, ScriptState* script_state) {
+                       NonThrowableExceptionState exception_state;
+                       stream->cancel(script_state, exception_state);
+                     },
+                     WrapPersistent(stream), WrapPersistent(script_state)));
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return monitor.NumFrames(device_id) == 0u; }));
+  EXPECT_EQ(monitor.NumFrames(device_id), 0u);
+  EXPECT_EQ(monitor.NumRefs(device_id, frame_id), 0);
+  // The frame's discard is accounted for.
+  EXPECT_EQ(source->DiscardedFrames(), 1u);
+
+  track->stopTrack(v8_scope.GetExecutionContext());
+}
+
+TEST_F(MediaStreamVideoTrackUnderlyingSourceTest,
+       QueuedFrameDeliveredToNextRead) {
+  const std::string device_id = "window:test-window";
+  auto* media_stream_source = CreateDevicePushableSource(device_id);
+  auto* platform_video_source = static_cast<PushableMediaStreamVideoSource*>(
+      media_stream_source->GetPlatformSource());
+  V8TestingScope v8_scope;
+  ScriptState* script_state = v8_scope.GetScriptState();
+  auto* track = MakeGarbageCollected<MediaStreamTrackImpl>(
+      v8_scope.GetExecutionContext(),
+      MediaStreamVideoTrack::CreateVideoTrack(
+          platform_video_source,
+          MediaStreamVideoSource::ConstraintsOnceCallback(),
+          /*enabled=*/true));
+  auto* source = CreateSource(script_state, track);
+  VideoFrameMonitor& monitor = VideoFrameMonitor::Instance();
+  auto* stream =
+      ReadableStream::CreateWithCountQueueingStrategy(script_state, source, 0);
+  NonThrowableExceptionState exception_state;
+  auto* reader =
+      stream->GetDefaultReaderForTesting(script_state, exception_state);
+
+  // Read once to register a pending pull.
+  ScriptPromiseTester read_tester(script_state,
+                                  reader->read(script_state, exception_state));
+  v8_scope.PerformMicrotaskCheckpoint();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return source->NumPendingPullsForTesting() == 1; }));
+
+  auto frame = media::VideoFrame::CreateBlackFrame(gfx::Size(10, 10));
+  const media::VideoFrame::ID frame_id = frame->unique_id();
+  source->QueueFrame(std::move(frame));
+
+  // Release the lock before the delivery task runs: the pending read is
+  // rejected and the frame is left in the queue.
+  auto realm_task_runner = v8_scope.GetExecutionContext()->GetTaskRunner(
+      TaskType::kInternalMediaRealTime);
+  realm_task_runner->PostTask(
+      FROM_HERE,
+      BindOnce(
+          [](ReadableStreamDefaultReader* reader, ScriptState* script_state) {
+            NonThrowableExceptionState exception_state;
+            reader->releaseLock(script_state, exception_state);
+          },
+          WrapPersistent(reader), WrapPersistent(script_state)));
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return read_tester.IsFulfilled() || read_tester.IsRejected(); }));
+  EXPECT_TRUE(read_tester.IsRejected());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return source->NumPendingPullsForTesting() == 0; }));
+  EXPECT_EQ(monitor.NumFrames(device_id), 1u);
+
+  // A new reader receives the queued frame on its first read.
+  auto* reader2 =
+      stream->GetDefaultReaderForTesting(script_state, exception_state);
+  VideoFrame* video_frame = ReadObjectFromStream<VideoFrame>(v8_scope, reader2);
+  EXPECT_EQ(video_frame->frame()->unique_id(), frame_id);
+  EXPECT_EQ(monitor.NumFrames(device_id), 1u);
+
+  video_frame->close();
+  EXPECT_EQ(monitor.NumFrames(device_id), 0u);
+
+  track->stopTrack(v8_scope.GetExecutionContext());
+}
+
+TEST_F(MediaStreamVideoTrackUnderlyingSourceTest,
        CancelStreamDisconnectsFromTrack) {
   V8TestingScope v8_scope;
   MediaStreamTrack* track = CreateTrack(v8_scope.GetExecutionContext());
