@@ -20,15 +20,23 @@ BookmarkBarMenuDelegate::BookmarkBarMenuDelegate(
 
 BookmarkBarMenuDelegate::~BookmarkBarMenuDelegate() = default;
 
-void BookmarkBarMenuDelegate::SetActiveMenu(const BookmarkParentFolder& folder,
+bool BookmarkBarMenuDelegate::SetActiveMenu(const BookmarkParentFolder& folder,
                                             size_t start_index) {
   const BookmarkFolderOrURL node(folder);
   auto node_to_menu = node_to_menu_map().find(node);
   if (node_to_menu == node_to_menu_map().end() || !node_to_menu->second) {
     menu_ = CreateMenu(folder, start_index);
-  } else {
-    menu_ = node_to_menu->second;
+    return true;
   }
+  // The cache also holds folders built as submenus of other menus. The active
+  // menu must be a root, so don't reuse one of those. Don't build a new root
+  // with CreateMenu() either: the cache holds one menu per folder, so that
+  // would replace the open submenu's entries and stop its model updates.
+  if (node_to_menu->second->GetParentMenuItem()) {
+    return false;
+  }
+  menu_ = node_to_menu->second;
+  return true;
 }
 
 void BookmarkBarMenuDelegate::SetMenuStartIndex(

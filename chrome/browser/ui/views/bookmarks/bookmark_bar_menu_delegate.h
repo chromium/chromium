@@ -37,8 +37,11 @@ class BookmarkBarMenuDelegate : public BookmarkMenuDelegate {
   ~BookmarkBarMenuDelegate() override;
 
   // Makes the menu for `folder` the active menu. `start_index` is the index of
-  // the first child of `folder` to show in the menu.
-  void SetActiveMenu(const BookmarkParentFolder& folder, size_t start_index);
+  // the first child of `folder` to show in the menu. The active menu must be a
+  // root, so returns false and leaves the active menu unchanged if `folder` is
+  // already cached as a submenu.
+  [[nodiscard]] bool SetActiveMenu(const BookmarkParentFolder& folder,
+                                   size_t start_index);
 
   // Updates the start index of the given `folder` and updates its menu
   // accordingly.

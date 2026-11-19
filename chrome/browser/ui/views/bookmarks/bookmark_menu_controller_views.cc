@@ -38,7 +38,7 @@ BookmarkMenuController::BookmarkMenuController(
       observer_(nullptr),
       for_drop_(for_drop),
       bookmark_bar_(nullptr) {
-  menu_delegate_->SetActiveMenu(folder, start_child_index);
+  CHECK(menu_delegate_->SetActiveMenu(folder, start_child_index));
 
   int run_type = 0;
   if (for_drop) {
@@ -183,7 +183,9 @@ views::MenuItemView* BookmarkMenuController::GetSiblingMenu(
     return nullptr;
   }
 
-  menu_delegate_->SetActiveMenu(*folder, start_index);
+  if (!menu_delegate_->SetActiveMenu(*folder, start_index)) {
+    return nullptr;
+  }
   *button = bookmark_bar_->GetMenuButtonForFolder(*folder);
   bookmark_bar_->GetAnchorPositionForButton(*button, anchor);
   *has_mnemonics = false;

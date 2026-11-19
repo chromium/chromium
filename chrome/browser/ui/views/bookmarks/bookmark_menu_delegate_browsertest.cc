@@ -348,8 +348,8 @@ IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateTest, RemoveBookmarks) {
   const BookmarkNode* f1 = bookmark_service()->GetNodeAtIndex(
       BookmarkParentFolder::BookmarkBarFolder(), 1u);
   NewDelegate();
-  bookmark_menu_delegate_->SetActiveMenu(
-      BookmarkParentFolder::FromFolderNode(f1), 0);
+  ASSERT_TRUE(bookmark_menu_delegate_->SetActiveMenu(
+      BookmarkParentFolder::FromFolderNode(f1), 0));
   LoadAllMenus(menu());
   std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes_to_remove =
       {
@@ -374,8 +374,8 @@ IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateTest, CloseOnRemove) {
       bookmark_service()->GetNodeAtIndex(bookmark_bar_folder, 1u);
   const BookmarkNode* bookmark_bar_node_to_remove =
       bookmark_service()->GetNodeAtIndex(bookmark_bar_folder, 2u);
-  bookmark_menu_delegate_->SetActiveMenu(
-      BookmarkParentFolder::FromFolderNode(initial_f1), 0);
+  ASSERT_TRUE(bookmark_menu_delegate_->SetActiveMenu(
+      BookmarkParentFolder::FromFolderNode(initial_f1), 0));
   // Nodes on the bookmark bar should close on remove when shown from a
   // non-overflow menu.
   EXPECT_TRUE(ShouldCloseOnRemove(bookmark_bar_node_to_remove));
@@ -387,7 +387,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateTest, CloseOnRemove) {
   DestroyDelegate();
 
   NewDelegate();
-  bookmark_menu_delegate_->SetActiveMenu(bookmark_bar_folder, 1u);
+  ASSERT_TRUE(bookmark_menu_delegate_->SetActiveMenu(bookmark_bar_folder, 1u));
   // Nodes shown from the bookmark bar overflow menu should not close on remove.
   EXPECT_FALSE(ShouldCloseOnRemove(bookmark_bar_node_to_remove));
   DestroyDelegate();
@@ -407,8 +407,8 @@ IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateTest, CloseOnRemove) {
   NewDelegate();
   const BookmarkNode* f1_after_other_folder_removals =
       bookmark_service()->GetNodeAtIndex(bookmark_bar_folder, 1u);
-  bookmark_menu_delegate_->SetActiveMenu(
-      BookmarkParentFolder::FromFolderNode(f1_after_other_folder_removals), 0);
+  ASSERT_TRUE(bookmark_menu_delegate_->SetActiveMenu(
+      BookmarkParentFolder::FromFolderNode(f1_after_other_folder_removals), 0));
   const BookmarkNode* last_other_folder_child =
       bookmark_service()->GetNodeAtIndex(other_folder, 0u);
   // The only remaining node in "other bookmarks" should close on remove.
@@ -426,7 +426,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateTest, CloseOnRemoveStateContinuity) {
   const BookmarkNode* node_to_remove =
       bookmark_service()->GetNodeAtIndex(bookmark_bar_folder, 2u);
 
-  bookmark_menu_delegate_->SetActiveMenu(bookmark_bar_folder, 0u);
+  ASSERT_TRUE(bookmark_menu_delegate_->SetActiveMenu(bookmark_bar_folder, 0u));
   EXPECT_TRUE(ShouldCloseOnRemove(node_to_remove));
 
   bookmark_menu_delegate_->SetMenuStartIndex(bookmark_bar_folder, 1u);
@@ -476,8 +476,8 @@ IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateTest,
 IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateTest,
                        UpdateOtherNodeMenuAfterNodeRemoved) {
   NewDelegate();
-  bookmark_menu_delegate_->SetActiveMenu(BookmarkParentFolder::OtherFolder(),
-                                         0);
+  ASSERT_TRUE(bookmark_menu_delegate_->SetActiveMenu(
+      BookmarkParentFolder::OtherFolder(), 0));
   views::MenuItemView* other_node_menu = menu();
 
   ASSERT_TRUE(other_node_menu->HasSubmenu());
@@ -507,8 +507,8 @@ IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateTest, DragAndDropAfterNode) {
   const BookmarkNode* f1 = bookmark_service()->GetNodeAtIndex(
       BookmarkParentFolder::BookmarkBarFolder(), 1u);
   NewDelegate();
-  bookmark_menu_delegate_->SetActiveMenu(
-      BookmarkParentFolder::FromFolderNode(f1), 0);
+  ASSERT_TRUE(bookmark_menu_delegate_->SetActiveMenu(
+      BookmarkParentFolder::FromFolderNode(f1), 0));
   views::MenuItemView* root_item = menu();
   LoadAllMenus(root_item);
 
@@ -545,8 +545,8 @@ IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateTest, DragAndDropOnNode) {
   const BookmarkNode* f1 = bookmark_service()->GetNodeAtIndex(
       BookmarkParentFolder::BookmarkBarFolder(), 1u);
   NewDelegate();
-  bookmark_menu_delegate_->SetActiveMenu(
-      BookmarkParentFolder::FromFolderNode(f1), 0);
+  ASSERT_TRUE(bookmark_menu_delegate_->SetActiveMenu(
+      BookmarkParentFolder::FromFolderNode(f1), 0));
   views::MenuItemView* root_item = menu();
   LoadAllMenus(root_item);
 
@@ -584,8 +584,8 @@ IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateTest, DragAndDropBeforeNode) {
   const BookmarkNode* f1 = bookmark_service()->GetNodeAtIndex(
       BookmarkParentFolder::BookmarkBarFolder(), 1u);
   NewDelegate();
-  bookmark_menu_delegate_->SetActiveMenu(
-      BookmarkParentFolder::FromFolderNode(f1), 0);
+  ASSERT_TRUE(bookmark_menu_delegate_->SetActiveMenu(
+      BookmarkParentFolder::FromFolderNode(f1), 0));
   views::MenuItemView* root_item = menu();
   LoadAllMenus(root_item);
 
@@ -622,8 +622,8 @@ IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateTest, DropCallbackModelChanged) {
   const BookmarkNode* f1 = bookmark_service()->GetNodeAtIndex(
       BookmarkParentFolder::BookmarkBarFolder(), 1u);
   NewDelegate();
-  bookmark_menu_delegate_->SetActiveMenu(
-      BookmarkParentFolder::FromFolderNode(f1), 0);
+  ASSERT_TRUE(bookmark_menu_delegate_->SetActiveMenu(
+      BookmarkParentFolder::FromFolderNode(f1), 0));
   views::MenuItemView* root_item = menu();
   LoadAllMenus(root_item);
 
@@ -874,8 +874,8 @@ IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateTest,
   const BookmarkNode* const f1_node = bookmark_bar_children[1];
 
   NewDelegate();
-  bookmark_menu_delegate_->SetActiveMenu(
-      BookmarkParentFolder::FromFolderNode(f1_node), 0);
+  ASSERT_TRUE(bookmark_menu_delegate_->SetActiveMenu(
+      BookmarkParentFolder::FromFolderNode(f1_node), 0));
   // In practice, additional menus created by `SetActiveMenu` are registered as
   // siblings of the menu runner, which handles deletion.
   const std::unique_ptr<views::MenuItemView> f1_menu(
@@ -889,13 +889,36 @@ IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateTest,
   // f1_node's menu should be a child of f2_node.
   model()->Move(f1_node, f2_node, 0);
 
-  bookmark_menu_delegate_->SetActiveMenu(
-      BookmarkParentFolder::FromFolderNode(f2_node), 0);
+  ASSERT_TRUE(bookmark_menu_delegate_->SetActiveMenu(
+      BookmarkParentFolder::FromFolderNode(f2_node), 0));
   ASSERT_NE(nullptr, menu());
   ASSERT_TRUE(menu()->HasSubmenu());
   ASSERT_FALSE(menu()->GetSubmenu()->GetMenuItems().empty());
   EXPECT_EQ(f1_node->GetTitle(),
             menu()->GetSubmenu()->GetMenuItemAt(0)->title());
+}
+
+// The active menu can become a sibling menu of the menu runner, which must be a
+// root. A bar folder can already be cached as a submenu of another menu built
+// in the same run; it must not be reused.
+IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateTest, SetActiveMenuIgnoresSubmenu) {
+  const BookmarkParentFolder bookmark_bar_folder =
+      BookmarkParentFolder::BookmarkBarFolder();
+  BookmarkParentFolderChildren bookmark_bar_children =
+      bookmark_service()->GetChildren(bookmark_bar_folder);
+  ASSERT_EQ(bookmark_bar_children.size(), 4u);
+  const BookmarkParentFolder f1_folder =
+      BookmarkParentFolder::FromFolderNode(bookmark_bar_children[1]);
+
+  NewDelegate();
+  // Building the bookmark bar menu caches F1 as one of its submenus.
+  ASSERT_TRUE(bookmark_menu_delegate_->SetActiveMenu(bookmark_bar_folder, 0));
+  views::MenuItemView* const bar_menu = menu();
+  ASSERT_NE(bar_menu, nullptr);
+
+  EXPECT_FALSE(bookmark_menu_delegate_->SetActiveMenu(f1_folder, 0));
+  EXPECT_EQ(menu(), bar_menu);
+  EXPECT_EQ(menu()->GetParentMenuItem(), nullptr);
 }
 
 // Tests that the bookmarks title is appropriately added and removed when moving
@@ -1001,8 +1024,8 @@ IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateTest,
   ASSERT_EQ(bookmark_bar_children.size(), 4u);
 
   NewDelegate();
-  bookmark_menu_delegate_->SetActiveMenu(
-      BookmarkParentFolder::BookmarkBarFolder(), 1);
+  ASSERT_TRUE(bookmark_menu_delegate_->SetActiveMenu(
+      BookmarkParentFolder::BookmarkBarFolder(), 1));
 
   views::MenuItemView* root_menu = menu();
   EXPECT_EQ(root_menu->GetSubmenu()->GetMenuItems().size(), 3u);
@@ -1038,7 +1061,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateTest,
   ASSERT_EQ(bookmark_bar_children.size(), 4u);
 
   NewDelegate();
-  bookmark_menu_delegate_->SetActiveMenu(bookmark_bar_folder, 1);
+  ASSERT_TRUE(bookmark_menu_delegate_->SetActiveMenu(bookmark_bar_folder, 1));
 
   views::MenuItemView* root_menu = menu();
   // The menu has items for nodes F1, F2 and b.
@@ -1059,7 +1082,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateTest, IncreaseStartIndex) {
   ASSERT_EQ(bookmark_bar_children.size(), 4u);
 
   NewDelegate();
-  bookmark_menu_delegate_->SetActiveMenu(bookmark_bar_folder, 0);
+  ASSERT_TRUE(bookmark_menu_delegate_->SetActiveMenu(bookmark_bar_folder, 0));
   views::MenuItemView* root_menu = menu();
   // The menu has items for nodes, a, F1, F2 and b.
   EXPECT_EQ(root_menu->GetSubmenu()->GetMenuItems().size(), 4u);
@@ -1080,7 +1103,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateTest, DecreaseStartIndex) {
   ASSERT_EQ(bookmark_bar_children.size(), 4u);
 
   NewDelegate();
-  bookmark_menu_delegate_->SetActiveMenu(bookmark_bar_folder, 2);
+  ASSERT_TRUE(bookmark_menu_delegate_->SetActiveMenu(bookmark_bar_folder, 2));
   views::MenuItemView* root_menu = menu();
   ASSERT_TRUE(root_menu->HasSubmenu());
   ASSERT_EQ(root_menu->GetSubmenu()->GetMenuItems().size(), 2u);
@@ -1104,7 +1127,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateTest, SetMenuStartIndexUnchanged) {
   ASSERT_EQ(bookmark_bar_children.size(), 4u);
 
   NewDelegate();
-  bookmark_menu_delegate_->SetActiveMenu(bookmark_bar_folder, 2);
+  ASSERT_TRUE(bookmark_menu_delegate_->SetActiveMenu(bookmark_bar_folder, 2));
   views::MenuItemView* root_menu = menu();
   ASSERT_TRUE(root_menu->HasSubmenu());
   EXPECT_EQ(root_menu->GetSubmenu()->GetMenuItems().size(), 2u);

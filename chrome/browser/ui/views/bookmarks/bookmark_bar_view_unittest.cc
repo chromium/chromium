@@ -1040,7 +1040,8 @@ class BookmarkBarViewFaviconTest : public BookmarkBarViewTest {
     menu_delegate_ = std::make_unique<BookmarkBarMenuDelegate>(
         browser(), nullptr, &dummy_menu_delegate_,
         BookmarkLaunchLocation::kSubfolder);
-    menu_delegate_->SetActiveMenu(BookmarkParentFolder::OtherFolder(), 0);
+    ASSERT_TRUE(
+        menu_delegate_->SetActiveMenu(BookmarkParentFolder::OtherFolder(), 0));
     root_menu_.reset(menu_delegate_->menu());
     ASSERT_GE(root_menu_->GetSubmenu()->GetMenuItems().size(), 2u);
     menu_item_ = root_menu_->GetSubmenu()->GetMenuItemAt(1);
