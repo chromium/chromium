@@ -1553,9 +1553,6 @@ void WindowState::OnWindowDestroying(aura::Window* window) {
 
   MaybeRecordPartialDuration();
 
-  auto* widget = views::Widget::GetWidgetForNativeWindow(window);
-  if (widget)
-    Shell::Get()->focus_cycler()->RemoveWidget(widget);
   if (delegate_) {
     delegate_->OnWindowDestroying();
   }

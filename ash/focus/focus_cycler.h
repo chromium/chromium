@@ -10,16 +10,15 @@
 #include "ash/ash_export.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-
-namespace views {
-class Widget;
-}  // namespace views
+#include "base/scoped_multi_source_observation.h"
+#include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_observer.h"
 
 namespace ash {
 
 // This class handles moving focus between a set of widgets and the main browser
 // window.
-class ASH_EXPORT FocusCycler {
+class ASH_EXPORT FocusCycler : public views::WidgetObserver {
  public:
   enum Direction { FORWARD, BACKWARD };
 
@@ -28,7 +27,7 @@ class ASH_EXPORT FocusCycler {
   FocusCycler(const FocusCycler&) = delete;
   FocusCycler& operator=(const FocusCycler&) = delete;
 
-  ~FocusCycler();
+  ~FocusCycler() override;
 
   // Returns the widget the FocusCycler is attempting to activate or NULL if
   // FocusCycler is not activating any widgets.
@@ -55,7 +54,12 @@ class ASH_EXPORT FocusCycler {
   void ResetForTesting();
 
  private:
+  // views::WidgetObserver:
+  void OnWidgetDestroying(views::Widget* widget) override;
+
   std::vector<raw_ptr<views::Widget, VectorExperimental>> widgets_;
+  base::ScopedMultiSourceObservation<views::Widget, views::WidgetObserver>
+      widget_observations_{this};
 
   // See description above getter.
   raw_ptr<views::Widget> widget_activating_;

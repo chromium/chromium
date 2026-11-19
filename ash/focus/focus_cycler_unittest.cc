@@ -16,6 +16,7 @@
 #include "ash/system/status_area_widget_delegate.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/window_util.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/aura/test/test_windows.h"
 #include "ui/aura/window.h"
@@ -439,6 +440,26 @@ TEST_F(FocusCyclerTest, RemoveWidgetOnDisplayRemoved) {
   // Cycle focus should go back to the browser.
   focus_cycler()->RotateFocus(FocusCycler::FORWARD);
   EXPECT_TRUE(wm::IsActiveWindow(window.get()));
+}
+
+TEST_F(FocusCyclerTest, RemoveClientOwnsWidgetOnDestroy) {
+  focus_cycler()->ResetForTesting();
+
+  auto widget = std::make_unique<views::Widget>();
+  views::Widget::InitParams params(
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW);
+  params.bounds = {100, 100};
+  widget->Init(std::move(params));
+  widget->Show();
+
+  focus_cycler()->AddWidget(widget.get());
+  EXPECT_EQ(widget.get(), focus_cycler()->FindWidget(base::BindRepeating(
+                              [](views::Widget* w) { return true; })));
+
+  widget.reset();
+  EXPECT_EQ(nullptr, focus_cycler()->FindWidget(base::BindRepeating(
+                         [](views::Widget* w) { return true; })));
 }
 
 }  // namespace ash

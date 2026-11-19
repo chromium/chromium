@@ -37,12 +37,14 @@ void FocusCycler::AddWidget(views::Widget* widget) {
   auto iter = std::ranges::find(widgets_, widget);
   CHECK(iter == widgets_.end());
   widgets_.push_back(widget);
+  widget_observations_.AddObservation(widget);
 }
 
 void FocusCycler::RemoveWidget(views::Widget* widget) {
   auto iter = std::ranges::find(widgets_, widget);
   if (iter != widgets_.end()) {
     widgets_.erase(iter);
+    widget_observations_.RemoveObservation(widget);
   }
 }
 
@@ -143,6 +145,11 @@ views::Widget* FocusCycler::FindWidget(
 
 void FocusCycler::ResetForTesting() {
   widgets_.clear();
+  widget_observations_.RemoveAllObservations();
+}
+
+void FocusCycler::OnWidgetDestroying(views::Widget* widget) {
+  RemoveWidget(widget);
 }
 
 }  // namespace ash
