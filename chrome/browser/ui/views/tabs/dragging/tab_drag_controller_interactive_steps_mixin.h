@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_controller.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_controller_interactive_uitest.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
+#include "chrome/browser/ui/views/tabs/tab_group_header.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -172,6 +173,37 @@ class TabDragControllerInteractiveStepsMixin : public T {
       const gfx::Rect bounds = el->GetScreenBounds();
       return bounds.CenterPoint() - gfx::Vector2d(bounds.width() / 4, 0);
     });
+  }
+
+  // Returns a position halfway between the center and right edge of the target
+  // element (matching `GetRightCenterInScreenCoordinates`).
+  static base::RepeatingCallback<gfx::Point(ui::TrackedElement*)>
+  RightCenterPoint() {
+    return base::BindLambdaForTesting([](ui::TrackedElement* el) {
+      const gfx::Rect bounds = el->GetScreenBounds();
+      return bounds.CenterPoint() + gfx::Vector2d(bounds.width() / 4, 0);
+    });
+  }
+
+  // Presses the pointer on `tab_strip->group_header(group)`.
+  auto PressGroupHeader(TabStrip* tab_strip, tab_groups::TabGroupId group) {
+    static constexpr char kPressedGroupHeader[] = "PressedGroupHeader";
+    return Steps(NameGroupHeader(kPressedGroupHeader, tab_strip, group),
+                 MoveMouseTo(kPressedGroupHeader).SetMustRemainVisible(false),
+                 ClickMouse(ui_controls::LEFT, /*release=*/false));
+  }
+
+  // Moves the pressed pointer straight down from
+  // `tab_strip->group_header(group)` until the group detaches into a window
+  // move loop.
+  auto MoveGroupHeaderOutUntilDetached(TabStrip* tab_strip,
+                                       tab_groups::TabGroupId group) {
+    static constexpr char kDetachingGroupHeader[] = "DetachingGroupHeader";
+    return Steps(
+        NameGroupHeader(kDetachingGroupHeader, tab_strip, group),
+        MoveMouseTo(kDetachingGroupHeader, PointBelowTabStrip(tab_strip))
+            .SetMustRemainVisible(false),
+        WaitForState(kTabDragWindowLoopActiveState, true));
   }
 
   // Moves the pressed pointer straight down from `tab_strip->tab_at(index)`
@@ -396,6 +428,19 @@ class TabDragControllerInteractiveStepsMixin : public T {
         Do([this, tab_strip]() { StopAnimating(tab_strip); }),
         NameView(name, base::BindLambdaForTesting([tab_strip, index]() {
                    return static_cast<views::View*>(tab_strip->tab_at(index));
+                 })));
+  }
+
+  // Names `tab_strip->group_header(group)` as `name` once animations have
+  // settled.
+  MultiStep NameGroupHeader(std::string_view name,
+                            TabStrip* tab_strip,
+                            tab_groups::TabGroupId group) {
+    return Steps(
+        Do([this, tab_strip]() { StopAnimating(tab_strip); }),
+        NameView(name, base::BindLambdaForTesting([tab_strip, group]() {
+                   return static_cast<views::View*>(
+                       tab_strip->group_header(group));
                  })));
   }
 
