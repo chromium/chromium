@@ -4,7 +4,6 @@ import {ContentSettingsTypes} from './constants.js';
 <settings-subpage page-title="$i18n{siteSettingsCategoryCamera}"
     search-label="$i18n{siteSettingsAllSitesFilter}"
     search-icon="settings20:filter-list"
-    .searchTerm="${this.searchTerm_}"
     @search-term-changed="${this.onSearchTermChanged_}"
     route-path="${this.routePath}">
   <media-picker label="$i18n{siteSettingsCameraLabel}" type="camera">
