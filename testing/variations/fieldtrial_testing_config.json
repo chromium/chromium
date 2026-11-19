@@ -14022,6 +14022,30 @@
             ]
         }
     ],
+    "NtpNextScaledAIMerchAndroid": [
+        {
+            "platforms": [
+                "android",
+                "android_desktop"
+            ],
+            "form_factors": [
+                "desktop"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_DirectNavigation_AddTab",
+                    "params": {
+                        "AddTabUploadDelayOnActionChipClick": "true"
+                    },
+                    "enable_features": [
+                        "NtpNextFeatures",
+                        "NtpScaledActionChips",
+                        "NtpScaledActionChipsSmall"
+                    ]
+                }
+            ]
+        }
+    ],
     "NtpRealboxCyclingPlaceholders": [
         {
             "platforms": [
