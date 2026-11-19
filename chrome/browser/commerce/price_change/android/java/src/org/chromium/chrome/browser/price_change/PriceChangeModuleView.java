@@ -88,8 +88,7 @@ public class PriceChangeModuleView extends FrameLayout {
         background.setColor(PriceChangeModuleViewUtils.getBackgroundColor(context));
         background.setCornerRadius(
                 context.getResources()
-                        .getDimensionPixelSize(
-                                R.dimen.price_change_module_product_image_corner_radius));
+                        .getDimensionPixelSize(R.dimen.home_module_image_corner_radius));
         mProductImageView.setBackgroundDrawable(background);
 
         // Initialize default icon.

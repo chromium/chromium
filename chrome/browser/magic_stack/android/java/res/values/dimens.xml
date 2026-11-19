@@ -10,4 +10,9 @@ found in the LICENSE file.
   <dimen name="page_indicator_top_margin">14dp</dimen>
   <dimen name="module_internal_padding">12dp</dimen>
   <dimen name="home_module_height">184dp</dimen>
+  <!-- Corner radius of the main image on a magic stack card, such as a tab
+       thumbnail, a tip illustration or a product image. -->
+  <dimen name="home_module_image_corner_radius">16dp</dimen>
+  <!-- Corner radius of the small favicon badge shown on a card's main image. -->
+  <dimen name="home_module_image_badge_corner_radius">8dp</dimen>
 </resources>

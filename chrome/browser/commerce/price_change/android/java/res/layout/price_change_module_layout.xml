@@ -44,10 +44,10 @@ found in the LICENSE file.
                 android:background="@drawable/price_change_module_image_background">
                 <org.chromium.components.browser_ui.widget.RoundedCornerImageView
                     android:id="@+id/product_image"
-                    app:cornerRadiusBottomEnd="@dimen/price_change_module_product_image_corner_radius"
-                    app:cornerRadiusBottomStart="@dimen/price_change_module_product_image_corner_radius"
-                    app:cornerRadiusTopEnd="@dimen/price_change_module_product_image_corner_radius"
-                    app:cornerRadiusTopStart="@dimen/price_change_module_product_image_corner_radius"
+                    app:cornerRadiusBottomEnd="@dimen/home_module_image_corner_radius"
+                    app:cornerRadiusBottomStart="@dimen/home_module_image_corner_radius"
+                    app:cornerRadiusTopEnd="@dimen/home_module_image_corner_radius"
+                    app:cornerRadiusTopStart="@dimen/home_module_image_corner_radius"
                     android:layout_height="@dimen/price_change_module_product_image_size"
                     android:layout_width="@dimen/price_change_module_product_image_size"
                     android:layout_margin="@dimen/price_change_module_product_image_margin"

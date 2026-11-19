@@ -9,5 +9,5 @@ found in the LICENSE file.
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="UnusedResources">
   <solid android:color="@color/home_surface_ui_background_color"/>
-  <corners android:radius="@dimen/price_change_module_favicon_background_radius"/>
+  <corners android:radius="@dimen/home_module_image_badge_corner_radius"/>
 </shape>
