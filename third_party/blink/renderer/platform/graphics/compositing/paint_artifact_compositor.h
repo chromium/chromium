@@ -297,10 +297,9 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
   const TransformPaintPropertyNode& ScrollTranslationStateForLayer(
       const PendingLayer&);
 
-  // if |needs_layer| is false, no cc::Layer is created, |mask_effect_id| is
-  // not set, and the Layer() method on the returned SynthesizedClip returns
-  // nullptr.
-  // However, |mask_isolation_id| is always set.
+  // If `needs_layer` is false, no `cc::Layer` is created or updated for this
+  // update, though a reused `SynthesizedClip` may still hold a layer from an
+  // earlier update. `mask_isolation_id` and `mask_effect_id` are always set.
   SynthesizedClip& CreateOrReuseSynthesizedClipLayer(
       const ClipPaintPropertyNode&,
       const TransformPaintPropertyNode&,

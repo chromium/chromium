@@ -484,8 +484,6 @@ class CC_EXPORT EffectTree final : public PropertyTree<EffectNode> {
   void UpdateEffectChanged(EffectNode* node, const EffectNode* parent_node);
 
   void UpdateHasFilters(EffectNode* node, const EffectNode* parent_node);
-  void UpdateHasFastRoundedCorner(EffectNode* node,
-                                  const EffectNode* parent_node);
 
   // TODO(crbug.com/443024856): Revisit decision of 'unordered_multimap' to
   // 'multimap'.

@@ -24,7 +24,9 @@
 #include "cc/trees/viewport_property_ids.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkBlendMode.h"
 #include "ui/gfx/geometry/linear_gradient.h"
+#include "ui/gfx/geometry/mask_filter_info.h"
 #include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/test/geometry_util.h"
 
@@ -490,6 +492,89 @@ TEST(PropertyTreeTest, TransformsWithFlattening) {
   grand_child_to_child.MakeIdentity();
   tree.CombineTransformsBetween(grand_child, child, &grand_child_to_child);
   EXPECT_TRANSFORM_EQ(rotation_about_x, grand_child_to_child);
+}
+
+class HitTestMayBeAffectedByMaskTest : public testing::Test {
+ protected:
+  // Builds contents root -> parent -> child, plus a sibling of the parent.
+  void SetUp() override {
+    contents_root_id_ = tree().Insert(EffectNode(), kRootPropertyNodeId);
+    ASSERT_EQ(kContentsRootPropertyNodeId, contents_root_id_);
+    parent_id_ = tree().Insert(EffectNode(), contents_root_id_);
+    child_id_ = tree().Insert(EffectNode(), parent_id_);
+    sibling_id_ = tree().Insert(EffectNode(), contents_root_id_);
+  }
+
+  EffectTree& tree() { return property_trees_.effect_tree_mutable(); }
+
+  PropertyTrees property_trees_;
+  int contents_root_id_ = kInvalidPropertyNodeId;
+  int parent_id_ = kInvalidPropertyNodeId;
+  int child_id_ = kInvalidPropertyNodeId;
+  int sibling_id_ = kInvalidPropertyNodeId;
+};
+
+TEST_F(HitTestMayBeAffectedByMaskTest, UnmaskedNodesAndBoundaryIds) {
+  EXPECT_FALSE(tree().HitTestMayBeAffectedByMask(kInvalidPropertyNodeId));
+  EXPECT_FALSE(tree().HitTestMayBeAffectedByMask(kRootPropertyNodeId));
+  EXPECT_FALSE(tree().HitTestMayBeAffectedByMask(contents_root_id_));
+  EXPECT_FALSE(tree().HitTestMayBeAffectedByMask(parent_id_));
+  EXPECT_FALSE(tree().HitTestMayBeAffectedByMask(child_id_));
+  EXPECT_FALSE(tree().HitTestMayBeAffectedByMask(sibling_id_));
+}
+
+TEST_F(HitTestMayBeAffectedByMaskTest, FastRoundedCornerOnParent) {
+  tree().MutableNode(parent_id_).is_fast_rounded_corner = true;
+  tree().MutableNode(parent_id_).mask_filter_info =
+      gfx::MaskFilterInfo(gfx::RRectF(0, 0, 100, 100, 5));
+
+  EXPECT_FALSE(tree().HitTestMayBeAffectedByMask(contents_root_id_));
+  EXPECT_TRUE(tree().HitTestMayBeAffectedByMask(parent_id_));
+  EXPECT_TRUE(tree().HitTestMayBeAffectedByMask(child_id_));
+  EXPECT_FALSE(tree().HitTestMayBeAffectedByMask(sibling_id_));
+}
+
+TEST_F(HitTestMayBeAffectedByMaskTest,
+       FastRoundedCornerOnChildDoesNotAffectParent) {
+  tree().MutableNode(child_id_).is_fast_rounded_corner = true;
+  tree().MutableNode(child_id_).mask_filter_info =
+      gfx::MaskFilterInfo(gfx::RRectF(0, 0, 100, 100, 5));
+
+  EXPECT_FALSE(tree().HitTestMayBeAffectedByMask(parent_id_));
+  EXPECT_TRUE(tree().HitTestMayBeAffectedByMask(child_id_));
+}
+
+TEST_F(HitTestMayBeAffectedByMaskTest, FastRoundedCornerOnContentsRoot) {
+  tree().MutableNode(contents_root_id_).is_fast_rounded_corner = true;
+  tree().MutableNode(contents_root_id_).mask_filter_info =
+      gfx::MaskFilterInfo(gfx::RRectF(0, 0, 100, 100, 5));
+
+  EXPECT_FALSE(tree().HitTestMayBeAffectedByMask(kRootPropertyNodeId));
+  EXPECT_TRUE(tree().HitTestMayBeAffectedByMask(contents_root_id_));
+  EXPECT_TRUE(tree().HitTestMayBeAffectedByMask(parent_id_));
+  EXPECT_TRUE(tree().HitTestMayBeAffectedByMask(child_id_));
+  EXPECT_TRUE(tree().HitTestMayBeAffectedByMask(sibling_id_));
+}
+
+TEST_F(HitTestMayBeAffectedByMaskTest, MaskingChildAndRemoval) {
+  int mask_id = tree().Insert(EffectNode(), parent_id_);
+  tree().MutableNode(mask_id).blend_mode = SkBlendMode::kDstIn;
+  tree().set_needs_update(true);
+  draw_property_utils::ComputeEffects(&tree(), 1.f);
+
+  EXPECT_TRUE(tree().Node(parent_id_).has_masking_child);
+  EXPECT_FALSE(tree().HitTestMayBeAffectedByMask(contents_root_id_));
+  EXPECT_TRUE(tree().HitTestMayBeAffectedByMask(parent_id_));
+  EXPECT_TRUE(tree().HitTestMayBeAffectedByMask(child_id_));
+  EXPECT_FALSE(tree().HitTestMayBeAffectedByMask(sibling_id_));
+
+  tree().MutableNode(mask_id).blend_mode = SkBlendMode::kSrcOver;
+  tree().set_needs_update(true);
+  draw_property_utils::ComputeEffects(&tree(), 1.f);
+
+  EXPECT_FALSE(tree().Node(parent_id_).has_masking_child);
+  EXPECT_FALSE(tree().HitTestMayBeAffectedByMask(parent_id_));
+  EXPECT_FALSE(tree().HitTestMayBeAffectedByMask(child_id_));
 }
 
 TEST(PropertyTreeTest, UnboundedRenderSurfaceReason) {

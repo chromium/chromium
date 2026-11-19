@@ -221,8 +221,6 @@ void ComputePropertyTreeNodeUpdate(
       !new_node.effect_changed() &&
       old_node->subtree_has_copy_request == new_node.subtree_has_copy_request &&
       old_node->is_fast_rounded_corner == new_node.is_fast_rounded_corner &&
-      old_node->node_or_ancestor_has_fast_rounded_corner ==
-          new_node.node_or_ancestor_has_fast_rounded_corner &&
       old_node->lcd_text_disallowed_by_filter ==
           new_node.lcd_text_disallowed_by_filter &&
       old_node->lcd_text_disallowed_by_backdrop_filter ==

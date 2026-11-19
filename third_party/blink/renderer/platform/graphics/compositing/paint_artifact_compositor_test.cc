@@ -9,16 +9,20 @@
 #include <ranges>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_simple_task_runner.h"
 #include "build/build_config.h"
+#include "cc/input/hit_test_opaqueness.h"
 #include "cc/input/main_thread_scrolling_reason.h"
 #include "cc/layers/layer.h"
+#include "cc/layers/layer_impl.h"
 #include "cc/test/fake_impl_task_runner_provider.h"
 #include "cc/test/fake_layer_tree_frame_sink.h"
 #include "cc/test/fake_layer_tree_host_delegate.h"
 #include "cc/test/fake_layer_tree_host_impl.h"
+#include "cc/test/test_task_graph_runner.h"
 #include "cc/trees/clip_node.h"
 #include "cc/trees/effect_node.h"
 #include "cc/trees/layer_tree_host.h"
@@ -30,9 +34,11 @@
 #include "cc/view_transition/view_transition_request.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/graphics/paint/clip_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/effect_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_artifact.h"
+#include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scroll_paint_property_node.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
@@ -44,6 +50,8 @@
 #include "third_party/blink/renderer/platform/testing/test_paint_artifact.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/skia/include/core/SkBlendMode.h"
+#include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/test/geometry_util.h"
 
 namespace blink {
@@ -109,6 +117,23 @@ class PaintArtifactCompositorTest : public testing::Test,
 
   cc::PropertyTrees& GetPropertyTrees() {
     return *layer_tree_->layer_tree_host()->property_trees();
+  }
+
+  // Evaluates `cc::LayerImpl::OpaqueToHitTest()` against a copy of
+  // `GetPropertyTrees()` with `effect_tree_index` and `hit_test_opaqueness`
+  // synced from `layer`.
+  bool OpaqueToHitTest(const cc::Layer* layer) {
+    cc::FakeImplTaskRunnerProvider task_runner_provider;
+    cc::TestTaskGraphRunner task_graph_runner;
+    cc::FakeLayerTreeHostImpl host_impl(&task_runner_provider,
+                                        &task_graph_runner);
+    cc::LayerTreeImpl* impl_tree = host_impl.active_tree();
+    *impl_tree->property_trees() = GetPropertyTrees();
+    std::unique_ptr<cc::LayerImpl> impl_layer =
+        layer->CreateLayerImpl(impl_tree);
+    impl_layer->SetEffectTreeIndex(layer->effect_tree_index());
+    impl_layer->SetHitTestOpaqueness(layer->hit_test_opaqueness());
+    return impl_layer->OpaqueToHitTest();
   }
 
   const cc::TransformNode& GetTransformNode(const cc::Layer* layer) {
@@ -3344,6 +3369,12 @@ TEST_P(PaintArtifactCompositorTest, SynthesizedClipIsNotDrawable) {
       GetPropertyTrees().effect_tree().Node(mask_isolation_0_id);
   ASSERT_EQ(e0_id, mask_isolation_0.parent_id);
   EXPECT_EQ(SkBlendMode::kSrcOver, mask_isolation_0.blend_mode);
+  EXPECT_TRUE(mask_isolation_0.is_fast_rounded_corner);
+  EXPECT_EQ(gfx::RRectF(50, 50, 300, 200, 5),
+            mask_isolation_0.mask_filter_info.rounded_corner_bounds());
+  EXPECT_FALSE(mask_isolation_0.has_masking_child);
+  EXPECT_TRUE(GetPropertyTrees().effect_tree().HitTestMayBeAffectedByMask(
+      mask_isolation_0_id));
 }
 
 TEST_P(PaintArtifactCompositorTest, GetLayersAsJSONSynthesizedClipMaskLayer) {
@@ -5404,6 +5435,137 @@ TEST_P(PaintArtifactCompositorTest, AddUnpaintedNonCompositedScrollNodes) {
   EXPECT_FALSE(scroll_tree.CanRealizeScrollsOnActiveTree(*scroll_node));
   EXPECT_FALSE(scroll_tree.CanRealizeScrollsOnPendingTree(*scroll_node));
   EXPECT_FALSE(scroll_tree.ShouldRealizeScrollsOnMain(*scroll_node));
+}
+
+TEST_P(PaintArtifactCompositorTest, ClipMaskHitTestNonDrawingAndRemoval) {
+  ClipPaintPropertyNode* clip =
+      CreateClipPathClip(c0(), t0(), FloatRoundedRect(0, 0, 100, 100));
+  ClipPaintPropertyNode* inner_clip =
+      CreateClip(*clip, t0(), FloatRoundedRect(0, 0, 80, 80));
+  PropertyTreeState state =
+      ScrollState1(PropertyTreeState(t0(), *inner_clip, e0()));
+  auto* client = MakeGarbageCollected<FakeDisplayItemClient>();
+  Update(TestPaintArtifact().ScrollHitTestChunk(*client, state).Build());
+
+  ASSERT_EQ(1u, LayerCount());
+  ASSERT_EQ(1u, SynthesizedClipLayerCount());
+  EXPECT_FALSE(SynthesizedClipLayerAt(0));
+  cc::Layer* scroll_layer = ScrollHitTestLayerAt(0);
+  ASSERT_TRUE(scroll_layer);
+  EXPECT_FALSE(scroll_layer->draws_content());
+  EXPECT_EQ(cc::HitTestOpaqueness::kOpaque,
+            scroll_layer->hit_test_opaqueness());
+  EXPECT_FALSE(OpaqueToHitTest(scroll_layer));
+  EXPECT_TRUE(GetEffectNode(scroll_layer).has_masking_child);
+  EXPECT_TRUE(GetPropertyTrees().effect_tree().HitTestMayBeAffectedByMask(
+      scroll_layer->effect_tree_index()));
+
+  Update(TestPaintArtifact()
+             .ScrollHitTestChunk(*client, state)
+             .Properties(t0(), c0(), e0())
+             .Build());
+
+  EXPECT_EQ(scroll_layer, ScrollHitTestLayerAt(0));
+  EXPECT_TRUE(OpaqueToHitTest(scroll_layer));
+  EXPECT_FALSE(GetPropertyTrees().effect_tree().HitTestMayBeAffectedByMask(
+      scroll_layer->effect_tree_index()));
+  EXPECT_THAT(GetPropertyTrees().effect_tree().nodes(),
+              testing::Each(testing::Field(&cc::EffectNode::blend_mode,
+                                           testing::Ne(SkBlendMode::kDstIn))));
+}
+
+TEST_P(PaintArtifactCompositorTest, ClipMaskHitTestOmittedThenEmitted) {
+  ClipPaintPropertyNode* clip =
+      CreateClipPathClip(c0(), t0(), FloatRoundedRect(0, 0, 100, 100));
+  ClipPaintPropertyNode* inner_clip =
+      CreateClip(*clip, t0(), FloatRoundedRect(0, 0, 80, 80));
+  PropertyTreeState state =
+      ScrollState1(PropertyTreeState(t0(), *inner_clip, e0()));
+  auto* client = MakeGarbageCollected<FakeDisplayItemClient>();
+  Update(TestPaintArtifact().ScrollHitTestChunk(*client, state).Build());
+
+  cc::Layer* scroll_layer = ScrollHitTestLayerAt(0);
+  ASSERT_TRUE(scroll_layer);
+  EXPECT_FALSE(OpaqueToHitTest(scroll_layer));
+  EXPECT_TRUE(GetEffectNode(scroll_layer).has_masking_child);
+  ASSERT_EQ(1u, SynthesizedClipLayerCount());
+  EXPECT_FALSE(SynthesizedClipLayerAt(0));
+
+  Update(TestPaintArtifact()
+             .ScrollHitTestChunk(*client, state)
+             .Chunk(t0(), *clip, e0())
+             .HitTestOpaqueness(cc::HitTestOpaqueness::kOpaque)
+             .RectDrawing(gfx::Rect(0, 0, 100, 100), Color::kBlack)
+             .Build());
+
+  scroll_layer = ScrollHitTestLayerAt(0);
+  ASSERT_TRUE(scroll_layer);
+  EXPECT_FALSE(OpaqueToHitTest(scroll_layer));
+  EXPECT_FALSE(OpaqueToHitTest(LayerAt(1)));
+  EXPECT_TRUE(GetEffectNode(scroll_layer).has_masking_child);
+  ASSERT_EQ(1u, SynthesizedClipLayerCount());
+  const cc::Layer* mask_layer = SynthesizedClipLayerAt(0);
+  ASSERT_TRUE(mask_layer);
+  EXPECT_EQ(cc::HitTestOpaqueness::kMixed, mask_layer->hit_test_opaqueness());
+  ASSERT_NE(-1, LayerIndex(mask_layer));
+  ASSERT_NE(-1, LayerIndex(scroll_layer));
+  EXPECT_GT(LayerIndex(mask_layer), LayerIndex(scroll_layer));
+  EXPECT_NE(scroll_layer->scroll_tree_index(), mask_layer->scroll_tree_index());
+}
+
+TEST_P(PaintArtifactCompositorTest, ClipMaskHitTestEmittedThenOmitted) {
+  ClipPaintPropertyNode* clip =
+      CreateClipPathClip(c0(), t0(), FloatRoundedRect(0, 0, 100, 100));
+  ClipPaintPropertyNode* inner_clip =
+      CreateClip(*clip, t0(), FloatRoundedRect(0, 0, 80, 80));
+  PropertyTreeState state =
+      ScrollState1(PropertyTreeState(t0(), *inner_clip, e0()));
+  auto* client = MakeGarbageCollected<FakeDisplayItemClient>();
+  Update(TestPaintArtifact()
+             .ScrollHitTestChunk(*client, state)
+             .Chunk(t0(), *clip, e0())
+             .HitTestOpaqueness(cc::HitTestOpaqueness::kOpaque)
+             .RectDrawing(gfx::Rect(0, 0, 100, 100), Color::kBlack)
+             .Build());
+
+  cc::Layer* scroll_layer = ScrollHitTestLayerAt(0);
+  ASSERT_TRUE(scroll_layer);
+  EXPECT_FALSE(OpaqueToHitTest(scroll_layer));
+  EXPECT_FALSE(OpaqueToHitTest(LayerAt(1)));
+  EXPECT_TRUE(GetEffectNode(scroll_layer).has_masking_child);
+  ASSERT_EQ(1u, SynthesizedClipLayerCount());
+  scoped_refptr<const cc::Layer> mask_layer = SynthesizedClipLayerAt(0);
+  ASSERT_TRUE(mask_layer);
+  EXPECT_NE(-1, LayerIndex(mask_layer.get()));
+
+  Update(TestPaintArtifact().ScrollHitTestChunk(*client, state).Build());
+
+  scroll_layer = ScrollHitTestLayerAt(0);
+  ASSERT_TRUE(scroll_layer);
+  EXPECT_FALSE(OpaqueToHitTest(scroll_layer));
+  EXPECT_TRUE(GetEffectNode(scroll_layer).has_masking_child);
+  EXPECT_EQ(-1, LayerIndex(mask_layer.get()));
+}
+
+TEST_P(PaintArtifactCompositorTest, ClipMaskHitTestForeignLayer) {
+  ClipPaintPropertyNode* clip =
+      CreateClipPathClip(c0(), t0(), FloatRoundedRect(0, 0, 100, 100));
+  scoped_refptr<cc::Layer> layer = cc::Layer::Create();
+  layer->SetBounds(gfx::Size(100, 100));
+  layer->SetHitTestOpaqueness(cc::HitTestOpaqueness::kOpaque);
+  Update(TestPaintArtifact()
+             .ForeignLayerChunk(layer, gfx::Point())
+             .Properties(t0(), *clip, e0())
+             .Build());
+
+  ASSERT_EQ(1u, LayerCount());
+  EXPECT_EQ(layer.get(), LayerAt(0));
+  EXPECT_EQ(cc::HitTestOpaqueness::kOpaque, layer->hit_test_opaqueness());
+  EXPECT_FALSE(OpaqueToHitTest(layer.get()));
+
+  Update(TestPaintArtifact().ForeignLayerChunk(layer, gfx::Point()).Build());
+
+  EXPECT_TRUE(OpaqueToHitTest(layer.get()));
 }
 
 TEST_P(PaintArtifactCompositorTest, RepaintIndirectScrollHitTest) {

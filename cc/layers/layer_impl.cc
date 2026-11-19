@@ -31,6 +31,7 @@
 #include "cc/trees/layer_tree_impl.h"
 #include "cc/trees/layer_tree_settings.h"
 #include "cc/trees/mutator_host.h"
+#include "cc/trees/property_tree.h"
 #include "cc/trees/proxy.h"
 #include "cc/trees/scroll_node.h"
 #include "cc/trees/transform_node.h"
@@ -674,10 +675,12 @@ bool LayerImpl::HitTestable() const {
 }
 
 bool LayerImpl::OpaqueToHitTest() const {
+  // Masked layers are not opaque to hit testing, to force main-thread hit
+  // testing when a hit may be clipped out by a mask.
+  // TODO(crbug.com/40572334): Exclude fast rounded corners when their fast
+  // hit testing is supported.
   return HitTestable() && hit_test_opaqueness_ == HitTestOpaqueness::kOpaque &&
-         !GetEffectTree()
-              .Node(effect_tree_index())
-              .node_or_ancestor_has_fast_rounded_corner;
+         !GetEffectTree().HitTestMayBeAffectedByMask(effect_tree_index());
 }
 
 void LayerImpl::SetBackgroundColor(SkColor4f background_color) {

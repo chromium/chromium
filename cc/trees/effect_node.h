@@ -208,10 +208,6 @@ struct CC_EXPORT EffectNode {
   // having a rounded corner.
   bool is_fast_rounded_corner : 1 = false;
 
-  // This property is computed in EffectTree::UpdateHasFastRoundedCorner and
-  // is not synced from clients for TreesInViz.
-  bool node_or_ancestor_has_fast_rounded_corner : 1 = false;
-
   // This is set to true if the node or any ancestor has filters that don't
   // allow LCD text.
   // This property is computed in EffectTree::UpdateHasFilters and is not

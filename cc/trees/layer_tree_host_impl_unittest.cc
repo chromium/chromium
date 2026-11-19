@@ -85,6 +85,8 @@
 #include "cc/trees/layer_tree_host_impl_test_base.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "cc/trees/mutator_host.h"
+#include "cc/trees/property_ids.h"
+#include "cc/trees/property_tree.h"
 #include "cc/trees/render_frame_metadata.h"
 #include "cc/trees/render_frame_metadata_observer.h"
 #include "cc/trees/scroll_node.h"
@@ -114,12 +116,15 @@
 #include "media/base/media.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkBlendMode.h"
 #include "third_party/skia/include/core/SkMallocPixelRef.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/types/scroll_input_type.h"
 #include "ui/gfx/animation/keyframe/keyframed_animation_curve.h"
 #include "ui/gfx/animation/keyframe/timing_function.h"
+#include "ui/gfx/geometry/mask_filter_info.h"
 #include "ui/gfx/geometry/point_conversions.h"
+#include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/test/geometry_util.h"
 #include "ui/gfx/geometry/transform_operations.h"
@@ -14499,19 +14504,120 @@ TEST_P(UnifiedScrollingTest, UnreliableHitTestOnNonOpaqueToHitTestScroller) {
   }
 }
 
+TEST_P(UnifiedScrollingTest, ScrollbarLayerClippedByMask) {
+  CreateScroller({}, HitTestOpaqueness::kOpaque);
+  auto* scrollbar_layer = AddLayer<PaintedScrollbarLayerImpl>(
+      host_impl_->active_tree(), ScrollbarOrientation::kVertical, false, true);
+  const int isolation_id = CreateEffectNode(ScrollerLayer()).id;
+  SetupScrollbarLayer(ScrollerLayer(), scrollbar_layer);
+  scrollbar_layer->SetHitTestOpaqueness(HitTestOpaqueness::kOpaque);
+  scrollbar_layer->SetBounds(gfx::Size(10, 50));
+  scrollbar_layer->SetOffsetToTransformParent(gfx::Vector2dF(40, 0));
+  UpdateDrawProperties(host_impl_->active_tree());
+
+  EXPECT_TRUE(ScrollerLayer()->OpaqueToHitTest());
+  EXPECT_TRUE(scrollbar_layer->OpaqueToHitTest());
+
+  // A `kDstIn` child effect without a layer, as Blink emits for a synthesized
+  // clip when nothing under it draws.
+  EffectTree& effect_tree = GetPropertyTrees()->effect_tree_mutable();
+  int mask_effect_id = effect_tree.Insert(EffectNode(), isolation_id);
+  effect_tree.MutableNode(mask_effect_id).blend_mode = SkBlendMode::kDstIn;
+  effect_tree.set_needs_update(true);
+  host_impl_->active_tree()->set_needs_update_draw_properties();
+  UpdateDrawProperties(host_impl_->active_tree());
+
+  EXPECT_FALSE(ScrollerLayer()->OpaqueToHitTest());
+  EXPECT_FALSE(scrollbar_layer->OpaqueToHitTest());
+
+  ScrollStatus status = GetInputHandler().ScrollBegin(
+      BeginState(gfx::Point(45, 20), gfx::Vector2d(0, 10),
+                 ui::ScrollInputType::kWheel)
+          .get(),
+      ui::ScrollInputType::kWheel);
+  EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
+  EXPECT_EQ(MainThreadHitTestReasons{MainThreadHitTestReason::kFailedHitTest},
+            status.main_thread_hit_test_reasons);
+
+  // Without the mask, the hit on the scrollbar is reliable again.
+  effect_tree.MutableNode(mask_effect_id).blend_mode = SkBlendMode::kSrcOver;
+  effect_tree.set_needs_update(true);
+  host_impl_->active_tree()->set_needs_update_draw_properties();
+  UpdateDrawProperties(host_impl_->active_tree());
+
+  EXPECT_TRUE(ScrollerLayer()->OpaqueToHitTest());
+  EXPECT_TRUE(scrollbar_layer->OpaqueToHitTest());
+
+  status = GetInputHandler().ScrollBegin(
+      BeginState(gfx::Point(45, 20), gfx::Vector2d(0, 10),
+                 ui::ScrollInputType::kWheel)
+          .get(),
+      ui::ScrollInputType::kWheel);
+  EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
+  EXPECT_TRUE(status.main_thread_hit_test_reasons.empty());
+  EXPECT_EQ(ScrollerNode(), CurrentlyScrollingNode());
+}
+
+TEST_P(UnifiedScrollingTest,
+       EmittedClipMaskOnEscapingLayerForcesMainThreadHitTest) {
+  CreateScroller({}, HitTestOpaqueness::kOpaque);
+
+  // An opaque masked layer over the scroller that does not scroll with it. A
+  // hit inside its bounds can be outside the mask shape.
+  LayerImpl* overlay_layer = AddLayerInActiveTree();
+  overlay_layer->SetBounds(gfx::Size(100, 100));
+  overlay_layer->SetDrawsContent(true);
+  overlay_layer->SetHitTestOpaqueness(HitTestOpaqueness::kOpaque);
+  CopyProperties(OuterViewportScrollLayer(), overlay_layer);
+  EffectNode& isolation = CreateEffectNode(overlay_layer);
+  isolation.render_surface_reason = RenderSurfaceReason::kClipPath;
+  const int isolation_id = isolation.id;
+
+  LayerImpl* mask_layer = AddLayerInActiveTree();
+  mask_layer->SetBounds(gfx::Size(100, 100));
+  mask_layer->SetDrawsContent(true);
+  mask_layer->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
+  CopyProperties(OuterViewportScrollLayer(), mask_layer);
+  mask_layer->SetEffectTreeIndex(isolation_id);
+  CreateEffectNode(mask_layer).blend_mode = SkBlendMode::kDstIn;
+  UpdateDrawProperties(host_impl_->active_tree());
+
+  EXPECT_FALSE(overlay_layer->OpaqueToHitTest());
+
+  ScrollStatus status = ScrollBegin(gfx::Vector2d(0, 10));
+  EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
+  EXPECT_EQ(MainThreadHitTestReasons{MainThreadHitTestReason::kFailedHitTest},
+            status.main_thread_hit_test_reasons);
+}
+
+TEST_P(UnifiedScrollingTest,
+       RootFastRoundedCornerMakesLayerNonOpaqueToHitTest) {
+  CreateScroller({}, HitTestOpaqueness::kOpaque);
+  EffectNode& root_effect =
+      GetPropertyTrees()->effect_tree_mutable().MutableNode(
+          kContentsRootPropertyNodeId);
+  root_effect.is_fast_rounded_corner = true;
+  root_effect.mask_filter_info =
+      gfx::MaskFilterInfo(gfx::RRectF(0, 0, 100, 100, 10));
+
+  EXPECT_FALSE(ScrollerLayer()->OpaqueToHitTest());
+}
+
 TEST_P(UnifiedScrollingTest, ScrollbarLayerClippedByRoundedCorner) {
   CreateScroller({}, HitTestOpaqueness::kMixed);
   auto* scrollbar_layer = AddLayer<PaintedScrollbarLayerImpl>(
       host_impl_->active_tree(), ScrollbarOrientation::kVertical, false, true);
-  CreateEffectNode(ScrollerLayer()).node_or_ancestor_has_fast_rounded_corner =
-      true;
+  EffectNode& effect = CreateEffectNode(ScrollerLayer());
+  effect.is_fast_rounded_corner = true;
+  effect.mask_filter_info = gfx::MaskFilterInfo(gfx::RRectF(0, 0, 100, 100, 5));
   SetupScrollbarLayer(ScrollerLayer(), scrollbar_layer);
+  scrollbar_layer->SetHitTestOpaqueness(HitTestOpaqueness::kOpaque);
   scrollbar_layer->SetBounds(gfx::Size(10, 50));
   scrollbar_layer->SetOffsetToTransformParent(gfx::Vector2dF(40, 0));
 
   // Hit test on the scrollbar layer is not reliable because of the rounded
   // corner.
-  auto status = GetInputHandler().ScrollBegin(
+  ScrollStatus status = GetInputHandler().ScrollBegin(
       BeginState(gfx::Point(45, 20), gfx::Vector2d(0, 10),
                  ui::ScrollInputType::kWheel)
           .get(),

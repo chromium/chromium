@@ -733,9 +733,10 @@ int PropertyTreeManager::EnsureCompositorOuterScrollAndTransformNode(
 
 void PropertyTreeManager::EmitClipMaskLayer() {
   cc::EffectNode& mask_isolation = effect_tree_.MutableNode(current_.effect_id);
+  bool has_mask_filter = !mask_isolation.mask_filter_info.IsEmpty();
   bool needs_layer =
       !pending_synthetic_mask_layers_.Contains(mask_isolation.id) &&
-      mask_isolation.mask_filter_info.IsEmpty();
+      !has_mask_filter;
 
   CompositorElementId mask_isolation_id, mask_effect_id;
   SynthesizedClip& clip = client_.CreateOrReuseSynthesizedClipLayer(
@@ -747,9 +748,14 @@ void PropertyTreeManager::EmitClipMaskLayer() {
   // backdrop effect was moved up to |mask_isolation|.
   mask_isolation.element_id = mask_isolation_id;
 
-  if (!needs_layer)
+  if (has_mask_filter) {
     return;
+  }
 
+  // Emit the `kDstIn` mask effect even when `!needs_layer` (when nothing under
+  // the clip draws content) so `EffectNode::has_masking_child` marks
+  // `mask_isolation` as masked for compositor hit testing without allocating
+  // or rasterizing a mask `PictureLayer`.
   cc::EffectNode& mask_effect = effect_tree_.MutableNode(
       effect_tree_.Insert(cc::EffectNode(), current_.effect_id));
   // The address of mask_isolation may have changed when we insert
@@ -760,6 +766,10 @@ void PropertyTreeManager::EmitClipMaskLayer() {
   mask_effect.element_id = mask_effect_id;
   mask_effect.clip_id = mask_isolation_ref.clip_id;
   mask_effect.blend_mode = SkBlendMode::kDstIn;
+
+  if (!needs_layer) {
+    return;
+  }
 
   cc::PictureLayer* mask_layer = clip.Layer();
 

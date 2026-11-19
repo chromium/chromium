@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_TEST_PAINT_ARTIFACT_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "cc/input/hit_test_opaqueness.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_list.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_artifact.h"
@@ -109,6 +110,7 @@ class TestPaintArtifact {
 
   TestPaintArtifact& SetRasterEffectOutset(RasterEffectOutset);
   TestPaintArtifact& RectKnownToBeOpaque(const gfx::Rect&);
+  TestPaintArtifact& HitTestOpaqueness(cc::HitTestOpaqueness);
   TestPaintArtifact& TextKnownToBeOnOpaqueBackground();
   TestPaintArtifact& HasText();
   TestPaintArtifact& IsSolidColor();

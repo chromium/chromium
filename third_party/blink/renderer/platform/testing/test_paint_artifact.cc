@@ -159,6 +159,12 @@ TestPaintArtifact& TestPaintArtifact::RectKnownToBeOpaque(const gfx::Rect& r) {
   return *this;
 }
 
+TestPaintArtifact& TestPaintArtifact::HitTestOpaqueness(
+    cc::HitTestOpaqueness opaqueness) {
+  paint_artifact_->GetPaintChunks().back().hit_test_opaqueness = opaqueness;
+  return *this;
+}
+
 TestPaintArtifact& TestPaintArtifact::TextKnownToBeOnOpaqueBackground() {
   auto& chunk = paint_artifact_->GetPaintChunks().back();
   DCHECK(chunk.has_text);
