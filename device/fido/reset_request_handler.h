@@ -41,7 +41,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) ResetRequestHandler
   using FinishedCallback = base::OnceCallback<void(CtapDeviceResponseCode)>;
 
   ResetRequestHandler(
-      const base::flat_set<FidoTransportProtocol>& supported_transports,
+      FidoTransportProtocolSet supported_transports,
       ResetSentCallback reset_sent_callback,
       FinishedCallback finished_callback,
       std::unique_ptr<FidoDiscoveryFactory> fido_discovery_factory =

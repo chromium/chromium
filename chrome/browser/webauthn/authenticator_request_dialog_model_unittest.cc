@@ -88,14 +88,14 @@ using Step = AuthenticatorRequestDialogModel::Step;
 using UIPresentation =
     content::AuthenticatorRequestClientDelegate::UIPresentation;
 
-const base::flat_set<AuthenticatorTransport> kAllTransports = {
+constexpr device::FidoTransportProtocolSet kAllTransports = {
     AuthenticatorTransport::kUsbHumanInterfaceDevice,
     AuthenticatorTransport::kNearFieldCommunication,
     AuthenticatorTransport::kInternal,
     AuthenticatorTransport::kHybrid,
 };
 
-const base::flat_set<AuthenticatorTransport> kAllTransportsWithoutCable = {
+constexpr device::FidoTransportProtocolSet kAllTransportsWithoutCable = {
     AuthenticatorTransport::kUsbHumanInterfaceDevice,
     AuthenticatorTransport::kNearFieldCommunication,
     AuthenticatorTransport::kInternal,
@@ -244,8 +244,8 @@ std::string_view TransportAvailabilityParamToString(
   }
 }
 
-template <typename T, std::string_view (*F)(T)>
-std::string SetToString(base::flat_set<T> s) {
+template <typename T, std::string_view (*F)(T), typename Set>
+std::string SetToString(const Set& s) {
   return base::JoinString(base::ToVector(s, F), ", ");
 }
 
@@ -349,7 +349,7 @@ void UpdateModelBeforeStartFlow(AuthenticatorRequestDialogModel* model,
       tai.attestation_conveyance_preference;
   model->ble_adapter_is_powered =
       tai.ble_status == device::FidoRequestHandlerBase::BleStatus::kOn;
-  model->show_security_key_on_qr_sheet = tai.available_transports.contains(
+  model->show_security_key_on_qr_sheet = tai.available_transports.Has(
       device::FidoTransportProtocol::kUsbHumanInterfaceDevice);
   model->is_off_the_record = is_off_the_record;
   model->platform_has_biometrics = tai.platform_has_biometrics;
@@ -497,7 +497,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
   struct Test {
     int line_num;
     RequestType request_type;
-    base::flat_set<AuthenticatorTransport> transports;
+    device::FidoTransportProtocolSet transports;
     base::flat_set<TransportAvailabilityParam> params;
     std::vector<AuthenticatorRequestDialogModel::Mechanism::Type>
         expected_mechanisms;
@@ -1154,7 +1154,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
     controller.SetAccountPreselectedCallback(base::BindRepeating(
         [](device::DiscoverableCredentialMetadata cred) {}));
 
-    if (test.transports.contains(device::FidoTransportProtocol::kHybrid)) {
+    if (test.transports.Has(device::FidoTransportProtocol::kHybrid)) {
       controller.set_cable_transport_info("fido:/1234");
     }
 
@@ -1216,7 +1216,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, WinCancel) {
           device::AttestationConveyancePreference::kNone;
       tai.has_win_native_api_authenticator = true;
       tai.win_native_ui_shows_resident_credential_notice = true;
-      tai.available_transports.insert(device::FidoTransportProtocol::kHybrid);
+      tai.available_transports.Put(device::FidoTransportProtocol::kHybrid);
       tai.resident_key_requirement =
           is_passkey_request ? device::ResidentKeyRequirement::kRequired
                              : device::ResidentKeyRequirement::kDiscouraged;
@@ -1279,7 +1279,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
   tai.request_type = device::FidoRequestType::kGetAssertion;
   tai.has_win_native_api_authenticator = true;
   tai.has_empty_allow_list = false;
-  tai.available_transports.insert(device::FidoTransportProtocol::kHybrid);
+  tai.available_transports.Put(device::FidoTransportProtocol::kHybrid);
   tai.ble_status = BleStatus::kOn;
   tai.recognized_credentials = {kWinCred1};
   tai.has_platform_authenticator_credential = device::FidoRequestHandlerBase::
@@ -1397,7 +1397,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, GpmDisabledForCreate) {
     model->gpm_create_available_but_disabled_by_policy = true;
     TransportAvailabilityInfo transports_info;
     if (security_keys_available) {
-      transports_info.available_transports.insert(
+      transports_info.available_transports.Put(
           device::FidoTransportProtocol::kUsbHumanInterfaceDevice);
     }
     transports_info.attestation_conveyance_preference =

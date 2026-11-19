@@ -27,6 +27,7 @@
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/global_routing_id.h"
 #include "device/fido/cable/v2_constants.h"
+#include "device/fido/public/fido_transport_protocol.h"
 #include "third_party/blink/public/mojom/credentialmanagement/credential_type_flags.mojom.h"
 
 class PasskeyUpgradeRequestController;
@@ -284,7 +285,7 @@ class AuthenticatorRequestDialogController
     return ephemeral_state_.saved_authenticators_;
   }
 
-  const base::flat_set<AuthenticatorTransport>& available_transports() {
+  device::FidoTransportProtocolSet available_transports() {
     return transport_availability_.available_transports;
   }
 

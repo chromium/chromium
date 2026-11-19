@@ -15,7 +15,6 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/containers/flat_set.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -56,7 +55,7 @@ class CredentialManagementHandlerTest : public ::testing::Test {
   std::unique_ptr<CredentialManagementHandler> MakeHandler() {
     auto handler = std::make_unique<CredentialManagementHandler>(
         &virtual_device_factory_,
-        base::flat_set<FidoTransportProtocol>{
+        FidoTransportProtocolSet{
             FidoTransportProtocol::kUsbHumanInterfaceDevice},
         ready_future_.GetCallback(),
         base::BindRepeating(&CredentialManagementHandlerTest::GetPIN,

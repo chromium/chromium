@@ -16,6 +16,7 @@
 #include "content/public/browser/web_authentication_delegate.h"
 #include "content/public/browser/web_authentication_request_proxy.h"
 #include "content/public/test/test_renderer_host.h"
+#include "device/fido/public/fido_transport_protocol.h"
 #include "mojo/public/cpp/system/functions.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 #include "url/origin.h"
@@ -80,7 +81,7 @@ class TestAuthenticatorRequestDelegate
       base::OnceClosure started_over_callback,
       bool simulate_user_cancelled,
       base::RepeatingCallback<void(bool)> enclave_discovered_callback,
-      base::RepeatingCallback<void(const base::flat_set<device::FidoTransportProtocol>&)>
+      base::RepeatingCallback<void(device::FidoTransportProtocolSet)>
           transports_discovered_callback);
 
   TestAuthenticatorRequestDelegate(const TestAuthenticatorRequestDelegate&) =
@@ -128,7 +129,7 @@ class TestAuthenticatorRequestDelegate
   bool does_block_request_on_failure_ = false;
   bool simulate_user_cancelled_ = false;
   base::RepeatingCallback<void(bool)> enclave_discovered_callback_;
-  base::RepeatingCallback<void(const base::flat_set<device::FidoTransportProtocol>&)>
+  base::RepeatingCallback<void(device::FidoTransportProtocolSet)>
       transports_discovered_callback_;
 };
 
@@ -349,7 +350,7 @@ class TestAuthenticatorContentBrowserClient : public ContentBrowserClient {
   std::optional<bool> enclave_authenticator_should_be_discovered_;
 
   // The set of transports allowed for a request.
-  base::flat_set<device::FidoTransportProtocol> discovered_transports_;
+  device::FidoTransportProtocolSet discovered_transports_;
 
  private:
   base::WeakPtrFactory<TestAuthenticatorContentBrowserClient> weak_factory_{this};

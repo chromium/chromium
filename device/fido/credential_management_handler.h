@@ -70,12 +70,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) CredentialManagementHandler
                                    base::OnceCallback<void(std::string)>)>;
   using ReadyCallback = base::OnceClosure;
 
-  CredentialManagementHandler(
-      FidoDiscoveryFactory* fido_discovery_factory,
-      const base::flat_set<FidoTransportProtocol>& supported_transports,
-      ReadyCallback ready_callback,
-      GetPINCallback get_pin_callback,
-      FinishedCallback finished_callback);
+  CredentialManagementHandler(FidoDiscoveryFactory* fido_discovery_factory,
+                              FidoTransportProtocolSet supported_transports,
+                              ReadyCallback ready_callback,
+                              GetPINCallback get_pin_callback,
+                              FinishedCallback finished_callback);
 
   CredentialManagementHandler(const CredentialManagementHandler&) = delete;
   CredentialManagementHandler& operator=(const CredentialManagementHandler&) =

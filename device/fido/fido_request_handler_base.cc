@@ -171,7 +171,7 @@ FidoRequestHandlerBase::FidoRequestHandlerBase()
 
 FidoRequestHandlerBase::FidoRequestHandlerBase(
     FidoDiscoveryFactory* fido_discovery_factory,
-    const base::flat_set<FidoTransportProtocol>& available_transports)
+    FidoTransportProtocolSet available_transports)
     : device::FidoRequestHandlerBase(fido_discovery_factory,
                                      /*additional_discoveries=*/{},
                                      available_transports) {}
@@ -179,7 +179,7 @@ FidoRequestHandlerBase::FidoRequestHandlerBase(
 FidoRequestHandlerBase::FidoRequestHandlerBase(
     FidoDiscoveryFactory* fido_discovery_factory,
     std::vector<std::unique_ptr<FidoDiscoveryBase>> additional_discoveries,
-    const base::flat_set<FidoTransportProtocol>& available_transports)
+    FidoTransportProtocolSet available_transports)
     : FidoRequestHandlerBase() {
   InitDiscoveries(fido_discovery_factory, std::move(additional_discoveries),
                   available_transports,
@@ -189,7 +189,7 @@ FidoRequestHandlerBase::FidoRequestHandlerBase(
 void FidoRequestHandlerBase::InitDiscoveries(
     FidoDiscoveryFactory* fido_discovery_factory,
     std::vector<std::unique_ptr<FidoDiscoveryBase>> additional_discoveries,
-    base::flat_set<FidoTransportProtocol> available_transports,
+    FidoTransportProtocolSet available_transports,
     bool consider_enclave) {
   FIDO_LOG(DEBUG) << "Initializing FIDO discoveries";
 #if BUILDFLAG(IS_WIN)
@@ -221,9 +221,7 @@ void FidoRequestHandlerBase::InitDiscoveries(
     // the implementing class because it is not subject to the OS'
     // device communication block (only GetAssertionRequestHandler uses
     // caBLE). Otherwise, do not instantiate any other transports.
-    base::EraseIf(available_transports, [](auto transport) {
-      return transport != FidoTransportProtocol::kHybrid;
-    });
+    available_transports.RetainAll({FidoTransportProtocol::kHybrid});
   }
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -235,7 +233,7 @@ void FidoRequestHandlerBase::InitDiscoveries(
       // This can occur in tests when a ScopedVirtualU2fDevice is in effect and
       // HID transports are not configured or when caBLE discovery data isn't
       // available.
-      transport_availability_info_.available_transports.erase(transport);
+      transport_availability_info_.available_transports.Remove(transport);
       continue;
     }
 
@@ -252,7 +250,7 @@ void FidoRequestHandlerBase::InitDiscoveries(
   for (auto& discovery : additional_discoveries) {
     // TODO: Make this work better for non-standard discoveries like Windows,
     // which currently pretends to be `kInternal`.
-    if (!available_transports.contains(discovery->transport())) {
+    if (!available_transports.Has(discovery->transport())) {
       continue;
     }
     discovery->set_observer(this);
@@ -311,7 +309,7 @@ void FidoRequestHandlerBase::InitDiscoveries(
   // so we don't need this additional check.
   if (can_call_ble_apis &&
       device::BluetoothAdapterFactory::Get()->IsLowEnergySupported() &&
-      transport_availability_info_.available_transports.contains(
+      transport_availability_info_.available_transports.Has(
           FidoTransportProtocol::kHybrid)) {
     FIDO_LOG(DEBUG) << "Checking for bluetooth availability";
     transport_availability_callback_readiness_->ble_information_pending = true;
@@ -387,7 +385,7 @@ void FidoRequestHandlerBase::OnBluetoothAdapterEnumerated(
     bool can_power_on,
     bool is_peripheral_role_supported) {
   if (!is_present) {
-    transport_availability_info_.available_transports.erase(
+    transport_availability_info_.available_transports.Remove(
         FidoTransportProtocol::kHybrid);
   }
 
@@ -485,7 +483,7 @@ void FidoRequestHandlerBase::DiscoveryStarted(
                  ->num_platform_discoveries_pending == 0 &&
          !transport_availability_callback_readiness_
               ->platform_discovery_succeeded)) {
-      transport_availability_info_.available_transports.erase(
+      transport_availability_info_.available_transports.Remove(
           discovery->transport());
     }
   } else {
@@ -600,7 +598,7 @@ void FidoRequestHandlerBase::OnHavePlatformCredentialStatus(
     transport_availability_info_.has_platform_authenticator_credential =
         has_credentials;
     if (has_credentials == RecognizedCredential::kNoRecognizedCredential) {
-      transport_availability_info_.available_transports.erase(
+      transport_availability_info_.available_transports.Remove(
           FidoTransportProtocol::kInternal);
     }
   }

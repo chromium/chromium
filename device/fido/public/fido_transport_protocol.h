@@ -9,6 +9,7 @@
 #include <string_view>
 
 #include "base/component_export.h"
+#include "base/containers/enum_set.h"
 #include "device/fido/public/fido_types.h"
 
 namespace device {
@@ -21,6 +22,7 @@ namespace device {
 // LINT.IfChange(FidoTransportProtocol)
 enum class FidoTransportProtocol : uint8_t {
   kUsbHumanInterfaceDevice = 0,
+  kMinValue = kUsbHumanInterfaceDevice,
   kNearFieldCommunication = 1,
   kBluetoothLowEnergy = 2,
   kHybrid = 3,
@@ -30,6 +32,8 @@ enum class FidoTransportProtocol : uint8_t {
   kMaxValue = kSmartCard,
 };
 // LINT.ThenChange(//content/browser/webauth/authenticator_impl_unittest.cc:VirtualAuthenticatorTransports)
+
+using FidoTransportProtocolSet = base::EnumSet<FidoTransportProtocol>;
 
 // String representation of above FidoTransportProtocol enum.
 inline constexpr std::string_view kUsbHumanInterfaceDevice = "usb";

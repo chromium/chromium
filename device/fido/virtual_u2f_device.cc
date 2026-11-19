@@ -20,6 +20,7 @@
 #include "crypto/keypair.h"
 #include "crypto/sign.h"
 #include "device/fido/public/fido_constants.h"
+#include "device/fido/public/fido_transport_protocol.h"
 
 namespace device {
 
@@ -42,13 +43,14 @@ std::optional<std::vector<uint8_t>> ErrorStatus(
 
 // static
 bool VirtualU2fDevice::IsTransportSupported(FidoTransportProtocol transport) {
-  return (base::flat_set<FidoTransportProtocol>(
-              {FidoTransportProtocol::kUsbHumanInterfaceDevice,
-               FidoTransportProtocol::kBluetoothLowEnergy,
-               FidoTransportProtocol::kNearFieldCommunication,
-               FidoTransportProtocol::kInternal,
-               FidoTransportProtocol::kSmartCard}))
-      .contains(transport);
+  static constexpr FidoTransportProtocolSet kSupportedTransports = {
+      FidoTransportProtocol::kUsbHumanInterfaceDevice,
+      FidoTransportProtocol::kBluetoothLowEnergy,
+      FidoTransportProtocol::kNearFieldCommunication,
+      FidoTransportProtocol::kInternal,
+      FidoTransportProtocol::kSmartCard,
+  };
+  return kSupportedTransports.Has(transport);
 }
 
 VirtualU2fDevice::VirtualU2fDevice() = default;

@@ -20,6 +20,7 @@
 #include "device/fido/fido_discovery_factory.h"
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/public/fido_constants.h"
+#include "device/fido/public/fido_transport_protocol.h"
 
 namespace device {
 
@@ -87,12 +88,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) BioEnrollmentHandler
   using EnrollmentCallback =
       base::OnceCallback<void(CtapDeviceResponseCode, TemplateId)>;
 
-  BioEnrollmentHandler(
-      const base::flat_set<FidoTransportProtocol>& supported_transports,
-      ReadyCallback ready_callback,
-      ErrorCallback error_callback,
-      GetPINCallback get_pin_callback,
-      FidoDiscoveryFactory* factory);
+  BioEnrollmentHandler(FidoTransportProtocolSet supported_transports,
+                       ReadyCallback ready_callback,
+                       ErrorCallback error_callback,
+                       GetPINCallback get_pin_callback,
+                       FidoDiscoveryFactory* factory);
   ~BioEnrollmentHandler() override;
   BioEnrollmentHandler(const BioEnrollmentHandler&) = delete;
   BioEnrollmentHandler(BioEnrollmentHandler&&) = delete;

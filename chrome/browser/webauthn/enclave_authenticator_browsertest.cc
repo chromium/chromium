@@ -784,8 +784,8 @@ class EnclaveAuthenticatorBrowserTest : public EnclaveAuthenticatorTestBase {
       return on_transport_availability_enumerated_called_;
     }
 
-    const std::optional<base::flat_set<device::FidoTransportProtocol>>&
-    transports_observed() const {
+    const std::optional<device::FidoTransportProtocolSet>& transports_observed()
+        const {
       return transports_observed_;
     }
 
@@ -817,7 +817,7 @@ class EnclaveAuthenticatorBrowserTest : public EnclaveAuthenticatorTestBase {
       CHECK(!transports_observed_);
       transports_observed_ = tai->available_transports;
       if (additional_transport_.has_value()) {
-        tai->available_transports.insert(*additional_transport_);
+        tai->available_transports.Put(*additional_transport_);
       }
       on_transport_availability_enumerated_called_ = true;
     }
@@ -838,8 +838,7 @@ class EnclaveAuthenticatorBrowserTest : public EnclaveAuthenticatorTestBase {
 
    private:
     raw_ptr<EnclaveAuthenticatorBrowserTest> test_instance_;
-    std::optional<base::flat_set<device::FidoTransportProtocol>>
-        transports_observed_;
+    std::optional<device::FidoTransportProtocolSet> transports_observed_;
     std::optional<device::FidoTransportProtocol> additional_transport_;
     bool use_synced_device_cable_pairing_ = false;
     bool ui_shown_ = false;

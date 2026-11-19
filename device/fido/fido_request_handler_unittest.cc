@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -68,7 +67,7 @@ enum class FakeTaskResponse : uint8_t {
 // DispatchRequest().
 class EmptyRequestHandler : public FidoRequestHandlerBase {
  public:
-  EmptyRequestHandler(const base::flat_set<FidoTransportProtocol>& protocols,
+  EmptyRequestHandler(FidoTransportProtocolSet protocols,
                       test::FakeFidoDiscoveryFactory* fake_discovery_factory)
       : FidoRequestHandlerBase(fake_discovery_factory, protocols) {
     Start();
@@ -96,12 +95,11 @@ class TestObserver : public FidoRequestHandlerBase::Observer {
   }
 
   void WaitForAndExpectAvailableTransportsAre(
-      base::flat_set<FidoTransportProtocol> expected_transports,
+      FidoTransportProtocolSet expected_transports,
       FidoRequestHandlerBase::RecognizedCredential
           has_platform_authenticator_credential) {
     auto result = WaitForTransportAvailabilityInfo();
-    EXPECT_THAT(result.available_transports,
-                ::testing::UnorderedElementsAreArray(expected_transports));
+    EXPECT_EQ(result.available_transports, expected_transports);
     EXPECT_EQ(result.has_platform_authenticator_credential,
               has_platform_authenticator_credential);
   }
@@ -206,7 +204,7 @@ class FakeFidoRequestHandler : public FidoRequestHandlerBase {
                               const FidoAuthenticator*)>;
 
   FakeFidoRequestHandler(test::FakeFidoDiscoveryFactory* fake_discovery_factory,
-                         const base::flat_set<FidoTransportProtocol>& protocols,
+                         FidoTransportProtocolSet protocols,
                          FakeHandlerFuture& completion_future)
       : FidoRequestHandlerBase(fake_discovery_factory, protocols),
         completion_callback_(completion_future.GetCallback()) {
@@ -312,7 +310,7 @@ class FidoRequestHandlerTest : public ::testing::Test {
     ForgeNextHidDiscovery();
     auto handler = std::make_unique<FakeFidoRequestHandler>(
         &fake_discovery_factory_,
-        base::flat_set<FidoTransportProtocol>(
+        FidoTransportProtocolSet(
             {FidoTransportProtocol::kUsbHumanInterfaceDevice}),
         handler_completion_future_);
     return handler;
@@ -535,7 +533,7 @@ TEST_F(FidoRequestHandlerTest,
       fake_discovery_factory_.ForgeNextPlatformDiscovery();
   auto request_handler = std::make_unique<FakeFidoRequestHandler>(
       &fake_discovery_factory_,
-      base::flat_set<FidoTransportProtocol>(
+      FidoTransportProtocolSet(
           {FidoTransportProtocol::kInternal,
            FidoTransportProtocol::kUsbHumanInterfaceDevice}),
       future());
@@ -602,8 +600,7 @@ TEST_F(FidoRequestHandlerTest, TestWithPlatformAuthenticator) {
   TestObserver observer;
   auto request_handler = std::make_unique<FakeFidoRequestHandler>(
       &fake_discovery_factory_,
-      base::flat_set<FidoTransportProtocol>({FidoTransportProtocol::kInternal}),
-      future());
+      FidoTransportProtocolSet({FidoTransportProtocol::kInternal}), future());
   request_handler->set_has_platform_credential(
       FidoRequestHandlerBase::RecognizedCredential::kHasRecognizedCredential);
   request_handler->SetObserver(&observer);
@@ -622,8 +619,7 @@ TEST_F(FidoRequestHandlerTest, InternalTransportDisallowedIfMarkedUnavailable) {
   TestObserver observer;
   auto request_handler = std::make_unique<FakeFidoRequestHandler>(
       &fake_discovery_factory_,
-      base::flat_set<FidoTransportProtocol>({FidoTransportProtocol::kInternal}),
-      future());
+      FidoTransportProtocolSet({FidoTransportProtocol::kInternal}), future());
   request_handler->SetObserver(&observer);
 
   observer.WaitForAndExpectAvailableTransportsAre(
@@ -669,8 +665,7 @@ TEST_F(FidoRequestHandlerTest, TestWithMultiplePlatformAuthenticators) {
   TestObserver observer;
   auto request_handler = std::make_unique<FakeFidoRequestHandler>(
       &fake_discovery_factory_,
-      base::flat_set<FidoTransportProtocol>({FidoTransportProtocol::kInternal}),
-      future());
+      FidoTransportProtocolSet({FidoTransportProtocol::kInternal}), future());
   request_handler->set_has_platform_credential(
       FidoRequestHandlerBase::RecognizedCredential::kHasRecognizedCredential);
   request_handler->SetObserver(&observer);

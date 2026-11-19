@@ -20,6 +20,7 @@
 #include "base/base64url.h"
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/enum_set.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
@@ -38,7 +39,6 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
-#include "base/stl_util.h"
 #include "base/strings/string_view_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -330,37 +330,37 @@ bool UsesDiscoverableCreds(const device::CtapGetAssertionRequest& request) {
 // a FidoRequestHandler for a WebAuthn request. This determines for which
 // transports the request handler will attempt to obtain FidoDiscovery
 // instances.
-base::flat_set<device::FidoTransportProtocol> GetWebAuthnTransports(
+device::FidoTransportProtocolSet GetWebAuthnTransports(
     RenderFrameHost* render_frame_host,
     device::FidoDiscoveryFactory* discovery_factory,
     bool uses_discoverable_creds,
     std::optional<bool> is_uvpaa_override,
     bool is_immediate_mediation = false) {
-  base::flat_set<device::FidoTransportProtocol> transports;
+  device::FidoTransportProtocolSet transports;
   if (!is_immediate_mediation) {
-    transports.insert(device::FidoTransportProtocol::kUsbHumanInterfaceDevice);
-    transports.insert(device::FidoTransportProtocol::kHybrid);
+    transports.Put(device::FidoTransportProtocol::kUsbHumanInterfaceDevice);
+    transports.Put(device::FidoTransportProtocol::kHybrid);
   }
 
   // Only instantiate platform discovery if the embedder hasn't chosen to
   // override IsUserVerifyingPlatformAuthenticatorAvailable() to be false.
   // Chrome disables platform authenticators in Guest modes this way.
   if (is_uvpaa_override.value_or(true)) {
-    transports.insert(device::FidoTransportProtocol::kInternal);
+    transports.Put(device::FidoTransportProtocol::kInternal);
   }
 
   if (discovery_factory->IsTestOverride()) {
     if (!is_immediate_mediation) {
       // The desktop implementation does not support BLE or NFC, but we emulate
       // them if the testing API is enabled.
-      transports.insert(device::FidoTransportProtocol::kBluetoothLowEnergy);
-      transports.insert(device::FidoTransportProtocol::kNearFieldCommunication);
-      transports.insert(device::FidoTransportProtocol::kSmartCard);
+      transports.Put(device::FidoTransportProtocol::kBluetoothLowEnergy);
+      transports.Put(device::FidoTransportProtocol::kNearFieldCommunication);
+      transports.Put(device::FidoTransportProtocol::kSmartCard);
     }
 
     // Ensure virtual platform authenticators can be instantiated even if they
     // are not-user-verifying, i.e. IsUVPAA() returns false.
-    transports.insert(device::FidoTransportProtocol::kInternal);
+    transports.Put(device::FidoTransportProtocol::kInternal);
   }
   return transports;
 }
@@ -754,9 +754,9 @@ void DeleteVirtualAuthenticatorCreds(
   }
 }
 
-base::flat_set<device::FidoTransportProtocol> GetTransportsAllowedByRP(
+device::FidoTransportProtocolSet GetTransportsAllowedByRP(
     const device::CtapGetAssertionRequest& request) {
-  const base::flat_set<device::FidoTransportProtocol> kAllTransports = {
+  static constexpr device::FidoTransportProtocolSet kAllTransports = {
       device::FidoTransportProtocol::kInternal,
       device::FidoTransportProtocol::kNearFieldCommunication,
       device::FidoTransportProtocol::kUsbHumanInterfaceDevice,
@@ -770,13 +770,14 @@ base::flat_set<device::FidoTransportProtocol> GetTransportsAllowedByRP(
     return kAllTransports;
   }
 
-  base::flat_set<device::FidoTransportProtocol> transports;
+  device::FidoTransportProtocolSet transports;
   for (const auto& credential : allowed_list) {
     if (credential.transports.empty()) {
       return kAllTransports;
     }
-    transports.insert(credential.transports.begin(),
-                      credential.transports.end());
+    for (device::FidoTransportProtocol transport : credential.transports) {
+      transports.Put(transport);
+    }
   }
 
   return transports;
@@ -973,10 +974,9 @@ void AuthenticatorCommonImpl::StartMakeCredentialRequest(
 
   make_credential_options->allow_skipping_pin_touch = allow_skipping_pin_touch;
 
-  base::flat_set<device::FidoTransportProtocol> transports =
-      GetWebAuthnTransports(GetRenderFrameHost(), discovery_factory(),
-                            UsesDiscoverableCreds(*make_credential_options),
-                            is_uvpaa_override_);
+  device::FidoTransportProtocolSet transports = GetWebAuthnTransports(
+      GetRenderFrameHost(), discovery_factory(),
+      UsesDiscoverableCreds(*make_credential_options), is_uvpaa_override_);
 
   auto platform_discoveries =
       discovery_factory()->IsTestOverride()
@@ -1028,16 +1028,14 @@ void AuthenticatorCommonImpl::StartGetAssertionRequest(
       &std::get<device::CtapGetAssertionOptions>(req_state_->request_options);
   bool is_immediate_mediation =
       req_state_->mediation_.value_or(Mediation::MODAL) == Mediation::IMMEDIATE;
-  base::flat_set<device::FidoTransportProtocol> transports =
-      base::STLSetIntersection<base::flat_set<device::FidoTransportProtocol>>(
-          GetWebAuthnTransports(
-              GetRenderFrameHost(), discovery_factory(),
-              UsesDiscoverableCreds(*ctap_get_assertion_request),
-              is_uvpaa_override_, is_immediate_mediation),
-          GetTransportsAllowedByRP(*ctap_get_assertion_request));
+  device::FidoTransportProtocolSet transports = base::Intersection(
+      GetWebAuthnTransports(GetRenderFrameHost(), discovery_factory(),
+                            UsesDiscoverableCreds(*ctap_get_assertion_request),
+                            is_uvpaa_override_, is_immediate_mediation),
+      GetTransportsAllowedByRP(*ctap_get_assertion_request));
   bool discover_enclave =
       browser_passkeys_available_ &&
-      transports.contains(device::FidoTransportProtocol::kInternal);
+      transports.Has(device::FidoTransportProtocol::kInternal);
   req_state_->request_delegate->ConfigureDiscoveries(
       req_state_->caller_origin, req_state_->relying_party_id, RequestSource(),
       device::FidoRequestType::kGetAssertion,
@@ -1056,9 +1054,9 @@ void AuthenticatorCommonImpl::StartGetAssertionRequest(
           ? std::vector<std::unique_ptr<device::FidoDiscoveryBase>>()
           : req_state_->request_delegate->CreatePlatformDiscoveries();
   auto request_handler = std::make_unique<device::GetAssertionRequestHandler>(
-      discovery_factory(), std::move(platform_discoveries),
-      std::move(transports), *ctap_get_assertion_request,
-      *ctap_get_assertion_options, allow_skipping_pin_touch,
+      discovery_factory(), std::move(platform_discoveries), transports,
+      *ctap_get_assertion_request, *ctap_get_assertion_options,
+      allow_skipping_pin_touch,
       base::BindOnce(&AuthenticatorCommonImpl::OnSignResponse,
                      weak_factory_.GetWeakPtr()));
   auto cancel_ui_timeout_callback =

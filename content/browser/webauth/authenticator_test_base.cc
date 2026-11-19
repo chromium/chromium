@@ -48,7 +48,7 @@ TestAuthenticatorRequestDelegate::TestAuthenticatorRequestDelegate(
     base::OnceClosure started_over_callback,
     bool simulate_user_cancelled,
     base::RepeatingCallback<void(bool)> enclave_discovered_callback,
-    base::RepeatingCallback<void(const base::flat_set<device::FidoTransportProtocol>&)>
+    base::RepeatingCallback<void(device::FidoTransportProtocolSet)>
         transports_discovered_callback)
     : action_callbacks_registered_callback_(
           std::move(action_callbacks_registered_callback)),
@@ -353,8 +353,7 @@ TestAuthenticatorContentBrowserClient::GetWebAuthenticationRequestDelegate(
       action_callbacks_registered_callback
           ? std::move(action_callbacks_registered_callback)
           : base::DoNothing(),
-      std::move(started_over_callback_),
-      simulate_user_cancelled_,
+      std::move(started_over_callback_), simulate_user_cancelled_,
       base::BindRepeating(
           [](base::WeakPtr<TestAuthenticatorContentBrowserClient> self,
              bool discovered) {
@@ -365,7 +364,7 @@ TestAuthenticatorContentBrowserClient::GetWebAuthenticationRequestDelegate(
           weak_factory_.GetWeakPtr()),
       base::BindRepeating(
           [](base::WeakPtr<TestAuthenticatorContentBrowserClient> self,
-             const base::flat_set<device::FidoTransportProtocol>& transports) {
+             device::FidoTransportProtocolSet transports) {
             if (self) {
               self->discovered_transports_ = transports;
             }

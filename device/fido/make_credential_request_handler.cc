@@ -11,11 +11,11 @@
 #include <vector>
 
 #include "base/barrier_closure.h"
+#include "base/containers/enum_set.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "components/cbor/diagnostic_writer.h"
@@ -193,7 +193,7 @@ void FilterAlgorithmsForAuthenticator(CtapMakeCredentialRequest* request,
       PublicKeyCredentialParams(std::move(filtered));
 }
 
-base::flat_set<FidoTransportProtocol> GetTransportsAllowedByRP(
+FidoTransportProtocolSet GetTransportsAllowedByRP(
     AuthenticatorAttachment authenticator_attachment) {
   switch (authenticator_attachment) {
     case AuthenticatorAttachment::kPlatform:
@@ -377,7 +377,7 @@ UserVerificationRequirement AtLeastUVPreferred(UserVerificationRequirement uv) {
 MakeCredentialRequestHandler::MakeCredentialRequestHandler(
     FidoDiscoveryFactory* fido_discovery_factory,
     std::vector<std::unique_ptr<FidoDiscoveryBase>> additional_discoveries,
-    const base::flat_set<FidoTransportProtocol>& supported_transports,
+    FidoTransportProtocolSet supported_transports,
     CtapMakeCredentialRequest request,
     const MakeCredentialOptions& options,
     CompletionCallback completion_callback)
@@ -406,7 +406,7 @@ MakeCredentialRequestHandler::MakeCredentialRequestHandler(
   transport_availability_info().make_credential_attachment =
       options_.authenticator_attachment;
 
-  base::flat_set<FidoTransportProtocol> allowed_transports =
+  FidoTransportProtocolSet allowed_transports =
       GetTransportsAllowedByRP(options_.authenticator_attachment);
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -417,13 +417,12 @@ MakeCredentialRequestHandler::MakeCredentialRequestHandler(
       AuthenticatorAttachment::kCrossPlatform) {
     allow_platform_authenticator_for_cross_platform_request_ = true;
     fido_discovery_factory->set_require_legacy_cros_authenticator(true);
-    allowed_transports.insert(FidoTransportProtocol::kInternal);
+    allowed_transports.Put(FidoTransportProtocol::kInternal);
   }
 #endif
 
-  auto available_transports =
-      base::STLSetIntersection<base::flat_set<FidoTransportProtocol>>(
-          supported_transports, allowed_transports);
+  FidoTransportProtocolSet available_transports =
+      base::Intersection(supported_transports, allowed_transports);
   bool consider_enclave = request_.authenticator_attachment !=
                           AuthenticatorAttachment::kCrossPlatform;
   if (options_.is_passkey_upgrade_request) {
@@ -432,7 +431,7 @@ MakeCredentialRequestHandler::MakeCredentialRequestHandler(
   }
 
   InitDiscoveries(fido_discovery_factory, std::move(additional_discoveries),
-                  std::move(available_transports), consider_enclave);
+                  available_transports, consider_enclave);
   std::string json_string;
   if (!options_.json ||
       !base::JSONWriter::WriteWithOptions(

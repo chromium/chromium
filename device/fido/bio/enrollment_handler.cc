@@ -20,7 +20,7 @@ BioEnrollmentHandler::SensorInfo& BioEnrollmentHandler::SensorInfo::operator=(
     SensorInfo&&) = default;
 
 BioEnrollmentHandler::BioEnrollmentHandler(
-    const base::flat_set<FidoTransportProtocol>& supported_transports,
+    FidoTransportProtocolSet supported_transports,
     ReadyCallback ready_callback,
     ErrorCallback error_callback,
     GetPINCallback get_pin_callback,

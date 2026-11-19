@@ -14,7 +14,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -61,7 +60,7 @@ class BioEnrollmentHandlerTest : public ::testing::Test {
  protected:
   std::unique_ptr<BioEnrollmentHandler> MakeHandler() {
     return std::make_unique<BioEnrollmentHandler>(
-        base::flat_set<FidoTransportProtocol>{
+        FidoTransportProtocolSet{
             FidoTransportProtocol::kUsbHumanInterfaceDevice},
         ready_future_.GetCallback(), error_future_.GetCallback(),
         base::BindRepeating(&BioEnrollmentHandlerTest::GetPIN,

@@ -53,7 +53,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) MakeCredentialRequestHandler
   MakeCredentialRequestHandler(
       FidoDiscoveryFactory* fido_discovery_factory,
       std::vector<std::unique_ptr<FidoDiscoveryBase>> additional_discoveries,
-      const base::flat_set<FidoTransportProtocol>& supported_transports,
+      FidoTransportProtocolSet supported_transports,
       CtapMakeCredentialRequest request_parameter,
       const MakeCredentialOptions& options,
       CompletionCallback completion_callback);

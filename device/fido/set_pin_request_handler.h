@@ -61,7 +61,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) SetPINRequestHandler
       base::RepeatingCallback<void(CtapDeviceResponseCode)>;
 
   SetPINRequestHandler(
-      const base::flat_set<FidoTransportProtocol>& supported_transports,
+      FidoTransportProtocolSet supported_transports,
       GetPINCallback get_pin_callback,
       FinishedCallback finished_callback,
       std::unique_ptr<FidoDiscoveryFactory> fido_discovery_factory =

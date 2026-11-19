@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/flat_set.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -190,32 +189,40 @@ class FidoGetAssertionHandlerTest : public ::testing::Test {
 
   void ExpectAllowedTransportsForRequestAre(
       GetAssertionRequestHandler* request_handler,
-      base::flat_set<FidoTransportProtocol> transports) {
+      FidoTransportProtocolSet transports) {
     using Transport = FidoTransportProtocol;
-    if (transports.contains(Transport::kUsbHumanInterfaceDevice))
+    if (transports.Has(Transport::kUsbHumanInterfaceDevice)) {
       discovery()->WaitForCallToStartAndSimulateSuccess();
-    if (transports.contains(Transport::kHybrid))
+    }
+    if (transports.Has(Transport::kHybrid)) {
       cable_discovery()->WaitForCallToStartAndSimulateSuccess();
-    if (transports.contains(Transport::kNearFieldCommunication))
+    }
+    if (transports.Has(Transport::kNearFieldCommunication)) {
       nfc_discovery()->WaitForCallToStartAndSimulateSuccess();
-    if (transports.contains(Transport::kInternal))
+    }
+    if (transports.Has(Transport::kInternal)) {
       platform_discovery()->WaitForCallToStartAndSimulateSuccess();
+    }
 
     task_environment_.FastForwardUntilNoTasksRemain();
     EXPECT_FALSE(get_assertion_future().IsReady());
 
-    if (!transports.contains(Transport::kUsbHumanInterfaceDevice))
+    if (!transports.Has(Transport::kUsbHumanInterfaceDevice)) {
       EXPECT_FALSE(discovery()->is_start_requested());
-    if (!transports.contains(Transport::kHybrid))
+    }
+    if (!transports.Has(Transport::kHybrid)) {
       EXPECT_FALSE(cable_discovery()->is_start_requested());
-    if (!transports.contains(Transport::kNearFieldCommunication))
+    }
+    if (!transports.Has(Transport::kNearFieldCommunication)) {
       EXPECT_FALSE(nfc_discovery()->is_start_requested());
-    if (!transports.contains(Transport::kInternal))
+    }
+    if (!transports.Has(Transport::kInternal)) {
       EXPECT_FALSE(platform_discovery()->is_start_requested());
+    }
 
-    EXPECT_THAT(
+    EXPECT_EQ(
         request_handler->transport_availability_info().available_transports,
-        ::testing::UnorderedElementsAreArray(transports));
+        transports);
   }
 
   test::FakeFidoDiscovery* discovery() const { return discovery_.get(); }
@@ -232,8 +239,7 @@ class FidoGetAssertionHandlerTest : public ::testing::Test {
     return get_assertion_future_;
   }
 
-  void set_supported_transports(
-      base::flat_set<FidoTransportProtocol> transports) {
+  void set_supported_transports(FidoTransportProtocolSet transports) {
     supported_transports_ = std::move(transports);
   }
 
@@ -249,7 +255,7 @@ class FidoGetAssertionHandlerTest : public ::testing::Test {
   scoped_refptr<::testing::NiceMock<MockBluetoothAdapter>> mock_adapter_ =
       base::MakeRefCounted<::testing::NiceMock<MockBluetoothAdapter>>();
   TestGetAssertionRequestFuture get_assertion_future_;
-  base::flat_set<FidoTransportProtocol> supported_transports_ = {
+  FidoTransportProtocolSet supported_transports_ = {
       FidoTransportProtocol::kUsbHumanInterfaceDevice,
       FidoTransportProtocol::kInternal,
       FidoTransportProtocol::kNearFieldCommunication,
@@ -864,7 +870,7 @@ TEST(GetAssertionRequestHandlerWinTest, TestWinUsbDiscovery) {
     auto handler = std::make_unique<GetAssertionRequestHandler>(
         &fido_discovery_factory,
         std::vector<std::unique_ptr<FidoDiscoveryBase>>(),
-        base::flat_set<FidoTransportProtocol>(
+        FidoTransportProtocolSet(
             {FidoTransportProtocol::kUsbHumanInterfaceDevice}),
         std::move(request), CtapGetAssertionOptions(),
         /*allow_skipping_pin_touch=*/true, future.GetCallback());

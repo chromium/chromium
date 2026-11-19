@@ -294,7 +294,7 @@ bool AllowListIncludedTransport(const CtapGetAssertionRequest& request,
 GetAssertionRequestHandler::GetAssertionRequestHandler(
     FidoDiscoveryFactory* fido_discovery_factory,
     std::vector<std::unique_ptr<FidoDiscoveryBase>> additional_discoveries,
-    const base::flat_set<FidoTransportProtocol>& supported_transports,
+    FidoTransportProtocolSet supported_transports,
     CtapGetAssertionRequest request,
     CtapGetAssertionOptions options,
     bool allow_skipping_pin_touch,

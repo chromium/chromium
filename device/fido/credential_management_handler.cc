@@ -18,7 +18,7 @@ namespace device {
 
 CredentialManagementHandler::CredentialManagementHandler(
     FidoDiscoveryFactory* fido_discovery_factory,
-    const base::flat_set<FidoTransportProtocol>& supported_transports,
+    FidoTransportProtocolSet supported_transports,
     ReadyCallback ready_callback,
     GetPINCallback get_pin_callback,
     FinishedCallback finished_callback)

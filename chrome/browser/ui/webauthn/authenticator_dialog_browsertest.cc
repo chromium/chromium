@@ -141,7 +141,7 @@ void UpdateModelBeforeStartFlow(
       tai.attestation_conveyance_preference;
   model->ble_adapter_is_powered =
       tai.ble_status == device::FidoRequestHandlerBase::BleStatus::kOn;
-  model->show_security_key_on_qr_sheet = tai.available_transports.contains(
+  model->show_security_key_on_qr_sheet = tai.available_transports.Has(
       device::FidoTransportProtocol::kUsbHumanInterfaceDevice);
   model->is_off_the_record = is_off_the_record;
   model->platform_has_biometrics = tai.platform_has_biometrics;

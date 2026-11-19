@@ -2013,7 +2013,7 @@ void AuthenticatorRequestDialogController::PopulateMechanisms() {
     }
   }
   if (!did_enumerate_local_passkeys &&
-      transport_availability_.available_transports.contains(
+      transport_availability_.available_transports.Has(
           AuthenticatorTransport::kInternal)) {
     transports_to_list_if_active.push_back(AuthenticatorTransport::kInternal);
   }
@@ -2023,7 +2023,7 @@ void AuthenticatorRequestDialogController::PopulateMechanisms() {
   bool include_add_phone_option = false;
 
   if (model_->cable_qr_string.has_value() &&
-      transport_availability_.available_transports.contains(kCable)) {
+      transport_availability_.available_transports.Has(kCable)) {
     include_add_phone_option = !windows_handles_hybrid;
   }
 
@@ -2095,7 +2095,7 @@ void AuthenticatorRequestDialogController::PopulateMechanisms() {
   // not available, if tapping it would trigger a prompt to enable BLE, or if
   // hints suggest that hybrid and USB should be separate options.
   const bool include_usb_option =
-      transport_availability_.available_transports.contains(
+      transport_availability_.available_transports.Has(
           AuthenticatorTransport::kUsbHumanInterfaceDevice) &&
       (!include_add_phone_option ||
        transport_availability_.ble_status != BleStatus::kOn ||
@@ -2104,7 +2104,7 @@ void AuthenticatorRequestDialogController::PopulateMechanisms() {
 
   if (include_add_phone_option) {
     model_->show_security_key_on_qr_sheet =
-        transport_availability_.available_transports.contains(
+        transport_availability_.available_transports.Has(
             AuthenticatorTransport::kUsbHumanInterfaceDevice) &&
         !include_usb_option;
     std::u16string label = l10n_util::GetStringUTF16(
@@ -2123,7 +2123,7 @@ void AuthenticatorRequestDialogController::PopulateMechanisms() {
   }
 
   for (const auto transport : transports_to_list_if_active) {
-    if (!transport_availability_.available_transports.contains(transport)) {
+    if (!transport_availability_.available_transports.Has(transport)) {
       continue;
     }
 

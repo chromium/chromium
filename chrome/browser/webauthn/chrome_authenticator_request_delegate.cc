@@ -1460,9 +1460,8 @@ void ChromeAuthenticatorRequestDelegate::UpdateModelForTransportAvailability(
       tai.attestation_conveyance_preference;
   dialog_model_->ble_adapter_is_powered =
       tai.ble_status == device::FidoRequestHandlerBase::BleStatus::kOn;
-  dialog_model_->show_security_key_on_qr_sheet =
-      tai.available_transports.contains(
-          device::FidoTransportProtocol::kUsbHumanInterfaceDevice);
+  dialog_model_->show_security_key_on_qr_sheet = tai.available_transports.Has(
+      device::FidoTransportProtocol::kUsbHumanInterfaceDevice);
   dialog_model_->is_off_the_record = GetBrowserContext()->IsOffTheRecord();
   dialog_model_->platform_has_biometrics = tai.platform_has_biometrics;
 }

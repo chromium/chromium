@@ -30,6 +30,7 @@
 #include "device/fido/credential_management.h"
 #include "device/fido/pin.h"
 #include "device/fido/public/fido_constants.h"
+#include "device/fido/public/fido_transport_protocol.h"
 #include "device/fido/public/public_key_credential_descriptor.h"
 #include "device/fido/public/public_key_credential_user_entity.h"
 #include "device/fido/reset_request_handler.h"
@@ -45,7 +46,7 @@ using content::BrowserThread;
 
 namespace {
 
-base::flat_set<device::FidoTransportProtocol> supported_transports() {
+device::FidoTransportProtocolSet supported_transports() {
   // If we ever support BLE devices then additional thought will be required
   // in the UI; therefore don't enable them here. NFC is not supported on
   // desktop thus only USB devices remain to be enabled.

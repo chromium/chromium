@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
@@ -124,24 +123,28 @@ class FidoMakeCredentialHandlerTest : public ::testing::Test {
 
   void ExpectAllowedTransportsForRequestAre(
       MakeCredentialRequestHandler* request_handler,
-      base::flat_set<FidoTransportProtocol> transports) {
+      FidoTransportProtocolSet transports) {
     using Transport = FidoTransportProtocol;
-    if (transports.contains(Transport::kUsbHumanInterfaceDevice))
+    if (transports.Has(Transport::kUsbHumanInterfaceDevice)) {
       discovery()->WaitForCallToStartAndSimulateSuccess();
-    if (transports.contains(Transport::kNearFieldCommunication))
+    }
+    if (transports.Has(Transport::kNearFieldCommunication)) {
       nfc_discovery()->WaitForCallToStartAndSimulateSuccess();
+    }
 
     task_environment_.FastForwardUntilNoTasksRemain();
     EXPECT_FALSE(future().IsReady());
 
-    if (!transports.contains(Transport::kUsbHumanInterfaceDevice))
+    if (!transports.Has(Transport::kUsbHumanInterfaceDevice)) {
       EXPECT_FALSE(discovery()->is_start_requested());
-    if (!transports.contains(Transport::kNearFieldCommunication))
+    }
+    if (!transports.Has(Transport::kNearFieldCommunication)) {
       EXPECT_FALSE(nfc_discovery()->is_start_requested());
+    }
 
-    EXPECT_THAT(
+    EXPECT_EQ(
         request_handler->transport_availability_info().available_transports,
-        ::testing::UnorderedElementsAreArray(transports));
+        transports);
   }
 
   test::FakeFidoDiscovery* discovery() const { return discovery_.get(); }
@@ -154,8 +157,7 @@ class FidoMakeCredentialHandlerTest : public ::testing::Test {
     pending_mock_platform_device_ = std::move(device);
   }
 
-  void set_supported_transports(
-      base::flat_set<FidoTransportProtocol> transports) {
+  void set_supported_transports(FidoTransportProtocolSet transports) {
     supported_transports_ = std::move(transports);
   }
 
@@ -170,7 +172,7 @@ class FidoMakeCredentialHandlerTest : public ::testing::Test {
   scoped_refptr<::testing::NiceMock<MockBluetoothAdapter>> mock_adapter_;
   std::unique_ptr<MockFidoDevice> pending_mock_platform_device_;
   TestMakeCredentialRequestFuture future_;
-  base::flat_set<FidoTransportProtocol> supported_transports_ = {
+  FidoTransportProtocolSet supported_transports_ = {
       FidoTransportProtocol::kUsbHumanInterfaceDevice,
       FidoTransportProtocol::kHybrid,
       FidoTransportProtocol::kNearFieldCommunication,
@@ -632,7 +634,7 @@ TEST_F(FidoMakeCredentialHandlerTest,
 }
 
 TEST_F(FidoMakeCredentialHandlerTest, SupportedTransportsAreOnlyNfc) {
-  const base::flat_set<FidoTransportProtocol> kNfc = {
+  const FidoTransportProtocolSet kNfc = {
       FidoTransportProtocol::kNearFieldCommunication,
   };
 
