@@ -9,19 +9,30 @@ export interface OnDeviceAiEnabled {
   allowedByPolicy: boolean;
 }
 
-// TODO(crbug.com/573643364): use Linter after all model status are added.
-// Mirrors optimization_guide::OnDeviceModelControl::ModelStatus in
-// components/optimization_guide/core/model_execution/on_device_capability.h.
+// LINT.IfChange(OnDeviceModelCategory)
+export enum OnDeviceModelCategory {
+  GENERAL_PURPOSE = 0,
+  PROOFREADING = 1,
+  SUMMARIZING = 2,
+  LIVE_TRANSCRIPTION = 3,
+}
+// LINT.ThenChange(//components/optimization_guide/core/model_execution/on_device_model_names.h:OnDeviceModelCategory)
+
+// LINT.IfChange(OnDeviceModelStatus)
 export enum OnDeviceModelStatus {
   READY = 0,
   DOWNLOADABLE = 1,
+  DOWNLOADING = 2,
+  UPDATING = 3,
 }
+// LINT.ThenChange(//components/optimization_guide/core/model_execution/on_device_capability.h:OnDeviceModelStatus)
 
 // An on-device AI model supported on this device.
 export interface OnDeviceAiCapability {
   // OnDeviceBaseModel enum value identifying the model.
   id: number;
   status: OnDeviceModelStatus;
+  category: OnDeviceModelCategory;
   categoryTitle: string;
   description: string;
   modelName: string;

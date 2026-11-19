@@ -11,13 +11,22 @@ import '../icons.html.js';
 
 import type {CrCollapseElement} from 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
 import type {CrExpandButtonElement} from 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
+import type {CrIconElement} from 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {OnDeviceAiCapability} from './on_device_ai_browser_proxy.js';
-import {OnDeviceModelStatus} from './on_device_ai_browser_proxy.js';
+import {OnDeviceModelCategory, OnDeviceModelStatus} from './on_device_ai_browser_proxy.js';
 import {getCss} from './on_device_ai_page_entry.css.js';
 import {getHtml} from './on_device_ai_page_entry.html.js';
+
+// Leading icon shown for each model category.
+const CATEGORY_ICONS: Record<OnDeviceModelCategory, string> = {
+  [OnDeviceModelCategory.GENERAL_PURPOSE]: 'settings20:pen-spark',
+  [OnDeviceModelCategory.PROOFREADING]: 'settings20:spellcheck-spark',
+  [OnDeviceModelCategory.SUMMARIZING]: 'settings20:summarize-auto-2',
+  [OnDeviceModelCategory.LIVE_TRANSCRIPTION]: 'settings20:mic-detect-auto',
+};
 
 export interface SettingsOnDeviceAiPageEntryElement {
   $: {
@@ -26,6 +35,7 @@ export interface SettingsOnDeviceAiPageEntryElement {
     expand: CrExpandButtonElement,
     modelDescription: HTMLElement,
     modelDetailsList: HTMLElement,
+    modelIcon: CrIconElement,
     modelMetadata: HTMLElement,
     modelTitle: HTMLElement,
   };
@@ -57,6 +67,7 @@ export class SettingsOnDeviceAiPageEntryElement extends
   accessor capability: OnDeviceAiCapability = {
     id: 0,
     status: OnDeviceModelStatus.READY,
+    category: OnDeviceModelCategory.GENERAL_PURPOSE,
     categoryTitle: '',
     description: '',
     modelName: '',
@@ -70,6 +81,10 @@ export class SettingsOnDeviceAiPageEntryElement extends
   // also move focus to the delete button whenever the row is clicked.
   override focus() {
     this.$.expand.focus();
+  }
+
+  protected getIcon_(): string {
+    return CATEGORY_ICONS[this.capability.category];
   }
 
   protected onExpandedChanged_(e: CustomEvent<{value: boolean}>) {

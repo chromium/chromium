@@ -60,6 +60,7 @@ std::string ConvertComponentKeyToUmaModelName(const std::string& key);
 // User-visible grouping of base models. Models that are not mapped to a
 // category return std::nullopt and are hidden from user-facing surfaces until
 // approved.
+// LINT.IfChange(OnDeviceModelCategory)
 enum class OnDeviceModelCategory {
   kGeneralPurpose = 0,
   kProofreading = 1,
@@ -67,6 +68,7 @@ enum class OnDeviceModelCategory {
   kLiveTranscription = 3,
   kMaxValue = kLiveTranscription,
 };
+// LINT.ThenChange(//chrome/browser/resources/settings/ai_page/on_device_ai_browser_proxy.ts:OnDeviceModelCategory)
 
 // Returns the user-visible category for `base_model`, or std::nullopt if the
 // model should be hidden from user-facing surfaces (e.g. unapproved Dev Trial

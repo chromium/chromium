@@ -388,6 +388,7 @@ class OnDeviceModelControl {
   };
 
   // Installation status of a base model supported by the current manifest.
+  // LINT.IfChange(OnDeviceModelStatus)
   enum class ModelStatus {
     // Model is downloaded on disk and ready to serve requests.
     kReady = 0,
@@ -398,6 +399,7 @@ class OnDeviceModelControl {
     // A new version of an already-installed model is being downloaded.
     kUpdating = 3,
   };
+  // LINT.ThenChange(//chrome/browser/resources/settings/ai_page/on_device_ai_browser_proxy.ts:OnDeviceModelStatus)
 
   // Information about a base model in the manifest.
   struct ModelInfo {

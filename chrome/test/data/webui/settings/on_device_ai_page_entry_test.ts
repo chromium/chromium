@@ -5,6 +5,7 @@
 import 'chrome://settings/lazy_load.js';
 
 import type {OnDeviceAiCapability, SettingsOnDeviceAiPageEntryElement} from 'chrome://settings/lazy_load.js';
+import {OnDeviceModelCategory} from 'chrome://settings/lazy_load.js';
 import {loadTimeData} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -49,6 +50,20 @@ suite('OnDeviceAiPageEntry', function() {
     entry.capability = createAsrCapability();
     await microtasksFinished();
     assertCapabilityRendered(createAsrCapability());
+  });
+
+  test('leading icon matches model category', async function() {
+    const expectedIcons: Array<[OnDeviceModelCategory, string]> = [
+      [OnDeviceModelCategory.GENERAL_PURPOSE, 'settings20:pen-spark'],
+      [OnDeviceModelCategory.PROOFREADING, 'settings20:spellcheck-spark'],
+      [OnDeviceModelCategory.SUMMARIZING, 'settings20:summarize-auto-2'],
+      [OnDeviceModelCategory.LIVE_TRANSCRIPTION, 'settings20:mic-detect-auto'],
+    ];
+    for (const [category, icon] of expectedIcons) {
+      entry.capability = {...createGemmaCapability(), category};
+      await microtasksFinished();
+      assertEquals(icon, entry.$.modelIcon.icon);
+    }
   });
 
   test('expand button toggles details', async function() {

@@ -41,6 +41,7 @@ struct VisibleCapabilityRow {
     base::DictValue item;
     item.Set("id", static_cast<int>(base_model));
     item.Set("status", static_cast<int>(status));
+    item.Set("category", static_cast<int>(metadata.category));
     item.Set("categoryTitle", metadata.category_title);
     item.Set("description", metadata.category_description);
     item.Set("modelName", metadata.model_display_name);

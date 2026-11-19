@@ -171,7 +171,7 @@ export {SettingsInlineCueMenuPageElement} from './ai_page/inline_cue_menu_page.j
 export {COMPOSE_PROACTIVE_NUDGE_DISABLED_SITES_PREF, COMPOSE_PROACTIVE_NUDGE_PREF, SettingsOfferWritingHelpPageElement} from './ai_page/offer_writing_help_page.js';
 // <if expr="_google_chrome">
 export type {OnDeviceAiBrowserProxy, OnDeviceAiCapability, OnDeviceAiEnabled} from './ai_page/on_device_ai_browser_proxy.js';
-export {OnDeviceAiBrowserProxyImpl, OnDeviceModelStatus} from './ai_page/on_device_ai_browser_proxy.js';
+export {OnDeviceAiBrowserProxyImpl, OnDeviceModelCategory, OnDeviceModelStatus} from './ai_page/on_device_ai_browser_proxy.js';
 export {SettingsOnDeviceAiPageElement} from './ai_page/on_device_ai_page.js';
 export {SettingsOnDeviceAiPageEntryElement} from './ai_page/on_device_ai_page_entry.js';
 // </if>

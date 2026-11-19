@@ -9,7 +9,7 @@ import type {SettingsOnDeviceAiPageEntryElement} from './on_device_ai_page_entry
 export function getHtml(this: SettingsOnDeviceAiPageEntryElement) {
   return html`<!--_html_template_start_-->
 <div id="modelRow">
-  <cr-icon id="modelIcon" icon="settings20:pen-spark" aria-hidden="true">
+  <cr-icon id="modelIcon" icon="${this.getIcon_()}" aria-hidden="true">
   </cr-icon>
   <div id="modelDetails">
     <div id="modelTitle">${this.capability.categoryTitle}</div>

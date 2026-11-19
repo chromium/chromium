@@ -26,6 +26,7 @@
 
 namespace {
 using optimization_guide::OnDeviceBaseModel;
+using optimization_guide::OnDeviceModelCategory;
 using optimization_guide::OnDeviceModelControl;
 using optimization_guide::model_execution::prefs::localstate::
     kOnDeviceAiUserSettingsEnabled;
@@ -305,6 +306,8 @@ TEST_F(OnDeviceAiSettingsHandlerTest,
   EXPECT_EQ(static_cast<int>(OnDeviceBaseModel::kGemma4), row0.FindInt("id"));
   EXPECT_EQ(static_cast<int>(OnDeviceModelControl::ModelStatus::kReady),
             row0.FindInt("status"));
+  EXPECT_EQ(static_cast<int>(OnDeviceModelCategory::kGeneralPurpose),
+            row0.FindInt("category"));
   EXPECT_EQ(l10n_util::GetStringUTF8(
                 IDS_ON_DEVICE_MODEL_CATEGORY_GENERAL_PURPOSE_TITLE),
             *row0.FindString("categoryTitle"));
@@ -338,6 +341,8 @@ TEST_F(OnDeviceAiSettingsHandlerTest,
             row2.FindInt("id"));
   EXPECT_EQ(static_cast<int>(OnDeviceModelControl::ModelStatus::kReady),
             row2.FindInt("status"));
+  EXPECT_EQ(static_cast<int>(OnDeviceModelCategory::kLiveTranscription),
+            row2.FindInt("category"));
   EXPECT_EQ(l10n_util::GetStringUTF8(
                 IDS_ON_DEVICE_MODEL_CATEGORY_LIVE_TRANSCRIPTION_TITLE),
             *row2.FindString("categoryTitle"));

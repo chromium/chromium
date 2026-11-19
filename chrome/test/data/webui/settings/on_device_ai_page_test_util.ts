@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {OnDeviceAiCapability} from 'chrome://settings/lazy_load.js';
-import {OnDeviceModelStatus} from 'chrome://settings/lazy_load.js';
+import {OnDeviceModelCategory, OnDeviceModelStatus} from 'chrome://settings/lazy_load.js';
 
 // These helpers return a new object on every call, so that tests never share
 // state with each other or with the element under test.
@@ -12,6 +12,7 @@ export function createGemmaCapability(): OnDeviceAiCapability {
   return {
     id: 1,
     status: OnDeviceModelStatus.READY,
+    category: OnDeviceModelCategory.GENERAL_PURPOSE,
     categoryTitle: 'General-purpose writing',
     description: 'Helps sites write, rewrite, and summarize text',
     modelName: 'Gemma 4',
@@ -27,6 +28,7 @@ export function createAsrCapability(): OnDeviceAiCapability {
   return {
     id: 2,
     status: OnDeviceModelStatus.READY,
+    category: OnDeviceModelCategory.LIVE_TRANSCRIPTION,
     categoryTitle: 'Live transcription',
     description: 'Captions and transcribes audio',
     modelName: 'Live Caption and Transcription',
