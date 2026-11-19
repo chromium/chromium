@@ -4,7 +4,9 @@
 
 #import "ios/chrome/browser/first_run/coordinator/first_run_post_action_provider.h"
 
+#import "base/values.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/first_run/public/features.h"
 #import "ios/chrome/browser/safari_data_import/model/features.h"
 #import "ios/chrome/browser/screen/ui_bundled/screen_provider+protected.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -14,7 +16,8 @@
   BOOL _guidedTourStarted;
 }
 
-- (instancetype)initWithPrefService:(PrefService*)prefService {
+- (instancetype)initWithProfilePrefs:(PrefService*)profilePrefs
+                          localState:(PrefService*)localState {
   NSMutableArray<NSNumber*>* screens = [NSMutableArray array];
   // For now, skip all post-FRE screens if the interactive promo is enabled, as
   // the interactive promo makes the FRE longer.
@@ -24,10 +27,19 @@
   }
 
   BOOL promoTriggered =
-      prefService &&
-      prefService->GetBoolean(prefs::kAppStoreGeminiPromoTriggered);
+      profilePrefs &&
+      profilePrefs->GetBoolean(prefs::kAppStoreGeminiPromoTriggered);
   if (promoTriggered) {
-    prefService->SetBoolean(prefs::kAppStoreGeminiPromoTriggered, false);
+    profilePrefs->SetBoolean(prefs::kAppStoreGeminiPromoTriggered, false);
+    [screens addObject:@(kStepsCompleted)];
+    return [super initWithScreens:screens];
+  }
+
+  if (localState &&
+      !localState->GetList(prefs::kFirstRunDeferredScreens).empty() &&
+      first_run::IsFREAblationEnabled() &&
+      first_run::GetFREAblationVariationType() ==
+          first_run::FREAblationVariationType::kSkipAllExceptSignInAndChoice) {
     [screens addObject:@(kStepsCompleted)];
     return [super initWithScreens:screens];
   }
@@ -37,7 +49,7 @@
   if (IsBestOfAppGuidedTourEnabled()) {
     [screens addObject:@(kGuidedTour)];
   }
-  if (ShouldShowSafariDataImportEntryPoint(prefService)) {
+  if (ShouldShowSafariDataImportEntryPoint(profilePrefs)) {
     [screens addObject:@(kSafariImport)];
   }
   [screens addObject:@(kStepsCompleted)];

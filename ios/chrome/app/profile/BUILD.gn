@@ -208,6 +208,7 @@ source_set("first_run_profile_agent") {
   deps = [
     "//base",
     "//components/feature_engagement/public",
+    "//components/prefs",
     "//ios/chrome/app/application_delegate:app_state",
     "//ios/chrome/app/application_delegate:startup_information",
     "//ios/chrome/app/profile",
@@ -220,6 +221,7 @@ source_set("first_run_profile_agent") {
     "//ios/chrome/browser/scoped_ui_blocker/ui_bundled",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_observer",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile",
@@ -454,6 +456,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/promos_manager/model:constants",
     "//ios/chrome/browser/promos_manager/model:factory",
     "//ios/chrome/browser/promos_manager/model:test_support",
+    "//ios/chrome/browser/screen/ui_bundled:screen_type",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/coordinator/scene/test",
     "//ios/chrome/browser/shared/model/application_context",

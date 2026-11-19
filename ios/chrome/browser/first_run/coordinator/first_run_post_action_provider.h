@@ -15,7 +15,8 @@ class PrefService;
 /// the FRE screens are dismissed.
 @interface FirstRunPostActionProvider : ScreenProvider
 
-- (instancetype)initWithPrefService:(PrefService*)prefService
+- (instancetype)initWithProfilePrefs:(PrefService*)profilePrefs
+                          localState:(PrefService*)localState
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

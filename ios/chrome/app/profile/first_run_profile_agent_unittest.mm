@@ -4,9 +4,15 @@
 
 #import "ios/chrome/app/profile/first_run_profile_agent.h"
 
+#import <utility>
+
+#import "base/feature_list.h"
 #import "base/ios/block_types.h"
+#import "base/metrics/field_trial.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
+#import "base/values.h"
+#import "components/prefs/pref_service.h"
 #import "components/sync_preferences/features.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
@@ -17,7 +23,9 @@
 #import "ios/chrome/app/profile/profile_state_observer.h"
 #import "ios/chrome/app/profile/profile_state_test_utils.h"
 #import "ios/chrome/browser/first_run/public/features.h"
+#import "ios/chrome/browser/screen/ui_bundled/screen_type.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -222,4 +230,70 @@ TEST_F(FirstRunProfileAgentTest, MaybePresentPostFREPromos_FeedSwipe) {
 
   id self = nil;
   OCMVerifyAll(ntp_commands_handler);
+}
+
+// Tests that `maybePresentPostFREPromos` suppresses follow-up IPH bubbles under
+// `kSkipAllExceptSignInAndChoice` when screens were deferred.
+TEST_F(FirstRunProfileAgentTest,
+       MaybePresentPostFREPromos_SuppressedForSkipAllExceptSignInAndChoice) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{first_run::kFREAblation,
+        {{first_run::kFREAblationParam,
+          first_run::kFREAblationParamSkipAllExceptSignInAndChoice}}},
+       {kBestOfAppFRE, {{"variant", "1"}}}},
+      {});
+
+  base::ListValue deferred_screens;
+  deferred_screens.Append(static_cast<int>(kDefaultBrowserPromo));
+  GetApplicationContext()->GetLocalState()->SetList(
+      prefs::kFirstRunDeferredScreens, std::move(deferred_screens));
+
+  InitializeActiveSceneState();
+  [profile_agent_ profileState:profile_state_
+      firstSceneHasInitializedUI:scene_state_];
+  [profile_state_ sceneStateConnected:scene_state_];
+
+  id ntp_commands_handler =
+      OCMStrictProtocolMock(@protocol(NewTabPageCommands));
+  [browser()->GetCommandDispatcher()
+      startDispatchingToTarget:ntp_commands_handler
+                   forProtocol:@protocol(NewTabPageCommands)];
+
+  [profile_agent_ maybePresentPostFREPromos];
+
+  EXPECT_OCMOCK_VERIFY(ntp_commands_handler);
+}
+
+// Tests that `maybePresentPostFREPromos` still presents the follow-up bubble
+// and leaves the `kFREAblation` trial inactive when `kFirstRunDeferredScreens`
+// is empty.
+TEST_F(FirstRunProfileAgentTest,
+       MaybePresentPostFREPromos_ShownWhenDeferredScreensEmpty) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{first_run::kFREAblation,
+        {{first_run::kFREAblationParam,
+          first_run::kFREAblationParamSkipAllExceptSignInAndChoice}}},
+       {kBestOfAppFRE, {{"variant", "1"}}}},
+      {});
+  base::FieldTrial* trial =
+      base::FeatureList::GetFieldTrial(first_run::kFREAblation);
+  ASSERT_NE(trial, nullptr);
+
+  InitializeActiveSceneState();
+  [profile_agent_ profileState:profile_state_
+      firstSceneHasInitializedUI:scene_state_];
+  [profile_state_ sceneStateConnected:scene_state_];
+
+  id ntp_commands_handler = OCMProtocolMock(@protocol(NewTabPageCommands));
+  OCMExpect([ntp_commands_handler presentFeedSwipeFirstRunBubble]);
+  [browser()->GetCommandDispatcher()
+      startDispatchingToTarget:ntp_commands_handler
+                   forProtocol:@protocol(NewTabPageCommands)];
+
+  [profile_agent_ maybePresentPostFREPromos];
+
+  EXPECT_FALSE(base::FieldTrialList::IsTrialActive(trial->trial_name()));
+  EXPECT_OCMOCK_VERIFY(ntp_commands_handler);
 }

@@ -4,9 +4,20 @@
 
 #import "ios/chrome/browser/first_run/coordinator/first_run_screen_provider.h"
 
+#import <memory>
+#import <string>
+#import <utility>
+#import <vector>
+
 #import "base/command_line.h"
+#import "base/feature_list.h"
+#import "base/metrics/field_trial.h"
+#import "base/metrics/field_trial_params.h"
+#import "base/test/scoped_command_line.h"
 #import "base/test/scoped_feature_list.h"
+#import "base/values.h"
 #import "components/policy/core/common/mock_policy_service.h"
+#import "components/prefs/pref_service.h"
 #import "components/regional_capabilities/regional_capabilities_test_utils.h"
 #import "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #import "components/search_engines/search_engines_switches.h"
@@ -15,9 +26,14 @@
 #import "ios/chrome/browser/regional_capabilities/model/regional_capabilities_service_factory.h"
 #import "ios/chrome/browser/screen/ui_bundled/screen_type.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
@@ -65,6 +81,26 @@ class FirstRunScreenProviderTest : public PlatformTest {
       type = [provider nextScreenType];
     }
     return screens;
+  }
+
+  // Adds a fake identity on the device without signing in.
+  void AddIdentityOnDevice() {
+    FakeSystemIdentityManager* system_identity_manager =
+        FakeSystemIdentityManager::FromSystemIdentityManager(
+            GetApplicationContext()->GetSystemIdentityManager());
+    system_identity_manager->AddIdentity([FakeSystemIdentity fakeIdentity1]);
+  }
+
+  // Reads the ordered list of deferred `ScreenType` values from `LocalState`.
+  std::vector<ScreenType> GetDeferredScreens() {
+    std::vector<ScreenType> deferred_screens;
+    const base::ListValue& list =
+        GetApplicationContext()->GetLocalState()->GetList(
+            prefs::kFirstRunDeferredScreens);
+    for (const base::Value& value : list) {
+      deferred_screens.push_back(static_cast<ScreenType>(value.GetInt()));
+    }
+    return deferred_screens;
   }
 
   web::WebTaskEnvironment task_environment_;
@@ -122,6 +158,139 @@ TEST_F(FirstRunScreenProviderTest, KeepUpdatedSequenceWhenNotChoiceEligible) {
   // Assert that kDefaultBrowserPromo is the first screen.
   ASSERT_FALSE(screens.empty());
   EXPECT_EQ(screens.front(), kDefaultBrowserPromo);
+}
+
+// Tests that `kFREAblation` is not evaluated (leaving its Finch trial inactive)
+// and any stale deferred screens are cleared when there are no identities on
+// the device.
+TEST_F(FirstRunScreenProviderTest,
+       FREAblationNotEvaluatedWhenNoIdentitiesOnDevice) {
+  feature_list_.InitWithFeaturesAndParameters(
+      {{first_run::kFREAblation,
+        {{first_run::kFREAblationParam,
+          first_run::kFREAblationParamSkipAllExceptSignInAndChoice}}}},
+      {kBestOfAppFRE});
+  base::FieldTrial* trial =
+      base::FeatureList::GetFieldTrial(first_run::kFREAblation);
+  ASSERT_NE(trial, nullptr);
+
+  // Seed a stale deferred screen to verify interrupted First Run state is
+  // cleared when First Run restarts without identities.
+  base::ListValue stale_deferred_screens;
+  stale_deferred_screens.Append(static_cast<int>(kHistorySync));
+  GetApplicationContext()->GetLocalState()->SetList(
+      prefs::kFirstRunDeferredScreens, std::move(stale_deferred_screens));
+
+  std::unique_ptr<TestProfileIOS> profile = CreateProfile("US");
+  FirstRunScreenProvider* provider =
+      [[FirstRunScreenProvider alloc] initForProfile:profile.get()];
+  std::vector<ScreenType> screens = GetScreensSequence(provider);
+
+  EXPECT_FALSE(base::FieldTrialList::IsTrialActive(trial->trial_name()));
+  EXPECT_THAT(screens, ::testing::ElementsAre(kDefaultBrowserPromo));
+  EXPECT_TRUE(GetDeferredScreens().empty());
+}
+
+// Tests that when an identity exists on the device and `kFREAblation` is
+// disabled, the Finch trial activates for Control and no screens are skipped or
+// deferred.
+TEST_F(FirstRunScreenProviderTest,
+       FREAblationDisabledWithIdentityActivatesTrialAndKeepsAllScreens) {
+  base::test::ScopedFeatureList isolated_trial_scope;
+  isolated_trial_scope.InitWithEmptyFeatureAndFieldTrialLists();
+
+  scoped_refptr<base::FieldTrial> trial =
+      base::FieldTrialList::CreateFieldTrial("FREAblationControlTrial",
+                                             "Control");
+  ASSERT_NE(trial, nullptr);
+  auto feature_list = std::make_unique<base::FeatureList>();
+  feature_list->RegisterFieldTrialOverride(
+      first_run::kFREAblation.name, base::FeatureList::OVERRIDE_DISABLE_FEATURE,
+      trial.get());
+  feature_list->RegisterExtraFeatureOverrides(
+      {{kBestOfAppFRE, base::FeatureList::OVERRIDE_DISABLE_FEATURE}});
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+
+  AddIdentityOnDevice();
+  std::unique_ptr<TestProfileIOS> profile = CreateProfile("US");
+  FirstRunScreenProvider* provider =
+      [[FirstRunScreenProvider alloc] initForProfile:profile.get()];
+  std::vector<ScreenType> screens = GetScreensSequence(provider);
+
+  EXPECT_TRUE(base::FieldTrialList::IsTrialActive(trial->trial_name()));
+  EXPECT_THAT(screens, ::testing::ElementsAre(kSignIn, kHistorySync,
+                                              kDefaultBrowserPromo));
+  EXPECT_TRUE(GetDeferredScreens().empty());
+}
+
+// Tests that the `kSkipHistorySync` arm skips only `kHistorySync` during First
+// Run and records `kHistorySync` in `prefs::kFirstRunDeferredScreens`.
+TEST_F(FirstRunScreenProviderTest,
+       FREAblationSkipHistorySyncDefersOnlyHistorySync) {
+  feature_list_.InitWithFeaturesAndParameters(
+      {{first_run::kFREAblation,
+        {{first_run::kFREAblationParam,
+          first_run::kFREAblationParamSkipHistorySync}}}},
+      {kBestOfAppFRE});
+
+  AddIdentityOnDevice();
+  std::unique_ptr<TestProfileIOS> profile = CreateProfile("US");
+  FirstRunScreenProvider* provider =
+      [[FirstRunScreenProvider alloc] initForProfile:profile.get()];
+  std::vector<ScreenType> screens = GetScreensSequence(provider);
+
+  EXPECT_THAT(screens, ::testing::ElementsAre(kSignIn, kDefaultBrowserPromo));
+  EXPECT_THAT(GetDeferredScreens(), ::testing::ElementsAre(kHistorySync));
+}
+
+// Tests that the `kSkipAllExceptSignInAndChoice` arm in a non-EEA region keeps
+// only `kSignIn` in First Run and records all skipped screens in sequence order
+// in `prefs::kFirstRunDeferredScreens`.
+TEST_F(FirstRunScreenProviderTest,
+       FREAblationSkipAllExceptSignInAndChoiceInNonEEA) {
+  feature_list_.InitWithFeaturesAndParameters(
+      {{first_run::kFREAblation,
+        {{first_run::kFREAblationParam,
+          first_run::kFREAblationParamSkipAllExceptSignInAndChoice}}},
+       {kBestOfAppFRE, {{kBestOfAppFREVariantParam.name, "2"}}}},
+      {});
+
+  AddIdentityOnDevice();
+  std::unique_ptr<TestProfileIOS> profile = CreateProfile("US");
+  FirstRunScreenProvider* provider =
+      [[FirstRunScreenProvider alloc] initForProfile:profile.get()];
+  std::vector<ScreenType> screens = GetScreensSequence(provider);
+
+  EXPECT_THAT(screens, ::testing::ElementsAre(kSignIn));
+  EXPECT_THAT(GetDeferredScreens(),
+              ::testing::ElementsAre(kHistorySync, kDefaultBrowserPromo,
+                                     kLensAnimatedPromo));
+}
+
+// Tests that the `kSkipAllExceptSignInAndChoice` arm preserves both `kSignIn`
+// and `kChoice` when the Search Engine Choice screen is required, and defers
+// the remaining screens in order.
+TEST_F(FirstRunScreenProviderTest,
+       FREAblationSkipAllExceptSignInAndChoicePreservesChoiceInEEA) {
+  feature_list_.InitWithFeaturesAndParameters(
+      {{first_run::kFREAblation,
+        {{first_run::kFREAblationParam,
+          first_run::kFREAblationParamSkipAllExceptSignInAndChoice}}}},
+      {kBestOfAppFRE});
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      switches::kForceSearchEngineChoiceScreen);
+
+  AddIdentityOnDevice();
+  std::unique_ptr<TestProfileIOS> profile = CreateProfile("BE");
+  FirstRunScreenProvider* provider =
+      [[FirstRunScreenProvider alloc] initForProfile:profile.get()];
+  std::vector<ScreenType> screens = GetScreensSequence(provider);
+
+  EXPECT_THAT(screens, ::testing::ElementsAre(kSignIn, kChoice));
+  EXPECT_THAT(GetDeferredScreens(),
+              ::testing::ElementsAre(kHistorySync, kDefaultBrowserPromo));
 }
 
 }  // namespace

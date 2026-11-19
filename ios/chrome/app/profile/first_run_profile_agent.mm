@@ -9,6 +9,7 @@
 #import "base/check.h"
 #import "base/check_op.h"
 #import "base/notreached.h"
+#import "base/values.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
@@ -24,6 +25,7 @@
 #import "ios/chrome/browser/scoped_ui_blocker/ui_bundled/scoped_ui_blocker.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_observer.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -174,6 +176,15 @@
     return;
   }
 
+  PrefService* localState = GetApplicationContext()->GetLocalState();
+  if (localState &&
+      !localState->GetList(prefs::kFirstRunDeferredScreens).empty() &&
+      first_run::IsFREAblationEnabled() &&
+      first_run::GetFREAblationVariationType() ==
+          first_run::FREAblationVariationType::kSkipAllExceptSignInAndChoice) {
+    return;
+  }
+
   CommandDispatcher* dispatcher = [self commandDispatcher];
   if (!dispatcher) {
     return;
@@ -242,8 +253,10 @@
   }
   if (!_postActionsProvider) {
     PrefService* prefService = [self profilePrefs];
+    PrefService* localState = GetApplicationContext()->GetLocalState();
     _postActionsProvider =
-        [[FirstRunPostActionProvider alloc] initWithPrefService:prefService];
+        [[FirstRunPostActionProvider alloc] initWithProfilePrefs:prefService
+                                                      localState:localState];
   }
   switch ([_postActionsProvider nextScreenType]) {
     case kSyncedSetUp:

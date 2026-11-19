@@ -492,6 +492,8 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterTimePref(prefs::kIosGeolocationSystemPromptLastShownTime,
                              base::Time());
 
+  registry->RegisterListPref(prefs::kFirstRunDeferredScreens);
+
   // Deprecated 01/2026.
   registry->RegisterListPref(kMagicStackSafetyCheckNotificationsShown);
   registry->RegisterListPref(kBottomOmniboxByDefault);

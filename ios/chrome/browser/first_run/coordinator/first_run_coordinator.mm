@@ -10,9 +10,11 @@
 #import "base/feature_list.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
+#import "base/values.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/metrics/metrics_service.h"
+#import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/authentication/fullscreen_signin_screen/coordinator/fullscreen_signin_screen_coordinator.h"
 #import "ios/chrome/browser/authentication/history_sync/coordinator/history_sync_coordinator.h"
@@ -175,6 +177,16 @@ class FirstRunCoordinatorMetricsHelper final {
               prefs::kAppStoreGeminiPromoTriggered)) {
         // If first run started due to app store external action, do not show
         // any follow up IPH.
+        return;
+      }
+
+      PrefService* localState = GetApplicationContext()->GetLocalState();
+      if (localState &&
+          !localState->GetList(prefs::kFirstRunDeferredScreens).empty() &&
+          first_run::IsFREAblationEnabled() &&
+          first_run::GetFREAblationVariationType() ==
+              first_run::FREAblationVariationType::
+                  kSkipAllExceptSignInAndChoice) {
         return;
       }
 

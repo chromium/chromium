@@ -1051,6 +1051,12 @@ inline constexpr char kDeviceAuthorizationStartupFetchBackoff[] =
 inline constexpr char kUniversalOptOutErrorToastShown[] =
     "ios.universal_optout.error_toast_shown";
 
+// Ordered list of `ScreenType` integer values for First Run Experience screens
+// that were skipped during First Run and deferred for post-First Run
+// presentation. Stored in `LocalState` since First Run is an app-level flow.
+inline constexpr char kFirstRunDeferredScreens[] =
+    "ios.first_run.deferred_screens";
+
 }  // namespace prefs
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_PREFS_PREF_NAMES_H_
