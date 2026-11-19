@@ -84,6 +84,7 @@ export class LocationBarElement extends CrLitElement implements
       isPopupOpen: {type: Boolean},
       touchUi: {type: Boolean},
       waitForState: {type: Boolean},
+      chipsKeyboardNavigable: {type: Boolean},
     };
   }
 
@@ -104,6 +105,8 @@ export class LocationBarElement extends CrLitElement implements
   // page as initialized at the same time as before. A frame painted before the
   // state arrives shows the empty location bar.
   accessor waitForState: boolean = false;
+
+  accessor chipsKeyboardNavigable: boolean = true;
 
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
   private focusState_: boolean = false;
@@ -297,6 +300,22 @@ export class LocationBarElement extends CrLitElement implements
   protected isPermissionDashboardVisible_(): boolean {
     const dashboard = this.locationBarState.lhsChipsState.permissionDashboard;
     return dashboard.indicatorChip.isVisible || dashboard.requestChip.isVisible;
+  }
+
+  protected chipTabIndex_(): number {
+    return this.chipsKeyboardNavigable ? 0 : -1;
+  }
+
+  protected permissionBubblesKeyboardNavigable_(): boolean {
+    // <if expr="not is_macosx">
+    return true;
+    // </if>
+
+    // <if expr="is_macosx">
+    // On Mac, permission bubbles can only be tabbed to if keyboard navigation
+    // is on.
+    return this.chipsKeyboardNavigable;
+    // </if>
   }
 }
 

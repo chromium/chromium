@@ -21,6 +21,10 @@
 #include "ui/actions/actions.h"
 #include "ui/base/ui_base_features.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "ui/base/cocoa/appkit_utils.h"
+#endif
+
 namespace webui_toolbar {
 
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kToolbarClearBrowsingDataElementId);
@@ -663,9 +667,7 @@ MojomPageActionId ActionIdToMojomPageActionId(actions::ActionId action_id) {
 
 bool IsKeyboardNavigableByDefault() {
 #if BUILDFLAG(IS_MAC)
-  // TODO(crbug.com/567215920): get actual value via
-  // ui::IsFullKeyboardAccessEnabled()
-  return true;
+  return ui::IsFullKeyboardAccessEnabled();
 #else
   // On non-Mac platforms, keyboard navigability for toolbar is always off
   // initially, and toggled on when a shortcut like IDC_FOCUS_TOOLBAR is used

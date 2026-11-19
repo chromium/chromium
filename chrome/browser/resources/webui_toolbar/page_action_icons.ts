@@ -35,8 +35,10 @@ export class PageActionIconsElement extends CrLitElement {
         reflect: true,
         attribute: 'is-capsule',
       },
+      buttonTabIndex: {type: Number},
     };
   }
+  accessor buttonTabIndex: number = 0;
 
   override willUpdate(changedProperties: PropertyValues<this>): void {
     super.willUpdate(changedProperties);

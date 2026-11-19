@@ -842,7 +842,7 @@ export class ToolbarAppElement extends AppElementBase {
         const el = node as HTMLElement;
         const isDisabled = el.hasAttribute('disabled');
         const isHidden = el.closest('[hidden]') !== null;
-        const isVisible = el.offsetWidth > 0 || el.offsetHeight > 0;
+        const isVisible = el.offsetWidth > 0 && el.offsetHeight > 0;
         const nonFocusable = this.isNonFocusable_(el);
 
         if (!isDisabled && !isHidden && !nonFocusable && isVisible) {
@@ -941,7 +941,9 @@ export class ToolbarAppElement extends AppElementBase {
 
   private onFocusRequest_(target: FocusRequestTarget) {
     if (target === FocusRequestTarget.kFirstFocusable) {
-      this.updateComplete.then(() => this.focusFirst_());
+      // updateComplete won't catch the update of tabIndex of
+      // location bar chips.
+      requestAnimationFrame(() => this.focusFirst_());
     }
   }
 
@@ -1287,6 +1289,20 @@ export class ToolbarAppElement extends AppElementBase {
 
   protected keyboardNavigable(): boolean {
     return this.toolbarState_.keyboardNavigable;
+  }
+
+  protected locationBarChipsKeyboardNavigable(): boolean {
+    // <if expr="not is_macosx">
+    // On non-Mac, location bar chips are almost always tab-focusable
+    // (except location icon isn't in some cases).
+    return true;
+    // </if>
+
+    // <if expr="is_macosx">
+    // On Mac, location bar chips follow the system tab navigability
+    // settings (except the AIM button is always focusable).
+    return this.toolbarState_.keyboardNavigable;
+    // </if>
   }
 }
 

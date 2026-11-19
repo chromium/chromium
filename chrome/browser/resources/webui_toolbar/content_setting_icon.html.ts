@@ -10,7 +10,8 @@ export function getHtml(this: ContentSettingIconElement) {
   return html`<!--_html_template_start_-->
 <toolbar-chip-button outset-focus-ring animates-label id="chip"
     class="${this.hasHelpBubble ? 'help-anchor-highlight' : ''}"
-    .buttonTabIndex="${0}" ?is-menu-open="${this.trackedHighlighted}"
+    .buttonTabIndex="${this.buttonTabIndex}"
+    ?is-menu-open="${this.trackedHighlighted}"
     ?has-label="${this.shouldShowLabel_ && !!this.state.explanatoryString}"
     ?disable-transitions="${this.suppressTransitions_}"
     .tooltip="${this.getTooltip_()}" .ariaLabel="${this.getAriaLabel_()}"

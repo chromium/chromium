@@ -12,7 +12,8 @@ export function getHtml(this: PageActionIconElement) {
   return html`<!--_html_template_start_-->
 <toolbar-chip-button outset-focus-ring id="button"
     class="${this.hasHelpBubble ? 'help-anchor-highlight' : ''}"
-    style="${this.chipStyleOverride_ ?? nothing}" .buttonTabIndex="${0}"
+    style="${this.chipStyleOverride_ ?? nothing}"
+    .buttonTabIndex="${this.effectiveTabIndex_()}"
     ?is-menu-open="${this.state.isActive || this.trackedHighlighted}"
     ?animates-label="${this.shouldAnimate_()}"
     ?has-label="${this.shouldShowLabel_()}" .tooltip="${this.getTooltip_()}"

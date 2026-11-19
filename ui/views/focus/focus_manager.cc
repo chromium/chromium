@@ -325,6 +325,9 @@ void FocusManager::SetKeyboardAccessible(bool keyboard_accessible) {
   // Disabling keyboard accessibility may cause the focused view to become not
   // focusable. Hence advance focus if necessary.
   AdvanceFocusIfNecessary();
+
+  focus_change_listeners_.Notify(
+      &FocusChangeListener::OnKeyboardAccessibleChanged, keyboard_accessible_);
 }
 
 bool FocusManager::IsSettingFocusedView() const {

@@ -315,7 +315,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewInteractiveTest, FocusReloadButton) {
         chrome::BrowserCommandController::From(browser())->ExecuteCommand(
             IDC_FOCUS_TOOLBAR);
       }),
-      CheckJsResultAt(kWebUIToolbarWebViewId, DeepQuery{},
+      WaitForJsResult(kWebUIToolbarWebViewId,
                       "() => {"
                       "  let active = document.activeElement;"
                       "  while (active && active.shadowRoot && "

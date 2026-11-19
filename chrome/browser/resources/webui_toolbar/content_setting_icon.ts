@@ -88,6 +88,7 @@ export class ContentSettingIconElement extends ContentSettingIconElementBase {
       suppressTransitions_: {
         type: Boolean,
       },
+      buttonTabIndex: {type: Number},
     };
   }
 
@@ -97,6 +98,8 @@ export class ContentSettingIconElement extends ContentSettingIconElementBase {
   // fully expanded state when the bubble opens so the chip shows its full,
   // unclipped label rather than freezing partially expanded.
   protected accessor suppressTransitions_: boolean = false;
+
+  accessor buttonTabIndex: number = 0;
 
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
   private collapseTimerId_: number|null = null;

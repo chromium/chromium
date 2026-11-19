@@ -92,6 +92,7 @@ export class LocationIconElement extends LocationIconElementBase {
         attribute: 'glow-up-active',
       },
       displayText: {type: String},
+      buttonTabIndex: {type: Number},
     };
   }
 
@@ -112,6 +113,8 @@ export class LocationIconElement extends LocationIconElementBase {
   accessor glowUpEnabled: boolean = loadTimeData.getBoolean('enableGlowUp');
   accessor glowUpActive: boolean = false;
   accessor displayText: string = '';
+
+  accessor buttonTabIndex: number = 0;
 
   private dragStartX_: number = 0;
   private dragStartY_: number = 0;

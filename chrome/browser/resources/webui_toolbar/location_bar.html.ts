@@ -13,6 +13,7 @@ ${this.locationBarState.lhsChipsState.securityChip.isVisible &&
         !this.locationBarState.selectedKeyword ?
     html`
   <location-icon .state="${this.locationBarState.lhsChipsState.securityChip}"
+      .buttonTabIndex="${this.chipTabIndex_()}"
       @pointerenter="${this.onChipPointerenter_}"
       @pointerleave="${this.onChipPointerleave_}"
       @pointercancel="${this.onChipPointercancel_}">
@@ -21,6 +22,8 @@ ${this.locationBarState.lhsChipsState.securityChip.isVisible &&
 <permission-dashboard .delegate="${BrowserProxyImpl.getInstance()}"
     .dashboardState="${
         this.locationBarState.lhsChipsState.permissionDashboard}"
+    .permissionBubblesKeyboardNavigable="${
+        this.permissionBubblesKeyboardNavigable_()}"
     ?visible="${this.isPermissionDashboardVisible_()}"
     @pointerenter="${this.onChipPointerenter_}"
     @pointerleave="${this.onChipPointerleave_}"
@@ -29,6 +32,7 @@ ${this.locationBarState.lhsChipsState.securityChip.isVisible &&
 ${this.locationBarState.selectedKeyword ? html`
   <selected-keyword
       .selectedKeywordState="${this.locationBarState.selectedKeyword}"
+      .buttonTabIndex="${this.chipTabIndex_()}"
       @pointerenter="${this.onChipPointerenter_}"
       @pointerleave="${this.onChipPointerleave_}"
       @pointercancel="${this.onChipPointercancel_}">
@@ -49,13 +53,13 @@ ${this.shouldShowClearButton_() ? html`
   </cr-icon-button>
 ` : nothing}
 <content-settings-icons id="contentSettings"
-    .contentSettingImageStates="${
+    .buttonTabIndex="${this.chipTabIndex_()}" .contentSettingImageStates="${
         this.locationBarState.contentSettingImageStates}"
     @chip-pointerenter="${this.onChipPointerenter_}"
     @chip-pointerleave="${this.onChipPointerleave_}"
     @chip-pointercancel="${this.onChipPointercancel_}">
 </content-settings-icons>
-<page-action-icons id="pageActions"
+<page-action-icons id="pageActions" .buttonTabIndex="${this.chipTabIndex_()}"
     .pageActionStates="${this.locationBarState.pageActionStates}"
     @chip-pointerenter="${this.onChipPointerenter_}"
     @chip-pointerleave="${this.onChipPointerleave_}"

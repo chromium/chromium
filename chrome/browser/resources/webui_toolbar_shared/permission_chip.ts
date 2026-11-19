@@ -24,6 +24,7 @@ const PermissionChipElementBase = HelpBubbleMixinLit(CrLitElement);
 
 export interface PermissionChipElement {
   $: {
+    chip: HTMLButtonElement,
     message: HTMLSpanElement,
   };
 }
@@ -47,12 +48,14 @@ export class PermissionChipElement extends PermissionChipElementBase {
       chipState: {type: Object},
       hasDivider: {type: Boolean, attribute: 'has-divider', reflect: true},
       isFullyCollapsed_: {type: Boolean},
+      permissionBubblesKeyboardNavigable: {type: Boolean},
     };
   }
 
   accessor delegate: PermissionChipDelegate|null = null;
   accessor chipState: PermissionChipState|null = null;
   accessor hasDivider: boolean = false;
+  accessor permissionBubblesKeyboardNavigable: boolean = false;
   protected accessor isFullyCollapsed_: boolean = true;
 
   private isTracking_: boolean = false;
@@ -72,6 +75,9 @@ export class PermissionChipElement extends PermissionChipElementBase {
       this.updateColors_();
       this.onChipStateChanged_();
       this.updateTracking_();
+    }
+    if (changedProperties.has('permissionBubblesKeyboardNavigable')) {
+      this.updateTabIndex_();
     }
   }
 
@@ -141,6 +147,7 @@ export class PermissionChipElement extends PermissionChipElementBase {
           // problem is, and whether we really need to manually toggle it or
           // if we can use a reflected Lit property.
           this.toggleAttribute('anchor-highlighted', highlighted);
+          this.updateTabIndex_();
         },
       });
       this.isTracking_ = true;
@@ -270,6 +277,21 @@ export class PermissionChipElement extends PermissionChipElementBase {
   // or sends an empty string when the chip has no icon.
   protected getIconName_(): string {
     return this.chipState?.iconName || '';
+  }
+
+  private updateTabIndex_() {
+    this.$.chip.tabIndex = this.effectiveTabIndex_();
+  }
+
+  private effectiveTabIndex_(): number {
+    // If bubbles aren't tab accessible, make sure at least chips are.
+    if (!this.permissionBubblesKeyboardNavigable) {
+      return 0;
+    }
+
+    // If we have a bubble, don't be tab focusable, since we want focus to
+    // go directly there.
+    return this.hasAttribute('anchor-highlighted') ? -1 : 0;
   }
 }
 

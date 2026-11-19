@@ -85,6 +85,8 @@ export class PageActionIconElement extends PageActionIconElementBase {
       glowUpEnabled: {type: Boolean},
 
       activeIconAnimation_: {type: String, state: true},
+
+      buttonTabIndex: {type: Number},
     };
   }
 
@@ -93,6 +95,7 @@ export class PageActionIconElement extends PageActionIconElementBase {
   }
 
   accessor forceFocusRing: boolean = false;
+  accessor buttonTabIndex: number = 0;
 
   protected accessor chipStyleOverride_: string|null = null;
 
@@ -249,6 +252,16 @@ export class PageActionIconElement extends PageActionIconElementBase {
         }
       }
     }
+  }
+
+  protected effectiveTabIndex_(): number {
+    // The AIM button is always tab-focusable, regardless of global
+    // keyboard navigation setting.
+    if (this.state.pageActionId === PageActionId.kActionAiMode) {
+      return 0;
+    }
+
+    return this.buttonTabIndex;
   }
 
   protected isIconAnimating_(): boolean {

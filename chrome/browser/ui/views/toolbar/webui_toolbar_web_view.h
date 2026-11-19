@@ -348,6 +348,7 @@ class WebUIToolbarWebView
   // views::FocusChangeListener:
   void OnWillChangeFocus(views::View* focused_before,
                          views::View* focused_now) override;
+  void OnKeyboardAccessibleChanged(bool keyboard_accessible) override;
 
   // content::WebContentsObserver:
   void DidStartNavigation(

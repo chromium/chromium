@@ -739,6 +739,11 @@ void WebUIToolbarWebView::OnWillChangeFocus(views::View* focused_before,
   }
 }
 
+void WebUIToolbarWebView::OnKeyboardAccessibleChanged(
+    bool keyboard_accessible) {
+  OnKeyboardNavigableMaybeChanged();
+}
+
 void WebUIToolbarWebView::HandleContextMenu(
     toolbar_ui_api::mojom::ContextMenuType menu_type,
     const gfx::RectF& bounds_in_css_pixels,
@@ -1976,12 +1981,12 @@ void WebUIToolbarWebView::FocusOut(bool reverse) {
 }
 
 void WebUIToolbarWebView::OnKeyboardNavigableMaybeChanged() {
-#if BUILDFLAG(IS_MAC)
-  // TODO(crbug.com/567215920): query the proper value (and arrange for this
-  // to be called the right times)
-  bool should_be_key_navigable = true;
-#else
   bool should_be_key_navigable = false;
+#if BUILDFLAG(IS_MAC)
+  if (auto* focus_manager = GetFocusManager()) {
+    should_be_key_navigable = focus_manager->keyboard_accessible();
+  }
+#else
   if (pane_) {
     should_be_key_navigable = pane_->pane_has_focus();
   }

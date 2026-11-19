@@ -28,11 +28,16 @@ export class PermissionDashboardElement extends CrLitElement {
     return {
       delegate: {type: Object},
       dashboardState: {type: Object},
+
+      // Whether bubbles can be tab-navigated into. This defaults to false
+      // since that ensures we will at least make the chip navigable.
+      permissionBubblesKeyboardNavigable: {type: Boolean},
     };
   }
 
   accessor delegate: PermissionChipDelegate|null = null;
   accessor dashboardState: PermissionDashboardState|null = null;
+  accessor permissionBubblesKeyboardNavigable: boolean = false;
 }
 
 declare global {

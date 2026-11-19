@@ -242,12 +242,20 @@ class DidChangeFocusListener : public FocusChangeListener {
   void OnDidChangeFocus(View* focused_before, View* focused_now) override {
     focus_changes_.emplace_back(focused_before, focused_now);
   }
+  void OnKeyboardAccessibleChanged(bool keyboard_accessible) override {
+    keyboard_accessible_changes_.push_back(keyboard_accessible);
+  }
 
   const std::vector<ViewPair>& focus_changes() const { return focus_changes_; }
   void ClearFocusChanges() { focus_changes_.clear(); }
 
+  const std::vector<bool>& keyboard_accessible_changes() const {
+    return keyboard_accessible_changes_;
+  }
+
  private:
   std::vector<ViewPair> focus_changes_;
+  std::vector<bool> keyboard_accessible_changes_;
 };
 
 }  // namespace
@@ -1114,6 +1122,29 @@ TEST_F(FocusManagerTest, RequestFocus) {
 }
 
 #endif
+
+TEST_F(FocusManagerTest, SetKeyboardAccessibleObservation) {
+  auto* focus_manager = GetFocusManager();
+  focus_manager->SetKeyboardAccessible(false);
+
+  DidChangeFocusListener listener;
+  base::ScopedObservation<views::FocusManager, views::FocusChangeListener>
+      focus_manager_observation{&listener};
+  focus_manager_observation.Observe(GetFocusManager());
+  EXPECT_THAT(listener.keyboard_accessible_changes(), testing::ElementsAre());
+
+  focus_manager->SetKeyboardAccessible(true);
+  EXPECT_THAT(listener.keyboard_accessible_changes(),
+              testing::ElementsAre(true));
+
+  focus_manager->SetKeyboardAccessible(true);
+  EXPECT_THAT(listener.keyboard_accessible_changes(),
+              testing::ElementsAre(true));
+
+  focus_manager->SetKeyboardAccessible(false);
+  EXPECT_THAT(listener.keyboard_accessible_changes(),
+              testing::ElementsAre(true, false));
+}
 
 namespace {
 

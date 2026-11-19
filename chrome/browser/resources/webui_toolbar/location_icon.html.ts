@@ -19,7 +19,7 @@ export function getHtml(this: LocationIconElement) {
     ?is-menu-open="${this.trackedHighlighted}"
     ?disable-hover-highlight="${!this.clickable}"
     ?disable-pressed-highlight="${!this.clickable || this.glowUpActive}"
-    .buttonTabIndex="${this.clickable ? 0 : -1}"
+    .buttonTabIndex="${this.clickable ? this.buttonTabIndex : -1}"
     .buttonRole="${this.getAccessibilityRole_()}"
     .tooltip="${this.state.tooltip}"
     .ariaLabel="${this.state.accessibilityState.label}"

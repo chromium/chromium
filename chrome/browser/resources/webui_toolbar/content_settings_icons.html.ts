@@ -9,7 +9,9 @@ import type {ContentSettingsIconsElement} from './content_settings_icons.js';
 export function getHtml(this: ContentSettingsIconsElement) {
   return html`<!--_html_template_start_-->
 ${repeat(this.contentSettingImageStates, item => item.type, item => html`
-  <content-setting-icon .state="${item}"></content-setting-icon>
+  <content-setting-icon .state="${item}"
+      .buttonTabIndex="${this.buttonTabIndex}">
+  </content-setting-icon>
 `)}
 <!--_html_template_end_-->`;
 }

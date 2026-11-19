@@ -26,6 +26,7 @@ export class SelectedKeywordElement extends CrLitElement {
   static override get properties() {
     return {
       selectedKeywordState: {type: Object},
+      buttonTabIndex: {type: Number},
     };
   }
 
@@ -34,6 +35,8 @@ export class SelectedKeywordElement extends CrLitElement {
     fullName: '',
     icon: {handleId: 0n},
   };
+
+  accessor buttonTabIndex: number = 0;
 }
 
 declare global {

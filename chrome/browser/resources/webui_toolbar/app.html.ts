@@ -49,6 +49,7 @@ ${this.isLocationBarEnabled_ ? html`
   <location-bar id="location-bar"
       .locationBarState="${this.toolbarState_.locationBarState}"
       .touchUi="${this.toolbarState_.touchUi}"
+      .chipsKeyboardNavigable="${this.locationBarChipsKeyboardNavigable()}"
       .waitForState="${!this.hasReceivedToolbarState_}">
   </location-bar>
 ` : ''}

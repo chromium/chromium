@@ -65,6 +65,7 @@
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/global_media_controls/media_dialog_view.h"
 #include "chrome/browser/ui/views/location_bar/webui_location_bar.h"
+#include "chrome/browser/ui/views/permissions/permission_prompt_bubble_base_view.h"
 #include "chrome/browser/ui/views/profiles/profile_menu_coordinator.h"
 #include "chrome/browser/ui/views/profiles/profile_menu_view_base.h"
 #include "chrome/browser/ui/views/toolbar/avatar_toolbar_button_interface.h"
@@ -94,6 +95,7 @@
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "chrome/test/permissions/permission_request_manager_test_api.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #include "components/prefs/pref_service.h"
 #include "components/translate/core/browser/translate_step.h"
@@ -138,6 +140,7 @@
 #include "ui/gfx/range/range.h"
 #include "ui/gfx/switches.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
+#include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"
 #include "ui/views/controls/menu/menu_runner.h"
@@ -2787,9 +2790,11 @@ class WebUIToolbarFocusInteractiveUiTestBase
  public:
   void SetUpOnMainThread() override {
     WebUIAndViewsToolbarInteractiveUiTestBase::SetUpOnMainThread();
-    // Ignore window activation/deactivation changes to make Chrome-internal
-    // focus unaffected by OS events during test execution.
-    views::DisableActivationChangeHandlingForTests();
+    if (!needs_bubbles_) {
+      // Ignore window activation/deactivation changes to make Chrome-internal
+      // focus unaffected by OS events during test execution.
+      views::DisableActivationChangeHandlingForTests();
+    }
     // Enable/pin home and split-tabs buttons so they can be focused.
     browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kShowHomeButton,
                                                     true);
@@ -2803,6 +2808,9 @@ class WebUIToolbarFocusInteractiveUiTestBase
   }
 
  protected:
+  // Should be called before SetUpOnMainThread().
+  void SetNeedsBubbles() { needs_bubbles_ = true; }
+
   views::View* GetViewForIdentifier(BrowserWindowInterface* browser,
                                     ui::ElementIdentifier el_id) {
     auto* element_tracker_views = views::ElementTrackerViews::GetInstance();
@@ -2870,6 +2878,8 @@ class WebUIToolbarFocusInteractiveUiTestBase
         )JS",
         expected_id));
   }
+
+  bool needs_bubbles_ = false;
 };
 
 // Only 3 navigation controls.
@@ -3102,6 +3112,14 @@ class WebUIToolbarFocusFullInteractiveUiTest
   base::test::ScopedFeatureList feature_list_;
 };
 
+// Fixture for tests that popup bubbles; it avoids altering activation behavior
+// since that causes trouble with bubble focus.
+class WebUIToolbarFocusWithBubblesInteractiveUiTest
+    : public WebUIToolbarFocusFullInteractiveUiTest {
+ public:
+  WebUIToolbarFocusWithBubblesInteractiveUiTest() { SetNeedsBubbles(); }
+};
+
 IN_PROC_BROWSER_TEST_F(WebUIToolbarFocusFullInteractiveUiTest,
                        KeyboardNavigation) {
   // Navigate to a URL so that back/forward buttons are enabled.
@@ -3225,9 +3243,124 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarFocusFullInteractiveUiTest,
       ExpectFocusedView(kToolbarAppMenuButtonElementId));
 }
 
-// Mac has very different tab order semantics (and will be in next CL, with
-// separate tests).
-#if !BUILDFLAG(IS_MAC)
+// Mac has very different tab order semantics, so gets different tests.
+#if BUILDFLAG(IS_MAC)
+
+IN_PROC_BROWSER_TEST_F(WebUIToolbarFocusFullInteractiveUiTest,
+                       KeyboardNavigationOff) {
+  // What's accessible via tab on toolbar on Mac is configured via system
+  // keyboard navigation setting. InProcessBrowserTest sets it to true by
+  // default, and so the various *KeyboardNavigation* cases cover that. This
+  // covers the behavior with it off, which turns off tabbing to most things.
+  ui::test::ScopedFakeFullKeyboardAccess::GetInstance()
+      ->set_full_keyboard_access_state(false);
+  // We also need to let the FocusManager know.
+  BrowserView::GetBrowserViewForBrowser(browser())
+      ->GetWidget()
+      ->GetFocusManager()
+      ->SetKeyboardAccessible(false);
+
+  RunTestSequence(
+      // 1. Wait for toolbar to load.
+      WaitForToolbarLoaded(),
+      // Wait for Lit rendering to complete (until Back button is rendered in
+      // shadow DOM).
+      WaitForElementVisible(WebUIToolbarId(),
+                            DeepQuery({"toolbar-app", "#back"})),
+
+      // 2. Focus the toolbar. This should also pick up the new fake keyboard
+      // access status.
+      Do(base::BindLambdaForTesting([this]() {
+        chrome::BrowserCommandController::From(browser())->ExecuteCommand(
+            IDC_FOCUS_TOOLBAR);
+      })),
+      ExpectFocusedWebUIElement("omnibox-text-input")
+
+      // Since we're focused via IDC_FOCUS_TOOLBAR, we're actually trapped,
+      // but we can't really test that, since that's looking for non-changes.
+  );
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIToolbarFocusFullInteractiveUiTest,
+                       KeyboardNavigationOff2) {
+  // What's accessible via tab on toolbar on Mac is configured via system
+  // keyboard navigation setting. InProcessBrowserTest sets it to true by
+  // default, and so the various *KeyboardNavigation* cases cover that. This
+  // covers the behavior with it off, which turns off tabbing to most things.
+  ui::test::ScopedFakeFullKeyboardAccess::GetInstance()
+      ->set_full_keyboard_access_state(false);
+  // We also need to let the FocusManager know.
+  BrowserView::GetBrowserViewForBrowser(browser())
+      ->GetWidget()
+      ->GetFocusManager()
+      ->SetKeyboardAccessible(false);
+
+  RunTestSequence(
+      // 1. Wait for toolbar to load.
+      WaitForToolbarLoaded(),
+      // Wait for Lit rendering to complete (until Back button is rendered in
+      // shadow DOM).
+      WaitForElementVisible(WebUIToolbarId(),
+                            DeepQuery({"toolbar-app", "#back"})),
+
+      // 2. Focus the location bar.
+      Do(base::BindLambdaForTesting([this]() {
+        chrome::BrowserCommandController::From(browser())->ExecuteCommand(
+            IDC_FOCUS_LOCATION);
+      })),
+      ExpectFocusedWebUIElement("omnibox-text-input"),
+
+      // Next Tab skips over the bookmark star, and ends up in the content area.
+      SendKeyPress(kToolbarAppMenuButtonElementId, ui::VKEY_TAB),
+      ExpectFocusedView(ContentsWebView::kContentsWebViewElementId));
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIToolbarFocusWithBubblesInteractiveUiTest,
+                       FocusPermissionNoKeyboardNav) {
+  // Test with keyboard navigation off, unlike fixture default.
+  // Case with it on is covered in
+  // PermissionBubbleWebUILocationBarInteractiveUITest.
+  //    ShiftTabFromOmniboxFocusesBubble
+  ui::test::ScopedFakeFullKeyboardAccess::GetInstance()
+      ->set_full_keyboard_access_state(false);
+  BrowserView::GetBrowserViewForBrowser(browser())
+      ->GetWidget()
+      ->GetFocusManager()
+      ->SetKeyboardAccessible(false);
+
+  auto permission_api =
+      std::make_unique<test::PermissionRequestManagerTestApi>(browser());
+
+  RunTestSequence(
+      // 1. Wait for toolbar to load.
+      WaitForToolbarLoaded(),
+      // Wait for Lit rendering to complete (until Back button is rendered in
+      // shadow DOM).
+      WaitForElementVisible(WebUIToolbarId(),
+                            DeepQuery({"toolbar-app", "#back"})),
+
+      // Request permission.
+      Do(base::BindLambdaForTesting([&]() {
+        permission_api->AddSimpleRequest(
+            browser()
+                ->GetTabStripModel()
+                ->GetActiveWebContents()
+                ->GetPrimaryMainFrame(),
+            permissions::RequestType::kGeolocation);
+      })),
+
+      WaitForShow(PermissionPromptBubbleBaseView::kMainViewId),
+
+      // Focus the toolbar bar. The first focusable thing should be
+      // the permission chip
+      Do(base::BindLambdaForTesting([this]() {
+        chrome::BrowserCommandController::From(browser())->ExecuteCommand(
+            IDC_FOCUS_TOOLBAR);
+      })),
+      ExpectFocusedWebUIElement("chip"));
+}
+
+#else
 
 // On Windows and Linux, toolbar buttons aren't focusable after Ctrl-L
 // (but location bar chips are).
@@ -3323,6 +3456,65 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarFocusFullInteractiveUiTest,
 }
 
 #endif
+
+// Tabbing into permission dashboard from the left goes directly to it,
+// rather than focusing a chip.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarFocusWithBubblesInteractiveUiTest,
+                       FocusPermissionFromLeft) {
+  // Move mouse off of toolbar. Having the mouse over the reload button when a
+  // page finishes loading may temporarily disable the reload button, making it
+  // no longer focusable, which will cause walking through focusable elements to
+  // skip over it, and the test will then fail.
+  RunTestSequence(MoveMouseTo(ToolbarView::kToolbarElementId,
+                              base::BindOnce([](ui::TrackedElement* el) {
+                                return el->GetScreenBounds().bottom_center() +
+                                       gfx::Vector2d(0, 1);
+                              })));
+
+  auto permission_api =
+      std::make_unique<test::PermissionRequestManagerTestApi>(browser());
+
+  DEFINE_LOCAL_POLLING_VIEW_PROPERTY_STATE_IDENTIFIER(views::View, HasFocus,
+                                                      kViewFocusState);
+
+  RunTestSequence(
+      // 1. Wait for toolbar to load.
+      WaitForToolbarLoaded(),
+      // Wait for Lit rendering to complete (until Back button is rendered in
+      // shadow DOM).
+      WaitForElementVisible(WebUIToolbarId(),
+                            DeepQuery({"toolbar-app", "#back"})),
+
+      // Request permission.
+      Do(base::BindLambdaForTesting([&]() {
+        permission_api->AddSimpleRequest(
+            browser()
+                ->GetTabStripModel()
+                ->GetActiveWebContents()
+                ->GetPrimaryMainFrame(),
+            permissions::RequestType::kGeolocation);
+      })),
+
+      WaitForShow(PermissionPromptBubbleBaseView::kMainViewId),
+
+      // 2. Focus the toolbar.
+      Do(base::BindLambdaForTesting([this]() {
+        chrome::BrowserCommandController::From(browser())->ExecuteCommand(
+            IDC_FOCUS_TOOLBAR);
+      })),
+      ExpectFocusedWebUIElement("reload"),
+
+      SendKeyPress(WebUIToolbarId(), ui::VKEY_TAB),
+      ExpectFocusedWebUIElement("home"),
+
+      SendKeyPress(WebUIToolbarId(), ui::VKEY_TAB),
+      ExpectFocusedWebUIElement("split-tabs"),
+
+      PollViewProperty(kViewFocusState,
+                       views::BubbleFrameView::kCloseButtonElementId),
+      SendKeyPress(WebUIToolbarId(), ui::VKEY_TAB),
+      WaitForState(kViewFocusState, true), StopObservingState(kViewFocusState));
+}
 
 IN_PROC_BROWSER_TEST_F(WebUIToolbarFocusFullInteractiveUiTest,
                        FocusNextPaneFromOmnibox) {

@@ -26,10 +26,12 @@ export class ContentSettingsIconsElement extends CrLitElement {
   static override get properties() {
     return {
       contentSettingImageStates: {type: Array},
+      buttonTabIndex: {type: Number},
     };
   }
 
   accessor contentSettingImageStates: ContentSettingImageState[] = [];
+  accessor buttonTabIndex: number = 0;
 }
 
 declare global {

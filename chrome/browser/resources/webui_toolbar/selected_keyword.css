@@ -45,6 +45,12 @@ icon-from-table {
   position: relative;
 }
 
+#chip-proper:focus-visible {
+  box-shadow: none;
+  outline: 2px solid var(--cr-focus-outline-color);
+  outline-offset: 2px;
+}
+
 #separator {
   background-color: var(--color-omnibox-keyword-separator);
   height: var(--location-bar-leading-icon-size);
@@ -86,6 +92,12 @@ icon-from-table {
   background-color: transparent;
   transition: background-color
               var(--duration-selected-keyword-separator-fade-out) ease-in;
+}
+
+/* Don't draw the separator when we're drawing the focus ring, they clash
+ */
+#chip-proper:focus-visible + #separator {
+  background-color: transparent;
 }
 
 #text-wrap {

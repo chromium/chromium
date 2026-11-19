@@ -53,7 +53,7 @@ suite('PermissionChipTest', function() {
     chip.chipState = state;
     await microtasksFinished();
 
-    const chipEl = chip.shadowRoot.querySelector<HTMLElement>('#chip');
+    const chipEl = chip.$.chip;
     assertTrue(!!chipEl);
     const style = window.getComputedStyle(chipEl);
     assertEquals('hidden', style.visibility);
@@ -65,7 +65,7 @@ suite('PermissionChipTest', function() {
     chip.chipState = createBaseState();
     await microtasksFinished();
 
-    const chipEl = chip.shadowRoot.querySelector<HTMLElement>('#chip');
+    const chipEl = chip.$.chip;
     assertTrue(!!chipEl);
     const style = window.getComputedStyle(chipEl);
     assertEquals('visible', style.visibility);
@@ -111,7 +111,7 @@ suite('PermissionChipTest', function() {
     chip.chipState = createBaseState();
     await microtasksFinished();
 
-    const chipEl = chip.shadowRoot.querySelector<HTMLElement>('#chip');
+    const chipEl = chip.$.chip;
     assertTrue(!!chipEl);
 
     // Left press (pointerdown)
@@ -171,7 +171,7 @@ suite('PermissionChipTest', function() {
     chip.chipState = createBaseState();
     await microtasksFinished();
 
-    const chipEl = chip.shadowRoot.querySelector<HTMLElement>('#chip');
+    const chipEl = chip.$.chip;
     assertTrue(!!chipEl);
 
     chipEl.dispatchEvent(new PointerEvent('pointerenter'));

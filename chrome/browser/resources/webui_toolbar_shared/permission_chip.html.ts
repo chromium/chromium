@@ -9,7 +9,7 @@ import type {PermissionChipElement} from './permission_chip.js';
 export function getHtml(this: PermissionChipElement) {
   return html`<!--_html_template_start_-->
 <button id="chip" class="iph-visual-target" type="button" role="button"
-    tabindex="0" ?collapsed="${this.isFullyCollapsed_}"
+    ?collapsed="${this.isFullyCollapsed_}"
     aria-label="${this.chipState?.accessibilityName || ''}"
     title="${this.chipState?.tooltip || ''}"
     @pointerenter="${this.onPointerenter_}"

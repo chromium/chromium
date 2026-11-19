@@ -117,6 +117,9 @@ class VIEWS_EXPORT FocusChangeListener {
   // TODO(crbug.com/348369180): Remove this. Debug only.
   virtual void OnFocusManagerDestroying(FocusManager* focus_manager) {}
 
+  // Called when the keyboard_accessible() setting has changed.
+  virtual void OnKeyboardAccessibleChanged(bool keyboard_accessible) {}
+
  protected:
   virtual ~FocusChangeListener() = default;
 };
