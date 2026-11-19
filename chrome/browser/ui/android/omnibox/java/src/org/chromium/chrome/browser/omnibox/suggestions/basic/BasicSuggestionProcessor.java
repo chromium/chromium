@@ -196,8 +196,10 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
             }
         } else if (suggestion.getTakeoverAction() != null) {
             var action = suggestion.getTakeoverAction();
-            icon = action.icon.chipIconRes;
-            allowTint = action.icon.tintWithTextColor;
+            if (action.icon.chipIconRes != 0) {
+                icon = action.icon.chipIconRes;
+                allowTint = action.icon.tintWithTextColor;
+            }
         }
 
         if (icon == 0 && suggestion.isSearchSuggestion()) {
@@ -423,7 +425,9 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
             AutocompleteMatch suggestion,
             boolean showDescriptionIfPresent,
             boolean shouldHighlight) {
-        if (suggestion.getTakeoverAction() != null) {
+        // Non-search takeover matches (e.g., Lens pedal) inline "contents - description" on line
+        // 1; search/document suggestions already populate `textLine2` with the description.
+        if (showDescriptionIfPresent && suggestion.getTakeoverAction() != null) {
             return getTakeoverActionSuggestedQuery(suggestion);
         }
 

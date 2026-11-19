@@ -175,6 +175,14 @@ public class OmniboxActionDelegateImplUnitTest {
     }
 
     @Test
+    public void issueContextualSearchQuery_loadsUrlInCurrentTab() {
+        doReturn(true).when(mTab).isUserInteractable();
+        mDelegate.issueContextualSearchQuery(TEST_URL);
+        verify(mTab).loadUrl(mLoadParamsCaptor.capture());
+        assertEquals(TEST_URL.getSpec(), mLoadParamsCaptor.getValue().getUrl());
+    }
+
+    @Test
     public void openLensOverlay() {
         // Provide a UserDataHost to prevent LensOverlayCoordinator from crashing on
         // getOrCreateForTab.

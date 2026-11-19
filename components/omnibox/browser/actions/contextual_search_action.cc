@@ -4,10 +4,10 @@
 
 #include "components/omnibox/browser/actions/contextual_search_action.h"
 
-#include "components/omnibox/common/omnibox_features.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/omnibox/browser/actions/omnibox_action_concepts.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -85,6 +85,19 @@ ContextualSearchFulfillmentAction::FromAction(OmniboxAction* action) {
   }
   return nullptr;
 }
+
+#if BUILDFLAG(IS_ANDROID)
+base::android::ScopedJavaLocalRef<jobject>
+ContextualSearchFulfillmentAction::GetOrCreateJavaObject(JNIEnv* env) const {
+  if (!j_omnibox_action_) {
+    j_omnibox_action_.Reset(BuildOmniboxContextualSearchFulfillmentAction(
+        env, reinterpret_cast<intptr_t>(this), strings_.hint,
+        strings_.accessibility_hint,
+        fulfillment_url_.is_valid() ? fulfillment_url_ : url_));
+  }
+  return base::android::ScopedJavaLocalRef<jobject>(j_omnibox_action_);
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 #if defined(SUPPORT_PEDALS_VECTOR_ICONS)
 const gfx::VectorIcon& ContextualSearchFulfillmentAction::GetVectorIcon()
     const {

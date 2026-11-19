@@ -6,11 +6,13 @@
 #define COMPONENTS_OMNIBOX_BROWSER_ACTIONS_OMNIBOX_ACTION_FACTORY_ANDROID_H_
 
 #include <vector>
+
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/scoped_java_ref.h"
 #include "components/omnibox/browser/actions/omnibox_action.h"
 #include "components/omnibox/browser/actions/omnibox_pedal_concepts.h"
+#include "url/gurl.h"
 
 base::android::ScopedJavaGlobalRef<jobject> BuildCrossDeviceTabAction(
     JNIEnv* env,
@@ -55,6 +57,14 @@ base::android::ScopedJavaGlobalRef<jobject> BuildOmniboxLensOverlayAction(
     intptr_t instance,
     const std::u16string& hint,
     const std::u16string& accessibility_hint);
+
+base::android::ScopedJavaGlobalRef<jobject>
+BuildOmniboxContextualSearchFulfillmentAction(
+    JNIEnv* env,
+    intptr_t instance,
+    const std::u16string& hint,
+    const std::u16string& accessibility_hint,
+    const GURL& fulfillment_url);
 
 std::vector<jni_zero::ScopedJavaLocalRef<jobject>> ToJavaOmniboxActionsList(
     JNIEnv* env,

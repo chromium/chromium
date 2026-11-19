@@ -80,6 +80,18 @@ base::android::ScopedJavaGlobalRef<jobject> BuildOmniboxLensOverlayAction(
           base::android::ConvertUTF16ToJavaString(env, accessibility_hint)));
 }
 
+base::android::ScopedJavaGlobalRef<jobject>
+BuildOmniboxContextualSearchFulfillmentAction(
+    JNIEnv* env,
+    intptr_t instance,
+    const std::u16string& hint,
+    const std::u16string& accessibility_hint,
+    const GURL& fulfillment_url) {
+  return base::android::ScopedJavaGlobalRef<jobject>(
+      Java_OmniboxActionFactory_buildOmniboxContextualSearchFulfillmentAction(
+          env, instance, hint, accessibility_hint, fulfillment_url));
+}
+
 // Convert a vector of OmniboxActions to Java counterpart.
 std::vector<jni_zero::ScopedJavaLocalRef<jobject>> ToJavaOmniboxActionsList(
     JNIEnv* env,

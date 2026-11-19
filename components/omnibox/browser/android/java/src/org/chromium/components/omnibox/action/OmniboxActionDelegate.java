@@ -67,4 +67,15 @@ public interface OmniboxActionDelegate {
      * starts the Lens Overlay experience for the current active tab.
      */
     void openLensOverlay();
+
+    /**
+     * Triggered when the user taps a contextual (zero-prefix) search suggestion whose takeover
+     * action fulfills the query with the current active tab attached as context (e.g. in the
+     * Contextual Tasks side panel on Desktop Android).
+     *
+     * @param url the search URL of the suggestion; its query text and params are used to build the
+     *     contextual request. Embedders that cannot fulfill the query contextually should load this
+     *     URL in the current tab.
+     */
+    void issueContextualSearchQuery(GURL url);
 }

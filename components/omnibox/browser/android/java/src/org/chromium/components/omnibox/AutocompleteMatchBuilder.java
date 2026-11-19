@@ -47,6 +47,7 @@ public class AutocompleteMatchBuilder {
     private boolean mHasTabMatch;
     private int mAndroidTabId;
     private List<OmniboxAction> mActions;
+    private OmniboxAction mTakeoverAction;
     private boolean mAllowedToBeDefaultMatch;
     private String mInlineAutocompletion;
     private String mAdditionalText;
@@ -104,6 +105,7 @@ public class AutocompleteMatchBuilder {
         mHasTabMatch = false;
         mAndroidTabId = 0;
         mActions = null;
+        mTakeoverAction = null;
         mAllowedToBeDefaultMatch = false;
         mInlineAutocompletion = null;
         mAdditionalText = null;
@@ -151,7 +153,7 @@ public class AutocompleteMatchBuilder {
                 mHasTabMatch,
                 mAndroidTabId,
                 mActions,
-                /* takeoverAction= */ null,
+                mTakeoverAction,
                 mAllowedToBeDefaultMatch,
                 mInlineAutocompletion,
                 mAdditionalText,
@@ -330,6 +332,15 @@ public class AutocompleteMatchBuilder {
      */
     public AutocompleteMatchBuilder setActions(List<OmniboxAction> actions) {
         mActions = actions;
+        return this;
+    }
+
+    /**
+     * @param takeoverAction Takeover action to set on the AutocompleteMatch.
+     * @return Omnibox suggestion builder.
+     */
+    public AutocompleteMatchBuilder setTakeoverAction(OmniboxAction takeoverAction) {
+        mTakeoverAction = takeoverAction;
         return this;
     }
 
