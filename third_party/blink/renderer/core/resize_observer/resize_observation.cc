@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/resize_observer/resize_observer_utilities.h"
 #include "third_party/blink/renderer/core/svg/svg_graphics_element.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
@@ -43,19 +44,12 @@ gfx::SizeF ComputeZoomAdjustedSVGBox(ResizeObserverBoxOptions box_option,
   }
 }
 
-// Set the initial observation size to something impossible so that the first
-// gather observation step always will pick up a new observation.
-constexpr LogicalSize kInitialObservationSize(kIndefiniteSize, kIndefiniteSize);
-
 }  // namespace
 
 ResizeObservation::ResizeObservation(Element* target,
                                      ResizeObserver* observer,
                                      ResizeObserverBoxOptions observed_box)
-    : target_(target),
-      observer_(observer),
-      observation_size_(kInitialObservationSize),
-      observed_box_(observed_box) {
+    : target_(target), observer_(observer), observed_box_(observed_box) {
   DCHECK(target_);
   DCHECK(observer_);
 }
@@ -89,8 +83,7 @@ bool ResizeObservation::ObservationSizeOutOfSync() {
   return true;
 }
 
-void ResizeObservation::SetObservationSize(
-    const LogicalSize& observation_size) {
+void ResizeObservation::SetObservationSize(const gfx::SizeF& observation_size) {
   observation_size_ = observation_size;
 }
 
@@ -106,25 +99,27 @@ size_t ResizeObservation::TargetDepth() {
   return depth;
 }
 
-LogicalSize ResizeObservation::ComputeTargetSize() const {
+gfx::SizeF ResizeObservation::ComputeTargetSize() const {
   const Element* target = target_.Get();
   if (!target) {
-    return LogicalSize();
+    return gfx::SizeF();
   }
   const LayoutObject* layout_object = target_->GetLayoutObject();
   if (!layout_object) {
-    return LogicalSize();
+    return gfx::SizeF();
   }
+  gfx::SizeF size;
   if (layout_object->IsSVGChild()) {
-    gfx::SizeF size = ComputeZoomAdjustedSVGBox(observed_box_, *layout_object);
-    return LogicalSize(LayoutUnit(size.width()), LayoutUnit(size.height()));
-  }
-  if (const auto* layout_box = DynamicTo<LayoutBox>(layout_object)) {
-    gfx::SizeF size = ResizeObserverUtilities::ComputeZoomAdjustedBox(
+    size = ComputeZoomAdjustedSVGBox(observed_box_, *layout_object);
+  } else if (const auto* layout_box = DynamicTo<LayoutBox>(layout_object)) {
+    size = ResizeObserverUtilities::ComputeZoomAdjustedBox(
         observed_box_, *layout_box, layout_box->Style());
-    return LogicalSize(LayoutUnit(size.width()), LayoutUnit(size.height()));
   }
-  return LogicalSize();
+  if (!RuntimeEnabledFeatures::
+          ResizeObserverUnroundedZoomAdjustedSizesEnabled()) {
+    return gfx::SizeF(LayoutUnit(size.width()), LayoutUnit(size.height()));
+  }
+  return size;
 }
 
 void ResizeObservation::Trace(Visitor* visitor) const {

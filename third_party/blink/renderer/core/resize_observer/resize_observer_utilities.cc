@@ -12,6 +12,8 @@
 #include "third_party/blink/renderer/core/resize_observer/resize_observer_box_options.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
@@ -29,6 +31,17 @@ LogicalOffset ComputePaintOffset(const LayoutObject& layout_object,
   return LogicalOffset(paint_offset_inline, paint_offset_block);
 }
 
+// Convert a layout value to CSS pixels. The result is kept as a float, since
+// storing it in a LayoutUnit would truncate it to 1/64px whenever the zoom
+// (e.g. a fractional device scale factor) does not divide the value evenly.
+float AdjustForZoom(LayoutUnit value, const ComputedStyle& style) {
+  if (!RuntimeEnabledFeatures::
+          ResizeObserverUnroundedZoomAdjustedSizesEnabled()) {
+    return AdjustForAbsoluteZoom::AdjustLayoutUnit(value, style);
+  }
+  return AdjustForAbsoluteZoom::AdjustFloat(value, style);
+}
+
 }  // namespace
 
 gfx::SizeF ResizeObserverUtilities::ComputeZoomAdjustedBox(
@@ -39,15 +52,12 @@ gfx::SizeF ResizeObserverUtilities::ComputeZoomAdjustedBox(
     case ResizeObserverBoxOptions::kContentBox: {
       const LogicalSize size = ToLogicalSize(
           layout_box.PhysicalContentBoxRect().size, style.GetWritingMode());
-      return gfx::SizeF(
-          AdjustForAbsoluteZoom::AdjustLayoutUnit(size.inline_size, style),
-          AdjustForAbsoluteZoom::AdjustLayoutUnit(size.block_size, style));
+      return gfx::SizeF(AdjustForZoom(size.inline_size, style),
+                        AdjustForZoom(size.block_size, style));
     }
     case ResizeObserverBoxOptions::kBorderBox:
-      return gfx::SizeF(AdjustForAbsoluteZoom::AdjustLayoutUnit(
-                            layout_box.LogicalWidth(), style),
-                        AdjustForAbsoluteZoom::AdjustLayoutUnit(
-                            layout_box.LogicalHeight(), style));
+      return gfx::SizeF(AdjustForZoom(layout_box.LogicalWidth(), style),
+                        AdjustForZoom(layout_box.LogicalHeight(), style));
     case ResizeObserverBoxOptions::kDevicePixelContentBox: {
       const LogicalSize size = ToLogicalSize(
           layout_box.PhysicalContentBoxRect().size, style.GetWritingMode());
@@ -82,16 +92,11 @@ gfx::Size ResizeObserverUtilities::ComputeSnappedDevicePixelContentBox(
 DOMRectReadOnly* ResizeObserverUtilities::ZoomAdjustedPhysicalRect(
     PhysicalRect content_rect,
     const ComputedStyle& style) {
-  content_rect.SetX(
-      AdjustForAbsoluteZoom::AdjustLayoutUnit(content_rect.X(), style));
-  content_rect.SetY(
-      AdjustForAbsoluteZoom::AdjustLayoutUnit(content_rect.Y(), style));
-  content_rect.SetWidth(
-      AdjustForAbsoluteZoom::AdjustLayoutUnit(content_rect.Width(), style));
-  content_rect.SetHeight(
-      AdjustForAbsoluteZoom::AdjustLayoutUnit(content_rect.Height(), style));
-
-  return DOMRectReadOnly::FromRectF(gfx::RectF(content_rect));
+  return DOMRectReadOnly::FromRectF(
+      gfx::RectF(AdjustForZoom(content_rect.X(), style),
+                 AdjustForZoom(content_rect.Y(), style),
+                 AdjustForZoom(content_rect.Width(), style),
+                 AdjustForZoom(content_rect.Height(), style)));
 }
 
 }  // namespace blink

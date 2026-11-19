@@ -5735,6 +5735,13 @@
       status: "stable",
     },
     {
+      // Kill switch for https://crbug.com/575023846. Divides ResizeObserver's
+      // CSS-pixel sizes by the zoom in float instead of truncating the result
+      // to LayoutUnit (1/64px) precision.
+      name: "ResizeObserverUnroundedZoomAdjustedSizes",
+      status: "stable",
+    },
+    {
       name: "ResourceTimingInitiator",
       status: "experimental",
     },
