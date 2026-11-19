@@ -113,6 +113,12 @@ class COMPONENT_EXPORT(LANGUAGE_TAG) LanguageTag {
     return tag_.AsString();
   }
 
+  // Returns true if this is the undetermined language tag ("und"), e.g. the
+  // value returned when a language tag is missing or could not be parsed.
+  // Tags that only have an undetermined language subtag but other subtags,
+  // like "und-BR", are not considered undetermined.
+  constexpr bool IsUndefined() const { return tag_string() == "und"; }
+
   // Returns the language tag in legacy ICU format, replacing hyphens with
   // underscores (e.g., "en_US", "zh_CN").
   // Note: This does not work correctly when the tag has extensions.

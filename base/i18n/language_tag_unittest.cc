@@ -54,6 +54,19 @@ TEST(LanguageTagTest, CompileTimeTags) {
   EXPECT_EQ(long_tag, LanguageTagConverter::GetInstance().FromString(kLongTag));
 }
 
+TEST(LanguageTagTest, IsUndefined) {
+  static_assert(GetKnownLanguageTag("und").IsUndefined());
+  static_assert(!GetKnownLanguageTag("en-US").IsUndefined());
+  static_assert(!GetKnownLanguageTag("und-BR").IsUndefined());
+
+  EXPECT_TRUE(
+      LanguageTagConverter::GetInstance().FromString("und")->IsUndefined());
+  EXPECT_TRUE(
+      LanguageTagConverter::GetInstance().FromString("UND")->IsUndefined());
+  EXPECT_FALSE(
+      LanguageTagConverter::GetInstance().FromString("fr")->IsUndefined());
+}
+
 TEST(LanguageTagTest, ParseAndSubtagsString) {
   EXPECT_THAT(GetKnownLanguageTag("en-US"), GetKnownLanguageTag("en-US"));
 
