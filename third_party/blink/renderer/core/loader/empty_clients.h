@@ -126,7 +126,7 @@ class CORE_EXPORT EmptyChromeClient : public ChromeClient {
   void BeginLifecycleUpdates(LocalFrame& main_frame) override {}
   void RegisterForCommitObservation(CommitObserver*) override {}
   void UnregisterFromCommitObservation(CommitObserver*) override {}
-  void WillCommitCompositorFrame() override {}
+  void WillSnapshotCommitState() override {}
   std::unique_ptr<cc::ScopedPauseRendering> PauseRendering(
       LocalFrame&) override;
   std::optional<int> GetMaxRenderBufferBounds(LocalFrame& frame) const override;

@@ -1180,11 +1180,11 @@ void ChromeClientImpl::UnregisterFromCommitObservation(
   commit_observers_.erase(observer);
 }
 
-void ChromeClientImpl::WillCommitCompositorFrame() {
+void ChromeClientImpl::WillSnapshotCommitState() {
   // Make a copy since callbacks may modify the set as we're iterating it.
   auto observers = commit_observers_;
   for (auto& observer : observers)
-    observer->WillCommitCompositorFrame();
+    observer->WillSnapshotCommitState();
 }
 
 std::unique_ptr<cc::ScopedPauseRendering> ChromeClientImpl::PauseRendering(

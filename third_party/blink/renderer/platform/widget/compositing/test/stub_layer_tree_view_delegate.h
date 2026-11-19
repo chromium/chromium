@@ -35,6 +35,7 @@ class StubLayerTreeViewDelegate : public LayerTreeViewDelegate {
   void OnCommitRequested() override {}
   void DidBeginMainFrame() override {}
   void DidCommitAndDrawCompositorFrame() override {}
+  void WillSnapshotCommitState() override {}
   void WillCommitCompositorFrame() override {}
   void DidCommitCompositorFrame(base::TimeTicks commit_start_time,
                                 base::TimeTicks commit_finish_time) override {}

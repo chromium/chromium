@@ -62,7 +62,10 @@ class LayerTreeViewDelegate {
       base::TimeDelta first_scroll_delay,
       base::TimeTicks first_scroll_timestamp) = 0;
 
-  // Notifies that a compositor frame commit operation is about to start.
+  // Notifies before the compositor frame's commit state is snapshotted.
+  virtual void WillSnapshotCommitState() = 0;
+
+  // Notifies after the compositor frame's commit state is snapshotted.
   virtual void WillCommitCompositorFrame() = 0;
 
   // Notifies about a compositor frame commit operation having finished.

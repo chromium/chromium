@@ -1090,6 +1090,10 @@ void WidgetBase::DidObserveFirstScrollDelay(
                                       first_scroll_timestamp);
 }
 
+void WidgetBase::WillSnapshotCommitState() {
+  client_->WillSnapshotCommitState();
+}
+
 void WidgetBase::WillCommitCompositorFrame() {
   client_->BeginCommitCompositorFrame();
 }

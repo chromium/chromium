@@ -902,6 +902,7 @@ class CORE_EXPORT WebFrameWidgetImpl
                                               int minimum_size);
 
   // WidgetBaseClient overrides.
+  void WillSnapshotCommitState() override;
   void BeginCommitCompositorFrame() override;
   void EndCommitCompositorFrame(base::TimeTicks commit_start_time,
                                 base::TimeTicks commit_finish_time) override;

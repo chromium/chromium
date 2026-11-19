@@ -86,6 +86,9 @@ class WidgetBaseClient {
   virtual void BeginUpdateLayers() {}
   virtual void EndUpdateLayers() {}
 
+  // Called before the compositor frame's commit state is snapshotted.
+  virtual void WillSnapshotCommitState() {}
+
   // Methods called to mark the beginning and end of a commit to the impl
   // thread for a frame. Only called when gathering main frame
   // UMA and UKM. That is, when RecordStartOfFrameMetrics has been called, and

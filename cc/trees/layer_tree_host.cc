@@ -460,6 +460,8 @@ std::unique_ptr<CommitState> LayerTreeHost::WillCommit(
   mutator_host()->RemoveStaleTimelines();
   mutator_host()->RemoveStaleTriggers();
 
+  client_->WillSnapshotCommitState();
+
   // TODO(paint-dev): We can avoid the churn of this call when (!has_updates) if
   // we know there are no paint event handlers registered.
   std::unique_ptr<CommitState> activated_commit_state = ActivateCommitState();

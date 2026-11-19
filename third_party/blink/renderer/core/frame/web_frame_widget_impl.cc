@@ -3212,13 +3212,16 @@ void WebFrameWidgetImpl::BeginMainFrame(const viz::BeginFrameArgs& args) {
   GetPage()->GetValidationMessageClient().LayoutOverlay();
 }
 
+void WebFrameWidgetImpl::WillSnapshotCommitState() {
+  GetPage()->GetChromeClient().WillSnapshotCommitState();
+}
+
 void WebFrameWidgetImpl::BeginCommitCompositorFrame() {
   if (commit_compositor_frame_start_time_.has_value()) {
     next_commit_compositor_frame_start_time_.emplace(base::TimeTicks::Now());
   } else {
     commit_compositor_frame_start_time_.emplace(base::TimeTicks::Now());
   }
-  GetPage()->GetChromeClient().WillCommitCompositorFrame();
   probe::LayerTreePainted(LocalRootImpl()->GetFrame());
   if (ForTopMostMainFrame()) {
     Document* doc = local_root_->GetFrame()->GetDocument();

@@ -1315,7 +1315,7 @@ CSSStyleSheet* ViewTransition::UAStyleSheet() const {
   return &style_tracker_->UAStyleSheet();
 }
 
-void ViewTransition::WillCommitCompositorFrame() {
+void ViewTransition::WillSnapshotCommitState() {
   // There should only be 1 commit when we're in the capturing phase and
   // rendering is paused immediately after it finishes.
   if (state_ == State::kCapturing) {

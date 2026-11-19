@@ -221,10 +221,10 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
   // local main frames.
   virtual void BeginLifecycleUpdates(LocalFrame& main_frame) = 0;
 
-  // Notifies clients immediately before a newly committed main frame is pushed
-  // to the compositor thread.
+  // Notifies clients immediately before the compositor commit state is
+  // snapshotted, while compositor animation state can still be updated.
   struct CORE_EXPORT CommitObserver : public GarbageCollectedMixin {
-    virtual void WillCommitCompositorFrame() {}
+    virtual void WillSnapshotCommitState() {}
 
    protected:
     virtual ~CommitObserver() = default;
@@ -233,7 +233,7 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
   virtual void RegisterForCommitObservation(CommitObserver*) = 0;
   virtual void UnregisterFromCommitObservation(CommitObserver*) = 0;
 
-  virtual void WillCommitCompositorFrame() = 0;
+  virtual void WillSnapshotCommitState() = 0;
   virtual void RequestFrameWithoutVSyncFromRoot(LocalFrame& frame) {}
 
   virtual bool StartDeferringCommits(LocalFrame& main_frame,

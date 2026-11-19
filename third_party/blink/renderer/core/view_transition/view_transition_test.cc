@@ -652,7 +652,7 @@ TEST_P(ViewTransitionTest, RenderingPausedTest) {
   EXPECT_EQ(GetState(transition), State::kCaptureTagDiscovery);
 
   UpdateAllLifecyclePhasesForTest();
-  GetDocument().GetPage()->GetChromeClient().WillCommitCompositorFrame();
+  GetDocument().GetPage()->GetChromeClient().WillSnapshotCommitState();
 
   // Visual updates paused during capture phase.
   EXPECT_TRUE(LayerTreeHost()->IsRenderingPaused());
@@ -1950,7 +1950,7 @@ TEST_P(ViewTransitionTest, SubframeSnapshotLayer) {
   ASSERT_TRUE(layer);
   EXPECT_TRUE(layer->is_live_content_layer());
 
-  child_document.GetPage()->GetChromeClient().WillCommitCompositorFrame();
+  child_document.GetPage()->GetChromeClient().WillSnapshotCommitState();
   auto new_layer = transition->GetScopeSnapshotLayer();
   ASSERT_TRUE(new_layer);
   EXPECT_NE(layer, new_layer);
@@ -2671,7 +2671,7 @@ TEST_P(ViewTransitionTest, ScopedViewTransitionRemoveChildDuringCallback) {
   // yet) so the DOM callback runs while waiting for capture rects.
   UpdateAllLifecyclePhasesForTest();
   ASSERT_EQ(GetState(transition), State::kCapturing);
-  vt->WillCommitCompositorFrame();
+  vt->WillSnapshotCommitState();
   test::RunPendingTasks();
   EXPECT_EQ(GetState(transition), State::kWaitingForCaptureRects);
 
@@ -2883,7 +2883,7 @@ TEST_P(ViewTransitionTest,
 
   // Commit only `b`'s capture. `b` is now ready to run its callback, but waits
   // for `a`, which is still capturing.
-  transition_b->GetViewTransitionForTest()->WillCommitCompositorFrame();
+  transition_b->GetViewTransitionForTest()->WillSnapshotCommitState();
   test::RunPendingTasks();
   EXPECT_EQ(GetState(transition_b), State::kCapturing);
   EXPECT_FALSE(data.ran);
