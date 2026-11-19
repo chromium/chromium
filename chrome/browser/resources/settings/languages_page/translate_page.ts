@@ -26,6 +26,7 @@ import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
+import {loadTimeData} from '../i18n_setup.js';
 import {getCss as getSettingsSharedCss} from '../settings_shared_lit.css.js';
 
 import {getLanguageHelperInstance} from './languages.js';
@@ -67,6 +68,7 @@ export class SettingsTranslatePageElement extends
       showAddNeverTranslateDialog_: {type: Boolean},
       addLanguagesDialogLanguages_: {type: Array},
       translateEnabledPref_: {type: Object},
+      settingsRefresh2026Enabled_: {type: Boolean},
     };
   }
 
@@ -83,6 +85,8 @@ export class SettingsTranslatePageElement extends
   protected accessor showAddNeverTranslateDialog_: boolean = false;
   protected accessor addLanguagesDialogLanguages_:
       chrome.languageSettingsPrivate.Language[] = [];
+  protected accessor settingsRefresh2026Enabled_: boolean =
+      loadTimeData.getString('settingsRefresh2026') !== '';
   private languageHelper_: LanguageHelper;
   private boundOnLanguagesChanged_: ((e: Event) => void)|null = null;
   private languageSettingsMetricsProxy_: LanguageSettingsMetricsProxy =

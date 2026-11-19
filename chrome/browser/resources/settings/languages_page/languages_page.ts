@@ -29,6 +29,7 @@ import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {isWindows} from 'chrome://resources/js/platform.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
+import {loadTimeData} from '../i18n_setup.js';
 import {RelaunchMixinLit, RestartType} from '../relaunch_mixin_lit.js';
 import {routes} from '../route.js';
 import {RouteObserverMixinLit} from '../router.js';
@@ -93,6 +94,7 @@ export class SettingsLanguagesPageElement extends
 
       showManagedLanguageDialog_: {type: Boolean},
       restartTypeEnum: {type: Object},
+      settingsRefresh2026Enabled_: {type: Boolean},
     };
   }
 
@@ -110,6 +112,8 @@ export class SettingsLanguagesPageElement extends
       chrome.languageSettingsPrivate.Language[] = [];
   protected accessor showManagedLanguageDialog_: boolean = false;
   protected accessor restartTypeEnum = RestartType;
+  protected accessor settingsRefresh2026Enabled_: boolean =
+      loadTimeData.getString('settingsRefresh2026') !== '';
 
   private languageHelper_: LanguageHelper;
   private boundOnLanguagesChanged_: ((e: Event) => void)|null = null;

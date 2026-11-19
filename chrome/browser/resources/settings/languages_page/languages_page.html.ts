@@ -15,7 +15,9 @@ export function getHtml(this: SettingsLanguagesPageElement) {
         <div>$i18n{preferredLanguagesHeader}</div>
         <div class="secondary">$i18n{preferredLanguagesDesc}</div>
       </div>
-      <cr-button id="addLanguages" class="cr-button-gap header-aligned-button"
+      <cr-button id="addLanguages"
+          class="cr-button-gap ${
+              this.settingsRefresh2026Enabled_ ? '' : 'header-aligned-button'}"
           ?disabled="${!this.canEnableSomeSupportedLanguage_}"
           @click="${this.onAddLanguagesClick_}">
         $i18n{addLanguages}

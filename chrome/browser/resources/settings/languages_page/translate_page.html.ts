@@ -35,7 +35,9 @@ export function getHtml(this: SettingsTranslatePageElement) {
     </div>
     <div class="cr-row continuation">
       <h2 class="flex">$i18n{automaticallyTranslateLanguages}</h2>
-      <cr-button id="addAlwaysTranslate" class="header-aligned-button"
+      <cr-button id="addAlwaysTranslate"
+          class="${
+              this.settingsRefresh2026Enabled_ ? '' : 'header-aligned-button'}"
           aria-label="$i18n{addAutomaticallyTranslateLanguagesAriaLabel}"
           @click="${this.onAddAlwaysTranslateLanguagesClick_}">
         $i18n{addLanguages}
@@ -63,7 +65,9 @@ export function getHtml(this: SettingsTranslatePageElement) {
     </div>
     <div class="cr-row continuation">
       <h2 class="flex">$i18n{neverTranslateLanguages}</h2>
-      <cr-button id="addNeverTranslate" class="header-aligned-button"
+      <cr-button id="addNeverTranslate"
+          class="${
+              this.settingsRefresh2026Enabled_ ? '' : 'header-aligned-button'}"
           aria-label="$i18n{addNeverTranslateLanguagesAriaLabel}"
           @click="${this.onAddNeverTranslateLanguagesClick_}">
         $i18n{addLanguages}
