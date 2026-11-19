@@ -273,6 +273,11 @@
       status: "experimental",
     },
     {
+      // Kill switch for the linear walk in AXObject::UnignoredChildrenSlow().
+      name: "AccessibilityLinearUnignoredChildren",
+      status: "stable",
+    },
+    {
       // Use a minimum role of group on elements that are keyboard-focusable.
       // See https://w3c.github.io/html-aam/#minimum-role.
       name: "AccessibilityMinRoleTabbable",

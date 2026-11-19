@@ -6,7 +6,9 @@
 
 #include <memory>
 #include <ranges>
+#include <string>
 #include <string_view>
+#include <vector>
 
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
@@ -366,7 +368,38 @@ TEST_F(AccessibilityTest, DetachedIsIgnored) {
   EXPECT_FALSE(button->IsIgnoredButIncludedInTree());
 }
 
-TEST_F(AccessibilityTest, UnignoredChildren) {
+// Runs with the linear walk in UnignoredChildrenSlow() enabled and disabled, so
+// that both walks are checked against the same expected children.
+class AccessibilityUnignoredChildrenTest
+    : public AccessibilityTest,
+      public testing::WithParamInterface<bool> {
+ protected:
+  AccessibilityUnignoredChildrenTest() : linear_walk_(GetParam()) {}
+
+  // Returns the ids of the elements of `object`'s unignored children.
+  static std::vector<std::string> UnignoredChildIds(const AXObject& object) {
+    std::vector<std::string> ids;
+    for (const auto& child : object.UnignoredChildrenSlow()) {
+      const Element* element = child->GetElement();
+      ids.push_back(element ? element->GetIdAttribute().GetString().Utf8()
+                            : child->ToString().Utf8());
+    }
+    return ids;
+  }
+
+ private:
+  ScopedAccessibilityLinearUnignoredChildrenForTest linear_walk_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         AccessibilityUnignoredChildrenTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return std::string(info.param ? "LinearWalk"
+                                                         : "SiblingWalk");
+                         });
+
+TEST_P(AccessibilityUnignoredChildrenTest, UnignoredChildren) {
   SetBodyInnerHTML(R"HTML(This is a test with
                    <p role="presentation">
                      ignored objects
@@ -401,6 +434,43 @@ TEST_F(AccessibilityTest, UnignoredChildren) {
             ax_body->UnignoredChildAtSlow(4)->RoleValue());
   EXPECT_EQ("in the accessibility tree.",
             ax_body->UnignoredChildAtSlow(4)->ComputedName());
+}
+
+TEST_P(AccessibilityUnignoredChildrenTest, NestedIgnoredObjects) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="first" role="none" lang="en"><button id="a">a</button></div>
+    <button id="b">b</button>
+    <div id="outer" role="none" lang="en">
+      <div id="middle" role="none" lang="en">
+        <div id="inner" role="none" lang="en"><button id="c">c</button></div>
+        <button id="d">d</button>
+      </div>
+      <div id="empty" role="none" lang="en"></div>
+      <button id="e">e</button>
+    </div>
+    <div id="hidden" aria-hidden="true" lang="fr"><button>hidden</button></div>
+    <div id="last" role="none" lang="en"><button id="f">f</button></div>
+  )HTML");
+
+  for (const char* id :
+       {"first", "outer", "middle", "inner", "empty", "hidden", "last"}) {
+    const AXObject* object = GetAXObjectByElementId(id);
+    ASSERT_NE(nullptr, object) << id;
+    ASSERT_TRUE(object->IsIgnoredButIncludedInTree()) << id;
+  }
+
+  // Each ignored object is replaced by its unignored descendants, in order, at
+  // any depth. An empty or hidden ignored subtree contributes nothing.
+  EXPECT_THAT(UnignoredChildIds(*GetAXBodyObject()),
+              testing::ElementsAre("a", "b", "c", "d", "e", "f"));
+  EXPECT_THAT(UnignoredChildIds(*GetAXObjectByElementId("outer")),
+              testing::ElementsAre("c", "d", "e"));
+  EXPECT_THAT(UnignoredChildIds(*GetAXObjectByElementId("middle")),
+              testing::ElementsAre("c", "d"));
+  EXPECT_THAT(UnignoredChildIds(*GetAXObjectByElementId("empty")),
+              testing::ElementsAre());
+  EXPECT_THAT(UnignoredChildIds(*GetAXObjectByElementId("hidden")),
+              testing::ElementsAre());
 }
 
 TEST_F(AccessibilityTest, SimpleTreeNavigation) {

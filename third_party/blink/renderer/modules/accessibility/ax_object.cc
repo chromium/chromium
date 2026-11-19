@@ -31,6 +31,7 @@
 #include <math.h>
 
 #include <ostream>
+#include <ranges>
 
 #include "base/auto_reset.h"
 #include "base/containers/span.h"
@@ -6770,6 +6771,26 @@ const AXObject::AXObjectVector AXObject::UnignoredChildrenSlow() {
   // ignored objects ,those are the ones that are one level deep.
 
   AXObjectVector unignored_children;
+  if (RuntimeEnabledFeatures::AccessibilityLinearUnignoredChildrenEnabled()) {
+    // Collect the children in order, replacing each ignored child with its own
+    // children. A stack of the children left to visit avoids stepping between
+    // siblings, which searches the parent's child list each time and made this
+    // quadratic.
+    AXObjectVector pending;
+    pending.append_range(std::views::reverse(CachedChildrenIncludingIgnored()));
+    while (!pending.empty()) {
+      AXObject* child = pending.back();
+      pending.pop_back();
+      if (child->IsIgnored()) {
+        pending.append_range(
+            std::views::reverse(child->CachedChildrenIncludingIgnored()));
+        continue;
+      }
+      unignored_children.push_back(child);
+    }
+    return unignored_children;
+  }
+
   AXObject* child = FirstChildIncludingIgnored();
   while (child && child != this) {
     if (child->IsIgnored()) {
