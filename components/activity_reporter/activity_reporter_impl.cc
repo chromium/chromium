@@ -155,7 +155,7 @@ class ActivityReporterImpl final : public ActivityReporter {
 #endif
     ++incomplete_reports_;
     update_client_->CheckForUpdate(
-        std::string{kChromeActivityId},
+        std::string(kChromeActivityId),
         base::BindOnce(
             [](version_info::Channel channel, const std::string& brand,
                const std::vector<std::string>& ids,
@@ -166,13 +166,14 @@ class ActivityReporterImpl final : public ActivityReporter {
                   components;
               for (const std::string& id : ids) {
                 if (id == kChromeActivityId) {
-                  update_client::CrxComponent component;
-                  component.app_id = kChromeActivityId;
-                  component.brand = brand;
-                  component.channel = version_info::GetChannelString(channel);
-                  component.updates_enabled = false;
-                  component.version = version_info::GetVersion();
-                  components.push_back(std::move(component));
+                  components.emplace_back(update_client::CrxComponent{
+                      .app_id = std::string(kChromeActivityId),
+                      .version = version_info::GetVersion(),
+                      .brand = brand,
+                      .updates_enabled = false,
+                      .channel =
+                          std::string(version_info::GetChannelString(channel)),
+                  });
                 } else {
                   components.push_back(std::nullopt);
                 }

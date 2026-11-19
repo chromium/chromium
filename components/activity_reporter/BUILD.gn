@@ -130,6 +130,7 @@ source_set("unit_tests") {
       ":activity_reporter",
       ":buildflags",
       ":impl",
+      "//base/version_info",
       "//components/prefs:test_support",
       "//components/update_client",
       "//testing/gmock",

@@ -118,8 +118,11 @@ CpuidRegisters Cpuid(uint32_t leaf) {
   std::array<int, 4> registers = {};
   __cpuidex(registers.data(), static_cast<int>(leaf), /*subleaf=*/0);
   return CpuidRegisters{
-      static_cast<uint32_t>(registers[0]), static_cast<uint32_t>(registers[1]),
-      static_cast<uint32_t>(registers[2]), static_cast<uint32_t>(registers[3])};
+      .eax = static_cast<uint32_t>(registers[0]),
+      .ebx = static_cast<uint32_t>(registers[1]),
+      .ecx = static_cast<uint32_t>(registers[2]),
+      .edx = static_cast<uint32_t>(registers[3]),
+  };
 }
 #endif  // defined(ARCH_CPU_X86_FAMILY)
 

@@ -22,7 +22,9 @@
 #include "base/test/test_future.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
+#include "base/version.h"
 #include "base/version_info/channel.h"
+#include "base/version_info/version_info.h"
 #include "components/activity_reporter/activity_reporter.h"
 #include "components/activity_reporter/activity_reporter_for_testing.h"
 #include "components/activity_reporter/buildflags.h"
@@ -183,7 +185,7 @@ TEST_F(ActivityReporterImplTest, ReportActiveThrottles) {
             ++call_count;
             EXPECT_EQ(id, kChromeActivityId);
             std::move(crx_data_callback)
-                .Run({std::string{kChromeActivityId}}, base::DoNothing());
+                .Run({std::string(kChromeActivityId)}, base::DoNothing());
           });
 
   // The first report should go through.
@@ -210,7 +212,7 @@ TEST_F(ActivityReporterImplTest, ReportActiveSendsComponentData) {
               update_client::Callback) {
             EXPECT_EQ(id, kChromeActivityId);
             std::move(crx_data_callback)
-                .Run({std::string{kChromeActivityId}},
+                .Run({std::string(kChromeActivityId)},
                      components_future.GetCallback());
           });
   activity_reporter_->ReportActive();
@@ -220,6 +222,8 @@ TEST_F(ActivityReporterImplTest, ReportActiveSendsComponentData) {
   ASSERT_EQ(components.size(), 1u);
   ASSERT_TRUE(components[0].has_value());
   EXPECT_EQ(components[0]->app_id, kChromeActivityId);
+  ASSERT_TRUE(components[0]->version.IsValid());
+  EXPECT_EQ(components[0]->version, version_info::GetVersion());
   EXPECT_EQ(components[0]->brand, "TEST");
   EXPECT_EQ(components[0]->channel, "unknown");
   EXPECT_FALSE(components[0]->updates_enabled);

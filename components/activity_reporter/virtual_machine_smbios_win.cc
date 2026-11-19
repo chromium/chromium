@@ -209,11 +209,11 @@ std::optional<FirmwareStrings> ReadFirmwareStringsFromRegistry() {
     }
     return base::WideToUTF8(value);
   };
-  FirmwareStrings strings;
-  strings.bios_vendor = read(L"BIOSVendor");
-  strings.system_manufacturer = read(L"SystemManufacturer");
-  strings.system_product = read(L"SystemProductName");
-  return strings;
+  return FirmwareStrings{
+      .bios_vendor = read(L"BIOSVendor"),
+      .system_manufacturer = read(L"SystemManufacturer"),
+      .system_product = read(L"SystemProductName"),
+  };
 }
 
 // The OS readers are not unit tested; the fallback, parsing and matching are
