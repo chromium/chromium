@@ -11,7 +11,6 @@ import static org.chromium.chrome.browser.browsing_data.TimePeriodUtils.getTimeP
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
@@ -221,12 +220,6 @@ public class ClearBrowsingDataFragment extends ChromeBaseSettingsFragment
     /** The tag used for logging. */
     public static final String TAG = "ClearBrowsingDataFragment";
 
-    /**
-     * Used for the onActivityResult pattern. The value is arbitrary, just to distinguish from other
-     * activities that we might be using onActivityResult with as well.
-     */
-    private static final int IMPORTANT_SITES_DIALOG_CODE = 1;
-
     private static final int IMPORTANT_SITES_PERCENTAGE_BUCKET_COUNT = 20;
 
     /** The various data types that can be cleared via this screen. */
@@ -277,10 +270,6 @@ public class ClearBrowsingDataFragment extends ChromeBaseSettingsFragment
     private @Nullable Preference mMyActivityLinkOut;
     private @Nullable Preference mSearchHistoryLinkOut;
     private @Nullable Preference mSearchHistoryLinkOutOtherDse;
-
-    // This is the dialog we show to the user that lets them 'uncheck' (or exclude) the above
-    // important domains from being cleared.
-    private @Nullable ConfirmImportantSitesDialogFragment mConfirmImportantSitesDialog;
 
     private @TimePeriod int mLastSelectedTimePeriod;
     private boolean mShouldShowPostDeleteFeedback;
@@ -666,6 +655,18 @@ public class ClearBrowsingDataFragment extends ChromeBaseSettingsFragment
     }
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // The important sites dialog is a child of this page, so it goes away with the page, and
+        // its result is only delivered while this page is started.
+        getChildFragmentManager()
+                .setFragmentResultListener(
+                        ConfirmImportantSitesDialogFragment.REQUEST_KEY,
+                        this,
+                        (String requestKey, Bundle result) -> onImportantSitesConfirmed(result));
+    }
+
+    @Override
     public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
         Bundle fragmentArgs = getArguments();
         assert fragmentArgs != null : "A valid fragment argument is required.";
@@ -932,9 +933,11 @@ public class ClearBrowsingDataFragment extends ChromeBaseSettingsFragment
         return mProgressDialog;
     }
 
-    @VisibleForTesting
+    /** Returns the important sites dialog, if it is showing. */
     @Nullable ConfirmImportantSitesDialogFragment getImportantSitesDialogFragment() {
-        return mConfirmImportantSitesDialog;
+        return (ConfirmImportantSitesDialogFragment)
+                getChildFragmentManager()
+                        .findFragmentByTag(ConfirmImportantSitesDialogFragment.FRAGMENT_TAG);
     }
 
     private void updateSignOutOfChromeText() {
@@ -976,15 +979,20 @@ public class ClearBrowsingDataFragment extends ChromeBaseSettingsFragment
      * This method shows the important sites dialog. After the dialog is shown, we correctly clear.
      */
     private void showImportantDialogThenClear() {
-        mConfirmImportantSitesDialog =
-                ConfirmImportantSitesDialogFragment.newInstance(
+        // Already showing, e.g. the button was clicked twice before the dialog appeared.
+        if (getImportantSitesDialogFragment() != null) return;
+
+        // Shown as a child of this page, rather than alongside it, so that it cannot outlive this
+        // page: finishing this page pops or replaces it in its FragmentManager, which leaves the
+        // other fragments there, including a dialog, in place. Shown synchronously, so that a
+        // second click sees it.
+        ConfirmImportantSitesDialogFragment.newInstance(
                         mFetcher.getSortedImportantDomains(),
                         mFetcher.getSortedImportantDomainReasons(),
-                        mFetcher.getSortedExampleOrigins());
-        mConfirmImportantSitesDialog.setTargetFragment(this, IMPORTANT_SITES_DIALOG_CODE);
-        mConfirmImportantSitesDialog.show(
-                assertNonNull(getFragmentManager()),
-                ConfirmImportantSitesDialogFragment.FRAGMENT_TAG);
+                        mFetcher.getSortedExampleOrigins())
+                .showNow(
+                        getChildFragmentManager(),
+                        ConfirmImportantSitesDialogFragment.FRAGMENT_TAG);
     }
 
     /** Used only to access the dialog about other forms of browsing history from tests. */
@@ -994,52 +1002,47 @@ public class ClearBrowsingDataFragment extends ChromeBaseSettingsFragment
     }
 
     /**
-     * This is the callback for the important domain dialog. We should only clear if we get the
-     * positive button response.
+     * Called when the user confirms the important sites dialog, which reports nothing on cancel.
+     *
+     * @param result The fragment result posted by {@link ConfirmImportantSitesDialogFragment}.
      */
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if (requestCode == IMPORTANT_SITES_DIALOG_CODE && resultCode == Activity.RESULT_OK) {
-            assert data != null;
-            // Deselected means that the user is excluding the domain from being cleared.
-            String[] deselectedDomains =
-                    data.getStringArrayExtra(
-                            ConfirmImportantSitesDialogFragment.DESELECTED_DOMAINS_TAG);
-            String[] ignoredDomains =
-                    data.getStringArrayExtra(
-                            ConfirmImportantSitesDialogFragment.IGNORED_DOMAINS_TAG);
-            if (deselectedDomains != null && mFetcher.getSortedImportantDomains() != null) {
-                // mMaxImportantSites is a constant on the C++ side.
-                RecordHistogram.recordCustomCountHistogram(
-                        "History.ClearBrowsingData.ImportantDeselectedNum",
-                        deselectedDomains.length,
-                        1,
-                        mFetcher.getMaxImportantSites() + 1,
-                        mFetcher.getMaxImportantSites() + 1);
-                assert ignoredDomains != null;
-                RecordHistogram.recordCustomCountHistogram(
-                        "History.ClearBrowsingData.ImportantIgnoredNum",
-                        ignoredDomains.length,
-                        1,
-                        mFetcher.getMaxImportantSites() + 1,
-                        mFetcher.getMaxImportantSites() + 1);
-                // We put our max at 20 instead of 100 to reduce the number of empty buckets (as
-                // our maximum denominator is 5).
-                RecordHistogram.recordEnumeratedHistogram(
-                        "History.ClearBrowsingData.ImportantDeselectedPercent",
-                        deselectedDomains.length
-                                * IMPORTANT_SITES_PERCENTAGE_BUCKET_COUNT
-                                / mFetcher.getSortedImportantDomains().length,
-                        IMPORTANT_SITES_PERCENTAGE_BUCKET_COUNT + 1);
-                RecordHistogram.recordEnumeratedHistogram(
-                        "History.ClearBrowsingData.ImportantIgnoredPercent",
-                        ignoredDomains.length
-                                * IMPORTANT_SITES_PERCENTAGE_BUCKET_COUNT
-                                / mFetcher.getSortedImportantDomains().length,
-                        IMPORTANT_SITES_PERCENTAGE_BUCKET_COUNT + 1);
-            }
-            clearBrowsingData(getSelectedOptions(), deselectedDomains, ignoredDomains);
+    private void onImportantSitesConfirmed(Bundle result) {
+        // Deselected means that the user is excluding the domain from being cleared.
+        String[] deselectedDomains =
+                result.getStringArray(ConfirmImportantSitesDialogFragment.DESELECTED_DOMAINS_TAG);
+        String[] ignoredDomains =
+                result.getStringArray(ConfirmImportantSitesDialogFragment.IGNORED_DOMAINS_TAG);
+        if (deselectedDomains != null && mFetcher.getSortedImportantDomains() != null) {
+            // mMaxImportantSites is a constant on the C++ side.
+            RecordHistogram.recordCustomCountHistogram(
+                    "History.ClearBrowsingData.ImportantDeselectedNum",
+                    deselectedDomains.length,
+                    1,
+                    mFetcher.getMaxImportantSites() + 1,
+                    mFetcher.getMaxImportantSites() + 1);
+            assert ignoredDomains != null;
+            RecordHistogram.recordCustomCountHistogram(
+                    "History.ClearBrowsingData.ImportantIgnoredNum",
+                    ignoredDomains.length,
+                    1,
+                    mFetcher.getMaxImportantSites() + 1,
+                    mFetcher.getMaxImportantSites() + 1);
+            // We put our max at 20 instead of 100 to reduce the number of empty buckets (as
+            // our maximum denominator is 5).
+            RecordHistogram.recordEnumeratedHistogram(
+                    "History.ClearBrowsingData.ImportantDeselectedPercent",
+                    deselectedDomains.length
+                            * IMPORTANT_SITES_PERCENTAGE_BUCKET_COUNT
+                            / mFetcher.getSortedImportantDomains().length,
+                    IMPORTANT_SITES_PERCENTAGE_BUCKET_COUNT + 1);
+            RecordHistogram.recordEnumeratedHistogram(
+                    "History.ClearBrowsingData.ImportantIgnoredPercent",
+                    ignoredDomains.length
+                            * IMPORTANT_SITES_PERCENTAGE_BUCKET_COUNT
+                            / mFetcher.getSortedImportantDomains().length,
+                    IMPORTANT_SITES_PERCENTAGE_BUCKET_COUNT + 1);
         }
+        clearBrowsingData(getSelectedOptions(), deselectedDomains, ignoredDomains);
     }
 
     /** {@link SigninManager.SignInStateObserver} implementation. */

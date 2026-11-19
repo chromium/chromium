@@ -49,6 +49,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AlertDialog;
 import androidx.collection.ArraySet;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.preference.CheckBoxPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
@@ -909,6 +910,60 @@ public class ClearBrowsingDataFragmentTest {
                         eq(DEFAULT_TIME_PERIOD),
                         eq(keepDomains),
                         eq(ignoredDomains));
+    }
+
+    /**
+     * Tests that clicking clear twice, before the important sites dialog appears, shows the dialog
+     * only once, as a child of the page, and that confirming it clears only once. Two dialogs,
+     * shown alongside the page, let one outlive the page once the other cleared and finished it.
+     * Regression test for b/580100671.
+     */
+    @Test
+    @MediumTest
+    @Feature({"SiteEngagement"})
+    public void testImportantSitesDialogShownOnce() throws Exception {
+        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
+        markOriginsAsImportant(new String[] {"http://www.facebook.com", "https://www.google.com"});
+        setDataTypesToClear(DialogOption.CLEAR_HISTORY, DialogOption.CLEAR_CACHE);
+
+        ClearBrowsingDataFragment fragment =
+                (ClearBrowsingDataFragment) startPreferences().getMainFragment();
+        Profile expectedProfile = fragment.getProfile();
+
+        // Click twice in one task, so that the second click lands before the first dialog shows.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    clickClearButton(fragment);
+                    clickClearButton(fragment);
+                });
+        waitForImportantDialogToShow(fragment, 2);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    FragmentManager activityFragmentManager =
+                            fragment.requireActivity().getSupportFragmentManager();
+                    assertEquals(1, countImportantSitesDialogs(activityFragmentManager));
+                    assertEquals(1, countImportantSitesDialogs(fragment.getChildFragmentManager()));
+                });
+
+        ThreadUtils.runOnUiThreadBlocking(
+                getPressButtonInImportantDialogRunnable(fragment, AlertDialog.BUTTON_POSITIVE));
+        waitForProgressToComplete(fragment);
+        mCallbackHelper.waitForOnly();
+        verify(mBrowsingDataBridgeMock, times(1))
+                .clearBrowsingData(eq(expectedProfile), any(), any(), anyInt(), any(), any());
+    }
+
+    /** Counts the important sites dialogs in {@code fragmentManager} and its descendants. */
+    private static int countImportantSitesDialogs(FragmentManager fragmentManager) {
+        int count = 0;
+        for (Fragment fragment : fragmentManager.getFragments()) {
+            if (fragment instanceof ConfirmImportantSitesDialogFragment) ++count;
+            if (fragment.isAdded()) {
+                count += countImportantSitesDialogs(fragment.getChildFragmentManager());
+            }
+        }
+        return count;
     }
 
     @Test

@@ -6,12 +6,10 @@ package org.chromium.chrome.browser.browsing_data;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
-import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
@@ -56,8 +54,8 @@ import java.util.Set;
 /**
  * Modal dialog that shows a list of important domains to the user which they can uncheck. Used to
  * allow the user to exclude domains from being cleared by the clear browsing data function. We use
- * proper bundle construction (through the {@link #newInstance(String[], int[], String[])} method)
- * and onActivityResult return conventions.
+ * proper bundle construction (through the {@link #newInstance(String[], int[], String[])} method),
+ * and report the user's confirmation as a fragment result under {@link #REQUEST_KEY}.
  */
 @NullMarked
 public class ConfirmImportantSitesDialogFragment extends DialogFragment
@@ -186,6 +184,13 @@ public class ConfirmImportantSitesDialogFragment extends DialogFragment
     /** The tag used when showing the clear browsing fragment. */
     public static final String FRAGMENT_TAG = "ConfirmImportantSitesDialogFragment";
 
+    /**
+     * The key under which the user's confirmation is posted as a fragment result to the {@link
+     * androidx.fragment.app.FragmentManager} showing this dialog. The result holds {@link
+     * #DESELECTED_DOMAINS_TAG} and {@link #IGNORED_DOMAINS_TAG}. Nothing is posted on cancel.
+     */
+    public static final String REQUEST_KEY = "ConfirmImportantSitesDialogFragment.RequestKey";
+
     /** The tag for the string array of deselected domains. These are meant to NOT be cleared. */
     public static final String DESELECTED_DOMAINS_TAG = "DeselectedDomains";
 
@@ -309,29 +314,24 @@ public class ConfirmImportantSitesDialogFragment extends DialogFragment
         mAdapter = new ClearBrowsingDataAdapter(mImportantDomains, mFaviconURLs, getResources());
         DialogInterface.OnClickListener listener =
                 (DialogInterface _, int which) -> {
-                    if (which == AlertDialog.BUTTON_POSITIVE) {
-                        Intent data = new Intent();
-                        List<String> deselectedDomains = new ArrayList<>();
-                        List<String> ignoredDomains = new ArrayList<>();
-                        for (Entry<String, Boolean> entry : mCheckedState.entrySet()) {
-                            if (entry.getValue()) {
-                                ignoredDomains.add(entry.getKey());
-                            } else {
-                                deselectedDomains.add(entry.getKey());
-                            }
+                    // Cancelling deletes nothing, so only a confirmation is reported.
+                    if (which != AlertDialog.BUTTON_POSITIVE) return;
+
+                    List<String> deselectedDomains = new ArrayList<>();
+                    List<String> ignoredDomains = new ArrayList<>();
+                    for (Entry<String, Boolean> entry : mCheckedState.entrySet()) {
+                        if (entry.getValue()) {
+                            ignoredDomains.add(entry.getKey());
+                        } else {
+                            deselectedDomains.add(entry.getKey());
                         }
-                        data.putExtra(
-                                DESELECTED_DOMAINS_TAG, deselectedDomains.toArray(new String[0]));
-                        data.putExtra(IGNORED_DOMAINS_TAG, ignoredDomains.toArray(new String[0]));
-                        assumeNonNull(getTargetFragment())
-                                .onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, data);
-                    } else {
-                        assumeNonNull(getTargetFragment())
-                                .onActivityResult(
-                                        getTargetRequestCode(),
-                                        Activity.RESULT_CANCELED,
-                                        getActivity().getIntent());
                     }
+                    Bundle result = new Bundle();
+                    result.putStringArray(
+                            DESELECTED_DOMAINS_TAG, deselectedDomains.toArray(new String[0]));
+                    result.putStringArray(
+                            IGNORED_DOMAINS_TAG, ignoredDomains.toArray(new String[0]));
+                    getParentFragmentManager().setFragmentResult(REQUEST_KEY, result);
                 };
 
         Set<String> originsWithApps = WebappRegistry.getInstance().getOriginsWithInstalledApp();
