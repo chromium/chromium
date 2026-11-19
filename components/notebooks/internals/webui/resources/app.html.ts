@@ -7,7 +7,6 @@ import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {NotebooksInternalsAppElement} from './app.js';
 
 export function getHtml(this: NotebooksInternalsAppElement) {
-  // clang-format off
   return html`
 <h1>Notebooks Internals</h1>
 
@@ -24,17 +23,23 @@ export function getHtml(this: NotebooksInternalsAppElement) {
       <tr>
         <td>Is user eligible?</td>
         <td>
-          ${this.eligibility?.userEligible ?
-            html`<span class="valid">Yes</span>` :
-            html`<span class="invalid">No</span>`}
+          ${this.eligibility?.userEligible ? html`
+            <span class="valid">Yes</span>
+          ` : html`
+            <span class="invalid">No</span>
+          `}
         </td>
       </tr>
       <tr>
-        <td><kbd>notebooks</kbd> feature flag enabled?</td>
         <td>
-          ${this.featureFlags?.notebooksFeatureEnabled ?
-            html`<span class="valid">Yes</span>` :
-            html`<span class="invalid">No</span>`}
+          <kbd>notebooks</kbd> feature flag enabled?
+        </td>
+        <td>
+          ${this.featureFlags?.notebooksFeatureEnabled ? html`
+            <span class="valid">Yes</span>
+          ` : html`
+            <span class="invalid">No</span>
+          `}
         </td>
       </tr>
     </tbody>
@@ -57,7 +62,5 @@ export function getHtml(this: NotebooksInternalsAppElement) {
       </tr>
     </tbody>
   </table>
-</section>
-  `;
-  // clang-format on
+</section>`;
 }
