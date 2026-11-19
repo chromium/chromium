@@ -1155,6 +1155,12 @@ bool TabStripCollectionController::ShouldAnimateLayout() const {
   if (StartupBrowserCreator::InSynchronousProfileLaunch()) {
     return false;
   }
+  // Don't animate anything if the containing window isn't visible yet.
+  const views::Widget* widget =
+      browser_view_ ? browser_view_->GetWidget() : nullptr;
+  if (!widget || !widget->IsVisible()) {
+    return false;
+  }
   Profile* profile = GetBrowserView()->browser()->GetProfile();
   CHECK(profile);
   if (SessionRestore::IsRestoring(profile)) {
