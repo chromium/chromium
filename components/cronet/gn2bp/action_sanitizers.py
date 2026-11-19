@@ -343,9 +343,11 @@ class JniGeneratorSanitizer(BaseActionSanitizer):
             file if not file.endswith('android.jar') else ':current_android_jar'
             for file in tool_files
         }
-        # Filter bin/javap
+        # Filter JDK files (javap wrapper, jdk-tools-graalvm, and runtime data).
         tool_files = {
-            file for file in tool_files if not file.endswith('bin/javap')
+            file
+            for file in tool_files
+            if not file.startswith('third_party/jdk/')
         }
 
         return tool_files

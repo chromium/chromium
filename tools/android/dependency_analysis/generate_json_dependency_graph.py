@@ -317,6 +317,8 @@ def main():
 
     if args.jdeps_path:
         jdeps_path = pathlib.Path(args.jdeps_path)
+    elif src_path.resolve() == _SRC_PATH.resolve():
+        jdeps_path = None
     else:
         java_home_rel = pathlib.Path(java_home.JAVA_HOME).relative_to(_SRC_PATH)
         jdeps_path = src_path / java_home_rel / 'bin/jdeps'

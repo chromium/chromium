@@ -39,8 +39,8 @@ sys.path.append(
                  'android'))
 import java_home  # noqa: E402
 
-_JAVA_BIN_DIR = os.path.join(java_home.JAVA_HOME, 'bin')
-_JAVAP_PATH = os.path.normpath(os.path.join(_JAVA_BIN_DIR, 'javap'))
+_JAVAP_PATH = os.path.normpath(
+    os.path.join(_SCRIPT_DIR, os.pardir, os.pardir, 'jdk', 'javap.sh'))
 
 # Set this environment variable in order to regenerate the golden text
 # files.
@@ -663,10 +663,7 @@ class Tests(BaseTest):
     with tempfile.TemporaryDirectory() as tdir:
       java_file = os.path.join(_JAVA_SRC_DIR, 'SampleForLinker.java')
 
-      javac_cmd = [
-          os.path.normpath(os.path.join(_JAVA_BIN_DIR, 'javac')), '-d', tdir,
-          java_file
-      ]
+      javac_cmd = java_home.ToolCmd('javac') + ['-d', tdir, java_file]
       logging.info('Running: %s', shlex.join(javac_cmd))
       subprocess.check_call(javac_cmd)
 

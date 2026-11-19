@@ -102,13 +102,17 @@ native_image_java_paths_for_inputs = [
   "$_native_image_jdk_home/lib/modules",
 ]
 
-javac_paths_for_inputs = native_image_java_paths_for_inputs
+jdk_tools_paths_for_inputs = native_image_java_paths_for_inputs
 
-# Non-x64 Linux JDKs do not ship javac-graalvm.
+# Non-x64 Linux JDKs do not ship jdk-tools-graalvm.
 if (host_os != "linux" || host_cpu == "x64") {
-  javac_paths_for_inputs += [ "$_native_image_jdk_home/bin/javac-graalvm" ]
+  jdk_tools_paths_for_inputs +=
+      [ "$_native_image_jdk_home/bin/jdk-tools-graalvm" ]
 }
 if (!use_native_image_inputs) {
-  # Local actions on other hosts run javac on the JVM.
-  javac_paths_for_inputs += java_paths_for_inputs
+  # Local actions on other hosts run JDK tools on the JVM.
+  jdk_tools_paths_for_inputs += java_paths_for_inputs + [
+                                  "$android_jdk_home/bin/javap",
+                                  "$android_jdk_home/bin/jdeps",
+                                ]
 }

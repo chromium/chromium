@@ -87,7 +87,7 @@ class ApiStaticCheckUnitTest(unittest.TestCase):
         utils.write_file(
             java_filename, 'public class %s {%s}' % (class_name, java)
         )
-        utils.run([utils.JAVAC_PATH, java_filename], verbose=False)
+        utils.run(utils.JAVAC_CMD + [java_filename], verbose=False)
         utils.run(
             f'{utils.JAR_PATH} cf {jar_filename} {class_filenames}',
             verbose=False,

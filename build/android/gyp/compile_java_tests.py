@@ -238,7 +238,7 @@ class ShardingTests(unittest.TestCase):
             )
             return compile_java._AllowSharding(options, [javac], use_errorprone)
 
-        graalvm = compile_java._JAVAC_GRAALVM_PATH
+        graalvm = compile_java.build_utils.JDK_TOOLS_GRAALVM_PATH
         self.assertTrue(allow(['header.jar'], [], graalvm, False))
         # Needs the header jar to find classes from other shards.
         self.assertFalse(allow([], [], graalvm, False))

@@ -1145,6 +1145,35 @@ class TestRunGN2BPUnitTest(unittest.TestCase):
             ctx,
         )
 
+    def test_jni_generator_sanitizer_strips_jdk_tools(self):
+        target = gn_utils.GnParser.Target(
+            "//base:android_runtime_jni_headers", "action"
+        )
+        target.script = "//third_party/jni_zero/jni_zero.py"
+        android_jar = (
+            "//third_party/android_sdk/public/platforms/android-36/android.jar"
+        )
+        target.common.inputs.update(
+            {
+                android_jar,
+                "//third_party/jdk/javap.sh",
+                "//third_party/jdk/current/bin/jdk-tools-graalvm",
+                "//third_party/jdk/current/lib/modules",
+            }
+        )
+        ctx = gen_android_bp.translation_context.TranslationContext("tot")
+        sanitizer = (
+            gen_android_bp.translators.action_sanitizers.JniGeneratorSanitizer(
+                target, None, False, ctx
+            )
+        )
+        tool_files = sanitizer.get_tool_files()
+        self.assertIn(':current_android_jar', tool_files)
+        self.assertFalse(
+            any(f.startswith('third_party/jdk/') for f in tool_files),
+            tool_files,
+        )
+
 
 if __name__ == '__main__':
     # This allows you to run the file directly

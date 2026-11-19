@@ -535,7 +535,7 @@ def main():
     if (
         not _DISABLE_NATIVE_IMAGE
         and options.has_chromium_plugin
-        and compile_java.IS_LINUX_X64
+        and build_utils.IS_LINUX_X64
     ):
         javac_cmd = [
             _NATIVE_IMAGE_PATH,

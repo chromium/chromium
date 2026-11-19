@@ -2158,7 +2158,7 @@ if (enable_java_templates) {
                                    "deps",
                                  ])
       script = "//build/android/gyp/check_for_missing_direct_deps.py"
-      inputs = java_paths_for_inputs + [
+      inputs = jdk_tools_paths_for_inputs + [
                  invoker.input_jar,
                  invoker.javac_build_config,
                  invoker.targets_build_config,
@@ -3273,7 +3273,7 @@ if (enable_java_templates) {
         }
       } else {
         script = "//build/android/gyp/compile_java.py"
-        inputs = javac_paths_for_inputs
+        inputs = jdk_tools_paths_for_inputs
       }
 
       if (target_name == "chrome_java__header") {

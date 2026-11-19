@@ -46,9 +46,14 @@ JAVA_HOME = os.path.relpath(java_home.JAVA_HOME)
 JAVA_PATH = os.path.join(JAVA_HOME, 'bin', 'java')
 JAVA_PATH_FOR_INPUTS = f'{JAVA_PATH}.chromium'
 JAVAC_PATH = os.path.join(JAVA_HOME, 'bin', 'javac')
-JAVAP_PATH = os.path.join(JAVA_HOME, 'bin', 'javap')
+JDK_TOOLS_GRAALVM_PATH = os.path.join(JAVA_HOME, 'bin', 'jdk-tools-graalvm')
+IS_LINUX_X64 = java_home.IS_LINUX_X64
 KOTLIN_HOME = os.path.join(DIR_SOURCE_ROOT, 'third_party', 'kotlinc', 'current')
 KOTLINC_PATH = os.path.join(KOTLIN_HOME, 'bin', 'kotlinc')
+
+
+def JdkToolCmd(tool):
+    return java_home.ToolCmd(tool, java_home_dir=JAVA_HOME)
 
 
 def JavaCmd(xmx='1G'):

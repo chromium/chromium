@@ -147,7 +147,7 @@ ALLOWED_EXCEPTIONS = ALLOWED_URLCONNECTION_EXCEPTIONS + [
 ]
 
 JAR_PATH = utils.JAR_PATH
-JAVAP_PATH = utils.JAVAP_PATH
+JAVAP_CMD = utils.JAVAP_CMD
 
 
 def find_api_calls(dump, api_classes, bad_calls):
@@ -232,9 +232,11 @@ def check_api_calls(opts):
             continue
         # Dump classes
         dump_file = os.path.join(temp_dir, 'dump.txt')
-        javap_cmd = [JAVAP_PATH, '-private', '-c'] + [
-            os.path.join(dirpath, f) for f in filenames
-        ]
+        javap_cmd = (
+            JAVAP_CMD
+            + ['-private', '-c']
+            + [os.path.join(dirpath, f) for f in filenames]
+        )
         try:
             dump_output = utils.run_and_get_stdout(
                 javap_cmd, verbose=opts.verbose

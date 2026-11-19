@@ -26,8 +26,8 @@ import java_home  # noqa: E402
 
 JAVA_HOME = java_home.JAVA_HOME
 JAR_PATH = os.path.abspath(os.path.join(JAVA_HOME, 'bin', 'jar'))
-JAVAC_PATH = os.path.abspath(os.path.join(JAVA_HOME, 'bin', 'javac'))
-JAVAP_PATH = os.path.abspath(os.path.join(JAVA_HOME, 'bin', 'javap'))
+JAVAC_CMD = java_home.ToolCmd('javac')
+JAVAP_CMD = java_home.ToolCmd('javap')
 
 _MB_PATH = os.path.join(REPOSITORY_ROOT, 'tools/mb/mb.py')
 GN_PATH = os.path.join(REPOSITORY_ROOT, 'buildtools/linux64/gn')

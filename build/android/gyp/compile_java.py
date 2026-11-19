@@ -12,7 +12,6 @@ import logging
 import argparse
 import os
 import pathlib
-import platform
 import re
 import shlex
 import shutil
@@ -37,14 +36,6 @@ _JAVAC_EXTRACTOR = os.path.join(
     'framework',
     'javac_extractor.jar',
 )
-
-# A GraalVM native-image of javac. Exists only for linux-x64 hosts.
-_JAVAC_GRAALVM_PATH = os.path.join(
-    build_utils.JAVA_HOME, 'bin', 'javac-graalvm'
-)
-
-# GraalVM native-images (e.g. javac-graalvm) exist only for linux-x64 hosts.
-IS_LINUX_X64 = sys.platform == 'linux' and platform.machine() == 'x86_64'
 
 # Large compiles are split across multiple javac processes. Each process has
 # a fixed cost (mostly loading the classpath), so this is a balance between
@@ -141,7 +132,10 @@ def _AllowSharding(options, javac_cmd, use_errorprone):
         return True
     # Sharding with the JVM javac is not worthwhile since each process needs to
     # warm up its JIT. Annotation processors might need to see all sources.
-    return javac_cmd[0] == _JAVAC_GRAALVM_PATH and not options.processorpath
+    return (
+        javac_cmd[0] == build_utils.JDK_TOOLS_GRAALVM_PATH
+        and not options.processorpath
+    )
 
 
 def _RunShardedJavac(
@@ -836,11 +830,11 @@ def main(
         # The native-image javac does not support plugins (Error Prone), and
         # --print-javac-command-line is used by tools that expect a JVM javac.
         if (
-            IS_LINUX_X64
+            build_utils.IS_LINUX_X64
             and not use_errorprone
             and not options.print_javac_command_line
         ):
-            javac_cmd = [_JAVAC_GRAALVM_PATH]
+            javac_cmd = build_utils.JdkToolCmd('javac')
         else:
             javac_cmd = [
                 build_utils.JAVAC_PATH,

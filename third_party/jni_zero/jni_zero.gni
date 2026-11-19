@@ -10,7 +10,8 @@ if (is_android) {
   import("//build/config/android/rules.gni")
 }
 
-_JAVAP_PATH = "$android_jdk_home/bin/javap"
+_JAVAP_PATH = "//third_party/jdk/javap.sh"
+_JAVAP_INPUTS = [ _JAVAP_PATH ] + jdk_tools_paths_for_inputs
 
 declare_args() {
   # Enables JNI multiplexing to reduce JNI native methods overhead. Component
@@ -322,7 +323,7 @@ template("generate_jar_jni_registration") {
                                ])
 
     _header_path = "$target_gen_dir/$target_name.h"
-    inputs = invoker.jar_files + [ _JAVAP_PATH ]
+    inputs = invoker.jar_files + _JAVAP_INPUTS
     outputs = [ _header_path ]
 
     args = [
@@ -568,10 +569,7 @@ template("generate_jni_impl") {
             # without the internal SDK.
             _jar_file = public_android_sdk_jar
           }
-          inputs += [
-            _jar_file,
-            _JAVAP_PATH,
-          ]
+          inputs += [ _jar_file ] + _JAVAP_INPUTS
           args += [
             "--jar-file",
             rebase_path(_jar_file, root_build_dir),
