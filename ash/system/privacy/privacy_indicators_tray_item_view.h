@@ -135,7 +135,8 @@ class ASH_EXPORT PrivacyIndicatorsTrayItemView : public TrayItemView,
   // Calculate the length of the longer size, based on `is_screen_sharing_`.
   int GetLongerSideLengthInExpandedMode() const;
 
-  // End all 3 animations contained in this class.
+  // End all 3 animations contained in this class, and stop the shrink delay
+  // timers.
   void EndAllAnimations();
 
   // Record the type of privacy indicators that are showing.
