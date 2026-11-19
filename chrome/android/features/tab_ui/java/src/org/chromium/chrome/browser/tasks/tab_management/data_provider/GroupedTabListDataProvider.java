@@ -18,7 +18,6 @@ import org.chromium.chrome.browser.tabmodel.TabGroupObserver.DidRemoveTabGroupRe
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
-import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_management.data_provider.TabListDataObserver.PayloadType;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tab_groups.TabGroupId;
@@ -201,7 +200,7 @@ public class GroupedTabListDataProvider extends TabListDataProvider {
         TabModel model = getTabModelIfTabStateInitialized();
         if (model == null) return;
 
-        Tab selectedTab = TabModelUtils.getCurrentTab(model);
+        Tab selectedTab = getSelectedTab();
         Token lastGroupId = null;
         boolean isCurrentGroupCollapsed = true;
         for (Tab tab : model) {
@@ -283,7 +282,7 @@ public class GroupedTabListDataProvider extends TabListDataProvider {
 
         TabModel model = getTabModelIfTabStateInitialized();
         if (model == null) return;
-        insertItem(model, createGroupItem(model, TabModelUtils.getCurrentTab(model), tabGroupId));
+        insertItem(model, createGroupItem(model, getSelectedTab(), tabGroupId));
     }
 
     private void removeTabAndUpdateGroup(Tab tab) {
@@ -335,12 +334,10 @@ public class GroupedTabListDataProvider extends TabListDataProvider {
     private void updateGroupItemAt(int index, @PayloadType int payload) {
         TabGroupItem oldItem = (TabGroupItem) mItems.get(index);
         Token tabGroupId = oldItem.getTabGroupId();
-        TabModel model = getTabModelIfGroupExists(tabGroupId);
-        if (model == null) return;
+        if (isGroupRemoving(tabGroupId)) return;
 
         TabGroupItem updatedItem =
-                oldItem.withSelected(
-                        isGroupSelected(TabModelUtils.getCurrentTab(model), tabGroupId));
+                oldItem.withSelected(isGroupSelected(getSelectedTab(), tabGroupId));
         updateItemAt(index, updatedItem, payload);
     }
 
@@ -363,7 +360,7 @@ public class GroupedTabListDataProvider extends TabListDataProvider {
                     model.getTabCountForGroup(TabGroupId.fromRawToken(tabGroupId)));
         } else {
             List<Tab> children = model.getTabsInGroup(TabGroupId.fromOptionalToken(tabGroupId));
-            Tab selectedTab = TabModelUtils.getCurrentTab(model);
+            Tab selectedTab = getSelectedTab();
             List<TabItem> childItems = new ArrayList<>(children.size());
             for (Tab childTab : children) {
                 childItems.add(createTabItem(selectedTab, childTab));

@@ -14,21 +14,30 @@ import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabGroupObserver;
+import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
-import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Predicate;
 
 /**
- * {@link TabListDataProvider} implementation that filters tabs from a {@link TabModel} according to
- * a {@link Predicate} into a flat list of {@link TabItem} entries.
+ * {@link TabListDataProvider} implementation that displays tabs from one or more {@link TabModel}s
+ * as a flat list of {@link TabItem} entries.
+ *
+ * <p>The {@link Predicate} filter decides which tabs are shown. Without a {@link Comparator}, the
+ * provider keeps its model's tab order. With a {@link Comparator}, it sorts the tabs by it, and a
+ * tab moving inside its model doesn't move its card. Observing several models also needs {@code
+ * supportsMultipleModels}, and their tabs are merged into one sorted list.
  */
 @NullMarked
 public class FlatTabListDataProvider extends TabListDataProvider {
     private final @Nullable Predicate<Tab> mFilter;
+    private final @Nullable Comparator<Tab> mComparator;
     private final boolean mSupportsMultipleModels;
 
     /**
@@ -49,6 +58,7 @@ public class FlatTabListDataProvider extends TabListDataProvider {
         assert !supportsMultipleModels || comparator != null
                 : "Supporting several TabModels needs a comparator.";
         mFilter = filter;
+        mComparator = comparator;
         mSupportsMultipleModels = supportsMultipleModels;
 
         TabModelObserver tabModelObserver =
@@ -66,7 +76,7 @@ public class FlatTabListDataProvider extends TabListDataProvider {
                     public void didMoveTab(Tab tab, int newIndex, int curIndex) {
                         // Intra-group reorders and group merges/ungroups are handled by
                         // TabGroupObserver; moveTabItem reorders standalone tabs when matching the
-                        // active filter.
+                        // active filter, and leaves them in place when there's a comparator.
                         if (curIndex == newIndex || tab.getTabGroupId() != null) return;
                         moveTabItem(tab);
                     }
@@ -146,16 +156,22 @@ public class FlatTabListDataProvider extends TabListDataProvider {
     @Override
     protected void rebuildItems() {
         mItems.clear();
-        // TODO(crbug.com/587126481): Build items from every attached model and sort them by
-        // mComparator.
-        TabModel model = getTabModelIfTabStateInitialized();
-        if (model == null) return;
 
-        Tab selectedTab = TabModelUtils.getCurrentTab(model);
-        for (Tab tab : model) {
-            if (shouldShowTab(tab)) {
-                mItems.add(createTabItem(selectedTab, tab));
+        // Keep only the first loaded model's copy of each tab id, checked before the filter, so a
+        // card always shows the copy that getTabById() returns.
+        Set<Integer> seenTabIds = new HashSet<>();
+        List<Tab> tabs = new ArrayList<>();
+        for (TabModel model : getAttachedTabModels()) {
+            if (!model.isTabStateInitialized()) continue;
+            for (Tab tab : model) {
+                if (seenTabIds.add(tab.getId()) && shouldShowTab(tab)) tabs.add(tab);
             }
+        }
+        if (mComparator != null) tabs.sort(mComparator);
+
+        Tab selectedTab = getSelectedTab();
+        for (Tab tab : tabs) {
+            mItems.add(createTabItem(selectedTab, tab));
         }
     }
 
@@ -172,5 +188,36 @@ public class FlatTabListDataProvider extends TabListDataProvider {
     @Override
     protected boolean supportsMultipleModels() {
         return mSupportsMultipleModels;
+    }
+
+    @Override
+    protected void moveTabItem(Tab tab) {
+        // With a comparator, a tab's position in its model doesn't decide where its card goes, so a
+        // model move leaves the card in place. Re-placing it could also swap tabs that compare
+        // equal.
+        if (mComparator != null) return;
+        super.moveTabItem(tab);
+    }
+
+    @Override
+    protected int getInsertionIndex(TabModel model, TabListItem targetItem) {
+        Comparator<Tab> comparator = mComparator;
+        if (comparator == null) return super.getInsertionIndex(model, targetItem);
+
+        Tab targetTab = getTabForItem(targetItem);
+        if (targetTab == null) return TabList.INVALID_TAB_INDEX;
+
+        // Keep mItems sorted by the comparator: return the first index whose tab compares greater
+        // than the target tab, or the end of the list.
+        for (int i = 0; i < mItems.size(); i++) {
+            Tab tab = getTabForItem(mItems.get(i));
+            if (tab != null && comparator.compare(targetTab, tab) < 0) return i;
+        }
+        return mItems.size();
+    }
+
+    /** Returns the tab shown by {@code item}, or null if it isn't a tab card or isn't found. */
+    private @Nullable Tab getTabForItem(TabListItem item) {
+        return item instanceof TabItem tabItem ? getTabById(tabItem.getTabId()) : null;
     }
 }

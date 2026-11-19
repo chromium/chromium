@@ -133,7 +133,36 @@ public abstract class TabListDataProvider {
         return tabModel.isTabStateInitialized() ? tabModel : null;
     }
 
-    /** Rebuilds {@link #mItems} from the current {@link TabModel}. */
+    /** Returns a read-only view of the observed models, in the order they were attached. */
+    protected List<TabModel> getAttachedTabModels() {
+        return Collections.unmodifiableList(mAttachedTabModels);
+    }
+
+    /**
+     * Returns the tab with {@code tabId} from the observed models, checking them in order and
+     * skipping models whose tab state isn't initialized yet, or null if none has it.
+     *
+     * @param tabId The ID of the tab to find.
+     */
+    protected @Nullable Tab getTabById(@TabId int tabId) {
+        if (tabId == Tab.INVALID_TAB_ID) return null;
+        for (TabModel model : mAttachedTabModels) {
+            if (!model.isTabStateInitialized()) continue;
+            Tab tab = model.getTabById(tabId);
+            if (tab != null) return tab;
+        }
+        return null;
+    }
+
+    /** Returns the tab to highlight in the list, or null if there is none. */
+    protected @Nullable Tab getSelectedTab() {
+        // TODO(crbug.com/587126481): The highlight comes from the first model for now; let the host
+        // choose which model drives it, or none.
+        TabModel model = getTabModelIfTabStateInitialized();
+        return model == null ? null : TabModelUtils.getCurrentTab(model);
+    }
+
+    /** Rebuilds {@link #mItems} from the attached {@link TabModel}s. */
     protected abstract void rebuildItems();
 
     /**
@@ -187,7 +216,7 @@ public abstract class TabListDataProvider {
     /**
      * Creates a {@link TabItem} from the given {@link Tab}.
      *
-     * @param selectedTab The currently selected {@link Tab} in the model, or null if none.
+     * @param selectedTab The tab to highlight, from {@link #getSelectedTab()}, or null if none.
      * @param tab The {@link Tab} to convert.
      * @return A new {@link TabItem} representing {@code tab}.
      */
@@ -216,7 +245,7 @@ public abstract class TabListDataProvider {
         TabModel model = getTabModelIfTabStateInitialized();
         if (model == null) return;
 
-        insertItem(model, createTabItem(TabModelUtils.getCurrentTab(model), tab));
+        insertItem(model, createTabItem(getSelectedTab(), tab));
     }
 
     /**
@@ -241,7 +270,9 @@ public abstract class TabListDataProvider {
         }
 
         TabItem existingItem = (TabItem) mItems.get(fromIndex);
-        moveItemsAt(fromIndex, /* count= */ 1);
+        // Go through moveTabItem so subclasses that keep their own order (e.g. Flat with a
+        // comparator) can leave the card in place.
+        moveTabItem(tab);
         return existingItem;
     }
 
@@ -505,7 +536,15 @@ public abstract class TabListDataProvider {
         return TabList.INVALID_TAB_INDEX;
     }
 
-    private int getInsertionIndex(TabModel model, TabListItem targetItem) {
+    /**
+     * Returns the index in {@link #mItems} where {@code targetItem} belongs, based on {@code
+     * model}'s tab order, or {@link TabList#INVALID_TAB_INDEX} if it has no position. Subclasses
+     * can override to use a different order.
+     *
+     * @param model The {@link TabModel} whose tab order positions the item.
+     * @param targetItem The item to position. It is not in {@link #mItems} when this is called.
+     */
+    protected int getInsertionIndex(TabModel model, TabListItem targetItem) {
         int itemIndex = 0;
         for (Tab tab : model) {
             int tabId = tab.getId();

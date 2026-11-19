@@ -32,6 +32,7 @@ import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -1011,6 +1012,135 @@ public class FlatTabListDataProviderUnitTest extends TabListDataProviderTestBase
     }
 
     // ============================================================================================
+    // Comparator Tests
+    // ============================================================================================
+
+    @Test
+    public void testComparator_SingleModel_SortsByComparator() {
+        mModelTabs.addAll(List.of(mTab1, mTab2, mTab3));
+        setUpSortedProvider(mTabModel);
+
+        assertItems(item(TAB3_ID), item(TAB2_ID), item(TAB1_ID));
+    }
+
+    @Test
+    public void testComparator_Rebuild_SortsTabsFromAllModels() {
+        mModelTabs.addAll(List.of(mTab1, mTab3));
+        mOtherModelTabs.addAll(List.of(mTab2, mTab4));
+        setUpSortedProvider(mTabModel, mOtherTabModel);
+
+        assertItems(item(TAB4_ID), item(TAB3_ID), item(TAB2_ID), item(TAB1_ID));
+    }
+
+    @Test
+    public void testComparator_Rebuild_ShowsRepeatedTabIdOnce() {
+        // The second model holds a different Tab object with the same ID.
+        MockTab otherTab2 = new MockTab(TAB2_ID, /* profile= */ null);
+        otherTab2.setIsPinned(true);
+        mModelTabs.addAll(List.of(mTab1, mTab2));
+        mOtherModelTabs.add(otherTab2);
+        setUpSortedProvider(mTabModel, mOtherTabModel);
+
+        // The first model's copy wins, so the card isn't pinned.
+        assertItems(item(TAB2_ID), item(TAB1_ID));
+    }
+
+    @Test
+    public void testComparator_Rebuild_FilteredOutFirstCopyHidesRepeatedTabId() {
+        // The filter shows pinned tabs. The first model's copy of TAB2_ID isn't pinned, while the
+        // second model's copy is.
+        MockTab otherTab2 = new MockTab(TAB2_ID, /* profile= */ null);
+        otherTab2.setIsPinned(true);
+        mTab1.setIsPinned(true);
+        mModelTabs.addAll(List.of(mTab1, mTab2));
+        mOtherModelTabs.add(otherTab2);
+        mTabModelListSupplier =
+                ObservableSuppliers.createNonNull(List.of(mTabModel, mOtherTabModel));
+        initProvider(
+                new FlatTabListDataProvider(
+                        mTabModelListSupplier,
+                        Tab::getIsPinned,
+                        (a, b) -> Integer.compare(b.getId(), a.getId()),
+                        /* supportsMultipleModels= */ true));
+        mProvider.requestDataReset();
+
+        // The first model's copy is checked before the filter, so TAB2_ID gets no card.
+        assertItems(pinned(TAB1_ID));
+    }
+
+    @Test
+    public void testComparator_Rebuild_SkipsModelThatHasNotLoaded() {
+        when(mOtherTabModel.isTabStateInitialized()).thenReturn(false);
+        mModelTabs.addAll(List.of(mTab1, mTab3));
+        mOtherModelTabs.addAll(List.of(mTab2, mTab4));
+        setUpSortedProvider(mTabModel, mOtherTabModel);
+        assertItems(item(TAB3_ID), item(TAB1_ID));
+
+        when(mOtherTabModel.isTabStateInitialized()).thenReturn(true);
+        mTabModelObserver.restoreCompleted();
+
+        assertItems(item(TAB4_ID), item(TAB3_ID), item(TAB2_ID), item(TAB1_ID));
+    }
+
+    @Test
+    public void testComparator_AddTabFromSecondModel_InsertsAtStartEndAndMiddle() {
+        mModelTabs.add(mTab2);
+        setUpSortedProvider(mTabModel, mOtherTabModel);
+
+        // Sorts first, so it has no previous item.
+        addTabToOtherModel(mTab4);
+        verify(mObserver).onItemsInserted(List.of(item(TAB4_ID)), null);
+        assertItems(item(TAB4_ID), item(TAB2_ID));
+
+        // Sorts last.
+        addTabToOtherModel(mTab1);
+        verify(mObserver).onItemsInserted(List.of(item(TAB1_ID)), item(TAB2_ID));
+        assertItems(item(TAB4_ID), item(TAB2_ID), item(TAB1_ID));
+
+        // Sorts in the middle, though it's at the end of its own model.
+        addTabToOtherModel(mTab3);
+        verify(mObserver).onItemsInserted(List.of(item(TAB3_ID)), item(TAB4_ID));
+        assertItems(item(TAB4_ID), item(TAB3_ID), item(TAB2_ID), item(TAB1_ID));
+    }
+
+    @Test
+    public void testComparator_ModelMove_KeepsCardInPlace() {
+        // Every tab compares equal, so re-placing the moved card would put it after the others.
+        mModelTabs.addAll(List.of(mTab1, mTab2, mTab3));
+        setUpProviderWithComparator((a, b) -> 0, mTabModel);
+
+        moveTab(mTab1, /* newIndex= */ 2);
+
+        assertItems(item(TAB1_ID), item(TAB2_ID), item(TAB3_ID));
+        verify(mObserver, never()).onItemsMoved(any(), any());
+    }
+
+    @Test
+    public void testComparator_MoveWithinGroup_KeepsCardInPlace() {
+        mTab1.setTabGroupId(TAB_GROUP_ID);
+        mTab2.setTabGroupId(TAB_GROUP_ID);
+        mModelTabs.addAll(List.of(mTab1, mTab2, mTab3));
+        setUpProviderWithComparator((a, b) -> 0, mTabModel);
+
+        moveTabWithinGroup(mTab1, /* newIndex= */ 1);
+
+        assertItems(item(TAB1_ID), item(TAB2_ID), item(TAB3_ID));
+        verify(mObserver, never()).onItemsMoved(any(), any());
+    }
+
+    @Test
+    public void testComparator_GroupJoinAndLeave_KeepsTiedCardsInPlace() {
+        mModelTabs.addAll(List.of(mTab1, mTab2));
+        setUpProviderWithComparator((a, b) -> 0, mTabModel);
+
+        mergeTabToGroup(mTab1, TAB_GROUP_ID, /* newIndex= */ 0, /* isDestinationTab= */ true);
+        ungroupTab(mTab1, TAB_GROUP_ID, /* newIndex= */ 0);
+
+        assertItems(item(TAB1_ID), item(TAB2_ID));
+        verify(mObserver, never()).onItemsMoved(any(), any());
+    }
+
+    // ============================================================================================
     // Test Helpers
     // ============================================================================================
 
@@ -1074,5 +1204,15 @@ public class FlatTabListDataProviderUnitTest extends TabListDataProviderTestBase
             verify(model, times(times)).removeObserver(mTabModelObserver);
             verify(model, times(times)).removeTabGroupObserver(mTabGroupObserver);
         }
+    }
+
+    /** Adds {@code tab} to the end of the second model and notifies the provider. */
+    private void addTabToOtherModel(Tab tab) {
+        mOtherModelTabs.add(tab);
+        mTabModelObserver.didAddTab(
+                tab,
+                TabLaunchType.FROM_CHROME_UI,
+                TabCreationState.LIVE_IN_FOREGROUND,
+                /* markedForSelection= */ false);
     }
 }
