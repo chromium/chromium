@@ -213,6 +213,11 @@ class MediaTest : public testing::WithParamInterface<bool>,
   }
 };
 
+// Audio playback and load errors never create a video decoder, so these tests
+// do not need to run once per is_accelerated() value.
+class MediaAudioTest : public MediaTest {};
+class MediaErrorTest : public MediaTest {};
+
 IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearWebm) {
   PlayVideo("bear.webm");
 }
@@ -221,19 +226,19 @@ IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearWebm_FileProtocol) {
   PlayVideo("bear.webm", false);
 }
 
-IN_PROC_BROWSER_TEST_P(MediaTest, AudioBearOpusWebm) {
+IN_PROC_BROWSER_TEST_P(MediaAudioTest, AudioBearOpusWebm) {
   PlayAudio("bear-opus.webm");
 }
 
-IN_PROC_BROWSER_TEST_P(MediaTest, AudioBearOpusMp4) {
+IN_PROC_BROWSER_TEST_P(MediaAudioTest, AudioBearOpusMp4) {
   PlayAudio("bear-opus.mp4");
 }
 
-IN_PROC_BROWSER_TEST_P(MediaTest, AudioBearOpusOgg) {
+IN_PROC_BROWSER_TEST_P(MediaAudioTest, AudioBearOpusOgg) {
   PlayAudio("bear-opus.ogg");
 }
 
-IN_PROC_BROWSER_TEST_P(MediaTest, AudioBearOpusOgg_FileProtocol) {
+IN_PROC_BROWSER_TEST_P(MediaAudioTest, AudioBearOpusOgg_FileProtocol) {
   PlayAudio("bear-opus.ogg", false);
 }
 
@@ -274,19 +279,19 @@ IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearMp4Vp9) {
   PlayVideo("bear-320x240-v_frag-vp9.mp4");
 }
 
-IN_PROC_BROWSER_TEST_P(MediaTest, AudioBearFlacMp4) {
+IN_PROC_BROWSER_TEST_P(MediaAudioTest, AudioBearFlacMp4) {
   PlayAudio("bear-flac.mp4");
 }
 
-IN_PROC_BROWSER_TEST_P(MediaTest, AudioBearFlac192kHzMp4) {
+IN_PROC_BROWSER_TEST_P(MediaAudioTest, AudioBearFlac192kHzMp4) {
   PlayAudio("bear-flac-192kHz.mp4");
 }
 
-IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearMovPcmS16be) {
+IN_PROC_BROWSER_TEST_P(MediaAudioTest, VideoBearMovPcmS16be) {
   PlayAudio("bear_pcm_s16be.mov");
 }
 
-IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearMovPcmS24be) {
+IN_PROC_BROWSER_TEST_P(MediaAudioTest, VideoBearMovPcmS24be) {
   PlayAudio("bear_pcm_s24be.mov");
 }
 
@@ -416,23 +421,23 @@ IN_PROC_BROWSER_TEST_P(MediaTest, MAYBE_LoadManyVideos) {
 }
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 
-IN_PROC_BROWSER_TEST_P(MediaTest, AudioBearFlac) {
+IN_PROC_BROWSER_TEST_P(MediaAudioTest, AudioBearFlac) {
   PlayAudio("bear.flac");
 }
 
-IN_PROC_BROWSER_TEST_P(MediaTest, AudioBearFlacOgg) {
+IN_PROC_BROWSER_TEST_P(MediaAudioTest, AudioBearFlacOgg) {
   PlayAudio("bear-flac.ogg");
 }
 
-IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearWavAlaw) {
+IN_PROC_BROWSER_TEST_P(MediaAudioTest, VideoBearWavAlaw) {
   PlayAudio("bear_alaw.wav");
 }
 
-IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearWavMulaw) {
+IN_PROC_BROWSER_TEST_P(MediaAudioTest, VideoBearWavMulaw) {
   PlayAudio("bear_mulaw.wav");
 }
 
-IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearWavPcm) {
+IN_PROC_BROWSER_TEST_P(MediaAudioTest, VideoBearWavPcm) {
   PlayAudio("bear_pcm.wav");
 }
 
@@ -443,11 +448,11 @@ IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearWavPcm) {
 #else
 #define MAYBE_VideoBearWavPcm3kHz VideoBearWavPcm3kHz
 #endif
-IN_PROC_BROWSER_TEST_P(MediaTest, MAYBE_VideoBearWavPcm3kHz) {
+IN_PROC_BROWSER_TEST_P(MediaAudioTest, MAYBE_VideoBearWavPcm3kHz) {
   PlayAudio("bear_3kHz.wav");
 }
 
-IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearWavPcm192kHz) {
+IN_PROC_BROWSER_TEST_P(MediaAudioTest, VideoBearWavPcm192kHz) {
   PlayAudio("bear_192kHz.wav");
 }
 
@@ -459,16 +464,16 @@ IN_PROC_BROWSER_TEST_P(MediaTest, VideoEbu3213Primary) {
   PlayVideo("ebu-3213-e-vp9.mp4");
 }
 
-IN_PROC_BROWSER_TEST_P(MediaTest, VideoErrorMissingResource) {
+IN_PROC_BROWSER_TEST_P(MediaErrorTest, VideoErrorMissingResource) {
   RunErrorMessageTest("video", "nonexistent_file.webm",
                       "MEDIA_ELEMENT_ERROR: Format error");
 }
 
-IN_PROC_BROWSER_TEST_P(MediaTest, VideoErrorEmptySrcAttribute) {
+IN_PROC_BROWSER_TEST_P(MediaErrorTest, VideoErrorEmptySrcAttribute) {
   RunErrorMessageTest("video", "", "MEDIA_ELEMENT_ERROR: Empty src attribute");
 }
 
-IN_PROC_BROWSER_TEST_P(MediaTest, VideoErrorNoSupportedStreams) {
+IN_PROC_BROWSER_TEST_P(MediaErrorTest, VideoErrorNoSupportedStreams) {
   RunErrorMessageTest("video", "no_streams.webm",
                       "DEMUXER_ERROR_NO_SUPPORTED_STREAMS: FFmpegDemuxer: no "
                       "supported streams");
@@ -481,7 +486,7 @@ IN_PROC_BROWSER_TEST_P(MediaTest, Navigate) {
   EXPECT_FALSE(shell()->web_contents()->IsCrashed());
 }
 
-IN_PROC_BROWSER_TEST_P(MediaTest, AudioOnly_XHE_AAC_MP4) {
+IN_PROC_BROWSER_TEST_P(MediaAudioTest, AudioOnly_XHE_AAC_MP4) {
   if (media::IsDecoderSupportedAudioType(
           {media::AudioCodec::kAAC, media::AudioCodecProfile::kXHE_AAC})) {
     PlayAudio("noise-xhe-aac.mp4");
@@ -489,5 +494,7 @@ IN_PROC_BROWSER_TEST_P(MediaTest, AudioOnly_XHE_AAC_MP4) {
 }
 
 INSTANTIATE_TEST_SUITE_P(Default, MediaTest, ::testing::Bool());
+INSTANTIATE_TEST_SUITE_P(Default, MediaAudioTest, ::testing::Values(true));
+INSTANTIATE_TEST_SUITE_P(Default, MediaErrorTest, ::testing::Values(true));
 
 }  // namespace content
