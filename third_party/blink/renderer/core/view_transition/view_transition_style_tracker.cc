@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
+#include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/first_letter_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/node.h"
@@ -1696,6 +1697,12 @@ bool ViewTransitionStyleTracker::RunPostPrePaintStepsForElement(
   DCHECK(scope);
   auto* layout_object = element_data->target_element->GetLayoutObject();
   if (!layout_object) {
+    return false;
+  }
+
+  // End the transition if the element has become skipped content.
+  // https://drafts.csswg.org/css-view-transitions-1/#update-pseudo-element-styles
+  if (DisplayLockUtilities::IsDisplayLockedPreventingPaint(layout_object)) {
     return false;
   }
 
