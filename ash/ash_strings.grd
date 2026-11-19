@@ -12493,6 +12493,14 @@ You can manage this account’s settings by installing the Family Link app on yo
       <message name="IDS_CROSUSB_NOTIFICATION_OR" desc="Word between multiple VM names in notification shown to user when a USB device gets plugged in.">
         or
       </message>
+
+      <!-- Input overlay strings -->
+      <message name="IDS_INPUT_OVERLAY_EDIT_MISSING_BINDING" desc="Text presented via a toltip so the user is aware of an incomplete key-binding.">
+        Key is missing. Press a keyboard key to customize
+      </message>
+      <message name="IDS_INPUT_OVERLAY_EDIT_RESERVED_KEYS" desc="Text informing the user about keys not available for binding.">
+        The following keys aren’t supported: Tab, Shift, Control, Escape, Caps lock, Volume
+      </message>
     </messages>
   </release>
 </grit>

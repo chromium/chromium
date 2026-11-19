@@ -17464,16 +17464,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
       Sign up with <ph name="IDP_NAME">$1<ex>google.com</ex></ph>
     </message>
 
-    <!-- Input overlay strings -->
-    <if expr="is_chromeos">
-      <message name="IDS_INPUT_OVERLAY_EDIT_MISSING_BINDING" desc="Text presented via a toltip so the user is aware of an incomplete key-binding.">
-        Key is missing. Press a keyboard key to customize
-      </message>
-      <message name="IDS_INPUT_OVERLAY_EDIT_RESERVED_KEYS" desc="Text informing the user about keys not available for binding.">
-        The following keys aren’t supported: Tab, Shift, Control, Escape, Caps lock, Volume
-      </message>
-    </if>
-
     <!-- Battery Saver Toolbar strings  -->
     <if expr="not is_android">
       <message name="IDS_BATTERY_SAVER_BUTTON_TOOLTIP" desc="The tooltip for the battery saver toolbar button">
