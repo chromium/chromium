@@ -154,9 +154,11 @@ class BrowserAnimationControllerTest : public testing::Test {
     return t;
   }
 
-  void FastForwardMs(int ms) {
-    task_environment_.FastForwardBy(base::Milliseconds(ms));
+  void FastForward(base::TimeDelta duration) {
+    task_environment_.FastForwardBy(duration);
   }
+
+  void FastForwardMs(int ms) { FastForward(base::Milliseconds(ms)); }
 
  protected:
   gfx::AnimationTestApi::RenderModeResetter animation_mode_reset_ =
@@ -1177,16 +1179,22 @@ namespace {
 
 class ResetAnimationProvider : public SingleGroupAnimationProvider {
  public:
+  static constexpr base::TimeDelta kTestMotionDuration = base::Seconds(1);
+
   ResetAnimationProvider() {
     SetSequenceParams(Persist(kTestAnimationSequence1),
                       Persist(kTestAnimationSequence2));
   }
   std::vector<MotionInfo> GetMotions() const override {
     return {
-        Motion(kTestAnimationMotion1, TotalDurationMs(1000), gfx::Tween::LINEAR,
+        Motion(kTestAnimationMotion1,
+               TotalDurationMs(kTestMotionDuration.InMilliseconds()),
+               gfx::Tween::LINEAR,
                Animate(kTestAnimationSequence1, FromValue(0.0), ToValue(1.0)),
                Animate(kTestAnimationSequence2, FromValue(1.0), ToValue(0.0))),
-        Motion(kTestAnimationMotion2, TotalDurationMs(1000), gfx::Tween::LINEAR,
+        Motion(kTestAnimationMotion2,
+               TotalDurationMs(kTestMotionDuration.InMilliseconds()),
+               gfx::Tween::LINEAR,
                Sequence(kTestAnimationSequence1,
                         Keyframe(AtPercent(0.25), Value(0.25)),
                         Keyframe(AtPercent(0.75), Value(0.75))),
@@ -1229,7 +1237,7 @@ TEST_F(BrowserAnimationControllerTest, Reset_MidMotion_NoMotionSpecified) {
   EXPECT_CALL(callback, Run(testing::_, BrowserAnimationUpdate::kProgressed))
       .Times(testing::AnyNumber());
   controller()->Start(kTestAnimationGroup, kTestAnimationMotion1);
-  FastForwardMs(500);
+  FastForward(ResetAnimationProvider::kTestMotionDuration / 2);
   EXPECT_CALL_IN_SCOPE(callback,
                        Run(testing::_, BrowserAnimationUpdate::kEnded),
                        controller()->Reset(kTestAnimationGroup));
@@ -1237,6 +1245,8 @@ TEST_F(BrowserAnimationControllerTest, Reset_MidMotion_NoMotionSpecified) {
                                                kTestAnimationSequence1));
   EXPECT_EQ(0.0, controller()->GetCurrentValue(kTestAnimationGroup,
                                                kTestAnimationSequence2));
+  testing::Mock::VerifyAndClearExpectations(&callback);
+  FastForward(ResetAnimationProvider::kTestMotionDuration);
 }
 
 TEST_F(BrowserAnimationControllerTest, Reset_MidMotion_DifferentMotion) {
@@ -1249,7 +1259,7 @@ TEST_F(BrowserAnimationControllerTest, Reset_MidMotion_DifferentMotion) {
   EXPECT_CALL(callback, Run(testing::_, BrowserAnimationUpdate::kProgressed))
       .Times(testing::AnyNumber());
   controller()->Start(kTestAnimationGroup, kTestAnimationMotion1);
-  FastForwardMs(500);
+  FastForward(ResetAnimationProvider::kTestMotionDuration / 2);
 
   testing::InSequence in_sequence;
   EXPECT_CALL(callback, Run(testing::_, BrowserAnimationUpdate::kCanceled))
@@ -1281,7 +1291,7 @@ TEST_F(BrowserAnimationControllerTest, Reset_MidMotion_SameMotion) {
   EXPECT_CALL(callback, Run(testing::_, BrowserAnimationUpdate::kProgressed))
       .Times(testing::AnyNumber());
   controller()->Start(kTestAnimationGroup, kTestAnimationMotion1);
-  FastForwardMs(500);
+  FastForward(ResetAnimationProvider::kTestMotionDuration / 2);
   EXPECT_CALL_IN_SCOPE(
       callback, Run(testing::_, BrowserAnimationUpdate::kEnded),
       controller()->Reset(kTestAnimationGroup, kTestAnimationMotion1));
@@ -1289,6 +1299,8 @@ TEST_F(BrowserAnimationControllerTest, Reset_MidMotion_SameMotion) {
                                                kTestAnimationSequence1));
   EXPECT_EQ(0.0, controller()->GetCurrentValue(kTestAnimationGroup,
                                                kTestAnimationSequence2));
+  testing::Mock::VerifyAndClearExpectations(&callback);
+  FastForward(ResetAnimationProvider::kTestMotionDuration);
 }
 
 TEST_F(BrowserAnimationControllerTest, Reset_NoMotion_NoMotionSpecified) {

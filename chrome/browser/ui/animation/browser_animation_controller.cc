@@ -509,6 +509,12 @@ class BrowserAnimationController::GroupData : public gfx::AnimationDelegate {
       OnCancel(params);
       current_motion_ = motion;
       current_motion_info_ = std::move(motion_info);
+    } else {
+      // Prevent `OnAnimationEnded()` from logging an incomplete motion.
+      logger_.reset();
+      if (animator_) {
+        animator_->Stop();
+      }
     }
     OnAnimationEnded(params);
   }
