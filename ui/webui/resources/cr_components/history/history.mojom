@@ -166,6 +166,8 @@ enum CriticalActionType {
   kFederatedLogin = 6,
   kCredentialsOtp = 7,
   kWebMcpTool = 8,
+  kFormFillContactInfo = 9,
+  kFormFillPayments = 10,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/critical_actions/enums.xml:CriticalActionType)
 

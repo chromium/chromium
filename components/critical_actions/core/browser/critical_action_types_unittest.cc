@@ -28,6 +28,22 @@ TEST(CriticalActionTypesTest, LabelsAndTooltipsForActionTypes) {
   EXPECT_EQ(form_action.GetTooltip(),
             l10n_util::GetStringUTF8(IDS_HISTORY_CRITICAL_ACTION_FORM_TOOLTIP));
 
+  CriticalActionEntry contact_info_action;
+  contact_info_action.action_type = ActionType::kFormFillContactInfo;
+  EXPECT_EQ(contact_info_action.GetLabel(),
+            l10n_util::GetStringUTF8(IDS_HISTORY_CRITICAL_ACTION_FORM_FILLED));
+  EXPECT_EQ(contact_info_action.GetTooltip(),
+            l10n_util::GetStringUTF8(IDS_HISTORY_CRITICAL_ACTION_FORM_TOOLTIP));
+
+  CriticalActionEntry payments_action;
+  payments_action.action_type = ActionType::kFormFillPayments;
+  EXPECT_EQ(payments_action.GetLabel(),
+            l10n_util::GetStringUTF8(
+                IDS_HISTORY_CRITICAL_ACTION_CARD_DETAILS_FILLED));
+  EXPECT_EQ(
+      payments_action.GetTooltip(),
+      l10n_util::GetStringUTF8(IDS_HISTORY_CRITICAL_ACTION_PAYMENTS_TOOLTIP));
+
   CriticalActionEntry download_action;
   download_action.action_type = ActionType::kDownload;
   EXPECT_EQ(download_action.GetLabel(),

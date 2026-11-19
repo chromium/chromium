@@ -102,6 +102,11 @@ std::string GetActionMetadata(const ToolRequest& action,
     case critical_actions::ActionType::kCredentialsOtp:
     case critical_actions::ActionType::kUnknown:
       return "";
+    // TODO(b/582250026): Return the requested form fill attributes once the
+    // actor logs these types instead of kFormFill.
+    case critical_actions::ActionType::kFormFillContactInfo:
+    case critical_actions::ActionType::kFormFillPayments:
+      return "";
   }
 }
 

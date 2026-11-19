@@ -21,6 +21,8 @@ namespace critical_actions {
 // LINT.IfChange(CriticalActionType)
 enum class ActionType {
   kUnknown = 0,
+  // Legacy generic form fill, superseded by the form fill groups below.
+  // Existing rows keep this type. Don't use it in new code.
   kFormFill = 1,
   kDownload = 2,
   kSettingChange = 3,
@@ -29,7 +31,13 @@ enum class ActionType {
   kFederatedLogin = 6,
   kCredentialsOtp = 7,
   kWebMcpTool = 8,
-  kMaxValue = kWebMcpTool,
+  // Form fill groups mirroring the "Your saved info" settings pages. These
+  // supersede the legacy `kFormFill` type:
+  // - `kFormFillContactInfo`: address, name, email, phone number.
+  // - `kFormFillPayments`: card details.
+  kFormFillContactInfo = 9,
+  kFormFillPayments = 10,
+  kMaxValue = kFormFillPayments,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/critical_actions/enums.xml:CriticalActionType)
 

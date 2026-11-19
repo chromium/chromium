@@ -67,6 +67,8 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="FederatedLogin"/>
   <int value="7" label="CredentialsOtp"/>
   <int value="8" label="WebMcpTool"/>
+  <int value="9" label="FormFillContactInfo"/>
+  <int value="10" label="FormFillPayments"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/critical_actions/core/browser/critical_action_types.h:CriticalActionType, //ui/webui/resources/cr_components/history/history.mojom:CriticalActionType) -->

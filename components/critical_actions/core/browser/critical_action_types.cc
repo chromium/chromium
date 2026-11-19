@@ -41,7 +41,11 @@ std::string CriticalActionEntry::GetLabel() const {
       return l10n_util::GetStringUTF8(
           IDS_HISTORY_CRITICAL_ACTION_CREDENTIALS_OTP);
     case ActionType::kFormFill:
+    case ActionType::kFormFillContactInfo:
       return l10n_util::GetStringUTF8(IDS_HISTORY_CRITICAL_ACTION_FORM_FILLED);
+    case ActionType::kFormFillPayments:
+      return l10n_util::GetStringUTF8(
+          IDS_HISTORY_CRITICAL_ACTION_CARD_DETAILS_FILLED);
     case ActionType::kDownload:
       return l10n_util::GetStringUTF8(IDS_HISTORY_CRITICAL_ACTION_DOWNLOAD);
     case ActionType::kSettingChange:
@@ -84,7 +88,11 @@ std::string CriticalActionEntry::GetTooltip() const {
       return l10n_util::GetStringUTF8(
           IDS_HISTORY_CRITICAL_ACTION_CREDENTIALS_OTP_TOOLTIP);
     case ActionType::kFormFill:
+    case ActionType::kFormFillContactInfo:
       return l10n_util::GetStringUTF8(IDS_HISTORY_CRITICAL_ACTION_FORM_TOOLTIP);
+    case ActionType::kFormFillPayments:
+      return l10n_util::GetStringUTF8(
+          IDS_HISTORY_CRITICAL_ACTION_PAYMENTS_TOOLTIP);
     case ActionType::kDownload:
       return l10n_util::GetStringUTF8(
           IDS_HISTORY_CRITICAL_ACTION_DOWNLOAD_TOOLTIP);

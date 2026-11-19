@@ -6,8 +6,10 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/strings/strcat.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/critical_actions/core/browser/critical_action_types.h"
@@ -17,6 +19,15 @@
 
 namespace critical_actions {
 namespace {
+
+// Android settings has no /contactInfo route, so it links to /addresses.
+#if BUILDFLAG(IS_ANDROID)
+constexpr std::string_view kExpectedContactInfoSubPage =
+    chrome::kAddressesSubPage;
+#else
+constexpr std::string_view kExpectedContactInfoSubPage =
+    chrome::kContactInfoSubPage;
+#endif
 
 TEST(CriticalActionUiUtilsTest, PasswordManagerLinkoutDomainExtraction) {
   EXPECT_EQ(
@@ -43,7 +54,19 @@ TEST(CriticalActionUiUtilsTest, LinkoutsForActionTypes) {
   EXPECT_EQ(
       GetCriticalActionLinkoutUrl(ActionType::kFormFill,
                                   GURL("https://www.example.com/checkout")),
-      base::StrCat({chrome::kChromeUISettingsURL, chrome::kAddressesSubPage}));
+      base::StrCat(
+          {chrome::kChromeUISettingsURL, kExpectedContactInfoSubPage}));
+
+  EXPECT_EQ(
+      GetCriticalActionLinkoutUrl(ActionType::kFormFillContactInfo,
+                                  GURL("https://www.example.com/checkout")),
+      base::StrCat(
+          {chrome::kChromeUISettingsURL, kExpectedContactInfoSubPage}));
+
+  EXPECT_EQ(
+      GetCriticalActionLinkoutUrl(ActionType::kFormFillPayments,
+                                  GURL("https://www.example.com/checkout")),
+      base::StrCat({chrome::kChromeUISettingsURL, chrome::kPaymentsSubPage}));
 
   EXPECT_EQ(GetCriticalActionLinkoutUrl(ActionType::kDownload,
                                         GURL("https://www.example.com/file")),
