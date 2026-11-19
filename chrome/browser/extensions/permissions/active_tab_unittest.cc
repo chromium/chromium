@@ -34,6 +34,7 @@
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/web_contents_tester.h"
 #include "extensions/browser/disable_reason.h"
+#include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
@@ -1054,6 +1055,55 @@ TEST_F(ActiveTabTest, GrantRejectedWhileLoadingBeforeFirstPaint) {
   EXPECT_TRUE(active_tab_permission_granter()->IsGranted(extension.get()));
   EXPECT_TRUE(IsAllowed(extension, example));
   EXPECT_TRUE(HasTabsPermission(extension));
+}
+
+// Tests that `GrantIfRequested()` does not grant tab-specific permissions on an
+// off-the-record tab unless the extension is enabled in incognito, while still
+// invoking `on_granted` asynchronously.
+TEST_F(ActiveTabTest, IncognitoRequiresExtensionEnabled) {
+  Profile* otr_profile =
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  ASSERT_TRUE(otr_profile);
+
+  std::unique_ptr<content::WebContents> otr_web_contents =
+      content::WebContentsTester::CreateTestWebContents(otr_profile, nullptr);
+  ASSERT_TRUE(otr_web_contents);
+  TabHelper::CreateForWebContents(otr_web_contents.get());
+
+  const GURL google("http://www.google.com");
+  content::WebContentsTester::For(otr_web_contents.get())
+      ->NavigateAndCommit(google);
+
+  ActiveTabPermissionGranter* otr_granter =
+      ActiveTabPermissionGranter::FromWebContents(otr_web_contents.get());
+  ASSERT_TRUE(otr_granter);
+  const int otr_tab_id =
+      sessions::SessionTabHelper::IdForTab(otr_web_contents.get()).id();
+
+  TestPermissionsManagerObserver observer(PermissionsManager::Get(profile()));
+  ASSERT_FALSE(util::IsIncognitoEnabled(extension.get(), otr_profile));
+
+  base::test::TestFuture<void> denied;
+  otr_granter->GrantIfRequested(extension.get(), denied.GetCallback());
+  EXPECT_FALSE(denied.IsReady());
+  EXPECT_TRUE(denied.Wait());
+  EXPECT_FALSE(otr_granter->IsGranted(extension.get()));
+  EXPECT_TRUE(IsBlocked(extension, google, otr_tab_id));
+  EXPECT_FALSE(HasTabsPermission(extension, otr_tab_id));
+  EXPECT_EQ(0, observer.active_tab_granted_count());
+
+  // Once incognito access is enabled, GrantIfRequested grants permissions on
+  // the off-the-record tab.
+  ExtensionPrefs::Get(profile())->SetIsIncognitoEnabled(extension->id(), true);
+  ASSERT_TRUE(util::IsIncognitoEnabled(extension.get(), otr_profile));
+
+  base::test::TestFuture<void> granted;
+  otr_granter->GrantIfRequested(extension.get(), granted.GetCallback());
+  EXPECT_TRUE(granted.Wait());
+  EXPECT_TRUE(otr_granter->IsGranted(extension.get()));
+  EXPECT_TRUE(IsAllowed(extension, google, PERMITTED_BOTH, otr_tab_id));
+  EXPECT_TRUE(HasTabsPermission(extension, otr_tab_id));
+  EXPECT_EQ(1, observer.active_tab_granted_count());
 }
 
 }  // namespace

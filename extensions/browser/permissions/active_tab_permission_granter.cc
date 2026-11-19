@@ -154,6 +154,14 @@ void ActiveTabPermissionGranter::GrantIfRequested(
     base::OnceClosure on_granted) {
   content::BrowserContext* browser_context =
       web_contents()->GetBrowserContext();
+  if (browser_context->IsOffTheRecord() &&
+      !util::IsIncognitoEnabled(extension, browser_context)) {
+    // `on_granted` must still run asynchronously when nothing is granted.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(on_granted));
+    return;
+  }
+
   if (IsGranted(extension)) {
     // If the earlier grant is still on its way to the network service, then
     // wait for it.  Otherwise, the grant has already taken effect everywhere.

@@ -45,7 +45,8 @@ class ActiveTabPermissionGranter
 
   // If `extension` has the activeTab or tabCapture permission, grants
   // tab-specific permissions to it until the next page navigation or refresh,
-  // provided the committed page has either painted or finished loading.
+  // provided the committed page has either painted or finished loading, and
+  // (for off-the-record tabs) `extension` is enabled in incognito.
   //
   // `on_granted` is called (asynchronously) after the grant has taken effect
   // everywhere, including in the network service (where CORS and ORB depend

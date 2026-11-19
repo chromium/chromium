@@ -16,9 +16,6 @@
 #include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
 #include "chrome/browser/ui/ui_features.h"
-#if BUILDFLAG(IS_MAC)
-#include "chrome/browser/ui/views/extensions/extension_keybinding_registry_views.h"
-#endif
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -41,10 +38,18 @@
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/public/common/switches.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "chrome/browser/ui/views/extensions/extension_keybinding_registry_views.h"
+#endif
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "extensions/browser/extension_registry.h"
+#include "extensions/browser/test_extension_registry_observer.h"
 #include "ui/base/base_window.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
@@ -612,6 +617,207 @@ IN_PROC_BROWSER_TEST_F(CommandsApiTest, MediaKeysDoNotGrantActiveTab) {
 
   // Verify that activeTab permission was NOT granted by the media key command.
   EXPECT_FALSE(granter->IsGranted(extension));
+}
+
+// Tests that named and action command shortcuts for an extension not allowed in
+// incognito are ignored in incognito windows (allowing the webpage to receive
+// the key events without losing focus or granting tab-specific permissions),
+// while still working in regular windows and dynamically updating when
+// incognito access is toggled. Regression test for crbug.com/568850674 and
+// crbug.com/563525847.
+IN_PROC_BROWSER_TEST_F(CommandsApiTest,
+                       IncognitoShortcutsIgnoredWhenNotAllowed) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(R"(
+    {
+      "name": "Incognito Shortcuts Test",
+      "version": "1.0",
+      "manifest_version": 3,
+      "permissions": ["activeTab"],
+      "action": {},
+      "background": {
+        "service_worker": "background.js"
+      },
+      "commands": {
+        "_execute_action": {
+          "suggested_key": { "default": "Alt+Shift+J" }
+        },
+        "named-command": {
+          "suggested_key": { "default": "Alt+Shift+K" },
+          "description": "Named command"
+        }
+      }
+    })");
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), R"(
+    chrome.action.onClicked.addListener(() => {
+      chrome.test.sendMessage("action_clicked");
+    });
+    chrome.commands.onCommand.addListener((command) => {
+      chrome.test.sendMessage("command_received:" + command);
+    });
+    chrome.test.sendMessage("ready");
+  )");
+
+  ExtensionTestMessageListener ready_listener("ready");
+  scoped_refptr<const Extension> extension =
+      LoadExtension(test_dir.UnpackedPath(), {.allow_in_incognito = false});
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
+
+  constexpr char kInstallKeyRecorderJs[] = R"(
+    window.recordedKeys = [];
+    window.addEventListener('keydown', (e) => {
+      let key = null;
+      if (e.code === 'KeyJ' || e.keyCode === 74) {
+        key = 'KeyJ';
+      } else if (e.code === 'KeyK' || e.keyCode === 75) {
+        key = 'KeyK';
+      }
+      if (key) {
+        window.recordedKeys.push(
+            (e.altKey ? 'Alt+' : '') + (e.shiftKey ? 'Shift+' : '') + key);
+      }
+    });
+  )";
+
+  const GURL test_url =
+      embedded_test_server()->GetURL("/extensions/test_file.html");
+  BrowserWindowInterface* regular_browser = GetBrowserWindowInterface();
+  ASSERT_TRUE(regular_browser);
+  content::WebContents* regular_web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(regular_web_contents, test_url));
+  content::SimulateEndOfPaintHoldingOnPrimaryMainFrame(regular_web_contents);
+  ASSERT_TRUE(content::ExecJs(regular_web_contents, kInstallKeyRecorderJs));
+
+  content::WebContents* incognito_web_contents =
+      PlatformOpenURLOffTheRecord(profile(), test_url);
+  ASSERT_TRUE(incognito_web_contents);
+  ASSERT_TRUE(content::WaitForLoadStop(incognito_web_contents));
+  // `kAllowPreCommitInput` only disables renderer-side paint-holding; also end
+  // browser-side paint-holding so `RenderInputRouter::FilterInputEvent()` does
+  // not drop key events before the first compositor frame arrives.
+  content::SimulateEndOfPaintHoldingOnPrimaryMainFrame(incognito_web_contents);
+  ASSERT_TRUE(content::ExecJs(incognito_web_contents, kInstallKeyRecorderJs));
+
+  BrowserWindowInterface* incognito_browser =
+      extensions::browser_window_util::GetBrowserForTabContents(
+          *incognito_web_contents);
+  ASSERT_TRUE(incognito_browser);
+
+  auto focus_tab = []([[maybe_unused]] BrowserWindowInterface* target_browser,
+                      content::WebContents* contents) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+    ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(target_browser));
+#endif
+    contents->Focus();
+  };
+  auto take_recorded_keys = [](content::WebContents* contents) {
+    return content::EvalJs(contents, "window.recordedKeys.splice(0).join(',')");
+  };
+  auto send_unintercepted_incognito_key = [&](ui::KeyboardCode key_code) {
+    content::InputEventAckWaiter key_up_ack_waiter(
+        incognito_web_contents->GetPrimaryMainFrame()->GetRenderWidgetHost(),
+        base::BindRepeating(
+            [](ui::KeyboardCode expected_key_code,
+               blink::mojom::InputEventResultSource,
+               blink::mojom::InputEventResultState,
+               const blink::WebInputEvent& event) {
+              return event.GetType() == blink::WebInputEvent::Type::kKeyUp &&
+                     static_cast<const blink::WebKeyboardEvent&>(event)
+                             .windows_key_code == expected_key_code;
+            },
+            key_code));
+    ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
+        incognito_browser, key_code, /*control=*/false, /*shift=*/true,
+        /*alt=*/true, /*command=*/false));
+    key_up_ack_waiter.Wait();
+  };
+
+  TestEventRouterObserver event_observer(
+      EventRouter::Get(incognito_browser->GetProfile()));
+
+  auto expect_incognito_shortcuts_ignored = [&]() {
+    focus_tab(incognito_browser, incognito_web_contents);
+    event_observer.ClearEvents();
+    send_unintercepted_incognito_key(ui::VKEY_K);
+    send_unintercepted_incognito_key(ui::VKEY_J);
+    EXPECT_EQ("Alt+Shift+KeyK,Alt+Shift+KeyJ",
+              take_recorded_keys(incognito_web_contents));
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+    EXPECT_EQ(true,
+              content::EvalJs(incognito_web_contents, "document.hasFocus()"));
+#endif
+    EXPECT_FALSE(event_observer.events().contains("commands.onCommand"));
+    EXPECT_FALSE(event_observer.events().contains("action.onClicked"));
+    EXPECT_FALSE(IsGrantedForTab(extension.get(), incognito_web_contents));
+  };
+
+  auto expect_shortcuts_handled = [&](BrowserWindowInterface* target_browser,
+                                      content::WebContents* contents) {
+    focus_tab(target_browser, contents);
+    ExtensionTestMessageListener command_listener(
+        "command_received:named-command");
+    ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
+        target_browser, ui::VKEY_K, /*control=*/false, /*shift=*/true,
+        /*alt=*/true, /*command=*/false));
+    EXPECT_TRUE(command_listener.WaitUntilSatisfied());
+
+    ExtensionTestMessageListener action_listener("action_clicked");
+    ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
+        target_browser, ui::VKEY_J, /*control=*/false, /*shift=*/true,
+        /*alt=*/true, /*command=*/false));
+    EXPECT_TRUE(action_listener.WaitUntilSatisfied());
+
+    EXPECT_EQ("", take_recorded_keys(contents));
+    EXPECT_TRUE(IsGrantedForTab(extension.get(), contents));
+  };
+
+  // Disabled in incognito: both shortcuts pass through to the webpage without
+  // losing focus, dispatching extension events, or granting activeTab.
+  {
+    SCOPED_TRACE("initial incognito disabled");
+    expect_incognito_shortcuts_ignored();
+  }
+
+  // Regular window: both shortcuts are intercepted and grant activeTab.
+  {
+    SCOPED_TRACE("regular window");
+    expect_shortcuts_handled(regular_browser, regular_web_contents);
+  }
+
+  // Verify that toggling "Allow in Incognito" (true -> false) while the
+  // incognito window remains open dynamically registers and then unregisters
+  // both shortcuts across extension reloads. Gated on ENABLE_EXTENSIONS due to
+  // crbug.com/405219115 on Desktop Android.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  auto set_incognito_enabled = [&](bool enabled) {
+    const ExtensionId id = extension->id();
+    ready_listener.Reset();
+    TestExtensionRegistryObserver reload_observer(
+        ExtensionRegistry::Get(profile()), id);
+    util::SetIsIncognitoEnabled(id, profile(), enabled);
+    extension = reload_observer.WaitForExtensionLoaded();
+    ASSERT_TRUE(extension);
+    ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
+  };
+
+  // Enabling in incognito arms the shortcuts in the open incognito window.
+  set_incognito_enabled(true);
+  {
+    SCOPED_TRACE("incognito enabled");
+    expect_shortcuts_handled(incognito_browser, incognito_web_contents);
+  }
+
+  // Disabling in incognito again unregisters the accelerators on unload so the
+  // webpage receives the keystrokes again.
+  set_incognito_enabled(false);
+  {
+    SCOPED_TRACE("incognito re-disabled");
+    expect_incognito_shortcuts_ignored();
+  }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 }
 
 #if BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG)

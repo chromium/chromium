@@ -22,6 +22,7 @@
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_registry_factory.h"
+#include "extensions/browser/extension_util.h"
 #include "extensions/browser/permissions/active_tab_permission_granter.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/command.h"
@@ -68,16 +69,33 @@ namespace extensions {
 
 namespace {
 
+bool IsExtensionAllowedInContext(const Extension& extension,
+                                 content::BrowserContext& context) {
+  return !context.IsOffTheRecord() ||
+         util::IsIncognitoEnabled(&extension, &context);
+}
+
+const Extension* GetEnabledExtensionForContext(
+    const ExtensionId& extension_id,
+    content::BrowserContext& context) {
+  const Extension* extension =
+      ExtensionRegistry::Get(&context)->enabled_extensions().GetByID(
+          extension_id);
+  return (extension && IsExtensionAllowedInContext(*extension, context))
+             ? extension
+             : nullptr;
+}
+
 // Dispatches the `commands.onCommand` event for `command` to the extension
-// with `extension_id` (if the extension is still enabled).  `web_contents` is
-// the active tab (or null if there is no active tab).
+// with `extension_id` (if the extension is still enabled and allowed in
+// `browser_context`). `web_contents` is the active tab (or null if there is no
+// active tab).
 void DispatchCommandEvent(content::BrowserContext& browser_context,
                           const ExtensionId& extension_id,
                           const std::string& command,
                           content::WebContents* web_contents) {
-  const Extension* extension = ExtensionRegistry::Get(&browser_context)
-                                   ->enabled_extensions()
-                                   .GetByID(extension_id);
+  const Extension* extension =
+      GetEnabledExtensionForContext(extension_id, browser_context);
   if (!extension) {
     return;
   }
@@ -159,7 +177,18 @@ void ExtensionKeybindingRegistry::AddExtensionKeybindings(
   if (!browser_context_) {
     return;
   }
-  // This object only handles named commands, not toolbar action execution.
+  // In incognito mode, don't add any keybindings for extensions that aren't
+  // incognito-enabled. Note that this check must be here rather than in
+  // `ExtensionMatchesFilter()` because `SetIsIncognitoEnabled()` updates
+  // `ExtensionPrefs` to false before reloading the extension, and
+  // `OnExtensionUnloaded()` still needs to unregister the old keybindings.
+  // Checking this in `ExtensionKeybindingRegistry` also covers Desktop Android,
+  // which routes action commands through this class.
+  if (!IsExtensionAllowedInContext(*extension, *browser_context_)) {
+    return;
+  }
+  // On Desktop Views, this object only handles named commands, not toolbar
+  // action execution (which is handled per action view).
   if (ShouldIgnoreCommand(command_name)) {
     return;
   }
@@ -278,11 +307,11 @@ void ExtensionKeybindingRegistry::CommandExecuted(
   if (!browser_context_) {
     return;
   }
-  const Extension* extension = ExtensionRegistry::Get(browser_context_)
-                                   ->enabled_extensions()
-                                   .GetByID(extension_id);
-  if (!extension)
+  const Extension* extension =
+      GetEnabledExtensionForContext(extension_id, *browser_context_);
+  if (!extension) {
     return;
+  }
 
   content::WebContents* web_contents = nullptr;
   if (tab_list_interface_) {
@@ -472,6 +501,9 @@ bool ExtensionKeybindingRegistry::ExecuteCommands(
   bool executed = false;
   for (TargetList::const_iterator it = targets->second.begin();
        it != targets->second.end(); it++) {
+    if (!GetEnabledExtensionForContext(it->first, *browser_context_)) {
+      continue;
+    }
     if (!EventRouter::Get(browser_context_)
              ->ExtensionHasEventListener(it->first, kOnCommandEventName)) {
       continue;
