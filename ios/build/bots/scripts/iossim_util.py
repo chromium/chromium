@@ -68,6 +68,8 @@ _DISABLE_SIMULATOR_DAEMONS_OVERRIDE: bool | None = None
 #   `com.apple.corespotlightservice`: required by `SpotlightInterface` and the
 #   document picker.
 # - `com.apple.sharingd`: required for system share sheets.
+# - `com.apple.Safari.passwordbreachd`: required by tests using the "Turn on
+#   AutoFill" flow.
 # - `com.apple.gamed`: required for timely XCTest / XCUITest app launches.
 # - com.apple.assistantd: kept running because it hosts dictation XPC
 #   services; without it Spotlight leaks memory retrying connections.
@@ -199,7 +201,6 @@ DISABLED_SIMULATOR_LAUNCHD_JOBS: tuple[str, ...] = (
   # Safari sync, media ML & background telemetry.
   'com.apple.SafariBookmarksSyncAgent',
   'com.apple.Safari.History',
-  'com.apple.Safari.passwordbreachd',
   'com.apple.safarifetcherd',
   'com.apple.mediaanalysisd',
   'com.apple.mediaanalysisd.service',
