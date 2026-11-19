@@ -12462,6 +12462,11 @@ You can manage this account’s settings by installing the Family Link app on yo
       <message name="IDS_TAB_CXMENU_GROUPED_BY_DESK_CURRENT_DESK_LABEL" desc="The label for the current active desk in 'Move tabs to another window' when grouped by desk.">
         <ph name="DESK_NAME">$1<ex>Desk 1</ex></ph> (Current)
       </message>
+
+      <!-- Strings for the certificate selection dialog triggered by chrome.platformKeys -->
+      <message name="IDS_PLATFORM_KEYS_SELECT_CERT_DIALOG_TEXT" desc="The text in the dialog that prompts the user to select a certificate when an extension requests certificates through the platformKeys API.">
+        <ph name="EXTENSION_NAME">$1<ex>My OpenVPN App</ex></ph> wants permanent access to a certificate to authenticate itself on your behalf.
+      </message>
     </messages>
   </release>
 </grit>

@@ -30,6 +30,9 @@ specific_include_rules = {
   "omnibox_popup_full_presenter\\.cc": [
     "+ash/ash_element_identifiers.h",
   ],
+  "platform_keys_certificate_selector_chromeos\\.cc": [
+    "+ash/strings/grit/ash_strings.h",
+  ],
   "save_card_bubble_views_browsertest\\.cc": [
     "+chromeos/ash/services/multidevice_setup/public/cpp/prefs.h",
   ],

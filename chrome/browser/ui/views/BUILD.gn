@@ -1168,8 +1168,8 @@ if (is_chromeos) {
       "//ui/views",
     ]
     deps = [
+      "//ash/strings",
       "//base",
-      "//chrome/app:generated_resources",
       "//ui/base",
       "//ui/gfx",
     ]
