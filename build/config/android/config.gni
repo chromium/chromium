@@ -67,15 +67,13 @@ if (is_android) {
       default_min_sdk_version = 24
     }
 
-    # Static analysis can be either "on" or "off" or "build_server". This
+    # Static analysis can be either "on" or "off" or "no-lint". This
     # controls how android lint, error-prone, bytecode checks are run. This
     # needs to be in a separate declare_args as it determines some of the args
     # in the main declare_args block below.
-    # "build_server" (default)
-    #     Runs static analysis jobs via a daemon process and does not block
-    #     on the results. Does not work on bots (requires autoninja.py).
-    #     Android lint is not offloaded: it runs as build steps.
-    #     See: https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/static_analysis.md#autoninja-integration
+    # "no-lint" (default)
+    #     Same as "on", except that android lint is disabled. "build_server"
+    #     is a deprecated alias for it.
     # "on"
     #     Runs static analysis as build steps, blocking until they complete.
     #     This mode will fail builds when analysis steps fail, unless
@@ -106,20 +104,19 @@ if (is_android) {
       # been caught by other bots.
       android_static_analysis = "off"
     } else {
-      android_static_analysis = "build_server"
+      # All android bots that can build java targets need to explicitly set
+      # android_static_analysis = "on" or "off" rather than rely on the
+      # default value, because the default value of "no-lint" disables
+      # android lint. This is an assert instead of a dynamic default so that
+      # copy pasting gn args reproduces bot behavior.
+      assert(!enable_java_templates || getenv("SWARMING_TASK_ID") == "",
+             "All android bots must explicitly set android_static_analysis " +
+                 "gn arg.")
+      android_static_analysis = "no-lint"
     }
-  }
-
-  if (android_static_analysis == "build_server" && enable_java_templates &&
-      getenv("SWARMING_TASK_ID") != "") {
-    # All android bots that can build java targets need to explicitly set
-    # android_static_analysis = "on" or "off" rather than rely on the default
-    # value, because the default value of "build_server" does not work on
-    # bots. This is an assert instead of a dynamic default so that copy
-    # pasting gn args reproduces bot behavior.
-    assert(
-        false,
-        "All android bots must explicitly set android_static_analysis gn arg.")
+  } else if (android_static_analysis == "build_server") {
+    # TODO(crbug.com/579786031): Remove once args.gn files have migrated.
+    android_static_analysis = "no-lint"
   }
 
   # Our build system no longer supports legacy multidex.
@@ -140,7 +137,7 @@ if (is_android) {
 
   # Avoid typos when setting android_static_analysis in args.gn.
   assert(android_static_analysis == "on" || android_static_analysis == "off" ||
-         android_static_analysis == "build_server")
+         android_static_analysis == "no-lint")
 
   if (enable_chrome_android_internal) {
     import("//clank/config.gni")
@@ -285,7 +282,7 @@ if (is_android) {
     update_android_aar_prebuilts = false
 
     # Turns off android lint.
-    disable_android_lint = android_static_analysis == "off"
+    disable_android_lint = android_static_analysis != "on"
 
     # Location of aapt2 used for app bundles. For now, a more recent version
     # than the one distributed with the Android SDK is required.

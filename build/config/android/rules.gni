@@ -2816,7 +2816,6 @@ if (!is_robolectric && enable_java_templates) {
                                "native_lib_placeholders",
                                "parent_module_target",
                                "processor_args_javac",
-                               "skip_build_server",
                                "secondary_abi_loadable_modules",
                                "secondary_native_lib_placeholders",
                                "sources",

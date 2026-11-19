@@ -1439,9 +1439,6 @@ if (enable_java_templates) {
         "--stamp",
         rebase_path(outputs[0], root_build_dir),
       ]
-      if (android_static_analysis == "build_server") {
-        args += [ "--use-build-server" ]
-      }
       if (treat_warnings_as_errors) {
         args += [ "--warnings-as-errors" ]
       }
@@ -2195,9 +2192,6 @@ if (enable_java_templates) {
         _rebased_header_jar_path =
             rebase_path(invoker.header_jar_path, root_build_dir)
         args += [ "--direct-classpath-jars=$_rebased_header_jar_path" ]
-      }
-      if (android_static_analysis == "build_server") {
-        args += [ "--use-build-server" ]
       }
       if (invoker.include_android_sdk) {
         args += [ "--sdk-classpath-jars=@FileArg($_rebased_turbine_build_config:sdk_interface_jars)" ]
@@ -3470,9 +3464,6 @@ if (enable_java_templates) {
         }
         if (defined(testonly) && testonly) {
           args += [ "--testonly" ]
-        }
-        if (android_static_analysis == "build_server") {
-          args += [ "--use-build-server" ]
         }
       }
 

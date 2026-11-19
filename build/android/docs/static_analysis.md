@@ -4,22 +4,13 @@ We use several tools for static analysis in chromium.
 
 [TOC]
 
-## Autoninja Integration
+## GN Arg: `android_static_analysis`
 
-You can set `android_static_analysis = "build_server"` in your gn args to run
-static analysis tasks in the background. This will change the build as follows:
-* `autoninja` will not wait for static analysis jobs to complete.
-  * This means the build will succeed but static analysis might fail later.
-  * If there are background tasks still running, autoninja will say so at the end of the build.
-  * Leads to [30-50% improvement in build times][cbuild- speed improvement] when building debug.
-* If a background static analysis task fails, the failure output is printed onto the terminal that ran `autoninja`.
-  * The output is preceded by an emoji like ⏩.
-  * If the output gets mixed in with what you are doing so it is no longer clear, you can check the task output in the logfile.
-    * E.g.: `out/Default/buildserver.log.0`.
-* Changes the terminal title to keep live track of remaining analysis tasks.
-* Android lint is not offloaded: it always runs as build steps.
-
-[cbuild- speed improvement]: https://dashboards.corp.google.com/clank_build_speed?f=commit:bt:1411615,1422246&f=benchmark:in:base_sig_compile,chrome_nosig_compile&f=server:in:true,false&f=emulator:in:None,api31
+* `"no-lint"` (default for non-official builds): runs Error Prone and
+  other static analysis as normal build steps, but disables Android Lint.
+  * `"build_server"` is a deprecated alias for `"no-lint"`.
+* `"on"`: runs all static analysis, Android Lint included, as build steps.
+* `"off"`: disables static analysis.
 
 ## [Android Lint](lint.md)
 * Runs as part of normal compilation.

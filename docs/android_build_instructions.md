@@ -389,37 +389,13 @@ Args that affect build speed:
  * `treat_warnings_as_errors = false` *(default=`true`)*
    * Causes any compiler warnings or lint checks to not fail the build.
    * Allows you to iterate without needing to satisfy static analysis checks.
- * `android_static_analysis = "build_server"` *(default=`"on"`)*
-   * Offloads static analysis steps to the build server. Explained below.
-   * Set this to `"off"` if you want to turn off static analysis altogether.
+ * `android_static_analysis = "off"` *(default=`"no-lint"`)*
+   * Turns off static analysis altogether.
+   * The default, `"no-lint"`, runs static analysis as build steps but skips
+     Android Lint. Set `"on"` to also run Android Lint.
  * `enable_chrome_android_internal = false` *(Googlers only)*
    * Disables non-public code, which exists even when building public targets.
    * Use this is you do not need to test internal-only things.
-
-### Asynchronous Static Analysis
-
-Normally analysis build steps like Lint and Error Prone will run as normal build
-steps. The build will then wait for all analysis steps to complete successfully.
-By offloading analysis build steps to a separate build server to be run lazily at
-a low priority, the actual build can complete much faster. Lint is not
-offloaded: it always runs as build steps.
-
-**Note**: Since the build completes before the analysis checks finish, the build
-will not fail if an analysis check fails.
-
-To enable this mode, add the gn args:
-
-```gn
-android_static_analysis = "build_server"
-```
-
-Command output will show up on the terminal that ran the build, as well as in
-`out/Debug/buildserver.log.0`.
-
-See the status of the server at any time via:
-```
-build/android/fast_local_dev_server.py --print-status-all
-```
 
 ### Use Remote Execution
 
