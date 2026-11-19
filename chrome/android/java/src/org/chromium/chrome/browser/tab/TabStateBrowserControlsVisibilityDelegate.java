@@ -315,7 +315,7 @@ public class TabStateBrowserControlsVisibilityDelegate extends BrowserControlsVi
             NavigationHandle navigation, int fallbackShowAfterMs) {
         return fallbackShowAfterMs > 0
                 && canKeepOmniboxHiddenInTab()
-                && areBrowserControlsOffScreen()
+                && isToolbarScrolledOffScreen()
                 && isSameOriginHttpOrHttpsNavigation(navigation)
                 && isEligibleNavigationType(navigation);
     }
@@ -372,12 +372,18 @@ public class TabStateBrowserControlsVisibilityDelegate extends BrowserControlsVi
         if (!mTab.isTabInBrowser() || mTab.isHidden()) return false;
         if (DeviceInfo.isAutomotive() || DeviceInfo.isTV() || DeviceInfo.isXr()) return false;
         BrowserControlsStateProvider provider = getBrowserControlsStateProvider();
+        // Exp A covers only the top toolbar. With a bottom toolbar, navigations keep the load lock.
         return provider != null && provider.getControlsPosition() == ControlsPosition.TOP;
     }
 
-    private boolean areBrowserControlsOffScreen() {
+    /**
+     * Returns whether the toolbar and the layers that scroll with it are scrolled off screen. A
+     * non-scrollable strip above them (for example the edge-to-edge top scalp) can still be
+     * visible.
+     */
+    private boolean isToolbarScrolledOffScreen() {
         BrowserControlsStateProvider provider = getBrowserControlsStateProvider();
-        return provider != null && BrowserControlsUtils.areBrowserControlsOffScreen(provider);
+        return provider != null && BrowserControlsUtils.isTopToolbarScrolledOffScreen(provider);
     }
 
     private @Nullable BrowserControlsStateProvider getBrowserControlsStateProvider() {
@@ -435,7 +441,7 @@ public class TabStateBrowserControlsVisibilityDelegate extends BrowserControlsVi
         if (!canKeepOmniboxHiddenInTab()) return false;
         // If the user scrolled to partially reveal the controls mid-load, finish showing and lock
         // them rather than leaving them partially visible on the new document.
-        if (!areBrowserControlsOffScreen()) return false;
+        if (!isToolbarScrolledOffScreen()) return false;
         // Error pages must always display the Omnibox even when NavigationHandle#isSameOrigin() is
         // true.
         if (navigation.isErrorPage()) return false;

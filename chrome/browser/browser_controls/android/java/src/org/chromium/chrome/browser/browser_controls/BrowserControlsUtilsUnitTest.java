@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.browser_controls;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
 
 import android.content.Context;
@@ -140,5 +142,121 @@ public class BrowserControlsUtilsUnitTest {
         BrowserControlsUtils.recordCombinedControlsMetrics(
                 mStateProvider, mContext, mWindowAndroid);
         histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testIsTopToolbarScrolledOffScreen_ZeroMinHeight() {
+        stubTop(/* height= */ 56, /* minHeight= */ 0, /* minHeightOffset= */ 0, /* offset= */ -56);
+        assertTrue(BrowserControlsUtils.isTopToolbarScrolledOffScreen(mStateProvider));
+
+        stubTop(/* height= */ 56, /* minHeight= */ 0, /* minHeightOffset= */ 0, /* offset= */ -55);
+        assertFalse(BrowserControlsUtils.isTopToolbarScrolledOffScreen(mStateProvider));
+
+        stubTop(/* height= */ 56, /* minHeight= */ 0, /* minHeightOffset= */ 0, /* offset= */ 0);
+        assertFalse(BrowserControlsUtils.isTopToolbarScrolledOffScreen(mStateProvider));
+
+        // No top controls.
+        stubTop(/* height= */ 0, /* minHeight= */ 0, /* minHeightOffset= */ 0, /* offset= */ 0);
+        assertFalse(BrowserControlsUtils.isTopToolbarScrolledOffScreen(mStateProvider));
+
+        // A height-shrink animation can move the top controls below their resting position.
+        stubTop(/* height= */ 56, /* minHeight= */ 0, /* minHeightOffset= */ 0, /* offset= */ 56);
+        assertFalse(BrowserControlsUtils.isTopToolbarScrolledOffScreen(mStateProvider));
+    }
+
+    @Test
+    public void testIsTopToolbarScrolledOffScreen_NonScrollableStrip() {
+        stubTop(
+                /* height= */ 80,
+                /* minHeight= */ 24,
+                /* minHeightOffset= */ 24,
+                /* offset= */ -56);
+        assertTrue(BrowserControlsUtils.isTopToolbarScrolledOffScreen(mStateProvider));
+
+        stubTop(
+                /* height= */ 80,
+                /* minHeight= */ 24,
+                /* minHeightOffset= */ 24,
+                /* offset= */ -60);
+        assertTrue(BrowserControlsUtils.isTopToolbarScrolledOffScreen(mStateProvider));
+
+        stubTop(
+                /* height= */ 80,
+                /* minHeight= */ 24,
+                /* minHeightOffset= */ 24,
+                /* offset= */ -55);
+        assertFalse(BrowserControlsUtils.isTopToolbarScrolledOffScreen(mStateProvider));
+
+        stubTop(/* height= */ 80, /* minHeight= */ 24, /* minHeightOffset= */ 24, /* offset= */ 0);
+        assertFalse(BrowserControlsUtils.isTopToolbarScrolledOffScreen(mStateProvider));
+    }
+
+    @Test
+    public void testIsTopToolbarScrolledOffScreen_PinnedToolbar() {
+        stubTop(/* height= */ 80, /* minHeight= */ 80, /* minHeightOffset= */ 80, /* offset= */ 0);
+        assertFalse(BrowserControlsUtils.isTopToolbarScrolledOffScreen(mStateProvider));
+
+        stubTop(
+                /* height= */ 80,
+                /* minHeight= */ 100,
+                /* minHeightOffset= */ 100,
+                /* offset= */ 0);
+        assertFalse(BrowserControlsUtils.isTopToolbarScrolledOffScreen(mStateProvider));
+    }
+
+    @Test
+    public void testIsTopToolbarScrolledOffScreen_MinHeightAnimating() {
+        // The min height grows from 0 to 24 px, and the toolbar moves down with the strip.
+        stubTop(
+                /* height= */ 80,
+                /* minHeight= */ 24,
+                /* minHeightOffset= */ 10,
+                /* offset= */ -70);
+        assertTrue(BrowserControlsUtils.isTopToolbarScrolledOffScreen(mStateProvider));
+
+        stubTop(
+                /* height= */ 80,
+                /* minHeight= */ 24,
+                /* minHeightOffset= */ 10,
+                /* offset= */ -60);
+        assertFalse(BrowserControlsUtils.isTopToolbarScrolledOffScreen(mStateProvider));
+
+        // The min height shrinks from 40 to 24 px.
+        stubTop(
+                /* height= */ 80,
+                /* minHeight= */ 24,
+                /* minHeightOffset= */ 40,
+                /* offset= */ -56);
+        assertTrue(BrowserControlsUtils.isTopToolbarScrolledOffScreen(mStateProvider));
+
+        stubTop(
+                /* height= */ 80,
+                /* minHeight= */ 24,
+                /* minHeightOffset= */ 40,
+                /* offset= */ -40);
+        assertFalse(BrowserControlsUtils.isTopToolbarScrolledOffScreen(mStateProvider));
+
+        // A stale min height offset of 0 px leaves 24 px of the toolbar visible.
+        stubTop(/* height= */ 80, /* minHeight= */ 24, /* minHeightOffset= */ 0, /* offset= */ -56);
+        assertFalse(BrowserControlsUtils.isTopToolbarScrolledOffScreen(mStateProvider));
+    }
+
+    @Test
+    public void testIsTopToolbarScrolledOffScreen_BottomControls() {
+        stubTop(/* height= */ 56, /* minHeight= */ 0, /* minHeightOffset= */ 0, /* offset= */ -56);
+        doReturn(BrowserControlsStateProvider.ControlsPosition.BOTTOM)
+                .when(mStateProvider)
+                .getControlsPosition();
+        assertFalse(BrowserControlsUtils.isTopToolbarScrolledOffScreen(mStateProvider));
+    }
+
+    private void stubTop(int height, int minHeight, int minHeightOffset, int offset) {
+        doReturn(BrowserControlsStateProvider.ControlsPosition.TOP)
+                .when(mStateProvider)
+                .getControlsPosition();
+        doReturn(height).when(mStateProvider).getTopControlsHeight();
+        doReturn(minHeight).when(mStateProvider).getTopControlsMinHeight();
+        doReturn(minHeightOffset).when(mStateProvider).getTopControlsMinHeightOffset();
+        doReturn(offset).when(mStateProvider).getTopControlOffset();
     }
 }

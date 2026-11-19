@@ -80,7 +80,12 @@ import java.util.function.Function;
 @Config(shadows = {ShadowSystemClock.class})
 @DisableFeatures(ChromeFeatureList.ANDROID_SETTINGS_URL)
 public class TabStateBrowserControlsVisibilityDelegateTest {
-    private static final int HIDDEN_TOP_CONTROLS_OFFSET = -56;
+    private static final String SAME_ORIGIN_MINIMIZATION_NOT_IMPLEMENTED =
+            "Same-origin Omnibox minimization is not implemented yet, crbug.com/578150286";
+    // Arbitrary pixel height for the mocked BrowserControlsStateProvider. The code under test only
+    // compares it with other provider values, so it does not need to match a resource.
+    private static final int TOP_CONTROLS_HEIGHT_PX = 56;
+    private static final int HIDDEN_TOP_CONTROLS_OFFSET = -TOP_CONTROLS_HEIGHT_PX;
     private static final int FALLBACK_SHOW_AFTER_MS = 1500;
     private static final String MINIMIZATION_WITH_FALLBACK_PARAM =
             ChromeFeatureList.CLANK_OMNIBOX_MINIMIZATION
@@ -126,6 +131,8 @@ public class TabStateBrowserControlsVisibilityDelegateTest {
         TabBrowserControlsConstraintsHelperJni.setInstanceForTesting(mConstraintsHelperJniMock);
         PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(false);
         when(mBrowserControlsStateProvider.getControlsPosition()).thenReturn(ControlsPosition.TOP);
+        when(mBrowserControlsStateProvider.getTopControlsHeight())
+                .thenReturn(TOP_CONTROLS_HEIGHT_PX);
     }
 
     private static MonotonicObservableSupplier<BrowserControlsStateProvider> attachProvider(
@@ -575,7 +582,6 @@ public class TabStateBrowserControlsVisibilityDelegateTest {
 
     private TabStateBrowserControlsVisibilityDelegate createWiredDelegate(
             GURL initialUrl,
-            float hiddenRatio,
             int topControlsOffset,
             Function<
                             TabStateBrowserControlsVisibilityDelegate,
@@ -609,13 +615,13 @@ public class TabStateBrowserControlsVisibilityDelegateTest {
         mTab.setIsTabInBrowser(true);
         when(mWebContents.getVisibleUrl()).thenReturn(initialUrl);
         when(mWebContents.getLastCommittedUrl()).thenReturn(initialUrl);
-        when(mBrowserControlsStateProvider.getBrowserControlHiddenRatio()).thenReturn(hiddenRatio);
+        when(mBrowserControlsStateProvider.getTopControlOffset()).thenReturn(topControlsOffset);
 
         TabHelpers.initTabHelpers(mTab, /* parentTab= */ null);
         TabBrowserControlsOffsetHelper.get(mTab)
                 .setOffsets(
                         topControlsOffset,
-                        /* contentOffset= */ topControlsOffset + 56,
+                        /* contentOffset= */ topControlsOffset + TOP_CONTROLS_HEIGHT_PX,
                         /* topControlsMinHeightOffset= */ 0,
                         /* bottomControlsOffset= */ 0,
                         /* bottomControlsMinHeightOffset= */ 0);
@@ -643,11 +649,16 @@ public class TabStateBrowserControlsVisibilityDelegateTest {
 
     private TabStateBrowserControlsVisibilityDelegate createWiredHiddenControlsDelegate(
             GURL initialUrl) {
-        return createWiredDelegate(
-                initialUrl,
-                /* hiddenRatio= */ 1.0f,
-                HIDDEN_TOP_CONTROLS_OFFSET,
-                Function.identity());
+        return createWiredDelegate(initialUrl, HIDDEN_TOP_CONTROLS_OFFSET, Function.identity());
+    }
+
+    private TabStateBrowserControlsVisibilityDelegate createWiredDelegateWithMinHeight(
+            int height, int minHeight, int minHeightOffset, int topControlsOffset) {
+        when(mBrowserControlsStateProvider.getTopControlsHeight()).thenReturn(height);
+        when(mBrowserControlsStateProvider.getTopControlsMinHeight()).thenReturn(minHeight);
+        when(mBrowserControlsStateProvider.getTopControlsMinHeightOffset())
+                .thenReturn(minHeightOffset);
+        return createWiredDelegate(JUnitTestGURLs.BLUE_1, topControlsOffset, Function.identity());
     }
 
     private void hideTab(@TabHidingType int type) {
@@ -862,6 +873,48 @@ public class TabStateBrowserControlsVisibilityDelegateTest {
 
     @Test
     @EnableFeatures(MINIMIZATION_WITH_FALLBACK_PARAM)
+    public void testSameOriginMinimization_NonScrollableTopStripFullyScrolledKeepsControlsHidden() {
+        // A 24 px non-scrollable strip stays visible. The other 56 px of the 80 px controls are
+        // scrolled off.
+        TabStateBrowserControlsVisibilityDelegate delegate =
+                createWiredDelegateWithMinHeight(
+                        /* height= */ 80,
+                        /* minHeight= */ 24,
+                        /* minHeightOffset= */ 24,
+                        /* topControlsOffset= */ -56);
+        GURL destinationUrl = JUnitTestGURLs.BLUE_2;
+
+        NavigationHandle navigation = startNavigation(destinationUrl);
+        assertEquals(BrowserControlsState.BOTH, delegate.calculateVisibilityConstraints());
+        verify(mConstraintsHelperJniMock, never())
+                .updateState(any(), anyInt(), anyInt(), anyBoolean(), any());
+
+        finishNavigation(navigation, destinationUrl, /* isSameOrigin= */ true);
+        assertEquals(BrowserControlsState.BOTH, delegate.calculateVisibilityConstraints());
+        verifyControlsUnlockedPushed();
+
+        ShadowSystemClock.advanceBy(FALLBACK_SHOW_AFTER_MS, TimeUnit.MILLISECONDS);
+        ShadowLooper.runUiThreadTasks();
+        assertEquals(BrowserControlsState.BOTH, delegate.calculateVisibilityConstraints());
+        verifyControlsNeverLockedShown();
+    }
+
+    @Test
+    @EnableFeatures(MINIMIZATION_WITH_FALLBACK_PARAM)
+    public void testSameOriginMinimization_PinnedToolbarLocksControls() {
+        // The top controls cannot scroll when the min height equals the height.
+        TabStateBrowserControlsVisibilityDelegate delegate =
+                createWiredDelegateWithMinHeight(
+                        /* height= */ 80,
+                        /* minHeight= */ 80,
+                        /* minHeightOffset= */ 80,
+                        /* topControlsOffset= */ 0);
+
+        assertSameOriginNavigationLocksControls(delegate);
+    }
+
+    @Test
+    @EnableFeatures(MINIMIZATION_WITH_FALLBACK_PARAM)
     public void testSameOriginMinimization_SameOriginBackNavigationKeepsControlsHidden() {
         assertSameOriginHistoryNavigationKeepsControlsHidden(/* isBack= */ true);
     }
@@ -903,13 +956,9 @@ public class TabStateBrowserControlsVisibilityDelegateTest {
     public void testSameOriginMinimization_VisibleSameOriginLocksControls() {
         GURL sourceUrl = JUnitTestGURLs.BLUE_1;
         GURL destinationUrl = JUnitTestGURLs.BLUE_2;
-        // Controls are visible (ratio 0.0f) rather than fully off-screen.
+        // Controls are fully visible rather than off-screen.
         TabStateBrowserControlsVisibilityDelegate delegate =
-                createWiredDelegate(
-                        sourceUrl,
-                        /* hiddenRatio= */ 0.0f,
-                        /* topControlsOffset= */ 0,
-                        Function.identity());
+                createWiredDelegate(sourceUrl, /* topControlsOffset= */ 0, Function.identity());
 
         NavigationHandle navigation = startNavigation(destinationUrl);
         assertEquals(BrowserControlsState.SHOWN, delegate.calculateVisibilityConstraints());
@@ -1050,7 +1099,7 @@ public class TabStateBrowserControlsVisibilityDelegateTest {
         assertEquals(BrowserControlsState.BOTH, delegate.calculateVisibilityConstraints());
 
         // User scrolls up to reveal the omnibox while the load is still in flight.
-        when(mBrowserControlsStateProvider.getBrowserControlHiddenRatio()).thenReturn(0.25f);
+        when(mBrowserControlsStateProvider.getTopControlOffset()).thenReturn(-14);
         TabBrowserControlsOffsetHelper.get(mTab)
                 .setOffsets(
                         /* topControlsOffset= */ -14,
@@ -1485,7 +1534,6 @@ public class TabStateBrowserControlsVisibilityDelegateTest {
         TabStateBrowserControlsVisibilityDelegate delegate =
                 createWiredDelegate(
                         JUnitTestGURLs.BLUE_1,
-                        /* hiddenRatio= */ 1.0f,
                         HIDDEN_TOP_CONTROLS_OFFSET,
                         tabStateDelegate ->
                                 new ComposedBrowserControlsVisibilityDelegate(
@@ -1527,7 +1575,6 @@ public class TabStateBrowserControlsVisibilityDelegateTest {
         TabStateBrowserControlsVisibilityDelegate delegate =
                 createWiredDelegate(
                         JUnitTestGURLs.BLUE_1,
-                        /* hiddenRatio= */ 1.0f,
                         HIDDEN_TOP_CONTROLS_OFFSET,
                         tabStateDelegate ->
                                 new ComposedBrowserControlsVisibilityDelegate(
@@ -1559,10 +1606,7 @@ public class TabStateBrowserControlsVisibilityDelegateTest {
         when(mWebDistillerUrlUtilsNatives.isDistilledPage(distillerUrl.getSpec())).thenReturn(true);
         TabStateBrowserControlsVisibilityDelegate delegate =
                 createWiredDelegate(
-                        JUnitTestGURLs.BLUE_1,
-                        /* hiddenRatio= */ 0.0f,
-                        /* topControlsOffset= */ 0,
-                        Function.identity());
+                        JUnitTestGURLs.BLUE_1, /* topControlsOffset= */ 0, Function.identity());
 
         NavigationHandle visibleNav = startNavigation(distillerUrl, /* navigationId= */ 1L);
         finishNavigation(visibleNav, distillerUrl, /* isSameOrigin= */ false);
@@ -1588,7 +1632,7 @@ public class TabStateBrowserControlsVisibilityDelegateTest {
         verifyControlsLockedShown();
         clearInvocations(mConstraintsHelperJniMock);
 
-        when(mBrowserControlsStateProvider.getBrowserControlHiddenRatio()).thenReturn(0.5f);
+        when(mBrowserControlsStateProvider.getTopControlOffset()).thenReturn(-28);
         TabBrowserControlsOffsetHelper.get(mTab).setOffsets(-28, 28, 0, 0, 0);
         redirectNavigation(navigation, JUnitTestGURLs.RED_1);
         finishNavigation(navigation, JUnitTestGURLs.RED_1, /* isSameOrigin= */ false);
@@ -1719,7 +1763,7 @@ public class TabStateBrowserControlsVisibilityDelegateTest {
         verifyControlsLockedShown();
         clearInvocations(mConstraintsHelperJniMock);
 
-        when(mBrowserControlsStateProvider.getBrowserControlHiddenRatio()).thenReturn(0.5f);
+        when(mBrowserControlsStateProvider.getTopControlOffset()).thenReturn(-28);
         TabBrowserControlsOffsetHelper.get(mTab)
                 .setOffsets(
                         /* topControlsOffset= */ -28,
@@ -1787,7 +1831,8 @@ public class TabStateBrowserControlsVisibilityDelegateTest {
         finishNavigation(firstNav, destinationUrl, /* isSameOrigin= */ true);
 
         // The tab moves to another window, whose controls are fully visible.
-        when(mOtherBrowserControlsStateProvider.getBrowserControlHiddenRatio()).thenReturn(0.0f);
+        when(mOtherBrowserControlsStateProvider.getTopControlsHeight())
+                .thenReturn(TOP_CONTROLS_HEIGHT_PX);
         mOtherProviderSupplier =
                 attachProvider(mOtherWindowAndroid, mOtherBrowserControlsStateProvider);
         mTab.updateAttachment(mOtherWindowAndroid, /* tabDelegateFactory= */ null);

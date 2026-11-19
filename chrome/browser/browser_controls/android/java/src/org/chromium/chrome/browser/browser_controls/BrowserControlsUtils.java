@@ -142,6 +142,31 @@ public class BrowserControlsUtils {
     }
 
     /**
+     * Returns whether the scrollable part of the top controls, which holds the toolbar, is fully
+     * scrolled off screen. A non-scrollable strip above it (the min height, for example the
+     * edge-to-edge top scalp or the status indicator) can still be visible. Returns false for
+     * bottom controls, and when the top controls cannot scroll (height <= min height, for example
+     * when {@code TopControlsLockCoordinator} locks them, or when there are no top controls).
+     */
+    public static boolean isTopToolbarScrolledOffScreen(
+            BrowserControlsStateProvider stateProvider) {
+        if (stateProvider.getControlsPosition()
+                != BrowserControlsStateProvider.ControlsPosition.TOP) {
+            return false;
+        }
+        int minHeight = stateProvider.getTopControlsMinHeight();
+        int height = stateProvider.getTopControlsHeight();
+        if (height <= minHeight) return false;
+        // Scrollable layers rest with their bottom at the bottom of the visible min-height strip
+        // (TopControlsStacker#calculateStackLayersOffsets). Use the smaller of the min height and
+        // its animated offset, so that a partly visible toolbar never counts as off screen.
+        // During height animations, the stacker can clamp layers lower than this, but cc resets
+        // the min-height animation when a scroll begins.
+        int visibleMinHeight = Math.min(minHeight, stateProvider.getTopControlsMinHeightOffset());
+        return stateProvider.getTopControlOffset() <= visibleMinHeight - height;
+    }
+
+    /**
      * @return True if the browser controls are currently completely visible.
      */
     public static boolean areBrowserControlsFullyVisible(
