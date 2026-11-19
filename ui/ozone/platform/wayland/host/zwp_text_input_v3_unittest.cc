@@ -178,6 +178,42 @@ TEST_F(ZwpTextInputV3Test, SetCursorRect) {
   VerifyAndClearExpectations();
 }
 
+// Some compositors (e.g. wlroots and Smithay based ones) only send done events
+// in response to input method commits, not to text-input commits. Caret moves
+// must still reach the input method in that case. See crbug.com/491869953.
+TEST_F(ZwpTextInputV3Test, CursorRectSentWithoutDoneAfterEnable) {
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    InSequence s;
+    ExpectEnableWithDefaultContentType(
+        server->text_input_manager_v3()->text_input());
+  });
+  text_input_v3_->Enable(TEXT_INPUT_TYPE_TEXT, TEXT_INPUT_FLAG_NONE, true);
+  VerifyAndClearExpectations();
+
+  constexpr gfx::Rect kRect(50, 20, 1, 1);
+  PostToServerAndWait([kRect](wl::TestWaylandServerThread* server) {
+    InSequence s;
+    auto* zwp_text_input = server->text_input_manager_v3()->text_input();
+    EXPECT_CALL(*zwp_text_input, SetCursorRect(kRect.x(), kRect.y(),
+                                               kRect.width(), kRect.height()));
+    EXPECT_CALL(*zwp_text_input, Commit()).Times(1);
+  });
+  text_input_v3_->SetCursorRect(kRect);
+  VerifyAndClearExpectations();
+
+  constexpr gfx::Rect kRect2(100, 20, 1, 1);
+  PostToServerAndWait([kRect2](wl::TestWaylandServerThread* server) {
+    InSequence s;
+    auto* zwp_text_input = server->text_input_manager_v3()->text_input();
+    EXPECT_CALL(
+        *zwp_text_input,
+        SetCursorRect(kRect2.x(), kRect2.y(), kRect2.width(), kRect2.height()));
+    EXPECT_CALL(*zwp_text_input, Commit()).Times(1);
+  });
+  text_input_v3_->SetCursorRect(kRect2);
+  VerifyAndClearExpectations();
+}
+
 TEST_F(ZwpTextInputV3Test, SetSurroundingText) {
   const std::string text("surroundingすしはおいしいですtext");
   constexpr std::string kSurroundingText("surroundingtext");
@@ -354,7 +390,9 @@ TEST_F(ZwpTextInputV3Test, SetSurroundingText) {
   VerifyAndClearExpectations();
 }
 
-TEST_F(ZwpTextInputV3Test, PendingRequestsSentOnDone) {
+// State requests are sent right away, even if the last done serial does not
+// match the number of commits. See crbug.com/491869953.
+TEST_F(ZwpTextInputV3Test, RequestsSentWithoutMatchingDone) {
   constexpr gfx::Rect kRect(50, 20, 1, 1);
   const std::string text("surroundingすしはおいしいですtext");
   constexpr std::string kSurroundingText("surroundingtext");
@@ -377,52 +415,52 @@ TEST_F(ZwpTextInputV3Test, PendingRequestsSentOnDone) {
   text_input_v3_->Enable(TEXT_INPUT_TYPE_TEXT, TEXT_INPUT_FLAG_NONE, true);
   VerifyAndClearExpectations();
 
-  // Now if commit number doesn't match done serial it shouldn't send a request.
-  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
-    auto* zwp_text_input = server->text_input_manager_v3()->text_input();
-    EXPECT_CALL(*zwp_text_input, SetContentType(_, _)).Times(0);
-    EXPECT_CALL(*zwp_text_input, SetCursorRect(_, _, _, _)).Times(0);
-    EXPECT_CALL(*zwp_text_input, SetSurroundingText(_, _)).Times(0);
-    EXPECT_CALL(*zwp_text_input, Commit()).Times(0);
-    // Commit has been called twice. So done serial 1 should not match.
-    zwp_text_input_v3_send_done(zwp_text_input->resource(), 1);
-  });
+  // Commit has been called twice, so done serial 1 does not match. The
+  // requests are still sent.
+  PostToServerAndWait(
+      [kRect, kSurroundingText](wl::TestWaylandServerThread* server) {
+        auto* zwp_text_input = server->text_input_manager_v3()->text_input();
+        zwp_text_input_v3_send_done(zwp_text_input->resource(), 1);
+        InSequence s;
+        EXPECT_CALL(*zwp_text_input,
+                    SetSurroundingText(kSurroundingText, gfx::Range{11, 11}))
+            .Times(1);
+        EXPECT_CALL(*zwp_text_input, Commit()).Times(1);
+        EXPECT_CALL(
+            *zwp_text_input,
+            SetCursorRect(kRect.x(), kRect.y(), kRect.width(), kRect.height()))
+            .Times(1);
+        EXPECT_CALL(*zwp_text_input, Commit()).Times(1);
+        EXPECT_CALL(*zwp_text_input,
+                    SetContentType(ZWP_TEXT_INPUT_V3_CONTENT_HINT_SPELLCHECK,
+                                   ZWP_TEXT_INPUT_V3_CONTENT_PURPOSE_EMAIL))
+            .Times(1);
+        EXPECT_CALL(*zwp_text_input, Commit()).Times(1);
+      });
   text_input_v3_->SetSurroundingText(text, kPreeditRange, kSelectionRange);
   text_input_v3_->SetCursorRect(kRect);
   text_input_v3_->SetContentType(TEXT_INPUT_TYPE_EMAIL,
                                  TEXT_INPUT_FLAG_AUTOCORRECT_ON, true);
   VerifyAndClearExpectations();
 
-  // Multiple pending requests should be sent when commit number finally
-  // matches.
-  PostToServerAndWait(
-      [kRect, kSurroundingText](wl::TestWaylandServerThread* server) {
-        auto* zwp_text_input = server->text_input_manager_v3()->text_input();
-        InSequence s;
-        EXPECT_CALL(*zwp_text_input,
-                    SetContentType(ZWP_TEXT_INPUT_V3_CONTENT_HINT_SPELLCHECK,
-                                   ZWP_TEXT_INPUT_V3_CONTENT_PURPOSE_EMAIL))
-            .Times(1);
-        EXPECT_CALL(
-            *server->text_input_manager_v3()->text_input(),
-            SetCursorRect(kRect.x(), kRect.y(), kRect.width(), kRect.height()));
-        EXPECT_CALL(*zwp_text_input,
-                    SetSurroundingText(kSurroundingText, gfx::Range{11, 11}))
-            .Times(1);
-        EXPECT_CALL(*zwp_text_input, Commit()).Times(1);
-        // Commit has been called twice. So done serial 2 should match.
-        zwp_text_input_v3_send_done(zwp_text_input->resource(), 2);
-      });
+  // Nothing is resent when the done serial matches.
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    auto* zwp_text_input = server->text_input_manager_v3()->text_input();
+    EXPECT_CALL(*zwp_text_input, SetContentType(_, _)).Times(0);
+    EXPECT_CALL(*zwp_text_input, SetCursorRect(_, _, _, _)).Times(0);
+    EXPECT_CALL(*zwp_text_input, SetSurroundingText(_, _)).Times(0);
+    EXPECT_CALL(*zwp_text_input, Commit()).Times(0);
+    zwp_text_input_v3_send_done(zwp_text_input->resource(), 5);
+  });
   VerifyAndClearExpectations();
 }
 
-TEST_F(ZwpTextInputV3Test, PendingRequestsClearedOnEnable) {
+TEST_F(ZwpTextInputV3Test, LatestStateResentOnEnable) {
   constexpr gfx::Rect kRect(50, 20, 1, 1);
   const std::string text("surroundingすしはおいしいですtext");
   constexpr gfx::Range kPreeditRange(11, 38);
   constexpr gfx::Range kSelectionRange(38, 38);
 
-  // Trigger 1 commit by calling activate.
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     auto* zwp_text_input = server->text_input_manager_v3()->text_input();
     InSequence s;
@@ -431,13 +469,12 @@ TEST_F(ZwpTextInputV3Test, PendingRequestsClearedOnEnable) {
   text_input_v3_->Enable(TEXT_INPUT_TYPE_TEXT, TEXT_INPUT_FLAG_NONE, true);
   VerifyAndClearExpectations();
 
-  // Pending set requests should not be sent without matching done event.
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     auto* zwp_text_input = server->text_input_manager_v3()->text_input();
-    EXPECT_CALL(*zwp_text_input, SetCursorRect(_, _, _, _)).Times(0);
-    EXPECT_CALL(*zwp_text_input, SetContentType(_, _)).Times(0);
-    EXPECT_CALL(*zwp_text_input, SetSurroundingText(_, _)).Times(0);
-    EXPECT_CALL(*zwp_text_input, Commit()).Times(0);
+    EXPECT_CALL(*zwp_text_input, SetCursorRect(_, _, _, _)).Times(1);
+    EXPECT_CALL(*zwp_text_input, SetContentType(_, _)).Times(1);
+    EXPECT_CALL(*zwp_text_input, SetSurroundingText(_, _)).Times(1);
+    EXPECT_CALL(*zwp_text_input, Commit()).Times(3);
   });
   text_input_v3_->SetSurroundingText(text, kPreeditRange, kSelectionRange);
   text_input_v3_->SetCursorRect(kRect);
@@ -445,9 +482,9 @@ TEST_F(ZwpTextInputV3Test, PendingRequestsClearedOnEnable) {
                                  TEXT_INPUT_FLAG_AUTOCORRECT_ON, true);
   VerifyAndClearExpectations();
 
-  // Enable should clear pending requests. The latest surrounding text and
-  // cursor rect are sent along with enable since enable resets all state, but
-  // the pending content type is replaced by the one passed to Enable().
+  // The latest surrounding text and cursor rect are sent along with enable
+  // since enable resets all state, but the content type is replaced by the
+  // one passed to Enable().
   PostToServerAndWait([kRect](wl::TestWaylandServerThread* server) {
     auto* zwp_text_input = server->text_input_manager_v3()->text_input();
     InSequence s;
@@ -467,16 +504,15 @@ TEST_F(ZwpTextInputV3Test, PendingRequestsClearedOnEnable) {
   text_input_v3_->Enable(TEXT_INPUT_TYPE_TEXT, TEXT_INPUT_FLAG_NONE, true);
   VerifyAndClearExpectations();
 
-  // Since there are no more pending requests nothing should be sent even if
-  // done serial matches.
+  // Nothing more is sent on done events.
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     auto* zwp_text_input = server->text_input_manager_v3()->text_input();
     EXPECT_CALL(*zwp_text_input, SetCursorRect(_, _, _, _)).Times(0);
     EXPECT_CALL(*zwp_text_input, SetContentType(_, _)).Times(0);
     EXPECT_CALL(*zwp_text_input, SetSurroundingText(_, _)).Times(0);
     EXPECT_CALL(*zwp_text_input, Commit()).Times(0);
-    zwp_text_input_v3_send_done(zwp_text_input->resource(), 1);
-    zwp_text_input_v3_send_done(zwp_text_input->resource(), 2);
+    zwp_text_input_v3_send_done(zwp_text_input->resource(), 4);
+    zwp_text_input_v3_send_done(zwp_text_input->resource(), 5);
   });
   VerifyAndClearExpectations();
 }
@@ -594,11 +630,11 @@ TEST_F(ZwpTextInputV3Test, ClearCachedStateNotSentOnEnable) {
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     auto* zwp_text_input = server->text_input_manager_v3()->text_input();
     EXPECT_CALL(*zwp_text_input, SetSurroundingText(_, _)).Times(1);
-    EXPECT_CALL(*zwp_text_input, Commit()).Times(1);
+    EXPECT_CALL(*zwp_text_input, SetCursorRect(_, _, _, _)).Times(1);
+    EXPECT_CALL(*zwp_text_input, Commit()).Times(2);
   });
   text_input_v3_->SetSurroundingText("text", gfx::Range::InvalidRange(),
                                      gfx::Range(4, 4));
-  // Not sent yet since done has not been received for the previous commit.
   text_input_v3_->SetCursorRect(kRect);
   VerifyAndClearExpectations();
 
@@ -615,13 +651,12 @@ TEST_F(ZwpTextInputV3Test, ClearCachedStateNotSentOnEnable) {
   VerifyAndClearExpectations();
 }
 
-TEST_F(ZwpTextInputV3Test, PendingRequestsClearedOnDisable) {
+TEST_F(ZwpTextInputV3Test, NothingSentOnDoneAfterDisable) {
   constexpr gfx::Rect kRect(50, 20, 1, 1);
   const std::string text("surroundingすしはおいしいですtext");
   constexpr gfx::Range kPreeditRange(11, 38);
   constexpr gfx::Range kSelectionRange(38, 38);
 
-  // Trigger 1 commit by calling activate.
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     auto* zwp_text_input = server->text_input_manager_v3()->text_input();
     InSequence s;
@@ -630,13 +665,12 @@ TEST_F(ZwpTextInputV3Test, PendingRequestsClearedOnDisable) {
   text_input_v3_->Enable(TEXT_INPUT_TYPE_TEXT, TEXT_INPUT_FLAG_NONE, true);
   VerifyAndClearExpectations();
 
-  // Pending set requests should not be sent without matching done event.
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     auto* zwp_text_input = server->text_input_manager_v3()->text_input();
-    EXPECT_CALL(*zwp_text_input, SetCursorRect(_, _, _, _)).Times(0);
-    EXPECT_CALL(*zwp_text_input, SetContentType(_, _)).Times(0);
-    EXPECT_CALL(*zwp_text_input, SetSurroundingText(_, _)).Times(0);
-    EXPECT_CALL(*zwp_text_input, Commit()).Times(0);
+    EXPECT_CALL(*zwp_text_input, SetCursorRect(_, _, _, _)).Times(1);
+    EXPECT_CALL(*zwp_text_input, SetContentType(_, _)).Times(1);
+    EXPECT_CALL(*zwp_text_input, SetSurroundingText(_, _)).Times(1);
+    EXPECT_CALL(*zwp_text_input, Commit()).Times(3);
   });
   text_input_v3_->SetSurroundingText(text, kPreeditRange, kSelectionRange);
   text_input_v3_->SetCursorRect(kRect);
@@ -644,7 +678,6 @@ TEST_F(ZwpTextInputV3Test, PendingRequestsClearedOnDisable) {
                                  TEXT_INPUT_FLAG_AUTOCORRECT_ON, true);
   VerifyAndClearExpectations();
 
-  // Disable should clear pending requests.
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     auto* zwp_text_input = server->text_input_manager_v3()->text_input();
     InSequence s;
@@ -654,41 +687,41 @@ TEST_F(ZwpTextInputV3Test, PendingRequestsClearedOnDisable) {
   text_input_v3_->Disable();
   VerifyAndClearExpectations();
 
-  // Since there are no more pending requests nothing should be sent even if
-  // done serial matches.
+  // Nothing should be sent on done events after disabling.
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     auto* zwp_text_input = server->text_input_manager_v3()->text_input();
     EXPECT_CALL(*zwp_text_input, SetCursorRect(_, _, _, _)).Times(0);
     EXPECT_CALL(*zwp_text_input, SetContentType(_, _)).Times(0);
     EXPECT_CALL(*zwp_text_input, SetSurroundingText(_, _)).Times(0);
     EXPECT_CALL(*zwp_text_input, Commit()).Times(0);
-    zwp_text_input_v3_send_done(zwp_text_input->resource(), 1);
-    zwp_text_input_v3_send_done(zwp_text_input->resource(), 2);
+    zwp_text_input_v3_send_done(zwp_text_input->resource(), 4);
+    zwp_text_input_v3_send_done(zwp_text_input->resource(), 5);
   });
   VerifyAndClearExpectations();
 }
 
-TEST_F(ZwpTextInputV3Test, PendingRequestsClearedOnReset) {
+// Reset clears the last sent state, so the same values are sent again after
+// it. See crbug.com/353915732.
+TEST_F(ZwpTextInputV3Test, StateResentAfterReset) {
   constexpr gfx::Rect kRect(50, 20, 1, 1);
   const std::string text("surroundingすしはおいしいですtext");
   constexpr gfx::Range kPreeditRange(11, 38);
   constexpr gfx::Range kSelectionRange(38, 38);
 
-  // Trigger 1 commit by calling activate
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     auto* zwp_text_input = server->text_input_manager_v3()->text_input();
     InSequence s;
     ExpectEnableWithDefaultContentType(zwp_text_input);
   });
   text_input_v3_->Enable(TEXT_INPUT_TYPE_TEXT, TEXT_INPUT_FLAG_NONE, true);
+  VerifyAndClearExpectations();
 
-  // Pending set requests should not be sent without matching done event.
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     auto* zwp_text_input = server->text_input_manager_v3()->text_input();
-    EXPECT_CALL(*zwp_text_input, SetCursorRect(_, _, _, _)).Times(0);
-    EXPECT_CALL(*zwp_text_input, SetContentType(_, _)).Times(0);
-    EXPECT_CALL(*zwp_text_input, SetSurroundingText(_, _)).Times(0);
-    EXPECT_CALL(*zwp_text_input, Commit()).Times(0);
+    EXPECT_CALL(*zwp_text_input, SetCursorRect(_, _, _, _)).Times(1);
+    EXPECT_CALL(*zwp_text_input, SetContentType(_, _)).Times(1);
+    EXPECT_CALL(*zwp_text_input, SetSurroundingText(_, _)).Times(1);
+    EXPECT_CALL(*zwp_text_input, Commit()).Times(3);
   });
   text_input_v3_->SetSurroundingText(text, kPreeditRange, kSelectionRange);
   text_input_v3_->SetCursorRect(kRect);
@@ -696,28 +729,109 @@ TEST_F(ZwpTextInputV3Test, PendingRequestsClearedOnReset) {
                                  TEXT_INPUT_FLAG_AUTOCORRECT_ON, true);
   VerifyAndClearExpectations();
 
-  // Reset should clear pending requests.
+  // Reset should not send anything by itself, even on done events.
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     auto* zwp_text_input = server->text_input_manager_v3()->text_input();
-    InSequence s;
     EXPECT_CALL(*zwp_text_input, Disable()).Times(0);
     EXPECT_CALL(*zwp_text_input, Enable()).Times(0);
-    EXPECT_CALL(*zwp_text_input, Commit()).Times(0);
-  });
-  text_input_v3_->Reset();
-  VerifyAndClearExpectations();
-
-  // Since there are no more pending requests nothing should be sent even if
-  // done serial matches.
-  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
-    auto* zwp_text_input = server->text_input_manager_v3()->text_input();
     EXPECT_CALL(*zwp_text_input, SetCursorRect(_, _, _, _)).Times(0);
     EXPECT_CALL(*zwp_text_input, SetContentType(_, _)).Times(0);
     EXPECT_CALL(*zwp_text_input, SetSurroundingText(_, _)).Times(0);
     EXPECT_CALL(*zwp_text_input, Commit()).Times(0);
-    zwp_text_input_v3_send_done(zwp_text_input->resource(), 1);
-    zwp_text_input_v3_send_done(zwp_text_input->resource(), 2);
-    zwp_text_input_v3_send_done(zwp_text_input->resource(), 3);
+  });
+  text_input_v3_->Reset();
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    zwp_text_input_v3_send_done(
+        server->text_input_manager_v3()->text_input()->resource(), 4);
+  });
+  VerifyAndClearExpectations();
+
+  // The same values are sent again after reset.
+  PostToServerAndWait([kRect](wl::TestWaylandServerThread* server) {
+    auto* zwp_text_input = server->text_input_manager_v3()->text_input();
+    InSequence s;
+    EXPECT_CALL(*zwp_text_input,
+                SetSurroundingText("surroundingtext", gfx::Range{11, 11}))
+        .Times(1);
+    EXPECT_CALL(*zwp_text_input, Commit()).Times(1);
+    EXPECT_CALL(*zwp_text_input, SetCursorRect(kRect.x(), kRect.y(),
+                                               kRect.width(), kRect.height()))
+        .Times(1);
+    EXPECT_CALL(*zwp_text_input, Commit()).Times(1);
+  });
+  text_input_v3_->SetSurroundingText(text, kPreeditRange, kSelectionRange);
+  text_input_v3_->SetCursorRect(kRect);
+  VerifyAndClearExpectations();
+}
+
+// Regression test for crbug.com/565605611: moving the cursor in the omnibox
+// sends the cursor rect, then the surrounding text, then resets the input
+// method context before any done event arrives. The surrounding text must
+// still reach the compositor.
+TEST_F(ZwpTextInputV3Test, SurroundingTextSetBeforeResetIsSent) {
+  constexpr gfx::Rect kRect(50, 20, 1, 1);
+  constexpr gfx::Rect kNewRect(40, 20, 1, 1);
+  constexpr std::string kText("abcd");
+
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    auto* zwp_text_input = server->text_input_manager_v3()->text_input();
+    InSequence s;
+    ExpectEnableWithDefaultContentType(zwp_text_input);
+  });
+  text_input_v3_->Enable(TEXT_INPUT_TYPE_TEXT, TEXT_INPUT_FLAG_NONE, true);
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    zwp_text_input_v3_send_done(
+        server->text_input_manager_v3()->text_input()->resource(), 1);
+  });
+  VerifyAndClearExpectations();
+
+  // Typing "abcd" sends the cursor rect and the surrounding text.
+  PostToServerAndWait([kRect, kText](wl::TestWaylandServerThread* server) {
+    auto* zwp_text_input = server->text_input_manager_v3()->text_input();
+    InSequence s;
+    EXPECT_CALL(*zwp_text_input, SetCursorRect(kRect.x(), kRect.y(),
+                                               kRect.width(), kRect.height()))
+        .Times(1);
+    EXPECT_CALL(*zwp_text_input, Commit()).Times(1);
+    EXPECT_CALL(*zwp_text_input, SetSurroundingText(kText, gfx::Range{4, 4}))
+        .Times(1);
+    EXPECT_CALL(*zwp_text_input, Commit()).Times(1);
+  });
+  text_input_v3_->SetCursorRect(kRect);
+  text_input_v3_->SetSurroundingText(kText, gfx::Range::InvalidRange(),
+                                     gfx::Range(4, 4));
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    zwp_text_input_v3_send_done(
+        server->text_input_manager_v3()->text_input()->resource(), 2);
+  });
+  VerifyAndClearExpectations();
+
+  // Pressing Left moves the cursor, which sends the cursor rect and the
+  // surrounding text. The context is then reset.
+  PostToServerAndWait([kNewRect, kText](wl::TestWaylandServerThread* server) {
+    auto* zwp_text_input = server->text_input_manager_v3()->text_input();
+    InSequence s;
+    EXPECT_CALL(*zwp_text_input,
+                SetCursorRect(kNewRect.x(), kNewRect.y(), kNewRect.width(),
+                              kNewRect.height()))
+        .Times(1);
+    EXPECT_CALL(*zwp_text_input, Commit()).Times(1);
+    EXPECT_CALL(*zwp_text_input, SetSurroundingText(kText, gfx::Range{3, 3}))
+        .Times(1);
+    EXPECT_CALL(*zwp_text_input, Commit()).Times(1);
+  });
+  text_input_v3_->SetCursorRect(kNewRect);
+  text_input_v3_->SetSurroundingText(kText, gfx::Range::InvalidRange(),
+                                     gfx::Range(3, 3));
+  text_input_v3_->Reset();
+  VerifyAndClearExpectations();
+
+  // Nothing is left to send when the done event arrives.
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    auto* zwp_text_input = server->text_input_manager_v3()->text_input();
+    EXPECT_CALL(*zwp_text_input, SetSurroundingText(_, _)).Times(0);
+    EXPECT_CALL(*zwp_text_input, Commit()).Times(0);
+    zwp_text_input_v3_send_done(zwp_text_input->resource(), 4);
   });
   VerifyAndClearExpectations();
 }

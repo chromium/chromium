@@ -165,14 +165,13 @@ void ZwpTextInputV3Impl::Reset() {
   const bool has_preedit =
       enabled_content_type_ && !applied_input_events_.preedit->text.empty();
 
-  // Clear last committed values.
-  committed_ime_data_.Reset();
+  // Clear last sent values so that the next ones are sent even if unchanged.
+  sent_ime_data_.Reset();
   // Even though chromium expects only preedit to be reset, the surrounding text
   // in fact could change along with reset being called if composition was
   // canceled internally. So we shouldn't keep old surrounding text anyway. See
   // related crbug.com/353915732 where surrounding text update is not sent after
   // reset when composition is canceled.
-  pending_ime_data_.Reset();
   pending_input_events_.Reset();
   applied_input_events_.Reset();
 
@@ -216,16 +215,12 @@ void ZwpTextInputV3Impl::Enable(ui::TextInputType type,
 void ZwpTextInputV3Impl::SendEnable(const ContentType& content_type) {
   enable_after_reset_factory_.InvalidateWeakPtrs();
   // Pending state is reset on enable.
-  pending_ime_data_.Reset();
   pending_input_events_.Reset();
   applied_input_events_.Reset();
-  committed_ime_data_.Reset();
+  sent_ime_data_.Reset();
 
   zwp_text_input_v3_enable(obj_.get());
-  zwp_text_input_v3_set_content_type(obj_.get(), content_type.content_hint,
-                                     content_type.content_purpose);
-  committed_ime_data_.content_type =
-      std::make_unique<ContentType>(content_type);
+  SendContentType(content_type);
   enabled_content_type_ = content_type;
 
   // Per the protocol, all state is reset by the compositor on each committed
@@ -234,18 +229,10 @@ void ZwpTextInputV3Impl::SendEnable(const ContentType& content_type) {
   // they may not otherwise be requested again (e.g. when the window regains
   // text input focus and the text is unchanged).
   if (latest_surrounding_text_) {
-    zwp_text_input_v3_set_surrounding_text(
-        obj_.get(), latest_surrounding_text_->text.c_str(),
-        latest_surrounding_text_->cursor, latest_surrounding_text_->anchor);
-    committed_ime_data_.surrounding_text =
-        std::make_unique<SurroundingText>(*latest_surrounding_text_);
+    SendSurroundingText(*latest_surrounding_text_);
   }
   if (latest_cursor_rect_) {
-    zwp_text_input_v3_set_cursor_rectangle(
-        obj_.get(), latest_cursor_rect_->x(), latest_cursor_rect_->y(),
-        latest_cursor_rect_->width(), latest_cursor_rect_->height());
-    committed_ime_data_.cursor_rect =
-        std::make_unique<gfx::Rect>(*latest_cursor_rect_);
+    SendCursorRect(*latest_cursor_rect_);
   }
   Commit();
 }
@@ -257,8 +244,6 @@ void ZwpTextInputV3Impl::ClearCachedState() {
 
 void ZwpTextInputV3Impl::Disable() {
   enabled_content_type_.reset();
-  // Avoid sending pending requests if done is received after disabling.
-  pending_ime_data_.Reset();
   // Do not process pending input events after deactivating.
   pending_input_events_.Reset();
   if (enable_after_reset_factory_.HasWeakPtrs()) {
@@ -268,11 +253,6 @@ void ZwpTextInputV3Impl::Disable() {
   }
   zwp_text_input_v3_disable(obj_.get());
   Commit();
-}
-
-bool ZwpTextInputV3Impl::DoneSerialEqualsCommitCount() {
-  return committed_ime_data_.commit_count ==
-         applied_input_events_.last_done_serial;
 }
 
 ZwpTextInputV3Impl::ContentType ZwpTextInputV3Impl::GetContentType(
@@ -289,25 +269,19 @@ ZwpTextInputV3Impl::ContentType ZwpTextInputV3Impl::GetContentType(
 
 void ZwpTextInputV3Impl::SetCursorRect(const gfx::Rect& rect) {
   latest_cursor_rect_ = rect;
-  if (committed_ime_data_.cursor_rect &&
-      *committed_ime_data_.cursor_rect == rect) {
+  if (sent_ime_data_.cursor_rect && *sent_ime_data_.cursor_rect == rect) {
     // This is to avoid a loop in sending cursor rect and receiving pre-edit
     // string.
     return;
   }
-  pending_ime_data_.cursor_rect = std::make_unique<gfx::Rect>(rect);
-  SendPendingImeData();
+  SendCursorRect(rect);
+  Commit();
 }
 
-bool ZwpTextInputV3Impl::SendCursorRect() {
-  CHECK(DoneSerialEqualsCommitCount());
-  if (const auto& rect = pending_ime_data_.cursor_rect; rect) {
-    zwp_text_input_v3_set_cursor_rectangle(obj_.get(), rect->x(), rect->y(),
-                                           rect->width(), rect->height());
-    committed_ime_data_.cursor_rect = std::move(pending_ime_data_.cursor_rect);
-    return true;
-  }
-  return false;
+void ZwpTextInputV3Impl::SendCursorRect(const gfx::Rect& rect) {
+  zwp_text_input_v3_set_cursor_rectangle(obj_.get(), rect.x(), rect.y(),
+                                         rect.width(), rect.height());
+  sent_ime_data_.cursor_rect = std::make_unique<gfx::Rect>(rect);
 }
 
 void ZwpTextInputV3Impl::SetSurroundingText(
@@ -346,82 +320,48 @@ void ZwpTextInputV3Impl::SetSurroundingText(
     cursor = base::checked_cast<int32_t>(
         selection_range.IsValid() ? selection_range.end() : text.length());
   }
-  auto surrounding_text =
-      std::make_unique<SurroundingText>(std::move(text), cursor, anchor);
-  latest_surrounding_text_ = *surrounding_text;
-  if (committed_ime_data_.surrounding_text &&
-      *committed_ime_data_.surrounding_text == *surrounding_text) {
+  latest_surrounding_text_ = SurroundingText(std::move(text), cursor, anchor);
+  if (sent_ime_data_.surrounding_text &&
+      *sent_ime_data_.surrounding_text == *latest_surrounding_text_) {
     return;
   }
-  pending_ime_data_.surrounding_text = std::move(surrounding_text);
-  SendPendingImeData();
+  SendSurroundingText(*latest_surrounding_text_);
+  Commit();
 }
 
-bool ZwpTextInputV3Impl::SendSurroundingText() {
-  CHECK(DoneSerialEqualsCommitCount());
-  if (const auto& surrounding = pending_ime_data_.surrounding_text) {
-    zwp_text_input_v3_set_surrounding_text(
-        obj_.get(), surrounding->text.c_str(), surrounding->cursor,
-        surrounding->anchor);
-    committed_ime_data_.surrounding_text =
-        std::move(pending_ime_data_.surrounding_text);
-    return true;
-  }
-  return false;
+void ZwpTextInputV3Impl::SendSurroundingText(
+    const SurroundingText& surrounding_text) {
+  zwp_text_input_v3_set_surrounding_text(
+      obj_.get(), surrounding_text.text.c_str(), surrounding_text.cursor,
+      surrounding_text.anchor);
+  sent_ime_data_.surrounding_text =
+      std::make_unique<SurroundingText>(surrounding_text);
 }
 
 void ZwpTextInputV3Impl::SetContentType(ui::TextInputType type,
                                         uint32_t flags,
                                         bool should_do_learning) {
-  auto content_type = std::make_unique<ContentType>(
-      GetContentType(type, flags, should_do_learning));
+  const ContentType content_type =
+      GetContentType(type, flags, should_do_learning);
   if (enabled_content_type_) {
-    enabled_content_type_ = *content_type;
+    enabled_content_type_ = content_type;
   }
-  if (committed_ime_data_.content_type &&
-      *committed_ime_data_.content_type == *content_type) {
+  if (sent_ime_data_.content_type &&
+      *sent_ime_data_.content_type == content_type) {
     return;
   }
-  pending_ime_data_.content_type = std::move(content_type);
-  SendPendingImeData();
+  SendContentType(content_type);
+  Commit();
 }
 
-bool ZwpTextInputV3Impl::SendContentType() {
-  CHECK(DoneSerialEqualsCommitCount());
-  if (const auto& content_type = pending_ime_data_.content_type) {
-    zwp_text_input_v3_set_content_type(obj_.get(), content_type->content_hint,
-                                       content_type->content_purpose);
-    committed_ime_data_.content_type =
-        std::move(pending_ime_data_.content_type);
-    return true;
-  }
-  return false;
-}
-
-void ZwpTextInputV3Impl::SendPendingImeData() {
-  if (!DoneSerialEqualsCommitCount()) {
-    return;
-  }
-  bool commit = false;
-  if (SendContentType()) {
-    commit = true;
-  }
-  if (SendCursorRect()) {
-    commit = true;
-  }
-  if (SendSurroundingText()) {
-    commit = true;
-  }
-  if (commit) {
-    Commit();
-  }
+void ZwpTextInputV3Impl::SendContentType(const ContentType& content_type) {
+  zwp_text_input_v3_set_content_type(obj_.get(), content_type.content_hint,
+                                     content_type.content_purpose);
+  sent_ime_data_.content_type = std::make_unique<ContentType>(content_type);
 }
 
 void ZwpTextInputV3Impl::Commit() {
   zwp_text_input_v3_commit(obj_.get());
-  // It will wrap around to 0 once it reaches uint32_t max value. It is
-  // expected that this will occur on the compositor side as well.
-  ++committed_ime_data_.commit_count;
 }
 
 void ZwpTextInputV3Impl::OnEnter(void* data,
@@ -470,8 +410,8 @@ void ZwpTextInputV3Impl::OnDeleteSurroundingText(
 void ZwpTextInputV3Impl::OnDone(void* data,
                                 struct zwp_text_input_v3* text_input,
                                 uint32_t serial) {
+  // The serial is not used, see `sent_ime_data_`.
   auto* self = static_cast<ZwpTextInputV3Impl*>(data);
-  self->applied_input_events_.last_done_serial = serial;
 
   if (!self->client_) {
     return;
@@ -520,11 +460,9 @@ void ZwpTextInputV3Impl::OnDone(void* data,
   // The input method expects the surrounding text sent in response to done to
   // reflect the applied events. Only do this if the client supports
   // surrounding text, i.e. it has been sent since the text input was enabled.
-  if (events_applied && (self->committed_ime_data_.surrounding_text ||
-                         self->pending_ime_data_.surrounding_text)) {
+  if (events_applied && self->sent_ime_data_.surrounding_text) {
     self->client_->OnInputEventsApplied();
   }
-  self->SendPendingImeData();
 }
 
 }  // namespace ui

@@ -154,8 +154,6 @@ class ZwpTextInputV3Impl : public ZwpTextInputV3 {
     std::unique_ptr<PreeditData> preedit;
     std::string commit;
     std::unique_ptr<DeleteSurroundingText> delete_surrounding_text;
-    // Only used when applied.
-    uint32_t last_done_serial = 0;
   };
 
   // Data sent to IME.
@@ -166,11 +164,7 @@ class ZwpTextInputV3Impl : public ZwpTextInputV3 {
     std::unique_ptr<gfx::Rect> cursor_rect;
     std::unique_ptr<ContentType> content_type;
     std::unique_ptr<SurroundingText> surrounding_text;
-    // Only used when committed.
-    uint32_t commit_count = 0;
   };
-
-  bool DoneSerialEqualsCommitCount();
 
   static ContentType GetContentType(TextInputType type,
                                     uint32_t flags,
@@ -183,11 +177,11 @@ class ZwpTextInputV3Impl : public ZwpTextInputV3 {
   // disabled or enabled in the meantime.
   void EnableAfterReset();
 
-  bool SendCursorRect();
-  bool SendContentType();
-  bool SendSurroundingText();
-
-  void SendPendingImeData();
+  // These send the request without committing it, and record the sent value
+  // in `sent_ime_data_`.
+  void SendCursorRect(const gfx::Rect& rect);
+  void SendContentType(const ContentType& content_type);
+  void SendSurroundingText(const SurroundingText& surrounding_text);
 
   void Commit();
 
@@ -224,16 +218,16 @@ class ZwpTextInputV3Impl : public ZwpTextInputV3 {
   // Input events applied on done event.
   InputEvents applied_input_events_;
 
-  // Pending data to be sent to IME.
-  ImeData pending_ime_data_;
-
-  // Data that was last sent to IME and committed.
-  ImeData committed_ime_data_;
+  // Data that was last sent to IME and committed. State requests are sent and
+  // committed right away rather than after a done event with a matching serial,
+  // since some compositors (e.g. wlroots and Smithay based ones) only send done
+  // events in response to input method commits.
+  ImeData sent_ime_data_;
 
   // Most recently requested surrounding text and cursor rect. Unlike
-  // `pending_ime_data_` and `committed_ime_data_`, these survive Enable() and
-  // Disable() so that they can be re-sent along with the enable request, since
-  // text-input-v3 state is reset by the compositor on each enable.
+  // `sent_ime_data_`, these survive Enable() and Disable() so that they can be
+  // re-sent along with the enable request, since text-input-v3 state is reset
+  // by the compositor on each enable.
   std::optional<SurroundingText> latest_surrounding_text_;
   std::optional<gfx::Rect> latest_cursor_rect_;
 
