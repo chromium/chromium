@@ -999,10 +999,12 @@ void VideoEncodeAcceleratorAdapter::BitstreamBufferReady(
     NotifyErrorStatus(
         {EncoderStatus::Codes::kInvalidOutputBuffer,
          "Buffer id is out of bounds: " + base::NumberToString(buffer_id)});
+    return;
   }
   if (!output_buffer_handles_[buffer_id]) {
     NotifyErrorStatus(
         {EncoderStatus::Codes::kInvalidOutputBuffer, "Invalid output buffer"});
+    return;
   }
 
   const base::WritableSharedMemoryMapping& mapping =

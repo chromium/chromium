@@ -114,9 +114,19 @@ void VideoEncoderFallback::ChangeOptions(const Options& options,
                                          OutputCB output_cb,
                                          EncoderStatusCB done_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (state_ == State::kError || !encoder_) {
+    std::move(done_cb).Run(EncoderStatus::Codes::kEncoderIllegalState);
+    return;
+  }
   options_ = options;
-  if (encoder_)
-    encoder_->ChangeOptions(options, std::move(output_cb), std::move(done_cb));
+  if (output_cb) {
+    // Keep `output_cb_` up to date, so that a later fallback encoder (see
+    // FallbackEncode()) emits outputs through the new callback.
+    output_cb_ = std::move(output_cb);
+    output_cb = base::BindRepeating(&VideoEncoderFallback::CallOutput,
+                                    weak_factory_.GetWeakPtr());
+  }
+  encoder_->ChangeOptions(options, std::move(output_cb), std::move(done_cb));
 }
 
 void VideoEncoderFallback::Flush(EncoderStatusCB done_cb) {
@@ -202,10 +212,18 @@ void VideoEncoderFallback::FallbackInitialize(EncoderStatusCB init_done_cb) {
 
   auto complete_cb = [](base::WeakPtr<VideoEncoderFallback> self,
                         EncoderStatusCB init_done_cb, EncoderStatus status) {
+    // `self` may have been destroyed (e.g. by reset() or close()) while the
+    // fallback encoder was initializing. This lambda isn't a weak method, so
+    // base::BindOnce() won't cancel it automatically.
+    if (!self) {
+      return;
+    }
     DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
     DCHECK(self->encoder_);
-    std::move(init_done_cb).Run(std::move(status));
+    // Update `state_` before running `init_done_cb`, since the client may
+    // synchronously call Encode() or Flush() from within it.
     self->state_ = State::kFallbackEncoder;
+    std::move(init_done_cb).Run(std::move(status));
   };
 
   // Initializes fallback encoder from main encoder's initialization failure.
