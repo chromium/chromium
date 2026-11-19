@@ -298,7 +298,13 @@ TEST_P(SublevelManagerTest, WidgetReparent) {
 // Invisible widgets should be skipped to work around MacOS where
 // stacking above them is no-op (crbug.com/1369180).
 // When they become invisible, sublevels should be respected.
-TEST_P(SublevelManagerTest, SkipInvisibleWidget) {
+// TODO(crbug.com/587864485): Chronically flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_SkipInvisibleWidget DISABLED_SkipInvisibleWidget
+#else
+#define MAYBE_SkipInvisibleWidget SkipInvisibleWidget
+#endif
+TEST_P(SublevelManagerTest, MAYBE_SkipInvisibleWidget) {
   std::unique_ptr<Widget> root =
       CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
   std::array<std::unique_ptr<Widget>, 3> children;
