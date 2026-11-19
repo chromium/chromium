@@ -212,9 +212,6 @@ public class ConfirmImportantSitesDialogFragment extends DialogFragment
     /** Array of important registerable domains we're showing to the user. */
     private String[] mImportantDomains;
 
-    /** Map of the reasons the above important domains were chosen. */
-    private final Map<String, Integer> mImportantDomainsReasons;
-
     /** Array of favicon urls to use for each important domain above. */
     private String @Nullable [] mFaviconURLs;
 
@@ -235,7 +232,6 @@ public class ConfirmImportantSitesDialogFragment extends DialogFragment
     private @Nullable ListView mSitesListView;
 
     public ConfirmImportantSitesDialogFragment() {
-        mImportantDomainsReasons = new HashMap<>();
         mCheckedState = new HashMap<>();
     }
 
@@ -251,10 +247,7 @@ public class ConfirmImportantSitesDialogFragment extends DialogFragment
         super.setArguments(args);
         mImportantDomains = assumeNonNull(args.getStringArray(IMPORTANT_DOMAINS_TAG));
         mFaviconURLs = args.getStringArray(FAVICON_URLS_TAG);
-        int[] importantDomainReasons = args.getIntArray(IMPORTANT_DOMAIN_REASONS_TAG);
         for (int i = 0; i < mImportantDomains.length; ++i) {
-            assert importantDomainReasons != null;
-            mImportantDomainsReasons.put(mImportantDomains[i], importantDomainReasons[i]);
             mCheckedState.put(mImportantDomains[i], true);
         }
     }
