@@ -1396,9 +1396,6 @@ public final class ProductionSupportedFlagList {
                 "When enabled, WebView uses the nonembedded low entropy source for layered studies."
                         + " This requires 2 restarts of the WebView-based app to take effect."),
         Flag.baseFeature(
-                "StructuredHeadersInRust",
-                "Enables the Rust-based structured headers parser instead of C++."),
-        Flag.baseFeature(
                 AwFeatures.WEBVIEW_INIT_IN_CONSTRUCTOR,
                 "When enabled, WebView initialization runs during the WebViewChromium constructor"
                         + " instead of waiting for init() to be called."),
