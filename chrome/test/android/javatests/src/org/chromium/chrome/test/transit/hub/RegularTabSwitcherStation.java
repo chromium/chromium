@@ -8,6 +8,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.isSelected;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.junit.Assert.assertEquals;
+
 import static org.chromium.base.test.transit.ViewElement.unscopedOption;
 import static org.chromium.chrome.test.util.ChromeTabUtils.getTabCountOnUiThread;
 
@@ -25,6 +27,7 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
+import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.transit.tabmodel.TabClosingCondition;
 
 /** Regular tab switcher pane station. */
@@ -73,6 +76,37 @@ public class RegularTabSwitcherStation extends TabSwitcherStation {
         ChromeTabbedActivity activity = origin.getActivity();
         return Outcome.enter(new RegularTabSwitcherStation(regularTabsExist, incognitoTabsExist))
                 .andWaitFor(new TabClosingCondition(activity::getCurrentTabModel));
+    }
+
+    /**
+     * Outcome: the last tab of |origin| closes and the empty regular tab switcher shows.
+     *
+     * <p>Asserts no other tab would be selected instead: |origin|'s tab is the last regular tab, or
+     * the last incognito tab when there are no regular tabs.
+     */
+    public static Outcome<RegularTabSwitcherStation> afterClosingLastTab(CtaPageStation origin) {
+        TabModelSelector tabModelSelector = origin.getTabModelSelector();
+        int incognitoTabCount =
+                getTabCountOnUiThread(tabModelSelector.getModel(/* incognito= */ true));
+        int regularTabCount =
+                getTabCountOnUiThread(tabModelSelector.getModel(/* incognito= */ false));
+        if (origin.isIncognito()) {
+            incognitoTabCount--;
+            assertEquals(
+                    "Another incognito tab should be selected instead of entering the tab switcher",
+                    0,
+                    incognitoTabCount);
+        } else {
+            regularTabCount--;
+        }
+        assertEquals(
+                "Another regular tab should be selected instead of entering the tab switcher",
+                0,
+                regularTabCount);
+        return afterClosingTab(
+                origin,
+                /* regularTabsExist= */ false,
+                /* incognitoTabsExist= */ incognitoTabCount > 0);
     }
 
     @Override

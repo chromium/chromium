@@ -108,8 +108,7 @@ public class ChromeHttpAuthHandlerTest {
     public void authDialogDismissOnTabClosed() throws Exception {
         ChromeHttpAuthHandler handler = triggerAuth();
         verifyAuthDialogVisibility(handler, true);
-        ChromeTabUtils.closeCurrentTab(
-                InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
+        mPage.closeLastTabToTabSwitcherFast();
         verifyAuthDialogVisibility(handler, false);
     }
 

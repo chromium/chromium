@@ -35,7 +35,6 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ActivityTestUtils;
-import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.url.Origin;
@@ -97,8 +96,7 @@ public class DocumentPictureInPictureActivityTest {
         DocumentPictureInPictureActivity activity = launchActivity();
         CriteriaHelper.pollUiThread(() -> !activity.isFinishing());
 
-        ChromeTabUtils.closeCurrentTab(
-                InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
+        mPage.closeLastTabToTabSwitcherFast();
 
         CriteriaHelper.pollUiThread(() -> activity.isFinishing() || activity.isDestroyed());
     }

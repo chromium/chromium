@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.url_constants.UrlOverrideUtils;
 import org.chromium.chrome.test.transit.ChromeTriggers;
@@ -286,6 +287,18 @@ public class CtaPageStation extends BasePageStation<ChromeTabbedActivity> {
      */
     public <T extends CtaPageStation> T closeCurrentTabFast(Builder<T> nextPageBuilder) {
         return ChromeTriggers.closeCurrentTabTo(this).reach(nextTabSelected(nextPageBuilder));
+    }
+
+    /**
+     * Closes the last tab programmatically, without undo, and arrives at the empty tab switcher.
+     *
+     * <p>Programmatic version of {@link
+     * TabSwitcherActionMenuFacility#selectCloseTabAndDisplayTabSwitcher()}; also uses {@link
+     * TabClosingSource#GRID_TAB_SWITCHER}, so the window stays open.
+     */
+    public RegularTabSwitcherStation closeLastTabToTabSwitcherFast() {
+        return ChromeTriggers.closeCurrentTabTo(this, TabClosingSource.GRID_TAB_SWITCHER)
+                .reach(RegularTabSwitcherStation.afterClosingLastTab(this));
     }
 
     /** Opens the tab switcher by pressing the toolbar tab switcher button. */

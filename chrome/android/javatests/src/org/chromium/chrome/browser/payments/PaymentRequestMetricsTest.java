@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.payments;
 
 import androidx.test.filters.MediumTest;
-import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -28,7 +27,7 @@ import org.chromium.chrome.browser.payments.PaymentRequestTestRule.FactorySpeed;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
-import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.payments.Event2;
 import org.chromium.components.payments.PaymentFeatureList;
@@ -51,9 +50,11 @@ public class PaymentRequestMetricsTest {
     public final RuleChain mRuleChain =
             RuleChain.outerRule(mCtaTestRule).around(mPaymentRequestTestRule);
 
+    private WebPageStation mPage;
+
     @Before
     public void setUp() throws TimeoutException, InterruptedException {
-        mPaymentRequestTestRule.startOnTestPage();
+        mPage = mPaymentRequestTestRule.startOnTestPage();
         AutofillTestHelper helper = new AutofillTestHelper();
         // The user has a shipping address and a credit card associated with that address on disk.
         String billingAddressId =
@@ -277,8 +278,7 @@ public class PaymentRequestMetricsTest {
         mPaymentRequestTestRule.triggerUiAndWait(
                 "buyWithUrlMethods", mPaymentRequestTestRule.getReadyToPay());
 
-        ChromeTabUtils.closeCurrentTab(
-                InstrumentationRegistry.getInstrumentation(), mCtaTestRule.getActivity());
+        mPage.closeLastTabToTabSwitcherFast();
 
         watcher.assertExpected();
     }

@@ -7,10 +7,6 @@ package org.chromium.chrome.test.transit.page;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
-import static org.junit.Assert.assertEquals;
-
-import static org.chromium.chrome.test.util.ChromeTabUtils.getTabCountOnUiThread;
-
 import android.view.View;
 
 import org.chromium.base.test.transit.Condition;
@@ -19,7 +15,6 @@ import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
@@ -75,29 +70,8 @@ public class TabSwitcherActionMenuFacility extends Facility<CtaPageStation> {
      * <p>This happens when the last regular tab is closed or when the last incognito is closed.
      */
     public RegularTabSwitcherStation selectCloseTabAndDisplayTabSwitcher() {
-        TabModelSelector tabModelSelector = mHostStation.getTabModelSelector();
-        int incognitoTabCount =
-                getTabCountOnUiThread(tabModelSelector.getModel(/* incognito= */ true));
-        int regularTabCount =
-                getTabCountOnUiThread(tabModelSelector.getModel(/* incognito= */ false));
-        if (mHostStation.isIncognito()) {
-            incognitoTabCount--;
-            assertEquals(
-                    "Another incognito tab should be selected instead of entering the tab switcher",
-                    0,
-                    incognitoTabCount);
-        } else {
-            regularTabCount--;
-        }
-        assertEquals(
-                "Another regular tab should be selected instead of entering the tab switcher",
-                0,
-                regularTabCount);
-
         return selectCloseTabTo()
-                .arriveAt(
-                        new RegularTabSwitcherStation(
-                                /* regularTabsExist= */ false, incognitoTabCount > 0));
+                .reach(RegularTabSwitcherStation.afterClosingLastTab(mHostStation));
     }
 
     /**

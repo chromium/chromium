@@ -124,7 +124,7 @@ public class MediaCaptureOverlayControllerTest {
         waitForOverlayVisibility(true);
 
         // Now close the tab and assert that the overlay disappears.
-        ChromeTabUtils.closeCurrentTab(InstrumentationRegistry.getInstrumentation(), mActivity);
+        mPage.closeLastTabToTabSwitcherFast();
         waitForOverlayVisibility(false);
     }
 
