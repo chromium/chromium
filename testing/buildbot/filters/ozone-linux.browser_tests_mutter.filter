@@ -6,7 +6,6 @@
 # which doesn't work with per-window scaling.
 -All/GetDisplayMediaHiDpiBrowserTest.Capture/3840x2160
 
--All/PDFExtensionJSInk2Test.Ink2/*
 -All/SoftNavigationTest.LayoutShift/*
 -BackForwardCachePageLoadMetricsObserverBrowserTest.LayoutShiftNormalization_AfterBackForwardCacheRestore
 -LayoutInstabilityTest.*
