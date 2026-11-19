@@ -166,7 +166,6 @@ allow_circular_includes_from_untriaged = [
   "//chrome/browser/ui/webui/ash/os_feedback_dialog:os_feedback_dialog",
   "//chrome/browser/ui/webui/ash/settings/pages/people:people",
   "//chrome/browser/ui/webui/ash/settings/pages/privacy:privacy",
-  "//chrome/browser/ui/webui/ash/settings/pages/system_preferences:system_preferences",
   "//chrome/browser/ui/webui/ash/settings/pages:pages",
   "//chrome/browser/ui/webui/ash/settings/services/settings_manager:settings_manager",
   "//chrome/browser/ui/webui/ash/settings:settings",

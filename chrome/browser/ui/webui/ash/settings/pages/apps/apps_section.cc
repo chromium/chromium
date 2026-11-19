@@ -20,7 +20,6 @@
 #include "chrome/browser/ash/child_accounts/on_device_controls/app_controls_service_factory.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/apps/android_apps_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/crostini/guest_os_handler.h"
-#include "chrome/browser/ui/webui/ash/settings/pages/system_preferences/startup_section.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_features.h"
 #include "chrome/browser/web_applications/link_capturing_features.h"

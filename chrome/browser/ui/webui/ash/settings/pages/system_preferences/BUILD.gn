@@ -26,13 +26,9 @@ static_library("system_preferences") {
 
   deps = [
     "//ash/constants",
-    "//chrome/browser/ui/webui/ash/settings/pages/apps",
     "//chrome/browser/ui/webui/ash/settings/search",
     "//chromeos/ash/experiences/settings_ui/resources:strings",
     "//content/public/browser",
     "//ui/base",
   ]
-
-  allow_circular_includes_from =
-      [ "//chrome/browser/ui/webui/ash/settings/pages/apps" ]
 }
