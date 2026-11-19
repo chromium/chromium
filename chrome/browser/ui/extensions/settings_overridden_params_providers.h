@@ -9,11 +9,10 @@
 #include <optional>
 
 #include "base/functional/callback_forward.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/extensions/extension_settings_overridden_dialog.h"
 
-namespace content {
-class WebContents;
-}  // namespace content
+class Profile;
 
 namespace settings_overridden_params {
 
@@ -57,7 +56,7 @@ bool HasUnacknowledgedMatchingDseExtension(Profile* profile);
 // is invoked with nullopt. Asynchronous operation allows fetching of
 // extension-related resources such as icons.
 void GetSearchOverriddenParamsThenRun(
-    content::WebContents* web_contents,
+    Profile* profile,
     base::OnceCallback<
         void(std::unique_ptr<ExtensionSettingsOverriddenDialog::Params>)>
         done_callback);

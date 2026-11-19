@@ -174,7 +174,7 @@ void DefaultSearchExtensionControlledController::ShowConfirmationDialog(
   SetDialogCurrentlyShowing(weak_factory_.GetWeakPtr());
 
   settings_overridden_params::GetSearchOverriddenParamsThenRun(
-      &web_contents,
+      base::to_address(profile_),
       base::BindOnce(
           &DefaultSearchExtensionControlledController::OnParamsLoaded,
           weak_factory_.GetWeakPtr(), std::move(callback)));

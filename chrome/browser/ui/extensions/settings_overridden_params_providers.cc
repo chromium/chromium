@@ -50,7 +50,6 @@
 #include "components/url_formatter/elide_url.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/browser_url_handler.h"
-#include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_pref_value_map.h"
 #include "extensions/browser/extension_pref_value_map_factory.h"
 #include "extensions/browser/extension_registry.h"
@@ -799,14 +798,10 @@ GetSearchOverriddenParams(Profile* profile) {
 }  // namespace
 
 void GetSearchOverriddenParamsThenRun(
-    content::WebContents* web_contents,
+    Profile* profile,
     base::OnceCallback<
         void(std::unique_ptr<ExtensionSettingsOverriddenDialog::Params>)>
         done_callback) {
-  Profile* profile =
-      web_contents
-          ? Profile::FromBrowserContext(web_contents->GetBrowserContext())
-          : nullptr;
   std::unique_ptr<ExtensionSettingsOverriddenDialog::Params> params =
       GetSearchOverriddenParams(profile);
   if (!params || !base::FeatureList::IsEnabled(

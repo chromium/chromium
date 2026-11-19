@@ -59,6 +59,7 @@
 #include "components/search_engines/template_url_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/vector_icons/vector_icons.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_system.h"
@@ -137,7 +138,9 @@ class SettingsOverriddenParamsProvidersBrowserTest
     std::optional<ExtensionSettingsOverriddenDialog::Params> result;
     base::RunLoop run_loop;
     settings_overridden_params::GetSearchOverriddenParamsThenRun(
-        web_contents,
+        web_contents
+            ? Profile::FromBrowserContext(web_contents->GetBrowserContext())
+            : nullptr,
         base::BindLambdaForTesting(
             [&](std::unique_ptr<ExtensionSettingsOverriddenDialog::Params>
                     params) {
