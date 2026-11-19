@@ -239,6 +239,75 @@ TEST_F(VideoToolboxDecompressionSessionManagerTest, CompatibleFormatChange) {
   EXPECT_EQ(decompression_session_->creations, 1ul);
 }
 
+TEST_F(VideoToolboxDecompressionSessionManagerTest, SerializedDecodes) {
+  auto format = CreateFormat();
+  auto sample0 = CreateSample(format.get());
+  auto sample1 = CreateSample(format.get());
+  auto sample2 = CreateSample(format.get());
+  auto metadata0 = CreateMetadata(0);
+  auto metadata1 = CreateMetadata(1);
+  auto metadata2 = CreateMetadata(2);
+  metadata0->session_metadata.serialize_decodes = true;
+  metadata1->session_metadata.serialize_decodes = true;
+  metadata2->session_metadata.serialize_decodes = true;
+
+  video_toolbox_.Decode(sample0, std::move(metadata0));
+  video_toolbox_.Decode(sample1, std::move(metadata1));
+  video_toolbox_.Decode(sample2, std::move(metadata2));
+
+  // Only the first decode is submitted; the others wait for it to be output.
+  EXPECT_EQ(video_toolbox_.NumDecodes(), 3ul);
+  EXPECT_EQ(decompression_session_->NumDecodes(), 1ul);
+
+  {
+    testing::InSequence sequence;
+    EXPECT_CALL(*this, OnOutput(_, MetadataEq(0)));
+    EXPECT_CALL(*this, OnOutput(_, MetadataEq(1)));
+    EXPECT_CALL(*this, OnOutput(_, MetadataEq(2)));
+  }
+
+  decompression_session_->CompleteDecode();
+  EXPECT_EQ(video_toolbox_.NumDecodes(), 2ul);
+  EXPECT_EQ(decompression_session_->NumDecodes(), 1ul);
+
+  decompression_session_->CompleteDecode();
+  EXPECT_EQ(video_toolbox_.NumDecodes(), 1ul);
+  EXPECT_EQ(decompression_session_->NumDecodes(), 1ul);
+
+  decompression_session_->CompleteDecode();
+
+  EXPECT_EQ(video_toolbox_.NumDecodes(), 0ul);
+  EXPECT_EQ(decompression_session_->NumDecodes(), 0ul);
+  EXPECT_EQ(decompression_session_->creations, 1ul);
+}
+
+TEST_F(VideoToolboxDecompressionSessionManagerTest,
+       SerializedDecodeWaitsForResetDecodes) {
+  auto format = CreateFormat();
+  auto sample0 = CreateSample(format.get());
+  auto sample1 = CreateSample(format.get());
+  auto metadata0 = CreateMetadata(0);
+  auto metadata1 = CreateMetadata(1);
+  metadata1->session_metadata.serialize_decodes = true;
+
+  video_toolbox_.Decode(sample0, std::move(metadata0));
+  video_toolbox_.Reset();
+  video_toolbox_.Decode(sample1, std::move(metadata1));
+
+  // The discarded decode is still in flight, so the next one waits for it.
+  EXPECT_EQ(video_toolbox_.NumDecodes(), 1ul);
+  EXPECT_EQ(decompression_session_->NumDecodes(), 1ul);
+
+  EXPECT_CALL(*this, OnOutput(_, MetadataEq(1)));
+
+  decompression_session_->CompleteDecode();
+  EXPECT_EQ(decompression_session_->NumDecodes(), 1ul);
+  decompression_session_->CompleteDecode();
+
+  EXPECT_EQ(video_toolbox_.NumDecodes(), 0ul);
+  EXPECT_EQ(decompression_session_->NumDecodes(), 0ul);
+}
+
 TEST_F(VideoToolboxDecompressionSessionManagerTest, IncompatibleFormatChange) {
   auto format0 = CreateFormat();
   auto format1 = CreateFormat();

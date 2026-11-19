@@ -35,6 +35,12 @@ struct MEDIA_GPU_EXPORT VideoToolboxDecompressionSessionMetadata {
   gfx::Rect visible_rect;
   // Selects a full-range pixel format.
   bool full_range = false;
+  // Submit each decode only once all earlier decodes have been output, so that
+  // at most one is in flight. With asynchronous decompression and several AV1
+  // spatial-layer temporal units in flight, VideoToolbox has been seen to
+  // output the base-layer picture instead of the top layer
+  // (crbug.com/573939397).
+  bool serialize_decodes = false;
 };
 
 // Metadata used when decoding a frame.

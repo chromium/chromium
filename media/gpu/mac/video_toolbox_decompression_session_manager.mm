@@ -169,6 +169,12 @@ bool VideoToolboxDecompressionSessionManager::Process() {
       }
     }
 
+    // Wait for earlier decodes to be output; OnOutput() resumes processing.
+    if (metadata->session_metadata.serialize_decodes &&
+        !active_decodes_.empty()) {
+      return true;
+    }
+
     // Create a new session if necessary.
     if (!decompression_session_->IsValid()) {
       if (!CreateSession(format, metadata->session_metadata)) {
@@ -375,6 +381,12 @@ void VideoToolboxDecompressionSessionManager::OnOutput(
   // callback might do synchronously.
   if (draining_ && active_decodes_.empty()) {
     DestroySession();
+    if (!Process()) {
+      NotifyError(DecoderStatus::Codes::kPlatformDecodeFailure);
+      return;
+    }
+  } else if (active_decodes_.empty() && !pending_decodes_.empty()) {
+    // A serialized decode is waiting for the session to become idle.
     if (!Process()) {
       NotifyError(DecoderStatus::Codes::kPlatformDecodeFailure);
       return;
