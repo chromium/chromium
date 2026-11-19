@@ -545,14 +545,6 @@ class AccountSelectionMediator {
         return currentTime - mComponentShowTime > POTENTIALLY_UNINTENDED_INPUT_THRESHOLD;
     }
 
-    private boolean isValidBrandIcon(@Nullable Bitmap bitmap, boolean shouldCircleCrop) {
-        return bitmap != null
-                && bitmap.getWidth() == bitmap.getHeight()
-                && (!shouldCircleCrop
-                        || bitmap.getWidth()
-                                >= AccountSelectionBridge.getBrandIconMinimumSize(mRpMode));
-    }
-
     private void maybeRecordAccountChooserResult(int result) {
         if (mRpMode != RpMode.ACTIVE || mSwitchedFromPassiveSheet || mAccountChooserState == null) {
             return;
@@ -994,6 +986,40 @@ class AccountSelectionMediator {
         return mHeaderType;
     }
 
+    // Shows the account chooser if mSelectedAccount is null, or the sheet for the selected account
+    // (the confirmation sheet in passive mode) otherwise. Callers returning to the chooser need to
+    // clear mSelectedAccount first, as handleBackPress() does. Does not set the
+    // AccountChooserResult placeholder, which stays in showAccountsInternal().
+    private boolean showAccountChooser() {
+        mHeaderType = HeaderType.SIGN_IN;
+        // Show the selected account's IDP or only show the IDP if there is just one.
+        if (mSelectedAccount != null) {
+            mIdpForDisplay = mSelectedAccount.getIdentityProviderData().getIdpForDisplay();
+        } else if (assumeNonNull(mIdpDataListForShowAccounts).size() == 1) {
+            mIdpForDisplay = mIdpDataListForShowAccounts.get(0).getIdpForDisplay();
+        } else {
+            mIdpForDisplay = null;
+        }
+
+        // We want the accounts to be clickable if there is no preselected account or if it doesn't
+        // need permission, which happens when `getFields()` is empty. Otherwise, the continue
+        // button selects the preselected account, also when the sheet shows no disclosure text
+        // because `shouldSwitchToActiveSheetForPermission()` is true.
+        if (!updateSheet(
+                mSelectedAccount != null
+                        ? Arrays.asList(mSelectedAccount)
+                        : assertNonNull(mAccounts),
+                mSelectedAccount != null
+                        ? Collections.emptyList()
+                        : assertNonNull(mIdpDataListForShowAccounts),
+                /* areAccountsClickable= */ mSelectedAccount == null
+                        || mSelectedAccount.getFields().length == 0)) {
+            return false;
+        }
+        updateBackPressBehavior();
+        return true;
+    }
+
     private boolean showAccountsInternal(@Nullable List<Account> newAccounts) {
         // TODO(crbug.com/356665527): Handle multiple newly signed-in accounts.
         Account newlySignedInAccount =
@@ -1033,32 +1059,9 @@ class AccountSelectionMediator {
             // request permission UI without disclosure text.
         }
 
-        mHeaderType = HeaderType.SIGN_IN;
-        // Show the selected account's IDP or only show the IDP if there is just one.
-        if (mSelectedAccount != null) {
-            mIdpForDisplay = mSelectedAccount.getIdentityProviderData().getIdpForDisplay();
-        } else if (assumeNonNull(mIdpDataListForShowAccounts).size() == 1) {
-            mIdpForDisplay = mIdpDataListForShowAccounts.get(0).getIdpForDisplay();
-        } else {
-            mIdpForDisplay = null;
-        }
-
-        // We want the accounts to be clickable if there is no preselected account or if it doesn't
-        // need permission, which happens when `getFields()` is empty. Otherwise, the continue
-        // button selects the preselected account, also when the sheet shows no disclosure text
-        // because `shouldSwitchToActiveSheetForPermission()` is true.
-        if (!updateSheet(
-                mSelectedAccount != null
-                        ? Arrays.asList(mSelectedAccount)
-                        : assertNonNull(mAccounts),
-                mSelectedAccount != null
-                        ? Collections.emptyList()
-                        : assertNonNull(mIdpDataListForShowAccounts),
-                /* areAccountsClickable= */ mSelectedAccount == null
-                        || mSelectedAccount.getFields().length == 0)) {
+        if (!showAccountChooser()) {
             return false;
         }
-        updateBackPressBehavior();
 
         // This is a placeholder assuming the tab containing the account chooser will be closed.
         // This will be updated upon user action i.e. clicking on account row, use
@@ -1271,9 +1274,15 @@ class AccountSelectionMediator {
 
     private void updateHeader(
             @Nullable Bitmap headerIcon, boolean shouldCircleCrop, @Nullable Bitmap rpBrandIcon) {
-        mHeaderIcon = isValidBrandIcon(headerIcon, shouldCircleCrop) ? headerIcon : null;
+        mHeaderIcon =
+                AccountSelectionViewBinder.isValidBrandIcon(headerIcon, mRpMode, shouldCircleCrop)
+                        ? headerIcon
+                        : null;
         mRpBrandIcon =
-                isValidBrandIcon(rpBrandIcon, /* shouldCircleCrop= */ true) ? rpBrandIcon : null;
+                AccountSelectionViewBinder.isValidBrandIcon(
+                                rpBrandIcon, mRpMode, /* shouldCircleCrop= */ true)
+                        ? rpBrandIcon
+                        : null;
         String rpForDisplay = "";
         String iframeForDisplay = "";
         assumeNonNull(mRpData);

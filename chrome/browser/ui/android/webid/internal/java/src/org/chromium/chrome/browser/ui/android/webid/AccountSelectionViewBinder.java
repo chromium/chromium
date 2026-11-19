@@ -136,6 +136,17 @@ class AccountSelectionViewBinder {
         return new BitmapDrawable(resources, output);
     }
 
+    // Returns whether bitmap is a valid brand icon: non-null, square, and at least
+    // getBrandIconMinimumSize(rpMode) when circle-cropped.
+    static boolean isValidBrandIcon(
+            @Nullable Bitmap bitmap, @RpMode.EnumType int rpMode, boolean shouldCircleCrop) {
+        return bitmap != null
+                && bitmap.getWidth() == bitmap.getHeight()
+                && (!shouldCircleCrop
+                        || bitmap.getWidth()
+                                >= AccountSelectionBridge.getBrandIconMinimumSize(rpMode));
+    }
+
     static void updateAccountViewAvatar(PropertyModel model, View view) {
         AccountProperties.Avatar avatarData = model.get(AccountProperties.AVATAR);
         if (avatarData == null) return;
@@ -287,7 +298,7 @@ class AccountSelectionViewBinder {
                 Bitmap brandIcon = idpMetadata.getBrandIconBitmap();
                 ImageView endIconView = view.findViewById(R.id.end_icon);
                 if (!showIdp || brandIcon == null) {
-                    setDefaultLoginImage(context, properties, startIconView);
+                    setDefaultLoginImage(context, properties.mRpMode, startIconView);
                     if (endIconView != null) {
                         endIconView.setVisibility(View.GONE);
                     }
@@ -301,7 +312,7 @@ class AccountSelectionViewBinder {
                     startIconView.setImageDrawable(croppedBrandIcon);
 
                     if (endIconView != null) {
-                        setDefaultLoginImage(context, properties, endIconView);
+                        setDefaultLoginImage(context, properties.mRpMode, endIconView);
                         endIconView.setVisibility(View.VISIBLE);
                     }
                 }
@@ -352,14 +363,12 @@ class AccountSelectionViewBinder {
     }
 
     static void setDefaultLoginImage(
-            Context context, LoginButtonProperties.Properties properties, ImageView iconView) {
+            Context context, @RpMode.EnumType int rpMode, ImageView iconView) {
         TintedDrawable plusIcon =
                 TintedDrawable.constructTintedDrawable(
                         context,
-                        properties.mRpMode == RpMode.ACTIVE
-                                ? R.drawable.plus
-                                : R.drawable.open_in_new_tab,
-                        properties.mRpMode == RpMode.ACTIVE
+                        rpMode == RpMode.ACTIVE ? R.drawable.plus : R.drawable.open_in_new_tab,
+                        rpMode == RpMode.ACTIVE
                                 ? R.color.default_icon_color_accent1_tint_list
                                 : R.color.default_icon_color_tint_list);
         iconView.setImageDrawable(plusIcon);

@@ -16,6 +16,7 @@ import static org.robolectric.Shadows.shadowOf;
 import static java.util.Arrays.asList;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.text.Spanned;
 import android.text.style.ClickableSpan;
@@ -882,5 +883,42 @@ public class AccountSelectionViewTest extends AccountSelectionJUnitTestBase {
                 "Incorrect subtitle",
                 "rp.com embeds content from iframe.com",
                 subtitle.getText().toString());
+    }
+
+    @Test
+    public void testIsValidBrandIcon() {
+        int minSize = AccountSelectionBridge.getBrandIconMinimumSize(mRpMode);
+        assertTrue(minSize > 1);
+
+        assertFalse(
+                AccountSelectionViewBinder.isValidBrandIcon(
+                        /* bitmap= */ null, mRpMode, /* shouldCircleCrop= */ true));
+        assertFalse(
+                AccountSelectionViewBinder.isValidBrandIcon(
+                        /* bitmap= */ null, mRpMode, /* shouldCircleCrop= */ false));
+
+        Bitmap nonSquare = Bitmap.createBitmap(minSize, minSize + 1, Bitmap.Config.ARGB_8888);
+        assertFalse(
+                AccountSelectionViewBinder.isValidBrandIcon(
+                        nonSquare, mRpMode, /* shouldCircleCrop= */ true));
+        assertFalse(
+                AccountSelectionViewBinder.isValidBrandIcon(
+                        nonSquare, mRpMode, /* shouldCircleCrop= */ false));
+
+        Bitmap tooSmall = Bitmap.createBitmap(minSize - 1, minSize - 1, Bitmap.Config.ARGB_8888);
+        assertFalse(
+                AccountSelectionViewBinder.isValidBrandIcon(
+                        tooSmall, mRpMode, /* shouldCircleCrop= */ true));
+        assertTrue(
+                AccountSelectionViewBinder.isValidBrandIcon(
+                        tooSmall, mRpMode, /* shouldCircleCrop= */ false));
+
+        Bitmap validSquare = Bitmap.createBitmap(minSize, minSize, Bitmap.Config.ARGB_8888);
+        assertTrue(
+                AccountSelectionViewBinder.isValidBrandIcon(
+                        validSquare, mRpMode, /* shouldCircleCrop= */ true));
+        assertTrue(
+                AccountSelectionViewBinder.isValidBrandIcon(
+                        validSquare, mRpMode, /* shouldCircleCrop= */ false));
     }
 }
