@@ -82,10 +82,6 @@ Profile& GetProfileForTopChromeWebUIContents(Profile* user_profile,
   return *profile;
 }
 
-bool IsWebUIDataSourceShared(content::WebUI* web_ui) {
-  return Profile::FromWebUI(web_ui)->IsTopChromeWebUIProfile();
-}
-
 ScopedTopChromeWebUIProfileForTesting::ScopedTopChromeWebUIProfileForTesting() {
   CreateTopChromeWebUIProfile();
 }

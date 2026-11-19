@@ -80,8 +80,6 @@ class OmniboxPopupUI : public TopChromeWebUIController,
   ~OmniboxPopupUI() override;
 
   // content::WebUIController:
-  void WebUIRenderFrameCreated(
-      content::RenderFrameHost* render_frame_host) override;
   void PopulateLocalResourceLoaderConfig(
       blink::mojom::LocalResourceLoaderConfig* config,
       const url::Origin& requesting_origin) override;
@@ -90,9 +88,7 @@ class OmniboxPopupUI : public TopChromeWebUIController,
   void OnColorProviderChanged() override;
 
   // Returns the loadTimeData values that depend on `profile`, the profile of
-  // the window that shows the popup. They are in the WebUIDataSource, or passed
-  // to each frame in WebUIRenderFrameCreated() if the data source is shared by
-  // the windows of all profiles, i.e. in TopChromeWebUIProfile.
+  // the window that shows the popup. See AddProfileLoadTimeData().
   static base::DictValue GetProfileLoadTimeData(Profile* profile);
 
   // Instantiates the implementor of the searchbox::mojom::PageHandlerFactory

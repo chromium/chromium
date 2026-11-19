@@ -5,10 +5,8 @@
 #include "chrome/browser/ui/webui/organizer_panel/organizer_panel_ui.h"
 
 #include <optional>
-#include <string>
 
 #include "base/check.h"
-#include "base/json/json_writer.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -23,7 +21,6 @@
 #include "chrome/browser/ui/webui/tab_search/search_handler.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_page_handler.h"
 #include "chrome/browser/ui/webui/theme_source.h"
-#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_profile.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_user_profile.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/webui_url_constants.h"
@@ -33,7 +30,6 @@
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -70,13 +66,11 @@ std::optional<GURL> OrganizerPanelUIConfig::GetPreloadEngagementAliasURL()
 }
 
 OrganizerPanelUI::OrganizerPanelUI(content::WebUI* web_ui)
-    // If the data source is shared, `enable_chrome_send` enables
-    // `BindingsPolicyValue::kWebUi`, which is required for `SetWebUIProperty` /
-    // `chrome.getVariableValue('profileLoadTimeData')`. No message is sent with
-    // chrome.send().
+    // If the data source is shared, AddProfileLoadTimeData() needs
+    // `enable_chrome_send`. No message is sent with chrome.send().
     : TopChromeWebUIController(
           web_ui,
-          /*enable_chrome_send=*/webui::IsWebUIDataSourceShared(web_ui)),
+          /*enable_chrome_send=*/IsWebUIDataSourceShared(web_ui)),
       webui_load_timer_(web_ui->GetWebContents(),
                         "Tabs.Organizer.WebUI.LoadDocumentTime",
                         "Tabs.Organizer.WebUI.LoadCompletedTime") {
@@ -120,13 +114,9 @@ OrganizerPanelUI::OrganizerPanelUI(content::WebUI* web_ui)
   source->AddLocalizedStrings(kStrings);
   source->AddBoolean("foreignTabsEnabled",
                      organizer_panel::IsOrganizerPanelForeignTabsEnabled());
-  // The values that depend on the profile. If the data source is shared by the
-  // windows of all profiles, WebUIRenderFrameCreated() passes them to each
-  // frame instead.
-  if (!webui::IsWebUIDataSourceShared(web_ui)) {
-    source->AddLocalizedStrings(GetProfileLoadTimeData(
-        webui::GetUserProfile(web_ui->GetWebContents())));
-  }
+  AddProfileLoadTimeData(
+      source,
+      GetProfileLoadTimeData(webui::GetUserProfile(web_ui->GetWebContents())));
 
   ui::Accelerator accelerator(ui::VKEY_A,
                               ui::EF_SHIFT_DOWN | ui::EF_PLATFORM_ACCELERATOR);
@@ -163,18 +153,6 @@ OrganizerPanelUI::~OrganizerPanelUI() = default;
 base::DictValue OrganizerPanelUI::GetProfileLoadTimeData(Profile* profile) {
   return base::DictValue().Set("isIncognitoMode",
                                profile->IsIncognitoProfile());
-}
-
-void OrganizerPanelUI::WebUIRenderFrameCreated(
-    content::RenderFrameHost* render_frame_host) {
-  // If the data source isn't shared, the constructor added these values to it.
-  if (!webui::IsWebUIDataSourceShared(web_ui())) {
-    return;
-  }
-  if (std::optional<std::string> json = base::WriteJson(GetProfileLoadTimeData(
-          webui::GetUserProfile(web_ui()->GetWebContents())))) {
-    render_frame_host->SetWebUIProperty("profileLoadTimeData", *json);
-  }
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(OrganizerPanelUI)

@@ -5,10 +5,8 @@
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
 
 #include <atomic>
-#include <optional>
 #include <string_view>
 
-#include "base/json/json_writer.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
@@ -40,7 +38,6 @@
 #include "chrome/browser/ui/webui/searchbox/webui_omnibox_handler.h"
 #include "chrome/browser/ui/webui/theme_colors_source_manager.h"
 #include "chrome/browser/ui/webui/theme_colors_source_manager_factory.h"
-#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_profile.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_user_profile.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_layout_css_helper.h"
@@ -145,12 +142,7 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
   source->AddLocalizedStrings(
       SearchboxHandler::GetProfileIndependentWebUIDataSourceDict(
           {.enable_voice_search = false, .enable_lens_search = false}));
-  // The values that depend on the profile. If the data source is shared by the
-  // windows of all profiles, WebUIRenderFrameCreated() passes them to each
-  // frame instead.
-  if (!webui::IsWebUIDataSourceShared(web_ui)) {
-    source->AddLocalizedStrings(GetProfileLoadTimeData(profile_));
-  }
+  AddProfileLoadTimeData(source, GetProfileLoadTimeData(profile_));
 
   // Default search engine placeholders, see
   // `omnibox_popup::mojom::PlaceholderType`. `$1` is the search engine name.
@@ -371,18 +363,6 @@ base::DictValue OmniboxPopupUI::GetProfileLoadTimeData(Profile* profile) {
            omnibox::kAskGCurrentTabChip.Get() &&
                omnibox::AreContextualTasksEligible(profile));
   return dict;
-}
-
-void OmniboxPopupUI::WebUIRenderFrameCreated(
-    content::RenderFrameHost* render_frame_host) {
-  // If the data source isn't shared, the constructor added these values to it.
-  if (!webui::IsWebUIDataSourceShared(web_ui())) {
-    return;
-  }
-  if (std::optional<std::string> json =
-          base::WriteJson(GetProfileLoadTimeData(profile_))) {
-    render_frame_host->SetWebUIProperty("profileLoadTimeData", *json);
-  }
 }
 
 // The popup's chrome://theme/colors.css and layout_constants_v0.css are

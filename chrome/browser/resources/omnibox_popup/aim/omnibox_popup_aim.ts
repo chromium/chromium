@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import '/strings.m.js';
-import 'chrome://omnibox-popup.top-chrome/shared/profile_load_time_data.js';
+import '//resources/js/profile_load_time_data.js';
 import './aim_app.js';
 
 export {AimButtonMode} from '//resources/cr_components/composebox/composebox_aim_button.js';

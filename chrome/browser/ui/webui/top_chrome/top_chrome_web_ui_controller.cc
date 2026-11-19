@@ -4,10 +4,16 @@
 
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 
+#include "base/check.h"
+#include "base/json/json_writer.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/host_zoom_map.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
+#include "content/public/browser/web_ui_data_source.h"
+#include "content/public/common/bindings_policy.h"
 
 TopChromeWebUIController::TopChromeWebUIController(
     content::WebUI* contents,
@@ -34,6 +40,34 @@ void TopChromeWebUIController::WebUIPrimaryPageChanged(content::Page& page) {
 }
 
 TopChromeWebUIController::~TopChromeWebUIController() = default;
+
+void TopChromeWebUIController::WebUIRenderFrameCreated(
+    content::RenderFrameHost* render_frame_host) {
+  MojoWebUIController::WebUIRenderFrameCreated(render_frame_host);
+  if (profile_load_time_data_json_) {
+    render_frame_host->SetWebUIProperty("profileLoadTimeData",
+                                        *profile_load_time_data_json_);
+  }
+}
+
+// static
+bool TopChromeWebUIController::IsWebUIDataSourceShared(content::WebUI* web_ui) {
+  return Profile::FromWebUI(web_ui)->IsTopChromeWebUIProfile();
+}
+
+void TopChromeWebUIController::AddProfileLoadTimeData(
+    content::WebUIDataSource* source,
+    const base::DictValue& values) {
+  if (!IsWebUIDataSourceShared(web_ui())) {
+    source->AddLocalizedStrings(values);
+    return;
+  }
+  CHECK(web_ui()->GetBindings().Has(content::BindingsPolicyValue::kWebUi));
+  // Unlike the data source, the values can't be merged, so add them once.
+  CHECK(!profile_load_time_data_json_);
+  profile_load_time_data_json_ = base::WriteJson(values);
+  CHECK(profile_load_time_data_json_);
+}
 
 content::WebUIController::DisplayDisposition
 TopChromeWebUIController::GetDisplayDisposition() const {

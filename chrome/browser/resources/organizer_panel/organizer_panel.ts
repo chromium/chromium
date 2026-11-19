@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import '/strings.m.js';
-import './profile_load_time_data.js';
+import '//resources/js/profile_load_time_data.js';
 import './app.js';
 
 export type {Range} from '/tab_group_shared/search.js';

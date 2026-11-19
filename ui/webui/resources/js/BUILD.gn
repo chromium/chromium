@@ -32,6 +32,7 @@ build_webui("build") {
     "parse_html_subset.ts",
     "platform.ts",
     "plural_string_proxy.ts",
+    "profile_load_time_data.ts",
     "promise_resolver.ts",
     "search_highlight_utils.ts",
     "static_types.ts",

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import '/strings.m.js';
-import 'chrome://omnibox-popup.top-chrome/shared/profile_load_time_data.js';
+import '//resources/js/profile_load_time_data.js';
 import './full_app.js';
 
 export {SearchboxBrowserProxy} from '//resources/cr_components/searchbox/searchbox_browser_proxy.js';

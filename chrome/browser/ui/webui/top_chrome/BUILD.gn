@@ -61,6 +61,7 @@ source_set("impl") {
     "//components/input",
     "//components/zoom",
     "//content/public/browser",
+    "//content/public/common",
     "//ui/base",
     "//ui/webui",
   ]
