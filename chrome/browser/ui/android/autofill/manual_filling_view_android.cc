@@ -32,6 +32,7 @@
 #include "components/password_manager/core/browser/password_string.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
 #include "url/android/gurl_android.h"
@@ -315,7 +316,7 @@ ScopedJavaGlobalRef<jobject> ManualFillingViewAndroid::GetOrCreateJavaObject() {
     return nullptr;  // No window attached (yet or anymore).
   }
   java_object_internal_.Reset(Java_ManualFillingComponentBridge_create(
-      base::android::AttachCurrentThread(), reinterpret_cast<intptr_t>(this),
+      base::android::AttachCurrentThread(), jni_zero::MakeRaw(this),
       controller_->container_view()->GetWindowAndroid(), web_contents_));
   return java_object_internal_;
 }
