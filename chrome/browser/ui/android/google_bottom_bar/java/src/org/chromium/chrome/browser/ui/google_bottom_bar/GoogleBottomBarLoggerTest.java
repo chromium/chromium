@@ -4,7 +4,6 @@
 package org.chromium.chrome.browser.ui.google_bottom_bar;
 
 import static org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.BOTTOM_BAR_CREATED_HISTOGRAM;
-import static org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.BOTTOM_BAR_VARIANT_CREATED_HISTOGRAM;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.BUTTON_SHOWN_HISTOGRAM;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.BUTTON_UPDATED_HISTOGRAM;
 
@@ -16,7 +15,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.GoogleBottomBarButtonEvent;
 import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.GoogleBottomBarCreatedEvent;
-import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.GoogleBottomBarVariantCreatedEvent;
 
 /** Unit tests for {@link GoogleBottomBarLogger}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -57,71 +55,6 @@ public class GoogleBottomBarLoggerTest {
                 HistogramWatcher.newBuilder().expectNoRecords(BOTTOM_BAR_CREATED_HISTOGRAM).build();
 
         GoogleBottomBarLogger.logCreatedEvent(GoogleBottomBarCreatedEvent.COUNT);
-    }
-
-    @Test
-    public void logVariantCreatedEvent_unknownVariant_logsUnknownVariant() {
-        mHistogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        BOTTOM_BAR_VARIANT_CREATED_HISTOGRAM,
-                        GoogleBottomBarVariantCreatedEvent.UNKNOWN_VARIANT);
-
-        GoogleBottomBarLogger.logVariantCreatedEvent(
-                GoogleBottomBarVariantCreatedEvent.UNKNOWN_VARIANT);
-    }
-
-    @Test
-    public void logVariantCreatedEvent_noVariant_logsNoVariant() {
-        mHistogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        BOTTOM_BAR_VARIANT_CREATED_HISTOGRAM,
-                        GoogleBottomBarVariantCreatedEvent.NO_VARIANT);
-
-        GoogleBottomBarLogger.logVariantCreatedEvent(GoogleBottomBarVariantCreatedEvent.NO_VARIANT);
-    }
-
-    @Test
-    public void logVariantCreatedEvent_doubleDeckerVariant_logsDoubleDecker() {
-        mHistogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        BOTTOM_BAR_VARIANT_CREATED_HISTOGRAM,
-                        GoogleBottomBarVariantCreatedEvent.DOUBLE_DECKER);
-
-        GoogleBottomBarLogger.logVariantCreatedEvent(
-                GoogleBottomBarVariantCreatedEvent.DOUBLE_DECKER);
-    }
-
-    @Test
-    public void logVariantCreatedEvent_singleDeckerVariant_logsSingleDecker() {
-        mHistogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        BOTTOM_BAR_VARIANT_CREATED_HISTOGRAM,
-                        GoogleBottomBarVariantCreatedEvent.SINGLE_DECKER);
-
-        GoogleBottomBarLogger.logVariantCreatedEvent(
-                GoogleBottomBarVariantCreatedEvent.SINGLE_DECKER);
-    }
-
-    @Test
-    public void
-            logVariantCreatedEvent_singleDeckerWithRightButtonsVariant_logsSingleDeckerWithRightButtons() {
-        mHistogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        BOTTOM_BAR_VARIANT_CREATED_HISTOGRAM,
-                        GoogleBottomBarVariantCreatedEvent.SINGLE_DECKER_WITH_RIGHT_BUTTONS);
-
-        GoogleBottomBarLogger.logVariantCreatedEvent(
-                GoogleBottomBarVariantCreatedEvent.SINGLE_DECKER_WITH_RIGHT_BUTTONS);
-    }
-
-    @Test(expected = AssertionError.class)
-    public void logVariantCreatedEvent_unsupportedVariant_doesNotLogEvent() {
-        mHistogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectNoRecords(BOTTOM_BAR_VARIANT_CREATED_HISTOGRAM)
-                        .build();
-
-        GoogleBottomBarLogger.logVariantCreatedEvent(GoogleBottomBarVariantCreatedEvent.COUNT);
     }
 
     @Test

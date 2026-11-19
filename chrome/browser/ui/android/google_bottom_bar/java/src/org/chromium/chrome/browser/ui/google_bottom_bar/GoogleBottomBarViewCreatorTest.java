@@ -18,7 +18,6 @@ import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.B
 import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonId.SEARCH;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonId.SHARE;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.BOTTOM_BAR_CREATED_HISTOGRAM;
-import static org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.BOTTOM_BAR_VARIANT_CREATED_HISTOGRAM;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.BUTTON_SHOWN_HISTOGRAM;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.BUTTON_UPDATED_HISTOGRAM;
 
@@ -51,7 +50,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonId;
 import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.GoogleBottomBarButtonEvent;
 import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.GoogleBottomBarCreatedEvent;
-import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.GoogleBottomBarVariantCreatedEvent;
 import org.chromium.chrome.browser.ui.google_bottom_bar.proto.IntentParams.GoogleBottomBarIntentParams;
 import org.chromium.chrome.browser.ui.google_bottom_bar.proto.IntentParams.GoogleBottomBarIntentParams.VariantLayoutType;
 import org.chromium.ui.base.TestActivity;
@@ -188,10 +186,6 @@ public class GoogleBottomBarViewCreatorTest {
     @Test
     public void
             testCreateGoogleBottomBarView_noVariantLayout_returnsLayoutWithBottomBarButtonsContainer() {
-        mHistogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        BOTTOM_BAR_VARIANT_CREATED_HISTOGRAM,
-                        GoogleBottomBarVariantCreatedEvent.NO_VARIANT);
         mGoogleBottomBarViewCreator = getGoogleBottomBarViewCreator(getEvenLayoutConfig());
 
         View view = mGoogleBottomBarViewCreator.createGoogleBottomBarView();
@@ -210,9 +204,6 @@ public class GoogleBottomBarViewCreatorTest {
             testCreateGoogleBottomBarView_doubleDeckerLayout_returnsLayoutWithBottomBarButtonsAndSearchboxContainers() {
         mHistogramWatcher =
                 HistogramWatcher.newBuilder()
-                        .expectIntRecord(
-                                BOTTOM_BAR_VARIANT_CREATED_HISTOGRAM,
-                                GoogleBottomBarVariantCreatedEvent.DOUBLE_DECKER)
                         .expectIntRecords(
                                 BUTTON_SHOWN_HISTOGRAM,
                                 GoogleBottomBarButtonEvent.SEARCHBOX_HOME,
@@ -245,9 +236,6 @@ public class GoogleBottomBarViewCreatorTest {
             testCreateGoogleBottomBarView_singleDeckerLayout_returnsLayoutWithBottomBarSearchboxContainer() {
         mHistogramWatcher =
                 HistogramWatcher.newBuilder()
-                        .expectIntRecord(
-                                BOTTOM_BAR_VARIANT_CREATED_HISTOGRAM,
-                                GoogleBottomBarVariantCreatedEvent.SINGLE_DECKER)
                         .expectIntRecords(
                                 BUTTON_SHOWN_HISTOGRAM,
                                 GoogleBottomBarButtonEvent.SEARCHBOX_HOME,
@@ -352,9 +340,6 @@ public class GoogleBottomBarViewCreatorTest {
             testCreateGoogleBottomBarView_singleDeckerWithRightButtonsLayout_returnsLayoutWithBottomBarButtonsOnRightAndSearchboxContainers() {
         mHistogramWatcher =
                 HistogramWatcher.newBuilder()
-                        .expectIntRecord(
-                                BOTTOM_BAR_VARIANT_CREATED_HISTOGRAM,
-                                GoogleBottomBarVariantCreatedEvent.SINGLE_DECKER_WITH_RIGHT_BUTTONS)
                         .expectIntRecords(
                                 BUTTON_SHOWN_HISTOGRAM,
                                 GoogleBottomBarButtonEvent.SEARCHBOX_HOME,

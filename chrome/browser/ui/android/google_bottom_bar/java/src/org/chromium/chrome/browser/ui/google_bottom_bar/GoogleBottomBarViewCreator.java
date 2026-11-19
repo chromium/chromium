@@ -31,7 +31,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonConfig;
 import org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonId;
 import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.GoogleBottomBarCreatedEvent;
-import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.GoogleBottomBarVariantCreatedEvent;
 import org.chromium.ui.base.ViewUtils;
 
 import java.util.function.Supplier;
@@ -158,40 +157,22 @@ public class GoogleBottomBarViewCreator {
     }
 
     private ViewGroup getLayoutRoot() {
-        int rootLayoutId = 0;
-        switch (mConfig.getVariantLayoutType()) {
-            case NO_VARIANT -> {
-                GoogleBottomBarLogger.logVariantCreatedEvent(
-                        GoogleBottomBarVariantCreatedEvent.NO_VARIANT);
-                rootLayoutId = R.layout.bottom_bar_no_variant_root_layout;
-            }
-            case DOUBLE_DECKER -> {
-                GoogleBottomBarLogger.logVariantCreatedEvent(
-                        GoogleBottomBarVariantCreatedEvent.DOUBLE_DECKER);
-                rootLayoutId = R.layout.bottom_bar_double_decker_root_layout;
-            }
-            case SINGLE_DECKER -> {
-                GoogleBottomBarLogger.logVariantCreatedEvent(
-                        GoogleBottomBarVariantCreatedEvent.SINGLE_DECKER);
-                rootLayoutId = R.layout.bottom_bar_single_decker_root_layout;
-            }
-            case SINGLE_DECKER_WITH_RIGHT_BUTTONS -> {
-                GoogleBottomBarLogger.logVariantCreatedEvent(
-                        GoogleBottomBarVariantCreatedEvent.SINGLE_DECKER_WITH_RIGHT_BUTTONS);
-                rootLayoutId = R.layout.bottom_bar_single_decker_with_right_buttons_root_layout;
-            }
-            default -> {
-                GoogleBottomBarLogger.logVariantCreatedEvent(
-                        GoogleBottomBarVariantCreatedEvent.UNKNOWN_VARIANT);
-                GoogleBottomBarLogger.logVariantCreatedEvent(
-                        GoogleBottomBarVariantCreatedEvent.NO_VARIANT);
-                Log.e(
-                        TAG,
-                        "Unexpected variant layout type: %s. Fallback to no variant" + " layout.",
-                        mConfig.getVariantLayoutType());
-                rootLayoutId = R.layout.bottom_bar_no_variant_root_layout;
-            }
-        }
+        int rootLayoutId =
+                switch (mConfig.getVariantLayoutType()) {
+                    case NO_VARIANT -> R.layout.bottom_bar_no_variant_root_layout;
+                    case DOUBLE_DECKER -> R.layout.bottom_bar_double_decker_root_layout;
+                    case SINGLE_DECKER -> R.layout.bottom_bar_single_decker_root_layout;
+                    case SINGLE_DECKER_WITH_RIGHT_BUTTONS ->
+                            R.layout.bottom_bar_single_decker_with_right_buttons_root_layout;
+                    default -> {
+                        Log.e(
+                                TAG,
+                                "Unexpected variant layout type: %s. Fallback to no variant"
+                                        + " layout.",
+                                mConfig.getVariantLayoutType());
+                        yield R.layout.bottom_bar_no_variant_root_layout;
+                    }
+                };
         return (ViewGroup) LayoutInflater.from(mContext).inflate(rootLayoutId, /* root= */ null);
     }
 

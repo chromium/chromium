@@ -288,14 +288,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Spotlight layout"/>
 </enum>
 
-<enum name="GoogleBottomBarVariantCreatedEvent">
-  <int value="0" label="Unknown variant"/>
-  <int value="1" label="No variant"/>
-  <int value="2" label="Double decker"/>
-  <int value="3" label="Single decker"/>
-  <int value="4" label="Single decker with right buttons"/>
-</enum>
-
 <enum name="IncognitoCCTCallerId">
   <int value="0" label="Other Apps"/>
   <int value="1" label="Google Apps"/>
