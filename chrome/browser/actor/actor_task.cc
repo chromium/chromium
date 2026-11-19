@@ -201,6 +201,7 @@ ActorTask::ActorTask(base::PassKey<ActorKeyedService, ActorTask>,
                         ? options.webui_task_options->feature_mode.value_or(
                               glic::mojom::FeatureMode::kUnspecified)
                         : glic::mojom::FeatureMode::kUnspecified),
+      skip_history_recording_(options.skip_history_recording),
       glic_initial_invocation_source_(options.glic_initial_invocation_source),
       policy_checker_(*policy_checker),
       delegate_(options.delegate),

@@ -832,6 +832,27 @@ TEST_F(ActorKeyedServiceTest, CreateTaskWithOptions_PopulatesActorTaskOptions) {
   EXPECT_EQ(slot.value(), ConvertAgentContainerConfig(agent_container_config));
 }
 
+TEST_F(ActorKeyedServiceTest, CreateTaskWithOptions_SkipHistoryRecording) {
+  auto* actor_service = ActorKeyedService::Get(profile());
+  ASSERT_TRUE(actor_service);
+
+  TaskId default_options_task_id = actor_service->CreateTaskWithOptions(
+      TestTaskSourceInfo(), NoEnterprisePolicyChecker(), ui_state_manager());
+  const ActorTask* default_options_task =
+      actor_service->GetTask(default_options_task_id);
+  ASSERT_TRUE(default_options_task);
+  EXPECT_FALSE(default_options_task->skip_history_recording());
+
+  ActorTaskOptions skip_options;
+  skip_options.skip_history_recording = true;
+  TaskId skip_task_id = actor_service->CreateTaskWithOptions(
+      TestTaskSourceInfo(), NoEnterprisePolicyChecker(), ui_state_manager(),
+      std::move(skip_options));
+  const ActorTask* skip_task = actor_service->GetTask(skip_task_id);
+  ASSERT_TRUE(skip_task);
+  EXPECT_TRUE(skip_task->skip_history_recording());
+}
+
 }  // namespace
 
 }  // namespace actor

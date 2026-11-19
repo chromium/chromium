@@ -54,6 +54,10 @@ struct ActorTaskOptions {
 
   // Initial surface creation mode when no initial surface is provided.
   ExecutionMode execution_mode = ExecutionMode::kHeaded;
+
+  // Whether navigations and critical actions performed during the task should
+  // be excluded from Chrome history and critical action logging.
+  bool skip_history_recording = false;
 };
 
 }  // namespace actor

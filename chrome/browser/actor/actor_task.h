@@ -116,6 +116,10 @@ class ActorTask : public base::SupportsUserData {
 
   glic::mojom::FeatureMode feature_mode() const { return feature_mode_; }
 
+  // Returns true if navigations and critical actions performed during the task
+  // should be excluded from Chrome history and critical action logging.
+  bool skip_history_recording() const { return skip_history_recording_; }
+
   std::optional<glic::mojom::InvocationSource> glic_initial_invocation_source()
       const {
     return glic_initial_invocation_source_;
@@ -499,6 +503,10 @@ class ActorTask : public base::SupportsUserData {
 
   // The feature mode for the task.
   const glic::mojom::FeatureMode feature_mode_;
+
+  // Whether navigations and critical actions performed during the task should
+  // be excluded from Chrome history and critical action logging.
+  const bool skip_history_recording_ = false;
 
   // Invocation source that first opened the Glic instance this task was
   // created from. nullopt for tasks not created via Glic.
