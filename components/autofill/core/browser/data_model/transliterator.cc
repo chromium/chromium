@@ -14,7 +14,6 @@
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/transliterator.h"
 #include "base/no_destructor.h"
-#include "base/strings/strcat.h"
 #include "base/synchronization/lock.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -55,38 +54,25 @@ GetTransliteratorsMap() {
 
 std::unique_ptr<base::i18n::Transliterator> CreateTransliterator(
     TransliterationId id) {
-  // Apply a simplified version of the "::de-ASCII" transliteration, which
-  // follows DIN 5007-2 ("ö" becomes "oe"). Here we map everything to lower case
-  // because that happens with "::Lower" anyway.
-  constexpr std::string_view kGermanRules =
-      "[ö {o\u0308} Ö {O\u0308}] → oe;"
-      "[ä {a\u0308} Ä {A\u0308}] → ae;"
-      "[ü {u\u0308} Ü {U\u0308}] → ue;";
-
-  // The following rules are happening in the following order:
-  // First there are `TransliterationId::kGerman` specific rules if they are
-  // present, then
-  // "::NFD;" performs a decomposition and normalization. (â becomes a and ̂)
-  // "::[:Nonspacing Mark:] Remove;" removes the " ̂"
-  // "::Lower;" converts the result to lower case
-  // "::NFC;" re-composes the decomposed characters
-  // "::Latin-ASCII;" converts various other Latin characters to an ASCII
-  //   representation (e.g. "ł", which does not get decomposed, to "l"; "ß"
-  //   to "ss").
-  constexpr std::string_view kDefaultRules =
-      "::NFD; ::[:Nonspacing Mark:] Remove; ::Lower; ::NFC; ::Latin-ASCII;";
-
+  // Address normalization rules live in
+  // `//tools/crates/icu4x_datagen/config.toml`,
+  // `//third_party/rust/icu4x_data/transliterators/de_normalize_for_address.txt`,
+  // and `//base/i18n/transliterator.cc`:
+  // - `und-t-und-x0-afillde` first expands German umlauts per DIN 5007-2
+  //   ("ö" -> "oe", "ä" -> "ae", "ü" -> "ue").
+  // - `und-t-und-x0-afill` (and the remainder of `und-t-und-x0-afillde`) runs
+  //   "::NFD; ::[:Nonspacing Mark:] Remove; ::Lower; ::NFC; ::Latin-ASCII;"
+  //   to decompose, strip combining marks, lowercase, recompose, and fold
+  //   remaining Latin characters (e.g. "ł" -> "l", "ß" -> "ss") to ASCII.
   switch (id) {
     case TransliterationId::kKatakanaToHiragana:
       return base::i18n::CreateTransliterator("Katakana-Hiragana");
     case TransliterationId::kHiraganaToKatakana:
       return base::i18n::CreateTransliterator("Hiragana-Katakana");
     case TransliterationId::kGerman:
-      return base::i18n::CreateTransliteratorFromRules(
-          "DE_NormalizForAddress", base::StrCat({kGermanRules, kDefaultRules}));
+      return base::i18n::CreateTransliterator("und-t-und-x0-afillde");
     case TransliterationId::kDefault:
-      return base::i18n::CreateTransliteratorFromRules(
-          "NormalizeForAddress", kDefaultRules);
+      return base::i18n::CreateTransliterator("und-t-und-x0-afill");
   }
 }
 
