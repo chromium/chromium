@@ -22,7 +22,8 @@ class TestNavigationUIData : public content::NavigationUIData {
   ~TestNavigationUIData() override;
 
   std::unique_ptr<NavigationUIData> Clone() override;
-  std::unique_ptr<NavigationUIData> CloneForNewNavigation() override;
+  std::unique_ptr<NavigationUIData> MaybeCreateForRedispatchedNavigation()
+      override;
   void PopulateFromNavigationHandle(
       NavigationHandle& navigation_handle) override;
 

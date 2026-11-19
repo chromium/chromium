@@ -8,7 +8,8 @@ namespace content {
 
 NavigationUIData::~NavigationUIData() = default;
 
-std::unique_ptr<NavigationUIData> NavigationUIData::CloneForNewNavigation() {
+std::unique_ptr<NavigationUIData>
+NavigationUIData::MaybeCreateForRedispatchedNavigation() {
   return nullptr;
 }
 

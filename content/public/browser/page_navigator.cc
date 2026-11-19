@@ -77,7 +77,7 @@ OpenURLParams OpenURLParams::FromNavigationHandle(NavigationHandle* handle) {
   params.reload_type = handle->GetReloadType();
   if (handle->IsInOutermostMainFrame() && handle->GetNavigationUIData()) {
     params.navigation_ui_data =
-        handle->GetNavigationUIData()->CloneForNewNavigation();
+        handle->GetNavigationUIData()->MaybeCreateForRedispatchedNavigation();
   }
 
   // NavigationHandle will include all redirects that happened on the way to the

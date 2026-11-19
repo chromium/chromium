@@ -24,7 +24,7 @@ std::unique_ptr<NavigationUIData> TestNavigationUIData::Clone() {
 }
 
 std::unique_ptr<NavigationUIData>
-TestNavigationUIData::CloneForNewNavigation() {
+TestNavigationUIData::MaybeCreateForRedispatchedNavigation() {
   return std::make_unique<TestNavigationUIData>(precursor_data_);
 }
 

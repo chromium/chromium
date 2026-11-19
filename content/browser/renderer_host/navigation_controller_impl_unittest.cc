@@ -4623,8 +4623,9 @@ TEST_F(NavigationControllerTest,
 //   first navigation's ID, then build fallback `OpenURLParams` via
 //   `OpenURLParams::FromNavigationHandle()`.
 // - Verify `FromNavigationHandle()` preserves `precursor_data()` while
-//   resetting handle-populated state via `CloneForNewNavigation()`, and
-//   starting the second navigation populates the second navigation's ID.
+//   resetting handle-populated state via
+//   `MaybeCreateForRedispatchedNavigation()`, and starting the second
+//   navigation populates the second navigation's ID.
 TEST_F(NavigationControllerTest,
        OpenURLParamsNavigationUIDataCloneAndFromNavigationHandle) {
   const GURL kUrl1("http://foo1");

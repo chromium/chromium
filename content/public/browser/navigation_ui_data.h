@@ -48,10 +48,20 @@ class CONTENT_EXPORT NavigationUIData {
   // the same navigation (e.g. passing to `NavigationURLLoader`).
   virtual std::unique_ptr<NavigationUIData> Clone() = 0;
 
-  // Creates a copy containing only upfront caller-supplied fields for a new
-  // navigation created via `OpenURLParams::FromNavigationHandle()`. Returns
-  // `nullptr` by default for subclasses without upfront fields.
-  virtual std::unique_ptr<NavigationUIData> CloneForNewNavigation();
+  // Returns the upfront `NavigationUIData` for a new navigation re-dispatched
+  // from this navigation via `OpenURLParams::FromNavigationHandle()`, carrying
+  // only the caller-supplied inputs that should apply to the new navigation
+  // and no `NavigationHandle`-dependent state.
+  //
+  // Returns `nullptr` if the new navigation should start without upfront
+  // `NavigationUIData`, in which case it is created lazily via
+  // `ContentBrowserClient::GetNavigationUIData()` as usual. Implementations
+  // must only return `nullptr` when the result would otherwise have all
+  // caller-supplied fields at their default values, so that both outcomes are
+  // equivalent apart from timing. The default implementation always returns
+  // `nullptr`.
+  virtual std::unique_ptr<NavigationUIData>
+  MaybeCreateForRedispatchedNavigation();
 
   // Populates or refreshes `NavigationHandle`-dependent fields at navigation
   // start when `NavigationUIData` was supplied upfront before the
