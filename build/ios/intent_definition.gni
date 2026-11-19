@@ -154,15 +154,16 @@ template("intent_definition") {
     if (!defined(deps)) {
       deps = []
     }
+    if (!defined(public_deps)) {
+      public_deps = []
+    }
     if (!defined(frameworks)) {
       frameworks = []
     }
 
     sources = _generate_source_output
-    deps += [
-      ":$_compile_intent_bundle",
-      ":$_generate_source_target",
-    ]
+    deps += [ ":$_compile_intent_bundle" ]
+    public_deps += [ ":$_generate_source_target" ]
     frameworks += [ "Intents.framework" ]
   }
 }
