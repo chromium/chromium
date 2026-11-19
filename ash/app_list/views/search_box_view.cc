@@ -1339,7 +1339,8 @@ SearchBoxView::PlaceholderTextType SearchBoxView::SelectPlaceholderText()
   if (use_fixed_placeholder_text_for_test_)
     return kDefaultPlaceholders[0];
 
-  return kDefaultPlaceholders[rand() % std::size(kDefaultPlaceholders)];
+  return kDefaultPlaceholders[base::RandGenerator(
+      std::size(kDefaultPlaceholders))];
 }
 
 void SearchBoxView::UpdateQuery(std::u16string_view new_query) {

@@ -17,6 +17,7 @@
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
+#include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/gmock_callback_support.h"
@@ -67,7 +68,7 @@ void FlushMessageLoop() {
 }
 
 SkBitmap GetRandomBitmap() {
-  SkColor color = rand() % 0xFFFFFF + 1;
+  SkColor color = base::RandIntInclusive(1, 0xFFFFFF);
 
   SkBitmap bitmap;
   bitmap.allocN32Pixels(24, 24);

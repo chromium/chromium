@@ -69,6 +69,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/path_service.h"
+#include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -523,7 +524,7 @@ std::vector<backdrop::Image> TimeOfDayImageSet() {
 // Returns a collection of images with randomized asset ids.
 std::vector<backdrop::Image> ImageSet() {
   const size_t image_size = 10;
-  const auto base_asset_id = rand() % 100;
+  const auto base_asset_id = base::RandGenerator(100);
   std::vector<backdrop::Image> images;
   for (size_t i = 0; i < image_size; ++i) {
     const uint64_t asset_id = i + base_asset_id;
