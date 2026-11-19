@@ -260,7 +260,8 @@ void ResourceLoadObserverForFrame::DidReceiveResponse(
           : PreloadHelper::LoadLinksFromHeaderMode::
                 kSubresourceNotFromMemoryCache,
       nullptr /* viewport_description */, std::move(alternate_resource_info),
-      base::OptionalToPtr(response.RecursivePrefetchToken()));
+      base::OptionalToPtr(response.RecursivePrefetchToken()),
+      /*initiator_world=*/resource->Options().WorldForCsp());
 
   if (response.HasMajorCertificateErrors()) {
     MixedContentChecker::HandleCertificateError(

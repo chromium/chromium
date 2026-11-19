@@ -12,6 +12,7 @@
 namespace blink {
 
 class AlternateSignedExchangeResourceInfo;
+class DOMWrapperWorld;
 class Document;
 class PendingLinkPreload;
 class LocalFrame;
@@ -57,6 +58,10 @@ class PreloadHelper final {
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:OriginStatusOnSubresource)
 
+  // `initiator_world` is the world that initiated the request whose response
+  // carried the Link header, or nullptr for the main world. It's used to keep
+  // network hints triggered by isolated world requests (e.g. by an extension
+  // content script's fetch()) from being exposed to the page.
   static void LoadLinksFromHeader(
       const String& header_value,
       const KURL& base_url,
@@ -66,7 +71,8 @@ class PreloadHelper final {
       const ViewportDescription*,  // can be nullptr
       std::unique_ptr<AlternateSignedExchangeResourceInfo>,
       const base::UnguessableToken*
-          recursive_prefetch_token /* can be nullptr */);
+          recursive_prefetch_token /* can be nullptr */,
+      const DOMWrapperWorld* initiator_world /* can be nullptr */);
   static Resource* StartPreload(ResourceType, FetchParameters&, Document&);
 
   // Currently only used for UseCounter.
@@ -79,10 +85,15 @@ class PreloadHelper final {
                                   Document*,
                                   LocalFrame*,
                                   LinkCaller);
+  // `initiator_world` is the world that triggered the preconnect, i.e. the
+  // world that inserted or modified the <link> element, or the world that
+  // initiated the request whose response carried the Link header. nullptr is
+  // treated as the main world.
   static void PreconnectIfNeeded(const LinkLoadParameters&,
                                  Document*,
                                  LocalFrame*,
-                                 LinkCaller);
+                                 LinkCaller,
+                                 const DOMWrapperWorld* initiator_world);
   static void PrefetchIfNeeded(const LinkLoadParameters&,
                                Document&,
                                PendingLinkPreload*);

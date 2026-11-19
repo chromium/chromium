@@ -320,7 +320,7 @@ ResourceFetcher* FrameFetchContext::CreateFetcherForCommittedDocument(
   for (const auto& preconnect : loader.GetPreconnects()) {
     fetcher->RecordPreconnect(
         preconnect.url, CrossOriginAttributeToBlink(preconnect.cross_origin),
-        preconnect.early_hint);
+        preconnect.early_hint, /*initiator_world=*/nullptr);
   }
   return fetcher;
 }

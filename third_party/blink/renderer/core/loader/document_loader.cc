@@ -960,7 +960,7 @@ void DocumentLoader::DispatchLinkHeaderPreloads(
       GetResponse().HttpHeaderField(http_names::kLink),
       GetResponse().CurrentRequestUrl(), *frame_, frame_->GetDocument(), mode,
       viewport, nullptr /* alternate_resource_info */,
-      nullptr /* recursive_prefetch_token */);
+      nullptr /* recursive_prefetch_token */, nullptr /* initiator_world */);
 }
 
 void DocumentLoader::DispatchLcppFontPreloads(
@@ -981,11 +981,11 @@ void DocumentLoader::DispatchLcppFontPreloads(
     fonts_link.Append(font.GetString());
     fonts_link.Append(">; rel=\"preload\"; as=\"font\"");
   }
-  PreloadHelper::LoadLinksFromHeader(fonts_link.ToString(),
-                                     GetResponse().CurrentRequestUrl(), *frame_,
-                                     frame_->GetDocument(), mode, viewport,
-                                     nullptr /* alternate_resource_info */,
-                                     nullptr /* recursive_prefetch_token */);
+  PreloadHelper::LoadLinksFromHeader(
+      fonts_link.ToString(), GetResponse().CurrentRequestUrl(), *frame_,
+      frame_->GetDocument(), mode, viewport,
+      nullptr /* alternate_resource_info */,
+      nullptr /* recursive_prefetch_token */, nullptr /* initiator_world */);
 }
 
 void DocumentLoader::DidChangePerformanceTiming() {
@@ -2215,7 +2215,7 @@ void DocumentLoader::StartLoadingInternal() {
       response_.CurrentRequestUrl(), *GetFrame(), nullptr,
       PreloadHelper::LoadLinksFromHeaderMode::kDocumentBeforeCommit,
       nullptr /* viewport_description */, nullptr /* alternate_resource_info */,
-      nullptr /* recursive_prefetch_token */);
+      nullptr /* recursive_prefetch_token */, nullptr /* initiator_world */);
   GetFrameLoader().Progress().IncrementProgress(main_resource_identifier_,
                                                 response_);
   probe::DidReceiveResourceResponse(probe::ToCoreProbeSink(GetFrame()),

@@ -127,8 +127,13 @@ bool LinkLoader::LoadLink(const LinkLoadParameters& params,
   PreloadHelper::DnsPrefetchIfNeeded(params, &document, document.GetFrame(),
                                      PreloadHelper::kLinkCalledFromMarkup);
 
-  PreloadHelper::PreconnectIfNeeded(params, &document, document.GetFrame(),
-                                    PreloadHelper::kLinkCalledFromMarkup);
+  // The preconnect is triggered by the world that's inserting or modifying the
+  // <link> element, e.g. an extension content script's isolated world.
+  ExecutionContext* context = document.GetExecutionContext();
+  PreloadHelper::PreconnectIfNeeded(
+      params, &document, document.GetFrame(),
+      PreloadHelper::kLinkCalledFromMarkup,
+      /*initiator_world=*/context ? context->GetCurrentWorld() : nullptr);
 
   PreloadHelper::PreloadIfNeeded(
       params, document, NullUrl(), PreloadHelper::kLinkCalledFromMarkup,

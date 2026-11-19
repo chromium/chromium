@@ -346,11 +346,11 @@ void PreloadHelper::DnsPrefetchIfNeeded(
   }
 }
 
-void PreloadHelper::PreconnectIfNeeded(
-    const LinkLoadParameters& params,
-    Document* document,
-    LocalFrame* frame,
-    LinkCaller caller) {
+void PreloadHelper::PreconnectIfNeeded(const LinkLoadParameters& params,
+                                       Document* document,
+                                       LocalFrame* frame,
+                                       LinkCaller caller,
+                                       const DOMWrapperWorld* initiator_world) {
   if (document && document->Loader() && document->Loader()->Archive()) {
     return;
   }
@@ -387,7 +387,8 @@ void PreloadHelper::PreconnectIfNeeded(
     }
     if (document && document->Fetcher()) {
       document->Fetcher()->RecordPreconnect(params.href, params.cross_origin,
-                                            /*early_hints=*/false);
+                                            /*early_hints=*/false,
+                                            initiator_world);
     }
   }
 }
@@ -872,7 +873,8 @@ void PreloadHelper::LoadLinksFromHeader(
     const ViewportDescription* viewport_description,
     std::unique_ptr<AlternateSignedExchangeResourceInfo>
         alternate_resource_info,
-    const base::UnguessableToken* recursive_prefetch_token) {
+    const base::UnguessableToken* recursive_prefetch_token,
+    const DOMWrapperWorld* initiator_world) {
   if (header_value.empty())
     return;
 
@@ -1001,7 +1003,8 @@ void PreloadHelper::LoadLinksFromHeader(
     if (is_network_hint_allowed) {
       DnsPrefetchIfNeeded(params, document, &frame, kLinkCalledFromHeader);
 
-      PreconnectIfNeeded(params, document, &frame, kLinkCalledFromHeader);
+      PreconnectIfNeeded(params, document, &frame, kLinkCalledFromHeader,
+                         initiator_world);
     }
     if (is_resource_load_allowed || is_compression_dictionary_load_allowed) {
       DCHECK(document);

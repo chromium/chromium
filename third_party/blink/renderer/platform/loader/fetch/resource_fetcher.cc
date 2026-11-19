@@ -63,6 +63,7 @@
 #include "third_party/blink/public/platform/scheduler/web_scoped_virtual_time_pauser.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_request.h"
+#include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -133,6 +134,14 @@ String LinkAsAttributeToString(network::mojom::LinkAsAttribute as) {
     case network::mojom::LinkAsAttribute::kUnspecified:
       return "fetch";
   }
+}
+
+// Returns true if `initiator_world` (e.g. a request's `WorldForCsp()`) is an
+// isolated world, such as that of an extension content script. Loads and
+// network hints initiated by isolated worlds must not be exposed to the page,
+// e.g. through Resource Timing or the SpeculationMeasurement API.
+bool IsInitiatedByIsolatedWorld(const DOMWrapperWorld* initiator_world) {
+  return initiator_world && initiator_world->IsIsolatedWorld();
 }
 
 constexpr base::TimeDelta kKeepaliveLoadersTimeout = base::Seconds(30);
@@ -379,7 +388,7 @@ bool IsExcludedFromResourceTiming(const ResourceRequestHead& request,
   }
   // Resource timing entries that correspond to resources fetched by extensions
   // are precluded.
-  return options.WorldForCsp() && options.WorldForCsp()->IsIsolatedWorld();
+  return IsInitiatedByIsolatedWorld(options.WorldForCsp());
 }
 
 }  // namespace
@@ -1870,6 +1879,18 @@ Resource* ResourceFetcher::MatchPreload(
     return nullptr;
   }
 
+  // As preloads aren't partitioned by world (see the TODO above), a main world
+  // <link rel=preload> request (`params`) may be merged below into an existing
+  // preload (`resource`) that was initiated by an isolated world, and hence
+  // wasn't recorded for the SpeculationMeasurement API. Record the main world's
+  // preload on its own behalf in that case, under its own URL, so as not to
+  // expose the isolated world's (e.g. if it has a different fragment).
+  if (params.IsLinkPreload() &&
+      !IsInitiatedByIsolatedWorld(params.Options().WorldForCsp()) &&
+      IsInitiatedByIsolatedWorld(resource->Options().WorldForCsp())) {
+    RecordLinkPreload(params.Url(), type, params);
+  }
+
   if (params.IsSpeculativePreload()) {
     return resource;
   }
@@ -1900,8 +1921,12 @@ Resource* ResourceFetcher::MatchPreload(
   resource->MatchPreload(params);
   preloads_.erase(it);
 
+  // Don't let isolated world consumers mark preloads as used. Note that
+  // `preload_records_` is keyed by URL alone, so the record may belong to a
+  // main world preload of the same URL with a different resource type.
   if (RuntimeEnabledFeatures::SpeculationMeasurementEnabled(
-          context_->GetFeatureContext())) {
+          context_->GetFeatureContext()) &&
+      !IsInitiatedByIsolatedWorld(params.Options().WorldForCsp())) {
     auto record_it = preload_records_.find(resource->Url());
     if (record_it != preload_records_.end()) {
       record_it->value.used_time = base::TimeTicks::Now();
@@ -2021,14 +2046,24 @@ void ResourceFetcher::InsertAsPreloadIfNecessary(Resource* resource,
   // SpeculationMeasurement API. Speculative preloads from the HTML parser
   // are not developer-initiated and should not be reported.
   if (params.IsLinkPreload()) {
-    const KURL& url = resource->Url();
-    if (!preload_records_.Contains(url)) {
-      PreloadInfo info;
-      info.as = GetAsAttributeFromResourceType(resource->GetType());
-      info.crossorigin = params.GetCrossOriginAttributeValue();
-      preload_records_.insert(url, std::move(info));
-    }
+    RecordLinkPreload(resource->Url(), resource->GetType(), params);
   }
+}
+
+void ResourceFetcher::RecordLinkPreload(const KURL& url,
+                                        ResourceType type,
+                                        const FetchParameters& params) {
+  DCHECK(params.IsLinkPreload());
+  // Preloads initiated by isolated worlds (e.g. <link rel=preload> elements
+  // inserted by extension content scripts) must not be exposed to the page.
+  if (IsInitiatedByIsolatedWorld(params.Options().WorldForCsp()) ||
+      preload_records_.Contains(url)) {
+    return;
+  }
+  PreloadInfo info;
+  info.as = GetAsAttributeFromResourceType(type);
+  info.crossorigin = params.GetCrossOriginAttributeValue();
+  preload_records_.insert(url, std::move(info));
 }
 
 bool ResourceFetcher::IsImageResourceDisallowedToBeReused(
@@ -2452,9 +2487,13 @@ void ResourceFetcher::SetEarlyHintsPreloadedResources(
 
 void ResourceFetcher::RecordPreconnect(const KURL& url,
                                        CrossOriginAttributeValue crossorigin,
-                                       bool early_hints) {
+                                       bool early_hints,
+                                       const DOMWrapperWorld* initiator_world) {
   if (!RuntimeEnabledFeatures::SpeculationMeasurementEnabled(
           context_->GetFeatureContext())) {
+    return;
+  }
+  if (IsInitiatedByIsolatedWorld(initiator_world)) {
     return;
   }
   if (!url.IsValid()) {
@@ -3342,14 +3381,22 @@ void ResourceFetcher::MarkEarlyHintConsumedIfNeeded(
       resource->GetResourceRequest().GetRedirectInfo().has_value()
           ? resource->GetResourceRequest().GetRedirectInfo()->original_url
           : resource->GetResourceRequest().Url();
+  // Mark Early Hints preloads as used in `preload_records_` for the
+  // SpeculationMeasurement API, on their first use by the main world. Uses by
+  // isolated worlds (e.g. extension content scripts) must not be exposed to
+  // the page, so they're ignored. This is independent of the bookkeeping of
+  // `unused_early_hints_preloaded_resources_` below, so that the page's own
+  // use is still recorded if an isolated world used the resource first.
+  if (!IsInitiatedByIsolatedWorld(resource->Options().WorldForCsp())) {
+    auto record_it = preload_records_.find(initial_url);
+    if (record_it != preload_records_.end() && record_it->value.early_hints &&
+        !record_it->value.used_time.has_value()) {
+      record_it->value.used_time = base::TimeTicks::Now();
+    }
+  }
   auto iter = unused_early_hints_preloaded_resources_.find(initial_url);
   if (iter != unused_early_hints_preloaded_resources_.end()) {
     unused_early_hints_preloaded_resources_.erase(iter);
-    // Mark as used in preload_records_ for the SpeculationMeasurement API.
-    auto record_it = preload_records_.find(initial_url);
-    if (record_it != preload_records_.end()) {
-      record_it->value.used_time = base::TimeTicks::Now();
-    }
     // The network service may not reuse the response fetched by the early hints
     // due to cache control policies.
     if (!response.NetworkAccessed() &&

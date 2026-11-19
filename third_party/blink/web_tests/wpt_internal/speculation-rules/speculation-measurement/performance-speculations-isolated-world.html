@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>performance.getSpeculations() doesn't expose isolated world speculations</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/speculation-rules/speculation-measurement/support/speculation-measurement-utils.js"></script>
+<body>
+<script>
+// Preloads and preconnects initiated by isolated worlds, such as those of
+// extension content scripts, must not be exposed to the page through
+// performance.getSpeculations(), just like they aren't exposed through
+// Resource Timing.
+
+const kIsolatedWorldId = 1;
+
+// Runs `func` in an isolated world, like an extension content script, and
+// resolves with its result, which must be a primitive. `func` is serialized,
+// so it can only use globals and its JSON-serializable `args`.
+async function runInIsolatedWorld(func, ...args) {
+  return testRunner.evaluateScriptInIsolatedWorldAndReturnValue(
+      kIsolatedWorldId, `(${func})(...${JSON.stringify(args)})`);
+}
+
+// Meant to run in an isolated world. Inserts a <link> with `attributes` into a
+// closed shadow root, so that the page can't observe it through the DOM. If
+// `waitForEvent` is true, resolves with the type of the event the <link> fires.
+function insertLinkInClosedShadowRoot(attributes, waitForEvent) {
+  const host = document.createElement('div');
+  document.body.append(host);
+  const shadowRoot = host.attachShadow({mode: 'closed'});
+  const link = document.createElement('link');
+  for (const [name, value] of Object.entries(attributes)) {
+    link.setAttribute(name, value);
+  }
+  const event = new Promise(resolve => {
+    link.onload = link.onerror = e => resolve(e.type);
+  });
+  shadowRoot.append(link);
+  return waitForEvent ? event : 'inserted';
+}
+
+function uniqueStyleUrl() {
+  return new URL(
+      `/speculation-rules/speculation-measurement/support/preloaded-style.css` +
+          `?${token()}`,
+      location.href).href;
+}
+
+// Returns a same-origin URL whose response carries a `Link: rel=preconnect`
+// header for `preconnectUrl`.
+function urlWithPreconnectLinkHeader(preconnectUrl) {
+  return new URL(
+      `/common/blank.html?${token()}&pipe=header(Link,<${preconnectUrl}>;` +
+          `rel=preconnect)`,
+      location.href).href;
+}
+
+promise_test(async t => {
+  assert_true(isSpeculationMeasurementEnabled(),
+    "SpeculationMeasurement feature must be enabled");
+  const isolatedHref = uniqueStyleUrl();
+  const mainHref = uniqueStyleUrl();
+
+  assert_equals(
+      await runInIsolatedWorld(insertLinkInClosedShadowRoot,
+                               {rel: 'preload', as: 'style',
+                                href: isolatedHref},
+                               /*waitForEvent=*/true),
+      'load', "the isolated world's preload should load");
+  // Control: the same kind of preload from the main world is exposed.
+  await addPreloadAndWait({t, as: 'style', href: mainHref});
+
+  let preloads = performance.getSpeculations().preloads;
+  assert_not_equals(findPreloadByUrl(preloads, mainHref), undefined,
+    "a main world preload should be exposed");
+  assert_equals(findPreloadByUrl(preloads, isolatedHref), undefined,
+    "an isolated world preload should not be exposed");
+
+  assert_equals(
+      await runInIsolatedWorld(insertLinkInClosedShadowRoot,
+                               {rel: 'stylesheet', href: isolatedHref},
+                               /*waitForEvent=*/true),
+      'load', "the isolated world's stylesheet should load");
+  preloads = performance.getSpeculations().preloads;
+  assert_equals(findPreloadByUrl(preloads, isolatedHref), undefined,
+    "an isolated world preload should not be exposed after being used");
+}, "Preloads from an isolated world are not exposed");
+
+promise_test(async t => {
+  const href = uniqueStyleUrl();
+  assert_equals(
+      await runInIsolatedWorld(insertLinkInClosedShadowRoot,
+                               {rel: 'preload', as: 'style',
+                                href: `${href}#isolated`},
+                               /*waitForEvent=*/true),
+      'load', "the isolated world's preload should load");
+  // As preloads aren't partitioned by world, the page's preload of the same
+  // resource is merged into the isolated world's.
+  await addPreloadAndWait({t, as: 'style', href});
+
+  const preloads = performance.getSpeculations().preloads.filter(
+      p => p.url.startsWith(href));
+  assert_equals(preloads.length, 1, "only the page's preload is exposed");
+  assert_equals(preloads[0].url, href,
+    "the page's preload should be exposed with its own URL");
+  assert_equals(preloads[0].used, null);
+}, "A page's preload merged into an isolated world's preload is exposed");
+
+promise_test(async t => {
+  const href = uniqueStyleUrl();
+  // Preload records are keyed by URL, while preloads are matched by URL and
+  // destination, so the page preloads the URL with a different destination
+  // than the isolated world.
+  await addPreloadAndWait({t, as: 'fetch', crossorigin: 'anonymous', href});
+
+  assert_equals(
+      await runInIsolatedWorld(insertLinkInClosedShadowRoot,
+                               {rel: 'preload', as: 'style', href},
+                               /*waitForEvent=*/true),
+      'load', "the isolated world's preload should load");
+  assert_equals(
+      await runInIsolatedWorld(insertLinkInClosedShadowRoot,
+                               {rel: 'stylesheet', href},
+                               /*waitForEvent=*/true),
+      'load', "the isolated world's stylesheet should load");
+
+  const preloads =
+      performance.getSpeculations().preloads.filter(p => p.url === href);
+  assert_equals(preloads.length, 1, "only the page's preload is exposed");
+  assert_equals(preloads[0].as, 'fetch');
+  assert_equals(preloads[0].used, null,
+    "the isolated world using its own preload should not mark the page's " +
+    "preload of the same URL as used");
+}, "An isolated world's use of its preload doesn't mark the page's preload " +
+   "of the same URL as used");
+
+promise_test(async t => {
+  const isolatedOrigin = new URL(uniquePreconnectUrl()).origin;
+  const mainOrigin = new URL(uniquePreconnectUrl()).origin;
+
+  await runInIsolatedWorld(insertLinkInClosedShadowRoot,
+                           {rel: 'preconnect', href: isolatedOrigin},
+                           /*waitForEvent=*/false);
+  // Control: a preconnect from the main world is exposed. Preconnects are
+  // recorded synchronously on insertion, so this also ensures the isolated
+  // world's preconnect would have been recorded by now.
+  await addPreconnect({t, href: mainOrigin});
+
+  const preconnects = performance.getSpeculations().preconnects;
+  assert_equals(findPreconnectsByOrigin(preconnects, mainOrigin).length, 1,
+    "a main world preconnect should be exposed");
+  assert_array_equals(findPreconnectsByOrigin(preconnects, isolatedOrigin), [],
+    "an isolated world preconnect should not be exposed");
+}, "Preconnects from an isolated world's <link> elements are not exposed");
+
+promise_test(async t => {
+  const isolatedOrigin = new URL(uniquePreconnectUrl()).origin;
+  const mainOrigin = new URL(uniquePreconnectUrl()).origin;
+
+  // The Link header is processed before the fetch() promise resolves.
+  assert_true(
+      await runInIsolatedWorld(async url => (await fetch(url)).ok,
+                               urlWithPreconnectLinkHeader(isolatedOrigin)),
+      "the isolated world's fetch should succeed");
+  // Control: a preconnect from the same kind of request from the main world
+  // is exposed.
+  assert_true((await fetch(urlWithPreconnectLinkHeader(mainOrigin))).ok,
+    "the main world's fetch should succeed");
+
+  const preconnects = performance.getSpeculations().preconnects;
+  assert_equals(findPreconnectsByOrigin(preconnects, mainOrigin).length, 1,
+    "a preconnect from a main world fetch's Link header should be exposed");
+  assert_array_equals(findPreconnectsByOrigin(preconnects, isolatedOrigin), [],
+    "a preconnect from an isolated world fetch's Link header should not be " +
+    "exposed");
+}, "Preconnects from Link headers on an isolated world's fetch() responses " +
+   "are not exposed");
+</script>
+</body>

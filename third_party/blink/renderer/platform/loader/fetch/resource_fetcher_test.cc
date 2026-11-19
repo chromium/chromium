@@ -45,6 +45,7 @@
 #include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/ip_address_space.mojom-blink.h"
+#include "services/network/public/mojom/link_header.mojom-blink.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -61,6 +62,7 @@
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/loader/fetch/console_logger.h"
+#include "third_party/blink/renderer/platform/loader/fetch/early_hints_preload_entry.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_info.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
@@ -3044,6 +3046,256 @@ TEST_P(ResourceFetcherTest, IsolatedWorldResourceWithIsolatedWorldCsp) {
   EXPECT_FALSE(resource->GetResourceRequest().GetSkipServiceWorker());
   EXPECT_EQ(resource->Options().TargetWorld(), isolated_world);
   EXPECT_EQ(resource->Options().WorldForCsp(), isolated_world);
+}
+
+// Link preloads initiated by isolated worlds (e.g. <link rel=preload> elements
+// inserted by extension content scripts) must not be exposed to the page via
+// the SpeculationMeasurement API, nor should their use be.
+TEST_P(ResourceFetcherTest, IsolatedWorldLinkPreloadIsNotRecorded) {
+  ScopedSpeculationMeasurementForTest enable_speculation_measurement(true);
+  auto* fetcher = CreateFetcher();
+  DOMWrapperWorld* isolated_world = DOMWrapperWorld::EnsureIsolatedWorld(
+      /*v8::Isolate=*/nullptr, blink::kIsolatedWorldIdLimit - 1);
+
+  KURL isolated_url("http://127.0.0.1:8000/isolated.png");
+  RegisterMockedURLLoad(isolated_url);
+  FetchParameters isolated_preload_params{
+      ResourceRequest(isolated_url),
+      ResourceLoaderOptions(/*world_for_csp=*/isolated_world)};
+  isolated_preload_params.SetLinkPreload(true);
+  Resource* isolated_preload =
+      MockResource::Fetch(isolated_preload_params, fetcher, nullptr);
+  ASSERT_TRUE(isolated_preload);
+  // The preload itself still happens.
+  EXPECT_TRUE(isolated_preload->IsUnusedPreload());
+  EXPECT_FALSE(fetcher->GetPreloadRecords().Contains(isolated_url));
+
+  // Using the preload from the isolated world doesn't record it either.
+  FetchParameters isolated_params{
+      ResourceRequest(isolated_url),
+      ResourceLoaderOptions(/*world_for_csp=*/isolated_world)};
+  Resource* isolated_resource =
+      MockResource::Fetch(isolated_params, fetcher, nullptr);
+  EXPECT_EQ(isolated_preload, isolated_resource);
+  EXPECT_FALSE(isolated_preload->IsUnusedPreload());
+  EXPECT_FALSE(fetcher->GetPreloadRecords().Contains(isolated_url));
+
+  // Main world link preloads are still recorded.
+  KURL main_url("http://127.0.0.1:8000/main.png");
+  RegisterMockedURLLoad(main_url);
+  FetchParameters main_preload_params =
+      FetchParameters::CreateForTest(ResourceRequest(main_url));
+  main_preload_params.SetLinkPreload(true);
+  Resource* main_preload =
+      MockResource::Fetch(main_preload_params, fetcher, nullptr);
+  ASSERT_TRUE(main_preload);
+  EXPECT_TRUE(main_preload->IsUnusedPreload());
+  EXPECT_TRUE(fetcher->GetPreloadRecords().Contains(main_url));
+  platform_->GetURLLoaderMockFactory()->ServeAsynchronousRequests();
+}
+
+// Preload records are keyed by URL alone, while preloads are matched by URL and
+// resource type. An isolated world using its own preload must not mark a main
+// world preload of the same URL (but of a different type) as used.
+TEST_P(ResourceFetcherTest,
+       IsolatedWorldPreloadUseDoesNotMarkMainWorldPreloadAsUsed) {
+  ScopedSpeculationMeasurementForTest enable_speculation_measurement(true);
+  auto* fetcher = CreateFetcher();
+  DOMWrapperWorld* isolated_world = DOMWrapperWorld::EnsureIsolatedWorld(
+      /*v8::Isolate=*/nullptr, blink::kIsolatedWorldIdLimit - 1);
+
+  KURL url("http://127.0.0.1:8000/foo.png");
+  RegisterMockedURLLoad(url);
+
+  // The main world preloads `url` as a raw resource.
+  ResourceRequest main_preload_request(url);
+  main_preload_request.SetRequestContext(
+      mojom::blink::RequestContextType::FETCH);
+  FetchParameters main_preload_params =
+      FetchParameters::CreateForTest(std::move(main_preload_request));
+  main_preload_params.SetLinkPreload(true);
+  Resource* main_preload =
+      RawResource::Fetch(main_preload_params, fetcher, nullptr);
+  ASSERT_TRUE(main_preload);
+  EXPECT_TRUE(main_preload->IsUnusedPreload());
+
+  // The isolated world preloads and uses `url` as a mock resource.
+  FetchParameters isolated_preload_params{
+      ResourceRequest(url),
+      ResourceLoaderOptions(/*world_for_csp=*/isolated_world)};
+  isolated_preload_params.SetLinkPreload(true);
+  Resource* isolated_preload =
+      MockResource::Fetch(isolated_preload_params, fetcher, nullptr);
+  ASSERT_TRUE(isolated_preload);
+  EXPECT_NE(main_preload, isolated_preload);
+  EXPECT_TRUE(isolated_preload->IsUnusedPreload());
+  FetchParameters isolated_params{
+      ResourceRequest(url),
+      ResourceLoaderOptions(/*world_for_csp=*/isolated_world)};
+  Resource* isolated_resource =
+      MockResource::Fetch(isolated_params, fetcher, nullptr);
+  EXPECT_EQ(isolated_preload, isolated_resource);
+  EXPECT_FALSE(isolated_preload->IsUnusedPreload());
+
+  // Only the main world preload is recorded, and it's still unused.
+  const auto& preload_records = fetcher->GetPreloadRecords();
+  EXPECT_EQ(preload_records.size(), 1u);
+  auto it = preload_records.find(url);
+  ASSERT_NE(it, preload_records.end());
+  EXPECT_EQ(it->value.as, "fetch");
+  EXPECT_FALSE(it->value.used_time.has_value());
+
+  // Using the main world preload from the main world marks it as used.
+  ResourceRequest main_request(url);
+  main_request.SetRequestContext(mojom::blink::RequestContextType::FETCH);
+  FetchParameters main_params =
+      FetchParameters::CreateForTest(std::move(main_request));
+  Resource* main_resource = RawResource::Fetch(main_params, fetcher, nullptr);
+  EXPECT_EQ(main_preload, main_resource);
+  EXPECT_FALSE(main_preload->IsUnusedPreload());
+  EXPECT_TRUE(it->value.used_time.has_value());
+  platform_->GetURLLoaderMockFactory()->ServeAsynchronousRequests();
+}
+
+// As preloads aren't partitioned by world, a main world link preload can be
+// merged into an isolated world's preload of the same resource. The main world
+// preload must still be recorded, under its own URL rather than the isolated
+// world's.
+TEST_P(ResourceFetcherTest,
+       MainWorldLinkPreloadMergedIntoIsolatedWorldPreloadIsRecorded) {
+  ScopedSpeculationMeasurementForTest enable_speculation_measurement(true);
+  auto* fetcher = CreateFetcher();
+  DOMWrapperWorld* isolated_world = DOMWrapperWorld::EnsureIsolatedWorld(
+      /*v8::Isolate=*/nullptr, blink::kIsolatedWorldIdLimit - 1);
+
+  KURL url("http://127.0.0.1:8000/foo.png");
+  KURL isolated_url("http://127.0.0.1:8000/foo.png#isolated");
+  RegisterMockedURLLoad(url);
+  RegisterMockedURLLoad(isolated_url);
+
+  FetchParameters isolated_preload_params{
+      ResourceRequest(isolated_url),
+      ResourceLoaderOptions(/*world_for_csp=*/isolated_world)};
+  isolated_preload_params.SetLinkPreload(true);
+  Resource* isolated_preload =
+      MockResource::Fetch(isolated_preload_params, fetcher, nullptr);
+  ASSERT_TRUE(isolated_preload);
+  EXPECT_TRUE(fetcher->GetPreloadRecords().empty());
+
+  FetchParameters main_preload_params =
+      FetchParameters::CreateForTest(ResourceRequest(url));
+  main_preload_params.SetLinkPreload(true);
+  Resource* main_preload =
+      MockResource::Fetch(main_preload_params, fetcher, nullptr);
+  EXPECT_EQ(isolated_preload, main_preload);
+
+  const auto& preload_records = fetcher->GetPreloadRecords();
+  EXPECT_EQ(preload_records.size(), 1u);
+  auto it = preload_records.find(url);
+  ASSERT_NE(it, preload_records.end());
+  EXPECT_FALSE(it->value.used_time.has_value());
+
+  // The isolated world using the preload doesn't mark it as used.
+  FetchParameters isolated_params{
+      ResourceRequest(isolated_url),
+      ResourceLoaderOptions(/*world_for_csp=*/isolated_world)};
+  Resource* isolated_resource =
+      MockResource::Fetch(isolated_params, fetcher, nullptr);
+  EXPECT_EQ(isolated_preload, isolated_resource);
+  EXPECT_FALSE(isolated_preload->IsUnusedPreload());
+  EXPECT_FALSE(it->value.used_time.has_value());
+  platform_->GetURLLoaderMockFactory()->ServeAsynchronousRequests();
+}
+
+// Uses of Early Hints preloads by isolated worlds must not be exposed to the
+// page via the SpeculationMeasurement API, neither directly via the `used`
+// timestamp, nor by keeping the page's own later use from being recorded.
+TEST_P(ResourceFetcherTest,
+       IsolatedWorldLoadDoesNotMarkEarlyHintsPreloadAsUsed) {
+  ScopedSpeculationMeasurementForTest enable_speculation_measurement(true);
+  auto* fetcher = CreateFetcher();
+  DOMWrapperWorld* isolated_world = DOMWrapperWorld::EnsureIsolatedWorld(
+      /*v8::Isolate=*/nullptr, blink::kIsolatedWorldIdLimit - 1);
+
+  KURL url("http://127.0.0.1:8000/foo.png");
+  RegisterMockedURLLoad(url);
+  HashMap<KURL, EarlyHintsPreloadEntry> early_hints_preloads;
+  early_hints_preloads.insert(
+      url, EarlyHintsPreloadEntry(
+               network::mojom::LinkAsAttribute::kImage,
+               network::mojom::CrossOriginAttribute::kUnspecified));
+  fetcher->SetEarlyHintsPreloadedResources(std::move(early_hints_preloads));
+
+  const auto& preload_records = fetcher->GetPreloadRecords();
+  auto it = preload_records.find(url);
+  ASSERT_NE(it, preload_records.end());
+  EXPECT_TRUE(it->value.early_hints);
+  EXPECT_FALSE(it->value.used_time.has_value());
+
+  FetchParameters isolated_params{
+      ResourceRequest(url),
+      ResourceLoaderOptions(/*world_for_csp=*/isolated_world)};
+  Resource* isolated_resource =
+      MockResource::Fetch(isolated_params, fetcher, nullptr);
+  ASSERT_TRUE(isolated_resource);
+  platform_->GetURLLoaderMockFactory()->ServeAsynchronousRequests();
+  EXPECT_TRUE(isolated_resource->IsLoaded());
+  EXPECT_FALSE(it->value.used_time.has_value());
+
+  // A later main world load of the same URL marks the preload as used.
+  FetchParameters main_params =
+      FetchParameters::CreateForTest(ResourceRequest(url));
+  Resource* main_resource = MockResource::Fetch(main_params, fetcher, nullptr);
+  ASSERT_TRUE(main_resource);
+  EXPECT_NE(isolated_resource, main_resource);
+  platform_->GetURLLoaderMockFactory()->ServeAsynchronousRequests();
+  EXPECT_TRUE(main_resource->IsLoaded());
+  EXPECT_TRUE(it->value.used_time.has_value());
+}
+
+// Receiving a response marks Early Hints preloads as used, but receiving a link
+// preload's own response must not mark it as used.
+TEST_P(ResourceFetcherTest, LinkPreloadResponseDoesNotMarkPreloadAsUsed) {
+  ScopedSpeculationMeasurementForTest enable_speculation_measurement(true);
+  auto* fetcher = CreateFetcher();
+  KURL url("http://127.0.0.1:8000/foo.png");
+  RegisterMockedURLLoad(url);
+
+  FetchParameters preload_params =
+      FetchParameters::CreateForTest(ResourceRequest(url));
+  preload_params.SetLinkPreload(true);
+  Resource* preload = MockResource::Fetch(preload_params, fetcher, nullptr);
+  ASSERT_TRUE(preload);
+  platform_->GetURLLoaderMockFactory()->ServeAsynchronousRequests();
+  EXPECT_TRUE(preload->IsLoaded());
+
+  const auto& preload_records = fetcher->GetPreloadRecords();
+  auto it = preload_records.find(url);
+  ASSERT_NE(it, preload_records.end());
+  EXPECT_FALSE(it->value.early_hints);
+  EXPECT_FALSE(it->value.used_time.has_value());
+}
+
+// Preconnects triggered by isolated worlds (e.g. <link rel=preconnect> elements
+// inserted by extension content scripts, or Link headers on responses to their
+// requests) must not be exposed to the page via the SpeculationMeasurement API.
+TEST_P(ResourceFetcherTest, IsolatedWorldPreconnectIsNotRecorded) {
+  ScopedSpeculationMeasurementForTest enable_speculation_measurement(true);
+  auto* fetcher = CreateFetcher();
+  DOMWrapperWorld* isolated_world = DOMWrapperWorld::EnsureIsolatedWorld(
+      /*v8::Isolate=*/nullptr, blink::kIsolatedWorldIdLimit - 1);
+
+  fetcher->RecordPreconnect(KURL("https://isolated.test/path"),
+                            kCrossOriginAttributeNotSet, /*early_hints=*/false,
+                            isolated_world);
+  EXPECT_TRUE(fetcher->GetPreconnectRecords().empty());
+
+  fetcher->RecordPreconnect(KURL("https://main.test/path"),
+                            kCrossOriginAttributeNotSet, /*early_hints=*/false,
+                            /*initiator_world=*/nullptr);
+  const auto& preconnect_records = fetcher->GetPreconnectRecords();
+  ASSERT_EQ(preconnect_records.size(), 1u);
+  EXPECT_EQ(preconnect_records.begin()->value.origin, "https://main.test");
 }
 
 namespace {

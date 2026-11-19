@@ -80,6 +80,7 @@ class CodeCacheHost;
 class DetachableConsoleLogger;
 class DetachableUseCounter;
 class DetachableResourceFetcherProperties;
+class DOMWrapperWorld;
 class FetchContext;
 class FrameOrWorkerScheduler;
 class MHTMLArchive;
@@ -282,9 +283,14 @@ class PLATFORM_EXPORT ResourceFetcher
   // API. `crossorigin` is the reflected crossorigin attribute value.
   // Preconnects are deduped by (origin, crossorigin); a duplicate that arrives
   // via Early Hints upgrades the existing entry's `early_hints` flag to true.
+  // `initiator_world` is the world that triggered the preconnect (nullptr is
+  // treated as the main world). Preconnects triggered by isolated worlds (e.g.
+  // by extension content scripts) are not recorded, as they must not be
+  // exposed to the page.
   void RecordPreconnect(const KURL& url,
                         CrossOriginAttributeValue crossorigin,
-                        bool early_hints);
+                        bool early_hints,
+                        const DOMWrapperWorld* initiator_world);
 
   // Returns a map keyed by (origin, crossorigin) to PreconnectInfo for all
   // developer-initiated preconnects.
@@ -531,6 +537,12 @@ class PLATFORM_EXPORT ResourceFetcher
   void InsertAsPreloadIfNecessary(Resource*,
                                   const FetchParameters& params,
                                   ResourceType);
+  // Records a <link rel=preload> of `url` in `preload_records_` for the
+  // SpeculationMeasurement API, unless `params` was initiated by an isolated
+  // world.
+  void RecordLinkPreload(const KURL& url,
+                         ResourceType,
+                         const FetchParameters& params);
 
   bool IsImageResourceDisallowedToBeReused(const Resource&) const;
 
