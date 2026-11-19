@@ -6,16 +6,21 @@
 #define COMPONENTS_GCM_DRIVER_GCM_REGISTRATION_MANAGER_IMPL_H_
 
 #include <map>
+#include <memory>
 #include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "components/gcm_driver/gcm_client.h"
 #include "components/gcm_driver/gcm_registration_manager.h"
 #include "google_apis/gcm/engine/gcm_store.h"
+#include "google_apis/gcm/engine/registration_request.h"
 
 namespace base {
 class Clock;
@@ -29,6 +34,9 @@ class GCMRegistrationManagerImpl : public GCMRegistrationManager {
  public:
   using InstanceIDDataMap =
       std::map<std::string, std::pair<std::string, std::string>>;
+  using RegisterCallback =
+      base::OnceCallback<void(const std::string& registration_id,
+                              GCMClient::Result result)>;
 
   // `gcm_store` and `clock` must outlive this instance.
   GCMRegistrationManagerImpl(GCMStore& gcm_store, base::Clock& clock);
@@ -45,10 +53,32 @@ class GCMRegistrationManagerImpl : public GCMRegistrationManager {
   // Returns true if at least one standalone app is registered for GCM.
   bool HasStandaloneRegisteredApp() const;
 
+  // Cancels all pending registration requests.
+  void CancelPendingRequests();
+
   // Returns the cached registration ID if a matching, non-stale registration
   // exists in `registrations_`, or `std::nullopt` otherwise.
   std::optional<std::string> GetCachedRegistrationId(
       scoped_refptr<RegistrationInfo> registration_info) const;
+
+  // TODO(b/545115204): Make private once request creation
+  // (`StartRegistrationRequest`) is migrated from `GCMClientImpl`.
+  // Tracks an in-flight `request` for `registration_info`.
+  void AddPendingRegistrationRequest(
+      scoped_refptr<RegistrationInfo> registration_info,
+      std::unique_ptr<RegistrationRequest> request);
+
+  // Completes a pending registration request, updating the cache and persistent
+  // store on success and invoking `callback` with the result.
+  void OnRegisterCompleted(scoped_refptr<RegistrationInfo> registration_info,
+                           RegisterCallback callback,
+                           RegistrationRequest::Status status,
+                           const std::string& registration_id);
+
+  // Returns a `WeakPtr` invalidated by `CancelPendingRequests()`.
+  base::WeakPtr<GCMRegistrationManagerImpl> GetPendingRequestWeakPtr() {
+    return pending_requests_weak_ptr_factory_.GetWeakPtr();
+  }
 
   // GCMRegistrationManager implementation:
   bool ValidateRegistration(scoped_refptr<RegistrationInfo> registration_info,
@@ -70,9 +100,21 @@ class GCMRegistrationManagerImpl : public GCMRegistrationManager {
   }
 
  private:
+  // Collection of pending registration requests. Keys are registration info
+  // instances, while values are pending registration requests to obtain a
+  // registration ID for requesting application, or for InstanceID tokens, the
+  // scope and extra data as well.
+  using PendingRegistrationRequests =
+      std::map<scoped_refptr<RegistrationInfo>,
+               std::unique_ptr<RegistrationRequest>,
+               RegistrationInfoComparer>;
+
   // Removes deprecated data (such as obsolete registrations) from the cache and
   // persistent store.
   void RemoveDeprecatedData();
+
+  // Callback for persisting registration info in `gcm_store_`.
+  void UpdateRegistrationCallback(bool success);
 
   const raw_ref<GCMStore> gcm_store_;
   const raw_ref<base::Clock> clock_;
@@ -84,7 +126,16 @@ class GCMRegistrationManagerImpl : public GCMRegistrationManager {
   // and extra data.
   InstanceIDDataMap instance_id_data_;
 
+  // Currently pending registration requests. GCMRegistrationManagerImpl owns
+  // the RegistrationRequests.
+  PendingRegistrationRequests pending_registration_requests_;
+
   SEQUENCE_CHECKER(sequence_checker_);
+
+  // Invalidated by `CancelPendingRequests()` when the client stops.
+  base::WeakPtrFactory<GCMRegistrationManagerImpl>
+      pending_requests_weak_ptr_factory_{this};
+  base::WeakPtrFactory<GCMRegistrationManagerImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace gcm

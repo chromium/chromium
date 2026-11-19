@@ -7,10 +7,12 @@
 #include <optional>
 #include <string>
 
+#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
+#include "base/test/test_future.h"
 #include "components/gcm_driver/registration_info.h"
 #include "google_apis/gcm/base/gcm_features.h"
 #include "google_apis/gcm/engine/fake_gcm_store.h"
@@ -214,6 +216,139 @@ TEST_F(GCMRegistrationManagerImplTest, GetCachedRegistrationId) {
   clock().Advance(base::Days(7));
   EXPECT_EQ(std::nullopt,
             registration_manager().GetCachedRegistrationId(gcm_info));
+}
+
+TEST_F(GCMRegistrationManagerImplTest, OnRegisterCompletedSuccess) {
+  scoped_refptr<GCMRegistrationInfo> gcm_info =
+      CreateGCMRegistrationInfo(kTestAppId, {kSenderId});
+  registration_manager().AddPendingRegistrationRequest(gcm_info,
+                                                       /*request=*/nullptr);
+
+  base::test::TestFuture<const std::string&, GCMClient::Result> future;
+  registration_manager().OnRegisterCompleted(gcm_info, future.GetCallback(),
+                                             RegistrationRequest::SUCCESS,
+                                             kRegistrationId);
+
+  const auto& [registration_id, result] = future.Get();
+  EXPECT_EQ(registration_id, kRegistrationId);
+  EXPECT_EQ(result, GCMClient::SUCCESS);
+  EXPECT_TRUE(
+      registration_manager().ValidateRegistration(gcm_info, kRegistrationId));
+  EXPECT_THAT(registration_manager().GetCachedRegistrationId(gcm_info),
+              Optional(std::string(kRegistrationId)));
+  EXPECT_THAT(gcm_store().registrations(),
+              UnorderedElementsAre(
+                  Pair(gcm_info->GetSerializedKey(),
+                       gcm_info->GetSerializedValue(kRegistrationId))));
+}
+
+TEST_F(GCMRegistrationManagerImplTest, OnRegisterCompletedReplacesSenderIds) {
+  scoped_refptr<GCMRegistrationInfo> initial_info =
+      CreateGCMRegistrationInfo(kTestAppId, {kSenderId});
+  registration_manager().AddPendingRegistrationRequest(initial_info,
+                                                       /*request=*/nullptr);
+  base::test::TestFuture<const std::string&, GCMClient::Result> initial_future;
+  registration_manager().OnRegisterCompleted(
+      initial_info, initial_future.GetCallback(), RegistrationRequest::SUCCESS,
+      kRegistrationId);
+  const auto& [initial_id, initial_result] = initial_future.Get();
+  ASSERT_EQ(initial_result, GCMClient::SUCCESS);
+
+  // Re-registering the same `app_id` with a new sender list must replace the
+  // cached map key so `sender_ids` is updated.
+  scoped_refptr<GCMRegistrationInfo> updated_info =
+      CreateGCMRegistrationInfo(kTestAppId, {kSenderId2});
+  registration_manager().AddPendingRegistrationRequest(updated_info,
+                                                       /*request=*/nullptr);
+  base::test::TestFuture<const std::string&, GCMClient::Result> updated_future;
+  registration_manager().OnRegisterCompleted(
+      updated_info, updated_future.GetCallback(), RegistrationRequest::SUCCESS,
+      "reg_id_2");
+
+  const auto& [registration_id, result] = updated_future.Get();
+  EXPECT_EQ(registration_id, "reg_id_2");
+  EXPECT_EQ(result, GCMClient::SUCCESS);
+  EXPECT_FALSE(registration_manager().ValidateRegistration(initial_info,
+                                                           kRegistrationId));
+  EXPECT_EQ(std::nullopt,
+            registration_manager().GetCachedRegistrationId(initial_info));
+  EXPECT_TRUE(
+      registration_manager().ValidateRegistration(updated_info, "reg_id_2"));
+  EXPECT_THAT(registration_manager().GetCachedRegistrationId(updated_info),
+              Optional(std::string("reg_id_2")));
+}
+
+TEST_F(GCMRegistrationManagerImplTest, OnRegisterCompletedInvalidSender) {
+  scoped_refptr<GCMRegistrationInfo> gcm_info =
+      CreateGCMRegistrationInfo(kTestAppId, {kSenderId});
+  registration_manager().AddPendingRegistrationRequest(gcm_info,
+                                                       /*request=*/nullptr);
+
+  base::test::TestFuture<const std::string&, GCMClient::Result> future;
+  registration_manager().OnRegisterCompleted(
+      gcm_info, future.GetCallback(), RegistrationRequest::INVALID_SENDER,
+      std::string());
+
+  const auto& [registration_id, result] = future.Get();
+  EXPECT_THAT(registration_id, IsEmpty());
+  EXPECT_EQ(result, GCMClient::INVALID_PARAMETER);
+  EXPECT_THAT(registration_manager().GetRegisteredAppIds(), IsEmpty());
+  EXPECT_THAT(gcm_store().registrations(), IsEmpty());
+}
+
+TEST_F(GCMRegistrationManagerImplTest, OnRegisterCompletedServerError) {
+  scoped_refptr<GCMRegistrationInfo> gcm_info =
+      CreateGCMRegistrationInfo(kTestAppId, {kSenderId});
+  registration_manager().AddPendingRegistrationRequest(gcm_info,
+                                                       /*request=*/nullptr);
+
+  base::test::TestFuture<const std::string&, GCMClient::Result> future;
+  registration_manager().OnRegisterCompleted(
+      gcm_info, future.GetCallback(),
+      RegistrationRequest::INTERNAL_SERVER_ERROR, std::string());
+
+  const auto& [registration_id, result] = future.Get();
+  EXPECT_THAT(registration_id, IsEmpty());
+  EXPECT_EQ(result, GCMClient::SERVER_ERROR);
+  EXPECT_THAT(registration_manager().GetRegisteredAppIds(), IsEmpty());
+  EXPECT_THAT(gcm_store().registrations(), IsEmpty());
+}
+
+TEST_F(GCMRegistrationManagerImplTest, CancelPendingRequests) {
+  scoped_refptr<GCMRegistrationInfo> gcm_info =
+      CreateGCMRegistrationInfo(kTestAppId, {kSenderId});
+  registration_manager().AddPendingRegistrationRequest(gcm_info,
+                                                       /*request=*/nullptr);
+
+  base::test::TestFuture<const std::string&, GCMClient::Result> future;
+  RegistrationRequest::RegistrationCallback request_callback =
+      base::BindOnce(&GCMRegistrationManagerImpl::OnRegisterCompleted,
+                     registration_manager().GetPendingRequestWeakPtr(),
+                     gcm_info, future.GetCallback());
+
+  registration_manager().CancelPendingRequests();
+  std::move(request_callback)
+      .Run(RegistrationRequest::SUCCESS, kRegistrationId);
+
+  EXPECT_FALSE(future.IsReady());
+  EXPECT_THAT(registration_manager().GetRegisteredAppIds(), IsEmpty());
+  EXPECT_THAT(gcm_store().registrations(), IsEmpty());
+}
+
+TEST_F(GCMRegistrationManagerImplTest, OnRegisterCompletedUntrackedRequest) {
+  scoped_refptr<GCMRegistrationInfo> gcm_info =
+      CreateGCMRegistrationInfo(kTestAppId, {kSenderId});
+
+  base::test::TestFuture<const std::string&, GCMClient::Result> future;
+  registration_manager().OnRegisterCompleted(gcm_info, future.GetCallback(),
+                                             RegistrationRequest::SUCCESS,
+                                             kRegistrationId);
+
+  const auto& [registration_id, result] = future.Get();
+  EXPECT_THAT(registration_id, IsEmpty());
+  EXPECT_EQ(result, GCMClient::UNKNOWN_ERROR);
+  EXPECT_THAT(registration_manager().GetRegisteredAppIds(), IsEmpty());
+  EXPECT_THAT(gcm_store().registrations(), IsEmpty());
 }
 
 }  // namespace

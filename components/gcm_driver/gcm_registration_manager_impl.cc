@@ -11,6 +11,7 @@
 
 #include "base/check.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/string_split.h"
 #include "base/time/clock.h"
@@ -92,6 +93,12 @@ bool GCMRegistrationManagerImpl::HasStandaloneRegisteredApp() const {
   return !registrations_.empty();
 }
 
+void GCMRegistrationManagerImpl::CancelPendingRequests() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  pending_registration_requests_.clear();
+  pending_requests_weak_ptr_factory_.InvalidateWeakPtrs();
+}
+
 std::optional<std::string> GCMRegistrationManagerImpl::GetCachedRegistrationId(
     scoped_refptr<RegistrationInfo> registration_info) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -129,6 +136,56 @@ std::optional<std::string> GCMRegistrationManagerImpl::GetCachedRegistrationId(
   }
 
   return registrations_iter->second;
+}
+
+void GCMRegistrationManagerImpl::AddPendingRegistrationRequest(
+    scoped_refptr<RegistrationInfo> registration_info,
+    std::unique_ptr<RegistrationRequest> request) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  pending_registration_requests_.emplace(std::move(registration_info),
+                                         std::move(request));
+}
+
+void GCMRegistrationManagerImpl::OnRegisterCompleted(
+    scoped_refptr<RegistrationInfo> registration_info,
+    RegisterCallback callback,
+    RegistrationRequest::Status status,
+    const std::string& registration_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  GCMClient::Result result;
+  if (pending_registration_requests_.erase(registration_info) == 0) {
+    result = GCMClient::UNKNOWN_ERROR;
+  } else if (status == RegistrationRequest::INVALID_SENDER) {
+    result = GCMClient::INVALID_PARAMETER;
+  } else if (registration_id.empty()) {
+    // All other errors are currently treated as SERVER_ERROR (including
+    // REACHED_MAX_RETRIES due to the device being offline!).
+    result = GCMClient::SERVER_ERROR;
+  } else {
+    result = GCMClient::SUCCESS;
+  }
+
+  if (result == GCMClient::SUCCESS) {
+    // Cache it.
+    // Note that the existing cached record has to be removed first because
+    // otherwise the key value in registrations_ will not be updated. For GCM
+    // registrations, the key consists of pair of app_id and sender_ids though
+    // only app_id is used in the key comparison.
+    registrations_.erase(registration_info);
+    registration_info->last_validated = clock_->Now();
+    registrations_[registration_info] = registration_id;
+
+    // Save it in the persistent store.
+    gcm_store_->AddRegistration(
+        registration_info->GetSerializedKey(),
+        registration_info->GetSerializedValue(registration_id),
+        base::BindOnce(&GCMRegistrationManagerImpl::UpdateRegistrationCallback,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  std::move(callback).Run(
+      result == GCMClient::SUCCESS ? registration_id : std::string(), result);
 }
 
 bool GCMRegistrationManagerImpl::ValidateRegistration(
@@ -226,6 +283,12 @@ void GCMRegistrationManagerImpl::RemoveDeprecatedData() {
     gcm_store_->RemoveRegistration(kDeprecatedGCMAccountMapperAppId,
                                    base::DoNothing());
   }
+}
+
+void GCMRegistrationManagerImpl::UpdateRegistrationCallback(bool success) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // TODO(crbug.com/40691191): Rebuild the store on write failure.
+  DCHECK(success);
 }
 
 }  // namespace gcm

@@ -141,14 +141,6 @@ class GCMClientImpl : public GCMClient,
   void OnDisconnected() override;
 
  private:
-  // Collection of pending registration requests. Keys are RegistrationInfo
-  // instance, while values are pending registration requests to obtain a
-  // registration ID for requesting application.
-  using PendingRegistrationRequests =
-      std::map<scoped_refptr<RegistrationInfo>,
-               std::unique_ptr<RegistrationRequest>,
-               RegistrationInfoComparer>;
-
   // Collection of pending unregistration requests. Keys are RegistrationInfo
   // instance, while values are pending unregistration requests to disable the
   // registration ID currently assigned to the application.
@@ -220,10 +212,10 @@ class GCMClientImpl : public GCMClient,
   // Callback for resetting the GCM store. The store will be reloaded.
   void ResetStoreCallback(bool success);
 
-  // Completes the registration request.
-  void OnRegisterCompleted(scoped_refptr<RegistrationInfo> registration_info,
-                           RegistrationRequest::Status status,
-                           const std::string& registration_id);
+  // Notifies observers that a registration request has finished.
+  void OnRegisterFinished(scoped_refptr<RegistrationInfo> registration_info,
+                          const std::string& registration_id,
+                          Result result);
 
   // Completes the unregistration request.
   void OnUnregisterCompleted(scoped_refptr<RegistrationInfo> registration_info,
@@ -320,10 +312,6 @@ class GCMClientImpl : public GCMClient,
   std::unique_ptr<MCSClient> mcs_client_;
 
   std::unique_ptr<CheckinRequest> checkin_request_;
-
-  // Currently pending registration requests. GCMClientImpl owns the
-  // RegistrationRequests.
-  PendingRegistrationRequests pending_registration_requests_;
 
   // Currently pending unregistration requests. GCMClientImpl owns the
   // UnregistrationRequests.

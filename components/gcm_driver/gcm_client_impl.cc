@@ -552,7 +552,9 @@ void GCMClientImpl::ResetCache() {
   mcs_client_.reset();
   checkin_request_.reset();
   // Delete all of the pending registration and unregistration requests.
-  pending_registration_requests_.clear();
+  if (registration_manager_) {
+    registration_manager_->CancelPendingRequests();
+  }
   pending_unregistration_requests_.clear();
 }
 
@@ -624,61 +626,25 @@ void GCMClientImpl::Register(
       new RegistrationRequest(
           gservices_settings_.GetRegistrationURL(), request_info,
           std::move(request_handler), fcm::GetBackoffPolicy(),
-          base::BindOnce(&GCMClientImpl::OnRegisterCompleted,
-                         weak_ptr_factory_.GetWeakPtr(), registration_info),
+          base::BindOnce(&GCMRegistrationManagerImpl::OnRegisterCompleted,
+                         registration_manager_->GetPendingRequestWeakPtr(),
+                         registration_info,
+                         base::BindOnce(&GCMClientImpl::OnRegisterFinished,
+                                        weak_ptr_factory_.GetWeakPtr(),
+                                        registration_info)),
           kMaxRegistrationRetries, url_loader_factory_, io_task_runner_,
           &recorder_, source_to_record));
   registration_request->Start();
-  pending_registration_requests_.insert(
-      std::make_pair(registration_info, std::move(registration_request)));
+  registration_manager_->AddPendingRegistrationRequest(
+      std::move(registration_info), std::move(registration_request));
 }
 
-void GCMClientImpl::OnRegisterCompleted(
+void GCMClientImpl::OnRegisterFinished(
     scoped_refptr<RegistrationInfo> registration_info,
-    RegistrationRequest::Status status,
-    const std::string& registration_id) {
-  Result result;
-  PendingRegistrationRequests::const_iterator iter =
-      pending_registration_requests_.find(registration_info);
-  if (iter == pending_registration_requests_.end()) {
-    result = UNKNOWN_ERROR;
-  } else if (status == RegistrationRequest::INVALID_SENDER) {
-    result = INVALID_PARAMETER;
-  } else if (registration_id.empty()) {
-    // All other errors are currently treated as SERVER_ERROR (including
-    // REACHED_MAX_RETRIES due to the device being offline!).
-    result = SERVER_ERROR;
-  } else {
-    result = SUCCESS;
-  }
-
-  if (result == SUCCESS) {
-    CHECK(registration_manager_);
-    // Cache it.
-    // Note that the existing cached record has to be removed first because
-    // otherwise the key value in registrations_ will not be updated. For GCM
-    // registrations, the key consists of pair of app_id and sender_ids though
-    // only app_id is used in the key comparison.
-    registration_manager_->mutable_registrations().erase(registration_info);
-    registration_info->last_validated = clock_->Now();
-    registration_manager_->mutable_registrations()[registration_info] =
-        registration_id;
-
-    // Save it in the persistent store.
-    gcm_store_->AddRegistration(
-        registration_info->GetSerializedKey(),
-        registration_info->GetSerializedValue(registration_id),
-        base::BindOnce(&GCMClientImpl::UpdateRegistrationCallback,
-                       weak_ptr_factory_.GetWeakPtr()));
-  }
-
-  observers_.Notify(&Observer::OnRegisterFinished, registration_info,
-                    result == SUCCESS ? registration_id : std::string(),
-                    result);
-
-  if (iter != pending_registration_requests_.end()) {
-    pending_registration_requests_.erase(iter);
-  }
+    const std::string& registration_id,
+    Result result) {
+  observers_.Notify(&Observer::OnRegisterFinished, std::move(registration_info),
+                    registration_id, result);
 }
 
 bool GCMClientImpl::ValidateRegistration(
