@@ -184,6 +184,9 @@ void AppMenuBlockButton::SetText(std::u16string_view text) {
   if (!display_text.empty()) {
     GetViewAccessibility().SetName(display_text);
     SetTooltipText(display_text);
+    SetProperty(views::kMenuPrefixTextKey, display_text);
+  } else {
+    ClearProperty(views::kMenuPrefixTextKey);
   }
 
   const char16_t mnemonic = ui::GetMnemonic(std::u16string(text));

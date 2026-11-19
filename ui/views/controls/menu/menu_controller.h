@@ -55,6 +55,10 @@ class OSExchangeData;
 struct OwnedWindowAnchor;
 }  // namespace ui
 
+namespace base {
+class TickClock;
+}  // namespace base
+
 namespace views {
 
 class Button;
@@ -288,6 +292,7 @@ class VIEWS_EXPORT MenuController final : public gfx::AnimationDelegate,
 
   // Only used for testing.
   bool IsCancelAllTimerRunningForTest();
+  void SetPrefixSelectorTickClockForTesting(const base::TickClock* clock);
 
   // Only used for testing.
   static void TurnOffMenuSelectionHoldForTest();
@@ -406,6 +411,7 @@ class VIEWS_EXPORT MenuController final : public gfx::AnimationDelegate,
   struct MenuPart;
 
   class MenuScrollTask;
+  class MenuPrefixDelegate;
 
   struct SelectByCharDetails;
 
@@ -765,10 +771,18 @@ class VIEWS_EXPORT MenuController final : public gfx::AnimationDelegate,
   // otherwise null.
   Button* GetHotTrackedButtonIn(const MenuItemView* item) const;
 
-  // Returns whether typing a new character will continue the existing prefix
-  // selection. If this returns false, typing a new character will start a new
-  // prefix selection, and some characters (such as Space) will be treated as
-  // commands instead of parts of the prefix.
+  // Selects `item` and hot-tracks `button` within it. Passing a null `button`
+  // clears any hot-tracked button. Safe if selecting `item` destroys the menu.
+  void SelectItemAndHotTrackButton(MenuItemView* item, Button* button);
+
+  // Returns the hot-trackable buttons inside `item` in forward focus order,
+  // using the same traversal as arrow-key navigation.
+  static std::vector<Button*> GetFocusableButtonsIn(MenuItemView* item);
+
+  // Returns whether typing a new character will continue the existing
+  // prefix selection. If this returns false, typing a new character will
+  // start a new prefix selection, and some characters (such as Space) will
+  // be treated as commands instead of parts of the prefix.
   bool ShouldContinuePrefixSelection() const;
 
   // Manage alerted MenuItemViews that we are animating.
@@ -913,6 +927,7 @@ class VIEWS_EXPORT MenuController final : public gfx::AnimationDelegate,
   // Task for scrolling the menu via scroll button. If non-null, indicates a
   // scroll is currently underway.
   std::unique_ptr<MenuScrollTask> scroll_task_;
+  std::unique_ptr<MenuPrefixDelegate> prefix_delegate_;
 
   // The lock to keep the menu button pressed while a menu is visible.
   std::unique_ptr<MenuButtonController::PressedLock> pressed_lock_;

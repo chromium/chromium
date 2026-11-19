@@ -42,6 +42,7 @@
 #include "ui/gfx/native_ui_types.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/menu_button.h"
 #include "ui/views/controls/menu/menu_config.h"
 #include "ui/views/controls/menu/menu_controller_delegate.h"
@@ -52,6 +53,8 @@
 #include "ui/views/controls/menu/menu_scroll_view_container.h"
 #include "ui/views/controls/menu/menu_types.h"
 #include "ui/views/controls/menu/submenu_view.h"
+#include "ui/views/controls/prefix_delegate.h"
+#include "ui/views/controls/prefix_selector.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/drag_utils.h"
 #include "ui/views/focus/focus_manager.h"
@@ -697,6 +700,131 @@ struct MenuController::SelectByCharDetails {
   // selected item/button whose mnemonic matches. This may remain nullopt even
   // though there are matches.
   std::optional<Match> next_match;
+};
+
+class MenuController::MenuPrefixDelegate final : public PrefixDelegate {
+ public:
+  explicit MenuPrefixDelegate(MenuController* controller)
+      : controller_(controller),
+        prefix_selector_(this, /*host_view=*/nullptr) {}
+
+  MenuPrefixDelegate(const MenuPrefixDelegate&) = delete;
+  MenuPrefixDelegate& operator=(const MenuPrefixDelegate&) = delete;
+  ~MenuPrefixDelegate() = default;
+
+  void SelectByPrefix(SubmenuView* submenu, const std::u16string& text) {
+    if (submenu_tracker_.view() != submenu) {
+      submenu_tracker_.SetView(submenu);
+      prefix_selector_.OnViewBlur();
+    }
+    BuildElements(submenu);
+    prefix_selector_.InsertText(
+        text,
+        ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+    elements_.clear();
+  }
+
+  bool ShouldContinueSelection(const SubmenuView* submenu) const {
+    return submenu_tracker_.view() == submenu &&
+           prefix_selector_.ShouldContinueSelection();
+  }
+
+  void set_tick_clock_for_testing(const base::TickClock* clock) {
+    prefix_selector_.set_tick_clock_for_testing(clock);  // IN-TEST
+  }
+
+  // PrefixDelegate:
+  size_t GetRowCount() override { return elements_.size(); }
+
+  std::optional<size_t> GetSelectedRow() override {
+    for (size_t i = 0; i < elements_.size(); ++i) {
+      if (!elements_[i].item->GetVisible()) {
+        continue;
+      }
+      const MenuItemView* const button_submenu =
+          elements_[i].button
+              ? elements_[i].button->GetProperty(kSubmenuItemKey)
+              : nullptr;
+      const bool item_selected =
+          elements_[i].item->IsSelected() ||
+          (button_submenu && button_submenu->IsSelected());
+      if (!item_selected) {
+        continue;
+      }
+      if (controller_->GetHotTrackedButtonIn(elements_[i].item) ==
+          elements_[i].button) {
+        return i;
+      }
+    }
+    return std::nullopt;
+  }
+
+  void SetSelectedRow(std::optional<size_t> index) override {
+    if (!index.has_value()) {
+      return;
+    }
+    CHECK_LT(*index, elements_.size());
+    MenuItemView* const item = elements_[*index].item;
+    Button* const button = elements_[*index].button;
+    // Clear raw_ptrs before selecting, as selection may destroy the menu.
+    elements_.clear();
+    controller_->SelectItemAndHotTrackButton(item, button);
+  }
+
+  std::u16string GetTextForRow(size_t index) override {
+    CHECK_LT(index, elements_.size());
+    const PrefixElement& element = elements_[index];
+    if (!element.item->GetEnabled() || !element.item->GetVisible()) {
+      return std::u16string();
+    }
+    if (element.button) {
+      const std::u16string* const prefix_text =
+          element.button->GetProperty(kMenuPrefixTextKey);
+      return prefix_text ? *prefix_text : std::u16string();
+    }
+    return MenuItemView::GetAccessibleNameForMenuItem(
+        element.item->title(), std::u16string(),
+        element.item->new_badge_type());
+  }
+
+ private:
+  // An interactable element for prefix selection: either a menu item (`button`
+  // is null) or a focusable button inside a menu item.
+  struct PrefixElement {
+    raw_ptr<MenuItemView> item = nullptr;
+    raw_ptr<Button> button = nullptr;
+  };
+
+  void BuildElements(SubmenuView* submenu) {
+    elements_.clear();
+    for (MenuItemView* child : submenu->GetMenuItems()) {
+      const bool is_selectable =
+          child->GetTriggerActionWithNonIconChildViews() ||
+          child->HasSubmenu() || child->NonIconChildViewsCount() == 0;
+      std::vector<Button*> buttons;
+      bool has_prefix_button = false;
+      if (!child->children().empty() && child->GetVisible() &&
+          child->GetEnabled()) {
+        buttons = MenuController::GetFocusableButtonsIn(child);
+        has_prefix_button = std::ranges::any_of(buttons, [](Button* button) {
+          const std::u16string* prefix_text =
+              button->GetProperty(kMenuPrefixTextKey);
+          return prefix_text && !prefix_text->empty();
+        });
+      }
+      if (is_selectable || !has_prefix_button) {
+        elements_.push_back({child, nullptr});
+      }
+      for (Button* button : buttons) {
+        elements_.push_back({child, button});
+      }
+    }
+  }
+
+  const raw_ptr<MenuController> controller_;
+  ViewTracker submenu_tracker_;
+  PrefixSelector prefix_selector_;
+  std::vector<PrefixElement> elements_;
 };
 
 // MenuController:State ------------------------------------------------------
@@ -1999,6 +2127,11 @@ bool MenuController::IsCancelAllTimerRunningForTest() {
   return cancel_all_timer_.IsRunning();
 }
 
+void MenuController::SetPrefixSelectorTickClockForTesting(
+    const base::TickClock* clock) {
+  prefix_delegate_->set_tick_clock_for_testing(clock);  // IN-TEST
+}
+
 void MenuController::SetShowing(bool showing) {
   if (showing_ == showing) {
     return;
@@ -2610,6 +2743,7 @@ MenuController::MenuController(bool for_drop,
                                internal::MenuControllerDelegate* delegate)
     : for_drop_(for_drop),
       result_(nullptr),
+      prefix_delegate_(std::make_unique<MenuPrefixDelegate>(this)),
       active_mouse_view_tracker_(std::make_unique<ViewTracker>()),
       alert_animation_(this) {
   delegate_stack_.push_back(delegate);
@@ -3982,20 +4116,15 @@ MenuController::SelectByCharDetails MenuController::FindChildForMnemonic(
       record_candidate({i, nullptr},
                        child == pending_state_.item && !hot_button_,
                        match_function(child, key));
-      for (View* v = GetInitialFocusableView(child, /*forward=*/true); v;
-           v = GetNextFocusableView(child, v, /*forward=*/true)) {
-        if (Button* button = Button::AsButton(v)) {
-          const char16_t button_mnemonic =
-              button->GetProperty(kMenuMnemonicKey);
-          const bool button_matches = check_button_mnemonics &&
-                                      button_mnemonic != 0 &&
-                                      base::i18n::ToLower(std::u16string_view(
-                                          &button_mnemonic, 1))[0] == key;
-          record_candidate(
-              {i, button},
-              child == pending_state_.item && hot_button_ == button,
-              button_matches);
-        }
+      for (Button* button : GetFocusableButtonsIn(child)) {
+        const char16_t button_mnemonic = button->GetProperty(kMenuMnemonicKey);
+        const bool button_matches =
+            check_button_mnemonics && button_mnemonic != 0 &&
+            base::i18n::ToLower(std::u16string_view(&button_mnemonic, 1))[0] ==
+                key;
+        record_candidate({i, button},
+                         child == pending_state_.item && hot_button_ == button,
+                         button_matches);
       }
     }
   }
@@ -4015,13 +4144,9 @@ void MenuController::AcceptOrSelect(MenuItemView* parent,
     const SelectByCharDetails::Match match = details.first_match.value();
     MenuItemView* item = submenu->GetMenuItemAt(match.item_index);
     if (match.button) {
-      ViewTracker button_tracker(match.button);
-      SetSelection(item, SELECTION_DEFAULT);
-      if (!destroy_pending_ && button_tracker) {
-        SetHotTrackedButton(match.button);
-        if (!destroy_pending_) {
-          SendAcceleratorToHotTrackedView(0);
-        }
+      SelectItemAndHotTrackButton(item, match.button);
+      if (!destroy_pending_ && hot_button_) {
+        SendAcceleratorToHotTrackedView(0);
       }
     } else if (item->HasSubmenu()) {
       SetSelection(item, SELECTION_OPEN_SUBMENU | SELECTION_UPDATE_IMMEDIATELY);
@@ -4033,11 +4158,8 @@ void MenuController::AcceptOrSelect(MenuItemView* parent,
         (!details.index_of_item.has_value() || !details.next_match.has_value())
             ? details.first_match.value()
             : details.next_match.value();
-    ViewTracker button_tracker(match.button);
-    SetSelection(submenu->GetMenuItemAt(match.item_index), SELECTION_DEFAULT);
-    if (!destroy_pending_) {
-      SetHotTrackedButton(static_cast<Button*>(button_tracker.view()));
-    }
+    SelectItemAndHotTrackButton(submenu->GetMenuItemAt(match.item_index),
+                                match.button);
   }
 }
 
@@ -4081,9 +4203,7 @@ void MenuController::SelectByChar(char16_t character) {
 
   if (IsReadonlyCombobox() ||
       MenuConfig::instance().all_menus_use_prefix_selection) {
-    item->GetSubmenu()->GetPrefixSelector()->InsertText(
-        char_array,
-        ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+    prefix_delegate_->SelectByPrefix(item->GetSubmenu(), char_array);
   } else {
     // If no mnemonics found, look at first character of titles.
     details = FindChildForMnemonic(item, key, &TitleMatchesMnemonic);
@@ -4585,12 +4705,37 @@ Button* MenuController::GetHotTrackedButtonIn(const MenuItemView* item) const {
   return hot_button_.get();
 }
 
+// static
+std::vector<Button*> MenuController::GetFocusableButtonsIn(MenuItemView* item) {
+  std::vector<Button*> buttons;
+  for (View* v = GetInitialFocusableView(item, /*forward=*/true); v;
+       v = GetNextFocusableView(item, v, /*forward=*/true)) {
+    Button* const button = Button::AsButton(v);
+    // GetButtonForView() walks up to ancestors, so several focusable views
+    // can map to the same button.
+    if (button && !GetEnclosingTextfield(button->parent())) {
+      buttons.push_back(button);
+    }
+  }
+  return buttons;
+}
+
+void MenuController::SelectItemAndHotTrackButton(MenuItemView* item,
+                                                 Button* button) {
+  ScopedDeletionGuard guard(AsWeakPtr());
+  ViewTracker button_tracker(button);
+  SetSelection(item, SELECTION_DEFAULT);
+  if (!destroy_pending_) {
+    SetHotTrackedButton(static_cast<Button*>(button_tracker.view()));
+  }
+}
+
 bool MenuController::ShouldContinuePrefixSelection() const {
   MenuItemView* item = pending_state_.item;
   if (!item->SubmenuIsShowing()) {
     item = item->GetParentMenuItem();
   }
-  return item->GetSubmenu()->GetPrefixSelector()->ShouldContinueSelection();
+  return prefix_delegate_->ShouldContinueSelection(item->GetSubmenu());
 }
 
 void MenuController::RegisterAlertedItem(MenuItemView* item) {

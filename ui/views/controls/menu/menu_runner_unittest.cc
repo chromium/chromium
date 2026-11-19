@@ -334,10 +334,8 @@ TEST_F(MenuRunnerTest, PrefixSelect) {
                     ui::mojom::MenuSourceType::kNone);
   EXPECT_TRUE(runner->IsRunning());
 
-  menu_item_view()
-      ->GetSubmenu()
-      ->GetPrefixSelector()
-      ->set_tick_clock_for_testing(&clock);
+  menu_item_view()->GetMenuController()->SetPrefixSelectorTickClockForTesting(
+      &clock);
 
   ui::test::EventGenerator generator(GetContext(), owner()->GetNativeWindow());
   generator.PressKey(ui::VKEY_O, 0);

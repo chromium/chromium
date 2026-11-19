@@ -25,6 +25,9 @@
 #include "base/task/current_thread.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/simple_test_tick_clock.h"
+#include "base/time/default_tick_clock.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_mode.h"
@@ -55,6 +58,7 @@
 #include "ui/views/accessibility/ax_update_notifier.h"
 #include "ui/views/accessibility/ax_update_observer.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/menu_button.h"
 #include "ui/views/controls/button/menu_button_controller.h"
@@ -4970,6 +4974,98 @@ TEST_F(MenuControllerTest, SelectChildButtonViewWithSubmenuByMnemonic) {
   EXPECT_EQ(buttons_item, buttons_item);
 
   anchored_submenu->SetAnchorView(nullptr);
+}
+
+// Tests that prefix selection reaches child buttons that set
+// kMenuPrefixTextKey, and that a multi-character prefix continues across them.
+TEST_F(MenuControllerTest, PrefixSelectChildButtons) {
+  CreateMenu();
+  SetComboboxType(MenuController::ComboboxType::kReadonly);
+  MenuItemView* const buttons_item = AddButtonMenuItems(/*single_child=*/false);
+  SubmenuView* const submenu = menu_item()->GetSubmenu();
+  const View* const buttons_view = submenu->children()[4];
+  ASSERT_NE(nullptr, buttons_view);
+  GET_CHILD_BUTTON(button1, buttons_view, 0);
+  GET_CHILD_BUTTON(button2, buttons_view, 1);
+  GET_CHILD_BUTTON(button3, buttons_view, 2);
+  button1->SetProperty(kMenuPrefixTextKey, u"Cut");
+  button2->SetProperty(kMenuPrefixTextKey, u"Copy");
+  button3->SetProperty(kMenuPrefixTextKey, u"Paste");
+
+  base::SimpleTestTickClock clock;
+  clock.Advance(base::Seconds(10));
+  menu_controller()->SetPrefixSelectorTickClockForTesting(&clock);
+
+  // "c" matches the first button.
+  SelectByChar('c');
+  EXPECT_EQ(buttons_item, pending_state_item());
+  EXPECT_EQ(button1, hot_button());
+
+  // Continuing the prefix to "co" moves to the next matching button.
+  SelectByChar('o');
+  EXPECT_EQ(buttons_item, pending_state_item());
+  EXPECT_EQ(button2, hot_button());
+
+  // After the prefix times out, "t" selects a menu item and clears the
+  // hot-tracked button.
+  clock.Advance(base::Seconds(2));
+  SelectByChar('t');
+  EXPECT_EQ(2, pending_state_item()->GetCommand());
+  EXPECT_EQ(nullptr, hot_button());
+
+  // "p" searches forward from the selected item and reaches the last button.
+  clock.Advance(base::Seconds(2));
+  SelectByChar('p');
+  EXPECT_EQ(buttons_item, pending_state_item());
+  EXPECT_EQ(button3, hot_button());
+  menu_controller()->SetPrefixSelectorTickClockForTesting(
+      base::DefaultTickClock::GetInstance());
+}
+
+// Tests that buttons without kMenuPrefixTextKey (e.g. icon-only buttons) are
+// not prefix-selectable, even if their accessible names match, and don't
+// replace the row of the menu item that contains them.
+TEST_F(MenuControllerTest, PrefixSelectIgnoresIconOnlyButtons) {
+  CreateMenu();
+  SetComboboxType(MenuController::ComboboxType::kReadonly);
+  MenuItemView* const icons_item = menu_item()->AppendMenuItem(5, u"Five");
+  for (const char16_t* name : {u"Forward", u"Zoom in"}) {
+    auto* const button =
+        icons_item->AddChildView(std::make_unique<ImageButton>());
+    button->SetFocusBehavior(View::FocusBehavior::ALWAYS);
+    button->GetViewAccessibility().SetName(std::u16string(name));
+  }
+  ShowSubmenu();
+
+  base::SimpleTestTickClock clock;
+  clock.Advance(base::Seconds(10));
+  menu_controller()->SetPrefixSelectorTickClockForTesting(&clock);
+
+  // "f" matches "Four" first.
+  SelectByChar('f');
+  EXPECT_EQ(4, pending_state_item()->GetCommand());
+  EXPECT_EQ(nullptr, hot_button());
+
+  // The next "f" reaches the "Five" item itself, not its "Forward" button.
+  clock.Advance(base::Seconds(2));
+  SelectByChar('f');
+  EXPECT_EQ(icons_item, pending_state_item());
+  EXPECT_EQ(nullptr, hot_button());
+
+  // And wraps back to "Four".
+  clock.Advance(base::Seconds(2));
+  SelectByChar('f');
+  EXPECT_EQ(4, pending_state_item()->GetCommand());
+  EXPECT_EQ(nullptr, hot_button());
+
+  // "z" matches only the "Zoom in" button's accessible name, so nothing
+  // changes.
+  clock.Advance(base::Seconds(2));
+  SelectByChar('z');
+  EXPECT_EQ(4, pending_state_item()->GetCommand());
+  EXPECT_EQ(nullptr, hot_button());
+  menu_controller()->SetPrefixSelectorTickClockForTesting(
+      base::DefaultTickClock::GetInstance());
 }
 
 TEST_F(MenuControllerTest, DragBetweenButtonsAndMenuItems) {

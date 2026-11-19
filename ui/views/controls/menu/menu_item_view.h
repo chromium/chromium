@@ -929,6 +929,11 @@ VIEWS_EXPORT extern const ui::ClassProperty<MenuItemView*>* const
 // specify its mnemonic character for keyboard selection in MenuController.
 VIEWS_EXPORT extern const ui::ClassProperty<char16_t>* const kMenuMnemonicKey;
 
+// Property set on child views::button inside a container MenuItemView to
+// specify its prefix text for keyboard search in MenuController
+VIEWS_EXPORT extern const ui::ClassProperty<std::u16string*>* const
+    kMenuPrefixTextKey;
+
 class VIEWS_EXPORT MenuItemActionViewInterface
     : public BaseActionViewInterface {
  public:

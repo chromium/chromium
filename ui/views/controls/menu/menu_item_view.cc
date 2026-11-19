@@ -24,6 +24,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/platform/ax_platform.h"
+#include "ui/base/class_property.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -2343,6 +2344,7 @@ END_METADATA
 
 DEFINE_UI_CLASS_PROPERTY_KEY(MenuItemView*, kSubmenuItemKey, nullptr)
 DEFINE_UI_CLASS_PROPERTY_KEY(char16_t, kMenuMnemonicKey, 0)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::u16string, kMenuPrefixTextKey)
 
 }  // namespace views
 
