@@ -262,7 +262,7 @@ export class CustomizeChromeComboboxElement extends CrLitElement {
     e.preventDefault();
   }
 
-  protected onDropdownPointerevent_(event: PointerEvent) {
+  private onDropdownPointerevent_(event: PointerEvent) {
     const highlightableTarget =
         event.composedPath().find(
             target => target instanceof HTMLElement &&

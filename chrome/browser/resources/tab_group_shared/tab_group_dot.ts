@@ -72,7 +72,7 @@ export class TabGroupDotElement extends CrLitElement {
     return this.size === TabGroupDotSize.LARGE ? '-6 -6 12 12' : '-3 -3 6 6';
   }
 
-  protected getOuterRadius_(): number {
+  private getOuterRadius_(): number {
     return this.size === TabGroupDotSize.LARGE ? 6 : 3;
   }
 

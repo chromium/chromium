@@ -243,7 +243,7 @@ export class AppElement extends CrLitElement {
     return !this.isAssistantSpeaking() && this.inputCaptionsVisible;
   }
 
-  protected formatCaptionsText(text: string): string {
+  private formatCaptionsText(text: string): string {
     return formatCaptions(text, this.usePersona ? 50 : 60);
   }
 

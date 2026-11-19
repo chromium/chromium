@@ -213,7 +213,7 @@ export class ManagedUserProfileNoticeAppElement extends
     this.managedUserProfileNoticeBrowserProxy_.cancel();
   }
 
-  protected allowValuePropStateBackFromDisclosure_() {
+  private allowValuePropStateBackFromDisclosure_() {
     return this.currentState_ === State.DISCLOSURE &&
         loadTimeData.getInteger('initialState') !== State.DISCLOSURE;
   }

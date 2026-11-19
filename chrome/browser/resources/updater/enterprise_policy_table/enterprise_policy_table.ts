@@ -56,7 +56,7 @@ export class EnterprisePolicyTableElement extends CrLitElement {
     }
   }
 
-  protected computeHasOnlyDefaultValues(): boolean {
+  private computeHasOnlyDefaultValues(): boolean {
     if (!this.policies) {
       return true;
     }
@@ -86,14 +86,14 @@ export class EnterprisePolicyTableElement extends CrLitElement {
     return true;
   }
 
-  protected computeUpdaterPolicies(): RowData[] {
+  private computeUpdaterPolicies(): RowData[] {
     if (this.policies === undefined) {
       return [];
     }
     return this.makeRowData(this.policies.policiesByName);
   }
 
-  protected computeAppPolicies(): {[key: string]: RowData[]} {
+  private computeAppPolicies(): {[key: string]: RowData[]} {
     if (this.policies === undefined) {
       return {};
     }

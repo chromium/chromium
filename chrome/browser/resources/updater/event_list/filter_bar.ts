@@ -218,19 +218,19 @@ export class FilterBarElement extends CrLitElement {
     }
   }
 
-  protected editFilter(category: FilterCategory) {
+  private editFilter(category: FilterCategory) {
     this.focusReturnElement = this.shadowRoot.activeElement as HTMLElement;
     this.menuHost = 'chip';
     this.filterMenuState = category;
   }
 
-  protected closeFilterMenu() {
+  private closeFilterMenu() {
     this.filterMenuState = 'closed';
     this.focusReturnElement?.focus();
     this.focusReturnElement = null;
   }
 
-  protected updateFilterOrder(category: FilterCategory, active: boolean) {
+  private updateFilterOrder(category: FilterCategory, active: boolean) {
     const index = this.filterOrder.indexOf(category);
     if (active && index === -1) {
       this.filterOrder = [...this.filterOrder, category];
@@ -282,7 +282,7 @@ export class FilterBarElement extends CrLitElement {
     await this.onFiltersChanged(FilterCategory.DATE);
   }
 
-  protected getDateFilterString(): string {
+  private getDateFilterString(): string {
     const format = (d: Date) => formatDateDigits(d);
     const start = this.filterSettings.startDate ?
         format(this.filterSettings.startDate) :

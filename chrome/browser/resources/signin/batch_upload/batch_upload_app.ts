@@ -175,7 +175,7 @@ export class BatchUploadAppElement extends BatchUploadAppElementBase {
         this.dataSectionsToggles_.some((value: boolean) => value);
   }
 
-  protected saveToAccount_() {
+  private saveToAccount_() {
     assert(this.isSaveEnabled_);
 
     const idsToMove: number[][] = [];

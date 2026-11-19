@@ -684,7 +684,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
     this.voiceLanguageController_.onLanguageSelected(event.detail.language);
   }
 
-  protected onReadabilityAnchorsReady_() {
+  private onReadabilityAnchorsReady_() {
     if (this.contentBrowserProxy_.isReadabilityEnabled()) {
       this.contentController_.updateAnchorsForReadability(this.shadowRoot);
     }
@@ -900,7 +900,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
          this.contentState_.type === ContentType.LOADING);
   }
 
-  protected onKeyDown_(e: KeyboardEvent) {
+  private onKeyDown_(e: KeyboardEvent) {
     if (isPlayPauseShortcut(e)) {
       e.stopPropagation();
       e.preventDefault();

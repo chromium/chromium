@@ -13,7 +13,7 @@ export function getHtml(this: ContentSettingIconElement) {
     .buttonTabIndex="${0}" ?is-menu-open="${this.trackedHighlighted}"
     ?has-label="${this.shouldShowLabel_ && !!this.state.explanatoryString}"
     ?disable-transitions="${this.suppressTransitions_}"
-    .tooltip="${this.state.tooltip}" .ariaLabel="${this.getAriaLabel_()}"
+    .tooltip="${this.getTooltip_()}" .ariaLabel="${this.getAriaLabel_()}"
     @click="${this.onClick_}" @auxclick="${this.onAuxclick_}"
     @contextmenu="${this.onContextmenu_}"
     @pointerenter="${this.onPointerenter_}"

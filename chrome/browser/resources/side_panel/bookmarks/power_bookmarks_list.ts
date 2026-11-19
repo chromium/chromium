@@ -636,7 +636,7 @@ export class PowerBookmarksListElement extends CrLitElement implements
         });
   }
 
-  protected getActiveFolderLabel_(listId: string): string {
+  private getActiveFolderLabel_(listId: string): string {
     const folder = listId === 'a' ? this.activeFolderA_ : this.activeFolderB_;
     return getFolderLabel(folder);
   }
@@ -967,7 +967,7 @@ export class PowerBookmarksListElement extends CrLitElement implements
     }
   }
 
-  protected onAnimationEnd_(e: AnimationEvent) {
+  private onAnimationEnd_(e: AnimationEvent) {
     const targetListId = this.transitioningList_;
     if (!targetListId) {
       return;
@@ -1174,7 +1174,7 @@ export class PowerBookmarksListElement extends CrLitElement implements
     return '';
   }
 
-  protected notifyBookmarksListResize_() {
+  private notifyBookmarksListResize_() {
     this.getActiveList_().fillCurrentViewport();
   }
 

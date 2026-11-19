@@ -1499,11 +1499,11 @@ export class ReadonlyOmniboxElement extends CrLitElement {
     }
   }
 
-  protected getAriaLabel_(): string {
+  private getAriaLabel_(): string {
     return loadTimeData.getString('locationAccName');
   }
 
-  protected getAriaKeyShortcut_(): string {
+  private getAriaKeyShortcut_(): string {
     // <if expr="not is_macosx">
     return 'Ctrl+L';
     // </if>

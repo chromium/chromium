@@ -538,7 +538,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     return !this.isReadAloudPlayable || !this.isSpeechActive;
   }
 
-  protected onToolbarContainerBlur_() {
+  private onToolbarContainerBlur_() {
     this.$.toolbarContainer.tabIndex = -1;
   }
 }

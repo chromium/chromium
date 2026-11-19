@@ -110,27 +110,27 @@ export class SupportToolElement extends SupportToolElementBase {
     }
   }
 
-  protected onDataExportStarted_() {
+  private onDataExportStarted_() {
     this.selectedPage_ = SupportToolPageIndex.EXPORT_SPINNER;
   }
 
-  protected onDataCollectionCompleted_(piiItems: PiiDataItem[]) {
+  private onDataCollectionCompleted_(piiItems: PiiDataItem[]) {
     this.$.piiSelection.updateDetectedPiiItems(piiItems);
     this.selectedPage_ = SupportToolPageIndex.PII_SELECTION;
   }
 
-  protected onDataCollectionCancelled_() {
+  private onDataCollectionCancelled_() {
     // Change the selected page into issue details page so they user can restart
     // data collection if they want.
     this.selectedPage_ = SupportToolPageIndex.ISSUE_DETAILS;
   }
 
-  protected displayError_(errorMessage: string) {
+  private displayError_(errorMessage: string) {
     this.errorMessage_ = errorMessage;
     this.$.errorMessageToast.show();
   }
 
-  protected onDataExportCompleted_(result: DataExportResult) {
+  private onDataExportCompleted_(result: DataExportResult) {
     if (result.success) {
       // Show the exported data path to user in data export page if the data
       // export is successful.
@@ -144,7 +144,7 @@ export class SupportToolElement extends SupportToolElementBase {
     }
   }
 
-  protected onDataCollectionStart_(result: StartDataCollectionResult) {
+  private onDataCollectionStart_(result: StartDataCollectionResult) {
     if (result.success) {
       this.selectedPage_ = SupportToolPageIndex.SPINNER;
     } else {

@@ -277,7 +277,7 @@ export class SelectableLazyListElement<T = any> extends CrLitElement {
    * Ensure the scroll view can fully display a preceding or following list item
    * to the one selected, if existing.
    */
-  protected async onSelectedChanged_() {
+  private async onSelectedChanged_() {
     if (this.selected === undefined) {
       return;
     }

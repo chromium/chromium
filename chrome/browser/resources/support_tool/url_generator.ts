@@ -91,7 +91,7 @@ export class UrlGeneratorElement extends UrlGeneratorElementBase {
     this.onDataCollectorItemChange_();
   }
 
-  protected onDataCollectorItemChange_() {
+  private onDataCollectorItemChange_() {
     // The button should be disabled if no data collector is selected.
     this.buttonDisabled_ =
         !this.dataCollectors_.some(collector => collector.isIncluded);

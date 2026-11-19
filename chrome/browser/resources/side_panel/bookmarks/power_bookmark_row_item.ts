@@ -163,7 +163,7 @@ export class PowerBookmarkRowItemElement extends CrLitElement {
     this.onRowClicked_(event);
   }
 
-  protected onRowClicked_(event: MouseEvent) {
+  private onRowClicked_(event: MouseEvent) {
     if (this.isRenamingItem_() || !this.bookmark || event.button === 2 ||
         this.hasActiveDrag) {
       return;

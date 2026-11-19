@@ -270,7 +270,7 @@ export class ContentSettingIconElement extends ContentSettingIconElementBase {
     return this.state.accessibilityString || this.state.tooltip;
   }
 
-  protected showContentSettingsBubble_(e: PointerEvent) {
+  private showContentSettingsBubble_(e: PointerEvent) {
     TrackedElementManager.getInstance().notifyElementActivated(this);
     // Keyboard synthetic clicks generate PointerEvents with an empty
     // pointerType in WebUI, whereas natural pointer clicks have a valid

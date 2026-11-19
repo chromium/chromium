@@ -278,7 +278,7 @@ export class LocationIconElement extends LocationIconElementBase {
         () => this.onContainerLostPointerCapture_());
   }
 
-  protected onContainerPointerMove_(e: PointerEvent) {
+  private onContainerPointerMove_(e: PointerEvent) {
     if (this.activePointerId_ === null || this.isDragging_) {
       return;
     }
@@ -295,7 +295,7 @@ export class LocationIconElement extends LocationIconElementBase {
     }
   }
 
-  protected onContainerPointerUp_(e: PointerEvent) {
+  private onContainerPointerUp_(e: PointerEvent) {
     this.finishDrag_();
 
     // Native Mac converts Ctrl+LeftClick into a right click, which opens Page
@@ -308,11 +308,11 @@ export class LocationIconElement extends LocationIconElementBase {
     }
   }
 
-  protected onContainerPointerCancel_() {
+  private onContainerPointerCancel_() {
     this.finishDrag_();
   }
 
-  protected onContainerLostPointerCapture_() {
+  private onContainerLostPointerCapture_() {
     this.finishDrag_();
   }
 

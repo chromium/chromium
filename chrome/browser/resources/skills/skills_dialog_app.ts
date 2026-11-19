@@ -577,7 +577,7 @@ export class SkillsDialogAppElement extends CrLitElement {
             });
   }
 
-  protected autoPopulateNameAndIcon_() {
+  private autoPopulateNameAndIcon_() {
     if (!this.skill_.prompt || this.skill_.name) {
       return;
     }

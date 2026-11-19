@@ -392,7 +392,7 @@ export class UserEducationInternalsElement extends
     }
   }
 
-  protected onTutorialLaunch_(id: string) {
+  private onTutorialLaunch_(id: string) {
     this.featurePromoErrorMessage_ = '';
 
     this.handler_.startTutorial(id).then(({errorMessage}) => {
@@ -403,7 +403,7 @@ export class UserEducationInternalsElement extends
     });
   }
 
-  protected onFeaturePromoLaunch_(id: string) {
+  private onFeaturePromoLaunch_(id: string) {
     this.featurePromoErrorMessage_ = '';
 
     // Promos may go into a queue, so notify the user that the promo is waiting
@@ -420,7 +420,7 @@ export class UserEducationInternalsElement extends
     });
   }
 
-  protected onNotifyFeaturePromoFeatureUsed_(id: string) {
+  private onNotifyFeaturePromoFeatureUsed_(id: string) {
     this.userEducation_.notifyFeaturePromoFeatureUsed(
         id, FeaturePromoFeatureUsedAction.kClosePromoIfPresent);
     this.handler_.getFeaturePromos().then(({featurePromos}) => {
@@ -475,7 +475,7 @@ export class UserEducationInternalsElement extends
     });
   }
 
-  protected onFeaturePromoClearPromoData_(id: string) {
+  private onFeaturePromoClearPromoData_(id: string) {
     this.featurePromoErrorMessage_ = '';
 
     this.handler_.clearFeaturePromoData(id).then(({errorMessage}) => {
@@ -491,7 +491,7 @@ export class UserEducationInternalsElement extends
     });
   }
 
-  protected onTestNewBadge_(id: string) {
+  private onTestNewBadge_(id: string) {
     this.featurePromoErrorMessage_ = '';
 
     this.userEducation_.maybeShowNewBadgeFor(id).then(({shouldShow}) => {
@@ -504,14 +504,14 @@ export class UserEducationInternalsElement extends
     });
   }
 
-  protected onNotifyNewBadgeFeatureUsed_(id: string) {
+  private onNotifyNewBadgeFeatureUsed_(id: string) {
     this.userEducation_.notifyNewBadgeFeatureUsed(id);
     this.handler_.getNewBadges().then(({newBadges}) => {
       this.newBadges_ = newBadges;
     });
   }
 
-  protected onNewBadgeClearPromoData_(id: string) {
+  private onNewBadgeClearPromoData_(id: string) {
     this.featurePromoErrorMessage_ = '';
 
     this.handler_.clearNewBadgeData(id).then(({errorMessage}) => {
@@ -527,7 +527,7 @@ export class UserEducationInternalsElement extends
     });
   }
 
-  protected onNonIphClearPromoData_(id: string) {
+  private onNonIphClearPromoData_(id: string) {
     this.featurePromoErrorMessage_ = '';
 
     this.handler_.clearNonIphPromoData(id).then(({errorMessage}) => {
@@ -543,7 +543,7 @@ export class UserEducationInternalsElement extends
     });
   }
 
-  protected onNtpPromoClearPromoData_(id: string) {
+  private onNtpPromoClearPromoData_(id: string) {
     this.featurePromoErrorMessage_ = '';
     this.handler_.clearNtpPromoData(id).then(({errorMessage}) => {
       this.featurePromoErrorMessage_ = errorMessage;
@@ -558,7 +558,8 @@ export class UserEducationInternalsElement extends
     });
   }
 
-  protected onClearWhatsNewData_() {
+  // <if expr="not is_chromeos">
+  private onClearWhatsNewData_() {
     this.featurePromoErrorMessage_ = '';
 
     this.handler_.clearWhatsNewData().then(({errorMessage}) => {
@@ -575,6 +576,7 @@ export class UserEducationInternalsElement extends
       }
     });
   }
+  // </if>
 
   protected onModuleClearWhatsNewData_(e: CustomEvent<string>) {
     this.featurePromoErrorMessage_ = '';

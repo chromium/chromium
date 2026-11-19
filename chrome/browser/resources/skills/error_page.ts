@@ -121,7 +121,7 @@ export class ErrorPageElement extends CrLitElement {
     }
   }
 
-  protected closeDialog_() {
+  private closeDialog_() {
     assert(this.dialog);
     SkillsPageHandler.getRemote().closeDialog(null);
   }

@@ -146,7 +146,7 @@ export class SkillCardElement extends CrLitElement {
     this.proxy_.handler.deleteSkill(this.skill.id);
     this.shadowRoot.querySelector<CrActionMenuElement>('#menu')!.close();
   }
-  protected logCardAction_(action: SkillsManagementAction) {
+  private logCardAction_(action: SkillsManagementAction) {
     this.proxy_.handler.recordSkillsManagementAction(
         this.cardType === CardType.USER_SKILL_CARD ?
             SkillsManagementPage.kYourSkills :

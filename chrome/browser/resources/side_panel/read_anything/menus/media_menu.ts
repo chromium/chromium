@@ -111,12 +111,12 @@ export class MediaMenuElement extends MediaMenuElementBase implements
     this.$.lazyMenu.get().close();
   }
 
-  protected getImageItemLabels_(): string {
+  private getImageItemLabels_(): string {
     return loadTimeData.getString(
         this.imagesEnabled ? 'disableImagesLabel' : 'enableImagesLabel');
   }
 
-  protected getLinkItemLabels_(): string {
+  private getLinkItemLabels_(): string {
     return loadTimeData.getString(
         this.linksEnabled ? 'disableLinksLabel' : 'enableLinksLabel');
   }

@@ -414,7 +414,7 @@ export class PowerBookmarksAppElement extends CrLitElement implements
         });
   }
 
-  protected toggleEditing_() {
+  private toggleEditing_() {
     this.editing_ = !this.editing_;
     if (!this.editing_) {
       this.selectedBookmarks_ = {};

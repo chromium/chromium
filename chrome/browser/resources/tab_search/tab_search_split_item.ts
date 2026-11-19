@@ -71,7 +71,7 @@ export class TabSearchSplitItemElement extends TabSearchSplitItemBase {
     return this.data.tabUrls.map(url => this.getDomainTextForUrl_(url));
   }
 
-  protected getDomainTextForUrl_(url: string): string {
+  private getDomainTextForUrl_(url: string): string {
     try {
       return getDisplayHostnameForUrl(new URL(normalizeURL(url)));
     } catch (e) {

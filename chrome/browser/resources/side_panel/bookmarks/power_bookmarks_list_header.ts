@@ -174,10 +174,6 @@ export class PowerBookmarksListHeaderElement extends CrLitElement {
     return !this.activeFolder || this.editing;
   }
 
-  protected getActiveFolderLabel_(): string {
-    return getFolderLabel(this.activeFolder);
-  }
-
   protected getViewButtonIcon_() {
     return this.compact ? (loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
                                'bookmarks:view-list' :

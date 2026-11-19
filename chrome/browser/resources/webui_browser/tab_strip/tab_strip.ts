@@ -334,7 +334,7 @@ export class TabStripElement extends CrLitElement implements
     this.tabStripService_.closeNodes([e.detail.id]);
   }
 
-  protected activateTab(tabId: NodeId) {
+  private activateTab(tabId: NodeId) {
     // Only request the activation. The active state is applied when the
     // browser reports the change through OnDataChanged (see updateTab()), so
     // the UI never disagrees with the TabStripModel.
@@ -394,7 +394,7 @@ export class TabStripElement extends CrLitElement implements
         undefined;
   }
 
-  protected getTabElement_(id: string): TabElement|null {
+  private getTabElement_(id: string): TabElement|null {
     return this.shadowRoot.querySelector<TabElement>(
         `webui-browser-tab#${this.tabIdToDomId(id)}`);
   }
@@ -403,7 +403,7 @@ export class TabStripElement extends CrLitElement implements
     this.activeTab_ = id;
   }
 
-  protected setItems_(items: TabStripItem[]) {
+  private setItems_(items: TabStripItem[]) {
     this.items_ = items;
   }
 

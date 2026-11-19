@@ -95,7 +95,7 @@ export class WatermarkAppElement extends CrLitElement {
     this.sendWatermarkToBackend_();
   }
 
-  protected sendWatermarkToBackend_() {
+  private sendWatermarkToBackend_() {
     this.pageHandler_.setWatermarkSettings({
       fillOpacity: this.fillOpacity_,
       outlineOpacity: this.outlineOpacity_,
@@ -122,7 +122,7 @@ export class WatermarkAppElement extends CrLitElement {
     event.preventDefault();
   }
 
-  protected updateFontSizeValue_(currentValue: number, newValue: number) {
+  private updateFontSizeValue_(currentValue: number, newValue: number) {
     if (currentValue === newValue) {
       return;
     }

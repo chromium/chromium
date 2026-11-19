@@ -50,7 +50,7 @@ export class TabGroupElement extends CrLitElement {
     isCollapsed: false,
   };
 
-  protected get colorName_(): string {
+  private get colorName_(): string {
     const color = colorMap.get(this.groupData.color);
     if (color === undefined) {
       throw Error('Undefined color id');

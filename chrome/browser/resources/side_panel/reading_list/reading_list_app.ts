@@ -439,10 +439,6 @@ export class ReadingListAppElement extends ReadingListAppElementBase {
     }
   }
 
-  protected shouldShowHr_(): boolean {
-    return this.unreadItems_.length > 0 && this.readItems_.length > 0;
-  }
-
   protected shouldShowList_(): boolean {
     return this.unreadItems_.length > 0 || this.readItems_.length > 0;
   }

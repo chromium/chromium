@@ -277,7 +277,7 @@ export class PowerBookmarkRowElement extends CrLitElement {
         '#listItem')!;
   }
 
-  protected async handleListItemSizeChanged_() {
+  private async handleListItemSizeChanged_() {
     await this.currentListItem_.updateComplete;
     this.fire('list-item-size-changed');
   }
@@ -296,11 +296,11 @@ export class PowerBookmarkRowElement extends CrLitElement {
     return !!(this.bookmark?.children && this.compact);
   }
 
-  protected isFolder_(): boolean {
+  private isFolder_(): boolean {
     return !this.bookmark.url;
   }
 
-  protected isFolderWithChildren_(): boolean {
+  private isFolderWithChildren_(): boolean {
     return this.isFolder_() && !!this.bookmark.children?.length;
   }
 

@@ -248,7 +248,7 @@ export class AppElement extends AppElementBase {
   }
 
 
-  protected computeShowFooter_(): boolean {
+  private computeShowFooter_(): boolean {
     return this.footerEnabled_ &&
         ((this.extensionPolicyEnabled_ &&
           this.newTabPageType_ === NewTabPageType.kExtension) ||

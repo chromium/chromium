@@ -1246,7 +1246,7 @@ export class ToolbarAppElement extends AppElementBase {
     }
   }
 
-  protected onDragOver_(e: DragEvent) {
+  private onDragOver_(e: DragEvent) {
     if (e.dataTransfer &&
         (e.dataTransfer.types.includes('text/uri-list') ||
          e.dataTransfer.types.includes('text/plain') ||
@@ -1259,7 +1259,7 @@ export class ToolbarAppElement extends AppElementBase {
     }
   }
 
-  protected onDrop_(e: DragEvent) {
+  private onDrop_(e: DragEvent) {
     if (e.defaultPrevented) {
       return;
     }

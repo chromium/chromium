@@ -160,7 +160,7 @@ export class EventListElement extends CrLitElement {
     return this.eventListItems.some(item => item.expanded);
   }
 
-  protected get eventListItems(): EventListItemElement[] {
+  private get eventListItems(): EventListItemElement[] {
     return Array.from(this.shadowRoot.querySelectorAll('event-list-item'));
   }
 

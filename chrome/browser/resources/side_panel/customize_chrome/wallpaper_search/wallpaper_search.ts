@@ -32,7 +32,7 @@ import type {Token} from 'chrome://resources/mojo/mojo/public/mojom/base/token.m
 import {CustomizeChromeAction, recordCustomizeChromeAction} from '../common.js';
 import type {BrowserProxy as CustomizeChromeBrowserProxy, Theme} from '../customize_chrome.mojom-webui.js';
 import {browserProxyFactory as customizeChromeBrowserProxyFactory} from '../customize_chrome.mojom-webui.js';
-import type {BrowserProxy as WallpaperSearchBrowserProxy, DescriptorB, DescriptorDValue, Descriptors, Group, InspirationDescriptors, InspirationGroup, ResultDescriptors, WallpaperSearchResult} from '../wallpaper_search.mojom-webui.js';
+import type {BrowserProxy as WallpaperSearchBrowserProxy, DescriptorDValue, Descriptors, Group, InspirationDescriptors, InspirationGroup, ResultDescriptors, WallpaperSearchResult} from '../wallpaper_search.mojom-webui.js';
 import {browserProxyFactory as wallpaperSearchBrowserProxyFactory, DescriptorDName, UserFeedback, WallpaperSearchStatus} from '../wallpaper_search.mojom-webui.js';
 import {WindowProxy} from '../window_proxy.js';
 
@@ -148,7 +148,6 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
       descriptors_: {type: Object},
       descriptorD_: {type: Array},
       errorState_: {type: Object},
-      expandedCategories_: {type: Object},
       loading_: {type: Boolean},
       history_: {type: Array},
       inspirationCardEnabled_: {type: Boolean},
@@ -180,7 +179,6 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
       DESCRIPTOR_D_VALUE.map(value => value.hex);
   private errorCallback_: (() => void)|undefined;
   protected accessor errorState_: ErrorState|null = null;
-  private accessor expandedCategories_: {[categoryIndex: number]: boolean} = {};
   protected accessor history_: WallpaperSearchResult[] = [];
   protected accessor inspirationGroups_: InspirationGroup[] = [];
   protected accessor inspirationCardEnabled_: boolean =
@@ -335,18 +333,6 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
 
   private computeShouldShowInspiration_(): boolean {
     return !!this.inspirationGroups_ && this.inspirationGroups_.length > 0;
-  }
-
-  private expandCategoryForDescriptorA_(key: string) {
-    if (!this.descriptors_) {
-      return;
-    }
-    const categoryGroupIndex = this.descriptors_.groups.findIndex(
-        group => group.descriptorAs.some(descriptor => descriptor.key === key));
-    if (categoryGroupIndex >= 0) {
-      this.expandedCategories_[categoryGroupIndex] = true;
-      this.requestUpdate();
-    }
   }
 
   private fetchDescriptors_() {
@@ -532,10 +518,6 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
     return defaultColor === this.selectedDefaultColor_;
   }
 
-  protected isOptionSelectedInDescriptorB_(option: DescriptorB): boolean {
-    return option.key === this.selectedDescriptorB_;
-  }
-
   protected onBackButtonClick_() {
     this.dispatchEvent(new Event('back-click'));
   }
@@ -546,13 +528,6 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
       e.stopPropagation();
       (e.target as HTMLElement).click();
     }
-  }
-
-  protected onComboboxCategoryClick_(e: Event) {
-    const index = getEventTargetIndex(e);
-    const previous = this.expandedCategories_[index];
-    this.expandedCategories_[index] = !previous;
-    this.requestUpdate();
   }
 
   protected onCustomColorClick_() {
@@ -702,7 +677,6 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
     assert(this.descriptors_);
     const selectedDescriptorA = this.selectedDescriptorA_ ||
         getRandomDescriptorA(this.descriptors_.groups);
-    this.expandCategoryForDescriptorA_(selectedDescriptorA);
     this.selectedDescriptorA_ = selectedDescriptorA;
     this.loading_ = true;
     this.results_ = [];
