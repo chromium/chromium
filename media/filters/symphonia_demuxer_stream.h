@@ -38,6 +38,7 @@ class MEDIA_EXPORT SymphoniaDemuxerStream : public DemuxerStream {
   // `request_data_cb` is run (synchronously) whenever the stream wants the
   // demuxer to read more packets.
   SymphoniaDemuxerStream(uint32_t track_id,
+                         MediaTrack::Id media_track_id,
                          AudioDecoderConfig audio_config,
                          base::TimeDelta duration,
                          base::RepeatingClosure request_data_cb);
@@ -58,7 +59,7 @@ class MEDIA_EXPORT SymphoniaDemuxerStream : public DemuxerStream {
 
   // The Symphonia track ID this stream carries packets for.
   uint32_t track_id() const { return track_id_; }
-  // The ID of the `MediaTrack` for this stream, derived from `track_id()`.
+  // The ID of the `MediaTrack` for this stream.
   const MediaTrack::Id& media_track_id() const { return media_track_id_; }
   base::TimeDelta duration() const { return duration_; }
 

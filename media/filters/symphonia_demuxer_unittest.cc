@@ -883,12 +883,36 @@ TEST_F(SymphoniaDemuxerTest, OnlyFirstAudioTrackStartsEnabled) {
   ASSERT_EQ(media_tracks_->tracks().size(), 2u);
   EXPECT_TRUE(media_tracks_->tracks()[0]->enabled());
   EXPECT_FALSE(media_tracks_->tracks()[1]->enabled());
+  EXPECT_EQ(media_tracks_->tracks()[0]->track_id(), MediaTrack::Id("1"));
+  EXPECT_EQ(media_tracks_->tracks()[1]->track_id(), MediaTrack::Id("2"));
   EXPECT_EQ(demuxer_->GetContainerForMetrics(),
             container_names::MediaContainerName::kContainerWEBM);
 
   // Packets for the disabled track are dropped rather than buffered.
   ExpectReadsAllPackets();
   EXPECT_EQ(disabled_stream->GetMemoryUsage(), 0);
+}
+
+TEST_F(SymphoniaDemuxerTest, NumbersTracksFromOne) {
+  // Ogg identifies tracks by stream serial number. Like `FFmpegDemuxer`, the
+  // track is reported as track 1 instead.
+  CreateDemuxer("sfx.ogg");
+  InitializeDemuxer();
+
+  ASSERT_NE(media_tracks_, nullptr);
+  ASSERT_EQ(media_tracks_->tracks().size(), 1u);
+  EXPECT_EQ(media_tracks_->tracks()[0]->track_id(), MediaTrack::Id("1"));
+  EXPECT_EQ(media_tracks_->tracks()[0]->stream_id(), 1);
+
+  SymphoniaDemuxerStream* stream = GetStream(DemuxerStream::AUDIO);
+  ASSERT_NE(stream, nullptr);
+  EXPECT_EQ(stream->media_track_id(), MediaTrack::Id("1"));
+
+  // Track changes use the same ID.
+  base::test::TestFuture<DemuxerStream*> enabled;
+  demuxer_->OnTracksChanged(DemuxerStream::AUDIO, MediaTrack::Id("1"),
+                            base::TimeDelta(), enabled.GetCallback());
+  EXPECT_EQ(enabled.Get(), stream);
 }
 
 TEST_F(SymphoniaDemuxerTest, UnknownDurationIsSetAtEndOfStream) {

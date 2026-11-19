@@ -400,8 +400,12 @@ void SymphoniaDemuxer::AddAudioStream(const SymphoniaTrackInfo& track,
 
   // Unretained is safe: `this` owns the stream, which runs the callback
   // synchronously and never outlives `this`.
+  // Like `FFmpegDemuxer`, number tracks sequentially from 1, rather than
+  // exposing container-specific IDs such as Ogg serial numbers.
+  const auto media_track_id =
+      static_cast<StreamParser::TrackId>(media_tracks.tracks().size() + 1);
   auto stream = std::make_unique<SymphoniaDemuxerStream>(
-      track.track_id, config, duration_,
+      track.track_id, MediaTrack::IntegralId(media_track_id), config, duration_,
       base::BindRepeating(&SymphoniaDemuxer::ReadFrameIfNeeded,
                           base::Unretained(this)));
 
@@ -415,9 +419,8 @@ void SymphoniaDemuxer::AddAudioStream(const SymphoniaTrackInfo& track,
   // TODO(crbug.com/583935468): Set the label once Symphonia exposes track
   // names.
   MediaTrack* media_track = media_tracks.AddAudioTrack(
-      config, enabled, static_cast<StreamParser::TrackId>(track.track_id),
-      MediaTrack::Kind("main"), MediaTrack::Label(""),
-      MediaTrack::Language(std::string(track.language)));
+      config, enabled, media_track_id, MediaTrack::Kind("main"),
+      MediaTrack::Label(""), MediaTrack::Language(std::string(track.language)));
   media_track->set_id(stream->media_track_id());
   streams_.push_back(std::move(stream));
 }

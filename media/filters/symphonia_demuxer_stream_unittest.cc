@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -27,6 +26,8 @@ namespace media {
 namespace {
 
 constexpr uint32_t kTrackId = 7;
+// Differs from `kTrackId`, since the demuxer numbers `MediaTrack`s itself.
+constexpr char kMediaTrackId[] = "1";
 constexpr base::TimeDelta kDuration = base::Seconds(10);
 
 scoped_refptr<DecoderBuffer> CreateBuffer(base::TimeDelta timestamp) {
@@ -42,6 +43,7 @@ class SymphoniaDemuxerStreamTest : public testing::Test {
  public:
   SymphoniaDemuxerStreamTest()
       : stream_(kTrackId,
+                MediaTrack::Id(kMediaTrackId),
                 TestAudioConfig::Normal(),
                 kDuration,
                 request_data_cb_.Get()) {}
@@ -59,8 +61,7 @@ TEST_F(SymphoniaDemuxerStreamTest, Properties) {
   EXPECT_EQ(stream_.type(), DemuxerStream::AUDIO);
   EXPECT_EQ(stream_.liveness(), StreamLiveness::kRecorded);
   EXPECT_EQ(stream_.track_id(), kTrackId);
-  EXPECT_EQ(stream_.media_track_id(),
-            MediaTrack::Id(base::NumberToString(kTrackId)));
+  EXPECT_EQ(stream_.media_track_id(), MediaTrack::Id(kMediaTrackId));
   EXPECT_EQ(stream_.duration(), kDuration);
   EXPECT_TRUE(
       stream_.audio_decoder_config().Matches(TestAudioConfig::Normal()));
