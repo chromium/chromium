@@ -2027,8 +2027,12 @@ void GpuImageDecodeCache::DecodeImageIfNecessary(
       } else {
         // Decode as RGB.
         DCHECK(info.rgba.has_value());
-        SkImageInfo image_info =
-            info.rgba->makeColorSpace(ColorSpaceForImageDecode(draw_image));
+        // Gainmap channels are numeric gain values, not color-managed RGB.
+        sk_sp<SkColorSpace> decode_color_space;
+        if (aux_image != AuxImage::kGainmap) {
+          decode_color_space = ColorSpaceForImageDecode(draw_image);
+        }
+        SkImageInfo image_info = info.rgba->makeColorSpace(decode_color_space);
         SkPixmap pixmap(image_info, backing_memory->data(),
                         image_info.minRowBytes());
         if (DrawAndScaleImageRGB(draw_image, aux_image, pixmap,

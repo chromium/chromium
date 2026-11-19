@@ -5,6 +5,7 @@
 #include "cc/tiles/gpu_image_decode_cache.h"
 
 #include <algorithm>
+#include <array>
 #include <limits>
 #include <map>
 #include <memory>
@@ -43,12 +44,14 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkColorFilter.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkImageGenerator.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkM44.h"
+#include "third_party/skia/include/core/SkPixmap.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkSize.h"
@@ -4405,6 +4408,104 @@ TEST_P(GpuImageDecodeCacheTest, GainmapImage) {
 
   cache->DrawWithImageFinished(draw_image, decoded_draw_image);
   cache->UnrefImage(draw_image);
+}
+
+TEST_P(GpuImageDecodeCacheTest, GainmapDecodePreservesRawSamples) {
+  if (color_type_ == kARGB_4444_SkColorType) {
+    GTEST_SKIP() << "ARGB_4444 does not support color-space conversion.";
+  }
+
+  class GainmapRecordingGenerator : public FakePaintImageGenerator {
+   public:
+    explicit GainmapRecordingGenerator(const SkImageInfo& info)
+        : FakePaintImageGenerator(info) {}
+
+    bool GetPixels(SkPixmap pixmap,
+                   size_t frame_index,
+                   PaintImage::GeneratorClientId client_id,
+                   uint64_t lazy_pixel_ref) override {
+      if (!FakePaintImageGenerator::GetPixels(pixmap, frame_index, client_id,
+                                              lazy_pixel_ref)) {
+        return false;
+      }
+      decoded_samples.clear();
+      for (int x = 0; x < pixmap.width(); ++x) {
+        decoded_samples.push_back(pixmap.getColor(x, 0));
+      }
+      return true;
+    }
+
+    std::vector<SkColor> decoded_samples;
+  };
+
+  for (bool use_pq_transfer : {false, true}) {
+    SCOPED_TRACE(use_pq_transfer ? "PQ Rec. 2020" : "linear Rec. 2020");
+    const skcms_TransferFunction& transfer_function =
+        use_pq_transfer ? SkNamedTransferFn::kPQ : SkNamedTransferFn::kLinear;
+    sk_sp<SkColorSpace> base_color_space =
+        SkColorSpace::MakeRGB(transfer_function, SkNamedGamut::kRec2020);
+    constexpr int kWidth = 3;
+    const SkImageInfo base_info = SkImageInfo::Make(
+        kWidth, 1, kN32_SkColorType, kPremul_SkAlphaType, base_color_space);
+    const SkImageInfo gainmap_sk_image_info = SkImageInfo::Make(
+        kWidth, 1, kN32_SkColorType, kOpaque_SkAlphaType, nullptr);
+    auto base_generator = sk_make_sp<FakePaintImageGenerator>(base_info);
+    auto gainmap_generator =
+        sk_make_sp<GainmapRecordingGenerator>(gainmap_sk_image_info);
+    constexpr std::array<uint8_t, kWidth> kSamples = {0, 128, 255};
+    for (int x = 0; x < kWidth; ++x) {
+      gainmap_generator->GetPixmap().writable_addr32(x, 0)[0] =
+          SkColorSetARGB(255, kSamples.at(x), kSamples.at(x), kSamples.at(x));
+    }
+
+    PaintImage paint_image = PaintImageBuilder::WithDefault()
+                                 .set_id(PaintImage::GetNextId())
+                                 .set_paint_image_generator(base_generator)
+                                 .set_gainmap_paint_image_generator(
+                                     gainmap_generator, SkGainmapInfo())
+                                 .TakePaintImage();
+    DrawImage draw_image = CreateDrawImageInternal(paint_image);
+    auto cache = CreateCache();
+    const uint32_t client_id = cache->GenerateClientId();
+    ImageDecodeCache::TaskResult result = cache->GetTaskForImageAndRef(
+        client_id, draw_image, ImageDecodeCache::TracingInfo());
+    ASSERT_TRUE(result.need_unref);
+    ASSERT_TRUE(result.task);
+    ASSERT_FALSE(result.task->dependencies().empty());
+
+    TestTileTaskRunner::ProcessTask(result.task->dependencies()[0].get());
+    TestTileTaskRunner::ProcessTask(result.task.get());
+
+    {
+      viz::RasterContextProvider::ScopedRasterContextLock context_lock(
+          context_provider());
+      DecodedDrawImage decoded_draw_image =
+          cache->GetDecodedImageForDraw(draw_image);
+      cache->DrawWithImageFinished(draw_image, decoded_draw_image);
+    }
+    cache->UnrefImage(draw_image);
+
+    const std::vector<SkImageInfo> base_decode_infos =
+        base_generator->decode_infos();
+    ASSERT_FALSE(base_decode_infos.empty());
+    for (const SkImageInfo& decode_info : base_decode_infos) {
+      EXPECT_TRUE(SkColorSpace::Equals(base_color_space.get(),
+                                       decode_info.colorSpace()));
+    }
+    const std::vector<SkImageInfo> gainmap_decode_infos =
+        gainmap_generator->decode_infos();
+    ASSERT_FALSE(gainmap_decode_infos.empty());
+    for (const SkImageInfo& decode_info : gainmap_decode_infos) {
+      EXPECT_EQ(nullptr, decode_info.colorSpace());
+    }
+    ASSERT_EQ(kWidth,
+              static_cast<int>(gainmap_generator->decoded_samples.size()));
+    for (int x = 0; x < kWidth; ++x) {
+      const SkColor expected =
+          SkColorSetARGB(255, kSamples.at(x), kSamples.at(x), kSamples.at(x));
+      EXPECT_EQ(expected, gainmap_generator->decoded_samples[x]);
+    }
+  }
 }
 
 TEST_P(GpuImageDecodeCacheTest, GainmapImageFailsDecode) {

@@ -958,8 +958,8 @@ TEST_F(GpuRasterPixelTest, DrawGainmapImageFiltering) {
 
   // The gainmap is fully applied at headroom 2, and has a maximum scale of 4.
   const float kRatioMax = 4.f;
-  auto gain_info = SkImageInfo::MakeN32Premul(
-      kGainSize.width(), kGainSize.height(), SkColorSpace::MakeSRGBLinear());
+  auto gain_info =
+      SkImageInfo::MakeN32Premul(kGainSize.width(), kGainSize.height());
   auto gain_image_generator = sk_make_sp<FakePaintImageGenerator>(gain_info);
   SkGainmapInfo gainmap_info = {
       {1.f, 1.f, 1.f, 1.f},
@@ -974,21 +974,16 @@ TEST_F(GpuRasterPixelTest, DrawGainmapImageFiltering) {
       nullptr,
   };
 
-  // The gainmap scales by 2 on the left and 3 on the right.
+  // Store raw gain values for scales of 2 on the left and 3 on the right.
   float kGainValue0 = std::log(2.f) / std::log(kRatioMax);
   float kGainValue1 = std::log(3.f) / std::log(kRatioMax);
-  {
-    SkBitmap bitmap;
-    bitmap.installPixels(gain_image_generator->GetPixmap());
-    SkCanvas canvas(bitmap, SkSurfaceProps{});
-
-    SkPaint paint;
-
-    paint.setColor({kGainValue0, kGainValue0, kGainValue0, 1.f});
-    canvas.drawRect(SkRect::MakeXYWH(0, 0, 1, 2), paint);
-
-    paint.setColor({kGainValue1, kGainValue1, kGainValue1, 1.f});
-    canvas.drawRect(SkRect::MakeXYWH(1, 0, 1, 2), paint);
+  const auto left = static_cast<uint8_t>(std::round(255.f * kGainValue0));
+  const auto right = static_cast<uint8_t>(std::round(255.f * kGainValue1));
+  SkPixmap gain_pixmap = gain_image_generator->GetPixmap();
+  for (int y = 0; y < kGainSize.height(); ++y) {
+    *gain_pixmap.writable_addr32(0, y) = SkColorSetARGB(255, left, left, left);
+    *gain_pixmap.writable_addr32(1, y) =
+        SkColorSetARGB(255, right, right, right);
   }
 
   static int counter = 0;
