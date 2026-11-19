@@ -2131,8 +2131,7 @@ PA_NOINLINE PartitionRoot* PartitionRoot::GetRootFromAddress(void* object) {
   if (table.IsManagedByDirectMap(address)) {
     uintptr_t reservation_start_address =
         table.GetDirectMapReservationStart(address);
-    return GetRootFromAddressInFirstSuperpage(
-        internal::TagAddr(reservation_start_address));
+    return FromFirstSuperPage(reservation_start_address);
   }
 
   return nullptr;

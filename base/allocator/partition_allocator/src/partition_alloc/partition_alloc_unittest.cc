@@ -7651,6 +7651,18 @@ TEST_P(PartitionAllocTest, SlotHasOrHasntSmuggledSize) {
 
 #endif  // PA_BUILDFLAG(CHECKED_SPAN_HAS_METADATA_SUPPORT)
 
+TEST_P(PartitionAllocTest, GetRootFromAddressDirectMap) {
+  void* normal = allocator.root()->Alloc(64, type_name);
+  EXPECT_EQ(PartitionRoot::GetRootFromAddress(normal), allocator.root());
+
+  constexpr size_t kDirectSize = BucketIndexLookup::kMaxBucketSize + 1;
+  void* direct = allocator.root()->Alloc(kDirectSize, type_name);
+  EXPECT_EQ(PartitionRoot::GetRootFromAddress(direct), allocator.root());
+
+  allocator.root()->Free(direct);
+  allocator.root()->Free(normal);
+}
+
 }  // namespace partition_alloc::internal
 
 #endif  // !PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR)
