@@ -103,9 +103,8 @@ class LocationBarViewQuietNotificationInteractiveUITest
   }
 
   WebAppFrameToolbarTestHelper web_app_frame_toolbar_helper_;
-  raw_ptr<
-      const std::vector<raw_ptr<ContentSettingImageView, VectorExperimental>>,
-      DanglingUntriaged>
+  raw_ptr<const std::vector<raw_ptr<ContentSettingImageView>>,
+          DanglingUntriaged>
       content_setting_views_ = nullptr;
   std::unique_ptr<test::PermissionRequestManagerTestApi> test_api_;
   web_app::OsIntegrationTestOverrideBlockingRegistration faked_os_integration_;

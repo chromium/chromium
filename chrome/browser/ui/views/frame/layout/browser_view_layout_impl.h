@@ -62,7 +62,7 @@ class BrowserViewLayoutImpl : public BrowserViewLayout {
     //
     // It is very important that this object not be stored, but only exist on
     // the stack during calls, as the `raw_ptr` may otherwise dangle.
-    std::map<raw_ptr<views::View, CtnExperimental>, ProposedLayout> children;
+    std::map<raw_ptr<views::View>, ProposedLayout> children;
 
     // Adds a child layout for `child` and returns the layout. Fails if `child`
     // is already present.

@@ -62,8 +62,7 @@ class PipTopBarAnimationController : public gfx::AnimationDelegate {
       Delegate* delegate,
       views::View* back_to_tab_button,
       views::View* close_button,
-      std::vector<raw_ptr<ContentSettingImageView, VectorExperimental>>
-          content_setting_views);
+      std::vector<raw_ptr<ContentSettingImageView>> content_setting_views);
   PipTopBarAnimationController(const PipTopBarAnimationController&) = delete;
   PipTopBarAnimationController& operator=(const PipTopBarAnimationController&) =
       delete;
@@ -118,8 +117,7 @@ class PipTopBarAnimationController : public gfx::AnimationDelegate {
 #endif
   const raw_ptr<views::View> back_to_tab_button_;  // May be null.
   const raw_ref<views::View> close_image_button_;
-  const std::vector<raw_ptr<ContentSettingImageView, VectorExperimental>>
-      content_setting_views_;
+  const std::vector<raw_ptr<ContentSettingImageView>> content_setting_views_;
 
   // 1.0 (in the animations below) is the active (mouse-in) state and 0.0 the
   // inactive (mouse-out) state. The top bar starts active because the window is

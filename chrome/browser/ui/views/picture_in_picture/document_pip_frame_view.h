@@ -258,8 +258,7 @@ class DocumentPipFrameView : public views::FrameView,
   // window-control buttons. Mirrors PictureInPictureBrowserFrameView's
   // content-setting views but reads from the opener WebContents and uses a
   // null Browser (no feature-promo surface in standalone PiP).
-  std::vector<raw_ptr<ContentSettingImageView, VectorExperimental>>
-      content_setting_views_;
+  std::vector<raw_ptr<ContentSettingImageView>> content_setting_views_;
 
   raw_ptr<views::ImageButton> back_to_tab_button_ = nullptr;
 #if BUILDFLAG(IS_CHROMEOS)

@@ -342,8 +342,8 @@ const SplitTabChange::RemovedChange* SplitTabChange::GetRemovedChange() const {
 TabStripModelObserver::TabStripModelObserver() = default;
 
 TabStripModelObserver::~TabStripModelObserver() {
-  std::set<raw_ptr<TabStripModel, SetExperimental>> models(
-      observed_models_.begin(), observed_models_.end());
+  std::set<raw_ptr<TabStripModel>> models(observed_models_.begin(),
+                                          observed_models_.end());
   for (TabStripModel* model : models) {
     model->RemoveObserver(this);
   }

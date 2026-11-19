@@ -45,7 +45,7 @@ class OmniboxMouseEnterExitHandler : public ui::EventHandler {
   // These are the Views for which we are observing mouse-enter or mouse-exit
   // events. This instance must outlive all of these Views, since these are
   // non-owning pointers, which we use in our destructor.
-  std::vector<raw_ptr<views::View, VectorExperimental>> observed_views_;
+  std::vector<raw_ptr<views::View>> observed_views_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_MOUSE_ENTER_EXIT_HANDLER_H_

@@ -47,15 +47,14 @@ class WebAppContentSettingsContainer : public views::View {
   void ChildPreferredSizeChanged(views::View* child) override;
   void ChildVisibilityChanged(views::View* child) override;
 
-  const std::vector<raw_ptr<ContentSettingImageView, VectorExperimental>>&
+  const std::vector<raw_ptr<ContentSettingImageView>>&
   get_content_setting_views() const {
     return content_setting_views_;
   }
 
  private:
   // Owned by the views hierarchy.
-  std::vector<raw_ptr<ContentSettingImageView, VectorExperimental>>
-      content_setting_views_;
+  std::vector<raw_ptr<ContentSettingImageView>> content_setting_views_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEB_APPS_FRAME_TOOLBAR_WEB_APP_CONTENT_SETTINGS_CONTAINER_H_

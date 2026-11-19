@@ -38,7 +38,7 @@ class StarRatingView : public views::BoxLayoutView {
   ui::ImageModel GetImageModel(double rating, int index);
 
   raw_ptr<views::Label> rating_label_ = nullptr;
-  std::vector<raw_ptr<NonAccessibleImageView, VectorExperimental>> star_views_;
+  std::vector<raw_ptr<NonAccessibleImageView>> star_views_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PAGE_INFO_STAR_RATING_VIEW_H_

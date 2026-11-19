@@ -53,8 +53,7 @@ PipTopBarAnimationController::PipTopBarAnimationController(
     Delegate* delegate,
     views::View* back_to_tab_button,
     views::View* close_button,
-    std::vector<raw_ptr<ContentSettingImageView, VectorExperimental>>
-        content_setting_views)
+    std::vector<raw_ptr<ContentSettingImageView>> content_setting_views)
     : delegate_(CHECK_DEREF(delegate)),
       back_to_tab_button_(back_to_tab_button),
       close_image_button_(CHECK_DEREF(close_button)),

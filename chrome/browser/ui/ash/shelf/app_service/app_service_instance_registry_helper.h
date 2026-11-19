@@ -141,11 +141,11 @@ class AppServiceInstanceRegistryHelper {
   // Maps the ash Chrome browser window to tab windows in the browser. When the
   // browser window is inactive or invisible, tab windows in the browser should
   // be updated accordingly as well.
-  std::map<aura::Window*, std::set<raw_ptr<aura::Window, SetExperimental>>>
+  std::map<aura::Window*, std::set<raw_ptr<aura::Window, DanglingUntriaged>>>
       browser_window_to_tab_windows_;
 
   // Maps the tab window to the ash Chrome browser window in the browser.
-  std::map<aura::Window*, raw_ptr<aura::Window, CtnExperimental>>
+  std::map<aura::Window*, raw_ptr<aura::Window, DanglingUntriaged>>
       tab_window_to_browser_window_;
 };
 

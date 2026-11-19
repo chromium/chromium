@@ -87,8 +87,7 @@ class FilledCardInformationBubbleViews : public AutofillLocationBarBubble {
 
   // The map keeping the references to each button with card information text in
   // the bubble.
-  std::map<FilledCardInformationBubbleField,
-           raw_ptr<views::MdTextButton, CtnExperimental>>
+  std::map<FilledCardInformationBubbleField, raw_ptr<views::MdTextButton>>
       fields_to_buttons_map_;
 
   base::WeakPtrFactory<FilledCardInformationBubbleViews> weak_ptr_factory_{

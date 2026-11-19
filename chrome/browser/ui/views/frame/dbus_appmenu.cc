@@ -208,7 +208,7 @@ struct DbusAppmenu::HistoryItem {
   // that this is a list of weak references. DbusAppmenu::history_items_
   // is the owner of all items. If it is not a window, then the entry is a
   // single page and the vector will be empty.
-  std::vector<raw_ptr<HistoryItem, VectorExperimental>> tabs;
+  std::vector<raw_ptr<HistoryItem, DanglingUntriaged>> tabs;
 };
 
 DbusAppmenu::DbusAppmenu(BrowserView* browser_view,

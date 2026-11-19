@@ -274,11 +274,11 @@ class OobeUI : public ui::MojoWebUIController {
   raw_ptr<CoreOobeHandler> core_handler_ = nullptr;
   std::unique_ptr<CoreOobe> core_oobe_;
 
-  std::vector<raw_ptr<BaseWebUIHandler, VectorExperimental>>
+  std::vector<raw_ptr<BaseWebUIHandler>>
       webui_handlers_;  // Non-owning pointers.
-  std::vector<raw_ptr<BaseWebUIHandler, VectorExperimental>>
+  std::vector<raw_ptr<BaseWebUIHandler>>
       webui_only_handlers_;  // Non-owning pointers.
-  std::vector<raw_ptr<BaseScreenHandler, VectorExperimental>>
+  std::vector<raw_ptr<BaseScreenHandler>>
       screen_handlers_;  // Non-owning pointers.
 
   std::unique_ptr<OobeScreensHandlerFactory> oobe_screens_handler_factory_;

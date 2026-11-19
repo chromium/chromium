@@ -69,8 +69,7 @@ class DownloadBubbleRowListView : public views::FlexLayoutView,
               std::optional<size_t> index = std::nullopt);
 
   // Map of download item's ID to child view in the row list.
-  std::map<offline_items_collection::ContentId,
-           raw_ptr<DownloadBubbleRowView, CtnExperimental>>
+  std::map<offline_items_collection::ContentId, raw_ptr<DownloadBubbleRowView>>
       rows_by_id_;
 
   base::WeakPtr<BrowserWindowInterface> browser_;

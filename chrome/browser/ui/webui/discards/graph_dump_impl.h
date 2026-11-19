@@ -172,9 +172,7 @@ class DiscardsGraphDumpImpl : public discards::mojom::GraphDump,
 
   // The live nodes and their IDs.
   base::flat_map<const performance_manager::Node*, NodeId> node_ids_;
-  base::flat_map<NodeId,
-                 raw_ptr<const performance_manager::Node, CtnExperimental>>
-      nodes_by_id_;
+  base::flat_map<NodeId, raw_ptr<const performance_manager::Node>> nodes_by_id_;
   NodeId::Generator node_id_generator_;
 
   // The current change subscriber to this dumper. This instance is subscribed

@@ -52,15 +52,14 @@ namespace {
 constexpr char kTestOrigin[] = "http://example.com/";
 constexpr char kTestPSLOrigin[] = "http://1.example.com/";
 
-std::vector<raw_ptr<const PasswordForm, VectorExperimental>> GetRawPointers(
+std::vector<raw_ptr<const PasswordForm>> GetRawPointers(
     const std::vector<std::unique_ptr<PasswordForm>>& forms) {
   // &std::unique_ptr<PasswordForm>::get returns a non-const ptr and hence
   // cannot be used instead.
-  return base::ToVector(
-      forms,
-      [](const auto& form) -> raw_ptr<const PasswordForm, VectorExperimental> {
-        return form.get();
-      });
+  return base::ToVector(forms,
+                        [](const auto& form) -> raw_ptr<const PasswordForm> {
+                          return form.get();
+                        });
 }
 
 class MockPasswordManagerClient
@@ -150,7 +149,7 @@ ManagePasswordsStateTest::CreateFormManager(
 }
 
 void ManagePasswordsStateTest::TestNoisyUpdates() {
-  const std::vector<raw_ptr<const PasswordForm, VectorExperimental>> forms =
+  const std::vector<raw_ptr<const PasswordForm>> forms =
       GetRawPointers(passwords_data_.GetCurrentForms());
   const password_manager::ui::State state = passwords_data_.state();
   const url::Origin origin = passwords_data_.origin();
@@ -193,7 +192,7 @@ void ManagePasswordsStateTest::TestNoisyUpdates() {
 }
 
 void ManagePasswordsStateTest::TestAllUpdates() {
-  const std::vector<raw_ptr<const PasswordForm, VectorExperimental>> forms =
+  const std::vector<raw_ptr<const PasswordForm>> forms =
       GetRawPointers(passwords_data_.GetCurrentForms());
   const password_manager::ui::State state = passwords_data_.state();
   const url::Origin origin = passwords_data_.origin();
@@ -257,7 +256,7 @@ void ManagePasswordsStateTest::TestAllUpdates() {
 }
 
 void ManagePasswordsStateTest::TestBlocklistedUpdates() {
-  const std::vector<raw_ptr<const PasswordForm, VectorExperimental>> forms =
+  const std::vector<raw_ptr<const PasswordForm>> forms =
       GetRawPointers(passwords_data_.GetCurrentForms());
   const password_manager::ui::State state = passwords_data_.state();
   const url::Origin origin = passwords_data_.origin();

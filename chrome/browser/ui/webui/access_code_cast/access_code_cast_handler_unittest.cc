@@ -354,8 +354,7 @@ class AccessCodeCastHandlerTest : public ChromeRenderViewHostTestHarness {
   std::unique_ptr<MockCastMediaSinkServiceImpl>
       mock_cast_media_sink_service_impl_;
   std::unique_ptr<MockWebContentsPresentationManager> presentation_manager_;
-  std::vector<raw_ptr<MediaSinksObserver, VectorExperimental>>
-      media_sinks_observers_;
+  std::vector<raw_ptr<MediaSinksObserver>> media_sinks_observers_;
   mojom::RouteRequestResultCode result_code_ =
       mojom::RouteRequestResultCode::OK;
   MediaSinkInternal cast_sink_1_;

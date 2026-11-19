@@ -236,8 +236,7 @@ class MediaRouteStarterTest : public ChromeRenderViewHostTestHarness {
   }
   LoggerImpl* logger() { return logger_.get(); }
 
-  const std::vector<raw_ptr<MediaSinksObserver, VectorExperimental>>
-  media_sink_observers() {
+  const std::vector<raw_ptr<MediaSinksObserver>> media_sink_observers() {
     return media_sinks_observers_;
   }
 
@@ -424,8 +423,7 @@ class MediaRouteStarterTest : public ChromeRenderViewHostTestHarness {
   std::unique_ptr<TestingProfileManager> profile_manager_;
 
   std::unique_ptr<LoggerImpl> logger_;
-  std::vector<raw_ptr<MediaSinksObserver, VectorExperimental>>
-      media_sinks_observers_;
+  std::vector<raw_ptr<MediaSinksObserver>> media_sinks_observers_;
 
   std::unique_ptr<MockWebContentsPresentationManager> presentation_manager_;
 

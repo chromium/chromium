@@ -45,8 +45,7 @@ class TestDelegateTwoOrigins : public permissions::PermissionPrompt::Delegate {
         });
     raw_requests_ = base::ToVector(
         requests_,
-        [](const auto& request)
-            -> raw_ptr<permissions::PermissionRequest, VectorExperimental> {
+        [](const auto& request) -> raw_ptr<permissions::PermissionRequest> {
           return request.get();
         });
   }
@@ -108,8 +107,7 @@ class TestDelegateTwoOrigins : public permissions::PermissionPrompt::Delegate {
 
  private:
   std::vector<std::unique_ptr<permissions::PermissionRequest>> requests_;
-  std::vector<raw_ptr<permissions::PermissionRequest, VectorExperimental>>
-      raw_requests_;
+  std::vector<raw_ptr<permissions::PermissionRequest>> raw_requests_;
   base::WeakPtrFactory<TestDelegateTwoOrigins> weak_factory_{this};
 };
 }  // namespace

@@ -277,8 +277,7 @@ class PictureInPictureBrowserFrameView
   raw_ptr<views::FlexLayoutView> button_container_view_ = nullptr;
 
   // The content setting views for icons and bubbles.
-  std::vector<raw_ptr<ContentSettingImageView, VectorExperimental>>
-      content_setting_views_;
+  std::vector<raw_ptr<ContentSettingImageView>> content_setting_views_;
 
   raw_ptr<CloseImageButton> close_image_button_ = nullptr;
   raw_ptr<views::View> back_to_tab_button_ = nullptr;

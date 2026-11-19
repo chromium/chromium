@@ -314,7 +314,7 @@ class LocationBarView
       security_state::SecurityLevel security_level) const override;
   ui::ImageModel GetLocationIcon(
       LocationIconView::Delegate::IconFetchedCallback on_icon_fetched) override;
-  std::vector<raw_ptr<ContentSettingImageView, VectorExperimental>>&
+  std::vector<raw_ptr<ContentSettingImageView>>&
   GetContentSettingViewsForTest() {
     return content_setting_views_;
   }
@@ -341,8 +341,7 @@ class LocationBarView
                            PrefChangesAddContextButtonVisibility);
   FRIEND_TEST_ALL_PREFIXES(FullWebUIOmniboxInteractiveTest,
                            NativeFocusHandoffKeepsDraftAndSelection);
-  using ContentSettingViews =
-      std::vector<raw_ptr<ContentSettingImageView, VectorExperimental>>;
+  using ContentSettingViews = std::vector<raw_ptr<ContentSettingImageView>>;
 
   void SetRunOmniboxContextMenuForTesting(
       base::RepeatingCallback<void(OmniboxContextMenu*, gfx::Point)> callback) {

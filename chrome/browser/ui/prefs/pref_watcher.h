@@ -51,7 +51,7 @@ class PrefWatcher : public KeyedService,
 
   // |tab_helpers_| observe changes in WebKitPreferences and
   // blink::RendererPreferences.
-  std::set<raw_ptr<PrefsTabHelper, SetExperimental>> tab_helpers_;
+  std::set<raw_ptr<PrefsTabHelper>> tab_helpers_;
 
 #if BUILDFLAG(IS_LINUX)
   friend class PrimaryPastePrefHelper;

@@ -75,7 +75,7 @@ class SadTabView : public views::View {
   const SadTabKind kind_;
   bool painted_ = false;
   raw_ptr<views::Label> message_;
-  std::vector<raw_ptr<views::Label, VectorExperimental>> bullet_labels_;
+  std::vector<raw_ptr<views::Label>> bullet_labels_;
   raw_ptr<views::MdTextButton> action_button_;
   raw_ptr<views::Label> title_;
 };

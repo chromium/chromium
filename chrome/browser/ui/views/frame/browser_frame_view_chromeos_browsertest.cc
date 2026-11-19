@@ -488,9 +488,8 @@ class WebAppFrameViewChromeOSTest
       nullptr;
   raw_ptr<WebAppFrameToolbarView, DanglingUntriaged> web_app_frame_toolbar_ =
       nullptr;
-  raw_ptr<
-      const std::vector<raw_ptr<ContentSettingImageView, VectorExperimental>>,
-      DanglingUntriaged>
+  raw_ptr<const std::vector<raw_ptr<ContentSettingImageView>>,
+          DanglingUntriaged>
       content_setting_views_ = nullptr;
   raw_ptr<AppMenuButton, DanglingUntriaged> web_app_menu_button_ = nullptr;
 

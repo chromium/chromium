@@ -63,7 +63,7 @@ class ColorPickerView : public views::View {
   // Called each time the color selection changes.
   ColorSelectedCallback callback_;
 
-  std::vector<raw_ptr<ColorPickerElementView, VectorExperimental>> elements_;
+  std::vector<raw_ptr<ColorPickerElementView>> elements_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_GROUPS_COLOR_PICKER_VIEW_H_

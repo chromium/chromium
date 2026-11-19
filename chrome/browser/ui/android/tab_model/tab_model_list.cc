@@ -34,7 +34,7 @@ using GlobalObserverList =
 using ProfileObserverList =
     base::ObserverList<TabModelListObserver, /*check_empty=*/true>::Unchecked;
 
-using TabModelVector = std::vector<raw_ptr<TabModel, VectorExperimental>>;
+using TabModelVector = std::vector<raw_ptr<TabModel>>;
 
 const int kProfileTabModelDataKey = 0;
 

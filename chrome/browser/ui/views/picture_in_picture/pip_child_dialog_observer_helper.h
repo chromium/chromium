@@ -158,8 +158,7 @@ class PipChildDialogObserverHelper : public views::WidgetObserver {
       child_dialog_observations_{this};
 
   // Tracks child dialogs that have not yet been shown.
-  base::flat_set<raw_ptr<views::Widget, CtnExperimental>>
-      invisible_child_dialogs_;
+  base::flat_set<raw_ptr<views::Widget>> invisible_child_dialogs_;
 
   // The bounds that we forced the window to be in response to a child dialog
   // opening.

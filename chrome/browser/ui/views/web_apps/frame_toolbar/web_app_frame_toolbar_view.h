@@ -129,7 +129,7 @@ class WebAppFrameToolbarView : public views::AccessiblePaneView,
 
   views::View* GetContentSettingContainerForTesting();
 
-  const std::vector<raw_ptr<ContentSettingImageView, VectorExperimental>>&
+  const std::vector<raw_ptr<ContentSettingImageView>>&
   GetContentSettingViewsForTesting() const;
 
   void UpdateCachedColors();

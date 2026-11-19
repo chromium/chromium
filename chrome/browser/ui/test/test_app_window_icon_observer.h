@@ -58,7 +58,7 @@ class TestAppWindowIconObserver
   const raw_ptr<content::BrowserContext> context_;
   int icon_updates_ = 0;
   int expected_icon_updates_ = 0;
-  std::vector<raw_ptr<aura::Window, VectorExperimental>> windows_;
+  std::vector<raw_ptr<aura::Window>> windows_;
   std::map<aura::Window*, std::array<uint8_t, crypto::hash::kSha256Size>>
       last_app_icon_hash_map_;
   base::OnceClosure icon_updated_callback_;

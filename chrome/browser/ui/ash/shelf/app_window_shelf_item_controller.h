@@ -28,7 +28,7 @@ class ShelfContextMenu;
 class AppWindowShelfItemController : public ash::ShelfItemDelegate,
                                      public aura::WindowObserver {
  public:
-  using WindowList = std::list<raw_ptr<AppWindowBase, CtnExperimental>>;
+  using WindowList = std::list<raw_ptr<AppWindowBase>>;
 
   explicit AppWindowShelfItemController(const ash::ShelfID& shelf_id);
 

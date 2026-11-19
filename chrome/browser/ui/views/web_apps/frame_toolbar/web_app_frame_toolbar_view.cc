@@ -475,7 +475,7 @@ views::View* WebAppFrameToolbarView::GetContentSettingContainerForTesting() {
   return right_container_->content_settings_container();
 }
 
-const std::vector<raw_ptr<ContentSettingImageView, VectorExperimental>>&
+const std::vector<raw_ptr<ContentSettingImageView>>&
 WebAppFrameToolbarView::GetContentSettingViewsForTesting() const {
   return right_container_->content_settings_container()
       ->get_content_setting_views();

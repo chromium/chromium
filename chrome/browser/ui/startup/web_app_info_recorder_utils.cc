@@ -81,7 +81,7 @@ class GetWebApps {
   const base::FilePath output_file_;
   const base::FilePath profile_base_name_;
   std::unique_ptr<ScopedKeepAlive> keep_alive_;
-  std::vector<raw_ptr<Profile, VectorExperimental>> profiles_;
+  std::vector<raw_ptr<Profile>> profiles_;
   std::vector<std::unique_ptr<ScopedProfileKeepAlive>> profiles_keep_alive_;
 };
 

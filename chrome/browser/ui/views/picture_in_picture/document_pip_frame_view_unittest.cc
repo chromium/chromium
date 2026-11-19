@@ -224,8 +224,8 @@ class DocumentPipFrameViewTest : public ChromeViewsTestBase {
     return frame_view->button_container_view_;
   }
 
-  const std::vector<raw_ptr<ContentSettingImageView, VectorExperimental>>&
-  GetContentSettingViews(DocumentPipFrameView* frame_view) {
+  const std::vector<raw_ptr<ContentSettingImageView>>& GetContentSettingViews(
+      DocumentPipFrameView* frame_view) {
     return frame_view->content_setting_views_;
   }
 

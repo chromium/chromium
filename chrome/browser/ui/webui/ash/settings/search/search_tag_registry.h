@@ -99,7 +99,7 @@ class SearchTagRegistry {
 
   // In-memory cache of all results which have been added to the
   // LocalSearchService. Contents are kept in sync with |index_remote_|.
-  std::unordered_map<std::string, raw_ptr<const SearchConcept, CtnExperimental>>
+  std::unordered_map<std::string, raw_ptr<const SearchConcept>>
       result_id_to_metadata_list_map_;
 
   base::ObserverList<Observer> observer_list_;

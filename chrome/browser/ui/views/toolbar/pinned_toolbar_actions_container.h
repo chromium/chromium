@@ -180,10 +180,8 @@ class PinnedToolbarActionsContainer
   raw_ptr<ToolbarButtonProvider> button_provider_;
 
   std::unique_ptr<views::ActionViewController> action_view_controller_;
-  std::vector<raw_ptr<PinnedActionToolbarButton, VectorExperimental>>
-      pinned_buttons_;
-  std::vector<raw_ptr<PinnedActionToolbarButton, VectorExperimental>>
-      popped_out_buttons_;
+  std::vector<raw_ptr<PinnedActionToolbarButton>> pinned_buttons_;
+  std::vector<raw_ptr<PinnedActionToolbarButton>> popped_out_buttons_;
   std::vector<std::unique_ptr<PinnedActionToolbarButton>> permanent_buttons_;
   raw_ptr<ToolbarDivider> toolbar_divider_;
   raw_ptr<PinnedToolbarActionsModel> model_;
