@@ -1016,7 +1016,18 @@ void Label::PaintText(gfx::Canvas* canvas) {
 }
 
 void Label::OnBoundsChanged(const gfx::Rect& previous_bounds) {
-  ClearDisplayText();
+  if (display_text_) {
+    gfx::Rect rect = GetContentsBounds();
+    if (rect.IsEmpty()) {
+      ClearDisplayText();
+    } else {
+      rect.Inset(-gfx::ShadowValue::GetMargin(GetShadows()));
+      if (rect != display_text_->display_rect()) {
+        display_text_->SetDisplayRect(rect);
+        SchedulePaint();
+      }
+    }
+  }
 
   UpdateTooltipText();
 #if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)

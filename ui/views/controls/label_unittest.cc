@@ -1425,11 +1425,18 @@ TEST_F(LabelTest, ResetRenderTextData) {
   label()->OnPaint(&canvas);
   EXPECT_TRUE(label()->display_text_);
 
-  // Changing layout just resets |display_text_|. It'll recover next time it's
-  // drawn.
+  // Changing to non-empty bounds updates |display_text_|'s display rect in
+  // place to preserve shaped runs.
   label()->SetBounds(0, 0, 10, 10);
+  ASSERT_TRUE(label()->display_text_);
+  EXPECT_EQ(gfx::Rect(0, 0, 10, 10), label()->display_text_->display_rect());
+
+  // Changing to empty bounds resets |display_text_|. It'll recover next time
+  // it's drawn with non-empty bounds.
+  label()->SetBounds(0, 0, 0, 0);
   EXPECT_FALSE(label()->display_text_);
 
+  label()->SetBounds(0, 0, 10, 10);
   label()->OnPaint(&canvas);
   EXPECT_TRUE(label()->display_text_);
 }
