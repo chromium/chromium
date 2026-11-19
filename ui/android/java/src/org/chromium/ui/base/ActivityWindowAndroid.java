@@ -123,6 +123,8 @@ public class ActivityWindowAndroid extends WindowAndroid
         if (insetObserver != null) {
             activityKeyboardVisibilityDelegate.setKeyboardInsetSupplier(
                     insetObserver.getSupplierForKeyboardInset());
+            activityKeyboardVisibilityDelegate.setImeVisibilitySupplier(
+                    insetObserver.getSupplierForImeVisibility());
         }
         setKeyboardDelegate(activityKeyboardVisibilityDelegate);
         setAndroidPermissionDelegate(activityAndroidPermissionDelegate);

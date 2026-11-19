@@ -909,6 +909,35 @@ public class InsetObserverTest {
         assertEquals(expectedSafeArea, mInsetObserver.getCurrentSafeArea());
     }
 
+    @Test
+    public void testImeVisibilitySupplier_zeroInsetTransitions() {
+        assertFalse(mInsetObserver.getSupplierForImeVisibility().get());
+
+        doReturn(true).when(mInsets).isVisible(WindowInsetsCompat.Type.ime());
+        mInsetObserver.onApplyWindowInsets(mContentView, mInsets);
+
+        assertTrue(mInsetObserver.getSupplierForImeVisibility().get());
+
+        doReturn(false).when(mModifiedInsets).isVisible(WindowInsetsCompat.Type.ime());
+        mInsetObserver.onApplyWindowInsets(mContentView, mModifiedInsets);
+
+        assertFalse(mInsetObserver.getSupplierForImeVisibility().get());
+    }
+
+    @Test
+    public void testImeVisibilitySupplier_consumerConsumesIme_supplierReceivesRawVisibility() {
+        mInsetObserver.addInsetsConsumer(
+                mInsetsConsumer1,
+                InsetConsumerSource.DEFERRED_IME_WINDOW_INSET_APPLICATION_CALLBACK);
+        doReturn(mModifiedInsets).when(mInsetsConsumer1).onApplyWindowInsets(mContentView, mInsets);
+        doReturn(false).when(mModifiedInsets).isVisible(WindowInsetsCompat.Type.ime());
+
+        doReturn(true).when(mInsets).isVisible(WindowInsetsCompat.Type.ime());
+        mInsetObserver.onApplyWindowInsets(mContentView, mInsets);
+
+        assertTrue(mInsetObserver.getSupplierForImeVisibility().get());
+    }
+
     private static WindowInsetsCompat buildStatusBarsInsets(boolean visible) {
         Insets statusBarInsets = Insets.of(0, STATUS_BAR_HEIGHT, 0, 0);
         return new WindowInsetsCompat.Builder()

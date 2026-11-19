@@ -26,12 +26,16 @@ import java.lang.ref.WeakReference;
 @NullMarked
 public class ActivityKeyboardVisibilityDelegate extends KeyboardVisibilityDelegate
         implements View.OnLayoutChangeListener {
-    private final Callback<Integer> mOnKeyboardInsetChanged = this::onKeyboardInsetChanged;
+    private final Callback<Integer> mOnKeyboardInsetChanged = (inset) -> updateKeyboardState();
+    private final Callback<Boolean> mOnImeVisibilityChanged = (visible) -> updateKeyboardState();
 
     private final WeakReference<@Nullable Activity> mActivity;
     private MonotonicObservableSupplier<Integer> mKeyboardInsetSupplier =
             ObservableSuppliers.alwaysNull();
-    private boolean mIsKeyboardShowing;
+    private MonotonicObservableSupplier<Boolean> mImeVisibilitySupplier =
+            ObservableSuppliers.alwaysNull();
+    private boolean mIsKeyboardObscuring;
+    private boolean mIsKeyboardVisible;
     private @Nullable View mContentViewForTesting;
 
     /**
@@ -52,6 +56,19 @@ public class ActivityKeyboardVisibilityDelegate extends KeyboardVisibilityDelega
         mKeyboardInsetSupplier = keyboardInsetSupplier;
         if (hasKeyboardVisibilityListeners()) {
             mKeyboardInsetSupplier.addSyncObserverAndPostIfNonNull(mOnKeyboardInsetChanged);
+            updateKeyboardState();
+        }
+    }
+
+    /** Sets the IME on-screen visibility supplier. */
+    void setImeVisibilitySupplier(MonotonicObservableSupplier<Boolean> imeVisibilitySupplier) {
+        if (hasKeyboardVisibilityListeners()) {
+            mImeVisibilitySupplier.removeObserver(mOnImeVisibilityChanged);
+        }
+        mImeVisibilitySupplier = imeVisibilitySupplier;
+        if (hasKeyboardVisibilityListeners()) {
+            mImeVisibilitySupplier.addSyncObserverAndPostIfNonNull(mOnImeVisibilityChanged);
+            updateKeyboardState();
         }
     }
 
@@ -60,24 +77,49 @@ public class ActivityKeyboardVisibilityDelegate extends KeyboardVisibilityDelega
     }
 
     @Override
+    public boolean isKeyboardVisible(View view) {
+        return super.isKeyboardVisible(view) || isActivityImeVisible(view);
+    }
+
+    private boolean isActivityImeVisible(View view) {
+        if (!BaseFeatureList.sSplitScreenImeInsetVisibility.isEnabled()) return false;
+        Activity activity = getActivity();
+        if (activity == null || activity.isFinishing() || activity.isDestroyed()) {
+            return false;
+        }
+        View content = getContentView(activity);
+        if (content == null || view.getRootView() != content.getRootView()) {
+            return false;
+        }
+        return Boolean.TRUE.equals(mImeVisibilitySupplier.get());
+    }
+
+    @Override
     public void registerKeyboardVisibilityCallbacks() {
         Activity activity = getActivity();
         if (activity == null) return;
         View content = getContentView(activity);
-        mIsKeyboardShowing = isKeyboardObscuring(content);
+        if (content == null) return;
+        mIsKeyboardObscuring = isKeyboardObscuring(content);
+        mIsKeyboardVisible = isKeyboardVisible(content);
         content.addOnLayoutChangeListener(this);
 
         mKeyboardInsetSupplier.addSyncObserverAndPostIfNonNull(mOnKeyboardInsetChanged);
+        mImeVisibilitySupplier.addSyncObserverAndPostIfNonNull(mOnImeVisibilityChanged);
     }
 
     @Override
     public void unregisterKeyboardVisibilityCallbacks() {
         Activity activity = getActivity();
         if (activity != null) {
-            getContentView(activity).removeOnLayoutChangeListener(this);
+            View content = getContentView(activity);
+            if (content != null) {
+                content.removeOnLayoutChangeListener(this);
+            }
         }
 
         mKeyboardInsetSupplier.removeObserver(mOnKeyboardInsetChanged);
+        mImeVisibilitySupplier.removeObserver(mOnImeVisibilityChanged);
     }
 
     @Override
@@ -91,28 +133,29 @@ public class ActivityKeyboardVisibilityDelegate extends KeyboardVisibilityDelega
             int oldTop,
             int oldRight,
             int oldBottom) {
-        Activity activity = getActivity();
-        if (activity == null) return;
-        updateKeyboardShowing(isKeyboardObscuring(getContentView(activity)));
+        updateKeyboardState();
     }
 
-    private void onKeyboardInsetChanged(int inset) {
-        if (!BaseFeatureList.sSplitScreenImeInsetVisibility.isEnabled()) {
-            updateKeyboardShowing(inset > 0);
-            return;
+    private void updateKeyboardState() {
+        Activity activity = getActivity();
+        if (activity == null) return;
+        View content = getContentView(activity);
+        if (content == null) return;
+        boolean isObscuring = isKeyboardObscuring(content);
+        boolean isVisible = isKeyboardVisible(content);
+        boolean obscuringChanged = isObscuring != mIsKeyboardObscuring;
+        boolean visibleChanged = isVisible != mIsKeyboardVisible;
+        mIsKeyboardObscuring = isObscuring;
+        mIsKeyboardVisible = isVisible;
+        if (obscuringChanged) {
+            notifyListeners(isObscuring);
         }
-        Activity activity = getActivity();
-        if (activity == null) return;
-        updateKeyboardShowing(isKeyboardObscuring(getContentView(activity)));
+        if (visibleChanged && mIsKeyboardVisible == isVisible) {
+            notifyVisibilityListeners(isVisible);
+        }
     }
 
-    private void updateKeyboardShowing(boolean isShowing) {
-        if (mIsKeyboardShowing == isShowing) return;
-        mIsKeyboardShowing = isShowing;
-        notifyListeners(isShowing);
-    }
-
-    private View getContentView(Activity activity) {
+    private @Nullable View getContentView(Activity activity) {
         if (mContentViewForTesting != null) return mContentViewForTesting;
 
         return activity.findViewById(android.R.id.content);

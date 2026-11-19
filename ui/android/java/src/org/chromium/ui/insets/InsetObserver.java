@@ -62,6 +62,8 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
     protected final ObserverList<WindowInsetObserver> mObservers;
     private final SettableNonNullObservableSupplier<Integer> mKeyboardInsetSupplier =
             ObservableSuppliers.createNonNull(0);
+    private final SettableNonNullObservableSupplier<Boolean> mImeVisibilitySupplier =
+            ObservableSuppliers.createNonNull(false);
     private final WindowInsetsAnimationCompat.Callback mWindowInsetsAnimationProxyCallback;
     private final ObserverList<WindowInsetsAnimationListener> mWindowInsetsAnimationListeners =
             new ObserverList<>();
@@ -330,6 +332,11 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
             mLastSeenRawWindowInset = sInitialRawWindowInsetsForTesting;
         }
         mLastAdjustedWindowInsets = mLastSeenRawWindowInset;
+        WindowInsetsCompat initialRawInsets = mLastSeenRawWindowInset;
+        if (initialRawInsets != null) {
+            updateKeyboardInset();
+            mImeVisibilitySupplier.set(initialRawInsets.isVisible(WindowInsetsCompat.Type.ime()));
+        }
         ViewCompat.setWindowInsetsAnimationCallback(rootView, mWindowInsetsAnimationProxyCallback);
         ViewCompat.setOnApplyWindowInsetsListener(rootView, this);
     }
@@ -340,6 +347,11 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
      */
     public NonNullObservableSupplier<Integer> getSupplierForKeyboardInset() {
         return mKeyboardInsetSupplier;
+    }
+
+    /** Returns a supplier providing changes to whether the raw IME is visible on screen. */
+    public NonNullObservableSupplier<Boolean> getSupplierForImeVisibility() {
+        return mImeVisibilitySupplier;
     }
 
     /**
@@ -598,8 +610,8 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
         mLastAdjustedWindowInsets = insets;
 
         updateDisplayCutoutRect(insets);
+        boolean isImeVisible = insets.isVisible(WindowInsetsCompat.Type.ime());
         insets = forwardToInsetConsumers(insets);
-        updateKeyboardInset();
 
         Insets systemInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars());
         onInsetChanged(
@@ -613,6 +625,17 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
         insets =
                 WindowInsetsCompat.toWindowInsetsCompat(
                         view.onApplyWindowInsets(insets.toWindowInsets()));
+        // Clear IME visibility before updating the keyboard inset so observers notified when
+        // the inset drops to 0 already see the IME as hidden (avoiding an intermediate
+        // obscuring=false, visible=true transition). When showing, update the inset first so
+        // obscuring and visibility changes fire together.
+        if (!isImeVisible) {
+            mImeVisibilitySupplier.set(false);
+        }
+        updateKeyboardInset();
+        if (isImeVisible) {
+            mImeVisibilitySupplier.set(true);
+        }
         return insets;
     }
 
