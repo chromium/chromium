@@ -104,6 +104,23 @@ enum class IndigoContextMenuTargetType {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/indigo/enums.xml:IndigoContextMenuTargetType)
 
+// State of the context menu snooze IPH when a user who hasn't onboarded uses
+// an Indigo entry point.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(IndigoSnoozeIphStateOnFirstUse)
+enum class IndigoSnoozeIphStateOnFirstUse {
+  // The IPH can't be shown to this user.
+  kNotEligible = 0,
+  // The IPH is enabled for this user but hasn't been shown yet.
+  kEligibleNeverShown = 1,
+  // The IPH is showing now or was shown before, even if the user is no longer
+  // eligible. `Indigo.PageAction.TimeSinceSnoozeIphLastShown` breaks this down.
+  kShown = 2,
+  kMaxValue = kShown,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/indigo/enums.xml:IndigoSnoozeIphStateOnFirstUse)
+
 enum class EntryPoint {
   kSuggestionChip = 0,
   kAnchoredMessage = 1,
@@ -137,6 +154,10 @@ inline constexpr char kErrorToastRetryClickAction[] =
 inline constexpr char kContextMenuClickAction[] = "Indigo.ContextMenu.Click";
 inline constexpr char kContextMenuTargetTypeHistogram[] =
     "Indigo.ContextMenu.TargetType";
+inline constexpr char kSnoozeIphStateOnFirstUseHistogram[] =
+    "Indigo.PageAction.SnoozeIphStateOnFirstUse";
+inline constexpr char kTimeSinceSnoozeIphLastShownHistogram[] =
+    "Indigo.PageAction.TimeSinceSnoozeIphLastShown";
 
 inline constexpr char kTransformationTriggerAction[] =
     "Indigo.Transformation.Trigger";
@@ -237,6 +258,14 @@ void RecordClickedEntryPoint(
 
 // Records UMA histogram for the context menu target type when executed.
 void RecordContextMenuTargetType(IndigoContextMenuTargetType target_type);
+
+// Records UMA histogram for the snooze IPH state on an entry point click by a
+// user who hasn't onboarded.
+void RecordSnoozeIphStateOnFirstUse(IndigoSnoozeIphStateOnFirstUse state);
+
+// Records UMA histogram for the time since the snooze IPH was last shown, with
+// zero if it's showing or the last show time is in the future.
+void RecordTimeSinceSnoozeIphLastShown(base::TimeDelta time_since_last_show);
 
 // Records UMA histogram for the raw HTTP response code.
 void RecordApiHttpResponse(IndigoApiEndpoint endpoint,

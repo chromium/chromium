@@ -55,6 +55,8 @@
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/user_education/user_education_service.h"
+#include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -65,6 +67,8 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/skills/public/skill.h"
 #include "components/skills/public/skills_service.h"
+#include "components/user_education/common/user_education_data.h"
+#include "components/user_education/common/user_education_storage_service.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -73,6 +77,7 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/visibility.h"
+#include "content/public/browser/web_contents.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -208,6 +213,10 @@ void IndigoPageActionController::InvokeAction(EntryPoint entry_point) {
   if (!indigo_service_) {
     return;
   }
+
+  // Must run before the promo is closed below, so a showing IPH records zero
+  // time.
+  MaybeRecordSnoozeIphStateOnFirstUse();
 
   // Engaging with Try on You from any entry point means the user no longer
   // needs the snooze promo that introduces it.
@@ -612,6 +621,7 @@ void IndigoPageActionController::DidFinishNavigation(
   last_non_retry_trigger_source_ = std::nullopt;
   context_menu_shown_on_current_page_ = false;
   trigger_source_recorded_on_current_page_ = false;
+  snooze_iph_state_recorded_on_current_page_ = false;
   page_eligible_time_ = std::nullopt;
   hidden_since_page_appeared_ = false;
   if (navigation_handle->IsPageActivation()) {
@@ -792,6 +802,7 @@ void IndigoPageActionController::ResetTriggeringState() {
   last_non_retry_trigger_source_ = std::nullopt;
   context_menu_shown_on_current_page_ = false;
   trigger_source_recorded_on_current_page_ = false;
+  snooze_iph_state_recorded_on_current_page_ = false;
   context_menu_snooze_iph_attempted_on_current_page_ = false;
   UpdateEntryPointsState();
 }
@@ -1067,6 +1078,62 @@ void IndigoPageActionController::AbortContextMenuSnoozeIph() {
     user_ed->AbortFeaturePromo(
         feature_engagement::kIPHIndigoContextMenuSnoozeFeature);
   }
+}
+
+void IndigoPageActionController::MaybeRecordSnoozeIphStateOnFirstUse() {
+  // Clicks while the onboarding dialog is open don't count as a first use.
+  if (snooze_iph_state_recorded_on_current_page_ || onboarding_dialog_) {
+    return;
+  }
+  content::WebContents* web_contents = tab().GetContents();
+  if (!web_contents) {
+    return;
+  }
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  if (profile->GetPrefs()->GetBoolean(prefs::kIndigoHasOnboarded)) {
+    return;
+  }
+  // Every path below records a sample.
+  snooze_iph_state_recorded_on_current_page_ = true;
+
+  const base::Feature& iph_feature =
+      feature_engagement::kIPHIndigoContextMenuSnoozeFeature;
+  auto record_shown = [](base::TimeDelta time_since_last_show) {
+    RecordSnoozeIphStateOnFirstUse(IndigoSnoozeIphStateOnFirstUse::kShown);
+    RecordTimeSinceSnoozeIphLastShown(time_since_last_show);
+  };
+
+  if (auto* user_ed = BrowserUserEducationInterface::From(
+          tab().GetBrowserWindowInterface());
+      user_ed && user_ed->IsFeaturePromoActive(iph_feature)) {
+    record_shown(base::TimeDelta());
+    return;
+  }
+
+  auto* user_education_service =
+      UserEducationServiceFactory::GetForBrowserContext(profile);
+  if (!user_education_service) {
+    RecordSnoozeIphStateOnFirstUse(
+        IndigoSnoozeIphStateOnFirstUse::kNotEligible);
+    return;
+  }
+
+  const auto& storage =
+      user_education_service->user_education_storage_service();
+  if (std::optional<user_education::FeaturePromoData> data =
+          storage.ReadPromoData(iph_feature);
+      data && data->show_count > 0) {
+    record_shown(std::max(base::TimeDelta(),
+                          storage.GetCurrentTime() - data->last_show_time));
+    return;
+  }
+
+  RecordSnoozeIphStateOnFirstUse(
+      ShouldOfferContextMenuSnoozeIph() &&
+              base::FeatureList::IsEnabled(iph_feature)
+          ? IndigoSnoozeIphStateOnFirstUse::kEligibleNeverShown
+          : IndigoSnoozeIphStateOnFirstUse::kNotEligible);
 }
 
 void IndigoPageActionController::DestroyToolbar() {

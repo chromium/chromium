@@ -87,6 +87,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/indigo/indigo_metrics.h:IndigoRegionFilterResult) -->
 
+<!-- LINT.IfChange(IndigoSnoozeIphStateOnFirstUse) -->
+
+<enum name="IndigoSnoozeIphStateOnFirstUse">
+  <int value="0" label="Not eligible"/>
+  <int value="1" label="Eligible, never shown"/>
+  <int value="2" label="Shown"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/indigo/indigo_metrics.h:IndigoSnoozeIphStateOnFirstUse) -->
+
 <!-- LINT.IfChange(IndigoTransformationResult) -->
 
 <enum name="IndigoTransformationResult">

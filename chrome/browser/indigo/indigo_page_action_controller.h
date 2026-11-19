@@ -312,6 +312,11 @@ class IndigoPageActionController : public tabs::ContentsObservingTabFeature,
   void MaybeShowContextMenuSnoozeIph();
   void AbortContextMenuSnoozeIph();
 
+  // Records the snooze IPH state for an entry point click by a user who hasn't
+  // onboarded, at most once per page. Call before the IPH is closed for
+  // feature use.
+  void MaybeRecordSnoozeIphStateOnFirstUse();
+
   // `page_action_controller_` is owned by the same `TabFeatures` that owns
   // `this`. Since `page_action_controller_` is initialized before `this` and
   // destroyed after, it is safe to hold as a `raw_ref`.
@@ -396,6 +401,10 @@ class IndigoPageActionController : public tabs::ContentsObservingTabFeature,
   // True if `Indigo.PageAction.TriggerSource` has already been recorded on the
   // current page load, whether for a contextual cue or the context menu.
   bool trigger_source_recorded_on_current_page_ = false;
+
+  // True if `Indigo.PageAction.SnoozeIphStateOnFirstUse` has already been
+  // recorded on the current page load.
+  bool snooze_iph_state_recorded_on_current_page_ = false;
 
   // When the current page appeared to the user.
   std::optional<base::TimeTicks> page_appeared_time_;

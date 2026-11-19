@@ -60,6 +60,8 @@
 #include "chrome/browser/ui/page_action/test_support/mock_page_action_controller.h"
 #include "chrome/browser/ui/side_panel/mock_side_panel_ui.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/user_education/user_education_service.h"
+#include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -73,6 +75,8 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/skills/mocks/mock_skills_service.h"
 #include "components/skills/public/skill.h"
+#include "components/user_education/common/user_education_data.h"
+#include "components/user_education/common/user_education_storage_service.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/navigation_simulator.h"
@@ -427,6 +431,33 @@ class IndigoPageActionControllerTestBase : public testing::Test {
                   RemoteEligibility{.is_service_supported_for_account = true,
                                     .has_user_image = true});
             }));
+  }
+
+  // Like `SetupEligibleAndOnboarded()`, but the user hasn't onboarded. Stubs
+  // out the onboarding dialog that `InvokeAction()` then opens.
+  void SetupEligibleAndNotOnboarded() {
+    SetupEligibleAndOnboarded();
+    profile_->GetPrefs()->SetBoolean(prefs::kIndigoHasOnboarded, false);
+    IndigoPageActionController::TestApi(controller_.get())
+        .SetOnboardingDialogFactory(base::BindRepeating(
+            [](tabs::TabInterface& tab, const GURL& url,
+               base::OnceCallback<void(const OnboardingResult&)> callback)
+                -> std::unique_ptr<IndigoOnboardingDialog> {
+              return nullptr;
+            }));
+  }
+
+  void SetSnoozeIphLastShown(base::TimeDelta time_since_last_show) {
+    auto& storage =
+        UserEducationServiceFactory::GetForBrowserContext(profile_.get())
+            ->user_education_storage_service();
+    user_education::FeaturePromoData data;
+    data.show_count = 2;
+    data.last_show_time = storage.GetCurrentTime() - time_since_last_show;
+    // An older first show, so tests fail if the time is measured from it.
+    data.first_show_time = data.last_show_time - base::Days(30);
+    storage.SavePromoData(
+        feature_engagement::kIPHIndigoContextMenuSnoozeFeature, data);
   }
 
   void SetModelExecutionCapability(bool can_use_model_execution_features) {
@@ -2989,6 +3020,69 @@ TEST_P(IndigoPageActionControllerTest,
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
       tab_interface_->GetContents(), url2);
 }
+
+TEST_F(IndigoPageActionControllerLegacyTest,
+       SnoozeIphStateOnFirstUseRecording) {
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitWithFeatures(
+      {features::kIndigoContextMenu,
+       feature_engagement::kIPHIndigoContextMenuSnoozeFeature},
+      {});
+  CreateController();
+  SetupEligibleAndOnboarded();
+
+  testing::NiceMock<MockBrowserUserEducationInterface> mock_user_education(
+      &mock_browser_window_interface_);
+  bool promo_active = false;
+  ON_CALL(mock_user_education,
+          IsFeaturePromoActive(testing::Ref(
+              feature_engagement::kIPHIndigoContextMenuSnoozeFeature)))
+      .WillByDefault(testing::ReturnPointee(&promo_active));
+  ON_CALL(
+      mock_user_education,
+      NotifyFeaturePromoFeatureUsed(
+          testing::Ref(feature_engagement::kIPHIndigoContextMenuSnoozeFeature),
+          FeaturePromoFeatureUsedAction::kClosePromoIfPresent))
+      .WillByDefault(testing::DoAll(testing::Assign(&promo_active, false),
+                                    testing::Return(true)));
+
+  // Onboarded users don't record.
+  base::HistogramTester histogram_tester;
+  controller_->InvokeAction(EntryPoint::kContextMenu);
+  histogram_tester.ExpectTotalCount(kSnoozeIphStateOnFirstUseHistogram, 0);
+
+  // Recorded once per page, so each state is checked on a new page.
+  SetupEligibleAndNotOnboarded();
+  controller_->InvokeAction(EntryPoint::kContextMenu);
+  controller_->InvokeAction(EntryPoint::kContextMenu);
+  histogram_tester.ExpectUniqueSample(
+      kSnoozeIphStateOnFirstUseHistogram,
+      IndigoSnoozeIphStateOnFirstUse::kEligibleNeverShown, 1);
+  histogram_tester.ExpectTotalCount(kTimeSinceSnoozeIphLastShownHistogram, 0);
+
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      tab_interface_->GetContents(), GURL("https://example.com/shown"));
+  SetSnoozeIphLastShown(base::Days(3));
+  controller_->InvokeAction(EntryPoint::kContextMenu);
+  histogram_tester.ExpectBucketCount(kSnoozeIphStateOnFirstUseHistogram,
+                                     IndigoSnoozeIphStateOnFirstUse::kShown, 1);
+  histogram_tester.ExpectUniqueTimeSample(kTimeSinceSnoozeIphLastShownHistogram,
+                                          base::Days(3), 1);
+
+  // Recording after `InvokeAction()` closes the promo would read the stored
+  // show from an hour ago instead of zero.
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      tab_interface_->GetContents(), GURL("https://example.com/showing"));
+  SetSnoozeIphLastShown(base::Hours(1));
+  promo_active = true;
+  controller_->InvokeAction(EntryPoint::kContextMenu);
+  EXPECT_FALSE(promo_active);
+  histogram_tester.ExpectBucketCount(kSnoozeIphStateOnFirstUseHistogram,
+                                     IndigoSnoozeIphStateOnFirstUse::kShown, 2);
+  histogram_tester.ExpectTimeBucketCount(kTimeSinceSnoozeIphLastShownHistogram,
+                                         base::TimeDelta(), 1);
+}
+
 class IndigoPageActionControllerGeicTest
     : public IndigoPageActionControllerTest {
  private:

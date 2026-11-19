@@ -9,6 +9,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/strcat.h"
+#include "base/time/time.h"
 #include "chrome/browser/indigo/indigo_service.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
 
@@ -112,6 +113,16 @@ void RecordClickedEntryPoint(
 
 void RecordContextMenuTargetType(IndigoContextMenuTargetType target_type) {
   base::UmaHistogramEnumeration(kContextMenuTargetTypeHistogram, target_type);
+}
+
+void RecordSnoozeIphStateOnFirstUse(IndigoSnoozeIphStateOnFirstUse state) {
+  base::UmaHistogramEnumeration(kSnoozeIphStateOnFirstUseHistogram, state);
+}
+
+void RecordTimeSinceSnoozeIphLastShown(base::TimeDelta time_since_last_show) {
+  base::UmaHistogramCustomTimes(kTimeSinceSnoozeIphLastShownHistogram,
+                                time_since_last_show, base::Seconds(1),
+                                base::Days(7), 50);
 }
 
 void RecordApiHttpResponse(IndigoApiEndpoint endpoint,

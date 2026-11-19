@@ -225,6 +225,34 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Indigo.PageAction.SnoozeIphStateOnFirstUse"
+    enum="IndigoSnoozeIphStateOnFirstUse" expires_after="2027-05-13">
+  <owner>jbroman@chromium.org</owner>
+  <owner>adithyas@chromium.org</owner>
+  <owner>baranerf@google.com</owner>
+  <summary>
+    The state of the Indigo context menu snooze IPH when a user who hasn't
+    completed Indigo onboarding clicks an Indigo entry point. Shown means the
+    IPH is showing at the time of the click or was shown before; the exact
+    timing is recorded in Indigo.PageAction.TimeSinceSnoozeIphLastShown. Users
+    who start but don't finish onboarding can record this more than once.
+  </summary>
+</histogram>
+
+<histogram name="Indigo.PageAction.TimeSinceSnoozeIphLastShown" units="ms"
+    expires_after="2027-05-13">
+  <owner>jbroman@chromium.org</owner>
+  <owner>adithyas@chromium.org</owner>
+  <owner>baranerf@google.com</owner>
+  <summary>
+    Time since the Indigo context menu snooze IPH was last shown, recorded with
+    each Shown sample of Indigo.PageAction.SnoozeIphStateOnFirstUse. Recorded as
+    zero if the IPH is showing at the time, so the underflow bucket also holds
+    shows under a second ago and clock changes. The overflow bucket is 7 days or
+    more.
+  </summary>
+</histogram>
+
 <histogram name="Indigo.PageAction.TriggerSource" enum="IndigoTriggerSource"
     expires_after="2027-05-13">
   <owner>jbroman@chromium.org</owner>
