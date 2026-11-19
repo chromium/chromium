@@ -111,6 +111,7 @@ if (is_android) {
       "//chrome/browser/commerce/subscriptions/android:subscriptions_java",
       "//chrome/browser/content_extraction/android:java",
       "//chrome/browser/contextmenu:java",
+      "//chrome/browser/contextual_tasks:utils_java",
       "//chrome/browser/data_sharing:data_sharing_public_java",
       "//chrome/browser/data_sharing:factory_java",
       "//chrome/browser/data_sharing:favicon_java",

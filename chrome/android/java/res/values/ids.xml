@@ -204,6 +204,7 @@ found in the LICENSE file.
     <item type="id" name="ai_pdf_menu_id" />
     <item type="id" name="ai_web_menu_id" />
     <item type="id" name="all_bookmarks_menu_id" />
+    <item type="id" name="ask_google_about_page_menu_id" />
     <item type="id" name="auto_dark_web_contents_check_id" />
     <item type="id" name="auto_dark_web_contents_id" />
     <item type="id" name="back_menu_id" />
