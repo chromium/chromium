@@ -963,7 +963,8 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
 
         // The color picker should select the current color of the tab group when it is displayed.
         @TabGroupColorId
-        int curGroupColor = getTabModel().getTabGroupColorWithFallback(mTabGroupId);
+        int curGroupColor =
+                getTabModel().getTabGroupColorWithFallback(TabGroupId.fromRawToken(mTabGroupId));
         mTabGroupColorPickerCoordinator.setSelectedColorItem(curGroupColor);
     }
 

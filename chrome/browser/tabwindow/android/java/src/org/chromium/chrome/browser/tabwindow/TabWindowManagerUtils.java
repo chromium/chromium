@@ -12,6 +12,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tab_groups.TabGroupId;
 
 /** Utils for TabWindowManager. */
 @NullMarked
@@ -55,6 +56,8 @@ public class TabWindowManagerUtils {
         if (windowId == TabWindowManager.INVALID_WINDOW_ID) return TabGroupColorId.GREY;
         TabModelSelector tabModelSelector = tabWindowManager.getTabModelSelectorById(windowId);
         if (tabModelSelector == null) return TabGroupColorId.GREY;
-        return tabModelSelector.getModel(isIncognito).getTabGroupColorWithFallback(tabGroupId);
+        return tabModelSelector
+                .getModel(isIncognito)
+                .getTabGroupColorWithFallback(TabGroupId.fromRawToken(tabGroupId));
     }
 }

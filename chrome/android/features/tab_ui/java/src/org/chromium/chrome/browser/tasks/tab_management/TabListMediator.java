@@ -1383,7 +1383,8 @@ public class TabListMediator implements TabListNotificationHandler {
         // clears group properties when the tab is ungrouped.
         if (tabGroupId != null) {
             TabModel tabModel = getCurrentTabModelChecked();
-            tabGroupColorId = tabModel.getTabGroupColorWithFallback(tabGroupId);
+            tabGroupColorId =
+                    tabModel.getTabGroupColorWithFallback(TabGroupId.fromRawToken(tabGroupId));
         }
 
         updateTabGroupProperties(model, tabGroupId, tabGroupColorId);
@@ -1980,7 +1981,8 @@ public class TabListMediator implements TabListNotificationHandler {
     void addTabInfoToModelForGroup(Tab tab, Token tabGroupId, int index) {
         assert index != TabModel.INVALID_TAB_INDEX;
         TabModel tabModel = getCurrentTabModelChecked();
-        @TabGroupColorId int colorId = tabModel.getTabGroupColorWithFallback(tabGroupId);
+        @TabGroupColorId
+        int colorId = tabModel.getTabGroupColorWithFallback(TabGroupId.fromRawToken(tabGroupId));
 
         boolean isCollapsed = mTabListLayoutDelegate.isGroupCollapsed(tabGroupId);
 
@@ -2105,7 +2107,9 @@ public class TabListMediator implements TabListNotificationHandler {
                     String title = tabModel.getTabGroupTitle(TabGroupId.fromRawToken(tabGroupId));
                     Resources res = context.getResources();
                     @TabGroupColorId
-                    int colorId = tabModel.getTabGroupColorWithFallback(tabGroupId);
+                    int colorId =
+                            tabModel.getTabGroupColorWithFallback(
+                                    TabGroupId.fromRawToken(tabGroupId));
                     @StringRes
                     int colorDescRes =
                             TabGroupColorPickerUtils
@@ -2928,7 +2932,8 @@ public class TabListMediator implements TabListNotificationHandler {
                         mTabListLayoutDelegate.didChangeTabGroupColor(
                                 tabGroupId,
                                 getCurrentTabModelChecked()
-                                        .getTabGroupColorWithFallback(tabGroupId));
+                                        .getTabGroupColorWithFallback(
+                                                TabGroupId.fromRawToken(tabGroupId)));
                 case PayloadType.COLLAPSED ->
                         updateTabGroupCollapsed(tabGroupId, groupItem.isCollapsed());
                 case PayloadType.TAB_GROUP_ORDER -> updateTabGroupThumbnail(tabGroupId);
@@ -3376,7 +3381,9 @@ public class TabListMediator implements TabListNotificationHandler {
                                     tabModel.containsTabGroup(
                                             TabGroupId.fromOptionalToken(tabGroupId));
                             @TabGroupColorId
-                            int oldColorId = tabModel.getTabGroupColorWithFallback(tabGroupId);
+                            int oldColorId =
+                                    tabModel.getTabGroupColorWithFallback(
+                                            TabGroupId.fromRawToken(tabGroupId));
                             @TabGroupColorId
                             int currentColorId =
                                     tabGroupVisualDataDialogManager.getCurrentColorId();
@@ -3425,7 +3432,9 @@ public class TabListMediator implements TabListNotificationHandler {
                 return "";
 
             Resources res = context.getResources();
-            @TabGroupColorId int colorId = tabModel.getTabGroupColorWithFallback(tabGroupId);
+            @TabGroupColorId
+            int colorId =
+                    tabModel.getTabGroupColorWithFallback(TabGroupId.fromRawToken(tabGroupId));
             @StringRes
             int colorDescRes =
                     TabGroupColorPickerUtils.getTabGroupColorPickerItemColorAccessibilityString(
@@ -3560,7 +3569,8 @@ public class TabListMediator implements TabListNotificationHandler {
             if (tabGroupId != null
                     && tabModel.containsTabGroup(TabGroupId.fromOptionalToken(tabGroupId))) {
                 @TabGroupColorId
-                int tabGroupColor = tabModel.getTabGroupColorWithFallback(tabGroupId);
+                int tabGroupColor =
+                        tabModel.getTabGroupColorWithFallback(TabGroupId.fromRawToken(tabGroupId));
                 List<Integer> actingTabIds = new ArrayList<>();
                 // Group headers display active indicators for all member tabs.
                 for (Tab groupTab :

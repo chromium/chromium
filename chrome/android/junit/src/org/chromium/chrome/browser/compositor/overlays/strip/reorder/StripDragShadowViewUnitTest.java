@@ -63,6 +63,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.components.tab_groups.TabGroupsFeatureMap;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.test.util.MockitoHelper;
@@ -351,7 +352,7 @@ public class StripDragShadowViewUnitTest {
     private void testUpdate_GroupTinting(boolean incognito) {
         @TabGroupColorId int colorId = TabGroupColorId.GREY;
         when(mMockTab.isIncognitoBranded()).thenReturn(incognito);
-        when(mMockTabModel.getTabGroupColorWithFallback(any(Token.class))).thenReturn(colorId);
+        when(mMockTabModel.getTabGroupColorWithFallback(any(TabGroupId.class))).thenReturn(colorId);
         mStripDragShadowView.prepareForGroupDrag(mMockTab, 0);
 
         // Verify card color
@@ -415,7 +416,7 @@ public class StripDragShadowViewUnitTest {
 
         Token tabGroupId = Token.createRandom();
         when(mMockTab.getTabGroupId()).thenReturn(tabGroupId);
-        when(mMockTabModel.getTabGroupColorWithFallback(tabGroupId))
+        when(mMockTabModel.getTabGroupColorWithFallback(TabGroupId.fromRawToken(tabGroupId)))
                 .thenReturn(TabGroupColorId.GREY);
 
         mStripDragShadowView.prepareForGroupDrag(mMockTab, /* sourceWidthPx= */ 0);

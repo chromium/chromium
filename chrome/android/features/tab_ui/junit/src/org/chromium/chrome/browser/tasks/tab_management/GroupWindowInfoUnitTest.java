@@ -149,7 +149,8 @@ public class GroupWindowInfoUnitTest {
 
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(true);
         when(mTabModel.getTabCountForGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(2);
-        when(mTabModel.getTabGroupColorWithFallback(groupId)).thenReturn(TabGroupColorId.ORANGE);
+        when(mTabModel.getTabGroupColorWithFallback(TabGroupId.fromRawToken(groupId)))
+                .thenReturn(TabGroupColorId.ORANGE);
         when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(groupId)))
                 .thenReturn(List.of(mTab1, mTab2));
         when(mTabModel.getTabGroupTitle(TabGroupId.fromRawToken(groupId)))
@@ -190,7 +191,8 @@ public class GroupWindowInfoUnitTest {
 
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(true);
         when(mTabModel.getTabCountForGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(2);
-        when(mTabModel.getTabGroupColorWithFallback(groupId)).thenReturn(TabGroupColorId.GREY);
+        when(mTabModel.getTabGroupColorWithFallback(TabGroupId.fromRawToken(groupId)))
+                .thenReturn(TabGroupColorId.GREY);
         when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(groupId)))
                 .thenReturn(List.of(mTab1, mTab2));
         when(mTabModel.getTabGroupTitle(TabGroupId.fromRawToken(groupId))).thenReturn("");
@@ -226,7 +228,8 @@ public class GroupWindowInfoUnitTest {
 
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(true);
         when(mTabModel.getTabCountForGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(2);
-        when(mTabModel.getTabGroupColorWithFallback(groupId)).thenReturn(TabGroupColorId.PURPLE);
+        when(mTabModel.getTabGroupColorWithFallback(TabGroupId.fromRawToken(groupId)))
+                .thenReturn(TabGroupColorId.PURPLE);
         when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(groupId)))
                 .thenReturn(List.of(mTab1, mTab2));
         when(mTabModel.getTabGroupTitle(TabGroupId.fromRawToken(groupId)))
@@ -257,7 +260,8 @@ public class GroupWindowInfoUnitTest {
 
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(true);
         when(mTabModel.getTabCountForGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(1);
-        when(mTabModel.getTabGroupColorWithFallback(groupId)).thenReturn(TabGroupColorId.BLUE);
+        when(mTabModel.getTabGroupColorWithFallback(TabGroupId.fromRawToken(groupId)))
+                .thenReturn(TabGroupColorId.BLUE);
         when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(groupId)))
                 .thenReturn(List.of(mTab1));
         when(mTabModel.getTabGroupTitle(TabGroupId.fromRawToken(groupId)))
@@ -311,7 +315,8 @@ public class GroupWindowInfoUnitTest {
         when(mTabModel.getComprehensiveModel()).thenReturn(mComprehensiveModel);
         when(mTabModel.getTabGroupTitle(TabGroupId.fromRawToken(token)))
                 .thenReturn("Live Local Title");
-        when(mTabModel.getTabGroupColorWithFallback(token)).thenReturn(TabGroupColorId.ORANGE);
+        when(mTabModel.getTabGroupColorWithFallback(TabGroupId.fromRawToken(token)))
+                .thenReturn(TabGroupColorId.ORANGE);
 
         GroupWindowInfo info =
                 GroupWindowInfo.forSyncedGroup(
@@ -396,7 +401,8 @@ public class GroupWindowInfoUnitTest {
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(true);
         when(mTabModel.getTabGroupTitle(TabGroupId.fromRawToken(groupId)))
                 .thenReturn("Local Explicit");
-        when(mTabModel.getTabGroupColorWithFallback(groupId)).thenReturn(TabGroupColorId.BLUE);
+        when(mTabModel.getTabGroupColorWithFallback(TabGroupId.fromRawToken(groupId)))
+                .thenReturn(TabGroupColorId.BLUE);
         when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(groupId)))
                 .thenReturn(Collections.emptyList());
 
@@ -429,7 +435,8 @@ public class GroupWindowInfoUnitTest {
         when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(token)))
                 .thenReturn(List.of(mTab1));
         when(mTabModel.getTabGroupTitle(TabGroupId.fromRawToken(token))).thenReturn("Active Group");
-        when(mTabModel.getTabGroupColorWithFallback(token)).thenReturn(TabGroupColorId.BLUE);
+        when(mTabModel.getTabGroupColorWithFallback(TabGroupId.fromRawToken(token)))
+                .thenReturn(TabGroupColorId.BLUE);
 
         GroupWindowInfo info =
                 GroupWindowInfo.forSyncedGroup(
@@ -512,7 +519,8 @@ public class GroupWindowInfoUnitTest {
 
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(true);
         when(mTabModel.getTabCountForGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(1);
-        when(mTabModel.getTabGroupColorWithFallback(groupId)).thenReturn(TabGroupColorId.ORANGE);
+        when(mTabModel.getTabGroupColorWithFallback(TabGroupId.fromRawToken(groupId)))
+                .thenReturn(TabGroupColorId.ORANGE);
         when(mTabModel.getTabGroupTitle(TabGroupId.fromRawToken(groupId)))
                 .thenReturn("Local Group Title");
 
@@ -576,7 +584,8 @@ public class GroupWindowInfoUnitTest {
 
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(true);
         when(mTabModel.getTabCountForGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(1);
-        when(mTabModel.getTabGroupColorWithFallback(groupId)).thenReturn(TabGroupColorId.ORANGE);
+        when(mTabModel.getTabGroupColorWithFallback(TabGroupId.fromRawToken(groupId)))
+                .thenReturn(TabGroupColorId.ORANGE);
         when(mTabModel.getTabGroupTitle(TabGroupId.fromRawToken(groupId))).thenReturn("");
 
         List<Tab> preResolvedTabs = List.of(mTab1);

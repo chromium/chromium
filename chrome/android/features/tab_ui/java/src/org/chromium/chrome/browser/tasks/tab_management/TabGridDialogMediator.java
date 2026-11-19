@@ -858,7 +858,9 @@ public class TabGridDialogMediator
         assumeNonNull(tabModel);
         @TabGroupColorId int color = TabGroupColorId.GREY;
         if (mCurrentTabGroupId != null) {
-            color = tabModel.getTabGroupColorWithFallback(mCurrentTabGroupId);
+            color =
+                    tabModel.getTabGroupColorWithFallback(
+                            TabGroupId.fromRawToken(mCurrentTabGroupId));
         }
         mModel.set(TabGridDialogProperties.TAB_GROUP_COLOR_ID, color);
         updateTitle(tabCount);

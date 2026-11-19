@@ -393,7 +393,10 @@ class VerticalTabGroupSpineDecoration extends RecyclerView.ItemDecoration {
         private int getColor(Context context, boolean isIncognito, TabModel tabModel) {
             assert mGroupId != null;
             int colorId =
-                    mColorId != null ? mColorId : tabModel.getTabGroupColorWithFallback(mGroupId);
+                    mColorId != null
+                            ? mColorId
+                            : tabModel.getTabGroupColorWithFallback(
+                                    TabGroupId.fromRawToken(mGroupId));
             return TabGroupColorPickerUtils.getTabGroupColorPickerItemColor(
                     context, colorId, isIncognito);
         }

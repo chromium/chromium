@@ -1613,8 +1613,8 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
     }
 
     @Override
-    public @TabGroupColorId int getTabGroupColorWithFallback(Token tabGroupId) {
-        int color = getTabGroupColor(TabGroupId.fromRawToken(tabGroupId));
+    public @TabGroupColorId int getTabGroupColorWithFallback(TabGroupId tabGroupId) {
+        int color = getTabGroupColor(tabGroupId);
         return color == TabGroupColorUtils.INVALID_COLOR_ID ? TabGroupColorId.GREY : color;
     }
 

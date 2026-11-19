@@ -49,6 +49,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.DefaultFaviconHelper;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.url.GURL;
 
@@ -279,7 +280,8 @@ public class StripDragShadowView extends FrameLayout {
         // Background color.
         Token tabGroupId = tab.getTabGroupId();
         assert tabGroupId != null : "The tab group ID should be non-null";
-        @TabGroupColorId int colorId = tabModel.getTabGroupColorWithFallback(tabGroupId);
+        @TabGroupColorId
+        int colorId = tabModel.getTabGroupColorWithFallback(TabGroupId.fromRawToken(tabGroupId));
 
         @ColorInt
         int groupColor =

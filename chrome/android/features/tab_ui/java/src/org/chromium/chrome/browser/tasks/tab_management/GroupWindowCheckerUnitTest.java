@@ -738,7 +738,7 @@ public class GroupWindowCheckerUnitTest {
         when(mTabWindowManager.getAllTabModelSelectors())
                 .thenReturn(List.of(selectorWindow1, mSelectorWindow2));
         when(mModelWindow2.getAllTabGroupIds()).thenReturn(Collections.emptySet());
-        when(mModelWindow2.getTabGroupColorWithFallback(closingToken))
+        when(mModelWindow2.getTabGroupColorWithFallback(TabGroupId.fromRawToken(closingToken)))
                 .thenReturn(TabGroupColorId.RED);
         mSyncUtils.invalidate();
 
@@ -916,7 +916,7 @@ public class GroupWindowCheckerUnitTest {
 
         when(mModelWindow2.getTabGroupTitle(TabGroupId.fromRawToken(closingToken)))
                 .thenReturn("Live Window 2 Closing Title");
-        when(mModelWindow2.getTabGroupColorWithFallback(closingToken))
+        when(mModelWindow2.getTabGroupColorWithFallback(TabGroupId.fromRawToken(closingToken)))
                 .thenReturn(TabGroupColorId.RED);
         mSyncUtils.invalidate();
 

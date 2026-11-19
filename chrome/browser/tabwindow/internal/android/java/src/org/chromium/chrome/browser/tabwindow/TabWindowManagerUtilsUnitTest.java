@@ -79,7 +79,8 @@ public class TabWindowManagerUtilsUnitTest {
         when(mTabWindowManager.findWindowIdForTabGroup(tabGroupId)).thenReturn(1);
         when(mTabWindowManager.getTabModelSelectorById(1)).thenReturn(mTabModelSelector);
         when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
-        when(mTabModel.getTabGroupColorWithFallback(tabGroupId)).thenReturn(TabGroupColorId.BLUE);
+        when(mTabModel.getTabGroupColorWithFallback(TabGroupId.fromRawToken(tabGroupId)))
+                .thenReturn(TabGroupColorId.BLUE);
 
         int color =
                 TabWindowManagerUtils.getTabGroupColorInAnyWindow(

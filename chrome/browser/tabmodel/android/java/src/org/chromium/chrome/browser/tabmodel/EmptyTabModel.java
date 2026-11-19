@@ -471,7 +471,7 @@ public class EmptyTabModel implements IncognitoTabModelInternal {
     }
 
     @Override
-    public int getTabGroupColorWithFallback(Token tabGroupId) {
+    public int getTabGroupColorWithFallback(TabGroupId tabGroupId) {
         return TabGroupColorId.GREY;
     }
 

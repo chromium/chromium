@@ -69,7 +69,7 @@ public class UndoClosureSnapshotFactoryUnitTest {
 
         when(mLazySupplier.get()).thenReturn(null);
         when(tabModel.getLazyAllTabGroupIds(any(), eq(true))).thenReturn(mLazySupplier);
-        when(tabModel.getTabGroupColorWithFallback(GROUP_1)).thenReturn(3);
+        when(tabModel.getTabGroupColorWithFallback(TabGroupId.fromRawToken(GROUP_1))).thenReturn(3);
         when(tabModel.getTabGroupCollapsed(GROUP_1)).thenReturn(false);
 
         UndoClosureSnapshot snapshot =
@@ -293,7 +293,7 @@ public class UndoClosureSnapshotFactoryUnitTest {
         when(tabModel.indexOf(tab2)).thenReturn(7);
         when(tabModel.getIndexOfTabInGroup(tab1)).thenReturn(2);
         when(tabModel.getTabGroupTitle(TabGroupId.fromRawToken(GROUP_1))).thenReturn("Group 1");
-        when(tabModel.getTabGroupColorWithFallback(GROUP_1)).thenReturn(5);
+        when(tabModel.getTabGroupColorWithFallback(TabGroupId.fromRawToken(GROUP_1))).thenReturn(5);
         when(tabModel.getTabGroupCollapsed(GROUP_1)).thenReturn(true);
         when(tabModel.isTabGroupHiding(TabGroupId.fromOptionalToken(GROUP_1))).thenReturn(false);
         when(mLazySupplier.get()).thenReturn(Set.of(GROUP_1));

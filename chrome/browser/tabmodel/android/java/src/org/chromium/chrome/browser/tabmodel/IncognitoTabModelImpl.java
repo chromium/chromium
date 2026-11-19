@@ -705,7 +705,7 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
     }
 
     @Override
-    public int getTabGroupColorWithFallback(Token tabGroupId) {
+    public int getTabGroupColorWithFallback(TabGroupId tabGroupId) {
         return mDelegateModel.getTabGroupColorWithFallback(tabGroupId);
     }
 

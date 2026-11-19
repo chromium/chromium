@@ -672,7 +672,7 @@ public interface TabModel extends TabList {
      * @return The color that should be used for this group.
      */
     @TabGroupColorId
-    int getTabGroupColorWithFallback(Token tabGroupId);
+    int getTabGroupColorWithFallback(TabGroupId tabGroupId);
 
     /** Stores the given color for the tab group. */
     void setTabGroupColor(Token tabGroupId, @TabGroupColorId int color);

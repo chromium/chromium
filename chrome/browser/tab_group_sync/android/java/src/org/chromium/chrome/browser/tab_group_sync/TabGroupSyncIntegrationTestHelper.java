@@ -375,7 +375,10 @@ public class TabGroupSyncIntegrationTestHelper {
                 runOnUiThreadBlocking(
                         () -> tabModel.getTabGroupTitle(TabGroupId.fromRawToken(tabGroupId)));
         int actualColor =
-                runOnUiThreadBlocking(() -> tabModel.getTabGroupColorWithFallback(tabGroupId));
+                runOnUiThreadBlocking(
+                        () ->
+                                tabModel.getTabGroupColorWithFallback(
+                                        TabGroupId.fromRawToken(tabGroupId)));
         List<Tab> tabs =
                 runOnUiThreadBlocking(
                         () -> tabModel.getTabsInGroup(TabGroupId.fromOptionalToken(tabGroupId)));

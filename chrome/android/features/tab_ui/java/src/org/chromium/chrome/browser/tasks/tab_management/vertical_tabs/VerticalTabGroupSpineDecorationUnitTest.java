@@ -110,7 +110,8 @@ public class VerticalTabGroupSpineDecorationUnitTest {
     @Test
     public void testOnDraw_HeaderScrolledOffScreen_StartsFromFirstVisibleChildTop() {
         Token groupId = new Token(1L, 2L);
-        when(mTabModel.getTabGroupColorWithFallback(groupId)).thenReturn(0);
+        when(mTabModel.getTabGroupColorWithFallback(TabGroupId.fromRawToken(groupId)))
+                .thenReturn(0);
 
         // Model has Header (0), Tab 1 (1), Tab 2 (2)
         addGroupHeaderModel(groupId, /* isCollapsed= */ false);
@@ -147,7 +148,8 @@ public class VerticalTabGroupSpineDecorationUnitTest {
     @Test
     public void testOnDraw_ScrambledChildren_SortsAndDrawsCorrectly() {
         Token groupId = new Token(1L, 2L);
-        when(mTabModel.getTabGroupColorWithFallback(groupId)).thenReturn(0);
+        when(mTabModel.getTabGroupColorWithFallback(TabGroupId.fromRawToken(groupId)))
+                .thenReturn(0);
 
         addGroupHeaderModel(groupId, /* isCollapsed= */ false);
         addTabModel(groupId);
@@ -193,7 +195,8 @@ public class VerticalTabGroupSpineDecorationUnitTest {
 
     private void testOnDraw_WithGroupExpandingOrCollapsing_ConnectsToSibling(boolean isCollapsing) {
         Token groupId = new Token(1L, 2L);
-        when(mTabModel.getTabGroupColorWithFallback(groupId)).thenReturn(0);
+        when(mTabModel.getTabGroupColorWithFallback(TabGroupId.fromRawToken(groupId)))
+                .thenReturn(0);
 
         // Capture TabGroupObserver
         ArgumentCaptor<TabGroupObserver> captor = ArgumentCaptor.forClass(TabGroupObserver.class);
@@ -235,7 +238,8 @@ public class VerticalTabGroupSpineDecorationUnitTest {
     @Test
     public void testOnDraw_CollapsedGroup_SkipsDrawing() {
         Token groupId = new Token(1L, 2L);
-        when(mTabModel.getTabGroupColorWithFallback(groupId)).thenReturn(0);
+        when(mTabModel.getTabGroupColorWithFallback(TabGroupId.fromRawToken(groupId)))
+                .thenReturn(0);
 
         addGroupHeaderModel(groupId, /* isCollapsed= */ true);
 
@@ -250,7 +254,8 @@ public class VerticalTabGroupSpineDecorationUnitTest {
     @Test
     public void testOnDraw_GroupDragging_TranslatesSpine() {
         Token groupId = new Token(1L, 2L);
-        when(mTabModel.getTabGroupColorWithFallback(groupId)).thenReturn(0);
+        when(mTabModel.getTabGroupColorWithFallback(TabGroupId.fromRawToken(groupId)))
+                .thenReturn(0);
         when(mTabModel.getTabCountForGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(2);
 
         PropertyModel headerModel = addGroupHeaderModel(groupId, /* isCollapsed= */ false);
@@ -282,7 +287,8 @@ public class VerticalTabGroupSpineDecorationUnitTest {
     @Test
     public void testOnDraw_SingleChildDragging_PromotedToGroupDragging() {
         Token groupId = new Token(1L, 2L);
-        when(mTabModel.getTabGroupColorWithFallback(groupId)).thenReturn(0);
+        when(mTabModel.getTabGroupColorWithFallback(TabGroupId.fromRawToken(groupId)))
+                .thenReturn(0);
         when(mTabModel.getTabCountForGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(1);
 
         addGroupHeaderModel(groupId, /* isCollapsed= */ false);
@@ -314,7 +320,8 @@ public class VerticalTabGroupSpineDecorationUnitTest {
     @Test
     public void testOnDraw_ChildDraggingInternally_LocksSpine() {
         Token groupId = new Token(1L, 2L);
-        when(mTabModel.getTabGroupColorWithFallback(groupId)).thenReturn(0);
+        when(mTabModel.getTabGroupColorWithFallback(TabGroupId.fromRawToken(groupId)))
+                .thenReturn(0);
         when(mTabModel.getTabCountForGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(2);
 
         addGroupHeaderModel(groupId, /* isCollapsed= */ false);
@@ -345,7 +352,8 @@ public class VerticalTabGroupSpineDecorationUnitTest {
     @Test
     public void testOnDraw_DragOtherTabs_DoesNotAnimate() {
         Token groupId = new Token(1L, 2L);
-        when(mTabModel.getTabGroupColorWithFallback(groupId)).thenReturn(0);
+        when(mTabModel.getTabGroupColorWithFallback(TabGroupId.fromRawToken(groupId)))
+                .thenReturn(0);
 
         // Add a standalone tab at position 0, which is being dragged
         PropertyModel otherTabModel = addTabModel(/* groupId= */ null);
@@ -388,7 +396,8 @@ public class VerticalTabGroupSpineDecorationUnitTest {
     @Test
     public void testOnDraw_LastGroupOnScreen_AnimatesWithAlpha() {
         Token groupId = new Token(1L, 2L);
-        when(mTabModel.getTabGroupColorWithFallback(groupId)).thenReturn(0);
+        when(mTabModel.getTabGroupColorWithFallback(TabGroupId.fromRawToken(groupId)))
+                .thenReturn(0);
 
         addGroupHeaderModel(groupId, /* isCollapsed= */ false);
         addTabModel(groupId);

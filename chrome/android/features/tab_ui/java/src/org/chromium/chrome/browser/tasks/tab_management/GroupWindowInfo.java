@@ -231,7 +231,8 @@ public class GroupWindowInfo {
             @Nullable SavedTabGroup savedGroup,
             boolean hasLocalData) {
         if (hasLocalData && localTabModel != null && localGroupId != null) {
-            return localTabModel.getTabGroupColorWithFallback(localGroupId);
+            return localTabModel.getTabGroupColorWithFallback(
+                    TabGroupId.fromRawToken(localGroupId));
         }
         return savedGroup != null ? savedGroup.color : TabGroupColorId.GREY;
     }

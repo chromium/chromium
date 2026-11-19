@@ -96,6 +96,7 @@ import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.collaboration.ServiceStatus;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.components.tabs.TabAlert;
 import org.chromium.ui.base.DeviceInput;
 import org.chromium.ui.base.LocalizationUtils;
@@ -809,7 +810,7 @@ public class VerticalTabListRenderTest {
 
                     // Tab Group Header and Nesting Tabs
                     Token groupId = Token.createRandom();
-                    when(tabModel.getTabGroupColorWithFallback(groupId))
+                    when(tabModel.getTabGroupColorWithFallback(TabGroupId.fromRawToken(groupId)))
                             .thenReturn(TabGroupColorId.BLUE);
 
                     addGroupHeaderListItem(
@@ -1459,7 +1460,7 @@ public class VerticalTabListRenderTest {
                             createGroupHeaderItemModelBuilder(
                                             "Group", groupId, TabGroupColorId.BLUE, isCollapsed)
                                     .build());
-                    when(tabModel.getTabGroupColorWithFallback(groupId))
+                    when(tabModel.getTabGroupColorWithFallback(TabGroupId.fromRawToken(groupId)))
                             .thenReturn(TabGroupColorId.BLUE);
                     if (!isCollapsed) {
                         addTabListItem(

@@ -1375,7 +1375,9 @@ public class TabCollectionTabModelImplTest {
                             testColor,
                             mCollectionModel.getTabGroupColor(TabGroupId.fromRawToken(tabGroupId)));
                     assertEquals(
-                            testColor, mCollectionModel.getTabGroupColorWithFallback(tabGroupId));
+                            testColor,
+                            mCollectionModel.getTabGroupColorWithFallback(
+                                    TabGroupId.fromRawToken(tabGroupId)));
                     mCollectionModel.removeTabGroupObserver(colorObserver);
                 });
         colorChangedHelper.waitForOnly("setTabGroupColor failed");

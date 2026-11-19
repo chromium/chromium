@@ -1405,7 +1405,8 @@ public class TabGridDialogMediatorUnitTest {
         List<Tab> tabGroup = new ArrayList<>(Arrays.asList(mTab1, mTab2));
         createTabGroup(tabGroup, TAB_GROUP_ID);
 
-        when(mTabModel.getTabGroupColorWithFallback(TAB_GROUP_ID)).thenReturn(COLOR_2);
+        when(mTabModel.getTabGroupColorWithFallback(TabGroupId.fromRawToken(TAB_GROUP_ID)))
+                .thenReturn(COLOR_2);
         assertTrue(mMediator.onReset(tabGroup));
 
         // Assert that a color and the incognito status were set.
@@ -1474,7 +1475,8 @@ public class TabGridDialogMediatorUnitTest {
         List<Tab> tabGroup = new ArrayList<>(Arrays.asList(mTab1, mTab2));
         createTabGroup(tabGroup, TAB_GROUP_ID);
 
-        when(mTabModel.getTabGroupColorWithFallback(TAB_GROUP_ID)).thenReturn(COLOR_2);
+        when(mTabModel.getTabGroupColorWithFallback(TabGroupId.fromRawToken(TAB_GROUP_ID)))
+                .thenReturn(COLOR_2);
         assertTrue(mMediator.onReset(tabGroup));
 
         // Assert that a color and the incognito status were set.

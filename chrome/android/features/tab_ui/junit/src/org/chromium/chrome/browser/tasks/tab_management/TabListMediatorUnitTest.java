@@ -4259,7 +4259,8 @@ public class TabListMediatorUnitTest {
         when(mTabModel.isIncognito()).thenReturn(false);
         // Mock that we have a stored color stored with reference to root ID of tab1.
         when(mTabModel.getTabGroupColor(TabGroupId.fromRawToken(TAB_GROUP_ID))).thenReturn(COLOR_2);
-        when(mTabModel.getTabGroupColorWithFallback(TAB_GROUP_ID)).thenReturn(COLOR_2);
+        when(mTabModel.getTabGroupColorWithFallback(TabGroupId.fromRawToken(TAB_GROUP_ID)))
+                .thenReturn(COLOR_2);
 
         // Test a group of three.
         Tab tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
@@ -7678,7 +7679,8 @@ public class TabListMediatorUnitTest {
 
         when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID))).thenReturn(tabs);
         when(mTabModel.getTabGroupCollapsed(TAB_GROUP_ID)).thenReturn(isCollapsed);
-        when(mTabModel.getTabGroupColorWithFallback(TAB_GROUP_ID)).thenReturn(COLOR_2);
+        when(mTabModel.getTabGroupColorWithFallback(TabGroupId.fromRawToken(TAB_GROUP_ID)))
+                .thenReturn(COLOR_2);
         when(mTabModel.getTabById(TAB1_ID)).thenReturn(mTab1);
         when(mTabModel.getTabById(TAB3_ID)).thenReturn(tab3);
         mockTabIndexes(mTab1, tab3);
@@ -8802,7 +8804,8 @@ public class TabListMediatorUnitTest {
         TabGroupItem groupItem =
                 setupGroupCardInProviderMediator(
                         TabListLayoutType.GROUPED, /* isCollapsed= */ true);
-        when(mTabModel.getTabGroupColorWithFallback(TAB_GROUP_ID)).thenReturn(TabGroupColorId.BLUE);
+        when(mTabModel.getTabGroupColorWithFallback(TabGroupId.fromRawToken(TAB_GROUP_ID)))
+                .thenReturn(TabGroupColorId.BLUE);
         assertThat(
                 mModelList.get(1).model.get(TabProperties.TAB_GROUP_CARD_COLOR),
                 not(equalTo(TabGroupColorId.BLUE)));
@@ -8907,7 +8910,8 @@ public class TabListMediatorUnitTest {
         assertNull(mModelList.get(0).model.get(TabProperties.TAB_GROUP_ID));
         // Simulates mTab1 joining a group whose children stay visible in the nested layout.
         when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
-        when(mTabModel.getTabGroupColorWithFallback(TAB_GROUP_ID)).thenReturn(COLOR_2);
+        when(mTabModel.getTabGroupColorWithFallback(TabGroupId.fromRawToken(TAB_GROUP_ID)))
+                .thenReturn(COLOR_2);
 
         mDataObserver.onItemUpdated(createTabItem(TAB1_ID), PayloadType.GROUP_MEMBERSHIP);
 
@@ -8926,7 +8930,8 @@ public class TabListMediatorUnitTest {
         mMediator.resetWithListOfTabs(
                 List.of(mTab1), /* tabGroupSyncIds= */ null, /* quickMode= */ false);
         when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
-        when(mTabModel.getTabGroupColorWithFallback(TAB_GROUP_ID)).thenReturn(COLOR_2);
+        when(mTabModel.getTabGroupColorWithFallback(TabGroupId.fromRawToken(TAB_GROUP_ID)))
+                .thenReturn(COLOR_2);
         mDataObserver.onDataReset(List.of(createTabItem(TAB1_ID)));
         assertEquals(1, mModelList.size());
         assertEquals(TAB_GROUP_ID, mModelList.get(0).model.get(TabProperties.TAB_GROUP_ID));
