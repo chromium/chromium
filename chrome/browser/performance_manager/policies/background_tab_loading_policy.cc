@@ -125,8 +125,9 @@ void ScheduleLoadForRestoredTabs(
     // Cannot use GetPermissionStatusForCurrentDocument() because the navigation
     // hasn't been committed in the RenderFrameHost yet, as evidenced by the
     // DCHECK below.
-    CHECK_EQ(content->GetPrimaryMainFrame()->GetLastCommittedURL(), GURL(),
-             base::NotFatalUntil::M163);
+    // TODO(crbug.com/583678251): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK_EQ(content->GetPrimaryMainFrame()->GetLastCommittedURL(), GURL());
     CHECK_NE(content->GetLastCommittedURL(), GURL(), base::NotFatalUntil::M163);
 
     auto permission_descriptor = content::PermissionDescriptorUtil::
