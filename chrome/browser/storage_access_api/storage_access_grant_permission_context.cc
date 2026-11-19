@@ -11,6 +11,7 @@
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/fuzzing_buildflags.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -61,6 +62,10 @@
 #include "third_party/blink/public/common/runtime_feature_state/runtime_feature_state_read_context.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
+
+#if !BUILDFLAG(USE_FUZZING_ENGINE)
+#include "chrome/browser/storage_access_api/storage_access_metrics.h"  // nogncheck
+#endif
 
 namespace {
 
@@ -139,12 +144,18 @@ RequestOutcome RequestOutcomeFromPrompt(PermissionDecision decision,
   }
 }
 
-void RecordOutcomeSample(RequestOutcome outcome,
+void RecordOutcomeSample(content::BrowserContext* browser_context,
+                         RequestOutcome outcome,
                          const net::SchemefulSite& requesting_site) {
   dwa::builders::StorageAccess_RequestOutcome()
       .SetOutcome(static_cast<int>(outcome))
       .SetContent(requesting_site.GetURL().spec())
       .Record(metrics::dwa::DwaRecorder::Get());
+  // TODO(b/564439825): Remove DWA once Private Insights is validated.
+#if !BUILDFLAG(USE_FUZZING_ENGINE)
+  storage_access_api::RecordOutcomeToPrivateInsights(browser_context, outcome,
+                                                     requesting_site);
+#endif
 }
 
 content_settings::ContentSettingConstraints ComputeConstraints(
@@ -206,7 +217,8 @@ FederatedIdentityPermissionContext* IsAutograntViaFedCmAllowed(
     return nullptr;
   }
 
-  RecordOutcomeSample(RequestOutcome::kAllowedByFedCM, requesting_site);
+  RecordOutcomeSample(browser_context, RequestOutcome::kAllowedByFedCM,
+                      requesting_site);
   return fedcm_context;
 }
 
@@ -220,7 +232,8 @@ ValidatePermissionEligibility(content::RenderFrameHost* rfh,
     // No need to log anything here, since well-behaved renderers have already
     // done these checks and have logged to the console. This block is to handle
     // compromised renderers.
-    RecordOutcomeSample(RequestOutcome::kDeniedByPrerequisites,
+    RecordOutcomeSample(rfh->GetBrowserContext(),
+                        RequestOutcome::kDeniedByPrerequisites,
                         requesting_site);
     bad_message::ReceivedBadMessage(
         rfh->GetProcess(), bad_message::BadMessageReason::
@@ -337,7 +350,8 @@ void StorageAccessGrantPermissionContext::DecidePermission(
       ContentSettingsType::COOKIES);
 
   if (setting == CONTENT_SETTING_BLOCK) {
-    RecordOutcomeSample(RequestOutcome::kDeniedByCookieSettings,
+    RecordOutcomeSample(browser_context(),
+                        RequestOutcome::kDeniedByCookieSettings,
                         requesting_site);
     std::move(callback).Run(content::PermissionResult(
         blink::mojom::PermissionStatus::DENIED,
@@ -354,7 +368,8 @@ void StorageAccessGrantPermissionContext::DecidePermission(
   if (overrides.Has(net::CookieSettingOverride::kStorageAccessGrantEligible) ||
       overrides.Has(
           net::CookieSettingOverride::kStorageAccessGrantEligibleViaHeader)) {
-    RecordOutcomeSample(RequestOutcome::kReusedPreviousDecision,
+    RecordOutcomeSample(browser_context(),
+                        RequestOutcome::kReusedPreviousDecision,
                         requesting_site);
     // The caller already has the `kStorageAccessGrantEligible` or
     // `kStorageAccessGrantEligibleViaHeader` override, which suggests they've
@@ -372,7 +387,8 @@ void StorageAccessGrantPermissionContext::DecidePermission(
           request_data->requesting_origin, net::SiteForCookies(),
           embedding_origin, overrides,
           rfh->GetStorageKey().ToCookiePartitionKey())) {
-    RecordOutcomeSample(RequestOutcome::kAllowedByCookieSettings,
+    RecordOutcomeSample(browser_context(),
+                        RequestOutcome::kAllowedByCookieSettings,
                         requesting_site);
     std::move(callback).Run(content::PermissionResult(
         blink::mojom::PermissionStatus::GRANTED,
@@ -385,7 +401,8 @@ void StorageAccessGrantPermissionContext::DecidePermission(
   // Return early without prompting users if the requesting frame is same-site
   // with the top-level frame.
   if (requesting_site == embedding_site) {
-    RecordOutcomeSample(RequestOutcome::kAllowedBySameSite, requesting_site);
+    RecordOutcomeSample(browser_context(), RequestOutcome::kAllowedBySameSite,
+                        requesting_site);
     std::move(callback).Run(content::PermissionResult(
         blink::mojom::PermissionStatus::GRANTED,
         content::PermissionStatusSource::UNSPECIFIED));
@@ -412,7 +429,8 @@ void StorageAccessGrantPermissionContext::DecidePermission(
     rfh->AddMessageToConsole(
         blink::mojom::ConsoleMessageLevel::kError,
         "requestStorageAccess: Must be handling a user gesture to use.");
-    RecordOutcomeSample(RequestOutcome::kDeniedByPrerequisites,
+    RecordOutcomeSample(browser_context(),
+                        RequestOutcome::kDeniedByPrerequisites,
                         requesting_site);
     std::move(callback).Run(content::PermissionResult(
         blink::mojom::PermissionStatus::DENIED,
@@ -476,7 +494,7 @@ void StorageAccessGrantPermissionContext::OnCheckedUserInteractionHeuristic(
   if (!rfh) {
     // After async steps, the RenderFrameHost is not guaranteed to still be
     // alive.
-    RecordOutcomeSample(RequestOutcome::kDeniedAborted,
+    RecordOutcomeSample(browser_context(), RequestOutcome::kDeniedAborted,
                         net::SchemefulSite(request_data->requesting_origin));
     std::move(callback).Run(content::PermissionResult(
         blink::mojom::PermissionStatus::DENIED,
@@ -576,7 +594,7 @@ void StorageAccessGrantPermissionContext::NotifyPermissionSetInternal(
     RequestOutcome outcome) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
 
-  RecordOutcomeSample(outcome,
+  RecordOutcomeSample(browser_context(), outcome,
                       net::SchemefulSite(request_data.requesting_origin));
 
   const bool permission_allowed = (decision == PermissionDecision::kAllow);

@@ -1,0 +1,16 @@
+%{
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+// Frozen Public Suffix List used by storage_access_metrics_unittest.cc, so the
+// tests do not depend on the contents of the real list. Compiled into a DAFSA
+// by //net/tools/dafsa/make_dafsa.py (see BUILD.gn). Values: 0 = ICANN rule,
+// 4 = private rule.
+%}
+%%
+com, 0
+uk, 0
+co.uk, 0
+io, 0
+github.io, 4
+%%

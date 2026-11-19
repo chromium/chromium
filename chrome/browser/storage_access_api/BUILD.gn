@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/sanitizers/sanitizers.gni")
 import("//components/guest_view/buildflags/buildflags.gni")
 
 source_set("storage_access_api") {
@@ -25,6 +26,7 @@ source_set("storage_access_api") {
   ]
 
   deps = [
+    "//base:fuzzing_buildflags",
     "//chrome/browser:bad_message",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/webid",
@@ -42,6 +44,25 @@ source_set("storage_access_api") {
   if (enable_guest_view) {
     deps += [ "//components/guest_view/browser" ]
   }
+
+  # Private Insights reporting. Not built for fuzzing: Federated Compute
+  # conflicts with libprotobuf-mutator; see //chrome/browser/private_insights.
+  # TODO(b/587049226): Remove this special-casing once Private Insights
+  # supports fuzzing builds.
+  if (!use_fuzzing_engine) {
+    sources += [
+      "storage_access_metrics.cc",
+      "storage_access_metrics.h",
+    ]
+    deps += [
+      "//chrome/browser/private_insights",
+      "//chrome/common:channel_info",
+      "//components/private_insights",
+      "//components/private_insights/events:storage_access_log_event_proto",
+      "//components/version_info",
+      "//net",
+    ]
+  }
 }
 
 source_set("unit_tests") {
@@ -57,11 +78,15 @@ source_set("unit_tests") {
 
   deps = [
     ":storage_access_api",
+    ":storage_access_metrics_unittest_psl",
     "//base",
+    "//base:fuzzing_buildflags",
     "//base/test:test_support",
     "//chrome/browser/content_settings",
     "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/private_insights",
     "//chrome/browser/webid",
+    "//chrome/common:channel_info",
     "//chrome/test:test_support",
     "//chrome/test/base:chrome_render_view_host_test_harness",
     "//chrome/test/base:testing_browser_process",
@@ -70,10 +95,37 @@ source_set("unit_tests") {
     "//components/metrics/private_metrics:dwa_recorder",
     "//components/permissions",
     "//components/permissions:test_support",
+    "//components/prefs:test_support",
     "//components/privacy_sandbox:privacy_sandbox_prefs",
+    "//components/private_insights/events:storage_access_log_event_proto",
+    "//components/version_info",
     "//content/test:test_support",
+    "//net",
+    "//services/network/public/cpp",
     "//testing/gmock",
     "//testing/gtest",
+  ]
+
+  # Needs //components/private_insights; see the `storage_access_api` target.
+  if (!use_fuzzing_engine) {
+    sources += [ "storage_access_metrics_unittest.cc" ]
+    deps += [ "//components/private_insights" ]
+  }
+}
+
+# Compiles the frozen Public Suffix List used by storage_access_metrics_unittest
+# into a DAFSA, the same way //net/base/registry_controlled_domains does.
+action("storage_access_metrics_unittest_psl") {
+  testonly = true
+  script = "//net/tools/dafsa/make_dafsa.py"
+  sources = [ "storage_access_metrics_unittest_psl.gperf" ]
+  outputs =
+      [ "$target_gen_dir/storage_access_metrics_unittest_psl-reversed-inc.cc" ]
+  args = [
+    "--reverse",
+    "--namespace=storage_access_api_test_psl",
+    rebase_path(sources[0], root_build_dir),
+    rebase_path(outputs[0], root_build_dir),
   ]
 }
 

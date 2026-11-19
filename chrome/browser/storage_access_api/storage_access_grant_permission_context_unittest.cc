@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/check_deref.h"
+#include "base/fuzzing_buildflags.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -59,6 +60,18 @@
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 
+#if !BUILDFLAG(USE_FUZZING_ENGINE)
+#include "chrome/browser/private_insights/private_insights_service_factory.h"
+#include "chrome/browser/storage_access_api/storage_access_metrics_unittest_psl-reversed-inc.cc"
+#include "components/prefs/testing_pref_service.h"
+#include "components/private_insights/events/storage_access_log_event.pb.h"
+#include "components/private_insights/private_insights_features.h"  // nogncheck
+#include "components/private_insights/private_insights_service.h"   // nogncheck
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#endif  // !BUILDFLAG(USE_FUZZING_ENGINE)
+
 namespace {
 
 using testing::_;
@@ -72,6 +85,7 @@ using testing::Lt;
 using testing::Matcher;
 using testing::Pair;
 using testing::Pointee;
+using testing::Property;
 using testing::UnorderedElementsAre;
 using DwaEntry = metrics::dwa::mojom::DwaEntry;
 using PermissionStatus = blink::mojom::PermissionStatus;
@@ -964,3 +978,108 @@ INSTANTIATE_TEST_SUITE_P(
     ,
     StorageAccessGrantPermissionContextAPIWithFedCMConnectionTest,
     testing::Bool());
+
+#if !BUILDFLAG(USE_FUZZING_ENGINE)
+namespace {
+
+using ::private_insights::events::StorageAccessLogEvent;
+
+class MockPrivateInsightsService
+    : public private_insights::PrivateInsightsService {
+ public:
+  MockPrivateInsightsService(PrefService* local_state,
+                             const base::FilePath& profile_dir)
+      : PrivateInsightsService(local_state,
+                               profile_dir,
+                               /*url_loader_factory=*/nullptr) {}
+
+  MOCK_METHOD(void,
+              LogStorageAccessEvent,
+              (StorageAccessLogEvent event),
+              (override));
+};
+
+MATCHER_P2(StorageAccessEventIs, domain, outcome, "") {
+  return testing::ExplainMatchResult(
+      AllOf(Property("domain", &StorageAccessLogEvent::domain, domain),
+            Property("outcome", &StorageAccessLogEvent::outcome, outcome)),
+      arg, result_listener);
+}
+
+}  // namespace
+
+// Checks that request outcomes reach Private Insights through the permission
+// context, not only through `RecordOutcomeToPrivateInsights()` directly.
+class StorageAccessGrantPermissionContextPrivateInsightsTest
+    : public StorageAccessGrantPermissionContextTest {
+ public:
+  void SetUp() override {
+    StorageAccessGrantPermissionContextTest::SetUp();
+    // After the base fixture's feature list, so they are destroyed in reverse
+    // order. Checked when recording, so it need not precede profile creation.
+    pi_features_.InitAndEnableFeature(
+        private_insights::kPrivateInsightsStorageAccess);
+    // Frozen Public Suffix List, so the reported domain does not depend on the
+    // real list; see storage_access_metrics_unittest_psl.gperf.
+    net::registry_controlled_domains::SetFindDomainGraphForTesting(
+        storage_access_api_test_psl::kDafsa);
+  }
+
+  void TearDown() override {
+    net::registry_controlled_domains::ResetFindDomainGraphForTesting();
+    StorageAccessGrantPermissionContextTest::TearDown();
+  }
+
+  TestingProfile::TestingFactories GetTestingFactories() const override {
+    return {TestingProfile::TestingFactory{
+        private_insights::PrivateInsightsServiceFactory::GetInstance(),
+        base::BindOnce(&StorageAccessGrantPermissionContextPrivateInsightsTest::
+                           BuildService,
+                       base::Unretained(this))}};
+  }
+
+  MockPrivateInsightsService& service() {
+    auto* service = static_cast<MockPrivateInsightsService*>(
+        private_insights::PrivateInsightsServiceFactory::GetForProfile(
+            profile()));
+    CHECK(service);
+    return *service;
+  }
+
+ private:
+  std::unique_ptr<KeyedService> BuildService(
+      content::BrowserContext* context) const {
+    return std::make_unique<testing::StrictMock<MockPrivateInsightsService>>(
+        &local_state_, context->GetPath());
+  }
+
+  base::test::ScopedFeatureList pi_features_;
+  mutable TestingPrefServiceSimple local_state_;
+};
+
+TEST_F(StorageAccessGrantPermissionContextPrivateInsightsTest,
+       ExplicitGrantIsReported) {
+  // requester.example.com is reported as its eTLD+1.
+  EXPECT_CALL(service(),
+              LogStorageAccessEvent(StorageAccessEventIs(
+                  "example.com", StorageAccessLogEvent::GRANTED_BY_USER)));
+
+  auto future =
+      DecidePermission(MakePermissionRequestData(/*user_gesture=*/true));
+  WaitUntilPrompt();
+  request_manager()->Accept(/*prompt_options=*/std::monostate());
+  EXPECT_EQ(PermissionStatus::GRANTED, future.Get().status);
+}
+
+TEST_F(StorageAccessGrantPermissionContextPrivateInsightsTest,
+       DenialWithoutPromptIsReported) {
+  EXPECT_CALL(service(), LogStorageAccessEvent(StorageAccessEventIs(
+                             "example.com",
+                             StorageAccessLogEvent::DENIED_BY_PREREQUISITES)));
+
+  EXPECT_EQ(PermissionStatus::DENIED,
+            DecidePermission(MakePermissionRequestData(/*user_gesture=*/false))
+                .Get()
+                .status);
+}
+#endif  // !BUILDFLAG(USE_FUZZING_ENGINE)
