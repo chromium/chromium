@@ -5,9 +5,11 @@
 #ifndef COMPONENTS_PRIVATE_AI_CONNECTION_TOKEN_ATTESTATION_H_
 #define COMPONENTS_PRIVATE_AI_CONNECTION_TOKEN_ATTESTATION_H_
 
+#include <cstdint>
 #include <memory>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
@@ -76,7 +78,7 @@ class ConnectionTokenAttestation : public Connection {
   void OnTokenFetched(base::expected<phosphor::BlindSignedAuthToken,
                                      phosphor::TokenManager::Error> auth_token);
   void OnInnerConnectionResponse(
-      OnRequestCallback original_callback,
+      int32_t request_id,
       base::expected<proto::PrivateAiResponse, StatusCode> result);
   void CallOnDisconnect(StatusCode status_code);
 
@@ -91,6 +93,9 @@ class ConnectionTokenAttestation : public Connection {
 
   AttestationState attestation_state_ = AttestationState::kFetchingToken;
   std::vector<PendingRequest> pending_requests_;
+
+  int32_t next_request_id_{1};
+  base::flat_map<int32_t, OnRequestCallback> pending_request_callbacks_;
 
   base::WeakPtrFactory<ConnectionTokenAttestation> weak_factory_{this};
 };

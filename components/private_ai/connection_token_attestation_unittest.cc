@@ -229,6 +229,40 @@ TEST_F(ConnectionTokenAttestationTest,
             StatusCode::kClientAttestationFailedConnectionAborted);
 }
 
+TEST_F(ConnectionTokenAttestationTest,
+       PipelinedRequestsClosedByServerBeforeFirstResponse) {
+  CreateConnectionAttestation();
+
+  base::test::TestFuture<base::expected<proto::PrivateAiResponse, StatusCode>>
+      future1;
+  proto::PrivateAiRequest request1;
+  request1.set_request_id(101);
+  connection_attestation_->Send(std::move(request1), base::Seconds(1),
+                                future1.GetCallback());
+
+  base::test::TestFuture<base::expected<proto::PrivateAiResponse, StatusCode>>
+      future2;
+  proto::PrivateAiRequest request2;
+  request2.set_request_id(102);
+  connection_attestation_->Send(std::move(request2), base::Seconds(1),
+                                future2.GetCallback());
+
+  token_manager_.RunPendingCallbacks();
+  ASSERT_EQ(fake_connection_->pending_requests().size(), 3u);
+
+  auto cb = std::move(fake_connection_->pending_requests()[1].callback);
+  fake_connection_->pending_requests()[1].callback = base::DoNothing();
+  std::move(cb).Run(base::unexpected(StatusCode::kConnectionClosedByServer));
+
+  ASSERT_TRUE(future1.IsReady());
+  EXPECT_EQ(future1.Get().error(),
+            StatusCode::kClientAttestationPresumedRejectedByServer);
+  ASSERT_TRUE(future2.IsReady());
+  EXPECT_EQ(future2.Get().error(),
+            StatusCode::kClientAttestationPresumedRejectedByServer);
+  EXPECT_EQ(on_disconnect_counter_, 1);
+}
+
 TEST_F(ConnectionTokenAttestationTest, NetworkErrorBeforeFirstResponse) {
   CreateConnectionAttestation();
 

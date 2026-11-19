@@ -77,10 +77,12 @@ void ConnectionTokenAttestation::Send(proto::PrivateAiRequest request,
                                       OnRequestCallback callback) {
   if (attestation_state_ == AttestationState::kTokenSent ||
       attestation_state_ == AttestationState::kTokenSuccess) {
+    const int32_t request_id = next_request_id_++;
+    pending_request_callbacks_.emplace(request_id, std::move(callback));
     inner_connection_->Send(
         std::move(request), timeout,
         base::BindOnce(&ConnectionTokenAttestation::OnInnerConnectionResponse,
-                       weak_factory_.GetWeakPtr(), std::move(callback)));
+                       weak_factory_.GetWeakPtr(), request_id));
     return;
   }
 
@@ -163,16 +165,13 @@ void ConnectionTokenAttestation::OnTokenFetched(
 
   auto pending_requests = std::move(pending_requests_);
   for (auto& pending_request : pending_requests) {
-    inner_connection_->Send(
-        std::move(pending_request.request), pending_request.timeout,
-        base::BindOnce(&ConnectionTokenAttestation::OnInnerConnectionResponse,
-                       weak_factory_.GetWeakPtr(),
-                       std::move(pending_request.callback)));
+    Send(std::move(pending_request.request), pending_request.timeout,
+         std::move(pending_request.callback));
   }
 }
 
 void ConnectionTokenAttestation::OnInnerConnectionResponse(
-    OnRequestCallback original_callback,
+    int32_t request_id,
     base::expected<proto::PrivateAiResponse, StatusCode> result) {
   if (attestation_state_ == AttestationState::kTokenSent) {
     if (!result.has_value()) {
@@ -189,12 +188,6 @@ void ConnectionTokenAttestation::OnInnerConnectionResponse(
                                         base::NumberToString(
                                             static_cast<int>(result.error())),
                                         ", assuming token rejection."}));
-        attestation_state_ = AttestationState::kTokenFailed;
-        if (original_callback) {
-          std::move(original_callback)
-              .Run(base::unexpected(
-                  StatusCode::kClientAttestationPresumedRejectedByServer));
-        }
         // The connection is now considered broken due to failed attestation.
         CallOnDisconnect(StatusCode::kClientAttestationFailedConnectionAborted);
         return;
@@ -207,9 +200,13 @@ void ConnectionTokenAttestation::OnInnerConnectionResponse(
     }
   }
 
-  if (original_callback) {
-    std::move(original_callback).Run(std::move(result));
+  auto it = pending_request_callbacks_.find(request_id);
+  if (it == pending_request_callbacks_.end()) {
+    return;
   }
+  auto callback = std::move(it->second);
+  pending_request_callbacks_.erase(it);
+  std::move(callback).Run(std::move(result));
 }
 
 void ConnectionTokenAttestation::OnDestroy(StatusCode status_code) {
@@ -221,6 +218,11 @@ void ConnectionTokenAttestation::OnDestroy(StatusCode status_code) {
     std::move(pending_request.callback).Run(base::unexpected(status_code));
   }
 
+  auto pending_callbacks = std::move(pending_request_callbacks_);
+  for (auto& pending_callback : pending_callbacks) {
+    std::move(pending_callback.second).Run(base::unexpected(status_code));
+  }
+
   inner_connection_->OnDestroy(status_code);
 
   token_manager_ = nullptr;
@@ -229,6 +231,20 @@ void ConnectionTokenAttestation::OnDestroy(StatusCode status_code) {
 }
 
 void ConnectionTokenAttestation::CallOnDisconnect(StatusCode status_code) {
+  attestation_state_ = AttestationState::kTokenFailed;
+
+  auto pending_requests = std::move(pending_requests_);
+  for (auto& pending_request : pending_requests) {
+    std::move(pending_request.callback).Run(base::unexpected(status_code));
+  }
+
+  auto pending_callbacks = std::move(pending_request_callbacks_);
+  for (auto& pending_callback : pending_callbacks) {
+    std::move(pending_callback.second)
+        .Run(base::unexpected(
+            StatusCode::kClientAttestationPresumedRejectedByServer));
+  }
+
   if (on_disconnect_) {
     std::move(on_disconnect_).Run(status_code);
   }
