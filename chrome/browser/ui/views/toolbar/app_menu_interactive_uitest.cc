@@ -21,6 +21,7 @@
 #include "base/time/time.h"
 #include "build/buildflag.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -28,6 +29,8 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/location_bar/location_bar.h"
+#include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/browser/ui/tabs/recent_tabs_builder.h"
 #include "chrome/browser/ui/tabs/recent_tabs_builder_test_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -36,8 +39,8 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_search_bar_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
+#include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
@@ -45,6 +48,8 @@
 #include "components/bookmarks/browser/bookmark_model_observer.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
+#include "components/history/core/test/history_service_test_util.h"
+#include "components/keyed_service/core/service_access_type.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -129,6 +134,24 @@ std::u16string ReadClipboardText() {
 void WriteClipboardText(std::u16string_view text) {
   ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste).WriteText(text);
 }
+
+std::u16string ReadOmniboxText(BrowserWindowInterface* browser) {
+  BrowserView* const browser_view =
+      BrowserView::GetBrowserViewForBrowser(browser);
+  LocationBar* const location_bar =
+      browser_view ? browser_view->GetLocationBar() : nullptr;
+  OmniboxView* const omnibox_view =
+      location_bar ? location_bar->GetOmniboxView() : nullptr;
+  CHECK(omnibox_view);
+  return omnibox_view->GetText();
+}
+
+DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(
+    ui::test::PollingStateObserver<std::u16string>,
+    kClipboardText);
+DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(
+    ui::test::PollingStateObserver<std::u16string>,
+    kOmniboxText);
 
 }  // namespace
 
@@ -380,12 +403,12 @@ IN_PROC_BROWSER_TEST_F(AppMenuSearchInteractiveTest,
   static constexpr char kCopyResult[] = "copy_result";
   WriteClipboardText(u"stale clipboard");
   RunTestSequence(
-      FocusElement(kOmniboxElementId),
-      WithView(kOmniboxElementId,
-               [](OmniboxViewViews* omnibox) {
-                 omnibox->SetUserText(u"omnibox text", /*update_popup=*/false);
-                 omnibox->SelectAll(/*reversed=*/false);
-               }),
+      ActivateSurface(kBrowserViewElementId), Check([this]() {
+        const testing::AssertionResult result =
+            FocusOmniboxAndSelectText(browser(), u"omnibox text");
+        EXPECT_TRUE(result);
+        return static_cast<bool>(result);
+      }),
       MoveMouseTo(kToolbarBackButtonElementId),
       PressButton(kToolbarAppMenuButtonElementId),
       WaitForShow(AppMenuSearchBarView::kSearchFieldElementId),
@@ -411,7 +434,12 @@ IN_PROC_BROWSER_TEST_F(AppMenuSearchInteractiveTest,
           }),
       SelectMenuItem(kCopyResult),
       WaitForHide(AppMenuSearchBarView::kSearchFieldElementId),
-      CheckResult(&ReadClipboardText, u"omnibox text"));
+      // When the omnibox is hosted in WebUI, the renderer writes to the
+      // clipboard asynchronously.
+      PollStateUntil(kClipboardText, base::BindRepeating(&ReadClipboardText),
+                     std::u16string(u"omnibox text")),
+      CheckResult([this]() { return ReadOmniboxText(browser()); },
+                  u"omnibox text"));
 }
 
 // Chooses Cut, Copy and Paste from the "Find and edit" submenu. They act on
@@ -431,10 +459,11 @@ class AppMenuEditCommandInteractiveTest
 
   // Focuses the omnibox with `text` in it, all selected.
   auto SelectOmniboxText(std::u16string text) {
-    return Steps(FocusElement(kOmniboxElementId),
-                 WithView(kOmniboxElementId, [text](OmniboxViewViews* omnibox) {
-                   omnibox->SetUserText(text, /*update_popup=*/false);
-                   omnibox->SelectAll(/*reversed=*/false);
+    return Steps(ActivateSurface(kBrowserViewElementId), Check([this, text]() {
+                   const testing::AssertionResult result =
+                       FocusOmniboxAndSelectText(browser(), text);
+                   EXPECT_TRUE(result);
+                   return static_cast<bool>(result);
                  }));
   }
 
@@ -471,9 +500,13 @@ class AppMenuEditCommandInteractiveTest
 IN_PROC_BROWSER_TEST_P(AppMenuEditCommandInteractiveTest,
                        CopyActsOnOmniboxSelection) {
   WriteClipboardText(u"stale clipboard");
-  RunTestSequence(SelectOmniboxText(u"omnibox text"),
-                  ChooseEditCommand(actions::kActionCopy),
-                  CheckResult(&ReadClipboardText, u"omnibox text"));
+  RunTestSequence(
+      SelectOmniboxText(u"omnibox text"),
+      ChooseEditCommand(actions::kActionCopy),
+      PollStateUntil(kClipboardText, base::BindRepeating(&ReadClipboardText),
+                     std::u16string(u"omnibox text")),
+      CheckResult([this]() { return ReadOmniboxText(browser()); },
+                  u"omnibox text"));
 }
 
 IN_PROC_BROWSER_TEST_P(AppMenuEditCommandInteractiveTest,
@@ -482,25 +515,37 @@ IN_PROC_BROWSER_TEST_P(AppMenuEditCommandInteractiveTest,
   RunTestSequence(
       SelectOmniboxText(u"omnibox text"),
       ChooseEditCommand(actions::kActionCut),
-      CheckResult(&ReadClipboardText, u"omnibox text"),
-      CheckViewProperty(kOmniboxElementId, &views::Textfield::GetText, u""));
+      PollStateUntil(kClipboardText, base::BindRepeating(&ReadClipboardText),
+                     std::u16string(u"omnibox text")),
+      PollStateUntil(kOmniboxText,
+                     base::BindRepeating(&ReadOmniboxText, browser()),
+                     std::u16string()));
 }
 
 IN_PROC_BROWSER_TEST_P(AppMenuEditCommandInteractiveTest,
                        PasteReplacesOmniboxSelection) {
   WriteClipboardText(u"clipboard text");
-  RunTestSequence(SelectOmniboxText(u"omnibox text"),
-                  ChooseEditCommand(actions::kActionPaste),
-                  // The omnibox reads the clipboard asynchronously.
-                  WaitForViewProperty(kOmniboxElementId, views::Textfield, Text,
-                                      u"clipboard text"));
+  RunTestSequence(
+      SelectOmniboxText(u"omnibox text"),
+      ChooseEditCommand(actions::kActionPaste),
+      // The omnibox reads the clipboard asynchronously.
+      PollStateUntil(kOmniboxText,
+                     base::BindRepeating(&ReadOmniboxText, browser()),
+                     std::u16string(u"clipboard text")));
+
+  // Pasting into the Omnibox starts autocomplete, including an asynchronous
+  // HistoryURLProvider query on the history backend. Flush the backend so the
+  // query's reply (HistoryURLProvider::QueryComplete) runs before the test
+  // ends; otherwise it can be dropped at shutdown, leaking its params with a
+  // dangling pointer to the provider (crbug.com/586636894).
+  history::BlockUntilHistoryProcessesPendingRequests(
+      HistoryServiceFactory::GetForProfile(browser()->GetProfile(),
+                                           ServiceAccessType::EXPLICIT_ACCESS));
 }
 
 IN_PROC_BROWSER_TEST_P(AppMenuEditCommandInteractiveTest,
                        CopyActsOnPageSelection) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabId);
-  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(
-      ui::test::PollingStateObserver<std::u16string>, kClipboardText);
   WriteClipboardText(u"stale clipboard");
   RunTestSequence(
       // The omnibox has a selection of its own from before the page took
@@ -516,8 +561,8 @@ IN_PROC_BROWSER_TEST_P(AppMenuEditCommandInteractiveTest,
                 "}"),
       ChooseEditCommand(actions::kActionCopy),
       // The renderer writes to the clipboard asynchronously.
-      PollState(kClipboardText, base::BindRepeating(&ReadClipboardText)),
-      WaitForState(kClipboardText, std::u16string(u"page text")));
+      PollStateUntil(kClipboardText, base::BindRepeating(&ReadClipboardText),
+                     std::u16string(u"page text")));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

@@ -36,7 +36,6 @@
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
-#include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/test/base/chrome_test_path_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -49,8 +48,8 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
-#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
@@ -804,79 +803,6 @@ IN_PROC_BROWSER_TEST_F(BrowserViewDesktopWidgetEnabledTest,
 // focus, which is why they are interactive ui tests.
 #if !BUILDFLAG(IS_MAC)
 namespace {
-
-// Returns whether the WebUI omnibox's input element is focused, holds `text`,
-// and has all of it selected. Also requires the omnibox's asynchronously
-// computed copy text to be up to date, since a copy or cut writes that text
-// to the clipboard rather than the selection.
-bool WebUIOmniboxHasSelectedText(content::WebContents* toolbar_contents,
-                                 const std::u16string& text) {
-  constexpr char kScript[] = R"(
-    (() => {
-      const omnibox = document.querySelector('toolbar-app')
-          ?.shadowRoot?.querySelector('location-bar')
-          ?.shadowRoot?.querySelector('readonly-omnibox');
-      const textInput = omnibox?.shadowRoot?.querySelector('#textInput');
-      const input = textInput?.shadowRoot?.querySelector('#input');
-      return !!input && textInput.shadowRoot.activeElement === input &&
-          input.value === $1 && input.selectionStart === 0 &&
-          input.selectionEnd === $1.length &&
-          omnibox.adjustedCopyResult?.adjustedText === $1;
-    })()
-  )";
-  return content::EvalJs(toolbar_contents, content::JsReplace(kScript, text))
-      .ExtractBool();
-}
-
-// Focuses the Omnibox, sets its text to `text`, and selects all of it. When the
-// Omnibox is hosted in the WebUI toolbar, also waits until the WebUI reflects
-// that state, so that edit commands sent to the toolbar's WebContents act on
-// it.
-[[nodiscard]] testing::AssertionResult FocusOmniboxAndSelectText(
-    BrowserWindowInterface* browser,
-    const std::u16string& text) {
-  LocationBar* location_bar =
-      BrowserView::GetBrowserViewForBrowser(browser)->GetLocationBar();
-  if (!location_bar) {
-    return testing::AssertionFailure() << "No LocationBar.";
-  }
-  OmniboxView* omnibox_view = location_bar->GetOmniboxView();
-  if (!omnibox_view) {
-    return testing::AssertionFailure() << "No OmniboxView.";
-  }
-
-  WaitForInitialWebUIToolbar(browser);
-  // Focus and set the text without starting autocomplete (e.g. zero-suggest or
-  // a query for `text`). If the test ends while a HistoryURLProvider query is
-  // still pending, its params are leaked at shutdown (see the comment on
-  // ~HistoryURLProvider()) with AutocompleteMatch::provider pointing at the
-  // freed provider, which fails the dangling raw_ptr check.
-  location_bar->FocusLocation(/*is_user_initiated=*/false,
-                              /*clear_focus_if_failed=*/false);
-  if (!base::test::RunUntil([&]() { return location_bar->IsFocusWithin(); })) {
-    return testing::AssertionFailure() << "LocationBar never got focus.";
-  }
-
-  omnibox_view->SetUserText(text, /*update_popup=*/false);
-  omnibox_view->SelectAll(/*reversed=*/false);
-  if (!omnibox_view->IsSelectAll() || omnibox_view->GetText() != text) {
-    return testing::AssertionFailure() << "OmniboxView state not updated.";
-  }
-
-  if (features::IsWebUILocationBarEnabled()) {
-    WebUIToolbarWebView* toolbar = GetWebUIToolbarWebView(browser);
-    if (!toolbar || !toolbar->web_contents()) {
-      return testing::AssertionFailure() << "No WebUI toolbar WebContents.";
-    }
-    if (!base::test::RunUntil([&]() {
-          return WebUIOmniboxHasSelectedText(toolbar->web_contents(), text);
-        })) {
-      return testing::AssertionFailure()
-             << "WebUI omnibox never reflected the selected text.";
-    }
-  }
-  return testing::AssertionSuccess();
-}
 
 // Returns the text currently on the copy/paste clipboard.
 std::u16string ReadClipboardText() {

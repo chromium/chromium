@@ -21,6 +21,10 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
+#include "chrome/browser/ui/location_bar/location_bar.h"
+#include "chrome/browser/ui/omnibox/omnibox_controller.h"
+#include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
+#include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/browser/ui/tab_contents/chrome_web_contents_view_handle_drop.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -29,6 +33,7 @@
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button_state_manager.h"
 #include "chrome/browser/ui/views/toolbar/avatar_toolbar_button_interface.h"
+#include "chrome/browser/ui/views/toolbar/test_support/webui_element_test_support.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/toolbar/webui_avatar_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
@@ -127,6 +132,45 @@ constexpr char kClickExtensionButtonScript[] = R"(
   })();
 )";
 
+// Waits until the WebUI omnibox's input element is focused, holds `text`, has
+// all of it selected, and has updated its asynchronously computed copy text to
+// `expected_copy_text`. Polls inside a single async `EvalJs` call so renderer
+// microtasks resolving `adjustedCopyResult` do not depend on browser UI-thread
+// wakeups.
+bool WaitForWebUIOmniboxSelectedText(content::WebContents* toolbar_contents,
+                                     std::u16string_view text,
+                                     std::u16string_view expected_copy_text) {
+  constexpr char kScript[] = R"(
+    (async () => {
+      const deadline = performance.now() + $3;
+      while (performance.now() < deadline) {
+        const omnibox = document.querySelector('toolbar-app')
+            ?.shadowRoot?.querySelector('location-bar')
+            ?.shadowRoot?.querySelector('readonly-omnibox');
+        const textInput = omnibox?.shadowRoot?.querySelector('#textInput');
+        const input = textInput?.shadowRoot?.querySelector('#input');
+        if (document.hasFocus() && !!input &&
+            omnibox.shadowRoot.activeElement === textInput &&
+            textInput.shadowRoot.activeElement === input &&
+            input.value === $1 && input.selectionStart === 0 &&
+            input.selectionEnd === $1.length &&
+            omnibox.adjustedCopyResult?.adjustedText === $2) {
+          return true;
+        }
+        await new Promise(resolve => setTimeout(resolve, 10));
+      }
+      return false;
+    })()
+  )";
+  return content::EvalJs(
+             toolbar_contents,
+             content::JsReplace(
+                 kScript, text, expected_copy_text,
+                 static_cast<int>(
+                     TestTimeouts::action_timeout().InMilliseconds())))
+      .ExtractBool();
+}
+
 }  // namespace
 
 void WaitUntilInitialWebUIPaintAndFlushMetricsForTesting(
@@ -172,6 +216,68 @@ void WaitForInitialWebUIToolbar(BrowserWindowInterface* browser) {
     return;
   }
   run_loop.Run();
+}
+
+::testing::AssertionResult FocusOmniboxAndSelectText(
+    BrowserWindowInterface* browser,
+    std::u16string_view text) {
+  if (text.empty()) {
+    return ::testing::AssertionFailure() << "Omnibox text must be non-empty.";
+  }
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+  if (!browser_view || !browser_view->GetWidget() ||
+      !browser_view->GetWidget()->IsActive()) {
+    return ::testing::AssertionFailure() << "Browser widget is not active.";
+  }
+  LocationBar* location_bar = browser_view->GetLocationBar();
+  if (!location_bar) {
+    return ::testing::AssertionFailure() << "No LocationBar.";
+  }
+  OmniboxView* omnibox_view = location_bar->GetOmniboxView();
+  if (!omnibox_view) {
+    return ::testing::AssertionFailure() << "No OmniboxView.";
+  }
+
+  WaitForInitialWebUIToolbar(browser);
+  // Focus and set the text without starting autocomplete (e.g. zero-suggest or
+  // a query for `text`). If the test ends while a HistoryURLProvider query is
+  // still pending, its params are leaked at shutdown (see the comment on
+  // ~HistoryURLProvider()) with AutocompleteMatch::provider pointing at the
+  // freed provider, which fails the dangling raw_ptr check.
+  location_bar->FocusLocation(/*is_user_initiated=*/false,
+                              /*clear_focus_if_failed=*/false);
+  if (!base::test::RunUntil([&]() { return location_bar->IsFocusWithin(); })) {
+    return ::testing::AssertionFailure() << "LocationBar never got focus.";
+  }
+
+  const std::u16string text_str(text);
+  omnibox_view->SetUserText(text_str, /*update_popup=*/false);
+  omnibox_view->SelectAll(/*reversed=*/false);
+  if (!omnibox_view->IsSelectAll() || omnibox_view->GetText() != text_str) {
+    return ::testing::AssertionFailure() << "OmniboxView state not updated.";
+  }
+
+  if (features::IsWebUILocationBarEnabled()) {
+    if (WebUIToolbarWebView* toolbar = GetWebUIToolbarWebView(browser)) {
+      toolbar->FlushPendingToolbarState();
+    }
+    content::WebContents* toolbar_contents =
+        WebUIElementTestSupport::GetToolbarWebContents(browser);
+    if (!toolbar_contents) {
+      return ::testing::AssertionFailure() << "No WebUI toolbar WebContents.";
+    }
+    std::u16string expected_copy_text = text_str;
+    GURL unused_url;
+    bool unused_write_url = false;
+    location_bar->GetOmniboxController()->edit_model()->AdjustTextForCopy(
+        /*sel_min=*/0, &expected_copy_text, &unused_url, &unused_write_url);
+    if (!WaitForWebUIOmniboxSelectedText(toolbar_contents, text_str,
+                                         expected_copy_text)) {
+      return ::testing::AssertionFailure()
+             << "WebUI omnibox never reflected the selected text.";
+    }
+  }
+  return ::testing::AssertionSuccess();
 }
 
 void SetUpWebUI(const ui::ElementIdentifier& element_id,

@@ -58,6 +58,17 @@ void WaitUntilInitialWebUIPaintAndFlushMetricsForTesting(
 // Waits until the InitialWebUIManager says the toolbar is ready.
 void WaitForInitialWebUIToolbar(BrowserWindowInterface* browser);
 
+// Focuses the inline toolbar Omnibox, sets its text to `text` (must be
+// non-empty), and selects all of it. `browser`'s widget must already be active
+// (e.g. via `BringBrowserWindowToFront()` or
+// `ActivateSurface(kBrowserViewElementId)`). When the Omnibox is hosted in the
+// WebUI toolbar (without full-popup mode), also waits until the WebUI reflects
+// the focused input, selection, and adjusted copy text so edit commands sent to
+// the toolbar's WebContents act on it.
+[[nodiscard]] ::testing::AssertionResult FocusOmniboxAndSelectText(
+    BrowserWindowInterface* browser,
+    std::u16string_view text);
+
 // Sets up the WebUI toolbar for testing by waiting for the toolbar view,
 // resolving the element associated with `element_id`, extracting the child
 // WebView, and waiting for it to finish composition.
