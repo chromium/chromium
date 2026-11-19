@@ -34,8 +34,9 @@ import java.util.Set;
  * AdaptiveUiProperties#BACK_PRESS_HANDLER}) are handled by {@link AdaptiveUiDialogCoordinator};
  * sheet-only keys ({@link AdaptiveUiProperties#SHEET_OPENED_ACCESSIBILITY_STRING_ID}, {@link
  * AdaptiveUiProperties#SHEET_CLOSED_ACCESSIBILITY_STRING_ID}, {@link
- * AdaptiveUiProperties#SHEET_HALF_HEIGHT_RATIO}, and {@link
- * AdaptiveUiProperties#SHEET_FULL_HEIGHT_RATIO}) are ignored by dialogs. {@link
+ * AdaptiveUiProperties#SHEET_HALF_HEIGHT_RATIO}, {@link
+ * AdaptiveUiProperties#SHEET_FULL_HEIGHT_RATIO}, and {@link
+ * AdaptiveUiProperties#SHOW_SHEET_HANDLEBAR}) are ignored by dialogs. {@link
  * AdaptiveUiProperties#DESCRIPTION} is bound here, both at the initial bind and on live updates.
  */
 @NullMarked
@@ -52,6 +53,7 @@ final class AdaptiveUiDialogViewBinder {
                     AdaptiveUiProperties.SHEET_HALF_HEIGHT_RATIO,
                     AdaptiveUiProperties.SHEET_FULL_HEIGHT_RATIO,
                     AdaptiveUiProperties.CLOSE_BUTTON_VISIBILITY,
+                    AdaptiveUiProperties.SHOW_SHEET_HANDLEBAR,
                     AdaptiveUiProperties.CUSTOM_VIEW,
                     AdaptiveUiProperties.CUSTOM_VIEW_SCROLLS_ITSELF,
                     AdaptiveUiProperties.BACK_PRESS_HANDLER,

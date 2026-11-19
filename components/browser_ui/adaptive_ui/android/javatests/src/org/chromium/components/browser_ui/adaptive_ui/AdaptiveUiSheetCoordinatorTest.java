@@ -238,6 +238,7 @@ public class AdaptiveUiSheetCoordinatorTest {
                         AdaptiveUiProperties.SHEET_CLOSED_ACCESSIBILITY_STRING_ID,
                         AdaptiveUiProperties.SHEET_HALF_HEIGHT_RATIO,
                         AdaptiveUiProperties.SHEET_FULL_HEIGHT_RATIO,
+                        AdaptiveUiProperties.SHOW_SHEET_HANDLEBAR,
                         AdaptiveUiProperties.BACK_PRESS_HANDLER,
                         AdaptiveUiProperties.CUSTOM_VIEW_SCROLLS_ITSELF,
                         AdaptiveUiProperties.ON_PRIMARY_BUTTON_CLICKED,
@@ -1558,6 +1559,16 @@ public class AdaptiveUiSheetCoordinatorTest {
         assertNotNull(content.getContentView());
         assertNull(content.getToolbarView());
         assertTrue(content.swipeToDismissEnabled());
+    }
+
+    @Test
+    public void testShowHandlebarReflectsModel() {
+        PropertyModel defaultModel = newModelBuilder().build();
+        assertFalse(createContent(defaultModel).showHandlebar());
+
+        PropertyModel handlebarModel =
+                newModelBuilder().with(AdaptiveUiProperties.SHOW_SHEET_HANDLEBAR, true).build();
+        assertTrue(createContent(handlebarModel).showHandlebar());
     }
 
     @Test

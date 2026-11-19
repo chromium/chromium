@@ -130,6 +130,13 @@ public class AdaptiveUiProperties {
     public static final ReadableIntPropertyKey CLOSE_BUTTON_VISIBILITY =
             new ReadableIntPropertyKey();
 
+    /**
+     * Bottom sheet only: whether the sheet shows a handlebar at the top, such as to keep a
+     * feature's existing sheet unchanged. Dialogs ignore it. Read-only. Defaults to {@code false}.
+     */
+    public static final ReadableBooleanPropertyKey SHOW_SHEET_HANDLEBAR =
+            new ReadableBooleanPropertyKey();
+
     /** Optional footer text displayed at the bottom of the surface. */
     public static final WritableObjectPropertyKey<@Nullable CharSequence> FOOTER_MESSAGE =
             new WritableObjectPropertyKey<>();
@@ -274,6 +281,7 @@ public class AdaptiveUiProperties {
                 SHEET_FULL_HEIGHT_RATIO,
                 DESCRIPTION,
                 CLOSE_BUTTON_VISIBILITY,
+                SHOW_SHEET_HANDLEBAR,
                 FOOTER_MESSAGE,
                 BACK_PRESS_HANDLER,
                 CUSTOM_VIEW,

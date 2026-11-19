@@ -138,6 +138,7 @@ public class AdaptiveUiDialogCoordinatorTest {
                         AdaptiveUiProperties.SHEET_HALF_HEIGHT_RATIO,
                         AdaptiveUiProperties.SHEET_FULL_HEIGHT_RATIO,
                         AdaptiveUiProperties.CLOSE_BUTTON_VISIBILITY,
+                        AdaptiveUiProperties.SHOW_SHEET_HANDLEBAR,
                         AdaptiveUiProperties.CUSTOM_VIEW,
                         AdaptiveUiProperties.CUSTOM_VIEW_SCROLLS_ITSELF,
                         AdaptiveUiProperties.BACK_PRESS_HANDLER,

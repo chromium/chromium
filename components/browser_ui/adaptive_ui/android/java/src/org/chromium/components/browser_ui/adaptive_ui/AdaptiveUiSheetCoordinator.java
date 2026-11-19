@@ -310,6 +310,11 @@ final class AdaptiveUiSheetCoordinator
     }
 
     @Override
+    public boolean showHandlebar() {
+        return mModel.get(AdaptiveUiProperties.SHOW_SHEET_HANDLEBAR);
+    }
+
+    @Override
     public float getHalfHeightRatio() {
         // The BottomSheetController opens the sheet in its lowest enabled state, so enabling the
         // half state makes the sheet open at the half height.
