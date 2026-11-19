@@ -11,6 +11,7 @@ per-file *device_tab_visibility*=file://chrome/browser/resources/settings/people
 per-file *language* , translate_* = file://components/language/OWNERS
 per-file geolocation_page_test.ts=lyf@chromium.org
 per-file notifications_page_test.ts=lyf@chromium.org
+per-file other_google_data_dialog_test.ts=file://chrome/browser/resources/settings/clear_browsing_data_dialog/OWNERS
 per-file people_page_*.ts=file://chrome/browser/resources/settings/people_page/OWNERS
 per-file privacy_guide_*test*.ts=file://chrome/browser/resources/settings/privacy_page/OWNERS
 per-file privacy_page_test.ts=rainhard@chromium.org,sideyilmaz@chromium.org,tommasin@chromium.org
