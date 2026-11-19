@@ -9,168 +9,92 @@
  * #css_wrapper_metadata_end */
 
 :host {
-  display: block;
-  background-color: var(--cr-card-background-color);
-  border-radius: var(--cr-card-border-radius, 16px);
-  border: 1px solid var(--cr-separator-color);
-  box-shadow: none;
-  overflow: hidden;
+  background-color: var(--color-sys-base, var(--cr-card-background-color));
+  border-bottom: 1px solid var(--cr-separator-color);
   container-type: inline-size;
+  display: block;
+  overflow: hidden;
+  transition: background-color 150ms ease;
 }
 
-cr-expand-button {
-  padding: 16px 20px;
-  min-height: 100px;
-  --cr-section-min-height: 100px;
-  box-sizing: border-box;
-  --cr-section-vertical-padding: 0;
-  --cr-expand-button-size: 32px;
-  --cr-expand-button-icon-size: 20px;
+:host(:last-of-type) {
+  border-bottom: none;
 }
 
-cr-expand-button::part(icon) {
-  --cr-icon-button-margin-start: 2px;
-  --cr-icon-button-margin-end: 0;
-  margin-inline-start: 2px;
-  margin-inline-end: 0;
+:host(:hover) {
+  background-color: var(--cr-hover-background-color);
 }
 
 .todo-content {
-  display: flex;
-  justify-content: space-between;
   align-items: center;
+  box-sizing: border-box;
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+  padding: 16px 20px;
   width: 100%;
-  gap: 20px;
 }
 
 .todo-main {
-  display: flex;
   align-items: center;
-  gap: 20px;
+  display: flex;
   flex: 1;
+  gap: 16px;
   min-width: 0;
 }
 
 #check-circle {
+  --cr-icon-button-fill-color: var(--cr-secondary-text-color);
   flex-shrink: 0;
-  margin-inline-start: 0;
-  --cr-icon-button-margin-start: 0;
 }
 
-.mark-active-button {
-  flex-shrink: 0;
-  margin-inline-start: 0;
+#check-circle.completed {
+  --cr-icon-button-fill-color: var(--cr-link-color);
 }
 
 .todo-info {
-  display: flex;
-  flex-direction: column;
   align-items: flex-start;
+  display: flex;
   flex: 1;
+  flex-direction: column;
   min-width: 0;
   overflow-wrap: anywhere;
 }
 
 .todo-info h3 {
-  font-size: 16px;
-  font-weight: 500;
-  line-height: 24px;
-  margin: 0;
   color: var(--cr-primary-text-color);
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 22px;
+  margin: 0;
 }
 
 .description {
-  font-size: 14px;
-  line-height: 20px;
   color: var(--cr-secondary-text-color);
-  margin: 4px 0 0 0;
+  font-size: 13px;
+  line-height: 18px;
+  margin: 2px 0 0 0;
   text-align: start;
   white-space: pre-line;
 }
 
-.todo-actions {
-  display: flex;
+.todo-metadata {
   align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
-}
-
-.split-button {
-  display: inline-flex;
-  align-items: center;
-  border-radius: 100px;
-  height: var(--cr-button-height, 32px);
-}
-
-.split-button cr-button {
-  height: 100%;
-}
-
-.split-button .split-main-button {
-  border-start-start-radius: 100px;
-  border-end-start-radius: 100px;
-  border-start-end-radius: 0;
-  border-end-end-radius: 0;
-  padding-inline-start: 16px;
-  padding-inline-end: 12px;
-}
-
-.split-button .split-dropdown-button {
-  border-start-start-radius: 0;
-  border-end-start-radius: 0;
-  border-start-end-radius: 100px;
-  border-end-end-radius: 100px;
-  border-inline-start: 1px solid var(--cr-card-background-color);
-  min-width: 0;
-  width: 32px;
-  padding-inline-start: 4px;
-  padding-inline-end: 8px;
-  --iron-icon-height: 20px;
-  --iron-icon-width: 20px;
-}
-
-.split-button cr-button:focus-visible {
-  outline-offset: -2px;
-  z-index: 1;
-}
-
-.todo-actions cr-icon-button {
-  --cr-icon-button-margin-start: 0;
-  --cr-icon-button-margin-end: 0;
-  margin-inline-start: 0;
-  margin-inline-end: 0;
-}
-
-.thumb-group {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-}
-
-.expanded-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 20px 16px 20px;
-  border-top: 1px solid var(--cr-separator-color);
-  font-size: 14px;
   color: var(--cr-secondary-text-color);
-  text-align: start;
-  gap: 16px;
-}
-
-.expanded-details {
   display: flex;
-  flex-direction: column;
-  gap: 4px;
-  min-width: 0;
-  flex: 1;
+  flex-wrap: wrap;
+  font-size: 12px;
+  gap: 16px;
+  line-height: 16px;
+  margin-top: 8px;
+  max-width: 100%;
 }
 
 .references-section {
+  align-items: center;
   display: flex;
-  align-items: flex-start;
-  gap: 4px;
+  gap: 6px;
+  max-width: 100%;
   min-width: 0;
 }
 
@@ -179,34 +103,75 @@ cr-expand-button::part(icon) {
 }
 
 .references-list {
+  align-items: center;
   display: flex;
-  flex-direction: column;
-  gap: 2px;
+  flex-wrap: wrap;
+  gap: 8px;
   min-width: 0;
-  flex: 1;
 }
 
 .reference-link {
-  color: var(--cr-link-color);
-  text-decoration: none;
-  white-space: nowrap;
+  color: var(--cr-secondary-text-color);
+  display: inline-block;
+  max-width: min(260px, 100%);
   overflow: hidden;
+  text-decoration: none;
   text-overflow: ellipsis;
-  display: block;
+  white-space: nowrap;
 }
 
 .reference-link:hover {
+  color: var(--cr-link-color);
   text-decoration: underline;
 }
 
-.dismiss-button {
+.score-badge {
+  color: var(--cr-secondary-text-color);
   flex-shrink: 0;
+}
+
+.todo-actions {
+  align-items: center;
+  display: flex;
+  flex-shrink: 0;
+  gap: 8px;
+}
+
+.action-pill-button {
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.run-task-button {
+  border-radius: 50%;
+  min-width: 36px;
+  padding: 0;
+  width: 36px;
+}
+
+.run-task-button cr-icon {
+  --iron-icon-height: 18px;
+  --iron-icon-width: 18px;
+  margin: 0;
+}
+
+#moreButton {
+  --cr-icon-button-fill-color: var(--cr-secondary-text-color);
+  --cr-icon-button-icon-size: 18px;
+  --cr-icon-button-size: 32px;
+  margin-inline-start: -4px;
+}
+
+.thumb-group {
+  align-items: center;
+  display: flex;
+  gap: 2px;
 }
 
 @container (max-width: 520px) {
   .todo-content {
-    flex-direction: column;
     align-items: stretch;
+    flex-direction: column;
     gap: 12px;
   }
 
@@ -215,17 +180,7 @@ cr-expand-button::part(icon) {
   }
 
   .todo-actions {
-    justify-content: flex-end;
     flex-wrap: wrap;
-  }
-
-  .expanded-content {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 12px;
-  }
-
-  .dismiss-button {
-    align-self: flex-end;
+    justify-content: flex-end;
   }
 }

@@ -8,6 +8,7 @@ import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_collapse/cr_collapse.js';
 import '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import '//resources/cr_elements/cr_toggle/cr_toggle.js';
 import '//resources/cr_elements/icons.html.js';
 
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
@@ -54,6 +55,7 @@ export class AiTaskboxElement extends CrLitElement {
   static override get properties() {
     return {
       autoTodosEnabled_: {type: Boolean},
+      feedbackModeEnabled_: {type: Boolean},
       todos: {type: Array},
       completedTodos: {type: Array},
       dismissedTodos: {type: Array},
@@ -73,6 +75,7 @@ export class AiTaskboxElement extends CrLitElement {
   protected accessor feedbacks_: Map<string, boolean> = new Map();
   protected accessor autoTodosEnabled_: boolean =
       loadTimeData.getBoolean('kAutoTodos');
+  protected accessor feedbackModeEnabled_: boolean = true;
 
   protected accessor isGeneratingGmailTodos_: boolean = false;
   protected accessor hasGmailGenerationError_: boolean = false;
@@ -174,6 +177,10 @@ export class AiTaskboxElement extends CrLitElement {
         id => browserProxyFactory.getInstance().callbackRouter.removeListener(
             id));
     this.listenerIds_ = [];
+  }
+
+  protected onFeedbackModeToggleChange_(e: CustomEvent<boolean>) {
+    this.feedbackModeEnabled_ = e.detail;
   }
 
   protected onGeneralFeedbackClick_() {

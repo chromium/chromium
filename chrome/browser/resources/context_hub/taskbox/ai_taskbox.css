@@ -14,27 +14,51 @@
   box-sizing: border-box;
 }
 
+.launchpad-container {
+  margin: 0 auto;
+  max-width: 800px;
+  width: 100%;
+}
+
 .header-section {
-  display: flex;
-  justify-content: space-between;
   align-items: center;
+  display: flex;
   flex-wrap: wrap;
-  gap: 12px;
-  margin-bottom: 24px;
+  gap: 16px;
+  justify-content: space-between;
+  margin-bottom: 28px;
 }
 
 .header-buttons {
-  display: flex;
   align-items: center;
+  display: flex;
   flex-wrap: wrap;
+  gap: 12px;
+}
+
+.feedback-toggle-container {
+  align-items: center;
+  display: flex;
   gap: 8px;
+}
+
+.feedback-toggle-label {
+  color: var(--cr-secondary-text-color);
+  font-size: 13px;
+  font-weight: 500;
+  user-select: none;
 }
 
 h1 {
   color: var(--cr-primary-text-color);
-  font-size: 28px;
+  font-size: 24px;
   font-weight: 600;
+  line-height: 32px;
   margin: 0;
+}
+
+.todo-count {
+  color: var(--cr-link-color);
 }
 
 .todo-column {
@@ -50,7 +74,7 @@ h1 {
   flex-wrap: wrap;
   gap: 8px;
   min-height: 36px;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 
 .refresh-container {
@@ -73,15 +97,19 @@ h1 {
 
 h2 {
   color: var(--cr-primary-text-color);
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 600;
   margin: 0;
 }
 
 .todo-list {
+  background-color: var(--color-sys-base, var(--cr-card-background-color));
+  border: 1px solid var(--cr-separator-color);
+  border-radius: 16px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  overflow: hidden;
 }
 
 .completed-section,
@@ -103,24 +131,21 @@ h2 {
 .completed-expand-button h2,
 .dismissed-expand-button h2 {
   color: var(--cr-primary-text-color);
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 600;
   margin: 0;
 }
 
 .completed-todo-list,
 .dismissed-todo-list {
-  padding-top: 20px;
+  margin-top: 12px;
 }
 
 .placeholder-card {
-  padding: 32px 20px;
-  border-radius: var(--cr-card-border-radius, 16px);
-  border: 1px solid var(--cr-separator-color);
-  box-shadow: none;
-  background-color: var(--cr-card-background-color);
-  text-align: center;
+  background-color: var(--color-sys-base, var(--cr-card-background-color));
   box-sizing: border-box;
+  padding: 32px 20px;
+  text-align: center;
 }
 
 .placeholder-text {

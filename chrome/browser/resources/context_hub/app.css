@@ -47,6 +47,11 @@ aside {
   scrollbar-width: none;
 }
 
+.content-area:has(> ai-taskbox) {
+  background-color: var(
+      --color-sys-surface2, var(--cr-fallback-color-surface2));
+}
+
 .content-area::-webkit-scrollbar {
   display: none;
 }

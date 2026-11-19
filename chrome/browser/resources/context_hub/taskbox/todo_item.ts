@@ -4,14 +4,15 @@
 
 import '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
-import '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/icons.html.js';
+import '../icons.html.js';
 
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {OpenWindowProxyImpl} from '//resources/js/open_window_proxy.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {AutoTodoStatus, browserProxyFactory} from '../context_hub.mojom-webui.js';
@@ -40,6 +41,17 @@ function isWebUrl(url: string): boolean {
   }
 }
 
+interface SourceReferenceItem {
+  label: string;
+  url: string;
+}
+
+export interface TodoItemElement {
+  $: {
+    menu: CrActionMenuElement,
+  };
+}
+
 export class TodoItemElement extends CrLitElement {
   static get is() {
     return 'todo-item';
@@ -62,10 +74,12 @@ export class TodoItemElement extends CrLitElement {
       actionableUrl: {type: String},
       sourceReferences: {type: Array},
       score: {type: Number},
-      expanded_: {type: Boolean},
       liked: {type: Boolean},
+      feedbackMode: {type: Boolean},
       disable_state_mgmt: {type: Boolean},
       canActOnWeb_: {type: Boolean},
+      isRunningTask_: {type: Boolean},
+      references_: {type: Array},
     };
   }
 
@@ -75,16 +89,31 @@ export class TodoItemElement extends CrLitElement {
   accessor status: AutoTodoStatus = AutoTodoStatus.kActive;
   accessor actionableUrl: string = '';
   accessor sourceReferences: SourceReference[] = [];
-  accessor score: number|null = null;
-  protected accessor expanded_: boolean = false;
+  accessor score: number|null|undefined = null;
   accessor liked: boolean|null = null;
+  accessor feedbackMode: boolean = false;
   accessor disable_state_mgmt: boolean = false;
   protected accessor canActOnWeb_: boolean =
       loadTimeData.valueExists('can_act_on_web') &&
       loadTimeData.getBoolean('can_act_on_web');
+  protected accessor isRunningTask_: boolean = false;
+  protected accessor references_: SourceReferenceItem[] = [];
 
-  protected onExpandedChanged_(e: CustomEvent<{value: boolean}>) {
-    this.expanded_ = e.detail.value;
+  private openableReferenceUrls_: string[] = [];
+
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if (changedProperties.has('sourceReferences')) {
+      this.references_ = this.computeReferences_();
+      this.openableReferenceUrls_ = this.references_.map(item => item.url);
+    }
+  }
+
+  protected getCheckCircleIcon_(): string {
+    return this.status === AutoTodoStatus.kCompleted ?
+        'cr:check-circle' :
+        'context-hub:radio-button-unchecked';
   }
 
   protected getThumbsUpIcon_(): string {
@@ -180,25 +209,25 @@ export class TodoItemElement extends CrLitElement {
     await this.updateStatus_(nextStatus);
   }
 
-  protected async onDismissClick_(e: Event) {
+  protected async onDismissButtonClick_(e: Event) {
     e.stopPropagation();
+    this.$.menu.close();
     await this.updateStatus_(AutoTodoStatus.kDismissed);
   }
 
-  protected async onMarkActiveClick_(e: Event) {
+  protected async onMenuMarkActiveButtonClick_(e: Event) {
     e.stopPropagation();
+    this.$.menu.close();
     await this.updateStatus_(AutoTodoStatus.kActive);
   }
 
-  protected onTaskMenuClick_(e: Event) {
+  protected onMoreButtonClick_(e: Event) {
     e.stopPropagation();
-    this.shadowRoot.querySelector<CrActionMenuElement>('#taskMenu')
-        ?.showAt(e.currentTarget as HTMLElement);
+    this.$.menu.showAt(e.currentTarget as HTMLElement);
   }
 
   protected async onOpenTabClick_(e: Event) {
     e.stopPropagation();
-    this.shadowRoot.querySelector<CrActionMenuElement>('#taskMenu')?.close();
     if (this.actionableUrl) {
       window.open(this.actionableUrl, '_blank');
       return;
@@ -206,28 +235,27 @@ export class TodoItemElement extends CrLitElement {
     await this.openReferencesInTabGroup_();
   }
 
-  protected async onRunTaskClick_(e: Event) {
+  protected async onRunTaskButtonClick_(e: Event) {
     e.stopPropagation();
-    this.shadowRoot.querySelector<CrActionMenuElement>('#taskMenu')?.close();
-    const targetUrl =
-        this.actionableUrl || this.getOpenableReferenceUrls_()[0] || '';
-    const taskSummary =
-        [this.heading.trim(), targetUrl].filter(Boolean).join(' ');
-    if (!taskSummary) {
+    const taskSummary = this.getTaskSummary_();
+    if (this.disable_state_mgmt || this.isRunningTask_ || !taskSummary) {
       return;
     }
     const prompt = `${taskSummary} If you need more information ` +
         `to complete your task or if you have any questions, ask.`;
 
+    this.isRunningTask_ = true;
     try {
       await browserProxyFactory.getInstance().handler.runTodoTask(prompt);
     } catch (err) {
       console.error('Failed to run todo task:', err);
+    } finally {
+      this.isRunningTask_ = false;
     }
   }
 
   private async openReferencesInTabGroup_() {
-    const urls = this.getOpenableReferenceUrls_();
+    const urls = this.openableReferenceUrls_;
     if (urls.length === 0) {
       return;
     }
@@ -250,47 +278,41 @@ export class TodoItemElement extends CrLitElement {
     }
   }
 
-  protected getReferences() {
+  private computeReferences_(): SourceReferenceItem[] {
     if (!this.sourceReferences) {
       return [];
     }
-    return this.sourceReferences
-        .map(ref => {
-          if (ref.gmail) {
-            return {
-              label: ref.gmail.subject.trim() || 'Gmail',
-              url: ref.gmail.messageUrl,
-            };
-          }
-          if (ref.chromeHistoryEntry) {
-            return {
-              label: ref.chromeHistoryEntry.title.trim() ||
-                  ref.chromeHistoryEntry.url,
-              url: ref.chromeHistoryEntry.url,
-            };
-          }
-          return null;
-        })
-        .filter((ref): ref is {label: string, url: string} => ref !== null);
+    const references: SourceReferenceItem[] = [];
+    for (const item of this.sourceReferences) {
+      let label = '';
+      let url = '';
+      if (item.gmail) {
+        url = item.gmail.messageUrl;
+        label = item.gmail.subject.trim() || 'Gmail';
+      } else if (item.chromeHistoryEntry) {
+        url = item.chromeHistoryEntry.url;
+        label = item.chromeHistoryEntry.title.trim() || url;
+      }
+      if (isWebUrl(url)) {
+        references.push({label, url});
+      }
+    }
+    return references;
   }
 
-  private getOpenableReferenceUrls_(): string[] {
-    return this.getReferences()
-        .map(ref => ref.url)
-        .filter(url => isWebUrl(url));
+  private getTaskSummary_(): string {
+    const targetUrl =
+        this.actionableUrl || this.openableReferenceUrls_[0] || '';
+    return [this.heading.trim(), targetUrl].filter(Boolean).join(' ');
   }
 
-  private hasOpenableReferences_(): boolean {
-    return this.getOpenableReferenceUrls_().length > 0;
+  protected canRunTask_(): boolean {
+    return Boolean(this.getTaskSummary_());
   }
 
   protected canOpenTab_(): boolean {
-    return Boolean(this.actionableUrl) || this.hasOpenableReferences_();
-  }
-
-  protected onActionsClick_(e: Event) {
-    // Prevent clicking actions from toggling the expand button.
-    e.stopPropagation();
+    return Boolean(this.actionableUrl) ||
+        this.openableReferenceUrls_.length > 0;
   }
 }
 
