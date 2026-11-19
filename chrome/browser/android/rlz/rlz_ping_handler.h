@@ -12,8 +12,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 
-class Profile;
-
 namespace network {
 class SimpleURLLoader;
 class SharedURLLoaderFactory;
@@ -25,7 +23,7 @@ namespace android {
 // JNI bridge for   RlzPingHandler.java
 class RlzPingHandler {
  public:
-  explicit RlzPingHandler(Profile* profile);
+  RlzPingHandler();
 
   RlzPingHandler(const RlzPingHandler&) = delete;
   RlzPingHandler& operator=(const RlzPingHandler&) = delete;

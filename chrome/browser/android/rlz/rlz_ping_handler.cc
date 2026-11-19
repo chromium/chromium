@@ -10,11 +10,10 @@
 
 #include "base/android/callback_android.h"
 #include "base/android/jni_string.h"
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/strings/stringprintf.h"
-#include "chrome/browser/profiles/profile.h"
-#include "content/public/browser/browser_context.h"
-#include "content/public/browser/storage_partition.h"
+#include "chrome/browser/browser_process.h"
 #include "net/base/load_flags.h"
 #include "net/base/url_util.h"
 #include "net/http/http_response_headers.h"
@@ -40,10 +39,9 @@ const char kProtocolCgiVariable[] = "rep";
 namespace chrome {
 namespace android {
 
-RlzPingHandler::RlzPingHandler(Profile* profile) {
-  CHECK(profile, base::NotFatalUntil::M161);
-  url_loader_factory_ = profile->GetDefaultStoragePartition()
-                            ->GetURLLoaderFactoryForBrowserProcess();
+RlzPingHandler::RlzPingHandler()
+    : url_loader_factory_(g_browser_process->shared_url_loader_factory()) {
+  CHECK(url_loader_factory_);
 }
 
 RlzPingHandler::~RlzPingHandler() = default;
@@ -148,13 +146,12 @@ void RlzPingHandler::OnSimpleLoaderComplete(
 }
 
 static void JNI_RlzPingHandler_StartPing(
-    Profile* profile,
     const std::string& brand,
     const std::string& language,
     const std::string& events,
     const std::string& id,
     base::OnceCallback<void(bool)> callback) {
-  RlzPingHandler* handler = new RlzPingHandler(profile);
+  RlzPingHandler* handler = new RlzPingHandler();
   handler->Ping(brand, language, events, id, std::move(callback));
 }
 
