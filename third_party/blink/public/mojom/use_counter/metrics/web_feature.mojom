@@ -5500,6 +5500,7 @@ enum WebFeature {
   // (see also kPerformanceTimeline = 2429):
   kPerformanceGetEntriesWithoutType = 6150,
   kPerformanceGetEntriesWithType = 6151,
+  kAudioWorkletGlobalScopePerformance = 6152,
 
   // Add new features immediately above this line. Don't change the existing
   // numbers of any item, and don't reuse removed slots. Also don't add extra

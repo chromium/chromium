@@ -6937,6 +6937,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="6149" label="ScrollTimingObserved"/>
   <int value="6150" label="PerformanceGetEntriesWithoutType"/>
   <int value="6151" label="PerformanceGetEntriesWithType"/>
+  <int value="6152" label="AudioWorkletGlobalScopePerformance"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
