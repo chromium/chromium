@@ -732,16 +732,6 @@ mojom("url_loader_base") {
     {
       types = [
         {
-          mojom = "network.mojom.CacheStorageSideDataWriterTag"
-          cpp = "::network::CacheStorageSideDataWriterTag"
-        },
-      ]
-      traits_headers = [ "//services/network/public/cpp/cache_storage_side_data_writer_mojom_traits.h" ]
-      traits_public_deps = [ "//services/network/public/cpp:cache_storage_side_data_writer_mojom_traits" ]
-    },
-    {
-      types = [
-        {
           mojom = "network.mojom.RequestPriority"
           cpp = "::net::RequestPriority"
         },
@@ -953,6 +943,16 @@ mojom("url_loader_base") {
   ]
 
   cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "network.mojom.CacheStorageSideDataWriterTag"
+          cpp = "::network::CacheStorageSideDataWriterTag"
+        },
+      ]
+      traits_headers = [ "//services/network/public/cpp/cache_storage_side_data_writer_mojom_traits.h" ]
+      traits_public_deps = [ "//services/network/public/cpp:cache_storage_side_data_writer_mojom_traits" ]
+    },
     {
       types = [
         {

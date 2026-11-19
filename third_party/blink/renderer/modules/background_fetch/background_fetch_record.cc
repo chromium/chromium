@@ -76,28 +76,19 @@ void BackgroundFetchRecord::UpdateState(
 }
 
 void BackgroundFetchRecord::SetResponseAndUpdateState(
-    mojom::blink::FetchAPIResponsePtr& response) {
+    mojom::blink::FetchAPIResponse& response) {
   DCHECK(record_state_ == State::kPending);
-  DCHECK(!response.is_null());
 
   if (!script_state_->ContextIsValid())
     return;
   record_state_ = State::kSettled;
 
   ScriptState::Scope scope(script_state_);
-  ResolveResponseReadyProperty(Response::Create(script_state_, *response));
+  ResolveResponseReadyProperty(Response::Create(script_state_, response));
 }
 
 bool BackgroundFetchRecord::IsRecordPending() {
   return record_state_ == State::kPending;
-}
-
-void BackgroundFetchRecord::OnRequestCompleted(
-    mojom::blink::FetchAPIResponsePtr response) {
-  if (!response.is_null())
-    SetResponseAndUpdateState(response);
-  else
-    UpdateState(State::kSettled);
 }
 
 const KURL& BackgroundFetchRecord::ObservedUrl() const {

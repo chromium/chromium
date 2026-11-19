@@ -401,16 +401,6 @@ mojom("mojom_platform") {
     {
       types = [
         {
-          mojom = "blink.mojom.FetchCacheStorageSideDataWriterTag"
-          cpp = "::network::CacheStorageSideDataWriterTag"
-        },
-      ]
-      traits_headers = [ "//services/network/public/cpp/cache_storage_side_data_writer_mojom_traits.h" ]
-      traits_public_deps = [ "//services/network/public/cpp:cache_storage_side_data_writer_mojom_traits" ]
-    },
-    {
-      types = [
-        {
           mojom = "blink.mojom.AllowedDragOperations"
           cpp = "::blink::DragOperationsMask"
           copyable_pass_by_value = true

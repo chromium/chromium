@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_BACKGROUND_FETCH_BACKGROUND_FETCH_RECORD_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_BACKGROUND_FETCH_BACKGROUND_FETCH_RECORD_H_
 
-#include "third_party/blink/public/mojom/background_fetch/background_fetch.mojom-blink.h"
+#include "third_party/blink/public/mojom/fetch/fetch_api_response.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_property.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -14,6 +14,7 @@
 
 namespace blink {
 
+class KURL;
 class Request;
 class Response;
 class ScriptState;
@@ -43,13 +44,11 @@ class MODULES_EXPORT BackgroundFetchRecord final : public ScriptWrappable {
 
   // Resolve the responseReady promise with |response|, and update
   // |record_state_|. Must be called when |record_state_| is kPending.
-  // Must not be called with a null response;
-  void SetResponseAndUpdateState(mojom::blink::FetchAPIResponsePtr& response);
+  void SetResponseAndUpdateState(mojom::blink::FetchAPIResponse& response);
 
   bool IsRecordPending();
   void Trace(Visitor* visitor) const override;
 
-  void OnRequestCompleted(mojom::blink::FetchAPIResponsePtr response);
   const KURL& ObservedUrl() const;
 
  private:

@@ -93,7 +93,11 @@ void BackgroundFetchRegistration::OnRequestCompleted(
   HeapVector<Member<BackgroundFetchRecord>> remaining_observers;
   for (auto& observer : observers_) {
     if (observer->ObservedUrl() == request->url) {
-      observer->OnRequestCompleted(response->Clone());
+      if (response) {
+        observer->SetResponseAndUpdateState(*response);
+      } else {
+        observer->UpdateState(BackgroundFetchRecord::State::kSettled);
+      }
     } else {
       remaining_observers.push_back(observer);
     }
@@ -292,7 +296,7 @@ void BackgroundFetchRegistration::UpdateRecord(
   // Per the spec, resolve with a valid response, if there is one available,
   // even if the fetch has been aborted.
   if (!response.is_null()) {
-    record->SetResponseAndUpdateState(response);
+    record->SetResponseAndUpdateState(*response);
     return;
   }
 
