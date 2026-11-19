@@ -33,12 +33,6 @@ BASE_FEATURE(kLoadingOnlyLearnHighPriorityResources,
 // the redirect target of the navigation.
 BASE_FEATURE(kLoadingPreconnectToRedirectTarget,
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Modifies loading predictor so that the value of the |always_access_network|
-// attribute is not used when computing the predicting score for an origin.
-BASE_FEATURE(kLoadingPredictorDisregardAlwaysAccessesNetwork,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Modifies loading predictor so that it can also use predictions coming from
 // the optimization guide.
 BASE_FEATURE(kLoadingPredictorUseOptimizationGuide,

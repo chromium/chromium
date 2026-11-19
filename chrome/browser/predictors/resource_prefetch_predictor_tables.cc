@@ -12,7 +12,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/predictors/lcp_critical_path_predictor/lcp_critical_path_predictor_util.h"
-#include "chrome/browser/predictors/predictors_features.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
 
@@ -108,10 +107,7 @@ float ResourcePrefetchPredictorTables::ComputeOriginScore(
   bool is_high_confidence = confidence > .75 && origin.number_of_hits() > 10;
   score += is_high_confidence * 1e6;
 
-  if (!base::FeatureList::IsEnabled(
-          features::kLoadingPredictorDisregardAlwaysAccessesNetwork)) {
-    score += origin.always_access_network() * 1e4;
-  }
+  score += origin.always_access_network() * 1e4;
 
   score += origin.accessed_network() * 1e2;
   score += 1e2 - origin.average_position();
