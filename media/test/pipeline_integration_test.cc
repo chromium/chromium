@@ -572,9 +572,15 @@ constexpr AudioPlaybackTestData kAudioPlaybackTests[] = {
     {"synth-bad.mp3", nullptr},
     {"sfx-flac.mp4", kSfxLosslessHash},
     {"sfx.flac", kSfxLosslessHash},
+    {"sfx_s16le.wav", kSfxLosslessHash},
+    {"sfx_s24le.wav", kSfxLosslessHash},
     {"sfx_s32le.wav", kSfxLosslessHash},
     {"sfx_f32le.wav", kSfxLosslessHash},
+    {"sfx_u8.wav", nullptr},
     {"bear-320x240-audio-only.webm", kBear320x240AudioHash},
+    {"sfx.ogg", nullptr},
+    {"sfx-opus.ogg", nullptr},
+    {"bear-opus.webm", nullptr},
 };
 
 class AudioPlaybackTest : public PipelineIntegrationTest,
@@ -623,6 +629,43 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Combine(testing::ValuesIn(kAudioBackends),
                      testing::ValuesIn(kAudioPlaybackTests)),
     &AudioPlaybackTestName);
+
+class AudioSeekTest : public PipelineIntegrationTest,
+                      public testing::WithParamInterface<AudioBackend> {
+ public:
+  AudioSeekTest() { ConfigureAudioBackend(GetParam(), scoped_feature_list_); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Seeks forward while playing, plays to the end, then seeks back and plays to
+// the end again.
+TEST_P(AudioSeekTest, SeekWhilePlaying) {
+  ASSERT_EQ(PIPELINE_OK, Start("bear-opus.ogg", kNoClockless));
+  EXPECT_EQ(demuxer_->GetDemuxerType(), ExpectedDemuxerType(GetParam()));
+  const base::TimeDelta duration = pipeline_->GetMediaDuration();
+  const base::TimeDelta start_seek_time = duration / 4;
+  const base::TimeDelta seek_time = duration * 3 / 4;
+
+  Play();
+  ASSERT_TRUE(WaitUntilCurrentTimeIsAfter(start_seek_time));
+  ASSERT_TRUE(Seek(seek_time));
+  EXPECT_GE(pipeline_->GetMediaTime(), seek_time);
+  ASSERT_TRUE(WaitUntilOnEnded());
+
+  ASSERT_TRUE(Seek(start_seek_time));
+  EXPECT_GE(pipeline_->GetMediaTime(), start_seek_time);
+  Play();
+  ASSERT_TRUE(WaitUntilOnEnded());
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         AudioSeekTest,
+                         testing::ValuesIn(kAudioBackends),
+                         [](const testing::TestParamInfo<AudioBackend>& info) {
+                           return std::string(AudioBackendName(info.param));
+                         });
 
 struct MSEChangeTypeTestData {
   const MSEPlaybackTestData file_one;
