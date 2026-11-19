@@ -146,7 +146,7 @@
 - (void)presentScreen:(ScreenType)type {
   // If there are no screens remaining, call delegate to stop presenting
   // screens.
-  if (type == kStepsCompleted) {
+  if (type == ScreenType::kStepsCompleted) {
     [self finishPresentingScreens];
     return;
   }
@@ -156,6 +156,7 @@
 
 // Creates a screen coordinator according to `type`.
 - (ChromeCoordinator*)createChildCoordinatorWithScreenType:(ScreenType)type {
+  using enum ScreenType;
   switch (type) {
     case kSignIn: {
       FullscreenSigninScreenCoordinator* coordinator =

@@ -9,7 +9,7 @@
 // Values are persisted in `prefs::kFirstRunDeferredScreens`; entries should not
 // be renumbered and numeric values should never be reused.
 // TODO(crbug.com/422216784): Rename to include post first-run actions.
-typedef NS_ENUM(NSInteger, ScreenType) {
+enum class ScreenType {
   kSignIn = 0,
   kHistorySync = 1,
   kDefaultBrowserPromo = 2,

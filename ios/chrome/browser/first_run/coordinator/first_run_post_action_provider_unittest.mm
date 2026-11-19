@@ -53,7 +53,7 @@ TEST_F(FirstRunPostActionProviderTest, SkipScreensForGeminiPromo) {
                 localState:local_state_.get()];
 
   ScreenType type = [provider nextScreenType];
-  EXPECT_EQ(type, kStepsCompleted);
+  EXPECT_EQ(type, ScreenType::kStepsCompleted);
 }
 
 // Tests that Safari Import is skipped if the Guided Tour has started.
@@ -68,8 +68,8 @@ TEST_F(FirstRunPostActionProviderTest, SkipSafariImportIfTourStarted) {
   // Advance to Guided Tour.
   BOOL foundGuidedTour = NO;
   ScreenType type = [provider nextScreenType];
-  while (type != kStepsCompleted) {
-    if (type == kGuidedTour) {
+  while (type != ScreenType::kStepsCompleted) {
+    if (type == ScreenType::kGuidedTour) {
       foundGuidedTour = YES;
       break;
     }
@@ -81,10 +81,10 @@ TEST_F(FirstRunPostActionProviderTest, SkipSafariImportIfTourStarted) {
   // Mark tour as started.
   [provider setGuidedTourStarted:YES];
 
-  // The next screen should NOT be kSafariImport.
+  // The next screen should NOT be `kSafariImport`.
   type = [provider nextScreenType];
-  EXPECT_NE(type, kSafariImport);
-  EXPECT_EQ(type, kStepsCompleted);
+  EXPECT_NE(type, ScreenType::kSafariImport);
+  EXPECT_EQ(type, ScreenType::kStepsCompleted);
 }
 
 // Tests that Safari Import is NOT skipped if the Guided Tour has NOT started.
@@ -102,8 +102,8 @@ TEST_F(FirstRunPostActionProviderTest, ShowSafariImportIfTourNotStarted) {
 
   BOOL foundGuidedTour = NO;
   ScreenType type = [provider nextScreenType];
-  while (type != kStepsCompleted) {
-    if (type == kGuidedTour) {
+  while (type != ScreenType::kStepsCompleted) {
+    if (type == ScreenType::kGuidedTour) {
       foundGuidedTour = YES;
       break;
     }
@@ -115,9 +115,9 @@ TEST_F(FirstRunPostActionProviderTest, ShowSafariImportIfTourNotStarted) {
   // Do NOT mark tour as started.
   [provider setGuidedTourStarted:NO];
 
-  // The next screen should be kSafariImport.
+  // The next screen should be `kSafariImport`.
   type = [provider nextScreenType];
-  EXPECT_EQ(type, kSafariImport);
+  EXPECT_EQ(type, ScreenType::kSafariImport);
 }
 
 // Tests that post-First Run actions are skipped when `kFREAblation` is in the
@@ -131,7 +131,7 @@ TEST_F(FirstRunPostActionProviderTest,
       {kBestOfAppFRE});
 
   base::ListValue deferred_screens;
-  deferred_screens.Append(static_cast<int>(kDefaultBrowserPromo));
+  deferred_screens.Append(static_cast<int>(ScreenType::kDefaultBrowserPromo));
   local_state_->SetList(prefs::kFirstRunDeferredScreens,
                         std::move(deferred_screens));
 
@@ -139,7 +139,7 @@ TEST_F(FirstRunPostActionProviderTest,
       initWithProfilePrefs:pref_service_.get()
                 localState:local_state_.get()];
 
-  EXPECT_EQ([provider nextScreenType], kStepsCompleted);
+  EXPECT_EQ([provider nextScreenType], ScreenType::kStepsCompleted);
 }
 
 // Tests that post-First Run actions are still returned when `kFREAblation` is
@@ -152,7 +152,7 @@ TEST_F(FirstRunPostActionProviderTest, KeepPostActionsForSkipHistorySync) {
       {kBestOfAppFRE});
 
   base::ListValue deferred_screens;
-  deferred_screens.Append(static_cast<int>(kHistorySync));
+  deferred_screens.Append(static_cast<int>(ScreenType::kHistorySync));
   local_state_->SetList(prefs::kFirstRunDeferredScreens,
                         std::move(deferred_screens));
 
@@ -160,7 +160,7 @@ TEST_F(FirstRunPostActionProviderTest, KeepPostActionsForSkipHistorySync) {
       initWithProfilePrefs:pref_service_.get()
                 localState:local_state_.get()];
 
-  EXPECT_EQ([provider nextScreenType], kSyncedSetUp);
+  EXPECT_EQ([provider nextScreenType], ScreenType::kSyncedSetUp);
 }
 
 // Tests that post-First Run actions are kept and `kFREAblation` is not
@@ -181,5 +181,5 @@ TEST_F(FirstRunPostActionProviderTest,
                 localState:local_state_.get()];
 
   EXPECT_FALSE(base::FieldTrialList::IsTrialActive(trial->trial_name()));
-  EXPECT_EQ([provider nextScreenType], kSyncedSetUp);
+  EXPECT_EQ([provider nextScreenType], ScreenType::kSyncedSetUp);
 }

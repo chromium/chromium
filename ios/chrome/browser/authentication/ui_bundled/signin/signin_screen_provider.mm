@@ -10,10 +10,8 @@
 @implementation SigninScreenProvider
 
 - (instancetype)init {
-  NSMutableArray* screens = [NSMutableArray array];
-  [screens addObject:@(kSignIn)];
-  [screens addObject:@(kStepsCompleted)];
-  return [super initWithScreens:screens];
+  return [super
+      initWithScreens:{ScreenType::kSignIn, ScreenType::kStepsCompleted}];
 }
 
 @end

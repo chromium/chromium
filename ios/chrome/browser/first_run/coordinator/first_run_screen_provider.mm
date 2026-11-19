@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/first_run/coordinator/first_run_screen_provider.h"
 
 #import <utility>
+#import <vector>
 
 #import "base/notreached.h"
 #import "base/values.h"
@@ -30,6 +31,7 @@ namespace {
 bool ShouldSkipAndDeferScreen(
     ScreenType screen_type,
     first_run::FREAblationVariationType ablation_type) {
+  using enum ScreenType;
   switch (ablation_type) {
     case first_run::FREAblationVariationType::kSkipHistorySync:
       return screen_type == kHistorySync;
@@ -55,26 +57,25 @@ bool ShouldSkipAndDeferScreen(
 
 // Filters `screens` according to the active `kFREAblation` variation and
 // persists skipped screens in sequence order to `kFirstRunDeferredScreens`.
-void ApplyFREAblationIfNeeded(NSMutableArray<NSNumber*>* screens) {
+void ApplyFREAblationIfNeeded(std::vector<ScreenType>& screens) {
   if (!first_run::IsFREAblationEnabled()) {
     return;
   }
   first_run::FREAblationVariationType ablation_type =
       first_run::GetFREAblationVariationType();
 
-  NSMutableArray<NSNumber*>* remaining_screens = [NSMutableArray array];
+  std::vector<ScreenType> remaining_screens;
+  remaining_screens.reserve(screens.size());
   base::ListValue deferred_screens;
-  for (NSNumber* screen_number in screens) {
-    ScreenType screen_type =
-        static_cast<ScreenType>(screen_number.integerValue);
+  for (ScreenType screen_type : screens) {
     if (ShouldSkipAndDeferScreen(screen_type, ablation_type)) {
       deferred_screens.Append(static_cast<int>(screen_type));
     } else {
-      [remaining_screens addObject:screen_number];
+      remaining_screens.push_back(screen_type);
     }
   }
 
-  [screens setArray:remaining_screens];
+  screens = std::move(remaining_screens);
   PrefService* local_state = GetApplicationContext()->GetLocalState();
   if (local_state) {
     local_state->SetList(prefs::kFirstRunDeferredScreens,
@@ -86,7 +87,7 @@ void ApplyFREAblationIfNeeded(NSMutableArray<NSNumber*>* screens) {
 
 // Helper function to add the Best Features, Default Browser Promo, and Address
 // Bar screens when kUpdatedFirstRunSequence is disabled.
-void AddDBPromoAndBestFeaturesScreens(NSMutableArray* screens) {
+void AddDBPromoAndBestFeaturesScreens(std::vector<ScreenType>& screens) {
   using enum first_run::BestFeaturesScreenVariationType;
   first_run::BestFeaturesScreenVariationType bestFeaturesType =
       first_run::GetBestFeaturesScreenVariationType();
@@ -95,26 +96,26 @@ void AddDBPromoAndBestFeaturesScreens(NSMutableArray* screens) {
     case kGeneralScreenWithPasswordItemAfterDBPromo:
     case kShoppingUsersWithFallbackAfterDBPromo:
     case kSignedInUsersOnlyAfterDBPromo:
-      [screens addObject:@(kDefaultBrowserPromo)];
-      [screens addObject:@(kBestFeatures)];
+      screens.push_back(ScreenType::kDefaultBrowserPromo);
+      screens.push_back(ScreenType::kBestFeatures);
       break;
     case kGeneralScreenBeforeDBPromo:
-      [screens addObject:@(kBestFeatures)];
-      [screens addObject:@(kDefaultBrowserPromo)];
+      screens.push_back(ScreenType::kBestFeatures);
+      screens.push_back(ScreenType::kDefaultBrowserPromo);
       break;
     case kAddressBarPromoInsteadOfBestFeaturesScreen:
       // TODO(crbug.com/402429544): Add address bar promo screen.
-      [screens addObject:@(kDefaultBrowserPromo)];
+      screens.push_back(ScreenType::kDefaultBrowserPromo);
       break;
     case kDisabled:
     case kBestOfApp:
-      [screens addObject:@(kDefaultBrowserPromo)];
+      screens.push_back(ScreenType::kDefaultBrowserPromo);
       break;
   }
 }
 
-NSArray* FirstRunScreenSequenceForProfile(ProfileIOS* profile) {
-  NSMutableArray<NSNumber*>* screens = [NSMutableArray array];
+std::vector<ScreenType> FirstRunScreenSequenceForProfile(ProfileIOS* profile) {
+  std::vector<ScreenType> screens;
 
   // Clear any stale deferred screens from an interrupted First Run attempt
   // without querying `base::FeatureList`.
@@ -137,43 +138,43 @@ NSArray* FirstRunScreenSequenceForProfile(ProfileIOS* profile) {
 
   switch (variationType) {
     case first_run::UpdatedFRESequenceVariationType::kDisabled:
-      [screens addObject:@(kSignIn)];
-      [screens addObject:@(kHistorySync)];
+      screens.push_back(ScreenType::kSignIn);
+      screens.push_back(ScreenType::kHistorySync);
       if (shouldDisplayChoiceScreen) {
-        [screens addObject:@(kChoice)];
+        screens.push_back(ScreenType::kChoice);
       }
       // Only add best features screen if feature
       // kUpdatedFirstRunSequence is disabled for now.
       AddDBPromoAndBestFeaturesScreens(screens);
       break;
     case first_run::UpdatedFRESequenceVariationType::kDBPromoFirst:
-      [screens addObject:@(kDefaultBrowserPromo)];
-      [screens addObject:@(kSignIn)];
-      [screens addObject:@(kHistorySync)];
+      screens.push_back(ScreenType::kDefaultBrowserPromo);
+      screens.push_back(ScreenType::kSignIn);
+      screens.push_back(ScreenType::kHistorySync);
       break;
     case first_run::UpdatedFRESequenceVariationType::kRemoveSignInSync:
       if (hasIdentities) {
-        [screens addObject:@(kSignIn)];
-        [screens addObject:@(kHistorySync)];
+        screens.push_back(ScreenType::kSignIn);
+        screens.push_back(ScreenType::kHistorySync);
       }
-      [screens addObject:@(kDefaultBrowserPromo)];
+      screens.push_back(ScreenType::kDefaultBrowserPromo);
       break;
     case first_run::UpdatedFRESequenceVariationType::
         kDBPromoFirstAndRemoveSignInSync:
-      [screens addObject:@(kDefaultBrowserPromo)];
+      screens.push_back(ScreenType::kDefaultBrowserPromo);
       if (hasIdentities) {
-        [screens addObject:@(kSignIn)];
-        [screens addObject:@(kHistorySync)];
+        screens.push_back(ScreenType::kSignIn);
+        screens.push_back(ScreenType::kHistorySync);
       }
       break;
   }
 
   if (IsBestOfAppLensInteractivePromoEnabled()) {
-    [screens addObject:@(kLensInteractivePromo)];
+    screens.push_back(ScreenType::kLensInteractivePromo);
   } else if (IsBestOfAppLensAnimatedPromoEnabled()) {
-    [screens addObject:@(kLensAnimatedPromo)];
+    screens.push_back(ScreenType::kLensAnimatedPromo);
   } else if (IsBestOfAppBestFeaturesEnabled()) {
-    [screens addObject:@(kBestFeatures)];
+    screens.push_back(ScreenType::kBestFeatures);
   }
 
   // Only evaluate `kFREAblation` when the device has at least one identity so
@@ -183,7 +184,7 @@ NSArray* FirstRunScreenSequenceForProfile(ProfileIOS* profile) {
     ApplyFREAblationIfNeeded(screens);
   }
 
-  [screens addObject:@(kStepsCompleted)];
+  screens.push_back(ScreenType::kStepsCompleted);
   return screens;
 }
 

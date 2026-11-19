@@ -15,8 +15,8 @@
 
 - (instancetype)init NS_UNAVAILABLE;
 
-// Returns the screen type of next screen. This method should stopped being
-// called when the screen type is kStepsCompleted.
+// Returns the screen type of next screen. This method should stop being
+// called when the screen type is `ScreenType::kStepsCompleted`.
 - (ScreenType)nextScreenType;
 
 @end

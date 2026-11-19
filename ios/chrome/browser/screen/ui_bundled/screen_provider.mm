@@ -4,36 +4,28 @@
 
 #import "ios/chrome/browser/screen/ui_bundled/screen_provider.h"
 
-#import "base/check.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
+#import <cstddef>
+#import <utility>
+#import <vector>
 
-@interface ScreenProvider ()
-
-// Index in the array of screens currently shown.
-@property(nonatomic, assign) NSInteger index;
-
-// Array of screens to display to the user.
-@property(nonatomic, strong) NSArray* screens;
-
-@end
-
-@implementation ScreenProvider
+@implementation ScreenProvider {
+  size_t _index;
+  std::vector<ScreenType> _screens;
+}
 
 - (ScreenType)nextScreenType {
-  DCHECK(self.screens);
-  if (self.index + 1 >= static_cast<NSInteger>(self.screens.count)) {
-    return kStepsCompleted;
+  if (_index >= _screens.size()) {
+    return ScreenType::kStepsCompleted;
   }
-  return static_cast<ScreenType>([self.screens[++self.index] integerValue]);
+  return _screens[_index++];
 }
 
 #pragma mark - Private
 
-- (instancetype)initWithScreens:(NSArray*)screens {
+- (instancetype)initWithScreens:(std::vector<ScreenType>)screens {
   self = [super init];
   if (self) {
-    _screens = screens;
-    _index = -1;
+    _screens = std::move(screens);
   }
   return self;
 }

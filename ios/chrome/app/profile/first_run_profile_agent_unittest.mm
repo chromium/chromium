@@ -245,7 +245,7 @@ TEST_F(FirstRunProfileAgentTest,
       {});
 
   base::ListValue deferred_screens;
-  deferred_screens.Append(static_cast<int>(kDefaultBrowserPromo));
+  deferred_screens.Append(static_cast<int>(ScreenType::kDefaultBrowserPromo));
   GetApplicationContext()->GetLocalState()->SetList(
       prefs::kFirstRunDeferredScreens, std::move(deferred_screens));
 

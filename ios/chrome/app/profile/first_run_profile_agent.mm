@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/safari_data_import/public/safari_data_import_entry_point.h"
 #import "ios/chrome/browser/safari_data_import/public/safari_data_import_ui_handler.h"
 #import "ios/chrome/browser/scoped_ui_blocker/ui_bundled/scoped_ui_blocker.h"
+#import "ios/chrome/browser/screen/ui_bundled/screen_type.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_observer.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -258,6 +259,7 @@
         [[FirstRunPostActionProvider alloc] initWithProfilePrefs:prefService
                                                       localState:localState];
   }
+  using enum ScreenType;
   switch ([_postActionsProvider nextScreenType]) {
     case kSyncedSetUp:
       [self showSyncedSetUp];
@@ -285,7 +287,6 @@
     case kBestFeatures:
     case kLensInteractivePromo:
     case kLensAnimatedPromo:
-    default:
       NOTREACHED() << "Not a post first run action.";
   }
 }

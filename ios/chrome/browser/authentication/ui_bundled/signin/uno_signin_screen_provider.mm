@@ -10,9 +10,8 @@
 @implementation UnoSigninScreenProvider
 
 - (instancetype)init {
-  NSArray<NSNumber*>* screens =
-      @[ @(kSignIn), @(kHistorySync), @(kStepsCompleted) ];
-  return [super initWithScreens:screens];
+  return [super initWithScreens:{ScreenType::kSignIn, ScreenType::kHistorySync,
+                                 ScreenType::kStepsCompleted}];
 }
 
 @end

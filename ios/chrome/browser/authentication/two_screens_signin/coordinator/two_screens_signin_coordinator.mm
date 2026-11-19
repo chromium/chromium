@@ -121,9 +121,9 @@ using base::UserMetricsAction;
   __typeof(self) strongSelf = self;
   [self presentScreenIfNeeded:[_screenProvider nextScreenType]];
 
-  // Check if the flow is already completed (kStepsCompleted) to prevent
+  // Check if the flow is already completed (`kStepsCompleted`) to prevent
   // presenting a nil navigation controller.
-  if (strongSelf->_currentScreenType == kStepsCompleted) {
+  if (strongSelf->_currentScreenType == ScreenType::kStepsCompleted) {
     return;
   }
 
@@ -180,7 +180,7 @@ using base::UserMetricsAction;
   _currentScreenType = type;
   // If there are no screens remaining, call delegate to stop presenting
   // screens.
-  if (type == kStepsCompleted) {
+  if (type == ScreenType::kStepsCompleted) {
     [self finishPresentingScreens];
     return;
   }
@@ -190,6 +190,7 @@ using base::UserMetricsAction;
 
 // Creates a screen coordinator according to `type`.
 - (ChromeCoordinator*)createChildCoordinatorWithScreenType:(ScreenType)type {
+  using enum ScreenType;
   switch (type) {
     case kSignIn:
       return [[FullscreenSigninScreenCoordinator alloc]

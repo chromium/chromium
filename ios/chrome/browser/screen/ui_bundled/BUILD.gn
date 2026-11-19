@@ -7,16 +7,13 @@ source_set("screen_provider") {
     "screen_provider.h",
     "screen_provider.mm",
   ]
-  deps = [
-    ":screen_type",
-    "//base",
-    "//ios/chrome/browser/shared/public/features",
-  ]
+  public_deps = [ ":screen_type" ]
+  frameworks = [ "Foundation.framework" ]
 }
 
 source_set("screen_provider_protected") {
   sources = [ "screen_provider+protected.h" ]
-  deps = [ ":screen_provider" ]
+  public_deps = [ ":screen_provider" ]
 }
 
 source_set("screen_type") {

@@ -76,7 +76,7 @@ class FirstRunScreenProviderTest : public PlatformTest {
   std::vector<ScreenType> GetScreensSequence(FirstRunScreenProvider* provider) {
     std::vector<ScreenType> screens;
     ScreenType type = [provider nextScreenType];
-    while (type != kStepsCompleted) {
+    while (type != ScreenType::kStepsCompleted) {
       screens.push_back(type);
       type = [provider nextScreenType];
     }
@@ -129,12 +129,12 @@ TEST_F(FirstRunScreenProviderTest, FallbackToDisabledWhenChoiceScreenEligible) {
       [[FirstRunScreenProvider alloc] initForProfile:profile.get()];
   std::vector<ScreenType> screens = GetScreensSequence(provider);
 
-  // Assert that kChoice is included in the sequence.
-  EXPECT_TRUE(std::ranges::contains(screens, kChoice));
+  // Assert that `kChoice` is included in the sequence.
+  EXPECT_TRUE(std::ranges::contains(screens, ScreenType::kChoice));
 
-  // Assert that kSignIn is the first screen.
+  // Assert that `kSignIn` is the first screen.
   ASSERT_FALSE(screens.empty());
-  EXPECT_EQ(screens.front(), kSignIn);
+  EXPECT_EQ(screens.front(), ScreenType::kSignIn);
 }
 
 // Tests that when the search engine choice screen is NOT required (e.g., in US
@@ -152,12 +152,12 @@ TEST_F(FirstRunScreenProviderTest, KeepUpdatedSequenceWhenNotChoiceEligible) {
       [[FirstRunScreenProvider alloc] initForProfile:profile.get()];
   std::vector<ScreenType> screens = GetScreensSequence(provider);
 
-  // Assert that kChoice is NOT included.
-  EXPECT_FALSE(std::ranges::contains(screens, kChoice));
+  // Assert that `kChoice` is NOT included.
+  EXPECT_FALSE(std::ranges::contains(screens, ScreenType::kChoice));
 
-  // Assert that kDefaultBrowserPromo is the first screen.
+  // Assert that `kDefaultBrowserPromo` is the first screen.
   ASSERT_FALSE(screens.empty());
-  EXPECT_EQ(screens.front(), kDefaultBrowserPromo);
+  EXPECT_EQ(screens.front(), ScreenType::kDefaultBrowserPromo);
 }
 
 // Tests that `kFREAblation` is not evaluated (leaving its Finch trial inactive)
@@ -177,7 +177,7 @@ TEST_F(FirstRunScreenProviderTest,
   // Seed a stale deferred screen to verify interrupted First Run state is
   // cleared when First Run restarts without identities.
   base::ListValue stale_deferred_screens;
-  stale_deferred_screens.Append(static_cast<int>(kHistorySync));
+  stale_deferred_screens.Append(static_cast<int>(ScreenType::kHistorySync));
   GetApplicationContext()->GetLocalState()->SetList(
       prefs::kFirstRunDeferredScreens, std::move(stale_deferred_screens));
 
@@ -187,7 +187,8 @@ TEST_F(FirstRunScreenProviderTest,
   std::vector<ScreenType> screens = GetScreensSequence(provider);
 
   EXPECT_FALSE(base::FieldTrialList::IsTrialActive(trial->trial_name()));
-  EXPECT_THAT(screens, ::testing::ElementsAre(kDefaultBrowserPromo));
+  EXPECT_THAT(screens,
+              ::testing::ElementsAre(ScreenType::kDefaultBrowserPromo));
   EXPECT_TRUE(GetDeferredScreens().empty());
 }
 
@@ -219,8 +220,9 @@ TEST_F(FirstRunScreenProviderTest,
   std::vector<ScreenType> screens = GetScreensSequence(provider);
 
   EXPECT_TRUE(base::FieldTrialList::IsTrialActive(trial->trial_name()));
-  EXPECT_THAT(screens, ::testing::ElementsAre(kSignIn, kHistorySync,
-                                              kDefaultBrowserPromo));
+  EXPECT_THAT(screens, ::testing::ElementsAre(
+                           ScreenType::kSignIn, ScreenType::kHistorySync,
+                           ScreenType::kDefaultBrowserPromo));
   EXPECT_TRUE(GetDeferredScreens().empty());
 }
 
@@ -240,8 +242,11 @@ TEST_F(FirstRunScreenProviderTest,
       [[FirstRunScreenProvider alloc] initForProfile:profile.get()];
   std::vector<ScreenType> screens = GetScreensSequence(provider);
 
-  EXPECT_THAT(screens, ::testing::ElementsAre(kSignIn, kDefaultBrowserPromo));
-  EXPECT_THAT(GetDeferredScreens(), ::testing::ElementsAre(kHistorySync));
+  EXPECT_THAT(screens,
+              ::testing::ElementsAre(ScreenType::kSignIn,
+                                     ScreenType::kDefaultBrowserPromo));
+  EXPECT_THAT(GetDeferredScreens(),
+              ::testing::ElementsAre(ScreenType::kHistorySync));
 }
 
 // Tests that the `kSkipAllExceptSignInAndChoice` arm in a non-EEA region keeps
@@ -262,10 +267,11 @@ TEST_F(FirstRunScreenProviderTest,
       [[FirstRunScreenProvider alloc] initForProfile:profile.get()];
   std::vector<ScreenType> screens = GetScreensSequence(provider);
 
-  EXPECT_THAT(screens, ::testing::ElementsAre(kSignIn));
+  EXPECT_THAT(screens, ::testing::ElementsAre(ScreenType::kSignIn));
   EXPECT_THAT(GetDeferredScreens(),
-              ::testing::ElementsAre(kHistorySync, kDefaultBrowserPromo,
-                                     kLensAnimatedPromo));
+              ::testing::ElementsAre(ScreenType::kHistorySync,
+                                     ScreenType::kDefaultBrowserPromo,
+                                     ScreenType::kLensAnimatedPromo));
 }
 
 // Tests that the `kSkipAllExceptSignInAndChoice` arm preserves both `kSignIn`
@@ -288,9 +294,11 @@ TEST_F(FirstRunScreenProviderTest,
       [[FirstRunScreenProvider alloc] initForProfile:profile.get()];
   std::vector<ScreenType> screens = GetScreensSequence(provider);
 
-  EXPECT_THAT(screens, ::testing::ElementsAre(kSignIn, kChoice));
+  EXPECT_THAT(screens,
+              ::testing::ElementsAre(ScreenType::kSignIn, ScreenType::kChoice));
   EXPECT_THAT(GetDeferredScreens(),
-              ::testing::ElementsAre(kHistorySync, kDefaultBrowserPromo));
+              ::testing::ElementsAre(ScreenType::kHistorySync,
+                                     ScreenType::kDefaultBrowserPromo));
 }
 
 }  // namespace

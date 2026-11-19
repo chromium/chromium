@@ -150,7 +150,7 @@ class FirstRunCoordinatorMetricsHelper final {
 - (void)presentScreen:(ScreenType)type {
   // If no more screen need to be present, call delegate to stop presenting
   // screens.
-  if (type == kStepsCompleted) {
+  if (type == ScreenType::kStepsCompleted) {
     // The user went through all screens of the FRE.
     if (!_navigationControllerPresented) {
       // All screens skipped presentation synchronously during `-start`, so
@@ -182,6 +182,7 @@ class FirstRunCoordinatorMetricsHelper final {
 
 // Creates a screen coordinator according to `type`.
 - (ChromeCoordinator*)createChildCoordinatorWithScreenType:(ScreenType)type {
+  using enum ScreenType;
   switch (type) {
     case kSignIn:
       return [[FullscreenSigninScreenCoordinator alloc]
