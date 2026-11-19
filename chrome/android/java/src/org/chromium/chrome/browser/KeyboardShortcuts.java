@@ -1187,6 +1187,7 @@ public class KeyboardShortcuts {
 
         TabModel currentTabModel = tabModelSelector.getCurrentModel();
 
+        // Legacy shortcut dispatch; see migration note at the end of this switch block.
         // LINT.IfChange(KeyboardShortcutsOnKeyDown)
         switch (semanticMeaning) {
             case KeyboardShortcutsSemanticMeaning.OPEN_RECENTLY_CLOSED_TAB:
@@ -1412,6 +1413,12 @@ public class KeyboardShortcuts {
             }
         }
         // LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/shortcuts/BrowserCommandDelegate.java:BrowserCommandDelegateCommands)
+        // Android keyboard shortcuts are migrating to the shared C++ accelerator table and
+        // BrowserCommandDelegate behind sAndroidUnifiedKeyboardShortcuts (crbug.com/542609750).
+        // New shortcuts added here should also be wired in:
+        //   1. chrome/browser/ui/accelerator_table.cc (enable on Android, e.g. kAcceleratorMap)
+        //   2. chrome/android/java/src/org/chromium/chrome/browser/ChromeCommandIds.template
+        //   3. BrowserCommandDelegate.java (isCommandEnabled and getActionIdForCommand)
 
         return false;
     }
