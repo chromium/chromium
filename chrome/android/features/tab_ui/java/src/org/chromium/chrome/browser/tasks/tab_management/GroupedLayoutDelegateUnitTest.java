@@ -362,7 +362,8 @@ public class GroupedLayoutDelegateUnitTest {
 
     @Test
     public void testGetIndexAndTabForTabGroupId_InvalidIndex() {
-        when(mTabModel.getGroupLastShownTabId(TAB_GROUP_ID)).thenReturn(TAB1_ID);
+        when(mTabModel.getGroupLastShownTabId(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
+                .thenReturn(TAB1_ID);
 
         assertNull(mDelegate.getIndexAndTabForTabGroupId(TAB_GROUP_ID));
     }
@@ -370,7 +371,8 @@ public class GroupedLayoutDelegateUnitTest {
     @Test
     @DisableFeatures(ChromeFeatureList.ANDROID_TAB_UI_REFACTOR)
     public void testGetIndexAndTabForTabGroupId_Success_featureDisabled() {
-        when(mTabModel.getGroupLastShownTabId(TAB_GROUP_ID)).thenReturn(TAB1_ID);
+        when(mTabModel.getGroupLastShownTabId(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
+                .thenReturn(TAB1_ID);
         createAndAddPropertyModel(TAB1_ID);
         when(mMediator.getTabForIndex(0)).thenReturn(mTab1);
         when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
@@ -842,7 +844,8 @@ public class GroupedLayoutDelegateUnitTest {
         when(mTabModel.getTabCountForGroup(null)).thenReturn(1);
         when(mTabModel.getIndividualTabAndGroupCount()).thenReturn(3);
         setupRepresentativeTab(mTab1, mTab1, 2);
-        when(mTabModel.getGroupLastShownTabId(TAB_GROUP_ID)).thenReturn(TAB2_ID);
+        when(mTabModel.getGroupLastShownTabId(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
+                .thenReturn(TAB2_ID);
         when(mTabModel.getTabById(TAB2_ID)).thenReturn(mTab2);
         when(mTabModel.representativeIndexOf(mTab2)).thenReturn(1);
 
@@ -950,7 +953,8 @@ public class GroupedLayoutDelegateUnitTest {
                 .thenReturn(2);
 
         Token differentGroupId = new Token(3L, 4L);
-        when(mTabModel.getGroupLastShownTabId(differentGroupId)).thenReturn(TAB2_ID);
+        when(mTabModel.getGroupLastShownTabId(TabGroupId.fromOptionalToken(differentGroupId)))
+                .thenReturn(TAB2_ID);
         when(mTabModel.getTabById(TAB2_ID)).thenReturn(mTab2);
         when(mTab2.getTabGroupId()).thenReturn(differentGroupId);
         when(mTabModel.representativeIndexOf(mTab2)).thenReturn(1);
@@ -1104,7 +1108,8 @@ public class GroupedLayoutDelegateUnitTest {
         when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
                 .thenReturn(List.of(mTab1, mTab2));
         when(mTabModel.getTabById(TAB1_ID)).thenReturn(mTab1);
-        when(mTabModel.getGroupLastShownTabId(TAB_GROUP_ID)).thenReturn(TAB2_ID);
+        when(mTabModel.getGroupLastShownTabId(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
+                .thenReturn(TAB2_ID);
         when(mTabModel.getTabById(TAB2_ID)).thenReturn(mTab2);
 
         // Only TAB1_ID is in the model list
@@ -1239,7 +1244,8 @@ public class GroupedLayoutDelegateUnitTest {
 
         when(mTabModel.getTabCountForGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
                 .thenReturn(1);
-        when(mTabModel.getGroupLastShownTabId(TAB_GROUP_ID)).thenReturn(TAB1_ID);
+        when(mTabModel.getGroupLastShownTabId(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
+                .thenReturn(TAB1_ID);
         when(mTabModel.getTabById(TAB1_ID)).thenReturn(mTab1);
 
         // After move, mTab1 is at 0, mTab2 is at 1. We mock the destination tab for calculating new
@@ -1762,7 +1768,8 @@ public class GroupedLayoutDelegateUnitTest {
 
     private void setupGetIndexAndTabForTabGroupId(Token tabGroupId, int index, Tab tab) {
         int tabId = tab.getId();
-        when(mTabModel.getGroupLastShownTabId(tabGroupId)).thenReturn(tabId);
+        when(mTabModel.getGroupLastShownTabId(TabGroupId.fromOptionalToken(tabGroupId)))
+                .thenReturn(tabId);
         when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(tabGroupId)))
                 .thenReturn(List.of(tab));
         when(mMediator.getIndexForTabIdWithRelatedTabs(tabId)).thenReturn(index);
@@ -1779,6 +1786,7 @@ public class GroupedLayoutDelegateUnitTest {
     }
 
     private void setupGetIndexAndTabForTabGroupIdNotFound(Token tabGroupId) {
-        when(mTabModel.getGroupLastShownTabId(tabGroupId)).thenReturn(Tab.INVALID_TAB_ID);
+        when(mTabModel.getGroupLastShownTabId(TabGroupId.fromOptionalToken(tabGroupId)))
+                .thenReturn(Tab.INVALID_TAB_ID);
     }
 }

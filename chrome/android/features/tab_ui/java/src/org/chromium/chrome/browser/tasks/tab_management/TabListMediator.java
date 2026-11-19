@@ -3285,7 +3285,8 @@ public class TabListMediator implements TabListNotificationHandler {
             int tabId =
                     TabUiFeatureUtilities.isAndroidTabUiRefactorEnabled()
                             ? TabGroupUtils.getFirstTabIdInGroup(tabModel, tabGroupId)
-                            : tabModel.getGroupLastShownTabId(tabGroupId);
+                            : tabModel.getGroupLastShownTabId(
+                                    TabGroupId.fromOptionalToken(tabGroupId));
             if (tabId == Tab.INVALID_TAB_ID) return;
 
             boolean hideTabGroups = menuId == R.id.close_tab_group;

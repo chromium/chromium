@@ -137,7 +137,9 @@ class GroupedLayoutDelegate extends TabListLayoutDelegate {
         if (tabGroupId == null) return null;
 
         TabModel tabModel = mMediator.getCurrentTabModelChecked();
-        @TabId int lastShownTabId = tabModel.getGroupLastShownTabId(tabGroupId);
+        @TabId
+        int lastShownTabId =
+                tabModel.getGroupLastShownTabId(TabGroupId.fromOptionalToken(tabGroupId));
 
         int index = getUiIndexForTab(lastShownTabId);
         if (index == TabModel.INVALID_TAB_INDEX) return null;
@@ -352,7 +354,10 @@ class GroupedLayoutDelegate extends TabListLayoutDelegate {
             return;
         }
 
-        Tab lastShownTab = tabModel.getTabById(tabModel.getGroupLastShownTabId(oldTabGroupId));
+        Tab lastShownTab =
+                tabModel.getTabById(
+                        tabModel.getGroupLastShownTabId(
+                                TabGroupId.fromOptionalToken(oldTabGroupId)));
         Tab previousGroupTab = lastShownTab != null ? lastShownTab : movedTab;
 
         if (tabModel.getTabCountForGroup(TabGroupId.fromOptionalToken(movedTabGroupId)) <= 1
@@ -448,7 +453,10 @@ class GroupedLayoutDelegate extends TabListLayoutDelegate {
             Token desTabGroupId = desTab.getTabGroupId();
             Tab lastShownTab = desTab;
             if (desTabGroupId != null) {
-                @TabId int lastShownTabId = tabModel.getGroupLastShownTabId(desTabGroupId);
+                @TabId
+                int lastShownTabId =
+                        tabModel.getGroupLastShownTabId(
+                                TabGroupId.fromOptionalToken(desTabGroupId));
                 if (lastShownTabId != Tab.INVALID_TAB_ID) {
                     lastShownTab = tabModel.getTabById(lastShownTabId);
                 }
@@ -489,7 +497,9 @@ class GroupedLayoutDelegate extends TabListLayoutDelegate {
             curPosition = mModelList.indexFromTabGroupId(tabGroupId);
         } else {
             Tab currentGroupSelectedTab =
-                    tabModel.getTabById(tabModel.getGroupLastShownTabId(tabGroupId));
+                    tabModel.getTabById(
+                            tabModel.getGroupLastShownTabId(
+                                    TabGroupId.fromOptionalToken(tabGroupId)));
             if (currentGroupSelectedTab == null) return;
             curPosition = getIndexFromTabId(currentGroupSelectedTab.getId());
             if (curPosition == TabModel.INVALID_TAB_INDEX) {

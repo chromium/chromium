@@ -1987,17 +1987,22 @@ public class TabCollectionTabModelImplTest {
                     assertNotNull(tab0GroupId);
 
                     assertEquals(
-                            tab0.getId(), mCollectionModel.getGroupLastShownTabId(tab0GroupId));
+                            tab0.getId(),
+                            mCollectionModel.getGroupLastShownTabId(
+                                    TabGroupId.fromOptionalToken(tab0GroupId)));
 
                     mCollectionModel.setIndex(1, TabSelectionType.FROM_USER);
                     assertEquals(tab1, mCollectionModel.getCurrentTabSupplier().get());
                     assertEquals(
-                            tab0.getId(), mCollectionModel.getGroupLastShownTabId(tab0GroupId));
+                            tab0.getId(),
+                            mCollectionModel.getGroupLastShownTabId(
+                                    TabGroupId.fromOptionalToken(tab0GroupId)));
 
                     assertEquals(Tab.INVALID_TAB_ID, mCollectionModel.getGroupLastShownTabId(null));
                     assertEquals(
                             Tab.INVALID_TAB_ID,
-                            mCollectionModel.getGroupLastShownTabId(Token.createRandom()));
+                            mCollectionModel.getGroupLastShownTabId(
+                                    TabGroupId.fromRawToken(Token.createRandom())));
                 });
     }
 
@@ -3393,14 +3398,20 @@ public class TabCollectionTabModelImplTest {
                     Token groupId = tab0.getTabGroupId();
                     assertNotNull(groupId);
 
-                    assertEquals(tab0.getId(), mCollectionModel.getGroupLastShownTabId(groupId));
+                    assertEquals(
+                            tab0.getId(),
+                            mCollectionModel.getGroupLastShownTabId(
+                                    TabGroupId.fromOptionalToken(groupId)));
 
                     mCollectionModel.mergeListOfTabsToGroup(
                             List.of(tab2),
                             tab0,
                             /* notify= */ TabGroupMergeNotificationType.DONT_NOTIFY);
 
-                    assertEquals(tab2.getId(), mCollectionModel.getGroupLastShownTabId(groupId));
+                    assertEquals(
+                            tab2.getId(),
+                            mCollectionModel.getGroupLastShownTabId(
+                                    TabGroupId.fromOptionalToken(groupId)));
                 });
     }
 
@@ -4144,7 +4155,10 @@ public class TabCollectionTabModelImplTest {
                     assertTrue(
                             mCollectionModel.containsTabGroup(
                                     TabGroupId.fromOptionalToken(tabGroupId)));
-                    assertEquals(tab1.getId(), mCollectionModel.getGroupLastShownTabId(tabGroupId));
+                    assertEquals(
+                            tab1.getId(),
+                            mCollectionModel.getGroupLastShownTabId(
+                                    TabGroupId.fromOptionalToken(tabGroupId)));
                     assertFalse(mCollectionModel.isTabGroupHiding(tabGroupId));
                     assertFalse(mCollectionModel.detachedTabGroupExists(tabGroupId));
                     assertFalse(mCollectionModel.isClosurePending(tab0.getId()));

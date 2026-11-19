@@ -1377,14 +1377,14 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
     }
 
     @Override
-    public @TabId int getGroupLastShownTabId(@Nullable Token tabGroupId) {
+    public @TabId int getGroupLastShownTabId(@Nullable TabGroupId tabGroupId) {
         assertOnUiThread();
         if (mNativeTabCollectionTabModelImplPtr == null
                 || tabGroupId == null
-                || !containsTabGroup(TabGroupId.fromOptionalToken(tabGroupId))) {
+                || !containsTabGroup(tabGroupId)) {
             return Tab.INVALID_TAB_ID;
         }
-        Tab tab = getLastShownTabForGroup(tabGroupId);
+        Tab tab = getLastShownTabForGroup(tabGroupId.getToken());
         return tab != null ? tab.getId() : Tab.INVALID_TAB_ID;
     }
 

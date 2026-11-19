@@ -855,7 +855,8 @@ public class TabListMediatorUnitTest {
         PropertyModel model = mModelList.get(0).model;
         model.set(TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER, mTabGroupColorViewProvider);
 
-        when(mTabModel.getGroupLastShownTabId(TAB_GROUP_ID)).thenReturn(TAB1_ID);
+        when(mTabModel.getGroupLastShownTabId(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
+                .thenReturn(TAB1_ID);
         mTabGroupObserverCaptor.getValue().didMoveTabOutOfGroup(mTab2, TAB_GROUP_ID);
 
         assertNull(model.get(TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER));
@@ -2305,7 +2306,8 @@ public class TabListMediatorUnitTest {
                 .thenReturn(0);
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
                 .thenReturn(false);
-        when(mTabModel.getGroupLastShownTabId(TAB_GROUP_ID)).thenReturn(Tab.INVALID_TAB_ID);
+        when(mTabModel.getGroupLastShownTabId(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
+                .thenReturn(Tab.INVALID_TAB_ID);
 
         // Move the remaining representative tab.
         mTabModelObserverCaptor.getValue().didMoveTab(mTab1, POSITION2, POSITION1);
@@ -2966,7 +2968,8 @@ public class TabListMediatorUnitTest {
         when(mTabModel.isTabInTabGroup(tab3)).thenReturn(false);
         when(mTabModel.isTabInTabGroup(tab4)).thenReturn(true);
         Token groupId1 = new Token(1L, 1L);
-        when(mTabModel.getGroupLastShownTabId(groupId1)).thenReturn(TAB1_ID);
+        when(mTabModel.getGroupLastShownTabId(TabGroupId.fromOptionalToken(groupId1)))
+                .thenReturn(TAB1_ID);
         mTabGroupObserverCaptor.getValue().didMoveTabOutOfGroup(tab3, groupId1);
         assertThat(mModelList.size(), equalTo(2));
         assertThat(mModelList.indexFromTabId(TAB1_ID), equalTo(0));
@@ -7638,7 +7641,8 @@ public class TabListMediatorUnitTest {
         when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(tabGroupId))).thenReturn(tabs);
         when(mTabModel.getTabGroupCollapsed(tabGroupId)).thenReturn(true);
         int firstTabId = tabs.get(0).getId();
-        when(mTabModel.getGroupLastShownTabId(tabGroupId)).thenReturn(firstTabId);
+        when(mTabModel.getGroupLastShownTabId(TabGroupId.fromOptionalToken(tabGroupId)))
+                .thenReturn(firstTabId);
         for (int i = 0; i < tabs.size(); i++) {
             Tab tab = tabs.get(i);
             when(mTabModel.getIndexOfTabInGroup(tab)).thenReturn(i);

@@ -593,7 +593,7 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
     }
 
     @Override
-    public int getGroupLastShownTabId(@Nullable Token tabGroupId) {
+    public int getGroupLastShownTabId(@Nullable TabGroupId tabGroupId) {
         return mDelegateModel.getGroupLastShownTabId(tabGroupId);
     }
 

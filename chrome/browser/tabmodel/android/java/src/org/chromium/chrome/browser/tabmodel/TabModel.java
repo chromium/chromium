@@ -513,14 +513,14 @@ public interface TabModel extends TabList {
      * tabGroupId}.
      *
      * @deprecated Do not rely on mutable last-shown representative tab state for tab groups.
-     *     Operate on {@link Token} {@code tabGroupId} and {@link #getTabsInGroup(TabGroupId)}
+     *     Operate on {@link TabGroupId} {@code tabGroupId} and {@link #getTabsInGroup(TabGroupId)}
      *     directly, or use {@link TabGroupUtils#getSelectedOrFirstTabInGroup(TabModel, Token)} or
      *     {@link TabGroupUtils#getFirstTabIdInGroup(TabModel, Token)}.
      */
     // TODO(crbug.com/517544602): Delete once sAndroidTabUiRefactor launches.
     @Deprecated
     @TabId
-    int getGroupLastShownTabId(@Nullable Token tabGroupId);
+    int getGroupLastShownTabId(@Nullable TabGroupId tabGroupId);
 
     /**
      * Moves the tab group with {@code tabGroupId} to the position with {@code newIndex} in

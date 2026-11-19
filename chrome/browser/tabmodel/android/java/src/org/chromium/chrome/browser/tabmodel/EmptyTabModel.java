@@ -398,7 +398,7 @@ public class EmptyTabModel implements IncognitoTabModelInternal {
     }
 
     @Override
-    public int getGroupLastShownTabId(@Nullable Token tabGroupId) {
+    public int getGroupLastShownTabId(@Nullable TabGroupId tabGroupId) {
         return Tab.INVALID_TAB_ID;
     }
 
