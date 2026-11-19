@@ -1484,9 +1484,6 @@ void FeedStream::ReportFeedViewed(SurfaceId surface_id) {
   stream->surfaces.FeedViewed(surface_id);
 }
 
-void FeedStream::ReportPageLoaded(SurfaceId /*surface_id*/) {
-  metrics_reporter_->PageLoaded();
-}
 void FeedStream::ReportStreamScrolled(SurfaceId surface_id, int distance_dp) {
   FeedStreamSurface* surface = FindSurface(surface_id);
   if (!surface) {

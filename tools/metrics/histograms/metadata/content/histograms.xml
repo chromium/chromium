@@ -735,36 +735,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ContentSuggestions.Feed.UserJourney.{Surface}.Failure"
-    enum="Boolean" expires_after="2024-01-23">
-  <owner>harringtond@chromium.org</owner>
-  <owner>carlosk@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Reported when a user taps on a {Surface} card and the page is not loaded
-    successfully within 20 seconds.
-  </summary>
-  <token key="Surface">
-    <variant name="OpenCard" summary="For-You Feed"/>
-    <variant name="OpenCard.WebFeed" summary="Web Feed"/>
-  </token>
-</histogram>
-
-<histogram name="ContentSuggestions.Feed.UserJourney.{Surface}.SuccessDuration"
-    units="ms" expires_after="2024-01-23">
-  <owner>harringtond@chromium.org</owner>
-  <owner>carlosk@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    The time between a user tapping on a {Surface} card and the page finishes
-    loading successfully. Only reported when loading takes less than 20 seconds.
-  </summary>
-  <token key="Surface">
-    <variant name="OpenCard" summary="For-You Feed"/>
-    <variant name="OpenCard.WebFeed" summary="Web Feed"/>
-  </token>
-</histogram>
-
 <histogram
     name="ContentSuggestions.Feed.UserJourney.{Surface}.{Status}Duration"
     units="ms" expires_after="2026-04-26">

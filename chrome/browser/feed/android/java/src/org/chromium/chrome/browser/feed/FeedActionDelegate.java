@@ -32,7 +32,7 @@ public interface FeedActionDelegate {
          *
          * @param pageId The unique ID for the page being opened.
          */
-        void onPageLoadFinished(int pageId, boolean inNewTab);
+        void onPageLoadFinished(int pageId);
 
         /**
          * Called when the page fails to load.

@@ -47,9 +47,6 @@ const int kMaxSuggestionsTotal = 50;
 // Maximum time to wait before declaring a load operation failed.
 // For ContentSuggestions.Feed.UserJourney.OpenFeed.
 constexpr base::TimeDelta kLoadTimeout = base::Seconds(15);
-// Maximum time to wait before declaring opening a card a failure.
-// For ContentSuggestions.Feed.UserJourney.OpenCard.
-constexpr base::TimeDelta kOpenTimeout = base::Seconds(20);
 // For ContentSuggestions.Feed.TimeSpentInFeed, we want to get a measure
 // of how much time the user is spending with the Feed. If the user stops
 // interacting with the Feed, we stop counting it as time spent after this
@@ -461,7 +458,6 @@ void MetricsReporter::FeedViewed(SurfaceId surface_id) {
 void MetricsReporter::OpenAction(const StreamType& stream_type,
                                  int index_in_stream,
                                  OpenActionType action_type) {
-  CardOpenBegin(stream_type);
   switch (action_type) {
     case OpenActionType::kDefault:
       ReportUserActionHistogram(FeedUserActionType::kTappedOnCard);
@@ -489,10 +485,6 @@ void MetricsReporter::OpenVisitComplete(base::TimeDelta visit_time) {
                               visit_time);
 
   good_visit_state_.OnOpenComplete(visit_time);
-}
-
-void MetricsReporter::PageLoaded() {
-  ReportCardOpenEndIfNeeded(true);
 }
 
 void MetricsReporter::OtherUserAction(const StreamType& stream_type,
@@ -690,7 +682,6 @@ void MetricsReporter::SurfaceClosed(SurfaceId surface_id) {
 
 void MetricsReporter::FinalizeMetrics() {
   FinalizeVisit();
-  ReportCardOpenEndIfNeeded(false);
   for (auto iter = surfaces_waiting_for_content_.begin();
        iter != surfaces_waiting_for_content_.end();) {
     ReportOpenFeedIfNeeded((iter++)->first, false);
@@ -712,40 +703,6 @@ void MetricsReporter::ReportOpenFeedIfNeeded(SurfaceId surface_id,
                     success ? "SuccessDuration" : "FailureDuration"}),
       base::TimeTicks::Now() - surface_waiting.wait_start,
       base::Milliseconds(50), kLoadTimeout, 50);
-}
-
-void MetricsReporter::CardOpenBegin(const StreamType& stream_type) {
-  ReportCardOpenEndIfNeeded(false);
-  pending_open_ = {stream_type, base::TimeTicks::Now()};
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&MetricsReporter::CardOpenTimeout, GetWeakPtr(),
-                     pending_open_.wait_start),
-      kOpenTimeout);
-}
-
-void MetricsReporter::CardOpenTimeout(base::TimeTicks start_ticks) {
-  if (pending_open_ && start_ticks == pending_open_.wait_start)
-    ReportCardOpenEndIfNeeded(false);
-}
-
-void MetricsReporter::ReportCardOpenEndIfNeeded(bool success) {
-  if (!pending_open_)
-    return;
-  base::TimeDelta latency = base::TimeTicks::Now() - pending_open_.wait_start;
-
-  std::string histogram_name =
-      base::StrCat({"ContentSuggestions.Feed.UserJourney.OpenCard",
-                    success ? ".SuccessDuration" : ".Failure"});
-
-  if (success) {
-    base::UmaHistogramCustomTimes(histogram_name, latency,
-                                  base::Milliseconds(100), kOpenTimeout, 50);
-  } else {
-    base::UmaHistogramBoolean(histogram_name, true);
-  }
-
-  pending_open_ = {};
 }
 
 void MetricsReporter::NetworkRequestComplete(

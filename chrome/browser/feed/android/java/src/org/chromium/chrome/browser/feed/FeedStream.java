@@ -269,8 +269,7 @@ public class FeedStream implements Stream {
         }
 
         @Override
-        public void onPageLoadFinished(int pageId, boolean inNewTab) {
-            mBridge.reportPageLoaded(inNewTab);
+        public void onPageLoadFinished(int pageId) {
             if (mReliabilityLogger != null) {
                 mReliabilityLogger.onPageLoadFinished(pageId);
             }

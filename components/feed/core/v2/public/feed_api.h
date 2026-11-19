@@ -164,8 +164,6 @@ class FeedApi {
   // Some feed content has been loaded and is now available to the user on the
   // feed surface. Reported only once after a surface is attached.
   virtual void ReportFeedViewed(SurfaceId surface_id) = 0;
-  // A web page was loaded in response to opening a link from the Feed.
-  virtual void ReportPageLoaded(SurfaceId surface_id) = 0;
   // The user triggered the open action which can be caused by tapping the card,
   // or selecting 'Open in new tab' menu item. The open action to trigger is
   // providen in `action_type`.

@@ -265,17 +265,6 @@ static void JNI_FeedSurfaceRendererBridge_ReportFeedViewed(JNIEnv* env,
   feed_api->ReportFeedViewed(FromJavaSurfaceId(surface_id));
 }
 
-static void JNI_FeedSurfaceRendererBridge_ReportPageLoaded(JNIEnv* env,
-                                                           Profile* profile,
-                                                           int32_t surface_id,
-                                                           bool in_new_tab) {
-  FeedApi* feed_api = GetFeedApi(profile);
-  if (!feed_api) {
-    return;
-  }
-  feed_api->ReportPageLoaded(FromJavaSurfaceId(surface_id));
-}
-
 static void JNI_FeedSurfaceRendererBridge_ReportStreamScrolled(
     JNIEnv* env,
     Profile* profile,

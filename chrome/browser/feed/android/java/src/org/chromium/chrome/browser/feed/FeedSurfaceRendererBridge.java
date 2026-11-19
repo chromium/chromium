@@ -160,10 +160,6 @@ public class FeedSurfaceRendererBridge {
         FeedSurfaceRendererBridgeJni.get().reportSliceViewed(mProfile, mSurfaceId, sliceId);
     }
 
-    void reportPageLoaded(boolean inNewTab) {
-        FeedSurfaceRendererBridgeJni.get().reportPageLoaded(mProfile, mSurfaceId, inNewTab);
-    }
-
     void reportOpenAction(GURL url, @Nullable String sliceId, @OpenActionType int openActionType) {
         FeedSurfaceRendererBridgeJni.get()
                 .reportOpenAction(mProfile, mSurfaceId, url, sliceId, openActionType);
@@ -285,9 +281,6 @@ public class FeedSurfaceRendererBridge {
                 @JniType("Profile*") Profile profile,
                 int surfaceId,
                 @JniType("std::string") String sliceId);
-
-        void reportPageLoaded(
-                @JniType("Profile*") Profile profile, int surfaceId, boolean inNewTab);
 
         void reportOpenAction(
                 @JniType("Profile*") Profile profile,

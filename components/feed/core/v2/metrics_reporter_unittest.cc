@@ -614,55 +614,6 @@ TEST_F(MetricsReporterTest, OpenFeedCloseBeforeLoad) {
       "ContentSuggestions.Feed.UserJourney.OpenFeed.SuccessDuration", 0);
 }
 
-TEST_F(MetricsReporterTest, OpenCardSuccessDuration) {
-  reporter_->OpenAction(StreamType(StreamKind::kForYou), 0,
-                        OpenActionType::kDefault);
-  task_environment_.FastForwardBy(base::Seconds(19));
-  reporter_->PageLoaded();
-
-  histogram_.ExpectUniqueTimeSample(
-      "ContentSuggestions.Feed.UserJourney.OpenCard.SuccessDuration",
-      base::Seconds(19), 1);
-}
-
-TEST_F(MetricsReporterTest, OpenCardTimeout) {
-  reporter_->OpenAction(StreamType(StreamKind::kForYou), 0,
-                        OpenActionType::kDefault);
-  task_environment_.FastForwardBy(base::Seconds(21));
-  reporter_->PageLoaded();
-
-  histogram_.ExpectUniqueSample(
-      "ContentSuggestions.Feed.UserJourney.OpenCard.Failure", 1, 1);
-  histogram_.ExpectTotalCount(
-      "ContentSuggestions.Feed.UserJourney.OpenCard.SuccessDuration", 0);
-}
-
-TEST_F(MetricsReporterTest, OpenCardFailureTwiceAndThenSucceed) {
-  reporter_->OpenAction(StreamType(StreamKind::kForYou), 0,
-                        OpenActionType::kDefault);
-  reporter_->OpenAction(StreamType(StreamKind::kForYou), 1,
-                        OpenActionType::kDefault);
-  reporter_->OpenAction(StreamType(StreamKind::kForYou), 2,
-                        OpenActionType::kDefault);
-  reporter_->PageLoaded();
-
-  histogram_.ExpectUniqueSample(
-      "ContentSuggestions.Feed.UserJourney.OpenCard.Failure", 1, 2);
-  histogram_.ExpectTotalCount(
-      "ContentSuggestions.Feed.UserJourney.OpenCard.SuccessDuration", 1);
-}
-
-TEST_F(MetricsReporterTest, OpenCardCloseChromeFailure) {
-  reporter_->OpenAction(StreamType(StreamKind::kForYou), 0,
-                        OpenActionType::kDefault);
-  reporter_->OnEnterBackground();
-
-  histogram_.ExpectUniqueSample(
-      "ContentSuggestions.Feed.UserJourney.OpenCard.Failure", 1, 1);
-  histogram_.ExpectTotalCount(
-      "ContentSuggestions.Feed.UserJourney.OpenCard.SuccessDuration", 0);
-}
-
 TEST_F(MetricsReporterTest, TimeSpentInFeedCountsOnlyForegroundTime) {
   reporter_->OpenAction(StreamType(StreamKind::kForYou), 0,
                         OpenActionType::kDefault);

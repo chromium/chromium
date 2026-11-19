@@ -157,12 +157,8 @@ public class FeedActionDelegateImpl
 
         NewTabPageUma.recordAction(NewTabPageUma.ACTION_OPENED_SNIPPET);
 
-        boolean inNewTab =
-                (disposition == WindowOpenDisposition.NEW_BACKGROUND_TAB
-                        || disposition == WindowOpenDisposition.OFF_THE_RECORD);
-
         if (tab != null) {
-            tab.addObserver(new FeedTabNavigationObserver(inNewTab, pageId, pageLoadObserver));
+            tab.addObserver(new FeedTabNavigationObserver(pageId, pageLoadObserver));
             Profile profile = mProfile;
             NavigationRecorder.record(tab, profile, surfaceId);
         }
@@ -277,15 +273,14 @@ public class FeedActionDelegateImpl
 
     /**
      * A {@link TabObserver} that observes navigation related events that originate from Feed
-     * interactions. Calls reportPageLoaded when navigation completes.
+     * interactions. Notifies the {@link PageLoadObserver} when the page starts loading, finishes
+     * loading, fails to load, or has its first non-empty paint.
      */
     private static class FeedTabNavigationObserver implements TabObserver {
-        private final boolean mInNewTab;
         private final int mPageId;
         private @Nullable PageLoadObserver mPageLoadObserver;
 
-        FeedTabNavigationObserver(boolean inNewTab, int pageId, PageLoadObserver pageLoadObserver) {
-            mInNewTab = inNewTab;
+        FeedTabNavigationObserver(int pageId, PageLoadObserver pageLoadObserver) {
             mPageId = pageId;
             mPageLoadObserver = pageLoadObserver;
 
@@ -301,7 +296,7 @@ public class FeedActionDelegateImpl
         public void onPageLoadFinished(Tab tab, GURL url) {
             // TODO(jianli): onPageLoadFinished is called on successful load, and if a user manually
             // stops the page load. We should only capture successful page loads.
-            assumeNonNull(mPageLoadObserver).onPageLoadFinished(mPageId, mInNewTab);
+            assumeNonNull(mPageLoadObserver).onPageLoadFinished(mPageId);
             destroy(tab);
         }
 
