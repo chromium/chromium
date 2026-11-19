@@ -1031,7 +1031,12 @@ void SystemNetworkContextManager::ConfigureDefaultNetworkContextParams(
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
     (BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS))
-  if (command_line.HasSwitch(switches::kUseSystemProxyResolver)) {
+  // --winhttp-proxy-resolver takes precedence over the SystemProxyResolver
+  // feature to preserve the legacy platform PAC resolver on Windows and macOS.
+  // Linux has no legacy platform PAC resolver.
+  // TODO(crbug.com/40111093): Skip the legacy-switch check on Linux.
+  if (base::FeatureList::IsEnabled(features::kSystemProxyResolver) &&
+      !command_line.HasSwitch(switches::kWinHttpProxyResolver)) {
 #if BUILDFLAG(IS_WIN)
     network_context_params->system_proxy_resolver =
         ChromeMojoProxyResolverWin::CreateWithSelfOwnedReceiver();

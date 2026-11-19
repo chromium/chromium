@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/process/process.h"
@@ -22,6 +23,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "build/config/linux/dbus/buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/stub_resolver_config_reader.h"
 #include "chrome/browser/profiles/profile.h"
@@ -74,6 +76,10 @@
 #include "chrome/common/chrome_version.h"
 #include "content/public/browser/storage_partition.h"
 #endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#include "base/command_line.h"
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 #include "sandbox/policy/linux/sandbox_seccomp_bpf_linux.h"
@@ -737,3 +743,59 @@ IN_PROC_BROWSER_TEST_P(SystemNetworkContextManagerWPADQuickCheckBrowsertest,
 INSTANTIATE_TEST_SUITE_P(All,
                          SystemNetworkContextManagerWPADQuickCheckBrowsertest,
                          ::testing::Bool());
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+class SystemProxyResolverFeatureBrowserTest
+    : public SystemNetworkContextManagerBrowsertest,
+      public testing::WithParamInterface<bool> {
+ public:
+  SystemProxyResolverFeatureBrowserTest() {
+    feature_list_.InitWithFeatureState(features::kSystemProxyResolver,
+                                       GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(SystemProxyResolverFeatureBrowserTest,
+                       DefaultNetworkContextParams) {
+  EXPECT_EQ(GetParam(),
+            base::FeatureList::IsEnabled(features::kSystemProxyResolver));
+  network::mojom::NetworkContextParamsPtr network_context_params =
+      g_browser_process->system_network_context_manager()
+          ->CreateDefaultNetworkContextParams();
+  EXPECT_EQ(GetParam() && (!BUILDFLAG(IS_LINUX) || BUILDFLAG(USE_DBUS)),
+            network_context_params->system_proxy_resolver.is_valid());
+  EXPECT_TRUE(network_context_params->proxy_resolver_factory.is_valid());
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SystemProxyResolverFeatureBrowserTest,
+                         testing::Bool());
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+class SystemProxyResolverLegacyBrowserTest
+    : public SystemProxyResolverFeatureBrowserTest {
+ public:
+  // InProcessBrowserTest:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    SystemProxyResolverFeatureBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(switches::kWinHttpProxyResolver);
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(SystemProxyResolverLegacyBrowserTest,
+                       LegacyResolverTakesPrecedence) {
+  network::mojom::NetworkContextParamsPtr network_context_params =
+      g_browser_process->system_network_context_manager()
+          ->CreateDefaultNetworkContextParams();
+  EXPECT_FALSE(network_context_params->system_proxy_resolver.is_valid());
+  EXPECT_FALSE(network_context_params->proxy_resolver_factory.is_valid());
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SystemProxyResolverLegacyBrowserTest,
+                         testing::Bool());
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)

@@ -548,6 +548,7 @@ if (!is_android) {
       ":storage_test_utils",
       ":test_support",
       "//base",
+      "//build/config/linux/dbus:buildflags",
       "//chrome/browser",
       "//chrome/browser:browser_process_platform_part",
       "//chrome/browser:chrome_content_browser_client",

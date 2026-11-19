@@ -77,8 +77,7 @@ struct SystemProxyResolutionStatus {
 [EnableIf=is_win|is_mac, ServiceSandbox=sandbox.mojom.Sandbox.kProxyResolver]
 // Implemented in a utility process to proxy system proxy lookups (WinHTTP on
 // Windows, SystemConfiguration/CFNetwork on macOS) and invoked from the network
-// service (or Chrome) when --use-system-proxy-resolver is enabled so that proxy
-// resolution happens with the OS configuration.
+// service when configured by the embedder.
 interface SystemProxyResolver {
   // Resolves proxies for `url` using the system configuration. On success the
   // returned proxy list is populated and `status.os_error` is 0. On failure the

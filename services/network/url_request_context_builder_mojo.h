@@ -32,16 +32,11 @@ class URLRequestContext;
 }  // namespace net
 
 namespace network {
-// Specialization of `URLRequestContextBuilder` that can create one or more
-// `ProxyResolutionService`s that use Mojo. This can be a
-// `ConfiguredProxyResolutionService` that uses a Mojo `ProxyResolver` or a
-// system proxy resolution service (Windows, macOS, or Linux) that may mojo all
-// proxy resolutions to another process if enabled. The consumer is responsible
-// for providing either the `proxy_resolver::mojom::ProxyResolverFactory` or
-// `proxy_resolver::mojom::SystemProxyResolver`, respectively. If a
-// `ProxyResolutionService` is set directly via the `URLRequestContextBuilder`
-// API, it will be used instead of either of the `ProxyResolutionService`
-// implementations mentioned here.
+// Builds a configured proxy service using a Mojo ProxyResolverFactory and/or
+// SystemProxyResolver. On Windows and macOS, the system resolver is an optional
+// native backend of the configured service. Linux uses a standalone system
+// service instead. A proxy service set directly through
+// URLRequestContextBuilder takes precedence.
 class COMPONENT_EXPORT(NETWORK_SERVICE) URLRequestContextBuilderMojo
     : public net::URLRequestContextBuilder {
  public:

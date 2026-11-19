@@ -969,6 +969,26 @@ delegates system-baseline decisions to the OS, not just PAC evaluation.
 Browser-origin settings and matching override or PvD rules retain configured
 resolution. Without a native resolver, the existing resolution path is unchanged.
 
+### Enabling native system proxy resolution
+
+On Windows and macOS, `--enable-features=SystemProxyResolver` enables
+experimental native system proxy resolution in a utility process. The feature
+is disabled by default and replaces the `--use-system-proxy-resolver` switch.
+
+The legacy `--winhttp-proxy-resolver` switch takes precedence over the
+`SystemProxyResolver` feature. When both are enabled, Chrome retains the legacy
+platform PAC resolver rather than using the native utility-process resolver.
+
+On Linux builds with D-Bus support, the same feature enables the existing
+`org.freedesktop.portal.ProxyResolver` path. Linux continues to use the portal
+resolver directly rather than the configuration-aware selection described above.
+Linux builds without D-Bus support do not create a portal resolver.
+
+Native PAC support is platform-specific. The macOS utility-process resolver
+does not yet execute PAC scripts (crbug.com/442313607); this selection feature
+does not add that support. Keep the experimental feature disabled where that
+capability is required.
+
 ## Analyzing Net Logs for proxy issues
 
 Load saved Net Logs using [Net Log Viewer](https://netlog-viewer.appspot.com/).

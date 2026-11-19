@@ -4,14 +4,16 @@
 
 #include "services/network/url_request_context_builder_mojo.h"
 
+#include <utility>
+
 #include "base/check.h"
 #include "build/build_config.h"
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
 #include "net/proxy_resolution/pac_file_fetcher_impl.h"
 #include "net/proxy_resolution/proxy_config_service.h"
+#include "net/proxy_resolution/proxy_resolution_service.h"
 #include "services/network/network_context.h"
 #include "services/network/proxy_service_mojo.h"
-#include "services/network/public/cpp/features.h"
 #if BUILDFLAG(IS_WIN)
 #include "net/proxy_resolution/win/dhcp_pac_file_fetcher_win.h"
 #include "net/proxy_resolution/win/windows_system_proxy_resolution_service.h"
@@ -99,14 +101,7 @@ URLRequestContextBuilderMojo::CreateProxyResolutionService(
   DCHECK(url_request_context);
   DCHECK(host_resolver);
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  // TODO(crbug.com/40111093): Support both ProxyResolutionService
-  // implementations so that they can be swapped around at runtime based on
-  // proxy config.
-  if (auto system_service = CreateSystemProxyResolutionService(net_log)) {
-    return system_service;
-  }
-#elif BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX)
   if (mojo_system_proxy_resolver_) {
     std::unique_ptr<net::ProxyResolutionService> proxy_resolution_service =
         net::LinuxSystemProxyResolutionService::Create(
@@ -116,7 +111,12 @@ URLRequestContextBuilderMojo::CreateProxyResolutionService(
       return proxy_resolution_service;
     }
   }
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX)
+
+  std::unique_ptr<net::ProxyResolutionService> system_proxy_service;
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  system_proxy_service = CreateSystemProxyResolutionService(net_log);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
   if (mojo_proxy_resolver_factory_) {
     std::unique_ptr<net::DhcpPacFileFetcher> dhcp_pac_file_fetcher =
@@ -128,12 +128,13 @@ URLRequestContextBuilderMojo::CreateProxyResolutionService(
         std::move(mojo_proxy_resolver_factory_),
         std::move(proxy_config_service), std::move(pac_file_fetcher),
         std::move(dhcp_pac_file_fetcher), host_resolver, net_log,
-        pac_quick_check_enabled, network_delegate);
+        pac_quick_check_enabled, network_delegate,
+        std::move(system_proxy_service));
   }
 
-  return net::URLRequestContextBuilder::CreateProxyResolutionService(
-      std::move(proxy_config_service), url_request_context, host_resolver,
-      network_delegate, net_log, pac_quick_check_enabled);
+  return net::ConfiguredProxyResolutionService::CreateUsingSystemProxyResolver(
+      std::move(proxy_config_service), host_resolver, net_log,
+      pac_quick_check_enabled, std::move(system_proxy_service));
 }
 
 }  // namespace network

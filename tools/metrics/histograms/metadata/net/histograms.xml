@@ -4508,9 +4508,9 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the status of Linux system proxy resolution requests, which are
     resolved by the org.freedesktop.portal.ProxyResolver XDG desktop portal when
-    --use-system-proxy-resolver is passed. Recorded for every proxy resolution
-    request made through the Linux system proxy resolver. Aborted requests
-    (e.g., during browser shutdown) are not recorded.
+    the SystemProxyResolver feature is enabled. Recorded for every proxy
+    resolution request made through the Linux system proxy resolver. Aborted
+    requests (e.g., during browser shutdown) are not recorded.
   </summary>
 </histogram>
 

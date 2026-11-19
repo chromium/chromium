@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <string>
+#include <utility>
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -46,6 +47,23 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/net/dhcp_wpad_url_client.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/chrome_content_browser_client.h"
+#include "chrome/common/chrome_features.h"
+#include "components/prefs/pref_service.h"
+#include "components/proxy_config/proxy_config_dictionary.h"
+#include "components/proxy_config/proxy_config_pref_names.h"
+#include "content/public/test/test_utils.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "net/dns/mock_host_resolver.h"
+#include "net/proxy_resolution/proxy_config.h"
+#include "net/proxy_resolution/proxy_config_with_annotation.h"
+#include "net/proxy_resolution/proxy_list.h"
+#include "services/network/public/mojom/network_context.mojom.h"
+#include "services/proxy_resolver/public/mojom/system_proxy_resolver.mojom.h"
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 namespace {
 
@@ -129,6 +147,126 @@ IN_PROC_BROWSER_TEST_F(ProxyBrowserTest, BasicAuthWSConnect) {
   const std::u16string result = watcher.WaitAndGetTitle();
   EXPECT_TRUE(base::EqualsASCII(result, "PASS"));
 }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+constexpr char kNativeProxyTestUrl[] = "http://does.not.resolve.test/echo";
+
+class NativeSystemProxyBrowserClient
+    : public ChromeContentBrowserClient,
+      public proxy_resolver::mojom::SystemProxyResolver {
+ public:
+  NativeSystemProxyBrowserClient(const net::HostPortPair& proxy_server,
+                                 bool force_system_config)
+      : force_system_config_(force_system_config) {
+    proxy_list_.Set(proxy_server.ToString());
+  }
+
+  bool resolved_test_url() const { return resolved_test_url_; }
+
+  // ChromeContentBrowserClient:
+  void ConfigureNetworkContextParams(
+      content::BrowserContext* context,
+      bool in_memory,
+      const base::FilePath& relative_partition_path,
+      network::mojom::NetworkContextParams* network_context_params,
+      cert_verifier::mojom::CertVerifierCreationParams*
+          cert_verifier_creation_params) override {
+    ChromeContentBrowserClient::ConfigureNetworkContextParams(
+        context, in_memory, relative_partition_path, network_context_params,
+        cert_verifier_creation_params);
+    EXPECT_TRUE(network_context_params->system_proxy_resolver.is_valid());
+
+    if (force_system_config_) {
+      net::ProxyConfig config;
+      config.set_from_system(true);
+      network_context_params->initial_proxy_config =
+          net::ProxyConfigWithAnnotation(config, TRAFFIC_ANNOTATION_FOR_TESTS);
+      // Keep subsequent OS configuration updates from replacing the test
+      // config.
+      network_context_params->proxy_config_client_receiver.reset();
+    }
+    network_context_params->system_proxy_resolver.reset();
+    receivers_.Add(this, network_context_params->system_proxy_resolver
+                             .InitWithNewPipeAndPassReceiver());
+  }
+
+  // proxy_resolver::mojom::SystemProxyResolver:
+  void GetProxyForUrl(const GURL& url,
+                      GetProxyForUrlCallback callback) override {
+    if (url == GURL(kNativeProxyTestUrl)) {
+      resolved_test_url_ = true;
+    }
+    auto status = proxy_resolver::mojom::SystemProxyResolutionStatus::New();
+    status->is_success = true;
+    std::move(callback).Run(proxy_list_, std::move(status));
+  }
+
+ private:
+  const bool force_system_config_;
+  net::ProxyList proxy_list_;
+  bool resolved_test_url_ = false;
+  mojo::ReceiverSet<proxy_resolver::mojom::SystemProxyResolver> receivers_;
+};
+
+class NativeSystemProxyBrowserTest : public InProcessBrowserTest {
+ public:
+  NativeSystemProxyBrowserTest() {
+    feature_list_.InitAndEnableFeature(features::kSystemProxyResolver);
+  }
+
+  // InProcessBrowserTest:
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    host_resolver()->AddSimulatedFailure("does.not.resolve.test");
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(NativeSystemProxyBrowserTest, NativeProxyNavigation) {
+  NativeSystemProxyBrowserClient browser_client(
+      embedded_test_server()->host_port_pair(), /*force_system_config=*/true);
+  content::ScopedContentBrowserClientSetting browser_client_setting(
+      &browser_client);
+
+  // A fresh profile creates its NetworkContext through the test browser client.
+  BrowserWindowInterface* proxy_browser = CreateIncognitoBrowser();
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(proxy_browser, GURL(kNativeProxyTestUrl)));
+  EXPECT_TRUE(browser_client.resolved_test_url());
+  EXPECT_EQ(
+      "Echo",
+      content::EvalJs(proxy_browser->GetTabStripModel()->GetActiveWebContents(),
+                      "document.body.textContent"));
+  CloseBrowserSynchronously(proxy_browser);
+}
+
+IN_PROC_BROWSER_TEST_F(NativeSystemProxyBrowserTest,
+                       BrowserConfiguredProxyNavigation) {
+  browser()->GetProfile()->GetPrefs()->SetDict(
+      proxy_config::prefs::kProxy,
+      ProxyConfigDictionary::CreateFixedServers(
+          embedded_test_server()->host_port_pair().ToString(), std::string()));
+
+  NativeSystemProxyBrowserClient browser_client(
+      net::HostPortPair(GURL(kNativeProxyTestUrl).host(), 80),
+      /*force_system_config=*/false);
+  content::ScopedContentBrowserClientSetting browser_client_setting(
+      &browser_client);
+
+  BrowserWindowInterface* proxy_browser = CreateIncognitoBrowser();
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(proxy_browser, GURL(kNativeProxyTestUrl)));
+  EXPECT_FALSE(browser_client.resolved_test_url());
+  EXPECT_EQ(
+      "Echo",
+      content::EvalJs(proxy_browser->GetTabStripModel()->GetActiveWebContents(),
+                      "document.body.textContent"));
+  CloseBrowserSynchronously(proxy_browser);
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 // Fetches a PAC script via an http:// URL, and ensures that requests to
 // https://www.google.com fail with ERR_PROXY_CONNECTION_FAILED (by virtue of

@@ -776,15 +776,6 @@ static_assert(std::string_view(kUserDataDir) ==
               std::string_view(ash::chrome_switches::kUserDataDir));
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-// Uses the operating system to resolve proxies instead of using Chromium's
-// normal proxy resolution logic. On Windows this uses WinHttp, on macOS this
-// uses CFNetwork, and on Linux this uses the
-// org.freedesktop.portal.ProxyResolver XDG desktop portal.
-//
-// TODO(crbug.com/40111093): Only use the system resolver whenever Chrome is
-// exclusively using system proxy configs.
-inline constexpr char kUseSystemProxyResolver[] = "use-system-proxy-resolver";
-
 // Examines a .crx for validity and prints the result.
 inline constexpr char kValidateCrx[] = "validate-crx";
 
@@ -828,8 +819,9 @@ inline constexpr char kWindowSize[] = "window-size";
 // Specify the initial window workspace: --window-workspace=id
 inline constexpr char kWindowWorkspace[] = "window-workspace";
 
-// Uses WinHTTP to fetch and evaluate PAC scripts. Otherwise the default is to
-// use Chromium's network stack to fetch, and V8 to evaluate.
+// Uses WinHTTP on Windows or CFNetwork on macOS to fetch and evaluate PAC
+// scripts instead of Chromium's network stack and V8. Despite its name, this
+// switch is supported on both Windows and macOS.
 inline constexpr char kWinHttpProxyResolver[] = "winhttp-proxy-resolver";
 
 // Specifies which category option was clicked in the Windows Jumplist that

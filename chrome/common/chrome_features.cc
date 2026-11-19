@@ -1765,6 +1765,14 @@ BASE_FEATURE(kProcessPerSiteForDSE,
 #endif
 );
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+// Uses native resolution for system proxy baselines on Windows and macOS.
+// Linux builds with D-Bus support use the XDG portal resolver directly.
+// TODO(crbug.com/40111093): Restrict Linux native resolution to system proxy
+// configurations as well.
+BASE_FEATURE(kSystemProxyResolver, base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
 // Disable downloads of unsafe file types over insecure transports if initiated
 // from a secure page. As of M89, mixed downloads are blocked on all platforms.
 BASE_FEATURE(kTreatUnsafeDownloadsAsActive, base::FEATURE_ENABLED_BY_DEFAULT);
