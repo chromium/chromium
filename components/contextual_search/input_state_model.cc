@@ -973,6 +973,7 @@ void InputStateModel::EnterAimMode() {
 void InputStateModel::RecomputeRouting() {
   if (!dynamic_aim_fulfillment_enabled_) {
     state_.will_fulfill_in_aim = true;
+    fulfillment_url_params_.clear();
     return;
   }
   std::vector<FileInfo> file_infos;
@@ -993,6 +994,7 @@ void InputStateModel::RecomputeRouting() {
     aim_mode_active_ = true;
   }
   state_.active_model = decision.model;
+  fulfillment_url_params_ = decision.url_params;
 }
 
 void InputStateModel::UpdateHintText() {
@@ -1095,6 +1097,16 @@ std::map<std::string, std::string> InputStateModel::GetAdditionalQueryParams() {
 
 const InputState& InputStateModel::GetInputState() const {
   return state_;
+}
+
+FulfillmentDecision InputStateModel::GetFulfillmentDecision() {
+  FulfillmentDecision decision;
+  decision.will_fulfill_in_aim = state_.will_fulfill_in_aim;
+  decision.model = state_.active_model;
+  decision.url_params = dynamic_aim_fulfillment_enabled_
+                            ? fulfillment_url_params_
+                            : GetAdditionalQueryParams();
+  return decision;
 }
 
 void InputStateModel::SetLensCrop(const std::string& data_uri) {

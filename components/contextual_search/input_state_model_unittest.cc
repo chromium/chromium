@@ -2593,4 +2593,27 @@ TEST_F(InputStateModelDynamicAimTest,
               testing::UnorderedElementsAre(testing::Pair("nem", "143")));
 }
 
+// The submit decision matches the routing, with the tool and model params.
+TEST_F(InputStateModelDynamicAimTest, GetFulfillmentDecision) {
+  input_state_model_->SetActiveTool(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
+
+  // Not opted in: AIM with today's params.
+  FulfillmentDecision decision = input_state_model_->GetFulfillmentDecision();
+  EXPECT_TRUE(decision.will_fulfill_in_aim);
+  EXPECT_EQ(decision.url_params,
+            input_state_model_->GetAdditionalQueryParams());
+
+  // Opted in: Create Images goes to SRP with only its own params.
+  input_state_model_->EnableDynamicAimFulfillment();
+  decision = input_state_model_->GetFulfillmentDecision();
+  EXPECT_FALSE(decision.will_fulfill_in_aim);
+  EXPECT_EQ(decision.url_params, (UrlParams{{"imgn", "1"}}));
+
+  // Canvas goes to AIM.
+  input_state_model_->SetActiveTool(omnibox::ToolMode::TOOL_MODE_CANVAS);
+  decision = input_state_model_->GetFulfillmentDecision();
+  EXPECT_TRUE(decision.will_fulfill_in_aim);
+  EXPECT_EQ(decision.url_params, (UrlParams{{"udm", "50"}}));
+}
+
 }  // namespace contextual_search

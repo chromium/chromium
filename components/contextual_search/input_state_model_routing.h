@@ -14,6 +14,8 @@
 
 #include "third_party/omnibox_proto/model_mode.pb.h"
 
+class GURL;
+
 namespace omnibox {
 struct InputState;
 }  // namespace omnibox
@@ -118,6 +120,19 @@ FulfillmentDecision ComputeFulfillment(const omnibox::InputState& state,
                                        const AttachmentCounts& attachments,
                                        const SrpEligibleAttachments& eligible,
                                        bool has_valid_config);
+
+// Routes a submitted query: the typed query (submitted as its "search what you
+// typed" match) or a clicked suggestion, with `submit_params` from its URL.
+// Goes to AIM if `decision` does or `submit_params` select AIM (`udm=50` or
+// `nem`), otherwise to SRP. The URL params are `submit_params` with
+// `decision`'s on top.
+FulfillmentDecision ResolveSubmitFulfillment(
+    const FulfillmentDecision& decision,
+    UrlParams submit_params);
+
+// Returns whether `url` is an AIM URL: like the params that route to AIM, it
+// has `udm=50` or `nem`.
+bool UrlRoutesToAim(const GURL& url);
 
 }  // namespace contextual_search
 

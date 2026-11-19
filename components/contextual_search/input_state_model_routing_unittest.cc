@@ -335,5 +335,43 @@ TEST(InputStateModelRoutingTest, DisableActiveModelSelectionOmitsModelParams) {
             UrlParams({{"rc", "1"}, {"udm", "50"}}));
 }
 
+TEST(InputStateModelRoutingTest, ResolveSubmitFulfillment) {
+  FulfillmentDecision srp;
+  srp.will_fulfill_in_aim = false;
+  srp.url_params = {{"imgn", "1"}};
+  FulfillmentDecision aim;
+  aim.url_params = {{"nem", "143"}};
+
+  // The typed query's match (no `udm`) follows the decision, keeping its
+  // params under the decision's.
+  FulfillmentDecision result =
+      ResolveSubmitFulfillment(srp, {{"oq", "q"}, {"imgn", "0"}});
+  EXPECT_FALSE(result.will_fulfill_in_aim);
+  EXPECT_EQ(result.url_params, UrlParams({{"oq", "q"}, {"imgn", "1"}}));
+  result = ResolveSubmitFulfillment(aim, {{"oq", "q"}});
+  EXPECT_TRUE(result.will_fulfill_in_aim);
+  EXPECT_EQ(result.url_params, UrlParams({{"oq", "q"}, {"nem", "143"}}));
+
+  // A suggestion marked for AIM goes to AIM even if the decision is SRP.
+  result = ResolveSubmitFulfillment(srp, {{"udm", "50"}});
+  EXPECT_TRUE(result.will_fulfill_in_aim);
+  EXPECT_EQ(result.url_params, UrlParams({{"imgn", "1"}, {"udm", "50"}}));
+  result = ResolveSubmitFulfillment(srp, {{"nem", "143"}});
+  EXPECT_TRUE(result.will_fulfill_in_aim);
+  EXPECT_EQ(result.url_params, UrlParams({{"imgn", "1"}, {"nem", "143"}}));
+  // AIM gets `udm=50`, or `nem` without `udm`.
+  result = ResolveSubmitFulfillment(aim, {{"udm", "50"}});
+  EXPECT_EQ(result.url_params, UrlParams({{"nem", "143"}}));
+}
+
+TEST(InputStateModelRoutingTest, UrlRoutesToAim) {
+  EXPECT_TRUE(UrlRoutesToAim(GURL("https://www.google.com/search?q=a&udm=50")));
+  EXPECT_TRUE(
+      UrlRoutesToAim(GURL("https://www.google.com/search?q=a&nem=143")));
+  EXPECT_FALSE(UrlRoutesToAim(GURL("https://www.google.com/search?q=a")));
+  EXPECT_FALSE(
+      UrlRoutesToAim(GURL("https://www.google.com/search?q=a&udm=24")));
+}
+
 }  // namespace
 }  // namespace contextual_search

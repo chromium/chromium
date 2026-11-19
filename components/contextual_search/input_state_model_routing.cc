@@ -19,8 +19,10 @@
 #include "components/lens/lens_overlay_mime_type.h"
 #include "components/omnibox/common/composebox_features.h"
 #include "components/omnibox/common/input_state.h"
+#include "net/base/url_util.h"
 #include "third_party/omnibox_proto/tool_config.pb.h"
 #include "third_party/omnibox_proto/url_param.pb.h"
+#include "url/gurl.h"
 
 namespace contextual_search {
 
@@ -39,6 +41,15 @@ bool ParamsRouteToAim(const UrlParams& params) {
   }
   auto it = params.find(kUdmKey);
   return it != params.end() && it->second == kAimUdmValue;
+}
+
+// AIM needs `udm=50`, or `nem` instead of `udm`.
+void AddAimParam(UrlParams& params) {
+  if (params.contains(kNemKey)) {
+    params.erase(kUdmKey);
+  } else {
+    params[kUdmKey] = kAimUdmValue;
+  }
 }
 
 // Adds `to_merge` to `params`, replacing params with the same key.
@@ -229,14 +240,36 @@ FulfillmentDecision ComputeFulfillment(const omnibox::InputState& state,
       MergeParams(params, model_config->aim_url_params());
     }
   }
-  // AIM needs `udm=50`, or `nem` instead of `udm`.
-  if (params.contains(kNemKey)) {
-    params.erase(kUdmKey);
-  } else {
-    params[kUdmKey] = kAimUdmValue;
-  }
+  AddAimParam(params);
   decision.url_params = std::move(params);
   return decision;
+}
+
+FulfillmentDecision ResolveSubmitFulfillment(
+    const FulfillmentDecision& decision,
+    UrlParams submit_params) {
+  FulfillmentDecision resolved = decision;
+  resolved.will_fulfill_in_aim =
+      decision.will_fulfill_in_aim || ParamsRouteToAim(submit_params);
+  for (const auto& [key, value] : decision.url_params) {
+    submit_params[key] = value;
+  }
+  if (resolved.will_fulfill_in_aim) {
+    AddAimParam(submit_params);
+  }
+  resolved.url_params = std::move(submit_params);
+  return resolved;
+}
+
+bool UrlRoutesToAim(const GURL& url) {
+  UrlParams params;
+  for (const char* key : {kUdmKey, kNemKey}) {
+    std::string value;
+    if (net::GetValueForKeyInQuery(url, key, &value)) {
+      params[key] = std::move(value);
+    }
+  }
+  return ParamsRouteToAim(params);
 }
 
 }  // namespace contextual_search

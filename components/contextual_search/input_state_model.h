@@ -14,6 +14,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ref.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
+#include "components/contextual_search/input_state_model_routing.h"
 #include "components/omnibox/common/input_state.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "third_party/omnibox_proto/input_type.pb.h"
@@ -128,6 +129,11 @@ class InputStateModel {
 
   // Gets additional query params for the current state.
   std::map<std::string, std::string> GetAdditionalQueryParams();
+
+  // Returns where to send the current query (AIM or the Search results page)
+  // and its URL params. Without dynamic AIM fulfillment, that's always AIM
+  // with `GetAdditionalQueryParams()`.
+  FulfillmentDecision GetFulfillmentDecision();
 
   // Turns on dynamic AIM fulfillment: `InputState::will_fulfill_in_aim` is
   // computed instead of always true. One-way, since the model can be shared by
@@ -285,6 +291,8 @@ class InputStateModel {
   // Whether the query is in AI Mode: set when routing goes to AIM or a model is
   // set; cleared when the model is cleared.
   bool aim_mode_active_ = false;
+  // URL params of the last routing result, for submit.
+  UrlParams fulfillment_url_params_;
 
   base::WeakPtrFactory<InputStateModel> weak_ptr_factory_{this};
 };

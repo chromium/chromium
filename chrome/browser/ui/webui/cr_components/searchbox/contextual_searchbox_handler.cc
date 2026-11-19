@@ -60,6 +60,7 @@
 #include "components/contextual_search/contextual_search_service.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
 #include "components/contextual_search/input_state_model.h"
+#include "components/contextual_search/input_state_model_routing.h"
 #include "components/contextual_search/pref_names.h"
 #include "components/contextual_tasks/public/account_utils.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
@@ -2336,12 +2337,26 @@ void ContextualSearchboxHandler::ComputeAndOpenQueryUrl(
     omnibox::ChromeAimEntryPoint aim_entry_point,
     std::map<std::string, std::string> additional_params,
     bool is_voice_search) {
+  using SearchUrlType =
+      contextual_search::ContextualSearchContextController::SearchUrlType;
   auto* contextual_session_handle = GetContextualSessionHandle();
   if (contextual_session_handle) {
     // Upload the cached tab context if it exists.
     UploadSnapshotTabContextIfPresent();
 
-    if (input_state_model_) {
+    SearchUrlType search_url_type = SearchUrlType::kAim;
+    if (input_state_model_ && opted_in_to_dynamic_aim_fulfillment_) {
+      // The query goes where the input state model decided (AIM or SRP), unless
+      // its params ask for AIM (e.g. an AI Mode suggestion). Typed queries are
+      // submitted as their "search what you typed" match, with no `udm`.
+      contextual_search::FulfillmentDecision decision =
+          contextual_search::ResolveSubmitFulfillment(
+              input_state_model_->GetFulfillmentDecision(),
+              std::move(additional_params));
+      additional_params = std::move(decision.url_params);
+      search_url_type = decision.will_fulfill_in_aim ? SearchUrlType::kAim
+                                                     : SearchUrlType::kSrp;
+    } else if (input_state_model_) {
       for (auto const& [key, val] :
            // Appends url params for tool and model selection.
            input_state_model_->GetAdditionalQueryParams()) {
@@ -2357,6 +2372,7 @@ void ContextualSearchboxHandler::ComputeAndOpenQueryUrl(
     // associated with the query.
     search_url_request_info->query_start_time = base::Time::Now();
     search_url_request_info->query_text = query_text;
+    search_url_request_info->search_url_type = search_url_type;
     search_url_request_info->additional_params = additional_params;
     search_url_request_info->aim_entry_point = aim_entry_point;
     search_url_request_info->is_voice_search = is_voice_search;
@@ -2547,6 +2563,20 @@ void ContextualSearchboxHandler::ProcessContextAndOpenUrl(
   }
 
   auto* contextual_session_handle = GetContextualSessionHandle();
+
+  // A Search results page URL opens like a normal search: skip the AIM side
+  // panel and don't hand the session to the target tab, where a later AIM
+  // navigation would pick up its context.
+  if (opted_in_to_dynamic_aim_fulfillment_ &&
+      !contextual_search::UrlRoutesToAim(url)) {
+    OpenUrl(url, disposition, base::DoNothing());
+    if (base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox)) {
+      ClearFiles(/*should_block_auto_suggested_tabs=*/false,
+                 /*query_submitted=*/true);
+    }
+    contextual_session_handle->ClearSubmittedContextTokens();
+    return;
+  }
 
   auto* contextual_session_service =
       ContextualSearchServiceFactory::GetForProfile(profile_);

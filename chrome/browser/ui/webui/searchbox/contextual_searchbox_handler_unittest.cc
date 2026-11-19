@@ -129,6 +129,8 @@
 #endif  // BUILDFLAG(IS_MAC)
 
 using contextual_search::SessionState;
+using SearchUrlType =
+    contextual_search::ContextualSearchContextController::SearchUrlType;
 
 namespace {
 constexpr char kClientUploadDurationQueryParameter[] = "cud";
@@ -310,6 +312,7 @@ class FakeContextualSearchboxHandler : public ContextualSearchboxHandler {
         ->NotifySessionStateChanged(session_state);
   }
 
+  using ContextualSearchboxHandler::ContextualizeQueryAndOpenUrl;
   using ContextualSearchboxHandler::InitializeInputStateModel;
 
   contextual_search::InputStateModel* input_state_model() {
@@ -2838,6 +2841,88 @@ TEST_F(ContextualSearchboxHandlerTest, OptInToDynamicAimFulfillment) {
   handler().InitializeInputStateModel();
   ASSERT_TRUE(handler().input_state_model());
   EXPECT_TRUE(handler().input_state_model()->dynamic_aim_fulfillment_enabled());
+}
+
+// Opted in, a query with nothing that needs AIM opens the Search results page
+// without `udm`, and the session isn't handed to the tab.
+TEST_F(ContextualSearchboxHandlerTest, DynamicAimFulfillment_QueryToSrp) {
+  handler().OptInToDynamicAimFulfillment();
+  SearchUrlType search_url_type = SearchUrlType::kAim;
+  EXPECT_CALL(query_controller(), CreateSearchUrl)
+      .WillOnce([&](auto&& request_info,
+                    base::OnceCallback<void(GURL)> callback) {
+        search_url_type = request_info->search_url_type;
+        EXPECT_FALSE(request_info->additional_params.contains("udm"));
+        std::move(callback).Run(GURL("https://www.google.com/search?q=query"));
+      });
+
+  SubmitQueryAndWaitForNavigation();
+  EXPECT_EQ(search_url_type, SearchUrlType::kSrp);
+  auto* helper =
+      ContextualSearchWebContentsHelper::FromWebContents(web_contents());
+  EXPECT_FALSE(helper && helper->session_handle());
+}
+
+// Opted in, a query in AI Mode (here, a picked model) still opens AIM.
+TEST_F(ContextualSearchboxHandlerTest, DynamicAimFulfillment_AimModeToAim) {
+  handler().OptInToDynamicAimFulfillment();
+  handler().input_state_model()->SetActiveModel(omnibox::MODEL_MODE_GEMINI_PRO);
+  SearchUrlType search_url_type = SearchUrlType::kSrp;
+  EXPECT_CALL(query_controller(), CreateSearchUrl)
+      .WillOnce([&](auto&& request_info, auto callback) {
+        search_url_type = request_info->search_url_type;
+      });
+
+  handler().SubmitQuery(kQueryText, 1, false, false, false, false,
+                        /*is_voice_search=*/false);
+  EXPECT_EQ(search_url_type, SearchUrlType::kAim);
+}
+
+// Opted in, a submitted match follows its own params: the typed query's match
+// (no `udm`) opens SRP with its params kept, and an AI Mode suggestion opens
+// AIM.
+TEST_F(ContextualSearchboxHandlerTest, DynamicAimFulfillment_MatchParams) {
+  handler().OptInToDynamicAimFulfillment();
+  std::vector<std::pair<SearchUrlType, std::map<std::string, std::string>>>
+      requests;
+  EXPECT_CALL(query_controller(), CreateSearchUrl)
+      .Times(2)
+      .WillRepeatedly([&](auto&& request_info, auto callback) {
+        requests.emplace_back(request_info->search_url_type,
+                              request_info->additional_params);
+      });
+
+  auto submit_match = [&](std::map<std::string, std::string> params) {
+    handler().ContextualizeQueryAndOpenUrl(
+        kQueryText, ui::mojom::WindowOpenDisposition::kCurrentTab,
+        omnibox::UNKNOWN_AIM_ENTRY_POINT, std::move(params),
+        /*is_voice_search=*/false);
+  };
+  submit_match({{"oq", "query"}});
+  submit_match({{"oq", "query"}, {"udm", "50"}});
+
+  ASSERT_EQ(requests.size(), 2u);
+  EXPECT_EQ(requests[0].first, SearchUrlType::kSrp);
+  EXPECT_EQ(requests[0].second,
+            (std::map<std::string, std::string>{{"oq", "query"}}));
+  EXPECT_EQ(requests[1].first, SearchUrlType::kAim);
+  EXPECT_EQ(requests[1].second.at("udm"), "50");
+}
+
+// A handler that didn't opt in keeps today's AIM URL, even if its model was
+// opted in by another handler.
+TEST_F(ContextualSearchboxHandlerTest, DynamicAimFulfillment_NotOptedIn) {
+  handler().input_state_model()->EnableDynamicAimFulfillment();
+  SearchUrlType search_url_type = SearchUrlType::kSrp;
+  EXPECT_CALL(query_controller(), CreateSearchUrl)
+      .WillOnce([&](auto&& request_info, auto callback) {
+        search_url_type = request_info->search_url_type;
+        EXPECT_EQ(request_info->additional_params.at("udm"), "50");
+      });
+
+  handler().SubmitQuery(kQueryText, 1, false, false, false, false,
+                        /*is_voice_search=*/false);
+  EXPECT_EQ(search_url_type, SearchUrlType::kAim);
 }
 
 TEST_F(ContextualSearchboxHandlerTest, SubmitQueryWithAdditionalParams) {

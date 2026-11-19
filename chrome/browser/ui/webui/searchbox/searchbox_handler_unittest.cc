@@ -3645,6 +3645,49 @@ TEST_F(OmniboxComposeboxHandlerTest,
   EXPECT_TRUE(session_handle_->GetSubmittedContextTokens().empty());
 }
 
+// Same setup as `ProcessContextAndOpenUrl_SingleActiveTabHandoffToSidePanel`,
+// where the URL opens in the side panel; with dynamic AIM fulfillment, a
+// Search results page URL (no `udm=50` or `nem`) doesn't.
+TEST_F(OmniboxComposeboxHandlerTest,
+       ProcessContextAndOpenUrl_SrpUrlDoesNotOpenInSidePanel) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(omnibox::kContextManagementInComposebox);
+  handler_->OptInToDynamicAimFulfillment();
+
+  auto* mock_ui_service = static_cast<MockContextualTasksUiService*>(
+      contextual_tasks::ContextualTasksUiServiceFactory::GetInstance()
+          ->SetTestingFactoryAndUse(
+              profile(),
+              base::BindLambdaForTesting([&](content::BrowserContext* context)
+                                             -> std::unique_ptr<KeyedService> {
+                return std::make_unique<
+                    testing::NiceMock<MockContextualTasksUiService>>(
+                    Profile::FromBrowserContext(context));
+              })));
+
+  sessions::SessionTabHelper::CreateForWebContents(
+      web_contents_.get(), base::BindRepeating([](content::WebContents*) {
+        return static_cast<sessions::SessionTabHelperDelegate*>(nullptr);
+      }));
+  base::UnguessableToken active_tab_token = base::UnguessableToken::Create();
+  contextual_search::FileInfo file_info;
+  file_info.file_token = active_tab_token;
+  file_info.tab_session_id =
+      sessions::SessionTabHelper::IdForTab(web_contents_.get());
+  auto* mock_controller =
+      static_cast<contextual_search::MockContextualSearchContextController*>(
+          session_handle_->GetController());
+  EXPECT_CALL(*mock_controller, GetFileInfo(active_tab_token))
+      .WillRepeatedly(testing::Return(&file_info));
+  session_handle_->SetSubmittedContextTokens({active_tab_token});
+
+  EXPECT_CALL(*mock_ui_service, StartTaskUiInSidePanelImpl).Times(0);
+
+  OpenUrl(GURL("https://www.google.com/search?q=test"),
+          ui::mojom::WindowOpenDisposition::kCurrentTab);
+  EXPECT_TRUE(session_handle_->GetSubmittedContextTokens().empty());
+}
+
 TEST_F(OmniboxComposeboxHandlerTest,
        ProcessContextAndOpenUrl_OmniboxPageActionSetsEntryPoint206) {
   base::test::ScopedFeatureList feature_list;

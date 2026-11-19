@@ -432,6 +432,9 @@ class ContextualSearchboxHandler
       std::map<std::string, std::string> additional_params,
       bool is_voice_search);
 
+  // When this handler opted in to dynamic AIM fulfillment, opens AIM or the
+  // Search results page as the input state model and `additional_params`
+  // decide.
   void ComputeAndOpenQueryUrl(
       const std::string& query_text,
       ui::mojom::WindowOpenDisposition disposition,
