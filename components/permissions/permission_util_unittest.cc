@@ -10,10 +10,14 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
+#include "net/base/net_errors.h"
 #include "net/http/http_response_headers.h"
+#include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+#include "url/scheme_host_port.h"
+#include "url/url_constants.h"
 
 namespace permissions {
 
@@ -131,6 +135,65 @@ TEST_F(PermissionUtilGetLastCommittedOriginAsURLTest,
   navigation->Start();
   ASSERT_EQ(pending_url, web_contents()->GetVisibleURL());
   ASSERT_EQ(rfh, web_contents()->GetPrimaryMainFrame());
+
+  EXPECT_EQ(GURL(), PermissionUtil::GetLastCommittedOriginAsURL(rfh));
+}
+
+// Regression test for https://crbug.com/576129749. A sandboxed page navigates
+// itself to about:blank. The about:blank document inherits the page's opaque
+// origin (precursor https://example.com) and its sandbox flags. It is still a
+// primary main frame, but its origin was inherited, not derived from its own
+// URL, so it must not use the permissions of https://example.com.
+TEST_F(PermissionUtilGetLastCommittedOriginAsURLTest,
+       SandboxedMainFrameNavigatedToAboutBlank) {
+  content::RenderFrameHost* sandboxed_rfh =
+      NavigateAndCommitSandboxed(GURL("https://example.com/path"));
+  ASSERT_TRUE(sandboxed_rfh->GetLastCommittedOrigin().opaque());
+
+  content::RenderFrameHost* rfh =
+      content::NavigationSimulator::NavigateAndCommitFromDocument(
+          GURL(url::kAboutBlankURL), sandboxed_rfh);
+  ASSERT_TRUE(rfh->IsInPrimaryMainFrame());
+  ASSERT_TRUE(rfh->GetLastCommittedOrigin().opaque());
+  ASSERT_EQ(url::SchemeHostPort(GURL("https://example.com/")),
+            rfh->GetLastCommittedOrigin().GetTupleOrPrecursorTupleIfOpaque());
+
+  EXPECT_EQ(GURL(), PermissionUtil::GetLastCommittedOriginAsURL(rfh));
+}
+
+// A same-document navigation keeps the document and its origin. A sandboxed
+// page must keep using the permissions of its precursor afterwards.
+TEST_F(PermissionUtilGetLastCommittedOriginAsURLTest,
+       SandboxedMainFrameSameDocumentNavigation) {
+  content::RenderFrameHost* rfh =
+      NavigateAndCommitSandboxed(GURL("https://example.com/path"));
+  ASSERT_TRUE(rfh->GetLastCommittedOrigin().opaque());
+
+  auto navigation = content::NavigationSimulator::CreateRendererInitiated(
+      GURL("https://example.com/path#fragment"), rfh);
+  navigation->CommitSameDocument();
+  ASSERT_EQ(rfh, web_contents()->GetPrimaryMainFrame());
+
+  EXPECT_EQ(GURL("https://example.com/"),
+            PermissionUtil::GetLastCommittedOriginAsURL(rfh));
+}
+
+// An opaque primary main frame whose URL matches its precursor origin, but to
+// which no sandbox restrictions apply, must not use the precursor's
+// permissions.
+TEST_F(PermissionUtilGetLastCommittedOriginAsURLTest,
+       UnsandboxedOpaqueMainFrameIsNotAttributedToPrecursor) {
+  // A failed navigation commits such a document.
+  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      GURL("https://example.com/path"), web_contents());
+  navigation->Fail(net::ERR_TIMED_OUT);
+  navigation->CommitErrorPage();
+  content::RenderFrameHost* rfh = navigation->GetFinalRenderFrameHost();
+  ASSERT_TRUE(rfh->IsInPrimaryMainFrame());
+  ASSERT_TRUE(rfh->GetLastCommittedOrigin().opaque());
+  ASSERT_EQ(url::SchemeHostPort(GURL("https://example.com/")),
+            rfh->GetLastCommittedOrigin().GetTupleOrPrecursorTupleIfOpaque());
+  ASSERT_FALSE(rfh->IsSandboxed(network::mojom::WebSandboxFlags::kOrigin));
 
   EXPECT_EQ(GURL(), PermissionUtil::GetLastCommittedOriginAsURL(rfh));
 }

@@ -5,6 +5,7 @@
 #include "components/permissions/permission_request_manager.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
@@ -74,12 +75,14 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "services/device/public/cpp/test/scoped_geolocation_overrider.h"
+#include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom-shared.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+#include "url/scheme_host_port.h"
 
 namespace {
 using PredictionGrantLikelihood =
@@ -2854,6 +2857,202 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
                                         blink::PermissionType::GEOLOCATION))
           .status,
       blink::mojom::PermissionStatus::GRANTED);
+}
+
+// Tests for https://crbug.com/576129749: a popup that escapes the sandbox
+// must not be able to use the permissions of the embedder.
+class PermissionRequestManagerSandboxEscapingPopupBrowserTest
+    : public PermissionRequestManagerBrowserTest {
+ protected:
+  // Sets up an embedder page with a sandboxed iframe whose popups can escape
+  // the sandbox, and returns the iframe. The iframe loads `src` if given, else
+  // inline content.
+  content::RenderFrameHost* NavigateToEmbedderWithSandboxedIframe(
+      std::string_view src) {
+    embedder_url_ = embedded_test_server()->GetURL("localhost", "/title1.html");
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), embedder_url_));
+
+    constexpr char kAppendIframeScript[] = R"(
+      new Promise(resolve => {
+        const iframe = document.createElement('iframe');
+        iframe.setAttribute('sandbox',
+            'allow-scripts allow-popups allow-popups-to-escape-sandbox');
+        if ($1) {
+          iframe.src = $1;
+        } else {
+          iframe.srcdoc = '<p>untrusted content</p>';
+        }
+        iframe.onload = () => resolve(true);
+        document.body.appendChild(iframe);
+      });
+    )";
+    EXPECT_EQ(true,
+              content::EvalJs(GetActiveMainFrame(),
+                              content::JsReplace(kAppendIframeScript, src)));
+    content::RenderFrameHost* iframe =
+        content::ChildFrameAt(GetActiveMainFrame(), 0);
+    EXPECT_TRUE(iframe);
+    EXPECT_TRUE(iframe->GetLastCommittedOrigin().opaque());
+    return iframe;
+  }
+
+  // Runs `script` with a user gesture in `iframe`, which is expected to open a
+  // popup, and returns the popup's primary main frame.
+  content::RenderFrameHost* OpenPopupFromIframe(
+      content::RenderFrameHost* iframe,
+      std::string_view script) {
+    content::WebContentsAddedObserver popup_observer;
+    EXPECT_TRUE(content::ExecJs(iframe, script));
+    content::WebContents* popup_contents = popup_observer.GetWebContents();
+    content::RenderFrameHost* popup_rfh = popup_contents->GetPrimaryMainFrame();
+
+    // Check the preconditions of the bug: the popup is a primary main frame
+    // that is not sandboxed, but shares the iframe's opaque origin, whose
+    // precursor is the embedder's origin.
+    EXPECT_TRUE(popup_rfh->IsInPrimaryMainFrame());
+    EXPECT_FALSE(
+        popup_rfh->IsSandboxed(network::mojom::WebSandboxFlags::kOrigin));
+    EXPECT_TRUE(popup_rfh->GetLastCommittedOrigin().opaque());
+    EXPECT_EQ(
+        url::SchemeHostPort(embedder_url_),
+        popup_rfh->GetLastCommittedOrigin().GetTupleOrPrecursorTupleIfOpaque());
+    EXPECT_EQ(iframe->GetLastCommittedOrigin(),
+              popup_rfh->GetLastCommittedOrigin());
+
+    popup_prompt_factory_ =
+        std::make_unique<permissions::MockPermissionPromptFactory>(
+            permissions::PermissionRequestManager::FromWebContents(
+                popup_contents));
+    popup_prompt_factory_->set_response_type(
+        permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
+    return popup_rfh;
+  }
+
+  // Grants geolocation to the embedder by accepting a prompt in its tab.
+  void GrantGeolocationToEmbedder() {
+    bubble_factory()->set_response_type(
+        permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
+    ASSERT_EQ(blink::mojom::PermissionStatus::GRANTED,
+              RequestPermissionFromDocumentSync(
+                  GetActiveMainFrame(),
+                  content::PermissionDescriptorUtil::
+                      CreatePermissionDescriptorForPermissionType(
+                          blink::PermissionType::GEOLOCATION))
+                  .status);
+    ASSERT_EQ(1, bubble_factory()->show_count());
+  }
+
+  // Expects that `popup_rfh` is not attributed to any origin, and that a
+  // geolocation status check and a geolocation request from it are both
+  // denied, without showing a prompt in the popup's tab.
+  void ExpectPopupCannotUseEmbedderPermissions(
+      content::RenderFrameHost* popup_rfh) {
+    EXPECT_EQ(GURL(), permissions::PermissionUtil::GetLastCommittedOriginAsURL(
+                          popup_rfh));
+
+    auto descriptor = content::PermissionDescriptorUtil::
+        CreatePermissionDescriptorForPermissionType(
+            blink::PermissionType::GEOLOCATION);
+    EXPECT_EQ(blink::mojom::PermissionStatus::DENIED,
+              browser()
+                  ->GetProfile()
+                  ->GetPermissionController()
+                  ->GetPermissionResultForCurrentDocument(descriptor, popup_rfh)
+                  .status);
+    EXPECT_EQ(blink::mojom::PermissionStatus::DENIED,
+              RequestPermissionFromDocumentSync(popup_rfh, descriptor.Clone())
+                  .status);
+    EXPECT_EQ(0, popup_prompt_factory_->show_count());
+  }
+
+  void TearDownOnMainThread() override {
+    popup_prompt_factory_.reset();
+    PermissionRequestManagerBrowserTest::TearDownOnMainThread();
+  }
+
+  GURL embedder_url_;
+  std::unique_ptr<permissions::MockPermissionPromptFactory>
+      popup_prompt_factory_;
+};
+
+// The embedder holds a geolocation grant. The popup must not be able to use it.
+IN_PROC_BROWSER_TEST_F(PermissionRequestManagerSandboxEscapingPopupBrowserTest,
+                       PopupDoesNotUseEmbedderGrant) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  content::RenderFrameHost* iframe =
+      NavigateToEmbedderWithSandboxedIframe(/*src=*/"");
+  content::RenderFrameHost* embedder_rfh = GetActiveMainFrame();
+  GrantGeolocationToEmbedder();
+
+  content::RenderFrameHost* popup_rfh =
+      OpenPopupFromIframe(iframe, "window.open('');");
+  ExpectPopupCannotUseEmbedderPermissions(popup_rfh);
+
+  // The embedder itself is unaffected.
+  EXPECT_EQ(
+      embedder_url_.DeprecatedGetOriginAsURL(),
+      permissions::PermissionUtil::GetLastCommittedOriginAsURL(embedder_rfh));
+}
+
+// The embedder holds no grant. The popup must not be able to show a prompt
+// that names the embedder's origin, because accepting it would store a grant
+// for the embedder ("mint" variant of the bug).
+IN_PROC_BROWSER_TEST_F(PermissionRequestManagerSandboxEscapingPopupBrowserTest,
+                       PopupCannotPromptOnBehalfOfEmbedder) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  content::RenderFrameHost* iframe =
+      NavigateToEmbedderWithSandboxedIframe(/*src=*/"");
+  content::RenderFrameHost* embedder_rfh = GetActiveMainFrame();
+
+  content::RenderFrameHost* popup_rfh =
+      OpenPopupFromIframe(iframe, "window.open('');");
+  ExpectPopupCannotUseEmbedderPermissions(popup_rfh);
+
+  // No grant was persisted for the embedder.
+  EXPECT_EQ(blink::mojom::PermissionStatus::ASK,
+            browser()
+                ->GetProfile()
+                ->GetPermissionController()
+                ->GetPermissionResultForCurrentDocument(
+                    content::PermissionDescriptorUtil::
+                        CreatePermissionDescriptorForPermissionType(
+                            blink::PermissionType::GEOLOCATION),
+                    embedder_rfh)
+                .status);
+}
+
+// An opaque primary main frame whose URL matches its precursor origin, but to
+// which no sandbox restrictions apply, must not use the precursor's
+// permissions.
+IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
+                       UnsandboxedOpaqueMainFrameIsNotAttributedToPrecursor) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  // A failed navigation commits such a document.
+  const GURL url = embedded_test_server()->GetURL("localhost", "/close-socket");
+  content::WebContents* web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  EXPECT_FALSE(content::NavigateToURL(web_contents, url));
+
+  content::RenderFrameHost* rfh = GetActiveMainFrame();
+  ASSERT_TRUE(rfh->IsInPrimaryMainFrame());
+  ASSERT_TRUE(rfh->GetLastCommittedOrigin().opaque());
+  ASSERT_EQ(url::SchemeHostPort(url),
+            rfh->GetLastCommittedOrigin().GetTupleOrPrecursorTupleIfOpaque());
+  ASSERT_EQ(url, rfh->GetLastCommittedURL());
+  ASSERT_FALSE(rfh->IsSandboxed(network::mojom::WebSandboxFlags::kOrigin));
+
+  EXPECT_EQ(GURL(),
+            permissions::PermissionUtil::GetLastCommittedOriginAsURL(rfh));
+  EXPECT_EQ(blink::mojom::PermissionStatus::DENIED,
+            browser()
+                ->GetProfile()
+                ->GetPermissionController()
+                ->GetPermissionResultForCurrentDocument(
+                    content::PermissionDescriptorUtil::
+                        CreatePermissionDescriptorForPermissionType(
+                            blink::PermissionType::GEOLOCATION),
+                    rfh)
+                .status);
 }
 
 }  // anonymous namespace

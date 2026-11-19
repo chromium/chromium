@@ -10,22 +10,42 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom-shared.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+#include "url/scheme_host_port.h"
 
 using blink::mojom::PermissionDescriptorPtr;
 
 namespace content {
 
-#if BUILDFLAG(IS_ANDROID)
 namespace {
+
+#if BUILDFLAG(IS_ANDROID)
 constexpr const char* kIsFileURLHistogram =
     "Permissions.GetLastCommittedOriginAsURL.IsFileURL";
-}
 #endif
+
+// Returns true if the opaque-origin document in `render_frame_host` may use the
+// permissions of its precursor origin. See https://crbug.com/576129749.
+//
+// Due to dependency issues, this function is duplicated from
+// components/permissions/permission_util.cc.
+bool ShouldUsePrecursorOrigin(RenderFrameHost* render_frame_host) {
+  const url::SchemeHostPort& precursor =
+      render_frame_host->GetLastCommittedOrigin()
+          .GetTupleOrPrecursorTupleIfOpaque();
+  return precursor.IsValid() &&
+         precursor ==
+             url::SchemeHostPort(render_frame_host->GetLastCommittedURL()) &&
+         render_frame_host->IsSandboxed(
+             network::mojom::WebSandboxFlags::kOrigin);
+}
+
+}  // namespace
 
 PermissionOption PermissionUtil::ToPermissionOption(
     blink::mojom::PermissionStatus permission_status) {
@@ -89,12 +109,15 @@ GURL PermissionUtil::GetLastCommittedOriginAsURL(
 #endif
 
   const url::Origin& origin = render_frame_host->GetLastCommittedOrigin();
-  if (origin.opaque() && render_frame_host->IsInPrimaryMainFrame()) {
-    // For historical reasons we are supporting permission grants to sandboxed
-    // documents.
-    // TODO(https://crbug.com/571135408): Revisit this logic.
+  // An opaque origin has no permissions of its own. For historical reasons,
+  // some top-level documents with an opaque origin may use the permissions of
+  // their precursor origin instead.
+  // TODO(https://crbug.com/571135408): Revisit this logic.
+  if (origin.opaque() && render_frame_host->IsInPrimaryMainFrame() &&
+      ShouldUsePrecursorOrigin(render_frame_host)) {
     return origin.GetTupleOrPrecursorTupleIfOpaque().GetURL();
   }
+
   return origin.GetURL();
 }
 
