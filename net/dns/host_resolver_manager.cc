@@ -162,6 +162,10 @@ const uint8_t kIPv6ProbeAddress[] = {0x20, 0x01, 0x48, 0x60, 0x48, 0x60,
                                      0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
                                      0x00, 0x00, 0x88, 0x88};
 
+// Port used for globally reachability checks.
+// See https://crbug.com/1403182 for details on why this port is used.
+constexpr uint16_t kGloballyReachableCheckPort = 443;
+
 // True if |hostname| ends with either ".local" or ".local.".
 bool ResemblesMulticastDNSName(std::string_view hostname) {
   return hostname.ends_with(".local") || hostname.ends_with(".local.");
@@ -291,14 +295,6 @@ std::vector<IPEndPoint> FilterAddresses(std::vector<IPEndPoint> addresses,
       &IPEndPoint::GetFamily);
   addresses.erase(removed.begin(), removed.end());
   return addresses;
-}
-
-int GetPortForGloballyReachableCheck() {
-  if (!base::FeatureList::IsEnabled(
-          features::kUseAlternativePortForGloballyReachableCheck)) {
-    return 443;
-  }
-  return features::kAlternativePortForGloballyReachableCheck.Get();
 }
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -1663,7 +1659,7 @@ int HostResolverManager::StartGloballyReachableCheck(
       base::RefCountedData<std::unique_ptr<DatagramClientSocket>>>(
       std::move(probing_socket));
   int rv = probing_socket_ptr->ConnectAsync(
-      IPEndPoint(dest, GetPortForGloballyReachableCheck()),
+      IPEndPoint(dest, kGloballyReachableCheckPort),
       base::BindOnce(&HostResolverManager::RunFinishGloballyReachableCheck,
                      weak_ptr_factory_.GetWeakPtr(), refcounted_socket,
                      std::move(callback)));

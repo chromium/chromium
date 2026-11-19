@@ -231,14 +231,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kRendererAccessibleHttpCache);
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
                                       kRendererAccessibleHttpCacheWalMode);
 
-// If the `kUseAlternativePortForGloballyReachableCheck` flag is enabled, the
-// globally reachable check will use the port number specified by
-// `kAlternativePortForGloballyReachableCheck` flag. Otherwise, the globally
-// reachable check will use 443 port.
-NET_EXPORT extern const base::FeatureParam<int>
-    kAlternativePortForGloballyReachableCheck;
-NET_EXPORT BASE_DECLARE_FEATURE(kUseAlternativePortForGloballyReachableCheck);
-
 // If enabled, overrides IPv6 reachability probe results based on the system's
 // IP addresses.
 NET_EXPORT BASE_DECLARE_FEATURE(kEnableIPv6ReachabilityOverride);

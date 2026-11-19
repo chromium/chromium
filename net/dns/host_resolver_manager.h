@@ -497,13 +497,13 @@ class NET_EXPORT HostResolverManager
   // Sets |last_ipv6_probe_result_| and updates |last_ipv6_probe_time_|.
   void SetLastIPv6ProbeResult(bool last_ipv6_probe_result);
 
-  // Attempts to connect a UDP socket to |dest|:53. Virtual for testing. Returns
-  // the value of the attempted socket connection and the reachability check. If
-  // the return value from the connection is not ERR_IO_PENDING, callers must
-  // handle the results of the reachability check themselves. Otherwise the
-  // result of the reachability check will be set when `callback` is run.
-  // Returns OK if the reachability check succeeded, ERR_FAILED if it failed,
-  // ERR_IO_PENDING if it will be asynchronous.
+  // Attempts to connect a UDP socket to |dest|:<implementation-defined port>.
+  // Virtual for testing. Returns the value of the attempted socket connection
+  // and the reachability check. If the return value from the connection is not
+  // ERR_IO_PENDING, callers must handle the results of the reachability check
+  // themselves. Otherwise the result of the reachability check will be set
+  // when `callback` is run. Returns OK if the reachability check succeeded,
+  // ERR_FAILED if it failed, ERR_IO_PENDING if it will be asynchronous.
   virtual int StartGloballyReachableCheck(
       const IPAddress& dest,
       handles::NetworkHandle target_network,

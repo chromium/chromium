@@ -224,13 +224,6 @@ BASE_FEATURE_PARAM(bool,
                    &kRendererAccessibleHttpCache,
                    true);
 
-const base::FeatureParam<int> kAlternativePortForGloballyReachableCheck{
-    &kUseAlternativePortForGloballyReachableCheck,
-    "AlternativePortForGloballyReachableCheck", 443};
-
-BASE_FEATURE(kUseAlternativePortForGloballyReachableCheck,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEnableIPv6ReachabilityOverride,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
