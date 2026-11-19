@@ -31,6 +31,10 @@ std::optional<ToolDefinition> ToolRequest::GetToolDefinition() {
   return std::nullopt;
 }
 
+const PageToolRequest* ToolRequest::AsPageToolRequest() const {
+  return nullptr;
+}
+
 bool ToolRequest::IsFollowup() const {
   return is_followup_;
 }

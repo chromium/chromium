@@ -60,6 +60,7 @@ class PageToolRequest : public TabToolRequest {
   // ToolRequest
   CreateToolResult CreateTool(TaskId task_id,
                               ToolDelegate& tool_delegate) const override;
+  const PageToolRequest* AsPageToolRequest() const override;
 
   // Returns what in the page the tool should act upon.
   const PageTarget& GetTarget() const;

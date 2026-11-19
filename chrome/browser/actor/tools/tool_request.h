@@ -26,6 +26,7 @@ namespace actor {
 class Tool;
 class ToolDelegate;
 class ExecutionEngine;
+class PageToolRequest;
 class ToolRequestVisitorFunctor;
 
 // Base class for all tool requests. For tools scoped to a tab (e.g. History
@@ -91,6 +92,8 @@ class ToolRequest {
   // Used by ConvertToVariantFn to convert a polymorphic ToolRequest object into
   // the proper ToolRequestVariant type.
   virtual void Apply(ToolRequestVisitorFunctor&) const = 0;
+
+  virtual const PageToolRequest* AsPageToolRequest() const;
 
   // Returns true if this request was created as a follow-up action.
   bool IsFollowup() const;

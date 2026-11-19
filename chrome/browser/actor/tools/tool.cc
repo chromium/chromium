@@ -44,6 +44,10 @@ GURL Tool::JournalURL() const {
   return GURL::EmptyGURL();
 }
 
+content::RenderFrameHost* Tool::GetTargetFrame() const {
+  return nullptr;
+}
+
 void Tool::UpdateTaskBeforeInvoke(ActorTask& task,
                                   DeprecatedToolCallback callback) const {
   // Do nothing by default, just trigger the callback.

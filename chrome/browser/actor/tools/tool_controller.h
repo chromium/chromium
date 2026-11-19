@@ -7,11 +7,14 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/tools/observation_delay_controller.h"
 #include "chrome/browser/actor/tools/tool_delegate.h"
 #include "chrome/common/actor.mojom-forward.h"
@@ -54,14 +57,35 @@ class ToolController {
   // Invokes a tool action.
   void CreateToolAndValidate(const ToolRequest& request,
                              ValidateCallback callback);
-  void Invoke(ToolResultCallback result_callback);
+  // Invokes the tool prepared by `CreateToolAndValidate()`. When
+  // `deferred_observation_config` is set, page-stability waiting is deferred so
+  // the next tool in the bundle can reuse the observation delayer instead of
+  // waiting immediately; the caller must either invoke another tool or call
+  // `SettlePendingObservation()` (or `Cancel()`) before finishing.
+  void Invoke(ToolResultCallback result_callback,
+              std::optional<ObservationDelayController::PageStabilityConfig>
+                  deferred_observation_config = std::nullopt);
   void Pause();
   void Cancel();
 
+  // Returns true if a previous deferred `Invoke()` left an unsettled
+  // observation delayer.
+  bool HasPendingObservation() const;
+
+  // Returns true if the pending observation must be settled before executing
+  // `request` (e.g. a main-frame navigation started, or `request` targets a
+  // different surface/document). Requires `HasPendingObservation()`.
+  bool ShouldSettlePendingObservationBefore(const ToolRequest& request) const;
+
+  // Runs the pending deferred observation wait and invokes `callback` once
+  // complete. Requires `HasPendingObservation()` and no settle already in
+  // flight.
+  void SettlePendingObservation(base::OnceClosure callback);
   static std::string StateToString(State state);
 
  private:
   void SetState(State state);
+  void ResetActiveTool();
 
   // Called when the tool itself finishes its invocation.
   void DidFinishToolInvoke(ToolResult tool_result);
@@ -74,8 +98,20 @@ class ToolController {
   void PostUpdateTask(mojom::ActionResultPtr result);
   void PostInvokeTool(ToolResult tool_result);
   void WaitForObservation(ToolResult tool_result);
+  void RestartObservationDelayer(
+      std::unique_ptr<ObservationDelayController>& delayer,
+      ActorSurface& actor_surface,
+      const GURL& journal_url,
+      std::string_view journal_event,
+      ObservationDelayController::ReadyCallback callback);
   void ObservationDelayComplete(
       ToolResult tool_result,
+      ObservationDelayController::Result observation_result);
+  std::unique_ptr<ObservationDelayController> TakePendingObservationDelayer(
+      const Tool& tool);
+  void OnPendingObservationSettled(
+      ActorSurfaceHandle actor_surface,
+      base::OnceClosure callback,
       ObservationDelayController::Result observation_result);
 
   // Validates the target surface of `tool`. Returns OK if the tool has no
@@ -119,6 +155,28 @@ class ToolController {
   // Set while a tool invocation is in progress, delays invocation of the
   // completion_callback until the page is ready for observation.
   std::unique_ptr<ObservationDelayController> observation_delayer_;
+
+  std::optional<ObservationDelayController::PageStabilityConfig>
+      deferred_observation_config_;
+  bool is_observation_delayer_shared_ = false;
+  bool carried_requires_page_stabilization_ = false;
+
+  struct PendingObservation {
+    PendingObservation(std::unique_ptr<ObservationDelayController> delayer,
+                       ActorSurfaceHandle actor_surface,
+                       bool requires_page_stabilization,
+                       base::TimeDelta start_delay);
+    ~PendingObservation();
+    PendingObservation(PendingObservation&&) noexcept;
+    PendingObservation& operator=(PendingObservation&&) noexcept;
+
+    std::unique_ptr<ObservationDelayController> delayer;
+    ActorSurfaceHandle actor_surface;
+    bool requires_page_stabilization = false;
+    base::TimeDelta start_delay;
+  };
+  std::optional<PendingObservation> pending_observation_;
+  std::unique_ptr<ObservationDelayController> settling_delayer_;
 
   // ActorTask indirectly owns `this`.
   raw_ptr<ActorTask> task_;

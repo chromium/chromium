@@ -55,6 +55,7 @@ class PageTool : public Tool {
       ObservationDelayController::PageStabilityConfig page_stability_config)
       override;
   ActorSurfaceHandle GetTargetActorSurface() const override;
+  content::RenderFrameHost* GetTargetFrame() const override;
 
  private:
   // Callback for navigation.

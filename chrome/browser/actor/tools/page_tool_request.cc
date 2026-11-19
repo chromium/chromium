@@ -77,6 +77,10 @@ std::string PageToolRequest::GetTextContentSentToRenderer() const {
   return "";
 }
 
+const PageToolRequest* PageToolRequest::AsPageToolRequest() const {
+  return this;
+}
+
 const PageTarget& PageToolRequest::GetTarget() const {
   return target_;
 }

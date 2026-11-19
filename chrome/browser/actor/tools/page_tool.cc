@@ -759,6 +759,10 @@ ActorSurfaceHandle PageTool::GetTargetActorSurface() const {
   return actor_surface_handle_;
 }
 
+content::RenderFrameHost* PageTool::GetTargetFrame() const {
+  return GetFrame();
+}
+
 void PageTool::OnRenderFrameHostChanged() {
   // Return error if tab itself is closed or the WebContents hosted in the tab
   // is being destroyed.

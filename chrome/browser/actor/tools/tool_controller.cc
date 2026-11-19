@@ -6,14 +6,18 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/safe_ref.h"
 #include "base/state_transitions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/actor/actor_surface.h"
 #include "chrome/browser/actor/actor_tab_data.h"
 #include "chrome/browser/actor/actor_task.h"
+#include "chrome/browser/actor/tools/page_target_util.h"
+#include "chrome/browser/actor/tools/page_tool_request.h"
 #include "chrome/browser/actor/tools/tool.h"
 #include "chrome/browser/actor/tools/tool_callbacks.h"
 #include "chrome/browser/actor/tools/tool_request.h"
@@ -24,6 +28,7 @@
 #include "chrome/common/chrome_features.h"
 #include "components/actor/core/aggregated_journal.h"
 #include "components/actor/core/journal_details_builder.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "url/gurl.h"
@@ -43,6 +48,24 @@ ToolController::ActiveState::ActiveState(
   CHECK(!this->validate_callback.is_null());
 }
 ToolController::ActiveState::~ActiveState() = default;
+
+ToolController::PendingObservation::PendingObservation(
+    std::unique_ptr<ObservationDelayController> delayer,
+    ActorSurfaceHandle actor_surface,
+    bool requires_page_stabilization,
+    base::TimeDelta start_delay)
+    : delayer(std::move(delayer)),
+      actor_surface(actor_surface),
+      requires_page_stabilization(requires_page_stabilization),
+      start_delay(start_delay) {
+  CHECK(this->delayer);
+}
+ToolController::PendingObservation::~PendingObservation() = default;
+ToolController::PendingObservation::PendingObservation(
+    PendingObservation&&) noexcept = default;
+ToolController::PendingObservation&
+ToolController::PendingObservation::operator=(PendingObservation&&) noexcept =
+    default;
 
 ToolController::ToolController(ActorTask& task, ToolDelegate& tool_delegate)
     : task_(&task), tool_delegate_(tool_delegate) {
@@ -120,7 +143,7 @@ void ToolController::CreateToolAndValidate(const ToolRequest& request,
                       .Build());
     PostResponseTask(std::move(result_callback),
                      std::move(create_result.result));
-    Cancel();
+    ResetActiveTool();
     return;
   }
 
@@ -189,9 +212,13 @@ void ToolController::PostUpdateTask(mojom::ActionResultPtr result) {
   PostResponseTask(std::move(active_state_->validate_callback), MakeOkResult());
 }
 
-void ToolController::Invoke(ToolResultCallback result_callback) {
+void ToolController::Invoke(
+    ToolResultCallback result_callback,
+    std::optional<ObservationDelayController::PageStabilityConfig>
+        deferred_observation_config) {
   SetState(State::kPreInvoke);
   active_state_->invoke_callback = std::move(result_callback);
+  deferred_observation_config_ = std::move(deferred_observation_config);
 
   Tool& tool = *active_state_->tool;
 
@@ -232,12 +259,18 @@ void ToolController::Invoke(ToolResultCallback result_callback) {
   // alive and focused), return error otherwise.
 
   SetState(State::kInvoking);
-  if (skip_observation_delay_) {
-    journal().Log(tool.JournalURL(), task_->id(),
-                  "ObservationDelay: Skipped by request", {});
-  } else {
-    observation_delayer_ =
-        tool.GetObservationDelayer(observation_page_stability_config_);
+  observation_delayer_ = TakePendingObservationDelayer(tool);
+  is_observation_delayer_shared_ =
+      observation_delayer_ || deferred_observation_config_.has_value();
+  if (!observation_delayer_) {
+    if (skip_observation_delay_) {
+      journal().Log(tool.JournalURL(), task_->id(),
+                    "ObservationDelay: Skipped by request", {});
+    } else {
+      observation_delayer_ =
+          tool.GetObservationDelayer(deferred_observation_config_.value_or(
+              observation_page_stability_config_));
+    }
   }
   tool.Invoke(base::BindOnce(&ToolController::DidFinishToolInvoke,
                              weak_ptr_factory_.GetWeakPtr()));
@@ -250,10 +283,22 @@ void ToolController::Pause() {
 }
 
 void ToolController::Cancel() {
+  pending_observation_.reset();
+  if (settling_delayer_) {
+    settling_delayer_.reset();
+    weak_ptr_factory_.InvalidateWeakPtrs();
+  }
+  ResetActiveTool();
+}
+
+void ToolController::ResetActiveTool() {
   // Only cancel callbacks and states if the tool has been created.
   if (state_ != State::kInit && state_ != State::kReady) {
     weak_ptr_factory_.InvalidateWeakPtrs();
     observation_delayer_.reset();
+    deferred_observation_config_.reset();
+    is_observation_delayer_shared_ = false;
+    carried_requires_page_stabilization_ = false;
     if (active_state_) {
       active_state_->tool->Cancel();
     }
@@ -274,12 +319,34 @@ void ToolController::DidFinishToolInvoke(ToolResult tool_result) {
         base::TimeTicks::Now();
   }
 
-  if (!RequiresPageStabilization(*tool_result.deprecated_action_result()) ||
-      !observation_delayer_) {
+  const bool carried_requires_page_stabilization =
+      std::exchange(carried_requires_page_stabilization_, false);
+  const bool requires_page_stabilization =
+      RequiresPageStabilization(*tool_result.deprecated_action_result()) ||
+      carried_requires_page_stabilization;
+
+  if (deferred_observation_config_ && tool_result.Ok() &&
+      observation_delayer_) {
+    journal().Log(active_state_->tool->JournalURL(), task_->id(),
+                  "ToolController Deferring Observation", {});
+    pending_observation_.emplace(
+        std::move(observation_delayer_),
+        active_state_->tool->GetTargetActorSurface(),
+        requires_page_stabilization,
+        observation_page_stability_config_.start_delay);
     PostInvokeTool(std::move(tool_result));
     return;
   }
 
+  if (!requires_page_stabilization || !observation_delayer_) {
+    PostInvokeTool(std::move(tool_result));
+    return;
+  }
+
+  if (is_observation_delayer_shared_) {
+    observation_delayer_->SetStartDelay(
+        observation_page_stability_config_.start_delay);
+  }
   WaitForObservation(std::move(tool_result));
 }
 
@@ -301,6 +368,21 @@ void ToolController::WaitForObservation(ToolResult tool_result) {
   }
 }
 
+void ToolController::RestartObservationDelayer(
+    std::unique_ptr<ObservationDelayController>& delayer,
+    ActorSurface& actor_surface,
+    const GURL& journal_url,
+    std::string_view journal_event,
+    ObservationDelayController::ReadyCallback callback) {
+  size_t last_navigation_count = delayer->NavigationCount();
+  journal().Log(journal_url, task_->id(), journal_event, {});
+  delayer = std::make_unique<ObservationDelayController>(
+      *actor_surface.GetWebContents()->GetPrimaryMainFrame(), task_->id(),
+      journal(), observation_page_stability_config_);
+  delayer->SetNavigationCount(last_navigation_count + 1);
+  delayer->Wait(actor_surface, std::move(callback));
+}
+
 void ToolController::ObservationDelayComplete(
     ToolResult tool_result,
     ObservationDelayController::Result observation_result) {
@@ -311,15 +393,14 @@ void ToolController::ObservationDelayComplete(
     case ObservationDelayController::Result::kPageNavigated: {
       if (ActorSurface* actor_surface =
               active_state_->tool->GetTargetActorSurface().Get()) {
-        size_t last_navigation_count = observation_delayer_->NavigationCount();
         // The page navigated, restart the observation.
-        journal().Log(active_state_->tool->JournalURL(), task_->id(),
-                      "ToolController Restarting Observation", {});
-        observation_delayer_ = std::make_unique<ObservationDelayController>(
-            *actor_surface->GetWebContents()->GetPrimaryMainFrame(),
-            task_->id(), journal(), observation_page_stability_config_);
-        observation_delayer_->SetNavigationCount(last_navigation_count + 1);
-        WaitForObservation(std::move(tool_result));
+        RestartObservationDelayer(
+            observation_delayer_, *actor_surface,
+            active_state_->tool->JournalURL(),
+            "ToolController Restarting Observation",
+            base::BindOnce(&ToolController::ObservationDelayComplete,
+                           weak_ptr_factory_.GetWeakPtr(),
+                           std::move(tool_result)));
       } else {
         PostInvokeTool(std::move(tool_result));
       }
@@ -349,6 +430,9 @@ void ToolController::CompleteToolRequest(ToolResult tool_result) {
 
   SetState(State::kReady);
   observation_delayer_.reset();
+  deferred_observation_config_.reset();
+  is_observation_delayer_shared_ = false;
+  carried_requires_page_stabilization_ = false;
   if (tool_result.Ok()) {
     active_state_->journal_entry->EndEntry(
         JournalDetailsBuilder().Add("result", "success").Build());
@@ -367,6 +451,105 @@ void ToolController::CompleteToolRequest(ToolResult tool_result) {
                      std::move(tool_result.deprecated_action_result()));
   }
   active_state_.reset();
+}
+
+bool ToolController::HasPendingObservation() const {
+  return pending_observation_.has_value();
+}
+
+bool ToolController::ShouldSettlePendingObservationBefore(
+    const ToolRequest& request) const {
+  CHECK(pending_observation_);
+
+  if (pending_observation_->delayer->DidPrimaryMainFrameNavigateBeforeWait()) {
+    return true;
+  }
+
+  const PageToolRequest* page_request = request.AsPageToolRequest();
+  if (!page_request || page_request->GetActorSurfaceHandle() !=
+                           pending_observation_->actor_surface) {
+    return true;
+  }
+
+  content::RenderFrameHost* frame = FindTargetLocalRootFrame(
+      page_request->GetActorSurfaceHandle(), page_request->GetTarget());
+  return !frame ||
+         !pending_observation_->delayer->IsMonitoringDocumentOf(*frame);
+}
+
+void ToolController::SettlePendingObservation(base::OnceClosure callback) {
+  CHECK(pending_observation_);
+  CHECK(!settling_delayer_);
+
+  PendingObservation pending = std::move(*pending_observation_);
+  pending_observation_.reset();
+
+  ActorSurface* actor_surface = pending.actor_surface.Get();
+  if (!pending.requires_page_stabilization || !actor_surface) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(callback));
+    return;
+  }
+
+  journal().Log(actor_surface->GetWebContents()->GetLastCommittedURL(),
+                task_->id(), "ToolController Settling Deferred Observation",
+                {});
+  settling_delayer_ = std::move(pending.delayer);
+  settling_delayer_->SetStartDelay(pending.start_delay);
+  settling_delayer_->Wait(
+      *actor_surface,
+      base::BindOnce(&ToolController::OnPendingObservationSettled,
+                     weak_ptr_factory_.GetWeakPtr(), pending.actor_surface,
+                     std::move(callback)));
+}
+
+void ToolController::OnPendingObservationSettled(
+    ActorSurfaceHandle actor_surface_handle,
+    base::OnceClosure callback,
+    ObservationDelayController::Result observation_result) {
+  CHECK(settling_delayer_);
+
+  ActorSurface* actor_surface = actor_surface_handle.Get();
+  if (observation_result ==
+          ObservationDelayController::Result::kPageNavigated &&
+      actor_surface) {
+    // The page navigated, restart the observation.
+    RestartObservationDelayer(
+        settling_delayer_, *actor_surface,
+        actor_surface->GetWebContents()->GetLastCommittedURL(),
+        "ToolController Restarting Deferred Observation",
+        base::BindOnce(&ToolController::OnPendingObservationSettled,
+                       weak_ptr_factory_.GetWeakPtr(), actor_surface_handle,
+                       std::move(callback)));
+    return;
+  }
+
+  settling_delayer_.reset();
+  std::move(callback).Run();
+}
+
+std::unique_ptr<ObservationDelayController>
+ToolController::TakePendingObservationDelayer(const Tool& tool) {
+  if (!pending_observation_) {
+    return nullptr;
+  }
+
+  PendingObservation pending = std::move(*pending_observation_);
+  pending_observation_.reset();
+
+  content::RenderFrameHost* frame = tool.GetTargetFrame();
+  if (pending.actor_surface != tool.GetTargetActorSurface() || !frame ||
+      !pending.delayer->IsMonitoringDocumentOf(*frame)) {
+    journal().Log(tool.JournalURL(), task_->id(),
+                  "ToolController Dropping Deferred Observation",
+                  JournalDetailsBuilder()
+                      .AddError("Tool acts on a different document")
+                      .Build());
+    return nullptr;
+  }
+
+  carried_requires_page_stabilization_ = pending.requires_page_stabilization;
+  return std::move(pending.delayer);
 }
 
 mojom::ActionResultPtr ToolController::ValidateTarget(const Tool& tool) const {

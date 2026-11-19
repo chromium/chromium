@@ -22,6 +22,10 @@
 
 class BrowserWindowInterface;
 
+namespace content {
+class RenderFrameHost;
+}  // namespace content
+
 namespace optimization_guide::proto {
 class AnnotatedPageContent;
 }  // namespace optimization_guide::proto
@@ -122,6 +126,12 @@ class Tool {
   // surface they were created for, so the handle stays non-null (and Get()
   // returns null) once the surface goes away.
   virtual ActorSurfaceHandle GetTargetActorSurface() const = 0;
+
+  // Returns the target frame of this tool, or nullptr if the tool doesn't
+  // target a specific frame or the frame is unavailable. For `PageTool`s,
+  // `TimeOfUseValidation()` must have completed before calling this (it CHECKs
+  // `has_completed_time_of_use_`).
+  virtual content::RenderFrameHost* GetTargetFrame() const;
 
  protected:
   TaskId task_id() const { return task_id_; }

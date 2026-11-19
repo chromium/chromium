@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
@@ -37,6 +38,7 @@
 #include "chrome/browser/actor/tools/fake_tool_request.h"
 #include "chrome/browser/actor/tools/history_tool_request.h"
 #include "chrome/browser/actor/tools/script_tool_request.h"
+#include "chrome/browser/actor/tools/tool_controller.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/tools/tool_result.h"
 #include "chrome/browser/actor/tools/wait_tool.h"
@@ -44,6 +46,7 @@
 #include "chrome/browser/actor/ui/test_support/mock_event_dispatcher.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/preloading/preloading_prefs.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor/actor_constants.h"
@@ -69,6 +72,7 @@
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/navigation_simulator.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "net/http/http_response_headers.h"
 #include "pdf/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -151,6 +155,37 @@ class MockAutofillSelectionDialogEventHandler
       this};
 };
 
+// Reports the page as stable right away and records each wait.
+class FakePageStabilityMonitor
+    : public page_content_annotations::mojom::PageStabilityMonitor {
+ public:
+  void NotifyWhenStable(base::TimeDelta observation_delay,
+                        NotifyWhenStableCallback callback) override {
+    observation_delays_.push_back(observation_delay);
+    if (on_next_wait_held_) {
+      held_callback_ = std::move(callback);
+      std::move(on_next_wait_held_).Run();
+      return;
+    }
+    std::move(callback).Run();
+  }
+
+  // Holds the next wait instead of reporting the page as stable, and runs
+  // `on_held` from the task that receives it.
+  void HoldNextWait(base::OnceClosure on_held) {
+    on_next_wait_held_ = std::move(on_held);
+  }
+
+  const std::vector<base::TimeDelta>& observation_delays() const {
+    return observation_delays_;
+  }
+
+ private:
+  base::OnceClosure on_next_wait_held_;
+  NotifyWhenStableCallback held_callback_;
+  std::vector<base::TimeDelta> observation_delays_;
+};
+
 class FakeChromeRenderFrame : public chrome::mojom::ChromeRenderFrame {
  public:
   FakeChromeRenderFrame() = default;
@@ -193,7 +228,7 @@ class FakeChromeRenderFrame : public chrome::mojom::ChromeRenderFrame {
   }
   void ExecuteTool(const actor::TaskId& task_id,
                    ExecuteToolCallback callback) override {
-    std::move(callback).Run(MakeOkResult());
+    std::move(callback).Run(TakeToolResult());
   }
   void set_on_invoke_tool(
       base::RepeatingCallback<void(actor::mojom::ToolInvocationPtr,
@@ -207,7 +242,7 @@ class FakeChromeRenderFrame : public chrome::mojom::ChromeRenderFrame {
       on_invoke_tool_.Run(std::move(request), std::move(callback));
       return;
     }
-    std::move(callback).Run(MakeOkResult());
+    std::move(callback).Run(TakeToolResult());
   }
   void StartActorJournal(
       mojo::PendingAssociatedRemote<actor::mojom::JournalClient> client)
@@ -216,7 +251,13 @@ class FakeChromeRenderFrame : public chrome::mojom::ChromeRenderFrame {
       mojo::PendingReceiver<
           page_content_annotations::mojom::PageStabilityMonitor> monitor,
       const TaskId& task_id,
-      bool supports_paint_stability) override {}
+      bool supports_paint_stability) override {
+    ++page_stability_monitor_count_;
+    if (bind_page_stability_monitors_) {
+      page_stability_monitor_receivers_.Add(&page_stability_monitor_,
+                                            std::move(monitor));
+    }
+  }
   void CancelTool(const TaskId& task_id) override {}
   void GetCrossDocumentScriptToolResult(
       const blink::ToolInvocationToken& execution_id,
@@ -232,6 +273,29 @@ class FakeChromeRenderFrame : public chrome::mojom::ChromeRenderFrame {
                        const GURL& page_url) override {}
 #endif
 
+  // Makes the next tool executed in the renderer fail with `code`.
+  void FailNextTool(mojom::ActionResultCode code) { next_tool_failure_ = code; }
+
+  // The number of PageStabilityMonitors created, i.e. of observation delayers
+  // armed.
+  int page_stability_monitor_count() const {
+    return page_stability_monitor_count_;
+  }
+
+  // If set, created PageStabilityMonitors are bound to
+  // `page_stability_monitor()`. Otherwise they're dropped, which makes
+  // observation delayers skip waiting for page stability.
+  void set_bind_page_stability_monitors(bool bind) {
+    bind_page_stability_monitors_ = bind;
+  }
+
+  FakePageStabilityMonitor& page_stability_monitor() {
+    return page_stability_monitor_;
+  }
+  const FakePageStabilityMonitor& page_stability_monitor() const {
+    return page_stability_monitor_;
+  }
+
  private:
   void Bind(mojo::ScopedInterfaceEndpointHandle handle) {
     receivers_.Add(
@@ -239,10 +303,24 @@ class FakeChromeRenderFrame : public chrome::mojom::ChromeRenderFrame {
                   std::move(handle)));
   }
 
+  mojom::ActionResultPtr TakeToolResult() {
+    if (std::optional<mojom::ActionResultCode> failure =
+            std::exchange(next_tool_failure_, std::nullopt)) {
+      return MakeResult(*failure);
+    }
+    return MakeOkResult();
+  }
+
   mojo::AssociatedReceiverSet<chrome::mojom::ChromeRenderFrame> receivers_;
   base::RepeatingCallback<void(actor::mojom::ToolInvocationPtr,
                                InvokeToolCallback)>
       on_invoke_tool_;
+  std::optional<mojom::ActionResultCode> next_tool_failure_;
+  int page_stability_monitor_count_ = 0;
+  bool bind_page_stability_monitors_ = false;
+  FakePageStabilityMonitor page_stability_monitor_;
+  mojo::ReceiverSet<page_content_annotations::mojom::PageStabilityMonitor>
+      page_stability_monitor_receivers_;
 };
 
 class ExecutionEngineTest : public ChromeRenderViewHostTestHarness {
@@ -1742,6 +1820,232 @@ INSTANTIATE_TEST_SUITE_P(
                     std::make_tuple(kShutdown, "Shutdown"),
                     std::make_tuple(kUserStartedNewChat, "NewChat"),
                     std::make_tuple(kUserLoadedPreviousChat, "PreviousChat")));
+
+class ToolControllerDeferredObservationTest : public ExecutionEngineTest {
+ public:
+  ToolControllerDeferredObservationTest() {
+    // This suite drives ToolController directly without going through
+    // ExecutionEngine::Act(), so disable the subframe-gating dry run that
+    // queries ExecutionEngine::GetInProgressAction().
+    subframe_gating_feature_list_.InitAndDisableFeature(
+        kGlicActorSubframeGatingDryRun);
+  }
+
+  void SetUp() override {
+    ExecutionEngineTest::SetUp();
+    // Browser-initiated navigations preconnect a socket when preloading is
+    // enabled. This suite waits long enough for that connect to run, which
+    // crashes on Android where the in-process network service runs on the UI
+    // thread.
+    prefetch::SetPreloadPagesState(profile()->GetPrefs(),
+                                   prefetch::PreloadPagesState::kNoPreloading);
+    content::NavigationSimulator::NavigateAndCommitFromBrowser(
+        web_contents(), GURL("http://localhost/"));
+    fake_chrome_render_frame_.OverrideBinder(main_rfh());
+    fake_chrome_render_frame_.set_bind_page_stability_monitors(true);
+    tool_controller_ =
+        std::make_unique<ToolController>(*task_, task_->GetExecutionEngine());
+  }
+
+  void TearDown() override {
+    tool_controller_.reset();
+    ExecutionEngineTest::TearDown();
+  }
+
+ protected:
+  std::unique_ptr<ClickToolRequest> MakeClickRequest(
+      base::TimeDelta start_delay) {
+    std::string doc_id =
+        *optimization_guide::DocumentIdentifierUserData::GetDocumentIdentifier(
+            main_rfh()->GetGlobalFrameToken());
+    return std::make_unique<ClickToolRequest>(
+        ActorSurfaceHandle::From(GetTab()->GetHandle()),
+        PageTarget(DomNode{.node_id = kFakeContentNodeId,
+                           .document_identifier = doc_id}),
+        mojom::ClickType::kLeft, mojom::ClickCount::kSingle,
+        /*requires_opening_web_contents=*/false,
+        ObservationDelayController::PageStabilityConfig{.start_delay =
+                                                            start_delay});
+  }
+
+  mojom::ActionResultPtr CreateAndInvoke(
+      const ToolRequest& request,
+      std::optional<ObservationDelayController::PageStabilityConfig>
+          deferred_observation_config = std::nullopt) {
+    base::test::TestFuture<mojom::ActionResultPtr> created;
+    tool_controller_->CreateToolAndValidate(request, created.GetCallback());
+    if (mojom::ActionResultPtr res = created.Take(); !IsOk(*res)) {
+      return res;
+    }
+    base::test::TestFuture<ToolResult> invoked;
+    tool_controller_->Invoke(invoked.GetCallback(),
+                             std::move(deferred_observation_config));
+    return std::move(invoked.Take().deprecated_action_result());
+  }
+
+  const std::vector<base::TimeDelta>& observation_delays() const {
+    return fake_chrome_render_frame_.page_stability_monitor()
+        .observation_delays();
+  }
+
+  base::test::ScopedFeatureList subframe_gating_feature_list_;
+  std::unique_ptr<ToolController> tool_controller_;
+};
+
+TEST_F(ToolControllerDeferredObservationTest, NextToolReusesDeferredDelayer) {
+  auto click1 = MakeClickRequest(base::Seconds(1));
+  auto click2 = MakeClickRequest(base::Seconds(2));
+  ASSERT_TRUE(IsOk(
+      *CreateAndInvoke(*click1, click1->GetObservationPageStabilityConfig())));
+  EXPECT_TRUE(tool_controller_->HasPendingObservation());
+  EXPECT_THAT(observation_delays(), testing::IsEmpty());
+
+  EXPECT_FALSE(tool_controller_->ShouldSettlePendingObservationBefore(*click2));
+  ASSERT_TRUE(IsOk(*CreateAndInvoke(*click2)));
+  EXPECT_FALSE(tool_controller_->HasPendingObservation());
+  EXPECT_EQ(fake_chrome_render_frame_.page_stability_monitor_count(), 1);
+  EXPECT_THAT(observation_delays(), testing::ElementsAre(base::Seconds(2)));
+}
+
+TEST_F(ToolControllerDeferredObservationTest, SettlePendingObservation) {
+  auto click1 = MakeClickRequest(base::Seconds(1));
+  auto click2 = MakeClickRequest(base::Seconds(2));
+  ASSERT_TRUE(IsOk(
+      *CreateAndInvoke(*click1, click1->GetObservationPageStabilityConfig())));
+  ASSERT_TRUE(IsOk(
+      *CreateAndInvoke(*click2, click2->GetObservationPageStabilityConfig())));
+  ASSERT_TRUE(tool_controller_->HasPendingObservation());
+
+  base::test::TestFuture<void> settled;
+  tool_controller_->SettlePendingObservation(settled.GetCallback());
+  ASSERT_TRUE(settled.Wait());
+  EXPECT_FALSE(tool_controller_->HasPendingObservation());
+  EXPECT_EQ(fake_chrome_render_frame_.page_stability_monitor_count(), 1);
+  EXPECT_THAT(observation_delays(), testing::ElementsAre(base::Seconds(2)));
+}
+
+TEST_F(ToolControllerDeferredObservationTest, CancelDropsPendingObservation) {
+  auto click = MakeClickRequest(base::Seconds(1));
+  ASSERT_TRUE(IsOk(
+      *CreateAndInvoke(*click, click->GetObservationPageStabilityConfig())));
+  tool_controller_->Cancel();
+  EXPECT_FALSE(tool_controller_->HasPendingObservation());
+  task_environment()->RunUntilIdle();
+  EXPECT_THAT(observation_delays(), testing::IsEmpty());
+
+  ASSERT_TRUE(IsOk(
+      *CreateAndInvoke(*click, click->GetObservationPageStabilityConfig())));
+  bool settled = false;
+  tool_controller_->SettlePendingObservation(
+      base::BindLambdaForTesting([&]() { settled = true; }));
+  tool_controller_->Cancel();
+  task_environment()->RunUntilIdle();
+  EXPECT_FALSE(settled);
+  EXPECT_FALSE(tool_controller_->HasPendingObservation());
+}
+
+TEST_F(ToolControllerDeferredObservationTest, ShouldSettleBefore) {
+  auto click = MakeClickRequest(base::Seconds(1));
+  ASSERT_TRUE(IsOk(
+      *CreateAndInvoke(*click, click->GetObservationPageStabilityConfig())));
+  EXPECT_FALSE(tool_controller_->ShouldSettlePendingObservationBefore(
+      *MakeClickRequest(base::Seconds(1))));
+  FakeToolRequest non_page_request(
+      base::DoNothing(), base::DoNothing(),
+      ActorSurfaceHandle::From(GetTab()->GetHandle()));
+  EXPECT_TRUE(
+      tool_controller_->ShouldSettlePendingObservationBefore(non_page_request));
+
+  content::NavigationSimulator::CreateRendererInitiated(
+      GURL("http://localhost/#foo"), main_rfh())
+      ->CommitSameDocument();
+  EXPECT_TRUE(tool_controller_->ShouldSettlePendingObservationBefore(
+      *MakeClickRequest(base::Seconds(1))));
+}
+
+TEST_F(ToolControllerDeferredObservationTest, FailedToolHandling) {
+  auto click1 = MakeClickRequest(base::Seconds(1));
+  fake_chrome_render_frame_.FailNextTool(
+      mojom::ActionResultCode::kNotImplemented);
+  EXPECT_EQ(
+      CreateAndInvoke(*click1, click1->GetObservationPageStabilityConfig())
+          ->code,
+      mojom::ActionResultCode::kNotImplemented);
+  EXPECT_FALSE(tool_controller_->HasPendingObservation());
+  EXPECT_THAT(observation_delays(), testing::IsEmpty());
+
+  ASSERT_TRUE(IsOk(
+      *CreateAndInvoke(*click1, click1->GetObservationPageStabilityConfig())));
+  fake_chrome_render_frame_.FailNextTool(
+      mojom::ActionResultCode::kNotImplemented);
+  EXPECT_EQ(CreateAndInvoke(*MakeClickRequest(base::Seconds(2)))->code,
+            mojom::ActionResultCode::kNotImplemented);
+  EXPECT_FALSE(tool_controller_->HasPendingObservation());
+  EXPECT_THAT(observation_delays(), testing::ElementsAre(base::Seconds(2)));
+}
+
+TEST_F(ToolControllerDeferredObservationTest,
+       CreateToolFailurePreservesPendingObservation) {
+  auto click1 = MakeClickRequest(base::Seconds(1));
+  ASSERT_TRUE(IsOk(
+      *CreateAndInvoke(*click1, click1->GetObservationPageStabilityConfig())));
+  ASSERT_TRUE(tool_controller_->HasPendingObservation());
+
+  // A request targeting a closed surface fails synchronously in CreateTool()
+  // without consuming the deferred observation.
+  ActorSurfaceHandle gone_surface;
+  {
+    std::unique_ptr<content::WebContents> closed_contents =
+        CreateTestWebContents();
+    TestTabState closed_tab(closed_contents.get());
+    gone_surface = ActorSurfaceHandle::From(closed_tab.tab.GetHandle());
+  }
+  ASSERT_FALSE(gone_surface.is_null());
+  ASSERT_EQ(gone_surface.Get(), nullptr);
+
+  ClickToolRequest invalid_click(gone_surface, PageTarget(gfx::Point(10, 10)),
+                                 mojom::ClickType::kLeft,
+                                 mojom::ClickCount::kSingle);
+  EXPECT_EQ(CreateAndInvoke(invalid_click)->code,
+            mojom::ActionResultCode::kTabWentAway);
+  EXPECT_TRUE(tool_controller_->HasPendingObservation());
+
+  base::test::TestFuture<void> settled;
+  tool_controller_->SettlePendingObservation(settled.GetCallback());
+  ASSERT_TRUE(settled.Wait());
+  EXPECT_FALSE(tool_controller_->HasPendingObservation());
+  EXPECT_THAT(observation_delays(), testing::ElementsAre(base::Seconds(1)));
+}
+
+TEST_F(ToolControllerDeferredObservationTest,
+       SettlePendingObservationRestartsOnNavigation) {
+  auto click = MakeClickRequest(base::Seconds(1));
+  ASSERT_TRUE(IsOk(
+      *CreateAndInvoke(*click, click->GetObservationPageStabilityConfig())));
+  ASSERT_TRUE(tool_controller_->HasPendingObservation());
+
+  // Quit from the task that holds the wait. Waiting for the thread to go idle
+  // instead would let mock time fast-forward to the observation timeout.
+  base::RunLoop wait_held;
+  fake_chrome_render_frame_.page_stability_monitor().HoldNextWait(
+      wait_held.QuitClosure());
+  base::test::TestFuture<void> settled;
+  tool_controller_->SettlePendingObservation(settled.GetCallback());
+  wait_held.Run();
+  EXPECT_FALSE(settled.IsReady());
+
+  auto navigation = content::NavigationSimulator::CreateRendererInitiated(
+      GURL("http://localhost/next"), main_rfh());
+  navigation->ReadyToCommit();
+  fake_chrome_render_frame_.OverrideBinder(
+      navigation->GetFinalRenderFrameHost());
+  navigation->Commit();
+
+  ASSERT_TRUE(settled.Wait());
+  EXPECT_FALSE(tool_controller_->HasPendingObservation());
+  EXPECT_EQ(fake_chrome_render_frame_.page_stability_monitor_count(), 2);
+  EXPECT_EQ(observation_delays().size(), 2u);
+}
 
 class ExecutionEngineNavigationGatingTest : public ExecutionEngineTest {
  public:

@@ -554,6 +554,7 @@ source_set("unit_tests") {
     "//chrome/browser/optimization_guide",
     "//chrome/browser/optimization_guide:test_support",
     "//chrome/browser/password_manager",
+    "//chrome/browser/preloading:prefs",
     "//chrome/browser/stream_transport",
     "//chrome/test:test_support",
     "//chrome/test/base:chrome_render_view_host_test_harness",
