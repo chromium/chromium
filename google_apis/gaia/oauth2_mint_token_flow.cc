@@ -725,6 +725,7 @@ OAuth2MintTokenFlow::GetNetworkTrafficAnnotationTag() {
           "User's login token, the identity of a chrome app/extension, and a "
           "list of oauth scopes requested by the app/extension."
         destination: GOOGLE_OWNED_SERVICE
+        api_service_name: "oauthaccountmanager.googleapis.com"
       }
       policy {
         setting:

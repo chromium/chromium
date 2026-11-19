@@ -186,6 +186,7 @@ void GaiaOAuthClient::Core::GetTokensFromAuthCode(
             "The Google console client ID and client secret of the caller, the "
             "OAuth authorization code and the redirect URI."
           destination: GOOGLE_OWNED_SERVICE
+          api_service_name: "oauth2.googleapis.com"
         }
         policy {
           cookies_allowed: NO
@@ -239,6 +240,7 @@ void GaiaOAuthClient::Core::RefreshToken(
             "client secret of the caller, and optionally the scopes of the API "
             "for which the access token should be authorized."
           destination: GOOGLE_OWNED_SERVICE
+          api_service_name: "oauth2.googleapis.com"
         }
         policy {
           cookies_allowed: NO
@@ -295,6 +297,7 @@ void GaiaOAuthClient::Core::GetUserInfoImpl(
           data:
             "The OAuth 2.0 access token of the account."
           destination: GOOGLE_OWNED_SERVICE
+          api_service_name: "openidconnect.googleapis.com"
         }
         policy {
           cookies_allowed: NO
@@ -340,6 +343,7 @@ void GaiaOAuthClient::Core::GetTokenInfo(const std::string& qualifier,
             "access token."
           data: "The OAuth 2.0 access token."
           destination: GOOGLE_OWNED_SERVICE
+          api_service_name: "oauth2.googleapis.com"
         }
         policy {
           cookies_allowed: NO
@@ -384,6 +388,7 @@ void GaiaOAuthClient::Core::GetAccountCapabilities(
             "The OAuth 2.0 access token of the account and a predefined list "
             "of capabilities to fetch."
           destination: GOOGLE_OWNED_SERVICE
+          api_service_name: "accountcapabilities-pa.googleapis.com"
         }
         policy {
           cookies_allowed: NO

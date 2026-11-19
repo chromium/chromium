@@ -72,19 +72,19 @@ Refer to README.md for content description and update process.
  <item id="ftl_messaging_client_receive_messages" added_in_milestone="86" content_hash_code="06e4579b" os_list="linux,windows,chromeos,android" file_path="remoting/signaling/ftl_messaging_client.cc" />
  <item id="ftl_messaging_client_send_messages" added_in_milestone="86" content_hash_code="0294a8ce" os_list="linux,windows,chromeos,android" file_path="remoting/signaling/ftl_messaging_client.cc" />
  <item id="ftl_registration_manager" added_in_milestone="86" content_hash_code="06eac042" os_list="linux,windows,chromeos,android" file_path="remoting/signaling/ftl_registration_manager.cc" />
- <item id="gaia_auth_check_connection_info" added_in_milestone="62" content_hash_code="0522caf3" os_list="linux,windows,chromeos,android" file_path="google_apis/gaia/gaia_auth_fetcher.cc" />
- <item id="gaia_auth_exchange_device_id" added_in_milestone="62" content_hash_code="07eac86c" os_list="linux,windows,chromeos,android" file_path="google_apis/gaia/gaia_auth_fetcher.cc" />
- <item id="gaia_auth_list_accounts" added_in_milestone="62" content_hash_code="0670c7be" os_list="linux,windows,chromeos,android" file_path="google_apis/gaia/gaia_auth_fetcher.cc" />
- <item id="gaia_auth_log_out" added_in_milestone="62" content_hash_code="06d3cf48" os_list="linux,windows,chromeos,android" file_path="google_apis/gaia/gaia_auth_fetcher.cc" />
- <item id="gaia_auth_multilogin" added_in_milestone="70" content_hash_code="005de053" os_list="linux,windows,chromeos,android" file_path="google_apis/gaia/gaia_auth_fetcher.cc" />
- <item id="gaia_auth_revoke_token" added_in_milestone="62" content_hash_code="0146a871" os_list="linux,windows,chromeos,android" file_path="google_apis/gaia/gaia_auth_fetcher.cc" />
+ <item id="gaia_auth_check_connection_info" added_in_milestone="62" content_hash_code="07839068" os_list="linux,windows,chromeos,android" file_path="google_apis/gaia/gaia_auth_fetcher.cc" />
+ <item id="gaia_auth_exchange_device_id" added_in_milestone="62" content_hash_code="02b79e89" os_list="linux,windows,chromeos,android" file_path="google_apis/gaia/gaia_auth_fetcher.cc" />
+ <item id="gaia_auth_list_accounts" added_in_milestone="62" content_hash_code="07bcbcd1" os_list="linux,windows,chromeos,android" file_path="google_apis/gaia/gaia_auth_fetcher.cc" />
+ <item id="gaia_auth_log_out" added_in_milestone="62" content_hash_code="05ef7941" os_list="linux,windows,chromeos,android" file_path="google_apis/gaia/gaia_auth_fetcher.cc" />
+ <item id="gaia_auth_multilogin" added_in_milestone="70" content_hash_code="05bde50d" os_list="linux,windows,chromeos,android" file_path="google_apis/gaia/gaia_auth_fetcher.cc" />
+ <item id="gaia_auth_revoke_token" added_in_milestone="62" content_hash_code="03058592" os_list="linux,windows,chromeos,android" file_path="google_apis/gaia/gaia_auth_fetcher.cc" />
  <item id="gaia_cookie_manager_external_cc_result" added_in_milestone="62" content_hash_code="01dbe597" os_list="linux,windows,chromeos,android" file_path="components/signin/internal/identity_manager/gaia_cookie_manager_service.cc" />
- <item id="gaia_create_reauth_proof_token_for_parent" added_in_milestone="80" content_hash_code="02f7fbe2" os_list="linux,windows,chromeos,android" file_path="google_apis/gaia/gaia_auth_fetcher.cc" />
- <item id="gaia_oauth_client_get_account_capabilities" added_in_milestone="93" content_hash_code="00df262d" os_list="linux,windows,chromeos,android" file_path="google_apis/gaia/gaia_oauth_client.cc" />
- <item id="gaia_oauth_client_get_token_info" added_in_milestone="62" content_hash_code="0160f619" os_list="linux,windows,chromeos,android" file_path="google_apis/gaia/gaia_oauth_client.cc" />
- <item id="gaia_oauth_client_get_tokens" added_in_milestone="62" content_hash_code="00f65831" os_list="linux,windows,chromeos,android" file_path="google_apis/gaia/gaia_oauth_client.cc" />
- <item id="gaia_oauth_client_get_user_info" added_in_milestone="62" content_hash_code="057db9b8" os_list="linux,windows,chromeos,android" file_path="google_apis/gaia/gaia_oauth_client.cc" />
- <item id="gaia_oauth_client_refresh_token" added_in_milestone="62" content_hash_code="0688ed4a" os_list="linux,windows,chromeos,android" file_path="google_apis/gaia/gaia_oauth_client.cc" />
+ <item id="gaia_create_reauth_proof_token_for_parent" added_in_milestone="80" content_hash_code="059f2358" os_list="linux,windows,chromeos,android" file_path="google_apis/gaia/gaia_auth_fetcher.cc" />
+ <item id="gaia_oauth_client_get_account_capabilities" added_in_milestone="93" content_hash_code="0834077a" os_list="linux,windows,chromeos,android" file_path="google_apis/gaia/gaia_oauth_client.cc" />
+ <item id="gaia_oauth_client_get_token_info" added_in_milestone="62" content_hash_code="061760b9" os_list="linux,windows,chromeos,android" file_path="google_apis/gaia/gaia_oauth_client.cc" />
+ <item id="gaia_oauth_client_get_tokens" added_in_milestone="62" content_hash_code="01f5f28a" os_list="linux,windows,chromeos,android" file_path="google_apis/gaia/gaia_oauth_client.cc" />
+ <item id="gaia_oauth_client_get_user_info" added_in_milestone="62" content_hash_code="009b1305" os_list="linux,windows,chromeos,android" file_path="google_apis/gaia/gaia_oauth_client.cc" />
+ <item id="gaia_oauth_client_refresh_token" added_in_milestone="62" content_hash_code="026184b5" os_list="linux,windows,chromeos,android" file_path="google_apis/gaia/gaia_oauth_client.cc" />
  <item id="gcm_checkin" added_in_milestone="62" content_hash_code="05db527b" os_list="linux,windows,chromeos,android" file_path="google_apis/gcm/engine/checkin_request.cc" />
  <item id="gcm_connection_factory" added_in_milestone="66" content_hash_code="047caddb" os_list="linux,windows,chromeos,android" file_path="google_apis/gcm/engine/connection_factory_impl.cc" />
  <item id="gcm_registration" added_in_milestone="62" content_hash_code="06c679e8" os_list="linux,windows,chromeos,android" file_path="google_apis/gcm/engine/registration_request.cc" />
@@ -116,9 +116,9 @@ Refer to README.md for content description and update process.
  <item id="network_location_request" added_in_milestone="65" type="completing" content_hash_code="067c111a" os_list="linux,windows,chromeos,android" semantics_fields="2,3,4,5,10" policy_fields="-1" file_path="services/device/geolocation/network_location_request.cc" />
  <item id="network_time_component" added_in_milestone="62" content_hash_code="01ac0991" os_list="linux,windows,chromeos,android" file_path="components/network_time/network_time_tracker.cc" />
  <item id="new_tab_page_handler" added_in_milestone="84" content_hash_code="02ee5881" os_list="linux,windows,chromeos" file_path="chrome/browser/ui/webui/new_tab_page/new_tab_page_handler.cc" />
- <item id="oauth2_access_token_fetcher" added_in_milestone="62" content_hash_code="0657196c" os_list="linux,windows,chromeos,android" file_path="google_apis/gaia/gaia_access_token_fetcher.cc" />
+ <item id="oauth2_access_token_fetcher" added_in_milestone="62" content_hash_code="06d29e06" os_list="linux,windows,chromeos,android" file_path="google_apis/gaia/gaia_access_token_fetcher.cc" />
  <item id="oauth2_api_call_flow" added_in_milestone="65" type="completing" content_hash_code="067ca204" os_list="linux,windows,chromeos,android" policy_fields="-1" file_path="google_apis/gaia/oauth2_api_call_flow.cc" />
- <item id="oauth2_mint_token_flow" added_in_milestone="62" type="partial" second_id="oauth2_api_call_flow" content_hash_code="068b83ae" os_list="linux,windows,chromeos,android" semantics_fields="1,2,3,4,5" policy_fields="3,4" file_path="google_apis/gaia/oauth2_mint_token_flow.cc" />
+ <item id="oauth2_mint_token_flow" added_in_milestone="62" type="partial" second_id="oauth2_api_call_flow" content_hash_code="02add7b0" os_list="linux,windows,chromeos,android" semantics_fields="1,2,3,4,5,10" policy_fields="3,4" file_path="google_apis/gaia/oauth2_mint_token_flow.cc" />
  <item id="omaha_client_android_uc" added_in_milestone="99" content_hash_code="078c36df" os_list="android" file_path="chrome/browser/omaha/android/java/src/org/chromium/chrome/browser/omaha/OmahaBase.java" />
  <item id="omnibox_documentsuggest" added_in_milestone="69" content_hash_code="063bb2ed" os_list="linux,windows,chromeos,android" file_path="components/omnibox/browser/document_suggestions_service.cc" />
  <item id="omnibox_navigation_observer" added_in_milestone="62" content_hash_code="077dc065" os_list="linux,windows,chromeos,android" file_path="chrome/browser/omnibox/chrome_omnibox_navigation_observer_base.cc" />

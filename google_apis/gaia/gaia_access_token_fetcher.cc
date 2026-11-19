@@ -70,6 +70,7 @@ GaiaAccessTokenFetcher::GetTrafficAnnotationTag() const {
         "Chrome OAuth 2.0 client id and secret, the set of OAuth 2.0 "
         "scopes and the OAuth 2.0 refresh token."
       destination: GOOGLE_OWNED_SERVICE
+      api_service_name: "oauth2.googleapis.com"
     }
     policy {
       cookies_allowed: NO

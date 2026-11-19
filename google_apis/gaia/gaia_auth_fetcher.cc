@@ -374,6 +374,7 @@ void GaiaAuthFetcher::StartRevokeOAuth2Token(const std::string& auth_token) {
             "an OAuth 2.0 refresh token needs to be revoked."
           data: "The OAuth 2.0 refresh token that should be revoked."
           destination: GOOGLE_OWNED_SERVICE
+          api_service_name: "oauth2.googleapis.com"
         }
         policy {
           cookies_allowed: NO
@@ -439,6 +440,7 @@ void GaiaAuthFetcher::StartAuthCodeForOAuth2TokenExchangeWithDeviceId(
             "application, the OAuth 2.0 authorization code, the ID of the "
             "device, and the public binding key."
           destination: GOOGLE_OWNED_SERVICE
+          api_service_name: "oauth2.googleapis.com"
         }
         policy {
           cookies_allowed: NO
@@ -477,6 +479,7 @@ void GaiaAuthFetcher::StartListAccounts() {
             "cookies is required."
           data: "None."
           destination: GOOGLE_OWNED_SERVICE
+          legacy_api_url: "https://accounts.google.com/ListAccounts"
         }
         policy {
           cookies_allowed: YES
@@ -587,6 +590,7 @@ void GaiaAuthFetcher::StartOAuthMultilogin(
             "This request includes the vector of account ids and auth-login "
             "tokens."
           destination: GOOGLE_OWNED_SERVICE
+          legacy_api_url: "https://accounts.google.com/oauth/multilogin"
         }
         policy {
           cookies_allowed: YES
@@ -623,6 +627,7 @@ void GaiaAuthFetcher::StartLogOut() {
             "signing out of all Google accounts is required."
           data: "None."
           destination: GOOGLE_OWNED_SERVICE
+          legacy_api_url: "https://accounts.google.com/Logout"
         }
         policy {
           cookies_allowed: YES
@@ -678,6 +683,7 @@ void GaiaAuthFetcher::StartCreateReAuthProofTokenForParent(
             "token of the child account, and the credential to be used to "
             "reauthorize the user."
           destination: GOOGLE_OWNED_SERVICE
+          api_service_name: "reauth.googleapis.com"
         }
         policy {
           cookies_allowed: NO
@@ -718,6 +724,7 @@ void GaiaAuthFetcher::StartGetCheckConnectionInfo() {
             "after a Google account is added to the browser."
           data: "None."
           destination: GOOGLE_OWNED_SERVICE
+          legacy_api_url: "https://accounts.google.com/GetCheckConnectionInfo"
         }
         policy {
           cookies_allowed: NO
