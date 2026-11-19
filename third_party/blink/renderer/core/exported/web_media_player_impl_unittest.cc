@@ -1183,6 +1183,11 @@ TEST_F(WebMediaPlayerImplTest, LoadPreloadMetadataSuspend) {
 
   // Wait until we reach the have current data state.
   WaitForReadyStateHaveCurrentData();
+  // `OnPipelineSuspended()` posts demuxer memory reporting to `media_thread_`
+  // and back to the main thread to update V8 external memory accounting, while
+  // `WaitForReadyStateHaveCurrentData()` returns immediately if the ready state
+  // was already reached during the earlier `CycleThreads()` call.
+  CycleThreads();
 
   // The data source contains the entire file, so subtract it from the memory
   // usage to ensure there's no other memory usage.
@@ -1333,6 +1338,11 @@ TEST_F(WebMediaPlayerImplTest, LazyLoadPreloadMetadataSuspend) {
 
   // Wait until we reach the have current data state.
   WaitForReadyStateHaveCurrentData();
+  // `OnPipelineSuspended()` posts demuxer memory reporting to `media_thread_`
+  // and back to the main thread to update V8 external memory accounting, while
+  // `WaitForReadyStateHaveCurrentData()` returns immediately if the ready state
+  // was already reached during the earlier `CycleThreads()` call.
+  CycleThreads();
 
   // The data source contains the entire file, so subtract it from the memory
   // usage to ensure there's no other memory usage.
@@ -1420,6 +1430,11 @@ TEST_F(WebMediaPlayerImplTest, LoadPreloadMetadataSuspendNoVideoMemoryUsage) {
 
   // Wait until we reach the have current data state.
   WaitForReadyStateHaveCurrentData();
+  // `OnPipelineSuspended()` posts demuxer memory reporting to `media_thread_`
+  // and back to the main thread to update V8 external memory accounting, while
+  // `WaitForReadyStateHaveCurrentData()` returns immediately if the ready state
+  // was already reached during the earlier `CycleThreads()` call.
+  CycleThreads();
 
   // The data source contains the entire file, so subtract it from the memory
   // usage to ensure there's no other memory usage.
