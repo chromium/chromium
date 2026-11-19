@@ -21,10 +21,20 @@ const char kAccountInfo[] = "account_info";
 
 // Dictionary pref that contains the `AccountPreviewPreference` result when
 // offering signed-out users to sign in.
+// It contains the account selected by `ComputePreferredAccountForSignin()`
+// (see its documentation for the selection rules).
+// A value being set does not mean that a sign-in promo should be shown. It
+// only means that, if a sign-in promo is shown, this is the account to promote.
 const char kAccountPreviewPreference[] = "signin.account_preview_preference";
 
 // Dictionary pref that contains the `AccountPreviewPreference` result when
 // offering signed-in users to switch accounts.
+// It contains the secondary account selected by
+// `ComputeAccountSwitchingSelection()` (see its documentation for the
+// selection rules).
+// A value being set does not mean that an account switching promo should be
+// shown. It only means that, if an account switching promo is shown, this is
+// the account to promote.
 const char kAccountPreviewSwitchingPreference[] =
     "signin.account_preview_switching_preference";
 
