@@ -210,10 +210,11 @@ class blinkFixedPointPrinter:
         self.val = val
 
     def to_string(self):
-        return "%.14gpx" % (
-            float(self.val['value_'])
-            / float(self.val['kFixedPointDenominator'])
-        )
+        val_type = self.val.type
+        if val_type.code in (gdb.TYPE_CODE_REF, gdb.TYPE_CODE_RVALUE_REF):
+            val_type = val_type.target()
+        fractional_bits = int(val_type.strip_typedefs().template_argument(0))
+        return "%.14gpx" % (float(self.val['value_']) / (1 << fractional_bits))
 
 
 class blinkLayoutPointPrinter:
