@@ -117,8 +117,8 @@ void TabStripModelEventBridge::OnTabStripModelChanged(
   }
 }
 
-void TabStripModelEventBridge::OnTabChangedAt(tabs::TabInterface* tab,
-                                              TabChangeType change_type) {
+void TabStripModelEventBridge::OnTabChanged(tabs::TabHandle tab,
+                                            TabChangeType change_type) {
   Notify(events::ToEvent(*tab_strip_model_adapter_, tab, change_type));
 }
 

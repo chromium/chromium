@@ -552,8 +552,8 @@ namespace {
 class MockTabStripModelObserver : public TabStripModelObserver {
  public:
   MOCK_METHOD(void,
-              OnTabChangedAt,
-              (tabs::TabInterface * tab, TabChangeType change_type),
+              OnTabChanged,
+              (tabs::TabHandle tab, TabChangeType change_type),
               (override));
 };
 
@@ -573,7 +573,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, FirstIconUpdatesTabStripSynchronously) {
   testing::Mock::VerifyAndClearExpectations(&observer);
 
   // With INVALIDATE_TYPE_ICON, the tab strip should update synchronously.
-  EXPECT_CALL(observer, OnTabChangedAt(testing::_, TabChangeType::kAll));
+  EXPECT_CALL(observer, OnTabChanged(testing::_, TabChangeType::kAll));
   ui_controller->ScheduleUIUpdate(
       contents, content::INVALIDATE_TYPE_TAB | content::INVALIDATE_TYPE_ICON);
   testing::Mock::VerifyAndClearExpectations(&observer);

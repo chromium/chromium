@@ -141,8 +141,8 @@ void TabStripInternalsObserver::OnSplitTabChanged(
   FireUpdate();
 }
 
-void TabStripInternalsObserver::OnTabChangedAt(tabs::TabInterface* /*tab*/,
-                                               TabChangeType /*change_type*/) {
+void TabStripInternalsObserver::OnTabChanged(tabs::TabHandle /*tab*/,
+                                             TabChangeType /*change_type*/) {
   FireUpdate();
 }
 

@@ -399,9 +399,8 @@ class MockTabStripModelObserver : public TabStripModelObserver {
     return latest_selection_change_;
   }
 
-  void OnTabChangedAt(tabs::TabInterface* tab,
-                      TabChangeType change_type) override {
-    states_.emplace_back(tab->GetContents(), std::nullopt, CHANGE);
+  void OnTabChanged(tabs::TabHandle tab, TabChangeType change_type) override {
+    states_.emplace_back(tab.Get()->GetContents(), std::nullopt, CHANGE);
   }
 
   void OnTabPinnedStateChanged(tabs::TabHandle tab) override {
