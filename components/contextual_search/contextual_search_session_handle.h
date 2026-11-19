@@ -329,11 +329,12 @@ class ContextualSearchSessionHandle {
 
   // Removes file from context controller. Returns true if the file was found
   // and deleted.
-  bool DeleteFile(const base::UnguessableToken& file_token);
+  virtual bool DeleteFile(const base::UnguessableToken& file_token);
 
   // Removes the token from the list of uploaded context tokens. Returns true if
   // the token was found and removed.
-  bool RemoveUploadedContextToken(const base::UnguessableToken& file_token);
+  virtual bool RemoveUploadedContextToken(
+      const base::UnguessableToken& file_token);
 
   using DeselectedTabsMap = TabContextState::DeselectedTabsMap;
 
@@ -608,7 +609,7 @@ class ContextualSearchSessionHandle {
   // tabs are retained in `displaced_submitted_tabs_` so `TakeRemovedContexts()`
   // reports their `request_id` on the next query submission. Returns the
   // context tokens that were removed, if any.
-  std::vector<base::UnguessableToken> OnTabClosedOrNavigated(
+  virtual std::vector<base::UnguessableToken> OnTabClosedOrNavigated(
       SessionID tab_session_id,
       std::optional<GURL> current_url,
       std::optional<std::string> current_title);
