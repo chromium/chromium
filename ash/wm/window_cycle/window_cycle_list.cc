@@ -135,8 +135,13 @@ WindowCycleList::~WindowCycleList() {
     window->RemoveObserver(this);
   }
 
-  if (cycle_ui_widget_)
+  if (cycle_ui_widget_) {
     cycle_ui_widget_->Close();
+    // `this` may be destroyed from inside the widget's own event handling, so
+    // the controller deletes the widget in a later task.
+    Shell::Get()->window_cycle_controller()->TakeClosedCycleUiWidget(
+        std::move(cycle_ui_widget_));
+  }
 
   // Store the target window before |cycle_view_| is destroyed.
   aura::Window* target_window = nullptr;
@@ -380,9 +385,9 @@ void WindowCycleList::InitWindowCycleView() {
   const bool spoken_feedback_enabled =
       Shell::Get()->accessibility_controller()->spoken_feedback().enabled();
 
-  views::Widget* widget = new views::Widget();
+  cycle_ui_widget_ = std::make_unique<views::Widget>();
   views::Widget::InitParams params(
-      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.delegate = cycle_view_.get();
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
@@ -400,16 +405,16 @@ void WindowCycleList::InitWindowCycleView() {
   params.parent = root_window->GetChildById(kShellWindowId_OverlayContainer);
   params.bounds = cycle_view_->GetTargetBounds();
 
-  widget->Init(std::move(params));
-  widget->Show();
+  cycle_ui_widget_->Init(std::move(params));
+  cycle_ui_widget_->Show();
   cycle_view_->FadeInLayer();
-  cycle_ui_widget_ = widget;
 
   // Since this window is not activated, grab events.
   if (!spoken_feedback_enabled) {
     window_targeter_ = std::make_unique<aura::ScopedWindowTargeter>(
-        widget->GetNativeWindow()->GetRootWindow(),
-        std::make_unique<CustomWindowTargeter>(widget->GetNativeWindow()));
+        cycle_ui_widget_->GetNativeWindow()->GetRootWindow(),
+        std::make_unique<CustomWindowTargeter>(
+            cycle_ui_widget_->GetNativeWindow()));
   }
   // Close the app list, if it's open in clamshell mode.
   if (!display::Screen::Get()->InTabletMode()) {

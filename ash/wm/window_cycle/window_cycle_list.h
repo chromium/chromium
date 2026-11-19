@@ -176,7 +176,7 @@ class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
   raw_ptr<WindowCycleView> cycle_view_ = nullptr;
 
   // The widget that hosts the window cycle UI.
-  raw_ptr<views::Widget> cycle_ui_widget_ = nullptr;
+  std::unique_ptr<views::Widget> cycle_ui_widget_;
 
   // The window list will dismiss if the display metrics change.
   display::ScopedDisplayObserver display_observer_{this};

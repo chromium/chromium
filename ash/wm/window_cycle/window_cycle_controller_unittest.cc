@@ -168,7 +168,9 @@ class WindowCycleListTestApi {
 
   const aura::Window::Windows& windows() const { return cycle_list_->windows_; }
 
-  const views::Widget* widget() const { return cycle_list_->cycle_ui_widget_; }
+  const views::Widget* widget() const {
+    return cycle_list_->cycle_ui_widget_.get();
+  }
 
   WindowCycleView* cycle_view() const { return cycle_list_->cycle_view_; }
 

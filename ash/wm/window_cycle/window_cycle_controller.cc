@@ -32,8 +32,10 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/string_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash {
 
@@ -105,6 +107,8 @@ WindowCycleController::WindowCycleController() {
 }
 
 WindowCycleController::~WindowCycleController() {
+  // `~Shell` cancels cycling first, so the list never outlives the controller.
+  CHECK(!window_cycle_list_);
   Shell::Get()->session_controller()->RemoveObserver(this);
 }
 
@@ -482,6 +486,19 @@ void WindowCycleController::StopCycling() {
   active_window_before_window_cycle_ = nullptr;
   active_desk_container_id_before_cycle_ = kShellWindowId_Invalid;
   Shell::Get()->event_rewriter_controller()->SetAltDownRemappingEnabled(true);
+}
+
+void WindowCycleController::TakeClosedCycleUiWidget(
+    std::unique_ptr<views::Widget> widget) {
+  closed_cycle_ui_widget_ = std::move(widget);
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&WindowCycleController::DeleteClosedCycleUiWidget,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void WindowCycleController::DeleteClosedCycleUiWidget() {
+  closed_cycle_ui_widget_.reset();
 }
 
 void WindowCycleController::InitFromUserPrefs() {

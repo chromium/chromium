@@ -13,6 +13,7 @@
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -24,6 +25,10 @@ class Window;
 namespace ui {
 class LocatedEvent;
 }  // namespace ui
+
+namespace views {
+class Widget;
+}  // namespace views
 
 namespace ash {
 
@@ -184,6 +189,13 @@ class ASH_EXPORT WindowCycleController : public SessionObserver,
 
   void StopCycling();
 
+  // Takes the alt-tab `widget`, which the window cycle list has just closed,
+  // and deletes it in a later task.
+  void TakeClosedCycleUiWidget(std::unique_ptr<views::Widget> widget);
+
+  // Deletes `closed_cycle_ui_widget_`.
+  void DeleteClosedCycleUiWidget();
+
   void InitFromUserPrefs();
 
   // Triggers alt-tab UI updates when the alt-tab mode is updated in the active
@@ -196,6 +208,10 @@ class ASH_EXPORT WindowCycleController : public SessionObserver,
   bool IsValidKeyboardNavigation(KeyboardNavDirection direction) const;
 
   std::unique_ptr<WindowCycleList> window_cycle_list_;
+
+  // The alt-tab widget after the window cycle list closed it, kept until it
+  // can be deleted outside of its own event handling.
+  std::unique_ptr<views::Widget> closed_cycle_ui_widget_;
 
   // Tracks the ID of the active desk container before window cycling starts. It
   // is used to determine whether a desk switch occurred when cycling ends.
@@ -221,6 +237,8 @@ class ASH_EXPORT WindowCycleController : public SessionObserver,
 
   base::ScopedObservation<DesksController, DesksController::Observer>
       desks_observation_{this};
+
+  base::WeakPtrFactory<WindowCycleController> weak_ptr_factory_{this};
 };
 
 }  // namespace ash
