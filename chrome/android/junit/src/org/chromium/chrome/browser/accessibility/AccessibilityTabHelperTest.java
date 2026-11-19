@@ -6,11 +6,13 @@ package org.chromium.chrome.browser.accessibility;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import org.junit.Before;
@@ -18,7 +20,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -27,6 +28,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
+import org.chromium.ui.base.WindowAndroid;
 
 /** Unit tests for {@link AccessibilityTabHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -37,6 +39,7 @@ public class AccessibilityTabHelperTest {
     @Mock private Tab mTab;
     @Mock private WebContentsImpl mWebContents;
     @Mock private WebContentsAccessibilityImpl mWebContentsAccessibility;
+    @Mock private WindowAndroid mWindowAndroid;
 
     private UserDataHost mUserDataHost;
     private AccessibilityTabHelper mHelper;
@@ -55,16 +58,20 @@ public class AccessibilityTabHelperTest {
 
     @Test
     public void testLazyInitialization() {
-        // Clear UserDataHost initially
-        mUserDataHost = new UserDataHost();
-        when(mTab.getUserDataHost()).thenReturn(mUserDataHost);
-
         // Calling from(Tab) with active WebContents should create the helper
         mHelper = AccessibilityTabHelper.from(mTab);
         assertNotNull(mHelper);
+        verify(mTab).addObserver(mHelper);
 
         // Verify it registers accessibility focus preferences on page load
         verify(mWebContentsAccessibility).setShouldFocusOnPageLoad(true);
+
+        // Once created, from(Tab) returns the existing helper even if WebContents becomes null.
+        when(mTab.getWebContents()).thenReturn(null);
+        assertSame(mHelper, AccessibilityTabHelper.from(mTab));
+
+        mUserDataHost.destroy();
+        verify(mTab).removeObserver(mHelper);
     }
 
     @Test
@@ -79,29 +86,20 @@ public class AccessibilityTabHelperTest {
     }
 
     @Test
-    public void testCleanupOnFreeze() {
-        // Setup active helper first
-        mHelper = AccessibilityTabHelper.from(mTab);
-        assertNotNull(mHelper);
-        Mockito.reset(mWebContentsAccessibility);
-
-        // Simulate tab freeze (WebContents detached)
-        when(mTab.getWebContents()).thenReturn(null);
-        mHelper.onContentChanged(mTab);
-
-        // Accessibility configurations should no longer be pushed
-        verify(mWebContentsAccessibility, never()).setShouldFocusOnPageLoad(any(Boolean.class));
-    }
-
-    @Test
     public void testRestoreOnUnfreeze() {
         // Setup active helper first
         mHelper = AccessibilityTabHelper.from(mTab);
         assertNotNull(mHelper);
 
-        // Simulate tab freeze
+        // Calling onContentChanged with the same WebContents should be a no-op.
+        clearInvocations(mWebContentsAccessibility);
+        mHelper.onContentChanged(mTab);
+        verifyNoInteractions(mWebContentsAccessibility);
+
+        // Simulate tab freeze (WebContents detached)
         when(mTab.getWebContents()).thenReturn(null);
         mHelper.onContentChanged(mTab);
+        verifyNoInteractions(mWebContentsAccessibility);
 
         // Simulate tab restore (new WebContents attached)
         WebContentsImpl newWebContents = mock(WebContentsImpl.class);
@@ -115,18 +113,31 @@ public class AccessibilityTabHelperTest {
 
         // Verify it successfully registered on the new WebContents
         verify(newWebContentsAccessibility).setShouldFocusOnPageLoad(true);
+        verify(newWebContentsAccessibility).setIsImageDescriptionsCandidate(true);
+        verify(newWebContentsAccessibility).setIsAutoDisableAccessibilityCandidate(true);
     }
 
     @Test
     public void testActivityAttachmentTriggersUpdate() {
+        when(mTab.isCustomTab()).thenReturn(true);
         mHelper = AccessibilityTabHelper.from(mTab);
         assertNotNull(mHelper);
-        Mockito.reset(mWebContentsAccessibility);
+        verify(mWebContentsAccessibility).setShouldFocusOnPageLoad(true);
+        verify(mWebContentsAccessibility).setIsImageDescriptionsCandidate(false);
+        verify(mWebContentsAccessibility).setIsAutoDisableAccessibilityCandidate(false);
+        clearInvocations(mWebContentsAccessibility);
 
-        // Simulate activity attachment changed
+        // Detaching from activity should not update accessibility state.
         mHelper.onActivityAttachmentChanged(mTab, null);
+        verifyNoInteractions(mWebContentsAccessibility);
+
+        // Simulate reparenting from CCT to tabbed Chrome
+        when(mTab.isCustomTab()).thenReturn(false);
+        mHelper.onActivityAttachmentChanged(mTab, mWindowAndroid);
 
         // Verify it refreshed the accessibility configuration
         verify(mWebContentsAccessibility).setShouldFocusOnPageLoad(true);
+        verify(mWebContentsAccessibility).setIsImageDescriptionsCandidate(true);
+        verify(mWebContentsAccessibility).setIsAutoDisableAccessibilityCandidate(true);
     }
 }

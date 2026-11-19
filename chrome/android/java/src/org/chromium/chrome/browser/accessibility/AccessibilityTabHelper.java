@@ -6,18 +6,17 @@ package org.chromium.chrome.browser.accessibility;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
-import org.chromium.base.UserData;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabObserver;
+import org.chromium.chrome.browser.tab.TabWebContentsUserData;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.ui.base.WindowAndroid;
 
 /** Helper class that wraps accessibility state information for {@link Tab}. */
 @NullMarked
-public class AccessibilityTabHelper implements TabObserver, UserData {
+public class AccessibilityTabHelper extends TabWebContentsUserData {
     public static final Class<AccessibilityTabHelper> USER_DATA_KEY = AccessibilityTabHelper.class;
 
     private final Tab mTab;
@@ -27,15 +26,15 @@ public class AccessibilityTabHelper implements TabObserver, UserData {
      * doesn't already exist.
      *
      * @param tab The Tab to get the helper for.
-     * @return The {@link AccessibilityTabHelper}, or null if UserDataHost is null.
+     * @return The {@link AccessibilityTabHelper}, or null if WebContents is null and no helper has
+     *     been created yet.
      */
     public static @Nullable AccessibilityTabHelper from(Tab tab) {
-        if (tab.getUserDataHost() == null || tab.getWebContents() == null) return null;
+        assert !tab.isDestroyed();
         AccessibilityTabHelper helper = tab.getUserDataHost().getUserData(USER_DATA_KEY);
         if (helper == null) {
-            helper =
-                    tab.getUserDataHost()
-                            .setUserData(USER_DATA_KEY, new AccessibilityTabHelper(tab));
+            if (tab.getWebContents() == null) return null;
+            helper = attachToTab(USER_DATA_KEY, new AccessibilityTabHelper(tab));
         }
         return helper;
     }
@@ -45,22 +44,28 @@ public class AccessibilityTabHelper implements TabObserver, UserData {
      *
      * @param tab Tab to observe.
      */
-    public AccessibilityTabHelper(Tab tab) {
+    private AccessibilityTabHelper(Tab tab) {
+        super(tab);
         mTab = tab;
-        mTab.addObserver(this);
-        updateWebContentsAccessibilityState();
     }
 
     @Override
-    public void onContentChanged(Tab tab) {
-        updateWebContentsAccessibilityState();
+    public void initWebContents(WebContents webContents) {
+        updateWebContentsAccessibilityState(webContents);
     }
 
     @Override
-    public void onActivityAttachmentChanged(Tab tab, @Nullable WindowAndroid windowAndroid) {
+    public void cleanupWebContents(WebContents webContents) {}
+
+    @Override
+    public void onActivityAttachmentChanged(Tab tab, @Nullable WindowAndroid window) {
+        if (window == null) return;
         // When the activity attachment changes, we communicate the current accessibility state
         // since the attachment change could be part of switching embedders (e.g. CCT to Chrome).
-        updateWebContentsAccessibilityState();
+        WebContents webContents = getWebContents();
+        if (webContents != null) {
+            updateWebContentsAccessibilityState(webContents);
+        }
     }
 
     /**
@@ -69,10 +74,7 @@ public class AccessibilityTabHelper implements TabObserver, UserData {
      * accessibility features are enabled for the associated {@link WebContents}; which is dependent
      * on both user device settings, and the embedder of this Tab.
      */
-    private void updateWebContentsAccessibilityState() {
-        WebContents webContents = mTab.getWebContents();
-        if (webContents == null) return;
-
+    private void updateWebContentsAccessibilityState(WebContents webContents) {
         WebContentsAccessibility wcax = WebContentsAccessibility.fromWebContents(webContents);
         assumeNonNull(wcax);
 
@@ -87,10 +89,5 @@ public class AccessibilityTabHelper implements TabObserver, UserData {
 
         // Enable Auto-disable Accessibility feature normally, but not for Chrome Custom Tabs.
         wcax.setIsAutoDisableAccessibilityCandidate(!isCustomTab);
-    }
-
-    @Override
-    public void destroy() {
-        mTab.removeObserver(this);
     }
 }
