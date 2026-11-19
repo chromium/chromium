@@ -8,7 +8,6 @@
 
 #include "base/barrier_callback.h"
 #include "base/feature_list.h"
-#include "base/logging.h"
 #include "components/payments/core/features.h"
 #include "components/payments/core/secure_payment_confirmation_credential.h"
 #include "components/payments/core/secure_payment_confirmation_metrics.h"
@@ -133,9 +132,6 @@ SecurePaymentConfirmationCredentialFinder::
     SecurePaymentConfirmationCredentialFinder() = default;
 SecurePaymentConfirmationCredentialFinder::
     ~SecurePaymentConfirmationCredentialFinder() {
-  VLOG(1) << "SecurePaymentConfirmationCredentialFinder::~"
-             "SecurePaymentConfirmationCredentialFinder: Cancelling "
-          << requests_.size() << " pending requests";
   std::ranges::for_each(requests_, [&](const auto& pair) {
     if (pair.second) {
       pair.second->CancelRequest(pair.first);
@@ -150,14 +146,6 @@ void SecurePaymentConfirmationCredentialFinder::GetMatchingCredentials(
     webauthn::InternalAuthenticator* authenticator,
     scoped_refptr<payments::WebPaymentsWebDataService> web_data_service,
     SecurePaymentConfirmationCredentialFinderCallback result_callback) {
-  VLOG(1) << "SecurePaymentConfirmationCredentialFinder::"
-             "GetMatchingCredentials"
-          << " [credential_ids count: " << credential_ids.size()
-          << ", relying_party_id: " << relying_party_id
-          << ", authenticator: " << (authenticator ? "valid" : "null")
-          << ", web_data_service: " << (web_data_service ? "valid" : "null")
-          << "]";
-
   const bool require_third_party_payment_bit =
       RequiresThirdPartyPaymentBit(caller_origin, relying_party_id);
 
@@ -169,8 +157,6 @@ void SecurePaymentConfirmationCredentialFinder::GetMatchingCredentials(
       /*has_web_data_service=*/web_data_service != nullptr);
 
   if (strategy.num_queries() == 0) {
-    VLOG(1) << "SecurePaymentConfirmationCredentialFinder::"
-               "GetMatchingCredentials: No queryable location available";
     std::move(result_callback).Run(std::nullopt);
     return;
   }
@@ -182,8 +168,6 @@ void SecurePaymentConfirmationCredentialFinder::GetMatchingCredentials(
           weak_ptr_factory_.GetWeakPtr(), std::move(result_callback)));
 
   if (strategy.query_os_store) {
-    VLOG(1) << "SecurePaymentConfirmationCredentialFinder::"
-               "GetMatchingCredentials: Querying OS Credential Store";
     authenticator->GetMatchingCredentialIds(
         relying_party_id, credential_ids, require_third_party_payment_bit,
         base::BindOnce(&SecurePaymentConfirmationCredentialFinder::
@@ -193,8 +177,6 @@ void SecurePaymentConfirmationCredentialFinder::GetMatchingCredentials(
   }
 
   if (strategy.query_web_database) {
-    VLOG(1) << "SecurePaymentConfirmationCredentialFinder::"
-               "GetMatchingCredentials: Querying web data service";
     WebDataServiceBase::Handle handle =
         web_data_service->GetSecurePaymentConfirmationCredentials(
             credential_ids, relying_party_id,
@@ -210,27 +192,13 @@ void SecurePaymentConfirmationCredentialFinder::
         QueryCallback callback,
         WebDataServiceBase::Handle handle,
         std::unique_ptr<WDTypedResult> result) {
-  VLOG(1) << "SecurePaymentConfirmationCredentialFinder::"
-             "OnGetMatchingCredentialsFromWebDataService called for handle: "
-          << handle;
   MatchedCredentials credentials = std::nullopt;
 
   auto iterator = requests_.find(handle);
-  if (iterator == requests_.end()) {
-    VLOG(1) << "SecurePaymentConfirmationCredentialFinder::"
-               "OnGetMatchingCredentialsFromWebDataService: Handle not found "
-               "in requests_";
-  } else {
+  if (iterator != requests_.end()) {
     requests_.erase(iterator);
 
-    if (!result) {
-      VLOG(1) << "SecurePaymentConfirmationCredentialFinder::"
-                 "OnGetMatchingCredentialsFromWebDataService: Result is null";
-    } else if (result->GetType() != SECURE_PAYMENT_CONFIRMATION) {
-      VLOG(1) << "SecurePaymentConfirmationCredentialFinder::"
-                 "OnGetMatchingCredentialsFromWebDataService: Result type "
-              << result->GetType() << " is not SECURE_PAYMENT_CONFIRMATION";
-    } else {
+    if (result && result->GetType() == SECURE_PAYMENT_CONFIRMATION) {
       credentials = static_cast<WDResult<
           std::vector<std::unique_ptr<SecurePaymentConfirmationCredential>>>*>(
                         result.get())
