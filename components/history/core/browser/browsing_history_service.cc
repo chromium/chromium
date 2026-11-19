@@ -89,12 +89,10 @@ bool CanIncludeRemoteResults(const QueryOptions& options) {
   if (options.app_id != kNoAppIdFilter) {
     return false;
   }
-#if !BUILDFLAG(IS_IOS)
   // Actor visits are local-only, so actor-only queries never use remote.
   if (!options.include_user_visits) {
     return false;
   }
-#endif
   return true;
 }
 
@@ -709,13 +707,9 @@ void BrowsingHistoryService::MergeDuplicateResults(
       current_day_midnight = entry.time.LocalMidnight();
     }
 
-#if !BUILDFLAG(IS_IOS)
     auto& current_day_entries = entry.is_actor_visit
                                     ? actor_current_day_entries
                                     : non_actor_current_day_entries;
-#else
-    auto& current_day_entries = non_actor_current_day_entries;
-#endif
     GroupingKey key{.url = entry.url, .app_id = entry.app_id};
 
     // Keep this visit if it's the first visit to this URL on the current day.
@@ -816,13 +810,9 @@ BrowsingHistoryService::GroupSimilarVisits(QueryHistoryState* state) {
       current_day_midnight = entry.time.LocalMidnight();
     }
 
-#if !BUILDFLAG(IS_IOS)
     auto& current_day_entries = entry.is_actor_visit
                                     ? actor_current_day_entries
                                     : non_actor_current_day_entries;
-#else
-    auto& current_day_entries = non_actor_current_day_entries;
-#endif
 
     // TODO(b/481272035): Use the domain name that matches the displayed domain
     // name in the UI.

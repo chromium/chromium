@@ -974,11 +974,8 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   // search for results which match the given text query.
   // Both functions assume QueryHistory already checked the DB for validity.
   void QueryHistoryBasic(const QueryOptions& options, QueryResults* result);
-  std::vector<URLResult> QueryHistoryBasicBatched(
-      const VisitVector& visits,
-      const VisitSourceMap& sources);
-  std::vector<URLResult> QueryHistoryBasicLegacy(const VisitVector& visits,
-                                                 const VisitSourceMap& sources);
+  std::vector<URLResult> QueryHistoryBasicBatched(const VisitVector& visits);
+  std::vector<URLResult> QueryHistoryBasicLegacy(const VisitVector& visits);
   void QueryHistoryText(const std::u16string& text_query,
                         const QueryOptions& options,
                         QueryResults* result);

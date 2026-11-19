@@ -4913,6 +4913,50 @@ TEST_F(HistoryBackendTest, GetAnnotatedVisits_Unclustered) {
   EXPECT_EQ(4, result[1].visit_row.visit_id);
 }
 
+TEST_F(HistoryBackendTest, GetAnnotatedVisits_VisitSource) {
+  base::Time now = base::Time::Now();
+  const auto kTransition = ui::PageTransitionFromInt(
+      ui::PAGE_TRANSITION_TYPED | ui::PAGE_TRANSITION_CHAIN_START |
+      ui::PAGE_TRANSITION_CHAIN_END);
+
+  auto [url_id1, browsed_visit_id] = backend_->AddPageVisit(
+      GURL("https://browsed.example.com/"), now, /*referring_visit=*/0,
+      /*external_referrer_url=*/GURL(), kTransition, /*hidden=*/false,
+      SOURCE_BROWSED, VisitResponseCodeCategory::kNot404,
+      /*should_increment_typed_count=*/true, /*opener_visit=*/0,
+      /*consider_for_ntp_most_visited=*/true);
+  auto [url_id2, synced_visit_id] = backend_->AddPageVisit(
+      GURL("https://synced.example.com/"), now + base::Seconds(1),
+      /*referring_visit=*/0, /*external_referrer_url=*/GURL(), kTransition,
+      /*hidden=*/false, SOURCE_SYNCED, VisitResponseCodeCategory::kNot404,
+      /*should_increment_typed_count=*/true, /*opener_visit=*/0,
+      /*consider_for_ntp_most_visited=*/true);
+
+  // `GetAnnotatedVisits()` populates `visit_row.source` directly from
+  // `GetVisibleVisitsInRange()`.
+  QueryOptions query_options;
+  query_options.duplicate_policy = QueryOptions::KEEP_ALL_DUPLICATES;
+  std::vector<AnnotatedVisit> from_query = backend_->GetAnnotatedVisits(
+      query_options, /*compute_redirect_chain_start_properties=*/false,
+      /*get_unclustered_visits_only=*/false);
+  ASSERT_EQ(from_query.size(), 2u);
+  EXPECT_EQ(from_query[0].visit_row.visit_id, synced_visit_id);
+  EXPECT_EQ(from_query[0].source, SOURCE_SYNCED);
+  EXPECT_EQ(from_query[1].visit_row.visit_id, browsed_visit_id);
+  EXPECT_EQ(from_query[1].source, SOURCE_BROWSED);
+
+  // `ToAnnotatedVisitsFromIds()` fetches rows via `GetRowForVisit()` (where
+  // `visit_row.source` is unset) and falls back to `GetVisitsSource()`.
+  std::vector<AnnotatedVisit> from_ids = backend_->ToAnnotatedVisitsFromIds(
+      {browsed_visit_id, synced_visit_id},
+      /*compute_redirect_chain_start_properties=*/false);
+  ASSERT_EQ(from_ids.size(), 2u);
+  EXPECT_EQ(from_ids[0].visit_row.visit_id, browsed_visit_id);
+  EXPECT_EQ(from_ids[0].source, SOURCE_BROWSED);
+  EXPECT_EQ(from_ids[1].visit_row.visit_id, synced_visit_id);
+  EXPECT_EQ(from_ids[1].source, SOURCE_SYNCED);
+}
+
 TEST_F(HistoryBackendTest, PreservesAllContextAnnotationsFields) {
   auto [url_id, visit_id] = backend_->AddPageVisit(
       GURL("https://url.com"), base::Time::Now(), /*referring_visit=*/0,

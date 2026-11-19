@@ -17,6 +17,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
@@ -2433,7 +2434,11 @@ std::vector<AnnotatedVisit> HistoryBackend::ToAnnotatedVisitsFromRows(
   }
 
   VisitSourceMap sources;
-  GetVisitsSource(visit_rows, &sources);
+  if (std::ranges::any_of(visit_rows, [](const VisitRow& row) {
+        return !row.source.has_value();
+      })) {
+    GetVisitsSource(visit_rows, &sources);
+  }
 
   base::flat_map<VisitID, VisitRow> redirect_start_cache;
   std::vector<AnnotatedVisit> annotated_visits;
@@ -2478,9 +2483,14 @@ std::vector<AnnotatedVisit> HistoryBackend::ToAnnotatedVisitsFromRows(
       opener_visit_of_redirect_chain_start = redirect_start.opener_visit;
     }
 
-    const auto source = sources.count(visit_row.visit_id) == 0
-                            ? VisitSource::SOURCE_BROWSED
-                            : sources[visit_row.visit_id];
+    VisitSource source;
+    if (visit_row.source.has_value()) {
+      source = *visit_row.source;
+    } else {
+      auto source_it = sources.find(visit_row.visit_id);
+      source = source_it == sources.end() ? VisitSource::SOURCE_BROWSED
+                                          : source_it->second;
+    }
 
     annotated_visits.emplace_back(url_row, visit_row, context_annotations,
                                   content_annotations,
@@ -2870,14 +2880,11 @@ void HistoryBackend::QueryHistoryBasic(const QueryOptions& options,
   bool has_more_results = db_->GetVisibleVisitsInRange(options, &visits);
   DCHECK_LE(static_cast<int>(visits.size()), options.EffectiveMaxCount());
 
-  VisitSourceMap sources;
-  GetVisitsSource(visits, &sources);
-
   // Now add them and the URL rows to the results.
   std::vector<URLResult> matching_results =
       base::FeatureList::IsEnabled(kHistoryQueryBatchedLookups)
-          ? QueryHistoryBasicBatched(visits, sources)
-          : QueryHistoryBasicLegacy(visits, sources);
+          ? QueryHistoryBasicBatched(visits)
+          : QueryHistoryBasicLegacy(visits);
 
   base::UmaHistogramTimes("History.QueryHistoryBasic.Duration",
                           timer.Elapsed());
@@ -2889,8 +2896,7 @@ void HistoryBackend::QueryHistoryBasic(const QueryOptions& options,
 }
 
 std::vector<URLResult> HistoryBackend::QueryHistoryBasicBatched(
-    const VisitVector& visits,
-    const VisitSourceMap& sources) {
+    const VisitVector& visits) {
   // Phase 1: Collect unique URL IDs and visit IDs for batched database
   // lookups.
   std::vector<URLID> unique_url_ids;
@@ -2940,18 +2946,8 @@ std::vector<URLResult> HistoryBackend::QueryHistoryBasicBatched(
       url_result.set_content_annotations(std::move(annot_it->second));
     }
 
-    VisitSource visit_source;
-    if (visit.source.has_value()) {
-      visit_source = visit.source.value();
-    } else {
-      auto source_it = sources.find(visit.visit_id);
-      if (source_it == sources.end()) {
-        visit_source = VisitSource::SOURCE_BROWSED;
-      } else {
-        visit_source = source_it->second;
-      }
-    }
-    url_result.set_actor_source(visit_source == VisitSource::SOURCE_ACTOR);
+    CHECK(visit.source.has_value());
+    url_result.set_actor_source(visit.source == VisitSource::SOURCE_ACTOR);
 
     // Set whether the visit was blocked for a managed user by looking at the
     // transition type.
@@ -2966,8 +2962,7 @@ std::vector<URLResult> HistoryBackend::QueryHistoryBasicBatched(
 }
 
 std::vector<URLResult> HistoryBackend::QueryHistoryBasicLegacy(
-    const VisitVector& visits,
-    const VisitSourceMap& sources) {
+    const VisitVector& visits) {
   // Legacy per-visit loop: executes 2 individual queries per visit.
   std::vector<URLResult> matching_results;
   URLResult url_result;
@@ -2993,18 +2988,8 @@ std::vector<URLResult> HistoryBackend::QueryHistoryBasicLegacy(
     db_->GetContentAnnotationsForVisit(visit.visit_id, &content_annotations);
     url_result.set_content_annotations(std::move(content_annotations));
 
-    VisitSource visit_source;
-    if (visit.source.has_value()) {
-      visit_source = visit.source.value();
-    } else {
-      auto source_it = sources.find(visit.visit_id);
-      if (source_it == sources.end()) {
-        visit_source = VisitSource::SOURCE_BROWSED;
-      } else {
-        visit_source = source_it->second;
-      }
-    }
-    url_result.set_actor_source(visit_source == VisitSource::SOURCE_ACTOR);
+    CHECK(visit.source.has_value());
+    url_result.set_actor_source(visit.source == VisitSource::SOURCE_ACTOR);
 
     url_result.set_blocked_visit(
         (visit.transition & ui::PAGE_TRANSITION_BLOCKED) != 0);
@@ -3043,24 +3028,14 @@ void HistoryBackend::QueryHistoryText(const std::u16string& text_query,
       has_more_results = true;
     }
 
-    VisitSourceMap sources;
-    GetVisitsSource(visits, &sources);
-
     for (const auto& visit : visits) {
       URLResult url_result(text_match);
       url_result.set_visit_id(visit.visit_id);
       url_result.set_visit_time(visit.visit_time);
       url_result.set_app_id(visit.app_id);
 
-      VisitSource visit_source;
-      if (visit.source.has_value()) {
-        visit_source = visit.source.value();
-      } else if (sources.count(visit.visit_id) == 0) {
-        visit_source = VisitSource::SOURCE_BROWSED;
-      } else {
-        visit_source = sources[visit.visit_id];
-      }
-      url_result.set_actor_source(visit_source == VisitSource::SOURCE_ACTOR);
+      CHECK(visit.source.has_value());
+      url_result.set_actor_source(visit.source == VisitSource::SOURCE_ACTOR);
 
       matching_visits.push_back(url_result);
     }

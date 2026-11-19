@@ -883,13 +883,6 @@ TEST_F(VisitDatabaseTest, GetVisibleVisitsInRange) {
   }
   AddContextAnnotationsForVisit(visit_404.visit_id, context_annotations_404);
 
-#if BUILDFLAG(IS_IOS)
-  for (auto& test_visit_row : test_visit_rows) {
-    test_visit_row.source = std::nullopt;
-  }
-  visit_404.source = std::nullopt;
-#endif  // BUILDFLAG(IS_IOS)
-
   // Query the visits for all time.
   VisitVector results;
   QueryOptions options;
@@ -1326,12 +1319,6 @@ TEST_F(VisitDatabaseTest, GetVisibleVisitsForURL) {
   // Make `visit_info9` a 404 visit.
   AddContextAnnotationsForVisit(visit_info9.visit_id, context_annotations_404);
 
-#if BUILDFLAG(IS_IOS)
-  for (auto& test_visit_row : test_visit_rows) {
-    test_visit_row.source = std::nullopt;
-  }
-#endif  // BUILDFLAG(IS_IOS)
-
   // Query the visits for the first url id, excluding 404s.
   VisitVector results;
   QueryOptions options;
@@ -1460,7 +1447,6 @@ TEST_F(VisitDatabaseTest, GetVisibleVisitsForURL) {
   EXPECT_THAT(results[1], MatchesVisitInfo(test_visit_rows[5]));
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 TEST_F(VisitDatabaseTest, GetVisibleVisits_ActorVisits) {
   const URLID kUrlId1 = 1U;
   VisitRow visit_browsed(
@@ -1585,7 +1571,6 @@ TEST_F(VisitDatabaseTest, GetVisibleVisits_SeparateBySource) {
                                    MatchesVisitInfo(visit_actor2),
                                    MatchesVisitInfo(visit_user2)));
 }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 TEST_F(VisitDatabaseTest, GetHistoryCount) {
   // Start with a day in the middle of summer, so that we are nowhere near
@@ -2531,7 +2516,6 @@ TEST_F(VisitDatabaseTest, GetLastRowForVisitByVisitTime) {
   EXPECT_THAT(result3, MatchesVisitInfo(visit3c));
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 TEST_F(VisitDatabaseTest, ShouldFilterUserAndActorVisits) {
   auto add_visit_with_source = [&](const GURL& url, VisitSource source) {
     URLRow url_row(url);
@@ -2594,7 +2578,6 @@ TEST_F(VisitDatabaseTest, ShouldFilterUserAndActorVisits) {
     }
   }
 }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 // Tests for FillVisitRow micro-optimizations ----------------------------------
 

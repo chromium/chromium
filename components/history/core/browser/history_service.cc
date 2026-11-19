@@ -42,7 +42,6 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/history/core/browser/download_row.h"
-#include "components/history/core/browser/features.h"
 #include "components/history/core/browser/history_backend.h"
 #include "components/history/core/browser/history_backend_client.h"
 #include "components/history/core/browser/history_backend_runner.h"
@@ -616,10 +615,8 @@ void HistoryService::AddPage(const GURL& url,
                              bool did_replace_entry) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  bool consider_for_ntp_most_visited = true;
-#if !BUILDFLAG(IS_IOS)
-  consider_for_ntp_most_visited = visit_source != VisitSource::SOURCE_ACTOR;
-#endif
+  bool consider_for_ntp_most_visited =
+      visit_source != VisitSource::SOURCE_ACTOR;
 
   AddPage(HistoryAddPageArgs(url, time, context_id, nav_entry_id,
                              /*local_navigation_id=*/std::nullopt, referrer,
@@ -634,10 +631,8 @@ void HistoryService::AddPage(const GURL& url,
                              VisitSource visit_source) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  bool consider_for_ntp_most_visited = true;
-#if !BUILDFLAG(IS_IOS)
-  consider_for_ntp_most_visited = visit_source != VisitSource::SOURCE_ACTOR;
-#endif
+  bool consider_for_ntp_most_visited =
+      visit_source != VisitSource::SOURCE_ACTOR;
 
   // This function will construct the following "self-links" entry in the
   // VisitedLinkDatabase: `<url, url, url>`.

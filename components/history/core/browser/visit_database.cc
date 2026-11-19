@@ -16,7 +16,6 @@
 #include <utility>
 
 #include "base/containers/span.h"
-#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -309,13 +308,6 @@ void VisitDatabase::FillVisitRow(sql::Statement& statement, VisitRow* visit) {
   if (!app_id_view.empty()) {
     visit->app_id = std::string(app_id_view);
   }
-  // TODO(crbug.com/457641486): Clean up preprocessor statements once feature is
-  // rolled out. Keep in sync with column 18 in `PrepareVisibleVisitsQuery()`.
-#if !BUILDFLAG(IS_IOS)
-  if (statement.ColumnCount() > 18) {
-    visit->source = VisitSourceFromInt(statement.ColumnInt(18));
-  }
-#endif
 }
 
 // static
@@ -350,6 +342,8 @@ bool VisitDatabase::FillVisitVectorWithOptions(sql::Statement& statement,
   while (statement.Step()) {
     VisitRow visit;
     FillVisitRow(statement, &visit);
+    // Keep in sync with column 18 in `PrepareVisibleVisitsQuery()`.
+    visit.source = VisitSourceFromInt(statement.ColumnInt(18));
 
     // Skip transitions that aren't user-visible.
     if (!TransitionIsVisible(visit.transition)) {
@@ -370,10 +364,7 @@ bool VisitDatabase::FillVisitVectorWithOptions(sql::Statement& statement,
         found_urls_midnight = visit.visit_time.LocalMidnight();
       }
 
-      bool is_actor_visit = false;
-#if !BUILDFLAG(IS_IOS)
-      is_actor_visit = visit.source == SOURCE_ACTOR;
-#endif
+      bool is_actor_visit = visit.source == SOURCE_ACTOR;
 
       // Make sure the (URLID, is_actor_visit) is unique.
       DedupeKey key = std::make_pair(visit.url_id, is_actor_visit);
@@ -635,9 +626,6 @@ bool VisitDatabase::PrepareVisibleVisitsQuery(
   std::vector<std::string> where_clauses;
   std::vector<int64_t> binding_values;
 
-// TODO(crbug.com/457641486) Clean up preprocessor statements once feature is
-// rolled out.
-#if !BUILDFLAG(IS_IOS)
   sql += ", IFNULL(visit_source.source, 1)";
   joins += " LEFT JOIN visit_source ON visits.id = visit_source.id";
 
@@ -651,11 +639,6 @@ bool VisitDatabase::PrepareVisibleVisitsQuery(
     where_clauses.push_back("visit_source.source = ?");
     binding_values.push_back(SOURCE_ACTOR);
   }
-#else
-  // Select `SOURCE_BROWSED` (1) at column 18 so extra columns have consistent
-  // indices across platforms.
-  sql += ", 1";
-#endif
 
   if (options.policy_for_404_visits == VisitQuery404sPolicy::kExclude404s) {
     joins +=
