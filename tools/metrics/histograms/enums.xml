@@ -27284,6 +27284,8 @@ Called by update_net_error_codes.py.-->
   </int>
 </enum>
 
+<!-- LINT.IfChange(SoftNavigationOutcome) -->
+
 <enum name="SoftNavigationOutcome">
   <int value="0" label="Soft navigation detected"/>
   <int value="1" label="No SoftNavContext during url change"/>
@@ -27294,7 +27296,11 @@ Called by update_net_error_codes.py.-->
   <int value="8"
       label="No SoftNavContext during url change, but we merged URL into an
              existing active context"/>
+  <int value="16"
+      label="Invalid time origin (before or equal to navigation start)"/>
 </enum>
+
+<!-- LINT.ThenChange(//third_party/blink/renderer/core/timing/soft_navigation_heuristics.cc:SoftNavigationOutcome) -->
 
 <enum name="SpeculationEagerness">
   <int value="0" label="Conservative"/>

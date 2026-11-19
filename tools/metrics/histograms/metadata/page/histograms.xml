@@ -5814,11 +5814,13 @@ chromium-metrics-reviews@google.com.
     changed through the history API. This is recorded at most once for each URL
     change. If the URL change was not attributable to a user interaction, that
     is recorded immediately. If a soft navigation is detected, then it is
-    recorded as soon as we detect it (when all conditions are satisfied).
-    Otherwise, to be sure that all tasks associated with the user interaction
-    have completed, we wait until all TaskAttributionInfo objects created within
-    the SoftNavigationHeuristics::EventScope are garbage-collected, and then
-    record which of the conditions was not satisfied.
+    recorded as soon as we detect it (when all conditions are satisfied), unless
+    its TimeOrigin() is less than or equal to ReferenceMonotonicTime(), in which
+    case the invalid time origin outcome is recorded instead. Otherwise, to be
+    sure that all tasks associated with the user interaction have completed, we
+    wait until all TaskAttributionInfo objects created within the
+    SoftNavigationHeuristics::EventScope are garbage-collected, and then record
+    which of the conditions was not satisfied.
   </summary>
 </histogram>
 

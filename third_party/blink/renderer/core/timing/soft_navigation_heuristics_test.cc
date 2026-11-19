@@ -17,6 +17,8 @@
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
+#include "third_party/blink/renderer/core/loader/document_loader.h"
+#include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_record.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/core/timing/performance_event_timing.h"
@@ -33,10 +35,25 @@ namespace blink {
 
 using TaskScope = scheduler::TaskAttributionTracker::TaskScope;
 
+class RecordingLocalFrameClient : public EmptyLocalFrameClient {
+ public:
+  void DidObserveSoftNavigation(
+      SoftNavigationMetricsForReporting metrics) override {
+    ++soft_navigation_count_;
+  }
+
+  int SoftNavigationCount() const { return soft_navigation_count_; }
+
+ private:
+  int soft_navigation_count_ = 0;
+};
+
 class SoftNavigationHeuristicsTest : public testing::Test {
  protected:
   void SetUp() override {
-    page_holder_ = std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
+    local_frame_client_ = MakeGarbageCollected<RecordingLocalFrameClient>();
+    page_holder_ = std::make_unique<DummyPageHolder>(
+        gfx::Size(800, 600), /*chrome_client=*/nullptr, local_frame_client_);
     task_environment_.AdvanceClock(base::Seconds(1));
   }
 
@@ -47,6 +64,10 @@ class SoftNavigationHeuristicsTest : public testing::Test {
   }
 
   Document& GetDocument() { return page_holder_->GetDocument(); }
+
+  int ObservedSoftNavigationCount() const {
+    return local_frame_client_->SoftNavigationCount();
+  }
 
   Node* CreateNodeForTest() {
     return GetDocument().CreateRawElement(html_names::kDivTag);
@@ -69,9 +90,44 @@ class SoftNavigationHeuristicsTest : public testing::Test {
     return heuristics->MaybeCreateTaskScopeForEvent(entry);
   }
 
+  void TriggerSoftNavigationWithStartTime(SoftNavigationHeuristics* heuristics,
+                                          base::TimeTicks start_time,
+                                          uint64_t interaction_id) {
+    auto* tracker = scheduler::TaskAttributionTracker::From(
+        GetScriptStateForTest()->GetIsolate());
+    ASSERT_TRUE(tracker);
+
+    auto* entry = blink::CreatePerformanceEventTimingForTest(
+        event_type_names::kClick, start_time, GetDocument().body(),
+        GetDocument().domWindow());
+    entry->SetInteractionIdInfo(
+        PerformanceTimelineEntryIdInfo(interaction_id, interaction_id));
+
+    SoftNavigationContext* context = nullptr;
+    Node* node = CreateNodeForTest();
+    {
+      auto event_scope = heuristics->MaybeCreateTaskScopeForEvent(entry);
+      context = tracker->CurrentTaskState()->GetSoftNavigationContext();
+      ASSERT_TRUE(context);
+
+      String new_url =
+          String("http://foo.com/#nav") + String::Number(interaction_id);
+      heuristics->SameDocumentNavigationCommitted(
+          KURL("http://foo.com/"), KURL(new_url), WebFrameLoadType::kStandard,
+          base::UnguessableToken::Create(), context->GetInteractionIdInfo());
+      heuristics->ModifiedDOM(node);
+    }
+
+    heuristics->SetContextForTest(context, node);
+    TextRecord* record = CreateTextRecordForTest(node, 1000, 1000);
+    record->SetPaintTime(base::TimeTicks::Now(), DOMPaintTimingInfo());
+    heuristics->OnPaintFinished({}, {record});
+  }
+
  private:
   test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  Persistent<RecordingLocalFrameClient> local_frame_client_;
   std::unique_ptr<DummyPageHolder> page_holder_;
 };
 
@@ -366,6 +422,32 @@ TEST_F(SoftNavigationHeuristicsTest, AsyncSameDocumentNavigationNoContext) {
       WebFrameLoadType::kStandard,
       /*same_document_metrics_token=*/base::UnguessableToken::Create(),
       PerformanceTimelineEntryIdInfo::kNone);
+}
+
+// Regression test for crbug.com/585428860.
+TEST_F(SoftNavigationHeuristicsTest, EarlyReturnOnInvalidTimeOrigin) {
+  base::HistogramTester histogram_tester;
+  auto* heuristics = CreateSoftNavigationHeuristicsForTest();
+  const base::TimeTicks ref_time =
+      GetDocument().Loader()->GetTiming().ReferenceMonotonicTime();
+
+  // TimeOrigin < ReferenceMonotonicTime should early-return without crashing.
+  TriggerSoftNavigationWithStartTime(heuristics,
+                                     ref_time - base::Milliseconds(10), 2);
+  // TimeOrigin == ReferenceMonotonicTime should also early-return.
+  TriggerSoftNavigationWithStartTime(heuristics, ref_time, 3);
+  EXPECT_EQ(ObservedSoftNavigationCount(), 0);
+  constexpr int kInvalidTimeOrigin = 16;
+  histogram_tester.ExpectUniqueSample("PageLoad.Internal.SoftNavigationOutcome",
+                                      kInvalidTimeOrigin, 2);
+
+  // Subsequent normal TimeOrigin > ReferenceMonotonicTime should report.
+  TriggerSoftNavigationWithStartTime(heuristics,
+                                     ref_time + base::Milliseconds(10), 4);
+  EXPECT_EQ(ObservedSoftNavigationCount(), 1);
+  constexpr int kSoftNavigationDetected = 0;
+  histogram_tester.ExpectBucketCount("PageLoad.Internal.SoftNavigationOutcome",
+                                     kSoftNavigationDetected, 1);
 }
 
 }  // namespace blink
