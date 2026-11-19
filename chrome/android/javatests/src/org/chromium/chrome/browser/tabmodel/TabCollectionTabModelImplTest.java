@@ -1370,7 +1370,8 @@ public class TabCollectionTabModelImplTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mCollectionModel.addTabGroupObserver(colorObserver);
-                    mCollectionModel.setTabGroupColor(tabGroupId, testColor);
+                    mCollectionModel.setTabGroupColor(
+                            TabGroupId.fromRawToken(tabGroupId), testColor);
                     assertEquals(
                             testColor,
                             mCollectionModel.getTabGroupColor(TabGroupId.fromRawToken(tabGroupId)));
@@ -1603,7 +1604,7 @@ public class TabCollectionTabModelImplTest {
             mCollectionModel.setTabGroupTitle(TabGroupId.fromRawToken(tabGroupId), title);
             assertEquals(0, callbackHelper.getCallCount());
 
-            mCollectionModel.setTabGroupColor(tabGroupId, color);
+            mCollectionModel.setTabGroupColor(TabGroupId.fromRawToken(tabGroupId), color);
             assertEquals(0, callbackHelper.getCallCount());
 
             mCollectionModel.setTabGroupCollapsed(tabGroupId, collapsed, /* animate= */ false);
@@ -1918,7 +1919,8 @@ public class TabCollectionTabModelImplTest {
                 () -> {
                     String title = "Test title";
                     mCollectionModel.setTabGroupTitle(TabGroupId.fromRawToken(groupId), title);
-                    mCollectionModel.setTabGroupColor(groupId, TabGroupColorId.BLUE);
+                    mCollectionModel.setTabGroupColor(
+                            TabGroupId.fromRawToken(groupId), TabGroupColorId.BLUE);
                     mCollectionModel.setTabGroupCollapsed(
                             groupId, /* isCollapsed= */ true, /* animate= */ false);
 
@@ -2655,7 +2657,8 @@ public class TabCollectionTabModelImplTest {
                     assertNotNull(groupId1);
                     mCollectionModel.setTabGroupTitle(
                             TabGroupId.fromRawToken(groupId1), group1Title);
-                    mCollectionModel.setTabGroupColor(groupId1, group1Color);
+                    mCollectionModel.setTabGroupColor(
+                            TabGroupId.fromRawToken(groupId1), group1Color);
 
                     // Create group 2 with tab2, tab3.
                     mCollectionModel.mergeListOfTabsToGroup(
@@ -2666,7 +2669,8 @@ public class TabCollectionTabModelImplTest {
                     assertNotNull(groupId2);
                     mCollectionModel.setTabGroupTitle(
                             TabGroupId.fromRawToken(groupId2), group2Title);
-                    mCollectionModel.setTabGroupColor(groupId2, group2Color);
+                    mCollectionModel.setTabGroupColor(
+                            TabGroupId.fromRawToken(groupId2), group2Color);
 
                     assertTabsInOrderAre(List.of(tab0, tab1, tab2, tab3));
 
@@ -3673,7 +3677,7 @@ public class TabCollectionTabModelImplTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mCollectionModel.setTabGroupTitle(TabGroupId.fromRawToken(tabGroupId), title);
-                    mCollectionModel.setTabGroupColor(tabGroupId, color);
+                    mCollectionModel.setTabGroupColor(TabGroupId.fromRawToken(tabGroupId), color);
 
                     mCollectionModel.closeTabs(
                             TabClosureParams.closeTabs(List.of(tab0, tab1))
@@ -4623,7 +4627,9 @@ public class TabCollectionTabModelImplTest {
 
         // Set the tab group color.
         ThreadUtils.runOnUiThreadBlocking(
-                () -> mCollectionModel.setTabGroupColor(tabGroupId.get(), TabGroupColorId.BLUE));
+                () ->
+                        mCollectionModel.setTabGroupColor(
+                                TabGroupId.fromRawToken(tabGroupId.get()), TabGroupColorId.BLUE));
 
         // The callback is called.
         onTabGroupVisualsChanged.waitForNext();

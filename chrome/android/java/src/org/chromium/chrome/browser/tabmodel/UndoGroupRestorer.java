@@ -358,7 +358,7 @@ final class UndoGroupRestorer {
             tabModel.setTabGroupTitle(TabGroupId.fromRawToken(groupId), title);
         }
         if (groupData.color != TabGroupColorUtils.INVALID_COLOR_ID) {
-            tabModel.setTabGroupColor(groupId, groupData.color);
+            tabModel.setTabGroupColor(TabGroupId.fromRawToken(groupId), groupData.color);
         }
         if (groupData.collapsed) {
             tabModel.setTabGroupCollapsed(groupId, /* isCollapsed= */ true, /* animate= */ false);

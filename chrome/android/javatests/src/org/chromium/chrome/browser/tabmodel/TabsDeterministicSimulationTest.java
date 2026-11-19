@@ -388,7 +388,7 @@ public class TabsDeterministicSimulationTest {
                                         + ", "
                                         + color
                                         + ")");
-                        mCollectionModel.setTabGroupColor(groupId, color);
+                        mCollectionModel.setTabGroupColor(TabGroupId.fromRawToken(groupId), color);
                     } else {
                         boolean collapsed = !mCollectionModel.getTabGroupCollapsed(groupId);
                         Log.i(

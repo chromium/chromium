@@ -78,7 +78,7 @@ public class TabGroupCreationDialogManagerUnitTest {
                 mTabGroupCreationDialogManager.getDialogControllerForTesting();
 
         controller.onDismiss(null, DialogDismissalCause.UNKNOWN);
-        verify(mTabModel).setTabGroupColor(eq(TAB_GROUP_ID), anyInt());
+        verify(mTabModel).setTabGroupColor(eq(TabGroupId.fromRawToken(TAB_GROUP_ID)), anyInt());
         verify(mTabModel).setTabGroupTitle(eq(TabGroupId.fromRawToken(TAB_GROUP_ID)), any());
         verify(mOnTabGroupCreation).run();
     }

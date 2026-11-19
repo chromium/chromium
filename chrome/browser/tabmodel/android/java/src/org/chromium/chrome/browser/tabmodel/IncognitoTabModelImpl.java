@@ -710,7 +710,7 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
     }
 
     @Override
-    public void setTabGroupColor(Token tabGroupId, int color) {
+    public void setTabGroupColor(TabGroupId tabGroupId, int color) {
         mDelegateModel.setTabGroupColor(tabGroupId, color);
     }
 

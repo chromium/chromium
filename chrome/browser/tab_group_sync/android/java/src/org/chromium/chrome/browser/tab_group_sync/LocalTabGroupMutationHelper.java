@@ -409,6 +409,6 @@ public class LocalTabGroupMutationHelper {
         mTabModel.setTabGroupTitle(
                 TabGroupId.fromRawToken(tabGroupId),
                 tabGroup.title == null ? UNSET_TAB_GROUP_TITLE : tabGroup.title);
-        mTabModel.setTabGroupColor(tabGroupId, tabGroup.color);
+        mTabModel.setTabGroupColor(TabGroupId.fromRawToken(tabGroupId), tabGroup.color);
     }
 }

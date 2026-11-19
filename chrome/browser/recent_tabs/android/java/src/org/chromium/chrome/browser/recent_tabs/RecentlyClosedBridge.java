@@ -113,7 +113,7 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
 
         Token tabGroupId = tab.getTabGroupId();
         assert tabGroupId != null;
-        tabModel.setTabGroupColor(tabGroupId, color);
+        tabModel.setTabGroupColor(TabGroupId.fromRawToken(tabGroupId), color);
 
         if (title == null || title.isEmpty()) return;
 

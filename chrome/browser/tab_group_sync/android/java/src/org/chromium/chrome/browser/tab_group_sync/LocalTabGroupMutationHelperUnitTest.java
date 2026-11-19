@@ -244,7 +244,7 @@ public class LocalTabGroupMutationHelperUnitTest {
 
         verify(mTabModel)
                 .setTabGroupTitle(eq(TabGroupId.fromRawToken(TOKEN_1)), eq(savedTabGroup.title));
-        verify(mTabModel).setTabGroupColor(eq(TOKEN_1), anyInt());
+        verify(mTabModel).setTabGroupColor(eq(TabGroupId.fromRawToken(TOKEN_1)), anyInt());
     }
 
     @Test

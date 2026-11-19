@@ -73,7 +73,7 @@ public class TabGroupCreationDialogManager {
                     mTabGroupVisualDataDialogManager.getCurrentColorId();
             boolean didChangeColor = currentColorId != defaultColorId;
             if (stillExists) {
-                mTabModel.setTabGroupColor(mTabGroupId, currentColorId);
+                mTabModel.setTabGroupColor(TabGroupId.fromRawToken(mTabGroupId), currentColorId);
             }
 
             // Only save the group title input text if it has been changed from the suggested

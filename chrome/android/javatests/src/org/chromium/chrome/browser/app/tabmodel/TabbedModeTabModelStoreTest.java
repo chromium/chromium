@@ -286,7 +286,7 @@ public class TabbedModeTabModelStoreTest {
                                     TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
                             Token id = mTabModel.getTabById(tabId1).getTabGroupId();
                             mTabModel.setTabGroupTitle(TabGroupId.fromRawToken(id), newTitle);
-                            mTabModel.setTabGroupColor(id, newColor);
+                            mTabModel.setTabGroupColor(TabGroupId.fromRawToken(id), newColor);
                             return id;
                         });
 

@@ -797,7 +797,7 @@ public class TabListMediatorUnitTest {
         List<Tab> tabs = List.of(mTab1, newTab);
         createTabGroup(tabs, TAB_GROUP_ID);
 
-        mTabModel.setTabGroupColor(TAB_GROUP_ID, TabGroupColorId.BLUE);
+        mTabModel.setTabGroupColor(TabGroupId.fromRawToken(TAB_GROUP_ID), TabGroupColorId.BLUE);
         PropertyModel model = mModelList.get(0).model;
         mMediator.updateTabGroupProperties(model, TAB_GROUP_ID, TabGroupColorId.BLUE);
         mMediator.updateFaviconForTab(model, mTab1, null, null);
@@ -814,7 +814,7 @@ public class TabListMediatorUnitTest {
         List<Tab> tabs = List.of(mTab1, newTab);
         createTabGroup(tabs, TAB_GROUP_ID);
 
-        mTabModel.setTabGroupColor(TAB_GROUP_ID, TabGroupColorId.BLUE);
+        mTabModel.setTabGroupColor(TabGroupId.fromRawToken(TAB_GROUP_ID), TabGroupColorId.BLUE);
         PropertyModel modelToUpdate = mModelList.get(0).model;
         mMediator.updateTabGroupProperties(modelToUpdate, TAB_GROUP_ID, TabGroupColorId.BLUE);
         mMediator.updateFaviconForTab(modelToUpdate, mTab1, null, null);
@@ -833,7 +833,7 @@ public class TabListMediatorUnitTest {
         List<Tab> tabs = List.of(mTab1, newTab);
         createTabGroup(tabs, TAB_GROUP_ID);
 
-        mTabModel.setTabGroupColor(TAB_GROUP_ID, TabGroupColorId.BLUE);
+        mTabModel.setTabGroupColor(TabGroupId.fromRawToken(TAB_GROUP_ID), TabGroupColorId.BLUE);
         PropertyModel modelToUpdate = mModelList.get(0).model;
         mMediator.updateTabGroupProperties(modelToUpdate, TAB_GROUP_ID, TabGroupColorId.BLUE);
         mMediator.updateFaviconForTab(modelToUpdate, mTab1, null, null);

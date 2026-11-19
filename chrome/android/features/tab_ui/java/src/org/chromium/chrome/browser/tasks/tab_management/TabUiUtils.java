@@ -204,7 +204,7 @@ public class TabUiUtils {
 
         int curGroupColor = tabModel.getTabGroupColor(TabGroupId.fromRawToken(tabGroupId));
         if (curGroupColor != newGroupColor) {
-            tabModel.setTabGroupColor(tabGroupId, newGroupColor);
+            tabModel.setTabGroupColor(TabGroupId.fromRawToken(tabGroupId), newGroupColor);
             return true;
         }
         return false;

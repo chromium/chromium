@@ -186,7 +186,7 @@ public class TabGroupUtils {
 
         // 3. Apply the tab group attributes (color, collapsed state, and title) using the
         // tabGroupId.
-        tabModel.setTabGroupColor(tabGroupId, tabGroupColor);
+        tabModel.setTabGroupColor(TabGroupId.fromRawToken(tabGroupId), tabGroupColor);
         tabModel.setTabGroupTitle(TabGroupId.fromRawToken(tabGroupId), tabGroupTitle);
         if (shouldApplyCollapse) {
             tabModel.setTabGroupCollapsed(tabGroupId, tabGroupCollapsed, /* animate= */ false);

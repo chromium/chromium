@@ -3390,7 +3390,8 @@ public class TabListMediator implements TabListNotificationHandler {
                             boolean didChangeColor = oldColorId != currentColorId;
                             if (didChangeColor) {
                                 if (stillExists) {
-                                    tabModel.setTabGroupColor(tabGroupId, currentColorId);
+                                    tabModel.setTabGroupColor(
+                                            TabGroupId.fromRawToken(tabGroupId), currentColorId);
                                 }
                                 RecordUserAction.record("TabGroup.RenameDialog.ColorChanged");
                             }

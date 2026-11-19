@@ -476,7 +476,7 @@ public class EmptyTabModel implements IncognitoTabModelInternal {
     }
 
     @Override
-    public void setTabGroupColor(Token tabGroupId, int color) {}
+    public void setTabGroupColor(TabGroupId tabGroupId, int color) {}
 
     @Override
     public boolean getTabGroupCollapsed(Token tabGroupId) {

@@ -1619,10 +1619,10 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
     }
 
     @Override
-    public void setTabGroupColor(Token tabGroupId, @TabGroupColorId int color) {
+    public void setTabGroupColor(TabGroupId tabGroupId, @TabGroupColorId int color) {
         assertOnUiThread();
         updateTabGroupVisualData(
-                TabGroupId.fromRawToken(tabGroupId),
+                tabGroupId,
                 /* title= */ null,
                 color,
                 /* isCollapsed= */ null,
@@ -2868,7 +2868,9 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         setTabGroupTitle(
                 TabGroupId.fromRawToken(tabGroupId),
                 getTabGroupTitle(TabGroupId.fromRawToken(tabGroupId)));
-        setTabGroupColor(tabGroupId, getTabGroupColor(TabGroupId.fromRawToken(tabGroupId)));
+        setTabGroupColor(
+                TabGroupId.fromRawToken(tabGroupId),
+                getTabGroupColor(TabGroupId.fromRawToken(tabGroupId)));
         setTabGroupCollapsed(tabGroupId, getTabGroupCollapsed(tabGroupId));
     }
 

@@ -823,7 +823,8 @@ public class TabGridDialogMediator
             TabModel tabModel = mCurrentTabModelSupplier.get();
             assumeNonNull(tabModel);
             if (tabModel.containsTabGroup(TabGroupId.fromOptionalToken(mCurrentTabGroupId))) {
-                tabModel.setTabGroupColor(mCurrentTabGroupId, selectedColor);
+                tabModel.setTabGroupColor(
+                        TabGroupId.fromRawToken(mCurrentTabGroupId), selectedColor);
             }
         }
     }

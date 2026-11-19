@@ -1390,7 +1390,7 @@ public class TabGridDialogMediatorUnitTest {
 
         // Assert that the color has changed both in the property model and the model filter.
         assertThat(mModel.get(TabGridDialogProperties.TAB_GROUP_COLOR_ID), equalTo(COLOR_3));
-        verify(mTabModel).setTabGroupColor(TAB_GROUP_ID, COLOR_3);
+        verify(mTabModel).setTabGroupColor(TabGroupId.fromRawToken(TAB_GROUP_ID), COLOR_3);
     }
 
     @Test

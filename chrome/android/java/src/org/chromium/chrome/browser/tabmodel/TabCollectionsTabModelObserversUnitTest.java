@@ -962,7 +962,7 @@ public class TabCollectionsTabModelObserversUnitTest {
                         any(), eq(TabGroupId.fromRawToken(groupId))))
                 .thenReturn(TabGroupColorId.GREY);
 
-        mTabModel.setTabGroupColor(groupId, TabGroupColorId.BLUE);
+        mTabModel.setTabGroupColor(TabGroupId.fromRawToken(groupId), TabGroupColorId.BLUE);
         verify(mTabGroupObserver).onTabGroupVisualsChanged(eq(groupId));
     }
 

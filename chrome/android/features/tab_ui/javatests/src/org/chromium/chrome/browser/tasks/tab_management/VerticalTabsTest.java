@@ -401,7 +401,9 @@ public class VerticalTabsTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         selector.getCurrentModel()
-                                .setTabGroupColor(tab1.getTabGroupId(), targetColorId));
+                                .setTabGroupColor(
+                                        TabGroupId.fromRawToken(tab1.getTabGroupId()),
+                                        targetColorId));
 
         CriteriaHelper.pollUiThread(
                 () ->

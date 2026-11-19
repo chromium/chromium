@@ -45,7 +45,7 @@ final class SyncTestTabGroupHelpers {
             @TabGroupColorId int color) {
         TabModel tabModel = TabModelUtils.getTabModelByTab(tabInGroup);
         Token tabGroupId = tabInGroup.getTabGroupId();
-        tabModel.setTabGroupColor(tabGroupId, color);
+        tabModel.setTabGroupColor(TabGroupId.fromRawToken(tabGroupId), color);
         tabModel.setTabGroupTitle(TabGroupId.fromRawToken(tabGroupId), title);
     }
 }

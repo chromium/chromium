@@ -299,15 +299,18 @@ public class TabUiUtilsUnitTest {
         when(mTabModel.getTabGroupColor(TabGroupId.fromRawToken(TAB_GROUP_ID)))
                 .thenReturn(TabGroupColorId.BLUE);
         TabUiUtils.updateTabGroupColor(mTabModel, TAB_GROUP_ID, TabGroupColorId.RED);
-        verify(mTabModel).setTabGroupColor(TAB_GROUP_ID, TabGroupColorId.RED);
+        verify(mTabModel)
+                .setTabGroupColor(TabGroupId.fromRawToken(TAB_GROUP_ID), TabGroupColorId.RED);
 
         TabUiUtils.updateTabGroupColor(mTabModel, TAB_GROUP_ID, TabGroupColorId.BLUE);
-        verify(mTabModel, never()).setTabGroupColor(TAB_GROUP_ID, TabGroupColorId.BLUE);
+        verify(mTabModel, never())
+                .setTabGroupColor(TabGroupId.fromRawToken(TAB_GROUP_ID), TabGroupColorId.BLUE);
 
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
                 .thenReturn(false);
         TabUiUtils.updateTabGroupColor(mTabModel, TAB_GROUP_ID, TabGroupColorId.YELLOW);
-        verify(mTabModel, never()).setTabGroupColor(TAB_GROUP_ID, TabGroupColorId.YELLOW);
+        verify(mTabModel, never())
+                .setTabGroupColor(TabGroupId.fromRawToken(TAB_GROUP_ID), TabGroupColorId.YELLOW);
     }
 
     @Test
