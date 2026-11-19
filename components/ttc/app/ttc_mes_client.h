@@ -18,9 +18,9 @@
 #include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/optimization_guide/proto/features/streaming/ttc.pb.h"
 #include "components/ttc/app/public/session_journal.h"
+#include "components/ttc/app/public/tab_context_info.h"
 #include "components/ttc/app/public/tool_types.h"
 #include "components/ttc/app/ttc_backend.h"
-#include "url/gurl.h"
 
 namespace ttc {
 
@@ -51,8 +51,7 @@ class TtcMesClient
   void SendAudioChunk(base::span<const int16_t> audio_data) override;
   void SendTextInput(const std::string& text) override;
   void SendContextUpdate(
-      const GURL& url,
-      const std::string& title,
+      const TabContextInfo& tab,
       const optimization_guide::proto::AnnotatedPageContent& apc) override;
   void ReportPlaybackStatus(base::TimeDelta playback_progress,
                             bool playback_complete,

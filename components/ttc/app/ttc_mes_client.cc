@@ -583,15 +583,15 @@ void TtcMesClient::SendTextInput(const std::string& text) {
 }
 
 void TtcMesClient::SendContextUpdate(
-    const GURL& url,
-    const std::string& title,
+    const TabContextInfo& tab,
     const optimization_guide::proto::AnnotatedPageContent& apc) {
   optimization_guide::proto::TtcClientFrame frame;
   frame.set_client_timestamp_ms(
       base::Time::Now().InMillisecondsSinceUnixEpoch());
   auto* ctx = frame.mutable_context_update();
-  ctx->mutable_active_tab()->set_url(url.spec());
-  ctx->mutable_active_tab()->set_title(title);
+  auto* active_tab = ctx->mutable_active_tab();
+  active_tab->set_url(tab.url.spec());
+  active_tab->set_title(tab.title);
   if (apc.ByteSizeLong() > 0) {
     *ctx->mutable_annotated_page_content() = apc;
   }

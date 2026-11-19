@@ -18,6 +18,7 @@
 #import "components/actor/public/mojom/actor_types.mojom.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #import "components/ttc/app/public/error_codes.h"
+#import "components/ttc/app/public/test_utils.h"
 #import "components/ttc/app/test_utils.h"
 #import "components/ttc/app/ttc_backend.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/audio/ttc_audio_controller.h"
@@ -344,7 +345,7 @@ TEST_F(TtcConversationTest, TestSendContextUpdateForwardsToBackend) {
   apc.mutable_main_frame_data()->set_title("Article Title");
   EXPECT_CALL(*mock_backend_,
               SendContextUpdate(
-                  url, "Article Title",
+                  ttc::TabContextIs(url, "Article Title"),
                   testing::ResultOf(
                       [](const optimization_guide::proto::AnnotatedPageContent&
                              forwarded_apc) {

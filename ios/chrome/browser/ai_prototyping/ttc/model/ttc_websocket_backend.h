@@ -21,7 +21,6 @@
 #import "components/ttc/app/public/tool_types.h"
 #import "components/ttc/app/ttc_backend.h"
 #import "ios/public/provider/chrome/browser/intelligence/ttc_api.h"
-#import "url/gurl.h"
 
 // Backend implementation managing bidirectional streaming with a live model
 // over WebSockets using Apple's native `NSURLSessionWebSocketTask`.
@@ -48,8 +47,7 @@ class TtcWebSocketBackend : public ttc::TtcBackend {
   void SendAudioChunk(base::span<const int16_t> audio_data) override;
   void SendTextInput(const std::string& text) override;
   void SendContextUpdate(
-      const GURL& url,
-      const std::string& title,
+      const ttc::TabContextInfo& tab,
       const optimization_guide::proto::AnnotatedPageContent& apc) override;
   void ReportPlaybackStatus(base::TimeDelta playback_progress,
                             bool playback_complete,

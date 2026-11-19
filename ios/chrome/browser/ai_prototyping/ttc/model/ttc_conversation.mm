@@ -25,6 +25,7 @@
 #import "base/strings/stringprintf.h"
 #import "components/actor/public/mojom/actor_types.mojom.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#import "components/ttc/app/public/tab_context_info.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/audio/ttc_audio_controller.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/audio/ttc_audio_session_controller.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_error_codes.h"
@@ -270,7 +271,7 @@ void TtcConversation::SendContextUpdate(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (backend_) {
     LogContextUpdateSent(url, title, apc);
-    backend_->SendContextUpdate(url, title, apc);
+    backend_->SendContextUpdate(ttc::TabContextInfo(url, title), apc);
   }
 }
 

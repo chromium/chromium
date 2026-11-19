@@ -30,6 +30,7 @@
 #include "components/optimization_guide/proto/features/wire/tool_declaration.pb.h"
 #include "components/ttc/app/public/debug_sink.h"
 #include "components/ttc/app/public/error_codes.h"
+#include "components/ttc/app/public/tab_context_info.h"
 #include "components/ttc/app/public/tool_types.h"
 #include "components/ttc/app/ttc_backend.h"
 #include "components/ttc/features.h"
@@ -574,7 +575,8 @@ TEST_F(TtcMesClientTest, DebugSinkGetsClientFrames) {
   client().SendTextInput("hi");
   optimization_guide::proto::AnnotatedPageContent apc;
   apc.mutable_main_frame_data()->set_title("page");
-  client().SendContextUpdate(GURL("https://a.test/"), "title", apc);
+  client().SendContextUpdate(TabContextInfo(GURL("https://a.test/"), "title"),
+                             apc);
   std::vector<ToolDefinition> tools(2);
   tools[0].name = "open_tab";
   tools[1].name = "scroll";
@@ -890,7 +892,7 @@ TEST_F(TtcMesClientTest, NullDebugSinkIsSafe) {
   const std::vector<int16_t> pcm = {1, 2};
   client.SendAudioChunk(pcm);
   client.SendTextInput("hi");
-  client.SendContextUpdate(GURL("https://a.test"), "title",
+  client.SendContextUpdate(TabContextInfo(GURL("https://a.test"), "title"),
                            optimization_guide::proto::AnnotatedPageContent());
   client.SendToolSetUpdate(std::vector<ToolDefinition>(1));
   client.ReportPlaybackStatus(base::Milliseconds(200),
@@ -982,6 +984,18 @@ TEST_F(TtcMesClientTest, GetSessionIdTracksSessionStatusAndClose) {
 
   client().Close();
   EXPECT_EQ(client().GetSessionId(), std::nullopt);
+}
+
+TEST_F(TtcMesClientTest, SendContextUpdatePopulatesActiveTab) {
+  client().SendContextUpdate(
+      TabContextInfo(GURL("https://a.test/doc.pdf"), "doc.pdf"),
+      optimization_guide::proto::AnnotatedPageContent());
+
+  const auto& update = last_sent_frame().context_update();
+  EXPECT_EQ(update.active_tab().url(), "https://a.test/doc.pdf");
+  EXPECT_EQ(update.active_tab().title(), "doc.pdf");
+  // Empty page content isn't sent.
+  EXPECT_FALSE(update.has_annotated_page_content());
 }
 
 TEST_F(TtcMesClientTest, SendToolSetUpdatePopulatesToolDeclaration) {

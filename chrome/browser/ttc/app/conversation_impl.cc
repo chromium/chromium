@@ -62,10 +62,9 @@ void ConversationImpl::SendTextInput(const std::string& text) {
 }
 
 void ConversationImpl::SendContextUpdate(
-    const GURL& url,
-    const std::string& title,
+    const TabContextInfo& tab,
     const optimization_guide::proto::AnnotatedPageContent& apc) {
-  backend_->SendContextUpdate(url, title, apc);
+  backend_->SendContextUpdate(tab, apc);
 }
 
 void ConversationImpl::OnPageContextInvalidated() {

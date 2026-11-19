@@ -16,9 +16,9 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/ttc/app/public/error_codes.h"
+#include "components/ttc/app/public/tab_context_info.h"
 #include "components/ttc/app/public/tool_types.h"
 #include "components/ttc/app/public/turn_state_update.h"
-#include "url/gurl.h"
 
 namespace optimization_guide::proto {
 class AnnotatedPageContent;
@@ -90,8 +90,7 @@ class TtcBackend {
   // Sends active tab context update to the backend server. `apc` is empty if
   // the page's content is unavailable.
   virtual void SendContextUpdate(
-      const GURL& url,
-      const std::string& title,
+      const TabContextInfo& tab,
       const optimization_guide::proto::AnnotatedPageContent& apc) = 0;
 
   // Reports the current playback status of model audio for `generation_id`.

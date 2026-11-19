@@ -502,6 +502,7 @@ source_set("browser_tests") {
     "//components/translate/core/browser",
     "//components/translate/core/common",
     "//components/ttc/app/public",
+    "//components/ttc/app/public:test_support",
     "//content/public/browser",
     "//content/public/common",
     "//content/test:browsertest_support",

@@ -11,7 +11,7 @@
 
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
-#include "url/gurl.h"
+#include "components/ttc/app/public/tab_context_info.h"
 
 namespace media {
 class AudioParameters;
@@ -42,12 +42,13 @@ class Conversation {
 
   // Sends user text, context, or tool messages to the model.
   virtual void SendTextInput(const std::string& text) = 0;
-  // Sends the context of the page the session is operating on to the model.
-  // Called by the SessionController whenever fresh page context is extracted,
-  // or with an empty `apc` when the page's content is unavailable.
+
+  // Sends the context of the page the session is operating on to the model:
+  // `tab` describes the tab, and `apc` the page's content. Called by the
+  // SessionController whenever fresh page context is extracted, or with an
+  // empty `apc` when the page's content is unavailable.
   virtual void SendContextUpdate(
-      const GURL& url,
-      const std::string& title,
+      const TabContextInfo& tab,
       const optimization_guide::proto::AnnotatedPageContent& apc) = 0;
 
   // Invoked when the page the session is operating on has changed, and so the

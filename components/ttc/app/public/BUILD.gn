@@ -11,12 +11,14 @@ source_set("public") {
     "error_codes.h",
     "server_journal_event.h",
     "session_journal.h",
+    "tab_context_info.h",
     "tool_types.h",
     "turn_state_update.h",
   ]
   sources = [
     "error_codes.cc",
     "server_journal_event.cc",
+    "tab_context_info.cc",
     "tool_types.cc",
   ]
   public_deps = [
@@ -24,5 +26,14 @@ source_set("public") {
     "//components/actor/public/mojom:mojo_bindings",
     "//components/actor/public/mojom:mojo_bindings_shared",
     "//url",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  public = [ "test_utils.h" ]
+  public_deps = [
+    ":public",
+    "//testing/gmock",
   ]
 }

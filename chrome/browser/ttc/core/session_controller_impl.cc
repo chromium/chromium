@@ -37,6 +37,7 @@
 #include "components/actor/core/journal_details_builder.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/ttc/app/public/conversation.h"
+#include "components/ttc/app/public/tab_context_info.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -473,22 +474,22 @@ void SessionControllerImpl::OnPageContextFetched(
     // a page whose context may not be shared.
     // TODO(b/555804152): Tell the model why there's no page content.
     content::RenderFrameHost& main_frame = page.GetMainDocument();
-    if (result.error() == page_content_annotations::FetchPageContextError::
-                              kPageContextNotEligible) {
-      conversation_->SendContextUpdate(
-          main_frame.GetLastCommittedOrigin().GetURL(),
-          /*title=*/std::string(), /*apc=*/{});
-    } else {
-      conversation_->SendContextUpdate(main_frame.GetLastCommittedURL(),
-                                       base::UTF16ToUTF8(contents->GetTitle()),
-                                       /*apc=*/{});
-    }
+    const TabContextInfo tab =
+        result.error() == page_content_annotations::FetchPageContextError::
+                              kPageContextNotEligible
+            ? TabContextInfo(main_frame.GetLastCommittedOrigin().GetURL(),
+                             /*title=*/std::string())
+            : TabContextInfo(main_frame.GetLastCommittedURL(),
+                             base::UTF16ToUTF8(contents->GetTitle()));
+    conversation_->SendContextUpdate(tab, /*apc=*/{});
     return;
   }
   const optimization_guide::proto::AnnotatedPageContent& apc =
       result->annotated_page_content->data;
-  conversation_->SendContextUpdate(GURL(apc.main_frame_data().url()),
-                                   apc.main_frame_data().title(), apc);
+  conversation_->SendContextUpdate(
+      TabContextInfo(GURL(apc.main_frame_data().url()),
+                     apc.main_frame_data().title()),
+      apc);
 }
 
 void SessionControllerImpl::OnInactivityTimeout() {

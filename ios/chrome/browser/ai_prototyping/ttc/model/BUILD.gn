@@ -95,6 +95,7 @@ source_set("unit_tests") {
     "//components/ttc/app",
     "//components/ttc/app:test_support",
     "//components/ttc/app/public",
+    "//components/ttc/app/public:test_support",
     "//ios/chrome/browser/ai_prototyping/ttc/model/audio",
     "//ios/chrome/browser/ai_prototyping/ttc/model/tools",
     "//ios/chrome/browser/intelligence/actor/model",

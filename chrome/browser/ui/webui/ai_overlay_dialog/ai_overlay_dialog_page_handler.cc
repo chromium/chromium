@@ -42,6 +42,7 @@
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/content/browser/page_content_proto_util.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/ttc/app/public/tab_context_info.h"
 #include "components/vector_icons/vector_icons.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "content/public/browser/render_frame_host.h"
@@ -270,7 +271,8 @@ void AiOverlayDialogPageHandler::DidChangePage(
         untrusted_ui_ ? untrusted_ui_->page_context_monitor() : nullptr;
     if (pcm && pcm->last_page_content().has_value()) {
       ttc_mes_client_->SendContextUpdate(
-          url, title.has_value() ? base::UTF16ToUTF8(title.value()) : "",
+          TabContextInfo(
+              url, title.has_value() ? base::UTF16ToUTF8(title.value()) : ""),
           *pcm->last_page_content());
     }
   }

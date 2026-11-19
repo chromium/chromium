@@ -22,8 +22,8 @@
 #include "chrome/browser/ttc/app/speaker_tracker.h"
 #include "chrome/browser/ttc/core/states.h"
 #include "components/ttc/app/public/conversation.h"
+#include "components/ttc/app/public/tab_context_info.h"
 #include "components/ttc/app/ttc_backend.h"
-#include "url/gurl.h"
 
 namespace media {
 class AudioParameters;
@@ -60,8 +60,7 @@ class ConversationImpl : public Conversation,
   void Stop() override;
   void SendTextInput(const std::string& text) override;
   void SendContextUpdate(
-      const GURL& url,
-      const std::string& title,
+      const TabContextInfo& tab,
       const optimization_guide::proto::AnnotatedPageContent& apc) override;
   void OnPageContextInvalidated() override;
   void SetMicMuted(bool muted) override;
