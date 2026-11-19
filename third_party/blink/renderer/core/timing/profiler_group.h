@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_PROFILER_GROUP_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/common/permissions_policy/js_profiling_mode.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -116,6 +117,8 @@ class CORE_EXPORT ProfilerGroup : public V8PerIsolateData::UserData {
   // A set of observers, one for each ExecutionContext that has profiling
   // enabled.
   HeapHashSet<Member<ProfilingContextObserver>> context_observers_;
+
+  THREAD_CHECKER(thread_checker_);
 };
 
 class DiscardedSamplesDelegate : public v8::DiscardedSamplesDelegate {

@@ -403,15 +403,7 @@ void WorkerClassicScriptLoader::ProcessDocumentPolicy(
   if (!response.CurrentRequestUrl().ProtocolIs("blob") &&
       !response.CurrentRequestUrl().ProtocolIs("file") &&
       !response.CurrentRequestUrl().ProtocolIs("filesystem")) {
-    PolicyParserMessageBuffer header_logger("Document-Policy HTTP header: ");
-    document_policy_ = DocumentPolicy::DocumentPolicyBundle{
-        DocumentPolicyParser::Parse(
-            response.HttpHeaderField(http_names::kDocumentPolicy),
-            header_logger)
-            .value_or(DocumentPolicy::ParsedDocumentPolicy{}),
-        std::string(
-            response.HttpHeaderField(http_names::kDocumentPolicyReportOnly)
-                .Utf8())};
+    document_policy_ = DocumentPolicyParser::ParseResponseHeaders(response);
   }
 }
 

@@ -352,7 +352,7 @@ void ProfilerGroup::CancelProfiler(Profiler* profiler) {
 
 void ProfilerGroup::CancelProfilerAsync(ScriptState* script_state,
                                         Profiler* profiler) {
-  DCHECK(IsMainThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(cpu_profiler_);
   DCHECK(!profiler->stopped());
   profilers_.erase(profiler);
@@ -370,7 +370,7 @@ void ProfilerGroup::CancelProfilerAsync(ScriptState* script_state,
 }
 
 void ProfilerGroup::StopDetachedProfiler(String profiler_id) {
-  DCHECK(IsMainThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // we use a vector instead of a map because the expected number of profiler
   // is expected to be very small
@@ -386,7 +386,7 @@ void ProfilerGroup::StopDetachedProfiler(String profiler_id) {
 }
 
 void ProfilerGroup::StopDetachedProfilers() {
-  DCHECK(IsMainThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   for (auto& detached_profiler_id : detached_profiler_ids_) {
     CancelProfilerImpl(detached_profiler_id);

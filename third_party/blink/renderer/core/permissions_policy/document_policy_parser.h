@@ -14,6 +14,8 @@
 
 namespace blink {
 
+class ResourceResponse;
+
 class CORE_EXPORT DocumentPolicyParser {
   STATIC_ONLY(DocumentPolicyParser);
 
@@ -23,6 +25,11 @@ class CORE_EXPORT DocumentPolicyParser {
   static std::optional<DocumentPolicy::ParsedDocumentPolicy> Parse(
       const String& policy_string,
       PolicyParserMessageBuffer&);
+
+  // Parse the enforced policy and retain the report-only header for
+  // initialization.
+  static DocumentPolicy::DocumentPolicyBundle ParseResponseHeaders(
+      const ResourceResponse&);
 
   // Internal parsing method for testing.
   static std::optional<DocumentPolicy::ParsedDocumentPolicy> ParseInternal(

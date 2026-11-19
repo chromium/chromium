@@ -8,6 +8,9 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/permissions_policy/document_policy.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
+#include "third_party/blink/renderer/platform/network/http_names.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
 
@@ -530,6 +533,56 @@ TEST_F(DocumentPolicyParserTest, SerializeResultShouldMatch) {
     ASSERT_TRUE(result.has_value());
     EXPECT_EQ(result.value(), expected);
   }
+}
+
+TEST_F(DocumentPolicyParserTest, ParseResponseHeaders) {
+  ResourceResponse response;
+  response.SetHttpHeaderField(
+      http_names::kDocumentPolicy,
+      AtomicString("force-load-at-top;report-to=endpoint, js-profiling=?0"));
+  response.SetHttpHeaderField(
+      http_names::kDocumentPolicyReportOnly,
+      AtomicString("force-load-at-top=?0;report-to=reports"));
+
+  const auto bundle = DocumentPolicyParser::ParseResponseHeaders(response);
+
+  const DocumentPolicyFeatureState expected_state = {
+      {mojom::blink::DocumentPolicyFeature::kForceLoadAtTop,
+       PolicyValue::CreateBool(true)},
+      {mojom::blink::DocumentPolicyFeature::kJSProfiling,
+       PolicyValue::CreateBool(false)}};
+  const DocumentPolicy::FeatureEndpointMap expected_endpoints = {
+      {mojom::blink::DocumentPolicyFeature::kForceLoadAtTop, "endpoint"}};
+  EXPECT_EQ(bundle.policy.feature_state, expected_state);
+  EXPECT_EQ(bundle.policy.endpoint_map, expected_endpoints);
+  EXPECT_EQ(bundle.report_only_header,
+            "force-load-at-top=?0;report-to=reports");
+}
+
+TEST_F(DocumentPolicyParserTest, ParseReportOnlyResponseHeader) {
+  ResourceResponse response;
+  response.SetHttpHeaderField(http_names::kDocumentPolicyReportOnly,
+                              AtomicString("force-load-at-top"));
+
+  const auto bundle = DocumentPolicyParser::ParseResponseHeaders(response);
+
+  EXPECT_TRUE(bundle.policy.feature_state.empty());
+  EXPECT_TRUE(bundle.policy.endpoint_map.empty());
+  EXPECT_EQ(bundle.report_only_header, "force-load-at-top");
+}
+
+TEST_F(DocumentPolicyParserTest, ParseMalformedEnforcedResponseHeader) {
+  ResourceResponse response;
+  response.SetHttpHeaderField(http_names::kDocumentPolicy,
+                              AtomicString("force-load-at-top=("));
+  response.SetHttpHeaderField(http_names::kDocumentPolicyReportOnly,
+                              AtomicString("force-load-at-top"));
+
+  const auto bundle = DocumentPolicyParser::ParseResponseHeaders(response);
+
+  EXPECT_TRUE(bundle.policy.feature_state.empty());
+  EXPECT_TRUE(bundle.policy.endpoint_map.empty());
+  EXPECT_EQ(bundle.report_only_header, "force-load-at-top");
 }
 
 INSTANTIATE_TEST_SUITE_P(

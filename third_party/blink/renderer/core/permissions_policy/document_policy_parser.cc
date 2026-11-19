@@ -4,10 +4,14 @@
 
 #include "third_party/blink/renderer/core/permissions_policy/document_policy_parser.h"
 
+#include <string>
+
 #include "net/http/structured_headers.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/public/common/permissions_policy/document_policy_enum_values.h"
 #include "third_party/blink/public/mojom/permissions_policy/policy_value.mojom-blink.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
+#include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/format.h"
 
 namespace blink {
@@ -181,6 +185,20 @@ void ApplyDefaultEndpoint(DocumentPolicy::ParsedDocumentPolicy& parsed_policy,
 }
 
 }  // namespace
+
+// static
+DocumentPolicy::DocumentPolicyBundle DocumentPolicyParser::ParseResponseHeaders(
+    const ResourceResponse& response) {
+  // Parsing diagnostics are intentionally discarded, matching classic worker
+  // response handling.
+  PolicyParserMessageBuffer header_logger("Document-Policy HTTP header: ");
+  return {Parse(response.HttpHeaderField(http_names::kDocumentPolicy),
+                header_logger)
+              .value_or(DocumentPolicy::ParsedDocumentPolicy{}),
+          std::string(
+              response.HttpHeaderField(http_names::kDocumentPolicyReportOnly)
+                  .Utf8())};
+}
 
 // static
 std::optional<DocumentPolicy::ParsedDocumentPolicy> DocumentPolicyParser::Parse(

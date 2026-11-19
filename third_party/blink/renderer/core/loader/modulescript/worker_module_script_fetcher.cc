@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_source_location_type.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
+#include "third_party/blink/renderer/core/permissions_policy/document_policy_parser.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/workers/dedicated_worker_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
@@ -25,6 +26,7 @@
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
 #include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
 #include "third_party/blink/renderer/platform/network/network_utils.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
@@ -196,13 +198,20 @@ void WorkerModuleScriptFetcher::NotifyClient(
         OriginTrialContext::ParseHeaderValue(
             response.HttpHeaderField(http_names::kOriginTrial));
 
+    DocumentPolicy::DocumentPolicyBundle response_document_policy;
+    if (global_scope_->IsDedicatedWorkerGlobalScope() &&
+        RuntimeEnabledFeatures::DocumentPolicyInDedicatedWorkerEnabled(
+            global_scope_.Get())) {
+      response_document_policy =
+          DocumentPolicyParser::ParseResponseHeaders(response);
+    }
+
     // Step 12.3-12.6 are implemented in Initialize().
     global_scope_->Initialize(
         response_url, response_referrer_policy,
         ParseContentSecurityPolicyHeaders(
             ContentSecurityPolicyResponseHeaders(response)),
-        // TODO(crbug.com/488090079): Plumb Document Policy in Module Workers.
-        DocumentPolicy::DocumentPolicyBundle{},
+        std::move(response_document_policy),
         response_origin_trial_tokens.get());
   }
 
