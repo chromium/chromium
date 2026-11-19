@@ -102,6 +102,16 @@ REMOTE_COCOA_APP_SHIM_EXPORT
 // child of the overlay window. Defaults to NO.
 - (BOOL)immersiveRevealLockRequiresKey;
 
+// Returns whether ancestor windows should still apply cursor updates while this
+// window is the key window. Defaults to NO.
+// TODO(b/587414254): If OmniboxPopupNSWindow is still the only window opting
+// in once the unbounded omnibox launches in the location bar
+// (ShouldHostUnboundedOmniboxInLocationBar()), remove this hook and the
+// supporting cursor delegation code (KeyWindowDelegatesCursorTo(),
+// OnCursorDelegatingWindowBecameKey(), and
+// kMacCursorUpdatesUnderKeyChildWindow).
+- (BOOL)ancestorsUpdateCursorWhileKey;
+
 // Identifier for the NativeWidgetMac from which this window was created. This
 // may be used to look up the NativeWidgetMacNSWindowHost in the browser process
 // or the NativeWidgetNSWindowBridge in a display process.
@@ -139,5 +149,16 @@ REMOTE_COCOA_APP_SHIM_EXPORT
     NSWindow<CommandDispatchingWindow>* commandDispatchParentOverride;
 
 @end
+
+namespace remote_cocoa {
+
+// True when the key window is a `NativeWidgetMacNSWindow` that opted in through
+// -ancestorsUpdateCursorWhileKey and has `window` in its `parentWindow` chain.
+// Always false when `features::kMacCursorUpdatesUnderKeyChildWindow` is
+// disabled.
+REMOTE_COCOA_APP_SHIM_EXPORT
+bool KeyWindowDelegatesCursorTo(NSWindow* window);
+
+}  // namespace remote_cocoa
 
 #endif  // COMPONENTS_REMOTE_COCOA_APP_SHIM_NATIVE_WIDGET_MAC_NSWINDOW_H_

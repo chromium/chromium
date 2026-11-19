@@ -12,6 +12,7 @@
 #include "base/mac/mac_util.h"
 #include "base/task/single_thread_task_runner.h"
 #import "components/remote_cocoa/app_shim/bridged_content_view.h"
+#import "components/remote_cocoa/app_shim/native_widget_mac_nswindow.h"
 #import "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
 #include "components/remote_cocoa/app_shim/native_widget_ns_window_fullscreen_controller.h"
 #include "components/remote_cocoa/app_shim/native_widget_ns_window_host_helper.h"
@@ -104,6 +105,14 @@
         break;
       }
     }
+  }
+
+  // Separately, if a descendant that opted in is key, -cursorUpdate: is never
+  // sent to this window either, so set the cursor here too. A window can't have
+  // both a key ancestor and a key descendant, so at most one of these two cases
+  // applies.
+  if (remote_cocoa::KeyWindowDelegatesCursorTo(window)) {
+    [(newCursor ? newCursor : [NSCursor arrowCursor]) set];
   }
 }
 
