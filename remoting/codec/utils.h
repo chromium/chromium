@@ -35,8 +35,9 @@ void ConvertDesktopFrameRectToYuv(const webrtc::DesktopFrame& frame,
 webrtc::DesktopRegion GetRowAlignedRegion(const webrtc::DesktopRegion& region,
                                           int frame_width);
 
-// Minimum pixel count (~25% of a 1080p frame) required for YUV conversion
-// helpers to parallelize across `base::ThreadPool` via `base::CreateJob()`.
+// Minimum pixel count (~25% of a 1080p frame) required for YUV<->RGB
+// conversion helpers to parallelize across `base::ThreadPool` via
+// `base::CreateJob()`.
 inline constexpr int64_t kParallelYuvConversionPixelThreshold = 512000;
 
 // Converts each rectangle in `region` (aligned horizontally to SIMD row
@@ -80,6 +81,32 @@ void ConvertDesktopFrameToNv12(const webrtc::DesktopFrame& frame,
                                int y_stride,
                                base::span<uint8_t> uv_data,
                                int uv_stride);
+
+// Converts planar 8-bit I420 (`is_i444 == false`) or I444 (`is_i444 == true`)
+// YUV planes into `rgb_frame` using `output_fourcc` (`webrtc::FOURCC_ARGB` for
+// BGRA byte order in memory, or `webrtc::FOURCC_ABGR` for RGBA byte order in
+// memory). Empty frames (`rgb_frame.size().is_empty()`) are a no-op. For
+// non-empty frames, `CHECK`s that `rgb_frame.data()` is non-null,
+// `output_fourcc` is `FOURCC_ARGB` or `FOURCC_ABGR`, `rgb_frame.stride() >=
+// width * kBytesPerPixel`, `y_stride >= width`, `u_stride` and `v_stride >=
+// uv_width`, and each Y/U/V span covers at least `stride * (rows - 1) +
+// row_bytes` bytes.
+//
+// When `rgb_frame` covers at least `kParallelYuvConversionPixelThreshold`
+// pixels and multiple CPU workers are available in `base::ThreadPool`,
+// conversion is partitioned across dynamic work-stealing horizontal strips via
+// `base::CreateJob(...).Join()` before returning synchronously; under
+// `ThreadPool` contention, the calling thread drains remaining strips inline
+// without stalling on queued workers.
+void ConvertYuvToDesktopFrame(base::span<const uint8_t> y_data,
+                              int y_stride,
+                              base::span<const uint8_t> u_data,
+                              int u_stride,
+                              base::span<const uint8_t> v_data,
+                              int v_stride,
+                              bool is_i444,
+                              webrtc::FourCC output_fourcc,
+                              webrtc::DesktopFrame& rgb_frame);
 
 // Overrides the `(NumberOfProcessors() + 1) / 2` worker cap in
 // `GetMaxParallelWorkers()` so unit tests exercise the multi-strip

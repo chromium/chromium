@@ -12,11 +12,13 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/function_ref.h"
+#include "base/notreached.h"
 #include "base/system/sys_info.h"
 #include "base/task/post_job.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "remoting/base/util.h"
+#include "third_party/libyuv/include/libyuv/convert_argb.h"
 #include "third_party/libyuv/include/libyuv/convert_from_argb.h"
 
 namespace remoting {
@@ -267,6 +269,74 @@ void ConvertDesktopFrameToNv12(const webrtc::DesktopFrame& frame,
 
   const webrtc::DesktopRect full_rect =
       webrtc::DesktopRect::MakeSize(frame.size());
+  const int64_t pixels = int64_t{width} * height;
+  const size_t max_workers = GetMaxParallelWorkers(pixels);
+  if (max_workers > 1) {
+    const std::vector<webrtc::DesktopRect> strips =
+        SplitRectIntoStrips(full_rect, max_workers * 2);
+    if (strips.size() > 1) {
+      RunStripsInParallel(strips, max_workers, convert_strip);
+      return;
+    }
+  }
+
+  convert_strip(full_rect);
+}
+
+void ConvertYuvToDesktopFrame(base::span<const uint8_t> y_data,
+                              int y_stride,
+                              base::span<const uint8_t> u_data,
+                              int u_stride,
+                              base::span<const uint8_t> v_data,
+                              int v_stride,
+                              bool is_i444,
+                              webrtc::FourCC output_fourcc,
+                              webrtc::DesktopFrame& rgb_frame) {
+  if (rgb_frame.size().is_empty()) {
+    return;
+  }
+  CHECK(rgb_frame.data());
+  const auto convert_fn = [&] {
+    switch (output_fourcc) {
+      case webrtc::FOURCC_ARGB:
+        return is_i444 ? &libyuv::I444ToARGB : &libyuv::I420ToARGB;
+      case webrtc::FOURCC_ABGR:
+        return is_i444 ? &libyuv::I444ToABGR : &libyuv::I420ToABGR;
+      default:
+        NOTREACHED();
+    }
+  }();
+  const int width = rgb_frame.size().width();
+  const int height = rgb_frame.size().height();
+  const int uv_width = is_i444 ? width : (width + 1) / 2;
+  const int uv_height = is_i444 ? height : (height + 1) / 2;
+  CHECK_GE(rgb_frame.stride(), width * webrtc::DesktopFrame::kBytesPerPixel);
+  CHECK_GE(y_stride, width);
+  CHECK_GE(u_stride, uv_width);
+  CHECK_GE(v_stride, uv_width);
+  CHECK_GE(y_data.size(), static_cast<size_t>(y_stride) * (height - 1) +
+                              static_cast<size_t>(width));
+  CHECK_GE(u_data.size(), static_cast<size_t>(u_stride) * (uv_height - 1) +
+                              static_cast<size_t>(uv_width));
+  CHECK_GE(v_data.size(), static_cast<size_t>(v_stride) * (uv_height - 1) +
+                              static_cast<size_t>(uv_width));
+
+  auto convert_strip = [&](const webrtc::DesktopRect& rect) {
+    DCHECK_EQ(rect.left(), 0);
+    DCHECK(is_i444 || rect.top() % 2 == 0);
+    const int uv_top = is_i444 ? rect.top() : rect.top() / 2;
+    const size_t y_offset = static_cast<size_t>(y_stride) * rect.top();
+    const size_t u_offset = static_cast<size_t>(u_stride) * uv_top;
+    const size_t v_offset = static_cast<size_t>(v_stride) * uv_top;
+    convert_fn(y_data.subspan(y_offset).data(), y_stride,
+               u_data.subspan(u_offset).data(), u_stride,
+               v_data.subspan(v_offset).data(), v_stride,
+               rgb_frame.GetFrameDataAtPos(rect.top_left()), rgb_frame.stride(),
+               rect.width(), rect.height());
+  };
+
+  const webrtc::DesktopRect full_rect =
+      webrtc::DesktopRect::MakeSize(rgb_frame.size());
   const int64_t pixels = int64_t{width} * height;
   const size_t max_workers = GetMaxParallelWorkers(pixels);
   if (max_workers > 1) {

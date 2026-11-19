@@ -17,6 +17,7 @@
 #include "base/test/test_waitable_event.h"
 #include "remoting/base/cpu_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/libyuv/include/libyuv/convert_argb.h"
 #include "third_party/libyuv/include/libyuv/convert_from_argb.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
@@ -76,6 +77,30 @@ struct FrameSizeParam {
   const char* name;
   int width;
   int height;
+};
+
+using LibyuvYuvToRgbFn = int (*)(const uint8_t* src_y,
+                                 int src_stride_y,
+                                 const uint8_t* src_u,
+                                 int src_stride_u,
+                                 const uint8_t* src_v,
+                                 int src_stride_v,
+                                 uint8_t* dst_rgb,
+                                 int dst_stride_rgb,
+                                 int width,
+                                 int height);
+
+struct YuvToRgbTestParam {
+  const char* name;
+  int width;
+  int height;
+  bool is_i444;
+  int uv_divisor;
+  int y_stride;
+  int u_stride;
+  int v_stride;
+  webrtc::FourCC output_fourcc;
+  LibyuvYuvToRgbFn ref_convert_fn;
 };
 
 // Populates an ARGB frame with deterministic, spatially varying pixel values.
@@ -162,6 +187,22 @@ class ScopedSaturateForegroundThreadPool {
   base::TestWaitableEvent release_workers_;
   base::test::TaskEnvironment task_environment_;
 };
+
+void ExpectDesktopFramesEqual(const webrtc::DesktopFrame& actual,
+                              const webrtc::DesktopFrame& expected) {
+  ASSERT_TRUE(actual.size().equals(expected.size()));
+  for (int y = 0; y < actual.size().height(); ++y) {
+    for (int x = 0; x < actual.size().width(); ++x) {
+      const webrtc::DesktopVector pos(x, y);
+      const uint32_t actual_px =
+          *reinterpret_cast<const uint32_t*>(actual.GetFrameDataAtPos(pos));
+      const uint32_t expected_px =
+          *reinterpret_cast<const uint32_t*>(expected.GetFrameDataAtPos(pos));
+      ASSERT_EQ(actual_px, expected_px)
+          << "Mismatch at (" << x << ", " << y << ")";
+    }
+  }
+}
 
 }  // namespace
 
@@ -810,6 +851,205 @@ TEST(CodecUtilsTest,
                      ref_uv.data(), kWidth, kWidth, kHeight);
   EXPECT_EQ(actual_y, ref_y);
   EXPECT_EQ(actual_uv, ref_uv);
+}
+
+TEST(CodecUtilsTest, ConvertYuvToDesktopFrame_EmptyFrameIsNoOp) {
+  webrtc::BasicDesktopFrame rgb_frame(webrtc::DesktopSize(0, 0));
+  std::vector<uint8_t> plane(16, kSentinel);
+  ConvertYuvToDesktopFrame(plane, 16, plane, 16, plane, 16, /*is_i444=*/false,
+                           webrtc::FOURCC_ARGB, rgb_frame);
+}
+
+class ConvertYuvToDesktopFrameBelowThresholdTest
+    : public testing::TestWithParam<YuvToRgbTestParam> {};
+
+TEST_P(ConvertYuvToDesktopFrameBelowThresholdTest,
+       MatchesSinglePassWithPaddedStridesAndTightSpans) {
+  const YuvToRgbTestParam& param = GetParam();
+  const int uv_width = (param.width + param.uv_divisor - 1) / param.uv_divisor;
+  const int uv_height =
+      (param.height + param.uv_divisor - 1) / param.uv_divisor;
+
+  std::vector<uint8_t> y_plane(
+      static_cast<size_t>(param.y_stride) * (param.height - 1) + param.width);
+  std::vector<uint8_t> u_plane(
+      static_cast<size_t>(param.u_stride) * (uv_height - 1) + uv_width);
+  std::vector<uint8_t> v_plane(
+      static_cast<size_t>(param.v_stride) * (uv_height - 1) + uv_width);
+  for (size_t i = 0; i < y_plane.size(); ++i) {
+    y_plane[i] = static_cast<uint8_t>(16 + (i * 7) % 210);
+  }
+  for (size_t i = 0; i < u_plane.size(); ++i) {
+    u_plane[i] = static_cast<uint8_t>(24 + (i * 11) % 200);
+  }
+  for (size_t i = 0; i < v_plane.size(); ++i) {
+    v_plane[i] = static_cast<uint8_t>(24 + (i * 13) % 200);
+  }
+
+  const webrtc::DesktopSize size(param.width, param.height);
+  webrtc::BasicDesktopFrame expected_rgb(size);
+  param.ref_convert_fn(y_plane.data(), param.y_stride, u_plane.data(),
+                       param.u_stride, v_plane.data(), param.v_stride,
+                       expected_rgb.data(), expected_rgb.stride(), param.width,
+                       param.height);
+
+  webrtc::BasicDesktopFrame actual_rgb(size);
+  ConvertYuvToDesktopFrame(y_plane, param.y_stride, u_plane, param.u_stride,
+                           v_plane, param.v_stride, param.is_i444,
+                           param.output_fourcc, actual_rgb);
+
+  ExpectDesktopFramesEqual(actual_rgb, expected_rgb);
+}
+
+constexpr YuvToRgbTestParam kYuvToRgbBelowThresholdParams[] = {
+    {"EvenBounds_32x24_I420_ARGB", 32, 24, /*is_i444=*/false, /*uv_divisor=*/2,
+     48, 40, 44, webrtc::FOURCC_ARGB, &libyuv::I420ToARGB},
+    {"EvenBounds_32x24_I420_ABGR", 32, 24, /*is_i444=*/false, /*uv_divisor=*/2,
+     48, 40, 44, webrtc::FOURCC_ABGR, &libyuv::I420ToABGR},
+    {"EvenBounds_32x24_I444_ARGB", 32, 24, /*is_i444=*/true, /*uv_divisor=*/1,
+     48, 40, 44, webrtc::FOURCC_ARGB, &libyuv::I444ToARGB},
+    {"EvenBounds_32x24_I444_ABGR", 32, 24, /*is_i444=*/true, /*uv_divisor=*/1,
+     48, 40, 44, webrtc::FOURCC_ABGR, &libyuv::I444ToABGR},
+    {"OddBounds_33x25_I420_ARGB", 33, 25, /*is_i444=*/false, /*uv_divisor=*/2,
+     48, 40, 44, webrtc::FOURCC_ARGB, &libyuv::I420ToARGB},
+    {"OddBounds_33x25_I420_ABGR", 33, 25, /*is_i444=*/false, /*uv_divisor=*/2,
+     48, 40, 44, webrtc::FOURCC_ABGR, &libyuv::I420ToABGR},
+    {"OddBounds_33x25_I444_ARGB", 33, 25, /*is_i444=*/true, /*uv_divisor=*/1,
+     48, 40, 44, webrtc::FOURCC_ARGB, &libyuv::I444ToARGB},
+    {"OddBounds_33x25_I444_ABGR", 33, 25, /*is_i444=*/true, /*uv_divisor=*/1,
+     48, 40, 44, webrtc::FOURCC_ABGR, &libyuv::I444ToABGR},
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ConvertYuvToDesktopFrameBelowThresholdTest,
+    testing::ValuesIn(kYuvToRgbBelowThresholdParams),
+    [](const testing::TestParamInfo<YuvToRgbTestParam>& info) {
+      return info.param.name;
+    });
+
+class ConvertYuvToDesktopFrameParallelTest
+    : public testing::TestWithParam<YuvToRgbTestParam> {};
+
+TEST_P(ConvertYuvToDesktopFrameParallelTest, ParallelJobMatchesSinglePass) {
+  base::test::TaskEnvironment task_environment;
+  ScopedParallelConversionCpuCapForTesting force_parallel(/*max_workers=*/4);
+  const YuvToRgbTestParam& param = GetParam();
+  const int uv_width = (param.width + param.uv_divisor - 1) / param.uv_divisor;
+  const int uv_height =
+      (param.height + param.uv_divisor - 1) / param.uv_divisor;
+
+  std::vector<uint8_t> y_plane(
+      static_cast<size_t>(param.y_stride) * (param.height - 1) + param.width);
+  std::vector<uint8_t> u_plane(
+      static_cast<size_t>(param.u_stride) * (uv_height - 1) + uv_width);
+  std::vector<uint8_t> v_plane(
+      static_cast<size_t>(param.v_stride) * (uv_height - 1) + uv_width);
+  for (size_t i = 0; i < y_plane.size(); ++i) {
+    y_plane[i] = static_cast<uint8_t>(16 + (i * 5) % 210);
+  }
+  for (size_t i = 0; i < u_plane.size(); ++i) {
+    u_plane[i] = static_cast<uint8_t>(24 + (i * 9) % 200);
+  }
+  for (size_t i = 0; i < v_plane.size(); ++i) {
+    v_plane[i] = static_cast<uint8_t>(24 + (i * 15) % 200);
+  }
+
+  const webrtc::DesktopSize size(param.width, param.height);
+  webrtc::BasicDesktopFrame expected_rgb(size);
+  param.ref_convert_fn(y_plane.data(), param.y_stride, u_plane.data(),
+                       param.u_stride, v_plane.data(), param.v_stride,
+                       expected_rgb.data(), expected_rgb.stride(), param.width,
+                       param.height);
+
+  webrtc::BasicDesktopFrame actual_rgb(size);
+  ConvertYuvToDesktopFrame(y_plane, param.y_stride, u_plane, param.u_stride,
+                           v_plane, param.v_stride, param.is_i444,
+                           param.output_fourcc, actual_rgb);
+
+  ExpectDesktopFramesEqual(actual_rgb, expected_rgb);
+}
+
+constexpr YuvToRgbTestParam kYuvToRgbParallelParams[] = {
+    {"EvenBounds_1024x542_I420_ARGB", 1024, 542, /*is_i444=*/false,
+     /*uv_divisor=*/2, 1088, 576, 608, webrtc::FOURCC_ARGB,
+     &libyuv::I420ToARGB},
+    {"EvenBounds_1024x542_I420_ABGR", 1024, 542, /*is_i444=*/false,
+     /*uv_divisor=*/2, 1088, 576, 608, webrtc::FOURCC_ABGR,
+     &libyuv::I420ToABGR},
+    {"EvenBounds_1024x542_I444_ARGB", 1024, 542, /*is_i444=*/true,
+     /*uv_divisor=*/1, 1088, 1104, 1120, webrtc::FOURCC_ARGB,
+     &libyuv::I444ToARGB},
+    {"EvenBounds_1024x542_I444_ABGR", 1024, 542, /*is_i444=*/true,
+     /*uv_divisor=*/1, 1088, 1104, 1120, webrtc::FOURCC_ABGR,
+     &libyuv::I444ToABGR},
+    {"OddBounds_1025x543_I420_ARGB", 1025, 543, /*is_i444=*/false,
+     /*uv_divisor=*/2, 1088, 576, 608, webrtc::FOURCC_ARGB,
+     &libyuv::I420ToARGB},
+    {"OddBounds_1025x543_I420_ABGR", 1025, 543, /*is_i444=*/false,
+     /*uv_divisor=*/2, 1088, 576, 608, webrtc::FOURCC_ABGR,
+     &libyuv::I420ToABGR},
+    {"OddBounds_1025x543_I444_ARGB", 1025, 543, /*is_i444=*/true,
+     /*uv_divisor=*/1, 1088, 1104, 1120, webrtc::FOURCC_ARGB,
+     &libyuv::I444ToARGB},
+    {"OddBounds_1025x543_I444_ABGR", 1025, 543, /*is_i444=*/true,
+     /*uv_divisor=*/1, 1088, 1104, 1120, webrtc::FOURCC_ABGR,
+     &libyuv::I444ToABGR},
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ConvertYuvToDesktopFrameParallelTest,
+    testing::ValuesIn(kYuvToRgbParallelParams),
+    [](const testing::TestParamInfo<YuvToRgbTestParam>& info) {
+      return info.param.name;
+    });
+
+TEST(CodecUtilsTest,
+     ConvertYuvToDesktopFrame_CompletesInlineWhenThreadPoolStarved) {
+  ScopedSaturateForegroundThreadPool saturated_pool;
+  ScopedParallelConversionCpuCapForTesting force_parallel(/*max_workers=*/4);
+
+  constexpr int kWidth = 1024;
+  constexpr int kHeight = 512;
+  std::vector<uint8_t> y_plane(kWidth * kHeight, 128);
+  std::vector<uint8_t> u_plane((kWidth / 2) * (kHeight / 2), 90);
+  std::vector<uint8_t> v_plane((kWidth / 2) * (kHeight / 2), 180);
+
+  webrtc::BasicDesktopFrame expected_rgb(webrtc::DesktopSize(kWidth, kHeight));
+  libyuv::I420ToARGB(y_plane.data(), kWidth, u_plane.data(), kWidth / 2,
+                     v_plane.data(), kWidth / 2, expected_rgb.data(),
+                     expected_rgb.stride(), kWidth, kHeight);
+
+  webrtc::BasicDesktopFrame actual_rgb(webrtc::DesktopSize(kWidth, kHeight));
+  ConvertYuvToDesktopFrame(y_plane, kWidth, u_plane, kWidth / 2, v_plane,
+                           kWidth / 2, /*is_i444=*/false, webrtc::FOURCC_ARGB,
+                           actual_rgb);
+
+  ExpectDesktopFramesEqual(actual_rgb, expected_rgb);
+}
+
+TEST(CodecUtilsTest,
+     ConvertYuvToDesktopFrame_NoThreadPoolRunsSinglePassAboveThreshold) {
+  ASSERT_FALSE(base::ThreadPoolInstance::Get());
+  ScopedParallelConversionCpuCapForTesting force_parallel(/*max_workers=*/4);
+  constexpr int kWidth = 1024;
+  constexpr int kHeight = 512;
+  std::vector<uint8_t> y_plane(kWidth * kHeight, 128);
+  std::vector<uint8_t> u_plane((kWidth / 2) * (kHeight / 2), 90);
+  std::vector<uint8_t> v_plane((kWidth / 2) * (kHeight / 2), 180);
+
+  webrtc::BasicDesktopFrame expected_rgb(webrtc::DesktopSize(kWidth, kHeight));
+  libyuv::I420ToARGB(y_plane.data(), kWidth, u_plane.data(), kWidth / 2,
+                     v_plane.data(), kWidth / 2, expected_rgb.data(),
+                     expected_rgb.stride(), kWidth, kHeight);
+
+  webrtc::BasicDesktopFrame actual_rgb(webrtc::DesktopSize(kWidth, kHeight));
+  ConvertYuvToDesktopFrame(y_plane, kWidth, u_plane, kWidth / 2, v_plane,
+                           kWidth / 2, /*is_i444=*/false, webrtc::FOURCC_ARGB,
+                           actual_rgb);
+
+  ExpectDesktopFramesEqual(actual_rgb, expected_rgb);
 }
 
 }  // namespace remoting
