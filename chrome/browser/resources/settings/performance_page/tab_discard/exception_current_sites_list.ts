@@ -111,7 +111,8 @@ export class ExceptionCurrentSitesListElement extends CrLitElement {
 
   private startUpdatingCurrentSites_() {
     this.updateCurrentSites_().then(() => {
-      if (this.updateIntervalID_ === undefined) {
+      if (this.visible && document.visibilityState === 'visible' &&
+          this.isConnected && this.updateIntervalID_ === undefined) {
         this.updateIntervalID_ = setInterval(
             this.updateCurrentSites_.bind(this), this.updateIntervalMS_);
       }

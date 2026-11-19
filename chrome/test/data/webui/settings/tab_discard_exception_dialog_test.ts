@@ -84,6 +84,7 @@ suite('TabDiscardExceptionsDialog', function() {
           'validateTabDiscardExceptionRule');
       assertEquals(trimmedRule, validatedRule);
     }
+    await microtasksFinished();
   }
 
   async function testValidation() {
@@ -289,8 +290,7 @@ suite('TabDiscardExceptionsDialog', function() {
     return flushTasks();
   }
 
-  // Flaky on all OSes. TODO(crbug.com/356848453): Fix and enable the test.
-  test.skip('testExceptionTabbedAddDialogSwitchTabs', async function() {
+  test('testExceptionTabbedAddDialogSwitchTabs', async function() {
     performanceBrowserProxy.setCurrentOpenSites([VALID_RULE]);
     dialog = await setupTabbedAddDialog();
     await microtasksFinished();
@@ -306,18 +306,16 @@ suite('TabDiscardExceptionsDialog', function() {
 
     checkbox.click();
     await microtasksFinished();
-    switchAddDialogTab(dialog, ExceptionAddDialogTabs.MANUAL);
+    await switchAddDialogTab(dialog, ExceptionAddDialogTabs.MANUAL);
     await assertUserInputValidated(VALID_RULE);
     assertFalse(dialog.$.actionButton.disabled);
     await switchAddDialogTab(dialog, ExceptionAddDialogTabs.CURRENT_SITES);
     assertTrue(dialog.$.actionButton.disabled);
-    switchAddDialogTab(dialog, ExceptionAddDialogTabs.MANUAL);
-    await performanceBrowserProxy.whenCalled('validateTabDiscardExceptionRule');
+    await switchAddDialogTab(dialog, ExceptionAddDialogTabs.MANUAL);
     assertFalse(dialog.$.actionButton.disabled);
   });
 
-  // Flaky on all OSes. TODO(charlesmeng): Fix and enable the test.
-  test.skip('testExceptionTabbedAddDialogLiveUpdate', async function() {
+  test('testExceptionTabbedAddDialogLiveUpdate', async function() {
     const UPDATE_INTERVAL_MS = 3;
     const INITIAL_SITE = 'siteA';
     const CHANGED_SITE = 'siteB';
@@ -333,11 +331,11 @@ suite('TabDiscardExceptionsDialog', function() {
     assertRulesListEquals(dialog, [INITIAL_SITE]);
     performanceBrowserProxy.setCurrentOpenSites([CHANGED_SITE]);
     await new Promise((resolve) => setTimeout(resolve, UPDATE_INTERVAL_MS));
+    await microtasksFinished();
     assertRulesListEquals(dialog, [CHANGED_SITE]);
 
     // after switching to the manual tab, list should no longer update
-    switchAddDialogTab(dialog, ExceptionAddDialogTabs.MANUAL);
-    await performanceBrowserProxy.whenCalled('getCurrentOpenSites');
+    await switchAddDialogTab(dialog, ExceptionAddDialogTabs.MANUAL);
     assertFalse(dialog.$.list.getIsUpdatingForTesting());
     await new Promise((resolve) => setTimeout(resolve, UPDATE_INTERVAL_MS));
     performanceBrowserProxy.setCurrentOpenSites([CHANGED_SITE_SWITCH_TAB]);
@@ -345,19 +343,19 @@ suite('TabDiscardExceptionsDialog', function() {
 
     // after switching back to the list tab, list should start updating again
     performanceBrowserProxy.resetResolver('getCurrentOpenSites');
-    switchAddDialogTab(dialog, ExceptionAddDialogTabs.CURRENT_SITES);
+    await switchAddDialogTab(dialog, ExceptionAddDialogTabs.CURRENT_SITES);
     await performanceBrowserProxy.whenCalled('getCurrentOpenSites');
     await microtasksFinished();
     assertTrue(dialog.$.list.getIsUpdatingForTesting());
     await new Promise((resolve) => setTimeout(resolve, UPDATE_INTERVAL_MS));
+    await microtasksFinished();
     assertRulesListEquals(dialog, [CHANGED_SITE_SWITCH_TAB]);
 
     // after document is hidden, list should no longer update
     Object.defineProperty(
         document, 'visibilityState', {value: 'hidden', writable: true});
-    performanceBrowserProxy.resetResolver('getCurrentOpenSites');
     document.dispatchEvent(new Event('visibilitychange'));
-    await performanceBrowserProxy.whenCalled('getCurrentOpenSites');
+    await microtasksFinished();
     assertFalse(dialog.$.list.getIsUpdatingForTesting());
     await new Promise((resolve) => setTimeout(resolve, UPDATE_INTERVAL_MS));
     performanceBrowserProxy.setCurrentOpenSites([CHANGED_SITE_DOCUMENT_HIDDEN]);
@@ -372,6 +370,7 @@ suite('TabDiscardExceptionsDialog', function() {
     await microtasksFinished();
     assertTrue(dialog.$.list.getIsUpdatingForTesting());
     await new Promise((resolve) => setTimeout(resolve, UPDATE_INTERVAL_MS));
+    await microtasksFinished();
     assertRulesListEquals(dialog, [CHANGED_SITE_DOCUMENT_HIDDEN]);
   });
 });
