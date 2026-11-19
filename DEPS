@@ -1385,6 +1385,16 @@ deps = {
     'condition': 'checkout_linux and checkout_snap_runtime',
     'dep_type': 'cipd',
   },
+  'src/chrome/installer/linux/snap/runtime/linux-arm64': {
+    'packages': [
+      {
+        'package': 'chromium/chrome/installer/linux/snap/runtime/linux-arm64',
+        'version': 'version:2@20261103.1',
+      },
+    ],
+    'condition': 'checkout_linux and checkout_arm64 and checkout_snap_runtime',
+    'dep_type': 'cipd',
+  },
 
   'src/third_party/compiler-rt/src':
     Var('chromium_git') +

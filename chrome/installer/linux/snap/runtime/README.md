@@ -71,8 +71,9 @@ and:
 
 The package contains `prime/` (files for the root of the snap), `copyright/`
 (the `debian/copyright` file of every bundled package) and `manifest.json`.
-`//DEPS` checks it out to `linux-amd64/` when the gclient variable
-`checkout_snap_runtime` is set to `True`, e.g. in `.gclient`:
+`//DEPS` checks it out to `linux-<arch>/` when the gclient variable
+`checkout_snap_runtime` is set to `True` (`linux-arm64/` also needs `arm64` in
+`target_cpu`), e.g. in `.gclient`:
 
 ```
 solutions = [
@@ -86,8 +87,8 @@ solutions = [
 ```
 
 The variable also sets the default of the GN arg `enable_snap_package`, so
-x64 builds in such a checkout build the snap package along with the `.deb` and
-`.rpm` packages. The `linux-rel` builders set it through the
+x64 and arm64 builds in such a checkout build the snap package along with the
+`.deb` and `.rpm` packages. The `linux-rel` builders set it through the
 `checkout_snap_runtime` gclient config of the chromium recipe module.
 
 ## Updating

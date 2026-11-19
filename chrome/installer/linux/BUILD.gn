@@ -34,8 +34,10 @@ declare_args() {
 
   # Enable building snap packages. Defaults to true when the snap runtime
   # libraries are checked out ("checkout_snap_runtime" in .gclient
-  # custom_vars), which are currently only available for x64.
-  enable_snap_package = checkout_snap_runtime && target_cpu == "x64"
+  # custom_vars), which are available for x64 and arm64. arm64 also needs
+  # "arm64" in the target_cpu list of .gclient.
+  enable_snap_package =
+      checkout_snap_runtime && (target_cpu == "x64" || target_cpu == "arm64")
 }
 
 assert(is_linux)
