@@ -311,6 +311,51 @@ TEST_F(PrintViewManagerBasicTest, StaleWriteCompletionKeepsNextJob) {
 
   print_view_manager->FinishPrint(main_rfh());
 }
+
+TEST_F(PrintViewManagerBasicTest, SetupScriptedPrintAndroidEarlyFailure) {
+  mojo::AssociatedRemote<mojom::PrintManagerHost> print_manager_host;
+  PrintViewManagerBasic::BindPrintManagerHost(
+      print_manager_host.BindNewEndpointAndPassDedicatedReceiver(), main_rfh());
+
+  // Without a top-level native window, SetupScriptedPrintAndroid() rejects the
+  // request and resolves the callback without starting a job.
+  base::test::TestFuture<void> future;
+  print_manager_host->SetupScriptedPrintAndroid(future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+
+  EXPECT_FALSE(PrintViewManagerBasic::FromWebContents(web_contents())
+                   ->GetPrintingRFHForTesting());
+}
+
+TEST_F(PrintViewManagerBasicTest, RejectedScriptedPrintKeepsInFlightJob) {
+  auto* print_view_manager =
+      PrintViewManagerBasic::FromWebContents(web_contents());
+  ASSERT_TRUE(print_view_manager);
+
+  base::ScopedFD unused_read_fd;
+  base::ScopedFD write_fd;
+  ASSERT_TRUE(base::CreatePipe(&unused_read_fd, &write_fd));
+  ASSERT_TRUE(print_view_manager->PrintNowAndroid(
+      main_rfh(), std::make_unique<PrintSettings>(), std::move(write_fd)));
+  ASSERT_TRUE(print_view_manager->GetPrintingRFHForTesting());
+
+  auto* sub_frame =
+      content::RenderFrameHostTester::For(main_rfh())->AppendChild("sub");
+  ASSERT_TRUE(sub_frame);
+  content::RenderFrameHostTester::For(sub_frame)
+      ->InitializeRenderFrameIfNeeded();
+
+  mojo::AssociatedRemote<mojom::PrintManagerHost> sub_host;
+  PrintViewManagerBasic::BindPrintManagerHost(
+      sub_host.BindNewEndpointAndPassDedicatedReceiver(), sub_frame);
+
+  base::test::TestFuture<void> future;
+  sub_host->SetupScriptedPrintAndroid(future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+
+  EXPECT_TRUE(print_view_manager->GetPrintingRFHForTesting());
+}
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace printing

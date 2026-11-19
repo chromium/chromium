@@ -182,11 +182,15 @@ public class TabPrinter implements Printable {
         // Deliberately not gated on canPrint(): the Activity may be stopped (and therefore the
         // Tab hidden) while the system print dialog is up, but afterprint must still be
         // dispatched so the renderer does not stay stuck in the printing state.
-        if (mWebContentsPrinter != null) {
-            mWebContentsPrinter.finishPrint(
-                    targetProcessId(renderProcessId), targetFrameId(renderFrameId));
-            mWebContentsPrinter = null;
+        WebContentsPrinter printer = mWebContentsPrinter;
+        mWebContentsPrinter = null;
+        if (printer == null) {
+            // initiatePrint() never ran or failed; teardown must still reach the renderer.
+            WebContents webContents = getWebContentsIfInitialized();
+            if (webContents == null) return;
+            printer = new WebContentsPrinter(webContents, mPrintSelectionOnly);
         }
+        printer.finishPrint(targetProcessId(renderProcessId), targetFrameId(renderFrameId));
     }
 
     private @Nullable WebContents getWebContentsIfInitialized() {

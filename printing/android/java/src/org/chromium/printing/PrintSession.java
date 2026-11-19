@@ -142,7 +142,9 @@ class PrintSession implements PdfGenerator {
         if (mDestroyed) return;
         mDestroyed = true;
 
-        if (mPrintInitiated && mPrintable != null) {
+        // Unconditional so window.print() is unblocked via finishPrint() even if
+        // the session ends before initiatePrint() runs.
+        if (mPrintable != null) {
             mPrintable.finishPrint(mRenderProcessId, mRenderFrameId);
         }
         mPrintInitiated = false;

@@ -14,11 +14,11 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/files/scoped_file.h"
+#include "content/public/browser/global_routing_id.h"
 #endif
 
 namespace printing {
 
-class PrinterQuery;
 #if BUILDFLAG(IS_ANDROID)
 class PrintSettings;
 #endif
@@ -64,16 +64,21 @@ class PrintViewManagerBasic
                      ScriptedPrintCallback callback) override;
   void PrintingFailed(int32_t cookie,
                       mojom::PrintFailureReason reason) override;
+
+  // content::WebContentsObserver:
+  void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
 #endif  // BUILDFLAG(IS_ANDROID)
 
  private:
   explicit PrintViewManagerBasic(content::WebContents* web_contents);
   friend class content::WebContentsUserData<PrintViewManagerBasic>;
+  WEB_CONTENTS_USER_DATA_KEY_DECL();
 
 #if BUILDFLAG(IS_ANDROID)
-  void OnSetupScriptedPrintAndroidDone(
-      SetupScriptedPrintAndroidCallback callback,
-      std::unique_ptr<PrinterQuery> printer_query);
+  // Dispatches `afterprint` to `rfh` and resolves `callback` without tearing
+  // down an in-flight print job for another frame of this WebContents.
+  void RejectScriptedPrint(content::RenderFrameHost* rfh,
+                           SetupScriptedPrintAndroidCallback callback);
 
   // Whether `document_cookie` still names the job that owns `settings_`. A
   // composite or write that completes after FinishPrint() must not report
@@ -104,11 +109,8 @@ class PrintViewManagerBasic
 
   std::unique_ptr<PrintSettings> settings_;
   base::ScopedFD fd_;
-#endif
-
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-#if BUILDFLAG(IS_ANDROID)
+  SetupScriptedPrintAndroidCallback scripted_print_callback_;
+  content::GlobalRenderFrameHostId scripted_print_rfh_id_;
   base::WeakPtrFactory<PrintViewManagerBasic> weak_ptr_factory_{this};
 #endif
 };

@@ -768,18 +768,13 @@ public class PrintingControllerTest {
         }
 
         @Override
-        public void setPendingPrintCallback(Runnable callback) {
-            super.setPendingPrintCallback(callback);
-            mPrintStartedLatch.countDown();
-        }
-
-        @Override
         public void setPendingPrint(
                 Printable printable,
                 PrintManagerDelegate printManager,
                 int renderProcessId,
                 int renderFrameId) {
             super.setPendingPrint(printable, mMockPrintManager, renderProcessId, renderFrameId);
+            mPrintStartedLatch.countDown();
         }
 
         public void waitForPrintToStart() throws InterruptedException {

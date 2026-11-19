@@ -9,6 +9,7 @@
 #if BUILDFLAG(IS_ANDROID)
 #include <utility>
 
+#include "base/android/jni_android.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/files/file_util.h"
@@ -19,8 +20,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/printing/print_job_manager.h"
-#include "chrome/browser/printing/printer_query.h"
+#include "chrome/browser/android/tab_android.h"
 #include "components/printing/browser/print_composite_client.h"
 #include "components/printing/browser/print_manager_utils.h"
 #include "components/printing/common/print.mojom.h"
@@ -31,6 +31,9 @@
 #include "printing/print_settings.h"
 #include "printing/printing_context_android.h"
 #include "ui/android/window_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/TabPrinter_jni.h"  // nogncheck
 
 namespace {
 
@@ -76,6 +79,9 @@ PrintViewManagerBasic::PrintViewManagerBasic(content::WebContents* web_contents)
 
 PrintViewManagerBasic::~PrintViewManagerBasic() {
 #if BUILDFLAG(IS_ANDROID)
+  if (scripted_print_callback_) {
+    std::move(scripted_print_callback_).Run();
+  }
   // Must do this call here and not let ~PrintViewManagerBase do it as
   // TerminatePrintJob() calls PdfWritingDone() and if that is done from
   // ~PrintViewManagerBase then a pure virtual call is done.
@@ -144,46 +150,98 @@ void PrintViewManagerBasic::FinishPrint(content::RenderFrameHost* rfh) {
   // FinishPrint is a teardown operation. It must be delivered as long as the
   // frame is live, even if inactive (e.g. backgrounded or in BackForwardCache),
   // so the renderer does not permanently retain `print_in_progress_ = true`.
-  if (IsCrashed() || !rfh || !rfh->IsRenderFrameLive()) {
-    return;
+  if (!IsCrashed() && rfh && rfh->IsRenderFrameLive()) {
+    GetPrintRenderFrame(rfh)->FinishPrintAndroid();
   }
 
-  GetPrintRenderFrame(rfh)->FinishPrintAndroid();
+  // Unblock only the frame waiting on SetupScriptedPrintAndroid(), after
+  // queueing FinishPrintAndroid() so `afterprint` fires before window.print()
+  // returns.
+  if (scripted_print_callback_ && rfh &&
+      rfh->GetGlobalId() == scripted_print_rfh_id_) {
+    scripted_print_rfh_id_ = content::GlobalRenderFrameHostId();
+    std::move(scripted_print_callback_).Run();
+  }
+}
+
+void PrintViewManagerBasic::RenderFrameDeleted(
+    content::RenderFrameHost* render_frame_host) {
+  if (scripted_print_callback_ &&
+      render_frame_host->GetGlobalId() == scripted_print_rfh_id_) {
+    scripted_print_rfh_id_ = content::GlobalRenderFrameHostId();
+    std::move(scripted_print_callback_).Run();
+  }
+  PrintViewManagerBase::RenderFrameDeleted(render_frame_host);
+}
+
+void PrintViewManagerBasic::RejectScriptedPrint(
+    content::RenderFrameHost* rfh,
+    SetupScriptedPrintAndroidCallback callback) {
+  if (!IsCrashed() && rfh && rfh->IsRenderFrameLive()) {
+    GetPrintRenderFrame(rfh)->FinishPrintAndroid();
+  }
+  std::move(callback).Run();
 }
 
 void PrintViewManagerBasic::SetupScriptedPrintAndroid(
     SetupScriptedPrintAndroidCallback callback) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
-  content::RenderFrameHost& rfh = CurrentTargetFrame();
-  CHECK(rfh.IsRenderFrameLive(), base::NotFatalUntil::M162);
-  if (!rfh.IsActive() || !web_contents() ||
-      !web_contents()->GetTopLevelNativeWindow()) {
-    FinishPrint(&rfh);
-    std::move(callback).Run();
+  content::RenderFrameHost* rfh = &CurrentTargetFrame();
+  CHECK(rfh->IsRenderFrameLive(), base::NotFatalUntil::M162);
+
+  if (scripted_print_callback_) {
+    RejectScriptedPrint(rfh, std::move(callback));
     return;
   }
 
-  // Start Printing Flow via PrinterQuery
-  std::unique_ptr<PrinterQuery> printer_query =
-      queue()->CreatePrinterQuery(rfh.GetGlobalId());
-  auto* printer_query_ptr = printer_query.get();
+  if (!rfh->IsActive() || !web_contents()->GetTopLevelNativeWindow()) {
+    RejectScriptedPrint(rfh, std::move(callback));
+    return;
+  }
 
-  printer_query_ptr->GetSettingsFromUser(
-      /*expected_page_count=*/0, /*has_selection=*/false,
-      mojom::MarginType::kDefaultMargins, /*is_scripted=*/true,
-      /*is_modifiable=*/true,
-      base::BindOnce(&PrintViewManagerBasic::OnSetupScriptedPrintAndroidDone,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                     std::move(printer_query)));
-}
+  const content::GlobalRenderFrameHostId rfh_id = rfh->GetGlobalId();
 
-void PrintViewManagerBasic::OnSetupScriptedPrintAndroidDone(
-    SetupScriptedPrintAndroidCallback callback,
-    std::unique_ptr<PrinterQuery> printer_query) {
-  std::move(callback).Run();
-  // Note: `printer_query` is intentionally dropped here. On Android, the print
-  // dialog manages the actual print request natively, so the `PrinterQuery`
-  // does not need to be queued for the renderer's `ScriptedPrint` IPC.
+  // Running a dialog causes an exit to webpage-initiated fullscreen.
+  // http://crbug.com/41322524
+  if (web_contents()->IsFullscreen()) {
+    auto weak_this = weak_ptr_factory_.GetWeakPtr();
+    web_contents()->ExitFullscreen(/*will_cause_resize=*/true);
+    if (!weak_this) {
+      std::move(callback).Run();
+      return;
+    }
+    rfh = content::RenderFrameHost::FromID(rfh_id);
+    if (!rfh || !rfh->IsActive() || !rfh->IsRenderFrameLive()) {
+      RejectScriptedPrint(rfh, std::move(callback));
+      return;
+    }
+  }
+
+  ui::WindowAndroid* window = web_contents()->GetTopLevelNativeWindow();
+  TabAndroid* tab = TabAndroid::FromWebContents(web_contents());
+  if (!window || !tab) {
+    RejectScriptedPrint(rfh, std::move(callback));
+    return;
+  }
+
+  // Set before StartPrint(), which can fail synchronously and re-enter
+  // FinishPrint().
+  scripted_print_callback_ = std::move(callback);
+  scripted_print_rfh_id_ = rfh_id;
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  auto weak_this = weak_ptr_factory_.GetWeakPtr();
+  // TODO(crbug.com/379869738) Remove GetUnsafeValue.
+  const bool started = PrintingContextAndroid::StartPrint(
+      window, Java_TabPrinter_getPrintable(env, tab->GetJavaObject()),
+      rfh_id.child_id.GetUnsafeValue(), rfh_id.frame_routing_id);
+  if (!weak_this || started || !scripted_print_callback_) {
+    return;
+  }
+
+  scripted_print_rfh_id_ = content::GlobalRenderFrameHostId();
+  RejectScriptedPrint(content::RenderFrameHost::FromID(rfh_id),
+                      std::move(scripted_print_callback_));
 }
 
 void PrintViewManagerBasic::PdfWritingDone(int page_count) {

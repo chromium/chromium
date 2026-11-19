@@ -33,7 +33,9 @@ class COMPONENT_EXPORT(PRINTING) PrintingContextAndroid
   // failure.
   static void PdfWritingDone(int page_count, ui::WindowAndroid* window);
 
-  static void SetPendingPrint(
+  // Returns true if the system print dialog took the job, i.e. if a teardown
+  // callback (PdfWritingDone()/finishPrint()) can be expected to follow.
+  static bool StartPrint(
       ui::WindowAndroid* window,
       const base::android::ScopedJavaLocalRef<jobject>& printable,
       int render_process_id,

@@ -47,6 +47,9 @@ public class PrintSessionUnitTest {
         int mInitiatePrintCount;
         int mPrintCount;
         int mGetPdfInputStreamCount;
+        int mFinishPrintCount;
+        int mFinishPrintProcessId;
+        int mFinishPrintFrameId;
 
         FakePdfPrintable(@Nullable InputStream pdfInputStream) {
             mPdfInputStream = pdfInputStream;
@@ -73,7 +76,11 @@ public class PrintSessionUnitTest {
         }
 
         @Override
-        public void finishPrint(int renderProcessId, int renderFrameId) {}
+        public void finishPrint(int renderProcessId, int renderFrameId) {
+            mFinishPrintCount++;
+            mFinishPrintProcessId = renderProcessId;
+            mFinishPrintFrameId = renderFrameId;
+        }
 
         @Override
         public String getTitle() {
@@ -270,6 +277,23 @@ public class PrintSessionUnitTest {
         assertEquals(0, printable.mPrintCount);
         assertEquals(1, writeCallback.mFinishedCount);
         session.destroy();
+    }
+
+    @Test
+    public void testDestroyFinishesPrintWithoutInitiatePrint() {
+        FakePdfPrintable printable = new FakePdfPrintable(/* pdfInputStream= */ null);
+        PrintSession session =
+                new PrintSession(
+                        printable, mPrintManager, /* renderProcessId= */ 5, /* renderFrameId= */ 7);
+
+        session.destroy();
+        assertEquals(0, printable.mInitiatePrintCount);
+        assertEquals(1, printable.mFinishPrintCount);
+        assertEquals(5, printable.mFinishPrintProcessId);
+        assertEquals(7, printable.mFinishPrintFrameId);
+
+        session.destroy();
+        assertEquals(1, printable.mFinishPrintCount);
     }
 
     @Test

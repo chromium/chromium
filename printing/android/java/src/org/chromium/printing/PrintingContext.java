@@ -62,14 +62,18 @@ public class PrintingContext {
     }
 
     @CalledByNative
-    private static void setPendingPrint(
+    private static boolean startPrint(
             WindowAndroid window, Printable printable, int renderProcessId, int renderFrameId) {
+        ThreadUtils.assertOnUiThread();
         Activity activity = window.getActivity().get();
-        if (activity == null || activity.isFinishing() || activity.isDestroyed()) return;
+        if (activity == null || activity.isFinishing() || activity.isDestroyed()) return false;
 
-        PrintingController printingController = PrintingControllerImpl.getInstance(window);
-        printingController.setPendingPrint(
+        PrintingController controller = PrintingControllerImpl.getInstance(window);
+        if (controller.isBusy()) return false;
+        controller.setPendingPrint(
                 printable, new PrintManagerDelegateImpl(activity), renderProcessId, renderFrameId);
+        controller.startPendingPrint();
+        return controller.isBusy();
     }
 
     private void showSystemDialogDone() {

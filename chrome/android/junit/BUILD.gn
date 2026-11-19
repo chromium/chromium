@@ -1889,7 +1889,10 @@ if (is_android) {
     ]
 
     if (enable_printing) {
-      sources += [ "src/org/chromium/chrome/browser/printing/WebContentsPrinterUnitTest.java" ]
+      sources += [
+        "src/org/chromium/chrome/browser/printing/TabPrinterUnitTest.java",
+        "src/org/chromium/chrome/browser/printing/WebContentsPrinterUnitTest.java",
+      ]
     }
 
     deps = [

@@ -61,17 +61,18 @@ void PrintingContextAndroid::PdfWritingDone(int page_count,
 }
 
 // static
-void PrintingContextAndroid::SetPendingPrint(
+bool PrintingContextAndroid::StartPrint(
     ui::WindowAndroid* window,
     const ScopedJavaLocalRef<jobject>& printable,
     int render_process_id,
     int render_frame_id) {
   if (!window) {
-    return;
+    return false;
   }
   JNIEnv* env = base::android::AttachCurrentThread();
-  Java_PrintingContext_setPendingPrint(env, window->GetJavaObject(), printable,
-                                       render_process_id, render_frame_id);
+  return Java_PrintingContext_startPrint(env, window->GetJavaObject(),
+                                         printable, render_process_id,
+                                         render_frame_id);
 }
 
 PrintingContextAndroid::PrintingContextAndroid(Delegate* delegate)
