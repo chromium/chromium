@@ -9,6 +9,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/files/file_path.h"
 #import "base/files/scoped_temp_dir.h"
+#import "base/rand_util.h"
 #import "base/run_loop.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/sessions/core/session_id.h"
@@ -167,9 +168,9 @@ class ImageFileManagerTest : public PlatformTest {
     return [renderer
         imageWithActions:^(UIGraphicsImageRendererContext* UIContext) {
           CGContextRef context = UIContext.CGContext;
-          CGFloat r = rand() / CGFloat(RAND_MAX);
-          CGFloat g = rand() / CGFloat(RAND_MAX);
-          CGFloat b = rand() / CGFloat(RAND_MAX);
+          CGFloat r = CGFloat(base::RandDouble());
+          CGFloat g = CGFloat(base::RandDouble());
+          CGFloat b = CGFloat(base::RandDouble());
           CGContextSetRGBStrokeColor(context, r, g, b, 1.0);
           CGContextSetRGBFillColor(context, r, g, b, 1.0);
           CGContextFillRect(context, CGRectMake(0.0, 0.0, kSnapshotPixelSize,
