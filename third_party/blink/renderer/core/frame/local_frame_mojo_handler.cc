@@ -70,6 +70,7 @@
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/inspector/main_thread_debugger.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
+#include "third_party/blink/renderer/core/loader/frame_loader.h"
 #include "third_party/blink/renderer/core/loader/mixed_content_checker.h"
 #include "third_party/blink/renderer/core/messaging/message_port.h"
 #include "third_party/blink/renderer/core/navigation_api/navigation_api.h"
@@ -375,6 +376,9 @@ LocalFrameMojoHandler::LocalFrameMojoHandler(blink::LocalFrame& frame)
   registry->AddAssociatedInterface(BindRepeating(
       &LocalFrameMojoHandler::BindOutsideContextCSPViolationReporterReceiver,
       WrapWeakPersistent(this)));
+  registry->AddAssociatedInterface(
+      BindRepeating(&LocalFrameMojoHandler::BindAutoplayConfigurationReceiver,
+                    WrapWeakPersistent(this)));
 }
 
 void LocalFrameMojoHandler::Trace(Visitor* visitor) const {
@@ -391,6 +395,7 @@ void LocalFrameMojoHandler::Trace(Visitor* visitor) const {
   visitor->Trace(main_frame_receiver_);
   visitor->Trace(fullscreen_video_receiver_);
   visitor->Trace(outside_context_csp_violation_reporter_receiver_);
+  visitor->Trace(autoplay_configuration_receiver_);
   visitor->Trace(device_posture_receiver_);
 }
 
@@ -406,6 +411,7 @@ void LocalFrameMojoHandler::DidDetachFrame() {
   local_frame_receiver_.reset();
   main_frame_receiver_.reset();
   outside_context_csp_violation_reporter_receiver_.reset();
+  autoplay_configuration_receiver_.reset();
   // TODO(tkent): Should we reset other receivers?
 }
 
@@ -528,6 +534,21 @@ void LocalFrameMojoHandler::BindOutsideContextCSPViolationReporterReceiver(
   outside_context_csp_violation_reporter_receiver_.Bind(
       std::move(receiver), frame_->GetTaskRunner(TaskType::kNetworking));
   outside_context_csp_violation_reporter_receiver_.SetFilter(
+      std::make_unique<ActiveURLMessageFilter>(frame_));
+}
+
+void LocalFrameMojoHandler::BindAutoplayConfigurationReceiver(
+    mojo::PendingAssociatedReceiver<mojom::blink::AutoplayConfigurationClient>
+        receiver) {
+  if (frame_->IsDetached()) {
+    return;
+  }
+
+  autoplay_configuration_receiver_.reset();
+  autoplay_configuration_receiver_.Bind(
+      std::move(receiver),
+      frame_->GetTaskRunner(TaskType::kInternalNavigationAssociated));
+  autoplay_configuration_receiver_.SetFilter(
       std::make_unique<ActiveURLMessageFilter>(frame_));
 }
 
@@ -1637,5 +1658,11 @@ void LocalFrameMojoHandler::PerformFullContentSpellCheck() {
   frame_->PerformFullContentSpellCheck();
 }
 #endif
+
+void LocalFrameMojoHandler::AddAutoplayFlags(
+    const scoped_refptr<const SecurityOrigin>& origin,
+    int32_t flags) {
+  frame_->Loader().AddAutoplayFlags(origin, flags);
+}
 
 }  // namespace blink

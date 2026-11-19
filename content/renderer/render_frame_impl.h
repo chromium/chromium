@@ -83,7 +83,6 @@
 #include "third_party/blink/public/common/subresource_load_metrics.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/common/unique_name/unique_name_helper.h"
-#include "third_party/blink/public/mojom/autoplay/autoplay.mojom.h"
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom.h"
 #include "third_party/blink/public/mojom/choosers/file_chooser.mojom.h"
 #include "third_party/blink/public/mojom/commit_result/commit_result.mojom.h"
@@ -181,7 +180,6 @@ class RenderFrameObserver;
 class CONTENT_EXPORT RenderFrameImpl
     : public RenderFrame,
       public blink::mojom::ResourceLoadInfoNotifier,
-      blink::mojom::AutoplayConfigurationClient,
       public mojom::Frame,
       mojom::FrameBindingsControl,
       mojom::MhtmlFileWriter,
@@ -383,10 +381,6 @@ class CONTENT_EXPORT RenderFrameImpl
       const gfx::Rect& rect) override;
   float GetDeviceScaleFactor() override;
   blink::scheduler::WebAgentGroupScheduler& GetAgentGroupScheduler() override;
-
-  // blink::mojom::AutoplayConfigurationClient implementation:
-  void AddAutoplayFlags(const url::Origin& origin,
-                        const int32_t flags) override;
 
   // blink::mojom::ResourceLoadInfoNotifier implementation:
 #if BUILDFLAG(IS_ANDROID)
@@ -664,11 +658,6 @@ class CONTENT_EXPORT RenderFrameImpl
   void BindGinJavaBridge(
       mojo::PendingAssociatedReceiver<mojom::GinJavaBridge> receiver);
 #endif
-
-  // Binds to the autoplay configuration service in the browser.
-  void BindAutoplayConfiguration(
-      mojo::PendingAssociatedReceiver<blink::mojom::AutoplayConfigurationClient>
-          receiver);
 
   void BindFrameBindingsControl(
       mojo::PendingAssociatedReceiver<mojom::FrameBindingsControl> receiver);
@@ -1260,11 +1249,6 @@ class CONTENT_EXPORT RenderFrameImpl
   base::SequenceBound<content::LocalResourceURLLoaderFactory>
       local_resource_loader_;
 
-  using AutoplayOriginAndFlags = std::pair<url::Origin, int32_t>;
-  AutoplayOriginAndFlags autoplay_flags_;
-
-  mojo::AssociatedReceiver<blink::mojom::AutoplayConfigurationClient>
-      autoplay_configuration_receiver_{this};
   // The mojom::Frame can not be bound at construction because it needs the
   // WebFrame to get a TaskRunner from so it is stashed here.
   mojo::PendingAssociatedReceiver<mojom::Frame> pending_frame_receiver_;

@@ -1243,6 +1243,8 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
         .Record(frame_->DomWindow()->UkmRecorder());
   }
 
+  GetFrameLoader().ApplyAutoplayFlags(/*is_within_same_document=*/true);
+
   GetLocalFrameClient().DidFinishSameDocumentNavigation(
       commit_type, is_synchronously_committed, same_document_navigation_type,
       is_client_redirect_, is_browser_initiated, should_skip_screenshot,
@@ -2486,6 +2488,7 @@ void DocumentLoader::DidCommitNavigation() {
   probe::DidCommitLoad(frame_, this);
 
   frame_->GetPage()->DidCommitLoad(frame_);
+  GetFrameLoader().ApplyAutoplayFlags(/*is_within_same_document=*/false);
 }
 
 Frame* DocumentLoader::CalculateOwnerFrame() {

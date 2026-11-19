@@ -2164,15 +2164,6 @@ void RenderFrameImpl::OnAssociatedInterfaceRequest(
   }
 }
 
-void RenderFrameImpl::BindAutoplayConfiguration(
-    mojo::PendingAssociatedReceiver<blink::mojom::AutoplayConfigurationClient>
-        receiver) {
-  autoplay_configuration_receiver_.reset();
-  autoplay_configuration_receiver_.Bind(
-      std::move(receiver),
-      GetTaskRunner(blink::TaskType::kInternalNavigationAssociated));
-}
-
 void RenderFrameImpl::BindFrameBindingsControl(
     mojo::PendingAssociatedReceiver<mojom::FrameBindingsControl> receiver) {
   frame_bindings_control_receiver_.Bind(
@@ -2438,20 +2429,6 @@ void RenderFrameImpl::AddMessageToConsole(
 
 bool RenderFrameImpl::IsPasting() {
   return GetLocalRootWebFrameWidget()->IsPasting();
-}
-
-// blink::mojom::AutoplayConfigurationClient implementation
-// --------------------------
-
-void RenderFrameImpl::AddAutoplayFlags(const url::Origin& origin,
-                                       const int32_t flags) {
-  // If the origin is the same as the previously stored flags then we should
-  // merge the two sets of flags together.
-  if (autoplay_flags_.first == origin) {
-    autoplay_flags_.second |= flags;
-  } else {
-    autoplay_flags_ = std::make_pair(origin, flags);
-  }
 }
 
 // blink::mojom::ResourceLoadInfoNotifier implementation
@@ -5187,20 +5164,6 @@ void RenderFrameImpl::UpdateStateForCommit(
     auto& widget = CHECK_DEREF(GetLocalRootWebFrameWidget());
     widget.SetZoomLevel(widget.GetZoomLevel());
   }
-
-  // If we are a top frame navigation to another document we should clear any
-  // existing autoplay flags on the Page. This is because flags are stored at
-  // the page level so subframes would only add to them.
-  if (!frame_->Parent() && !navigation_state->WasWithinSameDocument()) {
-    GetWebView()->ClearAutoplayFlags();
-  }
-
-  // Set the correct autoplay flags on the Page and wipe the cached origin so
-  // this will not be used incorrectly.
-  if (url::Origin(frame_->GetSecurityOrigin()) == autoplay_flags_.first) {
-    GetWebView()->AddAutoplayFlags(autoplay_flags_.second);
-    autoplay_flags_.first = url::Origin();
-  }
 }
 
 void RenderFrameImpl::DidCommitNavigationInternal(
@@ -6540,12 +6503,6 @@ media::MediaPermission* RenderFrameImpl::GetMediaPermission() {
 }
 
 void RenderFrameImpl::RegisterMojoInterfaces() {
-  // TODO(dcheng): Fold this interface into mojom::Frame.
-  GetAssociatedInterfaceRegistry()
-      ->AddInterface<blink::mojom::AutoplayConfigurationClient>(
-          base::BindRepeating(&RenderFrameImpl::BindAutoplayConfiguration,
-                              weak_factory_.GetWeakPtr()));
-
   GetAssociatedInterfaceRegistry()->AddInterface<mojom::FrameBindingsControl>(
       base::BindRepeating(&RenderFrameImpl::BindFrameBindingsControl,
                           weak_factory_.GetWeakPtr()));

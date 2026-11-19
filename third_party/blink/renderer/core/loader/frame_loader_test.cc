@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "third_party/blink/renderer/core/loader/frame_loader.h"
+
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
@@ -9,7 +11,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
+#include "third_party/blink/public/mojom/autoplay/autoplay.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
+#include "third_party/blink/public/web/web_navigation_params.h"
 #include "third_party/blink/public/web/web_view.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_mouse_event_init.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
@@ -17,9 +21,12 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/policy_container.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
+#include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/frame_load_request.h"
 #include "third_party/blink/renderer/core/page/chrome_client_impl.h"
+#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/testing/mock_policy_container_host.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
@@ -427,6 +434,96 @@ TEST_F(FrameLoaderTest, FrameLoadRequestCapturesInitiatorUserGesture) {
       initiator_frame->DomWindow(),
       ResourceRequest(KURL("https://example.com/foo.html")));
   EXPECT_TRUE(request2.GetResourceRequest().HasUserGesture());
+}
+
+TEST_F(FrameLoaderSimTest, AutoplayFlagsMergeAndNavigationLifecycle) {
+  auto origin_a = SecurityOrigin::Create(KURL("https://example.com/"));
+  auto origin_b = SecurityOrigin::Create(KURL("https://other.test/"));
+
+  // Calling AddAutoplayFlags with a different origin replaces pending flags,
+  // and calling again with the same origin merges the flags.
+  LocalFrame* main_frame = To<LocalFrame>(GetDocument().GetPage()->MainFrame());
+  main_frame->Loader().AddAutoplayFlags(origin_b,
+                                        mojom::blink::kAutoplayFlagForceAllow);
+  main_frame->Loader().AddAutoplayFlags(
+      origin_a, mojom::blink::kAutoplayFlagHighMediaEngagement);
+  main_frame->Loader().AddAutoplayFlags(
+      origin_a, mojom::blink::kAutoplayFlagUserException);
+
+  SimRequest main_request("https://example.com/main.html", "text/html");
+  SimRequest child_request("https://other.test/child.html", "text/html");
+  LoadURL("https://example.com/main.html");
+  main_request.Complete(R"HTML(
+      <!DOCTYPE html>
+      <iframe src="https://other.test/child.html"></iframe>
+  )HTML");
+
+  // Pending flags for origin_a should now be applied to the Page.
+  const int32_t expected_main_flags =
+      mojom::blink::kAutoplayFlagHighMediaEngagement |
+      mojom::blink::kAutoplayFlagUserException;
+  EXPECT_EQ(GetDocument().GetPage()->AutoplayFlags(), expected_main_flags);
+
+  // Subframe navigation adds subframe flags without clearing main frame flags.
+  LocalFrame* child_frame = To<LocalFrame>(main_frame->Tree().FirstChild());
+  ASSERT_NE(child_frame, nullptr);
+  child_frame->Loader().AddAutoplayFlags(origin_b,
+                                         mojom::blink::kAutoplayFlagForceAllow);
+  child_request.Complete("<!DOCTYPE html>");
+  EXPECT_EQ(GetDocument().GetPage()->AutoplayFlags(),
+            expected_main_flags | mojom::blink::kAutoplayFlagForceAllow);
+
+  // Same-document navigation on the main frame preserves Page flags and applies
+  // any pending flags.
+  GetDocument()
+      .GetFrame()
+      ->Loader()
+      .GetDocumentLoader()
+      ->RunURLAndHistoryUpdateSteps(
+          KURL("https://example.com/main.html#section"), nullptr,
+          mojom::blink::SameDocumentNavigationType::kFragment,
+          /*data=*/nullptr, WebFrameLoadType::kStandard, FirePopstate::kYes,
+          /*should_skip_screenshot=*/true, UserNavigationInvolvement::kNone,
+          PerformanceTimelineEntryIdInfo::kNone,
+          /*is_browser_initiated=*/false);
+  EXPECT_EQ(GetDocument().GetPage()->AutoplayFlags(),
+            expected_main_flags | mojom::blink::kAutoplayFlagForceAllow);
+
+  // A subsequent same-origin cross-document main frame navigation without new
+  // pending flags clears Page flags (since the pending origin was wiped on the
+  // previous commit).
+  SimRequest reload_request("https://example.com/main.html", "text/html");
+  LoadURL("https://example.com/main.html");
+  reload_request.Complete("<!DOCTYPE html>");
+  EXPECT_EQ(GetDocument().GetPage()->AutoplayFlags(),
+            mojom::blink::kAutoplayFlagNone);
+}
+
+TEST_F(FrameLoaderSimTest, AutoplayFlagsFileOriginWithBlockedLocalAccess) {
+  GetDocument().GetSettings()->SetAllowUniversalAccessFromFileURLs(false);
+  GetDocument().GetSettings()->SetAllowFileAccessFromFileURLs(false);
+
+  const KURL file_url("file:///test.html");
+  // Simulate distinct `SecurityOrigin` instances deserialized from
+  // `url.mojom.Origin` (which lack `block_local_access_from_local_origin_`).
+  auto mojo_origin_1 = SecurityOrigin::Create(file_url);
+  auto mojo_origin_2 = SecurityOrigin::CreateFromValidTuple("file", "", 0);
+  LocalFrame* main_frame = To<LocalFrame>(GetDocument().GetPage()->MainFrame());
+  main_frame->Loader().AddAutoplayFlags(
+      mojo_origin_1, mojom::blink::kAutoplayFlagHighMediaEngagement);
+  main_frame->Loader().AddAutoplayFlags(
+      mojo_origin_2, mojom::blink::kAutoplayFlagUserException);
+
+  main_frame->Loader().CommitNavigation(
+      WebNavigationParams::CreateWithEmptyHTMLForTesting(file_url), nullptr);
+
+  const SecurityOrigin* committed_origin =
+      main_frame->DomWindow()->GetSecurityOrigin();
+  EXPECT_TRUE(committed_origin->block_local_access_from_local_origin());
+  EXPECT_FALSE(committed_origin->IsSameOriginWith(mojo_origin_1.get()));
+  EXPECT_EQ(GetDocument().GetPage()->AutoplayFlags(),
+            mojom::blink::kAutoplayFlagHighMediaEngagement |
+                mojom::blink::kAutoplayFlagUserException);
 }
 
 }  // namespace blink

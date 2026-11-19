@@ -43,16 +43,19 @@
 #include "content/test/frame_host_test_interface.mojom.h"
 #include "content/test/test_render_frame.h"
 #include "media/media_buildflags.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/navigation/navigation_params.h"
 #include "third_party/blink/public/common/navigation/navigation_params_mojom_traits.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/mojom/autoplay/autoplay.mojom.h"
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom-forward.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom.h"
 #include "third_party/blink/public/mojom/frame/frame_replication_state.mojom.h"
@@ -236,6 +239,16 @@ class RenderFrameImplTest : public RenderViewTest {
 
   static int32_t AutoplayFlagsForFrame(const TestRenderFrame& frame) {
     return frame.GetWebView()->AutoplayFlagsForTest();
+  }
+
+  static mojo::AssociatedRemote<blink::mojom::AutoplayConfigurationClient>
+  GetAutoplayConfigurationClient(TestRenderFrame* frame) {
+    mojo::AssociatedRemote<blink::mojom::AutoplayConfigurationClient> client;
+    mojo::ScopedInterfaceEndpointHandle handle =
+        client.BindNewEndpointAndPassDedicatedReceiver().PassHandle();
+    EXPECT_TRUE(frame->GetAssociatedInterfaceRegistry()->TryBindInterface(
+        blink::mojom::AutoplayConfigurationClient::Name_, &handle));
+    return client;
   }
 
  private:
@@ -454,9 +467,10 @@ TEST_F(RenderFrameImplTest, NoCrashOnReceiveTitleWhenNavigatingToJavascript) {
 
 TEST_F(RenderFrameImplTest, AutoplayFlags) {
   // Add autoplay flags to the page.
-  GetMainRenderFrame()->AddAutoplayFlags(
-      url::Origin::Create(GURL(kAutoplayTestOrigin)),
-      blink::mojom::kAutoplayFlagHighMediaEngagement);
+  auto client = GetAutoplayConfigurationClient(GetMainRenderFrame());
+  client->AddAutoplayFlags(url::Origin::Create(GURL(kAutoplayTestOrigin)),
+                           blink::mojom::kAutoplayFlagHighMediaEngagement);
+  client.FlushForTesting();
 
   // Navigate the top frame.
   LoadHTMLWithUrlOverride(kParentFrameHTML, kAutoplayTestOrigin);
@@ -474,6 +488,21 @@ TEST_F(RenderFrameImplTest, AutoplayFlags) {
   EXPECT_EQ(blink::mojom::kAutoplayFlagHighMediaEngagement,
             AutoplayFlagsForFrame(child_frame()));
 
+  // Re-bind the interface and add another flag for the same origin across two
+  // separate bindings, verifying both re-binding reset and flag merging.
+  auto client2 = GetAutoplayConfigurationClient(GetMainRenderFrame());
+  client2->AddAutoplayFlags(url::Origin::Create(GURL(kAutoplayTestOrigin)),
+                            blink::mojom::kAutoplayFlagUserException);
+  client2.FlushForTesting();
+  auto client3 = GetAutoplayConfigurationClient(GetMainRenderFrame());
+  client3->AddAutoplayFlags(url::Origin::Create(GURL(kAutoplayTestOrigin)),
+                            blink::mojom::kAutoplayFlagForceAllow);
+  client3.FlushForTesting();
+  LoadHTMLWithUrlOverride(kParentFrameHTML, kAutoplayTestOrigin);
+  EXPECT_EQ(blink::mojom::kAutoplayFlagUserException |
+                blink::mojom::kAutoplayFlagForceAllow,
+            AutoplayFlagsForFrame(*GetMainRenderFrame()));
+
   // Navigate the top frame.
   LoadHTMLWithUrlOverride(kParentFrameHTML, "https://www.example.com");
   LoadChildFrame();
@@ -487,8 +516,10 @@ TEST_F(RenderFrameImplTest, AutoplayFlags) {
 
 TEST_F(RenderFrameImplTest, AutoplayFlags_WrongOrigin) {
   // Add autoplay flags to the page.
-  GetMainRenderFrame()->AddAutoplayFlags(
-      url::Origin(), blink::mojom::kAutoplayFlagHighMediaEngagement);
+  auto client = GetAutoplayConfigurationClient(GetMainRenderFrame());
+  client->AddAutoplayFlags(url::Origin(),
+                           blink::mojom::kAutoplayFlagHighMediaEngagement);
+  client.FlushForTesting();
 
   // Navigate the top frame.
   LoadHTMLWithUrlOverride(kParentFrameHTML, kAutoplayTestOrigin);

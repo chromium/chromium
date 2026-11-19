@@ -8,6 +8,7 @@
 #include "build/build_config.h"
 #include "cc/input/browser_controls_offset_tag_modifications.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/mojom/autoplay/autoplay.mojom-blink.h"
 #include "third_party/blink/public/mojom/confidence_level.mojom-blink.h"
 #include "third_party/blink/public/mojom/device_posture/device_posture_provider.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-blink.h"
@@ -58,6 +59,7 @@ class CORE_EXPORT LocalFrameMojoHandler
       public mojom::blink::LocalMainFrame,
       public mojom::blink::FullscreenVideoElementHandler,
       public mojom::blink::DevicePostureClient,
+      public mojom::blink::AutoplayConfigurationClient,
       public OutsideContextCSPViolationReporterBase {
  public:
   explicit LocalFrameMojoHandler(blink::LocalFrame& frame);
@@ -100,6 +102,9 @@ class CORE_EXPORT LocalFrameMojoHandler
   void BindOutsideContextCSPViolationReporterReceiver(
       mojo::PendingAssociatedReceiver<
           mojom::blink::OutsideContextCSPViolationReporter> receiver);
+  void BindAutoplayConfigurationReceiver(
+      mojo::PendingAssociatedReceiver<mojom::blink::AutoplayConfigurationClient>
+          receiver);
 
   // blink::mojom::LocalFrame overrides:
   void GetTextSurroundingSelection(
@@ -297,6 +302,10 @@ class CORE_EXPORT LocalFrameMojoHandler
   // DevicePostureClient implementation:
   void OnPostureChanged(mojom::blink::DevicePostureType posture) final;
 
+  // mojom::blink::AutoplayConfigurationClient implementation:
+  void AddAutoplayFlags(const scoped_refptr<const SecurityOrigin>& origin,
+                        int32_t flags) final;
+
   // OutsideContextCSPViolationReporterBase overrides, for the violations
   // checked in the frame host (e.g. form-action, frame-ancestors, and
   // frame-src):
@@ -352,6 +361,10 @@ class CORE_EXPORT LocalFrameMojoHandler
   HeapMojoAssociatedReceiver<mojom::blink::OutsideContextCSPViolationReporter,
                              LocalFrameMojoHandler>
       outside_context_csp_violation_reporter_receiver_{this, nullptr};
+  // LocalFrameMojoHandler can be reused by multiple ExecutionContext.
+  HeapMojoAssociatedReceiver<mojom::blink::AutoplayConfigurationClient,
+                             LocalFrameMojoHandler>
+      autoplay_configuration_receiver_{this, nullptr};
 };
 
 class ActiveURLMessageFilter : public mojo::MessageFilter {

@@ -391,11 +391,9 @@ class BLINK_EXPORT WebView {
 
   // Autoplay configuration -----------------------------------------------
 
-  // Sets the autoplay flags for this webview's page.
+  // Returns the autoplay flags set for this webview's page.
   // The valid flags are defined in
-  // third_party/blink/public/platform/autoplay.mojom
-  virtual void AddAutoplayFlags(int32_t flags) = 0;
-  virtual void ClearAutoplayFlags() = 0;
+  // third_party/blink/public/mojom/autoplay/autoplay.mojom
   virtual int32_t AutoplayFlagsForTest() const = 0;
   virtual gfx::Size GetPreferredSizeForTest() = 0;
 

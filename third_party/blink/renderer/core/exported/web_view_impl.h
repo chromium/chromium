@@ -513,8 +513,6 @@ class CORE_EXPORT WebViewImpl final : public WebView,
 
   void DidUpdateMaxSafeAreaInsets(const gfx::InsetsF& max_safe_area_insets);
 
-  void AddAutoplayFlags(int32_t) override;
-  void ClearAutoplayFlags() override;
   int32_t AutoplayFlagsForTest() const override;
   gfx::Size GetPreferredSizeForTest() override;
 

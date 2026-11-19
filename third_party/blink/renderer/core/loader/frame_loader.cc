@@ -163,6 +163,25 @@ void LogJavaScriptUrlHistogram(LocalDOMWindow* origin_window,
   }
 }
 
+// Matches `url::Origin` equality for origins received over Mojo: `file://`
+// documents set `BlockLocalAccessFromLocalOrigin()` by default, which causes
+// `SecurityOrigin::IsSameOriginWith()` to return false against a distinct
+// `SecurityOrigin` instance deserialized from `url.mojom.Origin`.
+bool IsSameOriginIgnoringFileCheck(const SecurityOrigin* a,
+                                   const SecurityOrigin* b) {
+  if (!a || !b) {
+    return false;
+  }
+  if (a->IsSameOriginWith(b)) {
+    return true;
+  }
+  if (a->IsLocal() && b->IsLocal() && !a->IsOpaque() && !b->IsOpaque()) {
+    return a->Protocol() == b->Protocol() && a->Host() == b->Host() &&
+           a->Port() == b->Port();
+  }
+  return false;
+}
+
 }  // namespace
 
 bool IsBackForwardLoadType(WebFrameLoadType type) {
@@ -1993,6 +2012,40 @@ void FrameLoader::ProcessPendingCrossDocumentFragment() {
   has_pending_cross_document_fragment_ = false;
   ProcessFragment(frame_->GetDocument()->Url(), document_loader_->LoadType(),
                   kNavigationToDifferentDocument);
+}
+
+void FrameLoader::AddAutoplayFlags(
+    const scoped_refptr<const SecurityOrigin>& origin,
+    int32_t flags) {
+  // If the origin is the same as the previously stored flags then we should
+  // merge the two sets of flags together.
+  if (IsSameOriginIgnoringFileCheck(autoplay_flags_.first.get(),
+                                    origin.get())) {
+    autoplay_flags_.second |= flags;
+  } else {
+    autoplay_flags_ = std::make_pair(origin, flags);
+  }
+}
+
+void FrameLoader::ApplyAutoplayFlags(bool is_within_same_document) {
+  Page* page = frame_->GetPage();
+  if (!page) {
+    return;
+  }
+  // If we are a top frame navigation to another document we should clear any
+  // existing autoplay flags on the Page. This is because flags are stored at
+  // the page level so subframes would only add to them.
+  if (frame_->IsMainFrame() && !is_within_same_document) {
+    page->ClearAutoplayFlags();
+  }
+
+  // Set the correct autoplay flags on the Page and wipe the cached origin so
+  // this will not be used incorrectly.
+  if (IsSameOriginIgnoringFileCheck(frame_->DomWindow()->GetSecurityOrigin(),
+                                    autoplay_flags_.first.get())) {
+    page->AddAutoplayFlags(autoplay_flags_.second);
+    autoplay_flags_.first = nullptr;
+  }
 }
 
 }  // namespace blink
