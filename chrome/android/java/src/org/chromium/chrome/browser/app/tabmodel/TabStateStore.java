@@ -549,6 +549,8 @@ public class TabStateStore implements TabPersistentStore {
         // TODO(https://crbug.com/448151052): This should catch up on saves for the collection tree
         // after a pause. If we have proper batching it might not be necessary to pause.
         assertInitialized();
+        // Saves are never paused, so there is nothing to wait for.
+        onSaveTabListRunnable.run();
     }
 
     @Override

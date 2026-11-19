@@ -1663,4 +1663,15 @@ public class TabStateStoreUnitTest {
         verify(mModelTrackingOrchestrator, never()).drainDirtyTabs(anyBoolean());
         verify(mModelTrackingOrchestrator, never()).flushPendingStructureSnapshot(anyBoolean());
     }
+
+    @Test
+    public void testResumeSaveTabList_runsCallback() {
+        mTabStateStore.onNativeLibraryReady();
+        mTabStateStore.pauseSaveTabList();
+
+        Runnable onSaveTabListRunnable = mock(Runnable.class);
+        mTabStateStore.resumeSaveTabList(onSaveTabListRunnable);
+
+        verify(onSaveTabListRunnable).run();
+    }
 }
