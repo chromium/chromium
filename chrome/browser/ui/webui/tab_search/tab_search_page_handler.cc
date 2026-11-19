@@ -931,8 +931,24 @@ void TabSearchPageHandler::OnTabEvents(
     const std::vector<tabs_api::mojom::TabsEventPtr>& events) {
   const auto* preload_state =
       WebUIContentsPreloadState::FromWebContents(web_ui_->GetWebContents());
-  if (!IsWebContentsVisible() ||
-      (preload_state && preload_state->pending_request)) {
+  if (preload_state && preload_state->pending_request) {
+    return;
+  }
+  if (!IsWebContentsVisible()) {
+    // TODO(crbug.com/587492900): Remove this workaround once
+    // TabSearchPageHandler listens directly to split events.
+    if (search::IsSplitViewNewTabPage(web_ui_->GetWebContents()->GetURL())) {
+      for (const auto& event : events) {
+        if (!event->is_nodes_closed_event()) {
+          continue;
+        }
+        for (const auto& node_id : event->get_nodes_closed_event()->node_ids) {
+          if (node_id.Type() == tabs_api::NodeId::Type::kCollection) {
+            OnSplitTabRemoved();
+          }
+        }
+      }
+    }
     return;
   }
 
