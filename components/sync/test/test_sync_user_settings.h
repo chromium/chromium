@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "components/signin/public/base/gaia_id_hash.h"
 #include "components/sync/base/data_type.h"
@@ -69,6 +70,8 @@ class TestSyncUserSettings : public SyncUserSettings {
   bool IsPassphraseRequiredForPreferredDataTypes() const override;
   bool IsPassphrasePromptMutedForCurrentProductVersion() const override;
   void MarkPassphrasePromptMutedForCurrentProductVersion() override;
+  void IsTrustedVaultEnrollmentPossible(
+      base::OnceCallback<void(bool)> callback) const override;
   bool IsTrustedVaultKeyRequired() const override;
   bool IsKeystoreKeyRequiredForTesting() const override;
   bool IsTrustedVaultKeyRequiredForPreferredDataTypes() const override;
@@ -90,6 +93,7 @@ class TestSyncUserSettings : public SyncUserSettings {
   void SetCustomPassphraseAllowed(bool allowed);
   void SetPassphraseRequired();
   void SetPassphraseRequired(const std::string& required_passphrase);
+  void SetTrustedVaultEnrollmentPossible(bool possible);
   void SetTrustedVaultKeyRequired(bool required);
   void SetTrustedVaultRecoverabilityDegraded(bool degraded);
   void SetIsUsingExplicitPassphrase(bool enabled);
@@ -131,6 +135,7 @@ class TestSyncUserSettings : public SyncUserSettings {
 
   bool custom_passphrase_allowed_ = true;
   bool passphrase_required_ = false;
+  bool trusted_vault_enrollment_possible_ = false;
   bool trusted_vault_key_required_ = false;
   bool trusted_vault_recoverability_degraded_ = false;
   PassphraseType passphrase_type_ = PassphraseType::kKeystorePassphrase;

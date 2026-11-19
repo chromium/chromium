@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/functional/callback_forward.h"
 #include "base/time/time.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/passphrase_enums.h"
@@ -124,6 +125,17 @@ class SyncUserSettings {
   // Passphrase prompt mute-state getter and setter, used on Android.
   virtual bool IsPassphrasePromptMutedForCurrentProductVersion() const = 0;
   virtual void MarkPassphrasePromptMutedForCurrentProductVersion() = 0;
+
+  // Asynchronously determines whether the user's account capabilities, Sync
+  // passphrase state (`kKeystorePassphrase` without crypto errors), and local
+  // Trusted Vault state allow non-interactive opt-in / enrollment into Trusted
+  // Vault (`kTrustedVaultPassphrase`) encryption. Note that this is scoped to
+  // account and encryption eligibility and does not check whether encrypted
+  // data types (such as passwords) are currently selected. Invokes `callback`
+  // asynchronously with the result upon completion (or with `false` if Sync
+  // transport is not active).
+  virtual void IsTrustedVaultEnrollmentPossible(
+      base::OnceCallback<void(bool)> callback) const = 0;
 
   // NOTE: All of the state below may only be queried or modified if the Sync
   // engine is initialized.

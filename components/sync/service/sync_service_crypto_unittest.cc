@@ -13,6 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/os_crypt/async/browser/test_utils.h"
@@ -170,6 +171,7 @@ class SyncServiceCryptoTest : public testing::Test {
         kSyncingAccount.gaia, &trusted_vault_client_, trigger);
   }
 
+  base::test::SingleThreadTaskEnvironment task_environment_;
   std::optional<PassphraseType> passphrase_type_;
 
   testing::NiceMock<MockDelegate> delegate_;
@@ -1172,6 +1174,37 @@ TEST_F(SyncServiceCryptoTest,
   // There is an ongoing GetIsRecoverabilityRequest(), mimic its completion.
   // Main expectation: no crashes.
   EXPECT_TRUE(trusted_vault_client_.CompleteAllPendingRequests());
+}
+
+TEST_F(SyncServiceCryptoTest,
+       ShouldDelegateIsTrustedVaultEnrollmentPossibleToClient) {
+  crypto_.SetSyncEngine(kSyncingAccount, &engine_);
+
+  trusted_vault_client_.SetCanEnroll(false);
+  {
+    base::test::TestFuture<bool> future;
+    crypto_.IsTrustedVaultEnrollmentPossible(future.GetCallback());
+    EXPECT_FALSE(future.Get());
+  }
+
+  trusted_vault_client_.SetCanEnroll(true);
+  {
+    base::test::TestFuture<bool> future;
+    crypto_.IsTrustedVaultEnrollmentPossible(future.GetCallback());
+    EXPECT_TRUE(future.Get());
+  }
+}
+
+TEST_F(SyncServiceCryptoTest,
+       ShouldReportTrustedVaultEnrollmentNotPossibleWhenUserActionRequired) {
+  crypto_.SetSyncEngine(kSyncingAccount, &engine_);
+  crypto_.OnKeystoreKeysRequired();
+  trusted_vault_client_.SetCanEnroll(true);
+
+  base::test::TestFuture<bool> future;
+  crypto_.IsTrustedVaultEnrollmentPossible(future.GetCallback());
+  EXPECT_FALSE(future.IsReady());
+  EXPECT_FALSE(future.Get());
 }
 
 }  // namespace

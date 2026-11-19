@@ -30,6 +30,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/base/gaia_id_hash.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -38,6 +39,7 @@
 #include "components/sync/base/custom_passphrase_bootstrap_token.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
+#include "components/sync/base/passphrase_enums.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/base/sync_util.h"
 #include "components/sync/base/user_selectable_type.h"
@@ -3268,6 +3270,165 @@ TEST_F(SyncServiceImplTest, PasskeysLockedErrorPriority) {
             service()->GetUserActionableError());
 }
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+
+class SyncServiceImplTrustedVaultEnrollmentTest : public SyncServiceImplTest {
+ protected:
+  void InitializeEligibleService() {
+    SignInWithoutSyncConsent();
+    InitializeService();
+    RunUntilSyncTransportState(SyncService::TransportState::ACTIVE);
+    service()->GetEncryptionObserverForTest()->OnPassphraseTypeChanged(
+        PassphraseType::kKeystorePassphrase, base::Time());
+    SetTrustedVaultPassphraseEligibilityCapability(true);
+    trusted_vault_client()->SetCanEnroll(true);
+  }
+
+  void SetTrustedVaultPassphraseEligibilityCapability(bool eligible) {
+    AccountInfo account_info = identity_manager()->FindExtendedAccountInfo(
+        service()->GetAccountInfo());
+    ASSERT_FALSE(account_info.IsEmpty());
+    AccountCapabilitiesTestMutator(&account_info)
+        .set_is_trusted_vault_passphrase_eligible(eligible);
+    signin::UpdateAccountInfoForAccount(identity_manager(), account_info);
+  }
+};
+
+TEST_F(SyncServiceImplTrustedVaultEnrollmentTest,
+       IsTrustedVaultEnrollmentPossibleWhenEligible) {
+  InitializeEligibleService();
+  // Eligibility is scoped to passphrase and account state rather than whether
+  // encrypted user data types are currently selected.
+  service()->GetUserSettings()->SetSelectedTypes(/*sync_everything=*/false,
+                                                 UserSelectableTypeSet());
+
+  base::test::TestFuture<bool> future;
+  service()->GetUserSettings()->IsTrustedVaultEnrollmentPossible(
+      future.GetCallback());
+  EXPECT_TRUE(future.Get());
+}
+
+TEST_F(SyncServiceImplTrustedVaultEnrollmentTest,
+       IsTrustedVaultEnrollmentPossibleFalseWhenClientCannotEnroll) {
+  InitializeEligibleService();
+  trusted_vault_client()->SetCanEnroll(false);
+
+  base::test::TestFuture<bool> future;
+  service()->GetUserSettings()->IsTrustedVaultEnrollmentPossible(
+      future.GetCallback());
+  EXPECT_FALSE(future.Get());
+}
+
+TEST_F(SyncServiceImplTrustedVaultEnrollmentTest,
+       IsTrustedVaultEnrollmentPossibleFalseWhenCapabilityUnknown) {
+  SignInWithoutSyncConsent();
+  InitializeService();
+  RunUntilSyncTransportState(SyncService::TransportState::ACTIVE);
+  service()->GetEncryptionObserverForTest()->OnPassphraseTypeChanged(
+      PassphraseType::kKeystorePassphrase, base::Time());
+  trusted_vault_client()->SetCanEnroll(true);
+
+  base::test::TestFuture<bool> future;
+  service()->GetUserSettings()->IsTrustedVaultEnrollmentPossible(
+      future.GetCallback());
+  EXPECT_FALSE(future.IsReady());
+  EXPECT_FALSE(future.Get());
+}
+
+TEST_F(SyncServiceImplTrustedVaultEnrollmentTest,
+       IsTrustedVaultEnrollmentPossibleFalseWhenCapabilityFalse) {
+  InitializeEligibleService();
+  SetTrustedVaultPassphraseEligibilityCapability(false);
+
+  base::test::TestFuture<bool> future;
+  service()->GetUserSettings()->IsTrustedVaultEnrollmentPossible(
+      future.GetCallback());
+  EXPECT_FALSE(future.IsReady());
+  EXPECT_FALSE(future.Get());
+}
+
+TEST_F(SyncServiceImplTrustedVaultEnrollmentTest,
+       IsTrustedVaultEnrollmentPossibleFalseWhenCryptoErrorPresent) {
+  InitializeEligibleService();
+  service()->GetEncryptionObserverForTest()->OnKeystoreKeysRequired();
+
+  base::test::TestFuture<bool> future;
+  service()->GetUserSettings()->IsTrustedVaultEnrollmentPossible(
+      future.GetCallback());
+  EXPECT_FALSE(future.IsReady());
+  EXPECT_FALSE(future.Get());
+}
+
+TEST_F(SyncServiceImplTrustedVaultEnrollmentTest,
+       IsTrustedVaultEnrollmentPossibleFalseWhenSignedOut) {
+  InitializeService();
+
+  base::test::TestFuture<bool> future;
+  service()->GetUserSettings()->IsTrustedVaultEnrollmentPossible(
+      future.GetCallback());
+  EXPECT_FALSE(future.IsReady());
+  EXPECT_FALSE(future.Get());
+}
+
+TEST_F(SyncServiceImplTrustedVaultEnrollmentTest,
+       IsTrustedVaultEnrollmentPossibleFalseWhenTransportNotActive) {
+  SignInWithoutSyncConsent();
+  InitializeService();
+  std::unique_ptr<SyncSetupInProgressHandle> setup_in_progress_handle =
+      service()->GetSetupInProgressHandle();
+  RunUntilSyncTransportState(
+      SyncService::TransportState::PENDING_DESIRED_CONFIGURATION);
+  ASSERT_TRUE(engine()->IsInitialized());
+  service()->GetEncryptionObserverForTest()->OnPassphraseTypeChanged(
+      PassphraseType::kKeystorePassphrase, base::Time());
+  SetTrustedVaultPassphraseEligibilityCapability(true);
+  trusted_vault_client()->SetCanEnroll(true);
+
+  base::test::TestFuture<bool> future;
+  service()->GetUserSettings()->IsTrustedVaultEnrollmentPossible(
+      future.GetCallback());
+  EXPECT_FALSE(future.IsReady());
+  EXPECT_FALSE(future.Get());
+}
+
+TEST_F(SyncServiceImplTrustedVaultEnrollmentTest,
+       IsTrustedVaultEnrollmentPossibleFalseForLocalSync) {
+  InitializeServiceWithLocalSyncBackend();
+  RunUntilSyncTransportState(SyncService::TransportState::ACTIVE);
+  service()->GetEncryptionObserverForTest()->OnPassphraseTypeChanged(
+      PassphraseType::kKeystorePassphrase, base::Time());
+  trusted_vault_client()->SetCanEnroll(true);
+
+  base::test::TestFuture<bool> future;
+  service()->GetUserSettings()->IsTrustedVaultEnrollmentPossible(
+      future.GetCallback());
+  EXPECT_FALSE(future.IsReady());
+  EXPECT_FALSE(future.Get());
+}
+
+class SyncServiceImplTrustedVaultIneligiblePassphraseTest
+    : public SyncServiceImplTrustedVaultEnrollmentTest,
+      public testing::WithParamInterface<PassphraseType> {};
+
+TEST_P(SyncServiceImplTrustedVaultIneligiblePassphraseTest,
+       IsTrustedVaultEnrollmentPossibleFalseForNonKeystorePassphrase) {
+  InitializeEligibleService();
+  service()->GetEncryptionObserverForTest()->OnPassphraseTypeChanged(
+      GetParam(), base::Time());
+
+  base::test::TestFuture<bool> future;
+  service()->GetUserSettings()->IsTrustedVaultEnrollmentPossible(
+      future.GetCallback());
+  EXPECT_FALSE(future.IsReady());
+  EXPECT_FALSE(future.Get());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SyncServiceImplTrustedVaultIneligiblePassphraseTest,
+    testing::Values(PassphraseType::kImplicitPassphrase,
+                    PassphraseType::kCustomPassphrase,
+                    PassphraseType::kFrozenImplicitPassphrase,
+                    PassphraseType::kTrustedVaultPassphrase));
 
 }  // namespace
 }  // namespace syncer

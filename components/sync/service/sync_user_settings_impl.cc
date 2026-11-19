@@ -9,6 +9,7 @@
 #include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/feature_list.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/version.h"
 #include "components/signin/public/base/gaia_id_hash.h"
@@ -307,6 +308,11 @@ bool SyncUserSettingsImpl::IsPassphrasePromptMutedForCurrentProductVersion()
 void SyncUserSettingsImpl::MarkPassphrasePromptMutedForCurrentProductVersion() {
   prefs_->SetPassphrasePromptMutedProductVersion(
       GetCurrentMajorProductVersion());
+}
+
+void SyncUserSettingsImpl::IsTrustedVaultEnrollmentPossible(
+    base::OnceCallback<void(bool)> callback) const {
+  delegate_->IsTrustedVaultEnrollmentPossible(std::move(callback));
 }
 
 bool SyncUserSettingsImpl::IsTrustedVaultKeyRequired() const {

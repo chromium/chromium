@@ -7,6 +7,7 @@
 #include <cstddef>
 #include <utility>
 
+#include "base/check.h"
 #include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
@@ -30,17 +31,20 @@
 #include "components/signin/public/base/gaia_id_hash.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/account_capabilities.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/account_managed_status_finder_outcome.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_utils.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
+#include "components/signin/public/identity_manager/tribool.h"
 #include "components/sync/base/command_line_switches.h"
 #include "components/sync/base/custom_passphrase_bootstrap_token.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/data_type_histogram.h"
 #include "components/sync/base/features.h"
+#include "components/sync/base/passphrase_enums.h"
 #include "components/sync/base/stop_source.h"
 #include "components/sync/base/sync_util.h"
 #include "components/sync/base/user_selectable_type.h"
@@ -1504,6 +1508,17 @@ bool SyncServiceImpl::IsCustomPassphraseAllowed() const {
   return sync_client_->IsCustomPassphraseAllowed();
 }
 
+void SyncServiceImpl::IsTrustedVaultEnrollmentPossible(
+    base::OnceCallback<void(bool)> callback) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!SatisfiesLocalTrustedVaultEnrollmentPrerequisites()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), false));
+    return;
+  }
+  crypto_.IsTrustedVaultEnrollmentPossible(std::move(callback));
+}
+
 SyncPrefs::SyncAccountState SyncServiceImpl::GetSyncAccountStateForPrefs()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -2488,6 +2503,27 @@ void SyncServiceImpl::GetLocalDataDescriptionsImpl(
   }
 
   data_type_manager_->GetLocalDataDescriptions(types, std::move(callback));
+}
+
+bool SyncServiceImpl::SatisfiesLocalTrustedVaultEnrollmentPrerequisites()
+    const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (IsLocalSyncEnabled() || GetTransportState() != TransportState::ACTIVE ||
+      crypto_.GetPassphraseType() != PassphraseType::kKeystorePassphrase) {
+    return false;
+  }
+  CHECK(identity_manager_);
+  CoreAccountInfo primary_account = GetAccountInfo();
+  if (primary_account.IsEmpty()) {
+    return false;
+  }
+  AccountInfo account_info =
+      identity_manager_->FindExtendedAccountInfo(primary_account);
+  if (account_info.IsEmpty()) {
+    return false;
+  }
+  return account_info.GetAccountCapabilities()
+             .is_trusted_vault_passphrase_eligible() == signin::Tribool::kTrue;
 }
 
 void SyncServiceImpl::TriggerLocalDataMigration(DataTypeSet types) {

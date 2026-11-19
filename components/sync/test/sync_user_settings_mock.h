@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "components/signin/public/base/gaia_id_hash.h"
 #include "components/sync/model/crypto/nigori.h"
 #include "components/sync/service/sync_user_settings.h"
@@ -91,6 +92,10 @@ class SyncUserSettingsMock : public SyncUserSettings {
               MarkPassphrasePromptMutedForCurrentProductVersion,
               (),
               (override));
+  MOCK_METHOD(void,
+              IsTrustedVaultEnrollmentPossible,
+              (base::OnceCallback<void(bool)>),
+              (const override));
   MOCK_METHOD(bool, IsTrustedVaultKeyRequired, (), (const override));
   MOCK_METHOD(bool, IsKeystoreKeyRequiredForTesting, (), (const override));
   MOCK_METHOD(bool,

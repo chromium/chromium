@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
@@ -31,6 +32,8 @@ class SyncUserSettingsImpl : public SyncUserSettings, public SyncPrefObserver {
     virtual ~Delegate() = default;
 
     virtual bool IsCustomPassphraseAllowed() const = 0;
+    virtual void IsTrustedVaultEnrollmentPossible(
+        base::OnceCallback<void(bool)> callback) const = 0;
     virtual SyncPrefs::SyncAccountState GetSyncAccountStateForPrefs() const = 0;
     virtual CoreAccountInfo GetSyncAccountInfoForPrefs() const = 0;
 
@@ -105,6 +108,8 @@ class SyncUserSettingsImpl : public SyncUserSettings, public SyncPrefObserver {
   bool IsPassphraseRequiredForPreferredDataTypes() const override;
   bool IsPassphrasePromptMutedForCurrentProductVersion() const override;
   void MarkPassphrasePromptMutedForCurrentProductVersion() override;
+  void IsTrustedVaultEnrollmentPossible(
+      base::OnceCallback<void(bool)> callback) const override;
   bool IsTrustedVaultKeyRequired() const override;
   bool IsKeystoreKeyRequiredForTesting() const override;
   bool IsTrustedVaultKeyRequiredForPreferredDataTypes() const override;

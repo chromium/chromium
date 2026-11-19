@@ -4,6 +4,9 @@
 
 #include "components/sync/test/test_sync_user_settings.h"
 
+#include <utility>
+
+#include "base/functional/callback.h"
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/model/crypto/nigori.h"
@@ -227,6 +230,11 @@ bool TestSyncUserSettings::IsPassphrasePromptMutedForCurrentProductVersion()
 void TestSyncUserSettings::MarkPassphrasePromptMutedForCurrentProductVersion() {
 }
 
+void TestSyncUserSettings::IsTrustedVaultEnrollmentPossible(
+    base::OnceCallback<void(bool)> callback) const {
+  std::move(callback).Run(trusted_vault_enrollment_possible_);
+}
+
 bool TestSyncUserSettings::IsTrustedVaultKeyRequired() const {
   return trusted_vault_key_required_;
 }
@@ -320,6 +328,10 @@ void TestSyncUserSettings::SetPassphraseRequired(
   CHECK(!passphrase.empty());
   encryption_passphrase_ = passphrase;
   passphrase_required_ = true;
+}
+
+void TestSyncUserSettings::SetTrustedVaultEnrollmentPossible(bool possible) {
+  trusted_vault_enrollment_possible_ = possible;
 }
 
 void TestSyncUserSettings::SetTrustedVaultKeyRequired(bool required) {

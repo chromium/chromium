@@ -7,8 +7,11 @@
 #include <utility>
 
 #include "base/base64.h"
+#include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -210,6 +213,29 @@ bool SyncServiceCrypto::IsEncryptEverythingEnabled() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(state_.engine);
   return state_.encrypt_everything;
+}
+
+void SyncServiceCrypto::IsTrustedVaultEnrollmentPossible(
+    base::OnceCallback<void(bool)> callback) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(state_.engine);
+
+  switch (state_.required_user_action) {
+    case RequiredUserAction::kNone:
+      break;
+    case RequiredUserAction::kUnknownDuringInitialization:
+    case RequiredUserAction::kPassphraseRequired:
+    case RequiredUserAction::kFetchingTrustedVaultKeys:
+    case RequiredUserAction::kTrustedVaultKeyRequired:
+    case RequiredUserAction::kTrustedVaultKeyRequiredButFetching:
+    case RequiredUserAction::kTrustedVaultRecoverabilityDegraded:
+    case RequiredUserAction::kKeystoreKeysRequired:
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback), false));
+      return;
+  }
+
+  trusted_vault_client_->CanEnroll(state_.account_info, std::move(callback));
 }
 
 void SyncServiceCrypto::SetEncryptionPassphrase(const std::string& passphrase) {

@@ -6,9 +6,11 @@
 #define COMPONENTS_SYNC_SERVICE_SYNC_SERVICE_CRYPTO_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -74,9 +76,10 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
   bool IsEncryptEverythingEnabled() const;
 
   // The following methods may only be called if the sync engine is initialized.
+  void IsTrustedVaultEnrollmentPossible(
+      base::OnceCallback<void(bool)> callback) const;
   void SetEncryptionPassphrase(const std::string& passphrase);
   bool SetDecryptionPassphrase(const std::string& passphrase);
-
 
   // Returns whether it's already possible to determine whether trusted vault
   // key required (e.g. engine didn't start yet or silent fetch attempt is in

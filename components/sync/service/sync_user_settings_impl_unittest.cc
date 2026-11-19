@@ -5,12 +5,15 @@
 #include "components/sync/service/sync_user_settings_impl.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/feature_list.h"
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/os_crypt/async/common/encryptor.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -94,6 +97,10 @@ class MockDelegate : public SyncUserSettingsImpl::Delegate {
   ~MockDelegate() override = default;
 
   MOCK_METHOD(bool, IsCustomPassphraseAllowed, (), (const override));
+  MOCK_METHOD(void,
+              IsTrustedVaultEnrollmentPossible,
+              (base::OnceCallback<void(bool)>),
+              (const override));
   MOCK_METHOD(SyncPrefs::SyncAccountState,
               GetSyncAccountStateForPrefs,
               (),
@@ -806,6 +813,32 @@ TEST_F(SyncUserSettingsImplTest, SetInitialSyncFeatureSetupComplete) {
   EXPECT_TRUE(sync_user_settings->IsInitialSyncFeatureSetupComplete());
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+TEST_F(SyncUserSettingsImplTest,
+       IsTrustedVaultEnrollmentPossibleForwardsToDelegate) {
+  std::unique_ptr<SyncUserSettingsImpl> sync_user_settings =
+      MakeSyncUserSettings(GetUserTypes());
+
+  EXPECT_CALL(delegate_, IsTrustedVaultEnrollmentPossible)
+      .WillOnce([](base::OnceCallback<void(bool)> callback) {
+        std::move(callback).Run(false);
+      });
+  {
+    base::test::TestFuture<bool> future;
+    sync_user_settings->IsTrustedVaultEnrollmentPossible(future.GetCallback());
+    EXPECT_FALSE(future.Get());
+  }
+
+  EXPECT_CALL(delegate_, IsTrustedVaultEnrollmentPossible)
+      .WillOnce([](base::OnceCallback<void(bool)> callback) {
+        std::move(callback).Run(true);
+      });
+  {
+    base::test::TestFuture<bool> future;
+    sync_user_settings->IsTrustedVaultEnrollmentPossible(future.GetCallback());
+    EXPECT_TRUE(future.Get());
+  }
+}
 
 }  // namespace
 

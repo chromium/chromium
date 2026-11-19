@@ -225,6 +225,8 @@ class SyncServiceImpl : public SyncService,
 
   // SyncUserSettingsImpl::Delegate implementation.
   bool IsCustomPassphraseAllowed() const override;
+  void IsTrustedVaultEnrollmentPossible(
+      base::OnceCallback<void(bool)> callback) const override;
   SyncPrefs::SyncAccountState GetSyncAccountStateForPrefs() const override;
   CoreAccountInfo GetSyncAccountInfoForPrefs() const override;
   void OnSyncClientDisabledByPolicyChanged() override;
@@ -429,6 +431,10 @@ class SyncServiceImpl : public SyncService,
       DataTypeSet types,
       base::OnceCallback<void(std::map<DataType, LocalDataDescription>)>
           callback);
+
+  // Returns whether local Sync transport, passphrase, and account capability
+  // prerequisites for Trusted Vault enrollment are met.
+  bool SatisfiesLocalTrustedVaultEnrollmentPrerequisites() const;
 
   // This profile's SyncClient.
   const std::unique_ptr<SyncClient> sync_client_;
