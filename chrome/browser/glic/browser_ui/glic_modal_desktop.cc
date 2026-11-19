@@ -118,7 +118,8 @@ class GlicModalDialogView : public views::DialogDelegate,
                       GlicModal::Params& params)
       : tab_handle_(tab.GetHandle()),
         focus_web_view_on_open_(params.focus_web_view_on_open),
-        accessible_title_(params.accessible_title) {
+        accessible_title_(params.accessible_title),
+        on_webui_created_(std::move(params.on_webui_created)) {
     SetShowCloseButton(false);
     SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
     SetModalType(ui::mojom::ModalType::kChild);
@@ -145,9 +146,8 @@ class GlicModalDialogView : public views::DialogDelegate,
         content::WebContents::CreateParams(profile));
     web_contents->SetPageBaseBackgroundColor(SK_ColorTRANSPARENT);
 
-    if (focus_web_view_on_open_) {
-      Observe(web_contents.get());
-    }
+    // Observe before the navigation starts, for ReadyToCommitNavigation().
+    Observe(web_contents.get());
 
     web_view_->SetOwnedWebContents(std::move(web_contents));
     if (params.size_to_content ||
@@ -257,6 +257,11 @@ class GlicModalDialogView : public views::DialogDelegate,
   }
 
   // content::WebContentsObserver:
+  void ReadyToCommitNavigation(
+      content::NavigationHandle* navigation_handle) override {
+    GlicModal::MaybeRunOnWebUICreated(navigation_handle, on_webui_created_);
+  }
+
   void DocumentOnLoadCompletedInPrimaryMainFrame() override {
     if (focus_web_view_on_open_ && web_view_ && !is_loading()) {
       web_view_->RequestFocus();
@@ -344,6 +349,7 @@ class GlicModalDialogView : public views::DialogDelegate,
   raw_ptr<GlicModalWebView> web_view_ = nullptr;
   bool focus_web_view_on_open_ = true;
   std::u16string accessible_title_;
+  base::OnceCallback<void(content::WebUI*)> on_webui_created_;
   bool title_announced_ = false;
   views::ViewTracker loading_view_tracker_;
   std::unique_ptr<views::WebView::ScopedAxDisconnectLock> ax_lock_;
@@ -401,10 +407,6 @@ class GlicModalDesktop : public GlicModal {
         focus_web_view_on_open_(params.focus_web_view_on_open),
         on_closed_(std::move(params.on_closed)) {
     dialog_view_ = std::make_unique<GlicModalDialogView>(profile, tab, params);
-    if (params.on_webui_created) {
-      std::move(params.on_webui_created)
-          .Run(dialog_view_->web_view()->GetWebContents());
-    }
     if (params.on_available_size_changed) {
       params.on_available_size_changed.Run(params.max_size);
     }

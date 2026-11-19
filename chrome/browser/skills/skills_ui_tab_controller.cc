@@ -33,6 +33,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_ui.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
@@ -120,19 +121,18 @@ void SkillsUiTabController::ShowDialog(Skill skill,
   params.on_webui_created = base::BindOnce(
       [](base::WeakPtr<SkillsUiTabController> controller, Skill skill_param,
          SkillsDialogEntryPoint entrypoint_param,
-         mojom::SkillsDialogType dialog_type_param,
-         content::WebContents* dialog_contents) {
-        if (!controller || !dialog_contents || !dialog_contents->GetWebUI()) {
+         mojom::SkillsDialogType dialog_type_param, content::WebUI* web_ui) {
+        if (!controller || !web_ui) {
           return;
         }
-        if (auto* skills_ui = dialog_contents->GetWebUI()
-                                  ->GetController()
-                                  ->GetAs<skills::SkillsUI>()) {
+        if (auto* skills_ui =
+                web_ui->GetController()->GetAs<skills::SkillsUI>()) {
           skills_ui->InitializeDialog(std::move(controller),
                                       std::move(skill_param), entrypoint_param,
                                       dialog_type_param);
         }
         if (!base::FeatureList::IsEnabled(features::kSkillsWebViewV2Enabled)) {
+          content::WebContents* dialog_contents = web_ui->GetWebContents();
           zoom::ZoomController::CreateForWebContents(dialog_contents);
           zoom::ZoomController::FromWebContents(dialog_contents)
               ->SetZoomMode(zoom::ZoomController::ZOOM_MODE_DISABLED);

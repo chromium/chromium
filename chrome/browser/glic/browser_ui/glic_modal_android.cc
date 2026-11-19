@@ -102,6 +102,9 @@ bool GlicModalAndroid::ShowInternal(tabs::TabInterface& tab,
   modal_web_contents_ =
       content::WebContents::Create(content::WebContents::CreateParams(profile));
   modal_web_contents_->SetDelegate(this);
+  // Observe before the navigation starts, for ReadyToCommitNavigation(). The
+  // callback is optional; MaybeRunOnWebUICreated() does nothing without one.
+  on_webui_created_ = std::move(params.on_webui_created);
   Observe(modal_web_contents_.get());
 
   std::optional<int32_t> background_color;
@@ -126,6 +129,7 @@ bool GlicModalAndroid::ShowInternal(tabs::TabInterface& tab,
           params.deprecated_always_use_modal_dialog);
   if (!java_obj) {
     Observe(nullptr);
+    on_webui_created_.Reset();
     modal_web_contents_->SetDelegate(nullptr);
     modal_web_contents_.reset();
     return false;
@@ -133,10 +137,6 @@ bool GlicModalAndroid::ShowInternal(tabs::TabInterface& tab,
 
   modal_web_contents_->GetController().LoadURLWithParams(
       content::NavigationController::LoadURLParams(params.content_url));
-
-  if (params.on_webui_created) {
-    std::move(params.on_webui_created).Run(modal_web_contents_.get());
-  }
 
   on_closed_ = std::move(params.on_closed);
   java_coordinator_.Reset(java_obj);
@@ -231,6 +231,11 @@ void GlicModalAndroid::RenderFrameHostChanged(
                        : nullptr);
 }
 
+void GlicModalAndroid::ReadyToCommitNavigation(
+    content::NavigationHandle* navigation_handle) {
+  MaybeRunOnWebUICreated(navigation_handle, on_webui_created_);
+}
+
 void GlicModalAndroid::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   UpdateAutoResize(modal_web_contents_
@@ -240,6 +245,7 @@ void GlicModalAndroid::DidFinishNavigation(
 
 void GlicModalAndroid::OnDismissed() {
   Observe(nullptr);
+  on_webui_created_.Reset();
   tab_will_detach_subscription_ = {};
   tab_will_become_hidden_subscription_ = {};
   java_coordinator_.Reset();

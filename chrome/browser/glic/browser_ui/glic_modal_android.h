@@ -65,6 +65,8 @@ class GlicModalAndroid : public GlicModal,
   void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
   void RenderFrameHostChanged(content::RenderFrameHost* old_host,
                               content::RenderFrameHost* new_host) override;
+  void ReadyToCommitNavigation(
+      content::NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
 
@@ -89,6 +91,7 @@ class GlicModalAndroid : public GlicModal,
 
   std::unique_ptr<content::WebContents> modal_web_contents_;
   base::android::ScopedJavaGlobalRef<jobject> java_coordinator_;
+  base::OnceCallback<void(content::WebUI*)> on_webui_created_;
   base::OnceClosure on_closed_;
   base::CallbackListSubscription tab_will_detach_subscription_;
   base::CallbackListSubscription tab_will_become_hidden_subscription_;

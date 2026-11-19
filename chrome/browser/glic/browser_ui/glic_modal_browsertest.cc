@@ -17,6 +17,8 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_ui.h"
+#include "content/public/browser/web_ui_controller.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -52,24 +54,22 @@ IN_PROC_BROWSER_TEST_F(GlicModalBrowserTest, MAYBE_ShowAndCloseModal) {
   tabs::TabInterface* tab = browser()->GetActiveTabInterface();
   ASSERT_TRUE(tab);
 
-  bool webui_created_called = false;
+  base::test::TestFuture<content::WebUI*> webui_created_future;
   base::test::TestFuture<void> closed_future;
 
   GlicModal::Params params;
   params.content_url = GURL(chrome::kChromeUIVersionURL);
   params.accessible_title = u"Test Modal Title";
-  params.on_webui_created =
-      base::BindLambdaForTesting([&](content::WebContents* contents) {
-        ASSERT_TRUE(contents);
-        webui_created_called = true;
-      });
+  params.on_webui_created = webui_created_future.GetCallback();
   params.on_closed = closed_future.GetCallback();
 
   views::test::AXEventCounter ax_counter(views::AXUpdateNotifier::Get());
 
   std::unique_ptr<GlicModal> modal = GlicModal::Show(*tab, std::move(params));
   ASSERT_TRUE(modal);
-  EXPECT_TRUE(webui_created_called);
+  content::WebUI* web_ui = webui_created_future.Get();
+  ASSERT_TRUE(web_ui);
+  EXPECT_TRUE(web_ui->GetController());
 
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   views::View* tracked_view =

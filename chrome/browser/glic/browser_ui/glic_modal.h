@@ -25,7 +25,9 @@ class View;
 #endif
 
 namespace content {
+class NavigationHandle;
 class WebContents;
+class WebUI;
 }  // namespace content
 
 namespace tabs {
@@ -134,10 +136,13 @@ class GlicModal {
     // Defaults to `GlicModal::kDialogElementId`.
     ui::ElementIdentifier element_identifier;
 
-    // Invoked synchronously after the modal WebContents is created and initial
-    // navigation has started, allowing the caller to initialize the
-    // WebUIController (e.g. `SkillsUI::InitializeDialog`).
-    base::OnceCallback<void(content::WebContents*)> on_webui_created;
+    // Invoked with the WebUI for `content_url` once its navigation is ready to
+    // commit, allowing the caller to initialize the WebUIController (e.g.
+    // `SkillsUI::InitializeDialog`). This is before the page can run or request
+    // any resources or interfaces, but the WebUI isn't yet the WebContents'
+    // committed WebUI (WebContents::GetWebUI()). Only invoked for the first
+    // navigation, and not if it doesn't commit a WebUI.
+    base::OnceCallback<void(content::WebUI*)> on_webui_created;
 
     // Invoked when the modal is closed (either programmatically via `Close()`
     // or dismissed by the user).
@@ -175,6 +180,13 @@ class GlicModal {
 #if BUILDFLAG(IS_ANDROID)
   virtual void SimulateDismissingForTesting() = 0;
 #endif
+
+  // For GlicModal implementations' ReadyToCommitNavigation(): runs
+  // `on_webui_created` (see Params::on_webui_created) with the WebUI the first
+  // primary main frame navigation will commit, if any, and clears it.
+  static void MaybeRunOnWebUICreated(
+      content::NavigationHandle* navigation_handle,
+      base::OnceCallback<void(content::WebUI*)>& on_webui_created);
 
  protected:
   GlicModal() = default;
