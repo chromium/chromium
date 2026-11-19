@@ -293,7 +293,7 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
 
   // Tracks WebStates that were explicitly removed by the user so they are not
   // automatically re-attached in Co-browse mode.
-  std::set<web::WebStateID> _removedWebStateIDs;
+  std::set<web::WebStateID> _userRemovedWebStateIDs;
 
   // Holds a pending send callback while attachments are being extracted or
   // uploaded.
@@ -509,7 +509,7 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
   [self stopObservingActiveWebState];
   _items = nil;
   _latestTabSelectionMapping.clear();
-  _removedWebStateIDs.clear();
+  _userRemovedWebStateIDs.clear();
   _pageContextWrappers.clear();
   _URLLoader = nil;
   _consumer = nil;
@@ -802,7 +802,7 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
     }
     web::WebStateID webStateID = _latestTabSelectionMapping[item.identifier];
     if ([self isItem:item matchingCurrentURLOfWebStateID:webStateID]) {
-      _removedWebStateIDs.insert(webStateID);
+      _userRemovedWebStateIDs.insert(webStateID);
     }
   }
   [self removeItemInternal:item];
@@ -1220,7 +1220,7 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
 - (void)removeDeselectedIDs:(std::set<web::WebStateID>)deselectedIDs {
   for (const web::WebStateID& webStateID : deselectedIDs) {
     if (webStateID.valid()) {
-      _removedWebStateIDs.insert(webStateID);
+      _userRemovedWebStateIDs.insert(webStateID);
     }
   }
   NSArray<ComposeboxInputItem*>* items = [_items.containedItems copy];
@@ -1537,7 +1537,7 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
     return;
   }
 
-  _removedWebStateIDs.erase(webState->GetUniqueIdentifier());
+  _userRemovedWebStateIDs.erase(webState->GetUniqueIdentifier());
 
   if (![_stateManager canAddMoreAttachments]) {
     [self.delegate showAttachmentLimitError];
@@ -1576,7 +1576,7 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
     return;
   }
 
-  if (_removedWebStateIDs.contains(webState->GetUniqueIdentifier())) {
+  if (_userRemovedWebStateIDs.contains(webState->GetUniqueIdentifier())) {
     return;
   }
 
@@ -1994,7 +1994,7 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
 
   if (!autoAdded) {
     for (const web::WebStateID& webStateID : selectedWebStateIDs) {
-      _removedWebStateIDs.erase(webStateID);
+      _userRemovedWebStateIDs.erase(webStateID);
     }
   }
 
@@ -3007,7 +3007,7 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
   }
   if (!navigationContext || (navigationContext->HasCommitted() &&
                              !navigationContext->IsSameDocument())) {
-    _removedWebStateIDs.erase(webState->GetUniqueIdentifier());
+    _userRemovedWebStateIDs.erase(webState->GetUniqueIdentifier());
   }
   [self updateAutoAttachedCurrentTabIfNeeded];
 }
@@ -3020,7 +3020,7 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
 }
 
 - (void)webStateDestroyed:(web::WebState*)webState {
-  _removedWebStateIDs.erase(webState->GetUniqueIdentifier());
+  _userRemovedWebStateIDs.erase(webState->GetUniqueIdentifier());
   [self updateActiveWebStateObserver];
 }
 
@@ -3032,8 +3032,8 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
       factory ? factory : &DefaultPageContextWrapperFactory::GetInstance();
 }
 
-- (BOOL)isWebStateIDRemoved:(web::WebStateID)webStateID {
-  return _removedWebStateIDs.contains(webStateID);
+- (BOOL)isWebStateIDRemovedByUser:(web::WebStateID)webStateID {
+  return _userRemovedWebStateIDs.contains(webStateID);
 }
 
 @end
