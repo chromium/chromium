@@ -184,7 +184,16 @@ public class OmniboxActionDelegateImplUnitTest {
     }
 
     @Test
-    public void issueContextualSearchQuery_loadsUrlInCurrentTab() {
+    public void issueContextualSearchQuery_forwardsToContextualTasks() {
+        ContextualTasksUtilsJni.setInstanceForTesting(mContextualTasksUtilsJni);
+        doReturn(mWebContents).when(mTab).getWebContents();
+        mDelegate.issueContextualSearchQuery(TEST_URL);
+        verify(mContextualTasksUtilsJni).issueOmniboxContextualQuery(mWebContents, TEST_URL);
+    }
+
+    @Test
+    public void issueContextualSearchQuery_loadsUrlInCurrentTabWithoutWebContents() {
+        doReturn(null).when(mTab).getWebContents();
         doReturn(true).when(mTab).isUserInteractable();
         mDelegate.issueContextualSearchQuery(TEST_URL);
         verify(mTab).loadUrl(mLoadParamsCaptor.capture());
