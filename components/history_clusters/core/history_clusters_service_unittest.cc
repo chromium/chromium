@@ -405,10 +405,6 @@ class HistoryClustersServiceTest : public testing::Test {
             history_service_.get(), std::move(callback));
   }
 
-  void SetJourneysVisible(bool visible) {
-    pref_service_->SetBoolean(prefs::kVisible, visible);
-  }
-
   void LoadCachesFromPrefs() {
     history_clusters_service_->LoadCachesFromPrefs();
   }
@@ -431,24 +427,6 @@ class HistoryClustersServiceTest : public testing::Test {
   // Tracks the next available navigation ID to be associated with visits.
   int64_t next_navigation_id_ = 0;
 };
-
-TEST_F(HistoryClustersServiceTest, EligibleAndEnabledHistogramRecorded) {
-  {
-    base::HistogramTester histogram_tester;
-    SetJourneysVisible(true);
-    ResetHistoryClustersService();
-    histogram_tester.ExpectUniqueSample(
-        "History.Clusters.JourneysEligibleAndEnabledAtSessionStart", true, 1);
-  }
-
-  {
-    base::HistogramTester histogram_tester;
-    SetJourneysVisible(false);
-    ResetHistoryClustersService();
-    histogram_tester.ExpectUniqueSample(
-        "History.Clusters.JourneysEligibleAndEnabledAtSessionStart", false, 1);
-  }
-}
 
 TEST_F(HistoryClustersServiceTest, HardCapOnVisitsFetchedFromHistory) {
   Config config;

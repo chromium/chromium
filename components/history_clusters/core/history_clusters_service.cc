@@ -108,13 +108,6 @@ HistoryClustersService::HistoryClustersService(
           GetConfig().is_journeys_enabled_no_locale_check),
       history_service_(history_service),
       pref_service_(prefs) {
-  if (prefs && is_journeys_feature_flag_enabled_) {
-    // Log whether the user has Journeys enabled if they are eligible for it.
-    base::UmaHistogramBoolean(
-        "History.Clusters.JourneysEligibleAndEnabledAtSessionStart",
-        prefs->GetBoolean(prefs::kVisible));
-  }
-
   if (!is_journeys_feature_flag_enabled_) {
     return;
   }
