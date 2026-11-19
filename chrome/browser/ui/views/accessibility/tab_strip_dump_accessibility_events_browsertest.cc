@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/feature_list.h"
 #include "base/test/run_until.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/views/accessibility/dump_accessibility_events_views_browsertest_base.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/tabs/tab.h"
-#include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "content/public/test/browser_test.h"
 #include "ui/accessibility/platform/assistive_tech.h"
 #include "ui/accessibility/platform/ax_platform.h"
@@ -46,11 +46,6 @@ class TabStripDumpAccessibilityEventsTest
  protected:
   Widget* GetBrowserWidget() const {
     return BrowserView::GetBrowserViewForBrowser(browser())->GetWidget();
-  }
-
-  TabStrip* GetTabStrip() const {
-    return BrowserView::GetBrowserViewForBrowser(browser())
-        ->horizontal_tab_strip_for_testing();
   }
 
   void WaitForBrowserSerialization() {
@@ -95,8 +90,11 @@ IN_PROC_BROWSER_TEST_P(TabStripDumpAccessibilityEventsTest,
       base::test::RunUntil([&]() { return !GetBrowserWidget()->IsActive(); }));
   WaitForBrowserSerialization();
 
-  BEGIN_RECORDING_EVENTS_OR_SKIP(
-      "tab-window-activation-fires-selection-for-jaws");
+  const std::string test_name =
+      base::FeatureList::IsEnabled(tabs::kTabStripUnification)
+          ? "tab-window-activation-fires-selection-for-jaws-tab-view"
+          : "tab-window-activation-fires-selection-for-jaws";
+  BEGIN_RECORDING_EVENTS_OR_SKIP(test_name);
 
   // Reactivate the browser. This should fire the selection event for JAWS.
   GetBrowserWidget()->Activate();
@@ -135,8 +133,11 @@ IN_PROC_BROWSER_TEST_P(TabStripDumpAccessibilityEventsTest,
       base::test::RunUntil([&]() { return !GetBrowserWidget()->IsActive(); }));
   WaitForBrowserSerialization();
 
-  BEGIN_RECORDING_EVENTS_OR_SKIP(
-      "tab-window-activation-fires-selection-on-new-tab");
+  const std::string test_name =
+      base::FeatureList::IsEnabled(tabs::kTabStripUnification)
+          ? "tab-window-activation-fires-selection-on-new-tab-view"
+          : "tab-window-activation-fires-selection-on-new-tab";
+  BEGIN_RECORDING_EVENTS_OR_SKIP(test_name);
 
   GetBrowserWidget()->Activate();
   ASSERT_TRUE(
