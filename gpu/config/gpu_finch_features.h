@@ -300,6 +300,8 @@ GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kVulkanImaginationMSAA);
 
 GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kWrappedSkiaBackingExclusiveAccess);
 
+GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kEnforceProduceDawnBufferUsage);
+
 }  // namespace features
 
 #endif  // GPU_CONFIG_GPU_FINCH_FEATURES_H_

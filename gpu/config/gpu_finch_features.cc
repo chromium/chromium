@@ -910,4 +910,7 @@ BASE_FEATURE(kVulkanImaginationMSAA, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kWrappedSkiaBackingExclusiveAccess,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Kill switch for enforcing WebGPU Buffer usage.
+BASE_FEATURE(kEnforceProduceDawnBufferUsage, base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace features

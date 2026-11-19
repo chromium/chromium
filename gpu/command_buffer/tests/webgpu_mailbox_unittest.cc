@@ -2066,6 +2066,11 @@ TEST_F(WebGPUMailboxBufferTest, DissociateMailboxForBufferCmd) {
 
 // Tests using Associate/DissociateMailbox to share a buffer with Dawn.
 TEST_F(WebGPUMailboxBufferTest, WriteToMailboxThenReadFromIt) {
+  // Nothing to test without SHARED_BUFFER, because that requires
+  // SHARED_IMAGE_USAGE_WEBGPU_SHARED_BUFFER usage to create the SI in the first
+  // place.
+  SKIP_TEST_IF(!use_shared_buffer_);
+
   webgpu::ReservedBuffer reservation = webgpu()->ReserveBuffer(device_.Get());
   auto shared_image = MakeSharedImage();
 
@@ -2126,6 +2131,11 @@ TEST_F(WebGPUMailboxBufferTest, WriteToMailboxThenReadFromIt) {
 // Tests that using a mailbox buffer after it is dissociated produces an
 // error.
 TEST_F(WebGPUMailboxBufferTest, ErrorWhenUsingBufferAfterDissociate) {
+  // Nothing to test without SHARED_BUFFER, because that requires
+  // SHARED_IMAGE_USAGE_WEBGPU_SHARED_BUFFER usage to create the SI in the first
+  // place.
+  SKIP_TEST_IF(!use_shared_buffer_);
+
   webgpu::ReservedBuffer reservation = webgpu()->ReserveBuffer(device_.Get());
   auto shared_image = MakeSharedImage();
 

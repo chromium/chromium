@@ -26,6 +26,7 @@
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "ui/gl/trace_util.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -37,7 +38,6 @@
 
 #if BUILDFLAG(IS_OZONE)
 #include "gpu/command_buffer/service/vulkan_context_provider.h"
-#include "gpu/config/gpu_finch_features.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/surface_factory_ozone.h"
 #endif
@@ -348,6 +348,16 @@ std::unique_ptr<DawnBufferRepresentation> SharedImageManager::ProduceDawnBuffer(
   if (!backing) {
     LOG(ERROR) << "SharedImageManager::ProduceDawnBuffer: Trying to produce a "
                   "Dawn buffer representation from a non-existent mailbox.";
+    return nullptr;
+  }
+
+  if (base::FeatureList::IsEnabled(features::kEnforceProduceDawnBufferUsage) &&
+      !backing->usage().HasAll(gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
+                               gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE |
+                               gpu::SHARED_IMAGE_USAGE_WEBGPU_SHARED_BUFFER)) {
+    LOG(ERROR) << "SharedImageManager::ProduceDawnBuffer with incorrect "
+                  "usage, client: "
+               << backing->debug_label();
     return nullptr;
   }
 
