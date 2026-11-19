@@ -72,7 +72,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Wallet.NetworkRequest.{RequestType}.ResponseByteSize"
-    units="bytes" expires_after="2026-12-31">
+    units="bytes" expires_after="2027-11-19">
   <owner>vizcay@google.com</owner>
   <owner>1p-integrations-autofill@google.com</owner>
   <summary>
