@@ -189,45 +189,40 @@ bool CSSNumericLiteralValue::IsComputationallyIndependent() const {
   return !IsRelativeUnit(GetType());
 }
 
-static String FormatNumber(double number, const char* suffix) {
+static void FormatNumber(double number, StringBuilder& builder) {
   // https://www.w3.org/TR/cssom-1/#serialize-a-css-component-value specifies
   // rounding, but does not specify the rounding mode.
   // This function has historically used round-to-even, whereas blink::Format()
   // rounds half away from zero. We use absl::StrFormat() for round-to-even
   // to maintain compatibility.
-  return String(absl::StrFormat("%.6g%s", number, suffix));
+  builder.Append(base::as_byte_span(absl::StrFormat("%.6g", number)));
 }
 
-static String FormatInfinityOrNaN(double number, StringView suffix) {
-  String result;
+static void FormatInfinityOrNaN(double number,
+                                bool has_unit_suffix,
+                                StringBuilder& builder) {
   if (std::isinf(number)) {
-    if (number > 0) {
-      result = "infinity";
-    } else {
-      result = "-infinity";
+    if (number < 0) {
+      builder.Append('-');
     }
-
+    builder.Append("infinity");
   } else {
     DCHECK(std::isnan(number));
-    result = "NaN";
+    builder.Append("NaN");
   }
-
-  if (suffix.length() > 0) {
-    result = StrCat({result, " * 1", suffix});
+  if (has_unit_suffix) {
+    builder.Append(" * 1");
   }
-  return result;
 }
 
 // static
 String CSSNumericLiteralValue::Serialize(double value, UnitType type) {
-  String text;
   switch (type) {
     case UnitType::kUnknown:
       // FIXME
-      break;
+      return String();
     case UnitType::kInteger:
-      text = String::Number(ClampTo<int>(value));
-      break;
+      return String::Number(ClampTo<int>(value));
     case UnitType::kNumber:
     case UnitType::kPercentage:
     case UnitType::kEms:
@@ -294,6 +289,8 @@ String CSSNumericLiteralValue::Serialize(double value, UnitType type) {
     case UnitType::kContainerBlockSize:
     case UnitType::kContainerMin:
     case UnitType::kContainerMax: {
+      StringBuilder builder;
+      StringView unit_type = UnitTypeToString(type);
       // The following integers are minimal and maximum integers which can
       // be represented in non-exponential format with 6 digit precision.
       constexpr int kMinInteger = -999999;
@@ -302,23 +299,21 @@ String CSSNumericLiteralValue::Serialize(double value, UnitType type) {
       if (value < kMinInteger || value > kMaxInteger ||
           std::trunc(value) != value) {
         if (!std::isfinite(value)) {
-          text = FormatInfinityOrNaN(value, UnitTypeToString(type));
+          FormatInfinityOrNaN(value, !unit_type.empty(), builder);
         } else {
-          text = FormatNumber(value, UnitTypeToString(type).Utf8().c_str());
+          FormatNumber(value, builder);
         }
       } else {
-        StringBuilder builder;
         int int_value = value;
-        StringView unit_type = UnitTypeToString(type);
         builder.AppendNumber(int_value);
-        builder.Append(unit_type);
-        text = builder.ReleaseString();
       }
-    } break;
+      builder.Append(unit_type);
+      return builder.ReleaseString();
+    }
     case UnitType::kIdent:
       NOTREACHED();
   }
-  return text;
+  NOTREACHED();
 }
 
 String CSSNumericLiteralValue::CustomCSSText() const {
