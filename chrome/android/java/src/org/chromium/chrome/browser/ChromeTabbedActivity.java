@@ -412,6 +412,7 @@ import org.chromium.components.supervised_user.SupervisedUserConstants;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.webapps.ShortcutSource;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -5524,7 +5525,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                             IntentUtils.safeGetStringExtra(
                                     intent, IntentHandler.EXTRA_TAB_GROUP_TITLE);
                     if (groupTitle != null) {
-                        tabModel.setTabGroupTitle(groupId, groupTitle);
+                        tabModel.setTabGroupTitle(TabGroupId.fromRawToken(groupId), groupTitle);
                     }
                 }
             }

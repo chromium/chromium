@@ -703,7 +703,8 @@ public class RecentlyClosedBridgeTest {
                             List.of(tabB),
                             tabA,
                             TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
-                    mTabModel.setTabGroupTitle(tabA.getTabGroupId(), "Bar");
+                    mTabModel.setTabGroupTitle(
+                            TabGroupId.fromRawToken(tabA.getTabGroupId()), "Bar");
                     titles[1] = tabA.getTitle();
                     titles[0] = tabB.getTitle();
                     closeTabs(
@@ -773,7 +774,8 @@ public class RecentlyClosedBridgeTest {
                             List.of(tabB, tabC),
                             tabA,
                             TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
-                    mTabModel.setTabGroupTitle(tabA.getTabGroupId(), "Bar");
+                    mTabModel.setTabGroupTitle(
+                            TabGroupId.fromRawToken(tabA.getTabGroupId()), "Bar");
                     titles[1] = tabA.getTitle();
                     titles[0] = tabC.getTitle();
                     closeTabs(
@@ -835,7 +837,8 @@ public class RecentlyClosedBridgeTest {
                             List.of(tabB, tabC),
                             tabA,
                             TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
-                    mTabModel.setTabGroupTitle(tabA.getTabGroupId(), "Bar");
+                    mTabModel.setTabGroupTitle(
+                            TabGroupId.fromRawToken(tabA.getTabGroupId()), "Bar");
                     titles[1] = tabA.getTitle();
                     titles[0] = tabC.getTitle();
                     closeTabs(
@@ -897,7 +900,8 @@ public class RecentlyClosedBridgeTest {
                             List.of(tabB),
                             tabA,
                             TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
-                    mTabModel.setTabGroupTitle(tabA.getTabGroupId(), "Bar");
+                    mTabModel.setTabGroupTitle(
+                            TabGroupId.fromRawToken(tabA.getTabGroupId()), "Bar");
                     titles[0] = tabA.getTitle();
                     closeTabs(
                             TabClosureParams.closeTabs(List.of(tabA)).hideTabGroups(false).build());
@@ -943,7 +947,8 @@ public class RecentlyClosedBridgeTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTabModel.createSingleTabGroup(tabA);
-                    mTabModel.setTabGroupTitle(tabA.getTabGroupId(), "Bar");
+                    mTabModel.setTabGroupTitle(
+                            TabGroupId.fromRawToken(tabA.getTabGroupId()), "Bar");
                     titles[0] = tabA.getTitle();
                     closeTabs(
                             TabClosureParams.closeTabs(List.of(tabA))
@@ -998,7 +1003,8 @@ public class RecentlyClosedBridgeTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTabModel.createSingleTabGroup(tabA);
-                    mTabModel.setTabGroupTitle(tabA.getTabGroupId(), "Bar");
+                    mTabModel.setTabGroupTitle(
+                            TabGroupId.fromRawToken(tabA.getTabGroupId()), "Bar");
                     titles[0] = tabA.getTitle();
                     closeTabs(
                             TabClosureParams.closeTabs(List.of(tabA)).hideTabGroups(false).build());
@@ -1051,7 +1057,8 @@ public class RecentlyClosedBridgeTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTabModel.createSingleTabGroup(tabA);
-                    mTabModel.setTabGroupTitle(tabA.getTabGroupId(), "Bar");
+                    mTabModel.setTabGroupTitle(
+                            TabGroupId.fromRawToken(tabA.getTabGroupId()), "Bar");
                     titles[0] = tabA.getTitle();
                     closeTabs(
                             TabClosureParams.closeTabs(List.of(tabA)).hideTabGroups(true).build());
@@ -1077,7 +1084,8 @@ public class RecentlyClosedBridgeTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTabModel.createSingleTabGroup(tabA);
-                    mTabModel.setTabGroupTitle(tabA.getTabGroupId(), "Bar");
+                    mTabModel.setTabGroupTitle(
+                            TabGroupId.fromRawToken(tabA.getTabGroupId()), "Bar");
                     titles[0] = tabA.getTitle();
                     closeTabs(
                             TabClosureParams.closeTabs(List.of(tabA))
@@ -1115,7 +1123,8 @@ public class RecentlyClosedBridgeTest {
                             List.of(tabB, tabC),
                             tabA,
                             TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
-                    mTabModel.setTabGroupTitle(tabA.getTabGroupId(), "Bar");
+                    mTabModel.setTabGroupTitle(
+                            TabGroupId.fromRawToken(tabA.getTabGroupId()), "Bar");
                     titles[2] = tabA.getTitle();
                     titles[1] = tabB.getTitle();
                     titles[0] = tabC.getTitle();
@@ -1283,7 +1292,8 @@ public class RecentlyClosedBridgeTest {
                             List.of(tabB),
                             tabA,
                             TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
-                    mTabModel.setTabGroupTitle(tabA.getTabGroupId(), "Foo");
+                    mTabModel.setTabGroupTitle(
+                            TabGroupId.fromRawToken(tabA.getTabGroupId()), "Foo");
                     titles[2] = tabA.getTitle();
                     titles[1] = tabB.getTitle();
                     titles[0] = tabC.getTitle();
@@ -1736,9 +1746,11 @@ public class RecentlyClosedBridgeTest {
                             List.of(tabC),
                             tabB,
                             TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
-                    mTabModel.setTabGroupTitle(tabB.getTabGroupId(), "Group 1");
+                    mTabModel.setTabGroupTitle(
+                            TabGroupId.fromRawToken(tabB.getTabGroupId()), "Group 1");
                     mTabModel.createSingleTabGroup(tabA);
-                    mTabModel.setTabGroupTitle(tabA.getTabGroupId(), "Group 2");
+                    mTabModel.setTabGroupTitle(
+                            TabGroupId.fromRawToken(tabA.getTabGroupId()), "Group 2");
                     group2Titles[0] = tabA.getTitle();
                     group1Titles[1] = tabB.getTitle();
                     group1Titles[0] = tabC.getTitle();

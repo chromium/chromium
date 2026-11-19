@@ -45,6 +45,7 @@ import org.chromium.chrome.test.transit.tab_search.TabSearchOverlayFacility.TabG
 import org.chromium.chrome.test.transit.tab_search.TabSearchOverlayFacility.TabSuggestionFacility;
 import org.chromium.chrome.test.util.TabRestoreServiceUtils;
 import org.chromium.components.omnibox.OmniboxFeatureList;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.DeviceFormFactor;
 
@@ -393,7 +394,8 @@ public class TabSearchOverlayTest {
                             List.of(tab2),
                             tab1,
                             TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
-                    tabModel.setTabGroupTitle(tab1.getTabGroupId(), tabGroupTitle);
+                    tabModel.setTabGroupTitle(
+                            TabGroupId.fromRawToken(tab1.getTabGroupId()), tabGroupTitle);
                 });
 
         HistogramWatcher watcher =

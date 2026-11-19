@@ -355,7 +355,7 @@ final class UndoGroupRestorer {
 
         String title = groupData.title;
         if (!TextUtils.isEmpty(title)) {
-            tabModel.setTabGroupTitle(groupId, title);
+            tabModel.setTabGroupTitle(TabGroupId.fromRawToken(groupId), title);
         }
         if (groupData.color != TabGroupColorUtils.INVALID_COLOR_ID) {
             tabModel.setTabGroupColor(groupId, groupData.color);

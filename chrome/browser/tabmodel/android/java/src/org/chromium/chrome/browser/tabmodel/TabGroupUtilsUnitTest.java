@@ -323,7 +323,8 @@ public class TabGroupUtilsUnitTest {
         verify(mTabModel)
                 .createTabGroupForTabGroupSync(any(), eq(TabGroupId.fromRawToken(TAB_GROUP_ID1)));
         verify(mTabModel).setTabGroupColor(eq(TAB_GROUP_ID1), eq(0));
-        verify(mTabModel).setTabGroupTitle(eq(TAB_GROUP_ID1), eq(TAB_GROUP_TITLE));
+        verify(mTabModel)
+                .setTabGroupTitle(eq(TabGroupId.fromRawToken(TAB_GROUP_ID1)), eq(TAB_GROUP_TITLE));
         if (shouldApplyCollapse) {
             verify(mTabModel).setTabGroupCollapsed(eq(TAB_GROUP_ID1), eq(true), eq(false));
         } else {
@@ -384,7 +385,8 @@ public class TabGroupUtilsUnitTest {
 
         verify(mTabModel, never()).createTabGroupForTabGroupSync(any(), any());
         verify(mTabModel).setTabGroupColor(eq(TAB_GROUP_ID1), eq(0));
-        verify(mTabModel).setTabGroupTitle(eq(TAB_GROUP_ID1), eq(TAB_GROUP_TITLE));
+        verify(mTabModel)
+                .setTabGroupTitle(eq(TabGroupId.fromRawToken(TAB_GROUP_ID1)), eq(TAB_GROUP_TITLE));
     }
 
     @Test

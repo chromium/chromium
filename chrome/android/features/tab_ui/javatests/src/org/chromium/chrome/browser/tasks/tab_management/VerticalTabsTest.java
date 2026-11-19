@@ -372,7 +372,10 @@ public class VerticalTabsTest {
 
         String testTitle = TEST_GROUP_TITLE;
         ThreadUtils.runOnUiThreadBlocking(
-                () -> selector.getCurrentModel().setTabGroupTitle(tab1.getTabGroupId(), testTitle));
+                () ->
+                        selector.getCurrentModel()
+                                .setTabGroupTitle(
+                                        TabGroupId.fromRawToken(tab1.getTabGroupId()), testTitle));
 
         CriteriaHelper.pollUiThread(
                 () ->

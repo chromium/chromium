@@ -35,6 +35,7 @@ import org.chromium.chrome.test.transit.hub.TabSwitcherAppMenuFacility;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.components.tab_groups.TabGroupsFeatureMap;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.test.util.RenderTestRule.Component;
@@ -105,7 +106,7 @@ public class TabGroupListRenderTest {
                                             TabLaunchType.FROM_LONGPRESS_BACKGROUND,
                                             null);
                     model.createSingleTabGroup(tab);
-                    model.setTabGroupTitle(tab.getTabGroupId(), title);
+                    model.setTabGroupTitle(TabGroupId.fromRawToken(tab.getTabGroupId()), title);
                 });
     }
 }

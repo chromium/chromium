@@ -225,7 +225,7 @@ public class TabUiUtils {
 
         String curGroupTitle = tabModel.getTabGroupTitle(TabGroupId.fromRawToken(tabGroupId));
         if (!newGroupTitle.equals(curGroupTitle)) {
-            tabModel.setTabGroupTitle(tabGroupId, newGroupTitle);
+            tabModel.setTabGroupTitle(TabGroupId.fromRawToken(tabGroupId), newGroupTitle);
             return true;
         }
         return false;

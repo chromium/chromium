@@ -1331,12 +1331,14 @@ public class TabGridDialogMediator
             mModel.set(TabGridDialogProperties.HEADER_TITLE, originalTitle);
             // Setting the tab group title to unset ensures the default title isn't saved, but
             // observers downstream will update to the correct default title.
-            tabModel.setTabGroupTitle(mCurrentTabGroupId, UNSET_TAB_GROUP_TITLE);
+            tabModel.setTabGroupTitle(
+                    TabGroupId.fromRawToken(mCurrentTabGroupId), UNSET_TAB_GROUP_TITLE);
             mCurrentGroupModifiedTitle = null;
             RecordUserAction.record("TabGridDialog.ResetTabGroupName");
             return;
         }
-        tabModel.setTabGroupTitle(mCurrentTabGroupId, mCurrentGroupModifiedTitle);
+        tabModel.setTabGroupTitle(
+                TabGroupId.fromRawToken(mCurrentTabGroupId), mCurrentGroupModifiedTitle);
         mModel.set(
                 TabGridDialogProperties.COLLAPSE_BUTTON_CONTENT_DESCRIPTION,
                 mActivity

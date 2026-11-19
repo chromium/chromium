@@ -227,11 +227,11 @@ int TabCollectionTabModelImpl::MoveTabGroupTo(const TabGroupId& tab_group_id,
 }
 
 void TabCollectionTabModelImpl::UpdateTabGroupVisualData(
-    const base::Token& tab_group_id,
+    const TabGroupId& tab_group_id,
     const std::optional<std::u16string>& tab_group_title,
     const std::optional<int32_t>& j_color_id,
     const std::optional<bool>& is_collapsed) {
-  TabGroup* group = GetTabGroupChecked(TabGroupId::FromRawToken(tab_group_id));
+  TabGroup* group = GetTabGroupChecked(tab_group_id);
   const TabGroupVisualData* old_visual_data = group->visual_data();
   CHECK(old_visual_data);
 

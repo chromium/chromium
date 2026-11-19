@@ -242,7 +242,8 @@ public class LocalTabGroupMutationHelperUnitTest {
         savedTabGroup.title = "Updated group";
         mLocalMutationHelper.updateTabGroup(savedTabGroup);
 
-        verify(mTabModel).setTabGroupTitle(eq(TOKEN_1), eq(savedTabGroup.title));
+        verify(mTabModel)
+                .setTabGroupTitle(eq(TabGroupId.fromRawToken(TOKEN_1)), eq(savedTabGroup.title));
         verify(mTabModel).setTabGroupColor(eq(TOKEN_1), anyInt());
     }
 

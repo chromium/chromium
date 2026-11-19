@@ -97,7 +97,7 @@ class TabCollectionTabModelImpl {
 
   // Update tab group visual data.
   void UpdateTabGroupVisualData(
-      const base::Token& tab_group_id,
+      const tab_groups::TabGroupId& tab_group_id,
       const std::optional<std::u16string>& tab_group_title,
       const std::optional<int32_t>& j_color_id,
       const std::optional<bool>& is_collapsed);

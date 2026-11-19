@@ -690,7 +690,7 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
     }
 
     @Override
-    public void setTabGroupTitle(Token tabGroupId, String title) {
+    public void setTabGroupTitle(TabGroupId tabGroupId, String title) {
         mDelegateModel.setTabGroupTitle(tabGroupId, title);
     }
 

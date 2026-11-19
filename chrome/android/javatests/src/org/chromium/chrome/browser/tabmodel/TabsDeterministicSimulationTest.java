@@ -378,7 +378,7 @@ public class TabsDeterministicSimulationTest {
                                         + ", "
                                         + title
                                         + ")");
-                        mCollectionModel.setTabGroupTitle(groupId, title);
+                        mCollectionModel.setTabGroupTitle(TabGroupId.fromRawToken(groupId), title);
                     } else if (choice == 1) {
                         int color = mGlobalRandom.nextInt(TabGroupColorId.NUM_ENTRIES);
                         Log.i(

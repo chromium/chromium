@@ -460,7 +460,7 @@ public class EmptyTabModel implements IncognitoTabModelInternal {
     }
 
     @Override
-    public void setTabGroupTitle(Token tabGroupId, @Nullable String title) {}
+    public void setTabGroupTitle(TabGroupId tabGroupId, @Nullable String title) {}
 
     @Override
     public void deleteTabGroupTitle(Token tabGroupId) {}

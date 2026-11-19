@@ -951,7 +951,7 @@ public class TabCollectionsTabModelObserversUnitTest {
                         any(), eq(TabGroupId.fromRawToken(groupId))))
                 .thenReturn("Old Title");
 
-        mTabModel.setTabGroupTitle(groupId, "New Title");
+        mTabModel.setTabGroupTitle(TabGroupId.fromRawToken(groupId), "New Title");
         verify(mTabGroupObserver).onTabGroupVisualsChanged(eq(groupId));
     }
 

@@ -123,7 +123,7 @@ public class UndoGroupRestorerUnitTest {
         inOrder.verify(mTabModel)
                 .createTabGroupForTabGroupSync(
                         List.of(mTab3, mTab2, mTab1), TabGroupId.fromRawToken(GROUP_A));
-        inOrder.verify(mTabModel).setTabGroupTitle(GROUP_A, GROUP_TITLE);
+        inOrder.verify(mTabModel).setTabGroupTitle(TabGroupId.fromRawToken(GROUP_A), GROUP_TITLE);
         inOrder.verify(mTabModel).setTabGroupColor(GROUP_A, GROUP_COLOR);
         inOrder.verify(mTabModel)
                 .setTabGroupCollapsed(GROUP_A, /* isCollapsed= */ true, /* animate= */ false);

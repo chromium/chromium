@@ -1325,7 +1325,8 @@ public class TabCollectionTabModelImplTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mCollectionModel.addTabGroupObserver(titleObserver);
-                    mCollectionModel.setTabGroupTitle(tabGroupId, testTitle);
+                    mCollectionModel.setTabGroupTitle(
+                            TabGroupId.fromRawToken(tabGroupId), testTitle);
                     assertEquals(
                             testTitle,
                             mCollectionModel.getTabGroupTitle(TabGroupId.fromRawToken(tabGroupId)));
@@ -1593,7 +1594,7 @@ public class TabCollectionTabModelImplTest {
                     0,
                     callbackHelper.getCallCount());
 
-            mCollectionModel.setTabGroupTitle(tabGroupId, title);
+            mCollectionModel.setTabGroupTitle(TabGroupId.fromRawToken(tabGroupId), title);
             assertEquals(0, callbackHelper.getCallCount());
 
             mCollectionModel.setTabGroupColor(tabGroupId, color);
@@ -1602,7 +1603,7 @@ public class TabCollectionTabModelImplTest {
             mCollectionModel.setTabGroupCollapsed(tabGroupId, collapsed, /* animate= */ false);
             assertEquals(0, callbackHelper.getCallCount());
 
-            mCollectionModel.setTabGroupTitle(tabGroupId, "New Title");
+            mCollectionModel.setTabGroupTitle(TabGroupId.fromRawToken(tabGroupId), "New Title");
             assertEquals(
                     "Observer should be called exactly once for the changed title",
                     1,
@@ -1621,7 +1622,7 @@ public class TabCollectionTabModelImplTest {
         Token tabGroupId = tab0.getTabGroupId();
 
         String staleTitle = "Stale Title";
-        mCollectionModel.setTabGroupTitle(tabGroupId, staleTitle);
+        mCollectionModel.setTabGroupTitle(TabGroupId.fromRawToken(tabGroupId), staleTitle);
 
         String freshTitle = "Fresh Title";
         when(mTabGroupCollectionData.getTabGroupId()).thenReturn(tabGroupId);
@@ -1633,7 +1634,7 @@ public class TabCollectionTabModelImplTest {
 
         assertEquals(freshTitle, TabGroupVisualDataStore.getTabGroupTitle(tabGroupId));
 
-        mCollectionModel.setTabGroupTitle(tabGroupId, freshTitle);
+        mCollectionModel.setTabGroupTitle(TabGroupId.fromRawToken(tabGroupId), freshTitle);
 
         TabGroupVisualDataStore.removeCachedGroups(
                 new TabGroupCollectionData[] {mTabGroupCollectionData});
@@ -1654,7 +1655,7 @@ public class TabCollectionTabModelImplTest {
         assertNotNull(tabGroupId);
 
         String title = "My Title";
-        mCollectionModel.setTabGroupTitle(tabGroupId, title);
+        mCollectionModel.setTabGroupTitle(TabGroupId.fromRawToken(tabGroupId), title);
         assertEquals(
                 "Native title should be set",
                 title,
@@ -1664,7 +1665,8 @@ public class TabCollectionTabModelImplTest {
                 title,
                 TabGroupVisualDataStore.getTabGroupTitle(tabGroupId));
 
-        mCollectionModel.setTabGroupTitle(tabGroupId, UNSET_TAB_GROUP_TITLE);
+        mCollectionModel.setTabGroupTitle(
+                TabGroupId.fromRawToken(tabGroupId), UNSET_TAB_GROUP_TITLE);
 
         assertEquals(
                 "Native title should be cleared (unset)",
@@ -1689,15 +1691,15 @@ public class TabCollectionTabModelImplTest {
         final String titleA = "Title A";
         final String titleB = "Title B";
 
-        mCollectionModel.setTabGroupTitle(tabGroupId, titleA);
+        mCollectionModel.setTabGroupTitle(TabGroupId.fromRawToken(tabGroupId), titleA);
         assertEquals(
                 titleA, mCollectionModel.getTabGroupTitle(TabGroupId.fromRawToken(tabGroupId)));
 
-        mCollectionModel.setTabGroupTitle(tabGroupId, titleB);
+        mCollectionModel.setTabGroupTitle(TabGroupId.fromRawToken(tabGroupId), titleB);
         assertEquals(
                 titleB, mCollectionModel.getTabGroupTitle(TabGroupId.fromRawToken(tabGroupId)));
 
-        mCollectionModel.setTabGroupTitle(tabGroupId, titleA);
+        mCollectionModel.setTabGroupTitle(TabGroupId.fromRawToken(tabGroupId), titleA);
 
         assertEquals(
                 "Title should be reverted to A",
@@ -1717,7 +1719,7 @@ public class TabCollectionTabModelImplTest {
         final String titleA = "Title A";
         final String titleB = "Title B";
 
-        mCollectionModel.setTabGroupTitle(tabGroupId, titleA);
+        mCollectionModel.setTabGroupTitle(TabGroupId.fromRawToken(tabGroupId), titleA);
         assertEquals(
                 titleA, mCollectionModel.getTabGroupTitle(TabGroupId.fromRawToken(tabGroupId)));
 
@@ -1729,14 +1731,14 @@ public class TabCollectionTabModelImplTest {
         TabGroupVisualDataStore.cacheGroups(new TabGroupCollectionData[] {mTabGroupCollectionData});
 
         try {
-            mCollectionModel.setTabGroupTitle(tabGroupId, titleB);
+            mCollectionModel.setTabGroupTitle(TabGroupId.fromRawToken(tabGroupId), titleB);
 
             assertEquals(
                     "Native should be updated to B",
                     titleB,
                     mCollectionModel.getTabGroupTitle(TabGroupId.fromRawToken(tabGroupId)));
 
-            mCollectionModel.setTabGroupTitle(tabGroupId, titleA);
+            mCollectionModel.setTabGroupTitle(TabGroupId.fromRawToken(tabGroupId), titleA);
 
             assertEquals(
                     "Native should be reverted to A",
@@ -1801,7 +1803,7 @@ public class TabCollectionTabModelImplTest {
         Token tabGroupId = tab0.getTabGroupId();
         assertNotNull(tabGroupId);
 
-        mCollectionModel.setTabGroupTitle(tabGroupId, "Some Title");
+        mCollectionModel.setTabGroupTitle(TabGroupId.fromRawToken(tabGroupId), "Some Title");
 
         final String newTitle = "";
         final int newColor = TabGroupColorId.RED;
@@ -1907,7 +1909,7 @@ public class TabCollectionTabModelImplTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     String title = "Test title";
-                    mCollectionModel.setTabGroupTitle(groupId, title);
+                    mCollectionModel.setTabGroupTitle(TabGroupId.fromRawToken(groupId), title);
                     mCollectionModel.setTabGroupColor(groupId, TabGroupColorId.BLUE);
                     mCollectionModel.setTabGroupCollapsed(
                             groupId, /* isCollapsed= */ true, /* animate= */ false);
@@ -2643,7 +2645,8 @@ public class TabCollectionTabModelImplTest {
                             /* notify= */ TabGroupMergeNotificationType.DONT_NOTIFY);
                     Token groupId1 = tab0.getTabGroupId();
                     assertNotNull(groupId1);
-                    mCollectionModel.setTabGroupTitle(groupId1, group1Title);
+                    mCollectionModel.setTabGroupTitle(
+                            TabGroupId.fromRawToken(groupId1), group1Title);
                     mCollectionModel.setTabGroupColor(groupId1, group1Color);
 
                     // Create group 2 with tab2, tab3.
@@ -2653,7 +2656,8 @@ public class TabCollectionTabModelImplTest {
                             /* notify= */ TabGroupMergeNotificationType.DONT_NOTIFY);
                     Token groupId2 = tab2.getTabGroupId();
                     assertNotNull(groupId2);
-                    mCollectionModel.setTabGroupTitle(groupId2, group2Title);
+                    mCollectionModel.setTabGroupTitle(
+                            TabGroupId.fromRawToken(groupId2), group2Title);
                     mCollectionModel.setTabGroupColor(groupId2, group2Color);
 
                     assertTabsInOrderAre(List.of(tab0, tab1, tab2, tab3));
@@ -2979,7 +2983,8 @@ public class TabCollectionTabModelImplTest {
                     Token groupId1 = tab0.getTabGroupId();
                     groupId1Ref.set(groupId1);
                     assertNotNull(groupId1);
-                    mCollectionModel.setTabGroupTitle(groupId1, GROUP_1_TITLE);
+                    mCollectionModel.setTabGroupTitle(
+                            TabGroupId.fromRawToken(groupId1), GROUP_1_TITLE);
 
                     // Create group 2 with tab1.
                     mCollectionModel.createSingleTabGroup(tab1);
@@ -3455,7 +3460,7 @@ public class TabCollectionTabModelImplTest {
         Token groupId = tab.getTabGroupId();
         assertNotNull("Tab group ID must not be null after creation.", groupId);
         if (title != null) {
-            mCollectionModel.setTabGroupTitle(groupId, title);
+            mCollectionModel.setTabGroupTitle(TabGroupId.fromRawToken(groupId), title);
         }
         if (groupIdRef != null) {
             groupIdRef.set(groupId);
@@ -3655,7 +3660,7 @@ public class TabCollectionTabModelImplTest {
         final int color = TabGroupColorId.BLUE;
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mCollectionModel.setTabGroupTitle(tabGroupId, title);
+                    mCollectionModel.setTabGroupTitle(TabGroupId.fromRawToken(tabGroupId), title);
                     mCollectionModel.setTabGroupColor(tabGroupId, color);
 
                     mCollectionModel.closeTabs(
@@ -4144,7 +4149,8 @@ public class TabCollectionTabModelImplTest {
                 () -> {
                     mCollectionModel.addTabGroupObserver(groupObserver);
                     mCollectionModel.addObserver(modelObserver);
-                    mCollectionModel.setTabGroupTitle(tabGroupId, groupTitle);
+                    mCollectionModel.setTabGroupTitle(
+                            TabGroupId.fromRawToken(tabGroupId), groupTitle);
                     mCollectionModel.closeTabs(
                             TabClosureParams.closeTabs(groupTabs)
                                     .allowUndo(true)
@@ -4594,7 +4600,8 @@ public class TabCollectionTabModelImplTest {
                 () -> {
                     mCollectionModel.addTabGroupObserver(observer);
                     tabGroupId.set(mCollectionModel.createTabGroup(tabs));
-                    mCollectionModel.setTabGroupTitle(tabGroupId.get(), "New Title");
+                    mCollectionModel.setTabGroupTitle(
+                            TabGroupId.fromRawToken(tabGroupId.get()), "New Title");
                 });
 
         // The callback is called.

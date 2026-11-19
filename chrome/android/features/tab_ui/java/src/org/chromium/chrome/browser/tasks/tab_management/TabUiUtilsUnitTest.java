@@ -315,21 +315,22 @@ public class TabUiUtilsUnitTest {
                 .thenReturn(true);
         when(mTabModel.getTabGroupTitle(TabGroupId.fromRawToken(TAB_GROUP_ID))).thenReturn("B");
         TabUiUtils.updateTabGroupTitle(mTabModel, TAB_GROUP_ID, "A");
-        verify(mTabModel).setTabGroupTitle(TAB_GROUP_ID, "A");
+        verify(mTabModel).setTabGroupTitle(TabGroupId.fromRawToken(TAB_GROUP_ID), "A");
 
         TabUiUtils.updateTabGroupTitle(mTabModel, TAB_GROUP_ID, "B");
-        verify(mTabModel, never()).setTabGroupTitle(TAB_GROUP_ID, "B");
+        verify(mTabModel, never()).setTabGroupTitle(TabGroupId.fromRawToken(TAB_GROUP_ID), "B");
 
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
                 .thenReturn(false);
         TabUiUtils.updateTabGroupTitle(mTabModel, TAB_GROUP_ID, "C");
-        verify(mTabModel, never()).setTabGroupTitle(TAB_GROUP_ID, "C");
+        verify(mTabModel, never()).setTabGroupTitle(TabGroupId.fromRawToken(TAB_GROUP_ID), "C");
 
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
                 .thenReturn(true);
         when(mTabModel.getTabGroupTitle(TabGroupId.fromRawToken(TAB_GROUP_ID))).thenReturn("A");
         TabUiUtils.updateTabGroupTitle(mTabModel, TAB_GROUP_ID, UNSET_TAB_GROUP_TITLE);
-        verify(mTabModel).setTabGroupTitle(TAB_GROUP_ID, UNSET_TAB_GROUP_TITLE);
+        verify(mTabModel)
+                .setTabGroupTitle(TabGroupId.fromRawToken(TAB_GROUP_ID), UNSET_TAB_GROUP_TITLE);
     }
 
     @Test

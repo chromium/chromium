@@ -407,7 +407,8 @@ public class LocalTabGroupMutationHelper {
 
     private void updateTabGroupVisuals(SavedTabGroup tabGroup, Token tabGroupId) {
         mTabModel.setTabGroupTitle(
-                tabGroupId, tabGroup.title == null ? UNSET_TAB_GROUP_TITLE : tabGroup.title);
+                TabGroupId.fromRawToken(tabGroupId),
+                tabGroup.title == null ? UNSET_TAB_GROUP_TITLE : tabGroup.title);
         mTabModel.setTabGroupColor(tabGroupId, tabGroup.color);
     }
 }

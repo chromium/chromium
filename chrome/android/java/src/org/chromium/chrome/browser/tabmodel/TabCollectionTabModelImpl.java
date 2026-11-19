@@ -1153,7 +1153,12 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
     @Override
     protected void setTabGroupVisualData(
             Token tabGroupId, String title, @TabGroupColorId int colorId, boolean isCollapsed) {
-        updateTabGroupVisualData(tabGroupId, title, colorId, isCollapsed, /* animate= */ false);
+        updateTabGroupVisualData(
+                TabGroupId.fromRawToken(tabGroupId),
+                title,
+                colorId,
+                isCollapsed,
+                /* animate= */ false);
     }
 
     /**
@@ -1163,20 +1168,21 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
      * {@code null}, its current value will not be modified or written to storage.
      */
     private void updateTabGroupVisualData(
-            Token tabGroupId,
+            TabGroupId tabGroupId,
             @Nullable String title,
             @Nullable Integer colorId,
             @Nullable Boolean isCollapsed,
             boolean animate) {
         assertOnUiThread();
+        Token rawToken = tabGroupId.getToken();
 
-        boolean isCached = TabGroupVisualDataStore.isTabGroupCachedForRestore(tabGroupId);
+        boolean isCached = TabGroupVisualDataStore.isTabGroupCachedForRestore(rawToken);
 
         boolean titleChanged = false;
         if (title != null) {
-            String currentTitle = TabGroupVisualDataStore.getTabGroupTitle(tabGroupId);
+            String currentTitle = TabGroupVisualDataStore.getTabGroupTitle(rawToken);
             if (isCached || !Objects.equals(currentTitle, title)) {
-                TabGroupVisualDataStore.storeTabGroupTitle(tabGroupId, title);
+                TabGroupVisualDataStore.storeTabGroupTitle(rawToken, title);
                 if (!Objects.equals(currentTitle, title)) {
                     titleChanged = true;
                 }
@@ -1186,12 +1192,12 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         boolean colorChanged = false;
         @TabGroupColorId Integer sanitizedColorId = null;
         if (colorId != null) {
-            int currentColorId = TabGroupVisualDataStore.getTabGroupColor(tabGroupId);
+            int currentColorId = TabGroupVisualDataStore.getTabGroupColor(rawToken);
             if (isCached || currentColorId != colorId) {
                 if (colorId == TabGroupColorUtils.INVALID_COLOR_ID) {
-                    TabGroupVisualDataStore.deleteTabGroupColor(tabGroupId);
+                    TabGroupVisualDataStore.deleteTabGroupColor(rawToken);
                 } else {
-                    TabGroupVisualDataStore.storeTabGroupColor(tabGroupId, colorId);
+                    TabGroupVisualDataStore.storeTabGroupColor(rawToken, colorId);
                 }
                 if (currentColorId != colorId) {
                     colorChanged = true;
@@ -1205,9 +1211,9 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
 
         boolean collapsedChanged = false;
         if (isCollapsed != null) {
-            boolean currentCollapsed = TabGroupVisualDataStore.getTabGroupCollapsed(tabGroupId);
+            boolean currentCollapsed = TabGroupVisualDataStore.getTabGroupCollapsed(rawToken);
             if (isCached || currentCollapsed != isCollapsed) {
-                TabGroupVisualDataStore.storeTabGroupCollapsed(tabGroupId, isCollapsed);
+                TabGroupVisualDataStore.storeTabGroupCollapsed(rawToken, isCollapsed);
                 if (currentCollapsed != isCollapsed) {
                     collapsedChanged = true;
                 }
@@ -1233,16 +1239,15 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
                 // The title parameter is nullable to support partial updates (null indicates no
                 // change), but titleChanged guarantees it is non-null here. assumeNonNull is
                 // required because static analysis (NullAway) cannot track this dependency.
-                observer.didChangeTabGroupTitle(tabGroupId, assumeNonNull(title));
+                observer.didChangeTabGroupTitle(rawToken, assumeNonNull(title));
             }
             if (colorChanged) {
-                observer.didChangeTabGroupColor(tabGroupId, assumeNonNull(sanitizedColorId));
+                observer.didChangeTabGroupColor(rawToken, assumeNonNull(sanitizedColorId));
             }
             if (collapsedChanged) {
-                observer.didChangeTabGroupCollapsed(
-                        tabGroupId, assumeNonNull(isCollapsed), animate);
+                observer.didChangeTabGroupCollapsed(rawToken, assumeNonNull(isCollapsed), animate);
             }
-            observer.onTabGroupVisualsChanged(tabGroupId);
+            observer.onTabGroupVisualsChanged(rawToken);
         }
     }
 
@@ -1583,7 +1588,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
     }
 
     @Override
-    public void setTabGroupTitle(Token tabGroupId, String title) {
+    public void setTabGroupTitle(TabGroupId tabGroupId, String title) {
         assertOnUiThread();
         updateTabGroupVisualData(
                 tabGroupId,
@@ -1596,7 +1601,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
     @Override
     public void deleteTabGroupTitle(Token tabGroupId) {
         if (!containsTabGroup(TabGroupId.fromOptionalToken(tabGroupId))) return;
-        setTabGroupTitle(tabGroupId, UNSET_TAB_GROUP_TITLE);
+        setTabGroupTitle(TabGroupId.fromRawToken(tabGroupId), UNSET_TAB_GROUP_TITLE);
     }
 
     @Override
@@ -1617,7 +1622,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
     public void setTabGroupColor(Token tabGroupId, @TabGroupColorId int color) {
         assertOnUiThread();
         updateTabGroupVisualData(
-                tabGroupId,
+                TabGroupId.fromRawToken(tabGroupId),
                 /* title= */ null,
                 color,
                 /* isCollapsed= */ null,
@@ -1636,7 +1641,11 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
     public void setTabGroupCollapsed(Token tabGroupId, boolean isCollapsed, boolean animate) {
         assertOnUiThread();
         updateTabGroupVisualData(
-                tabGroupId, /* title= */ null, /* colorId= */ null, isCollapsed, animate);
+                TabGroupId.fromRawToken(tabGroupId),
+                /* title= */ null,
+                /* colorId= */ null,
+                isCollapsed,
+                animate);
     }
 
     @Override
@@ -2445,7 +2454,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
                 String title = getTabGroupTitle(TabGroupId.fromRawToken(tabGroupId));
                 if (!TextUtils.isEmpty(title)) {
                     adoptedGroupTitle = true;
-                    setTabGroupTitle(destinationTabGroupId, title);
+                    setTabGroupTitle(TabGroupId.fromRawToken(destinationTabGroupId), title);
                     break;
                 }
             }
@@ -2856,7 +2865,9 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
     }
 
     private void restoreTabGroupVisualData(Token tabGroupId) {
-        setTabGroupTitle(tabGroupId, getTabGroupTitle(TabGroupId.fromRawToken(tabGroupId)));
+        setTabGroupTitle(
+                TabGroupId.fromRawToken(tabGroupId),
+                getTabGroupTitle(TabGroupId.fromRawToken(tabGroupId)));
         setTabGroupColor(tabGroupId, getTabGroupColor(tabGroupId));
         setTabGroupCollapsed(tabGroupId, getTabGroupCollapsed(tabGroupId));
     }
@@ -2938,7 +2949,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
 
         void updateTabGroupVisualData(
                 JniPtr<NativeTabCollectionTabModelImpl> self,
-                @JniType("base::Token") Token tabGroupId,
+                @JniType("tab_groups::TabGroupId") TabGroupId tabGroupId,
                 @JniType("std::optional<std::u16string>") @Nullable String title,
                 @JniType("std::optional<int>") @Nullable @TabGroupColorId Integer colorId,
                 @JniType("std::optional<bool>") @Nullable Boolean isCollapsed);

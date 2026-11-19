@@ -82,7 +82,7 @@ public class TabGroupCreationDialogManager {
             String inputGroupTitle = mTabGroupVisualDataDialogManager.getCurrentGroupTitle();
             boolean didChangeTitle = !Objects.equals(initialGroupTitle, inputGroupTitle);
             if (didChangeTitle && !TextUtils.isEmpty(inputGroupTitle) && stillExists) {
-                mTabModel.setTabGroupTitle(mTabGroupId, inputGroupTitle);
+                mTabModel.setTabGroupTitle(TabGroupId.fromRawToken(mTabGroupId), inputGroupTitle);
             }
 
             recordDialogSelectionHistogram(didChangeColor, didChangeTitle);

@@ -684,10 +684,9 @@ public class TabListMediatorUnitTest {
 
         doAnswer(
                         invocation -> {
-                            Token tabGroupId = invocation.getArgument(0);
+                            TabGroupId tabGroupId = invocation.getArgument(0);
                             String title = invocation.getArgument(1);
-                            when(mTabModel.getTabGroupTitle(TabGroupId.fromRawToken(tabGroupId)))
-                                    .thenReturn(title);
+                            when(mTabModel.getTabGroupTitle(tabGroupId)).thenReturn(title);
                             return null;
                         })
                 .when(mTabModel)
@@ -746,7 +745,7 @@ public class TabListMediatorUnitTest {
         createTabGroup(tabs, TAB_GROUP_ID);
 
         // Mock that we have a stored title stored with reference to root ID of tab1.
-        mTabModel.setTabGroupTitle(TAB_GROUP_ID, CUSTOMIZED_DIALOG_TITLE1);
+        mTabModel.setTabGroupTitle(TabGroupId.fromRawToken(TAB_GROUP_ID), CUSTOMIZED_DIALOG_TITLE1);
         assertThat(mModelList.get(0).model.get(TabProperties.TITLE), equalTo(TAB1_TITLE));
 
         mTabObserverCaptor.getValue().onTitleUpdated(mTab1);
@@ -762,7 +761,7 @@ public class TabListMediatorUnitTest {
         List<Tab> tabs = List.of(mTab1, newTab);
         createTabGroup(tabs, TAB_GROUP_ID);
 
-        mTabModel.setTabGroupTitle(TAB_GROUP_ID, CUSTOMIZED_DIALOG_TITLE1);
+        mTabModel.setTabGroupTitle(TabGroupId.fromRawToken(TAB_GROUP_ID), CUSTOMIZED_DIALOG_TITLE1);
         assertThat(mModelList.get(0).model.get(TabProperties.TITLE), equalTo(TAB1_TITLE));
         mMediator.updateTabGroupTitle(mTab1.getTabGroupId());
 
@@ -773,7 +772,7 @@ public class TabListMediatorUnitTest {
 
     @Test
     public void updatesTitle_OnTabGroupTitleChange_Tab_GroupedLayout() {
-        mTabModel.setTabGroupTitle(TAB_GROUP_ID, CUSTOMIZED_DIALOG_TITLE1);
+        mTabModel.setTabGroupTitle(TabGroupId.fromRawToken(TAB_GROUP_ID), CUSTOMIZED_DIALOG_TITLE1);
         assertThat(mModelList.get(0).model.get(TabProperties.TITLE), equalTo(TAB1_TITLE));
         mMediator.updateTabGroupTitle(mTab1.getTabGroupId());
 
@@ -787,7 +786,7 @@ public class TabListMediatorUnitTest {
         List<Tab> tabs = List.of(mTab1, newTab);
         createTabGroup(tabs, TAB_GROUP_ID);
 
-        mTabModel.setTabGroupTitle(TAB_GROUP_ID, "");
+        mTabModel.setTabGroupTitle(TabGroupId.fromRawToken(TAB_GROUP_ID), "");
         mMediator.updateTabGroupTitle(mTab1.getTabGroupId());
         assertThat(mModelList.get(0).model.get(TabProperties.TITLE), equalTo("2 tabs"));
     }
@@ -2587,7 +2586,7 @@ public class TabListMediatorUnitTest {
 
         createTabGroup(List.of(mTab2), TAB_GROUP_ID);
 
-        mTabModel.setTabGroupTitle(TAB_GROUP_ID, CUSTOMIZED_DIALOG_TITLE1);
+        mTabModel.setTabGroupTitle(TabGroupId.fromRawToken(TAB_GROUP_ID), CUSTOMIZED_DIALOG_TITLE1);
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
                 .thenReturn(false);
         mTabModelObserverCaptor.getValue().didRemoveTabForClosure(mTab2);
@@ -3142,7 +3141,8 @@ public class TabListMediatorUnitTest {
         createTabGroup(Collections.singletonList(mTab1), TAB_GROUP_ID);
 
         // Mock that we have a stored title stored with reference to root ID of tab1.
-        mTabModel.setTabGroupTitle(mTab1.getTabGroupId(), CUSTOMIZED_DIALOG_TITLE1);
+        mTabModel.setTabGroupTitle(
+                TabGroupId.fromRawToken(mTab1.getTabGroupId()), CUSTOMIZED_DIALOG_TITLE1);
         assertThat(
                 mTabModel.getTabGroupTitle(TabGroupId.fromRawToken(mTab1.getTabGroupId())),
                 equalTo(CUSTOMIZED_DIALOG_TITLE1));
@@ -3161,7 +3161,8 @@ public class TabListMediatorUnitTest {
     public void getLatestTitle_SingleTabGroupSupported_GroupedLayout() {
         createTabGroup(Collections.singletonList(mTab1), TAB_GROUP_ID);
         // Mock that we have a stored title stored with reference to root ID of tab1.
-        mTabModel.setTabGroupTitle(mTab1.getTabGroupId(), CUSTOMIZED_DIALOG_TITLE1);
+        mTabModel.setTabGroupTitle(
+                TabGroupId.fromRawToken(mTab1.getTabGroupId()), CUSTOMIZED_DIALOG_TITLE1);
         assertThat(
                 mTabModel.getTabGroupTitle(TabGroupId.fromRawToken(mTab1.getTabGroupId())),
                 equalTo(CUSTOMIZED_DIALOG_TITLE1));
@@ -3180,7 +3181,8 @@ public class TabListMediatorUnitTest {
     public void getLatestTitle_SingleTabGroupNotSupported_GroupedLayout() {
         createTabGroup(Collections.singletonList(mTab1), TAB_GROUP_ID);
         // Mock that we have a stored title stored with reference to root ID of tab1.
-        mTabModel.setTabGroupTitle(mTab1.getTabGroupId(), CUSTOMIZED_DIALOG_TITLE1);
+        mTabModel.setTabGroupTitle(
+                TabGroupId.fromRawToken(mTab1.getTabGroupId()), CUSTOMIZED_DIALOG_TITLE1);
         assertThat(
                 mTabModel.getTabGroupTitle(TabGroupId.fromRawToken(mTab1.getTabGroupId())),
                 equalTo(CUSTOMIZED_DIALOG_TITLE1));
@@ -3200,7 +3202,8 @@ public class TabListMediatorUnitTest {
     public void getLatestTitle_Stored_GroupedLayout() {
         createTabGroup(Collections.singletonList(mTab1), TAB_GROUP_ID);
         // Mock that we have a stored title stored with reference to root ID of tab1.
-        mTabModel.setTabGroupTitle(mTab1.getTabGroupId(), CUSTOMIZED_DIALOG_TITLE1);
+        mTabModel.setTabGroupTitle(
+                TabGroupId.fromRawToken(mTab1.getTabGroupId()), CUSTOMIZED_DIALOG_TITLE1);
         assertThat(
                 mTabModel.getTabGroupTitle(TabGroupId.fromRawToken(mTab1.getTabGroupId())),
                 equalTo(CUSTOMIZED_DIALOG_TITLE1));
@@ -3247,7 +3250,7 @@ public class TabListMediatorUnitTest {
         List<Tab> tabs = List.of(mTab1, newTab);
         createTabGroup(tabs, TAB_GROUP_ID);
 
-        mTabModel.setTabGroupTitle(TAB_GROUP_ID, CUSTOMIZED_DIALOG_TITLE1);
+        mTabModel.setTabGroupTitle(TabGroupId.fromRawToken(TAB_GROUP_ID), CUSTOMIZED_DIALOG_TITLE1);
         mMediator.updateTabGroupTitle(mTab1.getTabGroupId());
 
         assertThat(
@@ -3270,7 +3273,7 @@ public class TabListMediatorUnitTest {
 
         createTabGroup(List.of(mTab1), TAB_GROUP_ID);
 
-        mTabModel.setTabGroupTitle(TAB_GROUP_ID, CUSTOMIZED_DIALOG_TITLE1);
+        mTabModel.setTabGroupTitle(TabGroupId.fromRawToken(TAB_GROUP_ID), CUSTOMIZED_DIALOG_TITLE1);
         mMediator.updateTabGroupTitle(mTab1.getTabGroupId());
 
         assertThat(
@@ -3287,8 +3290,9 @@ public class TabListMediatorUnitTest {
 
     @Test
     public void tabGroupTitleEditor_storeTitle() {
-        mTabModel.setTabGroupTitle(TAB_GROUP_ID, CUSTOMIZED_DIALOG_TITLE1);
-        verify(mTabModel).setTabGroupTitle(TAB_GROUP_ID, CUSTOMIZED_DIALOG_TITLE1);
+        mTabModel.setTabGroupTitle(TabGroupId.fromRawToken(TAB_GROUP_ID), CUSTOMIZED_DIALOG_TITLE1);
+        verify(mTabModel)
+                .setTabGroupTitle(TabGroupId.fromRawToken(TAB_GROUP_ID), CUSTOMIZED_DIALOG_TITLE1);
     }
 
     @Test
@@ -4319,7 +4323,7 @@ public class TabListMediatorUnitTest {
         targetString =
                 String.format(
                         "Expand %s tab group with 2 tabs, color Grey.", CUSTOMIZED_DIALOG_TITLE1);
-        mTabModel.setTabGroupTitle(TAB_GROUP_ID, CUSTOMIZED_DIALOG_TITLE1);
+        mTabModel.setTabGroupTitle(TabGroupId.fromRawToken(TAB_GROUP_ID), CUSTOMIZED_DIALOG_TITLE1);
         mMediator.updateTabGroupTitle(mTab1.getTabGroupId());
         assertThat(
                 mModelList
@@ -4483,7 +4487,7 @@ public class TabListMediatorUnitTest {
                         group1.size(),
                         mResources.getString(colorDesc));
         // Check that a customized title provides a different content description.
-        mTabModel.setTabGroupTitle(TAB_GROUP_ID, CUSTOMIZED_DIALOG_TITLE1);
+        mTabModel.setTabGroupTitle(TabGroupId.fromRawToken(TAB_GROUP_ID), CUSTOMIZED_DIALOG_TITLE1);
         mMediator.updateTabGroupTitle(mTab2.getTabGroupId());
         assertThat(
                 mModelList
@@ -4518,7 +4522,7 @@ public class TabListMediatorUnitTest {
                         CUSTOMIZED_DIALOG_TITLE1,
                         2);
 
-        mTabModel.setTabGroupTitle(TAB_GROUP_ID, CUSTOMIZED_DIALOG_TITLE1);
+        mTabModel.setTabGroupTitle(TabGroupId.fromRawToken(TAB_GROUP_ID), CUSTOMIZED_DIALOG_TITLE1);
         mMediator.updateTabGroupTitle(mTab1.getTabGroupId());
         assertThat(
                 mModelList
@@ -4558,7 +4562,7 @@ public class TabListMediatorUnitTest {
                 String.format(
                         "Open the tab group action menu for tab group %s, color %s.",
                         CUSTOMIZED_DIALOG_TITLE1, mResources.getString(colorDesc));
-        mTabModel.setTabGroupTitle(TAB_GROUP_ID, CUSTOMIZED_DIALOG_TITLE1);
+        mTabModel.setTabGroupTitle(TabGroupId.fromRawToken(TAB_GROUP_ID), CUSTOMIZED_DIALOG_TITLE1);
         mMediator.updateTabGroupTitle(mTab1.getTabGroupId());
         assertThat(
                 mModelList
@@ -4618,7 +4622,7 @@ public class TabListMediatorUnitTest {
                         .get(TabProperties.ACTION_BUTTON_DESCRIPTION_TEXT_RESOLVER)
                         .resolve(mContext));
 
-        mTabModel.setTabGroupTitle(TAB_GROUP_ID, CUSTOMIZED_DIALOG_TITLE1);
+        mTabModel.setTabGroupTitle(TabGroupId.fromRawToken(TAB_GROUP_ID), CUSTOMIZED_DIALOG_TITLE1);
         mMediator.updateTabGroupTitle(TAB_GROUP_ID);
 
         assertEquals(
@@ -6196,7 +6200,7 @@ public class TabListMediatorUnitTest {
                         .get(TabProperties.CONTENT_DESCRIPTION_TEXT_RESOLVER)
                         .resolve(mContext));
 
-        mTabModel.setTabGroupTitle(TAB_GROUP_ID, CUSTOMIZED_DIALOG_TITLE1);
+        mTabModel.setTabGroupTitle(TabGroupId.fromRawToken(TAB_GROUP_ID), CUSTOMIZED_DIALOG_TITLE1);
         String targetString2 =
                 "Expand shared Cool Tabs tab group with 2 tabs, color Grey, with label Alice"
                         + " changed.";
@@ -8794,7 +8798,7 @@ public class TabListMediatorUnitTest {
         TabGroupItem groupItem =
                 setupGroupCardInProviderMediator(
                         TabListLayoutType.GROUPED, /* isCollapsed= */ true);
-        mTabModel.setTabGroupTitle(TAB_GROUP_ID, CUSTOMIZED_DIALOG_TITLE1);
+        mTabModel.setTabGroupTitle(TabGroupId.fromRawToken(TAB_GROUP_ID), CUSTOMIZED_DIALOG_TITLE1);
         assertThat(
                 mModelList.get(1).model.get(TabProperties.TITLE),
                 not(equalTo(CUSTOMIZED_DIALOG_TITLE1)));
@@ -8872,7 +8876,7 @@ public class TabListMediatorUnitTest {
         TabGroupItem groupItem =
                 setupGroupCardInProviderMediator(
                         TabListLayoutType.GROUPED, /* isCollapsed= */ true);
-        mTabModel.setTabGroupTitle(TAB_GROUP_ID, "");
+        mTabModel.setTabGroupTitle(TabGroupId.fromRawToken(TAB_GROUP_ID), "");
         Tab tab3 = mTabModel.getTabById(TAB3_ID);
         Tab tab4 = mTabModel.getTabById(TAB4_ID);
         assertThat(mModelList.get(1).model.get(TabProperties.TITLE), equalTo("2 tabs"));

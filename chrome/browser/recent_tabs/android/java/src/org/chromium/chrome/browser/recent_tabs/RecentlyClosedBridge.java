@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tab_groups.TabGroupId;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -116,7 +117,7 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
 
         if (title == null || title.isEmpty()) return;
 
-        tabModel.setTabGroupTitle(tabGroupId, title);
+        tabModel.setTabGroupTitle(TabGroupId.fromRawToken(tabGroupId), title);
     }
 
     /**

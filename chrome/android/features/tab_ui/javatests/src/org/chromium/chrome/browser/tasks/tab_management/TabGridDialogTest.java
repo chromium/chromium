@@ -168,6 +168,7 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.prefs.PrefService;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.components.tab_groups.TabGroupsFeatureMap;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -1568,7 +1569,8 @@ public class TabGridDialogTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Token tabGroupId = tabModel.getTabAt(0).getTabGroupId();
-                    tabModel.setTabGroupTitle(tabGroupId, CUSTOMIZED_TITLE1);
+                    tabModel.setTabGroupTitle(
+                            TabGroupId.fromRawToken(tabGroupId), CUSTOMIZED_TITLE1);
                 });
         collapseTargetString = "Collapse " + CUSTOMIZED_TITLE1 + " tab group with 3 tabs.";
         verifyDialogBackButtonContentDescription(cta, collapseTargetString);

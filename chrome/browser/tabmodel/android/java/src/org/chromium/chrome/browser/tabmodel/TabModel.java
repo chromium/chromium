@@ -651,7 +651,7 @@ public interface TabModel extends TabList {
     String getTabGroupTitle(TabGroupId tabGroupId);
 
     /** Stores the given title for the tab group. */
-    void setTabGroupTitle(Token tabGroupId, String title);
+    void setTabGroupTitle(TabGroupId tabGroupId, String title);
 
     /** Deletes the stored title for the tab group, defaulting it back to "N tabs." */
     void deleteTabGroupTitle(Token tabGroupId);

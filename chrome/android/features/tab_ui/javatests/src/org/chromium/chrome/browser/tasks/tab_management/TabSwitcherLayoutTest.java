@@ -875,7 +875,10 @@ public class TabSwitcherLayoutTest {
         List<Tab> tabGroup = getTabsAtIndices(0, 1);
         createTabGroup(cta, false, tabGroup);
         ThreadUtils.runOnUiThreadBlocking(
-                () -> tabModel.setTabGroupTitle(normalTabModel.getTabAt(0).getTabGroupId(), "Foo"));
+                () ->
+                        tabModel.setTabGroupTitle(
+                                TabGroupId.fromRawToken(normalTabModel.getTabAt(0).getTabGroupId()),
+                                "Foo"));
         verifyTabSwitcherCardCount(cta, 2);
 
         // Assert default color was set properly.
@@ -968,8 +971,12 @@ public class TabSwitcherLayoutTest {
         verifyTabSwitcherCardCount(cta, 3);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    tabModel.setTabGroupTitle(normalTabModel.getTabAt(3).getTabGroupId(), "Foo");
-                    tabModel.setTabGroupTitle(normalTabModel.getTabAt(1).getTabGroupId(), "Bar");
+                    tabModel.setTabGroupTitle(
+                            TabGroupId.fromRawToken(normalTabModel.getTabAt(3).getTabGroupId()),
+                            "Foo");
+                    tabModel.setTabGroupTitle(
+                            TabGroupId.fromRawToken(normalTabModel.getTabAt(1).getTabGroupId()),
+                            "Bar");
                 });
 
         // Assert default color 2 was set properly.
@@ -1089,7 +1096,9 @@ public class TabSwitcherLayoutTest {
         createTabGroup(cta, false, tabGroup);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    tabModel.setTabGroupTitle(normalTabModel.getTabAt(0).getTabGroupId(), "Foo");
+                    tabModel.setTabGroupTitle(
+                            TabGroupId.fromRawToken(normalTabModel.getTabAt(0).getTabGroupId()),
+                            "Foo");
                 });
         verifyTabSwitcherCardCount(cta, 2);
 

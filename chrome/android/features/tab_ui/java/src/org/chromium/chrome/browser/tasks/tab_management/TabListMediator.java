@@ -3398,7 +3398,8 @@ public class TabListMediator implements TabListNotificationHandler {
                             // which is displayed as a tab count and chooses not to change it.
                             if (didChangeTitle) {
                                 if (stillExists) {
-                                    tabModel.setTabGroupTitle(tabGroupId, inputGroupTitle);
+                                    tabModel.setTabGroupTitle(
+                                            TabGroupId.fromRawToken(tabGroupId), inputGroupTitle);
                                 }
                                 RecordUserAction.record("TabGroup.RenameDialog.TitleChanged");
                             }

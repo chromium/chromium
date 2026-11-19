@@ -553,7 +553,9 @@ public class TabGridDialogMediatorUnitTest {
         // The hide arrived within the settle window; it is confirmed once the window elapses.
         idlePastKeyboardShowSettleWindow();
 
-        verify(mTabModel).setTabGroupTitle(eq(TAB_GROUP_ID), eq(CUSTOMIZED_DIALOG_TITLE));
+        verify(mTabModel)
+                .setTabGroupTitle(
+                        eq(TabGroupId.fromRawToken(TAB_GROUP_ID)), eq(CUSTOMIZED_DIALOG_TITLE));
         assertThat(
                 mModel.get(TabGridDialogProperties.HEADER_TITLE), equalTo(CUSTOMIZED_DIALOG_TITLE));
     }
@@ -583,7 +585,9 @@ public class TabGridDialogMediatorUnitTest {
         // The hide arrived within the settle window; it is confirmed once the window elapses.
         idlePastKeyboardShowSettleWindow();
 
-        verify(mTabModel).setTabGroupTitle(eq(TAB_GROUP_ID), eq(CUSTOMIZED_DIALOG_TITLE));
+        verify(mTabModel)
+                .setTabGroupTitle(
+                        eq(TabGroupId.fromRawToken(TAB_GROUP_ID)), eq(CUSTOMIZED_DIALOG_TITLE));
         assertThat(
                 mModel.get(TabGridDialogProperties.HEADER_TITLE), equalTo(CUSTOMIZED_DIALOG_TITLE));
     }
@@ -659,7 +663,9 @@ public class TabGridDialogMediatorUnitTest {
         idlePastKeyboardShowSettleWindow();
 
         assertFalse(mModel.get(TabGridDialogProperties.IS_TITLE_TEXT_FOCUSED));
-        verify(mTabModel).setTabGroupTitle(eq(TAB_GROUP_ID), eq(CUSTOMIZED_DIALOG_TITLE));
+        verify(mTabModel)
+                .setTabGroupTitle(
+                        eq(TabGroupId.fromRawToken(TAB_GROUP_ID)), eq(CUSTOMIZED_DIALOG_TITLE));
     }
 
     @Test
@@ -673,7 +679,9 @@ public class TabGridDialogMediatorUnitTest {
         keyboardVisibilityListener.keyboardObscuringChanged(false);
 
         assertFalse(mModel.get(TabGridDialogProperties.IS_TITLE_TEXT_FOCUSED));
-        verify(mTabModel).setTabGroupTitle(eq(TAB_GROUP_ID), eq(CUSTOMIZED_DIALOG_TITLE));
+        verify(mTabModel)
+                .setTabGroupTitle(
+                        eq(TabGroupId.fromRawToken(TAB_GROUP_ID)), eq(CUSTOMIZED_DIALOG_TITLE));
     }
 
     @Test
@@ -691,7 +699,9 @@ public class TabGridDialogMediatorUnitTest {
         windowKeyboardDelegate.notifyForTesting(false);
 
         assertFalse(mModel.get(TabGridDialogProperties.IS_TITLE_TEXT_FOCUSED));
-        verify(mTabModel).setTabGroupTitle(eq(TAB_GROUP_ID), eq(CUSTOMIZED_DIALOG_TITLE));
+        verify(mTabModel)
+                .setTabGroupTitle(
+                        eq(TabGroupId.fromRawToken(TAB_GROUP_ID)), eq(CUSTOMIZED_DIALOG_TITLE));
 
         mMediator.destroy();
         mModel.set(TabGridDialogProperties.IS_TITLE_TEXT_FOCUSED, true);
@@ -1166,7 +1176,9 @@ public class TabGridDialogMediatorUnitTest {
 
         mMediator.hideDialog(false);
 
-        verify(mTabModel).setTabGroupTitle(eq(TAB_GROUP_ID), eq(CUSTOMIZED_DIALOG_TITLE));
+        verify(mTabModel)
+                .setTabGroupTitle(
+                        eq(TabGroupId.fromRawToken(TAB_GROUP_ID)), eq(CUSTOMIZED_DIALOG_TITLE));
         assertThat(
                 mModel.get(TabGridDialogProperties.HEADER_TITLE), equalTo(CUSTOMIZED_DIALOG_TITLE));
     }
@@ -1220,7 +1232,9 @@ public class TabGridDialogMediatorUnitTest {
         mModel.get(TabGridDialogProperties.SHARE_BUTTON_CLICK_LISTENER).onClick(null);
 
         // Verify that the modified title is committed to the TabModel.
-        verify(mTabModel).setTabGroupTitle(eq(TAB_GROUP_ID), eq(CUSTOMIZED_DIALOG_TITLE));
+        verify(mTabModel)
+                .setTabGroupTitle(
+                        eq(TabGroupId.fromRawToken(TAB_GROUP_ID)), eq(CUSTOMIZED_DIALOG_TITLE));
         assertThat(
                 mModel.get(TabGridDialogProperties.HEADER_TITLE), equalTo(CUSTOMIZED_DIALOG_TITLE));
     }
@@ -1249,7 +1263,9 @@ public class TabGridDialogMediatorUnitTest {
         // PropertyModel.
         verify(mTabModel).deleteTabGroupTitle(eq(TAB_GROUP_ID));
         assertThat(mModel.get(TabGridDialogProperties.HEADER_TITLE), equalTo(DIALOG_TITLE2));
-        verify(mTabModel).setTabGroupTitle(eq(TAB_GROUP_ID), eq(UNSET_TAB_GROUP_TITLE));
+        verify(mTabModel)
+                .setTabGroupTitle(
+                        eq(TabGroupId.fromRawToken(TAB_GROUP_ID)), eq(UNSET_TAB_GROUP_TITLE));
     }
 
     @Test

@@ -14,6 +14,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tab_groups.TabGroupId;
 
 /** Utility class for tab group functionalities in native Sync browser tests. */
 @JNINamespace("sync_test_utils_android")
@@ -45,6 +46,6 @@ final class SyncTestTabGroupHelpers {
         TabModel tabModel = TabModelUtils.getTabModelByTab(tabInGroup);
         Token tabGroupId = tabInGroup.getTabGroupId();
         tabModel.setTabGroupColor(tabGroupId, color);
-        tabModel.setTabGroupTitle(tabGroupId, title);
+        tabModel.setTabGroupTitle(TabGroupId.fromRawToken(tabGroupId), title);
     }
 }

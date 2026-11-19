@@ -660,7 +660,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         keyboardVisibilityListener.keyboardObscuringChanged(false);
 
         // Verify the group title is updated.
-        verify(mTabModel).setTabGroupTitle(eq(TAB_GROUP_ID), eq(newTitle));
+        verify(mTabModel).setTabGroupTitle(eq(TabGroupId.fromRawToken(TAB_GROUP_ID)), eq(newTitle));
 
         // Remove the custom title set by the user by clearing the edit box.
         newTitle = "";
@@ -687,7 +687,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
 
         // 2. Waiting for the 100ms debounce commits the final text.
         ShadowLooper.idleMainLooper(100, TimeUnit.MILLISECONDS);
-        verify(mTabModel).setTabGroupTitle(eq(TAB_GROUP_ID), eq("Test"));
+        verify(mTabModel).setTabGroupTitle(eq(TabGroupId.fromRawToken(TAB_GROUP_ID)), eq("Test"));
 
         // 3. Clearing the text deletes the title in TabModel without wiping the active EditText.
         groupTitleEditText.setText("");
@@ -716,7 +716,8 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         // Dismiss menu without further user edits; verify local edit does not overwrite remote
         // title.
         mTabGroupContextMenuCoordinator.updateTabGroupTitle();
-        verify(mTabModel, never()).setTabGroupTitle(eq(TAB_GROUP_ID), eq("local edit"));
+        verify(mTabModel, never())
+                .setTabGroupTitle(eq(TabGroupId.fromRawToken(TAB_GROUP_ID)), eq("local edit"));
     }
 
     @Test

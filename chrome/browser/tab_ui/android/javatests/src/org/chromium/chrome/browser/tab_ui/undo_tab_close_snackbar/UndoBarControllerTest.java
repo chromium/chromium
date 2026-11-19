@@ -46,6 +46,7 @@ import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.ui.accessibility.AccessibilityStateTestHelper;
 import org.chromium.ui.base.DeviceFormFactor;
 
@@ -266,7 +267,9 @@ public class UndoBarControllerTest {
                             List.of(mTabModel.getTabAt(0), mTabModel.getTabAt(1)),
                             mTabModel.getTabAt(0),
                             /* notify= */ TabGroupMergeNotificationType.DONT_NOTIFY);
-                    mTabModel.setTabGroupTitle(mTabModel.getTabAt(0).getTabGroupId(), "My group");
+                    mTabModel.setTabGroupTitle(
+                            TabGroupId.fromRawToken(mTabModel.getTabAt(0).getTabGroupId()),
+                            "My group");
                 });
 
         assertNull(getCurrentSnackbar());
@@ -300,7 +303,8 @@ public class UndoBarControllerTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mTabModel.setTabGroupTitle(mTabModel.getTabAt(0).getTabGroupId(), null);
+                    mTabModel.setTabGroupTitle(
+                            TabGroupId.fromRawToken(mTabModel.getTabAt(0).getTabGroupId()), null);
                 });
 
         histogramWatcher.assertExpected();
@@ -317,7 +321,8 @@ public class UndoBarControllerTest {
                             List.of(mTabModel.getTabAt(0), mTabModel.getTabAt(1)),
                             mTabModel.getTabAt(0),
                             /* notify= */ TabGroupMergeNotificationType.DONT_NOTIFY);
-                    mTabModel.setTabGroupTitle(mTabModel.getTabAt(0).getTabGroupId(), "");
+                    mTabModel.setTabGroupTitle(
+                            TabGroupId.fromRawToken(mTabModel.getTabAt(0).getTabGroupId()), "");
                 });
 
         assertNull(getCurrentSnackbar());
@@ -351,7 +356,8 @@ public class UndoBarControllerTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mTabModel.setTabGroupTitle(mTabModel.getTabAt(0).getTabGroupId(), null);
+                    mTabModel.setTabGroupTitle(
+                            TabGroupId.fromRawToken(mTabModel.getTabAt(0).getTabGroupId()), null);
                 });
 
         histogramWatcher.assertExpected();
