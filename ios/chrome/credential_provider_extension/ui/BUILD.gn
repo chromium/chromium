@@ -180,6 +180,7 @@ source_set("unit_tests") {
     "credential_list_coordinator_unittest.mm",
     "credential_list_mediator+Testing.h",
     "credential_list_mediator_unittest.mm",
+    "credential_list_view_controller_unittest.mm",
     "multi_profile_passkey_creation_view_controller_unittest.mm",
     "new_password_coordinator_unittest.mm",
     "new_password_mediator_unittest.mm",

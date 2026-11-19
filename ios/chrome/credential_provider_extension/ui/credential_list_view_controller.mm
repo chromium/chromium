@@ -36,6 +36,12 @@ const CGFloat kTableViewTopSpace = 8;
 UIColor* BackgroundColor() {
   return [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
 }
+
+// Returns true if `first` and `second` are both nil or contain equal elements.
+bool AreCredentialArraysEqual(NSArray<id<Credential>>* first,
+                              NSArray<id<Credential>>* second) {
+  return first == second || [first isEqualToArray:second];
+}
 }  // namespace
 
 // This cell just adds a simple hover pointer interaction to the TableViewCell.
@@ -75,7 +81,10 @@ UIColor* BackgroundColor() {
 
 @end
 
-@implementation CredentialListViewController
+@implementation CredentialListViewController {
+  // Whether credentials have been presented at least once.
+  BOOL _hasPresentedCredentials;
+}
 
 @synthesize delegate;
 
@@ -135,11 +144,24 @@ UIColor* BackgroundColor() {
                      allCredentials:(NSArray<id<Credential>>*)all
                       showSearchBar:(BOOL)showSearchBar
               showNewPasswordOption:(BOOL)showNewPasswordOption {
-  self.suggestedCredentials = suggested;
-  self.allCredentials = all;
-  self.showNewPasswordOption = showNewPasswordOption;
-  [self.tableView reloadData];
-  [self.tableView layoutIfNeeded];
+  // Skip reloading when only `showSearchBar` changes or filtering leaves the
+  // displayed credentials identical. This stays fast because `isEqualToArray:`
+  // short-circuits on count/pointer equality when callers reuse existing
+  // credential instances.
+  BOOL dataChanged =
+      !_hasPresentedCredentials ||
+      !AreCredentialArraysEqual(self.suggestedCredentials, suggested) ||
+      !AreCredentialArraysEqual(self.allCredentials, all) ||
+      self.showNewPasswordOption != showNewPasswordOption;
+
+  if (dataChanged) {
+    _hasPresentedCredentials = YES;
+    self.suggestedCredentials = suggested;
+    self.allCredentials = all;
+    self.showNewPasswordOption = showNewPasswordOption;
+    [self.tableView reloadData];
+    [self.tableView layoutIfNeeded];
+  }
 
   // Remove or add the search controller depending on whether there are
   // passwords to search.
