@@ -93,6 +93,9 @@ const CGFloat kVerticalOffset = 1;
   // Cached single line height.
   CGFloat _cachedSingleLineHeight;
 
+  // The last font applied during initialization or trait updates.
+  UIFont* _appliedTraitFont;
+
   // Whether a newline is being programmatically inserted (e.g. by
   // Shift+Return).
   BOOL _insertingNewline;
@@ -142,7 +145,8 @@ const CGFloat kVerticalOffset = 1;
     }
 
     // Force initial layout of internal text label.
-    self.font = self.currentFont;
+    _appliedTraitFont = self.currentFont;
+    self.font = _appliedTraitFont;
     [self updateTextContainerInset];
 
     _tapGestureRecognizer =
@@ -167,7 +171,11 @@ const CGFloat kVerticalOffset = 1;
 
     self.delegate = self;
 
-    [self registerForTraitChanges:@[ UITraitPreferredContentSizeCategory.class ]
+    [self registerForTraitChanges:@[
+      UITraitPreferredContentSizeCategory.class,
+      UITraitHorizontalSizeClass.class,
+      UITraitVerticalSizeClass.class,
+    ]
                        withAction:@selector(updateTextProperitesOnTraitChange)];
   }
   return self;
@@ -1190,16 +1198,37 @@ const CGFloat kVerticalOffset = 1;
   [self pasteboardDidChange:nil];
 }
 
-// Resets Omnibox's the font and attributed text when a UITrait is modified.
+// Resets the font, cached line height, and container insets when size class or
+// content size category traits change.
 - (void)updateTextProperitesOnTraitChange {
-  // Reset the fonts to the appropriate ones in this size class.
-  self.font = self.currentFont;
-  _cachedSingleLineHeight = 0;
+  UIFont* newFont = self.currentFont;
+  BOOL fontChanged = ![_appliedTraitFont isEqual:newFont];
+  if (fontChanged) {
+    _appliedTraitFont = newFont;
+    _cachedSingleLineHeight = 0;
+    self.placeholderLabel.font = newFont;
+    [self updateOmniboxTypingAttributes];
+    NSTextStorage* textStorage = self.textStorage;
+    NSUInteger textLength = textStorage.length;
+    if (textLength > 0) {
+      [textStorage beginEditing];
+      [textStorage addAttribute:NSFontAttributeName
+                          value:newFont
+                          range:NSMakeRange(0, textLength)];
+      [textStorage endEditing];
+    }
+    self.font = newFont;
+    self.typingAttributes = _omniboxTypingAttributes;
+  }
+
+  UIEdgeInsets previousInsets = self.textContainerInset;
   [self updateTextContainerInset];
-  self.placeholderLabel.font = self.font;
-  [self setAttributedText:self.attributedText];
-  [self updateOmniboxTypingAttributes];
-  [self.heightDelegate textViewContentChanged:self];
+  BOOL insetsChanged =
+      !UIEdgeInsetsEqualToEdgeInsets(previousInsets, self.textContainerInset);
+
+  if (fontChanged || insetsChanged) {
+    [self.heightDelegate textViewContentChanged:self];
+  }
 }
 
 - (void)updateTextContainerInset {

@@ -22,6 +22,21 @@
 - (void)forwardKeyCommandShiftReturn:(UIKeyCommand*)command;
 @end
 
+@interface FakeOmniboxTextViewHeightDelegate
+    : NSObject <OmniboxTextViewHeightDelegate>
+@property(nonatomic, assign) NSUInteger contentChangedCallCount;
+@property(nonatomic, weak) OmniboxTextViewIOS* lastTextView;
+@end
+
+@implementation FakeOmniboxTextViewHeightDelegate
+
+- (void)textViewContentChanged:(OmniboxTextViewIOS*)textView {
+  self.contentChangedCallCount++;
+  self.lastTextView = textView;
+}
+
+@end
+
 namespace {
 
 class OmniboxTextViewIOSTest : public PlatformTest {
@@ -49,6 +64,43 @@ class OmniboxTextViewIOSTest : public PlatformTest {
     text_view_.placeholderLabel = placeholderLabel;
   }
 
+  void TearDown() override {
+    text_view_.heightDelegate = nil;
+    [container_view_ removeFromSuperview];
+    window_.hidden = YES;
+    text_view_ = nil;
+    container_view_ = nil;
+    window_ = nil;
+    PlatformTest::TearDown();
+  }
+
+  // Attaches `container_view_` to `window_` if needed, applies the given trait
+  // overrides, flushes traits and layout, and checks resolved traits.
+  void ApplyTraits(UIUserInterfaceSizeClass horizontal_size_class,
+                   UIUserInterfaceSizeClass vertical_size_class,
+                   UIContentSizeCategory content_size_category =
+                       UIContentSizeCategoryLarge) {
+    if (!window_) {
+      window_ = [[UIWindow alloc] initWithFrame:CGRectMake(0, 0, 400, 400)];
+      [window_ addSubview:container_view_];
+    }
+    container_view_.traitOverrides.preferredContentSizeCategory =
+        content_size_category;
+    container_view_.traitOverrides.horizontalSizeClass = horizontal_size_class;
+    container_view_.traitOverrides.verticalSizeClass = vertical_size_class;
+    [container_view_ updateTraitsIfNeeded];
+    [container_view_ setNeedsLayout];
+    [container_view_ layoutIfNeeded];
+    [text_view_ updateTraitsIfNeeded];
+    EXPECT_EQ(text_view_.traitCollection.horizontalSizeClass,
+              horizontal_size_class);
+    EXPECT_EQ(text_view_.traitCollection.verticalSizeClass,
+              vertical_size_class);
+    EXPECT_NSEQ(text_view_.traitCollection.preferredContentSizeCategory,
+                content_size_category);
+  }
+
+  UIWindow* window_ = nil;
   OmniboxTextViewIOS* text_view_;
   UIView* container_view_;
   base::test::TaskEnvironment task_environment_;
@@ -269,6 +321,139 @@ TEST_F(OmniboxTextViewIOSTest, TextInputShouldNotReturnOnParagraphSeparator) {
   [delegateMock verify];
   EXPECT_EQ(0, user_action_tester.GetActionCount(
                    "IOS.Omnibox.PhysicalKeyboardShiftReturn"));
+}
+
+// Tests that changing horizontal size class updates the font, placeholder
+// font, cached single-line height, and container insets while preserving text
+// selection.
+TEST_F(OmniboxTextViewIOSTest,
+       UpdatesFontLineHeightAndInsetsOnHorizontalSizeClassChange) {
+  ApplyTraits(UIUserInterfaceSizeClassRegular, UIUserInterfaceSizeClassRegular,
+              UIContentSizeCategoryLarge);
+  text_view_.text = @"Hello world";
+  text_view_.selectedRange = NSMakeRange(2, 5);
+  CGFloat regular_point_size = text_view_.font.pointSize;
+  CGFloat regular_line_height = [text_view_ singleLineHeight];
+  CGFloat regular_top_inset = text_view_.textContainerInset.top;
+  FakeOmniboxTextViewHeightDelegate* height_delegate =
+      [[FakeOmniboxTextViewHeightDelegate alloc] init];
+  text_view_.heightDelegate = height_delegate;
+
+  ApplyTraits(UIUserInterfaceSizeClassCompact, UIUserInterfaceSizeClassRegular,
+              UIContentSizeCategoryLarge);
+
+  EXPECT_LT(text_view_.font.pointSize, regular_point_size);
+  EXPECT_NSEQ(text_view_.placeholderLabel.font, text_view_.font);
+  EXPECT_LT([text_view_ singleLineHeight], regular_line_height);
+  EXPECT_LT(text_view_.textContainerInset.top, regular_top_inset);
+  EXPECT_EQ(height_delegate.contentChangedCallCount, 1u);
+  EXPECT_EQ(height_delegate.lastTextView, text_view_);
+  EXPECT_EQ(text_view_.selectedRange.location, 2u);
+  EXPECT_EQ(text_view_.selectedRange.length, 5u);
+}
+
+// Tests that changing the preferred content size category in Compact width
+// updates fonts and typing attributes in place, preserves inline autocomplete
+// highlights, and notifies the height delegate even when insets do not change.
+TEST_F(OmniboxTextViewIOSTest,
+       UpdatesFontsAndPreservesAutocompleteHighlightOnContentSizeChange) {
+  ApplyTraits(UIUserInterfaceSizeClassCompact, UIUserInterfaceSizeClassRegular,
+              UIContentSizeCategoryLarge);
+  NSAttributedString* text =
+      [[NSAttributedString alloc] initWithString:@"chr_ome"];
+  [text_view_ setText:text userTextLength:3];
+  UIColor* highlight_before =
+      [text_view_.attributedText attribute:NSBackgroundColorAttributeName
+                                   atIndex:4
+                            effectiveRange:nullptr];
+  ASSERT_NE(highlight_before, nil);
+  CGFloat initial_point_size = text_view_.font.pointSize;
+  CGFloat initial_line_height = [text_view_ singleLineHeight];
+  UIEdgeInsets initial_insets = text_view_.textContainerInset;
+  FakeOmniboxTextViewHeightDelegate* height_delegate =
+      [[FakeOmniboxTextViewHeightDelegate alloc] init];
+  text_view_.heightDelegate = height_delegate;
+
+  ApplyTraits(UIUserInterfaceSizeClassCompact, UIUserInterfaceSizeClassRegular,
+              UIContentSizeCategoryExtraExtraLarge);
+
+  EXPECT_GT(text_view_.font.pointSize, initial_point_size);
+  EXPECT_NSEQ(text_view_.placeholderLabel.font, text_view_.font);
+  EXPECT_NSEQ(text_view_.typingAttributes[NSFontAttributeName],
+              text_view_.font);
+  NSRange full_range = NSMakeRange(0, text_view_.attributedText.length);
+  NSRange effective_range = NSMakeRange(0, 0);
+  EXPECT_NSEQ([text_view_.attributedText attribute:NSFontAttributeName
+                                           atIndex:0
+                             longestEffectiveRange:&effective_range
+                                           inRange:full_range],
+              text_view_.font);
+  EXPECT_EQ(effective_range.location, 0u);
+  EXPECT_EQ(effective_range.length, full_range.length);
+  EXPECT_NSEQ(
+      [text_view_.attributedText attribute:NSBackgroundColorAttributeName
+                                   atIndex:4
+                            effectiveRange:nullptr],
+      highlight_before);
+  EXPECT_GT([text_view_ singleLineHeight], initial_line_height);
+  EXPECT_TRUE(UIEdgeInsetsEqualToEdgeInsets(text_view_.textContainerInset,
+                                            initial_insets));
+  EXPECT_EQ(height_delegate.contentChangedCallCount, 1u);
+  EXPECT_EQ(height_delegate.lastTextView, text_view_);
+}
+
+// Tests that changing vertical size class in Regular width updates container
+// insets and notifies the height delegate.
+TEST_F(OmniboxTextViewIOSTest, UpdatesInsetsOnVerticalSizeClassChange) {
+  ApplyTraits(UIUserInterfaceSizeClassRegular, UIUserInterfaceSizeClassRegular);
+  CGFloat regular_top_inset = text_view_.textContainerInset.top;
+  FakeOmniboxTextViewHeightDelegate* height_delegate =
+      [[FakeOmniboxTextViewHeightDelegate alloc] init];
+  text_view_.heightDelegate = height_delegate;
+
+  ApplyTraits(UIUserInterfaceSizeClassRegular, UIUserInterfaceSizeClassCompact);
+
+  EXPECT_LT(text_view_.textContainerInset.top, regular_top_inset);
+  EXPECT_EQ(height_delegate.contentChangedCallCount, 1u);
+  EXPECT_EQ(height_delegate.lastTextView, text_view_);
+}
+
+// Tests that rotating a Compact-width device between Regular and Compact
+// vertical size classes is a no-op even when leading emoji triggers fallback
+// font substitution.
+TEST_F(OmniboxTextViewIOSTest,
+       PreservesSelectionAndSkipsUpdateOnCompactVerticalSizeClassChange) {
+  ApplyTraits(UIUserInterfaceSizeClassCompact, UIUserInterfaceSizeClassRegular);
+  text_view_.text = @"🍎 Hello world";
+  text_view_.selectedRange = NSMakeRange(5, 0);
+  FakeOmniboxTextViewHeightDelegate* height_delegate =
+      [[FakeOmniboxTextViewHeightDelegate alloc] init];
+  text_view_.heightDelegate = height_delegate;
+
+  ApplyTraits(UIUserInterfaceSizeClassCompact, UIUserInterfaceSizeClassCompact);
+
+  EXPECT_EQ(height_delegate.contentChangedCallCount, 0u);
+  EXPECT_EQ(text_view_.selectedRange.location, 5u);
+  EXPECT_EQ(text_view_.selectedRange.length, 0u);
+}
+
+// Tests that cached single-line height and placeholder font still update on a
+// deferred trait flush even if `-setText:` was called before traits flushed.
+TEST_F(OmniboxTextViewIOSTest,
+       UpdatesCachedLineHeightWhenTextSetBeforeDeferredTraitFlush) {
+  ApplyTraits(UIUserInterfaceSizeClassRegular, UIUserInterfaceSizeClassRegular);
+  CGFloat regular_line_height = [text_view_ singleLineHeight];
+  container_view_.traitOverrides.horizontalSizeClass =
+      UIUserInterfaceSizeClassCompact;
+  text_view_.text = @"Hello world";
+
+  [container_view_ updateTraitsIfNeeded];
+  [container_view_ setNeedsLayout];
+  [container_view_ layoutIfNeeded];
+  [text_view_ updateTraitsIfNeeded];
+
+  EXPECT_LT([text_view_ singleLineHeight], regular_line_height);
+  EXPECT_NSEQ(text_view_.placeholderLabel.font, text_view_.font);
 }
 
 }  // namespace
