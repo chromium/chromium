@@ -358,8 +358,9 @@ String GetUUIDForGATTAttribute(GATTAttribute attribute,
       break;
   }
 
-  if (map->Contains(name_str))
-    return BluetoothUUID::canonicalUUID(map->at(name_str));
+  if (auto it = map->find(name_str); it != map->end()) {
+    return BluetoothUUID::canonicalUUID(it->value);
+  }
 
   StringBuilder error_message;
   error_message.Append("Invalid ");
