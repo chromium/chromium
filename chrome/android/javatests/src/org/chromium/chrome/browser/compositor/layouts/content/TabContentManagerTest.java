@@ -107,7 +107,8 @@ public class TabContentManagerTest {
                                                     mActivityTestRule
                                                             .getActivity()
                                                             .getBrowserControlsManager()));
-                    tabContentManager.cacheTabThumbnail(currentTab);
+                    tabContentManager.cacheTabThumbnail(
+                            currentTab, /* deferUntilNextFrame= */ false);
                     tabContentManager.getTabThumbnailWithCallback(
                             currentTab.getId(), new Size(width, height), bitmapCallback);
                 });

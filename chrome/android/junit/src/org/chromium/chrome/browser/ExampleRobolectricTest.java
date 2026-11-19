@@ -34,7 +34,7 @@ public class ExampleRobolectricTest {
         }
 
         public void callCacheTabThumbnail(Tab tab) {
-            mTabContentManager.cacheTabThumbnail(tab);
+            mTabContentManager.cacheTabThumbnail(tab, /* deferUntilNextFrame= */ false);
         }
     }
 
@@ -50,6 +50,6 @@ public class ExampleRobolectricTest {
 
         subject.callCacheTabThumbnail(tab);
 
-        verify(mTabContentManager).cacheTabThumbnail(tab);
+        verify(mTabContentManager).cacheTabThumbnail(tab, /* deferUntilNextFrame= */ false);
     }
 }

@@ -254,7 +254,7 @@ public class ToolbarSwipeLayout extends Layout {
         Tab tab = mTabModelSelector.getCurrentTab();
         if (tab != null && tab.isNativePage()) {
             assumeNonNull(mTabContentManager);
-            mTabContentManager.cacheTabThumbnail(tab);
+            mTabContentManager.cacheTabThumbnail(tab, /* deferUntilNextFrame= */ false);
         }
 
         TabModel model = mTabModelSelector.getCurrentModel();

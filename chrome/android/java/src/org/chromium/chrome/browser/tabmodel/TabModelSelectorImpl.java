@@ -489,7 +489,7 @@ public class TabModelSelectorImpl extends TabModelSelectorBase {
         // Trigger a capture of this tab.
         if (tabToCache == null) return;
         assumeNonNull(mTabContentManager);
-        mTabContentManager.cacheTabThumbnail(tabToCache);
+        mTabContentManager.cacheTabThumbnail(tabToCache, /* deferUntilNextFrame= */ false);
     }
 
     @Override

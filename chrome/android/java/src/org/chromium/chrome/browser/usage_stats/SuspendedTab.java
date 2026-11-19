@@ -129,7 +129,7 @@ public class SuspendedTab implements TabObserver, UserData, TabViewProvider {
             mView.post(
                     () -> {
                         tabContentManager.removeTabThumbnail(mTab.getId());
-                        tabContentManager.cacheTabThumbnail(mTab);
+                        tabContentManager.cacheTabThumbnail(mTab, /* deferUntilNextFrame= */ false);
                     });
         }
     }

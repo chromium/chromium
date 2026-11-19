@@ -317,7 +317,7 @@ public class NewTabAnimationLayoutUnitTest {
         when(mCurrentTab.isNativePage()).thenReturn(true);
 
         mNewTabAnimationLayout.show(FAKE_TIME, /* animate= */ true);
-        verify(mTabContentManager).cacheTabThumbnail(mCurrentTab);
+        verify(mTabContentManager).cacheTabThumbnail(mCurrentTab, /* deferUntilNextFrame= */ false);
     }
 
     @Test
@@ -329,7 +329,7 @@ public class NewTabAnimationLayoutUnitTest {
         when(mTabModelSelector.getCurrentTab()).thenReturn(mCurrentTab);
         mNewTabAnimationLayout.show(FAKE_TIME, /* animate= */ true);
 
-        verify(mTabContentManager, never()).cacheTabThumbnail(mCurrentTab);
+        verify(mTabContentManager, never()).cacheTabThumbnail(any(), anyBoolean());
     }
 
     @Test

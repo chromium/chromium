@@ -566,11 +566,12 @@ public class TabContentManager {
     }
 
     /**
-     * Cache the content of a tab as a thumbnail.
+     * Caches the content of a tab as a thumbnail.
      *
      * @param tab The tab whose content we will cache.
+     * @param deferUntilNextFrame Whether to defer thumbnail capture until the next frame.
      */
-    public void cacheTabThumbnail(final Tab tab) {
+    public void cacheTabThumbnail(final Tab tab, boolean deferUntilNextFrame) {
         cacheTabThumbnailWithCallback(tab, /* returnBitmap= */ false, null);
     }
 

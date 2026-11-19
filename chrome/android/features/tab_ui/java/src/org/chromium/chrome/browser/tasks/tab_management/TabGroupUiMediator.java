@@ -430,7 +430,8 @@ public class TabGroupUiMediator implements BackPressHandler {
                     if (tabsInGroup.isEmpty()) return;
 
                     // Ensure the current tab has a thumbnail.
-                    mTabContentManager.cacheTabThumbnail(currentTab);
+                    mTabContentManager.cacheTabThumbnail(
+                            currentTab, /* deferUntilNextFrame= */ false);
 
                     mResetHandler.resetGridWithListOfTabs(tabsInGroup);
                     RecordUserAction.record("TabGroup.ExpandedFromStrip.TabGridDialog");

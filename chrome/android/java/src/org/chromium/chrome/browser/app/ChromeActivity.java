@@ -1669,7 +1669,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         mLaunchCause = LaunchCauseMetrics.LaunchCause.UNINITIALIZED;
         Tab tab = getActivityTab();
         if (tab != null) {
-            getTabContentManager().cacheTabThumbnail(tab);
+            getTabContentManager().cacheTabThumbnail(tab, /* deferUntilNextFrame= */ false);
         }
         getManualFillingComponent().onPause();
         super.onPauseWithNative();

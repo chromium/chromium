@@ -288,7 +288,7 @@ public class NewTabAnimationLayout extends Layout {
 
         @Nullable Tab tab = mTabModelSelector.getCurrentTab();
         if (tab != null && tab.isNativePage()) {
-            mTabContentManager.cacheTabThumbnail(tab);
+            mTabContentManager.cacheTabThumbnail(tab, /* deferUntilNextFrame= */ false);
         }
     }
 

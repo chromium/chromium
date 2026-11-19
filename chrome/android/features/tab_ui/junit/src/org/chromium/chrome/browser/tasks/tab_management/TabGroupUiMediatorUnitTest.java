@@ -419,7 +419,7 @@ public class TabGroupUiMediatorUnitTest {
 
         listener.onClick(mView);
 
-        verify(mTabContentManager).cacheTabThumbnail(mTab2);
+        verify(mTabContentManager).cacheTabThumbnail(mTab2, /* deferUntilNextFrame= */ false);
         verify(mResetHandler).resetGridWithListOfTabs(mTabGroup2);
     }
 
@@ -469,7 +469,7 @@ public class TabGroupUiMediatorUnitTest {
         showGroupDialogListener.onClick(mView);
         newTabListener.onClick(mView);
 
-        verify(mTabContentManager, never()).cacheTabThumbnail(any());
+        verify(mTabContentManager, never()).cacheTabThumbnail(any(), anyBoolean());
         verify(mResetHandler, never()).resetGridWithListOfTabs(any());
         verify(mTabCreator, never()).createNewTab(any(), anyInt(), any());
     }
@@ -487,7 +487,7 @@ public class TabGroupUiMediatorUnitTest {
         showGroupDialogListener.onClick(mView);
         newTabListener.onClick(mView);
 
-        verify(mTabContentManager, never()).cacheTabThumbnail(any());
+        verify(mTabContentManager, never()).cacheTabThumbnail(any(), anyBoolean());
         verify(mResetHandler, never()).resetGridWithListOfTabs(any());
         verify(mTabCreator, never()).createNewTab(any(), anyInt(), any());
     }
@@ -504,7 +504,7 @@ public class TabGroupUiMediatorUnitTest {
         showGroupDialogListener.onClick(mView);
         newTabListener.onClick(mView);
 
-        verify(mTabContentManager, never()).cacheTabThumbnail(any());
+        verify(mTabContentManager, never()).cacheTabThumbnail(any(), anyBoolean());
         verify(mResetHandler, never()).resetGridWithListOfTabs(any());
         verify(mTabCreator, never()).createNewTab(any(), anyInt(), any());
     }
@@ -523,7 +523,7 @@ public class TabGroupUiMediatorUnitTest {
         showGroupDialogListener.onClick(mView);
         newTabListener.onClick(mView);
 
-        verify(mTabContentManager, never()).cacheTabThumbnail(any());
+        verify(mTabContentManager, never()).cacheTabThumbnail(any(), anyBoolean());
         verify(mResetHandler, never()).resetGridWithListOfTabs(any());
         verify(mTabCreator, never()).createNewTab(any(), anyInt(), any());
     }
