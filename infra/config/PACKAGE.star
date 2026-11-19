@@ -32,7 +32,7 @@ pkg.depend(
         # Take revision from https://chromium.googlesource.com/infra/chromium/.
         # The @chromium-luci revision in targets/PACKAGE.star should also be
         # kept in sync with the revision here.
-        revision = "1ac486c7d3604e72ef386ec198865877529c342b",
+        revision = "566c1ef12737b532e32d2bda8bd24678f49c210e",
     ),
 )
 
