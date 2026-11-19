@@ -38,7 +38,6 @@ import android.widget.LinearLayout;
 import androidx.annotation.ColorInt;
 import androidx.annotation.Px;
 import androidx.annotation.StringRes;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.DrawableCompat;
 
 import com.google.android.material.tabs.TabLayout;
@@ -71,6 +70,7 @@ public class HubToolbarView extends LinearLayout {
     private final int mSearchBoxHeightPx;
 
     private TabLayout mPaneSwitcher;
+    private ViewGroup mSlidingTabIndicator;
     private View mActionContainer;
     private LinearLayout mMenuButtonContainer;
     private ImageButton mMenuButton;
@@ -88,7 +88,6 @@ public class HubToolbarView extends LinearLayout {
     private boolean mManualSearchBoxAnimation;
     private @Nullable NonNullObservableSupplier<Boolean> mXrSpaceModeObservableSupplier;
     private @Nullable List<FullButtonData> mCachedButtonDataList;
-    private @Nullable Drawable mTabIndicatorDrawable;
     private @Nullable Float mSearchBoxTransitionOffset;
     private @Nullable Boolean mSearchBoxTransitionIsIncognito;
     private float mSearchBoxVisibilityFraction;
@@ -111,10 +110,15 @@ public class HubToolbarView extends LinearLayout {
         setBackground(mBackgroundDrawable);
         mActionContainer = findViewById(R.id.toolbar_action_container);
         mPaneSwitcher = findViewById(R.id.pane_switcher);
-        ViewGroup slidingTabIndicator = (ViewGroup) mPaneSwitcher.getChildAt(0);
+        mSlidingTabIndicator = (ViewGroup) mPaneSwitcher.getChildAt(0);
         // Unclip children here to get unbounded ripple to work.
-        slidingTabIndicator.setClipToPadding(false);
-        slidingTabIndicator.setClipChildren(false);
+        mSlidingTabIndicator.setClipToPadding(false);
+        mSlidingTabIndicator.setClipChildren(false);
+        if (HubUtils.isGtsUpdateEnabled()) {
+            mPaneSwitcher.setTabIndicatorAnimationMode(TabLayout.INDICATOR_ANIMATION_MODE_LINEAR);
+            mPaneSwitcher.setSelectedTabIndicatorGravity(TabLayout.INDICATOR_GRAVITY_CENTER);
+            mPaneSwitcher.setSelectedTabIndicator(R.drawable.hub_pane_switcher_item_selector);
+        }
         mMenuButtonContainer = findViewById(R.id.menu_button_container);
         mMenuButton = mMenuButtonContainer.findViewById(R.id.menu_button);
         mMenuButtonWrapper = mMenuButtonContainer.findViewById(R.id.menu_button_wrapper);
@@ -282,14 +286,6 @@ public class HubToolbarView extends LinearLayout {
                 params.height =
                         resources.getDimensionPixelSize(R.dimen.hub_pane_switcher_card_height);
                 mPaneSwitcherCard.setLayoutParams(params);
-
-                mPaneSwitcher.setTabIndicatorAnimationMode(
-                        TabLayout.INDICATOR_ANIMATION_MODE_LINEAR);
-                mPaneSwitcher.setSelectedTabIndicatorGravity(TabLayout.INDICATOR_GRAVITY_CENTER);
-                mTabIndicatorDrawable =
-                        AppCompatResources.getDrawable(
-                                context, R.drawable.hub_pane_switcher_item_selector);
-                mPaneSwitcher.setSelectedTabIndicator(mTabIndicatorDrawable);
             }
         }
 
@@ -471,12 +467,8 @@ public class HubToolbarView extends LinearLayout {
     }
 
     private void updateSelectedTabIndicatorColor(@ColorInt int color) {
-        if (mTabIndicatorDrawable != null) {
-            DrawableCompat.setTint(mTabIndicatorDrawable.mutate(), color);
-            mPaneSwitcher.invalidate();
-        } else {
-            mPaneSwitcher.setSelectedTabIndicatorColor(color);
-        }
+        DrawableCompat.setTint(mPaneSwitcher.getTabSelectedIndicator(), color);
+        mSlidingTabIndicator.invalidate();
     }
 
     private void registerSearchBoxColorBlends() {

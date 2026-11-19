@@ -42,6 +42,7 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.res.ColorStateList;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
@@ -54,6 +55,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import androidx.annotation.ColorInt;
 import androidx.core.content.ContextCompat;
 
 import com.google.android.material.color.MaterialColors;
@@ -74,6 +76,7 @@ import org.robolectric.ParameterizedRobolectricTestRunner.Parameter;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 import org.robolectric.Robolectric;
 import org.robolectric.android.controller.ActivityController;
+import org.robolectric.annotation.GraphicsMode;
 
 import org.chromium.base.Callback;
 import org.chromium.base.DeviceInfo;
@@ -104,6 +107,7 @@ import java.util.List;
 public class HubToolbarViewUnitTest {
     private static final int TOOLBAR_WIDTH_PX = 1000;
     private static final int TOOLBAR_HEIGHT_PX = 200;
+    private static final int INDICATOR_BITMAP_SIZE_PX = 100;
 
     // All the tests in this file will run twice, once for isXrDevice=true and once for
     // isXrDevice=false. Expect all the tests with the same results on XR devices too.
@@ -781,6 +785,81 @@ public class HubToolbarViewUnitTest {
 
         verify(mCanvas, never()).clipRect(anyInt(), anyInt(), anyInt(), anyInt());
         verify(mCanvas, never()).clipRect(anyFloat(), anyFloat(), anyFloat(), anyFloat());
+    }
+
+    @Test
+    @GraphicsMode(GraphicsMode.Mode.NATIVE)
+    public void testSetPaneSwitcherButtonData_rebuildPreservesDefaultIndicatorColor() {
+        FullButtonData buttonData = makeTestButtonData();
+        FrameLayout container = inflateToolbarContainer();
+        TabLayout paneSwitcher = container.findViewById(R.id.pane_switcher);
+        PropertyModel model = new PropertyModel.Builder(HubToolbarProperties.ALL_KEYS).build();
+        PropertyModelChangeProcessor.create(
+                model, container.findViewById(R.id.hub_toolbar), HubToolbarViewBinder::bind);
+        model.set(PANE_SWITCHER_BUTTON_DATA, Arrays.asList(buttonData, buttonData, buttonData));
+        model.set(COLOR_MIXER, mColorMixer);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        model.set(PANE_SWITCHER_BUTTON_DATA, Arrays.asList(buttonData, buttonData));
+
+        assertEquals(
+                getExpectedSelectedTabIndicatorColor(HubColorScheme.DEFAULT),
+                getSelectedTabIndicatorRenderedColor(paneSwitcher));
+    }
+
+    @Test
+    @GraphicsMode(GraphicsMode.Mode.NATIVE)
+    public void testSetPaneSwitcherButtonData_rebuildAfterSchemeChangePreservesIndicatorColor() {
+        FullButtonData buttonData = makeTestButtonData();
+        mPropertyModel.set(
+                PANE_SWITCHER_BUTTON_DATA, Arrays.asList(buttonData, buttonData, buttonData));
+        forceSetColorScheme(HubColorScheme.INCOGNITO);
+
+        mPropertyModel.set(PANE_SWITCHER_BUTTON_DATA, Arrays.asList(buttonData, buttonData));
+
+        assertEquals(
+                getExpectedSelectedTabIndicatorColor(HubColorScheme.INCOGNITO),
+                getSelectedTabIndicatorRenderedColor(mPaneSwitcher));
+    }
+
+    @Test
+    @GraphicsMode(GraphicsMode.Mode.NATIVE)
+    public void testSetPaneSwitcherButtonData_rebuildOnPaneAdditionPreservesIndicatorColor() {
+        FullButtonData buttonData = makeTestButtonData();
+        mPropertyModel.set(PANE_SWITCHER_BUTTON_DATA, Arrays.asList(buttonData, buttonData));
+        forceSetColorScheme(HubColorScheme.INCOGNITO);
+
+        mPropertyModel.set(
+                PANE_SWITCHER_BUTTON_DATA, Arrays.asList(buttonData, buttonData, buttonData));
+
+        assertEquals(
+                getExpectedSelectedTabIndicatorColor(HubColorScheme.INCOGNITO),
+                getSelectedTabIndicatorRenderedColor(mPaneSwitcher));
+    }
+
+    private FrameLayout inflateToolbarContainer() {
+        int layoutId = mIsXrDevice ? R.layout.hub_xr_toolbar_layout : R.layout.hub_toolbar_layout;
+        return (FrameLayout) LayoutInflater.from(mActivity).inflate(layoutId, null, false);
+    }
+
+    private @ColorInt int getExpectedSelectedTabIndicatorColor(@HubColorScheme int colorScheme) {
+        if (HubUtils.isGtsUpdateEnabled()) {
+            return HubColors.geTabItemSelectorColor(mActivity, colorScheme);
+        }
+        return HubColors.getSelectedIconColor(mActivity, colorScheme, false);
+    }
+
+    private @ColorInt int getSelectedTabIndicatorRenderedColor(TabLayout paneSwitcher) {
+        Drawable indicator = paneSwitcher.getTabSelectedIndicator();
+        Bitmap bitmap =
+                Bitmap.createBitmap(
+                        INDICATOR_BITMAP_SIZE_PX,
+                        INDICATOR_BITMAP_SIZE_PX,
+                        Bitmap.Config.ARGB_8888);
+        indicator.setBounds(0, 0, INDICATOR_BITMAP_SIZE_PX, INDICATOR_BITMAP_SIZE_PX);
+        indicator.draw(new Canvas(bitmap));
+        int centerPx = INDICATOR_BITMAP_SIZE_PX / 2;
+        return bitmap.getPixel(centerPx, centerPx);
     }
 
     private void drawToolbarBackground() {
