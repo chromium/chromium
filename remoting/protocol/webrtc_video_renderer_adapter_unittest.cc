@@ -30,6 +30,7 @@
 #include "third_party/webrtc/api/test/mock_media_stream_interface.h"
 #include "third_party/webrtc/api/test/mock_video_track.h"
 #include "third_party/webrtc/api/video/i420_buffer.h"
+#include "third_party/webrtc/api/video/i444_buffer.h"
 #include "third_party/webrtc/api/video/video_common.h"
 #include "third_party/webrtc/api/video/video_frame.h"
 #include "third_party/webrtc/api/video/video_frame_buffer.h"
@@ -296,6 +297,66 @@ TEST_F(WebrtcVideoRendererAdapterTest,
   ASSERT_EQ(received.size(), 2u);
   EXPECT_TRUE(received.front()->size().equals(webrtc::DesktopSize(1024, 542)));
   EXPECT_TRUE(received.back()->size().equals(webrtc::DesktopSize(32, 24)));
+}
+
+TEST_F(WebrtcVideoRendererAdapterTest,
+       OnFrame_PreservesI444ChromaWithoutI420Downsampling) {
+  auto adapter = std::make_unique<WebrtcVideoRendererAdapter>("test_stream",
+                                                              &video_renderer_);
+
+  constexpr int kWidth = 16;
+  constexpr int kHeight = 16;
+  // Populate 1-pixel alternating complementary chroma columns (`U=32, V=224` vs
+  // `U=224, V=32`). Downsampling via `ToI420()` averages each 2x2 chroma block
+  // to neutral gray (`U=128, V=128`), whereas direct `I444ToARGB` preserves the
+  // distinct per-pixel colors.
+  std::vector<uint8_t> y_plane(kWidth * kHeight, 128);
+  std::vector<uint8_t> u_plane(kWidth * kHeight);
+  std::vector<uint8_t> v_plane(kWidth * kHeight);
+  for (int y = 0; y < kHeight; ++y) {
+    for (int x = 0; x < kWidth; ++x) {
+      const bool even_col = (x % 2 == 0);
+      u_plane[static_cast<size_t>(y * kWidth + x)] = even_col ? 32 : 224;
+      v_plane[static_cast<size_t>(y * kWidth + x)] = even_col ? 224 : 32;
+    }
+  }
+  webrtc::scoped_refptr<webrtc::I444Buffer> i444 =
+      webrtc::I444Buffer::Copy(kWidth, kHeight, y_plane.data(), kWidth,
+                               u_plane.data(), kWidth, v_plane.data(), kWidth);
+
+  base::RunLoop run_loop;
+  video_renderer_.GetFrameConsumer()->set_on_frame_callback(
+      run_loop.QuitClosure());
+  adapter->OnFrame(webrtc::VideoFrame::Builder()
+                       .set_video_frame_buffer(i444)
+                       .set_timestamp_us(0)
+                       .set_rtp_timestamp(3000)
+                       .build());
+  run_loop.Run();
+
+  ASSERT_EQ(video_renderer_.GetFrameConsumer()->received_frames().size(), 1u);
+  const webrtc::DesktopFrame& actual =
+      *video_renderer_.GetFrameConsumer()->received_frames().back();
+
+  webrtc::BasicDesktopFrame expected_i444(webrtc::DesktopSize(kWidth, kHeight),
+                                          webrtc::FOURCC_ARGB);
+  libyuv::I444ToARGB(i444->DataY(), i444->StrideY(), i444->DataU(),
+                     i444->StrideU(), i444->DataV(), i444->StrideV(),
+                     expected_i444.data(), expected_i444.stride(), kWidth,
+                     kHeight);
+  EXPECT_TRUE(AreDesktopFramesEqual(actual, expected_i444));
+
+  // Verify the rendered output actually retained full 4:4:4 chroma rather than
+  // matching a downsampled `ToI420()` frame.
+  webrtc::scoped_refptr<webrtc::I420BufferInterface> downsampled =
+      i444->ToI420();
+  webrtc::BasicDesktopFrame lossy_i420(webrtc::DesktopSize(kWidth, kHeight),
+                                       webrtc::FOURCC_ARGB);
+  libyuv::I420ToARGB(downsampled->DataY(), downsampled->StrideY(),
+                     downsampled->DataU(), downsampled->StrideU(),
+                     downsampled->DataV(), downsampled->StrideV(),
+                     lossy_i420.data(), lossy_i420.stride(), kWidth, kHeight);
+  EXPECT_FALSE(AreDesktopFramesEqual(actual, lossy_i420));
 }
 
 TEST_F(WebrtcVideoRendererAdapterTest,

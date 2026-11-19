@@ -66,32 +66,40 @@ std::unique_ptr<webrtc::DesktopFrame> ConvertYuvToRgb(
     return rgb_frame;
   }
 
-  webrtc::scoped_refptr<const webrtc::I420BufferInterface> i420_frame =
-      yuv_frame->ToI420();
-  if (!i420_frame) {
-    LOG(ERROR) << "Failed to convert video frame to I420.";
+  webrtc::scoped_refptr<const webrtc::I420BufferInterface> owned_i420;
+  const webrtc::PlanarYuv8Buffer* planar_yuv = nullptr;
+  bool is_i444 = false;
+  if (yuv_frame->type() == webrtc::VideoFrameBuffer::Type::kI444) {
+    planar_yuv = yuv_frame->GetI444();
+    is_i444 = true;
+  } else {
+    owned_i420 = yuv_frame->ToI420();
+    planar_yuv = owned_i420.get();
+  }
+  if (!planar_yuv) {
+    LOG(ERROR) << "Failed to obtain planar YUV buffer for video frame.";
     return nullptr;
   }
-  CHECK_EQ(i420_frame->width(), rgb_frame->size().width());
-  CHECK_EQ(i420_frame->height(), rgb_frame->size().height());
+  CHECK_EQ(planar_yuv->width(), rgb_frame->size().width());
+  CHECK_EQ(planar_yuv->height(), rgb_frame->size().height());
 
-  const int width = i420_frame->width();
-  const int height = i420_frame->height();
-  const int uv_width = i420_frame->ChromaWidth();
-  const int uv_height = i420_frame->ChromaHeight();
+  const int width = planar_yuv->width();
+  const int height = planar_yuv->height();
+  const int uv_width = planar_yuv->ChromaWidth();
+  const int uv_height = planar_yuv->ChromaHeight();
   const base::span<const uint8_t> y_span = GetYuvPlaneSpan(
-      i420_frame->DataY(), i420_frame->StrideY(), width, height);
+      planar_yuv->DataY(), planar_yuv->StrideY(), width, height);
   const base::span<const uint8_t> u_span = GetYuvPlaneSpan(
-      i420_frame->DataU(), i420_frame->StrideU(), uv_width, uv_height);
+      planar_yuv->DataU(), planar_yuv->StrideU(), uv_width, uv_height);
   const base::span<const uint8_t> v_span = GetYuvPlaneSpan(
-      i420_frame->DataV(), i420_frame->StrideV(), uv_width, uv_height);
+      planar_yuv->DataV(), planar_yuv->StrideV(), uv_width, uv_height);
 
   const webrtc::FourCC output_fourcc =
       (pixel_format == FrameConsumer::FORMAT_BGRA) ? webrtc::FOURCC_ARGB
                                                    : webrtc::FOURCC_ABGR;
-  ConvertYuvToDesktopFrame(y_span, i420_frame->StrideY(), u_span,
-                           i420_frame->StrideU(), v_span, i420_frame->StrideV(),
-                           /*is_i444=*/false, output_fourcc, *rgb_frame);
+  ConvertYuvToDesktopFrame(y_span, planar_yuv->StrideY(), u_span,
+                           planar_yuv->StrideU(), v_span, planar_yuv->StrideV(),
+                           is_i444, output_fourcc, *rgb_frame);
 
   rgb_frame->mutable_updated_region()->AddRect(
       webrtc::DesktopRect::MakeSize(rgb_frame->size()));
