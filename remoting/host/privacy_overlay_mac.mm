@@ -26,6 +26,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/i18n/rtl.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -73,8 +74,21 @@ constexpr CGFloat kMaxTextWidthRatio = 0.8;
 constexpr CGFloat kButtonCornerRadius = 14.0;
 constexpr CGFloat kButtonBorderWidth = 2.0;
 constexpr CGFloat kButtonMargin = 12.0;
+constexpr CGFloat kButtonScreenHorizontalMargin = 16.0;
 constexpr CGFloat kMinButtonWidth = 100.0;
 constexpr CGFloat kMinButtonHeight = 24.0;
+
+// Baseline macOS desktop `Body` text-style size (13pt for `DEFAULT` / `M`) and
+// supported clamp bounds for the user's Accessibility text scale factor
+// ("System Settings -> Accessibility -> Display -> Text size").
+constexpr CGFloat kDefaultMacBodyFontSizePt = 13.0;
+constexpr CGFloat kMinTextScaleFactor = 1.0;
+constexpr CGFloat kMaxTextScaleFactor = 2.5;
+
+NSString* const kUniversalAccessSuiteName = @"com.apple.universalaccess";
+NSString* const kFontSizeCategoryKey = @"FontSizeCategory";
+NSString* const kFontSizeUseGlobalValue = @"UseGlobal";
+NSString* const kFontSizeGlobalKey = @"global";
 
 // Per-axis movement threshold (in integer points truncated from
 // `CGEventGetLocation`, i.e., Chebyshev distance) required before local
@@ -112,6 +126,128 @@ GetMouseLocationProviderStorage() {
   static base::NoDestructor<remoting::PrivacyOverlayMac::MouseLocationProvider>
       provider;
   return *provider;
+}
+
+struct UniversalAccessTestingOverride {
+  bool active = false;
+  NSUserDefaults* __strong defaults = nil;
+  NSString* __strong bundle_id = nil;
+};
+
+UniversalAccessTestingOverride& GetUniversalAccessTestingOverrideStorage() {
+  static base::NoDestructor<UniversalAccessTestingOverride> storage;
+  return *storage;
+}
+
+// Maps a macOS Accessibility `FontSizeCategory` tier name (under
+// `com.apple.universalaccess`) to its empirically measured desktop `Body` point
+// size on macOS 14 (Sonoma) and macOS 15 (Sequoia). Unlike iOS Dynamic Type
+// (where `UIContentSizeCategoryLarge` `Body` defaults to 17pt and scales up to
+// `AX5` = 53pt), macOS uses a 13pt desktop baseline (`DEFAULT` / `M` = 13pt)
+// with slider steps `L` = 14pt, `XL` = 15pt, `XXL` = 16pt, `XXXL` = 17pt,
+// `AX1` = 20pt, `AX2` = 24pt, `AX3` = 29pt, `AX4` = 35pt, and `AX5` = 42pt.
+// Returns `kDefaultMacBodyFontSizePt` (13pt) for `DEFAULT`, `M`, unrecognized
+// values, or tiers smaller than 13pt (`XXXS`–`S`) so privacy overlay text is
+// never shrunk below baseline.
+CGFloat PointSizeForFontSizeCategory(NSString* category) {
+  if (!category || category.length == 0) {
+    return kDefaultMacBodyFontSizePt;
+  }
+  if ([category isEqualToString:@"L"]) {
+    return 14.0;
+  }
+  if ([category isEqualToString:@"XL"]) {
+    return 15.0;
+  }
+  if ([category isEqualToString:@"XXL"]) {
+    return 16.0;
+  }
+  if ([category isEqualToString:@"XXXL"]) {
+    return 17.0;
+  }
+  if ([category isEqualToString:@"AX1"]) {
+    return 20.0;
+  }
+  if ([category isEqualToString:@"AX2"]) {
+    return 24.0;
+  }
+  if ([category isEqualToString:@"AX3"]) {
+    return 29.0;
+  }
+  if ([category isEqualToString:@"AX4"]) {
+    return 35.0;
+  }
+  if ([category isEqualToString:@"AX5"]) {
+    return 42.0;
+  }
+  return kDefaultMacBodyFontSizePt;
+}
+
+CGFloat TextScaleFactorForCategory(NSString* category) {
+  return std::clamp(
+      PointSizeForFontSizeCategory(category) / kDefaultMacBodyFontSizePt,
+      kMinTextScaleFactor, kMaxTextScaleFactor);
+}
+
+NSUserDefaults* CreateUniversalAccessDefaults() {
+  const auto& override_state = GetUniversalAccessTestingOverrideStorage();
+  if (override_state.active) {
+    return override_state.defaults;
+  }
+  return [[NSUserDefaults alloc] initWithSuiteName:kUniversalAccessSuiteName];
+}
+
+// Queries the active user's Accessibility text scale factor from
+// `com.apple.universalaccess` / `FontSizeCategory` (clamped to `[1.0, 2.5]`).
+//
+// Pure AppKit font APIs (`NSFont.systemFontSize` and
+// `NSFontDescriptor.preferredFontDescriptorForTextStyle:`) remain fixed at 13pt
+// on macOS and do not track *System Settings -> Accessibility -> Display ->
+// Text size*. `com.apple.universalaccess` / `FontSizeCategory` is an
+// undocumented private preference introduced in macOS 14 (Sonoma) and validated
+// against macOS 14 (Sonoma) and macOS 15 (Sequoia): unsandboxed user-session
+// processes (such as `remoting_me2me_host`, which runs as a LaunchAgent with
+// Accessibility and Screen Recording TCC grants) read the domain via
+// `cfprefsd`, whereas direct plist file reads under `~/Library/Preferences/`
+// are TCC-protected since macOS 10.14. If `universal_access_defaults` or
+// `FontSizeCategory` is absent or empty (e.g. on macOS 13 Ventura, under
+// stricter TCC confinement, or if a future macOS release changes the schema),
+// this gracefully returns `kMinTextScaleFactor` (1.0).
+CGFloat GetSystemTextScaleFactor(NSUserDefaults* universal_access_defaults) {
+  if (!universal_access_defaults) {
+    return kMinTextScaleFactor;
+  }
+
+  NSDictionary* font_size_dict = base::apple::ObjCCast<NSDictionary>(
+      [universal_access_defaults objectForKey:kFontSizeCategoryKey]);
+  if (!font_size_dict) {
+    return kMinTextScaleFactor;
+  }
+
+  const auto& override_state = GetUniversalAccessTestingOverrideStorage();
+  NSString* bundle_id = override_state.active
+                            ? override_state.bundle_id
+                            : NSBundle.mainBundle.bundleIdentifier;
+  NSString* category = nil;
+  if (bundle_id.length > 0) {
+    NSString* app_category =
+        base::apple::ObjCCast<NSString>(font_size_dict[bundle_id]);
+    if (app_category.length > 0 &&
+        ![app_category isEqualToString:kFontSizeUseGlobalValue]) {
+      category = app_category;
+    }
+  }
+  if (!category) {
+    category =
+        base::apple::ObjCCast<NSString>(font_size_dict[kFontSizeGlobalKey]);
+  }
+  return TextScaleFactorForCategory(category);
+}
+
+CGFloat ScaleFontSize(CGFloat base_font_size, CGFloat text_scale) {
+  CGFloat clamped =
+      std::clamp(text_scale, kMinTextScaleFactor, kMaxTextScaleFactor);
+  return std::round(base_font_size * clamped);
 }
 
 // Returns active display frames in Cocoa global screen coordinates. Both
@@ -333,20 +469,19 @@ CGFloat MeasureWrappedTextHeight(
   return std::max(min_height, std::ceil(NSHeight(bounding_rect)));
 }
 
-struct BackdropContentLayout {
+struct BackdropRenderLayout {
   NSDictionary<NSAttributedStringKey, id>* __strong title_attrs;
   NSDictionary<NSAttributedStringKey, id>* __strong body_attrs;
-  NSRect icon_rect = NSZeroRect;
-  NSRect title_rect = NSZeroRect;
-  NSRect sharing_rect = NSZeroRect;
+  remoting::BackdropContentLayout rects;
 };
 
-BackdropContentLayout ComputeBackdropContentLayout(NSRect bounds,
-                                                   NSString* title_text,
-                                                   NSString* sharing_text,
-                                                   NSColor* text_color,
-                                                   BOOL is_rtl) {
-  BackdropContentLayout layout;
+BackdropRenderLayout ComputeBackdropRenderLayout(NSRect bounds,
+                                                 NSString* title_text,
+                                                 NSString* sharing_text,
+                                                 NSColor* text_color,
+                                                 BOOL is_rtl,
+                                                 CGFloat text_scale) {
+  BackdropRenderLayout layout;
   CGFloat width = NSWidth(bounds);
   CGFloat height = NSHeight(bounds);
   if (width <= 0.0 || height <= 0.0) {
@@ -359,20 +494,28 @@ BackdropContentLayout ComputeBackdropContentLayout(NSRect bounds,
       std::max<CGFloat>(1.0, std::floor(width * kMaxTextWidthRatio));
   CGFloat text_left = std::round(center_x - max_text_width / 2.0);
 
-  NSFont* title_font = [NSFont systemFontOfSize:kTitleFontSize
+  const CGFloat title_font_size = ScaleFontSize(kTitleFontSize, text_scale);
+  const CGFloat body_font_size = ScaleFontSize(kBodyFontSize, text_scale);
+
+  NSFont* title_font = [NSFont systemFontOfSize:title_font_size
                                          weight:NSFontWeightSemibold];
-  NSFont* body_font = [NSFont systemFontOfSize:kBodyFontSize
+  NSFont* body_font = [NSFont systemFontOfSize:body_font_size
                                         weight:NSFontWeightRegular];
 
   layout.title_attrs = CreateTextAttributes(title_font, text_color, is_rtl);
   layout.body_attrs = CreateTextAttributes(body_font, text_color, is_rtl);
 
   CGFloat title_height = MeasureWrappedTextHeight(
-      title_text, max_text_width, layout.title_attrs, kTitleFontSize);
+      title_text, max_text_width, layout.title_attrs, title_font_size);
   CGFloat body_height =
       MeasureWrappedTextHeight(sharing_text, max_text_width, layout.body_attrs,
-                               kBodyFontSize + kVerticalSpacing);
+                               body_font_size + kVerticalSpacing);
 
+  // On short displays or at large text scales (up to 2.5x), shifting
+  // `icon_top`, `title_bottom`, and `center_y` downward by the same
+  // `shift_down` keeps the icon below `min_icon_top` while preserving the exact
+  // `kVerticalSpacing` (16pt) separation between `icon_rect`, `title_rect`, and
+  // `sharing_rect` so the three elements never overlap.
   const CGFloat min_icon_top = NSMinY(bounds) + kVerticalSpacing;
   CGFloat title_bottom = center_y - kVerticalSpacing;
   CGFloat icon_top = title_bottom - title_height - kVerticalSpacing - kIconSize;
@@ -383,12 +526,13 @@ BackdropContentLayout ComputeBackdropContentLayout(NSRect bounds,
     center_y += shift_down;
   }
 
-  layout.icon_rect = NSMakeRect(std::round(center_x - kIconSize / 2.0),
-                                std::round(icon_top), kIconSize, kIconSize);
-  layout.title_rect =
+  layout.rects.icon_rect =
+      NSMakeRect(std::round(center_x - kIconSize / 2.0), std::round(icon_top),
+                 kIconSize, kIconSize);
+  layout.rects.title_rect =
       NSMakeRect(text_left, std::round(title_bottom - title_height),
                  max_text_width, title_height);
-  layout.sharing_rect =
+  layout.rects.sharing_rect =
       NSMakeRect(text_left, std::round(center_y), max_text_width, body_height);
   return layout;
 }
@@ -491,10 +635,12 @@ BackdropContentLayout ComputeBackdropContentLayout(NSRect bounds,
 @synthesize sharingText = _sharingText;
 @synthesize iconImage = _iconImage;
 @synthesize isRTL = _isRTL;
+@synthesize textScale = _textScale;
 
 - (instancetype)initWithFrame:(NSRect)frameRect {
   self = [super initWithFrame:frameRect];
   if (self) {
+    _textScale = kMinTextScaleFactor;
     self.accessibilityElement = YES;
     self.accessibilityRole = NSAccessibilityStaticTextRole;
     self.userInterfaceLayoutDirection =
@@ -560,6 +706,16 @@ BackdropContentLayout ComputeBackdropContentLayout(NSRect bounds,
   self.needsDisplay = YES;
 }
 
+- (void)setTextScale:(CGFloat)textScale {
+  const CGFloat clampedScale =
+      std::clamp(textScale, kMinTextScaleFactor, kMaxTextScaleFactor);
+  if (std::abs(_textScale - clampedScale) <= 1e-6) {
+    return;
+  }
+  _textScale = clampedScale;
+  self.needsDisplay = YES;
+}
+
 - (void)setHighContrastOverrideForTesting:(std::optional<bool>)highContrast {
   if (_highContrastOverrideForTesting == highContrast) {
     return;
@@ -581,10 +737,10 @@ BackdropContentLayout ComputeBackdropContentLayout(NSRect bounds,
   return NSWorkspace.sharedWorkspace.accessibilityDisplayShouldIncreaseContrast;
 }
 
-- (NSRect)sharingTextRectForBounds:(NSRect)bounds {
-  return ComputeBackdropContentLayout(bounds, _titleText, _sharingText,
-                                      NSColor.whiteColor, _isRTL)
-      .sharing_rect;
+- (remoting::BackdropContentLayout)contentLayoutForBounds:(NSRect)bounds {
+  return ComputeBackdropRenderLayout(bounds, _titleText, _sharingText,
+                                     NSColor.whiteColor, _isRTL, _textScale)
+      .rects;
 }
 
 - (void)drawRect:(NSRect)dirtyRect {
@@ -605,11 +761,11 @@ BackdropContentLayout ComputeBackdropContentLayout(NSRect bounds,
   [backgroundColor setFill];
   NSRectFill(dirtyRect);
 
-  BackdropContentLayout layout = ComputeBackdropContentLayout(
-      bounds, _titleText, _sharingText, textColor, _isRTL);
+  BackdropRenderLayout layout = ComputeBackdropRenderLayout(
+      bounds, _titleText, _sharingText, textColor, _isRTL, _textScale);
 
   if (_iconImage) {
-    [_iconImage drawInRect:layout.icon_rect
+    [_iconImage drawInRect:layout.rects.icon_rect
                   fromRect:NSZeroRect
                  operation:NSCompositingOperationSourceOver
                   fraction:1.0
@@ -617,15 +773,15 @@ BackdropContentLayout ComputeBackdropContentLayout(NSRect bounds,
                      hints:nil];
   }
 
-  if (_titleText.length > 0 && NSHeight(layout.title_rect) > 0.0) {
-    [_titleText drawWithRect:layout.title_rect
+  if (_titleText.length > 0 && NSHeight(layout.rects.title_rect) > 0.0) {
+    [_titleText drawWithRect:layout.rects.title_rect
                      options:NSStringDrawingUsesLineFragmentOrigin |
                              NSStringDrawingUsesFontLeading
                   attributes:layout.title_attrs];
   }
 
-  if (_sharingText.length > 0 && NSHeight(layout.sharing_rect) > 0.0) {
-    [_sharingText drawWithRect:layout.sharing_rect
+  if (_sharingText.length > 0 && NSHeight(layout.rects.sharing_rect) > 0.0) {
+    [_sharingText drawWithRect:layout.rects.sharing_rect
                        options:NSStringDrawingUsesLineFragmentOrigin |
                                NSStringDrawingUsesFontLeading
                     attributes:layout.body_attrs];
@@ -734,6 +890,9 @@ BackdropContentLayout ComputeBackdropContentLayout(NSRect bounds,
 
 @implementation PrivacyOverlayButtonWindow {
   base::RepeatingClosure _onDisconnect;
+  CGFloat _appliedTextScale;
+  NSSize _naturalButtonSize;
+  NSString* __strong _measuredButtonTitle;
 }
 
 @synthesize disconnectButton = _disconnectButton;
@@ -742,6 +901,7 @@ BackdropContentLayout ComputeBackdropContentLayout(NSRect bounds,
 - (instancetype)initWithTitle:(NSString*)buttonTitle
                   windowTitle:(NSString*)windowTitle
                         isRTL:(BOOL)isRTL
+                    textScale:(CGFloat)textScale
                  onDisconnect:(base::RepeatingClosure)onDisconnect {
   NSRect initialFrame = NSMakeRect(0, 0, kMinButtonWidth + kButtonMargin * 2.0,
                                    kMinButtonHeight + kButtonMargin * 2.0);
@@ -752,6 +912,8 @@ BackdropContentLayout ComputeBackdropContentLayout(NSRect bounds,
                               defer:NO];
   if (self) {
     _onDisconnect = std::move(onDisconnect);
+    _appliedTextScale = 0.0;
+    _naturalButtonSize = NSZeroSize;
     self.releasedWhenClosed = NO;
     self.hidesOnDeactivate = NO;
     self.canHide = NO;
@@ -778,7 +940,7 @@ BackdropContentLayout ComputeBackdropContentLayout(NSRect bounds,
                                  kMinButtonHeight)];
     _disconnectButton.buttonType = NSButtonTypeMomentaryPushIn;
     _disconnectButton.bezelStyle = NSBezelStyleFlexiblePush;
-    _disconnectButton.font = [NSFont systemFontOfSize:kBodyFontSize];
+    _disconnectButton.lineBreakMode = NSLineBreakByTruncatingTail;
     _disconnectButton.title = buttonTitle ?: @"";
     _disconnectButton.accessibilityLabel = buttonTitle ?: @"";
     _disconnectButton.userInterfaceLayoutDirection =
@@ -786,22 +948,19 @@ BackdropContentLayout ComputeBackdropContentLayout(NSRect bounds,
               : NSUserInterfaceLayoutDirectionLeftToRight;
     _disconnectButton.target = self;
     _disconnectButton.action = @selector(onDisconnectClicked:);
-    [_disconnectButton sizeToFit];
-
-    NSRect buttonFrame = _disconnectButton.frame;
-    CGFloat buttonWidth =
-        std::max(kMinButtonWidth, std::ceil(NSWidth(buttonFrame)));
-    CGFloat buttonHeight =
-        std::max(kMinButtonHeight, std::ceil(NSHeight(buttonFrame)));
-    CGFloat windowWidth = buttonWidth + kButtonMargin * 2.0;
-    CGFloat windowHeight = buttonHeight + kButtonMargin * 2.0;
-
-    [self setFrame:NSMakeRect(0, 0, windowWidth, windowHeight) display:NO];
-    _buttonView.frame = NSMakeRect(0, 0, windowWidth, windowHeight);
-    _disconnectButton.frame =
-        NSMakeRect(kButtonMargin, kButtonMargin, buttonWidth, buttonHeight);
     [_buttonView addSubview:_disconnectButton];
 
+    NSSize initialSize =
+        [self updateFontAndComputeWindowSizeForTextScale:textScale
+                                          maxWindowWidth:0.0];
+    if (![self applyWindowFrame:NSMakeRect(0, 0, initialSize.width,
+                                           initialSize.height)
+                   applyCaptureExclusion:NO
+            forceCaptureExclusionRefresh:NO]) {
+      [self orderOut:nil];
+      [self close];
+      return nil;
+    }
     // Capture exclusion on `button_window_` is best-effort (`sharingType =
     // NSWindowSharingNone` is still set, and remote clicks are dropped in
     // `-sendEvent:`): unlike `backdrop_windows_`, failing to apply the CGS
@@ -813,6 +972,98 @@ BackdropContentLayout ComputeBackdropContentLayout(NSRect bounds,
     }
   }
   return self;
+}
+
+- (NSSize)updateFontAndComputeWindowSizeForTextScale:(CGFloat)textScale
+                                      maxWindowWidth:(CGFloat)maxWindowWidth {
+  if (!_disconnectButton || !_buttonView) {
+    return NSZeroSize;
+  }
+
+  const CGFloat clampedScale =
+      std::clamp(textScale, kMinTextScaleFactor, kMaxTextScaleFactor);
+  NSString* currentTitle = _disconnectButton.title ?: @"";
+  if (_naturalButtonSize.width <= 0.0 || _naturalButtonSize.height <= 0.0 ||
+      std::abs(_appliedTextScale - clampedScale) > 1e-6 ||
+      !_measuredButtonTitle ||
+      ![_measuredButtonTitle isEqualToString:currentTitle]) {
+    _disconnectButton.font =
+        [NSFont systemFontOfSize:ScaleFontSize(kBodyFontSize, clampedScale)];
+    [_disconnectButton sizeToFit];
+    _naturalButtonSize = _disconnectButton.frame.size;
+    _appliedTextScale = clampedScale;
+    _measuredButtonTitle = [currentTitle copy];
+  }
+
+  CGFloat minButtonWidth = std::ceil(kMinButtonWidth * clampedScale);
+  CGFloat minButtonHeight = std::ceil(kMinButtonHeight * clampedScale);
+  CGFloat buttonWidth =
+      std::max(minButtonWidth, std::ceil(_naturalButtonSize.width));
+  CGFloat buttonHeight =
+      std::max(minButtonHeight, std::ceil(_naturalButtonSize.height));
+  CGFloat windowWidth = buttonWidth + kButtonMargin * 2.0;
+  if (maxWindowWidth > 0.0 && windowWidth > maxWindowWidth) {
+    windowWidth = maxWindowWidth;
+  }
+  return NSMakeSize(windowWidth, buttonHeight + kButtonMargin * 2.0);
+}
+
+- (BOOL)applyWindowFrame:(NSRect)targetFrame
+           applyCaptureExclusion:(BOOL)applyCaptureExclusion
+    forceCaptureExclusionRefresh:(BOOL)forceCaptureExclusionRefresh {
+  if (!_disconnectButton || !_buttonView || NSWidth(targetFrame) <= 0.0 ||
+      NSHeight(targetFrame) <= 0.0) {
+    return NO;
+  }
+
+  NSRect oldFrame = self.frame;
+  const BOOL sizeChanged = !NSEqualSizes(oldFrame.size, targetFrame.size);
+
+  // Expand the capture-exclusion region to the union size before growing a live
+  // window frame so enlarged corners cannot flash to WindowServer capture, then
+  // tighten to `targetFrame.size` afterward (or refresh unconditionally when
+  // `forceCaptureExclusionRefresh` is YES). Capture exclusion on
+  // `button_window_` is best-effort (`sharingType = NSWindowSharingNone` is
+  // still set, and remote clicks are dropped in `-sendEvent:`), so log a
+  // warning on failure and still apply `targetFrame`.
+  if (applyCaptureExclusion && sizeChanged) {
+    NSSize unionSize =
+        NSMakeSize(std::max(NSWidth(oldFrame), NSWidth(targetFrame)),
+                   std::max(NSHeight(oldFrame), NSHeight(targetFrame)));
+    if (!NSEqualSizes(oldFrame.size, unionSize) &&
+        !ApplyCaptureExclusionForSize(self, unionSize)) {
+      LOG(WARNING)
+          << "Failed to expand capture exclusion before resizing Disconnect "
+          << "button";
+    }
+  }
+
+  const BOOL frameChanged = !NSEqualRects(oldFrame, targetFrame);
+  if (frameChanged) {
+    [self setFrame:targetFrame display:NO];
+  }
+
+  if (applyCaptureExclusion && (sizeChanged || forceCaptureExclusionRefresh) &&
+      !ApplyCaptureExclusion(self)) {
+    LOG(WARNING) << "Failed to update capture exclusion for Disconnect button";
+  }
+
+  NSSize appliedSize = self.frame.size;
+  CGFloat buttonWidth =
+      std::max<CGFloat>(1.0, appliedSize.width - kButtonMargin * 2.0);
+  CGFloat buttonHeight =
+      std::max<CGFloat>(1.0, appliedSize.height - kButtonMargin * 2.0);
+  _buttonView.frame = NSMakeRect(0, 0, appliedSize.width, appliedSize.height);
+  if (self.contentView != _buttonView) {
+    self.contentView.frame =
+        NSMakeRect(0, 0, appliedSize.width, appliedSize.height);
+  }
+  _disconnectButton.frame =
+      NSMakeRect(kButtonMargin, kButtonMargin, buttonWidth, buttonHeight);
+  if (frameChanged && !self.ignoresMouseEvents && self.alphaValue > 0.0) {
+    [self displayIfNeeded];
+  }
+  return YES;
 }
 
 - (NSRect)constrainFrameRect:(NSRect)frameRect toScreen:(NSScreen*)screen {
@@ -926,6 +1177,35 @@ PrivacyOverlayMac::SetMouseLocationProviderForTesting(
 }
 
 // static
+base::ScopedClosureRunner
+PrivacyOverlayMac::SetUniversalAccessDefaultsForTesting(
+    NSUserDefaults* defaults,
+    NSString* bundle_id) {
+  auto& storage = GetUniversalAccessTestingOverrideStorage();
+  const bool prev_active = storage.active;
+  NSUserDefaults* prev_defaults = storage.defaults;
+  NSString* prev_bundle_id = storage.bundle_id;
+  storage.active = true;
+  storage.defaults = defaults;
+  storage.bundle_id = [bundle_id copy];
+  return base::ScopedClosureRunner(base::BindOnce(
+      [](bool prev_active, NSUserDefaults* prev_defaults,
+         NSString* prev_bundle_id) {
+        auto& storage = GetUniversalAccessTestingOverrideStorage();
+        storage.active = prev_active;
+        storage.defaults = prev_defaults;
+        storage.bundle_id = prev_bundle_id;
+      },
+      prev_active, prev_defaults, prev_bundle_id));
+}
+
+// static
+CGFloat PrivacyOverlayMac::TextScaleFactorForCategoryNameForTesting(
+    NSString* category) {
+  return TextScaleFactorForCategory(category);
+}
+
+// static
 bool PrivacyOverlayMac::IsRemoteInjectedEventForTesting(NSEvent* event) {
   return IsRemoteInjectedEvent(event);
 }
@@ -972,6 +1252,8 @@ bool PrivacyOverlayMac::BeginOverlay() {
   }
 
   icon_image_ = LoadOverlayIcon();
+  cached_text_scale_ =
+      GetSystemTextScaleFactor(CreateUniversalAccessDefaults());
 
   if (!UpdateBackdrops()) {
     return false;
@@ -981,6 +1263,7 @@ bool PrivacyOverlayMac::BeginOverlay() {
       initWithTitle:button_text_
         windowTitle:product_name_text_
               isRTL:is_rtl_
+          textScale:cached_text_scale_
        onDisconnect:base::BindRepeating(
                         &PrivacyOverlayMac::OnDisconnectButtonClicked,
                         weak_factory_.GetWeakPtr())];
@@ -992,7 +1275,8 @@ bool PrivacyOverlayMac::BeginOverlay() {
   NSPoint initial_cocoa_pos = GetCurrentMouseLocation();
   mouse_position_ = ConvertCocoaPointToQuartz(screen_frames, initial_cocoa_pos);
 
-  PositionDisconnectButton(screen_frames, initial_cocoa_pos);
+  PositionDisconnectButton(screen_frames, initial_cocoa_pos,
+                           /*force_capture_exclusion_refresh=*/false);
   DeactivateDisconnectButton();
 
   notification_observer_ = [[PrivacyOverlayNotificationObserver alloc]
@@ -1019,6 +1303,7 @@ void PrivacyOverlayMac::EndOverlay() {
   auto_hide_timer_.Stop();
   local_input_monitor_.reset();
   active_button_screen_frame_.reset();
+  cached_text_scale_ = kMinTextScaleFactor;
 
   if (notification_observer_) {
     [notification_observer_ invalidate];
@@ -1102,6 +1387,7 @@ bool PrivacyOverlayMac::UpdateBackdrops() {
     view.sharingText = sharing_with_text_;
     view.iconImage = icon_image_;
     view.isRTL = is_rtl_;
+    view.textScale = cached_text_scale_;
 
     [window orderFrontRegardless];
   }
@@ -1111,7 +1397,8 @@ bool PrivacyOverlayMac::UpdateBackdrops() {
 
 void PrivacyOverlayMac::PositionDisconnectButton(
     const std::vector<NSRect>& screen_frames,
-    NSPoint cocoa_screen_point) {
+    NSPoint cocoa_screen_point,
+    bool force_capture_exclusion_refresh) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!button_window_) {
     return;
@@ -1127,21 +1414,32 @@ void PrivacyOverlayMac::PositionDisconnectButton(
   const NSRect& screen_frame = screen_frames[screen_index];
   CGFloat screen_width = NSWidth(screen_frame);
   CGFloat screen_height = NSHeight(screen_frame);
-  NSRect button_frame = button_window_.frame;
-  CGFloat button_width = NSWidth(button_frame);
-  CGFloat button_height = NSHeight(button_frame);
+  CGFloat max_window_width =
+      (screen_width > kButtonScreenHorizontalMargin * 2.0)
+          ? (screen_width - kButtonScreenHorizontalMargin * 2.0)
+          : std::max<CGFloat>(1.0, screen_width);
+  NSSize button_size = [button_window_
+      updateFontAndComputeWindowSizeForTextScale:cached_text_scale_
+                                  maxWindowWidth:max_window_width];
+  if (button_size.width <= 0.0 || button_size.height <= 0.0) {
+    LOG(ERROR) << "Invalid Disconnect button window size: " << button_size.width
+               << "x" << button_size.height;
+    return;
+  }
+  CGFloat button_width = button_size.width;
+  CGFloat button_height = button_size.height;
 
-  // Measure the wrapped sharing text bounds directly from the current text and
-  // RTL state (independent of `backdrop_windows_`) so the floating Disconnect
-  // button is placed below multi-line text whenever vertical screen space
-  // permits. Clamp to `kVerticalSpacing` from the bottom edge so the button
-  // always remains fully on-screen (overlapping text only when a display is too
-  // short to fit both).
+  // Measure the wrapped sharing text bounds directly from the current text,
+  // RTL state, and `cached_text_scale_` (independent of `backdrop_windows_`) so
+  // the floating Disconnect button is placed below multi-line text whenever
+  // vertical screen space permits. Clamp to `kVerticalSpacing` from the bottom
+  // edge so the button always remains fully on-screen (overlapping text only
+  // when a display is too short to fit both).
   NSRect sharing_rect =
-      ComputeBackdropContentLayout(
+      ComputeBackdropRenderLayout(
           NSMakeRect(0, 0, screen_width, screen_height), product_name_text_,
-          sharing_with_text_, NSColor.whiteColor, is_rtl_)
-          .sharing_rect;
+          sharing_with_text_, NSColor.whiteColor, is_rtl_, cached_text_scale_)
+          .rects.sharing_rect;
   CGFloat min_flipped_button_top =
       std::max<CGFloat>((screen_height / 2.0) + kButtonTopOffset,
                         NSMaxY(sharing_rect) + kVerticalSpacing);
@@ -1158,10 +1456,19 @@ void PrivacyOverlayMac::PositionDisconnectButton(
   active_button_screen_frame_ = screen_frame;
 
   // Store expected origin in global Cocoa screen coordinates (matching
-  // `button_window_.frame.origin`, bottom-left origin of primary display) for
-  // `ShouldRepositionOnDisplacement()` when observing `NSWindowDidMove`.
+  // `button_window_.frame.origin`, bottom-left origin of primary display)
+  // before `setFrame:` (which synchronously posts `NSWindowDidMoveNotification`
+  // to `OnButtonWindowDidMove()`), then apply both size and centered origin in
+  // a single `setFrame:` call. `button_size` and subviews were already
+  // validated by `updateFontAndComputeWindowSizeForTextScale:maxWindowWidth:`
+  // above.
   SetExpectedPosition(static_cast<int>(cocoa_x), static_cast<int>(cocoa_y));
-  [button_window_ setFrameOrigin:NSMakePoint(cocoa_x, cocoa_y)];
+  const BOOL applied = [button_window_
+                  applyWindowFrame:NSMakeRect(cocoa_x, cocoa_y, button_width,
+                                              button_height)
+             applyCaptureExclusion:YES
+      forceCaptureExclusionRefresh:force_capture_exclusion_refresh ? YES : NO];
+  DCHECK(applied);
 }
 
 void PrivacyOverlayMac::ActivateDisconnectButton(NSPoint cocoa_screen_point) {
@@ -1204,13 +1511,8 @@ void PrivacyOverlayMac::ActivateDisconnectButtonWithFrames(
     }
   }
 
-  PositionDisconnectButton(screen_frames, cocoa_screen_point);
-
-  if (!ApplyCaptureExclusion(button_window_)) {
-    LOG(WARNING)
-        << "Failed to apply capture exclusion when activating Disconnect "
-        << "button";
-  }
+  PositionDisconnectButton(screen_frames, cocoa_screen_point,
+                           /*force_capture_exclusion_refresh=*/true);
   is_button_hidden_ = false;
   button_window_.ignoresMouseEvents = NO;
   button_window_.alphaValue = 1.0;
@@ -1274,13 +1576,9 @@ void PrivacyOverlayMac::OnScreenParametersChanged() {
   }
   const std::vector<NSRect> screen_frames = GetScreenFrames();
   PositionDisconnectButton(
-      screen_frames, ConvertQuartzPointToCocoa(screen_frames, mouse_position_));
+      screen_frames, ConvertQuartzPointToCocoa(screen_frames, mouse_position_),
+      /*force_capture_exclusion_refresh=*/!is_button_hidden_);
   if (!is_button_hidden_ && button_window_) {
-    if (!ApplyCaptureExclusion(button_window_)) {
-      LOG(WARNING)
-          << "Failed to reapply capture exclusion to Disconnect button after "
-          << "screen parameters changed";
-    }
     [button_window_ orderFrontRegardless];
   }
 }

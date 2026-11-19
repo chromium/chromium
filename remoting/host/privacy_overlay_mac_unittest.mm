@@ -22,6 +22,7 @@
 #include "base/auto_reset.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -281,6 +282,8 @@ class PrivacyOverlayMacTest : public testing::Test {
   bool synchronous_error_monitor_destroyed_ = false;
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  base::ScopedClosureRunner universal_access_override_ =
+      PrivacyOverlayMac::SetUniversalAccessDefaultsForTesting(nil, nil);
   std::string client_jid_ = "user@domain/jid123";
   NiceMock<MockClientSessionControl> client_session_control_;
   LocalInputMonitor::PointerMoveCallback pointer_callback_;
@@ -778,17 +781,18 @@ TEST_F(PrivacyOverlayMacTest, TruncatesOverlongClientEmailWithEllipsis) {
   std::u16string sharing_text = base::SysNSStringToUTF16(view.sharingText);
   EXPECT_NE(sharing_text.find(u"\u2026"), std::u16string::npos);
 
-  NSRect sharing_rect = [view sharingTextRectForBounds:view.bounds];
+  NSRect sharing_rect = [view contentLayoutForBounds:view.bounds].sharing_rect;
   EXPECT_GT(NSWidth(sharing_rect), 0.0);
   EXPECT_GT(NSHeight(sharing_rect), 0.0);
 
-  // Verify `sharingTextRectForBounds:` remains origin-invariant even on short
+  // Verify `contentLayoutForBounds:` remains origin-invariant even on short
   // bounds where the top-overflow clamp engages.
   NSRect zero_origin_short_bounds = NSMakeRect(0.0, 0.0, 300.0, 140.0);
   NSRect offset_short_bounds = NSMakeRect(120.0, 240.0, 300.0, 140.0);
   NSRect rect_at_zero =
-      [view sharingTextRectForBounds:zero_origin_short_bounds];
-  NSRect rect_at_offset = [view sharingTextRectForBounds:offset_short_bounds];
+      [view contentLayoutForBounds:zero_origin_short_bounds].sharing_rect;
+  NSRect rect_at_offset =
+      [view contentLayoutForBounds:offset_short_bounds].sharing_rect;
   EXPECT_TRUE(
       NSEqualRects(rect_at_offset, NSOffsetRect(rect_at_zero, 120.0, 240.0)));
 }
@@ -1125,7 +1129,7 @@ TEST_F(PrivacyOverlayMacTest,
           overlay_->backdrop_windows_for_testing().firstObject.contentView);
   ASSERT_NE(backdrop_view, nil);
   NSRect sharing_rect =
-      [backdrop_view sharingTextRectForBounds:backdrop_view.bounds];
+      [backdrop_view contentLayoutForBounds:backdrop_view.bounds].sharing_rect;
   CGFloat sharing_bottom_in_cocoa = NSMaxY(kScreenFrame) - NSMaxY(sharing_rect);
   EXPECT_LE(NSMaxY(button_frame), sharing_bottom_in_cocoa);
 }
@@ -1146,8 +1150,8 @@ TEST_F(PrivacyOverlayMacTest,
       base::apple::ObjCCastStrict<PrivacyOverlayBackdropView>(
           overlay_->backdrop_windows_for_testing().firstObject.contentView);
   ASSERT_NE(baseline_view, nil);
-  const CGFloat baseline_sharing_height =
-      NSHeight([baseline_view sharingTextRectForBounds:baseline_view.bounds]);
+  const CGFloat baseline_sharing_height = NSHeight(
+      [baseline_view contentLayoutForBounds:baseline_view.bounds].sharing_rect);
   const CGFloat baseline_button_max_y =
       NSMaxY(overlay_->button_window_for_testing().frame);
   DestroyOverlay();
@@ -1173,7 +1177,7 @@ TEST_F(PrivacyOverlayMacTest,
           overlay_->backdrop_windows_for_testing().firstObject.contentView);
   ASSERT_NE(backdrop_view, nil);
   NSRect sharing_rect =
-      [backdrop_view sharingTextRectForBounds:backdrop_view.bounds];
+      [backdrop_view contentLayoutForBounds:backdrop_view.bounds].sharing_rect;
   ASSERT_GT(NSHeight(sharing_rect), baseline_sharing_height);
   CGFloat sharing_bottom_in_cocoa = NSMaxY(narrow_frame) - NSMaxY(sharing_rect);
 
@@ -1192,9 +1196,11 @@ TEST_F(PrivacyOverlayMacTest,
       NSMakePoint(NSMidX(short_frame), NSMidY(short_frame)));
   NSRect clamped_frame = overlay_->button_window_for_testing().frame;
   EXPECT_DOUBLE_EQ(NSMinY(clamped_frame), kVerticalMargin);
-  NSRect short_sharing_rect = [backdrop_view
-      sharingTextRectForBounds:NSMakeRect(0.0, 0.0, NSWidth(short_frame),
-                                          NSHeight(short_frame))];
+  NSRect short_sharing_rect =
+      [backdrop_view
+          contentLayoutForBounds:NSMakeRect(0.0, 0.0, NSWidth(short_frame),
+                                            NSHeight(short_frame))]
+          .sharing_rect;
   CGFloat short_sharing_bottom_in_cocoa =
       NSMaxY(short_frame) - NSMaxY(short_sharing_rect);
   EXPECT_GT(NSMaxY(clamped_frame), short_sharing_bottom_in_cocoa);
@@ -1810,6 +1816,218 @@ TEST_F(PrivacyOverlayMacTest,
   EXPECT_FALSE(overlay_->is_button_hidden_for_testing());
   EXPECT_TRUE(button_window.isVisible);
   EXPECT_NEAR(NSMidX(button_window.frame), NSMidX(kResizedPrimary), 1.0);
+}
+
+TEST_F(PrivacyOverlayMacTest,
+       MapsAccessibilityFontSizeCategoryNamesToClampedScaleFactors) {
+  EXPECT_DOUBLE_EQ(
+      PrivacyOverlayMac::TextScaleFactorForCategoryNameForTesting(nil), 1.0);
+  EXPECT_DOUBLE_EQ(
+      PrivacyOverlayMac::TextScaleFactorForCategoryNameForTesting(@"DEFAULT"),
+      1.0);
+  EXPECT_DOUBLE_EQ(
+      PrivacyOverlayMac::TextScaleFactorForCategoryNameForTesting(@"M"), 1.0);
+  EXPECT_DOUBLE_EQ(
+      PrivacyOverlayMac::TextScaleFactorForCategoryNameForTesting(@"XS"), 1.0);
+  EXPECT_NEAR(PrivacyOverlayMac::TextScaleFactorForCategoryNameForTesting(@"L"),
+              14.0 / 13.0, 1e-6);
+  EXPECT_NEAR(
+      PrivacyOverlayMac::TextScaleFactorForCategoryNameForTesting(@"XL"),
+      15.0 / 13.0, 1e-6);
+  EXPECT_NEAR(
+      PrivacyOverlayMac::TextScaleFactorForCategoryNameForTesting(@"XXL"),
+      16.0 / 13.0, 1e-6);
+  EXPECT_NEAR(
+      PrivacyOverlayMac::TextScaleFactorForCategoryNameForTesting(@"XXXL"),
+      17.0 / 13.0, 1e-6);
+  EXPECT_NEAR(
+      PrivacyOverlayMac::TextScaleFactorForCategoryNameForTesting(@"AX1"),
+      20.0 / 13.0, 1e-6);
+  EXPECT_NEAR(
+      PrivacyOverlayMac::TextScaleFactorForCategoryNameForTesting(@"AX2"),
+      24.0 / 13.0, 1e-6);
+  EXPECT_NEAR(
+      PrivacyOverlayMac::TextScaleFactorForCategoryNameForTesting(@"AX3"),
+      29.0 / 13.0, 1e-6);
+  // `AX4` (35pt / 13pt ~= 2.69x) and `AX5` (42pt / 13pt ~= 3.23x) clamp to
+  // `kMaxTextScaleFactor` (2.5x).
+  EXPECT_DOUBLE_EQ(
+      PrivacyOverlayMac::TextScaleFactorForCategoryNameForTesting(@"AX4"), 2.5);
+  EXPECT_DOUBLE_EQ(
+      PrivacyOverlayMac::TextScaleFactorForCategoryNameForTesting(@"AX5"), 2.5);
+}
+
+class PrivacyOverlayMacTextScaleTest : public PrivacyOverlayMacTest {
+ protected:
+  void SetUp() override {
+    ASSERT_NO_FATAL_FAILURE(PrivacyOverlayMacTest::SetUp());
+    suite_name_ = [NSString
+        stringWithFormat:@"org.chromium.remoting.PrivacyOverlayMac.%@",
+                         NSUUID.UUID.UUIDString];
+    test_defaults_ = [[NSUserDefaults alloc] initWithSuiteName:suite_name_];
+    ASSERT_NE(test_defaults_, nil);
+    [test_defaults_ setObject:@{
+      @"global" : @"DEFAULT",
+      test_bundle_id_ : @"UseGlobal",
+    }
+                       forKey:@"FontSizeCategory"];
+    reset_defaults_ = PrivacyOverlayMac::SetUniversalAccessDefaultsForTesting(
+        test_defaults_, test_bundle_id_);
+  }
+
+  void TearDown() override {
+    // Destroy `overlay_` before removing the persistent suite domain, even on
+    // early `ASSERT_*`.
+    DestroyOverlay();
+    reset_defaults_.RunAndReset();
+    if (test_defaults_ && suite_name_) {
+      [test_defaults_ removePersistentDomainForName:suite_name_];
+    }
+    test_defaults_ = nil;
+    suite_name_ = nil;
+    PrivacyOverlayMacTest::TearDown();
+  }
+
+  void StartOverlayAndRevealButton() {
+    ASSERT_NO_FATAL_FAILURE(StartOverlay());
+    ASSERT_NE(overlay_, nullptr);
+    overlay_->ActivateDisconnectButtonForTesting(NSMakePoint(640.0, 360.0));
+    ASSERT_NE(overlay_->button_window_for_testing(), nil);
+    ASSERT_NE(PrimaryBackdropView(), nil);
+  }
+
+  PrivacyOverlayBackdropView* PrimaryBackdropView() const {
+    return base::apple::ObjCCastStrict<PrivacyOverlayBackdropView>(
+        overlay_->backdrop_windows_for_testing().firstObject.contentView);
+  }
+
+  // Matches `PrivacyOverlayMac`'s 1x baseline typography and minimum button
+  // window bounds (`kTitleFontSize = 21`, `kBodyFontSize = 14`,
+  // `kVerticalSpacing = 16`, `kMinButtonWidth = 100`, `kMinButtonHeight = 24`,
+  // `kButtonMargin = 12`).
+  static constexpr CGFloat kBaselineTitleFontSizePt = 21.0;
+  static constexpr CGFloat kBaselineBodyFontSizePt = 14.0;
+  static constexpr CGFloat kBaselineSharingMinHeightPt =
+      kBaselineBodyFontSizePt + 16.0;
+  static constexpr CGFloat kBaselineMinButtonWindowWidth = 100.0 + 12.0 * 2.0;
+  static constexpr CGFloat kBaselineMinButtonWindowHeight = 24.0 + 12.0 * 2.0;
+
+  std::vector<NSRect> screen_frames_{NSMakeRect(0.0, 0.0, 1280.0, 720.0)};
+  base::AutoReset<PrivacyOverlayMac::ScreenFramesProvider> reset_screens_ =
+      PrivacyOverlayMac::SetScreenFramesProviderForTesting(
+          base::BindLambdaForTesting([this]() { return screen_frames_; }));
+  base::AutoReset<PrivacyOverlayMac::MouseLocationProvider> reset_mouse_ =
+      PrivacyOverlayMac::SetMouseLocationProviderForTesting(
+          base::BindLambdaForTesting(
+              []() { return NSMakePoint(640.0, 360.0); }));
+  base::AutoReset<PrivacyOverlayMac::CaptureExclusionApplier> reset_exclusion_ =
+      PrivacyOverlayMac::SetCaptureExclusionApplierForTesting(
+          base::BindRepeating(
+              [](NSWindow* /*window*/, NSSize /*size*/) { return true; }));
+  NSString* __strong test_bundle_id_ = @"com.google.chromeremoting.test";
+  NSString* __strong suite_name_;
+  NSUserDefaults* __strong test_defaults_;
+  base::ScopedClosureRunner reset_defaults_;
+};
+
+TEST_F(PrivacyOverlayMacTextScaleTest,
+       ScalesBackdropAndButtonFontsFromInitialGlobalFontSizeCategory) {
+  // With the per-app entry set to `UseGlobal`, `BeginOverlay()` resolves the
+  // `global` tier (`AX2`).
+  constexpr CGFloat kAx2Scale = 24.0 / 13.0;
+  [test_defaults_ setObject:@{
+    @"global" : @"AX2",
+    test_bundle_id_ : @"UseGlobal",
+  }
+                     forKey:@"FontSizeCategory"];
+
+  ASSERT_NO_FATAL_FAILURE(StartOverlayAndRevealButton());
+  PrivacyOverlayButtonWindow* button_window =
+      overlay_->button_window_for_testing();
+  PrivacyOverlayBackdropView* backdrop_view = PrimaryBackdropView();
+  const NSRect button_frame = button_window.frame;
+  const BackdropContentLayout content_layout =
+      [backdrop_view contentLayoutForBounds:backdrop_view.bounds];
+
+  EXPECT_DOUBLE_EQ(backdrop_view.textScale, kAx2Scale);
+  EXPECT_DOUBLE_EQ(button_window.disconnectButton.font.pointSize,
+                   std::round(kBaselineBodyFontSizePt * kAx2Scale));
+  EXPECT_GT(NSWidth(button_frame), kBaselineMinButtonWindowWidth);
+  EXPECT_GT(NSHeight(button_frame), kBaselineMinButtonWindowHeight);
+  EXPECT_NEAR(NSMidX(button_frame), NSMidX(screen_frames_.front()), 1.0);
+  EXPECT_GE(NSHeight(content_layout.title_rect),
+            std::round(kBaselineTitleFontSizePt * kAx2Scale));
+  EXPECT_GT(NSHeight(content_layout.sharing_rect), kBaselineSharingMinHeightPt);
+}
+
+TEST_F(PrivacyOverlayMacTextScaleTest,
+       PerAppFontSizeCategoryOverrideTakesPrecedenceOverGlobal) {
+  constexpr CGFloat kXlScale = 15.0 / 13.0;
+  [test_defaults_ setObject:@{
+    @"global" : @"AX2",
+    test_bundle_id_ : @"XL",
+  }
+                     forKey:@"FontSizeCategory"];
+
+  ASSERT_NO_FATAL_FAILURE(StartOverlayAndRevealButton());
+  EXPECT_DOUBLE_EQ(
+      overlay_->button_window_for_testing().disconnectButton.font.pointSize,
+      std::round(kBaselineBodyFontSizePt * kXlScale));
+  EXPECT_DOUBLE_EQ(PrimaryBackdropView().textScale, kXlScale);
+}
+
+TEST_F(PrivacyOverlayMacTextScaleTest,
+       PreventsBackdropElementOverlapAtMaxClampedTextScaleOnShortDisplay) {
+  // Verify at max clamped scale (`AX5` -> 2.5x) on a short 1280x720 display
+  // that `icon_rect`, `title_rect`, and `sharing_rect` never overlap.
+  [test_defaults_ setObject:@{
+    @"global" : @"AX5",
+  }
+                     forKey:@"FontSizeCategory"];
+  ASSERT_NO_FATAL_FAILURE(StartOverlayAndRevealButton());
+  PrivacyOverlayButtonWindow* button_window =
+      overlay_->button_window_for_testing();
+  PrivacyOverlayBackdropView* backdrop_view = PrimaryBackdropView();
+
+  EXPECT_DOUBLE_EQ(button_window.disconnectButton.font.pointSize,
+                   std::round(kBaselineBodyFontSizePt * 2.5));
+  const BackdropContentLayout layout_max =
+      [backdrop_view contentLayoutForBounds:backdrop_view.bounds];
+  EXPECT_LE(NSMaxY(layout_max.icon_rect), NSMinY(layout_max.title_rect));
+  EXPECT_LE(NSMaxY(layout_max.title_rect), NSMinY(layout_max.sharing_rect));
+}
+
+TEST_F(PrivacyOverlayMacTextScaleTest,
+       ClampsDisconnectButtonWidthOnNarrowDisplayPreservingAccessibilityLabel) {
+  [test_defaults_ setObject:@{
+    @"global" : @"AX5",
+  }
+                     forKey:@"FontSizeCategory"];
+
+  ASSERT_NO_FATAL_FAILURE(StartOverlayAndRevealButton());
+  PrivacyOverlayButtonWindow* button_window =
+      overlay_->button_window_for_testing();
+  const CGFloat unclamped_width = NSWidth(button_window.frame);
+  ASSERT_GT(unclamped_width, 180.0);
+
+  // Transition to a narrow display (180x480) at 2.5x scale and verify
+  // `button_window_` clamps horizontally within the display bounds while
+  // preserving the full VoiceOver `accessibilityLabel`.
+  screen_frames_ = {NSMakeRect(0.0, 0.0, 180.0, 480.0)};
+  overlay_->OnScreenParametersChanged();
+
+  const NSRect clamped_button_frame = button_window.frame;
+  EXPECT_LE(NSWidth(clamped_button_frame), 180.0);
+  EXPECT_GE(NSMinX(clamped_button_frame), 0.0);
+  EXPECT_LE(NSMaxX(clamped_button_frame), 180.0);
+  EXPECT_GT(button_window.disconnectButton.accessibilityLabel.length, 0u);
+  EXPECT_TRUE([button_window.disconnectButton.accessibilityLabel
+      isEqualToString:button_window.disconnectButton.title]);
+
+  // Returning to the wider display restores the natural unclamped button width.
+  screen_frames_ = {NSMakeRect(0.0, 0.0, 1280.0, 720.0)};
+  overlay_->OnScreenParametersChanged();
+  EXPECT_DOUBLE_EQ(NSWidth(button_window.frame), unclamped_width);
 }
 
 }  // namespace

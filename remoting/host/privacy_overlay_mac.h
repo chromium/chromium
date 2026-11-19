@@ -14,6 +14,7 @@
 
 #include "base/auto_reset.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "remoting/host/disconnect_window_base.h"
@@ -88,6 +89,15 @@ class PrivacyOverlayMac : public DisconnectWindowBase {
   static base::AutoReset<MouseLocationProvider>
   SetMouseLocationProviderForTesting(MouseLocationProvider provider);
 
+  // Injects a hermetic `NSUserDefaults` suite (in place of
+  // `com.apple.universalaccess`) and optional per-app `bundle_id` for testing
+  // `FontSizeCategory` preference parsing.
+  static base::ScopedClosureRunner SetUniversalAccessDefaultsForTesting(
+      NSUserDefaults* defaults,
+      NSString* bundle_id);
+
+  static CGFloat TextScaleFactorForCategoryNameForTesting(NSString* category);
+
   static bool IsRemoteInjectedEventForTesting(NSEvent* event);
 
   NSArray<PrivacyOverlayBackdropWindow*>* backdrop_windows_for_testing() const {
@@ -121,12 +131,15 @@ class PrivacyOverlayMac : public DisconnectWindowBase {
   // `NSScreen`.
   bool UpdateBackdrops();
 
-  // Positions `button_window_` horizontally centered and vertically below the
-  // wrapped sharing message (when vertical screen space permits, clamping to
-  // stay on-screen) on the display in `screen_frames` containing or nearest to
-  // `cocoa_screen_point`.
+  // Sizes `button_window_` for `cached_text_scale_` (clamped to the target
+  // display width), positions it horizontally centered and vertically below
+  // the wrapped sharing message (when vertical screen space permits) in a
+  // single `setFrame:` call, and updates best-effort WindowServer capture
+  // exclusion across size growth (or refreshes it unconditionally when
+  // `force_capture_exclusion_refresh` is true).
   void PositionDisconnectButton(const std::vector<NSRect>& screen_frames,
-                                NSPoint cocoa_screen_point);
+                                NSPoint cocoa_screen_point,
+                                bool force_capture_exclusion_refresh);
 
   // Queries active screen frames and activates `button_window_` on the display
   // containing or nearest to `cocoa_screen_point` (in Cocoa screen coords).
@@ -187,6 +200,11 @@ class PrivacyOverlayMac : public DisconnectWindowBase {
   // (RTL) reading layout.
   bool is_rtl_ = false;
 
+  // Cached OS Accessibility text scale factor read in `BeginOverlay()` so
+  // backdrop drawing, hit rects, button sizing, and button placement share one
+  // consistent snapshot without per-paint `cfprefsd` queries.
+  CGFloat cached_text_scale_ = 1.0;
+
   // Timer that returns the Disconnect button to its hidden click-through state
   // after `kAutoHideTimeout` of local input inactivity.
   base::OneShotTimer auto_hide_timer_;
@@ -218,6 +236,14 @@ class PrivacyOverlayMac : public DisconnectWindowBase {
   base::WeakPtrFactory<PrivacyOverlayMac> weak_factory_{this};
 };
 
+// Bounding rectangles of `PrivacyOverlayBackdropView`'s stacked elements in the
+// view's flipped coordinate system (`y = 0` at top).
+struct BackdropContentLayout {
+  NSRect icon_rect = NSZeroRect;
+  NSRect title_rect = NSZeroRect;
+  NSRect sharing_rect = NSZeroRect;
+};
+
 }  // namespace remoting
 
 // Custom `NSView` that renders the branded Google Blue (or High Contrast)
@@ -229,12 +255,14 @@ class PrivacyOverlayMac : public DisconnectWindowBase {
 @property(nonatomic, copy) NSString* sharingText;
 @property(nonatomic, strong) NSImage* iconImage;
 @property(nonatomic, assign) BOOL isRTL;
+@property(nonatomic, assign) CGFloat textScale;
 
 - (void)setHighContrastOverrideForTesting:(std::optional<bool>)highContrast;
 
-// Computes the bounding rectangle of the wrapped `sharingText` in the view's
-// flipped coordinate system (`y = 0` at top) for `bounds`.
-- (NSRect)sharingTextRectForBounds:(NSRect)bounds;
+// Computes the bounding rectangles of the centered icon, wrapped `titleText`,
+// and wrapped `sharingText` in the view's flipped coordinate system (`y = 0` at
+// top) for `bounds`.
+- (remoting::BackdropContentLayout)contentLayoutForBounds:(NSRect)bounds;
 
 @end
 
@@ -265,7 +293,23 @@ class PrivacyOverlayMac : public DisconnectWindowBase {
 - (instancetype)initWithTitle:(NSString*)buttonTitle
                   windowTitle:(NSString*)windowTitle
                         isRTL:(BOOL)isRTL
+                    textScale:(CGFloat)textScale
                  onDisconnect:(base::RepeatingClosure)onDisconnect;
+
+// Updates `_disconnectButton`'s font when `textScale` changes and computes the
+// window size needed to fit the button, clamped horizontally to
+// `maxWindowWidth` when `maxWindowWidth > 0`.
+- (NSSize)updateFontAndComputeWindowSizeForTextScale:(CGFloat)textScale
+                                      maxWindowWidth:(CGFloat)maxWindowWidth;
+
+// Applies `targetFrame` (origin and size) in a single `setFrame:` call and,
+// when `applyCaptureExclusion` is YES, expands best-effort capture exclusion
+// to the union size before growing and tightens/refreshes it afterward
+// (always refreshing when `forceCaptureExclusionRefresh` is YES). Returns NO
+// only if `targetFrame` or button subviews are invalid.
+- (BOOL)applyWindowFrame:(NSRect)targetFrame
+           applyCaptureExclusion:(BOOL)applyCaptureExclusion
+    forceCaptureExclusionRefresh:(BOOL)forceCaptureExclusionRefresh;
 
 @end
 
