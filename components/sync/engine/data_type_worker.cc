@@ -192,13 +192,15 @@ std::string GetEncryptionKeyName(const sync_pb::SyncEntity& entity) {
 // parameter. The cryptographer must know the decryption key, i.e.
 // cryptographer.CanDecrypt(specifics.encrypted()) must return true.
 //
-// Returns false if the decryption failed. There are no guarantees about the
-// contents of `out` when that happens.
+// Returns false if the decryption failed or if the decrypted specifics do not
+// match `data_type`. There are no guarantees about the contents of `out` when
+// that happens.
 //
 // In theory, this should never fail. Only corrupt or invalid entries could
 // cause this to fail, and no clients are known to create such entries. The
 // failure case is an attempt to be defensive against bad input.
 bool DecryptSpecifics(const Cryptographer& cryptographer,
+                      DataType data_type,
                       const sync_pb::EntitySpecifics& in,
                       sync_pb::EntitySpecifics* out) {
   // Passwords and password sharing invitations have their own encryption
@@ -211,6 +213,11 @@ bool DecryptSpecifics(const Cryptographer& cryptographer,
 
   if (!cryptographer.Decrypt(in.encrypted(), out)) {
     DLOG(ERROR) << "Failed to decrypt a decryptable specifics";
+    return false;
+  }
+  if (GetDataTypeFromSpecifics(*out) != data_type) {
+    DLOG(ERROR) << "Decrypted specifics data type does not match "
+                << DataTypeToDebugString(data_type);
     return false;
   }
   return true;
@@ -678,7 +685,8 @@ DataTypeWorker::DecryptionStatus DataTypeWorker::PopulateUpdateResponseData(
     if (!cryptographer.CanDecrypt(specifics.encrypted())) {
       return DECRYPTION_PENDING;
     }
-    if (!DecryptSpecifics(cryptographer, specifics, &data.specifics)) {
+    if (!DecryptSpecifics(cryptographer, data_type, specifics,
+                          &data.specifics)) {
       return FAILED_TO_DECRYPT;
     }
     specifics_were_encrypted = true;

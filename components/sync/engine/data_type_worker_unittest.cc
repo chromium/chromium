@@ -1519,6 +1519,7 @@ TEST_F(DataTypeWorkerTest, DecryptUpdateIfPossibleDespiteEncryptionDisabled) {
   // Send an update encrypted with the known key.
   SyncEntity update;
   update.set_id_string("1");
+  *update.mutable_specifics() = GenerateSpecifics(kTag1, kValue1);
   EncryptUpdateWithNthKey(1, update.mutable_specifics());
   worker()->ProcessGetUpdatesResponse(server()->GetProgress(),
                                       server()->GetContext(), {&update},
@@ -1530,6 +1531,53 @@ TEST_F(DataTypeWorkerTest, DecryptUpdateIfPossibleDespiteEncryptionDisabled) {
   EXPECT_FALSE(worker()->BlockForEncryption());
   EXPECT_EQ(1u, processor()->GetNumUpdateResponses());
   EXPECT_EQ(1u, processor()->GetNthUpdateResponse(0).size());
+}
+
+TEST_F(DataTypeWorkerTest, ReceiveEncryptedEntitiesWithMismatchedDataType) {
+  base::HistogramTester histogram_tester;
+  NormalInitialize();
+
+  sync_pb::EntitySpecifics encrypted_specifics;
+  encrypted_specifics.mutable_bookmark()->set_url("http://www.example.com");
+  EncryptUpdateWithNthKey(1, &encrypted_specifics);
+
+  // Receive an encrypted update with a key that is not yet known.
+  SyncEntity entity = server()->UpdateFromServer(
+      /*version_offset=*/10, kHash1, encrypted_specifics);
+  worker()->ProcessGetUpdatesResponse(server()->GetProgress(),
+                                      server()->GetContext(), {&entity},
+                                      status_controller());
+  worker()->ApplyUpdates(status_controller(), /*cycle_done=*/true);
+
+  // No updates should have reached the processor and worker is blocked for
+  // encryption because the cryptographer isn't ready yet.
+  EXPECT_FALSE(processor()->HasUpdateResponse(kHash1));
+  EXPECT_TRUE(worker()->BlockForEncryption());
+  histogram_tester.ExpectUniqueSample(
+      "Sync.DataTypeUpdateDrop.DecryptionPending",
+      DataTypeHistogramValue(PREFERENCES), 1);
+
+  // Allow the cryptographer to decrypt using the first key.
+  AddPendingKey();
+  DecryptPendingKey();
+
+  // Still, no updates should have reached the processor and worker is NOT
+  // blocked for encryption anymore.
+  EXPECT_FALSE(processor()->HasUpdateResponse(kHash1));
+  EXPECT_FALSE(worker()->BlockForEncryption());
+
+  // Receiving another mismatched-type entity when the key is already known
+  // should immediately fail decryption and record FailedToDecrypt.
+  SyncEntity entity2 = server()->UpdateFromServer(
+      /*version_offset=*/10, kHash2, encrypted_specifics);
+  worker()->ProcessGetUpdatesResponse(server()->GetProgress(),
+                                      server()->GetContext(), {&entity2},
+                                      status_controller());
+  worker()->ApplyUpdates(status_controller(), /*cycle_done=*/true);
+  EXPECT_FALSE(processor()->HasUpdateResponse(kHash2));
+  EXPECT_FALSE(worker()->BlockForEncryption());
+  histogram_tester.ExpectUniqueSample("Sync.DataTypeUpdateDrop.FailedToDecrypt",
+                                      DataTypeHistogramValue(PREFERENCES), 1);
 }
 
 TEST_F(DataTypeWorkerTest, IgnoreUpdatesEncryptedWithKeysMissingForTooLong) {
@@ -1918,6 +1966,48 @@ TEST(DataTypeWorkerPopulateUpdateResponseDataTest,
 
   // The client tag hash gets filled in by the worker.
   EXPECT_FALSE(response_data.entity.client_tag_hash.value().empty());
+}
+
+TEST(DataTypeWorkerPopulateUpdateResponseDataTest,
+     EncryptedSpecificsWithMismatchedDataTypeFailsToDecrypt) {
+  auto cryptographer =
+      FakeCryptographer::FromSinglePrimaryKey(GetNthKeyName(1));
+
+  // Encrypt BOOKMARKS specifics inside an entity whose outer specifics claims
+  // to be PREFERENCES.
+  sync_pb::EntitySpecifics bookmark_specifics;
+  bookmark_specifics.mutable_bookmark()->set_url("http://www.example.com");
+
+  sync_pb::SyncEntity entity;
+  entity.mutable_specifics()->mutable_preference();
+  ASSERT_TRUE(cryptographer->Encrypt(
+      bookmark_specifics, entity.mutable_specifics()->mutable_encrypted()));
+
+  UpdateResponseData response_data;
+  EXPECT_EQ(DataTypeWorker::FAILED_TO_DECRYPT,
+            DataTypeWorker::PopulateUpdateResponseData(
+                *cryptographer, PREFERENCES, entity, &response_data));
+}
+
+TEST(DataTypeWorkerPopulateUpdateResponseDataTest,
+     EncryptedNonEntitySpecificsPayloadFailsToDecrypt) {
+  auto cryptographer =
+      FakeCryptographer::FromSinglePrimaryKey(GetNthKeyName(1));
+
+  // Encrypt a non-EntitySpecifics proto (e.g., PasswordSpecificsData) whose
+  // fields would otherwise parse as unknown fields in EntitySpecifics.
+  sync_pb::PasswordSpecificsData password_data;
+  password_data.set_password_value("secret");
+
+  sync_pb::SyncEntity entity;
+  entity.mutable_specifics()->mutable_preference();
+  ASSERT_TRUE(cryptographer->Encrypt(
+      password_data, entity.mutable_specifics()->mutable_encrypted()));
+
+  UpdateResponseData response_data;
+  EXPECT_EQ(DataTypeWorker::FAILED_TO_DECRYPT,
+            DataTypeWorker::PopulateUpdateResponseData(
+                *cryptographer, PREFERENCES, entity, &response_data));
 }
 
 TEST(DataTypeWorkerPopulateUpdateResponseDataTest,
