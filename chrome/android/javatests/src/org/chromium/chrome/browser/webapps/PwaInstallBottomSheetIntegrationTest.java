@@ -22,6 +22,7 @@ import android.graphics.Color;
 import androidx.core.widget.NestedScrollView;
 import androidx.test.filters.SmallTest;
 
+import org.jni_zero.JniUniquePtr;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -85,7 +86,7 @@ public class PwaInstallBottomSheetIntegrationTest {
                     icon.eraseColor(Color.BLUE);
 
                     controller.requestBottomSheetInstaller(
-                            /* nativePwaBottomSheetController= */ 1L,
+                            JniUniquePtr.createForTesting(1L),
                             mActivityTestRule.getActivity().getWindowAndroid(),
                             mActivityTestRule.getActivity().getCurrentWebContents(),
                             icon,

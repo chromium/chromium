@@ -9,6 +9,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.graphics.Bitmap;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniUniquePtr;
 
 import org.chromium.base.UnownedUserDataKey;
 import org.chromium.build.annotations.NullMarked;
@@ -73,8 +74,9 @@ public class PwaBottomSheetControllerProvider {
      * @param description The app description.
      */
     @CalledByNative
-    private static void showPwaBottomSheetInstaller(
-            long nativePwaBottomSheetController,
+    static void showPwaBottomSheetInstaller(
+            JniUniquePtr<PwaBottomSheetController.NativePwaBottomSheetController>
+                    nativePwaBottomSheetController,
             WebContents webContents,
             Bitmap icon,
             boolean isAdaptiveIcon,
@@ -82,7 +84,10 @@ public class PwaBottomSheetControllerProvider {
             String origin,
             String description) {
         PwaBottomSheetController controller = fromWebContents(webContents);
-        if (controller == null) return;
+        if (controller == null) {
+            nativePwaBottomSheetController.destroy();
+            return;
+        }
         controller.requestBottomSheetInstaller(
                 nativePwaBottomSheetController,
                 assumeNonNull(webContents.getTopLevelNativeWindow()),

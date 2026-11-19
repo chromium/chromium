@@ -4,7 +4,10 @@
 
 #include "components/webapps/browser/android/bottomsheet/pwa_bottom_sheet_controller.h"
 
+#include <memory>
 #include <string>
+#include <utility>
+#include <vector>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
@@ -19,6 +22,7 @@
 #include "components/webapps/common/constants.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/text_elider.h"
 
@@ -52,7 +56,12 @@ bool CanShowBottomSheet(content::WebContents* web_contents,
 
 }  // anonymous namespace
 
-PwaBottomSheetController::~PwaBottomSheetController() = default;
+PwaBottomSheetController::~PwaBottomSheetController() {
+  if (!install_triggered_ && !sheet_closed_ && sheet_expanded_ &&
+      a2hs_event_callback_) {
+    a2hs_event_callback_.Run(AddToHomescreenEvent::UI_CANCELLED, *a2hs_params_);
+  }
+}
 
 // static
 static bool JNI_PwaBottomSheetController_RequestOrExpandBottomSheetInstaller(
@@ -97,10 +106,10 @@ bool PwaBottomSheetController::MaybeShow(
     // Lifetime of this object is managed by the Java counterpart, iff bottom
     // sheets can be shown (otherwise an infobar is used and this class is no
     // longer needed).
-    PwaBottomSheetController* controller = new PwaBottomSheetController(
-        web_app_banner_data, std::move(a2hs_params),
-        std::move(a2hs_event_callback));
-    controller->ShowBottomSheetInstaller(web_contents, expand_sheet);
+    ShowBottomSheetInstaller(std::make_unique<PwaBottomSheetController>(
+                                 web_app_banner_data, std::move(a2hs_params),
+                                 std::move(a2hs_event_callback)),
+                             web_contents, expand_sheet);
   }
   return true;
 }
@@ -112,17 +121,6 @@ PwaBottomSheetController::PwaBottomSheetController(
     : web_app_banner_data_(web_app_banner_data),
       a2hs_params_(std::move(a2hs_params)),
       a2hs_event_callback_(a2hs_event_callback) {}
-
-void PwaBottomSheetController::Destroy(JNIEnv* env) {
-  // When the bottom sheet hasn't been expanded, it is considered equivalent to
-  // the regular install infobar and the expanded state equivalent
-  // to the regular install dialog prompt. Therefore, we send UI_CANCELLED
-  // only if the bottom sheet was ever expanded and not closed.
-  if (!install_triggered_ && !sheet_closed_ && sheet_expanded_) {
-    a2hs_event_callback_.Run(AddToHomescreenEvent::UI_CANCELLED, *a2hs_params_);
-  }
-  delete this;
-}
 
 void PwaBottomSheetController::UpdateInstallSource(JNIEnv* env,
                                                    int install_source) {
@@ -155,36 +153,44 @@ void PwaBottomSheetController::OnAddToHomescreen(
                                           a2hs_params_->install_source);
 }
 
+// static
 void PwaBottomSheetController::ShowBottomSheetInstaller(
+    std::unique_ptr<PwaBottomSheetController> controller,
     content::WebContents* web_contents,
     bool expand_sheet) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  ScopedJavaLocalRef<jstring> j_user_title =
-      ConvertUTF16ToJavaString(env, web_app_banner_data_.GetAppName());
+  ScopedJavaLocalRef<jstring> j_user_title = ConvertUTF16ToJavaString(
+      env, controller->web_app_banner_data_.GetAppName());
   // Trim down the app URL to the origin. Elide cryptographic schemes so HTTP
   // is still shown.
   ScopedJavaLocalRef<jstring> j_url = ConvertUTF16ToJavaString(
       env, url_formatter::FormatUrlForSecurityDisplay(
-               web_app_banner_data_.manifest().start_url(),
+               controller->web_app_banner_data_.manifest().start_url(),
                url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
 
   std::u16string elided_description = gfx::TruncateString(
-      web_app_banner_data_.manifest().description().value_or(u""),
+      controller->web_app_banner_data_.manifest().description().value_or(u""),
       webapps::kMaximumDescriptionLength, gfx::CHARACTER_BREAK);
   ScopedJavaLocalRef<jstring> j_description =
       ConvertUTF16ToJavaString(env, elided_description);
 
   ScopedJavaLocalRef<jobject> j_bitmap =
-      gfx::ConvertToJavaBitmap(web_app_banner_data_.primary_icon);
+      gfx::ConvertToJavaBitmap(controller->web_app_banner_data_.primary_icon);
+
+  std::vector<Screenshot> screenshots =
+      controller->web_app_banner_data_.screenshots;
+  bool has_maskable_primary_icon =
+      controller->web_app_banner_data_.has_maskable_primary_icon;
 
   Java_PwaBottomSheetControllerProvider_showPwaBottomSheetInstaller(
-      env, reinterpret_cast<intptr_t>(this), web_contents->GetJavaWebContents(),
-      j_bitmap, web_app_banner_data_.has_maskable_primary_icon, j_user_title,
-      j_url, j_description);
+      env, jni_zero::MakeUnique(std::move(controller)),
+      web_contents->GetJavaWebContents(), j_bitmap, has_maskable_primary_icon,
+      j_user_title, j_url, j_description);
 
-  for (const auto& screenshot : web_app_banner_data_.screenshots) {
-    if (!screenshot.image.isNull())
+  for (const auto& screenshot : screenshots) {
+    if (!screenshot.image.isNull()) {
       UpdateScreenshot(screenshot.image, web_contents);
+    }
   }
 
   if (expand_sheet) {
@@ -193,6 +199,7 @@ void PwaBottomSheetController::ShowBottomSheetInstaller(
   }
 }
 
+// static
 void PwaBottomSheetController::UpdateScreenshot(
     const SkBitmap& screenshot,
     content::WebContents* web_contents) {

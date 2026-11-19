@@ -17,6 +17,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
+import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.EnsuresNonNullIf;
@@ -47,10 +51,13 @@ import java.util.ArrayList;
 @JNINamespace("webapps")
 @NullMarked
 public class PwaBottomSheetController implements View.OnClickListener {
+    @JniType("::webapps::PwaBottomSheetController")
+    interface NativePwaBottomSheetController extends JniTypeToken {}
+
     private final Context mContext;
 
     /** A pointer to the native version of this class. It's lifetime is controlled by this class. */
-    private long mNativePwaBottomSheetController;
+    private @Nullable JniUniquePtr<NativePwaBottomSheetController> mNativePwaBottomSheetController;
 
     /** The controller used to show the bottom sheet. */
     private @Nullable BottomSheetController mBottomSheetController;
@@ -66,8 +73,10 @@ public class PwaBottomSheetController implements View.OnClickListener {
                         @SheetState int state, @StateChangeReason int reason) {
                     if (state == SheetState.HIDDEN) {
                         if (reason == StateChangeReason.SWIPE) {
-                            PwaBottomSheetControllerJni.get()
-                                    .onSheetClosedWithSwipe(mNativePwaBottomSheetController);
+                            if (mNativePwaBottomSheetController != null) {
+                                PwaBottomSheetControllerJni.get()
+                                        .onSheetClosedWithSwipe(mNativePwaBottomSheetController);
+                            }
                         }
                         assumeNonNull(mBottomSheetController);
                         mBottomSheetController.removeObserver(mBottomSheetObserver);
@@ -82,8 +91,10 @@ public class PwaBottomSheetController implements View.OnClickListener {
                     assumeNonNull(mPwaBottomSheetContent);
                     if (isBottomSheetVisible() && state == SheetState.FULL) {
                         mPwaBottomSheetContent.setPriority(ContentPriority.HIGH);
-                        PwaBottomSheetControllerJni.get()
-                                .onSheetExpanded(mNativePwaBottomSheetController);
+                        if (mNativePwaBottomSheetController != null) {
+                            PwaBottomSheetControllerJni.get()
+                                    .onSheetExpanded(mNativePwaBottomSheetController);
+                        }
                     } else {
                         mPwaBottomSheetContent.setPriority(ContentPriority.LOW);
                     }
@@ -202,7 +213,7 @@ public class PwaBottomSheetController implements View.OnClickListener {
      * @param description The app description.
      */
     public void requestBottomSheetInstaller(
-            long nativePwaBottomSheetController,
+            JniUniquePtr<NativePwaBottomSheetController> nativePwaBottomSheetController,
             WindowAndroid windowAndroid,
             WebContents webContents,
             Bitmap icon,
@@ -210,7 +221,7 @@ public class PwaBottomSheetController implements View.OnClickListener {
             String title,
             String origin,
             String description) {
-        assert mNativePwaBottomSheetController == 0;
+        assert mNativePwaBottomSheetController == null;
         mNativePwaBottomSheetController = nativePwaBottomSheetController;
         mWebContents = webContents;
 
@@ -218,6 +229,7 @@ public class PwaBottomSheetController implements View.OnClickListener {
                 BottomSheetControllerProvider.from(windowAndroid);
         if (bottomSheetController == null || !canShowFor(webContents)) {
             // TODO(finnur): Investigate whether retrying is feasible (and how).
+            destroy();
             return;
         }
         mBottomSheetController = bottomSheetController;
@@ -243,6 +255,11 @@ public class PwaBottomSheetController implements View.OnClickListener {
         bottomSheetController.addObserver(mBottomSheetObserver);
         if (!bottomSheetController.requestShowContent(mPwaBottomSheetContent, true)) {
             // TODO(finnur): Investigate whether retrying is feasible (and how).
+            bottomSheetController.hideContent(mPwaBottomSheetContent, false);
+            bottomSheetController.removeObserver(mBottomSheetObserver);
+            mPwaBottomSheetContent = null;
+            mBottomSheetController = null;
+            destroy();
             return;
         }
 
@@ -329,7 +346,9 @@ public class PwaBottomSheetController implements View.OnClickListener {
     public void expandBottomSheetInstaller() {
         if (!isBottomSheetVisible()) return;
         mBottomSheetController.expandSheet();
-        PwaBottomSheetControllerJni.get().onSheetExpanded(mNativePwaBottomSheetController);
+        if (mNativePwaBottomSheetController != null) {
+            PwaBottomSheetControllerJni.get().onSheetExpanded(mNativePwaBottomSheetController);
+        }
     }
 
     /**
@@ -338,20 +357,26 @@ public class PwaBottomSheetController implements View.OnClickListener {
      * @param installSource The source for triggering webapp installation.
      */
     public void updateInstallSource(@WebappInstallSource int installSource) {
-        PwaBottomSheetControllerJni.get()
-                .updateInstallSource(mNativePwaBottomSheetController, installSource);
+        if (mNativePwaBottomSheetController != null) {
+            PwaBottomSheetControllerJni.get()
+                    .updateInstallSource(mNativePwaBottomSheetController, installSource);
+        }
     }
 
     /** Called when the user wants to install. */
     public void onAddToHomescreen() {
-        PwaBottomSheetControllerJni.get()
-                .onAddToHomescreen(mNativePwaBottomSheetController, mWebContents);
+        if (mNativePwaBottomSheetController != null) {
+            PwaBottomSheetControllerJni.get()
+                    .onAddToHomescreen(mNativePwaBottomSheetController, mWebContents);
+        }
     }
 
     /** Called when the install UI is dismissed to clean up the C++ side. */
     public void destroy() {
-        PwaBottomSheetControllerJni.get().destroy(mNativePwaBottomSheetController);
-        mNativePwaBottomSheetController = 0;
+        if (mNativePwaBottomSheetController != null) {
+            mNativePwaBottomSheetController.destroy();
+            mNativePwaBottomSheetController = null;
+        }
     }
 
     @NativeMethods
@@ -359,16 +384,15 @@ public class PwaBottomSheetController implements View.OnClickListener {
         boolean requestOrExpandBottomSheetInstaller(
                 WebContents webContents, @InstallTrigger int trigger);
 
-        void onSheetClosedWithSwipe(long nativePwaBottomSheetController);
+        void onSheetClosedWithSwipe(JniPtr<NativePwaBottomSheetController> self);
 
-        void onSheetExpanded(long nativePwaBottomSheetController);
+        void onSheetExpanded(JniPtr<NativePwaBottomSheetController> self);
 
         void updateInstallSource(
-                long nativePwaBottomSheetController, @WebappInstallSource int installSource);
+                JniPtr<NativePwaBottomSheetController> self,
+                @WebappInstallSource int installSource);
 
         void onAddToHomescreen(
-                long nativePwaBottomSheetController, @Nullable WebContents webContents);
-
-        void destroy(long nativePwaBottomSheetController);
+                JniPtr<NativePwaBottomSheetController> self, @Nullable WebContents webContents);
     }
 }

@@ -44,8 +44,9 @@ class PwaBottomSheetController {
   PwaBottomSheetController& operator=(const PwaBottomSheetController&) = delete;
   virtual ~PwaBottomSheetController();
 
-  // Called from the Java side and destructs this object.
-  void Destroy(JNIEnv* env);
+  PwaBottomSheetController(const WebAppBannerData& web_app_banner_data,
+                           std::unique_ptr<AddToHomescreenParams> a2hs_params,
+                           AddToHomescreenEventCallback a2hs_event_callback);
 
   // Called from the Java side when install source needs to be updated (e.g. if
   // the bottom sheet is created as an ambient badge, but then the user uses the
@@ -64,18 +65,16 @@ class PwaBottomSheetController {
                          const base::android::JavaRef<jobject>& jweb_contents);
 
  private:
-  PwaBottomSheetController(const WebAppBannerData& web_app_banner_data,
-                           std::unique_ptr<AddToHomescreenParams> a2hs_params,
-                           AddToHomescreenEventCallback a2hs_event_callback);
-
   // Shows the Bottom Sheet installer UI for a given |web_contents|.
-  void ShowBottomSheetInstaller(content::WebContents* web_contents,
-                                bool expand_sheet);
+  static void ShowBottomSheetInstaller(
+      std::unique_ptr<PwaBottomSheetController> controller,
+      content::WebContents* web_contents,
+      bool expand_sheet);
 
   // Called for each screenshot available. Updates the Java side with the new
   // image.
-  void UpdateScreenshot(const SkBitmap& screenshot,
-                        content::WebContents* web_contents);
+  static void UpdateScreenshot(const SkBitmap& screenshot,
+                               content::WebContents* web_contents);
 
   const WebAppBannerData web_app_banner_data_;
   // Contains app parameters such as its type and the install source used that
