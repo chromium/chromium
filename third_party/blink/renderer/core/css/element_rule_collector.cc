@@ -881,18 +881,24 @@ DISABLE_CFI_PERF bool ElementRuleCollector::CollectMatchingRulesInternal(
   // We need to collect the rules for id, class, tag, and everything else into a
   // buffer and then sort the buffer.
   if (element.HasID()) {
+    const AtomicString id = element.IdForStyleResolution();
     for (const auto bundle : match_request.AllRuleSets()) {
       if (CollectMatchingRulesForList<stop_at_first_match>(
-              bundle.rule_set->IdRules(element.IdForStyleResolution()),
-              match_request, bundle.rule_set, bundle.style_sheet_index, checker,
-              context) &&
+              bundle.rule_set->IdRules(id), match_request, bundle.rule_set,
+              bundle.style_sheet_index, checker, context) &&
           stop_at_first_match) {
         return true;
       }
     }
   }
   if (element.HasClass()) {
-    for (const AtomicString& class_name : element.ClassNames()) {
+    // Note that this is a copy-by-value of the class names to keep the
+    // underlying SpaceSplitString::Data alive on the stack and prevent
+    // use-after-free if nested selector matching (e.g. :invalid pattern
+    // validation) or callbacks mutate the element's class attribute and
+    // trigger garbage collection.
+    const SpaceSplitString class_names = element.ClassNames();
+    for (const AtomicString& class_name : class_names) {
       for (const auto bundle : match_request.AllRuleSets()) {
         if (CollectMatchingRulesForList<stop_at_first_match>(
                 bundle.rule_set->ClassRules(class_name), match_request,
