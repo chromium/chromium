@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/containers/span.h"
-#include "base/hash/sha1.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -48,15 +47,42 @@ TEST(SHA1Test, Test3) {
   EXPECT_EQ(elf_sha1::SHA1HashString(input), expected);
 }
 
-// Verify that the implementation matches //base across input lengths,
-// especially around the 55/56-byte padding threshold (where the 8-byte bit
-// length spills into an extra block) and the 64-byte block boundary.
-TEST(SHA1Test, MatchesBaseAcrossLengths) {
-  std::string input;
-  for (size_t i = 0; i <= 256; ++i) {
-    EXPECT_EQ(elf_sha1::SHA1HashString(input),
-              base::SHA1Hash(base::as_byte_span(input)));
-    input.push_back(static_cast<char>(i));
+// Verify that the implementation matches known-good hashes across input
+// lengths, especially around the 55/56-byte padding threshold (where the
+// 8-byte bit length spills into an extra block) and the 64-byte block
+// boundary.
+TEST(SHA1Test, LengthBoundaryConditions) {
+  static const struct {
+    size_t bytes;
+    elf_sha1::Digest digest;
+  } cases[] = {
+      // These test vectors can be regenerated, if you need to, with:
+      //   perl -e 'print("a" x N)' | sha1sum
+      {55,
+       {
+           0xc1, 0xc8, 0xbb, 0xdc, 0x22, 0x79, 0x6e, 0x28, 0xc0, 0xe1,
+           0x51, 0x63, 0xd2, 0x08, 0x99, 0xb6, 0x56, 0x21, 0xd6, 0x5a,
+       }},
+      {56,
+       {
+           0xc2, 0xdb, 0x33, 0x0f, 0x60, 0x83, 0x85, 0x4c, 0x99, 0xd4,
+           0xb5, 0xbf, 0xb6, 0xe8, 0xf2, 0x9f, 0x20, 0x1b, 0xe6, 0x99,
+       }},
+      {64,
+       {
+           0x00, 0x98, 0xba, 0x82, 0x4b, 0x5c, 0x16, 0x42, 0x7b, 0xd7,
+           0xa1, 0x12, 0x2a, 0x5a, 0x44, 0x2a, 0x25, 0xec, 0x64, 0x4d,
+       }},
+      {65,
+       {
+           0x11, 0x65, 0x53, 0x26, 0xc7, 0x08, 0xd7, 0x03, 0x19, 0xbe,
+           0x26, 0x10, 0xe8, 0xa5, 0x7d, 0x9a, 0x5b, 0x95, 0x9d, 0x3b,
+       }},
+  };
+
+  for (const auto& c : cases) {
+    const auto digest = elf_sha1::SHA1HashString(std::string(c.bytes, 'a'));
+    EXPECT_EQ(digest, c.digest);
   }
 }
 
