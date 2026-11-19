@@ -1600,6 +1600,48 @@ TEST_F(TemplateURLTest, ComposeboxSuggestClient) {
 #endif
 }
 
+#if BUILDFLAG(IS_ANDROID)
+// On Android, the WebUI NTP composebox uses the Desktop client, while the other
+// composeboxes use the mobile one.
+TEST_F(TemplateURLTest, ComposeboxSuggestClientForNtpComposeboxOnAndroid) {
+  base::test::ScopedFeatureList features(
+      omnibox::kComposeboxUsesChromeComposeClient);
+  const std::string base_url_str("http://google.com/?");
+  search_terms_data_.set_google_base_url(base_url_str);
+
+  TemplateURLData data;
+  data.SetURL(base_url_str + "client={google:suggestClient}");
+  TemplateURL url(data);
+  ASSERT_TRUE(url.url_ref().IsValid(search_terms_data_));
+
+  auto get_suggest_url =
+      [&](metrics::OmniboxEventProto::PageClassification page_classification,
+          const std::string& current_page_url) {
+        TemplateURLRef::SearchTermsArgs search_terms_args;
+        search_terms_args.request_source = RequestSource::COMPOSEBOX;
+        search_terms_args.page_classification = page_classification;
+        search_terms_args.current_page_url = current_page_url;
+        return GURL(url.url_ref().ReplaceSearchTerms(search_terms_args,
+                                                     search_terms_data_))
+            .spec();
+      };
+
+  EXPECT_EQ("http://google.com/?client=chrome-compose",
+            get_suggest_url(metrics::OmniboxEventProto::NTP_COMPOSEBOX, ""));
+  // Other composeboxes keep the mobile client.
+  EXPECT_EQ(
+      "http://google.com/?client=chrome-mobile-aim",
+      get_suggest_url(metrics::OmniboxEventProto::NTP_OMNIBOX_COMPOSEBOX, ""));
+  EXPECT_EQ(
+      "http://google.com/?client=chrome-mobile-aim",
+      get_suggest_url(metrics::OmniboxEventProto::NTP_COMPOSEBOX_PREFETCH, ""));
+  // Delayed context uploads from the NTP composebox still use "chrome-omni".
+  EXPECT_EQ("http://google.com/?client=chrome-omni",
+            get_suggest_url(metrics::OmniboxEventProto::NTP_COMPOSEBOX,
+                            "https://example.com/"));
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
 TEST_F(TemplateURLTest, CoBrowseComposeboxSuggestClient) {
   base::test::ScopedFeatureList features;
   const std::string base_url_str("http://google.com/?");

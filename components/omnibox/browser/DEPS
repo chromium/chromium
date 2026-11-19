@@ -81,6 +81,7 @@ include_rules = [
   "+ui/base",
   "+ui/base/mojom",
   "+ui/gfx",
+  "+ui/webui/buildflags.h",
   "+url",
 ]
 
