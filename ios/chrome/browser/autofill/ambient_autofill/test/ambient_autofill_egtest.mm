@@ -15,7 +15,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/autofill/test/autofill_app_interface.h"
-#import "ios/chrome/browser/autofill/ui_bundled/autofill_egtest_util.h"
+#import "ios/chrome/browser/autofill/test/autofill_egtest_util.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/common/ui/elements/form_input_accessory_view.h"

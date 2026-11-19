@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/autofill/ui_bundled/autofill_egtest_util.h"
+#import "ios/chrome/browser/autofill/test/autofill_egtest_util.h"
 
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"

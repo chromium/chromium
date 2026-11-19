@@ -30,11 +30,3 @@ include_rules = [
   "+ios/chrome/browser/webdata_services/model/web_data_service_factory.h",
   # keep-sorted end
 ]
-
-specific_include_rules = {
-  "autofill_egtest_util\\.mm": [
-    # keep-sorted start
-    "+ios/chrome/browser/autofill/test/autofill_app_interface.h",
-    # keep-sorted end
-  ],
-}

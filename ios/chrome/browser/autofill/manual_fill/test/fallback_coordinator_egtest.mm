@@ -6,7 +6,7 @@
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/autofill/manual_fill/test/manual_fill_matchers.h"
 #import "ios/chrome/browser/autofill/test/autofill_app_interface.h"
-#import "ios/chrome/browser/autofill/ui_bundled/autofill_egtest_util.h"
+#import "ios/chrome/browser/autofill/test/autofill_egtest_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"

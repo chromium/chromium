@@ -160,7 +160,6 @@ source_set("eg2_tests") {
     "save_profile_egtest.mm",
   ]
   deps = [
-    ":eg_test_support+eg2",
     "//base",
     "//base/test:test_support",
     "//build:branding_buildflags",
@@ -196,23 +195,6 @@ source_set("eg2_tests") {
     "//url",
   ]
   frameworks = [ "UIKit.framework" ]
-}
-
-source_set("eg_test_support+eg2") {
-  configs += [ "//build/config/ios:xctest_config" ]
-  testonly = true
-  sources = [
-    "autofill_egtest_util.h",
-    "autofill_egtest_util.mm",
-  ]
-  deps = [
-    "//base",
-    "//base/test:test_support",
-    "//ios/chrome/browser/autofill/test:eg_test_support+eg2",
-    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
-    "//ios/testing/earl_grey:eg_test_support+eg2",
-    "//ios/web/public/test:element_selector",
-  ]
 }
 
 source_set("unit_tests") {
