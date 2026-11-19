@@ -613,6 +613,9 @@ void DesktopSessionAgent::OnDesktopEnvironmentCreated(
     // was already queued on the same associated channel and will be delivered
     // first.
     desktop_session_agent_.reset();
+    if (delegate_) {
+      delegate_->OnDesktopEnvironmentCreated(/*success=*/false);
+    }
     return;
   }
 
@@ -732,6 +735,9 @@ void DesktopSessionAgent::OnDesktopEnvironmentCreated(
 
   std::move(callback).Run(
       desktop_session_control_.BindNewEndpointAndPassRemote());
+  if (delegate_) {
+    delegate_->OnDesktopEnvironmentCreated(/*success=*/true);
+  }
 }
 
 void DesktopSessionAgent::OnCheckUrlForwarderSetUpResult(bool is_set_up) {

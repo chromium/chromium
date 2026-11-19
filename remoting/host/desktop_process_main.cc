@@ -178,7 +178,7 @@ int DesktopProcessMain() {
   io_task_runner = nullptr;
   run_loop.Run();
 
-  return kSuccessExitCode;
+  return desktop_process.exit_code();
 }
 
 }  // namespace remoting

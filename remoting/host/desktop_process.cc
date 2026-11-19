@@ -62,6 +62,15 @@ DesktopEnvironmentFactory& DesktopProcess::desktop_environment_factory() {
   return *desktop_environment_factory_;
 }
 
+void DesktopProcess::OnDesktopEnvironmentCreated(bool success) {
+  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+
+  if (initial_creation_state_ == InitialCreationState::kPending) {
+    initial_creation_state_ = success ? InitialCreationState::kSucceeded
+                                      : InitialCreationState::kFailed;
+  }
+}
+
 void DesktopProcess::OnNetworkProcessDisconnected() {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
@@ -71,6 +80,12 @@ void DesktopProcess::OnNetworkProcessDisconnected() {
   }
   if (on_network_process_disconnected_callback_) {
     std::move(on_network_process_disconnected_callback_).Run();
+  }
+  // A process that never created a DesktopEnvironment cannot serve a reconnect,
+  // so exit with a permanent-error code to make the daemon tear the session
+  // down instead of leaving an idle worker attached to the session.
+  if (initial_creation_state_ == InitialCreationState::kFailed) {
+    Shutdown(kInvalidHostConfigurationExitCode);
   }
 }
 
@@ -111,6 +126,17 @@ void DesktopProcess::OnChannelConnected(int32_t peer_pid) {
 }
 
 void DesktopProcess::OnChannelError() {
+  Shutdown();
+}
+
+void DesktopProcess::Shutdown(int exit_code) {
+  if (!caller_task_runner_) {
+    // Already shut down.
+    return;
+  }
+  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+
+  exit_code_ = exit_code;
   // Shutdown the desktop process.
   daemon_channel_.reset();
   if (desktop_agent_) {
@@ -119,6 +145,7 @@ void DesktopProcess::OnChannelError() {
   }
   desktop_session_request_handler_.reset();
   worker_process_control_.reset();
+  desktop_process_control_.reset();
 
 #if BUILDFLAG(IS_LINUX)
   // Cause the global AudioPipeReader to be freed, otherwise the audio thread

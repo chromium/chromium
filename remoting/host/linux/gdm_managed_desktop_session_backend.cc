@@ -63,6 +63,16 @@ base::FilePath GetRemoteDisplaysConfigFilePath() {
   return config_dir.Append("remote_displays.json");
 }
 
+bool HasUserSession(
+    const RemoteDisplaySessionManager::RemoteDisplayInfo& info) {
+  // Only recover displays with a user session. Greeter sessions do not need
+  // recovery and cannot be recovered on GNOME 48 or older.
+  return std::ranges::any_of(info.sessions, [](const auto& pair) {
+    return pair.second.session_info.has_value() &&
+           pair.second.session_info->session_class == "user";
+  });
+}
+
 }  // namespace
 
 GdmManagedDesktopSessionBackend::GdmManagedDesktopSessionBackend(
@@ -96,13 +106,19 @@ GdmManagedDesktopSessionBackend::CreateDesktopSession(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::string display_name;
-  auto recovered_it = recovered_displays_.find(options.client_id);
-  if (recovered_it != recovered_displays_.end()) {
-    display_name = std::move(recovered_it->second);
-    recovered_displays_.erase(recovered_it);
-    HOST_LOG << "Reusing recovered remote display name " << display_name
-             << " for " << options.client_id;
-  } else {
+  if (!options.client_id.empty()) {
+    auto unclaimed_it =
+        std::ranges::find_if(displays_, [&options](const auto& pair) {
+          return !pair.second.desktop_session &&
+                 pair.second.client_id == options.client_id;
+        });
+    if (unclaimed_it != displays_.end()) {
+      display_name = unclaimed_it->first;
+      HOST_LOG << "Reusing unclaimed remote display name " << display_name
+               << " for " << options.client_id;
+    }
+  }
+  if (display_name.empty()) {
     display_name = GenerateRandomDisplayName();
   }
 
@@ -140,20 +156,22 @@ GdmManagedDesktopSessionBackend::CreateDesktopSession(
             weak_ptr_factory_.GetWeakPtr(), display_name));
   }
 
-  desktop_sessions_[display_name] = desktop_session->GetWeakPtr();
+  displays_[display_name] =
+      ManagedDisplay{options.client_id, desktop_session->GetWeakPtr()};
   return desktop_session;
 }
 
 void GdmManagedDesktopSessionBackend::TerminateAllSessions(Callback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (desktop_sessions_.empty()) {
+  if (displays_.empty()) {
     std::move(callback).Run(base::ok());
     return;
   }
 
   std::vector<std::string> display_names;
-  for (const auto& [display_name, session] : desktop_sessions_) {
+  display_names.reserve(displays_.size());
+  for (const auto& [display_name, managed] : displays_) {
     display_names.push_back(display_name);
   }
 
@@ -182,8 +200,8 @@ void GdmManagedDesktopSessionBackend::TerminateAllSessions(Callback callback) {
 DesktopSession* GdmManagedDesktopSessionBackend::GetSessionByUid(uid_t uid) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  for (const auto& [display_name, session] : desktop_sessions_) {
-    if (!session) {
+  for (const auto& [display_name, managed] : displays_) {
+    if (!managed.desktop_session) {
       continue;
     }
     const auto* info =
@@ -196,7 +214,7 @@ DesktopSession* GdmManagedDesktopSessionBackend::GetSessionByUid(uid_t uid) {
     for (const auto& [path, remote_session] : info->sessions) {
       if (remote_session.user_info.has_value() &&
           remote_session.user_info->uid == uid) {
-        return session.get();
+        return managed.desktop_session.get();
       }
     }
   }
@@ -237,7 +255,7 @@ void GdmManagedDesktopSessionBackend::OnRemoteDisplaysFileLoaded(
         base::JSONReader::Read(*load_result, base::JSON_PARSE_RFC);
     if (json && json->is_dict()) {
       for (const auto [client_id, display_name_value] : json->GetDict()) {
-        if (!display_name_value.is_string()) {
+        if (client_id.empty() || !display_name_value.is_string()) {
           continue;
         }
         const std::string& display_name = display_name_value.GetString();
@@ -249,7 +267,8 @@ void GdmManagedDesktopSessionBackend::OnRemoteDisplaysFileLoaded(
           // with such that a user is associated with another user's graphical
           // session. This will be validated in
           // DesktopSessionLinux::SetSessionInfo when the client connects.
-          recovered_displays_[client_id] = display_name;
+          displays_[display_name] =
+              ManagedDisplay{client_id, /*desktop_session=*/nullptr};
         } else {
           LOG(WARNING) << "Ignored remote display " << display_name
                        << " which no longer exists.";
@@ -265,12 +284,7 @@ void GdmManagedDesktopSessionBackend::OnRemoteDisplaysFileLoaded(
 
   for (const auto& [display_name, info] :
        remote_display_session_manager_.remote_displays()) {
-    bool is_recovered = std::ranges::any_of(
-        recovered_displays_, [&display_name](const auto& pair) {
-          return pair.second == display_name;
-        });
-
-    if (!is_recovered) {
+    if (!displays_.contains(display_name)) {
       HOST_LOG << "Terminating unknown CRD-managed remote display: "
                << display_name;
       remote_display_session_manager_.TerminateRemoteDisplay(
@@ -368,25 +382,50 @@ void GdmManagedDesktopSessionBackend::OnRemoteDisplayTerminated(
     std::string_view display_name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  auto session = FindSession(display_name);
-  // session may be nullptr if the desktop session has already been removed by
-  // RemoveDesktopSession().
+  auto it = displays_.find(display_name);
+  if (it == displays_.end()) {
+    return;
+  }
+  auto session = it->second.desktop_session;
+  // session may be nullptr if the display is unclaimed or its desktop session
+  // was already removed by RemoveDesktopSession().
   if (session) {
     session->TerminateSession(ErrorCode::SESSION_REJECTED,
                               "Remote display terminated.", FROM_HERE);
+  } else {
+    displays_.erase(it);
+    RequestWriteRemoteDisplaysToFile();
   }
 }
 
 void GdmManagedDesktopSessionBackend::RemoveDesktopSession(
-    std::string_view display_name) {
+    std::string_view display_name,
+    DesktopSessionLinux::DestructionReason reason) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  desktop_sessions_.erase(display_name);
-  RequestWriteRemoteDisplaysToFile();
-  if (!remote_display_session_manager_.GetRemoteDisplayInfo(display_name)) {
-    // The remote display has already been terminated.
+  auto it = displays_.find(display_name);
+  if (it == displays_.end()) {
     return;
   }
+  const auto* info =
+      remote_display_session_manager_.GetRemoteDisplayInfo(display_name);
+  if (!info) {
+    // The remote display has already been terminated.
+    displays_.erase(it);
+    RequestWriteRemoteDisplaysToFile();
+    return;
+  }
+  if (reason == DesktopSessionLinux::DestructionReason::kPermanentWorkerError &&
+      HasUserSession(*info) && !it->second.client_id.empty()) {
+    LOG(WARNING) << "Desktop process for remote display " << display_name
+                 << " exited with a permanent error while a user session is "
+                 << "active; preserving display for recovery.";
+    it->second.desktop_session = nullptr;
+    RequestWriteRemoteDisplaysToFile();
+    return;
+  }
+  displays_.erase(it);
+  RequestWriteRemoteDisplaysToFile();
   remote_display_session_manager_.TerminateRemoteDisplay(
       display_name, base::BindOnce([](base::expected<void, Loggable> result) {
         // TODO: crbug.com/475611769 - See what to do with the callback.
@@ -400,8 +439,8 @@ base::WeakPtr<DesktopSessionLinux> GdmManagedDesktopSessionBackend::FindSession(
     std::string_view display_name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  auto it = desktop_sessions_.find(display_name);
-  return it == desktop_sessions_.end() ? nullptr : it->second;
+  auto it = displays_.find(display_name);
+  return it == displays_.end() ? nullptr : it->second.desktop_session;
 }
 
 void GdmManagedDesktopSessionBackend::RequestWriteRemoteDisplaysToFile() {
@@ -415,35 +454,22 @@ void GdmManagedDesktopSessionBackend::WriteRemoteDisplaysToFile() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   base::DictValue dict;
-  for (const auto& [display_name, session] : desktop_sessions_) {
-    if (!session) {
+  for (const auto& [display_name, managed] : displays_) {
+    if (managed.client_id.empty()) {
       continue;
     }
     const auto* info =
         remote_display_session_manager_.GetRemoteDisplayInfo(display_name);
-    if (!info) {
+    if (!info || !HasUserSession(*info)) {
       continue;
     }
 
-    // Only write a remote display with a user session. There is no value to
-    // recover a greeter session, and it is not recoverable on GNOME 48 or older
-    // since we can't launch the session reporter process ourselves.
-    bool has_user_session =
-        std::ranges::any_of(info->sessions, [](const auto& pair) {
-          return pair.second.session_info.has_value() &&
-                 pair.second.session_info->session_class == "user";
-        });
-    if (!has_user_session) {
-      continue;
-    }
-
-    if (dict.contains(session->client_id())) {
-      LOG(WARNING) << "Multiple remote displays found for "
-                   << session->client_id() << ". Using "
-                   << *dict.FindString(session->client_id()) << " and ignoring "
-                   << display_name;
+    if (dict.contains(managed.client_id)) {
+      LOG(WARNING) << "Multiple remote displays found for " << managed.client_id
+                   << ". Using " << *dict.FindString(managed.client_id)
+                   << " and ignoring " << display_name;
     } else {
-      dict.Set(session->client_id(), display_name);
+      dict.Set(managed.client_id, display_name);
     }
   }
 

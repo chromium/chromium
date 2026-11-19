@@ -23,6 +23,7 @@
 #include "remoting/base/loggable.h"
 #include "remoting/host/desktop_session.h"
 #include "remoting/host/linux/desktop_session_backend.h"
+#include "remoting/host/linux/desktop_session_linux.h"
 #include "remoting/host/linux/remote_display_session_manager.h"
 #include "remoting/host/mojom/desktop_session.mojom-forward.h"
 
@@ -71,9 +72,12 @@ class GdmManagedDesktopSessionBackend final
       const RemoteDisplaySessionManager::RemoteDisplayInfo& info) override;
   void OnRemoteDisplayTerminated(std::string_view display_name) override;
 
-  // Removes `display_name` from `desktop_sessions_` and terminates the remote
-  // display.
-  void RemoveDesktopSession(std::string_view display_name);
+  // Removes the session for `display_name` and terminates the remote display,
+  // or clears `desktop_session` in `displays_` to preserve the display for
+  // recovery when destroyed due to a permanent worker error while a user
+  // session is active.
+  void RemoveDesktopSession(std::string_view display_name,
+                            DesktopSessionLinux::DestructionReason reason);
 
   // Finds a DesktopSessionLinux with the display name. Returns nullptr if not
   // found.
@@ -96,16 +100,15 @@ class GdmManagedDesktopSessionBackend final
   base::RetainingOneShotTimer write_remote_displays_timer_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // Note that sessions that have been terminated but not yet destroyed are
-  // still in this map.
-  base::flat_map<std::string /*display_name*/,
-                 base::WeakPtr<DesktopSessionLinux>>
-      desktop_sessions_ GUARDED_BY_CONTEXT(sequence_checker_);
+  struct ManagedDisplay {
+    std::string client_id;
+    // Null when recovered on startup or detached after a permanent worker
+    // error, waiting for `client_id` to reconnect.
+    base::WeakPtr<DesktopSessionLinux> desktop_session;
+  };
 
-  // A collection of remote displays that are recovered from the previous CRD
-  // host incarnation.
-  base::flat_map<std::string /*client_id*/, std::string /*display_name*/>
-      recovered_displays_ GUARDED_BY_CONTEXT(sequence_checker_);
+  base::flat_map<std::string /*display_name*/, ManagedDisplay> displays_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::WeakPtrFactory<GdmManagedDesktopSessionBackend> weak_ptr_factory_{this};
 };

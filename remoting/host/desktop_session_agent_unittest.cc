@@ -65,14 +65,23 @@ class FakeDelegate : public DesktopSessionAgent::Delegate {
     return *factory_;
   }
 
+  void OnDesktopEnvironmentCreated(bool success) override {
+    desktop_environment_created_success_ = success;
+  }
+
   void OnNetworkProcessDisconnected() override {}
 
   void CrashNetworkProcess(const base::Location& location) override {}
+
+  std::optional<bool> desktop_environment_created_success() const {
+    return desktop_environment_created_success_;
+  }
 
   base::WeakPtr<Delegate> GetWeakPtr() { return weak_ptr_.GetWeakPtr(); }
 
  private:
   std::unique_ptr<DesktopEnvironmentFactory> factory_;
+  std::optional<bool> desktop_environment_created_success_;
 
   base::WeakPtrFactory<FakeDelegate> weak_ptr_{this};
 };
@@ -164,6 +173,7 @@ TEST_F(DesktopSessionAgentTest, StartDesktopSessionAgent) {
   bool session_started = false;
   FakeListener listener(base::BindLambdaForTesting([&]() {
     session_started = true;
+    EXPECT_EQ(delegate->desktop_environment_created_success(), true);
     Shutdown();
     delegate.reset();
     proxy.reset();
@@ -253,6 +263,7 @@ TEST_F(DesktopSessionAgentTest, CreateDesktopEnvironmentFails) {
   EXPECT_TRUE(disconnected_future.Wait());
   EXPECT_TRUE(agent_disconnected_future.Wait());
   EXPECT_FALSE(start_callback_invoked);
+  EXPECT_EQ(delegate->desktop_environment_created_success(), false);
 
   desktop_session_agent.reset();
   Shutdown();
@@ -301,6 +312,7 @@ TEST_F(DesktopSessionAgentTest, StopWhileCreateDesktopEnvironmentPending) {
   Shutdown();
   std::move(pending_callback).Run(nullptr);
 
+  EXPECT_EQ(delegate->desktop_environment_created_success(), std::nullopt);
   desktop_session_agent.reset();
   delegate.reset();
   proxy.reset();

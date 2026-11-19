@@ -16,6 +16,7 @@
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/json/string_escape.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -219,8 +220,9 @@ std::unique_ptr<DesktopSession> UserDesktopSessionBackend::CreateDesktopSession(
   auto desktop_session = std::make_unique<DesktopSessionLinux>(
       daemon_process, id, options.required_username, options.client_id,
       io_task_runner_,
-      base::BindOnce(&UserDesktopSessionBackend::RemoveDesktopSession,
-                     weak_ptr_factory_.GetWeakPtr(), id),
+      base::IgnoreArgs<DesktopSessionLinux::DestructionReason>(
+          base::BindOnce(&UserDesktopSessionBackend::RemoveDesktopSession,
+                         weak_ptr_factory_.GetWeakPtr(), id)),
       options.curtain_required, /*is_greeter_allowed=*/false);
 
   auto resolved_user = ValidateClientSession(options);

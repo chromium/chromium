@@ -87,6 +87,9 @@ class DesktopSessionAgent
     // Returns an instance of desktop environment factory used.
     virtual DesktopEnvironmentFactory& desktop_environment_factory() = 0;
 
+    // Notifies the delegate whether DesktopEnvironment creation succeeded.
+    virtual void OnDesktopEnvironmentCreated(bool success) = 0;
+
     // Notifies the delegate that the network-to-desktop channel has been
     // disconnected.
     virtual void OnNetworkProcessDisconnected() = 0;

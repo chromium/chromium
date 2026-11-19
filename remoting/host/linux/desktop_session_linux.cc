@@ -86,7 +86,7 @@ DesktopSessionLinux::~DesktopSessionLinux() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (on_destroyed_) {
-    std::move(on_destroyed_).Run();
+    std::move(on_destroyed_).Run(destruction_reason_);
   }
 }
 
@@ -268,7 +268,12 @@ void DesktopSessionLinux::OnChannelConnected(int32_t peer_pid) {
 void DesktopSessionLinux::OnPermanentError(int exit_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  TerminateSession();
+  destruction_reason_ = DestructionReason::kPermanentWorkerError;
+  TerminateSession(
+      ErrorCode::HOST_CONFIGURATION_ERROR,
+      base::StringPrintf("Desktop process exited with permanent error %d.",
+                         exit_code),
+      FROM_HERE);
 }
 
 void DesktopSessionLinux::OnWorkerProcessStopped() {

@@ -40,7 +40,12 @@ class DesktopSessionLinux : public DesktopSession,
                             public WorkerProcessIpcDelegate,
                             public mojom::DesktopSessionRequestHandler {
  public:
-  using DestroyedCallback = base::OnceClosure;
+  enum class DestructionReason {
+    kSessionTerminated,
+    kPermanentWorkerError,
+  };
+
+  using DestroyedCallback = base::OnceCallback<void(DestructionReason)>;
 
   DesktopSessionLinux(
       DaemonProcess* daemon_process,
@@ -138,6 +143,8 @@ class DesktopSessionLinux : public DesktopSession,
   std::string current_session_id_ GUARDED_BY_CONTEXT(sequence_checker_);
   std::optional<uid_t> current_uid_ GUARDED_BY_CONTEXT(sequence_checker_);
   bool is_local_session_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+  DestructionReason destruction_reason_ GUARDED_BY_CONTEXT(sequence_checker_) =
+      DestructionReason::kSessionTerminated;
 
   mojo::AssociatedReceiver<mojom::DesktopSessionRequestHandler>
       desktop_session_request_handler_ GUARDED_BY_CONTEXT(sequence_checker_){

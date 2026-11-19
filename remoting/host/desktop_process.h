@@ -17,6 +17,7 @@
 #include "ipc/ipc_listener.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/system/message_pipe.h"
+#include "remoting/host/base/host_exit_codes.h"
 #include "remoting/host/desktop_session_agent.h"
 #include "remoting/host/mojom/desktop_session.mojom.h"
 
@@ -51,6 +52,7 @@ class DesktopProcess : public DesktopSessionAgent::Delegate,
 
   // DesktopSessionAgent::Delegate implementation.
   DesktopEnvironmentFactory& desktop_environment_factory() override;
+  void OnDesktopEnvironmentCreated(bool success) override;
   void OnNetworkProcessDisconnected() override;
   void CrashNetworkProcess(const base::Location& location) override;
 
@@ -89,8 +91,17 @@ class DesktopProcess : public DesktopSessionAgent::Delegate,
   // testing purposes.
   void SetOnDesktopAgentCreatedCallbackForTesting(base::OnceClosure callback);
 
+  int exit_code() const { return exit_code_; }
+
  private:
+  enum class InitialCreationState {
+    kPending,
+    kSucceeded,
+    kFailed,
+  };
+
   mojo::ScopedMessagePipeHandle CreateDesktopAgent();
+  void Shutdown(int exit_code = kSuccessExitCode);
 
   // Task runner on which public methods of this class should be called.
   scoped_refptr<AutoThreadTaskRunner> caller_task_runner_;
@@ -128,6 +139,12 @@ class DesktopProcess : public DesktopSessionAgent::Delegate,
 
   base::OnceClosure on_network_process_disconnected_callback_;
   base::OnceClosure on_desktop_agent_created_callback_;
+
+  // Tracks whether initial DesktopEnvironment creation failed before any
+  // environment succeeded so OnNetworkProcessDisconnected() exits with
+  // kInvalidHostConfigurationExitCode instead of waiting for a reconnect.
+  InitialCreationState initial_creation_state_ = InitialCreationState::kPending;
+  int exit_code_ = kSuccessExitCode;
 
   base::WeakPtrFactory<DesktopProcess> weak_factory_{this};
 };

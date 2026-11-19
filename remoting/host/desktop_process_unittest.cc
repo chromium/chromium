@@ -18,6 +18,7 @@
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "ipc/ipc_channel.h"
@@ -31,6 +32,7 @@
 #include "remoting/base/auto_thread.h"
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/host/base/desktop_environment_options.h"
+#include "remoting/host/base/host_exit_codes.h"
 #include "remoting/host/base/screen_resolution.h"
 #include "remoting/host/desktop_environment.h"
 #include "remoting/host/desktop_process.h"
@@ -143,8 +145,15 @@ class DesktopProcessTest : public testing::Test {
   // exit.
   void DisconnectChannels();
 
+  // Disconnects only the network-to-desktop channel, leaving `daemon_channel_`
+  // open.
+  void DisconnectNetworkChannel();
+
   // Posts DisconnectChannels() to |message_loop_|.
   void PostDisconnectChannels();
+
+  // Posts DisconnectNetworkChannel() to the main task runner.
+  void PostDisconnectNetworkChannel();
 
   // Runs the desktop process code in a separate thread.
   void RunDesktopProcess();
@@ -176,6 +185,7 @@ class DesktopProcessTest : public testing::Test {
   mojo::AssociatedRemote<mojom::DesktopSessionAgent> desktop_session_agent_;
   mojo::AssociatedRemote<mojom::DesktopSessionControl> desktop_session_control_;
   mojo::AssociatedRemote<mojom::WorkerProcessControl> worker_process_control_;
+  mojo::AssociatedRemote<mojom::DesktopProcessControl> desktop_process_control_;
 
   // Runs the daemon's end of the channel.
   base::test::TaskEnvironment task_environment_{
@@ -190,6 +200,9 @@ class DesktopProcessTest : public testing::Test {
   MockNetworkListener network_listener_;
 
   mojo::ScopedMessagePipeHandle desktop_pipe_handle_;
+  base::OnceClosure on_desktop_session_agent_disconnected_;
+  bool fail_desktop_environment_creation_ = false;
+  int last_exit_code_ = kSuccessExitCode;
 };
 
 DesktopProcessTest::DesktopProcessTest() = default;
@@ -219,6 +232,12 @@ void DesktopProcessTest::CreateDesktopEnvironment(
     base::WeakPtr<ClientSessionEvents>,
     const DesktopEnvironmentOptions&,
     DesktopEnvironmentFactory::CreateCallback callback) {
+  if (fail_desktop_environment_creation_) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), nullptr));
+    return;
+  }
+
   auto desktop_environment = std::make_unique<MockDesktopEnvironment>();
   EXPECT_CALL(*desktop_environment, CreateAudioCapturer()).Times(0);
   EXPECT_CALL(*desktop_environment, CreateInputInjector())
@@ -268,14 +287,27 @@ void DesktopProcessTest::DisconnectChannels() {
   desktop_session_agent_.reset();
   desktop_session_control_.reset();
   worker_process_control_.reset();
+  desktop_process_control_.reset();
 
   network_channel_.reset();
   io_task_runner_ = nullptr;
 }
 
+void DesktopProcessTest::DisconnectNetworkChannel() {
+  desktop_session_agent_.reset();
+  desktop_session_control_.reset();
+  network_channel_.reset();
+}
+
 void DesktopProcessTest::PostDisconnectChannels() {
   task_environment_.GetMainThreadTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(&DesktopProcessTest::DisconnectChannels,
+                                base::Unretained(this)));
+}
+
+void DesktopProcessTest::PostDisconnectNetworkChannel() {
+  task_environment_.GetMainThreadTaskRunner()->PostTask(
+      FROM_HERE, base::BindOnce(&DesktopProcessTest::DisconnectNetworkChannel,
                                 base::Unretained(this)));
 }
 
@@ -316,6 +348,7 @@ void DesktopProcessTest::RunDesktopProcess() {
 
   ui_task_runner = nullptr;
   run_loop.Run();
+  last_exit_code_ = desktop_process.exit_code();
   desktop_process_ = nullptr;
 }
 
@@ -340,6 +373,10 @@ void DesktopProcessTest::SendCrashRequest() {
 void DesktopProcessTest::SendStartSessionAgent() {
   desktop_session_agent_.reset();
   network_channel_->GetRemoteAssociatedInterface(&desktop_session_agent_);
+  if (on_desktop_session_agent_disconnected_) {
+    desktop_session_agent_.set_disconnect_handler(
+        std::move(on_desktop_session_agent_disconnected_));
+  }
 
   desktop_session_agent_->Start(
       "user@domain/rest-of-jid", ScreenResolution(),
@@ -404,6 +441,81 @@ TEST_F(DesktopProcessTest, StartSessionAgent) {
           InvokeWithoutArgs(this, &DesktopProcessTest::PostDisconnectChannels));
 
   RunDesktopProcess();
+  EXPECT_EQ(last_exit_code_, kSuccessExitCode);
+}
+
+TEST_F(DesktopProcessTest,
+       CreateDesktopEnvironmentFailsExitsWithPermanentError) {
+  fail_desktop_environment_creation_ = true;
+  on_desktop_session_agent_disconnected_ =
+      base::BindOnce(&DesktopProcessTest::PostDisconnectNetworkChannel,
+                     base::Unretained(this));
+
+  {
+    InSequence s;
+    EXPECT_CALL(daemon_listener_, OnChannelConnected(_));
+    EXPECT_CALL(daemon_listener_, ConnectDesktopChannel(_))
+        .WillOnce([&](mojo::ScopedMessagePipeHandle desktop_pipe) {
+          CreateNetworkChannel(std::move(desktop_pipe));
+        });
+    EXPECT_CALL(network_listener_, OnChannelConnected(_))
+        .WillOnce(InvokeWithoutArgs(
+            this, &DesktopProcessTest::SendStartSessionAgent));
+    EXPECT_CALL(daemon_listener_, OnChannelError())
+        .WillOnce(
+            InvokeWithoutArgs(this, &DesktopProcessTest::DisconnectChannels));
+  }
+
+  EXPECT_CALL(network_listener_, OnDesktopEnvironmentCreated()).Times(0);
+
+  RunDesktopProcess();
+  EXPECT_EQ(last_exit_code_, kInvalidHostConfigurationExitCode);
+}
+
+TEST_F(DesktopProcessTest,
+       ReconnectFailureAfterInitialSuccessKeepsDesktopProcessAlive) {
+  {
+    InSequence s;
+    EXPECT_CALL(daemon_listener_, OnChannelConnected(_)).WillOnce([&]() {
+      daemon_channel_->GetRemoteAssociatedInterface(&desktop_process_control_);
+    });
+    EXPECT_CALL(daemon_listener_, ConnectDesktopChannel(_))
+        .WillOnce([&](mojo::ScopedMessagePipeHandle desktop_pipe) {
+          CreateNetworkChannel(std::move(desktop_pipe));
+        });
+    EXPECT_CALL(network_listener_, OnChannelConnected(_))
+        .WillOnce(InvokeWithoutArgs(
+            this, &DesktopProcessTest::SendStartSessionAgent));
+    EXPECT_CALL(network_listener_, OnDesktopEnvironmentCreated())
+        .WillOnce([&]() {
+          fail_desktop_environment_creation_ = true;
+          desktop_process_->SetOnNetworkProcessDisconnectedCallbackForTesting(
+              base::BindLambdaForTesting([&]() {
+                on_desktop_session_agent_disconnected_ = base::BindOnce(
+                    &DesktopProcessTest::PostDisconnectNetworkChannel,
+                    base::Unretained(this));
+                desktop_process_
+                    ->SetOnNetworkProcessDisconnectedCallbackForTesting(
+                        base::BindOnce(
+                            &DesktopProcessTest::PostDisconnectChannels,
+                            base::Unretained(this)));
+                desktop_process_control_->ReconnectNetworkChannel();
+              }));
+          PostDisconnectNetworkChannel();
+        });
+    EXPECT_CALL(daemon_listener_, ConnectDesktopChannel(_))
+        .WillOnce([&](mojo::ScopedMessagePipeHandle desktop_pipe) {
+          CreateNetworkChannel(std::move(desktop_pipe));
+        });
+    EXPECT_CALL(network_listener_, OnChannelConnected(_))
+        .WillOnce(InvokeWithoutArgs(
+            this, &DesktopProcessTest::SendStartSessionAgent));
+  }
+
+  EXPECT_CALL(daemon_listener_, OnChannelError()).Times(0);
+
+  RunDesktopProcess();
+  EXPECT_EQ(last_exit_code_, kSuccessExitCode);
 }
 
 // Run the desktop process and ask it to crash.
