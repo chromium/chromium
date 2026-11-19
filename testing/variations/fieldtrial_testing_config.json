@@ -19503,6 +19503,21 @@
             ]
         }
     ],
+    "TabPickerSelectTabsIPH": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20261119",
+                    "enable_features": [
+                        "IPH_TabPickerSelectTabs"
+                    ]
+                }
+            ]
+        }
+    ],
     "TabSearchJourney": [
         {
             "platforms": [
