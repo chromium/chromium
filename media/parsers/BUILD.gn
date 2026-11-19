@@ -18,6 +18,8 @@ rust_static_library("safe_parsers") {
 
 source_set("parsers") {
   sources = [
+    "av1_svc_utils.cc",
+    "av1_svc_utils.h",
     "bit_reader_macros.h",
     "h264_bit_reader.cc",
     "h264_bit_reader.h",
@@ -86,6 +88,7 @@ static_library("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "av1_svc_utils_unittest.cc",
     "h264_bit_reader_unittest.cc",
     "h264_parser_unittest.cc",
     "h264_poc_unittest.cc",

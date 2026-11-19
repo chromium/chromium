@@ -24,6 +24,7 @@ include_rules = [
     "+media/filters/resolution_monitor.h",
     "+media/media_buildflags.h",
     "+media/mojo/clients/mojo_video_encoder_metrics_provider.h",
+    "+media/parsers/av1_svc_utils.h",
     "+media/parsers/h264_parser.h",
     "+media/parsers/vp8_parser.h",
     "+media/parsers/vp9_parser.h",
