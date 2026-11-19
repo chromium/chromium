@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/elapsed_timer.h"
 #include "chrome/browser/ttc/core/pointer_context_capturer.h"
 #include "chrome/browser/ttc/core/pointer_tracker.h"
 #include "components/ttc/app/public/tool_types.h"
@@ -44,7 +45,7 @@ class GetPointerTool {
 
   // Answers a call of the tool through `callback`. Captures the page the
   // session is focused on if the user pointed at something and TTC may read
-  // the page.
+  // the page. Records metrics for the call.
   void Run(ToolResponseCallback callback);
 
  private:
@@ -54,11 +55,18 @@ class GetPointerTool {
                     bool is_url_supported);
   void OnCaptured(base::WeakPtr<content::Page> page,
                   std::vector<PointerTracker::Location> locations,
+                  base::ElapsedTimer capture_timer,
                   ToolResponseCallback callback,
                   PointerContextCapturer::Result context);
   void OnResponseBuilt(base::WeakPtr<content::Page> page,
                        ToolResponseCallback callback,
                        ToolResponse response);
+  // Every call ends here, whichever step answers it: records metrics for
+  // `response` and then answers with it. `timer` was started when the call
+  // was.
+  void OnDone(base::ElapsedTimer timer,
+              ToolResponseCallback callback,
+              ToolResponse response);
 
   const raw_ref<SessionControllerImpl> session_controller_;
 

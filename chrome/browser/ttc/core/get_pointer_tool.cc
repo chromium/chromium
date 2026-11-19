@@ -5,6 +5,7 @@
 #include "chrome/browser/ttc/core/get_pointer_tool.h"
 
 #include <optional>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -12,18 +13,24 @@
 #include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/json/json_writer.h"
 #include "base/location.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ttc/core/features.h"
+#include "chrome/browser/ttc/core/get_pointer_metrics.h"
 #include "chrome/browser/ttc/core/get_pointer_response.h"
 #include "chrome/browser/ttc/core/page_context_util.h"
 #include "chrome/browser/ttc/core/session_controller_impl.h"
+#include "chrome/browser/ttc/core/session_journal_impl.h"
 #include "chrome/browser/ttc/core/ttc_keyed_service.h"
+#include "components/actor/core/journal_details_builder.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
@@ -52,6 +59,31 @@ std::vector<gfx::Point> GetPointsInResponse(const ToolResponse& response) {
     }
   }
   return points;
+}
+
+GetPointerOutcome ToGetPointerOutcome(const ToolResponse& response) {
+  if (response.Ok()) {
+    // A response without an image says that the user is not pointing.
+    return response.visual_content() ? GetPointerOutcome::kOk
+                                     : GetPointerOutcome::kNoActivePointer;
+  }
+  // An error that is not one of the actor's has no code.
+  if (!response.error().code) {
+    return GetPointerOutcome::kOtherError;
+  }
+  switch (*response.error().code) {
+    case actor::mojom::ActionResultCode::kUrlBlocked:
+    case actor::mojom::ActionResultCode::kScreenshotCapturePageNotEligible:
+      return GetPointerOutcome::kPageNotAllowed;
+    case actor::mojom::ActionResultCode::kScreenshotCapturePageChanged:
+      return GetPointerOutcome::kPageChanged;
+    case actor::mojom::ActionResultCode::kToolTimeout:
+      return GetPointerOutcome::kTimedOut;
+    case actor::mojom::ActionResultCode::kScreenshotCaptureFailed:
+      return GetPointerOutcome::kCaptureFailed;
+    default:
+      return GetPointerOutcome::kOtherError;
+  }
 }
 
 }  // namespace
@@ -92,6 +124,8 @@ ToolDefinition GetPointerTool::GetDefinition() {
 }
 
 void GetPointerTool::Run(ToolResponseCallback callback) {
+  callback = base::BindOnce(&GetPointerTool::OnDone, weak_factory_.GetWeakPtr(),
+                            base::ElapsedTimer(), std::move(callback));
   content::WebContents* contents =
       session_controller_->GetVoiceFocusedWebContents();
   if (!contents) {
@@ -140,14 +174,16 @@ void GetPointerTool::OnUrlChecked(
 
   capturer_ = std::make_unique<PointerContextCapturer>(
       kTtcGetPointerCaptureTimeout.Get());
-  capturer_->Capture(web_contents,
-                     base::BindOnce(&GetPointerTool::OnCaptured,
-                                    weak_factory_.GetWeakPtr(), std::move(page),
-                                    std::move(locations), std::move(callback)));
+  capturer_->Capture(
+      web_contents,
+      base::BindOnce(&GetPointerTool::OnCaptured, weak_factory_.GetWeakPtr(),
+                     std::move(page), std::move(locations),
+                     base::ElapsedTimer(), std::move(callback)));
 }
 
 void GetPointerTool::OnCaptured(base::WeakPtr<content::Page> page,
                                 std::vector<PointerTracker::Location> locations,
+                                base::ElapsedTimer capture_timer,
                                 ToolResponseCallback callback,
                                 PointerContextCapturer::Result context) {
   capturer_.reset();
@@ -155,6 +191,8 @@ void GetPointerTool::OnCaptured(base::WeakPtr<content::Page> page,
     std::move(callback).Run(std::move(context.error()));
     return;
   }
+  base::UmaHistogramTimes("Ttc.GetPointer.CaptureLatency",
+                          capture_timer.Elapsed());
   // The capturer does not notice the user leaving the page, e.g. for another
   // tab. What was captured is then no longer what they are pointing at, and
   // the page they are on now has not been checked. The URL was found to be
@@ -190,6 +228,32 @@ void GetPointerTool::OnResponseBuilt(base::WeakPtr<content::Page> page,
                  GetPointsInResponse(response);
              !points.empty()) {
     session_controller_->NotifyPointerLocationsReported(points);
+  }
+  std::move(callback).Run(std::move(response));
+}
+
+void GetPointerTool::OnDone(base::ElapsedTimer timer,
+                            ToolResponseCallback callback,
+                            ToolResponse response) {
+  const GetPointerOutcome outcome = ToGetPointerOutcome(response);
+  base::UmaHistogramEnumeration("Ttc.GetPointer.Outcome", outcome);
+
+  if (outcome == GetPointerOutcome::kOk) {
+    base::UmaHistogramTimes("Ttc.GetPointer.TotalLatency", timer.Elapsed());
+    const base::ListValue* points = response.GetResult().FindList("points");
+    base::UmaHistogramExactLinear("Ttc.GetPointer.LocationCount",
+                                  points ? points->size() : 0, 10);
+    const size_t image_bytes = response.visual_content()->image_data.size();
+    base::UmaHistogramCounts1M("Ttc.GetPointer.ImageBytes", image_bytes);
+    // The journal has every tool call's name, arguments and success already.
+    // This adds what the call answered with, less the image.
+    session_controller_->GetJournal().Log(
+        "TtcGetPointer",
+        actor::JournalDetailsBuilder()
+            .Add("result",
+                 base::WriteJson(response.GetResult()).value_or(std::string()))
+            .Add("image_bytes", image_bytes)
+            .Build());
   }
   std::move(callback).Run(std::move(response));
 }

@@ -1,0 +1,79 @@
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of TTC histograms
+along with a detailed description for each histogram. The code for TTC is in
+chrome/browser/ttc:
+https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ttc/
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="Ttc.GetPointer.CaptureLatency" units="ms"
+    expires_after="2027-02-13">
+  <owner>jamescook@chromium.org</owner>
+  <owner>src/chrome/browser/ttc/OWNERS</owner>
+  <summary>
+    How long it took to capture the page's screenshot and content for a call of
+    the get_pointer tool in a TTC session. Recorded when the capture succeeds;
+    one that fails or times out is counted in Ttc.GetPointer.Outcome instead.
+  </summary>
+</histogram>
+
+<histogram name="Ttc.GetPointer.ImageBytes" units="bytes"
+    expires_after="2027-02-13">
+  <owner>jamescook@chromium.org</owner>
+  <owner>src/chrome/browser/ttc/OWNERS</owner>
+  <summary>
+    The size of the encoded image, of the page around where the user pointed,
+    that a call of the get_pointer tool in a TTC session answered with. Recorded
+    for each call that is answered with an image.
+  </summary>
+</histogram>
+
+<histogram name="Ttc.GetPointer.LocationCount" units="locations"
+    expires_after="2027-02-13">
+  <owner>jamescook@chromium.org</owner>
+  <owner>src/chrome/browser/ttc/OWNERS</owner>
+  <summary>
+    How many places the user pointed at were reported by a call of the
+    get_pointer tool in a TTC session. Recorded for each call that is answered
+    with an image. It is 0 when the image is of the text the user had selected
+    rather than of where they pointed.
+  </summary>
+</histogram>
+
+<histogram name="Ttc.GetPointer.Outcome" enum="TtcGetPointerOutcome"
+    expires_after="2027-02-13">
+  <owner>jamescook@chromium.org</owner>
+  <owner>src/chrome/browser/ttc/OWNERS</owner>
+  <summary>
+    How a call of the get_pointer tool in a TTC session ended: with an image of
+    what the user pointed at, with the answer that they were not pointing, or
+    with an error. Recorded once for each call that is answered; a call still in
+    progress when its session ends is not counted.
+  </summary>
+</histogram>
+
+<histogram name="Ttc.GetPointer.TotalLatency" units="ms"
+    expires_after="2027-02-13">
+  <owner>jamescook@chromium.org</owner>
+  <owner>src/chrome/browser/ttc/OWNERS</owner>
+  <summary>
+    How long a call of the get_pointer tool in a TTC session took, from the call
+    to the answer. Recorded for each call that is answered with an image.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

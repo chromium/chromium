@@ -1,0 +1,37 @@
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<!-- LINT.IfChange(TtcGetPointerOutcome) -->
+
+<enum name="TtcGetPointerOutcome">
+  <int value="0" label="Ok"/>
+  <int value="1" label="NoActivePointer"/>
+  <int value="2" label="PageNotAllowed"/>
+  <int value="3" label="PageChanged"/>
+  <int value="4" label="TimedOut"/>
+  <int value="5" label="CaptureFailed"/>
+  <int value="6" label="OtherError"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ttc/core/get_pointer_metrics.h:TtcGetPointerOutcome) -->
+
+</enums>
+
+</histogram-configuration>

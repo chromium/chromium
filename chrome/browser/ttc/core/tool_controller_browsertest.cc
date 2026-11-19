@@ -20,6 +20,7 @@
 #include "base/strings/strcat.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -56,6 +57,7 @@
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/translate/translate_test_utils.h"
 #include "chrome/browser/ttc/core/features.h"
+#include "chrome/browser/ttc/core/get_pointer_metrics.h"
 #include "chrome/browser/ttc/core/pointer_tracker.h"
 #include "chrome/browser/ttc/core/session_controller.h"
 #include "chrome/browser/ttc/core/session_controller_impl.h"
@@ -3287,6 +3289,10 @@ IN_PROC_BROWSER_TEST_F(ToolControllerGetPointerBrowserTest,
             ToolDefinition::Verbalization::kStandard);
   EXPECT_TRUE(get_pointer->parameters_json_schema.empty());
 
+  base::HistogramTester histograms;
+  actor::ActorJournalRecorder journal_recorder(
+      actor::ActorKeyedService::Get(profile())->GetJournal());
+
   // A button over the whole viewport, so that it is what is pointed at
   // however the page is laid out and scaled.
   ASSERT_TRUE(content::ExecJs(
@@ -3323,6 +3329,22 @@ IN_PROC_BROWSER_TEST_F(ToolControllerGetPointerBrowserTest,
   EXPECT_EQ(response.visual_content()->mime_type, "image/jpeg");
   EXPECT_FALSE(
       gfx::JPEGCodec::Decode(response.visual_content()->image_data).isNull());
+
+  histograms.ExpectUniqueSample("Ttc.GetPointer.Outcome",
+                                GetPointerOutcome::kOk, 1);
+  histograms.ExpectTotalCount("Ttc.GetPointer.CaptureLatency", 1);
+  histograms.ExpectTotalCount("Ttc.GetPointer.TotalLatency", 1);
+  histograms.ExpectUniqueSample("Ttc.GetPointer.LocationCount", 1, 1);
+  histograms.ExpectUniqueSample("Ttc.GetPointer.ImageBytes",
+                                response.visual_content()->image_data.size(),
+                                1);
+  // The journal has what the call answered with.
+  const std::vector<actor::ActorJournalRecorder::Entry> entries =
+      journal_recorder.GetEntries("TtcGetPointer");
+  ASSERT_EQ(entries.size(), 1u);
+  EXPECT_THAT(entries[0].details,
+              testing::Contains(testing::Pair(
+                  "result", testing::HasSubstr("\"status\":\"ok\""))));
 }
 
 class ToolControllerGetPointerNodeIdentityBrowserTest
@@ -3370,6 +3392,7 @@ IN_PROC_BROWSER_TEST_F(ToolControllerGetPointerNodeIdentityBrowserTest,
 
 // A user whose pointer the session has not seen is not pointing.
 IN_PROC_BROWSER_TEST_F(ToolControllerGetPointerBrowserTest, NoActivePointer) {
+  base::HistogramTester histograms;
   SessionControllerImpl* controller = StartSessionAt(PageWithText());
   ASSERT_TRUE(controller);
   // The machine's own pointer may be over the window, and so have been seen.
@@ -3381,6 +3404,12 @@ IN_PROC_BROWSER_TEST_F(ToolControllerGetPointerBrowserTest, NoActivePointer) {
   EXPECT_EQ(response.GetResult(),
             base::DictValue().Set("status", "no_active_pointer"));
   EXPECT_FALSE(response.visual_content());
+
+  // Only the outcome is recorded for a call that is not answered with an
+  // image.
+  histograms.ExpectUniqueSample("Ttc.GetPointer.Outcome",
+                                GetPointerOutcome::kNoActivePointer, 1);
+  histograms.ExpectTotalCount("Ttc.GetPointer.TotalLatency", 0);
 }
 
 class ToolControllerGetPointerSelectionBrowserTest
@@ -3439,6 +3468,7 @@ IN_PROC_BROWSER_TEST_F(ToolControllerGetPointerSelectionBrowserTest,
 // Like get_screenshot, get_pointer does not capture pages that TTC may not
 // read.
 IN_PROC_BROWSER_TEST_F(ToolControllerGetPointerBrowserTest, DisallowedUrl) {
+  base::HistogramTester histograms;
   SessionControllerImpl* controller = StartSessionAt(GURL("chrome://version"));
   ASSERT_TRUE(controller);
   PressAt(gfx::Point(30, 18));
@@ -3446,6 +3476,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerGetPointerBrowserTest, DisallowedUrl) {
   CallGetPointer(*controller, future);
   ToolResponse response = future.Take();
   EXPECT_TOOL_ERROR(response, actor::mojom::ActionResultCode::kUrlBlocked);
+  histograms.ExpectUniqueSample("Ttc.GetPointer.Outcome",
+                                GetPointerOutcome::kPageNotAllowed, 1);
 }
 
 // What the user points at is found on a page that is zoomed in too: the
@@ -3505,6 +3537,7 @@ IN_PROC_BROWSER_TEST_F(ToolControllerGetPointerBrowserTest, ZoomedPage) {
 // fails for it or completes first.
 IN_PROC_BROWSER_TEST_F(ToolControllerGetPointerBrowserTest,
                        PageChangedDuringCapture) {
+  base::HistogramTester histograms;
   SessionControllerImpl* controller = StartSessionAt(PageWithText());
   ASSERT_TRUE(controller);
   PressAt(gfx::Point(30, 18));
@@ -3524,6 +3557,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerGetPointerBrowserTest,
   ToolResponse response = future.Take();
   EXPECT_TOOL_ERROR(
       response, actor::mojom::ActionResultCode::kScreenshotCapturePageChanged);
+  histograms.ExpectUniqueSample("Ttc.GetPointer.Outcome",
+                                GetPointerOutcome::kPageChanged, 1);
 }
 
 // The session's actor task is started with the session and stopped when it

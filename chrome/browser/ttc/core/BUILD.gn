@@ -108,6 +108,7 @@ source_set("impl") {
     "entrypoint_controller.cc",
     "eval_audio_controller.cc",
     "eval_audio_controller.h",
+    "get_pointer_metrics.h",
     "get_pointer_response.cc",
     "get_pointer_response.h",
     "get_pointer_tool.cc",
