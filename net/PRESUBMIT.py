@@ -18,6 +18,10 @@ def CheckNoShortKeywordInNet(input_api, output_api):
   """
   Prohibit the use of the "short" keyword in platform-independent //net code.
   """
+
+  if not input_api.HasAffectedFiles(extensions=('.cc', '.h')):
+    return []
+
   problems = []
   platform_suffixes = (
     '_android',
@@ -44,6 +48,11 @@ def CheckNoShortKeywordInNet(input_api, output_api):
     'win',
   }
 
+  STRING_RE = input_api.re.compile(r'"(?:[^"]*\\")*[^"]*"')
+  CPP_COMMENT_RE = input_api.re.compile(r'//.*')
+  C_COMMENT_RE = input_api.re.compile(r'/\*.*?\*/')
+  SHORT_RE = input_api.re.compile(r'\bshort\b')
+
   for f in input_api.AffectedSourceFiles(None):
     local_path = f.LocalPath().replace('\\', '/')
     if not local_path.startswith('net/'):
@@ -60,7 +69,16 @@ def CheckNoShortKeywordInNet(input_api, output_api):
       continue
 
     for line_number, line in f.ChangedContents():
-      if input_api.re.search(r'\bshort\b', line):
+      # Quickly eliminate most lines.
+      if "short" not in line:
+        continue
+      #  Remove the content of strings.
+      line = input_api.re.sub(STRING_RE, '""', line)
+      # Replace comments with spaces (to avoid joining tokens).
+      line = input_api.re.sub(CPP_COMMENT_RE, ' ', line)
+      line = input_api.re.sub(C_COMMENT_RE, ' ', line)
+
+      if input_api.re.search(SHORT_RE, line):
         problems.append(f'{local_path}:{line_number}\n    {line.strip()}')
 
   if problems:
