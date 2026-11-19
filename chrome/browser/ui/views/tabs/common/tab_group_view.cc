@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/views/tabs/horizontal/horizontal_tab_closing_helper.h"
 #include "chrome/browser/ui/views/tabs/hovercard/tab_hover_card_controller.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_types.h"
+#include "chrome/browser/ui/views/tabs/tab_style_views.h"
 #include "components/tabs/public/tab_collection_storage.h"
 #include "components/tabs/public/tab_collection_types.h"
 #include "components/tabs/public/tab_group.h"
@@ -43,6 +44,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/list_selection_model.h"
 #include "ui/gfx/animation/tween.h"
+#include "ui/gfx/geometry/outsets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/scroll_view.h"
@@ -190,6 +192,23 @@ void TabGroupView::RemovedFromWidget() {
 void TabGroupView::OnThemeChanged() {
   views::View::OnThemeChanged();
   OnDataChanged();
+}
+
+void TabGroupView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
+  TabCollectionZOrderManager::OnBoundsChanged(previous_bounds);
+  if (orientation_ != TabStripOrientation::kHorizontal || !parent()) {
+    return;
+  }
+  // The header's separators are painted by the parent and extend past this
+  // view's bounds, so repaint the parent around both the previous and the new
+  // bounds, not only inside them.
+  const gfx::Outsets separator_outsets =
+      gfx::Outsets::VH(0, TabGroupStyle::GetLeadingGroupHeaderPadding());
+  for (const gfx::Rect& group_bounds : {previous_bounds, bounds()}) {
+    gfx::Rect dirty_rect = parent()->GetMirroredRect(group_bounds);
+    dirty_rect.Outset(separator_outsets);
+    parent()->SchedulePaintInRect(dirty_rect);
+  }
 }
 
 void TabGroupView::OnGestureEvent(ui::GestureEvent* event) {
@@ -387,6 +406,8 @@ void TabGroupView::OnDataChanged() {
   }
 
   group_line_->SchedulePaint();
+  // Collapsed, focused and paint-as-active state affect the header separators.
+  SchedulePaintSeparators();
 
   InvalidateLayout();
 }
@@ -480,6 +501,8 @@ void TabGroupView::SetIsCollapsed(bool is_collapsed) {
   }
   is_collapsed_ = is_collapsed;
   InvalidateLayout();
+  // The header's separators depend on the collapsed state.
+  SchedulePaintSeparators();
 }
 
 void TabGroupView::UpdateChildVisibilityForCollapseState(bool collapsed) {
@@ -495,6 +518,58 @@ void TabGroupView::UpdateChildVisibilityForCollapseState(bool collapsed) {
 
 bool TabGroupView::IsCollapsed() const {
   return tab_group_visual_data_.is_collapsed();
+}
+
+TabStyle::SeparatorOpacities TabGroupView::GetSeparatorOpacities() const {
+  if (!collection_node_ || !collection_node_->GetController()) {
+    return {};
+  }
+  const TabStripCollectionController* const controller =
+      collection_node_->GetController();
+  // Use the collapsed state the group is laid out with: while the collapse
+  // animation runs, the group's tabs are still visible. In focus mode, and
+  // while entering or leaving it, only the focused group is shown, expanded.
+  const bool is_collapsed = is_collapsed_ &&
+                            !controller->GetFocusedGroup().has_value() &&
+                            !controller->GetFocusTransition().has_value();
+  const bool is_dragging = !GetVisible() || !group_header_->GetVisible() ||
+                           controller->IsViewDragging(*this);
+
+  // Find the tab following this group in the model. It only affects the
+  // separator of a collapsed group, so skip the lookup otherwise.
+  const TabStyleViewDelegate* adjacent_tab = nullptr;
+  if (const tabs::TabInterface* last_tab =
+          is_collapsed ? GetTabGroup().GetLastTab() : nullptr) {
+    if (const TabCollectionNode* adjacent_node =
+            controller->GetAdjacentTab(last_tab, /*leading=*/false)) {
+      if (const auto* tab_view =
+              views::AsViewClass<TabView>(adjacent_node->view())) {
+        adjacent_tab = tab_view->tab_styling()->delegate();
+      }
+    }
+  }
+
+  return TabGroupStyle::GetSeparatorOpacities(
+      is_collapsed, is_dragging, controller->GetTabCount(), adjacent_tab);
+}
+
+gfx::Rect TabGroupView::GetSeparatorReferenceBounds() const {
+  // Unlike a tab, the header's bounds only cover the chip. Place the header's
+  // separators as if it were a tab spanning the chip plus the tab overlap on
+  // each side, so they line up with the separators painted by tabs.
+  const gfx::Rect header_bounds = group_header_->GetMirroredBounds();
+  const int padding = TabGroupStyle::GetLeadingGroupHeaderPadding();
+  return gfx::Rect(header_bounds.x() - padding, 0,
+                   header_bounds.width() + 2 * padding,
+                   TabStyle::Get()->GetStandardHeight());
+}
+
+void TabGroupView::SchedulePaintSeparators() {
+  if (orientation_ != TabStripOrientation::kHorizontal || !parent()) {
+    return;
+  }
+  parent()->SchedulePaintInRect(
+      ConvertRectToParent(GetSeparatorReferenceBounds()));
 }
 
 views::ScrollView* TabGroupView::GetScrollViewForContainer() const {

@@ -94,6 +94,7 @@ source_set("tab_group_impl") {
     ":tab",
     ":tab_group",
     ":tab_strip",
+    ":tab_style_views",
     "//base",
     "//base:i18n",
     "//chrome/app:generated_resources",

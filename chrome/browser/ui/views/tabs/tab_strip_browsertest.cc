@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/horizontal_tab_strip_region_view.h"
+#include "chrome/browser/ui/views/tabs/common/horizontal_tab_style_views.h"
 #include "chrome/browser/ui/window_metadata/window_metadata_controller.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -49,9 +50,12 @@
 #include "ui/base/text/bytes_formatting.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event_constants.h"
+#include "ui/gfx/animation/animation_test_api.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/test/ax_event_counter.h"
 #include "ui/views/test/mock_activation_controller.h"
+#include "ui/views/test/views_test_utils.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -199,6 +203,162 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, DetachAndReInsertGroup) {
   EXPECT_EQ(tab_strip()->tab_at(0)->group(), std::nullopt);
   EXPECT_EQ(tab_strip()->tab_at(1)->group(), group);
   EXPECT_EQ(tab_strip()->tab_at(2)->group(), group);
+}
+
+IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
+                       CollapsedGroupHeaderTrailingSeparator) {
+  // Tabs layout:
+  // Tab 0: ungrouped (active)
+  // Tab 1: Group 1
+  // Tab 2: Group 2
+  // Tab 3: ungrouped
+  ASSERT_TRUE(tab_strip_model()->SupportsTabGroups());
+  AppendTab();
+  AppendTab();
+  AppendTab();
+  tab_strip_model()->ActivateTabAt(0);
+  const tab_groups::TabGroupId group1 = AddTabToNewGroup(1);
+  const tab_groups::TabGroupId group2 = AddTabToNewGroup(2);
+
+  TabGroupHeader* const header1 = tab_strip()->group_header(group1);
+  TabGroupHeader* const header2 = tab_strip()->group_header(group2);
+
+  // Expanded groups' headers don't paint separators.
+  EXPECT_EQ(header1->GetSeparatorOpacitiesForTesting().left, 0.0f);
+  EXPECT_EQ(header1->GetSeparatorOpacitiesForTesting().right, 0.0f);
+  EXPECT_EQ(header2->GetSeparatorOpacitiesForTesting().right, 0.0f);
+
+  tab_strip()->ToggleTabGroupCollapsedState(group1);
+  tab_strip()->ToggleTabGroupCollapsedState(group2);
+  ASSERT_TRUE(tab_strip()->IsGroupCollapsed(group1));
+  ASSERT_TRUE(tab_strip()->IsGroupCollapsed(group2));
+  tab_strip()->StopAnimating();
+  views::test::RunScheduledLayout(tab_strip());
+
+  // Group 1 is followed by Group 2's header and Group 2 by an inactive tab, so
+  // both collapsed headers paint a trailing separator, but no leading one.
+  EXPECT_EQ(header1->GetSeparatorOpacitiesForTesting().left, 0.0f);
+  EXPECT_EQ(header1->GetSeparatorOpacitiesForTesting().right, 1.0f);
+  EXPECT_EQ(header2->GetSeparatorOpacitiesForTesting().left, 0.0f);
+  EXPECT_EQ(header2->GetSeparatorOpacitiesForTesting().right, 1.0f);
+
+  // Group 2's trailing separator lines up with the separator a tab would paint
+  // at the same boundary, i.e. the following tab's leading separator.
+  Tab* const tab3 = tab_strip()->tab_at(3);
+  const gfx::RectF header_trailing =
+      HorizontalTabStyleViews::GetSeparatorBounds(header2->bounds(),
+                                                  /*scale=*/1.0f,
+                                                  /*stroke_thickness=*/0)
+          .trailing +
+      header2->bounds().OffsetFromOrigin();
+  const gfx::RectF tab_leading =
+      HorizontalTabStyleViews::GetSeparatorBounds(tab3->bounds(),
+                                                  /*scale=*/1.0f,
+                                                  /*stroke_thickness=*/0)
+          .leading +
+      tab3->bounds().OffsetFromOrigin();
+  EXPECT_EQ(header_trailing, tab_leading);
+
+  // Once the tab following Group 2 is active, it displays a visible background
+  // so Group 2's header no longer paints a separator next to it.
+  tab_strip_model()->ActivateTabAt(3);
+  EXPECT_EQ(header1->GetSeparatorOpacitiesForTesting().right, 1.0f);
+  EXPECT_EQ(header2->GetSeparatorOpacitiesForTesting().right, 0.0f);
+}
+
+IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
+                       CollapsedGroupHeaderSeparatorHiddenWhileCollapsing) {
+  // Tabs layout:
+  // Tab 0: ungrouped (active)
+  // Tab 1: Group
+  // Tab 2-4: ungrouped
+  // The trailing tabs keep the tab strip wide enough that the collapsing tab
+  // isn't clipped by its trailing edge while it shrinks.
+  ASSERT_TRUE(tab_strip_model()->SupportsTabGroups());
+  AppendTab();
+  AppendTab();
+  AppendTab();
+  AppendTab();
+  tab_strip_model()->ActivateTabAt(0);
+  const tab_groups::TabGroupId group = AddTabToNewGroup(1);
+  tab_strip()->StopAnimating();
+  views::test::RunScheduledLayout(tab_strip());
+
+  // Make the collapse animate, so the grouped tab stays visible for a while.
+  auto animation_mode_reset = gfx::AnimationTestApi::SetRichAnimationRenderMode(
+      gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED);
+  gfx::ScopedAnimationDurationScaleMode normal_duration(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+
+  TabGroupHeader* const header = tab_strip()->group_header(group);
+  Tab* const grouped_tab = tab_strip()->tab_at(1);
+
+  // While the collapse animation runs, the grouped tab shrinks but stays
+  // visible until it reaches its minimum size, so the header doesn't paint a
+  // separator over it.
+  tab_strip()->ToggleTabGroupCollapsedState(group);
+  views::test::RunScheduledLayout(tab_strip());
+  ASSERT_TRUE(tab_strip()->IsGroupCollapsed(group));
+  ASSERT_TRUE(grouped_tab->GetVisible());
+  EXPECT_EQ(header->GetSeparatorOpacitiesForTesting().right, 0.0f);
+
+  // Once the grouped tab is hidden, the header paints its trailing separator.
+  tab_strip()->StopAnimating();
+  views::test::RunScheduledLayout(tab_strip());
+  ASSERT_FALSE(grouped_tab->GetVisible());
+  EXPECT_EQ(header->GetSeparatorOpacitiesForTesting().right, 1.0f);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    TabStripBrowsertest,
+    CollapsedGroupHeaderSeparatorHiddenWhileAnyGroupedTabVisible) {
+  // Tabs layout:
+  // Tab 0: ungrouped (active)
+  // Tab 1: Group
+  // Tab 2-4: ungrouped
+  // The trailing tabs keep the tab strip wide enough that the collapsing tabs
+  // aren't clipped by its trailing edge while they shrink.
+  ASSERT_TRUE(tab_strip_model()->SupportsTabGroups());
+  AppendTab();
+  AppendTab();
+  AppendTab();
+  AppendTab();
+  tab_strip_model()->ActivateTabAt(0);
+  const tab_groups::TabGroupId group = AddTabToNewGroup(1);
+  tab_strip()->StopAnimating();
+  views::test::RunScheduledLayout(tab_strip());
+
+  auto animation_mode_reset = gfx::AnimationTestApi::SetRichAnimationRenderMode(
+      gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED);
+  gfx::ScopedAnimationDurationScaleMode normal_duration(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+
+  // Insert a background tab at the start of the group. It's still animating
+  // in, so it's much narrower than the other grouped tab.
+  chrome::AddTabAt(browser(), GURL(), 1, /*foreground=*/false);
+  AddTabToExistingGroup(1, group);
+  ASSERT_EQ(tab_strip()->tab_at(1)->group(), group);
+  ASSERT_EQ(tab_strip()->tab_at(2)->group(), group);
+
+  TabGroupHeader* const header = tab_strip()->group_header(group);
+  Tab* const narrow_tab = tab_strip()->tab_at(1);
+  Tab* const wide_tab = tab_strip()->tab_at(2);
+
+  // The narrow tab reaches its minimum width and is hidden first, while the
+  // wide tab is still visible, so the header doesn't paint a separator yet.
+  tab_strip()->ToggleTabGroupCollapsedState(group);
+  views::test::RunScheduledLayout(tab_strip());
+  ASSERT_TRUE(tab_strip()->IsGroupCollapsed(group));
+  ASSERT_FALSE(narrow_tab->GetVisible());
+  ASSERT_TRUE(wide_tab->GetVisible());
+  EXPECT_EQ(header->GetSeparatorOpacitiesForTesting().right, 0.0f);
+
+  // Once all grouped tabs are hidden, the header paints its trailing separator.
+  tab_strip()->StopAnimating();
+  views::test::RunScheduledLayout(tab_strip());
+  ASSERT_FALSE(narrow_tab->GetVisible());
+  ASSERT_FALSE(wide_tab->GetVisible());
+  EXPECT_EQ(header->GetSeparatorOpacitiesForTesting().right, 1.0f);
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, ShiftTabPrevious_Success) {

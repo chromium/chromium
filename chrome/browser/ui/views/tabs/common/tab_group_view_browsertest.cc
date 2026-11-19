@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
+#include "chrome/browser/ui/views/tabs/common/horizontal_tab_style_views.h"
 #include "chrome/browser/ui/views/tabs/common/root_tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/common/tab_collection_animating_layout_manager.h"
 #include "chrome/browser/ui/views/tabs/common/tab_collection_node.h"
@@ -723,6 +724,94 @@ IN_PROC_BROWSER_TEST_P(TabGroupViewTest, FocusTraversalInFocusMode) {
 // Closing the focused group while its enter transition is still running tears
 // the group view down cleanly and animates the remaining tabs back in across
 // both orientations.
+IN_PROC_BROWSER_TEST_P(TabGroupViewTest,
+                       SeparatorHiddenUntilCollapseAnimationEnds) {
+  if (!is_horizontal()) {
+    GTEST_SKIP() << "Separators are only painted in the horizontal tab strip.";
+  }
+  // Tabs layout:
+  // Tab 0: ungrouped (active)
+  // Tab 1: Group
+  // Tab 2: ungrouped
+  AppendTab();
+  AppendTab();
+  TabStripModel* const model = browser()->GetTabStripModel();
+  const tab_groups::TabGroupId group_id = model->AddToNewGroup({1});
+  model->ActivateTabAt(0);
+  RunScheduledLayouts();
+  TabGroupView* const group_view = GetTabGroupView(group_id);
+  ASSERT_NE(group_view, nullptr);
+  views::View* const grouped_tab =
+      root_node()
+          ->GetNodeForHandle(model->GetTabAtIndex(1)->GetHandle())
+          ->view();
+
+  // While the collapse animation runs, the grouped tab is still visible, so the
+  // header doesn't paint a separator over it.
+  EnableFocusAnimations();
+  group_view->ToggleCollapsedState(ToggleTabGroupCollapsedStateOrigin::kMouse);
+  ASSERT_TRUE(group_view->IsCollapsed());
+  ASSERT_TRUE(grouped_tab->GetVisible());
+  EXPECT_EQ(group_view->GetSeparatorOpacities().right, 0.0f);
+
+  // Once the animation ends and the grouped tab is hidden, the separator is
+  // shown.
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return !grouped_tab->GetVisible(); }));
+  EXPECT_EQ(group_view->GetSeparatorOpacities().right, 1.0f);
+}
+
+IN_PROC_BROWSER_TEST_P(TabGroupViewTest,
+                       SeparatorHiddenDuringFocusModeTransitions) {
+  if (!is_horizontal()) {
+    GTEST_SKIP() << "Separators are only painted in the horizontal tab strip.";
+  }
+  DisableFocusAnimations();
+  // Tabs layout:
+  // Tab 0: ungrouped (active)
+  // Tab 1: Group A (collapsed)
+  // Tab 2: ungrouped
+  // Tab 3: Group B
+  AppendTab();
+  AppendTab();
+  AppendTab();
+  TabStripModel* const model = browser()->GetTabStripModel();
+  const tab_groups::TabGroupId group_a = model->AddToNewGroup({1});
+  const tab_groups::TabGroupId group_b = model->AddToNewGroup({3});
+  model->ActivateTabAt(0);
+  RunScheduledLayouts();
+  TabGroupView* const group_view_a = GetTabGroupView(group_a);
+  ASSERT_NE(group_view_a, nullptr);
+  group_view_a->ToggleCollapsedState(
+      ToggleTabGroupCollapsedStateOrigin::kMenuAction);
+  RunScheduledLayouts();
+  ASSERT_EQ(group_view_a->GetSeparatorOpacities().right, 1.0f);
+
+  // Group A is shrunk away while Group B is focused, so it doesn't paint a
+  // separator while focus mode is entered, active, or exited.
+  EnableFocusAnimations();
+  model->EnterFocusMode(group_b);
+  AdvanceFocusMotion(base::Milliseconds(100));
+  ASSERT_TRUE(BrowserAnimationController::From(browser())->IsAnimating(
+      FocusModeAnimations::kFocusMode));
+  EXPECT_EQ(group_view_a->GetSeparatorOpacities().right, 0.0f);
+
+  FinishFocusMotion();
+  ASSERT_EQ(model->GetFocusedGroup(), group_b);
+  EXPECT_EQ(group_view_a->GetSeparatorOpacities().right, 0.0f);
+
+  model->ExitFocusMode();
+  AdvanceFocusMotion(base::Milliseconds(100));
+  ASSERT_TRUE(BrowserAnimationController::From(browser())->IsAnimating(
+      FocusModeAnimations::kFocusMode));
+  EXPECT_EQ(group_view_a->GetSeparatorOpacities().right, 0.0f);
+
+  // Once focus mode is fully exited, the separator is shown again.
+  FinishFocusMotion();
+  ASSERT_FALSE(model->GetFocusedGroup().has_value());
+  EXPECT_EQ(group_view_a->GetSeparatorOpacities().right, 1.0f);
+}
+
 IN_PROC_BROWSER_TEST_P(TabGroupViewTest,
                        FocusModeGroupClosedMidEnterAnimation) {
   DisableFocusAnimations();
@@ -2453,6 +2542,242 @@ IN_PROC_BROWSER_TEST_F(VerticalTabGroupViewBrowserTest,
 
   FinishFocusMotion();
   EXPECT_FALSE(group_view_c->unfocus_header()->GetVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(HorizontalTabGroupViewBrowserTest,
+                       SeparatorBetweenCollapsedTabGroups) {
+  // Tabs layout:
+  // Tab 0: ungrouped (active)
+  // Tab 1, 2: Group 1
+  // Tab 3, 4: Group 2
+  // Tab 5: ungrouped
+  AppendTab();
+  AppendTab();
+  AppendTab();
+  AppendTab();
+  AppendTab();
+  GetTabStripModel()->ActivateTabAt(0);
+
+  tab_groups::TabGroupId group_id1 = GetTabStripModel()->AddToNewGroup({1, 2});
+  tab_groups::TabGroupId group_id2 = GetTabStripModel()->AddToNewGroup({3, 4});
+
+  auto* base_region_view = views::AsViewClass<BaseTabStripRegionView>(
+      BrowserView::GetBrowserViewForBrowser(browser())->tab_strip_view());
+  ASSERT_NE(base_region_view, nullptr);
+
+  auto* tab_strip_view =
+      views::AsViewClass<TabStripView>(base_region_view->GetTabStripView());
+  ASSERT_NE(tab_strip_view, nullptr);
+
+  auto* unpinned_container = tab_strip_view->GetUnpinnedTabsContainer();
+  ASSERT_NE(unpinned_container, nullptr);
+
+  auto* group_node1 =
+      root_node()->GetNodeForHandle(GetTabStripModel()
+                                        ->group_model()
+                                        ->GetTabGroup(group_id1)
+                                        ->GetCollectionHandle());
+  ASSERT_NE(group_node1, nullptr);
+  auto* group_view1 = views::AsViewClass<TabGroupView>(group_node1->view());
+  ASSERT_NE(group_view1, nullptr);
+
+  auto* group_node2 =
+      root_node()->GetNodeForHandle(GetTabStripModel()
+                                        ->group_model()
+                                        ->GetTabGroup(group_id2)
+                                        ->GetCollectionHandle());
+  ASSERT_NE(group_node2, nullptr);
+  auto* group_view2 = views::AsViewClass<TabGroupView>(group_node2->view());
+  ASSERT_NE(group_view2, nullptr);
+
+  auto* header_view1 = group_view1->group_header();
+  ASSERT_NE(header_view1, nullptr);
+  const int padding = TabGroupStyle::GetLeadingGroupHeaderPadding();
+
+  tab_strip_view->GetWidget()->LayoutRootViewIfNecessary();
+
+  // When both groups are expanded, neither group shows a trailing separator.
+  EXPECT_EQ(group_view1->GetSeparatorOpacities().right, 0.0f);
+  EXPECT_EQ(group_view2->GetSeparatorOpacities().right, 0.0f);
+
+  // Collapse both groups.
+  group_view1->ToggleCollapsedState(ToggleTabGroupCollapsedStateOrigin::kMouse);
+  group_view2->ToggleCollapsedState(ToggleTabGroupCollapsedStateOrigin::kMouse);
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return group_view1->IsCollapsed() && group_view2->IsCollapsed();
+  }));
+  tab_strip_view->GetWidget()->LayoutRootViewIfNecessary();
+
+  // Both groups are collapsed -> both show their trailing separator.
+  EXPECT_EQ(group_view1->GetSeparatorOpacities().right, 1.0f);
+  EXPECT_EQ(group_view2->GetSeparatorOpacities().right, 1.0f);
+
+  // The tab following Group 2 must not paint a leading separator on top of the
+  // one painted by Group 2's header.
+  auto* tab5 = views::AsViewClass<TabView>(
+      root_node()
+          ->GetNodeForHandle(GetTabStripModel()->GetTabAtIndex(5)->GetHandle())
+          ->view());
+  ASSERT_NE(tab5, nullptr);
+  EXPECT_EQ(tab5->tab_styling()->GetSeparatorOpacitiesForTesting().left, 0.0f);
+
+  // The separators are painted by the parent container, so the group view
+  // keeps clipping its children to its bounds.
+  EXPECT_TRUE(group_view1->clip_path().isEmpty());
+
+  // When the tab following Group 2 is active it has a visible background, so
+  // Group 2's header doesn't paint a separator next to it. Group 1 is followed
+  // by Group 2's header, so it is unaffected.
+  GetTabStripModel()->ActivateTabAt(5);
+  EXPECT_EQ(group_view1->GetSeparatorOpacities().right, 1.0f);
+  EXPECT_EQ(group_view2->GetSeparatorOpacities().right, 0.0f);
+  GetTabStripModel()->ActivateTabAt(0);
+  EXPECT_EQ(group_view2->GetSeparatorOpacities().right, 1.0f);
+
+  // Verify the container paints Group 1's trailing separator next to where its
+  // header is drawn, past the group's trailing edge.
+  gfx::Canvas canvas(unpinned_container->size(), 1.0f, false);
+  unpinned_container->OnPaint(&canvas);
+  gfx::Point header_origin;
+  views::View::ConvertPointToTarget(header_view1, unpinned_container,
+                                    &header_origin);
+  const gfx::Rect reference_bounds(header_origin.x() - padding, 0,
+                                   header_view1->width() + 2 * padding,
+                                   TabStyle::Get()->GetStandardHeight());
+  gfx::RectF separator_bounds =
+      HorizontalTabStyleViews::GetSeparatorBounds(reference_bounds, 1.0f,
+                                                  /*stroke_thickness=*/0)
+          .trailing;
+  separator_bounds.Offset(reference_bounds.OffsetFromOrigin());
+  EXPECT_GT(separator_bounds.x(), group_view1->GetMirroredBounds().right());
+  EXPECT_NE(canvas.GetBitmap().getColor(separator_bounds.CenterPoint().x(),
+                                        separator_bounds.CenterPoint().y()),
+            SK_ColorTRANSPARENT);
+
+  // When Group 2 is expanded, Group 1 is still collapsed so its trailing
+  // separator remains visible, while Group 2 no longer shows one.
+  group_view2->ToggleCollapsedState(ToggleTabGroupCollapsedStateOrigin::kMouse);
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return !group_view2->IsCollapsed(); }));
+  tab_strip_view->GetWidget()->LayoutRootViewIfNecessary();
+
+  EXPECT_EQ(group_view1->GetSeparatorOpacities().right, 1.0f);
+  EXPECT_EQ(group_view2->GetSeparatorOpacities().right, 0.0f);
+
+  // A group in focus mode is shown expanded, so its header doesn't paint a
+  // separator.
+  GetTabStripModel()->EnterFocusMode(group_id1);
+  EXPECT_EQ(group_view1->GetSeparatorOpacities().right, 0.0f);
+}
+
+IN_PROC_BROWSER_TEST_F(HorizontalTabGroupViewBrowserTest,
+                       SeparatorFollowsMirroredHeaderInRTL) {
+  base::i18n::ScopedRTLForTesting scoped_rtl(true);
+
+  // Tabs layout:
+  // Tab 0: ungrouped (active)
+  // Tab 1, 2: Group
+  AppendTab();
+  AppendTab();
+  GetTabStripModel()->ActivateTabAt(0);
+  tab_groups::TabGroupId group_id = GetTabStripModel()->AddToNewGroup({1, 2});
+
+  auto* group_node = root_node()->GetNodeForHandle(GetTabStripModel()
+                                                       ->group_model()
+                                                       ->GetTabGroup(group_id)
+                                                       ->GetCollectionHandle());
+  ASSERT_NE(group_node, nullptr);
+  auto* group_view = views::AsViewClass<TabGroupView>(group_node->view());
+  ASSERT_NE(group_view, nullptr);
+  auto* header_view = group_view->group_header();
+  ASSERT_NE(header_view, nullptr);
+
+  group_view->ToggleCollapsedState(ToggleTabGroupCollapsedStateOrigin::kMouse);
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return group_view->IsCollapsed(); }));
+  group_view->GetWidget()->LayoutRootViewIfNecessary();
+
+  // In RTL, the trailing separator is on the physical left.
+  const TabStyle::SeparatorOpacities opacities =
+      group_view->GetSeparatorOpacities();
+  EXPECT_EQ(opacities.left, 1.0f);
+  EXPECT_EQ(opacities.right, 0.0f);
+
+  // Make the group wider than its header, as it is e.g. while the collapse
+  // animation runs. The header stays at logical x = 0, which is drawn on the
+  // physical right of the group in RTL.
+  const int padding = TabGroupStyle::GetLeadingGroupHeaderPadding();
+  group_view->SetSize(
+      gfx::Size(header_view->width() + 3 * padding, group_view->height()));
+  ASSERT_EQ(header_view->x(), 0);
+  ASSERT_GT(header_view->GetMirroredX(), 2 * padding);
+
+  UnpinnedTabContainerView* const container =
+      views::AsViewClass<UnpinnedTabContainerView>(group_view->parent());
+  ASSERT_NE(container, nullptr);
+  gfx::Canvas canvas(container->size(), 1.0f, false);
+  container->OnPaint(&canvas);
+
+  // The separator must be painted next to where the header is drawn.
+  gfx::Point header_origin;
+  views::View::ConvertPointToTarget(header_view, container, &header_origin);
+  const gfx::Rect reference_bounds(header_origin.x() - padding, 0,
+                                   header_view->width() + 2 * padding,
+                                   TabStyle::Get()->GetStandardHeight());
+  gfx::RectF separator_bounds =
+      HorizontalTabStyleViews::GetSeparatorBounds(reference_bounds, 1.0f,
+                                                  /*stroke_thickness=*/0)
+          .leading;
+  separator_bounds.Offset(reference_bounds.OffsetFromOrigin());
+  EXPECT_NE(canvas.GetBitmap().getColor(separator_bounds.CenterPoint().x(),
+                                        separator_bounds.CenterPoint().y()),
+            SK_ColorTRANSPARENT);
+}
+
+// The separator following a collapsed group depends on the slot after the
+// group, which can change without the group itself changing (e.g. while a tab
+// is dragged between two groups), so the container repaints the separators
+// whenever it lays out its children.
+IN_PROC_BROWSER_TEST_F(HorizontalTabGroupViewBrowserTest,
+                       SeparatorRepaintedOnContainerLayout) {
+  // Tabs layout:
+  // Tab 0: ungrouped (active)
+  // Tab 1: Group
+  // Tab 2: ungrouped
+  AppendTab();
+  AppendTab();
+  GetTabStripModel()->ActivateTabAt(0);
+  const tab_groups::TabGroupId group_id =
+      GetTabStripModel()->AddToNewGroup({1});
+  auto* group_node = root_node()->GetNodeForHandle(GetTabStripModel()
+                                                       ->group_model()
+                                                       ->GetTabGroup(group_id)
+                                                       ->GetCollectionHandle());
+  ASSERT_NE(group_node, nullptr);
+  auto* group_view = views::AsViewClass<TabGroupView>(group_node->view());
+  ASSERT_NE(group_view, nullptr);
+  UnpinnedTabContainerView* const container =
+      tab_strip_view()->GetUnpinnedTabsContainer();
+  ASSERT_EQ(group_view->parent(), container);
+
+  ToggleCollapse(group_view, /*expected_collapsed=*/true);
+  ASSERT_EQ(group_view->GetSeparatorOpacities().right, 1.0f);
+  const gfx::Rect separator_rect = group_view->ConvertRectToParent(
+      group_view->GetSeparatorReferenceBounds());
+  // The separator extends past the group's bounds.
+  ASSERT_GT(separator_rect.right(), group_view->GetMirroredBounds().right());
+
+  container->TakeScheduledPaintRectForTesting();
+  container->InvalidateLayout();
+  tab_strip_view()->GetWidget()->LayoutRootViewIfNecessary();
+  EXPECT_TRUE(
+      container->TakeScheduledPaintRectForTesting().Contains(separator_rect));
+
+  // Changing the collapsed state repaints the separators too.
+  ToggleCollapse(group_view, /*expected_collapsed=*/false);
+  EXPECT_EQ(group_view->GetSeparatorOpacities().right, 0.0f);
+  EXPECT_TRUE(
+      container->TakeScheduledPaintRectForTesting().Contains(separator_rect));
 }
 
 // TODO(crbug.com/490428062): Create Tests to Verify Focus Order of Tab Group

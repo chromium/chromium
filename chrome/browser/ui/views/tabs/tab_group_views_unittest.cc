@@ -12,6 +12,7 @@
 #include "base/i18n/test/scoped_rtl_for_testing.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/views/tabs/common/horizontal_tab_style_views.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_unfocus_button.h"
 #include "chrome/browser/ui/views/tabs/fake_base_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/fake_tab_slot_controller.h"
@@ -23,6 +24,7 @@
 #include "components/tabs/public/tab_group.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
+#include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/focus/focus_search.h"
@@ -656,4 +658,44 @@ TEST_F(TabGroupViewsTest, UnfocusButtonClickOnEphemeralGroupRecordsAction) {
                    "TabGroups_TabGroupHeader_UnfocusNonGroupTabsButton"));
   EXPECT_EQ(0, user_action_tester.GetActionCount(
                    "TabGroups_TabGroupHeader_UnfocusGroupButton"));
+}
+
+TEST_F(TabGroupViewsTest, CollapsedHeaderTrailingSeparatorVisibility) {
+  TabGroupHeader* header = group_views_->header();
+  Tab* tab = tab_container_->AddChildView(
+      std::make_unique<Tab>(tabs::TabHandle(1), tab_slot_controller_.get()));
+  tab->SetGroup(id_);
+
+  header->SetBounds(0, 0, 100, 41);
+  tab->SetBounds(50, 0, 100, 41);
+
+  // When the group is expanded, its header does not show a trailing separator.
+  EXPECT_EQ(header->GetSeparatorOpacitiesForTesting().left, 0.0f);
+  EXPECT_EQ(header->GetSeparatorOpacitiesForTesting().right, 0.0f);
+
+  // When the group is collapsed, its header shows a trailing separator.
+  tab_strip_controller_->SetVisualDataForGroup(
+      id_, tab_groups::TabGroupVisualData(
+               u"Group 1", tab_groups::TabGroupColorId::kGrey, true));
+  tab->SetVisible(false);
+  group_views_->OnGroupVisualsChanged();
+  group_views_->UpdateBounds();
+
+  EXPECT_EQ(header->GetSeparatorOpacitiesForTesting().left, 0.0f);
+  EXPECT_EQ(header->GetSeparatorOpacitiesForTesting().right, 1.0f);
+
+  // Verify painting actually draws the separator at the expected bounds.
+  gfx::Canvas canvas(header->size(), 1.0f, false);
+  header->OnPaint(&canvas);
+  const gfx::RectF separator_bounds =
+      HorizontalTabStyleViews::GetSeparatorBounds(header->bounds(), 1.0f,
+                                                  /*stroke_thickness=*/0)
+          .trailing;
+  EXPECT_NE(canvas.GetBitmap().getColor(separator_bounds.CenterPoint().x(),
+                                        separator_bounds.CenterPoint().y()),
+            SK_ColorTRANSPARENT);
+
+  // When focus mode is active, the trailing separator is hidden.
+  tab_strip_controller_->EnterFocusMode(id_);
+  EXPECT_EQ(header->GetSeparatorOpacitiesForTesting().right, 0.0f);
 }

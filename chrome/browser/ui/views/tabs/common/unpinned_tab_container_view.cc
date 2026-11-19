@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/tabs/common/unpinned_tab_container_view.h"
 
 #include <optional>
+#include <utility>
 #include <vector>
 
 #include "chrome/browser/ui/animation/browser_animation_controller.h"
@@ -14,6 +15,7 @@
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/animations/focus_mode_animations.h"
 #include "chrome/browser/ui/views/tabs/common/dragged_tabs_container.h"
+#include "chrome/browser/ui/views/tabs/common/horizontal_tab_style_views.h"
 #include "chrome/browser/ui/views/tabs/common/split_tab_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_collection_animating_layout_manager.h"
 #include "chrome/browser/ui/views/tabs/common/tab_collection_node.h"
@@ -31,7 +33,9 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/animation/tween.h"
+#include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/scoped_canvas.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/layout/normalized_geometry.h"
@@ -212,6 +216,59 @@ UnpinnedTabContainerView::UnpinnedTabContainerView(
 }
 
 UnpinnedTabContainerView::~UnpinnedTabContainerView() = default;
+
+void UnpinnedTabContainerView::Layout(PassKey) {
+  LayoutSuperclass<TabCollectionZOrderManager>(this);
+  if (orientation_ != TabStripOrientation::kHorizontal) {
+    return;
+  }
+  // A group header's separators depend on the slot following the group, which
+  // can change without the group itself changing, e.g. while a tab is dragged
+  // between two groups. Repaint them whenever the children are laid out.
+  for (views::View* child : children()) {
+    if (auto* group_view = views::AsViewClass<TabGroupView>(child)) {
+      group_view->SchedulePaintSeparators();
+    }
+  }
+}
+
+void UnpinnedTabContainerView::OnPaint(gfx::Canvas* canvas) {
+  TabCollectionZOrderManager::OnPaint(canvas);
+  if (orientation_ != TabStripOrientation::kHorizontal) {
+    return;
+  }
+  // Group headers' separators extend past the group's bounds, so they are
+  // painted here, which lets TabGroupView keep clipping its children to its
+  // bounds.
+  for (views::View* child : children()) {
+    auto* group_view = views::AsViewClass<TabGroupView>(child);
+    if (!group_view || !group_view->GetVisible()) {
+      continue;
+    }
+    const TabStyle::SeparatorOpacities opacities =
+        group_view->GetSeparatorOpacities();
+    if (!opacities.left && !opacities.right) {
+      continue;
+    }
+    gfx::Rect reference_bounds = group_view->GetSeparatorReferenceBounds();
+    reference_bounds.Offset(
+        group_view->GetMirroredPosition().OffsetFromOrigin());
+    gfx::ScopedCanvas scoped_canvas(canvas);
+    canvas->Translate(reference_bounds.OffsetFromOrigin());
+    HorizontalTabStyleViews::PaintSeparators(canvas, this, reference_bounds,
+                                             opacities,
+                                             /*stroke_thickness=*/0);
+  }
+}
+
+gfx::Rect UnpinnedTabContainerView::TakeScheduledPaintRectForTesting() {
+  return std::exchange(scheduled_paint_rect_for_testing_, gfx::Rect());
+}
+
+void UnpinnedTabContainerView::OnDidSchedulePaint(const gfx::Rect& rect) {
+  TabCollectionZOrderManager::OnDidSchedulePaint(rect);
+  scheduled_paint_rect_for_testing_.Union(rect);
+}
 
 int UnpinnedTabContainerView::LayoutManager::GetUnconstrainedPreferredWidth()
     const {

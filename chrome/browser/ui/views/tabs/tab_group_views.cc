@@ -96,6 +96,10 @@ void TabGroupViews::UpdateBounds() {
 
   highlight_->UpdateBounds(leading_dragged_group_view,
                            trailing_dragged_group_view);
+  // The header's separators depend on the group's collapsed state and on the
+  // tab following the group, which can change without the header's bounds
+  // changing, so repaint it whenever the group's bounds are updated.
+  header_->SchedulePaint();
 }
 
 void TabGroupViews::OnGroupVisualsChanged() {

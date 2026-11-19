@@ -15,6 +15,7 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/tabs/tab_group_attention_indicator.h"
+#include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_unfocus_button.h"
 #include "chrome/browser/ui/views/tabs/groups/tab_group_editor_bubble_tracker.h"
 #include "chrome/browser/ui/views/tabs/hovercard/hover_card_anchor_target.h"
@@ -64,6 +65,7 @@ class TabGroupHeader : public TabSlotView,
   void Init(const tab_groups::TabGroupId& group);
 
   // TabSlotView:
+  void OnPaint(gfx::Canvas* canvas) override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   bool OnMouseDragged(const ui::MouseEvent& event) override;
@@ -115,6 +117,9 @@ class TabGroupHeader : public TabSlotView,
   // Returns whether the attention indicator should be shown.
   bool ShouldShowAttentionIndicator() const;
 
+  // Returns the separator opacities for testing.
+  TabStyle::SeparatorOpacities GetSeparatorOpacitiesForTesting() const;
+
   // Returns the title text for testing.
   std::u16string_view GetTitleTextForTesting() const;
 
@@ -127,6 +132,9 @@ class TabGroupHeader : public TabSlotView,
  private:
   friend class TabGroupEditorBubbleViewDialogBrowserTest;
   FRIEND_TEST_ALL_PREFIXES(TabStripSaveBrowsertest, AttentionIndicatorIsShown);
+
+  // Returns the opacities of the separators painted by this header.
+  TabStyle::SeparatorOpacities GetSeparatorOpacities() const;
 
   // Calculate the width for this View.
   int GetDesiredWidth() const;

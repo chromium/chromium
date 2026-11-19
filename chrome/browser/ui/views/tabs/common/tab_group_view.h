@@ -8,6 +8,7 @@
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/animation/browser_animation_types.h"
+#include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/views/frame/browser_root_view.h"
 #include "chrome/browser/ui/views/tabs/common/dragged_tabs_container.h"
 #include "chrome/browser/ui/views/tabs/common/tab_collection_animating_layout_manager.h"
@@ -71,6 +72,7 @@ class TabGroupView : public TabCollectionZOrderManager,
   void AddedToWidget() override;
   void RemovedFromWidget() override;
   void OnThemeChanged() override;
+  void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
 
   // TabGroupHeaderView::Delegate:
@@ -142,6 +144,19 @@ class TabGroupView : public TabCollectionZOrderManager,
   // child tabs have the same size. Below this width, an active tab has a larger
   // size than inactive tabs before the container scrolls.
   int GetCrossoverWidth() const;
+
+  // Returns the opacities, in physical order, of the separators painted around
+  // the group header in horizontal orientation. The separators are painted by
+  // the parent container.
+  TabStyle::SeparatorOpacities GetSeparatorOpacities() const;
+
+  // Returns the bounds, in this view's coordinates, of the tab slot that the
+  // header's separators are placed in: the header plus the tab overlap on each
+  // side. They can extend past this view's bounds.
+  gfx::Rect GetSeparatorReferenceBounds() const;
+
+  // Schedules a repaint of the header's separators in the parent container.
+  void SchedulePaintSeparators();
 
  private:
   friend class TabGroupViewVerticalLayout;

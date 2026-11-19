@@ -32,18 +32,21 @@
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/tabs/common/horizontal_tab_style_views.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_style.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_unfocus_button.h"
 #include "chrome/browser/ui/views/tabs/groups/tab_group_accessibility.h"
 #include "chrome/browser/ui/views/tabs/groups/tab_group_editor_bubble_tracker.h"
 #include "chrome/browser/ui/views/tabs/groups/tab_group_editor_bubble_view.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_types.h"
+#include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_group_style_views.h"
 #include "chrome/browser/ui/views/tabs/tab_group_underline.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
+#include "chrome/browser/ui/views/tabs/tab_style_views.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/data_sharing/public/features.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
@@ -63,6 +66,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/gfx/range/range.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
@@ -265,6 +269,16 @@ void TabGroupHeader::Init(const tab_groups::TabGroupId& group) {
   GetViewAccessibility().SetIsEditable(true);
   title_chip_->GetViewAccessibility().SetRole(ax::mojom::Role::kTabList);
   title_chip_->GetViewAccessibility().SetIsEditable(true);
+}
+
+void TabGroupHeader::OnPaint(gfx::Canvas* canvas) {
+  TabSlotView::OnPaint(canvas);
+  // Like a tab, and unlike the unified TabGroupHeaderView, the header's bounds
+  // cover its whole slot including the overlap with its neighbors (see
+  // GetDesiredWidth()), so they can be used to place the separators directly.
+  HorizontalTabStyleViews::PaintSeparators(canvas, this, bounds(),
+                                           GetSeparatorOpacities(),
+                                           /*stroke_thickness=*/0);
 }
 
 bool TabGroupHeader::OnKeyPressed(const ui::KeyEvent& event) {
@@ -642,6 +656,56 @@ bool TabGroupHeader::ShouldShowAttentionIndicator() const {
   return is_collapsed_ && tab_group->GetTabGroupFeatures()
                               ->attention_indicator()
                               ->GetHasAttention();
+}
+
+TabStyle::SeparatorOpacities TabGroupHeader::GetSeparatorOpacitiesForTesting()
+    const {
+  return GetSeparatorOpacities();
+}
+
+TabStyle::SeparatorOpacities TabGroupHeader::GetSeparatorOpacities() const {
+  if (!group().has_value()) {
+    return {};
+  }
+  const tab_groups::TabGroupId group_id = group().value();
+  // A group in focus mode is always shown expanded.
+  const bool is_focused =
+      is_ephemeral_ || tab_slot_controller_->GetFocusedGroup() == group_id;
+  bool is_collapsed =
+      !is_focused && tab_slot_controller_->IsGroupCollapsed(group_id);
+  const bool is_dragging = !GetVisible() || dragging();
+
+  // Find the tab following this group in the model. It only affects the
+  // separator of a collapsed group, so skip the lookup otherwise.
+  const TabStyleViewDelegate* adjacent_tab = nullptr;
+  if (const TabGroup* tab_group =
+          is_collapsed ? tab_slot_controller_->GetTabGroup(group_id)
+                       : nullptr) {
+    const gfx::Range tabs = tab_group->ListTabs();
+    // While the collapse animation runs, the group's tabs shrink and stay
+    // visible until TabContainer::SetTabSlotVisibility() hides each of them
+    // once it reaches its minimum width. Tabs can reach it at different times
+    // so treat the group as expanded while any of its tabs is visible.
+    for (size_t i = tabs.start(); i < tabs.end(); ++i) {
+      if (const Tab* tab = tab_slot_controller_->tab_at(static_cast<int>(i));
+          tab && tab->GetVisible()) {
+        is_collapsed = false;
+        break;
+      }
+    }
+    const int next_index = static_cast<int>(tabs.end());
+    if (is_collapsed && !tabs.is_empty() &&
+        next_index < tab_slot_controller_->GetTabCount()) {
+      if (const Tab* next_tab = tab_slot_controller_->tab_at(next_index);
+          next_tab && next_tab->tab_style_views()) {
+        adjacent_tab = next_tab->tab_style_views()->delegate();
+      }
+    }
+  }
+
+  return TabGroupStyle::GetSeparatorOpacities(
+      is_collapsed, is_dragging, tab_slot_controller_->GetTabCount(),
+      adjacent_tab);
 }
 
 std::u16string_view TabGroupHeader::GetTitleTextForTesting() const {

@@ -68,6 +68,10 @@ class UnpinnedTabContainerView
         const views::View* child) const;
   };
 
+  // views::View:
+  void Layout(PassKey) override;
+  void OnPaint(gfx::Canvas* canvas) override;
+
   // TabCollectionAnimatingLayoutManager::Delegate:
   bool ShouldSnapToTarget(const views::View& child_view) const override;
   bool ShouldAnimateOpacityForAddAndRemove(
@@ -87,6 +91,14 @@ class UnpinnedTabContainerView
   // Returns the total preferred width of all visible children at standard size,
   // ignoring any active tab closing mode override.
   int GetUnconstrainedPreferredWidth() const;
+
+  // Returns the union of the areas scheduled to be repainted since the last
+  // call, and resets it.
+  gfx::Rect TakeScheduledPaintRectForTesting();
+
+ protected:
+  // views::View:
+  void OnDidSchedulePaint(const gfx::Rect& rect) override;
 
  private:
   friend class UnpinnedTabContainerViewVerticalLayout;
@@ -124,6 +136,8 @@ class UnpinnedTabContainerView
   base::CallbackListSubscription node_destroyed_subscription_;
   base::CallbackListSubscription collapsed_state_changed_subscription_;
   base::CallbackListSubscription focus_animation_subscription_;
+
+  gfx::Rect scheduled_paint_rect_for_testing_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_COMMON_UNPINNED_TAB_CONTAINER_VIEW_H_

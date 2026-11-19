@@ -598,19 +598,14 @@ float HorizontalTabStyleViews::GetSeparatorOpacity(bool for_layout,
   if (base::FeatureList::IsEnabled(tabs::kTabStripUnification)) {
     // When unification is enabled, tabs render trailing separators by default
     // to avoid double separators between tabs. Leading separators are only
-    // rendered in certain scenarios.
+    // rendered in certain scenarios. The separator following a collapsed group
+    // is painted by the group header, see
+    // TabGroupStyle::GetSeparatorOpacities().
     if (leading) {
       // Between the pinned and unpinned tab containers when new pinned
       // tab styling is disabled should show leading
       if (!tabs::IsNewHorizontalPinnedTabStylingEnabled() && adjacent_tab &&
           adjacent_tab->IsPinned() && !HasVisibleBackground(adjacent_tab)) {
-        return shown_separator_opacity;
-      }
-
-      // When the preceding item is a group header, show a leading separator.
-      if (adjacent_tab && adjacent_tab->IsGroupCollapsed() &&
-          adjacent_tab->GetGroup() != delegate_->GetGroup() &&
-          !HasVisibleBackground(adjacent_tab)) {
         return shown_separator_opacity;
       }
 
