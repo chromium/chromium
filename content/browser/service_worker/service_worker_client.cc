@@ -649,13 +649,20 @@ std::optional<blink::StorageKey> GetStorageKeyFromRenderFrameHost(
   return frame_host->CalculateStorageKey(origin, nonce);
 }
 
-// For dedicated/shared worker cases, if a storage key is returned, it will have
-// its origin replaced by |origin| (the script URL's origin). The worker's own
-// StorageKey origin is never opaque here:
-// ServiceWorkerMainResourceLoaderInterceptor::CreateForWorker() refuses to
-// create a ServiceWorkerClient for opaque-origin workers, so this substitution
-// cannot turn an opaque worker into a client matching its precursor origin's
-// registrations (crbug.com/578670204).
+// For dedicated/shared worker cases, the worker's `StorageKey` must never be
+// opaque (ineligible workers are excluded prior to `ServiceWorkerClient`
+// creation) and must match `origin` unless `--disable-web-security` is enabled.
+blink::StorageKey ResolveWorkerStorageKeyForUpdateUrls(
+    const blink::StorageKey& worker_storage_key,
+    const url::Origin& origin) {
+  DUMP_WILL_BE_CHECK(!worker_storage_key.origin().opaque());
+  if (service_worker_security_utils::IsWebSecurityDisabled()) {
+    return worker_storage_key.WithOrigin(origin);
+  }
+  CHECK(worker_storage_key.origin().IsSameOriginWith(origin));
+  return worker_storage_key;
+}
+
 std::optional<blink::StorageKey> GetStorageKeyFromDedicatedWorkerHost(
     content::StoragePartition* storage_partition,
     blink::DedicatedWorkerToken dedicated_worker_token,
@@ -665,8 +672,8 @@ std::optional<blink::StorageKey> GetStorageKeyFromDedicatedWorkerHost(
   auto* worker_host =
       worker_service->GetDedicatedWorkerHostFromToken(dedicated_worker_token);
   if (worker_host) {
-    DUMP_WILL_BE_CHECK(!worker_host->GetWorkerStorageKey().origin().opaque());
-    return worker_host->GetWorkerStorageKey().WithOrigin(origin);
+    return ResolveWorkerStorageKeyForUpdateUrls(
+        worker_host->GetWorkerStorageKey(), origin);
   }
   return std::nullopt;
 }
@@ -680,8 +687,8 @@ std::optional<blink::StorageKey> GetStorageKeyFromSharedWorkerHost(
   auto* worker_host =
       worker_service->GetSharedWorkerHostFromToken(shared_worker_token);
   if (worker_host) {
-    DUMP_WILL_BE_CHECK(!worker_host->GetWorkerStorageKey().origin().opaque());
-    return worker_host->GetWorkerStorageKey().WithOrigin(origin);
+    return ResolveWorkerStorageKeyForUpdateUrls(
+        worker_host->GetWorkerStorageKey(), origin);
   }
   return std::nullopt;
 }

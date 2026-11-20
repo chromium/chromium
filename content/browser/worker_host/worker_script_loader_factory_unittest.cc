@@ -7,6 +7,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/run_until.h"
+#include "base/test/scoped_command_line.h"
 #include "content/browser/isolation_context.h"
 #include "content/browser/origin_agent_cluster_isolation_state.h"
 #include "content/browser/process_lock.h"
@@ -16,18 +17,24 @@
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_main_resource_handle.h"
+#include "content/browser/storage_partition_impl.h"
 #include "content/browser/url_info.h"
+#include "content/browser/worker_host/dedicated_worker_host.h"
+#include "content/browser/worker_host/dedicated_worker_service_impl.h"
 #include "content/browser/worker_host/worker_script_loader.h"
 #include "content/public/browser/storage_partition_config.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/test/fake_network_url_loader_factory.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/isolation_info.h"
+#include "net/storage_access_api/status.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
+#include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/ip_address_space.mojom.h"
@@ -35,6 +42,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/mojom/worker/dedicated_worker_host.mojom.h"
 
 namespace content {
 
@@ -86,6 +94,33 @@ class WorkerScriptLoaderFactoryTest : public testing::Test {
   }
 
  protected:
+  struct RegisteredDedicatedWorkerHost {
+    blink::DedicatedWorkerToken token;
+    std::unique_ptr<DedicatedWorkerHost> host;
+    mojo::Remote<blink::mojom::DedicatedWorkerHost> remote;
+  };
+
+  RegisteredDedicatedWorkerHost CreateRegisteredDedicatedWorkerHost(
+      const url::Origin& origin,
+      const blink::StorageKey& storage_key) {
+    EXPECT_TRUE(helper_->mock_render_process_host()->Init());
+    auto* storage_partition = static_cast<StoragePartitionImpl*>(
+        helper_->mock_render_process_host()->GetStoragePartition());
+    RegisteredDedicatedWorkerHost registered;
+    registered.host = std::make_unique<DedicatedWorkerHost>(
+        static_cast<DedicatedWorkerServiceImpl*>(
+            storage_partition->GetDedicatedWorkerService()),
+        registered.token, helper_->mock_render_process_host(),
+        DedicatedWorkerCreator(GlobalRenderFrameHostId()), WeakDocumentPtr(),
+        origin, storage_key, origin,
+        net::IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+        network::mojom::ClientSecurityState::New(), PolicyContainerPolicies(),
+        /*creator_coep_reporter=*/nullptr, base::UnguessableToken::Create(),
+        registered.remote.BindNewPipeAndPassReceiver(),
+        net::StorageAccessApiStatus::kNone);
+    return registered;
+  }
+
   mojo::PendingRemote<network::mojom::URLLoader> CreateTestLoaderAndStart(
       const GURL& url,
       WorkerScriptLoaderFactory* factory,
@@ -504,6 +539,188 @@ TEST_F(WorkerScriptLoaderFactoryTest, BlobUrlWorkerParentOriginMismatch) {
   ASSERT_TRUE(matching_handle->service_worker_client());
   EXPECT_EQ(parent_client->key(),
             matching_handle->service_worker_client()->key());
+}
+
+// Tests that a cross-origin worker script URL does not create a
+// ServiceWorkerClient for either dedicated or shared workers.
+TEST_F(WorkerScriptLoaderFactoryTest, CrossOriginScriptSkipsServiceWorker) {
+  GURL worker_origin_url("https://www.example.com/");
+  GURL cross_origin_script_url("https://other.example.com/worker.js");
+
+  for (const DedicatedOrSharedWorkerToken& worker_token :
+       {DedicatedOrSharedWorkerToken(blink::DedicatedWorkerToken()),
+        DedicatedOrSharedWorkerToken(blink::SharedWorkerToken())}) {
+    auto handle = std::make_unique<ServiceWorkerMainResourceHandle>(
+        helper_->context_wrapper(), base::DoNothing(),
+        /*fetch_event_client_id=*/"");
+    auto factory = std::make_unique<WorkerScriptLoaderFactory>(
+        helper_->mock_render_process_id(), worker_token,
+        blink::StorageKey::CreateFirstParty(
+            url::Origin::Create(worker_origin_url)),
+        net::IsolationInfo::CreateForInternalRequest(
+            url::Origin::Create(worker_origin_url)),
+        handle.get(), browser_context_getter_, network_loader_factory_);
+
+    network::TestURLLoaderClient client;
+    mojo::PendingRemote<network::mojom::URLLoader> loader =
+        CreateTestLoaderAndStart(cross_origin_script_url, factory.get(),
+                                 &client);
+    base::RunLoop().RunUntilIdle();
+
+    EXPECT_FALSE(handle->service_worker_client());
+    factory->GetScriptLoader()->OnFetcherCallbackCalled();
+    client.RunUntilComplete();
+    EXPECT_EQ(net::OK, client.completion_status().error_code);
+  }
+}
+
+// Tests that a cross-origin redirect on a worker script load discards the
+// reserved ServiceWorkerClient while keeping the handle alive for fallback,
+// and remains cleared across subsequent redirect hops.
+TEST_F(WorkerScriptLoaderFactoryTest,
+       CrossOriginRedirectResetsServiceWorkerClient) {
+  GURL url("https://www.example.com/worker.js");
+  const url::Origin origin = url::Origin::Create(url);
+  const blink::StorageKey storage_key =
+      blink::StorageKey::CreateFirstParty(origin);
+
+  RegisteredDedicatedWorkerHost registered_host =
+      CreateRegisteredDedicatedWorkerHost(origin, storage_key);
+
+  network_loader_factory_instance_->DeferHandleRequest();
+
+  for (const DedicatedOrSharedWorkerToken& worker_token :
+       {DedicatedOrSharedWorkerToken(registered_host.token),
+        DedicatedOrSharedWorkerToken(blink::SharedWorkerToken())}) {
+    auto handle = std::make_unique<ServiceWorkerMainResourceHandle>(
+        helper_->context_wrapper(), base::DoNothing(),
+        /*fetch_event_client_id=*/"");
+    auto factory = std::make_unique<WorkerScriptLoaderFactory>(
+        helper_->mock_render_process_id(), worker_token, storage_key,
+        net::IsolationInfo::CreateForInternalRequest(origin), handle.get(),
+        browser_context_getter_, network_loader_factory_);
+
+    network::TestURLLoaderClient client;
+    mojo::PendingRemote<network::mojom::URLLoader> remote_loader =
+        CreateTestLoaderAndStart(url, factory.get(), &client);
+    mojo::Remote<network::mojom::URLLoader> loader(std::move(remote_loader));
+    ASSERT_TRUE(base::test::RunUntil(
+        [&]() { return factory->GetScriptLoader() != nullptr; }));
+    base::RunLoop().RunUntilIdle();
+    EXPECT_TRUE(handle->service_worker_client());
+
+    net::RedirectInfo redirect_info;
+    redirect_info.status_code = 302;
+    redirect_info.new_method = "GET";
+    redirect_info.new_url = GURL("https://other.example.com/worker.js");
+    factory->GetScriptLoader()->OnReceiveRedirect(
+        redirect_info, network::mojom::URLResponseHead::New());
+    client.RunUntilRedirectReceived();
+    ASSERT_TRUE(client.has_received_redirect());
+
+    loader->FollowRedirect(/*headers_update_params=*/{},
+                           /*new_url=*/std::nullopt);
+    base::RunLoop().RunUntilIdle();
+
+    EXPECT_TRUE(handle);
+    EXPECT_FALSE(handle->service_worker_client());
+
+    // Even if a subsequent redirect hop returns to the original origin, the
+    // discarded client must not be resurrected or crash InitializeForRequest.
+    client.ClearHasReceivedRedirect();
+    net::RedirectInfo redirect_back;
+    redirect_back.status_code = 302;
+    redirect_back.new_method = "GET";
+    redirect_back.new_url = GURL("https://www.example.com/final.js");
+    factory->GetScriptLoader()->OnReceiveRedirect(
+        redirect_back, network::mojom::URLResponseHead::New());
+    client.RunUntilRedirectReceived();
+    loader->FollowRedirect(/*headers_update_params=*/{},
+                           /*new_url=*/std::nullopt);
+    base::RunLoop().RunUntilIdle();
+
+    EXPECT_TRUE(handle);
+    EXPECT_FALSE(handle->service_worker_client());
+  }
+}
+
+// Tests that `--disable-web-security` allows cross-origin HTTP(S) worker
+// scripts to create a ServiceWorkerClient, while still rejecting cross-origin
+// `blob:` worker scripts.
+TEST_F(WorkerScriptLoaderFactoryTest,
+       DisableWebSecurityAllowsCrossOriginHttpButSkipsCrossOriginBlob) {
+  base::test::ScopedCommandLine command_line;
+  command_line.GetProcessCommandLine()->AppendSwitch(
+      switches::kDisableWebSecurity);
+
+  GURL worker_origin_url("https://www.example.com/");
+  GURL cross_origin_http_url("https://other.example.com/worker.js");
+  GURL cross_origin_blob_url(
+      "blob:https://other.example.com/49146318-7a89-4041-9bcc-36e6b6eeef86");
+
+  // Cross-origin HTTP(S) script is allowed under `--disable-web-security`.
+  {
+    const url::Origin worker_origin = url::Origin::Create(worker_origin_url);
+    const blink::StorageKey worker_storage_key =
+        blink::StorageKey::CreateFirstParty(worker_origin);
+    RegisteredDedicatedWorkerHost registered_host =
+        CreateRegisteredDedicatedWorkerHost(worker_origin, worker_storage_key);
+
+    auto factory = std::make_unique<WorkerScriptLoaderFactory>(
+        helper_->mock_render_process_id(),
+        DedicatedOrSharedWorkerToken(registered_host.token), worker_storage_key,
+        net::IsolationInfo::CreateForInternalRequest(worker_origin),
+        service_worker_handle_.get(), browser_context_getter_,
+        network_loader_factory_);
+
+    network::TestURLLoaderClient client;
+    mojo::PendingRemote<network::mojom::URLLoader> loader =
+        CreateTestLoaderAndStart(cross_origin_http_url, factory.get(), &client);
+    base::RunLoop().RunUntilIdle();
+
+    ASSERT_TRUE(service_worker_handle_->service_worker_client());
+    EXPECT_EQ(blink::StorageKey::CreateFirstParty(
+                  url::Origin::Create(cross_origin_http_url)),
+              service_worker_handle_->service_worker_client()->key());
+    factory->GetScriptLoader()->OnFetcherCallbackCalled();
+    client.RunUntilComplete();
+    EXPECT_EQ(net::OK, client.completion_status().error_code);
+  }
+
+  // Cross-origin `blob:` script is still rejected even with
+  // `--disable-web-security` and a parent ServiceWorkerClient.
+  {
+    const url::Origin cross_origin = url::Origin::Create(cross_origin_http_url);
+    ScopedServiceWorkerClient parent_client =
+        helper_->context()
+            ->service_worker_client_owner()
+            .CreateServiceWorkerClientForWindow(
+                /*are_ancestors_secure=*/true, FrameTreeNodeId());
+    parent_client->UpdateUrls(
+        cross_origin_http_url, cross_origin,
+        blink::StorageKey::CreateFirstParty(cross_origin));
+    auto blob_handle = std::make_unique<ServiceWorkerMainResourceHandle>(
+        helper_->context_wrapper(), base::DoNothing(),
+        /*fetch_event_client_id=*/"", parent_client.AsWeakPtr());
+
+    auto factory = std::make_unique<WorkerScriptLoaderFactory>(
+        helper_->mock_render_process_id(), DedicatedOrSharedWorkerToken(),
+        blink::StorageKey::CreateFirstParty(
+            url::Origin::Create(worker_origin_url)),
+        net::IsolationInfo::CreateForInternalRequest(
+            url::Origin::Create(worker_origin_url)),
+        blob_handle.get(), browser_context_getter_, network_loader_factory_);
+
+    network::TestURLLoaderClient client;
+    mojo::PendingRemote<network::mojom::URLLoader> loader =
+        CreateTestLoaderAndStart(cross_origin_blob_url, factory.get(), &client);
+    base::RunLoop().RunUntilIdle();
+
+    EXPECT_FALSE(blob_handle->service_worker_client());
+    factory->GetScriptLoader()->OnFetcherCallbackCalled();
+    client.RunUntilComplete();
+    EXPECT_EQ(net::OK, client.completion_status().error_code);
+  }
 }
 
 // TODO(falken): Add a test for a shared worker that's controlled by a service

@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_MAIN_RESOURCE_LOADER_INTERCEPTOR_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/weak_ptr.h"
 #include "content/browser/loader/navigation_loader_interceptor.h"
@@ -20,11 +21,8 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/cpp/single_request_url_loader_factory.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_provider.mojom.h"
-
-namespace blink {
-class StorageKey;
-}  // namespace blink
 
 namespace content {
 
@@ -106,8 +104,9 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoaderInterceptor final
  private:
   friend class ServiceWorkerMainResourceLoaderInterceptorTest;
 
-  ServiceWorkerMainResourceLoaderInterceptor(
-      base::WeakPtr<ServiceWorkerMainResourceHandle> handle);
+  explicit ServiceWorkerMainResourceLoaderInterceptor(
+      base::WeakPtr<ServiceWorkerMainResourceHandle> handle,
+      std::optional<blink::StorageKey> worker_storage_key = std::nullopt);
 
   // Returns true if a ServiceWorkerMainResourceLoaderInterceptor should be
   // created for a navigation to |url|.
@@ -130,6 +129,9 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoaderInterceptor final
   // WorkerScriptLoader which owns |this|.
   // TODO(falken): Arrange things so |handle_| outlives |this| for workers too.
   const base::WeakPtr<ServiceWorkerMainResourceHandle> handle_;
+
+  // Non-nullopt when created for a dedicated or shared worker.
+  const std::optional<blink::StorageKey> worker_storage_key_;
 
   // Handles a single request. Set to a new instance on redirects.
   std::unique_ptr<ServiceWorkerControlleeRequestHandler> request_handler_;

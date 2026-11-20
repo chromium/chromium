@@ -36,6 +36,7 @@
 #include "content/public/browser/dedicated_worker_service.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/shared_worker_service.h"
+#include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -53,6 +54,10 @@
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_content_browser_client.h"
 #include "content/test/content_browser_test_utils_internal.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/features.h"
 #include "net/base/filename_util.h"
 #include "net/base/schemeful_site.h"
@@ -80,9 +85,22 @@
 #include "services/network/public/mojom/parsed_headers.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/loader/url_loader_factory_bundle.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/common/runtime_feature_state/runtime_feature_state_context.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/mojom/blob/blob_url_store.mojom.h"
+#include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom.h"
+#include "third_party/blink/public/mojom/frame/policy_container.mojom.h"
+#include "third_party/blink/public/mojom/frame/reporting_observer.mojom.h"
+#include "third_party/blink/public/mojom/loader/fetch_client_settings_object.mojom.h"
+#include "third_party/blink/public/mojom/service_worker/controller_service_worker.mojom.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_container.mojom.h"
+#include "third_party/blink/public/mojom/worker/dedicated_worker_host.mojom.h"
+#include "third_party/blink/public/mojom/worker/dedicated_worker_host_factory.mojom.h"
+#include "third_party/blink/public/mojom/worker/subresource_loader_updater.mojom.h"
+#include "third_party/blink/public/mojom/worker/worker_main_script_load_params.mojom.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -1934,6 +1952,339 @@ IN_PROC_BROWSER_TEST_P(XMLHttpRequestLoadIgnoreLimitsTest, WorkerContext) {
   ASSERT_TRUE(worker_sync_request.has_value());
   EXPECT_EQ(!IsRequiresLoadIgnoreLimitsForDomWindowsOnlyEnabled(),
             (bool)(worker_sync_request->load_flags & net::LOAD_IGNORE_LIMITS));
+}
+
+namespace {
+
+class TestDedicatedWorkerHostFactoryClient
+    : public blink::mojom::DedicatedWorkerHostFactoryClient {
+ public:
+  TestDedicatedWorkerHostFactoryClient() = default;
+  ~TestDedicatedWorkerHostFactoryClient() override = default;
+
+  mojo::PendingRemote<blink::mojom::DedicatedWorkerHostFactoryClient>
+  BindNewPipeAndPassRemote() {
+    return receiver_.BindNewPipeAndPassRemote();
+  }
+
+  void WaitUntilFinished() { run_loop_.Run(); }
+
+  bool script_load_started() const { return script_load_started_; }
+  bool script_load_start_failed() const { return script_load_start_failed_; }
+  const blink::mojom::ServiceWorkerContainerInfoForClientPtr&
+  service_worker_container_info() const {
+    return service_worker_container_info_;
+  }
+  const blink::mojom::ControllerServiceWorkerInfoPtr& controller_info() const {
+    return controller_info_;
+  }
+  const blink::mojom::WorkerMainScriptLoadParamsPtr& main_script_load_params()
+      const {
+    return main_script_load_params_;
+  }
+
+  // blink::mojom::DedicatedWorkerHostFactoryClient:
+  void OnWorkerHostCreated(
+      mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
+          browser_interface_broker,
+      mojo::PendingRemote<blink::mojom::DedicatedWorkerHost> host,
+      const url::Origin& origin) override {
+    browser_interface_broker_.Bind(std::move(browser_interface_broker));
+    remote_host_.Bind(std::move(host));
+  }
+
+  void OnScriptLoadStarted(
+      blink::mojom::ServiceWorkerContainerInfoForClientPtr
+          service_worker_container_info,
+      blink::mojom::WorkerMainScriptLoadParamsPtr main_script_load_params,
+      std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
+          pending_subresource_loader_factory_bundle,
+      mojo::PendingReceiver<blink::mojom::SubresourceLoaderUpdater>
+          subresource_loader_updater,
+      blink::mojom::ControllerServiceWorkerInfoPtr controller_info,
+      mojo::PendingRemote<blink::mojom::BackForwardCacheControllerHost>
+          back_forward_cache_controller_host,
+      blink::mojom::PolicyContainerPtr policy_container,
+      mojo::PendingReceiver<blink::mojom::ReportingObserver>
+          coep_reporting_observer,
+      mojo::PendingReceiver<blink::mojom::ReportingObserver>
+          dip_reporting_observer) override {
+    script_load_started_ = true;
+    service_worker_container_info_ = std::move(service_worker_container_info);
+    main_script_load_params_ = std::move(main_script_load_params);
+    controller_info_ = std::move(controller_info);
+    run_loop_.Quit();
+  }
+
+  void OnScriptLoadStartFailed() override {
+    script_load_start_failed_ = true;
+    run_loop_.Quit();
+  }
+
+ private:
+  base::RunLoop run_loop_;
+  mojo::Receiver<blink::mojom::DedicatedWorkerHostFactoryClient> receiver_{
+      this};
+  mojo::Remote<blink::mojom::BrowserInterfaceBroker> browser_interface_broker_;
+  mojo::Remote<blink::mojom::DedicatedWorkerHost> remote_host_;
+  bool script_load_started_ = false;
+  bool script_load_start_failed_ = false;
+  blink::mojom::ServiceWorkerContainerInfoForClientPtr
+      service_worker_container_info_;
+  blink::mojom::WorkerMainScriptLoadParamsPtr main_script_load_params_;
+  blink::mojom::ControllerServiceWorkerInfoPtr controller_info_;
+};
+
+void StartDedicatedWorkerScriptLoadForFrame(
+    RenderFrameHostImpl* frame,
+    const GURL& script_url,
+    mojo::Remote<blink::mojom::DedicatedWorkerHostFactory>& factory_out,
+    TestDedicatedWorkerHostFactoryClient& client_out) {
+  frame->CreateDedicatedWorkerHostFactory(
+      factory_out.BindNewPipeAndPassReceiver());
+  auto fetch_settings = blink::mojom::FetchClientSettingsObject::New();
+  fetch_settings->policy_container_policies =
+      blink::mojom::PolicyContainerPolicies::New();
+  fetch_settings->outgoing_referrer = frame->GetLastCommittedURL();
+  factory_out->CreateWorkerHostAndStartScriptLoad(
+      blink::DedicatedWorkerToken(), script_url,
+      network::mojom::CredentialsMode::kSameOrigin, std::move(fetch_settings),
+      mojo::NullRemote(), client_out.BindNewPipeAndPassRemote());
+  client_out.WaitUntilFinished();
+}
+
+}  // namespace
+
+class SandboxedDedicatedWorkerServiceWorkerBrowserTest : public WorkerTest {
+ public:
+  void SetUpOnMainThread() override {
+    ssl_server()->RegisterRequestHandler(base::BindRepeating(
+        &SandboxedDedicatedWorkerServiceWorkerBrowserTest::HandleRequest,
+        base::Unretained(this)));
+    WorkerTest::SetUpOnMainThread();
+  }
+
+ private:
+  std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
+      const net::test_server::HttpRequest& request) {
+    if (request.relative_url == "/sw_test_worker.js") {
+      auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+      response->set_code(net::HTTP_OK);
+      response->set_content_type("text/javascript");
+      response->set_content(R"(
+        let handledScriptCount = 0;
+        self.addEventListener('install', event => {
+          event.waitUntil(
+              caches.open('v1')
+                  .then(c => c.put(
+                      '/sw_cached_script.js',
+                      new Response("postMessage('from-sw-cache');", {
+                        headers: {'Content-Type': 'text/javascript'}
+                      })))
+                  .then(() => self.skipWaiting()));
+        });
+        self.addEventListener('activate', event => {
+          event.waitUntil(self.clients.claim());
+        });
+        self.addEventListener('fetch', event => {
+          if (event.request.url.endsWith('/sw_cached_script.js')) {
+            handledScriptCount++;
+          }
+          const params = new URL(event.request.url).searchParams;
+          if (params.has('redirect_to')) {
+            event.respondWith(Response.redirect(params.get('redirect_to'), 302));
+            return;
+          }
+          event.respondWith(
+              caches.match(event.request).then(r => r || fetch(event.request)));
+        });
+        self.addEventListener('message', event => {
+          event.source.postMessage(handledScriptCount);
+        });
+      )");
+      return response;
+    }
+    return nullptr;
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(
+    SandboxedDedicatedWorkerServiceWorkerBrowserTest,
+    SandboxedFrameDedicatedWorkerDoesNotReceiveServiceWorkerCapabilities) {
+  const GURL top_url = ssl_server()->GetURL("b.test", "/title1.html");
+  const GURL frame_url = ssl_server()->GetURL("a.test", "/title1.html");
+  const GURL cached_worker_url =
+      ssl_server()->GetURL("a.test", "/sw_cached_script.js");
+  const url::Origin target_origin = url::Origin::Create(frame_url);
+
+  ASSERT_TRUE(NavigateToURL(shell(), top_url));
+  RenderFrameHostImpl* main_rfh = static_cast<RenderFrameHostImpl*>(
+      shell()->web_contents()->GetPrimaryMainFrame());
+
+  // 1. Positive control: `<iframe sandbox="allow-scripts allow-same-origin">`
+  // under `b.test` retains `a.test` origin access (in the `{a.test, b.test,
+  // kCrossSite}` partition), registers a cache-backed Service Worker, and
+  // receives Service Worker container, controller, and CacheStorage side-data
+  // writer capabilities for a dedicated worker load.
+  ASSERT_TRUE(ExecJs(main_rfh, JsReplace(R"(
+    new Promise(resolve => {
+      const f = document.createElement('iframe');
+      f.id = 'same_origin_sandboxed';
+      f.sandbox = 'allow-scripts allow-same-origin';
+      f.src = $1;
+      f.onload = resolve;
+      document.body.appendChild(f);
+    })
+  )",
+                                         frame_url)));
+  RenderFrameHostImpl* same_origin_rfh =
+      static_cast<RenderFrameHostImpl*>(ChildFrameAt(main_rfh, 0));
+  ASSERT_TRUE(same_origin_rfh);
+  ASSERT_FALSE(same_origin_rfh->GetStorageKey().origin().opaque());
+
+  ASSERT_EQ("from-sw-cache", EvalJs(same_origin_rfh, R"(
+    (async () => {
+      await navigator.serviceWorker.register('/sw_test_worker.js', {scope: '/'});
+      await navigator.serviceWorker.ready;
+      return await new Promise((resolve, reject) => {
+        const w = new Worker('/sw_cached_script.js');
+        w.onmessage = e => resolve(e.data);
+        w.onerror = () => reject(new Error('worker load failed'));
+      });
+    })()
+  )"));
+
+  {
+    mojo::Remote<blink::mojom::DedicatedWorkerHostFactory> factory;
+    TestDedicatedWorkerHostFactoryClient client;
+    StartDedicatedWorkerScriptLoadForFrame(same_origin_rfh, cached_worker_url,
+                                           factory, client);
+    EXPECT_TRUE(client.script_load_started());
+    EXPECT_FALSE(client.script_load_start_failed());
+    EXPECT_TRUE(client.service_worker_container_info());
+    EXPECT_TRUE(client.controller_info());
+    ASSERT_TRUE(client.main_script_load_params());
+    EXPECT_TRUE(client.main_script_load_params()
+                    ->response_head->was_fetched_via_service_worker);
+    EXPECT_TRUE(client.main_script_load_params()
+                    ->response_head->cache_storage_side_data_writer.is_valid());
+  }
+
+  // 2. Boundary check: `<iframe sandbox="allow-scripts">` commits with an
+  // opaque StorageKey whose `.WithOrigin(a.test)` matches `same_origin_rfh`'s
+  // partitioned StorageKey (and in an isolated sandboxed process when
+  // `AreIsolatedSandboxedIframesEnabled()` is true).
+  ASSERT_TRUE(ExecJs(main_rfh, JsReplace(R"(
+    new Promise(resolve => {
+      const f = document.createElement('iframe');
+      f.id = 'sandboxed_frame';
+      f.sandbox = 'allow-scripts';
+      f.src = $1;
+      f.onload = resolve;
+      document.body.appendChild(f);
+    })
+  )",
+                                         frame_url)));
+  RenderFrameHostImpl* sandboxed_rfh =
+      static_cast<RenderFrameHostImpl*>(ChildFrameAt(main_rfh, 1));
+  ASSERT_TRUE(sandboxed_rfh);
+  ASSERT_TRUE(sandboxed_rfh->GetStorageKey().origin().opaque());
+  ASSERT_EQ(same_origin_rfh->GetStorageKey(),
+            sandboxed_rfh->GetStorageKey().WithOrigin(target_origin));
+  if (SiteIsolationPolicy::UseDedicatedProcessesForAllSites() &&
+      SiteIsolationPolicy::AreIsolatedSandboxedIframesEnabled()) {
+    EXPECT_TRUE(sandboxed_rfh->GetProcess()->GetProcessLock().is_sandboxed());
+    EXPECT_FALSE(
+        ChildProcessSecurityPolicyImpl::GetInstance()->CanAccessDataForOrigin(
+            sandboxed_rfh->GetProcess()->GetID().value(), target_origin));
+  }
+
+  // Requesting the cached HTTPS worker URL from `sandboxed_rfh`'s
+  // DedicatedWorkerHostFactory must not dispatch a FetchEvent to `a.test`'s
+  // Service Worker and must not deliver Service Worker capabilities.
+  {
+    mojo::Remote<blink::mojom::DedicatedWorkerHostFactory> factory;
+    TestDedicatedWorkerHostFactoryClient client;
+    StartDedicatedWorkerScriptLoadForFrame(sandboxed_rfh, cached_worker_url,
+                                           factory, client);
+    EXPECT_TRUE(client.script_load_start_failed());
+    EXPECT_FALSE(client.script_load_started());
+    EXPECT_FALSE(client.service_worker_container_info());
+    EXPECT_FALSE(client.controller_info());
+    EXPECT_FALSE(client.main_script_load_params());
+  }
+
+  // 3. Cross-origin & redirect checks: a cross-origin request from `main_rfh`
+  // (`b.test`) for `a.test`'s cached worker URL is rejected without invoking
+  // `a.test`'s Service Worker, and a Service Worker cross-origin redirect
+  // resets the unclaimed client cleanly.
+  {
+    mojo::Remote<blink::mojom::DedicatedWorkerHostFactory> cross_origin_factory;
+    TestDedicatedWorkerHostFactoryClient cross_origin_client;
+    StartDedicatedWorkerScriptLoadForFrame(
+        main_rfh, cached_worker_url, cross_origin_factory, cross_origin_client);
+    EXPECT_TRUE(cross_origin_client.script_load_start_failed());
+    EXPECT_FALSE(cross_origin_client.script_load_started());
+  }
+
+  // A same-origin worker script request from `main_rfh` (`b.test`) that
+  // 302-redirects cross-origin to `a.test`'s cached worker URL must also clear
+  // its ServiceWorkerClient and never invoke `a.test`'s Service Worker.
+  {
+    const GURL redirect_to_a_url = ssl_server()->GetURL(
+        "b.test", "/server-redirect?" + cached_worker_url.spec());
+    mojo::Remote<blink::mojom::DedicatedWorkerHostFactory> redirect_factory;
+    TestDedicatedWorkerHostFactoryClient redirect_client;
+    StartDedicatedWorkerScriptLoadForFrame(main_rfh, redirect_to_a_url,
+                                           redirect_factory, redirect_client);
+    EXPECT_TRUE(redirect_client.script_load_start_failed());
+    EXPECT_FALSE(redirect_client.script_load_started());
+    EXPECT_FALSE(redirect_client.service_worker_container_info());
+    EXPECT_FALSE(redirect_client.controller_info());
+  }
+
+  EXPECT_EQ("redirect-error", EvalJs(same_origin_rfh, JsReplace(R"(
+    new Promise(resolve => {
+      const w = new Worker('/redirect_worker.js?redirect_to=' +
+                           encodeURIComponent($1));
+      w.onmessage = () => resolve('unexpected-message');
+      w.onerror = () => resolve('redirect-error');
+    })
+  )",
+                                                                top_url)));
+
+  // Confirm the active Service Worker only handled the two legitimate
+  // `/sw_cached_script.js` loads from step 1, and never received a fetch event
+  // from the sandboxed or cross-origin worker requests.
+  EXPECT_EQ(2, EvalJs(same_origin_rfh, R"(
+    (async () => {
+      const reg = await navigator.serviceWorker.ready;
+      return await new Promise(resolve => {
+        navigator.serviceWorker.addEventListener(
+            'message', e => resolve(e.data), {once: true});
+        reg.active.postMessage('count');
+      });
+    })()
+  )"));
+
+  // 4. Non-regression check: local-scheme (`blob:` and `data:`) dedicated
+  // workers inside `<iframe sandbox="allow-scripts">` continue to run normally.
+  EXPECT_EQ("blob-ok", EvalJs(sandboxed_rfh, R"(
+    new Promise((resolve, reject) => {
+      const blob = new Blob(["postMessage('blob-ok');"],
+                            {type: 'text/javascript'});
+      const w = new Worker(URL.createObjectURL(blob));
+      w.onmessage = e => resolve(e.data);
+      w.onerror = () => reject(new Error('blob worker failed'));
+    })
+  )"));
+  EXPECT_EQ("data-ok", EvalJs(sandboxed_rfh, R"(
+    new Promise((resolve, reject) => {
+      const w = new Worker("data:text/javascript,postMessage('data-ok');");
+      w.onmessage = e => resolve(e.data);
+      w.onerror = () => reject(new Error('data worker failed'));
+    })
+  )"));
 }
 
 }  // namespace content
