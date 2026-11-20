@@ -93,30 +93,10 @@ public class AdaptiveUiSheetCoordinatorTest {
 
     private AdaptiveUiSheetCoordinator createContent(
             PropertyModel model, @AdaptiveUiScope int scope) {
-        return createContent(model, scope, /* isUserInitiated= */ false, UserCriticalFeature.NONE);
-    }
-
-    private AdaptiveUiSheetCoordinator createContent(
-            PropertyModel model,
-            @AdaptiveUiScope int scope,
-            boolean isUserInitiated,
-            @UserCriticalFeature int userCriticalFeature) {
-        return createContent(model, scope, isUserInitiated, userCriticalFeature, SheetState.FULL);
-    }
-
-    private AdaptiveUiSheetCoordinator createContent(
-            PropertyModel model,
-            @AdaptiveUiScope int scope,
-            boolean isUserInitiated,
-            @UserCriticalFeature int userCriticalFeature,
-            @SheetState int initialState) {
         return new AdaptiveUiSheetCoordinator(
                 mActivity,
                 model,
                 scope,
-                isUserInitiated,
-                userCriticalFeature,
-                initialState,
                 mBottomSheetController,
                 () -> mShownCount++,
                 mSheetDismissals::add);
@@ -165,14 +145,25 @@ public class AdaptiveUiSheetCoordinatorTest {
     }
 
     @Test
+    public void testExplicitFullInitialState_matchesDefault() {
+        AdaptiveUiSheetCoordinator content =
+                createContent(
+                        newModelBuilder()
+                                .with(AdaptiveUiProperties.SHEET_INITIAL_STATE, SheetState.FULL)
+                                .with(AdaptiveUiProperties.SHEET_HALF_HEIGHT_RATIO, 0.5f)
+                                .build());
+
+        assertEquals(HeightMode.DISABLED, content.getHalfHeightRatio(), 0f);
+        assertEquals(HeightMode.WRAP_CONTENT, content.getFullHeightRatio(), 0f);
+    }
+
+    @Test
     public void testHalfInitialState_enablesHalfState() {
         AdaptiveUiSheetCoordinator content =
                 createContent(
-                        newModelBuilder().build(),
-                        AdaptiveUiScope.TRANSIENT,
-                        /* isUserInitiated= */ false,
-                        UserCriticalFeature.NONE,
-                        SheetState.HALF);
+                        newModelBuilder()
+                                .with(AdaptiveUiProperties.SHEET_INITIAL_STATE, SheetState.HALF)
+                                .build());
 
         assertEquals(HeightMode.DEFAULT, content.getHalfHeightRatio(), 0f);
         assertEquals(HeightMode.RESIZE_CONTENT, content.getFullHeightRatio(), 0f);
@@ -187,11 +178,8 @@ public class AdaptiveUiSheetCoordinatorTest {
                         newModelBuilder()
                                 .with(AdaptiveUiProperties.SHEET_HALF_HEIGHT_RATIO, 0.5f)
                                 .with(AdaptiveUiProperties.SHEET_FULL_HEIGHT_RATIO, 0.9f)
-                                .build(),
-                        AdaptiveUiScope.TRANSIENT,
-                        /* isUserInitiated= */ false,
-                        UserCriticalFeature.NONE,
-                        SheetState.HALF);
+                                .with(AdaptiveUiProperties.SHEET_INITIAL_STATE, SheetState.HALF)
+                                .build());
 
         assertEquals(0.5f, content.getHalfHeightRatio(), 0f);
         assertEquals(HeightMode.RESIZE_CONTENT, content.getFullHeightRatio(), 0f);
@@ -204,11 +192,8 @@ public class AdaptiveUiSheetCoordinatorTest {
                 createContent(
                         newModelBuilder()
                                 .with(AdaptiveUiProperties.SHEET_FULL_HEIGHT_RATIO, 0.5f)
-                                .build(),
-                        AdaptiveUiScope.TRANSIENT,
-                        /* isUserInitiated= */ false,
-                        UserCriticalFeature.NONE,
-                        SheetState.HALF);
+                                .with(AdaptiveUiProperties.SHEET_INITIAL_STATE, SheetState.HALF)
+                                .build());
 
         assertThrows(AssertionError.class, content::getHalfHeightRatio);
     }
@@ -233,9 +218,14 @@ public class AdaptiveUiSheetCoordinatorTest {
     public void testNonVisualSheetKeysAreExpectedSet() {
         Set<PropertyKey> expected =
                 Set.of(
+                        AdaptiveUiProperties.ON_SHOWN,
+                        AdaptiveUiProperties.ON_DISMISSED,
                         AdaptiveUiProperties.DIALOG_CONTENT_DESCRIPTION,
                         AdaptiveUiProperties.SHEET_OPENED_ACCESSIBILITY_STRING_ID,
                         AdaptiveUiProperties.SHEET_CLOSED_ACCESSIBILITY_STRING_ID,
+                        AdaptiveUiProperties.SHEET_INITIAL_STATE,
+                        AdaptiveUiProperties.SHEET_USER_INITIATED,
+                        AdaptiveUiProperties.SHEET_USER_CRITICAL,
                         AdaptiveUiProperties.SHEET_HALF_HEIGHT_RATIO,
                         AdaptiveUiProperties.SHEET_FULL_HEIGHT_RATIO,
                         AdaptiveUiProperties.SHOW_SHEET_HANDLEBAR,
@@ -749,10 +739,12 @@ public class AdaptiveUiSheetCoordinatorTest {
     public void testGetSheetTypeReflectsPrecedence() {
         AdaptiveUiSheetCoordinator content =
                 createContent(
-                        newModelBuilder().build(),
-                        AdaptiveUiScope.TRANSIENT,
-                        /* isUserInitiated= */ true,
-                        UserCriticalFeature.ACCOUNT_PICKER);
+                        newModelBuilder()
+                                .with(AdaptiveUiProperties.SHEET_USER_INITIATED, true)
+                                .with(
+                                        AdaptiveUiProperties.SHEET_USER_CRITICAL,
+                                        UserCriticalFeature.ACCOUNT_PICKER)
+                                .build());
         BottomSheetType expected =
                 new BottomSheetType.Builder()
                         .setModal(/* isModal= */ true)

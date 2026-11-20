@@ -35,6 +35,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.Callback;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -69,7 +70,8 @@ public class AdaptiveUiControllerImplTest {
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private BottomSheetController mBottomSheetController;
-    @Mock private AdaptiveUiObserver mObserver;
+    @Mock private Callback<Integer> mOnShown;
+    @Mock private Callback<Integer> mOnDismissed;
 
     private Activity mActivity;
     private AdaptiveUiControllerImpl mController;
@@ -110,11 +112,24 @@ public class AdaptiveUiControllerImplTest {
                                         .with(
                                                 AdaptiveUiProperties.DIALOG_CONTENT_DESCRIPTION,
                                                 "Dialog")
+                                        .with(AdaptiveUiProperties.ON_SHOWN, mOnShown)
+                                        .with(AdaptiveUiProperties.ON_DISMISSED, mOnDismissed)
                                         .build())
-                        .setScope(scope)
-                        .setObserver(mObserver);
+                        .setScope(scope);
         for (int container : containers) builder.addAllowedContainer(container);
         return builder.build();
+    }
+
+    private AdaptiveUiEntry newEntryWithSheetInitialState(int state) {
+        return new AdaptiveUiEntry.Builder(
+                        new PropertyModel.Builder(AdaptiveUiProperties.ALL_KEYS)
+                                .with(AdaptiveUiProperties.DIALOG_CONTENT_DESCRIPTION, "Dialog")
+                                .with(AdaptiveUiProperties.SHEET_INITIAL_STATE, state)
+                                .with(AdaptiveUiProperties.ON_DISMISSED, mOnDismissed)
+                                .build())
+                .addAllowedContainer(AdaptiveUiContainer.BOTTOM_SHEET)
+                .addAllowedContainer(AdaptiveUiContainer.MODAL_DIALOG)
+                .build();
     }
 
     private AdaptiveUiEntry newEntry() {
@@ -244,13 +259,13 @@ public class AdaptiveUiControllerImplTest {
         DeviceInfo.setIsDesktopForTesting(/* isDesktop= */ true);
         mController.show(newEntry());
         PropertyModel model = captureDialogModel(ModalDialogType.TAB);
-        verify(mObserver, never()).onShown(anyInt());
+        verify(mOnShown, never()).onResult(anyInt());
 
         ModalDialogManagerObserver dialogObserver = captureDialogObserver();
         dialogObserver.onDialogCreated(model, /* dialog= */ null);
         dialogObserver.onDialogShown(new View(mActivity));
 
-        verify(mObserver).onShown(AdaptiveUiContainer.MODAL_DIALOG);
+        verify(mOnShown).onResult(AdaptiveUiContainer.MODAL_DIALOG);
     }
 
     @Test
@@ -263,7 +278,7 @@ public class AdaptiveUiControllerImplTest {
         mController.dismiss(entry, DismissReason.PRIMARY_ACTION);
 
         verify(mModalDialogManager).dismissDialog(eq(model), anyInt());
-        verify(mObserver).onDismissed(DismissReason.PRIMARY_ACTION);
+        verify(mOnDismissed).onResult(DismissReason.PRIMARY_ACTION);
     }
 
     @Test
@@ -275,7 +290,7 @@ public class AdaptiveUiControllerImplTest {
         model.get(ModalDialogProperties.CONTROLLER)
                 .onDismiss(model, DialogDismissalCause.TAB_SWITCHED);
 
-        verify(mObserver).onDismissed(DismissReason.TAB_SWITCHED);
+        verify(mOnDismissed).onResult(DismissReason.TAB_SWITCHED);
     }
 
     // ---------------------------------------------------------------------------------------
@@ -288,10 +303,10 @@ public class AdaptiveUiControllerImplTest {
         mController.show(newEntry());
 
         verify(mBottomSheetController).requestShowContent(any(), eq(/* animate= */ true));
-        verify(mObserver, never()).onShown(anyInt());
+        verify(mOnShown, never()).onResult(anyInt());
 
         captureSheetObserver().onSheetContentChanged(captureSheetContent());
-        verify(mObserver).onShown(AdaptiveUiContainer.BOTTOM_SHEET);
+        verify(mOnShown).onResult(AdaptiveUiContainer.BOTTOM_SHEET);
     }
 
     @Test
@@ -304,7 +319,7 @@ public class AdaptiveUiControllerImplTest {
 
         sheetObserver.onSheetStateChanged(SheetState.HIDDEN, StateChangeReason.OMNIBOX_FOCUS);
 
-        verify(mObserver, never()).onDismissed(anyInt());
+        verify(mOnDismissed, never()).onResult(anyInt());
     }
 
     @Test
@@ -317,7 +332,7 @@ public class AdaptiveUiControllerImplTest {
         captureSheetObserver().onSheetStateChanged(SheetState.HIDDEN, StateChangeReason.SWIPE);
         content.destroy();
 
-        verify(mObserver).onDismissed(DismissReason.SWIPE_DOWN);
+        verify(mOnDismissed).onResult(DismissReason.SWIPE_DOWN);
     }
 
     @Test
@@ -334,10 +349,10 @@ public class AdaptiveUiControllerImplTest {
                         eq(content),
                         eq(/* animate= */ true),
                         eq(StateChangeReason.INTERACTION_COMPLETE));
-        verify(mObserver, never()).onDismissed(anyInt());
+        verify(mOnDismissed, never()).onResult(anyInt());
 
         content.destroy();
-        verify(mObserver).onDismissed(DismissReason.SECONDARY_ACTION);
+        verify(mOnDismissed).onResult(DismissReason.SECONDARY_ACTION);
     }
 
     @Test
@@ -353,7 +368,7 @@ public class AdaptiveUiControllerImplTest {
                 .hideContent(
                         eq(content), eq(/* animate= */ true), eq(StateChangeReason.CLOSE_BUTTON));
         content.destroy();
-        verify(mObserver).onDismissed(DismissReason.CLOSE_BUTTON);
+        verify(mOnDismissed).onResult(DismissReason.CLOSE_BUTTON);
     }
 
     // ---------------------------------------------------------------------------------------
@@ -368,7 +383,7 @@ public class AdaptiveUiControllerImplTest {
         mController.dismiss(entry, DismissReason.CLOSE_BUTTON);
         mController.dismiss(entry, DismissReason.CLOSE_BUTTON);
 
-        verify(mObserver).onDismissed(anyInt());
+        verify(mOnDismissed).onResult(anyInt());
     }
 
     @Test
@@ -383,7 +398,7 @@ public class AdaptiveUiControllerImplTest {
 
         verify(mBottomSheetController).hideContent(any(), eq(/* animate= */ false), anyInt());
         verify(mModalDialogManager).dismissDialog(any(), anyInt());
-        verify(mObserver, times(2)).onDismissed(DismissReason.TAB_CLOSED);
+        verify(mOnDismissed, times(2)).onResult(DismissReason.TAB_CLOSED);
     }
 
     @Test
@@ -404,8 +419,8 @@ public class AdaptiveUiControllerImplTest {
         inOrder.verify(mModalDialogManager).dismissDialog(any(), anyInt());
         inOrder.verify(mBottomSheetController)
                 .hideContent(eq(content), eq(/* animate= */ false), anyInt());
-        verify(mObserver).onShown(anyInt());
-        verify(mObserver, times(2)).onDismissed(DismissReason.TAB_CLOSED);
+        verify(mOnShown).onResult(anyInt());
+        verify(mOnDismissed, times(2)).onResult(DismissReason.TAB_CLOSED);
     }
 
     @Test
@@ -434,8 +449,8 @@ public class AdaptiveUiControllerImplTest {
         InOrder inOrder = inOrder(mModalDialogManager);
         inOrder.verify(mModalDialogManager).dismissDialog(eq(tabModel), anyInt());
         inOrder.verify(mModalDialogManager).dismissDialog(eq(appModel), anyInt());
-        verify(mObserver, times(2)).onShown(anyInt());
-        verify(mObserver, times(2)).onDismissed(DismissReason.TAB_CLOSED);
+        verify(mOnShown, times(2)).onResult(anyInt());
+        verify(mOnDismissed, times(2)).onResult(DismissReason.TAB_CLOSED);
     }
 
     @Test
@@ -470,8 +485,8 @@ public class AdaptiveUiControllerImplTest {
                 .hideContent(eq(first), eq(/* animate= */ false), anyInt());
         inOrder.verify(mBottomSheetController)
                 .hideContent(eq(second), eq(/* animate= */ false), anyInt());
-        verify(mObserver, times(2)).onShown(anyInt());
-        verify(mObserver, times(2)).onDismissed(DismissReason.TAB_CLOSED);
+        verify(mOnShown, times(2)).onResult(anyInt());
+        verify(mOnDismissed, times(2)).onResult(DismissReason.TAB_CLOSED);
     }
 
     @Test
@@ -523,14 +538,49 @@ public class AdaptiveUiControllerImplTest {
     }
 
     @Test
+    public void testShow_AcceptsFullAndHalfSheetInitialState() {
+        DeviceInfo.setIsDesktopForTesting(/* isDesktop= */ false);
+
+        mController.show(newEntryWithSheetInitialState(SheetState.FULL));
+        mController.show(newEntryWithSheetInitialState(SheetState.HALF));
+
+        verify(mBottomSheetController, times(2)).requestShowContent(any(), anyBoolean());
+    }
+
+    @Test
+    public void testLifecycleCallbacksAreOptional() {
+        DeviceInfo.setIsDesktopForTesting(/* isDesktop= */ true);
+        AdaptiveUiEntry entry =
+                new AdaptiveUiEntry.Builder(
+                                new PropertyModel.Builder(AdaptiveUiProperties.ALL_KEYS)
+                                        .with(
+                                                AdaptiveUiProperties.DIALOG_CONTENT_DESCRIPTION,
+                                                "Dialog")
+                                        .build())
+                        .addAllowedContainer(AdaptiveUiContainer.MODAL_DIALOG)
+                        .build();
+
+        // Showing and dismissing an entry without ON_SHOWN or ON_DISMISSED must not throw.
+        mController.show(entry);
+        PropertyModel dialogModel = captureDialogModel(ModalDialogType.TAB);
+        ModalDialogManagerObserver dialogObserver = captureDialogObserver();
+        dialogObserver.onDialogCreated(dialogModel, /* dialog= */ null);
+        dialogObserver.onDialogShown(new View(mActivity));
+        mController.dismiss(entry, DismissReason.DISMISSED_BY_FEATURE);
+    }
+
+    @Test
     public void testSheet_ForwardsPrecedenceToSheetType() {
         DeviceInfo.setIsDesktopForTesting(/* isDesktop= */ false);
         AdaptiveUiEntry entry =
                 new AdaptiveUiEntry.Builder(
-                                new PropertyModel.Builder(AdaptiveUiProperties.ALL_KEYS).build())
+                                new PropertyModel.Builder(AdaptiveUiProperties.ALL_KEYS)
+                                        .with(AdaptiveUiProperties.SHEET_USER_INITIATED, true)
+                                        .with(
+                                                AdaptiveUiProperties.SHEET_USER_CRITICAL,
+                                                UserCriticalFeature.SECURE_PAYMENT_CONFIRMATION)
+                                        .build())
                         .addAllowedContainer(AdaptiveUiContainer.BOTTOM_SHEET)
-                        .setSheetUserInitiated(true)
-                        .setSheetUserCritical(UserCriticalFeature.SECURE_PAYMENT_CONFIRMATION)
                         .build();
 
         mController.show(entry);
@@ -671,8 +721,8 @@ public class AdaptiveUiControllerImplTest {
                             mController.dismiss(entry, DismissReason.CLOSE_BUTTON);
                             return null;
                         })
-                .when(mObserver)
-                .onShown(anyInt());
+                .when(mOnShown)
+                .onResult(anyInt());
         doAnswer(
                         invocation -> {
                             PropertyModel model = invocation.getArgument(0);

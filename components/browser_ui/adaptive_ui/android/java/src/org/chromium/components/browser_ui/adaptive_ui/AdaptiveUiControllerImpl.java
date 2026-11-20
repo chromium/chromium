@@ -14,6 +14,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,8 +32,8 @@ import java.util.Set;
  * <p>Each {@link #show} creates one {@link Presenter} ({@link AdaptiveUiDialogCoordinator} or
  * {@link AdaptiveUiSheetCoordinator}) for the entry. This class keeps no queue: the container
  * ({@link ModalDialogManager} or {@link BottomSheetController}) owns the queue, and the coordinator
- * may wait in it. This class picks the container and turns the coordinator's callbacks into {@link
- * AdaptiveUiObserver} calls.
+ * may wait in it. This class picks the container and forwards the coordinator's callbacks to the
+ * entry's {@link AdaptiveUiProperties#ON_SHOWN} and {@link AdaptiveUiProperties#ON_DISMISSED}.
  */
 @NullMarked
 public final class AdaptiveUiControllerImpl implements AdaptiveUiController {
@@ -145,22 +146,20 @@ public final class AdaptiveUiControllerImpl implements AdaptiveUiController {
                     recordDismissalMetrics(container, reason, dismissedBeforeShown);
                     notifyDismissed(entry, reason);
                 };
+        PropertyModel model = entry.getPropertyModel();
         Presenter presenter =
                 container == AdaptiveUiContainer.MODAL_DIALOG
                         ? new AdaptiveUiDialogCoordinator(
                                 mContext,
-                                entry.getPropertyModel(),
+                                model,
                                 entry.getScope(),
                                 mModalDialogManager,
                                 onShown,
                                 onDismissed)
                         : new AdaptiveUiSheetCoordinator(
                                 mContext,
-                                entry.getPropertyModel(),
+                                model,
                                 entry.getScope(),
-                                entry.isSheetUserInitiated(),
-                                entry.getSheetUserCriticalFeature(),
-                                entry.getSheetInitialState(),
                                 mBottomSheetController,
                                 onShown,
                                 onDismissed);
@@ -226,12 +225,13 @@ public final class AdaptiveUiControllerImpl implements AdaptiveUiController {
     }
 
     private static void notifyShown(AdaptiveUiEntry entry, @AdaptiveUiContainer int container) {
-        AdaptiveUiObserver observer = entry.getObserver();
-        if (observer != null) observer.onShown(container);
+        Callback<Integer> onShown = entry.getPropertyModel().get(AdaptiveUiProperties.ON_SHOWN);
+        if (onShown != null) onShown.onResult(container);
     }
 
     private static void notifyDismissed(AdaptiveUiEntry entry, @DismissReason int reason) {
-        AdaptiveUiObserver observer = entry.getObserver();
-        if (observer != null) observer.onDismissed(reason);
+        Callback<Integer> onDismissed =
+                entry.getPropertyModel().get(AdaptiveUiProperties.ON_DISMISSED);
+        if (onDismissed != null) onDismissed.onResult(reason);
     }
 }

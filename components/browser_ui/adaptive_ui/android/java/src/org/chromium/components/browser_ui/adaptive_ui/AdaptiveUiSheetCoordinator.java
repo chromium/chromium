@@ -27,7 +27,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Shee
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetType;
-import org.chromium.components.browser_ui.bottomsheet.UserCriticalFeature;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableFloatPropertyKey;
@@ -54,9 +53,6 @@ final class AdaptiveUiSheetCoordinator
 
     private final PropertyModel mModel;
     private final @AdaptiveUiScope int mScope;
-    private final boolean mIsUserInitiated;
-    private final @UserCriticalFeature int mUserCriticalFeature;
-    private final @SheetState int mInitialState;
     private final BottomSheetController mBottomSheetController;
     private final Runnable mOnShown;
     private final Callback<Integer> mOnDismissed;
@@ -126,15 +122,13 @@ final class AdaptiveUiSheetCoordinator
 
     /**
      * @param context The {@link Context} used to inflate the sheet layout.
-     * @param model The feature's model, built with {@link AdaptiveUiProperties#ALL_KEYS}.
+     * @param model The feature's model, built with {@link AdaptiveUiProperties#ALL_KEYS}. Its
+     *     sheet-only keys ({@link AdaptiveUiProperties#SHEET_INITIAL_STATE}, {@link
+     *     AdaptiveUiProperties#SHEET_USER_INITIATED} and {@link
+     *     AdaptiveUiProperties#SHEET_USER_CRITICAL}) are read here.
      * @param scope The {@link AdaptiveUiScope} governing whether the sheet survives tab switches
      *     and navigation ({@link AdaptiveUiScope#WINDOW}) or is cleared automatically ({@link
      *     AdaptiveUiScope#TRANSIENT}).
-     * @param isUserInitiated Whether the sheet is triggered by an explicit user action.
-     * @param userCriticalFeature The approved {@link UserCriticalFeature} for sheet precedence, or
-     *     {@link UserCriticalFeature#NONE}.
-     * @param initialState The {@link SheetState} the sheet opens in: {@link SheetState#FULL} (sized
-     *     to its content) or {@link SheetState#HALF}.
      * @param bottomSheetController The window's {@link BottomSheetController} that shows the sheet.
      * @param onShown Runs once, when the {@link BottomSheetController} takes this content (the
      *     sheet starts opening). Not run again if the sheet is suppressed or re-queued and later
@@ -148,17 +142,11 @@ final class AdaptiveUiSheetCoordinator
             Context context,
             PropertyModel model,
             @AdaptiveUiScope int scope,
-            boolean isUserInitiated,
-            @UserCriticalFeature int userCriticalFeature,
-            @SheetState int initialState,
             BottomSheetController bottomSheetController,
             Runnable onShown,
             Callback<Integer> onDismissed) {
         mModel = model;
         mScope = scope;
-        mIsUserInitiated = isUserInitiated;
-        mUserCriticalFeature = userCriticalFeature;
-        mInitialState = initialState;
         mBottomSheetController = bottomSheetController;
         mOnShown = onShown;
         mOnDismissed = onDismissed;
@@ -346,8 +334,8 @@ final class AdaptiveUiSheetCoordinator
         return new BottomSheetType.Builder()
                 .setModal(/* isModal= */ true)
                 .setPersistent(mScope == AdaptiveUiScope.WINDOW)
-                .setUserInitiated(mIsUserInitiated)
-                .setUserCritical(mUserCriticalFeature)
+                .setUserInitiated(mModel.get(AdaptiveUiProperties.SHEET_USER_INITIATED))
+                .setUserCritical(mModel.get(AdaptiveUiProperties.SHEET_USER_CRITICAL))
                 .build();
     }
 
@@ -466,7 +454,7 @@ final class AdaptiveUiSheetCoordinator
      * screen and resizes its content to fit; any other sheet wraps its content.
      */
     private boolean isHalfSheet() {
-        return mInitialState == SheetState.HALF;
+        return mModel.get(AdaptiveUiProperties.SHEET_INITIAL_STATE) == SheetState.HALF;
     }
 
     private static boolean isSettledOpenState(@SheetState int state) {

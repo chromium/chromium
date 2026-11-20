@@ -132,9 +132,14 @@ public class AdaptiveUiDialogCoordinatorTest {
     public void testCoordinatorHandledKeysAreExpectedSet() {
         Set<PropertyKey> expected =
                 Set.of(
+                        AdaptiveUiProperties.ON_SHOWN,
+                        AdaptiveUiProperties.ON_DISMISSED,
                         AdaptiveUiProperties.DIALOG_CONTENT_DESCRIPTION,
                         AdaptiveUiProperties.SHEET_OPENED_ACCESSIBILITY_STRING_ID,
                         AdaptiveUiProperties.SHEET_CLOSED_ACCESSIBILITY_STRING_ID,
+                        AdaptiveUiProperties.SHEET_INITIAL_STATE,
+                        AdaptiveUiProperties.SHEET_USER_INITIATED,
+                        AdaptiveUiProperties.SHEET_USER_CRITICAL,
                         AdaptiveUiProperties.SHEET_HALF_HEIGHT_RATIO,
                         AdaptiveUiProperties.SHEET_FULL_HEIGHT_RATIO,
                         AdaptiveUiProperties.CLOSE_BUTTON_VISIBILITY,

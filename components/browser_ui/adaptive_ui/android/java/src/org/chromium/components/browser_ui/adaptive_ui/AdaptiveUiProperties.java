@@ -10,11 +10,15 @@ import android.view.View;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.IntDef;
 
+import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
+import org.chromium.components.browser_ui.bottomsheet.UserCriticalFeature;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableFloatPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.ReadableIntDefPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
@@ -28,17 +32,39 @@ import java.lang.annotation.Target;
 
 /**
  * Shared model properties for an {@link AdaptiveUiEntry} presented as a bottom sheet or a modal
- * dialog.
+ * dialog. The model holds what the entry shows, its callbacks (including the lifecycle callbacks
+ * {@link #ON_SHOWN} and {@link #ON_DISMISSED}) and its container-specific options; {@link
+ * AdaptiveUiEntry} holds where the entry may be shown (scope and allowed containers).
  *
  * <p>Features should handle each user response once. Handle the primary button, and a secondary
  * button with {@link SecondaryButtonBehavior#ACTION_THEN_DISMISS} or {@link
  * SecondaryButtonBehavior#ACTION_THEN_STAY_OPEN}, in {@link #ON_PRIMARY_BUTTON_CLICKED} and {@link
  * #ON_SECONDARY_BUTTON_CLICKED}. Handle closes that run no callback, such as the close ('X') button
  * or a {@link SecondaryButtonBehavior#CLOSE} button (reported as {@link
- * DismissReason#SECONDARY_ACTION}), in {@link AdaptiveUiObserver#onDismissed}.
+ * DismissReason#SECONDARY_ACTION}), in {@link #ON_DISMISSED}.
  */
 @NullMarked
 public class AdaptiveUiProperties {
+    /**
+     * Optional callback run at most once per {@link AdaptiveUiController#show}, when the container
+     * starts showing the entry (a dialog right after it is shown, a sheet once it takes the entry's
+     * content). Receives the {@link AdaptiveUiContainer} that presents the entry. Not run if the
+     * entry is closed while it still waits in a queue, and not run again if the container
+     * temporarily hides the entry and shows it again. Read-only so it stays the same for the whole
+     * show.
+     */
+    public static final ReadableObjectPropertyKey<@Nullable Callback<Integer>> ON_SHOWN =
+            new ReadableObjectPropertyKey<>();
+
+    /**
+     * Optional callback run exactly once per {@link AdaptiveUiController#show}, when the entry is
+     * closed, whether or not it was ever shown. Receives the {@link DismissReason}. Features can
+     * rely on it to release what they set up for the entry. Read-only so it stays the same for the
+     * whole show.
+     */
+    public static final ReadableObjectPropertyKey<@Nullable Callback<Integer>> ON_DISMISSED =
+            new ReadableObjectPropertyKey<>();
+
     /** Optional icon displayed in the header. */
     public static final WritableObjectPropertyKey<@Nullable Drawable> HEADER_ICON =
             new WritableObjectPropertyKey<>();
@@ -77,21 +103,50 @@ public class AdaptiveUiProperties {
             new ReadableIntPropertyKey();
 
     /**
+     * Bottom sheet only: the {@link SheetState} the sheet opens in. Dialogs ignore it. Read-only.
+     *
+     * <p>{@link SheetState#FULL} (the default when unset) sizes the sheet to its content. {@link
+     * SheetState#HALF} opens the sheet at the half height, and the user can drag it to the full
+     * height. The half state is skipped on small screens, where the sheet opens at the full height.
+     * A half sheet's heights can be set with {@link #SHEET_HALF_HEIGHT_RATIO} and {@link
+     * #SHEET_FULL_HEIGHT_RATIO}.
+     *
+     * <p>{@link AdaptiveUiEntry.Builder} throws {@link IllegalArgumentException} for any other
+     * {@link SheetState}, whichever containers the entry allows.
+     */
+    public static final ReadableIntDefPropertyKey<SheetState> SHEET_INITIAL_STATE =
+            new ReadableIntDefPropertyKey<>(SheetState.FULL);
+
+    /**
+     * Bottom sheet only: whether the sheet is triggered directly by an explicit user action rather
+     * than passively by browser state. Used for bottom sheet precedence. Dialogs ignore it.
+     * Read-only. Defaults to {@code false}.
+     */
+    public static final ReadableBooleanPropertyKey SHEET_USER_INITIATED =
+            new ReadableBooleanPropertyKey();
+
+    /**
+     * Bottom sheet only: an approved {@link UserCriticalFeature} constant for top bottom sheet
+     * precedence. Dialogs ignore it. Read-only. Defaults to {@link UserCriticalFeature#NONE}.
+     */
+    public static final ReadableIntPropertyKey SHEET_USER_CRITICAL = new ReadableIntPropertyKey();
+
+    /**
      * Optional half height of a bottom sheet opened at {@code SheetState.HALF} (see {@link
-     * AdaptiveUiEntry.Builder#setSheetInitialState}), as a ratio of the sheet container height in
-     * (0, 1]. Leaving this unset ({@code 0}) keeps the default bottom sheet half height of {@code
-     * 0.75}. Must not be above the full height ({@link #SHEET_FULL_HEIGHT_RATIO}, or {@code 1} if
-     * unset). Ignored by full-height sheets and dialogs.
+     * #SHEET_INITIAL_STATE}), as a ratio of the sheet container height in (0, 1]. Leaving this
+     * unset ({@code 0}) keeps the default bottom sheet half height of {@code 0.75}. Must not be
+     * above the full height ({@link #SHEET_FULL_HEIGHT_RATIO}, or {@code 1} if unset). Ignored by
+     * full-height sheets and dialogs.
      */
     public static final ReadableFloatPropertyKey SHEET_HALF_HEIGHT_RATIO =
             new ReadableFloatPropertyKey();
 
     /**
      * Optional full height of a bottom sheet opened at {@code SheetState.HALF} (see {@link
-     * AdaptiveUiEntry.Builder#setSheetInitialState}), as a ratio of the sheet container height in
-     * (0, 1]. Leaving this unset ({@code 0}) keeps the default bottom sheet full height of {@code
-     * 1}. Must not be below the half height ({@link #SHEET_HALF_HEIGHT_RATIO}, or {@code 0.75} if
-     * unset). Ignored by full-height sheets and dialogs.
+     * #SHEET_INITIAL_STATE}), as a ratio of the sheet container height in (0, 1]. Leaving this
+     * unset ({@code 0}) keeps the default bottom sheet full height of {@code 1}. Must not be below
+     * the half height ({@link #SHEET_HALF_HEIGHT_RATIO}, or {@code 0.75} if unset). Ignored by
+     * full-height sheets and dialogs.
      *
      * <p>Also ignored on small screens: the bottom sheet disables the half state there, so the
      * sheet opens at the full container height.
@@ -233,7 +288,7 @@ public class AdaptiveUiProperties {
         /**
          * Only closes the entry, like the close ('X') button, Esc, back, or a scrim tap (such as
          * "No thanks"). Never runs {@link AdaptiveUiProperties#ON_SECONDARY_BUTTON_CLICKED}; handle
-         * the outcome in {@link AdaptiveUiObserver#onDismissed}. Bottom sheets and dialogs with
+         * the outcome in {@link AdaptiveUiProperties#ON_DISMISSED}. Bottom sheets and dialogs with
          * {@link CloseButtonVisibility#HIDDEN} draw this button and close the entry with {@link
          * DismissReason#SECONDARY_ACTION}; dialogs omit it while the close ('X') button is shown.
          */
@@ -272,11 +327,16 @@ public class AdaptiveUiProperties {
 
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
+                ON_SHOWN,
+                ON_DISMISSED,
                 HEADER_ICON,
                 TITLE,
                 DIALOG_CONTENT_DESCRIPTION,
                 SHEET_OPENED_ACCESSIBILITY_STRING_ID,
                 SHEET_CLOSED_ACCESSIBILITY_STRING_ID,
+                SHEET_INITIAL_STATE,
+                SHEET_USER_INITIATED,
+                SHEET_USER_CRITICAL,
                 SHEET_HALF_HEIGHT_RATIO,
                 SHEET_FULL_HEIGHT_RATIO,
                 DESCRIPTION,

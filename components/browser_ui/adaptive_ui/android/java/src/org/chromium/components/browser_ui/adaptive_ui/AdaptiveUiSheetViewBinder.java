@@ -29,6 +29,8 @@ import java.util.Set;
  * <p>Event-time and {@code BottomSheetContent} metadata keys ({@link
  * AdaptiveUiProperties#SHEET_OPENED_ACCESSIBILITY_STRING_ID}, {@link
  * AdaptiveUiProperties#SHEET_CLOSED_ACCESSIBILITY_STRING_ID}, {@link
+ * AdaptiveUiProperties#SHEET_INITIAL_STATE}, {@link AdaptiveUiProperties#SHEET_USER_INITIATED},
+ * {@link AdaptiveUiProperties#SHEET_USER_CRITICAL}, {@link
  * AdaptiveUiProperties#SHEET_HALF_HEIGHT_RATIO}, {@link
  * AdaptiveUiProperties#SHEET_FULL_HEIGHT_RATIO}, {@link AdaptiveUiProperties#SHOW_SHEET_HANDLEBAR},
  * {@link AdaptiveUiProperties#CUSTOM_VIEW_SCROLLS_ITSELF}, {@link
@@ -38,20 +40,27 @@ import java.util.Set;
  * AdaptiveUiProperties#SECONDARY_BUTTON_BEHAVIOR}, {@link
  * AdaptiveUiProperties#BUTTON_TAP_PROTECTION_PERIOD_MS}, and {@link
  * AdaptiveUiProperties#BACK_PRESS_HANDLER}) are read directly by {@link
- * AdaptiveUiSheetCoordinator}. {@link AdaptiveUiProperties#DIALOG_CONTENT_DESCRIPTION} is
- * dialog-only and ignored by sheets.
+ * AdaptiveUiSheetCoordinator}. The lifecycle callbacks ({@link AdaptiveUiProperties#ON_SHOWN} and
+ * {@link AdaptiveUiProperties#ON_DISMISSED}) are run by {@link AdaptiveUiControllerImpl}. {@link
+ * AdaptiveUiProperties#DIALOG_CONTENT_DESCRIPTION} is dialog-only and ignored by sheets.
  */
 @NullMarked
 final class AdaptiveUiSheetViewBinder {
     /**
      * Keys read directly by {@link AdaptiveUiSheetCoordinator} (for interaction or {@code
-     * BottomSheetContent} metadata) or used exclusively by dialogs.
+     * BottomSheetContent} metadata), run by {@link AdaptiveUiControllerImpl} (lifecycle callbacks),
+     * or used exclusively by dialogs.
      */
     static final Set<PropertyKey> NON_VISUAL_SHEET_KEYS =
             Set.of(
+                    AdaptiveUiProperties.ON_SHOWN,
+                    AdaptiveUiProperties.ON_DISMISSED,
                     AdaptiveUiProperties.DIALOG_CONTENT_DESCRIPTION,
                     AdaptiveUiProperties.SHEET_OPENED_ACCESSIBILITY_STRING_ID,
                     AdaptiveUiProperties.SHEET_CLOSED_ACCESSIBILITY_STRING_ID,
+                    AdaptiveUiProperties.SHEET_INITIAL_STATE,
+                    AdaptiveUiProperties.SHEET_USER_INITIATED,
+                    AdaptiveUiProperties.SHEET_USER_CRITICAL,
                     AdaptiveUiProperties.SHEET_HALF_HEIGHT_RATIO,
                     AdaptiveUiProperties.SHEET_FULL_HEIGHT_RATIO,
                     AdaptiveUiProperties.SHOW_SHEET_HANDLEBAR,

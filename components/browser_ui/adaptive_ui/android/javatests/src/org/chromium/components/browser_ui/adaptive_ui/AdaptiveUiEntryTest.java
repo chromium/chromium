@@ -46,72 +46,28 @@ public class AdaptiveUiEntryTest {
                 Set.of(AdaptiveUiContainer.BOTTOM_SHEET, AdaptiveUiContainer.MODAL_DIALOG),
                 entry.getAllowedContainers());
         assertSame(model, entry.getPropertyModel());
-        assertNull(entry.getObserver());
-        assertFalse(entry.isSheetUserInitiated());
-        assertEquals(UserCriticalFeature.NONE, entry.getSheetUserCriticalFeature());
     }
 
     @Test
-    public void testBuilderSetsSheetPrecedence() {
+    public void testLifecycleAndSheetKeyDefaults() {
         PropertyModel model = new PropertyModel.Builder(AdaptiveUiProperties.ALL_KEYS).build();
-        AdaptiveUiEntry entry =
-                new AdaptiveUiEntry.Builder(model)
-                        .addAllowedContainer(AdaptiveUiContainer.BOTTOM_SHEET)
-                        .setSheetUserInitiated(true)
-                        .setSheetUserCritical(UserCriticalFeature.ACCOUNT_PICKER)
-                        .build();
 
-        assertTrue(entry.isSheetUserInitiated());
-        assertEquals(UserCriticalFeature.ACCOUNT_PICKER, entry.getSheetUserCriticalFeature());
-    }
-
-    @Test
-    public void testBuilderSheetInitialStateDefaultsToFull() {
-        PropertyModel model = new PropertyModel.Builder(AdaptiveUiProperties.ALL_KEYS).build();
-        AdaptiveUiEntry entry =
-                new AdaptiveUiEntry.Builder(model)
-                        .addAllowedContainer(AdaptiveUiContainer.BOTTOM_SHEET)
-                        .build();
-
-        assertEquals(SheetState.FULL, entry.getSheetInitialState());
-    }
-
-    @Test
-    public void testBuilderSetsSheetInitialStateHalf() {
-        PropertyModel model = new PropertyModel.Builder(AdaptiveUiProperties.ALL_KEYS).build();
-        AdaptiveUiEntry entry =
-                new AdaptiveUiEntry.Builder(model)
-                        .addAllowedContainer(AdaptiveUiContainer.BOTTOM_SHEET)
-                        .setSheetInitialState(SheetState.HALF)
-                        .build();
-
-        assertEquals(SheetState.HALF, entry.getSheetInitialState());
+        assertNull(model.get(AdaptiveUiProperties.ON_SHOWN));
+        assertNull(model.get(AdaptiveUiProperties.ON_DISMISSED));
+        assertEquals(SheetState.FULL, model.get(AdaptiveUiProperties.SHEET_INITIAL_STATE));
+        assertFalse(model.get(AdaptiveUiProperties.SHEET_USER_INITIATED));
+        assertEquals(UserCriticalFeature.NONE, model.get(AdaptiveUiProperties.SHEET_USER_CRITICAL));
     }
 
     @Test
     public void testBuilderRejectsUnsupportedSheetInitialState() {
-        PropertyModel model = new PropertyModel.Builder(AdaptiveUiProperties.ALL_KEYS).build();
-        AdaptiveUiEntry.Builder builder = new AdaptiveUiEntry.Builder(model);
-
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> builder.setSheetInitialState(SheetState.PEEK));
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> builder.setSheetInitialState(SheetState.HIDDEN));
-    }
-
-    @Test
-    public void testBuilderSetsObserver() {
-        PropertyModel model = new PropertyModel.Builder(AdaptiveUiProperties.ALL_KEYS).build();
-        AdaptiveUiObserver observer = reason -> {};
-        AdaptiveUiEntry entry =
-                new AdaptiveUiEntry.Builder(model)
-                        .addAllowedContainer(AdaptiveUiContainer.BOTTOM_SHEET)
-                        .setObserver(observer)
-                        .build();
-
-        assertEquals(observer, entry.getObserver());
+        for (int state : new int[] {SheetState.PEEK, SheetState.HIDDEN, SheetState.SCROLLING}) {
+            PropertyModel model =
+                    new PropertyModel.Builder(AdaptiveUiProperties.ALL_KEYS)
+                            .with(AdaptiveUiProperties.SHEET_INITIAL_STATE, state)
+                            .build();
+            assertThrows(IllegalArgumentException.class, () -> new AdaptiveUiEntry.Builder(model));
+        }
     }
 
     @Test

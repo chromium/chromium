@@ -79,7 +79,7 @@ import java.util.List;
 /** Integration tests for Adaptive UI on a real bottom sheet and a real ModalDialogManager. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-public class AdaptiveUiIntegrationTest implements AdaptiveUiObserver {
+public class AdaptiveUiIntegrationTest {
     private static final int ROOT_SIZE_PX = 2000;
     private static final long PERIOD_MS = 500;
     private static final long LONGER_THAN_PERIOD_MS = PERIOD_MS * 2;
@@ -140,16 +140,6 @@ public class AdaptiveUiIntegrationTest implements AdaptiveUiObserver {
     private ModalDialogManager mDialogManager;
     private AdaptiveUiControllerImpl mController;
     private @Nullable PropertyModel mScrimModel;
-
-    @Override
-    public void onShown(@AdaptiveUiContainer int container) {
-        mShownContainers.add(container);
-    }
-
-    @Override
-    public void onDismissed(@DismissReason int reason) {
-        mDismissReasons.add(reason);
-    }
 
     @Before
     public void setUp() {
@@ -794,8 +784,11 @@ public class AdaptiveUiIntegrationTest implements AdaptiveUiObserver {
         return mActivity.getResources().getString(resId);
     }
 
-    private static PropertyModel.Builder newModelBuilder() {
-        return new PropertyModel.Builder(AdaptiveUiProperties.ALL_KEYS);
+    /** Every model records its lifecycle callbacks in the test's lists. */
+    private PropertyModel.Builder newModelBuilder() {
+        return new PropertyModel.Builder(AdaptiveUiProperties.ALL_KEYS)
+                .with(AdaptiveUiProperties.ON_SHOWN, mShownContainers::add)
+                .with(AdaptiveUiProperties.ON_DISMISSED, mDismissReasons::add);
     }
 
     private PropertyModel primaryModel(Runnable onPrimary, long tapProtectionMs) {
@@ -832,7 +825,6 @@ public class AdaptiveUiIntegrationTest implements AdaptiveUiObserver {
         return new AdaptiveUiEntry.Builder(model)
                 .setScope(scope)
                 .addAllowedContainer(container)
-                .setObserver(this)
                 .build();
     }
 
@@ -840,11 +832,10 @@ public class AdaptiveUiIntegrationTest implements AdaptiveUiObserver {
         var model =
                 newModelBuilder()
                         .with(AdaptiveUiProperties.PRIMARY_BUTTON_TEXT, str(R.string.ok))
+                        .with(AdaptiveUiProperties.SHEET_INITIAL_STATE, SheetState.HALF)
                         .build();
         return new AdaptiveUiEntry.Builder(model)
                 .addAllowedContainer(AdaptiveUiContainer.BOTTOM_SHEET)
-                .setSheetInitialState(SheetState.HALF)
-                .setObserver(this)
                 .build();
     }
 

@@ -31,9 +31,13 @@ import java.util.Set;
  * AdaptiveUiProperties#ON_PRIMARY_BUTTON_CLICKED}, {@link
  * AdaptiveUiProperties#ON_SECONDARY_BUTTON_CLICKED}, {@link
  * AdaptiveUiProperties#PRIMARY_BUTTON_KEEPS_OPEN}, and {@link
- * AdaptiveUiProperties#BACK_PRESS_HANDLER}) are handled by {@link AdaptiveUiDialogCoordinator};
- * sheet-only keys ({@link AdaptiveUiProperties#SHEET_OPENED_ACCESSIBILITY_STRING_ID}, {@link
+ * AdaptiveUiProperties#BACK_PRESS_HANDLER}) are handled by {@link AdaptiveUiDialogCoordinator}; the
+ * lifecycle callbacks ({@link AdaptiveUiProperties#ON_SHOWN} and {@link
+ * AdaptiveUiProperties#ON_DISMISSED}) are run by {@link AdaptiveUiControllerImpl}; sheet-only keys
+ * ({@link AdaptiveUiProperties#SHEET_OPENED_ACCESSIBILITY_STRING_ID}, {@link
  * AdaptiveUiProperties#SHEET_CLOSED_ACCESSIBILITY_STRING_ID}, {@link
+ * AdaptiveUiProperties#SHEET_INITIAL_STATE}, {@link AdaptiveUiProperties#SHEET_USER_INITIATED},
+ * {@link AdaptiveUiProperties#SHEET_USER_CRITICAL}, {@link
  * AdaptiveUiProperties#SHEET_HALF_HEIGHT_RATIO}, {@link
  * AdaptiveUiProperties#SHEET_FULL_HEIGHT_RATIO}, and {@link
  * AdaptiveUiProperties#SHOW_SHEET_HANDLEBAR}) are ignored by dialogs. {@link
@@ -42,14 +46,20 @@ import java.util.Set;
 @NullMarked
 final class AdaptiveUiDialogViewBinder {
     /**
-     * Keys handled at creation time or click time by {@link AdaptiveUiDialogCoordinator}, or
-     * sheet-only keys ignored by dialogs, rather than bound 1:1 by {@link #bind}.
+     * Keys handled at creation time or click time by {@link AdaptiveUiDialogCoordinator}, lifecycle
+     * callbacks run by {@link AdaptiveUiControllerImpl}, or sheet-only keys ignored by dialogs,
+     * rather than bound 1:1 by {@link #bind}.
      */
     static final Set<PropertyKey> COORDINATOR_HANDLED_KEYS =
             Set.of(
+                    AdaptiveUiProperties.ON_SHOWN,
+                    AdaptiveUiProperties.ON_DISMISSED,
                     AdaptiveUiProperties.DIALOG_CONTENT_DESCRIPTION,
                     AdaptiveUiProperties.SHEET_OPENED_ACCESSIBILITY_STRING_ID,
                     AdaptiveUiProperties.SHEET_CLOSED_ACCESSIBILITY_STRING_ID,
+                    AdaptiveUiProperties.SHEET_INITIAL_STATE,
+                    AdaptiveUiProperties.SHEET_USER_INITIATED,
+                    AdaptiveUiProperties.SHEET_USER_CRITICAL,
                     AdaptiveUiProperties.SHEET_HALF_HEIGHT_RATIO,
                     AdaptiveUiProperties.SHEET_FULL_HEIGHT_RATIO,
                     AdaptiveUiProperties.CLOSE_BUTTON_VISIBILITY,

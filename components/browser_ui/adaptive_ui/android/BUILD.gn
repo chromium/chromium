@@ -13,7 +13,6 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/adaptive_ui/AdaptiveUiDialogCoordinator.java",
     "java/src/org/chromium/components/browser_ui/adaptive_ui/AdaptiveUiDialogViewBinder.java",
     "java/src/org/chromium/components/browser_ui/adaptive_ui/AdaptiveUiEntry.java",
-    "java/src/org/chromium/components/browser_ui/adaptive_ui/AdaptiveUiObserver.java",
     "java/src/org/chromium/components/browser_ui/adaptive_ui/AdaptiveUiProperties.java",
     "java/src/org/chromium/components/browser_ui/adaptive_ui/AdaptiveUiScope.java",
     "java/src/org/chromium/components/browser_ui/adaptive_ui/AdaptiveUiSheetCoordinator.java",
