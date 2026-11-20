@@ -78,6 +78,29 @@ TEST_F(CastFeaturesTest, EnableDisableMultipleBooleanFeatures) {
   ASSERT_TRUE(chromecast::IsFeatureEnabled(bool_feature_4));
 }
 
+TEST_F(CastFeaturesTest, OnlyRegisteredFeaturesAreOverriddenByDCS) {
+  static BASE_FEATURE(registered_feature, kTestBooleanFeatureName,
+                      base::FEATURE_DISABLED_BY_DEFAULT);
+  static BASE_FEATURE(unregistered_feature, kTestBooleanFeatureName2,
+                      base::FEATURE_DISABLED_BY_DEFAULT);
+  static BASE_FEATURE(unregistered_default_on_feature, kTestBooleanFeatureName3,
+                      base::FEATURE_ENABLED_BY_DEFAULT);
+
+  chromecast::SetFeaturesForTest({&registered_feature});
+
+  base::ListValue experiments;
+  base::DictValue features;
+  features.Set(kTestBooleanFeatureName, true);
+  features.Set(kTestBooleanFeatureName2, true);
+  features.Set(kTestBooleanFeatureName3, false);
+
+  InitializeFeatureList(features, experiments, "", "", "", "");
+
+  EXPECT_TRUE(chromecast::IsFeatureEnabled(registered_feature));
+  EXPECT_FALSE(base::FeatureList::IsEnabled(unregistered_feature));
+  EXPECT_TRUE(base::FeatureList::IsEnabled(unregistered_default_on_feature));
+}
+
 TEST_F(CastFeaturesTest, EnableSingleFeatureWithParams) {
   // Define a feature with params.
   static BASE_FEATURE(test_feature, kTestParamsFeatureName,
