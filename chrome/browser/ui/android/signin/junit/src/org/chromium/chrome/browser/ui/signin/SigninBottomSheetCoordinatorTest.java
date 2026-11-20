@@ -54,7 +54,10 @@ import java.lang.ref.WeakReference;
 
 /** Tests for {@link SigninBottomSheetCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures(SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS)
+@EnableFeatures({
+    SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS,
+    SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS_PART2
+})
 public class SigninBottomSheetCoordinatorTest {
 
     @Rule

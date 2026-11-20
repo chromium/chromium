@@ -69,10 +69,13 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
 
         @Override
         public void close() {
-            unblockGetAccounts();
-            if (mPostUpdateCallback != null) {
-                mPostUpdateCallback.run();
-            }
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        unblockGetAccounts();
+                        if (mPostUpdateCallback != null) {
+                            mPostUpdateCallback.run();
+                        }
+                    });
         }
     }
 

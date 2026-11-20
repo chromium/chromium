@@ -58,7 +58,12 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.params.ParameterAnnotations.ClassParameter;
+import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
+import org.chromium.base.test.params.ParameterSet;
+import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -70,26 +75,42 @@ import org.chromium.chrome.browser.signin.services.SigninFlowTimestampsLogger.Ev
 import org.chromium.chrome.browser.signin.services.SigninFlowTimestampsLogger.FlowVariant;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.ui.signin.R;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.OverrideContextWrapperTestRule;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.components.signin.test.util.FakeIdentityManager;
 import org.chromium.components.signin.test.util.TestAccounts;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
-/** Tests for the seamless sign-in coordinator. */
-@RunWith(ChromeJUnit4ClassRunner.class)
+/**
+ * Tests for the seamless sign-in coordinator.
+ *
+ * <p>TODO(crbug.com/493130564): Revert to regular runner after
+ * MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS_PART2 launch.
+ */
+@RunWith(ParameterizedRunner.class)
+@UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
+@EnableFeatures(SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS)
 @DisableFeatures(ChromeFeatureList.ACCOUNT_PICKER_DIALOG)
 @Batch(Batch.PER_CLASS)
 public class SeamlessSigninTest {
+    @ClassParameter
+    private static final List<ParameterSet> sClassParameters =
+            Arrays.asList(
+                    new ParameterSet().value(false).name("withAccountManagerFacadeSource"),
+                    new ParameterSet().value(true).name("withIdentityManagerSource"));
+
     private static final String TEST_DOMAIN = "test.com";
     private static final String TIMESTAMP_MANAGEMENT_STATUS_LOADED =
             "Signin.SignIn.Timestamps." + FlowVariant.OTHER + "." + Event.MANAGEMENT_STATUS_LOADED;
@@ -113,7 +134,9 @@ public class SeamlessSigninTest {
     @Mock private SigninManager mSigninManagerMock;
     @Mock private AccountPreviewDataService mAccountPreviewDataServiceMock;
 
-    private final FakeIdentityManager mIdentityManager = new FakeIdentityManager();
+    private final FakeIdentityManager mIdentityManager =
+            mAccountManagerTestRule.getIdentityManager();
+    private final boolean mIsIdentityManagerSourceOfAccounts;
     private final AtomicReference<Boolean> mIsNextSigninSuccessful = new AtomicReference<>(true);
 
     private BottomSheetController mBottomSheetController;
@@ -121,11 +144,17 @@ public class SeamlessSigninTest {
     private SigninTestUtil.CustomDeviceLockActivityLauncher mDeviceLockActivityLauncher;
     private boolean mIsAccountManaged;
 
+    public SeamlessSigninTest(boolean isIdentityManagerSourceOfAccounts) {
+        mIsIdentityManagerSourceOfAccounts = isIdentityManagerSourceOfAccounts;
+    }
+
     @Before
     public void setUp() {
+        FeatureOverrides.overrideFlag(
+                SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS_PART2,
+                mIsIdentityManagerSourceOfAccounts);
         mActivityTestRule.startOnBlankPage();
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
-        mIdentityManager.addOrUpdateExtendedAccountInfo(TestAccounts.ACCOUNT1);
         mAutoTestRule.setIsAutomotive(false);
 
         doCallback(
