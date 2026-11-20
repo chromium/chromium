@@ -3400,6 +3400,25 @@
       "features": [
         "disable_android_zero_copy_video_capture"
       ]
+    },
+    {
+      "id": 513,
+      "cr_bugs": [574473630],
+      "description": "Disable accelerated video decoding and encoding on certain AMD GPUs using radeon",
+      "os": {
+        "type": "chromeos"
+      },
+      "vendor_id": "0x1002",
+      "device_id": [
+        "0x130c", "0x1318", "0x131c", "0x6600", "0x6821", "0x6822",
+        "0x9831", "0x9832", "0x9833", "0x9834", "0x9837", "0x9850",
+        "0x9851", "0x9852", "0x9856", "0x9900", "0x990e", "0x9992",
+        "0x9993", "0x9996", "0x9997"
+      ],
+      "features": [
+        "disable_accelerated_h264_decode",
+        "disable_accelerated_h264_encode"
+      ]
     }
   ]
 }
