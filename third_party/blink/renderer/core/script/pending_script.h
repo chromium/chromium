@@ -127,6 +127,7 @@ class CORE_EXPORT PendingScript : public GarbageCollected<PendingScript>,
   void SetIsInDocumentWrite(bool is_in_document_write) {
     is_in_document_write_ = is_in_document_write;
   }
+  bool is_in_document_write() const { return is_in_document_write_; }
 
   bool WasCreatedDuringDocumentWrite() {
     return created_during_document_write_;
@@ -166,8 +167,6 @@ class CORE_EXPORT PendingScript : public GarbageCollected<PendingScript>,
   }
 
   bool IsDisposed() const { return !element_; }
-
-  bool is_in_document_write() const { return is_in_document_write_; }
 
  private:
   static void ExecuteScriptBlockInternal(

@@ -138,6 +138,16 @@ ScriptRunner::ScriptRunner(Document* document)
   DCHECK(document);
 }
 
+PendingScript* ScriptRunner::FindPendingAsyncScriptForTesting(
+    const ScriptElementBase* element) const {
+  for (const auto& entry : pending_async_scripts_) {
+    if (entry.key->GetElement() == element) {
+      return entry.key.Get();
+    }
+  }
+  return nullptr;
+}
+
 void ScriptRunner::QueueScriptForExecution(PendingScript* pending_script,
                                            DelayReasons delay_reasons) {
   DCHECK(pending_script);

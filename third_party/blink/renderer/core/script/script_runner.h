@@ -39,6 +39,7 @@
 namespace blink {
 
 class Document;
+class ScriptElementBase;
 
 class CORE_EXPORT ScriptRunner final : public GarbageCollected<ScriptRunner>,
                                        public PendingScriptClient,
@@ -89,6 +90,8 @@ class CORE_EXPORT ScriptRunner final : public GarbageCollected<ScriptRunner>,
   void SetTaskRunnerForTesting(base::SingleThreadTaskRunner* task_runner) {
     task_runner_ = task_runner;
   }
+  PendingScript* FindPendingAsyncScriptForTesting(
+      const ScriptElementBase* element) const;
 
   void Trace(Visitor*) const override;
   const char* GetHumanReadableName() const override { return "ScriptRunner"; }

@@ -57,6 +57,12 @@ namespace {
 constexpr base::ByteSize kLowPriorityAsyncScriptMinMemory = base::GiB(3);
 constexpr base::TimeDelta kLowPriorityAsyncScriptMaxDocumentAge =
     base::Seconds(3);
+
+bool IsDeviceEligibleForLowPriorityAsyncScriptExecution() {
+  return !base::SysInfo::IsLowEndDevice() &&
+         base::SysInfo::AmountOfTotalPhysicalMemory() >=
+             kLowPriorityAsyncScriptMinMemory;
+}
 #endif
 
 InlineScriptStreamer* GetInlineScriptStreamer(const String& source,
@@ -293,9 +299,8 @@ bool ClassicPendingScript::IsEligibleForLowPriorityAsyncScriptExecution()
 #if BUILDFLAG(IS_CHROMEOS)
   return false;
 #else
-  static const bool enabled = !base::SysInfo::IsLowEndDevice() &&
-                              base::SysInfo::AmountOfTotalPhysicalMemory() >=
-                                  kLowPriorityAsyncScriptMinMemory;
+  static const bool enabled =
+      IsDeviceEligibleForLowPriorityAsyncScriptExecution();
   if (!enabled) {
     return false;
   }
@@ -364,6 +369,14 @@ bool ClassicPendingScript::IsEligibleForLowPriorityAsyncScriptExecution()
   return true;
 #endif
 }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+// static
+bool ClassicPendingScript::
+    IsDeviceEligibleForLowPriorityAsyncScriptExecutionForTesting() {
+  return IsDeviceEligibleForLowPriorityAsyncScriptExecution();
+}
+#endif
 
 void ClassicPendingScript::NotifyFinished(Resource* resource) {
   // The following SRI checks need to be here because, unfortunately, fetches

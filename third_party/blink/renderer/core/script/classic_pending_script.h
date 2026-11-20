@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SCRIPT_CLASSIC_PENDING_SCRIPT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SCRIPT_CLASSIC_PENDING_SCRIPT_H_
 
+#include "build/build_config.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_cache_consumer_client.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_source_location_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_streamer.h"
@@ -54,6 +55,10 @@ class CORE_EXPORT ClassicPendingScript final
                                             const ScriptFetchOptions&,
                                             scheduler::TaskAttributionInfo*,
                                             CacheHintAttributeValue);
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  static bool IsDeviceEligibleForLowPriorityAsyncScriptExecutionForTesting();
+#endif
 
   ClassicPendingScript(ScriptElementBase*,
                        const TextPosition&,
