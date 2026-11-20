@@ -1998,6 +1998,33 @@ TEST_F(HTMLCapabilityElementBaseSimTest, DISABLED_MovePEPCToAnotherDocument) {
                                          /*expected_enabled*/ true);
 }
 
+TEST_F(HTMLCapabilityElementBaseSimTest,
+       RemovedFromAfterExecutionContextDestroyed) {
+  SimRequest main_resource("https://example.test/", "text/html");
+  SimRequest iframe_resource("https://example.test/foo.html", "text/html");
+  LoadURL("https://example.test/");
+  main_resource.Complete(R"HTML(
+  <body>
+    <iframe id="iframe" src="https://example.test/foo.html" allow="camera *">
+    </iframe>
+  </body>
+  )HTML");
+  iframe_resource.Finish();
+
+  Compositor().BeginFrame();
+  auto* child_frame = To<WebLocalFrameImpl>(MainFrame().FirstChild());
+  Document* child_document = child_frame->GetFrame()->GetDocument();
+  auto* permission_element = CreatePermissionElement(*child_document, "camera");
+
+  // Detach the iframe so the child document's ExecutionContext is destroyed.
+  GetDocument().getElementById(AtomicString("iframe"))->remove();
+  ASSERT_EQ(permission_element->GetExecutionContext(), nullptr);
+
+  // Removing the capability element after its ExecutionContext is destroyed
+  // should not crash.
+  permission_element->remove();
+}
+
 class HTMLCapabilityElementBaseIntersectionTest
     : public HTMLCapabilityElementBaseSimTest {
  public:

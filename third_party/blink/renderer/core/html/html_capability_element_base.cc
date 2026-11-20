@@ -384,8 +384,10 @@ void HTMLCapabilityElementBase::RemovedFrom(ContainerNode& insertion_point) {
   }
   intersection_rect_ = std::nullopt;
   if (is_cache_registered_) {
-    CachedPermissionStatus::From(GetExecutionContext())
-        ->UnregisterClient(this, permission_descriptors_);
+    if (ExecutionContext* context = GetExecutionContext()) {
+      CachedPermissionStatus::From(context)->UnregisterClient(
+          this, permission_descriptors_);
+    }
     is_cache_registered_ = false;
   }
   EnsureUnregisterPageEmbeddedPermissionControl();
