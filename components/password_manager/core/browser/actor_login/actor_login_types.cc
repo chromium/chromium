@@ -209,4 +209,32 @@ actor::mojom::ActionResultCode LoginResultToActorResult(
   }
 }
 
+bool IsSuccessfulPasswordCredentialFilling(LoginStatusResult login_result) {
+  switch (login_result) {
+    case LoginStatusResult::kSuccessUsernameAndPasswordFilled:
+    case LoginStatusResult::kSuccessUsernameFilled:
+    case LoginStatusResult::kSuccessPasswordFilled:
+      return true;
+    case LoginStatusResult::kSuccessFederated:
+    case LoginStatusResult::kErrorNoSigninForm:
+    case LoginStatusResult::kErrorInvalidCredential:
+    case LoginStatusResult::kErrorNoFillableFields:
+    case LoginStatusResult::kErrorDeviceReauthRequired:
+    case LoginStatusResult::kErrorDeviceReauthFailed:
+    case LoginStatusResult::kErrorFederatedContinuation:
+    case LoginStatusResult::kErrorFederatedAccountNotLoggedIn:
+    case LoginStatusResult::kErrorFederatedAccountIsSignUp:
+    case LoginStatusResult::kErrorFederatedAccountNotAvailable:
+    case LoginStatusResult::kErrorFederatedIdpReturnedError:
+    case LoginStatusResult::kErrorFederatedIdpNetworkError:
+    case LoginStatusResult::kErrorFederatedTokenRequestAborted:
+    case LoginStatusResult::kErrorFederatedFrameNotActive:
+    case LoginStatusResult::kErrorFederatedExpectedAccountNotPresent:
+    case LoginStatusResult::kErrorFederatedTimeout:
+    case LoginStatusResult::kRequiresButtonClick:
+    case LoginStatusResult::kErrorPageChangedDuringFilling:
+      return false;
+  }
+}
+
 }  // namespace actor_login

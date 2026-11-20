@@ -8,9 +8,11 @@
 #import <utility>
 
 #import "base/check.h"
+#import "base/check_op.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
 #import "base/memory/scoped_refptr.h"
+#import "base/not_fatal_until.h"
 #import "components/actor/public/mojom/actor_types.mojom.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "components/password_manager/core/browser/actor_login/actor_login_quality_logger.h"
@@ -18,7 +20,9 @@
 #import "components/password_manager/core/browser/password_form_cache.h"
 #import "components/password_manager/core/browser/password_form_manager.h"
 #import "components/password_manager/ios/actor_login/actor_login_tool_delegate.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/action_target.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_task_form_filling_handler.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_request.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/tool_delegate.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
 #import "ios/chrome/browser/passwords/model/actor_login/ios_chrome_actor_login_delegate_client.h"
@@ -26,6 +30,7 @@
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
+#import "ios/web/public/web_state_id.h"
 
 namespace {
 
@@ -34,22 +39,91 @@ using actor_login::LoginStatusResult;
 // Timeout duration to wait for web state rescan to complete and find forms.
 constexpr base::TimeDelta kRescanTimeout = base::Seconds(1);
 
+// Creates a single left-click follow-up `ActorToolRequest` on `target` in
+// `tab_id`.
+std::unique_ptr<actor::ActorToolRequest> CreateClickActionForLoginTarget(
+    const actor::ActionTarget& target,
+    web::WebStateID tab_id) {
+  optimization_guide::proto::Action action;
+  optimization_guide::proto::ClickAction* click_action = action.mutable_click();
+  click_action->set_tab_id(tab_id.identifier());
+  click_action->set_click_type(optimization_guide::proto::ClickAction::LEFT);
+  click_action->set_click_count(optimization_guide::proto::ClickAction::SINGLE);
+  *click_action->mutable_target() = target.ToProto();
+  return std::make_unique<actor::ActorToolRequest>(std::move(action));
+}
+
 }  // namespace
 
 namespace actor {
+
+#pragma mark - AttemptLoginTool::LoginTarget
+
+// Represents a target element on the page used to submit or trigger login.
+struct AttemptLoginTool::LoginTarget {
+  // Converts an `AttemptLoginAction::LoginTarget` proto to `LoginTarget`.
+  static std::optional<LoginTarget> FromProto(
+      const optimization_guide::proto::AttemptLoginAction_LoginTarget&
+          login_target_proto) {
+    LoginTarget login_target;
+    if (!login_target_proto.has_login_type() ||
+        !login_target_proto.has_target()) {
+      return login_target;
+    }
+
+    ActionTarget target = ActionTarget::FromProto(login_target_proto.target());
+    if (!target.is_valid()) {
+      return login_target;
+    }
+
+    login_target.target = std::move(target);
+    switch (login_target_proto.login_type()) {
+      case optimization_guide::proto::
+          AttemptLoginAction_LoginTarget_LoginType_PASSWORD_FORM_SUBMIT:
+        login_target.credential_type = actor_login::CredentialType::kPassword;
+        break;
+      case optimization_guide::proto::
+          AttemptLoginAction_LoginTarget_LoginType_FEDERATED_GOOGLE_SIGNIN:
+        login_target.credential_type = actor_login::CredentialType::kFederated;
+        break;
+      default:
+        // We ignore unknown types and proceed to attempt login with the
+        // options we do understand. For example, maybe a future version of
+        // chrome supports another federated signin provider.
+        return std::nullopt;
+    }
+    return login_target;
+  }
+
+  ActionTarget target;
+  std::optional<actor_login::CredentialType> credential_type;
+};
+
+#pragma mark - AttemptLoginTool
 
 // static
 std::unique_ptr<AttemptLoginTool> AttemptLoginTool::Create(
     base::WeakPtr<web::WebState> web_state,
     const optimization_guide::proto::AttemptLoginAction& action,
     ToolDelegate* tool_delegate) {
+  std::vector<LoginTarget> login_targets;
+  login_targets.reserve(action.login_targets_size());
+  for (const auto& login_target_proto : action.login_targets()) {
+    if (std::optional<LoginTarget> login_target =
+            LoginTarget::FromProto(login_target_proto)) {
+      login_targets.push_back(std::move(*login_target));
+    }
+  }
+
   return std::unique_ptr<AttemptLoginTool>(
-      new AttemptLoginTool(web_state, tool_delegate));
+      new AttemptLoginTool(web_state, std::move(login_targets), tool_delegate));
 }
 
 AttemptLoginTool::AttemptLoginTool(base::WeakPtr<web::WebState> web_state,
+                                   std::vector<LoginTarget> login_targets,
                                    ToolDelegate* tool_delegate)
     : web_state_(web_state),
+      login_targets_(std::move(login_targets)),
       tool_delegate_(tool_delegate),
       attempt_login_tool_start_time_(base::TimeTicks::Now()),
       // Quality logs are not uploaded on iOS yet, so the logger is
@@ -84,6 +158,16 @@ void AttemptLoginTool::Cancel() {
 }
 
 void AttemptLoginTool::Validate(ToolExecutionCallback callback) {
+  for (const LoginTarget& login_target : login_targets_) {
+    if (!login_target.credential_type.has_value() ||
+        !login_target.target.is_valid()) {
+      login_targets_.clear();
+      std::move(callback).Run(
+          ToolExecutionResult(mojom::ActionResultCode::kArgumentsInvalid));
+      return;
+    }
+  }
+
   std::move(callback).Run(ToolExecutionResult::Ok());
 }
 
@@ -98,7 +182,7 @@ void AttemptLoginTool::Execute(ToolExecutionCallback callback) {
 
   web::NavigationItem* navigation_item =
       web_state_->GetNavigationManager()->GetVisibleItem();
-  CHECK(navigation_item, base::NotFatalUntil::M156);
+  CHECK(navigation_item);
   navigation_item_id_ = navigation_item->GetUniqueID();
 
   IOSChromeActorLoginDelegateClient* client =
@@ -288,6 +372,26 @@ void AttemptLoginTool::OnAttemptLogin(
                          /*forms_found=*/false));
       [delegate actorLoginToolRescansFormsInWebState:web_state_.get()
                                  noFormsFoundHandler:no_forms_found_block];
+      return;
+    }
+  }
+
+  if (actor_login::IsSuccessfulPasswordCredentialFilling(value)) {
+    CHECK_EQ(selected_credential.type, actor_login::CredentialType::kPassword,
+             base::NotFatalUntil::M165);
+    // Use the last `kPassword` target, aligning with Desktop's behavior in
+    // `CreateAttemptLoginRequest`.
+    auto it = std::find_if(login_targets_.rbegin(), login_targets_.rend(),
+                           [](const LoginTarget& login_target) {
+                             return login_target.credential_type ==
+                                    actor_login::CredentialType::kPassword;
+                           });
+    if (it != login_targets_.rend()) {
+      tool_delegate_->EnqueueFollowupAction(CreateClickActionForLoginTarget(
+          it->target, web_state_->GetUniqueIdentifier()));
+      std::move(execute_callback_)
+          .Run(ToolExecutionResult(mojom::ActionResultCode::kOk,
+                                   /*requires_page_stabilization=*/false));
       return;
     }
   }

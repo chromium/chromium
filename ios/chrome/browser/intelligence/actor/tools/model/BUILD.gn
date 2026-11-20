@@ -175,6 +175,7 @@ source_set("attempt_login_tool") {
   ]
 
   deps = [
+    ":action_target",
     ":actor_tool_interface",
     "//base",
     "//components/optimization_guide/proto:optimization_guide_proto",

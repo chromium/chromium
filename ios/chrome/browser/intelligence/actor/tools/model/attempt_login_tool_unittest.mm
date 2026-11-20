@@ -211,6 +211,8 @@ class AttemptLoginToolTest : public PlatformTest {
     return intervention_delegate_;
   }
 
+  FakeToolDelegate& tool_delegate() { return delegate_; }
+
   void TearDown() override {
     [mock_password_controller_ stopMocking];
     mock_password_controller_ = nil;
@@ -469,8 +471,10 @@ TEST_F(AttemptLoginToolTest, Cancel_IgnoresLateCredentialAnswer) {
 }
 
 // Tests that execution automatically selects and logs in using a credential
-// that has persistent permission, without prompting the user.
-TEST_F(AttemptLoginToolTest, Execute_PersistentCredentialDirectSelect_Success) {
+// that has persistent permission without prompting the user, and does not
+// enqueue a follow-up click when no `login_targets` are provided.
+TEST_F(AttemptLoginToolTest,
+       Execute_PersistentCredentialDirectSelect_NoLoginTargets_Success) {
   optimization_guide::proto::AttemptLoginAction action;
   web::FakeWebState* web_state = CreateAndInsertWebState();
   action.set_tab_id(web_state->GetUniqueIdentifier().identifier());
@@ -494,6 +498,63 @@ TEST_F(AttemptLoginToolTest, Execute_PersistentCredentialDirectSelect_Success) {
   EXPECT_EQ(fake_actor_login_service()->attempted_credentials_.front().id,
             cred.id);
   EXPECT_TRUE(fake_actor_login_service()->attempted_should_store_permission_);
+  EXPECT_TRUE(tool_delegate().enqueued_followup_actions().empty());
+}
+
+// Tests that execution automatically selects and logs in using a credential
+// that has persistent permission, and enqueues a follow-up click when a
+// `PASSWORD_FORM_SUBMIT` login target is provided.
+TEST_F(AttemptLoginToolTest,
+       Execute_PersistentCredentialDirectSelect_WithLoginTarget_Success) {
+  optimization_guide::proto::AttemptLoginAction action;
+  web::FakeWebState* web_state = CreateAndInsertWebState();
+  const int32_t tab_id = web_state->GetUniqueIdentifier().identifier();
+  action.set_tab_id(tab_id);
+
+  optimization_guide::proto::AttemptLoginAction_LoginTarget* login_target =
+      action.add_login_targets();
+  login_target->set_login_type(
+      optimization_guide::proto::AttemptLoginAction_LoginTarget::
+          PASSWORD_FORM_SUBMIT);
+  login_target->mutable_target()->set_content_node_id(42);
+  login_target->mutable_target()
+      ->mutable_document_identifier()
+      ->set_serialized_token("main_frame_doc");
+
+  auto result = CreateToolAndValidate(action, web_state);
+  ASSERT_TRUE(result.has_value());
+  std::unique_ptr<AttemptLoginTool> tool = std::move(result.value());
+
+  actor_login::Credential cred;
+  cred.id = actor_login::Credential::Id(123);
+  cred.has_persistent_permission = true;
+
+  fake_actor_login_service()->credentials_ = {cred};
+  fake_actor_login_service()->SetSequentialResults(
+      {actor_login::LoginStatusResult::kSuccessUsernameAndPasswordFilled});
+
+  base::test::TestFuture<ToolExecutionResult> future;
+  tool->Execute(future.GetCallback());
+  EXPECT_EQ(future.Get().code(), mojom::ActionResultCode::kOk);
+  EXPECT_FALSE(future.Get().requires_page_stabilization());
+  EXPECT_TRUE(fake_actor_login_service()->attempt_login_called_);
+  EXPECT_EQ(fake_actor_login_service()->attempted_credentials_.front().id,
+            cred.id);
+  EXPECT_TRUE(fake_actor_login_service()->attempted_should_store_permission_);
+
+  ASSERT_EQ(tool_delegate().enqueued_followup_actions().size(), 1u);
+  const ActorToolRequest& followup =
+      *tool_delegate().enqueued_followup_actions()[0];
+  EXPECT_EQ(followup.GetToolType(), ToolType::kClick);
+  const optimization_guide::proto::ClickAction& click =
+      followup.action().click();
+  EXPECT_EQ(click.tab_id(), tab_id);
+  EXPECT_EQ(click.click_type(), optimization_guide::proto::ClickAction::LEFT);
+  EXPECT_EQ(click.click_count(),
+            optimization_guide::proto::ClickAction::SINGLE);
+  EXPECT_EQ(click.target().content_node_id(), 42);
+  EXPECT_EQ(click.target().document_identifier().serialized_token(),
+            "main_frame_doc");
 }
 
 // Tests that when login requires device re-authentication, the tool waits for
@@ -978,6 +1039,285 @@ TEST_F(AttemptLoginToolTest, DebugString) {
   ASSERT_TRUE(result.has_value());
   std::unique_ptr<AttemptLoginTool> tool = std::move(result.value());
   EXPECT_EQ(tool->DebugString(), "AttemptLoginTool");
+}
+
+// Tests that `Validate()` fails with `kArgumentsInvalid` when a `login_targets`
+// entry is missing `login_type`.
+TEST_F(AttemptLoginToolTest,
+       Validate_MissingLoginType_ReturnsArgumentsInvalid) {
+  optimization_guide::proto::AttemptLoginAction action;
+  web::FakeWebState* web_state = CreateAndInsertWebState();
+  action.set_tab_id(web_state->GetUniqueIdentifier().identifier());
+
+  optimization_guide::proto::AttemptLoginAction_LoginTarget* login_target =
+      action.add_login_targets();
+  login_target->mutable_target()->mutable_coordinate()->set_x(10);
+  login_target->mutable_target()->mutable_coordinate()->set_y(20);
+
+  auto result = CreateToolAndValidate(action, web_state);
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error().code(), mojom::ActionResultCode::kArgumentsInvalid);
+}
+
+// Tests that `Validate()` fails with `kArgumentsInvalid` when a `login_targets`
+// entry is missing `target`.
+TEST_F(AttemptLoginToolTest, Validate_MissingTarget_ReturnsArgumentsInvalid) {
+  optimization_guide::proto::AttemptLoginAction action;
+  web::FakeWebState* web_state = CreateAndInsertWebState();
+  action.set_tab_id(web_state->GetUniqueIdentifier().identifier());
+
+  optimization_guide::proto::AttemptLoginAction_LoginTarget* login_target =
+      action.add_login_targets();
+  login_target->set_login_type(
+      optimization_guide::proto::AttemptLoginAction_LoginTarget::
+          PASSWORD_FORM_SUBMIT);
+
+  auto result = CreateToolAndValidate(action, web_state);
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error().code(), mojom::ActionResultCode::kArgumentsInvalid);
+}
+
+// Tests that `Validate()` fails with `kArgumentsInvalid` when a `login_targets`
+// entry has an incomplete `ActionTarget` (node ID without document identifier).
+TEST_F(AttemptLoginToolTest, Validate_InvalidTarget_ReturnsArgumentsInvalid) {
+  optimization_guide::proto::AttemptLoginAction action;
+  web::FakeWebState* web_state = CreateAndInsertWebState();
+  action.set_tab_id(web_state->GetUniqueIdentifier().identifier());
+
+  optimization_guide::proto::AttemptLoginAction_LoginTarget* login_target =
+      action.add_login_targets();
+  login_target->set_login_type(
+      optimization_guide::proto::AttemptLoginAction_LoginTarget::
+          PASSWORD_FORM_SUBMIT);
+  login_target->mutable_target()->set_content_node_id(42);
+
+  auto result = CreateToolAndValidate(action, web_state);
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error().code(), mojom::ActionResultCode::kArgumentsInvalid);
+}
+
+// Tests that unsupported or unknown `login_targets` types (including
+// `FEDERATED_GOOGLE_SIGNIN`) are ignored during validation and do not enqueue a
+// follow-up click when executed without a `PASSWORD_FORM_SUBMIT` target.
+TEST_F(AttemptLoginToolTest, Validate_UnsupportedLoginTypesIgnored_Success) {
+  optimization_guide::proto::AttemptLoginAction action;
+  web::FakeWebState* web_state = CreateAndInsertWebState();
+  action.set_tab_id(web_state->GetUniqueIdentifier().identifier());
+
+  optimization_guide::proto::AttemptLoginAction_LoginTarget* federated_target =
+      action.add_login_targets();
+  federated_target->set_login_type(
+      optimization_guide::proto::AttemptLoginAction_LoginTarget::
+          FEDERATED_GOOGLE_SIGNIN);
+  federated_target->mutable_target()->mutable_coordinate()->set_x(10);
+  federated_target->mutable_target()->mutable_coordinate()->set_y(20);
+
+  optimization_guide::proto::AttemptLoginAction_LoginTarget* unknown_target =
+      action.add_login_targets();
+  unknown_target->set_login_type(
+      optimization_guide::proto::AttemptLoginAction_LoginTarget::
+          UNKNOWN_LOGIN_TYPE);
+  unknown_target->mutable_target()->mutable_coordinate()->set_x(30);
+  unknown_target->mutable_target()->mutable_coordinate()->set_y(40);
+
+  auto result = CreateToolAndValidate(action, web_state);
+  ASSERT_TRUE(result.has_value());
+  std::unique_ptr<AttemptLoginTool> tool = std::move(result.value());
+
+  actor_login::Credential cred;
+  cred.id = actor_login::Credential::Id(123);
+  cred.has_persistent_permission = true;
+  fake_actor_login_service()->credentials_ = {cred};
+  fake_actor_login_service()->SetSequentialResults(
+      {actor_login::LoginStatusResult::kSuccessUsernameAndPasswordFilled});
+
+  base::test::TestFuture<ToolExecutionResult> future;
+  tool->Execute(future.GetCallback());
+  EXPECT_EQ(future.Get().code(), mojom::ActionResultCode::kOk);
+  EXPECT_TRUE(tool_delegate().enqueued_followup_actions().empty());
+}
+
+// Tests that when multiple `login_targets` are provided (including multiple
+// `PASSWORD_FORM_SUBMIT` targets and a federated target), the follow-up click
+// targets the last `PASSWORD_FORM_SUBMIT` entry.
+TEST_F(AttemptLoginToolTest,
+       Execute_MultipleLoginTargets_EnqueuesLastPasswordButtonClick) {
+  optimization_guide::proto::AttemptLoginAction action;
+  web::FakeWebState* web_state = CreateAndInsertWebState();
+  const int32_t tab_id = web_state->GetUniqueIdentifier().identifier();
+  action.set_tab_id(tab_id);
+
+  optimization_guide::proto::AttemptLoginAction_LoginTarget*
+      first_password_target = action.add_login_targets();
+  first_password_target->set_login_type(
+      optimization_guide::proto::AttemptLoginAction_LoginTarget::
+          PASSWORD_FORM_SUBMIT);
+  first_password_target->mutable_target()->set_content_node_id(7);
+  first_password_target->mutable_target()
+      ->mutable_document_identifier()
+      ->set_serialized_token("earlier_doc");
+
+  optimization_guide::proto::AttemptLoginAction_LoginTarget* password_target =
+      action.add_login_targets();
+  password_target->set_login_type(
+      optimization_guide::proto::AttemptLoginAction_LoginTarget::
+          PASSWORD_FORM_SUBMIT);
+  password_target->mutable_target()->set_content_node_id(42);
+  password_target->mutable_target()
+      ->mutable_document_identifier()
+      ->set_serialized_token("main_frame_doc");
+
+  // Also include a federated target to verify `PASSWORD_FORM_SUBMIT` is used.
+  optimization_guide::proto::AttemptLoginAction_LoginTarget* federated_target =
+      action.add_login_targets();
+  federated_target->set_login_type(
+      optimization_guide::proto::AttemptLoginAction_LoginTarget::
+          FEDERATED_GOOGLE_SIGNIN);
+  federated_target->mutable_target()->mutable_coordinate()->set_x(10);
+  federated_target->mutable_target()->mutable_coordinate()->set_y(20);
+
+  auto result = CreateToolAndValidate(action, web_state);
+  ASSERT_TRUE(result.has_value());
+  std::unique_ptr<AttemptLoginTool> tool = std::move(result.value());
+
+  actor_login::Credential cred;
+  cred.id = actor_login::Credential::Id(123);
+  cred.has_persistent_permission = true;
+  fake_actor_login_service()->credentials_ = {cred};
+  fake_actor_login_service()->SetSequentialResults(
+      {actor_login::LoginStatusResult::kSuccessUsernameAndPasswordFilled});
+
+  base::test::TestFuture<ToolExecutionResult> future;
+  tool->Execute(future.GetCallback());
+  EXPECT_EQ(future.Get().code(), mojom::ActionResultCode::kOk);
+  EXPECT_FALSE(future.Get().requires_page_stabilization());
+
+  ASSERT_EQ(tool_delegate().enqueued_followup_actions().size(), 1u);
+  const ActorToolRequest& followup =
+      *tool_delegate().enqueued_followup_actions()[0];
+  EXPECT_EQ(followup.GetToolType(), ToolType::kClick);
+  const optimization_guide::proto::ClickAction& click =
+      followup.action().click();
+  EXPECT_EQ(click.tab_id(), tab_id);
+  EXPECT_EQ(click.click_type(), optimization_guide::proto::ClickAction::LEFT);
+  EXPECT_EQ(click.click_count(),
+            optimization_guide::proto::ClickAction::SINGLE);
+  EXPECT_EQ(click.target().content_node_id(), 42);
+  EXPECT_EQ(click.target().document_identifier().serialized_token(),
+            "main_frame_doc");
+}
+
+// Tests that `kSuccessUsernameFilled` and `kSuccessPasswordFilled` also enqueue
+// the `PASSWORD_FORM_SUBMIT` follow-up click (e.g. multi-step login forms).
+TEST_F(
+    AttemptLoginToolTest,
+    Execute_PasswordButtonProvided_PartialFillSuccess_EnqueuesFollowupClick) {
+  web::FakeWebState* web_state = CreateAndInsertWebState();
+  optimization_guide::proto::AttemptLoginAction action;
+  action.set_tab_id(web_state->GetUniqueIdentifier().identifier());
+  optimization_guide::proto::AttemptLoginAction_LoginTarget* password_target =
+      action.add_login_targets();
+  password_target->set_login_type(
+      optimization_guide::proto::AttemptLoginAction_LoginTarget::
+          PASSWORD_FORM_SUBMIT);
+  password_target->mutable_target()->mutable_coordinate()->set_x(50);
+  password_target->mutable_target()->mutable_coordinate()->set_y(60);
+
+  actor_login::Credential cred;
+  cred.id = actor_login::Credential::Id(123);
+  cred.has_persistent_permission = true;
+  fake_actor_login_service()->credentials_ = {cred};
+  fake_actor_login_service()->SetSequentialResults(
+      {actor_login::LoginStatusResult::kSuccessUsernameFilled,
+       actor_login::LoginStatusResult::kSuccessPasswordFilled});
+
+  for (size_t expected_count = 1; expected_count <= 2; ++expected_count) {
+    auto result = CreateToolAndValidate(action, web_state);
+    ASSERT_TRUE(result.has_value());
+    base::test::TestFuture<ToolExecutionResult> future;
+    result.value()->Execute(future.GetCallback());
+    EXPECT_EQ(future.Get().code(), mojom::ActionResultCode::kOk);
+    EXPECT_EQ(tool_delegate().enqueued_followup_actions().size(),
+              expected_count);
+  }
+}
+
+// Tests that no follow-up click is enqueued when `PASSWORD_FORM_SUBMIT` is
+// provided but password filling does not succeed (including
+// `kRequiresButtonClick`).
+TEST_F(
+    AttemptLoginToolTest,
+    Execute_PasswordButtonProvided_FillingFails_DoesNotEnqueueFollowupClick) {
+  web::FakeWebState* web_state = CreateAndInsertWebState();
+  optimization_guide::proto::AttemptLoginAction action;
+  action.set_tab_id(web_state->GetUniqueIdentifier().identifier());
+  optimization_guide::proto::AttemptLoginAction_LoginTarget* password_target =
+      action.add_login_targets();
+  password_target->set_login_type(
+      optimization_guide::proto::AttemptLoginAction_LoginTarget::
+          PASSWORD_FORM_SUBMIT);
+  password_target->mutable_target()->mutable_coordinate()->set_x(50);
+  password_target->mutable_target()->mutable_coordinate()->set_y(60);
+
+  actor_login::Credential cred;
+  cred.id = actor_login::Credential::Id(123);
+  cred.has_persistent_permission = true;
+  fake_actor_login_service()->credentials_ = {cred};
+  fake_actor_login_service()->SetSequentialResults(
+      {actor_login::LoginStatusResult::kErrorNoFillableFields,
+       actor_login::LoginStatusResult::kRequiresButtonClick});
+
+  const mojom::ActionResultCode expected_codes[] = {
+      mojom::ActionResultCode::kLoginNoFillableFields,
+      mojom::ActionResultCode::kArgumentsInvalid,
+  };
+  for (mojom::ActionResultCode expected_code : expected_codes) {
+    auto result = CreateToolAndValidate(action, web_state);
+    ASSERT_TRUE(result.has_value());
+    base::test::TestFuture<ToolExecutionResult> future;
+    result.value()->Execute(future.GetCallback());
+    EXPECT_EQ(future.Get().code(), expected_code);
+    EXPECT_TRUE(tool_delegate().enqueued_followup_actions().empty());
+  }
+}
+
+// Tests that when `PASSWORD_FORM_SUBMIT` is provided and login initially
+// requires device reauthentication, the follow-up click is enqueued only after
+// the tab is refocused and the retry fills credentials.
+TEST_F(AttemptLoginToolTest,
+       Execute_PasswordButtonProvided_DeviceReauthRetry_EnqueuesFollowupClick) {
+  web::FakeWebState* web_state = CreateAndInsertWebState();
+  optimization_guide::proto::AttemptLoginAction action;
+  action.set_tab_id(web_state->GetUniqueIdentifier().identifier());
+  optimization_guide::proto::AttemptLoginAction_LoginTarget* password_target =
+      action.add_login_targets();
+  password_target->set_login_type(
+      optimization_guide::proto::AttemptLoginAction_LoginTarget::
+          PASSWORD_FORM_SUBMIT);
+  password_target->mutable_target()->mutable_coordinate()->set_x(50);
+  password_target->mutable_target()->mutable_coordinate()->set_y(60);
+
+  auto result = CreateToolAndValidate(action, web_state);
+  ASSERT_TRUE(result.has_value());
+  std::unique_ptr<AttemptLoginTool> tool = std::move(result.value());
+
+  actor_login::Credential cred;
+  cred.id = actor_login::Credential::Id(123);
+  cred.has_persistent_permission = true;
+  fake_actor_login_service()->credentials_ = {cred};
+  fake_actor_login_service()->SetSequentialResults(
+      {actor_login::LoginStatusResult::kErrorDeviceReauthRequired,
+       actor_login::LoginStatusResult::kSuccessUsernameAndPasswordFilled});
+
+  base::test::TestFuture<ToolExecutionResult> future;
+  tool->Execute(future.GetCallback());
+  EXPECT_FALSE(future.IsReady());
+  EXPECT_TRUE(tool_delegate().enqueued_followup_actions().empty());
+
+  web_state->WasShown();
+
+  EXPECT_EQ(future.Get().code(), mojom::ActionResultCode::kOk);
+  EXPECT_EQ(tool_delegate().enqueued_followup_actions().size(), 1u);
 }
 
 }  // namespace actor

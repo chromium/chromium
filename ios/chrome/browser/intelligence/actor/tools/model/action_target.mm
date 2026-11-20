@@ -38,6 +38,21 @@ ActionTarget ActionTarget::FromProto(
   return local_target;
 }
 
+optimization_guide::proto::ActionTarget ActionTarget::ToProto() const {
+  optimization_guide::proto::ActionTarget proto;
+  if (coordinate_.has_value()) {
+    optimization_guide::proto::Coordinate* coord = proto.mutable_coordinate();
+    coord->set_x(coordinate_->x);
+    coord->set_y(coordinate_->y);
+    coord->set_pixel_type(coordinate_->pixel_type);
+  } else if (node_id_.has_value()) {
+    proto.set_content_node_id(node_id_->content_node_id);
+    proto.mutable_document_identifier()->set_serialized_token(
+        node_id_->document_identifier);
+  }
+  return proto;
+}
+
 void ActionTarget::UpdateCoordinate(int x, int y) {
   CHECK(coordinate_);
   coordinate_->x = x;

@@ -50,6 +50,9 @@ class ActionTarget {
   static ActionTarget FromProto(
       const optimization_guide::proto::ActionTarget& target);
 
+  // Converts this `ActionTarget` back to its protobuf representation.
+  optimization_guide::proto::ActionTarget ToProto() const;
+
   // Returns the coordinate target if present.
   const std::optional<CoordinateTarget>& coordinate() const {
     return coordinate_;

@@ -71,13 +71,6 @@
   optimization_guide::proto::AttemptLoginAction* attemptLogin =
       action.mutable_attempt_login();
   attemptLogin->set_tab_id([ChromeEarlGrey currentTabID].intValue);
-  optimization_guide::proto::AttemptLoginAction_LoginTarget* loginTarget =
-      attemptLogin->add_login_targets();
-  loginTarget->set_login_type(
-      optimization_guide::proto::AttemptLoginAction_LoginTarget::
-          PASSWORD_FORM_SUBMIT);
-  [self setCoordinatesOnTarget:loginTarget->mutable_target()
-                  withSelector:"#submit_button"];
 
   // Execute the action asynchronously (as it blocks waiting for reauth).
   std::string serializedAction;
@@ -152,13 +145,6 @@
   optimization_guide::proto::AttemptLoginAction* attemptLogin =
       action.mutable_attempt_login();
   attemptLogin->set_tab_id([ChromeEarlGrey currentTabID].intValue);
-  optimization_guide::proto::AttemptLoginAction_LoginTarget* loginTarget =
-      attemptLogin->add_login_targets();
-  loginTarget->set_login_type(
-      optimization_guide::proto::AttemptLoginAction_LoginTarget::
-          PASSWORD_FORM_SUBMIT);
-  [self setCoordinatesOnTarget:loginTarget->mutable_target()
-                  withSelector:"#submit_button"];
 
   // Execute the action and wait for execution.
   GREYAssertNil([self executeAction:action], @"Action execution failed.");
@@ -169,6 +155,47 @@
                        @"!!document.getElementById('%s')?.value",
                        "un", username, "pw"];
   [ChromeEarlGrey waitForJavaScriptCondition:condition];
+}
+
+// Tests that if a password form submit button is provided, `AttemptLoginTool`
+// fills the login form and clicks the button to submit it.
+- (void)testAttemptLoginTool_fillsAndSubmitsLoginForm {
+  [ReauthenticationAppInterface mockReauthenticationModuleCanAttempt:NO];
+
+  GURL url = self.testServer->GetURL("/simple_login_form_empty.html");
+  NSString* username = @"test_user";
+  NSString* password = @"test_password";
+
+  [PasswordManagerAppInterface clearCredentials];
+  NSError* storeError = [PasswordManagerAppInterface
+      storeCredentialWithUsername:username
+                         password:password
+                              URL:net::NSURLWithGURL(url)];
+  GREYAssertNil(storeError, @"Failed to store credential");
+
+  [ChromeEarlGrey loadURL:url];
+  [ChromeEarlGrey waitForWebStateContainingText:"Login form."];
+
+  optimization_guide::proto::Action action;
+  optimization_guide::proto::AttemptLoginAction* attemptLogin =
+      action.mutable_attempt_login();
+  attemptLogin->set_tab_id([ChromeEarlGrey currentTabID].intValue);
+  optimization_guide::proto::AttemptLoginAction_LoginTarget* loginTarget =
+      attemptLogin->add_login_targets();
+  loginTarget->set_login_type(
+      optimization_guide::proto::AttemptLoginAction_LoginTarget::
+          PASSWORD_FORM_SUBMIT);
+  [self setCoordinatesOnTarget:loginTarget->mutable_target()
+                  withSelector:"#submit_button"];
+
+  GREYAssertNil([self executeAction:action], @"Action execution failed.");
+
+  [ChromeEarlGrey waitForWebStateContainingText:"You've arrived"];
+  NSString* queryCondition = [NSString
+      stringWithFormat:@"window.location.search.includes('username=%@') && "
+                       @"window.location.search.includes('password=%@')",
+                       username, password];
+  [ChromeEarlGrey waitForJavaScriptCondition:queryCondition];
 }
 
 // Tests that the `AttemptLoginTool` scrolls and fills the login form with
@@ -211,13 +238,6 @@
   optimization_guide::proto::AttemptLoginAction* attemptLogin =
       action.mutable_attempt_login();
   attemptLogin->set_tab_id([ChromeEarlGrey currentTabID].intValue);
-  optimization_guide::proto::AttemptLoginAction_LoginTarget* loginTarget =
-      attemptLogin->add_login_targets();
-  loginTarget->set_login_type(
-      optimization_guide::proto::AttemptLoginAction_LoginTarget::
-          PASSWORD_FORM_SUBMIT);
-  [self setCoordinatesOnTarget:loginTarget->mutable_target()
-                  withSelector:"#submit_button"];
 
   // Execute the action and wait for execution.
   GREYAssertNil([self executeAction:action], @"Action execution failed.");
@@ -256,13 +276,6 @@
   optimization_guide::proto::AttemptLoginAction* attemptLogin =
       action.mutable_attempt_login();
   attemptLogin->set_tab_id([ChromeEarlGrey currentTabID].intValue);
-  optimization_guide::proto::AttemptLoginAction_LoginTarget* loginTarget =
-      attemptLogin->add_login_targets();
-  loginTarget->set_login_type(
-      optimization_guide::proto::AttemptLoginAction_LoginTarget::
-          PASSWORD_FORM_SUBMIT);
-  [self setCoordinatesOnTarget:loginTarget->mutable_target()
-                  withSelector:"#submit_button"];
 
   // Start action asynchronously.
   std::string serializedAction;
@@ -329,13 +342,6 @@
   optimization_guide::proto::AttemptLoginAction* attemptLogin =
       action.mutable_attempt_login();
   attemptLogin->set_tab_id([ChromeEarlGrey currentTabID].intValue);
-  optimization_guide::proto::AttemptLoginAction_LoginTarget* loginTarget =
-      attemptLogin->add_login_targets();
-  loginTarget->set_login_type(
-      optimization_guide::proto::AttemptLoginAction_LoginTarget::
-          PASSWORD_FORM_SUBMIT);
-  [self setCoordinatesOnTarget:loginTarget->mutable_target()
-                  withSelector:"#submit_button"];
 
   // Start action asynchronously.
   std::string serializedAction;

@@ -96,36 +96,6 @@ GetModelQualityLogsUploader(Profile& profile) {
              : nullptr;
 }
 
-bool IsSuccessfulPasswordCredentialFilling(
-    actor_login::LoginStatusResult login_result) {
-  switch (login_result) {
-    case actor_login::LoginStatusResult::kSuccessUsernameAndPasswordFilled:
-    case actor_login::LoginStatusResult::kSuccessUsernameFilled:
-    case actor_login::LoginStatusResult::kSuccessPasswordFilled:
-      return true;
-    case actor_login::LoginStatusResult::kSuccessFederated:
-    case actor_login::LoginStatusResult::kErrorNoSigninForm:
-    case actor_login::LoginStatusResult::kErrorInvalidCredential:
-    case actor_login::LoginStatusResult::kErrorNoFillableFields:
-    case actor_login::LoginStatusResult::kErrorDeviceReauthRequired:
-    case actor_login::LoginStatusResult::kErrorDeviceReauthFailed:
-    case actor_login::LoginStatusResult::kErrorFederatedContinuation:
-    case actor_login::LoginStatusResult::kErrorFederatedAccountNotLoggedIn:
-    case actor_login::LoginStatusResult::kErrorFederatedAccountIsSignUp:
-    case actor_login::LoginStatusResult::kErrorFederatedAccountNotAvailable:
-    case actor_login::LoginStatusResult::kErrorFederatedIdpReturnedError:
-    case actor_login::LoginStatusResult::kErrorFederatedIdpNetworkError:
-    case actor_login::LoginStatusResult::kErrorFederatedTokenRequestAborted:
-    case actor_login::LoginStatusResult::kErrorFederatedFrameNotActive:
-    case actor_login::LoginStatusResult::
-        kErrorFederatedExpectedAccountNotPresent:
-    case actor_login::LoginStatusResult::kErrorFederatedTimeout:
-    case actor_login::LoginStatusResult::kRequiresButtonClick:
-    case actor_login::LoginStatusResult::kErrorPageChangedDuringFilling:
-      return false;
-  }
-}
-
 }  // namespace
 
 AttemptLoginTool::AttemptLoginTool(
@@ -487,7 +457,8 @@ void AttemptLoginTool::OnAttemptLogin(
     return;
   }
 
-  if (!IsSuccessfulPasswordCredentialFilling(login_status.value())) {
+  if (!actor_login::IsSuccessfulPasswordCredentialFilling(
+          login_status.value())) {
     tool_delegate().GetActorOneTimeTokenFillingService().AbortLoginTracking();
   }
 
@@ -541,7 +512,8 @@ void AttemptLoginTool::OnAttemptLogin(
   // The availability of the password submit target is bundled with federated
   // support.
   if (base::FeatureList::IsEnabled(features::kFedCmEmbedderInitiatedLogin) &&
-      IsSuccessfulPasswordCredentialFilling(login_status.value()) &&
+      actor_login::IsSuccessfulPasswordCredentialFilling(
+          login_status.value()) &&
       password_button_.has_value()) {
     CHECK_EQ(selected_credential.type, actor_login::CredentialType::kPassword);
     if (!actor_surface_handle_.Get()) {

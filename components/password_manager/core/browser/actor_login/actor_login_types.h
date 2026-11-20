@@ -199,6 +199,10 @@ enum class LoginStatusResult {
 actor::mojom::ActionResultCode LoginResultToActorResult(
     LoginStatusResult login_result);
 
+// Returns whether `login_result` indicates successful password credential
+// filling.
+bool IsSuccessfulPasswordCredentialFilling(LoginStatusResult login_result);
+
 using FrameFillingStartedCallback =
     base::OnceCallback<void(base::span<const int> global_frame_ids)>;
 using LoginStatusResultOrError =

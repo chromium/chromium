@@ -71,7 +71,10 @@ class AttemptLoginTool : public ActorTool,
   void WebStateDestroyed(web::WebState* web_state) override;
 
  private:
+  struct LoginTarget;
+
   AttemptLoginTool(base::WeakPtr<web::WebState> web_state,
+                   std::vector<LoginTarget> login_targets,
                    ToolDelegate* tool_delegate);
 
   void OnGetCredentials(actor_login::CredentialsOrError credentials);
@@ -100,6 +103,9 @@ class AttemptLoginTool : public ActorTool,
   // The tab and navigation item this tool actuates on.
   base::WeakPtr<web::WebState> web_state_;
   std::optional<int> navigation_item_id_;
+
+  // Parsed login targets from the action proto, validated in `Validate()`.
+  std::vector<LoginTarget> login_targets_;
 
   // Delegate object for the tool to interact with its invoking task.
   raw_ptr<ToolDelegate> tool_delegate_;
