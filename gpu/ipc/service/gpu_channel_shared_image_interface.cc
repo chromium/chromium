@@ -142,6 +142,39 @@ GpuChannelSharedImageInterface::CreateSharedImageForD3D11Video(
       new ClientSharedImage(mailbox, si_info, GenVerifiedSyncToken(), holder_,
                             GL_TEXTURE_EXTERNAL_OES));
 }
+
+scoped_refptr<ClientSharedImage>
+GpuChannelSharedImageInterface::CreateSharedImageForD3D12Video(
+    const SharedImageInfo& si_info,
+    Microsoft::WRL::ComPtr<ID3D12Resource> d3d12_resource,
+    size_t array_slice,
+    const bool is_thread_safe) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
+  CHECK(d3d12_resource);
+
+  if (!shared_image_stub_) {
+    return nullptr;
+  }
+
+  auto mailbox = Mailbox::Generate();
+  auto caps = shared_image_stub_->shared_context_state()->GetGLFormatCaps();
+  std::unique_ptr<gpu::SharedImageBacking> backing =
+      gpu::D3DImageBacking::CreateFromD3D12Texture(
+          mailbox, si_info, std::move(d3d12_resource), caps,
+          GL_TEXTURE_EXTERNAL_OES, array_slice, is_thread_safe);
+  if (!backing) {
+    return nullptr;
+  }
+
+  // Need to clear the backing since the video decoder will initialize the
+  // textures.
+  backing->SetCleared();
+  shared_image_stub_->factory()->RegisterBacking(std::move(backing));
+
+  return base::WrapRefCounted<ClientSharedImage>(
+      new ClientSharedImage(mailbox, si_info, GenVerifiedSyncToken(), holder_,
+                            GL_TEXTURE_EXTERNAL_OES));
+}
 #endif
 
 SharedImageFactory*

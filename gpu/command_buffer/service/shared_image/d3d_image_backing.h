@@ -236,6 +236,11 @@ class GPU_GLES2_EXPORT D3DImageBacking final
       const {
     return dxgi_shared_handle_state_;
   }
+  Microsoft::WRL::ComPtr<ID3D11Texture2D>
+  angle_d3d11_texture_from_d3d12_for_testing() const {
+    AutoLock auto_lock(this);
+    return angle_d3d11_texture_from_d3d12_;
+  }
 
  protected:
   std::unique_ptr<GLTexturePassthroughImageRepresentation>
@@ -289,12 +294,21 @@ class GPU_GLES2_EXPORT D3DImageBacking final
       std::unique_ptr<void, VirtualAllocAddressDeleter> d3d12_heap_memory,
       bool is_thread_safe);
 
+  bool is_d3d12_texture() const { return !d3d11_texture_ && d3d12_resource_; }
+
   bool use_cross_device_fence_synchronization() const {
     // Fences are needed if we're sharing between devices and there's no keyed
-    // mutex for synchronization.
-    return dxgi_shared_handle_state_ &&
-           !dxgi_shared_handle_state_->has_keyed_mutex();
+    // mutex for synchronization. D3D12 textures are always shared (e.g.
+    // between a video D3D12 queue and ANGLE or Dawn) and have no keyed mutex.
+    return is_d3d12_texture() ||
+           (dxgi_shared_handle_state_ &&
+            !dxgi_shared_handle_state_->has_keyed_mutex());
   }
+
+  bool IsSameDawnDevice(const wgpu::Device& device,
+                        wgpu::BackendType backend_type,
+                        bool is_graphite_device) const
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Helper to retrieve internal EGLImage for WebGPU GLES compat backend.
   void* GetEGLImage() const;
@@ -446,6 +460,11 @@ class GPU_GLES2_EXPORT D3DImageBacking final
   // backings created from duplicated handles that refer to the same texture.
   const scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state_;
 
+  // D3D11 texture opened on `angle_d3d11_device_` from `d3d12_resource_` for GL
+  // interop.
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> angle_d3d11_texture_from_d3d12_
+      GUARDED_BY(lock_);
+
   // Capabilities needed for getting the correct GL format for creating GL
   // textures.
   const GLFormatCaps gl_format_caps_;
@@ -485,6 +504,10 @@ class GPU_GLES2_EXPORT D3DImageBacking final
   // TODO(crbug.com/543937339): Consider making this a variant that can also
   // hold a D3D12 command queue.
   Microsoft::WRL::ComPtr<ID3D11Device> texture_d3d11_device_;
+
+  // D3D12 device corresponding to the |d3d12_resource_| (or underlying
+  // D3D11On12 device for |d3d11_texture_|) provided on creation.
+  Microsoft::WRL::ComPtr<ID3D12Device> texture_d3d12_device_;
 
   // D3D11 device used by ANGLE. Can be different from |d3d11_device_| when
   // using Graphite.

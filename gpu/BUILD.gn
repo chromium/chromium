@@ -99,6 +99,8 @@ static_library("test_support") {
     "command_buffer/service/test_helper.h",
     "ipc/raster_in_process_context.cc",
     "ipc/raster_in_process_context.h",
+    "ipc/service/gpu_channel_test_common.cc",
+    "ipc/service/gpu_channel_test_common.h",
     "ipc/webgpu_in_process_context.cc",
     "ipc/webgpu_in_process_context.h",
   ]
@@ -128,6 +130,7 @@ static_library("test_support") {
     "//ui/gfx:test_support",
     "//ui/gl:gl_unittest_utils",
     "//ui/gl:test_support",
+    "//ui/gl/init",
   ]
 
   if (is_fuchsia) {
@@ -522,8 +525,6 @@ test("gpu_unittests") {
     "ipc/common/mojom_traits_unittest.cc",
     "ipc/host/gpu_disk_cache_unittest.cc",
     "ipc/host/shader_cache_metrics_unittest.cc",
-    "ipc/service/gpu_channel_test_common.cc",
-    "ipc/service/gpu_channel_test_common.h",
     "ipc/service/gpu_watchdog_thread_unittest.cc",
   ]
 
@@ -967,11 +968,7 @@ if (is_linux || is_chromeos) {
 # create/destroy/reuse-mailbox sequences (IOSurface-backing UAF family). No
 # pre-existing fuzzer covers this surface.
 mojolpm_fuzzer_test("shared_image_stub_mojolpm_fuzzer") {
-  sources = [
-    "ipc/service/gpu_channel_test_common.cc",
-    "ipc/service/gpu_channel_test_common.h",
-    "ipc/service/shared_image_stub_mojolpm_fuzzer.cc",
-  ]
+  sources = [ "ipc/service/shared_image_stub_mojolpm_fuzzer.cc" ]
 
   proto_source = "ipc/service/shared_image_stub_mojolpm_fuzzer.proto"
 

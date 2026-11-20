@@ -21,6 +21,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <d3d11.h>
+#include <d3d12.h>
 #include <wrl/client.h>
 
 #include "gpu/command_buffer/service/dxgi_shared_handle_manager.h"
@@ -60,6 +61,13 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelSharedImageInterface
       const SharedImageInfo& si_info,
       Microsoft::WRL::ComPtr<ID3D11Texture2D> texture,
       scoped_refptr<gpu::DXGISharedHandleState> dxgi_shared_handle_state,
+      size_t array_slice,
+      const bool is_thread_safe);
+
+  // Creates a SharedImage for a D3D12 video resource.
+  scoped_refptr<ClientSharedImage> CreateSharedImageForD3D12Video(
+      const SharedImageInfo& si_info,
+      Microsoft::WRL::ComPtr<ID3D12Resource> d3d12_resource,
       size_t array_slice,
       const bool is_thread_safe);
 #endif

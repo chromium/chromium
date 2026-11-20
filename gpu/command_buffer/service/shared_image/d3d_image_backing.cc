@@ -167,6 +167,41 @@ void PrepareD3D11on12TextureForD3D11(ID3D11Resource* d3d11_texture) {
                                               nullptr);
 }
 
+Microsoft::WRL::ComPtr<ID3D11Texture2D> OpenD3D12ResourceOnD3D11(
+    ID3D12Resource* d3d12_resource,
+    ID3D11Device* d3d11_device) {
+  CHECK(d3d12_resource);
+  CHECK(d3d11_device);
+
+  Microsoft::WRL::ComPtr<ID3D12Device> d3d12_device;
+  HRESULT hr = d3d12_resource->GetDevice(IID_PPV_ARGS(&d3d12_device));
+  CHECK_EQ(hr, S_OK);
+
+  HANDLE raw_handle = nullptr;
+  hr = d3d12_device->CreateSharedHandle(d3d12_resource, /*pAttributes=*/nullptr,
+                                        GENERIC_ALL,
+                                        /*Name=*/nullptr, &raw_handle);
+  if (FAILED(hr)) {
+    LOG(ERROR) << "Failed to create shared handle for D3D12 resource: "
+               << logging::SystemErrorCodeToString(hr);
+    return nullptr;
+  }
+  base::win::ScopedHandle shared_handle(raw_handle);
+
+  Microsoft::WRL::ComPtr<ID3D11Device1> d3d11_device1;
+  CHECK_EQ(d3d11_device->QueryInterface(IID_PPV_ARGS(&d3d11_device1)), S_OK);
+
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture;
+  hr = d3d11_device1->OpenSharedResource1(shared_handle.get(),
+                                          IID_PPV_ARGS(&d3d11_texture));
+  if (FAILED(hr)) {
+    LOG(ERROR) << "Unable to open shared D3D12 resource on D3D11: "
+               << logging::SystemErrorCodeToString(hr);
+    return nullptr;
+  }
+  return d3d11_texture;
+}
+
 bool BindEGLImageToTexture(GLenum texture_target, void* egl_image) {
   if (!egl_image) {
     LOG(ERROR) << "EGL image is null";
@@ -739,11 +774,20 @@ D3DImageBacking::D3DImageBacking(
     d3d11_texture_->GetDesc(&d3d11_texture_desc_);
     texture_device_can_use_d3d12_ =
         CanUseD3D12(texture_d3d11_device_.Get(), d3d11_texture_desc_);
+    if (texture_device_can_use_d3d12_) {
+      Microsoft::WRL::ComPtr<ID3D11On12Device2> d3d11on12_device;
+      CHECK_EQ(texture_d3d11_device_.As(&d3d11on12_device), S_OK);
+      CHECK_EQ(d3d11on12_device->GetD3D12Device(
+                   IID_PPV_ARGS(&texture_d3d12_device_)),
+               S_OK);
+    }
   }
   // If a D3D12 resource is provided, use it directly instead of going through
   // D3D11On12.
   if (d3d12_resource) {
     d3d12_resource_ = std::move(d3d12_resource);
+    CHECK_EQ(d3d12_resource_->GetDevice(IID_PPV_ARGS(&texture_d3d12_device_)),
+             S_OK);
     is_texture_unwrapped_for_d3d12_ = true;
     texture_device_can_use_d3d12_ = true;
   }
@@ -1049,20 +1093,14 @@ std::unique_ptr<DawnImageRepresentation> D3DImageBacking::ProduceDawn(
         dawn_context_provider &&
         dawn_context_provider->GetDevice().Get() == device.Get();
 
-    Microsoft::WRL::ComPtr<ID3D11Device> dawn_d3d11_device =
-        GetDawnD3D11Device(device, backend_type, is_graphite_device);
+    const bool is_same_device =
+        IsSameDawnDevice(device, backend_type, is_graphite_device);
     Microsoft::WRL::ComPtr<ID3D12Resource> unwrapped_d3d12_resource;
-    // If there is no texture_d3d11_device_, it is safe to assume that the
-    // resource was created with the Dawn D3D12 device.
-    // TODO(crbug.com/543937339): This logic can be simplified by making
-    // texture_d3d11_device_ a variant as well.
     // TODO(crbug.com/481916492) Consider creating a D3D12 resource and
     // wrapping it when the D3D11 texture is required. That way only
     // UploadTo/FromMemory related operations will need D3D11On12.
     if (backend_type == wgpu::BackendType::D3D12 &&
-        texture_device_can_use_d3d12_ &&
-        (!texture_d3d11_device_ ||
-         (texture_d3d11_device_ == dawn_d3d11_device))) {
+        texture_device_can_use_d3d12_ && is_same_device) {
       // ProduceDawn can be called during D3D12 access. Ensure the texture is
       // unwrapped for D3D12.
       unwrapped_d3d12_resource = EnsureD3D12Resource();
@@ -1076,8 +1114,7 @@ std::unique_ptr<DawnImageRepresentation> D3DImageBacking::ProduceDawn(
         shared_texture_memory =
             CreateDawnSharedTextureMemory(device, unwrapped_d3d12_resource);
         d3d12_shared_texture_memory_is_current_ = true;
-      } else if (dawn_d3d11_device == texture_d3d11_device_ &&
-                 backend_type == wgpu::BackendType::D3D11) {
+      } else if (backend_type == wgpu::BackendType::D3D11 && is_same_device) {
         shared_texture_memory =
             CreateDawnSharedTextureMemory(device, d3d11_texture_);
       } else {
@@ -1085,10 +1122,9 @@ std::unique_ptr<DawnImageRepresentation> D3DImageBacking::ProduceDawn(
         const HANDLE shared_handle =
             dxgi_shared_handle_state_->GetSharedHandle();
         CHECK(base::win::HandleTraits::IsHandleValid(shared_handle));
-        const bool use_keyed_mutex = d3d11_texture_desc_.MiscFlags &
-                                     D3D11_RESOURCE_MISC_SHARED_KEYEDMUTEX;
         shared_texture_memory = CreateDawnSharedTextureMemory(
-            device, use_keyed_mutex, shared_handle);
+            device, dxgi_shared_handle_state_->has_keyed_mutex(),
+            shared_handle);
       }
 
       if (!shared_texture_memory) {
@@ -1123,6 +1159,7 @@ std::unique_ptr<DawnImageRepresentation> D3DImageBacking::ProduceDawn(
       if (is_graphite_device && context_state->IsGraphiteDawnD3D11() &&
           !is_thread_safe() && !share_dxgi_handle_with_other_backings_ &&
           !already_accessed_by_other_device) {
+        CHECK(d3d11_texture_);
         InitPersistentGraphiteDawnAccess(context_state, device,
                                          shared_texture_memory, view_formats);
       }
@@ -1442,30 +1479,26 @@ wgpu::Texture D3DImageBacking::BeginAccessDawn(
       backend_type == wgpu::BackendType::D3D12 && d3d12_resource_;
   Microsoft::WRL::ComPtr<ID3D11Device> dawn_d3d11_device =
       GetDawnD3D11Device(device, backend_type, is_graphite_device);
+  const bool is_same_device =
+      IsSameDawnDevice(device, backend_type, is_graphite_device);
 
   // Dawn access is allowed without shared handle for single device scenarios.
-  CHECK(dxgi_shared_handle_state_ ||
-        dawn_d3d11_device == texture_d3d11_device_);
+  const bool can_import_d3d12_resource =
+      backend_type == wgpu::BackendType::D3D12 &&
+      texture_device_can_use_d3d12_ && is_same_device;
+  CHECK(dxgi_shared_handle_state_ || is_same_device);
 
-  if (backend_type == wgpu::BackendType::D3D12) {
-    // If there is no texture_d3d11_device_, it is safe to assume that the
-    // resource was created with the Dawn D3D12 device.
-    // TODO(crbug.com/543937339): This logic can be simplified by making
-    // texture_d3d11_device_ a variant as well.
-    if (texture_device_can_use_d3d12_ &&
-        (!texture_d3d11_device_ ||
-         (texture_d3d11_device_ == dawn_d3d11_device))) {
-      auto unwrapped_d3d12_resource = EnsureD3D12Resource();
-      // If the resource changed, invalidate and recreate shared texture
-      // memory for the new resource.
-      if (!d3d12_shared_texture_memory_is_current_) {
-        dawn_shared_texture_cache_->EraseDawnSharedTextureCache(device);
-        auto shared_texture_memory =
-            CreateDawnSharedTextureMemory(device, unwrapped_d3d12_resource);
-        dawn_shared_texture_cache_->MaybeCacheSharedTextureMemory(
-            device, shared_texture_memory);
-        d3d12_shared_texture_memory_is_current_ = true;
-      }
+  if (can_import_d3d12_resource) {
+    auto unwrapped_d3d12_resource = EnsureD3D12Resource();
+    // If the resource changed, invalidate and recreate shared texture
+    // memory for the new resource.
+    if (!d3d12_shared_texture_memory_is_current_) {
+      dawn_shared_texture_cache_->EraseDawnSharedTextureCache(device);
+      auto shared_texture_memory =
+          CreateDawnSharedTextureMemory(device, unwrapped_d3d12_resource);
+      dawn_shared_texture_cache_->MaybeCacheSharedTextureMemory(
+          device, shared_texture_memory);
+      d3d12_shared_texture_memory_is_current_ = true;
     }
   }
 
@@ -1716,6 +1749,21 @@ void D3DImageBacking::NotifyGraphiteAboutInitializedStatus() {
   }
 }
 
+bool D3DImageBacking::IsSameDawnDevice(const wgpu::Device& device,
+                                       wgpu::BackendType backend_type,
+                                       bool is_graphite_device) const {
+  if (d3d11_texture_) {
+    return texture_d3d11_device_ ==
+           GetDawnD3D11Device(device, backend_type, is_graphite_device);
+  }
+  if (backend_type != wgpu::BackendType::D3D12) {
+    return false;
+  }
+  CHECK(texture_d3d12_device_);
+  return texture_d3d12_device_ ==
+         dawn::native::d3d12::GetD3D12Device(device.Get());
+}
+
 wgpu::SharedTextureMemory D3DImageBacking::GetSharedTextureMemory(
     const wgpu::Device& device) {
   if (dxgi_shared_handle_state_) {
@@ -1732,14 +1780,10 @@ bool D3DImageBacking::IsSameAccessObject(
             return device == texture_d3d11_device_;
           },
           [&](const Microsoft::WRL::ComPtr<ID3D12CommandQueue>& queue) {
-            CHECK(d3d12_resource_);
+            CHECK(texture_d3d12_device_);
             Microsoft::WRL::ComPtr<ID3D12Device> queue_device;
-            HRESULT hr = queue->GetDevice(IID_PPV_ARGS(&queue_device));
-            CHECK_EQ(hr, S_OK);
-            Microsoft::WRL::ComPtr<ID3D12Device> resource_device;
-            hr = d3d12_resource_->GetDevice(IID_PPV_ARGS(&resource_device));
-            CHECK_EQ(hr, S_OK);
-            return queue_device == resource_device;
+            CHECK_EQ(queue->GetDevice(IID_PPV_ARGS(&queue_device)), S_OK);
+            return queue_device == texture_d3d12_device_;
           }},
       access_device);
 }
@@ -1786,7 +1830,7 @@ bool D3DImageBacking::BeginAccessD3D(const D3DAccessObject& access_device,
     // Unwrap the D3D11 texture via D3D11On12, or return the native D3D12
     // resource.
     unwrapped_d3d12_resource = EnsureD3D12Resource();
-  } else if (is_texture_unwrapped_for_d3d12_) {
+  } else if (is_texture_unwrapped_for_d3d12_ && d3d11_texture_) {
     // Return the texture to the 11On12 translation layer for D3D11 access. Do
     // not release the D3D12 resource here since it may back Dawn's shared
     // texture memory or a DComp texture.
@@ -1812,8 +1856,12 @@ bool D3DImageBacking::BeginAccessD3D(const D3DAccessObject& access_device,
   if (!access_as_d3d12) {
     CHECK(d3d11_device);
     // D3D11 access is allowed without shared handle for single device
-    // scenarios.
-    CHECK(dxgi_shared_handle_state_ || IsSameAccessObject(access_device));
+    // scenarios, or via `angle_d3d11_texture_from_d3d12_` for GL on D3D12
+    // textures.
+    // TODO(crbug.com/542565485): Consider using dxgi_shared_handle_state_ to
+    // share texture between D3D12 and ANGLE if needed
+    CHECK(dxgi_shared_handle_state_ || angle_d3d11_texture_from_d3d12_ ||
+          IsSameAccessObject(access_device));
     if (dxgi_shared_handle_state_) {
       // Trace event for backings with DXGI shared handles (e.g. camera capture
       // textures). Used by the MediaFoundationD3D11VideoCapture trace test.
@@ -1852,7 +1900,19 @@ void D3DImageBacking::EndAccessD3D(
   const bool is_texture_device = IsSameAccessObject(access_device);
   // If shared handle is not present, we can only access on the same device.
   AutoLock auto_lock(this);
-  CHECK(dxgi_shared_handle_state_ || is_texture_device);
+  CHECK(dxgi_shared_handle_state_ || angle_d3d11_texture_from_d3d12_ ||
+        is_texture_device);
+
+  // For native D3D12 textures, a D3D12 queue on the owning device is treated
+  // as `is_texture_device`, so the backing does not signal its own fence here,
+  // and `GetPendingWaitFences()` cannot lazily signal one without
+  // `texture_d3d11_device_` (crbug.com/543937339). Require an external fence so
+  // subsequent readers do not skip waiting.
+  if (in_write_access_ && is_d3d12_texture() &&
+      std::holds_alternative<Microsoft::WRL::ComPtr<ID3D12CommandQueue>>(
+          access_device)) {
+    CHECK(external_fence);
+  }
 
   // Do not create a fence for the texture's original device if we're only using
   // the texture on one device or using a keyed mutex. The fence is lazily
@@ -2280,13 +2340,24 @@ D3DImageBacking::ProduceGLTexturePassthrough(SharedImageManager* manager,
 
     // If DXGI shared handle is present, the |d3d11_texture_| might belong to a
     // different device with Graphite so retrieve the ANGLE specific D3D11
-    // texture from the |dxgi_shared_handle_state_|.
-    const bool is_angle_texture = texture_d3d11_device_ == angle_d3d11_device_;
-    CHECK(is_angle_texture || dxgi_shared_handle_state_);
-    auto d3d11_texture =
-        is_angle_texture ? d3d11_texture_
-                         : dxgi_shared_handle_state_->GetOrCreateD3D11Texture(
-                               angle_d3d11_device_);
+    // texture from the |dxgi_shared_handle_state_|. Native D3D12 textures
+    // lazily open and cache a D3D11 texture on ANGLE's device.
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture;
+    if (d3d11_texture_) {
+      const bool is_angle_texture =
+          texture_d3d11_device_ == angle_d3d11_device_;
+      CHECK(is_angle_texture || dxgi_shared_handle_state_);
+      d3d11_texture = is_angle_texture
+                          ? d3d11_texture_
+                          : dxgi_shared_handle_state_->GetOrCreateD3D11Texture(
+                                angle_d3d11_device_);
+    } else {
+      if (!angle_d3d11_texture_from_d3d12_) {
+        angle_d3d11_texture_from_d3d12_ = OpenD3D12ResourceOnD3D11(
+            d3d12_resource_.Get(), angle_d3d11_device_.Get());
+      }
+      d3d11_texture = angle_d3d11_texture_from_d3d12_;
+    }
     if (!d3d11_texture) {
       LOG(ERROR) << "Failed to open DXGI shared handle";
       return nullptr;
@@ -2451,9 +2522,7 @@ ID3D12CommandQueue* D3DImageBacking::GetOrCreateCommandQueueFor11On12() {
     return d3d12_texture_unwrap_command_queue_.Get();
   }
 
-  Microsoft::WRL::ComPtr<ID3D11On12Device2> d3d11on12_device;
-  HRESULT hr = texture_d3d11_device_.As(&d3d11on12_device);
-  CHECK_EQ(hr, S_OK);
+  CHECK(texture_d3d12_device_);
 
   D3D12_COMMAND_QUEUE_DESC command_queue_desc = {};
   command_queue_desc.Type = D3D12_COMMAND_LIST_TYPE_NONE;
@@ -2462,12 +2531,10 @@ ID3D12CommandQueue* D3DImageBacking::GetOrCreateCommandQueueFor11On12() {
   command_queue_desc.NodeMask = 0;
 
   Microsoft::WRL::ComPtr<ID3D12CommandQueue> command_queue;
-  Microsoft::WRL::ComPtr<ID3D12Device> d3d12_device;
-  d3d11on12_device->GetD3D12Device(IID_PPV_ARGS(&d3d12_device));
   // `CreateCommandQueue` with D3D12_COMMAND_QUEUE_FLAG_NONE should always
   // succeed, even if the device has been removed.
-  hr = d3d12_device->CreateCommandQueue(&command_queue_desc,
-                                        IID_PPV_ARGS(&command_queue));
+  HRESULT hr = texture_d3d12_device_->CreateCommandQueue(
+      &command_queue_desc, IID_PPV_ARGS(&command_queue));
   CHECK_EQ(hr, S_OK);
   d3d12_texture_unwrap_command_queue_ = std::move(command_queue);
   return d3d12_texture_unwrap_command_queue_.Get();
