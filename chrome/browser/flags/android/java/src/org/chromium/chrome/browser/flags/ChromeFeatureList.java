@@ -2194,6 +2194,10 @@ public abstract class ChromeFeatureList {
             newBooleanCachedFeatureParam(
                     ANDROID_VERTICAL_TABS, "enable_by_default", /* defaultValue= */ false);
 
+    public static final BooleanCachedFeatureParam sAndroidVerticalTabsMultiTabDrag =
+            newBooleanCachedFeatureParam(
+                    ANDROID_VERTICAL_TABS, "multi_tab_drag", /* defaultValue= */ false);
+
     public static final IntCachedFeatureParam sBackgroundThreadPoolFieldTrialConfig =
             newIntCachedFeatureParam(BACKGROUND_THREAD_POOL_FIELD_TRIAL, "config", 4);
 
@@ -2587,6 +2591,7 @@ public abstract class ChromeFeatureList {
                     sAndroidTipsNotificationsV2MaxShowCount,
                     sAndroidVerticalTabsBlockDrawOnColdStart,
                     sAndroidVerticalTabsEnableByDefault,
+                    sAndroidVerticalTabsMultiTabDrag,
                     sBackgroundThreadPoolFieldTrialConfig,
                     sBrowserControlsLockoutFullscreenLoadDelayMs,
                     sBrowserControlsLockoutMinimumShowDurationMs,

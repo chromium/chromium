@@ -2520,8 +2520,12 @@ const FeatureEntry::FeatureVariation kEphemeralCardRankerCardOverrideOptions[] =
 const FeatureEntry::FeatureParam kAndroidVerticalTabs_EnableByDefault[] = {
     {"enable_by_default", "true"}};
 
+const FeatureEntry::FeatureParam kAndroidVerticalTabs_MultiTabDrag[] = {
+    {"multi_tab_drag", "true"}};
+
 const FeatureEntry::FeatureVariation kAndroidVerticalTabsVariations[] = {
     {"with enabled-by-default", kAndroidVerticalTabs_EnableByDefault, nullptr},
+    {"with multi-tab drag", kAndroidVerticalTabs_MultiTabDrag, nullptr},
 };
 #endif  // BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_ANDROID)
