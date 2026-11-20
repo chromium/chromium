@@ -4,16 +4,19 @@
 
 #include "chrome/browser/actor/tools/get_screenshot_tool_request.h"
 
+#include <memory>
 #include <optional>
 #include <string_view>
 
-#include "base/notimplemented.h"
+#include "chrome/browser/actor/actor_surface.h"
+#include "chrome/browser/actor/tools/get_screenshot_tool.h"
 #include "chrome/browser/actor/tools/registry/tool_definition.h"
 #include "chrome/browser/actor/tools/registry/tool_definition_builder.h"
-#include "chrome/browser/actor/tools/tool.h"
 #include "chrome/browser/actor/tools/tool_request_visitor_functor.h"
 #include "chrome/common/actor/action_result.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
+#include "content/public/browser/page.h"
+#include "content/public/browser/web_contents.h"
 
 namespace actor {
 
@@ -26,7 +29,13 @@ constexpr std::string_view kGetScreenshotToolDescription =
 
 GetScreenshotToolRequest::GetScreenshotToolRequest(
     ActorSurfaceHandle actor_surface_handle)
-    : TabToolRequest(actor_surface_handle) {}
+    : TabToolRequest(actor_surface_handle) {
+  if (ActorSurface* actor_surface = actor_surface_handle.Get();
+      actor_surface && actor_surface->GetWebContents()) {
+    target_page_ =
+        actor_surface->GetWebContents()->GetPrimaryPage().GetWeakPtr();
+  }
+}
 
 GetScreenshotToolRequest::GetScreenshotToolRequest(
     const GetScreenshotToolRequest&) = default;
@@ -44,9 +53,15 @@ std::optional<ToolDefinition> GetScreenshotToolRequest::GetToolDefinition() {
 ToolRequest::CreateToolResult GetScreenshotToolRequest::CreateTool(
     TaskId task_id,
     ToolDelegate& tool_delegate) const {
-  // TODO(crbug.com/573253710): Implement.
-  NOTIMPLEMENTED();
-  return {/*tool=*/nullptr, MakeResult(mojom::ActionResultCode::kToolUnknown)};
+  ActorSurface* actor_surface = GetActorSurfaceHandle().Get();
+  if (!actor_surface) {
+    return {/*tool=*/nullptr,
+            MakeResult(mojom::ActionResultCode::kTabWentAway)};
+  }
+
+  return {std::make_unique<GetScreenshotTool>(task_id, tool_delegate,
+                                              *actor_surface, target_page_),
+          MakeOkResult()};
 }
 
 void GetScreenshotToolRequest::Apply(ToolRequestVisitorFunctor& f) const {

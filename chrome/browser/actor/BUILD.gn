@@ -646,6 +646,7 @@ source_set("browser_tests") {
     "actor_util_browsertest.cc",
     "javascript_dialog_interceptor_browsertest.cc",
     "tools/execute_js_tool_browsertest.cc",
+    "tools/get_screenshot_tool_browsertest.cc",
     "tools/open_known_page_tool_browsertest.cc",
     "tools/open_url_tool_browsertest.cc",
     "tools/password_manager/attempt_login/attempt_login_tool_browsertest.cc",
@@ -703,8 +704,11 @@ source_set("browser_tests") {
     "//content/test:browsertest_support",
     "//content/test:test_support",
     "//pdf:features",
+    "//skia",
     "//testing/gtest",
     "//ui/base:ozone_buildflags",
+    "//ui/gfx/codec",
+    "//ui/gfx/geometry",
   ]
 
   if (is_android) {

@@ -20,6 +20,7 @@
 #include "chrome/browser/actor/tools/drag_and_release_tool_request.h"
 #include "chrome/browser/actor/tools/file_upload_tool_request.h"
 #include "chrome/browser/actor/tools/find_and_highlight_tool_request.h"
+#include "chrome/browser/actor/tools/get_screenshot_tool_request.h"
 #include "chrome/browser/actor/tools/history_tool_request.h"
 #include "chrome/browser/actor/tools/media_control_tool_request.h"
 #include "chrome/browser/actor/tools/move_mouse_tool_request.h"
@@ -144,6 +145,7 @@ TEST_F(ToolRequestTest, SubclassSurfaceConstructorsStoreTarget) {
       FileUploadToolRequest(actor_surface_handle_, target, /*files=*/{}));
   expect_targets_surface(
       FindAndHighlightToolRequest(actor_surface_handle_, "query"));
+  expect_targets_surface(GetScreenshotToolRequest(actor_surface_handle_));
   expect_targets_surface(HistoryBackToolRequest(actor_surface_handle_));
   expect_targets_surface(HistoryForwardToolRequest(actor_surface_handle_));
   expect_targets_surface(ReloadPageToolRequest(actor_surface_handle_));

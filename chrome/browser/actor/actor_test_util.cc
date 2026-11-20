@@ -27,6 +27,7 @@
 #include "chrome/browser/actor/tools/click_tool_request.h"
 #include "chrome/browser/actor/tools/drag_and_release_tool_request.h"
 #include "chrome/browser/actor/tools/find_and_highlight_tool_request.h"
+#include "chrome/browser/actor/tools/get_screenshot_tool_request.h"
 #include "chrome/browser/actor/tools/history_tool_request.h"
 #include "chrome/browser/actor/tools/media_control_tool_request.h"
 #include "chrome/browser/actor/tools/move_mouse_tool_request.h"
@@ -866,6 +867,11 @@ std::unique_ptr<ToolRequest> MakeFindAndHighlightRequest(
     const std::string& query) {
   return std::make_unique<FindAndHighlightToolRequest>(
       ActorSurfaceHandle::From(tab.GetHandle()), query);
+}
+
+std::unique_ptr<ToolRequest> MakeGetScreenshotRequest(tabs::TabInterface& tab) {
+  return std::make_unique<GetScreenshotToolRequest>(
+      ActorSurfaceHandle::From(tab.GetHandle()));
 }
 
 std::vector<std::unique_ptr<ToolRequest>> ToRequestList(

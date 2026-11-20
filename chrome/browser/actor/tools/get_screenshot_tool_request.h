@@ -8,8 +8,13 @@
 #include <optional>
 #include <string_view>
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/tools/tool_request.h"
+
+namespace content {
+class Page;
+}  // namespace content
 
 namespace actor {
 
@@ -34,6 +39,9 @@ class GetScreenshotToolRequest : public TabToolRequest {
                               ToolDelegate& tool_delegate) const override;
   void Apply(ToolRequestVisitorFunctor& f) const override;
   std::string_view Name() const override;
+
+ private:
+  base::WeakPtr<content::Page> target_page_;
 };
 
 }  // namespace actor

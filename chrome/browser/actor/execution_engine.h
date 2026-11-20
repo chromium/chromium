@@ -333,6 +333,10 @@ class ExecutionEngine : public ToolDelegate,
 
   void DidUninterruptTask();
 
+  void set_tool_invoke_callback_for_testing(base::OnceClosure callback) {
+    tool_invoke_callback_for_testing_ = std::move(callback);
+  }
+
   void set_tool_invoke_complete_callback_for_testing(
       base::OnceClosure callback) {
     tool_invoke_complete_callback_for_testing_ = std::move(callback);
@@ -587,6 +591,9 @@ class ExecutionEngine : public ToolDelegate,
   // If a tool finishes while the task is in a waiting state, the finish
   // callback and processing is deferred until the task is resumed.
   base::OnceClosure deferred_finish_tool_invoke_;
+
+  // Run right after the current tool is invoked.
+  base::OnceClosure tool_invoke_callback_for_testing_;
 
   base::OnceClosure tool_invoke_complete_callback_for_testing_;
 

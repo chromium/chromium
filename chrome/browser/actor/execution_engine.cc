@@ -1737,6 +1737,10 @@ void ExecutionEngine::FinishedUiPreInvoke(mojom::ActionResultPtr result) {
   tool_controller_->Invoke(base::BindOnce(&ExecutionEngine::FinishedToolInvoke,
                                           GetActionSequenceWeakPtr()),
                            GetDeferredObservationConfig());
+
+  if (tool_invoke_callback_for_testing_) {
+    std::move(tool_invoke_callback_for_testing_).Run();
+  }
 }
 
 void ExecutionEngine::FinishedToolInvoke(ToolResult tool_result) {

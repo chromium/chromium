@@ -303,6 +303,7 @@ std::unique_ptr<ToolRequest> MakeTranslatePageRequest(
 std::unique_ptr<ToolRequest> MakeFindAndHighlightRequest(
     tabs::TabInterface& tab,
     const std::string& query);
+std::unique_ptr<ToolRequest> MakeGetScreenshotRequest(tabs::TabInterface& tab);
 
 // A helper to create a vector of ToolRequests suitable for passing to
 // ExecutionEngine::Act. Note that this will necessarily move the ToolRequest
