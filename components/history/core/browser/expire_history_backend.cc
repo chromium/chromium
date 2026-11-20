@@ -10,6 +10,9 @@
 #include <functional>
 #include <limits>
 #include <memory>
+#include <optional>
+#include <set>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -246,32 +249,79 @@ void ExpireHistoryBackend::ExpireHistoryBetween(
     base::Time begin_time,
     base::Time end_time,
     bool user_initiated) {
+  std::optional<base::Time> next_begin_time = begin_time;
+  while (next_begin_time.has_value()) {
+    next_begin_time =
+        ExpireSomeHistoryBetween(restrict_urls, restrict_app_id,
+                                 *next_begin_time, end_time, user_initiated);
+  }
+}
+
+std::optional<base::Time> ExpireHistoryBackend::ExpireSomeHistoryBetween(
+    const std::set<GURL>& restrict_urls,
+    std::optional<std::string> restrict_app_id,
+    base::Time begin_time,
+    base::Time end_time,
+    bool user_initiated) {
   if (!main_db_) {
-    return;
+    return std::nullopt;
   }
 
-  // Find the affected visits and delete them.
+  // Find the affected visits and delete up to `kMaxVisitsToExpirePerBatch` of
+  // them. Fetch one extra visit when `restrict_urls` is empty so we know
+  // whether any matching visits remain without an extra database query. When
+  // `restrict_urls` is non-empty, `GetAllVisitsInRange()` does not filter by
+  // URL in SQL; production callers passing `restrict_urls` only query narrow
+  // time windows, while deletion itself is still capped per batch below.
   VisitVector visits;
-  main_db_->GetAllVisitsInRange(begin_time, end_time, restrict_app_id, 0,
-                                &visits);
+  const int max_results =
+      restrict_urls.empty()
+          ? static_cast<int>(internal::kMaxVisitsToExpirePerBatch + 1)
+          : 0;
+  if (!main_db_->GetAllVisitsInRange(begin_time, end_time, restrict_app_id,
+                                     max_results, &visits)) {
+    return std::nullopt;
+  }
   if (!restrict_urls.empty()) {
     std::set<URLID> url_ids;
     for (const auto& restrict_url : restrict_urls) {
       url_ids.insert(main_db_->GetRowForURL(restrict_url, nullptr));
     }
-    VisitVector all_visits;
-    all_visits.swap(visits);
-    for (const auto& visit : all_visits) {
-      if (url_ids.find(visit.url_id) != url_ids.end()) {
-        visits.push_back(visit);
-      }
-    }
+    std::erase_if(visits, [&url_ids](const VisitRow& visit) {
+      return !url_ids.contains(visit.url_id);
+    });
   }
-  DeletionTimeRange time_range(begin_time, end_time);
+  if (visits.empty()) {
+    return std::nullopt;
+  }
+
+  const bool has_more = visits.size() > internal::kMaxVisitsToExpirePerBatch;
+  std::optional<base::Time> next_begin_time;
+  base::Time batch_end_time = end_time;
+  if (has_more) {
+    const base::Time next_visit_time =
+        visits[internal::kMaxVisitsToExpirePerBatch].visit_time;
+    visits.resize(internal::kMaxVisitsToExpirePerBatch);
+    next_begin_time = next_visit_time;
+    batch_end_time = std::max(next_visit_time,
+                              visits.back().visit_time + base::Microseconds(1));
+  }
+
+  const VisitID first_visit_id = visits.front().visit_id;
+  // Notify observers only for the sub-range covered by this batch.
   ExpireVisitsInternal(
-      visits, time_range, restrict_urls,
+      visits, DeletionTimeRange(begin_time, batch_end_time), restrict_urls,
       user_initiated ? DELETION_USER_INITIATED : DELETION_EXPIRED,
       DeletionInfo::Reason::kOther);
+  if (!has_more) {
+    return std::nullopt;
+  }
+  // Verify that the first visit was actually deleted from the DB, to guard
+  // against infinite loops in case of database corruption.
+  if (VisitRow unused; main_db_->GetRowForVisit(first_visit_id, &unused)) {
+    return std::nullopt;
+  }
+  return next_begin_time;
 }
 
 void ExpireHistoryBackend::ExpireHistoryForTimes(

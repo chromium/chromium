@@ -1537,6 +1537,185 @@ TEST_F(ExpireHistoryTest, DeleteVisitsWithoutDeletingURLs) {
       << "URL should still exist";
 }
 
+TEST_F(ExpireHistoryTest, ExpireSomeHistoryBetween) {
+  static constexpr size_t kNumVisits =
+      internal::kMaxVisitsToExpirePerBatch + 10;
+  base::Time start_time = PretendNow() - base::Days(1);
+
+  URLRow url_row(GURL("http://www.google.com/paginated"));
+  url_row.set_last_visit(start_time + base::Seconds(kNumVisits - 1));
+  url_row.set_visit_count(kNumVisits);
+  URLID url_id = main_db_->AddURL(url_row);
+  ASSERT_NE(0, url_id);
+  ASSERT_TRUE(main_db_->GetURLRow(url_id, &url_row));
+
+  for (size_t i = 0; i < kNumVisits; ++i) {
+    VisitRow visit_row;
+    visit_row.url_id = url_id;
+    visit_row.visit_time = start_time + base::Seconds(i);
+    visit_row.source = SOURCE_BROWSED;
+    main_db_->AddVisit(&visit_row);
+  }
+
+  // First call deletes the oldest `kMaxVisitsToExpirePerBatch` visits and
+  // returns the `begin_time` for the next batch.
+  std::optional<base::Time> next_begin_time = expirer_.ExpireSomeHistoryBetween(
+      /*restrict_urls=*/{}, kNoAppIdFilter, base::Time(), base::Time::Max(),
+      /*user_initiated=*/true);
+  ASSERT_EQ(start_time + base::Seconds(internal::kMaxVisitsToExpirePerBatch),
+            next_begin_time);
+  ASSERT_TRUE(GetLastDeletionInfo());
+  EXPECT_EQ(base::Time(), GetLastDeletionInfo()->time_range().begin());
+  EXPECT_EQ(*next_begin_time, GetLastDeletionInfo()->time_range().end());
+  EXPECT_EQ(internal::kMaxVisitsToExpirePerBatch,
+            GetLastDeletionInfo()->deleted_visit_ids().size());
+  EXPECT_TRUE(GetLastDeletionInfo()->deleted_rows().empty());
+
+  // `url_row` should still have 10 visits remaining.
+  URLRow temp_row;
+  ASSERT_TRUE(main_db_->GetURLRow(url_id, &temp_row));
+  EXPECT_EQ(10, temp_row.visit_count());
+
+  ClearLastNotifications();
+
+  // Second call deletes the remaining 10 visits (plus `url_row`) and returns
+  // `std::nullopt` since all visits in range have been expired.
+  EXPECT_EQ(std::nullopt,
+            expirer_.ExpireSomeHistoryBetween(
+                /*restrict_urls=*/{}, kNoAppIdFilter, *next_begin_time,
+                base::Time::Max(), /*user_initiated=*/true));
+  ASSERT_TRUE(GetLastDeletionInfo());
+  EXPECT_EQ(*next_begin_time, GetLastDeletionInfo()->time_range().begin());
+  EXPECT_EQ(base::Time::Max(), GetLastDeletionInfo()->time_range().end());
+  EXPECT_EQ(10u, GetLastDeletionInfo()->deleted_visit_ids().size());
+  EnsureURLInfoGone(url_row, /*expired=*/false);
+}
+
+TEST_F(ExpireHistoryTest, ExpireHistoryBetweenPagination) {
+  static constexpr size_t kNumVisits =
+      internal::kMaxVisitsToExpirePerBatch + 10;
+  base::Time start_time = PretendNow() - base::Days(1);
+
+  URLRow url_row(GURL("http://www.google.com/paginated"));
+  url_row.set_last_visit(start_time + base::Seconds(kNumVisits - 1));
+  url_row.set_visit_count(kNumVisits);
+  URLID url_id = main_db_->AddURL(url_row);
+  ASSERT_NE(0, url_id);
+  ASSERT_TRUE(main_db_->GetURLRow(url_id, &url_row));
+
+  for (size_t i = 0; i < kNumVisits; ++i) {
+    VisitRow visit_row;
+    visit_row.url_id = url_id;
+    visit_row.visit_time = start_time + base::Seconds(i);
+    visit_row.source = SOURCE_BROWSED;
+    main_db_->AddVisit(&visit_row);
+  }
+
+  expirer_.ExpireHistoryBetween(
+      /*restrict_urls=*/{}, kNoAppIdFilter, base::Time(), base::Time::Max(),
+      /*user_initiated=*/true);
+
+  // Expiration should have been processed in 2 batches:
+  // Batch 1 deletes the first `kMaxVisitsToExpirePerBatch` visits and modifies
+  // `url_row` (10 visits remaining).
+  // Batch 2 deletes the remaining 10 visits and deletes `url_row`.
+  ASSERT_EQ(1u, urls_modified_notifications_.size());
+  ASSERT_EQ(1u, urls_modified_notifications_[0].second.size());
+  EXPECT_EQ(url_row.url(), urls_modified_notifications_[0].second[0].url());
+  EXPECT_EQ(10, urls_modified_notifications_[0].second[0].visit_count());
+
+  const base::Time split_time =
+      start_time + base::Seconds(internal::kMaxVisitsToExpirePerBatch);
+  ASSERT_EQ(2u, urls_deleted_notifications_.size());
+  EXPECT_EQ(base::Time(), urls_deleted_notifications_[0].time_range().begin());
+  EXPECT_EQ(split_time, urls_deleted_notifications_[0].time_range().end());
+  EXPECT_EQ(internal::kMaxVisitsToExpirePerBatch,
+            urls_deleted_notifications_[0].deleted_visit_ids().size());
+  EXPECT_TRUE(urls_deleted_notifications_[0].deleted_rows().empty());
+  EXPECT_EQ(split_time, urls_deleted_notifications_[1].time_range().begin());
+  EXPECT_EQ(base::Time::Max(),
+            urls_deleted_notifications_[1].time_range().end());
+  EXPECT_EQ(10u, urls_deleted_notifications_[1].deleted_visit_ids().size());
+  ASSERT_EQ(1u, urls_deleted_notifications_[1].deleted_rows().size());
+  EXPECT_EQ(url_row.url(),
+            urls_deleted_notifications_[1].deleted_rows()[0].url());
+
+  URLRow temp_row;
+  EXPECT_FALSE(main_db_->GetURLRow(url_id, &temp_row));
+  VisitVector visits;
+  main_db_->GetVisitsForURL(url_id, &visits);
+  EXPECT_TRUE(visits.empty());
+}
+
+TEST_F(ExpireHistoryTest, ExpireHistoryBetweenPaginationWithRestrictUrls) {
+  static constexpr size_t kNumRestrictedVisits =
+      internal::kMaxVisitsToExpirePerBatch + 10;
+  static constexpr size_t kNumUnrestrictedVisits = 5;
+  base::Time start_time = PretendNow() - base::Days(1);
+
+  URLRow restricted_row(GURL("http://www.google.com/restricted"));
+  restricted_row.set_last_visit(start_time +
+                                base::Seconds(kNumRestrictedVisits - 1));
+  restricted_row.set_visit_count(kNumRestrictedVisits);
+  URLID restricted_url_id = main_db_->AddURL(restricted_row);
+  ASSERT_NE(0, restricted_url_id);
+  ASSERT_TRUE(main_db_->GetURLRow(restricted_url_id, &restricted_row));
+
+  URLRow unrestricted_row(GURL("http://www.google.com/unrestricted"));
+  unrestricted_row.set_last_visit(start_time +
+                                  base::Seconds(kNumUnrestrictedVisits - 1));
+  unrestricted_row.set_visit_count(kNumUnrestrictedVisits);
+  URLID unrestricted_url_id = main_db_->AddURL(unrestricted_row);
+  ASSERT_NE(0, unrestricted_url_id);
+  ASSERT_TRUE(main_db_->GetURLRow(unrestricted_url_id, &unrestricted_row));
+
+  for (size_t i = 0; i < kNumRestrictedVisits; ++i) {
+    VisitRow visit_row;
+    visit_row.url_id = restricted_url_id;
+    visit_row.visit_time = start_time + base::Seconds(i);
+    visit_row.source = SOURCE_BROWSED;
+    main_db_->AddVisit(&visit_row);
+  }
+  for (size_t i = 0; i < kNumUnrestrictedVisits; ++i) {
+    VisitRow visit_row;
+    visit_row.url_id = unrestricted_url_id;
+    visit_row.visit_time = start_time + base::Seconds(i);
+    visit_row.source = SOURCE_BROWSED;
+    main_db_->AddVisit(&visit_row);
+  }
+
+  const std::set<GURL> restrict_urls = {restricted_row.url()};
+  expirer_.ExpireHistoryBetween(restrict_urls, kNoAppIdFilter, base::Time(),
+                                base::Time::Max(),
+                                /*user_initiated=*/true);
+
+  const base::Time split_time =
+      start_time + base::Seconds(internal::kMaxVisitsToExpirePerBatch);
+  ASSERT_EQ(2u, urls_deleted_notifications_.size());
+  EXPECT_EQ(base::Time(), urls_deleted_notifications_[0].time_range().begin());
+  EXPECT_EQ(split_time, urls_deleted_notifications_[0].time_range().end());
+  EXPECT_EQ(restrict_urls, urls_deleted_notifications_[0].restrict_urls());
+  EXPECT_EQ(internal::kMaxVisitsToExpirePerBatch,
+            urls_deleted_notifications_[0].deleted_visit_ids().size());
+  EXPECT_EQ(split_time, urls_deleted_notifications_[1].time_range().begin());
+  EXPECT_EQ(base::Time::Max(),
+            urls_deleted_notifications_[1].time_range().end());
+  EXPECT_EQ(restrict_urls, urls_deleted_notifications_[1].restrict_urls());
+  EXPECT_EQ(10u, urls_deleted_notifications_[1].deleted_visit_ids().size());
+
+  URLRow temp_row;
+  EXPECT_FALSE(main_db_->GetURLRow(restricted_url_id, &temp_row));
+  VisitVector visits;
+  main_db_->GetVisitsForURL(restricted_url_id, &visits);
+  EXPECT_TRUE(visits.empty());
+
+  // Unrestricted URL and its visits should remain intact.
+  ASSERT_TRUE(main_db_->GetURLRow(unrestricted_url_id, &temp_row));
+  EXPECT_EQ(static_cast<int>(kNumUnrestrictedVisits), temp_row.visit_count());
+  main_db_->GetVisitsForURL(unrestricted_url_id, &visits);
+  EXPECT_EQ(kNumUnrestrictedVisits, visits.size());
+}
+
 // TODO(brettw) add some visits with no URL to make sure everything is updated
 // properly. Have the visits also refer to nonexistent FTS rows.
 //

@@ -3691,10 +3691,9 @@ void HistoryBackend::ExpireHistoryBetween(
     // possibility of an information leak.
     DeleteAllHistory();
   } else {
-    // Clearing parts of history, have the expirer do the depend
-    expirer_.ExpireHistoryBetween(restrict_urls, restrict_app_id, begin_time,
-                                  end_time, user_initiated);
-
+    // Clearing parts of history, have the expirer do the dependency following.
+    ExpireHistoryBetweenImpl(restrict_urls, restrict_app_id, begin_time,
+                             end_time, user_initiated);
     // Force a commit, if the user is deleting something for privacy reasons,
     // we want to get it on disk ASAP.
     Commit();
@@ -3753,9 +3752,35 @@ void HistoryBackend::ExpireHistory(
     const std::vector<ExpireHistoryArgs>& expire_list) {
   if (db_) {
     for (const auto& expire : expire_list) {
-      expirer_.ExpireHistoryBetween(expire.urls, expire.restrict_app_id,
-                                    expire.begin_time, expire.end_time, true);
+      ExpireHistoryBetweenImpl(expire.urls, expire.restrict_app_id,
+                               expire.begin_time, expire.end_time,
+                               /*user_initiated=*/true);
     }
+    // `ExpireHistoryBetweenImpl()` doesn't commit the last batch, so the caller
+    // has to commit.
+    Commit();
+  }
+}
+
+void HistoryBackend::ExpireHistoryBetweenImpl(
+    const std::set<GURL>& restrict_urls,
+    std::optional<std::string> restrict_app_id,
+    Time begin_time,
+    Time end_time,
+    bool user_initiated) {
+  std::optional<base::Time> next_begin_time = begin_time;
+  while (true) {
+    next_begin_time = expirer_.ExpireSomeHistoryBetween(
+        restrict_urls, restrict_app_id, *next_begin_time, end_time,
+        user_initiated);
+    if (!next_begin_time.has_value()) {
+      break;
+    }
+    // Commit after each intermediate batch to bound transaction size and ensure
+    // progress is persisted if the browser crashes or is killed mid-deletion.
+    // The caller commits after the final batch so that callers like
+    // `ExpireHistory()` can consolidate a sequence of small
+    // `ExpireHistoryBetweenImpl()` calls into a single commit.
     Commit();
   }
 }

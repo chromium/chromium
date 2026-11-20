@@ -5,10 +5,13 @@
 #ifndef COMPONENTS_HISTORY_CORE_BROWSER_EXPIRE_HISTORY_BACKEND_H_
 #define COMPONENTS_HISTORY_CORE_BROWSER_EXPIRE_HISTORY_BACKEND_H_
 
+#include <stddef.h>
+
 #include <map>
 #include <memory>
 #include <optional>
 #include <set>
+#include <string>
 #include <vector>
 
 #include "base/containers/queue.h"
@@ -54,6 +57,11 @@ typedef std::vector<raw_ptr<const ExpiringVisitsReader, VectorExperimental>>
 namespace internal {
 // The minimum number of days since last use for an icon to be considered old.
 extern const int kOnDemandFaviconIsOldAfterDays;
+
+// Maximum number of visits to expire in a single batch in
+// `ExpireHistoryBetween()` and `ExpireSomeHistoryBetween()`, to avoid OOMs when
+// expiring large history ranges.
+inline constexpr size_t kMaxVisitsToExpirePerBatch = 1000;
 }  // namespace internal
 
 // Helper component to HistoryBackend that manages expiration and deleting of
@@ -93,11 +101,26 @@ class ExpireHistoryBackend {
   // Removes all visits to restrict_urls (or all URLs if empty) and
   // restrict_app_id (or all entries if absent) in the given
   // time range, updating the URLs accordingly.
+  // TODO(crbug.com/537187681): Remove this method (now only used in tests) and
+  // migrate callers to `ExpireSomeHistoryBetween()`.
   void ExpireHistoryBetween(const std::set<GURL>& restrict_urls,
                             std::optional<std::string> restrict_app_id,
                             base::Time begin_time,
                             base::Time end_time,
                             bool user_initiated);
+
+  // Expires up to `internal::kMaxVisitsToExpirePerBatch` visits (plus any
+  // redirect parents) matching `restrict_urls` (or all URLs if empty) and
+  // `restrict_app_id` (or all entries if absent) in the given time range,
+  // updating the URLs accordingly. If there might be more visits to expire in
+  // the given time range, returns the `begin_time` to pass to the next call;
+  // otherwise returns `std::nullopt`.
+  std::optional<base::Time> ExpireSomeHistoryBetween(
+      const std::set<GURL>& restrict_urls,
+      std::optional<std::string> restrict_app_id,
+      base::Time begin_time,
+      base::Time end_time,
+      bool user_initiated);
 
   // Removes all visits to all URLs with the given times, updating the
   // URLs accordingly.  `times` must be in reverse chronological order

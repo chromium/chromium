@@ -802,7 +802,9 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   void DeleteURLsUntil(
       const std::vector<std::pair<GURL, base::Time>>& urls_and_timestamps);
 
-  // Calls ExpireHistoryBackend::ExpireHistoryBetween and commits the change.
+  // Expires all visits matching `restrict_urls` (or all URLs if empty) and
+  // `restrict_app_id` (or all entries if absent) in `[begin_time, end_time)` in
+  // batches, committing after each batch.
   void ExpireHistoryBetween(const std::set<GURL>& restrict_urls,
                             std::optional<std::string> restrict_app_id,
                             base::Time begin_time,
@@ -1080,7 +1082,16 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
                           VisitUpdateReason reason) override;
   void NotifyVisitsDeleted(const std::vector<DeletedVisit>& visits) override;
 
-  // Deleting all history ------------------------------------------------------
+  // Deleting history ----------------------------------------------------------
+
+  // Expires visits in `[begin_time, end_time)` in batches, committing between
+  // batches to bound transaction size. The caller is responsible for calling
+  // `Commit()` after the final batch.
+  void ExpireHistoryBetweenImpl(const std::set<GURL>& restrict_urls,
+                                std::optional<std::string> restrict_app_id,
+                                base::Time begin_time,
+                                base::Time end_time,
+                                bool user_initiated);
 
   // Deletes all history. This is a special case of deleting that is separated
   // from our normal dependency-following method for performance reasons. The
