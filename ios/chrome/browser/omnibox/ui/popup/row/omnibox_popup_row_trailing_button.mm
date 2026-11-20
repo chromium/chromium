@@ -12,6 +12,7 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
+#import "ios/chrome/common/ui/util/ui_util.h"
 
 namespace {
 
@@ -32,6 +33,7 @@ const CGFloat kTrailingButtonDotPointSize = 8.0f;
   self = [super initWithFrame:frame];
 
   if (self) {
+    self.hidden = YES;
     [self registerForTraitChanges:@[ UITraitPreferredContentSizeCategory.self ]
                        withAction:@selector(traitCollectionDidChangeAction)];
   }
@@ -44,6 +46,7 @@ const CGFloat kTrailingButtonDotPointSize = 8.0f;
   }
 
   _trailingIconType = trailingIconType;
+  [self invalidateIntrinsicContentSize];
 
   [self updateButtonImageForCurrentState];
 }
@@ -72,6 +75,21 @@ const CGFloat kTrailingButtonDotPointSize = 8.0f;
   return appendArrow.size;
 }
 
+- (void)layoutSubviews {
+  [super layoutSubviews];
+  if (self.trailingIconType != TrailingIconType::kBlueDot ||
+      CGRectIsEmpty(self.bounds)) {
+    return;
+  }
+  // Keep the dot image unstretched even if UIButton shrinks its content rect
+  // vertically across cell reuse.
+  CGSize imageSize = self.currentImage.size;
+  if (imageSize.width > 0 && imageSize.height > 0) {
+    self.imageView.frame =
+        CGRectMakeCenteredRectInFrame(self.bounds.size, imageSize);
+  }
+}
+
 #pragma mark - private
 
 - (void)setRefineQueryArrowDirectionDown:(BOOL)refineQueryArrowDirectionDown {
@@ -85,6 +103,7 @@ const CGFloat kTrailingButtonDotPointSize = 8.0f;
 }
 
 - (void)traitCollectionDidChangeAction {
+  [self invalidateIntrinsicContentSize];
   [self updateButtonImageForCurrentState];
 }
 
@@ -98,6 +117,7 @@ const CGFloat kTrailingButtonDotPointSize = 8.0f;
     self.userInteractionEnabled = YES;
     switch (self.trailingIconType) {
       case TrailingIconType::kNone:
+        [self setImage:nil forState:UIControlStateNormal];
         self.accessibilityIdentifier = nil;
         self.hidden = YES;
         return;
@@ -136,6 +156,7 @@ const CGFloat kTrailingButtonDotPointSize = 8.0f;
 
     [self setImage:icon forState:UIControlStateNormal];
     [self updateTintColor];
+    [self setNeedsLayout];
   }
 }
 
