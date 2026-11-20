@@ -2604,23 +2604,26 @@ const FeatureEntry::FeatureVariation kAndroidAppIntegrationModuleVariations[] =
      {"Force to show opt in card",
       kAndroidAppIntegrationModule_ForceCardShown_NonPixel, nullptr}};
 
-const FeatureEntry::FeatureParam kNewTabPageCustomizationV2_ShowColorPicker[] =
-    {{"show_color_picker", "true"}};
+const FeatureEntry::FeatureParam
+    kNewTabPageCustomizationThemeDebug_ShowColorPicker[] = {
+        {"show_color_picker", "true"}};
 
 const FeatureEntry::FeatureParam
-    kNewTabPageCustomizationV2_DailyRefreshThresholdMs[] = {
+    kNewTabPageCustomizationThemeDebug_DailyRefreshThresholdMs[] = {
         {"daily_refresh_threshold_ms", "20000"}};
 
 const FeatureEntry::FeatureParam
-    kNewTabPageCustomizationV2_ForceShowTipBottomSheet[] = {
+    kNewTabPageCustomizationThemeDebug_ForceShowTipBottomSheet[] = {
         {"force_show_tip_bottom_sheet", "true"}};
 
-const FeatureEntry::FeatureVariation kNewTabPageCustomizationV2Variations[] = {
-    {"Show color picker", kNewTabPageCustomizationV2_ShowColorPicker, nullptr},
-    {"Daily refresh after 20s",
-     kNewTabPageCustomizationV2_DailyRefreshThresholdMs, nullptr},
-    {"Force to show theme tip bottom sheet",
-     kNewTabPageCustomizationV2_ForceShowTipBottomSheet, nullptr}};
+const FeatureEntry::FeatureVariation
+    kNewTabPageCustomizationThemeDebugVariations[] = {
+        {"Show color picker",
+         kNewTabPageCustomizationThemeDebug_ShowColorPicker, nullptr},
+        {"Daily refresh after 20s",
+         kNewTabPageCustomizationThemeDebug_DailyRefreshThresholdMs, nullptr},
+        {"Force to show theme tip bottom sheet",
+         kNewTabPageCustomizationThemeDebug_ForceShowTipBottomSheet, nullptr}};
 
 const FeatureEntry::FeatureParam
     kAndroidAppIntegrationMultiDataSource_SkipDeviceCheck[] = {
@@ -6703,13 +6706,14 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidHistoryClusteringDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kAndroidHistoryClustering)},
 
-    {"new-tab-page-customization-v2",
-     flag_descriptions::kNewTabPageCustomizationV2Name,
-     flag_descriptions::kNewTabPageCustomizationV2Description, kOsAndroid,
+    {"new-tab-page-customization-theme-debug",
+     flag_descriptions::kNewTabPageCustomizationThemeDebugName,
+     flag_descriptions::kNewTabPageCustomizationThemeDebugDescription,
+     kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(
-         segmentation_platform::features::kNewTabPageCustomizationV2,
-         kNewTabPageCustomizationV2Variations,
-         "NewTabPageCustomizationV2")},
+         chrome::android::kNewTabPageCustomizationThemeDebug,
+         kNewTabPageCustomizationThemeDebugVariations,
+         "NewTabPageCustomizationThemeDebug")},
 
     {"auxiliary-search-history-donation",
      flag_descriptions::kAuxiliarySearchHistoryDonationName,

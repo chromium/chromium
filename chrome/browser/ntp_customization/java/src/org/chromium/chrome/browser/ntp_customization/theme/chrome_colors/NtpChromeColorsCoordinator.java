@@ -101,7 +101,7 @@ public class NtpChromeColorsCoordinator implements ThemeBottomSheetObserver {
                 NtpChromeColorsProperties.DAILY_REFRESH_SWITCH_ON_CHECKED_CHANGE_LISTENER,
                 this::onDailyRefreshSwitchToggled);
 
-        if (ChromeFeatureList.sNewTabPageCustomizationV2ShowColorPicker.getValue()) {
+        if (ChromeFeatureList.sNewTabPageCustomizationThemeDebugShowColorPicker.getValue()) {
             setupColorInputs();
         }
 

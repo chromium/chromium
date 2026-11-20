@@ -733,6 +733,8 @@ public abstract class ChromeFeatureList {
     public static final String MOVE_TO_FRONT_IN_LAUNCH_INTENT_DISPATCHER =
             "MoveToFrontInLaunchIntentDispatcher";
     public static final String NAVIGATION_LIST_MENU = "NavigationListMenu";
+    public static final String NEW_TAB_PAGE_CUSTOMIZATION_THEME_DEBUG =
+            "NewTabPageCustomizationThemeDebug";
     // Enabled by syncer::kNewTabPageCustomizationThemeSync on C++ side.
     public static final String NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC =
             "NewTabPageCustomizationThemeSync";
@@ -2369,20 +2371,25 @@ public abstract class ChromeFeatureList {
             newBooleanCachedFeatureParam(
                     DEFAULT_BROWSER_PROMO_ENTRY_POINT, "show_app_menu_item", true);
 
-    public static final BooleanCachedFeatureParam sNewTabPageCustomizationV2ShowColorPicker =
-            newBooleanCachedFeatureParam(NEW_TAB_PAGE_CUSTOMIZATION_V2, "show_color_picker", false);
+    public static final BooleanCachedFeatureParam
+            sNewTabPageCustomizationThemeDebugShowColorPicker =
+                    newBooleanCachedFeatureParam(
+                            NEW_TAB_PAGE_CUSTOMIZATION_THEME_DEBUG, "show_color_picker", false);
 
     public static final BooleanCachedFeatureParam
-            sNewTabPageCustomizationV2ForceShowTipBottomSheet =
+            sNewTabPageCustomizationThemeDebugForceShowTipBottomSheet =
                     newBooleanCachedFeatureParam(
-                            NEW_TAB_PAGE_CUSTOMIZATION_V2, "force_show_tip_bottom_sheet", false);
+                            NEW_TAB_PAGE_CUSTOMIZATION_THEME_DEBUG,
+                            "force_show_tip_bottom_sheet",
+                            false);
 
     /** The time duration limit to refresh NTP's background. */
-    public static final IntCachedFeatureParam sNewTabPageCustomizationV2DailyRefreshThresholdMs =
-            newIntCachedFeatureParam(
-                    NEW_TAB_PAGE_CUSTOMIZATION_V2,
-                    "daily_refresh_threshold_ms",
-                    (int) TimeUtils.MILLISECONDS_PER_DAY); // 1 day in milliseconds.
+    public static final IntCachedFeatureParam
+            sNewTabPageCustomizationThemeDebugDailyRefreshThresholdMs =
+                    newIntCachedFeatureParam(
+                            NEW_TAB_PAGE_CUSTOMIZATION_THEME_DEBUG,
+                            "daily_refresh_threshold_ms",
+                            (int) TimeUtils.MILLISECONDS_PER_DAY); // 1 day in milliseconds.
 
     public static final StringCachedFeatureParam sEdgeToEdgeUseBackupNavbarInsetsOemMinVersions =
             newStringCachedFeatureParam(
@@ -2637,9 +2644,9 @@ public abstract class ChromeFeatureList {
                     sMostVisitedTilesReselectLaxQuery,
                     sMostVisitedTilesReselectLaxRef,
                     sMostVisitedTilesReselectLaxSchemeHost,
-                    sNewTabPageCustomizationV2DailyRefreshThresholdMs,
-                    sNewTabPageCustomizationV2ForceShowTipBottomSheet,
-                    sNewTabPageCustomizationV2ShowColorPicker,
+                    sNewTabPageCustomizationThemeDebugDailyRefreshThresholdMs,
+                    sNewTabPageCustomizationThemeDebugForceShowTipBottomSheet,
+                    sNewTabPageCustomizationThemeDebugShowColorPicker,
                     sNotificationTrampolineImmediateJobDurationMs,
                     sNotificationTrampolineLongJobDurationMs,
                     sNotificationTrampolineNormalJobDurationMs,

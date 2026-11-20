@@ -92,7 +92,8 @@ public class NtpCustomizationPromoManager {
             return false;
         }
 
-        if (ChromeFeatureList.sNewTabPageCustomizationV2ForceShowTipBottomSheet.getValue()) {
+        if (ChromeFeatureList.sNewTabPageCustomizationThemeDebugForceShowTipBottomSheet
+                .getValue()) {
             return true;
         }
 
@@ -211,7 +212,8 @@ public class NtpCustomizationPromoManager {
     public static void maybeUpdateShowThemeTipSnackbarState(
             @SnackBarState int newState, int taskId) {
         boolean forceBottomSheetShow =
-                ChromeFeatureList.sNewTabPageCustomizationV2ForceShowTipBottomSheet.getValue();
+                ChromeFeatureList.sNewTabPageCustomizationThemeDebugForceShowTipBottomSheet
+                        .getValue();
         if ((sState == SnackBarState.SHOWN
                         || NtpCustomizationUtils.isThemeSnackbarShownFromSharedPreference())
                 && !forceBottomSheetShow) {

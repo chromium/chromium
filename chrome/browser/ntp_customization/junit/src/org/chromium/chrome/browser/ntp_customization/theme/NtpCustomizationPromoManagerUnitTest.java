@@ -130,24 +130,17 @@ public class NtpCustomizationPromoManagerUnitTest {
                 NtpCustomizationPromoManager.canTriggerCustomizationBottomSheet(
                         mWindowAndroid, /* isLff= */ false, /* ntpOpenedCount= */ 2));
 
-        // Case 5: Force show enabled.
-        ChromeFeatureList.sNewTabPageCustomizationV2ForceShowTipBottomSheet.setForTesting(true);
-        assertTrue(
-                NtpCustomizationPromoManager.canTriggerCustomizationBottomSheet(
-                        mWindowAndroid, /* isLff= */ false, /* ntpOpenedCount= */ 2));
-        ChromeFeatureList.sNewTabPageCustomizationV2ForceShowTipBottomSheet.setForTesting(false);
-
         NtpCustomizationUtils
                 .resetThemeTipBottomSheetShownTimestampFromSharedPreferenceForTesting();
 
-        // Case 6: Within cool down period (last applied 6 days ago).
+        // Case 5: Within cool down period (last applied 6 days ago).
         long sixDaysAgo = TimeUtils.currentTimeMillis() - Duration.ofDays(6).toMillis();
         NtpCustomizationUtils.setLastApplyThemeTimestampToSharedPreference(sixDaysAgo);
         assertFalse(
                 NtpCustomizationPromoManager.canTriggerCustomizationBottomSheet(
                         mWindowAndroid, /* isLff= */ false, /* ntpOpenedCount= */ 2));
 
-        // Case 7: Outside cool down period (last applied 8 days ago).
+        // Case 6: Outside cool down period (last applied 8 days ago).
         long eightDaysAgo = TimeUtils.currentTimeMillis() - Duration.ofDays(8).toMillis();
         NtpCustomizationUtils.setLastApplyThemeTimestampToSharedPreference(eightDaysAgo);
 
@@ -160,6 +153,22 @@ public class NtpCustomizationPromoManagerUnitTest {
 
         // Reset for other tests.
         NtpCustomizationUtils.resetSharedPreferenceForTesting();
+    }
+
+    @Test
+    @EnableFeatures(
+            ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_DEBUG
+                    + ":force_show_tip_bottom_sheet/true")
+    public void testCanTriggerCustomizationBottomSheet_forceShow() {
+        NtpCustomizationConfigManager configManager = mock(NtpCustomizationConfigManager.class);
+        NtpCustomizationConfigManager.setInstanceForTesting(configManager);
+        when(configManager.getBackgroundType()).thenReturn(NtpBackgroundType.DEFAULT);
+
+        // The bottom sheet is forced even though it has already been shown.
+        NtpCustomizationUtils.setThemeTipBottomSheetShownTimestampToSharedPreference(100);
+        assertTrue(
+                NtpCustomizationPromoManager.canTriggerCustomizationBottomSheet(
+                        mWindowAndroid, /* isLff= */ false, /* ntpOpenedCount= */ 2));
     }
 
     @Test
@@ -243,7 +252,8 @@ public class NtpCustomizationPromoManagerUnitTest {
         NtpCustomizationPromoManager.setStateForTesting(SnackBarState.SHOWN);
 
         // Try to transition to PROMO_OPEN when SHOWN and forceShow is false
-        ChromeFeatureList.sNewTabPageCustomizationV2ForceShowTipBottomSheet.setForTesting(false);
+        ChromeFeatureList.sNewTabPageCustomizationThemeDebugForceShowTipBottomSheet.setForTesting(
+                false);
         NtpCustomizationPromoManager.maybeUpdateShowThemeTipSnackbarState(
                 SnackBarState.PROMO_OPEN, taskId);
         assertEquals(SnackBarState.SHOWN, NtpCustomizationPromoManager.getStateForTesting());
@@ -255,12 +265,14 @@ public class NtpCustomizationPromoManagerUnitTest {
         NtpCustomizationPromoManager.setStateForTesting(SnackBarState.SHOWN);
 
         // Try to transition to PROMO_OPEN when SHOWN and forceShow is true
-        ChromeFeatureList.sNewTabPageCustomizationV2ForceShowTipBottomSheet.setForTesting(true);
+        ChromeFeatureList.sNewTabPageCustomizationThemeDebugForceShowTipBottomSheet.setForTesting(
+                true);
         NtpCustomizationPromoManager.maybeUpdateShowThemeTipSnackbarState(
                 SnackBarState.PROMO_OPEN, taskId);
         assertEquals(SnackBarState.PROMO_OPEN, NtpCustomizationPromoManager.getStateForTesting());
 
-        ChromeFeatureList.sNewTabPageCustomizationV2ForceShowTipBottomSheet.setForTesting(false);
+        ChromeFeatureList.sNewTabPageCustomizationThemeDebugForceShowTipBottomSheet.setForTesting(
+                false);
     }
 
     @Test
@@ -269,7 +281,8 @@ public class NtpCustomizationPromoManagerUnitTest {
         NtpCustomizationPromoManager.setStateForTesting(SnackBarState.PENDING_ON_RECREATE);
 
         // Try to transition to PROMO_OPEN when state is PENDING_ON_RECREATE and forceShow is false
-        ChromeFeatureList.sNewTabPageCustomizationV2ForceShowTipBottomSheet.setForTesting(false);
+        ChromeFeatureList.sNewTabPageCustomizationThemeDebugForceShowTipBottomSheet.setForTesting(
+                false);
         NtpCustomizationPromoManager.maybeUpdateShowThemeTipSnackbarState(
                 SnackBarState.PROMO_OPEN, taskId);
         assertEquals(

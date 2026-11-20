@@ -129,7 +129,7 @@ public class NtpThemeDailyRefreshManagerUnitTest {
 
     @Test
     @Features.EnableFeatures({
-        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2 + ":daily_refresh_threshold_ms/0"
+        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_DEBUG + ":daily_refresh_threshold_ms/0"
     })
     public void testIsDailyRefreshEnabled_Within24Hours_ForceUpdate() {
         NtpCustomizationUtils.setIsChromeColorDailyRefreshEnabledToSharedPreference(true);

@@ -18085,6 +18085,7 @@ from previous Chrome versions.
   <int value="910964036" label="ChangeUnfocusedPriority:disabled"/>
   <int value="911212299" label="AndroidKeyboardShortcutHints:disabled"/>
   <int value="911256399" label="GlobalMediaControlsModernUI:enabled"/>
+  <int value="911903069" label="NewTabPageCustomizationThemeDebug:enabled"/>
   <int value="911991932" label="OnDeviceModelLitertLmBackend:enabled"/>
   <int value="912119426" label="InfiniteSessionRestore:disabled"/>
   <int value="912145170" label="FirstRunDesktopChoiceScreenRefresh:disabled"/>
@@ -20785,6 +20786,7 @@ from previous Chrome versions.
   <int value="1702985369"
       label="IncognitoClearBrowsingDataDialogForDesktop:enabled"/>
   <int value="1703206814" label="CloseAllTabsModalDialog:disabled"/>
+  <int value="1703255331" label="NewTabPageCustomizationThemeDebug:disabled"/>
   <int value="1703927420" label="PiexWasm:enabled"/>
   <int value="1704490504"
       label="UseDirectXkbLayoutForThaiTisInputMethod:disabled"/>

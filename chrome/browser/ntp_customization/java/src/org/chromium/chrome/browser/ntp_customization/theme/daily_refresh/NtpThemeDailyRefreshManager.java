@@ -183,7 +183,8 @@ public class NtpThemeDailyRefreshManager {
         }
 
         long dailyRefreshHoursMs =
-                ChromeFeatureList.sNewTabPageCustomizationV2DailyRefreshThresholdMs.getValue();
+                ChromeFeatureList.sNewTabPageCustomizationThemeDebugDailyRefreshThresholdMs
+                        .getValue();
 
         if (mLastDailyUpdateTimestamp == null) {
             mLastDailyUpdateTimestamp =

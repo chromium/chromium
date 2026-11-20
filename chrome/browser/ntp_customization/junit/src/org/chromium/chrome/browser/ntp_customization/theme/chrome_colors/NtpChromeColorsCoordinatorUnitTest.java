@@ -107,7 +107,7 @@ public class NtpChromeColorsCoordinatorUnitTest {
 
     @Test
     @Features.EnableFeatures(
-            ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2 + ":show_color_picker/true")
+            ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_DEBUG + ":show_color_picker/true")
     public void testConstructor() {
         mCoordinator.destroy();
         createCoordinator();
@@ -122,6 +122,13 @@ public class NtpChromeColorsCoordinatorUnitTest {
                 mPropertyModel.get(
                         NtpChromeColorsProperties.DAILY_REFRESH_SWITCH_ON_CHECKED_CHANGE_LISTENER));
         assertFalse(mPropertyModel.get(NtpChromeColorsProperties.IS_DAILY_REFRESH_SWITCH_CHECKED));
+    }
+
+    @Test
+    public void testConstructor_colorPickerHiddenByDefault() {
+        assertNull(
+                mPropertyModel.get(NtpChromeColorsProperties.BACKGROUND_COLOR_INPUT_TEXT_WATCHER));
+        assertNull(mPropertyModel.get(NtpChromeColorsProperties.PRIMARY_COLOR_INPUT_TEXT_WATCHER));
     }
 
     @Test
