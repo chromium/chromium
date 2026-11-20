@@ -13,6 +13,7 @@
 #include "base/features.h"
 #include "base/metrics/histogram.h"
 #include "base/no_destructor.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/synchronization/lock.h"
@@ -90,6 +91,17 @@ base::HistogramBase* CreateLockHistogram(const LockMetricTag& lock_tag,
       base::HistogramBase::kUmaTargetedHistogramFlag);
 }
 
+base::HistogramBase* CreateDroppedSamplesHistogram(
+    std::string_view histogram_suffix) {
+  std::string name =
+      StrCat({"Scheduling.ContendedLockAcquisitionTime.DroppedSamples.",
+              histogram_suffix});
+
+  // Parameters match `base::UmaHistogramCounts1000()`.
+  return base::Histogram::FactoryGet(
+      name, 1, 1000, 50, base::HistogramBase::kUmaTargetedHistogramFlag);
+}
+
 std::vector<std::string>& GetAllowedThreads() {
   static base::NoDestructor<std::vector<std::string>> allowed_threads(
       base::SplitString(
@@ -140,6 +152,16 @@ base::HistogramBase* LockMetricsRecorder::GetOrCreateHistogram(
   return histogram;
 }
 
+base::HistogramBase* LockMetricsRecorder::GetOrCreateDroppedSamplesHistogram() {
+  DCHECK(CalledOnValidThread());
+
+  if (!dropped_samples_histogram_) {
+    dropped_samples_histogram_ =
+        CreateDroppedSamplesHistogram(histogram_suffix_);
+  }
+  return dropped_samples_histogram_;
+}
+
 void LockMetricsRecorder::ReportLockHistogram(const LockMetricSample& sample) {
   DCHECK(CalledOnValidThread());
   DCHECK_LE(sample.tags.size(), LockMetricTagList::kMaxTags);
@@ -186,8 +208,25 @@ void LockMetricsRecorder::ReportLockAcquisitionTimes() {
     return;
   }
 
+  // `RingBuffer::CurrentIndex()` counts all samples saved since the last
+  // `Clear()`, including overwrites. Any excess beyond `kMaxSamples` is the
+  // number of older samples dropped before this flush.
+  const size_t total_recorded = unified_sample_buffer_.CurrentIndex();
+  if (total_recorded == 0) {
+    return;
+  }
+
+  const size_t dropped_samples =
+      total_recorded > kMaxSamples ? total_recorded - kMaxSamples : 0;
+
   ForEachSample(
       [this](const LockMetricSample& sample) { ReportLockHistogram(sample); });
+
+  // Guard histogram lookup/recording against reentrancy on StatisticsRecorder's
+  // internal lock.
+  AutoReset<bool> mark_iterating_in_progress(&iterating_in_progress_, true);
+  GetOrCreateDroppedSamplesHistogram()->Add(
+      saturated_cast<HistogramBase::Sample32>(dropped_samples));
 }
 
 // `EnableRecordingOnCurrentThread()` is the only function responsible for

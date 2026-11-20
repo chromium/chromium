@@ -421,6 +421,34 @@ TEST_F(LockMetricsEnabledTest, ReportLockAcquisitionTimesFlushesToHistograms) {
   EXPECT_GE(test_samples->TotalCount(), 1);
 }
 
+TEST_F(LockMetricsRecorderTest, ReportsDroppedSamplesOnFlush) {
+  constexpr std::string_view kDroppedSamplesHistogram =
+      "Scheduling.ContendedLockAcquisitionTime.DroppedSamples."
+      "LockMetricsRecorderTest";
+  base::HistogramTester histogram_tester;
+  const LockMetricsRecorder::LockMetricSample sample{
+      Microseconds(100), Lock::GetBaseLockMetricTagList()};
+
+  // Empty flush should not emit a DroppedSamples sample.
+  lock_metrics_recorder_.ReportLockAcquisitionTimes();
+  histogram_tester.ExpectTotalCount(kDroppedSamplesHistogram, 0);
+
+  // Flush without overflow records 0 dropped samples.
+  lock_metrics_recorder_.RecordLockAcquisitionTime(sample);
+  lock_metrics_recorder_.ReportLockAcquisitionTimes();
+  histogram_tester.ExpectUniqueSample(kDroppedSamplesHistogram, 0, 1);
+
+  // Flush after overflowing the ring buffer records the exact overflow count.
+  constexpr size_t kOverflow = 5;
+  for (size_t i = 0; i < LockMetricsRecorder::kMaxSamples + kOverflow; ++i) {
+    lock_metrics_recorder_.RecordLockAcquisitionTime(sample);
+  }
+  lock_metrics_recorder_.ReportLockAcquisitionTimes();
+  histogram_tester.ExpectBucketCount(kDroppedSamplesHistogram, 0, 1);
+  histogram_tester.ExpectBucketCount(kDroppedSamplesHistogram, kOverflow, 1);
+  histogram_tester.ExpectTotalCount(kDroppedSamplesHistogram, 2);
+}
+
 // Test that different threads use separate thread-local storage for lock
 // metrics.
 TEST_F(LockMetricsEnabledTest, ThreadLocalBufferIsolation) {

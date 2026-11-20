@@ -45,6 +45,51 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Scheduling.ContendedLockAcquisitionTime.DroppedSamples.{ProcessName}.{ThreadGroup}Worker"
+    units="samples" expires_after="2027-05-17">
+  <owner>anandrv@google.com</owner>
+  <owner>clank-performance-team@google.com</owner>
+  <summary>
+    The number of subsampled contended lock acquisition samples overwritten in
+    the thread-local ring buffer before flushing on a {ThreadGroup} thread pool
+    worker in the {ProcessName} process. Recorded once per non-empty flush
+    alongside the flushed lock acquisition time samples.
+  </summary>
+  <token key="ThreadGroup">
+    <variant name="Background"
+        summary="a thread pool background worker thread"/>
+    <variant name="Foreground"
+        summary="a thread pool foreground worker thread"/>
+  </token>
+  <token key="ProcessName">
+    <variant name="Browser" summary="the browser process"/>
+    <variant name="GPU" summary="the gpu process"/>
+    <variant name="Renderer" summary="the renderer process"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Scheduling.ContendedLockAcquisitionTime.DroppedSamples.{ThreadName}"
+    units="samples" expires_after="2027-05-17">
+  <owner>anandrv@google.com</owner>
+  <owner>clank-performance-team@google.com</owner>
+  <summary>
+    The number of subsampled contended lock acquisition samples overwritten in
+    the thread-local ring buffer before flushing on {ThreadName}. Recorded once
+    per non-empty flush alongside the flushed lock acquisition time samples.
+  </summary>
+  <token key="ThreadName">
+    <variant name="BrowserIO" summary="the browser IO thread"/>
+    <variant name="Compositor" summary="the compositor thread"/>
+    <variant name="CrBrowserMain" summary="the browser main thread"/>
+    <variant name="CrGpuMain" summary="the gpu main thread"/>
+    <variant name="CrRendererMain" summary="the renderer main thread"/>
+    <variant name="NetworkService" summary="the network service thread"/>
+    <variant name="VizCompositor" summary="the viz compositor thread"/>
+  </token>
+</histogram>
+
+<histogram
     name="Scheduling.ContendedLockAcquisitionTime.{LockType}.{ProcessName}.{ThreadGroup}Worker"
     units="microseconds" expires_after="2027-04-11">
   <owner>fionav@google.com</owner>

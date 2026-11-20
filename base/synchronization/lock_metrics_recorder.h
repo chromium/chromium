@@ -159,6 +159,8 @@ class BASE_EXPORT LockMetricsRecorder {
 
   base::HistogramBase* GetOrCreateHistogram(const LockMetricTag& lock_tag);
 
+  base::HistogramBase* GetOrCreateDroppedSamplesHistogram();
+
   void ReportLockHistogram(const LockMetricSample& sample);
 
   bool iterating_in_progress_ = false;
@@ -171,6 +173,8 @@ class BASE_EXPORT LockMetricsRecorder {
 
   // Maps `LockMetricTag` hashes to UMA histogram pointers for this thread.
   base::flat_map<uint64_t, base::HistogramBase*> tagged_lock_histograms_;
+
+  raw_ptr<base::HistogramBase> dropped_samples_histogram_ = nullptr;
 
   // The thread ref of the thread that created this object.
   //
