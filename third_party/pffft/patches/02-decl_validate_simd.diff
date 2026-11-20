@@ -1,5 +1,5 @@
 diff --git a/src/pffft.h b/src/pffft.h
-index 2bfa7b3ebcfb..bb6f78d4b795 100644
+index 7f62206..4744e47 100644
 --- a/src/pffft.h
 +++ b/src/pffft.h
 @@ -83,6 +83,11 @@
@@ -11,14 +11,14 @@ index 2bfa7b3ebcfb..bb6f78d4b795 100644
 +  void validate_pffft_simd();
 +#endif
 +
-   /* opaque struct holding internal stuff (precomputed twiddle factors)
+   /**
+      Opaque struct holding internal stuff (precomputed twiddle factors)
       this struct can be shared by many threads as it contains only
-      read-only data.  
 diff --git a/src/test_pffft.c b/src/test_pffft.c
-index 512f0ae..ab78b4d 100644
+index af59738..fcabcf2 100644
 --- a/src/test_pffft.c
 +++ b/src/test_pffft.c
-@@ -361,10 +361,6 @@ void benchmark_ffts(int N, int cplx) {
+@@ -444,10 +444,6 @@ void benchmark_ffts(int N, int cplx) {
    pffft_aligned_free(Z);
  }
  
@@ -27,5 +27,5 @@ index 512f0ae..ab78b4d 100644
 -#endif
 -
  int main(int argc, char **argv) {
-   int Nvalues[] = { 64, 96, 128, 160, 192, 256, 384, 5*96, 512, 5*128, 3*256, 800, 1024, 2048, 2400, 4096, 8192, 9*1024, 16384, 32768, 256*1024, 1024*1024, -1 };
-   int i;
+   int Nvalues[] = { 64, 96, 128, 160, 192, 256, 384, 5*96, 512, 5*128, 3*256, 800, 1024, 2048, 2400, 4096, 8192, 9*1024, 16384, 32768, 256*1024, 1024*1024, 2<<24, 2<<25, -1 };
+   int Nmax = 1014*1024;

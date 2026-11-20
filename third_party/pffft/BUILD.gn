@@ -139,6 +139,9 @@ config("pffft_benchmark_internal_config") {
   cflags = [
     # test_pffft.c contains an `exit(1)` following a `break` statement.
     "-Wno-unreachable-code",
+
+    # test_pffft.c uses a variable only in an assert().
+    "-Wno-unused-variable",
   ]
 }
 

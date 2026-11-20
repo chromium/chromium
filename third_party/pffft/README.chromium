@@ -1,9 +1,9 @@
 Name: PFFFT: a pretty fast FFT.
 Short Name: PFFFT
 URL: https://bitbucket.org/jpommier/pffft/
-Version: N/A
-Date: 2014-08-09
-Revision: 16490be31ba96c11eae52bde754351c05f604cda
+Version: v1.0.0
+Revision: 02fe7715a5bf8bfd914681c53429600f94e0f536
+Date: 2024-11-29
 Update Mechanism: Manual
 License: pffft
 License File: LICENSE
@@ -41,5 +41,3 @@ In case of conflict, update those patches accordingly and save them back in //th
  * 02-decl_validate_simd.diff: declare validate_pffft_simd() in pffft.h and drop
    the local declaration from test_pffft.c
  * 03-malloca.diff: replace _alloca (deprecated) with _malloca (MSVC case only) + cleanup
- * 04-fix_ptr_cast.diff: avoid MSVC warnings by fixing pointer cast
- * 05-fix-arch-detection.diff: better arch detection to avoid to define PFFFT_SIMD_DISABLE

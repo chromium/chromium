@@ -273,8 +273,8 @@ static void passb2(integer ido, integer l1, const real *cc, real *ch, const real
 
 static void passb3(integer ido, integer l1, const real *cc, real *ch, const real *wa1, const real *wa2)
 {
-  static const real taur = -.5f;
-  static const real taui = .866025403784439f;
+  static const real taur = -.5;
+  static const real taui = .866025403784439;
 
   /* System generated locals */
   integer cc_offset, ch_offset;
@@ -419,10 +419,10 @@ static void passb4(integer ido, integer l1, const real *cc, real *ch,
 static void passfb5(integer ido, integer l1, const real *cc, real *ch, 
                     const real *wa1, const real *wa2, const real *wa3, const real *wa4, real fsign)
 {
-  const real tr11 = .309016994374947f;
-  const real ti11 = .951056516295154f*fsign;
-  const real tr12 = -.809016994374947f;
-  const real ti12 = .587785252292473f*fsign;
+  const real tr11 = .309016994374947;
+  const real ti11 = .951056516295154*fsign;
+  const real tr12 = -.809016994374947;
+  const real ti12 = .587785252292473*fsign;
 
   /* System generated locals */
   integer cc_offset, ch_offset;
@@ -571,8 +571,8 @@ static void passf2(integer ido, integer l1, const real *cc, real *ch, const real
 static void passf3(integer ido, integer l1, const real *cc, real *ch, 
                    const real *wa1, const real *wa2)
 {
-  static const real taur = -.5f;
-  static const real taui = -.866025403784439f;
+  static const real taur = -.5;
+  static const real taui = -.866025403784439;
 
   /* System generated locals */
   integer cc_offset, ch_offset;
@@ -771,8 +771,8 @@ static void radb3(integer ido, integer l1, const real *cc, real *ch,
 {
   /* Initialized data */
 
-  static const real taur = -.5f;
-  static const real taui = .866025403784439f;
+  static const real taur = -.5;
+  static const real taui = .866025403784439;
 
   /* System generated locals */
   integer cc_offset, ch_offset;
@@ -839,7 +839,7 @@ static void radb4(integer ido, integer l1, const real *cc, real *ch,
 {
   /* Initialized data */
 
-  static const real sqrt2 = 1.414213562373095f;
+  static const real sqrt2 = 1.414213562373095;
 
   /* System generated locals */
   integer cc_offset, ch_offset;
@@ -926,10 +926,10 @@ static void radb5(integer ido, integer l1, const real *cc, real *ch,
 {
   /* Initialized data */
 
-  static const real tr11 = .309016994374947f;
-  static const real ti11 = .951056516295154f;
-  static const real tr12 = -.809016994374947f;
-  static const real ti12 = .587785252292473f;
+  static const real tr11 = .309016994374947;
+  static const real ti11 = .951056516295154;
+  static const real tr12 = -.809016994374947;
+  static const real ti12 = .587785252292473;
 
   /* System generated locals */
   integer cc_offset, ch_offset;
@@ -1111,8 +1111,8 @@ static void radbg(integer ido, integer ip, integer l1, integer idl1,
       }
     }
   }
-  ar1 = 1.f;
-  ai1 = 0.f;
+  ar1 = 1.;
+  ai1 = 0.;
   for (l = 2; l <= ipph; ++l) {
     lc = ipp2 - l;
     ar1h = dcp * ar1 - dsp * ai1;
@@ -1285,8 +1285,8 @@ static void radf2(integer ido, integer l1, const real *cc, real *ch,
 static void radf3(integer ido, integer l1, const real *cc, real *ch, 
                   const real *wa1, const real *wa2)
 {
-  static const real taur = -.5f;
-  static const real taui = .866025403784439f;
+  static const real taur = -.5;
+  static const real taui = .866025403784439;
 
   /* System generated locals */
   integer ch_offset, cc_offset;
@@ -1355,7 +1355,7 @@ static void radf4(integer ido, integer l1, const real *cc, real *ch,
 {
   /* Initialized data */
 
-  static const real hsqt2 = .7071067811865475f;
+  static const real hsqt2 = .7071067811865475;
 
   /* System generated locals */
   integer cc_offset, ch_offset;
@@ -1446,10 +1446,10 @@ static void radf5(integer ido, integer l1, const real *cc, real *ch,
 {
   /* Initialized data */
 
-  static const real tr11 = .309016994374947f;
-  static const real ti11 = .951056516295154f;
-  static const real tr12 = -.809016994374947f;
-  static const real ti12 = .587785252292473f;
+  static const real tr11 = .309016994374947;
+  static const real ti11 = .951056516295154;
+  static const real tr12 = -.809016994374947;
+  static const real ti12 = .587785252292473;
 
   /* System generated locals */
   integer cc_offset, ch_offset;
@@ -1661,8 +1661,8 @@ static void radfg(integer ido, integer ip, integer l1, integer idl1,
     }
   }
 
-  ar1 = 1.f;
-  ai1 = 0.f;
+  ar1 = 1.;
+  ai1 = 0.;
   for (l = 2; l <= ipph; ++l) {
     lc = ipp2 - l;
     ar1h = dcp * ar1 - dsp * ai1;
@@ -1984,14 +1984,14 @@ static void cffti1(integer n, real *wa, integer *ifac)
     ipm = ip - 1;
     for (j = 1; j <= ipm; ++j) {
       i1 = i;
-      wa[i - 1] = 1.f;
-      wa[i] = 0.f;
+      wa[i - 1] = 1.;
+      wa[i] = 0.;
       ld += l1;
-      fi = 0.f;
+      fi = 0.;
       argld = (real) ld * argh;
       for (ii = 4; ii <= idot; ii += 2) {
         i += 2;
-        fi += 1.f;
+        fi += 1.;
         arg = fi * argld;
         wa[i - 1] = cos(arg);
         wa[i] = sin(arg);
@@ -2192,10 +2192,10 @@ static void rffti1(integer n, real *wa, integer *ifac)
       ld += l1;
       i = is;
       argld = (real) ld * argh;
-      fi = 0.f;
+      fi = 0.;
       for (ii = 3; ii <= ido; ii += 2) {
         i += 2;
-        fi += 1.f;
+        fi += 1.;
         arg = fi * argld;
         wa[i - 1] = cos(arg);
         wa[i] = sin(arg);
@@ -2277,7 +2277,7 @@ static void cosqb1(integer n, real *x, real *w, real *xh)
 
 void cosqb(integer n, real *x, real *wsave)
 {
-  static const real tsqrt2 = 2.82842712474619f;
+  static const real tsqrt2 = 2.82842712474619;
 
   /* Local variables */
   real x1;
@@ -2287,9 +2287,9 @@ void cosqb(integer n, real *x, real *wsave)
   --x;
 
   if (n < 2) {
-    x[1] *= 4.f;
+    x[1] *= 4.;
   } else if (n == 2) {
-    x1 = (x[1] + x[2]) * 4.f;
+    x1 = (x[1] + x[2]) * 4.;
     x[2] = tsqrt2 * (x[1] - x[2]);
     x[1] = x1;
   } else {
@@ -2339,7 +2339,7 @@ static void cosqf1(integer n, real *x, real *w, real *xh)
 
 void cosqf(integer n, real *x, real *wsave)
 {
-  static const real sqrt2 = 1.4142135623731f;
+  static const real sqrt2 = 1.4142135623731;
 
   /* Local variables */
   real tsqx;
@@ -2367,9 +2367,9 @@ void cosqi(integer n, real *wsave)
   --wsave;
 
   dt = M_PI/2 / (real) (n);
-  fk = 0.f;
+  fk = 0.;
   for (k = 1; k <= n; ++k) {
-    fk += 1.f;
+    fk += 1.;
     wsave[k] = cos(fk * dt);
   }
   rffti(n, &wsave[n + 1]);
@@ -2458,12 +2458,12 @@ void costi(integer n, real *wsave)
   np1 = n + 1;
   ns2 = n / 2;
   dt = M_PI / (real) nm1;
-  fk = 0.f;
+  fk = 0.;
   for (k = 2; k <= ns2; ++k) {
     kc = np1 - k;
-    fk += 1.f;
-    wsave[k] = sin(fk * dt) * 2.f;
-    wsave[kc] = cos(fk * dt) * 2.f;
+    fk += 1.;
+    wsave[k] = sin(fk * dt) * 2.;
+    wsave[kc] = cos(fk * dt) * 2.;
   }
   rffti(nm1, &wsave[n + 1]);
 } /* costi */
@@ -2480,7 +2480,7 @@ void sinqb(integer n, real *x, real *wsave)
 
   /* Function Body */
   if (n <= 1) {
-    x[1] *= 4.f;
+    x[1] *= 4.;
     return;
   }
   ns2 = n / 2;
@@ -2538,7 +2538,7 @@ static void sint1(integer n, real *war, real *was, real *xh, real *
 {
   /* Initialized data */
 
-  static const real sqrt3 = 1.73205080756888f;
+  static const real sqrt3 = 1.73205080756888;
 
   /* Local variables */
   integer i, k;
@@ -2568,7 +2568,7 @@ static void sint1(integer n, real *war, real *was, real *xh, real *
   } else {
     np1 = n + 1;
     ns2 = n / 2;
-    x[1] = 0.f;
+    x[1] = 0.;
     for (k = 1; k <= ns2; ++k) {
       kc = np1 - k;
       t1 = xh[k] - xh[kc];
@@ -2578,10 +2578,10 @@ static void sint1(integer n, real *war, real *was, real *xh, real *
     }
     modn = n % 2;
     if (modn != 0) {
-      x[ns2 + 2] = xh[ns2 + 1] * 4.f;
+      x[ns2 + 2] = xh[ns2 + 1] * 4.;
     }
     rfftf1(np1, &x[1], &xh[1], &war[1], &ifac[1]);
-    xh[1] = x[1] * .5f;
+    xh[1] = x[1] * .5;
     for (i = 3; i <= n; i += 2) {
       xh[i - 1] = -x[i];
       xh[i] = xh[i - 2] + x[i - 1];
@@ -2614,7 +2614,7 @@ void sinti(integer n, real *wsave)
   np1 = n + 1;
   dt = M_PI / (real) np1;
   for (k = 1; k <= ns2; ++k) {
-    wsave[k] = sin(k * dt) * 2.f;
+    wsave[k] = sin(k * dt) * 2.;
   }
   rffti(np1, &wsave[ns2 + 1]);
 } /* sinti */
@@ -2652,7 +2652,7 @@ int main(void)
   f77complex cx[200], cy[200];
   real xh[200];
   integer nz, nm1, np1, ns2;
-  real arg, tfn;
+  real arg;
   real sum, arg1, arg2;
   real sum1, sum2, dcfb;
   integer modn;
@@ -2716,13 +2716,12 @@ int main(void)
   /*     19.  CFFTB     UNNORMALIZED INVERSE OF CFFTF */
 
 
-  sqrt2 = sqrt(2.f);
+  sqrt2 = sqrt(2.);
   int all_ok = 1;
   for (nz = 1; nz <= (int)(sizeof nd/sizeof nd[0]); ++nz) {
     n = nd[nz - 1];
     modn = n % 2;
     fn = (real) n;
-    tfn = fn + fn;
     np1 = n + 1;
     nm1 = n - 1;
     for (j = 1; j <= np1; ++j) {
@@ -2740,8 +2739,8 @@ int main(void)
       goto L104;
     }
     for (k = 2; k <= ns2; ++k) {
-      sum1 = 0.f;
-      sum2 = 0.f;
+      sum1 = 0.;
+      sum2 = 0.;
       arg = (real) (k - 1) * dt;
       for (i = 1; i <= n; ++i) {
         arg1 = (real) (i - 1) * arg;
@@ -2752,8 +2751,8 @@ int main(void)
       y[(k << 1) - 2] = -sum2;
     }
   L104:
-    sum1 = 0.f;
-    sum2 = 0.f;
+    sum1 = 0.;
+    sum2 = 0.;
     for (i = 1; i <= nm1; i += 2) {
       sum1 += x[i - 1];
       sum2 += x[i];
@@ -2766,7 +2765,7 @@ int main(void)
       y[n - 1] = sum1 - sum2;
     }
     rfftf(n, x, w);
-    rftf = 0.f;
+    rftf = 0.;
     for (i = 1; i <= n; ++i) {
       /* Computing MAX */
       r2 = rftf, r3 = (r1 = x[i - 1] - y[i - 1], fabs(r1));
@@ -2775,7 +2774,7 @@ int main(void)
     }
     rftf /= fn;
     for (i = 1; i <= n; ++i) {
-      sum = x[0] * .5f;
+      sum = x[0] * .5;
       arg = (real) (i - 1) * dt;
       if (ns2 < 2) {
         goto L108;
@@ -2787,12 +2786,12 @@ int main(void)
       }
     L108:
       if (modn == 0) {
-        sum += (real)pow(-1, i-1) * .5f * x[n - 1];
+        sum += (real)pow(-1, i-1) * .5 * x[n - 1];
       }
       y[i - 1] = sum + sum;
     }
     rfftb(n, x, w);
-    rftb = 0.f;
+    rftb = 0.;
     for (i = 1; i <= n; ++i) {
       /* Computing MAX */
       r2 = rftb, r3 = (r1 = x[i - 1] - y[i - 1], fabs(r1));
@@ -2802,8 +2801,8 @@ int main(void)
     }
     rfftb(n, y, w);
     rfftf(n, y, w);
-    cf = 1.f / fn;
-    rftfb = 0.f;
+    cf = 1. / fn;
+    rftfb = 0.;
     for (i = 1; i <= n; ++i) {
       /* Computing MAX */
       r2 = rftfb, r3 = (r1 = cf * y[i - 1] - x[i - 1], fabs(
@@ -2818,7 +2817,7 @@ int main(void)
       x[i - 1] = xh[i - 1];
     }
     for (i = 1; i <= nm1; ++i) {
-      y[i - 1] = 0.f;
+      y[i - 1] = 0.;
       arg1 = (real) i * dt;
       for (k = 1; k <= nm1; ++k) {
         y[i - 1] += x[k - 1] * sin((real) k * arg1);
@@ -2827,8 +2826,8 @@ int main(void)
     }
     sinti(nm1, w);
     sint(nm1, x, w);
-    cf = .5f / fn;
-    sintt = 0.f;
+    cf = .5 / fn;
+    sintt = 0.;
     for (i = 1; i <= nm1; ++i) {
       /* Computing MAX */
       r2 = sintt, r3 = (r1 = x[i - 1] - y[i - 1], fabs(r1));
@@ -2839,7 +2838,7 @@ int main(void)
     sintt = cf * sintt;
     sint(nm1, x, w);
     sint(nm1, x, w);
-    sintfb = 0.f;
+    sintfb = 0.;
     for (i = 1; i <= nm1; ++i) {
       /* Computing MAX */
       r2 = sintfb, r3 = (r1 = cf * x[i - 1] - y[i - 1], fabs(
@@ -2853,7 +2852,7 @@ int main(void)
       x[i - 1] = xh[i - 1];
     }
     for (i = 1; i <= np1; ++i) {
-      y[i - 1] = (x[0] + (real) pow(-1, i+1) * x[n]) * .5f;
+      y[i - 1] = (x[0] + (real) pow(-1, i+1) * x[n]) * .5;
       arg = (real) (i - 1) * dt;
       for (k = 2; k <= n; ++k) {
         y[i - 1] += x[k - 1] * cos((real) (k - 1) * arg);
@@ -2862,7 +2861,7 @@ int main(void)
     }
     costi(np1, w);
     cost(np1, x, w);
-    costt = 0.f;
+    costt = 0.;
     for (i = 1; i <= np1; ++i) {
       /* Computing MAX */
       r2 = costt, r3 = (r1 = x[i - 1] - y[i - 1], fabs(r1));
@@ -2873,7 +2872,7 @@ int main(void)
     costt = cf * costt;
     cost(np1, x, w);
     cost(np1, x, w);
-    costfb = 0.f;
+    costfb = 0.;
     for (i = 1; i <= np1; ++i) {
       /* Computing MAX */
       r2 = costfb, r3 = (r1 = cf * x[i - 1] - y[i - 1], fabs(
@@ -2883,22 +2882,22 @@ int main(void)
 
     /*     TEST SUBROUTINES SINQI,SINQF AND SINQB */
 
-    cf = .25f / fn;
+    cf = .25 / fn;
     for (i = 1; i <= n; ++i) {
       y[i - 1] = xh[i - 1];
     }
     dt = M_PI / (fn + fn);
     for (i = 1; i <= n; ++i) {
-      x[i - 1] = 0.f;
+      x[i - 1] = 0.;
       arg = dt * (real) i;
       for (k = 1; k <= n; ++k) {
         x[i - 1] += y[k - 1] * sin((real) (k + k - 1) * arg);
       }
-      x[i - 1] *= 4.f;
+      x[i - 1] *= 4.;
     }
     sinqi(n, w);
     sinqb(n, y, w);
-    sinqbt = 0.f;
+    sinqbt = 0.;
     for (i = 1; i <= n; ++i) {
       /* Computing MAX */
       r2 = sinqbt, r3 = (r1 = y[i - 1] - x[i - 1], fabs(r1))
@@ -2909,14 +2908,14 @@ int main(void)
     sinqbt = cf * sinqbt;
     for (i = 1; i <= n; ++i) {
       arg = (real) (i + i - 1) * dt;
-      y[i - 1] = (real) pow(-1, i+1) * .5f * x[n - 1];
+      y[i - 1] = (real) pow(-1, i+1) * .5 * x[n - 1];
       for (k = 1; k <= nm1; ++k) {
         y[i - 1] += x[k - 1] * sin((real) k * arg);
       }
       y[i - 1] += y[i - 1];
     }
     sinqf(n, x, w);
-    sinqft = 0.f;
+    sinqft = 0.;
     for (i = 1; i <= n; ++i) {
       /* Computing MAX */
       r2 = sinqft, r3 = (r1 = x[i - 1] - y[i - 1], fabs(r1))
@@ -2927,7 +2926,7 @@ int main(void)
     }
     sinqf(n, y, w);
     sinqb(n, y, w);
-    sinqfb = 0.f;
+    sinqfb = 0.;
     for (i = 1; i <= n; ++i) {
       /* Computing MAX */
       r2 = sinqfb, r3 = (r1 = cf * y[i - 1] - x[i - 1], fabs(
@@ -2941,16 +2940,16 @@ int main(void)
       y[i - 1] = xh[i - 1];
     }
     for (i = 1; i <= n; ++i) {
-      x[i - 1] = 0.f;
+      x[i - 1] = 0.;
       arg = (real) (i - 1) * dt;
       for (k = 1; k <= n; ++k) {
         x[i - 1] += y[k - 1] * cos((real) (k + k - 1) * arg);
       }
-      x[i - 1] *= 4.f;
+      x[i - 1] *= 4.;
     }
     cosqi(n, w);
     cosqb(n, y, w);
-    cosqbt = 0.f;
+    cosqbt = 0.;
     for (i = 1; i <= n; ++i) {
       /* Computing MAX */
       r2 = cosqbt, r3 = (r1 = x[i - 1] - y[i - 1], fabs(r1))
@@ -2960,7 +2959,7 @@ int main(void)
     }
     cosqbt = cf * cosqbt;
     for (i = 1; i <= n; ++i) {
-      y[i - 1] = x[0] * .5f;
+      y[i - 1] = x[0] * .5;
       arg = (real) (i + i - 1) * dt;
       for (k = 2; k <= n; ++k) {
         y[i - 1] += x[k - 1] * cos((real) (k - 1) * arg);
@@ -2968,7 +2967,7 @@ int main(void)
       y[i - 1] += y[i - 1];
     }
     cosqf(n, x, w);
-    cosqft = 0.f;
+    cosqft = 0.;
     for (i = 1; i <= n; ++i) {
       /* Computing MAX */
       r2 = cosqft, r3 = (r1 = y[i - 1] - x[i - 1], fabs(r1))
@@ -2980,7 +2979,7 @@ int main(void)
     cosqft = cf * cosqft;
     cosqb(n, x, w);
     cosqf(n, x, w);
-    cosqfb = 0.f;
+    cosqfb = 0.;
     for (i = 1; i <= n; ++i) {
       /* Computing MAX */
       r2 = cosqfb, r3 = (r1 = cf * x[i - 1] - y[i - 1], fabs(r1));
@@ -2998,7 +2997,7 @@ int main(void)
     dt = (2*M_PI) / fn;
     for (i = 1; i <= n; ++i) {
       arg1 = -((real) (i - 1)) * dt;
-      cy[i-1].r = 0.f, cy[i-1].i = 0.f;
+      cy[i-1].r = 0., cy[i-1].i = 0.;
       for (k = 1; k <= n; ++k) {
         arg2 = (real) (k - 1) * arg1;
         r1 = cos(arg2);
@@ -3012,7 +3011,7 @@ int main(void)
     }
     cffti(n, w);
     cfftf(n, (real*)cx, w);
-    dcfftf = 0.f;
+    dcfftf = 0.;
     for (i = 1; i <= n; ++i) {
       /* Computing MAX */
       q1.r = cx[i-1].r - cy[i-1].r, q1.i = cx[i-1].i - cy[i-1]
@@ -3025,7 +3024,7 @@ int main(void)
     dcfftf /= fn;
     for (i = 1; i <= n; ++i) {
       arg1 = (real) (i - 1) * dt;
-      cy[i-1].r = 0.f, cy[i-1].i = 0.f;
+      cy[i-1].r = 0., cy[i-1].i = 0.;
       for (k = 1; k <= n; ++k) {
         arg2 = (real) (k - 1) * arg1;
         r1 = cos(arg2);
@@ -3038,7 +3037,7 @@ int main(void)
       }
     }
     cfftb(n, (real*)cx, w);
-    dcfftb = 0.f;
+    dcfftb = 0.;
     for (i = 1; i <= n; ++i) {
       /* Computing MAX */
       q1.r = cx[i-1].r - cy[i-1].r, q1.i = cx[i-1].i - cy[i-1].i;
@@ -3046,10 +3045,10 @@ int main(void)
       dcfftb = dmax(r1,r2);
       cx[i-1].r = cy[i-1].r, cx[i-1].i = cy[i-1].i;
     }
-    cf = 1.f / fn;
+    cf = 1. / fn;
     cfftf(n, (real*)cx, w);
     cfftb(n, (real*)cx, w);
-    dcfb = 0.f;
+    dcfb = 0.;
     for (i = 1; i <= n; ++i) {
       /* Computing MAX */
       q2.r = cf * cx[i-1].r, q2.i = cf * cx[i-1].i;

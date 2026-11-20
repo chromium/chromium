@@ -2,7 +2,7 @@ load("//crowbar", "crowbar_workflow")
 
 crowbar_workflow(
     origin_files = glob([
-        "README.txt",
+        "README.md",
         "fftpack.c",
         "fftpack.h",
         "pffft.c",
@@ -14,8 +14,6 @@ crowbar_workflow(
             "patches/01-rmv_printf.diff",
             "patches/02-decl_validate_simd.diff",
             "patches/03-malloca.diff",
-            "patches/04-fix_ptr_cast.diff",
-            "patches/05-fix-arch-detection.diff",
         ]),
     ],
 )
