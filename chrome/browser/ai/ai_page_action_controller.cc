@@ -50,7 +50,7 @@
 #include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
 
-BASE_FEATURE(kOnDeviceAiPageAction, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kOnDeviceAiPageAction, base::FEATURE_ENABLED_BY_DEFAULT);
 
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kOnDeviceAiBubbleElementId);
 
