@@ -43,6 +43,7 @@
 #import "components/autofill/core/browser/metrics/autofill_metrics.h"
 #import "components/autofill/core/browser/suggestions/suggestion.h"
 #import "components/autofill/core/browser/suggestions/suggestion_type.h"
+#import "components/autofill/core/common/aliases.h"
 #import "components/autofill/core/common/autofill_constants.h"
 #import "components/autofill/core/common/autofill_debug_features.h"
 #import "components/autofill/core/common/autofill_features.h"
@@ -129,10 +130,40 @@ struct AutofillData {
 // the enqueued utterance.
 constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
 
-bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
+const FormFieldData* FindFocusableField(const FormData& form,
+                                        FieldRendererId field_id) {
   auto it =
       std::ranges::find(form.fields(), field_id, &FormFieldData::renderer_id);
-  return it != form.fields().end() && it->is_focusable();
+  return it != form.fields().end() && it->is_focusable() ? &*it : nullptr;
+}
+
+autofill::AutofillSuggestionTriggerSource GetSuggestionTriggerSource(
+    ActivityType type,
+    const FormFieldData& field) {
+  switch (type) {
+    case ActivityType::kFocus:
+      return field.form_control_type() ==
+                     autofill::FormControlType::kContentEditable
+                 ? autofill::AutofillSuggestionTriggerSource::
+                       kContentEditableClicked
+                 : autofill::AutofillSuggestionTriggerSource::
+                       kFormControlElementClicked;
+    case ActivityType::kInput:
+    case ActivityType::kKeyUp:
+    case ActivityType::kChange:
+      return autofill::AutofillSuggestionTriggerSource::kTextFieldValueChanged;
+    case ActivityType::kBlur:
+    case ActivityType::kFormChanged:
+    case ActivityType::kUnknown:
+      // Legacy fallback: All cases in this switch used to fallback to `kiOS`.
+      // As to not break any possible suggestion flow during the migration to
+      // meaningful trigger sources, these remaining cases still fallback to
+      // `kiOS` instead of returning `std::nullopt` for example.
+      // TODO(crbug.com/40269303): Stop querying suggestions for these activity
+      // types and remove `kiOS`.
+      return autofill::AutofillSuggestionTriggerSource::kiOS;
+  }
+  NOTREACHED();
 }
 
 // Returns whether the FormSuggestion's payload contains a non empty guid.
@@ -999,7 +1030,7 @@ bool HasGuid(const Suggestion::Payload& payload) {
     return;
   }
   const FormData& form = forms[0];
-  if (!ContainsFocusableField(form, fieldIdentifier)) {
+  if (!FindFocusableField(form, fieldIdentifier)) {
     return;
   }
   driver->TextFieldValueChanged(form, {form.host_frame(), fieldIdentifier},
@@ -1115,7 +1146,8 @@ bool HasGuid(const Suggestion::Payload& payload) {
     return;
   }
 
-  if (!ContainsFocusableField(form, fieldIdentifier)) {
+  const FormFieldData* field = FindFocusableField(form, fieldIdentifier);
+  if (!field) {
     if (completion) {
       completion(NO);
     }
@@ -1139,7 +1171,8 @@ bool HasGuid(const Suggestion::Payload& payload) {
 
   // Query the BrowserAutofillManager for suggestions. Results will arrive in
   // -showAutofillPopup:suggestionDelegate:formId:fieldId:.
-  driver->AskForValuesToFill(form, _lastQueriedFieldID);
+  driver->AskForValuesToFill(form, _lastQueriedFieldID,
+                             GetSuggestionTriggerSource(type, *field));
 }
 
 - (void)processPage:(web::WebState*)webState {

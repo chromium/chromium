@@ -12,8 +12,10 @@
 #import "base/test/mock_callback.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/test_future.h"
+#import "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #import "components/autofill/core/browser/test_utils/autofill_form_test_util.h"
 #import "components/autofill/core/browser/test_utils/autofill_test_util.h"
+#import "components/autofill/core/common/aliases.h"
 #import "components/autofill/core/common/autofill_test_util.h"
 #import "components/autofill/core/common/form_data.h"
 #import "components/autofill/core/common/form_field_data.h"
@@ -21,6 +23,7 @@
 #import "components/autofill/ios/browser/autofill_driver_ios_bridge.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_factory_test_api.h"
+#import "components/autofill/ios/browser/autofill_driver_ios_test_api.h"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "components/autofill/ios/browser/test_autofill_client_ios.h"
 #import "components/autofill/ios/common/features.h"
@@ -31,6 +34,7 @@
 #import "ios/web/public/test/web_test.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
+#import "ui/gfx/geometry/rect.h"
 
 // AutofillDriverIosBridge used for testing. Provides a simple implementation of
 // the methods that are used during testing, e.g. call the completion block upon
@@ -134,9 +138,25 @@ namespace autofill {
 
 namespace {
 
+using testing::_;
 using testing::Eq;
 using testing::Optional;
 using testing::Property;
+
+class MockAutofillManager : public BrowserAutofillManager {
+ public:
+  explicit MockAutofillManager(AutofillDriverIOS* driver)
+      : BrowserAutofillManager(driver) {}
+  MOCK_METHOD(void,
+              OnAskForValuesToFill,
+              (const FormData& form,
+               const FieldGlobalId& field_id,
+               const gfx::Rect& caret_bounds,
+               AutofillSuggestionTriggerSource trigger_source,
+               std::optional<PasswordSuggestionRequest> password_request,
+               AutofillManager::RendererEventPassKey pass_key),
+              (override));
+};
 
 // Origin of the frames used in tests.
 constexpr char kTestFrameOrigin[] = "https://example.com";
@@ -537,6 +557,33 @@ TEST_F(AutofillDriverIOSTest, ApplyFieldActionNoFallbackWhenFeatureDisabled) {
       mojom::ActionPersistence::kFill, field_global_id, test_value);
 
   EXPECT_EQ(bridge().fillSpecificFormFieldRunCount, 0);
+}
+
+// Tests that `AskForValuesToFill` forwards `trigger_source` through the router
+// to the root driver's `AutofillManager::OnAskForValuesToFill`.
+TEST_F(AutofillDriverIOSTest, AskForValuesToFill_ForwardsTriggerSource) {
+  FormData iframe_form = MakeForm(/*main_frame=*/false);
+  FormData main_frame_form = MakeForm(/*main_frame=*/true);
+
+  main_frame_driver()->FormsSeen({main_frame_form}, /*removed_forms=*/{});
+  iframe_driver()->FormsSeen({iframe_form}, /*removed_forms=*/{});
+  ASSERT_EQ(iframe_driver()->GetParent(), main_frame_driver());
+
+  auto manager = std::make_unique<testing::NiceMock<MockAutofillManager>>(
+      main_frame_driver());
+  MockAutofillManager* mock_manager = manager.get();
+  test_api(*main_frame_driver()).SetAutofillManager(std::move(manager));
+
+  const FieldGlobalId field_id = iframe_form.fields()[0].global_id();
+  EXPECT_CALL(
+      *mock_manager,
+      OnAskForValuesToFill(
+          Property(&FormData::global_id, main_frame_form.global_id()), field_id,
+          _, AutofillSuggestionTriggerSource::kTextFieldValueChanged, _, _));
+
+  iframe_driver()->AskForValuesToFill(
+      iframe_form, field_id,
+      AutofillSuggestionTriggerSource::kTextFieldValueChanged);
 }
 
 }  // namespace

@@ -24,6 +24,7 @@
 #import "components/autofill/core/browser/foundations/test_autofill_client.h"
 #import "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
 #import "components/autofill/core/browser/test_utils/autofill_test_util.h"
+#import "components/autofill/core/common/aliases.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/core/common/form_data.h"
 #import "components/autofill/core/common/form_data_test_api.h"
@@ -1530,7 +1531,9 @@ TEST_F(AutofillAcrossIframesTest, AskForFillDataOnMultiFrameForm) {
   FormFieldData* name_field =
       GetFieldWithPlaceholder(kNamePlaceholder, &fields);
 
-  main_frame_driver()->AskForValuesToFill(form, name_field->global_id());
+  main_frame_driver()->AskForValuesToFill(
+      form, name_field->global_id(),
+      AutofillSuggestionTriggerSource::kFormControlElementClicked);
 
   // Wait on the main frame form to report itself as having fill data for the
   // entire browser form, across frames.

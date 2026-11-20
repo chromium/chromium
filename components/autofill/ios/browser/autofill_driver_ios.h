@@ -16,6 +16,7 @@
 #import "base/memory/weak_ptr.h"
 #import "components/autofill/core/browser/foundations/autofill_client.h"
 #import "components/autofill/core/browser/foundations/browser_autofill_manager.h"
+#import "components/autofill/core/common/aliases.h"
 #import "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #import "components/autofill/ios/browser/form_fetch_batcher.h"
 #import "third_party/abseil-cpp/absl/container/flat_hash_map.h"
@@ -186,7 +187,9 @@ class AutofillDriverIOS final : public AutofillDriver,
   // for further documentation of each method.
   // TODO(crbug.com/514243241): Make these functions take FormData by value to
   // avoid copying (as done for FormsSeen).
-  void AskForValuesToFill(const FormData& form, const FieldGlobalId& field_id);
+  void AskForValuesToFill(const FormData& form,
+                          const FieldGlobalId& field_id,
+                          AutofillSuggestionTriggerSource trigger_source);
   void DidAutofillForm(const FormData& form);
   void FormsSeen(std::vector<FormData> updated_forms,
                  const std::vector<FormGlobalId>& removed_forms);

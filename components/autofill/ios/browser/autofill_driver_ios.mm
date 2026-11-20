@@ -534,8 +534,10 @@ web::WebFrame* AutofillDriverIOS::web_frame() const {
   return frames_manager->GetFrameWithId(web_frame_id_);
 }
 
-void AutofillDriverIOS::AskForValuesToFill(const FormData& form,
-                                           const FieldGlobalId& field_id) {
+void AutofillDriverIOS::AskForValuesToFill(
+    const FormData& form,
+    const FieldGlobalId& field_id,
+    AutofillSuggestionTriggerSource trigger_source) {
   auto callback =
       [](AutofillDriver& driver, const FormData& form,
          const FieldGlobalId& field_id, const gfx::Rect& bounding_box,
@@ -548,10 +550,8 @@ void AutofillDriverIOS::AskForValuesToFill(const FormData& form,
       };
   // The caret position is currently not extracted on iOS.
   gfx::Rect caret_bounds;
-  // TODO(crbug.com/40269303): Distinguish between different trigger sources.
   router_->AskForValuesToFill(callback, *this, form, field_id, caret_bounds,
-                              AutofillSuggestionTriggerSource::kiOS,
-                              std::nullopt);
+                              trigger_source, std::nullopt);
 }
 
 void AutofillDriverIOS::DidAutofillForm(const FormData& form) {

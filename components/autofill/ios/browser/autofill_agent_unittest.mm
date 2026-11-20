@@ -28,11 +28,13 @@
 #import "components/autofill/core/browser/autofill_field.h"
 #import "components/autofill/core/browser/data_model/payments/credit_card.h"
 #import "components/autofill/core/browser/filling/filling_product.h"
+#import "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #import "components/autofill/core/browser/foundations/test_autofill_client.h"
 #import "components/autofill/core/browser/suggestions/suggestion.h"
 #import "components/autofill/core/browser/suggestions/suggestion_type.h"
 #import "components/autofill/core/browser/test_utils/autofill_test_util.h"
 #import "components/autofill/core/browser/ui/mock_autofill_suggestion_delegate.h"
+#import "components/autofill/core/common/aliases.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/autofill/core/common/autofill_prefs.h"
@@ -48,6 +50,7 @@
 #import "components/autofill/ios/browser/mock_password_autofill_agent_delegate.h"
 #import "components/autofill/ios/browser/password_autofill_agent.h"
 #import "components/autofill/ios/browser/test_autofill_client_ios.h"
+#import "components/autofill/ios/browser/test_autofill_manager_injector.h"
 #import "components/autofill/ios/common/features.h"
 #import "components/autofill/ios/common/field_data_manager_factory_ios.h"
 #import "components/autofill/ios/form_util/form_handlers_java_script_feature.h"
@@ -66,6 +69,7 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 #import "ui/base/resource/resource_bundle.h"
+#import "ui/gfx/geometry/rect.h"
 #import "ui/gfx/image/image_unittest_util.h"
 #import "url/gurl.h"
 #import "url/origin.h"
@@ -84,6 +88,23 @@ namespace {
 
 using autofill::AutofillDriverIOS;
 using autofill::AutofillDriverIOSFactory;
+using autofill::AutofillSuggestionTriggerSource;
+
+class MockAutofillManager : public autofill::BrowserAutofillManager {
+ public:
+  explicit MockAutofillManager(AutofillDriverIOS* driver)
+      : BrowserAutofillManager(driver) {}
+  MOCK_METHOD(
+      void,
+      OnAskForValuesToFill,
+      (const autofill::FormData& form,
+       const autofill::FieldGlobalId& field_id,
+       const gfx::Rect& caret_bounds,
+       AutofillSuggestionTriggerSource trigger_source,
+       std::optional<autofill::PasswordSuggestionRequest> password_request,
+       autofill::AutofillManager::RendererEventPassKey pass_key),
+      (override));
+};
 
 constexpr char kTestFrameId[] = "11111111111111111111111111111111";
 
@@ -866,6 +887,150 @@ TEST_F(AutofillAgentTest, QueryAutofill_ConcurrentQueries) {
 
   EXPECT_TRUE(second_completion_called);
   EXPECT_TRUE(second_completion_success);
+}
+
+// Tests that `queryAutofillForForm:` maps `ActivityType` and field control type
+// to the corresponding `AutofillSuggestionTriggerSource`.
+TEST_F(AutofillAgentTest, QueryAutofill_TriggerSource) {
+  autofill::TestAutofillManagerInjectorIOS<
+      testing::NiceMock<MockAutofillManager>>
+      injector(&fake_web_state_);
+
+  web::WebFrame* main_frame = fake_web_frames_manager_->GetMainWebFrame();
+  ASSERT_NE(nullptr, main_frame);
+  AutofillDriverIOS* main_frame_driver =
+      AutofillDriverIOS::FromWebStateAndWebFrame(&fake_web_state_, main_frame);
+  ASSERT_NE(nullptr, main_frame_driver);
+
+  autofill::FormFieldData text_field;
+  text_field.set_form_control_type(autofill::FormControlType::kInputText);
+  text_field.set_name(u"address");
+  text_field.set_renderer_id(FieldRendererId(2));
+  text_field.set_is_focusable(true);
+  text_field.set_host_frame(main_frame_driver->GetFrameToken());
+  text_field.set_host_form_id(FormRendererId(1));
+
+  autofill::FormFieldData content_editable_field;
+  content_editable_field.set_form_control_type(
+      autofill::FormControlType::kContentEditable);
+  content_editable_field.set_name(u"notes");
+  content_editable_field.set_renderer_id(FieldRendererId(3));
+  content_editable_field.set_is_focusable(true);
+  content_editable_field.set_host_frame(main_frame_driver->GetFrameToken());
+  content_editable_field.set_host_form_id(FormRendererId(1));
+
+  autofill::FormData form;
+  form.set_host_frame(main_frame_driver->GetFrameToken());
+  form.set_renderer_id(FormRendererId(1));
+  form.set_fields({text_field, content_editable_field});
+  main_frame_driver->FormsSeen({form}, {});
+
+  MockAutofillManager* mock_manager = injector.GetForMainFrame();
+  ASSERT_NE(nullptr, mock_manager);
+
+  struct TriggerCase {
+    FieldRendererId field_id;
+    ActivityType activity_type;
+    AutofillSuggestionTriggerSource expected_source;
+  };
+  const TriggerCase kCases[] = {
+      {text_field.renderer_id(), ActivityType::kFocus,
+       AutofillSuggestionTriggerSource::kFormControlElementClicked},
+      {content_editable_field.renderer_id(), ActivityType::kFocus,
+       AutofillSuggestionTriggerSource::kContentEditableClicked},
+      {text_field.renderer_id(), ActivityType::kInput,
+       AutofillSuggestionTriggerSource::kTextFieldValueChanged},
+      {text_field.renderer_id(), ActivityType::kKeyUp,
+       AutofillSuggestionTriggerSource::kTextFieldValueChanged},
+      {text_field.renderer_id(), ActivityType::kChange,
+       AutofillSuggestionTriggerSource::kTextFieldValueChanged},
+      {text_field.renderer_id(), ActivityType::kBlur,
+       AutofillSuggestionTriggerSource::kiOS},
+      {text_field.renderer_id(), ActivityType::kFormChanged,
+       AutofillSuggestionTriggerSource::kiOS},
+      {text_field.renderer_id(), ActivityType::kUnknown,
+       AutofillSuggestionTriggerSource::kiOS},
+  };
+
+  for (const TriggerCase& test_case : kCases) {
+    autofill::FieldGlobalId expected_field_id{
+        main_frame_driver->GetFrameToken(), test_case.field_id};
+    EXPECT_CALL(*mock_manager,
+                OnAskForValuesToFill(testing::_, expected_field_id, testing::_,
+                                     test_case.expected_source, testing::_,
+                                     testing::_));
+    [autofill_agent_ queryAutofillForForm:form
+                          fieldIdentifier:test_case.field_id
+                                     type:test_case.activity_type
+                               typedValue:@""
+                                    frame:main_frame->AsWeakPtr()
+                                 webState:fake_web_state_.GetWeakPtr()
+                        completionHandler:^(BOOL){
+                        }];
+    testing::Mock::VerifyAndClearExpectations(mock_manager);
+  }
+}
+
+// Tests end-to-end that `checkIfSuggestionsAvailableForForm:` forwards the
+// mapped `AutofillSuggestionTriggerSource` to `BrowserAutofillManager`.
+TEST_F(AutofillAgentTest, CheckIfSuggestionsAvailable_ForwardsTriggerSource) {
+  autofill::TestAutofillManagerInjectorIOS<
+      testing::NiceMock<MockAutofillManager>>
+      injector(&fake_web_state_);
+  MockAutofillManager* mock_manager = injector.GetForMainFrame();
+  ASSERT_NE(nullptr, mock_manager);
+
+  // An input activity extracts the form and queries BAM with
+  // `kTextFieldValueChanged`.
+  base::DictValue field_dict;
+  field_dict.Set("name", "address");
+  field_dict.Set("renderer_id", "2");
+  field_dict.Set("form_control_type", "text");
+  field_dict.Set("is_focusable", true);
+  base::ListValue fields_list;
+  fields_list.Append(std::move(field_dict));
+  base::DictValue form_dict;
+  form_dict.Set("name", kTestFormName);
+  form_dict.Set("origin", kTestFrameOrigin);
+  form_dict.Set("host_frame", kTestFrameId);
+  form_dict.Set("renderer_id", "1");
+  form_dict.Set("fields", std::move(fields_list));
+  base::ListValue forms_list;
+  forms_list.Append(std::move(form_dict));
+  base::Value extracted_forms(base::WriteJson(forms_list).value_or(""));
+  fake_main_frame_->AddJsResultForFunctionCall(&extracted_forms,
+                                               kExtractFormsFunction);
+
+  base::test::TestFuture<AutofillSuggestionTriggerSource> trigger_source_future;
+  EXPECT_CALL(*mock_manager, OnAskForValuesToFill)
+      .WillOnce([&](const autofill::FormData&, const autofill::FieldGlobalId&,
+                    const gfx::Rect&,
+                    AutofillSuggestionTriggerSource trigger_source,
+                    std::optional<autofill::PasswordSuggestionRequest>,
+                    autofill::AutofillManager::RendererEventPassKey) {
+        trigger_source_future.SetValue(trigger_source);
+      });
+
+  FormSuggestionProviderQuery* input_query =
+      [[FormSuggestionProviderQuery alloc]
+          initWithFormName:base::SysUTF8ToNSString(kTestFormName)
+            formRendererID:FormRendererId(1)
+           fieldIdentifier:@"address"
+           fieldRendererID:FieldRendererId(2)
+                 fieldType:FieldType::kText
+                      type:ActivityType::kInput
+                typedValue:@"123"
+                   frameID:base::SysUTF8ToNSString(kTestFrameId)
+              onlyPassword:NO];
+  [autofill_agent_ checkIfSuggestionsAvailableForForm:input_query
+                                       hasUserGesture:YES
+                                             webState:&fake_web_state_
+                                    completionHandler:^(BOOL){
+                                    }];
+
+  ASSERT_TRUE(trigger_source_future.Wait());
+  EXPECT_EQ(AutofillSuggestionTriggerSource::kTextFieldValueChanged,
+            trigger_source_future.Get());
 }
 
 // Tests that virtual cards are being served as suggestions with the
