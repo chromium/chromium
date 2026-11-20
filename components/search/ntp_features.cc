@@ -108,12 +108,6 @@ BASE_FEATURE(kNtpCustomizeChromeAutoOpen, base::FEATURE_ENABLED_BY_DEFAULT);
 // If enabled, shows Customize Chrome button on Android.
 BASE_FEATURE(kNtpCustomizeWebUiAndroid, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, ChromeContentBrowserClient::OverrideNavigationParams no
-// longer treats NTP-sourced renderer-initiated link clicks as browser-
-// initiated.
-BASE_FEATURE(kNtpDisableBrowserInitiatedLinks,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if !defined(OFFICIAL_BUILD)
 // If enabled, dummy modules will be shown.
 // This is a development switch. Keep indefinitely.

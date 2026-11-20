@@ -91,7 +91,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
-#include "components/search/ntp_features.h"
 #include "components/search_engines/search_engines_switches.h"
 #include "components/site_isolation/features.h"
 #include "components/site_isolation/site_isolation_policy.h"
@@ -505,11 +504,7 @@ TEST_F(ChromeContentBrowserClientTest, ShouldStayInParentProcessForNTP) {
       site_instance->GetSecurityPrincipal().GetDeprecatedSiteURL()));
 }
 
-TEST_F(ChromeContentBrowserClientTest, OverrideNavigationParams_FlagEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      ntp_features::kNtpDisableBrowserInitiatedLinks);
-
+TEST_F(ChromeContentBrowserClientTest, OverrideNavigationParams) {
   ChromeContentBrowserClient client;
   ui::PageTransition transition;
   bool is_renderer_initiated;
@@ -522,8 +517,8 @@ TEST_F(ChromeContentBrowserClientTest, OverrideNavigationParams_FlagEnabled) {
 
   // Link transition from a remote NTP process is rewritten to AUTO_BOOKMARK
   // so the destination contributes to TopSites segments, matching native
-  // NTP tile-click behavior. With the feature enabled, other fields are
-  // intentionally left untouched.
+  // NTP tile-click behavior. Other fields are intentionally left
+  // untouched.
   GURL remote_ntp_url("chrome-search://remote-ntp");
   transition = ui::PAGE_TRANSITION_LINK;
   is_renderer_initiated = true;
@@ -561,63 +556,6 @@ TEST_F(ChromeContentBrowserClientTest, OverrideNavigationParams_FlagEnabled) {
       ui::PageTransitionCoreTypeIs(ui::PAGE_TRANSITION_TYPED, transition));
 
   // No change for transitions from a non-NTP page.
-  GURL example_url("https://www.example.com");
-  transition = ui::PAGE_TRANSITION_LINK;
-  client.OverrideNavigationParams(example_url, &transition,
-                                  &is_renderer_initiated, &referrer,
-                                  &initiator_origin);
-  EXPECT_TRUE(
-      ui::PageTransitionCoreTypeIs(ui::PAGE_TRANSITION_LINK, transition));
-}
-
-TEST_F(ChromeContentBrowserClientTest, OverrideNavigationParams_FlagDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      ntp_features::kNtpDisableBrowserInitiatedLinks);
-
-  ChromeContentBrowserClient client;
-  ui::PageTransition transition;
-  bool is_renderer_initiated;
-  content::Referrer referrer = content::Referrer();
-  std::optional<url::Origin> initiator_origin;
-
-  // Link transition from a remote NTP process is rewritten to AUTO_BOOKMARK
-  // and the other three fields are reset to "browser-initiated" defaults
-  // (the legacy behavior; see crbug.com/518853220).
-  GURL remote_ntp_url("chrome-search://remote-ntp");
-  transition = ui::PAGE_TRANSITION_LINK;
-  is_renderer_initiated = true;
-  // The origin is a placeholder to test that |initiator_origin| is set to
-  // std::nullopt and is not meant to represent what would happen in practice.
-  initiator_origin = url::Origin::Create(GURL("https://www.example.com"));
-  client.OverrideNavigationParams(remote_ntp_url, &transition,
-                                  &is_renderer_initiated, &referrer,
-                                  &initiator_origin);
-  EXPECT_TRUE(ui::PageTransitionCoreTypeIs(ui::PAGE_TRANSITION_AUTO_BOOKMARK,
-                                           transition));
-  EXPECT_FALSE(is_renderer_initiated);
-  EXPECT_EQ(std::nullopt, initiator_origin);
-
-  transition = ui::PAGE_TRANSITION_LINK;
-  is_renderer_initiated = true;
-  initiator_origin = url::Origin::Create(GURL("https://www.example.com"));
-  client.OverrideNavigationParams(chrome::ChromeUINewTabPageURLAsGURL(),
-                                  &transition, &is_renderer_initiated,
-                                  &referrer, &initiator_origin);
-  EXPECT_TRUE(ui::PageTransitionCoreTypeIs(ui::PAGE_TRANSITION_AUTO_BOOKMARK,
-                                           transition));
-  EXPECT_FALSE(is_renderer_initiated);
-  EXPECT_EQ(std::nullopt, initiator_origin);
-
-  // No change for transitions that are not PAGE_TRANSITION_LINK.
-  transition = ui::PAGE_TRANSITION_TYPED;
-  client.OverrideNavigationParams(chrome::ChromeUINewTabPageURLAsGURL(),
-                                  &transition, &is_renderer_initiated,
-                                  &referrer, &initiator_origin);
-  EXPECT_TRUE(
-      ui::PageTransitionCoreTypeIs(ui::PAGE_TRANSITION_TYPED, transition));
-
-  // No change for transitions on a non-NTP page.
   GURL example_url("https://www.example.com");
   transition = ui::PAGE_TRANSITION_LINK;
   client.OverrideNavigationParams(example_url, &transition,

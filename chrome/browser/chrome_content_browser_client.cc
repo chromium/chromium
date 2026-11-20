@@ -342,7 +342,6 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/hashprefix_realtime/hash_realtime_utils.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
-#include "components/search/ntp_features.h"
 #include "components/search_engines/search_engines_switches.h"
 #include "components/security_state/core/security_state.h"
 #include "components/site_isolation/features.h"
@@ -2424,15 +2423,6 @@ void ChromeContentBrowserClient::OverrideNavigationParams(
     // Use AUTO_BOOKMARK for clicks on tiles of the new tab page,
     // consistent with native implementations like Android's.
     *transition = ui::PAGE_TRANSITION_AUTO_BOOKMARK;
-    if (!base::FeatureList::IsEnabled(
-            ntp_features::kNtpDisableBrowserInitiatedLinks)) {
-      // Reset the renderer-initiated flag, referrer, and initiator origin so
-      // that security features (like Sec-Fetch-Site and SameSite-cookies)
-      // treat the navigation as browser-initiated.
-      *is_renderer_initiated = false;
-      *referrer = content::Referrer();
-      *initiator_origin = std::nullopt;
-    }
   }
 }
 

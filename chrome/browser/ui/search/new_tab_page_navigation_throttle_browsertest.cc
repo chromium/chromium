@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -13,7 +12,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/search/ntp_features.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -63,37 +61,6 @@ class NewTabPageNavigationThrottleTest : public InProcessBrowserTest {
   net::EmbeddedTestServer* https_test_server() { return &https_test_server_; }
 
   net::EmbeddedTestServer https_test_server_;
-};
-
-// Fixture that runs OverrideNavigationParams tests with the
-// kNtpDisableBrowserInitiatedLinks feature explicitly enabled. The feature
-// state must be set in the fixture constructor (before BrowserTestBase::SetUp)
-// per base::test::ScopedFeatureList contract.
-class NewTabPageNavigationThrottleNoBrowserInitiatedLinksTest
-    : public NewTabPageNavigationThrottleTest {
- public:
-  NewTabPageNavigationThrottleNoBrowserInitiatedLinksTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        ntp_features::kNtpDisableBrowserInitiatedLinks);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-// Fixture that runs OverrideNavigationParams tests with the
-// kNtpDisableBrowserInitiatedLinks feature explicitly disabled (legacy
-// behavior).
-class NewTabPageNavigationThrottleBrowserInitiatedLinksTest
-    : public NewTabPageNavigationThrottleTest {
- public:
-  NewTabPageNavigationThrottleBrowserInitiatedLinksTest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        ntp_features::kNtpDisableBrowserInitiatedLinks);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(NewTabPageNavigationThrottleTest, NoThrottle) {
@@ -207,9 +174,8 @@ class OverrideNavigationParamsObserver : public content::WebContentsObserver {
 };
 
 // Check that ChromeContentBrowserClient::OverrideNavigationParams behaves
-// correctly when navigating from a custom 3P NTP with an HTTPS scheme,
-// with the kNtpDisableBrowserInitiatedLinks feature enabled.
-IN_PROC_BROWSER_TEST_F(NewTabPageNavigationThrottleNoBrowserInitiatedLinksTest,
+// correctly when navigating from a custom 3P NTP with an HTTPS scheme.
+IN_PROC_BROWSER_TEST_F(NewTabPageNavigationThrottleTest,
                        OverrideNavigationParams_ThirdPartyNTP) {
   ASSERT_TRUE(https_test_server()->Start());
   std::string ntp_url =
@@ -228,42 +194,16 @@ IN_PROC_BROWSER_TEST_F(NewTabPageNavigationThrottleNoBrowserInitiatedLinksTest,
   // required for the destination to contribute to TopSites segments.
   EXPECT_TRUE(ui::PageTransitionCoreTypeIs(snapshot.page_transition,
                                            ui::PAGE_TRANSITION_AUTO_BOOKMARK));
-  // With the feature enabled, the initiator origin is preserved and the
-  // source is an HTTPS document, so renderer-side BeginNavigation does not
-  // fork to OpenURL and the navigation stays renderer-initiated.
+  // The initiator origin is preserved and the source is an HTTPS document, so
+  // renderer-side BeginNavigation does not fork to OpenURL and the navigation
+  // stays renderer-initiated.
   EXPECT_NE(std::nullopt, snapshot.initiator_origin);
   EXPECT_TRUE(snapshot.is_renderer_initiated);
 }
 
-// Same as above but with the feature disabled -- legacy reclassification
-// applies (initiator origin cleared, is_renderer_initiated false).
-IN_PROC_BROWSER_TEST_F(NewTabPageNavigationThrottleBrowserInitiatedLinksTest,
-                       OverrideNavigationParams_ThirdPartyNTP) {
-  ASSERT_TRUE(https_test_server()->Start());
-  std::string ntp_url =
-      https_test_server()->GetURL("/instant_extended.html").spec();
-  SetNewTabPage(ntp_url);
-  EXPECT_EQ(ntp_url, NavigateToNewTabPage());
-
-  const GURL page_url = https_test_server()->GetURL("/simple.html");
-  auto* web_contents = browser()->GetTabStripModel()->GetActiveWebContents();
-  OverrideNavigationParamsObserver observer(web_contents);
-  EXPECT_TRUE(content::NavigateToURLFromRenderer(web_contents, page_url));
-
-  ASSERT_TRUE(observer.last_snapshot());
-  const auto& snapshot = *observer.last_snapshot();
-  EXPECT_TRUE(ui::PageTransitionCoreTypeIs(snapshot.page_transition,
-                                           ui::PAGE_TRANSITION_AUTO_BOOKMARK));
-  // Legacy reclassification clears the initiator origin and reports the
-  // navigation as not renderer-initiated.
-  EXPECT_EQ(std::nullopt, snapshot.initiator_origin);
-  EXPECT_FALSE(snapshot.is_renderer_initiated);
-}
-
 // Check that ChromeContentBrowserClient::OverrideNavigationParams behaves
-// correctly when navigating from a chrome:// NTP, with the
-// kNtpDisableBrowserInitiatedLinks feature enabled.
-IN_PROC_BROWSER_TEST_F(NewTabPageNavigationThrottleNoBrowserInitiatedLinksTest,
+// correctly when navigating from a chrome:// NTP.
+IN_PROC_BROWSER_TEST_F(NewTabPageNavigationThrottleTest,
                        OverrideNavigationParams_ChromeURLNTP) {
   ASSERT_TRUE(https_test_server()->Start());
   SetNewTabPage(chrome::kChromeUINewTabPageThirdPartyURL);
@@ -283,26 +223,6 @@ IN_PROC_BROWSER_TEST_F(NewTabPageNavigationThrottleNoBrowserInitiatedLinksTest,
   // forks the navigation to OpenURL, which calls Navigator::RequestOpenURL
   // and flips is_renderer_initiated to false because of the WebUI check.
   // That happens independent of OverrideNavigationParams.
-  EXPECT_FALSE(snapshot.is_renderer_initiated);
-}
-
-// Same as above but with the feature disabled.
-IN_PROC_BROWSER_TEST_F(NewTabPageNavigationThrottleBrowserInitiatedLinksTest,
-                       OverrideNavigationParams_ChromeURLNTP) {
-  ASSERT_TRUE(https_test_server()->Start());
-  SetNewTabPage(chrome::kChromeUINewTabPageThirdPartyURL);
-  EXPECT_EQ(chrome::kChromeUINewTabPageThirdPartyURL, NavigateToNewTabPage());
-
-  const GURL page_url = https_test_server()->GetURL("/simple.html");
-  auto* web_contents = browser()->GetTabStripModel()->GetActiveWebContents();
-  OverrideNavigationParamsObserver observer(web_contents);
-  EXPECT_TRUE(content::NavigateToURLFromRenderer(web_contents, page_url));
-
-  ASSERT_TRUE(observer.last_snapshot());
-  const auto& snapshot = *observer.last_snapshot();
-  EXPECT_TRUE(ui::PageTransitionCoreTypeIs(snapshot.page_transition,
-                                           ui::PAGE_TRANSITION_AUTO_BOOKMARK));
-  EXPECT_EQ(std::nullopt, snapshot.initiator_origin);
   EXPECT_FALSE(snapshot.is_renderer_initiated);
 }
 
