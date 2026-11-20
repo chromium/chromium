@@ -22,6 +22,7 @@ schema:
 supported_on:
 - chrome.*:117-
 - chrome_os:117-
+- android:160-
 tags:
 - google-sharing
 type: main
