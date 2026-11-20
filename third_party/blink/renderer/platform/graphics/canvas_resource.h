@@ -73,8 +73,6 @@ class PLATFORM_EXPORT CanvasResource final : public gpu::ClientImage {
   class Client {
    public:
     virtual ~Client() = default;
-    virtual void OnResourceRefReturned(
-        scoped_refptr<CanvasResource> resource) = 0;
     virtual void OnDestroyResource() = 0;
   };
 
@@ -82,8 +80,6 @@ class PLATFORM_EXPORT CanvasResource final : public gpu::ClientImage {
       scoped_refptr<blink::CanvasResource> canvas_resource,
       const gpu::SyncToken& sync_token,
       bool is_lost)>;
-
-  static void DropRefOnOwningThread(scoped_refptr<CanvasResource> resource);
 
   explicit CanvasResource(scoped_refptr<gpu::ClientSharedImage> shared_image);
 

@@ -372,13 +372,6 @@ void CanvasNon2DResourceProvider::OnFlushForImage(
   }
 }
 
-void CanvasNon2DResourceProvider::OnResourceRefReturned(
-    scoped_refptr<CanvasResource> resource) {
-  if (!resource->IsLost() && resource->HasOneRef() && image_pool_) {
-    image_pool_->ReleaseImage(std::move(resource));
-  }
-}
-
 gpu::raster::RasterInterface* CanvasNon2DResourceProvider::RasterInterface()
     const {
   if (!context_provider_wrapper_) {
@@ -521,14 +514,19 @@ CanvasNon2DResourceProvider::CreateExportedResource(
       resource);
 
   auto release_callback = base::BindOnce(
-      [](scoped_refptr<CanvasResource> resource,
+      [](base::WeakPtr<gpu::SharedImagePool<CanvasResource>> pool,
+         scoped_refptr<CanvasResource> resource,
          const gpu::SyncToken& sync_token, bool is_lost) {
+        CHECK(resource);
+        DCHECK(!resource->is_cross_thread());
         if (is_lost) {
           resource->NotifyResourceLost();
         }
-        CanvasResource::DropRefOnOwningThread(std::move(resource));
+        if (pool && !resource->IsLost() && resource->HasOneRef()) {
+          pool->ReleaseImage(std::move(resource));
+        }
       },
-      resource);
+      image_pool_->GetWeakPtr(), resource);
 
   return base::MakeRefCounted<ExportedCanvasResource>(
       resource->GetSharedImage(), resource->sync_token(),
@@ -601,15 +599,19 @@ scoped_refptr<StaticBitmapImage> CanvasNon2DResourceProvider::Snapshot() {
     // the ref-count on the resource as a proxy for a read lock to allow
     // recycling the resource once all refs have been released.
     auto release_callback = base::BindOnce(
-        [](scoped_refptr<CanvasResource> resource,
+        [](base::WeakPtr<gpu::SharedImagePool<CanvasResource>> pool,
+           scoped_refptr<CanvasResource> resource,
            const gpu::SyncToken& sync_token, bool lost_resource) {
           CHECK(resource);
+          DCHECK(!resource->is_cross_thread());
           CHECK(!lost_resource);
 
           resource->WaitSyncToken(sync_token);
-          CanvasResource::DropRefOnOwningThread(std::move(resource));
+          if (pool && !resource->IsLost() && resource->HasOneRef()) {
+            pool->ReleaseImage(std::move(resource));
+          }
         },
-        resource_);
+        image_pool_->GetWeakPtr(), resource_);
 
     cached_snapshot_ =
         AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(

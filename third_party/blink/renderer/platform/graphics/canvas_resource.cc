@@ -80,17 +80,6 @@ CanvasResource::CanvasResource(
   subclass_manages_destruction_sync_token_ = true;
 }
 
-// static
-void CanvasResource::DropRefOnOwningThread(
-    scoped_refptr<CanvasResource> resource) {
-  CHECK(resource);
-  DCHECK(!resource->is_cross_thread());
-
-  if (auto* client = resource->client_.get()) {
-    client->OnResourceRefReturned(std::move(resource));
-  }
-}
-
 void CanvasResource::InitializeSoftware(
     base::WeakPtr<Client> client,
     base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>

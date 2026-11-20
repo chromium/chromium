@@ -157,7 +157,6 @@ class PLATFORM_EXPORT CanvasNon2DResourceProvider
   // WebGraphicsContext3DProviderWrapper::DestructionObserver implementation.
   void OnContextDestroyed() override;
 
-  void OnResourceRefReturned(scoped_refptr<CanvasResource> resource) override;
   void OnDestroyResource() override { --num_inflight_resources_; }
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd) override;
   size_t GetSize() const override;
