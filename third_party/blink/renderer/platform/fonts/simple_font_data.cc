@@ -266,8 +266,7 @@ Glyph SimpleFontData::GlyphForMathCharacter(UChar32 codepoint,
                                             TextDirection direction) const {
   // If the text is RTL, try to get a suitable mirrored glyph. This is handled
   // automatically by harfbuzz when setting HB_DIRECTION_RTL in the buffer.
-  if (RuntimeEnabledFeatures::MathMLOperatorRTLMirroringEnabled() &&
-      direction == TextDirection::kRtl) {
+  if (IsRtl(direction)) {
     StringBuilder builder;
     builder.Append(codepoint);
     HarfBuzzShaper shaper(builder.ReleaseString());

@@ -89,8 +89,7 @@ void MathMLPainter::PaintOperator(const PaintInfo& info,
   // box fragment, which relies on the min-max sizes instead. Shift the paint
   // offset to work around that issue, splitting the size error symmetrically.
   DCHECK(box_fragment_.Style().IsHorizontalWritingMode());
-  bool is_ltr = style.GetWritingDirection().IsLtr() ||
-                !RuntimeEnabledFeatures::MathMLOperatorRTLMirroringEnabled();
+  const bool is_ltr = style.GetWritingDirection().IsLtr();
   physical_offset.left +=
       (box_fragment_.Size().width - borders.HorizontalSum() -
        padding.HorizontalSum() - parameters.operator_inline_size) /
@@ -136,9 +135,7 @@ void MathMLPainter::PaintRadicalSymbol(const PaintInfo& info,
   auto radical_symbol_physical_offset = radical_symbol_offset.ConvertToPhysical(
       style.GetWritingDirection(),
       PhysicalSize(box_fragment_.Size().width, box_fragment_.Size().height),
-      PhysicalSize(RuntimeEnabledFeatures::MathMLOperatorRTLMirroringEnabled()
-                       ? parameters.operator_inline_size
-                       : parameters.operator_ascent,
+      PhysicalSize(parameters.operator_inline_size,
                    parameters.operator_ascent + parameters.operator_descent));
   PaintStretchyOrLargeOperator(info,
                                paint_offset + radical_symbol_physical_offset);

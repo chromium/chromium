@@ -146,10 +146,6 @@ const ShapeResult* StretchyOperatorShaper::Shape(const Font* font,
 
   Glyph glyph_variant;
   float glyph_variant_stretch_size;
-  TextDirection direction =
-      RuntimeEnabledFeatures::MathMLOperatorRTLMirroringEnabled()
-          ? direction_
-          : TextDirection::kLtr;
 
   // Try different glyph variants.
   for (auto& variant : OpenTypeMathSupport::GetGlyphVariantRecords(
@@ -169,7 +165,7 @@ const ShapeResult* StretchyOperatorShaper::Shape(const Font* font,
             : bounds.height();
     if (glyph_variant_stretch_size >= target_size) {
       return ShapeResult::CreateForStretchyMathOperator(
-          font, direction, glyph_variant, glyph_variant_stretch_size);
+          font, direction_, glyph_variant, glyph_variant_stretch_size);
     }
   }
 
@@ -179,12 +175,12 @@ const ShapeResult* StretchyOperatorShaper::Shape(const Font* font,
                                       metrics ? &italic_correction : nullptr);
   if (!params) {
     return ShapeResult::CreateForStretchyMathOperator(
-        font, direction, glyph_variant, glyph_variant_stretch_size);
+        font, direction_, glyph_variant, glyph_variant_stretch_size);
   }
 
   const ShapeResult* shape_result_for_glyph_assembly =
-      ShapeResult::CreateForStretchyMathOperator(font, direction, stretch_axis_,
-                                                 std::move(*params));
+      ShapeResult::CreateForStretchyMathOperator(
+          font, direction_, stretch_axis_, std::move(*params));
   if (metrics) {
     // The OpenType MATH specification does provide any distinction between
     // the advance width and ink width, so the latter is returned here.
