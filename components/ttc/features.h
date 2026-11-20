@@ -14,7 +14,7 @@ namespace ttc {
 // Enables TTC feature.
 BASE_DECLARE_FEATURE(kTtc);
 
-// Controls model recipe selection for Talk To Chrome (TTC) live streaming.
+// Controls model recipe selection for TTC live streaming.
 BASE_DECLARE_FEATURE(kTtcLiveRecipe);
 
 // Model choices for TTC streaming.
