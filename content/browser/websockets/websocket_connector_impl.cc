@@ -143,7 +143,8 @@ void WebSocketConnectorImpl::Connect(
       options.options, std::move(throttling_profile_id),
       network_restrictions_id_, target_address_space, target_network);
 
-  if (GetContentClient()->browser()->WillInterceptWebSocket(frame)) {
+  if (GetContentClient()->browser()->WillInterceptWebSocket(
+          frame, process->GetBrowserContext())) {
     GetContentClient()->browser()->CreateWebSocket(
         frame, std::move(factory), url, isolation_info_.site_for_cookies(),
         user_agent, std::move(handshake_client), std::move(options));

@@ -745,7 +745,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       int64_t navigation_id,
       scoped_refptr<base::SequencedTaskRunner> navigation_response_task_runner)
       override;
-  bool WillInterceptWebSocket(content::RenderFrameHost* frame) override;
+  bool WillInterceptWebSocket(
+      content::RenderFrameHost* frame,
+      content::BrowserContext* browser_context) override;
   content::ContentBrowserClient::WebSocketOptions GetWebSocketOptions(
       content::RenderFrameHost* frame) override;
   void CreateWebSocket(

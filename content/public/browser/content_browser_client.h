@@ -2060,7 +2060,11 @@ class CONTENT_EXPORT ContentBrowserClient {
       bool is_for_network_service);
 
   // Returns true when the embedder wants to intercept a websocket connection.
-  virtual bool WillInterceptWebSocket(RenderFrameHost* frame);
+  // `frame` is null for connections from service workers and shared workers.
+  // `browser_context` is the context of the frame or worker that initiated the
+  // connection, and is never null.
+  virtual bool WillInterceptWebSocket(RenderFrameHost* frame,
+                                      BrowserContext* browser_context);
 
   struct CONTENT_EXPORT WebSocketOptions {
     WebSocketOptions();

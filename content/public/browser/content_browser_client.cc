@@ -1139,7 +1139,8 @@ void ContentBrowserClient::WillCreateURLLoaderFactory(
   DCHECK(browser_context);
 }
 
-bool ContentBrowserClient::WillInterceptWebSocket(RenderFrameHost*) {
+bool ContentBrowserClient::WillInterceptWebSocket(RenderFrameHost*,
+                                                  BrowserContext*) {
   return false;
 }
 

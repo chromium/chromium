@@ -7116,7 +7116,8 @@ ChromeContentBrowserClient::
 }
 
 bool ChromeContentBrowserClient::WillInterceptWebSocket(
-    content::RenderFrameHost* frame) {
+    content::RenderFrameHost* frame,
+    content::BrowserContext* browser_context) {
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   if (!frame) {
     return false;
