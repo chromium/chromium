@@ -11,7 +11,6 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/accessibility/tree_fixing/pref_names.h"
 #include "chrome/browser/autofill/generated_find_and_fill_with_gemini_pref.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -664,8 +663,6 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[::prefs::kLiveTranslateTargetLanguageCode] =
       settings_api::PrefType::kString;
-  (*s_allowlist)[::prefs::kAccessibilityAXTreeFixingEnabled] =
-      settings_api::PrefType::kBoolean;
   (*s_allowlist)[::prefs::kAccessibilityMainNodeAnnotationsEnabled] =
       settings_api::PrefType::kBoolean;
 #endif

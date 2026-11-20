@@ -75,13 +75,6 @@ export function getHtml(this: SettingsA11yPageElement) {
         label="$i18n{accessibleImageLabelsTitle}"
         sub-label="$i18n{accessibleImageLabelsSubtitle}">
     </settings-toggle-button>
-    ${this.showAxTreeFixingSection_ ? html`
-      <settings-toggle-button id="axTreeFixing" class="hr"
-          pref-key="settings.a11y.enable_ax_tree_fixing"
-          label="$i18n{axTreeFixingTitle}"
-          sub-label="$i18n{axTreeFixingSubtitle}">
-      </settings-toggle-button>
-    ` : ''}
 <if expr="is_win or is_linux or is_macosx">
     ${this.showAxAnnotationsSection_ ? html`
       <settings-ax-annotations-section id="AxAnnotationsSection">

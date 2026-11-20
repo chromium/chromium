@@ -70,11 +70,6 @@ function getInitialPrefs(): chrome.settingsPrivate.PrefObject[] {
       value: false,
     },
     {
-      key: 'settings.a11y.enable_ax_tree_fixing',
-      type: chrome.settingsPrivate.PrefType.BOOLEAN,
-      value: false,
-    },
-    {
       key: 'settings.a11y.enable_main_node_annotations',
       type: chrome.settingsPrivate.PrefType.BOOLEAN,
       value: false,
@@ -135,7 +130,6 @@ suite('A11yPage', () => {
 
   setup(async function() {
     loadTimeData.overrideValues({
-      axTreeFixingEnabled: true,
       mainNodeAnnotationsEnabled: true,
       pageColorsSettingsEnabled: true,
     });
@@ -162,29 +156,6 @@ suite('A11yPage', () => {
     a11yPage = document.createElement('settings-a11y-page');
     document.body.appendChild(a11yPage);
     await microtasksFinished();
-  });
-
-  test('ax tree fixing toggle and pref', async () => {
-    assertTrue(loadTimeData.getBoolean('axTreeFixingEnabled'));
-
-    const toggle =
-        a11yPage.shadowRoot.querySelector<SettingsToggleButtonElement>(
-            '#axTreeFixing');
-    assertTrue(!!toggle);
-
-    // The AX Tree Fixing pref is off by default, so the button should be
-    // toggled off.
-    assertFalse(
-        prefService.getPref<boolean>('settings.a11y.enable_ax_tree_fixing')
-            .value);
-    assertFalse(toggle.checked);
-
-    toggle.click();
-    await microtasksFinished();
-    assertTrue(
-        prefService.getPref<boolean>('settings.a11y.enable_ax_tree_fixing')
-            .value);
-    assertTrue(toggle.checked);
   });
 
   // <if expr="is_win or is_linux or is_macosx">

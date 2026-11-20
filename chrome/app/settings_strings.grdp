@@ -79,12 +79,6 @@
     <message name="IDS_SETTINGS_MORE_FEATURES_LINK" desc="Link which opens page where users can install extensions which provide additional accessibility features.">
       Add accessibility features
     </message>
-    <message name="IDS_SETTINGS_AX_TREE_FIXING_TITLE" desc="Description for screen reader tree fixing feature." translateable = "false">
-      AXTree Fixing
-    </message>
-    <message name="IDS_SETTINGS_AX_TREE_FIXING_SUBTITLE" desc="Subtitle for screen reader tree fixing feature." translateable = "false">
-      Fix the AXTree
-    </message>
     <if expr="not is_chromeos">
       <message name="IDS_SETTINGS_ACCESSIBILITY_FOCUS_HIGHLIGHT_DESCRIPTION" desc="In the settings tab, the text next to the checkbox to highlight the focused object to make it easier to see.">
         Show a quick highlight on the focused object

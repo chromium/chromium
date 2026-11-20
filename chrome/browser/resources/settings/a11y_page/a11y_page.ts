@@ -122,11 +122,6 @@ export class SettingsA11yPageElement extends SettingsA11yPageElementBase {
        */
       hasScreenReader_: {type: Boolean},
 
-      /**
-       * Whether to show the AxTreeFixing subpage.
-       */
-      showAxTreeFixingSection_: {type: Boolean},
-
       // <if expr="is_win or is_linux or is_macosx">
       /**
        * Whether to show the AxAnnotations subpage.
@@ -183,8 +178,6 @@ export class SettingsA11yPageElement extends SettingsA11yPageElementBase {
   // </if>
 
   protected accessor hasScreenReader_: boolean = false;
-  protected accessor showAxTreeFixingSection_: boolean =
-      loadTimeData.getBoolean('axTreeFixingEnabled');
   // <if expr="is_win or is_linux or is_macosx">
   protected accessor showAxAnnotationsSection_: boolean = false;
   // </if>
