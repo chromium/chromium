@@ -2,10 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {GlicClientStorageImpl} from '//webui-test/glic/glic_api_impl/glic_api_client.js';
+import {DrivePickerErrorReason as DrivePickerErrorReasonMojo} from '//webui-test/glic/glic.mojom-webui.js';
+import {DrivePickerErrorReason} from '//webui-test/glic/glic_api/glic_api.js';
+import {driveFileSelectionToClient, drivePickerOptionsFromClient, drivePickerResultToClient, numberToClient} from '//webui-test/glic/glic_api_impl/conversions.js';
+import {GlicBrowserHostImpl, GlicClientStorageImpl} from '//webui-test/glic/glic_api_impl/glic_api_client.js';
 import type {ClientStorageHandler} from '//webui-test/glic/glic_api_impl/glic_api_client.js';
 import {TabObservable, TabObservableSet} from '//webui-test/glic/glic_api_impl/observable_set_by_tab_id.js';
-import {assertEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertNotEquals, assertThrows, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {sleep, waitUntilEqual} from './test_helpers.js';
 
@@ -564,5 +567,152 @@ suite('GlicClientStorageImpl', () => {
 
     storage.onRemoteItemChanged('k1', 'final_remote');
     assertEquals(storage.getItem('k1'), 'final_remote');
+  });
+});
+
+suite('DrivePickerApiClient', () => {
+  test('numberToClient converts bigint, number, and null', () => {
+    assertEquals(numberToClient(4096n), 4096);
+    assertEquals(numberToClient(0n), 0);
+    assertEquals(numberToClient(42), 42);
+    assertEquals(numberToClient(null), undefined);
+  });
+
+  test(
+      'driveFileSelectionToClient converts bigint size and optional fields',
+      () => {
+        assertDeepEquals(
+            driveFileSelectionToClient({
+              id: 'file-1',
+              title: 'Report.pdf',
+              mimeType: 'application/pdf',
+              sizeBytes: 4096n,
+              resourceKey: 'rk-123',
+            }),
+            {
+              id: 'file-1',
+              title: 'Report.pdf',
+              mimeType: 'application/pdf',
+              sizeBytes: 4096,
+              resourceKey: 'rk-123',
+            });
+
+        assertDeepEquals(
+            driveFileSelectionToClient({
+              id: 'doc-1',
+              title: 'Doc',
+              mimeType: 'application/vnd.google-apps.document',
+              sizeBytes: 0n,
+              resourceKey: null,
+            }),
+            {
+              id: 'doc-1',
+              title: 'Doc',
+              mimeType: 'application/vnd.google-apps.document',
+              sizeBytes: 0,
+              resourceKey: undefined,
+            });
+      });
+
+  test('drivePickerResultToClient converts union variants', () => {
+    assertDeepEquals(
+        drivePickerResultToClient({
+          files: [{
+            id: 'abc',
+            title: 'Deck.pptx',
+            mimeType: 'application/pdf',
+            sizeBytes: 2048n,
+            resourceKey: 'rk',
+          }],
+        }),
+        {
+          files: [{
+            id: 'abc',
+            title: 'Deck.pptx',
+            mimeType: 'application/pdf',
+            sizeBytes: 2048,
+            resourceKey: 'rk',
+          }],
+        });
+    assertDeepEquals(drivePickerResultToClient({files: []}), {files: []});
+    assertDeepEquals(
+        drivePickerResultToClient(
+            {errorReason: DrivePickerErrorReasonMojo.kUnknown}),
+        {errorReason: DrivePickerErrorReason.UNKNOWN});
+    assertDeepEquals(
+        drivePickerResultToClient(
+            {errorReason: DrivePickerErrorReasonMojo.kAccountMismatch}),
+        {errorReason: DrivePickerErrorReason.ACCOUNT_MISMATCH});
+    assertThrows(() => drivePickerResultToClient({}));
+  });
+
+  test('drivePickerOptionsFromClient defaults missing options', () => {
+    assertDeepEquals(
+        drivePickerOptionsFromClient({accountId: '12345'}),
+        {accountId: '12345'});
+    assertDeepEquals(drivePickerOptionsFromClient(undefined), {accountId: ''});
+  });
+
+  test('showDrivePicker returns converted selections on success', async () => {
+    let receivedOptions: {accountId: string}|undefined;
+    const fakeHost = {
+      handler: {
+        showDrivePicker: (options: {accountId: string}) => {
+          receivedOptions = options;
+          return Promise.resolve({
+            result: {
+              files: [
+                {
+                  id: 'abc',
+                  title: 'Deck.pptx',
+                  mimeType: 'application/pdf',
+                  sizeBytes: 2048n,
+                  resourceKey: 'rk',
+                },
+              ],
+            },
+          });
+        },
+      },
+    };
+    const result = await GlicBrowserHostImpl.prototype.showDrivePicker!.call(
+        fakeHost as unknown as GlicBrowserHostImpl, {accountId: 'gaia-1'});
+    assertDeepEquals(receivedOptions, {accountId: 'gaia-1'});
+    assertDeepEquals(result, {
+      files: [
+        {
+          id: 'abc',
+          title: 'Deck.pptx',
+          mimeType: 'application/pdf',
+          sizeBytes: 2048,
+          resourceKey: 'rk',
+        },
+      ],
+    });
+  });
+
+  test('showDrivePicker returns empty files array on cancel', async () => {
+    const fakeHost = {
+      handler: {
+        showDrivePicker: () => Promise.resolve({result: {files: []}}),
+      },
+    };
+    const result = await GlicBrowserHostImpl.prototype.showDrivePicker!.call(
+        fakeHost as unknown as GlicBrowserHostImpl, {accountId: 'gaia-1'});
+    assertDeepEquals(result, {files: []});
+  });
+
+  test('showDrivePicker returns errorReason on error', async () => {
+    const fakeHost = {
+      handler: {
+        showDrivePicker: () => Promise.resolve({
+          result: {errorReason: DrivePickerErrorReasonMojo.kAccountMismatch},
+        }),
+      },
+    };
+    const result = await GlicBrowserHostImpl.prototype.showDrivePicker!.call(
+        fakeHost as unknown as GlicBrowserHostImpl, {accountId: 'gaia-1'});
+    assertDeepEquals(
+        result, {errorReason: DrivePickerErrorReason.ACCOUNT_MISMATCH});
   });
 });

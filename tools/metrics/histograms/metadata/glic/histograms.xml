@@ -113,6 +113,7 @@ chromium-metrics-reviews@google.com.
   <variant name="SetSyntheticExperimentState"/>
   <variant name="SetTabContextPermissionState"/>
   <variant name="ShowBrowseSkillsUi"/>
+  <variant name="ShowDrivePicker"/>
   <variant name="ShowManageSkillsUi"/>
   <variant name="ShowProfilePicker"/>
   <variant name="StopActorTask"/>

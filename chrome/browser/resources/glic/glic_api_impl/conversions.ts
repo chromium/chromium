@@ -10,6 +10,7 @@
 // * Optional types in Mojo use null, but optional types in the public API use
 //   undefined.
 
+import {assert} from '//resources/js/assert.js';
 import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
 import type {ProtoWrapper} from '//resources/mojo/mojo/public/mojom/base/proto_wrapper.mojom-webui.js';
 import type {Time, TimeDelta} from '//resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
@@ -29,6 +30,9 @@ import type {                                                    //
              CounterAbuseVerdict as CounterAbuseVerdictMojo,     //
              CreateTabOptions as CreateTabOptionsMojo,           //
              DataTransferActionsBlockedNotice as DataTransferActionsBlockedNoticeMojo, //
+             DriveFileSelection as DriveFileSelectionMojo,                   //
+             DrivePickerOptions as DrivePickerOptionsMojo,                   //
+             DrivePickerResult as DrivePickerResultMojo,                     //
              FileUploadPolicyState as FileUploadPolicyStateMojo,             //
              FocusedTabData as FocusedTabDataMojo,                           //
              GetPinCandidatesOptions as GetPinCandidatesOptionsMojo,         //
@@ -72,6 +76,9 @@ import type {                                                   //
              CounterAbuseVerdict,                               //
              CreateTabOptions,                                  //
              DataTransferActionsBlockedNotice,                  //
+             DriveFileSelection,                                //
+             DrivePickerOptions,                                //
+             DrivePickerResult,                                 //
              FileUploadPolicyState as FileUploadPolicyStateApi, //
              FocusedTabData,                                    //
              GetPinCandidatesOptions,                           //
@@ -257,6 +264,15 @@ export function optionalFromClient<T>(value: T|undefined) {
     return null;
   }
   return value;
+}
+
+export function numberToClient(value: bigint|number): number;
+export function numberToClient(value: bigint|number|null): number|undefined;
+export function numberToClient(value: bigint|number|null): number|undefined {
+  if (value === null) {
+    return undefined;
+  }
+  return Number(value);
 }
 
 export function urlToClient(url: Url): string;
@@ -853,5 +869,32 @@ export function dataTransferActionsBlockedNoticeToClient(
   return {
     action: enumToClient(notice.action),
     reason: enumToClient(notice.reason),
+  };
+}
+
+export function driveFileSelectionToClient(selection: DriveFileSelectionMojo):
+    DriveFileSelection {
+  return {
+    id: selection.id,
+    title: selection.title,
+    mimeType: selection.mimeType,
+    sizeBytes: numberToClient(selection.sizeBytes),
+    resourceKey: optionalToClient(selection.resourceKey),
+  };
+}
+
+export function drivePickerResultToClient(result: DrivePickerResultMojo):
+    DrivePickerResult {
+  if (result.files !== undefined) {
+    return {files: result.files.map(driveFileSelectionToClient)};
+  }
+  assert(result.errorReason !== undefined);
+  return {errorReason: enumToClient(result.errorReason)};
+}
+
+export function drivePickerOptionsFromClient(
+    options: DrivePickerOptions|undefined): DrivePickerOptionsMojo {
+  return {
+    accountId: options?.accountId ?? '',
   };
 }

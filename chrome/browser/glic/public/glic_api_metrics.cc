@@ -226,6 +226,8 @@ std::string_view ToString(GlicHostApiRequestId request_id) {
       return "SetGuestUrlQueryParam";
     case GlicHostApiRequestId::kSwitchAssistant:
       return "SwitchAssistant";
+    case GlicHostApiRequestId::kShowDrivePicker:
+      return "ShowDrivePicker";
   }
   return "";
 }

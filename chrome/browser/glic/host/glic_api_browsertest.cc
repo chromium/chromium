@@ -260,6 +260,7 @@ struct TestParams {
   bool skills_v2 = false;
   bool enable_embedded_pdf_bytes_extraction = false;
   bool enable_execute_js = false;
+  bool enable_drive_picker = false;
   bool enable_ssr = false;
   // Latches the profile to Gemini Enterprise in Chrome (GEiC) instead of
   // consumer Gemini, with the mock client as the GE guest. GEiC requires
@@ -322,6 +323,9 @@ class WithTestParams : public testing::WithParamInterface<TestParams> {
     }
     if (info.param.enable_execute_js) {
       result.push_back("EnableExecuteJs");
+    }
+    if (info.param.enable_drive_picker) {
+      result.push_back("EnableDrivePicker");
     }
     if (info.param.enable_ssr) {
       result.push_back("EnableSsr");
@@ -3561,6 +3565,12 @@ class GlicGetHostCapabilityApiTest : public GlicApiBrowserTest,
       disabled_features.push_back(actor::kActorExecuteJsTool);
     }
 
+    if (GetParam().enable_drive_picker) {
+      enabled_features.push_back({features::kGlicDrivePicker, {}});
+    } else {
+      disabled_features.push_back(features::kGlicDrivePicker);
+    }
+
     features_.InitWithFeaturesAndParameters(enabled_features,
                                             disabled_features);
   }
@@ -3652,6 +3662,12 @@ IN_PROC_BROWSER_TEST_P(GlicGetHostCapabilityApiTest, testGetHostCapabilities) {
     expected_capabilities.Append(
         std::to_underlying(mojom::HostCapability::kChromeTools));
   }
+#if !BUILDFLAG(IS_ANDROID)
+  if (GetParam().enable_drive_picker && !IsGeic()) {
+    expected_capabilities.Append(
+        std::to_underlying(mojom::HostCapability::kDrivePicker));
+  }
+#endif
   if (GetParam().skills_v2) {
     expected_capabilities.Append(
         std::to_underlying(mojom::HostCapability::kSkillsV2));
@@ -6155,6 +6171,8 @@ INSTANTIATE_TEST_SUITE_P(
                     TestParams{.skills_v2 = true},
                     TestParams{.enable_embedded_pdf_bytes_extraction = true},
                     TestParams{.enable_execute_js = true},
+                    TestParams{.enable_drive_picker = true},
+                    TestParams{.enable_drive_picker = true, .geic = true},
                     TestParams{.no_webview = true},
                     TestParams{.geic = true}),
     &WithTestParams::PrintTestVariant);

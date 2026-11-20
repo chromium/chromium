@@ -638,6 +638,7 @@ chromium-metrics-reviews@google.com.
   <int value="113" label="OnUserInputHeldForOnboarding"/>
   <int value="114" label="SetGuestUrlQueryParam"/>
   <int value="115" label="SwitchAssistant"/>
+  <int value="116" label="ShowDrivePicker"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/public/glic_api_metrics.h:GlicHostApiRequestId) -->

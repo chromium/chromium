@@ -5,10 +5,9 @@
 #ifndef CHROME_BROWSER_GLIC_HOST_GLIC_DRIVE_PICKER_MANAGER_H_
 #define CHROME_BROWSER_GLIC_HOST_GLIC_DRIVE_PICKER_MANAGER_H_
 
-#include <cstdint>
+#include <cstddef>
 #include <memory>
 #include <optional>
-#include <string>
 #include <vector>
 
 #include "base/callback_list.h"
@@ -18,6 +17,7 @@
 #include "base/types/expected.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/glic/host/glic_drive_picker_account_util.h"
+#include "chrome/browser/glic/host/glic_drive_picker_types.h"
 #include "chrome/browser/ui/views/drive_picker_host/drive_picker_result_handler.mojom.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -42,35 +42,6 @@ class Widget;
 namespace glic {
 
 class GlicEnabling;
-
-// Reason why a Glic Drive picker request failed.
-enum class GlicDrivePickerError {
-  kUnknown,
-  kWebSessionSignedOut,
-  kChromeSignInRequired,
-  kAccountMismatch,
-  kAlreadyActive,
-  kNoAnchorWindow,
-  kLoadFailed,
-  kDisabledByPolicy,
-  kUnsupported,
-};
-
-// A sanitized Google Drive file selected by the user.
-struct GlicDriveFileSelection {
-  GlicDriveFileSelection();
-  GlicDriveFileSelection(const GlicDriveFileSelection&);
-  GlicDriveFileSelection& operator=(const GlicDriveFileSelection&);
-  GlicDriveFileSelection(GlicDriveFileSelection&&);
-  GlicDriveFileSelection& operator=(GlicDriveFileSelection&&);
-  ~GlicDriveFileSelection();
-
-  std::string id;
-  std::string title;
-  std::string mime_type;
-  uint64_t size_bytes = 0;
-  std::optional<std::string> resource_key;
-};
 
 // Manages Chrome's modal Google Drive picker (`chrome://drive-picker-host`)
 // lifecycle for a Glic profile. Owned by `GlicKeyedService` so at most one

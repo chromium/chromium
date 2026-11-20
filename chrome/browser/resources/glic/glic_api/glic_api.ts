@@ -51,6 +51,9 @@ export import Credential = generated.Credential;
 export import DataTransferActionsBlockedNotice =
     generated.DataTransferActionsBlockedNotice;
 export import DocumentData = generated.DocumentData;
+export import DriveFileSelection = generated.DriveFileSelection;
+export import DrivePickerOptions = generated.DrivePickerOptions;
+export import DrivePickerResult = generated.DrivePickerResult;
 export import ExperimentalTriggeringPayload =
     generated.ExperimentalTriggeringPayload;
 export import ExperimentalTriggeringUpdate =
@@ -141,6 +144,7 @@ export import CredentialType = generated.CredentialType;
 export import DataTransferAction = generated.DataTransferAction;
 export import DataTransferActionsBlockedReason =
     generated.DataTransferActionsBlockedReason;
+export import DrivePickerErrorReason = generated.DrivePickerErrorReason;
 export import ExperimentalTriggeringUpdateType =
     generated.ExperimentalTriggeringUpdateType;
 export import FeatureMode = generated.FeatureMode;
@@ -835,6 +839,20 @@ export declare interface GlicBrowserHost {
    * closed in favor of a new one.
    */
   showProfilePicker?(): void;
+
+  /**
+   * Shows a modal Google Drive file picker dialog.
+   *
+   * Resolves with a {@link DrivePickerResult}: either `files` (empty if the
+   * user cancelled or the panel closed before a selection was made) or
+   * `errorReason` if the picker could not be shown or failed.
+   *
+   * Only one Drive picker dialog may be open at a time per profile. Calling
+   * this while a picker is already open immediately resolves with
+   * `{errorReason: DrivePickerErrorReason.ALREADY_ACTIVE}` without affecting
+   * the active picker.
+   */
+  showDrivePicker?(options: DrivePickerOptions): Promise<DrivePickerResult>;
 
   /**
    * Returns the state of the panel.

@@ -23,6 +23,7 @@
 #include "base/strings/pattern.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/types/expected.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/browser_process.h"
@@ -47,6 +48,7 @@
 #include "chrome/browser/glic/host/glic_assistant_switcher.h"
 #include "chrome/browser/glic/host/glic_client_data_storage.h"
 #include "chrome/browser/glic/host/glic_cookie_synchronizer.h"
+#include "chrome/browser/glic/host/glic_drive_picker_types.h"
 #include "chrome/browser/glic/host/glic_page_handler.h"
 #include "chrome/browser/glic/host/glic_skills_manager.h"
 #include "chrome/browser/glic/host/glic_synthetic_trial_manager.h"
@@ -111,9 +113,11 @@
 #include "ui/display/screen.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "base/unguessable_token.h"
 #include "chrome/browser/feedback/system_logs/chrome_system_logs_fetcher.h"
 #include "chrome/browser/glic/glic_hotkey.h"
 #include "chrome/browser/glic/host/context/glic_focused_browser_manager.h"
+#include "chrome/browser/glic/host/glic_drive_picker_manager.h"
 #include "chrome/browser/glic/host/glic_tools_desktop.h"
 #include "chrome/browser/glic/selection/selection_overlay_controller.h"
 #include "chrome/browser/media/audio_ducker.h"
@@ -121,6 +125,7 @@
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
+#include "google_apis/gaia/gaia_id.h"
 #else
 #include "base/android/device_info.h"
 #include "chrome/browser/glic/android/glic_tab_picker_bridge.h"
@@ -418,6 +423,7 @@ class GlicWebClientHandler
     if (web_client_) {
       Uninstall();
     }
+    CancelDrivePicker();
   }
 
   // GlicWebClientResponsivenessMonitor::Delegate implementation.
@@ -815,6 +821,54 @@ class GlicWebClientHandler
   void ShowProfilePicker() override {
     LogApiRequestCount(GlicHostApiRequestId::kShowProfilePicker);
     glic::GlicProfileManager::GetInstance()->ShowProfilePicker();
+  }
+
+  void ShowDrivePicker(glic::mojom::DrivePickerOptionsPtr options,
+                       ShowDrivePickerCallback callback) override {
+    if (!glic_service_->provider_spec().SupportsFeature(
+            GlicFeature::kDrivePicker)) {
+      receiver_.ReportBadMessage(
+          "Client should not call ShowDrivePicker when the Drive picker "
+          "feature is not supported.");
+      return;
+    }
+    LogApiRequest(GlicHostApiRequestId::kShowDrivePicker);
+    // Never drop the callback (e.g. if the handler is destroyed while the
+    // picker is open); resolve with an empty list (cancelled) instead.
+    callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+        std::move(callback), mojom::DrivePickerResult::NewFiles(
+                                 std::vector<GlicDriveFileSelection>()));
+#if !BUILDFLAG(IS_ANDROID)
+    auto* manager = glic_service_->drive_picker_manager();
+    if (!manager) {
+      std::move(callback).Run(mojom::DrivePickerResult::NewErrorReason(
+          GlicDrivePickerError::kUnsupported));
+      return;
+    }
+    const bool is_panel_showing = host_->GetPrimaryWebClient() == this &&
+                                  host_->instance().GetPanelState()->kind !=
+                                      mojom::PanelStateKind::kHidden;
+    const GaiaId expected_gaia(options->account_id);
+    manager->ShowDrivePicker(
+        drive_picker_owner_token_, expected_gaia, is_panel_showing,
+        host_->webui_contents(),
+        base::BindOnce(
+            [](ShowDrivePickerCallback cb,
+               base::expected<std::vector<GlicDriveFileSelection>,
+                              GlicDrivePickerError> result) {
+              if (!result.has_value()) {
+                std::move(cb).Run(
+                    mojom::DrivePickerResult::NewErrorReason(result.error()));
+                return;
+              }
+              std::move(cb).Run(
+                  mojom::DrivePickerResult::NewFiles(std::move(*result)));
+            },
+            std::move(callback)));
+#else
+    std::move(callback).Run(mojom::DrivePickerResult::NewErrorReason(
+        GlicDrivePickerError::kUnsupported));
+#endif
   }
 
   void OnModeChange(glic::mojom::WebClientMode new_mode) override {
@@ -1713,6 +1767,7 @@ class GlicWebClientHandler
   }
 
   void PanelWasClosed(base::OnceClosure done) override {
+    CancelDrivePicker();
     host().SetInvocationSource(mojom::InvocationSource::kUnsupported);
     if (web_client_) {
       web_client_->NotifyPanelWasClosed(
@@ -1928,6 +1983,15 @@ class GlicWebClientHandler
     consent_subscription_ = {};
     client_storage_observation_.Reset();
     browser_attach_observation_.reset();
+    CancelDrivePicker();
+  }
+
+  void CancelDrivePicker() {
+#if !BUILDFLAG(IS_ANDROID)
+    if (auto* manager = glic_service_->drive_picker_manager()) {
+      manager->CancelForOwner(drive_picker_owner_token_);
+    }
+#endif
   }
 
   void SetState(mojom::WebClientState new_state) {
@@ -2098,6 +2162,8 @@ class GlicWebClientHandler
   bool ignore_client_storage_pref_change_ = false;
 #if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<GlicToolsHolder> ai_overlay_tools_;
+  const base::UnguessableToken drive_picker_owner_token_ =
+      base::UnguessableToken::Create();
 #endif
 };
 

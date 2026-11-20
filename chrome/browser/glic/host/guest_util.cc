@@ -1179,6 +1179,10 @@ void PopulateGlobalClientInitialState(mojom::WebClientInitialState* state,
     state->host_capabilities.push_back(mojom::HostCapability::kInvoke);
   }
 
+  if (GetGlicProviderSpec(profile).SupportsFeature(GlicFeature::kDrivePicker)) {
+    state->host_capabilities.push_back(mojom::HostCapability::kDrivePicker);
+  }
+
   if (GetOnboardingArm(profile) == "2") {
     state->host_capabilities.push_back(
         mojom::HostCapability::kTrustFirstOnboardingArm2);

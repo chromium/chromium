@@ -53,6 +53,8 @@ import type {                                  //
              CounterAbuseVerdict,              //
              CreateTabOptions,                 //
              DataTransferActionsBlockedNotice, //
+             DrivePickerOptions,               //
+             DrivePickerResult,                //
              FileUploadPolicyState,            //
              FocusedTabData,                   //
              FormFactor,                       //
@@ -105,6 +107,8 @@ import {                                     //
   counterAbuseVerdictFromClient,             //
   createTabOptionsFromClient,                //
   dataTransferActionsBlockedNoticeToClient,  //
+  drivePickerOptionsFromClient,              //
+  drivePickerResultToClient,                 //
   fileUploadPolicyStateToClient,             //
   focusedTabDataToClient,                    //
   getPinCandidatesOptionsFromClient,         //
@@ -454,6 +458,10 @@ export class GlicBrowserHostImpl implements GlicBrowserHost,
       // MOJO_RUNTIME_FEATURE_GATED GetSendTabToSelfDevices
       this.getSendTabToSelfDevices = undefined;
     }
+
+    if (!this.hostCapabilities.has(HostCapability.DRIVE_PICKER)) {
+      this.showDrivePicker = undefined;
+    }
   }
 
   webClientInitialized(success: boolean) {
@@ -762,6 +770,13 @@ export class GlicBrowserHostImpl implements GlicBrowserHost,
 
   showProfilePicker(): void {
     this.handler.showProfilePicker();
+  }
+
+  async showDrivePicker?
+      (options: DrivePickerOptions): Promise<DrivePickerResult> {
+    const {result} = await this.handler.showDrivePicker(
+        drivePickerOptionsFromClient(options));
+    return drivePickerResultToClient(result);
   }
 
   async getSendTabToSelfDevices?(): Promise<SendTabToSelfDevice[]> {

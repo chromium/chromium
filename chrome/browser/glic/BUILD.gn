@@ -304,6 +304,13 @@ if (is_android) {
   }
 }
 
+source_set("drive_picker_types") {
+  sources = [
+    "host/glic_drive_picker_types.cc",
+    "host/glic_drive_picker_types.h",
+  ]
+}
+
 source_set("enum") {
   sources = [
     "glic_enums.cc",
@@ -633,6 +640,7 @@ source_set("impl") {
     "//chrome/browser/actor",
   ]
   deps = [
+    ":drive_picker_types",
     ":glic",
     ":glic_metrics",
     ":provider_spec_impl",
@@ -980,13 +988,25 @@ mojom("mojo_bindings") {
           mojom = "glic.mojom.ScreenshotCompressionQuality"
           cpp = "::page_content_annotations::ScreenshotOptions::ScreenshotCompressionQuality"
         },
+        {
+          mojom = "glic.mojom.DriveFileSelection"
+          cpp = "::glic::GlicDriveFileSelection"
+        },
+        {
+          mojom = "glic.mojom.DrivePickerErrorReason"
+          cpp = "::glic::GlicDrivePickerError"
+        },
       ]
       traits_headers = [
         "//components/page_content_annotations/content/page_context_fetcher.h",
+        "host/glic_drive_picker_types.h",
         "host/glic_mojom_traits.h",
       ]
       traits_sources = [ "host/glic_mojom_traits.cc" ]
-      traits_public_deps = [ "//components/page_content_annotations/content" ]
+      traits_public_deps = [
+        ":drive_picker_types",
+        "//components/page_content_annotations/content",
+      ]
     },
   ]
 }
@@ -1008,6 +1028,7 @@ source_set("unit_tests") {
     "host/glic_guest_observer_unittest.cc",
     "host/glic_guest_page_load_metrics_observer_unittest.cc",
     "host/glic_local_storage_migration_unittest.cc",
+    "host/glic_mojom_traits_unittest.cc",
     "host/glic_pwc_permission_delegate_unittest.cc",
     "host/glic_pwc_policy_delegate_unittest.cc",
     "host/glic_url_loader_throttle_unittest.cc",
@@ -1034,6 +1055,7 @@ source_set("unit_tests") {
     "suggestions/caching_zero_state_suggestions_manager_unittest.cc",
   ]
   deps = [
+    ":drive_picker_types",
     ":glic",
     ":glic_metrics",
     ":impl",
@@ -1098,6 +1120,7 @@ source_set("unit_tests") {
     "//components/tabs:test_support",
     "//components/ukm:test_support",
     "//content/test:test_support",
+    "//mojo/public/cpp/test_support:test_utils",
     "//pdf:buildflags",
     "//testing/gmock",
     "//testing/gtest",
@@ -1158,7 +1181,6 @@ source_set("unit_tests") {
       "//components/skills/public:metrics",
       "//components/viz/common",
       "//components/web_modal:test_support",
-      "//mojo/public/cpp/test_support:test_utils",
       "//services/network:test_support",
       "//ui/base",
       "//ui/base:test_support",
@@ -1327,6 +1349,7 @@ source_set("browser_tests") {
       "glic_settings_page_browsertest.cc",
       "glic_user_status_browsertest.cc",
       "host/context/glic_tab_data_browsertest.cc",
+      "host/glic_api_drive_picker_browsertest.cc",
       "host/glic_focus_browsertest.cc",
       "host/glic_guest_navigation_throttle_browsertest.cc",
       "host/glic_paste_policy_browsertest.cc",
@@ -1394,10 +1417,13 @@ source_set("browser_tests") {
       "//chrome/browser/ui/side_panel",
       "//chrome/browser/ui/side_panel:side_panel_views_dependent",
       "//chrome/browser/ui/toasts",
+      "//chrome/browser/ui/views/drive_picker_host",
+      "//chrome/browser/ui/views/drive_picker_host:mojo_bindings",
       "//chrome/browser/ui/views/frame:browser_view_header",
       "//chrome/browser/ui/views/glic",
       "//chrome/browser/ui/views/tabs:tab_strip",
       "//chrome/browser/ui/views/tabs/glic",
+      "//chrome/browser/ui/webui/drive_picker_host:drive_picker_host_request",
       "//chrome/common:constants",
       "//chrome/test:test_support",
       "//components/enterprise/common/proto:dlp_policy_event_proto",

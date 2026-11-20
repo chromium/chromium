@@ -5,8 +5,13 @@
 #ifndef CHROME_BROWSER_GLIC_HOST_GLIC_MOJOM_TRAITS_H_
 #define CHROME_BROWSER_GLIC_HOST_GLIC_MOJOM_TRAITS_H_
 
+#include <cstdint>
+#include <optional>
+#include <string>
+
 #include "base/notreached.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/host/glic_drive_picker_types.h"
 #include "components/page_content_annotations/content/page_context_fetcher.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
@@ -131,6 +136,40 @@ struct EnumTraits<
     }
     NOTREACHED();
   }
+};
+
+template <>
+struct StructTraits<glic::mojom::DriveFileSelectionDataView,
+                    glic::GlicDriveFileSelection> {
+  static const std::string& id(const glic::GlicDriveFileSelection& input) {
+    return input.id;
+  }
+  static const std::string& title(const glic::GlicDriveFileSelection& input) {
+    return input.title;
+  }
+  static const std::string& mime_type(
+      const glic::GlicDriveFileSelection& input) {
+    return input.mime_type;
+  }
+  static uint64_t size_bytes(const glic::GlicDriveFileSelection& input) {
+    return input.size_bytes;
+  }
+  static const std::optional<std::string>& resource_key(
+      const glic::GlicDriveFileSelection& input) {
+    return input.resource_key;
+  }
+
+  static bool Read(glic::mojom::DriveFileSelectionDataView data,
+                   glic::GlicDriveFileSelection* out);
+};
+
+template <>
+struct EnumTraits<glic::mojom::DrivePickerErrorReason,
+                  glic::GlicDrivePickerError> {
+  static glic::mojom::DrivePickerErrorReason ToMojom(
+      glic::GlicDrivePickerError input);
+  static glic::GlicDrivePickerError FromMojom(
+      glic::mojom::DrivePickerErrorReason input);
 };
 
 }  // namespace mojo

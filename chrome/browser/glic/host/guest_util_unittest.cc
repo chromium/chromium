@@ -15,6 +15,7 @@
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_features.mojom-features.h"
@@ -48,6 +49,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "components/omnibox/common/omnibox_features.h"
+#endif
 
 namespace glic {
 
@@ -783,6 +788,82 @@ TEST_F(GuestUtilMultiInstanceTest,
   EXPECT_THAT(state->host_capabilities,
               Contains(mojom::HostCapability::kExecuteJs));
 }
+
+TEST_F(GuestUtilMultiInstanceTest,
+       PopulateGlobalClientInitialState_DrivePickerEnabled) {
+  base::test::ScopedFeatureList feature_list;
+#if !BUILDFLAG(IS_ANDROID)
+  feature_list.InitWithFeatures(
+      {features::kGlicDrivePicker, omnibox::kDrivePickerV2Scope}, {});
+#else
+  feature_list.InitAndEnableFeature(features::kGlicDrivePicker);
+#endif
+
+  TestingProfile* profile = CreateTestingProfile("drive_picker_enabled");
+  auto state = mojom::WebClientInitialState::New();
+  PopulateGlobalClientInitialState(state.get(), profile);
+
+#if !BUILDFLAG(IS_ANDROID)
+  EXPECT_THAT(state->host_capabilities,
+              Contains(mojom::HostCapability::kDrivePicker));
+#else
+  EXPECT_THAT(state->host_capabilities,
+              Not(Contains(mojom::HostCapability::kDrivePicker)));
+#endif
+}
+
+TEST_F(GuestUtilMultiInstanceTest,
+       PopulateGlobalClientInitialState_DrivePickerDisabledWhenFlagOff) {
+  base::test::ScopedFeatureList feature_list;
+#if !BUILDFLAG(IS_ANDROID)
+  feature_list.InitWithFeatures({omnibox::kDrivePickerV2Scope},
+                                {features::kGlicDrivePicker});
+#else
+  feature_list.InitAndDisableFeature(features::kGlicDrivePicker);
+#endif
+
+  TestingProfile* profile = CreateTestingProfile("drive_picker_flag_off");
+  auto state = mojom::WebClientInitialState::New();
+  PopulateGlobalClientInitialState(state.get(), profile);
+
+  EXPECT_THAT(state->host_capabilities,
+              Not(Contains(mojom::HostCapability::kDrivePicker)));
+}
+
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(GuestUtilMultiInstanceTest,
+       PopulateGlobalClientInitialState_DrivePickerDisabledWhenV2ScopeOff) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({features::kGlicDrivePicker},
+                                {omnibox::kDrivePickerV2Scope});
+
+  TestingProfile* profile = CreateTestingProfile("drive_picker_v2_off");
+  auto state = mojom::WebClientInitialState::New();
+  PopulateGlobalClientInitialState(state.get(), profile);
+
+  EXPECT_THAT(state->host_capabilities,
+              Not(Contains(mojom::HostCapability::kDrivePicker)));
+}
+
+TEST_F(GuestUtilMultiInstanceTest,
+       PopulateGlobalClientInitialState_DrivePickerDisabledForGeic) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::kGlicDrivePicker, {}},
+       {omnibox::kDrivePickerV2Scope, {}},
+       {features::kGeic,
+        {{features::kGeicGuestURL.name,
+          "https://business.gemini.google/side-panel"}}}},
+      {});
+
+  TestingProfile* profile = CreateTestingProfile("drive_picker_geic");
+  auto state = mojom::WebClientInitialState::New();
+  PopulateGlobalClientInitialState(state.get(), profile);
+
+  EXPECT_THAT(state->host_capabilities,
+              Not(Contains(mojom::HostCapability::kDrivePicker)));
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(GuestUtilTest, IsOriginAllowedGlicApiWildcardMatching) {
   base::test::ScopedFeatureList feature_list;

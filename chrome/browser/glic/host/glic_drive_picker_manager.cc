@@ -116,17 +116,6 @@ BrowserWindowInterface* FindAnchorBrowserImpl(
 
 }  // namespace
 
-GlicDriveFileSelection::GlicDriveFileSelection() = default;
-GlicDriveFileSelection::GlicDriveFileSelection(const GlicDriveFileSelection&) =
-    default;
-GlicDriveFileSelection& GlicDriveFileSelection::operator=(
-    const GlicDriveFileSelection&) = default;
-GlicDriveFileSelection::GlicDriveFileSelection(GlicDriveFileSelection&&) =
-    default;
-GlicDriveFileSelection& GlicDriveFileSelection::operator=(
-    GlicDriveFileSelection&&) = default;
-GlicDriveFileSelection::~GlicDriveFileSelection() = default;
-
 GlicDrivePickerManager::GlicDrivePickerManager(
     Profile* profile,
     signin::IdentityManager* identity_manager,
