@@ -8753,3 +8753,8 @@ crbug.com/580335041 [ Mac ] external/wpt/resize-observer/scrollbars.html [ Failu
 # commit of the net::ERR_FILE_NOT_FOUND error page. Fix pending in crrev.com/c/8677279.
 crbug.com/566257733 tables/mozilla/bugs/bug137388-1.html [ Failure Pass ]
 crbug.com/566257733 tables/mozilla/bugs/bug137388-2.html [ Failure Pass ]
+
+# Gardener 2026-11-20
+crbug.com/566841082 [ Mac ] external/wpt/css/css-overflow/scrollbar-gutter-propagation-001.html [ Failure Pass ]
+crbug.com/569420237 [ Mac ] external/wpt/css/css-overflow/scrollbar-gutter-propagation-002.html [ Failure Pass ]
+crbug.com/566469808 [ Mac ] external/wpt/css/css-overflow/scrollbar-gutter-propagation-003.html [ Failure Pass ]
