@@ -6,6 +6,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "components/origin_matcher/origin_matcher.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -105,6 +106,40 @@ TEST(AwOriginMatchedHeaderTest, GetCombinedMatchingHeaders) {
   combined_headers = AwOriginMatchedHeader::GetCombinedMatchingHeaders(
       headers, test_org_origin);
   EXPECT_TRUE(combined_headers.empty());
+}
+
+TEST(AwOriginMatchedHeaderTest,
+     GetCombinedMatchingHeaders_MultipleHeaderNames) {
+  using ::testing::Pair;
+  using ::testing::UnorderedElementsAre;
+
+  origin_matcher::OriginMatcher test_matcher;
+  ASSERT_TRUE(test_matcher.AddRuleFromString("https://*.test.com"));
+
+  // Interleave multiple distinct header names with differently capitalized
+  // duplicates so lookups and insertions exercise a multi-element map.
+  std::vector<scoped_refptr<AwOriginMatchedHeader>> headers;
+  headers.push_back(base::MakeRefCounted<AwOriginMatchedHeader>("X-Beta", "B1",
+                                                                test_matcher));
+  headers.push_back(base::MakeRefCounted<AwOriginMatchedHeader>("X-Alpha", "A1",
+                                                                test_matcher));
+  headers.push_back(base::MakeRefCounted<AwOriginMatchedHeader>("x-beta", "B2",
+                                                                test_matcher));
+  headers.push_back(base::MakeRefCounted<AwOriginMatchedHeader>("X-Gamma", "G1",
+                                                                test_matcher));
+  headers.push_back(base::MakeRefCounted<AwOriginMatchedHeader>("x-ALPHA", "A2",
+                                                                test_matcher));
+  headers.push_back(base::MakeRefCounted<AwOriginMatchedHeader>("X-GAMMA", "G2",
+                                                                test_matcher));
+
+  const url::Origin test_origin =
+      url::Origin::Create(GURL("https://www.test.com"));
+  std::vector<std::pair<std::string_view, std::string>> combined_headers =
+      AwOriginMatchedHeader::GetCombinedMatchingHeaders(headers, test_origin);
+
+  EXPECT_THAT(combined_headers, UnorderedElementsAre(Pair("X-Alpha", "A1,A2"),
+                                                     Pair("X-Beta", "B1,B2"),
+                                                     Pair("X-Gamma", "G1,G2")));
 }
 
 }  // namespace android_webview

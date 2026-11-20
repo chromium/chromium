@@ -64,8 +64,8 @@ AwOriginMatchedHeader::GetCombinedMatchingHeaders(
   // unified header.
   struct HeaderNameComparator {
    public:
-    int operator()(const std::string_view a, const std::string_view b) const {
-      return base::CompareCaseInsensitiveASCII(a, b);
+    bool operator()(const std::string_view a, const std::string_view b) const {
+      return base::CompareCaseInsensitiveASCII(a, b) < 0;
     }
   };
   base::flat_map<std::string_view, std::string, HeaderNameComparator>
