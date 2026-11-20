@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -16,6 +17,7 @@
 #include "base/containers/map_util.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
+#include "base/i18n/language_tag.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "base/types/optional_ref.h"
@@ -122,7 +124,7 @@ ProfileImportMetadata::~ProfileImportMetadata() = default;
 
 ProfileImportProcess::ProfileImportProcess(
     const AutofillProfile& observed_profile,
-    const std::string& app_locale,
+    const base::i18n::LanguageTag& app_locale,
     const GURL& form_source_url,
     ukm::SourceId ukm_source_id,
     AddressDataManager* address_data_manager,
@@ -173,7 +175,7 @@ void ProfileImportProcess::DetermineProfileImportType() {
           ProfileCountrySource::kExplicitlyObserved &&
       ShouldCountryApproximationBeRemoved(observed_profile_,
                                           address_data_manager_->GetProfiles(),
-                                          app_locale_)) {
+                                          app_locale_.tag_string())) {
     observed_profile_.ClearFields({ADDRESS_HOME_COUNTRY});
     import_metadata_.country_source = ProfileCountrySource::kNoCountry;
   }
@@ -356,8 +358,8 @@ ProfileImportProcess::GetImportCandidates(
   result.reserve(existing_profiles.size());
   for (const AutofillProfile* candidate : existing_profiles) {
     AutofillProfile merged_profile = *candidate;
-    const ProfileMergeResult merge_result =
-        merged_profile.MergeDataFrom(observed_profile, app_locale_);
+    const ProfileMergeResult merge_result = merged_profile.MergeDataFrom(
+        observed_profile, app_locale_.tag_string());
     switch (merge_result) {
       case ProfileMergeResult::kMergeSucceededWithModification: {
         // `ProfilesHaveDifferentSettingsVisibleValues()` compares raw field
@@ -366,14 +368,16 @@ ProfileImportProcess::GetImportCandidates(
         // whitespace and formatting via `GetEnvelopeStyleAddress()`). Require
         // both to detect a difference so that whitespace/formatting-only
         // updates are applied silently.
+        const std::string app_locale_str(app_locale_.tag_string());
         const bool raw_values_differ = AutofillProfileComparator::
             ProfilesHaveDifferentSettingsVisibleValues(
-                *candidate, merged_profile, app_locale_);
+                *candidate, merged_profile, app_locale_str);
         const bool has_setting_visible_change =
             raw_values_differ &&
             (!base::FeatureList::IsEnabled(
                  features::kAutofillGuardEmptyUpdatePrompts) ||
-             !GetProfileDifferenceForUi(merged_profile, *candidate, app_locale_)
+             !GetProfileDifferenceForUi(merged_profile, *candidate,
+                                        app_locale_str)
                   .empty());
         result.push_back(
             ImportCandidate{.change = has_setting_visible_change
@@ -703,7 +707,8 @@ int ProfileImportProcess::CollectedEditedTypeHistograms() const {
   // Compute the number of edited settings-visible fields.
   std::vector<ProfileValueDifference> edit_difference =
       AutofillProfileComparator::GetSettingsVisibleProfileDifference(
-          *import_candidate_, *confirmed_import_candidate_, app_locale_);
+          *import_candidate_, *confirmed_import_candidate_,
+          std::string(app_locale_.tag_string()));
   // Log edited types.
   for (const ProfileValueDifference& difference : edit_difference) {
     autofill_metrics::LogProfileImportTypeEditedType(import_type(),
@@ -721,7 +726,7 @@ void ProfileImportProcess::LogUkmMetrics(
       ukm_recorder, ukm_source_id_, import_type_, user_decision_,
       import_metadata_, num_edited_fields,
       UserAccepted() ? confirmed_import_candidate_ : import_candidate_,
-      existing_profiles, app_locale_);
+      existing_profiles, app_locale_.tag_string());
 }
 
 void ProfileImportProcess::LogNewProfileMetrics(
@@ -729,7 +734,7 @@ void ProfileImportProcess::LogNewProfileMetrics(
   autofill_metrics::LogNewProfileImportDecision(
       user_decision_, import_metadata_, existing_profiles,
       UserAccepted() ? *confirmed_import_candidate_ : *import_candidate_,
-      app_locale_);
+      app_locale_.tag_string());
   if (UserAccepted()) {
     autofill_metrics::LogNewProfileStorageLocation(
         *confirmed_import_candidate_);
@@ -741,7 +746,7 @@ void ProfileImportProcess::LogConfirmableProfileUpdateMetrics(
   autofill_metrics::LogProfileUpdateImportDecision(
       user_decision_, existing_profiles,
       UserAccepted() ? *confirmed_import_candidate_ : *import_candidate_,
-      app_locale_);
+      app_locale_.tag_string());
 
   DCHECK(merge_candidate_.has_value() && import_candidate_.has_value());
   // For all update prompts, log the field types and total number of fields
@@ -750,7 +755,8 @@ void ProfileImportProcess::LogConfirmableProfileUpdateMetrics(
   // Those are covered separately below.
   const std::vector<ProfileValueDifference> merge_difference =
       AutofillProfileComparator::GetSettingsVisibleProfileDifference(
-          import_candidate_.value(), merge_candidate_.value(), app_locale_);
+          import_candidate_.value(), merge_candidate_.value(),
+          std::string(app_locale_.tag_string()));
 
   for (const auto& difference : merge_difference) {
     autofill_metrics::LogProfileUpdateAffectedType(difference.type,
@@ -766,7 +772,8 @@ void ProfileImportProcess::LogHomeAndWorkSupersetMetrics() const {
   // Log the types that triggered the prompt.
   for (const ProfileValueDifference& difference :
        AutofillProfileComparator::GetSettingsVisibleProfileDifference(
-           import_candidate_.value(), merge_candidate_.value(), app_locale_)) {
+           import_candidate_.value(), merge_candidate_.value(),
+           std::string(app_locale_.tag_string()))) {
     autofill_metrics::LogHomeAndWorkSupersetAffectedType(difference.type);
   }
 }

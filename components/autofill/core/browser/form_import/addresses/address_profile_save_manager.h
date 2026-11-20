@@ -6,7 +6,6 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_IMPORT_ADDRESSES_ADDRESS_PROFILE_SAVE_MANAGER_H_
 
 #include <memory>
-#include <string>
 
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -14,6 +13,10 @@
 #include "components/autofill/core/browser/form_import/addresses/autofill_profile_import_process.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+
+namespace base::i18n {
+class LanguageTag;
+}  // namespace base::i18n
 
 namespace autofill {
 
@@ -44,7 +47,7 @@ class AddressProfileSaveManager {
   // |import_metadata| is passed through, to collect metrics based on the
   // profile import decision.
   void ImportProfileFromForm(const AutofillProfile& profile,
-                             const std::string& app_locale,
+                             const base::i18n::LanguageTag& app_locale,
                              const GURL& url,
                              ukm::SourceId ukm_source_id,
                              bool allow_only_silent_updates,

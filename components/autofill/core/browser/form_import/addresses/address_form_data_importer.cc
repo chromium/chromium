@@ -285,9 +285,8 @@ bool AddressFormDataImporter::ProcessExtractedAddressProfiles(
   bool allow_only_silent_updates = !allow_prompt;
   for (const ExtractedAddressProfile& candidate : extracted_address_profiles) {
     address_profile_save_manager_->ImportProfileFromForm(
-        candidate.profile, std::string(client_->GetAppLocale().tag_string()),
-        candidate.url, ukm_source_id, allow_only_silent_updates,
-        candidate.import_metadata);
+        candidate.profile, client_->GetAppLocale(), candidate.url,
+        ukm_source_id, allow_only_silent_updates, candidate.import_metadata);
     // Limit the number of importable profiles to 2.
     if (!allow_only_silent_updates && ++imported_profiles >= 2) {
       return true;

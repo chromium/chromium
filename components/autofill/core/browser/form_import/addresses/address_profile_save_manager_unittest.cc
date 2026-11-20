@@ -328,7 +328,8 @@ void AddressProfileSaveManagerTest::TestImportScenario(
 
   // Initiate the profile import.
   save_manager.ImportProfileFromForm(
-      test_scenario.observed_profile, "en-US", form_url(), ukm_source_id(),
+      test_scenario.observed_profile, base::i18n::GetKnownLanguageTag("en-US"),
+      form_url(), ukm_source_id(),
       /*allow_only_silent_updates=*/test_scenario.allow_only_silent_updates,
       import_metadata());
 

@@ -11,6 +11,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
+#include "base/i18n/language_tag.h"
 #include "base/memory/raw_ref.h"
 #include "base/types/optional_ref.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
@@ -167,7 +168,7 @@ struct ProfileImportMetadata {
 class ProfileImportProcess {
  public:
   ProfileImportProcess(const AutofillProfile& observed_profile,
-                       const std::string& app_locale,
+                       const base::i18n::LanguageTag& app_locale,
                        const GURL& form_source_url,
                        ukm::SourceId ukm_source_id,
                        AddressDataManager* address_data_manager,
@@ -396,7 +397,7 @@ class ProfileImportProcess {
       AutofillClient::AddressPromptUserDecision::kUndefined};
 
   // The application locale used for this import process.
-  std::string app_locale_;
+  base::i18n::LanguageTag app_locale_;
 
   // The url of the form.
   GURL form_source_url_;

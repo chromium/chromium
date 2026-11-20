@@ -12,6 +12,7 @@
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
+#include "base/i18n/language_tag.h"
 #include "base/notreached.h"
 #include "base/types/optional_ref.h"
 #include "base/types/optional_util.h"
@@ -96,7 +97,7 @@ AddressProfileSaveManager::~AddressProfileSaveManager() = default;
 
 void AddressProfileSaveManager::ImportProfileFromForm(
     const AutofillProfile& observed_profile,
-    const std::string& app_locale,
+    const base::i18n::LanguageTag& app_locale,
     const GURL& url,
     ukm::SourceId ukm_source_id,
     bool allow_only_silent_updates,
