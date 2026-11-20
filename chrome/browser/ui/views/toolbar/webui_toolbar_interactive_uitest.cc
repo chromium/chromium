@@ -5231,12 +5231,9 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledInteractiveUiTest,
   // Manually invoke showOverflowMenu() with invalid controls. It should throw
   // an exception.
   EXPECT_THAT(show_overflow_menu(R"([
-              {id: {trackedElementId: {nativeIdentifier: 'invalid-control-1',
-                                       secondaryIdentifier: 'sec-1'}},
-               isEnabled: true},
-              {id: {trackedElementId: {nativeIdentifier: 'invalid-control-2',
-                                       secondaryIdentifier: 'sec-2'}},
-               isEnabled: false}])"),
+              {id: {elementIdentifier: 'invalid-control-1'}, isEnabled: true},
+              {id: {elementIdentifier: 'invalid-control-2'}, isEnabled: false}
+              ])"),
               testing::HasSubstr("invalid-control-1"));
   EXPECT_FALSE(overflow_button->overflow_menu_for_testing());
 
@@ -5254,13 +5251,11 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledInteractiveUiTest,
   // Manually invoke showOverflowMenu() with a mix of valid and invalid
   // controls. It should throw an exception.
   EXPECT_THAT(show_overflow_menu(R"([
-              {id: {trackedElementId:
-                {nativeIdentifier: 'kToolbarSplitTabsToolbarButtonElementId',
-                  secondaryIdentifier: 'sec-1'}},
-                isEnabled: true},
-              {id: {trackedElementId: {nativeIdentifier: 'invalid-control',
-                                        secondaryIdentifier: 'sec-2'}},
-                isEnabled: true}])"),
+              {id: {elementIdentifier:
+                      'kToolbarSplitTabsToolbarButtonElementId'},
+               isEnabled: true},
+              {id: {elementIdentifier: 'invalid-control'}, isEnabled: true}
+              ])"),
               testing::HasSubstr("invalid-control"));
   EXPECT_FALSE(overflow_button->overflow_menu_for_testing());
 
@@ -5268,10 +5263,8 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledInteractiveUiTest,
   // split-tabs button isn't pinned, we still allow this - as there may have
   // been a race between unpinning the button and showing the overflow menu.
   EXPECT_EQ(show_overflow_menu(R"([
-            {id: {trackedElementId:
-              {nativeIdentifier: 'kToolbarSplitTabsToolbarButtonElementId',
-                secondaryIdentifier: 'sec-1'}},
-              isEnabled: true}])"),
+            {id: {elementIdentifier: 'kToolbarSplitTabsToolbarButtonElementId'},
+             isEnabled: true}])"),
             "SUCCESS");
 
   // Wait for overflow menu to appear.

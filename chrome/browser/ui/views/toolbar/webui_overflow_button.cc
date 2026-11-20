@@ -117,15 +117,14 @@ void WebUIOverflowButton::ShowOverflowMenu(
       new_overflowed_elements;
   for (const auto& item : controls) {
     switch (item->id->which()) {
-      case toolbar_ui_api::mojom::OverflowMenuItemId::Tag::kTrackedElementId: {
-        auto element_id = ui::ElementIdentifier::FromName(
-            item->id->get_tracked_element_id()->native_identifier.c_str());
+      case toolbar_ui_api::mojom::OverflowMenuItemId::Tag::kElementIdentifier: {
+        const std::string& element_name = item->id->get_element_identifier();
+        auto element_id = ui::ElementIdentifier::FromName(element_name.c_str());
         if (!element_id || !ElementCanOverflow(element_id)) {
           std::move(callback).Run(base::unexpected(mojo_base::mojom::Error::New(
               mojo_base::mojom::Code::kInvalidArgument,
               base::StringPrintf("WebUIOverflowButton: Unknown control ID: %s",
-                                 item->id->get_tracked_element_id()
-                                     ->native_identifier.c_str()))));
+                                 element_name.c_str()))));
           return;
         }
         new_overflowed_elements.emplace(

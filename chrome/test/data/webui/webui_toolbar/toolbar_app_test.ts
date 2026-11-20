@@ -1154,6 +1154,41 @@ suite('ToolbarAppTest', () => {
         'App menu without a label should not be in getResponsiveControls()');
   });
 
+  // Overflowed buttons should be able to report their ElementIdentifiers
+  // without having been registered with the TrackedElementManager, so the
+  // overflow menu doesn't depend on registration having happened before
+  // layout. `mockManager` never tags elements with IDs, so if the IDs came
+  // from the TrackedElementManager, getOverflowedMenuItems() would fail.
+  test('OverflowedMenuItemsDoNotDependOnTrackedElementManager', async () => {
+    loadTimeData.overrideValues({webUIToolbarFullyEnabled: true});
+
+    app = document.createElement('toolbar-app');
+    document.body.appendChild(app);
+
+    const state = createMockToolbarState();
+    state.homeControlState.shouldBeShown = true;
+    browserProxy.fireToolbarStateListener([], state);
+    await microtasksFinished();
+
+    // Make it so nothing fits, so all buttons that can overflow do.
+    app.getAvailableWidth = () => -10;
+    (app as any).layoutResponsiveControls();
+    await microtasksFinished();
+
+    const overflowButton = app.shadowRoot.querySelector('#overflow')!;
+    assertFalse(overflowButton.hasAttribute('hidden'));
+
+    const ids =
+        app.getOverflowedMenuItems().map(item => item.id.elementIdentifier);
+    for (const expectedId
+             of ['kToolbarAvatarButtonElementId',
+                 'kToolbarForwardButtonElementId',
+                 'kToolbarHomeButtonElementId']) {
+      assertTrue(ids.includes(expectedId), `Missing ${expectedId}`);
+    }
+    assertFalse(ids.includes(undefined));
+  });
+
   test('GlicButtonResizingDisabledFlag', async () => {
     loadTimeData.overrideValues({
       enableAppMenuButton: true,

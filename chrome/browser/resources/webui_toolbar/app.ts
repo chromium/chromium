@@ -1181,6 +1181,19 @@ export class ToolbarAppElement extends AppElementBase {
   }
 
   /**
+   * Returns the name of the ui::ElementIdentifier of `element`, if it's one of
+   * the controls in TRACKED_ELEMENTS. Unlike
+   * TrackedElementManager.getElementId(), this works before `element` has been
+   * registered with the TrackedElementManager.
+   */
+  getElementIdentifier(element: HTMLElement): string|undefined {
+    return TRACKED_ELEMENTS
+        .find(
+            ({selector}) => this.shadowRoot.querySelector(selector) === element)
+        ?.id;
+  }
+
+  /**
    * Resizes / shows / hides responsive controls based on available space in the
    * toolbar.
    *

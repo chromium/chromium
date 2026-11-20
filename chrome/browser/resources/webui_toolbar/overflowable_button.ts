@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {assert} from '//resources/js/assert.js';
-import {TrackedElementManager} from '//resources/js/tracked_element/tracked_element_manager.js';
 import type {CrLitElement, PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import type {MenuSourceType} from '//resources/mojo/ui/base/mojom/menu_source_type.mojom-webui.js';
 import {getContextMenuPosition} from '/shared/toolbar_button.js';
@@ -176,18 +175,20 @@ export const OverflowableButtonMixin =
 
           // Otherwise, return information about this button. Even disabled
           // buttons should be shown on the menu, if they've overflowed.
+          //
+          // The ID is looked up from the toolbar rather than the
+          // TrackedElementManager, since this may be called before the button
+          // is registered with the TrackedElementManager, particularly during
+          // layout, just after a button has become visible.
+          const shadowRoot = this.getRootNode() as ShadowRoot;
+          const toolbarApp = shadowRoot.host as ToolbarAppElement;
+          const id = toolbarApp.getElementIdentifier(this);
+          assert(id, `No ElementIdentifier found for element ${this.id}`);
           const innerControl =
               this.shadowRoot.querySelector<HTMLElement>('#button')!;
-          // Most controls register their own element with
-          // TrackedElementManager, but the Avatar button registers its button
-          // element instead, so we have to handle both cases here.
-          const id = TrackedElementManager.getElementId(this) ||
-              TrackedElementManager.getElementId(innerControl);
-          assert(
-              id, `No TrackedElementIdentifier found for element ${this.id}`);
           return [{
             id: {
-              trackedElementId: id,
+              elementIdentifier: id,
             },
             isEnabled: !innerControl.hasAttribute('disabled'),
           }];
