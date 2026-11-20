@@ -11,11 +11,18 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_controller.h"
 #include "chrome/browser/contextual_tasks/search_journey_tab_feature.h"
+#include "chrome/browser/contextual_tasks/search_journey_tracker.h"
+#include "chrome/browser/contextual_tasks/search_journey_tracker_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/omnibox/browser/vector_icons.h"
+#include "components/sessions/content/session_tab_helper.h"
+#include "components/sessions/core/session_id.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
@@ -53,7 +60,14 @@ AbaSearchJourneyCueTarget::AbaSearchJourneyCueTarget(tabs::TabInterface& tab)
     : tab_(tab),
       did_activate_subscription_(tab.RegisterDidActivate(
           base::BindRepeating(&AbaSearchJourneyCueTarget::OnTabDidActivate,
-                              base::Unretained(this)))) {}
+                              base::Unretained(this)))) {
+  if (SearchJourneyTracker* tracker =
+          SearchJourneyTrackerFactory::GetForProfile(tab.GetProfile())) {
+    journey_ended_subscription_ = tracker->RegisterJourneyEndedCallback(
+        base::BindRepeating(&AbaSearchJourneyCueTarget::OnJourneyEnded,
+                            base::Unretained(this)));
+  }
+}
 
 AbaSearchJourneyCueTarget::~AbaSearchJourneyCueTarget() = default;
 
@@ -110,6 +124,7 @@ void AbaSearchJourneyCueTarget::OnAnchoredMessageShown(
 
 void AbaSearchJourneyCueTarget::OnAnchoredMessageClicked(
     contextual_cueing::CueActionData data) {
+  expiry_timer_.Stop();
   if (SearchJourneyTabFeature* feature =
           SearchJourneyTabFeature::From(&tab_.get())) {
     feature->RestoreJourneyInSidePanel();
@@ -122,6 +137,7 @@ void AbaSearchJourneyCueTarget::OnEditPrompt(
 }
 
 void AbaSearchJourneyCueTarget::OnDismissed() {
+  expiry_timer_.Stop();
   if (SearchJourneyTabFeature* feature =
           SearchJourneyTabFeature::From(&tab_.get())) {
     feature->OnCueDismissed();
@@ -129,6 +145,7 @@ void AbaSearchJourneyCueTarget::OnDismissed() {
 }
 
 void AbaSearchJourneyCueTarget::OnSuggestionsSettingsOpened() {
+  expiry_timer_.Stop();
   if (SearchJourneyTabFeature* feature =
           SearchJourneyTabFeature::From(&tab_.get())) {
     feature->OnCueSuggestionsSettingsOpened();
@@ -155,6 +172,10 @@ AbaSearchJourneyCueTarget::GetSurface() const {
   return optimization_guide::proto::CONTEXTUAL_CUEING_SURFACE_UNSPECIFIED;
 }
 
+void AbaSearchJourneyCueTarget::FireExpiryTimerForTesting() {
+  expiry_timer_.FireNow();
+}
+
 void AbaSearchJourneyCueTarget::OnTabDidActivate(tabs::TabInterface* tab) {
   // Cues are only evaluated when a page loads, so evaluate this one when the
   // user returns to Tab A.
@@ -167,11 +188,33 @@ void AbaSearchJourneyCueTarget::OnTabDidActivate(tabs::TabInterface* tab) {
   controller->EvaluateCueForTarget(GetType());
 }
 
-void AbaSearchJourneyCueTarget::OnCueShown(bool is_anchored_message) {
-  if (SearchJourneyTabFeature* feature =
-          SearchJourneyTabFeature::From(&tab_.get())) {
-    feature->OnCueShown(is_anchored_message);
+void AbaSearchJourneyCueTarget::OnJourneyEnded(SessionID source_tab_id) {
+  if (content::WebContents* contents = tab_->GetContents();
+      contents &&
+      sessions::SessionTabHelper::IdForTab(contents) == source_tab_id) {
+    HideStaleCue();
   }
+}
+
+void AbaSearchJourneyCueTarget::HideStaleCue() {
+  expiry_timer_.Stop();
+  if (auto* controller =
+          contextual_cueing::ContextualCueingController::From(&tab_.get())) {
+    controller->HideCueForTarget(GetType());
+  }
+}
+
+void AbaSearchJourneyCueTarget::OnCueShown(bool is_anchored_message) {
+  SearchJourneyTabFeature* feature = SearchJourneyTabFeature::From(&tab_.get());
+  if (!feature) {
+    return;
+  }
+  feature->OnCueShown(is_anchored_message);
+  const base::TimeDelta delay =
+      feature->GetRemainingJourneyTtl().value_or(base::TimeDelta()) +
+      base::Milliseconds(1);
+  expiry_timer_.Start(FROM_HERE, delay, this,
+                      &AbaSearchJourneyCueTarget::HideStaleCue);
 }
 
 void AbaSearchJourneyCueTarget::GenerateContent(GenerateCallback callback) {

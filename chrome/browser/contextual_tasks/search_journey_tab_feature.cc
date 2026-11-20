@@ -4,6 +4,8 @@
 
 #include "chrome/browser/contextual_tasks/search_journey_tab_feature.h"
 
+#include <algorithm>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -22,6 +24,7 @@
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/contextual_tasks/public/utils.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
@@ -111,6 +114,22 @@ bool SearchJourneyTabFeature::CanRestoreJourneyInSidePanel() const {
   return GetRestoreUrl().is_valid();
 }
 
+std::optional<base::TimeDelta> SearchJourneyTabFeature::GetRemainingJourneyTtl()
+    const {
+  if (!tracker_ || !web_contents()) {
+    return std::nullopt;
+  }
+  const JourneyState* journey = tracker_->GetRestorableJourney(
+      sessions::SessionTabHelper::IdForTab(web_contents()),
+      GetLastCommittedEntryId(web_contents()));
+  if (!journey) {
+    return std::nullopt;
+  }
+  return std::max(base::TimeDelta(),
+                  (journey->search_committed_time + GetABASearchJourneysTtl()) -
+                      base::TimeTicks::Now());
+}
+
 bool SearchJourneyTabFeature::RestoreJourneyInSidePanel() {
   const GURL url = GetRestoreUrl();
   if (!url.is_valid()) {
@@ -155,7 +174,7 @@ bool SearchJourneyTabFeature::ShouldShowCue() const {
 }
 
 void SearchJourneyTabFeature::OnCueShown(bool is_anchored_message) {
-  if (tracker_ && web_contents()) {
+  if (tracker_ && web_contents() && GetRemainingJourneyTtl().has_value()) {
     tracker_->OnJourneyCueShown(
         sessions::SessionTabHelper::IdForTab(web_contents()),
         is_anchored_message);
@@ -201,7 +220,14 @@ void SearchJourneyTabFeature::OnTextCopiedToClipboard(
 void SearchJourneyTabFeature::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   if (!tracker_ || !navigation_handle->IsInPrimaryMainFrame() ||
-      !navigation_handle->HasCommitted() || navigation_handle->IsErrorPage()) {
+      !navigation_handle->HasCommitted()) {
+    return;
+  }
+
+  const SessionID tab_id = sessions::SessionTabHelper::IdForTab(web_contents());
+  tracker_->OnSourceTabNavigated(tab_id,
+                                 GetLastCommittedEntryId(web_contents()));
+  if (navigation_handle->IsErrorPage()) {
     return;
   }
 
@@ -211,8 +237,7 @@ void SearchJourneyTabFeature::DidFinishNavigation(
     return;
   }
 
-  tracker_->OnSearchNavigationCommitted(
-      sessions::SessionTabHelper::IdForTab(web_contents()), search_terms);
+  tracker_->OnSearchNavigationCommitted(tab_id, search_terms);
 }
 
 void SearchJourneyTabFeature::OnTabDidActivate(tabs::TabInterface* tab) {

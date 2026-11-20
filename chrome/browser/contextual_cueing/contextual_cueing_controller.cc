@@ -1705,6 +1705,14 @@ void ContextualCueingController::HideCue() {
 #endif
 }
 
+void ContextualCueingController::HideCueForTarget(CueTargetType type) {
+#if !BUILDFLAG(IS_ANDROID)
+  if (active_cue_data_ && active_cue_data_->cue_type == type) {
+    HideCue();
+  }
+#endif
+}
+
 void ContextualCueingController::HideAnchoredMessage() {
 #if !BUILDFLAG(IS_ANDROID)
   if (page_actions::PageActionController* page_action_controller =

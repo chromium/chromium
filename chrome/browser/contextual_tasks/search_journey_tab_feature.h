@@ -5,11 +5,13 @@
 #ifndef CHROME_BROWSER_CONTEXTUAL_TASKS_SEARCH_JOURNEY_TAB_FEATURE_H_
 #define CHROME_BROWSER_CONTEXTUAL_TASKS_SEARCH_JOURNEY_TAB_FEATURE_H_
 
+#include <optional>
 #include <string>
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
+#include "base/time/time.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
@@ -46,6 +48,10 @@ class SearchJourneyTabFeature : public content::WebContentsObserver {
   // Returns whether `RestoreJourneyInSidePanel()` would open the side panel
   // now.
   bool CanRestoreJourneyInSidePanel() const;
+
+  // Returns the remaining TTL of this tab's restorable journey, or
+  // `std::nullopt` if the tab has no restorable journey.
+  std::optional<base::TimeDelta> GetRemainingJourneyTtl() const;
 
   // Opens the Contextual Tasks side panel next to this tab, restoring the AI
   // Overview of the journey whose Tab A is this tab as the first turn of an AI

@@ -5,9 +5,11 @@
 #include "chrome/browser/contextual_tasks/search_journey_tracker.h"
 
 #include <algorithm>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 #include "base/containers/adapters.h"
 #include "base/containers/span.h"
@@ -263,30 +265,28 @@ bool SearchJourneyTracker::OnTabActivated(SessionID tab_id, int nav_entry_id) {
   const bool allow_intermediate_tabs =
       ShouldAllowABASearchJourneysIntermediateTabs();
   bool returned = false;
-  std::erase_if(active_journeys_, [&](const auto& pair) {
-    const auto& [source_tab_id, journey] = pair;
+  EraseJourneysIf([&](SessionID source_tab_id, const JourneyState& journey)
+                      -> std::optional<SearchJourneyEndReason> {
     if (source_tab_id == tab_id) {
       // Only a return to the page the user left counts.
       if (journey.source_nav_entry_id != nav_entry_id) {
-        RecordJourneyEnd(journey, SearchJourneyEndReason::kSourceTabNavigated);
-        return true;
+        return SearchJourneyEndReason::kSourceTabNavigated;
       }
       // Don't re-record a return once the cue has already shown.
       if (!journey.cue_shown) {
         returned = true;
       }
-      return false;
+      return std::nullopt;
     }
     // Once the cue has shown on Tab A, the A -> B -> A return already happened,
     // so switching to another tab shouldn't drop the journey while the cue
     // stays visible.
     if (journey.search_tab_id == tab_id || journey.cue_shown ||
         allow_intermediate_tabs) {
-      return false;
+      return std::nullopt;
     }
     // Any other tab is an intermediate tab, as in A -> B -> C -> A.
-    RecordJourneyEnd(journey, SearchJourneyEndReason::kIntermediateTab);
-    return true;
+    return SearchJourneyEndReason::kIntermediateTab;
   });
   if (returned) {
     base::RecordAction(base::UserMetricsAction(
@@ -350,12 +350,12 @@ void SearchJourneyTracker::OnSearchNavigationCommitted(
   }
 
   // A new search in Tab B replaces the journey tied to its previous search.
-  std::erase_if(active_journeys_, [search_tab_id](const auto& pair) {
-    if (pair.second.search_tab_id != search_tab_id) {
-      return false;
-    }
-    RecordJourneyEnd(pair.second, SearchJourneyEndReason::kReplacedByNewSearch);
-    return true;
+  EraseJourneysIf([&](SessionID, const JourneyState& journey)
+                      -> std::optional<SearchJourneyEndReason> {
+    return journey.search_tab_id == search_tab_id
+               ? std::make_optional(
+                     SearchJourneyEndReason::kReplacedByNewSearch)
+               : std::nullopt;
   });
 
   // Only a search in the tab the user is looking at, after they left a
@@ -378,11 +378,9 @@ void SearchJourneyTracker::OnSearchNavigationCommitted(
     journey.is_context_menu_search = matching_copy->is_context_menu_search;
   }
   // A new journey for Tab A replaces its earlier one, as in A -> B -> A -> C.
-  if (auto it = active_journeys_.find(source_tab_->tab_id);
-      it != active_journeys_.end()) {
-    RecordJourneyEnd(it->second, SearchJourneyEndReason::kReplacedByNewSearch);
-  }
-  active_journeys_.insert_or_assign(source_tab_->tab_id, std::move(journey));
+  EraseJourney(source_tab_->tab_id,
+               SearchJourneyEndReason::kReplacedByNewSearch);
+  active_journeys_.emplace(source_tab_->tab_id, std::move(journey));
   base::RecordAction(
       base::UserMetricsAction("ContextualTasks.SearchJourney.Armed"));
 }
@@ -446,8 +444,7 @@ void SearchJourneyTracker::OnJourneyRestored(SessionID source_tab_id) {
   }
   base::RecordAction(
       base::UserMetricsAction("ContextualTasks.SearchJourney.Restored"));
-  RecordJourneyEnd(it->second, SearchJourneyEndReason::kRestored);
-  active_journeys_.erase(it);
+  EraseJourney(source_tab_id, SearchJourneyEndReason::kRestored);
 }
 
 void SearchJourneyTracker::OnJourneyCueEligible(SessionID source_tab_id) {
@@ -509,16 +506,27 @@ void SearchJourneyTracker::OnJourneyCueSuggestionsSettingsOpened(
   active_journeys_.erase(it);
 }
 
+void SearchJourneyTracker::OnSourceTabNavigated(SessionID source_tab_id,
+                                                int nav_entry_id) {
+  if (!source_tab_id.is_valid()) {
+    return;
+  }
+  // Journeys past their TTL are recorded as expired rather than navigated.
+  EvictExpiredRecords();
+  if (auto it = active_journeys_.find(source_tab_id);
+      it != active_journeys_.end() &&
+      it->second.source_nav_entry_id != nav_entry_id) {
+    EraseJourney(source_tab_id, SearchJourneyEndReason::kSourceTabNavigated);
+  }
+}
+
 void SearchJourneyTracker::OnTabDestroyed(SessionID tab_id) {
   // Journeys past their TTL are recorded as expired rather than closed.
   EvictExpiredRecords();
   std::erase_if(ring_buffer_, [tab_id](const CopyRecord& record) {
     return record.source_tab_id == tab_id;
   });
-  if (auto it = active_journeys_.find(tab_id); it != active_journeys_.end()) {
-    RecordJourneyEnd(it->second, SearchJourneyEndReason::kSourceTabClosed);
-    active_journeys_.erase(it);
-  }
+  EraseJourney(tab_id, SearchJourneyEndReason::kSourceTabClosed);
   for (auto& [source_tab_id, journey] : active_journeys_) {
     if (journey.search_tab_id == tab_id) {
       journey.search_tab_closed = true;
@@ -532,15 +540,31 @@ void SearchJourneyTracker::OnTabDestroyed(SessionID tab_id) {
   }
 }
 
+base::CallbackListSubscription
+SearchJourneyTracker::RegisterJourneyEndedCallback(
+    base::RepeatingCallback<void(SessionID)> callback) {
+  return journey_ended_callbacks_.Add(std::move(callback));
+}
+
+void SearchJourneyTracker::SetSearchCommittedTimeForTesting(
+    SessionID source_tab_id,
+    base::TimeTicks time) {
+  if (auto it = active_journeys_.find(source_tab_id);
+      it != active_journeys_.end()) {
+    it->second.search_committed_time = time;
+  }
+}
+
 void SearchJourneyTracker::ClearState() {
   // Journeys past their TTL are recorded as expired rather than cleared.
   EvictExpiredRecords();
-  for (const auto& [source_tab_id, journey] : active_journeys_) {
-    RecordJourneyEnd(journey, SearchJourneyEndReason::kStateCleared);
-  }
+  EraseJourneysIf(
+      [](SessionID,
+         const JourneyState&) -> std::optional<SearchJourneyEndReason> {
+        return SearchJourneyEndReason::kStateCleared;
+      });
   ring_buffer_.clear();
   source_tab_.reset();
-  active_journeys_.clear();
 }
 
 void SearchJourneyTracker::EvictExpiredRecords() {
@@ -552,13 +576,43 @@ void SearchJourneyTracker::EvictExpiredRecords() {
   if (source_tab_ && now - source_tab_->left_time > ttl) {
     source_tab_.reset();
   }
-  std::erase_if(active_journeys_, [now, ttl](const auto& pair) {
-    if (now - pair.second.search_committed_time <= ttl) {
+  EraseJourneysIf([now, ttl](SessionID, const JourneyState& journey)
+                      -> std::optional<SearchJourneyEndReason> {
+    return now - journey.search_committed_time > ttl
+               ? std::make_optional(SearchJourneyEndReason::kExpired)
+               : std::nullopt;
+  });
+}
+
+void SearchJourneyTracker::EraseJourney(SessionID source_tab_id,
+                                        SearchJourneyEndReason reason) {
+  auto it = active_journeys_.find(source_tab_id);
+  if (it == active_journeys_.end()) {
+    return;
+  }
+  RecordJourneyEnd(it->second, reason);
+  active_journeys_.erase(it);
+  journey_ended_callbacks_.Notify(source_tab_id);
+}
+
+void SearchJourneyTracker::EraseJourneysIf(
+    base::FunctionRef<
+        std::optional<SearchJourneyEndReason>(SessionID, const JourneyState&)>
+        predicate) {
+  std::vector<SessionID> ended_source_tabs;
+  std::erase_if(active_journeys_, [&](const auto& pair) {
+    std::optional<SearchJourneyEndReason> reason =
+        predicate(pair.first, pair.second);
+    if (!reason.has_value()) {
       return false;
     }
-    RecordJourneyEnd(pair.second, SearchJourneyEndReason::kExpired);
+    RecordJourneyEnd(pair.second, *reason);
+    ended_source_tabs.push_back(pair.first);
     return true;
   });
+  for (SessionID source_tab_id : ended_source_tabs) {
+    journey_ended_callbacks_.Notify(source_tab_id);
+  }
 }
 
 void SearchJourneyTracker::RecordCopy(SessionID source_tab_id,

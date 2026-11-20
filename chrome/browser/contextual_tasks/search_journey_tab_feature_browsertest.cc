@@ -22,6 +22,7 @@
 #include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
 #include "chrome/browser/contextual_cueing/cue_target.h"
 #include "chrome/browser/contextual_cueing/features.h"
+#include "chrome/browser/contextual_tasks/aba_search_journey_cue_target.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_eligibility_manager.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
@@ -49,6 +50,8 @@
 #include "components/lens/lens_features.h"
 #include "components/optimization_guide/proto/features/contextual_cueing.pb.h"
 #include "components/optimization_guide/proto/hints.pb.h"
+#include "components/search_engines/template_url.h"
+#include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
@@ -1243,6 +1246,188 @@ IN_PROC_BROWSER_TEST_F(SearchJourneyHomeworkChipBrowserTest,
       [&]() { return cue_observer.GetCurrentPageActionState().showing; }));
   EXPECT_TRUE(homework_observer.GetCurrentPageActionState().showing);
   EXPECT_TRUE(homework_observer.GetCurrentPageActionState().chip_showing);
+}
+
+// Tests that when Tab B commits a new search, the stale cue for the replaced
+// journey is hidden immediately without corrupting the replacement journey's
+// metrics or preventing a new cue from showing when the new search registers
+// restore parameters.
+IN_PROC_BROWSER_TEST_F(SearchJourneyCueBrowserTest,
+                       HidesCueWhenNewSearchReplacesJourney) {
+  base::UserActionTester user_action_tester;
+  tabs::TabInterface* source_tab = StartJourney(CreatePromoParams());
+  ASSERT_TRUE(source_tab);
+  tabs::TabInterface* search_tab = tab_list()->GetActiveTab();
+  page_actions::PageActionController* page_action_controller =
+      page_actions::PageActionController::From(source_tab);
+  ASSERT_TRUE(page_action_controller);
+  page_actions::PageActionObserver observer(kActionAnchoredContextualCue);
+  observer.RegisterAsPageActionObserver(*page_action_controller);
+
+  tab_list()->ActivateTab(source_tab->GetHandle());
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return observer.GetCurrentPageActionState().anchored_message_showing;
+  }));
+  EXPECT_TRUE(SearchJourneyTabFeature::From(source_tab)
+                  ->GetRemainingJourneyTtl()
+                  .has_value());
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "ContextualTasks.SearchJourney.Cue.Shown"),
+            1);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "ContextualTasks.SearchJourney.Cue.Shown.Chip"),
+            0);
+
+  // Commit a different search in Tab B without restore parameters, replacing
+  // the journey. The stale cue hides immediately, so returning to Tab A does
+  // not reactivate the old icon or record a phantom chip impression.
+  tab_list()->ActivateTab(search_tab->GetHandle());
+  const GURL new_search_url =
+      template_url_service()->GenerateSearchURLForDefaultSearchProvider(
+          u"different search query");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), new_search_url));
+
+  tab_list()->ActivateTab(source_tab->GetHandle());
+  EXPECT_FALSE(observer.GetCurrentPageActionState().showing);
+  EXPECT_FALSE(SearchJourneyTabFeature::From(source_tab)
+                   ->GetRemainingJourneyTtl()
+                   .has_value());
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "ContextualTasks.SearchJourney.Cue.Shown"),
+            1);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "ContextualTasks.SearchJourney.Cue.Shown.Chip"),
+            0);
+}
+
+// Tests that when Tab B replaces a shown journey with a new search that also
+// registers restore parameters, the old cue hides before Tab A reactivates and
+// the new journey can show its own cue cleanly.
+IN_PROC_BROWSER_TEST_F(SearchJourneyCueBrowserTest,
+                       ReplacementSearchWithPromoParamsShowsNewCue) {
+  base::UserActionTester user_action_tester;
+  tabs::TabInterface* source_tab = StartJourney(CreatePromoParams());
+  ASSERT_TRUE(source_tab);
+  tabs::TabInterface* search_tab = tab_list()->GetActiveTab();
+  page_actions::PageActionController* page_action_controller =
+      page_actions::PageActionController::From(source_tab);
+  ASSERT_TRUE(page_action_controller);
+  page_actions::PageActionObserver observer(kActionAnchoredContextualCue);
+  observer.RegisterAsPageActionObserver(*page_action_controller);
+
+  tab_list()->ActivateTab(source_tab->GetHandle());
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return observer.GetCurrentPageActionState().anchored_message_showing;
+  }));
+
+  // Start a replacement search with restore parameters in Tab B.
+  tab_list()->ActivateTab(search_tab->GetHandle());
+  const GURL new_search_url =
+      template_url_service()->GenerateSearchURLForDefaultSearchProvider(
+          u"second search with aio");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), new_search_url));
+  ASSERT_TRUE(tracker()->OnAimPromoParamsReceived(
+      sessions::SessionTabHelper::IdForTab(search_tab->GetContents()),
+      u"second search with aio", CreatePromoParams(), {}));
+
+  // Returning to Tab A records a fresh Eligible return and shows the new cue.
+  tab_list()->ActivateTab(source_tab->GetHandle());
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "ContextualTasks.SearchJourney.Eligible"),
+            2);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return observer.GetCurrentPageActionState().showing; }));
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "ContextualTasks.SearchJourney.Cue.Shown"),
+            2);
+}
+
+// Tests that the showing ABA cue hides automatically when the journey's TTL
+// elapses, even if the user stays on Tab A without switching tabs.
+IN_PROC_BROWSER_TEST_F(SearchJourneyCueBrowserTest,
+                       HidesCueWhenJourneyTtlExpires) {
+  tabs::TabInterface* source_tab = StartJourney(CreatePromoParams());
+  ASSERT_TRUE(source_tab);
+  page_actions::PageActionController* page_action_controller =
+      page_actions::PageActionController::From(source_tab);
+  ASSERT_TRUE(page_action_controller);
+  page_actions::PageActionObserver observer(kActionAnchoredContextualCue);
+  observer.RegisterAsPageActionObserver(*page_action_controller);
+
+  tab_list()->ActivateTab(source_tab->GetHandle());
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return observer.GetCurrentPageActionState().anchored_message_showing;
+  }));
+
+  // Backdate the journey past its TTL and fire the scheduled expiry timer
+  // deterministically while staying on Tab A.
+  const SessionID source_tab_id =
+      sessions::SessionTabHelper::IdForTab(source_tab->GetContents());
+  tracker()->SetSearchCommittedTimeForTesting(
+      source_tab_id,
+      base::TimeTicks::Now() - GetABASearchJourneysTtl() - base::Seconds(1));
+  auto* cue_target =
+      static_cast<AbaSearchJourneyCueTarget*>(GetCueTarget(source_tab));
+  ASSERT_TRUE(cue_target);
+  cue_target->FireExpiryTimerForTesting();
+
+  EXPECT_FALSE(observer.GetCurrentPageActionState().showing);
+  EXPECT_FALSE(SearchJourneyTabFeature::From(source_tab)
+                   ->GetRemainingJourneyTtl()
+                   .has_value());
+}
+
+// Tests that an in-page fragment navigation on Tab A, which creates a new
+// NavigationEntry without triggering ContextualCueingWebContentsObserver's
+// cross-document hide, still hides the stale ABA cue immediately.
+IN_PROC_BROWSER_TEST_F(SearchJourneyCueBrowserTest,
+                       HidesCueOnSameDocumentFragmentNavigation) {
+  tabs::TabInterface* source_tab = StartJourney(CreatePromoParams());
+  ASSERT_TRUE(source_tab);
+  page_actions::PageActionController* page_action_controller =
+      page_actions::PageActionController::From(source_tab);
+  ASSERT_TRUE(page_action_controller);
+  page_actions::PageActionObserver observer(kActionAnchoredContextualCue);
+  observer.RegisterAsPageActionObserver(*page_action_controller);
+
+  tab_list()->ActivateTab(source_tab->GetHandle());
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return observer.GetCurrentPageActionState().anchored_message_showing;
+  }));
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("https://example.com/doc#section")));
+  EXPECT_FALSE(observer.GetCurrentPageActionState().showing);
+  EXPECT_TRUE(tracker()->GetActiveJourneysForTesting().empty());
+}
+
+// Tests that switching the default search provider away from Google while Tab A
+// is active immediately hides the showing ABA cue.
+IN_PROC_BROWSER_TEST_F(SearchJourneyCueBrowserTest,
+                       HidesCueWhenDefaultSearchProviderChanges) {
+  tabs::TabInterface* source_tab = StartJourney(CreatePromoParams());
+  ASSERT_TRUE(source_tab);
+  page_actions::PageActionController* page_action_controller =
+      page_actions::PageActionController::From(source_tab);
+  ASSERT_TRUE(page_action_controller);
+  page_actions::PageActionObserver observer(kActionAnchoredContextualCue);
+  observer.RegisterAsPageActionObserver(*page_action_controller);
+
+  tab_list()->ActivateTab(source_tab->GetHandle());
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return observer.GetCurrentPageActionState().anchored_message_showing;
+  }));
+
+  TemplateURLData data;
+  data.SetShortName(u"Other");
+  data.SetKeyword(u"other");
+  data.SetURL("https://other.example/search?q={searchTerms}");
+  TemplateURL* other =
+      template_url_service()->Add(std::make_unique<TemplateURL>(data));
+  template_url_service()->SetUserSelectedDefaultSearchProvider(other);
+
+  EXPECT_FALSE(observer.GetCurrentPageActionState().showing);
+  EXPECT_TRUE(tracker()->GetActiveJourneysForTesting().empty());
 }
 
 class SearchJourneyTabFeatureDisabledBrowserTest : public InProcessBrowserTest {

@@ -13,7 +13,10 @@
 #include <string>
 #include <string_view>
 
+#include "base/callback_list.h"
 #include "base/containers/enum_set.h"
+#include "base/functional/callback_forward.h"
+#include "base/functional/function_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -316,14 +319,25 @@ class SearchJourneyTracker : public KeyedService,
   // journey from active tracking.
   void OnJourneyCueSuggestionsSettingsOpened(SessionID source_tab_id);
 
+  // Ends any active journey whose Tab A is `source_tab_id` if its recorded
+  // `NavigationEntry` no longer matches `nav_entry_id`.
+  void OnSourceTabNavigated(SessionID source_tab_id, int nav_entry_id);
+
   // Clears copy records for `tab_id` and any journey whose Tab A is `tab_id`.
   // Journeys whose Tab B is `tab_id` are kept and marked as closed.
   void OnTabDestroyed(SessionID tab_id);
+
+  // Registers a callback notified with Tab A's `SessionID` whenever an active
+  // journey for that tab ends (after removal from tracking).
+  base::CallbackListSubscription RegisterJourneyEndedCallback(
+      base::RepeatingCallback<void(SessionID)> callback);
 
   size_t GetRingBufferSizeForTesting() const { return ring_buffer_.size(); }
   const std::map<SessionID, JourneyState>& GetActiveJourneysForTesting() const {
     return active_journeys_;
   }
+  void SetSearchCommittedTimeForTesting(SessionID source_tab_id,
+                                        base::TimeTicks time);
 
  private:
   // The tab the user most recently left that can be Tab A.
@@ -336,6 +350,10 @@ class SearchJourneyTracker : public KeyedService,
 
   void ClearState();
   void EvictExpiredRecords();
+  void EraseJourney(SessionID source_tab_id, SearchJourneyEndReason reason);
+  void EraseJourneysIf(base::FunctionRef<std::optional<SearchJourneyEndReason>(
+                           SessionID,
+                           const JourneyState&)> predicate);
 
   // Records `text` on `source_tab_id` at `source_nav_entry_id`, as a copy or as
   // a context-menu search selection. See `OnCopyRecorded()`.
@@ -363,6 +381,8 @@ class SearchJourneyTracker : public KeyedService,
 
   // Armed journeys keyed by Tab A's `SessionID`.
   std::map<SessionID, JourneyState> active_journeys_;
+
+  base::RepeatingCallbackList<void(SessionID)> journey_ended_callbacks_;
 };
 
 }  // namespace contextual_tasks

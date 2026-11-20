@@ -3481,6 +3481,44 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerMultiSourceBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualCueingControllerMultiSourceBrowserTest,
+                       HideCueForTargetOnlyHidesMatchingTarget) {
+  cue_target()->eligible = false;
+  auto target = std::make_unique<TestCueTarget>();
+  target->requires_model_execution = false;
+  target->generate_result = MakeCompleteResponse().contextual_cues(0);
+  contextual_cueing_controller()->RegisterCueTarget(CueTargetType::kTestSource,
+                                                    std::move(target));
+
+  page_actions::PageActionObserver observer(kActionAnchoredContextualCue);
+  observer.RegisterAsPageActionObserver(*GetPageActionController());
+
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("https://www.activetab.com/abc"),
+      ui::mojom::WindowOpenDisposition::kCurrentTab,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  optimization_guide::RetryForHistogramUntilCountReached(
+      &histogram_tester, "ContextualCueing.V2.Decision", 1);
+  ASSERT_TRUE(observer.GetCurrentPageActionState().showing);
+
+  // Simulate the anchored message collapsing to a suggestion chip.
+  GetPageActionController()->ShowSuggestionChip(kActionAnchoredContextualCue);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return observer.GetCurrentPageActionState().chip_showing; }));
+
+  // Hiding for a different target leaves this cue visible.
+  contextual_cueing_controller()->HideCueForTarget(CueTargetType::kGlic);
+  EXPECT_TRUE(observer.GetCurrentPageActionState().showing);
+  EXPECT_TRUE(observer.GetCurrentPageActionState().chip_showing);
+
+  // Hiding for the active target hides both the icon and suggestion chip.
+  contextual_cueing_controller()->HideCueForTarget(CueTargetType::kTestSource);
+  EXPECT_FALSE(observer.GetCurrentPageActionState().showing);
+  EXPECT_FALSE(observer.GetCurrentPageActionState().chip_showing);
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualCueingControllerMultiSourceBrowserTest,
                        QuietCueAllowedAfterDismissal) {
   auto* service =
       ContextualCueingServiceFactory::GetForProfile(browser()->GetProfile());

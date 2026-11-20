@@ -721,6 +721,7 @@ if (!is_android) {
     deps = [
       ":contextual_tasks",
       ":impl",
+      ":search_journey_cue",
       ":test_support",
       ":ui",
       ":ui_impl",
@@ -983,7 +984,9 @@ if (!is_android) {
     ]
     deps = [
       ":contextual_tasks",
+      "//chrome/browser/profiles:profile",
       "//components/omnibox/browser:vector_icons",
+      "//components/sessions",
       "//components/strings:components_strings",
       "//components/tabs:public",
       "//content/public/browser",

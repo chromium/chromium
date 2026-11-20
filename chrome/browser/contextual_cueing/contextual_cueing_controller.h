@@ -128,6 +128,9 @@ class ContextualCueingController
   // omnibox chip).
   void HideCue();
 
+  // Like `HideCue()`, but only hides the cue if it belongs to `type`.
+  void HideCueForTarget(CueTargetType type);
+
   // Hide the anchored message for this tab if it's showing, leaving the omnibox
   // chip visible.
   void HideAnchoredMessage();

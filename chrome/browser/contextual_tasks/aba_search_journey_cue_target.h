@@ -10,9 +10,12 @@
 #include "base/callback_list.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/contextual_cueing/cue_target.h"
 #include "components/optimization_guide/proto/features/contextual_cueing.pb.h"
 #include "ui/base/models/image_model.h"
+
+class SessionID;
 
 namespace content {
 class WebContents;
@@ -66,9 +69,18 @@ class AbaSearchJourneyCueTarget : public contextual_cueing::CueTarget {
   optimization_guide::proto::ContextualCueingSurface GetSurface()
       const override;
 
+  // Fires the pending TTL expiry timer immediately.
+  void FireExpiryTimerForTesting();
+
  private:
   // Evaluates the cue when the user returns to Tab A.
   void OnTabDidActivate(tabs::TabInterface* tab);
+
+  // Hides this target's cue when `source_tab_id` is this tab.
+  void OnJourneyEnded(SessionID source_tab_id);
+
+  // Stops the expiry timer and hides this target's cue if it is showing.
+  void HideStaleCue();
 
   // Records that the cue has shown for the tab's journey.
   void OnCueShown(bool is_anchored_message);
@@ -78,6 +90,8 @@ class AbaSearchJourneyCueTarget : public contextual_cueing::CueTarget {
 
   const raw_ref<tabs::TabInterface> tab_;
   base::CallbackListSubscription did_activate_subscription_;
+  base::CallbackListSubscription journey_ended_subscription_;
+  base::OneShotTimer expiry_timer_;
 
   base::WeakPtrFactory<AbaSearchJourneyCueTarget> weak_ptr_factory_{this};
 };
