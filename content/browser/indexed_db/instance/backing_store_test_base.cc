@@ -9,6 +9,7 @@
 #include "base/uuid.h"
 #include "content/browser/indexed_db/file_path_util.h"
 #include "content/browser/indexed_db/instance/backing_store_util.h"
+#include "content/browser/indexed_db/instance/leveldb/indexed_db_leveldb_operations.h"
 #include "content/browser/indexed_db/instance/sqlite/backing_store_impl.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "storage/browser/test/fake_blob.h"
@@ -64,6 +65,7 @@ void BackingStoreTestBase::SetUp() {
   quota_manager_proxy_ = base::MakeRefCounted<storage::MockQuotaManagerProxy>(
       quota_manager_.get(), base::SingleThreadTaskRunner::GetCurrentDefault());
 
+  ResetGlobalSweepAndCompactionTimesForTest();
   CreateFactoryAndBackingStore();
 
   // useful keys and values during tests
@@ -212,6 +214,7 @@ BackingStore* BackingStoreTestBase::backing_store() {
 
 void BackingStoreTestBase::TearDown() {
   DestroyFactoryAndBackingStore();
+  ResetGlobalSweepAndCompactionTimesForTest();
   if (temp_dir_.IsValid()) {
     ASSERT_TRUE(temp_dir_.Delete());
   }
