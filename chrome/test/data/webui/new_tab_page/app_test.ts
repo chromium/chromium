@@ -4596,7 +4596,7 @@ suite('NewTabPageAppTest', () => {
       const attribution = $$(app, '#backgroundImageAttribution');
       assertTrue(!!attribution);
       const attributionStyle = getComputedStyle(attribution);
-      assertNear(216, parseFloat(attributionStyle.left), LAYOUT_TOLERANCE_PX);
+      assertNear(220, parseFloat(attributionStyle.left), LAYOUT_TOLERANCE_PX);
       const rhsWrapper = $$<HTMLElement>(app, '#rhsWrapper');
       assertTrue(!!rhsWrapper);
       // Not offsetWidth, which is rounded to a whole px.
@@ -4604,6 +4604,52 @@ suite('NewTabPageAppTest', () => {
           rhsWrapper.getBoundingClientRect().width / 2,
           parseFloat(attributionStyle.maxWidth), LAYOUT_TOLERANCE_PX);
     });
+
+    test('customize buttons are inset 16px when feature disabled', async () => {
+      document.documentElement.dir = 'ltr';
+      await setThreadsRailEnabled(false);
+
+      const buttons = $$(app, '#customizeButtons');
+      assertTrue(!!buttons);
+      assertStyle(buttons, 'bottom', '16px');
+      assertStyle(buttons, 'right', '16px');
+    });
+
+    test('customize buttons are inset 20px when feature enabled', async () => {
+      document.documentElement.dir = 'ltr';
+      await setThreadsRailEnabled(true);
+
+      const buttons = $$(app, '#customizeButtons');
+      assertTrue(!!buttons);
+      assertStyle(buttons, 'bottom', '20px');
+      assertStyle(buttons, 'right', '20px');
+    });
+
+    test(
+        'customize buttons are inset 20px in RTL when feature enabled',
+        async () => {
+          document.documentElement.dir = 'rtl';
+          await setThreadsRailEnabled(true);
+
+          const buttons = $$(app, '#customizeButtons');
+          assertTrue(!!buttons);
+          assertStyle(buttons, 'bottom', '20px');
+          assertStyle(buttons, 'left', '20px');
+        });
+
+    test(
+        'attribution is centered on the customize button when feature enabled',
+        async () => {
+          await setThreadsRailEnabled(true);
+          await showBackgroundImageAttribution();
+
+          assertCenterAligned(
+              app, {
+                'Attribution': '#backgroundImageAttribution',
+                'Customize button': ['#customizeButtons', '#customizeButton'],
+              },
+              'y');
+        });
 
     test(
         'background image fills the window when feature disabled', async () => {

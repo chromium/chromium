@@ -33,6 +33,9 @@
   --ntp-protected-icon-background-color: transparent;
   --ntp-protected-icon-background-color-hovered: rgba(255, 255, 255, 0.1);
   --ntp-scrim-opacity_: 1;
+  /* Distance of the fixed controls at the bottom of the page (the customize
+   * buttons and the background image attribution) from the page edges. */
+  --ntp-bottom-controls-inset_: 16px;
 
 <if expr="is_android">
   /* Use Google Sans Text for the NTP realbox on Android. The @font-face
@@ -220,12 +223,19 @@ ntp-searchbox[shown] {
   position: fixed;
 }
 
+/* With the LHS present, the fixed controls at the bottom of the RHS are inset
+ * 20px from its edges. This centers the customize buttons (32px tall) on the
+ * settings button at the bottom of the expanded LHS. */
+:host([enable-threads-rail_]) {
+  --ntp-bottom-controls-inset_: 20px;
+}
+
 #backgroundImageAttribution {
   border-radius: 8px;
   bottom: 16px;
   color: var(--color-new-tab-page-attribution-foreground);
   /* 100cqw = width of the rhsWrapper (query container). */
-  inset-inline-start: calc(100% - 100cqw + 16px);
+  inset-inline-start: calc(100% - 100cqw + var(--ntp-bottom-controls-inset_));
   line-height: 20px;
   max-width: 50cqw;
   padding: 8px;
@@ -233,6 +243,13 @@ ntp-searchbox[shown] {
   z-index: -1;
   background-color: var(--ntp-protected-icon-background-color);
   text-shadow: none;
+}
+
+/* With the LHS present, center the attribution on the customize buttons (32px
+ * tall), whatever its own height is. */
+:host([enable-threads-rail_]) #backgroundImageAttribution {
+  bottom: calc(var(--ntp-bottom-controls-inset_) + 16px);
+  translate: 0 50%;
 }
 
 #backgroundImageAttribution:hover {
@@ -271,16 +288,9 @@ ntp-searchbox[shown] {
 }
 
 #customizeButtons {
-  bottom: 16px;
+  bottom: var(--ntp-bottom-controls-inset_);
+  inset-inline-end: var(--ntp-bottom-controls-inset_);
   position: fixed;
-}
-
-:host-context([dir='ltr']) #customizeButtons {
-  right: 16px;
-}
-
-:host-context([dir='rtl']) #customizeButtons {
-  left: 16px;
 }
 
 #contentBottomSpacer {
