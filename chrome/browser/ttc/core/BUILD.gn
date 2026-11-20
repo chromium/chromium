@@ -56,7 +56,6 @@ if (enable_ttc_webui) {
 
 source_set("core") {
   public = [
-    "entrypoint_controller.h",
     "eval_audio_controller.h",
     "hotl/hotl_speech_recognizer.h",
     "page_context.h",
@@ -89,9 +88,12 @@ source_set("core") {
     "//components/ttc/app/public",
     "//content/public/browser",
     "//media",
-    "//ui/base/unowned_user_data",
     "//url",
   ]
+  if (!is_android) {
+    public += [ "entrypoint_controller.h" ]
+    public_deps += [ "//ui/base/unowned_user_data" ]
+  }
   if (enable_ttc_webui) {
     public += [
       "harness_page_handler.h",
@@ -105,7 +107,6 @@ source_set("impl") {
   sources = [
     "actor_task_holder.cc",
     "actor_task_holder.h",
-    "entrypoint_controller.cc",
     "eval_audio_controller.cc",
     "eval_audio_controller.h",
     "get_pointer_metrics.h",
@@ -178,7 +179,6 @@ source_set("impl") {
     "//chrome/browser/search",
     "//chrome/browser/ttc/app:impl",
     "//chrome/browser/ttc/app:public",
-    "//chrome/browser/ui/actions:actions_headers",
     "//chrome/browser/ui/browser_window",
     "//chrome/common",
     "//chrome/common:actor_webui_mojom",
@@ -197,7 +197,6 @@ source_set("impl") {
     "//skia",
     "//third_party/blink/public/common:headers",
     "//third_party/blink/public/mojom:mojom_platform_headers",
-    "//ui/actions:actions_headers",
     "//ui/base/idle",
     "//ui/gfx/codec",
     "//ui/gfx/geometry",
@@ -235,6 +234,7 @@ source_set("impl") {
     ]
   } else {
     sources += [
+      "entrypoint_controller.cc",
       "hotl/hotl_sound_player.cc",
       "hotl/hotl_sound_player.h",
       "hotl/hotl_sound_player_internal.h",
@@ -250,6 +250,7 @@ source_set("impl") {
       "//chrome/browser/lifetime",
       "//chrome/browser/ui:browser_element_identifiers",
       "//chrome/browser/ui:browser_window_header",
+      "//chrome/browser/ui/actions:actions_headers",
       "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/ui/fullscreen",
       "//chrome/browser/ui/tabs:tab_strip",
@@ -258,6 +259,7 @@ source_set("impl") {
       "//chrome/browser/ui/toolbar/pinned_toolbar",
       "//chrome/browser/ui/views/interaction",
       "//chrome/browser/ui/views/toolbar",
+      "//ui/actions:actions_headers",
       "//ui/views",
     ]
     if (is_mac) {

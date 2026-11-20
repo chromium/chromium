@@ -5,15 +5,11 @@
 #include "chrome/browser/ttc/core/entrypoint_controller.h"
 
 #include "base/functional/bind.h"
-#include "build/build_config.h"
 #include "chrome/browser/ttc/core/ttc_keyed_service.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-
-#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions.h"
-#endif
 
 namespace ttc {
 
@@ -76,7 +72,6 @@ void EntrypointController::UpdateUi(ServiceState state) {
 }
 
 void EntrypointController::UpdateToolbarButton(ServiceState state) {
-#if !BUILDFLAG(IS_ANDROID)
   // Driven by OnTtcStateChanged(), which can fire while the window is going
   // away.
   BrowserWindow* const browser_window =
@@ -101,7 +96,6 @@ void EntrypointController::UpdateToolbarButton(ServiceState state) {
                                         /*is_active=*/true);
       break;
   }
-#endif
 }
 
 }  // namespace ttc
