@@ -20,6 +20,7 @@
 #include "build/build_config.h"
 #include "chrome/updater/external_constants.h"
 #include "chrome/updater/registration_data.h"
+#include "chrome/updater/test/json_matchers.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_version.h"
 #include "components/update_client/update_client_errors.h"
@@ -513,12 +514,12 @@ void ExpectInstallSequence(UpdaterScope scope,
 void ExpectEnterpriseCompanionAppOTAInstallSequence(ScopedServer& test_server);
 
 // Expects one update check for `apps`, then each app's CRX download (once per
-// CRX file name) and event ping in any order. The check's `request` must cover
-// `request_attributes` and list every app, in any order, with `version` set to
-// `from_version`, and `release_channel`, `rollback_allowed`,
-// `targetversionprefix`, and `updatedisabled` set from `target_channel`,
-// `allow_rollback`, `target_version_prefix`, and `update_disabled`. An empty or
-// false field forbids its key.
+// CRX file name) and event ping in any order. The check's `request` must match
+// `request_matcher`, if set, and list every app, in any order, with `version`
+// set to `from_version` and `release_channel`, `updatecheck.rollback_allowed`,
+// `updatecheck.targetversionprefix`, and `updatecheck.updatedisabled` set from
+// `target_channel`, `allow_rollback`, `target_version_prefix`, and
+// `update_disabled`. An empty or false field forbids its key.
 //
 // Expects a success ping if `should_update`; otherwise, if
 // `custom_app_response` is empty and `response_status` is "ok", an error ping
@@ -526,8 +527,8 @@ void ExpectEnterpriseCompanionAppOTAInstallSequence(ScopedServer& test_server);
 void ExpectAppsUpdateSequence(
     UpdaterScope scope,
     ScopedServer& test_server,
-    const base::DictValue& request_attributes,
     const std::vector<AppUpdateExpectation>& apps,
+    std::optional<json::ValueMatcher> request_matcher = std::nullopt,
     const base::Version& updater_version = base::Version(kUpdaterVersion));
 
 void StressUpdateService(UpdaterScope scope);

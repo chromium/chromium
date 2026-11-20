@@ -31,6 +31,7 @@ using ::testing::Not;
 using ::testing::Property;
 using ::testing::SizeIs;
 using ::testing::StartsWith;
+using ::testing::StrCaseEq;
 
 // Returns the explanation that `matcher` gives for `value`.
 std::string Explain(const ValueMatcher& matcher, const base::Value& value) {
@@ -154,6 +155,10 @@ TEST(JsonMatchersTest, IsString) {
   EXPECT_THAT(base::Value("2.0"), Not(IsString(StartsWith("1."))));
   EXPECT_THAT(base::Value("b"), IsString(AnyOf("a", "b")));
   EXPECT_THAT(base::Value(1), Not(IsString(_)));
+  EXPECT_THAT(ParseJson(R"({"k": "value"})"),
+              HasKey("k", IsString(StrCaseEq("VALUE"))));
+  EXPECT_THAT(ParseJson(R"({"k": "other"})"),
+              Not(HasKey("k", IsString(StrCaseEq("VALUE")))));
 
   EXPECT_EQ(Explain(IsString(_), base::Value(1)), "which is not a string");
   EXPECT_EQ(Describe(IsString("x")), R"(is a string that is equal to "x")");
@@ -186,101 +191,6 @@ TEST(JsonMatchersTest, IsListExplainsItemsWithTheirPaths) {
       R"(.a: is [{"x":1},{}], whose size 2 doesn't match)");
   EXPECT_EQ(Explain(IsList(Each(HasKey("x"))), ParseJson(R"([{"x": 1}, {}])")),
             "whose element #1 doesn't match, [1].x: is missing");
-}
-
-TEST(JsonMatchersTest, Covers) {
-  const ValueMatcher matcher = Covers(ParseJson(R"({
-    "key_a": "val_a",
-    "key_b": {
-      "key_b1": 1,
-      "key_b2": ["x", ["y"]]
-    },
-    "missing_key": null
-  })"));
-
-  // Extra keys and list items are fine.
-  EXPECT_THAT(ParseJson(R"({
-    "another_key": 50,
-    "key_a": "val_a",
-    "key_b": {
-      "key_b1": 1,
-      "key_b2": [4, "x", 19, ["rutabaga", "y", "beef"]],
-      "extra": "cabbage"
-    }
-  })"),
-              matcher);
-
-  const base::Value missing_key = ParseJson(R"({"key_a": "val_a"})");
-  EXPECT_THAT(missing_key, Not(matcher));
-  EXPECT_EQ(Explain(matcher, missing_key), ".key_b: is missing");
-
-  // A null expected value requires the key to be absent or null.
-  const base::Value present_key = ParseJson(R"({
-    "key_a": "val_a",
-    "key_b": {"key_b1": 1, "key_b2": ["x", ["y"]]},
-    "missing_key": "oops"
-  })");
-  EXPECT_THAT(present_key, Not(matcher));
-  EXPECT_EQ(Explain(matcher, present_key),
-            R"(.missing_key: is "oops", expected absent)");
-
-  // The expected list items must appear in order.
-  const base::Value out_of_order = ParseJson(R"({
-    "key_a": "val_a",
-    "key_b": {"key_b1": 1, "key_b2": [["y"], "x"]}
-  })");
-  EXPECT_THAT(out_of_order, Not(matcher));
-  EXPECT_EQ(
-      Explain(matcher, out_of_order),
-      R"(.key_b.key_b2: is [["y"],"x"], expected an item that covers ["y"])");
-
-  EXPECT_EQ(Explain(Covers(ParseJson(R"({"a": {"b": 1}})")),
-                    ParseJson(R"({"a": [1]})")),
-            ".a: is [1], which is not a dict");
-  EXPECT_EQ(Explain(Covers(ParseJson(R"({"a": [1]})")),
-                    ParseJson(R"({"a": {"b": 1}})")),
-            R"(.a: is {"b":1}, which is not a list)");
-  EXPECT_EQ(Explain(Covers(ParseJson(R"({"a": 1})")), base::Value(1)),
-            "which is not a dict");
-  EXPECT_EQ(Describe(Covers(ParseJson(R"({"a": 1})"))), R"(covers {"a":1})");
-  EXPECT_EQ(Describe(Not(Covers(ParseJson(R"({"a": 1})")))),
-            R"(doesn't cover {"a":1})");
-}
-
-TEST(JsonMatchersTest, CoversListsAndNull) {
-  const ValueMatcher matcher = Covers(ParseJson("[1, 2]"));
-  EXPECT_THAT(ParseJson("[1, 3, 2]"), matcher);
-  EXPECT_THAT(ParseJson("[2, 1]"), Not(matcher));
-  EXPECT_EQ(Explain(matcher, ParseJson("[2, 1]")),
-            "expected an item that covers 2");
-
-  EXPECT_THAT(base::Value(), Covers(base::Value()));
-  EXPECT_THAT(base::Value(1), Not(Covers(base::Value())));
-  EXPECT_EQ(Explain(Covers(base::Value()), base::Value(1)), "expected null");
-}
-
-TEST(JsonMatchersTest, CoversExplainsWithPathInsideOtherMatchers) {
-  const base::Value value = ParseJson(R"({"a": {"b": {"c": 1}}})");
-  EXPECT_EQ(
-      Explain(HasKey("a", Covers(ParseJson(R"({"b": {"c": 2}})"))), value),
-      ".a.b.c: is 1, expected 2");
-  EXPECT_EQ(Explain(HasKey("a", Covers(base::Value(1))), value),
-            R"(.a: is {"b":{"c":1}}, expected 1)");
-}
-
-TEST(JsonMatchersTest, CoversComparesNumbersByValue) {
-  EXPECT_THAT(base::Value(1), Covers(base::Value(1.0)));
-  EXPECT_THAT(base::Value(1.0), Covers(base::Value(1)));
-  EXPECT_THAT(base::Value(2), Not(Covers(base::Value(1))));
-  EXPECT_EQ(Explain(Covers(base::Value(1)), base::Value(2)), "expected 1");
-}
-
-TEST(JsonMatchersTest, CoversComparesStringsCaseInsensitively) {
-  EXPECT_THAT(ParseJson(R"({"key": "value"})"),
-              Covers(ParseJson(R"({"key": "VALUE"})")));
-  EXPECT_THAT(ParseJson(R"(["a", "b"])"), Covers(ParseJson(R"(["A", "B"])")));
-  EXPECT_THAT(ParseJson(R"({"key": "other"})"),
-              Not(Covers(ParseJson(R"({"key": "VALUE"})"))));
 }
 
 TEST(JsonMatchersTest, UpdateRequest) {
@@ -343,26 +253,6 @@ TEST(JsonMatchersTest, HasAppWithRepeatedAppId) {
             R"(.request.apps[1].version: is "2.0")");
 }
 
-TEST(JsonMatchersTest, HasAppMatching) {
-  const base::Value body = ParseJson(R"({"request": {"apps": [
-    {"appid": "app1", "version": "1.0"},
-    {"appid": "app2", "version": "2.0"}
-  ]}})");
-  EXPECT_THAT(body, HasAppMatching(HasKey("version", "2.0")));
-  EXPECT_THAT(body, Not(HasAppMatching(HasKey("version", "3.0"))));
-
-  EXPECT_EQ(Explain(HasAppMatching(HasKey("version", "3.0")), body),
-            R"(.request.apps: no app matches: )"
-            R"(.request.apps[0].version: is "1.0"; )"
-            R"(.request.apps[1].version: is "2.0")");
-  EXPECT_EQ(
-      Explain(HasAppMatching(_), ParseJson(R"({"request": {"apps": []}})")),
-      ".request.apps: is empty");
-  EXPECT_EQ(Describe(HasAppMatching(HasKey("version", "1.0"))),
-            R"(has at least one app that has key "version" that is equal to )"
-            R"("1.0")");
-}
-
 TEST(JsonMatchersTest, HasEvent) {
   const base::Value app = ParseJson(R"({"appid": "app1", "events": [
     {"eventtype": 14},
@@ -378,6 +268,8 @@ TEST(JsonMatchersTest, HasEvent) {
             ".events[1].eventtype: is 3");
   EXPECT_EQ(Explain(HasEvent(_), ParseJson(R"({"appid": "app1"})")),
             ".events: is missing");
+  EXPECT_EQ(Explain(HasEvent(_), ParseJson(R"({"events": []})")),
+            ".events: is empty");
   EXPECT_EQ(Describe(HasEvent(HasKey("eventtype", 2))),
             R"(has at least one event that has key "eventtype" that is equal )"
             "to 2");

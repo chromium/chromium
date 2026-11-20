@@ -807,8 +807,8 @@ void ExpectNoCrashes(UpdaterScope scope) {
 
 void ExpectAppsUpdateSequence(UpdaterScope scope,
                               ScopedServer& test_server,
-                              const base::DictValue& request_attributes,
                               const std::vector<AppUpdateExpectation>& apps,
+                              std::optional<json::ValueMatcher> request_matcher,
                               const base::Version& updater_version) {
   base::FilePath exe_path;
   ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_path));
@@ -822,9 +822,9 @@ void ExpectAppsUpdateSequence(UpdaterScope scope,
       request::GetUpdaterEnableUpdatesMatcher(),
   };
   std::vector<json::ValueMatcher> content_matchers;
-  if (!request_attributes.empty()) {
-    content_matchers.push_back(json::UpdateRequest(
-        json::Covers(base::Value(request_attributes.Clone()))));
+  if (request_matcher) {
+    content_matchers.push_back(
+        json::UpdateRequest(*std::move(request_matcher)));
   }
   std::vector<ScopedServer::ResponseBodyProvider> app_response_providers;
   for (const AppUpdateExpectation& app : apps) {

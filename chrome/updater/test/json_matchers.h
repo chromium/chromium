@@ -70,11 +70,11 @@ ValueMatcher HasKey(std::string key);
 // `base::Value` equality, as in `HasKey("eventtype", 3)`: the types must be the
 // same, so `3` doesn't match `3.0`, and strings compare case-sensitively. An
 // integer that doesn't fit in an `int` matches a `double`, since
-// `base::JSONReader` parses it as one. `Covers()` compares numbers by value and
-// strings case-insensitively. Inside other GMock matchers, write strings with
-// `IsString()` and JSON values with `base::test::IsJson()`, as in
+// `base::JSONReader` parses it as one. Inside other GMock matchers, write
+// strings with `IsString()` and JSON values with `base::test::IsJson()`, as in
 // `HasKey("installsource", IsString(AnyOf("a", "b")))`, since GMock prints C
-// strings there as pointers and can't copy a `base::Value`.
+// strings there as pointers and can't copy a `base::Value`. Compare strings
+// case-insensitively with `IsString(StrCaseEq("a"))`.
 template <typename M>
 ValueMatcher HasKey(std::string key, const M& matcher) {
   return internal::HasKeyThat(std::move(key),
@@ -107,12 +107,6 @@ ValueMatcher IsString(testing::Matcher<const std::string&> matcher);
 // list, even if they explain an item.
 ValueMatcher IsList(testing::Matcher<const base::ListValue&> matcher);
 
-// Matches a value that covers `expected`: dicts may have extra keys, lists may
-// have extra items (with the expected items in order), a `null` dict value
-// requires the key to be missing or `null`, numbers compare by value, and
-// strings compare case-insensitively.
-ValueMatcher Covers(base::Value expected);
-
 // The matchers below match an update protocol request body, or an app in its
 // `request.apps` list, that uses protocol V4 names.
 // `request::GetJSONContentMatcher()` renames protocol V3 names in a request to
@@ -128,9 +122,6 @@ ValueMatcher HasApp(std::string app_id);
 // Matches a body with an app in `request.apps` whose `appid` equals `app_id`
 // case-insensitively and that matches `matcher`.
 ValueMatcher HasApp(std::string app_id, ValueMatcher matcher);
-
-// Matches a body with an app in `request.apps` that matches `matcher`.
-ValueMatcher HasAppMatching(ValueMatcher matcher);
 
 // Matches an app with an event in `events` that matches `matcher`.
 ValueMatcher HasEvent(ValueMatcher matcher);

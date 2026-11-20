@@ -379,138 +379,6 @@ class IsListMatcher {
   testing::Matcher<const base::ListValue&> matcher_;
 };
 
-// Returns true if `actual`, found at `path`, covers `expected` (see
-// `Covers()`). Otherwise sets `explanation`, if not null, to the first
-// mismatch. `path` is only used for `explanation`.
-bool CoversValue(const base::Value& expected,
-                 const base::Value& actual,
-                 std::string_view path,
-                 std::string* explanation) {
-  switch (expected.type()) {
-    case base::Value::Type::DICT: {
-      const base::DictValue* actual_dict = actual.GetIfDict();
-      if (!actual_dict) {
-        if (explanation) {
-          *explanation = ExplainAt(path, actual, "which is not a dict");
-        }
-        return false;
-      }
-      for (const auto [key, expected_child] : expected.GetDict()) {
-        const base::Value* actual_child = actual_dict->Find(key);
-        if (expected_child.is_none()) {
-          if (actual_child && !actual_child->is_none()) {
-            if (explanation) {
-              *explanation = ExplainAt(base::StrCat({path, ".", key}),
-                                       *actual_child, "expected absent");
-            }
-            return false;
-          }
-          continue;
-        }
-        if (!actual_child) {
-          if (explanation) {
-            *explanation = base::StrCat({path, ".", key, ": is missing"});
-          }
-          return false;
-        }
-        if (!CoversValue(expected_child, *actual_child,
-                         explanation ? base::StrCat({path, ".", key}) : "",
-                         explanation)) {
-          return false;
-        }
-      }
-      return true;
-    }
-    case base::Value::Type::LIST: {
-      const base::ListValue* actual_list = actual.GetIfList();
-      if (!actual_list) {
-        if (explanation) {
-          *explanation = ExplainAt(path, actual, "which is not a list");
-        }
-        return false;
-      }
-      // Finds the expected items in order, skipping other items.
-      auto actual_it = actual_list->begin();
-      for (const base::Value& expected_item : expected.GetList()) {
-        actual_it = std::find_if(
-            actual_it, actual_list->end(),
-            [&expected_item](const base::Value& actual_item) {
-              return CoversValue(expected_item, actual_item, "", nullptr);
-            });
-        if (actual_it == actual_list->end()) {
-          if (explanation) {
-            *explanation =
-                ExplainAt(path, actual,
-                          base::StrCat({"expected an item that covers ",
-                                        ToShortJson(expected_item)}));
-          }
-          return false;
-        }
-        ++actual_it;
-      }
-      return true;
-    }
-    case base::Value::Type::INTEGER:
-    case base::Value::Type::DOUBLE:
-      if ((actual.is_int() || actual.is_double()) &&
-          actual.GetDouble() == expected.GetDouble()) {
-        return true;
-      }
-      break;
-    case base::Value::Type::STRING:
-      if (actual.is_string() && base::EqualsCaseInsensitiveASCII(
-                                    actual.GetString(), expected.GetString())) {
-        return true;
-      }
-      break;
-    case base::Value::Type::NONE:
-    case base::Value::Type::BOOLEAN:
-    case base::Value::Type::BINARY:
-      if (actual == expected) {
-        return true;
-      }
-      break;
-  }
-  if (explanation) {
-    *explanation = ExplainAt(
-        path, actual, base::StrCat({"expected ", ToShortJson(expected)}));
-  }
-  return false;
-}
-
-// Matches a value that covers `expected`. See `Covers()`.
-class CoversMatcher {
- public:
-  using is_gtest_matcher = void;
-
-  explicit CoversMatcher(base::Value expected)
-      : expected_(std::move(expected)) {}
-
-  bool MatchAndExplain(const base::Value& value,
-                       testing::MatchResultListener* listener) const {
-    if (!listener->IsInterested()) {
-      return CoversValue(expected_, value, "", nullptr);
-    }
-    const ScopedMatch match(value);
-    std::string explanation;
-    const bool matches =
-        CoversValue(expected_, value, match.path(), &explanation);
-    *listener << match.Finish(std::move(explanation));
-    return matches;
-  }
-
-  void DescribeTo(std::ostream* os) const {
-    *os << "covers " << ToJson(expected_);
-  }
-
-  void DescribeNegationTo(std::ostream* os) const {
-    *os << "doesn't cover " << ToJson(expected_);
-  }
-
- private:
-  base::Value expected_;
-};
-
 // Matches a value equal to `expected`.
 class EqualsMatcher {
  public:
@@ -757,10 +625,6 @@ ValueMatcher IsList(testing::Matcher<const base::ListValue&> matcher) {
   return IsListMatcher(std::move(matcher));
 }
 
-ValueMatcher Covers(base::Value expected) {
-  return CoversMatcher(std::move(expected));
-}
-
 ValueMatcher UpdateRequest(ValueMatcher matcher) {
   return HasKeyMatcher("request", std::move(matcher));
 }
@@ -775,10 +639,6 @@ ValueMatcher HasApp(std::string app_id, ValueMatcher matcher) {
   return EntryMatcher("request.apps", "app",
                       EntryId{.key = "appid", .value = std::move(app_id)},
                       std::move(matcher));
-}
-
-ValueMatcher HasAppMatching(ValueMatcher matcher) {
-  return EntryMatcher("request.apps", "app", std::nullopt, std::move(matcher));
 }
 
 ValueMatcher HasEvent(ValueMatcher matcher) {
