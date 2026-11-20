@@ -22,6 +22,10 @@ class MockRtpSender : public webrtc::RefCountedObject<webrtc::MockRtpSender> {
               CreateSframeEncryptorOrError,
               (const webrtc::SframeEncryptorInit&),
               (override));
+  MOCK_METHOD(webrtc::RTCError,
+              GenerateKeyFrame,
+              (const std::vector<std::string>&),
+              (override));
 };
 
 }  // namespace blink

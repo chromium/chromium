@@ -175,6 +175,11 @@ class MODULES_EXPORT RTCRtpSenderImpl : public blink::RTCRtpSenderPlatform {
       webrtc::TargetBitrateCallback bitrate_callback) override;
   webrtc::RTCErrorOr<scoped_refptr<webrtc::SframeEncryptorInterface>>
   CreateSframeEncryptor(const webrtc::SframeEncryptorInit& init) override;
+  void GenerateKeyFrame(
+      const String& rid,
+      CrossThreadOnceFunction<void(Vector<String>)> on_layers_selected,
+      CrossThreadOnceFunction<void(webrtc::RTCError)> on_encoder_error)
+      override;
 
   // The ReplaceTrack() that takes a blink::RTCVoidRequest is implemented on
   // top of this, which returns the result in a callback instead. Allows doing

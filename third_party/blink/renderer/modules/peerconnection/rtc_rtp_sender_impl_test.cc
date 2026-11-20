@@ -340,4 +340,96 @@ TEST_F(RTCRtpSenderImplTest, CopiedSenderSharesInternalStates) {
   EXPECT_FALSE(copy->Track());
 }
 
+TEST_F(RTCRtpSenderImplTest,
+       GenerateKeyFrameSelectsActiveLayersAndNotifiesBeforeEncoder) {
+  auto* component = CreateTrack("track_id");
+  sender_ = CreateSender(component);
+
+  webrtc::RtpParameters params;
+  webrtc::RtpEncodingParameters layer0;
+  layer0.rid = "0";
+  layer0.active = true;
+  webrtc::RtpEncodingParameters layer1;
+  layer1.rid = "1";
+  layer1.active = false;
+  webrtc::RtpEncodingParameters layer2;
+  layer2.rid = "2";
+  layer2.active = true;
+  params.encodings = {layer0, layer1, layer2};
+
+  EXPECT_CALL(*mock_webrtc_sender_, GetParameters())
+      .WillRepeatedly(Return(params));
+
+  bool layers_notified = false;
+  Vector<String> selected_rids;
+  base::RunLoop run_loop;
+  EXPECT_CALL(*mock_webrtc_sender_,
+              GenerateKeyFrame(testing::ElementsAre("0", "2")))
+      .WillOnce([&](const std::vector<std::string>&) {
+        EXPECT_TRUE(layers_notified);
+        run_loop.Quit();
+        return webrtc::RTCError::OK();
+      });
+
+  sender_->GenerateKeyFrame(
+      /*rid=*/String(),
+      CrossThreadBindOnce(
+          [](bool* notified, Vector<String>* out_rids, Vector<String> rids) {
+            *notified = true;
+            *out_rids = std::move(rids);
+          },
+          CrossThreadUnretained(&layers_notified),
+          CrossThreadUnretained(&selected_rids)),
+      CrossThreadBindOnce([](webrtc::RTCError) { FAIL(); }));
+  run_loop.Run();
+  EXPECT_THAT(selected_rids, testing::ElementsAre("0", "2"));
+
+  // Requesting an inactive layer reports empty rids and does not call WebRTC.
+  EXPECT_CALL(*mock_webrtc_sender_, GenerateKeyFrame(_)).Times(0);
+  base::RunLoop inactive_loop;
+  Vector<String> inactive_rids;
+  sender_->GenerateKeyFrame(
+      "1",
+      CrossThreadBindOnce(
+          [](Vector<String>* out_rids, base::RepeatingClosure quit,
+             Vector<String> rids) {
+            *out_rids = std::move(rids);
+            quit.Run();
+          },
+          CrossThreadUnretained(&inactive_rids), inactive_loop.QuitClosure()),
+      CrossThreadBindOnce([](webrtc::RTCError) { FAIL(); }));
+  inactive_loop.Run();
+  EXPECT_TRUE(inactive_rids.empty());
+}
+
+TEST_F(RTCRtpSenderImplTest, GenerateKeyFrameReportsEncoderError) {
+  auto* component = CreateTrack("track_id");
+  sender_ = CreateSender(component);
+
+  webrtc::RtpParameters params;
+  webrtc::RtpEncodingParameters layer0;
+  layer0.rid = "0";
+  layer0.active = true;
+  params.encodings = {layer0};
+
+  EXPECT_CALL(*mock_webrtc_sender_, GetParameters()).WillOnce(Return(params));
+  EXPECT_CALL(*mock_webrtc_sender_, GenerateKeyFrame(testing::ElementsAre("0")))
+      .WillOnce(
+          Return(webrtc::RTCError(webrtc::RTCErrorType::INVALID_PARAMETER)));
+
+  base::RunLoop run_loop;
+  webrtc::RTCErrorType received_error = webrtc::RTCErrorType::NONE;
+  sender_->GenerateKeyFrame(
+      "0", CrossThreadBindOnce([](Vector<String>) {}),
+      CrossThreadBindOnce(
+          [](webrtc::RTCErrorType* out_type, base::RepeatingClosure quit,
+             webrtc::RTCError error) {
+            *out_type = error.type();
+            quit.Run();
+          },
+          CrossThreadUnretained(&received_error), run_loop.QuitClosure()));
+  run_loop.Run();
+  EXPECT_EQ(received_error, webrtc::RTCErrorType::INVALID_PARAMETER);
+}
+
 }  // namespace blink

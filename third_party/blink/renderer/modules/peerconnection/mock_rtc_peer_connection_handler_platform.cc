@@ -160,6 +160,14 @@ class DummyRTCRtpSenderPlatform : public RTCRtpSenderPlatform {
     return webrtc::RTCError::UnsupportedOperation();
   }
 
+  void GenerateKeyFrame(
+      const String& rid,
+      CrossThreadOnceFunction<void(Vector<String>)> on_layers_selected,
+      CrossThreadOnceFunction<void(webrtc::RTCError)> on_encoder_error)
+      override {
+    std::move(on_layers_selected).Run({});
+  }
+
  private:
   scoped_refptr<DummyRtpSenderInternal> internal_;
   std::unique_ptr<RTCEncodedAudioStreamTransformer> audio_transformer_;

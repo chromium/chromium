@@ -135,7 +135,33 @@ class FakeRTCRtpSenderPlatform : public RTCRtpSenderPlatform {
     return webrtc::RTCError::UnsupportedOperation();
   }
 
+  void GenerateKeyFrame(
+      const String& rid,
+      CrossThreadOnceFunction<void(Vector<String>)> on_layers_selected,
+      CrossThreadOnceFunction<void(webrtc::RTCError)> on_encoder_error)
+      override {
+    ++generate_keyframe_call_count_;
+    last_generate_keyframe_rid_ = rid;
+    std::unique_ptr<webrtc::RtpParameters> params = GetParameters();
+    Vector<String> active_rids;
+    if (params) {
+      for (const auto& encoding : params->encodings) {
+        if (!encoding.active) {
+          continue;
+        }
+        String encoding_rid = String::FromUtf8(encoding.rid);
+        if ((rid.IsNull() || encoding_rid == rid) &&
+            !active_rids.Contains(encoding_rid)) {
+          active_rids.push_back(std::move(encoding_rid));
+        }
+      }
+    }
+    std::move(on_layers_selected).Run(std::move(active_rids));
+  }
+
   bool set_parameters_called_ = false;
+  int generate_keyframe_call_count_ = 0;
+  String last_generate_keyframe_rid_;
 
  private:
   std::unique_ptr<RTCEncodedAudioStreamTransformer> audio_transformer_;

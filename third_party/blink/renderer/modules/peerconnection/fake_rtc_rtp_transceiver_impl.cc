@@ -152,6 +152,14 @@ FakeRTCRtpSenderImpl::CreateSframeEncryptor(
   return webrtc::RTCError::UnsupportedOperation();
 }
 
+void FakeRTCRtpSenderImpl::GenerateKeyFrame(
+    const String& rid,
+    CrossThreadOnceFunction<void(Vector<String>)> on_layers_selected,
+    CrossThreadOnceFunction<void(webrtc::RTCError)> on_encoder_error) {
+  NOTIMPLEMENTED();
+  std::move(on_layers_selected).Run({});
+}
+
 FakeRTCRtpReceiverImpl::FakeRTCRtpReceiverImpl(
     const String& track_id,
     Vector<String> stream_ids,

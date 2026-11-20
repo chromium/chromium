@@ -74,6 +74,11 @@ class FakeRTCRtpSenderImpl : public blink::RTCRtpSenderPlatform {
       webrtc::TargetBitrateCallback bitrate_callback) override;
   webrtc::RTCErrorOr<scoped_refptr<webrtc::SframeEncryptorInterface>>
   CreateSframeEncryptor(const webrtc::SframeEncryptorInit& init) override;
+  void GenerateKeyFrame(
+      const String& rid,
+      CrossThreadOnceFunction<void(Vector<String>)> on_layers_selected,
+      CrossThreadOnceFunction<void(webrtc::RTCError)> on_encoder_error)
+      override;
 
  private:
   String track_id_;

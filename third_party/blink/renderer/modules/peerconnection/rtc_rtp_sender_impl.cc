@@ -381,6 +381,20 @@ class RTCRtpSenderImpl::RTCRtpSenderInternal
     return encoded_video_transformer_.get();
   }
 
+  void GenerateKeyFrame(
+      const String& rid,
+      CrossThreadOnceFunction<void(Vector<String>)> on_layers_selected,
+      CrossThreadOnceFunction<void(webrtc::RTCError)> on_encoder_error) {
+    DCHECK(main_task_runner_->BelongsToCurrentThread());
+    PostCrossThreadTask(
+        *signaling_task_runner_, FROM_HERE,
+        CrossThreadBindOnce(&RTCRtpSenderImpl::RTCRtpSenderInternal::
+                                GenerateKeyFrameOnSignalingThread,
+                            WrapRefCounted(this), rid,
+                            std::move(on_layers_selected),
+                            std::move(on_encoder_error)));
+  }
+
  private:
   friend class ThreadSafeRefCounted<RTCRtpSenderInternal,
                                     RTCRtpSenderInternalTraits>;
@@ -447,6 +461,54 @@ class RTCRtpSenderImpl::RTCRtpSenderInternal
       ids.emplace_back(stream_id.Utf8());
 
     webrtc_sender_->SetStreams(std::move(ids));
+  }
+
+  void GenerateKeyFrameOnSignalingThread(
+      const String& rid,
+      CrossThreadOnceFunction<void(Vector<String>)> on_layers_selected,
+      CrossThreadOnceFunction<void(webrtc::RTCError)> on_encoder_error) {
+    DCHECK(signaling_task_runner_->BelongsToCurrentThread());
+    // Select all active encodings in order, filtering to `rid` when specified
+    // and deduplicating empty rids (e.g. legacy SSRC simulcast). Uses
+    // `GetParametersReadOnly()` so this does not mutate `last_transaction_id_`.
+    // TODO(crbug.com/354881878): When simulcast is rejected in negotiation
+    // (dropped to unicast), WebRTC's `DisableSimulcastInSender()` leaves
+    // `encodings[0].rid` populated; once WebRTC clears it on unicast fallback,
+    // requesting that rid will reject with NotFoundError automatically.
+    webrtc::RtpParameters parameters = webrtc_sender_->GetParametersReadOnly();
+    Vector<String> active_rids;
+    for (const auto& encoding : parameters.encodings) {
+      if (!encoding.active) {
+        continue;
+      }
+      String encoding_rid = String::FromUtf8(encoding.rid);
+      if ((rid.IsNull() || encoding_rid == rid) &&
+          !active_rids.Contains(encoding_rid)) {
+        active_rids.push_back(std::move(encoding_rid));
+      }
+    }
+    // Notify the caller BEFORE instructing the encoder so pending-request
+    // registration can be posted ahead of any resulting key frame.
+    std::move(on_layers_selected).Run(active_rids);
+    if (active_rids.empty()) {
+      return;
+    }
+    std::vector<std::string> webrtc_rids;
+    for (const String& active_rid : active_rids) {
+      if (!active_rid.empty()) {
+        webrtc_rids.push_back(active_rid.Utf8());
+      }
+    }
+    // Intentionally not deduplicating against pending requests (spec step
+    // "remove layers already found in pending tasks"): as written that step can
+    // leave a task with no layers, and a cross-thread snapshot of pending rids
+    // is racy. Always instructing the encoder is observably equivalent because
+    // VideoStreamEncoder coalesces key frame requests. See
+    // https://crbug.com/354881878.
+    webrtc::RTCError error = webrtc_sender_->GenerateKeyFrame(webrtc_rids);
+    if (!error.ok()) {
+      std::move(on_encoder_error).Run(std::move(error));
+    }
   }
 
   const webrtc::scoped_refptr<webrtc::PeerConnectionInterface>
@@ -619,6 +681,14 @@ webrtc::RTCErrorOr<scoped_refptr<webrtc::SframeEncryptorInterface>>
 RTCRtpSenderImpl::CreateSframeEncryptor(
     const webrtc::SframeEncryptorInit& init) {
   return internal_->CreateSframeEncryptor(init);
+}
+
+void RTCRtpSenderImpl::GenerateKeyFrame(
+    const String& rid,
+    CrossThreadOnceFunction<void(Vector<String>)> on_layers_selected,
+    CrossThreadOnceFunction<void(webrtc::RTCError)> on_encoder_error) {
+  internal_->GenerateKeyFrame(rid, std::move(on_layers_selected),
+                              std::move(on_encoder_error));
 }
 
 }  // namespace blink
