@@ -1,0 +1,21 @@
+Tests that backendNodeId cannot resolve nodes of another target sharing the renderer process.
+Nodes of the inspected target resolve:
+DOM.describeNode(input): INPUT
+DOM.describeNode(template content): SPAN
+DOM.describeNode(subframe input): INPUT
+DOM.describeNode(subframe template content): SPAN
+DOM.resolveNode(input, executionContextId): resolved
+Accessibility.getAXNodeAndAncestors(input): resolved
+Nodes of a detached subframe are rejected:
+DOM.describeNode(detached subframe input): error: No node found for given backend id
+DOM.describeNode(detached subframe template content): error: No node found for given backend id
+Nodes of the popup target are rejected:
+DOM.describeNode: error: No node found for given backend id
+DOM.resolveNode: error: No node with given id found
+DOM.resolveNode(executionContextId): error: No node with given id found
+DOM.getBoxModel: error: No node found for given backend id
+Overlay.highlightNode: error: No node found for given backend id
+Accessibility.getPartialAXTree: error: No node found for given backend id
+Accessibility.getAXNodeAndAncestors: error: No node found for given backend id
+Accessibility.queryAXTree: error: No node found for given backend id
+

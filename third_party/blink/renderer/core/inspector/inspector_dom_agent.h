@@ -381,6 +381,9 @@ class CORE_EXPORT InspectorDOMAgent final
       std::unique_ptr<protocol::Array<int>>* node_ids) override;
 
  private:
+  // Returns the node with `backend_node_id` if it belongs to a frame inspected
+  // by this agent, nullptr otherwise.
+  Node* NodeForBackendId(int backend_node_id) const;
   void SetDocument(Document*);
   // Unconditionally enables the agent, even if |enabled_.Get()==true|.
   // For idempotence, call enable().

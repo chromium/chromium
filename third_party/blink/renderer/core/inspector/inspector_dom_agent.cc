@@ -78,6 +78,7 @@
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
 #include "third_party/blink/renderer/core/fileapi/file.h"
 #include "third_party/blink/renderer/core/frame/frame.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/location.h"
 #include "third_party/blink/renderer/core/frame/remote_frame.h"
@@ -624,6 +625,24 @@ void InspectorDOMAgent::Unbind(Node* node) {
   cached_child_count_.erase(id);
 }
 
+Node* InspectorDOMAgent::NodeForBackendId(int backend_node_id) const {
+  Node* node = DOMNodeIds::NodeForId(backend_node_id);
+  if (!node) {
+    return nullptr;
+  }
+  // Backend node ids are renderer-process-global, so they can also resolve
+  // into documents of other targets sharing the process (e.g. same-site
+  // popups). Keep the session inside its target. Check the execution context
+  // rather than the document's frame, so that nodes of frameless documents
+  // owned by an inspected frame (e.g. <template> content) still resolve.
+  auto* window = DynamicTo<LocalDOMWindow>(node->GetExecutionContext());
+  if (!window || !window->GetFrame() ||
+      !inspected_frames_->Contains(window->GetFrame())) {
+    return nullptr;
+  }
+  return node;
+}
+
 protocol::Response InspectorDOMAgent::AssertNode(int node_id, Node*& node) {
   node = NodeForId(node_id);
   if (!node)
@@ -641,7 +660,7 @@ protocol::Response InspectorDOMAgent::AssertNode(
   }
 
   if (backend_node_id.has_value()) {
-    node = DOMNodeIds::NodeForId(backend_node_id.value());
+    node = NodeForBackendId(backend_node_id.value());
     return !node ? protocol::Response::ServerError(
                        "No node found for given backend id")
                  : protocol::Response::Success();
@@ -1947,7 +1966,7 @@ protocol::Response InspectorDOMAgent::resolveNode(
   if (node_id.has_value()) {
     node = NodeForId(node_id.value());
   } else {
-    node = DOMNodeIds::NodeForId(backend_node_id.value());
+    node = NodeForBackendId(backend_node_id.value());
   }
 
   if (!node)
