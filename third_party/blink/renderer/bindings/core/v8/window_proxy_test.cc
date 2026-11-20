@@ -63,23 +63,28 @@ TEST_F(WindowProxyTest, NotInitializedIfNoScript) {
   EXPECT_TRUE(context.IsEmpty());
 }
 
-// A named item currently triggers WindowProxy initialization.
-// TODO(dcheng): It's not clear if this is necessary or if it can be done lazily
-// instead.
+// A named item does not trigger WindowProxy initialization, since that can run
+// script in the middle of a DOM mutation. The named item is exposed once the
+// WindowProxy is initialized.
 TEST_F(WindowProxyTest, NamedItem) {
   SimRequest main_resource("https://example.com/index.html", "text/html");
   LoadURL("https://example.com/index.html");
   main_resource.Complete(
       R"HTML(<!DOCTYPE html><html><body><iframe name="x"></iframe></body></html>)HTML");
 
-  EXPECT_EQ(2, DidClearWindowObjectCount());
+  EXPECT_EQ(1, DidClearWindowObjectCount());
 
   LocalFrame* const frame = GetDocument().GetFrame();
   v8::Isolate* const isolate = ToIsolate(frame);
   v8::HandleScope scope(Window().GetIsolate());
   v8::Local<v8::Context> context =
       ToV8ContextMaybeEmpty(frame, DOMWrapperWorld::MainWorld(isolate));
-  EXPECT_FALSE(context.IsEmpty());
+  EXPECT_TRUE(context.IsEmpty());
+
+  v8::Local<v8::Value> result = MainFrame().ExecuteScriptAndReturnValue(
+      WebScriptSource("document.x === window[0]"));
+  ASSERT_FALSE(result.IsEmpty());
+  EXPECT_TRUE(result->IsTrue());
 }
 
 // Tests that a WindowProxy is reinitialized after a navigation, even if the new

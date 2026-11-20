@@ -291,6 +291,18 @@ void LocalWindowProxy::Initialize() {
   if (world_->IsMainWorld()) {
     // This also updates the ActivityLogger for the main world.
     UpdateDocumentForMainWorld();
+    if (context_was_created_from_snapshot_) {
+      // When the context is created from the snapshot, the document wrapper is
+      // deserialized directly into the DOMDataStore without calling
+      // HTMLDocument::AssociateWithWrapper(), so the named items need to be
+      // installed here. (If the wrapper already existed, they were already
+      // installed, and this is a no-op.)
+      auto* html_document = To<HTMLDocument>(GetFrame()->GetDocument());
+      InstallNamedItems(GetIsolate(), html_document,
+                        world_->DomDataStore()
+                            .Get(GetIsolate(), html_document)
+                            .ToLocalChecked());
+    }
     origin = GetFrame()->DomWindow()->GetSecurityOrigin();
   } else {
     UpdateActivityLogger();
@@ -646,55 +658,94 @@ void EmptySetter(v8::Local<v8::Name> name,
   // state even in case the value is updated by user code.
 }
 
-}  // namespace
-
-void LocalWindowProxy::NamedItemAdded(HTMLDocument* document,
-                                      const AtomicString& name) {
-  DCHECK(world_->IsMainWorld());
-
-  // Currently only contexts in attached frames can change the named items.
-  // TODO(yukishiino): Support detached frame's case, too, since the spec is not
-  // saying that the document needs to be attached to the DOM.
-  // https://html.spec.whatwg.org/C/dom.html#dom-document-nameditem
-  DCHECK(lifecycle_ == Lifecycle::kContextIsInitialized);
-  // TODO(yukishiino): Remove the following if-clause due to the above DCHECK.
-  if (lifecycle_ != Lifecycle::kContextIsInitialized)
-    return;
-
-  ScriptState::Scope scope(script_state_);
-  v8::Local<v8::Object> document_wrapper =
-      world_->DomDataStore().Get(GetIsolate(), document).ToLocalChecked();
+void InstallNamedItem(v8::Isolate* isolate,
+                      v8::Local<v8::Context> context,
+                      v8::Local<v8::Object> document_wrapper,
+                      const AtomicString& name) {
   // When a non-configurable own property (e.g. unforgeable attribute) already
   // exists, `SetNativeDataProperty` fails and throws. Ignore the exception
   // because own properties have priority over named properties.
   // https://webidl.spec.whatwg.org/#dfn-named-property-visibility
-  v8::TryCatch try_block(GetIsolate());
+  v8::TryCatch try_block(isolate);
   std::ignore = document_wrapper->SetNativeDataProperty(
-      GetIsolate()->GetCurrentContext(), V8String(GetIsolate(), name), Getter,
-      EmptySetter);
+      context, V8String(isolate, name), Getter, EmptySetter);
 }
 
-void LocalWindowProxy::NamedItemRemoved(HTMLDocument* document,
+// Returns the main world wrapper of `document`, if one exists. This never
+// creates a wrapper, never initializes a context, and does not require a
+// context to be entered.
+v8::MaybeLocal<v8::Object> GetMainWorldDocumentWrapper(v8::Isolate* isolate,
+                                                       HTMLDocument* document) {
+  return DOMWrapperWorld::MainWorld(isolate)
+      .DomDataStore()
+      .Get</*entered_context=*/false>(isolate, document);
+}
+
+}  // namespace
+
+// static
+void LocalWindowProxy::NamedItemAdded(v8::Isolate* isolate,
+                                      HTMLDocument* document,
+                                      const AtomicString& name) {
+  // This is called while the DOM tree is being mutated, so it must not run
+  // script. In particular, it must not initialize a context, because that runs
+  // embedder (user agent) script which can in turn reach author script. If the
+  // document has no main world wrapper yet, there is nothing to do: the named
+  // items are installed when the wrapper is created (see
+  // InstallNamedItems()).
+  v8::HandleScope handle_scope(isolate);
+  v8::Local<v8::Object> document_wrapper;
+  if (!GetMainWorldDocumentWrapper(isolate, document)
+           .ToLocal(&document_wrapper)) {
+    return;
+  }
+  v8::Local<v8::Context> context =
+      document_wrapper->GetCreationContextChecked(isolate);
+  v8::Context::Scope context_scope(context);
+  // TODO(crbug.com/587541566): This appends the property, so the supported
+  // property names end up in insertion order rather than in tree order.
+  InstallNamedItem(isolate, context, document_wrapper, name);
+}
+
+// static
+void LocalWindowProxy::NamedItemRemoved(v8::Isolate* isolate,
+                                        HTMLDocument* document,
                                         const AtomicString& name) {
-  DCHECK(world_->IsMainWorld());
-
-  // Currently only contexts in attached frames can change the named items.
-  // TODO(yukishiino): Support detached frame's case, too, since the spec is not
-  // saying that the document needs to be attached to the DOM.
-  // https://html.spec.whatwg.org/C/dom.html#dom-document-nameditem
-  DCHECK(lifecycle_ == Lifecycle::kContextIsInitialized);
-  // TODO(yukishiino): Remove the following if-clause due to the above DCHECK.
-  if (lifecycle_ != Lifecycle::kContextIsInitialized)
+  if (document->HasNamedItem(name)) {
     return;
-
-  if (document->HasNamedItem(name))
+  }
+  // See the comment in NamedItemAdded().
+  v8::HandleScope handle_scope(isolate);
+  v8::Local<v8::Object> document_wrapper;
+  if (!GetMainWorldDocumentWrapper(isolate, document)
+           .ToLocal(&document_wrapper)) {
     return;
-  ScriptState::Scope scope(script_state_);
-  v8::Local<v8::Object> document_wrapper =
-      world_->DomDataStore().Get(GetIsolate(), document).ToLocalChecked();
-  document_wrapper
-      ->Delete(GetIsolate()->GetCurrentContext(), V8String(GetIsolate(), name))
-      .ToChecked();
+  }
+  v8::Local<v8::Context> context =
+      document_wrapper->GetCreationContextChecked(isolate);
+  v8::Context::Scope context_scope(context);
+  v8::TryCatch try_block(isolate);
+  std::ignore = document_wrapper->Delete(context, V8String(isolate, name));
+}
+
+// static
+void LocalWindowProxy::InstallNamedItems(
+    v8::Isolate* isolate,
+    HTMLDocument* document,
+    v8::Local<v8::Object> document_wrapper) {
+  if (!document->HasAnyNamedItems()) {
+    return;
+  }
+  v8::HandleScope handle_scope(isolate);
+  v8::Local<v8::Context> context =
+      document_wrapper->GetCreationContextChecked(isolate);
+  v8::Context::Scope context_scope(context);
+  // Install in the order in which the names were added, to match the order
+  // that NamedItemAdded() would have produced.
+  // TODO(crbug.com/587541566): This should be tree order.
+  for (const AtomicString& name : document->NamedItems()) {
+    InstallNamedItem(isolate, context, document_wrapper, name);
+  }
 }
 
 void LocalWindowProxy::UpdateSecurityOrigin(const SecurityOrigin* origin) {

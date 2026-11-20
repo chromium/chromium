@@ -54,11 +54,10 @@
 #include "third_party/blink/renderer/core/html/html_document.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/local_window_proxy.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
-#include "third_party/blink/renderer/bindings/core/v8/window_proxy.h"
 #include "third_party/blink/renderer/core/dom/document_init.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 
 namespace blink {
 
@@ -96,23 +95,40 @@ Document* HTMLDocument::CloneDocumentWithoutChildren() const {
 void HTMLDocument::AddNamedItem(const AtomicString& name) {
   if (name.empty())
     return;
-  named_item_counts_.insert(name);
+  if (named_item_counts_.insert(name).is_new_entry) {
+    named_items_in_order_.insert(name);
+  }
+  // Note that this is called during DOM mutations, and so must not run script
+  // (e.g. by initializing the window proxy).
   if (LocalDOMWindow* window = domWindow()) {
-    window->GetScriptController()
-        .WindowProxy(DOMWrapperWorld::MainWorld(window->GetIsolate()))
-        ->NamedItemAdded(this, name);
+    LocalWindowProxy::NamedItemAdded(window->GetIsolate(), this, name);
   }
 }
 
 void HTMLDocument::RemoveNamedItem(const AtomicString& name) {
   if (name.empty())
     return;
-  named_item_counts_.erase(name);
-  if (LocalDOMWindow* window = domWindow()) {
-    window->GetScriptController()
-        .WindowProxy(DOMWrapperWorld::MainWorld(window->GetIsolate()))
-        ->NamedItemRemoved(this, name);
+  if (named_item_counts_.erase(name)) {
+    named_items_in_order_.erase(name);
   }
+  if (LocalDOMWindow* window = domWindow()) {
+    LocalWindowProxy::NamedItemRemoved(window->GetIsolate(), this, name);
+  }
+}
+
+v8::Local<v8::Object> HTMLDocument::AssociateWithWrapper(
+    v8::Isolate* isolate,
+    const WrapperTypeInfo* wrapper_type_info,
+    v8::Local<v8::Object> wrapper) {
+  wrapper = Document::AssociateWithWrapper(isolate, wrapper_type_info, wrapper);
+  // Named items are only exposed on the main world wrapper of documents that
+  // have a window. Named items that were added before the wrapper existed
+  // need to be installed now.
+  if (domWindow() && HasAnyNamedItems() &&
+      DOMWrapperWorld::Current(isolate).IsMainWorld()) {
+    LocalWindowProxy::InstallNamedItems(isolate, this, wrapper);
+  }
+  return wrapper;
 }
 
 bool HTMLDocument::IsCaseSensitiveAttribute(

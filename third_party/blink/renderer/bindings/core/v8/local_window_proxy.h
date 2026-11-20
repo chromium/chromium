@@ -59,8 +59,21 @@ class LocalWindowProxy final : public WindowProxy {
   // Update document object of the frame.
   void UpdateDocument();
 
-  void NamedItemAdded(HTMLDocument*, const AtomicString&);
-  void NamedItemRemoved(HTMLDocument*, const AtomicString&);
+  // Install or remove the named property accessor for `name` on the main world
+  // wrapper of `document`, if that wrapper exists. These never create a wrapper
+  // or initialize a context, and never run script, so they are safe to call
+  // during DOM mutations.
+  static void NamedItemAdded(v8::Isolate*,
+                             HTMLDocument* document,
+                             const AtomicString& name);
+  static void NamedItemRemoved(v8::Isolate*,
+                               HTMLDocument* document,
+                               const AtomicString& name);
+  // Installs the named property accessors for all of the current named items
+  // of `document` on `document_wrapper`, its main world wrapper.
+  static void InstallNamedItems(v8::Isolate*,
+                                HTMLDocument* document,
+                                v8::Local<v8::Object> document_wrapper);
 
   // Update the security origin of a document
   // (e.g., after setting docoument.domain).

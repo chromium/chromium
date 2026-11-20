@@ -45,6 +45,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/unsafe_shared_memory_region.h"
+#include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -123,6 +124,7 @@
 #include "third_party/blink/public/web/web_text_checking_completion.h"
 #include "third_party/blink/public/web/web_text_checking_result.h"
 #include "third_party/blink/public/web/web_view_client.h"
+#include "third_party/blink/renderer/bindings/core/v8/local_window_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value_factory.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/v8_script_value_serializer.h"
@@ -139,6 +141,7 @@
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/document_fragment.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/dom/range.h"
 #include "third_party/blink/renderer/core/editing/editor.h"
@@ -180,6 +183,7 @@
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/html/image_document.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
+#include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/inspector/dev_tools_emulator.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
@@ -5604,6 +5608,212 @@ TEST_F(WebFrameTest, ExecuteScriptDuringDidCreateScriptContext) {
 
   frame_test_helpers::ReloadFrame(
       web_view_helper.GetWebView()->MainFrameImpl());
+}
+
+// Mimics an embedder which, when a main world script context is created, reads
+// `window.chrome` and sets a property on it (as Chrome does for
+// `chrome.loadTimes`). If `window.chrome` resolves to a page-controlled object,
+// this can run page script.
+class SetChromePropertyOnContextCreationWebFrameClient
+    : public frame_test_helpers::TestWebFrameClient {
+ public:
+  SetChromePropertyOnContextCreationWebFrameClient() = default;
+  ~SetChromePropertyOnContextCreationWebFrameClient() override = default;
+
+  // frame_test_helpers::TestWebFrameClient:
+  WebLocalFrame* CreateChildFrame(
+      mojom::blink::TreeScopeType scope,
+      const WebString& name,
+      const WebString& fallback_name,
+      const FramePolicy& frame_policy,
+      const WebFrameOwnerProperties&,
+      FrameOwnerElementType,
+      WebPolicyContainerBindParams policy_container_bind_params,
+      ukm::SourceId document_ukm_source_id,
+      FinishChildFrameCreationFn finish_creation) override {
+    auto client =
+        std::make_unique<SetChromePropertyOnContextCreationWebFrameClient>();
+    // Propagate the sandbox flags, so that they are applied when the child
+    // frame commits a navigation.
+    client->set_sandbox_flags(frame_policy.sandbox_flags);
+    return CreateLocalChild(*Frame(), scope, std::move(client),
+                            std::move(policy_container_bind_params),
+                            finish_creation);
+  }
+
+  void DidCreateScriptContext(v8::Local<v8::Context> context,
+                              int32_t world_id) override {
+    if (world_id != DOMWrapperWorld::kMainWorldId) {
+      return;
+    }
+    v8::Isolate* isolate = Frame()->GetAgentGroupScheduler()->Isolate();
+    v8::MicrotasksScope microtasks_scope(
+        context, v8::MicrotasksScope::kDoNotRunMicrotasks);
+    v8::TryCatch try_catch(isolate);
+    v8::Local<v8::Value> chrome;
+    if (!context->Global()
+             ->Get(context, V8AtomicString(isolate, "chrome"))
+             .ToLocal(&chrome) ||
+        !chrome->IsObject()) {
+      return;
+    }
+    std::ignore = chrome.As<v8::Object>()->Set(
+        context, V8AtomicString(isolate, "loadTimes"), v8::Null(isolate));
+  }
+};
+
+base::RepeatingClosure& LoadTimesSetterCallback() {
+  static base::NoDestructor<base::RepeatingClosure> callback;
+  return *callback;
+}
+
+// Sets up a sandboxed iframe without allow-scripts, whose script context is
+// therefore not initialized eagerly, containing a child frame named "chrome"
+// with a `loadTimes` setter that runs LoadTimesSetterCallback(). If the
+// sandboxed frame's script context gets initialized, the embedder (see
+// SetChromePropertyOnContextCreationWebFrameClient) invokes that setter.
+class NamedItemInsertionTest : public WebFrameTest {
+ protected:
+  void SetUp() override {
+    WebFrameTest::SetUp();
+    LoadTimesSetterCallback() = base::DoNothing();
+    helper_.Initialize(&client_);
+    frame_test_helpers::LoadHTMLString(MainFrame(),
+                                       "<!DOCTYPE html><body></body>",
+                                       ToKURL("http://example.test/"));
+    MainFrame()->ExecuteScript(
+        WebScriptSource("const sandbox = document.createElement('iframe');"
+                        "sandbox.sandbox = 'allow-same-origin';"
+                        "document.body.appendChild(sandbox);"));
+    sandbox_frame_ =
+        To<LocalFrame>(MainFrame()->GetFrame()->Tree().FirstChild());
+
+    Document& document = SandboxDocument();
+    document.body()->AppendChild(
+        document.CreateRawElement(html_names::kIFrameTag));
+    auto* chrome_frame = To<LocalFrame>(sandbox_frame_->Tree().FirstChild());
+    chrome_frame->Tree().SetName(AtomicString("chrome"));
+
+    v8::Isolate* isolate = Isolate();
+    v8::HandleScope handle_scope(isolate);
+    ScriptState* script_state = ToScriptStateForMainWorld(chrome_frame);
+    ScriptState::Scope scope(script_state);
+    v8::Local<v8::Context> context = script_state->GetContext();
+    v8::Local<v8::Function> getter =
+        v8::Function::New(context,
+                          [](const v8::FunctionCallbackInfo<v8::Value>&) {})
+            .ToLocalChecked();
+    v8::Local<v8::Function> setter =
+        v8::Function::New(context,
+                          [](const v8::FunctionCallbackInfo<v8::Value>&) {
+                            LoadTimesSetterCallback().Run();
+                          })
+            .ToLocalChecked();
+    context->Global()->SetAccessorProperty(V8AtomicString(isolate, "loadTimes"),
+                                           getter, setter);
+  }
+
+  void TearDown() override {
+    LoadTimesSetterCallback().Reset();
+    sandbox_frame_ = nullptr;
+    helper_.Reset();
+    WebFrameTest::TearDown();
+  }
+
+  WebLocalFrameImpl* MainFrame() { return helper_.LocalMainFrame(); }
+  v8::Isolate* Isolate() { return helper_.GetAgentGroupScheduler().Isolate(); }
+  Document& SandboxDocument() { return *sandbox_frame_->GetDocument(); }
+
+  bool SandboxContextIsInitialized() {
+    v8::HandleScope handle_scope(Isolate());
+    return !sandbox_frame_
+                ->WindowProxyMaybeUninitialized(
+                    DOMWrapperWorld::MainWorld(Isolate()))
+                ->ContextIfInitialized()
+                .IsEmpty();
+  }
+
+  // Checks that the named item is exposed on the sandboxed document, once its
+  // script context is initialized.
+  void ExpectNamedItemIsExposed() {
+    LoadTimesSetterCallback() = base::DoNothing();
+    v8::HandleScope handle_scope(Isolate());
+    v8::Local<v8::Value> result =
+        MainFrame()->ExecuteScriptAndReturnValue(WebScriptSource(R"JS(
+          (() => {
+            const doc = document.querySelector('iframe').contentDocument;
+            return doc.target_item === doc.getElementsByName('target_item')[0];
+          })()
+        )JS"));
+    ASSERT_FALSE(result.IsEmpty());
+    EXPECT_TRUE(result->IsTrue());
+  }
+
+  SetChromePropertyOnContextCreationWebFrameClient client_;
+  frame_test_helpers::WebViewHelper helper_;
+  Persistent<LocalFrame> sandbox_frame_;
+};
+
+// Regression test for crbug.com/584687193: inserting a named item from a
+// DocumentFragment must not run script, which could move the remaining
+// fragment children before they are inserted.
+TEST_F(NamedItemInsertionTest, FragmentInsertionDoesNotRunScript) {
+  ASSERT_FALSE(SandboxContextIsInitialized());
+  Document& document = SandboxDocument();
+  Persistent<Element> img = document.CreateRawElement(html_names::kImgTag);
+  img->setAttribute(html_names::kNameAttr, AtomicString("target_item"));
+  Persistent<Element> victim = document.CreateRawElement(html_names::kSpanTag);
+  Persistent<Element> other = document.CreateRawElement(html_names::kDivTag);
+  auto* fragment = DocumentFragment::Create(document);
+  fragment->AppendChild(img);
+  fragment->AppendChild(victim);
+  bool setter_called = false;
+  LoadTimesSetterCallback() = base::BindLambdaForTesting([&]() {
+    setter_called = true;
+    other->AppendChild(victim);
+  });
+
+  document.body()->AppendChild(fragment);
+
+  EXPECT_FALSE(setter_called);
+  EXPECT_FALSE(SandboxContextIsInitialized());
+  EXPECT_EQ(document.body(), img->parentNode());
+  EXPECT_EQ(document.body(), victim->parentNode());
+  EXPECT_TRUE(victim->isConnected());
+  EXPECT_FALSE(other->hasChildren());
+  ExpectNamedItemIsExposed();
+}
+
+// Regression test for crbug.com/584675198: notifying the nodes of an inserted
+// subtree that contains a named item must not run script, which could move
+// the node being notified out of the inserted subtree.
+TEST_F(NamedItemInsertionTest, SubtreeInsertionDoesNotRunScript) {
+  ASSERT_FALSE(SandboxContextIsInitialized());
+  Document& document = SandboxDocument();
+  Persistent<Element> root = document.CreateRawElement(html_names::kDivTag);
+  Persistent<Element> img = document.CreateRawElement(html_names::kImgTag);
+  img->setAttribute(html_names::kNameAttr, AtomicString("target_item"));
+  Persistent<Element> sibling = document.CreateRawElement(html_names::kSpanTag);
+  root->AppendChild(img);
+  root->AppendChild(sibling);
+  Persistent<Element> other = document.CreateRawElement(html_names::kDivTag);
+  Persistent<Element> outside = document.CreateRawElement(html_names::kSpanTag);
+  other->AppendChild(outside);
+  bool setter_called = false;
+  LoadTimesSetterCallback() = base::BindLambdaForTesting([&]() {
+    setter_called = true;
+    other->InsertBefore(img, outside);
+  });
+
+  document.body()->AppendChild(root);
+
+  EXPECT_FALSE(setter_called);
+  EXPECT_FALSE(SandboxContextIsInitialized());
+  EXPECT_EQ(root, img->parentNode());
+  EXPECT_TRUE(img->isConnected());
+  EXPECT_TRUE(sibling->isConnected());
+  EXPECT_FALSE(outside->isConnected());
+  ExpectNamedItemIsExposed();
 }
 
 class TestFindInPageClient : public mojom::blink::FindInPageClient {

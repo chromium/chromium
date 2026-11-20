@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/core/dom/document_init.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_client.h"
 #include "third_party/blink/renderer/platform/wtf/hash_counted_set.h"
+#include "third_party/blink/renderer/platform/wtf/linked_hash_set.h"
 
 namespace blink {
 
@@ -45,13 +46,31 @@ class CORE_EXPORT HTMLDocument : public Document {
   void AddNamedItem(const AtomicString& name);
   void RemoveNamedItem(const AtomicString& name);
   bool HasNamedItem(const AtomicString& name);
+  bool HasAnyNamedItems() const { return !named_items_in_order_.empty(); }
+  // The current named items, in the order in which they were (first) added.
+  const LinkedHashSet<AtomicString>& NamedItems() const {
+    return named_items_in_order_;
+  }
 
   static bool IsCaseSensitiveAttribute(const QualifiedName&);
 
   Document* CloneDocumentWithoutChildren() const final;
 
+  [[nodiscard]] v8::Local<v8::Object> AssociateWithWrapper(
+      v8::Isolate*,
+      const WrapperTypeInfo*,
+      v8::Local<v8::Object> wrapper) override;
+
  private:
   HashCountedSet<AtomicString> named_item_counts_;
+  // The keys of `named_item_counts_`, in the order in which they were added.
+  // The named property accessors are installed on the document wrapper in this
+  // order, which is observable (e.g. via Object.getOwnPropertyNames()). It
+  // matches the order in which they'd have been installed if the wrapper had
+  // existed when they were added.
+  // TODO(crbug.com/587541566): The spec requires tree order, which this is not
+  // (e.g. for named elements inserted before existing ones).
+  LinkedHashSet<AtomicString> named_items_in_order_;
 };
 
 inline bool HTMLDocument::HasNamedItem(const AtomicString& name) {
