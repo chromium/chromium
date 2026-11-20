@@ -9,7 +9,6 @@
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/pixel_test_utils.h"
@@ -398,17 +397,12 @@ TEST_P(WrappedSkImageBackingFactoryTest, AccessExclusivity) {
 }
 
 // Verify that WrappedSkImageBacking and WrappedSkImageBackingFactory enforce
-// access stream and context compatibility checks under
-// kUseDynamicBackingAllocations.
+// access stream and context compatibility checks.
 TEST_P(WrappedSkImageBackingFactoryTest,
        SupportsAccessAndIsSupportedForAccessStream) {
   if (GetGrContextType() != GrContextType::kGL) {
     GTEST_SKIP() << "Test is specific to Ganesh (GL)";
   }
-
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kUseDynamicBackingAllocations);
 
   auto format = GetFormat();
   AccessParams params;
@@ -485,10 +479,6 @@ TEST_P(WrappedSkImageBackingFactoryTest,
   if (format != viz::SinglePlaneFormat::kRGBA_8888) {
     GTEST_SKIP() << "Test is scoped to RGBA_8888";
   }
-
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kUseDynamicBackingAllocations);
 
   SharedImageFactory factory(gpu_preferences_, gpu_workarounds_,
                              GpuFeatureInfo(), context_state_.get(),
@@ -628,13 +618,11 @@ class CompoundImageBackingWithWrappedSkImageTest
       return;
     }
     if (!context_state_->graphite_shared_context()) {
-      // TODO(crbug.com/577947820): WrappedSkImageBacking does not implement
-      // SupportsAccess() for kUseDynamicBackingAllocations.
+      // TODO(crbug.com/577947820): Support Ganesh WrappedSkImageBacking in this
+      // test.
       GTEST_SKIP()
           << "Requires WrappedSkImageBacking::SupportsAccess() on Ganesh";
     }
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kUseDynamicBackingAllocations);
     factory_ = std::make_unique<SharedImageFactory>(
         gpu_preferences_, gpu_workarounds_, GpuFeatureInfo(),
         context_state_.get(), &shared_image_manager_, nullptr,
@@ -686,7 +674,6 @@ class CompoundImageBackingWithWrappedSkImageTest
     device_context->Unmap(staging_texture.Get(), 0);
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<SharedImageFactory> factory_;
 };
 

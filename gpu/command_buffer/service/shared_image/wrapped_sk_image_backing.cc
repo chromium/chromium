@@ -470,16 +470,14 @@ bool WrappedSkImageBacking::ReadbackToMemory(
 bool WrappedSkImageBacking::CheckSupportForAccessStream(
     SharedImageAccessStream stream,
     const AccessParams& params) {
-  if (base::FeatureList::IsEnabled(features::kUseDynamicBackingAllocations)) {
-    // WrappedSkImageBacking only produces SkiaGaneshImageRepresentation.
-    // Reject non-Skia streams and non-Ganesh contexts so
-    // CompoundImageBacking allocates a compatible backing instead.
-    if (stream != SharedImageAccessStream::kSkia) {
-      return false;
-    }
-    if (params.context_state && !params.context_state->gr_context()) {
-      return false;
-    }
+  // WrappedSkImageBacking only produces SkiaGaneshImageRepresentation. Reject
+  // non-Skia streams and non-Ganesh contexts so CompoundImageBacking allocates
+  // a compatible backing instead.
+  if (stream != SharedImageAccessStream::kSkia) {
+    return false;
+  }
+  if (params.context_state && !params.context_state->gr_context()) {
+    return false;
   }
   return true;
 }

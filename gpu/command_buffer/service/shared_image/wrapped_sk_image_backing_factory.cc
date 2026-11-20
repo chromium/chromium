@@ -34,9 +34,17 @@ constexpr SharedImageUsageSet kSupportedUsage =
 
 SharedImageUsageSet GetSupportedUsage(const SharedContextState* context_state) {
 #if BUILDFLAG(SKIA_USE_DAWN) && !BUILDFLAG(IS_ANDROID)
-  // We support WebGL and WebGPU fallback when using Graphite Dawn Vulkan or
-  // D3D12. Except on Android where AHardwareBufferImageBackingFactory is used
-  // for interop with WebGL and WebGPU.
+  // WrappedGraphiteTextureBacking does not directly support GL or Dawn access
+  // (CheckSupportForAccessStream() rejects kGL and kDawn). However, initial
+  // CompoundImageBacking::Create() still requires a single factory to accept
+  // all combined client usages, and on non-Android Graphite Dawn Vulkan no
+  // other factory accepts combined DISPLAY/RASTER + GLES2/WEBGPU usages. Keep
+  // accepting them here so WrappedGraphiteTextureBacking can be created as the
+  // initial element and CompoundImageBacking can dynamically allocate native
+  // GL/Dawn backings on demand (except on Android, where
+  // AHardwareBufferImageBackingFactory handles WebGL/WebGPU interop).
+  // TODO(crbug.com/475210055): Remove once initial creation no longer requires
+  // a single factory to match all combined usages.
   constexpr SharedImageUsageSet kGraphiteDawnFallbackUsage =
       SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE |
       SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU |

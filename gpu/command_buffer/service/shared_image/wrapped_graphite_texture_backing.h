@@ -16,7 +16,6 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/wrapped_graphite_texture_holder.h"
-#include "skia/buildflags.h"
 #include "third_party/skia/include/core/SkAlphaType.h"
 #include "third_party/skia/include/core/SkColorType.h"
 #include "third_party/skia/include/gpu/graphite/BackendTexture.h"
@@ -72,29 +71,6 @@ class WrappedGraphiteTextureBacking : public ClearTrackingSharedImageBacking {
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
       scoped_refptr<SharedContextState> context_state) override;
-
-  // Only used for testing 1-copy path where CopySharedImageToGLTexture is
-  // called via passthrough command decoder with GL context. This happens on
-  // test scenarios with Graphite-Swiftshader-Vulkan backend whereas in
-  // production IOSurfaceImageBacking would be used.
-  std::unique_ptr<SkiaGaneshImageRepresentation> ProduceSkiaGanesh(
-      SharedImageManager* manager,
-      MemoryTypeTracker* tracker,
-      scoped_refptr<SharedContextState> context_state) override;
-
-#if BUILDFLAG(SKIA_USE_DAWN)
-  std::unique_ptr<GLTexturePassthroughImageRepresentation>
-  ProduceGLTexturePassthrough(SharedImageManager* manager,
-                              MemoryTypeTracker* tracker) override;
-
-  std::unique_ptr<DawnImageRepresentation> ProduceDawn(
-      SharedImageManager* manager,
-      MemoryTypeTracker* tracker,
-      const wgpu::Device& device,
-      wgpu::BackendType backend_type,
-      std::vector<wgpu::TextureFormat> view_formats,
-      scoped_refptr<SharedContextState> context_state) override;
-#endif  // BUILDFLAG(SKIA_USE_DAWN)
 
  private:
   class SkiaGraphiteImageRepresentationImpl;
