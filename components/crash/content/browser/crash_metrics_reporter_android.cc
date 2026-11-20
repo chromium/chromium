@@ -99,11 +99,11 @@ void RecordMemoryPressureMetricsOnProcessKill(
   base::UmaHistogramMemoryLargeMB(
       base::StrCat({"Browser.Memory.Experimental.MemoryPressureOnProcessKill.",
                     process_type_suffix, ".AvailableMemory"}),
-      info.memory_pressure_metrics->available_memory.InMiB());
+      info.memory_pressure_metrics->available_memory);
   base::UmaHistogramMemoryLargeMB(
       base::StrCat({"Browser.Memory.Experimental.MemoryPressureOnProcessKill.",
                     process_type_suffix, ".TotalPrivateFootprint"}),
-      info.memory_pressure_metrics->total_private_footprint.InMiB());
+      info.memory_pressure_metrics->total_private_footprint);
   base::UmaHistogramCounts100(
       base::StrCat({"Browser.Memory.Experimental.MemoryPressureOnProcessKill.",
                     process_type_suffix, ".TotalProcessCount"}),
