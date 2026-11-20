@@ -209,7 +209,10 @@ export class AclManager {
         this.#normalizeAcl(requestedAcl),
         reason,
       );
-      return {...decision, acl: this.#setAcl(decision.acl)};
+      // TODO(crbug.com/586824814): remove, as restricted mode will be enforced
+      // when the mapper is created.
+      this.setEnabled(true);
+      return {...decision, acl: this.setAcl(decision.acl)};
     });
   }
 
@@ -221,22 +224,20 @@ export class AclManager {
   }
 
   /**
-   * Enables ACL enforcement for the session. Once enabled, it cannot be
-   * disabled.
+   * Enables or disables ACL enforcement for the session.
    */
-  enable(): void {
-    this.#enabled = true;
+  setEnabled(enabled: boolean): void {
+    this.#enabled = enabled;
   }
 
   /**
-   * Stores the session ACL. Unsupported commands and events, invalid entries,
-   * and unknown or non-top-level navigables are ignored (granting no access).
-   * Private, so that every ACL change goes through `updateAcl` and the
-   * embedder's handler.
+   * Configures the session ACL. Unsupported commands and events, invalid
+   * entries, and unknown or non-top-level navigables are ignored (granting no
+   * access).
    *
    * @returns The actually saved ACL configuration.
    */
-  #setAcl(acl: unknown): AclConfig {
+  setAcl(acl: unknown): AclConfig {
     // Reuse the normalization so the stored and the normalized ACLs can't
     // drift apart.
     const normalizedAcl = this.#normalizeAcl(acl);
@@ -258,7 +259,7 @@ export class AclManager {
 
   /**
    * Returns `acl` without unsupported commands and events, invalid entries, and
-   * unknown or non-top-level navigables, i.e. what `#setAcl` would store,
+   * unknown or non-top-level navigables, i.e. what `setAcl` would store,
    * without storing it.
    */
   #normalizeAcl(acl: unknown): AclConfig {

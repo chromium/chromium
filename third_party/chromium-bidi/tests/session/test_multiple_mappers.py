@@ -22,8 +22,8 @@ Setup used by every test:
   `WindowBidiTransport` (`window.onBidiMessage` / `window.sendBidiResponse`)
   and `WindowCdpTransport` (`window.cdp`). The `websocket` fixture talks to it.
 * The tests start more Mapper instances in the same tab with
-  `window.runMapperInstance(selfTargetId, bidiTransport, cdpTransport?,
-  restrictedMode?)` and talk to them through `InTabMapperConnection`:
+  `window.runMapperInstance(selfTargetId, bidiTransport, cdpTransport?)` and
+  talk to them through `InTabMapperConnection`:
 
       test (Python)
         |
@@ -405,14 +405,14 @@ class InTabMapperConnection:
             # Used by `closeMapper_<id>` if `runMapperInstance` failed.
             fallback_close_js = "bidiTransport.close(); cdpTransport.close();"
         else:
-            # No custom CDP transport: pass `undefined`, so `runMapperInstance`
-            # uses the shared default `window.cdp` transport.
+            # No custom CDP transport: `runMapperInstance` uses the shared
+            # default `window.cdp` transport.
             cdp_setup_js = ""
+            cdp_transport_arg = ", undefined" if restricted_mode is not None else ""
             run_call_js = f"""
                 await window.runMapperInstance(
                     {json.dumps(mapper_target_id)},
-                    bidiTransport,
-                    undefined{restricted_mode_arg},
+                    bidiTransport{cdp_transport_arg}{restricted_mode_arg},
                 )
             """
             fallback_close_js = "bidiTransport.close();"
@@ -762,10 +762,6 @@ async def create_mapper(browser_ws_url, mapper_tab_cdp, capabilities):
         custom_cdp_transport: If `True` (default), the Mapper gets its own CDP
             transport over a new browser WebSocket. If `False`, it shares the
             default `window.cdp` transport with the primary Mapper.
-        restricted_mode: If set, passed as `restrictedMode` to
-            `runMapperInstance`.
-        create_session: If `True` (default), sends `session.new` after the
-            Mapper starts.
 
     All created mappers are closed at teardown.
     """
@@ -1622,26 +1618,16 @@ async def test_multiple_mappers_no_cdp_errors(
 
 @pytest.mark.asyncio
 async def test_restricted_mode_mapper(create_mapper):
-    """A Mapper started in restricted mode creates only restricted sessions,
-    and accepts no ACL changes before `session.new`.
-    """
     mapper = await create_mapper(create_session=False, restricted_mode=True)
 
-    # Commands other than `session.new` and `session.status` fail before the
-    # session is created.
+    # In restricted mode, the Mapper starts with an empty ACL before `session.new`.
     with pytest.raises(Exception) as exception_info:
         await execute_command(
-            mapper,
-            {
-                "method": "goog:session.setAcl",
-                "params": {
-                    "acl": {"default": {"commands": ["browsingContext.getTree"]}}
-                },
-            },
+            mapper, {"method": "browsingContext.getTree", "params": {}}
         )
     assert exception_info.value.args[0] == {
-        "error": "invalid session id",
-        "message": "Command 'goog:session.setAcl' requires a session. Call 'session.new' first.",
+        "error": "unsupported operation",
+        "message": "Command 'browsingContext.getTree' is not allowed by the session ACL.",
     }
 
     with pytest.raises(Exception) as exception_info:

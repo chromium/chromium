@@ -83,25 +83,81 @@ describe('BidiServer', () => {
     const sendCommand = async (
       command: ChromiumBidi.Command,
     ): Promise<ChromiumBidi.Message> => {
+      const countBefore = sentMessages.length;
       onMessage?.(command);
-      // Wait for the async message processing, but fail instead of hanging if
-      // the response never arrives.
-      for (let i = 0; i < 1000; i++) {
-        const response = sentMessages.find(
-          (message) => 'id' in message && message.id === command.id,
-        );
-        if (response !== undefined) {
-          return response;
-        }
+      // Wait for async message processing queue to flush.
+      while (sentMessages.length === countBefore) {
         await new Promise((resolve) => setTimeout(resolve, 0));
       }
-      assert.fail(`No response to command ${command.id}.`);
+      return sentMessages.at(-1)!;
     };
 
     return {server, sendCommand};
   }
 
-  it('rejects commands other than session.new and session.status before session.new', async () => {
+  it('enables ACL from the start and requires restricted session when restrictedMode is true', async () => {
+    const {server, sendCommand} = await createTestServer(true);
+    try {
+      const preSessionResponse = await sendCommand({
+        id: 1,
+        method: 'browsingContext.getTree',
+        params: {},
+      });
+      assert.deepEqual(preSessionResponse, {
+        type: 'error',
+        id: 1,
+        error: 'unsupported operation',
+        message:
+          "Command 'browsingContext.getTree' is not allowed by the session ACL.",
+        stacktrace: undefined,
+      });
+
+      const rejectedSession = await sendCommand({
+        id: 2,
+        method: 'session.new',
+        params: {capabilities: {}},
+      });
+      assert.include(rejectedSession, {
+        type: 'error',
+        id: 2,
+        error: 'session not created',
+        message:
+          'Only restricted sessions are allowed. Request capability "goog:sessionType": "restricted".',
+      });
+
+      const restrictedSession = await sendCommand({
+        id: 3,
+        method: 'session.new',
+        params: {
+          capabilities: {
+            alwaysMatch: {'goog:sessionType': 'restricted'},
+          },
+        },
+      });
+      assert.deepEqual(restrictedSession, {
+        type: 'success',
+        id: 3,
+        result: {
+          sessionId: 'unknown',
+          capabilities: {
+            unhandledPromptBehavior: undefined,
+            'goog:sessionType': 'restricted',
+            acceptInsecureCerts: false,
+            browserName: 'Chrome/test',
+            browserVersion: '1',
+            platformName: '',
+            setWindowRect: false,
+            webSocketUrl: '',
+            userAgent: 'test-ua',
+          },
+        },
+      });
+    } finally {
+      server.close();
+    }
+  });
+
+  it('does not enable ACL or require restricted session when restrictedMode is omitted', async () => {
     const {server, sendCommand} = await createTestServer();
     try {
       const treeBeforeSession = await sendCommand({
@@ -110,96 +166,19 @@ describe('BidiServer', () => {
         params: {},
       });
       assert.deepEqual(treeBeforeSession, {
-        type: 'error',
-        id: 1,
-        error: 'invalid session id',
-        message:
-          "Command 'browsingContext.getTree' requires a session. Call 'session.new' first.",
-        stacktrace: undefined,
-      });
-
-      const setAclBeforeSession = await sendCommand({
-        id: 2,
-        method: 'goog:session.setAcl',
-        params: {acl: {}},
-      });
-      assert.include(setAclBeforeSession, {
-        type: 'error',
-        id: 2,
-        error: 'invalid session id',
-      });
-
-      const status = await sendCommand({
-        id: 3,
-        method: 'session.status',
-        params: {},
-      });
-      assert.include(status, {type: 'success', id: 3});
-
-      const standardSession = await sendCommand({
-        id: 4,
-        method: 'session.new',
-        params: {capabilities: {}},
-      });
-      assert.include(standardSession, {type: 'success', id: 4});
-
-      // The ACL of a standard session is not enforced.
-      const treeAfterSession = await sendCommand({
-        id: 5,
-        method: 'browsingContext.getTree',
-        params: {},
-      });
-      assert.deepEqual(treeAfterSession, {
         type: 'success',
-        id: 5,
+        id: 1,
         result: {contexts: []},
       });
-    } finally {
-      server.close();
-    }
-  });
 
-  it('requires a restricted session when restrictedMode is true', async () => {
-    const {server, sendCommand} = await createTestServer(true);
-    try {
-      const rejectedSession = await sendCommand({
-        id: 1,
+      const standardSession = await sendCommand({
+        id: 2,
         method: 'session.new',
         params: {capabilities: {}},
       });
-      assert.include(rejectedSession, {
-        type: 'error',
-        id: 1,
-        error: 'session not created',
-        message:
-          'Only restricted sessions are allowed. Request capability "goog:sessionType": "restricted".',
-      });
-
-      const restrictedSession = await sendCommand({
-        id: 2,
-        method: 'session.new',
-        params: {
-          capabilities: {
-            alwaysMatch: {'goog:sessionType': 'restricted'},
-          },
-        },
-      });
-      assert.nestedInclude(restrictedSession, {
+      assert.include(standardSession, {
         type: 'success',
         id: 2,
-        'result.capabilities.goog:sessionType': 'restricted',
-      });
-
-      // The ACL of the restricted session starts empty.
-      const treeAfterSession = await sendCommand({
-        id: 3,
-        method: 'browsingContext.getTree',
-        params: {},
-      });
-      assert.include(treeAfterSession, {
-        type: 'error',
-        id: 3,
-        error: 'unsupported operation',
       });
     } finally {
       server.close();

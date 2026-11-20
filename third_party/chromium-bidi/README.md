@@ -69,34 +69,11 @@ top-level browsing context. The command implements the specification draft
 
 The event `goog:cdp.<CDP Event Name>` contains a CDP event.
 
-### Capability `goog:sessionType`
-
-`"goog:sessionType": "restricted"` in `session.new` starts a restricted session,
-per the proposal
-[WICG/agentic-webdriver-bidi](https://github.com/WICG/agentic-webdriver-bidi).
-
-- A restricted session starts with an empty ACL. Only `goog:session.setAcl`
-  changes the ACL.
-- A restricted session cannot use `acceptInsecureCerts: true`,
-  `unhandledPromptBehavior`, `'goog:prerenderingDisabled': true`, or
-  `'goog:disableNetworkDurableMessages': true`. Requesting them in
-  `session.new` fails with `session not created`.
-- The Mapper's `session.new` result contains
-  `"goog:sessionType": "restricted"`.
-- Other values of `goog:sessionType` are ignored: the session is not restricted,
-  and the result does not contain `goog:sessionType`.
-- If the Mapper is started in restricted mode (`restrictedMode` is `true` in
-  `runMapperInstance`), `session.new` without
-  `"goog:sessionType": "restricted"` causes a `session not created` error.
-- Before `session.new`, all commands except `session.new` and `session.status`
-  fail with `invalid session id`.
-
 ### Command `goog:session.setAcl`
 
 The command requests or retracts access for a restricted session. It takes
 the full desired access control list (ACL) in `acl` and an optional `reason`,
-and returns the ACL now in effect. In a standard (non-restricted) session, the
-command fails with `unsupported operation`. The command implements the proposal
+and returns the ACL now in effect. The command implements the proposal
 [WICG/agentic-webdriver-bidi](https://github.com/WICG/agentic-webdriver-bidi).
 
 - The client sends the full desired ACL, not a diff, so the call is idempotent.

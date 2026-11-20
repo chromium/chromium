@@ -82,7 +82,8 @@ describe('AclManager', () => {
   });
 
   it('always allows commands when disabled', () => {
-    // Disabled by default, even though the ACL is empty.
+    // Disabled by default, even if an empty ACL is configured.
+    aclManager.setAcl({});
     assert.isTrue(aclManager.isCommandAllowed('browsingContext.getTree'));
     assert.isTrue(
       aclManager.isCommandAllowed(
@@ -91,15 +92,17 @@ describe('AclManager', () => {
       ),
     );
 
-    // Enabling enforces the configured ACL.
-    aclManager.enable();
-    assert.isTrue(aclManager.isEnabled());
+    // Enabling enforces the configured ACL; disabling allows commands again.
+    aclManager.setEnabled(true);
     assert.isFalse(aclManager.isCommandAllowed('browsingContext.getTree'));
+
+    aclManager.setEnabled(false);
+    assert.isTrue(aclManager.isCommandAllowed('browsingContext.getTree'));
   });
 
-  it('disallows unlisted commands when enabled and set to an empty object', async () => {
-    aclManager.enable();
-    const {acl: saved} = await aclManager.updateAcl({});
+  it('disallows unlisted commands when enabled and set to an empty object', () => {
+    aclManager.setEnabled(true);
+    const saved = aclManager.setAcl({});
     assert.deepEqual(saved, {
       default: {commands: [], events: []},
       perNavigable: {},
@@ -114,11 +117,11 @@ describe('AclManager', () => {
     );
   });
 
-  it('allows default commands across all navigables', async () => {
-    aclManager.enable();
+  it('allows default commands across all navigables', () => {
+    aclManager.setEnabled(true);
     // Commands in `default.commands` are allowed both globally and for any
     // specific top-level navigable.
-    const {acl: saved} = await aclManager.updateAcl({
+    const saved = aclManager.setAcl({
       default: {
         commands: ['browsingContext.getTree', 'browsingContext.create'],
       },
@@ -151,9 +154,9 @@ describe('AclManager', () => {
     );
   });
 
-  it('allows union of default and perNavigable commands and returns full ACL', async () => {
-    aclManager.enable();
-    const {acl: saved} = await aclManager.updateAcl({
+  it('allows union of default and perNavigable commands and returns full ACL', () => {
+    aclManager.setEnabled(true);
+    const saved = aclManager.setAcl({
       default: {
         commands: ['browsingContext.getTree'],
       },
@@ -211,9 +214,9 @@ describe('AclManager', () => {
     );
   });
 
-  it('respects parent top-level navigable ACL for child and nested navigables', async () => {
-    aclManager.enable();
-    await aclManager.updateAcl({
+  it('respects parent top-level navigable ACL for child and nested navigables', () => {
+    aclManager.setEnabled(true);
+    aclManager.setAcl({
       default: {
         commands: ['browsingContext.getTree'],
       },
@@ -247,9 +250,9 @@ describe('AclManager', () => {
     );
   });
 
-  it('ignores unsupported commands and non-top-level or unknown navigables', async () => {
-    aclManager.enable();
-    const {acl: saved} = await aclManager.updateAcl({
+  it('ignores unsupported commands and non-top-level or unknown navigables', () => {
+    aclManager.setEnabled(true);
+    const saved = aclManager.setAcl({
       default: {
         commands: [
           'browsingContext.getTree',
@@ -319,9 +322,9 @@ describe('AclManager', () => {
     );
   });
 
-  it('replaces previous ACL on reconfiguration', async () => {
-    aclManager.enable();
-    await aclManager.updateAcl({
+  it('replaces previous ACL on reconfiguration', () => {
+    aclManager.setEnabled(true);
+    aclManager.setAcl({
       default: {
         commands: ['browsingContext.getTree'],
       },
@@ -333,7 +336,7 @@ describe('AclManager', () => {
     });
 
     // Reconfiguring overwrites both `default` and `perNavigable` entries.
-    const {acl: updated} = await aclManager.updateAcl({
+    const updated = aclManager.setAcl({
       default: {
         commands: ['browsingContext.create'],
       },
@@ -367,9 +370,9 @@ describe('AclManager', () => {
     );
   });
 
-  it('prunes closed top-level navigables from getAcl and isCommandAllowed', async () => {
-    aclManager.enable();
-    await aclManager.updateAcl({
+  it('prunes closed top-level navigables from getAcl and isCommandAllowed', () => {
+    aclManager.setEnabled(true);
+    aclManager.setAcl({
       default: {
         commands: ['browsingContext.getTree'],
       },
@@ -409,10 +412,10 @@ describe('AclManager', () => {
     });
   });
 
-  it('accepts all supported ACL commands in default and perNavigable', async () => {
-    aclManager.enable();
+  it('accepts all supported ACL commands in default and perNavigable', () => {
+    aclManager.setEnabled(true);
     const allSupportedCommands = [...SUPPORTED_ACL_COMMANDS];
-    const {acl: saved} = await aclManager.updateAcl({
+    const saved = aclManager.setAcl({
       default: {
         commands: allSupportedCommands,
       },
@@ -440,8 +443,8 @@ describe('AclManager', () => {
     }
   });
 
-  it('interprets invalid ACL data as no access', async () => {
-    aclManager.enable();
+  it('interprets invalid ACL data as no access', () => {
+    aclManager.setEnabled(true);
     for (const invalidAcl of [
       undefined,
       null,
@@ -450,7 +453,7 @@ describe('AclManager', () => {
       'invalid',
       ['array'],
     ]) {
-      const {acl: result} = await aclManager.updateAcl(invalidAcl);
+      const result = aclManager.setAcl(invalidAcl);
       const expected = {
         default: {commands: [], events: []},
         perNavigable: {},
@@ -460,7 +463,7 @@ describe('AclManager', () => {
       assert.isFalse(aclManager.isCommandAllowed('browsingContext.getTree'));
     }
 
-    const {acl: saved} = await aclManager.updateAcl({
+    const saved = aclManager.setAcl({
       default: {
         commands: 'browsingContext.getTree',
       },
@@ -512,9 +515,9 @@ describe('AclManager', () => {
       );
     });
 
-    it('always allows exempt commands', async () => {
-      aclManager.enable();
-      await aclManager.updateAcl({});
+    it('always allows exempt commands', () => {
+      aclManager.setEnabled(true);
+      aclManager.setAcl({});
 
       const expectedExemptCommands = [
         'goog:session.setAcl',
@@ -530,10 +533,10 @@ describe('AclManager', () => {
       }
     });
 
-    it('throws unsupported operation for commands that an ACL cannot grant', async () => {
-      aclManager.enable();
+    it('throws unsupported operation for commands that an ACL cannot grant', () => {
+      aclManager.setEnabled(true);
       // Requesting such commands doesn't grant them.
-      await aclManager.updateAcl({
+      aclManager.setAcl({
         default: {commands: ['network.addIntercept', 'goog:cdp.sendCommand']},
       });
 
@@ -554,11 +557,9 @@ describe('AclManager', () => {
       }
     });
 
-    it('throws unsupported operation for commands that the ACL does not grant', async () => {
-      aclManager.enable();
-      await aclManager.updateAcl({
-        default: {commands: ['browsingContext.getTree']},
-      });
+    it('throws unsupported operation for commands that the ACL does not grant', () => {
+      aclManager.setEnabled(true);
+      aclManager.setAcl({default: {commands: ['browsingContext.getTree']}});
 
       assert.doesNotThrow(() =>
         aclManager.assertCommandAllowed('browsingContext.getTree', {}),
@@ -590,9 +591,9 @@ describe('AclManager', () => {
       );
     });
 
-    it('allows default commands for any browsing context', async () => {
-      aclManager.enable();
-      await aclManager.updateAcl({
+    it('allows default commands for any browsing context', () => {
+      aclManager.setEnabled(true);
+      aclManager.setAcl({
         default: {commands: ['browsingContext.navigate', 'script.evaluate']},
       });
 
@@ -635,9 +636,9 @@ describe('AclManager', () => {
       );
     });
 
-    it('checks commands without a target tab against the default ACL only', async () => {
-      aclManager.enable();
-      await aclManager.updateAcl({
+    it('checks commands without a target tab against the default ACL only', () => {
+      aclManager.setEnabled(true);
+      aclManager.setAcl({
         perNavigable: {
           [TOP_LEVEL_CONTEXT_1]: {
             commands: NO_TARGET_COMMANDS,
@@ -675,10 +676,10 @@ describe('AclManager', () => {
       }
     });
 
-    it('checks `context` against the ACL of its top-level navigable', async () => {
-      aclManager.enable();
+    it('checks `context` against the ACL of its top-level navigable', () => {
+      aclManager.setEnabled(true);
       for (const command of CONTEXT_TARGET_COMMANDS) {
-        await aclManager.updateAcl({
+        aclManager.setAcl({
           perNavigable: {
             [TOP_LEVEL_CONTEXT_1]: {commands: [command]},
           },
@@ -723,9 +724,9 @@ describe('AclManager', () => {
       }
     });
 
-    it('checks `target.context` against the ACL of its top-level navigable', async () => {
-      aclManager.enable();
-      await aclManager.updateAcl({
+    it('checks `target.context` against the ACL of its top-level navigable', () => {
+      aclManager.setEnabled(true);
+      aclManager.setAcl({
         perNavigable: {[TOP_LEVEL_CONTEXT_1]: {commands: ['script.evaluate']}},
       });
 
@@ -774,10 +775,10 @@ describe('AclManager', () => {
       }
     });
 
-    it('requires a browsing context target with a non-empty sandbox for `script.evaluate`', async () => {
+    it('requires a browsing context target with a non-empty sandbox for `script.evaluate`', () => {
       const sandboxRequiredMessage =
         "Command 'script.evaluate' in restricted sessions requires a browsing context target with a non-empty 'sandbox'.";
-      aclManager.enable();
+      aclManager.setEnabled(true);
       for (const acl of [
         {default: {commands: ['script.evaluate']}},
         {
@@ -786,7 +787,7 @@ describe('AclManager', () => {
           },
         },
       ]) {
-        await aclManager.updateAcl(acl);
+        aclManager.setAcl(acl);
 
         assert.doesNotThrow(() =>
           aclManager.assertCommandAllowed('script.evaluate', {
@@ -821,7 +822,7 @@ describe('AclManager', () => {
 
       // With a `default` grant, `realm` and malformed targets pass the ACL
       // check and must still be rejected by the sandbox check.
-      await aclManager.updateAcl({default: {commands: ['script.evaluate']}});
+      aclManager.setAcl({default: {commands: ['script.evaluate']}});
       for (const params of [
         // `realm` targets can address the page's main world or workers.
         {target: {realm: 'window-realm'}},
@@ -847,7 +848,7 @@ describe('AclManager', () => {
     const LOG_ENTRY_ADDED = ChromiumBidi.Log.EventNames.LogEntryAdded;
 
     it('allows any event when disabled', () => {
-      // Disabled by default, even though the ACL is empty.
+      aclManager.setAcl({});
       assert.isTrue(
         aclManager.isEventAllowed(
           ChromiumBidi.BrowsingContext.EventNames.ContextCreated,
@@ -879,9 +880,9 @@ describe('AclManager', () => {
       );
     });
 
-    it('allows default events for every navigable and without one', async () => {
-      aclManager.enable();
-      await aclManager.updateAcl({default: {events: [NAVIGATION_COMMITTED]}});
+    it('allows default events for every navigable and without one', () => {
+      aclManager.setEnabled(true);
+      aclManager.setAcl({default: {events: [NAVIGATION_COMMITTED]}});
 
       for (const contextId of [TOP_LEVEL_CONTEXT_1, CHILD_CONTEXT, null]) {
         assert.isTrue(
@@ -891,9 +892,9 @@ describe('AclManager', () => {
       }
     });
 
-    it('allows perNavigable events only for that navigable and its children', async () => {
-      aclManager.enable();
-      await aclManager.updateAcl({
+    it('allows perNavigable events only for that navigable and its children', () => {
+      aclManager.setEnabled(true);
+      aclManager.setAcl({
         perNavigable: {[TOP_LEVEL_CONTEXT_1]: {events: [LOG_ENTRY_ADDED]}},
       });
 
@@ -918,9 +919,9 @@ describe('AclManager', () => {
       });
     });
 
-    it('revokes events that a new ACL no longer contains', async () => {
-      aclManager.enable();
-      await aclManager.updateAcl({
+    it('revokes events that a new ACL no longer contains', () => {
+      aclManager.setEnabled(true);
+      aclManager.setAcl({
         default: {events: [NAVIGATION_COMMITTED]},
         perNavigable: {[TOP_LEVEL_CONTEXT_1]: {events: [LOG_ENTRY_ADDED]}},
       });
@@ -929,7 +930,7 @@ describe('AclManager', () => {
         aclManager.isEventAllowed(LOG_ENTRY_ADDED, TOP_LEVEL_CONTEXT_1),
       );
 
-      await aclManager.updateAcl({perNavigable: {[TOP_LEVEL_CONTEXT_2]: {}}});
+      aclManager.setAcl({perNavigable: {[TOP_LEVEL_CONTEXT_2]: {}}});
 
       assert.isFalse(aclManager.isEventAllowed(NAVIGATION_COMMITTED, null));
       assert.isFalse(
@@ -937,9 +938,9 @@ describe('AclManager', () => {
       );
     });
 
-    it('ignores unsupported events', async () => {
-      aclManager.enable();
-      const {acl: saved} = await aclManager.updateAcl({
+    it('ignores unsupported events', () => {
+      aclManager.setEnabled(true);
+      const saved = aclManager.setAcl({
         default: {
           events: [
             NAVIGATION_COMMITTED,
@@ -991,8 +992,6 @@ describe('AclManager', () => {
         .stub<Parameters<UpdateAclHandler>, ReturnType<UpdateAclHandler>>()
         .callsFake((acl) => Promise.resolve({acl}));
       aclManager = new AclManager(browsingContextStorage, updateAclHandler);
-      // ACL changes happen in restricted sessions, where the ACL is enabled.
-      aclManager.enable();
     });
 
     it('stores the requested ACL as is without a custom handler', async () => {
@@ -1039,12 +1038,14 @@ describe('AclManager', () => {
       );
     });
 
-    it('does not enable the ACL', async () => {
-      aclManager = new AclManager(browsingContextStorage, updateAclHandler);
+    it('switches an unrestricted session to restricted mode', async () => {
+      assert.isTrue(aclManager.isCommandAllowed('network.addIntercept'));
 
-      await aclManager.updateAcl(NAVIGATE_ACL);
+      const result = await aclManager.updateAcl(NAVIGATE_ACL);
 
-      assert.isFalse(aclManager.isEnabled());
+      assert.deepEqual(result, {acl: NAVIGATE_ACL});
+      assert.isTrue(aclManager.isEnabled());
+      assert.isFalse(aclManager.isCommandAllowed('network.addIntercept'));
     });
 
     it('replaces the previous ACL', async () => {
