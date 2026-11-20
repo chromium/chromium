@@ -707,6 +707,9 @@ data (a slot's assigned nodes and flat tree children, and each slotted node's
 from a lazy entry point that needs it: `HTMLSlotElement::AssignedNodes()`,
 `FlatTreeTraversal`, and `Node::AssignedSlot()`.
 
+A recalc covers every dirty shadow root in the same tree (the "recalc list")
+and runs in two passes. Pass 1 computes the assignment data with no side
+effects. Pass 2 applies the side effects, when every root in the list is clean.
 See the [`SlotAssignment`](./slot_assignment.h) class comment for the full list
 of rules (R1-R7). In short, for authors of new flat tree consumers:
 

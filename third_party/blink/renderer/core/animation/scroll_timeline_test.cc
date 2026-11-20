@@ -102,14 +102,12 @@ class ManualSlottingHostElement final : public HTMLDivElement {
         nodes.push_back(&child);
       }
     }
-    if (!effect_to_clear_) {
-      slot_->Assign(nodes);
-    } else {
-      slot_->Assign({});
-      for (Node* node : nodes) {
-        node->remove();
-      }
-    }
+    // Use SetManuallyAssignedNodesForRecalc(), like the user-agent hosts do,
+    // because slot assignment recalc must not dirty slot assignment or mutate
+    // the DOM. Unassigning the children removes them from the flat tree,
+    // which detaches their layout trees.
+    slot_->SetManuallyAssignedNodesForRecalc(
+        effect_to_clear_ ? HeapVector<Member<Node>>() : nodes);
     did_assign_slots_ = true;
     HeapVector<Member<Animation>> to_detach = std::move(animations_to_detach_);
     for (Animation* animation : to_detach) {

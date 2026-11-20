@@ -101,9 +101,7 @@ void SlotAssignmentEngine::RecalcSlotAssignments() {
   }
   // SlotAssignment::RecalcShadowRoots() removes each shadow root from
   // shadow_roots_needing_recalc_. If this runs during a recalc (which rule R4
-  // forbids), the shadow root being recalculated is skipped (see
-  // SlotAssignment::RecalcOwnAssignment()), and stays in the set until that
-  // recalc finishes.
+  // forbids), RecalcShadowRoots() bails out and leaves them in the set.
   SlotAssignment::RecalcShadowRoots(roots);
   DCHECK(shadow_roots_needing_recalc_.empty() ||
          SlotAssignmentRecalcInProgressScope::IsActive());

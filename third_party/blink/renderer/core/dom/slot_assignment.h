@@ -13,6 +13,7 @@
 
 namespace blink {
 
+class AXObjectCache;
 class HTMLSlotElement;
 class Node;
 class ShadowRoot;
@@ -35,7 +36,15 @@ class ShadowRoot;
 // A recalc always covers every dirty shadow root that a side effect can read
 // (the "recalc list"): every dirty connected shadow root in the document, or,
 // for a disconnected shadow root, every dirty shadow root with the same
-// shadow-including root.
+// shadow-including root. It runs in two passes:
+//  - Pass 1 computes the assignment data for every root in the list, with no
+//    side effects. Flat tree traversal is forbidden. Computing one root's
+//    assignment only reads its host's children, its slots, and those slots'
+//    children, so no other root's flat tree data is needed.
+//  - Pass 2 applies the side effects (style and layout tree invalidation,
+//    canvas subtree propagation, accessibility, dir=auto). Every root in the
+//    list is clean, so flat tree reads, including the *NoRecalc accessors,
+//    are accurate.
 //
 // Rules
 // -----
@@ -54,8 +63,8 @@ class ShadowRoot;
 // R6. No partial staleness. Side effects run only after every dirty shadow
 //     root they can reach has its assignment data recomputed.
 // R7. The flat tree is not read while assignment data is being recomputed
-//     (while flat tree traversal is forbidden), because that data is only
-//     partly updated.
+//     (pass 1, where flat tree traversal is forbidden), because that data is
+//     only partly updated.
 //
 // R1-R5 and R7 are checked by SlotAssignmentRecalcInProgressScope. R6 is
 // checked indirectly: a side effect that reads a dirty shadow root triggers a
@@ -63,9 +72,9 @@ class ShadowRoot;
 //
 // Recalc hooks
 // ------------
-// Hooks reachable from recalc (Element::ManuallyAssignSlots(),
-// Node::FlatTreeParentChanged(), Node::RemovedFromFlatTree(),
-// Element::DidChangeIsInCanvasSubtree()) must follow these rules. In
+// Hooks reachable from pass 2 (Node::FlatTreeParentChanged(),
+// Node::RemovedFromFlatTree(), Element::DidChangeIsInCanvasSubtree()) and
+// from pass 1 (Element::ManuallyAssignSlots()) must follow these rules. In
 // practice, they may only mark style or layout-tree dirty, detach layout
 // trees, update node flags, notify accessibility (without traversing dirty
 // data), and queue work for later. Anything else must be posted as a task,
@@ -113,8 +122,8 @@ class SlotAssignment final : public GarbageCollected<SlotAssignment> {
   // its recalc list.
   void RecalcAssignment();
 
-  // Recalculates the assignment of every dirty shadow root in `roots`. All of
-  // `roots` must belong to the same document.
+  // Recalculates the assignment of the shadow roots in `roots`, in two
+  // passes. All of `roots` must be dirty and belong to the same document.
   static void RecalcShadowRoots(const HeapVector<Member<ShadowRoot>>& roots);
 
  private:
@@ -122,6 +131,8 @@ class SlotAssignment final : public GarbageCollected<SlotAssignment> {
     kRemoved,
     kRenamed,
   };
+
+  class RecalcSideEffects;
 
   HTMLSlotElement* FindSlotInManualSlotting(Node&);
 
@@ -134,8 +145,11 @@ class SlotAssignment final : public GarbageCollected<SlotAssignment> {
                              const AtomicString& slot_name,
                              SlotMutationType);
 
-  // Recalculates this shadow root's assignment, if it is dirty.
-  void RecalcOwnAssignment();
+  // Pass 1: computes this shadow root's assignment data, without side
+  // effects. Returns the side effects to apply in pass 2.
+  RecalcSideEffects* ComputeAssignment();
+  // Pass 2.
+  static void ApplySideEffects(RecalcSideEffects&, AXObjectCache*);
 
   HeapVector<Member<HTMLSlotElement>> slots_;
   Member<TreeOrderedMap> slot_map_;
@@ -143,10 +157,6 @@ class SlotAssignment final : public GarbageCollected<SlotAssignment> {
   unsigned needs_collect_slots_ : 1;
   unsigned needs_assignment_recalc_ : 1;
   unsigned slot_count_ : 30;
-  // True while RecalcAssignment() is running for this shadow root. Used to
-  // bail out of re-entrant recalcs, which would rebuild slots_ while an outer
-  // RecalcAssignment() is still iterating it.
-  bool in_recalc_assignment_ = false;
 };
 
 }  // namespace blink

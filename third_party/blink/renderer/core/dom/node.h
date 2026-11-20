@@ -1143,7 +1143,7 @@ class CORE_EXPORT Node : public EventTarget {
   // 1. Host children that are no longer assigned to a slot.
   // 2. Light tree children of slots which are no longer rendered as fallback
   //    content.
-  // Runs during slot assignment recalc; see "Recalc hooks" in
+  // Runs during pass 2 of slot assignment recalc; see "Recalc hooks" in
   // slot_assignment.h.
   void RemovedFromFlatTree();
 
@@ -1218,7 +1218,7 @@ class CORE_EXPORT Node : public EventTarget {
 
   // Called when a node changes its flat tree parent, either because slot
   // assignments changed, or the node got reparented by a moveBefore().
-  // Can run during slot assignment recalc; see "Recalc hooks" in
+  // Can run during pass 2 of slot assignment recalc; see "Recalc hooks" in
   // slot_assignment.h.
   void FlatTreeParentChanged();
 

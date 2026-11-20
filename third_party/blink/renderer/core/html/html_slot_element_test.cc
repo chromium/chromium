@@ -144,7 +144,8 @@ class HTMLSlotElementInDocumentTest : public testing::Test {
   }
   Document& GetDocument() { return dummy_page_holder_->GetDocument(); }
   const HeapVector<Member<Node>>& GetFlatTreeChildren(HTMLSlotElement& slot) {
-    slot.RecalcFlatTreeChildren();
+    // Recomputes the flat tree children if the assignment is dirty.
+    slot.AssignedNodes();
     return slot.flat_tree_children_;
   }
 

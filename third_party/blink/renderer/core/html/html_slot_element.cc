@@ -308,18 +308,6 @@ void HTMLSlotElement::SetManuallyAssignedNodesForRecalc(Node* node) {
   SetManuallyAssignedNodesForRecalc(nodes);
 }
 
-void HTMLSlotElement::DidRecalcAssignedNodes(bool display_locked_subtree) {
-  if (has_slotted_invalidation_pending_) {
-    has_slotted_invalidation_pending_ = false;
-    PseudoStateChanged(CSSSelector::kPseudoHasSlotted);
-  }
-  UpdateFlatTreeNodeDataForAssignedNodes();
-  RecalcFlatTreeChildren();
-  if (display_locked_subtree) {
-    MarkAssignedNodesForDisplayLockDetachCheck();
-  }
-}
-
 void HTMLSlotElement::AppendAssignedNode(Node& host_child) {
   DCHECK(host_child.IsSlotable());
   assigned_nodes_.push_back(&host_child);
@@ -334,10 +322,10 @@ void HTMLSlotElement::ClearAssignedNodesAndFlatTreeChildren() {
   flat_tree_children_.clear();
 }
 
-void HTMLSlotElement::UpdateFlatTreeNodeDataForAssignedNodes() {
+void HTMLSlotElement::UpdateFlatTreeNodeDataForAssignedNodes(
+    SlotRecalcSideEffects& side_effects) {
   Node* previous = nullptr;
-  const HeapVector<Member<Node>> assigned_nodes = assigned_nodes_;
-  for (auto& current : assigned_nodes) {
+  for (auto& current : assigned_nodes_) {
     bool mark_parent_slot_changed = false;
     if (FlatTreeNodeData* node_data = current->GetFlatTreeNodeData()) {
       // This invalidation is covering the case where the node did not
@@ -361,7 +349,7 @@ void HTMLSlotElement::UpdateFlatTreeNodeDataForAssignedNodes() {
     }
     previous = current;
     if (mark_parent_slot_changed) {
-      current->ParentSlotChanged();
+      side_effects.nodes_needing_parent_slot_changed.push_back(current);
     }
   }
   if (previous) {
@@ -387,13 +375,15 @@ void HTMLSlotElement::MarkAssignedNodesForDisplayLockDetachCheck() {
   }
 }
 
-void HTMLSlotElement::RecalcFlatTreeChildren() {
+void HTMLSlotElement::RecalcFlatTreeChildren(
+    SlotRecalcSideEffects& side_effects) {
   DCHECK(SupportsAssignment());
 
-  HeapVector<Member<Node>> old_flat_tree_children;
-  old_flat_tree_children.swap(flat_tree_children_);
+  CHECK(side_effects.old_flat_tree_children.empty());
+  side_effects.old_flat_tree_children.swap(flat_tree_children_);
 
-  if (assigned_nodes_.empty()) {
+  const bool new_children_are_fallback = assigned_nodes_.empty();
+  if (new_children_are_fallback) {
     // Use children as fallback
     for (auto& child : NodeTraversal::ChildrenOf(*this)) {
       if (child.IsSlotable()) {
@@ -401,22 +391,47 @@ void HTMLSlotElement::RecalcFlatTreeChildren() {
       }
     }
   } else {
+    // Fallback nodes are detached by ApplyRecalcSideEffects().
     flat_tree_children_ = assigned_nodes_;
+  }
+
+  side_effects.switched_between_assignment_and_fallback =
+      flat_tree_children_are_fallback_ != new_children_are_fallback;
+  flat_tree_children_are_fallback_ = new_children_are_fallback;
+}
+
+SlotRecalcSideEffects* HTMLSlotElement::DidRecalcAssignedNodes() {
+  auto* side_effects = MakeGarbageCollected<SlotRecalcSideEffects>();
+  UpdateFlatTreeNodeDataForAssignedNodes(*side_effects);
+  RecalcFlatTreeChildren(*side_effects);
+  return side_effects;
+}
+
+void HTMLSlotElement::ApplyRecalcSideEffects(
+    const SlotRecalcSideEffects& side_effects,
+    bool display_locked_subtree) {
+  if (has_slotted_invalidation_pending_) {
+    has_slotted_invalidation_pending_ = false;
+    PseudoStateChanged(CSSSelector::kPseudoHasSlotted);
+  }
+  for (Node* node : side_effects.nodes_needing_parent_slot_changed) {
+    node->ParentSlotChanged();
+  }
+  if (!assigned_nodes_.empty()) {
     for (auto& child : NodeTraversal::ChildrenOf(*this)) {
       // Detach fallback nodes. Host children which are no longer slotted are
-      // detached in SlotAssignment::RecalcAssignment().
+      // detached by SlotAssignment.
       if (child.IsSlotable()) {
         child.RemovedFromFlatTree();
       }
     }
   }
-
-  bool switched_between_assignment_and_fallback =
-      flat_tree_children_are_fallback_ != assigned_nodes_.empty();
-  NotifySlottedNodesOfFlatTreeChange(old_flat_tree_children,
-                                     flat_tree_children_,
-                                     switched_between_assignment_and_fallback);
-  flat_tree_children_are_fallback_ = assigned_nodes_.empty();
+  NotifySlottedNodesOfFlatTreeChange(
+      side_effects.old_flat_tree_children, flat_tree_children_,
+      side_effects.switched_between_assignment_and_fallback);
+  if (display_locked_subtree) {
+    MarkAssignedNodesForDisplayLockDetachCheck();
+  }
 }
 
 void HTMLSlotElement::DispatchSlotChangeEvent() {

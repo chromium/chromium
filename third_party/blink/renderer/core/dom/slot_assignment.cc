@@ -4,7 +4,8 @@
 
 #include "third_party/blink/renderer/core/dom/slot_assignment.h"
 
-#include "base/auto_reset.h"
+#include <ranges>
+
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
@@ -224,7 +225,8 @@ SlotAssignment::SlotAssignment(ShadowRoot& owner)
 
 void SlotAssignment::SetNeedsAssignmentRecalc() {
   // Recalc side effects must not dirty slot assignment (rule R4 in
-  // slot_assignment.h).
+  // slot_assignment.h). If this fires anyway, the assignment stays dirty and
+  // is picked up by the next recalc.
   SlotAssignmentRecalcInProgressScope::CheckNotActive(
       SlotAssignmentInvariant::kNoAssignmentDirtying);
   needs_assignment_recalc_ = true;
@@ -234,6 +236,33 @@ void SlotAssignment::SetNeedsAssignmentRecalc() {
     owner_->GetDocument().ScheduleLayoutTreeUpdateIfNeeded();
   }
 }
+
+// The side effects of recomputing one shadow root's assignment, recorded in
+// pass 1 and applied in pass 2.
+class SlotAssignment::RecalcSideEffects final
+    : public GarbageCollected<RecalcSideEffects> {
+ public:
+  explicit RecalcSideEffects(ShadowRoot& root) : root(&root) {}
+
+  void Trace(Visitor* visitor) const {
+    visitor->Trace(root);
+    visitor->Trace(slots);
+    visitor->Trace(slot_side_effects);
+    visitor->Trace(slotted_nodes);
+    visitor->Trace(unassigned_nodes);
+  }
+
+  Member<ShadowRoot> root;
+  // The slots of `root` at the time of pass 1, and their side effects (same
+  // indices).
+  HeapVector<Member<HTMLSlotElement>> slots;
+  HeapVector<Member<SlotRecalcSideEffects>> slot_side_effects;
+  // Host children that were assigned to a slot.
+  HeapVector<Member<Node>> slotted_nodes;
+  // Host children that were not assigned to any slot, whether or not they
+  // were assigned before. RemovedFromFlatTree() is called on each of them.
+  HeapVector<Member<Node>> unassigned_nodes;
+};
 
 void SlotAssignment::RecalcAssignment() {
   if (!needs_assignment_recalc_) {
@@ -247,161 +276,188 @@ void SlotAssignment::RecalcAssignment() {
 // static
 void SlotAssignment::RecalcShadowRoots(
     const HeapVector<Member<ShadowRoot>>& roots) {
-  for (const Member<ShadowRoot>& root : roots) {
-    root->GetSlotAssignment().RecalcOwnAssignment();
-  }
-}
-
-void SlotAssignment::RecalcOwnAssignment() {
-  // Every root in the recalc list is dirty when RecalcShadowRoots() starts,
-  // but a root can be clean by the time it is reached: a side effect of an
-  // earlier root can read it through the flat tree, which starts a nested
-  // recalc of the rest of the list (rule R6 in slot_assignment.h). The next
-  // CL removes nested recalc, and with it this case.
-  if (!needs_assignment_recalc_) {
+  if (roots.empty()) {
     return;
   }
-  // Recalc must not re-enter recalc, for this or any other shadow root (rule
-  // R4 in slot_assignment.h).
-  SlotAssignmentRecalcInProgressScope::CheckNotActive(
-      SlotAssignmentInvariant::kNoReentrantRecalc);
-  // DidRecalcAssignedNodes() below can run script that re-enters here, which
-  // would rebuild slots_ while the outer call is iterating it. Bail out; the
-  // recalc stays pending and runs on the next lifecycle update. This is a
-  // stopgap: script should not run here at all. Remove this or upgrade it to a
-  // CHECK once the remaining sources are gone (crbug.com/574469802).
-  if (in_recalc_assignment_) {
+  // Recalc must not re-enter recalc (rules R4 and R6 in slot_assignment.h).
+  // Reaching here during recalc means a side effect read a shadow root that
+  // is not in the recalc list and is still dirty, or that a side effect
+  // dirtied a shadow root. Bail out: a re-entrant recalc would rebuild Slots()
+  // while the outer recalc is iterating it. The assignment stays dirty and is
+  // picked up by the next recalc.
+  if (SlotAssignmentRecalcInProgressScope::ReportViolationIf(
+          SlotAssignmentRecalcInProgressScope::IsActive(),
+          SlotAssignmentInvariant::kNoReentrantRecalc)) {
     return;
   }
+  Document& document = roots.front()->GetDocument();
   // Recalc must not run while the tree is unstable (rule R5 in
   // slot_assignment.h). Until reporting is enabled, keep the existing DCHECK.
   SlotAssignmentRecalcInProgressScope::ReportViolationIf(
-      owner_->GetDocument().IsSlotAssignmentRecalcForbidden(),
+      document.IsSlotAssignmentRecalcForbidden(),
       SlotAssignmentInvariant::kNoRecalcWhileForbidden);
-  DCHECK(!owner_->GetDocument().IsSlotAssignmentRecalcForbidden());
-  base::AutoReset<bool> in_recalc(&in_recalc_assignment_, true);
-  {
-    SlotAssignmentRecalcInProgressScope recalc_scope;
+  DCHECK(!document.IsSlotAssignmentRecalcForbidden());
 
-    // To detect recursive RecalcAssignment, which shouldn't happen.
-    SlotAssignmentRecalcForbiddenScope forbid_slot_recalc(
-        owner_->GetDocument());
+  SlotAssignmentRecalcInProgressScope recalc_scope;
+  SlotAssignmentRecalcForbiddenScope forbid_slot_recalc(document);
 
-    // The accessibility cache must be invalidated before flat tree traversal
-    // is forbidden, because the process of invalidation accesses the old flat
-    // tree children in order to clean up soon to be stale relationships.
-    // Any <slot> within this shadow root may lose or gain flat tree children
-    // during slot reassignment, so call ChildrenChanged() on all of them.
-    AXObjectCache* cache = owner_->GetDocument().ExistingAXObjectCache();
-    if (cache) {
-      for (Member<HTMLSlotElement>& slot : Slots()) {
+  // The accessibility cache must be invalidated before pass 1, because the
+  // process of invalidation accesses the old flat tree children in order to
+  // clean up soon to be stale relationships. Any <slot> within these shadow
+  // roots may lose or gain flat tree children during slot reassignment, so
+  // call SlotAssignmentWillChange() on all of them.
+  if (AXObjectCache* cache = document.ExistingAXObjectCache()) {
+    for (const Member<ShadowRoot>& root : roots) {
+      DCHECK_EQ(&root->GetDocument(), &document);
+      for (Member<HTMLSlotElement>& slot : root->GetSlotAssignment().Slots()) {
         cache->SlotAssignmentWillChange(slot);
       }
     }
+  }
 
+  // Pass 1: compute the assignment of every root in the list, without side
+  // effects.
+  HeapVector<Member<RecalcSideEffects>> pending;
+  pending.reserve(roots.size());
+  {
     SlotAssignmentRecalcInProgressScope::ForbidFlatTreeTraversal
         forbid_flat_tree_traversal;
-
-    if (owner_->IsUserAgent() && owner_->IsManualSlotting()) {
-      owner_->host().ManuallyAssignSlots();
-    }
-    needs_assignment_recalc_ = false;
-
-    for (Member<HTMLSlotElement>& slot : Slots()) {
-      slot->WillRecalcAssignedNodes();
-    }
-
-    if (owner_->IsManualSlotting()) {
-      // |children_to_clear| starts with the list of all slottable light-dom
-      // children of the host. Any of those that aren't slotted during this
-      // recalc will then have their flat tree data cleared and detach their
-      // layout trees.
-      HeapHashSet<Member<Node>> children_to_clear;
-      for (Node& child : NodeTraversal::ChildrenOf(owner_->host())) {
-        if (!child.IsSlotable()) {
-          continue;
-        }
-        children_to_clear.insert(&child);
-      }
-
-      for (Member<HTMLSlotElement>& slot : Slots()) {
-        for (Node* slottable : slot->ManuallyAssignedNodes()) {
-          // Some of the manually assigned nodes might have been moved
-          // to other trees or documents. In that case, don't assign them
-          // here, but also don't remove/invalidate them in the manually
-          // assigned nodes list, in case they come back later.
-          if (slottable && slottable->IsChildOfShadowHost() &&
-              slottable->parentElement() == owner_->host()) {
-            slot->AppendAssignedNode(*slottable);
-            children_to_clear.erase(slottable);
-            // If changing tree scope, recompute the a11y subtree.
-            // This normally occurs when the slottable node is removed
-            // from the flat tree via the below call to RemovedFromFlatTree(),
-            // which calls DetachLayoutTree().
-            if (cache) {
-              cache->RemoveSubtree(slottable);
-            }
-          }
-        }
-      }
-
-      for (auto& child : children_to_clear) {
-        child->ClearFlatTreeNodeData();
-        child->RemovedFromFlatTree();
-      }
-    } else {
-      for (Node& child : NodeTraversal::ChildrenOf(owner_->host())) {
-        if (!child.IsSlotable())
-          continue;
-
-        if (HTMLSlotElement* slot = FindSlotByName(child.SlotName())) {
-          slot->AppendAssignedNode(child);
-          // If changing tree scope, recompute the a11y subtree.
-          // This normally occurs when the slottable node is removed
-          // from the flat tree via the below call to RemovedFromFlatTree(),
-          // which calls DetachLayoutTree().
-          if (cache) {
-            cache->RemoveSubtree(&child);
-          }
-        } else {
-          child.ClearFlatTreeNodeData();
-          child.RemovedFromFlatTree();
-        }
-      }
-    }
-
-    owner_->GetDocument()
-        .GetSlotAssignmentEngine()
-        .RemoveShadowRootNeedingRecalc(*owner_);
-
-    // Defense in depth: script is not supposed to run here, but
-    // DidRecalcAssignedNodes() still can (crbug.com/574469802) and add or
-    // remove slots. Iterate over a copy and skip slots that left this root.
-    const bool has_display_locks = owner_->GetDocument()
-                                       .GetDisplayLockDocumentState()
-                                       .LockedDisplayLockCount() > 0;
-    const HeapVector<Member<HTMLSlotElement>> slots = Slots();
-    for (auto& slot : slots) {
-      if (slot->ContainingShadowRoot() != owner_) {
-        continue;
-      }
-      slot->DidRecalcAssignedNodes(has_display_locks);
+    for (const Member<ShadowRoot>& root : roots) {
+      pending.push_back(root->GetSlotAssignment().ComputeAssignment());
     }
   }
 
+  // Pass 2: apply the side effects. Every root in the list is clean, so flat
+  // tree reads are accurate. A side effect that triggers another recalc is
+  // caught by the re-entrancy check above.
+  for (Member<RecalcSideEffects>& side_effects : pending) {
+    ApplySideEffects(*side_effects, document.ExistingAXObjectCache());
+  }
+}
+
+SlotAssignment::RecalcSideEffects* SlotAssignment::ComputeAssignment() {
+  // Every root in the recalc list is dirty. Only ComputeAssignment() cleans a
+  // root, and only its own, and nested recalc bails out.
+  CHECK(needs_assignment_recalc_);
+  auto* side_effects = MakeGarbageCollected<RecalcSideEffects>(*owner_);
+
+  // Clear the flag first: nothing below may dirty it again.
+  needs_assignment_recalc_ = false;
+
+  if (owner_->IsUserAgent() && owner_->IsManualSlotting()) {
+    owner_->host().ManuallyAssignSlots();
+  }
+
+  side_effects->slots = Slots();
+  for (Member<HTMLSlotElement>& slot : side_effects->slots) {
+    slot->WillRecalcAssignedNodes();
+  }
+
+  if (owner_->IsManualSlotting()) {
+    // |children_to_clear| starts with the list of all slottable light-dom
+    // children of the host. Any of those that aren't slotted during this
+    // recalc will then have their flat tree data cleared and detach their
+    // layout trees.
+    HeapHashSet<Member<Node>> children_to_clear;
+    for (Node& child : NodeTraversal::ChildrenOf(owner_->host())) {
+      if (!child.IsSlotable()) {
+        continue;
+      }
+      children_to_clear.insert(&child);
+    }
+
+    for (Member<HTMLSlotElement>& slot : side_effects->slots) {
+      for (Node* slottable : slot->ManuallyAssignedNodes()) {
+        // Some of the manually assigned nodes might have been moved
+        // to other trees or documents. In that case, don't assign them
+        // here, but also don't remove/invalidate them in the manually
+        // assigned nodes list, in case they come back later.
+        if (slottable && slottable->IsChildOfShadowHost() &&
+            slottable->parentElement() == owner_->host()) {
+          slot->AppendAssignedNode(*slottable);
+          children_to_clear.erase(slottable);
+          side_effects->slotted_nodes.push_back(slottable);
+        }
+      }
+    }
+
+    for (auto& child : children_to_clear) {
+      child->ClearFlatTreeNodeData();
+      side_effects->unassigned_nodes.push_back(child);
+    }
+  } else {
+    for (Node& child : NodeTraversal::ChildrenOf(owner_->host())) {
+      if (!child.IsSlotable()) {
+        continue;
+      }
+
+      if (HTMLSlotElement* slot = FindSlotByName(child.SlotName())) {
+        slot->AppendAssignedNode(child);
+        side_effects->slotted_nodes.push_back(&child);
+      } else {
+        child.ClearFlatTreeNodeData();
+        side_effects->unassigned_nodes.push_back(&child);
+      }
+    }
+  }
+
+  owner_->GetDocument().GetSlotAssignmentEngine().RemoveShadowRootNeedingRecalc(
+      *owner_);
+
+  side_effects->slot_side_effects.reserve(side_effects->slots.size());
+  for (Member<HTMLSlotElement>& slot : side_effects->slots) {
+    side_effects->slot_side_effects.push_back(slot->DidRecalcAssignedNodes());
+  }
+  // Nothing above (including ManuallyAssignSlots()) may dirty slot
+  // assignment.
+  CHECK(!needs_assignment_recalc_);
+  return side_effects;
+}
+
+// static
+void SlotAssignment::ApplySideEffects(RecalcSideEffects& side_effects,
+                                      AXObjectCache* cache) {
+  ShadowRoot& root = *side_effects.root;
+
+  // If changing tree scope, recompute the a11y subtree. This normally occurs
+  // when the slottable node is removed from the flat tree via the
+  // RemovedFromFlatTree() call below, which calls DetachLayoutTree().
+  if (cache) {
+    for (Node* node : side_effects.slotted_nodes) {
+      cache->RemoveSubtree(node);
+    }
+  }
+
+  for (Node* node : side_effects.unassigned_nodes) {
+    node->RemovedFromFlatTree();
+  }
+
+  const bool has_display_locks = root.GetDocument()
+                                     .GetDisplayLockDocumentState()
+                                     .LockedDisplayLockCount() > 0;
+  for (auto [slot, slot_side_effects] :
+       std::views::zip(side_effects.slots, side_effects.slot_side_effects)) {
+    // Defense in depth: DOM mutation is forbidden here, but if it happens
+    // anyway (and is not fatal), skip slots that left this root.
+    if (slot->ContainingShadowRoot() != &root) {
+      continue;
+    }
+    slot->ApplyRecalcSideEffects(*slot_side_effects, has_display_locks);
+  }
+
   // We need to update any slots with dir=auto for two reasons:
-  //  (1) because this call might have assigned them different assigned nodes
-  //      and changed the result of the dir=auto, or
+  //  (1) because this recalc might have assigned them different assigned
+  //      nodes and changed the result of the dir=auto, or
   //  (2) because an earlier call to the slot's
   //      CalculateAndAdjustAutoDirectionality method was deferred because the
   //      slot needed assignment recalc (which is necessary because some such
   //      calls happen when it's not safe to recalc assignment).
   //
-  // This needs to happen outside of the scope above, when flat tree traversal
-  // is allowed, because Element::UpdateDescendantHasDirAutoAttribute uses
-  // FlatTreeTraversal.
-  for (HTMLSlotElement* slot : Slots()) {
-    if (slot->HasDirectionAuto()) {
+  // This uses FlatTreeTraversal (Element::UpdateDescendantHasDirAutoAttribute),
+  // which is allowed in pass 2. The ContainingShadowRoot() check is the same
+  // defense in depth as above.
+  for (HTMLSlotElement* slot : side_effects.slots) {
+    if (slot->ContainingShadowRoot() == &root && slot->HasDirectionAuto()) {
       slot->AdjustDirectionAutoAfterRecalcAssignedNodes();
     }
   }

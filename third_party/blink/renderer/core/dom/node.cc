@@ -3732,25 +3732,14 @@ HTMLSlotElement* Node::AssignedSlot() const {
     return nullptr;
   }
 
-  SlotAssignmentRecalcInProgressScope::ReportViolationIf(
-      SlotAssignmentRecalcInProgressScope::IsFlatTreeTraversalForbidden(),
-      SlotAssignmentInvariant::kNoFlatTreeAccessWhileForbidden);
-
-  // TODO(hayato): Node::AssignedSlot() shouldn't be called while
-  // in executing RecalcAssignment(), however, unfortunately,
-  // that could happen as follows:
-  //
-  // 1. RecalcAssignment() can detach a node
-  // 2. Then, DetachLayoutTree() may use FlatTreeTraversal via the hook of
-  // AXObjectCacheImpl::ChildrenChanged().
-  //
-  // Note that using FlatTreeTraversal in detaching layout tree should be banned
-  // in the long term.
-  //
-  // If we can remove such code path, we don't need to check
-  // SlotAssignmentRecalcInProgressScope::IsActive() here.
-  if (SlotAssignmentRecalcInProgressScope::IsActive()) {
-    // FlatTreeNodeData is not realiable here. Entering slow path.
+  // FlatTreeNodeData is being recomputed during pass 1 of slot assignment
+  // recalc, so it must not be read then. During pass 2, every shadow root in
+  // the recalc list is clean, so RecalcAssignment() below is a no-op. If this
+  // is reached during pass 1 anyway, use the slow path, since FlatTreeNodeData
+  // is not reliable then.
+  if (SlotAssignmentRecalcInProgressScope::ReportViolationIf(
+          SlotAssignmentRecalcInProgressScope::IsFlatTreeTraversalForbidden(),
+          SlotAssignmentInvariant::kNoFlatTreeAccessWhileForbidden)) {
     return root->AssignedSlotFor(*this);
   }
 
@@ -3774,7 +3763,7 @@ HTMLSlotElement* Node::AssignedSlot() const {
 
 // Used when assignment recalc is forbidden, i.e., DetachLayoutTree().
 // Returned assignedSlot is not guaranteed up to date (see "Stale accessors" in
-// slot_assignment.h).
+// slot_assignment.h). It is accurate during pass 2 of slot assignment recalc.
 HTMLSlotElement* Node::AssignedSlotWithoutRecalc() const {
   if (!GetSlotAssignmentRoot()) {
     return nullptr;

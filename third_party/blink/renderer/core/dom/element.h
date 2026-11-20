@@ -1159,9 +1159,10 @@ class CORE_EXPORT Element : public ContainerNode {
       SlotAssignmentMode = SlotAssignmentMode::kNamed);
 
   // Implements manual slot assignment for user agent shadow roots. Called
-  // during slot assignment recalc, so implementations must not read the flat
-  // tree, mutate the DOM, run script, or dirty slot assignment. See the rules
-  // and "Recalc hooks" in slot_assignment.h.
+  // during pass 1 of slot assignment recalc, so implementations must only call
+  // HTMLSlotElement::SetManuallyAssignedNodesForRecalc(), and must not read
+  // the flat tree, mutate the DOM, or run script. See the rules and
+  // "Recalc hooks" in slot_assignment.h.
   virtual void ManuallyAssignSlots() { DCHECK(false); }
 
   // Returns the Element’s ComputedStyle. If the ComputedStyle is not already
