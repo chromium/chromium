@@ -90,7 +90,6 @@
 #include "third_party/blink/public/mojom/page/page_visibility_state.mojom-shared.h"
 #include "ui/accessibility/ax_location_and_scroll_updates.h"
 #include "ui/accessibility/ax_mode.h"
-#include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/platform/inspect/ax_event_recorder.h"
 #include "ui/base/clipboard/clipboard_metadata.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
@@ -477,7 +476,6 @@ class CONTENT_EXPORT WebContentsImpl
                              size_t max_nodes,
                              base::TimeDelta timeout,
                              AXTreeSnapshotPolicy policy) override;
-  ui::AXTreeUpdate RequestAXTreeSnapshotWithinBrowserProcess() override;
   uint64_t GetUploadSize() override;
   uint64_t GetUploadPosition() override;
   const std::string& GetEncoding() override;
@@ -798,9 +796,6 @@ class CONTENT_EXPORT WebContentsImpl
   std::string DumpAccessibilityTree(
       ui::AXApiType::Type api_type,
       std::vector<ui::AXPropertyFilter> property_filters) override;
-  void ApplyAXTreeFixingResult(ui::AXTreeID tree_id,
-                               ui::AXNodeID node_id,
-                               ax::mojom::Role role) override;
   void RecordAccessibilityEvents(
       bool start_recording,
       std::optional<ui::AXEventCallback> callback) override;
@@ -2367,11 +2362,6 @@ class CONTENT_EXPORT WebContentsImpl
   // Cancel any pending dialogs created from the delegate's
   // JavascriptDialogManager.
   void CancelDialogManagerDialogs(bool reset_state);
-
-  // Recursively constructs a vector of AXNodeData objects for the children of
-  // the given |node|.
-  void RecursivelyConstructAXTree(ui::AXNode* node,
-                                  std::vector<ui::AXNodeData>& nodes);
 
   void StartRecordingAccessibilityEvents(ui::AXApiType::Type api_type,
                                          ui::AXEventCallback callback);

@@ -267,11 +267,6 @@ using ax::mojom::features::kReadAloudServerSynthesizer;
 AX_BASE_EXPORT bool IsReadAloudServerSynthesizerEnabled();
 
 #if !BUILDFLAG(IS_ANDROID)
-// Use the AXTree fixing code, which may be an assortment of different
-// tools/methods to fix the AXTree. This is not available on Android.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAXTreeFixing);
-AX_BASE_EXPORT bool IsAXTreeFixingEnabled();
-
 #if !BUILDFLAG(IS_CHROMEOS)
 // Shows the Page Colors control in chrome://settings/accessibility, which lets
 // users override the web theme's forced colors independently of the operating

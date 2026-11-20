@@ -56,7 +56,6 @@
 #include "third_party/blink/public/mojom/picture_in_picture_window_options/picture_in_picture_window_options.mojom.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/platform/inspect/ax_api_type.h"
 #include "ui/color/color_provider_key.h"
@@ -653,14 +652,6 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
                                      base::TimeDelta timeout,
                                      AXTreeSnapshotPolicy policy) = 0;
 
-  // Request a one-time snapshot of the accessibility tree, without going
-  // through the renderer process. This method constructs the tree based on the
-  // current AXTree's in the browser-side RenderFrameHosts. This will only work
-  // if an accessibility mode is already enabled. Unlike RequestAXTreeSnapshot,
-  // the AXMode is not an input; rather, the AXMode that was used to construct
-  // the existing tree must be used.
-  virtual ui::AXTreeUpdate RequestAXTreeSnapshotWithinBrowserProcess() = 0;
-
   // Causes the current page to be closed, including running its onunload event
   // handler.
   virtual void ClosePage() = 0;
@@ -752,11 +743,6 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   virtual std::string DumpAccessibilityTree(
       ui::AXApiType::Type api_type,
       std::vector<ui::AXPropertyFilter> property_filters) = 0;
-
-  // Applies a fix to an AXTree from an AXTreeFixing service.
-  virtual void ApplyAXTreeFixingResult(ui::AXTreeID tree_id,
-                                       ui::AXNodeID node_id,
-                                       ax::mojom::Role role) = 0;
 
   // A callback that takes a string which contains accessibility event
   // information.

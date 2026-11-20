@@ -301,11 +301,6 @@ bool IsReadAloudServerSynthesizerEnabled() {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kAXTreeFixing, base::FEATURE_DISABLED_BY_DEFAULT);
-bool IsAXTreeFixingEnabled() {
-  return base::FeatureList::IsEnabled(::features::kAXTreeFixing);
-}
-
 #if !BUILDFLAG(IS_CHROMEOS)
 BASE_FEATURE(kPageColorsSettings, base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsPageColorsSettingsEnabled() {
