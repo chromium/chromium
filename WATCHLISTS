@@ -7,11 +7,13 @@
 
 # Important: The regular expression filepath is tested against each path using
 # re.search, so it is not usually necessary to add .* at the end of the pattern.
+# Because this file is parsed as a Python literal, escape regex backslashes
+# (e.g. '\\.') or use raw strings (e.g. r'\.').
 
 {
   'WATCHLIST_DEFINITIONS': {
     'about_flags': {
-      'filepath': 'chrome/browser/about_flags\.cc'
+      'filepath': 'chrome/browser/about_flags\\.cc'
     },
     'accelerators': {
       'filepath': 'ash/accelerators/|'\
@@ -43,11 +45,11 @@
                   '|ash/color_enhancement/',
     },
     'accessibility_minimal_core': {
-      'filepath': 'ui/accessibility/(ax_enums|ax_event_generator|ax_node\.|ax_node_data\.|ax_tree\.|ax_tree_serializer)' \
+      'filepath': 'ui/accessibility/(ax_enums|ax_event_generator|ax_node\\.|ax_node_data\\.|ax_tree\\.|ax_tree_serializer)' \
                   '|ui/accessibility/platform/ax_platform_node_(base|mac|win)' \
                   '|third_party/(WebKit|blink)/.*(accessibility|ax_object|web_ax|ax_node|ax_layout)' \
                   '|content/renderer/accessibility/render_accessibility_impl' \
-                  '|ui/accessibility/platform/browser_accessibility(\.|_manager|_win|_com|_cocoa)'
+                  '|ui/accessibility/platform/browser_accessibility(\\.|_manager|_win|_com|_cocoa)'
     },
     'accessibility_reading': {
       'filepath': 'read_anything/|'\
@@ -186,8 +188,8 @@
     'android_side_panel': {
       'filepath': 'chrome/browser/ui/side_panel/'\
                   '|chrome/browser/ui/side_ui/'\
-                  '|.*SidePanel.*\.java'\
-                  '|.*SideUi.*\.java'
+                  '|.*SidePanel.*\\.java'\
+                  '|.*SideUi.*\\.java'
     },
     'android_split_view': {
       'filepath': 'chrome/browser/ui/android/split_view/' \
@@ -645,7 +647,7 @@
     },
     'blink_out_of_process_frames': {
       'filepath': 'third_party/blink/renderer/core/frame/frame_owner' \
-                  '|third_party/blink/renderer/core/frame/frame\.' \
+                  '|third_party/blink/renderer/core/frame/frame\\.' \
                   '|third_party/blink/renderer/core/frame/web_frame' \
                   '|third_party/blink/renderer/core/exported/web_remote_frame_impl'
     },
@@ -889,7 +891,7 @@
     },
     'chrome_camera_app': {
       'filepath': # Exclude string translation .xtb files.
-                  'ash/webui/camera_app_ui/.*$(?<!\.xtb)'\
+                  'ash/webui/camera_app_ui/.*$(?<!\\.xtb)'\
                   '|chrome/browser/ash/system_web_apps/apps/camera_app'\
                   '|components/arc/intent_helper/control_camera_app_delegate.h'\
                   '|components/arc/mojom/camera_intent.mojom'\
@@ -1490,7 +1492,7 @@
       'filepath': 'chrome/browser/apps/guest_view|'\
                   'chrome/browser/extensions/api/web_view|'\
                   'chrome/browser/guest_view|'\
-                  'chrome/common/extensions/api/(app|web)view_tag\.(json|idl)|'\
+                  'chrome/common/extensions/api/(app|web)view_tag\\.(json|idl)|'\
                   'chrome/common/extensions/docs/.*(app|web)view|'\
                   'chrome/renderer/resources/extensions/web_view|'\
                   'chrome/test/data/extensions/platform_apps/(app|web)_view|'\
@@ -1498,11 +1500,11 @@
                   'content/browser/browser_plugin|'\
                   'extensions/browser/api/guest_view|'\
                   'extensions/browser/guest_view|'\
-                  'extensions/common/api/(app|guest|web)_view.*\.(json|idl)|'\
-                  'extensions/common/api/extension_options.*\.(json|idl)|'\
-                  'extensions/common/api/mime_handler.*\.(json|idl|mojom)|'\
+                  'extensions/common/api/(app|guest|web)_view.*\\.(json|idl)|'\
+                  'extensions/common/api/extension_options.*\\.(json|idl)|'\
+                  'extensions/common/api/mime_handler.*\\.(json|idl|mojom)|'\
                   'extensions/common/guest_view|'\
-                  'extensions/common/mojom/guest_view\.mojom|'\
+                  'extensions/common/mojom/guest_view\\.mojom|'\
                   'extensions/renderer/guest_view|'\
                   'extensions/renderer/resources/guest_view|'\
                   'extensions/test/data/(app|web)_view',
@@ -1607,9 +1609,9 @@
                   'ios/chrome/browser/webui/ui_bundled/management/',
     },
     'ios_flags': {
-      'filepath': 'ios/chrome/browser/about_flags\.(h|mm)|'\
-                  'ios/chrome/browser/experimental_flags\.(h|mm)|'\
-                  'ios/chrome/browser/resources/Settings.bundle/Experimental\.plist',
+      'filepath': 'ios/chrome/browser/about_flags\\.(h|mm)|'\
+                  'ios/chrome/browser/experimental_flags\\.(h|mm)|'\
+                  'ios/chrome/browser/resources/Settings.bundle/Experimental\\.plist',
     },
     'ios_intelligence': {
       'filepath': 'ios/chrome/browser/intelligence/'
@@ -1733,7 +1735,7 @@
                   '|components/url_formatter/',
     },
     'mac': {
-      'filepath': '(_|/)(cocoa|mac)(_|\.)|/(cocoa|mac)/|^((?!ios\/).)*\.mm?$',
+      'filepath': '(_|/)(cocoa|mac)(_|\\.)|/(cocoa|mac)/|^((?!ios/).)*\\.mm?$',
     },
     'manifest': {
       'filepath': 'content/(browser|renderer)/manifest/'\
@@ -1765,7 +1767,7 @@
       'filepath': 'media/gpu/chromeos'\
                   '|media/gpu/vaapi'\
                   '|media/gpu/v4l2'\
-                  '|media/gpu/.*\.(cc|h)$'\
+                  '|media/gpu/.*\\.(cc|h)$'\
                   '|media/mojo/(clients|mojom|test|services)/.*accelerator'
     },
     'media_gpu_vaapi': {
@@ -1820,7 +1822,7 @@
     'metrics_metadata_files': {
       # Subscribe to this to watch for changes to {actions, histograms, ukm}.xml
       # and to the field trial testing config.
-      'filepath': 'tools/metrics/.*\.xml$'\
+      'filepath': 'tools/metrics/.*\\.xml$'\
                   '|testing/variations/fieldtrial_testing_config.json',
     },
     'metrics_perf': {
@@ -1914,7 +1916,7 @@
       'filepath': '/netinfo/',
     },
     'network_context': {
-      'filepath': 'services/network/network_context\.(cc|h)$',
+      'filepath': 'services/network/network_context\\.(cc|h)$',
     },
     'network_service': {
       'filepath': 'services/network/',
@@ -2005,7 +2007,7 @@
     },
     'page_content_extraction': {
       'filepath': 'components/optimization_guide/content/browser/page_content_|' \
-                  'components/optimization_guide/proto/features/common_quality_data\.proto|' \
+                  'components/optimization_guide/proto/features/common_quality_data\\.proto|' \
                   'ios/chrome/browser/intelligence/proto_wrappers/|' \
                   'ios/chrome/browser/intelligence/persist_tab_context/'
     },
@@ -2103,7 +2105,7 @@
     },
     'prerender': {
       'filepath': 'chrome/browser/chrome_content_browser_client_binder_policies' \
-                  '|chrome/browser/predictors/autocomplete_action_predictor\.(cc|h)$' \
+                  '|chrome/browser/predictors/autocomplete_action_predictor\\.(cc|h)$' \
                   '|chrome/browser/preloading/' \
                   '|content/browser/mojo_binder_policy' \
                   '|content/browser/preloading/' \
@@ -2317,7 +2319,7 @@
                   '|chromeos/ash/components/dbus/smbprovider',
     },
     'source_idls': {
-      'filepath': 'third_party/blink/renderer/(core|modules|platform)/.*\.idl',
+      'filepath': 'third_party/blink/renderer/(core|modules|platform)/.*\\.idl',
     },
     'speed_metrics_changelog': {
       'filepath': 'docs/speed/metrics_changelog/.*.md',
@@ -2394,7 +2396,7 @@
       'filepath': 'content/browser/media/audio_stream_monitor'\
         '|chrome/browser/ui/tabs/tab_utils'\
         '|chrome/browser/ui/views/tabs/alert_indicator_button'\
-        '|chrome/browser/ui/views/tabs/tab\.cc'\
+        '|chrome/browser/ui/views/tabs/tab\\.cc'\
         '|media/audio/audio_(output_controller|power_monitor)',
     },
     'tab_alerts': {
@@ -2411,7 +2413,7 @@
             '|video_capture/)'\
         '|content/browser/media/capture/'\
         '|content/browser/renderer_host/media/'\
-        '|media/base/video_frame\.h'\
+        '|media/base/video_frame\\.h'\
         '|media/capture/'\
         '|services/viz/privileged/mojom/compositing/frame_sink'\
         '|third_party/blink/public/mojom/mediastream/'
@@ -2428,7 +2430,7 @@
         '|components/saved_tab_groups/'
     },
     'tab_switcher_button': {
-      'filepath': 'chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/top/ToggleTabStackButton.*\.java' \
+      'filepath': 'chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/top/ToggleTabStackButton.*\\.java' \
                   '|chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/TabSwitcherDrawable.java'
     },
     'tab_ui_and_start_surface': {
@@ -2520,7 +2522,7 @@
                   'ios/web_view/internal/translate'
     },
     'ui_compositor': {
-      'filepath': 'ui/compositor/layer\.|'\
+      'filepath': 'ui/compositor/layer\\.|'\
                   'ui/compositor/layer_unittest|'\
                   'ui/compositor/compositor',
     },
@@ -2665,7 +2667,7 @@
                     '|services/webnn/',
     },
     'webotp': {
-        'filepath': 'third_party/blink/renderer/modules/credentialmanager/credentials_container\.cc'\
+        'filepath': 'third_party/blink/renderer/modules/credentialmanager/credentials_container\\.cc'\
                     '|third_party/blink/renderer/modules/credentialmanager/.*otp'\
                     '|third_party/blink/public/mojom/sms/'\
                     '|content/browser/.*sms/'\
