@@ -203,6 +203,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kBackForwardCache,
     &features::kBrowserControlsExtraHideGestures,
     &features::kBrowserControlsScrollSnapAnimation,
+    &features::kControlsInBrowser,
     &features::kDisplayEdgeToEdgeFullscreen,
     &features::kElasticOverscroll,
     &features::kEmailVerificationProtocol,
