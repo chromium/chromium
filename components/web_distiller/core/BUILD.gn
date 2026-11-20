@@ -173,6 +173,7 @@ source_set("unit_tests") {
     "//components/resources",
     "//components/strings",
     "//components/sync_preferences:test_support",
+    "//components/web_distiller/core/eligibility:unit_tests",
     "//testing/gmock",
     "//testing/gtest",
     "//ui/base",

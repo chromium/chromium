@@ -1,0 +1,38 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("eligibility") {
+  sources = [
+    "eligibility_decider.cc",
+    "eligibility_decider.h",
+    "reader_mode_eligibility.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/optimization_guide/core:hints",
+    "//url",
+  ]
+  deps = [
+    "//components/google/core/common",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/web_distiller/core",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "eligibility_decider_unittest.cc" ]
+
+  deps = [
+    ":eligibility",
+    "//base",
+    "//base/test:test_support",
+    "//components/optimization_guide/core:hints_test_support",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//url",
+  ]
+}
