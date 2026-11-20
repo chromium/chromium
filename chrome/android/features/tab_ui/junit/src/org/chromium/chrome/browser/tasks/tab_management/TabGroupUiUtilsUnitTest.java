@@ -313,11 +313,35 @@ public class TabGroupUiUtilsUnitTest {
     @Test
     public void testGetAddToGroupMenuItemTitle() {
         Context context = ApplicationProvider.getApplicationContext();
+        Token groupId = Token.createRandom();
         assertEquals(
-                "Add tab to group", TabGroupUiUtils.getAddToGroupMenuItemTitle(context, null, 1));
+                "Add tab to group",
+                TabGroupUiUtils.getAddToGroupMenuItemTitle(
+                        context, /* currentGroupId= */ null, /* hasOtherGroups= */ true, 1));
+        assertEquals(
+                "Add tabs to group",
+                TabGroupUiUtils.getAddToGroupMenuItemTitle(
+                        context, /* currentGroupId= */ null, /* hasOtherGroups= */ true, 2));
+        assertEquals(
+                "Add tab to new group",
+                TabGroupUiUtils.getAddToGroupMenuItemTitle(
+                        context, /* currentGroupId= */ null, /* hasOtherGroups= */ false, 1));
+        assertEquals(
+                "Add tabs to new group",
+                TabGroupUiUtils.getAddToGroupMenuItemTitle(
+                        context, /* currentGroupId= */ null, /* hasOtherGroups= */ false, 2));
+        assertEquals(
+                "Add tab to new group",
+                TabGroupUiUtils.getAddToGroupMenuItemTitle(
+                        context, groupId, /* hasOtherGroups= */ false, 1));
+        assertEquals(
+                "Add tabs to new group",
+                TabGroupUiUtils.getAddToGroupMenuItemTitle(
+                        context, groupId, /* hasOtherGroups= */ false, 2));
         assertEquals(
                 "Move tab to group",
-                TabGroupUiUtils.getAddToGroupMenuItemTitle(context, Token.createRandom(), 1));
+                TabGroupUiUtils.getAddToGroupMenuItemTitle(
+                        context, groupId, /* hasOtherGroups= */ true, 1));
     }
 
     @Test

@@ -44,6 +44,7 @@ import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.DeviceRestriction;
 
 import java.util.List;
+import java.util.Set;
 
 /** Public Transit tests for operations through the app menu in multi-window. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -296,5 +297,56 @@ public class MultiWindowAppMenuTest {
                                     .size());
                 });
         TransitAsserts.assertFinalDestinations(activeGroupedPage);
+    }
+
+    @Test
+    @LargeTest
+    @Restriction(DeviceFormFactor.ONLY_TABLET)
+    @EnableFeatures({
+        ChromeFeatureList.SUBMENUS_IN_APP_MENU,
+        ChromeFeatureList.TAB_GROUP_ACTIONS_SUBMENUS
+    })
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM)
+    public void testAddToGroupSubmenu_multiSelectedTabs() {
+        WebPageStation page1 = mCtaTestRule.startOnBlankPage();
+        WebPageStation pageTabs =
+                Journeys.prepareTabs(page1, 3, 0, "about:blank", WebPageStation::newBuilder);
+        TabModel tabModel = pageTabs.getTabModel();
+        List<Tab> tabs =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> TabModelUtils.convertTabListToListOfTabs(tabModel));
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Tab groupTab = tabs.get(0);
+                    tabModel.createSingleTabGroup(groupTab);
+                    Token groupId = groupTab.getTabGroupId();
+                    assertNotNull(groupId);
+                    tabModel.setTabGroupTitle(TabGroupId.fromRawToken(groupId), "Grp1");
+                    tabModel.setTabsMultiSelected(
+                            Set.of(tabs.get(1).getId(), tabs.get(2).getId()),
+                            /* isSelected= */ true);
+                });
+
+        RegularWebPageAppMenuFacility appMenu = pageTabs.openRegularTabAppMenu();
+        TabGroupsSubmenuFacility<WebPageStation> tabGroupsSubmenu =
+                appMenu.openTabGroupsSubmenu(
+                        /* expectedGroups= */ List.of("Grp1"), /* excludedGroups= */ List.of());
+        AddToGroupSubmenuFacility<WebPageStation> addToGroupSubmenu =
+                tabGroupsSubmenu.openAddToGroupSubmenu(
+                        /* expectedGroups= */ List.of("Grp1"), /* excludedGroups= */ List.of());
+        addToGroupSubmenu.selectGroup("Grp1");
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Token groupId = tabs.get(0).getTabGroupId();
+                    assertNotNull(groupId);
+                    assertEquals(groupId, tabs.get(1).getTabGroupId());
+                    assertEquals(groupId, tabs.get(2).getTabGroupId());
+                    assertEquals(
+                            3,
+                            tabModel.getTabsInGroup(TabGroupId.fromOptionalToken(groupId)).size());
+                });
+        TransitAsserts.assertFinalDestinations(pageTabs);
     }
 }

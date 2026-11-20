@@ -4632,8 +4632,12 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                         .notifyEvent("menu_add_to_group_clicked");
             }
 
+            List<Tab> targetTabs =
+                    id == R.id.add_to_group_menu_id && !isInOverviewMode()
+                            ? mTabModelSelector.getCurrentModel().getOrderedMultiSelectedTabs()
+                            : List.of(currentTab);
             boolean existingGroupsPresent =
-                    createTabGroupMenuActionHandler().handleAddToGroupAction(List.of(currentTab));
+                    createTabGroupMenuActionHandler().handleAddToGroupAction(targetTabs);
             if (id == R.id.add_to_group_menu_id) {
                 RecordUserAction.record(
                         existingGroupsPresent ? "MobileMenuAddToGroup" : "MobileMenuAddToNewGroup");
@@ -4660,8 +4664,12 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 return false;
             }
 
+            List<Tab> targetTabs =
+                    !isInOverviewMode()
+                            ? mTabModelSelector.getCurrentModel().getOrderedMultiSelectedTabs()
+                            : List.of(currentTab);
             return createTabGroupMenuActionHandler()
-                    .handleAddToExistingGroupAction(List.of(currentTab), groupId, syncGroupId);
+                    .handleAddToExistingGroupAction(targetTabs, groupId, syncGroupId);
         } else if (id == R.id.tab_group_open_group_menu_id
                 || id == R.id.tab_group_open_in_new_window_menu_id
                 || id == R.id.tab_group_delete_group_menu_id) {

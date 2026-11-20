@@ -939,12 +939,10 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
         GroupWindowChecker windowChecker =
                 new GroupWindowChecker(mActivity, mTabGroupSyncService, tabModel);
         boolean hasOtherGroups = windowChecker.hasOtherGroups(groupToNotBeIncluded);
+        String title =
+                TabGroupUiUtils.getAddToGroupMenuItemTitle(
+                        mActivity, groupToNotBeIncluded, hasOtherGroups, tabs.size());
         if (!hasOtherGroups) {
-            int tabCount = tabs.size();
-            String title =
-                    mActivity
-                            .getResources()
-                            .getQuantityString(R.plurals.add_tab_to_new_group_menu_item, tabCount);
             return new ListItemBuilder()
                     .withTitle(title)
                     .withMenuId(R.id.add_to_new_tab_group)
@@ -952,10 +950,6 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                     .build();
         }
 
-        int tabCount = tabs.size();
-        String title =
-                TabGroupUiUtils.getAddToGroupMenuItemTitle(
-                        mActivity, groupToNotBeIncluded, tabCount);
         Supplier<List<ListItem>> submenuProvider =
                 () -> buildMoveToTabGroupSubmenu(anchorInfo, isIncognito);
         return new ListItemBuilder()

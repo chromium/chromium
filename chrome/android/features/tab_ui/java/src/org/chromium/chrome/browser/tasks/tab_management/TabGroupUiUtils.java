@@ -110,11 +110,16 @@ public class TabGroupUiUtils {
      *
      * @param context The current context.
      * @param currentGroupId The group ID of the current tab group, or null if outside a group.
+     * @param hasOtherGroups Whether any tab groups other than {@code currentGroupId} exist.
      * @param tabCount The number of tabs to add or move.
      * @return The string title for the menu item.
      */
     public static String getAddToGroupMenuItemTitle(
-            Context context, @Nullable Token currentGroupId, int tabCount) {
+            Context context, @Nullable Token currentGroupId, boolean hasOtherGroups, int tabCount) {
+        if (!hasOtherGroups) {
+            return context.getResources()
+                    .getQuantityString(R.plurals.add_tab_to_new_group_menu_item, tabCount);
+        }
         if (currentGroupId != null) {
             return context.getString(R.string.menu_move_tab_to_group);
         }

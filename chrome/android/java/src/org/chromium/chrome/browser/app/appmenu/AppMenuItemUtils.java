@@ -113,9 +113,31 @@ public class AppMenuItemUtils {
             @StringRes int titleId,
             @DrawableRes int iconResId,
             boolean isMenuIconAtStart) {
+        return buildModelForStandardMenuItem(
+                context, theme, id, context.getString(titleId), iconResId, isMenuIconAtStart);
+    }
+
+    /**
+     * Build a property model for a standard text menu item.
+     *
+     * @param context The Context used to resolve resources.
+     * @param theme The AppMenuItemTheme handling theming aspects.
+     * @param id The id of the menu item.
+     * @param title The title to be displayed.
+     * @param iconResId The resource id of the icon to be displayed (or 0 for no icon).
+     * @param isMenuIconAtStart Whether the menu icon should be placed at the start.
+     * @return The property model for this item.
+     */
+    public static PropertyModel buildModelForStandardMenuItem(
+            Context context,
+            AppMenuItemTheme theme,
+            @IdRes int id,
+            String title,
+            @DrawableRes int iconResId,
+            boolean isMenuIconAtStart) {
         PropertyModel model =
                 buildBaseModelForTextItem(theme, id, isMenuIconAtStart)
-                        .with(AppMenuItemProperties.TITLE, context.getString(titleId))
+                        .with(AppMenuItemProperties.TITLE, title)
                         .build();
         if (iconResId != 0) {
             model.set(

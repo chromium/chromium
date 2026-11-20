@@ -43,6 +43,7 @@ import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.appmenu.AppMenuItemTheme;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
@@ -2226,6 +2227,108 @@ public class TabGroupItemBuilderUnitTest {
         assertFalse(openItem.model.get(AppMenuItemProperties.ENABLED));
     }
 
+    @Test
+    public void testBuildAddToGroupItem_multiSelectedTabs_pluralTitle() {
+        Token token1 = new Token(1L, 1L);
+        Tab tab1 = setUpMultiSelectedTabs(null, null);
+        when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of(TabGroupId.fromRawToken(token1)));
+
+        ListItem item = mTabGroupItemBuilder.buildAddToGroupItem(tab1, /* showIcon= */ false);
+
+        assertEquals(
+                mContext.getResources().getQuantityString(R.plurals.add_tab_to_group_menu_item, 2),
+                item.model.get(AppMenuItemProperties.TITLE));
+    }
+
+    @Test
+    public void testBuildAddToGroupItem_multiSelectedTabs_mixedGroupedAndUngrouped() {
+        Token token1 = new Token(1L, 1L);
+        Tab tab1 = setUpMultiSelectedTabs(token1, null);
+        when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of(TabGroupId.fromRawToken(token1)));
+        when(mTabModel.getTabGroupTitle(TabGroupId.fromRawToken(token1))).thenReturn("Group 1");
+        when(mTabModel.getTabGroupColorWithFallback(TabGroupId.fromRawToken(token1)))
+                .thenReturn(TabGroupColorId.BLUE);
+
+        assertTrue(mTabGroupItemBuilder.shouldShowAddToGroup(tab1));
+        ListItem parent = mTabGroupItemBuilder.buildTabGroupsParentItem(tab1);
+        ListItem addToGroupItem =
+                findItemById(getGroupSubmenuItems(parent), R.id.add_to_group_menu_id);
+        assertNotNull(addToGroupItem);
+        assertEquals(
+                mContext.getResources().getQuantityString(R.plurals.add_tab_to_group_menu_item, 2),
+                addToGroupItem.model.get(AppMenuItemProperties.TITLE));
+
+        List<ListItem> submenuItems = getGroupSubmenuItems(addToGroupItem);
+        assertEquals(1, submenuItems.size());
+        assertEquals(
+                token1, submenuItems.get(0).model.get(AppMenuTabGroupItemProperties.TAB_GROUP_ID));
+    }
+
+    @Test
+    public void testBuildAddToGroupItem_multiSelectedTabs_allInSameGroup() {
+        Token token1 = new Token(1L, 1L);
+        Token token2 = new Token(2L, 2L);
+        Tab tab1 = setUpMultiSelectedTabs(token1, token1);
+        when(mTabModel.getAllTabGroupIds())
+                .thenReturn(
+                        Set.of(TabGroupId.fromRawToken(token1), TabGroupId.fromRawToken(token2)));
+        when(mTabModel.getTabGroupTitle(TabGroupId.fromRawToken(token2))).thenReturn("Group 2");
+        when(mTabModel.getTabGroupColorWithFallback(TabGroupId.fromRawToken(token2)))
+                .thenReturn(TabGroupColorId.RED);
+
+        ListItem addToGroupItem =
+                mTabGroupItemBuilder.buildAddToGroupItem(tab1, /* showIcon= */ true);
+        assertEquals(
+                mContext.getString(R.string.menu_move_tab_to_group),
+                addToGroupItem.model.get(AppMenuItemProperties.TITLE));
+
+        List<ListItem> submenuItems = getGroupSubmenuItems(addToGroupItem);
+        assertEquals(1, submenuItems.size());
+        assertEquals(
+                token2, submenuItems.get(0).model.get(AppMenuTabGroupItemProperties.TAB_GROUP_ID));
+    }
+
+    @Test
+    @DisableFeatures({
+        ChromeFeatureList.SUBMENUS_IN_APP_MENU,
+        ChromeFeatureList.SUBMENUS_IN_APP_MENU_LFF
+    })
+    public void testBuildAddToGroupItem_multiSelectedTabs_submenusDisabled_noGroups() {
+        Tab tab1 = setUpMultiSelectedTabs(null, null);
+        when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of());
+        when(mTabModel.getTabGroupCount()).thenReturn(0);
+
+        ListItem newGroupItem =
+                mTabGroupItemBuilder.buildAddToGroupItem(tab1, /* showIcon= */ false);
+
+        assertEquals(AppMenuHandler.AppMenuItemType.STANDARD_NO_ICON, newGroupItem.type);
+        assertEquals(
+                mContext.getResources()
+                        .getQuantityString(R.plurals.add_tab_to_new_group_menu_item, 2),
+                newGroupItem.model.get(AppMenuItemProperties.TITLE));
+    }
+
+    @Test
+    @DisableFeatures({
+        ChromeFeatureList.SUBMENUS_IN_APP_MENU,
+        ChromeFeatureList.SUBMENUS_IN_APP_MENU_LFF
+    })
+    public void testBuildAddToGroupItem_multiSelectedTabs_submenusDisabled_withOtherGroups() {
+        Token token1 = new Token(1L, 1L);
+        Tab tab1 = setUpMultiSelectedTabs(null, null);
+        when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of(TabGroupId.fromRawToken(token1)));
+        when(mTabModel.getTabGroupCount()).thenReturn(1);
+
+        ListItem existingGroupItem =
+                mTabGroupItemBuilder.buildAddToGroupItem(tab1, /* showIcon= */ true);
+
+        assertEquals(AppMenuHandler.AppMenuItemType.STANDARD, existingGroupItem.type);
+        assertEquals(
+                mContext.getResources().getQuantityString(R.plurals.add_tab_to_group_menu_item, 2),
+                existingGroupItem.model.get(AppMenuItemProperties.TITLE));
+        assertNotNull(existingGroupItem.model.get(AppMenuItemProperties.ICON));
+    }
+
     private TabGroupItemBuilder createBuilder() {
         return new TabGroupItemBuilder(
                 mContext,
@@ -2468,5 +2571,13 @@ public class TabGroupItemBuilderUnitTest {
 
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {"sync_another"});
         when(mTabGroupSyncService.getGroup("sync_another")).thenReturn(anotherGroup);
+    }
+
+    private Tab setUpMultiSelectedTabs(@Nullable Token groupId1, @Nullable Token groupId2) {
+        Tab tab1 = createMockTab(101, "Tab 1", JUnitTestGURLs.URL_1, groupId1, false);
+        Tab tab2 = createMockTab(102, "Tab 2", JUnitTestGURLs.URL_2, groupId2, false);
+        when(mTabModel.getMultiSelectedTabsCount()).thenReturn(2);
+        when(mTabModel.getOrderedMultiSelectedTabs()).thenReturn(List.of(tab1, tab2));
+        return tab1;
     }
 }
