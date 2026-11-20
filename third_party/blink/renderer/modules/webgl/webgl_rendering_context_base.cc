@@ -1556,7 +1556,7 @@ void WebGLRenderingContextBase::InitializeNewContext() {
   DCHECK(GetDrawingBuffer());
 
   marked_canvas_dirty_ = false;
-  must_paint_to_canvas_ = false;
+  copied_contents_are_stale_ = false;
   active_texture_unit_ = 0;
   pack_alignment_ = 4;
   unpack_alignment_ = 4;
@@ -1781,10 +1781,10 @@ void WebGLRenderingContextBase::MarkContextChanged(
     return;
   }
 
-  // Regardless of whether dirty propagations are optimized away, the back
-  // buffer is now out of sync with respect to the canvas's internal backing
-  // store -- which is only used for certain purposes, like printing.
-  must_paint_to_canvas_ = true;
+  // Regardless of whether dirty propagations are optimized away, any contents
+  // previously copied into `resource_provider_` or `cached_snapshot_` are now
+  // stale.
+  copied_contents_are_stale_ = true;
 
   if (!GetDrawingBuffer()->MarkContentsChanged() && marked_canvas_dirty_) {
     return;
@@ -2152,7 +2152,7 @@ WebGLRenderingContextBase::PaintRenderingResultsToSnapshot(
     // SharedImage that we will export below, at this point we have successfully
     // painted the canvas' contents by doing any necessary clearing in the above
     // call.
-    must_paint_to_canvas_ = false;
+    copied_contents_are_stale_ = false;
 
     return GetDrawingBuffer()->ExportLowLatencyBitmap();
   }
@@ -2172,7 +2172,7 @@ WebGLRenderingContextBase::PaintRenderingResultsToSnapshot(
   // The host's ResourceProvider is purged to save memory when the tab
   // is backgrounded.
 
-  if (!must_paint_to_canvas_ && !cleared_content) {
+  if (!copied_contents_are_stale_ && !cleared_content) {
     if (resource_provider_.get()) {
       // `resource_provider_` already has the current contents.
       return resource_provider_->Snapshot();
@@ -2199,7 +2199,7 @@ WebGLRenderingContextBase::PaintRenderingResultsToSnapshot(
 
     if (cached_snapshot_) {
       // We successfully painted the canvas' contents.
-      must_paint_to_canvas_ = false;
+      copied_contents_are_stale_ = false;
     }
 
     // Whether the snapshot was successfully created or not, there is nothing
@@ -2248,7 +2248,7 @@ WebGLRenderingContextBase::PaintRenderingResultsToSnapshot(
   }
 
   // We successfully painted the canvas' contents.
-  must_paint_to_canvas_ = false;
+  copied_contents_are_stale_ = false;
   return snapshot;
 }
 
@@ -2269,7 +2269,7 @@ WebGLRenderingContextBase::PaintRenderingResultsToResource(
     // SharedImage that we will export below, at this point we have successfully
     // painted the canvas' contents by doing any necessary clearing in the above
     // call.
-    must_paint_to_canvas_ = false;
+    copied_contents_are_stale_ = false;
     return GetDrawingBuffer()->ExportLowLatencyCanvasResource();
   }
 
@@ -2280,7 +2280,8 @@ WebGLRenderingContextBase::PaintRenderingResultsToResource(
     Host()->DiscardResources();
   }
 
-  if (!must_paint_to_canvas_ && !cleared_content && resource_provider_.get()) {
+  if (!copied_contents_are_stale_ && !cleared_content &&
+      resource_provider_.get()) {
     // `resource_provider_` already has the current contents.
     return resource_provider_->ProduceCanvasResource();
   }
@@ -2408,7 +2409,7 @@ WebGLRenderingContextBase::CopyRenderingResultsFromDrawingBufferToResource(
   }
 
   // We successfully painted the contents to the resource provider.
-  must_paint_to_canvas_ = false;
+  copied_contents_are_stale_ = false;
   return resource;
 }
 

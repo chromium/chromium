@@ -865,10 +865,9 @@ class MODULES_EXPORT WebGLRenderingContextBase
   // uninitialized context whose initial CreateDrawingBuffer() failed.
   bool was_activated_ = false;
   bool marked_canvas_dirty_;
-  // For performance reasons we must separately track whether we've
-  // copied WebGL's drawing buffer to the canvas's backing store, for
-  // example for printing.
-  bool must_paint_to_canvas_;
+  // Tracks whether `DrawingBuffer` has been modified since its contents were
+  // last copied into `resource_provider_` or `cached_snapshot_`.
+  bool copied_contents_are_stale_;
 
   // List of bound VBO's. Used to maintain info about sizes for ARRAY_BUFFER and
   // stored values for ELEMENT_ARRAY_BUFFER
