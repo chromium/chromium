@@ -1184,7 +1184,6 @@
       {
         "args": [
           "--avd-config=../../tools/android/avd/proto/android_37_google_apis_ps16k_x64.textpb",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_17.content_browsertests.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -2346,7 +2345,7 @@
       {
         "args": [
           "--avd-config=../../tools/android/avd/proto/android_37_google_apis_ps16k_x64.textpb",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.media_unittests.filter;../../testing/buildbot/filters/android.emulator_17.media_unittests.filter",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.media_unittests.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],

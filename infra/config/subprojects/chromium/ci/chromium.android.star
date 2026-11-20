@@ -4372,9 +4372,6 @@ ci.builder(
                 ],
             ),
             "content_browsertests": targets.mixin(
-                args = [
-                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_17.content_browsertests.filter",
-                ],
                 swarming = targets.swarming(
                     shards = 30,
                 ),
@@ -4399,7 +4396,7 @@ ci.builder(
             ),
             "media_unittests": targets.mixin(
                 args = [
-                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.media_unittests.filter;../../testing/buildbot/filters/android.emulator_17.media_unittests.filter",
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.media_unittests.filter",
                 ],
             ),
             "perfetto_unittests": targets.mixin(
