@@ -17659,7 +17659,6 @@ void RenderFrameHostImpl::TakeNewDocumentPropertiesFromNavigation(
   local_network_access_request_policy_ =
       navigation_request->local_network_access_request_policy();
 
-  reporting_endpoints_.clear();
   CHECK(navigation_request);
 
   // Reporting API: If a Reporting-Endpoints header was received with this

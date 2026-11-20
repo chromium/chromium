@@ -5393,14 +5393,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // JavaScript / WebAssembly resources.
   CodeCacheHostImpl::ReceiverSet code_cache_host_receivers_;
 
-  // Holds the mapping of names to URLs of reporting endpoints for the current
-  // document, as parsed from the Reporting-Endpoints response header. This data
-  // comes directly from the structured header parser, and does not necessarily
-  // represent a valid reporting configuration. This is passed to the network
-  // service to set up the actual endpoint configuration once the document load
-  // commits.
-  base::flat_map<std::string, std::string> reporting_endpoints_;
-
   // This indicates whether `this` is not nested in a fenced frame, or `this` is
   // associated with a fenced frame root, or `this` is associated with an iframe
   // nested within a fenced frame.
