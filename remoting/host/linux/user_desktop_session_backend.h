@@ -25,6 +25,7 @@
 #include "base/threading/sequence_bound.h"
 #include "base/timer/timer.h"
 #include "base/types/expected.h"
+#include "remoting/base/errors.h"
 #include "remoting/base/loggable.h"
 #include "remoting/base/passwd_utils.h"
 #include "remoting/host/desktop_session.h"
@@ -77,6 +78,35 @@ class UserDesktopSessionBackend final : public DesktopSessionBackend {
  private:
   friend class UserDesktopSessionBackendTest;
 
+  enum class SessionState {
+    // Looking for an existing graphical session or deciding how to proceed.
+    kDiscovering,
+    // Terminating the blocking local graphical session before creating a remote
+    // session.
+    kTerminatingLocalSession,
+    // Waiting for a remote session requested via `session_creator_` to appear
+    // in systemd-logind.
+    kCreatingRemoteSession,
+    // Attached to a systemd-logind session (`desktop_session` has a
+    // `current_session_id()`).
+    kAttached,
+  };
+
+  enum class LocalSessionCurtainAction {
+    // Report ErrorCode::UNCURTAINED_SESSION (custom mode; client cannot
+    // recover with `Terminate-Local-Session`).
+    kRejectUncurtainable,
+    // Reject immediately with ErrorCode::SESSION_REJECTED without terminating
+    // any local session (auto-session mode with an ineligible user).
+    kRejectIneligible,
+    // Report ErrorCode::LOCAL_SESSION_RUNNING (auto-session mode with an
+    // eligible user without `Terminate-Local-Session`).
+    kRejectLocalSessionRunning,
+    // Terminate the blocking local graphical session and request a remote
+    // session once it is removed.
+    kTerminateAndCreateRemote,
+  };
+
   // Run with the session ID of a tracked session once it has been handled by
   // TerminateAllSessions(). See OnTrackedSessionInfo().
   using TrackedSessionDoneCallback =
@@ -86,6 +116,13 @@ class UserDesktopSessionBackend final : public DesktopSessionBackend {
   // nullptr if no suitable session is found.
   static const LoginSessionManager::SessionInfo* SelectBestGraphicalSession(
       base::span<const LoginSessionManager::SessionInfo> sessions);
+
+  // Decides how to handle a blocking local graphical session when Curtain Mode
+  // is required.
+  static LocalSessionCurtainAction DecideLocalSessionCurtainAction(
+      bool create_remote_user_sessions,
+      bool terminate_local_session,
+      bool is_eligible_for_remote_session);
 
   // Checks whether a remote session may be created for `requested_username`
   // without interactive authentication, given its passwd entry `user_info` and
@@ -98,9 +135,10 @@ class UserDesktopSessionBackend final : public DesktopSessionBackend {
 
   // Looks up the passwd entry of `username`, then checks it with
   // CheckCreateRemoteSessionUserInfo() and checks that PAM allows the user to
-  // log in. Returns an error describing why not otherwise.
-  static base::expected<void, Loggable> CheckCreateRemoteSessionEligibility(
-      const std::string& username);
+  // log in. Returns the passwd entry on success, or an error describing why not
+  // otherwise.
+  static base::expected<PasswdUserInfo, Loggable>
+  CheckCreateRemoteSessionEligibility(const std::string& username);
 
   // Returns whether `session`, which a connection attached to while waiting
   // for a session requested via `session_creator_`, should be recorded as
@@ -120,17 +158,21 @@ class UserDesktopSessionBackend final : public DesktopSessionBackend {
   // requested session doesn't exist.
   static bool IsNoSuchSessionError(std::string_view error);
 
-  // A connection is in one of these states:
-  // - Looking for the user's graphical session: `creation_timeout` is null and
-  //   `desktop_session` has no `current_session_id()`.
-  // - Waiting for a session requested via `session_creator_` to show up in
-  //   logind: `creation_timeout` is non-null. The user's sessions are looked
-  //   up again on each `SessionNew` signal.
-  // - Attached: `desktop_session` has a `current_session_id()`.
   struct ActiveSessionEntry {
+    ActiveSessionEntry();
+    ActiveSessionEntry(std::string username,
+                       base::WeakPtr<DesktopSessionLinux> desktop_session,
+                       bool terminate_local_session);
+    ~ActiveSessionEntry();
+    ActiveSessionEntry(ActiveSessionEntry&&);
+    ActiveSessionEntry& operator=(ActiveSessionEntry&&);
+
     std::string username;
     base::WeakPtr<DesktopSessionLinux> desktop_session;
-    std::unique_ptr<base::OneShotTimer> creation_timeout;
+    SessionState state = SessionState::kDiscovering;
+    bool terminate_local_session = false;
+    std::string pending_termination_session_id;
+    std::unique_ptr<base::OneShotTimer> state_timeout;
   };
 
   // Validates `options` against `routing_config_` and active sessions. Returns
@@ -146,6 +188,25 @@ class UserDesktopSessionBackend final : public DesktopSessionBackend {
       int terminal_id,
       base::expected<std::vector<LoginSessionManager::SessionInfo>, Loggable>
           result);
+
+  // Looks up user credentials, validates session access via `desktop_session`
+  // (so credential/PAM rejections still precede curtain errors), and then
+  // terminates `desktop_session` with `error_code`.
+  void RejectUncurtainedLocalSession(
+      DesktopSessionLinux& desktop_session,
+      const LoginSessionManager::SessionInfo& session,
+      ErrorCode error_code);
+
+  // Terminates the blocking local graphical session for `terminal_id`'s user
+  // and waits for its `SessionRemoved` signal before creating a remote session.
+  void TerminateLocalThenCreateRemoteSession(
+      int terminal_id,
+      const LoginSessionManager::SessionInfo& session,
+      uid_t expected_uid);
+  void OnTerminateLocalSessionResult(int terminal_id,
+                                     std::string session_id,
+                                     base::expected<void, Loggable> result);
+  void OnLocalSessionTerminationTimeout(int terminal_id);
 
   // Checks that the user of `terminal_id`'s connection is allowed to have a
   // remote session created, then requests one via `session_creator_` and waits
@@ -192,9 +253,10 @@ class UserDesktopSessionBackend final : public DesktopSessionBackend {
       base::expected<void, Loggable> termination_result,
       base::expected<void, Loggable> remove_result);
 
-  // Returns the entry for `terminal_id` if it is waiting for a requested
-  // session to show up, or nullptr otherwise.
-  ActiveSessionEntry* GetEntryPendingCreation(int terminal_id);
+  // Returns the entry for `terminal_id` if it exists, has a live
+  // `desktop_session`, and is in `expected_state`, or nullptr otherwise.
+  ActiveSessionEntry* GetEntryInState(int terminal_id,
+                                      SessionState expected_state);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

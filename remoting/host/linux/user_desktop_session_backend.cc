@@ -59,10 +59,21 @@ namespace {
 // GdmRemoteUserDesktopSessionCreator is longer than this.
 constexpr base::TimeDelta kSessionCreationTimeout = base::Seconds(30);
 
+// How long to wait for the blocking local graphical session to be removed from
+// logind after calling TerminateSession().
+constexpr base::TimeDelta kSessionTerminationTimeout = base::Seconds(30);
+
 // Substring of the D-Bus error returned by logind when a session doesn't
 // exist.
 constexpr std::string_view kNoSuchSessionError =
     "org.freedesktop.login1.NoSuchSession";
+
+bool IsActiveGraphicalUserSession(
+    const LoginSessionManager::SessionInfo& session) {
+  return session.session_class == "user" &&
+         (session.session_type == "wayland" || session.session_type == "x11") &&
+         session.state != "closing";
+}
 
 void LogIfTrackerError(std::string_view operation,
                        base::expected<void, Loggable> result) {
@@ -82,9 +93,7 @@ UserDesktopSessionBackend::SelectBestGraphicalSession(
   std::tuple<int, bool, bool> best_priority = {-1, false, false};
 
   for (const auto& session : sessions) {
-    if (session.session_class != "user" ||
-        (session.session_type != "wayland" && session.session_type != "x11") ||
-        session.state == "closing") {
+    if (!IsActiveGraphicalUserSession(session)) {
       continue;
     }
 
@@ -116,6 +125,23 @@ UserDesktopSessionBackend::SelectBestGraphicalSession(
 }
 
 // static
+UserDesktopSessionBackend::LocalSessionCurtainAction
+UserDesktopSessionBackend::DecideLocalSessionCurtainAction(
+    bool create_remote_user_sessions,
+    bool terminate_local_session,
+    bool is_eligible_for_remote_session) {
+  if (!create_remote_user_sessions) {
+    return LocalSessionCurtainAction::kRejectUncurtainable;
+  }
+  if (!is_eligible_for_remote_session) {
+    return LocalSessionCurtainAction::kRejectIneligible;
+  }
+  return terminate_local_session
+             ? LocalSessionCurtainAction::kTerminateAndCreateRemote
+             : LocalSessionCurtainAction::kRejectLocalSessionRunning;
+}
+
+// static
 base::expected<void, Loggable>
 UserDesktopSessionBackend::CheckCreateRemoteSessionUserInfo(
     std::string_view requested_username,
@@ -144,7 +170,7 @@ UserDesktopSessionBackend::CheckCreateRemoteSessionUserInfo(
 }
 
 // static
-base::expected<void, Loggable>
+base::expected<PasswdUserInfo, Loggable>
 UserDesktopSessionBackend::CheckCreateRemoteSessionEligibility(
     const std::string& username) {
   auto user_info = GetPasswdUserInfo(username);
@@ -155,13 +181,13 @@ UserDesktopSessionBackend::CheckCreateRemoteSessionEligibility(
   auto result = CheckCreateRemoteSessionUserInfo(username, *user_info,
                                                  GetValidLoginShells());
   if (!result.has_value()) {
-    return result;
+    return base::unexpected(std::move(result.error()));
   }
   if (!IsLocalLoginAllowed(username)) {
     return base::unexpected(
         Loggable(FROM_HERE, "PAM does not allow the user to log in."));
   }
-  return base::ok();
+  return std::move(*user_info);
 }
 
 // static
@@ -181,15 +207,28 @@ bool UserDesktopSessionBackend::ShouldTerminateTrackedSession(
   // SSH session of the same user that reuses the session ID.
   return session.session_id == entry.session_id && session.uid == entry.uid &&
          session.username == entry.username && session.is_remote &&
-         session.session_class == "user" &&
-         (session.session_type == "wayland" || session.session_type == "x11") &&
-         session.state != "closing";
+         IsActiveGraphicalUserSession(session);
 }
 
 // static
 bool UserDesktopSessionBackend::IsNoSuchSessionError(std::string_view error) {
   return error.contains(kNoSuchSessionError);
 }
+
+UserDesktopSessionBackend::ActiveSessionEntry::ActiveSessionEntry() = default;
+UserDesktopSessionBackend::ActiveSessionEntry::ActiveSessionEntry(
+    std::string username,
+    base::WeakPtr<DesktopSessionLinux> desktop_session,
+    bool terminate_local_session)
+    : username(std::move(username)),
+      desktop_session(std::move(desktop_session)),
+      terminate_local_session(terminate_local_session) {}
+UserDesktopSessionBackend::ActiveSessionEntry::~ActiveSessionEntry() = default;
+UserDesktopSessionBackend::ActiveSessionEntry::ActiveSessionEntry(
+    ActiveSessionEntry&&) = default;
+UserDesktopSessionBackend::ActiveSessionEntry&
+UserDesktopSessionBackend::ActiveSessionEntry::operator=(ActiveSessionEntry&&) =
+    default;
 
 UserDesktopSessionBackend::UserDesktopSessionBackend(
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
@@ -218,12 +257,16 @@ std::unique_ptr<DesktopSession> UserDesktopSessionBackend::CreateDesktopSession(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto desktop_session = std::make_unique<DesktopSessionLinux>(
-      daemon_process, id, options.required_username, options.client_id,
-      io_task_runner_,
+      daemon_process, id, io_task_runner_,
       base::IgnoreArgs<DesktopSessionLinux::DestructionReason>(
           base::BindOnce(&UserDesktopSessionBackend::RemoveDesktopSession,
                          weak_ptr_factory_.GetWeakPtr(), id)),
-      options.curtain_required, /*is_greeter_allowed=*/false);
+      DesktopSessionLinux::Options{
+          .required_username = options.required_username,
+          .client_id = options.client_id,
+          .curtain_required = options.curtain_required,
+          .is_greeter_allowed = false,
+      });
 
   auto resolved_user = ValidateClientSession(options);
   if (!resolved_user.has_value()) {
@@ -236,7 +279,8 @@ std::unique_ptr<DesktopSession> UserDesktopSessionBackend::CreateDesktopSession(
   }
 
   desktop_sessions_[id] =
-      ActiveSessionEntry{*resolved_user, desktop_session->GetWeakPtr()};
+      ActiveSessionEntry(*resolved_user, desktop_session->GetWeakPtr(),
+                         options.terminate_local_session);
 
   if (login_session_manager_) {
     ListUserSessions(id);
@@ -388,9 +432,10 @@ void UserDesktopSessionBackend::OnListUserSessionsResult(
   }
   ActiveSessionEntry& entry = it->second;
   auto desktop_session = entry.desktop_session;
-  if (!desktop_session->current_session_id().empty()) {
-    // Already attached to a session, e.g. because a lookup triggered by an
-    // earlier `SessionNew` signal attached first.
+  if (entry.state == SessionState::kTerminatingLocalSession ||
+      entry.state == SessionState::kAttached) {
+    // Already attached to a session (e.g. a concurrent SessionNew lookup
+    // attached first), or waiting for the local session to terminate.
     // Calling SetSessionInfo() again would relaunch the desktop process.
     return;
   }
@@ -398,7 +443,7 @@ void UserDesktopSessionBackend::OnListUserSessionsResult(
   if (!result.has_value()) {
     LOG(ERROR) << "Failed to list sessions for user " << entry.username << ": "
                << result.error();
-    // This erases `entry` synchronously, which also stops `creation_timeout`.
+    // This erases `entry` synchronously, which also stops `state_timeout`.
     desktop_session->TerminateSession(
         ErrorCode::INVALID_STATE, "Failed to query systemd-logind sessions.",
         FROM_HERE);
@@ -407,7 +452,7 @@ void UserDesktopSessionBackend::OnListUserSessionsResult(
 
   const auto* best_session = SelectBestGraphicalSession(*result);
   if (!best_session) {
-    if (entry.creation_timeout) {
+    if (entry.state == SessionState::kCreatingRemoteSession) {
       // Still waiting for the requested session to show up.
       return;
     }
@@ -421,13 +466,51 @@ void UserDesktopSessionBackend::OnListUserSessionsResult(
         "No graphical user session found for user.", FROM_HERE);
     return;
   }
-  if (entry.creation_timeout && desktop_session->curtain_required() &&
+  if (desktop_session->curtain_required() &&
       !DesktopSessionLinux::IsSessionCompatibleWithCurtainMode(*best_session)) {
-    // Still waiting for the requested remote session to show up.
-    return;
+    if (entry.state == SessionState::kCreatingRemoteSession) {
+      // Still waiting for the requested remote session to show up.
+      return;
+    }
+
+    std::optional<PasswdUserInfo> eligible_user_info;
+    if (routing_config_.create_remote_user_sessions()) {
+      auto eligibility = CheckCreateRemoteSessionEligibility(entry.username);
+      if (eligibility.has_value()) {
+        eligible_user_info = std::move(*eligibility);
+      } else {
+        LOG(WARNING) << "User " << entry.username
+                     << " is not eligible for remote session creation: "
+                     << eligibility.error();
+      }
+    }
+
+    switch (DecideLocalSessionCurtainAction(
+        routing_config_.create_remote_user_sessions(),
+        entry.terminate_local_session, eligible_user_info.has_value())) {
+      case LocalSessionCurtainAction::kRejectUncurtainable:
+        RejectUncurtainedLocalSession(*desktop_session, *best_session,
+                                      ErrorCode::UNCURTAINED_SESSION);
+        return;
+      case LocalSessionCurtainAction::kRejectIneligible:
+        desktop_session->TerminateSession(
+            ErrorCode::SESSION_REJECTED,
+            "User is not allowed to have a remote session created.", FROM_HERE);
+        return;
+      case LocalSessionCurtainAction::kRejectLocalSessionRunning:
+        RejectUncurtainedLocalSession(*desktop_session, *best_session,
+                                      ErrorCode::LOCAL_SESSION_RUNNING);
+        return;
+      case LocalSessionCurtainAction::kTerminateAndCreateRemote:
+        TerminateLocalThenCreateRemoteSession(terminal_id, *best_session,
+                                              eligible_user_info->uid);
+        return;
+    }
   }
-  bool was_pending_creation = entry.creation_timeout != nullptr;
-  entry.creation_timeout.reset();
+  bool was_pending_creation =
+      entry.state == SessionState::kCreatingRemoteSession;
+  entry.state = SessionState::kAttached;
+  entry.state_timeout.reset();
   if (was_pending_creation && ShouldTrackCreatedSession(*best_session)) {
     // Track the session before any of the checks below, since it has been
     // created regardless of whether the connection can attach to it.
@@ -462,6 +545,125 @@ void UserDesktopSessionBackend::OnListUserSessionsResult(
   desktop_session->SetSessionInfo(*best_session, *user_info);
 }
 
+void UserDesktopSessionBackend::RejectUncurtainedLocalSession(
+    DesktopSessionLinux& desktop_session,
+    const LoginSessionManager::SessionInfo& session,
+    ErrorCode error_code) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  auto user_info = GetPasswdUserInfo(session.username);
+  if (!user_info.has_value()) {
+    LOG(ERROR) << "Failed to find passwd entry for session user "
+               << session.username << ": " << user_info.error();
+    desktop_session.TerminateSession(ErrorCode::INVALID_STATE,
+                                     "Failed to look up user credentials.",
+                                     FROM_HERE);
+    return;
+  }
+
+  if (!desktop_session.ValidateSessionAccess(session, *user_info)) {
+    return;
+  }
+
+  LOG(ERROR) << "Curtain mode is not supported for local session "
+             << session.session_id;
+  desktop_session.TerminateSession(
+      error_code,
+      "A local graphical session is already running while curtain mode is "
+      "required.",
+      FROM_HERE);
+}
+
+void UserDesktopSessionBackend::TerminateLocalThenCreateRemoteSession(
+    int terminal_id,
+    const LoginSessionManager::SessionInfo& session,
+    uid_t expected_uid) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  ActiveSessionEntry* entry =
+      GetEntryInState(terminal_id, SessionState::kDiscovering);
+  if (!entry) {
+    return;
+  }
+
+  if (session.username != entry->username || session.uid != expected_uid) {
+    LOG(ERROR) << "Refusing to terminate local session " << session.session_id
+               << " (user " << session.username << ", UID " << session.uid
+               << ") because it does not match target user " << entry->username
+               << " (UID " << expected_uid << ").";
+    entry->desktop_session->TerminateSession(
+        ErrorCode::INVALID_STATE,
+        "Session credentials do not match target user.", FROM_HERE);
+    return;
+  }
+
+  // If the user somehow has multiple local graphical sessions (rare), only the
+  // selected one is terminated; if remote session creation fails as a result,
+  // a retry handles the next one, otherwise the extra local session is left
+  // running.
+  entry->state = SessionState::kTerminatingLocalSession;
+  entry->pending_termination_session_id = session.session_id;
+  entry->state_timeout = std::make_unique<base::OneShotTimer>();
+  entry->state_timeout->Start(
+      FROM_HERE, kSessionTerminationTimeout,
+      base::BindOnce(
+          &UserDesktopSessionBackend::OnLocalSessionTerminationTimeout,
+          weak_ptr_factory_.GetWeakPtr(), terminal_id));
+
+  HOST_LOG << "Terminating local graphical session " << session.session_id
+           << " for user " << entry->username << ".";
+  login_session_manager_->TerminateSession(
+      session.object_path,
+      base::BindOnce(&UserDesktopSessionBackend::OnTerminateLocalSessionResult,
+                     weak_ptr_factory_.GetWeakPtr(), terminal_id,
+                     session.session_id));
+}
+
+void UserDesktopSessionBackend::OnTerminateLocalSessionResult(
+    int terminal_id,
+    std::string session_id,
+    base::expected<void, Loggable> result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  ActiveSessionEntry* entry =
+      GetEntryInState(terminal_id, SessionState::kTerminatingLocalSession);
+  if (!entry) {
+    return;
+  }
+
+  if (result.has_value()) {
+    // Termination accepted by logind; wait for SessionRemoved before
+    // requesting a remote session.
+    return;
+  }
+
+  // If the local session exited on its own between ListUserSessions() and
+  // TerminateSession(), Session.Terminate fails (e.g. UnknownObject). Terminate
+  // cleanly with INVALID_STATE so no stale state remains and a retry succeeds.
+  LOG(ERROR) << "Failed to terminate local graphical session " << session_id
+             << " for user " << entry->username << ": " << result.error();
+  entry->desktop_session->TerminateSession(
+      ErrorCode::INVALID_STATE, "Failed to terminate local graphical session.",
+      FROM_HERE);
+}
+
+void UserDesktopSessionBackend::OnLocalSessionTerminationTimeout(
+    int terminal_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  ActiveSessionEntry* entry =
+      GetEntryInState(terminal_id, SessionState::kTerminatingLocalSession);
+  if (!entry) {
+    return;
+  }
+
+  LOG(ERROR) << "Timed out waiting for local graphical session for user "
+             << entry->username << " to terminate.";
+  entry->desktop_session->TerminateSession(
+      ErrorCode::OPERATION_TIMEOUT,
+      "Timed out waiting for local graphical session to terminate.", FROM_HERE);
+}
+
 void UserDesktopSessionBackend::CreateRemoteUserSession(int terminal_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -470,7 +672,8 @@ void UserDesktopSessionBackend::CreateRemoteUserSession(int terminal_id) {
     return;
   }
   ActiveSessionEntry& entry = it->second;
-  HOST_LOG << "No graphical session found for user " << entry.username << ".";
+  HOST_LOG << "Requesting a remote graphical session for user "
+           << entry.username << ".";
 
   // The session is created without interactive authentication, so make sure
   // that the user is allowed to log in first.
@@ -486,8 +689,9 @@ void UserDesktopSessionBackend::CreateRemoteUserSession(int terminal_id) {
     return;
   }
 
-  entry.creation_timeout = std::make_unique<base::OneShotTimer>();
-  entry.creation_timeout->Start(
+  entry.state = SessionState::kCreatingRemoteSession;
+  entry.state_timeout = std::make_unique<base::OneShotTimer>();
+  entry.state_timeout->Start(
       FROM_HERE, kSessionCreationTimeout,
       base::BindOnce(&UserDesktopSessionBackend::OnSessionCreationTimeout,
                      weak_ptr_factory_.GetWeakPtr(), terminal_id));
@@ -503,7 +707,8 @@ void UserDesktopSessionBackend::OnCreateSessionResult(
     base::expected<void, Loggable> result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  ActiveSessionEntry* entry = GetEntryPendingCreation(terminal_id);
+  ActiveSessionEntry* entry =
+      GetEntryInState(terminal_id, SessionState::kCreatingRemoteSession);
   if (!entry) {
     return;
   }
@@ -511,7 +716,7 @@ void UserDesktopSessionBackend::OnCreateSessionResult(
   if (!result.has_value()) {
     LOG(ERROR) << "Failed to create a remote session for user "
                << entry->username << ": " << result.error();
-    // This erases `entry` synchronously, which also stops `creation_timeout`.
+    // This erases `entry` synchronously, which also stops `state_timeout`.
     entry->desktop_session->TerminateSession(
         ErrorCode::SESSION_REJECTED, "Failed to create remote user session.",
         FROM_HERE);
@@ -525,14 +730,15 @@ void UserDesktopSessionBackend::OnCreateSessionResult(
 void UserDesktopSessionBackend::OnSessionCreationTimeout(int terminal_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  ActiveSessionEntry* entry = GetEntryPendingCreation(terminal_id);
+  ActiveSessionEntry* entry =
+      GetEntryInState(terminal_id, SessionState::kCreatingRemoteSession);
   if (!entry) {
     return;
   }
 
   LOG(ERROR) << "Timed out waiting for the remote session for user "
              << entry->username << " to start.";
-  // This erases `entry` synchronously, including `creation_timeout`.
+  // This erases `entry` synchronously, including `state_timeout`.
   entry->desktop_session->TerminateSession(
       ErrorCode::INVALID_STATE,
       "Timed out waiting for the remote user session to start.", FROM_HERE);
@@ -547,19 +753,21 @@ void UserDesktopSessionBackend::OnSessionNew(
   // sessions of every connection waiting for a requested session. There are
   // rarely more than a few.
   for (const auto& [id, entry] : desktop_sessions_) {
-    if (entry.desktop_session && entry.creation_timeout) {
+    if (entry.desktop_session &&
+        entry.state == SessionState::kCreatingRemoteSession) {
       ListUserSessions(id);
     }
   }
 }
 
 UserDesktopSessionBackend::ActiveSessionEntry*
-UserDesktopSessionBackend::GetEntryPendingCreation(int terminal_id) {
+UserDesktopSessionBackend::GetEntryInState(int terminal_id,
+                                           SessionState expected_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto it = desktop_sessions_.find(terminal_id);
   if (it == desktop_sessions_.end() || !it->second.desktop_session ||
-      !it->second.creation_timeout) {
+      it->second.state != expected_state) {
     return nullptr;
   }
   return &it->second;
@@ -577,10 +785,17 @@ void UserDesktopSessionBackend::OnSessionRemoved(
       .Then(base::BindOnce(&LogIfTrackerError, "untrack"));
 
   std::vector<base::WeakPtr<DesktopSessionLinux>> sessions_to_terminate;
-  for (const auto& [id, entry] : desktop_sessions_) {
-    if (entry.desktop_session &&
-        entry.desktop_session->current_session_id() == session_id) {
+  std::vector<int> ready_terminal_ids;
+  for (auto& [id, entry] : desktop_sessions_) {
+    if (!entry.desktop_session) {
+      continue;
+    }
+    if (entry.desktop_session->current_session_id() == session_id) {
       sessions_to_terminate.push_back(entry.desktop_session);
+    } else if (entry.state == SessionState::kTerminatingLocalSession &&
+               entry.pending_termination_session_id == session_id) {
+      entry.pending_termination_session_id.clear();
+      ready_terminal_ids.push_back(id);
     }
   }
 
@@ -589,6 +804,9 @@ void UserDesktopSessionBackend::OnSessionRemoved(
       session->TerminateSession(ErrorCode::SESSION_REJECTED,
                                 "Login session terminated.", FROM_HERE);
     }
+  }
+  for (int terminal_id : ready_terminal_ids) {
+    CreateRemoteUserSession(terminal_id);
   }
 }
 

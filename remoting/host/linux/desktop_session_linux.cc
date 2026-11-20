@@ -68,19 +68,16 @@ base::FilePath GetSessionCgroupProcsPath(uid_t uid,
 DesktopSessionLinux::DesktopSessionLinux(
     DaemonProcess* daemon_process,
     int id,
-    std::string_view required_username,
-    std::string_view client_id,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
     DestroyedCallback on_destroyed,
-    bool curtain_required,
-    bool is_greeter_allowed)
+    const Options& options)
     : DesktopSession(daemon_process, id),
-      required_username_(required_username),
-      client_id_(client_id),
+      required_username_(options.required_username),
+      client_id_(options.client_id),
       io_task_runner_(io_task_runner),
       on_destroyed_(std::move(on_destroyed)),
-      curtain_required_(curtain_required),
-      is_greeter_allowed_(is_greeter_allowed) {}
+      curtain_required_(options.curtain_required),
+      is_greeter_allowed_(options.is_greeter_allowed) {}
 
 DesktopSessionLinux::~DesktopSessionLinux() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -97,14 +94,10 @@ bool DesktopSessionLinux::IsSessionCompatibleWithCurtainMode(
          session_info.service == "chrome-remote-desktop";
 }
 
-void DesktopSessionLinux::SetSessionInfo(
+bool DesktopSessionLinux::ValidateSessionAccess(
     const LoginSessionManager::SessionInfo& session_info,
     const PasswdUserInfo& user_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  current_session_id_ = session_info.session_id;
-  current_uid_ = user_info.uid;
-  is_local_session_ = !IsSessionCompatibleWithCurtainMode(session_info);
 
   if (session_info.uid != user_info.uid) {
     TerminateSession(
@@ -112,7 +105,7 @@ void DesktopSessionLinux::SetSessionInfo(
         base::StringPrintf("Session UID (%u) does not match user UID (%u).",
                            session_info.uid, user_info.uid),
         FROM_HERE);
-    return;
+    return false;
   }
 
   if (!IsSessionUsernameAllowed(session_info, user_info)) {
@@ -121,7 +114,7 @@ void DesktopSessionLinux::SetSessionInfo(
         base::StringPrintf("User %s does not match the required username.",
                            user_info.username.c_str()),
         FROM_HERE);
-    return;
+    return false;
   }
 
   if (!IsUidAllowedForDesktopSession(
@@ -133,7 +126,7 @@ void DesktopSessionLinux::SetSessionInfo(
             "User %s (UID %u) is not allowed for desktop sessions.",
             user_info.username.c_str(), user_info.uid),
         FROM_HERE);
-    return;
+    return false;
   }
 
   if (!IsLocalLoginAllowed(user_info.username)) {
@@ -142,8 +135,24 @@ void DesktopSessionLinux::SetSessionInfo(
         base::StringPrintf("Local login for user %s is disallowed by PAM.",
                            user_info.username.c_str()),
         FROM_HERE);
+    return false;
+  }
+
+  return true;
+}
+
+void DesktopSessionLinux::SetSessionInfo(
+    const LoginSessionManager::SessionInfo& session_info,
+    const PasswdUserInfo& user_info) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!ValidateSessionAccess(session_info, user_info)) {
     return;
   }
+
+  current_session_id_ = session_info.session_id;
+  current_uid_ = user_info.uid;
+  is_local_session_ = !IsSessionCompatibleWithCurtainMode(session_info);
 
   if (!ValidateCurtainMode()) {
     return;
@@ -239,7 +248,11 @@ void DesktopSessionLinux::ReconnectNetworkChannel(
   }
 
   // `curtain_required` may change between connections when session policies
-  // change.
+  // change. If `curtain_required` flips from false to true mid-session while
+  // attached to a local session (rare), ValidateCurtainMode() terminates the
+  // session with UNCURTAINED_SESSION leaving no stale state, and a fresh
+  // reconnect runs the backend's normal flow (`LOCAL_SESSION_RUNNING` /
+  // `Terminate-Local-Session`).
   curtain_required_ = options.curtain_required;
   if (!ValidateCurtainMode()) {
     return;
@@ -406,11 +419,11 @@ bool DesktopSessionLinux::ValidateCurtainMode() {
   if (curtain_required_ && is_local_session_) {
     LOG(ERROR) << "Curtain mode is not supported for local session "
                << current_session_id_;
-    // TODO: crbug.com/587093166 - Report a dedicated ErrorCode for uncurtained
-    // local sessions.
-    TerminateSession(ErrorCode::HOST_CONFIGURATION_ERROR,
-                     "Curtain mode is not supported for local sessions.",
-                     FROM_HERE);
+    TerminateSession(
+        ErrorCode::UNCURTAINED_SESSION,
+        "A local graphical session is already running while curtain mode is "
+        "required.",
+        FROM_HERE);
     return false;
   }
   return true;

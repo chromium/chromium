@@ -123,11 +123,15 @@ GdmManagedDesktopSessionBackend::CreateDesktopSession(
   }
 
   auto desktop_session = std::make_unique<DesktopSessionLinux>(
-      daemon_process, id, options.required_username, options.client_id,
-      io_task_runner_,
+      daemon_process, id, io_task_runner_,
       base::BindOnce(&GdmManagedDesktopSessionBackend::RemoveDesktopSession,
                      weak_ptr_factory_.GetWeakPtr(), display_name),
-      options.curtain_required, /*is_greeter_allowed=*/true);
+      DesktopSessionLinux::Options{
+          .required_username = options.required_username,
+          .client_id = options.client_id,
+          .curtain_required = options.curtain_required,
+          .is_greeter_allowed = true,
+      });
 
   if (auto* info =
           remote_display_session_manager_.GetRemoteDisplayInfo(display_name)) {

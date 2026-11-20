@@ -47,15 +47,19 @@ class DesktopSessionLinux : public DesktopSession,
 
   using DestroyedCallback = base::OnceCallback<void(DestructionReason)>;
 
+  struct Options {
+    std::string_view required_username;
+    std::string_view client_id;
+    bool curtain_required = false;
+    bool is_greeter_allowed = false;
+  };
+
   DesktopSessionLinux(
       DaemonProcess* daemon_process,
       int id,
-      std::string_view required_username,
-      std::string_view client_id,
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
       DestroyedCallback on_destroyed,
-      bool curtain_required,
-      bool is_greeter_allowed = false);
+      const Options& options);
   ~DesktopSessionLinux() override;
 
   DesktopSessionLinux(const DesktopSessionLinux&) = delete;
@@ -65,6 +69,14 @@ class DesktopSessionLinux : public DesktopSession,
   // non-CRD sessions cannot be curtained and return false.
   static bool IsSessionCompatibleWithCurtainMode(
       const LoginSessionManager::SessionInfo& session_info);
+
+  // Validates UID, username, UID allowlist, and PAM login checks for
+  // `session_info` and `user_info`. If access is denied, terminates the
+  // session with ErrorCode::SESSION_REJECTED (deleting `this`) and returns
+  // false.
+  bool ValidateSessionAccess(
+      const LoginSessionManager::SessionInfo& session_info,
+      const PasswdUserInfo& user_info);
 
   // Associates this session with a systemd login session and user credentials,
   // launching or re-launching the desktop process.
@@ -136,7 +148,7 @@ class DesktopSessionLinux : public DesktopSession,
       GUARDED_BY_CONTEXT(sequence_checker_);
   DestroyedCallback on_destroyed_ GUARDED_BY_CONTEXT(sequence_checker_);
   bool curtain_required_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
-  bool is_greeter_allowed_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+  const bool is_greeter_allowed_ = false;
 
   std::unique_ptr<WorkerProcessLauncher> launcher_
       GUARDED_BY_CONTEXT(sequence_checker_);

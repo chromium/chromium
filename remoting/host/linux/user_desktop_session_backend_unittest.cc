@@ -94,6 +94,18 @@ class UserDesktopSessionBackendTest : public testing::Test {
   static bool IsNoSuchSessionError(std::string_view error) {
     return UserDesktopSessionBackend::IsNoSuchSessionError(error);
   }
+
+  using LocalSessionCurtainAction =
+      UserDesktopSessionBackend::LocalSessionCurtainAction;
+
+  static LocalSessionCurtainAction DecideLocalSessionCurtainAction(
+      bool create_remote_user_sessions,
+      bool terminate_local_session,
+      bool is_eligible_for_remote_session) {
+    return UserDesktopSessionBackend::DecideLocalSessionCurtainAction(
+        create_remote_user_sessions, terminate_local_session,
+        is_eligible_for_remote_session);
+  }
 };
 
 TEST_F(UserDesktopSessionBackendTest, EmptySessionsReturnsNullptr) {
@@ -314,6 +326,42 @@ TEST_F(UserDesktopSessionBackendTest, DetectsNoSuchSessionError) {
   EXPECT_FALSE(IsNoSuchSessionError(
       "Error invoking method: GDBus.Error:org.freedesktop.DBus.Error."
       "UnknownObject: Unknown object '/org/freedesktop/login1/session/_33'."));
+}
+
+TEST_F(UserDesktopSessionBackendTest, DecidesLocalSessionCurtainAction) {
+  // Custom mode (`create_remote_user_sessions == false`) rejects with
+  // UNCURTAINED_SESSION and ignores `terminate_local_session`.
+  for (bool terminate_local_session : {false, true}) {
+    for (bool is_eligible : {false, true}) {
+      EXPECT_EQ(DecideLocalSessionCurtainAction(
+                    /*create_remote_user_sessions=*/false,
+                    terminate_local_session, is_eligible),
+                LocalSessionCurtainAction::kRejectUncurtainable);
+    }
+  }
+
+  // Auto-session mode with an ineligible user rejects with SESSION_REJECTED
+  // regardless of `terminate_local_session`.
+  for (bool terminate_local_session : {false, true}) {
+    EXPECT_EQ(DecideLocalSessionCurtainAction(
+                  /*create_remote_user_sessions=*/true, terminate_local_session,
+                  /*is_eligible_for_remote_session=*/false),
+              LocalSessionCurtainAction::kRejectIneligible);
+  }
+
+  // Auto-session mode with an eligible user either reports
+  // LOCAL_SESSION_RUNNING or terminates the local session and creates a remote
+  // session.
+  EXPECT_EQ(DecideLocalSessionCurtainAction(
+                /*create_remote_user_sessions=*/true,
+                /*terminate_local_session=*/false,
+                /*is_eligible_for_remote_session=*/true),
+            LocalSessionCurtainAction::kRejectLocalSessionRunning);
+  EXPECT_EQ(DecideLocalSessionCurtainAction(
+                /*create_remote_user_sessions=*/true,
+                /*terminate_local_session=*/true,
+                /*is_eligible_for_remote_session=*/true),
+            LocalSessionCurtainAction::kTerminateAndCreateRemote);
 }
 
 struct CurtainModeCompatibilityTestCase {
