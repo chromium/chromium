@@ -288,10 +288,6 @@ packager_builder(
                 "target_arch": "arm64",
             },
             {
-                "sdk_package_name": "platforms/android-37.0",
-                "cipd_yaml": "third_party/android_sdk/cipd/platforms/android-37.0.yaml",
-            },
-            {
                 "sdk_package_name": "platforms/android-37.2",
                 "cipd_yaml": "third_party/android_sdk/cipd/platforms/android-37.2.yaml",
             },
@@ -305,26 +301,6 @@ packager_builder(
                 "target_os": "mac",
             },
             {
-                "sdk_package_name": "system-images/android-24/google_apis/x86",
-                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-24/google_apis/x86.yaml",
-            },
-            {
-                "sdk_package_name": "system-images/android-25/google_apis/x86",
-                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-25/google_apis/x86.yaml",
-            },
-            {
-                "sdk_package_name": "system-images/android-26/google_apis/x86",
-                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-26/google_apis/x86.yaml",
-            },
-            {
-                "sdk_package_name": "system-images/android-27/google_apis/x86",
-                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-27/google_apis/x86.yaml",
-            },
-            {
-                "sdk_package_name": "system-images/android-28/google_apis/x86",
-                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-28/google_apis/x86.yaml",
-            },
-            {
                 "sdk_package_name": "system-images/android-29/google_apis/x86",
                 "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-29/google_apis/x86.yaml",
             },
@@ -333,10 +309,6 @@ packager_builder(
                 "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-30/google_apis/x86.yaml",
             },
             # use x86_64 since sdkmanager don't ship x86 for android-31 and above.
-            {
-                "sdk_package_name": "system-images/android-31/google_apis/arm64-v8a",
-                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-31/google_apis/arm64.yaml",
-            },
             {
                 "sdk_package_name": "system-images/android-31/google_apis/x86_64",
                 "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-31/google_apis/x86_64.yaml",
@@ -372,22 +344,6 @@ packager_builder(
             {
                 "sdk_package_name": "system-images/android-36/google_apis/x86_64",
                 "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-36/google_apis/x86_64.yaml",
-            },
-            {
-                "sdk_package_name": "system-images/android-36.1/google_apis/arm64-v8a",
-                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-36.1/google_apis/arm64-v8a.yaml",
-            },
-            {
-                "sdk_package_name": "system-images/android-36.1/google_apis/x86_64",
-                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-36.1/google_apis/x86_64.yaml",
-            },
-            {
-                "sdk_package_name": "system-images/android-37.0/google_apis_ps16k/arm64-v8a",
-                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-37.0/google_apis_ps16k/arm64-v8a.yaml",
-            },
-            {
-                "sdk_package_name": "system-images/android-37.0/google_apis_ps16k/x86_64",
-                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-37.0/google_apis_ps16k/x86_64.yaml",
             },
             {
                 "sdk_package_name": "system-images/android-37.1/android-desktop/arm64-v8a",
