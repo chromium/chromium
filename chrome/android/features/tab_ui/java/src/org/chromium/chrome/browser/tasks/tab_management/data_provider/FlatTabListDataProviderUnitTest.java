@@ -51,6 +51,7 @@ public class FlatTabListDataProviderUnitTest extends TabListDataProviderTestBase
     @Mock private TabListDataObserver mSecondObserver;
     @Mock private Profile mProfile;
     @Mock private Profile mOtherProfile;
+    @Mock private TabModel mThirdTabModel;
 
     private final Predicate<Tab> mInCurrentGroupFilter = this::isInCurrentGroup;
 
@@ -1195,6 +1196,84 @@ public class FlatTabListDataProviderUnitTest extends TabListDataProviderTestBase
         setUpSortedProvider(mTabModel, mOtherTabModel);
 
         assertItems(multiSelected(TAB2_ID), item(TAB1_ID));
+    }
+
+    @Test
+    public void testMultipleModels_RemoveModel_RemovesOnlyItsTabs() {
+        mModelTabs.add(mTab1);
+        mModelTabs.add(mTab2);
+        mOtherModelTabs.add(mTab3);
+        setUpSortedProvider(mTabModel, mOtherTabModel);
+        assertItems(item(TAB3_ID), item(TAB2_ID), item(TAB1_ID));
+
+        // The second model leaves, so only its tab 3 goes.
+        mTabModelListSupplier.set(List.of(mTabModel));
+
+        verifyDetached(/* times= */ 1, mOtherTabModel);
+        verifyDetached(/* times= */ 0, mTabModel);
+        verify(mObserver).onItemsRemoved(List.of(item(TAB3_ID)));
+        verify(mObserver, times(1)).onItemsRemoved(any());
+        verify(mObserver, never()).onDataReset(any());
+        assertItems(item(TAB2_ID), item(TAB1_ID));
+    }
+
+    @Test
+    public void testMultipleModels_AddModel_InsertsItsNewTabsInOrder() {
+        mModelTabs.add(mTab1);
+        mOtherModelTabs.add(mTab3);
+        stubBackedTabModel(mThirdTabModel, List.of(mTab2));
+        setUpSortedProvider(mTabModel, mOtherTabModel);
+        assertItems(item(TAB3_ID), item(TAB1_ID));
+
+        // The joining model's tab 2 is added in sorted order without a reset.
+        mTabModelListSupplier.set(List.of(mTabModel, mOtherTabModel, mThirdTabModel));
+
+        verifyAttached(mThirdTabModel);
+        verify(mObserver).onItemsInserted(List.of(item(TAB2_ID)), item(TAB3_ID));
+        verify(mObserver, times(1)).onItemsInserted(any(), any());
+        verify(mObserver, never()).onDataReset(any());
+        assertItems(item(TAB3_ID), item(TAB2_ID), item(TAB1_ID));
+    }
+
+    @Test
+    public void testMultipleModels_ReplaceOneModel_UpdatesInPlaceAndResetDoesNotReattach() {
+        mModelTabs.add(mTab2);
+        mOtherModelTabs.add(mTab3);
+        stubBackedTabModel(mThirdTabModel, List.of(mTab1));
+        setUpSortedProvider(mTabModel, mOtherTabModel);
+        assertItems(item(TAB3_ID), item(TAB2_ID));
+
+        mTabModelListSupplier.set(List.of(mTabModel, mThirdTabModel));
+
+        verifyDetached(/* times= */ 1, mOtherTabModel);
+        verifyAttached(mThirdTabModel);
+        verifyDetached(/* times= */ 0, mTabModel);
+        assertItems(item(TAB2_ID), item(TAB1_ID));
+
+        // A reset after the update rebuilds without attaching the models again.
+        clearInvocations(mTabModel, mThirdTabModel, mObserver);
+        mProvider.requestDataReset();
+
+        verify(mTabModel, never()).addObserver(any());
+        verify(mThirdTabModel, never()).addObserver(any());
+        assertResetWithItems(item(TAB2_ID), item(TAB1_ID));
+    }
+
+    @Test
+    public void testMultipleModels_AddAndRemoveLoadingModel_NoCardChanges() {
+        mModelTabs.add(mTab1);
+        stubBackedTabModel(mThirdTabModel, List.of(mTab2));
+        when(mThirdTabModel.isTabStateInitialized()).thenReturn(false);
+        setUpSortedProvider(mTabModel, mOtherTabModel);
+
+        // A model that hasn't loaded adds no cards when it joins and removes none when it leaves.
+        mTabModelListSupplier.set(List.of(mTabModel, mOtherTabModel, mThirdTabModel));
+        verifyAttached(mThirdTabModel);
+        mTabModelListSupplier.set(List.of(mTabModel, mOtherTabModel));
+        verifyDetached(/* times= */ 1, mThirdTabModel);
+
+        verifyNoInteractions(mObserver);
+        assertItems(item(TAB1_ID));
     }
 
     // ============================================================================================

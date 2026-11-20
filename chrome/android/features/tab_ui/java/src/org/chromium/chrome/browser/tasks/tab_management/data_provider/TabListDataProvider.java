@@ -604,6 +604,14 @@ public abstract class TabListDataProvider {
                 && groupItem.getTabGroupId().equals(tabGroupId);
     }
 
+    /** Adds a card for each of {@code model}'s tabs, if the model has loaded. */
+    private void addTabItems(TabModel model) {
+        if (!model.isTabStateInitialized()) return;
+        for (Tab tab : model) {
+            addTabItem(tab);
+        }
+    }
+
     private void updateSelection(int index, boolean isSelected) {
         TabListItem currentItem = mItems.get(index);
         if (currentItem.isSelected() == isSelected) return;
@@ -625,9 +633,46 @@ public abstract class TabListDataProvider {
     private void onTabModelsChanged(List<TabModel> newModels) {
         assertModelsSupported(newModels);
         if (hasSameModels(newModels)) return;
+        if (!Collections.disjoint(mAttachedTabModels, newModels)) {
+            // Detach only the models that left and remove their cards, then attach the models that
+            // joined and add their tabs.
+            detachRemovedModels(newModels);
+            attachAddedModels(newModels);
+            return;
+        }
         // Detach from the previous models on switch; the surface re-attaches on its next
         // requestDataReset().
         detachFromAttachedModels();
+    }
+
+    /**
+     * Detaches the attached models missing from {@code newModels}, then removes the cards whose tab
+     * no remaining model holds.
+     */
+    private void detachRemovedModels(List<TabModel> newModels) {
+        List<TabModel> removedModels = new ArrayList<>(mAttachedTabModels);
+        removedModels.removeAll(newModels);
+        if (removedModels.isEmpty()) return;
+        for (TabModel model : removedModels) {
+            detachFromModel(model);
+        }
+        // Walk backwards so removing a card doesn't shift the ones still to check.
+        for (int i = mItems.size() - 1; i >= 0; i--) {
+            if (mItems.get(i) instanceof TabItem tabItem
+                    && getTabById(tabItem.getTabId()) == null) {
+                removeItemsAt(i, /* count= */ 1);
+            }
+        }
+    }
+
+    /** Attaches the models in {@code newModels} that aren't attached yet and adds their tabs. */
+    private void attachAddedModels(List<TabModel> newModels) {
+        List<TabModel> addedModels = new ArrayList<>(newModels);
+        addedModels.removeAll(mAttachedTabModels);
+        for (TabModel model : addedModels) {
+            attachToModel(model);
+            addTabItems(model);
+        }
     }
 
     private void attachToModels(List<TabModel> models) {
