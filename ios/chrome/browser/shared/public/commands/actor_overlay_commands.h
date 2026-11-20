@@ -14,8 +14,12 @@ class WebState;
 // Commands to show/hide the Actor Overlay UI.
 @protocol ActorOverlayCommands <NSObject>
 
-// Shows the Actor Overlay UI for the given `webState`.
-- (void)showActorOverlayForWebState:(web::WebState*)webState;
+// Shows or updates the Actor Overlay UI for the given `webState`. When
+// `showScrim` is `YES`, a touch-blocking scrim is shown over the content area
+// in addition to the border glow; when `NO`, only the border glow is shown and
+// page interactions remain enabled.
+- (void)showActorOverlayForWebState:(web::WebState*)webState
+                          showScrim:(BOOL)showScrim;
 
 // Hides the Actor Overlay UI.
 - (void)hideActorOverlay;

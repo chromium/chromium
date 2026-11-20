@@ -59,6 +59,24 @@ class ActorBrowserAgentTest : public PlatformTest {
     return appended_web_state;
   }
 
+  // Activates the `WebState` at `index` and verifies that no overlay commands
+  // are dispatched. Calls are counted rather than rejected because rejections
+  // would also fire during teardown.
+  void ActivateWebStateAndExpectNoOverlayCommands(int index) {
+    __block int command_count = 0;
+    void (^count_command)(NSInvocation*) = ^(NSInvocation*) {
+      ++command_count;
+    };
+    OCMStub([mock_actor_overlay_handler_ hideActorOverlay])
+        .andDo(count_command);
+    OCMStub([mock_actor_overlay_handler_ showActorOverlayForWebState:nullptr
+                                                           showScrim:NO])
+        .ignoringNonObjectArgs()
+        .andDo(count_command);
+    browser_->GetWebStateList()->ActivateWebStateAt(index);
+    EXPECT_EQ(0, command_count);
+  }
+
  protected:
   // Task environment to support asynchronous runs.
   web::WebTaskEnvironment task_environment_;
@@ -80,8 +98,8 @@ TEST_F(ActorBrowserAgentTest, ActiveWebStateChange) {
 
   // 2. Setting it to actor-controlled.
   // Expect it to show.
-  OCMExpect(
-      [mock_actor_overlay_handler_ showActorOverlayForWebState:web_state1]);
+  OCMExpect([mock_actor_overlay_handler_ showActorOverlayForWebState:web_state1
+                                                           showScrim:YES]);
   ActorTabHelper::FromWebState(web_state1)
       ->SetControlState(ActorControlState::kActorControlled);
   EXPECT_OCMOCK_VERIFY(mock_actor_overlay_handler_);
@@ -94,25 +112,64 @@ TEST_F(ActorBrowserAgentTest, ActiveWebStateChange) {
 
   // 4. Setting the second `WebState` to actor-controlled.
   // Expect it to show.
-  OCMExpect(
-      [mock_actor_overlay_handler_ showActorOverlayForWebState:web_state2]);
+  OCMExpect([mock_actor_overlay_handler_ showActorOverlayForWebState:web_state2
+                                                           showScrim:YES]);
   ActorTabHelper::FromWebState(web_state2)
       ->SetControlState(ActorControlState::kActorControlled);
   EXPECT_OCMOCK_VERIFY(mock_actor_overlay_handler_);
 
   // 5. Switching back to the first `WebState` (which is actor-controlled).
-  // Expect no command since the control state is unchanged. Calls are counted
-  // rather than rejected because rejections would also fire during teardown.
-  __block int command_count = 0;
-  void (^count_command)(NSInvocation*) = ^(NSInvocation*) {
-    ++command_count;
-  };
-  OCMStub([mock_actor_overlay_handler_ hideActorOverlay]).andDo(count_command);
-  OCMStub([mock_actor_overlay_handler_
-              showActorOverlayForWebState:(web::WebState*)[OCMArg anyPointer]])
-      .andDo(count_command);
+  // Expect no command since the control state is unchanged.
+  ActivateWebStateAndExpectNoOverlayCommands(0);
+}
+
+// Tests that switching active tabs between `kActorControlled` and
+// `kUserControlled` updates `showScrim`, while switching between two
+// `kUserControlled` tabs dispatches no command.
+TEST_F(ActorBrowserAgentTest,
+       ActiveWebStateChangeBetweenActorControlledAndUserControlled) {
+  web::FakeWebState* web_state1 = AppendActiveWebState();
+  OCMExpect([mock_actor_overlay_handler_ showActorOverlayForWebState:web_state1
+                                                           showScrim:YES]);
+  ActorTabHelper::FromWebState(web_state1)
+      ->SetControlState(ActorControlState::kActorControlled);
+  EXPECT_OCMOCK_VERIFY(mock_actor_overlay_handler_);
+
+  OCMExpect([mock_actor_overlay_handler_ hideActorOverlay]);
+  web::FakeWebState* web_state2 = AppendActiveWebState();
+  EXPECT_OCMOCK_VERIFY(mock_actor_overlay_handler_);
+
+  OCMExpect([mock_actor_overlay_handler_ showActorOverlayForWebState:web_state2
+                                                           showScrim:NO]);
+  ActorTabHelper::FromWebState(web_state2)
+      ->SetControlState(ActorControlState::kUserControlled);
+  EXPECT_OCMOCK_VERIFY(mock_actor_overlay_handler_);
+
+  // Switching from `kUserControlled` to `kActorControlled` shows scrim.
+  OCMExpect([mock_actor_overlay_handler_ showActorOverlayForWebState:web_state1
+                                                           showScrim:YES]);
   browser_->GetWebStateList()->ActivateWebStateAt(0);
-  EXPECT_EQ(0, command_count);
+  EXPECT_OCMOCK_VERIFY(mock_actor_overlay_handler_);
+
+  // Switching from `kActorControlled` to `kUserControlled` hides scrim.
+  OCMExpect([mock_actor_overlay_handler_ showActorOverlayForWebState:web_state2
+                                                           showScrim:NO]);
+  browser_->GetWebStateList()->ActivateWebStateAt(1);
+  EXPECT_OCMOCK_VERIFY(mock_actor_overlay_handler_);
+
+  // Append a third `WebState` and set it to `kUserControlled`.
+  OCMExpect([mock_actor_overlay_handler_ hideActorOverlay]);
+  web::FakeWebState* web_state3 = AppendActiveWebState();
+  EXPECT_OCMOCK_VERIFY(mock_actor_overlay_handler_);
+
+  OCMExpect([mock_actor_overlay_handler_ showActorOverlayForWebState:web_state3
+                                                           showScrim:NO]);
+  ActorTabHelper::FromWebState(web_state3)
+      ->SetControlState(ActorControlState::kUserControlled);
+  EXPECT_OCMOCK_VERIFY(mock_actor_overlay_handler_);
+
+  // Switching between two `kUserControlled` tabs dispatches no command.
+  ActivateWebStateAndExpectNoOverlayCommands(1);
 }
 
 // Test that when the observed `ActorTabHelper` changes its control state, the
@@ -121,8 +178,8 @@ TEST_F(ActorBrowserAgentTest, TabHelperControlStateChange) {
   web::FakeWebState* web_state = AppendActiveWebState();
 
   // Test start control.
-  OCMExpect(
-      [mock_actor_overlay_handler_ showActorOverlayForWebState:web_state]);
+  OCMExpect([mock_actor_overlay_handler_ showActorOverlayForWebState:web_state
+                                                           showScrim:YES]);
   ActorTabHelper::FromWebState(web_state)->SetControlState(
       ActorControlState::kActorControlled);
   EXPECT_OCMOCK_VERIFY(mock_actor_overlay_handler_);
@@ -134,19 +191,61 @@ TEST_F(ActorBrowserAgentTest, TabHelperControlStateChange) {
   EXPECT_OCMOCK_VERIFY(mock_actor_overlay_handler_);
 }
 
+// Tests that `kUserControlled` transitions dispatch the overlay command with
+// `showScrim:NO` and hide the overlay when returning to `kInactive`.
+TEST_F(ActorBrowserAgentTest, TabHelperUserControlledTransitions) {
+  web::FakeWebState* web_state = AppendActiveWebState();
+  ActorTabHelper* tab_helper = ActorTabHelper::FromWebState(web_state);
+
+  OCMExpect([mock_actor_overlay_handler_ showActorOverlayForWebState:web_state
+                                                           showScrim:NO]);
+  tab_helper->SetControlState(ActorControlState::kUserControlled);
+  EXPECT_OCMOCK_VERIFY(mock_actor_overlay_handler_);
+
+  OCMExpect([mock_actor_overlay_handler_ showActorOverlayForWebState:web_state
+                                                           showScrim:YES]);
+  tab_helper->SetControlState(ActorControlState::kActorControlled);
+  EXPECT_OCMOCK_VERIFY(mock_actor_overlay_handler_);
+
+  OCMExpect([mock_actor_overlay_handler_ showActorOverlayForWebState:web_state
+                                                           showScrim:NO]);
+  tab_helper->SetControlState(ActorControlState::kUserControlled);
+  EXPECT_OCMOCK_VERIFY(mock_actor_overlay_handler_);
+
+  OCMExpect([mock_actor_overlay_handler_ hideActorOverlay]);
+  tab_helper->SetControlState(ActorControlState::kInactive);
+  EXPECT_OCMOCK_VERIFY(mock_actor_overlay_handler_);
+}
+
 // Test that closing the active actor-controlled `WebState` correctly hides the
 // UI.
 TEST_F(ActorBrowserAgentTest, CloseActiveWebState) {
   web::FakeWebState* web_state = AppendActiveWebState();
 
   // Activate actor control.
-  OCMExpect(
-      [mock_actor_overlay_handler_ showActorOverlayForWebState:web_state]);
+  OCMExpect([mock_actor_overlay_handler_ showActorOverlayForWebState:web_state
+                                                           showScrim:YES]);
   ActorTabHelper::FromWebState(web_state)->SetControlState(
       ActorControlState::kActorControlled);
   EXPECT_OCMOCK_VERIFY(mock_actor_overlay_handler_);
 
   // Close the active `WebState`.
+  OCMExpect([mock_actor_overlay_handler_ hideActorOverlay]);
+  browser_->GetWebStateList()->CloseWebStateAt(
+      0, WebStateList::ClosingReason::kDefault);
+  EXPECT_OCMOCK_VERIFY(mock_actor_overlay_handler_);
+}
+
+// Tests that closing the active user-controlled `WebState` hides the overlay.
+TEST_F(ActorBrowserAgentTest, CloseActiveUserControlledWebState) {
+  web::FakeWebState* web_state = AppendActiveWebState();
+
+  OCMExpect([mock_actor_overlay_handler_ showActorOverlayForWebState:web_state
+                                                           showScrim:NO]);
+  ActorTabHelper::FromWebState(web_state)->SetControlState(
+      ActorControlState::kUserControlled);
+  EXPECT_OCMOCK_VERIFY(mock_actor_overlay_handler_);
+
   OCMExpect([mock_actor_overlay_handler_ hideActorOverlay]);
   browser_->GetWebStateList()->CloseWebStateAt(
       0, WebStateList::ClosingReason::kDefault);

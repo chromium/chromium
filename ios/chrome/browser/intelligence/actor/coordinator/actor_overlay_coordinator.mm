@@ -48,6 +48,7 @@
     CHECK(glowColor);
     _scrimColor = scrimColor;
     _glowColor = glowColor;
+    _scrimVisible = YES;
   }
   return self;
 }
@@ -61,6 +62,19 @@
                               webState:webState
                             scrimColor:[UIColor colorNamed:kStaticBlueColor]
                              glowColor:[UIColor colorNamed:kStaticBlueColor]];
+}
+
+#pragma mark - Properties
+
+- (void)setScrimVisible:(BOOL)scrimVisible {
+  if (_scrimVisible == scrimVisible) {
+    return;
+  }
+  _scrimVisible = scrimVisible;
+  _viewController.scrimVisible = _scrimVisible;
+  if (!_scrimVisible) {
+    [self dismissInteractionLimitedSnackbar];
+  }
 }
 
 #pragma mark - ChromeCoordinator
@@ -81,6 +95,7 @@
                             scrimColor:_scrimColor
                              glowColor:_glowColor];
   _viewController.delegate = self;
+  _viewController.scrimVisible = self.scrimVisible;
   _viewController.layoutState = layoutState;
 
   UIViewController* baseViewController = self.baseViewController;
@@ -90,12 +105,7 @@
 }
 
 - (void)stop {
-  if (_interactionLimitedSnackbar) {
-    [_snackbarCommandsHandler
-        dismissSnackbarWithMessage:_interactionLimitedSnackbar.title
-                          animated:YES];
-  }
-  _interactionLimitedSnackbar = nil;
+  [self dismissInteractionLimitedSnackbar];
   _snackbarCommandsHandler = nil;
   _viewController.delegate = nil;
   _viewController.layoutState = nil;
@@ -110,7 +120,7 @@
 - (void)actorOverlayViewControllerDidTapScrim:
     (ActorOverlayViewController*)viewController {
   CHECK_EQ(_viewController, viewController);
-  if (_interactionLimitedSnackbar) {
+  if (!self.scrimVisible || _interactionLimitedSnackbar) {
     return;
   }
 
@@ -119,8 +129,9 @@
                         IDS_IOS_ACTOR_OVERLAY_INTERACTION_LIMITED_SNACKBAR)];
   _interactionLimitedSnackbar = message;
   __weak __typeof(self) weakSelf = self;
+  __weak SnackbarMessage* weakMessage = message;
   message.completionHandler = ^(BOOL) {
-    [weakSelf clearInteractionLimitedSnackbar];
+    [weakSelf clearInteractionLimitedSnackbarForMessage:weakMessage];
   };
 
   [_snackbarCommandsHandler showSnackbarMessage:message];
@@ -128,9 +139,23 @@
 
 #pragma mark - Private
 
-// Clears `_interactionLimitedSnackbar` when the snackbar finishes dismissing.
-- (void)clearInteractionLimitedSnackbar {
+// Dismisses `_interactionLimitedSnackbar` if one is currently presented.
+- (void)dismissInteractionLimitedSnackbar {
+  if (!_interactionLimitedSnackbar) {
+    return;
+  }
+  [_snackbarCommandsHandler
+      dismissSnackbarWithMessage:_interactionLimitedSnackbar.title
+                        animated:YES];
   _interactionLimitedSnackbar = nil;
+}
+
+// Clears `_interactionLimitedSnackbar` when `message` finishes dismissing, if
+// it is still the active snackbar.
+- (void)clearInteractionLimitedSnackbarForMessage:(SnackbarMessage*)message {
+  if (_interactionLimitedSnackbar == message) {
+    _interactionLimitedSnackbar = nil;
+  }
 }
 
 @end

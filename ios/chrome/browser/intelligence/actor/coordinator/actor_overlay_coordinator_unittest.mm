@@ -188,4 +188,91 @@ TEST_F(ActorOverlayCoordinatorTest,
   EXPECT_OCMOCK_VERIFY(mock_snackbar_handler_);
 }
 
+// Tests that `scrimVisible` defaults to `YES`, can be configured to `NO` before
+// `-start`, and ignores scrim taps while hidden.
+TEST_F(ActorOverlayCoordinatorTest,
+       ScrimVisibleDefaultsToYesAndCanBeConfiguredBeforeStart) {
+  web::FakeWebState fake_web_state;
+  ActorOverlayCoordinator* coordinator = [[ActorOverlayCoordinator alloc]
+      initWithBaseViewController:base_view_controller_
+                         browser:browser_.get()
+                        webState:&fake_web_state];
+  EXPECT_TRUE(coordinator.scrimVisible);
+
+  coordinator.scrimVisible = NO;
+  [coordinator start];
+
+  ActorOverlayViewController* overlay_vc =
+      base::apple::ObjCCastStrict<ActorOverlayViewController>(
+          base_view_controller_.childViewControllers.firstObject);
+  ASSERT_NE(overlay_vc, nil);
+  EXPECT_FALSE(overlay_vc.scrimVisible);
+
+  // Scrim taps are ignored when `scrimVisible` is `NO`.
+  [overlay_vc.delegate actorOverlayViewControllerDidTapScrim:overlay_vc];
+  EXPECT_OCMOCK_VERIFY(mock_snackbar_handler_);
+
+  [coordinator stop];
+}
+
+// Tests that toggling `scrimVisible` updates the view controller, dismisses any
+// presented interaction-limited snackbar when set to `NO`, and re-enables scrim
+// tap handling when set back to `YES`.
+TEST_F(ActorOverlayCoordinatorTest,
+       SetScrimVisibleUpdatesViewControllerAndDismissesSnackbar) {
+  web::FakeWebState fake_web_state;
+  ActorOverlayCoordinator* coordinator = [[ActorOverlayCoordinator alloc]
+      initWithBaseViewController:base_view_controller_
+                         browser:browser_.get()
+                        webState:&fake_web_state];
+  [coordinator start];
+
+  ActorOverlayViewController* overlay_vc =
+      base::apple::ObjCCastStrict<ActorOverlayViewController>(
+          base_view_controller_.childViewControllers.firstObject);
+  ASSERT_NE(overlay_vc, nil);
+  EXPECT_TRUE(overlay_vc.scrimVisible);
+
+  NSString* expected_title = l10n_util::GetNSString(
+      IDS_IOS_ACTOR_OVERLAY_INTERACTION_LIMITED_SNACKBAR);
+  __block SnackbarMessage* first_message = nil;
+  OCMExpect([mock_snackbar_handler_
+      showSnackbarMessage:[OCMArg checkWithBlock:^BOOL(SnackbarMessage* msg) {
+        first_message = msg;
+        return YES;
+      }]]);
+  [overlay_vc.delegate actorOverlayViewControllerDidTapScrim:overlay_vc];
+  EXPECT_OCMOCK_VERIFY(mock_snackbar_handler_);
+  ASSERT_NE(first_message, nil);
+
+  // Hiding the scrim forwards the state and dismisses the active snackbar.
+  OCMExpect([mock_snackbar_handler_ dismissSnackbarWithMessage:expected_title
+                                                      animated:YES]);
+  coordinator.scrimVisible = NO;
+  EXPECT_FALSE(overlay_vc.scrimVisible);
+  EXPECT_OCMOCK_VERIFY(mock_snackbar_handler_);
+
+  // Tapping while hidden is a no-op.
+  [overlay_vc.delegate actorOverlayViewControllerDidTapScrim:overlay_vc];
+  EXPECT_OCMOCK_VERIFY(mock_snackbar_handler_);
+
+  // Showing the scrim again re-enables snackbar presentation on tap.
+  coordinator.scrimVisible = YES;
+  EXPECT_TRUE(overlay_vc.scrimVisible);
+  OCMExpect([mock_snackbar_handler_ showSnackbarMessage:[OCMArg any]]);
+  [overlay_vc.delegate actorOverlayViewControllerDidTapScrim:overlay_vc];
+  EXPECT_OCMOCK_VERIFY(mock_snackbar_handler_);
+
+  // A delayed completion from the previously dismissed snackbar must not clear
+  // the newly presented snackbar.
+  first_message.completionHandler(NO);
+  [overlay_vc.delegate actorOverlayViewControllerDidTapScrim:overlay_vc];
+  EXPECT_OCMOCK_VERIFY(mock_snackbar_handler_);
+
+  OCMExpect([mock_snackbar_handler_ dismissSnackbarWithMessage:expected_title
+                                                      animated:YES]);
+  [coordinator stop];
+  EXPECT_OCMOCK_VERIFY(mock_snackbar_handler_);
+}
+
 }  // namespace

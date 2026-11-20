@@ -90,7 +90,10 @@ void ActorBrowserAgent::UpdateOverlayForControlState(
       [handler hideActorOverlay];
       break;
     case actor::ActorControlState::kActorControlled:
-      [handler showActorOverlayForWebState:web_state];
+      [handler showActorOverlayForWebState:web_state showScrim:YES];
+      break;
+    case actor::ActorControlState::kUserControlled:
+      [handler showActorOverlayForWebState:web_state showScrim:NO];
       break;
   }
 }

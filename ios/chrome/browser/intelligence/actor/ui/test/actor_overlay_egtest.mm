@@ -27,6 +27,10 @@ namespace {
 NSString* const kActorOverlayScrimAccessibilityIdentifier =
     @"ActorOverlayScrimAccessibilityIdentifier";
 
+// Accessibility identifier for the overlay glow view.
+NSString* const kActorOverlayGlowAccessibilityIdentifier =
+    @"ActorOverlayGlowAccessibilityIdentifier";
+
 constexpr char kPageAPath[] = "/page_a.html";
 constexpr char kPageBPath[] = "/page_b.html";
 constexpr char kPageCPath[] = "/page_c.html";
@@ -110,14 +114,27 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 
 #pragma mark - Private
 
-// Asserts whether the overlay is visible or not.
+// Asserts whether the overlay scrim is visible or not.
 - (void)assertOverlayVisible:(BOOL)visible {
-  id<GREYMatcher> scrimMatcher =
-      grey_accessibilityID(kActorOverlayScrimAccessibilityIdentifier);
+  id<GREYMatcher> scrimMatcher = grey_allOf(
+      grey_accessibilityID(kActorOverlayScrimAccessibilityIdentifier),
+      grey_sufficientlyVisible(), nil);
   if (visible) {
     [ChromeEarlGrey waitForUIElementToAppearWithMatcher:scrimMatcher];
   } else {
     [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:scrimMatcher];
+  }
+}
+
+// Asserts whether the overlay glow is visible or not.
+- (void)assertGlowVisible:(BOOL)visible {
+  id<GREYMatcher> glowMatcher =
+      grey_allOf(grey_accessibilityID(kActorOverlayGlowAccessibilityIdentifier),
+                 grey_sufficientlyVisible(), nil);
+  if (visible) {
+    [ChromeEarlGrey waitForUIElementToAppearWithMatcher:glowMatcher];
+  } else {
+    [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:glowMatcher];
   }
 }
 
@@ -487,6 +504,108 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   [[EarlGrey selectElementWithMatcher:chrome_test_util::BackButton()]
       performAction:grey_tap()];
   [ChromeEarlGrey waitForWebStateContainingText:kPageAText];
+}
+
+// Tests that `kUserControlled` displays the glow without the scrim, lets web
+// page touch interactions pass through, and removes the glow when returning to
+// `kInactive`.
+- (void)testUserControlledShowsGlowWithoutScrimAndAllowsInteraction {
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/button.html")];
+  [ChromeEarlGrey waitForWebStateContainingText:"Button"];
+
+  [ActorAppInterface setControlState:actor::ActorControlState::kUserControlled
+                  forWebStateAtIndex:0];
+  [self assertGlowVisible:YES];
+  [self assertOverlayVisible:NO];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId("btn")];
+  [ChromeEarlGrey waitForWebStateContainingText:"Clicked"];
+
+  [ActorAppInterface setControlState:actor::ActorControlState::kInactive
+                  forWebStateAtIndex:0];
+  [self assertGlowVisible:NO];
+  [self assertOverlayVisible:NO];
+}
+
+// Tests that `kUserControlled` allows keyboard presentation and transitions
+// cleanly to and from `kActorControlled` (dismissing the keyboard and showing
+// the scrim on `kActorControlled`, then hiding the scrim, dismissing the
+// interaction-limited snackbar, and re-enabling keyboard input on return to
+// `kUserControlled`).
+- (void)testUserControlledAllowsKeyboardAndTransitionsWithActorControlled {
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/input.html")];
+  [ChromeEarlGrey waitForWebStateContainingText:"Input"];
+
+  [ActorAppInterface setControlState:actor::ActorControlState::kUserControlled
+                  forWebStateAtIndex:0];
+  [self assertGlowVisible:YES];
+  [self assertOverlayVisible:NO];
+
+  // Tapping an input field opens the keyboard in `kUserControlled`.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId("input")];
+  [ChromeEarlGrey waitForKeyboardToAppear];
+
+  // Transitioning to `kActorControlled` dismisses the keyboard and shows the
+  // scrim while keeping the glow visible.
+  [ActorAppInterface setControlState:actor::ActorControlState::kActorControlled
+                  forWebStateAtIndex:0];
+  [ChromeEarlGrey waitForKeyboardToDisappear];
+  [self assertOverlayVisible:YES];
+  [self assertGlowVisible:YES];
+
+  // Show the interaction-limited snackbar by tapping the scrim.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kActorOverlayScrimAccessibilityIdentifier)]
+      performAction:grey_tap()];
+  [self assertInteractionLimitedSnackbarVisible:YES];
+
+  // Transitioning back to `kUserControlled` hides the scrim, keeps the glow,
+  // dismisses the snackbar, and does not auto-reopen the keyboard.
+  [ActorAppInterface setControlState:actor::ActorControlState::kUserControlled
+                  forWebStateAtIndex:0];
+  [self assertOverlayVisible:NO];
+  [self assertGlowVisible:YES];
+  [self assertInteractionLimitedSnackbarVisible:NO];
+  NSError* error = nil;
+  GREYAssertFalse([EarlGrey isKeyboardShownWithError:&error],
+                  @"Keyboard should stay dismissed until the user taps.");
+  GREYAssertNil(error, @"Unexpected error checking keyboard state: %@", error);
+
+  // Tapping the input field opens the keyboard again in `kUserControlled`.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId("input")];
+  [ChromeEarlGrey waitForKeyboardToAppear];
+
+  [ActorAppInterface setControlState:actor::ActorControlState::kInactive
+                  forWebStateAtIndex:0];
+  [self assertGlowVisible:NO];
+  [self assertOverlayVisible:NO];
+}
+
+// Tests that `kUserControlled` leaves the primary toolbar / omnibox interactive
+// on iPhone (unlike `kActorControlled`, where the scrim covers it).
+- (void)testUserControlledAllowsToolbarInteraction {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Toolbar is not covered by overlay on iPad.");
+  }
+
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/button.html")];
+  [ChromeEarlGrey waitForWebStateContainingText:"Button"];
+
+  [ActorAppInterface setControlState:actor::ActorControlState::kUserControlled
+                  forWebStateAtIndex:0];
+  [self assertGlowVisible:YES];
+  [self assertOverlayVisible:NO];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::DefocusedLocationView()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey waitForKeyboardToAppear];
+
+  [ActorAppInterface setControlState:actor::ActorControlState::kInactive
+                  forWebStateAtIndex:0];
 }
 
 @end

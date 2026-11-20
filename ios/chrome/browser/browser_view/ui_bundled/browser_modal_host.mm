@@ -806,13 +806,20 @@ const char kContextPanelDismissedHistogram[] =
 
 #pragma mark - ActorOverlayCommands
 
-- (void)showActorOverlayForWebState:(web::WebState*)webState {
-  [_actorOverlayCoordinator stop];
-  _actorOverlayCoordinator = [[ActorOverlayCoordinator alloc]
-      initWithBaseViewController:_baseViewController
-                         browser:_browser
-                        webState:webState];
-  [_actorOverlayCoordinator start];
+- (void)showActorOverlayForWebState:(web::WebState*)webState
+                          showScrim:(BOOL)showScrim {
+  if (!_actorOverlayCoordinator) {
+    _actorOverlayCoordinator = [[ActorOverlayCoordinator alloc]
+        initWithBaseViewController:_baseViewController
+                           browser:_browser
+                          webState:webState];
+    _actorOverlayCoordinator.scrimVisible = showScrim;
+    [_actorOverlayCoordinator start];
+    return;
+  }
+  // `ActorOverlayCoordinator` does not retain `webState` (crbug.com/548051839),
+  // so updating `scrimVisible` in place avoids restarting the glow view.
+  _actorOverlayCoordinator.scrimVisible = showScrim;
 }
 
 - (void)hideActorOverlay {

@@ -164,9 +164,15 @@ TEST_F(ActorTabHelperTest, DefaultControlState) {
 
 // Test setting and getting the control state.
 TEST_F(ActorTabHelperTest, SetAndGetControlState) {
+  tab_helper_->SetControlState(ActorControlState::kUserControlled);
+  EXPECT_EQ(tab_helper_->GetControlState(), ActorControlState::kUserControlled);
+
   tab_helper_->SetControlState(ActorControlState::kActorControlled);
   EXPECT_EQ(tab_helper_->GetControlState(),
             ActorControlState::kActorControlled);
+
+  tab_helper_->SetControlState(ActorControlState::kUserControlled);
+  EXPECT_EQ(tab_helper_->GetControlState(), ActorControlState::kUserControlled);
 
   tab_helper_->SetControlState(ActorControlState::kInactive);
   EXPECT_EQ(tab_helper_->GetControlState(), ActorControlState::kInactive);
@@ -194,11 +200,24 @@ TEST_F(ActorTabHelperTest, ObserverNotification) {
       ActorControlState::kActorControlled);  // No change.
   EXPECT_FALSE(observer.on_control_state_changed_called_);
 
-  tab_helper_->SetControlState(ActorControlState::kInactive);
+  tab_helper_->SetControlState(ActorControlState::kUserControlled);
   EXPECT_TRUE(observer.on_control_state_changed_called_);
   EXPECT_EQ(observer.last_web_state_value_, web_state_.get());
   EXPECT_EQ(observer.last_previous_control_state_value_,
             ActorControlState::kActorControlled);
+  EXPECT_EQ(observer.last_new_control_state_value_,
+            ActorControlState::kUserControlled);
+
+  observer.on_control_state_changed_called_ = false;
+  tab_helper_->SetControlState(
+      ActorControlState::kUserControlled);  // No change.
+  EXPECT_FALSE(observer.on_control_state_changed_called_);
+
+  tab_helper_->SetControlState(ActorControlState::kInactive);
+  EXPECT_TRUE(observer.on_control_state_changed_called_);
+  EXPECT_EQ(observer.last_web_state_value_, web_state_.get());
+  EXPECT_EQ(observer.last_previous_control_state_value_,
+            ActorControlState::kUserControlled);
   EXPECT_EQ(observer.last_new_control_state_value_,
             ActorControlState::kInactive);
 }
@@ -349,6 +368,35 @@ TEST_F(ActorTabHelperTest, DeprecatedActuatingCompatibility) {
   EXPECT_FALSE(observer.last_actuating_value_);
   ASSERT_TRUE(future.IsReady());
   EXPECT_FALSE(future.Take());
+
+  // Transitioning between `kInactive` and `kUserControlled` does not mark the
+  // tab as actuating or notify legacy actuation listeners.
+  observer.on_actuation_state_changed_called_ = false;
+  tab_helper_->SetControlState(ActorControlState::kUserControlled);
+  EXPECT_FALSE(tab_helper_->IsActuating());
+  EXPECT_FALSE(observer.on_actuation_state_changed_called_);
+  EXPECT_FALSE(future.IsReady());
+
+  tab_helper_->SetControlState(ActorControlState::kActorControlled);
+  EXPECT_TRUE(tab_helper_->IsActuating());
+  EXPECT_TRUE(observer.on_actuation_state_changed_called_);
+  EXPECT_TRUE(observer.last_actuating_value_);
+  ASSERT_TRUE(future.IsReady());
+  EXPECT_TRUE(future.Take());
+
+  observer.on_actuation_state_changed_called_ = false;
+  tab_helper_->SetControlState(ActorControlState::kUserControlled);
+  EXPECT_FALSE(tab_helper_->IsActuating());
+  EXPECT_TRUE(observer.on_actuation_state_changed_called_);
+  EXPECT_FALSE(observer.last_actuating_value_);
+  ASSERT_TRUE(future.IsReady());
+  EXPECT_FALSE(future.Take());
+
+  observer.on_actuation_state_changed_called_ = false;
+  tab_helper_->SetControlState(ActorControlState::kInactive);
+  EXPECT_FALSE(tab_helper_->IsActuating());
+  EXPECT_FALSE(observer.on_actuation_state_changed_called_);
+  EXPECT_FALSE(future.IsReady());
 }
 
 // Test streaming operator and string conversion for ActorControlState.
@@ -359,24 +407,53 @@ TEST_F(ActorTabHelperTest, ActorControlStateToStringAndStream) {
       actor::ActorControlStateToString(ActorControlState::kActorControlled),
       "kActorControlled");
   EXPECT_EQ(
+      actor::ActorControlStateToString(ActorControlState::kUserControlled),
+      "kUserControlled");
+  EXPECT_EQ(
       actor::ActorControlStateToString(static_cast<ActorControlState>(999)),
       "kUnknown");
 
   std::ostringstream oss;
   oss << ActorControlState::kActorControlled;
   EXPECT_EQ(oss.str(), "kActorControlled");
+
+  std::ostringstream user_oss;
+  user_oss << ActorControlState::kUserControlled;
+  EXPECT_EQ(user_oss.str(), "kUserControlled");
 }
 
-// Test that keep-alive is derived from the control state: enabled when the tab
-// becomes actor-controlled and disabled when it goes back to inactive.
+// Tests that keep-alive is derived from the control state: enabled while the
+// tab is active in a task (`kActorControlled` or `kUserControlled`) and
+// disabled when it goes back to `kInactive`.
 TEST_F(ActorTabHelperTest, KeepRenderProcessAliveFollowsControlState) {
   EXPECT_FALSE(web_state_->keep_render_process_alive());
+
+  tab_helper_->SetControlState(ActorControlState::kUserControlled);
+  EXPECT_TRUE(web_state_->keep_render_process_alive());
 
   tab_helper_->SetControlState(ActorControlState::kActorControlled);
   EXPECT_TRUE(web_state_->keep_render_process_alive());
 
+  tab_helper_->SetControlState(ActorControlState::kUserControlled);
+  EXPECT_TRUE(web_state_->keep_render_process_alive());
+
   tab_helper_->SetControlState(ActorControlState::kInactive);
   EXPECT_FALSE(web_state_->keep_render_process_alive());
+}
+
+// Tests that keep-alive is re-applied asynchronously after the `WebState` is
+// hidden while in `kUserControlled`.
+TEST_F(ActorTabHelperTest,
+       KeepRenderProcessAliveReappliedAfterWasHiddenWhenUserControlled) {
+  tab_helper_->SetControlState(ActorControlState::kUserControlled);
+  ASSERT_TRUE(web_state_->keep_render_process_alive());
+
+  web_state_->WasHidden();
+  web_state_->SetKeepRenderProcessAlive(false);
+  EXPECT_FALSE(web_state_->keep_render_process_alive());
+
+  EXPECT_TRUE(base::test::RunUntil(
+      [this]() { return web_state_->keep_render_process_alive(); }));
 }
 
 // Test that keep-alive is re-applied asynchronously after the WebState is
@@ -573,6 +650,63 @@ TEST_F(ActorTabHelperTest,
   EXPECT_OCMOCK_VERIFY(mock_web_view_proxy);
 }
 
+// Tests that `kUserControlled` does not suppress input views, transitioning
+// from `kActorControlled` to `kUserControlled` calls `endEditing:YES` before
+// unsuppressing input views, and tearing down while `kUserControlled` does not
+// touch input view suppression.
+TEST_F(ActorTabHelperTest,
+       UserControlledDoesNotSuppressInputViewsAndUnsuppressesOnTransition) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kActorTools);
+
+  UIView* mock_view = OCMStrictClassMock([UIView class]);
+  web_state_->SetView(mock_view);
+
+  id<CRWWebViewProxy> mock_web_view_proxy =
+      OCMStrictProtocolMock(@protocol(CRWWebViewProxy));
+  web_state_->SetWebViewProxy(mock_web_view_proxy);
+
+  // `kInactive` -> `kUserControlled` does not suppress input views.
+  tab_helper_->SetControlState(ActorControlState::kUserControlled);
+  EXPECT_OCMOCK_VERIFY((id)mock_web_view_proxy);
+  EXPECT_OCMOCK_VERIFY((id)mock_view);
+
+  // `kUserControlled` -> `kActorControlled` enables input view suppression.
+  OCMExpect([mock_web_view_proxy setShouldSuppressInputViews:YES]);
+  tab_helper_->SetControlState(ActorControlState::kActorControlled);
+  EXPECT_OCMOCK_VERIFY((id)mock_web_view_proxy);
+  EXPECT_OCMOCK_VERIFY((id)mock_view);
+
+  // `kActorControlled` -> `kUserControlled` ends editing before lifting
+  // suppression so a previously actor-focused field does not pop the keyboard.
+  __block bool end_editing_called = false;
+  __block bool end_editing_called_before_unsuppressing = false;
+  OCMExpect([mock_view endEditing:YES]).andDo(^(NSInvocation* /*invocation*/) {
+    end_editing_called = true;
+  });
+  OCMExpect([mock_web_view_proxy setShouldSuppressInputViews:NO])
+      .andDo(^(NSInvocation* /*invocation*/) {
+        end_editing_called_before_unsuppressing = end_editing_called;
+      });
+  tab_helper_->SetControlState(ActorControlState::kUserControlled);
+  EXPECT_OCMOCK_VERIFY((id)mock_view);
+  EXPECT_OCMOCK_VERIFY((id)mock_web_view_proxy);
+  EXPECT_TRUE(end_editing_called_before_unsuppressing);
+
+  // `kUserControlled` -> `kInactive` does not touch the proxy or view.
+  tab_helper_->SetControlState(ActorControlState::kInactive);
+  EXPECT_OCMOCK_VERIFY((id)mock_view);
+  EXPECT_OCMOCK_VERIFY((id)mock_web_view_proxy);
+
+  // Destroying the `WebState` while `kUserControlled` does not touch the proxy
+  // or view.
+  tab_helper_->SetControlState(ActorControlState::kUserControlled);
+  tab_helper_ = nullptr;
+  web_state_.reset();
+  EXPECT_OCMOCK_VERIFY((id)mock_view);
+  EXPECT_OCMOCK_VERIFY((id)mock_web_view_proxy);
+}
+
 // Tests that `SetControlState` keeps the tab in `kInactive`, does not suppress
 // input views, and does not notify observers when `task_source_info` is `kTtc`.
 TEST_F(ActorTabHelperTest, SetControlStateIgnoresActorControlForTtcTaskSource) {
@@ -587,25 +721,41 @@ TEST_F(ActorTabHelperTest, SetControlStateIgnoresActorControlForTtcTaskSource) {
       &observer);
   observation.Observe(tab_helper_);
 
-  tab_helper_->SetControlState(
-      ActorControlState::kActorControlled,
-      actor::TaskSourceInfo(actor::TaskSourceInfo::Client::kTtc,
-                            /*id=*/std::nullopt));
+  const actor::TaskSourceInfo ttc_source(actor::TaskSourceInfo::Client::kTtc,
+                                         /*id=*/std::nullopt);
+  tab_helper_->SetControlState(ActorControlState::kActorControlled, ttc_source);
   EXPECT_EQ(ActorControlState::kInactive, tab_helper_->GetControlState());
+  EXPECT_FALSE(web_state_->keep_render_process_alive());
+  EXPECT_FALSE(observer.on_control_state_changed_called_);
+
+  tab_helper_->SetControlState(ActorControlState::kUserControlled, ttc_source);
+  EXPECT_EQ(ActorControlState::kInactive, tab_helper_->GetControlState());
+  EXPECT_FALSE(web_state_->keep_render_process_alive());
   EXPECT_FALSE(observer.on_control_state_changed_called_);
   EXPECT_OCMOCK_VERIFY(mock_web_view_proxy);
 }
 
-// Tests that `MaybeHandleNewTabRequest` ignores requests while `kInactive`,
-// intercepts and redirects valid HTTP(S) URLs while `kActorControlled`, and
-// stops intercepting once the tab returns to `kInactive`.
+// Tests that `MaybeHandleNewTabRequest` ignores requests while `kInactive` or
+// `kUserControlled`, intercepts and redirects valid HTTP(S) URLs while
+// `kActorControlled`, and stops intercepting once the tab leaves
+// `kActorControlled`.
 TEST_F(ActorTabHelperTest, MaybeHandleNewTabRequestFollowsControlState) {
+  EXPECT_FALSE(tab_helper_->MaybeHandleNewTabRequest(GURL(kHttpsPopupUrl)));
+  EXPECT_FALSE(navigation_manager()->LoadURLWithParamsWasCalled());
+
+  tab_helper_->SetControlState(ActorControlState::kUserControlled);
   EXPECT_FALSE(tab_helper_->MaybeHandleNewTabRequest(GURL(kHttpsPopupUrl)));
   EXPECT_FALSE(navigation_manager()->LoadURLWithParamsWasCalled());
 
   tab_helper_->SetControlState(ActorControlState::kActorControlled);
   EXPECT_TRUE(tab_helper_->MaybeHandleNewTabRequest(GURL(kHttpsPopupUrl)));
   ASSERT_TRUE(navigation_manager()->LoadURLWithParamsWasCalled());
+  EXPECT_EQ(GURL(kHttpsPopupUrl),
+            navigation_manager()->GetLastLoadURLWithParams()->url);
+
+  tab_helper_->SetControlState(ActorControlState::kUserControlled);
+  EXPECT_FALSE(
+      tab_helper_->MaybeHandleNewTabRequest(GURL(kSecondHttpsPopupUrl)));
   EXPECT_EQ(GURL(kHttpsPopupUrl),
             navigation_manager()->GetLastLoadURLWithParams()->url);
 
@@ -699,9 +849,13 @@ TEST_F(ActorTabHelperTest, IsActorControlledAndObserveControlStateHelpers) {
   EXPECT_TRUE(ActorTabHelper::IsActorControlled(web_state_.get()));
   EXPECT_EQ(1, callback_count);
 
-  tab_helper_->SetControlState(ActorControlState::kInactive);
+  tab_helper_->SetControlState(ActorControlState::kUserControlled);
   EXPECT_FALSE(ActorTabHelper::IsActorControlled(web_state_.get()));
   EXPECT_EQ(2, callback_count);
+
+  tab_helper_->SetControlState(ActorControlState::kInactive);
+  EXPECT_FALSE(ActorTabHelper::IsActorControlled(web_state_.get()));
+  EXPECT_EQ(3, callback_count);
 }
 
 }  // namespace

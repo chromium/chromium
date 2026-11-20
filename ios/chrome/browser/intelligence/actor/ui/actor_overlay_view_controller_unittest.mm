@@ -95,8 +95,72 @@ TEST_F(ActorOverlayViewControllerTest, SetupViewAndSubviews) {
   EXPECT_TRUE([scrim_view isKindOfClass:[ActorOverlayScrimView class]]);
   EXPECT_TRUE([glow_view isKindOfClass:[ActorOverlayGlowView class]]);
 
-  // Glow view should be visible.
+  // Both scrim and glow views should be visible by default.
+  EXPECT_TRUE(view_controller_.scrimVisible);
+  EXPECT_FALSE(scrim_view.hidden);
   EXPECT_FALSE(glow_view.hidden);
+}
+
+// Tests that setting `scrimVisible` to `NO` before the view loads hides the
+// scrim while keeping the glow visible.
+TEST_F(ActorOverlayViewControllerTest,
+       SetScrimVisibleBeforeLoadViewHidesScrimAndKeepsGlowVisible) {
+  view_controller_ = [[ActorOverlayViewController alloc]
+      initWithBrowserLayoutGuideCenter:layout_guide_center_
+                            scrimColor:[UIColor blackColor]
+                             glowColor:[UIColor whiteColor]];
+  view_controller_.scrimVisible = NO;
+  view_controller_.layoutState = layout_state_;
+
+  ASSERT_NE(view_controller_.view, nil);
+  UIView* scrim_view = [view_controller_ valueForKey:@"_scrimView"];
+  UIView* glow_view = [view_controller_ valueForKey:@"_glowView"];
+  ASSERT_NE(scrim_view, nil);
+  ASSERT_NE(glow_view, nil);
+
+  EXPECT_TRUE(scrim_view.hidden);
+  EXPECT_FALSE(glow_view.hidden);
+}
+
+// Tests that toggling `scrimVisible` updates `_scrimView.hidden`, keeps
+// `_glowView` visible, and lets touches pass through when the scrim is hidden.
+TEST_F(ActorOverlayViewControllerTest,
+       ToggleScrimVisibleUpdatesVisibilityAndHitTesting) {
+  view_controller_ = [[ActorOverlayViewController alloc]
+      initWithBrowserLayoutGuideCenter:layout_guide_center_
+                            scrimColor:[UIColor blackColor]
+                             glowColor:[UIColor whiteColor]];
+  view_controller_.layoutState = layout_state_;
+
+  UIViewController* parent = [[UIViewController alloc] init];
+  scoped_key_window_.Get().rootViewController = parent;
+  [parent addChildViewController:view_controller_];
+  UIView* overlay_view = view_controller_.view;
+  [parent.view addSubview:overlay_view];
+  [view_controller_ didMoveToParentViewController:parent];
+  [parent.view layoutIfNeeded];
+
+  UIView* scrim_view = [view_controller_ valueForKey:@"_scrimView"];
+  UIView* glow_view = [view_controller_ valueForKey:@"_glowView"];
+  ASSERT_NE(scrim_view, nil);
+  ASSERT_NE(glow_view, nil);
+  ASSERT_FALSE(CGRectIsEmpty(scrim_view.frame));
+
+  const CGPoint test_point = CGPointMake(CGRectGetMidX(scrim_view.frame),
+                                         CGRectGetMidY(scrim_view.frame));
+  EXPECT_FALSE(scrim_view.hidden);
+  EXPECT_FALSE(glow_view.hidden);
+  EXPECT_EQ([overlay_view hitTest:test_point withEvent:nil], scrim_view);
+
+  view_controller_.scrimVisible = NO;
+  EXPECT_TRUE(scrim_view.hidden);
+  EXPECT_FALSE(glow_view.hidden);
+  EXPECT_EQ([overlay_view hitTest:test_point withEvent:nil], nil);
+
+  view_controller_.scrimVisible = YES;
+  EXPECT_FALSE(scrim_view.hidden);
+  EXPECT_FALSE(glow_view.hidden);
+  EXPECT_EQ([overlay_view hitTest:test_point withEvent:nil], scrim_view);
 }
 
 // Test that `LayoutState` `appBarPosition` default and bottom updates change

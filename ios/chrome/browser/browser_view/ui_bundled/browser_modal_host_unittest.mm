@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/download/coordinator/pass_kit_coordinator.h"
 #import "ios/chrome/browser/download/model/external_app_util.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/test/test_fullscreen_controller.h"
+#import "ios/chrome/browser/intelligence/actor/coordinator/actor_overlay_coordinator.h"
 #import "ios/chrome/browser/promos_manager/coordinator/promos_manager_coordinator.h"
 #import "ios/chrome/browser/save_to_photos/ui_bundled/save_to_photos_coordinator.h"
 #import "ios/chrome/browser/send_tab_to_self/coordinator/send_tab_to_self_coordinator.h"
@@ -37,6 +38,7 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
+#import "ios/chrome/browser/shared/public/commands/actor_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_iph_commands.h"
@@ -707,6 +709,40 @@ TEST_F(BrowserModalHostTest, HidesDefaultBrowserPromo) {
   OCMExpect([mockCoordinator stop]);
   [defaultBrowserHandler hidePromo];
   EXPECT_OCMOCK_VERIFY(classMock);
+}
+
+// Tests that `ActorOverlayCommands` starts `ActorOverlayCoordinator` with the
+// initial `scrimVisible` value, updates `scrimVisible` in place without
+// restarting the coordinator on subsequent show calls, and stops it on hide.
+TEST_F(BrowserModalHostTest, StartsUpdatesAndStopsActorOverlayCoordinator) {
+  InsertWebState();
+  web::WebState* web_state = GetActiveWebState();
+
+  id class_mock = OCMStrictClassMock([ActorOverlayCoordinator class]);
+  [class_mock setExpectationOrderMatters:YES];
+  ActorOverlayCoordinator* mock_coordinator = class_mock;
+  OCMExpect([class_mock alloc]).andReturn(class_mock);
+  OCMExpect([mock_coordinator initWithBaseViewController:base_view_controller_
+                                                 browser:browser_.get()
+                                                webState:web_state])
+      .andReturn(mock_coordinator);
+  OCMExpect([mock_coordinator setScrimVisible:NO]);
+  OCMExpect([mock_coordinator start]);
+
+  id<ActorOverlayCommands> handler = HandlerForProtocol(
+      browser_->GetCommandDispatcher(), ActorOverlayCommands);
+  [handler showActorOverlayForWebState:web_state showScrim:NO];
+  EXPECT_OCMOCK_VERIFY(class_mock);
+
+  // Calling `-showActorOverlayForWebState:showScrim:` while already started
+  // updates `scrimVisible` in place without re-allocating or re-starting.
+  OCMExpect([mock_coordinator setScrimVisible:YES]);
+  [handler showActorOverlayForWebState:web_state showScrim:YES];
+  EXPECT_OCMOCK_VERIFY(class_mock);
+
+  OCMExpect([mock_coordinator stop]);
+  [handler hideActorOverlay];
+  EXPECT_OCMOCK_VERIFY(class_mock);
 }
 
 namespace {

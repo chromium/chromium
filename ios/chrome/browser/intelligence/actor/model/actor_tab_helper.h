@@ -64,7 +64,9 @@ class ActorTabHelper : public web::WebStateObserver,
   // Sets the `ActorControlState` for the associated `WebState`, notifying
   // registered callbacks and observers if the control state changes. `kTtc`
   // tasks in `task_source_info` keep the tab in `kInactive`. The render process
-  // is kept alive while the control state is not `kInactive`.
+  // is kept alive while the control state is not `kInactive` (both
+  // `kActorControlled` and `kUserControlled`), while keyboard/input-view
+  // suppression applies only during `kActorControlled`.
   // TODO(crbug.com/581400371): Move `TaskSourceInfo`-specific UI configuration
   // out of `ActorTabHelper`.
   void SetControlState(

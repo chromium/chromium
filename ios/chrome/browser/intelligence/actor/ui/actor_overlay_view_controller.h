@@ -29,6 +29,11 @@
 // The layout state observed by this view controller.
 @property(nonatomic, weak) SceneLayoutState* layoutState;
 
+// Whether the touch-blocking scrim view is visible. Defaults to `YES`. When
+// `NO`, only the border glow is shown and touches pass through to underlying
+// views.
+@property(nonatomic, assign, getter=isScrimVisible) BOOL scrimVisible;
+
 // Initializes the view controller using `browserCenter` to anchor subviews to
 // browser layout guides, `scrimColor` as the base scrim color, and `glowColor`
 // as the base glow color.

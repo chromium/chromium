@@ -75,9 +75,12 @@
     _browserLayoutGuideCenter = browserCenter;
     _scrimColor = scrimColor;
     _glowColor = glowColor;
+    _scrimVisible = YES;
   }
   return self;
 }
+
+#pragma mark - Properties
 
 - (void)setLayoutState:(SceneLayoutState*)layoutState {
   if (_layoutState == layoutState) {
@@ -89,11 +92,20 @@
   [self updateGlowConstraintsAndCornerRadii];
 }
 
+- (void)setScrimVisible:(BOOL)scrimVisible {
+  if (_scrimVisible == scrimVisible) {
+    return;
+  }
+  _scrimVisible = scrimVisible;
+  _scrimView.hidden = !_scrimVisible;
+}
+
 #pragma mark - UIViewController
 
 - (void)loadView {
   _scrimView = [[ActorOverlayScrimView alloc] initWithScrimColor:_scrimColor];
   _scrimView.translatesAutoresizingMaskIntoConstraints = NO;
+  _scrimView.hidden = !self.scrimVisible;
   _glowView = [[ActorOverlayGlowView alloc] initWithGlowColor:_glowColor];
   _glowView.translatesAutoresizingMaskIntoConstraints = NO;
   UIView* view = [[ActorOverlayContainerView alloc] initWithFrame:CGRectZero];

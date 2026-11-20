@@ -26,11 +26,11 @@
 
 namespace {
 
-// Returns whether `ActorTabHelper` should apply `kActorControlled` state
-// (suppressing keyboard input and notifying overlay observers) for a task
-// created by `task_source_info`. Defaults to `true` when no `TaskSourceInfo` is
-// set; `kTtc` tasks keep the tab in `kInactive` because TTC manages its own UI
-// and does not block user input.
+// Returns whether `ActorTabHelper` should apply non-`kInactive` control states
+// (such as suppressing keyboard input during `kActorControlled` and notifying
+// overlay observers) for a task created by `task_source_info`. Defaults to
+// `true` when no `TaskSourceInfo` is set; `kTtc` tasks keep the tab in
+// `kInactive` because TTC manages its own UI and does not block user input.
 // TODO(crbug.com/581400371): Move UI configuration out of `ActorTabHelper` so
 // it only stores state and propagates messages.
 bool ShouldApplyControlStateForTaskSource(

@@ -8,6 +8,10 @@
 
 namespace {
 
+// Accessibility identifier for the overlay glow view.
+NSString* const kActorOverlayGlowAccessibilityIdentifier =
+    @"ActorOverlayGlowAccessibilityIdentifier";
+
 // The radius (thickness spread) of the inner shadow glow.
 constexpr CGFloat kGlowShadowRadius = 12.0f;
 
@@ -40,6 +44,7 @@ constexpr CGFloat kStrokePerimeterWidth = 14.0f;
   self = [super initWithFrame:CGRectZero];
   if (self) {
     _glowColor = glowColor;
+    self.accessibilityIdentifier = kActorOverlayGlowAccessibilityIdentifier;
     self.translatesAutoresizingMaskIntoConstraints = NO;
     self.userInteractionEnabled = NO;
     self.opaque = NO;

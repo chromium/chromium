@@ -17,6 +17,9 @@ enum class ActorControlState {
   kInactive = 0,
   // Tab is actively controlled by the actor.
   kActorControlled = 1,
+  // Tab has an active actor task, but the user currently has control (e.g.,
+  // taking over or paused).
+  kUserControlled = 2,
 };
 
 // Returns a string representation of `control_state`.
@@ -27,6 +30,8 @@ constexpr std::string_view ActorControlStateToString(
       return "kInactive";
     case ActorControlState::kActorControlled:
       return "kActorControlled";
+    case ActorControlState::kUserControlled:
+      return "kUserControlled";
   }
   return "kUnknown";
 }

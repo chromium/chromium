@@ -78,16 +78,13 @@ std::string ActorTaskStateToString(ActorTaskState state) {
 // Returns the control state corresponding to `task_state`.
 ActorControlState ControlStateForTaskState(ActorTaskState task_state) {
   switch (task_state) {
-    // TODO(crbug.com/580899072): Move `kInit` to
-    // `ActorControlState::kUserControlled` once implemented.
     case ActorTaskState::kInit:
     case ActorTaskState::kActing:
     case ActorTaskState::kReflecting:
     case ActorTaskState::kWaitingOnUser:
-    // TODO(crbug.com/582302821): Return the WebStates to the user while paused
-    // once the paused UI is ready.
-    case ActorTaskState::kPausedByUser:
       return ActorControlState::kActorControlled;
+    case ActorTaskState::kPausedByUser:
+      return ActorControlState::kUserControlled;
     case ActorTaskState::kPausedByActor:
     case ActorTaskState::kCancelled:
     case ActorTaskState::kFinished:

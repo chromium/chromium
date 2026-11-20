@@ -1907,7 +1907,7 @@ TEST_F(ActorTaskTest, PauseWhileActingHoldsReplyUntilResume) {
 
   task_->Pause();
   EXPECT_EQ(ActorTaskState::kPausedByUser, task_->GetState());
-  EXPECT_EQ(ActorControlState::kActorControlled, helper->GetControlState());
+  EXPECT_EQ(ActorControlState::kUserControlled, helper->GetControlState());
 
   // Drain the cancelled engine work: it must not reply.
   FlushCurrentSequence();
