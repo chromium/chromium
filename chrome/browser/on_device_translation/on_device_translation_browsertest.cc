@@ -18,6 +18,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/current_thread.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
@@ -870,6 +871,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
 // incompatibility of the library.
 IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
                        CreateTranslatorErrorLibraryIncompatible) {
+  base::HistogramTester histogram_tester;
   MockComponentManager mock_component_manager(GetTempDir());
   EXPECT_CALL(mock_component_manager, RegisterTranslateKitComponentImpl())
       .Times(1);
@@ -889,6 +891,10 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
       )"),
             "NotSupportedError: Unable to create translator for the given "
             "source and target language.");
+  // The browser records why `create()` failed before it replies.
+  histogram_tester.ExpectUniqueSample(
+      "Translate.TranslatorApi.CreateTranslatorError",
+      blink::mojom::CreateTranslatorError::kInvalidFunctionPointer, 1);
 
   // The console message should be logged.
   WaitForConsoleObserver(*console_observer);

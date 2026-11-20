@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/auto_reset.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
@@ -25,6 +26,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "services/on_device_model/public/mojom/download_observer.mojom-forward.h"
 #include "third_party/blink/public/mojom/on_device_translation/translation_manager.mojom.h"
@@ -128,9 +130,15 @@ class TranslationManagerImpl : public base::SupportsUserData::Data,
   std::set<std::pair<std::string, std::string>>
       transient_initialized_translations_;
 
+  void ReplyWithCreateTranslatorError(
+      mojo::RemoteSetElementId client_id,
+      blink::mojom::CreateTranslatorError error);
+
+  void RemovePendingClient(mojo::RemoteSetElementId client_id);
+
   void CreateTranslatorImpl(
-      mojo::PendingRemote<
-          blink::mojom::TranslationManagerCreateTranslatorClient> client,
+      mojo::RemoteSetElementId client_id,
+      base::ScopedClosureRunner cleanup_pending_client,
       const std::string& source_language,
       const std::string& target_language,
       std::unique_ptr<optimization_guide::OnDeviceModelDownloadProgressManager>
@@ -161,6 +169,8 @@ class TranslationManagerImpl : public base::SupportsUserData::Data,
   raw_ptr<ServiceControllerManager> manager_;
   mojo::UniqueReceiverSet<blink::mojom::Translator> translators_;
   mojo::ReceiverSet<blink::mojom::TranslationManager> receiver_set_;
+  mojo::RemoteSet<blink::mojom::TranslationManagerCreateTranslatorClient>
+      pending_clients_;
   raw_ptr<component_updater::ComponentUpdateService> component_update_service_;
 
   base::WeakPtrFactory<TranslationManagerImpl> weak_ptr_factory_{this};

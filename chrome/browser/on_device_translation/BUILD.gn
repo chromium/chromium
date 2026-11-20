@@ -58,6 +58,7 @@ source_set("unit_tests") {
     "../component_updater/translate_kit_language_pack_component_installer_unittest.cc",
     "installer_impl_unittest.cc",
     "library_source_unittest.cc",
+    "translation_manager_impl_unittest.cc",
   ]
   deps = [
     ":on_device_translation",
@@ -77,6 +78,10 @@ source_set("unit_tests") {
     "//components/sync_preferences:test_support",
     "//components/update_client",
     "//content/test:test_support",
+    "//mojo/public/cpp/bindings",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//url",
   ]
   if (is_chromeos) {
     deps += [ "//chromeos/ash/components/dbus/image_loader" ]

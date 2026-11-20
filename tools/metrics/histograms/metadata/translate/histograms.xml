@@ -871,6 +871,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Translate.TranslatorApi.CreateTranslatorError"
+    enum="TranslatorApiCreateTranslatorError" expires_after="2027-04-30">
+  <owner>jaeone@google.com</owner>
+  <owner>chrome-builtin-ai@google.com</owner>
+  <summary>
+    Recorded when a Translator.create() call that reached the on-device
+    translation service controller manager fails while the renderer client is
+    still connected, with the error value sent to the renderer. Successful calls
+    are not recorded. Calls that disconnect before they finish (such as on abort
+    or frame teardown) or fail before reaching the service controller manager
+    (such as policy or unsupported language checks) are also excluded.
+  </summary>
+</histogram>
+
 <histogram name="Translate.TranslatorApi.TranslationLength" units="int"
     expires_after="2027-03-01">
   <owner>evliu@google.com</owner>

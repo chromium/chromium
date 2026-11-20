@@ -360,6 +360,27 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="Automatic translation by hrefTranslate"/>
 </enum>
 
+<!-- LINT.IfChange(TranslatorApiCreateTranslatorError) -->
+
+<enum name="TranslatorApiCreateTranslatorError">
+  <int value="1" label="kInvalidBinary"/>
+  <int value="2" label="kInvalidFunctionPointer"/>
+  <int value="3" label="kFailedToInitialize"/>
+  <int value="4" label="kFailedToCreateTranslator"/>
+  <int value="5" label="kServiceCrashed"/>
+  <int value="6" label="kDisallowedByPolicy"/>
+  <int value="7" label="kExceedsServiceCountLimitation"/>
+  <int value="8" label="kExceedsPendingTaskCountLimitation"/>
+  <int value="9" label="kInvalidVersion"/>
+  <int value="10" label="kInvalidStoragePartition"/>
+  <int value="11" label="kNotSupportedLanguage"/>
+  <int value="12" label="kLibraryInstallFailed"/>
+  <int value="13" label="kLanguagePackDownloadFailed"/>
+  <int value="14" label="kNotEnoughDiskSpace"/>
+</enum>
+
+<!-- LINT.ThenChange(//third_party/blink/public/mojom/on_device_translation/translation_manager.mojom:CreateTranslatorError) -->
+
 </enums>
 
 </histogram-configuration>
