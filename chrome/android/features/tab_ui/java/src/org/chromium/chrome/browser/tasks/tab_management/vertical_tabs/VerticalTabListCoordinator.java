@@ -223,9 +223,6 @@ public class VerticalTabListCoordinator {
     private final VerticalTabItemHoverController mTabItemHoverController;
     private final RecyclerView.OnScrollListener mOnScrollListener;
     private final VerticalTabKeyboardHandler mKeyboardHandler;
-    private final BackPressManager mBackPressManager;
-    private final TabSwitcherBackPressHandlerManager mBackPressHandlerManager =
-            new TabSwitcherBackPressHandlerManager();
     private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
     private final @Nullable AppHeaderObserver mAppHeaderObserver;
     private final @Nullable BooleanSupplier mCanActivateTabLayoutToggleMenuSupplier;
@@ -391,6 +388,7 @@ public class VerticalTabListCoordinator {
      * @param undoBarThrottle Throttler for undo bar messages.
      * @param browserControlsStateProvider Provider for browser controls sizing and state.
      * @param backPressManager Manager for intercepting system back press and physical ESC keys.
+     * @param backPressHandlerManager The activity's shared handler for cancelling tab drags on ESC.
      * @param tabWindowManagerSupplier Supplier for the {@link TabWindowManager}.
      * @param collapseController The controller that owns the rail collapse state.
      */
@@ -416,6 +414,7 @@ public class VerticalTabListCoordinator {
             @Nullable UndoBarThrottle undoBarThrottle,
             BrowserControlsStateProvider browserControlsStateProvider,
             BackPressManager backPressManager,
+            TabSwitcherBackPressHandlerManager backPressHandlerManager,
             Supplier<TabWindowManager> tabWindowManagerSupplier,
             VerticalTabRailCollapseController collapseController) {
         mCanActivateTabLayoutToggleMenuSupplier = canActivateTabLayoutToggleMenuSupplier;
@@ -431,10 +430,11 @@ public class VerticalTabListCoordinator {
         mDataSharingTabManager = dataSharingTabManager;
         mUndoBarThrottle = undoBarThrottle;
         mBrowserControlsStateProvider = browserControlsStateProvider;
-        mBackPressManager = backPressManager;
-        // Register the TabSwitcherBackPressHandlerManager to receive ESC / Back events.
-        mBackPressManager.addHandler(
-                mBackPressHandlerManager, BackPressHandler.Type.CANCEL_TAB_SWITCHER_DRAG);
+        // The tab switcher shares this handler and may have registered it first.
+        if (!backPressManager.has(BackPressHandler.Type.CANCEL_TAB_SWITCHER_DRAG)) {
+            backPressManager.addHandler(
+                    backPressHandlerManager, BackPressHandler.Type.CANCEL_TAB_SWITCHER_DRAG);
+        }
         mTabContentManagerSupplier = tabContentManagerSupplier;
         mTabWindowManagerSupplier = tabWindowManagerSupplier;
         if (GlicEnabling.isEnabledByFlags() || ContextualTasksUtils.isContextualTasksUiEnabled()) {
@@ -585,7 +585,8 @@ public class VerticalTabListCoordinator {
                         R.dimen.default_favicon_corner_radius,
                         TabFavicon::getBitmap);
 
-        mTabSwitcherDragHandler = createTabSwitcherDragHandler(activity, tabModelSelector);
+        mTabSwitcherDragHandler =
+                createTabSwitcherDragHandler(activity, tabModelSelector, backPressHandlerManager);
         mNonOriginatingDragHandlerDelegate =
                 createNonOriginatingDragHandlerDelegate(mTabSwitcherDragHandler);
         mTabSwitcherDragHandler.setDragHandlerDelegate(mNonOriginatingDragHandlerDelegate);
@@ -994,9 +995,6 @@ public class VerticalTabListCoordinator {
         mSpineDecoration.destroy();
         mTabModelSelectorTabModelObserver.destroy();
         mVerticalTabsActiveSupplier.removeObserver(mActiveObserver);
-        if (mBackPressManager.has(BackPressHandler.Type.CANCEL_TAB_SWITCHER_DRAG)) {
-            mBackPressManager.removeHandler(BackPressHandler.Type.CANCEL_TAB_SWITCHER_DRAG);
-        }
         // The drag handler is destroyed without ending an in-progress drag through its listener,
         // so the drag's end would never be reported otherwise.
         notifyExternalDragEnded();
@@ -1482,7 +1480,9 @@ public class VerticalTabListCoordinator {
     }
 
     private TabSwitcherDragHandler createTabSwitcherDragHandler(
-            Activity activity, TabModelSelector tabModelSelector) {
+            Activity activity,
+            TabModelSelector tabModelSelector,
+            TabSwitcherBackPressHandlerManager backPressHandlerManager) {
         if (sTabSwitcherDragHandlerSupplierForTesting != null) {
             return sTabSwitcherDragHandlerSupplierForTesting.get();
         }
@@ -1497,7 +1497,7 @@ public class VerticalTabListCoordinator {
                         activitySupplier,
                         mMultiInstanceManager,
                         dragDropDelegate,
-                        mBackPressHandlerManager,
+                        backPressHandlerManager,
                         /* fadeDragShadow= */ false,
                         mTabWindowManagerSupplier);
         dragHandler.setTabModelSelector(tabModelSelector);

@@ -280,6 +280,9 @@ public class VerticalTabListCoordinatorUnitTest {
     /** Counts how many times the coordinator asked for a {@link TabSwitcherDragHandler}. */
     private final AtomicInteger mDragHandlerCreationCount = new AtomicInteger();
 
+    private final TabSwitcherBackPressHandlerManager mDragHandlerManager =
+            new TabSwitcherBackPressHandlerManager();
+
     private VerticalTabListCoordinator mCoordinator;
     private VerticalTabRailCollapseController mCollapseController;
     private int mMinPinnedTabGap;
@@ -437,8 +440,19 @@ public class VerticalTabListCoordinatorUnitTest {
         verify(mTabModelSelector).addObserver(mSelectorObserverCaptor.getValue());
         verify(mBackPressManager)
                 .addHandler(
-                        any(TabSwitcherBackPressHandlerManager.class),
+                        eq(mDragHandlerManager),
                         eq(BackPressHandler.Type.CANCEL_TAB_SWITCHER_DRAG));
+    }
+
+    @Test
+    public void testDoesNotRegisterBackPressHandlerTwice() {
+        when(mBackPressManager.has(BackPressHandler.Type.CANCEL_TAB_SWITCHER_DRAG))
+                .thenReturn(true);
+
+        createCoordinator();
+
+        verify(mBackPressManager, never())
+                .addHandler(any(), eq(BackPressHandler.Type.CANCEL_TAB_SWITCHER_DRAG));
     }
 
     @Test
@@ -512,9 +526,11 @@ public class VerticalTabListCoordinatorUnitTest {
 
         when(mBackPressManager.has(BackPressHandler.Type.CANCEL_TAB_SWITCHER_DRAG))
                 .thenReturn(true);
+
         mCoordinator.destroy();
 
-        verify(mBackPressManager).removeHandler(BackPressHandler.Type.CANCEL_TAB_SWITCHER_DRAG);
+        verify(mBackPressManager, never())
+                .removeHandler(BackPressHandler.Type.CANCEL_TAB_SWITCHER_DRAG);
         verify(mTabModelSelector).removeObserver(observer);
         verify(mTabStripContextMenuCoordinator).destroy();
         assertNull(
@@ -1632,6 +1648,7 @@ public class VerticalTabListCoordinatorUnitTest {
                         mUndoBarThrottle,
                         mBrowserControlsStateProvider,
                         mBackPressManager,
+                        mDragHandlerManager,
                         () -> mTabWindowManager,
                         mCollapseController);
 
@@ -4400,6 +4417,7 @@ public class VerticalTabListCoordinatorUnitTest {
                         mUndoBarThrottle,
                         mBrowserControlsStateProvider,
                         mBackPressManager,
+                        mDragHandlerManager,
                         () -> mTabWindowManager,
                         mCollapseController);
         mCollapseController.setRailStateChangeDelegate(mMockRailStateChangeDelegate);
@@ -4436,6 +4454,7 @@ public class VerticalTabListCoordinatorUnitTest {
                         mUndoBarThrottle,
                         mBrowserControlsStateProvider,
                         mBackPressManager,
+                        mDragHandlerManager,
                         () -> mTabWindowManager,
                         mCollapseController);
         mCollapseController.setRailStateChangeDelegate(mMockRailStateChangeDelegate);

@@ -236,6 +236,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabGroupFaviconCluster;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupListFaviconResolverFactory;
 import org.chromium.chrome.browser.tasks.tab_management.TabSearchOverlayCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabSearchOverlayCoordinator.TabSearchEntryPoint;
+import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherBackPressHandlerManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiUtils;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabsActionDelegate;
@@ -345,6 +346,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private static final String TAG = "TabbedRootUiCoord";
     private static boolean sDisableTopControlsAnimationForTesting;
     private final RootUiTabObserver mRootUiTabObserver;
+    private final TabSwitcherBackPressHandlerManager mDragHandlerManager;
     private final SettableNonNullObservableSupplier<Boolean> mIsVerticalTabsActiveSupplier =
             ObservableSuppliers.createNonNull(false);
     private final SettableNonNullObservableSupplier<Boolean> mIsGlicPinnedSupplier =
@@ -615,6 +617,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
      * @param sendToBackground Callback exiting the app and closing the tab.
      * @param initializeUiWithIncognitoColors Whether to initialize the UI with incognito colors.
      * @param backPressManager The {@link BackPressManager} handling back press.
+     * @param dragHandlerManager The activity's shared handler for cancelling tab drags on ESC.
      * @param savedInstanceState The saved bundle for the last recorded state.
      * @param persistentState The persistent bundle for the last recorded state.
      * @param multiInstanceManager Manages multi-instance mode.
@@ -678,6 +681,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             Callback<@Nullable Tab> sendToBackground,
             boolean initializeUiWithIncognitoColors,
             BackPressManager backPressManager,
+            TabSwitcherBackPressHandlerManager dragHandlerManager,
             @Nullable Bundle savedInstanceState,
             @Nullable PersistableBundle persistentState,
             @Nullable MultiInstanceManager multiInstanceManager,
@@ -793,6 +797,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                     }
                 };
         mMultiInstanceManager = multiInstanceManager;
+        mDragHandlerManager = dragHandlerManager;
         mHubManagerSupplier = hubManagerSupplier;
         mStatusBarColorController.setAllowToolbarColorOnTablets(true);
         mSystemBarColorHelperSupplier = systemBarColorHelperSupplier;
@@ -2611,6 +2616,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                                             mUndoGroupSnackbarController,
                                             mBrowserControlsManager,
                                             mBackPressManager,
+                                            mDragHandlerManager,
                                             TabWindowManagerSingleton::getInstance,
                                             collapseController),
                             mIsVerticalTabsActiveSupplier);

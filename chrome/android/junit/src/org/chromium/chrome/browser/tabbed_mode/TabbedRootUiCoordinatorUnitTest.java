@@ -77,6 +77,7 @@ import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabAssociatedApp;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherBackPressHandlerManager;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabsActionDelegate;
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuBlocker;
@@ -490,6 +491,7 @@ public class TabbedRootUiCoordinatorUnitTest {
                 /* sendToBackground= */ CallbackUtils.emptyCallback(),
                 /* initializeUiWithIncognitoColors= */ false,
                 mBackPressManager,
+                new TabSwitcherBackPressHandlerManager(),
                 /* savedInstanceState= */ null,
                 /* persistentState= */ null,
                 /* multiInstanceManager= */ null,

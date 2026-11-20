@@ -3584,6 +3584,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 // We should make it more robust by using more signals.
                 IntentHandler.hasAnyIncognitoExtra(getIntent().getExtras()),
                 mBackPressManager,
+                mDragHandlerManager,
                 getSavedInstanceState(),
                 getPersistentInstanceState(),
                 mMultiInstanceManager,
