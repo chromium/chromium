@@ -1920,6 +1920,38 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
     }
 
     @Test
+    public void testDragDropResult_AbortedByEsc() {
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.VerticalTabs.DragDropResult",
+                        VerticalTabListItemTouchHelperCallback.DragDropResult.ABORTED_BY_ESC);
+
+        mPropertyModel.set(TabProperties.TAB_ID, 1);
+        when(mTabModel.getTabById(1)).thenReturn(mTab1);
+        when(mTabModel.indexOf(mTab1)).thenReturn(0);
+
+        mCallback.onSelectedChanged(mViewHolder, ItemTouchHelper.ACTION_STATE_DRAG);
+        mCallback.markDragAbortedByEsc();
+        mCallback.clearView(mRecyclerView, mViewHolder);
+
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testDragDropResult_GroupHeader_AbortedByEsc() {
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.VerticalTabs.DragDropResult",
+                        VerticalTabListItemTouchHelperCallback.DragDropResult.ABORTED_BY_ESC);
+
+        setupDragGroupHeaderState();
+        mCallback.markDragAbortedByEsc();
+        mCallback.clearView(mRecyclerView, mViewHolder);
+
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
     public void testDragDropResult_Reordered() {
         var histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(

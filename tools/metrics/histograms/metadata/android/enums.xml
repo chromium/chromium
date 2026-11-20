@@ -592,6 +592,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Ungrouped"/>
   <int value="3" label="Aborted (No Change)"/>
   <int value="4" label="Dragged Out"/>
+  <int value="5" label="Aborted by ESC"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/vertical_tabs/VerticalTabListItemTouchHelperCallback.java:AndroidVerticalTabsDragDropResult) -->

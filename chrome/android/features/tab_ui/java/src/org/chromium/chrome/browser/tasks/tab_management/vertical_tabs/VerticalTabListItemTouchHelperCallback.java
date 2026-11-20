@@ -74,7 +74,8 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
         DragDropResult.GROUPED,
         DragDropResult.UNGROUPED,
         DragDropResult.ABORTED_NO_CHANGE,
-        DragDropResult.DRAGGED_OUT
+        DragDropResult.DRAGGED_OUT,
+        DragDropResult.ABORTED_BY_ESC
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface DragDropResult {
@@ -83,7 +84,8 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
         int UNGROUPED = 2;
         int ABORTED_NO_CHANGE = 3;
         int DRAGGED_OUT = 4;
-        int COUNT = 5;
+        int ABORTED_BY_ESC = 5;
+        int COUNT = 6;
     }
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:AndroidVerticalTabsDragDropResult)
@@ -560,6 +562,7 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
             // Pause undo snackbars while dragging.
             startThrottling();
             mIsOSNewWindowDrop = false;
+            mIsDragAbortedByEsc = false;
             mSelectedViewHolder = viewHolder;
             mSelectedGroupTabIds.clear();
 
@@ -847,7 +850,6 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
                         mDragStartTabModelIndex,
                         mIsDragStartGroup);
             }
-            mIsDragAbortedByEsc = false;
         }
 
         if (viewHolder == mSelectedViewHolder || mSelectedViewHolder == null) {
@@ -917,6 +919,7 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
             mIsDragStartGroup = false;
             mIsOSNewWindowDrop = false;
         }
+        mIsDragAbortedByEsc = false;
         mSavedItemStates.clear();
         mCollapsedItems.clear();
         mCollapsedViewHolder = null;
@@ -1770,6 +1773,9 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
      * Evaluates the drag outcome by diffing the drop state against the snapshot from drag start.
      */
     private @DragDropResult int computeDragDropResult(RecyclerView.ViewHolder viewHolder) {
+        if (mIsDragAbortedByEsc) {
+            return DragDropResult.ABORTED_BY_ESC;
+        }
         if (mIsOSNewWindowDrop
                 || viewHolder.getBindingAdapterPosition() == RecyclerView.NO_POSITION) {
             return DragDropResult.DRAGGED_OUT;
