@@ -1746,6 +1746,11 @@ targets.legacy_basic_suite(
                 # Ensure that the platform-specific backends are disabled so
                 # that TFLite is used.
                 "--additional-driver-flag=--disable-features=WebNNCoreML,WebNNDirectML,WebNNOnnxRuntime",
+                # Enable Vulkan and prefer the discrete GPU so Dawn WebGPU
+                # exposes the hardware NVIDIA Vulkan adapter on Linux X11 for
+                # in-renderer LiteRT GPU execution.
+                "--additional-driver-flag=--enable-features=Vulkan",
+                "--additional-driver-flag=--use-webgpu-power-preference=default-high-performance",
                 "--ignore-default-expectations",
                 "--additional-expectations=../../third_party/blink/web_tests/OptimizationGuideExpectations",
                 "--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/optimization_guide.filter",

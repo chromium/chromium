@@ -6279,6 +6279,8 @@
           "--num-retries=3",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
           "--additional-driver-flag=--disable-features=WebNNCoreML,WebNNDirectML,WebNNOnnxRuntime",
+          "--additional-driver-flag=--enable-features=Vulkan",
+          "--additional-driver-flag=--use-webgpu-power-preference=default-high-performance",
           "--ignore-default-expectations",
           "--additional-expectations=../../third_party/blink/web_tests/OptimizationGuideExpectations",
           "--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/optimization_guide.filter"
