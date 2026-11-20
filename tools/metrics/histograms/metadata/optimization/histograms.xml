@@ -1493,6 +1493,20 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="OptimizationGuide.ModelExecution.OnDeviceModelRegistrationMode.{BaseModel}"
+    enum="OnDeviceModelRegistrationMode" expires_after="2027-04-19">
+  <owner>zekunjiang@google.com</owner>
+  <owner>wittman@chromium.org</owner>
+  <summary>
+    Records how ManifestAssetManager initiates or schedules downloading for a
+    registered {BaseModel} component (e.g. immediate vs. deferred). Recorded
+    once when a model is registered and requires download and again if an
+    existing registration is promoted to foreground on-demand download.
+  </summary>
+  <token key="BaseModel" variants="BaseModel"/>
+</histogram>
+
+<histogram
     name="OptimizationGuide.ModelExecution.OnDeviceModelUninstallReason.{BaseModel}"
     enum="OnDeviceModelUninstallReason" expires_after="2027-04-18">
   <owner>zekunjiang@google.com</owner>

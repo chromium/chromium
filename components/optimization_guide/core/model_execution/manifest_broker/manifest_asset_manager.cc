@@ -303,6 +303,7 @@ void ManifestAssetManager::ComponentContext::SetRegistered() {
   CHECK(state_ == ComponentState::kRegistering ||
         state_ == ComponentState::kReady);
   state_ = ComponentState::kRegistered;
+  passive_registration_logged_ = false;
 }
 
 void ManifestAssetManager::ComponentContext::SetOnDemandDownloading() {
@@ -532,6 +533,19 @@ ManifestAssetManager::~ManifestAssetManager() {
   TRACE_EVENT("optimization_guide",
               "ManifestAssetManager::~ManifestAssetManager",
               perfetto::TerminatingFlow::FromPointer(this));
+}
+
+void ManifestAssetManager::RecordRegistrationMode(const std::string& asset_id,
+                                                  RegistrationMode mode) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!IsBaseModelAsset(factory_->manifest(), asset_id)) {
+    return;
+  }
+  base::UmaHistogramEnumeration(
+      base::StrCat({"OptimizationGuide.ModelExecution."
+                    "OnDeviceModelRegistrationMode.",
+                    ConvertComponentKeyToUmaModelName(asset_id)}),
+      mode);
 }
 
 void ManifestAssetManager::OnAssetUpdateEvent(
@@ -1004,9 +1018,15 @@ void ManifestAssetManager::UpdateRegistrations() {
     if (context.state() == ComponentState::kRegistered) {
       if (ShouldRequestForegroundDownload(context)) {
         context.SetOnDemandDownloading();
+        RecordRegistrationMode(context.asset_id(),
+                               RegistrationMode::kForegroundOnDemand);
         // This doesn't change a persistent state, so it's okay to not save.
         delegate_->RequestUpdate(public_key,
                                  /*is_background=*/false);
+      } else if (!context.passive_registration_logged()) {
+        context.set_passive_registration_logged();
+        RecordRegistrationMode(context.asset_id(),
+                               RegistrationMode::kPassiveBackground);
       }
       continue;
     }

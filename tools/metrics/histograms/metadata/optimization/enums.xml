@@ -158,6 +158,16 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="Failed to load library"/>
 </enum>
 
+<!-- LINT.IfChange(OnDeviceModelRegistrationMode) -->
+
+<enum name="OnDeviceModelRegistrationMode">
+  <int value="0" label="ForegroundOnDemand"/>
+  <int value="1" label="DeferredMeteredConnection"/>
+  <int value="2" label="PassiveBackground"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/optimization_guide/core/model_execution/manifest_broker/manifest_asset_manager.h:OnDeviceModelRegistrationMode) -->
+
 <!-- LINT.IfChange(OnDeviceModelUninstallReason) -->
 
 <enum name="OnDeviceModelUninstallReason">

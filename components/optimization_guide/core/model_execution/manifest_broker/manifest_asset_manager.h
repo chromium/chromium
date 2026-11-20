@@ -62,6 +62,19 @@ class UsageTracker;
 class ManifestAssetManager : public UsageTracker::Observer,
                              public ManifestAssetManagerDelegate::AssetManager {
  public:
+  // Mode in which a newly registered on-device model component initiates or
+  // awaits downloading in `UpdateRegistrations()`.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(OnDeviceModelRegistrationMode)
+  enum class RegistrationMode {
+    kForegroundOnDemand = 0,
+    kDeferredMeteredConnection = 1,
+    kPassiveBackground = 2,
+    kMaxValue = kPassiveBackground,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/optimization/enums.xml:OnDeviceModelRegistrationMode)
+
   // Outcome of a component update attempt for an on-device model asset.
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -216,6 +229,12 @@ class ManifestAssetManager : public UsageTracker::Observer,
     }
     ComponentState state() const { return state_; }
     std::optional<base::FilePath> install_dir() const { return install_dir_; }
+    bool passive_registration_logged() const {
+      return passive_registration_logged_;
+    }
+    void set_passive_registration_logged() {
+      passive_registration_logged_ = true;
+    }
 
     mojom::BrokerAssetState ToBrokerAssetState() const;
     mojom::BrokerAssetInfoPtr ToBrokerAssetInfo(
@@ -253,6 +272,9 @@ class ManifestAssetManager : public UsageTracker::Observer,
     std::optional<base::Version> version_;
     Manifest::UninstallReason uninstall_reason_ =
         Manifest::UninstallReason::kUnknown;
+    // Components registered passively stay `kRegistered` and this flag is
+    // needed to prevent repeated logs of their registration mode.
+    bool passive_registration_logged_ = false;
   };
 
   // Persists component contexts and base model installation history in prefs.
@@ -334,6 +356,8 @@ class ManifestAssetManager : public UsageTracker::Observer,
 
   bool IsEvictionEnabled() const;
 
+  void RecordRegistrationMode(const std::string& asset_id,
+                              RegistrationMode mode) const;
   void RecordEvictableAssetsCount() const;
   Manifest::UninstallReason RecordUninstallReason(
       const ComponentContext& context,

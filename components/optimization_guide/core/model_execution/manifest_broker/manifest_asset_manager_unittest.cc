@@ -2399,5 +2399,79 @@ TEST_F(ManifestAssetManagerTest,
                   .empty());
 }
 
+TEST_F(ManifestAssetManagerTest, RecordsRegistrationMode) {
+  DummyAsset background_asset =
+      DummyAsset::For("compose").WithAssetId("gemma4_component");
+  DummyAsset foreground_asset =
+      DummyAsset::For("prompt_api").WithAssetId("nano_v3_gpu_component");
+
+  usage_tracker_.RaisePriority(background_asset.use_case,
+                               UsageTracker::Priority::kBestEffort);
+  component_state_.SetDownloadScenario(
+      TestManifestAssetManagerComponentState::DownloadScenario::kOffline);
+
+  base::HistogramTester startup_histograms;
+  UpdateManifest(DummyManifest().Add(background_asset).Add(foreground_asset));
+  Startup();
+  manifest_broker_state_->SetUseCaseRequested(foreground_asset.use_case, true);
+  EXPECT_TRUE(
+      component_state_.WaitForRegistration(background_asset.ToInstallTarget()));
+  EXPECT_TRUE(
+      component_state_.WaitForRegistration(foreground_asset.ToInstallTarget()));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return startup_histograms.GetBucketCount(
+               "OptimizationGuide.ModelExecution."
+               "OnDeviceModelRegistrationMode.Gemma4",
+               ManifestAssetManager::RegistrationMode::kPassiveBackground) ==
+               1 &&
+           startup_histograms.GetBucketCount(
+               "OptimizationGuide.ModelExecution."
+               "OnDeviceModelRegistrationMode.V3NanoGpu",
+               ManifestAssetManager::RegistrationMode::kForegroundOnDemand) ==
+               1;
+  }));
+
+  startup_histograms.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceModelRegistrationMode.Gemma4",
+      ManifestAssetManager::RegistrationMode::kPassiveBackground, 1);
+  startup_histograms.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution."
+      "OnDeviceModelRegistrationMode.V3NanoGpu",
+      ManifestAssetManager::RegistrationMode::kForegroundOnDemand, 1);
+
+  // Unrelated `UpdateRegistrations()` passes run synchronously on pref updates
+  // when disk space is fresh and do not re-emit `kPassiveBackground`.
+  {
+    base::HistogramTester histogram_tester;
+    local_state_.local_state().SetBoolean(
+        model_execution::prefs::localstate::
+            kOnDeviceAiAutoRemoveUnusedModelsEnabled,
+        false);
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.ModelExecution.OnDeviceModelEvictableAssetsCount", 0,
+        1);
+    histogram_tester.ExpectTotalCount(
+        "OptimizationGuide.ModelExecution.OnDeviceModelRegistrationMode.Gemma4",
+        0);
+  }
+
+  // Promoting `background_asset` to foreground logs `kForegroundOnDemand`.
+  {
+    base::HistogramTester histogram_tester;
+    manifest_broker_state_->SetUseCaseRequested(background_asset.use_case,
+                                                true);
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return histogram_tester.GetBucketCount(
+                 "OptimizationGuide.ModelExecution."
+                 "OnDeviceModelRegistrationMode.Gemma4",
+                 ManifestAssetManager::RegistrationMode::kForegroundOnDemand) ==
+             1;
+    }));
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.ModelExecution.OnDeviceModelRegistrationMode.Gemma4",
+        ManifestAssetManager::RegistrationMode::kForegroundOnDemand, 1);
+  }
+}
+
 }  // namespace
 }  // namespace optimization_guide
