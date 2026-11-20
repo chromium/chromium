@@ -13,13 +13,11 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.graphics.Insets;
 import androidx.core.view.WindowInsetsCompat;
 
-import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
@@ -37,7 +35,6 @@ import org.chromium.ui.insets.InsetObserver;
 @NullMarked
 /** Class to consume top Insets to make supported native page (NTP) truly edge to edge. */
 public class TopInsetCoordinator implements InsetObserver.WindowInsetsConsumer, TopInsetProvider {
-    private static final String TAG = "TopInset";
     private final ObserverList<Observer> mObservers = new ObserverList<>();
     private final NullableObservableSupplier<Tab> mTabSupplier;
     private final TabObserver mTabObserver;
@@ -46,7 +43,6 @@ public class TopInsetCoordinator implements InsetObserver.WindowInsetsConsumer, 
     private final InsetObserver.WindowInsetsConsumer mWindowInsetsConsumer;
     private final OneshotSupplier<LayoutStateProvider> mLayoutStateProviderSupplier;
     private final NtpCustomizationConfigManager.HomepageStateListener mHomepageStateListener;
-    private final boolean mEnableLogs;
 
     private Insets mSystemInsets = Insets.NONE;
     private int mAppliedTopPadding;
@@ -86,7 +82,6 @@ public class TopInsetCoordinator implements InsetObserver.WindowInsetsConsumer, 
         mInsetObserver = insetObserver;
         mTabSupplier = tabSupplier;
         mLayoutStateProviderSupplier = layoutStateProviderSupplier;
-        mEnableLogs = ChromeFeatureList.sNewTabPageCustomizationV2EnableLogs.getValue();
 
         // Observing the events when 1) a Tab shows its native page or 2) a native page
         // navigates to a URL for web page. This observer is only added when needed.
@@ -217,14 +212,6 @@ public class TopInsetCoordinator implements InsetObserver.WindowInsetsConsumer, 
                 NtpCustomizationUtils.supportsEnableEdgeToEdgeOnTop(currentTab)
                         && !mStatusIndicatorVisible;
         computeEdgePaddings();
-        if (mEnableLogs) {
-            Log.i(
-                    TAG,
-                    "TopInsetCoordinator %s consume top padding, and the top padding added to the"
-                            + " parent layout will be: %d.",
-                    (mConsumeTopInset ? "will" : "will not"),
-                    mAppliedTopPadding);
-        }
         notifyObservers();
 
         if (!mConsumeTopInset) return windowInsetsCompat;
@@ -303,13 +290,6 @@ public class TopInsetCoordinator implements InsetObserver.WindowInsetsConsumer, 
             shouldReTriggerOnApplyWindowInsets = true;
         }
 
-        if (mEnableLogs) {
-            Log.i(
-                    TAG,
-                    "onTabSwitched %s trigger OnApplyWindowInsets with current Tab %s a NTP.",
-                    (shouldReTriggerOnApplyWindowInsets ? "will" : "will not"),
-                    isRegularNtp ? "is" : "isn't");
-        }
         if (shouldReTriggerOnApplyWindowInsets) {
             mInsetObserver.retriggerOnApplyWindowInsets();
         }

@@ -2382,9 +2382,6 @@ public abstract class ChromeFeatureList {
                     "daily_refresh_threshold_ms",
                     (int) TimeUtils.MILLISECONDS_PER_DAY); // 1 day in milliseconds.
 
-    public static final BooleanCachedFeatureParam sNewTabPageCustomizationV2EnableLogs =
-            newBooleanCachedFeatureParam(NEW_TAB_PAGE_CUSTOMIZATION_V2, "enable_logs", false);
-
     public static final StringCachedFeatureParam sEdgeToEdgeUseBackupNavbarInsetsOemMinVersions =
             newStringCachedFeatureParam(
                     EDGE_TO_EDGE_USE_BACKUP_NAVBAR_INSETS,
@@ -2639,7 +2636,6 @@ public abstract class ChromeFeatureList {
                     sMostVisitedTilesReselectLaxRef,
                     sMostVisitedTilesReselectLaxSchemeHost,
                     sNewTabPageCustomizationV2DailyRefreshThresholdMs,
-                    sNewTabPageCustomizationV2EnableLogs,
                     sNewTabPageCustomizationV2ForceShowTipBottomSheet,
                     sNewTabPageCustomizationV2ShowColorPicker,
                     sNewTabPageCustomizationV2ShowLogoAndSearchBox,
