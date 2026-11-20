@@ -13,7 +13,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/base64.h"
 #include "base/callback_list.h"
 #include "base/command_line.h"
 #include "base/containers/span.h"
@@ -2388,61 +2387,11 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GetScreenshot) {
   ToolResponse response = future.Take();
   ASSERT_TRUE(response.Ok());
 
-  const std::string* mime_type = response.GetResult().FindString("mime_type");
-  ASSERT_TRUE(mime_type);
-  EXPECT_EQ(*mime_type, "image/jpeg");
-
-  const std::string* image_b64 = response.GetResult().FindString("image_b64");
-  ASSERT_TRUE(image_b64);
-  EXPECT_FALSE(image_b64->empty());
-
-  std::optional<std::vector<uint8_t>> decoded_bytes =
-      base::Base64Decode(*image_b64);
-  ASSERT_TRUE(decoded_bytes.has_value());
-  ASSERT_FALSE(decoded_bytes->empty());
-
+  ASSERT_TRUE(response.visual_content());
+  EXPECT_EQ(response.visual_content()->mime_type, "image/jpeg");
   // TODO(b/438825957): Also verify the captured pixels once CopyFromSurface
   // screenshot output is reliable in browser tests; it currently reads back
   // black on Linux and Windows bots.
-  SkBitmap bitmap = gfx::JPEGCodec::Decode(*decoded_bytes);
-  EXPECT_FALSE(bitmap.isNull());
-  EXPECT_GT(bitmap.width(), 0);
-  EXPECT_GT(bitmap.height(), 0);
-}
-
-class ToolControllerScreenshotAsVisualContentBrowserTest
-    : public ToolControllerBrowserTest {
- public:
-  ToolControllerScreenshotAsVisualContentBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(kTtcScreenshotAsVisualContent);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(ToolControllerScreenshotAsVisualContentBrowserTest,
-                       GetScreenshot) {
-  ttc_service().StartSession();
-  auto* session_controller = ttc_service().session_controller();
-  ASSERT_TRUE(session_controller);
-
-  ASSERT_TRUE(content::NavigateToURL(
-      web_contents(),
-      embedded_https_test_server().GetURL("example.com", "/title1.html")));
-  content::WaitForCopyableViewInWebContents(web_contents());
-
-  base::test::TestFuture<ToolResponse> future;
-  ToolRequest tool_request;
-  tool_request.name = "get_screenshot";
-  session_controller->ProcessToolCall(std::move(tool_request),
-                                      future.GetCallback());
-
-  ToolResponse response = future.Take();
-  ASSERT_TRUE(response.Ok());
-
-  ASSERT_TRUE(response.visual_content());
-  EXPECT_EQ(response.visual_content()->mime_type, "image/jpeg");
   SkBitmap bitmap =
       gfx::JPEGCodec::Decode(response.visual_content()->image_data);
   ASSERT_FALSE(bitmap.isNull());
