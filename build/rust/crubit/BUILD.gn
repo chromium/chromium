@@ -237,6 +237,16 @@ if (enable_rust_api_from_cpp) {
     # `__configuration/abi.h`).  `vector.rs` supports this layout only when the
     # `len_capacity_encoding` feature is enabled.
     crate_features = [ "len_capacity_encoding" ]
+
+    # We already **allow** `impl_trait_in_assoc_type` unstable Rust feature,
+    # but the generated `cc_std` bindings do not **enable** this feature
+    # (this is arguably a bug in Crubit - see b/588457635).  As a workaround,
+    # we use GN build rules to enable this feature.
+    #
+    # TODO(b/588457635): Remove once Crubit emits
+    # `#![feature(impl_trait_in_assoc_type)]` in `.rs` generated for `cc_std`
+    # bindings.
+    unstable_rust_features = [ "impl_trait_in_assoc_type" ]
   }
 
   source_set("cc_std_empty_target") {

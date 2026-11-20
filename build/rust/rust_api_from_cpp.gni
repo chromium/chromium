@@ -112,6 +112,10 @@ import("//build_overrides/crubit.gni")
 #     generated bindings crate.  Crubit-generated code doesn't check any
 #     features, so this is only useful for hand-written Rust sources (e.g.
 #     `len_capacity_encoding` for `vector.rs`).
+#
+#   unstable_rust_features: (optional)
+#     Internal parameter, used only by `//build/rust/crubit:cc_std`.
+#     TODO(b/588457635): Remove once Crubit fix gets rolled into Chromium.
 template("rust_api_from_cpp") {
   assert(enable_rust_api_from_cpp)
   assert(enable_rust)
@@ -394,6 +398,15 @@ template("rust_api_from_cpp") {
     sources = [ crate_root ] + _extra_rust_sources
     deps += _extra_rs_srcs_copy_targets
     rustflags = _extra_rs_srcs_remap_flags
+    if (defined(invoker.unstable_rust_features) &&
+        invoker.unstable_rust_features != []) {
+      # `rs_bindings_from_cc` appends `--unstable_rust_features` to
+      # `#![feature(...)]` without deduplicating against features it already
+      # emitted for generated bindings.  Suppress `duplicate_features` (denied
+      # by default) in case a feature is emitted by both.
+      # TODO(b/588457635): Remove once Crubit fix gets rolled into Chromium.
+      rustflags += [ "-Aduplicate_features" ]
+    }
 
     if (defined(invoker.crate_features)) {
       features = invoker.crate_features
@@ -500,6 +513,12 @@ template("rust_api_from_cpp") {
     if (_extra_rs_srcs_flag_values != []) {
       args +=
           [ "--extra_rs_srcs=" + string_join(",", _extra_rs_srcs_flag_values) ]
+    }
+
+    if (defined(invoker.unstable_rust_features) &&
+        invoker.unstable_rust_features != []) {
+      args += [ "--unstable_rust_features=" +
+                string_join(",", invoker.unstable_rust_features) ]
     }
 
     # TODO(https://crbug.com/40226863): Use
