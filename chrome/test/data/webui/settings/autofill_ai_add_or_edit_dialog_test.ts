@@ -458,11 +458,6 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
     ineligibleEntity.guid = '';
 
     dialog.entityInstance = ineligibleEntity;
-    loadTimeData.overrideValues({
-      autofillAiSaveOrUpdateLocalEntitySourceNotice:
-          'Your info is saved to your device',
-    });
-
     document.body.appendChild(dialog);
     await Promise.all([
       entityDataManager.whenCalled('getAllAttributeTypesForEntityTypeName'),
@@ -503,7 +498,6 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
           'how this info is used across Google',
       autofillAiPrivacyPolicy: 'Privacy Policy',
       managePrivatePassesUrl: 'https://support.google.com/wallet',
-      googlePrivacyPolicyUrl: 'https://policies.google.com/privacy',
     });
 
     document.body.appendChild(dialog);
@@ -535,8 +529,8 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
     assertEquals(
         'https://policies.google.com/privacy', privacyPolicyLinks[0]!.href);
     assertEquals('_blank', privacyPolicyLinks[0]!.target);
-    assertEquals('Privacy Policy', privacyPolicyLinks[0]!.textContent);
-    assertEquals('Privacy Policy', paragraphs[1]!.textContent);
+    assertEquals('Privacy Policy', privacyPolicyLinks[0]!.textContent.trim());
+    assertEquals('Privacy Policy', paragraphs[1]!.textContent.trim());
   });
 
   test('AsyncSave_ShowsSpinnerAndDisablesButton', async function() {
@@ -1592,8 +1586,6 @@ suite('AutofillAiAddOrEditDialogVehiclePublicPassTest', function() {
 
     loadTimeData.overrideValues({
       autofillAiManageYourInfo: 'manage your info',
-      autofillAiSaveOrUpdateLocalEntitySourceNotice:
-          'Your info is saved to your device',
       enableAutofillAiWalletPrivatePasses: true,
       enableWalletDisclosureNoticePublicPass: true,
       googleWalletTitle: 'Google Wallet',

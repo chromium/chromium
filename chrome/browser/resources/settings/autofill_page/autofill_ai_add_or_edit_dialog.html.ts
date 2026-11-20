@@ -171,8 +171,24 @@ export function getHtml(this: SettingsAutofillAiAddOrEditDialogElement) {
         </cr-input>
       ` : ''}
     `)}
-    <div id="footer" ?hidden="${this.shouldHideFooterText_()}"
-        @click="${this.onFooterClick_}" .innerHTML="${this.footerText_}">
+    <div id="footer" ?hidden="${!this.shouldShowFooter_()}">
+      ${this.shouldShowWalletNotice_() ? html`
+        <div .innerHTML="${this.walletNoticeHtml_}"></div>
+        ${this.privacyPolicyLinkText_ ? html`
+          <div>
+            <a target="_blank" href="$i18n{googlePrivacyPolicyUrl}">
+              ${this.privacyPolicyLinkText_}
+            </a>
+          </div>
+        ` : ''}
+        ${this.shouldShowLegalMessage_() ? html`
+          <div id="legal-message" @click="${this.onLegalMessageClick_}"
+              .innerHTML="${this.legalMessageHtml_}">
+          </div>
+        ` : ''}
+      ` : html`
+        <div>$i18n{autofillAiSaveOrUpdateLocalEntitySourceNotice}</div>
+      `}
     </div>
   </div>
   <div slot="button-container">
