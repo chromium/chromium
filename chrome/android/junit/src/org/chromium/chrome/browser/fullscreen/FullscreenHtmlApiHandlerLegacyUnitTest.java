@@ -14,6 +14,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
+import android.view.Display;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -25,6 +26,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
+import org.robolectric.shadows.ShadowDisplay;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.UserDataHost;
@@ -63,9 +65,17 @@ public class FullscreenHtmlApiHandlerLegacyUnitTest {
     private SettableNonNullObservableSupplier<Boolean> mAreControlsHidden;
     private UserDataHost mHost;
 
+    /** An Activity with a display, which Robolectric does not associate with its context. */
+    public static class DisplayActivity extends Activity {
+        @Override
+        public Display getDisplay() {
+            return ShadowDisplay.getDefaultDisplay();
+        }
+    }
+
     @Before
     public void setUp() {
-        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
+        mActivity = Robolectric.buildActivity(DisplayActivity.class).setup().get();
         mContentView = ContentView.createContentView(mActivity, /* webContents= */ null);
         mHost = new UserDataHost();
         doReturn(mHost).when(mTab).getUserDataHost();

@@ -49,6 +49,6 @@ public @interface TabAttributeKeys {
      */
     String FULLSCREEN_START_POSITION = "FullscreenStartPosition";
 
-    /** FullscreenOptions when entering fullscreen to screen. */
+    /** FullscreenOptions of this tab's fullscreen, holding the display it is or will be on. */
     String FULLSCREEN_OPTIONS = "FullscreenOptions";
 }
