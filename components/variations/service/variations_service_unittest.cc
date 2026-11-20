@@ -782,6 +782,7 @@ TEST_F(VariationsServiceTest, CountryHeader) {
 }
 
 TEST_F(VariationsServiceTest, CountryHeaderNotTrustedOverHTTP) {
+  base::test::ScopedFeatureList scoped_feature_list(kVariationsHttpFallback);
   std::string serialized_seed = SerializeSeed(CreateTestSeed());
   VariationsService::EnableFetchForTesting();
 
@@ -1124,6 +1125,7 @@ TEST_F(VariationsServiceTest, SafeMode_NotModifiedFetchClearsFailureStreaks) {
 }
 
 TEST_F(VariationsServiceTest, NotModifiedOverHttpRetryDoesNotUpdateState) {
+  base::test::ScopedFeatureList scoped_feature_list(kVariationsHttpFallback);
   // Set a fixed past reference date (2024-01-01 00:00:00 UTC).
   base::Time initial_time;
   ASSERT_TRUE(
@@ -1168,6 +1170,7 @@ TEST_F(VariationsServiceTest, NotModifiedOverHttpRetryDoesNotUpdateState) {
 }
 
 TEST_F(VariationsServiceTest, SeedDateIgnoredOverHttpRetry) {
+  base::test::ScopedFeatureList scoped_feature_list(kVariationsHttpFallback);
   // Set a fixed past reference date (2024-01-01 00:00:00 UTC).
   base::Time initial_time;
   ASSERT_TRUE(
@@ -1216,7 +1219,20 @@ TEST_F(VariationsServiceTest, FieldTrialCreatorInitializedCorrectly) {
   service.GetClientFilterableStateForVersion();
 }
 
+TEST_F(VariationsServiceTest, DoNotRetryOverHTTPByDefault) {
+  TestVariationsService service(
+      std::make_unique<web_resource::TestRequestAllowedNotifier>(
+          &prefs_, network_tracker_),
+      &prefs_, GetMetricsStateManager(), true);
+  service.set_intercepts_fetch(true);
+  service.set_last_request_was_retry(false);
+  service.set_insecure_url(GURL("http://example.test"));
+  EXPECT_FALSE(service.CallMaybeRetryOverHTTP());
+  EXPECT_FALSE(service.fetch_attempted());
+}
+
 TEST_F(VariationsServiceTest, RetryOverHTTPIfURLisSet) {
+  base::test::ScopedFeatureList scoped_feature_list(kVariationsHttpFallback);
   TestVariationsService service(
       std::make_unique<web_resource::TestRequestAllowedNotifier>(
           &prefs_, network_tracker_),
@@ -1229,6 +1245,7 @@ TEST_F(VariationsServiceTest, RetryOverHTTPIfURLisSet) {
 }
 
 TEST_F(VariationsServiceTest, RetryOverHTTPWithBackgroundEncryption) {
+  base::test::ScopedFeatureList scoped_feature_list(kVariationsHttpFallback);
   TestVariationsService service(
       std::make_unique<web_resource::TestRequestAllowedNotifier>(
           &prefs_, network_tracker_),
@@ -1257,6 +1274,7 @@ TEST_F(VariationsServiceTest, RetryOverHTTPWithBackgroundEncryption) {
 }
 
 TEST_F(VariationsServiceTest, DoNotRetryAfterARetry) {
+  base::test::ScopedFeatureList scoped_feature_list(kVariationsHttpFallback);
   TestVariationsService service(
       std::make_unique<web_resource::TestRequestAllowedNotifier>(
           &prefs_, network_tracker_),
@@ -1269,6 +1287,7 @@ TEST_F(VariationsServiceTest, DoNotRetryAfterARetry) {
 }
 
 TEST_F(VariationsServiceTest, DoNotRetryIfInsecureURLIsHTTPS) {
+  base::test::ScopedFeatureList scoped_feature_list(kVariationsHttpFallback);
   TestVariationsService service(
       std::make_unique<web_resource::TestRequestAllowedNotifier>(
           &prefs_, network_tracker_),
