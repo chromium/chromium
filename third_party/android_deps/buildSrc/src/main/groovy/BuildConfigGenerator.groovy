@@ -178,6 +178,17 @@ class BuildConfigGenerator extends DefaultTask {
         return 'file://third_party/android_deps/OWNERS\n'
     }
 
+    // androidx.dev snapshot file URLs embed the snapshot build ID and a
+    // timestamp, so every androidx roll used to change the URL line of every
+    // README.chromium. Point at the version's maven-metadata.xml under
+    // snapshots/latest instead, which changes only with the version. It keeps
+    // the /artifacts/repository/<group>/<artifact>/<version>/ path that
+    // vulnerability scanners parse into a Maven identifier.
+    static String makeReadmeUrl(String fileUrl) {
+        Matcher m = fileUrl =~ /^https:\/\/androidx\.dev\/snapshots\/builds\/\d+\/(artifacts\/repository\/.+\/)[^\/]+$/
+        return m.matches() ? "https://androidx.dev/snapshots/latest/${m.group(1)}maven-metadata.xml" : fileUrl
+    }
+
     static String makeReadme(ChromiumDepGraph.DependencyDescription dependency) {
         List<String> licenseNames = []
         for (ChromiumDepGraph.LicenseSpec license : dependency.licenses) {
@@ -228,12 +239,12 @@ class BuildConfigGenerator extends DefaultTask {
         boolean securityCritical = dependency.supportsAndroid && dependency.isShipped
         String cpePrefix = dependency.cpePrefix ? dependency.cpePrefix : 'unknown'
 
-        // Useing fileUrl as URL is required for vulnerability scanning.
+        // A package manager URL is required for vulnerability scanning.
         // https://crbug.com/446990546
         return """\
 Name: ${dependency.displayName}
 Short Name: ${dependency.name}
-URL: ${dependency.fileUrl}
+URL: ${makeReadmeUrl(dependency.fileUrl)}
 Version: ${dependency.version}
 Update Mechanism: ${(dependency.isAutorolled || dependency.isAndroidx) ? 'Autoroll' : 'Manual'}
 License: ${licenseString}
