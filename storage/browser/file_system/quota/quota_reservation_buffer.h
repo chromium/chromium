@@ -71,8 +71,7 @@ class QuotaReservationBuffer : public base::RefCounted<QuotaReservationBuffer> {
 
   // Not owned.  The destructor of OpenFileHandler should erase itself from
   // |open_files_|.
-  std::map<base::FilePath, raw_ptr<OpenFileHandleContext, CtnExperimental>>
-      open_files_;
+  std::map<base::FilePath, raw_ptr<OpenFileHandleContext>> open_files_;
 
   base::WeakPtr<QuotaReservationManager> reservation_manager_;
 

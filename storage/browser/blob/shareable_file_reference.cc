@@ -20,8 +20,7 @@ namespace {
 // A shareable file map with enforcement of sequence checker.
 class ShareableFileMap {
  public:
-  using FileMap = std::map<base::FilePath,
-                           raw_ptr<ShareableFileReference, CtnExperimental>>;
+  using FileMap = std::map<base::FilePath, raw_ptr<ShareableFileReference>>;
   using iterator = FileMap::iterator;
   using key_type = FileMap::key_type;
   using value_type = FileMap::value_type;

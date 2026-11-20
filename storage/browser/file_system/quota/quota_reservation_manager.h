@@ -89,7 +89,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaReservationManager {
  private:
   using ReservationBufferByOriginAndType =
       std::map<std::pair<url::Origin, FileSystemType>,
-               raw_ptr<QuotaReservationBuffer, CtnExperimental>>;
+               raw_ptr<QuotaReservationBuffer>>;
 
   friend class QuotaReservation;
   friend class QuotaReservationBuffer;

@@ -446,8 +446,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemContext
   // This map itself doesn't retain each backend's ownership; ownerships
   // of the backends are held by additional_backends_ or other scoped_ptr
   // backend fields.
-  std::map<FileSystemType, raw_ptr<FileSystemBackend, CtnExperimental>>
-      backend_map_;
+  std::map<FileSystemType, raw_ptr<FileSystemBackend>> backend_map_;
 
   // External mount points visible in the file system context (excluding system
   // external mount points).
@@ -455,7 +454,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemContext
 
   // MountPoints used to crack FileSystemURLs. The MountPoints are ordered
   // in order they should try to crack a FileSystemURL.
-  std::vector<raw_ptr<MountPoints, VectorExperimental>> url_crackers_;
+  std::vector<raw_ptr<MountPoints>> url_crackers_;
 
   // The base path of the storage partition for this context.
   const base::FilePath partition_path_;
