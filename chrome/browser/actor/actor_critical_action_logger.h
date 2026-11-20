@@ -32,8 +32,13 @@ class ActorCriticalActionLogger {
   // logged. Only Glic tasks are supported for now.
   static bool IsTaskSourceSupported(TaskSourceInfo::Client source);
 
+  // Returns whether critical actions of `task` should be logged. True if the
+  // source of `task` is supported and history is recorded for `task`.
+  static bool ShouldLogForTask(const ActorTask& task);
+
   // Evaluates whether the completed tool action is critical and, if so,
-  // logs it to the CriticalActionService associated with the profile.
+  // logs it to the CriticalActionService associated with the profile when
+  // history is recorded.
   static void MaybeLogAction(ActorTask& task,
                              Profile* profile,
                              const ToolRequest& action,
@@ -41,7 +46,7 @@ class ActorCriticalActionLogger {
                              int64_t navigation_id);
 
   // Logs a self-reported agent action to the `CriticalActionService`, if
-  // `IsTaskSourceSupported()` is true for the source of `task`.
+  // `ShouldLogForTask()` is true for `task`.
   static void LogAgentSelfReportedAction(
       Profile* profile,
       const ActorTask& task,

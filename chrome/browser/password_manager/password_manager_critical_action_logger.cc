@@ -53,8 +53,7 @@ void PasswordManagerCriticalActionLogger::MaybeLogCriticalAction(
 
   const actor::ActorTask* task =
       actor_service->GetActingActorTaskForWebContents(web_contents());
-  if (!task || !actor::ActorCriticalActionLogger::IsTaskSourceSupported(
-                   task->source_info().type)) {
+  if (!task || !actor::ActorCriticalActionLogger::ShouldLogForTask(*task)) {
     return;
   }
 

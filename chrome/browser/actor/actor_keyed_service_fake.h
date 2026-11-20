@@ -5,10 +5,12 @@
 #ifndef CHROME_BROWSER_ACTOR_ACTOR_KEYED_SERVICE_FAKE_H_
 #define CHROME_BROWSER_ACTOR_ACTOR_KEYED_SERVICE_FAKE_H_
 
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_task_options.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/enterprise_policy_checker.h"
 #include "chrome/common/glic_enums.mojom.h"
@@ -22,7 +24,11 @@ class ActorKeyedServiceFake : public ActorKeyedService {
   explicit ActorKeyedServiceFake(Profile* profile);
   ~ActorKeyedServiceFake() override;
 
-  TaskId CreateTaskForTesting();
+  // Creates a task created by `source_info`. Uses default-duration options
+  // if `options` is not set.
+  TaskId CreateTaskForTesting(
+      const TaskSourceInfo& source_info = TestTaskSourceInfo(),
+      std::optional<ActorTaskOptions> options = std::nullopt);
   TaskId CreateTransientTaskForTesting();
   TaskId CreateExperimentalTriggeringTaskForTesting();
   // Creates a default-duration task created by `source_info`, e.g. `kGlic` with

@@ -122,6 +122,8 @@
 #include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_surface_registry.h"
 #include "chrome/browser/actor/actor_task.h"
+#include "chrome/browser/actor/actor_task_options.h"
+#include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
@@ -1009,6 +1011,42 @@ TEST_F(ChromeAutofillClientTestWithMockWindow,
       headless_task_id);
   EXPECT_EQ(client()->GetActorAutofillManager()->active_actor_task()->task_id,
             tab_task_id);
+}
+
+// Test that `actor::ActorTaskOptions::skip_history_recording` is forwarded to
+// `ActorAutofillManager::ActorTaskInfo::skip_history_recording`.
+TEST_F(ChromeAutofillClientTestWithMockWindow,
+       OnActorTaskStateChange_PropagatesSkipHistoryRecording) {
+  actor::ActorKeyedServiceFake* actor_service =
+      static_cast<actor::ActorKeyedServiceFake*>(
+          actor::ActorKeyedService::Get(profile()));
+  ASSERT_TRUE(actor_service);
+
+  MockContentAutofillDriver* mock_driver = (*driver_injector_)[web_contents()];
+  ASSERT_TRUE(mock_driver);
+  EXPECT_CALL(*mock_driver, TriggerFormExtractionInAllFrames)
+      .Times(::testing::AnyNumber());
+
+  actor::ActorTaskOptions options;
+  options.skip_history_recording = true;
+  actor::TaskId task_id = actor_service->CreateTaskForTesting(
+      actor::TestTaskSourceInfo(), std::move(options));
+  actor::ActorTask* task = actor_service->GetTask(task_id);
+  ASSERT_TRUE(task);
+
+  actor_service->GetSurfaceRegistry().OnTabCreated(mock_tab_interface());
+  task->AddTab(mock_tab_interface().GetHandle(),
+               /*stop_task_on_detach=*/true, base::DoNothing());
+
+  actor_service->NotifyTaskStateChanged(*task);
+  EXPECT_TRUE(client()->IsTabInActorMode());
+  ASSERT_TRUE(client()->GetActorAutofillManager());
+  ASSERT_TRUE(
+      client()->GetActorAutofillManager()->active_actor_task().has_value());
+  EXPECT_TRUE(client()
+                  ->GetActorAutofillManager()
+                  ->active_actor_task()
+                  ->skip_history_recording);
 }
 
 #endif  //  !BUILDFLAG(IS_ANDROID)

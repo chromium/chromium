@@ -285,6 +285,27 @@ TEST_F(ActorAutofillManagerTest,
   EXPECT_TRUE(manager().IsTabInActorMode());
 }
 
+// Test that fills made by a task that skips history recording are not logged
+// as critical actions, while the tab stays in actor mode.
+TEST_F(ActorAutofillManagerTest,
+       NoCriticalActionLoggedWhenSkipHistoryRecordingIsTrue) {
+  manager().OnActorTaskStateChanged(ActorAutofillManager::ActorTaskInfo{
+      .conversation_id = "test-conv-id",
+      .task_id = ::actor::TaskId(42),
+      .critical_action_logger_supports_task_source = true,
+      .skip_history_recording = true,
+  });
+
+  EXPECT_CALL(mock_critical_service(), AddCriticalAction).Times(0);
+  EXPECT_CALL(mock_critical_service(), AddCriticalActionWithNavigationId)
+      .Times(0);
+
+  FillSingleFieldForm();
+
+  // Other actor-specific Autofill behavior is unchanged.
+  EXPECT_TRUE(manager().IsTabInActorMode());
+}
+
 }  // namespace
 
 }  // namespace autofill

@@ -23,12 +23,6 @@ ActorKeyedServiceFake::ActorKeyedServiceFake(Profile* profile)
 
 ActorKeyedServiceFake::~ActorKeyedServiceFake() = default;
 
-TaskId ActorKeyedServiceFake::CreateTaskForTesting() {
-  return CreateTaskWithDurationAndFeatureModeForTesting(  // IN-TEST
-      actor::webui::mojom::TaskDuration::kDefault,
-      glic::mojom::FeatureMode::kUnspecified);
-}
-
 TaskId ActorKeyedServiceFake::CreateTransientTaskForTesting() {
   return CreateTaskWithDurationAndFeatureModeForTesting(  // IN-TEST
       actor::webui::mojom::TaskDuration::kTransient,
@@ -68,6 +62,24 @@ TaskId ActorKeyedServiceFake::
         glic::mojom::FeatureMode feature_mode,
         const std::string& title,
         const TaskSourceInfo& source_info) {
+  auto webui_task_options = webui::mojom::TaskOptions::New();
+  webui_task_options->title = title;
+  webui_task_options->duration = duration;
+  webui_task_options->feature_mode = feature_mode;
+  ActorTaskOptions options;
+  options.webui_task_options = std::move(webui_task_options);
+  return CreateTaskForTesting(source_info, std::move(options));  // IN-TEST
+}
+
+TaskId ActorKeyedServiceFake::CreateTaskForTesting(  // IN-TEST
+    const TaskSourceInfo& source_info,
+    std::optional<ActorTaskOptions> options) {
+  if (!options) {
+    return CreateTaskWithDurationAndFeatureModeForTesting(  // IN-TEST
+        actor::webui::mojom::TaskDuration::kDefault,
+        glic::mojom::FeatureMode::kUnspecified, "Test Task", source_info);
+  }
+
   std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher =
       ui::NewMockUiEventDispatcher();
   auto* mock_ui_dispatcher =
@@ -85,15 +97,9 @@ TaskId ActorKeyedServiceFake::
           base::BindRepeating(MakeOkResult,
                               /*requires_page_stabilization=*/true)));
 
-  auto webui_task_options = webui::mojom::TaskOptions::New();
-  webui_task_options->title = title;
-  webui_task_options->duration = duration;
-  webui_task_options->feature_mode = feature_mode;
-  ActorTaskOptions options;
-  options.webui_task_options = std::move(webui_task_options);
   return ActorKeyedService::CreateTaskForTesting(  // IN-TEST
       std::move(ui_event_dispatcher), source_info,
-      &no_enterprise_policy_checker_, std::move(options));
+      &no_enterprise_policy_checker_, std::move(*options));
 }
 
 void ActorKeyedServiceFake::PauseTaskForTesting(TaskId task_id,  // IN-TEST

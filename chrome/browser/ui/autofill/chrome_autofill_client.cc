@@ -1909,6 +1909,7 @@ void ChromeAutofillClient::OnActorTaskStateChange(actor::ActorTask& task) {
           .critical_action_logger_supports_task_source =
               actor::ActorCriticalActionLogger::IsTaskSourceSupported(
                   task.source_info().type),
+          .skip_history_recording = task.skip_history_recording(),
       });
 
   // If the task was just created, known forms should be reparsed to ensure that

@@ -5,14 +5,18 @@
 #include "chrome/browser/actor/actor_critical_action_logger.h"
 
 #include <memory>
+#include <utility>
 #include <vector>
 
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/actor/actor_keyed_service_fake.h"
 #include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_task.h"
+#include "chrome/browser/actor/actor_task_options.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/tools/autofill/attempt_form_filling/attempt_form_filling_tool_request.h"
 #include "chrome/browser/actor/tools/fake_tool_request.h"
@@ -30,7 +34,10 @@
 #include "components/critical_actions/core/browser/critical_action_service.h"
 #include "components/critical_actions/core/browser/critical_action_types.h"
 #include "components/critical_actions/core/browser/features.h"
+#include "components/download/public/common/mock_download_item.h"
 #include "components/history/core/browser/history_types.h"
+#include "content/public/browser/download_item_utils.h"
+#include "content/public/browser/render_frame_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/content_extraction/script_tools.mojom.h"
@@ -52,11 +59,18 @@ class ActorCriticalActionLoggerTest : public ChromeRenderViewHostTestHarness {
          features::kGlicActor},
         {});
     ChromeRenderViewHostTestHarness::SetUp();
-    service_ = std::make_unique<ActorKeyedServiceFake>(profile());
+    service_ = static_cast<ActorKeyedServiceFake*>(
+        ActorKeyedServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+            profile(),
+            base::BindRepeating([](content::BrowserContext* context)
+                                    -> std::unique_ptr<KeyedService> {
+              return std::make_unique<ActorKeyedServiceFake>(
+                  Profile::FromBrowserContext(context));
+            })));
   }
 
   void TearDown() override {
-    service_.reset();
+    service_ = nullptr;
     tab_states_.clear();
     ChromeRenderViewHostTestHarness::TearDown();
   }
@@ -65,9 +79,10 @@ class ActorCriticalActionLoggerTest : public ChromeRenderViewHostTestHarness {
 
   // Creates a task created by Glic, the only source whose critical actions are
   // logged.
-  TaskId CreateGlicTask() {
-    return actor_service().CreateTaskWithSourceInfoForTesting(
-        TaskSourceInfo(TaskSourceInfo::Client::kGlic, kConversationId));
+  TaskId CreateGlicTask(ActorTaskOptions options = {}) {
+    return actor_service().CreateTaskForTesting(
+        TaskSourceInfo(TaskSourceInfo::Client::kGlic, kConversationId),
+        std::move(options));
   }
 
   ActorSurfaceHandle CreateActorSurfaceHandle() {
@@ -103,7 +118,7 @@ class ActorCriticalActionLoggerTest : public ChromeRenderViewHostTestHarness {
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  std::unique_ptr<ActorKeyedServiceFake> service_;
+  raw_ptr<ActorKeyedServiceFake> service_ = nullptr;
   std::vector<std::unique_ptr<TestTabState>> tab_states_;
 };
 
@@ -470,6 +485,88 @@ INSTANTIATE_TEST_SUITE_P(
                     TaskSourceInfo::Client::kContextualTasks,
                     TaskSourceInfo::Client::kTtc,
                     TaskSourceInfo::Client::kBrowserActuator));
+
+TEST_F(ActorCriticalActionLoggerTest,
+       SkipsMaybeLogActionWhenSkipHistoryRecordingIsTrue) {
+  ActorTaskOptions options;
+  options.skip_history_recording = true;
+  TaskId task_id = CreateGlicTask(std::move(options));
+  ActorTask* task = actor_service().GetTask(task_id);
+  ASSERT_TRUE(task);
+  EXPECT_TRUE(task->skip_history_recording());
+
+  PageTarget password_button;
+  AttemptLoginToolRequest request(CreateActorSurfaceHandle(), password_button,
+                                  std::nullopt);
+  mojom::ActionResultPtr result = MakeOkResult();
+  result->attempt_login_status = mojom::AttemptLoginStatus::kPasswordManager;
+
+  ActorCriticalActionLogger::MaybeLogAction(*task, profile(), request, *result,
+                                            /*navigation_id=*/1015);
+  FlushPendingActions(1015);
+
+  EXPECT_TRUE(GetLoggedActions().empty());
+
+  actor_service().StopTaskForTesting(
+      task_id, actor::ActorTask::StoppedReason::kTaskComplete);
+}
+
+TEST_F(ActorCriticalActionLoggerTest,
+       SkipsLogAgentSelfReportedActionWhenSkipHistoryRecordingIsTrue) {
+  ActorTaskOptions options;
+  options.skip_history_recording = true;
+  TaskId task_id = CreateGlicTask(std::move(options));
+  ActorTask* task = actor_service().GetTask(task_id);
+  ASSERT_TRUE(task);
+
+  ActorCriticalActionLogger::LogAgentSelfReportedAction(
+      profile(), *task, critical_actions::ActionType::kDownload,
+      /*navigation_id=*/1016);
+  FlushPendingActions(1016);
+
+  EXPECT_TRUE(GetLoggedActions().empty());
+
+  actor_service().StopTaskForTesting(
+      task_id, actor::ActorTask::StoppedReason::kTaskComplete);
+}
+
+TEST_F(ActorCriticalActionLoggerTest,
+       OnDownloadCreatedRespectsSkipHistoryRecording) {
+  NavigateAndCommit(GURL("https://example.com"));
+  ActorSurfaceHandle surface_handle = CreateActorSurfaceHandle();
+  int64_t nav_id = web_contents()->GetPrimaryMainFrame()->GetNavigationId();
+
+  ActorTaskOptions skip_options;
+  skip_options.skip_history_recording = true;
+  TaskId skip_task_id = CreateGlicTask(std::move(skip_options));
+  AddTabToTask(*surface_handle.GetTabHandle().Get(),
+               *actor_service().GetTask(skip_task_id));
+
+  testing::NiceMock<download::MockDownloadItem> download_item;
+  content::DownloadItemUtils::AttachInfoForTesting(&download_item, profile(),
+                                                   web_contents());
+
+  actor_service().OnDownloadCreated(nullptr, &download_item);
+  FlushPendingActions(nav_id);
+  EXPECT_TRUE(GetLoggedActions().empty());
+
+  actor_service().StopTaskForTesting(
+      skip_task_id, actor::ActorTask::StoppedReason::kTaskComplete);
+
+  TaskId normal_task_id = CreateGlicTask();
+  AddTabToTask(*surface_handle.GetTabHandle().Get(),
+               *actor_service().GetTask(normal_task_id));
+
+  actor_service().OnDownloadCreated(nullptr, &download_item);
+  FlushPendingActions(nav_id);
+  auto logged_actions = GetLoggedActions();
+  ASSERT_EQ(logged_actions.size(), 1u);
+  EXPECT_EQ(logged_actions[0].action_type,
+            critical_actions::ActionType::kDownload);
+
+  actor_service().StopTaskForTesting(
+      normal_task_id, actor::ActorTask::StoppedReason::kTaskComplete);
+}
 
 }  // namespace
 

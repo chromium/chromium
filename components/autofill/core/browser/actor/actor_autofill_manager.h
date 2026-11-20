@@ -34,6 +34,8 @@ class ActorAutofillManager : public AutofillManager::Observer {
     // Fills are only logged if the critical action logger supports the task's
     // source.
     bool critical_action_logger_supports_task_source = false;
+    // Fills made by tasks that skip history recording are not logged.
+    bool skip_history_recording = false;
   };
 
   explicit ActorAutofillManager(

@@ -176,6 +176,12 @@ bool ActorCriticalActionLogger::IsTaskSourceSupported(
   NOTREACHED();
 }
 
+// static
+bool ActorCriticalActionLogger::ShouldLogForTask(const ActorTask& task) {
+  return IsTaskSourceSupported(task.source_info().type) &&
+         !task.skip_history_recording();
+}
+
 void ActorCriticalActionLogger::MaybeLogAction(
     ActorTask& task,
     Profile* profile,
@@ -212,7 +218,7 @@ void ActorCriticalActionLogger::LogAgentSelfReportedAction(
     return;
   }
 
-  if (!IsTaskSourceSupported(task.source_info().type)) {
+  if (!ShouldLogForTask(task)) {
     return;
   }
 

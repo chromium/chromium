@@ -111,6 +111,10 @@ void ActorAutofillManager::MaybeLogCriticalAction(
     return;  // Only log if the tab has an active Actor task.
   }
 
+  if (active_actor_task_->skip_history_recording) {
+    return;  // The task does not record history.
+  }
+
   if (active_actor_task_->is_under_user_control) {
     return;  // The user is filling the form, not the actor.
   }
