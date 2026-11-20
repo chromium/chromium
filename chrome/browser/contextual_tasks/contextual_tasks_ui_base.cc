@@ -287,7 +287,8 @@ bool ShouldHandleContextualTasksRequest(const std::string& path) {
     return true;
   }
 #endif
-  return base::StartsWith(path, kProfileAvatarPathPrefix);
+  return contextual_tasks::IsContextualTasksSidePanelRearchitectureEnabled() &&
+         base::StartsWith(path, kProfileAvatarPathPrefix);
 }
 
 void HandleContextualTasksRequest(
@@ -337,12 +338,13 @@ class ContextualTasksUIBase::CookieJarObserver
  public:
   CookieJarObserver(ContextualTasksUIBase& owner, Profile* profile)
       : owner_(owner), profile_(profile) {
+    if (!contextual_tasks::IsContextualTasksSidePanelRearchitectureEnabled()) {
+      return;
+    }
     if (auto* identity_manager =
             IdentityManagerFactory::GetForProfile(profile_)) {
       observation_.Observe(identity_manager);
-    } else if (profile_ && profile_->IsOffTheRecord() &&
-               contextual_tasks::
-                   IsContextualTasksSidePanelRearchitectureEnabled()) {
+    } else if (profile_ && profile_->IsOffTheRecord()) {
       if (content::StoragePartition* partition =
               profile_->GetDefaultStoragePartition()) {
         partition->GetCookieManagerForBrowserProcess()->AddCookieChangeListener(
@@ -509,7 +511,8 @@ ContextualTasksUIBase::ContextualTasksUIBase(content::WebUI* web_ui)
                               /*enable_chrome_send=*/true,
                               /*enable_chrome_histograms=*/true) {
   Profile* profile = GetProfile();
-  if (profile) {
+  if (profile &&
+      contextual_tasks::IsContextualTasksSidePanelRearchitectureEnabled()) {
     cookie_jar_observer_ = std::make_unique<CookieJarObserver>(*this, profile);
   }
   is_contextual_tasks_eligible_on_init_ =
@@ -650,7 +653,9 @@ content::WebUIDataSource* ContextualTasksUIBase::RegisterWebUIDataSource(
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-  source->AddResourcePaths(kContextualTasksExtensionResources);
+  if (contextual_tasks::IsContextualTasksRearchitectureEnabled()) {
+    source->AddResourcePaths(kContextualTasksExtensionResources);
+  }
 #endif
 
   content::URLDataSource::Add(profile,
@@ -785,7 +790,10 @@ base::DictValue ContextualTasksUIBase::GetContextualTasksLoadTimeData(
           is_eligible &&
           contextual_tasks::GetExpandButtonOption() ==
               contextual_tasks::ExpandButtonOption::kSidePanelExpandButton);
-  dict.Set("profileAvatarUrl", GetProfileAvatarUrl(profile, GURL()).spec());
+  dict.Set("profileAvatarUrl",
+           contextual_tasks::IsContextualTasksSidePanelRearchitectureEnabled()
+               ? GetProfileAvatarUrl(profile, GURL()).spec()
+               : std::string());
 
   dict.Set("isSmallDeviceFormFactor",
            ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE);
@@ -1503,6 +1511,9 @@ void ContextualTasksUIBase::UpdateProfileIndicator() {
 }
 
 void ContextualTasksUIBase::UpdateProfileIndicator(const GURL& url) {
+  if (!contextual_tasks::IsContextualTasksSidePanelRearchitectureEnabled()) {
+    return;
+  }
   if (auto* toolbar_page = GetToolbarPageRemote()) {
     ProfileIndicatorInfo info;
     if (cookie_jar_observer_) {

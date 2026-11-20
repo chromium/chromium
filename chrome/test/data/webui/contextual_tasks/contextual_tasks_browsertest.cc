@@ -335,22 +335,6 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, Composebox_ErrorScrim) {
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, LensButton) {
-  RunTest("contextual_tasks/lens_button_test.js", "mocha.run();");
-}
-
-IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, LensChip) {
-  RunTest("contextual_tasks/lens_chip_test.js", "mocha.run();");
-}
-
-IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, TabPicker) {
-  RunTest("contextual_tasks/tab_picker_test.js", "mocha.run();");
-}
-
-IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, ContextLibrary) {
-  RunTest("contextual_tasks/context_library_test.js", "mocha.run();");
-}
-
 class ContextualTasksExtensionBrowserTestBase
     : public ContextualTasksBrowserTest {
  protected:
@@ -560,6 +544,23 @@ class ContextualTasksExtensionBrowserTestBase
  private:
   base::test::ScopedFeatureList extension_feature_list_;
 };
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionBrowserTestBase, LensButton) {
+  RunTest("contextual_tasks/lens_button_test.js", "mocha.run();");
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionBrowserTestBase, LensChip) {
+  RunTest("contextual_tasks/lens_chip_test.js", "mocha.run();");
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionBrowserTestBase, TabPicker) {
+  RunTest("contextual_tasks/tab_picker_test.js", "mocha.run();");
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionBrowserTestBase,
+                       ContextLibrary) {
+  RunTest("contextual_tasks/context_library_test.js", "mocha.run();");
+}
 
 IN_PROC_BROWSER_TEST_F(
     ContextualTasksExtensionBrowserTestBase,

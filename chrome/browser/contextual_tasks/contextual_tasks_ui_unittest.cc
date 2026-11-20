@@ -5116,6 +5116,8 @@ TEST_F(ContextualTasksUiTest,
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(ContextualTasksUiTest, ProfileIndicator_SignedOutInitially) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      kContextualTasksSidePanelRearchitecture};
   content::TestWebUI web_ui;
   web_ui.set_web_contents(embedded_web_contents_.get());
   TestContextualTasksUIBase controller(&web_ui);
@@ -5139,6 +5141,8 @@ TEST_F(ContextualTasksUiTest, ProfileIndicator_SignedOutInitially) {
 }
 
 TEST_F(ContextualTasksUiTest, ProfileIndicator_WebSignedInWithoutExtendedInfo) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      kContextualTasksSidePanelRearchitecture};
   AccountInfo account_info =
       identity_test_env()->MakeAccountAvailable("user@example.com");
   identity_test_env()->SetCookieAccounts(
@@ -5167,6 +5171,8 @@ TEST_F(ContextualTasksUiTest, ProfileIndicator_WebSignedInWithoutExtendedInfo) {
 }
 
 TEST_F(ContextualTasksUiTest, ProfileIndicator_HiddenUntilCookieJarIsFresh) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      kContextualTasksSidePanelRearchitecture};
   AccountInfo account_info =
       identity_test_env()->MakeAccountAvailable("user@example.com");
   identity_test_env()->SetCookieAccounts(
@@ -5206,6 +5212,8 @@ TEST_F(ContextualTasksUiTest, ProfileIndicator_HiddenUntilCookieJarIsFresh) {
 }
 
 TEST_F(ContextualTasksUiTest, ProfileIndicator_WebSignedInWithExtendedInfo) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      kContextualTasksSidePanelRearchitecture};
   AccountInfo account_info =
       identity_test_env()->MakeAccountAvailable("user@example.com");
   SkBitmap bitmap;
@@ -5243,6 +5251,8 @@ TEST_F(ContextualTasksUiTest, ProfileIndicator_WebSignedInWithExtendedInfo) {
 }
 
 TEST_F(ContextualTasksUiTest, AccountInfo_WebSignedInWithFullName) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      kContextualTasksSidePanelRearchitecture};
   AccountInfo account_info =
       identity_test_env()->MakeAccountAvailable("user@example.com");
   account_info =
@@ -5278,6 +5288,8 @@ TEST_F(ContextualTasksUiTest, AccountInfo_WebSignedInWithFullName) {
 }
 
 TEST_F(ContextualTasksUiTest, SignedInAccountCount_MultipleWebAccounts) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      kContextualTasksSidePanelRearchitecture};
   AccountInfo account_info1 =
       identity_test_env()->MakeAccountAvailable("user1@example.com");
   AccountInfo account_info2 =
@@ -5307,6 +5319,8 @@ TEST_F(ContextualTasksUiTest, SignedInAccountCount_MultipleWebAccounts) {
 }
 
 TEST_F(ContextualTasksUiTest, SignedInAccountCount_ZeroWhenSignedOut) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      kContextualTasksSidePanelRearchitecture};
   content::TestWebUI web_ui;
   web_ui.set_web_contents(embedded_web_contents_.get());
   TestContextualTasksUIBase controller(&web_ui);
@@ -5347,6 +5361,8 @@ TEST_F(ContextualTasksUiTest,
 }
 
 TEST_F(ContextualTasksUiTest, AccountInfo_EmptyWhenSignedOut) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      kContextualTasksSidePanelRearchitecture};
   content::TestWebUI web_ui;
   web_ui.set_web_contents(embedded_web_contents_.get());
   TestContextualTasksUIBase controller(&web_ui);
@@ -5373,6 +5389,8 @@ TEST_F(ContextualTasksUiTest, AccountInfo_EmptyWhenSignedOut) {
 }
 
 TEST_F(ContextualTasksUiTest, AccountInfo_EmptyWhenSignedInToChrome) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      kContextualTasksSidePanelRearchitecture};
   AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
       "user@example.com", signin::ConsentLevel::kSignin);
   identity_test_env()->SetCookieAccounts(
@@ -5404,6 +5422,8 @@ TEST_F(ContextualTasksUiTest, AccountInfo_EmptyWhenSignedInToChrome) {
 }
 
 TEST_F(ContextualTasksUiTest, ProfileIndicator_HiddenWhenSignedInToChrome) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      kContextualTasksSidePanelRearchitecture};
   AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
       "user@example.com", signin::ConsentLevel::kSignin);
   SkBitmap bitmap;
@@ -5439,6 +5459,8 @@ TEST_F(ContextualTasksUiTest, ProfileIndicator_HiddenWhenSignedInToChrome) {
 
 TEST_F(ContextualTasksUiTest,
        ProfileIndicator_UpdateProfileIndicatorPushesAvatarUrl) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      kContextualTasksSidePanelRearchitecture};
   content::TestWebUI web_ui;
   web_ui.set_web_contents(embedded_web_contents_.get());
   TestContextualTasksUIBase controller(&web_ui);
@@ -5517,6 +5539,8 @@ TEST_F(ContextualTasksUiTest,
 }
 
 TEST_F(ContextualTasksUiTest, ProfileIndicator_LoadTimeDataPopulated) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      kContextualTasksSidePanelRearchitecture};
   // Signed-out test.
   base::DictValue signed_out_dict =
       ContextualTasksUIBase::GetContextualTasksLoadTimeData(profile_);
@@ -5561,6 +5585,43 @@ TEST_F(ContextualTasksUiTest, ProfileIndicator_LoadTimeDataPopulated) {
       chrome_signed_in_dict.FindString("profileAvatarUrl");
   ASSERT_TRUE(chrome_signed_in_avatar_url);
   EXPECT_EQ(*chrome_signed_in_avatar_url, "");
+}
+
+TEST_F(ContextualTasksUiTest,
+       ProfileIndicator_DisabledWhenSidePanelRearchitectureOff) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      kContextualTasksSidePanelRearchitecture);
+
+  AccountInfo account_info =
+      identity_test_env()->MakeAccountAvailable("user@example.com");
+  identity_test_env()->SetCookieAccounts(
+      {{std::string(account_info.GetEmail()), account_info.GetGaiaId()}});
+
+  base::DictValue dict =
+      ContextualTasksUIBase::GetContextualTasksLoadTimeData(profile_);
+  const std::string* avatar_url = dict.FindString("profileAvatarUrl");
+  ASSERT_TRUE(avatar_url);
+  EXPECT_EQ(*avatar_url, "");
+
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  TestContextualTasksUIBase controller(&web_ui);
+
+  mojo::Remote<contextual_tasks_toolbar::mojom::PageHandlerFactory>
+      factory_remote;
+  controller.BindInterface(factory_remote.BindNewPipeAndPassReceiver());
+
+  testing::NiceMock<MockContextualTasksToolbarPage> mock_page;
+  EXPECT_CALL(mock_page, SetProfileAvatarUrl(_)).Times(0);
+  EXPECT_CALL(mock_page, SetAccountInfo(_, _)).Times(0);
+  EXPECT_CALL(mock_page, SetSignedInAccountCount(_)).Times(0);
+
+  mojo::Remote<contextual_tasks_toolbar::mojom::PageHandler> page_handler;
+  factory_remote->CreatePageHandler(mock_page.BindAndGetRemote(),
+                                    page_handler.BindNewPipeAndPassReceiver());
+  controller.UpdateProfileIndicator(GURL("https://google.com/search"));
+  mock_page.FlushForTesting();
 }
 
 TEST_F(ContextualTasksUiTest, ProfileIndicator_IncognitoSignedOutInitially) {
@@ -5748,6 +5809,8 @@ TEST_F(ContextualTasksUiTest,
 
 TEST_F(ContextualTasksUiTest,
        ProfileIndicator_UpdatesWhenExtendedAccountInfoArrivesLater) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      kContextualTasksSidePanelRearchitecture};
   identity_test_env()->EnableRemovalOfExtendedAccountInfo();
 
   content::TestWebUI web_ui;
@@ -5826,6 +5889,8 @@ TEST_F(ContextualTasksUiTest,
 
 TEST_F(ContextualTasksUiTest,
        ProfileIndicator_UpdatesWhenPrimaryAccountChanges) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      kContextualTasksSidePanelRearchitecture};
   AccountInfo account_info =
       identity_test_env()->MakeAccountAvailable("user@example.com");
   account_info =

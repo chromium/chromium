@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
@@ -20,6 +21,7 @@
 #include "extensions/browser/extension_mojo_binder_registry_factory.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_features.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/contextual_tasks/contextual_tasks_extension_handler.h"
@@ -67,7 +69,7 @@ ContextualTasksExtensionBinderProvider::
     ~ContextualTasksExtensionBinderProvider() = default;
 
 bool ContextualTasksExtensionBinderProvider::IsMojoJsEnabledForFrame() const {
-  return true;
+  return IsContextualTasksRearchitectureEnabled();
 }
 
 bool ContextualTasksExtensionBinderProvider::IsMojoJsEnabledForServiceWorker()
@@ -75,7 +77,11 @@ bool ContextualTasksExtensionBinderProvider::IsMojoJsEnabledForServiceWorker()
   // Exposes the `Mojo` JS bindings object inside the extension service worker
   // execution context (`background.ts`), which is checked separately from
   // extension document frames (`IsMojoJsEnabledForFrame()`).
-  return true;
+  return IsContextualTasksRearchitectureEnabled() ||
+         base::FeatureList::IsEnabled(
+             extensions_features::kApiContextualTasksPrivate) ||
+         base::FeatureList::IsEnabled(
+             extensions_features::kApiContextualTasksPrivateAba);
 }
 
 void ContextualTasksExtensionBinderProvider::PopulateFrameBinders(
@@ -83,8 +89,7 @@ void ContextualTasksExtensionBinderProvider::PopulateFrameBinders(
     content::RenderFrameHost* render_frame_host,
     const extensions::Extension& extension) {
 #if !BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(
-          contextual_tasks::kContextualTasksRearchitecture)) {
+  if (IsContextualTasksRearchitectureEnabled()) {
     binder_map.Add<contextual_tasks::mojom::ExtensionPageHandlerFactory>(
         base::BindRepeating(
             [](content::RenderFrameHost* frame_host,
@@ -104,23 +109,23 @@ void ContextualTasksExtensionBinderProvider::PopulateFrameBinders(
                   frame_host)
                   ->BindTrackedElementHandler(std::move(receiver));
             }));
+    binder_map.Add<composebox::mojom::PageHandlerFactory>(base::BindRepeating(
+        [](content::RenderFrameHost* frame_host,
+           mojo::PendingReceiver<composebox::mojom::PageHandlerFactory>
+               receiver) {
+          ::ContextualTasksExtensionHandler::GetOrCreateForCurrentDocument(
+              frame_host)
+              ->BindComposeboxFactory(std::move(receiver));
+        }));
+    binder_map.Add<plural_string::mojom::PluralStringProvider>(
+        base::BindRepeating(
+            [](content::RenderFrameHost* frame_host,
+               mojo::PendingReceiver<plural_string::mojom::PluralStringProvider>
+                   receiver) {
+              PluralStringProvider::Create(std::move(receiver),
+                                           GetSearchboxPluralStringIds());
+            }));
   }
-  binder_map.Add<composebox::mojom::PageHandlerFactory>(base::BindRepeating(
-      [](content::RenderFrameHost* frame_host,
-         mojo::PendingReceiver<composebox::mojom::PageHandlerFactory>
-             receiver) {
-        ::ContextualTasksExtensionHandler::GetOrCreateForCurrentDocument(
-            frame_host)
-            ->BindComposeboxFactory(std::move(receiver));
-      }));
-  binder_map.Add<plural_string::mojom::PluralStringProvider>(
-      base::BindRepeating(
-          [](content::RenderFrameHost* frame_host,
-             mojo::PendingReceiver<plural_string::mojom::PluralStringProvider>
-                 receiver) {
-            PluralStringProvider::Create(std::move(receiver),
-                                         GetSearchboxPluralStringIds());
-          }));
 #endif
 }
 
@@ -133,8 +138,7 @@ void ContextualTasksExtensionBinderProvider::PopulateServiceWorkerBinders(
   // service worker `BrowserInterfaceBroker` requests are dispatched here rather
   // than `PopulateFrameBinders()` and must be bound to the profile-scoped
   // `ContextualTasksExtensionServiceWorkerHandler`.
-  if (base::FeatureList::IsEnabled(
-          contextual_tasks::kContextualTasksRearchitecture)) {
+  if (IsContextualTasksRearchitectureEnabled()) {
     binder_map.Add<mojom::ExtensionPageHandlerFactory>(base::BindRepeating(
         &BindServiceWorkerFactoryReceiver, browser_context));
   }

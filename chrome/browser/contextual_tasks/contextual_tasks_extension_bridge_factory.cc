@@ -6,12 +6,15 @@
 
 #include <memory>
 
+#include "base/feature_list.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_extension_bridge.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/contextual_tasks/public/features.h"
 #include "extensions/browser/extension_config_map_factory.h"
 #include "extensions/browser/extension_mojo_binder_registry_factory.h"
 #include "extensions/browser/extension_registry_factory.h"
 #include "extensions/browser/process_manager_factory.h"
+#include "extensions/common/extension_features.h"
 
 namespace contextual_tasks {
 
@@ -51,6 +54,13 @@ ContextualTasksExtensionBridgeFactory::
 std::unique_ptr<KeyedService>
 ContextualTasksExtensionBridgeFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
+  if (!IsContextualTasksRearchitectureEnabled() &&
+      !base::FeatureList::IsEnabled(
+          extensions_features::kApiContextualTasksPrivate) &&
+      !base::FeatureList::IsEnabled(
+          extensions_features::kApiContextualTasksPrivateAba)) {
+    return nullptr;
+  }
   return std::make_unique<ContextualTasksExtensionBridge>(
       Profile::FromBrowserContext(context));
 }

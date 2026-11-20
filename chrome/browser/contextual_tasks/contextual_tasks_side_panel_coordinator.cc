@@ -1119,10 +1119,13 @@ void ContextualTasksSidePanelCoordinator::ShareTabsWithNewThread(
     return;
   }
   AttachTabsToTask(task->GetTaskId(), tabs_to_attach);
-  if (content::WebContents* panel_contents = GetActiveWebContents()) {
-    ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
-        panel_contents)
-        ->PreservePreStagedContext();
+  if (IsContextualTasksRearchitectureEnabled() ||
+      IsContextualTasksSidePanelRearchitectureEnabled()) {
+    if (content::WebContents* panel_contents = GetActiveWebContents()) {
+      ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
+          panel_contents)
+          ->PreservePreStagedContext();
+    }
   }
 }
 
@@ -1308,13 +1311,16 @@ void ContextualTasksSidePanelCoordinator::UnshareTabs(
     if (active_task_context_provider_) {
       active_task_context_provider_->RemoveLocalTabUnderline(tab_handle);
     }
-    for (content::WebContents* web_contents : target_web_contents) {
-      if (!web_contents) {
-        continue;
+    if (IsContextualTasksRearchitectureEnabled() ||
+        IsContextualTasksSidePanelRearchitectureEnabled()) {
+      for (content::WebContents* web_contents : target_web_contents) {
+        if (!web_contents) {
+          continue;
+        }
+        ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
+            web_contents)
+            ->DeleteTabContext(tab_handle.raw_value());
       }
-      ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
-          web_contents)
-          ->DeleteTabContext(tab_handle.raw_value());
     }
   }
 
@@ -3005,11 +3011,13 @@ void ContextualTasksSidePanelCoordinator::AttachTabsToTask(
           ? it->second->web_contents.get()
           : GetActiveWebContents();
 
-  auto* user_data =
-      panel_contents
-          ? ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
-                panel_contents)
-          : nullptr;
+  ContextualTasksWebContentsUserData* user_data = nullptr;
+  if ((IsContextualTasksRearchitectureEnabled() ||
+       IsContextualTasksSidePanelRearchitectureEnabled()) &&
+      panel_contents) {
+    user_data = ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
+        panel_contents);
+  }
   contextual_search::ContextualSearchSessionHandle* session_handle = nullptr;
   if (panel_contents) {
     if (auto* helper = ContextualSearchWebContentsHelper::FromWebContents(
