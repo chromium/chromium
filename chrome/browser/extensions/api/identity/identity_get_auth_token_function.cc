@@ -240,6 +240,13 @@ ExtensionFunction::ResponseAction IdentityGetAuthTokenFunction::Run() {
                     IdentityMintRequestQueue::GetRequestTrack(this),
                     "extension", extension()->id());
 
+  if (!GetProfile() || GetProfile()->ShutdownStarted()) {
+    IdentityGetAuthTokenError error(
+        IdentityGetAuthTokenError::State::kBrowserContextShutDown);
+    RecordFunctionResult(error, remote_consent_approved_);
+    return RespondNow(Error(error.ToString()));
+  }
+
   if (GetProfile()->IsOffTheRecord()) {
     IdentityGetAuthTokenError error(
         IdentityGetAuthTokenError::State::kOffTheRecord);
@@ -940,6 +947,7 @@ void IdentityGetAuthTokenFunction::OnIdentityAPIShutdown() {
   device_oauth2_token_fetcher_.reset();
 #endif
   gaia_remote_consent_flow_.reset();
+  mint_token_flow_.reset();
   token_key_account_access_token_fetcher_.reset();
   refresh_tokens_loaded_waiter_.reset();
   scoped_identity_manager_observation_.Reset();

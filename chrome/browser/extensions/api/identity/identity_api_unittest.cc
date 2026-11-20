@@ -210,6 +210,22 @@ TEST_F(IdentityAPITest, GaiaIdErasedAfterSignOutAfterShutdown) {
   EXPECT_EQ(api()->GetGaiaIdForExtension(extension_id), std::nullopt);
 }
 
+TEST_F(IdentityAPITest, ShutdownOnProfileWillBeDestroyed) {
+  base::MockOnceClosure shutdown_callback;
+  base::CallbackListSubscription subscription =
+      api()->RegisterOnShutdownCallback(shutdown_callback.Get());
+  EXPECT_CALL(shutdown_callback, Run()).Times(1);
+
+  Profile::FromBrowserContext(prefs()->browser_context())
+      ->MaybeSendDestroyedNotification();
+  Mock::VerifyAndClearExpectations(&shutdown_callback);
+
+  EXPECT_CALL(mock_on_signin_changed_callback(), Run(_)).Times(0);
+  identity_env()->MakePrimaryAccountAvailable(kTestAccount,
+                                              signin::ConsentLevel::kSignin);
+  api()->Shutdown();
+}
+
 TEST_F(IdentityAPITest, FireOnAccountSignInChangedOnlyIfSignedIn) {
   EXPECT_CALL(mock_on_signin_changed_callback(), Run(_)).Times(0);
   AccountInfo account = identity_env()->MakeAccountAvailable(kTestAccount);

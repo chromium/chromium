@@ -15,6 +15,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/browser/extensions/api/identity/identity_clear_all_cached_auth_tokens_function.h"
@@ -25,6 +26,8 @@
 #include "chrome/browser/extensions/api/identity/identity_mint_queue.h"
 #include "chrome/browser/extensions/api/identity/identity_remove_cached_auth_token_function.h"
 #include "chrome/browser/extensions/api/identity/identity_token_cache.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_observer.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
@@ -38,8 +41,6 @@ namespace content {
 class BrowserContext;
 }
 
-class Profile;
-
 namespace extensions {
 
 class EventRouter;
@@ -47,7 +48,8 @@ class ExtensionPrefs;
 struct Event;
 
 class IdentityAPI : public BrowserContextKeyedAPI,
-                    public signin::IdentityManager::Observer {
+                    public signin::IdentityManager::Observer,
+                    public ProfileObserver {
  public:
   explicit IdentityAPI(content::BrowserContext* context);
   ~IdentityAPI() override;
@@ -155,6 +157,9 @@ class IdentityAPI : public BrowserContextKeyedAPI,
   // Fires the chrome.identity.onSignInChanged event.
   void FireOnAccountSignInChanged(const GaiaId& gaia_id, bool is_signed_in);
 
+  // ProfileObserver:
+  void OnProfileWillBeDestroyed(Profile* profile) override;
+
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   void OnChromeSigninDialogDestroyed();
   void HandleSkipUIForTesting(base::OnceClosure on_complete);
@@ -178,6 +183,11 @@ class IdentityAPI : public BrowserContextKeyedAPI,
   OnSignInChangedCallback on_signin_changed_callback_for_testing_;
 
   base::OnceCallbackList<void()> on_shutdown_callback_list_;
+
+  base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observation_{this};
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   bool is_chrome_signin_dialog_open_ = false;

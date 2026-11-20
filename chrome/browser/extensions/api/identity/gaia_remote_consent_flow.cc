@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/barrier_callback.h"
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/identity/identity_api.h"
@@ -47,6 +48,7 @@ GaiaRemoteConsentFlow::~GaiaRemoteConsentFlow() {
 }
 
 void GaiaRemoteConsentFlow::Start() {
+  CHECK(!profile_ || !profile_->ShutdownStarted());
   if (!web_flow_) {
     // No initiator origin: `resolution_data_.url` is not controlled by the
     // extension, it is obtained by Chrome from Gaia.
@@ -134,6 +136,8 @@ WebAuthFlow* GaiaRemoteConsentFlow::GetWebAuthFlowForTesting() const {
 
 void GaiaRemoteConsentFlow::OnResolutionDataCookiesSet(
     const std::vector<net::CookieAccessResult>& cookie_set_result) {
+  CHECK(!profile_ || !profile_->ShutdownStarted());
+
   bool cookies_set_failed = std::ranges::any_of(
       cookie_set_result, [](const net::CookieAccessResult& result) {
         return !result.status.IsInclude();

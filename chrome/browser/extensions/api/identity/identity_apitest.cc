@@ -2503,6 +2503,55 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest,
   base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
       FROM_HERE, std::move(keep_alive));
 }
+
+IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest, RunAfterShutdownStarted) {
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  Profile& profile2 = profiles::testing::CreateProfileSync(
+      profile_manager, profile_manager->GenerateNextProfileDirectoryPath());
+
+  profile2.MaybeSendDestroyedNotification();
+  ASSERT_TRUE(profile2.ShutdownStarted());
+
+  auto func = base::MakeRefCounted<IdentityGetAuthTokenFunction>();
+  func->set_extension(CreateExtension(CLIENT_ID | SCOPES));
+
+  std::string error = utils::RunFunctionAndReturnError(
+      func.get(), "[{\"interactive\": true}]", &profile2);
+
+  EXPECT_EQ(std::string(errors::kBrowserContextShutDown), error);
+  histogram_tester()->ExpectUniqueSample(
+      kGetAuthTokenResultHistogramName,
+      IdentityGetAuthTokenError::State::kBrowserContextShutDown, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest, ShutdownStartedDuringFlow) {
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  Profile& profile2 = profiles::testing::CreateProfileSync(
+      profile_manager, profile_manager->GenerateNextProfileDirectoryPath());
+  signin::MakePrimaryAccountAvailable(
+      IdentityManagerFactory::GetForProfile(&profile2), "primary@example.com",
+      signin::ConsentLevel::kSignin);
+
+  scoped_refptr<FakeGetAuthTokenFunction> func =
+      CreateFakeGetAuthTokenFunction();
+  func->set_extension(CreateExtension(CLIENT_ID | SCOPES));
+  func->push_mint_token_flow(std::make_unique<TestHangOAuth2MintTokenFlow>());
+
+  AsyncFunctionRunner func_runner;
+  func_runner.RunFunctionAsync(func.get(), "[{\"interactive\": true}]",
+                               &profile2);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return !func->login_access_tokens().empty(); }));
+
+  profile2.MaybeSendDestroyedNotification();
+  ASSERT_TRUE(profile2.ShutdownStarted());
+
+  EXPECT_EQ(std::string(errors::kBrowserContextShutDown),
+            func_runner.WaitForError(func.get()));
+  histogram_tester()->ExpectUniqueSample(
+      kGetAuthTokenResultHistogramName,
+      IdentityGetAuthTokenError::State::kBrowserContextShutDown, 1);
+}
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 

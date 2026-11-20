@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/lazy_instance.h"
@@ -135,7 +136,15 @@ void IdentityAPI::StopTrackingWebAuthFlow(
 
 void IdentityAPI::Shutdown() {
   on_shutdown_callback_list_.Notify();
-  identity_manager_->RemoveObserver(this);
+  profile_observation_.Reset();
+  identity_manager_observation_.Reset();
+}
+
+void IdentityAPI::OnProfileWillBeDestroyed(Profile* profile) {
+  // Profile teardown starts shutting down renderers asynchronously before
+  // `KeyedService`s are shut down. Shut down early to abort in-flight auth
+  // flows so they don't try to create new renderers.
+  Shutdown();
 }
 
 static base::LazyInstance<BrowserContextKeyedAPIFactory<IdentityAPI>>::
@@ -148,6 +157,7 @@ BrowserContextKeyedAPIFactory<IdentityAPI>* IdentityAPI::GetFactoryInstance() {
 
 base::CallbackListSubscription IdentityAPI::RegisterOnShutdownCallback(
     base::OnceClosure cb) {
+  CHECK(!profile_->ShutdownStarted());
   return on_shutdown_callback_list_.Add(std::move(cb));
 }
 
@@ -236,7 +246,8 @@ IdentityAPI::IdentityAPI(Profile* profile,
       identity_manager_(identity_manager),
       extension_prefs_(extension_prefs),
       event_router_(event_router) {
-  identity_manager_->AddObserver(this);
+  profile_observation_.Observe(profile_);
+  identity_manager_observation_.Observe(identity_manager_);
   EraseStaleGaiaIdsForAllExtensions();
 }
 
