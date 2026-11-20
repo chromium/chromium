@@ -369,7 +369,6 @@ constexpr int kTestRendererBlinkGCFragmentation = 10;
 constexpr int kTestRendererSharedMemoryFootprint = 135;
 constexpr int kNativeLibraryResidentMemoryFootprint = 27560;
 constexpr int kNativeLibraryResidentNotOrderedCodeFootprint = 12345;
-constexpr int kNativeLibraryNotResidentOrderedCodeFootprint = 23456;
 constexpr int kTestRendererResidentSet = 110;
 constexpr base::ProcessId kTestRendererPid201 = 201;
 constexpr base::ProcessId kTestRendererPid202 = 202;
@@ -1130,8 +1129,6 @@ TEST_F(ProcessMemoryMetricsEmitterTest, RendererAndTotalHistogramsAreRecorded) {
 
   global_dump->aggregated_metrics->native_library_resident_kb =
       kNativeLibraryResidentMemoryFootprint;
-  global_dump->aggregated_metrics->native_library_not_resident_ordered_kb =
-      kNativeLibraryNotResidentOrderedCodeFootprint;
   global_dump->aggregated_metrics->native_library_resident_not_ordered_kb =
       kNativeLibraryResidentNotOrderedCodeFootprint;
 
@@ -1150,8 +1147,6 @@ TEST_F(ProcessMemoryMetricsEmitterTest, RendererAndTotalHistogramsAreRecorded) {
   histograms.ExpectTotalCount("Memory.Total.ResidentSet", 0);
   histograms.ExpectTotalCount(
       "Memory.NativeLibrary.MappedAndResidentMemoryFootprint3", 0);
-  histograms.ExpectTotalCount(
-      "Memory.NativeLibrary.NotResidentOrderedCodeMemoryFootprint", 0);
   histograms.ExpectTotalCount(
       "Memory.NativeLibrary.ResidentNotOrderedCodeMemoryFootprint", 0);
 #if BUILDFLAG(IS_ANDROID)
@@ -1222,9 +1217,6 @@ TEST_F(ProcessMemoryMetricsEmitterTest, RendererAndTotalHistogramsAreRecorded) {
   histograms.ExpectUniqueSample(
       "Memory.NativeLibrary.MappedAndResidentMemoryFootprint3",
       kNativeLibraryResidentMemoryFootprint, 1);
-  histograms.ExpectUniqueSample(
-      "Memory.NativeLibrary.NotResidentOrderedCodeMemoryFootprint",
-      kNativeLibraryNotResidentOrderedCodeFootprint, 1);
   histograms.ExpectUniqueSample(
       "Memory.NativeLibrary.ResidentNotOrderedCodeMemoryFootprint",
       kNativeLibraryResidentNotOrderedCodeFootprint, 1);

@@ -93,8 +93,6 @@ mojom::AggregatedMetricsPtr ComputeGlobalNativeCodeResidentMemoryKb(
 
   int32_t native_library_resident_not_ordered_kb =
       GlobalMemoryDump::AggregatedMetrics::kInvalid;
-  int32_t native_library_not_resident_ordered_kb =
-      GlobalMemoryDump::AggregatedMetrics::kInvalid;
   int32_t native_library_resident_kb =
       static_cast<int32_t>(accessed_pages_set.size() * kb_per_page);
 
@@ -113,25 +111,16 @@ mojom::AggregatedMetricsPtr ComputeGlobalNativeCodeResidentMemoryKb(
             kPageSize -
         start_of_text_page_index;
 
-    size_t resident_pages_in_ordered_section = 0;
     size_t resident_pages_outside_ordered_section = 0;
     for (size_t page : accessed_pages_set) {
-      if (page >= start_of_ordered_section_page_offset &&
-          page < end_of_ordered_section_page_offset) {
-        resident_pages_in_ordered_section++;
-      } else {
+      if (page < start_of_ordered_section_page_offset ||
+          page >= end_of_ordered_section_page_offset) {
         resident_pages_outside_ordered_section++;
       }
     }
-    size_t ordered_section_pages = end_of_ordered_section_page_offset -
-                                   start_of_ordered_section_page_offset;
-    size_t not_resident_ordered_pages =
-        ordered_section_pages - resident_pages_in_ordered_section;
 
     native_library_resident_not_ordered_kb = static_cast<int32_t>(
         resident_pages_outside_ordered_section * kb_per_page);
-    native_library_not_resident_ordered_kb =
-        static_cast<int32_t>(not_resident_ordered_pages * kb_per_page);
   }
 
   // TODO(crbug.com/41455053) replace adding |NativeCodeResidentMemory| to trace
@@ -144,8 +133,6 @@ mojom::AggregatedMetricsPtr ComputeGlobalNativeCodeResidentMemoryKb(
   metrics->native_library_resident_kb = native_library_resident_kb;
   metrics->native_library_resident_not_ordered_kb =
       native_library_resident_not_ordered_kb;
-  metrics->native_library_not_resident_ordered_kb =
-      native_library_not_resident_ordered_kb;
 
   // 0 is not a valid value, as at the very least the current page (the one
   // containing code for the collection function) should be resident.

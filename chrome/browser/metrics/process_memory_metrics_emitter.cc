@@ -1713,8 +1713,6 @@ void ProcessMemoryMetricsEmitter::ReceivedMemoryDump(
     int32_t native_resident_kb = metrics.native_library_resident_kb();
     int32_t native_library_resident_not_ordered_kb =
         metrics.native_library_resident_not_ordered_kb();
-    int32_t native_library_not_resident_ordered_kb =
-        metrics.native_library_not_resident_ordered_kb();
 
     // |native_resident_kb| is only calculated for android devices that support
     // code ordering.
@@ -1724,11 +1722,6 @@ void ProcessMemoryMetricsEmitter::ReceivedMemoryDump(
       base::UmaHistogramCustomCounts(
           "Memory.NativeLibrary.MappedAndResidentMemoryFootprint3",
           native_resident_kb, 1000, 100000, 100);
-      if (native_library_not_resident_ordered_kb != metrics.kInvalid) {
-        base::UmaHistogramCustomCounts(
-            "Memory.NativeLibrary.NotResidentOrderedCodeMemoryFootprint",
-            native_library_not_resident_ordered_kb, 1000, 100000, 100);
-      }
       if (native_library_resident_not_ordered_kb != metrics.kInvalid) {
         base::UmaHistogramCustomCounts(
             "Memory.NativeLibrary.ResidentNotOrderedCodeMemoryFootprint",

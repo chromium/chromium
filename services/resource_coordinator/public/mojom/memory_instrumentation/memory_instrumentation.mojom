@@ -294,7 +294,6 @@ struct AggregatedMetrics {
   // These values are not always available, -1 when invalid.
   int32 native_library_resident_kb = 0;
   int32 native_library_resident_not_ordered_kb = 0;
-  int32 native_library_not_resident_ordered_kb = 0;
 };
 
 // This struct is returned by the public-facing API

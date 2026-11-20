@@ -69,10 +69,6 @@ class COMPONENT_EXPORT(RESOURCE_COORDINATOR_PUBLIC_MEMORY_INSTRUMENTATION)
       return aggregated_metrics_->native_library_resident_not_ordered_kb;
     }
 
-    int32_t native_library_not_resident_ordered_kb() const {
-      return aggregated_metrics_->native_library_not_resident_ordered_kb;
-    }
-
     static constexpr int32_t kInvalid = -1;
 
    private:
