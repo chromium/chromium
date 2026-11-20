@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_UI_EDIT_LABELS_H_
 #define CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_UI_EDIT_LABELS_H_
 
+#include <stddef.h>
+
 #include <memory>
 #include <string>
 #include <vector>
@@ -65,6 +67,8 @@ class EditLabels : public views::View {
   std::u16string CalculateActionName();
   // Returns key list, such as "w, a, s, d" or "w".
   std::u16string CalculateKeyListForA11yLabel() const;
+  // Returns the number of keys in this control, i.e. the size of `labels_`.
+  size_t GetKeyCount() const { return labels_.size(); }
 
   bool IsFirstLabelUnassigned() const;
 

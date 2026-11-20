@@ -6,7 +6,8 @@
 
 #include "ash/strings/grit/ash_strings.h"
 #include "base/check_op.h"
-#include "base/strings/string_util.h"
+#include "base/i18n/icubridge/icu_bridge.h"
+#include "base/i18n/icubridge/list_formatter.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/button_options_menu.h"
@@ -140,7 +141,9 @@ std::u16string EditLabels::CalculateKeyListForA11yLabel() const {
         GetDisplayTextAccessibleName(std::u16string(label->GetText())));
   }
 
-  return base::JoinString(keys, u", ");
+  return base::i18n::IcuBridge::GetInstance()
+      .list_formatter()
+      ->FormatNarrowList(keys);
 }
 
 bool EditLabels::IsFirstLabelUnassigned() const {

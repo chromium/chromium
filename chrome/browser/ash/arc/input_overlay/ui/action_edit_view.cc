@@ -202,7 +202,7 @@ std::u16string ActionEditView::CalculateAccessibleLabel() const {
   // "Selected key is w. Tap on the button to edit the control" or
   // "Selected keys are w, a, s, d. Tap on the button to edit the control".
   return l10n_util::GetStringFUTF16(
-      keys_string.find(',') == std::string::npos
+      labels_view_->GetKeyCount() <= 1u
           ? IDS_INPUT_OVERLAY_EDITING_LIST_ITEM_BUTTON_CONTAINER_A11Y_TPL
           : IDS_INPUT_OVERLAY_EDITING_LIST_ITEM_JOYSTICK_CONTAINER_A11Y_TPL,
       keys_string);

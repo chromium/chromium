@@ -7,6 +7,8 @@
 #include <memory>
 #include <vector>
 
+#include "base/check.h"
+#include "base/i18n/language_tag.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_metrics.h"
@@ -25,6 +27,8 @@
 #include "chrome/browser/ash/arc/input_overlay/ui/input_mapping_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/name_tag.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/test/scoped_application_locale.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/views/view_utils.h"
 
@@ -65,6 +69,11 @@ class EditLabelTest : public OverlayViewTestBase {
   bool IsInErrorState(ActionViewListItem* list_item) {
     DCHECK(list_item);
     return IsNameTagInErrorState(list_item->labels_view_);
+  }
+
+  EditLabels* GetLabelsView(ActionViewListItem* list_item) {
+    DCHECK(list_item);
+    return list_item->labels_view_;
   }
 
   void CheckAction(Action* action,
@@ -370,6 +379,56 @@ TEST_F(EditLabelTest, TestHistograms) {
   VerifyButtonOptionsMenuFunctionTriggeredUkmEvent(
       ukm_recorder, /*expected_entry_size=*/3u, /*index=*/2u,
       static_cast<int64_t>(ButtonOptionsMenuFunction::kEditLabelFocused));
+}
+
+// Tests that the accessible key list formats correctly across locales
+// using the locale's list pattern, and verifies key count reporting.
+TEST_F(EditLabelTest, KeyListForA11yLabelAcrossLocales) {
+  ASSERT_TRUE(tap_action_list_item_);
+  EditLabels* tap_labels = GetLabelsView(tap_action_list_item_);
+  ASSERT_TRUE(tap_labels);
+  EXPECT_EQ(tap_labels->GetKeyCount(), 1u);
+  EXPECT_EQ(tap_labels->CalculateKeyListForA11yLabel(), u"space");
+
+  ASSERT_TRUE(move_action_list_item_);
+  EditLabels* move_labels = GetLabelsView(move_action_list_item_);
+  ASSERT_TRUE(move_labels);
+  EXPECT_EQ(move_labels->GetKeyCount(), 4u);
+
+  // English (en-US): "w, a, s, d".
+  {
+    ui::test::ScopedApplicationLocale locale(
+        base::i18n::GetKnownLanguageTag("en-US"));
+    EXPECT_EQ(move_labels->CalculateKeyListForA11yLabel(), u"w, a, s, d");
+  }
+
+  // French (fr): narrow list pattern is "w, a, s, d" (same as en-US).
+  {
+    ui::test::ScopedApplicationLocale locale(
+        base::i18n::GetKnownLanguageTag("fr"));
+    EXPECT_EQ(move_labels->CalculateKeyListForA11yLabel(), u"w, a, s, d");
+  }
+
+  // German (de): "w, a, s und d".
+  {
+    ui::test::ScopedApplicationLocale locale(
+        base::i18n::GetKnownLanguageTag("de"));
+    EXPECT_EQ(move_labels->CalculateKeyListForA11yLabel(), u"w, a, s und d");
+  }
+
+  // Japanese (ja): "w、a、s、d".
+  {
+    ui::test::ScopedApplicationLocale locale(
+        base::i18n::GetKnownLanguageTag("ja"));
+    EXPECT_EQ(move_labels->CalculateKeyListForA11yLabel(), u"w、a、s、d");
+  }
+
+  // Arabic (ar): "w وa وs وd".
+  {
+    ui::test::ScopedApplicationLocale locale(
+        base::i18n::GetKnownLanguageTag("ar"));
+    EXPECT_EQ(move_labels->CalculateKeyListForA11yLabel(), u"w وa وs وd");
+  }
 }
 
 }  // namespace arc::input_overlay
