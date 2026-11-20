@@ -485,6 +485,47 @@ TEST_F(ActorKeyedServiceTest, HeadlessModeKeepsCallerOwnedSurface) {
   EXPECT_TRUE(actor_service->GetSurfaceRegistry().Get(handle));
 }
 
+// GetActingActorTaskForWebContents() returns a task only while one is acting on
+// the surface that the WebContents backs.
+TEST_F(ActorKeyedServiceTest, GetActingActorTaskForWebContents) {
+  auto* actor_service = ActorKeyedService::Get(profile());
+  ScopedHeadlessActorSurface headless =
+      actor_service->CreateHeadlessActorSurface();
+  ScopedHeadlessActorSurface other_headless =
+      actor_service->CreateHeadlessActorSurface();
+  const ActorSurfaceHandle handle = headless.actor_surface_handle();
+  ActorSurface* surface = actor_service->GetSurfaceRegistry().Get(handle);
+  ASSERT_TRUE(surface);
+  ActorSurface* other_surface = actor_service->GetSurfaceRegistry().Get(
+      other_headless.actor_surface_handle());
+  ASSERT_TRUE(other_surface);
+  content::WebContents* web_contents = surface->GetWebContents();
+  content::WebContents* other_web_contents = other_surface->GetWebContents();
+
+  // The surfaces exist, but no task does.
+  EXPECT_FALSE(actor_service->GetActingActorTaskForWebContents(web_contents));
+
+  ActorTaskOptions options;
+  options.webui_task_options = webui::mojom::TaskOptions::New();
+  options.webui_task_options->actuation_tab_id = handle.raw_value();
+  TaskId id = actor_service->CreateTaskWithOptions(
+      TestTaskSourceInfo(), NoEnterprisePolicyChecker(), ui_state_manager(),
+      std::move(options));
+  ActorTask* task = actor_service->GetTask(id);
+  ASSERT_TRUE(task);
+  EXPECT_EQ(actor_service->GetActingActorTaskForWebContents(web_contents),
+            task);
+  // The task is not acting on the other surface.
+  EXPECT_FALSE(
+      actor_service->GetActingActorTaskForWebContents(other_web_contents));
+
+  actor_service->StopTask(id, ActorTask::StoppedReason::kTaskComplete);
+
+  // The surface outlives the task, so the WebContents still backs it.
+  ASSERT_TRUE(actor_service->GetSurfaceRegistry().Get(handle));
+  EXPECT_FALSE(actor_service->GetActingActorTaskForWebContents(web_contents));
+}
+
 TEST_F(ActorKeyedServiceTest, TraceRecordingToFile) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());

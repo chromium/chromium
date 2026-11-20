@@ -453,6 +453,14 @@ ActorKeyedService* ActorKeyedService::Get(content::BrowserContext* context) {
 
 const ActorTask* ActorKeyedService::GetActingActorTaskForWebContents(
     content::WebContents* web_contents) {
+  // ActorSurfaceHandle::From() is linear in the number of live surfaces
+  // (roughly the number of open tabs), and this function is called on hot
+  // paths such as navigations. Skip the lookup when there is no task it could
+  // match.
+  if (active_tasks_.empty()) {
+    return nullptr;
+  }
+
   const ActorSurfaceHandle actor_surface_handle =
       ActorSurfaceHandle::From(web_contents);
   if (!actor_surface_handle.is_null()) {
