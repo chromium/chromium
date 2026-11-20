@@ -165,10 +165,19 @@ TEST_F(MultiProfilePasskeyCreationViewControllerTest,
   FaviconView* favicon_view = FindFaviconView(controller.view);
   ASSERT_TRUE(favicon_view);
 
-  // Give the failed fetch time to complete. This is best-effort: the fetch
-  // completion isn't observable from the test, and the default icon is
-  // displayed both before and after it.
-  base::test::ios::SpinRunLoopWithMinDelay(base::Milliseconds(100));
+  // Favicons are fetched on a serial queue and the controller applies the
+  // result on the main queue, so once this second fetch has hopped to the main
+  // queue, the controller's fetch has been fully handled.
+  __block bool done = false;
+  FetchFaviconAsync(@"missing_favicon_key", ^(FaviconAttributes*) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+      done = true;
+    });
+  });
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForFileOperationTimeout, ^{
+        return done;
+      }));
 
   EXPECT_TRUE(DisplayedImage(favicon_view));
 }
