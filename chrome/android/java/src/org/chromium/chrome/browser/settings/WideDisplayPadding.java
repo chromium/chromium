@@ -23,7 +23,6 @@ import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.PaddedItemDecorationWithDivider;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
-import org.chromium.components.browser_ui.widget.displaystyle.UiConfig.DisplayStyle;
 import org.chromium.components.browser_ui.widget.displaystyle.ViewResizer;
 import org.chromium.components.browser_ui.widget.displaystyle.ViewResizerUtil;
 
@@ -33,11 +32,17 @@ import java.util.function.Supplier;
 /** Applies the padding to the fragment for wide displays. */
 @NullMarked
 public class WideDisplayPadding {
+    private static final int INVALID_ITEM_OFFSET_PX = -1;
+
     private final Context mContext;
     private final Fragment mFragment;
     private final @Nullable View mContent;
     private final int mMinWidePaddingPixels;
     private final UiConfig mUiConfig;
+    private final BooleanSupplier mIsTwoColumnSettingsVisibleSupplier;
+    private final int mMinPaddingPx;
+
+    private int mLastAppliedItemOffsetPx = INVALID_ITEM_OFFSET_PX;
 
     private WideDisplayPadding(
             Fragment fragment,
@@ -46,6 +51,8 @@ public class WideDisplayPadding {
         mContext = fragment.requireContext();
         mFragment = fragment;
         mContent = fragment.getView();
+        mIsTwoColumnSettingsVisibleSupplier = isTwoColumnSettingsVisibleSupplier;
+        mMinPaddingPx = minPaddingPx;
 
         mMinWidePaddingPixels =
                 mContext.getResources()
@@ -64,13 +71,24 @@ public class WideDisplayPadding {
             // Invalidate decorations to reset.
             mUiConfig.addObserver(
                     (newDisplayStyle) -> {
+                        mLastAppliedItemOffsetPx = INVALID_ITEM_OFFSET_PX;
                         recyclerView.invalidateItemDecorations();
                     });
             recyclerView.addOnLayoutChangeListener(
                     (v, l, t, r, b, oldL, oldT, oldR, oldB) -> {
-                        if (r - l != oldR - oldL) {
-                            recyclerView.invalidateItemDecorations();
+                        int newOffset = computeItemOffsetPx(recyclerView);
+                        if (mLastAppliedItemOffsetPx == INVALID_ITEM_OFFSET_PX
+                                || newOffset == mLastAppliedItemOffsetPx) {
+                            mLastAppliedItemOffsetPx = newOffset;
+                            return;
                         }
+                        mLastAppliedItemOffsetPx = newOffset;
+                        RecyclerView.ItemAnimator itemAnimator = recyclerView.getItemAnimator();
+                        if (itemAnimator != null && recyclerView.isAnimating()) {
+                            itemAnimator.endAnimations();
+                        }
+                        recyclerView.invalidateItemDecorations();
+                        relayout(recyclerView, l, t, r, b);
                     });
         }
 
@@ -89,13 +107,7 @@ public class WideDisplayPadding {
             int defaultPadding =
                     mContext.getResources()
                             .getDimensionPixelSize(R.dimen.settings_single_column_layout_margin);
-            new SettingsViewResizer(
-                            paddedView,
-                            mUiConfig,
-                            defaultPadding,
-                            mMinWidePaddingPixels,
-                            isTwoColumnSettingsVisibleSupplier,
-                            minPaddingPx)
+            new SettingsViewResizer(paddedView, mUiConfig, defaultPadding, mMinWidePaddingPixels)
                     .attach();
             return;
         }
@@ -112,8 +124,7 @@ public class WideDisplayPadding {
                         : null;
 
         PaddedItemDecorationWithDivider itemDecoration =
-                getPaddedItemDecorationWithDivider(
-                        isTwoColumnSettingsVisibleSupplier, recyclerView, minPaddingPx);
+                getPaddedItemDecorationWithDivider(recyclerView);
         Drawable dividerDrawable = getDividerDrawable();
 
         // Early return if (a)Fragment implements CustomDividerFragment and explicitly don't
@@ -141,37 +152,42 @@ public class WideDisplayPadding {
     }
 
     private PaddedItemDecorationWithDivider getPaddedItemDecorationWithDivider(
-            BooleanSupplier isTwoColumnSettingsVisibleSupplier,
-            RecyclerView recyclerView,
-            int minPaddingPx) {
+            RecyclerView recyclerView) {
         Supplier<Integer> itemOffsetSupplier =
                 () -> {
-                    if (isTwoColumnSettingsVisibleSupplier.getAsBoolean()) {
-                        return computeMultiColumnSearchPadding(recyclerView, minPaddingPx);
-                    } else {
-                        return getItemOffset(mUiConfig.getCurrentDisplayStyle(), recyclerView);
+                    int offset = computeItemOffsetPx(recyclerView);
+                    if (mLastAppliedItemOffsetPx == INVALID_ITEM_OFFSET_PX) {
+                        mLastAppliedItemOffsetPx = offset;
                     }
+                    return offset;
                 };
         PaddedItemDecorationWithDivider itemDecoration =
                 new PaddedItemDecorationWithDivider(itemOffsetSupplier);
         return itemDecoration;
     }
 
+    private int computeItemOffsetPx(RecyclerView recyclerView) {
+        if (mIsTwoColumnSettingsVisibleSupplier.getAsBoolean()) {
+            return computeMultiColumnSearchPadding(recyclerView);
+        }
+        return ViewResizerUtil.computePadding(
+                recyclerView, mUiConfig, /* defaultPaddingPixels= */ 0, mMinWidePaddingPixels);
+    }
+
     /**
      * Computes the horizontal padding that centers the content within the two-column detail pane.
      *
      * @param view The view whose width defines the available space.
-     * @param minPaddingPx Minimum horizontal padding in pixels.
      */
-    private int computeMultiColumnSearchPadding(View view, int minPaddingPx) {
+    private int computeMultiColumnSearchPadding(View view) {
         int widthPx = getAvailableWidthPx(view);
-        if (widthPx == 0) return minPaddingPx;
+        if (widthPx == 0) return mMinPaddingPx;
 
         int maxDetailWidthPx =
                 mContext.getResources()
                         .getDimensionPixelSize(R.dimen.settings_min_multi_column_screen_width);
-        int excessPx = widthPx - maxDetailWidthPx - minPaddingPx * 2;
-        return minPaddingPx + (excessPx > 0 ? excessPx / 2 : 0);
+        int excessPx = widthPx - maxDetailWidthPx - mMinPaddingPx * 2;
+        return mMinPaddingPx + (excessPx > 0 ? excessPx / 2 : 0);
     }
 
     /**
@@ -232,12 +248,20 @@ public class WideDisplayPadding {
         new WideDisplayPadding(fragment, isTwoColumnSettingsVisibleSupplier, minPaddingPx);
     }
 
-    private Integer getItemOffset(DisplayStyle displayStyle, View view) {
-        if (displayStyle.isWide()) {
-            return ViewResizerUtil.computePaddingForWideDisplay(
-                    mContext, view, mMinWidePaddingPixels);
-        }
-        return 0;
+    /**
+     * Re-measures and re-lays out {@code view} within the current layout pass.
+     *
+     * <p>View.layout() clears PFLAG_FORCE_LAYOUT right after notifying layout change listeners, so
+     * a requestLayout() made from a listener (e.g. by setPaddingRelative() or
+     * invalidateItemDecorations()) is dropped and the children would stay positioned for the old
+     * padding or item offset. Lay them out again right away so the stale layout is never drawn or
+     * captured by transitions. See crbug.com/565658549.
+     */
+    private static void relayout(View view, int left, int top, int right, int bottom) {
+        view.measure(
+                MeasureSpec.makeMeasureSpec(right - left, MeasureSpec.EXACTLY),
+                MeasureSpec.makeMeasureSpec(bottom - top, MeasureSpec.EXACTLY));
+        view.layout(left, top, right, bottom);
     }
 
     // Get the divider drawable from AndroidX Pref attribute to keep things consistent.
@@ -266,21 +290,12 @@ public class WideDisplayPadding {
      */
     private class SettingsViewResizer extends ViewResizer {
         private final View mResizedView;
-        private final BooleanSupplier mIsTwoColumnSettingsVisibleSupplier;
-        private final int mMinPaddingPx;
         private final int mContainmentHorizontalMarginPx;
 
         SettingsViewResizer(
-                View view,
-                UiConfig uiConfig,
-                int defaultPaddingPixels,
-                int minWidePaddingPixels,
-                BooleanSupplier isTwoColumnSettingsVisibleSupplier,
-                int minPaddingPx) {
+                View view, UiConfig uiConfig, int defaultPaddingPixels, int minWidePaddingPixels) {
             super(view, uiConfig, defaultPaddingPixels, minWidePaddingPixels);
             mResizedView = view;
-            mIsTwoColumnSettingsVisibleSupplier = isTwoColumnSettingsVisibleSupplier;
-            mMinPaddingPx = minPaddingPx;
             mContainmentHorizontalMarginPx =
                     mContext.getResources().getDimensionPixelSize(R.dimen.settings_item_margin);
             applyPadding(computePadding());
@@ -294,7 +309,7 @@ public class WideDisplayPadding {
                 // exactly with the padding computed here. Pages padded as a whole still apply
                 // that margin to their own items, so subtract it to keep the rectangles
                 // aligned across settings pages.
-                int padding = computeMultiColumnSearchPadding(mResizedView, mMinPaddingPx);
+                int padding = computeMultiColumnSearchPadding(mResizedView);
                 return Math.max(0, padding - mContainmentHorizontalMarginPx);
             }
             return super.computePadding();
@@ -318,17 +333,11 @@ public class WideDisplayPadding {
             if (padding == view.getPaddingStart()) return;
             applyPadding(padding);
 
-            // The requestLayout() triggered by setPaddingRelative() is dropped here, because
-            // View.layout() clears PFLAG_FORCE_LAYOUT right after notifying layout change
-            // listeners, so the children would stay positioned for the old padding. This happens
+            // The requestLayout() triggered by setPaddingRelative() is dropped here. This happens
             // when the initial padding was estimated from the window width because no ancestor
             // had been measured yet, for example when settings is opened in a new tab next to the
-            // vertical tab strip. Lay out the children again right away, within the same layout
-            // pass, so the stale layout is never drawn. See crbug.com/565658549.
-            view.measure(
-                    MeasureSpec.makeMeasureSpec(right - left, MeasureSpec.EXACTLY),
-                    MeasureSpec.makeMeasureSpec(bottom - top, MeasureSpec.EXACTLY));
-            view.layout(left, top, right, bottom);
+            // vertical tab strip. See crbug.com/565658549.
+            relayout(view, left, top, right, bottom);
         }
 
         private void applyPadding(int padding) {
