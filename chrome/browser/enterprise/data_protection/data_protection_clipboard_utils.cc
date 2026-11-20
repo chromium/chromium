@@ -11,6 +11,7 @@
 #include <optional>
 #include <queue>
 #include <string>
+#include <utility>
 #include <variant>
 
 #include "base/containers/span.h"
@@ -1502,6 +1503,14 @@ void OnGetSourceClipboardEndpointForFindBar(
     content::ClipboardEndpoint destination,
     base::OnceCallback<void(std::optional<std::u16string>)> callback,
     content::ClipboardEndpoint source) {
+  // The clipboard is read asynchronously, so the find bar's tab may have been
+  // closed or navigated to another document since `destination` was checked.
+  // Its policies can no longer be evaluated, so replaced data isn't restored.
+  if (SkipDataControlOrContentAnalysisChecks(destination)) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
   auto verdict = GetPasteVerdict(source, destination, /*metadata=*/{});
 
   if (verdict.level() == data_controls::Rule::Level::kBlock) {

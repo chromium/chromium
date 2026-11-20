@@ -4,6 +4,10 @@
 
 #include "chrome/browser/enterprise/data_protection/data_protection_clipboard_utils.h"
 
+#include <memory>
+#include <optional>
+#include <string>
+#include <utility>
 #include <variant>
 
 #include "base/functional/function_ref.h"
@@ -25,9 +29,11 @@
 #include "components/web_distiller/core/url_constants.h"
 #include "components/web_distiller/core/url_utils.h"
 #include "content/public/browser/clipboard_types.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/drop_data.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
@@ -35,14 +41,18 @@
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/clipboard/clipboard.h"
+#include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/clipboard/clipboard_metadata.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
 #include "ui/base/clipboard/test/test_clipboard.h"
+#include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/skia_util.h"
+#include "url/gurl.h"
 #if defined(TOOLKIT_VIEWS)
 #include "ui/views/layout/layout_provider.h"
 #endif
@@ -285,46 +295,6 @@ class DataProtectionClipboardDistilledURLTest
  protected:
   content::RenderViewHostTestEnabler test_render_host_factories_;
   std::unique_ptr<content::WebContents> test_web_contents_;
-};
-
-// Tests for `ReplacePasteToFindBar()` with data tracked as replaced in the OS
-// clipboard by a copy made from `source_page_`.
-class DataProtectionClipboardFindBarTest : public DataProtectionClipboardTest {
- public:
-  void SetUp() override {
-    DataProtectionClipboardTest::SetUp();
-    source_page_ =
-        content::WebContentsTester::CreateTestWebContents(profile_, nullptr);
-    content::WebContentsTester::For(source_page_.get())
-        ->NavigateAndCommit(GURL("https://source.com"));
-    other_profile_page_ = content::WebContentsTester::CreateTestWebContents(
-        profile_manager_.CreateTestingProfile("find-bar-other-user"), nullptr);
-    content::WebContentsTester::For(other_profile_page_.get())
-        ->NavigateAndCommit(GURL("https://other.com"));
-  }
-
-  // Puts `text` in the OS clipboard as a copy from `source_page_` would, so
-  // that the source of the clipboard resolves to that page.
-  void WriteClipboardTextFromSourcePage(std::u16string text) {
-    ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste,
-                                     std::make_unique<ui::DataTransferEndpoint>(
-                                         source_page_->GetLastCommittedURL()));
-    content::AddSourceDataToClipboardWriter(
-        writer, *source_page_->GetPrimaryMainFrame());
-    writer.WriteText(std::move(text));
-  }
-
-  std::optional<std::u16string> ReplacePasteToFindBarOf(
-      content::WebContents* web_contents) {
-    base::test::TestFuture<std::optional<std::u16string>> future;
-    ReplacePasteToFindBar(web_contents, future.GetCallback());
-    return future.Get();
-  }
-
- protected:
-  content::RenderViewHostTestEnabler test_render_host_factories_;
-  std::unique_ptr<content::WebContents> source_page_;
-  std::unique_ptr<content::WebContents> other_profile_page_;
 };
 
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
@@ -2337,6 +2307,97 @@ TEST_F(DataProtectionClipboardTest, PrepopulateFindBarTextAllowed) {
   EXPECT_FALSE(PrepopulateFindBarTextAllowed(source, destination_blocked));
 }
 
+namespace {
+
+// A clipboard whose `ReadData()` is held until `ResumeReadData()`, as the
+// Windows and X11 clipboards answer it asynchronously. This lets a test change
+// the destination of a find bar paste while the clipboard's source is read.
+class DeferredReadDataClipboard : public ui::TestClipboard {
+ public:
+  void ReadData(const ui::ClipboardFormatType& format,
+                const std::optional<ui::DataTransferEndpoint>& data_dst,
+                ReadDataCallback callback) const override {
+    ASSERT_FALSE(has_pending_read());
+    pending_format_ = format;
+    pending_data_dst_ = data_dst;
+    pending_callback_ = std::move(callback);
+  }
+
+  bool has_pending_read() const { return !pending_callback_.is_null(); }
+
+  void ResumeReadData() {
+    ASSERT_TRUE(has_pending_read());
+    ui::TestClipboard::ReadData(std::exchange(pending_format_, {}),
+                                std::exchange(pending_data_dst_, std::nullopt),
+                                std::move(pending_callback_));
+  }
+
+ private:
+  mutable ui::ClipboardFormatType pending_format_;
+  mutable std::optional<ui::DataTransferEndpoint> pending_data_dst_;
+  mutable ReadDataCallback pending_callback_;
+};
+
+// Tests for `ReplacePasteToFindBar()` with data tracked as replaced in the OS
+// clipboard by a copy made from `source_page_`.
+class DataProtectionClipboardFindBarTest : public DataProtectionClipboardTest {
+ public:
+  void SetUp() override {
+    DataProtectionClipboardTest::SetUp();
+    source_page_ =
+        content::WebContentsTester::CreateTestWebContents(profile_, nullptr);
+    content::WebContentsTester::For(source_page_.get())
+        ->NavigateAndCommit(GURL("https://source.com"));
+    other_profile_page_ = content::WebContentsTester::CreateTestWebContents(
+        profile_manager_.CreateTestingProfile("find-bar-other-user"), nullptr);
+    content::WebContentsTester::For(other_profile_page_.get())
+        ->NavigateAndCommit(GURL("https://other.com"));
+  }
+
+  void TearDown() override {
+    // Frees the default test clipboard from `SetUp()`, or one installed by
+    // `UseDeferredReadDataClipboard()` and any read it still holds, so that
+    // neither the clipboard nor a pending read outlives the test.
+    ui::Clipboard::DestroyClipboardForCurrentThread();
+    DataProtectionClipboardTest::TearDown();
+  }
+
+  // Replaces the clipboard with one that holds `ReadData()`. Call this before
+  // writing to the clipboard, as its data doesn't carry over.
+  DeferredReadDataClipboard& UseDeferredReadDataClipboard() {
+    ui::Clipboard::DestroyClipboardForCurrentThread();
+    auto clipboard = std::make_unique<DeferredReadDataClipboard>();
+    DeferredReadDataClipboard& clipboard_ref = *clipboard;
+    ui::Clipboard::SetClipboardForCurrentThread(std::move(clipboard));
+    return clipboard_ref;
+  }
+
+  // Puts `text` in the OS clipboard as a copy from `source_page_` would, so
+  // that the source of the clipboard resolves to that page.
+  void WriteClipboardTextFromSourcePage(std::u16string text) {
+    ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste,
+                                     std::make_unique<ui::DataTransferEndpoint>(
+                                         source_page_->GetLastCommittedURL()));
+    content::AddSourceDataToClipboardWriter(
+        writer, *source_page_->GetPrimaryMainFrame());
+    writer.WriteText(std::move(text));
+  }
+
+  std::optional<std::u16string> ReplacePasteToFindBarOf(
+      content::WebContents* web_contents) {
+    base::test::TestFuture<std::optional<std::u16string>> future;
+    ReplacePasteToFindBar(web_contents, future.GetCallback());
+    return future.Get();
+  }
+
+ protected:
+  content::RenderViewHostTestEnabler test_render_host_factories_;
+  std::unique_ptr<content::WebContents> source_page_;
+  std::unique_ptr<content::WebContents> other_profile_page_;
+};
+
+}  // namespace
+
 TEST_F(DataProtectionClipboardFindBarTest, NoReplacedData) {
   WriteClipboardTextFromSourcePage(u"text");
   EXPECT_FALSE(ReplacePasteToFindBarOf(source_page_.get()));
@@ -2382,6 +2443,74 @@ TEST_F(DataProtectionClipboardFindBarTest, OngoingScan) {
 
   EXPECT_FALSE(ReplacePasteToFindBarOf(source_page_.get()));
   EXPECT_FALSE(ReplacePasteToFindBarOf(other_profile_page_.get()));
+}
+
+TEST_F(DataProtectionClipboardFindBarTest, DestinationAliveAfterClipboardRead) {
+  DeferredReadDataClipboard& clipboard = UseDeferredReadDataClipboard();
+  WriteClipboardTextFromSourcePage(u"placeholder");
+  TrackReplacedClipboardText(
+      u"kept", data_controls::CopyRestrictionLevel::kKeptInManagedBrowser);
+
+  base::test::TestFuture<std::optional<std::u16string>> future;
+  ReplacePasteToFindBar(source_page_.get(), future.GetCallback());
+  ASSERT_TRUE(clipboard.has_pending_read());
+  EXPECT_FALSE(future.IsReady());
+
+  clipboard.ResumeReadData();
+  EXPECT_EQ(future.Get(), u"kept");
+}
+
+TEST_F(DataProtectionClipboardFindBarTest,
+       DestinationTabClosedDuringClipboardRead) {
+  DeferredReadDataClipboard& clipboard = UseDeferredReadDataClipboard();
+  WriteClipboardTextFromSourcePage(u"placeholder");
+  TrackReplacedClipboardText(
+      u"kept", data_controls::CopyRestrictionLevel::kKeptInManagedBrowser);
+  std::unique_ptr<content::WebContents> destination =
+      content::WebContentsTester::CreateTestWebContents(profile_, nullptr);
+  content::WebContentsTester::For(destination.get())
+      ->NavigateAndCommit(GURL("https://destination.com"));
+
+  base::test::TestFuture<std::optional<std::u16string>> future;
+  ReplacePasteToFindBar(destination.get(), future.GetCallback());
+  ASSERT_TRUE(clipboard.has_pending_read());
+
+  destination.reset();
+  clipboard.ResumeReadData();
+
+  // The find bar's tab is gone, so the replaced data isn't restored.
+  ASSERT_TRUE(future.IsReady());
+  EXPECT_FALSE(future.Get());
+}
+
+TEST_F(DataProtectionClipboardFindBarTest,
+       DestinationFrameReplacedDuringClipboardRead) {
+  DeferredReadDataClipboard& clipboard = UseDeferredReadDataClipboard();
+  WriteClipboardTextFromSourcePage(u"placeholder");
+  TrackReplacedClipboardText(
+      u"kept", data_controls::CopyRestrictionLevel::kKeptInManagedBrowser);
+  std::unique_ptr<content::WebContents> destination =
+      content::WebContentsTester::CreateTestWebContents(profile_, nullptr);
+  // A page kept in the back/forward cache keeps its frame alive.
+  content::DisableBackForwardCacheForTesting(
+      destination.get(), content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
+  content::WebContentsTester::For(destination.get())
+      ->NavigateAndCommit(GURL("https://destination.com"));
+  const content::GlobalRenderFrameHostId initial_frame_id =
+      destination->GetPrimaryMainFrame()->GetGlobalId();
+
+  base::test::TestFuture<std::optional<std::u16string>> future;
+  ReplacePasteToFindBar(destination.get(), future.GetCallback());
+  ASSERT_TRUE(clipboard.has_pending_read());
+
+  content::WebContentsTester::For(destination.get())
+      ->NavigateAndCommit(GURL("https://other-destination.com"));
+  // The tab is still open, but the frame the paste was made into is gone.
+  ASSERT_FALSE(content::RenderFrameHost::FromID(initial_frame_id));
+  clipboard.ResumeReadData();
+
+  ASSERT_TRUE(future.IsReady());
+  EXPECT_FALSE(future.Get());
 }
 
 class DataProtectionClipboardInitialEmptyDocumentPopupTest
