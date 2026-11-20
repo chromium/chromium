@@ -49,6 +49,11 @@ void ServiceWorkerMainResourceHandle::set_service_worker_client(
   CHECK(service_worker_client());
 }
 
+void ServiceWorkerMainResourceHandle::ResetServiceWorkerClient() {
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
+  std::exchange(scoped_service_worker_client_, nullptr).reset();
+}
+
 base::WeakPtr<ServiceWorkerClient>
 ServiceWorkerMainResourceHandle::service_worker_client() {
   if (!scoped_service_worker_client_) {
