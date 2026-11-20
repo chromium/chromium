@@ -102,7 +102,13 @@ TEST_F(ThreadPoolJobTaskSourceTest, RunTasks) {
 
 // Verifies that a job task source doesn't allow any new RunStatus after Clear()
 // is called.
-TEST_F(ThreadPoolJobTaskSourceTest, Clear) {
+// TODO(crbug.com/587243538): Flaky on iOS.
+#if BUILDFLAG(IS_IOS)
+#define MAYBE_Clear DISABLED_Clear
+#else
+#define MAYBE_Clear Clear
+#endif
+TEST_F(ThreadPoolJobTaskSourceTest, MAYBE_Clear) {
   auto job_task = base::MakeRefCounted<test::MockJobTask>(
       DoNothing(), /* num_tasks_to_run */ 5);
   scoped_refptr<JobTaskSource> task_source =
