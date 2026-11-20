@@ -632,7 +632,7 @@ class ResultSelectionTest : public testing::Test,
 
   std::unique_ptr<test::AppListTestViewDelegate> app_list_test_delegate_;
   std::unique_ptr<ResultSelectionController> result_selection_controller_;
-  std::vector<raw_ptr<SearchResultContainerView, VectorExperimental>>
+  std::vector<raw_ptr<SearchResultContainerView, DanglingUntriaged>>
       containers_;
 
   // Set up key events for test. These will never be marked as 'handled'.

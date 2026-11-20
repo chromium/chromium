@@ -318,7 +318,7 @@ void ForeignSessionHandler::OpenForeignSessionTab(
   if (side_panel_ui_ && side_panel_ui_->metrics_recorder()) {
     size_t device_index = 0;
     size_t tab_recency_index = 0;
-    std::vector<raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>
+    std::vector<raw_ptr<const sync_sessions::SyncedSession, DanglingUntriaged>>
         sessions;
     if (open_tabs->GetAllForeignSessions(
             &sessions, sync_sessions::OpenTabsUIDelegate::ForeignSessionFilter::
@@ -419,7 +419,7 @@ std::vector<history::mojom::ForeignSessionPtr>
 ForeignSessionHandler::GetForeignSessionsInternal() {
   sync_sessions::OpenTabsUIDelegate* open_tabs =
       GetOpenTabsUIDelegate(profile_);
-  std::vector<raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>
+  std::vector<raw_ptr<const sync_sessions::SyncedSession, DanglingUntriaged>>
       sessions;
 
   std::vector<history::mojom::ForeignSessionPtr> session_list;

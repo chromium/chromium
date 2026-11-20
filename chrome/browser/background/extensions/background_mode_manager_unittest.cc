@@ -231,7 +231,7 @@ class BackgroundModeManagerTest : public testing::Test {
 
     auto policy_service = std::make_unique<policy::PolicyServiceImpl>(
         std::vector<
-            raw_ptr<policy::ConfigurationPolicyProvider, VectorExperimental>>{
+            raw_ptr<policy::ConfigurationPolicyProvider, DanglingUntriaged>>{
             &policy_provider_});
 
 #if BUILDFLAG(IS_WIN)

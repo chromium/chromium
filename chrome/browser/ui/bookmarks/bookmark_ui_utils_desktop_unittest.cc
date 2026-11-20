@@ -71,7 +71,7 @@ TEST_F(BookmarkUIUtilsTest, HasBookmarkURLs) {
   std::unique_ptr<BookmarkModel> model(
       bookmarks::TestBookmarkClient::CreateModel());
 
-  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes;
+  std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>> nodes;
 
   // This tests that |nodes| contains an URL.
   const BookmarkNode* page1 = model->AddURL(
@@ -110,7 +110,7 @@ TEST_F(BookmarkUIUtilsTest, HasBookmarkURLs) {
 TEST_F(BookmarkUIUtilsTest, HasBookmarkURLsAllowedInIncognitoMode) {
   std::unique_ptr<BookmarkModel> model(
       bookmarks::TestBookmarkClient::CreateModel());
-  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes;
+  std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>> nodes;
   const GURL history_page = GURL(chrome::kChromeUIHistoryURL);
 
   // This tests that |nodes| contains an disabled-in-incognito URL.

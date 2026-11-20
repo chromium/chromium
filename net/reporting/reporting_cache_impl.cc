@@ -77,8 +77,8 @@ void ReportingCacheImpl::AddReport(
 }
 
 void ReportingCacheImpl::GetReports(
-    std::vector<raw_ptr<const ReportingReport, VectorExperimental>>*
-        reports_out) const {
+    std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>>* reports_out)
+    const {
   reports_out->clear();
   for (const auto& report : reports_) {
     if (report->status != ReportingReport::Status::DOOMED &&
@@ -132,9 +132,9 @@ base::Value ReportingCacheImpl::GetReportsAsValue() const {
   return base::Value(std::move(report_list));
 }
 
-std::vector<raw_ptr<const ReportingReport, VectorExperimental>>
+std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>>
 ReportingCacheImpl::GetReportsToDeliver() {
-  std::vector<raw_ptr<const ReportingReport, VectorExperimental>> reports_out;
+  std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>> reports_out;
   for (const auto& report : reports_) {
     if (report->IsUploadPending())
       continue;
@@ -145,11 +145,11 @@ ReportingCacheImpl::GetReportsToDeliver() {
   return reports_out;
 }
 
-std::vector<raw_ptr<const ReportingReport, VectorExperimental>>
+std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>>
 ReportingCacheImpl::GetReportsToDeliverForSource(
     const base::UnguessableToken& reporting_source) {
   DCHECK(!reporting_source.is_empty());
-  std::vector<raw_ptr<const ReportingReport, VectorExperimental>> reports_out;
+  std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>> reports_out;
   for (const auto& report : reports_) {
     if (report->reporting_source == reporting_source) {
       if (report->IsUploadPending())
@@ -163,7 +163,7 @@ ReportingCacheImpl::GetReportsToDeliverForSource(
 }
 
 void ReportingCacheImpl::ClearReportsPending(
-    const std::vector<raw_ptr<const ReportingReport, VectorExperimental>>&
+    const std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>>&
         reports) {
   for (const ReportingReport* report : reports) {
     auto it = reports_.find(report);
@@ -180,7 +180,7 @@ void ReportingCacheImpl::ClearReportsPending(
 }
 
 void ReportingCacheImpl::IncrementReportsAttempts(
-    const std::vector<raw_ptr<const ReportingReport, VectorExperimental>>&
+    const std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>>&
         reports) {
   for (const ReportingReport* report : reports) {
     auto it = reports_.find(report);
@@ -298,13 +298,13 @@ ReportingCacheImpl::GetExpiredSources() const {
 }
 
 void ReportingCacheImpl::RemoveReports(
-    const std::vector<raw_ptr<const ReportingReport, VectorExperimental>>&
+    const std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>>&
         reports) {
   RemoveReports(reports, false);
 }
 
 void ReportingCacheImpl::RemoveReports(
-    const std::vector<raw_ptr<const ReportingReport, VectorExperimental>>&
+    const std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>>&
         reports,
     bool delivery_success) {
   for (const ReportingReport* report : reports) {
@@ -337,7 +337,7 @@ void ReportingCacheImpl::RemoveReports(
 }
 
 void ReportingCacheImpl::RemoveAllReports() {
-  std::vector<raw_ptr<const ReportingReport, VectorExperimental>>
+  std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>>
       reports_to_remove;
   GetReports(&reports_to_remove);
   RemoveReports(reports_to_remove);

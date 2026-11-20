@@ -418,7 +418,7 @@ void ContinueTaskContainerView::ClearAnimatingViews() {
   // case view removal causes an aborted view animation that calls back into
   // `ClearAnimatingViews()`. Clearing `views_to_remove_after_animation_` mid
   // iteraion over the vector would not be safe.
-  std::vector<raw_ptr<ContinueTaskView, VectorExperimental>> views_to_remove;
+  std::vector<raw_ptr<ContinueTaskView, DanglingUntriaged>> views_to_remove;
   views_to_remove_after_animation_.swap(views_to_remove);
   for (ash::ContinueTaskView* view : views_to_remove) {
     RemoveChildViewT(view);

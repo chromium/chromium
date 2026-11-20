@@ -55,19 +55,19 @@ class ReportingCacheImpl : public ReportingCache {
                  base::TimeTicks queued,
                  ReportingTargetType target_type) override;
   void GetReports(
-      std::vector<raw_ptr<const ReportingReport, VectorExperimental>>*
+      std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>>*
           reports_out) const override;
   base::Value GetReportsAsValue() const override;
-  std::vector<raw_ptr<const ReportingReport, VectorExperimental>>
+  std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>>
   GetReportsToDeliver() override;
-  std::vector<raw_ptr<const ReportingReport, VectorExperimental>>
+  std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>>
   GetReportsToDeliverForSource(
       const base::UnguessableToken& reporting_source) override;
   void ClearReportsPending(
-      const std::vector<raw_ptr<const ReportingReport, VectorExperimental>>&
+      const std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>>&
           reports) override;
   void IncrementReportsAttempts(
-      const std::vector<raw_ptr<const ReportingReport, VectorExperimental>>&
+      const std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>>&
           reports) override;
   base::flat_map<url::Origin, std::vector<ReportingEndpoint>>
   GetV1ReportingEndpointsByOrigin() const override;
@@ -80,10 +80,10 @@ class ReportingCacheImpl : public ReportingCache {
   const base::flat_set<base::UnguessableToken>& GetExpiredSources()
       const override;
   void RemoveReports(
-      const std::vector<raw_ptr<const ReportingReport, VectorExperimental>>&
+      const std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>>&
           reports) override;
   void RemoveReports(
-      const std::vector<raw_ptr<const ReportingReport, VectorExperimental>>&
+      const std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>>&
           reports,
       bool delivery_success) override;
   void RemoveAllReports() override;

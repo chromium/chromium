@@ -343,7 +343,7 @@ aura::Window* OverviewItem::GetWindow() {
   return transform_window_.window();
 }
 
-std::vector<raw_ptr<aura::Window, VectorExperimental>>
+std::vector<raw_ptr<aura::Window, DanglingUntriaged>>
 OverviewItem::GetWindows() {
   return {transform_window_.window()};
 }

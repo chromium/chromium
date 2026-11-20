@@ -262,7 +262,7 @@ class DesktopMediaPickerViewsTestBase
   views::ScopedViewsTestHelper test_helper_{
       std::make_unique<ChromeTestViewsDelegate<>>()};
   std::map<DesktopMediaList::Type,
-           raw_ptr<FakeDesktopMediaList, CtnExperimental>>
+           raw_ptr<FakeDesktopMediaList, DanglingUntriaged>>
       media_lists_;
   std::unique_ptr<DesktopMediaPickerImpl> picker_views_;
   DesktopMediaPickerViewsTestApi test_api_;

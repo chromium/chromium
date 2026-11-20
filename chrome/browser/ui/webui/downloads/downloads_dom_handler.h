@@ -103,7 +103,7 @@ class DownloadsDOMHandler : public content::WebContentsObserver,
   void FinalizeRemovals();
 
   using DownloadVector =
-      std::vector<raw_ptr<download::DownloadItem, VectorExperimental>>;
+      std::vector<raw_ptr<download::DownloadItem, DanglingUntriaged>>;
 
   // Remove all downloads in |to_remove|. Safe downloads can be revived,
   // dangerous ones are immediately removed. Protected for testing.

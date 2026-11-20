@@ -27,7 +27,7 @@ class ScopedOverviewHideWindows : public aura::WindowObserver {
   // is true, the hidden windows may have their visibility altered during
   // overview, but we want to keep them hidden.
   ScopedOverviewHideWindows(
-      const std::vector<raw_ptr<aura::Window, VectorExperimental>>& windows,
+      const std::vector<raw_ptr<aura::Window, DanglingUntriaged>>& windows,
       bool force_hidden);
   ScopedOverviewHideWindows(const ScopedOverviewHideWindows&) = delete;
   ScopedOverviewHideWindows& operator=(const ScopedOverviewHideWindows&) =

@@ -134,7 +134,7 @@ class TestVirtualKeyboardExtensionsAPIClient : public ExtensionsAPIClient {
   // Points to the last mock delegate created for each browser context. Does not
   // own the delegates.
   mutable std::map<content::BrowserContext*,
-                   raw_ptr<MockVirtualKeyboardDelegate, CtnExperimental>>
+                   raw_ptr<MockVirtualKeyboardDelegate, DanglingUntriaged>>
       delegates_;
 };
 

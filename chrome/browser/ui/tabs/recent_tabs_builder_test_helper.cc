@@ -241,7 +241,7 @@ void RecentTabsBuilderTestHelper::VerifyExport(
     sync_sessions::OpenTabsUIDelegate* delegate) {
   DCHECK(delegate);
   // Make sure data is populated correctly in SessionModelAssociator.
-  std::vector<raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>
+  std::vector<raw_ptr<const sync_sessions::SyncedSession, DanglingUntriaged>>
       sessions;
   ASSERT_TRUE(delegate->GetAllForeignSessions(
       &sessions,

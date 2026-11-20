@@ -2299,7 +2299,7 @@ int MockUDPClientSocket::GetLocalAddressIfAvailable(
 }
 
 TestSocketRequest::TestSocketRequest(
-    std::vector<raw_ptr<TestSocketRequest, VectorExperimental>>* request_order,
+    std::vector<raw_ptr<TestSocketRequest, DanglingUntriaged>>* request_order,
     size_t* completion_count)
     : request_order_(request_order), completion_count_(completion_count) {
   DCHECK(request_order);

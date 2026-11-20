@@ -110,7 +110,8 @@ class ToolbarIconContainerView : public views::View,
   // Points to the child buttons that we know are currently highlighted.
   // TODO(pbos): Consider observing buttons leaving our hierarchy and removing
   // them from this set.
-  std::set<raw_ptr<const views::Button, SetExperimental>> highlighted_buttons_;
+  std::set<raw_ptr<const views::Button, DanglingUntriaged>>
+      highlighted_buttons_;
 
   RoundRectBorder border_{this};
 

@@ -170,7 +170,7 @@ TEST_F(WindowUtilTest, EnsureTransientRoots) {
   // neither of them get removed when running EnsureTransientRoots.
   auto window1 = CreateWindowWithAppType();
   auto window2 = CreateWindowWithAppType();
-  std::vector<raw_ptr<aura::Window, VectorExperimental>> window_list = {
+  std::vector<raw_ptr<aura::Window, DanglingUntriaged>> window_list = {
       window1.get(), window2.get()};
   EnsureTransientRoots(&window_list);
   ASSERT_EQ(2u, window_list.size());
@@ -226,7 +226,7 @@ TEST_F(WindowUtilTest,
   WindowState::Get(window.get())
       ->SetStateObject(std::unique_ptr<WindowState::State>(state));
 
-  std::vector<raw_ptr<aura::Window, VectorExperimental>> windows = {
+  std::vector<raw_ptr<aura::Window, DanglingUntriaged>> windows = {
       window.get()};
   MinimizeAndHideWithoutAnimation(windows);
 

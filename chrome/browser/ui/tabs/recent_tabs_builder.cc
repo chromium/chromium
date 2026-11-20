@@ -506,7 +506,7 @@ std::vector<RecentTabItem> RecentTabsBuilder::BuildRemoteEntries(
       session_sync_service ? session_sync_service->GetOpenTabsUIDelegate()
                            : nullptr;
 
-  std::vector<raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>
+  std::vector<raw_ptr<const sync_sessions::SyncedSession, DanglingUntriaged>>
       sessions;
   if (!open_tabs || !open_tabs->GetAllForeignSessions(
                         &sessions, sync_sessions::OpenTabsUIDelegate::
@@ -572,7 +572,7 @@ std::vector<RecentTabItem> RecentTabsBuilder::BuildOtherDeviceTabs(
   sync_sessions::OpenTabsUIDelegate* open_tabs =
       session_sync_service ? session_sync_service->GetOpenTabsUIDelegate()
                            : nullptr;
-  std::vector<raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>
+  std::vector<raw_ptr<const sync_sessions::SyncedSession, DanglingUntriaged>>
       sessions;
   if (!open_tabs ||
       !open_tabs->GetAllForeignSessions(

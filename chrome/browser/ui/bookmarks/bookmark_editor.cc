@@ -73,7 +73,7 @@ const BookmarkNode* CreateNewNode(BookmarkModel* model,
 const BookmarkNode* GetParentNodeForMove(
     bookmarks::BookmarkModel* model,
     const std::vector<
-        raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>& nodes) {
+        raw_ptr<const bookmarks::BookmarkNode, DanglingUntriaged>>& nodes) {
   CHECK(!nodes.empty());
   const BookmarkNode* first_parent = nodes[0].get()->parent();
 
@@ -199,11 +199,12 @@ BookmarkEditor::EditDetails BookmarkEditor::EditDetails::TabGroupToFolder(
 BookmarkEditor::EditDetails BookmarkEditor::EditDetails::MoveNodes(
     bookmarks::BookmarkModel* model,
     const std::vector<
-        raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>& nodes) {
+        raw_ptr<const bookmarks::BookmarkNode, DanglingUntriaged>>& nodes) {
   EditDetails details(MOVE);
 
-  details.existing_nodes_to_move = base::flat_set<
-      raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>(nodes);
+  details.existing_nodes_to_move =
+      base::flat_set<raw_ptr<const bookmarks::BookmarkNode, DanglingUntriaged>>(
+          nodes);
 
   details.parent_node = GetParentNodeForMove(model, nodes);
 
@@ -228,7 +229,7 @@ void BookmarkEditor::ApplyEdits(BookmarkModel* model,
   }
 
   if (details.type == EditDetails::MOVE) {
-    std::vector<raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>
+    std::vector<raw_ptr<const bookmarks::BookmarkNode, DanglingUntriaged>>
         nodes(details.existing_nodes_to_move.begin(),
               details.existing_nodes_to_move.end());
 

@@ -154,7 +154,7 @@ QueryFields::QueryFields() = default;
 QueryFields::~QueryFields() = default;
 
 VectorIterator::VectorIterator(
-    std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>* nodes)
+    std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>>* nodes)
     : nodes_(nodes), current_(nodes->begin()) {}
 
 VectorIterator::~VectorIterator() = default;
@@ -406,7 +406,7 @@ std::vector<const BookmarkNode*> GetBookmarksMatchingProperties(
   if (query.url) {
     // Shortcut into the BookmarkModel if searching for URL.
     GURL url(*query.url);
-    std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>
+    std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>>
         url_matched_nodes;
     if (url.is_valid()) {
       url_matched_nodes = model->GetNodesByURL(url);
@@ -538,7 +538,7 @@ bool IsDescendantOf(const BookmarkNode* node, const BookmarkNode* root) {
 }
 
 bool HasDescendantsOf(
-    const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>& list,
+    const std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>>& list,
     const BookmarkNode* root) {
   for (const BookmarkNode* node : list) {
     if (IsDescendantOf(node, root)) {

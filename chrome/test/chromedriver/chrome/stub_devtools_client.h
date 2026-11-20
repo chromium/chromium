@@ -89,7 +89,7 @@ class StubDevToolsClient : public DevToolsClient {
   const std::string id_;
   std::string session_id_;
   std::string tunnel_session_id_;
-  std::list<raw_ptr<DevToolsEventListener, CtnExperimental>> listeners_;
+  std::list<raw_ptr<DevToolsEventListener, DanglingUntriaged>> listeners_;
   raw_ptr<WebViewImpl> owner_ = nullptr;
   bool is_connected_ = false;
   bool autoaccept_beforeunload_ = false;

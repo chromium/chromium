@@ -19,7 +19,8 @@ class SyncedWindowDelegate;
 class SyncedWindowDelegatesGetter {
  public:
   using SyncedWindowDelegateMap =
-      std::map<SessionID, raw_ptr<const SyncedWindowDelegate, CtnExperimental>>;
+      std::map<SessionID,
+               raw_ptr<const SyncedWindowDelegate, DanglingUntriaged>>;
 
   SyncedWindowDelegatesGetter();
 

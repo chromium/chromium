@@ -791,7 +791,7 @@ class BASE_EXPORT FieldTrialList {
 
   // A map from FieldTrial names to the actual instances.
   typedef std::
-      map<std::string, raw_ptr<FieldTrial, CtnExperimental>, std::less<>>
+      map<std::string, raw_ptr<FieldTrial, DanglingUntriaged>, std::less<>>
           RegistrationMap;
 
   // Helper function should be called only while holding lock_.
@@ -855,12 +855,12 @@ class BASE_EXPORT FieldTrialList {
 
   // List of observers to be notified when a group is selected for a FieldTrial.
   // Excludes low anonymity field trials.
-  std::vector<raw_ptr<Observer, VectorExperimental>> observers_
+  std::vector<raw_ptr<Observer, DanglingUntriaged>> observers_
       GUARDED_BY(lock_);
 
   // List of observers to be notified when a group is selected for a FieldTrial.
   // Includes low anonymity field trials.
-  std::vector<raw_ptr<Observer, VectorExperimental>>
+  std::vector<raw_ptr<Observer, DanglingUntriaged>>
       observers_including_low_anonymity_ GUARDED_BY(lock_);
 
   // Counts the ongoing calls to

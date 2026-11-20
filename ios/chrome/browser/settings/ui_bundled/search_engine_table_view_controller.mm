@@ -501,7 +501,7 @@ const char kUmaSelectDefaultSearchEngine[] =
     return;
   }
 
-  std::vector<raw_ptr<TemplateURL, VectorExperimental>> urls =
+  std::vector<raw_ptr<TemplateURL, DanglingUntriaged>> urls =
       _templateURLService->GetTemplateURLs();
   _firstList.clear();
   _firstList.reserve(urls.size());

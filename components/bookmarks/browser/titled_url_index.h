@@ -34,7 +34,7 @@ struct TitledUrlMatch;
 class TitledUrlIndex {
  public:
   using TitledUrlNodeSet =
-      base::flat_set<raw_ptr<const TitledUrlNode, CtnExperimental>>;
+      base::flat_set<raw_ptr<const TitledUrlNode, DanglingUntriaged>>;
 
   // Constructs a TitledUrlIndex. `sorter` is used to construct a sorted list
   // of matches when matches are returned from the index. If null, matches are
@@ -78,7 +78,7 @@ class TitledUrlIndex {
   friend class TitledUrlIndexFake;
 
   using TitledUrlNodes =
-      std::vector<raw_ptr<const TitledUrlNode, CtnExperimental>>;
+      std::vector<raw_ptr<const TitledUrlNode, DanglingUntriaged>>;
   using Index = std::map<std::u16string, TitledUrlNodeSet>;
 
   // Constructs `sorted_nodes` by copying the matches in `matches` and sorting

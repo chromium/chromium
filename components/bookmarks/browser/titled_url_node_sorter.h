@@ -17,9 +17,9 @@ class TitledUrlNode;
 class TitledUrlNodeSorter {
  public:
   using TitledUrlNodes =
-      std::vector<raw_ptr<const TitledUrlNode, CtnExperimental>>;
+      std::vector<raw_ptr<const TitledUrlNode, DanglingUntriaged>>;
   using TitledUrlNodeSet =
-      base::flat_set<raw_ptr<const TitledUrlNode, CtnExperimental>>;
+      base::flat_set<raw_ptr<const TitledUrlNode, DanglingUntriaged>>;
 
   virtual ~TitledUrlNodeSorter() = default;
 

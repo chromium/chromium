@@ -36,7 +36,7 @@ class FakeSharingHandlerRegistry : public SharingHandlerRegistry {
 
  private:
   std::map<components_sharing_message::SharingMessage::PayloadCase,
-           raw_ptr<SharingMessageHandler, CtnExperimental>>
+           raw_ptr<SharingMessageHandler, DanglingUntriaged>>
       handler_map_;
 };
 

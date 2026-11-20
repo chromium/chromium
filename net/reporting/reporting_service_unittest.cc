@@ -130,7 +130,7 @@ TEST_P(ReportingServiceTest, QueueReport) {
                          ReportingTargetType::kDeveloper);
   FinishLoading(true /* load_success */);
 
-  std::vector<raw_ptr<const ReportingReport, VectorExperimental>> reports;
+  std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>> reports;
   context()->cache()->GetReports(&reports);
   ASSERT_EQ(1u, reports.size());
   EXPECT_EQ(kUrl_, reports[0]->url);
@@ -147,7 +147,7 @@ TEST_P(ReportingServiceTest, QueueEnterpriseReport) {
                          ReportingTargetType::kEnterprise);
   FinishLoading(true /* load_success */);
 
-  std::vector<raw_ptr<const ReportingReport, VectorExperimental>> reports;
+  std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>> reports;
   context()->cache()->GetReports(&reports);
   ASSERT_EQ(1u, reports.size());
   EXPECT_EQ(kUrl_, reports[0]->url);
@@ -166,7 +166,7 @@ TEST_P(ReportingServiceTest, QueueReportSanitizeUrl) {
                          ReportingTargetType::kDeveloper);
   FinishLoading(true /* load_success */);
 
-  std::vector<raw_ptr<const ReportingReport, VectorExperimental>> reports;
+  std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>> reports;
   context()->cache()->GetReports(&reports);
   ASSERT_EQ(1u, reports.size());
   EXPECT_EQ(kUrl_, reports[0]->url);
@@ -184,7 +184,7 @@ TEST_P(ReportingServiceTest, DontQueueReportInvalidUrl) {
                          kType_, base::DictValue(), 0,
                          ReportingTargetType::kDeveloper);
 
-  std::vector<raw_ptr<const ReportingReport, VectorExperimental>> reports;
+  std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>> reports;
   context()->cache()->GetReports(&reports);
   ASSERT_EQ(0u, reports.size());
 }
@@ -201,7 +201,7 @@ TEST_P(ReportingServiceTest, QueueReportNetworkIsolationKeyDisabled) {
                          ReportingTargetType::kDeveloper);
   FinishLoading(true /* load_success */);
 
-  std::vector<raw_ptr<const ReportingReport, VectorExperimental>> reports;
+  std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>> reports;
   context()->cache()->GetReports(&reports);
   ASSERT_EQ(1u, reports.size());
 
@@ -292,7 +292,7 @@ TEST_P(ReportingServiceTest, SendReportsAndRemoveSource) {
 
   FinishLoading(true /* load_success */);
 
-  std::vector<raw_ptr<const ReportingReport, VectorExperimental>> reports;
+  std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>> reports;
   context()->cache()->GetReports(&reports);
   ASSERT_EQ(1u, reports.size());
   EXPECT_EQ(0u, context()->cache()->GetReportCountWithStatusForTesting(
@@ -326,7 +326,7 @@ TEST_P(ReportingServiceTest, SendReportsForSource) {
                          ReportingTargetType::kDeveloper);
   FinishLoading(true /* load_success */);
 
-  std::vector<raw_ptr<const ReportingReport, VectorExperimental>> reports;
+  std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>> reports;
   context()->cache()->GetReports(&reports);
   ASSERT_EQ(1u, reports.size());
   EXPECT_EQ(0u, context()->cache()->GetReportCountWithStatusForTesting(
@@ -409,7 +409,7 @@ TEST_P(ReportingServiceTest,
   service()->SendReportsForSource(*kReportingSource_);
 
   // Verify neither operation has been processed yet.
-  std::vector<raw_ptr<const ReportingReport, VectorExperimental>> reports;
+  std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>> reports;
   context()->cache()->GetReports(&reports);
   EXPECT_EQ(0u, reports.size());
   EXPECT_FALSE(
@@ -449,7 +449,7 @@ TEST_P(ReportingServiceTest,
   service()->SendReportsAndRemoveSource(*kReportingSource_);
 
   // Verify neither operation has been processed yet.
-  std::vector<raw_ptr<const ReportingReport, VectorExperimental>> reports;
+  std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>> reports;
   context()->cache()->GetReports(&reports);
   EXPECT_EQ(0u, reports.size());
   EXPECT_FALSE(
@@ -489,7 +489,7 @@ TEST_P(ReportingServiceTest,
 
   FinishLoading(true /* load_success */);
 
-  std::vector<raw_ptr<const ReportingReport, VectorExperimental>> reports;
+  std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>> reports;
   context()->cache()->GetReports(&reports);
   ASSERT_EQ(1u, reports.size());
   EXPECT_EQ(0u, context()->cache()->GetReportCountWithStatusForTesting(

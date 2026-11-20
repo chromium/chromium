@@ -19,7 +19,7 @@ class AURA_EXPORT WindowTracker : public WindowObserver {
  public:
   // A vector is used for tracking the windows (instead of a set) as some places
   // care about ordering.
-  using WindowList = std::vector<raw_ptr<Window, VectorExperimental>>;
+  using WindowList = std::vector<raw_ptr<Window, DanglingUntriaged>>;
 
   explicit WindowTracker(const WindowList& windows);
   WindowTracker();

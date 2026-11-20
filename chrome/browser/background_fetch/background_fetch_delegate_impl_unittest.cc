@@ -125,7 +125,7 @@ TEST_F(BackgroundFetchDelegateImplTest, RecordUkmEvent) {
   url::Origin origin = url::Origin::Create(kOriginUrl);
 
   {
-    std::vector<raw_ptr<const ukm::mojom::UkmEntry, VectorExperimental>>
+    std::vector<raw_ptr<const ukm::mojom::UkmEntry, DanglingUntriaged>>
         entries = recorder_->GetEntriesByName(
             ukm::builders::BackgroundFetchDeletingRegistration::kEntryName);
     EXPECT_EQ(entries.size(), 0u);
@@ -140,7 +140,7 @@ TEST_F(BackgroundFetchDelegateImplTest, RecordUkmEvent) {
   run_loop.Run();
 
   {
-    std::vector<raw_ptr<const ukm::mojom::UkmEntry, VectorExperimental>>
+    std::vector<raw_ptr<const ukm::mojom::UkmEntry, DanglingUntriaged>>
         entries = recorder_->GetEntriesByName(
             ukm::builders::BackgroundFetchDeletingRegistration::kEntryName);
     ASSERT_EQ(entries.size(), 1u);

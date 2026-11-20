@@ -106,7 +106,7 @@ AutoResumptionHandler::~AutoResumptionHandler() {
 }
 
 void AutoResumptionHandler::SetResumableDownloads(
-    const std::vector<raw_ptr<download::DownloadItem, VectorExperimental>>&
+    const std::vector<raw_ptr<download::DownloadItem, DanglingUntriaged>>&
         downloads) {
   is_resumable_downloads_initialized_ = true;
   resumable_downloads_.clear();
@@ -309,7 +309,7 @@ void AutoResumptionHandler::ResumePendingDownloads() {
 }
 
 int AutoResumptionHandler::MaybeResumeDownloads(
-    std::map<std::string, raw_ptr<DownloadItem, CtnExperimental>> downloads) {
+    std::map<std::string, raw_ptr<DownloadItem, DanglingUntriaged>> downloads) {
   int resumed = 0;
   for (const auto& pair : downloads) {
     DownloadItem* download = pair.second;

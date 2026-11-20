@@ -380,7 +380,7 @@ class TestReportingService : public ReportingService {
 
   ReportingContext* GetContextForTesting() const override;
 
-  std::vector<raw_ptr<const ReportingReport, VectorExperimental>> GetReports()
+  std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>> GetReports()
       const override;
   base::flat_map<url::Origin, std::vector<ReportingEndpoint>>
   GetV1ReportingEndpointsByOrigin() const override;

@@ -32,7 +32,7 @@ class AURA_EXPORT TransientWindowClient {
   virtual void RemoveTransientChild(Window* parent, Window* child) = 0;
   virtual Window* GetTransientParent(Window* window) = 0;
   virtual const Window* GetTransientParent(const Window* window) = 0;
-  virtual std::vector<raw_ptr<Window, VectorExperimental>> GetTransientChildren(
+  virtual std::vector<raw_ptr<Window, DanglingUntriaged>> GetTransientChildren(
       const Window* parent) = 0;
   virtual void AddObserver(TransientWindowClientObserver* observer) = 0;
   virtual void RemoveObserver(TransientWindowClientObserver* observer) = 0;

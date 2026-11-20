@@ -278,7 +278,7 @@ DragOperation GetBookmarkDropOperation(Profile* profile,
 bool CanAllBeEditedByUser(
     bookmarks::ManagedBookmarkService* managed_bookmark_service,
     const std::vector<
-        raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>& nodes) {
+        raw_ptr<const bookmarks::BookmarkNode, DanglingUntriaged>>& nodes) {
   if (!managed_bookmark_service) {
     return true;
   }

@@ -164,14 +164,14 @@ class GlobalDumpGraph {
       guid_ = guid;
     }
     GlobalDumpGraph::Edge* owns_edge() const { return owns_edge_; }
-    std::map<std::string, raw_ptr<Node, CtnExperimental>>* children() {
+    std::map<std::string, raw_ptr<Node, DanglingUntriaged>>* children() {
       return &children_;
     }
-    const std::map<std::string, raw_ptr<Node, CtnExperimental>>&
+    const std::map<std::string, raw_ptr<Node, DanglingUntriaged>>&
     const_children() const {
       return children_;
     }
-    std::vector<raw_ptr<GlobalDumpGraph::Edge, VectorExperimental>>*
+    std::vector<raw_ptr<GlobalDumpGraph::Edge, DanglingUntriaged>>*
     owned_by_edges() {
       return &owned_by_edges_;
     }
@@ -187,7 +187,7 @@ class GlobalDumpGraph {
     const raw_ptr<Node> parent_;
     base::trace_event::MemoryAllocatorDumpGuid guid_;
     std::map<std::string, Entry> entries_;
-    std::map<std::string, raw_ptr<Node, CtnExperimental>> children_;
+    std::map<std::string, raw_ptr<Node, DanglingUntriaged>> children_;
     bool explicit_ = false;
     bool weak_ = false;
     uint64_t not_owning_sub_size_ = 0;
@@ -198,7 +198,7 @@ class GlobalDumpGraph {
     double cumulative_owning_coefficient_ = 1;
 
     raw_ptr<GlobalDumpGraph::Edge, DanglingUntriaged> owns_edge_;
-    std::vector<raw_ptr<GlobalDumpGraph::Edge, VectorExperimental>>
+    std::vector<raw_ptr<GlobalDumpGraph::Edge, DanglingUntriaged>>
         owned_by_edges_;
   };
 
@@ -223,7 +223,7 @@ class GlobalDumpGraph {
   // An iterator-esque class which yields nodes in a depth-first pre order.
   class PreOrderIterator {
    public:
-    PreOrderIterator(std::vector<raw_ptr<Node, VectorExperimental>> root_nodes);
+    PreOrderIterator(std::vector<raw_ptr<Node, DanglingUntriaged>> root_nodes);
     PreOrderIterator(PreOrderIterator&& other);
     ~PreOrderIterator();
 
@@ -231,15 +231,14 @@ class GlobalDumpGraph {
     Node* next();
 
    private:
-    std::vector<raw_ptr<Node, VectorExperimental>> to_visit_;
-    std::set<raw_ptr<const Node, SetExperimental>> visited_;
+    std::vector<raw_ptr<Node, DanglingUntriaged>> to_visit_;
+    std::set<raw_ptr<const Node, DanglingUntriaged>> visited_;
   };
 
   // An iterator-esque class which yields nodes in a depth-first post order.
   class PostOrderIterator {
    public:
-    PostOrderIterator(
-        std::vector<raw_ptr<Node, VectorExperimental>> root_nodes);
+    PostOrderIterator(std::vector<raw_ptr<Node, DanglingUntriaged>> root_nodes);
     PostOrderIterator(PostOrderIterator&& other);
     ~PostOrderIterator();
 
@@ -247,15 +246,15 @@ class GlobalDumpGraph {
     Node* next();
 
    private:
-    std::vector<raw_ptr<Node, VectorExperimental>> to_visit_;
-    std::set<raw_ptr<Node, SetExperimental>> visited_;
-    std::vector<raw_ptr<Node, VectorExperimental>> path_;
+    std::vector<raw_ptr<Node, DanglingUntriaged>> to_visit_;
+    std::set<raw_ptr<Node, DanglingUntriaged>> visited_;
+    std::vector<raw_ptr<Node, DanglingUntriaged>> path_;
   };
 
   using ProcessDumpGraphMap =
       std::map<base::ProcessId, std::unique_ptr<GlobalDumpGraph::Process>>;
   using GuidNodeMap = std::map<base::trace_event::MemoryAllocatorDumpGuid,
-                               raw_ptr<Node, CtnExperimental>>;
+                               raw_ptr<Node, DanglingUntriaged>>;
 
   GlobalDumpGraph();
 

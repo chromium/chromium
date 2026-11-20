@@ -36,12 +36,12 @@ class KEYED_SERVICE_EXPORT DependencyGraph {
   // Topologically sorts nodes to produce a safe construction order
   // (all nodes after their dependees).
   [[nodiscard]] bool GetConstructionOrder(
-      std::vector<raw_ptr<DependencyNode, VectorExperimental>>* order);
+      std::vector<raw_ptr<DependencyNode, DanglingUntriaged>>* order);
 
   // Topologically sorts nodes to produce a safe destruction order
   // (all nodes before their dependees).
   [[nodiscard]] bool GetDestructionOrder(
-      std::vector<raw_ptr<DependencyNode, VectorExperimental>>* order);
+      std::vector<raw_ptr<DependencyNode, DanglingUntriaged>>* order);
 
   // Returns representation of the dependency graph in graphviz format.
   std::string DumpAsGraphviz(
@@ -51,7 +51,7 @@ class KEYED_SERVICE_EXPORT DependencyGraph {
 
  private:
   typedef std::multimap<DependencyNode*,
-                        raw_ptr<DependencyNode, CtnExperimental>>
+                        raw_ptr<DependencyNode, DanglingUntriaged>>
       EdgeMap;
 
   // Populates |construction_order_| with computed construction order.
@@ -59,14 +59,14 @@ class KEYED_SERVICE_EXPORT DependencyGraph {
   [[nodiscard]] bool BuildConstructionOrder();
 
   // Keeps track of all live nodes (see AddNode, RemoveNode).
-  std::vector<raw_ptr<DependencyNode, VectorExperimental>> all_nodes_;
+  std::vector<raw_ptr<DependencyNode, DanglingUntriaged>> all_nodes_;
 
   // Keeps track of edges of the dependency graph.
   EdgeMap edges_;
 
   // Cached construction order (needs rebuild with BuildConstructionOrder
   // when empty).
-  std::vector<raw_ptr<DependencyNode, VectorExperimental>> construction_order_;
+  std::vector<raw_ptr<DependencyNode, DanglingUntriaged>> construction_order_;
 };
 
 #endif  // COMPONENTS_KEYED_SERVICE_CORE_DEPENDENCY_GRAPH_H_

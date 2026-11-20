@@ -454,7 +454,7 @@ void DownloadOfflineContentProvider::OnRenameDownloadCallbackDone(
 
 void DownloadOfflineContentProvider::OnManagerGoingDown(
     SimpleDownloadManagerCoordinator* manager) {
-  std::vector<raw_ptr<DownloadItem, VectorExperimental>> all_items;
+  std::vector<raw_ptr<DownloadItem, DanglingUntriaged>> all_items;
   GetAllDownloads(&all_items);
 
   for (download::DownloadItem* item : all_items) {
@@ -598,7 +598,7 @@ DownloadItem* DownloadOfflineContentProvider::GetDownload(
 }
 
 void DownloadOfflineContentProvider::GetAllDownloads(
-    std::vector<raw_ptr<DownloadItem, VectorExperimental>>* all_items) {
+    std::vector<raw_ptr<DownloadItem, DanglingUntriaged>>* all_items) {
   if (manager_)
     manager_->GetAllDownloads(all_items);
 }
@@ -636,7 +636,7 @@ void DownloadOfflineContentProvider::EnsureDownloadCoreServiceStarted() {
 
 void DownloadOfflineContentProvider::RunGetAllItemsCallback(
     OfflineContentProvider::MultipleItemCallback callback) {
-  std::vector<raw_ptr<DownloadItem, VectorExperimental>> all_items;
+  std::vector<raw_ptr<DownloadItem, DanglingUntriaged>> all_items;
   GetAllDownloads(&all_items);
 
   std::vector<OfflineItem> items;

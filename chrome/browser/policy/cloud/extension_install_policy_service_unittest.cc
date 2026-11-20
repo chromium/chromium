@@ -86,7 +86,7 @@ class ExtensionInstallPolicyServiceTest : public testing::Test {
     policy_provider_->SetDefaultReturns(
         /*is_initialization_complete_return=*/true,
         /*is_first_policy_load_complete_return=*/true);
-    std::vector<raw_ptr<ConfigurationPolicyProvider, VectorExperimental>>
+    std::vector<raw_ptr<ConfigurationPolicyProvider, DanglingUntriaged>>
         providers = {policy_provider_.get()};
     auto policy_service_ = std::make_unique<PolicyServiceImpl>(providers);
 

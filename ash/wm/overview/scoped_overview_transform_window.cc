@@ -159,7 +159,7 @@ ScopedOverviewTransformWindow::ScopedOverviewTransformWindow(
       original_clip_rect_(window_->layer()->GetTargetClipRect()) {
   fill_mode_ = GetOverviewItemFillModeForWindow(window);
 
-  std::vector<raw_ptr<aura::Window, VectorExperimental>>
+  std::vector<raw_ptr<aura::Window, DanglingUntriaged>>
       transient_children_to_hide;
   for (auto* transient : GetTransientTreeIterator(window)) {
     transient_windows_info_map_.emplace(
@@ -668,7 +668,7 @@ void ScopedOverviewTransformWindow::CloseWidget() {
 }
 
 void ScopedOverviewTransformWindow::AddHiddenTransientWindows(
-    const std::vector<raw_ptr<aura::Window, VectorExperimental>>&
+    const std::vector<raw_ptr<aura::Window, DanglingUntriaged>>&
         transient_windows) {
   if (!hidden_transient_children_) {
     hidden_transient_children_ = std::make_unique<ScopedOverviewHideWindows>(

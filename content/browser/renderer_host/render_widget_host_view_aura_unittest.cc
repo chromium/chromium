@@ -7805,10 +7805,10 @@ class InputMethodAuraTestBase : public RenderWidgetHostViewAuraTest {
 
   MockRenderWidgetHostImpl* tab_widget_host() const { return widget_host_; }
 
-  std::vector<raw_ptr<RenderWidgetHostViewBase, VectorExperimental>> views_;
-  std::vector<raw_ptr<MockRenderWidgetHostImpl, VectorExperimental>>
+  std::vector<raw_ptr<RenderWidgetHostViewBase, DanglingUntriaged>> views_;
+  std::vector<raw_ptr<MockRenderWidgetHostImpl, DanglingUntriaged>>
       widget_hosts_;
-  std::vector<raw_ptr<MockRenderWidgetHostImpl, VectorExperimental>>
+  std::vector<raw_ptr<MockRenderWidgetHostImpl, DanglingUntriaged>>
       widget_hosts_to_cleanup_;
   // A sequence of indices in [0, 3] which determines the index of a RWHV in
   // |views_|. This sequence is used in the tests to sequentially make a RWHV

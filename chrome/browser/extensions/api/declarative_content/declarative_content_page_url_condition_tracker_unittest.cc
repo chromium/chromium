@@ -44,7 +44,7 @@ class DeclarativeContentPageUrlConditionTrackerTest
     Delegate(const Delegate&) = delete;
     Delegate& operator=(const Delegate&) = delete;
 
-    std::set<raw_ptr<content::WebContents, SetExperimental>>&
+    std::set<raw_ptr<content::WebContents, DanglingUntriaged>>&
     evaluation_requests() {
       return evaluation_requests_;
     }
@@ -61,7 +61,7 @@ class DeclarativeContentPageUrlConditionTrackerTest
     }
 
    private:
-    std::set<raw_ptr<content::WebContents, SetExperimental>>
+    std::set<raw_ptr<content::WebContents, DanglingUntriaged>>
         evaluation_requests_;
   };
 

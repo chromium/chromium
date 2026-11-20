@@ -94,7 +94,7 @@ class TestDisplayLayoutManager : public DisplayLayoutManager {
   }
 
   bool GetDisplayLayout(
-      const std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>& displays,
+      const std::vector<raw_ptr<DisplaySnapshot, DanglingUntriaged>>& displays,
       MultipleDisplayState new_display_state,
       chromeos::DisplayPowerState new_power_state,
       const base::flat_set<int64_t>& new_vrr_state,
@@ -132,7 +132,7 @@ class TestDisplayLayoutManager : public DisplayLayoutManager {
 
  private:
   const DisplayMode* FindMirrorMode(
-      const std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>& displays)
+      const std::vector<raw_ptr<DisplaySnapshot, DanglingUntriaged>>& displays)
       const {
     const DisplayMode* mode = displays[0]->native_mode();
     for (DisplaySnapshot* display : displays) {
@@ -199,8 +199,8 @@ class UpdateDisplayConfigurationTaskTest : public testing::Test {
 
   void ResponseCallback(
       bool success,
-      const std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>& displays,
-      const std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>&
+      const std::vector<raw_ptr<DisplaySnapshot, DanglingUntriaged>>& displays,
+      const std::vector<raw_ptr<DisplaySnapshot, DanglingUntriaged>>&
           unassociated_displays,
       MultipleDisplayState new_display_state,
       chromeos::DisplayPowerState new_power_state) {
@@ -228,7 +228,7 @@ class UpdateDisplayConfigurationTaskTest : public testing::Test {
 
   bool configured_ = false;
   bool configuration_status_ = false;
-  std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>> display_states_;
+  std::vector<raw_ptr<DisplaySnapshot, DanglingUntriaged>> display_states_;
   MultipleDisplayState display_state_ = MULTIPLE_DISPLAY_STATE_INVALID;
   chromeos::DisplayPowerState power_state_ = chromeos::DISPLAY_POWER_ALL_ON;
 };

@@ -3672,7 +3672,7 @@ class FlexLayoutCrossAxisFitTest : public FlexLayoutTest {
       {gfx::Insets::TLBR(6, 0, 2, 0), gfx::Insets::TLBR(10, 0, 5, 0),
        gfx::Insets::TLBR(6, 0, 2, 0)}};
 
-  std::vector<raw_ptr<View, VectorExperimental>> child_views_;
+  std::vector<raw_ptr<View, DanglingUntriaged>> child_views_;
 };
 
 TEST_F(FlexLayoutCrossAxisFitTest, Layout_CrossStretch) {
@@ -3773,7 +3773,7 @@ class NestedFlexLayoutTest : public FlexLayoutTest {
   }
 
  private:
-  std::vector<raw_ptr<FlexLayout, VectorExperimental>> layouts_;
+  std::vector<raw_ptr<FlexLayout, DanglingUntriaged>> layouts_;
   View::Views children_;
 };
 

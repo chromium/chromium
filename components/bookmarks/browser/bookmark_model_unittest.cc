@@ -4001,7 +4001,7 @@ class BookmarkModelFaviconTest : public testing::Test,
 
  private:
   std::unique_ptr<BookmarkModel> model_;
-  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> updated_nodes_;
+  std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>> updated_nodes_;
 };
 
 // Test that BookmarkModel::OnFaviconsChanged() sends a notification that the

@@ -43,7 +43,7 @@ class CC_EXPORT ThrottleDecider {
 
  private:
   base::flat_map<viz::CompositorRenderPassId,
-                 raw_ptr<const viz::CompositorRenderPass, CtnExperimental>>
+                 raw_ptr<const viz::CompositorRenderPass, DanglingUntriaged>>
       id_to_pass_map_;
   // Ids of frame sinks that are qualified for throttling.
   base::flat_set<viz::FrameSinkId> ids_;

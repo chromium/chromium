@@ -130,7 +130,7 @@ class ReaderModeTabHelperTest : public ReaderModeTest {
   }
 
   // Returns the heuristic results from the UKM recorder.
-  std::vector<raw_ptr<const ukm::mojom::UkmEntry, VectorExperimental>>
+  std::vector<raw_ptr<const ukm::mojom::UkmEntry, DanglingUntriaged>>
   GetHeuristicResultEntries() {
     return test_ukm_recorder_.GetEntriesByName(
         IOS_ReaderMode_Heuristic_Result::kEntryName);

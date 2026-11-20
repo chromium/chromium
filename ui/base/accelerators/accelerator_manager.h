@@ -141,7 +141,7 @@ class COMPONENT_EXPORT(UI_BASE) AcceleratorManager {
     size_t size() const { return targets_.size(); }
 
    private:
-    std::list<raw_ptr<AcceleratorTarget, CtnExperimental>> targets_;
+    std::list<raw_ptr<AcceleratorTarget, DanglingUntriaged>> targets_;
     bool has_priority_handler_ = false;
   };
 

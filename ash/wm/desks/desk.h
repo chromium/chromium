@@ -79,7 +79,7 @@ class ASH_EXPORT Desk {
     ~ScopedContentUpdateNotificationDisabler();
 
    private:
-    std::vector<raw_ptr<Desk, VectorExperimental>> desks_;
+    std::vector<raw_ptr<Desk, DanglingUntriaged>> desks_;
 
     // Notifies all desks in `desks_` via `NotifyContentChanged()` when this is
     // destroyed and there are no other disablers.
@@ -114,8 +114,7 @@ class ASH_EXPORT Desk {
 
   const base::Uuid& uuid() const { return uuid_; }
 
-  const std::vector<raw_ptr<aura::Window, VectorExperimental>>& windows()
-      const {
+  const std::vector<raw_ptr<aura::Window, DanglingUntriaged>>& windows() const {
     return windows_;
   }
 
@@ -254,14 +253,14 @@ class ASH_EXPORT Desk {
   void RecordAndResetConsecutiveDailyVisits(bool being_removed);
 
   // Gets all app windows on this desk that should be closed.
-  std::vector<raw_ptr<aura::Window, VectorExperimental>> GetAllAppWindows()
+  std::vector<raw_ptr<aura::Window, DanglingUntriaged>> GetAllAppWindows()
       const;
 
   // Gets desk windows including floated window (if any).
   // Note that floated window isn't tracked in `windows_` but still "belongs" to
   // this desk, it's stored in the float container and managed by
   // `FloatController`.
-  std::vector<raw_ptr<aura::Window, VectorExperimental>>
+  std::vector<raw_ptr<aura::Window, DanglingUntriaged>>
   GetAllAssociatedWindows() const;
 
   // Construct stacking data for windows that appear on all desks. This is done
@@ -337,7 +336,7 @@ class ASH_EXPORT Desk {
   // Windows tracked on this desk. Clients of the DesksController can use this
   // list when they're notified of desk change events.
   // TODO(afakhry): Change this to track MRU windows on this desk.
-  std::vector<raw_ptr<aura::Window, VectorExperimental>> windows_;
+  std::vector<raw_ptr<aura::Window, DanglingUntriaged>> windows_;
 
   // The name given to this desk.
   std::u16string name_;

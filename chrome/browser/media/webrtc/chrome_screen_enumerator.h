@@ -38,7 +38,7 @@ class ChromeScreenEnumerator : public media::ScreenEnumerator {
 
 #if BUILDFLAG(IS_CHROMEOS)
   static void SetRootWindowsForTesting(
-      std::vector<raw_ptr<aura::Window, VectorExperimental>> root_windows);
+      std::vector<raw_ptr<aura::Window, DanglingUntriaged>> root_windows);
 #elif BUILDFLAG(IS_LINUX)
   static void SetDesktopCapturerForTesting(
       std::unique_ptr<webrtc::DesktopCapturer> capturer);

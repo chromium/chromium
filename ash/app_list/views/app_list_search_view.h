@@ -68,7 +68,7 @@ class ASH_EXPORT AppListSearchView : public views::View,
   // is an implementation detail.
   ui::Layer* GetPageAnimationLayer() const;
 
-  std::vector<raw_ptr<SearchResultContainerView, VectorExperimental>>
+  std::vector<raw_ptr<SearchResultContainerView, DanglingUntriaged>>
   result_container_views_for_test() {
     return result_container_views_;
   }
@@ -139,7 +139,7 @@ class ASH_EXPORT AppListSearchView : public views::View,
 
   // Containers for search result views. The contained views are owned by the
   // views hierarchy. Used by result_selection_controller_.
-  std::vector<raw_ptr<SearchResultContainerView, VectorExperimental>>
+  std::vector<raw_ptr<SearchResultContainerView, DanglingUntriaged>>
       result_container_views_;
 
   // The container of the image search results. This is owned by the views

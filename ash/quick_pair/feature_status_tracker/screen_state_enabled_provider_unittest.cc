@@ -60,7 +60,7 @@ class ScreenStateEnabledProviderTest : public AshTestBase {
   }
 
   void UpdateDisplays(bool external_on, bool internal_on) {
-    std::vector<raw_ptr<display::DisplaySnapshot, VectorExperimental>> outputs;
+    std::vector<raw_ptr<display::DisplaySnapshot, DanglingUntriaged>> outputs;
 
     if (internal_on) {
       outputs.push_back(internal_on_snapshot_.get());

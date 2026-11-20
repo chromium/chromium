@@ -145,7 +145,7 @@ class AndroidUsbDevice : public base::RefCountedThreadSafe<AndroidUsbDevice> {
   // Created sockets info
   uint32_t last_socket_id_;
   using AndroidUsbSockets =
-      std::map<uint32_t, raw_ptr<AndroidUsbSocket, CtnExperimental>>;
+      std::map<uint32_t, raw_ptr<AndroidUsbSocket, DanglingUntriaged>>;
   AndroidUsbSockets sockets_;
 
   // Outgoing bulk queue

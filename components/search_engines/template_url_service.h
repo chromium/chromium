@@ -698,10 +698,10 @@ class TemplateURLService final : public WebDataServiceConsumer,
   friend class ProfileInternalsHandler;
 
   using GUIDToTURL =
-      std::map<std::string, raw_ptr<TemplateURL, CtnExperimental>>;
+      std::map<std::string, raw_ptr<TemplateURL, DanglingUntriaged>>;
 
   using IdToTURL =
-      std::map<TemplateURLID, raw_ptr<TemplateURL, CtnExperimental>>;
+      std::map<TemplateURLID, raw_ptr<TemplateURL, DanglingUntriaged>>;
 
   // A mapping from keywords to the corresponding TemplateURLs.
   // This is a multimap, so the system can
@@ -712,7 +712,7 @@ class TemplateURLService final : public WebDataServiceConsumer,
   // value for each key must traverse through all matching items. The vast
   // majority of keywords should only have one item.
   using KeywordToTURL =
-      std::multimap<std::u16string, raw_ptr<TemplateURL, CtnExperimental>>;
+      std::multimap<std::u16string, raw_ptr<TemplateURL, DanglingUntriaged>>;
 
   // Declaration of values to be used in an enumerated histogram to tally
   // changes to the default search provider from various entry points. In
@@ -977,7 +977,7 @@ class TemplateURLService final : public WebDataServiceConsumer,
   IdToTURL id_to_turl_;
 
   // Mapping from keyword to TemplateURLs created by the policy.
-  base::flat_map<std::u16string, raw_ptr<TemplateURL, CtnExperimental>>
+  base::flat_map<std::u16string, raw_ptr<TemplateURL, DanglingUntriaged>>
       enterprise_search_keyword_to_turl_;
 
   OwnedTemplateURLVector template_urls_;

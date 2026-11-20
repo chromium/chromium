@@ -260,7 +260,7 @@ class ExtensionUtilWithSigninProfileUnittest : public ExtensionUtilUnittest {
 
     auto policy_service = std::make_unique<policy::PolicyServiceImpl>(
         std::vector<
-            raw_ptr<policy::ConfigurationPolicyProvider, VectorExperimental>>{
+            raw_ptr<policy::ConfigurationPolicyProvider, DanglingUntriaged>>{
             policy_provider()});
     signin_profile_ = testing_profile_manager()->CreateTestingProfile(
         chrome::kInitialProfile, /*prefs=*/nullptr,

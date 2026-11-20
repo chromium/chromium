@@ -77,7 +77,7 @@ class TestUkmRecorder : public UkmRecorderImpl {
                              base::RepeatingClosure on_add_entry);
 
   // Gets all of the entries recorded for entry name.
-  std::vector<raw_ptr<const mojom::UkmEntry, VectorExperimental>>
+  std::vector<raw_ptr<const mojom::UkmEntry, DanglingUntriaged>>
   GetEntriesByName(std::string_view entry_name) const;
 
   // Gets the data for all entries with given entry name, merged to one entry

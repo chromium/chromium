@@ -145,7 +145,7 @@ TEST_F(PaneTitleHandlerTest, CreateAndEvents) {
 
   handler.PreDispatchEvent(tree_source(), *event_data);
 
-  std::vector<raw_ptr<AccessibilityInfoDataWrapper, VectorExperimental>>
+  std::vector<raw_ptr<AccessibilityInfoDataWrapper, DanglingUntriaged>>
       children;
   tree_source()->GetRoot()->GetChildren(&children);
   ASSERT_EQ(2U, children.size());

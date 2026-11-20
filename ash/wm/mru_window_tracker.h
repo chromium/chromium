@@ -44,7 +44,7 @@ class ASH_EXPORT MruWindowTracker : public wm::ActivationChangeObserver,
   SANITIZED_OBJECT();
 
  public:
-  using WindowList = std::vector<raw_ptr<aura::Window, VectorExperimental>>;
+  using WindowList = std::vector<raw_ptr<aura::Window, DanglingUntriaged>>;
 
   MruWindowTracker();
 
@@ -106,7 +106,7 @@ class ASH_EXPORT MruWindowTracker : public wm::ActivationChangeObserver,
   // `WindowRestoreController`.
   void OnWindowAlteredByWindowRestore(aura::Window* window);
 
-  const std::vector<raw_ptr<aura::Window, VectorExperimental>>&
+  const std::vector<raw_ptr<aura::Window, DanglingUntriaged>>&
   GetMruWindowsForTesting() {
     return mru_windows_;
   }
@@ -128,7 +128,7 @@ class ASH_EXPORT MruWindowTracker : public wm::ActivationChangeObserver,
   // through, sorted such that the most recently used window comes last. Note
   // that this ordering differs from the lists returned by the
   // `Build*Window*List` functions, which are reversed.
-  std::vector<raw_ptr<aura::Window, VectorExperimental>> mru_windows_;
+  std::vector<raw_ptr<aura::Window, DanglingUntriaged>> mru_windows_;
 
   bool ignore_window_activations_ = false;
 };

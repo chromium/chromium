@@ -123,7 +123,7 @@ void ChromeExtensionsAPIClient::AddAdditionalValueStoreCaches(
     const scoped_refptr<value_store::ValueStoreFactory>& factory,
     SettingsChangedCallback observer,
     std::map<settings_namespace::Namespace,
-             raw_ptr<ValueStoreCache, CtnExperimental>>* caches) {
+             raw_ptr<ValueStoreCache, DanglingUntriaged>>* caches) {
   // Add support for chrome.storage.sync.
   (*caches)[settings_namespace::SYNC] =
       new SyncValueStoreCache(factory, observer, context->GetPath());

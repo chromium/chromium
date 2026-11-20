@@ -157,7 +157,7 @@ const UserMetricsAction* GetActionForLocationAndDisposition(
 
 // Check selection is not empty, nodes are not null nor repeated.
 void CheckSelectionIsValid(
-    const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>&
+    const std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>>&
         selection) {
   CHECK(!selection.empty());
   // Nodes must be not null.
@@ -177,7 +177,7 @@ BookmarkContextMenuController::BookmarkContextMenuController(
     BrowserWindowInterface* browser,
     Profile* profile,
     BookmarkLaunchLocation opened_from,
-    const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>&
+    const std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>>&
         selection,
     bool can_paste)
     : parent_window_(parent_window),
@@ -208,7 +208,7 @@ BookmarkContextMenuController::~BookmarkContextMenuController() {
 // static
 std::unique_ptr<BookmarkParentFolder>
 BookmarkContextMenuController::GetParentForNewNodes(
-    const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>&
+    const std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>>&
         selection) {
   if (selection.empty()) {
     return nullptr;
@@ -889,7 +889,7 @@ void BookmarkContextMenuController::AddSubmenuItems() {
 }
 
 bool IsSelectionPermanentBookmarkFolder(
-    const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>&
+    const std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>>&
         selection) {
   if (selection.size() == 1) {
     return selection[0]->is_permanent_node();

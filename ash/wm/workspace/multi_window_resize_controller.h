@@ -131,7 +131,7 @@ class ASH_EXPORT MultiWindowResizeController
 
     // Windows after |window2| that are to be resized. Determined at the time
     // the resize starts.
-    std::vector<raw_ptr<aura::Window, VectorExperimental>> other_windows;
+    std::vector<raw_ptr<aura::Window, DanglingUntriaged>> other_windows;
   };
 
   void CreateMouseWatcher();
@@ -160,7 +160,7 @@ class ASH_EXPORT MultiWindowResizeController
   void FindWindowsTouching(
       aura::Window* start,
       Direction direction,
-      std::vector<raw_ptr<aura::Window, VectorExperimental>>* others) const;
+      std::vector<raw_ptr<aura::Window, DanglingUntriaged>>* others) const;
 
   // Starts/Stops observing `window`.
   void StartObserving(aura::Window* window);

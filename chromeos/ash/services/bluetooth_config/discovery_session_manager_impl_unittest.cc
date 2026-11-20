@@ -177,7 +177,7 @@ class DiscoverySessionManagerImplTest : public testing::Test {
     return observer;
   }
 
-  std::vector<raw_ptr<FakeDevicePairingHandler, VectorExperimental>>&
+  std::vector<raw_ptr<FakeDevicePairingHandler, DanglingUntriaged>>&
   GetDevicePairingHandlers() {
     return fake_device_pairing_handler_factory_.device_pairing_handlers();
   }
@@ -189,7 +189,7 @@ class DiscoverySessionManagerImplTest : public testing::Test {
     FakeDevicePairingHandlerFactory() = default;
     ~FakeDevicePairingHandlerFactory() override = default;
 
-    std::vector<raw_ptr<FakeDevicePairingHandler, VectorExperimental>>&
+    std::vector<raw_ptr<FakeDevicePairingHandler, DanglingUntriaged>>&
     device_pairing_handlers() {
       return device_pairing_handlers_;
     }
@@ -211,7 +211,7 @@ class DiscoverySessionManagerImplTest : public testing::Test {
       return fake_device_pairing_handler;
     }
 
-    std::vector<raw_ptr<FakeDevicePairingHandler, VectorExperimental>>
+    std::vector<raw_ptr<FakeDevicePairingHandler, DanglingUntriaged>>
         device_pairing_handlers_;
   };
 

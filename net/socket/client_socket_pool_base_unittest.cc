@@ -286,7 +286,7 @@ class MockClientSocketFactory : public ClientSocketFactory {
 
  private:
   int allocation_count_ = 0;
-  std::vector<raw_ptr<TestConnectJob, VectorExperimental>> waiting_jobs_;
+  std::vector<raw_ptr<TestConnectJob, DanglingUntriaged>> waiting_jobs_;
 };
 
 class TestConnectJob : public ConnectJob {
@@ -2301,7 +2301,7 @@ TEST_F(ClientSocketPoolBaseTest, ReleaseSockets) {
   // Start job 1 (async OK)
   connect_job_factory_->set_job_type(TestConnectJob::kMockPendingJob);
 
-  std::vector<raw_ptr<TestSocketRequest, VectorExperimental>> request_order;
+  std::vector<raw_ptr<TestSocketRequest, DanglingUntriaged>> request_order;
   size_t completion_count;  // unused
   TestSocketRequest req1(&request_order, &completion_count);
   int rv = req1.handle()->Init(
@@ -2356,7 +2356,7 @@ TEST_F(ClientSocketPoolBaseTest, PendingJobCompletionOrder) {
   // First two jobs are async.
   connect_job_factory_->set_job_type(TestConnectJob::kMockPendingFailingJob);
 
-  std::vector<raw_ptr<TestSocketRequest, VectorExperimental>> request_order;
+  std::vector<raw_ptr<TestSocketRequest, DanglingUntriaged>> request_order;
   size_t completion_count;  // unused
   TestSocketRequest req1(&request_order, &completion_count);
   int rv = req1.handle()->Init(

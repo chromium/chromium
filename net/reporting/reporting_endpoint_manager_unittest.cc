@@ -73,27 +73,27 @@ class TestReportingCache : public ReportingCache {
     NOTREACHED();
   }
   void GetReports(
-      std::vector<raw_ptr<const ReportingReport, VectorExperimental>>*
+      std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>>*
           reports_out) const override {
     NOTREACHED();
   }
   base::Value GetReportsAsValue() const override { NOTREACHED(); }
-  std::vector<raw_ptr<const ReportingReport, VectorExperimental>>
+  std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>>
   GetReportsToDeliver() override {
     NOTREACHED();
   }
-  std::vector<raw_ptr<const ReportingReport, VectorExperimental>>
+  std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>>
   GetReportsToDeliverForSource(
       const base::UnguessableToken& reporting_source) override {
     NOTREACHED();
   }
   void ClearReportsPending(
-      const std::vector<raw_ptr<const ReportingReport, VectorExperimental>>&
+      const std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>>&
           reports) override {
     NOTREACHED();
   }
   void IncrementReportsAttempts(
-      const std::vector<raw_ptr<const ReportingReport, VectorExperimental>>&
+      const std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>>&
           reports) override {
     NOTREACHED();
   }
@@ -116,12 +116,12 @@ class TestReportingCache : public ReportingCache {
     NOTREACHED();
   }
   void RemoveReports(
-      const std::vector<raw_ptr<const ReportingReport, VectorExperimental>>&
+      const std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>>&
           reports) override {
     NOTREACHED();
   }
   void RemoveReports(
-      const std::vector<raw_ptr<const ReportingReport, VectorExperimental>>&
+      const std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>>&
           reports,
       bool delivery_success) override {
     NOTREACHED();

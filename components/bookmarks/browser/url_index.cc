@@ -93,7 +93,7 @@ void UrlIndex::GetNodesWithIconUrl(const GURL& icon_url,
 
 void UrlIndex::GetNodesByUrl(
     const GURL& url,
-    std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>* nodes) {
+    std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>>* nodes) {
   base::AutoLock url_lock(url_lock_);
   auto range = nodes_ordered_by_url_set_.equal_range<GURL>(url);
   nodes->insert(nodes->end(), range.first, range.second);

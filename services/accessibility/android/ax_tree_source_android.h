@@ -30,7 +30,7 @@ class AXTreeSourceAndroidTest;
 
 using AXTreeAndroidSerializer = ui::AXTreeSerializer<
     AccessibilityInfoDataWrapper*,
-    std::vector<raw_ptr<AccessibilityInfoDataWrapper, VectorExperimental>>,
+    std::vector<raw_ptr<AccessibilityInfoDataWrapper, DanglingUntriaged>>,
     ui::AXTreeUpdate*,
     ui::AXTreeData*,
     ui::AXNodeData>;
@@ -242,7 +242,7 @@ class AXTreeSourceAndroid
   // AXActionHandlerBase:
   void PerformAction(const ui::AXActionData& data) override;
 
-  std::vector<raw_ptr<AccessibilityInfoDataWrapper, VectorExperimental>>&
+  std::vector<raw_ptr<AccessibilityInfoDataWrapper, DanglingUntriaged>>&
   GetChildren(AccessibilityInfoDataWrapper* info_data) const;
 
   void ComputeAndCacheChildren(AccessibilityInfoDataWrapper* info_data) const;

@@ -255,7 +255,7 @@ AccessibilityInfoDataWrapper* GetSelectedNodeInfoFromAdapterViewEvent(
       return nullptr;
     }
 
-    std::vector<raw_ptr<AccessibilityInfoDataWrapper, VectorExperimental>>
+    std::vector<raw_ptr<AccessibilityInfoDataWrapper, DanglingUntriaged>>
         children;
     source_node->GetChildren(&children);
     if (index >= static_cast<int>(children.size())) {
@@ -269,7 +269,7 @@ AccessibilityInfoDataWrapper* GetSelectedNodeInfoFromAdapterViewEvent(
   // Find a node with focusable property.
   while (selected_node && !GetBooleanProperty(selected_node->GetNode(),
                                               AXBooleanProperty::FOCUSABLE)) {
-    std::vector<raw_ptr<AccessibilityInfoDataWrapper, VectorExperimental>>
+    std::vector<raw_ptr<AccessibilityInfoDataWrapper, DanglingUntriaged>>
         children;
     selected_node->GetChildren(&children);
     if (children.size() != 1) {

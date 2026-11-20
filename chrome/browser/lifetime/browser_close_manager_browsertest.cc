@@ -334,7 +334,7 @@ class BrowserCloseManagerBrowserTest : public InProcessBrowserTest {
     }));
   }
 
-  std::vector<raw_ptr<BrowserWindowInterface, VectorExperimental>> browsers_;
+  std::vector<raw_ptr<BrowserWindowInterface, DanglingUntriaged>> browsers_;
 };
 
 IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest, TestSingleTabShutdown) {

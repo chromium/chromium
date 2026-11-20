@@ -45,7 +45,7 @@ struct QueryFields {
 class VectorIterator {
  public:
   explicit VectorIterator(
-      std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>* nodes);
+      std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>>* nodes);
   VectorIterator(const VectorIterator& other) = delete;
   VectorIterator& operator=(const VectorIterator& other) = delete;
   ~VectorIterator();
@@ -53,8 +53,8 @@ class VectorIterator {
   const BookmarkNode* Next();
 
  private:
-  raw_ptr<std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>> nodes_;
-  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>::iterator
+  raw_ptr<std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>>> nodes_;
+  std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>>::iterator
       current_;
 };
 
@@ -74,7 +74,7 @@ void CloneBookmarkNode(BookmarkModel* model,
 // `source`.
 void CopyToClipboard(
     BookmarkModel* model,
-    const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>& nodes,
+    const std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>>& nodes,
     bool remove_nodes,
     metrics::BookmarkEditSource source,
     bool is_off_the_record);
@@ -204,7 +204,7 @@ bool IsDescendantOf(const BookmarkNode* node, const BookmarkNode* root);
 
 // Returns true if any node in `list` is a descendant of `root`.
 bool HasDescendantsOf(
-    const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>& list,
+    const std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>>& list,
     const BookmarkNode* root);
 
 // Returns the parent to add new nodes to, never returns null (as long as

@@ -385,7 +385,7 @@ TEST_F(PlatformNotificationServiceTest, RecordNotificationUkmEvent) {
                            history::SOURCE_BROWSED);
 
   // Initially there are no UKM entries.
-  std::vector<raw_ptr<const ukm::mojom::UkmEntry, VectorExperimental>> entries =
+  std::vector<raw_ptr<const ukm::mojom::UkmEntry, DanglingUntriaged>> entries =
       recorder_->GetEntriesByName(ukm::builders::Notification::kEntryName);
   EXPECT_EQ(0u, entries.size());
 

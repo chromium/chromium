@@ -64,7 +64,7 @@ class VIEWS_EXPORT SublevelManager : public WidgetObserver {
   // to maintain the sublevel ordering. This methods assumes that `child` is not
   // in `children_`.
   using ChildIterator =
-      std::vector<raw_ptr<Widget, VectorExperimental>>::const_iterator;
+      std::vector<raw_ptr<Widget, DanglingUntriaged>>::const_iterator;
   ChildIterator FindInsertPosition(Widget* child) const;
 
   // The owner widget.
@@ -81,7 +81,7 @@ class VIEWS_EXPORT SublevelManager : public WidgetObserver {
   // within each level subsequence, but subsequences may interleave with each
   // other. For example, "[(1,0), (2,0), (2,1), (1,1), (1,2)]" is a possible
   // sequence of (level, sublevel).
-  std::vector<raw_ptr<Widget, VectorExperimental>> children_;
+  std::vector<raw_ptr<Widget, DanglingUntriaged>> children_;
 };
 
 }  // namespace views

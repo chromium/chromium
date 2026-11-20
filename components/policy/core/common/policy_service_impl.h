@@ -43,7 +43,7 @@ class POLICY_EXPORT PolicyServiceImpl
       public ConfigurationPolicyProvider::Observer {
  public:
   using Providers =
-      std::vector<raw_ptr<ConfigurationPolicyProvider, VectorExperimental>>;
+      std::vector<raw_ptr<ConfigurationPolicyProvider, DanglingUntriaged>>;
   using Migrators = std::vector<std::unique_ptr<PolicyMigrator>>;
 
   static constexpr char kInitTimeHistogramPrefix[] =
@@ -222,7 +222,7 @@ class POLICY_EXPORT PolicyServiceImpl
 
   // Set of providers that have a pending update that was triggered by a
   // call to RefreshPolicies().
-  std::set<raw_ptr<ConfigurationPolicyProvider, SetExperimental>>
+  std::set<raw_ptr<ConfigurationPolicyProvider, DanglingUntriaged>>
       refresh_pending_;
 
   // List of callbacks to invoke once all providers refresh after a
@@ -239,7 +239,7 @@ class POLICY_EXPORT PolicyServiceImpl
   // Note that this is intentionally a set - if multiple updates from the same
   // provider come in faster than they can be processed, they should only
   // trigger one notification to |provider_update_observers_|.
-  std::set<raw_ptr<ConfigurationPolicyProvider, SetExperimental>>
+  std::set<raw_ptr<ConfigurationPolicyProvider, DanglingUntriaged>>
       provider_update_pending_;
 
   // If this is true, IsInitializationComplete should be returning false for all

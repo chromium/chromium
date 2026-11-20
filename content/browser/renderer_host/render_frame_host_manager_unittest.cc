@@ -4414,7 +4414,7 @@ class RenderFrameHostManagerAdTaggingSignalTest
  private:
   // The set of proxies that when created, the replication state of that frame
   // indicates it's an ad.
-  std::set<raw_ptr<RenderFrameProxyHost, SetExperimental>>
+  std::set<raw_ptr<RenderFrameProxyHost, DanglingUntriaged>>
       ad_frames_on_proxy_created_;
 
   std::map<RenderFrameProxyHost*,

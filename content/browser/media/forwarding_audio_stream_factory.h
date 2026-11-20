@@ -176,7 +176,7 @@ class CONTENT_EXPORT ForwardingAudioStreamFactory final
 
     InputStreamBrokerMap inputs_;
     StreamBrokerSet outputs_;
-    base::flat_set<raw_ptr<AudioStreamBroker::LoopbackSink, CtnExperimental>>
+    base::flat_set<raw_ptr<AudioStreamBroker::LoopbackSink, DanglingUntriaged>>
         loopback_sinks_;
 
     base::WeakPtrFactory<ForwardingAudioStreamFactory::Core> weak_ptr_factory_{

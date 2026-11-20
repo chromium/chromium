@@ -95,9 +95,9 @@ std::u16string GetExpectedPrefix() {
                                     std::u16string());
 }
 
-std::vector<raw_ptr<task_manager::WebContentsTag, VectorExperimental>>
+std::vector<raw_ptr<task_manager::WebContentsTag, DanglingUntriaged>>
 GetTrackedTags() {
-  std::vector<raw_ptr<task_manager::WebContentsTag, VectorExperimental>> tags;
+  std::vector<raw_ptr<task_manager::WebContentsTag, DanglingUntriaged>> tags;
   // Filter WebUI Omnibox and WebUI Toolbar out from the tracked tags so that
   // the tests don't fail when they are in the background.
   std::ranges::copy_if(

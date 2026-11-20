@@ -55,11 +55,11 @@ class ChromeAppListModelUpdater : public AppListModelUpdater,
   void SetStatus(ash::AppListModelStatus status) override;
   void SetSearchEngineIsGoogle(bool is_google) override;
   void PublishSearchResults(
-      const std::vector<raw_ptr<ChromeSearchResult, VectorExperimental>>&
+      const std::vector<raw_ptr<ChromeSearchResult, DanglingUntriaged>>&
           results,
       const std::vector<ash::AppListSearchResultCategory>& categories) override;
   void ClearSearchResults() override;
-  std::vector<raw_ptr<ChromeSearchResult, VectorExperimental>>
+  std::vector<raw_ptr<ChromeSearchResult, DanglingUntriaged>>
   GetPublishedSearchResultsForTest() override;
   void SetAccessibleName(const std::string& id,
                          const std::string& name) override;
@@ -228,7 +228,7 @@ class ChromeAppListModelUpdater : public AppListModelUpdater,
   bool is_active_ = false;
 
   // The most recently list of search results.
-  std::vector<raw_ptr<ChromeSearchResult, VectorExperimental>>
+  std::vector<raw_ptr<ChromeSearchResult, DanglingUntriaged>>
       published_results_;
   // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
   base::ObserverList<

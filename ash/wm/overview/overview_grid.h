@@ -79,7 +79,7 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
 
   OverviewGrid(
       aura::Window* root_window,
-      const std::vector<raw_ptr<aura::Window, VectorExperimental>>& window_list,
+      const std::vector<raw_ptr<aura::Window, DanglingUntriaged>>& window_list,
       OverviewSession* overview_session,
       base::WeakPtr<DesksWindowOcclusionCalculator>
           window_occlusion_calculator);
@@ -621,7 +621,7 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // the overview item that represents the `windows` is being added to `this`,
   // `increment` is true, and false if being removed.
   void UpdateNumSavedDeskUnsupportedWindows(
-      const std::vector<raw_ptr<aura::Window, VectorExperimental>>& windows,
+      const std::vector<raw_ptr<aura::Window, DanglingUntriaged>>& windows,
       bool increment);
 
   // Returns the height of `desks_bar_view_`.

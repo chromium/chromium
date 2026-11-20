@@ -32,7 +32,7 @@ class FakeNearbyShareCertificateStorage : public NearbyShareCertificateStorage {
 
     // Returns all FakeNearbyShareCertificateStorage instances created by
     // CreateInstance().
-    std::vector<raw_ptr<FakeNearbyShareCertificateStorage, VectorExperimental>>&
+    std::vector<raw_ptr<FakeNearbyShareCertificateStorage, DanglingUntriaged>>&
     instances() {
       return instances_;
     }
@@ -52,7 +52,7 @@ class FakeNearbyShareCertificateStorage : public NearbyShareCertificateStorage {
         leveldb_proto::ProtoDatabaseProvider* proto_database_provider,
         const base::FilePath& profile_path) override;
 
-    std::vector<raw_ptr<FakeNearbyShareCertificateStorage, VectorExperimental>>
+    std::vector<raw_ptr<FakeNearbyShareCertificateStorage, DanglingUntriaged>>
         instances_;
     raw_ptr<PrefService, DanglingUntriaged> latest_pref_service_ = nullptr;
     raw_ptr<leveldb_proto::ProtoDatabaseProvider>

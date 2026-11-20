@@ -395,7 +395,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
       base::OnceCallback<void(std::unique_ptr<BluetoothDiscoverySession>)>;
   using DeviceList = std::vector<BluetoothDevice*>;
   using ConstDeviceList =
-      std::vector<raw_ptr<const BluetoothDevice, VectorExperimental>>;
+      std::vector<raw_ptr<const BluetoothDevice, DanglingUntriaged>>;
   using UUIDList = std::vector<BluetoothUUID>;
   using CreateServiceCallback =
       base::OnceCallback<void(scoped_refptr<BluetoothSocket>)>;
@@ -980,7 +980,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
   // will remove itself from this list when it gets destroyed or becomes
   // inactive by calling DiscoverySessionBecameInactive(), hence no pointers to
   // deallocated sessions are kept.
-  std::set<raw_ptr<BluetoothDiscoverySession, SetExperimental>>
+  std::set<raw_ptr<BluetoothDiscoverySession, DanglingUntriaged>>
       discovery_sessions_;
 
  private:

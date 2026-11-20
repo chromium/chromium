@@ -268,7 +268,7 @@ void ReparentAllWindows(aura::Window* src, aura::Window* dst) {
     }
   }
 
-  const std::vector<raw_ptr<aura::Window, VectorExperimental>> mru_list =
+  const std::vector<raw_ptr<aura::Window, DanglingUntriaged>> mru_list =
       Shell::Get()->mru_window_tracker()->BuildWindowForCycleList(kAllDesks);
   for (int id : container_ids) {
     aura::Window* src_container = src->GetChildById(id);

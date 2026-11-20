@@ -244,7 +244,7 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
 
   void LogSessionEvent(SessionEvent event);
 
-  std::vector<raw_ptr<views::View, VectorExperimental>> GetButtons();
+  std::vector<raw_ptr<views::View, DanglingUntriaged>> GetButtons();
 
   void OnTitleTextChanged();
 

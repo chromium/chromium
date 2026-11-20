@@ -216,7 +216,7 @@ class ManagementPolicy {
   using ProviderFunction = bool (Provider::*)(const Extension*,
                                               std::u16string*) const;
 
-  using ProviderList = std::set<raw_ptr<Provider, SetExperimental>>;
+  using ProviderList = std::set<raw_ptr<Provider, DanglingUntriaged>>;
 
   // This is a helper to apply a method in the Provider interface to each of
   // the Provider objects in `providers_`. The return value of this function

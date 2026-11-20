@@ -54,7 +54,7 @@ class TemplateURLTableModel {
 
  private:
   // The entries.
-  std::vector<raw_ptr<TemplateURL, VectorExperimental>> entries_;
+  std::vector<raw_ptr<TemplateURL, DanglingUntriaged>> entries_;
 
   // The model we're displaying entries from.
   raw_ptr<TemplateURLService> template_url_service_;

@@ -142,7 +142,7 @@ constexpr auto kDeskDefaultNameIds = std::to_array<int>({
 // session such that the most-recently used window is added first. If
 // The windows will animate to their positions in the overview grid.
 void AppendWindowsToOverview(
-    const std::vector<raw_ptr<aura::Window, VectorExperimental>>& windows) {
+    const std::vector<raw_ptr<aura::Window, DanglingUntriaged>>& windows) {
   DCHECK(Shell::Get()->overview_controller()->InOverviewSession());
 
   // TODO(dandersson): See if we can remove this code and just let
@@ -199,9 +199,9 @@ void RemoveAllWindowsFromOverview() {
 // given windows will be updated, while the rest will remain unchanged. Either
 // or both window lists can be empty.
 void MaybeUpdateShelfItems(
-    const std::vector<raw_ptr<aura::Window, VectorExperimental>>&
+    const std::vector<raw_ptr<aura::Window, DanglingUntriaged>>&
         windows_on_inactive_desk,
-    const std::vector<raw_ptr<aura::Window, VectorExperimental>>&
+    const std::vector<raw_ptr<aura::Window, DanglingUntriaged>>&
         windows_on_active_desk) {
   if (!features::IsPerDeskShelfEnabled())
     return;
@@ -2077,7 +2077,7 @@ void DesksController::FinalizeDeskRemoval(RemovedDeskData* removed_desk_data) {
       Desk::ScopedContentUpdateNotificationDisabler(
           /*desks=*/{removed_desk}, /*notify_when_destroyed=*/false);
 
-  std::vector<raw_ptr<aura::Window, VectorExperimental>> app_windows =
+  std::vector<raw_ptr<aura::Window, DanglingUntriaged>> app_windows =
       removed_desk->GetAllAppWindows();
 
   // We use `closing_window_tracker` to track all app windows that should be

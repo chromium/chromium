@@ -354,8 +354,8 @@ TEST_F(BluetoothGattApplicationServiceProviderTest, GetManagedObjects) {
   std::unique_ptr<BluetoothGattApplicationServiceProviderImpl> app_provider =
       std::make_unique<BluetoothGattApplicationServiceProviderImpl>(
           nullptr, dbus::ObjectPath(kAppObjectPath),
-          std::map<dbus::ObjectPath,
-                   raw_ptr<BluetoothLocalGattServiceBlueZ, CtnExperimental>>());
+          std::map<dbus::ObjectPath, raw_ptr<BluetoothLocalGattServiceBlueZ,
+                                             DanglingUntriaged>>());
   CreateFakeAttributes(app_provider.get());
 
   dbus::MethodCall method_call("com.example.Interface", "SomeMethod");
@@ -369,8 +369,8 @@ TEST_F(BluetoothGattApplicationServiceProviderTest, SendValueChanged) {
   std::unique_ptr<BluetoothGattApplicationServiceProviderImpl> app_provider =
       std::make_unique<BluetoothGattApplicationServiceProviderImpl>(
           nullptr, dbus::ObjectPath(kAppObjectPath),
-          std::map<dbus::ObjectPath,
-                   raw_ptr<BluetoothLocalGattServiceBlueZ, CtnExperimental>>());
+          std::map<dbus::ObjectPath, raw_ptr<BluetoothLocalGattServiceBlueZ,
+                                             DanglingUntriaged>>());
   const std::string& kServicePath =
       CreateFakeService(app_provider.get(), "service0");
   const std::string& kCharacteristicPath = CreateFakeCharacteristic(

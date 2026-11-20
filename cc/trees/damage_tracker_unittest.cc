@@ -397,7 +397,7 @@ class DamageTrackerTest : public LayerTreeImplTestBase, public testing::Test {
   }
 
   // Stores result of CreateTestTreeWithOneSurface().
-  std::vector<raw_ptr<TestLayerImpl, VectorExperimental>> child_layers_;
+  std::vector<raw_ptr<TestLayerImpl, DanglingUntriaged>> child_layers_;
 
   // Store result of CreateTestTreeWithTwoSurfaces().
   raw_ptr<TestLayerImpl> child1_ = nullptr;

@@ -65,7 +65,7 @@ std::string RefreshRateOverrideToString(
 }
 
 int GetDisplayPower(
-    const std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>& displays,
+    const std::vector<raw_ptr<DisplaySnapshot, DanglingUntriaged>>& displays,
     chromeos::DisplayPowerState state,
     std::vector<bool>* display_power) {
   int num_on_displays = 0;

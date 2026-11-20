@@ -68,7 +68,7 @@ IN_PROC_BROWSER_TEST_F(PermissionUkmBrowserTest, IgnoredPromptRecordedInUkm) {
   ASSERT_FALSE(prompt_factory_->is_visible());
 
   // Verify UKM.
-  std::vector<raw_ptr<const ukm::mojom::UkmEntry, VectorExperimental>> entries =
+  std::vector<raw_ptr<const ukm::mojom::UkmEntry, DanglingUntriaged>> entries =
       ukm_recorder.GetEntriesByName(ukm::builders::Permission::kEntryName);
   ASSERT_EQ(1u, entries.size());
   const ukm::mojom::UkmEntry* entry = entries.front().get();

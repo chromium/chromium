@@ -37,7 +37,7 @@ class BookmarkContextMenuControllerDelegate {
   virtual void WillExecuteCommand(
       int command_id,
       const std::vector<raw_ptr<const bookmarks::BookmarkNode,
-                                VectorExperimental>>& bookmarks) {}
+                                DanglingUntriaged>>& bookmarks) {}
 
   // Sent after any command from the menu is executed.
   virtual void DidExecuteCommand(int command_id) {}
@@ -62,8 +62,8 @@ class BookmarkContextMenuController
       BrowserWindowInterface* browser,
       Profile* profile,
       BookmarkLaunchLocation opened_from,
-      const std::vector<raw_ptr<const bookmarks::BookmarkNode,
-                                VectorExperimental>>& selection,
+      const std::vector<
+          raw_ptr<const bookmarks::BookmarkNode, DanglingUntriaged>>& selection,
       bool can_paste);
 
   BookmarkContextMenuController(const BookmarkContextMenuController&) = delete;
@@ -81,7 +81,7 @@ class BookmarkContextMenuController
   // `selection[0]->parent` is returned.
   static std::unique_ptr<BookmarkParentFolder> GetParentForNewNodes(
       const std::vector<raw_ptr<const bookmarks::BookmarkNode,
-                                VectorExperimental>>& selection);
+                                DanglingUntriaged>>& selection);
 
   // ui::SimpleMenuModel::Delegate implementation:
   bool IsCommandIdChecked(int command_id) const override;
@@ -140,7 +140,7 @@ class BookmarkContextMenuController
   const raw_ptr<BrowserWindowInterface> browser_;
   raw_ptr<Profile> profile_;
   const BookmarkLaunchLocation opened_from_;
-  std::vector<raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>
+  std::vector<raw_ptr<const bookmarks::BookmarkNode, DanglingUntriaged>>
       selection_;
   const raw_ptr<BookmarkMergedSurfaceService> bookmark_service_;
   std::unique_ptr<ui::SimpleMenuModel> menu_model_;
@@ -157,6 +157,6 @@ class BookmarkContextMenuController
 // type.
 bool IsSelectionPermanentBookmarkFolder(
     const std::vector<
-        raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>& selection);
+        raw_ptr<const bookmarks::BookmarkNode, DanglingUntriaged>>& selection);
 
 #endif  // CHROME_BROWSER_UI_BOOKMARKS_BOOKMARK_CONTEXT_MENU_CONTROLLER_H_

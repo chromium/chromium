@@ -178,7 +178,7 @@ class VIEWS_EXPORT ViewAXPlatformNodeDelegate
   struct ChildWidgetsResult final {
     ChildWidgetsResult();
     ChildWidgetsResult(
-        std::vector<raw_ptr<Widget, VectorExperimental>> child_widgets,
+        std::vector<raw_ptr<Widget, DanglingUntriaged>> child_widgets,
         bool is_tab_modal_showing);
     ChildWidgetsResult(const ChildWidgetsResult& other);
     ~ChildWidgetsResult();
@@ -191,7 +191,7 @@ class VIEWS_EXPORT ViewAXPlatformNodeDelegate
     // This focused-widget projection supports the "read title (NVDAKey+T)" and
     // "read window (NVDAKey+B)" commands in the NVDA screen reader by hiding
     // the rest of the UI from the accessibility tree.
-    std::vector<raw_ptr<Widget, VectorExperimental>> child_widgets;
+    std::vector<raw_ptr<Widget, DanglingUntriaged>> child_widgets;
 
     // Whether child_widgets contains only the selected focused widget.
     bool is_tab_modal_showing = false;
@@ -200,7 +200,7 @@ class VIEWS_EXPORT ViewAXPlatformNodeDelegate
   // Uses Views::GetViewsInGroup to find nearby Views in the same group.
   // Searches from the View's parent to include siblings within that group.
   void GetViewsInGroupForSet(
-      std::vector<raw_ptr<View, VectorExperimental>>* views_in_group) const;
+      std::vector<raw_ptr<View, DanglingUntriaged>>* views_in_group) const;
 
   // Returns visible owned widgets accepted by ShouldIncludeChildWidget when
   // attached to a root view, applying focused-child selection.

@@ -71,7 +71,7 @@ void CaptureController::SetCapture(aura::Window* new_capture_window) {
 
   // Copy the map in case it's modified out from under us.
   std::map<aura::Window*,
-           raw_ptr<aura::client::CaptureDelegate, CtnExperimental>>
+           raw_ptr<aura::client::CaptureDelegate, DanglingUntriaged>>
       delegates = delegates_;
 
   base::WeakPtr<aura::Window> new_capture_window_weak =

@@ -130,7 +130,7 @@ class NET_EXPORT_PRIVATE MemBackendImpl final : public Backend,
   friend class MemIterator;
 
   using EntryMap =
-      std::unordered_map<std::string, raw_ptr<MemEntryImpl, CtnExperimental>>;
+      std::unordered_map<std::string, raw_ptr<MemEntryImpl, DanglingUntriaged>>;
 
   // Performs general initialization for this current instance of the cache.
   void Init(int32_t max_bytes);

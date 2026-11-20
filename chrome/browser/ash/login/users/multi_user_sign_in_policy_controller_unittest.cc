@@ -217,7 +217,7 @@ class MultiUserSignInPolicyControllerTest : public testing::Test {
   std::unique_ptr<user_manager::MultiUserSignInPolicyController> controller_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
 
-  std::vector<raw_ptr<TestingProfile, VectorExperimental>> user_profiles_;
+  std::vector<raw_ptr<TestingProfile, DanglingUntriaged>> user_profiles_;
 
   std::vector<AccountId> test_users_;
 };

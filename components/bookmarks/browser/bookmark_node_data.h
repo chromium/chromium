@@ -112,8 +112,7 @@ struct BookmarkNodeData {
   // Created a BookmarkNodeData populated from the arguments.
   explicit BookmarkNodeData(const BookmarkNode* node);
   explicit BookmarkNodeData(
-      const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>&
-          nodes);
+      const std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>>& nodes);
 
   ~BookmarkNodeData();
 
@@ -124,8 +123,7 @@ struct BookmarkNodeData {
   // Returns true if the operation succeeds, which also implies that this
   // contains valid data (is non-empty).
   bool ReadFromVector(
-      const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>&
-          nodes);
+      const std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>>& nodes);
 
   // Creates a single-bookmark DragData from url/title pair.
   // Returns true if the operation succeeds, which also implies that this
@@ -171,7 +169,7 @@ struct BookmarkNodeData {
   // created from the same profile then the nodes from the model are returned.
   // If the nodes can't be found (may have been deleted), an empty vector is
   // returned.
-  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> GetNodes(
+  std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>> GetNodes(
       BookmarkModel* model,
       const base::FilePath& profile_path) const;
 

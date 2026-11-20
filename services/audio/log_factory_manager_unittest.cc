@@ -74,7 +74,7 @@ class MockAudioLogFactory : public media::mojom::AudioLogFactory {
  private:
   mojo::Receiver<media::mojom::AudioLogFactory> receiver_;
   size_t current_mock_log_ = 0;
-  std::vector<raw_ptr<MockAudioLog, VectorExperimental>> mock_logs_;
+  std::vector<raw_ptr<MockAudioLog, DanglingUntriaged>> mock_logs_;
 };
 
 }  // namespace

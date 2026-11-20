@@ -318,7 +318,7 @@ class CaptureHandleBrowserTest : public WebRtcTestBase {
   };
 
   // Checked for no unconsumed events.
-  std::vector<raw_ptr<WebContents, VectorExperimental>> event_sinks_;
+  std::vector<raw_ptr<WebContents, DanglingUntriaged>> event_sinks_;
 
   // Three servers to create three origins (different ports). One server for the
   // captured page, one for the top-level capturer and one for the embedded

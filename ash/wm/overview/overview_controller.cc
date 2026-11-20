@@ -69,7 +69,7 @@ constexpr base::TimeDelta kOcclusionPauseDurationForEnd =
 OverviewEnterExitType MaybeOverrideEnterExitType(
     OverviewEnterExitType original_type,
     bool enter,
-    const std::vector<raw_ptr<aura::Window, VectorExperimental>>& windows) {
+    const std::vector<raw_ptr<aura::Window, DanglingUntriaged>>& windows) {
   if (original_type != OverviewEnterExitType::kNormal) {
     return original_type;
   }
@@ -337,7 +337,7 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
     return w == wm::GetTransientRoot(w) &&
            !WindowState::Get(w)->IsUserPositionable();
   };
-  std::vector<raw_ptr<aura::Window, VectorExperimental>> hide_windows(
+  std::vector<raw_ptr<aura::Window, DanglingUntriaged>> hide_windows(
       windows.size());
   auto end = std::ranges::copy_if(windows, hide_windows.begin(),
                                   should_hide_for_overview)
@@ -384,8 +384,8 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
       // windows without animations to prevent them from getting maximized
       // during overview exit. Minimized widgets will get created in their
       // place, and those widgets will fade out of overview.
-      std::vector<raw_ptr<aura::Window, VectorExperimental>>
-          windows_to_minimize(windows.size());
+      std::vector<raw_ptr<aura::Window, DanglingUntriaged>> windows_to_minimize(
+          windows.size());
       auto it = std::ranges::copy_if(
                     windows, windows_to_minimize.begin(),
                     [](aura::Window* window) {

@@ -93,7 +93,7 @@ class InProcessBrowserTestMixinHost final {
   // simpler.
   friend class InProcessBrowserTestMixin;
 
-  std::vector<raw_ptr<InProcessBrowserTestMixin, VectorExperimental>> mixins_;
+  std::vector<raw_ptr<InProcessBrowserTestMixin, DanglingUntriaged>> mixins_;
 };
 
 #endif  // CHROME_TEST_BASE_IN_PROCESS_BROWSER_TEST_MIXIN_H_

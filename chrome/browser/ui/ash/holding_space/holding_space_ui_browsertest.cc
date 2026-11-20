@@ -473,7 +473,7 @@ class HoldingSpaceUiDragAndDropBrowserTest
     // Cache a reference to preview layers.
     const ui::Layer* previews_container_layer =
         test_api().GetPreviewsTrayIcon()->layer()->children()[0];
-    const std::vector<raw_ptr<ui::Layer, VectorExperimental>>& preview_layers =
+    const std::vector<raw_ptr<ui::Layer, DanglingUntriaged>>& preview_layers =
         previews_container_layer->children();
 
     // Iterate over the layers for each preview.

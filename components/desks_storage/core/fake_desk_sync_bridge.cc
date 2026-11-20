@@ -28,10 +28,10 @@ DeskModel::GetAllEntriesResult FakeDeskSyncBridge::GetAllEntries() {
   if (!IsReady()) {
     return GetAllEntriesResult(
         GetAllEntriesStatus::kFailure,
-        std::vector<raw_ptr<const ash::DeskTemplate, VectorExperimental>>());
+        std::vector<raw_ptr<const ash::DeskTemplate, DanglingUntriaged>>());
   }
 
-  std::vector<raw_ptr<const ash::DeskTemplate, VectorExperimental>> entries;
+  std::vector<raw_ptr<const ash::DeskTemplate, DanglingUntriaged>> entries;
 
   for (const auto& it : policy_entries_) {
     entries.push_back(it.get());
@@ -95,7 +95,7 @@ void FakeDeskSyncBridge::AddOrUpdateEntry(
                             std::move(new_entry));
     return;
   }
-  std::vector<raw_ptr<const ash::DeskTemplate, VectorExperimental>>
+  std::vector<raw_ptr<const ash::DeskTemplate, DanglingUntriaged>>
       added_or_updated;
   // When a user creates a desk template locally, the desk template has `kUser`
   // as its source. Only user desk templates should be saved to Sync.
@@ -212,7 +212,7 @@ const ash::DeskTemplate* FakeDeskSyncBridge::GetUserEntryByUUID(
 }
 
 void FakeDeskSyncBridge::NotifyRemoteDeskTemplateAddedOrUpdated(
-    const std::vector<raw_ptr<const ash::DeskTemplate, VectorExperimental>>&
+    const std::vector<raw_ptr<const ash::DeskTemplate, DanglingUntriaged>>&
         new_entries) {
   if (new_entries.empty()) {
     return;

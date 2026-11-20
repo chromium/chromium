@@ -529,7 +529,7 @@ int GetTooltipID(DeskTemplateType type, TooltipStatus status) {
 
 OverviewGrid::OverviewGrid(
     aura::Window* root_window,
-    const std::vector<raw_ptr<aura::Window, VectorExperimental>>& windows,
+    const std::vector<raw_ptr<aura::Window, DanglingUntriaged>>& windows,
     OverviewSession* overview_session,
     base::WeakPtr<DesksWindowOcclusionCalculator> window_occlusion_calculator)
     : root_window_(root_window),
@@ -3182,7 +3182,7 @@ void OverviewGrid::RefreshDesksWidgets(bool visible) {
 }
 
 void OverviewGrid::UpdateNumSavedDeskUnsupportedWindows(
-    const std::vector<raw_ptr<aura::Window, VectorExperimental>>& windows,
+    const std::vector<raw_ptr<aura::Window, DanglingUntriaged>>& windows,
     bool increment) {
   if (!saved_desk_util::ShouldShowSavedDesksOptions()) {
     return;

@@ -47,7 +47,7 @@ class DesktopBookmarkBarActionAdapter : public bookmark_bar_api::ActionAdapter,
   // BookmarkContextMenuObserver overrides:
   void WillRemoveBookmarks(
       const std::vector<raw_ptr<const bookmarks::BookmarkNode,
-                                VectorExperimental>>& bookmarks) override {}
+                                DanglingUntriaged>>& bookmarks) override {}
   void DidRemoveBookmarks() override {}
   void OnContextMenuClosed() override;
 

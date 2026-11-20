@@ -103,7 +103,7 @@ class AX_BASE_EXPORT AXActionHandlerRegistry final {
   std::map<FrameID, AXTreeID> frame_to_ax_tree_id_map_;
 
   // Maps an id to its handler.
-  std::map<AXTreeID, raw_ptr<AXActionHandlerBase, CtnExperimental>>
+  std::map<AXTreeID, raw_ptr<AXActionHandlerBase, DanglingUntriaged>>
       id_to_action_handler_;
 
   // Tracks all observers.

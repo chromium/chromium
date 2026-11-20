@@ -753,10 +753,10 @@ bool ContainsDuplicateBookmarks(int profile) {
     if (node->is_folder()) {
       continue;
     }
-    std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes =
+    std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>> nodes =
         GetBookmarkModel(profile)->GetNodesByURL(node->url());
     EXPECT_GE(nodes.size(), 1U);
-    for (std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>::
+    for (std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>>::
              const_iterator it = nodes.begin();
          it != nodes.end(); ++it) {
       if (node->id() != (*it)->id() && node->parent() == (*it)->parent() &&
@@ -773,7 +773,7 @@ bool HasNodeWithURL(int profile, const GURL& url) {
 }
 
 const BookmarkNode* GetUniqueNodeByURL(int profile, const GURL& url) {
-  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes =
+  std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>> nodes =
       GetBookmarkModel(profile)->GetNodesByURL(url);
   EXPECT_EQ(1U, nodes.size());
   if (nodes.empty()) {
@@ -793,7 +793,7 @@ size_t CountBookmarksWithTitlesMatching(int profile,
 }
 
 size_t CountBookmarksWithUrlsMatching(int profile, const GURL& url) {
-  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes =
+  std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>> nodes =
       GetBookmarkModel(profile)->GetNodesByURL(url);
   return nodes.size();
 }

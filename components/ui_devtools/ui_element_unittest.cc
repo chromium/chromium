@@ -37,12 +37,12 @@ class FakeUIElementDelegate : public UIElementDelegate {
 
   void OnUIElementBoundsChanged(UIElement* ui_element) override {}
 
-  const std::vector<raw_ptr<UIElement, VectorExperimental>>& elements() {
+  const std::vector<raw_ptr<UIElement, DanglingUntriaged>>& elements() {
     return elements_;
   }
 
  private:
-  std::vector<raw_ptr<UIElement, VectorExperimental>> elements_;
+  std::vector<raw_ptr<UIElement, DanglingUntriaged>> elements_;
 };
 
 using UIElementsUnittest = testing::Test;

@@ -141,7 +141,7 @@ void PrivacyScreenController::OnSigninScreenPrefServiceInitialized(
 }
 
 void PrivacyScreenController::OnDisplayConfigurationChanged(
-    const std::vector<raw_ptr<display::DisplaySnapshot, VectorExperimental>>&
+    const std::vector<raw_ptr<display::DisplaySnapshot, DanglingUntriaged>>&
         displays) {
   // OnDisplayConfigurationChanged() may fire many times during Chrome's
   // lifetime. We limit automatic user pref initialization to login screen only.

@@ -6727,7 +6727,7 @@ TEST_F(
 
   // Verify the grid arrangement.
   ASSERT_TRUE(InOverviewSession());
-  const std::vector<raw_ptr<aura::Window, VectorExperimental>>
+  const std::vector<raw_ptr<aura::Window, DanglingUntriaged>>
       expected_mru_list = {window2.get(), window1.get(), window3.get()};
   const std::vector<aura::Window*> expected_overview_list = {
       window2.get(), window1.get(), window3.get()};
@@ -6776,7 +6776,7 @@ TEST_F(
 
   // Verify the grid arrangement.
   ASSERT_TRUE(InOverviewSession());
-  const std::vector<raw_ptr<aura::Window, VectorExperimental>>
+  const std::vector<raw_ptr<aura::Window, DanglingUntriaged>>
       expected_mru_list = {window3.get(), window2.get(), window1.get(),
                            window4.get()};
   const std::vector<aura::Window*> expected_overview_list = {

@@ -134,7 +134,7 @@ bool IsRightScrollButtonEnabled(views::ScrollView* scroll_view) {
 // Returns the index of the first (left-most) visible (partially or wholly)
 // child in the ScrollView.
 int GetFirstVisibleChildIndex(
-    std::vector<raw_ptr<views::View, VectorExperimental>> event_views,
+    std::vector<raw_ptr<views::View, DanglingUntriaged>> event_views,
     views::View* scroll_view) {
   for (size_t i = 0; i < event_views.size(); ++i) {
     auto* child = event_views[i].get();

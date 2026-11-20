@@ -329,7 +329,7 @@ std::set<std::string> DownloadDriverImpl::GetActiveDownloads() {
   if (!download_manager_coordinator_)
     return guids;
 
-  std::vector<raw_ptr<DownloadItem, VectorExperimental>> items;
+  std::vector<raw_ptr<DownloadItem, DanglingUntriaged>> items;
   download_manager_coordinator_->GetAllDownloads(&items);
 
   for (download::DownloadItem* item : items) {

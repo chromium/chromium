@@ -216,7 +216,7 @@ void DownloadTestBase::CheckDownloadStatesForBrowser(
     BrowserWindowInterface* browser,
     size_t num,
     DownloadItem::DownloadState state) {
-  std::vector<raw_ptr<DownloadItem, VectorExperimental>> download_items;
+  std::vector<raw_ptr<DownloadItem, DanglingUntriaged>> download_items;
   GetDownloads(browser, &download_items);
 
   EXPECT_EQ(num, download_items.size());
@@ -432,7 +432,7 @@ bool DownloadTestBase::RunSizeTest(BrowserWindowInterface* browser,
 
 void DownloadTestBase::GetDownloads(
     BrowserWindowInterface* browser,
-    std::vector<raw_ptr<DownloadItem, VectorExperimental>>* downloads) const {
+    std::vector<raw_ptr<DownloadItem, DanglingUntriaged>>* downloads) const {
   DCHECK(downloads);
   DownloadManager* manager = DownloadManagerForBrowser(browser);
   manager->GetAllDownloads(downloads);
@@ -490,7 +490,7 @@ bool DownloadTestBase::VerifyFile(const base::FilePath& path,
 void DownloadTestBase::DownloadFilesCheckErrorsSetup() {
   embedded_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
   ASSERT_TRUE(embedded_test_server()->Start());
-  std::vector<raw_ptr<DownloadItem, VectorExperimental>> download_items;
+  std::vector<raw_ptr<DownloadItem, DanglingUntriaged>> download_items;
   GetDownloads(browser(), &download_items);
   ASSERT_TRUE(download_items.empty());
 
@@ -514,7 +514,7 @@ void DownloadTestBase::DownloadFilesCheckErrorsLoopBody(
                << " reason = "
                << DownloadInterruptReasonToString(download_info.reason));
 
-  std::vector<raw_ptr<DownloadItem, VectorExperimental>> download_items;
+  std::vector<raw_ptr<DownloadItem, DanglingUntriaged>> download_items;
   GetDownloads(browser(), &download_items);
   size_t downloads_expected = download_items.size();
 

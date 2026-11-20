@@ -124,7 +124,7 @@ void SavedDeskGridView::SortEntries(const base::Uuid& order_first_uuid) {
 }
 
 void SavedDeskGridView::AddOrUpdateEntries(
-    const std::vector<raw_ptr<const DeskTemplate, VectorExperimental>>& entries,
+    const std::vector<raw_ptr<const DeskTemplate, DanglingUntriaged>>& entries,
     const base::Uuid& order_first_uuid,
     bool animate) {
   std::vector<SavedDeskItemView*> new_grid_items;

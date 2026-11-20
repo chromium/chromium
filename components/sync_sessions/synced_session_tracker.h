@@ -66,13 +66,13 @@ class SyncedSessionTracker {
 
   // Returns a vector of tracked sessions matching `lookup`. `SyncedSession`
   // ownership remains within the `SyncedSessionTracker`.
-  std::vector<raw_ptr<const SyncedSession, VectorExperimental>>
+  std::vector<raw_ptr<const SyncedSession, DanglingUntriaged>>
   LookupAllSessions(SessionLookup lookup) const;
 
   // Returns a vector of tracked foreign sessions matching `lookup` (skips the
   // local session). `SyncedSession` ownership remains within the
   // `SyncedSessionTracker`.
-  std::vector<raw_ptr<const SyncedSession, VectorExperimental>>
+  std::vector<raw_ptr<const SyncedSession, DanglingUntriaged>>
   LookupAllForeignSessions(SessionLookup lookup) const;
 
   // Returns the tab node ids (see GetTab) for all the tabs* associated with the
@@ -269,9 +269,9 @@ class SyncedSessionTracker {
     // The SessionTab/SessionWindow objects referred to may be owned either by
     // the session in the |synced_session| or be temporarily unmapped and live
     // in the |unmapped_tabs|/|unmapped_windows| collections.
-    std::map<SessionID, raw_ptr<sessions::SessionTab, CtnExperimental>>
+    std::map<SessionID, raw_ptr<sessions::SessionTab, DanglingUntriaged>>
         synced_tab_map;
-    std::map<SessionID, raw_ptr<SyncedSessionWindow, CtnExperimental>>
+    std::map<SessionID, raw_ptr<SyncedSessionWindow, DanglingUntriaged>>
         synced_window_map;
 
     // The collection of tabs/windows not owned by SyncedSession. This is the
@@ -294,7 +294,7 @@ class SyncedSessionTracker {
   // Creates tracked session if it wasn't known previously. Never returns null.
   TrackedSession* GetTrackedSession(const std::string& session_tag);
 
-  std::vector<raw_ptr<const SyncedSession, VectorExperimental>> LookupSessions(
+  std::vector<raw_ptr<const SyncedSession, DanglingUntriaged>> LookupSessions(
       SessionLookup lookup,
       bool exclude_local_session) const;
 

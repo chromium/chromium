@@ -95,7 +95,7 @@ class ArcResizeLockManager : public KeyedService,
 
   std::unique_ptr<TouchModeMouseRewriter> touch_mode_mouse_rewriter_;
 
-  base::flat_set<raw_ptr<aura::Window, CtnExperimental>>
+  base::flat_set<raw_ptr<aura::Window, DanglingUntriaged>>
       resize_lock_enabled_windows_;
 
   std::map<aura::Window*, std::vector<base::OnceClosure>>

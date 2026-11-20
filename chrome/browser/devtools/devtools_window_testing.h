@@ -106,7 +106,7 @@ class DevToolsWindowCreationObserver {
   ~DevToolsWindowCreationObserver();
 
   using DevToolsWindows =
-      std::vector<raw_ptr<DevToolsWindow, VectorExperimental>>;
+      std::vector<raw_ptr<DevToolsWindow, DanglingUntriaged>>;
   const DevToolsWindows& devtools_windows() { return devtools_windows_; }
   DevToolsWindow* devtools_window();
 

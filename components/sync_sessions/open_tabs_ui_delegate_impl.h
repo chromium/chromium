@@ -39,7 +39,7 @@ class OpenTabsUIDelegateImpl : public OpenTabsUIDelegate {
 
   // OpenTabsUIDelegate implementation.
   bool GetAllForeignSessions(
-      std::vector<raw_ptr<const SyncedSession, VectorExperimental>>* sessions,
+      std::vector<raw_ptr<const SyncedSession, DanglingUntriaged>>* sessions,
       ForeignSessionFilter filter) override;
   base::flat_map<std::string, base::Time>
   GetAllForeignSessionLastModifiedTimes() const override;

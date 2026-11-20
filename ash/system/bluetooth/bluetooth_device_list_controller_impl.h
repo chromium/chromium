@@ -60,7 +60,7 @@ class ASH_EXPORT BluetoothDeviceListControllerImpl
   size_t CreateViewsIfMissingAndReorder(
       const PairedBluetoothDevicePropertiesPtrs& device_property_list,
       base::flat_map<std::string,
-                     raw_ptr<BluetoothDeviceListItemView, CtnExperimental>>*
+                     raw_ptr<BluetoothDeviceListItemView, DanglingUntriaged>>*
           previous_views,
       size_t index);
 
@@ -68,7 +68,7 @@ class ASH_EXPORT BluetoothDeviceListControllerImpl
 
   bool is_bluetooth_enabled_ = false;
   base::flat_map<std::string,
-                 raw_ptr<BluetoothDeviceListItemView, CtnExperimental>>
+                 raw_ptr<BluetoothDeviceListItemView, DanglingUntriaged>>
       device_id_to_view_map_;
   raw_ptr<views::View> connected_sub_header_ = nullptr;
   raw_ptr<views::View> no_device_connected_sub_header_ = nullptr;

@@ -38,8 +38,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattApplicationServiceProviderImpl
       dbus::Bus* bus,
       const dbus::ObjectPath& object_path,
       const std::map<dbus::ObjectPath,
-                     raw_ptr<BluetoothLocalGattServiceBlueZ, CtnExperimental>>&
-          services);
+                     raw_ptr<BluetoothLocalGattServiceBlueZ,
+                             DanglingUntriaged>>& services);
 
   BluetoothGattApplicationServiceProviderImpl(
       const BluetoothGattApplicationServiceProviderImpl&) = delete;

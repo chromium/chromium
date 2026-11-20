@@ -1873,7 +1873,7 @@ TEST_F(ChromeDownloadManagerDelegateTest, CancelAllEphemeralWarnings) {
   feature_list.InitAndEnableFeature(safe_browsing::kMaliciousApkDownloadCheck);
 #endif
 
-  std::vector<raw_ptr<download::DownloadItem, VectorExperimental>> items;
+  std::vector<raw_ptr<download::DownloadItem, DanglingUntriaged>> items;
   auto safe_item = CreateActiveDownloadItem(0);
   EXPECT_CALL(*safe_item, GetDangerType())
       .WillRepeatedly(Return(download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS));

@@ -125,7 +125,7 @@ bool CanIncludeWindowInCycleWithPipList(aura::Window* window) {
 // include a window in the returned list or not.
 template <class CanIncludeWindowPredicate>
 MruWindowTracker::WindowList BuildWindowListInternal(
-    const std::vector<raw_ptr<aura::Window, VectorExperimental>>* mru_windows,
+    const std::vector<raw_ptr<aura::Window, DanglingUntriaged>>* mru_windows,
     DesksMruType desks_mru_type,
     CanIncludeWindowPredicate can_include_window_predicate) {
   MruWindowTracker::WindowList windows;

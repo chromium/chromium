@@ -196,7 +196,7 @@ class MockUiServiceForUrlIntercept : public ContextualTasksUiService {
 
  private:
   std::optional<bool> is_web_contents_in_side_panel_override_;
-  base::flat_set<raw_ptr<content::WebContents, CtnExperimental>>
+  base::flat_set<raw_ptr<content::WebContents, DanglingUntriaged>>
       side_panel_web_contents_;
 };
 

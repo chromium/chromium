@@ -80,7 +80,7 @@ class DownloadCoreServiceImplTest : public testing::Test {
     auto completed_item = CreateDownloadItem(DownloadState::COMPLETE);
     auto in_progress_item1 = CreateDownloadItem(DownloadState::IN_PROGRESS);
     auto in_progress_item2 = CreateDownloadItem(DownloadState::IN_PROGRESS);
-    std::vector<raw_ptr<download::DownloadItem, VectorExperimental>> items;
+    std::vector<raw_ptr<download::DownloadItem, DanglingUntriaged>> items;
     items.push_back(completed_item.get());
     items.push_back(in_progress_item1.get());
     items.push_back(in_progress_item2.get());

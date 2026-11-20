@@ -61,7 +61,7 @@ constexpr size_t kOnAllSitesButtonIndex = 2;
 
 // Returns the site access button in a site permissions `page`.
 std::vector<views::RadioButton*> GetSiteAccessButtons(views::View* page) {
-  std::vector<raw_ptr<views::View, VectorExperimental>> buttons;
+  std::vector<raw_ptr<views::View, DanglingUntriaged>> buttons;
   page->GetViewsInGroup(kSiteAccessButtonsId, &buttons);
 
   std::vector<views::RadioButton*> site_access_buttons;

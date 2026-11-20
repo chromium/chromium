@@ -88,7 +88,7 @@ auto StyledLabel::StyleRange::operator<=>(
 
 struct StyledLabel::LayoutViews {
   // All views to be added as children, line by line.
-  std::vector<std::vector<raw_ptr<View, VectorExperimental>>> views_per_line;
+  std::vector<std::vector<raw_ptr<View, DanglingUntriaged>>> views_per_line;
 
   // The subset of |views| that are created by StyledLabel itself.  Basically,
   // this is all non-custom views;  These appear in the same order as |views|.

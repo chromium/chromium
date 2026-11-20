@@ -128,12 +128,12 @@ class DragImageLayoutManager : public views::LayoutManagerBase {
     return proposed_layout;
   }
 
-  std::vector<raw_ptr<views::View, VectorExperimental>>
+  std::vector<raw_ptr<views::View, DanglingUntriaged>>
   GetChildViewsInPaintOrder(const views::View* host) const override {
     // Paint `children` in reverse order so that earlier views paint at a higher
     // z-index than later views, like a deck of cards with the first `child`
     // stacked on top.
-    std::vector<raw_ptr<views::View, VectorExperimental>> children;
+    std::vector<raw_ptr<views::View, DanglingUntriaged>> children;
     for (views::View* child : std::views::reverse(host->children())) {
       children.push_back(child);
     }

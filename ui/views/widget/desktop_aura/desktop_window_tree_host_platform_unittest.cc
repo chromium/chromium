@@ -542,7 +542,7 @@ class TestWidgetDelegate : public WidgetDelegate {
   void AddAccessiblePane(View* pane) { accessible_panes_.push_back(pane); }
 
  private:
-  std::vector<raw_ptr<View, VectorExperimental>> accessible_panes_;
+  std::vector<raw_ptr<View, DanglingUntriaged>> accessible_panes_;
 };
 
 TEST_F(DesktopWindowTreeHostPlatformTest, OnRotateFocus) {

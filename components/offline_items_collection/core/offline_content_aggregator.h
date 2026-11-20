@@ -104,13 +104,14 @@ class OfflineContentAggregator : public OfflineContentProvider,
   // OfflineContentProviders are all aggregated by this class and exposed to the
   // consumer as a single list.
   using OfflineProviderMap =
-      std::map<std::string, raw_ptr<OfflineContentProvider, CtnExperimental>>;
+      std::map<std::string, raw_ptr<OfflineContentProvider, DanglingUntriaged>>;
   OfflineProviderMap providers_;
 
   // Used by GetAllItems and the corresponding callback.
   std::vector<MultipleItemCallback> multiple_item_get_callbacks_;
   OfflineItemList aggregated_items_;
-  std::set<raw_ptr<OfflineContentProvider, SetExperimental>> pending_providers_;
+  std::set<raw_ptr<OfflineContentProvider, DanglingUntriaged>>
+      pending_providers_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

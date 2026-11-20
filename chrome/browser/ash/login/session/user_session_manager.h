@@ -632,7 +632,7 @@ class UserSessionManager
   // at SessionManager.
   base::RepeatingClosure attempt_restart_closure_;
 
-  base::flat_set<raw_ptr<Profile, CtnExperimental>>
+  base::flat_set<raw_ptr<Profile, DanglingUntriaged>>
       user_profile_initialized_called_;
 
   std::unique_ptr<arc::AlwaysOnVpnManager> always_on_vpn_manager_;

@@ -21,8 +21,8 @@ class GURL;
 
 namespace sessions_helper {
 
-using SyncedSessionVector = std::vector<
-    raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>;
+using SyncedSessionVector =
+    std::vector<raw_ptr<const sync_sessions::SyncedSession, DanglingUntriaged>>;
 using ScopedWindowMap =
     std::map<SessionID, std::unique_ptr<sync_sessions::SyncedSessionWindow>>;
 

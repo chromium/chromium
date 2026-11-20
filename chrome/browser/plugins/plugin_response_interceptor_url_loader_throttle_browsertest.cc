@@ -95,7 +95,7 @@ IN_PROC_BROWSER_TEST_F(PluginResponseInterceptorURLLoaderThrottleBrowserTest,
 
   // Cancel the download to shutdown cleanly.
   download_manager->RemoveObserver(&download_observer);
-  std::vector<raw_ptr<download::DownloadItem, VectorExperimental>> downloads;
+  std::vector<raw_ptr<download::DownloadItem, DanglingUntriaged>> downloads;
   download_manager->GetAllDownloads(&downloads);
   ASSERT_EQ(1u, downloads.size());
   downloads[0]->Cancel(false);

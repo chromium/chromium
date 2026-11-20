@@ -52,7 +52,7 @@ class InputImeEventRouterFactory {
   ~InputImeEventRouterFactory();
 
   std::map<Profile*,
-           raw_ptr<InputImeEventRouter, CtnExperimental>,
+           raw_ptr<InputImeEventRouter, DanglingUntriaged>,
            ProfileCompare>
       router_map_;
 };

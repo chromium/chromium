@@ -35,7 +35,7 @@ DeskModel::GetAllEntriesResult DeskModelWrapper::GetAllEntries() {
     return saved_desk_or_group_result;
   }
 
-  std::vector<raw_ptr<const ash::DeskTemplate, VectorExperimental>>&
+  std::vector<raw_ptr<const ash::DeskTemplate, DanglingUntriaged>>&
       all_entries = templates_result.entries;
 
   for (const ash::DeskTemplate* const entry :

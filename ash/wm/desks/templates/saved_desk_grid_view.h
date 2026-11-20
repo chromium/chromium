@@ -34,8 +34,8 @@ class SavedDeskGridView : public views::View {
   SavedDeskGridView& operator=(const SavedDeskGridView&) = delete;
   ~SavedDeskGridView() override;
 
-  const std::vector<raw_ptr<SavedDeskItemView, VectorExperimental>>&
-  grid_items() const {
+  const std::vector<raw_ptr<SavedDeskItemView, DanglingUntriaged>>& grid_items()
+      const {
     return grid_items_;
   }
 
@@ -52,7 +52,7 @@ class SavedDeskGridView : public views::View {
   // their final positions if `animate` is true. Currently only allows a maximum
   // of 6 saved desks to be shown in the grid.
   void AddOrUpdateEntries(
-      const std::vector<raw_ptr<const DeskTemplate, VectorExperimental>>&
+      const std::vector<raw_ptr<const DeskTemplate, DanglingUntriaged>>&
           entries,
       const base::Uuid& order_first_uuid,
       bool animate);
@@ -101,7 +101,7 @@ class SavedDeskGridView : public views::View {
   void AnimateGridItems(const std::vector<SavedDeskItemView*>& new_grid_items);
 
   // The views representing saved desks. They're owned by views hierarchy.
-  std::vector<raw_ptr<SavedDeskItemView, VectorExperimental>> grid_items_;
+  std::vector<raw_ptr<SavedDeskItemView, DanglingUntriaged>> grid_items_;
 
   // Controls how the grid items are laid out.
   LayoutMode layout_mode_ = LayoutMode::LANDSCAPE;

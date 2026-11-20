@@ -165,7 +165,7 @@ class ASH_EXPORT ContinueTaskContainerView : public ui::ListModelObserver,
       nullptr;  // Owned by SearchModel.
 
   // The list of tasks views for the container.
-  std::vector<raw_ptr<ContinueTaskView, VectorExperimental>>
+  std::vector<raw_ptr<ContinueTaskView, DanglingUntriaged>>
       suggestion_tasks_views_;
 
   // The number of results shown in the container. Each result has one view.
@@ -192,7 +192,7 @@ class ASH_EXPORT ContinueTaskContainerView : public ui::ListModelObserver,
   // of results shown in the container gets updated. The views are only still
   // needed for the update animation and should be removed once the animation
   // completes.
-  std::vector<raw_ptr<ContinueTaskView, VectorExperimental>>
+  std::vector<raw_ptr<ContinueTaskView, DanglingUntriaged>>
       views_to_remove_after_animation_;
 
   // Timer which when active disables container update animations. The timer

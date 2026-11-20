@@ -229,7 +229,7 @@ void PersistentWindowController::
   // their persistent window info. Go backwards so that if they do get added to
   // another root window's container, the stacking order will match the MRU
   // order (windows added first are stacked at the bottom).
-  std::vector<raw_ptr<aura::Window, VectorExperimental>> mru_window_list =
+  std::vector<raw_ptr<aura::Window, DanglingUntriaged>> mru_window_list =
       GetWindowList();
   for (aura::Window* window : std::views::reverse(mru_window_list)) {
     WindowState* window_state = WindowState::Get(window);

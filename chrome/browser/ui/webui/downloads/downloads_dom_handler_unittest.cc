@@ -120,7 +120,7 @@ TEST_F(DownloadsDOMHandlerTest, HandleGetDownloads) {
 }
 
 TEST_F(DownloadsDOMHandlerTest, ClearAll) {
-  std::vector<raw_ptr<download::DownloadItem, VectorExperimental>> downloads;
+  std::vector<raw_ptr<download::DownloadItem, DanglingUntriaged>> downloads;
 
   // Safe, in-progress items should be passed over.
   testing::StrictMock<download::MockDownloadItem> in_progress;
@@ -168,7 +168,7 @@ TEST_F(DownloadsDOMHandlerTest, ClearAll) {
 }
 
 TEST_F(DownloadsDOMHandlerTest, RemoveDownloadsAsyncScanning) {
-  std::vector<raw_ptr<download::DownloadItem, VectorExperimental>> downloads;
+  std::vector<raw_ptr<download::DownloadItem, DanglingUntriaged>> downloads;
 
   testing::StrictMock<download::MockDownloadItem> async_scanning;
   EXPECT_CALL(async_scanning, IsDangerous()).WillOnce(testing::Return(false));
@@ -184,7 +184,7 @@ TEST_F(DownloadsDOMHandlerTest, RemoveDownloadsAsyncScanning) {
 }
 
 TEST_F(DownloadsDOMHandlerTest, RemoveDownloadsLocalPasswordScanning) {
-  std::vector<raw_ptr<download::DownloadItem, VectorExperimental>> downloads;
+  std::vector<raw_ptr<download::DownloadItem, DanglingUntriaged>> downloads;
 
   testing::StrictMock<download::MockDownloadItem> local_password_scanning;
   EXPECT_CALL(local_password_scanning, IsDangerous())

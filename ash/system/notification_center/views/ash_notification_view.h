@@ -147,7 +147,7 @@ class ASH_EXPORT AshNotificationView
     return control_buttons_view_;
   }
 
-  std::vector<raw_ptr<views::LabelButton, VectorExperimental>>
+  std::vector<raw_ptr<views::LabelButton, DanglingUntriaged>>
   GetActionButtonsForTest();
 
   views::Label* GetTitleRowLabelForTest();

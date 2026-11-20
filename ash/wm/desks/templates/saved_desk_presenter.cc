@@ -137,7 +137,7 @@ class WindowCloseObserver : public aura::WindowObserver {
       aura::Window* root_window,
       const base::Uuid& saved_desk_uuid,
       const std::u16string& saved_desk_name,
-      const std::vector<raw_ptr<aura::Window, VectorExperimental>>& windows)
+      const std::vector<raw_ptr<aura::Window, DanglingUntriaged>>& windows)
       : root_window_(root_window),
         saved_desk_uuid_(saved_desk_uuid),
         saved_desk_name_(saved_desk_name) {
@@ -493,7 +493,7 @@ void SavedDeskPresenter::OnDeskModelDestroying() {
 }
 
 void SavedDeskPresenter::EntriesAddedOrUpdatedRemotely(
-    const std::vector<raw_ptr<const DeskTemplate, VectorExperimental>>&
+    const std::vector<raw_ptr<const DeskTemplate, DanglingUntriaged>>&
         new_entries) {
   AddOrUpdateUIEntries(new_entries);
 }
@@ -706,7 +706,7 @@ void SavedDeskPresenter::OnAddOrUpdateEntry(
                                       GetMaxEntryCount(saved_desk_type));
 
     if (saved_desk_type == DeskTemplateType::kSaveAndRecall) {
-      std::vector<raw_ptr<aura::Window, VectorExperimental>> windows =
+      std::vector<raw_ptr<aura::Window, DanglingUntriaged>> windows =
           Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
 
       // Get rid of transient windows and all-desks windows.
@@ -746,7 +746,7 @@ void SavedDeskPresenter::OnAddOrUpdateEntry(
 }
 
 void SavedDeskPresenter::AddOrUpdateUIEntries(
-    const std::vector<raw_ptr<const DeskTemplate, VectorExperimental>>&
+    const std::vector<raw_ptr<const DeskTemplate, DanglingUntriaged>>&
         new_entries) {
   if (new_entries.empty())
     return;

@@ -373,7 +373,7 @@ void SearchController::Publish() {
 
   // Compile a single list of results and sort first by their category with best
   // match first, then by burn-in iteration number, and finally by relevance.
-  std::vector<raw_ptr<ChromeSearchResult, VectorExperimental>> all_results;
+  std::vector<raw_ptr<ChromeSearchResult, DanglingUntriaged>> all_results;
   for (const auto& type_results : results_) {
     for (const auto& result : type_results.second) {
       double score = result->scoring().FinalScore();

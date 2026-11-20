@@ -1253,7 +1253,7 @@ RenderFrameDevToolsAgentHost::content_security_policy(const std::string& id) {
 }
 
 bool RenderFrameDevToolsAgentHost::HasSessionsWithoutTabTargetSupport() const {
-  const std::vector<raw_ptr<DevToolsSession, VectorExperimental>>& sessions =
+  const std::vector<raw_ptr<DevToolsSession, DanglingUntriaged>>& sessions =
       DevToolsAgentHostImpl::sessions();
 
   return std::any_of(sessions.begin(), sessions.end(), [](DevToolsSession* s) {

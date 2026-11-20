@@ -64,7 +64,7 @@ void BookmarkScoringSignalsAnnotator::AnnotateResult(
       continue;
     }
 
-    std::vector<raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>
+    std::vector<raw_ptr<const bookmarks::BookmarkNode, DanglingUntriaged>>
         nodes = bookmark_model_->GetNodesByURL(match.destination_url);
 
     for (const bookmarks::BookmarkNode* node : nodes) {

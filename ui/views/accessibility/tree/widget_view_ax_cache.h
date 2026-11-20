@@ -63,7 +63,7 @@ class VIEWS_EXPORT WidgetViewAXCache {
  private:
   // Keeps track of the known ViewAccessibility instances by their AXNodeID.
   absl::flat_hash_map<ui::AXNodeID,
-                      raw_ptr<ViewAccessibility, VectorExperimental>>
+                      raw_ptr<ViewAccessibility, DanglingUntriaged>>
       node_map_;
 
   // Caches the children of ViewAccessibility instances marked as being cached.
@@ -71,7 +71,7 @@ class VIEWS_EXPORT WidgetViewAXCache {
   // serializer can operate on a stable set of children during serialization.
   absl::flat_hash_map<
       ui::AXNodeID,
-      std::vector<raw_ptr<ViewAccessibility, VectorExperimental>>>
+      std::vector<raw_ptr<ViewAccessibility, DanglingUntriaged>>>
       cached_children_;
 };
 

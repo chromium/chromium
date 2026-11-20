@@ -37,13 +37,13 @@ class DisplayLayoutManager {
   // configure the hardware. The requested configuration is stored in
   // |requests|.
   virtual bool GetDisplayLayout(
-      const std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>& displays,
+      const std::vector<raw_ptr<DisplaySnapshot, DanglingUntriaged>>& displays,
       MultipleDisplayState new_display_state,
       chromeos::DisplayPowerState new_power_state,
       const base::flat_set<int64_t>& new_vrr_enabled_state,
       std::vector<DisplayConfigureRequest>* requests) const = 0;
 
-  virtual std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>
+  virtual std::vector<raw_ptr<DisplaySnapshot, DanglingUntriaged>>
   GetDisplayStates() const = 0;
 
   virtual bool IsMirroring() const = 0;

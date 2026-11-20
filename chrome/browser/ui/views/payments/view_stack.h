@@ -85,7 +85,7 @@ class ViewStack : public views::BoundsAnimatorObserver, public views::View {
 
   // Should be the last member, because views need to be destroyed before other
   // members, and members are destroyed in reverse order of their creation.
-  std::vector<raw_ptr<views::View, VectorExperimental>> stack_;
+  std::vector<raw_ptr<views::View, DanglingUntriaged>> stack_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PAYMENTS_VIEW_STACK_H_

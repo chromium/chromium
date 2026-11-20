@@ -136,7 +136,7 @@ class DragWindowFromShelfController::WindowsHider
     : public aura::WindowObserver {
  public:
   WindowsHider(aura::Window* dragged_window, aura::Window* other_window) {
-    std::vector<raw_ptr<aura::Window, VectorExperimental>> windows =
+    std::vector<raw_ptr<aura::Window, DanglingUntriaged>> windows =
         Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
     auto* split_view_controller = SplitViewController::Get(dragged_window);
 
@@ -205,7 +205,7 @@ class DragWindowFromShelfController::WindowsHider
   }
 
  private:
-  std::vector<raw_ptr<aura::Window, VectorExperimental>> hidden_windows_;
+  std::vector<raw_ptr<aura::Window, DanglingUntriaged>> hidden_windows_;
 };
 
 // static

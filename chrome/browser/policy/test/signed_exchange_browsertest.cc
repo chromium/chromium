@@ -92,7 +92,7 @@ IN_PROC_BROWSER_TEST_F(SignedExchangePolicyTest, SignedExchangeDisabled) {
   download_observer.WaitForFinished();
 
   // Check that the SXG file was not loaded as a page, but downloaded.
-  std::vector<raw_ptr<download::DownloadItem, VectorExperimental>> downloads;
+  std::vector<raw_ptr<download::DownloadItem, DanglingUntriaged>> downloads;
   browser()->GetProfile()->GetDownloadManager()->GetAllDownloads(&downloads);
   ASSERT_EQ(1u, downloads.size());
   EXPECT_EQ(downloads[0]->GetURL(), url);

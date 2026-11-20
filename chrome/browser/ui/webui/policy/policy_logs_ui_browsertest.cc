@@ -109,7 +109,7 @@ IN_PROC_BROWSER_TEST_P(PolicyUILogsPageTest, DownloadLogs) {
 
   observer.WaitForFinished();
 
-  std::vector<raw_ptr<download::DownloadItem, VectorExperimental>> downloads;
+  std::vector<raw_ptr<download::DownloadItem, DanglingUntriaged>> downloads;
   download_manager->GetAllDownloads(&downloads);
   ASSERT_EQ(1u, downloads.size());
   ASSERT_EQ(download::DownloadItem::COMPLETE, downloads[0]->GetState());

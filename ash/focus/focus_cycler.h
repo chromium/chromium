@@ -57,7 +57,7 @@ class ASH_EXPORT FocusCycler : public views::WidgetObserver {
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
 
-  std::vector<raw_ptr<views::Widget, VectorExperimental>> widgets_;
+  std::vector<raw_ptr<views::Widget, DanglingUntriaged>> widgets_;
   base::ScopedMultiSourceObservation<views::Widget, views::WidgetObserver>
       widget_observations_{this};
 

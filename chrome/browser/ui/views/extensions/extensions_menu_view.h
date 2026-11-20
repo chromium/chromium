@@ -88,7 +88,7 @@ class ExtensionsMenuView : public views::BubbleDialogDelegateView,
   void OnToolbarPinnedActionsChanged() override;
 
   // For testing.
-  base::flat_set<raw_ptr<ExtensionMenuItemView, CtnExperimental>>
+  base::flat_set<raw_ptr<ExtensionMenuItemView, DanglingUntriaged>>
   extensions_menu_items_for_testing();
   views::Button* manage_extensions_button_for_testing();
   // Returns a scoped object allowing test dialogs to be created (i.e.,
@@ -173,7 +173,7 @@ class ExtensionsMenuView : public views::BubbleDialogDelegateView,
 
   // A collection of all menu item views in the menu. Note that this is
   // *unordered*, since the menu puts extensions into different sections.
-  base::flat_set<raw_ptr<ExtensionMenuItemView, CtnExperimental>>
+  base::flat_set<raw_ptr<ExtensionMenuItemView, DanglingUntriaged>>
       extensions_menu_items_;
 
   raw_ptr<views::LabelButton> manage_extensions_button_ = nullptr;

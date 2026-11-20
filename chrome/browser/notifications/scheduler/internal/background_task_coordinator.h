@@ -31,7 +31,7 @@ class BackgroundTaskCoordinator {
  public:
   using Notifications = std::map<
       SchedulerClientType,
-      std::vector<raw_ptr<const NotificationEntry, VectorExperimental>>>;
+      std::vector<raw_ptr<const NotificationEntry, DanglingUntriaged>>>;
   using ClientStates = std::map<SchedulerClientType, const ClientState*>;
   using TimeRandomizer = base::RepeatingCallback<base::TimeDelta()>;
 

@@ -175,7 +175,7 @@ void FeatureTilesContainerView::RelayoutTiles() {
   for (PageContainer* page : pages_) {
     for (views::View* row : page->children()) {
       // Copy the list of children since it will be modified during iteration.
-      std::vector<raw_ptr<views::View, VectorExperimental>> children =
+      std::vector<raw_ptr<views::View, DanglingUntriaged>> children =
           row->children();
       for (views::View* child : children) {
         DCHECK(views::IsViewClass<FeatureTile>(child));

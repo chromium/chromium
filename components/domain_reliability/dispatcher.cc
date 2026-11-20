@@ -79,7 +79,7 @@ void DomainReliabilityDispatcher::RunEligibleTasks() {
   // RunAndDeleteTask won't erase elements out from under the iterator.  (Also
   // keeps RunEligibleTasks from running forever if a task adds a new, already-
   // eligible task that does the same, and so on.)
-  std::set<raw_ptr<Task, SetExperimental>> tasks;
+  std::set<raw_ptr<Task, DanglingUntriaged>> tasks;
   tasks.swap(eligible_tasks_);
 
   for (Task* task : tasks) {

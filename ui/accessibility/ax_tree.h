@@ -456,7 +456,7 @@ class AX_EXPORT AXTree {
   bool CreateNewChildVector(
       AXNode* node,
       const std::vector<AXNodeID>& new_child_ids,
-      std::vector<raw_ptr<AXNode, VectorExperimental>>* new_children,
+      std::vector<raw_ptr<AXNode, DanglingUntriaged>>* new_children,
       AXTreeUpdateState* update_state);
 
   // Returns the lowest unignored ancestor of the node with the given ID. If the

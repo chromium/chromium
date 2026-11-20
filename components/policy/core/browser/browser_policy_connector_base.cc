@@ -156,9 +156,9 @@ BrowserPolicyConnectorBase::GetPolicyProviderForTesting() {
   return g_testing_provider;
 }
 
-std::vector<raw_ptr<ConfigurationPolicyProvider, VectorExperimental>>
+std::vector<raw_ptr<ConfigurationPolicyProvider, DanglingUntriaged>>
 BrowserPolicyConnectorBase::GetProvidersForPolicyService() {
-  std::vector<raw_ptr<ConfigurationPolicyProvider, VectorExperimental>>
+  std::vector<raw_ptr<ConfigurationPolicyProvider, DanglingUntriaged>>
       providers;
   if (g_testing_provider) {
     providers.push_back(g_testing_provider);

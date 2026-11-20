@@ -36,7 +36,7 @@ using WindowCyclingDirection = WindowCycleController::WindowCyclingDirection;
 class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
                                    public display::DisplayObserver {
  public:
-  using WindowList = std::vector<raw_ptr<aura::Window, VectorExperimental>>;
+  using WindowList = std::vector<raw_ptr<aura::Window, DanglingUntriaged>>;
 
   explicit WindowCycleList(const WindowList& windows);
   WindowCycleList(const WindowCycleList&) = delete;

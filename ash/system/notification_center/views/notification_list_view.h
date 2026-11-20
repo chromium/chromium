@@ -75,13 +75,13 @@ class ASH_EXPORT NotificationListView
   // Returns the notifications in the view hierarchy that are also in the
   // MessageCenter, whose bottom position is above |y_offset|. O(n) where n is
   // number of notifications.
-  std::vector<raw_ptr<message_center::Notification, VectorExperimental>>
+  std::vector<raw_ptr<message_center::Notification, DanglingUntriaged>>
   GetNotificationsAboveY(int y_offset) const;
 
   // Returns the notifications in the view hierarchy that are also in the
   // MessageCenter, whose bottom position is below |y_offset|. O(n) where n is
   // number of notifications.
-  std::vector<raw_ptr<message_center::Notification, VectorExperimental>>
+  std::vector<raw_ptr<message_center::Notification, DanglingUntriaged>>
   GetNotificationsBelowY(int y_offset) const;
 
   // Same as GetNotificationsAboveY, but returns notifications that are not in
@@ -165,7 +165,7 @@ class ASH_EXPORT NotificationListView
   void ConfigureMessageView(message_center::MessageView* message_view);
 
   // Virtual for testing.
-  virtual std::vector<raw_ptr<message_center::Notification, VectorExperimental>>
+  virtual std::vector<raw_ptr<message_center::Notification, DanglingUntriaged>>
   GetStackedNotifications() const;
 
   // Virtual for testing.

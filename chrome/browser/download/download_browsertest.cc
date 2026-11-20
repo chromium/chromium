@@ -234,7 +234,7 @@ class CreatedObserver : public content::DownloadManager::Observer {
   }
 
   void Wait() {
-    std::vector<raw_ptr<DownloadItem, VectorExperimental>> downloads;
+    std::vector<raw_ptr<DownloadItem, DanglingUntriaged>> downloads;
     manager_->GetAllDownloads(&downloads);
     if (!downloads.empty())
       return;
@@ -1355,7 +1355,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, DownloadTest_IncognitoRegular) {
   std::string original_contents;
   EXPECT_TRUE(base::ReadFileToString(origin, &original_contents));
 
-  std::vector<raw_ptr<DownloadItem, VectorExperimental>> download_items;
+  std::vector<raw_ptr<DownloadItem, DanglingUntriaged>> download_items;
   GetDownloads(browser(), &download_items);
   ASSERT_TRUE(download_items.empty());
 
@@ -1774,7 +1774,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, DownloadHistoryDangerCheck) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), download_url));
 
   // Validate the download and wait for it to finish.
-  std::vector<raw_ptr<DownloadItem, VectorExperimental>> downloads;
+  std::vector<raw_ptr<DownloadItem, DanglingUntriaged>> downloads;
   dangerous_observer->WaitForFinished();
   DownloadManagerForBrowser(browser())->GetAllDownloads(&downloads);
   ASSERT_EQ(1u, downloads.size());
@@ -1916,7 +1916,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, DISABLED_AutoOpenByUser) {
   DownloadAndWait(browser(), url);
 
   // Find the download and confirm it was opened.
-  std::vector<raw_ptr<DownloadItem, VectorExperimental>> downloads;
+  std::vector<raw_ptr<DownloadItem, DanglingUntriaged>> downloads;
   DownloadManagerForBrowser(browser())->GetAllDownloads(&downloads);
   ASSERT_EQ(1u, downloads.size());
   EXPECT_EQ(DownloadItem::COMPLETE, downloads[0]->GetState());
@@ -2184,7 +2184,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, DownloadUrlToPath) {
 
   // Temporary are treated as auto-opened, and after that open won't be
   // visible; wait for auto-open and confirm not visible.
-  std::vector<raw_ptr<DownloadItem, VectorExperimental>> downloads;
+  std::vector<raw_ptr<DownloadItem, DanglingUntriaged>> downloads;
   DownloadManagerForBrowser(browser())->GetAllDownloads(&downloads);
   ASSERT_EQ(1u, downloads.size());
   content::DownloadUpdatedObserver(downloads[0],
@@ -2223,7 +2223,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, TransientDownload) {
   ASSERT_TRUE(CheckDownloadFullPaths(browser(), target_file_full_path,
                                      OriginFile(file)));
 
-  std::vector<raw_ptr<DownloadItem, VectorExperimental>> downloads;
+  std::vector<raw_ptr<DownloadItem, DanglingUntriaged>> downloads;
   DownloadManagerForBrowser(browser())->GetAllDownloads(&downloads);
   ASSERT_EQ(1u, downloads.size());
   ASSERT_TRUE(downloads[0]->IsTransient());
@@ -2873,7 +2873,7 @@ IN_PROC_BROWSER_TEST_F(PdfDownloadTestSplitCacheEnabled,
           browser()->GetProfile());
   ASSERT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
 
-  std::vector<raw_ptr<DownloadItem, VectorExperimental>> download_items;
+  std::vector<raw_ptr<DownloadItem, DanglingUntriaged>> download_items;
   DownloadManagerForBrowser(download_browser)->GetAllDownloads(&download_items);
   ASSERT_EQ(download_items.size(), 1u);
   download::DownloadItem* item = download_items[0];
@@ -2926,7 +2926,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTestWithHistogramTester,
   embedded_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
   ASSERT_TRUE(embedded_test_server()->Start());
   EnableFileChooser(true);
-  std::vector<raw_ptr<DownloadItem, VectorExperimental>> download_items;
+  std::vector<raw_ptr<DownloadItem, DanglingUntriaged>> download_items;
   GetDownloads(browser(), &download_items);
   ASSERT_TRUE(download_items.empty());
 
@@ -3046,7 +3046,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, MAYBE_SaveLargeImage) {
   CheckDownloadStates(1, DownloadItem::COMPLETE);
 
   // Validate that the correct file was downloaded via the context menu.
-  std::vector<raw_ptr<DownloadItem, VectorExperimental>> download_items;
+  std::vector<raw_ptr<DownloadItem, DanglingUntriaged>> download_items;
   GetDownloads(browser(), &download_items);
   EXPECT_TRUE(DidShowFileChooser());
   ASSERT_EQ(1u, download_items.size());
@@ -3082,7 +3082,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, SavePageNonHTMLViaPost) {
   embedded_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
   ASSERT_TRUE(embedded_test_server()->Start());
   EnableFileChooser(true);
-  std::vector<raw_ptr<DownloadItem, VectorExperimental>> download_items;
+  std::vector<raw_ptr<DownloadItem, DanglingUntriaged>> download_items;
   GetDownloads(browser(), &download_items);
   ASSERT_TRUE(download_items.empty());
 
@@ -3164,7 +3164,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, SaveImageInPostPage) {
   embedded_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
   ASSERT_TRUE(embedded_test_server()->Start());
   EnableFileChooser(true);
-  std::vector<raw_ptr<DownloadItem, VectorExperimental>> download_items;
+  std::vector<raw_ptr<DownloadItem, DanglingUntriaged>> download_items;
   GetDownloads(browser(), &download_items);
   ASSERT_TRUE(download_items.empty());
 
@@ -3486,7 +3486,7 @@ IN_PROC_BROWSER_TEST_P(DownloadReferrerPolicyTest,
   embedded_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
   ASSERT_TRUE(embedded_test_server()->Start());
   EnableFileChooser(true);
-  std::vector<raw_ptr<DownloadItem, VectorExperimental>> download_items;
+  std::vector<raw_ptr<DownloadItem, DanglingUntriaged>> download_items;
   GetDownloads(browser(), &download_items);
   ASSERT_TRUE(download_items.empty());
 
@@ -3565,7 +3565,7 @@ IN_PROC_BROWSER_TEST_P(DownloadReferrerPolicyTest, SaveLinkAsReferrerPolicy) {
       base::BindRepeating(&EchoReferrerRequestHandler));
   ASSERT_TRUE(embedded_test_server()->Start());
   EnableFileChooser(true);
-  std::vector<raw_ptr<DownloadItem, VectorExperimental>> download_items;
+  std::vector<raw_ptr<DownloadItem, DanglingUntriaged>> download_items;
   GetDownloads(browser(), &download_items);
   ASSERT_TRUE(download_items.empty());
 
@@ -3648,7 +3648,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, SaveLinkAsVsCrossOriginResourcePolicy) {
   EnableFileChooser(true);
 
   // Test's sanity check that initially there are no download items.
-  std::vector<raw_ptr<DownloadItem, VectorExperimental>> download_items;
+  std::vector<raw_ptr<DownloadItem, DanglingUntriaged>> download_items;
   GetDownloads(browser(), &download_items);
   ASSERT_TRUE(download_items.empty());
 
@@ -3722,7 +3722,7 @@ IN_PROC_BROWSER_TEST_P(DownloadReferrerPolicyTest,
       base::BindRepeating(&EchoReferrerRequestHandler));
   ASSERT_TRUE(embedded_test_server()->Start());
   EnableFileChooser(true);
-  std::vector<raw_ptr<DownloadItem, VectorExperimental>> download_items;
+  std::vector<raw_ptr<DownloadItem, DanglingUntriaged>> download_items;
   GetDownloads(browser(), &download_items);
   ASSERT_TRUE(download_items.empty());
 
@@ -3807,7 +3807,7 @@ IN_PROC_BROWSER_TEST_P(DownloadReferrerPolicyTest,
   https_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
   ASSERT_TRUE(https_test_server()->Start());
   EnableFileChooser(true);
-  std::vector<raw_ptr<DownloadItem, VectorExperimental>> download_items;
+  std::vector<raw_ptr<DownloadItem, DanglingUntriaged>> download_items;
   GetDownloads(browser(), &download_items);
   ASSERT_TRUE(download_items.empty());
 
@@ -4101,7 +4101,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, MAYBE_DownloadTest_CrazyFilenames) {
       L"This is a very very long english sentence with spaces and , and +.zip",
   });
 
-  std::vector<raw_ptr<DownloadItem, VectorExperimental>> download_items;
+  std::vector<raw_ptr<DownloadItem, DanglingUntriaged>> download_items;
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::FilePath origin_directory =
       GetDownloadDirectory(browser()).Append(FILE_PATH_LITERAL("origin"));
@@ -4143,7 +4143,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, DownloadTest_Remove) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url = embedded_test_server()->GetURL("/downloads/a_zip_file.zip");
 
-  std::vector<raw_ptr<DownloadItem, VectorExperimental>> download_items;
+  std::vector<raw_ptr<DownloadItem, DanglingUntriaged>> download_items;
   GetDownloads(browser(), &download_items);
   ASSERT_TRUE(download_items.empty());
 
@@ -4217,7 +4217,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, DownloadTest_PercentComplete) {
   progress_waiter->WaitForFinished();
   EXPECT_EQ(1u, progress_waiter->NumDownloadsSeenInState(
       DownloadItem::IN_PROGRESS));
-  std::vector<raw_ptr<DownloadItem, VectorExperimental>> download_items;
+  std::vector<raw_ptr<DownloadItem, DanglingUntriaged>> download_items;
   GetDownloads(browser(), &download_items);
   ASSERT_EQ(1u, download_items.size());
 
@@ -4444,7 +4444,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, FileExistenceCheckOpeningDownloadsPage) {
   // Download the file and wait.  We do not expect the Select File dialog.
   DownloadAndWait(browser(), url);
 
-  std::vector<raw_ptr<DownloadItem, VectorExperimental>> downloads;
+  std::vector<raw_ptr<DownloadItem, DanglingUntriaged>> downloads;
   DownloadManagerForBrowser(browser())->GetAllDownloads(&downloads);
   ASSERT_EQ(1u, downloads.size());
   DownloadItem* item = downloads[0];
@@ -4512,7 +4512,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, CrossOriginDownloadNavigatesIframe) {
   ASSERT_EQ(expected_title, title_watcher.WaitAndGetTitle());
 
   // Also verify that there's no download.
-  std::vector<raw_ptr<DownloadItem, VectorExperimental>> downloads;
+  std::vector<raw_ptr<DownloadItem, DanglingUntriaged>> downloads;
   DownloadManagerForBrowser(browser())->GetAllDownloads(&downloads);
   ASSERT_EQ(0u, downloads.size());
 
@@ -4568,7 +4568,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, DISABLED_DownloadLargeDataURL) {
       1u, completion_observer->NumDownloadsSeenInState(DownloadItem::COMPLETE));
 
   // Validate that the correct file was downloaded via the context menu.
-  std::vector<raw_ptr<DownloadItem, VectorExperimental>> download_items;
+  std::vector<raw_ptr<DownloadItem, DanglingUntriaged>> download_items;
   GetDownloads(browser(), &download_items);
   ASSERT_EQ(base::FilePath(FILE_PATH_LITERAL("large.png")),
             download_items[0]->GetFileNameToReportUser());
@@ -4962,7 +4962,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest,
   ASSERT_FALSE(browser()->GetProfile()->GetPrefs()->GetBoolean(
       prefs::kSafeBrowsingEnabled));
 
-  std::vector<raw_ptr<DownloadItem, VectorExperimental>> downloads;
+  std::vector<raw_ptr<DownloadItem, DanglingUntriaged>> downloads;
   DownloadManagerForBrowser(browser())->GetAllDownloads(&downloads);
   ASSERT_EQ(1u, downloads.size());
   DownloadItem* download = downloads[0];
@@ -4994,7 +4994,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, DangerousFileWithSBDisabledBeforeStart) {
       ui_test_utils::BROWSER_TEST_NO_WAIT);
   dangerous_observer->WaitForFinished();
 
-  std::vector<raw_ptr<DownloadItem, VectorExperimental>> downloads;
+  std::vector<raw_ptr<DownloadItem, DanglingUntriaged>> downloads;
   DownloadManagerForBrowser(browser())->GetAllDownloads(&downloads);
   ASSERT_EQ(1u, downloads.size());
 
@@ -5014,7 +5014,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, SafeSupportedFile) {
 
   DownloadAndWait(browser(), download_url);
 
-  std::vector<raw_ptr<DownloadItem, VectorExperimental>> downloads;
+  std::vector<raw_ptr<DownloadItem, DanglingUntriaged>> downloads;
   DownloadManagerForBrowser(browser())->GetAllDownloads(&downloads);
   ASSERT_EQ(1u, downloads.size());
 
@@ -5043,7 +5043,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTestWithFakeSafeBrowsing,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), download_url));
   dangerous_observer->WaitForFinished();
 
-  std::vector<raw_ptr<DownloadItem, VectorExperimental>> downloads;
+  std::vector<raw_ptr<DownloadItem, DanglingUntriaged>> downloads;
   DownloadManagerForBrowser(browser())->GetAllDownloads(&downloads);
   ASSERT_EQ(1u, downloads.size());
   DownloadItem* download = downloads[0];
@@ -5088,7 +5088,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTestWithFakeSafeBrowsing,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), download_url));
   dangerous_observer->WaitForFinished();
 
-  std::vector<raw_ptr<DownloadItem, VectorExperimental>> downloads;
+  std::vector<raw_ptr<DownloadItem, DanglingUntriaged>> downloads;
   DownloadManagerForBrowser(browser())->GetAllDownloads(&downloads);
   ASSERT_EQ(1u, downloads.size());
   DownloadItem* download = downloads[0];
@@ -5132,7 +5132,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTestWithFakeSafeBrowsing,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), download_url));
   dangerous_observer->WaitForFinished();
 
-  std::vector<raw_ptr<DownloadItem, VectorExperimental>> downloads;
+  std::vector<raw_ptr<DownloadItem, DanglingUntriaged>> downloads;
   DownloadManagerForBrowser(browser())->GetAllDownloads(&downloads);
   ASSERT_EQ(1u, downloads.size());
   DownloadItem* download = downloads[0];
@@ -5287,7 +5287,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, DownloadTest_History) {
   GURL download_url =
       embedded_test_server()->GetURL("/" + std::string(kDownloadTest1Path));
 
-  std::vector<raw_ptr<DownloadItem, VectorExperimental>> downloads;
+  std::vector<raw_ptr<DownloadItem, DanglingUntriaged>> downloads;
   content::DownloadManager* manager = DownloadManagerForBrowser(browser());
 
   // Wait for the history to be loaded with a single DownloadItem. Check that
@@ -5453,7 +5453,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, DownloadFromWebApp) {
   DownloadAndWait(app_browser, url);
 
   DownloadManager* manager = DownloadManagerForBrowser(app_browser);
-  std::vector<raw_ptr<DownloadItem, VectorExperimental>> all_downloads;
+  std::vector<raw_ptr<DownloadItem, DanglingUntriaged>> all_downloads;
   manager->GetAllDownloads(&all_downloads);
   ASSERT_EQ(all_downloads.size(), 1u);
   auto* web_app_data = DownloadItemWebAppData::Get(all_downloads[0]);

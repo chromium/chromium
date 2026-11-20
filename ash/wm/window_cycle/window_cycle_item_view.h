@@ -75,7 +75,7 @@ class ASH_EXPORT GroupContainerCycleView : public WindowMiniViewBase {
   GroupContainerCycleView& operator=(const GroupContainerCycleView&) = delete;
   ~GroupContainerCycleView() override;
 
-  const std::vector<raw_ptr<WindowCycleItemView, VectorExperimental>>&
+  const std::vector<raw_ptr<WindowCycleItemView, DanglingUntriaged>>&
   mini_views() const {
     return mini_views_;
   }
@@ -98,7 +98,7 @@ class ASH_EXPORT GroupContainerCycleView : public WindowMiniViewBase {
   void OnAccessibleIgnoredStateChanged(ax::mojom::State state,
                                        const bool value);
 
-  std::vector<raw_ptr<WindowCycleItemView, VectorExperimental>> mini_views_;
+  std::vector<raw_ptr<WindowCycleItemView, DanglingUntriaged>> mini_views_;
 
   // True if the `SnapGroup` represented by `this` has horizontal window layout,
   // false otherwise.

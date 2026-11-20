@@ -222,7 +222,7 @@ class DownloadTestBase : public InProcessBrowserTest {
 
   void GetDownloads(
       BrowserWindowInterface* browser,
-      std::vector<raw_ptr<download::DownloadItem, VectorExperimental>>*
+      std::vector<raw_ptr<download::DownloadItem, DanglingUntriaged>>*
           downloads) const;
 
   static void ExpectWindowCountAfterDownload(size_t expected);

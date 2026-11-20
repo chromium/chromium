@@ -386,7 +386,7 @@ ReportingContext* TestReportingService::GetContextForTesting() const {
   NOTREACHED();
 }
 
-std::vector<raw_ptr<const ReportingReport, VectorExperimental>>
+std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>>
 TestReportingService::GetReports() const {
   NOTREACHED();
 }

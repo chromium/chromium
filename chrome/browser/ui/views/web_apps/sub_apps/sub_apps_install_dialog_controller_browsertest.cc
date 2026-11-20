@@ -112,13 +112,13 @@ IN_PROC_BROWSER_TEST_F(SubAppsInstallDialogControllerBrowserTest,
   EXPECT_TRUE(dialog->owned_by_widget());
 
   // Confirm that all sub app names and icons were added to the view.
-  std::vector<raw_ptr<views::View, VectorExperimental>> sub_app_labels;
+  std::vector<raw_ptr<views::View, DanglingUntriaged>> sub_app_labels;
   widget->GetContentsView()->GetViewsInGroup(
       std::to_underlying(DialogViewIDForTesting::SUB_APP_LABEL),
       &sub_app_labels);
   EXPECT_EQ(sub_app_labels.size(), 3u);
 
-  std::vector<raw_ptr<views::View, VectorExperimental>> sub_app_icons;
+  std::vector<raw_ptr<views::View, DanglingUntriaged>> sub_app_icons;
   widget->GetContentsView()->GetViewsInGroup(
       std::to_underlying(DialogViewIDForTesting::SUB_APP_ICON), &sub_app_icons);
   EXPECT_EQ(sub_app_icons.size(), 3u);
@@ -159,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(SubAppsInstallDialogControllerBrowserTest,
       kParentAppName, parent_app_id, base::DoNothing());
   views::Widget* widget = waiter.WaitIfNeededAndGet();
 
-  std::vector<raw_ptr<views::View, VectorExperimental>> sub_app_labels;
+  std::vector<raw_ptr<views::View, DanglingUntriaged>> sub_app_labels;
   widget->GetContentsView()->GetViewsInGroup(
       std::to_underlying(DialogViewIDForTesting::SUB_APP_LABEL),
       &sub_app_labels);
@@ -167,7 +167,7 @@ IN_PROC_BROWSER_TEST_F(SubAppsInstallDialogControllerBrowserTest,
   EXPECT_EQ(static_cast<views::Label*>(sub_app_labels[0])->GetText(),
             kSubAppName1);
 
-  std::vector<raw_ptr<views::View, VectorExperimental>> sub_app_icons;
+  std::vector<raw_ptr<views::View, DanglingUntriaged>> sub_app_icons;
   widget->GetContentsView()->GetViewsInGroup(
       std::to_underlying(DialogViewIDForTesting::SUB_APP_ICON), &sub_app_icons);
   EXPECT_EQ(sub_app_icons.size(), 1u);
@@ -270,7 +270,7 @@ IN_PROC_BROWSER_TEST_F(SubAppsInstallDialogControllerBrowserTest,
   // to have been constructed.
   base::RunLoop().RunUntilIdle();
 
-  std::vector<raw_ptr<views::View, VectorExperimental>> sub_app_icons;
+  std::vector<raw_ptr<views::View, DanglingUntriaged>> sub_app_icons;
   widget->GetContentsView()->GetViewsInGroup(
       std::to_underlying(DialogViewIDForTesting::SUB_APP_ICON), &sub_app_icons);
   ASSERT_EQ(sub_app_icons.size(), 3u);

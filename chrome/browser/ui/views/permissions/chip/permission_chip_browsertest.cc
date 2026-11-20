@@ -247,7 +247,7 @@ class MockPermissionRequestManager
     raw_requests_ = base::ToVector(
         requests_,
         [](const auto& request)
-            -> raw_ptr<permissions::PermissionRequest, VectorExperimental> {
+            -> raw_ptr<permissions::PermissionRequest, DanglingUntriaged> {
           return request.get();
         });
     if (!requests_.empty()) {
@@ -272,7 +272,7 @@ class MockPermissionRequestManager
   }
 
  private:
-  std::vector<raw_ptr<permissions::PermissionRequest, VectorExperimental>>
+  std::vector<raw_ptr<permissions::PermissionRequest, DanglingUntriaged>>
       raw_requests_;
   bool was_current_request_already_displayed_ = false;
   std::optional<QuietUiReason> quiet_ui_reason_;

@@ -113,7 +113,7 @@ class DisplayConfigurator::DisplayLayoutManagerImpl
   MultipleDisplayState GetDisplayState() const override;
   chromeos::DisplayPowerState GetPowerState() const override;
   bool GetDisplayLayout(
-      const std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>& displays,
+      const std::vector<raw_ptr<DisplaySnapshot, DanglingUntriaged>>& displays,
       MultipleDisplayState new_display_state,
       chromeos::DisplayPowerState new_power_state,
       const base::flat_set<int64_t>& new_vrr_enabled_state,
@@ -131,7 +131,7 @@ class DisplayConfigurator::DisplayLayoutManagerImpl
   // TODO(dnicoara): Break this into GetSelectedMode() and GetMirrorMode() and
   // remove DisplayState.
   std::vector<DisplayState> ParseDisplays(
-      const std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>& displays)
+      const std::vector<raw_ptr<DisplaySnapshot, DanglingUntriaged>>& displays)
       const;
 
   const DisplayMode* GetUserSelectedMode(const DisplaySnapshot& display) const;
@@ -190,7 +190,7 @@ DisplayConfigurator::DisplayLayoutManagerImpl::GetPowerState() const {
 
 std::vector<DisplayState>
 DisplayConfigurator::DisplayLayoutManagerImpl::ParseDisplays(
-    const std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>& snapshots)
+    const std::vector<raw_ptr<DisplaySnapshot, DanglingUntriaged>>& snapshots)
     const {
   std::vector<DisplayState> cached_displays;
   for (display::DisplaySnapshot* snapshot : snapshots) {
@@ -203,7 +203,7 @@ DisplayConfigurator::DisplayLayoutManagerImpl::ParseDisplays(
 }
 
 bool DisplayConfigurator::DisplayLayoutManagerImpl::GetDisplayLayout(
-    const std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>& displays,
+    const std::vector<raw_ptr<DisplaySnapshot, DanglingUntriaged>>& displays,
     MultipleDisplayState new_display_state,
     chromeos::DisplayPowerState new_power_state,
     const base::flat_set<int64_t>& new_vrr_enabled_state,
@@ -1022,8 +1022,8 @@ void DisplayConfigurator::RunPendingConfiguration() {
 
 void DisplayConfigurator::OnConfigured(
     bool success,
-    const std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>& displays,
-    const std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>&
+    const std::vector<raw_ptr<DisplaySnapshot, DanglingUntriaged>>& displays,
+    const std::vector<raw_ptr<DisplaySnapshot, DanglingUntriaged>>&
         unassociated_displays,
     MultipleDisplayState new_display_state,
     chromeos::DisplayPowerState new_power_state) {

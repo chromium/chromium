@@ -44,7 +44,7 @@ class ASH_EXPORT WorkspaceWindowResizer : public WindowResizer {
 
   static std::unique_ptr<WorkspaceWindowResizer> Create(
       WindowState* window_state,
-      const std::vector<raw_ptr<aura::Window, VectorExperimental>>&
+      const std::vector<raw_ptr<aura::Window, DanglingUntriaged>>&
           attached_windows);
 
   // WindowResizer:
@@ -60,7 +60,7 @@ class ASH_EXPORT WorkspaceWindowResizer : public WindowResizer {
 
   WorkspaceWindowResizer(
       WindowState* window_state,
-      const std::vector<raw_ptr<aura::Window, VectorExperimental>>&
+      const std::vector<raw_ptr<aura::Window, DanglingUntriaged>>&
           attached_windows);
   WorkspaceWindowResizer(const WorkspaceWindowResizer&) = delete;
   WorkspaceWindowResizer& operator=(const WorkspaceWindowResizer&) = delete;
@@ -179,8 +179,7 @@ class ASH_EXPORT WorkspaceWindowResizer : public WindowResizer {
   // Returns the currently used instance for test.
   static WorkspaceWindowResizer* GetInstanceForTest();
 
-  const std::vector<raw_ptr<aura::Window, VectorExperimental>>
-      attached_windows_;
+  const std::vector<raw_ptr<aura::Window, DanglingUntriaged>> attached_windows_;
 
   bool did_lock_cursor_ = false;
 

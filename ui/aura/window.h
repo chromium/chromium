@@ -127,7 +127,7 @@ class AURA_EXPORT Window : public ui::LayerDelegate,
  public:
   METADATA_HEADER_BASE(Window);
 
-  using Windows = std::vector<raw_ptr<Window, VectorExperimental>>;
+  using Windows = std::vector<raw_ptr<Window, DanglingUntriaged>>;
 
   // A helper class to ensure that the Window is not deleted while it is
   // notifying observers or doing other operations where re-entrant deletion
@@ -144,7 +144,7 @@ class AURA_EXPORT Window : public ui::LayerDelegate,
 
    private:
     raw_ptr<Window> window_ = nullptr;
-    base::raw_span<const raw_ptr<Window, VectorExperimental>> windows_;
+    base::raw_span<const raw_ptr<Window, DanglingUntriaged>> windows_;
   };
 
   // Asserts that at least one `ScopedDeleteBlocker` is active on this Window.

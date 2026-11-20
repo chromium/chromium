@@ -410,7 +410,7 @@ class DriveBackendSyncTest : public testing::Test,
     }
 
     for (std::map<std::string, raw_ptr<CannedSyncableFileSystem,
-                                       CtnExperimental>>::const_iterator itr =
+                                       DanglingUntriaged>>::const_iterator itr =
              file_systems_.begin();
          itr != file_systems_.end(); ++itr) {
       const std::string& app_id = itr->first;
@@ -600,7 +600,7 @@ class DriveBackendSyncTest : public testing::Test,
   int64_t pending_local_changes_;
 
   std::unique_ptr<FakeDriveServiceHelper> fake_drive_service_helper_;
-  std::map<std::string, raw_ptr<CannedSyncableFileSystem, CtnExperimental>>
+  std::map<std::string, raw_ptr<CannedSyncableFileSystem, DanglingUntriaged>>
       file_systems_;
 
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;

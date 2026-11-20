@@ -1921,7 +1921,7 @@ TEST_F(InputDeviceSettingsControllerTest,
   mock_device->SetBatteryInfo(device::BluetoothDevice::BatteryInfo(
       device::BluetoothDevice::BatteryType::kDefault, 66,
       device::BluetoothDevice::BatteryInfo::ChargeState::kDischarging));
-  std::vector<raw_ptr<const device::BluetoothDevice, VectorExperimental>>
+  std::vector<raw_ptr<const device::BluetoothDevice, DanglingUntriaged>>
       devices;
   devices.push_back(mock_device.get());
   ON_CALL(*mock_adapter_, GetDevices).WillByDefault(testing::Return(devices));
@@ -1944,7 +1944,7 @@ TEST_F(InputDeviceSettingsControllerTest, BatteryInfoUpdates) {
   auto mock_device = SetupMockBluetoothDevice(test_vendor_id, test_product_id,
                                               kBluetoothDeviceName,
                                               kBluetoothDevicePublicAddress);
-  std::vector<raw_ptr<const device::BluetoothDevice, VectorExperimental>>
+  std::vector<raw_ptr<const device::BluetoothDevice, DanglingUntriaged>>
       devices;
   devices.push_back(mock_device.get());
   ON_CALL(*mock_adapter_, GetDevices).WillByDefault(testing::Return(devices));

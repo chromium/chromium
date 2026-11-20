@@ -336,7 +336,7 @@ class TestObserver : public DesksController::Observer {
 
   ~TestObserver() override = default;
 
-  const std::vector<raw_ptr<const Desk, VectorExperimental>>& desks() const {
+  const std::vector<raw_ptr<const Desk, DanglingUntriaged>>& desks() const {
     return desks_;
   }
   int desk_name_changed_notify_counts() const {
@@ -370,7 +370,7 @@ class TestObserver : public DesksController::Observer {
   }
 
  private:
-  std::vector<raw_ptr<const Desk, VectorExperimental>> desks_;
+  std::vector<raw_ptr<const Desk, DanglingUntriaged>> desks_;
 
   int desk_name_changed_notify_counts_ = 0;
 };
@@ -4116,7 +4116,7 @@ class DesksPerDeskZOrderTest : public AshTestBase {
             const ui::LayerTreeOwner* layer_tree_owner =
                 DesksTestApi::GetMirroredContentsLayerTreeForRootAndDesk(root,
                                                                          desk);
-            const std::vector<raw_ptr<ui::Layer, VectorExperimental>>
+            const std::vector<raw_ptr<ui::Layer, DanglingUntriaged>>
                 mirrored_layers =
                     layer_tree_owner->root()->children().front()->children();
 
@@ -6918,7 +6918,7 @@ TEST_P(DesksTest, ReorderDesksByMouse) {
   NewDesk();
 
   // Cache the mini view and corresponding desks.
-  std::vector<raw_ptr<DeskMiniView, VectorExperimental>> mini_views =
+  std::vector<raw_ptr<DeskMiniView, DanglingUntriaged>> mini_views =
       desks_bar_view->mini_views();
   DeskMiniView* mini_view_0 = mini_views[0];
   Desk* desk_0 = mini_view_0->desk();
@@ -6994,7 +6994,7 @@ TEST_P(DesksTest, ReorderDesksByGesture) {
   RunScheduledLayoutForAllOverviewDeskBars();
 
   // Cache the mini view and corresponding desks.
-  std::vector<raw_ptr<DeskMiniView, VectorExperimental>> mini_views =
+  std::vector<raw_ptr<DeskMiniView, DanglingUntriaged>> mini_views =
       desks_bar_view->mini_views();
   DeskMiniView* mini_view_0 = mini_views[0];
   Desk* desk_0 = mini_view_0->desk();
@@ -7081,7 +7081,7 @@ TEST_P(DesksTest, ReorderDesksByKeyboard) {
   overview_grid->CommitNameChanges();
 
   // Cache the mini view and corresponding desks.
-  std::vector<raw_ptr<DeskMiniView, VectorExperimental>> mini_views =
+  std::vector<raw_ptr<DeskMiniView, DanglingUntriaged>> mini_views =
       desks_bar_view->mini_views();
   DeskMiniView* mini_view_0 = mini_views[0];
   Desk* desk_0 = mini_view_0->desk();
@@ -7164,7 +7164,7 @@ TEST_P(DesksTest, ReorderDesksInRTLMode) {
   NewDesk();
 
   // Cache the mini view and corresponding desks.
-  std::vector<raw_ptr<DeskMiniView, VectorExperimental>> mini_views =
+  std::vector<raw_ptr<DeskMiniView, DanglingUntriaged>> mini_views =
       desks_bar_view->mini_views();
   DeskMiniView* mini_view_0 = mini_views[0];
   Desk* desk_0 = mini_view_0->desk();
@@ -7469,7 +7469,7 @@ TEST_P(DesksTest, RemoveDeskWhileDragging) {
   NewDesk();
 
   // Cache the mini views.
-  const std::vector<raw_ptr<DeskMiniView, VectorExperimental>>& mini_views =
+  const std::vector<raw_ptr<DeskMiniView, DanglingUntriaged>>& mini_views =
       desks_bar_view->mini_views();
   DeskMiniView* mini_view_0 = mini_views[0];
   DeskMiniView* mini_view_1 = mini_views[1];
@@ -8839,7 +8839,7 @@ TEST_P(DesksTest, DeskGuidsReorder) {
   EnterOverview();
   const auto* desks_bar_view =
       GetOverviewGridForRoot(Shell::GetPrimaryRootWindow())->desks_bar_view();
-  std::vector<raw_ptr<DeskMiniView, VectorExperimental>> mini_views =
+  std::vector<raw_ptr<DeskMiniView, DanglingUntriaged>> mini_views =
       desks_bar_view->mini_views();
   auto* event_generator = GetEventGenerator();
 

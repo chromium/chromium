@@ -64,7 +64,7 @@ void AppListSearchBrowserTest::SearchAndWaitForProviders(
   results_waiter.Wait();
 }
 
-std::vector<raw_ptr<ChromeSearchResult, VectorExperimental>>
+std::vector<raw_ptr<ChromeSearchResult, DanglingUntriaged>>
 AppListSearchBrowserTest::PublishedResults() {
   return GetClient()
       ->GetModelUpdaterForTest()

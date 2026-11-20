@@ -200,7 +200,7 @@ SearchResultImageView* SearchResultImageListView::GetResultViewAt(
   return image_views_[index];
 }
 
-std::vector<raw_ptr<SearchResultImageView, VectorExperimental>>
+std::vector<raw_ptr<SearchResultImageView, DanglingUntriaged>>
 SearchResultImageListView::GetSearchResultImageViews() {
   return image_views_;
 }

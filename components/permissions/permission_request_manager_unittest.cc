@@ -3009,7 +3009,7 @@ TEST_P(PermissionRequestManagerApproximateGeolocationTest,
       /*sample=*/static_cast<int>(accuracy),
       /*expected_bucket_count=*/1);
 
-  const std::vector<raw_ptr<const ukm::mojom::UkmEntry, VectorExperimental>>&
+  const std::vector<raw_ptr<const ukm::mojom::UkmEntry, DanglingUntriaged>>&
       entries = test_ukm_recorder.GetEntriesByName("Permission");
   ASSERT_THAT(entries, SizeIs(1));
   EXPECT_EQ(
@@ -3038,7 +3038,7 @@ TEST_P(PermissionRequestManagerApproximateGeolocationTest,
       /*sample=*/static_cast<int>(accuracy),
       /*expected_bucket_count=*/1);
 
-  const std::vector<raw_ptr<const ukm::mojom::UkmEntry, VectorExperimental>>&
+  const std::vector<raw_ptr<const ukm::mojom::UkmEntry, DanglingUntriaged>>&
       entries = test_ukm_recorder.GetEntriesByName("Permission");
   ASSERT_THAT(entries, SizeIs(1));
   EXPECT_EQ(
@@ -3066,7 +3066,7 @@ TEST_P(PermissionRequestManagerApproximateGeolocationTest,
       "Permissions.Prompt.Geolocation.Denied.Accuracy",
       /*sample=*/static_cast<int>(accuracy),
       /*expected_bucket_count=*/1);
-  const std::vector<raw_ptr<const ukm::mojom::UkmEntry, VectorExperimental>>&
+  const std::vector<raw_ptr<const ukm::mojom::UkmEntry, DanglingUntriaged>>&
       entries = test_ukm_recorder.GetEntriesByName("Permission");
   ASSERT_THAT(entries, SizeIs(1));
   EXPECT_EQ(
@@ -3094,7 +3094,7 @@ TEST_P(PermissionRequestManagerApproximateGeolocationTest,
       "Permissions.Prompt.Geolocation.Dismissed.Accuracy",
       /*sample=*/static_cast<int>(accuracy),
       /*expected_bucket_count=*/1);
-  const std::vector<raw_ptr<const ukm::mojom::UkmEntry, VectorExperimental>>&
+  const std::vector<raw_ptr<const ukm::mojom::UkmEntry, DanglingUntriaged>>&
       entries = test_ukm_recorder.GetEntriesByName("Permission");
   ASSERT_THAT(entries, SizeIs(1));
   EXPECT_EQ(
@@ -3123,7 +3123,7 @@ TEST_P(PermissionRequestManagerApproximateGeolocationTest,
       /*sample=*/static_cast<int>(accuracy),
       /*expected_bucket_count=*/1);
 
-  const std::vector<raw_ptr<const ukm::mojom::UkmEntry, VectorExperimental>>&
+  const std::vector<raw_ptr<const ukm::mojom::UkmEntry, DanglingUntriaged>>&
       entries = test_ukm_recorder.GetEntriesByName("Permission");
   ASSERT_THAT(entries, SizeIs(1));
   EXPECT_EQ(

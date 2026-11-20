@@ -15,7 +15,7 @@ namespace {
 
 void FillTabsFromSessionsAfterTime(
     const std::vector<raw_ptr<const sync_sessions::SyncedSession,
-                              VectorExperimental>> sessions,
+                              DanglingUntriaged>> sessions,
     std::vector<TabFetcher::TabEntry>& tabs,
     base::Time tabs_loaded_after_timestamp) {
   for (const sync_sessions::SyncedSession* session : sessions) {
@@ -50,7 +50,7 @@ bool TabFetcher::FillAllRemoteTabs(std::vector<TabEntry>& tabs) {
   if (!open_ui_delegate) {
     return false;
   }
-  std::vector<raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>
+  std::vector<raw_ptr<const sync_sessions::SyncedSession, DanglingUntriaged>>
       sessions;
   open_ui_delegate->GetAllForeignSessions(
       &sessions,
@@ -66,7 +66,7 @@ bool TabFetcher::FillAllRemoteTabsAfterTime(
   if (!open_ui_delegate) {
     return false;
   }
-  std::vector<raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>
+  std::vector<raw_ptr<const sync_sessions::SyncedSession, DanglingUntriaged>>
       sessions;
   open_ui_delegate->GetAllForeignSessions(
       &sessions,
@@ -129,7 +129,7 @@ std::optional<base::Time> TabFetcher::GetLatestRemoteSessionModifiedTime() {
   if (!open_ui_delegate) {
     return std::nullopt;
   }
-  std::vector<raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>
+  std::vector<raw_ptr<const sync_sessions::SyncedSession, DanglingUntriaged>>
       sessions;
   open_ui_delegate->GetAllForeignSessions(
       &sessions,

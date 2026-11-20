@@ -3943,7 +3943,7 @@ TEST_P(CaptureModeTest, KeyboardNavigationBasic) {
 // mode.
 TEST_P(CaptureModeTest, KeyboardNavigationTabThroughWindowsOnMultipleDisplays) {
   UpdateDisplay("800x700,801+0-800x700");
-  std::vector<raw_ptr<aura::Window, VectorExperimental>> root_windows =
+  std::vector<raw_ptr<aura::Window, DanglingUntriaged>> root_windows =
       Shell::GetAllRootWindows();
   ASSERT_EQ(2u, root_windows.size());
 

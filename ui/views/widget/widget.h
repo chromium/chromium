@@ -166,7 +166,7 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
 
  public:
   METADATA_HEADER_BASE(Widget);
-  using Widgets = std::set<raw_ptr<Widget, SetExperimental>>;
+  using Widgets = std::set<raw_ptr<Widget, DanglingUntriaged>>;
   using ShapeRects = std::vector<gfx::Rect>;
   using PaintAsActiveCallbackList = base::RepeatingClosureList;
 

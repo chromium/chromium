@@ -188,7 +188,7 @@ TEST_F(SearchEngineTableViewControllerEEATest, EditingMode) {
   // In the background, set the first prepopulated engine as default engine
   // using `template_url_service_`. This will reload the table and move C#1 to
   // the second list.
-  std::vector<raw_ptr<TemplateURL, VectorExperimental>> template_urls =
+  std::vector<raw_ptr<TemplateURL, DanglingUntriaged>> template_urls =
       template_url_service_->GetTemplateURLs();
   // The first engine in the list is P#0.
   template_url_service_->SetUserSelectedDefaultSearchProvider(

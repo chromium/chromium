@@ -32,7 +32,7 @@ base::NoDestructor<WidgetTest::RootWindowProvider> g_root_window_provider;
 // when there are no children left.
 // Note that ui::Layer children are bottom-to-top stacking order.
 bool FindLayersInOrder(
-    const std::vector<raw_ptr<ui::Layer, VectorExperimental>>& children,
+    const std::vector<raw_ptr<ui::Layer, DanglingUntriaged>>& children,
     const ui::Layer** first,
     const ui::Layer** second) {
   for (const ui::Layer* child : children) {

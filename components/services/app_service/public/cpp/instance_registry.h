@@ -113,7 +113,7 @@ class InstanceRegistry {
   void OnInstance(InstancePtr delta);
 
   // Returns instances for the |app_id|.
-  std::set<raw_ptr<const Instance, SetExperimental>> GetInstances(
+  std::set<raw_ptr<const Instance, DanglingUntriaged>> GetInstances(
       const std::string& app_id);
 
   // Returns one state for the `window`.
@@ -266,12 +266,13 @@ class InstanceRegistry {
   // might be changed, and the instance id should be removed from
   // `window_to_instance_ids_`. `states_` can't be used to check window, because
   // some instances might be in `deltas_pending_`.
-  std::map<const base::UnguessableToken, raw_ptr<aura::Window, CtnExperimental>>
+  std::map<const base::UnguessableToken,
+           raw_ptr<aura::Window, DanglingUntriaged>>
       instance_id_to_window_;
 
   // Maps from app id to instances.
   std::map<const std::string,
-           std::set<raw_ptr<const Instance, SetExperimental>>>
+           std::set<raw_ptr<const Instance, DanglingUntriaged>>>
       app_id_to_instances_;
 
   std::unique_ptr<Instance> old_state_;

@@ -511,7 +511,7 @@ class CrossContextData {
  private:
   using CrossContextMap =
       std::map<content::BrowserContext*,
-               raw_ptr<content::BrowserContext, CtnExperimental>>;
+               raw_ptr<content::BrowserContext, DanglingUntriaged>>;
 
   // For each on-the-record context that has an off-the-record context, this
   // bi-map contains an entry for both contexts where the value is the other

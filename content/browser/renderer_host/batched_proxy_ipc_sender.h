@@ -107,7 +107,7 @@ class CONTENT_EXPORT BatchedProxyIPCSender {
   // `create_remote_children_params_` with the params to create the
   // corresponding proxy.
   std::map<GlobalRoutingID,
-           raw_ptr<blink::mojom::CreateRemoteChildParams, CtnExperimental>>
+           raw_ptr<blink::mojom::CreateRemoteChildParams, DanglingUntriaged>>
       proxy_to_child_params_;
 
   // If this class is used to create proxies for a navigation, this token

@@ -688,7 +688,7 @@ class WizardController : public OobeUI::Observer {
 
   // The `BaseScreen*` here point to the objects owned by the `screen_manager_`.
   // So it should be safe to store the pointers.
-  base::flat_map<BaseScreen*, raw_ptr<BaseScreen, CtnExperimental>>
+  base::flat_map<BaseScreen*, raw_ptr<BaseScreen, DanglingUntriaged>>
       previous_screens_;
 
   raw_ptr<WizardContext> wizard_context_;

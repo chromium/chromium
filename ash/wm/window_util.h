@@ -76,7 +76,7 @@ ASH_EXPORT aura::Window* GetTopMostWindow(const aura::Window::Windows& windows);
 // window tree. Windows which are descendants of a different root window will be
 // returned in an arbitrary order relative to each-other.
 ASH_EXPORT std::vector<aura::Window*> SortWindowsBottomToTop(
-    std::set<raw_ptr<aura::Window, SetExperimental>> window_set);
+    std::set<raw_ptr<aura::Window, DanglingUntriaged>> window_set);
 
 // Returns the window with capture, null if no window currently has capture.
 ASH_EXPORT aura::Window* GetCaptureWindow();
@@ -145,11 +145,11 @@ ASH_EXPORT bool ShouldExcludeForOverview(const aura::Window* window);
 // by overview and window cycler to avoid showing multiple previews for windows
 // linked by transient and creating items using transient descendants.
 ASH_EXPORT void EnsureTransientRoots(
-    std::vector<raw_ptr<aura::Window, VectorExperimental>>* out_window_list);
+    std::vector<raw_ptr<aura::Window, DanglingUntriaged>>* out_window_list);
 
 // Minimizes a hides list of |windows| without any animations.
 ASH_EXPORT void MinimizeAndHideWithoutAnimation(
-    const std::vector<raw_ptr<aura::Window, VectorExperimental>>& windows);
+    const std::vector<raw_ptr<aura::Window, DanglingUntriaged>>& windows);
 
 // Returns the RootWindow at |point_in_screen| in virtual screen coordinates.
 // Returns nullptr if the root window does not exist at the given point.

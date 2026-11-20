@@ -221,12 +221,12 @@ const std::string& SyncedSessionTracker::GetLocalSessionTag() const {
   return local_session_tag_;
 }
 
-std::vector<raw_ptr<const SyncedSession, VectorExperimental>>
+std::vector<raw_ptr<const SyncedSession, DanglingUntriaged>>
 SyncedSessionTracker::LookupAllSessions(SessionLookup lookup) const {
   return LookupSessions(lookup, /*exclude_local_session=*/false);
 }
 
-std::vector<raw_ptr<const SyncedSession, VectorExperimental>>
+std::vector<raw_ptr<const SyncedSession, DanglingUntriaged>>
 SyncedSessionTracker::LookupAllForeignSessions(SessionLookup lookup) const {
   return LookupSessions(lookup, /*exclude_local_session=*/true);
 }
@@ -377,10 +377,10 @@ SyncedSessionTracker::TrackedSession* SyncedSessionTracker::GetTrackedSession(
   return session;
 }
 
-std::vector<raw_ptr<const SyncedSession, VectorExperimental>>
+std::vector<raw_ptr<const SyncedSession, DanglingUntriaged>>
 SyncedSessionTracker::LookupSessions(SessionLookup lookup,
                                      bool exclude_local_session) const {
-  std::vector<raw_ptr<const SyncedSession, VectorExperimental>> sessions;
+  std::vector<raw_ptr<const SyncedSession, DanglingUntriaged>> sessions;
   for (const auto& [session_tag, tracked_session] : session_map_) {
     const SyncedSession& session = tracked_session.synced_session;
     if (!ShouldIncludeSession(sessions_client_, session, lookup)) {

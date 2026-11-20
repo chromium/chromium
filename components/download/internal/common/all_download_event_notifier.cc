@@ -13,7 +13,7 @@ AllDownloadEventNotifier::AllDownloadEventNotifier(
     : simple_download_manager_coordinator_(simple_download_manager_coordinator),
       download_initialized_(false) {
   simple_download_manager_coordinator_->AddObserver(this);
-  std::vector<raw_ptr<DownloadItem, VectorExperimental>> downloads;
+  std::vector<raw_ptr<DownloadItem, DanglingUntriaged>> downloads;
   simple_download_manager_coordinator_->GetAllDownloads(&downloads);
   for (download::DownloadItem* download : downloads) {
     download->AddObserver(this);

@@ -33,7 +33,7 @@ class DisplayDecider {
  public:
   using Notifications = std::map<
       SchedulerClientType,
-      std::vector<raw_ptr<const NotificationEntry, VectorExperimental>>>;
+      std::vector<raw_ptr<const NotificationEntry, DanglingUntriaged>>>;
   using ClientStates = std::map<SchedulerClientType, const ClientState*>;
   using Results = std::set<std::string>;
 

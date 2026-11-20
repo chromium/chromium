@@ -92,7 +92,7 @@ bool EndOverview(OverviewEndAction action) {
 // selected.
 aura::Window* GetWindowForSelection(
     OverviewItemBase* overview_item,
-    const std::vector<raw_ptr<aura::Window, VectorExperimental>>& window_list) {
+    const std::vector<raw_ptr<aura::Window, DanglingUntriaged>>& window_list) {
   const auto item_windows = overview_item->GetWindows();
   CHECK(!item_windows.empty());
   if (item_windows.size() == 1u) {
@@ -188,10 +188,10 @@ void OverviewSession::Init(
   Shell::Get()->AddShellObserver(this);
 
   if (saved_desk_util::ShouldShowSavedDesksOptions()) {
-    hide_windows_for_saved_desks_grid_ = std::make_unique<
-        ScopedOverviewHideWindows>(
-        /*windows=*/std::vector<raw_ptr<aura::Window, VectorExperimental>>{},
-        /*forced_hidden=*/true);
+    hide_windows_for_saved_desks_grid_ =
+        std::make_unique<ScopedOverviewHideWindows>(
+            /*windows=*/std::vector<raw_ptr<aura::Window, DanglingUntriaged>>{},
+            /*forced_hidden=*/true);
   }
 
   hide_overview_windows_ = std::make_unique<ScopedOverviewHideWindows>(
@@ -1177,12 +1177,12 @@ void OverviewSession::ShowSavedDeskLibrary(
   if (!library_view)
     return;
 
-  std::vector<raw_ptr<SavedDeskGridView, VectorExperimental>> grid_views =
+  std::vector<raw_ptr<SavedDeskGridView, DanglingUntriaged>> grid_views =
       library_view->grid_views();
   if (grid_views.empty())
     return;
 
-  std::vector<raw_ptr<SavedDeskItemView, VectorExperimental>> grid_items =
+  std::vector<raw_ptr<SavedDeskItemView, DanglingUntriaged>> grid_items =
       grid_views.front()->grid_items();
   if (grid_items.empty() ||
       library_view->GetWidget()->GetNativeWindow()->GetRootWindow() !=
@@ -1226,7 +1226,7 @@ void OverviewSession::UpdateAccessibilityFocus() {
 }
 
 void OverviewSession::UpdateFrameThrottling() {
-  std::vector<raw_ptr<aura::Window, VectorExperimental>> windows_to_throttle;
+  std::vector<raw_ptr<aura::Window, DanglingUntriaged>> windows_to_throttle;
   if (!grid_list_.empty()) {
     windows_to_throttle.reserve(num_start_windows_ * 2);
     for (auto& grid : grid_list_) {

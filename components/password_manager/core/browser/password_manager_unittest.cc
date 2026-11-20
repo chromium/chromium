@@ -450,7 +450,7 @@ void SanitizeFormData(FormData* form) {
 const ukm::mojom::UkmEntry* GetMetricEntry(
     const ukm::TestUkmRecorder& test_ukm_recorder,
     std::string_view entry) {
-  std::vector<raw_ptr<const ukm::mojom::UkmEntry, VectorExperimental>>
+  std::vector<raw_ptr<const ukm::mojom::UkmEntry, DanglingUntriaged>>
       ukm_entries = test_ukm_recorder.GetEntriesByName(entry);
   EXPECT_EQ(1u, ukm_entries.size());
   return ukm_entries[0];

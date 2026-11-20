@@ -328,7 +328,7 @@ TEST_F(BookmarkUtilsTest, RemoveAllBookmarks) {
   model->AddURL(model->mobile_node(), 0, title, url);
   model->AddURL(managed_node, 0, title, url);
 
-  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes =
+  std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>> nodes =
       model->GetNodesByURL(url);
   ASSERT_EQ(4u, nodes.size());
 

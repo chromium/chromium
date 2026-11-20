@@ -20,7 +20,7 @@ namespace ui_devtools {
 namespace {
 
 void PaintRectVector(
-    std::vector<raw_ptr<UIElement, VectorExperimental>> child_elements) {
+    std::vector<raw_ptr<UIElement, DanglingUntriaged>> child_elements) {
   for (ui_devtools::UIElement* element : child_elements) {
     if (element->type() == UIElementType::VIEW) {
       element->PaintRect();

@@ -74,7 +74,7 @@ class QuicSessionPool::Job : public QuicSessionAttempt::Delegate {
 
   const QuicSessionAliasKey& key() const { return key_; }
   const NetLogWithSource& net_log() const { return net_log_; }
-  const std::set<raw_ptr<QuicSessionRequest, SetExperimental>>& requests() {
+  const std::set<raw_ptr<QuicSessionRequest, DanglingUntriaged>>& requests() {
     return requests_;
   }
   RequestPriority priority() const { return priority_; }
@@ -125,7 +125,7 @@ class QuicSessionPool::Job : public QuicSessionAttempt::Delegate {
   RequestPriority priority_;
   const MultiplexedSessionCreationInitiator session_creation_initiator_;
   const NetLogWithSource net_log_;
-  std::set<raw_ptr<QuicSessionRequest, SetExperimental>> requests_;
+  std::set<raw_ptr<QuicSessionRequest, DanglingUntriaged>> requests_;
   const QuicConnectionReuseDetails quic_connection_reuse_details_;
 
  private:

@@ -63,7 +63,7 @@ class FakeTimerFactory : public ash::timer_factory::TimerFactory {
   }
 
   base::flat_map<base::UnguessableToken,
-                 raw_ptr<FakeOneShotTimer, CtnExperimental>>&
+                 raw_ptr<FakeOneShotTimer, DanglingUntriaged>>&
   id_to_active_one_shot_timer_map() {
     return id_to_active_one_shot_timer_map_;
   }
@@ -80,7 +80,7 @@ class FakeTimerFactory : public ash::timer_factory::TimerFactory {
 
   base::UnguessableToken id_for_last_created_one_shot_timer_;
   base::flat_map<base::UnguessableToken,
-                 raw_ptr<FakeOneShotTimer, CtnExperimental>>
+                 raw_ptr<FakeOneShotTimer, DanglingUntriaged>>
       id_to_active_one_shot_timer_map_;
   size_t num_instances_created_ = 0u;
 

@@ -317,7 +317,7 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
     return SessionsSyncUserState::USER_SIGNED_IN_SYNC_IN_PROGRESS;
   }
 
-  std::vector<raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>
+  std::vector<raw_ptr<const sync_sessions::SyncedSession, DanglingUntriaged>>
       sessions;
   return delegate->GetAllForeignSessions(&sessions,
                                          sync_sessions::OpenTabsUIDelegate::

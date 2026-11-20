@@ -810,8 +810,7 @@ void TestingProfile::CreateProfilePolicyConnector() {
       this, policy::Schema(), policy::Schema(), nullptr);
 
   if (!policy_service_) {
-    std::vector<
-        raw_ptr<policy::ConfigurationPolicyProvider, VectorExperimental>>
+    std::vector<raw_ptr<policy::ConfigurationPolicyProvider, DanglingUntriaged>>
         providers;
     std::unique_ptr<policy::PolicyServiceImpl> policy_service =
         std::make_unique<policy::PolicyServiceImpl>(

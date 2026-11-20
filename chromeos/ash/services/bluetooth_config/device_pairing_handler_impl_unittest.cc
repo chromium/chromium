@@ -288,9 +288,9 @@ class DevicePairingHandlerImplTest : public testing::Test {
   }
 
  private:
-  std::vector<raw_ptr<const device::BluetoothDevice, VectorExperimental>>
+  std::vector<raw_ptr<const device::BluetoothDevice, DanglingUntriaged>>
   GetMockDevices() {
-    std::vector<raw_ptr<const device::BluetoothDevice, VectorExperimental>>
+    std::vector<raw_ptr<const device::BluetoothDevice, DanglingUntriaged>>
         devices;
     for (auto& device : mock_devices_)
       devices.push_back(device.get());

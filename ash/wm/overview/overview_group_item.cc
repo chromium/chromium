@@ -137,9 +137,9 @@ aura::Window* OverviewGroupItem::GetWindow() {
   return overview_items_.empty() ? nullptr : overview_items_[0]->GetWindow();
 }
 
-std::vector<raw_ptr<aura::Window, VectorExperimental>>
+std::vector<raw_ptr<aura::Window, DanglingUntriaged>>
 OverviewGroupItem::GetWindows() {
-  std::vector<raw_ptr<aura::Window, VectorExperimental>> windows;
+  std::vector<raw_ptr<aura::Window, DanglingUntriaged>> windows;
   for (const auto& item : overview_items_) {
     windows.push_back(item->GetWindow());
   }

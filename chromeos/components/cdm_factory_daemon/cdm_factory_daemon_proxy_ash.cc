@@ -260,7 +260,7 @@ void CdmFactoryDaemonProxyAsh::GetScreenResolutions(
     GetScreenResolutionsCallback callback) {
   std::vector<gfx::Size> resolutions;
   const std::vector<
-      raw_ptr<display::DisplaySnapshot, VectorExperimental>>& displays =
+      raw_ptr<display::DisplaySnapshot, DanglingUntriaged>>& displays =
       ash::Shell::Get()->display_manager()->configurator()->cached_displays();
   for (display::DisplaySnapshot* display : displays)
     resolutions.emplace_back(display->native_mode()->size());

@@ -56,7 +56,7 @@ class BookmarkUIOperationsHelper {
   static void CopyToClipboard(
       bookmarks::BookmarkModel* model,
       const std::vector<
-          raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>& nodes,
+          raw_ptr<const bookmarks::BookmarkNode, DanglingUntriaged>>& nodes,
       bookmarks::metrics::BookmarkEditSource source,
       bool is_off_the_record);
 
@@ -65,7 +65,7 @@ class BookmarkUIOperationsHelper {
   static void CutToClipboard(
       bookmarks::BookmarkModel* model,
       const std::vector<
-          raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>& nodes,
+          raw_ptr<const bookmarks::BookmarkNode, DanglingUntriaged>>& nodes,
       bookmarks::metrics::BookmarkEditSource source,
       bool is_off_the_record);
 
@@ -115,7 +115,7 @@ class BookmarkUIOperationsHelper {
   static void CopyOrCutToClipboard(
       bookmarks::BookmarkModel* model,
       const std::vector<
-          raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>& nodes,
+          raw_ptr<const bookmarks::BookmarkNode, DanglingUntriaged>>& nodes,
       bool remove_nodes,
       bookmarks::metrics::BookmarkEditSource source,
       bool is_off_the_record);

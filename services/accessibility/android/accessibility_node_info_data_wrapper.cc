@@ -348,7 +348,7 @@ void AccessibilityNodeInfoDataWrapper::PopulateAXRole(
 
   std::string text;
   GetProperty(AXStringProperty::TEXT, &text);
-  std::vector<raw_ptr<AccessibilityInfoDataWrapper, VectorExperimental>>
+  std::vector<raw_ptr<AccessibilityInfoDataWrapper, DanglingUntriaged>>
       children;
   GetChildren(&children);
   if (!text.empty() && children.empty()) {
@@ -683,7 +683,7 @@ std::string AccessibilityNodeInfoDataWrapper::ComputeAXName(
 }
 
 void AccessibilityNodeInfoDataWrapper::GetChildren(
-    std::vector<raw_ptr<AccessibilityInfoDataWrapper, VectorExperimental>>*
+    std::vector<raw_ptr<AccessibilityInfoDataWrapper, DanglingUntriaged>>*
         children) const {
   if (!node_ptr_->int_list_properties) {
     return;
@@ -842,7 +842,7 @@ bool AccessibilityNodeInfoDataWrapper::HasAccessibilityFocusableText() const {
 
 void AccessibilityNodeInfoDataWrapper::ComputeNameFromContents(
     std::vector<std::string>* names) const {
-  std::vector<raw_ptr<AccessibilityInfoDataWrapper, VectorExperimental>>
+  std::vector<raw_ptr<AccessibilityInfoDataWrapper, DanglingUntriaged>>
       children;
   GetChildren(&children);
   for (AccessibilityInfoDataWrapper* child : children) {
@@ -883,7 +883,7 @@ void AccessibilityNodeInfoDataWrapper::ComputeNameFromContentsInternal(
   }
 
   // Otherwise, continue looking for a name in this subtree.
-  std::vector<raw_ptr<AccessibilityInfoDataWrapper, VectorExperimental>>
+  std::vector<raw_ptr<AccessibilityInfoDataWrapper, DanglingUntriaged>>
       children;
   GetChildren(&children);
   for (AccessibilityInfoDataWrapper* child : children) {
@@ -974,7 +974,7 @@ bool AccessibilityNodeInfoDataWrapper::HasImportantPropertyInternal() const {
   }
 
   // Check if any ancestor has an important property.
-  std::vector<raw_ptr<AccessibilityInfoDataWrapper, VectorExperimental>>
+  std::vector<raw_ptr<AccessibilityInfoDataWrapper, DanglingUntriaged>>
       children;
   GetChildren(&children);
   for (AccessibilityInfoDataWrapper* child : children) {

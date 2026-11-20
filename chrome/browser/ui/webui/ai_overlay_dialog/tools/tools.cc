@@ -429,8 +429,8 @@ void AiOverlayTools::RemoveBookmark(RemoveBookmarkCallback callback) {
   }
 
   const GURL& target_url = active_contents->GetVisibleURL();
-  std::vector<raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>
-      nodes = bookmark_model->GetNodesByURL(target_url);
+  std::vector<raw_ptr<const bookmarks::BookmarkNode, DanglingUntriaged>> nodes =
+      bookmark_model->GetNodesByURL(target_url);
   if (nodes.empty()) {
     std::move(callback).Run(base::unexpected("Active tab is not bookmarked"));
     return;

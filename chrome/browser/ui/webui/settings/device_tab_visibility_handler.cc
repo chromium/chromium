@@ -116,7 +116,7 @@ base::ListValue DeviceTabVisibilityHandler::GetDeviceTabVisibilityList() const {
     return {};
   }
 
-  std::vector<raw_ptr<const SyncedSession, VectorExperimental>> sessions;
+  std::vector<raw_ptr<const SyncedSession, DanglingUntriaged>> sessions;
   if (!open_tabs->GetAllForeignSessions(
           &sessions, OpenTabsUIDelegate::ForeignSessionFilter::kAll)) {
     return {};

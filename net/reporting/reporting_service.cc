@@ -186,10 +186,9 @@ class ReportingServiceImpl : public ReportingService {
     return base::Value(std::move(dict));
   }
 
-  std::vector<raw_ptr<const ReportingReport, VectorExperimental>> GetReports()
+  std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>> GetReports()
       const override {
-    std::vector<raw_ptr<const net::ReportingReport, VectorExperimental>>
-        reports;
+    std::vector<raw_ptr<const net::ReportingReport, DanglingUntriaged>> reports;
     context_->cache()->GetReports(&reports);
     return reports;
   }

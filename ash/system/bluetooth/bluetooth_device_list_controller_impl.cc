@@ -67,7 +67,7 @@ void BluetoothDeviceListControllerImpl::UpdateDeviceList(
   // |previously_connected|. Before returning, any view remaining in
   // |previous_views| is no longer needed and is deleted.
   base::flat_map<std::string,
-                 raw_ptr<BluetoothDeviceListItemView, CtnExperimental>>
+                 raw_ptr<BluetoothDeviceListItemView, DanglingUntriaged>>
       previous_views = std::move(device_id_to_view_map_);
   device_id_to_view_map_.clear();
 
@@ -141,7 +141,7 @@ BluetoothDeviceListControllerImpl::CreateSubHeaderIfMissingAndReorder(
 size_t BluetoothDeviceListControllerImpl::CreateViewsIfMissingAndReorder(
     const PairedBluetoothDevicePropertiesPtrs& device_property_list,
     base::flat_map<std::string,
-                   raw_ptr<BluetoothDeviceListItemView, CtnExperimental>>*
+                   raw_ptr<BluetoothDeviceListItemView, DanglingUntriaged>>*
         previous_views,
     size_t index) {
   DCHECK(previous_views);

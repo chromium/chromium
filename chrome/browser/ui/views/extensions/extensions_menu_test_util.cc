@@ -252,7 +252,7 @@ HoverButton* ExtensionsMenuTestUtil::GetActionButton(
                                         : (*iter)->action_button_for_testing();
   }
 
-  base::flat_set<raw_ptr<ExtensionMenuItemView, CtnExperimental>> menu_items =
+  base::flat_set<raw_ptr<ExtensionMenuItemView, DanglingUntriaged>> menu_items =
       menu_view_->extensions_menu_items_for_testing();
   auto iter = std::find_if(menu_items.begin(), menu_items.end(),
                            [&id](ExtensionMenuItemView* item) {

@@ -35,7 +35,7 @@ ASH_EXPORT aura::Window* GetDefaultParentForWindow(
 // Returns the list of containers that match |container_id| in all root windows.
 // If |priority_root| is non-null, the container in |priority_root| is placed at
 // the front of the list.
-ASH_EXPORT std::vector<raw_ptr<aura::Window, VectorExperimental>>
+ASH_EXPORT std::vector<raw_ptr<aura::Window, DanglingUntriaged>>
 GetContainersForAllRootWindows(int container_id,
                                aura::Window* priority_root = nullptr);
 

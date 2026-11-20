@@ -29,7 +29,7 @@ namespace {
 
 template<typename T>int GetZPosition(const T* child) {
   const T* parent = child->parent();
-  const std::vector<raw_ptr<T, VectorExperimental>> children =
+  const std::vector<raw_ptr<T, DanglingUntriaged>> children =
       parent->children();
   auto iter = std::ranges::find(children, child);
   CHECK(iter != children.end());

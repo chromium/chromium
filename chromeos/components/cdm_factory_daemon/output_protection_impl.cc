@@ -56,7 +56,7 @@ constexpr uint32_t kProtectableConnectionTypes =
     display::DISPLAY_CONNECTION_TYPE_DISPLAYPORT;
 
 std::vector<int64_t> GetDisplayIdsFromSnapshots(
-    const std::vector<raw_ptr<display::DisplaySnapshot, VectorExperimental>>&
+    const std::vector<raw_ptr<display::DisplaySnapshot, DanglingUntriaged>>&
         snapshots) {
   std::vector<int64_t> display_ids;
   for (display::DisplaySnapshot* ds : snapshots) {
@@ -116,7 +116,7 @@ class DisplaySystemDelegateImpl
       display::ContentProtectionManager::ClientId client_id) override {
     content_protection_manager_->UnregisterClient(client_id);
   }
-  const std::vector<raw_ptr<display::DisplaySnapshot, VectorExperimental>>&
+  const std::vector<raw_ptr<display::DisplaySnapshot, DanglingUntriaged>>&
   cached_displays() const override {
     return display_configurator_->cached_displays();
   }

@@ -106,7 +106,7 @@ class DelayedInstallManager : public KeyedService {
   ExtensionSet delayed_installs_;
 
   using InstallGateRegistry = std::map<ExtensionPrefs::DelayReason,
-                                       raw_ptr<InstallGate, CtnExperimental>>;
+                                       raw_ptr<InstallGate, DanglingUntriaged>>;
   InstallGateRegistry install_delayer_registry_;
 
   base::ObserverList<Observer> observers_;

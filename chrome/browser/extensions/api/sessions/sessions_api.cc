@@ -661,7 +661,7 @@ ExtensionFunction::ResponseAction SessionsGetDevicesFunction::Run() {
 
   sync_sessions::OpenTabsUIDelegate* open_tabs =
       service->GetOpenTabsUIDelegate();
-  std::vector<raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>
+  std::vector<raw_ptr<const sync_sessions::SyncedSession, DanglingUntriaged>>
       sessions;
   // If the user has disabled tab sync, GetOpenTabsUIDelegate() returns null.
   if (!(open_tabs && open_tabs->GetAllForeignSessions(

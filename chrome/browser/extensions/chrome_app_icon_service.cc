@@ -93,7 +93,7 @@ void ChromeAppIconService::OnAppUpdated(const std::string& app_id) {
   if (it == icon_map_.end())
     return;
   // Set can be updated during the UpdateIcon call.
-  const std::set<raw_ptr<ChromeAppIcon, SetExperimental>> icons_to_update =
+  const std::set<raw_ptr<ChromeAppIcon, DanglingUntriaged>> icons_to_update =
       it->second;
   for (ChromeAppIcon* icon : icons_to_update) {
     if (it->second.count(icon))

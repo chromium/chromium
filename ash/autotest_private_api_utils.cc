@@ -148,7 +148,7 @@ bool WaitForLauncherAnimation(base::OnceClosure closure) {
 
 }  // namespace
 
-std::vector<raw_ptr<aura::Window, VectorExperimental>> GetAppWindowList() {
+std::vector<raw_ptr<aura::Window, DanglingUntriaged>> GetAppWindowList() {
   ScopedSkipUserSessionBlockedCheck skip_session_blocked;
   return Shell::Get()->mru_window_tracker()->BuildAppWindowList(kAllDesks);
 }

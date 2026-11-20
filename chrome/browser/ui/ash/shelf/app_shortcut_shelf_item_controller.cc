@@ -73,8 +73,8 @@ ash::ShelfAction ActivateContentOrMinimize(bool allow_minimize,
 // |activate_callback| will activate the next window selected by this function.
 template <class T>
 std::optional<ash::ShelfAction> AdvanceApp(
-    const std::vector<raw_ptr<T, VectorExperimental>>& items,
-    base::OnceCallback<T*(const std::vector<raw_ptr<T, VectorExperimental>>&,
+    const std::vector<raw_ptr<T, DanglingUntriaged>>& items,
+    base::OnceCallback<T*(const std::vector<raw_ptr<T, DanglingUntriaged>>&,
                           aura::Window**)> active_item_callback,
     base::OnceCallback<void(T*)> activate_callback) {
   if (items.empty()) {
@@ -373,7 +373,7 @@ AppShortcutShelfItemController::GetAppMenuItems(
   };
 
   if (IsWindowedWebApp() && !(event_flags & ui::EF_SHIFT_DOWN)) {
-    std::vector<raw_ptr<ash::BrowserDelegate, VectorExperimental>>
+    std::vector<raw_ptr<ash::BrowserDelegate, DanglingUntriaged>>
         app_menu_browsers;
     for (ash::BrowserDelegate* browser : GetAppBrowsers(filter_predicate)) {
       app_menu_browsers.push_back(browser);
@@ -507,7 +507,7 @@ void AppShortcutShelfItemController::OnBrowserClosed(
   }
 }
 
-std::vector<raw_ptr<content::WebContents, VectorExperimental>>
+std::vector<raw_ptr<content::WebContents, DanglingUntriaged>>
 AppShortcutShelfItemController::GetAppWebContents(
     const ItemFilterPredicate& filter_predicate) {
   URLPattern refocus_pattern(URLPattern::SCHEME_ALL);
@@ -521,7 +521,7 @@ AppShortcutShelfItemController::GetAppWebContents(
   Profile* const profile = ChromeShelfController::instance()->profile();
   AppMatcher matcher(profile, app_id(), refocus_pattern);
 
-  std::vector<raw_ptr<content::WebContents, VectorExperimental>> items;
+  std::vector<raw_ptr<content::WebContents, DanglingUntriaged>> items;
   // It is possible to come here while an app gets loaded.
   if (!matcher.CanMatchWebContents()) {
     return items;
@@ -548,11 +548,11 @@ AppShortcutShelfItemController::GetAppWebContents(
   return items;
 }
 
-std::vector<raw_ptr<ash::BrowserDelegate, VectorExperimental>>
+std::vector<raw_ptr<ash::BrowserDelegate, DanglingUntriaged>>
 AppShortcutShelfItemController::GetAppBrowsers(
     const ItemFilterPredicate& filter_predicate) {
   CHECK(IsWindowedWebApp(), base::NotFatalUntil::M162);
-  std::vector<raw_ptr<ash::BrowserDelegate, VectorExperimental>> browsers;
+  std::vector<raw_ptr<ash::BrowserDelegate, DanglingUntriaged>> browsers;
   ash::BrowserController::GetInstance()->ForEachBrowser(
       ash::BrowserController::BrowserOrder::kAscendingCreationTime,
       [&](ash::BrowserDelegate& browser) {
@@ -586,7 +586,7 @@ AppShortcutShelfItemController::AdvanceToNextApp(
         GetAppBrowsers(filter_predicate),
         base::BindOnce(
             [](const std::vector<
-                   raw_ptr<ash::BrowserDelegate, VectorExperimental>>& browsers,
+                   raw_ptr<ash::BrowserDelegate, DanglingUntriaged>>& browsers,
                aura::Window** out_window) -> ash::BrowserDelegate* {
               for (ash::BrowserDelegate* browser : browsers) {
                 if (browser->IsActive()) {
@@ -604,7 +604,7 @@ AppShortcutShelfItemController::AdvanceToNextApp(
       GetAppWebContents(filter_predicate),
       base::BindOnce(
           [](const std::vector<raw_ptr<content::WebContents,
-                                       VectorExperimental>>& web_contents,
+                                       DanglingUntriaged>>& web_contents,
              aura::Window** out_window) -> content::WebContents* {
             for (content::WebContents* web_content : web_contents) {
               ash::BrowserDelegate* browser =

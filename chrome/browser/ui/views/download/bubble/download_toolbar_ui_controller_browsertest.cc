@@ -352,7 +352,7 @@ IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
       ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
       ui_test_utils::BROWSER_TEST_NO_WAIT);
   dangerous_observer->WaitForFinished();
-  std::vector<raw_ptr<download::DownloadItem, VectorExperimental>>
+  std::vector<raw_ptr<download::DownloadItem, DanglingUntriaged>>
       download_items;
   GetDownloads(browser(), &download_items);
   ASSERT_EQ(1UL, download_items.size());

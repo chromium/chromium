@@ -110,7 +110,7 @@ class TestDelegate : public ToolbarController::PinnedActionsDelegate {
   std::vector<actions::ActionId> action_ids_ = {0, 1, 2};
   std::vector<std::unique_ptr<actions::ActionItem>> action_items_;
   base::flat_map<actions::ActionId,
-                 raw_ptr<actions::ActionItem, CtnExperimental>>
+                 raw_ptr<actions::ActionItem, DanglingUntriaged>>
       kIdToItemMap_;
   base::flat_map<actions::ActionId, bool> kIdToOverflowedMap_;
   raw_ptr<views::View> container_view_;
@@ -455,7 +455,7 @@ class ToolbarControllerUnitTest : public ChromeViewsTestBase {
   ui::test::EventGenerator* event_generator() { return event_generator_.get(); }
   views::View* toolbar_container_view() { return toolbar_container_view_; }
   OverflowButton* overflow_button() { return overflow_button_; }
-  const std::vector<raw_ptr<views::View, VectorExperimental>>& test_buttons() {
+  const std::vector<raw_ptr<views::View, DanglingUntriaged>>& test_buttons() {
     return test_buttons_;
   }
   const ui::SimpleMenuModel* overflow_menu_for_testing() {
@@ -510,7 +510,7 @@ class ToolbarControllerUnitTest : public ChromeViewsTestBase {
   std::unique_ptr<TestingProfile> testing_profile_;
 
   // Buttons being tested.
-  std::vector<raw_ptr<views::View, VectorExperimental>> test_buttons_;
+  std::vector<raw_ptr<views::View, DanglingUntriaged>> test_buttons_;
 };
 
 TEST_F(ToolbarControllerUnitTest, OverflowButtonVisibility) {

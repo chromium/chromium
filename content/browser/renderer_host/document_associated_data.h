@@ -133,7 +133,7 @@ class CONTENT_EXPORT DocumentAssociatedData : public base::SupportsUserData {
 
   // "Owned" but not with std::unique_ptr, as a DocumentServiceBase is
   // allowed to delete itself directly.
-  std::vector<raw_ptr<internal::DocumentServiceBase, VectorExperimental>>&
+  std::vector<raw_ptr<internal::DocumentServiceBase, DanglingUntriaged>>&
   services() {
     return services_;
   }
@@ -269,7 +269,7 @@ class CONTENT_EXPORT DocumentAssociatedData : public base::SupportsUserData {
   std::optional<GURL> pending_did_finish_load_url_for_prerendering_;
   bool pending_did_stop_loading_for_prerendering_ = false;
   GURL original_url_;
-  std::vector<raw_ptr<internal::DocumentServiceBase, VectorExperimental>>
+  std::vector<raw_ptr<internal::DocumentServiceBase, DanglingUntriaged>>
       services_;
   scoped_refptr<NavigationOrDocumentHandle> navigation_or_document_handle_;
   std::optional<base::UnguessableToken> devtools_navigation_token_;

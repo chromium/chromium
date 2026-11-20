@@ -109,7 +109,7 @@ class DownloadQueryTest : public testing::Test {
   // These two vectors hold the MockDownloadItems. |mocks_| contains just the
   // pointers, but is necessary because DownloadQuery processes vectors of
   // unowned pointers. |owned_mocks_| holds the ownership of the mock objects.
-  std::vector<raw_ptr<download::MockDownloadItem, VectorExperimental>> mocks_;
+  std::vector<raw_ptr<download::MockDownloadItem, DanglingUntriaged>> mocks_;
   std::vector<std::unique_ptr<download::MockDownloadItem>> owned_mocks_;
   DownloadQuery query_;
   DownloadVector results_;

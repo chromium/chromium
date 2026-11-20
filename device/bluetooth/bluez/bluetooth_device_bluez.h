@@ -313,7 +313,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceBlueZ
   // Keeps track of all services for which we've called
   // NotifyGattDiscoveryComplete().
   std::unordered_set<
-      raw_ptr<device::BluetoothRemoteGattService, CtnExperimental>>
+      raw_ptr<device::BluetoothRemoteGattService, DanglingUntriaged>>
       discovery_complete_notified_;
 
   // UI thread task runner and socket thread object used to create sockets.

@@ -59,7 +59,7 @@ DrawerLayoutHandler::CreateIfNecessary(
 
   // Find a node with accessibility importance. That is a menu node opened now.
   // Extract the accessibility name of the drawer menu from the event text.
-  std::vector<raw_ptr<AccessibilityInfoDataWrapper, VectorExperimental>>
+  std::vector<raw_ptr<AccessibilityInfoDataWrapper, DanglingUntriaged>>
       children;
   source_node->GetChildren(&children);
   for (ax::android::AccessibilityInfoDataWrapper* child : children) {

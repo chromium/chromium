@@ -71,7 +71,7 @@ AutoCompleteHandler::CreateIfNecessary(
   std::vector<IdAndHandler> results;
 
   // Check all updated nodes under the event source.
-  std::vector<raw_ptr<AccessibilityInfoDataWrapper, VectorExperimental>>
+  std::vector<raw_ptr<AccessibilityInfoDataWrapper, DanglingUntriaged>>
       to_visit;
   to_visit.push_back(tree_source->GetFromId(event_data.source_id));
   while (!to_visit.empty()) {

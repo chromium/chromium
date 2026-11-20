@@ -23,7 +23,7 @@ using chromeos::AppType;
 namespace {
 
 int FindIndex(
-    const std::vector<raw_ptr<aura::Window, VectorExperimental>>& windows,
+    const std::vector<raw_ptr<aura::Window, DanglingUntriaged>>& windows,
     const aura::Window* target) {
   auto iter = std::ranges::find(windows, target);
   return iter != windows.end() ? iter - windows.begin() : -1;
@@ -77,7 +77,7 @@ TEST_F(ScreenPinningControllerTest, FullscreenInPinnedMode) {
   window_util::PinWindow(w1, /* trusted */ false);
   {
     // Window w1 should be in front of w2.
-    std::vector<raw_ptr<aura::Window, VectorExperimental>> siblings =
+    std::vector<raw_ptr<aura::Window, DanglingUntriaged>> siblings =
         w1->parent()->children();
     int index1 = FindIndex(siblings, w1);
     int index2 = FindIndex(siblings, w2);
@@ -94,7 +94,7 @@ TEST_F(ScreenPinningControllerTest, FullscreenInPinnedMode) {
   }
   {
     // Verify that w1 is still in front of w2.
-    std::vector<raw_ptr<aura::Window, VectorExperimental>> siblings =
+    std::vector<raw_ptr<aura::Window, DanglingUntriaged>> siblings =
         w1->parent()->children();
     int index1 = FindIndex(siblings, w1);
     int index2 = FindIndex(siblings, w2);
@@ -111,7 +111,7 @@ TEST_F(ScreenPinningControllerTest, FullscreenInPinnedMode) {
   }
   {
     // Verify that w1 is still in front of w2.
-    std::vector<raw_ptr<aura::Window, VectorExperimental>> siblings =
+    std::vector<raw_ptr<aura::Window, DanglingUntriaged>> siblings =
         w1->parent()->children();
     int index1 = FindIndex(siblings, w1);
     int index2 = FindIndex(siblings, w2);
@@ -128,7 +128,7 @@ TEST_F(ScreenPinningControllerTest, FullscreenInPinnedMode) {
   }
   {
     // Verify that w1 is still in front of w2.
-    std::vector<raw_ptr<aura::Window, VectorExperimental>> siblings =
+    std::vector<raw_ptr<aura::Window, DanglingUntriaged>> siblings =
         w1->parent()->children();
     int index1 = FindIndex(siblings, w1);
     int index2 = FindIndex(siblings, w2);
@@ -145,7 +145,7 @@ TEST_F(ScreenPinningControllerTest, FullscreenInPinnedMode) {
   }
   {
     // Verify that w1 is still in front of w2.
-    std::vector<raw_ptr<aura::Window, VectorExperimental>> siblings =
+    std::vector<raw_ptr<aura::Window, DanglingUntriaged>> siblings =
         w1->parent()->children();
     int index1 = FindIndex(siblings, w1);
     int index2 = FindIndex(siblings, w2);
@@ -165,7 +165,7 @@ TEST_F(ScreenPinningControllerTest, FullscreenInPinnedMode) {
   }
   {
     // Verify that w1 is still in front of w2.
-    std::vector<raw_ptr<aura::Window, VectorExperimental>> siblings =
+    std::vector<raw_ptr<aura::Window, DanglingUntriaged>> siblings =
         w1->parent()->children();
     int index1 = FindIndex(siblings, w1);
     int index2 = FindIndex(siblings, w2);

@@ -672,7 +672,7 @@ class PDFPluginDisabledTest : public PDFExtensionTest {
     download_manager->RemoveObserver(download_awaiter_.get());
 
     // Cancel all downloads to shut down cleanly.
-    std::vector<raw_ptr<download::DownloadItem, VectorExperimental>> downloads;
+    std::vector<raw_ptr<download::DownloadItem, DanglingUntriaged>> downloads;
     download_manager->GetAllDownloads(&downloads);
     for (download::DownloadItem* item : downloads) {
       item->Cancel(false);
@@ -706,7 +706,7 @@ class PDFPluginDisabledTest : public PDFExtensionTest {
     content::DownloadManager* download_manager =
         browser_context->GetDownloadManager();
 
-    std::vector<raw_ptr<download::DownloadItem, VectorExperimental>> downloads;
+    std::vector<raw_ptr<download::DownloadItem, DanglingUntriaged>> downloads;
     download_manager->GetAllDownloads(&downloads);
     return downloads.size();
   }

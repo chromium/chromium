@@ -65,7 +65,7 @@ void LayoutManager::SetViewVisibility(View* view, bool visible) {
   view->SetVisible(visible);
 }
 
-std::vector<raw_ptr<View, VectorExperimental>>
+std::vector<raw_ptr<View, DanglingUntriaged>>
 LayoutManager::GetChildViewsInPaintOrder(const View* host) const {
   return host->children();
 }

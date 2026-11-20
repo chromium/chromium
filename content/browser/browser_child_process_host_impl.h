@@ -153,7 +153,7 @@ class CONTENT_EXPORT BrowserChildProcessHostImpl
         ->child_process();
   }
 
-  typedef std::list<raw_ptr<BrowserChildProcessHostImpl, CtnExperimental>>
+  typedef std::list<raw_ptr<BrowserChildProcessHostImpl, DanglingUntriaged>>
       BrowserChildProcessList;
 
  private:

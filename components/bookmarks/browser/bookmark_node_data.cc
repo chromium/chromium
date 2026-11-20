@@ -274,7 +274,7 @@ BookmarkNodeData::BookmarkNodeData(const BookmarkNode* node) {
 }
 
 BookmarkNodeData::BookmarkNodeData(
-    const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>& nodes) {
+    const std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>>& nodes) {
   ReadFromVector(nodes);
 }
 
@@ -299,7 +299,7 @@ void BookmarkNodeData::ClipboardContainsBookmarks(
 #endif
 
 bool BookmarkNodeData::ReadFromVector(
-    const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>& nodes) {
+    const std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>>& nodes) {
   Clear();
 
   if (nodes.empty()) {
@@ -469,10 +469,10 @@ bool BookmarkNodeData::ReadFromPickle(base::PickleIterator data_iterator) {
 }
 #endif  // BUILDFLAG(IS_APPLE)
 
-std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>
+std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>>
 BookmarkNodeData::GetNodes(BookmarkModel* model,
                            const base::FilePath& profile_path) const {
-  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes;
+  std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>> nodes;
 
   if (!IsFromProfilePath(profile_path)) {
     return nodes;
@@ -492,7 +492,7 @@ BookmarkNodeData::GetNodes(BookmarkModel* model,
 const BookmarkNode* BookmarkNodeData::GetFirstNode(
     BookmarkModel* model,
     const base::FilePath& profile_path) const {
-  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes =
+  std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>> nodes =
       GetNodes(model, profile_path);
   return nodes.size() == 1 ? nodes[0] : nullptr;
 }

@@ -55,7 +55,7 @@ class FakeSafeBrowsingDatabaseManager
   void OnCheckUrlForSubresourceFilterComplete(base::WeakPtr<Client> client,
                                               const GURL& url);
 
-  std::set<raw_ptr<Client, SetExperimental>> checks_;
+  std::set<raw_ptr<Client, DanglingUntriaged>> checks_;
   std::map<
       GURL,
       std::pair<safe_browsing::SBThreatType, safe_browsing::ThreatMetadata>>

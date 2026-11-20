@@ -41,7 +41,7 @@ class Value;
 // query.Search(all_items.begin(), all_items.end(), &results);
 class DownloadQuery {
  public:
-  typedef std::vector<raw_ptr<download::DownloadItem, VectorExperimental>>
+  typedef std::vector<raw_ptr<download::DownloadItem, DanglingUntriaged>>
       DownloadVector;
 
   // FilterCallback is a Callback that takes a DownloadItem and returns true if

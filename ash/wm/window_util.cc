@@ -241,7 +241,7 @@ aura::Window* GetTopMostWindow(const aura::Window::Windows& windows) {
 }
 
 std::vector<aura::Window*> SortWindowsBottomToTop(
-    std::set<raw_ptr<aura::Window, SetExperimental>> window_set) {
+    std::set<raw_ptr<aura::Window, DanglingUntriaged>> window_set) {
   std::vector<aura::Window*> ordered;
   std::vector<aura::Window*> root_windows;
   std::stack<aura::Window*> stack;
@@ -484,7 +484,7 @@ bool ShouldExcludeForOverview(const aura::Window* window) {
 }
 
 void EnsureTransientRoots(
-    std::vector<raw_ptr<aura::Window, VectorExperimental>>* out_window_list) {
+    std::vector<raw_ptr<aura::Window, DanglingUntriaged>>* out_window_list) {
   for (auto it = out_window_list->begin(); it != out_window_list->end();) {
     aura::Window* transient_root = ::wm::GetTransientRoot(*it);
     if (*it != transient_root) {
@@ -501,7 +501,7 @@ void EnsureTransientRoots(
 }
 
 void MinimizeAndHideWithoutAnimation(
-    const std::vector<raw_ptr<aura::Window, VectorExperimental>>& windows) {
+    const std::vector<raw_ptr<aura::Window, DanglingUntriaged>>& windows) {
   for (aura::Window* window : windows) {
     wm::ScopedAnimationDisabler disable(window);
 

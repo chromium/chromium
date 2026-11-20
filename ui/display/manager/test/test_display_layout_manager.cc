@@ -10,7 +10,7 @@
 namespace display::test {
 
 TestDisplayLayoutManager::TestDisplayLayoutManager(
-    const std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>& displays,
+    const std::vector<raw_ptr<DisplaySnapshot, DanglingUntriaged>>& displays,
     MultipleDisplayState display_state)
     : displays_(displays), display_state_(display_state) {}
 
@@ -35,7 +35,7 @@ chromeos::DisplayPowerState TestDisplayLayoutManager::GetPowerState() const {
 }
 
 bool TestDisplayLayoutManager::GetDisplayLayout(
-    const std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>& displays,
+    const std::vector<raw_ptr<DisplaySnapshot, DanglingUntriaged>>& displays,
     MultipleDisplayState new_display_state,
     chromeos::DisplayPowerState new_power_state,
     const base::flat_set<int64_t>& new_vrr_enabled_state,
@@ -43,7 +43,7 @@ bool TestDisplayLayoutManager::GetDisplayLayout(
   NOTREACHED();
 }
 
-std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>
+std::vector<raw_ptr<DisplaySnapshot, DanglingUntriaged>>
 TestDisplayLayoutManager::GetDisplayStates() const {
   return displays_;
 }

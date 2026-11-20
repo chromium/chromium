@@ -80,7 +80,7 @@ bool isRowlessTable(AXNode* node) {
 // Returns false if cells were found. We should not reach cells if rows are
 // present.
 void FindRows(AXNode* node,
-              std::vector<raw_ptr<AXNode, VectorExperimental>>* row_node_list,
+              std::vector<raw_ptr<AXNode, DanglingUntriaged>>* row_node_list,
               AXNodeID& caption_node_id) {
   for (auto iter = node->UnignoredChildrenBegin(),
             end = node->UnignoredChildrenEnd();
@@ -100,7 +100,7 @@ void FindRows(AXNode* node,
 
 // For each row find its cells and add them to |cell_nodes_per_row| as a
 // 2-dimensional array.
-void FindCells(std::vector<raw_ptr<AXNode, VectorExperimental>>* row_node_list,
+void FindCells(std::vector<raw_ptr<AXNode, DanglingUntriaged>>* row_node_list,
                std::vector<std::vector<AXNode*>>* cell_nodes_per_row) {
   for (AXNode* row : *row_node_list) {
     cell_nodes_per_row->emplace_back();
@@ -441,7 +441,7 @@ void AXTableInfo::BuildCellDataVectorFromCellNodes(
 }
 
 void AXTableInfo::BuildCellDataVectorFromRowAndCellNodes(
-    const std::vector<raw_ptr<AXNode, VectorExperimental>>& row_node_list,
+    const std::vector<raw_ptr<AXNode, DanglingUntriaged>>& row_node_list,
     const std::vector<std::vector<AXNode*>>& cell_nodes_per_row) {
   // Iterate over the cells and build up an array of CellData
   // entries, one for each cell. Compute the actual row and column
@@ -569,7 +569,7 @@ void AXTableInfo::UpdateExtraMacNodes() {
   // There is one node for each column, and one more for the table header
   // container.
   size_t extra_node_count = dom_col_count + 1;
-  std::vector<raw_ptr<AXNode, VectorExperimental>> new_extra_mac_nodes;
+  std::vector<raw_ptr<AXNode, DanglingUntriaged>> new_extra_mac_nodes;
   new_extra_mac_nodes.reserve(extra_node_count);
   std::vector<AXTreeObserver::Change> changes;
   // Reserve room for the extra Mac nodes plus for the table itself.

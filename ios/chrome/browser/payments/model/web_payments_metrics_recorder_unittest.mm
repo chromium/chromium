@@ -38,7 +38,7 @@ using ChallengeRequestUkm =
 using ChallengeResponseUkm =
     ukm::builders::Payments_ThreeDSecure_ChallengeResponse;
 using UkmEntries =
-    std::vector<raw_ptr<const ukm::mojom::UkmEntry, VectorExperimental>>;
+    std::vector<raw_ptr<const ukm::mojom::UkmEntry, DanglingUntriaged>>;
 
 constexpr char kChallengeRequestHistogram[] =
     "Payments.ThreeDSecure.ChallengeRequest";

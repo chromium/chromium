@@ -306,7 +306,7 @@ TEST_F(ManagedBookmarkServiceTest, HasDescendantsOfManagedNode) {
       managed_->managed_node()->children().front().get();
   ASSERT_TRUE(managed_node);
 
-  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes;
+  std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>> nodes;
   EXPECT_FALSE(bookmarks::HasDescendantsOf(nodes, managed_->managed_node()));
   nodes.push_back(user_node);
   EXPECT_FALSE(bookmarks::HasDescendantsOf(nodes, managed_->managed_node()));

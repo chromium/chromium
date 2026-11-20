@@ -66,7 +66,7 @@ class RestoreDataCollector {
     DeskTemplateType template_type;
     std::string template_name;
     raw_ptr<aura::Window> root_window_to_show;
-    std::vector<raw_ptr<aura::Window, VectorExperimental>> unsupported_apps;
+    std::vector<raw_ptr<aura::Window, DanglingUntriaged>> unsupported_apps;
     size_t non_persistable_window_count = 0;
     std::unique_ptr<app_restore::RestoreData> data;
     GetDeskTemplateCallback callback;

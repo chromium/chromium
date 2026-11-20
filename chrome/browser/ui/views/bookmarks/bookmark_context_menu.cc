@@ -47,7 +47,7 @@ BookmarkContextMenu::BookmarkContextMenu(
     BrowserWindowInterface* browser,
     Profile* profile,
     BookmarkLaunchLocation opened_from,
-    const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>&
+    const std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>>&
         selection,
     bool close_on_remove,
     bool can_paste)
@@ -172,7 +172,7 @@ void BookmarkContextMenu::CloseMenu() {
 
 void BookmarkContextMenu::WillExecuteCommand(
     int command_id,
-    const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>&
+    const std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>>&
         bookmarks) {
   if (IsRemoveBookmarksCommand(command_id)) {
     observers_.Notify(&BookmarkContextMenuObserver::WillRemoveBookmarks,

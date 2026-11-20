@@ -792,12 +792,12 @@ void Desk::RecordAndResetConsecutiveDailyVisits(bool being_removed) {
   first_day_visited_ = -1;
 }
 
-std::vector<raw_ptr<aura::Window, VectorExperimental>> Desk::GetAllAppWindows()
+std::vector<raw_ptr<aura::Window, DanglingUntriaged>> Desk::GetAllAppWindows()
     const {
   // We need to copy the app windows from `windows_` into `app_windows` so
   // that we do not modify `windows_` in place. This also gives us a filtered
   // list with all of the app windows that we need to remove.
-  std::vector<raw_ptr<aura::Window, VectorExperimental>> app_windows;
+  std::vector<raw_ptr<aura::Window, DanglingUntriaged>> app_windows;
   std::ranges::copy_if(windows_, std::back_inserter(app_windows),
                        [](aura::Window* window) {
                          return window->GetProperty(chromeos::kAppTypeKey) !=
@@ -813,13 +813,13 @@ std::vector<raw_ptr<aura::Window, VectorExperimental>> Desk::GetAllAppWindows()
   return app_windows;
 }
 
-std::vector<raw_ptr<aura::Window, VectorExperimental>>
+std::vector<raw_ptr<aura::Window, DanglingUntriaged>>
 Desk::GetAllAssociatedWindows() const {
   // Note that floated window needs to be handled separately since it doesn't
   // store in desk container.
   if (auto* floated_window =
           Shell::Get()->float_controller()->FindFloatedWindowOfDesk(this)) {
-    std::vector<raw_ptr<aura::Window, VectorExperimental>> all_windows;
+    std::vector<raw_ptr<aura::Window, DanglingUntriaged>> all_windows;
     std::ranges::copy(windows_, std::back_inserter(all_windows));
     all_windows.push_back(floated_window);
     return all_windows;

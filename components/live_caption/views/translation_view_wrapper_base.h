@@ -76,7 +76,7 @@ class TranslationViewWrapperBase : public ui::SimpleMenuModel::Delegate,
 
   void Init(views::View* translate_container, Delegate* delegate);
 
-  std::vector<raw_ptr<views::View, VectorExperimental>> GetButtons();
+  std::vector<raw_ptr<views::View, DanglingUntriaged>> GetButtons();
 
   void SetTextSizeAndFontFamily(double text_scale_factor,
                                 const gfx::FontList& font_list);

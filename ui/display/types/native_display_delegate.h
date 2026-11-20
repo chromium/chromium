@@ -26,7 +26,7 @@ struct DisplayConfigurationParams;
 struct GammaAdjustment;
 
 using GetDisplaysCallback = base::OnceCallback<void(
-    const std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>&)>;
+    const std::vector<raw_ptr<DisplaySnapshot, DanglingUntriaged>>&)>;
 using ConfigureCallback = base::OnceCallback<void(
     const std::vector<DisplayConfigurationParams>& request_results,
     bool status)>;

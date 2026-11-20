@@ -46,7 +46,7 @@ using TestUuidId = base::StrongAlias<class TestUuidIdTag, int>;
 // found, false if not.
 bool FindUuidInUuidList(
     const base::Uuid& uuid,
-    const std::vector<raw_ptr<const ash::DeskTemplate, VectorExperimental>>&
+    const std::vector<raw_ptr<const ash::DeskTemplate, DanglingUntriaged>>&
         entry_list) {
   for (const ash::DeskTemplate* entry : entry_list) {
     if (entry->uuid() == uuid)

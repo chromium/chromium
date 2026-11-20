@@ -28,7 +28,7 @@ class ScheduledNotificationManager {
  public:
   using Notifications = std::map<
       SchedulerClientType,
-      std::vector<raw_ptr<const NotificationEntry, VectorExperimental>>>;
+      std::vector<raw_ptr<const NotificationEntry, DanglingUntriaged>>>;
   using InitCallback = base::OnceCallback<void(bool)>;
   using ScheduleCallback = base::OnceCallback<void(bool)>;
   using DisplayCallback =

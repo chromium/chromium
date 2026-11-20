@@ -201,7 +201,7 @@ class TabGroupsApiBrowserTest : public ExtensionBrowserTest {
 
  private:
   // The original web contentses in order.
-  std::vector<raw_ptr<content::WebContents, VectorExperimental>> web_contents_;
+  std::vector<raw_ptr<content::WebContents, DanglingUntriaged>> web_contents_;
 };
 
 // TODO(crbug.com/405219902): Port to desktop Android.

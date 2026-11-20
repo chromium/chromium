@@ -132,7 +132,7 @@ class ASH_EXPORT PhoneHubRecentAppsView
     base::WeakPtr<LoadingView> GetWeakPtr();
 
    private:
-    std::vector<raw_ptr<AppLoadingIcon, VectorExperimental>> app_loading_icons_;
+    std::vector<raw_ptr<AppLoadingIcon, DanglingUntriaged>> app_loading_icons_;
     raw_ptr<PhoneHubMoreAppsButton> more_apps_button_ = nullptr;
     base::WeakPtrFactory<LoadingView> weak_ptr_factory_{this};
   };
@@ -164,7 +164,7 @@ class ASH_EXPORT PhoneHubRecentAppsView
   base::TimeTicks error_button_start_time_ = base::TimeTicks();
 
   raw_ptr<RecentAppButtonsView> recent_app_buttons_view_ = nullptr;
-  std::vector<raw_ptr<views::View, VectorExperimental>> recent_app_button_list_;
+  std::vector<raw_ptr<views::View, DanglingUntriaged>> recent_app_button_list_;
   raw_ptr<phonehub::RecentAppsInteractionHandler>
       recent_apps_interaction_handler_ = nullptr;
   raw_ptr<phonehub::PhoneHubManager> phone_hub_manager_ = nullptr;

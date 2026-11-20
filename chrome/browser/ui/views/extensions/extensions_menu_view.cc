@@ -503,7 +503,7 @@ void ExtensionsMenuView::OnToolbarPinnedActionsChanged() {
   }
 }
 
-base::flat_set<raw_ptr<ExtensionMenuItemView, CtnExperimental>>
+base::flat_set<raw_ptr<ExtensionMenuItemView, DanglingUntriaged>>
 ExtensionsMenuView::extensions_menu_items_for_testing() {
   return extensions_menu_items_;
 }

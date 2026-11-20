@@ -126,7 +126,7 @@ void PostFlushEventQueueTaskIfNecessary() {
 ViewAXPlatformNodeDelegate::ChildWidgetsResult::ChildWidgetsResult() = default;
 
 ViewAXPlatformNodeDelegate::ChildWidgetsResult::ChildWidgetsResult(
-    std::vector<raw_ptr<Widget, VectorExperimental>> child_widgets,
+    std::vector<raw_ptr<Widget, DanglingUntriaged>> child_widgets,
     bool is_tab_modal_showing)
     : child_widgets(child_widgets),
       is_tab_modal_showing(is_tab_modal_showing) {}
@@ -446,7 +446,7 @@ gfx::NativeViewAccessible ViewAXPlatformNodeDelegate::ChildAtIndex(
   // widgets in the list of the root view's children because this is the most
   // opportune location in the accessibility tree to expose them.
   const ChildWidgetsResult child_widgets_result = GetChildWidgets();
-  const std::vector<raw_ptr<Widget, VectorExperimental>>& child_widgets =
+  const std::vector<raw_ptr<Widget, DanglingUntriaged>>& child_widgets =
       child_widgets_result.child_widgets;
 
   // If a visible tab modal dialog is present, return the dialog's root view.
@@ -991,7 +991,7 @@ std::optional<int> ViewAXPlatformNodeDelegate::GetPosInSet() const {
     return data.GetIntAttribute(ax::mojom::IntAttribute::kPosInSet);
   }
 
-  std::vector<raw_ptr<View, VectorExperimental>> views_in_group;
+  std::vector<raw_ptr<View, DanglingUntriaged>> views_in_group;
   GetViewsInGroupForSet(&views_in_group);
   if (views_in_group.empty()) {
     return std::nullopt;
@@ -1015,7 +1015,7 @@ std::optional<int> ViewAXPlatformNodeDelegate::GetSetSize() const {
     return data.GetIntAttribute(ax::mojom::IntAttribute::kSetSize);
   }
 
-  std::vector<raw_ptr<View, VectorExperimental>> views_in_group;
+  std::vector<raw_ptr<View, DanglingUntriaged>> views_in_group;
   GetViewsInGroupForSet(&views_in_group);
   if (views_in_group.empty()) {
     return std::nullopt;
@@ -1030,7 +1030,7 @@ std::optional<int> ViewAXPlatformNodeDelegate::GetSetSize() const {
 }
 
 void ViewAXPlatformNodeDelegate::GetViewsInGroupForSet(
-    std::vector<raw_ptr<View, VectorExperimental>>* views_in_group) const {
+    std::vector<raw_ptr<View, DanglingUntriaged>>* views_in_group) const {
   const int group_id = view()->GetGroup();
   if (group_id < 0) {
     return;
@@ -1074,7 +1074,7 @@ ViewAXPlatformNodeDelegate::GetChildWidgets() const {
   Widget::Widgets owned_widgets =
       Widget::GetAllOwnedWidgets(widget->GetNativeView());
 
-  std::vector<raw_ptr<Widget, VectorExperimental>> visible_widgets;
+  std::vector<raw_ptr<Widget, DanglingUntriaged>> visible_widgets;
   std::ranges::copy_if(owned_widgets, std::back_inserter(visible_widgets),
                        [this](Widget* child_widget) {
                          return child_widget->IsVisible() &&

@@ -133,7 +133,7 @@ void FadeInView(views::View* view,
 
 // See details at AnimateView.
 void AnimateMiniViews(
-    std::vector<raw_ptr<DeskMiniView, VectorExperimental>> mini_views,
+    std::vector<raw_ptr<DeskMiniView, DanglingUntriaged>> mini_views,
     const gfx::Transform& begin_transform,
     const base::TimeDelta duration) {
   for (ash::DeskMiniView* mini_view : mini_views) {
@@ -490,7 +490,7 @@ void PerformZeroStateToExpandedStateMiniViewAnimation(
 void PerformReorderDeskMiniViewAnimation(
     int old_index,
     int new_index,
-    const std::vector<raw_ptr<DeskMiniView, VectorExperimental>>& mini_views) {
+    const std::vector<raw_ptr<DeskMiniView, DanglingUntriaged>>& mini_views) {
   const int views_size = static_cast<int>(mini_views.size());
 
   DCHECK_GE(old_index, 0);
@@ -517,7 +517,7 @@ void PerformReorderDeskMiniViewAnimation(
   desks_transform.Translate(shift_x, 0);
 
   auto start_iter = mini_views.begin();
-  AnimateMiniViews(std::vector<raw_ptr<DeskMiniView, VectorExperimental>>(
+  AnimateMiniViews(std::vector<raw_ptr<DeskMiniView, DanglingUntriaged>>(
                        start_iter + start_index, start_iter + end_index),
                    desks_transform, kMiniViewsAddingAnimationDuration);
 
@@ -542,7 +542,7 @@ void PerformReorderDeskMiniViewAnimation(
 }
 
 void PerformLibraryButtonVisibilityAnimation(
-    const std::vector<raw_ptr<DeskMiniView, VectorExperimental>>& mini_views,
+    const std::vector<raw_ptr<DeskMiniView, DanglingUntriaged>>& mini_views,
     views::View* new_desk_button,
     int shift_x) {
   gfx::Transform translation;

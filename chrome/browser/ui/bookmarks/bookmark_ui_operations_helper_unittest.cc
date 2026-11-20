@@ -402,7 +402,7 @@ TYPED_TEST(BookmarkUIOperationsHelperTest, MakeTitleUnique) {
   EXPECT_EQ(title_text, bookmark_bar_node->children()[0]->GetTitle());
 
   // Copy a node to the clipboard.
-  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes{node};
+  std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>> nodes{node};
   internal::BookmarkUIOperationsHelper::CopyToClipboard(
       model, nodes, bookmarks::metrics::BookmarkEditSource::kOther,
       /*is_off_the_record=*/false);
@@ -435,7 +435,7 @@ TYPED_TEST(BookmarkUIOperationsHelperTest, CopyPasteMetaInfo) {
   model->SetNodeMetaInfo(node, "someotherkey", "someothervalue");
 
   // Copy a node to the clipboard.
-  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes{node};
+  std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>> nodes{node};
   internal::BookmarkUIOperationsHelper::CopyToClipboard(
       model, nodes, bookmarks::metrics::BookmarkEditSource::kOther,
       /*is_off_the_record=*/false);
@@ -473,7 +473,7 @@ TYPED_TEST(BookmarkUIOperationsHelperTest, CopyPaste) {
                                            GURL("http://www.google.com"));
 
   // Copy a node to the clipboard.
-  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes{node};
+  std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>> nodes{node};
   internal::BookmarkUIOperationsHelper::CopyToClipboard(
       model, nodes, bookmarks::metrics::BookmarkEditSource::kOther,
       /*is_off_the_record=*/false);
@@ -505,7 +505,7 @@ TYPED_TEST(BookmarkUIOperationsHelperTest, CopyPasteMultipleNodes) {
                                          GURL("http://www.google.com"));
 
   // Copy a node to the clipboard.
-  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes{n1, n2};
+  std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>> nodes{n1, n2};
   internal::BookmarkUIOperationsHelper::CopyToClipboard(
       model, nodes, bookmarks::metrics::BookmarkEditSource::kOther,
       /*is_off_the_record=*/false);
@@ -545,7 +545,7 @@ TYPED_TEST(BookmarkUIOperationsHelperTest, CutToClipboard) {
   EXPECT_CALL(observer, GroupedBookmarkChangesBeginning()).Times(2);
   EXPECT_CALL(observer, GroupedBookmarkChangesEnded()).Times(2);
   // Cut the nodes to the clipboard.
-  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes{n1, n2};
+  std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>> nodes{n1, n2};
   internal::BookmarkUIOperationsHelper::CutToClipboard(
       model, nodes, bookmarks::metrics::BookmarkEditSource::kOther,
       /*is_off_the_record=*/false);
@@ -575,7 +575,7 @@ TYPED_TEST(BookmarkUIOperationsHelperTest, PasteNonEditableNodes) {
                                            GURL("http://www.google.com"));
 
   // Copy a node to the clipboard.
-  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes{node};
+  std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>> nodes{node};
   internal::BookmarkUIOperationsHelper::CopyToClipboard(
       model, nodes, bookmarks::metrics::BookmarkEditSource::kOther,
       /*is_off_the_record=*/false);

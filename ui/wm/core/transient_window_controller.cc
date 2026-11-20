@@ -47,7 +47,7 @@ const aura::Window* TransientWindowController::GetTransientParent(
   return window_manager ? window_manager->transient_parent() : nullptr;
 }
 
-std::vector<raw_ptr<aura::Window, VectorExperimental>>
+std::vector<raw_ptr<aura::Window, DanglingUntriaged>>
 TransientWindowController::GetTransientChildren(const aura::Window* parent) {
   const TransientWindowManager* window_manager =
       TransientWindowManager::GetIfExists(parent);

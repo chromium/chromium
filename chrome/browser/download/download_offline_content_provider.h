@@ -121,7 +121,7 @@ class DownloadOfflineContentProvider
   void OnManagerGoingDown(SimpleDownloadManagerCoordinator* manager) override;
 
   void GetAllDownloads(
-      std::vector<raw_ptr<DownloadItem, VectorExperimental>>* all_items);
+      std::vector<raw_ptr<DownloadItem, DanglingUntriaged>>* all_items);
   DownloadItem* GetDownload(const std::string& download_guid);
   void OnThumbnailRetrieved(const ContentId& id,
                             VisualsCallback callback,

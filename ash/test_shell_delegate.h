@@ -121,7 +121,7 @@ class TestShellDelegate : public ShellDelegate {
       const WindowState& window_state) override {}
   const GURL& GetLastCommittedURLForWindowIfAny(aura::Window* window) override;
   void ForceSkipWarningUserOnClose(
-      const std::vector<raw_ptr<aura::Window, VectorExperimental>>& windows)
+      const std::vector<raw_ptr<aura::Window, DanglingUntriaged>>& windows)
       override {}
 
   void SetCanGoBack(bool can_go_back);

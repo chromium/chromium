@@ -54,7 +54,7 @@ SavedDeskDialogController::~SavedDeskDialogController() {
 
 void SavedDeskDialogController::ShowUnsupportedAppsDialog(
     aura::Window* root_window,
-    const std::vector<raw_ptr<aura::Window, VectorExperimental>>&
+    const std::vector<raw_ptr<aura::Window, DanglingUntriaged>>&
         unsupported_apps,
     size_t incognito_window_count,
     DesksController::GetDeskTemplateCallback callback,

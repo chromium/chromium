@@ -89,7 +89,7 @@ class DownloadMetadataManager
 
   // A mapping of DownloadManagerCoordinators to their corresponding contexts.
   typedef std::map<download::SimpleDownloadManagerCoordinator*,
-                   raw_ptr<ManagerContext, CtnExperimental>>
+                   raw_ptr<ManagerContext, DanglingUntriaged>>
       ManagerToContextMap;
 
   // A task runner to which IO tasks are posted.

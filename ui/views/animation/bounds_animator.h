@@ -143,7 +143,7 @@ class VIEWS_EXPORT BoundsAnimator : public AnimationDelegateViews {
   using ViewToDataMap = std::map<const View*, Data>;
 
   using AnimationToViewMap =
-      std::map<const gfx::Animation*, raw_ptr<View, CtnExperimental>>;
+      std::map<const gfx::Animation*, raw_ptr<View, DanglingUntriaged>>;
 
   // Removes references to |view| and its animation. Returns the data for the
   // caller to handle cleanup.

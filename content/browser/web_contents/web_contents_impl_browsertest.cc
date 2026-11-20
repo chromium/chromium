@@ -4457,7 +4457,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, NotifyFullscreenAcquired) {
   RenderFrameHostImpl* child_frame =
       static_cast<RenderFrameHostImpl*>(ChildFrameAt(main_frame, 0));
 
-  std::set<raw_ptr<RenderFrameHostImpl, SetExperimental>> fullscreen_frames;
+  std::set<raw_ptr<RenderFrameHostImpl, DanglingUntriaged>> fullscreen_frames;
   EXPECT_EQ(fullscreen_frames, web_contents->fullscreen_frames_for_testing());
   EXPECT_FALSE(IsInFullscreen());
 
@@ -4718,7 +4718,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   RenderFrameHostImpl* child_frame =
       static_cast<RenderFrameHostImpl*>(ChildFrameAt(main_frame, 0));
 
-  std::set<raw_ptr<RenderFrameHostImpl, SetExperimental>> nodes;
+  std::set<raw_ptr<RenderFrameHostImpl, DanglingUntriaged>> nodes;
   EXPECT_EQ(nodes, web_contents->fullscreen_frames_for_testing());
   EXPECT_FALSE(IsInFullscreen());
 
@@ -4897,7 +4897,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   RenderFrameHostImpl* main_frame = web_contents->GetPrimaryMainFrame();
   RenderFrameHostImpl* child_frame =
       static_cast<RenderFrameHostImpl*>(ChildFrameAt(main_frame, 0));
-  std::set<raw_ptr<RenderFrameHostImpl, SetExperimental>> fullscreen_frames;
+  std::set<raw_ptr<RenderFrameHostImpl, DanglingUntriaged>> fullscreen_frames;
   EXPECT_TRUE(web_contents->fullscreen_frames_for_testing().empty());
   EXPECT_FALSE(IsInFullscreen());
 

@@ -312,7 +312,7 @@ bool MenuModelAdapter::IsItemChecked(int id) const {
 void MenuModelAdapter::WillShowMenu(MenuItemView* menu) {
   // Look up the menu model for this menu.
   const std::map<MenuItemView*,
-                 raw_ptr<ui::MenuModel, CtnExperimental>>::const_iterator
+                 raw_ptr<ui::MenuModel, DanglingUntriaged>>::const_iterator
       map_iterator = menu_map_.find(menu);
   CHECK(map_iterator != menu_map_.end());
   map_iterator->second->MenuWillShow();
@@ -321,7 +321,7 @@ void MenuModelAdapter::WillShowMenu(MenuItemView* menu) {
 void MenuModelAdapter::WillHideMenu(MenuItemView* menu) {
   // Look up the menu model for this menu.
   const std::map<MenuItemView*,
-                 raw_ptr<ui::MenuModel, CtnExperimental>>::const_iterator
+                 raw_ptr<ui::MenuModel, DanglingUntriaged>>::const_iterator
       map_iterator = menu_map_.find(menu);
   CHECK(map_iterator != menu_map_.end());
   map_iterator->second->MenuWillClose();

@@ -88,7 +88,7 @@ class NET_EXPORT ReportingCache {
   //
   // (Clears any existing data in |*reports_out|.)
   virtual void GetReports(
-      std::vector<raw_ptr<const ReportingReport, VectorExperimental>>*
+      std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>>*
           reports_out) const = 0;
 
   // Gets all reports in the cache, including pending and doomed reports, as a
@@ -99,7 +99,7 @@ class NET_EXPORT ReportingCache {
   // eligible for delivery), and marks returned reports as pending in
   // preparation for a delivery attempt. The returned pointers are valid as long
   // as the reports are still pending.
-  virtual std::vector<raw_ptr<const ReportingReport, VectorExperimental>>
+  virtual std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>>
   GetReportsToDeliver() = 0;
 
   // Gets all reports in the cache which are eligible for delivery, which were
@@ -108,19 +108,19 @@ class NET_EXPORT ReportingCache {
   // valid as long as the reports are still pending. This method is used when a
   // reporting source is being destroyed, to trigger delivery of any remaining
   // outstanding reports.
-  virtual std::vector<raw_ptr<const ReportingReport, VectorExperimental>>
+  virtual std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>>
   GetReportsToDeliverForSource(
       const base::UnguessableToken& reporting_source) = 0;
 
   // Unmarks a set of reports as pending. |reports| must be previously marked as
   // pending.
   virtual void ClearReportsPending(
-      const std::vector<raw_ptr<const ReportingReport, VectorExperimental>>&
+      const std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>>&
           reports) = 0;
 
   // Increments |attempts| on a set of reports.
   virtual void IncrementReportsAttempts(
-      const std::vector<raw_ptr<const ReportingReport, VectorExperimental>>&
+      const std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>>&
           reports) = 0;
 
   // Records that we attempted (and possibly succeeded at) delivering
@@ -146,10 +146,10 @@ class NET_EXPORT ReportingCache {
   // immediately, but rather marked doomed and removed once they are no longer
   // pending.
   virtual void RemoveReports(
-      const std::vector<raw_ptr<const ReportingReport, VectorExperimental>>&
+      const std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>>&
           reports) = 0;
   virtual void RemoveReports(
-      const std::vector<raw_ptr<const ReportingReport, VectorExperimental>>&
+      const std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>>&
           reports,
       bool delivery_success) = 0;
 

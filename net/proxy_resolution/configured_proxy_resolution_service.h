@@ -306,7 +306,7 @@ class NET_EXPORT ConfiguredProxyResolutionService
   class PacFileDeciderPoller;
   class SystemProxyResolver;
 
-  typedef std::set<raw_ptr<ConfiguredProxyResolutionRequest, SetExperimental>>
+  typedef std::set<raw_ptr<ConfiguredProxyResolutionRequest, DanglingUntriaged>>
       PendingRequests;
 
   enum class PacResolverState {

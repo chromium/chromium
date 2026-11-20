@@ -185,7 +185,7 @@ IN_PROC_BROWSER_TEST_F(DragDownloadFileTest, DragDownloadFileTest_ClosePage) {
   file->Start(observer.get());
   shell()->web_contents()->Close();
   RunAllTasksUntilIdle();
-  std::vector<raw_ptr<download::DownloadItem, VectorExperimental>> downloads;
+  std::vector<raw_ptr<download::DownloadItem, DanglingUntriaged>> downloads;
   manager->GetAllDownloads(&downloads);
   ASSERT_EQ(0u, downloads.size());
 }

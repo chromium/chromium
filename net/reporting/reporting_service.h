@@ -140,7 +140,7 @@ class NET_EXPORT ReportingService {
 
   virtual base::Value StatusAsValue() const;
 
-  virtual std::vector<raw_ptr<const ReportingReport, VectorExperimental>>
+  virtual std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>>
   GetReports() const = 0;
 
   virtual base::flat_map<url::Origin, std::vector<ReportingEndpoint>>

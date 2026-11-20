@@ -17,7 +17,7 @@ namespace {
 constexpr size_t kHdcpKeySize = 285;
 
 display::DisplaySnapshot* GetDisplayWithIdIfHdcpCapableAndKeyNeeded(
-    const std::vector<raw_ptr<display::DisplaySnapshot, VectorExperimental>>&
+    const std::vector<raw_ptr<display::DisplaySnapshot, DanglingUntriaged>>&
         displays_states,
     int64_t display_id) {
   for (display::DisplaySnapshot* display : displays_states) {
@@ -42,7 +42,7 @@ ContentProtectionKeyManager::ContentProtectionKeyManager() = default;
 ContentProtectionKeyManager::~ContentProtectionKeyManager() = default;
 
 void ContentProtectionKeyManager::SetKeyIfRequired(
-    const std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>&
+    const std::vector<raw_ptr<DisplaySnapshot, DanglingUntriaged>>&
         displays_states,
     int64_t display_id,
     KeySetCallback on_key_set) {

@@ -348,7 +348,7 @@ void BackToBackBeginFrameSource::OnTimerTick() {
   // This must happen after getting the LastTickTime() from the time source.
   time_source_->SetActive(false);
 
-  base::flat_set<raw_ptr<BeginFrameObserver, CtnExperimental>>
+  base::flat_set<raw_ptr<BeginFrameObserver, DanglingUntriaged>>
       pending_observers;
   pending_observers.swap(pending_begin_frame_observers_);
   DCHECK(!pending_observers.empty());
@@ -478,7 +478,7 @@ void DelayBasedBeginFrameSource::OnTimerTick() {
   }
 
   IssueBeginFrameToInputClient(last_begin_frame_args_);
-  base::flat_set<raw_ptr<BeginFrameObserver, CtnExperimental>> observers(
+  base::flat_set<raw_ptr<BeginFrameObserver, DanglingUntriaged>> observers(
       observers_);
   for (BeginFrameObserver* obs : observers) {
     IssueBeginFrameToObserver(obs, last_begin_frame_args_);
@@ -584,7 +584,7 @@ void ExternalBeginFrameSource::OnSetBeginFrameSourcePaused(bool paused) {
   if (paused_ == paused)
     return;
   paused_ = paused;
-  base::flat_set<raw_ptr<BeginFrameObserver, CtnExperimental>> observers(
+  base::flat_set<raw_ptr<BeginFrameObserver, DanglingUntriaged>> observers(
       observers_);
   for (BeginFrameObserver* obs : observers) {
     obs->OnBeginFrameSourcePausedChanged(paused_);
@@ -631,7 +631,7 @@ void ExternalBeginFrameSource::OnBeginFrame(const BeginFrameArgs& args) {
   last_begin_frame_args_ = args;
 
   IssueBeginFrameToInputClient(args);
-  base::flat_set<raw_ptr<BeginFrameObserver, CtnExperimental>> observers(
+  base::flat_set<raw_ptr<BeginFrameObserver, DanglingUntriaged>> observers(
       observers_);
 
   for (BeginFrameObserver* obs : observers) {

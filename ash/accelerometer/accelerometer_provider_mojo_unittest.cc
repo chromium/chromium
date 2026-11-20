@@ -140,7 +140,7 @@ class AccelerometerProviderMojoTest : public ::testing::Test {
   FakeObserver observer_;
   std::unique_ptr<chromeos::sensors::FakeSensorHalServer> sensor_hal_server_;
   std::map<int32_t,
-           raw_ptr<chromeos::sensors::FakeSensorDevice, CtnExperimental>>
+           raw_ptr<chromeos::sensors::FakeSensorDevice, DanglingUntriaged>>
       sensor_devices_;
 
   scoped_refptr<AccelerometerProviderMojo> provider_;

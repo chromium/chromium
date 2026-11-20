@@ -889,7 +889,7 @@ void ProfilePolicyConnector::RecordAffiliationMetrics() {
 #if BUILDFLAG(IS_CHROMEOS)
 std::unique_ptr<PolicyService>
 ProfilePolicyConnector::CreatePolicyServiceWithInitializationThrottled(
-    const std::vector<raw_ptr<ConfigurationPolicyProvider, VectorExperimental>>&
+    const std::vector<raw_ptr<ConfigurationPolicyProvider, DanglingUntriaged>>&
         policy_providers,
     std::vector<std::unique_ptr<PolicyMigrator>> migrators,
     ConfigurationPolicyProvider* user_policy_delegate) {

@@ -47,7 +47,7 @@ class StackedNotificationBar : public views::View,
   bool Update(
       int total_notification_count,
       int pinned_notification_count,
-      std::vector<raw_ptr<message_center::Notification, VectorExperimental>>
+      std::vector<raw_ptr<message_center::Notification, DanglingUntriaged>>
           stacked_notifications);
 
   // message_center::MessageCenterObserver:
@@ -78,18 +78,18 @@ class StackedNotificationBar : public views::View,
 
   // Move all icons left when notifications are scrolled up.
   void ShiftIconsLeft(
-      std::vector<raw_ptr<message_center::Notification, VectorExperimental>>
+      std::vector<raw_ptr<message_center::Notification, DanglingUntriaged>>
           stacked_notifications);
 
   // Move icons right to make space for additional icons when notifications are
   // scrolled down.
   void ShiftIconsRight(
-      std::vector<raw_ptr<message_center::Notification, VectorExperimental>>
+      std::vector<raw_ptr<message_center::Notification, DanglingUntriaged>>
           stacked_notifications);
 
   // Update state for stacked notification icons and move them as necessary.
   void UpdateStackedNotifications(
-      std::vector<raw_ptr<message_center::Notification, VectorExperimental>>
+      std::vector<raw_ptr<message_center::Notification, DanglingUntriaged>>
           stacked_notifications);
 
   int total_notification_count_ = 0;

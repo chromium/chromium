@@ -667,7 +667,7 @@ void AppListTestApi::SimulateSearch(const std::u16string& query) {
 }
 
 SearchResultListView* AppListTestApi::GetTopVisibleSearchResultListView() {
-  std::vector<raw_ptr<SearchResultContainerView, VectorExperimental>>
+  std::vector<raw_ptr<SearchResultContainerView, DanglingUntriaged>>
       result_containers = GetSearchView()->result_container_views_for_test();
   // Check that one of the `result_containers` is kApps.
   for (SearchResultContainerView* container : result_containers) {

@@ -64,7 +64,7 @@ class ReportingBrowsingDataRemoverTest : public ReportingTestBase {
   }
 
   size_t report_count() {
-    std::vector<raw_ptr<const ReportingReport, VectorExperimental>> reports;
+    std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>> reports;
     cache()->GetReports(&reports);
     return reports.size();
   }
@@ -142,7 +142,7 @@ TEST_F(ReportingBrowsingDataRemoverTest, RemoveSomeReports) {
                      /* host= */ kUrl1_.GetHost());
   EXPECT_EQ(2u, cache()->GetEndpointCount());
 
-  std::vector<raw_ptr<const ReportingReport, VectorExperimental>> reports;
+  std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>> reports;
   cache()->GetReports(&reports);
   ASSERT_EQ(1u, reports.size());
   EXPECT_EQ(kUrl2_, reports[0]->url);

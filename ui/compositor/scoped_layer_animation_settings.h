@@ -65,7 +65,7 @@ class COMPOSITOR_EXPORT ScopedLayerAnimationSettings {
   base::TimeDelta old_transition_duration_;
   gfx::Tween::Type old_tween_type_;
   LayerAnimator::PreemptionStrategy old_preemption_strategy_;
-  std::set<raw_ptr<ImplicitAnimationObserver, SetExperimental>> observers_;
+  std::set<raw_ptr<ImplicitAnimationObserver, DanglingUntriaged>> observers_;
 };
 
 }  // namespace ui

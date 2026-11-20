@@ -108,7 +108,7 @@ class TestNotificationListView : public NotificationListView {
     return message_view;
   }
 
-  std::vector<raw_ptr<message_center::Notification, VectorExperimental>>
+  std::vector<raw_ptr<message_center::Notification, DanglingUntriaged>>
   GetStackedNotifications() const override {
     return stacked_notifications_;
   }
@@ -119,7 +119,7 @@ class TestNotificationListView : public NotificationListView {
   }
 
  private:
-  std::vector<raw_ptr<message_center::Notification, VectorExperimental>>
+  std::vector<raw_ptr<message_center::Notification, DanglingUntriaged>>
       stacked_notifications_;
   std::vector<std::string> notification_id_list_;
 };

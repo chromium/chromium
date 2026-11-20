@@ -3261,7 +3261,7 @@ TEST_F(WindowTest, RecreateLayerZOrder) {
       SK_ColorWHITE);
   std::unique_ptr<ui::Layer> old_layer(w->RecreateLayer());
 
-  const std::vector<raw_ptr<ui::Layer, VectorExperimental>>& child_layers =
+  const std::vector<raw_ptr<ui::Layer, DanglingUntriaged>>& child_layers =
       root_window()->layer()->children();
   ASSERT_EQ(2u, child_layers.size());
   EXPECT_EQ(w->layer(), child_layers[0]);

@@ -231,7 +231,7 @@ class SecureChannelConnectionAttemptBaseTest : public testing::Test {
 
   std::unique_ptr<FakeAuthenticatedChannel> fake_authenticated_channel_;
   std::set<raw_ptr<FakePendingConnectionRequest<BleInitiatorFailureType>,
-                   SetExperimental>>
+                   DanglingUntriaged>>
       active_requests_;
   bool was_operation_canceled_in_tear_down_ = false;
 

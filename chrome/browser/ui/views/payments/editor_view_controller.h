@@ -82,7 +82,7 @@ class EditorViewController : public PaymentRequestSheetController,
   using ComboboxMap =
       std::unordered_map<ValidatingCombobox*, const EditorField>;
   using ErrorLabelMap =
-      std::map<autofill::FieldType, raw_ptr<views::View, CtnExperimental>>;
+      std::map<autofill::FieldType, raw_ptr<views::View, DanglingUntriaged>>;
 
   // Does not take ownership of the arguments, which should outlive this object.
   // |back_navigation_type| identifies what sort of back navigation should be

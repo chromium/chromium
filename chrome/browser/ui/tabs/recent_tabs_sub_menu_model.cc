@@ -531,7 +531,7 @@ void RecentTabsSubMenuModel::BuildTabsFromOtherDevices() {
   AddTitleWithStringId(IDS_YOUR_DEVICES);
 
   sync_sessions::OpenTabsUIDelegate* open_tabs = GetOpenTabsUIDelegate();
-  std::vector<raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>
+  std::vector<raw_ptr<const sync_sessions::SyncedSession, DanglingUntriaged>>
       sessions;
   if (!open_tabs || !open_tabs->GetAllForeignSessions(
                         &sessions, sync_sessions::OpenTabsUIDelegate::

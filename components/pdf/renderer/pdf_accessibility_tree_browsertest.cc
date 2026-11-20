@@ -12018,7 +12018,7 @@ TEST_F(PdfAccessibilityTreeTest, TestOverlappingAnnots) {
   ui::AXNode* paragraph_node = page_node->GetChildAtIndex(0);
   ASSERT_TRUE(paragraph_node);
   EXPECT_EQ(ax::mojom::Role::kParagraph, paragraph_node->GetRole());
-  const std::vector<raw_ptr<ui::AXNode, VectorExperimental>>& child_nodes =
+  const std::vector<raw_ptr<ui::AXNode, DanglingUntriaged>>& child_nodes =
       paragraph_node->GetAllChildren();
   ASSERT_EQ(3u, child_nodes.size());
 
@@ -12804,10 +12804,10 @@ TEST_F(PdfAccessibilityTreeTest, TestClickActionDataConversion) {
   ASSERT_NE(nullptr, page_node);
   ASSERT_EQ(ax::mojom::Role::kRegion, page_node->GetRole());
 
-  const std::vector<raw_ptr<ui::AXNode, VectorExperimental>>& para_nodes =
+  const std::vector<raw_ptr<ui::AXNode, DanglingUntriaged>>& para_nodes =
       page_node->GetAllChildren();
   ASSERT_EQ(2u, para_nodes.size());
-  const std::vector<raw_ptr<ui::AXNode, VectorExperimental>>& link_nodes =
+  const std::vector<raw_ptr<ui::AXNode, DanglingUntriaged>>& link_nodes =
       para_nodes[1]->GetAllChildren();
   ASSERT_EQ(1u, link_nodes.size());
 
@@ -12950,24 +12950,24 @@ TEST_F(PdfAccessibilityTreeTest, TestSelectionActionDataConversion) {
   ui::AXNode* page_node = root_node->GetChildAtIndex(1);
   ASSERT_NE(nullptr, page_node);
   ASSERT_EQ(ax::mojom::Role::kRegion, page_node->GetRole());
-  const std::vector<raw_ptr<ui::AXNode, VectorExperimental>>& para_nodes =
+  const std::vector<raw_ptr<ui::AXNode, DanglingUntriaged>>& para_nodes =
       page_node->GetAllChildren();
   ASSERT_EQ(2u, para_nodes.size());
   ASSERT_TRUE(para_nodes[0]);
-  const std::vector<raw_ptr<ui::AXNode, VectorExperimental>>&
+  const std::vector<raw_ptr<ui::AXNode, DanglingUntriaged>>&
       static_text_nodes1 = para_nodes[0]->GetAllChildren();
   ASSERT_EQ(1u, static_text_nodes1.size());
   ASSERT_TRUE(static_text_nodes1[0]);
-  const std::vector<raw_ptr<ui::AXNode, VectorExperimental>>&
+  const std::vector<raw_ptr<ui::AXNode, DanglingUntriaged>>&
       inline_text_nodes1 = static_text_nodes1[0]->GetAllChildren();
   ASSERT_TRUE(inline_text_nodes1[0]);
   ASSERT_EQ(1u, inline_text_nodes1.size());
   ASSERT_TRUE(para_nodes[1]);
-  const std::vector<raw_ptr<ui::AXNode, VectorExperimental>>&
+  const std::vector<raw_ptr<ui::AXNode, DanglingUntriaged>>&
       static_text_nodes2 = para_nodes[1]->GetAllChildren();
   ASSERT_EQ(1u, static_text_nodes2.size());
   ASSERT_TRUE(static_text_nodes2[0]);
-  const std::vector<raw_ptr<ui::AXNode, VectorExperimental>>&
+  const std::vector<raw_ptr<ui::AXNode, DanglingUntriaged>>&
       inline_text_nodes2 = static_text_nodes2[0]->GetAllChildren();
   ASSERT_TRUE(inline_text_nodes2[0]);
   ASSERT_EQ(1u, inline_text_nodes2.size());

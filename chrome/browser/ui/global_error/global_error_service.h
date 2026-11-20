@@ -24,7 +24,7 @@ class GlobalError;
 class GlobalErrorService : public KeyedService {
  public:
   // Type used to represent the list of currently active errors.
-  using GlobalErrorList = std::vector<raw_ptr<GlobalError, VectorExperimental>>;
+  using GlobalErrorList = std::vector<raw_ptr<GlobalError, DanglingUntriaged>>;
 
   // Constructs a GlobalErrorService object.
   GlobalErrorService();

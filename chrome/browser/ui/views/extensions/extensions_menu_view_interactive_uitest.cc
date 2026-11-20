@@ -69,7 +69,7 @@ class ExtensionsMenuViewInteractiveUITest : public ExtensionsToolbarUITest {
              features::kWebUIExtensionsContainer});
   }
 
-  static base::flat_set<raw_ptr<ExtensionMenuItemView, CtnExperimental>>
+  static base::flat_set<raw_ptr<ExtensionMenuItemView, DanglingUntriaged>>
   GetExtensionMenuItemViews() {
     return ExtensionsMenuView::GetExtensionsMenuViewForTesting()
         ->extensions_menu_items_for_testing();

@@ -62,9 +62,9 @@ bool EntryContainsMetrics(const ukm::mojom::UkmEntry* entry,
 // Returns an iterator to an entry whose metrics match `expected_metrics`,
 // or end() if not found.
 std::vector<
-    raw_ptr<const ukm::mojom::UkmEntry, VectorExperimental>>::const_iterator
+    raw_ptr<const ukm::mojom::UkmEntry, DanglingUntriaged>>::const_iterator
 FindMatchingEntry(
-    const std::vector<raw_ptr<const ukm::mojom::UkmEntry, VectorExperimental>>&
+    const std::vector<raw_ptr<const ukm::mojom::UkmEntry, DanglingUntriaged>>&
         entries,
     const UkmMetricMap& expected_metrics) {
   return std::ranges::find_if(
@@ -106,7 +106,7 @@ void UkmEntryChecker::ExpectNewEntry(const std::string& entry_name,
                                      const UkmMetricMap& expected_metrics) {
   // There should be at least one new entry, which is the one we're checking.
   num_entries_[entry_name]++;
-  std::vector<raw_ptr<const ukm::mojom::UkmEntry, VectorExperimental>> entries =
+  std::vector<raw_ptr<const ukm::mojom::UkmEntry, DanglingUntriaged>> entries =
       ukm_recorder_.GetEntriesByName(entry_name);
   ASSERT_LE(num_entries_[entry_name], entries.size())
       << "Expected at least " << num_entries_[entry_name] << " entries, found "
@@ -124,7 +124,7 @@ void UkmEntryChecker::ExpectNewEntry(const std::string& entry_name,
 void UkmEntryChecker::ExpectNewEntries(
     const std::string& entry_name,
     const std::vector<UkmMetricMap>& expected_entries) {
-  std::vector<raw_ptr<const ukm::mojom::UkmEntry, VectorExperimental>> entries =
+  std::vector<raw_ptr<const ukm::mojom::UkmEntry, DanglingUntriaged>> entries =
       ukm_recorder_.GetEntriesByName(entry_name);
 
   const size_t num_new_entries = expected_entries.size();

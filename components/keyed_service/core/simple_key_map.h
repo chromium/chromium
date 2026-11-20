@@ -55,7 +55,7 @@ class KEYED_SERVICE_EXPORT SimpleKeyMap {
   ~SimpleKeyMap();
 
   std::map<raw_ptr<content::BrowserContext>,
-           raw_ptr<SimpleFactoryKey, CtnExperimental>>
+           raw_ptr<SimpleFactoryKey, DanglingUntriaged>>
       mapping_;
 };
 

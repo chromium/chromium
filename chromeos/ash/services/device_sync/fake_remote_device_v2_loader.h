@@ -79,7 +79,7 @@ class FakeRemoteDeviceV2LoaderFactory
 
   // Returns a vector of all FakeRemoteDeviceV2Loader instances created by
   // CreateInstance().
-  const std::vector<raw_ptr<FakeRemoteDeviceV2Loader, VectorExperimental>>&
+  const std::vector<raw_ptr<FakeRemoteDeviceV2Loader, DanglingUntriaged>>&
   instances() const {
     return instances_;
   }
@@ -88,7 +88,7 @@ class FakeRemoteDeviceV2LoaderFactory
   // RemoteDeviceV2LoaderImpl::Factory:
   std::unique_ptr<RemoteDeviceV2Loader> CreateInstance() override;
 
-  std::vector<raw_ptr<FakeRemoteDeviceV2Loader, VectorExperimental>> instances_;
+  std::vector<raw_ptr<FakeRemoteDeviceV2Loader, DanglingUntriaged>> instances_;
 };
 
 }  // namespace device_sync

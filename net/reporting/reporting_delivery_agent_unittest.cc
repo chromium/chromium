@@ -126,7 +126,7 @@ class ReportingDeliveryAgentTest : public ReportingTestBase {
   void SendReports() { delivery_agent()->SendReportsForTesting(); }
 
   bool AreReportsProcessed() {
-    std::vector<raw_ptr<const ReportingReport, VectorExperimental>>
+    std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>>
         cached_reports;
     cache()->GetReports(&cached_reports);
     return cached_reports.empty();
@@ -193,7 +193,7 @@ TEST_F(ReportingDeliveryAgentTest, SuccessfulImmediateUpload) {
   pending_uploads()[0]->Complete(ReportingUploader::Outcome::SUCCESS);
 
   // Successful upload should remove delivered reports.
-  std::vector<raw_ptr<const ReportingReport, VectorExperimental>> reports;
+  std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>> reports;
   cache()->GetReports(&reports);
   EXPECT_TRUE(reports.empty());
 
@@ -229,7 +229,7 @@ TEST_F(ReportingDeliveryAgentTest, SuccessfulImmediateUploadDocumentReport) {
   pending_uploads()[0]->Complete(ReportingUploader::Outcome::SUCCESS);
 
   // Successful upload should remove delivered reports.
-  std::vector<raw_ptr<const ReportingReport, VectorExperimental>> reports;
+  std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>> reports;
   cache()->GetReports(&reports);
   EXPECT_TRUE(reports.empty());
 
@@ -263,7 +263,7 @@ TEST_F(ReportingDeliveryAgentTest, SuccessfulImmediateSubdomainUpload) {
   pending_uploads()[0]->Complete(ReportingUploader::Outcome::SUCCESS);
 
   // Successful upload should remove delivered reports.
-  std::vector<raw_ptr<const ReportingReport, VectorExperimental>> reports;
+  std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>> reports;
   cache()->GetReports(&reports);
   EXPECT_TRUE(reports.empty());
 
@@ -303,7 +303,7 @@ TEST_F(ReportingDeliveryAgentTest,
   }
 
   // Successful upload should remove delivered reports.
-  std::vector<raw_ptr<const ReportingReport, VectorExperimental>> reports;
+  std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>> reports;
   cache()->GetReports(&reports);
   EXPECT_TRUE(reports.empty());
 }
@@ -342,7 +342,7 @@ TEST_F(ReportingDeliveryAgentTest, SuccessfulDelayedUpload) {
   }
 
   // Successful upload should remove delivered reports.
-  std::vector<raw_ptr<const ReportingReport, VectorExperimental>> reports;
+  std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>> reports;
   cache()->GetReports(&reports);
   EXPECT_TRUE(reports.empty());
 
@@ -369,7 +369,7 @@ TEST_F(ReportingDeliveryAgentTest, FailedUpload) {
   }
 
   // Failed upload should increment reports' attempts.
-  std::vector<raw_ptr<const ReportingReport, VectorExperimental>> reports;
+  std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>> reports;
   cache()->GetReports(&reports);
   ASSERT_EQ(1u, reports.size());
   EXPECT_EQ(1, reports[0]->attempts);
@@ -420,7 +420,7 @@ TEST_F(ReportingDeliveryAgentTest, DisallowedUpload) {
   }
 
   // Disallowed reports should NOT have been removed from the cache.
-  std::vector<raw_ptr<const ReportingReport, VectorExperimental>> reports;
+  std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>> reports;
   cache()->GetReports(&reports);
   EXPECT_EQ(1u, reports.size());
 }
@@ -442,7 +442,7 @@ TEST_F(ReportingDeliveryAgentTest, RemoveEndpointUpload) {
 
   // "Remove endpoint" upload should remove endpoint from *all* origins and
   // increment reports' attempts.
-  std::vector<raw_ptr<const ReportingReport, VectorExperimental>> reports;
+  std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>> reports;
   cache()->GetReports(&reports);
   ASSERT_EQ(1u, reports.size());
   EXPECT_EQ(1, reports[0]->attempts);
@@ -466,7 +466,7 @@ TEST_F(ReportingDeliveryAgentTest, ConcurrentRemove) {
   ASSERT_EQ(1u, pending_uploads().size());
 
   // Remove the report while the upload is running.
-  std::vector<raw_ptr<const ReportingReport, VectorExperimental>> reports;
+  std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>> reports;
   cache()->GetReports(&reports);
   EXPECT_EQ(1u, reports.size());
 
@@ -498,7 +498,7 @@ TEST_F(ReportingDeliveryAgentTest, ConcurrentRemoveDuringPermissionsCheck) {
   ASSERT_TRUE(context()->test_delegate()->PermissionsCheckPaused());
 
   // Remove the report while the upload is running.
-  std::vector<raw_ptr<const ReportingReport, VectorExperimental>> reports;
+  std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>> reports;
   cache()->GetReports(&reports);
   EXPECT_EQ(1u, reports.size());
 
@@ -941,7 +941,7 @@ TEST_F(ReportingDeliveryAgentTest, SendEnterpriseReports) {
   EXPECT_EQ(0u, pending_uploads().size());
 
   // Successful upload should remove delivered reports.
-  std::vector<raw_ptr<const ReportingReport, VectorExperimental>> reports;
+  std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>> reports;
   cache()->GetReports(&reports);
   EXPECT_TRUE(reports.empty());
 }
@@ -976,7 +976,7 @@ TEST_F(ReportingDeliveryAgentTest, SendEnterpriseReportsBatched) {
   EXPECT_EQ(0u, pending_uploads().size());
 
   // Successful upload should remove delivered reports.
-  std::vector<raw_ptr<const ReportingReport, VectorExperimental>> reports;
+  std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>> reports;
   cache()->GetReports(&reports);
   EXPECT_TRUE(reports.empty());
 }
@@ -1009,7 +1009,7 @@ TEST_F(ReportingDeliveryAgentTest, SendDeveloperAndEnterpriseReports) {
   EXPECT_EQ(0u, pending_uploads().size());
 
   // Successful upload should remove delivered reports.
-  std::vector<raw_ptr<const ReportingReport, VectorExperimental>> reports;
+  std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>> reports;
   cache()->GetReports(&reports);
   EXPECT_TRUE(reports.empty());
 }

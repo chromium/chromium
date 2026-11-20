@@ -260,7 +260,7 @@ bool IsZOrderTracked(aura::Window* window) {
 }
 
 std::optional<size_t> GetWindowZOrder(
-    const std::vector<raw_ptr<aura::Window, VectorExperimental>>& windows,
+    const std::vector<raw_ptr<aura::Window, DanglingUntriaged>>& windows,
     aura::Window* window) {
   size_t position = 0;
   for (aura::Window* w : std::views::reverse(windows)) {

@@ -238,7 +238,7 @@ IN_PROC_BROWSER_TEST_P(
   ON_CALL(*manager(), GetAllDownloads)
       .WillByDefault(
           [&downloads](
-              std::vector<raw_ptr<download::DownloadItem, VectorExperimental>>*
+              std::vector<raw_ptr<download::DownloadItem, DanglingUntriaged>>*
                   download_ptrs) {
             for (auto& download : downloads) {
               download_ptrs->push_back(download.get());

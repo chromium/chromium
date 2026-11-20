@@ -62,7 +62,7 @@ class ASH_EXPORT QuickSettingsMediaView : public views::View {
   int GetMediaViewHeight() const;
 
   std::map<const std::string,
-           raw_ptr<global_media_controls::MediaItemUIView, CtnExperimental>>
+           raw_ptr<global_media_controls::MediaItemUIView, DanglingUntriaged>>
   items_for_testing() {
     return items_;
   }
@@ -79,7 +79,7 @@ class ASH_EXPORT QuickSettingsMediaView : public views::View {
   raw_ptr<PaginationView> pagination_view_ = nullptr;
 
   std::map<const std::string,
-           raw_ptr<global_media_controls::MediaItemUIView, CtnExperimental>>
+           raw_ptr<global_media_controls::MediaItemUIView, DanglingUntriaged>>
       items_;
 
   base::WeakPtrFactory<QuickSettingsMediaView> weak_factory_{this};

@@ -280,7 +280,7 @@ class CaptionBubbleFrameView : public views::BubbleFrameView {
 
  public:
   CaptionBubbleFrameView(
-      std::vector<raw_ptr<views::View, VectorExperimental>> buttons,
+      std::vector<raw_ptr<views::View, DanglingUntriaged>> buttons,
       raw_ptr<views::ScrollView> scrollable)
       : views::BubbleFrameView(gfx::Insets(), gfx::Insets()),
         buttons_(buttons),
@@ -346,7 +346,7 @@ class CaptionBubbleFrameView : public views::BubbleFrameView {
   }
 
  private:
-  const std::vector<raw_ptr<views::View, VectorExperimental>> buttons_;
+  const std::vector<raw_ptr<views::View, DanglingUntriaged>> buttons_;
   const raw_ptr<views::ScrollView> scrollable_;
 };
 
@@ -1077,7 +1077,7 @@ void CaptionBubble::Init() {
   header_container_ = AddChildViewRaw(std::move(header_container));
   AddChildViewRaw(std::move(content_container));
 
-  std::vector<raw_ptr<views::View, VectorExperimental>> buttons = GetButtons();
+  std::vector<raw_ptr<views::View, DanglingUntriaged>> buttons = GetButtons();
   for (views::View* button : buttons) {
     button->SetPaintToLayer();
     button->layer()->SetFillsBoundsOpaquely(false);
@@ -1183,7 +1183,7 @@ bool CaptionBubble::ShouldShowCloseButton() const {
 
 std::unique_ptr<views::FrameView> CaptionBubble::CreateFrameView(
     views::Widget* widget) {
-  std::vector<raw_ptr<views::View, VectorExperimental>> buttons = GetButtons();
+  std::vector<raw_ptr<views::View, DanglingUntriaged>> buttons = GetButtons();
   caption_bubble_event_observer_ =
       std::make_unique<CaptionBubbleEventObserver>(this, widget);
 
@@ -1343,7 +1343,7 @@ void CaptionBubble::SetModel(CaptionBubbleModel* model) {
 }
 
 void CaptionBubble::AnimationProgressed(const gfx::Animation* animation) {
-  std::vector<raw_ptr<views::View, VectorExperimental>> buttons = GetButtons();
+  std::vector<raw_ptr<views::View, DanglingUntriaged>> buttons = GetButtons();
   for (views::View* button : buttons) {
     button->layer()->SetOpacity(animation->GetCurrentValue());
   }
@@ -1977,15 +1977,15 @@ void CaptionBubble::LogSessionEvent(SessionEvent event) {
   }
 }
 
-std::vector<raw_ptr<views::View, VectorExperimental>>
+std::vector<raw_ptr<views::View, DanglingUntriaged>>
 CaptionBubble::GetButtons() {
-  // TODO: the extraction here needs to be removed once the VectorExperimental
-  // alias is removed.
-  std::vector<raw_ptr<views::View, VectorExperimental>> buttons = {
+  // TODO: the extraction here needs to be removed once DanglingUntriaged
+  // is removed.
+  std::vector<raw_ptr<views::View, DanglingUntriaged>> buttons = {
       back_to_tab_button_.get(), close_button_.get(), expand_button_.get(),
       collapse_button_.get()};
 
-  std::vector<raw_ptr<views::View, VectorExperimental>> language_buttons =
+  std::vector<raw_ptr<views::View, DanglingUntriaged>> language_buttons =
       translation_view_wrapper_->GetButtons();
   buttons.insert(buttons.end(), language_buttons.begin(),
                  language_buttons.end());

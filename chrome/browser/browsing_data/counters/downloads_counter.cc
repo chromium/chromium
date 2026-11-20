@@ -60,7 +60,7 @@ void DownloadsCounter::CountDownloads() {
     ReportResult(0);
     return;
   }
-  std::vector<raw_ptr<download::DownloadItem, VectorExperimental>> downloads;
+  std::vector<raw_ptr<download::DownloadItem, DanglingUntriaged>> downloads;
   download_manager->GetAllDownloads(&downloads);
   base::Time begin_time = GetPeriodStart();
 

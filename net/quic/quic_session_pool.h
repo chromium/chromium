@@ -655,14 +655,14 @@ class NET_EXPORT_PRIVATE QuicSessionPool
 
   using SessionMap =
       std::map<QuicSessionKey,
-               raw_ptr<QuicChromiumClientSession, CtnExperimental>>;
+               raw_ptr<QuicChromiumClientSession, DanglingUntriaged>>;
   using SessionIdSet = std::set<std::unique_ptr<QuicChromiumClientSession>,
                                 base::UniquePtrComparator>;
   using WeakSessionList = std::vector<base::WeakPtr<QuicChromiumClientSession>>;
   using AliasSet = std::set<QuicSessionAliasKey>;
   using SessionAliasMap = std::map<QuicChromiumClientSession*, AliasSet>;
   using SessionSet =
-      std::set<raw_ptr<QuicChromiumClientSession, SetExperimental>>;
+      std::set<raw_ptr<QuicChromiumClientSession, DanglingUntriaged>>;
   using IPAliasMap = std::map<IPEndPoint, SessionSet>;
   using SessionPeerIPMap = std::map<QuicChromiumClientSession*, IPEndPoint>;
   using JobMap = std::map<QuicSessionKey, std::unique_ptr<Job>>;

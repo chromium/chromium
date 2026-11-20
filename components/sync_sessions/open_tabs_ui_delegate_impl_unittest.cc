@@ -115,7 +115,7 @@ TEST_F(OpenTabsUIDelegateImplTest, ShouldSortSessions) {
   session_tracker_.GetSession(kSessionTag3)
       ->SetModifiedTime(kTime0 - base::Seconds(2));
 
-  std::vector<raw_ptr<const SyncedSession, VectorExperimental>> sessions;
+  std::vector<raw_ptr<const SyncedSession, DanglingUntriaged>> sessions;
   EXPECT_TRUE(delegate_.GetAllForeignSessions(
       &sessions, OpenTabsUIDelegate::ForeignSessionFilter::kPresentable));
   EXPECT_EQ(sessions[0]->GetSessionTag(), kSessionTag2);
@@ -171,7 +171,7 @@ TEST_F(OpenTabsUIDelegateImplTest, ShouldSkipNonPresentable) {
       ->navigations.push_back(sessions::SerializedNavigationEntryTestHelper::
                                   CreateNavigationForTest());
 
-  std::vector<raw_ptr<const SyncedSession, VectorExperimental>> sessions;
+  std::vector<raw_ptr<const SyncedSession, DanglingUntriaged>> sessions;
   EXPECT_TRUE(delegate_.GetAllForeignSessions(
       &sessions, OpenTabsUIDelegate::ForeignSessionFilter::kPresentable));
   EXPECT_EQ(sessions[0]->GetSessionTag(), kSessionTag2);
@@ -240,7 +240,7 @@ TEST_F(OpenTabsUIDelegateImplTest, ShouldSkipNonSyncableTabs) {
   session_tracker_.GetTab(kSessionTag2, kTabId2)
       ->navigations.push_back(syncable_entry);
 
-  std::vector<raw_ptr<const SyncedSession, VectorExperimental>> sessions;
+  std::vector<raw_ptr<const SyncedSession, DanglingUntriaged>> sessions;
   EXPECT_TRUE(delegate_.GetAllForeignSessions(
       &sessions, OpenTabsUIDelegate::ForeignSessionFilter::kPresentable));
   EXPECT_EQ(sessions[0]->GetSessionTag(), kSessionTag2);
@@ -251,7 +251,7 @@ TEST_F(OpenTabsUIDelegateImplTest, ShouldSkipNonSyncableTabs) {
 // ordered from most recent to least recent.
 TEST_F(OpenTabsUIDelegateImplTest,
        GetAllForeignSessionsWithFilterAllReturnsZeroTabAndNonSyncableSessions) {
-  std::vector<raw_ptr<const SyncedSession, VectorExperimental>> empty_sessions;
+  std::vector<raw_ptr<const SyncedSession, DanglingUntriaged>> empty_sessions;
   EXPECT_FALSE(delegate_.GetAllForeignSessions(
       &empty_sessions, OpenTabsUIDelegate::ForeignSessionFilter::kAll));
   EXPECT_THAT(empty_sessions, IsEmpty());
@@ -291,14 +291,14 @@ TEST_F(OpenTabsUIDelegateImplTest,
   session_tracker_.GetSession(kSessionTag3)
       ->SetModifiedTime(kTime0 - base::Seconds(2));
 
-  std::vector<raw_ptr<const SyncedSession, VectorExperimental>>
+  std::vector<raw_ptr<const SyncedSession, DanglingUntriaged>>
       presentable_sessions;
   EXPECT_TRUE(delegate_.GetAllForeignSessions(
       &presentable_sessions,
       OpenTabsUIDelegate::ForeignSessionFilter::kPresentable));
   EXPECT_THAT(presentable_sessions, ElementsAre(HasSessionTag(kSessionTag3)));
 
-  std::vector<raw_ptr<const SyncedSession, VectorExperimental>> all_sessions;
+  std::vector<raw_ptr<const SyncedSession, DanglingUntriaged>> all_sessions;
   EXPECT_TRUE(delegate_.GetAllForeignSessions(
       &all_sessions, OpenTabsUIDelegate::ForeignSessionFilter::kAll));
   EXPECT_THAT(all_sessions, ElementsAre(HasSessionTag(kSessionTag2),
@@ -328,14 +328,14 @@ TEST_F(
   session_tracker_.GetSession(kSessionTag2)->SetSessionName("device2");
   session_tracker_.DeleteForeignSession(kSessionTag2);
 
-  std::vector<raw_ptr<const SyncedSession, VectorExperimental>>
+  std::vector<raw_ptr<const SyncedSession, DanglingUntriaged>>
       presentable_sessions;
   EXPECT_FALSE(delegate_.GetAllForeignSessions(
       &presentable_sessions,
       OpenTabsUIDelegate::ForeignSessionFilter::kPresentable));
   EXPECT_THAT(presentable_sessions, IsEmpty());
 
-  std::vector<raw_ptr<const SyncedSession, VectorExperimental>> all_sessions;
+  std::vector<raw_ptr<const SyncedSession, DanglingUntriaged>> all_sessions;
   EXPECT_TRUE(delegate_.GetAllForeignSessions(
       &all_sessions, OpenTabsUIDelegate::ForeignSessionFilter::kAll));
   EXPECT_THAT(all_sessions, ElementsAre(HasSessionTag(kSessionTag1)));
@@ -356,7 +356,7 @@ TEST_F(OpenTabsUIDelegateImplTest,
       ->navigations.push_back(sessions::SerializedNavigationEntryTestHelper::
                                   CreateNavigationForTest());
 
-  std::vector<raw_ptr<const SyncedSession, VectorExperimental>> all_sessions;
+  std::vector<raw_ptr<const SyncedSession, DanglingUntriaged>> all_sessions;
   EXPECT_FALSE(delegate_.GetAllForeignSessions(
       &all_sessions, OpenTabsUIDelegate::ForeignSessionFilter::kAll));
   EXPECT_THAT(all_sessions, IsEmpty());
@@ -400,7 +400,7 @@ TEST_F(OpenTabsUIDelegateImplTest,
   session_sync_prefs_.SetSessionVisibility(kSessionTag1,
                                            SessionVisibility::kHidden);
 
-  std::vector<raw_ptr<const SyncedSession, VectorExperimental>> sessions;
+  std::vector<raw_ptr<const SyncedSession, DanglingUntriaged>> sessions;
   EXPECT_TRUE(delegate_.GetAllForeignSessions(
       &sessions, OpenTabsUIDelegate::ForeignSessionFilter::kPresentable));
   EXPECT_THAT(sessions, ElementsAre(Pointee(Property(
@@ -451,7 +451,7 @@ TEST_F(OpenTabsUIDelegateImplTest,
   session_sync_prefs_.SetSessionVisibility(kSessionTag1,
                                            SessionVisibility::kHidden);
 
-  std::vector<raw_ptr<const SyncedSession, VectorExperimental>> sessions;
+  std::vector<raw_ptr<const SyncedSession, DanglingUntriaged>> sessions;
   EXPECT_TRUE(delegate_.GetAllForeignSessions(
       &sessions, OpenTabsUIDelegate::ForeignSessionFilter::kPresentable));
   EXPECT_THAT(sessions, ElementsAre(Pointee(Property(

@@ -135,7 +135,7 @@ class ExtensionFunctionDispatcher {
   // The set of ExtensionFunction instances waiting for responses from
   // the renderer. These are removed once the response is processed.
   // The lifetimes of the instances are managed by the instances themselves.
-  std::set<raw_ptr<ExtensionFunction, SetExperimental>> response_targets_;
+  std::set<raw_ptr<ExtensionFunction, DanglingUntriaged>> response_targets_;
 
   base::WeakPtrFactory<ExtensionFunctionDispatcher> weak_ptr_factory_{this};
 };

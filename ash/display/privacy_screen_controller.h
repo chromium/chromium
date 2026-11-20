@@ -63,7 +63,7 @@ class ASH_EXPORT PrivacyScreenController
 
   // DisplayConfigurator::Observer:
   void OnDisplayConfigurationChanged(
-      const std::vector<raw_ptr<display::DisplaySnapshot, VectorExperimental>>&
+      const std::vector<raw_ptr<display::DisplaySnapshot, DanglingUntriaged>>&
           displays) override;
 
  private:

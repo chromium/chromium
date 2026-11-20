@@ -280,7 +280,7 @@ ExtensionServiceTestBase::ExtensionServiceTestBase(
 
   policy_service_ = std::make_unique<policy::PolicyServiceImpl>(
       std::vector<
-          raw_ptr<policy::ConfigurationPolicyProvider, VectorExperimental>>{
+          raw_ptr<policy::ConfigurationPolicyProvider, DanglingUntriaged>>{
           &policy_provider_});
   feature_list_.InitWithFeatures(
       /*enabled_features=*/{},

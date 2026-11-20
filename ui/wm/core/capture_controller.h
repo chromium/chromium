@@ -76,7 +76,7 @@ class COMPONENT_EXPORT(UI_WM) CaptureController
 
   // The delegates notified when capture changes.
   std::map<aura::Window*,
-           raw_ptr<aura::client::CaptureDelegate, CtnExperimental>>
+           raw_ptr<aura::client::CaptureDelegate, DanglingUntriaged>>
       delegates_;
 
   // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.

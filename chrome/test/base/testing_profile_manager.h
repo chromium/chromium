@@ -167,7 +167,7 @@ class TestingProfileManager : public ProfileObserver {
   friend class ProfileAttributesStorageTest;
   friend class ProfileNameVerifierObserver;
 
-  typedef std::map<std::string, raw_ptr<TestingProfile, CtnExperimental>>
+  typedef std::map<std::string, raw_ptr<TestingProfile, DanglingUntriaged>>
       TestingProfilesMap;
 
   // Does the actual ASSERT-checked SetUp work. This function cannot have a

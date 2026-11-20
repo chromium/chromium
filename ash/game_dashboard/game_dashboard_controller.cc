@@ -366,7 +366,7 @@ void GameDashboardController::GetWindowGameState(aura::Window* window) {
                      &GameDashboardController::OnArcWindowIsGame,
                      weak_ptr_factory_.GetWeakPtr(),
                      std::make_unique<aura::WindowTracker>(
-                         std::vector<raw_ptr<aura::Window, VectorExperimental>>(
+                         std::vector<raw_ptr<aura::Window, DanglingUntriaged>>(
                              {window}))));
   } else {
     RefreshWindowTracking(window, WindowGameState::kNotGame);

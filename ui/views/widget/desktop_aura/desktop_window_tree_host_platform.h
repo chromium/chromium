@@ -273,7 +273,7 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
   // We can optionally have a parent which can order us to close, or own
   // children who we're responsible for closing when we CloseNow().
   raw_ptr<DesktopWindowTreeHostPlatform> window_parent_ = nullptr;
-  std::set<raw_ptr<DesktopWindowTreeHostPlatform, SetExperimental>>
+  std::set<raw_ptr<DesktopWindowTreeHostPlatform, DanglingUntriaged>>
       window_children_;
 
   std::unique_ptr<ui::ExternalBeginFrameAdapter> begin_frame_adapter_;

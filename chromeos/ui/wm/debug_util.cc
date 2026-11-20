@@ -59,7 +59,7 @@ void PrintWindowHierarchy(const aura::Window* active_window,
     views::PrintWidgetInformation(*widget, /*detailed*/ false, out);
   }
 
-  std::vector<raw_ptr<aura::Window, VectorExperimental>> children =
+  std::vector<raw_ptr<aura::Window, DanglingUntriaged>> children =
       children_callback.is_null() ? window->children()
                                   : children_callback.Run(window);
   for (aura::Window* child : children) {

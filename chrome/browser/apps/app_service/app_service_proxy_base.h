@@ -425,7 +425,7 @@ class AppServiceProxyBase : public KeyedService,
 
   const raw_ref<PublisherHostFactory> publisher_host_factory_;
   std::unique_ptr<PublisherHost> publisher_host_;
-  base::flat_map<AppType, raw_ptr<Publisher, CtnExperimental>> publishers_;
+  base::flat_map<AppType, raw_ptr<Publisher, DanglingUntriaged>> publishers_;
 
   apps::AppRegistryCache app_registry_cache_;
   apps::AppCapabilityAccessCache app_capability_access_cache_;

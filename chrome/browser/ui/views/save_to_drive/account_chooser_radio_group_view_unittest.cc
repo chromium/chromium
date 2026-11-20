@@ -77,7 +77,7 @@ TEST_F(AccountChooserRadioGroupViewTest, MultiAccountWithoutPrimary) {
   AccountChooserRadioGroupView* account_chooser_view =
       anchor_view_->AddChildView(std::make_unique<AccountChooserRadioGroupView>(
           mock_account_chooser_view_delegate_, accounts, std::nullopt));
-  std::vector<raw_ptr<views::View, VectorExperimental>> children =
+  std::vector<raw_ptr<views::View, DanglingUntriaged>> children =
       account_chooser_view->children();
   ASSERT_EQ(children.size(), 5u);  // 3 separators + 2 accounts
   // Accounts are lexicographically ordered by full name.
@@ -107,7 +107,7 @@ TEST_F(AccountChooserRadioGroupViewTest, MultiAccountWithPrimary) {
       anchor_view_->AddChildView(std::make_unique<AccountChooserRadioGroupView>(
           mock_account_chooser_view_delegate_, accounts,
           account_pothos.GetAccountId()));
-  std::vector<raw_ptr<views::View, VectorExperimental>> children =
+  std::vector<raw_ptr<views::View, DanglingUntriaged>> children =
       account_chooser_view->children();
   ASSERT_EQ(children.size(), 7u);  // 4 separators + 3 accounts
   // Primary account is first.
@@ -156,7 +156,7 @@ TEST_F(AccountChooserRadioGroupViewTest, MultiAccountWithSameName) {
   AccountChooserRadioGroupView* account_chooser_view =
       anchor_view_->AddChildView(std::make_unique<AccountChooserRadioGroupView>(
           mock_account_chooser_view_delegate_, accounts, std::nullopt));
-  std::vector<raw_ptr<views::View, VectorExperimental>> children =
+  std::vector<raw_ptr<views::View, DanglingUntriaged>> children =
       account_chooser_view->children();
   ASSERT_EQ(children.size(), 5u);  // 3 separators + 2 accounts
   // Accounts are lexicographically ordered by full name, then email.

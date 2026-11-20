@@ -16,9 +16,9 @@ namespace bluez {
 FakeBluetoothGattApplicationServiceProvider::
     FakeBluetoothGattApplicationServiceProvider(
         const dbus::ObjectPath& object_path,
-        const std::map<
-            dbus::ObjectPath,
-            raw_ptr<BluetoothLocalGattServiceBlueZ, CtnExperimental>>& services)
+        const std::map<dbus::ObjectPath,
+                       raw_ptr<BluetoothLocalGattServiceBlueZ,
+                               DanglingUntriaged>>& services)
     : object_path_(object_path) {
   DVLOG(1) << "Creating Bluetooth GATT application: " << object_path_.value();
 

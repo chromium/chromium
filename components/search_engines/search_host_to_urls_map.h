@@ -23,7 +23,8 @@
 // to the caller to ensure the right lifetime of them.
 class SearchHostToURLsMap {
  public:
-  using TemplateURLSet = base::flat_set<raw_ptr<TemplateURL, CtnExperimental>>;
+  using TemplateURLSet =
+      base::flat_set<raw_ptr<TemplateURL, DanglingUntriaged>>;
 
   SearchHostToURLsMap();
 

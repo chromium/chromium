@@ -341,7 +341,7 @@ class CHROME_DBUS_EXPORT ObjectManager final
 
   // Maps the name of an interface to the implementation class used for
   // instantiating PropertySet structures for that interface's properties.
-  typedef std::map<std::string, raw_ptr<Interface, CtnExperimental>>
+  typedef std::map<std::string, raw_ptr<Interface, DanglingUntriaged>>
       InterfaceMap;
   InterfaceMap interface_map_;
 
@@ -356,13 +356,13 @@ class CHROME_DBUS_EXPORT ObjectManager final
 
     // Maps the name of an interface to the specific PropertySet structure
     // of that interface's properties.
-    typedef std::map<const std::string, raw_ptr<PropertySet, CtnExperimental>>
+    typedef std::map<const std::string, raw_ptr<PropertySet, DanglingUntriaged>>
         PropertiesMap;
     PropertiesMap properties_map;
   };
 
   // Maps the object path of an object to the Object structure.
-  typedef std::map<const ObjectPath, raw_ptr<Object, CtnExperimental>>
+  typedef std::map<const ObjectPath, raw_ptr<Object, DanglingUntriaged>>
       ObjectMap;
   ObjectMap object_map_;
 

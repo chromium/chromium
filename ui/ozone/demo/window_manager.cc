@@ -94,7 +94,7 @@ void WindowManager::OnConfigurationChanged() {
 void WindowManager::OnDisplaySnapshotsInvalidated() {}
 
 void WindowManager::OnDisplaysAcquired(
-    const std::vector<raw_ptr<display::DisplaySnapshot, VectorExperimental>>&
+    const std::vector<raw_ptr<display::DisplaySnapshot, DanglingUntriaged>>&
         displays) {
   windows_.clear();
 

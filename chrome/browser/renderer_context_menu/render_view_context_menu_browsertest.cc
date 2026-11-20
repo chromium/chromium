@@ -1039,7 +1039,7 @@ class ContextMenuForSupervisedUsersBrowserTest
     menu->ExecuteCommand(IDC_CONTENT_CONTEXT_SAVELINKAS, /*event_flags=*/0);
     observer.WaitForFinished();
 
-    std::vector<raw_ptr<download::DownloadItem, VectorExperimental>> items;
+    std::vector<raw_ptr<download::DownloadItem, DanglingUntriaged>> items;
     download_manager->GetAllDownloads(&items);
     CHECK_EQ(1u, items.size());
     return items[0];

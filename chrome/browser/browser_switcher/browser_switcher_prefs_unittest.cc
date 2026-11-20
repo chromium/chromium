@@ -59,8 +59,7 @@ class BrowserSwitcherPrefsTest : public testing::Test {
     policy_provider_->SetDefaultReturns(
         /*is_initialization_complete_return=*/true,
         /*is_first_policy_load_complete_return=*/true);
-    std::vector<
-        raw_ptr<policy::ConfigurationPolicyProvider, VectorExperimental>>
+    std::vector<raw_ptr<policy::ConfigurationPolicyProvider, DanglingUntriaged>>
         providers = {policy_provider_.get()};
     policy_service_ = std::make_unique<policy::PolicyServiceImpl>(providers);
     prefs_ = std::make_unique<TestBrowserSwitcherPrefs>(&prefs_backend_,

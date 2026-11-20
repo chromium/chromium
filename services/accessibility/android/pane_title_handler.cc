@@ -65,7 +65,7 @@ class PaneTitleProviderNode : public AccessibilityInfoDataWrapper {
   }
   std::string ComputeAXName(bool do_recursive) const override { return name_; }
   void GetChildren(
-      std::vector<raw_ptr<AccessibilityInfoDataWrapper, VectorExperimental>>*
+      std::vector<raw_ptr<AccessibilityInfoDataWrapper, DanglingUntriaged>>*
           children) const override {}
   int32_t GetWindowId() const override {
     DUMP_WILL_BE_NOTREACHED();

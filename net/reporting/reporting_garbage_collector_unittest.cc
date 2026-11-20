@@ -26,7 +26,7 @@ namespace {
 class ReportingGarbageCollectorTest : public ReportingTestBase {
  protected:
   size_t report_count() {
-    std::vector<raw_ptr<const ReportingReport, VectorExperimental>> reports;
+    std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>> reports;
     cache()->GetReports(&reports);
     return reports.size();
   }
@@ -85,7 +85,7 @@ TEST_F(ReportingGarbageCollectorTest, FailedReport) {
                      base::DictValue(), 0, tick_clock()->NowTicks(),
                      ReportingTargetType::kDeveloper);
 
-  std::vector<raw_ptr<const ReportingReport, VectorExperimental>> reports;
+  std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>> reports;
   cache()->GetReports(&reports);
   for (int i = 0; i < policy().max_report_attempts; i++) {
     cache()->IncrementReportsAttempts(reports);
@@ -138,7 +138,7 @@ TEST_F(ReportingGarbageCollectorTest, ExpiredSourceWithPendingReports) {
   EXPECT_TRUE(cache()->GetV1EndpointForTesting(*kReportingSource_, kGroup_));
 
   // Deliver report.
-  std::vector<raw_ptr<const ReportingReport, VectorExperimental>> reports;
+  std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>> reports;
   cache()->GetReports(&reports);
   cache()->RemoveReports(reports);
   EXPECT_EQ(0u, report_count());

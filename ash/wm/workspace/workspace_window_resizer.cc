@@ -680,7 +680,7 @@ WorkspaceWindowResizer::~WorkspaceWindowResizer() {
 // static
 std::unique_ptr<WorkspaceWindowResizer> WorkspaceWindowResizer::Create(
     WindowState* window_state,
-    const std::vector<raw_ptr<aura::Window, VectorExperimental>>&
+    const std::vector<raw_ptr<aura::Window, DanglingUntriaged>>&
         attached_windows) {
   return base::WrapUnique(
       new WorkspaceWindowResizer(window_state, attached_windows));
@@ -1108,7 +1108,7 @@ void WorkspaceWindowResizer::FlingOrSwipe(ui::GestureEvent* event) {
 
 WorkspaceWindowResizer::WorkspaceWindowResizer(
     WindowState* window_state,
-    const std::vector<raw_ptr<aura::Window, VectorExperimental>>&
+    const std::vector<raw_ptr<aura::Window, DanglingUntriaged>>&
         attached_windows)
     : WindowResizer(window_state),
       attached_windows_(attached_windows),
@@ -1406,7 +1406,7 @@ bool WorkspaceWindowResizer::UpdateMagnetismWindow(
   aura::Window* container =
       desks_util::GetActiveDeskContainerForRoot(root_window);
   DCHECK(container);
-  const std::vector<raw_ptr<aura::Window, VectorExperimental>>& children =
+  const std::vector<raw_ptr<aura::Window, DanglingUntriaged>>& children =
       container->children();
   for (auto i = children.rbegin();
        i != children.rend() && !matcher.AreEdgesObscured(); ++i) {
@@ -1671,7 +1671,7 @@ void WorkspaceWindowResizer::RestackWindows() {
   using IndexToWindowMap = std::map<size_t, aura::Window*>;
   IndexToWindowMap map;
   aura::Window* parent = GetTarget()->parent();
-  const std::vector<raw_ptr<aura::Window, VectorExperimental>>& windows(
+  const std::vector<raw_ptr<aura::Window, DanglingUntriaged>>& windows(
       parent->children());
   map[std::ranges::find(windows, GetTarget()) - windows.begin()] = GetTarget();
   for (aura::Window* attached_window : attached_windows_) {

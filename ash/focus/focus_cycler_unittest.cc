@@ -40,7 +40,7 @@ class PanedWidgetDelegate : public views::WidgetDelegate {
   PanedWidgetDelegate& operator=(const PanedWidgetDelegate&) = delete;
 
   void SetAccessiblePanes(
-      const std::vector<raw_ptr<views::View, VectorExperimental>>& panes) {
+      const std::vector<raw_ptr<views::View, DanglingUntriaged>>& panes) {
     accessible_panes_ = panes;
   }
 
@@ -50,7 +50,7 @@ class PanedWidgetDelegate : public views::WidgetDelegate {
   }
 
  private:
-  std::vector<raw_ptr<views::View, VectorExperimental>> accessible_panes_;
+  std::vector<raw_ptr<views::View, DanglingUntriaged>> accessible_panes_;
 };
 
 }  // namespace
@@ -284,7 +284,7 @@ TEST_F(FocusCyclerTest, CycleFocusThroughWindowWithPanes) {
   view4->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   pane2->AddChildViewRaw(view4);
 
-  std::vector<raw_ptr<views::View, VectorExperimental>> panes;
+  std::vector<raw_ptr<views::View, DanglingUntriaged>> panes;
   panes.push_back(pane1);
   panes.push_back(pane2);
 

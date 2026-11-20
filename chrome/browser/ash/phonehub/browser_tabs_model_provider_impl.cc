@@ -82,7 +82,7 @@ void BrowserTabsModelProviderImpl::AttemptBrowserTabsModelUpdate() {
     return;
   }
 
-  std::vector<raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>
+  std::vector<raw_ptr<const sync_sessions::SyncedSession, DanglingUntriaged>>
       sessions;
   bool was_fetch_successful = open_tabs->GetAllForeignSessions(
       &sessions,

@@ -312,9 +312,9 @@ bool DeviceOAuth2TokenService::HandleAccessTokenFetch(
 void DeviceOAuth2TokenService::FlushPendingRequests(
     bool token_is_valid,
     const GoogleServiceAuthError& error) {
-  std::vector<raw_ptr<PendingRequest, VectorExperimental>> requests;
+  std::vector<raw_ptr<PendingRequest, DanglingUntriaged>> requests;
   requests.swap(pending_requests_);
-  for (std::vector<raw_ptr<PendingRequest, VectorExperimental>>::iterator
+  for (std::vector<raw_ptr<PendingRequest, DanglingUntriaged>>::iterator
            request(requests.begin());
        request != requests.end(); ++request) {
     std::unique_ptr<PendingRequest> scoped_request(*request);

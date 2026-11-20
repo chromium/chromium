@@ -178,7 +178,7 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   void StackBelow(Layer* child, Layer* other);
 
   // Returns the child Layers.
-  const std::vector<raw_ptr<Layer, VectorExperimental>>& children() const {
+  const std::vector<raw_ptr<Layer, DanglingUntriaged>>& children() const {
     return children_;
   }
 
@@ -683,12 +683,12 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   raw_ptr<Layer> parent_ = nullptr;
 
   // This layer's children, in bottom-to-top stacking order.
-  std::vector<raw_ptr<Layer, VectorExperimental>> children_;
+  std::vector<raw_ptr<Layer, DanglingUntriaged>> children_;
 
   std::vector<std::unique_ptr<internal::LayerMirror>> mirrors_;
 
   // List of layers reflecting this layer and its subtree, if any.
-  base::flat_set<raw_ptr<Layer, CtnExperimental>> subtree_reflecting_layers_;
+  base::flat_set<raw_ptr<Layer, DanglingUntriaged>> subtree_reflecting_layers_;
 
   // Settings indicating which properties from the source layer should be
   // propagated to this mirror layer.

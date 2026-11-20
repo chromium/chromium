@@ -176,8 +176,8 @@ class ExtensionsMenuViewBrowserTest : public InProcessBrowserTest {
 
   // Asserts there is exactly 1 menu item and then returns it.
   ExtensionMenuItemView* GetOnlyMenuItem() {
-    base::flat_set<raw_ptr<ExtensionMenuItemView, CtnExperimental>> menu_items =
-        extensions_menu()->extensions_menu_items_for_testing();
+    base::flat_set<raw_ptr<ExtensionMenuItemView, DanglingUntriaged>>
+        menu_items = extensions_menu()->extensions_menu_items_for_testing();
     if (menu_items.size() != 1u) {
       ADD_FAILURE() << "Not exactly one item; size is: " << menu_items.size();
       return nullptr;
@@ -231,8 +231,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest,
   InstallExtension(kExtensionName);
 
   {
-    base::flat_set<raw_ptr<ExtensionMenuItemView, CtnExperimental>> menu_items =
-        extensions_menu()->extensions_menu_items_for_testing();
+    base::flat_set<raw_ptr<ExtensionMenuItemView, DanglingUntriaged>>
+        menu_items = extensions_menu()->extensions_menu_items_for_testing();
     ASSERT_EQ(1u, menu_items.size());
     EXPECT_EQ(kExtensionName,
               base::UTF16ToUTF8((*menu_items.begin())

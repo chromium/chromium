@@ -41,7 +41,7 @@
 using download::DownloadItem;
 using download::MockDownloadItem;
 using downloads::mojom::SafeBrowsingState;
-using DownloadVector = std::vector<raw_ptr<DownloadItem, VectorExperimental>>;
+using DownloadVector = std::vector<raw_ptr<DownloadItem, DanglingUntriaged>>;
 using testing::_;
 using testing::Return;
 using testing::ReturnRefOfCopy;

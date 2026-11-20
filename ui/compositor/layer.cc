@@ -1096,7 +1096,7 @@ void Layer::CompleteAllAnimations() {
 
 void Layer::StackChildrenAtBottom(
     const std::vector<Layer*>& new_leading_children) {
-  std::vector<raw_ptr<Layer, VectorExperimental>> new_children_order;
+  std::vector<raw_ptr<Layer, DanglingUntriaged>> new_children_order;
   new_children_order.reserve(children_.size());
 
   cc::LayerList new_cc_children_order;
@@ -1110,7 +1110,7 @@ void Layer::StackChildrenAtBottom(
     new_cc_children_order.emplace_back(leading_child->cc_layer_.get());
   }
 
-  base::flat_set<raw_ptr<Layer, VectorExperimental>> reordered_children(
+  base::flat_set<raw_ptr<Layer, DanglingUntriaged>> reordered_children(
       new_children_order);
 
   for (Layer* child : children_) {

@@ -215,7 +215,7 @@ class TableLayout::Column : public LayoutElement {
   }
 
   void set_linked_columns(
-      const std::vector<raw_ptr<Column, VectorExperimental>>& linked_columns) {
+      const std::vector<raw_ptr<Column, DanglingUntriaged>>& linked_columns) {
     DCHECK(linked_columns_.empty()) << "Cannot link a column twice";
     linked_columns_ = linked_columns;
   }
@@ -233,7 +233,7 @@ class TableLayout::Column : public LayoutElement {
   int fixed_width_;
   int min_width_;
   bool is_padding_;
-  std::vector<raw_ptr<Column, VectorExperimental>> linked_columns_;
+  std::vector<raw_ptr<Column, DanglingUntriaged>> linked_columns_;
 };
 
 class TableLayout::Row : public LayoutElement {
@@ -378,7 +378,7 @@ TableLayout& TableLayout::LinkColumnSizes(std::vector<size_t> columns) {
     DCHECK_LT(columns.back(), columns_.size())
         << "Cannot link an unspecified column";
 
-    std::vector<raw_ptr<Column, VectorExperimental>> linked_columns;
+    std::vector<raw_ptr<Column, DanglingUntriaged>> linked_columns;
     std::ranges::transform(columns, std::back_inserter(linked_columns),
                            [&](size_t index) { return &columns_[index]; });
 
@@ -727,7 +727,7 @@ int TableLayout::LayoutWidth() const {
 
 void TableLayout::CalculateSize(
     SizeCalculationType type,
-    const std::vector<raw_ptr<ViewState, VectorExperimental>>& view_states)
+    const std::vector<raw_ptr<ViewState, DanglingUntriaged>>& view_states)
     const {
   // Reset the size and remaining sizes.
   for (views::TableLayout::ViewState* view_state : view_states) {
@@ -824,7 +824,7 @@ void TableLayout::ResizeUsingMin(int total_delta) const {
   // modifications to them aren't reflected in the members.
   const size_t num_states = view_states_by_col_span_.size();
   std::vector<ViewState> view_states(num_states);
-  std::vector<raw_ptr<ViewState, VectorExperimental>> view_state_ptrs(
+  std::vector<raw_ptr<ViewState, DanglingUntriaged>> view_state_ptrs(
       num_states);
   for (size_t i = 0; i < num_states; ++i) {
     view_states[i] = *view_states_by_col_span_[i];

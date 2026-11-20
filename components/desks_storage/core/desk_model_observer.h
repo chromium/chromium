@@ -37,7 +37,7 @@ class DeskModelObserver {
   // This is the mechanism for the sync server to push changes in the state of
   // the model to clients.
   virtual void EntriesAddedOrUpdatedRemotely(
-      const std::vector<raw_ptr<const ash::DeskTemplate, VectorExperimental>>&
+      const std::vector<raw_ptr<const ash::DeskTemplate, DanglingUntriaged>>&
           new_entries) {}
   virtual void EntriesRemovedRemotely(const std::vector<base::Uuid>& uuids) {}
 

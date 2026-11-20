@@ -863,8 +863,8 @@ void View::RemoveLayerFromRegions(ui::Layer* old_layer) {
 
 void View::RemoveLayerFromRegionsKeepInLayerTree(ui::Layer* old_layer) {
   auto remove_layer =
-      [old_layer, this](
-          std::vector<raw_ptr<ui::Layer, VectorExperimental>>& layer_vector) {
+      [old_layer,
+       this](std::vector<raw_ptr<ui::Layer, DanglingUntriaged>>& layer_vector) {
         auto layer_pos = std::ranges::find(layer_vector, old_layer);
         if (layer_pos == layer_vector.end()) {
           return false;
@@ -909,7 +909,7 @@ void View::LayerDestroyed(ui::Layer* layer) {
 
 void View::OnLayerRecreated(ui::Layer* old_layer, ui::Layer* new_layer) {
   auto swap_layer =
-      [&](std::vector<raw_ptr<ui::Layer, VectorExperimental>>& layers) {
+      [&](std::vector<raw_ptr<ui::Layer, DanglingUntriaged>>& layers) {
         auto it = std::ranges::find(layers, old_layer);
         if (it != layers.end()) {
           old_layer->RemoveObserver(this);
@@ -2634,7 +2634,7 @@ void View::DestroyLayerImpl(LayerChangeNotifyBehavior notify_parents) {
   }
 
   // Copy children(), since the loop below will mutate its result.
-  std::vector<raw_ptr<ui::Layer, VectorExperimental>> children =
+  std::vector<raw_ptr<ui::Layer, DanglingUntriaged>> children =
       layer()->children();
   ui::Layer* new_parent = layer()->parent();
   for (ui::Layer* child : children) {
@@ -2769,7 +2769,7 @@ void View::ReorderLayers() {
 
 void View::AddLayerToRegionImpl(
     ui::Layer* new_layer,
-    std::vector<raw_ptr<ui::Layer, VectorExperimental>>& layer_vector) {
+    std::vector<raw_ptr<ui::Layer, DanglingUntriaged>>& layer_vector) {
   CHECK(new_layer, base::NotFatalUntil::M163);
   DCHECK(!std::ranges::contains(layer_vector, new_layer))
       << "Layer already added.";

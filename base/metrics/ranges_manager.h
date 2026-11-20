@@ -62,7 +62,7 @@ class BASE_EXPORT RangesManager {
 
   // Type for a set of unique RangesBucket, with their hash and equivalence
   // defined by `BucketRangesHash` and `BucketRangesEqual`.
-  typedef std::unordered_set<raw_ptr<const BucketRanges, CtnExperimental>,
+  typedef std::unordered_set<raw_ptr<const BucketRanges, DanglingUntriaged>,
                              BucketRangesHash,
                              BucketRangesEqual>
       RangesMap;

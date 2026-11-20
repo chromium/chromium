@@ -112,7 +112,7 @@ bool InTabletMode() {
 }
 
 bool TopTwoVisibleWindowsBothSnapped(
-    const std::vector<raw_ptr<aura::Window, VectorExperimental>>& windows) {
+    const std::vector<raw_ptr<aura::Window, DanglingUntriaged>>& windows) {
   int windows_size = windows.size();
   if (windows_size < 2)
     return false;
@@ -648,7 +648,7 @@ bool SplitViewMetricsController::
     return false;
 
   return TopTwoVisibleWindowsBothSnapped(
-      std::vector<raw_ptr<aura::Window, VectorExperimental>>(begin_iter, iter));
+      std::vector<raw_ptr<aura::Window, DanglingUntriaged>>(begin_iter, iter));
 }
 
 void SplitViewMetricsController::RecordSnapTwoWindowsDuration(

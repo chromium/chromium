@@ -97,7 +97,7 @@ ASH_EXPORT bool IsZOrderTracked(aura::Window* window);
 // in reverse order. If `window` is not in the list (or isn't z-order tracked),
 // then nullopt is returned.
 ASH_EXPORT std::optional<size_t> GetWindowZOrder(
-    const std::vector<raw_ptr<aura::Window, VectorExperimental>>& windows,
+    const std::vector<raw_ptr<aura::Window, DanglingUntriaged>>& windows,
     aura::Window* window);
 
 // Move an item at |old_index| to |new_index|.

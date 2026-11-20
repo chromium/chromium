@@ -54,7 +54,7 @@ AXNodeData&& AXNode::TakeData() {
   return std::move(data_);
 }
 
-const std::vector<raw_ptr<AXNode, VectorExperimental>>& AXNode::GetAllChildren()
+const std::vector<raw_ptr<AXNode, DanglingUntriaged>>& AXNode::GetAllChildren()
     const {
   CHECK(!tree_->GetTreeUpdateInProgressState(), base::NotFatalUntil::M163);
   return children_;
@@ -838,7 +838,7 @@ void AXNode::UpdateUnignoredCachedValues() {
 }
 
 void AXNode::SwapChildren(
-    std::vector<raw_ptr<AXNode, VectorExperimental>>* children) {
+    std::vector<raw_ptr<AXNode, DanglingUntriaged>>* children) {
   children->swap(children_);
 }
 
@@ -1573,7 +1573,7 @@ std::vector<AXNodeID> AXNode::GetTableUniqueCellIds() const {
   return std::vector<AXNodeID>(table_info->unique_cell_ids);
 }
 
-const std::vector<raw_ptr<AXNode, VectorExperimental>>*
+const std::vector<raw_ptr<AXNode, DanglingUntriaged>>*
 AXNode::GetExtraMacNodes() const {
   CHECK(!tree_->GetTreeUpdateInProgressState(), base::NotFatalUntil::M163);
   // Should only be available on the table node itself, not any of its children.

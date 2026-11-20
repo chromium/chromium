@@ -17,7 +17,7 @@
 namespace chromeos::wm {
 
 using GetChildrenCallback = base::RepeatingCallback<
-    std::vector<raw_ptr<aura::Window, VectorExperimental>>(aura::Window*)>;
+    std::vector<raw_ptr<aura::Window, DanglingUntriaged>>(aura::Window*)>;
 
 // Prints all windows hierarchy to `out`. If `scrub_data` is true, we
 // may skip some data fields that are not very important for debugging. Returns

@@ -98,7 +98,7 @@ aura::Window* OverviewDropTarget::GetWindow() {
   return nullptr;
 }
 
-std::vector<raw_ptr<aura::Window, VectorExperimental>>
+std::vector<raw_ptr<aura::Window, DanglingUntriaged>>
 OverviewDropTarget::GetWindows() {
   return {};
 }

@@ -1959,7 +1959,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
       blink::mojom::WebFeature::kOpenerNavigationDownloadCrossOrigin, 1);
 
   // Ensure that no download happened.
-  std::vector<raw_ptr<download::DownloadItem, VectorExperimental>>
+  std::vector<raw_ptr<download::DownloadItem, DanglingUntriaged>>
       download_items;
   content::DownloadManager* manager =
       browser()->GetProfile()->GetDownloadManager();
@@ -2007,7 +2007,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
       blink::mojom::WebFeature::kOpenerNavigationDownloadCrossOrigin, 0);
 
   // Delete any pending download.
-  std::vector<raw_ptr<download::DownloadItem, VectorExperimental>>
+  std::vector<raw_ptr<download::DownloadItem, DanglingUntriaged>>
       download_items;
   content::DownloadManager* manager =
       browser()->GetProfile()->GetDownloadManager();

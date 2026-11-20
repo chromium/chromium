@@ -58,12 +58,12 @@ class ReportingGarbageCollectorImpl : public ReportingGarbageCollector,
     base::flat_set<base::UnguessableToken> sources_to_remove =
         context_->cache()->GetExpiredSources();
 
-    std::vector<raw_ptr<const ReportingReport, VectorExperimental>> all_reports;
+    std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>> all_reports;
     context_->cache()->GetReports(&all_reports);
 
-    std::vector<raw_ptr<const ReportingReport, VectorExperimental>>
+    std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>>
         failed_reports;
-    std::vector<raw_ptr<const ReportingReport, VectorExperimental>>
+    std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>>
         expired_reports;
     for (const ReportingReport* report : all_reports) {
       if (report->attempts >= policy.max_report_attempts)

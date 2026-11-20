@@ -2244,7 +2244,7 @@ TEST_F(NetworkContextTest, QueueReport) {
   network_context->QueueReport(kType_, kGroup_, kUrl_, kReportingSource_, kNak_,
                                base::DictValue());
 
-  std::vector<raw_ptr<const net::ReportingReport, VectorExperimental>> reports =
+  std::vector<raw_ptr<const net::ReportingReport, DanglingUntriaged>> reports =
       network_context->url_request_context()->reporting_service()->GetReports();
   ASSERT_EQ(1u, reports.size());
   EXPECT_EQ(kUrl_, reports[0]->url);
@@ -2268,7 +2268,7 @@ TEST_F(NetworkContextTest, QueueEnterpriseReport) {
   network_context->QueueEnterpriseReport(kType_, kGroup_, kUrl_,
                                          base::DictValue());
 
-  std::vector<raw_ptr<const net::ReportingReport, VectorExperimental>> reports =
+  std::vector<raw_ptr<const net::ReportingReport, DanglingUntriaged>> reports =
       network_context->url_request_context()->reporting_service()->GetReports();
   ASSERT_EQ(1u, reports.size());
   EXPECT_EQ(kUrl_, reports[0]->url);
@@ -5341,7 +5341,7 @@ TEST_F(NetworkContextTest, ClearReportingCacheReports) {
   network_context->QueueEnterpriseReport("type", "group", domain,
                                          base::DictValue());
 
-  std::vector<raw_ptr<const net::ReportingReport, VectorExperimental>> reports;
+  std::vector<raw_ptr<const net::ReportingReport, DanglingUntriaged>> reports;
   reporting_cache->GetReports(&reports);
   ASSERT_EQ(2u, reports.size());
 
@@ -5376,7 +5376,7 @@ TEST_F(NetworkContextTest, ClearReportingCacheReportsWithFilter) {
                                  "group", "type", base::DictValue(), 0,
                                  net::ReportingTargetType::kDeveloper);
 
-  std::vector<raw_ptr<const net::ReportingReport, VectorExperimental>> reports;
+  std::vector<raw_ptr<const net::ReportingReport, DanglingUntriaged>> reports;
   reporting_cache->GetReports(&reports);
   ASSERT_EQ(2u, reports.size());
 
@@ -5417,7 +5417,7 @@ TEST_F(NetworkContextTest,
                                  "group", "type", base::DictValue(), 0,
                                  net::ReportingTargetType::kDeveloper);
 
-  std::vector<raw_ptr<const net::ReportingReport, VectorExperimental>> reports;
+  std::vector<raw_ptr<const net::ReportingReport, DanglingUntriaged>> reports;
   reporting_cache->GetReports(&reports);
   ASSERT_EQ(2u, reports.size());
 
@@ -5444,7 +5444,7 @@ TEST_F(NetworkContextTest, ClearEmptyReportingCacheReports) {
       CreateNetworkContextParamsForTesting(),
       net::ReportingService::CreateForTesting(std::move(reporting_context)));
 
-  std::vector<raw_ptr<const net::ReportingReport, VectorExperimental>> reports;
+  std::vector<raw_ptr<const net::ReportingReport, DanglingUntriaged>> reports;
   reporting_cache->GetReports(&reports);
   ASSERT_TRUE(reports.empty());
 
@@ -7903,7 +7903,7 @@ class TestResolverFactory : public net::HostResolver::Factory {
     return resolver;
   }
 
-  const std::vector<raw_ptr<net::ContextHostResolver, VectorExperimental>>&
+  const std::vector<raw_ptr<net::ContextHostResolver, DanglingUntriaged>>&
   resolvers() const {
     return resolvers_;
   }
@@ -7911,7 +7911,7 @@ class TestResolverFactory : public net::HostResolver::Factory {
   void ForgetResolvers() { resolvers_.clear(); }
 
  private:
-  std::vector<raw_ptr<net::ContextHostResolver, VectorExperimental>> resolvers_;
+  std::vector<raw_ptr<net::ContextHostResolver, DanglingUntriaged>> resolvers_;
 };
 
 using NetworkContextCreateHostResolverTest = NetworkContextTest;
@@ -15652,7 +15652,7 @@ TEST_F(NetworkContextWebSocketNetLogTest,
 
 #if BUILDFLAG(ENABLE_REPORTING)
 MATCHER(ConnectionAllowlistReportsMatch, "") {
-  const raw_ptr<const net::ReportingReport, VectorExperimental>& report =
+  const raw_ptr<const net::ReportingReport, DanglingUntriaged>& report =
       std::get<0>(arg);
   const std::pair<GURL, std::string>& expectation = std::get<1>(arg);
 
@@ -15723,7 +15723,7 @@ class ConnectionAllowlistReportingTest : public NetworkContextTest {
   void VerifyReports(
       NetworkContext* network_context,
       const std::vector<std::pair<GURL, std::string>>& expected_reports) {
-    std::vector<raw_ptr<const net::ReportingReport, VectorExperimental>>
+    std::vector<raw_ptr<const net::ReportingReport, DanglingUntriaged>>
         reports = network_context->url_request_context()
                       ->reporting_service()
                       ->GetReports();

@@ -1022,7 +1022,7 @@ class MockReportingService : public net::ReportingService {
 
   net::ReportingContext* GetContextForTesting() const override { NOTREACHED(); }
 
-  std::vector<raw_ptr<const net::ReportingReport, VectorExperimental>>
+  std::vector<raw_ptr<const net::ReportingReport, DanglingUntriaged>>
   GetReports() const override {
     NOTREACHED();
   }

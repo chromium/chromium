@@ -45,7 +45,7 @@ void SortCategories(CategoriesList& categories) {
 }
 
 void SortResults(
-    std::vector<raw_ptr<ChromeSearchResult, VectorExperimental>>& results,
+    std::vector<raw_ptr<ChromeSearchResult, DanglingUntriaged>>& results,
     const CategoriesList& categories) {
   std::sort(
       results.begin(), results.end(),

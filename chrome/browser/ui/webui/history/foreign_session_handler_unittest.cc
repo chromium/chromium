@@ -218,7 +218,7 @@ TEST_F(ForeignSessionHandlerTest, DeleteForeignSession) {
   delegate->AddForeignSession("session_to_delete");
   delegate->AddForeignSession("session_to_keep");
 
-  std::vector<raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>
+  std::vector<raw_ptr<const sync_sessions::SyncedSession, DanglingUntriaged>>
       sessions;
   ASSERT_TRUE(delegate->GetAllForeignSessions(
       &sessions,

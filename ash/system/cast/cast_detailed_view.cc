@@ -245,7 +245,7 @@ void CastDetailedView::AddReceiverActionButtons(
   if (route.freeze_info.can_freeze) {
     std::unique_ptr<PillButton> freeze_button = CreateFreezeButton(route);
     std::unique_ptr<views::View> button_container = MakeButtonContainer();
-    std::vector<raw_ptr<views::View, VectorExperimental>> extra_views;
+    std::vector<raw_ptr<views::View, DanglingUntriaged>> extra_views;
     extra_views.emplace_back(
         button_container->AddChildView(std::move(freeze_button)));
     extra_views.emplace_back(

@@ -304,7 +304,7 @@ TEST_F(BookmarkNodeDataTest, MultipleNodes) {
   const BookmarkNode* url_node = model()->AddURL(folder, 0, title, url);
 
   // Write the nodes to the clipboard.
-  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes;
+  std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>> nodes;
   nodes.push_back(folder);
   nodes.push_back(url_node);
   BookmarkNodeData drag_data(nodes);
@@ -332,7 +332,7 @@ TEST_F(BookmarkNodeDataTest, MultipleNodes) {
   EXPECT_EQ(0u, read_url.children.size());
 
   // And make sure we get the node back.
-  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> read_nodes =
+  std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>> read_nodes =
       read_data.GetNodes(model(), GetProfilePath());
   ASSERT_EQ(2u, read_nodes.size());
   EXPECT_TRUE(read_nodes[0] == folder);
@@ -372,7 +372,7 @@ TEST_F(BookmarkNodeDataTest, MAYBE_WriteToClipboardMultipleURLs) {
   const std::u16string title2(u"blah2");
   const BookmarkNode* url_node = model()->AddURL(root, 0, title, url);
   const BookmarkNode* url_node2 = model()->AddURL(root, 1, title2, url2);
-  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes;
+  std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>> nodes;
   nodes.push_back(url_node);
   nodes.push_back(url_node2);
 
@@ -403,7 +403,7 @@ TEST_F(BookmarkNodeDataTest, MAYBE_WriteToClipboardEmptyFolder) {
   BookmarkNodeData data;
   const BookmarkNode* root = model()->bookmark_bar_node();
   const BookmarkNode* folder = model()->AddFolder(root, 0, u"g1");
-  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes;
+  std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>> nodes;
   nodes.push_back(folder);
 
   data.ReadFromVector(nodes);
@@ -431,7 +431,7 @@ TEST_F(BookmarkNodeDataTest, MAYBE_WriteToClipboardFolderWithChildren) {
   GURL url(GURL("http://foo.com"));
   const std::u16string title(u"blah");
   model()->AddURL(folder, 0, title, url);
-  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes;
+  std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>> nodes;
   nodes.push_back(folder);
 
   data.ReadFromVector(nodes);
@@ -457,7 +457,7 @@ TEST_F(BookmarkNodeDataTest, MAYBE_WriteToClipboardFolderAndURL) {
   const BookmarkNode* root = model()->bookmark_bar_node();
   const BookmarkNode* url_node = model()->AddURL(root, 0, title, url);
   const BookmarkNode* folder = model()->AddFolder(root, 0, u"g1");
-  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes;
+  std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>> nodes;
   nodes.push_back(url_node);
   nodes.push_back(folder);
 

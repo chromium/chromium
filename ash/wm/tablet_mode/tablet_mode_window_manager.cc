@@ -68,7 +68,7 @@ bool IsCarryOverCandidateForSplitView(
 // the snapshot are not notified to the windows.
 base::flat_set<aura::Window*> GetOccludedOrHiddenWindows(
     const base::flat_map<aura::Window*,
-                         raw_ptr<TabletModeWindowState, CtnExperimental>>&
+                         raw_ptr<TabletModeWindowState, DanglingUntriaged>>&
         window_state_map) {
   auto* tracker = aura::Env::GetInstance()->GetWindowOcclusionTracker();
 

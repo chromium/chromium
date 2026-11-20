@@ -46,9 +46,9 @@ TestNativeDisplayDelegate::TestNativeDisplayDelegate(ActionLogger* log)
 
 TestNativeDisplayDelegate::~TestNativeDisplayDelegate() = default;
 
-const std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>
+const std::vector<raw_ptr<DisplaySnapshot, DanglingUntriaged>>
 TestNativeDisplayDelegate::GetOutputs() const {
-  std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>> outputs;
+  std::vector<raw_ptr<DisplaySnapshot, DanglingUntriaged>> outputs;
   for (const auto& output : outputs_) {
     outputs.push_back(output.get());
   }

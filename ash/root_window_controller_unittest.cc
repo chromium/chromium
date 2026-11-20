@@ -387,9 +387,9 @@ TEST_F(RootWindowControllerTest, MoveWindows_MaintainMRUordering) {
   // ordering.
   aura::Window* parent = moved->GetNativeWindow()->parent();
   ASSERT_EQ(parent, existing1->GetNativeWindow()->parent());
-  const std::vector<raw_ptr<aura::Window, VectorExperimental>> expected_order =
-      {existing1->GetNativeWindow(), moved->GetNativeWindow(),
-       existing2->GetNativeWindow(), active->GetNativeWindow()};
+  const std::vector<raw_ptr<aura::Window, DanglingUntriaged>> expected_order = {
+      existing1->GetNativeWindow(), moved->GetNativeWindow(),
+      existing2->GetNativeWindow(), active->GetNativeWindow()};
   EXPECT_EQ(expected_order, parent->children());
 }
 

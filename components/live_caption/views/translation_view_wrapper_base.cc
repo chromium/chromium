@@ -192,9 +192,9 @@ void TranslationViewWrapperBase::Init(views::View* translate_container,
   delegate_->UpdateLanguageDirection(GetDisplayLanguage());
 }
 
-std::vector<raw_ptr<views::View, VectorExperimental>>
+std::vector<raw_ptr<views::View, DanglingUntriaged>>
 TranslationViewWrapperBase::GetButtons() {
-  std::vector<raw_ptr<views::View, VectorExperimental>> buttons;
+  std::vector<raw_ptr<views::View, DanglingUntriaged>> buttons;
   for (auto& language_button : language_buttons_) {
     buttons.push_back(language_button->GetMdTextButton());
   }

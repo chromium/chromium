@@ -224,20 +224,20 @@ class DevToolsClientImpl : public DevToolsClient {
   // deep. children_ holds child sessions - identified by their session id -
   // which send/receive messages via the socket_ of their parent.
   raw_ptr<DevToolsClient> parent_ = nullptr;
-  std::map<std::string, raw_ptr<DevToolsClient, CtnExperimental>> children_;
+  std::map<std::string, raw_ptr<DevToolsClient, DanglingUntriaged>> children_;
   bool crashed_ = false;
   bool detached_ = false;
   // For the top-level session, this is the target id.
   // For child sessions, it's the session id.
   const std::string id_;
   ParserFunc parser_func_;
-  std::list<raw_ptr<DevToolsEventListener, CtnExperimental>> listeners_;
-  std::list<raw_ptr<DevToolsEventListener, CtnExperimental>>
+  std::list<raw_ptr<DevToolsEventListener, DanglingUntriaged>> listeners_;
+  std::list<raw_ptr<DevToolsEventListener, DanglingUntriaged>>
       unnotified_connect_listeners_;
-  std::list<raw_ptr<DevToolsEventListener, CtnExperimental>>
+  std::list<raw_ptr<DevToolsEventListener, DanglingUntriaged>>
       unnotified_event_listeners_;
   raw_ptr<const InspectorEvent> unnotified_event_ = nullptr;
-  std::list<raw_ptr<DevToolsEventListener, CtnExperimental>>
+  std::list<raw_ptr<DevToolsEventListener, DanglingUntriaged>>
       unnotified_cmd_response_listeners_;
   scoped_refptr<ResponseInfo> unnotified_cmd_response_info_;
   std::map<int, scoped_refptr<ResponseInfo>> response_info_map_;

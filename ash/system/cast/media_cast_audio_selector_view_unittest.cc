@@ -71,7 +71,7 @@ class MediaCastAudioSelectorViewTest : public AshTestBase {
         view_->GetViewByID(kMediaCastListViewId));
   }
 
-  std::vector<raw_ptr<views::View, VectorExperimental>>
+  std::vector<raw_ptr<views::View, DanglingUntriaged>>
   GetContainerChildViews() {
     return GetMediaCastListView()->item_container_->children();
   }

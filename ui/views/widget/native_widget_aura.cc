@@ -110,7 +110,7 @@ void SetIcon(aura::Window* window,
 }
 
 bool FindLayersInOrder(
-    const std::vector<raw_ptr<ui::Layer, VectorExperimental>>& children,
+    const std::vector<raw_ptr<ui::Layer, DanglingUntriaged>>& children,
     const ui::Layer** first,
     const ui::Layer** second) {
   for (const ui::Layer* child : children) {

@@ -195,7 +195,7 @@ class CONTENT_EXPORT RenderFrameDevToolsAgentHost
   std::unique_ptr<FrameAutoAttacher> auto_attacher_;
   // The active host we are talking to.
   raw_ptr<RenderFrameHostImpl> frame_host_ = nullptr;
-  base::flat_set<raw_ptr<NavigationRequest, CtnExperimental>>
+  base::flat_set<raw_ptr<NavigationRequest, DanglingUntriaged>>
       navigation_requests_;
   bool is_initial_provisional_navigation_ = false;
   bool render_frame_alive_ = false;

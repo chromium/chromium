@@ -709,7 +709,7 @@ void BluetoothAdapter::MarkDiscoverySessionsAsInactive() {
   // have become inactive, upon which the adapter will remove them from
   // |discovery_sessions_|. To avoid invalidating the iterator, make a copy
   // here.
-  std::set<raw_ptr<BluetoothDiscoverySession, SetExperimental>> temp(
+  std::set<raw_ptr<BluetoothDiscoverySession, DanglingUntriaged>> temp(
       discovery_sessions_);
   for (auto iter = temp.begin(); iter != temp.end(); ++iter) {
     (*iter)->MarkAsInactive();

@@ -215,7 +215,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, MAYBE_Persist) {
   BookmarkModel* bookmark_model = WaitForBookmarkModel(browser()->GetProfile());
 
   GURL url(kPersistBookmarkURL);
-  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes =
+  std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>> nodes =
       bookmark_model->GetNodesByURL(url);
 
   ASSERT_EQ(1u, nodes.size());

@@ -119,7 +119,7 @@ class BookmarkEditorViewBrowserTestMoveDialog
   }
 
   void set_nodes(const std::vector<raw_ptr<const bookmarks::BookmarkNode,
-                                           VectorExperimental>>& nodes) {
+                                           DanglingUntriaged>>& nodes) {
     nodes_ = nodes;
   }
 
@@ -128,13 +128,12 @@ class BookmarkEditorViewBrowserTestMoveDialog
   }
 
  private:
-  std::vector<raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>
-      nodes_;
+  std::vector<raw_ptr<const bookmarks::BookmarkNode, DanglingUntriaged>> nodes_;
 };
 
 IN_PROC_BROWSER_TEST_F(BookmarkEditorViewBrowserTestMoveDialog,
                        InvokeUi_MoveNodes) {
-  const std::vector<raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>
+  const std::vector<raw_ptr<const bookmarks::BookmarkNode, DanglingUntriaged>>
       nodes({bookmark_model()->AddURL(bookmark_model()->other_node(), 0,
                                       u"bookmark 2",
                                       GURL("http://www.google.com")),
@@ -150,7 +149,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkEditorViewBrowserTestMoveDialog,
                        DeleteNodeDuringMoveDialog) {
   raw_ptr<BookmarkEditorView> editor_raw = nullptr;
 
-  std::vector<raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>> nodes(
+  std::vector<raw_ptr<const bookmarks::BookmarkNode, DanglingUntriaged>> nodes(
       {bookmark_model()->AddURL(bookmark_model()->other_node(), 0,
                                 u"bookmark 2", GURL("http://www.google.com")),
        bookmark_model()->AddURL(bookmark_model()->other_node(), 0, u"bookmark",

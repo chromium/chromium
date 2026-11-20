@@ -53,7 +53,7 @@ class PushNotificationClientManager {
  private:
   void FlushPendingMessageStore(ClientId client_id);
 
-  base::flat_map<ClientId, raw_ptr<PushNotificationClient, CtnExperimental>>
+  base::flat_map<ClientId, raw_ptr<PushNotificationClient, DanglingUntriaged>>
       client_id_to_client_map_;
 
   // Messages for clients that have not registered with the service yet. After a

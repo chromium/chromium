@@ -559,8 +559,7 @@ class MockDeskModelObserver : public DeskModelObserver {
   MOCK_METHOD0(DeskModelLoaded, void());
   MOCK_METHOD1(
       EntriesAddedOrUpdatedRemotely,
-      void(
-          const std::vector<raw_ptr<const DeskTemplate, VectorExperimental>>&));
+      void(const std::vector<raw_ptr<const DeskTemplate, DanglingUntriaged>>&));
   MOCK_METHOD1(EntriesRemovedRemotely, void(const std::vector<base::Uuid>&));
 };
 

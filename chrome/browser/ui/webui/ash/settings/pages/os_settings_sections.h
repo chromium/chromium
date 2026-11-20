@@ -108,7 +108,7 @@ class OsSettingsSections {
   OsSettingsSections();
 
   std::unordered_map<chromeos::settings::mojom::Section,
-                     raw_ptr<OsSettingsSection, CtnExperimental>>
+                     raw_ptr<OsSettingsSection, DanglingUntriaged>>
       sections_map_;
   std::vector<std::unique_ptr<OsSettingsSection>> sections_;
 

@@ -77,7 +77,7 @@ class ASH_EXPORT NetworkListViewControllerImpl
   // Map of network guids and their corresponding list item views.
   using NetworkIdToViewMap =
       base::flat_map<std::string,
-                     raw_ptr<NetworkListNetworkItemView, CtnExperimental>>;
+                     raw_ptr<NetworkListNetworkItemView, DanglingUntriaged>>;
 
   // TrayNetworkStateObserver:
   void ActiveNetworkStateChanged() override;

@@ -142,7 +142,7 @@ class ASH_EXPORT VideoConferenceTrayEffectsManager {
       controller_for_effect_id_;
 
   // This list of registered effect delegates, unowned.
-  std::vector<raw_ptr<VcEffectsDelegate, VectorExperimental>> effect_delegates_;
+  std::vector<raw_ptr<VcEffectsDelegate, DanglingUntriaged>> effect_delegates_;
 
   base::ObserverList<Observer> observers_;
 

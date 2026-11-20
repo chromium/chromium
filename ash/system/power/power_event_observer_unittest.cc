@@ -649,7 +649,7 @@ TEST_F(PowerEventObserverTest, LockOnLidCloseWhenDocked) {
           .Build();
 
   auto set_docked = [&](bool docked) {
-    std::vector<raw_ptr<display::DisplaySnapshot, VectorExperimental>> displays(
+    std::vector<raw_ptr<display::DisplaySnapshot, DanglingUntriaged>> displays(
         {internal_display.get()});
     if (docked) {
       displays.push_back(external_display.get());

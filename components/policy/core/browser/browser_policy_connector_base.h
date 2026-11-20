@@ -100,7 +100,7 @@ class POLICY_EXPORT BrowserPolicyConnectorBase {
   // Returns the providers to pass to the PolicyService. Generally this is the
   // same as |policy_providers_|, unless SetPolicyProviderForTesting() has been
   // called.
-  std::vector<raw_ptr<ConfigurationPolicyProvider, VectorExperimental>>
+  std::vector<raw_ptr<ConfigurationPolicyProvider, DanglingUntriaged>>
   GetProvidersForPolicyService();
 
   // Set to true when the PolicyService has been created, and false in

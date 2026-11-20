@@ -351,7 +351,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateTest, RemoveBookmarks) {
   ASSERT_TRUE(bookmark_menu_delegate_->SetActiveMenu(
       BookmarkParentFolder::FromFolderNode(f1), 0));
   LoadAllMenus(menu());
-  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes_to_remove =
+  std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>> nodes_to_remove =
       {
           f1->children()[1].get(),
       };
@@ -452,7 +452,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateTest,
   BookmarkParentFolderChildren bookmark_bar_has_children =
       bookmark_service()->GetChildren(
           BookmarkParentFolder::BookmarkBarFolder());
-  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes_to_remove =
+  std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>> nodes_to_remove =
       {};
   for (const BookmarkNode* node : bookmark_bar_has_children) {
     nodes_to_remove.push_back(node);
@@ -487,7 +487,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateTest,
   // Remove all "other" node children.
   BookmarkParentFolderChildren other_folder_children =
       bookmark_service()->GetChildren(BookmarkParentFolder::OtherFolder());
-  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes_to_remove =
+  std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>> nodes_to_remove =
       {};
   for (const BookmarkNode* node : other_folder_children) {
     nodes_to_remove.push_back(node);

@@ -253,7 +253,7 @@ class VideoDetectorTest : public testing::Test {
   SurfaceIdAllocatorSet allocators_;
   SurfaceAggregator surface_aggregator_;
   std::unique_ptr<CompositorFrameSinkSupport> root_frame_sink_;
-  std::set<raw_ptr<CompositorFrameSinkSupport, SetExperimental>>
+  std::set<raw_ptr<CompositorFrameSinkSupport, DanglingUntriaged>>
       embedded_clients_;
   raw_ptr<VideoDetector> detector_;
 };

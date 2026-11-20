@@ -42,9 +42,9 @@ void WallpaperWindowStateManager::MinimizeInactiveWindows(
     const std::string& user_id_hash) {
   if (!user_id_hash_window_list_map_.contains(user_id_hash)) {
     user_id_hash_window_list_map_[user_id_hash] =
-        std::set<raw_ptr<aura::Window, SetExperimental>>();
+        std::set<raw_ptr<aura::Window, DanglingUntriaged>>();
   }
-  std::set<raw_ptr<aura::Window, SetExperimental>>* results =
+  std::set<raw_ptr<aura::Window, DanglingUntriaged>>* results =
       &user_id_hash_window_list_map_[user_id_hash];
 
   aura::Window* active_window = window_util::GetActiveWindow();
@@ -75,11 +75,11 @@ void WallpaperWindowStateManager::RestoreMinimizedWindows(
     return;
   }
 
-  std::set<raw_ptr<aura::Window, SetExperimental>> removed_windows;
+  std::set<raw_ptr<aura::Window, DanglingUntriaged>> removed_windows;
   removed_windows.swap(it->second);
   user_id_hash_window_list_map_.erase(it);
 
-  for (std::set<raw_ptr<aura::Window, SetExperimental>>::iterator iter =
+  for (std::set<raw_ptr<aura::Window, DanglingUntriaged>>::iterator iter =
            removed_windows.begin();
        iter != removed_windows.end(); ++iter) {
     WindowState::Get(*iter)->Unminimize();

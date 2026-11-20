@@ -146,7 +146,7 @@ class CONTENT_EXPORT DevToolsAgentHostImpl : public DevToolsAgentHost {
   DevToolsIOContext* GetIOContext() { return &io_context_; }
   DevToolsRendererChannel* GetRendererChannel() { return &renderer_channel_; }
 
-  const std::vector<raw_ptr<DevToolsSession, VectorExperimental>>& sessions()
+  const std::vector<raw_ptr<DevToolsSession, DanglingUntriaged>>& sessions()
       const {
     return sessions_;
   }
@@ -181,7 +181,7 @@ class CONTENT_EXPORT DevToolsAgentHostImpl : public DevToolsAgentHost {
   DevToolsSession* SessionByClient(DevToolsAgentHostClient* client);
 
   const std::string id_;
-  std::vector<raw_ptr<DevToolsSession, VectorExperimental>> sessions_;
+  std::vector<raw_ptr<DevToolsSession, DanglingUntriaged>> sessions_;
   base::flat_map<DevToolsAgentHostClient*, std::unique_ptr<DevToolsSession>>
       session_by_client_;
   DevToolsIOContext io_context_;

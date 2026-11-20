@@ -149,7 +149,7 @@ class DeclarativeContentPageUrlConditionTracker
   // Grouped predicates tracked by this object.
   std::map<const void*,
            std::vector<raw_ptr<const DeclarativeContentPageUrlPredicate,
-                               VectorExperimental>>>
+                               DanglingUntriaged>>>
       tracked_predicates_;
 
   // Maps WebContents to the tracker for that WebContents state.

@@ -177,7 +177,7 @@ class TestWidgetRemovalsObserver : public WidgetRemovalsObserver {
   }
 
  private:
-  std::set<raw_ptr<View, SetExperimental>> removed_views_;
+  std::set<raw_ptr<View, DanglingUntriaged>> removed_views_;
 };
 
 class MakeCloseSynchronousReceiver {

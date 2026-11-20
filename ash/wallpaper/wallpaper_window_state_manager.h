@@ -24,7 +24,7 @@ namespace ash {
 class ASH_EXPORT WallpaperWindowStateManager : public aura::WindowObserver {
  public:
   typedef std::map<std::string,
-                   std::set<raw_ptr<aura::Window, SetExperimental>>>
+                   std::set<raw_ptr<aura::Window, DanglingUntriaged>>>
       UserIDHashWindowListMap;
 
   WallpaperWindowStateManager();

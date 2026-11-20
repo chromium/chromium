@@ -745,7 +745,7 @@ struct AXTree::OrderedSetContent {
   OrderedSetContent& operator=(const OrderedSetContent&) = delete;
   OrderedSetContent& operator=(OrderedSetContent&&) noexcept = default;
 
-  std::vector<raw_ptr<const AXNode, VectorExperimental>> set_items_;
+  std::vector<raw_ptr<const AXNode, DanglingUntriaged>> set_items_;
 
   // Some ordered set items may not be associated with an ordered set.
   raw_ptr<const AXNode> ordered_set_;
@@ -1406,7 +1406,7 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
           for (AXNode* child : cleared_node->children()) {
             DestroySubtree(child, &update_state);
           }
-          std::vector<raw_ptr<AXNode, VectorExperimental>> children;
+          std::vector<raw_ptr<AXNode, DanglingUntriaged>> children;
           cleared_node->SwapChildren(&children);
           update_state.pending_node_ids.insert(cleared_node->id());
         }
@@ -2087,7 +2087,7 @@ bool AXTree::UpdateNode(const AXNodeData& src,
 
   // Now build a new children vector, reusing nodes when possible,
   // and swap it in.
-  std::vector<raw_ptr<AXNode, VectorExperimental>> new_children;
+  std::vector<raw_ptr<AXNode, DanglingUntriaged>> new_children;
   bool success = CreateNewChildVector(
       node, src.child_ids, &new_children, update_state);
   node->SwapChildren(&new_children);
@@ -2635,7 +2635,7 @@ void AXTree::DeleteOldChildren(AXNode* node,
 bool AXTree::CreateNewChildVector(
     AXNode* node,
     const std::vector<AXNodeID>& new_child_ids,
-    std::vector<raw_ptr<AXNode, VectorExperimental>>* new_children,
+    std::vector<raw_ptr<AXNode, DanglingUntriaged>>* new_children,
     AXTreeUpdateState* update_state) {
   CHECK(GetTreeUpdateInProgressState(), base::NotFatalUntil::M163);
   bool success = true;

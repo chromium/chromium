@@ -321,7 +321,7 @@ TEST_F(MultistepFilterMetricsTrackerTest,
       kMultistepFilterSuggestionAgeAcceptedOnSameDomainHistogram, 15, 1);
 
   // Verify UKM.
-  std::vector<raw_ptr<const ukm::mojom::UkmEntry, VectorExperimental>> entries =
+  std::vector<raw_ptr<const ukm::mojom::UkmEntry, DanglingUntriaged>> entries =
       ukm_recorder.GetEntriesByName(
           ukm::builders::MultistepFilter_UiSession::kEntryName);
   ASSERT_EQ(1u, entries.size());
@@ -554,7 +554,7 @@ TEST_F(MultistepFilterMetricsTrackerTest,
   histogram_tester.ExpectTotalCount(
       kMultistepFilterPostSuggestionApplicationUserEngagementHistogram, 0);
 
-  std::vector<raw_ptr<const ukm::mojom::UkmEntry, VectorExperimental>> entries =
+  std::vector<raw_ptr<const ukm::mojom::UkmEntry, DanglingUntriaged>> entries =
       ukm_recorder.GetEntriesByName(
           ukm::builders::MultistepFilter_ApplicationSession::kEntryName);
   ASSERT_EQ(1u, entries.size());
@@ -708,7 +708,7 @@ TEST_F(MultistepFilterMetricsTrackerTest, FacetsShownLogged) {
       "MultistepFilter.NumberOfFacetsShown.ByTask.SEARCH_ACCOMMODATIONS", 2, 1);
 
   // Verify UKM.
-  std::vector<raw_ptr<const ukm::mojom::UkmEntry, VectorExperimental>> entries =
+  std::vector<raw_ptr<const ukm::mojom::UkmEntry, DanglingUntriaged>> entries =
       ukm_recorder.GetEntriesByName(
           ukm::builders::MultistepFilter_UiSession::kEntryName);
   ASSERT_EQ(1u, entries.size());
@@ -797,7 +797,7 @@ TEST_F(MultistepFilterMetricsTrackerTest,
       true, 1);
 
   // Verify UKM.
-  std::vector<raw_ptr<const ukm::mojom::UkmEntry, VectorExperimental>> entries =
+  std::vector<raw_ptr<const ukm::mojom::UkmEntry, DanglingUntriaged>> entries =
       ukm_recorder.GetEntriesByName(
           ukm::builders::MultistepFilter_ApplicationSession::kEntryName);
   ASSERT_EQ(1u, entries.size());
@@ -877,7 +877,7 @@ TEST_F(MultistepFilterMetricsTrackerTest,
       false, 1);
 
   // Verify UKM.
-  std::vector<raw_ptr<const ukm::mojom::UkmEntry, VectorExperimental>> entries =
+  std::vector<raw_ptr<const ukm::mojom::UkmEntry, DanglingUntriaged>> entries =
       ukm_recorder.GetEntriesByName(
           ukm::builders::MultistepFilter_ApplicationSession::kEntryName);
   ASSERT_EQ(1u, entries.size());
@@ -1521,8 +1521,8 @@ TEST_F(MultistepFilterMetricsTrackerTest, SessionIdsMatch) {
     SetupPostSuggestionApplicationSession(tracker, suggestion);
   }
 
-  std::vector<raw_ptr<const ukm::mojom::UkmEntry, VectorExperimental>> ui_entries =
-      ukm_recorder.GetEntriesByName(
+  std::vector<raw_ptr<const ukm::mojom::UkmEntry, DanglingUntriaged>>
+      ui_entries = ukm_recorder.GetEntriesByName(
           ukm::builders::MultistepFilter_UiSession::kEntryName);
   ASSERT_EQ(1u, ui_entries.size());
   const int64_t* ui_session_id = ukm_recorder.GetEntryMetric(
@@ -1530,8 +1530,8 @@ TEST_F(MultistepFilterMetricsTrackerTest, SessionIdsMatch) {
   ASSERT_NE(nullptr, ui_session_id);
   EXPECT_NE(0, *ui_session_id);
 
-  std::vector<raw_ptr<const ukm::mojom::UkmEntry, VectorExperimental>> app_entries =
-      ukm_recorder.GetEntriesByName(
+  std::vector<raw_ptr<const ukm::mojom::UkmEntry, DanglingUntriaged>>
+      app_entries = ukm_recorder.GetEntriesByName(
           ukm::builders::MultistepFilter_ApplicationSession::kEntryName);
   ASSERT_EQ(1u, app_entries.size());
   const int64_t* app_session_id = ukm_recorder.GetEntryMetric(

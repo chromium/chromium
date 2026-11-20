@@ -178,7 +178,7 @@ class DeviceOAuth2TokenService : public OAuth2AccessTokenManager::Delegate,
 
   // Currently open requests that are waiting while loading the system salt or
   // validating the token.
-  std::vector<raw_ptr<PendingRequest, VectorExperimental>> pending_requests_;
+  std::vector<raw_ptr<PendingRequest, DanglingUntriaged>> pending_requests_;
 
   // Callbacks to invoke, if set, for refresh token-related events.
   RefreshTokenAvailableCallback on_refresh_token_available_callback_;

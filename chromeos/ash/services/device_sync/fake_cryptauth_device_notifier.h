@@ -87,7 +87,7 @@ class FakeCryptAuthDeviceNotifierFactory
 
   ~FakeCryptAuthDeviceNotifierFactory() override;
 
-  const std::vector<raw_ptr<FakeCryptAuthDeviceNotifier, VectorExperimental>>&
+  const std::vector<raw_ptr<FakeCryptAuthDeviceNotifier, DanglingUntriaged>>&
   instances() const {
     return instances_;
   }
@@ -110,7 +110,7 @@ class FakeCryptAuthDeviceNotifierFactory
       CryptAuthClientFactory* client_factory,
       std::unique_ptr<base::OneShotTimer> timer) override;
 
-  std::vector<raw_ptr<FakeCryptAuthDeviceNotifier, VectorExperimental>>
+  std::vector<raw_ptr<FakeCryptAuthDeviceNotifier, DanglingUntriaged>>
       instances_;
   std::string last_instance_id_;
   std::string last_instance_id_token_;

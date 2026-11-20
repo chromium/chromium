@@ -54,7 +54,7 @@ class TestValueStoreFactory : public ValueStoreFactory {
   // A mapping from directories to their ValueStore. None of these value
   // stores are owned by this factory, so care must be taken when calling
   // GetExisting.
-  std::map<base::FilePath, raw_ptr<ValueStore, CtnExperimental>>
+  std::map<base::FilePath, raw_ptr<ValueStore, DanglingUntriaged>>
       value_store_map_;
 };
 

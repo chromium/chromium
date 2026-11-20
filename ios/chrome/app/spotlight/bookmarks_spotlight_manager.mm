@@ -243,7 +243,7 @@ class SpotlightBookmarkModelBridge;
     title = @"";
   }
 
-  std::vector<raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>
+  std::vector<raw_ptr<const bookmarks::BookmarkNode, DanglingUntriaged>>
       nodesMatchingURL = [self nodesByURL:URL];
 
   NSMutableArray* itemKeywords = [[NSMutableArray alloc] init];
@@ -439,7 +439,7 @@ class SpotlightBookmarkModelBridge;
                             _pendingLargeIconTasksCount);
 }
 
-- (std::vector<raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>)
+- (std::vector<raw_ptr<const bookmarks::BookmarkNode, DanglingUntriaged>>)
     nodesByURL:(const GURL&)url {
   if (self.isShuttingDown || !_bookmarkModel) {
     return {};

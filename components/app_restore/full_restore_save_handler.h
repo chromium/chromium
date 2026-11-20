@@ -255,7 +255,7 @@ class COMPONENT_EXPORT(APP_RESTORE) FullRestoreSaveHandler
 
   // The AppRegistryCache for each user's profile. The key is the profile path.
   base::flat_map<base::FilePath,
-                 raw_ptr<apps::AppRegistryCache, CtnExperimental>>
+                 raw_ptr<apps::AppRegistryCache, DanglingUntriaged>>
       profile_path_to_app_registry_cache_;
 
   // The map from the window id to the full restore file path and the app id.

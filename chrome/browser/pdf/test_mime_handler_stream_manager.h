@@ -143,7 +143,8 @@ class TestMimeHandlerStreamManagerFactory
  private:
   // Tracks managers this factory has created. It's safe to track raw pointers,
   // since the pointers are only for comparison and aren't dereferenced.
-  base::flat_set<raw_ptr<MimeHandlerStreamManager, CtnExperimental>> managers_;
+  base::flat_set<raw_ptr<MimeHandlerStreamManager, DanglingUntriaged>>
+      managers_;
 };
 
 }  // namespace pdf

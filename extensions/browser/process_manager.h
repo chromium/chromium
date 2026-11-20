@@ -60,7 +60,7 @@ class ProcessManager : public KeyedService,
                        public ExtensionHostObserver {
  public:
   using ExtensionHostSet =
-      std::set<raw_ptr<extensions::ExtensionHost, SetExperimental>>;
+      std::set<raw_ptr<extensions::ExtensionHost, DanglingUntriaged>>;
 
   // A struct representing an active service worker keepalive.
   struct ServiceWorkerKeepaliveData {
@@ -434,7 +434,7 @@ class ProcessManager : public KeyedService,
   // extension URLRequest is constructed and then destroyed without ever
   // starting, we can receive a completion notification without a corresponding
   // start notification. In that case we want to avoid decrementing keepalive.
-  std::map<int, raw_ptr<ExtensionHost, CtnExperimental>>
+  std::map<int, raw_ptr<ExtensionHost, DanglingUntriaged>>
       pending_network_requests_;
 
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>

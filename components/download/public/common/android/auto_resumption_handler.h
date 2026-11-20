@@ -62,7 +62,7 @@ class COMPONENTS_DOWNLOAD_EXPORT AutoResumptionHandler
   ~AutoResumptionHandler() override;
 
   void SetResumableDownloads(
-      const std::vector<raw_ptr<download::DownloadItem, VectorExperimental>>&
+      const std::vector<raw_ptr<download::DownloadItem, DanglingUntriaged>>&
           downloads);
   bool IsActiveNetworkMetered() const;
   void OnStartScheduledTask(DownloadTaskType type,
@@ -79,7 +79,7 @@ class COMPONENTS_DOWNLOAD_EXPORT AutoResumptionHandler
 
  private:
   using DownloadMap =
-      std::map<std::string, raw_ptr<DownloadItem, CtnExperimental>>;
+      std::map<std::string, raw_ptr<DownloadItem, DanglingUntriaged>>;
 
   // NetworkStatusListener::Observer implementation.
   void OnNetworkStatusReady(
@@ -114,7 +114,7 @@ class COMPONENTS_DOWNLOAD_EXPORT AutoResumptionHandler
   DownloadMap resumable_downloads_;
 
   // A temporary list of downloads which are being retried immediately.
-  std::set<raw_ptr<download::DownloadItem, SetExperimental>>
+  std::set<raw_ptr<download::DownloadItem, DanglingUntriaged>>
       downloads_to_retry_;
 
   bool recompute_task_params_scheduled_ = false;

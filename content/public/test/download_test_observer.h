@@ -114,7 +114,7 @@ class DownloadTestObserver : public DownloadManager::Observer,
   virtual bool IsDownloadInFinalState(download::DownloadItem* download) = 0;
 
  private:
-  typedef std::set<raw_ptr<download::DownloadItem, SetExperimental>>
+  typedef std::set<raw_ptr<download::DownloadItem, DanglingUntriaged>>
       DownloadSet;
 
   // Maps states to the number of times they have been encountered
@@ -273,7 +273,7 @@ class DownloadTestFlushObserver : public DownloadManager::Observer,
   void OnDownloadDestroyed(download::DownloadItem* download) override;
 
  private:
-  typedef std::set<raw_ptr<download::DownloadItem, SetExperimental>>
+  typedef std::set<raw_ptr<download::DownloadItem, DanglingUntriaged>>
       DownloadSet;
 
   // If we're waiting for that flush point, check the number

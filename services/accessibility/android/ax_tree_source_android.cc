@@ -379,7 +379,7 @@ void AXTreeSourceAndroid::ComputeEnclosingBoundsInternal(
 
   // NOTE: |AXTreeSourceAndroid::GetChildren| depends on ComputeEnclosingBounds.
   // To get children, directly call wrapper's GetChildren here.
-  std::vector<raw_ptr<AccessibilityInfoDataWrapper, VectorExperimental>>
+  std::vector<raw_ptr<AccessibilityInfoDataWrapper, DanglingUntriaged>>
       children;
   info_data->GetChildren(&children);
   for (AccessibilityInfoDataWrapper* child : children) {
@@ -704,7 +704,7 @@ void AXTreeSourceAndroid::PerformAction(const ui::AXActionData& data) {
   delegate_->OnAction(data);
 }
 
-std::vector<raw_ptr<AccessibilityInfoDataWrapper, VectorExperimental>>&
+std::vector<raw_ptr<AccessibilityInfoDataWrapper, DanglingUntriaged>>&
 AXTreeSourceAndroid::GetChildren(
     AccessibilityInfoDataWrapper* info_data) const {
   DCHECK(info_data);
@@ -718,7 +718,7 @@ void AXTreeSourceAndroid::ComputeAndCacheChildren(
     return;
   }
 
-  std::vector<raw_ptr<AccessibilityInfoDataWrapper, VectorExperimental>>&
+  std::vector<raw_ptr<AccessibilityInfoDataWrapper, DanglingUntriaged>>&
       children = info_data->cached_children_.emplace();
 
   info_data->GetChildren(&children);

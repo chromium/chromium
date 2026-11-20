@@ -84,7 +84,7 @@ class PageAnchorsMetricsObserverBrowserTest
     return ukm_recorder_->GetEntriesByName(entry_name).size();
   }
 
-  std::vector<raw_ptr<const ukm::mojom::UkmEntry, VectorExperimental>>
+  std::vector<raw_ptr<const ukm::mojom::UkmEntry, DanglingUntriaged>>
   GetEntriesByName(std::string_view entry_name) const {
     return ukm_recorder_->GetEntriesByName(entry_name);
   }

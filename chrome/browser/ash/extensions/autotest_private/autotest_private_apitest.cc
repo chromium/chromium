@@ -620,7 +620,7 @@ class AutotestPrivateSearchTest
   AutotestPrivateSearchTest& operator=(const AutotestPrivateSearchTest&) =
       delete;
 
-  std::vector<raw_ptr<ChromeSearchResult, VectorExperimental>>
+  std::vector<raw_ptr<ChromeSearchResult, DanglingUntriaged>>
   PublishedResults() {
     return AppListClientImpl::GetInstance()
         ->GetModelUpdaterForTest()

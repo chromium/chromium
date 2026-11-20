@@ -266,7 +266,7 @@ class DownloadBubbleUIControllerTest : public InProcessBrowserTest {
     EXPECT_CALL(item(index), GetDangerType())
         .WillRepeatedly(
             Return(DownloadDangerType::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS));
-    std::vector<raw_ptr<download::DownloadItem, VectorExperimental>> items;
+    std::vector<raw_ptr<download::DownloadItem, DanglingUntriaged>> items;
     for (size_t i = 0; i < items_.size(); ++i) {
       items.push_back(&item(i));
     }

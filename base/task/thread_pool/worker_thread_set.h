@@ -61,7 +61,7 @@ class BASE_EXPORT WorkerThreadSet {
   bool IsEmpty() const { return set_.empty(); }
 
  private:
-  std::set<raw_ptr<WorkerThread, SetExperimental>, Compare> set_;
+  std::set<raw_ptr<WorkerThread, DanglingUntriaged>, Compare> set_;
 };
 
 }  // namespace internal

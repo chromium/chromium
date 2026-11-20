@@ -212,7 +212,7 @@ class LoginAuthFactorsViewUnittest : public LoginTestBase {
 
   raw_ptr<views::View> container_ = nullptr;
   raw_ptr<LoginAuthFactorsView> view_ = nullptr;  // Owned by container.
-  std::vector<raw_ptr<FakeAuthFactorModel, VectorExperimental>> auth_factors_;
+  std::vector<raw_ptr<FakeAuthFactorModel, DanglingUntriaged>> auth_factors_;
   bool click_to_enter_called_ = false;
   bool auth_factor_is_hiding_password_ = false;
 };

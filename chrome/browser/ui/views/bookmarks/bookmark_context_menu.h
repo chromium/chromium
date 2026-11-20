@@ -26,7 +26,7 @@ class BookmarkContextMenuObserver : public base::CheckedObserver {
   // Invoked before the specified items are removed from the bookmark model.
   virtual void WillRemoveBookmarks(
       const std::vector<raw_ptr<const bookmarks::BookmarkNode,
-                                VectorExperimental>>& bookmarks) = 0;
+                                DanglingUntriaged>>& bookmarks) = 0;
 
   // Invoked after the items have been removed from the model.
   virtual void DidRemoveBookmarks() = 0;
@@ -48,7 +48,7 @@ class BookmarkContextMenu : public BookmarkContextMenuControllerDelegate,
                       Profile* profile,
                       BookmarkLaunchLocation opened_from,
                       const std::vector<raw_ptr<const bookmarks::BookmarkNode,
-                                                VectorExperimental>>& selection,
+                                                DanglingUntriaged>>& selection,
                       bool close_on_remove,
                       bool can_paste);
 
@@ -86,7 +86,7 @@ class BookmarkContextMenu : public BookmarkContextMenuControllerDelegate,
   void WillExecuteCommand(
       int command_id,
       const std::vector<raw_ptr<const bookmarks::BookmarkNode,
-                                VectorExperimental>>& bookmarks) override;
+                                DanglingUntriaged>>& bookmarks) override;
   void DidExecuteCommand(int command_id) override;
 
   void UpdateSubMenuState();

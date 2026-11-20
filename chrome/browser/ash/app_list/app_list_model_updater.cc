@@ -37,9 +37,9 @@ syncer::StringOrdinal AppListModelUpdater::GetFirstAvailablePosition() const {
   return (*last_item)->position().CreateAfter();
 }
 
-std::vector<raw_ptr<ChromeSearchResult, VectorExperimental>>
+std::vector<raw_ptr<ChromeSearchResult, DanglingUntriaged>>
 AppListModelUpdater::GetPublishedSearchResultsForTest() {
-  return std::vector<raw_ptr<ChromeSearchResult, VectorExperimental>>();
+  return std::vector<raw_ptr<ChromeSearchResult, DanglingUntriaged>>();
 }
 
 // static

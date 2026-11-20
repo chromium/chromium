@@ -418,7 +418,7 @@ class ExtensionDownloadsEventRouter
   std::deque<scoped_refptr<DownloadsFunction>> pending_functions_;
   raw_ptr<Profile> profile_;
   download::AllDownloadItemNotifier notifier_;
-  std::set<raw_ptr<const extensions::Extension, SetExperimental>>
+  std::set<raw_ptr<const extensions::Extension, DanglingUntriaged>>
       ui_disabling_extensions_;
 
   base::Time last_checked_removal_;

@@ -22,7 +22,7 @@
 namespace segmentation_platform {
 
 ModelExecutionSchedulerImpl::ModelExecutionSchedulerImpl(
-    std::vector<raw_ptr<Observer, VectorExperimental>>&& observers,
+    std::vector<raw_ptr<Observer, DanglingUntriaged>>&& observers,
     SegmentInfoDatabase* segment_database,
     SignalStorageConfig* signal_storage_config,
     ModelManager* model_manager,

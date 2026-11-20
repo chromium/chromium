@@ -37,7 +37,7 @@ class DEVICE_GAMEPAD_EXPORT GamepadDataFetcherManager {
   void CreateDataFetcherFromFactory(GamepadDataFetcherFactory* factory);
   void RemoveSourceDataFetcher(GamepadSource* source);
 
-  typedef std::vector<raw_ptr<GamepadDataFetcherFactory, VectorExperimental>>
+  typedef std::vector<raw_ptr<GamepadDataFetcherFactory, DanglingUntriaged>>
       FactoryVector;
   FactoryVector factories_;
 

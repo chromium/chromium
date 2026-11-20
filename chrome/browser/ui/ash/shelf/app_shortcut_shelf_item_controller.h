@@ -83,9 +83,9 @@ class AppShortcutShelfItemController : public ash::ShelfItemDelegate,
 
   // |filter_predicate| is used to filter out the app webcontents and app
   // browsers results based on their corresponding windows.
-  std::vector<raw_ptr<content::WebContents, VectorExperimental>>
+  std::vector<raw_ptr<content::WebContents, DanglingUntriaged>>
   GetAppWebContents(const ItemFilterPredicate& filter_predicate);
-  std::vector<raw_ptr<ash::BrowserDelegate, VectorExperimental>> GetAppBrowsers(
+  std::vector<raw_ptr<ash::BrowserDelegate, DanglingUntriaged>> GetAppBrowsers(
       const ItemFilterPredicate& filter_predicate);
 
   // If an owned item is already active, this function advances to the next item
@@ -120,9 +120,9 @@ class AppShortcutShelfItemController : public ash::ShelfItemDelegate,
   // The cached lists of open app shown in an application menu. We either cache
   // by the web contents or by the browsers, and this is indicated by the value
   // of |app_menu_cached_by_browsers_|.
-  std::vector<raw_ptr<content::WebContents, VectorExperimental>>
+  std::vector<raw_ptr<content::WebContents, DanglingUntriaged>>
       app_menu_web_contents_;
-  std::vector<raw_ptr<ash::BrowserDelegate, VectorExperimental>>
+  std::vector<raw_ptr<ash::BrowserDelegate, DanglingUntriaged>>
       app_menu_browsers_;
   bool app_menu_cached_by_browsers_ = false;
 

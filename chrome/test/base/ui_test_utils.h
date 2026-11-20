@@ -398,7 +398,7 @@ void GetCookies(const GURL& url,
 
 // Get all tags from the `WebContentsTagsManager`.
 // `exclude_web_ui` determines whether to exclude tags of web UI web contents.
-const std::vector<raw_ptr<task_manager::WebContentsTag, VectorExperimental>>
+const std::vector<raw_ptr<task_manager::WebContentsTag, DanglingUntriaged>>
 GetAllTrackedTags(bool exclude_web_ui);
 
 // Helper to get the titles of all tags. Can be used with

@@ -560,7 +560,7 @@ void WorkspaceLayoutManager::UpdateAlwaysOnTop(
   // appropriate windows will be included in the iteration.
   // Use an `aura::WindowTracker` since `OnWillRemoveWindowFromLayout()` may
   // remove windows from `windows_`.
-  std::vector<raw_ptr<aura::Window, VectorExperimental>> windows(
+  std::vector<raw_ptr<aura::Window, DanglingUntriaged>> windows(
       windows_.begin(), windows_.end());
   aura::WindowTracker tracker(windows);
   while (!tracker.windows().empty()) {

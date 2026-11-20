@@ -27,7 +27,7 @@ namespace {
 void CloneChildren(ui::Layer* to_clone,
                    ui::Layer* parent,
                    const wm::MapLayerFunc& map_func) {
-  typedef std::vector<raw_ptr<ui::Layer, VectorExperimental>> Layers;
+  typedef std::vector<raw_ptr<ui::Layer, DanglingUntriaged>> Layers;
   // Make a copy of the children since RecreateLayer() mutates it.
   Layers children(to_clone->children());
   for (Layers::const_iterator i = children.begin(); i != children.end(); ++i) {
@@ -220,15 +220,15 @@ const aura::Window* GetTransientParent(const aura::Window* window) {
   return manager ? manager->transient_parent() : nullptr;
 }
 
-const std::vector<raw_ptr<aura::Window, VectorExperimental>>&
+const std::vector<raw_ptr<aura::Window, DanglingUntriaged>>&
 GetTransientChildren(const aura::Window* window) {
   const TransientWindowManager* manager =
       TransientWindowManager::GetIfExists(window);
   if (manager)
     return manager->transient_children();
 
-  static std::vector<raw_ptr<aura::Window, VectorExperimental>>* shared =
-      new std::vector<raw_ptr<aura::Window, VectorExperimental>>;
+  static std::vector<raw_ptr<aura::Window, DanglingUntriaged>>* shared =
+      new std::vector<raw_ptr<aura::Window, DanglingUntriaged>>;
   return *shared;
 }
 

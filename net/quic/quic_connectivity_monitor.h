@@ -94,10 +94,10 @@ class NET_EXPORT_PRIVATE QuicConnectivityMonitor
   // handles::kInvalidNetworkHandle.
   handles::NetworkHandle default_network_;
   // Sessions that are currently degrading on the |default_network_|.
-  std::set<raw_ptr<QuicChromiumClientSession, SetExperimental>>
+  std::set<raw_ptr<QuicChromiumClientSession, DanglingUntriaged>>
       degrading_sessions_;
   // Sessions that are currently active on the |default_network_|.
-  std::set<raw_ptr<QuicChromiumClientSession, SetExperimental>>
+  std::set<raw_ptr<QuicChromiumClientSession, DanglingUntriaged>>
       active_sessions_;
 
   // Number of sessions that have been active or created during the period of

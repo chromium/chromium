@@ -84,7 +84,7 @@ void DesktopBookmarkBarActionAdapter::OpenFolderNodes(
 
   auto raw_nodes =
       base::ToVector(nodes, [](const bookmarks::BookmarkNode* node) {
-        return raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>(node);
+        return raw_ptr<const bookmarks::BookmarkNode, DanglingUntriaged>(node);
       });
 
   bookmarks::OpenAllIfAllowed(
@@ -101,7 +101,7 @@ void DesktopBookmarkBarActionAdapter::CanPasteFromClipboard(
   std::unique_ptr<BookmarkParentFolder> parent =
       BookmarkContextMenuController::GetParentForNewNodes(
           base::ToVector(selection, [](const bookmarks::BookmarkNode* node) {
-            return raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>(
+            return raw_ptr<const bookmarks::BookmarkNode, DanglingUntriaged>(
                 node);
           }));
   CHECK(parent);
@@ -126,7 +126,7 @@ void DesktopBookmarkBarActionAdapter::ShowContextMenu(
 
   auto raw_selection =
       base::ToVector(selection, [](const bookmarks::BookmarkNode* node) {
-        return raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>(node);
+        return raw_ptr<const bookmarks::BookmarkNode, DanglingUntriaged>(node);
       });
 
   context_menu_ = std::make_unique<BookmarkContextMenu>(

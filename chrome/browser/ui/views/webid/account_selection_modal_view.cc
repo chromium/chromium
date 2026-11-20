@@ -1300,7 +1300,7 @@ void AccountSelectionModalView::
   idp_picker_ = nullptr;
   verifying_focus_view_ = nullptr;
 
-  const std::vector<raw_ptr<views::View, VectorExperimental>> child_views =
+  const std::vector<raw_ptr<views::View, DanglingUntriaged>> child_views =
       children();
   for (views::View* child_view : child_views) {
     if (child_view != header_view_) {

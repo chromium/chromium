@@ -48,7 +48,7 @@ class ContentMap {
   // These two containers work together to store and index content.
   // Each unique piece of content is stored once, and never removed.
   std::map<feedstore::Content, ContentRevision, ContentCompareFunctor> content_;
-  std::vector<raw_ptr<const feedstore::Content, VectorExperimental>>
+  std::vector<raw_ptr<const feedstore::Content, DanglingUntriaged>>
       revision_to_content_;
 };
 

@@ -107,7 +107,7 @@ FrameThrottlingController::~FrameThrottlingController() {
 }
 
 void FrameThrottlingController::StartThrottling(
-    const std::vector<raw_ptr<aura::Window, VectorExperimental>>& windows) {
+    const std::vector<raw_ptr<aura::Window, DanglingUntriaged>>& windows) {
   if (windows_manually_throttled_)
     EndThrottling();
 

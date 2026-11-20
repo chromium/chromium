@@ -83,13 +83,13 @@ class DeskModel {
   struct GetAllEntriesResult {
     GetAllEntriesResult(
         GetAllEntriesStatus status,
-        std::vector<raw_ptr<const ash::DeskTemplate, VectorExperimental>>
+        std::vector<raw_ptr<const ash::DeskTemplate, DanglingUntriaged>>
             entries);
     GetAllEntriesResult(const GetAllEntriesResult& other);
     ~GetAllEntriesResult();
 
     GetAllEntriesStatus status;
-    std::vector<raw_ptr<const ash::DeskTemplate, VectorExperimental>> entries;
+    std::vector<raw_ptr<const ash::DeskTemplate, DanglingUntriaged>> entries;
   };
 
   // Stores GetEntryByUuid result.

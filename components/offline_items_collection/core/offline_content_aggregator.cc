@@ -18,7 +18,7 @@ namespace offline_items_collection {
 namespace {
 
 template <typename T, typename U>
-bool MapContainsValue(const std::map<T, raw_ptr<U, CtnExperimental>>& map,
+bool MapContainsValue(const std::map<T, raw_ptr<U, DanglingUntriaged>>& map,
                       U* value) {
   for (const auto& it : map) {
     if (it.second == value)

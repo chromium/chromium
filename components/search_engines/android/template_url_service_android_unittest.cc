@@ -253,7 +253,7 @@ TEST_F(TemplateUrlServiceAndroidUnitTest, FilterUserSelectableTemplateUrls) {
     SCOPED_TRACE(tc.title);
     std::vector<TemplateURLData> tdata(tc.input_data.size());
     std::vector<std::unique_ptr<TemplateURL>> turls;
-    std::vector<raw_ptr<TemplateURL, VectorExperimental>> input_data;
+    std::vector<raw_ptr<TemplateURL, DanglingUntriaged>> input_data;
     for (size_t index = 0; index < tc.input_data.size(); ++index) {
       TemplateURLData& data = tdata[index];
       data.SetKeyword(tc.input_data[index].keyword);

@@ -38,7 +38,7 @@ class AnswerRanker : public Ranker {
   base::WeakPtr<ChromeSearchResult> chosen_answer_;
 
   // All current Omnibox answer candidates.
-  std::vector<raw_ptr<ChromeSearchResult, VectorExperimental>>
+  std::vector<raw_ptr<ChromeSearchResult, DanglingUntriaged>>
       omnibox_candidates_;
 
   bool burn_in_elapsed_ = false;

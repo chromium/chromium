@@ -2844,7 +2844,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest,
     // the new one that we initiated. This would be true iff the DownloadManager
     // has exactly two downloads and they correspond to |first_download_url| and
     // |second_download_url|.
-    std::vector<raw_ptr<download::DownloadItem, VectorExperimental>> downloads;
+    std::vector<raw_ptr<download::DownloadItem, DanglingUntriaged>> downloads;
     download_manager->GetAllDownloads(&downloads);
     ASSERT_EQ(2u, downloads.size());
     std::set<GURL> download_urls{downloads[0]->GetURL(),
@@ -2947,7 +2947,7 @@ class MultiBrowserObserver : public BrowserCollectionObserver {
 
   // Note that the returned pointers might no longer be valid (because the
   // Browser objects were closed).
-  std::vector<raw_ptr<BrowserWindowInterface, VectorExperimental>> Wait() {
+  std::vector<raw_ptr<BrowserWindowInterface, DanglingUntriaged>> Wait() {
     run_loop_.Run();
     return browsers_;
   }
@@ -2973,7 +2973,7 @@ class MultiBrowserObserver : public BrowserCollectionObserver {
  private:
   size_t num_expected_;
   Event event_;
-  std::vector<raw_ptr<BrowserWindowInterface, VectorExperimental>> browsers_;
+  std::vector<raw_ptr<BrowserWindowInterface, DanglingUntriaged>> browsers_;
   base::RunLoop run_loop_;
   base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
       browser_collection_observation_{this};
@@ -3050,7 +3050,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestoreAllBrowsers) {
   // Reopen the second profile and trigger session restore.
   MultiBrowserObserver added_observer(2, MultiBrowserObserver::Event::kAdded);
   profiles::SwitchToProfile(second_profile_path, false, {});
-  std::vector<raw_ptr<BrowserWindowInterface, VectorExperimental>> browsers =
+  std::vector<raw_ptr<BrowserWindowInterface, DanglingUntriaged>> browsers =
       added_observer.Wait();
 
   // Verify that the correct URLs where restored.
@@ -3088,7 +3088,7 @@ class LoadOrderObserver : public BrowserCollectionObserver,
 
   void WaitForAllTabsToStartLoading() { run_loop_.Run(); }
 
-  const std::vector<raw_ptr<content::WebContents, VectorExperimental>>&
+  const std::vector<raw_ptr<content::WebContents, DanglingUntriaged>>&
   web_contents() const {
     return web_contents_;
   }
@@ -3131,7 +3131,7 @@ class LoadOrderObserver : public BrowserCollectionObserver,
   base::RunLoop run_loop_;
   WebContentsCollection web_contents_collection_{this};
   // Ordered by load start order.
-  std::vector<raw_ptr<content::WebContents, VectorExperimental>> web_contents_;
+  std::vector<raw_ptr<content::WebContents, DanglingUntriaged>> web_contents_;
   base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
       browser_collection_observation_{this};
 };

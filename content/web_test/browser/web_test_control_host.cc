@@ -741,7 +741,7 @@ void WebTestControlHost::ResetBrowserAfterWebTest() {
   pixel_dump_.reset();
   waiting_for_pixel_results_ = false;
   composite_all_frames_node_queue_ =
-      std::queue<raw_ptr<Node, CtnExperimental>>();
+      std::queue<raw_ptr<Node, DanglingUntriaged>>();
   composite_all_frames_node_storage_.clear();
   next_pointer_lock_action_ = NextPointerLockAction::kWillSucceed;
 

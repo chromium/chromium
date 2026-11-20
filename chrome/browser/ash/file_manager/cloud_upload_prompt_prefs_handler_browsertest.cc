@@ -80,7 +80,7 @@ class CloudUploadPromptPrefsHandlerTestBase : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(CloudUploadPromptPrefsHandlerTestBase,
                        KeyedServiceRegistered) {
-  std::vector<raw_ptr<DependencyNode, VectorExperimental>> nodes;
+  std::vector<raw_ptr<DependencyNode, DanglingUntriaged>> nodes;
   const bool success = BrowserContextDependencyManager::GetInstance()
                            ->GetDependencyGraphForTesting()
                            .GetConstructionOrder(&nodes);

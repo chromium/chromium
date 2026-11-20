@@ -170,7 +170,7 @@ class DummyCertVerifier : public net::CertVerifierWithUpdatableProc {
 
  private:
   std::map<net::CertVerifier::RequestParams,
-           raw_ptr<DummyRequest, CtnExperimental>>
+           raw_ptr<DummyRequest, DanglingUntriaged>>
       dummy_requests_;
   std::set<net::CertVerifier::RequestParams> sync_response_params_;
   std::set<net::CertVerifier::RequestParams> cancelled_requests_;

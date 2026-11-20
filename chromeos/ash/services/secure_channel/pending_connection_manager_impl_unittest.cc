@@ -55,9 +55,9 @@ class FakeBleInitiatorConnectionAttemptFactory
     expected_connection_attempt_details_ = expected_connection_attempt_details;
   }
 
-  base::flat_map<
-      ConnectionAttemptDetails,
-      raw_ptr<FakeConnectionAttempt<BleInitiatorFailureType>, CtnExperimental>>&
+  base::flat_map<ConnectionAttemptDetails,
+                 raw_ptr<FakeConnectionAttempt<BleInitiatorFailureType>,
+                         DanglingUntriaged>>&
   details_to_active_attempt_map() {
     return details_to_active_attempt_map_;
   }
@@ -107,9 +107,9 @@ class FakeBleInitiatorConnectionAttemptFactory
   raw_ptr<FakeBleConnectionManager> expected_ble_connection_manager_;
   std::optional<ConnectionAttemptDetails> expected_connection_attempt_details_;
 
-  base::flat_map<
-      ConnectionAttemptDetails,
-      raw_ptr<FakeConnectionAttempt<BleInitiatorFailureType>, CtnExperimental>>
+  base::flat_map<ConnectionAttemptDetails,
+                 raw_ptr<FakeConnectionAttempt<BleInitiatorFailureType>,
+                         DanglingUntriaged>>
       details_to_active_attempt_map_;
 
   size_t num_instances_created_ = 0u;
@@ -137,9 +137,9 @@ class FakeBleListenerConnectionAttemptFactory
     expected_connection_attempt_details_ = expected_connection_attempt_details;
   }
 
-  base::flat_map<
-      ConnectionAttemptDetails,
-      raw_ptr<FakeConnectionAttempt<BleListenerFailureType>, CtnExperimental>>&
+  base::flat_map<ConnectionAttemptDetails,
+                 raw_ptr<FakeConnectionAttempt<BleListenerFailureType>,
+                         DanglingUntriaged>>&
   details_to_active_attempt_map() {
     return details_to_active_attempt_map_;
   }
@@ -191,7 +191,7 @@ class FakeBleListenerConnectionAttemptFactory
 
   base::flat_map<
       ConnectionAttemptDetails,
-      raw_ptr<FakeConnectionAttempt<BleListenerFailureType>, CtnExperimental>>
+      raw_ptr<FakeConnectionAttempt<BleListenerFailureType>, DanglingUntriaged>>
       details_to_active_attempt_map_;
 
   size_t num_instances_created_ = 0u;
@@ -222,7 +222,7 @@ class FakeNearbyInitiatorConnectionAttemptFactory
 
   base::flat_map<ConnectionAttemptDetails,
                  raw_ptr<FakeConnectionAttempt<NearbyInitiatorFailureType>,
-                         CtnExperimental>>&
+                         DanglingUntriaged>>&
   details_to_active_attempt_map() {
     return details_to_active_attempt_map_;
   }
@@ -274,7 +274,7 @@ class FakeNearbyInitiatorConnectionAttemptFactory
 
   base::flat_map<ConnectionAttemptDetails,
                  raw_ptr<FakeConnectionAttempt<NearbyInitiatorFailureType>,
-                         CtnExperimental>>
+                         DanglingUntriaged>>
       details_to_active_attempt_map_;
 
   size_t num_instances_created_ = 0u;

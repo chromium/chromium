@@ -261,7 +261,7 @@ class BASE_EXPORT WaitableEvent {
     base::Lock lock_;
     const bool manual_reset_;
     bool signaled_;
-    base::circular_deque<raw_ptr<Waiter, CtnExperimental>> waiters_;
+    base::circular_deque<raw_ptr<Waiter, DanglingUntriaged>> waiters_;
 
    private:
     friend class RefCountedThreadSafe<WaitableEventKernel>;

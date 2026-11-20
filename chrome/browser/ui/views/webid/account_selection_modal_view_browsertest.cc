@@ -269,7 +269,7 @@ class AccountSelectionModalViewTest
     EXPECT_THAT(GetChildClassNames(header),
                 testing::ElementsAreArray(expected_class_names));
 
-    std::vector<raw_ptr<views::View, VectorExperimental>> header_children =
+    std::vector<raw_ptr<views::View, DanglingUntriaged>> header_children =
         header->children();
     ASSERT_EQ(header_children.size(), expected_class_names.size());
 
@@ -280,7 +280,7 @@ class AccountSelectionModalViewTest
 
     // Check background container contains the background image, spinner, IDP
     // icon and combined icon container.
-    std::vector<raw_ptr<views::View, VectorExperimental>>
+    std::vector<raw_ptr<views::View, DanglingUntriaged>>
         background_container_children = background_container->children();
     ASSERT_EQ(background_container_children.size(),
               expect_visible_combined_icons ? 4u : 3u);
@@ -296,7 +296,7 @@ class AccountSelectionModalViewTest
         static_cast<views::View*>(background_container_children[1]);
     ASSERT_TRUE(spinner_container);
 
-    std::vector<raw_ptr<views::View, VectorExperimental>>
+    std::vector<raw_ptr<views::View, DanglingUntriaged>>
         spinner_container_children = spinner_container->children();
     ASSERT_EQ(spinner_container_children.size(), 1u);
 
@@ -316,7 +316,7 @@ class AccountSelectionModalViewTest
         static_cast<views::View*>(background_container_children[2]);
     ASSERT_TRUE(idp_icon_container);
 
-    std::vector<raw_ptr<views::View, VectorExperimental>>
+    std::vector<raw_ptr<views::View, DanglingUntriaged>>
         idp_icon_container_children = idp_icon_container->children();
     ASSERT_EQ(idp_icon_container_children.size(), 1u);
 
@@ -342,7 +342,7 @@ class AccountSelectionModalViewTest
           static_cast<views::View*>(background_container_children[3]);
       ASSERT_TRUE(combined_icons_container);
 
-      std::vector<raw_ptr<views::View, VectorExperimental>>
+      std::vector<raw_ptr<views::View, DanglingUntriaged>>
           combined_icons_container_children =
               combined_icons_container->children();
       ASSERT_EQ(combined_icons_container_children.size(), 3u);
@@ -400,7 +400,7 @@ class AccountSelectionModalViewTest
                       bool expect_continue_button,
                       bool expect_add_account_button,
                       bool expect_back_button) {
-    std::vector<raw_ptr<views::View, VectorExperimental>> button_row_children =
+    std::vector<raw_ptr<views::View, DanglingUntriaged>> button_row_children =
         button_row->children();
 
     // Cancel button is always expected.
@@ -412,7 +412,7 @@ class AccountSelectionModalViewTest
 
     size_t button_index = 0;
     if (expect_add_account_button || expect_back_button) {
-      std::vector<raw_ptr<views::View, VectorExperimental>>
+      std::vector<raw_ptr<views::View, DanglingUntriaged>>
           leftmost_button_container_children =
               button_row_children[button_index++]->children();
       ASSERT_EQ(leftmost_button_container_children.size(), 1u);
@@ -483,7 +483,7 @@ class AccountSelectionModalViewTest
     CreateAndShowSingleAccountPicker(
         /*show_back_button=*/false, *account);
 
-    std::vector<raw_ptr<views::View, VectorExperimental>> children =
+    std::vector<raw_ptr<views::View, DanglingUntriaged>> children =
         dialog()->children();
     ASSERT_EQ(children.size(), 3u);
 
@@ -507,14 +507,14 @@ class AccountSelectionModalViewTest
                                     /*has_display_identifier=*/true,
                                     supports_add_account);
 
-    std::vector<raw_ptr<views::View, VectorExperimental>> children =
+    std::vector<raw_ptr<views::View, DanglingUntriaged>> children =
         dialog()->children();
     ASSERT_EQ(children.size(), 3u);
 
     expect_visible_body_label_ = true;
     PerformHeaderChecks(children[0]);
 
-    std::vector<raw_ptr<views::View, VectorExperimental>> accounts =
+    std::vector<raw_ptr<views::View, DanglingUntriaged>> accounts =
         TestStructureAndGetAccounts(children[1]);
     size_t accounts_index = 0;
     CheckHoverableAccountRows(accounts, kAccountSuffixes, accounts_index,
@@ -550,7 +550,7 @@ class AccountSelectionModalViewTest
 
     CreateAndShowMultiIdpPicker(account_list_, {idp_data_, idp_data_2});
 
-    std::vector<raw_ptr<views::View, VectorExperimental>> children =
+    std::vector<raw_ptr<views::View, DanglingUntriaged>> children =
         dialog()->children();
     ASSERT_EQ(children.size(), 3u);
 
@@ -559,7 +559,7 @@ class AccountSelectionModalViewTest
                         /*expect_visible_combined_icons=*/false,
                         /*is_multi_idp=*/true);
 
-    std::vector<raw_ptr<views::View, VectorExperimental>> accounts =
+    std::vector<raw_ptr<views::View, DanglingUntriaged>> accounts =
         TestStructureAndGetAccounts(children[1]);
     size_t accounts_index = 0;
     CheckHoverableAccountRows(accounts, {"1", "2"}, accounts_index,
@@ -585,7 +585,7 @@ class AccountSelectionModalViewTest
 
     CreateAndShowMultiIdpPicker(account_list_, {idp_data_, idp_data_2});
 
-    std::vector<raw_ptr<views::View, VectorExperimental>> children =
+    std::vector<raw_ptr<views::View, DanglingUntriaged>> children =
         dialog()->children();
     ASSERT_EQ(children.size(), 3u);
 
@@ -594,7 +594,7 @@ class AccountSelectionModalViewTest
                         /*expect_visible_combined_icons=*/false,
                         /*is_multi_idp=*/true);
 
-    std::vector<raw_ptr<views::View, VectorExperimental>> accounts =
+    std::vector<raw_ptr<views::View, DanglingUntriaged>> accounts =
         TestStructureAndGetAccounts(children[1]);
     ASSERT_EQ(accounts.size(), 3u);
     size_t accounts_index = 0;
@@ -624,13 +624,13 @@ class AccountSelectionModalViewTest
                            /*show_back_button=*/true);
     account_selection_view_->UpdateDialogPosition();
 
-    std::vector<raw_ptr<views::View, VectorExperimental>> children =
+    std::vector<raw_ptr<views::View, DanglingUntriaged>> children =
         dialog()->children();
     ASSERT_EQ(children.size(), 3u);
 
     // The standard header is shown, with the multi-IDP title and a prompt to
     // pick an IDP.
-    std::vector<raw_ptr<views::View, VectorExperimental>> header_children =
+    std::vector<raw_ptr<views::View, DanglingUntriaged>> header_children =
         children[0]->children();
     ASSERT_EQ(header_children.size(), 3u);
     views::Label* title_view = static_cast<views::Label*>(header_children[1]);
@@ -647,7 +647,7 @@ class AccountSelectionModalViewTest
     }
 
     // One row per IDP, between a leading and a trailing separator.
-    std::vector<raw_ptr<views::View, VectorExperimental>> rows =
+    std::vector<raw_ptr<views::View, DanglingUntriaged>> rows =
         TestStructureAndGetAccounts(children[1]);
     ASSERT_EQ(rows.size(), idp_list.size() + 2u);
     EXPECT_EQ("Separator", rows[0]->GetClassName());
@@ -682,7 +682,7 @@ class AccountSelectionModalViewTest
     EXPECT_EQ(num_clicks, 2);
   }
 
-  std::vector<raw_ptr<views::View, VectorExperimental>>
+  std::vector<raw_ptr<views::View, DanglingUntriaged>>
   TestStructureAndGetAccounts(views::View* container) {
     views::ScrollView* scroller = static_cast<views::ScrollView*>(container);
     EXPECT_FALSE(scroller->children().empty());
@@ -722,7 +722,7 @@ class AccountSelectionModalViewTest
     }
     CreateAndShowRequestPermissionDialog(*account);
 
-    std::vector<raw_ptr<views::View, VectorExperimental>> children =
+    std::vector<raw_ptr<views::View, DanglingUntriaged>> children =
         dialog()->children();
     // Order: Header, single account chooser, button row
     ASSERT_EQ(children.size(), 3u);
@@ -814,7 +814,7 @@ class AccountSelectionModalViewTest
     PerformHeaderChecks(dialog()->children()[0], expect_visible_idp_icon,
                         expect_visible_combined_icons);
 
-    std::vector<raw_ptr<views::View, VectorExperimental>> account_chooser =
+    std::vector<raw_ptr<views::View, DanglingUntriaged>> account_chooser =
         dialog()->children()[1]->children();
     // Based on the modal type, there could be different items from the
     // account_chooser section. e.g. accounts, disclosure text, scroll view etc.
@@ -839,12 +839,12 @@ class AccountSelectionModalViewTest
     PerformHeaderChecks(dialog()->children()[0],
                         /*expect_visible_idp_icon=*/false);
 
-    std::vector<raw_ptr<views::View, VectorExperimental>>
+    std::vector<raw_ptr<views::View, DanglingUntriaged>>
         placeholder_account_chooser = dialog()->children()[1]->children();
     // Order: Placeholder account image, placeholder text column
     ASSERT_EQ(placeholder_account_chooser.size(), 2u);
 
-    std::vector<raw_ptr<views::View, VectorExperimental>>
+    std::vector<raw_ptr<views::View, DanglingUntriaged>>
         placeholder_text_column = placeholder_account_chooser[1]->children();
     // Order: Placeholder account name, placeholder account email
     ASSERT_EQ(placeholder_text_column.size(), 2u);
@@ -876,7 +876,7 @@ class AccountSelectionModalViewTest
     EXPECT_EQ(body_label->GetText(), expected_description);
 
     auto button_container = dialog()->children()[1];
-    const std::vector<raw_ptr<views::View, VectorExperimental>> button_row =
+    const std::vector<raw_ptr<views::View, DanglingUntriaged>> button_row =
         button_container->children();
 
     if (error_url.is_empty()) {
@@ -916,14 +916,14 @@ class AccountSelectionModalViewTest
                                      /*show_back_button=*/false);
     account_selection_view_->UpdateDialogPosition();
 
-    std::vector<raw_ptr<views::View, VectorExperimental>> children =
+    std::vector<raw_ptr<views::View, DanglingUntriaged>> children =
         dialog()->children();
     ASSERT_EQ(children.size(), 3u);
 
     expect_visible_body_label_ = true;
     PerformHeaderChecks(children[0]);
 
-    std::vector<raw_ptr<views::View, VectorExperimental>> accounts =
+    std::vector<raw_ptr<views::View, DanglingUntriaged>> accounts =
         TestStructureAndGetAccounts(children[1]);
     ASSERT_GE(accounts.size(), account_suffixes.size());
 
@@ -958,14 +958,14 @@ class AccountSelectionModalViewTest
                                      /*show_back_button=*/false);
     account_selection_view_->UpdateDialogPosition();
 
-    std::vector<raw_ptr<views::View, VectorExperimental>> children =
+    std::vector<raw_ptr<views::View, DanglingUntriaged>> children =
         dialog()->children();
     ASSERT_EQ(children.size(), 3u);
 
     expect_visible_body_label_ = true;
     PerformHeaderChecks(children[0]);
 
-    std::vector<raw_ptr<views::View, VectorExperimental>> accounts =
+    std::vector<raw_ptr<views::View, DanglingUntriaged>> accounts =
         TestStructureAndGetAccounts(children[1]);
 
     ASSERT_EQ(accounts[0]->GetClassName(), "Separator");

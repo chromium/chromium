@@ -200,7 +200,7 @@ class VIEWS_EXPORT AnimatingLayoutManager : public LayoutManagerBase {
                              const SizeBounds& available_size) const override;
   gfx::Size GetMinimumSize(const View* host) const override;
   int GetPreferredHeightForWidth(const View* host, int width) const override;
-  std::vector<raw_ptr<View, VectorExperimental>> GetChildViewsInPaintOrder(
+  std::vector<raw_ptr<View, DanglingUntriaged>> GetChildViewsInPaintOrder(
       const View* host) const override;
   bool OnViewRemoved(View* host, View* view) override;
 

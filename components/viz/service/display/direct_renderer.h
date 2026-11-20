@@ -368,7 +368,7 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   // the drawn frame, so it is safe to store these pointers until the end of
   // DrawFrame().
   base::flat_map<AggregatedRenderPassId,
-                 raw_ptr<const DrawQuad, CtnExperimental>>
+                 raw_ptr<const DrawQuad, DanglingUntriaged>>
       render_pass_bypass_quads_;
   base::flat_map<AggregatedRenderPassId, std::optional<SkPath>>
       render_pass_backdrop_filter_bounds_;

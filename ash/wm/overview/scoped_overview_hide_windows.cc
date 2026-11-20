@@ -14,7 +14,7 @@
 namespace ash {
 
 ScopedOverviewHideWindows::ScopedOverviewHideWindows(
-    const std::vector<raw_ptr<aura::Window, VectorExperimental>>& windows,
+    const std::vector<raw_ptr<aura::Window, DanglingUntriaged>>& windows,
     bool force_hidden)
     : force_hidden_(force_hidden) {
   aura::WindowTracker tracker(windows);

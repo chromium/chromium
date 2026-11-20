@@ -68,7 +68,7 @@ class UrlIndex : public HistoryBookmarkModel {
 
   void GetNodesByUrl(
       const GURL& url,
-      std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>* nodes);
+      std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>>* nodes);
 
   // Returns true if there is at least one bookmark.
   bool HasBookmarks() const;

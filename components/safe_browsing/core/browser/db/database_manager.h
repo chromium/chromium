@@ -402,7 +402,7 @@ class SafeBrowsingDatabaseManager
     return owning_task_runner();
   }
 
-  typedef std::set<raw_ptr<NotificationAbuseCheck, SetExperimental>>
+  typedef std::set<raw_ptr<NotificationAbuseCheck, DanglingUntriaged>>
       NotificationAbuseCheckSet;
 
   // In-progress checks. This set owns the NotificationAbuseCheck pointers and

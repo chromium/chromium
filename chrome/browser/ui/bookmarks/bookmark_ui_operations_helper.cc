@@ -88,7 +88,7 @@ void GetBookmarkNodeDataFromClipboard(
 // selected nodes.
 bool HasAncestorInSelectedNodes(
     BookmarkModel* model,
-    const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>&
+    const std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>>&
         selected_nodes,
     const BookmarkNode* node) {
   std::unordered_set selected_nodes_set(selected_nodes.begin(),
@@ -132,7 +132,7 @@ ui::mojom::DragOperation BookmarkUIOperationsHelper::DropBookmarks(
     return DragOperation::kCopy;
   }
 
-  const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>
+  const std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>>
       dragged_nodes = data.GetNodes(model(), profile->GetPath());
   if (dragged_nodes.empty()) {
     return DragOperation::kNone;
@@ -177,7 +177,7 @@ ui::mojom::DragOperation BookmarkUIOperationsHelper::DropBookmarks(
 void BookmarkUIOperationsHelper::CopyToClipboard(
     bookmarks::BookmarkModel* model,
     const std::vector<
-        raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>& nodes,
+        raw_ptr<const bookmarks::BookmarkNode, DanglingUntriaged>>& nodes,
     bookmarks::metrics::BookmarkEditSource source,
     bool is_off_the_record) {
   CopyOrCutToClipboard(model, nodes, /*remove_nodes=*/false, source,
@@ -188,7 +188,7 @@ void BookmarkUIOperationsHelper::CopyToClipboard(
 void BookmarkUIOperationsHelper::CutToClipboard(
     bookmarks::BookmarkModel* model,
     const std::vector<
-        raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>& nodes,
+        raw_ptr<const bookmarks::BookmarkNode, DanglingUntriaged>>& nodes,
     bookmarks::metrics::BookmarkEditSource source,
     bool is_off_the_record) {
   CopyOrCutToClipboard(model, nodes, /*remove_nodes=*/true, source,
@@ -199,7 +199,7 @@ void BookmarkUIOperationsHelper::CutToClipboard(
 void BookmarkUIOperationsHelper::CopyOrCutToClipboard(
     bookmarks::BookmarkModel* model,
     const std::vector<
-        raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>& nodes,
+        raw_ptr<const bookmarks::BookmarkNode, DanglingUntriaged>>& nodes,
     bool remove_nodes,
     bookmarks::metrics::BookmarkEditSource source,
     bool is_off_the_record) {
@@ -208,7 +208,7 @@ void BookmarkUIOperationsHelper::CopyOrCutToClipboard(
   }
 
   // Create array of selected nodes with descendants filtered out.
-  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> filtered_nodes;
+  std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>> filtered_nodes;
   for (const BookmarkNode* node : nodes) {
     if (!HasAncestorInSelectedNodes(model, nodes, node->parent())) {
       filtered_nodes.push_back(node);
@@ -468,7 +468,7 @@ void BookmarkUIOperationsHelperNonMergedSurfaces::MoveBookmarkNodeData(
   if (!parent) {
     return;
   }
-  const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>
+  const std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>>
       moved_nodes = data.GetNodes(model_, profile_path);
   CHECK(!moved_nodes.empty());
   for (const auto& moved_node : moved_nodes) {
@@ -647,7 +647,7 @@ void BookmarkUIOperationsHelperMergedSurfaces::MoveBookmarkNodeData(
     return;
   }
   CHECK_GE(data.size(), 1u);
-  const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>
+  const std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>>
       moved_nodes = data.GetNodes(model(), profile_path);
   CHECK(!moved_nodes.empty());
 

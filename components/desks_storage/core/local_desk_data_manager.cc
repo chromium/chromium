@@ -196,7 +196,7 @@ void LocalDeskDataManager::SetupFloatingWorkspaceForTest() {
 }
 
 DeskModel::GetAllEntriesResult LocalDeskDataManager::GetAllEntries() {
-  std::vector<raw_ptr<const ash::DeskTemplate, VectorExperimental>> entries;
+  std::vector<raw_ptr<const ash::DeskTemplate, DanglingUntriaged>> entries;
   if (cache_status_ != CacheStatus::kOk) {
     LOG(WARNING) << "Unable to get all entries: Cache failure";
     return GetAllEntriesResult(GetAllEntriesStatus::kFailure,

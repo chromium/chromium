@@ -34,7 +34,7 @@ class SignalStorageConfig;
 class ModelExecutionSchedulerImpl : public ModelExecutionScheduler {
  public:
   ModelExecutionSchedulerImpl(
-      std::vector<raw_ptr<Observer, VectorExperimental>>&& observers,
+      std::vector<raw_ptr<Observer, DanglingUntriaged>>&& observers,
       SegmentInfoDatabase* segment_database,
       SignalStorageConfig* signal_storage_config,
       ModelManager* model_manager,
@@ -69,7 +69,7 @@ class ModelExecutionSchedulerImpl : public ModelExecutionScheduler {
 
   // Observers listening to model exeuction events. Required by the segment
   // selection pipeline.
-  std::vector<raw_ptr<Observer, VectorExperimental>> observers_;
+  std::vector<raw_ptr<Observer, DanglingUntriaged>> observers_;
 
   // The database storing metadata and results.
   const raw_ptr<SegmentInfoDatabase> segment_database_;

@@ -113,7 +113,7 @@ class DialRegistry
  private:
   using DeviceByIdMap = std::map<std::string, std::unique_ptr<DialDeviceData>>;
   using DeviceByLabelMap =
-      std::map<std::string, raw_ptr<DialDeviceData, CtnExperimental>>;
+      std::map<std::string, raw_ptr<DialDeviceData, DanglingUntriaged>>;
 
   friend class MockDialRegistry;
   friend class TestDialRegistry;

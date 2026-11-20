@@ -619,7 +619,7 @@ class ChromePasswordProtectionService
   std::string sync_password_hash_;
   base::ObserverList<Observer>::Unchecked observer_list_;
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
-  std::set<raw_ptr<content::WebContents, SetExperimental>>
+  std::set<raw_ptr<content::WebContents, DanglingUntriaged>>
       web_contents_with_unhandled_enterprise_reuses_;
 
   base::ScopedObservation<password_manager::PasswordReuseManager,

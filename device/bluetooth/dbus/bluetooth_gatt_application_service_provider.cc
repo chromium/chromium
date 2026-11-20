@@ -127,7 +127,7 @@ BluetoothGattApplicationServiceProvider::
 void BluetoothGattApplicationServiceProvider::CreateAttributeServiceProviders(
     dbus::Bus* bus,
     const std::map<dbus::ObjectPath,
-                   raw_ptr<BluetoothLocalGattServiceBlueZ, CtnExperimental>>&
+                   raw_ptr<BluetoothLocalGattServiceBlueZ, DanglingUntriaged>>&
         services) {
   for (const auto& service : services) {
     service_providers_.push_back(
@@ -182,7 +182,7 @@ BluetoothGattApplicationServiceProvider::Create(
     dbus::Bus* bus,
     const dbus::ObjectPath& object_path,
     const std::map<dbus::ObjectPath,
-                   raw_ptr<BluetoothLocalGattServiceBlueZ, CtnExperimental>>&
+                   raw_ptr<BluetoothLocalGattServiceBlueZ, DanglingUntriaged>>&
         services) {
   if (!bluez::BluezDBusManager::Get()->IsUsingFakes()) {
     return base::WrapUnique(new BluetoothGattApplicationServiceProviderImpl(

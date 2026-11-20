@@ -54,7 +54,7 @@ class DISPLAY_MANAGER_EXPORT DisplayConfigurator
       base::OnceCallback<void(const std::optional<std::vector<float>>&)>;
 
   using DisplayStateList =
-      std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>;
+      std::vector<raw_ptr<DisplaySnapshot, DanglingUntriaged>>;
   // Map of display id to a refresh rate override.
   using RefreshRateOverrideMap = std::unordered_map<int64_t, float>;
 
@@ -183,7 +183,7 @@ class DISPLAY_MANAGER_EXPORT DisplayConfigurator
   ~DisplayConfigurator() override;
 
   MultipleDisplayState display_state() const { return current_display_state_; }
-  const std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>&
+  const std::vector<raw_ptr<DisplaySnapshot, DanglingUntriaged>>&
   cached_displays() const {
     return cached_displays_;
   }
@@ -371,8 +371,8 @@ class DISPLAY_MANAGER_EXPORT DisplayConfigurator
   // this is called with the result (|success|) and the updated display state.
   void OnConfigured(
       bool success,
-      const std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>& displays,
-      const std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>&
+      const std::vector<raw_ptr<DisplaySnapshot, DanglingUntriaged>>& displays,
+      const std::vector<raw_ptr<DisplaySnapshot, DanglingUntriaged>>&
           unassociated_displays,
       MultipleDisplayState new_display_state,
       chromeos::DisplayPowerState new_power_state);

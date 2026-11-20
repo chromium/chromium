@@ -70,10 +70,10 @@ class ASH_EXPORT WindowRestoreController
   // should be inserted. The insertion point is determined by iterating from LRU
   // to MRU, returning the an iter to the first window that has no activation
   // index or a lower activation index.
-  static std::vector<raw_ptr<aura::Window, VectorExperimental>>::const_iterator
+  static std::vector<raw_ptr<aura::Window, DanglingUntriaged>>::const_iterator
   GetWindowToInsertBefore(
       aura::Window* window,
-      const std::vector<raw_ptr<aura::Window, VectorExperimental>>& windows);
+      const std::vector<raw_ptr<aura::Window, DanglingUntriaged>>& windows);
 
   const aura::Window* to_be_snapped_window() const {
     return to_be_snapped_window_.get();
@@ -159,7 +159,7 @@ class ASH_EXPORT WindowRestoreController
 
   // The set of windows that have had their widgets initialized and will be
   // shown later.
-  base::flat_set<raw_ptr<aura::Window, CtnExperimental>> to_be_shown_windows_;
+  base::flat_set<raw_ptr<aura::Window, DanglingUntriaged>> to_be_shown_windows_;
 
   // When a window is restored, we post a task to clear its
   // `app_restore::kLaunchedFromAppRestoreKey` property. However, a window can

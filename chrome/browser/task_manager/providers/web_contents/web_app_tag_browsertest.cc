@@ -44,7 +44,7 @@ class WebAppTagWebAppTest : public web_app::WebAppBrowserTestBase {
     return browser;
   }
 
-  const std::vector<raw_ptr<WebContentsTag, VectorExperimental>> tracked_tags()
+  const std::vector<raw_ptr<WebContentsTag, DanglingUntriaged>> tracked_tags()
       const {
     return ui_test_utils::GetAllTrackedTags(/*exclude_web_ui=*/true);
   }
@@ -164,7 +164,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTagWebAppTest, TabNavigatedAwayNotWebAppTask) {
 class WebAppTagIsolatedWebAppTest
     : public web_app::IsolatedWebAppBrowserTestHarness {
  protected:
-  const std::vector<raw_ptr<WebContentsTag, VectorExperimental>> tracked_tags()
+  const std::vector<raw_ptr<WebContentsTag, DanglingUntriaged>> tracked_tags()
       const {
     return ui_test_utils::GetAllTrackedTags(/*exclude_web_ui=*/true);
   }

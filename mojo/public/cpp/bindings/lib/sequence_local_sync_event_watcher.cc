@@ -201,7 +201,8 @@ class SequenceLocalSyncEventWatcher::SequenceLocalState {
   // Set of all SequenceLocalSyncEventWatchers in a signaled state, guarded by
   // a lock for sequence-safe signaling.
   base::Lock ready_watchers_lock_;
-  base::flat_set<raw_ptr<const SequenceLocalSyncEventWatcher, CtnExperimental>>
+  base::flat_set<
+      raw_ptr<const SequenceLocalSyncEventWatcher, DanglingUntriaged>>
       ready_watchers_;
 
   base::WeakPtrFactory<SequenceLocalState> weak_ptr_factory_{this};
@@ -210,7 +211,7 @@ class SequenceLocalSyncEventWatcher::SequenceLocalState {
 void SequenceLocalSyncEventWatcher::SequenceLocalState::OnEventSignaled() {
   for (;;) {
     base::flat_set<
-        raw_ptr<const SequenceLocalSyncEventWatcher, CtnExperimental>>
+        raw_ptr<const SequenceLocalSyncEventWatcher, DanglingUntriaged>>
         ready_watchers;
     {
       base::AutoLock lock(ready_watchers_lock_);

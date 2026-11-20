@@ -267,7 +267,7 @@ class MockDiskCache : public disk_cache::Backend {
 
  private:
   using EntryMap =
-      std::map<std::string, raw_ptr<MockDiskEntry, CtnExperimental>>;
+      std::map<std::string, raw_ptr<MockDiskEntry, DanglingUntriaged>>;
   class NotImplementedIterator;
 
   void CallbackLater(base::OnceClosure callback);

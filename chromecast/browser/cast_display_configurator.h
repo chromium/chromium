@@ -68,7 +68,7 @@ class CastDisplayConfigurator : public display::NativeDisplayObserver {
   void NotifyObservers();
   void OnDisplaysAcquired(
       bool force_initial_configure,
-      const std::vector<raw_ptr<display::DisplaySnapshot, VectorExperimental>>&
+      const std::vector<raw_ptr<display::DisplaySnapshot, DanglingUntriaged>>&
           displays);
   void OnDisplayConfigured(
       const std::vector<display::DisplayConfigurationParams>& request_results,

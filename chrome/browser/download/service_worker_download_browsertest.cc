@@ -282,7 +282,7 @@ class ServiceWorkerDownloadBrowserTestBase : public DownloadTestBase {
     EXPECT_EQ(1u, observer->NumDownloadsSeenInState(
                       download::DownloadItem::COMPLETE));
 
-    std::vector<raw_ptr<download::DownloadItem, VectorExperimental>> items;
+    std::vector<raw_ptr<download::DownloadItem, DanglingUntriaged>> items;
     GetDownloads(browser(), &items);
     EXPECT_EQ(1u, items.size());
     return items.empty() ? base::FilePath() : items[0]->GetTargetFilePath();
@@ -432,7 +432,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerDownloadBrowserTest,
   StartDirectDownload(embedded_test_server()->GetURL(kSwErrorPath));
   observer->WaitForFinished();
 
-  std::vector<raw_ptr<download::DownloadItem, VectorExperimental>> items;
+  std::vector<raw_ptr<download::DownloadItem, DanglingUntriaged>> items;
   GetDownloads(browser(), &items);
   ASSERT_EQ(1u, items.size());
   EXPECT_EQ(download::DownloadItem::INTERRUPTED, items[0]->GetState());
@@ -457,7 +457,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerDownloadBrowserTest,
   StartDirectDownload(embedded_test_server()->GetURL(kSwSlowPath));
   in_progress->WaitForFinished();
 
-  std::vector<raw_ptr<download::DownloadItem, VectorExperimental>> items;
+  std::vector<raw_ptr<download::DownloadItem, DanglingUntriaged>> items;
   GetDownloads(browser(), &items);
   ASSERT_EQ(1u, items.size());
   download::DownloadItem* item = items[0];
@@ -500,7 +500,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerDownloadBrowserTest,
   ASSERT_EQ(
       1u, observer->NumDownloadsSeenInState(download::DownloadItem::COMPLETE));
 
-  std::vector<raw_ptr<download::DownloadItem, VectorExperimental>> items;
+  std::vector<raw_ptr<download::DownloadItem, DanglingUntriaged>> items;
   GetDownloads(incognito, &items);
   ASSERT_EQ(1u, items.size());
   EXPECT_EQ(std::string(kSwResponseBody),
@@ -538,7 +538,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerDownloadParallelDisabledBrowserTest,
       CreateWaiter(browser(), /*num_downloads=*/1));
   observer->WaitForFinished();
 
-  std::vector<raw_ptr<download::DownloadItem, VectorExperimental>> items;
+  std::vector<raw_ptr<download::DownloadItem, DanglingUntriaged>> items;
   GetDownloads(browser(), &items);
   ASSERT_EQ(1u, items.size());
   EXPECT_EQ(download::DownloadItem::COMPLETE, items[0]->GetState());
@@ -596,7 +596,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerDownloadBrowserTest,
   StartDirectDownload(embedded_test_server()->GetURL(kSwResumePath));
   interrupt_observer->WaitForFinished();
 
-  std::vector<raw_ptr<download::DownloadItem, VectorExperimental>> items;
+  std::vector<raw_ptr<download::DownloadItem, DanglingUntriaged>> items;
   GetDownloads(browser(), &items);
   ASSERT_EQ(1u, items.size());
   download::DownloadItem* item = items[0];

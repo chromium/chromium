@@ -197,8 +197,8 @@ void WMDesksPrivateFeature::GetSavedDesks(GetSavedDesksCallback callback) {
   DesksClient::Get()->GetDeskTemplates(base::BindOnce(
       [](GetSavedDesksCallback callback,
          std::optional<DesksClient::DeskActionError> error,
-         const std::vector<raw_ptr<const ash::DeskTemplate,
-                                   VectorExperimental>>& desk_templates) {
+         const std::vector<raw_ptr<const ash::DeskTemplate, DanglingUntriaged>>&
+             desk_templates) {
         if (error) {
           std::move(callback).Run(GetStringError(error.value()), {});
         } else {

@@ -264,7 +264,7 @@ StackedNotificationBar::~StackedNotificationBar() {
 bool StackedNotificationBar::Update(
     int total_notification_count,
     int pinned_notification_count,
-    std::vector<raw_ptr<message_center::Notification, VectorExperimental>>
+    std::vector<raw_ptr<message_center::Notification, DanglingUntriaged>>
         stacked_notifications) {
   int stacked_notification_count = stacked_notifications.size();
   if (total_notification_count == total_notification_count_ &&
@@ -343,7 +343,7 @@ StackedNotificationBar::GetIconFromId(const std::string& id) const {
 }
 
 void StackedNotificationBar::ShiftIconsLeft(
-    std::vector<raw_ptr<message_center::Notification, VectorExperimental>>
+    std::vector<raw_ptr<message_center::Notification, DanglingUntriaged>>
         stacked_notifications) {
   auto* front_animating_out_icon = GetFrontIcon(/*animating_out=*/true);
   bool is_already_animating_a_left_shift = front_animating_out_icon != nullptr;
@@ -399,7 +399,7 @@ void StackedNotificationBar::ShiftIconsLeft(
 }
 
 void StackedNotificationBar::ShiftIconsRight(
-    std::vector<raw_ptr<message_center::Notification, VectorExperimental>>
+    std::vector<raw_ptr<message_center::Notification, DanglingUntriaged>>
         stacked_notifications) {
   int new_stacked_notification_count = stacked_notifications.size();
 
@@ -421,7 +421,7 @@ void StackedNotificationBar::ShiftIconsRight(
 }
 
 void StackedNotificationBar::UpdateStackedNotifications(
-    std::vector<raw_ptr<message_center::Notification, VectorExperimental>>
+    std::vector<raw_ptr<message_center::Notification, DanglingUntriaged>>
         stacked_notifications) {
   int stacked_notification_count = stacked_notifications.size();
   int notification_overflow_count = 0;

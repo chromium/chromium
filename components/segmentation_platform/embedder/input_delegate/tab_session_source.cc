@@ -129,7 +129,7 @@ void TabSessionSource::AddTabRanks(const std::string& session_tag,
       }
     }
   }
-  std::vector<raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>
+  std::vector<raw_ptr<const sync_sessions::SyncedSession, DanglingUntriaged>>
       sessions;
   int session_rank_overall = 0;
   if (open_tab_delegate->GetAllForeignSessions(

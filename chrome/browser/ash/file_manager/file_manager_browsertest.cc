@@ -275,7 +275,7 @@ IN_PROC_BROWSER_TEST_F(QuickOfficeForceFileDownloadEnabledBrowserTest,
   EXPECT_EQ(1u,
             download_observer->NumDownloadsSeenInState(DownloadItem::COMPLETE));
 
-  std::vector<raw_ptr<DownloadItem, VectorExperimental>> downloads;
+  std::vector<raw_ptr<DownloadItem, DanglingUntriaged>> downloads;
   download_manager->GetAllDownloads(&downloads);
   ASSERT_EQ(1u, downloads.size());
 

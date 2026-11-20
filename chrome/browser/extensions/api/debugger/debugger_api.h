@@ -66,7 +66,8 @@ class ExtensionDevToolsInfoBarController {
 
   void OnInfoBarActionInternal();
 
-  std::set<raw_ptr<ExtensionDevToolsClientHost, SetExperimental>> active_hosts_;
+  std::set<raw_ptr<ExtensionDevToolsClientHost, DanglingUntriaged>>
+      active_hosts_;
   std::u16string last_extension_name_;
   base::OneShotTimer autoclose_timer_;
 };

@@ -237,7 +237,7 @@ IN_PROC_BROWSER_TEST_F(CookieUseCounterBrowserTest,
 
   // The iframe navigation request contains 2 partitioned cookies, but only
   // records the event once (with a metric value of true).
-  std::vector<raw_ptr<const ukm::mojom::UkmEntry, VectorExperimental>> entries =
+  std::vector<raw_ptr<const ukm::mojom::UkmEntry, DanglingUntriaged>> entries =
       ukm_recorder.GetEntriesByName("PartitionedCookiePresentV3");
   ASSERT_EQ(entries.size(), 1);
   ukm_recorder.ExpectEntryMetric(entries[0],

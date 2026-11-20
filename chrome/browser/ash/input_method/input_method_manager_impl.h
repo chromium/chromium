@@ -357,7 +357,7 @@ class InputMethodManagerImpl : public InputMethodManager,
 
   // The engine map from extension_id to an engine.
   using EngineMap =
-      std::map<std::string, raw_ptr<TextInputMethod, CtnExperimental>>;
+      std::map<std::string, raw_ptr<TextInputMethod, DanglingUntriaged>>;
   using ProfileEngineMap = std::map<Profile*, EngineMap, ProfileCompare>;
   ProfileEngineMap engine_map_;
 

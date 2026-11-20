@@ -939,7 +939,7 @@ bool PdfAccessibilityTree::FindCharacterOffset(
   if (node.GetRole() == ax::mojom::Role::kStaticText &&
       !node.GetAllChildren().empty()) {
     uint32_t remaining_offset = char_offset_in_node;
-    const std::vector<raw_ptr<ui::AXNode, VectorExperimental>>& children =
+    const std::vector<raw_ptr<ui::AXNode, DanglingUntriaged>>& children =
         node.GetAllChildren();
     for (size_t i = 0; i < children.size(); ++i) {
       ui::AXNode* child = children[i];

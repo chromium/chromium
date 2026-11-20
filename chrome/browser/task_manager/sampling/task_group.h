@@ -89,7 +89,7 @@ class TaskGroup {
   const base::ProcessHandle& process_handle() const { return process_handle_; }
   const base::ProcessId& process_id() const { return process_id_; }
 
-  const std::vector<raw_ptr<Task, VectorExperimental>>& tasks() const {
+  const std::vector<raw_ptr<Task, DanglingUntriaged>>& tasks() const {
     return tasks_;
   }
   size_t num_tasks() const { return tasks().size(); }
@@ -192,7 +192,7 @@ class TaskGroup {
 
   // Lists the Tasks in this TaskGroup.
   // Tasks are not owned by the TaskGroup. They're owned by the TaskProviders.
-  std::vector<raw_ptr<Task, VectorExperimental>> tasks_;
+  std::vector<raw_ptr<Task, DanglingUntriaged>> tasks_;
 
   // Flags will be used to determine when the background calculations has
   // completed for the enabled refresh types for this TaskGroup.

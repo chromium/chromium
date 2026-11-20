@@ -83,7 +83,7 @@ class OneDrivePrefObserverBrowserTest
   }
 
   bool OneDrivePrefObserverServiceExists() {
-    std::vector<raw_ptr<DependencyNode, VectorExperimental>> nodes;
+    std::vector<raw_ptr<DependencyNode, DanglingUntriaged>> nodes;
     const bool success = BrowserContextDependencyManager::GetInstance()
                              ->GetDependencyGraphForTesting()
                              .GetConstructionOrder(&nodes);

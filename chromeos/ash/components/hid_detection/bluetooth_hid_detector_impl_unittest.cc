@@ -183,7 +183,7 @@ class BluetoothHidDetectorImplTest : public testing::Test {
     EXPECT_TRUE(device_pairing_handler->current_pairing_device_id().empty());
   }
 
-  std::vector<raw_ptr<FakeDevicePairingHandler, VectorExperimental>>
+  std::vector<raw_ptr<FakeDevicePairingHandler, DanglingUntriaged>>
   GetDevicePairingHandlers() {
     return scoped_bluetooth_config_test_helper_
         .fake_discovery_session_manager()

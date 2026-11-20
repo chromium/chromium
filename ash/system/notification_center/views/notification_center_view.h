@@ -76,7 +76,7 @@ class ASH_EXPORT NotificationCenterView : public views::View,
   // Count number of notifications that are still in the `MessageCenter` that
   // are above visible area. NOTE: views may be in the view hierarchy, but no
   // longer in the message center.
-  std::vector<raw_ptr<message_center::Notification, VectorExperimental>>
+  std::vector<raw_ptr<message_center::Notification, DanglingUntriaged>>
   GetStackedNotifications() const;
 
   // Count the number of notifications that are not visible in the scrollable

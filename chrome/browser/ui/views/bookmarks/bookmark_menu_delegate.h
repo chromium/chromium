@@ -149,7 +149,7 @@ class BookmarkMenuDelegate : public BookmarkMergedSurfaceServiceObserver,
   // BookmarkContextMenuObserver methods.
   void WillRemoveBookmarks(
       const std::vector<raw_ptr<const bookmarks::BookmarkNode,
-                                VectorExperimental>>& bookmarks) override;
+                                DanglingUntriaged>>& bookmarks) override;
   void DidRemoveBookmarks() override;
   void OnContextMenuClosed() override;
 
@@ -177,7 +177,7 @@ class BookmarkMenuDelegate : public BookmarkMergedSurfaceServiceObserver,
 
     const bookmarks::BookmarkNode* GetIfNonPermanentNode() const;
 
-    std::vector<raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>
+    std::vector<raw_ptr<const bookmarks::BookmarkNode, DanglingUntriaged>>
     GetUnderlyingNodes(
         const BookmarkMergedSurfaceService* bookmark_merged_service) const;
 

@@ -77,7 +77,7 @@ std::string GetPolicyStringWithOneTemplate() {
 // found, false if not.
 bool FindUuidInUuidList(
     const std::string& uuid_query,
-    const std::vector<raw_ptr<const ash::DeskTemplate, VectorExperimental>>&
+    const std::vector<raw_ptr<const ash::DeskTemplate, DanglingUntriaged>>&
         entry_list) {
   base::Uuid guid = base::Uuid::ParseCaseInsensitive(uuid_query);
   DCHECK(guid.is_valid());
@@ -155,7 +155,7 @@ class MockDeskModelObserver : public DeskModelObserver {
   MOCK_METHOD0(DeskModelLoaded, void());
   MOCK_METHOD1(EntriesAddedOrUpdatedRemotely,
                void(const std::vector<
-                    raw_ptr<const ash::DeskTemplate, VectorExperimental>>&));
+                    raw_ptr<const ash::DeskTemplate, DanglingUntriaged>>&));
   MOCK_METHOD1(EntriesRemovedRemotely, void(const std::vector<base::Uuid>&));
 };
 

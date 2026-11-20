@@ -61,7 +61,7 @@ class FakeDeskSyncBridge : public DeskModel {
   // Notify all observers of any `new_entries` when they are added/updated via
   // sync.
   void NotifyRemoteDeskTemplateAddedOrUpdated(
-      const std::vector<raw_ptr<const ash::DeskTemplate, VectorExperimental>>&
+      const std::vector<raw_ptr<const ash::DeskTemplate, DanglingUntriaged>>&
           new_entries);
 
   const ash::DeskTemplate* GetUserEntryByUUID(const base::Uuid& uuid) const;

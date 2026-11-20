@@ -251,15 +251,15 @@ std::unique_ptr<ash::DeskTemplate> CaptureActiveDeskAndSaveTemplate(
   return desk_template;
 }
 
-std::vector<raw_ptr<const ash::DeskTemplate, VectorExperimental>>
+std::vector<raw_ptr<const ash::DeskTemplate, DanglingUntriaged>>
 GetDeskTemplates() {
   base::RunLoop run_loop;
-  std::vector<raw_ptr<const ash::DeskTemplate, VectorExperimental>> templates;
+  std::vector<raw_ptr<const ash::DeskTemplate, DanglingUntriaged>> templates;
 
   DesksClient::Get()->GetDeskTemplates(base::BindLambdaForTesting(
       [&](std::optional<DesksClient::DeskActionError> error,
           const std::vector<raw_ptr<const ash::DeskTemplate,
-                                    VectorExperimental>>& desk_templates) {
+                                    DanglingUntriaged>>& desk_templates) {
         templates = desk_templates;
         run_loop.Quit();
       }));
@@ -272,7 +272,7 @@ GetDeskTemplates() {
 // false if not.
 bool ContainUuidInTemplates(
     const base::Uuid& uuid,
-    const std::vector<raw_ptr<const ash::DeskTemplate, VectorExperimental>>&
+    const std::vector<raw_ptr<const ash::DeskTemplate, DanglingUntriaged>>&
         desk_templates) {
   DCHECK(uuid.is_valid());
   return std::ranges::contains(desk_templates, uuid, &ash::DeskTemplate::uuid);
@@ -374,7 +374,7 @@ void ClickFirstTemplateItem() {
   ClickView(template_item);
 }
 
-const std::vector<raw_ptr<const ash::DeskTemplate, VectorExperimental>>
+const std::vector<raw_ptr<const ash::DeskTemplate, DanglingUntriaged>>
 GetAllEntries() {
   std::vector<const ash::DeskTemplate*> templates;
   auto error = DesksClient::Get()->GetDeskModel()->GetAllEntries();
@@ -631,7 +631,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, CaptureBrowserTabGroupsTest) {
 
   ClickSaveDeskAsTemplateMenuItem();
 
-  std::vector<raw_ptr<const ash::DeskTemplate, VectorExperimental>> templates =
+  std::vector<raw_ptr<const ash::DeskTemplate, DanglingUntriaged>> templates =
       GetAllEntries();
   ASSERT_EQ(1u, templates.size());
 
@@ -703,7 +703,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, CaptureBrowserWithPinnedTabs) {
 
   ClickSaveDeskAsTemplateMenuItem();
 
-  std::vector<raw_ptr<const ash::DeskTemplate, VectorExperimental>> templates =
+  std::vector<raw_ptr<const ash::DeskTemplate, DanglingUntriaged>> templates =
       GetAllEntries();
   ASSERT_EQ(1u, templates.size());
 
@@ -1603,7 +1603,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUICaptureBrowserUrlsTest) {
 
   ClickSaveDeskAsTemplateMenuItem();
 
-  std::vector<raw_ptr<const ash::DeskTemplate, VectorExperimental>> templates =
+  std::vector<raw_ptr<const ash::DeskTemplate, DanglingUntriaged>> templates =
       GetAllEntries();
   ASSERT_EQ(1u, templates.size());
 
@@ -1775,7 +1775,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUICaptureIncognitoBrowserTest) {
     event_generator.PressAndReleaseKey(ui::VKEY_RETURN);
   }
 
-  std::vector<raw_ptr<const ash::DeskTemplate, VectorExperimental>> templates =
+  std::vector<raw_ptr<const ash::DeskTemplate, DanglingUntriaged>> templates =
       GetAllEntries();
   ASSERT_EQ(1u, templates.size());
 
@@ -2049,7 +2049,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUILaunchTemplateWithPWA) {
   ash::WaitForOverviewEnterAnimation();
   ClickSaveDeskAsTemplateMenuItem();
 
-  std::vector<raw_ptr<const ash::DeskTemplate, VectorExperimental>> templates =
+  std::vector<raw_ptr<const ash::DeskTemplate, DanglingUntriaged>> templates =
       GetAllEntries();
   ASSERT_EQ(1u, templates.size());
 
@@ -2096,7 +2096,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest,
   ash::WaitForOverviewEnterAnimation();
   ClickSaveDeskAsTemplateMenuItem();
 
-  std::vector<raw_ptr<const ash::DeskTemplate, VectorExperimental>> templates =
+  std::vector<raw_ptr<const ash::DeskTemplate, DanglingUntriaged>> templates =
       GetAllEntries();
   ASSERT_EQ(1u, templates.size());
 
@@ -2145,7 +2145,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest,
 
   ClickSaveDeskAsTemplateMenuItem();
 
-  std::vector<raw_ptr<const ash::DeskTemplate, VectorExperimental>> templates =
+  std::vector<raw_ptr<const ash::DeskTemplate, DanglingUntriaged>> templates =
       GetAllEntries();
   ASSERT_EQ(1u, templates.size());
 
@@ -3068,7 +3068,7 @@ IN_PROC_BROWSER_TEST_F(SaveAndRecallBrowserTest,
   ASSERT_TRUE(overview_grid);
   EXPECT_TRUE(overview_grid->IsShowingSavedDeskLibrary());
 
-  std::vector<raw_ptr<const ash::DeskTemplate, VectorExperimental>> templates =
+  std::vector<raw_ptr<const ash::DeskTemplate, DanglingUntriaged>> templates =
       GetAllEntries();
   EXPECT_EQ(1u, templates.size());
 }

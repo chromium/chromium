@@ -42,7 +42,7 @@ class ASH_EXPORT SearchResultImageListView : public SearchResultContainerView {
   SearchResultImageView* GetResultViewAt(size_t index) override;
 
   // Returns all search result image views children of this view.
-  std::vector<raw_ptr<SearchResultImageView, VectorExperimental>>
+  std::vector<raw_ptr<SearchResultImageView, DanglingUntriaged>>
   GetSearchResultImageViews();
 
   // Returns the preferred width of the image search result according to the
@@ -56,7 +56,7 @@ class ASH_EXPORT SearchResultImageListView : public SearchResultContainerView {
   const views::FlexLayoutView* image_info_container_for_test() const {
     return image_info_container_.get();
   }
-  const std::vector<raw_ptr<views::Label, VectorExperimental>>&
+  const std::vector<raw_ptr<views::Label, DanglingUntriaged>>&
   metadata_content_labels_for_test() const {
     return metadata_content_labels_;
   }
@@ -77,12 +77,12 @@ class ASH_EXPORT SearchResultImageListView : public SearchResultContainerView {
   raw_ptr<views::FlexLayoutView> image_view_container_ = nullptr;
   raw_ptr<views::FlexLayoutView> image_info_container_ = nullptr;
 
-  std::vector<raw_ptr<SearchResultImageView, VectorExperimental>> image_views_;
+  std::vector<raw_ptr<SearchResultImageView, DanglingUntriaged>> image_views_;
 
   // Labels that show the file metadata in `image_info_container_`. There should
   // always be 3 labels, which in the order of {file name, file directory, date
   // modified}.
-  std::vector<raw_ptr<views::Label, VectorExperimental>>
+  std::vector<raw_ptr<views::Label, DanglingUntriaged>>
       metadata_content_labels_;
 
   base::WeakPtrFactory<SearchResultImageListView> weak_ptr_factory_{this};

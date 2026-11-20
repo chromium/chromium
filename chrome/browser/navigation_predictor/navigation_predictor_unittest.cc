@@ -310,7 +310,7 @@ class MetricsBuilder {
   ukm::TestAutoSetUkmRecorder ukm_recorder_;
   std::vector<blink::mojom::AnchorElementMetricsPtr> metrics_;
   std::vector<blink::mojom::AnchorElementEnteredViewportPtr> entered_viewport_;
-  std::vector<raw_ptr<const ukm::mojom::UkmEntry, VectorExperimental>>
+  std::vector<raw_ptr<const ukm::mojom::UkmEntry, DanglingUntriaged>>
       ukm_entries_;
 };
 

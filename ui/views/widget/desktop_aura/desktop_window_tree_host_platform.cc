@@ -440,7 +440,7 @@ void DesktopWindowTreeHostPlatform::CloseNow() {
 
   // If we have children, close them. Use a copy for iteration because they'll
   // remove themselves.
-  std::set<raw_ptr<DesktopWindowTreeHostPlatform, SetExperimental>>
+  std::set<raw_ptr<DesktopWindowTreeHostPlatform, DanglingUntriaged>>
       window_children_copy = window_children_;
   for (DesktopWindowTreeHostPlatform* child : window_children_copy) {
     child->CloseNow();

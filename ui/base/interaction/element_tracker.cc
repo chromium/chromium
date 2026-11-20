@@ -73,7 +73,8 @@ class ElementTracker::ElementData {
     return elements_.size();
   }
 
-  const std::list<raw_ptr<TrackedElement, CtnExperimental>>& elements() const {
+  const std::list<raw_ptr<TrackedElement, DanglingUntriaged>>& elements()
+      const {
     return elements_;
   }
 
@@ -94,7 +95,7 @@ class ElementTracker::ElementData {
   }
 
   void NotifyElementShown(
-      const raw_ptr<TrackedElement, CtnExperimental>& element) {
+      const raw_ptr<TrackedElement, DanglingUntriaged>& element) {
     CHECK(element, base::NotFatalUntil::M163);
     CHECK_EQ(identifier(), Unwrap(element->identifier()),
              base::NotFatalUntil::M163);
@@ -122,7 +123,7 @@ class ElementTracker::ElementData {
   }
 
   void NotifyElementActivated(
-      const raw_ptr<TrackedElement, CtnExperimental>& element) {
+      const raw_ptr<TrackedElement, DanglingUntriaged>& element) {
     // Note: "All contexts" does not require the element to be present here.
     CHECK(!context_ || element_lookup_.contains(element),
           base::NotFatalUntil::M163);
@@ -130,7 +131,7 @@ class ElementTracker::ElementData {
   }
 
   void NotifyElementHidden(
-      const raw_ptr<TrackedElement, CtnExperimental>& element) {
+      const raw_ptr<TrackedElement, DanglingUntriaged>& element) {
     if (context_) {
       const auto it = element_lookup_.find(element);
       CHECK(it != element_lookup_.end());
@@ -141,7 +142,7 @@ class ElementTracker::ElementData {
   }
 
   void NotifyCustomEvent(
-      const raw_ptr<TrackedElement, CtnExperimental>& element) {
+      const raw_ptr<TrackedElement, DanglingUntriaged>& element) {
     custom_event_callbacks_.Notify(element);
   }
 
@@ -152,13 +153,13 @@ class ElementTracker::ElementData {
   // Holds elements in the order they were added to this data block, so that the
   // first element or the first element that matches some criterion can be
   // easily found.
-  std::list<raw_ptr<TrackedElement, CtnExperimental>> elements_;
+  std::list<raw_ptr<TrackedElement, DanglingUntriaged>> elements_;
 
   // Provides a fast lookup into `elements_` by element for checking and
   // removal. Since there could be many elements (e.g. tabs in a browser) we
   // don't want removing a series of them to turn into an O(n^2) operation.
   std::map<const TrackedElement*,
-           std::list<raw_ptr<TrackedElement, CtnExperimental>>::iterator>
+           std::list<raw_ptr<TrackedElement, DanglingUntriaged>>::iterator>
       element_lookup_;
 
   base::RepeatingCallbackList<void(TrackedElement*)> shown_callbacks_;
@@ -216,7 +217,7 @@ class ElementTracker::GarbageCollector {
   }
 
   const raw_ptr<ElementTracker> tracker_;
-  std::set<raw_ptr<ElementData, SetExperimental>> candidates_;
+  std::set<raw_ptr<ElementData, DanglingUntriaged>> candidates_;
   int frame_count_ = 0;
 };
 

@@ -94,7 +94,7 @@ TEST_F(ScreenDimmerTest, DimAtBottom) {
   std::unique_ptr<aura::Window> window(aura::test::CreateTestWindow(
       {.parent = root_window, .bounds = {100, 100}, .window_id = 1}));
   dimmer_->SetDimming(true);
-  std::vector<raw_ptr<aura::Window, VectorExperimental>>::const_iterator
+  std::vector<raw_ptr<aura::Window, DanglingUntriaged>>::const_iterator
       dim_iter = std::ranges::find(root_window->children(), GetDimWindow());
   ASSERT_TRUE(dim_iter != root_window->children().end());
   // Dim layer is at top.

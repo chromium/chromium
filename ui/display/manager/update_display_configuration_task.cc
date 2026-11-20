@@ -23,7 +23,7 @@ namespace {
 // Move all internal panel displays to the front of the display list. Otherwise,
 // the list remains in order.
 void MoveInternalDisplaysToTheFront(
-    std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>& displays) {
+    std::vector<raw_ptr<DisplaySnapshot, DanglingUntriaged>>& displays) {
   DisplayConfigurator::DisplayStateList sorted_displays;
 
   // First pass for internal panels.
@@ -115,7 +115,7 @@ void UpdateDisplayConfigurationTask::OnDisplaySnapshotsInvalidated() {
 }
 
 void UpdateDisplayConfigurationTask::OnDisplaysUpdated(
-    const std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>& displays) {
+    const std::vector<raw_ptr<DisplaySnapshot, DanglingUntriaged>>& displays) {
   cached_displays_ = displays;
   MoveInternalDisplaysToTheFront(cached_displays_);
   requesting_displays_ = false;

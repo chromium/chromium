@@ -844,7 +844,7 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
   mutable MenuItemDimensions dimensions_;
 
   // Removed items to be deleted in ChildrenChanged().
-  std::vector<raw_ptr<View, VectorExperimental>> removed_items_;
+  std::vector<raw_ptr<View, DanglingUntriaged>> removed_items_;
 
   std::optional<int> vertical_margin_;
 

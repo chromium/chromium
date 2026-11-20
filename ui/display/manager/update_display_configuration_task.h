@@ -30,9 +30,9 @@ class DISPLAY_MANAGER_EXPORT UpdateDisplayConfigurationTask
   using ResponseCallback = base::OnceCallback<void(
       /*success=*/bool,
       /*displays=*/
-      const std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>&,
+      const std::vector<raw_ptr<DisplaySnapshot, DanglingUntriaged>>&,
       /*unassociated_displays=*/
-      const std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>&,
+      const std::vector<raw_ptr<DisplaySnapshot, DanglingUntriaged>>&,
       /*new_display_state=*/MultipleDisplayState,
       /*new_power_state=*/chromeos::DisplayPowerState)>;
 
@@ -64,8 +64,7 @@ class DISPLAY_MANAGER_EXPORT UpdateDisplayConfigurationTask
  private:
   // Callback to NativeDisplayDelegate::GetDisplays().
   void OnDisplaysUpdated(
-      const std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>&
-          displays);
+      const std::vector<raw_ptr<DisplaySnapshot, DanglingUntriaged>>& displays);
 
   // Callback to ConfigureDisplaysTask used to process the result of a display
   // configuration run.
@@ -132,12 +131,12 @@ class DISPLAY_MANAGER_EXPORT UpdateDisplayConfigurationTask
   bool requesting_displays_;
 
   // List of updated displays.
-  std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>> cached_displays_;
+  std::vector<raw_ptr<DisplaySnapshot, DanglingUntriaged>> cached_displays_;
 
   // List of updated displays which have no associated crtc. It can happen
   // when the device is connected with so many displays that has no available
   // crtc to assign.
-  std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>
+  std::vector<raw_ptr<DisplaySnapshot, DanglingUntriaged>>
       cached_unassociated_displays_;
 
   std::unique_ptr<ConfigureDisplaysTask> configure_task_;

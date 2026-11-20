@@ -215,7 +215,7 @@ gfx::Rect GetCollisionAvoidanceRect(aura::Window* root_window,
       unified_system_tray->IsBubbleShown()) {
     collision_avoidance_rect = unified_system_tray->GetBubbleBoundsInScreen();
   } else {
-    const std::vector<raw_ptr<TrayBackgroundView, VectorExperimental>>
+    const std::vector<raw_ptr<TrayBackgroundView, DanglingUntriaged>>
         tray_buttons = status_area_widget->tray_buttons();
     for (ash::TrayBackgroundView* tray_button : tray_buttons) {
       if (views::Widget* tray_bubble_widget = tray_button->GetBubbleWidget();

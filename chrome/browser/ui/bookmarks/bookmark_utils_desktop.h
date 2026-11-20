@@ -88,7 +88,7 @@ extern size_t kNumBookmarkUrlsBeforePrompting;
 void OpenAllIfAllowed(
     BrowserWindowInterface* browser,
     const std::vector<
-        raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>& nodes,
+        raw_ptr<const bookmarks::BookmarkNode, DanglingUntriaged>>& nodes,
     ui::mojom::WindowOpenDisposition initial_disposition,
     bookmarks::OpenAllBookmarksContext context =
         bookmarks::OpenAllBookmarksContext::kNone,
@@ -101,7 +101,7 @@ void OpenAllIfAllowed(
 // |incognito_context| is set, the function will use it to check if the URLs
 // can be opened in incognito mode, which may affect the count.
 int OpenCount(const std::vector<raw_ptr<const bookmarks::BookmarkNode,
-                                        VectorExperimental>>& nodes,
+                                        DanglingUntriaged>>& nodes,
               content::BrowserContext* incognito_context = nullptr);
 
 // Convenience for OpenCount() with a single BookmarkNode.
@@ -119,19 +119,19 @@ void ShowBookmarkAllTabsDialog(BrowserWindowInterface* browser);
 // Returns true if OpenAll() can open at least one bookmark of type url
 // in |selection|.
 bool HasBookmarkURLs(const std::vector<raw_ptr<const bookmarks::BookmarkNode,
-                                               VectorExperimental>>& selection);
+                                               DanglingUntriaged>>& selection);
 
 // Returns true if OpenAll() can open at least one bookmark of type url
 // in |selection| with incognito mode.
 bool HasBookmarkURLsAllowedInIncognitoMode(
     const std::vector<
-        raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>& selection);
+        raw_ptr<const bookmarks::BookmarkNode, DanglingUntriaged>>& selection);
 
 // Returns true if the "Open in Incognito Window" command should be enabled
 // for the given |selection| and |profile|.
 bool IsOpenInIncognitoAllowed(
     const std::vector<
-        raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>& selection,
+        raw_ptr<const bookmarks::BookmarkNode, DanglingUntriaged>>& selection,
     Profile* profile);
 
 // Populates |folder_data| with all tab items and sub-folders for any open tab

@@ -96,7 +96,7 @@ std::vector<KeyedServiceBaseFactory*> GetKeyedServiceBaseFactories() {
       BrowserContextDependencyManager::GetInstance();
   DependencyGraph& dependency_graph =
       dependency_manager->GetDependencyGraphForTesting();
-  std::vector<raw_ptr<DependencyNode, VectorExperimental>> nodes;
+  std::vector<raw_ptr<DependencyNode, DanglingUntriaged>> nodes;
   bool success = dependency_graph.GetConstructionOrder(&nodes);
   DCHECK(success);
 

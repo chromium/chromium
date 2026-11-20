@@ -4027,13 +4027,13 @@ class TestWindowObserver : public WMHelper::ExoWindowObserver {
     windows_.push_back(window);
   }
 
-  const std::vector<raw_ptr<aura::Window, VectorExperimental>>&
+  const std::vector<raw_ptr<aura::Window, DanglingUntriaged>>&
   observed_windows() {
     return windows_;
   }
 
  private:
-  std::vector<raw_ptr<aura::Window, VectorExperimental>> windows_;
+  std::vector<raw_ptr<aura::Window, DanglingUntriaged>> windows_;
 };
 
 TEST_F(ShellSurfaceTest, NotifyOnWindowCreation) {

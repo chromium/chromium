@@ -63,7 +63,7 @@ class GlobalConfirmInfoBar : public infobars::InfoBarManager::Observer {
   void MaybeAddInfoBar(content::WebContents* web_contents);
 
   std::unique_ptr<ConfirmInfoBarDelegate> delegate_;
-  std::map<infobars::InfoBarManager*, raw_ptr<DelegateProxy, CtnExperimental>>
+  std::map<infobars::InfoBarManager*, raw_ptr<DelegateProxy, DanglingUntriaged>>
       proxies_;
 
   // Helper to deal with tab strip differences between Win/Mac/Linux and

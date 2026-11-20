@@ -110,7 +110,7 @@ void ApplyContentProtectionTask::OnGetHDCPState(
     return;
   }
 
-  std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>> displays =
+  std::vector<raw_ptr<DisplaySnapshot, DanglingUntriaged>> displays =
       layout_manager_->GetDisplayStates();
   std::vector<std::tuple<DisplaySnapshot*, HDCPState, ContentProtectionMethod>>
       hdcped_displays;

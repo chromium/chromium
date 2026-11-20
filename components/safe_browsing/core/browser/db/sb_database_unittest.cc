@@ -257,7 +257,7 @@ class SBDatabaseTest : public PlatformTest {
   std::vector<ListIdentifier> expected_identifiers_;
   std::vector<base::FilePath> expected_store_paths_;
   StoreStateMap expected_store_state_map_;
-  std::unordered_map<ListIdentifier, raw_ptr<SBStore, CtnExperimental>>
+  std::unordered_map<ListIdentifier, raw_ptr<SBStore, DanglingUntriaged>>
       old_stores_map_;
 };
 

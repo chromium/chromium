@@ -44,7 +44,7 @@ std::string RefreshRateOverrideToString(
 // |state|.  If |display_power| is non-NULL, it is updated to contain the
 // on/off state of each corresponding entry in |displays|.
 DISPLAY_MANAGER_EXPORT int GetDisplayPower(
-    const std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>& displays,
+    const std::vector<raw_ptr<DisplaySnapshot, DanglingUntriaged>>& displays,
     chromeos::DisplayPowerState state,
     std::vector<bool>* display_power);
 

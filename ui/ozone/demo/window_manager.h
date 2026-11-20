@@ -43,7 +43,7 @@ class WindowManager : public display::NativeDisplayObserver {
 
  private:
   void OnDisplaysAcquired(
-      const std::vector<raw_ptr<display::DisplaySnapshot, VectorExperimental>>&
+      const std::vector<raw_ptr<display::DisplaySnapshot, DanglingUntriaged>>&
           displays);
   void OnDisplayConfigured(
       const std::vector<display::DisplayConfigurationParams>& request_results,

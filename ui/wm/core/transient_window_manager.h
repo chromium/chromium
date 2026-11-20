@@ -31,7 +31,7 @@ class TransientWindowObserver;
 class COMPONENT_EXPORT(UI_WM) TransientWindowManager
     : public aura::WindowObserver {
  public:
-  using Windows = std::vector<raw_ptr<aura::Window, VectorExperimental>>;
+  using Windows = std::vector<raw_ptr<aura::Window, DanglingUntriaged>>;
 
   TransientWindowManager(const TransientWindowManager&) = delete;
   TransientWindowManager& operator=(const TransientWindowManager&) = delete;

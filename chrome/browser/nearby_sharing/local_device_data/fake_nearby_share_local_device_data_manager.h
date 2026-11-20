@@ -34,7 +34,7 @@ class FakeNearbyShareLocalDeviceDataManager
     // Returns all FakeNearbyShareLocalDeviceDataManager instances created by
     // CreateInstance().
     std::vector<
-        raw_ptr<FakeNearbyShareLocalDeviceDataManager, VectorExperimental>>&
+        raw_ptr<FakeNearbyShareLocalDeviceDataManager, DanglingUntriaged>>&
     instances() {
       return instances_;
     }
@@ -50,7 +50,7 @@ class FakeNearbyShareLocalDeviceDataManager
 
    private:
     std::vector<
-        raw_ptr<FakeNearbyShareLocalDeviceDataManager, VectorExperimental>>
+        raw_ptr<FakeNearbyShareLocalDeviceDataManager, DanglingUntriaged>>
         instances_;
     raw_ptr<NearbyShareClientFactory, DanglingUntriaged>
         latest_http_client_factory_ = nullptr;

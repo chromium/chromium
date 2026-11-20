@@ -295,7 +295,7 @@ class DevToolsSession : public protocol::FrontendChannel,
   // |session_state_cookie_| is nullptr before first attach.
   blink::mojom::DevToolsSessionStatePtr session_state_cookie_;
 
-  base::flat_map<std::string, raw_ptr<DevToolsSession, CtnExperimental>>
+  base::flat_map<std::string, raw_ptr<DevToolsSession, DanglingUntriaged>>
       child_sessions_;
   base::OnceClosure runtime_resume_;
   raw_ptr<DevToolsExternalAgentProxyDelegate> proxy_delegate_ = nullptr;

@@ -47,8 +47,8 @@ class SavedDeskLibraryView : public views::View, public aura::WindowObserver {
   static std::unique_ptr<views::Widget> CreateSavedDeskLibraryWidget(
       aura::Window* root);
 
-  const std::vector<raw_ptr<SavedDeskGridView, VectorExperimental>>&
-  grid_views() const {
+  const std::vector<raw_ptr<SavedDeskGridView, DanglingUntriaged>>& grid_views()
+      const {
     return grid_views_;
   }
 
@@ -61,7 +61,7 @@ class SavedDeskLibraryView : public views::View, public aura::WindowObserver {
   // their final positions if `animate` is true. Currently only allows a maximum
   // of 6 saved desks to be shown in the grid.
   void AddOrUpdateEntries(
-      const std::vector<raw_ptr<const DeskTemplate, VectorExperimental>>&
+      const std::vector<raw_ptr<const DeskTemplate, DanglingUntriaged>>&
           entries,
       const base::Uuid& order_first_uuid,
       bool animate);
@@ -116,7 +116,7 @@ class SavedDeskLibraryView : public views::View, public aura::WindowObserver {
   // Maps the desk template type to the corresponding grid view. These will be
   // set depending on which features are enabled.
   base::flat_map<DeskTemplateType,
-                 raw_ptr<SavedDeskGridView, VectorExperimental>>
+                 raw_ptr<SavedDeskGridView, DanglingUntriaged>>
       grid_views_map_;
 
   // Used for scroll functionality of the library page. Owned by views
@@ -127,11 +127,11 @@ class SavedDeskLibraryView : public views::View, public aura::WindowObserver {
   std::unique_ptr<ScrollViewGradientHelper> scroll_view_gradient_helper_;
 
   // Holds the active ones, for convenience.
-  std::vector<raw_ptr<SavedDeskGridView, VectorExperimental>> grid_views_;
+  std::vector<raw_ptr<SavedDeskGridView, DanglingUntriaged>> grid_views_;
 
   // Owned by views hierarchy. Section headers above grids. Will match size and
   // order of items in `grid_views_`.
-  std::vector<raw_ptr<views::Label, VectorExperimental>> grid_labels_;
+  std::vector<raw_ptr<views::Label, DanglingUntriaged>> grid_labels_;
 
   // Label that shows up when the library has no items.
   raw_ptr<views::Label> no_items_label_ = nullptr;

@@ -193,7 +193,7 @@ void MirrorLayerTree(
   parent->Add(mirror);
 
   // Calculate child layers.
-  std::vector<raw_ptr<ui::Layer, VectorExperimental>> children;
+  std::vector<raw_ptr<ui::Layer, DanglingUntriaged>> children;
   if (visible_on_all_desks_windows_to_mirror.empty()) {
     // Without all desk windows, there is no need to reorder layers, just use
     // them as is.

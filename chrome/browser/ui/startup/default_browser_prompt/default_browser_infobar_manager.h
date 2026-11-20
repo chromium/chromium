@@ -113,7 +113,7 @@ class DefaultBrowserInfoBarManager : public BrowserTabStripTrackerDelegate,
   void OnDismiss() override;
 
   std::unique_ptr<BrowserTabStripTracker> browser_tab_strip_tracker_;
-  std::map<content::WebContents*, raw_ptr<infobars::InfoBar, CtnExperimental>>
+  std::map<content::WebContents*, raw_ptr<infobars::InfoBar, DanglingUntriaged>>
       infobars_;
 
   std::optional<DefaultBrowserPromptManager::CloseReason>

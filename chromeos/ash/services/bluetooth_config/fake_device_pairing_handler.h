@@ -52,8 +52,7 @@ class FakeDevicePairingHandler : public DevicePairingHandler {
 
   std::optional<bool> last_confirm_;
 
-  std::vector<raw_ptr<device::BluetoothDevice, VectorExperimental>>
-      device_list_;
+  std::vector<raw_ptr<device::BluetoothDevice, DanglingUntriaged>> device_list_;
 
   FetchDeviceCallback fetch_device_callback_;
 };

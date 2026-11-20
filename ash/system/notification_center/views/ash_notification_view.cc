@@ -1476,7 +1476,7 @@ views::View* AshNotificationView::FindGroupNotificationView(
              : *notification;
 }
 
-std::vector<raw_ptr<views::LabelButton, VectorExperimental>>
+std::vector<raw_ptr<views::LabelButton, DanglingUntriaged>>
 AshNotificationView::GetActionButtonsForTest() {
   return action_buttons();
 }

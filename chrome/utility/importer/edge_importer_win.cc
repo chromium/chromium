@@ -58,7 +58,7 @@ struct EdgeFavoriteEntry {
   GUID item_id;
   GUID parent_id;
 
-  std::vector<raw_ptr<const EdgeFavoriteEntry, VectorExperimental>> children;
+  std::vector<raw_ptr<const EdgeFavoriteEntry, DanglingUntriaged>> children;
 
   user_data_importer::ImportedBookmarkEntry ToBookmarkEntry(
       bool in_toolbar,

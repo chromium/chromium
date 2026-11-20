@@ -355,7 +355,7 @@ class USER_MANAGER_EXPORT User {
 };
 
 // List of known users.
-using UserList = std::vector<raw_ptr<User, VectorExperimental>>;
+using UserList = std::vector<raw_ptr<User, DanglingUntriaged>>;
 
 }  // namespace user_manager
 

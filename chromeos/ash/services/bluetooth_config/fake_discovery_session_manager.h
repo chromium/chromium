@@ -26,7 +26,7 @@ class FakeDiscoverySessionManager : public DiscoverySessionManager {
 
   using DiscoverySessionManager::HasAtLeastOneDiscoveryClient;
 
-  std::vector<raw_ptr<FakeDevicePairingHandler, VectorExperimental>>&
+  std::vector<raw_ptr<FakeDevicePairingHandler, DanglingUntriaged>>&
   device_pairing_handlers() {
     return device_pairing_handlers_;
   }
@@ -40,7 +40,7 @@ class FakeDiscoverySessionManager : public DiscoverySessionManager {
 
   bool is_discovery_session_active_ = false;
 
-  std::vector<raw_ptr<FakeDevicePairingHandler, VectorExperimental>>
+  std::vector<raw_ptr<FakeDevicePairingHandler, DanglingUntriaged>>
       device_pairing_handlers_;
 };
 

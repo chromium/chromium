@@ -29,7 +29,7 @@ OpenTabsUIDelegateImpl::OpenTabsUIDelegateImpl(
 OpenTabsUIDelegateImpl::~OpenTabsUIDelegateImpl() = default;
 
 bool OpenTabsUIDelegateImpl::GetAllForeignSessions(
-    std::vector<raw_ptr<const SyncedSession, VectorExperimental>>* sessions,
+    std::vector<raw_ptr<const SyncedSession, DanglingUntriaged>>* sessions,
     ForeignSessionFilter filter) {
   *sessions = session_tracker_->LookupAllForeignSessions(
       filter == ForeignSessionFilter::kAll ? SyncedSessionTracker::NAMED
@@ -52,7 +52,7 @@ bool OpenTabsUIDelegateImpl::GetAllForeignSessions(
 
 base::flat_map<std::string, base::Time>
 OpenTabsUIDelegateImpl::GetAllForeignSessionLastModifiedTimes() const {
-  std::vector<raw_ptr<const SyncedSession, VectorExperimental>> sessions =
+  std::vector<raw_ptr<const SyncedSession, DanglingUntriaged>> sessions =
       session_tracker_->LookupAllForeignSessions(
           SyncedSessionTracker::PRESENTABLE);
   std::vector<std::pair<std::string, base::Time>> timestamps;

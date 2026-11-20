@@ -80,7 +80,7 @@ class BookmarksPageHandler::BookmarkContextMenu
   explicit BookmarkContextMenu(
       BrowserWindowInterface* browser_window,
       base::WeakPtr<TopChromeWebUIController::Embedder> embedder,
-      std::vector<raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>
+      std::vector<raw_ptr<const bookmarks::BookmarkNode, DanglingUntriaged>>
           bookmarks,
       const side_panel::mojom::ActionSource& source,
       commerce::ShoppingListContextMenuController* shopping_list_controller,
@@ -192,16 +192,16 @@ class BookmarksPageHandler::BookmarkContextMenu
   std::unique_ptr<BookmarkContextMenuController> controller_;
   raw_ptr<commerce::ShoppingListContextMenuController>
       shopping_list_controller_;
-  std::vector<raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>
+  std::vector<raw_ptr<const bookmarks::BookmarkNode, DanglingUntriaged>>
       bookmarks_;
 };
 
 namespace {
 
-std::vector<raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>
+std::vector<raw_ptr<const bookmarks::BookmarkNode, DanglingUntriaged>>
 BookmarksFromNodeIds(const std::vector<int64_t> node_ids,
                      bookmarks::BookmarkModel* bookmark_model) {
-  std::vector<raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>
+  std::vector<raw_ptr<const bookmarks::BookmarkNode, DanglingUntriaged>>
       bookmarks = {};
   for (const int64_t id : node_ids) {
     const bookmarks::BookmarkNode* bookmark =

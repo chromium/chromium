@@ -70,7 +70,7 @@ class BookmarkEditor {
     static EditDetails MoveNodes(
         bookmarks::BookmarkModel* model,
         const std::vector<
-            raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>& nodes);
+            raw_ptr<const bookmarks::BookmarkNode, DanglingUntriaged>>& nodes);
 
     // Returns an EditDetails instance for the user adding a bookmark within
     // a given parent node with a specified index.
@@ -124,7 +124,7 @@ class BookmarkEditor {
     raw_ptr<const bookmarks::BookmarkNode> existing_node = nullptr;
 
     // If type == MOVE this gives the existing nodes to move.
-    base::flat_set<raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>
+    base::flat_set<raw_ptr<const bookmarks::BookmarkNode, DanglingUntriaged>>
         existing_nodes_to_move;
 
     // This gives the initial parent node to place the node(s) in.

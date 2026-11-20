@@ -3235,7 +3235,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
     // though those cells are also children of rows in the table. Internally
     // this is implemented using `AXTableInfo` and `indirect_child_ids` with the
     // result retrievable via `AXNode::GetExtraMacNodes()`.
-    const std::vector<raw_ptr<ui::AXNode, VectorExperimental>>* nodes =
+    const std::vector<raw_ptr<ui::AXNode, DanglingUntriaged>>* nodes =
         delegate->node()->GetExtraMacNodes();
     if (nodes && !nodes->empty()) {
       ui::AXNode* lastChild = nodes->back();

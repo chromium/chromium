@@ -163,7 +163,7 @@ std::string AccessibilityWindowInfoDataWrapper::ComputeAXName(
 }
 
 void AccessibilityWindowInfoDataWrapper::GetChildren(
-    std::vector<raw_ptr<AccessibilityInfoDataWrapper, VectorExperimental>>*
+    std::vector<raw_ptr<AccessibilityInfoDataWrapper, DanglingUntriaged>>*
         children) const {
   // Populate the children vector by combining the child window IDs with the
   // root node ID.

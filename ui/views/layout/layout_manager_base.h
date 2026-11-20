@@ -86,7 +86,7 @@ class VIEWS_EXPORT LayoutManagerBase : public LayoutManager,
   PassKeyType PassKey() const { return PassKeyType(); }
 
   // LayoutManager:
-  std::vector<raw_ptr<View, VectorExperimental>> GetChildViewsInPaintOrder(
+  std::vector<raw_ptr<View, DanglingUntriaged>> GetChildViewsInPaintOrder(
       const View* host) const override;
 
   // Direct cache control for subclasses that want to override default caching

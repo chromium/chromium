@@ -90,7 +90,7 @@ void BirchRecentTabsProvider::RequestBirchDataFetch() {
     return;
   }
 
-  std::vector<raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>
+  std::vector<raw_ptr<const sync_sessions::SyncedSession, DanglingUntriaged>>
       remote_sessions;
   if (!open_tabs->GetAllForeignSessions(
           &remote_sessions, sync_sessions::OpenTabsUIDelegate::

@@ -57,7 +57,7 @@ class ExecutionService {
       const base::flat_set<SegmentId>& legacy_output_segment_ids,
       ModelProviderFactory* model_provider_factory,
       std::vector<raw_ptr<ModelExecutionScheduler::Observer,
-                          VectorExperimental>>&& observers,
+                          DanglingUntriaged>>&& observers,
       const PlatformOptions& platform_options,
       std::unique_ptr<processing::InputDelegateHolder> input_delegate_holder,
       PrefService* profile_prefs,

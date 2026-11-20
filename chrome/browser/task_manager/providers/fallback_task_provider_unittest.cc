@@ -78,7 +78,7 @@ class FakeTaskProvider : public TaskProvider {
 
   void StopUpdating() override {}
 
-  std::vector<raw_ptr<Task, VectorExperimental>> task_provider_tasks_;
+  std::vector<raw_ptr<Task, DanglingUntriaged>> task_provider_tasks_;
 };
 
 // Defines a test for the child process task provider and the child process
@@ -177,7 +177,7 @@ class FallbackTaskProviderTest : public testing::Test,
   }
 
   // This is the vector of tasks the FallbackTaskProvider has told us about.
-  std::vector<raw_ptr<Task, VectorExperimental>> seen_tasks() {
+  std::vector<raw_ptr<Task, DanglingUntriaged>> seen_tasks() {
     return seen_tasks_;
   }
 
@@ -189,7 +189,7 @@ class FallbackTaskProviderTest : public testing::Test,
   content::BrowserTaskEnvironment task_environment_{
       content::BrowserTaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<FallbackTaskProvider> task_provider_;
-  std::vector<raw_ptr<Task, VectorExperimental>> seen_tasks_;
+  std::vector<raw_ptr<Task, DanglingUntriaged>> seen_tasks_;
 };
 
 TEST_F(FallbackTaskProviderTest, BasicTest) {

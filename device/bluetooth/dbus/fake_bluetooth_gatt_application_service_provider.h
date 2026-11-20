@@ -30,8 +30,8 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothGattApplicationServiceProvider
   FakeBluetoothGattApplicationServiceProvider(
       const dbus::ObjectPath& object_path,
       const std::map<dbus::ObjectPath,
-                     raw_ptr<BluetoothLocalGattServiceBlueZ, CtnExperimental>>&
-          services);
+                     raw_ptr<BluetoothLocalGattServiceBlueZ,
+                             DanglingUntriaged>>& services);
 
   FakeBluetoothGattApplicationServiceProvider(
       const FakeBluetoothGattApplicationServiceProvider&) = delete;

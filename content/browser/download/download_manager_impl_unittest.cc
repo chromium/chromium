@@ -199,7 +199,7 @@ class MockDownloadItemFactory final : public download::DownloadItemFactory {
   }
 
  private:
-  std::map<uint32_t, raw_ptr<download::MockDownloadItemImpl, CtnExperimental>>
+  std::map<uint32_t, raw_ptr<download::MockDownloadItemImpl, DanglingUntriaged>>
       items_;
   download::DownloadItemImplDelegate item_delegate_;
   bool is_download_persistent_;
@@ -840,7 +840,7 @@ TEST_F(DownloadManagerTest, OnInProgressDownloadsLoaded) {
       .WillOnce(Return());
   OnInProgressDownloadManagerInitialized();
   ASSERT_TRUE(download_manager_->GetDownloadByGuid(kGuid));
-  std::vector<raw_ptr<download::DownloadItem, VectorExperimental>> vector;
+  std::vector<raw_ptr<download::DownloadItem, DanglingUntriaged>> vector;
   download_manager_->GetAllDownloads(&vector);
   ASSERT_EQ(0u, vector.size());
 

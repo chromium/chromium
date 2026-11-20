@@ -341,11 +341,11 @@ SavedDeskItemView* SavedDeskLibraryView::GetItemForUUID(
 }
 
 void SavedDeskLibraryView::AddOrUpdateEntries(
-    const std::vector<raw_ptr<const DeskTemplate, VectorExperimental>>& entries,
+    const std::vector<raw_ptr<const DeskTemplate, DanglingUntriaged>>& entries,
     const base::Uuid& order_first_uuid,
     bool animate) {
   base::flat_map<DeskTemplateType,
-                 std::vector<raw_ptr<const DeskTemplate, VectorExperimental>>>
+                 std::vector<raw_ptr<const DeskTemplate, DanglingUntriaged>>>
       entries_by_type;
   for (const DeskTemplate* entry : entries) {
     entries_by_type[entry->type()].push_back(entry);

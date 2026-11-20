@@ -97,7 +97,7 @@ class MultiProfileDownloadNotifier
   void AddProfile(Profile* profile);
 
   // Returns all downloads for all observed profiles.
-  std::vector<raw_ptr<download::DownloadItem, VectorExperimental>>
+  std::vector<raw_ptr<download::DownloadItem, DanglingUntriaged>>
   GetAllDownloads();
 
   // Searches all download notifiers for an observed `DownloadItem` matching

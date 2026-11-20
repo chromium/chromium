@@ -108,7 +108,7 @@ class ChromeShellDelegate : public ash::ShellDelegate,
   const GURL& GetLastCommittedURLForWindowIfAny(aura::Window* window) override;
   version_info::Channel GetChannel() override;
   void ForceSkipWarningUserOnClose(
-      const std::vector<raw_ptr<aura::Window, VectorExperimental>>& windows)
+      const std::vector<raw_ptr<aura::Window, DanglingUntriaged>>& windows)
       override;
   std::string GetVersionString() override;
   void OpenMultitaskingSettings() override;

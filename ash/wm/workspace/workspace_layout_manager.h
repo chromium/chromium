@@ -180,7 +180,7 @@ class ASH_EXPORT WorkspaceLayoutManager : public aura::LayoutManager,
   display::ScopedDisplayObserver display_observer_{this};
 
   // Set of windows we're listening to.
-  std::set<raw_ptr<aura::Window, SetExperimental>> windows_;
+  std::set<raw_ptr<aura::Window, DanglingUntriaged>> windows_;
 
   // True if this workspace is currently in fullscreen mode. Tracks the
   // fullscreen state of the container |window_| associated with this workspace

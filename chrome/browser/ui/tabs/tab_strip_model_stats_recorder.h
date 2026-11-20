@@ -68,7 +68,7 @@ class TabStripModelStatsRecorder : public TabStripModelObserver {
 
   class TabInfo;
 
-  std::vector<raw_ptr<content::WebContents, VectorExperimental>>
+  std::vector<raw_ptr<content::WebContents, DanglingUntriaged>>
       active_tab_history_;
 
   std::unique_ptr<BrowserTabStripTracker> browser_tab_strip_tracker_;

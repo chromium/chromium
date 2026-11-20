@@ -74,7 +74,7 @@ class NET_EXPORT_PRIVATE MultiThreadedProxyResolverFactory
 
   const size_t max_num_threads_;
 
-  std::set<raw_ptr<Job, SetExperimental>> jobs_;
+  std::set<raw_ptr<Job, DanglingUntriaged>> jobs_;
 };
 
 }  // namespace net

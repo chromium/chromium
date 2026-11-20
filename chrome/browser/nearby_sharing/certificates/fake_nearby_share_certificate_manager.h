@@ -34,7 +34,7 @@ class FakeNearbyShareCertificateManager : public NearbyShareCertificateManager {
 
     // Returns all FakeNearbyShareCertificateManager instances created by
     // CreateInstance().
-    std::vector<raw_ptr<FakeNearbyShareCertificateManager, VectorExperimental>>&
+    std::vector<raw_ptr<FakeNearbyShareCertificateManager, DanglingUntriaged>>&
     instances() {
       return instances_;
     }
@@ -51,7 +51,7 @@ class FakeNearbyShareCertificateManager : public NearbyShareCertificateManager {
         NearbyShareClientFactory* client_factory,
         const base::Clock* clock) override;
 
-    std::vector<raw_ptr<FakeNearbyShareCertificateManager, VectorExperimental>>
+    std::vector<raw_ptr<FakeNearbyShareCertificateManager, DanglingUntriaged>>
         instances_;
   };
 

@@ -182,7 +182,7 @@ void SavedDeskIconContainer::PopulateIconContainerFromTemplate(
 }
 
 void SavedDeskIconContainer::PopulateIconContainerFromWindows(
-    const std::vector<raw_ptr<aura::Window, VectorExperimental>>& windows) {
+    const std::vector<raw_ptr<aura::Window, DanglingUntriaged>>& windows) {
   DCHECK(!windows.empty());
 
   // Iterate through `windows`, counting the occurrences of each unique icon and

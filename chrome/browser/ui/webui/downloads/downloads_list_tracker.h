@@ -126,7 +126,7 @@ class DownloadsListTracker
     bool operator()(const download::DownloadItem* a,
                     const download::DownloadItem* b) const;
   };
-  using SortedSet = std::set<raw_ptr<download::DownloadItem, SetExperimental>,
+  using SortedSet = std::set<raw_ptr<download::DownloadItem, DanglingUntriaged>,
                              StartTimeComparator>;
 
   // Called by both constructors to initialize common state.

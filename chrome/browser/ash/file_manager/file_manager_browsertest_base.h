@@ -261,7 +261,7 @@ class FileManagerBrowserTestBase
 
  private:
   using IdToWebContents =
-      std::map<std::string, raw_ptr<content::WebContents, CtnExperimental>>;
+      std::map<std::string, raw_ptr<content::WebContents, DanglingUntriaged>>;
 
   class MockFileTasksObserver;
 

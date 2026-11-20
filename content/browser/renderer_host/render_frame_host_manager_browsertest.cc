@@ -2154,7 +2154,8 @@ class RenderViewHostDestructionObserver : public WebContentsObserver {
     watched_render_view_hosts_.erase(rvh);
   }
 
-  std::set<raw_ptr<RenderViewHost, SetExperimental>> watched_render_view_hosts_;
+  std::set<raw_ptr<RenderViewHost, DanglingUntriaged>>
+      watched_render_view_hosts_;
 };
 
 // Crashes under ThreadSanitizer, http://crbug.com/356758.

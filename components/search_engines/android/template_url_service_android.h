@@ -198,7 +198,7 @@ class TemplateUrlServiceAndroid : public TemplateURLServiceObserver {
   // Given a vector of TemplateURL pointers, returns an array of TemplateURLs
   // that should be selectable by the user as their primary Search Engine.
   static std::vector<raw_ptr<TemplateURL>> FilterUserSelectableTemplateUrls(
-      std::vector<raw_ptr<TemplateURL, VectorExperimental>> template_urls);
+      std::vector<raw_ptr<TemplateURL, DanglingUntriaged>> template_urls);
 
   base::android::ScopedJavaGlobalRef<jobject> java_ref_;
 

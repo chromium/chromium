@@ -39,7 +39,7 @@ class MockWebContentsTaskManager : public TaskProviderObserver {
   void StartObserving();
   void StopObserving();
 
-  const std::vector<raw_ptr<Task, VectorExperimental>>& tasks() const {
+  const std::vector<raw_ptr<Task, DanglingUntriaged>>& tasks() const {
     return tasks_;
   }
 
@@ -50,7 +50,7 @@ class MockWebContentsTaskManager : public TaskProviderObserver {
   }
 
   static std::vector<std::string> TaskTitles(
-      std::vector<raw_ptr<Task, VectorExperimental>> tasks) {
+      std::vector<raw_ptr<Task, DanglingUntriaged>> tasks) {
     std::vector<std::string> task_titles;
     std::ranges::transform(
         tasks, std::back_inserter(task_titles),
@@ -59,10 +59,10 @@ class MockWebContentsTaskManager : public TaskProviderObserver {
   }
 
   // Filter out tool tasks.
-  std::vector<raw_ptr<Task, VectorExperimental>> NonToolTasks() {
+  std::vector<raw_ptr<Task, DanglingUntriaged>> NonToolTasks() {
     std::u16string tool_prefix =
         l10n_util::GetStringFUTF16(IDS_TASK_MANAGER_TOOL_PREFIX, u"");
-    std::vector<raw_ptr<Task, VectorExperimental>> non_tool_tasks;
+    std::vector<raw_ptr<Task, DanglingUntriaged>> non_tool_tasks;
     std::ranges::copy_if(tasks_, std::back_inserter(non_tool_tasks),
                          [&](const auto& task) {
                            return !task->title().starts_with(tool_prefix);
@@ -71,7 +71,7 @@ class MockWebContentsTaskManager : public TaskProviderObserver {
   }
 
  private:
-  std::vector<raw_ptr<Task, VectorExperimental>> tasks_;
+  std::vector<raw_ptr<Task, DanglingUntriaged>> tasks_;
   WebContentsTaskProvider provider_;
 };
 

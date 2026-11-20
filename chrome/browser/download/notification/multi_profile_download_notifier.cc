@@ -53,7 +53,7 @@ void MultiProfileDownloadNotifier::AddProfile(Profile* profile) {
   }
 }
 
-std::vector<raw_ptr<download::DownloadItem, VectorExperimental>>
+std::vector<raw_ptr<download::DownloadItem, DanglingUntriaged>>
 MultiProfileDownloadNotifier::GetAllDownloads() {
   download::SimpleDownloadManager::DownloadVector downloads;
   for (const auto& download_notifier : download_notifiers_) {

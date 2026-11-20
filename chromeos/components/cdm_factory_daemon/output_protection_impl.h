@@ -50,7 +50,7 @@ class COMPONENT_EXPORT(CDM_FACTORY_DAEMON) OutputProtectionImpl
 
     // Delegate to display::DisplayConfigurator.
     virtual const std::vector<
-        raw_ptr<display::DisplaySnapshot, VectorExperimental>>&
+        raw_ptr<display::DisplaySnapshot, DanglingUntriaged>>&
     cached_displays() const = 0;
   };
 

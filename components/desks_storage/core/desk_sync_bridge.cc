@@ -173,7 +173,7 @@ std::optional<syncer::ModelError> DeskSyncBridge::MergeFullSyncData(
 std::optional<syncer::ModelError> DeskSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
-  std::vector<raw_ptr<const DeskTemplate, VectorExperimental>> added_or_updated;
+  std::vector<raw_ptr<const DeskTemplate, DanglingUntriaged>> added_or_updated;
   std::vector<base::Uuid> removed;
   std::unique_ptr<DataTypeStore::WriteBatch> batch =
       store_->CreateWriteBatch(std::move(metadata_change_list));
@@ -287,10 +287,10 @@ DeskModel::GetAllEntriesResult DeskSyncBridge::GetAllEntries() {
     LOG(WARNING) << "Unable to get all entries: Not Ready";
     return GetAllEntriesResult(
         GetAllEntriesStatus::kFailure,
-        std::vector<raw_ptr<const DeskTemplate, VectorExperimental>>());
+        std::vector<raw_ptr<const DeskTemplate, DanglingUntriaged>>());
   }
 
-  std::vector<raw_ptr<const DeskTemplate, VectorExperimental>> entries;
+  std::vector<raw_ptr<const DeskTemplate, DanglingUntriaged>> entries;
 
   for (const auto& it : policy_entries_)
     entries.push_back(it.get());
@@ -547,7 +547,7 @@ void DeskSyncBridge::NotifyDeskModelLoaded() {
 }
 
 void DeskSyncBridge::NotifyRemoteDeskTemplateAddedOrUpdated(
-    const std::vector<raw_ptr<const DeskTemplate, VectorExperimental>>&
+    const std::vector<raw_ptr<const DeskTemplate, DanglingUntriaged>>&
         new_entries) {
   if (new_entries.empty()) {
     return;

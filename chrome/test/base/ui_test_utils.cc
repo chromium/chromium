@@ -832,7 +832,7 @@ void GetCookies(const GURL& url,
   }
 }
 
-const std::vector<raw_ptr<task_manager::WebContentsTag, VectorExperimental>>
+const std::vector<raw_ptr<task_manager::WebContentsTag, DanglingUntriaged>>
 GetAllTrackedTags(bool exclude_web_ui) {
   auto all_tags =
       task_manager::WebContentsTagsManager::GetInstance()->tracked_tags();
@@ -840,7 +840,7 @@ GetAllTrackedTags(bool exclude_web_ui) {
     return all_tags;
   }
 
-  std::vector<raw_ptr<task_manager::WebContentsTag, VectorExperimental>>
+  std::vector<raw_ptr<task_manager::WebContentsTag, DanglingUntriaged>>
       filtered_tags;
   std::ranges::copy_if(
       all_tags, std::back_inserter(filtered_tags),

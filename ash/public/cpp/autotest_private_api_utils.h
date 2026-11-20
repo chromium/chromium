@@ -20,7 +20,7 @@ class Window;
 namespace ash {
 
 // Get application windows, windows that are shown in overview grid.
-ASH_EXPORT std::vector<raw_ptr<aura::Window, VectorExperimental>>
+ASH_EXPORT std::vector<raw_ptr<aura::Window, DanglingUntriaged>>
 GetAppWindowList();
 
 // Runs the callback when the launcher state becomes |state| after

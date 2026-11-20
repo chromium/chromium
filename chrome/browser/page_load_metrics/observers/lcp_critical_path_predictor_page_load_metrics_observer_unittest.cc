@@ -256,9 +256,9 @@ class LcpCriticalPathPredictorPageLoadMetricsObserverTest
 
  private:
   page_load_metrics::mojom::PageLoadTiming timing_;
-  std::map<
-      GURL,
-      raw_ptr<LcpCriticalPathPredictorPageLoadMetricsObserver, CtnExperimental>>
+  std::map<GURL,
+           raw_ptr<LcpCriticalPathPredictorPageLoadMetricsObserver,
+                   DanglingUntriaged>>
       lcpp_observers_;
   int max_lcpp_histogram_buckets_;
 };

@@ -71,7 +71,7 @@ class TestCompatModeButtonController : public CompatModeButtonController {
   }
 
  private:
-  base::flat_set<raw_ptr<const aura::Window, CtnExperimental>>
+  base::flat_set<raw_ptr<const aura::Window, DanglingUntriaged>>
       update_compat_mode_button_called;
 };
 

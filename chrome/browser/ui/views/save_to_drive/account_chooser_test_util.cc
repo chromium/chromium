@@ -41,7 +41,7 @@ std::vector<AccountInfo> GetTestAccounts(const std::vector<std::string>& names,
 
 bool VerifyAccountChooserRow(views::View* row_view,
                              const AccountInfo& account) {
-  std::vector<raw_ptr<views::View, VectorExperimental>> account_view_children =
+  std::vector<raw_ptr<views::View, DanglingUntriaged>> account_view_children =
       row_view->children();
   if (account_view_children.size() != 2u) {
     return false;
@@ -52,7 +52,7 @@ bool VerifyAccountChooserRow(views::View* row_view,
     return false;
   }
 
-  std::vector<raw_ptr<views::View, VectorExperimental>> account_info_children =
+  std::vector<raw_ptr<views::View, DanglingUntriaged>> account_info_children =
       account_view_children.back()->children();
   if (account_info_children.size() != 2u) {
     return false;

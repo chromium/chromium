@@ -16,7 +16,7 @@ namespace display::test {
 class TestDisplayLayoutManager : public DisplayLayoutManager {
  public:
   TestDisplayLayoutManager(
-      const std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>& displays,
+      const std::vector<raw_ptr<DisplaySnapshot, DanglingUntriaged>>& displays,
       MultipleDisplayState display_state);
 
   TestDisplayLayoutManager(const TestDisplayLayoutManager&) = delete;
@@ -25,7 +25,7 @@ class TestDisplayLayoutManager : public DisplayLayoutManager {
   ~TestDisplayLayoutManager() override;
 
   void set_displays(
-      const std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>&
+      const std::vector<raw_ptr<DisplaySnapshot, DanglingUntriaged>>&
           displays) {
     displays_ = displays;
   }
@@ -41,17 +41,17 @@ class TestDisplayLayoutManager : public DisplayLayoutManager {
   MultipleDisplayState GetDisplayState() const override;
   chromeos::DisplayPowerState GetPowerState() const override;
   bool GetDisplayLayout(
-      const std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>& displays,
+      const std::vector<raw_ptr<DisplaySnapshot, DanglingUntriaged>>& displays,
       MultipleDisplayState new_display_state,
       chromeos::DisplayPowerState new_power_state,
       const base::flat_set<int64_t>& new_vrr_enabled_state,
       std::vector<DisplayConfigureRequest>* requests) const override;
-  std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>> GetDisplayStates()
+  std::vector<raw_ptr<DisplaySnapshot, DanglingUntriaged>> GetDisplayStates()
       const override;
   bool IsMirroring() const override;
 
  private:
-  std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>> displays_;
+  std::vector<raw_ptr<DisplaySnapshot, DanglingUntriaged>> displays_;
   MultipleDisplayState display_state_;
 };
 

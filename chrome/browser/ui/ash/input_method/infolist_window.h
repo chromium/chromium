@@ -51,7 +51,7 @@ class UI_CHROMEOS_EXPORT InfolistWindow
   void WindowClosing() override;
 
   // The list of visible entries. Owned by views hierarchy.
-  std::vector<raw_ptr<InfolistEntryView, VectorExperimental>> entry_views_;
+  std::vector<raw_ptr<InfolistEntryView, DanglingUntriaged>> entry_views_;
 
   // Information title font.
   gfx::FontList title_font_list_;

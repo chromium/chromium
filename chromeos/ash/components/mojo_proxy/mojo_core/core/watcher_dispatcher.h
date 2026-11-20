@@ -59,7 +59,7 @@ class WatcherDispatcher : public Dispatcher {
  private:
   friend class Watch;
 
-  using WatchSet = std::set<raw_ptr<const Watch, SetExperimental>>;
+  using WatchSet = std::set<raw_ptr<const Watch, DanglingUntriaged>>;
 
   ~WatcherDispatcher() override;
 

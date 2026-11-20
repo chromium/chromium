@@ -128,7 +128,7 @@ class DownloadItemCreatedObserver : public DownloadManager::Observer {
 
   // Wait for the first download item created after object creation.
   void WaitForDownloadItem(
-      std::vector<raw_ptr<DownloadItem, VectorExperimental>>* items_seen) {
+      std::vector<raw_ptr<DownloadItem, DanglingUntriaged>>* items_seen) {
     if (!manager_) {
       // The manager went away before we were asked to wait; return
       // what we have, even if it's null.
@@ -167,7 +167,7 @@ class DownloadItemCreatedObserver : public DownloadManager::Observer {
 
   base::OnceClosure quit_waiting_callback_;
   raw_ptr<DownloadManager> manager_;
-  std::vector<raw_ptr<DownloadItem, VectorExperimental>> items_seen_;
+  std::vector<raw_ptr<DownloadItem, DanglingUntriaged>> items_seen_;
 };
 
 class SBNavigationObserverBrowserTest : public InProcessBrowserTest {
@@ -225,7 +225,7 @@ class SBNavigationObserverBrowserTest : public InProcessBrowserTest {
   // download completed or not. So we cancel downloads as soon as we record
   // all the navigation events we need.
   void CancelDownloads() {
-    std::vector<raw_ptr<DownloadItem, VectorExperimental>> download_items;
+    std::vector<raw_ptr<DownloadItem, DanglingUntriaged>> download_items;
     content::DownloadManager* manager =
         browser()->GetProfile()->GetDownloadManager();
     manager->GetAllDownloads(&download_items);
@@ -236,7 +236,7 @@ class SBNavigationObserverBrowserTest : public InProcessBrowserTest {
   }
 
   DownloadItem* GetDownload() {
-    std::vector<raw_ptr<DownloadItem, VectorExperimental>> download_items;
+    std::vector<raw_ptr<DownloadItem, DanglingUntriaged>> download_items;
     content::DownloadManager* manager =
         browser()->GetProfile()->GetDownloadManager();
     manager->GetAllDownloads(&download_items);
@@ -319,7 +319,7 @@ class SBNavigationObserverBrowserTest : public InProcessBrowserTest {
   }
 
   void TriggerDownloadViaHtml5FileApi() {
-    std::vector<raw_ptr<DownloadItem, VectorExperimental>> items;
+    std::vector<raw_ptr<DownloadItem, DanglingUntriaged>> items;
     content::DownloadManager* manager =
         browser()->GetProfile()->GetDownloadManager();
     content::WebContents* current_web_contents =

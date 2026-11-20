@@ -212,7 +212,7 @@ std::vector<const bookmarks::BookmarkNode*> GetBookmarksMatchingProperties(
   if (query.url) {
     // Shortcut into the BookmarkModel if searching for URL.
     GURL url(*query.url);
-    std::vector<raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>
+    std::vector<raw_ptr<const bookmarks::BookmarkNode, DanglingUntriaged>>
         url_matched_nodes;
     if (url.is_valid()) {
       url_matched_nodes = model->GetNodesByURL(url);

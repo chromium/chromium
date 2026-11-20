@@ -83,7 +83,7 @@ class AccountSelectionViewTestBase {
                                    const std::string& account_suffix,
                                    bool has_display_identifier);
   void CheckHoverableAccountRows(
-      const std::vector<raw_ptr<views::View, VectorExperimental>>& accounts,
+      const std::vector<raw_ptr<views::View, DanglingUntriaged>>& accounts,
       const std::vector<std::string>& account_suffixes,
       size_t& accounts_index,
       bool expect_idp = false,

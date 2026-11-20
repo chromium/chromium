@@ -25,14 +25,14 @@ namespace {
 // An ordered container of pointers to DependencyNode. The order depends
 // on the operation to perform (initialisation, destruction, ...).
 using OrderedDependencyNodes =
-    std::vector<raw_ptr<DependencyNode, VectorExperimental>>;
+    std::vector<raw_ptr<DependencyNode, DanglingUntriaged>>;
 
 // Convert a vector of pointers to DependencyNode to a vector of pointers to
 // KeyedServiceBaseFactory.
-std::vector<raw_ptr<KeyedServiceBaseFactory, VectorExperimental>>
+std::vector<raw_ptr<KeyedServiceBaseFactory, DanglingUntriaged>>
 OrderedFactoriesFromOrderedDependencyNodes(
     const OrderedDependencyNodes& ordered_dependency_nodes) {
-  std::vector<raw_ptr<KeyedServiceBaseFactory, VectorExperimental>>
+  std::vector<raw_ptr<KeyedServiceBaseFactory, DanglingUntriaged>>
       ordered_factories;
   ordered_factories.reserve(ordered_dependency_nodes.size());
   for (DependencyNode* dependency_node : ordered_dependency_nodes) {
@@ -98,7 +98,7 @@ void DependencyManager::AddEdge(KeyedServiceBaseFactory* depended,
 
 void DependencyManager::RegisterPrefsForServices(
     user_prefs::PrefRegistrySyncable* pref_registry) {
-  std::vector<raw_ptr<DependencyNode, VectorExperimental>> construction_order;
+  std::vector<raw_ptr<DependencyNode, DanglingUntriaged>> construction_order;
   if (!dependency_graph_.GetConstructionOrder(&construction_order)) {
     NOTREACHED();
   }

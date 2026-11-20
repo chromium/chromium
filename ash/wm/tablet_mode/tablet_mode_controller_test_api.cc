@@ -97,7 +97,7 @@ void TabletModeControllerTestApi::AttachBluetoothMouse(
   ON_CALL(*mock_device, GetProductID)
       .WillByDefault(testing::Return(test_product_id));
 
-  std::vector<raw_ptr<const device::BluetoothDevice, VectorExperimental>>
+  std::vector<raw_ptr<const device::BluetoothDevice, DanglingUntriaged>>
       devices;
   devices.push_back(mock_device.get());
   ON_CALL(*bluetooth_adapter, GetDevices)

@@ -227,7 +227,7 @@ class FloatingSsoTest : public policy::PolicyTest {
   }
 
   bool IsFloatingSsoServiceRegistered() {
-    std::vector<raw_ptr<DependencyNode, VectorExperimental>> nodes;
+    std::vector<raw_ptr<DependencyNode, DanglingUntriaged>> nodes;
     const bool success = BrowserContextDependencyManager::GetInstance()
                              ->GetDependencyGraphForTesting()
                              .GetConstructionOrder(&nodes);

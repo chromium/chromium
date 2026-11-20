@@ -250,7 +250,7 @@ class BookmarkModel : public BookmarkUndoProvider,
   void SetDateAdded(const BookmarkNode* node, base::Time date_added);
 
   // Returns the set of nodes with the `url`.
-  [[nodiscard]] std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>
+  [[nodiscard]] std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>>
   GetNodesByURL(const GURL& url) const;
 
   // Enum determining a subset of bookmark nodes within a BookmarkModel for the

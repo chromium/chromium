@@ -207,7 +207,7 @@ class ClearAllServiceWorkersHelper
     }
     // Make a copy of live versions map because StopWorker() removes the version
     // from it when we were starting up and don't have a process yet.
-    const std::map<int64_t, raw_ptr<ServiceWorkerVersion, CtnExperimental>>
+    const std::map<int64_t, raw_ptr<ServiceWorkerVersion, DanglingUntriaged>>
         live_versions_copy = context->GetLiveVersions();
     for (const auto& version_itr : live_versions_copy) {
       ServiceWorkerVersion* version(version_itr.second);
@@ -236,7 +236,7 @@ class ClearAllServiceWorkersHelper
 };
 
 int GetWarmedUpServiceWorkerCount(
-    const std::map<int64_t, raw_ptr<ServiceWorkerVersion, CtnExperimental>>&
+    const std::map<int64_t, raw_ptr<ServiceWorkerVersion, DanglingUntriaged>>&
         live_versions) {
   return std::ranges::count_if(live_versions, [](const auto& iter) {
     ServiceWorkerVersion& service_worker_version = *iter.second;
@@ -1005,8 +1005,9 @@ void ServiceWorkerContextCore::RemoveLiveVersion(int64_t id) {
 std::vector<ServiceWorkerRegistrationInfo>
 ServiceWorkerContextCore::GetAllLiveRegistrationInfo() {
   std::vector<ServiceWorkerRegistrationInfo> infos;
-  for (std::map<int64_t, raw_ptr<ServiceWorkerRegistration, CtnExperimental>>::
-           const_iterator iter = live_registrations_.begin();
+  for (std::map<int64_t, raw_ptr<ServiceWorkerRegistration,
+                                 DanglingUntriaged>>::const_iterator iter =
+           live_registrations_.begin();
        iter != live_registrations_.end(); ++iter) {
     infos.push_back(iter->second->GetInfo());
   }
@@ -1016,9 +1017,8 @@ ServiceWorkerContextCore::GetAllLiveRegistrationInfo() {
 std::vector<ServiceWorkerVersionInfo>
 ServiceWorkerContextCore::GetAllLiveVersionInfo() {
   std::vector<ServiceWorkerVersionInfo> infos;
-  for (std::map<int64_t,
-                raw_ptr<ServiceWorkerVersion, CtnExperimental>>::const_iterator
-           iter = live_versions_.begin();
+  for (std::map<int64_t, raw_ptr<ServiceWorkerVersion, DanglingUntriaged>>::
+           const_iterator iter = live_versions_.begin();
        iter != live_versions_.end(); ++iter) {
     infos.push_back(iter->second->GetInfo());
   }

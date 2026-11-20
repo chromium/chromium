@@ -120,7 +120,7 @@ class WorkItemList : public WorkItem {
  protected:
   friend class WorkItem;
 
-  typedef std::list<raw_ptr<WorkItem, CtnExperimental>> WorkItems;
+  typedef std::list<raw_ptr<WorkItem, DanglingUntriaged>> WorkItems;
   typedef WorkItems::iterator WorkItemIterator;
 
   WorkItemList();

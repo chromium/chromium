@@ -161,7 +161,7 @@ class WrappedDeviceFactory final : public media::FakeVideoCaptureDeviceFactory {
     devices_.erase(it);
   }
 
-  std::vector<raw_ptr<WrappedDevice, VectorExperimental>> devices_;
+  std::vector<raw_ptr<WrappedDevice, DanglingUntriaged>> devices_;
 };
 
 // Listener class used to track progress of VideoCaptureManager test.
@@ -392,7 +392,7 @@ class VideoCaptureManagerTest : public testing::Test {
   raw_ptr<ScreenlockMonitorTestSource> screenlock_monitor_source_;
   std::unique_ptr<ScreenlockMonitor> screenlock_monitor_;
   std::map<VideoCaptureControllerID,
-           raw_ptr<VideoCaptureController, CtnExperimental>>
+           raw_ptr<VideoCaptureController, DanglingUntriaged>>
       controllers_;
   scoped_refptr<VideoCaptureManager> vcm_;
   std::unique_ptr<MockMediaStreamProviderListener> listener_;

@@ -191,7 +191,7 @@ class WebTestControlHost
     raw_ptr<RenderFrameHost, AcrossTasksDanglingUntriaged> render_frame_host =
         nullptr;
     GlobalRenderFrameHostId render_frame_host_id;
-    std::vector<raw_ptr<Node, VectorExperimental>> children;
+    std::vector<raw_ptr<Node, DanglingUntriaged>> children;
   };
 
   class WebTestWindowObserver;
@@ -421,11 +421,11 @@ class WebTestControlHost
   base::ScopedMultiSourceObservation<RenderProcessHost,
                                      RenderProcessHostObserver>
       render_process_host_observations_{this};
-  std::set<raw_ptr<RenderProcessHost, SetExperimental>>
+  std::set<raw_ptr<RenderProcessHost, DanglingUntriaged>>
       all_observed_render_process_hosts_;
-  std::set<raw_ptr<RenderProcessHost, SetExperimental>>
+  std::set<raw_ptr<RenderProcessHost, DanglingUntriaged>>
       main_window_render_process_hosts_;
-  std::set<raw_ptr<RenderViewHost, SetExperimental>>
+  std::set<raw_ptr<RenderViewHost, DanglingUntriaged>>
       main_window_render_view_hosts_;
 
   // Changes reported by WebTestRuntimeFlagsChanged() that have accumulated
@@ -459,7 +459,7 @@ class WebTestControlHost
   std::map<FrameTreeNodeId, std::string> frame_to_layout_dump_map_;
 
   std::vector<std::unique_ptr<Node>> composite_all_frames_node_storage_;
-  std::queue<raw_ptr<Node, CtnExperimental>> composite_all_frames_node_queue_;
+  std::queue<raw_ptr<Node, DanglingUntriaged>> composite_all_frames_node_queue_;
 
   // Map from one frame to one mojo pipe.
   std::map<GlobalRenderFrameHostId,

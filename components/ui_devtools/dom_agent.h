@@ -117,7 +117,7 @@ class UI_DEVTOOLS_EXPORT DOMAgent
   void SearchDomTree(const Query& query, std::vector<int>* result_collector);
 
   std::unique_ptr<UIElement> element_root_;
-  std::unordered_map<int, raw_ptr<UIElement, CtnExperimental>>
+  std::unordered_map<int, raw_ptr<UIElement, DanglingUntriaged>>
       node_id_to_ui_element_;
 
   base::ObserverList<DOMAgentObserver>::UncheckedAndDanglingUntriaged

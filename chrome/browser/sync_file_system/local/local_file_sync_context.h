@@ -348,7 +348,7 @@ class LocalFileSyncContext
   // Pointers to file system contexts that have been initialized for
   // synchronization (i.e. that own this instance).
   // This must be accessed only on UI thread.
-  std::set<raw_ptr<storage::FileSystemContext, SetExperimental>>
+  std::set<raw_ptr<storage::FileSystemContext, DanglingUntriaged>>
       file_system_contexts_;
 
   // Accessed only on UI thread.

@@ -1415,7 +1415,7 @@ TEST_P(AXPlatformNodeCocoaTest, AccessibilityIndexOnRowsAndColumns) {
 
   // Exposing accessible column objects is unique to NSAccessibility so we
   // retrieve them via `GetExtraMacNodes`.
-  const std::vector<raw_ptr<AXNode, VectorExperimental>>& nodes =
+  const std::vector<raw_ptr<AXNode, DanglingUntriaged>>& nodes =
       *GetRoot()->GetExtraMacNodes();
   EXPECT_EQ(nodes.size(), 3U);
 

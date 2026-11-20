@@ -58,7 +58,7 @@ class FakeContentAnalysisSdkManager final : public ContentAnalysisSdkManager {
       };
 
   std::map<content_analysis::sdk::Client::Config,
-           raw_ptr<FakeContentAnalysisSdkClient, CtnExperimental>,
+           raw_ptr<FakeContentAnalysisSdkClient, DanglingUntriaged>,
            decltype(CompareConfig)>
       fake_clients_{CompareConfig};
 };

@@ -70,7 +70,7 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, FirstScrollDelay) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 
   // Check UKM.
-  std::vector<raw_ptr<const ukm::mojom::UkmEntry, VectorExperimental>> entries =
+  std::vector<raw_ptr<const ukm::mojom::UkmEntry, DanglingUntriaged>> entries =
       ukm_recorder().GetEntriesByName(PageLoad::kEntryName);
   // There could be other metrics recorded for PageLoad; filter them out.
   std::erase_if(entries, [](const ukm::mojom::UkmEntry* entry) {

@@ -66,7 +66,7 @@ class FakeCryptAuthDeviceSyncerFactory
 
   ~FakeCryptAuthDeviceSyncerFactory() override;
 
-  const std::vector<raw_ptr<FakeCryptAuthDeviceSyncer, VectorExperimental>>&
+  const std::vector<raw_ptr<FakeCryptAuthDeviceSyncer, DanglingUntriaged>>&
   instances() const {
     return instances_;
   }
@@ -96,8 +96,7 @@ class FakeCryptAuthDeviceSyncerFactory
       PrefService* pref_service,
       std::unique_ptr<base::OneShotTimer> timer) override;
 
-  std::vector<raw_ptr<FakeCryptAuthDeviceSyncer, VectorExperimental>>
-      instances_;
+  std::vector<raw_ptr<FakeCryptAuthDeviceSyncer, DanglingUntriaged>> instances_;
   raw_ptr<CryptAuthDeviceRegistry> last_device_registry_ = nullptr;
   raw_ptr<CryptAuthKeyRegistry> last_key_registry_ = nullptr;
   raw_ptr<CryptAuthClientFactory> last_client_factory_ = nullptr;

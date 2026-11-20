@@ -32,7 +32,7 @@ FakeOpenTabsUIDelegate::FakeOpenTabsUIDelegate()
 FakeOpenTabsUIDelegate::~FakeOpenTabsUIDelegate() = default;
 
 bool FakeOpenTabsUIDelegate::GetAllForeignSessions(
-    std::vector<raw_ptr<const SyncedSession, VectorExperimental>>* sessions,
+    std::vector<raw_ptr<const SyncedSession, DanglingUntriaged>>* sessions,
     ForeignSessionFilter /*filter*/) {
   // `filter` is intentionally ignored here because several unit tests populate
   // stub sessions via `AddForeignSession()` without adding tabs while testing

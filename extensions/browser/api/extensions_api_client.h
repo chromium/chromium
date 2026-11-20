@@ -107,7 +107,7 @@ class ExtensionsAPIClient {
       const scoped_refptr<value_store::ValueStoreFactory>& factory,
       SettingsChangedCallback observer,
       std::map<settings_namespace::Namespace,
-               raw_ptr<ValueStoreCache, CtnExperimental>>* caches);
+               raw_ptr<ValueStoreCache, DanglingUntriaged>>* caches);
 
   // Attaches any extra web contents helpers (like ExtensionWebContentsObserver)
   // to `web_contents`.

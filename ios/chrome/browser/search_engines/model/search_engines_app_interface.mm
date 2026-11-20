@@ -30,7 +30,7 @@
   ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
   TemplateURLService* service =
       ios::TemplateURLServiceFactory::GetForProfile(profile);
-  std::vector<raw_ptr<TemplateURL, VectorExperimental>> urls =
+  std::vector<raw_ptr<TemplateURL, DanglingUntriaged>> urls =
       service->GetTemplateURLs();
 
   for (auto iter = urls.begin(); iter != urls.end(); ++iter) {
@@ -59,7 +59,7 @@
   ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
   TemplateURLService* url_service =
       ios::TemplateURLServiceFactory::GetForProfile(profile);
-  std::vector<raw_ptr<TemplateURL, VectorExperimental>> urls =
+  std::vector<raw_ptr<TemplateURL, DanglingUntriaged>> urls =
       url_service->GetTemplateURLs();
   std::u16string utfName = base::SysNSStringToUTF16(name);
 

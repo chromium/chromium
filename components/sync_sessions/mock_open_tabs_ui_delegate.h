@@ -35,7 +35,7 @@ class MockOpenTabsUIDelegate : public OpenTabsUIDelegate {
 
   MOCK_METHOD(bool,
               GetAllForeignSessions,
-              ((std::vector<raw_ptr<const SyncedSession, VectorExperimental>> *
+              ((std::vector<raw_ptr<const SyncedSession, DanglingUntriaged>> *
                 sessions),
                ForeignSessionFilter filter),
               (override));

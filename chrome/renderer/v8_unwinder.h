@@ -94,7 +94,7 @@ class V8Unwinder : public base::Unwinder {
 
   // Records the currently active V8 modules, ordered by their extents in
   // memory.
-  std::set<raw_ptr<const base::ModuleCache::Module, SetExperimental>,
+  std::set<raw_ptr<const base::ModuleCache::Module, DanglingUntriaged>,
            ModuleCompare>
       modules_ GUARDED_BY(modules_lock_);
 };

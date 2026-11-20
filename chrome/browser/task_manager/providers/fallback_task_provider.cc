@@ -29,7 +29,7 @@ constexpr base::TimeDelta kTimeDelayForPendingTask = base::Milliseconds(750);
 // with the other task.
 Task* GetTaskByPidFromVector(
     base::ProcessId process_id,
-    std::vector<raw_ptr<Task, VectorExperimental>>* which_vector) {
+    std::vector<raw_ptr<Task, DanglingUntriaged>>* which_vector) {
   for (Task* candidate : *which_vector) {
     if (candidate->process_id() == process_id)
       return candidate;

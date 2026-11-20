@@ -967,8 +967,8 @@ void FieldTrialList::NotifyFieldTrialGroupSelection(FieldTrial* field_trial) {
     return;
   }
 
-  std::vector<raw_ptr<Observer, VectorExperimental>> local_observers;
-  std::vector<raw_ptr<Observer, VectorExperimental>>
+  std::vector<raw_ptr<Observer, DanglingUntriaged>> local_observers;
+  std::vector<raw_ptr<Observer, DanglingUntriaged>>
       local_observers_including_low_anonymity;
 
   {

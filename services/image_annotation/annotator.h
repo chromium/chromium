@@ -298,7 +298,7 @@ class Annotator : public mojom::Annotator {
   // share a source ID and origin ID but differ in language. This is suboptimal;
   // in future we could share local processing among all relevant requests.
   std::map<RequestKey,
-           raw_ptr<mojo::Remote<mojom::ImageProcessor>, CtnExperimental>>
+           raw_ptr<mojo::Remote<mojom::ImageProcessor>, DanglingUntriaged>>
       local_processors_;
 
   // A list of currently-ongoing HTTP requests to the image annotation server.

@@ -183,9 +183,9 @@ std::vector<std::string> NotificationListView::GetAllNotificationIds() const {
   return notifications;
 }
 
-std::vector<raw_ptr<message_center::Notification, VectorExperimental>>
+std::vector<raw_ptr<message_center::Notification, DanglingUntriaged>>
 NotificationListView::GetNotificationsAboveY(int y_offset) const {
-  std::vector<raw_ptr<message_center::Notification, VectorExperimental>>
+  std::vector<raw_ptr<message_center::Notification, DanglingUntriaged>>
       notifications;
   for (views::View* view : children()) {
     const int bottom_limit =
@@ -201,9 +201,9 @@ NotificationListView::GetNotificationsAboveY(int y_offset) const {
   return notifications;
 }
 
-std::vector<raw_ptr<message_center::Notification, VectorExperimental>>
+std::vector<raw_ptr<message_center::Notification, DanglingUntriaged>>
 NotificationListView::GetNotificationsBelowY(int y_offset) const {
-  std::vector<raw_ptr<message_center::Notification, VectorExperimental>>
+  std::vector<raw_ptr<message_center::Notification, DanglingUntriaged>>
       notifications;
   for (views::View* view : children()) {
     const int bottom_limit =
@@ -683,7 +683,7 @@ void NotificationListView::ConfigureMessageView(
   }
 }
 
-std::vector<raw_ptr<message_center::Notification, VectorExperimental>>
+std::vector<raw_ptr<message_center::Notification, DanglingUntriaged>>
 NotificationListView::GetStackedNotifications() const {
   return message_center_view_->GetStackedNotifications();
 }

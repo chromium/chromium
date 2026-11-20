@@ -224,7 +224,7 @@ PrefService* GetLastActiveUserPrefService() {
 // Gets the MRU window shown over the applist when in tablet mode.
 // Returns nullptr if no windows are shown over the applist.
 aura::Window* GetTopVisibleWindow() {
-  std::vector<raw_ptr<aura::Window, VectorExperimental>> window_list =
+  std::vector<raw_ptr<aura::Window, DanglingUntriaged>> window_list =
       Shell::Get()->mru_window_tracker()->BuildWindowListIgnoreModal(
           DesksMruType::kActiveDesk);
   for (aura::Window* window : window_list) {
@@ -634,7 +634,7 @@ bool AppListControllerImpl::GoHome(int64_t display_id) {
   // The foreground window or windows (for split mode) - the windows that will
   // not be minimized without animations (instead they will be animated into the
   // home screen).
-  std::vector<raw_ptr<aura::Window, VectorExperimental>> foreground_windows;
+  std::vector<raw_ptr<aura::Window, DanglingUntriaged>> foreground_windows;
   if (split_view_active) {
     foreground_windows = {split_view_controller->primary_window(),
                           split_view_controller->secondary_window()};

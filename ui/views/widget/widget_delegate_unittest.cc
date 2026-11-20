@@ -152,12 +152,12 @@ class TestWidgetDelegate : public WidgetDelegate {
   }
 
   void SetAccessiblePanes(
-      const std::vector<raw_ptr<View, VectorExperimental>>& panes) {
+      const std::vector<raw_ptr<View, DanglingUntriaged>>& panes) {
     accessible_panes_ = panes;
   }
 
  private:
-  std::vector<raw_ptr<View, VectorExperimental>> accessible_panes_;
+  std::vector<raw_ptr<View, DanglingUntriaged>> accessible_panes_;
 };
 
 TEST_F(WidgetDelegateTest, RotatePaneFocusFromView) {
@@ -188,7 +188,7 @@ TEST_F(WidgetDelegateTest, RotatePaneFocusFromView) {
   auto* v4 = pane2->AddChildView(std::make_unique<View>());
   v4->SetFocusBehavior(View::FocusBehavior::ALWAYS);
 
-  std::vector<raw_ptr<views::View, VectorExperimental>> panes;
+  std::vector<raw_ptr<views::View, DanglingUntriaged>> panes;
   panes.push_back(pane1);
   panes.push_back(pane2);
   delegate.SetAccessiblePanes(panes);

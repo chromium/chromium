@@ -134,7 +134,7 @@ void LayoutManagerBase::OnViewPropertyChanged(View* observed_view,
   }
 }
 
-std::vector<raw_ptr<View, VectorExperimental>>
+std::vector<raw_ptr<View, DanglingUntriaged>>
 LayoutManagerBase::GetChildViewsInPaintOrder(const View* host) const {
   CHECK_EQ(host_view_, host, base::NotFatalUntil::M163);
   return LayoutManager::GetChildViewsInPaintOrder(host);

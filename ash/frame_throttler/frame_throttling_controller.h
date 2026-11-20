@@ -78,7 +78,7 @@ class ASH_EXPORT FrameThrottlingController final
 
   // Starts to throttle the frame rate of |windows| at kDefaultThrottleFps.
   void StartThrottling(
-      const std::vector<raw_ptr<aura::Window, VectorExperimental>>& windows);
+      const std::vector<raw_ptr<aura::Window, DanglingUntriaged>>& windows);
 
   // Ends throttling of all windows specified via StartThrottling().
   void EndThrottling();

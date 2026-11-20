@@ -571,7 +571,7 @@ void SaveUpdatePasswordMessageDelegateTest::VerifyUkmMetrics(
     PasswordFormMetricsRecorder::BubbleDismissalReason
         expected_dismissal_reason,
     bool update_password) {
-  const std::vector<raw_ptr<const ukm::mojom::UkmEntry, VectorExperimental>>&
+  const std::vector<raw_ptr<const ukm::mojom::UkmEntry, DanglingUntriaged>>&
       entries = ukm_recorder.GetEntriesByName(
           ukm::builders::PasswordForm::kEntryName);
   EXPECT_EQ(1u, entries.size());
@@ -2443,7 +2443,7 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
       password_manager::metrics_util::PasswordChangeRecoveryFlowState::
           kPrimaryPasswordUpdated,
       1);
-  const std::vector<raw_ptr<const ukm::mojom::UkmEntry, VectorExperimental>>&
+  const std::vector<raw_ptr<const ukm::mojom::UkmEntry, DanglingUntriaged>>&
       entries = test_ukm_recorder.GetEntriesByName(
           ukm::builders::PasswordManager_ChangeRecovery::kEntryName);
   test_ukm_recorder.ExpectEntryMetric(

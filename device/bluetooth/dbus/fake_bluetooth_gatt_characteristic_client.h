@@ -200,7 +200,7 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothGattCharacteristicClient
   };
 
   // Map of delayed callbacks.
-  std::map<std::string, raw_ptr<DelayedCallback, CtnExperimental>>
+  std::map<std::string, raw_ptr<DelayedCallback, DanglingUntriaged>>
       action_extra_requests_;
 
   // List of observers interested in event notifications from us.

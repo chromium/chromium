@@ -113,7 +113,7 @@ class KEYED_SERVICE_EXPORT DependencyManager {
   // An ordered container of pointers to KeyedServiceBaseFactory. The order
   // depends on the operation to perform (initialisation, destruction, ...).
   using OrderedFactories =
-      std::vector<raw_ptr<KeyedServiceBaseFactory, VectorExperimental>>;
+      std::vector<raw_ptr<KeyedServiceBaseFactory, DanglingUntriaged>>;
 
   // Returns the list of factories in the order they should be initialised.
   OrderedFactories GetConstructionOrder();
@@ -140,7 +140,7 @@ class KEYED_SERVICE_EXPORT DependencyManager {
   // These pointers are most likely invalid, but we keep track of their
   // locations in memory so we can nicely assert if we're asked to do anything
   // with them.
-  std::set<raw_ptr<void, SetExperimental>> dead_context_pointers_;
+  std::set<raw_ptr<void, DanglingUntriaged>> dead_context_pointers_;
 
   // Contexts passed to DisableContextServicesByDefault(). A context is removed
   // when it is marked as dead.

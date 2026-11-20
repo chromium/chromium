@@ -170,7 +170,7 @@ class TaskManagerImpl : public TaskManagerInterface,
   // Map each task by its ID to the TaskGroup on which it resides.
   // Keys are unique but values will have duplicates (i.e. multiple tasks
   // running on the same process represented by a single TaskGroup).
-  base::flat_map<TaskId, raw_ptr<TaskGroup, CtnExperimental>>
+  base::flat_map<TaskId, raw_ptr<TaskGroup, DanglingUntriaged>>
       task_groups_by_task_id_;
 
   // A cached sorted list of the task IDs.

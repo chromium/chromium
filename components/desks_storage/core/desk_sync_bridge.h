@@ -117,7 +117,7 @@ class DeskSyncBridge : public syncer::DataTypeSyncBridge, public DeskModel {
   // Notify all observers of any `new_entries` when they are added/updated
   // via sync.
   void NotifyRemoteDeskTemplateAddedOrUpdated(
-      const std::vector<raw_ptr<const ash::DeskTemplate, VectorExperimental>>&
+      const std::vector<raw_ptr<const ash::DeskTemplate, DanglingUntriaged>>&
           new_entries);
 
   // Notify all observers when the entries with `uuids` have been removed via

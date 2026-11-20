@@ -54,7 +54,7 @@ Node* GlobalDumpGraph::CreateNode(Process* process_graph, Node* parent) {
 }
 
 PreOrderIterator GlobalDumpGraph::VisitInDepthFirstPreOrder() {
-  std::vector<raw_ptr<Node, VectorExperimental>> roots;
+  std::vector<raw_ptr<Node, DanglingUntriaged>> roots;
   for (const auto& [process_id, process] :
        std::views::reverse(process_dump_graphs_)) {
     roots.push_back(process->root());
@@ -64,7 +64,7 @@ PreOrderIterator GlobalDumpGraph::VisitInDepthFirstPreOrder() {
 }
 
 PostOrderIterator GlobalDumpGraph::VisitInDepthFirstPostOrder() {
-  std::vector<raw_ptr<Node, VectorExperimental>> roots;
+  std::vector<raw_ptr<Node, DanglingUntriaged>> roots;
   for (const auto& [process_id, process] :
        std::views::reverse(process_dump_graphs_)) {
     roots.push_back(process->root());
@@ -196,7 +196,7 @@ Edge::Edge(Node* source, Node* target, int priority)
     : source_(source), target_(target), priority_(priority) {}
 
 PreOrderIterator::PreOrderIterator(
-    std::vector<raw_ptr<Node, VectorExperimental>> roots)
+    std::vector<raw_ptr<Node, DanglingUntriaged>> roots)
     : to_visit_(std::move(roots)) {}
 PreOrderIterator::PreOrderIterator(PreOrderIterator&& other) = default;
 PreOrderIterator::~PreOrderIterator() {}
@@ -239,7 +239,7 @@ Node* PreOrderIterator::next() {
 }
 
 PostOrderIterator::PostOrderIterator(
-    std::vector<raw_ptr<Node, VectorExperimental>> roots)
+    std::vector<raw_ptr<Node, DanglingUntriaged>> roots)
     : to_visit_(std::move(roots)) {}
 PostOrderIterator::PostOrderIterator(PostOrderIterator&& other) = default;
 PostOrderIterator::~PostOrderIterator() = default;

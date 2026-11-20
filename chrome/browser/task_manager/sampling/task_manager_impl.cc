@@ -421,7 +421,7 @@ const TaskIdList& TaskManagerImpl::GetTaskIdsList() const {
     for (const auto& groups_pair : task_groups_by_proc_id_) {
       // The first task in the group (per |comparator|) is the one used for
       // sorting the group relative to other groups.
-      const std::vector<raw_ptr<Task, VectorExperimental>>& tasks =
+      const std::vector<raw_ptr<Task, DanglingUntriaged>>& tasks =
           groups_pair.second->tasks();
       Task* group_task =
           *std::min_element(tasks.begin(), tasks.end(), comparator);
@@ -437,7 +437,7 @@ const TaskIdList& TaskManagerImpl::GetTaskIdsList() const {
     }
 
     for (const auto& groups_pair : arc_vm_task_groups_by_proc_id_) {
-      const std::vector<raw_ptr<Task, VectorExperimental>>& tasks =
+      const std::vector<raw_ptr<Task, DanglingUntriaged>>& tasks =
           groups_pair.second->tasks();
       Task* group_task =
           *std::min_element(tasks.begin(), tasks.end(), comparator);
@@ -456,7 +456,7 @@ const TaskIdList& TaskManagerImpl::GetTaskIdsList() const {
     sorted_task_ids_.reserve(num_tasks);
     std::unordered_set<TaskGroup*> visited_groups;
     visited_groups.reserve(num_groups);
-    std::vector<raw_ptr<Task, VectorExperimental>>
+    std::vector<raw_ptr<Task, DanglingUntriaged>>
         current_group_tasks;  // Outside loop for fewer mallocs.
     while (visited_groups.size() < num_groups) {
       CHECK(!tasks_to_visit.empty(), base::NotFatalUntil::M162);

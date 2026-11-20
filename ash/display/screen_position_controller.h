@@ -24,8 +24,7 @@ class ASH_EXPORT ScreenPositionController
   // returns the other root window.
   static void ConvertHostPointToRelativeToRootWindow(
       aura::Window* root_window,
-      const std::vector<raw_ptr<aura::Window, VectorExperimental>>&
-          root_windows,
+      const std::vector<raw_ptr<aura::Window, DanglingUntriaged>>& root_windows,
       gfx::Point* point_in_host,
       aura::Window** target_window);
 

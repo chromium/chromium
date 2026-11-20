@@ -77,7 +77,7 @@ class CONTENT_EXPORT NavigationEntryRestoreContextImpl
     std::string unique_name_;
     GURL url_;
   };
-  std::map<Key, raw_ptr<FrameNavigationEntry, CtnExperimental>, Key::Compare>
+  std::map<Key, raw_ptr<FrameNavigationEntry, DanglingUntriaged>, Key::Compare>
       entries_;
 };
 

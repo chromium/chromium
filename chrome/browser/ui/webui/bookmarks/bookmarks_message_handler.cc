@@ -536,7 +536,7 @@ void BookmarksMessageHandler::HandleOpenBookmarks(const base::ListValue& args) {
   bookmarks::BookmarkModel* model =
       BookmarkModelFactory::GetForBrowserContext(profile);
 
-  std::vector<raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>> nodes;
+  std::vector<raw_ptr<const bookmarks::BookmarkNode, DanglingUntriaged>> nodes;
   for (const auto& val : uuid_list) {
     const std::string& uuid_str = val.GetString();
     base::Uuid uuid = base::Uuid::ParseLowercase(uuid_str);

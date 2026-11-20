@@ -226,7 +226,7 @@ class FakeWSCProductList : public IWSCProductList {
   std::optional<FailureStep> failed_step_;
 
   std::optional<ULONG> provider_;
-  std::vector<raw_ptr<IWscProduct, VectorExperimental>> products_;
+  std::vector<raw_ptr<IWscProduct, DanglingUntriaged>> products_;
 };
 
 }  // namespace device_signals

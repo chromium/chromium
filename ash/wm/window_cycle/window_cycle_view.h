@@ -44,7 +44,7 @@ class ASH_EXPORT WindowCycleView : public views::WidgetDelegateView,
   METADATA_HEADER(WindowCycleView, views::WidgetDelegateView)
 
  public:
-  using WindowList = std::vector<raw_ptr<aura::Window, VectorExperimental>>;
+  using WindowList = std::vector<raw_ptr<aura::Window, DanglingUntriaged>>;
 
   // Horizontal padding between the alt-tab bandshield and the window
   // previews.
@@ -140,7 +140,7 @@ class ASH_EXPORT WindowCycleView : public views::WidgetDelegateView,
     return mirror_container_;
   }
 
-  const std::vector<raw_ptr<WindowMiniViewBase, VectorExperimental>>&
+  const std::vector<raw_ptr<WindowMiniViewBase, DanglingUntriaged>>&
   cycle_views_for_testing() const {
     return cycle_views_;
   }
@@ -166,7 +166,7 @@ class ASH_EXPORT WindowCycleView : public views::WidgetDelegateView,
 
   // Constructed as the child views of `mirror_container` and used for window
   // cycling.
-  std::vector<raw_ptr<WindowMiniViewBase, VectorExperimental>> cycle_views_;
+  std::vector<raw_ptr<WindowMiniViewBase, DanglingUntriaged>> cycle_views_;
 
   // A container that hosts and lays out all the `WindowMiniViewBase`s.
   raw_ptr<views::BoxLayoutView> mirror_container_ = nullptr;
@@ -199,8 +199,7 @@ class ASH_EXPORT WindowCycleView : public views::WidgetDelegateView,
   // List which contains items which have been created but have some of their
   // performance heavy elements not created yet. These elements will be created
   // once onscreen to improve fade in performance, then removed from this set.
-  std::vector<raw_ptr<WindowMiniViewBase, VectorExperimental>>
-      no_previews_list_;
+  std::vector<raw_ptr<WindowMiniViewBase, DanglingUntriaged>> no_previews_list_;
 
   // Tracks the distance that a user has dragged, offsetting the
   // |mirror_container_|. This should be reset only when a user cycles the

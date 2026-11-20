@@ -1029,7 +1029,7 @@ views::Label* MediaItemUIDetailedView::GetTotalDurationViewForTesting() {
   return total_duration_view_;
 }
 
-base::flat_map<int, raw_ptr<ChapterItemView, CtnExperimental>>
+base::flat_map<int, raw_ptr<ChapterItemView, DanglingUntriaged>>
 MediaItemUIDetailedView::GetChaptersForTesting() {
   return chapters_;
 }

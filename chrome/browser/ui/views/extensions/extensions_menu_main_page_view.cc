@@ -378,7 +378,7 @@ void ExtensionsMenuMainPageView::UpdateExtensionRequestingAccess(
   views::View* request_view = requests_entries_view_->children().at(index);
   CHECK(request_view);
 
-  std::vector<raw_ptr<View, VectorExperimental>> extension_items =
+  std::vector<raw_ptr<View, DanglingUntriaged>> extension_items =
       request_view->children();
   views::AsViewClass<views::ImageView>(extension_items[kRequestEntryIconIndex])
       ->SetImage(request.extension_icon);

@@ -132,7 +132,7 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIDetailedView
   views::View* GetChapterListViewForTesting();
   views::Label* GetCurrentTimestampViewForTesting();
   views::Label* GetTotalDurationViewForTesting();
-  base::flat_map<int, raw_ptr<ChapterItemView, CtnExperimental>>
+  base::flat_map<int, raw_ptr<ChapterItemView, DanglingUntriaged>>
   GetChaptersForTesting();
 #endif
 
@@ -208,7 +208,7 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIDetailedView
   media_session::MediaPosition position_;
 
   // The list of action buttons in the view.
-  std::vector<raw_ptr<views::Button, VectorExperimental>> action_buttons_;
+  std::vector<raw_ptr<views::Button, DanglingUntriaged>> action_buttons_;
 
   // Set of enabled actions.
   base::flat_set<media_session::mojom::MediaSessionAction> enabled_actions_;
@@ -255,7 +255,7 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIDetailedView
 
   // The current `ChapterItemView` for the chapter at the index of the chapter
   // list.
-  base::flat_map<int, raw_ptr<ChapterItemView, CtnExperimental>> chapters_;
+  base::flat_map<int, raw_ptr<ChapterItemView, DanglingUntriaged>> chapters_;
 
   base::WeakPtrFactory<MediaItemUIDetailedView> weak_factory_{this};
 #endif

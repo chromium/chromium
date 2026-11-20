@@ -65,11 +65,11 @@ class AppListModelUpdater {
   // For SearchModel:
   virtual void SetSearchEngineIsGoogle(bool is_google) {}
   virtual void PublishSearchResults(
-      const std::vector<raw_ptr<ChromeSearchResult, VectorExperimental>>&
+      const std::vector<raw_ptr<ChromeSearchResult, DanglingUntriaged>>&
           results,
       const std::vector<ash::AppListSearchResultCategory>& categories) {}
   virtual void ClearSearchResults() {}
-  virtual std::vector<raw_ptr<ChromeSearchResult, VectorExperimental>>
+  virtual std::vector<raw_ptr<ChromeSearchResult, DanglingUntriaged>>
   GetPublishedSearchResultsForTest();
 
   // Item field setters only used by ChromeAppListItem and its derived classes.

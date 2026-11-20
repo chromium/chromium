@@ -367,8 +367,8 @@ class VIZ_COMMON_EXPORT BackToBackBeginFrameSource
 
  private:
   std::unique_ptr<DelayBasedTimeSource> time_source_;
-  base::flat_set<raw_ptr<BeginFrameObserver, CtnExperimental>> observers_;
-  base::flat_set<raw_ptr<BeginFrameObserver, CtnExperimental>>
+  base::flat_set<raw_ptr<BeginFrameObserver, DanglingUntriaged>> observers_;
+  base::flat_set<raw_ptr<BeginFrameObserver, DanglingUntriaged>>
       pending_begin_frame_observers_;
   uint64_t next_sequence_number_;
   base::TimeDelta vsync_interval_ = BeginFrameArgs::DefaultInterval();
@@ -424,7 +424,7 @@ class VIZ_COMMON_EXPORT DelayBasedBeginFrameSource
   void SetActive(bool active);
 
   std::unique_ptr<DelayBasedTimeSource> time_source_;
-  base::flat_set<raw_ptr<BeginFrameObserver, CtnExperimental>> observers_;
+  base::flat_set<raw_ptr<BeginFrameObserver, DanglingUntriaged>> observers_;
   base::TimeTicks last_timebase_;
   base::TimeDelta last_vsync_interval_;
   std::optional<base::TimeDelta> max_vrr_interval_ = std::nullopt;
@@ -507,7 +507,7 @@ class VIZ_COMMON_EXPORT ExternalBeginFrameSource : public BeginFrameSource {
   virtual BeginFrameArgs GetMissedBeginFrameArgs(BeginFrameObserver* obs);
 
   BeginFrameArgs last_begin_frame_args_;
-  base::flat_set<raw_ptr<BeginFrameObserver, CtnExperimental>> observers_;
+  base::flat_set<raw_ptr<BeginFrameObserver, DanglingUntriaged>> observers_;
   raw_ptr<ExternalBeginFrameSourceClient> client_;
   bool paused_ = false;
 

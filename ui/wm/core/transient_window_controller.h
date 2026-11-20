@@ -35,7 +35,7 @@ class COMPONENT_EXPORT(UI_WM) TransientWindowController
   void RemoveTransientChild(aura::Window* parent, aura::Window* child) override;
   aura::Window* GetTransientParent(aura::Window* window) override;
   const aura::Window* GetTransientParent(const aura::Window* window) override;
-  std::vector<raw_ptr<aura::Window, VectorExperimental>> GetTransientChildren(
+  std::vector<raw_ptr<aura::Window, DanglingUntriaged>> GetTransientChildren(
       const aura::Window* parent) override;
   void AddObserver(
       aura::client::TransientWindowClientObserver* observer) override;

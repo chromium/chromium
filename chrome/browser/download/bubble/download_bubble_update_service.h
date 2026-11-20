@@ -476,7 +476,7 @@ class DownloadBubbleUpdateService
       const std::vector<offline_items_collection::OfflineItem>& all_items);
 
   // Gets download items from profile and original profile.
-  std::vector<raw_ptr<download::DownloadItem, VectorExperimental>>
+  std::vector<raw_ptr<download::DownloadItem, DanglingUntriaged>>
   GetAllDownloadItems();
 
   // Called when a crx download has waited out its 2 second delay. Adds the

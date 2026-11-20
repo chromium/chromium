@@ -39,7 +39,7 @@ class ButtonFocusSkipper : public ui::EventHandler {
   void OnEvent(ui::Event* event) override;
 
  private:
-  std::vector<raw_ptr<views::View, VectorExperimental>> buttons_;
+  std::vector<raw_ptr<views::View, DanglingUntriaged>> buttons_;
   const raw_ptr<ui::EventTarget> event_target_;
 };
 

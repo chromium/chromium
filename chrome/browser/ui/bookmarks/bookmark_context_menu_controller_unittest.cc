@@ -53,7 +53,7 @@ using content::WebContents;
 namespace {
 
 std::u16string NodesToString(
-    const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>& nodes) {
+    const std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>>& nodes) {
   return std::accumulate(nodes.begin(), nodes.end(), std::u16string{},
                          [](const std::u16string& a, const BookmarkNode* node) {
                            return a + (a.empty() ? u"" : u", ") +
@@ -167,7 +167,7 @@ class BookmarkContextMenuControllerTest : public testing::Test {
 
 // Tests Deleting from the menu.
 TEST_F(BookmarkContextMenuControllerTest, DeleteURL) {
-  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes = {
+  std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>> nodes = {
       model_->bookmark_bar_node()->children().front().get(),
   };
   BookmarkContextMenuController controller(
@@ -184,7 +184,7 @@ TEST_F(BookmarkContextMenuControllerTest, DeleteURL) {
 // Tests the enabled state of the menus when supplied a vector with a single
 // url.
 TEST_F(BookmarkContextMenuControllerTest, SingleURL) {
-  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes = {
+  std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>> nodes = {
       model_->bookmark_bar_node()->children().front().get(),
   };
   BookmarkContextMenuController controller(
@@ -205,7 +205,7 @@ TEST_F(BookmarkContextMenuControllerTest, SingleURL) {
 // Tests the enabled state of the menus when supplied a vector with multiple
 // urls.
 TEST_F(BookmarkContextMenuControllerTest, MultipleURLs) {
-  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes = {
+  std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>> nodes = {
       model_->bookmark_bar_node()->children()[0].get(),
       model_->bookmark_bar_node()->children()[1]->children()[0].get(),
   };
@@ -225,7 +225,7 @@ TEST_F(BookmarkContextMenuControllerTest, MultipleURLs) {
 // Tests the enabled state of the menus when supplied an vector with a single
 // folder.
 TEST_F(BookmarkContextMenuControllerTest, SingleFolder) {
-  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes = {
+  std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>> nodes = {
       model_->bookmark_bar_node()->children()[2].get(),
   };
   BookmarkContextMenuController controller(
@@ -245,7 +245,7 @@ TEST_F(BookmarkContextMenuControllerTest, SingleFolder) {
 // Tests the enabled state of the menus when supplied a vector with multiple
 // folders, all of which are empty.
 TEST_F(BookmarkContextMenuControllerTest, MultipleEmptyFolders) {
-  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes = {
+  std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>> nodes = {
       model_->bookmark_bar_node()->children()[2].get(),
       model_->bookmark_bar_node()->children()[3].get(),
   };
@@ -265,7 +265,7 @@ TEST_F(BookmarkContextMenuControllerTest, MultipleEmptyFolders) {
 // Tests the enabled state of the menus when supplied a vector with multiple
 // folders, some of which contain URLs.
 TEST_F(BookmarkContextMenuControllerTest, MultipleFoldersWithURLs) {
-  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes = {
+  std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>> nodes = {
       model_->bookmark_bar_node()->children()[3].get(),
       model_->bookmark_bar_node()->children()[4].get(),
   };
@@ -293,7 +293,7 @@ TEST_F(BookmarkContextMenuControllerTest, DisableIncognito) {
   bookmarks::test::WaitForBookmarkModelToLoad(model);
   AddTestData(model);
 
-  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes = {
+  std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>> nodes = {
       model_->bookmark_bar_node()->children().front().get(),
   };
   BookmarkContextMenuController controller(
@@ -307,7 +307,7 @@ TEST_F(BookmarkContextMenuControllerTest, DisableIncognito) {
 // Tests that you can't remove/edit when showing the other node.
 TEST_F(BookmarkContextMenuControllerTest, DisabledItemsWithOtherNode) {
   {
-    std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes{
+    std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>> nodes{
         model_->other_node()};
     BookmarkContextMenuController controller(
         gfx::NativeWindow(), nullptr, nullptr, profile_.get(),
@@ -319,7 +319,7 @@ TEST_F(BookmarkContextMenuControllerTest, DisabledItemsWithOtherNode) {
   model_->CreateAccountPermanentFolders();
   ASSERT_TRUE(model_->account_other_node());
   {
-    std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes{
+    std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>> nodes{
         model_->account_other_node(), model_->other_node()};
     BookmarkContextMenuController controller(
         gfx::NativeWindow(), nullptr, nullptr, profile_.get(),
@@ -336,7 +336,7 @@ TEST_F(BookmarkContextMenuControllerTest,
   model_->CreateAccountPermanentFolders();
   // Test only local or syncable bookmark bar, then both account and local
   // bookmark bar.
-  std::vector<std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>>
+  std::vector<std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>>>
       nodes_selections{
           {model_->bookmark_bar_node()},
           {model_->account_bookmark_bar_node(), model_->bookmark_bar_node()},
@@ -385,7 +385,7 @@ TEST_F(BookmarkContextMenuControllerTest,
                      GURL("http://google.com"));
   const BookmarkNode* local_node = model_->AddURL(
       model_->bookmark_bar_node(), 0, u"Google", GURL("http://google.com"));
-  std::vector<std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>>
+  std::vector<std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>>>
       nodes_selections{{account_node}, {local_node}};
 
   for (const auto& nodes : nodes_selections) {
@@ -406,7 +406,7 @@ TEST_F(BookmarkContextMenuControllerTest,
       model_->AddFolder(model_->bookmark_bar_node(), 1, u"Folder 1");
   const BookmarkNode* node =
       model_->AddURL(folder_node, 0, u"Google", GURL("http://google.com"));
-  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes{node};
+  std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>> nodes{node};
   ASSERT_NE(node->parent()->type(), BookmarkNode::Type::BOOKMARK_BAR);
 
   BookmarkContextMenuController controller(
@@ -420,7 +420,7 @@ TEST_F(BookmarkContextMenuControllerTest,
 
 TEST_F(BookmarkContextMenuControllerTest, CutCopyPasteNode) {
   const BookmarkNode* bb_node = model_->bookmark_bar_node();
-  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes = {
+  std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>> nodes = {
       model_->bookmark_bar_node()->children()[0].get(),
   };
   std::unique_ptr<BookmarkContextMenuController> controller(
@@ -566,7 +566,7 @@ TEST_F(BookmarkContextMenuControllerTest, GetParentForNewNodesSelectionURL) {
   // Note: Account bookmarks show-up first.
   ASSERT_EQ(merged_surface_service()->GetIndexOf(page), page_index);
   {
-    std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes{page};
+    std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>> nodes{page};
     std::unique_ptr<BookmarkParentFolder> parent =
         BookmarkContextMenuController::GetParentForNewNodes(nodes);
     ASSERT_TRUE(parent);
@@ -592,7 +592,7 @@ TEST_F(BookmarkContextMenuControllerTest,
       merged_surface_service()->GetChildrenCount(
           BookmarkParentFolder::OtherFolder());
 
-  std::vector<std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>>
+  std::vector<std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>>>
       nodes_selections{{model_->other_node()},
                        {model_->account_other_node(), model_->other_node()}};
   for (const auto& nodes : nodes_selections) {
@@ -613,7 +613,7 @@ TEST_F(BookmarkContextMenuControllerTest,
        GetParentForNewNodesSelectionSingleFolder) {
   const BookmarkNode* folder_node =
       model_->AddFolder(model_->bookmark_bar_node(), 0, u"Folder 1");
-  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes{
+  std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>> nodes{
       folder_node};
   std::unique_ptr<BookmarkParentFolder> parent =
       BookmarkContextMenuController::GetParentForNewNodes(nodes);
@@ -787,7 +787,7 @@ TEST_F(BookmarkContextMenuControllerTest, IsolatedModeSingleURL) {
       static_cast<int>(
           enterprise_isolated_mode::IsolatedModeSetting::kEnabled));
 
-  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes = {
+  std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>> nodes = {
       model_->bookmark_bar_node()->children().front().get(),
   };
   BookmarkContextMenuController controller(
@@ -816,7 +816,7 @@ TEST_F(BookmarkContextMenuControllerTest, IsolatedModeSingleURL) {
 // Tests that isolated mode menu item is not shown when isolated mode is
 // disabled.
 TEST_F(BookmarkContextMenuControllerTest, IsolatedModeDisabledSingleURL) {
-  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes = {
+  std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>> nodes = {
       model_->bookmark_bar_node()->children().front().get(),
   };
   BookmarkContextMenuController controller(
@@ -846,7 +846,7 @@ TEST_F(BookmarkContextMenuControllerTest, IsolatedModeSingleFolder) {
       static_cast<int>(
           enterprise_isolated_mode::IsolatedModeSetting::kEnabled));
 
-  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes = {
+  std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>> nodes = {
       model_->bookmark_bar_node()->children()[1].get(),  // F1 folder
   };
   BookmarkContextMenuController controller(
@@ -875,7 +875,7 @@ TEST_F(BookmarkContextMenuControllerTest, IsolatedModeSingleFolder) {
 // Tests that isolated mode menu item is not shown for folders when isolated
 // mode is disabled.
 TEST_F(BookmarkContextMenuControllerTest, IsolatedModeDisabledSingleFolder) {
-  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes = {
+  std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>> nodes = {
       model_->bookmark_bar_node()->children()[1].get(),
   };
   BookmarkContextMenuController controller(

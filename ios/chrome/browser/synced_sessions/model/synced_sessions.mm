@@ -38,7 +38,7 @@ SyncedSessions::SyncedSessions(
   if (open_tabs) {
     // Iterating through all remote sessions, then retrieving the tabs to
     // display to the user.
-    std::vector<raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>
+    std::vector<raw_ptr<const sync_sessions::SyncedSession, DanglingUntriaged>>
         sessions;
     open_tabs->GetAllForeignSessions(
         &sessions,

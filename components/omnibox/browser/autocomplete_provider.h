@@ -387,7 +387,7 @@ class AutocompleteProvider
   using FixupReturn = std::pair<bool, std::u16string>;
   static FixupReturn FixupUserInput(const AutocompleteInput& input);
 
-  std::vector<raw_ptr<AutocompleteProviderListener, VectorExperimental>>
+  std::vector<raw_ptr<AutocompleteProviderListener, DanglingUntriaged>>
       listeners_;
 
   const size_t provider_max_matches_;

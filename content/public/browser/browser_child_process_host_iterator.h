@@ -45,7 +45,7 @@ class CONTENT_EXPORT BrowserChildProcessHostIterator {
  private:
   bool all_;
   int process_type_;
-  std::list<raw_ptr<BrowserChildProcessHostImpl, CtnExperimental>>::iterator
+  std::list<raw_ptr<BrowserChildProcessHostImpl, DanglingUntriaged>>::iterator
       iterator_;
 };
 

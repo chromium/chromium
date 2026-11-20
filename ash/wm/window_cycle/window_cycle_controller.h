@@ -45,7 +45,7 @@ class WindowCycleList;
 class ASH_EXPORT WindowCycleController : public SessionObserver,
                                          public DesksController::Observer {
  public:
-  using WindowList = std::vector<raw_ptr<aura::Window, VectorExperimental>>;
+  using WindowList = std::vector<raw_ptr<aura::Window, DanglingUntriaged>>;
 
   enum class WindowCyclingDirection { kForward, kBackward };
   enum class KeyboardNavDirection { kUp, kDown, kLeft, kRight, kInvalid };

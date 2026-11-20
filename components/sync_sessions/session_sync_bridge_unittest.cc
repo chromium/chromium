@@ -1237,8 +1237,7 @@ TEST_F(SessionSyncBridgeTest, ShouldMergeForeignSession) {
   EXPECT_CALL(mock_foreign_session_updated_cb(), Run()).Times(AtLeast(1));
   StartSyncing({foreign_header, foreign_tab});
 
-  std::vector<raw_ptr<const SyncedSession, VectorExperimental>>
-      foreign_sessions;
+  std::vector<raw_ptr<const SyncedSession, DanglingUntriaged>> foreign_sessions;
   EXPECT_TRUE(bridge()->GetOpenTabsUIDelegate()->GetAllForeignSessions(
       &foreign_sessions,
       OpenTabsUIDelegate::ForeignSessionFilter::kPresentable));
@@ -1284,8 +1283,7 @@ TEST_F(SessionSyncBridgeTest, ShouldNotExposeForeignHeaderWithoutTabs) {
   StartSyncing({foreign_header});
   ASSERT_THAT(GetDataForCommit(foreign_header_storage_key), NotNull());
 
-  std::vector<raw_ptr<const SyncedSession, VectorExperimental>>
-      foreign_sessions;
+  std::vector<raw_ptr<const SyncedSession, DanglingUntriaged>> foreign_sessions;
   EXPECT_FALSE(bridge()->GetOpenTabsUIDelegate()->GetAllForeignSessions(
       &foreign_sessions,
       OpenTabsUIDelegate::ForeignSessionFilter::kPresentable));
@@ -1397,8 +1395,7 @@ TEST_F(SessionSyncBridgeTest, ShouldHandleRemoteDeletion) {
       kForeignSessionTag, SessionID::FromSerializedValue(kForeignTabId),
       &foreign_session_tab));
   ASSERT_THAT(foreign_session_tab, NotNull());
-  std::vector<raw_ptr<const SyncedSession, VectorExperimental>>
-      foreign_sessions;
+  std::vector<raw_ptr<const SyncedSession, DanglingUntriaged>> foreign_sessions;
   ASSERT_TRUE(bridge()->GetOpenTabsUIDelegate()->GetAllForeignSessions(
       &foreign_sessions,
       OpenTabsUIDelegate::ForeignSessionFilter::kPresentable));
@@ -1856,8 +1853,7 @@ TEST_F(SessionSyncBridgeTest, ShouldDeleteForeignSessionFromUI) {
       kForeignSessionTag, SessionID::FromSerializedValue(kForeignTabId),
       &foreign_session_tab));
   ASSERT_THAT(foreign_session_tab, NotNull());
-  std::vector<raw_ptr<const SyncedSession, VectorExperimental>>
-      foreign_sessions;
+  std::vector<raw_ptr<const SyncedSession, DanglingUntriaged>> foreign_sessions;
   ASSERT_TRUE(bridge()->GetOpenTabsUIDelegate()->GetAllForeignSessions(
       &foreign_sessions,
       OpenTabsUIDelegate::ForeignSessionFilter::kPresentable));

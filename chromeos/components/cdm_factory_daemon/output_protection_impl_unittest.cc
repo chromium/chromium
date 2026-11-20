@@ -62,7 +62,7 @@ class MockDisplaySystemDelegate
               UnregisterClient,
               (display::ContentProtectionManager::ClientId));
   MOCK_METHOD((const std::vector<
-                  raw_ptr<display::DisplaySnapshot, VectorExperimental>>&),
+                  raw_ptr<display::DisplaySnapshot, DanglingUntriaged>>&),
               cached_displays,
               (),
               (const));
@@ -147,7 +147,7 @@ class OutputProtectionImplTest : public testing::Test {
       delegate_;  // Not owned.
   std::array<std::unique_ptr<display::DisplaySnapshot>, kDisplayIds.size()>
       displays_;
-  std::vector<raw_ptr<display::DisplaySnapshot, VectorExperimental>>
+  std::vector<raw_ptr<display::DisplaySnapshot, DanglingUntriaged>>
       cached_displays_;
 
  private:

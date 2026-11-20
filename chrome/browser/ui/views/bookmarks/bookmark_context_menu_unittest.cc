@@ -180,7 +180,7 @@ TEST_P(BookmarkContextMenuTest, DeleteURL) {
       SyncEnableBookmarksInTransportModeEnabled()
           ? model_->account_bookmark_bar_node()->children().front().get()
           : model_->bookmark_bar_node()->children().front().get();
-  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes = {
+  std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>> nodes = {
       node_to_delete};
   BookmarkContextMenu controller(nullptr, nullptr, profile_.get(),
                                  BookmarkLaunchLocation::kNone, nodes, false,
@@ -219,7 +219,7 @@ TEST_P(BookmarkContextMenuTest, OpenCountIncognito) {
 // Tests the enabled state of the menus when supplied a vector with a single
 // url.
 TEST_P(BookmarkContextMenuTest, SingleURL) {
-  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes = {
+  std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>> nodes = {
       model_->bookmark_bar_node()->children().front().get(),
   };
   BookmarkContextMenu controller(nullptr, nullptr, profile_.get(),
@@ -239,7 +239,7 @@ TEST_P(BookmarkContextMenuTest, SingleURL) {
 // Tests the enabled state of the menus when supplied a vector with multiple
 // urls.
 TEST_P(BookmarkContextMenuTest, MultipleURLs) {
-  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes = {
+  std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>> nodes = {
       model_->bookmark_bar_node()->children()[0].get(),
       model_->bookmark_bar_node()->children()[1]->children()[0].get(),
   };
@@ -258,7 +258,7 @@ TEST_P(BookmarkContextMenuTest, MultipleURLs) {
 // Tests the enabled state of the menus when supplied an vector with a single
 // folder.
 TEST_P(BookmarkContextMenuTest, SingleFolder) {
-  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes = {
+  std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>> nodes = {
       model_->bookmark_bar_node()->children()[2].get(),
   };
   BookmarkContextMenu controller(nullptr, nullptr, profile_.get(),
@@ -278,7 +278,7 @@ TEST_P(BookmarkContextMenuTest, SingleFolder) {
 // Tests the enabled state of the menus when supplied a vector with multiple
 // folders, all of which are empty.
 TEST_P(BookmarkContextMenuTest, MultipleEmptyFolders) {
-  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes = {
+  std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>> nodes = {
       model_->bookmark_bar_node()->children()[2].get(),
       model_->bookmark_bar_node()->children()[3].get(),
   };
@@ -298,7 +298,7 @@ TEST_P(BookmarkContextMenuTest, MultipleEmptyFolders) {
 // Tests the enabled state of the menus when supplied a vector with multiple
 // folders, some of which contain URLs.
 TEST_P(BookmarkContextMenuTest, MultipleFoldersWithURLs) {
-  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes = {
+  std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>> nodes = {
       model_->bookmark_bar_node()->children()[3].get(),
       model_->bookmark_bar_node()->children()[4].get(),
   };
@@ -316,7 +316,7 @@ TEST_P(BookmarkContextMenuTest, MultipleFoldersWithURLs) {
 
 // Tests the enabled state of open incognito.
 TEST_P(BookmarkContextMenuTest, DisableIncognito) {
-  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes = {
+  std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>> nodes = {
       model_->bookmark_bar_node()->children().front().get(),
   };
   Profile* incognito =
@@ -331,7 +331,7 @@ TEST_P(BookmarkContextMenuTest, DisableIncognito) {
 
 // Tests that you can't remove/edit when showing the other node.
 TEST_P(BookmarkContextMenuTest, DisabledItemsWithOtherNode) {
-  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes = {
+  std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>> nodes = {
       model_->other_node()};
   BookmarkContextMenu controller(nullptr, nullptr, profile_.get(),
                                  BookmarkLaunchLocation::kNone, nodes, false,
@@ -352,8 +352,8 @@ TEST_P(BookmarkContextMenuTest, CutCopyPasteNodeWithoutAccountNodes) {
   ASSERT_EQ(original_count, 5u);
 
   // Select the first bookmark (f1a).
-  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> selected_nodes =
-      {bb_node->children()[0].get()};
+  std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>> selected_nodes = {
+      bb_node->children()[0].get()};
 
   // Test the Copy command.
   {
@@ -415,8 +415,8 @@ TEST_P(BookmarkContextMenuTest, CutCopyPasteNodeWithAccountNodes) {
   // Test the Copy command.
   {
     // Select the first local bookmark (f1a).
-    std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>
-        selected_nodes = {bb_node->children()[0].get()};
+    std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>> selected_nodes =
+        {bb_node->children()[0].get()};
     BookmarkContextMenu controller(nullptr, nullptr, profile_.get(),
                                    BookmarkLaunchLocation::kNone,
                                    selected_nodes, false, false);
@@ -433,8 +433,8 @@ TEST_P(BookmarkContextMenuTest, CutCopyPasteNodeWithAccountNodes) {
   {
     // Select the first local bookmark (f1a).
     const BookmarkNode* local_bookmark_to_copy = bb_node->children()[0].get();
-    std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>
-        selected_nodes = {local_bookmark_to_copy};
+    std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>> selected_nodes =
+        {local_bookmark_to_copy};
 
     BookmarkContextMenu controller(nullptr, nullptr, profile_.get(),
                                    BookmarkLaunchLocation::kNone,
@@ -457,8 +457,8 @@ TEST_P(BookmarkContextMenuTest, CutCopyPasteNodeWithAccountNodes) {
   // Test the Cut command.
   {
     // Select the first account bookmark (acc_f1a).
-    std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>
-        selected_nodes = {account_bb_node->children()[0].get()};
+    std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>> selected_nodes =
+        {account_bb_node->children()[0].get()};
     BookmarkContextMenu controller(nullptr, nullptr, profile_.get(),
                                    BookmarkLaunchLocation::kNone,
                                    selected_nodes, false, false);
@@ -477,7 +477,7 @@ TEST_P(BookmarkContextMenuTest, CutCopyPasteNodeWithAccountNodes) {
 TEST_P(BookmarkContextMenuTest, ShowManagedBookmarks) {
   // Create a BookmarkContextMenu for the bookmarks bar.
   const BookmarkNode* bb_node = model_->bookmark_bar_node();
-  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes = {
+  std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>> nodes = {
       bb_node->children().front().get(),
   };
   std::unique_ptr<BookmarkContextMenu> controller(new BookmarkContextMenu(
@@ -536,7 +536,7 @@ TEST_P(BookmarkContextMenuTest, ParentWidgetDestroyedBeforeMenu) {
   widget->Init(std::move(params));
 
   const BookmarkNode* bb_node = model_->bookmark_bar_node();
-  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes = {
+  std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>> nodes = {
       bb_node->children().front().get(),
   };
 
@@ -562,7 +562,7 @@ class BookmarkContextMenuUpdateSubMenuStateTest
 // Tests that the submenu items checked state is updated.
 TEST_P(BookmarkContextMenuUpdateSubMenuStateTest, UpdateSubMenuState) {
   const BookmarkNode* bb_node = model_->bookmark_bar_node();
-  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes = {
+  std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>> nodes = {
       bb_node->children().front().get(),
   };
 
@@ -621,7 +621,7 @@ TEST_P(BookmarkContextMenuUpdateSubMenuStateTest, UpdateSubMenuState) {
 // managed.
 TEST_P(BookmarkContextMenuUpdateSubMenuStateTest, ManagedVisibilityState) {
   const BookmarkNode* bb_node = model_->bookmark_bar_node();
-  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes = {
+  std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>> nodes = {
       bb_node->children().front().get(),
   };
 
@@ -652,7 +652,7 @@ TEST_P(BookmarkContextMenuUpdateSubMenuStateTest, ManagedVisibilityState) {
 TEST_P(BookmarkContextMenuUpdateSubMenuStateTest,
        UpdateBookmarkBarVisibilityOnUserAction) {
   const BookmarkNode* bb_node = model_->bookmark_bar_node();
-  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes = {
+  std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>> nodes = {
       bb_node->children().front().get(),
   };
 
@@ -677,7 +677,7 @@ TEST_P(BookmarkContextMenuUpdateSubMenuStateTest,
 // correct user action metrics.
 TEST_P(BookmarkContextMenuUpdateSubMenuStateTest, LogsUserActions) {
   const BookmarkNode* bb_node = model_->bookmark_bar_node();
-  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes = {
+  std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>> nodes = {
       bb_node->children().front().get(),
   };
 

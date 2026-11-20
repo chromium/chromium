@@ -273,8 +273,7 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
   views::View* action_buttons_row() { return action_buttons_row_; }
   const views::View* action_buttons_row() const { return action_buttons_row_; }
 
-  std::vector<raw_ptr<views::LabelButton, VectorExperimental>>
-  action_buttons() {
+  std::vector<raw_ptr<views::LabelButton, DanglingUntriaged>> action_buttons() {
     return action_buttons_;
   }
 
@@ -284,7 +283,7 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
 
   views::Label* status_view() { return status_view_; }
   const views::Label* status_view() const { return status_view_; }
-  const std::vector<raw_ptr<views::View, VectorExperimental>> item_views()
+  const std::vector<raw_ptr<views::View, DanglingUntriaged>> item_views()
       const {
     return item_views_;
   }
@@ -390,8 +389,8 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
   raw_ptr<views::Label, DanglingUntriaged> status_view_ = nullptr;
   raw_ptr<ProportionalImageView, DanglingUntriaged> icon_view_ = nullptr;
   raw_ptr<views::View> image_container_view_ = nullptr;
-  std::vector<raw_ptr<views::LabelButton, VectorExperimental>> action_buttons_;
-  std::vector<raw_ptr<views::View, VectorExperimental>> item_views_;
+  std::vector<raw_ptr<views::LabelButton, DanglingUntriaged>> action_buttons_;
+  std::vector<raw_ptr<views::View, DanglingUntriaged>> item_views_;
   raw_ptr<views::ProgressBar, DanglingUntriaged> progress_bar_view_ = nullptr;
   raw_ptr<CompactTitleMessageView, DanglingUntriaged>
       compact_title_message_view_ = nullptr;

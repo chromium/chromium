@@ -78,7 +78,7 @@ void SimpleDownloadManagerCoordinator::DownloadUrl(
 }
 
 void SimpleDownloadManagerCoordinator::GetAllDownloads(
-    std::vector<raw_ptr<DownloadItem, VectorExperimental>>* downloads) {
+    std::vector<raw_ptr<DownloadItem, DanglingUntriaged>>* downloads) {
   if (simple_download_manager_) {
     simple_download_manager_->GetAllDownloads(downloads);
     simple_download_manager_->GetUninitializedActiveDownloadsIfAny(downloads);

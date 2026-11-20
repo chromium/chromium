@@ -71,7 +71,8 @@ class ChildProcessTaskTest
   }
 
  protected:
-  std::map<base::ProcessHandle, raw_ptr<Task, CtnExperimental>> provided_tasks_;
+  std::map<base::ProcessHandle, raw_ptr<Task, DanglingUntriaged>>
+      provided_tasks_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;

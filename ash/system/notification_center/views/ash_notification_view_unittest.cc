@@ -396,7 +396,7 @@ class AshNotificationViewTestBase : public AshTestBase,
     return static_cast<AshNotificationView*>(
         view->grouped_notifications_container_->children().front());
   }
-  std::vector<raw_ptr<views::View, VectorExperimental>> GetChildNotifications(
+  std::vector<raw_ptr<views::View, DanglingUntriaged>> GetChildNotifications(
       AshNotificationView* view) {
     return view->grouped_notifications_container_->children();
   }
@@ -447,7 +447,7 @@ class AshNotificationViewTestBase : public AshTestBase,
   views::View* GetActionButtonsRow(AshNotificationView* view) {
     return view->action_buttons_row();
   }
-  std::vector<raw_ptr<views::LabelButton, VectorExperimental>> GetActionButtons(
+  std::vector<raw_ptr<views::LabelButton, DanglingUntriaged>> GetActionButtons(
       AshNotificationView* view) {
     return view->action_buttons();
   }

@@ -118,7 +118,7 @@ class UI_DEVTOOLS_EXPORT UIElement {
     int line_;
   };
 
-  using UIElements = std::vector<raw_ptr<UIElement, VectorExperimental>>;
+  using UIElements = std::vector<raw_ptr<UIElement, DanglingUntriaged>>;
 
   UIElement(const UIElement&) = delete;
   UIElement& operator=(const UIElement&) = delete;

@@ -53,7 +53,7 @@ class DialogWindowWaiter : public aura::EnvObserver,
 
   base::RunLoop run_loop_;
 
-  std::set<raw_ptr<aura::Window, SetExperimental>> dialog_windows_;
+  std::set<raw_ptr<aura::Window, DanglingUntriaged>> dialog_windows_;
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
       window_observations_{this};
 };

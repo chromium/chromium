@@ -19,10 +19,10 @@ void ReportingBrowsingDataRemover::RemoveBrowsingData(
     uint64_t data_type_mask,
     const base::RepeatingCallback<bool(const url::Origin&)>& origin_filter) {
   if ((data_type_mask & DATA_TYPE_REPORTS) != 0) {
-    std::vector<raw_ptr<const ReportingReport, VectorExperimental>> all_reports;
+    std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>> all_reports;
     cache->GetReports(&all_reports);
 
-    std::vector<raw_ptr<const ReportingReport, VectorExperimental>>
+    std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>>
         reports_to_remove;
     for (const ReportingReport* report : all_reports) {
       if (origin_filter.Run(url::Origin::Create(report->url)))

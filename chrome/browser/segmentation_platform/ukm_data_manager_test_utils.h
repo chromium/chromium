@@ -90,7 +90,8 @@ class UkmDataManagerTestUtils {
   std::unique_ptr<TestDefaultModelOverride> test_default_model_override_;
   std::unique_ptr<UkmDatabaseClient> owned_db_client_;
 
-  std::map<proto::SegmentId, raw_ptr<MockDefaultModelProvider, CtnExperimental>>
+  std::map<proto::SegmentId,
+           raw_ptr<MockDefaultModelProvider, DanglingUntriaged>>
       default_overrides_;
 
   base::WeakPtrFactory<UkmDataManagerTestUtils> weak_factory_{this};

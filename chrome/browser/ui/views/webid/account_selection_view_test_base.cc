@@ -145,7 +145,7 @@ void AccountSelectionViewTestBase::CheckNonHoverableAccountRow(
     views::View* row,
     const std::string& account_suffix,
     bool has_display_identifier) {
-  std::vector<raw_ptr<views::View, VectorExperimental>> row_children =
+  std::vector<raw_ptr<views::View, DanglingUntriaged>> row_children =
       row->children();
   ASSERT_EQ(row_children.size(), 2u);
 
@@ -161,7 +161,7 @@ void AccountSelectionViewTestBase::CheckNonHoverableAccountRow(
   ASSERT_TRUE(layout_manager);
   EXPECT_EQ(layout_manager->GetOrientation(),
             views::BoxLayout::Orientation::kVertical);
-  std::vector<raw_ptr<views::View, VectorExperimental>> text_view_children =
+  std::vector<raw_ptr<views::View, DanglingUntriaged>> text_view_children =
       text_view->children();
   unsigned int expected_children = has_display_identifier ? 2u : 1u;
   ASSERT_EQ(text_view_children.size(), expected_children);
@@ -185,7 +185,7 @@ void AccountSelectionViewTestBase::CheckNonHoverableAccountRow(
 }
 
 void AccountSelectionViewTestBase::CheckHoverableAccountRows(
-    const std::vector<raw_ptr<views::View, VectorExperimental>>& accounts,
+    const std::vector<raw_ptr<views::View, DanglingUntriaged>>& accounts,
     const std::vector<std::string>& account_suffixes,
     size_t& accounts_index,
     bool expect_idp,

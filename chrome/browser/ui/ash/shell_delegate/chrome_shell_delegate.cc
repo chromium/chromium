@@ -543,7 +543,7 @@ version_info::Channel ChromeShellDelegate::GetChannel() {
 }
 
 void ChromeShellDelegate::ForceSkipWarningUserOnClose(
-    const std::vector<raw_ptr<aura::Window, VectorExperimental>>& windows) {
+    const std::vector<raw_ptr<aura::Window, DanglingUntriaged>>& windows) {
   for (aura::Window* window : windows) {
     ash::BrowserDelegate* browser =
         ash::BrowserController::GetInstance()->GetBrowserForWindow(window);

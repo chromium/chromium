@@ -81,10 +81,10 @@ void TestUkmRecorder::SetOnAddEntryCallback(
   entry_hash_to_wait_for_ = base::HashMetricName(entry_name);
 }
 
-std::vector<raw_ptr<const mojom::UkmEntry, VectorExperimental>>
+std::vector<raw_ptr<const mojom::UkmEntry, DanglingUntriaged>>
 TestUkmRecorder::GetEntriesByName(std::string_view entry_name) const {
   uint64_t hash = base::HashMetricName(entry_name);
-  std::vector<raw_ptr<const mojom::UkmEntry, VectorExperimental>> result;
+  std::vector<raw_ptr<const mojom::UkmEntry, DanglingUntriaged>> result;
   for (const auto& it : entries()) {
     if (it->event_hash == hash)
       result.push_back(it.get());

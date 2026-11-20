@@ -117,7 +117,7 @@ class VIEWS_EXPORT LayoutManager : public ui::metadata::MetaDataProvider {
   // Gets the child views of the specified view in paint order (reverse
   // Z-order). Defaults to returning host->children(). Called by
   // View::GetChildrenInZOrder().
-  virtual std::vector<raw_ptr<View, VectorExperimental>>
+  virtual std::vector<raw_ptr<View, DanglingUntriaged>>
   GetChildViewsInPaintOrder(const View* host) const;
 
  private:

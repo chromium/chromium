@@ -167,7 +167,7 @@ class ASH_EXPORT ScopedOverviewTransformWindow
   // windows are hidden in overview mode and the visibility of the windows is
   // recovered after overview mode.
   void AddHiddenTransientWindows(
-      const std::vector<raw_ptr<aura::Window, VectorExperimental>>&
+      const std::vector<raw_ptr<aura::Window, DanglingUntriaged>>&
           transient_windows);
 
   void RestoreWindowTree();

@@ -259,8 +259,7 @@ void SegmentationPlatformServiceImpl::OnDatabaseInitialized(bool success) {
 
   signal_handler_.OnSignalListUpdated();
 
-  std::vector<
-      raw_ptr<ModelExecutionSchedulerImpl::Observer, VectorExperimental>>
+  std::vector<raw_ptr<ModelExecutionSchedulerImpl::Observer, DanglingUntriaged>>
       observers;
   for (auto& key_and_selector : segment_selectors_)
     observers.push_back(key_and_selector.second.get());

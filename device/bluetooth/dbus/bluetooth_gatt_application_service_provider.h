@@ -38,8 +38,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattApplicationServiceProvider {
   void CreateAttributeServiceProviders(
       dbus::Bus* bus,
       const std::map<dbus::ObjectPath,
-                     raw_ptr<BluetoothLocalGattServiceBlueZ, CtnExperimental>>&
-          services);
+                     raw_ptr<BluetoothLocalGattServiceBlueZ,
+                             DanglingUntriaged>>& services);
 
   // Creates the instance where |bus| is the D-Bus bus connection to export the
   // object onto, |object_path| is the object path that it should have, |uuid|
@@ -51,8 +51,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattApplicationServiceProvider {
       dbus::Bus* bus,
       const dbus::ObjectPath& object_path,
       const std::map<dbus::ObjectPath,
-                     raw_ptr<BluetoothLocalGattServiceBlueZ, CtnExperimental>>&
-          services);
+                     raw_ptr<BluetoothLocalGattServiceBlueZ,
+                             DanglingUntriaged>>& services);
 
   void SendValueChanged(const dbus::ObjectPath& characteristic_path,
                         const std::vector<uint8_t>& value);

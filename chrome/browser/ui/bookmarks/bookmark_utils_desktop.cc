@@ -252,7 +252,7 @@ OpenedWebContentsSet OpenAllHelper(
 // recurses one level deep, not infinitely.  TODO(pkasting): It's not clear why
 // this shouldn't just recurse infinitely.
 std::vector<UrlAndId> GetURLsToOpen(
-    const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>& nodes,
+    const std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>>& nodes,
     bool incognito_urls_only = false) {
   std::vector<UrlAndId> url_and_ids;
   const auto AddUrlIfLegal = [&](const GURL url, int64_t id) {
@@ -409,7 +409,7 @@ void DoOpenPromptConfirm(
 void OpenAllIfAllowed(
     BrowserWindowInterface* browser,
     const std::vector<
-        raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>& nodes,
+        raw_ptr<const bookmarks::BookmarkNode, DanglingUntriaged>>& nodes,
     ui::mojom::WindowOpenDisposition initial_disposition,
     bookmarks::OpenAllBookmarksContext context,
     std::optional<page_load_metrics::NavigationInitiator> navigation_initiator,
@@ -460,7 +460,7 @@ void OpenAllIfAllowed(
 }
 
 int OpenCount(const std::vector<raw_ptr<const bookmarks::BookmarkNode,
-                                        VectorExperimental>>& nodes,
+                                        DanglingUntriaged>>& nodes,
               content::BrowserContext* incognito_context) {
   return GetURLsToOpen(nodes, incognito_context != nullptr).size();
 }
@@ -470,7 +470,7 @@ int OpenCount(const BookmarkNode* node,
   std::vector<const BookmarkNode*> nodes;
   nodes.push_back(node);
   return OpenCount(
-      std::vector<raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>{
+      std::vector<raw_ptr<const bookmarks::BookmarkNode, DanglingUntriaged>>{
           node},
       incognito_context);
 }
@@ -507,22 +507,21 @@ void ShowBookmarkAllTabsDialog(BrowserWindowInterface* browser) {
                            base::Unretained(profile)));
 }
 
-
 bool HasBookmarkURLs(
-    const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>&
+    const std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>>&
         selection) {
   return !GetURLsToOpen(selection).empty();
 }
 
 bool HasBookmarkURLsAllowedInIncognitoMode(
-    const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>&
+    const std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>>&
         selection) {
   return !GetURLsToOpen(selection, true).empty();
 }
 
 bool IsOpenInIncognitoAllowed(
     const std::vector<
-        raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>& selection,
+        raw_ptr<const bookmarks::BookmarkNode, DanglingUntriaged>>& selection,
     Profile* profile) {
   policy::IncognitoModeAvailability incognito_avail =
       IncognitoModePrefs::GetAvailability(profile);

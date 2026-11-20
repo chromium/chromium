@@ -15,9 +15,9 @@ BluetoothGattApplicationServiceProviderImpl::
     BluetoothGattApplicationServiceProviderImpl(
         dbus::Bus* bus,
         const dbus::ObjectPath& object_path,
-        const std::map<
-            dbus::ObjectPath,
-            raw_ptr<BluetoothLocalGattServiceBlueZ, CtnExperimental>>& services)
+        const std::map<dbus::ObjectPath,
+                       raw_ptr<BluetoothLocalGattServiceBlueZ,
+                               DanglingUntriaged>>& services)
     : origin_thread_id_(base::PlatformThread::CurrentId()),
       bus_(bus),
       object_path_(object_path) {

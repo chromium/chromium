@@ -329,7 +329,7 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
   mojo::Receiver<cros::mojom::CrosCameraServiceObserver>
       camera_service_observer_receiver_;
 
-  std::set<raw_ptr<CameraClientObserver, SetExperimental>> client_observers_;
+  std::set<raw_ptr<CameraClientObserver, DanglingUntriaged>> client_observers_;
 
   TokenManager token_manager_;
 

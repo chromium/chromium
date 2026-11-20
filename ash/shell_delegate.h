@@ -226,8 +226,7 @@ class ASH_EXPORT ShellDelegate {
   // Tells browsers not to ask the user to confirm that they want to close a
   // window when that window is closed.
   virtual void ForceSkipWarningUserOnClose(
-      const std::vector<raw_ptr<aura::Window, VectorExperimental>>&
-          windows) = 0;
+      const std::vector<raw_ptr<aura::Window, DanglingUntriaged>>& windows) = 0;
 
   // Retrieves the official Chrome version string e.g. 105.0.5178.0.
   virtual std::string GetVersionString() = 0;

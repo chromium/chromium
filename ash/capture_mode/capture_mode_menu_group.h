@@ -159,7 +159,7 @@ class ASH_EXPORT CaptureModeMenuGroup : public views::View {
 
   // Options added via calls "AddOption()". Options are owned by theirs views
   // hierarchy.
-  std::vector<raw_ptr<CaptureModeOption, VectorExperimental>> options_;
+  std::vector<raw_ptr<CaptureModeOption, DanglingUntriaged>> options_;
 
   // It's a container view for |options_|. It's owned by its views hierarchy.
   // We need it for grouping up options. For example, when user selects a custom
@@ -168,7 +168,7 @@ class ASH_EXPORT CaptureModeMenuGroup : public views::View {
   raw_ptr<views::View> options_container_;
 
   // Menu items added by calling AddMenuItem().
-  std::vector<raw_ptr<CaptureModeMenuItem, VectorExperimental>> menu_items_;
+  std::vector<raw_ptr<CaptureModeMenuItem, DanglingUntriaged>> menu_items_;
 };
 
 }  // namespace ash

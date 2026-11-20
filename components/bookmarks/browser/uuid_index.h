@@ -45,7 +45,7 @@ class NodeUuidHash {
 };
 
 using UuidIndex =
-    absl::flat_hash_set<raw_ptr<const BookmarkNode, CtnExperimental>,
+    absl::flat_hash_set<raw_ptr<const BookmarkNode, DanglingUntriaged>,
                         NodeUuidHash,
                         NodeUuidEquality>;
 

@@ -56,7 +56,7 @@ void VerifyAccountChooserViewFooter(views::View* footer_view) {
 
 void TestSingleAccount(AccountChooserView* account_chooser_view,
                        const AccountInfo& account) {
-  std::vector<raw_ptr<views::View, VectorExperimental>> children =
+  std::vector<raw_ptr<views::View, DanglingUntriaged>> children =
       account_chooser_view->children();
   ASSERT_EQ(children.size(), 3u);  // header + body + footer
 
@@ -67,7 +67,7 @@ void TestSingleAccount(AccountChooserView* account_chooser_view,
 
   // check body contents
   views::View* body_view = children.at(1);
-  std::vector<raw_ptr<views::View, VectorExperimental>> body_view_children =
+  std::vector<raw_ptr<views::View, DanglingUntriaged>> body_view_children =
       body_view->children();
   ASSERT_EQ(body_view_children.size(), 3u);  // 2 separators + account
   EXPECT_TRUE(VerifyAccountChooserRow(
@@ -80,7 +80,7 @@ void TestSingleAccount(AccountChooserView* account_chooser_view,
 
 void TestMultiAccount(AccountChooserView* account_chooser_view,
                       const std::vector<AccountInfo>& accounts) {
-  std::vector<raw_ptr<views::View, VectorExperimental>> children =
+  std::vector<raw_ptr<views::View, DanglingUntriaged>> children =
       account_chooser_view->children();
   ASSERT_EQ(children.size(), 3u);  // header + body + footer
 

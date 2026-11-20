@@ -32,7 +32,7 @@ class FakeOtaActivatorFactory : public OtaActivatorImpl::Factory {
 
   ~FakeOtaActivatorFactory() override = default;
 
-  std::vector<raw_ptr<FakeOtaActivator, VectorExperimental>>&
+  std::vector<raw_ptr<FakeOtaActivator, DanglingUntriaged>>&
   created_instances() {
     return created_instances_;
   }
@@ -59,7 +59,7 @@ class FakeOtaActivatorFactory : public OtaActivatorImpl::Factory {
     return fake_ota_activator;
   }
 
-  std::vector<raw_ptr<FakeOtaActivator, VectorExperimental>> created_instances_;
+  std::vector<raw_ptr<FakeOtaActivator, DanglingUntriaged>> created_instances_;
 };
 
 }  // namespace

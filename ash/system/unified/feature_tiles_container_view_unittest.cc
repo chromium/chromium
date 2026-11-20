@@ -132,7 +132,7 @@ class FeatureTilesContainerViewTest : public AshTestBase,
 
   int GetVisibleCount() { return container()->GetVisibleFeatureTileCount(); }
 
-  std::vector<raw_ptr<views::View, VectorExperimental>> pages() {
+  std::vector<raw_ptr<views::View, DanglingUntriaged>> pages() {
     return container()->children();
   }
 

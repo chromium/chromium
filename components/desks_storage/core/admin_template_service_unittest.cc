@@ -122,7 +122,7 @@ GetAdminTemplatePolicyTemplateWithOneTemplate() {
 // Verifies that the two vectors contain equal contents.
 void ExpectTemplateVectorsEqual(
     const std::vector<std::unique_ptr<ash::DeskTemplate>>& expected_templates,
-    const std::vector<raw_ptr<const ash::DeskTemplate, VectorExperimental>>&
+    const std::vector<raw_ptr<const ash::DeskTemplate, DanglingUntriaged>>&
         got_templates) {
   EXPECT_EQ(expected_templates.size(), got_templates.size());
 
@@ -313,7 +313,7 @@ TEST_F(AdminTemplateServiceTest, WaitsForAppsCacheBeforeParsingPolicy) {
       GetAdminService()->GetFullDeskModel()->GetAllEntries();
 
   EXPECT_EQ(all_entries_result.status, DeskModel::GetAllEntriesStatus::kOk);
-  std::vector<raw_ptr<const ash::DeskTemplate, VectorExperimental>>& entries =
+  std::vector<raw_ptr<const ash::DeskTemplate, DanglingUntriaged>>& entries =
       all_entries_result.entries;
 
   std::vector<std::unique_ptr<ash::DeskTemplate>> expected_templates =
@@ -345,7 +345,7 @@ TEST_F(AdminTemplateServiceTest,
       GetAdminService()->GetFullDeskModel()->GetAllEntries();
 
   EXPECT_EQ(all_entries_result.status, DeskModel::GetAllEntriesStatus::kOk);
-  std::vector<raw_ptr<const ash::DeskTemplate, VectorExperimental>>& entries =
+  std::vector<raw_ptr<const ash::DeskTemplate, DanglingUntriaged>>& entries =
       all_entries_result.entries;
 
   std::vector<std::unique_ptr<ash::DeskTemplate>> expected_templates =

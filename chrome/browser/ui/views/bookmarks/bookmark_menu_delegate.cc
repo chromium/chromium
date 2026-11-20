@@ -245,7 +245,7 @@ BookmarkMenuDelegate::BookmarkFolderOrURL::GetIfNonPermanentNode() const {
   return folder ? folder->as_non_permanent_folder() : GetIfBookmarkURL();
 }
 
-std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>
+std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>>
 BookmarkMenuDelegate::BookmarkFolderOrURL::GetUnderlyingNodes(
     const BookmarkMergedSurfaceService* bookmark_merged_service) const {
   if (const BookmarkNode* node = GetIfBookmarkURL(); node) {
@@ -254,7 +254,7 @@ BookmarkMenuDelegate::BookmarkFolderOrURL::GetUnderlyingNodes(
   std::vector<const BookmarkNode*> nodes =
       bookmark_merged_service->GetUnderlyingNodes(*GetIfBookmarkFolder());
   return base::ToVector(nodes, [](const BookmarkNode* node) {
-    return raw_ptr<const BookmarkNode, VectorExperimental>(node);
+    return raw_ptr<const BookmarkNode, DanglingUntriaged>(node);
   });
 }
 
@@ -367,7 +367,7 @@ void BookmarkMenuDelegate::ExecuteCommand(int id, int mouse_event_flags) {
   RecordBookmarkLaunch(location_,
                        profile_metrics::GetBrowserProfileType(profile_));
 
-  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> selection =
+  std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>> selection =
       menu_id_to_node_map_.find(id)->second.GetUnderlyingNodes(
           GetBookmarkMergedSurfaceService());
   bookmarks::OpenAllIfAllowed(browser_, selection, initial_disposition,
@@ -512,7 +512,7 @@ bool BookmarkMenuDelegate::ShowContextMenu(
   }
 
   const BookmarkFolderOrURL folder_or_url = menu_id_to_node->second;
-  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes =
+  std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>> nodes =
       folder_or_url.GetUnderlyingNodes(GetBookmarkMergedSurfaceService());
   const bool close_on_remove = ShouldCloseOnRemove(folder_or_url);
 
@@ -539,7 +539,7 @@ void BookmarkMenuDelegate::RunContextMenuAt(
     bool close_on_remove,
     bool can_paste) {
   auto* bookmark_model = BookmarkModelFactory::GetForBrowserContext(profile_);
-  std::vector<raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>> nodes;
+  std::vector<raw_ptr<const bookmarks::BookmarkNode, DanglingUntriaged>> nodes;
   for (int64_t node_id : node_ids) {
     const BookmarkNode* node =
         bookmarks::GetBookmarkNodeByID(bookmark_model, node_id);
@@ -730,7 +730,7 @@ void BookmarkMenuDelegate::UpdateMenuItemFavicon(const BookmarkNode* node,
 }
 
 void BookmarkMenuDelegate::WillRemoveBookmarks(
-    const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>&
+    const std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>>&
         bookmarks) {
   CHECK(!is_mutating_model_, base::NotFatalUntil::M162);
   is_mutating_model_ = true;  // Set to false in DidRemoveBookmarks().

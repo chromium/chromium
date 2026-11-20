@@ -254,7 +254,7 @@ class DOMAgentTest : public views::ViewsTestBase {
     }
 
     protocol::Array<DOM::Node>* children = root->getChildren(nullptr);
-    std::vector<raw_ptr<views::View, VectorExperimental>> child_views =
+    std::vector<raw_ptr<views::View, DanglingUntriaged>> child_views =
         view->GetChildrenInZOrder();
     const size_t child_count = child_views.size();
     if (child_count != children->size())

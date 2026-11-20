@@ -258,7 +258,7 @@ class DeskBarScrollViewLayout : public views::LayoutManager {
       return;
     }
 
-    std::vector<raw_ptr<DeskMiniView, VectorExperimental>> mini_views =
+    std::vector<raw_ptr<DeskMiniView, DanglingUntriaged>> mini_views =
         bar_view_->mini_views();
     if (mini_views.empty()) {
       return;

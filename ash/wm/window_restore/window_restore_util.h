@@ -70,7 +70,7 @@ ASH_EXPORT bool IsAskEveryTime(PrefService* prefs);
 std::unique_ptr<::app_restore::WindowInfo> BuildWindowInfo(
     aura::Window* window,
     std::optional<int> activation_index,
-    const std::vector<raw_ptr<aura::Window, VectorExperimental>>& mru_windows);
+    const std::vector<raw_ptr<aura::Window, DanglingUntriaged>>& mru_windows);
 
 bool IsBrowserAppId(std::string_view id);
 

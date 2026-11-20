@@ -105,7 +105,7 @@ class FakeConnectTetheringOperationFactory
   FakeConnectTetheringOperationFactory() = default;
   ~FakeConnectTetheringOperationFactory() override = default;
 
-  std::vector<raw_ptr<FakeConnectTetheringOperation, VectorExperimental>>&
+  std::vector<raw_ptr<FakeConnectTetheringOperation, DanglingUntriaged>>&
   created_operations() {
     return created_operations_;
   }
@@ -124,7 +124,7 @@ class FakeConnectTetheringOperationFactory
   }
 
  private:
-  std::vector<raw_ptr<FakeConnectTetheringOperation, VectorExperimental>>
+  std::vector<raw_ptr<FakeConnectTetheringOperation, DanglingUntriaged>>
       created_operations_;
 };
 

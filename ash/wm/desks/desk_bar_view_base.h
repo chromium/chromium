@@ -95,7 +95,7 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
 
   OverviewGrid* overview_grid() const { return overview_grid_.get(); }
 
-  const std::vector<raw_ptr<DeskMiniView, VectorExperimental>>& mini_views()
+  const std::vector<raw_ptr<DeskMiniView, DanglingUntriaged>>& mini_views()
       const {
     return mini_views_;
   }
@@ -429,7 +429,7 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
   base::WeakPtr<OverviewGrid> overview_grid_;
 
   // The views representing desks mini_views. They're owned by views hierarchy.
-  std::vector<raw_ptr<DeskMiniView, VectorExperimental>> mini_views_;
+  std::vector<raw_ptr<DeskMiniView, DanglingUntriaged>> mini_views_;
 
   // The view representing the desk bar background view. It's owned by views
   // hierarchy. It exists only in the shelf desk bar as it's needed for

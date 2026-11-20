@@ -211,7 +211,7 @@ class WebAppUninstallDialogViewIwaBrowserTest
   std::vector<views::View*> GetViews(
       views::View* view,
       WebAppUninstallDialogDelegateView::DialogViewID view_type) {
-    std::vector<raw_ptr<views::View, VectorExperimental>> views_group;
+    std::vector<raw_ptr<views::View, DanglingUntriaged>> views_group;
 
     view->GetViewsInGroup(std::to_underlying(view_type), &views_group);
     return base::ToVector(views_group, [](auto item) { return item.get(); });

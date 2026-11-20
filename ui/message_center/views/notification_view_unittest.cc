@@ -275,8 +275,7 @@ class NotificationViewTest : public views::ViewsTestBase,
   views::View* inline_settings_row() {
     return notification_view_->inline_settings_row();
   }
-  std::vector<raw_ptr<views::LabelButton, VectorExperimental>>
-  action_buttons() {
+  std::vector<raw_ptr<views::LabelButton, DanglingUntriaged>> action_buttons() {
     return notification_view()->action_buttons();
   }
   views::RadioButton* block_all_button() {

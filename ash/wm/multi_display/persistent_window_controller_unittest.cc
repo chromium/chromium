@@ -576,7 +576,7 @@ TEST_F(PersistentWindowControllerTest, MRUOrderMatchesStacking) {
           .GetSecondaryDisplay()
           .id();
   display::Screen* screen = display::Screen::Get();
-  const std::vector<raw_ptr<aura::Window, VectorExperimental>>
+  const std::vector<raw_ptr<aura::Window, DanglingUntriaged>>
       expected_mru_order = {window3.get(), window2.get(), window1.get()};
   ASSERT_EQ(
       expected_mru_order,
@@ -599,7 +599,7 @@ TEST_F(PersistentWindowControllerTest, MRUOrderMatchesStacking) {
   // they are in the children() field.
   aura::Window* parent = window1->parent();
   ASSERT_TRUE(parent);
-  std::vector<raw_ptr<aura::Window, VectorExperimental>>
+  std::vector<raw_ptr<aura::Window, DanglingUntriaged>>
       children_ordered_by_stacking = parent->children();
   std::ranges::reverse(children_ordered_by_stacking);
   EXPECT_EQ(
@@ -646,7 +646,7 @@ TEST_F(PersistentWindowControllerTest, MRUOrderMatchesStackingInterleaved) {
           .GetSecondaryDisplay()
           .id();
   display::Screen* screen = display::Screen::Get();
-  const std::vector<raw_ptr<aura::Window, VectorExperimental>>
+  const std::vector<raw_ptr<aura::Window, DanglingUntriaged>>
       expected_mru_order = {window4.get(), window3.get(), window2.get(),
                             window1.get()};
   ASSERT_EQ(
@@ -669,7 +669,7 @@ TEST_F(PersistentWindowControllerTest, MRUOrderMatchesStackingInterleaved) {
   aura::Window* parent = window1->parent();
   ASSERT_TRUE(parent);
   ASSERT_EQ(parent, window2->parent());
-  std::vector<raw_ptr<aura::Window, VectorExperimental>>
+  std::vector<raw_ptr<aura::Window, DanglingUntriaged>>
       children_ordered_by_stacking = parent->children();
   std::ranges::reverse(children_ordered_by_stacking);
   EXPECT_EQ(

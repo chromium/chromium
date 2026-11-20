@@ -338,10 +338,12 @@ class UnifiedAudioDetailedViewControllerTest : public AshTestBase {
         AudioDetailedView::AudioDetailedViewID::kNbsWarningView);
   }
 
-  std::map<uint64_t, raw_ptr<views::View, CtnExperimental>> input_sliders_map_;
-  std::map<uint64_t, raw_ptr<views::View, CtnExperimental>> output_sliders_map_;
-  std::map<uint64_t, raw_ptr<views::View, CtnExperimental>> toggles_map_;
-  std::map<uint64_t, raw_ptr<views::View, CtnExperimental>>
+  std::map<uint64_t, raw_ptr<views::View, DanglingUntriaged>>
+      input_sliders_map_;
+  std::map<uint64_t, raw_ptr<views::View, DanglingUntriaged>>
+      output_sliders_map_;
+  std::map<uint64_t, raw_ptr<views::View, DanglingUntriaged>> toggles_map_;
+  std::map<uint64_t, raw_ptr<views::View, DanglingUntriaged>>
       style_transfer_toggles_map_;
   MicGainSliderController::MapDeviceSliderCallback
       map_input_device_sliders_callback_;

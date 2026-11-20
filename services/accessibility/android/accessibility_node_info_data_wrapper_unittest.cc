@@ -86,7 +86,7 @@ class AccessibilityNodeInfoDataWrapperTest
 
    private:
     int32_t node_root_id_ = -1;
-    std::map<int32_t, raw_ptr<AccessibilityInfoDataWrapper, CtnExperimental>>
+    std::map<int32_t, raw_ptr<AccessibilityInfoDataWrapper, DanglingUntriaged>>
         wrapper_map_;
     std::map<int32_t, int32_t> parent_map_;
   };
@@ -1208,7 +1208,7 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, TypeConfusionRegression) {
                                                           &child_window);
   SetIdToWrapper(&child_window_wrapper);
 
-  std::vector<raw_ptr<AccessibilityInfoDataWrapper, VectorExperimental>>
+  std::vector<raw_ptr<AccessibilityInfoDataWrapper, DanglingUntriaged>>
       children;
   root_wrapper.GetChildren(&children);
 

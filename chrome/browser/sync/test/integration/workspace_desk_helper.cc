@@ -44,7 +44,7 @@ void DeskUuidChecker::DeskModelLoaded() {
 }
 
 void DeskUuidChecker::EntriesAddedOrUpdatedRemotely(
-    const std::vector<raw_ptr<const ash::DeskTemplate, VectorExperimental>>&
+    const std::vector<raw_ptr<const ash::DeskTemplate, DanglingUntriaged>>&
         new_entries) {
   CheckExitCondition();
 }
@@ -85,7 +85,7 @@ void DeskUuidDeletedChecker::DeskModelLoaded() {
 }
 
 void DeskUuidDeletedChecker::EntriesAddedOrUpdatedRemotely(
-    const std::vector<raw_ptr<const ash::DeskTemplate, VectorExperimental>>&
+    const std::vector<raw_ptr<const ash::DeskTemplate, DanglingUntriaged>>&
         new_entries) {
   CheckExitCondition();
 }
@@ -117,7 +117,7 @@ void DeskModelReadyChecker::DeskModelLoaded() {
 }
 
 void DeskModelReadyChecker::EntriesAddedOrUpdatedRemotely(
-    const std::vector<raw_ptr<const ash::DeskTemplate, VectorExperimental>>&
+    const std::vector<raw_ptr<const ash::DeskTemplate, DanglingUntriaged>>&
         new_entries) {
   CheckExitCondition();
 }

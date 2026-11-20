@@ -188,11 +188,11 @@ void NotificationCenterView::OnContentsScrolled() {
   UpdateNotificationBar();
 }
 
-std::vector<raw_ptr<message_center::Notification, VectorExperimental>>
+std::vector<raw_ptr<message_center::Notification, DanglingUntriaged>>
 NotificationCenterView::GetStackedNotifications() const {
   if (!notification_list_view_) {
     return std::vector<
-        raw_ptr<message_center::Notification, VectorExperimental>>{};
+        raw_ptr<message_center::Notification, DanglingUntriaged>>{};
   }
 
   // CountNotificationsAboveY() only works after SetBoundsRect() is called at

@@ -97,7 +97,7 @@ class FakeNearbyShareClientFactory : public NearbyShareClientFactory {
 
  public:
   // Returns all FakeNearbyShareClient instances created by CreateInstance().
-  std::vector<raw_ptr<FakeNearbyShareClient, VectorExperimental>>& instances() {
+  std::vector<raw_ptr<FakeNearbyShareClient, DanglingUntriaged>>& instances() {
     return instances_;
   }
 
@@ -105,7 +105,7 @@ class FakeNearbyShareClientFactory : public NearbyShareClientFactory {
   // NearbyShareClientFactory:
   std::unique_ptr<NearbyShareClient> CreateInstance() override;
 
-  std::vector<raw_ptr<FakeNearbyShareClient, VectorExperimental>> instances_;
+  std::vector<raw_ptr<FakeNearbyShareClient, DanglingUntriaged>> instances_;
 };
 
 #endif  // CHROME_BROWSER_NEARBY_SHARING_CLIENT_FAKE_NEARBY_SHARE_CLIENT_H_

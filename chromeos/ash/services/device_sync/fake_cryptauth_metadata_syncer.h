@@ -91,7 +91,7 @@ class FakeCryptAuthMetadataSyncerFactory
 
   // Returns a vector of all FakeCryptAuthMetadataSyncer instances created
   // by CreateInstance().
-  const std::vector<raw_ptr<FakeCryptAuthMetadataSyncer, VectorExperimental>>&
+  const std::vector<raw_ptr<FakeCryptAuthMetadataSyncer, DanglingUntriaged>>&
   instances() const {
     return instances_;
   }
@@ -111,7 +111,7 @@ class FakeCryptAuthMetadataSyncerFactory
       PrefService* pref_service,
       std::unique_ptr<base::OneShotTimer> timer) override;
 
-  std::vector<raw_ptr<FakeCryptAuthMetadataSyncer, VectorExperimental>>
+  std::vector<raw_ptr<FakeCryptAuthMetadataSyncer, DanglingUntriaged>>
       instances_;
   raw_ptr<CryptAuthClientFactory> last_client_factory_ = nullptr;
   raw_ptr<PrefService> last_pref_service_ = nullptr;

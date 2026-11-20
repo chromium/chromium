@@ -34,7 +34,7 @@ class TestCompositor : public GlobalObject {
 
  private:
   Version version_;
-  std::vector<raw_ptr<MockSurface, VectorExperimental>> surfaces_;
+  std::vector<raw_ptr<MockSurface, DanglingUntriaged>> surfaces_;
 };
 
 }  // namespace wl

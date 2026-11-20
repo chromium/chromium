@@ -43,7 +43,7 @@ void LookalikeTestHelper::TearDownLookalikeTestParams() {
 
 void LookalikeTestHelper::CheckSafetyTipUkmCount(
     size_t expected_event_count) const {
-  std::vector<raw_ptr<const ukm::mojom::UkmEntry, VectorExperimental>> entries =
+  std::vector<raw_ptr<const ukm::mojom::UkmEntry, DanglingUntriaged>> entries =
       ukm_recorder_->GetEntriesByName(
           ukm::builders::Security_SafetyTip::kEntryName);
   ASSERT_EQ(expected_event_count, entries.size());
@@ -51,7 +51,7 @@ void LookalikeTestHelper::CheckSafetyTipUkmCount(
 
 void LookalikeTestHelper::CheckInterstitialUkmCount(
     size_t expected_event_count) const {
-  std::vector<raw_ptr<const ukm::mojom::UkmEntry, VectorExperimental>> entries =
+  std::vector<raw_ptr<const ukm::mojom::UkmEntry, DanglingUntriaged>> entries =
       ukm_recorder_->GetEntriesByName(
           ukm::builders::LookalikeUrl_NavigationSuggestion::kEntryName);
   ASSERT_EQ(expected_event_count, entries.size());

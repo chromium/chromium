@@ -690,9 +690,9 @@ class TemplateURLRef {
 class TemplateURL {
  public:
   using TemplateURLVector =
-      std::vector<raw_ptr<TemplateURL, VectorExperimental>>;
+      std::vector<raw_ptr<TemplateURL, DanglingUntriaged>>;
   using TemplateURLVectorSpan =
-      base::span<const raw_ptr<TemplateURL, VectorExperimental>>;
+      base::span<const raw_ptr<TemplateURL, DanglingUntriaged>>;
   using OwnedTemplateURLVector = std::vector<std::unique_ptr<TemplateURL>>;
   using OwnedTemplateURLVectorSpan =
       base::span<const std::unique_ptr<TemplateURL>>;

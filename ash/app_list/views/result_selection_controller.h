@@ -23,7 +23,7 @@ class SearchResultContainerView;
 // This alias is intended to clarify the intended use of this class within the
 // context of this controller.
 using ResultSelectionModel =
-    std::vector<raw_ptr<SearchResultContainerView, VectorExperimental>>;
+    std::vector<raw_ptr<SearchResultContainerView, DanglingUntriaged>>;
 
 // Stores and organizes the details for the 'coordinates' of the selected
 // result. This includes all information to determine exactly where a result is,

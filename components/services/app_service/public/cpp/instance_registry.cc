@@ -104,11 +104,11 @@ void InstanceRegistry::OnInstance(InstancePtr delta) {
   }
 }
 
-std::set<raw_ptr<const Instance, SetExperimental>>
+std::set<raw_ptr<const Instance, DanglingUntriaged>>
 InstanceRegistry::GetInstances(const std::string& app_id) {
   auto it = app_id_to_instances_.find(app_id);
   if (it == app_id_to_instances_.end()) {
-    return std::set<raw_ptr<const Instance, SetExperimental>>();
+    return std::set<raw_ptr<const Instance, DanglingUntriaged>>();
   }
   return it->second;
 }

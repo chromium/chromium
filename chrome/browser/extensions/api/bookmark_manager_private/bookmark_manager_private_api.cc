@@ -141,7 +141,7 @@ const BookmarkNode* GetNodeFromString(BookmarkModel* model,
 bool GetNodesFromVector(
     BookmarkModel* model,
     const std::vector<std::string>& id_strings,
-    std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>* nodes) {
+    std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>>* nodes) {
   if (id_strings.empty()) {
     return false;
   }
@@ -210,7 +210,7 @@ bookmark_manager_private::BookmarkNodeData CreateApiBookmarkNodeData(
   node_data.same_profile = data.IsFromProfilePath(profile_path);
 
   if (node_data.same_profile) {
-    std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes =
+    std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>> nodes =
         data.GetNodes(BookmarkModelFactory::GetForBrowserContext(profile),
                       profile_path);
     for (const bookmarks::BookmarkNode* node : nodes) {
@@ -227,7 +227,7 @@ bookmark_manager_private::BookmarkNodeData CreateApiBookmarkNodeData(
 }
 
 bool HasPermanentNodes(
-    const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>& list) {
+    const std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>>& list) {
   for (const BookmarkNode* node : list) {
     if (node->is_permanent_node()) {
       return true;
@@ -414,7 +414,7 @@ ExtensionFunction::ResponseValue ClipboardBookmarkManagerFunction::CopyOrCut(
     bool cut,
     const std::vector<std::string>& id_list) {
   BookmarkModel* model = GetBookmarkModel();
-  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes;
+  std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>> nodes;
   if (!GetNodesFromVector(model, id_list, &nodes)) {
     return Error(kBookmarkNodesNotFoundFromIdListError,
                  base::JoinString(id_list, ", "));
@@ -514,7 +514,7 @@ void BookmarkManagerPrivatePasteFunction::OnCanPasteFinished(
   }
 
   // We want to use the highest index of the selected nodes as a destination.
-  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes;
+  std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>> nodes;
   // No need to test return value, if we got an empty list, we insert at end.
   if (selected_id_list) {
     GetNodesFromVector(model, *selected_id_list, &nodes);
@@ -636,7 +636,7 @@ BookmarkManagerPrivateStartDragFunction::RunOnReady() {
 
   BookmarkModel* model =
       BookmarkModelFactory::GetForBrowserContext(GetProfile());
-  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes;
+  std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>> nodes;
   if (!GetNodesFromVector(model, params->id_list, &nodes)) {
     return RespondNow(Error(kBookmarkNodesNotFoundFromIdListError,
                             base::JoinString(params->id_list, ", ")));
@@ -702,7 +702,7 @@ BookmarkManagerPrivateDropFunction::RunOnReady() {
     return RespondNow(Error(kDropFailedNoDragDataError));
   }
   if (drag_data->IsFromProfilePath(GetProfile()->GetPath())) {
-    const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>
+    const std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>>
         dragged_nodes = drag_data->GetNodes(model, GetProfile()->GetPath());
     if (std::ranges::any_of(dragged_nodes, [&](const BookmarkNode* node) {
           return drop_parent->HasAncestor(node);
@@ -884,7 +884,7 @@ BookmarkManagerPrivateOpenInNewWindowFunction::RunOnReady() {
 
   BookmarkModel* model =
       BookmarkModelFactory::GetForBrowserContext(calling_profile);
-  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes;
+  std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>> nodes;
   if (!GetNodesFromVector(model, params->id_list, &nodes)) {
     return RespondNow(Error(kBookmarkNodesNotFoundFromIdListError,
                             base::JoinString(params->id_list, ", ")));
@@ -987,7 +987,7 @@ BookmarkManagerPrivateOpenInNewTabGroupFunction::RunOnReady() {
 
   BookmarkModel* model =
       BookmarkModelFactory::GetForBrowserContext(browser->GetProfile());
-  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes;
+  std::vector<raw_ptr<const BookmarkNode, DanglingUntriaged>> nodes;
   if (!GetNodesFromVector(model, params->id_list, &nodes)) {
     return RespondNow(Error(kBookmarkNodesNotFoundFromIdListError,
                             base::JoinString(params->id_list, ", ")));

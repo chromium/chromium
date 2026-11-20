@@ -67,7 +67,7 @@ class MESSAGE_CENTER_EXPORT NotificationList {
 
   // Auto-sorted set. Matches the order in which Notifications are shown in
   // Notification Center.
-  using Notifications = std::set<raw_ptr<Notification, SetExperimental>,
+  using Notifications = std::set<raw_ptr<Notification, DanglingUntriaged>,
                                  ComparePriorityTimestampSerial>;
   using OwnedNotifications =
       std::map<std::unique_ptr<Notification>,

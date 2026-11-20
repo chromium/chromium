@@ -497,7 +497,7 @@ class DownloadHistoryTest : public testing::Test {
     }
 #endif
 
-    std::vector<raw_ptr<download::DownloadItem, VectorExperimental>> items;
+    std::vector<raw_ptr<download::DownloadItem, DanglingUntriaged>> items;
     for (size_t i = 0; i < items_.size(); ++i) {
       items.push_back(&item(i));
     }

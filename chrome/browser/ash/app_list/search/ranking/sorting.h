@@ -29,7 +29,7 @@ void SortCategories(CategoriesList& categories);
 // - Burn-in iteration number
 // - Display score.
 void SortResults(
-    std::vector<raw_ptr<ChromeSearchResult, VectorExperimental>>& results,
+    std::vector<raw_ptr<ChromeSearchResult, DanglingUntriaged>>& results,
     const CategoriesList& categories);
 
 }  // namespace app_list

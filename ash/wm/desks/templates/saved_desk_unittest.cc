@@ -160,7 +160,7 @@ class SavedDeskTest : public OverviewTestBase {
 
   // Gets the current list of saved desk entries from the desk model directly
   // without updating the UI.
-  const std::vector<raw_ptr<const DeskTemplate, VectorExperimental>>
+  const std::vector<raw_ptr<const DeskTemplate, DanglingUntriaged>>
   GetAllEntries() {
     auto result = desk_model()->GetAllEntries();
     EXPECT_EQ(desks_storage::DeskModel::GetAllEntriesStatus::kOk,
@@ -452,7 +452,7 @@ TEST_F(SavedDeskTest, AddDeleteEntry) {
   AddEntry(expected_uuid, expected_name, expected_time,
            DeskTemplateType::kTemplate);
 
-  std::vector<raw_ptr<const DeskTemplate, VectorExperimental>> entries =
+  std::vector<raw_ptr<const DeskTemplate, DanglingUntriaged>> entries =
       GetAllEntries();
   ASSERT_EQ(1ul, entries.size());
   EXPECT_EQ(expected_uuid, entries[0]->uuid());
@@ -578,7 +578,7 @@ TEST_F(SavedDeskTest, NoItemsLabelOnDeletingLastSavedDesk) {
 
   // Open overview and save a template.
   OpenOverviewAndSaveTemplate(Shell::Get()->GetPrimaryRootWindow());
-  std::vector<raw_ptr<const DeskTemplate, VectorExperimental>> entries =
+  std::vector<raw_ptr<const DeskTemplate, DanglingUntriaged>> entries =
       GetAllEntries();
   ASSERT_EQ(1ul, desk_model()->GetEntryCount());
   // Exit overview mode.
@@ -898,7 +898,7 @@ TEST_F(SavedDeskTest, SaveDeskOptionsEnabledDisabled) {
         saved_desk_presenter->GetEntryCount(DeskTemplateType::kTemplate));
 
     // Verify that the option is re-enabled after we delete all entries.
-    std::vector<raw_ptr<const DeskTemplate, VectorExperimental>> entries =
+    std::vector<raw_ptr<const DeskTemplate, DanglingUntriaged>> entries =
         GetAllEntries();
     for (size_t i = entries.size(); i > 0; i--) {
       DeleteSavedDeskItem(/*uuid=*/entries[i - 1]->uuid(),
@@ -948,7 +948,7 @@ TEST_F(SavedDeskTest, SaveDeskOptionsEnabledDisabled) {
         saved_desk_presenter->GetEntryCount(DeskTemplateType::kSaveAndRecall));
 
     // Verify that the button is re-enabled after we delete all entries.
-    std::vector<raw_ptr<const DeskTemplate, VectorExperimental>> entries =
+    std::vector<raw_ptr<const DeskTemplate, DanglingUntriaged>> entries =
         GetAllEntries();
     for (size_t i = entries.size(); i > 0; i--) {
       DeleteSavedDeskItem(/*uuid=*/entries[i - 1]->uuid(),
@@ -1799,7 +1799,7 @@ TEST_F(SavedDeskTest, TabletModeActivationIssues) {
 
   // Open overview and save a template.
   OpenOverviewAndSaveTemplate(Shell::Get()->GetPrimaryRootWindow());
-  std::vector<raw_ptr<const DeskTemplate, VectorExperimental>> entries =
+  std::vector<raw_ptr<const DeskTemplate, DanglingUntriaged>> entries =
       GetAllEntries();
   ASSERT_EQ(1ul, entries.size());
 
@@ -1840,7 +1840,7 @@ TEST_F(SavedDeskTest, OverviewTabbing) {
 
   // Traversing name views should not update the template if there was no
   // editing.
-  std::vector<raw_ptr<const DeskTemplate, VectorExperimental>> entries =
+  std::vector<raw_ptr<const DeskTemplate, DanglingUntriaged>> entries =
       GetAllEntries();
   ASSERT_EQ(2u, entries.size());
   EXPECT_EQ(saved_desk_creation_time, entries[0]->GetLastUpdatedTime());
@@ -2237,7 +2237,7 @@ TEST_F(SavedDeskTest, WindowActivatableAfterSaveAndDeleteTemplate) {
 
   // Open overview and save a template.
   OpenOverviewAndSaveTemplate(Shell::Get()->GetPrimaryRootWindow());
-  std::vector<raw_ptr<const DeskTemplate, VectorExperimental>> entries =
+  std::vector<raw_ptr<const DeskTemplate, DanglingUntriaged>> entries =
       GetAllEntries();
   ASSERT_EQ(1ul, entries.size());
 
@@ -2705,7 +2705,7 @@ TEST_F(SavedDeskTest, AccessibilityGridItemTraversalOrder) {
   ASSERT_TRUE(grid_view);
 
   // The grid items are sorted and displayed alphabetically.
-  std::vector<raw_ptr<SavedDeskItemView, VectorExperimental>> grid_items =
+  std::vector<raw_ptr<SavedDeskItemView, DanglingUntriaged>> grid_items =
       grid_view->grid_items();
   views::View::Views grid_child_views = grid_view->children();
 
@@ -3121,7 +3121,7 @@ TEST_F(SavedDeskTest, ReplaceTemplateMetric) {
   // The Template has been replaced.
   SavedDeskNameView* name_view = grid_items[0]->name_view();
   EXPECT_EQ(base::UTF8ToUTF16(name_1), name_view->GetText());
-  std::vector<raw_ptr<const DeskTemplate, VectorExperimental>> entries =
+  std::vector<raw_ptr<const DeskTemplate, DanglingUntriaged>> entries =
       GetAllEntries();
   EXPECT_EQ(uuid_2, entries[0]->uuid());
   // Assert metrics being recorded.
@@ -4070,7 +4070,7 @@ TEST_F(DeskSaveAndRecallTest, SaveDeskForLater) {
 
   // Open overview and save the desk.
   OpenOverviewAndSaveDeskForLater(Shell::Get()->GetPrimaryRootWindow());
-  std::vector<raw_ptr<const DeskTemplate, VectorExperimental>> entries =
+  std::vector<raw_ptr<const DeskTemplate, DanglingUntriaged>> entries =
       GetAllEntries();
   ASSERT_EQ(1ul, entries.size());
 
@@ -4147,7 +4147,7 @@ TEST_F(DeskSaveAndRecallTest, DISABLED_SaveDeskForLaterWithAllDeskWindow) {
 
   // Open overview and save the desk.
   OpenOverviewAndSaveDeskForLater(Shell::Get()->GetPrimaryRootWindow());
-  std::vector<raw_ptr<const DeskTemplate, VectorExperimental>> entries =
+  std::vector<raw_ptr<const DeskTemplate, DanglingUntriaged>> entries =
       GetAllEntries();
   ASSERT_EQ(1u, entries.size());
 

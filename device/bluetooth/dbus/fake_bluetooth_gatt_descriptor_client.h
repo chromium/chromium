@@ -93,7 +93,7 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothGattDescriptorClient
 
     std::unique_ptr<Properties> properties;
   };
-  typedef std::map<dbus::ObjectPath, raw_ptr<DescriptorData, CtnExperimental>>
+  typedef std::map<dbus::ObjectPath, raw_ptr<DescriptorData, DanglingUntriaged>>
       PropertiesMap;
   PropertiesMap properties_;
 

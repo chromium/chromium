@@ -88,7 +88,7 @@ class ImmersiveFocusWatcher::BubbleObserver : public aura::WindowObserver {
 
   raw_ptr<ImmersiveFullscreenController> controller_;
 
-  std::set<raw_ptr<aura::Window, SetExperimental>> bubbles_;
+  std::set<raw_ptr<aura::Window, DanglingUntriaged>> bubbles_;
 
   // Lock which keeps the top-of-window views revealed based on whether any of
   // |bubbles_| is visible.
@@ -245,7 +245,7 @@ aura::Window* ImmersiveFocusWatcher::GetWidgetWindow() {
 void ImmersiveFocusWatcher::RecreateBubbleObserver() {
   bubble_observer_ =
       std::make_unique<BubbleObserver>(immersive_fullscreen_controller_);
-  const std::vector<raw_ptr<aura::Window, VectorExperimental>>
+  const std::vector<raw_ptr<aura::Window, DanglingUntriaged>>
       transient_children =
           aura::client::GetTransientWindowClient()->GetTransientChildren(
               GetWidgetWindow());

@@ -484,7 +484,7 @@ void MediaDialogView::TargetLanguageChanged() {
 
 const std::map<
     const std::string,
-    raw_ptr<global_media_controls::MediaItemUIUpdatedView, CtnExperimental>>&
+    raw_ptr<global_media_controls::MediaItemUIUpdatedView, DanglingUntriaged>>&
 MediaDialogView::GetItemsForTesting() const {
   return active_sessions_view_->updated_items_for_testing();  // IN-TEST
 }

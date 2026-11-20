@@ -47,7 +47,7 @@ class ContentProtectionKeyManagerTest : public testing::Test {
 
   void SetKeyIfRequiredForDisplay(auto on_key_set) {
     key_manager_.SetKeyIfRequired(
-        std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>{
+        std::vector<raw_ptr<DisplaySnapshot, DanglingUntriaged>>{
             display_.get()},
         kDisplayId, std::move(on_key_set));
   }
@@ -106,7 +106,7 @@ TEST_F(ContentProtectionKeyManagerTest, TestIfKeyNotSetWhenDisplayIdMismatch) {
   auto on_key_set = base::BindOnce([](bool result) { EXPECT_FALSE(result); });
 
   key_manager_.SetKeyIfRequired(
-      std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>{display_.get()},
+      std::vector<raw_ptr<DisplaySnapshot, DanglingUntriaged>>{display_.get()},
       kDisplayId + 1, std::move(on_key_set));
 }
 
@@ -123,7 +123,7 @@ TEST_F(ContentProtectionKeyManagerTest,
 
   SetProvisionedKeyRequest(true);
 
-  auto displays = std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>{
+  auto displays = std::vector<raw_ptr<DisplaySnapshot, DanglingUntriaged>>{
       display_.get(), other_display.get()};
   key_manager_.SetKeyIfRequired(displays, kDisplayId, std::move(on_key_set));
 
@@ -163,7 +163,7 @@ TEST_F(ContentProtectionKeyManagerTest, TestThatKeyIsSetForMultipleDisplays) {
 
   auto on_key_set = base::BindOnce([](bool result) { EXPECT_TRUE(result); });
   key_manager_.SetKeyIfRequired(
-      std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>{display_.get()},
+      std::vector<raw_ptr<DisplaySnapshot, DanglingUntriaged>>{display_.get()},
       kDisplayId, std::move(on_key_set));
 
   auto other_display = FakeDisplaySnapshot::Builder()
@@ -174,7 +174,7 @@ TEST_F(ContentProtectionKeyManagerTest, TestThatKeyIsSetForMultipleDisplays) {
                            .Build();
   on_key_set = base::BindOnce([](bool result) { EXPECT_TRUE(result); });
   key_manager_.SetKeyIfRequired(
-      std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>{
+      std::vector<raw_ptr<DisplaySnapshot, DanglingUntriaged>>{
           other_display.get()},
       kDisplayId + 1, std::move(on_key_set));
 
@@ -202,7 +202,7 @@ TEST_F(ContentProtectionKeyManagerTest,
   on_key_set = base::BindOnce([](bool result) { EXPECT_TRUE(true); });
 
   key_manager_.SetKeyIfRequired(
-      std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>{display_.get()},
+      std::vector<raw_ptr<DisplaySnapshot, DanglingUntriaged>>{display_.get()},
       kDisplayId + 1, std::move(on_key_set));
 }
 
@@ -228,7 +228,7 @@ TEST_F(ContentProtectionKeyManagerTest, TestThatKeyIsFetchedAgainIfKeyInvalid) {
   on_key_set = base::BindOnce([](bool result) { EXPECT_TRUE(true); });
 
   key_manager_.SetKeyIfRequired(
-      std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>{display_.get()},
+      std::vector<raw_ptr<DisplaySnapshot, DanglingUntriaged>>{display_.get()},
       kDisplayId + 1, std::move(on_key_set));
 }
 

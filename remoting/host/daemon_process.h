@@ -78,7 +78,7 @@ class DaemonProcess : public ConfigWatcher::Delegate,
 
   using StoppedCallback = base::OnceCallback<void(int /*exit_code*/)>;
   using DesktopSessionMap =
-      std::map<int, raw_ptr<DesktopSession, CtnExperimental>>;
+      std::map<int, raw_ptr<DesktopSession, DanglingUntriaged>>;
 
   DaemonProcess(const DaemonProcess&) = delete;
   DaemonProcess& operator=(const DaemonProcess&) = delete;

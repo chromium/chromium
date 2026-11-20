@@ -389,7 +389,7 @@ void DOMAgent::SearchDomTree(const DOMAgent::Query& query_data,
   std::vector<UIElement*> stack;
   // Root node from element_root() is not a real node from the DOM tree.
   // The children of the root node are the 'actual' roots of the DOM tree.
-  std::vector<raw_ptr<UIElement, VectorExperimental>> root_list =
+  std::vector<raw_ptr<UIElement, DanglingUntriaged>> root_list =
       element_root()->children();
   DCHECK(root_list.size());
   // Children are accessed from bottom to top. So iterate backwards.
@@ -401,7 +401,7 @@ void DOMAgent::SearchDomTree(const DOMAgent::Query& query_data,
   while (!stack.empty()) {
     UIElement* node = stack.back();
     stack.pop_back();
-    std::vector<raw_ptr<UIElement, VectorExperimental>> children_array =
+    std::vector<raw_ptr<UIElement, DanglingUntriaged>> children_array =
         node->children();
     // Children are accessed from bottom to top. So iterate backwards.
     for (ui_devtools::UIElement* child : std::views::reverse(children_array)) {

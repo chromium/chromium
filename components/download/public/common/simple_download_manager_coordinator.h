@@ -74,7 +74,7 @@ class COMPONENTS_DOWNLOAD_EXPORT SimpleDownloadManagerCoordinator
   // check if all downloads are initialized. If only active downloads are
   // initialized, this method will only return all active downloads.
   void GetAllDownloads(
-      std::vector<raw_ptr<DownloadItem, VectorExperimental>>* downloads);
+      std::vector<raw_ptr<DownloadItem, DanglingUntriaged>>* downloads);
 
   // Get the download item for |guid|.
   DownloadItem* GetDownloadByGuid(const std::string& guid);

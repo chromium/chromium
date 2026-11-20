@@ -68,7 +68,7 @@ class ModelExecutionSchedulerTest : public testing::Test {
 
   void SetUp() override {
     clock_.SetNow(base::Time::Now());
-    std::vector<raw_ptr<ModelExecutionScheduler::Observer, VectorExperimental>>
+    std::vector<raw_ptr<ModelExecutionScheduler::Observer, DanglingUntriaged>>
         observers = {&observer1_, &observer2_};
     segment_database_ = std::make_unique<test::TestSegmentInfoDatabase>();
     base::flat_set<SegmentId> segment_ids;

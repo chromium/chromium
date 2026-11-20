@@ -185,7 +185,7 @@ class VIEWS_EXPORT TableLayout : public LayoutManagerBase {
   // Calculates the preferred width of each view, as well as updating the
   // ViewStates' `remaining_width`.
   void CalculateSize(SizeCalculationType type,
-                     const std::vector<raw_ptr<ViewState, VectorExperimental>>&
+                     const std::vector<raw_ptr<ViewState, DanglingUntriaged>>&
                          view_states) const;
 
   // Distributes `delta` among the resizable columns.
@@ -217,7 +217,7 @@ class VIEWS_EXPORT TableLayout : public LayoutManagerBase {
   mutable std::vector<std::unique_ptr<ViewState>> view_states_by_row_span_;
 
   // ViewStates sorted based on column_span in ascending order.
-  mutable std::vector<raw_ptr<ViewState, VectorExperimental>>
+  mutable std::vector<raw_ptr<ViewState, DanglingUntriaged>>
       view_states_by_col_span_;
 };
 

@@ -76,7 +76,7 @@ class MaximizedWindowAnimationWatcher : public ui::ImplicitAnimationObserver {
 // Modifies the given |window_list| such that the most-recently used window (if
 // any, and if it exists in |window_list|) will be the last window in the list.
 void PutMruWindowLast(
-    std::vector<raw_ptr<aura::Window, VectorExperimental>>* window_list) {
+    std::vector<raw_ptr<aura::Window, DanglingUntriaged>>* window_list) {
   DCHECK(window_list);
   auto it = std::ranges::find_if(*window_list, &wm::IsActiveWindow);
   if (it == window_list->end())

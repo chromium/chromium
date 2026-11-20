@@ -196,7 +196,7 @@ class SyncServiceImplStartupTest : public testing::Test {
   SyncPrefs sync_prefs_;
   std::unique_ptr<SyncServiceImpl> sync_service_;
   // The controllers are owned by `sync_service_`.
-  std::map<DataType, raw_ptr<FakeDataTypeController, CtnExperimental>>
+  std::map<DataType, raw_ptr<FakeDataTypeController, DanglingUntriaged>>
       controller_map_;
   const base::TimeDelta account_managed_status_finder_timeout_;
 };

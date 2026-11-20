@@ -42,7 +42,7 @@ class OpenTabsUIDelegate {
   // recent to least recent. Caller does NOT own `SyncedSession` objects.
   // Returns true if foreign sessions were found, false otherwise.
   virtual bool GetAllForeignSessions(
-      std::vector<raw_ptr<const SyncedSession, VectorExperimental>>* sessions,
+      std::vector<raw_ptr<const SyncedSession, DanglingUntriaged>>* sessions,
       ForeignSessionFilter filter) = 0;
 
   // Returns the timestamp of each foreign session, keyed by its session tag.

@@ -838,7 +838,7 @@ ui::KeyboardCode StringToKeyCode(const std::string& str) {
 }
 
 aura::Window* GetActiveWindow() {
-  std::vector<raw_ptr<aura::Window, VectorExperimental>> list =
+  std::vector<raw_ptr<aura::Window, DanglingUntriaged>> list =
       ash::GetAppWindowList();
   if (!list.size()) {
     return nullptr;

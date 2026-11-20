@@ -14602,7 +14602,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, TriggeredPrerenderUkm) {
 
   // PrerenderPageLoad:TriggeredPrerender is recorded for the initiator page
   // load.
-  const std::vector<raw_ptr<const ukm::mojom::UkmEntry, VectorExperimental>>
+  const std::vector<raw_ptr<const ukm::mojom::UkmEntry, DanglingUntriaged>>
       entries = ukm_recorder.GetEntriesByName(
           ukm::builders::PrerenderPageLoad::kEntryName);
   ASSERT_EQ(1u, entries.size());

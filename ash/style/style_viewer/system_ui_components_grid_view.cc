@@ -232,7 +232,7 @@ class SystemUIComponentsGridView::GridLayout : public views::LayoutManagerBase {
   int col_group_spacing_;
   gfx::Insets border_insets_;
 
-  std::vector<raw_ptr<views::View, VectorExperimental>> children_;
+  std::vector<raw_ptr<views::View, DanglingUntriaged>> children_;
 };
 
 // -----------------------------------------------------------------------------

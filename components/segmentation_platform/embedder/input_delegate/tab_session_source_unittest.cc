@@ -178,7 +178,7 @@ TEST_F(TabSessionSourceTest, ProcessLocal) {
 }
 
 TEST_F(TabSessionSourceTest, ProcessForeign) {
-  std::vector<raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>
+  std::vector<raw_ptr<const sync_sessions::SyncedSession, DanglingUntriaged>>
       foreign_sessions;
   ASSERT_TRUE(
       session_sync_service_.GetOpenTabsUIDelegate()->GetAllForeignSessions(

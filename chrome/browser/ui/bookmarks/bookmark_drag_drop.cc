@@ -12,7 +12,7 @@
 namespace chrome {
 
 BookmarkDragParams::BookmarkDragParams(
-    std::vector<raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>
+    std::vector<raw_ptr<const bookmarks::BookmarkNode, DanglingUntriaged>>
         nodes,
     int drag_node_index,
     content::WebContents* web_contents,

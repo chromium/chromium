@@ -411,7 +411,7 @@ class SafetyTipPageInfoBubbleViewBrowserTest : public InProcessBrowserTest {
   // at the index in the UKM data specified by |expected_idx|.
   void CheckHeuristicsUkmRecord(const HeuristicsTestCase& test_case,
                                 size_t expected_idx) {
-    std::vector<raw_ptr<const ukm::mojom::UkmEntry, VectorExperimental>>
+    std::vector<raw_ptr<const ukm::mojom::UkmEntry, DanglingUntriaged>>
         entries = test_ukm_recorder_->GetEntriesByName(
             ukm::builders::Security_SafetyTip::kEntryName);
 

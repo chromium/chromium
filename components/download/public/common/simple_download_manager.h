@@ -52,7 +52,7 @@ class COMPONENTS_DOWNLOAD_EXPORT SimpleDownloadManager {
   // Returns whether the manager can handle this download.
   virtual bool CanDownload(DownloadUrlParameters* parameters) = 0;
 
-  using DownloadVector = std::vector<raw_ptr<DownloadItem, VectorExperimental>>;
+  using DownloadVector = std::vector<raw_ptr<DownloadItem, DanglingUntriaged>>;
   // Add all initialized download items to |downloads|, no matter the type or
   // state, without clearing |downloads| first. If active downloads are not
   // initialized, this call will not return them. Caller should call

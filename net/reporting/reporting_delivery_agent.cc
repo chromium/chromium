@@ -43,7 +43,7 @@ namespace net {
 namespace {
 
 using ReportList =
-    std::vector<raw_ptr<const ReportingReport, VectorExperimental>>;
+    std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>>;
 std::string SerializeReports(const ReportList& reports, base::TimeTicks now) {
   base::ListValue reports_value;
   const bool can_exclude_report_with_large_body =

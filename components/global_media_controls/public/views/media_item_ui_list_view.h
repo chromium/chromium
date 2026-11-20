@@ -56,21 +56,24 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIListView
 
   base::WeakPtr<MediaItemUIListView> GetWeakPtr();
 
-  const std::map<const std::string, raw_ptr<MediaItemUIView, CtnExperimental>>&
+  const std::map<const std::string,
+                 raw_ptr<MediaItemUIView, DanglingUntriaged>>&
   items_for_testing() const {
     return items_;
   }
 
   const std::map<const std::string,
-                 raw_ptr<MediaItemUIUpdatedView, CtnExperimental>>&
+                 raw_ptr<MediaItemUIUpdatedView, DanglingUntriaged>>&
   updated_items_for_testing() const {
     return updated_items_;
   }
 
  private:
   // `items_` is used for CrOS while `updated_items_` is used for non-CrOS.
-  std::map<const std::string, raw_ptr<MediaItemUIView, CtnExperimental>> items_;
-  std::map<const std::string, raw_ptr<MediaItemUIUpdatedView, CtnExperimental>>
+  std::map<const std::string, raw_ptr<MediaItemUIView, DanglingUntriaged>>
+      items_;
+  std::map<const std::string,
+           raw_ptr<MediaItemUIUpdatedView, DanglingUntriaged>>
       updated_items_;
 
   base::WeakPtrFactory<MediaItemUIListView> weak_factory_{this};

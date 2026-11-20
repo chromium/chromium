@@ -195,13 +195,13 @@ class DownloadStatusUpdaterTest : public testing::Test {
   // top-level vector is the manager index, and the inner vector is the list of
   // items of that manager. The inner vector is a vector<DownloadItem*> for
   // compatibility with the return value of DownloadManager::GetAllDownloads().
-  std::vector<std::vector<raw_ptr<download::DownloadItem, VectorExperimental>>>
+  std::vector<std::vector<raw_ptr<download::DownloadItem, DanglingUntriaged>>>
       manager_items_;
   // An owning container for items in |manager_items_|.
   std::vector<std::unique_ptr<download::DownloadItem>> all_owned_items_;
   int manager_observer_index_;
 
-  std::vector<raw_ptr<content::DownloadManager::Observer, VectorExperimental>>
+  std::vector<raw_ptr<content::DownloadManager::Observer, DanglingUntriaged>>
       manager_observers_;
 
   // Pointer so we can verify that destruction triggers appropriate
@@ -215,7 +215,7 @@ class DownloadStatusUpdaterTest : public testing::Test {
 
   // To test ScopedProfileKeepAlive behavior.
   TestingProfileManager profile_manager_;
-  std::vector<raw_ptr<TestingProfile, VectorExperimental>> testing_profiles_;
+  std::vector<raw_ptr<TestingProfile, DanglingUntriaged>> testing_profiles_;
 };
 
 // Test null updater.

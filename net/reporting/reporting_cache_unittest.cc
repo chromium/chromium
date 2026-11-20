@@ -101,7 +101,7 @@ class ReportingCacheTest : public ReportingTestBase,
   TestReportingCacheObserver* observer() { return &observer_; }
 
   size_t report_count() {
-    std::vector<raw_ptr<const ReportingReport, VectorExperimental>> reports;
+    std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>> reports;
     cache()->GetReports(&reports);
     return reports.size();
   }
@@ -124,13 +124,13 @@ class ReportingCacheTest : public ReportingTestBase,
     // the cache.  So we need to grab the list before we add, and the list after
     // we add, and return the one element that's different.  This is only used
     // in test cases, so I've optimized for readability over execution speed.
-    std::vector<raw_ptr<const ReportingReport, VectorExperimental>> before;
+    std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>> before;
     cache()->GetReports(&before);
     cache()->AddReport(std::nullopt, network_anonymization_key, url, user_agent,
                        group, type, std::move(body), depth, queued,
                        ReportingTargetType::kDeveloper);
 
-    std::vector<raw_ptr<const ReportingReport, VectorExperimental>> after;
+    std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>> after;
     cache()->GetReports(&after);
 
     for (const ReportingReport* report : after) {
@@ -269,7 +269,7 @@ class ReportingCacheTest : public ReportingTestBase,
 TEST_P(ReportingCacheTest, Reports) {
   LoadReportingClients();
 
-  std::vector<raw_ptr<const ReportingReport, VectorExperimental>> reports;
+  std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>> reports;
   cache()->GetReports(&reports);
   EXPECT_TRUE(reports.empty());
 
@@ -321,7 +321,7 @@ TEST_P(ReportingCacheTest, RemoveAllReports) {
                      ReportingTargetType::kDeveloper);
   EXPECT_EQ(2, observer()->cached_reports_update_count());
 
-  std::vector<raw_ptr<const ReportingReport, VectorExperimental>> reports;
+  std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>> reports;
   cache()->GetReports(&reports);
   EXPECT_EQ(2u, reports.size());
 
@@ -340,7 +340,7 @@ TEST_P(ReportingCacheTest, RemovePendingReports) {
                      ReportingTargetType::kDeveloper);
   EXPECT_EQ(1, observer()->cached_reports_update_count());
 
-  std::vector<raw_ptr<const ReportingReport, VectorExperimental>> reports;
+  std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>> reports;
   cache()->GetReports(&reports);
   ASSERT_EQ(1u, reports.size());
   EXPECT_FALSE(cache()->IsReportPendingForTesting(reports[0]));
@@ -360,7 +360,7 @@ TEST_P(ReportingCacheTest, RemovePendingReports) {
   EXPECT_EQ(2, observer()->cached_reports_update_count());
 
   // After removing report, future calls to GetReports should not return it.
-  std::vector<raw_ptr<const ReportingReport, VectorExperimental>>
+  std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>>
       visible_reports;
   cache()->GetReports(&visible_reports);
   EXPECT_TRUE(visible_reports.empty());
@@ -379,7 +379,7 @@ TEST_P(ReportingCacheTest, RemoveAllPendingReports) {
                      ReportingTargetType::kDeveloper);
   EXPECT_EQ(1, observer()->cached_reports_update_count());
 
-  std::vector<raw_ptr<const ReportingReport, VectorExperimental>> reports;
+  std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>> reports;
   cache()->GetReports(&reports);
   ASSERT_EQ(1u, reports.size());
   EXPECT_FALSE(cache()->IsReportPendingForTesting(reports[0]));
@@ -399,7 +399,7 @@ TEST_P(ReportingCacheTest, RemoveAllPendingReports) {
   EXPECT_EQ(2, observer()->cached_reports_update_count());
 
   // After removing report, future calls to GetReports should not return it.
-  std::vector<raw_ptr<const ReportingReport, VectorExperimental>>
+  std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>>
       visible_reports;
   cache()->GetReports(&visible_reports);
   EXPECT_TRUE(visible_reports.empty());
@@ -544,7 +544,7 @@ TEST_P(ReportingCacheTest, GetReportsToDeliverForSource) {
                      ReportingTargetType::kDeveloper);
   EXPECT_EQ(3, observer()->cached_reports_update_count());
 
-  std::vector<raw_ptr<const ReportingReport, VectorExperimental>> reports;
+  std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>> reports;
   cache()->GetReports(&reports);
   ASSERT_EQ(3u, reports.size());
 
@@ -560,7 +560,7 @@ TEST_P(ReportingCacheTest, GetReportsToDeliverForSource) {
   CHECK(report3 != reports.end());
 
   // Get the reports for Source 1 and check the status of all reports.
-  EXPECT_EQ((std::vector<raw_ptr<const ReportingReport, VectorExperimental>>{
+  EXPECT_EQ((std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>>{
                 *report1}),
             cache()->GetReportsToDeliverForSource(source1));
   EXPECT_TRUE(cache()->IsReportPendingForTesting(*report1));
@@ -585,7 +585,7 @@ TEST_P(ReportingCacheTest, GetReportsToDeliverForSource) {
                     ReportingReport::Status::QUEUED));
 
   // Get the reports for Source 2 and check the status again.
-  EXPECT_EQ((std::vector<raw_ptr<const ReportingReport, VectorExperimental>>{
+  EXPECT_EQ((std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>>{
                 *report2}),
             cache()->GetReportsToDeliverForSource(source2));
   EXPECT_TRUE(cache()->IsReportPendingForTesting(*report1));
@@ -1545,7 +1545,7 @@ TEST_P(ReportingCacheTest, EvictOldestReport) {
 
   // Make sure the cache evicted a report to make room for the new one, and make
   // sure the report evicted was the earliest-queued one.
-  std::vector<raw_ptr<const ReportingReport, VectorExperimental>> reports;
+  std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>> reports;
   cache()->GetReports(&reports);
   EXPECT_EQ(max_report_count, reports.size());
   for (const ReportingReport* report : reports)
@@ -1561,7 +1561,7 @@ TEST_P(ReportingCacheTest, DontEvictPendingReports) {
   ASSERT_GT(std::numeric_limits<size_t>::max(), max_report_count);
 
   // Enqueue the maximum number of reports, spaced apart in time.
-  std::vector<raw_ptr<const ReportingReport, VectorExperimental>> reports;
+  std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>> reports;
   for (size_t i = 0; i < max_report_count; ++i) {
     reports.push_back(AddAndReturnReport(kNak_, kUrl1_, kUserAgent_, kGroup1_,
                                          kType_, base::DictValue(), 0,
@@ -1582,7 +1582,7 @@ TEST_P(ReportingCacheTest, DontEvictPendingReports) {
 
   // Make sure the cache evicted a report, and make sure the report evicted was
   // the new, non-pending one.
-  std::vector<raw_ptr<const ReportingReport, VectorExperimental>>
+  std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>>
       reports_after_eviction;
   cache()->GetReports(&reports_after_eviction);
   EXPECT_EQ(max_report_count, reports_after_eviction.size());

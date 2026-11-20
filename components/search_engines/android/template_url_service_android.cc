@@ -616,7 +616,7 @@ TemplateUrlServiceAndroid::AddSearchEngineForTesting(
 
 std::vector<raw_ptr<TemplateURL>>
 TemplateUrlServiceAndroid::FilterUserSelectableTemplateUrls(
-    std::vector<raw_ptr<TemplateURL, VectorExperimental>> template_urls) {
+    std::vector<raw_ptr<TemplateURL, DanglingUntriaged>> template_urls) {
   std::vector<raw_ptr<TemplateURL>> result;
 
   // Clean up duplication between a Play API template URL and a corresponding

@@ -89,7 +89,7 @@ class GCMDriver {
   constexpr static size_t kMaxSenders = 100;
 
   using GCMAppHandlerMap =
-      std::map<std::string, raw_ptr<GCMAppHandler, CtnExperimental>>;
+      std::map<std::string, raw_ptr<GCMAppHandler, DanglingUntriaged>>;
   using RegisterCallback =
       base::OnceCallback<void(const std::string& registration_id,
                               GCMClient::Result result)>;

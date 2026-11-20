@@ -67,7 +67,7 @@ void DependencyGraph::AddEdge(DependencyNode* depended,
 }
 
 bool DependencyGraph::GetConstructionOrder(
-    std::vector<raw_ptr<DependencyNode, VectorExperimental>>* order) {
+    std::vector<raw_ptr<DependencyNode, DanglingUntriaged>>* order) {
   if (construction_order_.empty() && !BuildConstructionOrder())
     return false;
 
@@ -76,7 +76,7 @@ bool DependencyGraph::GetConstructionOrder(
 }
 
 bool DependencyGraph::GetDestructionOrder(
-    std::vector<raw_ptr<DependencyNode, VectorExperimental>>* order) {
+    std::vector<raw_ptr<DependencyNode, DanglingUntriaged>>* order) {
   if (construction_order_.empty() && !BuildConstructionOrder())
     return false;
 
@@ -101,7 +101,7 @@ bool DependencyGraph::BuildConstructionOrder() {
   }
 
   // Step 2: Do the Kahn topological sort.
-  std::vector<raw_ptr<DependencyNode, VectorExperimental>> output;
+  std::vector<raw_ptr<DependencyNode, DanglingUntriaged>> output;
   output.reserve(all_nodes_.size());
   size_t remaining_edges = edges_.size();
   while (!queue.empty()) {

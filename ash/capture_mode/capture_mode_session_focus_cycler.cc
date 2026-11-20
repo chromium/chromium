@@ -91,7 +91,7 @@ constexpr int kWindowOfInterestInset = 1;
 // this amount when focusing the affordance circle with spoken feedback.
 constexpr int kSpokenFeedbackAffordanceExtraOutset = 12;
 
-std::vector<raw_ptr<aura::Window, VectorExperimental>>
+std::vector<raw_ptr<aura::Window, DanglingUntriaged>>
 GetWindowListIgnoreModalForActiveDesk() {
   return Shell::Get()->mru_window_tracker()->BuildWindowListIgnoreModal(
       DesksMruType::kActiveDesk);
@@ -1159,7 +1159,7 @@ CaptureModeSessionFocusCycler::GetGroupItems(FocusGroup group) const {
       break;
     }
     case FocusGroup::kCaptureWindow: {
-      const std::vector<raw_ptr<aura::Window, VectorExperimental>> windows =
+      const std::vector<raw_ptr<aura::Window, DanglingUntriaged>> windows =
           GetWindowListIgnoreModalForActiveDesk();
       if (!windows.empty()) {
         const std::vector<HighlightableView*> camera_items =

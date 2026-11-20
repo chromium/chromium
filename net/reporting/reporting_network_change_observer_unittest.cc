@@ -42,7 +42,7 @@ class ReportingNetworkChangeObserverTest : public ReportingTestBase {
   }
 
   size_t report_count() {
-    std::vector<raw_ptr<const ReportingReport, VectorExperimental>> reports;
+    std::vector<raw_ptr<const ReportingReport, DanglingUntriaged>> reports;
     cache()->GetReports(&reports);
     return reports.size();
   }

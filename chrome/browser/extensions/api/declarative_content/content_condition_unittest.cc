@@ -73,13 +73,13 @@ class TestPredicateFactoryGeneratingPredicate : public ContentPredicateFactory {
     return predicate;
   }
 
-  const std::vector<raw_ptr<const ContentPredicate, VectorExperimental>>&
+  const std::vector<raw_ptr<const ContentPredicate, DanglingUntriaged>>&
   created_predicates() const {
     return created_predicates_;
   }
 
  private:
-  std::vector<raw_ptr<const ContentPredicate, VectorExperimental>>
+  std::vector<raw_ptr<const ContentPredicate, DanglingUntriaged>>
       created_predicates_;
 };
 

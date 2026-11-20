@@ -82,7 +82,7 @@ class PolicyCacheUpdaterAndroidTest : public ::testing::Test {
         true /* is_first_policy_load_complete_return */);
     j_support_ = Java_PolicyCacheUpdaterTestSupporter_Constructor(env_);
     policy_service_ = std::make_unique<policy::PolicyServiceImpl>(
-        std::vector<raw_ptr<ConfigurationPolicyProvider, VectorExperimental>>{
+        std::vector<raw_ptr<ConfigurationPolicyProvider, DanglingUntriaged>>{
             &policy_provider_});
     policy_handler_list_ = std::make_unique<ConfigurationPolicyHandlerList>(
         ConfigurationPolicyHandlerList::

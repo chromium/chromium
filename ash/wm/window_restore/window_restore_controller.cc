@@ -225,10 +225,10 @@ bool WindowRestoreController::CanActivateAppList(const aura::Window* window) {
 }
 
 // static
-std::vector<raw_ptr<aura::Window, VectorExperimental>>::const_iterator
+std::vector<raw_ptr<aura::Window, DanglingUntriaged>>::const_iterator
 WindowRestoreController::GetWindowToInsertBefore(
     aura::Window* window,
-    const std::vector<raw_ptr<aura::Window, VectorExperimental>>& windows) {
+    const std::vector<raw_ptr<aura::Window, DanglingUntriaged>>& windows) {
   const int32_t* activation_index =
       window->GetProperty(app_restore::kActivationIndexKey);
   DCHECK(activation_index);

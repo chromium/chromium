@@ -194,7 +194,7 @@ class ShillDeviceClientImpl : public ShillDeviceClient {
   TestInterface* GetTestInterface() override { return nullptr; }
 
  private:
-  typedef std::map<std::string, raw_ptr<ShillClientHelper, CtnExperimental>>
+  typedef std::map<std::string, raw_ptr<ShillClientHelper, DanglingUntriaged>>
       HelperMap;
 
   // Returns the corresponding ShillClientHelper for the profile.

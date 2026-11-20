@@ -300,7 +300,7 @@ void ChromeAppListModelUpdater::SetSearchEngineIsGoogle(bool is_google) {
 }
 
 void ChromeAppListModelUpdater::PublishSearchResults(
-    const std::vector<raw_ptr<ChromeSearchResult, VectorExperimental>>& results,
+    const std::vector<raw_ptr<ChromeSearchResult, DanglingUntriaged>>& results,
     const std::vector<ash::AppListSearchResultCategory>& categories) {
   TRACE_EVENT0("ui", "ChromeAppListModelUpdater::PublishSearchResults");
   published_results_ = results;
@@ -324,7 +324,7 @@ void ChromeAppListModelUpdater::ClearSearchResults() {
   search_model_.DeleteAllResults();
 }
 
-std::vector<raw_ptr<ChromeSearchResult, VectorExperimental>>
+std::vector<raw_ptr<ChromeSearchResult, DanglingUntriaged>>
 ChromeAppListModelUpdater::GetPublishedSearchResultsForTest() {
   return published_results_;
 }

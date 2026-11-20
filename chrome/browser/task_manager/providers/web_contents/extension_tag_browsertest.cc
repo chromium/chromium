@@ -41,10 +41,9 @@ class ExtensionTagsTest : public extensions::ExtensionBrowserTest {
     return itr != task_manager.tasks().end() ? *itr : nullptr;
   }
 
-  std::vector<raw_ptr<WebContentsTag, VectorExperimental>> tracked_tags()
-      const {
+  std::vector<raw_ptr<WebContentsTag, DanglingUntriaged>> tracked_tags() const {
     auto all_tags = WebContentsTagsManager::GetInstance()->tracked_tags();
-    std::vector<raw_ptr<WebContentsTag, VectorExperimental>> filtered_tags;
+    std::vector<raw_ptr<WebContentsTag, DanglingUntriaged>> filtered_tags;
     std::ranges::copy_if(
         all_tags, std::back_inserter(filtered_tags),
         [](const auto& tag) { return !tag->web_contents()->GetWebUI(); });

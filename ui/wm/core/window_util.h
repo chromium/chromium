@@ -108,7 +108,7 @@ COMPONENT_EXPORT(UI_WM) aura::Window* GetTransientParent(aura::Window* window);
 COMPONENT_EXPORT(UI_WM)
 const aura::Window* GetTransientParent(const aura::Window* window);
 COMPONENT_EXPORT(UI_WM)
-const std::vector<raw_ptr<aura::Window, VectorExperimental>>&
+const std::vector<raw_ptr<aura::Window, DanglingUntriaged>>&
 GetTransientChildren(const aura::Window* window);
 COMPONENT_EXPORT(UI_WM)
 void AddTransientChild(aura::Window* parent, aura::Window* child);

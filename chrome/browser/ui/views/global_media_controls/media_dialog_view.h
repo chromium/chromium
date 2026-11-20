@@ -108,9 +108,9 @@ class MediaDialogView : public views::BubbleDialogDelegateView,
 
   void TargetLanguageChanged();
 
-  const std::map<
-      const std::string,
-      raw_ptr<global_media_controls::MediaItemUIUpdatedView, CtnExperimental>>&
+  const std::map<const std::string,
+                 raw_ptr<global_media_controls::MediaItemUIUpdatedView,
+                         DanglingUntriaged>>&
   GetItemsForTesting() const;
 
   const global_media_controls::MediaItemUIListView* GetListViewForTesting()
@@ -187,7 +187,7 @@ class MediaDialogView : public views::BubbleDialogDelegateView,
   // observing.
   std::map<
       const std::string,
-      raw_ptr<global_media_controls::MediaItemUIUpdatedView, CtnExperimental>>
+      raw_ptr<global_media_controls::MediaItemUIUpdatedView, DanglingUntriaged>>
       items_;
 
   // Refreshes items in `items_` when their associated Media Route changes.
