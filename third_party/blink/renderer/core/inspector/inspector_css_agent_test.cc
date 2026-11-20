@@ -299,12 +299,13 @@ class InspectorCSSAgentTest : public PageTestBase {
   InspectorCSSAgent* SetUpEnsureComputedStyleReentrancy() {
     InspectorCSSAgent* agent = CreateAttachedInspectorCSSAgent();
     SeedMapForShrinkOnFlush(agent);
-    // An unsupported format leaves `sources_` empty so our custom source runs
-    // directly on lookup without starting a network or local font load.
+    // An unsupported `.eot` source leaves `sources_` empty without triggering a
+    // network/local font load or a CSS src parse error, so our custom source
+    // runs directly on lookup.
     auto* font_face = FontFace::Create(
         GetDocument().GetExecutionContext(), AtomicString("Reentrant"),
         MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferViewOrString>(
-            String("url('') format('svg')")),
+            String("url('https://example.invalid/font.eot')")),
         FontFaceDescriptors::Create());
     font_face->CssFontFace()->AddSource(
         MakeGarbageCollected<ReentrantFontFaceSource>(agent));
@@ -1866,7 +1867,10 @@ TEST_F(InspectorCSSAgentTest,
        FontAtRulesForNodesReentrancyDuringEnsureComputedStyle) {
   SetBodyInnerHTML(R"HTML(
     <style>
-      @font-face { font-family: CustomFont; src: url('') format('svg'); }
+      @font-face {
+        font-family: CustomFont;
+        src: url('https://example.invalid/font.eot');
+      }
       #styled { font-family: CustomFont; }
       #scope { font-family: Reentrant, CustomFont; width: 10ch; }
     </style>
