@@ -528,3 +528,18 @@ IN_PROC_BROWSER_TEST_F(JavascriptFrameworksUkmObserverBrowserTest,
       "/page_load_metrics/framework-version-detection/"
       "not-detected-bad-values.html");
 }
+
+IN_PROC_BROWSER_TEST_F(JavascriptFrameworksUkmObserverBrowserTest,
+                       NoFrameworkVersionDetectedGetters) {
+  RunNoFrameworkVersionNotDetectedTest(
+      "/page_load_metrics/framework-version-detection/"
+      "not-detected-getters.html");
+}
+
+IN_PROC_BROWSER_TEST_F(JavascriptFrameworksUkmObserverBrowserTest,
+                       NextJSVersionDetectedRegExpExecOverride) {
+  RunSingleFrameworkVersionDetectionTest(
+      "/page_load_metrics/framework-version-detection/"
+      "nextjs-regexp-exec-override.html",
+      "NextJSVersion", std::make_pair(13, 3));
+}

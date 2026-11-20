@@ -21,8 +21,10 @@
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
 #include "third_party/blink/renderer/platform/bindings/dom_data_store.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
+#include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+#include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 #include "v8/include/v8.h"
@@ -231,35 +233,34 @@ inline void CheckGlobalStringMatches(
   }
 }
 
-int64_t ExtractVersion(v8::Local<v8::RegExp> regexp,
-                       v8::Local<v8::Context> context,
-                       v8::Local<v8::Value> version) {
-  v8::Local<v8::Value> groups;
-  v8::Local<v8::Value> major;
-  v8::Local<v8::Value> minor;
-  bool success =
-      regexp->ExecV2(context, version.As<v8::String>()).ToLocal(&groups);
-  if (!success || !groups->IsArray()) {
-    return kNoFrameworkVersionDetected;
+// Finds the first match of /([0-9]+)\.([0-9]+)/ in `version`, and returns the
+// major and minor versions, each clamped to 8 bits. This is implemented
+// natively rather than with a v8::RegExp, because executing a RegExp calls the
+// page-modifiable RegExp.prototype.exec, which would run page script.
+int64_t ExtractVersion(const String& version) {
+  const wtf_size_t length = version.length();
+  wtf_size_t i = 0;
+  while (i < length) {
+    if (!IsAsciiDigit(version[i])) {
+      ++i;
+      continue;
+    }
+    // Major & minor versions are clamped to 8bits to avoid using this as a
+    // vector to identify users. Accumulating modulo 256 gives the same result
+    // as clamping the full value.
+    int64_t major = 0;
+    for (; i < length && IsAsciiDigit(version[i]); ++i) {
+      major = (major * 10 + (version[i] - '0')) & 0xff;
+    }
+    if (i + 1 < length && version[i] == '.' && IsAsciiDigit(version[i + 1])) {
+      int64_t minor = 0;
+      for (++i; i < length && IsAsciiDigit(version[i]); ++i) {
+        minor = (minor * 10 + (version[i] - '0')) & 0xff;
+      }
+      return (major << 8) | minor;
+    }
   }
-  v8::Local<v8::Array> groups_array = groups.As<v8::Array>();
-  if (!groups_array->Get(context, 1).ToLocal(&major) ||
-      !groups_array->Get(context, 2).ToLocal(&minor) || !major->IsString() ||
-      !minor->IsString()) {
-    return kNoFrameworkVersionDetected;
-  }
-
-  v8::Local<v8::Value> major_number;
-  v8::Local<v8::Value> minor_number;
-  if (!major->ToNumber(context).ToLocal(&major_number) ||
-      !minor->ToNumber(context).ToLocal(&minor_number)) {
-    return kNoFrameworkVersionDetected;
-  }
-
-  // Major & minor versions are clamped to 8bits to avoid using this as a
-  // vector to identify users.
-  return ((major_number->IntegerValue(context).FromMaybe(0) & 0xff) << 8) |
-         (minor_number->IntegerValue(context).FromMaybe(0) & 0xff);
+  return kNoFrameworkVersionDetected;
 }
 
 void DetectFrameworkVersions(Document& document,
@@ -268,28 +269,29 @@ void DetectFrameworkVersions(Document& document,
                              JavaScriptFrameworkDetectionResult& result,
                              const AtomicString& detected_ng_version) {
   v8::Local<v8::Object> global = context->Global();
-  static constexpr char kVersionPattern[] = "([0-9]+)\\.([0-9]+)";
-  v8::Local<v8::RegExp> version_regexp;
 
-  if (!v8::RegExp::New(context, V8AtomicString(isolate, kVersionPattern),
-                       v8::RegExp::kNone)
-           .ToLocal(&version_regexp)) {
-    return;
-  }
-
+  // Returns the value of the own data property `prop_name` of `object`, or
+  // undefined. This must never run page script, so accessor properties
+  // (getters), interceptors, proxies and the prototype chain are all ignored.
   auto SafeGetProperty = [&](v8::Local<v8::Value> object,
                              const char* prop_name) -> v8::Local<v8::Value> {
-    if (object.IsEmpty() || !object->IsObject()) {
+    if (object.IsEmpty() || !object->IsObject() || object->IsProxy()) {
       return v8::Undefined(isolate);
     }
-
+    v8::Local<v8::Object> obj = object.As<v8::Object>();
+    v8::Local<v8::String> name = V8AtomicString(isolate, prop_name);
+    // HasRealNamedProperty() and HasRealNamedCallbackProperty() only look at
+    // own properties, skip interceptors, and never run script.
+    if (!obj->HasRealNamedProperty(context, name).FromMaybe(false) ||
+        obj->HasRealNamedCallbackProperty(context, name).FromMaybe(true)) {
+      return v8::Undefined(isolate);
+    }
+    // `name` is now known to be an own data property, so this does not run
+    // script.
     v8::Local<v8::Value> value;
-    if (!object.As<v8::Object>()
-             ->GetRealNamedProperty(context, V8AtomicString(isolate, prop_name))
-             .ToLocal(&value)) {
+    if (!obj->GetRealNamedProperty(context, name).ToLocal(&value)) {
       return v8::Undefined(isolate);
     }
-
     return value;
   };
 
@@ -300,18 +302,16 @@ void DetectFrameworkVersions(Document& document,
     v8::Local<v8::Value> version_string =
         SafeGetProperty(SafeGetProperty(global, kNext), kVersion);
     if (!version_string.IsEmpty() && version_string->IsString()) {
-      version = ExtractVersion(version_regexp, context, version_string);
+      version = ExtractVersion(
+          ToCoreString(isolate, version_string.As<v8::String>()));
     }
 
     result.detected_versions[JavaScriptFramework::kNext] = version;
   }
 
   if (!detected_ng_version.IsNull()) {
-    result.detected_versions[JavaScriptFramework::kAngular] = ExtractVersion(
-        version_regexp, context,
-        v8::String::NewFromUtf8(isolate,
-                                detected_ng_version.GetString().Utf8().c_str())
-            .FromMaybe(v8::String::Empty(isolate)));
+    result.detected_versions[JavaScriptFramework::kAngular] =
+        ExtractVersion(detected_ng_version.GetString());
   }
 
   if (result.detected_versions.contains(JavaScriptFramework::kVue)) {
@@ -322,8 +322,8 @@ void DetectFrameworkVersions(Document& document,
       v8::Local<v8::Value> version_string =
           SafeGetProperty(SafeGetProperty(global, kVue2), kVersion);
       if (!version_string.IsEmpty() && version_string->IsString()) {
-        result.detected_versions[JavaScriptFramework::kVue] =
-            ExtractVersion(version_regexp, context, version_string);
+        result.detected_versions[JavaScriptFramework::kVue] = ExtractVersion(
+            ToCoreString(isolate, version_string.As<v8::String>()));
       }
     } else {
       static constexpr char kVue3[] = "__VUE__";
@@ -365,8 +365,7 @@ void DetectFrameworkVersions(Document& document,
         StringView version_string = content;
         version_string.remove_prefix(kWordpressPrefixLength);
         result.detected_versions[JavaScriptFramework::kWordPress] =
-            ExtractVersion(version_regexp, context,
-                           V8String(isolate, version_string));
+            ExtractVersion(version_string.ToString());
       } else if (constexpr char kDrupalPrefix[] = "Drupal ";
                  content.starts_with(kDrupalPrefix)) {
         constexpr size_t kDrupalPrefixLength =
@@ -414,6 +413,13 @@ void DetectJavascriptFrameworksOnLoad(Document& document) {
   if (!frame || !frame->IsOutermostMainFrame() ||
       !document.Url().ProtocolIsInHttpFamily() ||
       !document.BaseURL().ProtocolIsInHttpFamily()) {
+    return;
+  }
+
+  // This can be reached synchronously from frame detach, e.g. during a
+  // rendering update. Detection should never run script, but don't even touch
+  // V8 objects when script is forbidden.
+  if (ScriptForbiddenScope::IsScriptForbidden()) {
     return;
   }
 
