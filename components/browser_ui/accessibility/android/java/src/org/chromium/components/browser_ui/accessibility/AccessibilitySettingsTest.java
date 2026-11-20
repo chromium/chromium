@@ -14,6 +14,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -52,7 +53,6 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.components.browser_ui.settings.BlankUiTestActivitySettingsTestRule;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
@@ -63,7 +63,6 @@ import org.chromium.components.prefs.PrefChangeRegistrarJni;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.web_distiller.core.DistilledPagePrefs;
-import org.chromium.components.web_distiller.core.WebDistillerFeatures;
 import org.chromium.content.browser.HostZoomMapImpl;
 import org.chromium.content.browser.HostZoomMapImplJni;
 import org.chromium.content_public.browser.BrowserContextHandle;
@@ -330,8 +329,8 @@ public class AccessibilitySettingsTest {
     @Test
     @SmallTest
     @Feature({"Accessibility"})
-    @EnableFeatures(WebDistillerFeatures.READER_MODE_TOGGLE_LINKS)
     public void testReaderEnableLinksPreferenceChange() {
+        when(mDelegate.shouldShowReaderModeToggleLinksSetting()).thenReturn(true);
         when(mDistilledPagePrefsMock.getLinksEnabled()).thenReturn(true);
         launchPreferenceUI();
         ChromeSwitchPreference readerEnableLinksPref =
@@ -355,8 +354,8 @@ public class AccessibilitySettingsTest {
     @Test
     @SmallTest
     @Feature({"Accessibility"})
-    @EnableFeatures(WebDistillerFeatures.READER_MODE_TOGGLE_LINKS)
     public void testReaderEnableLinksObserver() {
+        when(mDelegate.shouldShowReaderModeToggleLinksSetting()).thenReturn(true);
         when(mDistilledPagePrefsMock.getLinksEnabled()).thenReturn(true);
         launchPreferenceUI();
         ChromeSwitchPreference readerEnableLinksPref =
@@ -381,8 +380,8 @@ public class AccessibilitySettingsTest {
     @Test
     @SmallTest
     @Feature({"Accessibility"})
-    @EnableFeatures(WebDistillerFeatures.READER_MODE_TOGGLE_LINKS)
     public void testReaderEnableLinksObserver_unregisterObserverOnDestroy() {
+        when(mDelegate.shouldShowReaderModeToggleLinksSetting()).thenReturn(true);
         when(mDistilledPagePrefsMock.getLinksEnabled()).thenReturn(true);
         launchPreferenceUI();
         verify(mDistilledPagePrefsMock).addObserver(any());
@@ -394,8 +393,22 @@ public class AccessibilitySettingsTest {
     @Test
     @SmallTest
     @Feature({"Accessibility"})
-    @EnableFeatures(WebDistillerFeatures.READER_MODE_TOGGLE_LINKS)
+    public void testReaderEnableLinksHidden_DelegateFalse() {
+        when(mDelegate.shouldShowReaderModeToggleLinksSetting()).thenReturn(false);
+        launchPreferenceUI();
+        ChromeSwitchPreference readerEnableLinksPref =
+                (ChromeSwitchPreference)
+                        mAccessibilitySettings.findPreference(
+                                AccessibilitySettings.PREF_READER_ENABLE_LINKS);
+        Assert.assertFalse(readerEnableLinksPref.isVisible());
+        verify(mDistilledPagePrefsMock, never()).addObserver(any());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Accessibility"})
     public void testReaderEnableLinksInitialState_Disabled() {
+        when(mDelegate.shouldShowReaderModeToggleLinksSetting()).thenReturn(true);
         when(mDistilledPagePrefsMock.getLinksEnabled()).thenReturn(false);
         launchPreferenceUI();
         ChromeSwitchPreference readerEnableLinksPref =

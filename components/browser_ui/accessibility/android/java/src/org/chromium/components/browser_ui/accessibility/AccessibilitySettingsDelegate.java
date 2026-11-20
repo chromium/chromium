@@ -42,6 +42,9 @@ public interface AccessibilitySettingsDelegate {
     /** Returns whether the Image Descriptions user setting should be shown. */
     boolean shouldShowImageDescriptionsSetting();
 
+    /** Returns whether the Reader Mode toggle links setting should be shown. */
+    boolean shouldShowReaderModeToggleLinksSetting();
+
     /** Returns the SettingsNavigation for navigating between Settings pages. */
     SettingsNavigation getSiteSettingsNavigation();
 

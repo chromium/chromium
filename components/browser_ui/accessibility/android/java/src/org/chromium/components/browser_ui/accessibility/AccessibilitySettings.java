@@ -39,7 +39,6 @@ import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.components.prefs.PrefChangeRegistrar.PrefObserver;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.web_distiller.core.DistilledPagePrefs;
-import org.chromium.components.web_distiller.core.WebDistillerFeatures;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.ui.base.UiAndroidFeatureList;
@@ -143,7 +142,7 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
                 mDelegate.getReaderAccessibilityDelegate().getValue());
         readerForAccessibilityPref.setOnPreferenceChangeListener(this);
 
-        boolean toggleLinksEnabled = shouldShowReadingModeToggleLinks();
+        boolean toggleLinksEnabled = mDelegate.shouldShowReaderModeToggleLinksSetting();
         ChromeSwitchPreference readerEnableLinks = findPreference(PREF_READER_ENABLE_LINKS);
         readerEnableLinks.setVisible(toggleLinksEnabled);
         if (toggleLinksEnabled) {
@@ -338,10 +337,6 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
         return delegate.shouldShowImageDescriptionsSetting();
     }
 
-    private static boolean shouldShowReadingModeToggleLinks() {
-        return WebDistillerFeatures.sReaderModeToggleLinks.isEnabled();
-    }
-
     public static final BaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
             new BaseSearchIndexProvider(
                     AccessibilitySettings.class.getName(), R.xml.accessibility_preferences);
@@ -397,7 +392,7 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
         if (!shouldShowTouchpadOverscrollHistoryNavigationPref()) {
             indexData.removeEntryForKey(prefFragment, PREF_TOUCHPAD_OVERSCROLL_HISTORY_NAVIGATION);
         }
-        if (!shouldShowReadingModeToggleLinks()) {
+        if (!delegate.shouldShowReaderModeToggleLinksSetting()) {
             indexData.removeEntryForKey(prefFragment, PREF_READER_ENABLE_LINKS);
         }
     }

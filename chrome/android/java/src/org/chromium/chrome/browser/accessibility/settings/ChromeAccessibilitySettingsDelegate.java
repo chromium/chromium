@@ -19,6 +19,7 @@ import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.web_distiller.core.DistilledPagePrefs;
+import org.chromium.components.web_distiller.core.WebDistillerFeatures;
 import org.chromium.content_public.browser.BrowserContextHandle;
 
 /** The Chrome implementation of AccessibilitySettingsDelegate. */
@@ -97,6 +98,11 @@ public class ChromeAccessibilitySettingsDelegate implements AccessibilitySetting
     @Override
     public boolean shouldShowImageDescriptionsSetting() {
         return ImageDescriptionsController.getInstance().shouldShowImageDescriptionsMenuItem();
+    }
+
+    @Override
+    public boolean shouldShowReaderModeToggleLinksSetting() {
+        return WebDistillerFeatures.sReaderModeToggleLinks.isEnabled();
     }
 
     @Override
