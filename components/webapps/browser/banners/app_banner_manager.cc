@@ -407,6 +407,9 @@ void AppBannerManager::OnNativeAppInstallableCheckComplete(
   CHECK(mode_ == AppBannerMode::kNativeApp);
 
   native_app_data_.emplace(result.value());
+  // The page prefers a native app, so do not promote the web app. This also
+  // overwrites `last_known_result_`, which can hold a result of an earlier run.
+  SetInstallableWebAppCheckResult(InstallableWebAppCheckResult::kNo);
 
   SendBannerPromptRequest();
 }

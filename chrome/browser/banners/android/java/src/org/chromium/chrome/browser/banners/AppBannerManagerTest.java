@@ -746,6 +746,33 @@ public class AppBannerManagerTest {
         changeManifestFromNativeAppToWebApp(AppBannerManagerState.COMPLETE);
     }
 
+    /**
+     * Loads a page with a web app manifest, then changes the manifest link of the same page to a
+     * Play app manifest. The web app must not stay promotable after the native app check passes
+     * (b/586955348).
+     */
+    @Test
+    @MediumTest
+    @Feature({"AppBanners"})
+    public void testManifestChangeFromWebAppToNativeApp() throws Exception {
+        ChromeActivityTestRule<? extends ChromeActivity> rule =
+                mTabbedActivityTestRule.getActivityTestRule();
+        rule.loadUrlInNewTab(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
+        navigateToUrlAndWaitForBannerManager(
+                rule, WebappTestPage.getTestUrlWithManifest(mTestServer, WEB_APP_MANIFEST));
+        Tab tab = rule.getActivityTab();
+        waitForAppBannerPipelineStatus(tab, AppBannerManagerState.PENDING_PROMPT);
+        waitUntilPromotableStatus(rule, true);
+        Assert.assertEquals(0, mDetailsDelegate.mNumRetrieved);
+
+        JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                tab.getWebContents(), "changeManifestUrl('" + NATIVE_APP_MANIFEST_WITH_ID + "')");
+
+        waitUntilAppDetailsRetrieved(rule, 1);
+        waitForAppBannerPipelineStatus(tab, AppBannerManagerState.PENDING_PROMPT);
+        waitUntilPromotableStatus(rule, false);
+    }
+
     @Test
     @SmallTest
     @Feature({"AppBanners"})
