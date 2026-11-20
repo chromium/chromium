@@ -37,6 +37,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -415,9 +416,28 @@ IN_PROC_BROWSER_TEST_F(GlicProviderChangeWebviewBrowserTest,
                        OpeningGlicShowsRelaunchPanel) {
   UpdateGeminiEnterpriseUrlPolicy(kPolicyUrl);
 
-  ASSERT_OK(OpenGlicForActiveTab());
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
   EXPECT_OK(
       WaitForWebUiState(mojom::WebUiState::kPendingProviderChangeGeminiToGeic));
+  content::WebContents* webui = instance->host().webui_contents();
+  ASSERT_TRUE(webui);
+  EXPECT_EQ(true, content::EvalJs(webui, R"js(
+    (() => {
+      const panel = document.getElementById('providerChangePanel');
+      const label = document.getElementById(
+          panel?.getAttribute('aria-labelledby') ?? '');
+      const desc = document.getElementById(
+          panel?.getAttribute('aria-describedby') ?? '');
+      return !!panel && !panel.hidden &&
+          panel.getAttribute('role') === 'dialog' &&
+          panel.getAttribute('aria-modal') === 'true' &&
+          panel.getAttribute('tabindex') === '-1' &&
+          (label?.textContent?.trim().length ?? 0) > 0 &&
+          (desc?.textContent?.trim().length ?? 0) > 0 &&
+          document.activeElement === panel &&
+          getComputedStyle(panel).outlineStyle === 'none';
+    })()
+  )js"));
 }
 
 // Opening on warmed WebUI contents sends `IntentToShow()` right after

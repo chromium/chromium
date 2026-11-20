@@ -136,17 +136,23 @@ export class GlicOverlayElement extends HTMLElement {
     }
   }
 
-  private setOverlayState(state: OverlayState): void {
-    // Hide all dialog panels.
+  private showPanel(activePanel: HTMLElement): void {
     const panels = this.querySelectorAll('#localPanels .dialog.panel');
     for (const panel of panels) {
-      (panel as HTMLElement).hidden = true;
+      (panel as HTMLElement).hidden = panel !== activePanel;
     }
+  }
 
+  private setOverlayState(state: OverlayState): void {
     if (state.loading !== undefined) {
       this.showLoading(state.loading);
     } else if (state.error !== undefined) {
       this.showError(state.error);
+    } else {
+      const panels = this.querySelectorAll('#localPanels .dialog.panel');
+      for (const panel of panels) {
+        (panel as HTMLElement).hidden = true;
+      }
     }
   }
 
@@ -165,38 +171,41 @@ export class GlicOverlayElement extends HTMLElement {
     });
     $.relaunchButton.hidden = showContinueButton;
     $.continueButton.hidden = !showContinueButton;
-    $.providerChangePanel.hidden = false;
+    this.showPanel($.providerChangePanel);
+    if (!$.providerChangePanel.contains(document.activeElement)) {
+      $.providerChangePanel.focus();
+    }
   }
 
   private showError(errorType: ErrorPanelType): void {
     switch (errorType) {
       case ErrorPanelType.kOffline:
-        $.offlinePanel.hidden = false;
+        this.showPanel($.offlinePanel);
         break;
       case ErrorPanelType.kError:
-        $.errorPanel.hidden = false;
+        this.showPanel($.errorPanel);
         break;
       case ErrorPanelType.kUnavailable:
-        $.unavailablePanel.hidden = false;
+        this.showPanel($.unavailablePanel);
         break;
       case ErrorPanelType.kIneligibleAccount:
-        $.ineligibleAccountPanel.hidden = false;
+        this.showPanel($.ineligibleAccountPanel);
         break;
       case ErrorPanelType.kDisabledByAdmin:
         $.disabledByAdminPanel.classList.toggle(
             'show-disabled-by-admin-link', false);
-        $.disabledByAdminPanel.hidden = false;
+        this.showPanel($.disabledByAdminPanel);
         break;
       case ErrorPanelType.kDisabledByAdminWithLink:
         $.disabledByAdminPanel.classList.toggle(
             'show-disabled-by-admin-link', true);
-        $.disabledByAdminPanel.hidden = false;
+        this.showPanel($.disabledByAdminPanel);
         break;
       case ErrorPanelType.kSignIn:
-        $.signInPanel.hidden = false;
+        this.showPanel($.signInPanel);
         break;
       case ErrorPanelType.kLocationMismatch:
-        $.locationMismatchPanel.hidden = false;
+        this.showPanel($.locationMismatchPanel);
         break;
       case ErrorPanelType.kPendingProviderChangeGeminiToGeic:
       case ErrorPanelType.kPendingProviderChangeGeicToGemini:
@@ -209,14 +218,14 @@ export class GlicOverlayElement extends HTMLElement {
       default: {
         const _exhaustiveCheck: never = errorType;
         console.error(`Unhandled error panel type: ${_exhaustiveCheck}`);
-        $.errorPanel.hidden = false;
+        this.showPanel($.errorPanel);
         break;
       }
     }
   }
 
   private showLoading(loadingStyle: LoadingStyle): void {
-    $.loadingPanel.hidden = false;
+    this.showPanel($.loadingPanel);
     const isSidePanel = loadingStyle === LoadingStyle.kSidePanel;
     document.body.classList.toggle('sidePanel', isSidePanel);
     document.body.classList.toggle('floating', !isSidePanel);

@@ -1002,12 +1002,17 @@ export class GlicAppController implements WebviewDelegate {
     const panelStateKindSection = getRequiredElement('localPanels');
     panelStateKindSection.classList.toggle('hidden', id === 'guestPanel');
 
-    // Focus the webview when the guest panel is shown.
+    // Focus the webview when the guest panel is shown, or the provider-change
+    // dialog panel so screen readers announce it.
     // b/475260887: webview.focus() won't focus the client page if the
     // <webview> element is invisible (due to an ancestor element having
     // display: none or HTML hidden attribute).
     if (id === 'guestPanel') {
       this.webview?.focus();
+    } else if (
+        id === 'providerChangePanel' &&
+        !$.providerChangePanel.contains(document.activeElement)) {
+      $.providerChangePanel.focus();
     }
   }
 

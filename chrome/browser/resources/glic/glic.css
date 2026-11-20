@@ -265,6 +265,12 @@ webview {
   }
 }
 
+/* Suppress the browser focus ring on the full-panel dialog container itself;
+ * interactive controls inside keep their focus rings. */
+#providerChangePanel:focus-visible {
+  outline: none;
+}
+
 #providerChangePanel .container {
   isolation: isolate;
   position: relative;

@@ -265,4 +265,61 @@ suite('GlicOverlayTest', () => {
           `Expected close button ${i} to trigger onClosePanelClicked`);
     }
   });
+
+  test('ProviderChangePanelDialogSemanticsAndFocus', async () => {
+    const panel = getElement('providerChangePanel');
+    assertEquals('dialog', panel.getAttribute('role'));
+    assertEquals('true', panel.getAttribute('aria-modal'));
+    assertEquals('-1', panel.getAttribute('tabindex'));
+
+    const labelledBy = panel.getAttribute('aria-labelledby');
+    const describedBy = panel.getAttribute('aria-describedby');
+    assertTrue(!!labelledBy, 'Expected aria-labelledby attribute');
+    assertTrue(!!describedBy, 'Expected aria-describedby attribute');
+
+    const labelEl = getElement(labelledBy);
+    const bodyEl = getElement(describedBy);
+
+    for (const type of
+             [ErrorPanelType.kProviderSwitchNoticeGeminiToGeic,
+              ErrorPanelType.kProviderSwitchNoticeGeicToGemini,
+              ErrorPanelType.kProviderSwitchNoticeGeicToOtherGeic,
+              ErrorPanelType.kPendingProviderChangeGeminiToGeic,
+              ErrorPanelType.kPendingProviderChangeGeicToGemini,
+              ErrorPanelType.kPendingProviderChangeGeicToOtherGeic,
+    ]) {
+      if (document.activeElement instanceof HTMLElement) {
+        document.activeElement.blur();
+      }
+      assertFalse(panel.contains(document.activeElement));
+
+      remote.setOverlayState({error: type});
+      await remote.$.flushForTesting();
+
+      assertFalse(panel.hidden);
+      assertEquals(panel, document.activeElement);
+      assertTrue(
+          (labelEl.textContent?.trim().length ?? 0) > 0,
+          `Expected non-empty label text for ${type}`);
+      const visibleBodyText =
+          Array.from(bodyEl.children)
+              .filter(child => !(child as HTMLElement).hidden)
+              .map(child => child.textContent?.trim() ?? '')
+              .join(' ')
+              .trim();
+      assertTrue(
+          visibleBodyText.length > 0,
+          `Expected non-empty visible body text for ${type}`);
+    }
+
+    // Incidental state refreshes while focus is inside the dialog must not
+    // steal focus from the active control.
+    const relaunchButton = getElement('relaunchButton');
+    relaunchButton.focus();
+    assertEquals(relaunchButton, document.activeElement);
+    remote.setOverlayState(
+        {error: ErrorPanelType.kPendingProviderChangeGeicToOtherGeic});
+    await remote.$.flushForTesting();
+    assertEquals(relaunchButton, document.activeElement);
+  });
 });
