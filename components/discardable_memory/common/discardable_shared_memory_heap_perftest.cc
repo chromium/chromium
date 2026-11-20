@@ -9,7 +9,6 @@
 #include <algorithm>
 #include <array>
 #include <cmath>
-#include <cstdlib>
 #include <memory>
 #include <utility>
 
@@ -17,6 +16,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/discardable_shared_memory.h"
 #include "base/memory/page_size.h"
+#include "base/test/insecure_random_generator.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/perf/perf_result_reporter.h"
@@ -48,16 +48,17 @@ TEST(DiscardableSharedMemoryHeapTest, SearchFreeLists) {
 
   unsigned kSeed = 1;
   // Use kSeed as seed for random number generator.
-  srand(kSeed);
+  base::test::InsecureRandomGenerator rng;
+  rng.ReseedForTesting(kSeed);
 
   // Pre-compute random values.
-  std::array<int, kTimeCheckInterval> random_span;
+  std::array<size_t, kTimeCheckInterval> random_span;
   std::array<size_t, kTimeCheckInterval> random_blocks;
   for (int i = 0; i < kTimeCheckInterval; ++i) {
-    random_span[i] = std::rand();
+    random_span[i] = rng.RandUint32();
     // Exponentially distributed block size.
     const double kLambda = 2.0;
-    double v = static_cast<double>(std::rand()) / RAND_MAX;
+    double v = rng.RandDouble();
     random_blocks[i] = 1 + log(1.0 - v) / -kLambda * kBlocks;
   }
 

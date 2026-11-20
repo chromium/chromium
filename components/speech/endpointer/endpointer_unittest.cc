@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "components/speech/endpointer/endpointer.h"
 
 #include <stdint.h>
 
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/insecure_random_generator.h"
 #include "base/types/fixed_array.h"
 #include "components/speech/audio_buffer.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -34,7 +34,8 @@ void RunEndpointerEventsTest(FrameProcessor* processor, int sample_rate) {
   const int kNumFrames = 150;
 
   // Create a random sequence of samples.
-  srand(1);
+  base::test::InsecureRandomGenerator rng;
+  rng.ReseedForTesting(1);
   float gain = 0.0;
   int64_t time = 0;
   for (int frame_count = 0; frame_count < kNumFrames; ++frame_count) {
@@ -47,8 +48,7 @@ void RunEndpointerEventsTest(FrameProcessor* processor, int sample_rate) {
     }
     // Create random samples.
     for (int i = 0; i < frame_size; ++i) {
-      float randNum = static_cast<float>(rand() - (RAND_MAX / 2)) /
-                      static_cast<float>(RAND_MAX);
+      float randNum = static_cast<float>(rng.RandDouble() - 0.5);
       samples[i] = static_cast<int16_t>(gain * randNum);
     }
 

@@ -67,6 +67,7 @@ source_set("unit_tests") {
 
   deps = [
     ":speech",
+    "//base/test:test_support",
     "//testing/gtest",
   ]
 }
