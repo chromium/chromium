@@ -552,6 +552,11 @@ public class ClearBrowsingDataFragmentTest {
         verify(mSearchIndexDataMock)
                 .removeEntry(
                         indexProvider.getUniqueId(
+                                ClearBrowsingDataFragment
+                                        .PREF_SEARCH_HISTORY_LINK_OUT_OTHER_DSE));
+        verify(mSearchIndexDataMock)
+                .removeEntry(
+                        indexProvider.getUniqueId(
                                 ClearBrowsingDataFragment.PREF_PASSWORD_MANAGER_LINK_OUT));
     }
 
