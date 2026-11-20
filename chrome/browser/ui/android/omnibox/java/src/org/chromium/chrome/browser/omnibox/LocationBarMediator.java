@@ -19,6 +19,7 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.util.FloatProperty;
 import android.view.KeyEvent;
@@ -343,6 +344,8 @@ public class LocationBarMediator
     // is aim-eligible, but not every AIM-eligible client is Fusebox-eligible. AIM-but-not-Fusebox
     // clients get AIM UI affordances, e.g. the activation chip, but not Fusebox ones.
     private boolean mIsFuseboxEligible;
+    private @Nullable Drawable mAiModeButtonIcon;
+    private boolean mTintAiModeButtonIcon;
     private @BrandedColorScheme int mBrandedColorScheme = BrandedColorScheme.APP_DEFAULT;
     // TODO(https://crbug.com/481357849): Remove this.
     private boolean mHasEverUpdatedBrandedColorScheme;
@@ -2179,6 +2182,8 @@ public class LocationBarMediator
         mLocationBarLayout.setDeleteButtonTint(
                 ThemeUtils.getThemedToolbarIconTint(mContext, mBrandedColorScheme));
         mLocationBarLayout.updateVisualsForState();
+        // The button's icons take on the text color only when set, so re-apply them.
+        updateAiModeButtonIcons(computeAiModeButtonState());
         mUrlCoordinator.setBrandedColorScheme(mBrandedColorScheme);
         // This sets spans inside the data object that override the color.
         updateUrl();
@@ -3698,6 +3703,7 @@ public class LocationBarMediator
                         || mIsTextWrapping;
         if (shouldBeCompact == mLocationBarLayout.isActivationChipCompact()) return;
         mLocationBarLayout.setActivationChipCompact(shouldBeCompact);
+        updateAiModeButtonIcons(computeAiModeButtonState());
     }
 
     private void onTextWrappingChanged(boolean isTextWrapping) {
@@ -3831,14 +3837,23 @@ public class LocationBarMediator
         updateAlwaysShowAiModeCallback();
     }
 
+    /** Caches the AI Mode button's icon whenever the search engine supplies a new one. */
     private void onAiModeButtonIconChanged(StatusIconResource icon) {
-        mLocationBarLayout.setAiModeButtonIcon(
-                icon.getDrawable(mContext), /* tintWithTextColor= */ icon.getIconRes() != 0);
+        mAiModeButtonIcon = icon.getDrawable(mContext);
+        mTintAiModeButtonIcon = icon.getIconRes() != 0;
+        updateAiModeButtonIcons(computeAiModeButtonState());
+    }
+
+    private void updateAiModeButtonIcons(@AiModeButtonState int state) {
+        if (mAiModeButtonIcon == null) return;
+        mLocationBarLayout.setAiModeButtonIcons(
+                mAiModeButtonIcon, mTintAiModeButtonIcon, state == AiModeButtonState.VISIBLE_SEND);
     }
 
     /* package */ void updateActivationChip() {
         @AiModeButtonState int state = computeAiModeButtonState();
         mLocationBarLayout.setAiModeButtonState(state);
+        updateAiModeButtonIcons(state);
         updateAiModeButtonLabels(state);
         mActivationChipVisibilitySupplier.set(state != AiModeButtonState.HIDDEN);
         updateUrlBarAccessibilityOrder(state != AiModeButtonState.HIDDEN);

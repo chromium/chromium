@@ -6270,7 +6270,10 @@ public class LocationBarMediatorUnitTest {
                         R.drawable.ic_search_24dp, R.color.default_icon_color_tint_list));
 
         verify(mLocationBarLayout)
-                .setAiModeButtonIcon(any(Drawable.class), /* tintWithTextColor= */ eq(true));
+                .setAiModeButtonIcons(
+                        any(Drawable.class),
+                        /* tintWithTextColor= */ eq(true),
+                        /* isSend= */ eq(false));
     }
 
     @Test
@@ -6283,7 +6286,10 @@ public class LocationBarMediatorUnitTest {
                 new StatusIconResource("https://3p.com/favicon.ico", bitmap, 0));
 
         verify(mLocationBarLayout)
-                .setAiModeButtonIcon(any(Drawable.class), /* tintWithTextColor= */ eq(false));
+                .setAiModeButtonIcons(
+                        any(Drawable.class),
+                        /* tintWithTextColor= */ eq(false),
+                        /* isSend= */ eq(false));
     }
 
     @Test
@@ -6352,8 +6358,91 @@ public class LocationBarMediatorUnitTest {
         clearInvocations(mLocationBarLayout);
 
         mHasAttachmentsSupplier.set(true);
-
         verify(mLocationBarLayout).setAiModeButtonState(AiModeButtonState.VISIBLE_SEND);
+        verify(mLocationBarLayout, atLeastOnce())
+                .setAiModeButtonIcons(
+                        /* icon= */ any(Drawable.class),
+                        /* tintWithTextColor= */ eq(true),
+                        /* isSend= */ eq(true));
+
+        clearInvocations(mLocationBarLayout);
+        mHasAttachmentsSupplier.set(false);
+        verify(mLocationBarLayout).setAiModeButtonState(AiModeButtonState.VISIBLE_ACTIVE);
+        verify(mLocationBarLayout, atLeastOnce())
+                .setAiModeButtonIcons(
+                        /* icon= */ any(Drawable.class),
+                        /* tintWithTextColor= */ eq(true),
+                        /* isSend= */ eq(false));
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_STATEFUL_AI_MODE_BUTTON)
+    public void testAiModeButtonState_updatedWhenTextChanges() {
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        AutocompleteInput input = beginPopoverInputForAiModeButton();
+        input.setRequestType(AutocompleteRequestType.AI_MODE);
+        input.setPreviewMatchUrl(null);
+        clearInvocations(mLocationBarLayout);
+
+        doReturn("query").when(mUrlCoordinator).getTextWithAutocomplete();
+        mMediator.onUrlTextChanged("query");
+        verify(mLocationBarLayout, atLeastOnce())
+                .setAiModeButtonState(AiModeButtonState.VISIBLE_SEND);
+        verify(mLocationBarLayout, atLeastOnce())
+                .setAiModeButtonIcons(
+                        /* icon= */ any(Drawable.class),
+                        /* tintWithTextColor= */ eq(true),
+                        /* isSend= */ eq(true));
+
+        clearInvocations(mLocationBarLayout);
+        doReturn("").when(mUrlCoordinator).getTextWithAutocomplete();
+        mMediator.onUrlTextChanged("");
+        verify(mLocationBarLayout, atLeastOnce())
+                .setAiModeButtonState(AiModeButtonState.VISIBLE_ACTIVE);
+        verify(mLocationBarLayout, atLeastOnce())
+                .setAiModeButtonIcons(
+                        /* icon= */ any(Drawable.class),
+                        /* tintWithTextColor= */ eq(true),
+                        /* isSend= */ eq(false));
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_STATEFUL_AI_MODE_BUTTON)
+    public void testAiModeButtonIcons_compactChange_reappliesIcons() {
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        AutocompleteInput input = beginPopoverInputForAiModeButton();
+        input.setRequestType(AutocompleteRequestType.AI_MODE);
+        mHasAttachmentsSupplier.set(true);
+        doReturn(true).when(mLocationBarLayout).isTooNarrowForExpandedActivationChip();
+        clearInvocations(mLocationBarLayout);
+
+        mMediator.updateActivationChipCompact();
+
+        verify(mLocationBarLayout).setActivationChipCompact(true);
+        verify(mLocationBarLayout)
+                .setAiModeButtonIcons(
+                        /* icon= */ any(Drawable.class),
+                        /* tintWithTextColor= */ eq(true),
+                        /* isSend= */ eq(true));
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_STATEFUL_AI_MODE_BUTTON)
+    public void testAiModeButtonIcons_colorSchemeChange_reappliesIcons() {
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        AutocompleteInput input = beginPopoverInputForAiModeButton();
+        input.setRequestType(AutocompleteRequestType.AI_MODE);
+        doReturn(true).when(mLocationBarDataProvider).isIncognitoBranded();
+        clearInvocations(mLocationBarLayout);
+
+        mMediator.updateBrandedColorScheme();
+
+        verify(mLocationBarLayout).updateVisualsForState();
+        verify(mLocationBarLayout, atLeastOnce())
+                .setAiModeButtonIcons(
+                        /* icon= */ any(Drawable.class),
+                        /* tintWithTextColor= */ eq(true),
+                        /* isSend= */ eq(false));
     }
 
     @Test

@@ -127,6 +127,10 @@ found in the LICENSE file.
         <!-- 12dp visual end padding + 5dp horizontalInset. -->
         <item name="chipEndPadding">17dp</item>
         <item name="primaryTextStartPadding">4dp</item>
+        <!-- The chip drops its end padding while it shows an end icon, so the end margin carries
+             the visual padding and the inset: 10dp visual end padding + 5dp horizontalInset. -->
+        <item name="endIconMarginStart">4dp</item>
+        <item name="endIconMarginEnd">15dp</item>
         <item name="allowMultipleLines">false</item>
         <item name="android:text">@string/ai_mode_entrypoint_label</item>
         <item name="textAlignStart">true</item>

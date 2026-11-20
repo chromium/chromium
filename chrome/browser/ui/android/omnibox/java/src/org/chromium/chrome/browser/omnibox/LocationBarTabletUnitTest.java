@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.omnibox;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -15,6 +16,7 @@ import static org.mockito.Mockito.lenient;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
 import android.view.Gravity;
@@ -27,6 +29,7 @@ import android.view.ViewGroup.LayoutParams;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.view.ViewOutlineProvider;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import androidx.annotation.ColorInt;
@@ -59,6 +62,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.util.motion.MotionEventTestUtils;
+import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -982,6 +986,39 @@ public class LocationBarTabletUnitTest {
         mLocationBarTablet.setReparentedToPopover(false);
         assertEquals(0, statusParams.getMarginStart());
         assertEquals(0, chipParams.getMarginEnd());
+    }
+
+    @Test
+    public void testSetAiModeButtonIcons() {
+        ChipView chip = mLocationBarTablet.getActivationChip();
+        ImageView startIcon = chip.findViewById(R.id.chip_view_start_icon);
+        Drawable aiModeIcon = mActivity.getDrawable(R.drawable.ic_search_24dp);
+
+        mLocationBarTablet.setAiModeButtonIcons(
+                aiModeIcon, /* tintWithTextColor= */ true, /* isSend= */ false);
+        assertEquals(View.VISIBLE, startIcon.getVisibility());
+        assertEquals(aiModeIcon, startIcon.getDrawable());
+        assertNull(chip.findViewById(R.id.chip_view_end_icon));
+
+        mLocationBarTablet.setAiModeButtonIcons(
+                aiModeIcon, /* tintWithTextColor= */ true, /* isSend= */ true);
+        ImageView endIcon = chip.findViewById(R.id.chip_view_end_icon);
+        assertEquals(View.GONE, startIcon.getVisibility());
+        assertNotNull(endIcon.getDrawable());
+        assertEquals(View.VISIBLE, ((View) endIcon.getParent()).getVisibility());
+
+        mLocationBarTablet.setActivationChipCompact(true);
+        mLocationBarTablet.setAiModeButtonIcons(
+                aiModeIcon, /* tintWithTextColor= */ true, /* isSend= */ true);
+        assertEquals(View.VISIBLE, startIcon.getVisibility());
+        assertNotNull(startIcon.getDrawable());
+        assertNotEquals(aiModeIcon, startIcon.getDrawable());
+        assertNull(endIcon.getDrawable());
+
+        mLocationBarTablet.setAiModeButtonIcons(
+                aiModeIcon, /* tintWithTextColor= */ true, /* isSend= */ false);
+        assertEquals(aiModeIcon, startIcon.getDrawable());
+        assertNull(endIcon.getDrawable());
     }
 
     @Test

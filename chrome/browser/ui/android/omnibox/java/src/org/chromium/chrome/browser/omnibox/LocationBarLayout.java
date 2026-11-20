@@ -97,6 +97,9 @@ public class LocationBarLayout extends ConstraintLayout {
     private boolean mShowDeleteButton;
     private boolean mShowNavigateButton;
 
+    private Drawable mAiModeButtonSendStartIcon;
+    private Drawable mAiModeButtonSendEndIcon;
+
     private Runnable mOnSizeChangedRunnable = CallbackUtils.emptyRunnable();
 
     public LocationBarLayout(Context context, AttributeSet attrs) {
@@ -209,6 +212,13 @@ public class LocationBarLayout extends ConstraintLayout {
         mStatusCoordinator = statusCoordinator;
         mLocationBarDataProvider = locationBarDataProvider;
         mResourceProvider = resourceProvider;
+        // A drawable can only be attached to one view: a view releasing it clears its callback,
+        // leaving it unable to redraw in the other view. So each icon slot gets its own. Only the
+        // start slot tints the drawable itself rather than its view, so only it needs mutating.
+        mAiModeButtonSendStartIcon =
+                resourceProvider.getDrawable(R.drawable.ic_arrow_forward_accent1_24dp).mutate();
+        mAiModeButtonSendEndIcon =
+                resourceProvider.getDrawable(R.drawable.ic_arrow_forward_accent1_24dp);
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
@@ -661,13 +671,24 @@ public class LocationBarLayout extends ConstraintLayout {
     }
 
     /**
-     * Sets the icon identifying AI Mode, shown at the start of the AI Mode button.
+     * Sets the icons of the AI Mode button. In the send state, a send arrow replaces the AI Mode
+     * icon and trails the label; a compact button hides its label and trailing icon, so there the
+     * arrow leads instead.
      *
-     * @param icon The icon to display.
-     * @param tintWithTextColor Whether to tint the icon to match the button's text color.
+     * @param icon The icon identifying AI Mode, shown at the start of the button.
+     * @param tintWithTextColor Whether to tint {@code icon} to match the button's text color.
+     * @param isSend Whether the button is in the send state.
      */
-    /* package */ void setAiModeButtonIcon(@Nullable Drawable icon, boolean tintWithTextColor) {
-        mActivationChip.setIconWithTint(icon, tintWithTextColor);
+    /* package */ void setAiModeButtonIcons(
+            Drawable icon, boolean tintWithTextColor, boolean isSend) {
+        boolean isCompact = mActivationChip.isCompact();
+        if (isSend) {
+            mActivationChip.setIconWithTint(
+                    isCompact ? mAiModeButtonSendStartIcon : null, /* tintWithTextColor= */ true);
+        } else {
+            mActivationChip.setIconWithTint(icon, tintWithTextColor);
+        }
+        mActivationChip.setEndIcon(isSend && !isCompact ? mAiModeButtonSendEndIcon : null);
     }
 
     /* package */ void setActivationChipCompact(boolean isCompact) {
