@@ -14,7 +14,10 @@
 #include "chrome/browser/ui/side_panel/side_panel_metrics.h"
 
 #if BUILDFLAG(IS_ANDROID)
+DEFINE_UI_CLASS_PROPERTY_TYPE(ui::ImageModel*)
+
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::u16string, kSidePanelTitleKey)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(ui::ImageModel, kSidePanelIconKey)
 #else
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kShouldShowTitleInSidePanelHeaderKey, true)
 #endif

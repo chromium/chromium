@@ -41,8 +41,12 @@ source_set("android") {
     "//chrome/common:constants",
     "//components/prefs",
     "//components/tabs:public",
+    "//skia",
     "//third_party/jni_zero",
+    "//ui/base",
     "//ui/base/unowned_user_data",
+    "//ui/display",
+    "//ui/gfx",
   ]
 }
 

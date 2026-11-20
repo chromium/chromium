@@ -6,6 +6,9 @@ package org.chromium.chrome.browser.ui.side_panel;
 
 import static org.chromium.chrome.browser.ui.side_panel.SidePanelUtils.log;
 
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.view.View;
 
 import org.jni_zero.CalledByNative;
@@ -197,14 +200,14 @@ final class SidePanelCoordinatorAndroidBridge implements ChromeAndroidTaskFeatur
             @JniType("Profile*") Profile profile,
             View sidePanelNativeView,
             @JniType("std::u16string_view") String title,
+            @JniType("std::optional<SkBitmap>") @Nullable Bitmap icon,
             boolean shouldShowHeader,
             @JniType("std::optional<int32_t>") @Nullable Integer persistedPanelWidthDp,
             boolean suppressAnimations) {
         log(TAG, "startOpeningPanel", profile, sidePanelNativeView, title, persistedPanelWidthDp);
         mNativeBridgeSelector.startOpeningPanel(
                 profile,
-                new SidePanelContent(
-                        sidePanelNativeView, shouldShowHeader, /* icon= */ null, title),
+                createSidePanelContent(sidePanelNativeView, shouldShowHeader, icon, title),
                 persistedPanelWidthDp,
                 suppressAnimations || mDisableAnimationsForTesting);
     }
@@ -222,6 +225,7 @@ final class SidePanelCoordinatorAndroidBridge implements ChromeAndroidTaskFeatur
             @JniType("Profile*") Profile profile,
             View sidePanelNativeView,
             @JniType("std::u16string_view") @Nullable String title,
+            @JniType("std::optional<SkBitmap>") @Nullable Bitmap icon,
             boolean shouldShowHeader,
             @JniType("std::optional<int32_t>") @Nullable Integer persistedPanelWidthDp) {
         log(
@@ -233,9 +237,18 @@ final class SidePanelCoordinatorAndroidBridge implements ChromeAndroidTaskFeatur
                 persistedPanelWidthDp);
         mNativeBridgeSelector.startReplacingPanelContent(
                 profile,
-                new SidePanelContent(
-                        sidePanelNativeView, shouldShowHeader, /* icon= */ null, title),
+                createSidePanelContent(sidePanelNativeView, shouldShowHeader, icon, title),
                 persistedPanelWidthDp);
+    }
+
+    private static SidePanelContent createSidePanelContent(
+            View sidePanelNativeView,
+            boolean shouldShowHeader,
+            @Nullable Bitmap icon,
+            @Nullable String title) {
+        Drawable iconDrawable =
+                icon != null ? new BitmapDrawable(sidePanelNativeView.getResources(), icon) : null;
+        return new SidePanelContent(sidePanelNativeView, shouldShowHeader, iconDrawable, title);
     }
 
     @CalledByNative

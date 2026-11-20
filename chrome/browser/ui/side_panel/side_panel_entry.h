@@ -209,8 +209,18 @@ class SidePanelEntry final : public ui::PropertyHandler {
 };
 
 #if BUILDFLAG(IS_ANDROID)
+// Defined by views on other platforms.
+DECLARE_UI_CLASS_PROPERTY_TYPE(ui::ImageModel*)
+
 // Title is retrieved from SidePanelHelper::GetActionItem() on non-Android.
 extern const ui::ClassProperty<std::u16string*>* const kSidePanelTitleKey;
+
+// Icon is retrieved from SidePanelHelper::GetActionItem() on non-Android.
+//
+// The image is passed to Java as a bitmap, like Android extension action icons.
+// Only `ui::ImageModel::IsImage()` is supported for now; vector icons aren't
+// supported yet.
+extern const ui::ClassProperty<ui::ImageModel*>* const kSidePanelIconKey;
 #else
 extern const ui::ClassProperty<bool>* const
     kShouldShowTitleInSidePanelHeaderKey;

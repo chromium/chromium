@@ -40,6 +40,15 @@
 #include "components/tabs/public/tab_interface.h"
 #include "third_party/jni_zero/default_conversions.h"
 #include "third_party/jni_zero/jni_zero.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/base_window.h"
+#include "ui/base/models/image_model.h"
+#include "ui/display/display.h"
+#include "ui/display/screen.h"
+#include "ui/gfx/android/java_bitmap.h"
+#include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_rep.h"
+#include "ui/gfx/native_ui_types.h"
 
 // Must come after headers that provide symbols used by @JniType.
 #include "chrome/browser/ui/side_panel/internal/android/jni_headers/SidePanelCoordinatorAndroidBridge_jni.h"
@@ -85,6 +94,33 @@ GetCoordinatorsMap() {
   return *coordinators;
 }
 
+// Returns the header icon for `entry` as a bitmap at `browser`'s display
+// scale, or std::nullopt if there's no supported icon.
+std::optional<SkBitmap> GetHeaderIconBitmap(SidePanelEntry* entry,
+                                            BrowserWindowInterface* browser) {
+  CHECK(browser);
+  ui::BaseWindow* base_window = browser->GetWindow();
+  CHECK(base_window);
+  gfx::NativeWindow native_window = base_window->GetNativeWindow();
+  CHECK(native_window);
+
+  const ui::ImageModel* icon = entry->GetProperty(kSidePanelIconKey);
+  if (!icon || !icon->IsImage()) {
+    return std::nullopt;
+  }
+
+  float scale_factor = 1.0f;
+  if (display::Screen* screen = display::Screen::Get()) {
+    scale_factor =
+        screen->GetDisplayNearestWindow(native_window).device_scale_factor();
+  }
+  gfx::ImageSkia image_skia = icon->GetImage().AsImageSkia();
+  SkBitmap bitmap = image_skia.GetRepresentation(scale_factor).GetBitmap();
+  if (bitmap.isNull()) {
+    return std::nullopt;
+  }
+  return bitmap;
+}
 }  // namespace
 
 using jni_zero::AttachCurrentThread;
@@ -767,8 +803,8 @@ void SidePanelCoordinatorAndroid::StartOpeningPanel(
   JNIEnv* env = AttachCurrentThread();
   Java_SidePanelCoordinatorAndroidBridge_startOpeningPanel(
       env, java_coordinator(), browser()->GetProfile(), native_view->view(),
-      title, entry->should_show_header(), GetPersistedPanelWidthDp(*entry),
-      suppress_animations);
+      title, GetHeaderIconBitmap(entry, browser()), entry->should_show_header(),
+      GetPersistedPanelWidthDp(*entry), suppress_animations);
   entry->CacheView(std::move(native_view));
 }
 
@@ -916,8 +952,8 @@ void SidePanelCoordinatorAndroid::StartReplacingPanelContent(
   JNIEnv* env = AttachCurrentThread();
   Java_SidePanelCoordinatorAndroidBridge_startReplacingPanelContent(
       env, java_coordinator(), browser()->GetProfile(), native_view->view(),
-      title, new_entry->should_show_header(),
-      GetPersistedPanelWidthDp(*new_entry));
+      title, GetHeaderIconBitmap(new_entry, browser()),
+      new_entry->should_show_header(), GetPersistedPanelWidthDp(*new_entry));
   new_entry->CacheView(std::move(native_view));
 }
 
