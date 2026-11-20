@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/containers/flat_map.h"
@@ -78,6 +79,21 @@ class NotificationPlatformBridgeMac : public NotificationPlatformBridge {
   // Closes all notifications for the given |profile|.
   void CloseAllNotificationsForProfile(Profile* profile);
 
+  // Returns true if `web_app_id` has an in-flight attributed
+  // DisplayNotification IPC; destroying a dispatcher mid-display drops the
+  // weak-bound reply and leaves a stale entry in `pending_displays_`.
+  bool HasPendingDisplayForApp(const webapps::AppId& web_app_id) const;
+
+  // Evicts stale app dispatchers (those with no loaded regular profile other
+  // than `excluded_profile` and no in-flight display IPC), skipping
+  // `excluded_dispatchers`. If `close_identifier` is set, closes that
+  // notification on each non-excluded active app dispatcher.
+  void EvictStaleAppDispatchers(
+      const Profile* excluded_profile = nullptr,
+      base::span<const NotificationDispatcherMac* const> excluded_dispatchers =
+          {},
+      std::optional<MacNotificationIdentifier> close_identifier = std::nullopt);
+
   NotificationDispatcherMac* GetOrCreateDispatcherForWebApp(
       const webapps::AppId& web_app_id) const;
 
@@ -88,18 +104,18 @@ class NotificationPlatformBridgeMac : public NotificationPlatformBridge {
   std::unique_ptr<NotificationDispatcherMac> alert_dispatcher_;
 
   // The objects in charge of dispatching per-app notifications.
-  // TODO(crbug.com/40616749): Implement some logic for cleaning up no
-  // longer needed dispatchers.
   mutable std::map<webapps::AppId, std::unique_ptr<NotificationDispatcherMac>>
       app_specific_dispatchers_;
   WebAppDispatcherFactory web_app_dispatcher_factory_;
 
   // Tracks in-flight attributed DisplayNotification requests so they are
-  // included in `GetDisplayedForOrigin()` and can be cancelled if the
-  // notification is closed or re-displayed before the app shim replies.
+  // included in `GetDisplayedForOrigin()`, can be cancelled if the
+  // notification is closed or re-displayed before the app shim replies, and
+  // defer evicting `web_app_id`'s dispatcher until the IPC completes.
   struct PendingDisplay {
     uint64_t request_id;
     GURL origin_url;
+    webapps::AppId web_app_id;
   };
   uint64_t next_display_request_id_ = 0;
   base::flat_map<MacNotificationIdentifier, PendingDisplay> pending_displays_;
