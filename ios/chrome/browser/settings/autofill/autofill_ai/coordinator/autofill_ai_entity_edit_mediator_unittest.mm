@@ -19,6 +19,8 @@
 #import "components/consent_auditor/fake_consent_auditor.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/identity_test_environment.h"
+#import "components/strings/grit/components_strings.h"
+#import "components/sync/protocol/user_consent_types.pb.h"
 #import "components/sync/test/test_sync_service.h"
 #import "components/wallet/core/common/wallet_features.h"
 #import "ios/chrome/browser/autofill/autofill_ai/public/autofill_ai_ui_util.h"
@@ -35,6 +37,7 @@
 #import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -273,6 +276,63 @@ TEST_F(AutofillAIEntityEditMediatorTest, SaveWalletEligibleEntity_Success) {
 
   histogram_tester.ExpectUniqueSample("Autofill.Ai.EntityUpdatedFromSettings",
                                       autofill::EntityTypeName::kPassport, 1);
+}
+
+// Tests that saving a private pass to Wallet with the refined UX enabled
+// records the IDs of all strings shown in the private pass notice as consent.
+TEST_F(AutofillAIEntityEditMediatorTest,
+       SaveWalletEligibleEntity_WithRefinedUx_RecordsFullConsent) {
+  base::test::ScopedFeatureList feature_list(
+      autofill::features::kAutofillRegionalizedPrivatePassesUxRefine);
+  CreateMediator(autofill::test::MaskEntityInstance(
+      autofill::test::GetPassportEntityInstance(
+          {.record_type =
+               autofill::EntityInstance::RecordType::kServerWallet})));
+  fake_delegate_.canPerformWalletSave = YES;
+
+  sync_pb::UserConsentTypes::WalletPrivatePassConsent consent;
+  EXPECT_CALL(fake_consent_auditor_, RecordWalletPrivatePassConsent)
+      .WillOnce(testing::SaveArg<2>(&consent));
+  EXPECT_CALL(*mock_wallet_pass_manager_, SaveWalletEntityInstance);
+
+  [mediator_ saveEntityInstance];
+
+  EXPECT_THAT(
+      consent.description_grd_ids(),
+      testing::ElementsAre(
+          IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_PRIVATE_PASS,
+          IDS_AUTOFILL_GOOGLE_WALLET_TITLE,
+          IDS_AUTOFILL_HOW_THIS_INFO_IS_USED_ACROSS_GOOGLE_LINK,
+          IDS_AUTOFILL_PRIVACY_POLICY_LINK));
+  EXPECT_EQ(consent.confirmation_grd_id(),
+            autofill::GetSaveEntityAcceptButtonStringId());
+}
+
+// Tests that saving a private pass to Wallet with the refined UX disabled
+// records the IDs of all strings shown in the standard notice as consent.
+TEST_F(AutofillAIEntityEditMediatorTest,
+       SaveWalletEligibleEntity_WithoutRefinedUx_RecordsFullConsent) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      autofill::features::kAutofillRegionalizedPrivatePassesUxRefine);
+  CreateMediator(autofill::test::MaskEntityInstance(
+      autofill::test::GetPassportEntityInstance(
+          {.record_type =
+               autofill::EntityInstance::RecordType::kServerWallet})));
+  fake_delegate_.canPerformWalletSave = YES;
+
+  sync_pb::UserConsentTypes::WalletPrivatePassConsent consent;
+  EXPECT_CALL(fake_consent_auditor_, RecordWalletPrivatePassConsent)
+      .WillOnce(testing::SaveArg<2>(&consent));
+  EXPECT_CALL(*mock_wallet_pass_manager_, SaveWalletEntityInstance);
+
+  [mediator_ saveEntityInstance];
+
+  EXPECT_THAT(consent.description_grd_ids(),
+              testing::ElementsAre(
+                  IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_NEW,
+                  IDS_AUTOFILL_GOOGLE_WALLET_TITLE,
+                  IDS_AUTOFILL_MANAGE_YOUR_INFO_LINK));
 }
 
 // Tests that if the Wallet API fails to save, the mediator falls back to saving

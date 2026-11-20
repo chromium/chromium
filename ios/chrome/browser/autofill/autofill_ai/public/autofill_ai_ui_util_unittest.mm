@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/autofill/model/message/autofill_legal_message_line.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -38,6 +39,8 @@ TEST_F(AutofillAiUiUtilTest, LocalEntity_ReturnsSaveToDeviceFooter) {
               content.text);
   EXPECT_EQ(0u, content.urls.count);
   EXPECT_TRUE(content.legal_message_urls.empty());
+  EXPECT_THAT(content.consent_string_ids,
+              testing::ElementsAre(IDS_IOS_AUTOFILL_AI_FOOTER_SAVE_TO_DEVICE));
 }
 
 // Tests that a wallet entity with an empty user email falls back to the
@@ -54,6 +57,8 @@ TEST_F(AutofillAiUiUtilTest, EmptyEmail_ReturnsSaveToDeviceFooter) {
               content.text);
   EXPECT_EQ(0u, content.urls.count);
   EXPECT_TRUE(content.legal_message_urls.empty());
+  EXPECT_THAT(content.consent_string_ids,
+              testing::ElementsAre(IDS_IOS_AUTOFILL_AI_FOOTER_SAVE_TO_DEVICE));
 }
 
 // Tests that saving a public pass to Wallet returns the storage notice with
@@ -74,6 +79,11 @@ TEST_F(AutofillAiUiUtilTest, WalletPublicPass_Save_ReturnsManageInfoURL) {
   ASSERT_EQ(1u, content.urls.count);
   EXPECT_EQ(autofill::GetManageYourInfoURL(), content.urls[0].gurl);
   EXPECT_TRUE(content.legal_message_urls.empty());
+  EXPECT_THAT(content.consent_string_ids,
+              testing::ElementsAre(
+                  IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_NEW,
+                  IDS_AUTOFILL_GOOGLE_WALLET_TITLE,
+                  IDS_AUTOFILL_MANAGE_YOUR_INFO_LINK));
 }
 
 // Tests that saving a private pass without the refined UX feature enabled
@@ -96,6 +106,11 @@ TEST_F(AutofillAiUiUtilTest,
   ASSERT_EQ(1u, content.urls.count);
   EXPECT_EQ(autofill::GetManageYourInfoURL(), content.urls[0].gurl);
   EXPECT_TRUE(content.legal_message_urls.empty());
+  EXPECT_THAT(content.consent_string_ids,
+              testing::ElementsAre(
+                  IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_NEW,
+                  IDS_AUTOFILL_GOOGLE_WALLET_TITLE,
+                  IDS_AUTOFILL_MANAGE_YOUR_INFO_LINK));
 }
 
 // Tests that saving a private pass with the refined UX feature enabled returns
@@ -118,6 +133,13 @@ TEST_F(AutofillAiUiUtilTest,
   EXPECT_EQ(autofill::GetManageYourInfoURL(), content.urls[0].gurl);
   EXPECT_EQ(autofill::GetGooglePrivacyPolicyURL(), content.urls[1].gurl);
   EXPECT_TRUE(content.legal_message_urls.empty());
+  EXPECT_THAT(
+      content.consent_string_ids,
+      testing::ElementsAre(
+          IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_PRIVATE_PASS,
+          IDS_AUTOFILL_GOOGLE_WALLET_TITLE,
+          IDS_AUTOFILL_HOW_THIS_INFO_IS_USED_ACROSS_GOOGLE_LINK,
+          IDS_AUTOFILL_PRIVACY_POLICY_LINK));
 }
 
 // Tests that updating an entity in Wallet returns the update notice with
@@ -138,6 +160,10 @@ TEST_F(AutofillAiUiUtilTest, WalletEntity_Update_ReturnsPassesURL) {
   ASSERT_EQ(1u, content.urls.count);
   EXPECT_EQ(autofill::GetGoogleWalletPassesURL(), content.urls[0].gurl);
   EXPECT_TRUE(content.legal_message_urls.empty());
+  EXPECT_THAT(content.consent_string_ids,
+              testing::ElementsAre(
+                  IDS_AUTOFILL_AI_UPDATE_ENTITY_TO_WALLET_DIALOG_SUBTITLE,
+                  IDS_AUTOFILL_GOOGLE_WALLET_TITLE));
 }
 
 // Tests that legal messages are appended to the storage notice and their URLs
@@ -168,6 +194,13 @@ TEST_F(AutofillAiUiUtilTest, WithLegalMessages_CombinesNoticeAndAppendsURLs) {
 
   ASSERT_EQ(1u, content.legal_message_urls.size());
   EXPECT_EQ(GURL("https://example.com/terms"), content.legal_message_urls[0]);
+  // Server-provided legal messages have no message IDs, so the consent string
+  // IDs are those of the storage notice alone.
+  EXPECT_THAT(content.consent_string_ids,
+              testing::ElementsAre(
+                  IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_NEW,
+                  IDS_AUTOFILL_GOOGLE_WALLET_TITLE,
+                  IDS_AUTOFILL_MANAGE_YOUR_INFO_LINK));
 }
 
 // Tests that an invalid legal message link URL is ignored.

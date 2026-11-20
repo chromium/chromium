@@ -38,6 +38,7 @@ source_set("unit_tests") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/autofill/model/message",
     "//ios/chrome/browser/net/model:crurl",
+    "//testing/gmock",
     "//testing/gtest",
     "//ui/base",
     "//url",

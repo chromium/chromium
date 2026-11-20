@@ -123,6 +123,10 @@ void LogEntitySaveOrUpdate(AutofillAIEntityEditMode mode,
   // URLs from `_legalMessages` displayed in the footer.
   std::vector<GURL> _legalMessageURLs;
 
+  // Message IDs of the storage notice strings displayed in the footer, recorded
+  // as consent when the user saves to Google Wallet.
+  std::vector<int> _consentStringIDs;
+
   // Whether `kLegalMessageShown` has already been logged for this presentation.
   BOOL _hasLoggedLegalMessageShown;
 
@@ -202,6 +206,7 @@ void LogEntitySaveOrUpdate(AutofillAIEntityEditMode mode,
                                        base::SysNSStringToUTF16(_userEmail),
                                        _legalMessages);
   _legalMessageURLs = std::move(footerContent.legal_message_urls);
+  _consentStringIDs = std::move(footerContent.consent_string_ids);
 
   if (!_legalMessageURLs.empty() && !_hasLoggedLegalMessageShown) {
     _hasLoggedLegalMessageShown = YES;
@@ -330,10 +335,11 @@ void LogEntitySaveOrUpdate(AutofillAIEntityEditMode mode,
   consent_auditor::ConsentAuditor::SessionId sessionId;
   if (base::FeatureList::IsEnabled(
           wallet::features::kWalletApiPrivatePassesConsent)) {
+    // The consent must match the storage notice cached when the footer was
+    // displayed in `setConsumer:`.
+    CHECK(!_consentStringIDs.empty());
     sessionId = autofill::RecordWalletPrivatePassConsent(
-        /*accepted_consent_string_ids=*/{autofill::
-                                             GetSaveToWalletSubtitleStringId(
-                                                 [self isPrivateWalletPass])},
+        /*accepted_consent_string_ids=*/_consentStringIDs,
         /*clicked_button_string_id=*/
         autofill::GetSaveEntityAcceptButtonStringId(), *_consentAuditor,
         *_identityManager);

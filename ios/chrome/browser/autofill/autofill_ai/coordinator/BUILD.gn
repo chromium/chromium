@@ -67,6 +67,7 @@ source_set("unit_tests") {
     "//components/autofill/core/common",
     "//components/autofill/ios/browser:test_support",
     "//components/prefs:test_support",
+    "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/autofill/autofill_ai/public",
     "//ios/chrome/browser/autofill/autofill_ai/ui",

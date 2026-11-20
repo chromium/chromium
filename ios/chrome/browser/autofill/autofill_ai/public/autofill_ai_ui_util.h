@@ -30,6 +30,11 @@ struct AutofillAiEntityFooterContent {
   // The subset of link URLs originating from legal disclosure messages, used
   // for funnel metrics logging.
   std::vector<GURL> legal_message_urls;
+  // The message IDs of all localized strings used to build the storage notice,
+  // template first (matching desktop's `GetWalletImportPromptNotice()`).
+  // Recorded by the Consent Auditor when the user accepts a Wallet save, so
+  // that the logged consent matches the displayed text.
+  std::vector<int> consent_string_ids;
 };
 
 // Returns the default icon for the Autofill AI entity type.
@@ -86,10 +91,6 @@ UIImage* GetWalletLogo(CGFloat point_size, UIColor* tint_color);
 // save (update, etc) an entity in Google Wallet. Should not be used for local
 // saves. `title` is the desired text to display (e.g., "Add Passport").
 UIView* CreateBrandedTitleForWalletSave(NSString* title);
-
-// Returns the message ID for the subtitle shown in the save-to-wallet dialog.
-// Exposed so the Consent Auditor records the exact string shown in the UI.
-int GetSaveToWalletSubtitleStringId(bool is_private_pass);
 
 // Returns the message ID for the accept button in the save entity dialog.
 // Exposed so the Consent Auditor records the exact string shown in the UI.

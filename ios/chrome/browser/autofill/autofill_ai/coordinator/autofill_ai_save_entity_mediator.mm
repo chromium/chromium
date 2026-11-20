@@ -40,6 +40,10 @@
   // URLs from the disclosure legal messages displayed in the footer.
   std::vector<GURL> _legalMessageURLs;
 
+  // Message IDs of the storage notice strings displayed in the footer, recorded
+  // as consent when the user accepts.
+  std::vector<int> _consentStringIDs;
+
   // Whether `kLegalMessageShown` has already been logged for this presentation.
   BOOL _hasLoggedLegalMessageShown;
 
@@ -206,6 +210,7 @@
           params->new_entity, /*is_update=*/params->old_entity.has_value(),
           params->user_email, legalMessages);
   _legalMessageURLs = std::move(footerContent.legal_message_urls);
+  _consentStringIDs = std::move(footerContent.consent_string_ids);
 
   if (!_legalMessageURLs.empty() && !_hasLoggedLegalMessageShown) {
     _hasLoggedLegalMessageShown = YES;
@@ -222,22 +227,14 @@
                        autofill::EntityInstance::RecordType::kServerWallet;
 }
 
-- (BOOL)isPrivateWalletPass {
-  const autofill::SaveEntityParams* params = [self params];
-  return params &&
-         autofill::GetWalletPassType(params->new_entity.type(),
-                                     params->new_entity.record_type()) ==
-             autofill::EntityInstance::WalletPassType::kPrivate;
-}
-
 // Saves entity locally or to Google wallet.
 - (void)saveEntity {
+  // Delivered to `AutofillAiManager::HandlePromptResult()` via the params
+  // callback, which records it as consent only for private passes.
   autofill::AutofillClient::EntityImportUIContext UIContext =
       [self isSaveToWallet]
           ? autofill::AutofillClient::
-                EntityImportUIContext{{autofill::
-                                           GetSaveToWalletSubtitleStringId(
-                                               [self isPrivateWalletPass])},
+                EntityImportUIContext{_consentStringIDs,
                                       autofill::
                                           GetSaveEntityAcceptButtonStringId()}
           : autofill::AutofillClient::EntityImportUIContext{};

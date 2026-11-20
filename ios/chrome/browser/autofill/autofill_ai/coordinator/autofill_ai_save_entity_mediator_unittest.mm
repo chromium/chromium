@@ -19,6 +19,7 @@
 #import "components/autofill/core/browser/payments/test_legal_message_line.h"
 #import "components/autofill/core/browser/test_utils/entity_data_test_util.h"
 #import "components/autofill/core/common/autofill_features.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/autofill_ai/public/autofill_ai_ui_util.h"
 #import "ios/chrome/browser/autofill/autofill_ai/public/save_entity_params.h"
 #import "ios/chrome/browser/autofill/autofill_ai/ui/autofill_ai_save_entity_consumer.h"
@@ -31,6 +32,7 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
+#import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -497,18 +499,64 @@ TEST_F(AutofillAISaveEntityMediatorTest,
                 ui_context = context;
               }),
           std::move(vehicle)));
+  // Setting a consumer displays the footer, whose strings are reported as the
+  // accepted consent.
+  FakeAutofillAISaveEntityConsumer* consumer =
+      [[FakeAutofillAISaveEntityConsumer alloc] init];
+  mediator.consumer = consumer;
 
   [mediator acceptSaving];
 
   EXPECT_EQ(callback_result,
             autofill::AutofillClient::AutofillAiBubbleResult::kAccepted);
   ASSERT_TRUE(ui_context.has_value());
-  EXPECT_EQ(ui_context->accepted_consent_string_ids,
-            std::vector<int>{autofill::GetSaveToWalletSubtitleStringId(
-                /*is_private=*/false)});
+  EXPECT_THAT(ui_context->accepted_consent_string_ids,
+              testing::ElementsAre(
+                  IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_NEW,
+                  IDS_AUTOFILL_GOOGLE_WALLET_TITLE,
+                  IDS_AUTOFILL_MANAGE_YOUR_INFO_LINK));
   EXPECT_EQ(ui_context->accept_button_string_id,
             autofill::GetSaveEntityAcceptButtonStringId());
   EXPECT_EQ(nullptr, tab_helper_->GetAutofillAiSaveEntityPromptModel());
+  [mediator disconnect];
+}
+
+// Tests that accepting the save of a private pass to Wallet with the refined UX
+// enabled reports the IDs of all strings shown in the private pass notice.
+TEST_F(AutofillAISaveEntityMediatorTest,
+       TabHelperIntegrationAcceptPrivatePassWithRefinedUxPassesUIContext) {
+  std::optional<autofill::AutofillClient::EntityImportUIContext> ui_context;
+  AutofillAISaveEntityMediator* mediator =
+      CreateMediatorWithPromptModel(CreateDefaultSaveEntityParams(
+          base::BindLambdaForTesting(
+              [&](autofill::AutofillClient::AutofillAiBubbleResult result,
+                  std::optional<autofill::EntityInstance> entity,
+                  const autofill::AutofillClient::EntityImportUIContext&
+                      context) { ui_context = context; }),
+          autofill::test::GetPassportEntityInstance(
+              {.record_type =
+                   autofill::EntityInstance::RecordType::kServerWallet})));
+  // Initialized after `CreateMediatorWithPromptModel()`, which initializes the
+  // fixture's `scoped_feature_list_`, so that scoped feature lists are
+  // destroyed in reverse order of initialization.
+  base::test::ScopedFeatureList feature_list(
+      autofill::features::kAutofillRegionalizedPrivatePassesUxRefine);
+  // Setting a consumer displays the footer, whose strings are reported as the
+  // accepted consent.
+  FakeAutofillAISaveEntityConsumer* consumer =
+      [[FakeAutofillAISaveEntityConsumer alloc] init];
+  mediator.consumer = consumer;
+
+  [mediator acceptSaving];
+
+  ASSERT_TRUE(ui_context.has_value());
+  EXPECT_THAT(
+      ui_context->accepted_consent_string_ids,
+      testing::ElementsAre(
+          IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_PRIVATE_PASS,
+          IDS_AUTOFILL_GOOGLE_WALLET_TITLE,
+          IDS_AUTOFILL_HOW_THIS_INFO_IS_USED_ACROSS_GOOGLE_LINK,
+          IDS_AUTOFILL_PRIVACY_POLICY_LINK));
   [mediator disconnect];
 }
 

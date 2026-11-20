@@ -42,54 +42,80 @@ NSString* WrapInLinkTags(NSString* text) {
       [NSString stringWithFormat:@"%@%@%@", kBeginLinkTag, text, kEndLinkTag];
 }
 
+// Returns the localized string for `message_id` and appends `message_id` to
+// `string_ids`, so that the consent recorded on acceptance consists of exactly
+// the strings shown in the footer.
+NSString* GetNSStringAppendingIdTo(int message_id,
+                                   std::vector<int>& string_ids) {
+  string_ids.push_back(message_id);
+  return l10n_util::GetNSString(message_id);
+}
+
+// Returns the message ID for the storage notice template shown when saving an
+// entity to Google Wallet.
+int GetSaveToWalletSubtitleStringId(bool is_private_pass) {
+  if (is_private_pass &&
+      base::FeatureList::IsEnabled(
+          autofill::features::kAutofillRegionalizedPrivatePassesUxRefine)) {
+    return IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_PRIVATE_PASS;
+  }
+  return IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_NEW;
+}
+
 // Returns the storage notice footer text for saving an entity to Google Wallet,
 // formatted with `user_email`, and appends the corresponding link URLs to
 // `urls` (if non-nil) in the order their link tags appear in the returned
-// string.
+// string. The message IDs of all shown strings are appended to `string_ids`.
 NSString* GetSaveEntityToWalletFooterTextAppendingURLsTo(
     const std::u16string& user_email,
     bool is_private_pass,
-    NSMutableArray<CrURL*>* urls) {
-  int string_id = autofill::GetSaveToWalletSubtitleStringId(is_private_pass);
+    NSMutableArray<CrURL*>* urls,
+    std::vector<int>& string_ids) {
+  int subtitle_id = GetSaveToWalletSubtitleStringId(is_private_pass);
+  string_ids.push_back(subtitle_id);
+  string_ids.push_back(IDS_AUTOFILL_GOOGLE_WALLET_TITLE);
   std::u16string google_wallet =
       l10n_util::GetStringUTF16(IDS_AUTOFILL_GOOGLE_WALLET_TITLE);
 
-  if (string_id ==
+  if (subtitle_id ==
       IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_PRIVATE_PASS) {
-    NSString* how_info_is_used_link = WrapInLinkTags(l10n_util::GetNSString(
-        IDS_AUTOFILL_HOW_THIS_INFO_IS_USED_ACROSS_GOOGLE_LINK));
+    NSString* how_info_is_used_link = WrapInLinkTags(GetNSStringAppendingIdTo(
+        IDS_AUTOFILL_HOW_THIS_INFO_IS_USED_ACROSS_GOOGLE_LINK, string_ids));
     [urls addObject:[[CrURL alloc]
                         initWithGURL:autofill::GetManageYourInfoURL()]];
 
     NSString* privacy_policy_link = WrapInLinkTags(
-        l10n_util::GetNSString(IDS_AUTOFILL_PRIVACY_POLICY_LINK));
+        GetNSStringAppendingIdTo(IDS_AUTOFILL_PRIVACY_POLICY_LINK, string_ids));
     [urls addObject:[[CrURL alloc]
                         initWithGURL:autofill::GetGooglePrivacyPolicyURL()]];
 
     NSString* notice = l10n_util::GetNSStringF(
-        string_id, google_wallet,
+        subtitle_id, google_wallet,
         base::SysNSStringToUTF16(how_info_is_used_link), user_email);
     return [NSString stringWithFormat:@"%@\n\n%@", notice, privacy_policy_link];
   }
 
   NSString* formatted_link = WrapInLinkTags(
-      l10n_util::GetNSString(IDS_AUTOFILL_MANAGE_YOUR_INFO_LINK));
+      GetNSStringAppendingIdTo(IDS_AUTOFILL_MANAGE_YOUR_INFO_LINK, string_ids));
   [urls
       addObject:[[CrURL alloc] initWithGURL:autofill::GetManageYourInfoURL()]];
 
-  return l10n_util::GetNSStringF(string_id, google_wallet,
+  return l10n_util::GetNSStringF(subtitle_id, google_wallet,
                                  base::SysNSStringToUTF16(formatted_link),
                                  google_wallet, user_email);
 }
 
 // Returns the storage notice footer text for updating an entity saved in
 // Google Wallet, formatted with `user_email`, and appends the corresponding
-// Google Wallet passes link URL to `urls` (if non-nil).
+// Google Wallet passes link URL to `urls` (if non-nil). The message IDs of all
+// shown strings are appended to `string_ids`.
 NSString* GetUpdateEntitySavedInWalletFooterTextAppendingURLsTo(
     const std::u16string& user_email,
-    NSMutableArray<CrURL*>* urls) {
+    NSMutableArray<CrURL*>* urls,
+    std::vector<int>& string_ids) {
+  string_ids.push_back(IDS_AUTOFILL_AI_UPDATE_ENTITY_TO_WALLET_DIALOG_SUBTITLE);
   NSString* google_wallet =
-      l10n_util::GetNSString(IDS_AUTOFILL_GOOGLE_WALLET_TITLE);
+      GetNSStringAppendingIdTo(IDS_AUTOFILL_GOOGLE_WALLET_TITLE, string_ids);
   NSString* formatted_link = WrapInLinkTags(google_wallet);
   [urls addObject:[[CrURL alloc]
                       initWithGURL:autofill::GetGoogleWalletPassesURL()]];
@@ -331,21 +357,22 @@ AutofillAiEntityFooterContent GetEntityFooterContent(
     const std::u16string& user_email,
     NSArray<AutofillLegalMessageLine*>* legal_messages) {
   NSMutableArray<CrURL*>* urls = [NSMutableArray array];
+  std::vector<int> consent_string_ids;
   NSString* storage_notice_text = nil;
 
   if (entity.record_type() != EntityInstance::RecordType::kServerWallet ||
       user_email.empty()) {
-    storage_notice_text =
-        l10n_util::GetNSString(IDS_IOS_AUTOFILL_AI_FOOTER_SAVE_TO_DEVICE);
+    storage_notice_text = GetNSStringAppendingIdTo(
+        IDS_IOS_AUTOFILL_AI_FOOTER_SAVE_TO_DEVICE, consent_string_ids);
   } else if (is_update) {
-    storage_notice_text =
-        GetUpdateEntitySavedInWalletFooterTextAppendingURLsTo(user_email, urls);
+    storage_notice_text = GetUpdateEntitySavedInWalletFooterTextAppendingURLsTo(
+        user_email, urls, consent_string_ids);
   } else {
     bool is_private_pass =
         GetWalletPassType(entity.type(), entity.record_type()) ==
         EntityInstance::WalletPassType::kPrivate;
     storage_notice_text = GetSaveEntityToWalletFooterTextAppendingURLsTo(
-        user_email, is_private_pass, urls);
+        user_email, is_private_pass, urls, consent_string_ids);
   }
 
   std::vector<GURL> legal_message_urls;
@@ -356,6 +383,7 @@ AutofillAiEntityFooterContent GetEntityFooterContent(
       .text = footer_text,
       .urls = urls,
       .legal_message_urls = std::move(legal_message_urls),
+      .consent_string_ids = std::move(consent_string_ids),
   };
 }
 
@@ -393,15 +421,6 @@ UIView* CreateBrandedTitleForWalletSave(NSString* title) {
   titleView.titleLogoSpacing = kWalletLogoSpacing;
   titleView.accessibilityLabel = title;
   return titleView;
-}
-
-int GetSaveToWalletSubtitleStringId(bool is_private_pass) {
-  if (is_private_pass &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillRegionalizedPrivatePassesUxRefine)) {
-    return IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_PRIVATE_PASS;
-  }
-  return IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_NEW;
 }
 
 int GetSaveEntityAcceptButtonStringId() {
