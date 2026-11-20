@@ -614,7 +614,12 @@ public abstract class FullscreenHtmlApiHandlerBase
 
     @Override
     public void onExitFullscreen(Tab tab) {
-        if (tab != mTab && tab != mTabInFullscreen) return;
+        if (tab != mTab && tab != mTabInFullscreen) {
+            // This handler is not tracking the tab, but its fullscreen display must not outlive
+            // the exit.
+            clearFullscreenStartingPositionAndOptions(tab);
+            return;
+        }
         setEnterFullscreenRunnable(tab, null);
         boolean wasInPersistentFullscreenMode = getPersistentFullscreenMode();
         exitPersistentFullscreenMode();
