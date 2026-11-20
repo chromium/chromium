@@ -1631,6 +1631,10 @@ public final class ProductionSupportedFlagList {
                 NetFeatures.ASSUME_QUIC_BROKEN_UNTIL_VERIFIED_ON_CURRENT_NETWORK,
                 "When enabled, assumes QUIC is broken until a QUIC handshake succeeds on"
                         + " the current network."),
+        Flag.baseFeature(
+                BlinkFeatures.DRAG_THRESHOLD_REQUIRES_MOUSE_MOVEMENT,
+                "When enabled, the cursor needs to move past the drag start threshold in absolute"
+                        + " screen coordinates rather than window-relative coordinates."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
