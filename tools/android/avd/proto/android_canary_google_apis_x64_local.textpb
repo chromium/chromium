@@ -18,7 +18,7 @@ system_image_name: "system-images;android-canary-20261104;google_apis_ps16k;x86_
 avd_package {
   package_name: "chromium/third_party/android_sdk/public/avds/android-canary-20261104/google_apis_ps16k/x86_64"
   # Created in https://ci.chromium.org/ui/b/8665823113696102273
-  version: "WUSAgDcJHUnh5qC47CpPXZxmIIL8wPHVJOVDfNLgznkC"
+  version: "qLL3wJHZ3T--npxEZ4okY4tPlkz5HC7fR-ds8ET8u7QC"
 }
 avd_name: "android_canary_google_apis_x64"
 

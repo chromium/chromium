@@ -17,7 +17,7 @@ system_image_name: "system-images;android-37.2;google_apis_ps16k;x86_64"
 
 avd_package {
   package_name: "chromium/third_party/android_sdk/public/avds/android-37.2/google_apis_ps16k/x86_64"
-  version: "NaHgDgaR5YDacsmFHkRjUqGHBBN9dDgumnY9X-En0m0C"
+  version: "V5lLjZkSOzxLeqGxVYko4dN89hjnk_dO4_jx5te-KV0C"
 }
 avd_name: "android_37_google_apis_ps16k_x64"
 

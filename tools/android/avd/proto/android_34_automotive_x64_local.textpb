@@ -18,7 +18,7 @@ system_image_name: "system-images;android-34-ext9;android-automotive;x86_64"
 avd_package {
   package_name: "chromium/third_party/android_sdk/public/avds/android-34/android-automotive/x86_64"
   # Created in https://ci.chromium.org/ui/b/8668116274949353521
-  version: "ysxU8FfJZndAWUEdtuoXeubKsra5-ZFRE98WMkntNUYC"
+  version: "MItG18kwipUT__PUKrLJ_1WExJ_rrgLhlFn8zTrOYd4C"
 }
 avd_name: "android_34_automotive_x64"
 

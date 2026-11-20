@@ -17,7 +17,7 @@ system_image_name: "system-images;android-37.1;android-desktop;x86_64"
 
 avd_package {
   package_name: "chromium/third_party/android_sdk/public/avds/android-37.1/android-desktop/x86_64"
-  version: "Rz0sEJHO8W4Ejud7gjnFltyRHGCyhY2KSBFbHoAu_-AC"
+  version: "eqcFOfhYrUmkWMBPfFMt_YSJ0TVQbD-WV8_-WU4bxG4C"
 }
 avd_name: "android_37_desktop_x64"
 
