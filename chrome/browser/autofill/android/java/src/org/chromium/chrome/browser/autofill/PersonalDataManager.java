@@ -1094,9 +1094,11 @@ public class PersonalDataManager implements Destroyable {
 
         void addServerIbanForTest(long nativePersonalDataManagerAndroid, Iban iban); // IN-TEST
 
+        @JniType("const autofill::Iban*")
         Iban getIbanByGuid(
                 long nativePersonalDataManagerAndroid, @JniType("std::string") String guid);
 
+        @JniType("std::vector<const autofill::Iban*>")
         Iban[] getIbansForSettings(long nativePersonalDataManagerAndroid);
 
         @JniType("std::string")

@@ -433,11 +433,16 @@ generate_jni("payments_jni_headers") {
 }
 
 source_set("payments_autofill_cc") {
-  sources = [ "payments/legal_message_line_android.h" ]
-  deps = [
+  sources = [
+    "payments/iban_android.h",
+    "payments/legal_message_line_android.h",
+  ]
+  public_deps = [
     ":payments_jni_headers",
     "//base",
+    "//components/autofill/core/browser",
     "//components/autofill/core/browser:legal_message_line",
+    "//third_party/jni_zero",
   ]
 }
 

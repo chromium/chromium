@@ -31,6 +31,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "components/application_locale_storage/application_locale_storage.h"
+#include "components/autofill/android/payments/iban_android.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
@@ -515,26 +516,6 @@ PersonalDataManagerAndroid::GetPaymentRailsFromPaymentInstrument(
                         });
 }
 
-ScopedJavaLocalRef<jobject>
-PersonalDataManagerAndroid::CreateJavaIbanFromNative(JNIEnv* env,
-                                                     const Iban& iban) {
-  switch (iban.record_type()) {
-    case Iban::kLocalIban:
-      return Java_Iban_createLocal(env, iban.guid(),
-                                   iban.GetIdentifierStringForAutofillDisplay(),
-                                   iban.nickname(), iban.value());
-    case Iban::kServerIban:
-      return Java_Iban_createServer(
-          env, iban.instrument_id(),
-          iban.GetIdentifierStringForAutofillDisplay(), iban.nickname(),
-          iban.value());
-    case Iban::kUnknown:
-      return Java_Iban_createEphemeral(
-          env, iban.GetIdentifierStringForAutofillDisplay(), iban.nickname(),
-          iban.value());
-  }
-}
-
 void PersonalDataManagerAndroid::PopulateNativeIbanFromJava(
     const JavaRef<jobject>& jiban,
     JNIEnv* env,
@@ -568,25 +549,12 @@ void PersonalDataManagerAndroid::AddServerIbanForTest(
   pdm_observation_.GetSource()->NotifyPersonalDataObserver();
 }
 
-ScopedJavaLocalRef<jobject> PersonalDataManagerAndroid::GetIbanByGuid(
-    JNIEnv* env,
-    const std::string& guid) {
-  const Iban* iban = payments_data_manager().GetIbanByGUID(guid);
-  if (!iban) {
-    return nullptr;
-  }
-
-  return PersonalDataManagerAndroid::CreateJavaIbanFromNative(env, *iban);
+const Iban* PersonalDataManagerAndroid::GetIbanByGuid(const std::string& guid) {
+  return payments_data_manager().GetIbanByGUID(guid);
 }
 
-ScopedJavaLocalRef<jobjectArray>
-PersonalDataManagerAndroid::GetIbansForSettings(JNIEnv* env) {
-  std::vector<ScopedJavaLocalRef<jobject>> j_ibans_list = base::ToVector(
-      payments_data_manager().GetIbans(),
-      [env](const Iban* iban) { return CreateJavaIbanFromNative(env, *iban); });
-  return base::android::ToTypedJavaArrayOfObjects(
-      env, j_ibans_list,
-      org_chromium_components_autofill_payments_Iban_clazz(env));
+std::vector<const Iban*> PersonalDataManagerAndroid::GetIbansForSettings() {
+  return payments_data_manager().GetIbans();
 }
 
 std::string PersonalDataManagerAndroid::AddOrUpdateLocalIban(

@@ -30,14 +30,15 @@ source_set("android") {
   deps = [
     ":public",
     "//chrome/android:chrome_jni_headers",
-    "//chrome/browser/autofill",
     "//chrome/browser/profiles",
     "//chrome/browser/ui/autofill/payments",
     "//components/autofill/android:main_autofill_jni_headers",
     "//components/autofill/android:payments_autofill_cc",
     "//components/autofill/android:payments_jni_headers",
+    "//components/autofill/core/browser",
     "//content/public/browser",
     "//ui/android",
+    "//url",
   ]
 }
 

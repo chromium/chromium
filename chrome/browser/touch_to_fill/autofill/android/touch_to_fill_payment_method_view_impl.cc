@@ -16,10 +16,10 @@
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/strings/string_util.h"
-#include "chrome/browser/autofill/android/personal_data_manager_android.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_view_controller.h"
 #include "chrome/browser/ui/autofill/payments/android_bnpl_ui_delegate.h"
+#include "components/autofill/android/payments/iban_android.h"
 #include "components/autofill/android/payments/legal_message_line_android.h"
 #include "components/autofill/core/browser/data_model/valuables/android/loyalty_card_android.h"
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
@@ -173,12 +173,8 @@ bool TouchToFillPaymentMethodViewImpl::ShowIbans(
     return false;
   }
 
-  std::vector<base::android::ScopedJavaLocalRef<jobject>> ibans_array =
-      base::ToVector(ibans_to_suggest, [&](const Iban& iban) {
-        return PersonalDataManagerAndroid::CreateJavaIbanFromNative(env, iban);
-      });
   Java_TouchToFillPaymentMethodViewBridge_showIbans(env, java_object_,
-                                                    std::move(ibans_array));
+                                                    ibans_to_suggest);
   return true;
 }
 

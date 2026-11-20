@@ -82,7 +82,7 @@ class TouchToFillPaymentMethodViewBridge {
     }
 
     @CalledByNative
-    private void showIbans(@JniType("std::vector") List<Iban> ibans) {
+    private void showIbans(@JniType("base::span<const autofill::Iban>") List<Iban> ibans) {
         mComponent.showIbans(ibans);
     }
 

@@ -166,10 +166,6 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
   // date to the current time.
   void RecordAndLogCreditCardUse(const std::string& guid);
 
-  static base::android::ScopedJavaLocalRef<jobject> CreateJavaIbanFromNative(
-      JNIEnv* env,
-      const Iban& iban);
-
   static void PopulateNativeIbanFromJava(
       const base::android::JavaRef<jobject>& jiban,
       JNIEnv* env,
@@ -179,15 +175,12 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
   void AddServerIbanForTest(JNIEnv* env,
                             const base::android::JavaRef<jobject>& jiban);
 
-  // Return IBAN with the specified `guid`, or Null if there is no IBAN with
+  // Return IBAN with the specified `guid`, or nullptr if there is no IBAN with
   // the specified `guid`.
-  base::android::ScopedJavaLocalRef<jobject> GetIbanByGuid(
-      JNIEnv* env,
-      const std::string& guid);
+  const Iban* GetIbanByGuid(const std::string& guid);
 
   // Returns an array of all stored IBANs.
-  base::android::ScopedJavaLocalRef<jobjectArray> GetIbansForSettings(
-      JNIEnv* env);
+  std::vector<const Iban*> GetIbansForSettings();
 
   // Adds or modifies a local IBAN. If `jiban`'s GUID is an empty string we
   // create a new IBAN, otherwise we update the existing IBAN. Always returns
