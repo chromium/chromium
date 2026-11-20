@@ -73,7 +73,6 @@ import org.chromium.ui.util.TokenHolder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 @NullMarked
 class FullscreenSigninMediatorLegacy
@@ -705,7 +704,9 @@ class FullscreenSigninMediatorLegacy
         // If the user signs into an account on the FRE, goes to the next page and presses
         // back to come back to the welcome screen, then there will already be an account signed in.
         AccountInfo signedInAccount = getSignedInAccount();
-        if (signedInAccount != null && Objects.equals(signedInAccount, mSelectedAccount)) {
+        if (signedInAccount != null
+                && mSelectedAccount != null
+                && signedInAccount.getId().equals(mSelectedAccount.getId())) {
             mDelegate.advanceToNextPage();
             return;
         }
@@ -892,9 +893,10 @@ class FullscreenSigninMediatorLegacy
 
     private @AccountConsistencyPromoAction int getSigninPromoAction() {
         assert mSelectedAccount != null;
-        if (Objects.equals(mSelectedAccount, mDefaultAccount)) {
+        if (mDefaultAccount != null && mSelectedAccount.getId().equals(mDefaultAccount.getId())) {
             return AccountConsistencyPromoAction.SIGNED_IN_WITH_DEFAULT_ACCOUNT;
-        } else if (Objects.equals(mSelectedAccount, mAddedAccount)) {
+        } else if (mAddedAccount != null
+                && mSelectedAccount.getId().equals(mAddedAccount.getId())) {
             return AccountConsistencyPromoAction.SIGNED_IN_WITH_ADDED_ACCOUNT;
         }
         return AccountConsistencyPromoAction.SIGNED_IN_WITH_NON_DEFAULT_ACCOUNT;
@@ -1021,8 +1023,8 @@ class FullscreenSigninMediatorLegacy
             mSelectedAccount =
                     mSelectedAccount == null
                             ? null
-                            : AccountUtils.findAccountByEmail(
-                                    accounts, mSelectedAccount.getEmail());
+                            : AccountUtils.findAccountByAccountId(
+                                    accounts, mSelectedAccount.getId());
             if (mSelectedAccount == null) {
                 setSelectedAccount(mDefaultAccount);
             }
