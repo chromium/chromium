@@ -801,9 +801,12 @@ GlicInvocationHandle GlicInstanceCoordinatorImpl::InvokeInternal(
     // A window entry point is still shown to a user whose profile is not (or
     // is no longer) eligible, so a toggle from it opens the panel and lets the
     // WebUI render the ProfileReadyState error screen. The WebUI reports that
-    // as a client load failure, so the invocation ends in
-    // WaitForClientReadyTask with kClientLoadError and a ClientLoadError reason
-    // saying why. Other entry points fail fast without showing UI.
+    // as a client load failure with a ClientLoadError reason saying why. For
+    // an eligibility gate (ineligible account, location mismatch, disabled by
+    // admin) that panel is what the toggle should show, so the invocation
+    // succeeds in WaitForClientReadyTask (GatePanelBehavior::kCompletes);
+    // other reasons end it with kClientLoadError. Other entry points fail fast
+    // without showing UI.
     const bool show_error_panel = entry_path == GlicInvokeEntryPath::kToggle &&
                                   GlicEnabling::ShouldShowGlicButton(profile_);
     if (!show_error_panel) {

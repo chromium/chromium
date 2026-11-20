@@ -3977,8 +3977,9 @@
         (ClientLoadStateAtStart = LOAD_ERROR), a failure reached while the panel
         was hidden, or a failure whose ClientLoadError event was not joined on
         InvocationId still record why the client failed to load. Also populated
-        (as SIGN_IN) on show-only invocations that succeed on the sign-in panel
-        (SignInBehavior::kCompletes).
+        on show-only invocations that succeed on a visible eligibility gate
+        panel (SIGN_IN, INELIGIBLE_ACCOUNT, LOCATION_MISMATCH or
+        DISABLED_BY_ADMIN; GatePanelBehavior::kCompletes).
       </summary>
     </metric>
     <metric name="EntryPath" type="GlicInvokeEntryPath">

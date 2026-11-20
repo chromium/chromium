@@ -465,6 +465,10 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
 IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
                        ToggleOpensSidePanelForAnchoredIneligibleUser) {
   GlicHistogramTester histogram_tester;
+#if BUILDFLAG(STRUCTURED_METRICS_ENABLED)
+  metrics::structured::TestStructuredMetricsRecorder recorder;
+  recorder.Initialize();
+#endif
   ScopedGlicCapability scoped_glic_capability(GetProfile(), false);
   ASSERT_TRUE(GlicEnabling::HasConsentedForProfile(GetProfile()));
   ASSERT_TRUE(GlicEnabling::ShouldShowGlicButton(GetProfile()));
@@ -481,15 +485,28 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
 
   ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, WaitForGlicOpen(tab));
   // The toggle is a regular invocation: the panel opens so the WebUI can show
-  // the ineligibility screen, which it reports as a client load failure, and
-  // the invocation fails fast with kClientLoadError rather than being
-  // rejected up front.
+  // the ineligibility screen. That screen is what a show-only invocation
+  // should show, so the invocation succeeds on it (recording the gate as the
+  // client load error reason) rather than failing or being rejected up front.
   ASSERT_OK(WaitForClientLoadState(instance, ClientLoadState::kError));
-  EXPECT_FALSE(instance->IsInvoking());
+  // `IsInvoking()` ignores show-only invocations, so wait for the result.
+  ASSERT_OK(histogram_tester.WaitForBucketCount(
+      "Glic.InvokeResult2.TopChromeButton", GlicInvokeResult::kSuccess, 1));
+  EXPECT_EQ(instance->host().client_load_error_reason(),
+            ClientLoadErrorReason::kIneligibleAccount);
   histogram_tester.ExpectUniqueSample("Glic.InvokeResult2.TopChromeButton",
-                                      GlicInvokeError::kClientLoadError, 1);
+                                      GlicInvokeResult::kSuccess, 1);
   histogram_tester.ExpectUniqueSample("Glic.InvokeResult2",
-                                      GlicInvokeError::kClientLoadError, 1);
+                                      GlicInvokeResult::kSuccess, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.CUI.WindowEntryPointInvocation.Outcome", GlicCuiOutcome::kSuccess,
+      1);
+#if BUILDFLAG(STRUCTURED_METRICS_ENABLED)
+  EXPECT_EQ(
+      GetInvokeTerminatedMetric(recorder, "ClientLoadErrorReason"),
+      static_cast<int>(metrics::structured::events::v2::glic::
+                           GlicClientLoadErrorReason::INELIGIBLE_ACCOUNT));
+#endif
   histogram_tester.ExpectBucketCount("Glic.InvokeResult2",
                                      GlicInvokeError::kProfileNotEnabled, 0);
 
@@ -4141,7 +4158,7 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeNeverReadyClientBrowserTest,
 // When the panel is hidden (`!instance->IsShowing()`), no sign-in UI is shown
 // to the user, so `ClientLoadErrorReason::kSignIn` must fail immediately with
 // `GlicInvokeError::kClientLoadError` instead of stalling for `timeout` via
-// `SignInBehavior::kWaits`.
+// `GatePanelBehavior::kWaits`.
 IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
                        HiddenInvokeFailsImmediatelyWhenClientNeedsSignIn) {
   InvalidateAccount(GetProfile());
@@ -4176,7 +4193,7 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
                                       GlicInvokeError::kClientLoadError, 1);
 }
 
-// Show-only invocations (`SignInBehavior::kCompletes`) targeting an inactive
+// Show-only invocations (`GatePanelBehavior::kCompletes`) targeting an inactive
 // background tab leave the side panel hidden (`!instance->IsShowing()`), so
 // `ClientLoadErrorReason::kSignIn` must fail with `kClientLoadError` rather
 // than falsely completing without either a loaded client or a visible sign-in
@@ -4377,6 +4394,104 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
   coordinator().Invoke(std::move(options));
 
   EXPECT_EQ(error_future.Get(), GlicInvokeError::kClientLoadError);
+}
+
+// The eligibility-gate tests below put an open panel on a gate the way the
+// WebUI reports it (`SetClientLoadFailed()` on top of the failure
+// `DisconnectWebClient()` leaves behind), using `kReshowInactive` so showing
+// the already-open panel does not trigger a reload.
+class GlicInvokeGatePanelBrowserTest
+    : public GlicInvokeBrowserTest,
+      public testing::WithParamInterface<ClientLoadErrorReason> {
+ public:
+  [[nodiscard]] TestResult<GlicInstanceImpl*> OpenOnGatePanel() {
+    ASSIGN_OR_RETURN(GlicInstanceImpl * instance,
+                     OpenGlicForActiveTabAndWaitIdle());
+    RETURN_IF_ERROR(DisconnectWebClient(instance));
+    instance->host().ClientLoadErrorOccurred(GetParam());
+    instance->host().SetClientLoadFailed(GetParam());
+    if (instance->host().client_load_state() != ClientLoadState::kError ||
+        instance->host().client_load_error_reason() != GetParam()) {
+      return base::unexpected("Host did not stop on the gate panel");
+    }
+    return instance;
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    GlicInvokeGatePanelBrowserTest,
+    testing::Values(ClientLoadErrorReason::kIneligibleAccount,
+                    ClientLoadErrorReason::kLocationMismatch,
+                    ClientLoadErrorReason::kDisabledByAdmin));
+
+// A show-only invocation is done once the panel shows the gate
+// (`GatePanelBehavior::kCompletes`).
+IN_PROC_BROWSER_TEST_P(GlicInvokeGatePanelBrowserTest,
+                       ShowOnlyInvokeSucceedsOnGatePanel) {
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenOnGatePanel());
+
+  GlicHistogramTester histogram_tester;
+  base::test::TestFuture<void> success_future;
+  base::test::TestFuture<GlicInvokeError> error_future;
+  GlicInvokeOptions options(glic::Target(*tab),
+                            mojom::InvocationSource::kReshowInactive);
+  options.on_success = success_future.GetCallback();
+  options.on_error = error_future.GetCallback();
+  coordinator().Invoke(std::move(options));
+
+  EXPECT_TRUE(success_future.Wait());
+  EXPECT_FALSE(error_future.IsReady());
+  EXPECT_EQ(instance->host().client_load_error_reason(), GetParam());
+  histogram_tester.ExpectUniqueSample("Glic.InvokeResult2",
+                                      GlicInvokeResult::kSuccess, 1);
+}
+
+// An invocation that needs the client cannot finish on a gate panel, and
+// unlike the sign-in panel the other gates do not clear while it waits, so it
+// fails fast (`GatePanelBehavior::kWaits`) instead of running into the
+// timeout.
+IN_PROC_BROWSER_TEST_P(GlicInvokeGatePanelBrowserTest,
+                       InvokeNeedingClientFailsFastOnGatePanel) {
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenOnGatePanel());
+
+  GlicHistogramTester histogram_tester;
+  base::test::TestFuture<GlicInvokeError> error_future;
+  GlicInvokeOptions options(glic::Target(*tab),
+                            mojom::InvocationSource::kReshowInactive);
+  options.prompts = {"a prompt"};
+  options.timeout = base::Minutes(5);
+  options.on_error = error_future.GetCallback();
+  coordinator().Invoke(std::move(options));
+
+  EXPECT_EQ(error_future.Get(), GlicInvokeError::kClientLoadError);
+  EXPECT_EQ(instance->host().client_load_error_reason(), GetParam());
+  histogram_tester.ExpectUniqueSample("Glic.InvokeResult2",
+                                      GlicInvokeError::kClientLoadError, 1);
+}
+
+// An invocation with nothing to send that still asks to be told when the
+// client connects needs the client too: it must not complete on a gate panel
+// and report a connection that never happened.
+IN_PROC_BROWSER_TEST_P(GlicInvokeGatePanelBrowserTest,
+                       InvokeWaitingForClientConnectedFailsOnGatePanel) {
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenOnGatePanel());
+
+  base::test::TestFuture<base::WeakPtr<GlicInstance>> connected_future;
+  base::test::TestFuture<GlicInvokeError> error_future;
+  GlicInvokeOptions options(glic::Target(*tab),
+                            mojom::InvocationSource::kReshowInactive);
+  options.timeout = base::Minutes(5);
+  options.on_client_connected = connected_future.GetCallback();
+  options.on_error = error_future.GetCallback();
+  coordinator().Invoke(std::move(options));
+
+  EXPECT_EQ(error_future.Get(), GlicInvokeError::kClientLoadError);
+  EXPECT_FALSE(connected_future.IsReady());
+  EXPECT_EQ(instance->host().client_load_error_reason(), GetParam());
 }
 
 class GlicInvokeInitFailureBrowserTest : public GlicInvokeBrowserTest {

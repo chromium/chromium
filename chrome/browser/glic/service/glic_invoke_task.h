@@ -232,20 +232,22 @@ class WaitForClientConnectedTask : public GlicInvokeTask,
   base::OnceClosure done_callback_;
 };
 
-// What WaitForClientReadyTask does when the client stops on a visible sign-in
+// What WaitForClientReadyTask does when the client stops on a visible gate
 // panel (`Host::instance().IsShowing()`, `Host::client_load_state()` is
-// `kError` with `client_load_error_reason()` `kSignIn`). Unlike other load
-// failures, a visible sign-in panel has not given up: the client reloads and
-// becomes ready once the user signs in. When the panel is hidden, no sign-in
-// UI is visible to the user, so `kSignIn` fails immediately with
-// `GlicInvokeError::kClientLoadError`.
-enum class SignInBehavior {
+// `kError` with an eligibility-gate `client_load_error_reason()`: sign-in,
+// ineligible account, location mismatch or disabled by admin). The panel is
+// showing what it should, so it is not a client failure.
+// When the panel is hidden, no gate UI is visible to the user, so every gate
+// fails immediately with `GlicInvokeError::kClientLoadError`.
+enum class GatePanelBehavior {
   // The task completes. An invocation with nothing to send the client is done
-  // once the panel shows what it should, and the sign-in panel is that.
+  // once the panel shows what it should, and a gate panel is that.
   kCompletes,
-  // The task keeps waiting for the user to sign in. An invocation that needs
-  // the client can do nothing before then; if the user never does, the
-  // invocation times out (GlicInvokeHandler reports that as kSignInRequired).
+  // The invocation needs the client. On the sign-in panel the task keeps
+  // waiting: the client reloads and becomes ready once the user signs in, and
+  // if the user never does the invocation times out (GlicInvokeHandler reports
+  // that as kSignInRequired). The other gates cannot clear while the
+  // invocation waits, so they fail with `GlicInvokeError::kClientLoadError`.
   kWaits,
 };
 
@@ -256,7 +258,7 @@ class WaitForClientReadyTask : public GlicInvokeTask, public Host::Observer {
 
   WaitForClientReadyTask(
       Host& host,
-      SignInBehavior sign_in_behavior,
+      GatePanelBehavior gate_panel_behavior,
       base::OnceCallback<void(GlicInvokeError)> error_callback);
   ~WaitForClientReadyTask() override;
   void Start(base::OnceClosure done_callback) override;
@@ -269,7 +271,7 @@ class WaitForClientReadyTask : public GlicInvokeTask, public Host::Observer {
   void CheckState(ClientLoadState state);
 
   const base::raw_ref<Host> host_;
-  const SignInBehavior sign_in_behavior_;
+  const GatePanelBehavior gate_panel_behavior_;
   base::OnceCallback<void(GlicInvokeError)> error_callback_;
   base::ScopedObservation<Host, Host::Observer> observation_{this};
   base::OnceClosure done_callback_;

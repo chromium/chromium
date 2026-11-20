@@ -292,9 +292,9 @@ enum class GlicInvokeError {
   // (ClientLoadErrorReason::kSignIn), and the user had not signed in when the
   // invocation timed out. Not a failure of the client, and not a kTimeout
   // either: nothing the product did ran late. (An invocation that only shows
-  // the panel succeeds at that point instead; see SignInBehavior.) Counted as
-  // ABANDONED, which is what CUI 1 recorded for the sign-in panel before it
-  // was resolved from the invocation.
+  // the panel succeeds at that point instead; see GatePanelBehavior.)
+  // Counted as ABANDONED, which is what CUI 1 recorded for the sign-in panel
+  // before it was resolved from the invocation.
   kSignInRequired = 27,
   // A browser window is in locked fullscreen mode.
   kLockedFullscreen = 28,

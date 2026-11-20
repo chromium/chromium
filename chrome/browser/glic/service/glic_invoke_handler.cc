@@ -529,14 +529,20 @@ void GlicInvokeHandler::Invoke() {
   // responsive. Unlike a bare connection wait, this fails the invocation if the
   // client never loads instead of hanging until the invocation times out.
   //
-  // A client stopped on the sign-in panel is the exception: an invocation
-  // that only shows the panel is done at that point, while one that needs the
-  // client waits for the user to sign in while the panel is visible (see
-  // SignInBehavior and OnTimeout()).
+  // A client stopped on a visible gate panel (sign-in, ineligible account,
+  // location mismatch, disabled by admin) is the exception: an invocation that
+  // only shows the panel is done at that point, while one that needs the client
+  // waits for the user to sign in while the sign-in panel is visible (see
+  // GatePanelBehavior and OnTimeout()). An invocation that reports the client
+  // connection or waits for the FRE after this also needs the client, so a
+  // gate panel must not complete it.
+  const bool needs_ready_client = requires_client_invoke_ ||
+                                  !options_.on_client_connected.is_null() ||
+                                  NeedsFreCompletion();
   tasks.push_back(std::make_unique<WaitForClientReadyTask>(
       instance_->host(),
-      requires_client_invoke_ ? SignInBehavior::kWaits
-                              : SignInBehavior::kCompletes,
+      needs_ready_client ? GatePanelBehavior::kWaits
+                         : GatePanelBehavior::kCompletes,
       base::BindOnce(&GlicInvokeHandler::OnError,
                      weak_ptr_factory_.GetWeakPtr())));
   if (options_.on_client_connected) {
@@ -675,8 +681,9 @@ void GlicInvokeHandler::OnSuccess() {
     main_task_->NotifySequenceCompleted(/*success=*/true);
   }
 
-  // A show-only invocation completes when the host stops on the sign-in panel
-  // (`SignInBehavior::kCompletes`), leaving the host in `kError` (`kSignIn`).
+  // A show-only invocation completes when the host stops on a gate panel
+  // (`GatePanelBehavior::kCompletes`), leaving the host in `kError` with the
+  // gate as the reason. Record it so the success can be told apart.
   if (instance_->host().client_load_state() == ClientLoadState::kError &&
       instance_->host().client_load_error_reason().has_value()) {
     metrics_->SetClientLoadErrorReason(
@@ -696,9 +703,9 @@ void GlicInvokeHandler::OnSuccess() {
 
 void GlicInvokeHandler::OnTimeout() {
   // An invocation that needed the client and spent its time on a visible
-  // sign-in panel (SignInBehavior::kWaits) did not run out of time for anything
-  // the product did; the user did not sign in. Report that rather than a
-  // timeout.
+  // sign-in panel (GatePanelBehavior::kWaits) did not run out of time for
+  // anything the product did; the user did not sign in. Report that rather than
+  // a timeout.
   const Host& host = instance_->host();
   OnError(instance_->IsShowing() &&
                   host.client_load_state() == ClientLoadState::kError &&
