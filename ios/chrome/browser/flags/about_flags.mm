@@ -742,8 +742,6 @@ constexpr FeatureEntry::FeatureParam kBestFeaturesScreenInFirstRunArm2[] = {
     {first_run::kBestFeaturesScreenInFirstRunParam, "2"}};
 constexpr FeatureEntry::FeatureParam kBestFeaturesScreenInFirstRunArm3[] = {
     {first_run::kBestFeaturesScreenInFirstRunParam, "3"}};
-constexpr FeatureEntry::FeatureParam kBestFeaturesScreenInFirstRunArm4[] = {
-    {first_run::kBestFeaturesScreenInFirstRunParam, "4"}};
 constexpr FeatureEntry::FeatureParam kBestFeaturesScreenInFirstRunArm5[] = {
     {first_run::kBestFeaturesScreenInFirstRunParam, "5"}};
 constexpr FeatureEntry::FeatureParam kBestFeaturesScreenInFirstRunArm6[] = {
@@ -757,8 +755,6 @@ constexpr FeatureEntry::FeatureVariation
          kBestFeaturesScreenInFirstRunArm2, nullptr},
         {" - Variant C: General screen with passwords item",
          kBestFeaturesScreenInFirstRunArm3, nullptr},
-        {" - Variant D: Shopping users screen, variant C as fallback",
-         kBestFeaturesScreenInFirstRunArm4, nullptr},
         {" - Variant E: Show screen to signed-in users only",
          kBestFeaturesScreenInFirstRunArm5, nullptr},
         {" - Variant F: Show address bar promo",

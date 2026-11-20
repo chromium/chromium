@@ -53,18 +53,6 @@ id<GREYMatcher> NeverForgetPasswordsTitle() {
       IDS_IOS_BEST_FEATURES_NEVER_FORGET_PASSWORDS_TITLE));
 }
 
-// Returns a matcher for the Tab Groups title.
-id<GREYMatcher> TabGroupsTitle() {
-  return grey_text(
-      l10n_util::GetNSString(IDS_IOS_BEST_FEATURES_TAB_GROUPS_TITLE));
-}
-
-// Returns a matcher for the Price Tracking title.
-id<GREYMatcher> PriceTrackingTitle() {
-  return grey_text(
-      l10n_util::GetNSString(IDS_IOS_BEST_FEATURES_PRICE_TRACKING_TITLE));
-}
-
 // Returns a matcher for the Passwords In Other Apps title.
 id<GREYMatcher> PasswordsInOtherAppsTitle() {
   return grey_text(l10n_util::GetNSString(
@@ -129,20 +117,9 @@ id<GREYMatcher> SharePasswordsTitle() {
   if ([self isRunningTest:@selector(testBestFeatures_variantC)]) {
     feature_param = "3";
   }
-  if ([self isRunningTest:@selector(testBestFeatures_variantDShopper)]) {
-    feature_param = "4";
-    config.additional_args.push_back("-ForceExperienceForShopper");
-    config.additional_args.push_back("true");
-  }
-  if ([self isRunningTest:@selector(testBestFeatures_variantDNonShopper)]) {
-    feature_param = "4";
-  }
   if ([self isRunningTest:@selector(testBestFeatures_variantE)] ||
       [self isRunningTest:@selector(testBestFeatures_variantECPEEnabled)]) {
     feature_param = "5";
-  }
-  if ([self isRunningTest:@selector(testBestFeatures_variantDShopper)]) {
-    config.additional_args.push_back("--mock-shopping-service=is-eligible");
   }
 
   config.additional_args.push_back(
@@ -279,49 +256,6 @@ id<GREYMatcher> SharePasswordsTitle() {
 // the items are correct, and that the FeatureHighlightScreenshotVC and
 // InstructionsHalfSheetVC appear correctly.
 - (void)testBestFeatures_variantC {
-  // Ensure the Default Browser Promo appears before the Best Features Screen.
-  [self skipDefaultBrowserPromo];
-
-  // Assert that the correct items are visible.
-  [[EarlGrey selectElementWithMatcher:LensTitle()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:EnhancedSafeBrowsingTitle()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:NeverForgetPasswordsTitle()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  // Check that the Best Featues Detail Screen and Instructions Half Sheet
-  // appear correctly.
-  [self checkDetailScreen:IDS_IOS_BEST_FEATURES_NEVER_FORGET_PASSWORDS_TITLE
-                 withStep:
-                     IDS_IOS_BEST_FEATURES_NEVER_FORGET_PASSWORDS_FIRST_STEP];
-}
-
-// Tests that the Best Features screens appears after the Default Browser Promo,
-// shopping users see the correct items, and that the
-// FeatureHighlightScreenshotVC and InstructionsHalfSheetVC appear correctly.
-- (void)testBestFeatures_variantDShopper {
-  // Ensure the Default Browser Promo appears before the Best Features Screen.
-  [self skipDefaultBrowserPromo];
-
-  // Assert that the correct items are visible.
-  [[EarlGrey selectElementWithMatcher:TabGroupsTitle()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:LockedIncognitoTitle()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:PriceTrackingTitle()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  // Check that the Best Featues Detail Screen and Instructions Half Sheet
-  // appear correctly.
-  [self checkDetailScreen:IDS_IOS_BEST_FEATURES_PRICE_TRACKING_TITLE
-                 withStep:IDS_IOS_BEST_FEATURES_PRICE_TRACKING_STEP_1];
-}
-
-// Tests that the Best Features screens appears after the Default Browser Promo,
-// non-shopping users see the correct items, and that the
-// FeatureHighlightScreenshotVC and InstructionsHalfSheetVC appear correctly.
-- (void)testBestFeatures_variantDNonShopper {
   // Ensure the Default Browser Promo appears before the Best Features Screen.
   [self skipDefaultBrowserPromo];
 

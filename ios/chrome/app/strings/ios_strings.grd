@@ -1249,33 +1249,6 @@
       <message name="IDS_IOS_BEST_FEATURES_PASSWORDS_IN_OTHER_APPS_TITLE" desc="Title for the Passwords in other apps Chrome iOS Best Features Promo">
         Passwords in other apps
       </message>
-      <message name="IDS_IOS_BEST_FEATURES_PRICE_TRACKING_ANIMATION_TEXT_1" desc="Text featured on the Price Tracking animation used by Chrome iOS Best Features.">
-        Smart Watch
-      </message>
-      <message name="IDS_IOS_BEST_FEATURES_PRICE_TRACKING_ANIMATION_TEXT_2" desc="Text featured on the Price Tracking animation used by Chrome iOS Best Features. The rendered text is 'Price $100 - $150'">
-        Price &#36;100 - &#36;180
-      </message>
-      <message name="IDS_IOS_BEST_FEATURES_PRICE_TRACKING_ANIMATION_TEXT_3" desc="Text featured on the Price Tracking animation used by Chrome iOS Best Features.">
-        Track Price
-      </message>
-      <message name="IDS_IOS_BEST_FEATURES_PRICE_TRACKING_CAPTION" desc="Caption for the Price Tracking button on the Chrome iOS Best Features Promo">
-        Track price drops of products
-      </message>
-      <message name="IDS_IOS_BEST_FEATURES_PRICE_TRACKING_STEP_1" desc="The first step to use the price tracking feature">
-        Go to the page of a product
-      </message>
-      <message name="IDS_IOS_BEST_FEATURES_PRICE_TRACKING_STEP_2" desc="The second step to use the price tracking feature">
-        In the address bar, tap price history to see price changes over time
-      </message>
-      <message name="IDS_IOS_BEST_FEATURES_PRICE_TRACKING_STEP_3" desc="The third step to use the price tracking feature">
-        To track the product, tap Track
-      </message>
-      <message name="IDS_IOS_BEST_FEATURES_PRICE_TRACKING_SUBTITLE" desc="Subtitle for the Price Tracking Chrome iOS Best Features Promo">
-        Track prices of products and get alerts when the price drops on any site
-      </message>
-      <message name="IDS_IOS_BEST_FEATURES_PRICE_TRACKING_TITLE" desc="Title for the Price Tracking Chrome iOS Best Features Promo">
-        Price tracking and insights
-      </message>
       <message name="IDS_IOS_BEST_FEATURES_SHARE_PASSWORDS_ANIMATION_TEXT_1" desc="Text featured on the Share Passwords animation used by Chrome iOS Best Features.">
         Share Your Passwords
       </message>

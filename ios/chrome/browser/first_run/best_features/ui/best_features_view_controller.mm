@@ -130,7 +130,6 @@ const CGFloat kTableViewSectionFooterHeight = 3;
   switch (first_run::GetBestFeaturesScreenVariationType()) {
     case kGeneralScreenAfterDBPromo:
     case kGeneralScreenWithPasswordItemAfterDBPromo:
-    case kShoppingUsersWithFallbackAfterDBPromo:
     case kSignedInUsersOnlyAfterDBPromo:
     case kBestOfApp:
       return l10n_util::GetNSString(

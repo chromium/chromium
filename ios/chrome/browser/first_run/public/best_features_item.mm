@@ -39,29 +39,6 @@ NSDictionary<NSString*, UIColor*>* LensColorProvider(
   };
 }
 
-// Returns the color provider for the Price Tracking animation.
-// TODO(crbug.com/585553993): The callers pass an alpha byte in
-// `gradient_grouped_primary_background_color`, which `UIColorFromRGB` ignores.
-// Pass the alpha explicitly.
-NSDictionary<NSString*, UIColor*>* PriceTrackingColorProvider(
-    int gradient_grouped_primary_background_color) {
-  return @{
-    @"grouped_primary_background_color" :
-        [UIColor colorNamed:kGroupedPrimaryBackgroundColor],
-    @"grouped_secondary_background_color" :
-        [UIColor colorNamed:kGroupedSecondaryBackgroundColor],
-    @"blue_color" : [UIColor colorNamed:kBlueColor],
-    @"separator_color" : [UIColor colorNamed:kSeparatorColor],
-    @"tertiary_background_color" :
-        [UIColor colorNamed:kTertiaryBackgroundColor],
-    @"gradient_grouped_primary_background_color" :
-        UIColorFromRGB(gradient_grouped_primary_background_color),
-    @"Smart Watch" : [UIColor colorNamed:kTextPrimaryColor],
-    @"Price $100-$180" : [UIColor colorNamed:kTextSecondaryColor],
-    @"Track Price" : [UIColor colorNamed:kInvertedTextPrimaryColor],
-  };
-}
-
 // Returns the color provider for the Safe Browsing Tutorial animation.
 // Keys in this provider are prepended with a dot to force Lottie's
 // Swift keypath engine to perform deep recursive matching. This is required to
@@ -183,11 +160,6 @@ NSDictionary<NSString*, UIColor*>* StandardColorProvider(
         return SymbolWithPalette(
             SymbolWithConfiguration(SymbolTabGroups, configuration),
             @[ [UIColor whiteColor] ]);
-      case BestFeaturesItemType::kPriceTrackingAndInsights:
-        return SymbolWithPalette(
-            SymbolWithConfiguration(SymbolChartLineDowntrendXYAxis,
-                                    configuration),
-            @[ [UIColor whiteColor] ]);
     }
 }
 
@@ -205,8 +177,6 @@ NSDictionary<NSString*, UIColor*>* StandardColorProvider(
       return [UIColor colorNamed:kGrey400Color];
     case BestFeaturesItemType::kTabGroups:
       return [UIColor colorNamed:kGreen500Color];
-    case BestFeaturesItemType::kPriceTrackingAndInsights:
-      return [UIColor colorNamed:kPink500Color];
   }
 }
 
@@ -246,15 +216,6 @@ NSDictionary<NSString*, UIColor*>* StandardColorProvider(
         @"Trip to Tokyo" : l10n_util ::GetNSString(
             IDS_IOS_BEST_FEATURES_TAB_GROUPS_ANIMATION_TEXT_1),
       };
-    case BestFeaturesItemType::kPriceTrackingAndInsights:
-      return @{
-        @"Smart Watch" : l10n_util::GetNSString(
-            IDS_IOS_BEST_FEATURES_PRICE_TRACKING_ANIMATION_TEXT_1),
-        @"Price $100-$180" : l10n_util::GetNSString(
-            IDS_IOS_BEST_FEATURES_PRICE_TRACKING_ANIMATION_TEXT_2),
-        @"Track Price" : l10n_util::GetNSString(
-            IDS_IOS_BEST_FEATURES_PRICE_TRACKING_ANIMATION_TEXT_3),
-      };
     case BestFeaturesItemType::kAutofillPasswordsInOtherApps:
       // Animation has no strings.
       return nil;
@@ -286,8 +247,6 @@ NSDictionary<NSString*, UIColor*>* StandardColorProvider(
         return @"save_passwords";
       case BestFeaturesItemType::kTabGroups:
         return @"tab_groups";
-      case BestFeaturesItemType::kPriceTrackingAndInsights:
-        return @"price_tracking";
       case BestFeaturesItemType::kAutofillPasswordsInOtherApps:
         return @"CPE_promo_animation_edu_autofill";
       case BestFeaturesItemType::kSharePasswordsWithFamily:
@@ -337,12 +296,6 @@ NSDictionary<NSString*, UIColor*>* StandardColorProvider(
           l10n_util::GetNSString(IDS_IOS_BEST_FEATURES_TAB_GROUPS_STEP_3),
           l10n_util::GetNSString(IDS_IOS_BEST_FEATURES_TAB_GROUPS_STEP_4),
         ];
-      case BestFeaturesItemType::kPriceTrackingAndInsights:
-        return @[
-          l10n_util::GetNSString(IDS_IOS_BEST_FEATURES_PRICE_TRACKING_STEP_1),
-          l10n_util::GetNSString(IDS_IOS_BEST_FEATURES_PRICE_TRACKING_STEP_2),
-          l10n_util::GetNSString(IDS_IOS_BEST_FEATURES_PRICE_TRACKING_STEP_3),
-        ];
       case BestFeaturesItemType::kAutofillPasswordsInOtherApps:
         return @[
           l10n_util::GetNSString(
@@ -385,8 +338,6 @@ NSDictionary<NSString*, UIColor*>* StandardColorProvider(
     case BestFeaturesItemType::kSaveAndAutofillPasswords:
     case BestFeaturesItemType::kTabGroups:
       return StandardColorProvider(0xFFFFFF, 0xE8EAED);
-    case BestFeaturesItemType::kPriceTrackingAndInsights:
-      return PriceTrackingColorProvider(0xF1F3F480);
     case BestFeaturesItemType::kSharePasswordsWithFamily:
       return SharePasswordsColorProvider();
     case BestFeaturesItemType::kIncognitoBrowsing:
@@ -414,8 +365,6 @@ NSDictionary<NSString*, UIColor*>* StandardColorProvider(
     case BestFeaturesItemType::kSaveAndAutofillPasswords:
     case BestFeaturesItemType::kTabGroups:
       return StandardColorProvider(0x5F6368, 0x5F6368);
-    case BestFeaturesItemType::kPriceTrackingAndInsights:
-      return PriceTrackingColorProvider(0x20212480);
     case BestFeaturesItemType::kSharePasswordsWithFamily:
       return SharePasswordsColorProvider();
     case BestFeaturesItemType::kIncognitoBrowsing:
@@ -440,8 +389,6 @@ NSDictionary<NSString*, UIColor*>* StandardColorProvider(
       return IDS_IOS_BEST_FEATURES_NEVER_FORGET_PASSWORDS_TITLE;
     case BestFeaturesItemType::kTabGroups:
       return IDS_IOS_BEST_FEATURES_TAB_GROUPS_TITLE;
-    case BestFeaturesItemType::kPriceTrackingAndInsights:
-      return IDS_IOS_BEST_FEATURES_PRICE_TRACKING_TITLE;
     case BestFeaturesItemType::kAutofillPasswordsInOtherApps:
       return IDS_IOS_BEST_FEATURES_PASSWORDS_IN_OTHER_APPS_TITLE;
     case BestFeaturesItemType::kSharePasswordsWithFamily:
@@ -464,8 +411,6 @@ NSDictionary<NSString*, UIColor*>* StandardColorProvider(
       return IDS_IOS_BEST_FEATURES_NEVER_FORGET_PASSWORDS_SUBTITLE;
     case BestFeaturesItemType::kTabGroups:
       return IDS_IOS_BEST_FEATURES_TAB_GROUPS_SUBTITLE;
-    case BestFeaturesItemType::kPriceTrackingAndInsights:
-      return IDS_IOS_BEST_FEATURES_PRICE_TRACKING_SUBTITLE;
     case BestFeaturesItemType::kAutofillPasswordsInOtherApps:
       return IDS_IOS_BEST_FEATURES_PASSWORDS_IN_OTHER_APPS_SUBTITLE;
     case BestFeaturesItemType::kSharePasswordsWithFamily:
@@ -489,8 +434,6 @@ NSDictionary<NSString*, UIColor*>* StandardColorProvider(
       return IDS_IOS_BEST_FEATURES_NEVER_FORGET_PASSWORDS_CAPTION;
     case BestFeaturesItemType::kTabGroups:
       return IDS_IOS_BEST_FEATURES_TAB_GROUPS_CAPTION;
-    case BestFeaturesItemType::kPriceTrackingAndInsights:
-      return IDS_IOS_BEST_FEATURES_PRICE_TRACKING_CAPTION;
     case BestFeaturesItemType::kAutofillPasswordsInOtherApps:
       return IDS_IOS_BEST_FEATURES_PASSWORDS_IN_OTHER_APPS_CAPTION;
     case BestFeaturesItemType::kSharePasswordsWithFamily:

@@ -15,7 +15,7 @@ enum class BestFeaturesItemType {
   kLockedIncognitoTabs = 2,
   kSaveAndAutofillPasswords = 3,
   kTabGroups = 4,
-  kPriceTrackingAndInsights = 5,
+  // kPriceTrackingAndInsights = 5,  // Obsolete.
   kAutofillPasswordsInOtherApps = 6,
   kSharePasswordsWithFamily = 7,
   kIncognitoBrowsing = 8,

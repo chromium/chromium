@@ -19,8 +19,6 @@ const char kActionOnBestFeaturesSaveAutofillPasswordsHistogram[] =
     "IOS.FirstRun.BestFeatures.SaveAutofillPasswords.Action";
 const char kActionOnBestFeaturesTabGroupsHistogram[] =
     "IOS.FirstRun.BestFeatures.TabGroups.Action";
-const char kActionOnBestFeaturesPriceTrackingHistogram[] =
-    "IOS.FirstRun.BestFeatures.PriceTracking.Action";
 const char kActionOnBestFeaturesPasswordsInOtherAppsHistogram[] =
     "IOS.FirstRun.BestFeatures.PasswordsInOtherApps.Action";
 const char kActionOnBestFeaturesSharePasswordsHistogram[] =
@@ -42,8 +40,6 @@ const char* BestFeaturesActionHistogramForItemType(
       return kActionOnBestFeaturesSaveAutofillPasswordsHistogram;
     case kTabGroups:
       return kActionOnBestFeaturesTabGroupsHistogram;
-    case kPriceTrackingAndInsights:
-      return kActionOnBestFeaturesPriceTrackingHistogram;
     case kAutofillPasswordsInOtherApps:
       return kActionOnBestFeaturesPasswordsInOtherAppsHistogram;
     case kSharePasswordsWithFamily:

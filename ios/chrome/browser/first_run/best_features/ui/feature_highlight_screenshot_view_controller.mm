@@ -27,7 +27,6 @@ NSString* ConfigureSecondaryActionString() {
   switch (first_run::GetBestFeaturesScreenVariationType()) {
     case kGeneralScreenAfterDBPromo:
     case kGeneralScreenWithPasswordItemAfterDBPromo:
-    case kShoppingUsersWithFallbackAfterDBPromo:
     case kSignedInUsersOnlyAfterDBPromo:
       // Best Features screen is last in the FRE sequence
       return l10n_util::GetNSString(

@@ -142,8 +142,13 @@ BestFeaturesScreenVariationType GetBestFeaturesScreenVariationType() {
   if (!base::FeatureList::IsEnabled(kBestFeaturesScreenInFirstRun)) {
     return BestFeaturesScreenVariationType::kDisabled;
   }
-  return static_cast<BestFeaturesScreenVariationType>(
-      kBestFeaturesScreenInFirstRunParamFeature.Get());
+  int param = kBestFeaturesScreenInFirstRunParamFeature.Get();
+  if (param == 4) {
+    // 4 was `kShoppingUsersWithFallbackAfterDBPromo` (the Price Tracking
+    // promo), which is now obsolete.
+    return BestFeaturesScreenVariationType::kDisabled;
+  }
+  return static_cast<BestFeaturesScreenVariationType>(param);
 }
 
 UpdatedFRESequenceVariationType GetUpdatedFRESequenceVariation() {

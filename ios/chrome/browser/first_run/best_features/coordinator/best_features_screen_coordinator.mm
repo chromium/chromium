@@ -5,10 +5,8 @@
 #import "ios/chrome/browser/first_run/best_features/coordinator/best_features_screen_coordinator.h"
 
 #import "base/metrics/histogram_functions.h"
-#import "components/segmentation_platform/public/segmentation_platform_service.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
-#import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/first_run/best_features/coordinator/best_features_screen_detail_coordinator.h"
 #import "ios/chrome/browser/first_run/best_features/coordinator/best_features_screen_mediator.h"
 #import "ios/chrome/browser/first_run/best_features/ui/best_features_delegate.h"
@@ -18,7 +16,6 @@
 #import "ios/chrome/browser/first_run/public/best_features_item.h"
 #import "ios/chrome/browser/first_run/public/features.h"
 #import "ios/chrome/browser/first_run/public/first_run_screen_delegate.h"
-#import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
@@ -34,9 +31,6 @@
   __weak id<FirstRunScreenDelegate> _delegate;
   // Best Features Screen mediator.
   BestFeaturesScreenMediator* _mediator;
-  // Transparent view used to block user interaction before the Best Features
-  // Screen presents.
-  UIView* _transparentView;
   // Best Features Screen view controller.
   BestFeaturesViewController* _viewController;
   // The BestFeaturesScreenDetail coordinator.
@@ -81,41 +75,14 @@
   base::UmaHistogramEnumeration(first_run::kFirstRunStageHistogram,
                                 first_run::kBestFeaturesExperienceStart);
 
-  segmentation_platform::SegmentationPlatformService* segmentationService =
-      segmentation_platform::SegmentationPlatformServiceFactory::GetForProfile(
-          self.profile);
-  commerce::ShoppingService* shoppingService =
-      commerce::ShoppingServiceFactory::GetForProfile(self.profile);
-  _mediator = [[BestFeaturesScreenMediator alloc]
-      initWithSegmentationService:segmentationService
-                  shoppingService:shoppingService];
-
-  // Retrieve the user's segmentation status before presenting the view if the
-  // "shopping" arm is enabled. Otherwise, present the view.
-  if (variation == first_run::BestFeaturesScreenVariationType::
-                       kShoppingUsersWithFallbackAfterDBPromo) {
-    // Present a transparent view to block UI interaction until screen presents.
-    // TODO(crbug.com/396480750): This is a temporary solution. If the feature
-    // becomes a full launch candidate, consider more polished solutions, like a
-    // loading screen.
-    _transparentView =
-        [[UIView alloc] initWithFrame:self.baseViewController.view.bounds];
-    _transparentView.backgroundColor = [UIColor clearColor];
-    [self.baseViewController.view addSubview:_transparentView];
-    __weak __typeof(self) weakSelf = self;
-    [_mediator retrieveShoppingUserSegmentWithCompletion:^{
-      [weakSelf presentScreen];
-    }];
-  } else {
-    [self presentScreen];
-  }
+  _mediator = [[BestFeaturesScreenMediator alloc] init];
+  [self presentScreen];
 }
 
 - (void)stop {
   _delegate = nil;
   [_mediator disconnect];
   _mediator = nil;
-  _transparentView = nil;
   _viewController = nil;
   [_detailScreenCoordinator stop];
   _detailScreenCoordinator = nil;
@@ -190,8 +157,6 @@
 
 // Presents the Best Features Screen.
 - (void)presentScreen {
-  [_transparentView removeFromSuperview];
-  _transparentView = nil;
   _viewController = [[BestFeaturesViewController alloc] init];
   _mediator.consumer = _viewController;
   _viewController.delegate = self;
@@ -223,9 +188,6 @@
       break;
     case kTabGroups:
       enumValue = BestFeaturesMainScreenActionType::kTabGroupsTapped;
-      break;
-    case kPriceTrackingAndInsights:
-      enumValue = BestFeaturesMainScreenActionType::kPriceTrackingTapped;
       break;
     case kAutofillPasswordsInOtherApps:
       enumValue =

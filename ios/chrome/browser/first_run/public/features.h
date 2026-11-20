@@ -27,26 +27,23 @@ enum class AnimatedDefaultBrowserPromoInFREExperimentType {
 
 // Enum to represent variations of feature kBestFeaturesScreenInFirstRun.
 enum class BestFeaturesScreenVariationType {
-  kDisabled,
+  kDisabled = 0,
   // Show general screen to all users, after the Default Browser promo.
-  kGeneralScreenAfterDBPromo,
+  kGeneralScreenAfterDBPromo = 1,
   // Show general screen to all users, before the Default Browser promo.
-  kGeneralScreenBeforeDBPromo,
+  kGeneralScreenBeforeDBPromo = 2,
   // Show a modified version of the general screen to all users, after the
   // Default Browser promo. The "incognito tabs" item is replaced with
   // "passwords" item.
-  kGeneralScreenWithPasswordItemAfterDBPromo,
-  // For "Shopping" classified users, show the Shopping-specific screen. For all
-  // other users, show screen in kGeneralScreenWithPasswordItem arm. Appears
-  // after Default Browser promo.
-  kShoppingUsersWithFallbackAfterDBPromo,
+  kGeneralScreenWithPasswordItemAfterDBPromo = 3,
+  // kShoppingUsersWithFallbackAfterDBPromo = 4,  // Obsolete.
   // For signed-in users, show the "signed-in" specific screen. For all other
   // users, don't show screen. Appears after Default Browser promo.
-  kSignedInUsersOnlyAfterDBPromo,
+  kSignedInUsersOnlyAfterDBPromo = 5,
   // Show the address bar promo instead of the Best Features screen.
-  kAddressBarPromoInsteadOfBestFeaturesScreen,
+  kAddressBarPromoInsteadOfBestFeaturesScreen = 6,
   // Show the general screen to all users as a part of the Best of App FRE.
-  kBestOfApp,
+  kBestOfApp = 7,
 };
 
 // Enum to represent arms of feature kUpdatedFirstRunSequence.

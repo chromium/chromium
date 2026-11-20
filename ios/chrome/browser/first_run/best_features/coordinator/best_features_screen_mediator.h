@@ -7,16 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-#import "base/ios/block_types.h"
-
-namespace commerce {
-class ShoppingService;
-}
-
-namespace segmentation_platform {
-class SegmentationPlatformService;
-}
-
 @class BestFeaturesItem;
 
 @protocol BestFeaturesScreenConsumer;
@@ -27,18 +17,6 @@ class SegmentationPlatformService;
 // The consumer for this object. Setting it will update the consumer with
 // current data.
 @property(nonatomic, weak) id<BestFeaturesScreenConsumer> consumer;
-
-// Designated initializer for this mediator.
-- (instancetype)
-    initWithSegmentationService:
-        (segmentation_platform::SegmentationPlatformService*)segmentationService
-                shoppingService:(commerce::ShoppingService*)shoppingService
-    NS_DESIGNATED_INITIALIZER;
-
-- (instancetype)init NS_UNAVAILABLE;
-
-// Retrieves the status of the user's Shopping segment.
-- (void)retrieveShoppingUserSegmentWithCompletion:(ProceduralBlock)completion;
 
 // Disconnects the mediator.
 - (void)disconnect;

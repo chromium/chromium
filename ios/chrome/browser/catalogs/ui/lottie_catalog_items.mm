@@ -120,29 +120,6 @@ NSDictionary<NSString*, UIColor*>* SearchWithLensColorProvider(
   };
 }
 
-// Returns the color provider of the Price Tracking animation.
-// TODO(crbug.com/585553993): The callers pass an alpha byte in
-// `gradientGroupedPrimaryBackgroundColor`, which `UIColorFromRGB` ignores.
-// Update alongside the fix in `best_features_item.mm`.
-NSDictionary<NSString*, UIColor*>* PriceTrackingColorProvider(
-    int gradientGroupedPrimaryBackgroundColor) {
-  return @{
-    @"grouped_primary_background_color" :
-        [UIColor colorNamed:kGroupedPrimaryBackgroundColor],
-    @"grouped_secondary_background_color" :
-        [UIColor colorNamed:kGroupedSecondaryBackgroundColor],
-    @"blue_color" : [UIColor colorNamed:kBlueColor],
-    @"separator_color" : [UIColor colorNamed:kSeparatorColor],
-    @"tertiary_background_color" :
-        [UIColor colorNamed:kTertiaryBackgroundColor],
-    @"gradient_grouped_primary_background_color" :
-        UIColorFromRGB(gradientGroupedPrimaryBackgroundColor),
-    @"Smart Watch" : [UIColor colorNamed:kTextPrimaryColor],
-    @"Price $100-$180" : [UIColor colorNamed:kTextSecondaryColor],
-    @"Track Price" : [UIColor colorNamed:kInvertedTextPrimaryColor],
-  };
-}
-
 // Returns the color provider of the Safe Browsing Tutorial animation. Keys are
 // prepended with a dot to force deep keypath matching.
 NSDictionary<NSString*, UIColor*>* SafeBrowsingColorProvider() {
@@ -230,15 +207,11 @@ NSArray<LottieCatalogItem*>* LensItems() {
   return @[ lens, searchWithLens ];
 }
 
-// Returns the Best Features items of the shopping and tab animations.
-NSArray<LottieCatalogItem*>* ShoppingAndTabsItems() {
-  LottieCatalogItem* priceTracking = BestFeaturesItem(@"price_tracking");
-  priceTracking.lightModeColorProvider = PriceTrackingColorProvider(0xF1F3F480);
-  priceTracking.darkModeColorProvider = PriceTrackingColorProvider(0x20212480);
-
+// Returns the Best Features item of the Tab Groups animation.
+LottieCatalogItem* TabGroupsItem() {
   LottieCatalogItem* tabGroups = BestFeaturesItem(@"tab_groups");
   SetStandardColorProviders(tabGroups);
-  return @[ priceTracking, tabGroups ];
+  return tabGroups;
 }
 
 // Returns the Best Features items.
@@ -248,7 +221,7 @@ NSArray<LottieCatalogItem*>* BestFeaturesItems() {
   [items addObjectsFromArray:PasswordsItems()];
   [items addObjectsFromArray:SafeBrowsingItems()];
   [items addObjectsFromArray:LensItems()];
-  [items addObjectsFromArray:ShoppingAndTabsItems()];
+  [items addObject:TabGroupsItem()];
   return items;
 }
 

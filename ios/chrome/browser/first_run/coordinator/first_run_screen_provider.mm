@@ -94,7 +94,6 @@ void AddDBPromoAndBestFeaturesScreens(std::vector<ScreenType>& screens) {
   switch (bestFeaturesType) {
     case kGeneralScreenAfterDBPromo:
     case kGeneralScreenWithPasswordItemAfterDBPromo:
-    case kShoppingUsersWithFallbackAfterDBPromo:
     case kSignedInUsersOnlyAfterDBPromo:
       screens.push_back(ScreenType::kDefaultBrowserPromo);
       screens.push_back(ScreenType::kBestFeatures);

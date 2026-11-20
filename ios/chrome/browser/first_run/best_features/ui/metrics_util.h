@@ -30,7 +30,7 @@ enum class BestFeaturesMainScreenActionType {
   kLockedIncognitoTabsItemTapped = 3,
   kSaveAutofillPasswordsItemTapped = 4,
   kTabGroupsTapped = 5,
-  kPriceTrackingTapped = 6,
+  // kPriceTrackingTapped = 6,  // Obsolete.
   kPasswordsInOtherAppsItemTapped = 7,
   kSharePasswordsItemTapped = 8,
   kIncognitoBrowsingItemTapped = 9,
@@ -48,7 +48,6 @@ extern const char kActionOnBestFeaturesEnhancedSafeBrowsingHistogram[];
 extern const char kActionOnBestFeaturesLockedIncognitoTabsHistogram[];
 extern const char kActionOnBestFeaturesSaveAutofillPasswordsHistogram[];
 extern const char kActionOnBestFeaturesTabGroupsHistogram[];
-extern const char kActionOnBestFeaturesPriceTrackingHistogram[];
 extern const char kActionOnBestFeaturesPasswordsInOtherAppsHistogram[];
 extern const char kActionOnBestFeaturesSharePasswordsHistogram[];
 extern const char kActionOnBestFeaturesIncognitoBrowsingHistogram[];

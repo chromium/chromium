@@ -401,7 +401,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Locked Incognito Tabs Item Tapped"/>
   <int value="4" label="Save Autofill Passwords Item Tapped"/>
   <int value="5" label="Tab Groups Tapped"/>
-  <int value="6" label="Price Tracking Tapped"/>
+  <int value="6" label="(Obsolete) Price Tracking Tapped"/>
   <int value="7" label="Passwords In Other Apps Item Tapped"/>
   <int value="8" label="Share Passwords Item Tapped"/>
   <int value="9" label="Incognito Browsing Item Tapped"/>
