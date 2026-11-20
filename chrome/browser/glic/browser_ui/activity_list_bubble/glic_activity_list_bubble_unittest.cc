@@ -145,6 +145,7 @@ class GlicActivityListBubbleTest : public ChromeViewsTestBase {
     glic_split_button_controller_.reset();
     mock_glic_service_ = nullptr;
     browser_window_interface_.reset();
+    mock_tabs_.clear();
     mock_tab_.reset();
     anchor_widget_.reset();
     actor_service_ = nullptr;
@@ -159,11 +160,19 @@ class GlicActivityListBubbleTest : public ChromeViewsTestBase {
   // Mock callback for task clicks.
   void OnTaskClicked(actor::TaskId task_id) {}
 
+  MockTabInterface& CreateMockTab() {
+    auto tab = std::make_unique<MockTabInterface>();
+    ON_CALL(*tab, GetProfile()).WillByDefault(testing::Return(profile_));
+    actor_service_->GetSurfaceRegistry().OnTabCreated(*tab);
+    mock_tabs_.push_back(std::move(tab));
+    return *mock_tabs_.back();
+  }
+
   actor::TaskId CreatePausedTask() {
     actor::TaskId id = actor_service_->CreateTaskForTesting();
     base::RunLoop loop;
     actor_service_->GetTask(id)->AddTab(
-        mock_tab().GetHandle(),
+        CreateMockTab().GetHandle(),
         /*stop_task_on_detach=*/true,
         base::BindLambdaForTesting([&](actor::mojom::ActionResultPtr result) {
           EXPECT_TRUE(actor::IsOk(*result));
@@ -211,6 +220,7 @@ class GlicActivityListBubbleTest : public ChromeViewsTestBase {
   glic::GlicProfileManager glic_profile_manager_;
   glic::GlicUnitTestEnvironment glic_test_env_;
   std::unique_ptr<MockTabInterface> mock_tab_;
+  std::vector<std::unique_ptr<MockTabInterface>> mock_tabs_;
   views::UniqueWidgetPtr anchor_widget_;
   std::unique_ptr<MockBrowserWindowInterface> browser_window_interface_;
   ui::UnownedUserDataHost user_data_host_;

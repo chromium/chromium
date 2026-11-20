@@ -484,13 +484,14 @@ void ActorTask::OnFinishedAct(
   // The callback may already have been called, if the task was stopped or
   // paused.
   if (callback_for_act_) {
-    // A task can finish while still in `kCreated` if early tab addition fails
-    // before transitioning to `kActing`. Interruption (`kWaitingOnUser`) can
-    // happen while acting, but completion is deferred until the task is
-    // uninterrupted back to `kActing`.
+    // A task can finish while still in `kCreated` or `kReflecting` if early tab
+    // addition fails before transitioning to `kActing`. Interruption
+    // (`kWaitingOnUser`) can happen while acting, but completion is deferred
+    // until the task is uninterrupted back to `kActing`.
     // TODO(crbug.com/584658141): CHECK-exclusion: Convert to a CHECK once we
     // are confident it won't be triggered.
-    DCHECK(state_ == State::kCreated || state_ == State::kActing);
+    DCHECK(state_ == State::kCreated || state_ == State::kActing ||
+           state_ == State::kReflecting);
     action_tracker_for_metrics_->OnFinishedAct(*result);
     std::move(callback_for_act_)
         .Run(std::move(action_results), std::move(observation_strategy));
@@ -510,10 +511,11 @@ void ActorTask::Stop(StoppedReason stop_reason) {
   }
 
   if (callback_for_act_) {
-    // A task can be stopped while still in `kCreated` if an Act request is
-    // waiting on asynchronous tab addition before transitioning to `kActing`.
+    // A task can be stopped while still in `kCreated` or `kReflecting` if an
+    // Act request is waiting on asynchronous tab addition before transitioning
+    // to `kActing`.
     CHECK(state_ == State::kActing || state_ == State::kWaitingOnUser ||
-              state_ == State::kCreated,
+              state_ == State::kCreated || state_ == State::kReflecting,
           base::NotFatalUntil::M161);
     mojom::ActionResultPtr result = MakeResult(result_code);
     action_tracker_for_metrics_->OnFinishedAct(*result);
@@ -552,10 +554,11 @@ void ActorTask::Pause(bool from_actor) {
   // Invoke the callback before changing states so that the client sees the Act
   // result before seeing the state transition.
   if (callback_for_act_) {
-    // A task can be paused while still in `kCreated` if an Act request is
-    // waiting on asynchronous tab addition before transitioning to `kActing`.
+    // A task can be paused while still in `kCreated` or `kReflecting` if an Act
+    // request is waiting on asynchronous tab addition before transitioning to
+    // `kActing`.
     CHECK(state_ == State::kActing || state_ == State::kWaitingOnUser ||
-              state_ == State::kCreated,
+              state_ == State::kCreated || state_ == State::kReflecting,
           base::NotFatalUntil::M161);
     mojom::ActionResultPtr result =
         MakeResult(mojom::ActionResultCode::kTaskPaused);
@@ -716,6 +719,24 @@ void ActorTask::AddActorSurface(ActorSurfaceHandle actor_surface_handle,
   }
 
   const tabs::TabHandle tab_handle = actor_surface_handle.GetTabHandle();
+  if (const ActorTask* controlling_task =
+          service_->GetTaskFromActorSurface(actor_surface_handle)) {
+    journal_->Log(GURL(), id(), "ActorTask::AddTab",
+                  JournalDetailsBuilder()
+                      .Add("tab_id", tab_handle.raw_value())
+                      .Add("existing_task_id", controlling_task->id().value())
+                      .AddError("Tab already controlled by another task")
+                      .Build());
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            std::move(callback),
+            MakeResult(mojom::ActionResultCode::kTabOwnedByAnotherTask,
+                       /*requires_page_stabilization=*/false,
+                       "The tab is already controlled by another task.")));
+    return;
+  }
+
   journal_->Log(
       GURL(), id(), "ActorTask::AddTab",
       JournalDetailsBuilder()

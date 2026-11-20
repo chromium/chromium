@@ -167,6 +167,12 @@ enum ActionResultCode {
   // different profile than the active task.
   kActionTargetCrossProfile = 52,
 
+  // 53 and 54 are used by result codes that are defined outside of Chromium.
+  // Do not reuse them.
+
+  // The tab is already controlled by another task (active or paused).
+  kTabOwnedByAnotherTask = 55,
+
   // Please see the comment above about adding new values.
 
   ///////////////////////////////////////////////////////////////////////

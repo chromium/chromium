@@ -41,6 +41,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
+#include "url/gurl.h"
 
 namespace actor {
 
@@ -79,24 +80,7 @@ class ActorTaskTest : public testing::Test {
     auto mock_ui_event_dispatcher =
         std::make_unique<testing::NiceMock<ui::MockUiEventDispatcher>>();
     mock_ui_event_dispatcher_ = mock_ui_event_dispatcher.get();
-
-    ON_CALL(*mock_ui_event_dispatcher_, OnPreTool)
-        .WillByDefault([](const ToolRequest&,
-                          ui::UiEventDispatcher::UiCompleteCallback callback) {
-          std::move(callback).Run(MakeOkResult());
-        });
-
-    ON_CALL(*mock_ui_event_dispatcher_, OnPostTool)
-        .WillByDefault([](const ToolRequest&,
-                          ui::UiEventDispatcher::UiCompleteCallback callback) {
-          std::move(callback).Run(MakeOkResult());
-        });
-
-    ON_CALL(*mock_ui_event_dispatcher_, OnActorTaskAsyncChange)
-        .WillByDefault([](const ui::UiEventDispatcher::ActorTaskAsyncChange&,
-                          ui::UiEventDispatcher::UiCompleteCallback callback) {
-          std::move(callback).Run(MakeOkResult());
-        });
+    ConfigureMockDispatcher(*mock_ui_event_dispatcher_);
 
     auto* service = ActorKeyedService::Get(profile_.get());
     ActorTaskOptions options;
@@ -105,6 +89,24 @@ class ActorTaskTest : public testing::Test {
         std::move(mock_ui_event_dispatcher), TestTaskSourceInfo(),
         NoEnterprisePolicyChecker(), std::move(options));
     task_ = service->GetTask(task_id);
+  }
+
+  void ConfigureMockDispatcher(ui::MockUiEventDispatcher& dispatcher) {
+    ON_CALL(dispatcher, OnPreTool)
+        .WillByDefault([](const ToolRequest&,
+                          ui::UiEventDispatcher::UiCompleteCallback callback) {
+          std::move(callback).Run(MakeOkResult());
+        });
+    ON_CALL(dispatcher, OnPostTool)
+        .WillByDefault([](const ToolRequest&,
+                          ui::UiEventDispatcher::UiCompleteCallback callback) {
+          std::move(callback).Run(MakeOkResult());
+        });
+    ON_CALL(dispatcher, OnActorTaskAsyncChange)
+        .WillByDefault([](const ui::UiEventDispatcher::ActorTaskAsyncChange&,
+                          ui::UiEventDispatcher::UiCompleteCallback callback) {
+          std::move(callback).Run(MakeOkResult());
+        });
   }
 
   void ExpectStateChangeNotification(ActorTask::State new_state) {
@@ -195,9 +197,64 @@ class ActorTaskTest : public testing::Test {
                   OnActorTaskSyncChange(
                       VariantWith<ui::UiEventDispatcher::RemoveTab>(_)))
           .Times(testing::AnyNumber());
-      service->StopTask(task_->id(), ActorTask::StoppedReason::kTaskComplete);
+    }
+    for (TaskId task_id :
+         service->FindTaskIdsInActive([](const ActorTask&) { return true; })) {
+      service->StopTask(task_id, ActorTask::StoppedReason::kTaskComplete);
     }
     service->ResetForTesting();
+  }
+
+  ActorTask* CreateAdditionalTask(
+      ui::MockUiEventDispatcher** out_dispatcher = nullptr) {
+    auto dispatcher =
+        std::make_unique<testing::NiceMock<ui::MockUiEventDispatcher>>();
+    ConfigureMockDispatcher(*dispatcher);
+    if (out_dispatcher) {
+      *out_dispatcher = dispatcher.get();
+    }
+    auto* service = ActorKeyedService::Get(profile_.get());
+    ActorTaskOptions options;
+    options.delegate = mock_delegate_.GetWeakPtr();
+    TaskId task_id = service->CreateTaskForTesting(
+        std::move(dispatcher), TestTaskSourceInfo(),
+        NoEnterprisePolicyChecker(), std::move(options));
+    return service->GetTask(task_id);
+  }
+
+  std::unique_ptr<content::WebContents> CreateTestWebContents() {
+    content::WebContents::CreateParams params(profile_.get());
+    params.enable_wake_locks = false;
+    return base::WrapUnique(
+        content::WebContentsTester::CreateTestWebContents(params));
+  }
+
+  mojom::ActionResultCode AddTabAndGetCode(ActorTask& task,
+                                           tabs::TabHandle tab_handle,
+                                           bool stop_task_on_detach = true) {
+    base::test::TestFuture<mojom::ActionResultPtr> future;
+    task.AddTab(tab_handle, stop_task_on_detach, future.GetCallback());
+    return future.Take()->code;
+  }
+
+  mojom::ActionResultCode ActOnTabAndGetCode(ActorTask& task,
+                                             tabs::TabHandle tab_handle,
+                                             bool* out_invoked = nullptr) {
+    std::vector<std::unique_ptr<ToolRequest>> actions;
+    actions.push_back(std::make_unique<FakeToolRequest>(
+        base::BindLambdaForTesting(
+            [out_invoked](DeprecatedToolCallback callback) {
+              if (out_invoked) {
+                *out_invoked = true;
+              }
+              std::move(callback).Run(MakeOkResult());
+            }),
+        /*on_destroy=*/base::DoNothing(),
+        ActorSurfaceHandle::From(tab_handle)));
+    ActResultFuture future;
+    task.Act(std::move(actions), future.GetCallback());
+    EXPECT_TRUE(future.Wait());
+    return future.Get()[0].tool_result.deprecated_action_result()->code;
   }
 
   std::unique_ptr<tabs::MockTabInterface> CreateCrossProfileMockTab(
@@ -216,6 +273,7 @@ class ActorTaskTest : public testing::Test {
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
+  content::RenderViewHostTestEnabler rvh_test_enabler_;
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<TestingProfile> other_profile_;
@@ -1133,8 +1191,7 @@ class ActorTaskSurfaceTest : public ActorTaskTest {
  public:
   void SetUp() override {
     ActorTaskTest::SetUp();
-    web_contents_ = content::WebContentsTester::CreateTestWebContents(
-        profile_.get(), nullptr);
+    web_contents_ = CreateTestWebContents();
     ON_CALL(mock_tab_, GetContents)
         .WillByDefault(::testing::Return(web_contents_.get()));
     ON_CALL(mock_tab_, GetProfile)
@@ -1147,7 +1204,6 @@ class ActorTaskSurfaceTest : public ActorTaskTest {
     return *ActorKeyedService::Get(profile_.get());
   }
 
-  content::RenderViewHostTestEnabler rvh_test_enabler_;
   std::unique_ptr<content::WebContents> web_contents_;
   tabs::MockTabInterface mock_tab_;
 };
@@ -1376,6 +1432,172 @@ TEST_F(ActorTaskTest, OnActionsAcceptedNotRunWhenSuperseded) {
 
   // Stop the task while `mock_tab` is still alive.
   task_->Stop(ActorTask::StoppedReason::kTaskComplete);
+}
+
+TEST_F(ActorTaskTest, AddTab_RejectsTabOwnedByAnotherActiveOrPausedTask) {
+  tabs::MockTabInterface tab;
+  AddTabAndVerify(tab);
+
+  EXPECT_EQ(AddTabAndGetCode(*task_, tab.GetHandle()),
+            mojom::ActionResultCode::kOk);
+
+  ui::MockUiEventDispatcher* second_dispatcher = nullptr;
+  ActorTask* second_task = CreateAdditionalTask(&second_dispatcher);
+  ASSERT_NE(second_task, nullptr);
+  EXPECT_CALL(
+      *second_dispatcher,
+      OnActorTaskAsyncChange(
+          VariantWith<ui::UiEventDispatcher::AddTab>(Field(
+              &ui::UiEventDispatcher::AddTab::handle, Eq(tab.GetHandle()))),
+          _))
+      .Times(0);
+
+  EXPECT_EQ(AddTabAndGetCode(*second_task, tab.GetHandle()),
+            mojom::ActionResultCode::kTabOwnedByAnotherTask);
+  EXPECT_FALSE(second_task->HasTab(tab.GetHandle()));
+  EXPECT_TRUE(second_task->GetTabs().empty());
+  EXPECT_EQ(second_task->GetLastActuatedTabHandle(), tabs::TabHandle::Null());
+
+  ExpectStateChangeNotification(ActorTask::State::kPausedByActor);
+  task_->Pause(/*from_actor=*/true);
+  ASSERT_TRUE(task_->IsUnderUserControl());
+
+  EXPECT_EQ(AddTabAndGetCode(*second_task, tab.GetHandle()),
+            mojom::ActionResultCode::kTabOwnedByAnotherTask);
+  EXPECT_FALSE(second_task->HasTab(tab.GetHandle()));
+}
+
+TEST_F(ActorTaskSurfaceTest,
+       AddActorSurface_RejectsHeadlessSurfaceOwnedByAnotherTask) {
+  ScopedHeadlessActorSurface headless = service().CreateHeadlessActorSurface();
+  const ActorSurfaceHandle actor_surface_handle =
+      headless.actor_surface_handle();
+
+  base::test::TestFuture<mojom::ActionResultPtr> first_future;
+  task_->AddActorSurface(actor_surface_handle, /*stop_task_on_detach=*/true,
+                         first_future.GetCallback());
+  ExpectOkResult(first_future);
+
+  ActorTask* second_task = CreateAdditionalTask();
+  ASSERT_NE(second_task, nullptr);
+
+  base::test::TestFuture<mojom::ActionResultPtr> second_future;
+  second_task->AddActorSurface(actor_surface_handle,
+                               /*stop_task_on_detach=*/true,
+                               second_future.GetCallback());
+  EXPECT_EQ(second_future.Take()->code,
+            mojom::ActionResultCode::kTabOwnedByAnotherTask);
+  EXPECT_FALSE(second_task->HasActorSurface(actor_surface_handle));
+}
+
+TEST_F(ActorTaskTest, Act_RejectsTabOwnedByAnotherTaskOnTurn1AndTurn2) {
+  auto web_contents1 = CreateTestWebContents();
+  content::WebContentsTester::For(web_contents1.get())
+      ->NavigateAndCommit(GURL("about:blank"));
+  TestTabState tab1(web_contents1.get());
+  AddTabAndVerify(tab1.tab);
+
+  auto web_contents2 = CreateTestWebContents();
+  content::WebContentsTester::For(web_contents2.get())
+      ->NavigateAndCommit(GURL("about:blank"));
+  TestTabState tab2(web_contents2.get());
+
+  ActorTask* second_task = CreateAdditionalTask();
+  ASSERT_NE(second_task, nullptr);
+  ASSERT_EQ(second_task->GetState(), ActorTask::State::kCreated);
+
+  bool turn1_invoked = false;
+  EXPECT_EQ(
+      ActOnTabAndGetCode(*second_task, tab1.tab.GetHandle(), &turn1_invoked),
+      mojom::ActionResultCode::kTabOwnedByAnotherTask);
+  EXPECT_FALSE(turn1_invoked);
+  EXPECT_EQ(second_task->GetState(), ActorTask::State::kCreated);
+  EXPECT_FALSE(second_task->HasTab(tab1.tab.GetHandle()));
+
+  EXPECT_EQ(ActOnTabAndGetCode(*second_task, tab2.tab.GetHandle()),
+            mojom::ActionResultCode::kOk);
+  EXPECT_EQ(second_task->GetState(), ActorTask::State::kReflecting);
+  EXPECT_TRUE(second_task->HasTab(tab2.tab.GetHandle()));
+
+  bool turn2_invoked = false;
+  EXPECT_EQ(
+      ActOnTabAndGetCode(*second_task, tab1.tab.GetHandle(), &turn2_invoked),
+      mojom::ActionResultCode::kTabOwnedByAnotherTask);
+  EXPECT_FALSE(turn2_invoked);
+  EXPECT_EQ(second_task->GetState(), ActorTask::State::kReflecting);
+  EXPECT_FALSE(second_task->HasTab(tab1.tab.GetHandle()));
+}
+
+TEST_F(ActorTaskTest, Pause_WhileAddingTabsInReflecting) {
+  auto web_contents = CreateTestWebContents();
+  content::WebContentsTester::For(web_contents.get())
+      ->NavigateAndCommit(GURL("about:blank"));
+  TestTabState tab_state(web_contents.get());
+  tabs::TabHandle tab_handle = tab_state.tab.GetHandle();
+
+  ExpectTabAddedNotification(tab_handle);
+  EXPECT_EQ(ActOnTabAndGetCode(*task_, tab_handle),
+            mojom::ActionResultCode::kOk);
+  ASSERT_EQ(task_->GetState(), ActorTask::State::kReflecting);
+
+  std::vector<std::unique_ptr<ToolRequest>> actions;
+  actions.push_back(std::make_unique<FakeToolRequest>(
+      base::DoNothing(), /*on_destroy=*/base::DoNothing(),
+      ActorSurfaceHandle::From(tab_handle)));
+  ActResultFuture act_future;
+  task_->Act(std::move(actions), act_future.GetCallback());
+  task_->Pause(/*from_actor=*/true);
+  ASSERT_TRUE(act_future.Wait());
+  EXPECT_EQ(act_future.Get()[0].tool_result.deprecated_action_result()->code,
+            mojom::ActionResultCode::kTaskPaused);
+}
+
+TEST_F(ActorTaskTest, Stop_WhileAddingTabsInReflecting) {
+  auto web_contents = CreateTestWebContents();
+  content::WebContentsTester::For(web_contents.get())
+      ->NavigateAndCommit(GURL("about:blank"));
+  TestTabState tab_state(web_contents.get());
+  tabs::TabHandle tab_handle = tab_state.tab.GetHandle();
+
+  ExpectTabAddedNotification(tab_handle);
+  EXPECT_EQ(ActOnTabAndGetCode(*task_, tab_handle),
+            mojom::ActionResultCode::kOk);
+  ASSERT_EQ(task_->GetState(), ActorTask::State::kReflecting);
+
+  std::vector<std::unique_ptr<ToolRequest>> actions;
+  actions.push_back(std::make_unique<FakeToolRequest>(
+      base::DoNothing(), /*on_destroy=*/base::DoNothing(),
+      ActorSurfaceHandle::From(tab_handle)));
+  ActResultFuture act_future;
+  task_->Act(std::move(actions), act_future.GetCallback());
+  task_->Stop(ActorTask::StoppedReason::kTaskComplete);
+  ASSERT_TRUE(act_future.Wait());
+  EXPECT_EQ(act_future.Get()[0].tool_result.deprecated_action_result()->code,
+            mojom::ActionResultCode::kTaskWentAway);
+}
+
+TEST_F(ActorTaskTest, AddTab_SucceedsAfterOwningTaskRemovesTabOrStops) {
+  tabs::MockTabInterface tab;
+  AddTabAndVerify(tab);
+
+  ActorTask* second_task = CreateAdditionalTask();
+  ASSERT_NE(second_task, nullptr);
+
+  RemoveTabAndVerify(tab);
+
+  EXPECT_EQ(AddTabAndGetCode(*second_task, tab.GetHandle()),
+            mojom::ActionResultCode::kOk);
+  EXPECT_TRUE(second_task->HasTab(tab.GetHandle()));
+
+  ActorTask* third_task = CreateAdditionalTask();
+  ASSERT_NE(third_task, nullptr);
+
+  ActorKeyedService::Get(profile_.get())
+      ->StopTask(second_task->id(), ActorTask::StoppedReason::kTaskComplete);
+
+  EXPECT_EQ(AddTabAndGetCode(*third_task, tab.GetHandle()),
+            mojom::ActionResultCode::kOk);
+  EXPECT_TRUE(third_task->HasTab(tab.GetHandle()));
 }
 
 }  // namespace

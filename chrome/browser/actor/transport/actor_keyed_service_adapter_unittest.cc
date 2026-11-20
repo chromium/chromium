@@ -475,7 +475,8 @@ TEST_F(ActorKeyedServiceAdapterTest, StopTaskDestroysCreatedHeadlessSurface) {
 }
 
 // Stopping task A destroys the headless surface that StartTask() created for
-// it. Task B also acts on that surface, so destroying it stops B. The nested
+// it. Task A has released that surface and task B acts on it, so destroying it
+// stops B. The nested
 // NotifyTaskStateChanged() call for B destroys B's own headless surface while
 // A's surface is still alive.
 TEST_F(ActorKeyedServiceAdapterTest,
@@ -496,6 +497,8 @@ TEST_F(ActorKeyedServiceAdapterTest,
       ActorSurfaceHandle::FromRawValue(response_a.bound_surfaces(0).tab_id());
   const ActorSurfaceHandle surface_b =
       ActorSurfaceHandle::FromRawValue(response_b.bound_surfaces(0).tab_id());
+
+  actor_service_->GetTask(task_a)->RemoveActorSurface(surface_a);
 
   // An action for task B that targets task A's surface. Act() adds that
   // surface to B.
