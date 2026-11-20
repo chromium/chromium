@@ -70,7 +70,7 @@ INSTANTIATE_TEST_SUITE_P(
                     "stable",
                     "default",
                     "123",
-                    "  1234 df k;ljh"
+                    "  1234 df k;ljh",
                     "a channel name can even have emoji 🚂",
                     "日本"));
 
