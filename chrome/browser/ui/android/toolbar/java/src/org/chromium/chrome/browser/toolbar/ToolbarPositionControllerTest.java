@@ -346,16 +346,30 @@ public class ToolbarPositionControllerTest {
     private int mHairlineHeight;
 
     public static class FakeKeyboardVisibilityDelegate extends KeyboardVisibilityDelegate {
-        private boolean mIsShowing;
+        private boolean mIsObscuring;
+        private boolean mIsVisible;
 
         public void setVisibilityForTests(boolean isShowing) {
-            mIsShowing = isShowing;
-            notifyListeners(isShowing);
+            setVisibilityForTests(isShowing, isShowing);
+        }
+
+        public void setVisibilityForTests(boolean isObscuring, boolean isVisible) {
+            boolean obscuringChanged = isObscuring != mIsObscuring;
+            boolean visibleChanged = isVisible != mIsVisible;
+            mIsObscuring = isObscuring;
+            mIsVisible = isVisible;
+            if (obscuringChanged) notifyListeners(isObscuring);
+            if (visibleChanged) notifyVisibilityListeners(isVisible);
         }
 
         @Override
         public boolean isKeyboardObscuring(View view) {
-            return mIsShowing;
+            return mIsObscuring;
+        }
+
+        @Override
+        public boolean isKeyboardVisible(View view) {
+            return mIsVisible;
         }
     }
 

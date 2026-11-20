@@ -1027,6 +1027,88 @@ public class MiniOriginBarControllerTest {
         }
     }
 
+    @Test
+    public void testNonObscuringSoftKeyboardShowAndHide() {
+        doReturn(ControlsPosition.BOTTOM).when(mBrowserControlsSizer).getControlsPosition();
+        mMiniOriginBarController.onControlsPositionChanged(ControlsPosition.BOTTOM);
+
+        mKeyboardVisibilityDelegate.setVisibilityForTests(
+                /* isObscuring= */ false, /* isVisible= */ true);
+        mIsFormFieldFocused.onNodeAttributeUpdated(true, false);
+        assertEquals(MiniOriginState.SHOWING, mMiniOriginBarController.getCurrentStateForTesting());
+
+        mKeyboardVisibilityDelegate.setVisibilityForTests(
+                /* isObscuring= */ false, /* isVisible= */ false);
+        assertEquals(MiniOriginState.READY, mMiniOriginBarController.getCurrentStateForTesting());
+
+        mKeyboardVisibilityDelegate.setVisibilityForTests(
+                /* isObscuring= */ false, /* isVisible= */ true);
+        assertEquals(MiniOriginState.SHOWING, mMiniOriginBarController.getCurrentStateForTesting());
+
+        mKeyboardVisibilityDelegate.setVisibilityForTests(
+                /* isObscuring= */ false, /* isVisible= */ false);
+        assertEquals(MiniOriginState.READY, mMiniOriginBarController.getCurrentStateForTesting());
+    }
+
+    @Test
+    public void testDockedToFloatingTransition() {
+        doReturn(ControlsPosition.BOTTOM).when(mBrowserControlsSizer).getControlsPosition();
+        mMiniOriginBarController.onControlsPositionChanged(ControlsPosition.BOTTOM);
+        mIsFormFieldFocused.onNodeAttributeUpdated(true, false);
+        mKeyboardVisibilityDelegate.setVisibilityForTests(true);
+        assertEquals(MiniOriginState.SHOWING, mMiniOriginBarController.getCurrentStateForTesting());
+
+        mKeyboardVisibilityDelegate.setVisibilityForTests(
+                /* isObscuring= */ false, /* isVisible= */ true);
+        assertEquals(MiniOriginState.SHOWING, mMiniOriginBarController.getCurrentStateForTesting());
+
+        final MiniOriginWindowInsetsAnimationListener animationListener =
+                mMiniOriginBarController.getAnimationListenerForTesting();
+        final BoundsCompat bounds = new BoundsCompat(Insets.NONE, Insets.of(0, 0, 0, 100));
+        animationListener.onPrepare(mImeAnimation);
+        animationListener.onStart(mImeAnimation, bounds);
+        assertEquals(
+                MiniOriginState.ANIMATING, mMiniOriginBarController.getCurrentStateForTesting());
+
+        int currentKeyboardHeight = 90;
+        WindowInsetsCompat insets =
+                new WindowInsetsCompat.Builder()
+                        .setInsets(
+                                WindowInsetsCompat.Type.ime(),
+                                Insets.of(0, 0, 0, currentKeyboardHeight))
+                        .build();
+        mImeAnimation.setFraction(0.5f);
+        animationListener.onProgress(insets, Collections.singletonList(mImeAnimation));
+        assertEquals(-currentKeyboardHeight, (int) mControlContainerTranslationSupplier.get());
+
+        animationListener.onEnd(mImeAnimation);
+        assertEquals(0, (int) mControlContainerTranslationSupplier.get());
+        assertEquals(MiniOriginState.SHOWING, mMiniOriginBarController.getCurrentStateForTesting());
+    }
+
+    @Test
+    public void testAccessorySheetReplacementAndDismissal() {
+        doReturn(ControlsPosition.BOTTOM).when(mBrowserControlsSizer).getControlsPosition();
+        mMiniOriginBarController.onControlsPositionChanged(ControlsPosition.BOTTOM);
+        mIsFormFieldFocused.onNodeAttributeUpdated(true, false);
+        mKeyboardVisibilityDelegate.setVisibilityForTests(true);
+        assertEquals(MiniOriginState.SHOWING, mMiniOriginBarController.getCurrentStateForTesting());
+
+        mKeyboardVisibilityDelegate.setVisibilityForTests(
+                /* isObscuring= */ true, /* isVisible= */ false);
+        assertEquals(MiniOriginState.SHOWING, mMiniOriginBarController.getCurrentStateForTesting());
+
+        mIsKeyboardAccessorySheetShowing.set(true);
+        assertEquals(
+                MiniOriginState.SHOWING_WITH_ACCESSORY_SHEET,
+                mMiniOriginBarController.getCurrentStateForTesting());
+
+        mKeyboardVisibilityDelegate.setVisibilityForTests(
+                /* isObscuring= */ false, /* isVisible= */ false);
+        mIsKeyboardAccessorySheetShowing.set(false);
+        assertEquals(MiniOriginState.READY, mMiniOriginBarController.getCurrentStateForTesting());
+    }
+
     private void assertLocationBarTransform(float translationX, float scale) {
         assertEquals(translationX, mLocationBarView.getTranslationX(), DELTA);
         assertEquals(scale, mLocationBarView.getScaleX(), DELTA);

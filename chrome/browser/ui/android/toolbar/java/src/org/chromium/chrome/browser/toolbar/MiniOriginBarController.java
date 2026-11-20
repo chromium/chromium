@@ -220,10 +220,19 @@ public class MiniOriginBarController implements Observer {
         mKeyboardVisibilityObserver =
                 new KeyboardVisibilityListener() {
                     @Override
+                    public void keyboardVisibilityChanged(boolean isVisible) {
+                        onKeyboardStateChanged();
+                    }
+
+                    @Override
                     public void keyboardObscuringChanged(boolean isObscuring) {
+                        onKeyboardStateChanged();
+                    }
+
+                    private void onKeyboardStateChanged() {
                         if (mIsOmniboxFocusedSupplier.getAsBoolean()) return;
                         updateMiniOriginBarState(
-                                isObscuring
+                                isKeyboardShowing()
                                         ? MiniOriginEvent.KEYBOARD_APPEARED
                                         : MiniOriginEvent.KEYBOARD_DISAPPEARED);
                     }
@@ -512,10 +521,14 @@ public class MiniOriginBarController implements Observer {
             case MiniOriginState.SHOWING_WITH_ACCESSORY_SHEET -> {
                 return switch (miniOriginEvent) {
                     case MiniOriginEvent.CONTROLS_POSITION_BECAME_TOP,
-                            MiniOriginEvent.FORM_FIELD_LOST_FOCUS -> MiniOriginState.NOT_READY;
-                    case MiniOriginEvent.ACCESSORY_SHEET_DISAPPEARED -> MiniOriginState.SHOWING;
-                        // We don't animate from this state because the accessory sheet is in the
-                        // way.
+                            MiniOriginEvent.FORM_FIELD_LOST_FOCUS ->
+                            MiniOriginState.NOT_READY;
+                    case MiniOriginEvent.ACCESSORY_SHEET_DISAPPEARED ->
+                            isKeyboardShowing()
+                                    ? MiniOriginState.SHOWING
+                                    : (mIsFormFieldFocusedSupplier.get()
+                                            ? MiniOriginState.READY
+                                            : MiniOriginState.NOT_READY);
                     default -> MiniOriginState.SHOWING_WITH_ACCESSORY_SHEET;
                 };
             }
@@ -534,7 +547,9 @@ public class MiniOriginBarController implements Observer {
     }
 
     private boolean isKeyboardShowing() {
-        return mKeyboardVisibilityDelegate.isKeyboardObscuring(mControlContainer.getView());
+        View view = mControlContainer.getView();
+        return mKeyboardVisibilityDelegate.isKeyboardVisible(view)
+                || mKeyboardVisibilityDelegate.isKeyboardObscuring(view);
     }
 
     private void updateAnimationProgress(float minimizationProgress) {
