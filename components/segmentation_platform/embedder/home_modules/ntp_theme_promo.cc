@@ -4,7 +4,7 @@
 
 #include "components/segmentation_platform/embedder/home_modules/ntp_theme_promo.h"
 
-#include "base/metrics/field_trial_params.h"
+#include "base/feature_list.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/segmentation_platform/embedder/home_modules/constants.h"
@@ -34,6 +34,10 @@ const char kCustomizationBottomSheetShownHistogramName[] =
 const int kNtpThemePromoId = 19;
 
 const int kThemeTipBottomSheetShownId = 10;
+
+// The number of days the NTP theme promo waits after the theme tip bottom
+// sheet was shown before it can be shown.
+constexpr int kPromoDisplayIntervalDays = 7;
 
 }  // namespace
 
@@ -87,13 +91,11 @@ std::map<SignalKey, FeatureQuery> NtpThemePromo::GetInputs() {
                   .name = kHasThemeTipBottomSheetBeenShown}));
 
   // Define UMA feature for Theme Tip Bottom Sheet shown times.
-  int theme_tip_limit_days =
-      features::kNewTabPageCustomizationV2PromoDisplayIntervalDays.Get();
   DEFINE_UMA_FEATURE_ENUM_COUNT(countOfThemeTipBottomSheetShownTimes,
                                 kCustomizationBottomSheetShownHistogramName,
                                 &kThemeTipBottomSheetShownId,
                                 /* enum_size= */ 1,
-                                /* days= */ theme_tip_limit_days);
+                                /* days= */ kPromoDisplayIntervalDays);
   map.emplace(kThemeTipBottomSheetShownCount,
               std::move(countOfThemeTipBottomSheetShownTimes));
 
@@ -177,11 +179,6 @@ bool NtpThemePromo::IsEnabled(PrefService* profile_prefs) {
 
   if (!base::FeatureList::IsEnabled(
           segmentation_platform::features::kNewTabPageCustomizationV2)) {
-    return false;
-  }
-
-  if (!segmentation_platform::features::kNewTabPageCustomizationV2ShowPromo
-           .Get()) {
     return false;
   }
 

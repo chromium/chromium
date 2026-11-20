@@ -124,8 +124,7 @@ class SegmentationPlatformServiceFactoryTest : public testing::Test {
          {features::kSegmentationPlatformURLVisitResumptionRanker, {}},
          {features::kSegmentationPlatformEphemeralCardRanker, {}},
          {features::kSegmentationSurveyPage, {}},
-         {features::kSegmentationPlatformFedCmUser, {}},
-         {features::kNewTabPageCustomizationV2, {{"show_promo", "true"}}}},
+         {features::kSegmentationPlatformFedCmUser, {}}},
         {});
 
     // Creating profile and initialising segmentation service.

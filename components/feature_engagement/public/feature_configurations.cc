@@ -10,7 +10,6 @@
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/group_constants.h"
-#include "components/segmentation_platform/public/features.h"
 
 #if BUILDFLAG(IS_IOS)
 #include "base/metrics/field_trial_params.h"
@@ -1572,20 +1571,13 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
 
   if (kIPHNewTabPageThemeCustomizationFeature.name == feature->name) {
     // Allows an IPH for the theme customization entry point.
-    // Once per kNewTabPageCustomizationV2IphDisplayIntervalDays days.
-    // kNewTabPageCustomizationV2IphMaxImpression times as maximum for lifetime.
+    // Once per 7 days, 3 times as maximum for lifetime.
     FeatureConfig config;
     config.valid = true;
     config.availability = kAlwaysAvailable;
     config.session_rate = Comparator(EQUAL, 0);
-    // TODO(https://crbug.com/423579377): Clean up these feature params and use
-    // the default values after the feature NewTabPageCustomizationV2 is fully
-    // launched.
     config.trigger = EventConfig(
-        "ntp_theme_customization_iph_triggered",
-        Comparator(LESS_THAN,
-                   segmentation_platform::features::
-                       kNewTabPageCustomizationV2IphMaxImpression.Get()),
+        "ntp_theme_customization_iph_triggered", Comparator(LESS_THAN, 3),
         /*window=*/k10YearsInDays, /*storage=*/k10YearsInDays);
     config.used =
         EventConfig("ntp_theme_customization_iph_used", Comparator(EQUAL, 0),
@@ -1593,10 +1585,7 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
 
     config.event_configs.insert(EventConfig(
         "ntp_theme_customization_iph_triggered", Comparator(LESS_THAN, 1),
-        /*window=*/
-        segmentation_platform::features::
-            kNewTabPageCustomizationV2IphDisplayIntervalDays.Get(),
-        /*storage=*/k10YearsInDays));
+        /*window=*/7, /*storage=*/k10YearsInDays));
     // Enrolled in `kClankNewTabPageThemeCustomizationPromosGroup` so that
     // showing either this 3-dot menu IPH or the NTP theme customization promo
     // Magic Stack card enforces a shared 7-day cooldown across both surfaces.

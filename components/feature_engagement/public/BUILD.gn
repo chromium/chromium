@@ -68,7 +68,6 @@ static_library("public") {
     "//build:branding_buildflags",
     "//components/feed:feature_list",
     "//components/keyed_service/core",
-    "//components/segmentation_platform/public",
     "//components/webui/flags",
     "//extensions/buildflags",
   ]

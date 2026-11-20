@@ -173,11 +173,6 @@ TEST_F(NtpThemePromoTest, TestComputeCardResultWithCardDisabledForHasCustomizedN
 // Validates that `IsEnabled()` returns true when under the impression limit and
 // false otherwise.
 TEST_F(NtpThemePromoTest, IsEnabledReturnsFalseWhenImpressionLimitReached) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      segmentation_platform::features::kNewTabPageCustomizationV2,
-      {{"show_promo", "true"}});
-
   auto card = std::make_unique<NtpThemePromo>(&pref_service_);
 
   EXPECT_TRUE(NtpThemePromo::IsEnabled(&pref_service_));
@@ -207,25 +202,9 @@ TEST_F(NtpThemePromoTest, IsEnabledReturnsFalseWhenFeatureDisabled) {
 
 // Validates that `IsEnabled()` returns false when the preference is managed.
 TEST_F(NtpThemePromoTest, IsEnabledReturnsFalseWhenPrefManaged) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      segmentation_platform::features::kNewTabPageCustomizationV2,
-      {{"show_promo", "true"}});
-
   pref_service_.SetManagedPref(
       "ntp.custom_background_dict2",
       std::make_unique<base::Value>(base::Value::Type::DICT));
-
-  EXPECT_FALSE(NtpThemePromo::IsEnabled(&pref_service_));
-}
-
-// Validates that `IsEnabled()` returns false when the show_promo parameter is
-// disabled.
-TEST_F(NtpThemePromoTest, IsEnabledReturnsFalseWhenShowPromoParamDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      segmentation_platform::features::kNewTabPageCustomizationV2,
-      {{"show_promo", "false"}});
 
   EXPECT_FALSE(NtpThemePromo::IsEnabled(&pref_service_));
 }
