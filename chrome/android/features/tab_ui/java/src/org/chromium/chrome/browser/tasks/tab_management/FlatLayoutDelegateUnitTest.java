@@ -293,7 +293,7 @@ public class FlatLayoutDelegateUnitTest {
     public void testOnTitleUpdated() {
         addTabsToModelList(TAB1_ID);
         PropertyModel model = mModelList.get(0).model;
-        when(mTabModel.getTabById(TAB1_ID)).thenReturn(mTab1);
+        when(mMediator.getTabById(TAB1_ID)).thenReturn(mTab1);
         when(mMediator.getLatestTitleForTabOrGroup(mTab1, model, /* useDefault= */ true))
                 .thenReturn("New Title");
 

@@ -144,7 +144,7 @@ public abstract class TabListDataProvider {
      *
      * @param tabId The ID of the tab to find.
      */
-    protected @Nullable Tab getTabById(@TabId int tabId) {
+    public @Nullable Tab getTabById(@TabId int tabId) {
         if (tabId == Tab.INVALID_TAB_ID) return null;
         for (TabModel model : mAttachedTabModels) {
             if (!model.isTabStateInitialized()) continue;

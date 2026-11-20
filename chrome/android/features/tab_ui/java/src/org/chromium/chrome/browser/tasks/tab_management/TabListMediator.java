@@ -432,7 +432,7 @@ public class TabListMediator implements TabListNotificationHandler {
                 @Override
                 public void onUiTabStateChanged(UiTabState state) {
                     if (!mTrackingTabs) return;
-                    Tab tab = getCurrentTabModelChecked().getTabById(state.tabId);
+                    Tab tab = getTabById(state.tabId);
                     if (tab != null) {
                         mTabListLayoutDelegate.onUiTabStateChanged(tab);
                     }
@@ -967,6 +967,16 @@ public class TabListMediator implements TabListNotificationHandler {
         TabModel tabModel = mCurrentTabModelSupplier.get();
         assert tabModel != null;
         return tabModel;
+    }
+
+    /**
+     * Returns the tab with {@code tabId}, or null if there is none. Looks in every TabModel the
+     * {@link TabListDataProvider} observes, or in the current TabModel without a provider.
+     */
+    @Nullable Tab getTabById(@TabId int tabId) {
+        TabListDataProvider dataProvider = mTabListConfig.dataProvider;
+        if (dataProvider != null) return dataProvider.getTabById(tabId);
+        return getCurrentTabModelChecked().getTabById(tabId);
     }
 
     /**
@@ -1651,7 +1661,7 @@ public class TabListMediator implements TabListNotificationHandler {
             model.set(TabProperties.TAB_ACTION_STATE, mTabActionState);
             if (item.type == UiType.TAB) {
                 Tab tab = getTabForIndex(i);
-                assumeNonNull(tab);
+                if (tab == null) continue;
                 bindTabActionStateProperties(tabActionState, tab, model);
             } else if (item.type == UiType.TAB_GROUP) {
                 if (model.get(CARD_TYPE) == ModelType.ARCHIVED_TAB_GROUP) {
@@ -2669,8 +2679,7 @@ public class TabListMediator implements TabListNotificationHandler {
     }
 
     @Nullable Tab getTabForIndex(int index) {
-        return getCurrentTabModelChecked()
-                .getTabById(mModelList.get(index).model.get(TabProperties.TAB_ID));
+        return getTabById(mModelList.get(index).model.get(TabProperties.TAB_ID));
     }
 
     private void onTabModelChanged(@Nullable TabModel newTabModel, @Nullable TabModel oldTabModel) {
@@ -2991,7 +3000,7 @@ public class TabListMediator implements TabListNotificationHandler {
      * the item's current tab data and keeps its model. Otherwise inserts a new card at {@code
      * cardIndex}. A tab group card is filled from the group's first tab.
      *
-     * @param tabModel Used to look up the item's tabs.
+     * @param tabModel Used to look up a tab group's tabs.
      * @param item The tab or tab group to show.
      * @param cardIndex The card to refresh, or where to insert the new card.
      * @param updateInPlace Whether to refresh the existing card instead of inserting one.
@@ -3006,7 +3015,7 @@ public class TabListMediator implements TabListNotificationHandler {
             boolean updateInPlace,
             boolean quickMode) {
         if (item instanceof TabItem tabItem) {
-            Tab tab = tabModel.getTabById(tabItem.getTabId());
+            Tab tab = getTabById(tabItem.getTabId());
             if (tab == null) return false;
             if (updateInPlace) {
                 updateTabInPlace(cardIndex, tab, quickMode);
@@ -3556,10 +3565,10 @@ public class TabListMediator implements TabListNotificationHandler {
 
         ThumbnailFetcher newFetcher = null;
         if (tabId != Tab.INVALID_TAB_ID) {
-            TabModel tabModel = getCurrentTabModelChecked();
-            if (tabModel.getTabById(tabId) == null) return;
+            if (getTabById(tabId) == null) return;
 
             MultiThumbnailMetadata metadata;
+            TabModel tabModel = getCurrentTabModelChecked();
             Token tabGroupId = model.get(TabProperties.TAB_GROUP_HEADER_ID);
             if (tabGroupId != null
                     && tabModel.containsTabGroup(TabGroupId.fromOptionalToken(tabGroupId))) {
@@ -3719,7 +3728,7 @@ public class TabListMediator implements TabListNotificationHandler {
     private void updatePinState(TabItem tabItem) {
         int index = mModelList.indexFromItem(tabItem);
         if (index == TabModel.INVALID_TAB_INDEX) return;
-        Tab tab = getCurrentTabModelChecked().getTabById(tabItem.getTabId());
+        Tab tab = getTabById(tabItem.getTabId());
         if (tab == null) return;
         ListItem listItem = mModelList.get(index);
         // Detach while updating so the adapter doesn't see a view type change (vertical tabs pick

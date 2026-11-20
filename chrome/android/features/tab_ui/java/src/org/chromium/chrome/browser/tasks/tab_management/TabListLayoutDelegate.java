@@ -307,8 +307,7 @@ abstract class TabListLayoutDelegate implements TabGroupObserver, TabObserver {
         PropertyModel model = getModelFromTabId(updatedTab.getId());
         // TODO(crbug.com/40136874) The null check for tab here should be redundant once
         // we have resolved the bug.
-        if (model == null
-                || mMediator.getCurrentTabModelChecked().getTabById(updatedTab.getId()) == null) {
+        if (model == null || mMediator.getTabById(updatedTab.getId()) == null) {
             return;
         }
         updateTabTitleAndDescriptions(updatedTab, model);

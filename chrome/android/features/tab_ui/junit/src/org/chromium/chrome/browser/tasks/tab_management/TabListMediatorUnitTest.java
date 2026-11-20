@@ -8105,6 +8105,22 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
+    public void testDataProvider_OnDataReset_BuildsCardForTabFromAnotherModel() {
+        setUpProviderMediator(TabListLayoutType.GROUPED, /* supportsModifierMultiSelect= */ false);
+        Tab otherModelTab = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
+        when(mTabModel.getTabById(TAB3_ID)).thenReturn(null);
+        when(mTabListDataProvider.getTabById(TAB3_ID)).thenReturn(otherModelTab);
+        mMediator.resetWithListOfTabs(
+                List.of(mTab1, otherModelTab), /* tabGroupSyncIds= */ null, /* quickMode= */ false);
+
+        mDataObserver.onDataReset(List.of(createTabItem(TAB1_ID), createTabItem(TAB3_ID)));
+
+        // The current TabModel doesn't have the tab, but the provider finds it.
+        assertTabIds(TAB1_ID, TAB3_ID);
+        assertNotNull(mModelList.get(1).model.get(TabProperties.THUMBNAIL_FETCHER));
+    }
+
+    @Test
     public void testDataProvider_OnDataReset_IgnoresEmptyGroup() {
         setUpProviderMediator(TabListLayoutType.GROUPED, /* supportsModifierMultiSelect= */ false);
         mMediator.resetWithListOfTabs(
@@ -9374,6 +9390,8 @@ public class TabListMediatorUnitTest {
     private void setUpProviderMediator(
             @TabListLayoutType int layoutType, boolean supportsModifierMultiSelect) {
         setUpMediatorWithProvider(layoutType, supportsModifierMultiSelect, mTabListDataProvider);
+        when(mTabListDataProvider.getTabById(anyInt()))
+                .thenAnswer(invocation -> mTabModel.getTabById(invocation.getArgument(0)));
 
         verify(mTabListDataProvider).addObserver(mTabListDataObserverCaptor.capture());
         mDataObserver = mTabListDataObserverCaptor.getValue();
