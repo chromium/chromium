@@ -13,6 +13,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -33,6 +34,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.blink.mojom.RpContext;
 import org.chromium.blink.mojom.RpMode;
@@ -47,6 +49,7 @@ import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadat
 import org.chromium.chrome.browser.ui.android.webid.data.RelyingPartyData;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -236,6 +239,26 @@ public class AccountSelectionCoordinatorTest {
 
         assertTrue(activeMediator.wasDismissed());
         verify(mBottomSheetController).hideContent(activeSheet, /* animate= */ true);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CCT_DONT_OVERRIDE_INTENT_MIME_TYPE)
+    @DisableFeatures(ContentFeatures.FED_CM_NATIVE_ID_PS)
+    public void testCctModalDismissalReopensAccountChooser() {
+        assertTrue(
+                mCoordinator.showAccounts(
+                        mRpData,
+                        Arrays.asList(mNewAccount),
+                        Arrays.asList(mIdpData),
+                        /* newAccounts= */ Collections.emptyList()));
+        mCoordinator.showModalDialog(new GURL("https://idp.example/login"));
+        clearInvocations(mBottomSheetController);
+
+        mCoordinator.onActivityResumed();
+
+        verify(mMockDelegate, never()).onDismissed(anyInt());
+        assertEquals(HeaderType.SIGN_IN, mCoordinator.getMediator().getHeaderType());
+        verify(mBottomSheetController).requestShowContent(any(), eq(true));
     }
 
     /** Shows the passive mode sheet for a new account and continues with it. */

@@ -8,7 +8,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -20,6 +23,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.net.Uri;
 
 import org.junit.Before;
@@ -40,12 +44,19 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.blink.mojom.RpContext;
 import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifier;
 import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifierFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.HeaderType;
+import org.chromium.chrome.browser.ui.android.webid.data.Account;
+import org.chromium.chrome.browser.ui.android.webid.data.ClientIdMetadata;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityCredentialTokenError;
+import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderData;
+import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
 import org.chromium.chrome.browser.ui.android.webid.data.NativeAppRequestOptions;
+import org.chromium.chrome.browser.ui.android.webid.data.RelyingPartyData;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.content_relationship_verification.OriginVerifier.OriginVerificationListener;
 import org.chromium.components.embedder_support.util.Origin;
@@ -58,6 +69,7 @@ import org.chromium.url.GURL;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /** Robolectric tests for native app continue_on flow in AccountSelectionCoordinator. */
@@ -176,6 +188,65 @@ public class NativeAppTest {
         verify(mMockDelegate, never()).onNativeAppResult(any(String.class));
         verify(mMockDelegate).onNativeAppLoginFinished();
         verify(mMockDelegate, never()).onDismissed(any(Integer.class));
+    }
+
+    @Test
+    public void testNativeLoginCancelledFromAccountChooserReopensSheet() {
+        when(mBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
+        IdentityProviderMetadata idpMetadata =
+                new IdentityProviderMetadata(
+                        Color.BLUE,
+                        Color.GREEN,
+                        /* brandIconBitmap= */ null,
+                        new GURL("https://idp.example.com/fedcm.json"),
+                        LOGIN_URL,
+                        GURL.emptyGURL(),
+                        GURL.emptyGURL(),
+                        GURL.emptyGURL(),
+                        /* showUseDifferentAccountButton= */ true);
+        IdentityProviderData idpData =
+                new IdentityProviderData(
+                        "idp.example.com",
+                        idpMetadata,
+                        new ClientIdMetadata(
+                                GURL.emptyGURL(), GURL.emptyGURL(), /* brandIconBitmap= */ null),
+                        RpContext.SIGN_IN,
+                        AccountSelectionJUnitTestBase.DEFAULT_DISCLOSURE_FIELDS,
+                        /* hasLoginStatusMismatch= */ false);
+        Account account =
+                new Account(
+                        "id",
+                        "user@idp.example.com",
+                        "User",
+                        "User",
+                        /* secondaryDescription= */ null,
+                        /* pictureBitmap= */ null,
+                        /* circledBadgedPictureBitmap= */ null,
+                        /* isIdpClaimedSignIn= */ true,
+                        /* isBrowserTrustedSignIn= */ true,
+                        /* isFilteredOut= */ false,
+                        /* fields= */ new int[0],
+                        idpData);
+        mCoordinator.showAccounts(
+                new RelyingPartyData("rp.example", /* iframeForDisplay= */ "", /* rpIcon= */ null),
+                Collections.singletonList(account),
+                Collections.singletonList(idpData),
+                Collections.emptyList());
+
+        registerFakeApp(IDP_PACKAGE, "application/web-identity+json", LOGIN_URL);
+        ArgumentCaptor<IntentCallback> callbackCaptor =
+                ArgumentCaptor.forClass(IntentCallback.class);
+        when(mWindowAndroid.showIntent(any(Intent.class), callbackCaptor.capture(), any()))
+                .thenReturn(true);
+
+        mCoordinator.showModalDialog(LOGIN_URL);
+        clearInvocations(mBottomSheetController);
+
+        callbackCaptor.getValue().onIntentCompleted(Activity.RESULT_CANCELED, null);
+
+        verify(mMockDelegate, never()).onDismissed(anyInt());
+        assertEquals(HeaderType.SIGN_IN, mCoordinator.getMediator().getHeaderType());
+        verify(mBottomSheetController).requestShowContent(any(), eq(true));
     }
 
     @Test

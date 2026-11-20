@@ -1498,15 +1498,6 @@ class AccountSelectionMediator {
         if (mWasDismissed) {
             return;
         }
-        boolean isUseOtherAccountCctDismissed =
-                mHeaderType == HeaderType.SIGN_IN && mIsModalDialogOpen;
-        // If dismissed from use other account CCT, reshow the accounts dialog.
-        if (isUseOtherAccountCctDismissed) {
-            mIsModalDialogOpen = false;
-            mSelectedAccount = null;
-            showAccountsInternal(/* newAccounts= */ null);
-            return;
-        }
 
         // If dismissed from the close button for mismatch dialog, set the dialog state for
         // recording the dialog result.
@@ -1627,10 +1618,29 @@ class AccountSelectionMediator {
         mIsModalDialogOpen = true;
     }
 
+    // Called when the login modal finishes and is closed programmatically, as opposed to
+    // `onModalDialogClosedByUser()` when the user dismisses it before completion.
     void onModalDialogClosed() {
         mIsModalDialogOpen = false;
         if (!mIsLoadingDialogLoginToIdpClosed && mHeaderType == HeaderType.LOADING) {
             mIsLoadingDialogLoginToIdpClosed = true;
         }
+    }
+
+    // Handles the user closing the login CCT or native app intent before completion. Re-shows the
+    // account chooser when opened from `SIGN_IN`; otherwise dismisses the request because there is
+    // no chooser to return to (matching desktop's `user_close_cancels_flow`).
+    void onModalDialogClosedByUser() {
+        if (mWasDismissed) {
+            return;
+        }
+        boolean wasModalDialogOpen = mIsModalDialogOpen;
+        mIsModalDialogOpen = false;
+        if (mHeaderType == HeaderType.SIGN_IN && wasModalDialogOpen) {
+            mSelectedAccount = null;
+            showAccountsInternal(/* newAccounts= */ null);
+            return;
+        }
+        onDismissed(IdentityRequestDialogDismissReason.OTHER);
     }
 }

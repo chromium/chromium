@@ -559,6 +559,22 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
         assertTrue(containsItemOfType(mModel, ItemProperties.CONTINUE_BUTTON));
     }
 
+    @Test
+    public void testLoadingModalDialogClosedByUserDismissesRequest() {
+        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
+        mMediator.showLoadingDialog(
+                new RelyingPartyData(
+                        mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null),
+                mTestEtldPlusOne2,
+                RpContext.SIGN_IN);
+        mMediator.onModalDialogOpened();
+
+        mMediator.onModalDialogClosedByUser();
+
+        assertTrue(mMediator.wasDismissed());
+        verify(mMockDelegate).onDismissed(IdentityRequestDialogDismissReason.OTHER);
+    }
+
     /**
      * Asserts that the sheet shows the single-account chooser for {@code account}, with a clickable
      * account row and a continue button that selects it, without disclosure text.

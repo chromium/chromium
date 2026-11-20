@@ -443,8 +443,8 @@ public class AccountSelectionCoordinator
     @Override
     public void onModalDialogClosed() {
         // When the opener is notified that the CCT is about to be closed, we call
-        // removeActivityStateObserver() so that we do not invoke onDismissed() once the
-        // activity is resumed.
+        // removeActivityStateObserver() so that we do not invoke onModalDialogClosedByUser() once
+        // the activity is resumed.
         mWindowAndroid.removeActivityStateObserver(this);
         mMediator.onModalDialogClosed();
     }
@@ -478,7 +478,7 @@ public class AccountSelectionCoordinator
         // closed such that this is resumed. This method would then be invoked on the CCT opener's
         // object.
         mWindowAndroid.removeActivityStateObserver(this);
-        mMediator.onDismissed(IdentityRequestDialogDismissReason.OTHER);
+        mMediator.onModalDialogClosedByUser();
     }
 
     @Override
@@ -574,10 +574,10 @@ public class AccountSelectionCoordinator
                 } else {
                     mDelegate.onNativeAppLoginFinished();
                 }
+                mMediator.onModalDialogClosed();
             } else {
-                mMediator.onDismissed(IdentityRequestDialogDismissReason.OTHER);
+                mMediator.onModalDialogClosedByUser();
             }
-            mMediator.onModalDialogClosed();
         }
     }
 

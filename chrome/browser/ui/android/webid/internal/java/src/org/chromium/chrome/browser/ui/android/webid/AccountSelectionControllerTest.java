@@ -13,6 +13,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -1326,6 +1327,68 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
         assertFalse(mMediator.wasDismissed());
         verify(mMockDelegate, never()).onDismissed(anyInt());
         verify(mMockBottomSheetController).hideContent(mBottomSheetContent, true);
+    }
+
+    @Test
+    public void testSignInModalDialogClosedByUserReopensAccountChooserWithoutDismissing() {
+        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
+        mMediator.showAccounts(
+                new RelyingPartyData(
+                        mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null),
+                Arrays.asList(mAnaAccount, mBobAccount),
+                Arrays.asList(mIdpData),
+                /* newAccounts= */ Collections.emptyList());
+        mMediator.onModalDialogOpened();
+        clearInvocations(mMockBottomSheetController);
+
+        mMediator.onModalDialogClosedByUser();
+
+        verify(mMockDelegate, never()).onDismissed(anyInt());
+        assertEquals(HeaderType.SIGN_IN, mMediator.getHeaderType());
+        assertEquals(2, mSheetAccountItems.size());
+        verify(mMockBottomSheetController).requestShowContent(mBottomSheetContent, true);
+    }
+
+    @Test
+    public void testSignInDismissedDuringOpenModalDismissesRequest() {
+        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
+        mMediator.showAccounts(
+                new RelyingPartyData(
+                        mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null),
+                Arrays.asList(mAnaAccount, mBobAccount),
+                Arrays.asList(mIdpData),
+                /* newAccounts= */ Collections.emptyList());
+        mMediator.onModalDialogOpened();
+
+        mMediator.getTabObserver().onDidStartNavigationInPrimaryMainFrame(mTab, null);
+
+        assertTrue(mMediator.wasDismissed());
+        verify(mMockDelegate).onDismissed(IdentityRequestDialogDismissReason.OTHER);
+
+        // A subsequent user-close callback after dismissal is a no-op even though a modal was open.
+        clearInvocations(mMockBottomSheetController, mTab, mMockDelegate);
+        mMediator.onModalDialogClosedByUser();
+        verifyNoMoreInteractions(mMockBottomSheetController, mTab, mMockDelegate);
+    }
+
+    @Test
+    public void testModalDialogClosedByUserWithoutOpenModalDismissesRequest() {
+        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
+        mMediator.showAccounts(
+                new RelyingPartyData(
+                        mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null),
+                Arrays.asList(mAnaAccount, mBobAccount),
+                Arrays.asList(mIdpData),
+                /* newAccounts= */ Collections.emptyList());
+
+        // Without an open modal dialog, onModalDialogClosedByUser() dismisses with OTHER.
+        mMediator.onModalDialogClosedByUser();
+        assertTrue(mMediator.wasDismissed());
+        verify(mMockDelegate, times(1)).onDismissed(IdentityRequestDialogDismissReason.OTHER);
+
+        // Calling onModalDialogClosedByUser() again after dismissal is a no-op.
+        mMediator.onModalDialogClosedByUser();
+        verify(mMockDelegate, times(1)).onDismissed(anyInt());
     }
 
     private void pressBack() {
