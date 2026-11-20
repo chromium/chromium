@@ -3676,6 +3676,7 @@ void PaintLayerScrollableArea::EnqueueOverscrollStartEventIfNeeded() {
   Element& overscroll_element = To<PseudoElement>(GetLayoutBox()->GetNode())
                                     ->UltimateOriginatingElement();
   Element* overscroll_container = overscroll_element.GetOverscrollContainer();
+  CHECK(overscroll_container);
 
   EnsureRareData().in_active_overscroll_ = true;
   GetLayoutBox()->GetDocument().EnqueueOverscrollEvent(
@@ -3692,6 +3693,7 @@ void PaintLayerScrollableArea::EnqueueOverscrollChangingEventIfNeeded() {
   Element& overscroll_element = To<PseudoElement>(GetLayoutBox()->GetNode())
                                     ->UltimateOriginatingElement();
   Element* overscroll_container = overscroll_element.GetOverscrollContainer();
+  CHECK(overscroll_container);
 
   bool was_overscrolling = RareData()->is_currently_overscrolling_;
   // We should update the overscrolling value now, so that this and the "end"
@@ -3711,8 +3713,7 @@ void PaintLayerScrollableArea::EnqueueOverscrollChangingEventIfNeeded() {
            target_snap_areas.y != first_target.element_id;
   }();
 
-  if (was_overscrolling != RareData()->is_currently_overscrolling_ &&
-      overscroll_container) {
+  if (was_overscrolling != RareData()->is_currently_overscrolling_) {
     overscroll_container->GetOverscrollAreaTracker()->UpdateOpenState(
         overscroll_element);
   }
@@ -3732,6 +3733,7 @@ void PaintLayerScrollableArea::EnqueueOverscrollFinishedEventIfNeeded(
   Element& overscroll_element = To<PseudoElement>(GetLayoutBox()->GetNode())
                                     ->UltimateOriginatingElement();
   Element* overscroll_container = overscroll_element.GetOverscrollContainer();
+  CHECK(overscroll_container);
 
   RareData()->in_active_overscroll_ = false;
   GetLayoutBox()->GetDocument().EnqueueOverscrollEvent(

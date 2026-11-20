@@ -2172,11 +2172,23 @@ void LocalFrameView::UpdateDocumentDraggableRegions() const {
       !frame_->GetPage()->GetChromeClient().SupportsDraggableRegions()) {
     return;
   }
+  if (document->IsSlotAssignmentDirty()) {
+    // UpdateDocumentDraggableRegions() is called synchronously during scroll
+    // (e.g. PaintLayerScrollableArea::UpdateScrollOffset()). Recalculating slot
+    // assignments while walking the layout tree (e.g. via
+    // Element::CanvasForDrawing()) can detach layout objects and run script
+    // mid-scroll. Defer until the scheduled lifecycle update cleans slots.
+    document->SetDraggableRegionsDirty(true);
+    return;
+  }
   LayoutView* layout_view = document->GetLayoutView();
   DCHECK(layout_view);
 
   Vector<DraggableRegionValue> new_regions;
-  CollectDraggableRegions(*layout_view, new_regions);
+  {
+    SlotAssignmentRecalcForbiddenScope forbid_slot_recalc(*document);
+    CollectDraggableRegions(*layout_view, new_regions);
+  }
   if (new_regions == document->DraggableRegions()) {
     // The request has been served. Without this the bit stays set and every
     // paint recomputes the regions from now on.

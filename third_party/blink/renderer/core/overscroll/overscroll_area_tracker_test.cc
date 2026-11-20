@@ -4,6 +4,10 @@
 
 #include "third_party/blink/renderer/core/overscroll/overscroll_area_tracker.h"
 
+#include <utility>
+
+#include "base/functional/callback.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "cc/input/scroll_snap_data.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-blink.h"
@@ -18,6 +22,7 @@
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/indexed_pseudo_element.h"
+#include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/events/pointer_event.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -27,16 +32,20 @@
 #include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
+#include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
 #include "third_party/blink/renderer/platform/graphics/paint/clip_paint_property_node.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -2324,6 +2333,510 @@ TEST_F(OverscrollAreaTrackerPageTest, TallOverscrollAreaSnapAndScroll) {
       sheet_parent->GetLayoutBox()->GetScrollableArea();
   ASSERT_TRUE(sheet_scrollable);
   EXPECT_EQ(sheet_scrollable->GetScrollOffset(), ScrollOffset(0, 200));
+}
+
+TEST_F(OverscrollAreaTrackerPageTest,
+       MoveBeforeContainerSynchronouslyRemovesAreaParents) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #container {
+        width: 300px;
+        height: 200px;
+        overflow: clip;
+        position: relative;
+      }
+      .area {
+        position: absolute;
+        bottom: 100%;
+        width: 300px;
+        height: 100px;
+      }
+      .area::backdrop {
+        display: block;
+      }
+    </style>
+    <div id="container" overscrollcontainer>
+      <div id="menu0" class="area" overscrollarea></div>
+      <div id="menu1" class="area" overscrollarea></div>
+    </div>
+    <button command="toggle-overscroll" commandfor="menu0"></button>
+    <button command="toggle-overscroll" commandfor="menu1"></button>
+    <div id="elsewhere"></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* container = GetElementById("container");
+  Element* elsewhere = GetElementById("elsewhere");
+  Element* menu0 = GetElementById("menu0");
+  Element* menu1 = GetElementById("menu1");
+
+  container->GetOverscrollAreaTracker()->OpenArea(menu1);
+  UpdateAllLifecyclePhasesForTest();
+  ASSERT_TRUE(menu1->MatchesOverscrollOpen());
+  ASSERT_TRUE(menu0->GetPseudoElement(kPseudoIdOverscrollAreaParent));
+  ASSERT_TRUE(menu1->GetPseudoElement(kPseudoIdOverscrollAreaParent));
+  ASSERT_TRUE(menu1->GetPseudoElement(kPseudoIdBackdrop));
+
+  elsewhere->moveBefore(container, nullptr, ASSERT_NO_EXCEPTION);
+
+  // Removing the container via moveBefore() clears its tracked overscroll
+  // areas, so their ::-internal-overscroll-area-parent and ::backdrop
+  // pseudo-elements must be removed synchronously as well.
+  EXPECT_FALSE(menu0->GetOverscrollContainer());
+  EXPECT_FALSE(menu1->GetOverscrollContainer());
+  EXPECT_FALSE(menu0->GetPseudoElement(kPseudoIdOverscrollAreaParent));
+  EXPECT_FALSE(menu1->GetPseudoElement(kPseudoIdOverscrollAreaParent));
+  EXPECT_FALSE(menu0->GetPseudoElement(kPseudoIdBackdrop));
+  EXPECT_FALSE(menu1->GetPseudoElement(kPseudoIdBackdrop));
+
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(container->parentNode(), elsewhere);
+  EXPECT_EQ(menu0->GetOverscrollContainer(), container);
+  EXPECT_EQ(menu1->GetOverscrollContainer(), container);
+  EXPECT_TRUE(menu0->GetPseudoElement(kPseudoIdOverscrollAreaParent));
+  EXPECT_TRUE(menu1->GetPseudoElement(kPseudoIdOverscrollAreaParent));
+  EXPECT_FALSE(menu1->MatchesOverscrollOpen());
+}
+
+TEST_F(OverscrollAreaTrackerPageTest,
+       MoveBeforeAreaSynchronouslyRemovesAreaParent) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #container {
+        width: 300px;
+        height: 200px;
+        overflow: clip;
+        position: relative;
+      }
+      #menu {
+        position: absolute;
+        bottom: 100%;
+        width: 300px;
+        height: 100px;
+      }
+      #menu::backdrop {
+        display: block;
+      }
+    </style>
+    <div id="container" overscrollcontainer>
+      <div id="menu" overscrollarea>
+        <div id="child">hello</div>
+      </div>
+    </div>
+    <button command="toggle-overscroll" commandfor="menu"></button>
+    <div id="elsewhere"></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* container = GetElementById("container");
+  Element* elsewhere = GetElementById("elsewhere");
+  Element* menu = GetElementById("menu");
+  Element* child = GetElementById("child");
+  ASSERT_EQ(menu->GetOverscrollContainer(), container);
+  ASSERT_TRUE(menu->GetPseudoElement(kPseudoIdOverscrollAreaParent));
+  ASSERT_TRUE(menu->GetPseudoElement(kPseudoIdBackdrop));
+
+  elsewhere->moveBefore(menu, nullptr, ASSERT_NO_EXCEPTION);
+
+  EXPECT_FALSE(menu->GetOverscrollContainer());
+  EXPECT_FALSE(menu->GetPseudoElement(kPseudoIdOverscrollAreaParent));
+  EXPECT_FALSE(menu->GetPseudoElement(kPseudoIdBackdrop));
+
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(menu->parentNode(), elsewhere);
+  EXPECT_FALSE(menu->GetOverscrollContainer());
+  EXPECT_FALSE(menu->GetPseudoElement(kPseudoIdOverscrollAreaParent));
+  EXPECT_FALSE(menu->GetPseudoElement(kPseudoIdBackdrop));
+  ASSERT_TRUE(menu->GetLayoutObject());
+  EXPECT_EQ(menu->GetLayoutObject()->Parent(), elsewhere->GetLayoutObject());
+  ASSERT_TRUE(child->GetLayoutObject());
+  EXPECT_EQ(child->GetLayoutObject()->Parent(), menu->GetLayoutObject());
+}
+
+TEST_F(OverscrollAreaTrackerPageTest,
+       ContentVisibilityHiddenAreaRemovalRemovesAreaParent) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #container {
+        width: 300px;
+        height: 200px;
+        overflow: clip;
+        position: relative;
+      }
+      #menu {
+        position: absolute;
+        bottom: 100%;
+        width: 300px;
+        height: 100px;
+      }
+    </style>
+    <div id="container" overscrollcontainer>
+      <div id="menu" overscrollarea>
+        <div id="child">hello</div>
+      </div>
+    </div>
+    <button command="toggle-overscroll" commandfor="menu"></button>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* container = GetElementById("container");
+  Element* menu = GetElementById("menu");
+  ASSERT_EQ(menu->GetOverscrollContainer(), container);
+  ASSERT_TRUE(menu->GetPseudoElement(kPseudoIdOverscrollAreaParent));
+
+  // Becoming display-locked while removing `overscrollarea` returns early from
+  // Element::RecalcStyle() before UpdatePseudoElement(). The area parent must
+  // still be removed synchronously when the overscroll container is cleared.
+  menu->SetInlineStyleProperty(CSSPropertyID::kContentVisibility, "hidden");
+  menu->removeAttribute(html_names::kOverscrollareaAttr);
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_FALSE(menu->GetOverscrollContainer());
+  EXPECT_FALSE(menu->GetPseudoElement(kPseudoIdOverscrollAreaParent));
+  ASSERT_TRUE(menu->GetLayoutObject());
+  EXPECT_EQ(menu->GetLayoutObject()->Parent(), container->GetLayoutObject());
+}
+
+TEST_F(OverscrollAreaTrackerPageTest,
+       SizeContainerAreaRemovalRemovesAreaParent) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #container {
+        width: 300px;
+        height: 200px;
+        overflow: clip;
+        position: relative;
+      }
+      #menu {
+        position: absolute;
+        bottom: 100%;
+        width: 300px;
+        height: 100px;
+      }
+    </style>
+    <div id="container" overscrollcontainer>
+      <div id="menu" overscrollarea>
+        <div id="child">hello</div>
+      </div>
+    </div>
+    <button command="toggle-overscroll" commandfor="menu"></button>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* container = GetElementById("container");
+  Element* menu = GetElementById("menu");
+  Element* child = GetElementById("child");
+  ASSERT_EQ(menu->GetOverscrollContainer(), container);
+  ASSERT_TRUE(menu->GetPseudoElement(kPseudoIdOverscrollAreaParent));
+
+  // Becoming a size container while removing `overscrollarea` skips descendant
+  // style recalc before UpdatePseudoElement(). The area parent must still be
+  // removed synchronously when the overscroll container is cleared.
+  menu->SetInlineStyleProperty(CSSPropertyID::kContainerType, "size");
+  menu->removeAttribute(html_names::kOverscrollareaAttr);
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_FALSE(menu->GetOverscrollContainer());
+  EXPECT_FALSE(menu->GetPseudoElement(kPseudoIdOverscrollAreaParent));
+  ASSERT_TRUE(menu->GetLayoutObject());
+  EXPECT_EQ(menu->GetLayoutObject()->Parent(), container->GetLayoutObject());
+  ASSERT_TRUE(child->GetLayoutObject());
+  EXPECT_EQ(child->GetLayoutObject()->Parent(), menu->GetLayoutObject());
+}
+
+namespace {
+
+class DraggableRegionsChromeClient final : public EmptyChromeClient {
+ public:
+  bool SupportsDraggableRegions() override { return true; }
+
+  void DraggableRegionsChanged() override {
+    if (callback_) {
+      callback_.Run();
+    }
+  }
+
+  void SetDraggableRegionsChangedCallback(base::RepeatingClosure callback) {
+    callback_ = std::move(callback);
+  }
+
+ private:
+  base::RepeatingClosure callback_;
+};
+
+}  // namespace
+
+class OverscrollAreaTrackerReentrancyTest : public PageTestBase,
+                                            ScopedCSSScrollSnapTypePairForTest,
+                                            ScopedOverscrollAreasForTest,
+                                            ScopedCanvasDrawElementForTest {
+ public:
+  OverscrollAreaTrackerReentrancyTest()
+      : ScopedCSSScrollSnapTypePairForTest(true),
+        ScopedOverscrollAreasForTest(true),
+        ScopedCanvasDrawElementForTest(true) {}
+
+  void SetUp() override {
+    chrome_client_ = MakeGarbageCollected<DraggableRegionsChromeClient>();
+    SetupPageWithClients(chrome_client_);
+  }
+
+  void TearDown() override {
+    chrome_client_->SetDraggableRegionsChangedCallback({});
+    PageTestBase::TearDown();
+  }
+
+ protected:
+  // Sets up `#container` with four overscroll areas `[menu0, menu1, menu2,
+  // menu3]` (where `#menu1` is open and contains an `app-region: drag` child
+  // so scrolling `#menu1` closed in `CloseArea(menu1)` synchronously triggers
+  // `ChromeClient::DraggableRegionsChanged()`), plus `#container2`.
+  void SetUpReentrancyDOM() {
+    SetBodyInnerHTML(R"HTML(
+      <style>
+        #container, #container2 {
+          width: 300px;
+          height: 200px;
+          overflow: clip;
+          position: relative;
+        }
+        .area {
+          position: absolute;
+          bottom: 100%;
+          width: 300px;
+          height: 100px;
+        }
+        #menu1::backdrop {
+          display: block;
+          background: rgba(0, 128, 0, 0.5);
+        }
+        #drag {
+          width: 100px;
+          height: 30px;
+          app-region: drag;
+        }
+      </style>
+      <div id="container" overscrollcontainer>
+        <div id="menu0" class="area" overscrollarea></div>
+        <div id="menu1" class="area" overscrollarea>
+          <div id="drag">drag</div>
+        </div>
+        <div id="menu2" class="area" overscrollarea></div>
+        <div id="menu3" class="area" overscrollarea></div>
+        <div style="height: 200px"></div>
+      </div>
+      <div id="container2" overscrollcontainer>
+        <div style="height: 200px"></div>
+      </div>
+      <button command="toggle-overscroll" commandfor="menu0"></button>
+      <button command="toggle-overscroll" commandfor="menu1"></button>
+      <button command="toggle-overscroll" commandfor="menu2"></button>
+      <button command="toggle-overscroll" commandfor="menu3"></button>
+    )HTML");
+    UpdateAllLifecyclePhasesForTest();
+
+    Element* container = GetElementById("container");
+    Element* menu1 = GetElementById("menu1");
+    ASSERT_TRUE(container);
+    ASSERT_TRUE(menu1);
+    container->GetOverscrollAreaTracker()->OpenArea(menu1);
+    UpdateAllLifecyclePhasesForTest();
+    ASSERT_TRUE(menu1->MatchesOverscrollOpen());
+  }
+
+  void ClickBackdrop(Element* area) {
+    ASSERT_TRUE(area);
+    PseudoElement* backdrop = area->GetPseudoElement(kPseudoIdBackdrop);
+    ASSERT_TRUE(backdrop);
+
+    PointerEventInit* init = PointerEventInit::Create();
+    init->setBubbles(true);
+    init->setPointerId(1);
+    PointerEvent* click_event =
+        PointerEvent::Create(event_type_names::kClick, init);
+    backdrop->DispatchEvent(*click_event);
+  }
+
+  Persistent<DraggableRegionsChromeClient> chrome_client_;
+};
+
+// Regression test for crbug.com/586425049 (pure Shadow DOM `<slot>` fallback
+// detach): appending `<div slot="s">` before clicking `#menu1::backdrop`
+// dirties slot assignments. Verify that `CloseArea(menu1)` ->
+// `LocalFrameView::UpdateDocumentDraggableRegions()` defers draggable-region
+// collection (`DraggableRegionsDirty()`) instead of recalculating slot
+// assignments mid-scroll and detaching fallback `[overscrollarea]` children
+// `menu0..menu3` during `CloseAllAreas()`, and that the subsequent lifecycle
+// update cleans slot assignments and flushes draggable regions.
+TEST_F(OverscrollAreaTrackerReentrancyTest,
+       CloseAllAreasSlotFallbackDetachReentrancy) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #drag {
+        width: 100px;
+        height: 30px;
+        app-region: drag;
+      }
+    </style>
+    <div id="host">
+      <div id="drag" slot="inside" drawable>drag</div>
+    </div>
+  )HTML");
+
+  Element* host = GetElementById("host");
+  ASSERT_TRUE(host);
+  ShadowRoot& shadow_root =
+      host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
+  shadow_root.SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      #container {
+        display: block;
+        width: 300px;
+        height: 200px;
+        overflow: clip;
+        position: relative;
+      }
+      .area {
+        position: absolute;
+        bottom: 100%;
+        width: 300px;
+        height: 100px;
+      }
+      #menu1::backdrop {
+        display: block;
+        background: rgba(0, 128, 0, 0.5);
+      }
+    </style>
+    <slot id="container" name="s" overscrollcontainer>
+      <div id="menu0" class="area" overscrollarea></div>
+      <div id="menu1" class="area" overscrollarea></div>
+      <div id="menu2" class="area" overscrollarea></div>
+      <div id="menu3" class="area" overscrollarea></div>
+      <div style="height: 200px"></div>
+    </slot>
+    <button command="toggle-overscroll" commandfor="menu0"></button>
+    <button command="toggle-overscroll" commandfor="menu1"></button>
+    <button command="toggle-overscroll" commandfor="menu2"></button>
+    <button command="toggle-overscroll" commandfor="menu3"></button>
+    <canvas content="drawable" width="300" height="30">
+      <slot name="inside"></slot>
+    </canvas>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* slot_container =
+      shadow_root.getElementById(AtomicString("container"));
+  Element* menu1 = shadow_root.getElementById(AtomicString("menu1"));
+  ASSERT_TRUE(slot_container);
+  ASSERT_TRUE(menu1);
+  ASSERT_TRUE(slot_container->GetOverscrollAreaTracker());
+  ASSERT_EQ(
+      slot_container->GetOverscrollAreaTracker()->DOMSortedElements().size(),
+      4u);
+
+  slot_container->GetOverscrollAreaTracker()->OpenArea(menu1);
+  UpdateAllLifecyclePhasesForTest();
+  ASSERT_TRUE(menu1->MatchesOverscrollOpen());
+
+  Element* assigned = GetDocument().CreateRawElement(html_names::kDivTag);
+  assigned->setAttribute(html_names::kSlotAttr, AtomicString("s"));
+  host->AppendChild(assigned);
+  ASSERT_TRUE(GetDocument().IsSlotAssignmentDirty());
+
+  ClickBackdrop(menu1);
+  EXPECT_TRUE(GetDocument().DraggableRegionsDirty());
+  EXPECT_TRUE(GetDocument().IsSlotAssignmentDirty());
+  PseudoElement* menu1_parent =
+      menu1->GetPseudoElement(kPseudoIdOverscrollAreaParent);
+  ASSERT_TRUE(menu1_parent);
+  ASSERT_TRUE(menu1_parent->GetLayoutBox());
+  ScrollableArea* menu1_scrollable =
+      menu1_parent->GetLayoutBox()->GetScrollableArea();
+  ASSERT_TRUE(menu1_scrollable);
+  EXPECT_EQ(menu1_scrollable->GetScrollOffset(), ScrollOffset());
+  EXPECT_FALSE(menu1->MatchesOverscrollOpen());
+
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(GetDocument().DraggableRegionsDirty());
+  EXPECT_FALSE(GetDocument().IsSlotAssignmentDirty());
+  EXPECT_TRUE(
+      slot_container->GetOverscrollAreaTracker()->DOMSortedElements().empty());
+  EXPECT_FALSE(menu1->MatchesOverscrollOpen());
+}
+
+// Regression test for crbug.com/586425049 (erase variant): removing unvisited
+// overscroll areas synchronously during CloseAllAreas() shrinks
+// `overscroll_members_` in place and must not cause container-overflow or
+// null-dereference on subsequent loop iterations.
+TEST_F(OverscrollAreaTrackerReentrancyTest,
+       CloseAllAreasReentrancyErasesUnvisitedAreas) {
+  SetUpReentrancyDOM();
+
+  Element* container = GetElementById("container");
+  Element* menu1 = GetElementById("menu1");
+  Element* menu2 = GetElementById("menu2");
+  Element* menu3 = GetElementById("menu3");
+  bool reentered = false;
+
+  chrome_client_->SetDraggableRegionsChangedCallback(
+      base::BindLambdaForTesting([&]() {
+        if (reentered) {
+          return;
+        }
+        reentered = true;
+        menu2->remove();
+        menu3->remove();
+      }));
+
+  ClickBackdrop(menu1);
+  EXPECT_TRUE(reentered);
+
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(menu1->MatchesOverscrollOpen());
+  EXPECT_EQ(container->GetOverscrollAreaTracker()->DOMSortedElements().size(),
+            2u);
+}
+
+// Verifies that if synchronous re-entrancy moves an unvisited overscroll area
+// (`menu2`) to a different overscroll container (`container2`) and opens it
+// there, `container`'s CloseAllAreas() skips `menu2`
+// (`GetOverscrollContainer() != container_`) while still closing remaining
+// areas (`menu3`) in `container`.
+TEST_F(OverscrollAreaTrackerReentrancyTest,
+       CloseAllAreasReentrancySkipsAreaMovedToAnotherContainer) {
+  SetUpReentrancyDOM();
+
+  Element* container = GetElementById("container");
+  Element* container2 = GetElementById("container2");
+  Element* menu1 = GetElementById("menu1");
+  Element* menu2 = GetElementById("menu2");
+  Element* menu3 = GetElementById("menu3");
+
+  // Also open `menu3` in `container` before dismissing via backdrop click.
+  container->GetOverscrollAreaTracker()->OpenArea(menu3);
+  UpdateAllLifecyclePhasesForTest();
+  ASSERT_TRUE(menu3->MatchesOverscrollOpen());
+
+  bool reentered = false;
+  chrome_client_->SetDraggableRegionsChangedCallback(
+      base::BindLambdaForTesting([&]() {
+        if (reentered) {
+          return;
+        }
+        reentered = true;
+        container2->AppendChild(menu2);
+        UpdateAllLifecyclePhasesForTest();
+        ASSERT_EQ(menu2->GetOverscrollContainer(), container2);
+        container2->GetOverscrollAreaTracker()->OpenArea(menu2);
+      }));
+
+  ClickBackdrop(menu1);
+  EXPECT_TRUE(reentered);
+
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(menu1->MatchesOverscrollOpen());
+  EXPECT_TRUE(menu2->MatchesOverscrollOpen());
+  EXPECT_FALSE(menu3->MatchesOverscrollOpen());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

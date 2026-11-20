@@ -309,18 +309,19 @@ bool OverscrollAreaTracker::ShouldRemoveInertness(const Element* invoker,
 }
 
 void OverscrollAreaTracker::RemoveAllOverscroll() {
-  for (auto& member : overscroll_members_) {
+  VectorOf<Element> members;
+  members.swap(overscroll_members_);
+  needs_dom_sort_ = false;
+  for (auto& member : members) {
     member->ClearOverscrollContainer();
   }
-  overscroll_members_.clear();
-  needs_dom_sort_ = false;
 }
 
 void OverscrollAreaTracker::RemoveOverscroll(Element* element) {
   CHECK_EQ(element->GetOverscrollContainer(), container_);
-  element->ClearOverscrollContainer();
   Erase(overscroll_members_, element);
   needs_dom_sort_ = needs_dom_sort_ && overscroll_members_.size() > 1;
+  element->ClearOverscrollContainer();
 }
 
 void OverscrollAreaTracker::ToggleArea(Element* overscroll_area) {
@@ -428,7 +429,15 @@ void OverscrollAreaTracker::CloseArea(Element* overscroll_area) {
 }
 
 void OverscrollAreaTracker::CloseAllAreas() {
-  for (auto& member : overscroll_members_) {
+  // CloseArea() scrolls synchronously, which can update draggable regions or
+  // slot assignments and run script or flat-tree updates that remove areas
+  // from, or free the backing of, `overscroll_members_`. Iterate over a
+  // snapshot and skip areas that are no longer tracked by this container.
+  const VectorOf<Element> members(overscroll_members_);
+  for (Element* member : members) {
+    if (member->GetOverscrollContainer() != container_) {
+      continue;
+    }
     CloseArea(member);
   }
 }

@@ -30,6 +30,7 @@
 #include <bitset>
 #include <limits>
 #include <memory>
+#include <optional>
 #include <ranges>
 #include <utility>
 
@@ -14741,6 +14742,28 @@ void Element::SetOverscrollContainer(Element* element) {
 void Element::ClearOverscrollContainer() {
   if (NodeRareData* data = RareData()) {
     data->ClearOverscrollContainer();
+    const bool has_area_parent =
+        GetPseudoElement(kPseudoIdOverscrollAreaParent);
+    const bool has_overscroll_backdrop =
+        !IsInTopLayer() && GetPseudoElement(kPseudoIdBackdrop);
+    if (has_area_parent || has_overscroll_backdrop) {
+      // Remove ::-internal-overscroll-area-parent (and any overscroll
+      // ::backdrop) synchronously so an area parent never outlives its
+      // overscroll container (e.g. during moveBefore(), slot reassignment, or
+      // skipped style recalc for display-locked / size-container elements).
+      StyleEngine& engine = GetDocument().GetStyleEngine();
+      std::optional<StyleEngine::DetachLayoutTreeScope> detach_scope;
+      if (GetDocument().IsActive() && !GetDocument().InStyleRecalc() &&
+          !engine.InDetachLayoutTree()) {
+        detach_scope.emplace(engine);
+      }
+      if (has_overscroll_backdrop) {
+        ClearPseudoElement(kPseudoIdBackdrop);
+      }
+      if (has_area_parent) {
+        ClearPseudoElement(kPseudoIdOverscrollAreaParent);
+      }
+    }
   }
 }
 
