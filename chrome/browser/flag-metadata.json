@@ -495,7 +495,7 @@
   {
     "name": "android-fre-layout-update",
     "owners": ["sinansahin@google.com"],
-    "expiry_milestone": 160
+    "expiry_milestone": 170
   },
   {
     "name": "android-history-clustering",
