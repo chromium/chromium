@@ -74,7 +74,8 @@ class TouchAccessibilityBrowserTest : public ContentBrowserTest {
 };
 
 // TODO(crbug.com/421286357): Flaky on linux builders.
-#if BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/579634942): Flaky on windows builders.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #define MAYBE_TouchExplorationSendsHoverEvents \
   DISABLED_TouchExplorationSendsHoverEvents
 #else
