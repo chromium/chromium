@@ -81,9 +81,10 @@ gfx::Insets ComputeRowMargins() {
 
 std::unique_ptr<views::View> CreateIconView(
     const gfx::VectorIcon& vector_icon) {
-  // TODO(crbug.com/40253695): Double check if it should always be not
-  // accessible and that there is always another way to let user know important
-  // information.
+  // Row icons are decorative and hidden from assistive technologies via
+  // `NonAccessibleImageView`. Each row's content conveys the same
+  // information: the username and note labels/fields have explicit
+  // accessible names, and the password row's label and buttons describe it.
   auto icon = std::make_unique<NonAccessibleImageView>();
   icon->SetImage(ui::ImageModel::FromVectorIcon(
       vector_icon, ui::kColorIconSecondary, kIconSize));
