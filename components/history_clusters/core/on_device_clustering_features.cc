@@ -14,10 +14,6 @@
 namespace history_clusters {
 namespace features {
 
-BASE_FEATURE(kOnDeviceClustering,
-             "HistoryClustersOnDeviceClustering",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kOnDeviceClusteringBlocklists,
              "JourneysOnDeviceClusteringBlocklist",
              base::FEATURE_ENABLED_BY_DEFAULT);

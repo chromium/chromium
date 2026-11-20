@@ -145,7 +145,7 @@ struct Config {
   // Maximum number of keywords to keep per cluster.
   size_t max_num_keywords_per_cluster = 20;
 
-  // The `kOnDeviceClustering` feature and child params.
+  // On-device clustering params.
 
   // Returns the maximum duration between navigations that
   // a visit can be considered for the same cluster.
@@ -157,7 +157,7 @@ struct Config {
 
   // Returns the threshold for which we should mark a cluster as being able to
   // show on prominent UI surfaces.
-  float content_visibility_threshold = 0.7;
+  float content_visibility_threshold = 0.5;
 
   // Returns the threshold used to determine if a cluster, and its visits, has
   // too high site engagement to be likely useful.

@@ -13,9 +13,6 @@ namespace features {
 
 // Params & helpers functions
 
-// Enables configuring the on-device clustering backend.
-BASE_DECLARE_FEATURE(kOnDeviceClustering);
-
 // Specifies various blocklists for on-device clustering backend.
 BASE_DECLARE_FEATURE(kOnDeviceClusteringBlocklists);
 

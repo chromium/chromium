@@ -102,39 +102,6 @@ Config::Config() {
         "max_num_keywords_per_cluster", max_num_keywords_per_cluster);
   }
 
-  // The `kOnDeviceClustering` feature and child params.
-  {
-    cluster_navigation_time_cutoff =
-        base::Minutes(GetFieldTrialParamByFeatureAsInt(
-            features::kOnDeviceClustering, "navigation_time_cutoff_minutes",
-            cluster_navigation_time_cutoff.InMinutes()));
-
-    entity_relevance_threshold = GetFieldTrialParamByFeatureAsInt(
-        features::kOnDeviceClustering, "entity_relevance_threshold",
-        entity_relevance_threshold);
-    // Ensure that the value is [0 and 100].
-    DCHECK_GE(entity_relevance_threshold, 0);
-    DCHECK_LE(entity_relevance_threshold, 100);
-
-    content_visibility_threshold = GetFieldTrialParamByFeatureAsDouble(
-        features::kOnDeviceClustering, "content_visibility_threshold", 0.5);
-    // Ensure that the value is [0.0 and 1.0].
-    DCHECK_GE(content_visibility_threshold, 0.0f);
-    DCHECK_LE(content_visibility_threshold, 1.0f);
-
-    noisy_cluster_visits_engagement_threshold =
-        GetFieldTrialParamByFeatureAsDouble(
-            features::kOnDeviceClustering,
-            "noisy_cluster_visit_engagement_threshold",
-            noisy_cluster_visits_engagement_threshold);
-
-    number_interesting_visits_filter_threshold =
-        GetFieldTrialParamByFeatureAsInt(
-            features::kOnDeviceClustering,
-            "num_interesting_visits_filter_threshold",
-            number_interesting_visits_filter_threshold);
-  }
-
   // The `kHistoryClustersNavigationContextClustering` feature and child params.
   {
     use_navigation_context_clusters = base::FeatureList::IsEnabled(
