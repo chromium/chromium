@@ -11,7 +11,6 @@ import org.chromium.build.annotations.Nullable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.Locale;
 
 /**
  * Struct containing the info of ChromeTabbedActivity instance needed to manage multi-instance
@@ -94,19 +93,5 @@ public final class InstanceInfo {
         this.isIncognitoSelected = isIncognitoSelected;
         this.lastAccessedTime = lastAccessedTime;
         this.closureTime = closureTime;
-    }
-
-    @Override
-    public String toString() {
-        return String.format(
-                Locale.ENGLISH,
-                "(%d,%3d) incognito: %s ntab:%d itab:%d (%s,%s)",
-                instanceId,
-                taskId,
-                isIncognitoSelected ? "O" : "-",
-                tabCount,
-                incognitoTabCount,
-                title,
-                url);
     }
 }
