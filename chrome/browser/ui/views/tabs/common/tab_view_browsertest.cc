@@ -2609,12 +2609,15 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabViewPinnedStylingDisabledTest,
   EXPECT_EQ(opacities1.right, 1.0f);
 
   // When Tab 2 is active, both Tab 0 (pinned) and Tab 1 (unpinned) are
-  // inactive. When new pinned tab styling is disabled, Tab 1 renders a leading
-  // separator between the pinned and unpinned containers.
+  // inactive. Only Tab 0 renders a trailing separator at the container seam.
   tab_strip_model()->ActivateTabAt(2);
 
+  opacities0 = tab0->tab_styling()->GetSeparatorOpacitiesForTesting();
+  EXPECT_EQ(opacities0.left, 0.0f);
+  EXPECT_EQ(opacities0.right, 1.0f);
+
   opacities1 = tab1->tab_styling()->GetSeparatorOpacitiesForTesting();
-  EXPECT_EQ(opacities1.left, 1.0f);
+  EXPECT_EQ(opacities1.left, 0.0f);
   EXPECT_EQ(opacities1.right, 0.0f);
 }
 

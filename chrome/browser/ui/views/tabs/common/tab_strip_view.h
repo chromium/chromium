@@ -175,6 +175,7 @@ class TabStripView final : public views::View,
   void OnScrollButtonsVisibilityChanged();
   bool ShouldHideSeparators() const;
   void UpdateSeparatorVisibility();
+  void SchedulePaintPinnedTrailingSeparator();
 
   PrefService* GetPrefs() const;
 
@@ -220,6 +221,8 @@ class TabStripView final : public views::View,
       unpinned_tab_scrollable_state_recorder_;
 
   base::CallbackListSubscription node_destroyed_subscription_;
+  base::CallbackListSubscription
+      unpinned_leading_edge_paint_scheduled_subscription_;
   std::vector<base::CallbackListSubscription> callback_subscriptions_;
 
   base::ScopedObservation<views::Widget, views::WidgetObserver>
