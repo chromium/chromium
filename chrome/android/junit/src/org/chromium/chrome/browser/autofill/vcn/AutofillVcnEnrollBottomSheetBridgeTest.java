@@ -97,7 +97,7 @@ public final class AutofillVcnEnrollBottomSheetBridgeTest {
     private WindowAndroid mWindow;
     private AutofillVcnEnrollBottomSheetBridge mBridge;
 
-    private static final int ISSUER_ICON_RESOURCE_ID = R.drawable.mc_card;
+    private static final int ISSUER_ICON_RESOURCE_ID = R.drawable.mc_metadata_card;
     private static final GURL ISSUER_ICON_URL = new GURL("https://example.test/card.png");
 
     @Before

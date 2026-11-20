@@ -55,6 +55,7 @@ android_library("test_support_java") {
   public_deps = [
     "//base:base_java_test_support",
     "//chrome/browser/autofill/android:java",
+    "//components/autofill/android:autofill_payments_test_java_resources",
     "//components/autofill/android:main_autofill_java",
     "//content/public/test/android:content_java_test_support",
   ]

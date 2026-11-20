@@ -132,15 +132,11 @@ autofill_private::AddressEntry ProfileToAddressEntry(
 }
 
 std::string CardNetworkToIconResourceIdString(const std::string& network) {
-  if (network == autofill::kAmericanExpressCard) {
-    return "chrome://theme/IDR_AUTOFILL_METADATA_CC_AMEX_NEW";
-  }
-
   if (ShouldUseNewFopDisplay()) {
     static constexpr auto kNetworkToResourceIdStringMap =
         base::MakeFixedFlatMap<std::string_view, std::string_view>(
             {{autofill::kAmericanExpressCard,
-              "chrome://theme/IDR_AUTOFILL_METADATA_CC_AMEX"},
+              "chrome://theme/IDR_AUTOFILL_METADATA_CC_AMEX_NEW"},
              {autofill::kDiscoverCard,
               "chrome://theme/IDR_AUTOFILL_METADATA_CC_DISCOVER"},
              {autofill::kDinersCard,
@@ -176,7 +172,7 @@ std::string CardNetworkToIconResourceIdString(const std::string& network) {
            {autofill::kVisaCard,
             "chrome://theme/IDR_AUTOFILL_METADATA_CC_VISA_OLD"},
            {autofill::kAmericanExpressCard,
-            "chrome://theme/IDR_AUTOFILL_METADATA_CC_AMEX_OLD"},
+            "chrome://theme/IDR_AUTOFILL_METADATA_CC_AMEX_NEW"},
            {autofill::kDinersCard,
             "chrome://theme/IDR_AUTOFILL_METADATA_CC_DINERS_OLD"},
            {autofill::kJCBCard,
