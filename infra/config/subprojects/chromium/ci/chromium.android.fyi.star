@@ -487,14 +487,27 @@ ci.builder(
         per_test_modifications = {
             "android_browsertests": targets.mixin(
                 swarming = targets.swarming(
-                    shards = 6,
+                    shards = 10,
                 ),
+            ),
+            "android_browsertests_no_fieldtrial": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 10,
+                ),
+            ),
+            "base_unittests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14_15_16.base_unittests.filter;../../testing/buildbot/filters/android.emulator_17.base_unittests.filter",
+                ],
             ),
             "chrome_public_test_apk": targets.mixin(
                 args = [
                     # Don't enable render tests on non-CQ builders
                     "--skia-gold-consider-unsupported",
                 ],
+                swarming = targets.swarming(
+                    shards = 30,
+                ),
             ),
             "chrome_public_unit_test_apk": targets.mixin(
                 args = [
@@ -502,10 +515,45 @@ ci.builder(
                     "--skia-gold-consider-unsupported",
                 ],
             ),
+            "content_browsertests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 30,
+                ),
+            ),
+            "content_shell_crash_test": targets.remove(
+                reason = "crbug.com/40131701",
+            ),
             "content_shell_test_apk": targets.mixin(
                 args = [
                     # Don't enable render tests on non-CQ builders
                     "--skia-gold-consider-unsupported",
+                ],
+            ),
+            "content_unittests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15_16.content_unittests.filter",
+                ],
+            ),
+            "gl_tests_validating": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12_12l_13.gl_tests.filter",
+                ],
+            ),
+            "gwp_asan_unittests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15_16.gwp_asan_unittests.filter",
+                ],
+            ),
+            "media_unittests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.media_unittests.filter",
+                ],
+            ),
+            "perfetto_unittests": targets.mixin(
+                args = [
+                    # TODO(crbug.com/40201873): Fix ScopedDirTest.CloseOutOfScope.
+                    # TODO(crbug.com/579554079): Fix PosixSharedMemoryTest.CreateAndMap.
+                    "--gtest_filter=-ScopedDirTest.CloseOutOfScope:PosixSharedMemoryTest.CreateAndMap",
                 ],
             ),
             "webview_instrumentation_test_apk_multiple_process_mode": targets.mixin(
@@ -513,9 +561,6 @@ ci.builder(
                     # Don't enable render tests on non-CQ builders
                     "--skia-gold-consider-unsupported",
                 ],
-            ),
-            "content_shell_crash_test": targets.remove(
-                reason = "crbug.com/40131701",
             ),
         },
     ),

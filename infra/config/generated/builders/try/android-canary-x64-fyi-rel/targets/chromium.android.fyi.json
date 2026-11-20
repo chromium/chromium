@@ -93,7 +93,7 @@
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 6
+          "shards": 10
         },
         "test": "android_browsertests",
         "test_id_prefix": "ninja://chrome/test:android_browsertests/"
@@ -144,7 +144,7 @@
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 6
+          "shards": 10
         },
         "test": "android_browsertests",
         "test_id_prefix": "ninja://chrome/test:android_browsertests/"
@@ -292,6 +292,7 @@
       {
         "args": [
           "--avd-config=../../tools/android/avd/proto/android_canary_google_apis_x64.textpb",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14_15_16.base_unittests.filter;../../testing/buildbot/filters/android.emulator_17.base_unittests.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -1022,7 +1023,7 @@
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 20
+          "shards": 30
         },
         "test": "chrome_public_test_apk",
         "test_id_prefix": "ninja://chrome/android:chrome_public_test_apk/"
@@ -1224,7 +1225,7 @@
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 15
+          "shards": 30
         },
         "test": "content_browsertests",
         "test_id_prefix": "ninja://content/test:content_browsertests/"
@@ -1282,6 +1283,7 @@
       {
         "args": [
           "--avd-config=../../tools/android/avd/proto/android_canary_google_apis_x64.textpb",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15_16.content_unittests.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -1813,6 +1815,7 @@
         "args": [
           "--use-cmd-decoder=validating",
           "--avd-config=../../tools/android/avd/proto/android_canary_google_apis_x64.textpb",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12_12l_13.gl_tests.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -2005,6 +2008,7 @@
       {
         "args": [
           "--avd-config=../../tools/android/avd/proto/android_canary_google_apis_x64.textpb",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15_16.gwp_asan_unittests.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -2342,6 +2346,7 @@
       {
         "args": [
           "--avd-config=../../tools/android/avd/proto/android_canary_google_apis_x64.textpb",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.media_unittests.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -2631,6 +2636,7 @@
       {
         "args": [
           "--avd-config=../../tools/android/avd/proto/android_canary_google_apis_x64.textpb",
+          "--gtest_filter=-ScopedDirTest.CloseOutOfScope:PosixSharedMemoryTest.CreateAndMap",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
