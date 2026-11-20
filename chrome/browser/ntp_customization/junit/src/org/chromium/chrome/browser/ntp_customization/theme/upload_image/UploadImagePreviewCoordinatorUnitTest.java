@@ -123,7 +123,6 @@ public class UploadImagePreviewCoordinatorUnitTest {
                 mActivity.getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow);
 
         mConfigManager = NtpCustomizationConfigManager.getInstance();
-        ChromeFeatureList.sNewTabPageCustomizationV2ShowLogoAndSearchBox.setForTesting(true);
         RobolectricUtil.runAllBackgroundAndUi();
     }
 
@@ -481,7 +480,12 @@ public class UploadImagePreviewCoordinatorUnitTest {
                 expectedTallHeight,
                 model.get(NtpThemeProperty.SEARCH_BOX_HEIGHT));
 
-        // Verify the height of the real view
+        // Verify the visibility and height of the real view.
+        assertEquals(
+                View.VISIBLE,
+                ShadowDialog.getLatestDialog()
+                        .findViewById(R.id.search_box_container)
+                        .getVisibility());
         ConstraintLayout.LayoutParams layoutParams = getSearchBoxLayoutParams();
         assertEquals(
                 "The height of the real search box view should be the one returned by"

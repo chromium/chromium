@@ -33,7 +33,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.composeplate.ComposeplateUtils;
 import org.chromium.chrome.browser.feed.FeedStreamViewResizerUtils;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.logo.LogoUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationMetricsUtils;
@@ -64,7 +63,6 @@ public class UploadImagePreviewCoordinator implements InsetObserver.WindowInsets
     private final PropertyModel mPreviewPropertyModel;
     private final ChromeDialog mDialog;
     private final int mToolBarHeight;
-    private final boolean mShouldShowLogoAndSearchBox;
     private final Activity mActivity;
     private final UiConfig mUiConfig;
     private final int mButtonBottomMargin;
@@ -141,15 +139,11 @@ public class UploadImagePreviewCoordinator implements InsetObserver.WindowInsets
                         .getDimensionPixelSize(R.dimen.ntp_customization_back_button_margin_start);
 
         mUiConfig = new UiConfig(mPreviewLayout);
-        mShouldShowLogoAndSearchBox =
-                ChromeFeatureList.sNewTabPageCustomizationV2ShowLogoAndSearchBox.getValue();
         mLayoutChangeListener =
                 CommonOnLayoutChangeListeners.createBoundsChangedListener(
                         () -> {
                             mUiConfig.updateDisplayStyle();
-                            if (mShouldShowLogoAndSearchBox) {
-                                updateSearchBoxWidthPreview();
-                            }
+                            updateSearchBoxWidthPreview();
                         });
         mPreviewLayout.addOnLayoutChangeListener(mLayoutChangeListener);
 
@@ -184,10 +178,8 @@ public class UploadImagePreviewCoordinator implements InsetObserver.WindowInsets
                     recordPreviewInteractionsMetric();
                 });
 
-        if (mShouldShowLogoAndSearchBox) {
-            setUpLogo(activity, profile, mPreviewPropertyModel);
-            setUpSearchBox(mPreviewPropertyModel, profile);
-        }
+        setUpLogo(activity, profile, mPreviewPropertyModel);
+        setUpSearchBox(mPreviewPropertyModel, profile);
 
         mDialog.show();
         NtpCustomizationMetricsUtils.recordThemeUploadImagePreviewShow();

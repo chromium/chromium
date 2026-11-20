@@ -2606,25 +2606,21 @@ const FeatureEntry::FeatureVariation kAndroidAppIntegrationModuleVariations[] =
 
 const FeatureEntry::FeatureParam kNewTabPageCustomizationV2_ShowColorPicker[] =
     {{"show_color_picker", "true"},
-     {"show_logo_and_search_box", "true"},
      {"show_promo", "true"},
      {"show_tip_bottom_sheet", "true"}};
 
 const FeatureEntry::FeatureParam
     kNewTabPageCustomizationV2_DailyRefreshThresholdMs[] = {
         {"daily_refresh_threshold_ms", "20000"},
-        {"show_logo_and_search_box", "true"},
         {"show_promo", "true"},
         {"show_tip_bottom_sheet", "true"}};
 
 const FeatureEntry::FeatureParam kNewTabPageCustomizationV2_ShowPromo[] = {
-    {"show_logo_and_search_box", "true"},
     {"show_promo", "true"},
     {"show_tip_bottom_sheet", "true"}};
 const FeatureEntry::FeatureParam
     kNewTabPageCustomizationV2_ForceShowTipBottomSheet[] = {
         {"force_show_tip_bottom_sheet", "true"},
-        {"show_logo_and_search_box", "true"},
         {"show_promo", "true"},
         {"show_tip_bottom_sheet", "true"}};
 

@@ -121,7 +121,6 @@ public class UploadImagePreviewLayout extends ConstraintLayout {
     void setSearchBoxContainerWidth(int widthPx) {
         if (mSearchBoxContainer == null) return;
 
-        mSearchBoxContainer.setVisibility(View.VISIBLE);
         ViewGroup.LayoutParams params = mSearchBoxContainer.getLayoutParams();
         params.width = widthPx;
         mSearchBoxContainer.setLayoutParams(params);
@@ -130,7 +129,6 @@ public class UploadImagePreviewLayout extends ConstraintLayout {
     void setSearchBoxContainerHeight(int heightPx) {
         if (mSearchBoxContainer == null) return;
 
-        mSearchBoxContainer.setVisibility(View.VISIBLE);
         ViewGroup.LayoutParams params = mSearchBoxContainer.getLayoutParams();
         params.height = heightPx;
         mSearchBoxContainer.setLayoutParams(params);

@@ -2362,10 +2362,6 @@ public abstract class ChromeFeatureList {
     public static final BooleanCachedFeatureParam sNewTabPageCustomizationV2ShowColorPicker =
             newBooleanCachedFeatureParam(NEW_TAB_PAGE_CUSTOMIZATION_V2, "show_color_picker", false);
 
-    public static final BooleanCachedFeatureParam sNewTabPageCustomizationV2ShowLogoAndSearchBox =
-            newBooleanCachedFeatureParam(
-                    NEW_TAB_PAGE_CUSTOMIZATION_V2, "show_logo_and_search_box", true);
-
     public static final BooleanCachedFeatureParam
             sNewTabPageCustomizationV2ForceShowTipBottomSheet =
                     newBooleanCachedFeatureParam(
@@ -2638,7 +2634,6 @@ public abstract class ChromeFeatureList {
                     sNewTabPageCustomizationV2DailyRefreshThresholdMs,
                     sNewTabPageCustomizationV2ForceShowTipBottomSheet,
                     sNewTabPageCustomizationV2ShowColorPicker,
-                    sNewTabPageCustomizationV2ShowLogoAndSearchBox,
                     sNewTabPageCustomizationV2ShowTipBottomSheet,
                     sNotificationTrampolineImmediateJobDurationMs,
                     sNotificationTrampolineLongJobDurationMs,
