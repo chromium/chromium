@@ -21,7 +21,7 @@
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/components/quick_answers/test/fake_quick_answers_state.h"
-#include "chromeos/strings/grit/chromeos_strings.h"
+#include "chromeos/resources/grit/chromeos_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/test/event_generator.h"

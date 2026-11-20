@@ -15,7 +15,7 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/boca/spotlight/spotlight_notification_constants.h"
-#include "chromeos/strings/grit/chromeos_strings.h"
+#include "chromeos/resources/grit/chromeos_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/public/cpp/notification.h"

@@ -20,7 +20,7 @@
 #include "chromeos/components/mahi/public/cpp/mahi_browser_util.h"
 #include "chromeos/components/mahi/public/cpp/mahi_util.h"
 #include "chromeos/components/mahi/public/cpp/mahi_web_contents_manager.h"
-#include "chromeos/strings/grit/chromeos_strings.h"
+#include "chromeos/resources/grit/chromeos_strings.h"
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

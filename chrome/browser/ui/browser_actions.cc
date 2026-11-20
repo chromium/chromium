@@ -246,7 +246,7 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/ash/multi_user/multi_user_context_menu.h"
 #include "chrome/browser/ui/browser_commands_chromeos.h"
-#include "chromeos/strings/grit/chromeos_strings.h"
+#include "chromeos/resources/grit/chromeos_strings.h"
 #endif
 #include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "components/lens/lens_overlay_invocation_source.h"

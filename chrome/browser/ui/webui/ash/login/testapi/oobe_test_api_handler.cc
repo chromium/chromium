@@ -39,7 +39,7 @@
 #include "chrome/browser/ui/webui/ash/login/hid_detection_screen_handler.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/login/auth/public/saml_password_attributes.h"
-#include "chromeos/strings/grit/chromeos_strings.h"
+#include "chromeos/resources/grit/chromeos_strings.h"
 #include "components/account_id/account_id.h"
 #include "components/login/localized_values_builder.h"
 #include "components/metrics/metrics_pref_names.h"

@@ -9,7 +9,7 @@
 #include "ash/public/cpp/system/anchored_nudge_data.h"
 #include "ash/system/toast/system_nudge_view.h"
 #include "chrome/grit/component_extension_resources.h"
-#include "chromeos/strings/grit/chromeos_strings.h"
+#include "chromeos/resources/grit/chromeos_strings.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"

@@ -148,7 +148,6 @@ include_rules = [
   "+chromeos/services/machine_learning/public",
   "+chromeos/services/network_config/public",
   "+chromeos/services/power/public",
-  "+chromeos/strings",
   "+chromeos/ui",
   "+chromeos/utils",
 

@@ -4,7 +4,7 @@
 
 #include "ash/webui/common/sea_pen_resources.h"
 
-#include "chromeos/strings/grit/chromeos_strings.h"
+#include "chromeos/resources/grit/chromeos_strings.h"
 #include "ui/base/webui/web_ui_util.h"
 
 namespace ash::common {

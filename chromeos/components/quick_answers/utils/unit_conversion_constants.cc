@@ -7,7 +7,7 @@
 #include <string_view>
 
 #include "base/containers/fixed_flat_map.h"
-#include "chromeos/strings/grit/chromeos_strings.h"
+#include "chromeos/resources/grit/chromeos_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace quick_answers {

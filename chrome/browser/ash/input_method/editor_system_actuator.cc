@@ -17,7 +17,7 @@
 #include "chrome/browser/ash/input_method/editor_metrics_recorder.h"
 #include "chrome/browser/ash/input_method/editor_text_insertion.h"
 #include "chrome/browser/ash/input_method/url_utils.h"
-#include "chromeos/strings/grit/chromeos_strings.h"
+#include "chromeos/resources/grit/chromeos_strings.h"
 #include "components/feedback/feedback_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/url_constants.h"

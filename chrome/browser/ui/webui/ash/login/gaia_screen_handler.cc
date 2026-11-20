@@ -97,7 +97,7 @@
 #include "chromeos/components/security_token_pin/constants.h"
 #include "chromeos/components/security_token_pin/error_generator.h"
 #include "chromeos/constants/devicetype.h"
-#include "chromeos/strings/grit/chromeos_strings.h"
+#include "chromeos/resources/grit/chromeos_strings.h"
 #include "chromeos/version/version_loader.h"
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/login/base_screen_handler_utils.h"

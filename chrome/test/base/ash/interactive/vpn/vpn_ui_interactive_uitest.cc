@@ -11,7 +11,7 @@
 #include "chromeos/ash/components/dbus/shill/fake_shill_profile_client.h"
 #include "chromeos/ash/components/dbus/shill/fake_shill_service_client.h"
 #include "chromeos/ash/components/network/network_cert_loader.h"
-#include "chromeos/strings/grit/chromeos_strings.h"
+#include "chromeos/resources/grit/chromeos_strings.h"
 #include "components/user_manager/user_manager.h"
 #include "crypto/scoped_nss_types.h"
 #include "crypto/scoped_test_nss_db.h"

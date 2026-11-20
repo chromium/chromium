@@ -14,7 +14,7 @@
 #include "chromeos/ash/components/dbus/shill/fake_shill_service_client.h"
 #include "chromeos/ash/components/network/managed_network_configuration_handler.h"
 #include "chromeos/components/onc/onc_utils.h"
-#include "chromeos/strings/grit/chromeos_strings.h"
+#include "chromeos/resources/grit/chromeos_strings.h"
 #include "dbus/object_path.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"

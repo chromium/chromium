@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "chromeos/strings/grit/chromeos_strings.h"
+#include "chromeos/resources/grit/chromeos_strings.h"
 #include "chromeos/ui/frame/frame_utils.h"
 #include "chromeos/utils/haptics_util.h"
 #include "ui/base/l10n/l10n_util.h"

@@ -15,7 +15,7 @@
 #include "ash/webui/print_management/url_constants.h"
 #include "base/containers/span.h"
 #include "chromeos/components/print_management/mojom/printing_manager.mojom.h"
-#include "chromeos/strings/grit/chromeos_strings.h"
+#include "chromeos/resources/grit/chromeos_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"

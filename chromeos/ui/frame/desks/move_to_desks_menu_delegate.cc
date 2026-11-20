@@ -5,7 +5,7 @@
 #include "chromeos/ui/frame/desks/move_to_desks_menu_delegate.h"
 
 #include "base/metrics/histogram_macros.h"
-#include "chromeos/strings/grit/chromeos_strings.h"
+#include "chromeos/resources/grit/chromeos_strings.h"
 #include "chromeos/ui/frame/desks/move_to_desks_menu_model.h"
 #include "chromeos/ui/wm/desks/chromeos_desks_histogram_enums.h"
 #include "chromeos/ui/wm/desks/desks_helper.h"

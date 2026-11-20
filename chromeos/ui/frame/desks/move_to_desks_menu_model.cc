@@ -4,7 +4,7 @@
 
 #include "chromeos/ui/frame/desks/move_to_desks_menu_model.h"
 
-#include "chromeos/strings/grit/chromeos_strings.h"
+#include "chromeos/resources/grit/chromeos_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace chromeos {

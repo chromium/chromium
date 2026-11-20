@@ -32,7 +32,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/arc/arc_util.h"
-#include "chromeos/strings/grit/chromeos_strings.h"
+#include "chromeos/resources/grit/chromeos_strings.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace feedback_mojom = feedback::report_unsafe_site::mojom;

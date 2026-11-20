@@ -36,7 +36,7 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/time/time.h"
 #include "chromeos/constants/chromeos_features.h"
-#include "chromeos/strings/grit/chromeos_strings.h"
+#include "chromeos/resources/grit/chromeos_strings.h"
 #include "home_button.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"

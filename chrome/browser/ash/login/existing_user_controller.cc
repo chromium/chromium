@@ -94,7 +94,7 @@
 #include "chromeos/ash/components/settings/user_login_permission_tracker.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
 #include "chromeos/dbus/power/power_manager_client.h"
-#include "chromeos/strings/grit/chromeos_strings.h"
+#include "chromeos/resources/grit/chromeos_strings.h"
 #include "components/account_id/account_id.h"
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/google/core/common/google_util.h"

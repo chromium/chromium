@@ -26,7 +26,7 @@
 #include "chrome/grit/password_change_resources.h"
 #include "chrome/grit/password_change_resources_map.h"
 #include "chromeos/ash/components/login/auth/public/saml_password_attributes.h"
-#include "chromeos/strings/grit/chromeos_strings.h"
+#include "chromeos/resources/grit/chromeos_strings.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_thread.h"

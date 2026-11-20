@@ -11,7 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
-#include "chromeos/strings/grit/chromeos_strings.h"
+#include "chromeos/resources/grit/chromeos_strings.h"
 #include "chromeos/ui/base/nudge_util.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/user_manager/user_manager.h"

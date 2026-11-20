@@ -8,7 +8,7 @@
 
 #include "base/check.h"
 #include "base/files/file_path.h"
-#include "chromeos/strings/grit/chromeos_strings.h"
+#include "chromeos/resources/grit/chromeos_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {

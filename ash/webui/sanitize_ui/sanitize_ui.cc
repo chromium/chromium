@@ -15,7 +15,7 @@
 #include "ash/webui/sanitize_ui/sanitize_ui_uma.h"
 #include "base/metrics/histogram_functions.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
-#include "chromeos/strings/grit/chromeos_strings.h"
+#include "chromeos/resources/grit/chromeos_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "mojo/public/cpp/bindings/receiver.h"

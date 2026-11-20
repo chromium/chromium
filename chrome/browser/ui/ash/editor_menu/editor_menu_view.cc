@@ -24,7 +24,7 @@
 #include "chrome/browser/ui/ash/editor_menu/utils/utils.h"
 #include "chromeos/ash/components/editor_menu/public/cpp/icon.h"
 #include "chromeos/ash/components/editor_menu/public/cpp/preset_text_query.h"
-#include "chromeos/strings/grit/chromeos_strings.h"
+#include "chromeos/resources/grit/chromeos_strings.h"
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/accelerators/accelerator.h"

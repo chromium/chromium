@@ -20,7 +20,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "chromeos/strings/grit/chromeos_strings.h"
+#include "chromeos/resources/grit/chromeos_strings.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"

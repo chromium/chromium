@@ -1,5 +1,5 @@
 include_rules = [
-  "+chromeos/strings/grit/chromeos_strings.h",
+  "+chromeos/resources/grit/chromeos_strings.h",
   "+ui/base",
   "+ui/gfx",
   "+ui/resources",

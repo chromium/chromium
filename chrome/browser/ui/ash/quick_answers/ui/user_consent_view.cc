@@ -19,7 +19,7 @@
 #include "chrome/browser/ui/ash/read_write_cards/read_write_cards_view.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
-#include "chromeos/strings/grit/chromeos_strings.h"
+#include "chromeos/resources/grit/chromeos_strings.h"
 #include "content/public/common/content_switches.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"

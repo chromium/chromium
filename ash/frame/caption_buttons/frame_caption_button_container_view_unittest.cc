@@ -13,7 +13,7 @@
 #include "ash/wm/wm_event.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
-#include "chromeos/strings/grit/chromeos_strings.h"
+#include "chromeos/resources/grit/chromeos_strings.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/header_view.h"

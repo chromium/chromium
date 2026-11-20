@@ -17,7 +17,7 @@
 #include "chrome/browser/ui/ash/read_write_cards/read_write_cards_ui_controller.h"
 #include "chrome/browser/ui/ash/read_write_cards/read_write_cards_view.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
-#include "chromeos/strings/grit/chromeos_strings.h"
+#include "chromeos/resources/grit/chromeos_strings.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/aura/window.h"

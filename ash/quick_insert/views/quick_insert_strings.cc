@@ -12,7 +12,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "base/notreached.h"
 #include "build/branding_buildflags.h"
-#include "chromeos/strings/grit/chromeos_strings.h"
+#include "chromeos/resources/grit/chromeos_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)

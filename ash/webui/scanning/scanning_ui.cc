@@ -21,7 +21,7 @@
 #include "ash/webui/scanning/url_constants.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
-#include "chromeos/strings/grit/chromeos_strings.h"
+#include "chromeos/resources/grit/chromeos_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"

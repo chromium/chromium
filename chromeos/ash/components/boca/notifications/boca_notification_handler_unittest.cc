@@ -5,7 +5,7 @@
 #include "chromeos/ash/components/boca/notifications/boca_notification_handler.h"
 
 #include "chromeos/ash/components/boca/boca_app_client.h"
-#include "chromeos/strings/grit/chromeos_strings.h"
+#include "chromeos/resources/grit/chromeos_strings.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"

@@ -20,7 +20,7 @@
 #include "base/command_line.h"
 #include "base/containers/span.h"
 #include "build/branding_buildflags.h"
-#include "chromeos/strings/grit/chromeos_strings.h"
+#include "chromeos/resources/grit/chromeos_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"

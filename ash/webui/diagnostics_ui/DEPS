@@ -2,7 +2,7 @@ include_rules = [
   "+chromeos/ash/components/login/login_state",
   "+chromeos/ash/components/mojo_service_manager",
   "+chromeos/ash/services/network_config",
-  "+chromeos/strings/grit/chromeos_strings.h",
+  "+chromeos/resources/grit/chromeos_strings.h",
   "+components",
   "+ui/base",
   "+ui/chromeos/strings",

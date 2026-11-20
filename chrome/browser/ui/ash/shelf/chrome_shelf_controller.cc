@@ -85,7 +85,7 @@
 #include "chromeos/ash/experiences/arc/arc_util.h"
 #include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
 #include "chromeos/constants/chromeos_features.h"
-#include "chromeos/strings/grit/chromeos_strings.h"
+#include "chromeos/resources/grit/chromeos_strings.h"
 #include "components/account_id/account_id.h"
 #include "components/app_constants/constants.h"
 #include "components/favicon/content/content_favicon_driver.h"

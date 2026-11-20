@@ -13,7 +13,7 @@
 #include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_metrics.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
 #include "chromeos/ash/experiences/arc/test/fake_app_instance.h"
-#include "chromeos/strings/grit/chromeos_strings.h"
+#include "chromeos/resources/grit/chromeos_strings.h"
 #include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "components/ukm/test_ukm_recorder.h"

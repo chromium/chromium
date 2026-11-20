@@ -17,7 +17,7 @@
 #include "chrome/browser/ash/app_list/test/test_app_list_controller.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
-#include "chromeos/strings/grit/chromeos_strings.h"
+#include "chromeos/resources/grit/chromeos_strings.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/test_helper.h"
 #include "ui/base/l10n/l10n_util.h"

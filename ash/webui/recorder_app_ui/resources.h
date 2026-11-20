@@ -5,7 +5,7 @@
 #ifndef ASH_WEBUI_RECORDER_APP_UI_RESOURCES_H_
 #define ASH_WEBUI_RECORDER_APP_UI_RESOURCES_H_
 
-#include "chromeos/strings/grit/chromeos_strings.h"
+#include "chromeos/resources/grit/chromeos_strings.h"
 #include "ui/base/webui/web_ui_util.h"
 
 namespace ash {

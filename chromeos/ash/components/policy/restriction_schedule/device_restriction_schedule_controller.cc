@@ -27,7 +27,7 @@
 #include "chromeos/ash/components/policy/weekly_time/weekly_time_checked.h"
 #include "chromeos/ash/components/policy/weekly_time/weekly_time_interval_checked.h"
 #include "chromeos/constants/pref_names.h"
-#include "chromeos/strings/grit/chromeos_strings.h"
+#include "chromeos/resources/grit/chromeos_strings.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"

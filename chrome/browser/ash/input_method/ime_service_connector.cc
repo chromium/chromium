@@ -19,7 +19,7 @@
 #include "chromeos/ash/services/ime/constants.h"
 #include "chromeos/ash/services/ime/public/mojom/ime_service.mojom.h"
 #include "chromeos/ash/services/ime/public/mojom/input_method_user_data.mojom.h"
-#include "chromeos/strings/grit/chromeos_strings.h"
+#include "chromeos/resources/grit/chromeos_strings.h"
 #include "content/public/browser/service_process_host.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"

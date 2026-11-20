@@ -16,7 +16,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/boca/spotlight/spotlight_notification_constants.h"
-#include "chromeos/strings/grit/chromeos_strings.h"
+#include "chromeos/resources/grit/chromeos_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"

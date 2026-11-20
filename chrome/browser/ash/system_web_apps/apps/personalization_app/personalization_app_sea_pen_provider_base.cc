@@ -31,7 +31,7 @@
 #include "chrome/browser/ui/ash/wallpaper/wallpaper_controller_client_impl.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
-#include "chromeos/strings/grit/chromeos_strings.h"
+#include "chromeos/resources/grit/chromeos_strings.h"
 #include "components/feedback/feedback_constants.h"
 #include "components/manta/manta_service.h"
 #include "components/manta/manta_status.h"

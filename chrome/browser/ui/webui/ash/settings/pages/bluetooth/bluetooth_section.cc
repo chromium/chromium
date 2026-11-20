@@ -20,7 +20,7 @@
 #include "chrome/browser/ui/webui/ash/settings/search/mojom/search_result_icon.mojom.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
 #include "chromeos/ash/experiences/settings_ui/resources/grit/ash_settings_strings.h"
-#include "chromeos/strings/grit/chromeos_strings.h"
+#include "chromeos/resources/grit/chromeos_strings.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_ui_data_source.h"

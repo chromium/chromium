@@ -4,7 +4,7 @@
 
 #include "ash/webui/common/keyboard_diagram_strings.h"
 
-#include "chromeos/strings/grit/chromeos_strings.h"
+#include "chromeos/resources/grit/chromeos_strings.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/webui/web_ui_util.h"
 

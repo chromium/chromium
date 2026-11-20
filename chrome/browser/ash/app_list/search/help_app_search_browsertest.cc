@@ -27,7 +27,7 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chromeos/ash/components/browser_delegate/browser_delegate.h"
-#include "chromeos/strings/grit/chromeos_strings.h"
+#include "chromeos/resources/grit/chromeos_strings.h"
 #include "components/services/app_service/public/cpp/app_launch_params.h"
 #include "components/webapps/common/web_app_id.h"
 

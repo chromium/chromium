@@ -23,7 +23,7 @@
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/browser_delegate/browser_delegate.h"
 #include "chromeos/constants/chromeos_features.h"
-#include "chromeos/strings/grit/chromeos_strings.h"
+#include "chromeos/resources/grit/chromeos_strings.h"
 #include "components/tabs/public/tab_context_menu_command.h"
 #include "components/user_manager/user.h"
 #include "ui/base/l10n/l10n_util.h"

@@ -17,7 +17,7 @@
 #include "ash/style/style_util.h"
 #include "ash/style/typography.h"
 #include "base/check.h"
-#include "chromeos/strings/grit/chromeos_strings.h"
+#include "chromeos/resources/grit/chromeos_strings.h"
 #include "chromeos/ui/frame/frame_header.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "third_party/skia/include/core/SkColor.h"

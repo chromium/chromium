@@ -11,7 +11,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/version_info/channel.h"
 #include "chromeos/ash/components/channel/channel_info.h"
-#include "chromeos/strings/grit/chromeos_strings.h"
+#include "chromeos/resources/grit/chromeos_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_controller.h"

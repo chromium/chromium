@@ -26,7 +26,7 @@
 #include "chromeos/ash/components/boca/on_task/on_task_notifications_manager.h"
 #include "chromeos/ash/components/boca/on_task/on_task_system_web_app_manager.h"
 #include "chromeos/ash/components/boca/proto/bundle.pb.h"
-#include "chromeos/strings/grit/chromeos_strings.h"
+#include "chromeos/resources/grit/chromeos_strings.h"
 #include "components/sessions/core/session_id.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/public/cpp/notifier_id.h"

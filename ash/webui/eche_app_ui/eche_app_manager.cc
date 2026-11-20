@@ -38,7 +38,7 @@
 #include "chromeos/ash/components/channel/channel_info.h"
 #include "chromeos/ash/components/phonehub/phone_hub_manager.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/connection_manager_impl.h"
-#include "chromeos/strings/grit/chromeos_strings.h"
+#include "chromeos/resources/grit/chromeos_strings.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user.h"
 #include "google_apis/gaia/gaia_id.h"

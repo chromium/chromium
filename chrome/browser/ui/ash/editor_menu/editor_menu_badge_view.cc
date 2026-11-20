@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/ash/editor_menu/editor_menu_badge_view.h"
 
 #include "chrome/browser/ui/ash/editor_menu/editor_menu_strings.h"
-#include "chromeos/strings/grit/chromeos_strings.h"
+#include "chromeos/resources/grit/chromeos_strings.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"

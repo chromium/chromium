@@ -12,7 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/boca/babelorca/caption_bubble_settings_impl.h"
 #include "chromeos/ash/components/boca/babelorca/pref_names.h"
-#include "chromeos/strings/grit/chromeos_strings.h"
+#include "chromeos/resources/grit/chromeos_strings.h"
 #include "components/live_caption/caption_bubble_settings.h"
 #include "components/live_caption/views/translation_view_wrapper_base.h"
 #include "components/prefs/pref_registry_simple.h"

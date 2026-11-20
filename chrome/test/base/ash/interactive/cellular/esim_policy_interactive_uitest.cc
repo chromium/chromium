@@ -9,7 +9,7 @@
 #include "chrome/test/base/ash/interactive/settings/interactive_uitest_elements.h"
 #include "chromeos/ash/components/network/managed_network_configuration_handler.h"
 #include "chromeos/components/onc/onc_utils.h"
-#include "chromeos/strings/grit/chromeos_strings.h"
+#include "chromeos/resources/grit/chromeos_strings.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 

@@ -15,7 +15,7 @@
 #include "ash/webui/grit/ash_firmware_update_app_resources_map.h"
 #include "base/containers/span.h"
 #include "chromeos/ash/components/fwupd/firmware_update_manager.h"
-#include "chromeos/strings/grit/chromeos_strings.h"
+#include "chromeos/resources/grit/chromeos_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
