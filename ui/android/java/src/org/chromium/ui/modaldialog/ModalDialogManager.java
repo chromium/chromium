@@ -29,10 +29,8 @@ import org.chromium.ui.util.TokenHolder;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /** Manager for managing the display of a queue of {@link PropertyModel}s. */
@@ -272,7 +270,7 @@ public class ModalDialogManager {
     private final ObserverList<ModalDialogManagerObserver> mObserverList = new ObserverList<>();
 
     /** Tokens for features temporarily suppressing dialogs. */
-    private final Map<Integer, TokenHolder> mTokenHolders = new HashMap<>();
+    private final SparseArray<TokenHolder> mTokenHolders = new SparseArray<>();
 
     /**
      * A container to insert pending dialogs on both {@link ModalDialogType} and {@link
