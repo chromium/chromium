@@ -1255,6 +1255,14 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     collected via &quot;perf events&quot; on Chrome OS. The histogram is
     recorded when system-wide CPU profiling finishes and the collected data is
     being saved to memory for later upload.
+
+    Starting in M160, App Sync state detection switched from the deprecated
+    SyncService::IsSyncFeatureEnabled() check to
+    syncer::GetUploadToGoogleState() for DataType::APPS. As a result,
+    &quot;Chrome sync feature is disabled&quot; is no longer emitted, and
+    non-active upload states where OS App Sync is still selected (e.g.
+    enterprise policy, paused sync, or custom passphrase encryption) are
+    recorded as &quot;App sync is disabled&quot;.
   </summary>
 </histogram>
 

@@ -20,8 +20,8 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
-#include "components/signin/public/base/consent_level.h"
 #include "components/sync/base/user_selectable_type.h"
+#include "components/sync/service/sync_service.h"
 #include "components/sync/test/test_sync_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -360,15 +360,33 @@ class MetricProviderSyncSettingsTest : public testing::Test {
 
  protected:
   TestSyncService* GetSyncService(TestingProfile* profile) {
-    TestSyncService* sync_service = static_cast<TestSyncService*>(
+    return static_cast<TestSyncService*>(
         SyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
             profile, base::BindRepeating(&TestingSyncFactoryFunction)));
-    // TODO(crbug.com/474082262): Migrate these tests to cover signed-in users
-    // without sync consent. For now, grant sync consent explicitly, since
-    // TestSyncService defaults to ConsentLevel::kSignin.
-    sync_service->SetSignedIn(signin::ConsentLevel::kSync);
-    sync_service->SetInitialSyncFeatureSetupComplete(true);
-    return sync_service;
+  }
+
+  // Triggers one periodic collection and verifies that a single SampledProfile
+  // is cached with either `perf_data_redacted_` or `perf_data_unchanged_` as
+  // expected, and that `expected_status` is recorded to the
+  // ChromeOS.CWP.RecordTest histogram.
+  void ExpectRecordedProfile(
+      bool expect_redacted,
+      TestMetricProvider::RecordAttemptStatus expected_status) {
+    base::HistogramTester histogram_tester;
+    std::vector<SampledProfile> stored_profiles;
+    metric_provider_->OnUserLoggedIn();
+
+    task_environment_.FastForwardBy(kPeriodicCollectionInterval);
+
+    histogram_tester.ExpectUniqueSample("ChromeOS.CWP.RecordTest",
+                                        expected_status, 1);
+    EXPECT_TRUE(metric_provider_->GetSampledProfiles(&stored_profiles));
+    ASSERT_EQ(stored_profiles.size(), 1u);
+    const SampledProfile& profile = stored_profiles[0];
+    EXPECT_EQ(SampledProfile::PERIODIC_COLLECTION, profile.trigger_event());
+    EXPECT_EQ(SerializeMessageToVector(expect_redacted ? perf_data_redacted_
+                                                       : perf_data_unchanged_),
+              SerializeMessageToVector(profile.perf_data()));
   }
 
   void EnableOSAppSync(TestSyncService* sync_service) {
@@ -406,61 +424,14 @@ TEST_F(MetricProviderSyncSettingsTest, NoLoadedUserProfile) {
   // The Default profile is skipped and there is no other user profile
   // initialized. So we would expect the perf data to be redacted and a
   // histogram count of kNoLoadedProfile.
-  base::HistogramTester histogram_tester;
-  std::vector<SampledProfile> stored_profiles;
-  metric_provider_->OnUserLoggedIn();
-
-  task_environment_.FastForwardBy(kPeriodicCollectionInterval);
-
-  EXPECT_TRUE(metric_provider_->GetSampledProfiles(&stored_profiles));
-  EXPECT_EQ(stored_profiles.size(), 1u);
-
-  const SampledProfile& profile = stored_profiles[0];
-  EXPECT_EQ(SampledProfile::PERIODIC_COLLECTION, profile.trigger_event());
-  EXPECT_EQ(SerializeMessageToVector(perf_data_redacted_),
-            SerializeMessageToVector(profile.perf_data()));
-  histogram_tester.ExpectUniqueSample(
-      "ChromeOS.CWP.RecordTest",
-      TestMetricProvider::RecordAttemptStatus::kNoLoadedProfile, 1);
-}
-
-TEST_F(MetricProviderSyncSettingsTest, SyncFeatureDisabled) {
-  base::HistogramTester histogram_tester;
-  std::vector<SampledProfile> stored_profiles;
-  metric_provider_->OnUserLoggedIn();
-
-  // The first testing profile has both sync-the-feature and App sync enabled.
-  TestSyncService* sync_service1 =
-      GetSyncService(testing_profile_manager_->CreateTestingProfile("user1"));
-  EnableOSAppSync(sync_service1);
-
-  // The second testing profile has kOsApps type enabled, but sync-the-feature
-  // is turned off by marking FirstSetupComplete as false.
-  TestSyncService* sync_service2 =
-      GetSyncService(testing_profile_manager_->CreateTestingProfile("user2"));
-  EnableOSAppSync(sync_service2);
-  sync_service2->SetInitialSyncFeatureSetupComplete(false);
-
-  task_environment_.FastForwardBy(kPeriodicCollectionInterval);
-
-  EXPECT_TRUE(metric_provider_->GetSampledProfiles(&stored_profiles));
-  EXPECT_EQ(stored_profiles.size(), 1u);
-
-  const SampledProfile& profile = stored_profiles[0];
-  EXPECT_EQ(SampledProfile::PERIODIC_COLLECTION, profile.trigger_event());
-  EXPECT_EQ(SerializeMessageToVector(perf_data_redacted_),
-            SerializeMessageToVector(profile.perf_data()));
-  histogram_tester.ExpectUniqueSample(
-      "ChromeOS.CWP.RecordTest",
-      TestMetricProvider::RecordAttemptStatus::kChromeSyncFeatureDisabled, 1);
+  ExpectRecordedProfile(
+      /*expect_redacted=*/true,
+      TestMetricProvider::RecordAttemptStatus::kNoLoadedProfile);
 }
 
 TEST_F(MetricProviderSyncSettingsTest, AppSyncEnabled) {
-  base::HistogramTester histogram_tester;
-  std::vector<SampledProfile> stored_profiles;
-  metric_provider_->OnUserLoggedIn();
-
-  // Set up two testing profiles, both with OS App Sync enabled. The Default
+  // Set up two testing profiles signed in without legacy sync consent
+  // (ConsentLevel::kSignin), both with OS App Sync enabled. The Default
   // profile has OS App Sync disabled but is skipped.
   TestSyncService* sync_service1 =
       GetSyncService(testing_profile_manager_->CreateTestingProfile("user1"));
@@ -469,25 +440,27 @@ TEST_F(MetricProviderSyncSettingsTest, AppSyncEnabled) {
   EnableOSAppSync(sync_service1);
   EnableOSAppSync(sync_service2);
 
-  task_environment_.FastForwardBy(kPeriodicCollectionInterval);
+  ExpectRecordedProfile(
+      /*expect_redacted=*/false,
+      TestMetricProvider::RecordAttemptStatus::kAppSyncEnabled);
+}
 
-  EXPECT_TRUE(metric_provider_->GetSampledProfiles(&stored_profiles));
-  EXPECT_EQ(stored_profiles.size(), 1u);
+TEST_F(MetricProviderSyncSettingsTest, AppSyncEnabledWhileInitializing) {
+  TestSyncService* sync_service1 =
+      GetSyncService(testing_profile_manager_->CreateTestingProfile("user1"));
+  TestSyncService* sync_service2 =
+      GetSyncService(testing_profile_manager_->CreateTestingProfile("user2"));
+  EnableOSAppSync(sync_service1);
+  EnableOSAppSync(sync_service2);
+  sync_service2->SetMaxTransportState(
+      syncer::SyncService::TransportState::INITIALIZING);
 
-  const SampledProfile& profile = stored_profiles[0];
-  EXPECT_EQ(SampledProfile::PERIODIC_COLLECTION, profile.trigger_event());
-  EXPECT_EQ(SerializeMessageToVector(perf_data_unchanged_),
-            SerializeMessageToVector(profile.perf_data()));
-  histogram_tester.ExpectUniqueSample(
-      "ChromeOS.CWP.RecordTest",
-      TestMetricProvider::RecordAttemptStatus::kAppSyncEnabled, 1);
+  ExpectRecordedProfile(
+      /*expect_redacted=*/false,
+      TestMetricProvider::RecordAttemptStatus::kAppSyncEnabled);
 }
 
 TEST_F(MetricProviderSyncSettingsTest, AppSyncDisabled) {
-  base::HistogramTester histogram_tester;
-  std::vector<SampledProfile> stored_profiles;
-  metric_provider_->OnUserLoggedIn();
-
   // Set up two testing profiles, one with OS App Sync enabled and the other
   // disabled.
   TestSyncService* sync_service1 =
@@ -497,18 +470,51 @@ TEST_F(MetricProviderSyncSettingsTest, AppSyncDisabled) {
   EnableOSAppSync(sync_service1);
   DisableOSAppSync(sync_service2);
 
-  task_environment_.FastForwardBy(kPeriodicCollectionInterval);
+  ExpectRecordedProfile(
+      /*expect_redacted=*/true,
+      TestMetricProvider::RecordAttemptStatus::kOSAppSyncDisabled);
+}
 
-  EXPECT_TRUE(metric_provider_->GetSampledProfiles(&stored_profiles));
-  EXPECT_EQ(stored_profiles.size(), 1u);
+TEST_F(MetricProviderSyncSettingsTest, AppSyncDisabledByPolicy) {
+  TestSyncService* sync_service1 =
+      GetSyncService(testing_profile_manager_->CreateTestingProfile("user1"));
+  TestSyncService* sync_service2 =
+      GetSyncService(testing_profile_manager_->CreateTestingProfile("user2"));
+  EnableOSAppSync(sync_service1);
+  EnableOSAppSync(sync_service2);
+  sync_service2->SetAllowedByEnterprisePolicy(false);
 
-  const SampledProfile& profile = stored_profiles[0];
-  EXPECT_EQ(SampledProfile::PERIODIC_COLLECTION, profile.trigger_event());
-  EXPECT_EQ(SerializeMessageToVector(perf_data_redacted_),
-            SerializeMessageToVector(profile.perf_data()));
-  histogram_tester.ExpectUniqueSample(
-      "ChromeOS.CWP.RecordTest",
-      TestMetricProvider::RecordAttemptStatus::kOSAppSyncDisabled, 1);
+  ExpectRecordedProfile(
+      /*expect_redacted=*/true,
+      TestMetricProvider::RecordAttemptStatus::kAppSyncDisabled);
+}
+
+TEST_F(MetricProviderSyncSettingsTest, AppSyncPaused) {
+  TestSyncService* sync_service1 =
+      GetSyncService(testing_profile_manager_->CreateTestingProfile("user1"));
+  TestSyncService* sync_service2 =
+      GetSyncService(testing_profile_manager_->CreateTestingProfile("user2"));
+  EnableOSAppSync(sync_service1);
+  EnableOSAppSync(sync_service2);
+  sync_service2->SetPersistentAuthError();
+
+  ExpectRecordedProfile(
+      /*expect_redacted=*/true,
+      TestMetricProvider::RecordAttemptStatus::kAppSyncDisabled);
+}
+
+TEST_F(MetricProviderSyncSettingsTest, AppSyncEncryptedWithCustomPassphrase) {
+  TestSyncService* sync_service1 =
+      GetSyncService(testing_profile_manager_->CreateTestingProfile("user1"));
+  TestSyncService* sync_service2 =
+      GetSyncService(testing_profile_manager_->CreateTestingProfile("user2"));
+  EnableOSAppSync(sync_service1);
+  EnableOSAppSync(sync_service2);
+  sync_service2->SetIsUsingExplicitPassphrase(true);
+
+  ExpectRecordedProfile(
+      /*expect_redacted=*/true,
+      TestMetricProvider::RecordAttemptStatus::kAppSyncDisabled);
 }
 
 }  // namespace metrics

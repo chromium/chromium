@@ -13,8 +13,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_service_utils.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -205,17 +207,24 @@ MetricProvider::RecordAttemptStatus MetricProvider::AppSyncStateForUserProfile(
     Profile* profile) {
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile);
-  if (!sync_service)
+  if (!sync_service) {
     return RecordAttemptStatus::kSyncServiceUnavailable;
-  syncer::SyncUserSettings* sync_settings = sync_service->GetUserSettings();
+  }
 
-  if (!sync_service->IsSyncFeatureEnabled())
-    return RecordAttemptStatus::kChromeSyncFeatureDisabled;
-
-  if (!sync_settings->GetSelectedOsTypes().Has(
-          syncer::UserSelectableOsType::kOsApps))
-    return RecordAttemptStatus::kOSAppSyncDisabled;
-  return RecordAttemptStatus::kAppSyncEnabled;
+  switch (
+      syncer::GetUploadToGoogleState(sync_service, syncer::DataType::APPS)) {
+    case syncer::UploadState::NOT_ACTIVE:
+      if (!sync_service->GetUserSettings()->GetSelectedOsTypes().Has(
+              syncer::UserSelectableOsType::kOsApps)) {
+        return RecordAttemptStatus::kOSAppSyncDisabled;
+      }
+      return RecordAttemptStatus::kAppSyncDisabled;
+    case syncer::UploadState::INITIALIZING:
+      // Note that INITIALIZING is considered good enough, because syncing apps
+      // is known to be enabled, and transient errors don't really matter here.
+    case syncer::UploadState::ACTIVE:
+      return RecordAttemptStatus::kAppSyncEnabled;
+  }
 }
 
 // Check the current state of App Sync in the settings. This is done by getting
