@@ -77,6 +77,12 @@
 #include "ui/views/widget/native_widget_aura.h"
 #endif  // USE_AURA
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/ui/base/app_types.h"
+#include "chromeos/ui/base/window_properties.h"
+#include "ui/aura/window.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 namespace captions {
 namespace {
 
@@ -704,6 +710,18 @@ IN_PROC_BROWSER_TEST_P(CaptionBubbleControllerViewsTest, CloseButtonCloses) {
   EXPECT_FALSE(success);
   EXPECT_EQ("", GetLabelText());
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+// The caption bubble is not an app window, so that it is not listed, moved or
+// closed along with app windows.
+IN_PROC_BROWSER_TEST_P(CaptionBubbleControllerViewsTest, IsNotAppWindow) {
+  EXPECT_TRUE(OnPartialTranscription("Elephants can swim"));
+  ASSERT_TRUE(GetCaptionWidget());
+  EXPECT_EQ(chromeos::AppType::NON_APP,
+            GetCaptionWidget()->GetNativeWindow()->GetProperty(
+                chromeos::kAppTypeKey));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_P(CaptionBubbleControllerViewsTest,
                        ClosesOnAudioStreamEnd) {

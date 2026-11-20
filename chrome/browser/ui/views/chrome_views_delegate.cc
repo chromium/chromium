@@ -31,6 +31,7 @@
 #include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/frame_utils.h"
+#include "components/live_caption/views/caption_bubble.h"  // nogncheck
 #include "ui/aura/client/aura_constants.h"
 #include "ui/views/widget/widget_delegate.h"
 #endif
@@ -194,8 +195,12 @@ void ChromeViewsDelegate::OnBeforeWidgetInit(
   // type should be used.
   // `delegate->IsDialogBox()` does not work because the underlying Widget
   // does not have its widget delegate set before `OnBeforeWidgetInit`.
+  // The Live Caption bubble is not an app window. It lives in its own
+  // container and is shown and hidden by its controller.
   if (params->delegate && params->delegate->AsDialogDelegate() &&
-      !params->parent) {
+      !params->parent &&
+      !params->init_properties_container.GetProperty(
+          captions::kIsCaptionBubbleKey)) {
     params->init_properties_container.SetProperty(
         chromeos::kAppTypeKey, chromeos::AppType::SYSTEM_APP);
   }
