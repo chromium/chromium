@@ -1134,17 +1134,7 @@ omnibox::InputType InputTypeForItemType(ComposeboxInputItemType item_type) {
     return NO;
   }
 
-  BOOL canSearchWithAI = [self isEligibleToAIM];
-  BOOL canCreateImage =
-      [self isToolModeAllowed:omnibox::ToolMode::TOOL_MODE_IMAGE_GEN];
-  BOOL canUseCanvas =
-      [self isToolModeAllowed:omnibox::ToolMode::TOOL_MODE_CANVAS];
-  BOOL canUseDeepSearch =
-      [self isToolModeAllowed:omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH];
-  BOOL canUsePTM =
-      [self isToolModeAllowed:omnibox::ToolMode::TOOL_MODE_GEMINI_PRO];
-  return canUseCanvas || canCreateImage || canUseDeepSearch || canUsePTM ||
-         canSearchWithAI;
+  return [self isEligibleToAIM];
 }
 
 #pragma mark - Attachment Rules
