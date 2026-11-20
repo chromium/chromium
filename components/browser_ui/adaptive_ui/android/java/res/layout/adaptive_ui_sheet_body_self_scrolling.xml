@@ -24,13 +24,12 @@ footer stay in place, and the custom view gets the height left between them.
         android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
         android:visibility="gone" />
 
-    <!-- No side padding: the custom view draws its own, as in a dialog. -->
+    <!-- No top or side margin: the custom view spaces itself. -->
     <FrameLayout
         android:id="@+id/adaptive_ui_sheet_custom_view_container"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:layout_marginTop="@dimen/adaptive_ui_sheet_vertical_margin"
         android:visibility="gone" />
 
     <TextView

@@ -92,6 +92,7 @@ final class AdaptiveUiSheetViewBinder {
             bindText(
                     view.findViewById(R.id.adaptive_ui_sheet_footer_message),
                     model.get(AdaptiveUiProperties.FOOTER_MESSAGE));
+            updatePrimaryButtonTopMargin(view);
         } else if (key == AdaptiveUiProperties.CLOSE_BUTTON_VISIBILITY) {
             boolean visible =
                     model.get(AdaptiveUiProperties.CLOSE_BUTTON_VISIBILITY)
@@ -103,6 +104,7 @@ final class AdaptiveUiSheetViewBinder {
             bindCustomView(
                     view.findViewById(R.id.adaptive_ui_sheet_custom_view_container),
                     model.get(AdaptiveUiProperties.CUSTOM_VIEW));
+            updatePrimaryButtonTopMargin(view);
         } else if (key == AdaptiveUiProperties.PRIMARY_BUTTON_TEXT) {
             bindText(
                     view.findViewById(R.id.adaptive_ui_sheet_primary_button),
@@ -153,6 +155,27 @@ final class AdaptiveUiSheetViewBinder {
             container.addView(customView);
         }
         container.setVisibility(customView == null ? View.GONE : View.VISIBLE);
+    }
+
+    /**
+     * Clears the primary button's top margin when the custom view sits directly above the buttons,
+     * and restores {@code R.dimen.adaptive_ui_sheet_vertical_margin} otherwise.
+     */
+    private static void updatePrimaryButtonTopMargin(View root) {
+        boolean customViewDirectlyAboveButtons =
+                root.findViewById(R.id.adaptive_ui_sheet_custom_view_container).getVisibility()
+                                == View.VISIBLE
+                        && root.findViewById(R.id.adaptive_ui_sheet_footer_message).getVisibility()
+                                != View.VISIBLE;
+        View primaryButton = root.findViewById(R.id.adaptive_ui_sheet_primary_button);
+        ViewGroup.MarginLayoutParams params =
+                (ViewGroup.MarginLayoutParams) primaryButton.getLayoutParams();
+        params.topMargin =
+                customViewDirectlyAboveButtons
+                        ? 0
+                        : root.getResources()
+                                .getDimensionPixelSize(R.dimen.adaptive_ui_sheet_vertical_margin);
+        primaryButton.setLayoutParams(params);
     }
 
     // Only obscured touches are swallowed. Other touches return false and reach the button's own

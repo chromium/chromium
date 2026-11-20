@@ -28,13 +28,11 @@ found in the LICENSE file.
                 "@style/TextAppearance.TextMedium.Secondary"
             android:visibility="gone" />
 
-        <!-- No side margin: the custom view pads itself. -->
+        <!-- No top or side margin: the custom view spaces itself. -->
         <FrameLayout
             android:id="@+id/adaptive_ui_sheet_custom_view_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop=
-                "@dimen/adaptive_ui_sheet_vertical_margin"
             android:visibility="gone" />
 
         <TextView

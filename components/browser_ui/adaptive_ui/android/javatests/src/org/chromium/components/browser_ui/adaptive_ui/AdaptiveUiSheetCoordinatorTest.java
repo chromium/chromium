@@ -869,9 +869,129 @@ public class AdaptiveUiSheetCoordinatorTest {
                 find(content, R.id.adaptive_ui_sheet_footer_message).getWidth());
     }
 
+    private static int getTopMargin(View view) {
+        return ((ViewGroup.MarginLayoutParams) view.getLayoutParams()).topMargin;
+    }
+
+    private int getVerticalMargin() {
+        return mActivity
+                .getResources()
+                .getDimensionPixelSize(R.dimen.adaptive_ui_sheet_vertical_margin);
+    }
+
+    @Test
+    public void testCustomView_NoTopMarginInRegularBody() {
+        AdaptiveUiSheetCoordinator content =
+                createContent(
+                        newModelBuilder()
+                                .with(AdaptiveUiProperties.CUSTOM_VIEW, new View(mActivity))
+                                .build());
+
+        assertEquals(0, getTopMargin(find(content, R.id.adaptive_ui_sheet_custom_view_container)));
+    }
+
+    @Test
+    public void testCustomView_NoTopMarginInSelfScrollingBody() {
+        AdaptiveUiSheetCoordinator content =
+                createContent(
+                        newModelBuilder()
+                                .with(AdaptiveUiProperties.CUSTOM_VIEW, newScrollingBody())
+                                .with(AdaptiveUiProperties.CUSTOM_VIEW_SCROLLS_ITSELF, true)
+                                .build());
+
+        assertNull(content.getContentView().findViewById(R.id.adaptive_ui_sheet_scroll_view));
+        assertEquals(0, getTopMargin(find(content, R.id.adaptive_ui_sheet_custom_view_container)));
+    }
+
+    @Test
+    public void testPrimaryButton_NoTopMarginDirectlyBelowCustomView() {
+        AdaptiveUiSheetCoordinator content =
+                createContent(
+                        newModelBuilder()
+                                .with(AdaptiveUiProperties.CUSTOM_VIEW, new View(mActivity))
+                                .with(AdaptiveUiProperties.PRIMARY_BUTTON_TEXT, "Primary")
+                                .build());
+
+        assertEquals(0, getTopMargin(find(content, R.id.adaptive_ui_sheet_primary_button)));
+    }
+
+    @Test
+    public void testPrimaryButton_KeepsTopMarginBelowDescriptionOnly() {
+        AdaptiveUiSheetCoordinator content =
+                createContent(
+                        newModelBuilder()
+                                .with(AdaptiveUiProperties.DESCRIPTION, "Description")
+                                .with(AdaptiveUiProperties.PRIMARY_BUTTON_TEXT, "Primary")
+                                .build());
+
+        assertEquals(
+                getVerticalMargin(),
+                getTopMargin(find(content, R.id.adaptive_ui_sheet_primary_button)));
+    }
+
+    @Test
+    public void testPrimaryButton_KeepsTopMarginWhenFooterFollowsCustomView() {
+        AdaptiveUiSheetCoordinator content =
+                createContent(
+                        newModelBuilder()
+                                .with(AdaptiveUiProperties.CUSTOM_VIEW, new View(mActivity))
+                                .with(AdaptiveUiProperties.FOOTER_MESSAGE, "Footer")
+                                .with(AdaptiveUiProperties.PRIMARY_BUTTON_TEXT, "Primary")
+                                .build());
+
+        assertEquals(
+                getVerticalMargin(),
+                getTopMargin(find(content, R.id.adaptive_ui_sheet_primary_button)));
+    }
+
+    @Test
+    public void testSheetRoot_KeepsBottomPaddingWithCustomView() {
+        AdaptiveUiSheetCoordinator content =
+                createContent(
+                        newModelBuilder()
+                                .with(AdaptiveUiProperties.CUSTOM_VIEW, new View(mActivity))
+                                .with(AdaptiveUiProperties.PRIMARY_BUTTON_TEXT, "Primary")
+                                .build());
+
+        assertEquals(getVerticalMargin(), content.getContentView().getPaddingBottom());
+    }
+
     // ---------------------------------------------------------------------------------------
     // Live updates.
     // ---------------------------------------------------------------------------------------
+
+    @Test
+    public void testPrimaryButton_UpdatesTopMarginWhenFooterSetAndClearedAfterShow() {
+        PropertyModel model =
+                newModelBuilder()
+                        .with(AdaptiveUiProperties.CUSTOM_VIEW, new View(mActivity))
+                        .with(AdaptiveUiProperties.PRIMARY_BUTTON_TEXT, "Primary")
+                        .build();
+        AdaptiveUiSheetCoordinator content = createContent(model);
+        View primaryButton = find(content, R.id.adaptive_ui_sheet_primary_button);
+        assertEquals(0, getTopMargin(primaryButton));
+
+        model.set(AdaptiveUiProperties.FOOTER_MESSAGE, "Footer");
+        assertEquals(getVerticalMargin(), getTopMargin(primaryButton));
+
+        model.set(AdaptiveUiProperties.FOOTER_MESSAGE, null);
+        assertEquals(0, getTopMargin(primaryButton));
+    }
+
+    @Test
+    public void testPrimaryButton_RestoresTopMarginWhenCustomViewRemovedAfterShow() {
+        PropertyModel model =
+                newModelBuilder()
+                        .with(AdaptiveUiProperties.CUSTOM_VIEW, new View(mActivity))
+                        .with(AdaptiveUiProperties.PRIMARY_BUTTON_TEXT, "Primary")
+                        .build();
+        AdaptiveUiSheetCoordinator content = createContent(model);
+        View primaryButton = find(content, R.id.adaptive_ui_sheet_primary_button);
+        assertEquals(0, getTopMargin(primaryButton));
+
+        model.set(AdaptiveUiProperties.CUSTOM_VIEW, null);
+        assertEquals(getVerticalMargin(), getTopMargin(primaryButton));
+    }
 
     @Test
     public void testLiveUpdatesOfWritableProperties() {

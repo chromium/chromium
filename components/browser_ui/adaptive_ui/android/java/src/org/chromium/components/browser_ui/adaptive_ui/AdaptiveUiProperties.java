@@ -204,8 +204,10 @@ public class AdaptiveUiProperties {
             BACK_PRESS_HANDLER = new WritableObjectPropertyKey<>();
 
     /**
-     * Optional custom body {@link View} (such as inputs or lists) shown below the description.
-     * Neither the sheet nor the dialog adds side padding around it, so the view supplies its own.
+     * Optional custom body {@link View} (such as inputs or lists) shown below the description. The
+     * view supplies its own padding: neither container adds side padding, and the sheet adds no
+     * space above it, or between it and the primary button when that follows directly. A footer or
+     * a lone secondary button below it keeps the sheet's spacing.
      */
     public static final WritableObjectPropertyKey<@Nullable View> CUSTOM_VIEW =
             new WritableObjectPropertyKey<>();
