@@ -4515,15 +4515,15 @@ class OcclusionChangeOnChildDialogShownObserver : public views::WidgetObserver {
       views::Widget* pip_widget,
       content::WebContents* opener_web_contents,
       MockAutoPictureInPictureWindowOcclusionHelper* occlusion_helper)
-      : pip_widget_(pip_widget),
-        opener_web_contents_(opener_web_contents),
+      : opener_web_contents_(opener_web_contents),
         occlusion_helper_(occlusion_helper) {
     pip_observation_.Observe(pip_widget);
   }
 
   void OnWidgetChildAdded(views::Widget* widget,
                           views::Widget* child_dialog) override {
-    if (widget == pip_widget_ && !child_observation_.IsObserving()) {
+    if (pip_observation_.IsObservingSource(widget) &&
+        !child_observation_.IsObserving()) {
       child_observation_.Observe(child_dialog);
     }
   }
@@ -4558,7 +4558,6 @@ class OcclusionChangeOnChildDialogShownObserver : public views::WidgetObserver {
   }
 
  private:
-  raw_ptr<views::Widget> pip_widget_;
   raw_ptr<content::WebContents> opener_web_contents_;
   raw_ptr<MockAutoPictureInPictureWindowOcclusionHelper> occlusion_helper_;
   bool triggered_during_show_ = false;

@@ -308,7 +308,8 @@ DocumentPipHost::~DocumentPipHost() {
 void DocumentPipHost::CreateAndShowPipWindow(
     std::unique_ptr<content::WebContents> child_web_contents,
     blink::mojom::PictureInPictureWindowOptions pip_options,
-    const gfx::Rect& initial_bounds) {
+    const gfx::Rect& initial_bounds,
+    DocumentPipShowMode show_mode) {
   // Avoid creating a second widget if one already exists.
   if (widget_) {
     return;
@@ -323,34 +324,35 @@ void DocumentPipHost::CreateAndShowPipWindow(
                           extensions::mojom::ViewType::kTabContents);
 #endif
 
-  // Store a back-pointer on the child so the content-settings refresh path can
-  // find this host given the captured (child) WebContents. Done before the
-  // child's ownership is transferred to the widget delegate below.
+  // --- Child WebContents setup ---
+
+  // Let the content-settings refresh path find this host from the captured
+  // (child) WebContents. Must precede the ownership transfer below.
   DocumentPipHostBackPointer::CreateForWebContents(child_web_contents.get(),
                                                    this);
 
   widget_delegate_ = std::make_unique<DocumentPipWidgetDelegate>(
       this, std::move(child_web_contents));
 
-  // DocumentPipContentsView (a views::WebView) sets itself as the child
-  // WebContents' delegate in SetOwnedWebContents(). Re-assign the host as the
-  // delegate so PiP-specific WebContentsDelegate behavior (e.g.
-  // GetJavaScriptDialogManager()) is routed here rather than to the WebView.
+  // DocumentPipContentsView (a views::WebView) makes itself the child's
+  // delegate in SetOwnedWebContents(). Re-assign the host so PiP-specific
+  // WebContentsDelegate behavior (e.g. GetJavaScriptDialogManager()) is routed
+  // here instead of to the WebView.
   GetChildWebContents()->SetDelegate(this);
+
+  // --- Widget creation ---
 
   views::Widget::InitParams params(
       views::Widget::InitParams::CLIENT_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW);
-  // The Widget stores `delegate` as a raw pointer. Ownership stays with
-  // `widget_delegate_` because we use CLIENT_OWNS_WIDGET without
-  // SetOwnedByWidget(); the Widget will not delete the delegate.
+  // The Widget keeps only a raw pointer to the delegate. `widget_delegate_`
+  // retains ownership (CLIENT_OWNS_WIDGET without SetOwnedByWidget()).
   params.delegate = widget_delegate_.get();
   params.z_order = ui::ZOrderLevel::kFloatingWindow;
   params.visible_on_all_workspaces = true;
   params.remove_standard_frame = true;
-  // `initial_bounds` is computed for the opener's display (origin + size), so
-  // the window opens on the same monitor as the opener rather than at the
-  // primary display's origin.
+  // `initial_bounds` carries the opener's display origin, so the window opens
+  // on the opener's monitor rather than the primary display.
   params.bounds = initial_bounds;
 
 #if BUILDFLAG(IS_LINUX)
@@ -361,10 +363,9 @@ void DocumentPipHost::CreateAndShowPipWindow(
   widget_ = std::make_unique<views::Widget>();
 #endif
 #if BUILDFLAG(IS_MAC)
-  // Give the borderless PiP window the default macOS styling (rounded corners +
-  // drop shadow) so it matches the Browser-backed Document PiP window. The
-  // Widget takes ownership of the native widget. Safety: the native widget's
-  // delegate is `widget_`, which owns it, so it cannot outlive the widget.
+  // Use the default macOS styling (rounded corners and drop shadow) to match
+  // the Browser-backed Document PiP window. The Widget takes ownership of the
+  // native widget; its delegate is `widget_`, so it cannot outlive the widget.
   params.native_widget = new DocumentPipNativeWidgetMac(widget_.get());
 #endif
   widget_->Init(std::move(params));
@@ -373,9 +374,8 @@ void DocumentPipHost::CreateAndShowPipWindow(
       context_menu_controller_.get());
 
 #if BUILDFLAG(IS_CHROMEOS)
-  // Let ash manage the Document PiP window in the same way as the video PiP
-  // window. The auto layout is off by default for Document PiP, so the window
-  // stays where it is placed.
+  // Let ash manage the window like the video PiP window. Auto layout is off by
+  // default for Document PiP, so the window stays where it is placed.
   if (ash::features::IsPipAutoLayoutToggleEnabled()) {
     aura::Window* window = widget_->GetNativeWindow();
     window->SetProperty(ash::kPipParamsKey,
@@ -386,39 +386,37 @@ void DocumentPipHost::CreateAndShowPipWindow(
   }
 #endif
 
+  // --- Observers and helpers (require the initialized widget) ---
+
   widget_observation_.Observe(widget_.get());
   if (auto* contents_view = widget_delegate_->GetDocumentPipContentsView()) {
     contents_view_observation_.Observe(contents_view);
   }
 
-  // Now that the Widget (and its native window) exist and Init has applied the
-  // InitParams bounds, recompute the outer bounds to honor a requested inner
-  // (web-contents) size. This must run *after* Init: Init applies the
-  // InitParams bounds last, so doing this from the frame view's AddedToWidget()
-  // (which fires mid-Init) would be clobbered, leaving the window one top-bar
-  // height too short. Mirrors the Browser-backed recompute in
+  // Honor a requested inner (web-contents) size. Must run after Init(), which
+  // applies the InitParams bounds last: doing this from the frame view's
+  // AddedToWidget() (mid-Init) would be clobbered, leaving the window one
+  // top-bar height too short. Mirrors the Browser-backed recompute in
   // PictureInPictureBrowserFrameView::OnBrowserViewInitialized.
   if (auto* frame_view = views::AsViewClass<DocumentPipFrameView>(
           widget_->non_client_view()->frame_view())) {
     frame_view->UpdateWindowBoundsForRequestedInnerSize();
   }
 
-  // Now that the widget exists, observe it (and its child dialogs) so dialogs
-  // parented to the PiP window grow/reposition the window instead of being
-  // clipped. Reset in ClosePipWindow() before the widget is destroyed.
+  // Grow/reposition the window for dialogs parented to it instead of clipping
+  // them. Reset in ClosePipWindow() before the widget is destroyed.
   child_dialog_observer_helper_ =
       std::make_unique<PipChildDialogObserverHelper>(this);
 
-  // Intercept external close paths (OS close button, DialogDelegate, etc.) so
-  // they route through our teardown logic.
-  // Safety: `this` owns `widget_` via unique_ptr, so the widget (and its
-  // close callback) cannot outlive this host.
+  // Route external close paths (OS close button, DialogDelegate, etc.) through
+  // our teardown logic. Safe: `this` owns `widget_`, so the callback cannot
+  // outlive the host.
   widget_->MakeCloseSynchronous(base::BindOnce(
       &DocumentPipHost::OnWidgetCloseRequested, base::Unretained(this)));
 
-  // The child WebContents is not a tab, so TabHelpers never runs for it. Wire
-  // up the helpers a standalone PiP child needs directly. Done after `widget_`
-  // is initialized because the dialog manager anchors to it.
+  // The child is not a tab, so TabHelpers never runs for it; wire up the
+  // helpers it needs directly. Requires `widget_` because the dialog manager
+  // anchors to it.
   CreateChildWebContentsHelpers(GetChildWebContents());
 
   exclusive_access_context_ =
@@ -431,6 +429,8 @@ void DocumentPipHost::CreateAndShowPipWindow(
           session_id_);
 #endif
 
+  // --- Show ---
+
   restore_focus_on_activation_ = true;
   PictureInPictureWindowManager::GetInstance()->OnPictureInPictureWindowShown(
       this);
@@ -440,7 +440,21 @@ void DocumentPipHost::CreateAndShowPipWindow(
   fade_animator_->AnimateShowWindow(
       widget_.get(), PictureInPictureWidgetFadeAnimator::WidgetShowType::kNone);
 #endif
-  widget_->Show();
+  switch (show_mode) {
+    case DocumentPipShowMode::kInactive:
+      widget_->ShowInactive();
+      break;
+    case DocumentPipShowMode::kActivate:
+      widget_->Show();
+      break;
+    case DocumentPipShowMode::kActivateAndFocus:
+      // Match ScopedBrowserShower's user-gesture handling for Browser-backed
+      // windows rather than relying on native activation alone.
+      widget_->Show();
+      GetChildWebContents()->Focus();
+      widget_->Activate();
+      break;
+  }
 }
 
 void DocumentPipHost::Close() {

@@ -185,9 +185,9 @@ class DocumentPipFrameViewTest : public ChromeViewsTestBase {
         ->CalculateInitialPictureInPictureWindowBounds(
             MakePipOptions(disallow_return_to_opener),
             display::Screen::Get()->GetPrimaryDisplay());
-    host->CreateAndShowPipWindow(std::move(child),
-                                 MakePipOptions(disallow_return_to_opener),
-                                 MakeDefaultInitialBounds());
+    host->CreateAndShowPipWindow(
+        std::move(child), MakePipOptions(disallow_return_to_opener),
+        MakeDefaultInitialBounds(), DocumentPipShowMode::kActivate);
 
     views::Widget* widget = host->GetWidget();
     EXPECT_TRUE(widget);

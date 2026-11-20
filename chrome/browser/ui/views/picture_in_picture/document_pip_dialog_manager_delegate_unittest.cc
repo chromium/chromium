@@ -141,7 +141,8 @@ class DocumentPipDialogManagerDelegateTest : public ChromeViewsTestBase {
             MakeDefaultPipOptions(),
             display::Screen::Get()->GetPrimaryDisplay());
     host->CreateAndShowPipWindow(std::move(child), MakeDefaultPipOptions(),
-                                 initial_bounds);
+                                 initial_bounds,
+                                 DocumentPipShowMode::kActivate);
     return host;
   }
 

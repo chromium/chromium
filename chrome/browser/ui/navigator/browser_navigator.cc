@@ -859,14 +859,10 @@ base::WeakPtr<content::NavigationHandle> NavigateImpl(
         // Showing the window can synchronously destroy the child.
         base::WeakPtr<WebContents> weak_contents =
             contents_to_navigate_or_insert->GetWeakPtr();
-        const bool focus_contents =
-            params->window_action ==
-                NavigateParams::WindowAction::kShowWindow &&
-            params->user_gesture;
         PictureInPictureWindowManager::GetInstance()
             ->EnterStandaloneDocumentPictureInPicture(
                 params->source_contents, std::move(params->contents_to_insert),
-                std::move(*pip_options), focus_contents);
+                std::move(*pip_options), params->user_gesture);
         params->navigated_or_inserted_contents = weak_contents.get();
       }
       // If the WebContents doesn't have valid PiP options, don't enter PiP

@@ -263,8 +263,15 @@ class DocumentPipHostTest : public ChromeViewsTestBase {
 
   content::WebContents* opener() { return opener_web_contents_.get(); }
 
+  views::View* GetContentsView(DocumentPipHost* host) {
+    return static_cast<DocumentPipWidgetDelegate*>(
+               host->GetWidget()->widget_delegate())
+        ->GetDocumentPipContentsView();
+  }
+
   // Creates a DocumentPipHost attached to the opener with a PiP widget open.
-  DocumentPipHost* CreateHostAndOpenPipWindow() {
+  DocumentPipHost* CreateHostAndOpenPipWindow(
+      DocumentPipShowMode show_mode = DocumentPipShowMode::kActivate) {
     DocumentPipHost::CreateForWebContents(opener());
     auto* host = DocumentPipHost::FromWebContents(opener());
     auto child =
@@ -280,7 +287,7 @@ class DocumentPipHostTest : public ChromeViewsTestBase {
             MakeDefaultPipOptions(),
             display::Screen::Get()->GetPrimaryDisplay());
     host->CreateAndShowPipWindow(std::move(child), MakeDefaultPipOptions(),
-                                 MakeDefaultInitialBounds());
+                                 MakeDefaultInitialBounds(), show_mode);
     return host;
   }
 
@@ -892,7 +899,8 @@ TEST_F(DocumentPipHostTest, ReopenAfterClose) {
   auto new_child =
       content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
   host->CreateAndShowPipWindow(std::move(new_child), MakeDefaultPipOptions(),
-                               MakeDefaultInitialBounds());
+                               MakeDefaultInitialBounds(),
+                               DocumentPipShowMode::kActivate);
 
   EXPECT_TRUE(host->GetWidget());
   EXPECT_TRUE(host->GetChildWebContents());
@@ -1173,6 +1181,28 @@ TEST_F(DocumentPipHostTest, OpenPipWindowFocusesContents) {
   if (!host->GetWidget()->IsActive()) {
     host->OnWidgetActivationChanged(host->GetWidget(), /*active=*/true);
   }
+  EXPECT_TRUE(contents_view->HasFocus() ||
+              contents_view->Contains(
+                  host->GetWidget()->GetFocusManager()->GetFocusedView()) ||
+              contents_view->Contains(
+                  host->GetWidget()->GetFocusManager()->GetStoredFocusView()));
+}
+
+// A window opened inactive (e.g. by Auto PiP) must not focus its contents until
+// it is activated; the first activation afterwards restores focus as usual.
+TEST_F(DocumentPipHostTest, OpenPipWindowInactiveDoesNotFocusContents) {
+  DocumentPipHost* host =
+      CreateHostAndOpenPipWindow(DocumentPipShowMode::kInactive);
+  ASSERT_TRUE(host);
+
+  auto* contents_view = GetContentsView(host);
+  ASSERT_TRUE(contents_view);
+  EXPECT_FALSE(host->GetWidget()->IsActive());
+  EXPECT_FALSE(contents_view->HasFocus());
+
+  host->OnWidgetActivationChanged(host->GetWidget(), /*active=*/true);
+  // Whether the focus manager reports the view as focused or only as stored
+  // depends on whether the platform activates the test widget synchronously.
   EXPECT_TRUE(contents_view->HasFocus() ||
               contents_view->Contains(
                   host->GetWidget()->GetFocusManager()->GetFocusedView()) ||
@@ -1865,7 +1895,8 @@ TEST_F(DocumentPipHostTest, CreateAndShowPipWindow_NoOpWhileAlreadyOpen) {
       content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
   content::WebContentsDestroyedWatcher second_child_watcher(second_child.get());
   host->CreateAndShowPipWindow(std::move(second_child), MakeDefaultPipOptions(),
-                               MakeDefaultInitialBounds());
+                               MakeDefaultInitialBounds(),
+                               DocumentPipShowMode::kActivate);
 
   // The existing widget/child are unchanged, and the second child was
   // dropped.

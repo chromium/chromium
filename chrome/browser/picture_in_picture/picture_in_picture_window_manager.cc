@@ -30,6 +30,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_helper.h"
 #include "chrome/browser/picture_in_picture/auto_pip_setting_overlay_view.h"
+#include "chrome/browser/picture_in_picture/document_pip_show_mode.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_tracker.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window.h"
 #include "chrome/browser/ui/views/picture_in_picture/document_pip_host.h"
@@ -70,14 +71,15 @@ constexpr double kMaxWindowSizeRatio = 0.8;
 // `kMaxWindowSizeRatio`.
 constexpr double kMaxSiteRequestedWindowSizeRatio = 0.25;
 
-// Returns true if a document picture-in-picture window should be focused upon
-// opening it.
-bool ShouldFocusPictureInPictureWindow(const NavigateParams& params) {
-  // All document picture-in-picture openings must have a source_contents.
-  CHECK(params.source_contents);
-
+// Returns true if a document picture-in-picture window opened by
+// `source_contents` should be focused upon opening it. Only reliable once the
+// opener's picture-in-picture state has been updated by
+// EnterDocumentPictureInPicture(), because that is what makes the
+// AutoPictureInPictureTabHelper report IsInAutoPictureInPicture().
+bool ShouldFocusPictureInPictureWindow(
+    const content::WebContents& source_contents) {
   const auto* auto_picture_in_picture_tab_helper =
-      AutoPictureInPictureTabHelper::FromWebContents(params.source_contents);
+      AutoPictureInPictureTabHelper::FromWebContents(&source_contents);
   if (!auto_picture_in_picture_tab_helper) {
     return true;
   }
@@ -612,8 +614,10 @@ void PictureInPictureWindowManager::SetWindowParams(NavigateParams& params) {
 #if !BUILDFLAG(IS_ANDROID)
   // Always show document picture-in-picture in a new window. When this is
   // not opened via the AutoPictureInPictureTabHelper, focus the window.
+  // All document picture-in-picture openings must have a source_contents.
+  CHECK(params.source_contents);
   params.window_action =
-      ShouldFocusPictureInPictureWindow(params)
+      ShouldFocusPictureInPictureWindow(*params.source_contents)
           ? NavigateParams::WindowAction::kShowWindow
           : NavigateParams::WindowAction::kShowWindowInactive;
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -723,7 +727,7 @@ void PictureInPictureWindowManager::EnterStandaloneDocumentPictureInPicture(
     content::WebContents* parent_web_contents,
     std::unique_ptr<content::WebContents> child_web_contents,
     blink::mojom::PictureInPictureWindowOptions pip_options,
-    bool focus_contents) {
+    bool user_gesture) {
   CHECK(child_web_contents);
 
   // Reuse the shared document picture-in-picture setup: it closes any existing
@@ -757,17 +761,25 @@ void PictureInPictureWindowManager::EnterStandaloneDocumentPictureInPicture(
   const gfx::Rect initial_bounds =
       CalculateInitialPictureInPictureWindowBounds(pip_options, opener_display);
 
+  // Choose how to show the window. This must come after
+  // EnterDocumentPictureInPicture(): that is what updates the opener's
+  // picture-in-picture state, and only then does the
+  // AutoPictureInPictureTabHelper report that the opener is in auto-pip. This
+  // mirrors the Browser-backed path, where SetWindowParams() runs after
+  // EnterDocumentPictureInPicture() for the same reason, and
+  // ScopedBrowserShower focuses the contents for a user-gesture open.
+  DocumentPipShowMode show_mode = DocumentPipShowMode::kInactive;
+  if (ShouldFocusPictureInPictureWindow(*parent_web_contents)) {
+    show_mode = user_gesture ? DocumentPipShowMode::kActivateAndFocus
+                             : DocumentPipShowMode::kActivate;
+  }
+
   // Create the standalone host on the opener and hand it the child WebContents.
   DocumentPipHost::CreateForWebContents(parent_web_contents);
   auto* host = DocumentPipHost::FromWebContents(parent_web_contents);
   host->CreateAndShowPipWindow(std::move(child_web_contents),
-                               std::move(pip_options), initial_bounds);
-  // Match ScopedBrowserShower's user-gesture behavior for Browser-backed
-  // Document PiP windows instead of relying solely on native activation.
-  if (focus_contents) {
-    host->GetChildWebContents()->Focus();
-    host->GetWidget()->Activate();
-  }
+                               std::move(pip_options), initial_bounds,
+                               show_mode);
   document_pip_host_ = host->GetWeakPtr();
 }
 

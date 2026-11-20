@@ -16,6 +16,7 @@ use_stub_occlusion_helper = is_android
 
 source_set("picture_in_picture") {
   sources = [
+    "document_pip_show_mode.h",
     "picture_in_picture_bounds_cache.h",
     "picture_in_picture_window_manager.h",
     "video_overlay_window.h",

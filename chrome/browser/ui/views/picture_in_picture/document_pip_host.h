@@ -15,6 +15,7 @@
 #include "base/scoped_observation.h"
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
+#include "chrome/browser/picture_in_picture/document_pip_show_mode.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window.h"
 #include "chrome/browser/ui/views/picture_in_picture/pip_child_dialog_observer_helper.h"
 #include "components/web_modal/modal_dialog_host.h"
@@ -76,17 +77,22 @@ class DocumentPipHost : public content::WebContentsUserData<DocumentPipHost>,
 
   ~DocumentPipHost() override;
 
-  // Creates the PiP widget for the given child WebContents and shows it. Can be
-  // called multiple times over the host's lifetime — each call opens a new PiP
-  // window after the previous one has been closed via ClosePipWindow(). The
-  // child WebContents ownership is transferred to the widget's WebView.
-  // `initial_bounds` is the outer window bounds in screen coordinates,
-  // pre-computed for the opener's display so the window opens on the same
-  // monitor as the opener.
+  // Creates the PiP widget for the given child WebContents and shows it.
+  //
+  // - Can be called multiple times over the host's lifetime. Each call opens a
+  //   new PiP window after the previous one has been closed via
+  //   ClosePipWindow(). Does nothing if a window is already open.
+  // - Ownership of `child_web_contents` is transferred to the widget's WebView.
+  // - `initial_bounds` is the outer window bounds in screen coordinates,
+  //   pre-computed for the opener's display so the window opens on the same
+  //   monitor as the opener.
+  // - `show_mode` controls window activation and content focus, and is applied
+  //   entirely within this call. See DocumentPipShowMode.
   void CreateAndShowPipWindow(
       std::unique_ptr<content::WebContents> child_web_contents,
       blink::mojom::PictureInPictureWindowOptions pip_options,
-      const gfx::Rect& initial_bounds);
+      const gfx::Rect& initial_bounds,
+      DocumentPipShowMode show_mode);
 
   // Tears down the currently open PiP widget (and its child WebContents). The
   // host stays attached to the opener WebContents so a later
