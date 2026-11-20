@@ -136,6 +136,7 @@ class PageHandler : public DevToolsDomainHandler,
   void Reload(std::optional<bool> bypassCache,
               std::optional<std::string> script_to_evaluate_on_load,
               std::optional<std::string> loader_id,
+              std::optional<bool> check_for_repost,
               std::unique_ptr<ReloadCallback> callback) override;
   void Navigate(const std::string& url,
                 std::optional<std::string> referrer,
@@ -297,6 +298,16 @@ class PageHandler : public DevToolsDomainHandler,
   // not be null.
   Response CheckNavigationAllowed(const GURL& url);
 
+  // Runs when the form repost check of Reload() is complete. If `proceed` is
+  // true, prepares the reload of `outermost_main_frame`. If `proceed` is
+  // false, the user cancelled the form repost dialog or the reload was
+  // discarded.
+  void OnReloadRepostCheckDone(
+      base::WeakPtr<RenderFrameHostImpl> outermost_main_frame,
+      std::string script_to_evaluate_on_load,
+      std::unique_ptr<ReloadCallback> callback,
+      bool proceed);
+
   const bool allow_unsafe_operations_;
   const bool is_trusted_;
   const std::optional<url::Origin> navigation_initiator_origin_;
@@ -346,6 +357,10 @@ class PageHandler : public DevToolsDomainHandler,
   bool is_prerendering_allowed_ = true;
   base::RepeatingCallback<void(std::string)> prepare_for_reload_callback_;
   bool have_pending_reload_ = false;
+  // True while Reload() calls into the navigation controller.
+  bool is_starting_reload_ = false;
+  // The callback of a reload that started synchronously in Reload().
+  std::unique_ptr<ReloadCallback> reload_success_callback_;
   std::string pending_script_to_evaluate_on_load_;
   url::Origin initiating_origin_;
 

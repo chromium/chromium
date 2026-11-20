@@ -1385,7 +1385,7 @@ class CONTENT_EXPORT WebContentsImpl
   void NotifyBeforeFormRepostWarningShow() override;
 
   // Activate this WebContents and show a form repost warning.
-  void ActivateAndShowRepostFormWarningDialog() override;
+  bool ActivateAndShowRepostFormWarningDialog() override;
 
   void MediaMutedStatusChanged(const MediaPlayerId& id, bool muted);
 

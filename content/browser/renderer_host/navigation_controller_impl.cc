@@ -44,6 +44,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
@@ -970,6 +971,14 @@ void NavigationControllerImpl::Restore(
 
 void NavigationControllerImpl::Reload(ReloadType reload_type,
                                       bool check_for_repost) {
+  ReloadWithRepostCheckCallback(reload_type, check_for_repost,
+                                base::DoNothing());
+}
+
+void NavigationControllerImpl::ReloadWithRepostCheckCallback(
+    ReloadType reload_type,
+    bool check_for_repost,
+    RepostCheckCallback callback) {
   base::TimeTicks actual_navigation_start = base::TimeTicks::Now();
   SCOPED_CRASH_KEY_NUMBER("nav_reentrancy_caller1", "Reload_type",
                           (int)reload_type);
@@ -1008,6 +1017,7 @@ void NavigationControllerImpl::Reload(ReloadType reload_type,
   // If we are no where, then we can't reload.  TODO(darin): We should add a
   // CanReload method.
   if (!entry) {
+    std::move(callback).Run(/*proceed=*/true);
     return;
   }
 
@@ -1018,6 +1028,7 @@ void NavigationControllerImpl::Reload(ReloadType reload_type,
     // legacy behavior where trying to reload when the main frame is on the
     // initial empty document won't result in a navigation. See also
     // https://crbug.com/1277414.
+    std::move(callback).Run(/*proceed=*/true);
     return;
   }
 
@@ -1027,10 +1038,27 @@ void NavigationControllerImpl::Reload(ReloadType reload_type,
     // with check_for_repost = false.
     delegate_->NotifyBeforeFormRepostWarningShow();
 
+    // This request replaces a pending repost.
+    if (pending_reload_callback_) {
+      std::move(pending_reload_callback_).Run(/*proceed=*/false);
+    }
     pending_reload_ = reload_type;
-    delegate_->ActivateAndShowRepostFormWarningDialog();
+    pending_reload_callback_ = std::move(callback);
+    if (!delegate_->ActivateAndShowRepostFormWarningDialog() &&
+        pending_reload_callback_) {
+      // The embedder cannot show the dialog, thus no response to the
+      // dialog can occur. `pending_reload_` stays set, as before.
+      std::move(pending_reload_callback_).Run(/*proceed=*/false);
+    }
     return;
   }
+
+  // This reload replaces a pending repost. Without this, the pending repost
+  // stays set if this reload does not commit. ContinuePendingReload() clears
+  // the pending repost before it calls this method.
+  CancelPendingReload();
+
+  std::move(callback).Run(/*proceed=*/true);
 
   // Set ReloadType for |entry|.
   entry->set_reload_type(reload_type);
@@ -1054,6 +1082,9 @@ void NavigationControllerImpl::Reload(ReloadType reload_type,
 
 void NavigationControllerImpl::CancelPendingReload() {
   pending_reload_ = ReloadType::NONE;
+  if (pending_reload_callback_) {
+    std::move(pending_reload_callback_).Run(/*proceed=*/false);
+  }
 }
 
 void NavigationControllerImpl::ContinuePendingReload() {
@@ -1062,8 +1093,12 @@ void NavigationControllerImpl::ContinuePendingReload() {
   if (pending_reload_ == ReloadType::NONE) {
     return;
   }
-  Reload(pending_reload_, false);
-  pending_reload_ = ReloadType::NONE;
+  RepostCheckCallback callback = pending_reload_callback_
+                                     ? std::move(pending_reload_callback_)
+                                     : base::DoNothing();
+  ReloadWithRepostCheckCallback(
+      std::exchange(pending_reload_, ReloadType::NONE), false,
+      std::move(callback));
 }
 
 bool NavigationControllerImpl::IsInitialNavigation() {
@@ -1962,6 +1997,9 @@ NavigationControllerImpl::RendererDidNavigate(
   // Any pending request to repost a form submission is no longer valid, since a
   // different NavigationEntry is committing.
   pending_reload_ = ReloadType::NONE;
+  if (pending_reload_callback_) {
+    std::move(pending_reload_callback_).Run(/*proceed=*/false);
+  }
 
   // Save the previous state before we clobber it.
   bool overriding_user_agent_changed = false;

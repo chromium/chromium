@@ -107,7 +107,7 @@ class WebContentsDelegateAndroid : public content::WebContentsDelegate {
   bool HandleKeyboardEvent(content::WebContents* source,
                            const input::NativeWebKeyboardEvent& event) override;
   bool TakeFocus(content::WebContents* source, bool reverse) override;
-  void ShowRepostFormWarningDialog(content::WebContents* source) override;
+  bool ShowRepostFormWarningDialog(content::WebContents* source) override;
   bool ShouldBlockMediaRequest(const GURL& url) override;
   void RequestImmersivePlaybackConfirmation(
       const content::ImmersiveOptions& default_options,

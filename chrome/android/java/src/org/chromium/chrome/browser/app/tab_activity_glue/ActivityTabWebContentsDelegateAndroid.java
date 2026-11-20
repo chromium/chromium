@@ -185,14 +185,16 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
     }
 
     @Override
-    public void showRepostFormWarningDialog() {
+    public boolean showRepostFormWarningDialog() {
         // When the dialog is visible, keeping the refresh animation active
         // in the background is distracting and unnecessary (and likely to
         // jank when the dialog is shown).
         SwipeRefreshHandler handler = SwipeRefreshHandler.get(mTab);
         if (handler != null) handler.reset();
 
+        // If the dialog cannot show, this cancels the pending reload.
         showRepostFormWarningTabModalDialog();
+        return true;
     }
 
     @Override

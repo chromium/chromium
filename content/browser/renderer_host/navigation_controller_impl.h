@@ -157,6 +157,20 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   bool IsInitialNavigation() override;
   bool IsInitialBlankNavigation() override;
   void Reload(ReloadType reload_type, bool check_for_repost) override;
+
+  // Runs when the form repost check of a reload is complete. `proceed` is
+  // false if the user cancelled the form repost dialog, or if the pending
+  // reload was discarded. Otherwise `proceed` is true, and the callback runs
+  // immediately before the reload navigation starts. `proceed` is also true if
+  // there is no entry to reload. The callback must not start a navigation.
+  using RepostCheckCallback = base::OnceCallback<void(bool proceed)>;
+
+  // Same as Reload(), but runs `callback` when the form repost check is
+  // complete. If the form repost dialog shows, `callback` runs after the user
+  // responds to the dialog.
+  void ReloadWithRepostCheckCallback(ReloadType reload_type,
+                                     bool check_for_repost,
+                                     RepostCheckCallback callback);
   void NotifyEntryChanged(NavigationEntry* entry) override;
   void CopyStateFrom(NavigationController* source, bool needs_reload) override;
   bool CanPruneAllButLastCommitted() override;
@@ -553,6 +567,7 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
                            ResetPendingLoadTypeWhenCancelPendingReload);
   FRIEND_TEST_ALL_PREFIXES(NavigationControllerDisableHistoryIntervention,
                            GoToOffsetWithSkippingDisableHistoryIntervention);
+  friend class PageReloadRepostTest;
   FRIEND_TEST_ALL_PREFIXES(NavigationControllerHistoryInterventionBrowserTest,
                            GoToOffsetWithSkippingEnableHistoryIntervention);
   FRIEND_TEST_ALL_PREFIXES(NavigationControllerHistoryInterventionBrowserTest,
@@ -1264,6 +1279,9 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // If a repost is pending, its type (RELOAD or RELOAD_BYPASSING_CACHE),
   // NO_RELOAD otherwise.
   ReloadType pending_reload_ = ReloadType::NONE;
+
+  // The callback of the pending repost, if a repost is pending.
+  RepostCheckCallback pending_reload_callback_;
 
   // Used to get timestamps for newly-created navigation entries.
   base::RepeatingCallback<base::Time()> get_timestamp_callback_;

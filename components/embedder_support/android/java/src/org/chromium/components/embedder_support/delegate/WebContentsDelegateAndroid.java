@@ -156,11 +156,15 @@ public class WebContentsDelegateAndroid {
     }
 
     /**
-     * Report a form resubmission. The overwriter of this function should eventually call either of
+     * Report a form resubmission. An override that returns true must eventually call either of
      * NavigationController.ContinuePendingReload or NavigationController.CancelPendingReload.
+     *
+     * @return false if the embedder cannot show the form resubmission dialog.
      */
     @CalledByNative
-    public void showRepostFormWarningDialog() {}
+    public boolean showRepostFormWarningDialog() {
+        return false;
+    }
 
     /** Callback for immersive playback confirmation flow. */
     public static class ImmersivePlaybackConfirmationCallback {

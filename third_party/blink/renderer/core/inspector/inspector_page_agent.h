@@ -141,7 +141,8 @@ class CORE_EXPORT InspectorPageAgent final
   protocol::Response setLifecycleEventsEnabled(bool) override;
   protocol::Response reload(std::optional<bool> bypass_cache,
                             std::optional<String> script_to_evaluate_on_load,
-                            std::optional<String> loader_id) override;
+                            std::optional<String> loader_id,
+                            std::optional<bool> check_for_repost) override;
   protocol::Response stopLoading() override;
   protocol::Response setAdBlockingEnabled(bool) override;
   protocol::Response getResourceTree(

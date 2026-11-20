@@ -398,14 +398,14 @@ bool WebContentsDelegateAndroid::TakeFocus(WebContents* source, bool reverse) {
   return Java_WebContentsDelegateAndroid_takeFocus(env, obj, reverse);
 }
 
-void WebContentsDelegateAndroid::ShowRepostFormWarningDialog(
+bool WebContentsDelegateAndroid::ShowRepostFormWarningDialog(
     WebContents* source) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = GetJavaDelegate(env);
   if (obj.is_null()) {
-    return;
+    return false;
   }
-  Java_WebContentsDelegateAndroid_showRepostFormWarningDialog(env, obj);
+  return Java_WebContentsDelegateAndroid_showRepostFormWarningDialog(env, obj);
 }
 
 void WebContentsDelegateAndroid::RequestImmersivePlaybackConfirmation(

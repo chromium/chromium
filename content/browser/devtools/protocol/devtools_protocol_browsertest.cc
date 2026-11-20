@@ -57,6 +57,7 @@
 #include "content/browser/preloading/preloading_decider.h"
 #include "content/browser/preloading/prerender/prerender_features.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
+#include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/navigator.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
@@ -3722,6 +3723,224 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, ReloadBlankPage) {
   Attach();
   SendCommandAsync("Page.reload");
   // Should not crash at this point.
+}
+
+// Tests the form repost dialog for Page.reload with `checkForRepost`.
+class PageReloadRepostTest : public DevToolsProtocolTest {
+ protected:
+  void SetUpOnMainThread() override {
+    DevToolsProtocolTest::SetUpOnMainThread();
+    // Browser tests disable the form repost dialog by default.
+    show_repost_dialog_.emplace();
+  }
+
+  void TearDownOnMainThread() override {
+    show_repost_dialog_.reset();
+    DevToolsProtocolTest::TearDownOnMainThread();
+  }
+
+  // WebContentsDelegate:
+  bool ShowRepostFormWarningDialog(WebContents* source) override {
+    ++repost_form_warning_count_;
+    return can_show_repost_form_warning_;
+  }
+
+  NavigationControllerImpl& controller() {
+    return static_cast<NavigationControllerImpl&>(
+        shell()->web_contents()->GetController());
+  }
+
+  ReloadType pending_reload() { return controller().pending_reload_; }
+
+  // Navigates the page with a POST request.
+  void SubmitPostForm() {
+    ASSERT_TRUE(embedded_test_server()->Start());
+    ASSERT_TRUE(
+        NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
+    TestNavigationObserver observer(shell()->web_contents());
+    ASSERT_TRUE(ExecJs(
+        shell(), JsReplace("const form = document.createElement('form');"
+                           "form.method = 'POST';"
+                           "form.action = $1;"
+                           "document.body.appendChild(form);"
+                           "form.submit();",
+                           embedded_test_server()->GetURL("/title2.html"))));
+    observer.Wait();
+    ASSERT_TRUE(controller().GetLastCommittedEntry()->GetHasPostData());
+  }
+
+  // Attaches to the tab target and then to the frame target, as the DevTools
+  // UI does. Returns the session id of the frame target.
+  std::string AttachToTabTargetAndGetFrameSessionId() {
+    AttachToTabTarget(shell()->web_contents());
+    shell()->web_contents()->SetDelegate(this);
+
+    base::DictValue discover_params;
+    discover_params.Set("discover", true);
+    SendCommandSync("Target.setDiscoverTargets", std::move(discover_params));
+    std::string target_id;
+    while (target_id.empty()) {
+      base::DictValue created =
+          WaitForNotification("Target.targetCreated", true);
+      if (*created.FindStringByDottedPath("targetInfo.type") == "page") {
+        target_id = *created.FindStringByDottedPath("targetInfo.targetId");
+      }
+    }
+
+    base::DictValue attach_params;
+    attach_params.Set("targetId", target_id);
+    attach_params.Set("flatten", true);
+    const base::DictValue* result =
+        SendCommandSync("Target.attachToTarget", std::move(attach_params));
+    CHECK(result);
+    return *result->FindString("sessionId");
+  }
+
+  // Sends Page.reload with `checkForRepost` and with a script that sets
+  // `window.injected`. Does not wait for the response. The renderer runs the
+  // script only if the Page domain is enabled, thus this enables it first.
+  void SendReloadWithRepostCheck(const std::string& session_id = "") {
+    SendSessionCommand("Page.enable", base::DictValue(), session_id,
+                       /*wait=*/true);
+    responses_before_reload_ = received_responses_count();
+    base::DictValue params;
+    params.Set("checkForRepost", true);
+    params.Set("scriptToEvaluateOnLoad", "window.injected = true;");
+    SendSessionCommand("Page.reload", std::move(params), session_id,
+                       /*wait=*/false);
+  }
+
+  // Accepts the form repost dialog and waits for the reload and for the
+  // response to Page.reload.
+  void AcceptDialogAndWaitForReload() {
+    TestNavigationObserver observer(shell()->web_contents());
+    controller().ContinuePendingReload();
+    observer.Wait();
+    EXPECT_TRUE(observer.last_navigation_succeeded());
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return received_responses_count() == responses_before_reload_ + 1;
+    }));
+    EXPECT_TRUE(result());
+    EXPECT_FALSE(error());
+  }
+
+  int repost_form_warning_count_ = 0;
+  // False simulates an embedder that cannot show the dialog.
+  bool can_show_repost_form_warning_ = true;
+  // The number of responses before the last Page.reload command.
+  int responses_before_reload_ = 0;
+
+ private:
+  std::optional<NavigationControllerImpl::ScopedShowRepostDialogForTesting>
+      show_repost_dialog_;
+};
+
+// Without `checkForRepost`, Page.reload shows no dialog.
+IN_PROC_BROWSER_TEST_F(PageReloadRepostTest, NoDialogByDefault) {
+  SubmitPostForm();
+  Attach();
+
+  TestNavigationObserver observer(shell()->web_contents());
+  SendCommandSync("Page.reload");
+  observer.Wait();
+  EXPECT_EQ(0, repost_form_warning_count_);
+  EXPECT_TRUE(observer.last_navigation_succeeded());
+  EXPECT_TRUE(controller().GetLastCommittedEntry()->GetHasPostData());
+}
+
+// If the user accepts the dialog, the reload commits and the script runs.
+IN_PROC_BROWSER_TEST_F(PageReloadRepostTest, AcceptDialogRunsScript) {
+  SubmitPostForm();
+  Attach();
+
+  SendReloadWithRepostCheck();
+  EXPECT_EQ(1, repost_form_warning_count_);
+  // The reload and the response wait for the user.
+  EXPECT_FALSE(controller().GetPendingEntry());
+  EXPECT_EQ(responses_before_reload_, received_responses_count());
+
+  AcceptDialogAndWaitForReload();
+  EXPECT_TRUE(controller().GetLastCommittedEntry()->GetHasPostData());
+  EXPECT_EQ(true, EvalJs(shell(), "window.injected === true"));
+}
+
+// If the user cancels the dialog, Page.reload fails and a subsequent reload
+// does not run the script.
+IN_PROC_BROWSER_TEST_F(PageReloadRepostTest, CancelDialogDropsScript) {
+  SubmitPostForm();
+  Attach();
+
+  SendReloadWithRepostCheck();
+  EXPECT_EQ(1, repost_form_warning_count_);
+  EXPECT_EQ(responses_before_reload_, received_responses_count());
+
+  controller().CancelPendingReload();
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return received_responses_count() == responses_before_reload_ + 1;
+  }));
+  EXPECT_TRUE(error());
+  EXPECT_FALSE(controller().GetPendingEntry());
+
+  TestNavigationObserver observer(shell()->web_contents());
+  ExecuteScriptAsync(shell(), "location.reload();");
+  observer.Wait();
+  EXPECT_TRUE(observer.last_navigation_succeeded());
+  EXPECT_EQ(false, EvalJs(shell(), "'injected' in window"));
+}
+
+// A reload without `checkForRepost` replaces a pending repost. The first
+// Page.reload fails and the second Page.reload starts the reload.
+IN_PROC_BROWSER_TEST_F(PageReloadRepostTest, ReloadReplacesPendingRepost) {
+  SubmitPostForm();
+  Attach();
+
+  SendReloadWithRepostCheck();
+  EXPECT_EQ(1, repost_form_warning_count_);
+  EXPECT_EQ(ReloadType::NORMAL, pending_reload());
+
+  TestNavigationObserver observer(shell()->web_contents());
+  SendCommandAsync("Page.reload");
+  EXPECT_EQ(ReloadType::NONE, pending_reload());
+  observer.Wait();
+  EXPECT_TRUE(observer.last_navigation_succeeded());
+  // One response for each Page.reload command.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return received_responses_count() == responses_before_reload_ + 2;
+  }));
+  EXPECT_EQ(1, repost_form_warning_count_);
+
+  // The dialog of the first command has no effect now.
+  controller().ContinuePendingReload();
+  EXPECT_FALSE(controller().GetPendingEntry());
+}
+
+// If the embedder cannot show the dialog, Page.reload fails and does not
+// wait.
+IN_PROC_BROWSER_TEST_F(PageReloadRepostTest, DialogNotSupported) {
+  SubmitPostForm();
+  Attach();
+  can_show_repost_form_warning_ = false;
+
+  SendReloadWithRepostCheck();
+  EXPECT_EQ(1, repost_form_warning_count_);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return received_responses_count() == responses_before_reload_ + 1;
+  }));
+  EXPECT_TRUE(error());
+  EXPECT_FALSE(controller().GetPendingEntry());
+}
+
+// The DevTools UI sends Page.reload through a child session of the tab target.
+IN_PROC_BROWSER_TEST_F(PageReloadRepostTest, TabTargetChildSession) {
+  SubmitPostForm();
+  const std::string session_id = AttachToTabTargetAndGetFrameSessionId();
+
+  SendReloadWithRepostCheck(session_id);
+  EXPECT_EQ(1, repost_form_warning_count_);
+  EXPECT_EQ(responses_before_reload_, received_responses_count());
+
+  AcceptDialogAndWaitForReload();
+  EXPECT_EQ(true, EvalJs(shell(), "window.injected === true"));
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, EvaluateInBlankPage) {

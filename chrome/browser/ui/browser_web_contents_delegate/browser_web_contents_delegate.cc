@@ -990,10 +990,11 @@ bool BrowserWebContentsDelegate::ShouldFocusPageAfterCrash(
   return source == browser_->GetTabStripModel()->GetActiveWebContents();
 }
 
-void BrowserWebContentsDelegate::ShowRepostFormWarningDialog(
+bool BrowserWebContentsDelegate::ShowRepostFormWarningDialog(
     content::WebContents* source) {
   TabModalConfirmDialog::Create(
       std::make_unique<RepostFormWarningController>(source), source);
+  return true;
 }
 
 std::unique_ptr<content::EyeDropper> BrowserWebContentsDelegate::OpenEyeDropper(

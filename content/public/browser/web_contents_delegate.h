@@ -392,8 +392,11 @@ class CONTENT_EXPORT WebContentsDelegate {
                             const DropData& data,
                             blink::DragOperationsMask operations_allowed);
 
-  // Shows the repost form confirmation dialog box.
-  virtual void ShowRepostFormWarningDialog(WebContents* source) {}
+  // Shows the repost form confirmation dialog box. Returns false if the
+  // embedder cannot show the dialog. An embedder that returns true must
+  // call NavigationController::ContinuePendingReload() or
+  // NavigationController::CancelPendingReload() when the user responds.
+  virtual bool ShowRepostFormWarningDialog(WebContents* source);
 
   // Allows delegate to override navigation to the history entries.
   // Returns true to allow WebContents to continue with the default processing.

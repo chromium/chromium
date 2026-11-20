@@ -47,7 +47,8 @@ class NavigationControllerDelegate {
   virtual void NotifyNavigationListPruned(
       const PrunedDetails& pruned_details) = 0;
   virtual void NotifyNavigationEntriesDeleted() = 0;
-  virtual void ActivateAndShowRepostFormWarningDialog() = 0;
+  // Returns false if the form repost dialog cannot show.
+  virtual bool ActivateAndShowRepostFormWarningDialog() = 0;
 
   // Returns whether URLs for aborted browser-initiated navigations should be
   // preserved in the omnibox.  Defaults to false.

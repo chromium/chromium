@@ -191,7 +191,7 @@ class AwWebContentsDelegateAdapter extends AwWebContentsDelegate {
 
     @Override
     @SuppressLint("HandlerLeak")
-    public void showRepostFormWarningDialog() {
+    public boolean showRepostFormWarningDialog() {
         // TODO(mkosiba) We should be using something akin to the JsResultReceiver as the
         // callback parameter (instead of WebContents) and implement a way of converting
         // that to a pair of messages.
@@ -226,6 +226,7 @@ class AwWebContentsDelegateAdapter extends AwWebContentsDelegate {
         Message resend = handler.obtainMessage(msgContinuePendingReload);
         Message dontResend = handler.obtainMessage(msgCancelPendingReload);
         mContentsClient.getCallbackHelper().postOnFormResubmission(dontResend, resend);
+        return true;
     }
 
     @Override

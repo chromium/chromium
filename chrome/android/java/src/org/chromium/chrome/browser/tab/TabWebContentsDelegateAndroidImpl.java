@@ -358,8 +358,8 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
     }
 
     @Override
-    public void showRepostFormWarningDialog() {
-        mDelegate.showRepostFormWarningDialog();
+    public boolean showRepostFormWarningDialog() {
+        return mDelegate.showRepostFormWarningDialog();
     }
 
     @Override

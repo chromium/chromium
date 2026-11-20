@@ -77,7 +77,7 @@ class GuestPageHolderImpl : public GuestPageHolder,
       const EntryChangedDetails& change_details) override;
   void NotifyNavigationListPruned(const PrunedDetails& pruned_details) override;
   void NotifyNavigationEntriesDeleted() override;
-  void ActivateAndShowRepostFormWarningDialog() override;
+  bool ActivateAndShowRepostFormWarningDialog() override;
   bool ShouldPreserveAbortedURLs() override;
   void UpdateOverridingUserAgent() override;
 #if BUILDFLAG(IS_ANDROID)

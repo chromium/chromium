@@ -17745,8 +17745,9 @@ class CountRepostFormWarningWebContentsDelegate : public WebContentsDelegate {
 
   int repost_form_warning_count() { return repost_form_warning_count_; }
 
-  void ShowRepostFormWarningDialog(WebContents* source) override {
+  bool ShowRepostFormWarningDialog(WebContents* source) override {
     repost_form_warning_count_++;
+    return true;
   }
 
  private:

@@ -147,6 +147,10 @@ bool WebContentsDelegate::CanDragEnter(
   return true;
 }
 
+bool WebContentsDelegate::ShowRepostFormWarningDialog(WebContents* source) {
+  return false;
+}
+
 bool WebContentsDelegate::OnGoToEntryOffset(int offset) {
   return true;
 }

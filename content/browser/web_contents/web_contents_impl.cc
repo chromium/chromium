@@ -9459,13 +9459,11 @@ void WebContentsImpl::NotifyBeforeFormRepostWarningShow() {
   observers_.NotifyObservers(&WebContentsObserver::BeforeFormRepostWarningShow);
 }
 
-void WebContentsImpl::ActivateAndShowRepostFormWarningDialog() {
+bool WebContentsImpl::ActivateAndShowRepostFormWarningDialog() {
   OPTIONAL_TRACE_EVENT0(
       "content", "WebContentsImpl::ActivateAndShowRepostFormWarningDialog");
   Activate();
-  if (delegate_) {
-    delegate_->ShowRepostFormWarningDialog(this);
-  }
+  return delegate_ && delegate_->ShowRepostFormWarningDialog(this);
 }
 
 bool WebContentsImpl::HasAccessedInitialDocument() {

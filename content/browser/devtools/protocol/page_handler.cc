@@ -46,6 +46,7 @@
 #include "content/browser/manifest/manifest_manager_host.h"
 #include "content/browser/media/capture/web_contents_video_capture_device.h"
 #include "content/browser/renderer_host/frame_tree.h"
+#include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/navigator.h"
@@ -866,6 +867,7 @@ Response PageHandler::RemoveScriptToEvaluateOnLoad(
 void PageHandler::Reload(std::optional<bool> bypassCache,
                          std::optional<std::string> script_to_evaluate_on_load,
                          std::optional<std::string> loader_id,
+                         std::optional<bool> check_for_repost,
                          std::unique_ptr<ReloadCallback> callback) {
   Response response = AssureTopLevelActiveFrame();
   if (response.IsError()) {
@@ -892,25 +894,96 @@ void PageHandler::Reload(std::optional<bool> bypassCache,
   const auto reload_type = bypassCache.value_or(false)
                                ? ReloadType::BYPASSING_CACHE
                                : ReloadType::NORMAL;
-  NavigationController& navigation_controller =
+  NavigationControllerImpl& navigation_controller =
       outermost_main_frame->frame_tree()->controller();
+
+  // The reload preparation runs in OnReloadRepostCheckDone(). If the form
+  // repost dialog shows, the preparation runs only after the user accepts the
+  // dialog. Thus a cancelled dialog leaves no reload state in the browser or
+  // in the renderer.
+  base::WeakPtr<PageHandler> weak_self = weak_factory_.GetWeakPtr();
+  is_starting_reload_ = true;
+  navigation_controller.ReloadWithRepostCheckCallback(
+      reload_type, check_for_repost.value_or(false),
+      base::BindOnce(&PageHandler::OnReloadRepostCheckDone, weak_self,
+                     outermost_main_frame->GetWeakPtr(),
+                     script_to_evaluate_on_load.value_or(""),
+                     std::move(callback)));
+  if (!weak_self) {
+    return;
+  }
+  is_starting_reload_ = false;
+  if (reload_success_callback_) {
+    // Send the response after the reload starts, to keep the order of the
+    // response and the navigation events.
+    std::exchange(reload_success_callback_, nullptr)->sendSuccess();
+  }
+}
+
+namespace {
+
+// Sends the response to Page.reload in a separate task. The navigation
+// controller runs the repost check callback in the middle of a navigation
+// commit or of a reload request. The response can make the client close the
+// tab or change the navigation entries.
+void PostReloadResponse(std::unique_ptr<PageHandler::ReloadCallback> callback,
+                        Response response) {
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(
+                     [](std::unique_ptr<PageHandler::ReloadCallback> callback,
+                        Response response) {
+                       if (response.IsError()) {
+                         callback->sendFailure(response);
+                       } else {
+                         callback->sendSuccess();
+                       }
+                     },
+                     std::move(callback), std::move(response)));
+}
+
+}  // namespace
+
+void PageHandler::OnReloadRepostCheckDone(
+    base::WeakPtr<RenderFrameHostImpl> outermost_main_frame,
+    std::string script_to_evaluate_on_load,
+    std::unique_ptr<ReloadCallback> callback,
+    bool proceed) {
+  if (!proceed) {
+    PostReloadResponse(std::move(callback),
+                       Response::ServerError("Reload was cancelled"));
+    return;
+  }
+  // The form repost dialog can stay open for a long time. In that time, the
+  // frame can go away, and this handler can attach to a different frame. Do
+  // not prepare a reload of a frame that this handler does not inspect.
+  if (!outermost_main_frame || !host_ ||
+      host_->GetOutermostMainFrameOrEmbedder() != outermost_main_frame.get()) {
+    PostReloadResponse(
+        std::move(callback),
+        Response::ServerError("Reload target is no longer attached"));
+    return;
+  }
   // For RenderDocument, the path is different: we don't fall through to the
   // renderer and process `scriptToEvaluateOnLoad` in the browser instead.
-  const bool handle_reload_on_browser_side =
-      outermost_main_frame->ShouldChangeRenderFrameHostOnSameSiteNavigation();
-  if (handle_reload_on_browser_side) {
+  // Read the frame state now and not in Reload(), because it can change while
+  // the dialog is open, for example if the renderer crashes.
+  if (outermost_main_frame->ShouldChangeRenderFrameHostOnSameSiteNavigation()) {
     have_pending_reload_ = true;
-    pending_script_to_evaluate_on_load_ =
-        script_to_evaluate_on_load.value_or("");
+    pending_script_to_evaluate_on_load_ = std::move(script_to_evaluate_on_load);
     initiating_origin_ = outermost_main_frame->GetLastCommittedOrigin();
-    navigation_controller.Reload(reload_type, false);
-    callback->sendSuccess();
-  } else {
-    // It is important to fallback before triggering reload, so that
-    // renderer could prepare beforehand.
-    callback->fallThrough();
-    navigation_controller.Reload(reload_type, false);
+    if (is_starting_reload_) {
+      reload_success_callback_ = std::move(callback);
+    } else {
+      // The user accepted the form repost dialog. The navigation controller
+      // starts the reload after this callback returns. The posted response
+      // then follows the start of the reload, as in the synchronous case.
+      PostReloadResponse(std::move(callback), Response::Success());
+    }
+    return;
   }
+  // It is important to fallback before triggering reload, so that
+  // renderer could prepare beforehand.
+  callback->fallThrough();
 }
 
 static std::optional<network::mojom::ReferrerPolicy> ParsePolicyFromString(

@@ -147,7 +147,7 @@ class BrowserWebContentsDelegate : public content::WebContentsDelegate {
                          bool* proceed_to_fire_unload) override;
   bool ShouldFocusLocationBarByDefault(content::WebContents* source) override;
   bool ShouldFocusPageAfterCrash(content::WebContents* source) override;
-  void ShowRepostFormWarningDialog(content::WebContents* source) override;
+  bool ShowRepostFormWarningDialog(content::WebContents* source) override;
   std::unique_ptr<content::EyeDropper> OpenEyeDropper(
       content::RenderFrameHost* frame,
       content::EyeDropperListener* listener) override;

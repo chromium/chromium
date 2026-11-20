@@ -278,10 +278,11 @@ PrerenderHost::PrerenderFrameTreeDelegate::GetPrerenderHostId() {
   return prerender_host_->prerender_host_id();
 }
 
-void PrerenderHost::PrerenderFrameTreeDelegate::
+bool PrerenderHost::PrerenderFrameTreeDelegate::
     ActivateAndShowRepostFormWarningDialog() {
   // Not supported, cancel pending reload.
   frame_tree_->controller().CancelPendingReload();
+  return false;
 }
 
 bool PrerenderHost::PrerenderFrameTreeDelegate::ShouldPreserveAbortedURLs() {

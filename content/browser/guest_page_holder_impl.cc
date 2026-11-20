@@ -216,8 +216,9 @@ void GuestPageHolderImpl::NotifyNavigationListPruned(
 
 void GuestPageHolderImpl::NotifyNavigationEntriesDeleted() {}
 
-void GuestPageHolderImpl::ActivateAndShowRepostFormWarningDialog() {
+bool GuestPageHolderImpl::ActivateAndShowRepostFormWarningDialog() {
   NOTIMPLEMENTED();
+  return false;
 }
 
 bool GuestPageHolderImpl::ShouldPreserveAbortedURLs() {

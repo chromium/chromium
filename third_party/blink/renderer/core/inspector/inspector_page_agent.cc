@@ -645,7 +645,9 @@ protocol::Response InspectorPageAgent::setAdBlockingEnabled(bool enable) {
 protocol::Response InspectorPageAgent::reload(
     std::optional<bool> optional_bypass_cache,
     std::optional<String> optional_script_to_evaluate_on_load,
-    std::optional<String> loader_id) {
+    std::optional<String> loader_id,
+    std::optional<bool> check_for_repost) {
+  // The browser handles `check_for_repost`.
   if (loader_id.has_value() && inspected_frames_->Root()
                                        ->Loader()
                                        .GetDocumentLoader()
