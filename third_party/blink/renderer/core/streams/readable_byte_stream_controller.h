@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_READABLE_BYTE_STREAM_CONTROLLER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_READABLE_BYTE_STREAM_CONTROLLER_H_
 
+#include <stdint.h>
+
 #include <optional>
 
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
@@ -239,7 +241,7 @@ class CORE_EXPORT ReadableByteStreamController
                     StreamAlgorithm* pull_algorithm,
                     StreamAlgorithm* cancel_algorithm,
                     double high_water_mark,
-                    size_t auto_allocate_chunk_size,
+                    uint64_t auto_allocate_chunk_size,
                     ExceptionState&);
 
   // https://streams.spec.whatwg.org/#set-up-readable-byte-stream-controller-from-underlying-source
@@ -331,7 +333,7 @@ class CORE_EXPORT ReadableByteStreamController
   void ReleaseSteps() override;
 
   // autoAllocateChunkSize is encoded as 0 when it is undefined
-  size_t auto_allocate_chunk_size_ = 0u;
+  uint64_t auto_allocate_chunk_size_ = 0u;
   Member<ReadableStreamBYOBRequest> byob_request_;
   Member<StreamAlgorithm> cancel_algorithm_;
   bool close_requested_ = false;

@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 
+#include <stdint.h>
+
 #include <optional>
 
 #include "base/containers/span.h"
@@ -1430,7 +1432,7 @@ bool IsRangeError(ScriptState* script_state,
 
 ReadableStream* CreateOversizedAutoAllocateByteStream(
     V8TestingScope& scope,
-    size_t auto_allocate_chunk_size) {
+    uint64_t auto_allocate_chunk_size) {
   v8::Isolate* isolate = scope.GetIsolate();
   v8::Local<v8::Context> context = scope.GetContext();
   EXPECT_TRUE(context->Global()
@@ -1558,6 +1560,35 @@ TEST_F(ReadableByteStreamTest,
   EXPECT_FALSE(stream->IsLocked());
   EXPECT_TRUE(stream->IsReadable());
   EXPECT_FALSE(stream->IsErrored());
+}
+
+TEST_F(ReadableByteStreamTest, AutoAllocateChunkSizeExceeding32Bits) {
+  const auto check_size = [](uint64_t chunk_size) {
+    SCOPED_TRACE(chunk_size);
+    V8TestingScope scope;
+    auto* script_state = scope.GetScriptState();
+    ReadableStream* stream =
+        CreateOversizedAutoAllocateByteStream(scope, chunk_size);
+    ASSERT_TRUE(stream);
+    EXPECT_TRUE(stream->IsReadable());
+    EXPECT_FALSE(stream->IsErrored());
+
+    auto* reader =
+        stream->GetDefaultReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
+    ScriptPromiseTester read_tester(
+        script_state, reader->read(script_state, ASSERT_NO_EXCEPTION));
+    read_tester.WaitUntilSettled();
+
+    EXPECT_TRUE(read_tester.IsRejected());
+    EXPECT_TRUE(IsRangeError(script_state, read_tester.Value(),
+                             kAllocationFailedMessage));
+    EXPECT_TRUE(stream->IsReadable());
+    EXPECT_FALSE(stream->IsErrored());
+  };
+
+  check_size(uint64_t{1} << 32);
+  check_size((uint64_t{1} << 32) + 1);
+  check_size((uint64_t{1} << 53) - 1);
 }
 
 }  // namespace

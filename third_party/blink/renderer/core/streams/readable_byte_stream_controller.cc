@@ -7,6 +7,7 @@
 #include "base/containers/span.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/clamped_math.h"
+#include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_underlying_source.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_underlying_source_cancel_callback.h"
@@ -933,7 +934,7 @@ void ReadableByteStreamController::SetUp(
     StreamAlgorithm* pull_algorithm,
     StreamAlgorithm* cancel_algorithm,
     double high_water_mark,
-    size_t auto_allocate_chunk_size,
+    uint64_t auto_allocate_chunk_size,
     ExceptionState& exception_state) {
   // https://streams.spec.whatwg.org/#set-up-readable-byte-stream-controller
   // 1. Assert: stream.[[controller]] is undefined.
@@ -1091,9 +1092,9 @@ void ReadableByteStreamController::SetUpFromUnderlyingSource(
   // 8. Let autoAllocateChunkSize be
   // underlyingSourceDict["autoAllocateChunkSize"], if it exists, or undefined
   // otherwise.
-  size_t auto_allocate_chunk_size =
+  uint64_t auto_allocate_chunk_size =
       underlying_source_dict->hasAutoAllocateChunkSize()
-          ? static_cast<size_t>(underlying_source_dict->autoAllocateChunkSize())
+          ? underlying_source_dict->autoAllocateChunkSize()
           : 0u;
   // 9. If autoAllocateChunkSize is 0, then throw a TypeError exception.
   if (underlying_source_dict->hasAutoAllocateChunkSize() &&
@@ -1861,11 +1862,15 @@ void ReadableByteStreamController::PullSteps(ScriptState* script_state,
     return;
   }
   // 4. Let autoAllocateChunkSize be this.[[autoAllocateChunkSize]].
-  const size_t auto_allocate_chunk_size = auto_allocate_chunk_size_;
+  const uint64_t auto_allocate_chunk_size = auto_allocate_chunk_size_;
   // 5. If autoAllocateChunkSize is not undefined,
   if (auto_allocate_chunk_size) {
     //   a. Let buffer be Construct(%ArrayBuffer%, « autoAllocateChunkSize »).
-    auto* buffer = DOMArrayBuffer::CreateOrNull(auto_allocate_chunk_size, 1);
+    DOMArrayBuffer* buffer =
+        base::IsValueInRangeForNumericType<size_t>(auto_allocate_chunk_size)
+            ? DOMArrayBuffer::CreateOrNull(
+                  static_cast<size_t>(auto_allocate_chunk_size), 1)
+            : nullptr;
     //   b. If buffer is an abrupt completion,
     //     i. Perform readRequest’s error steps, given buffer.[[Value]].
     //     ii. Return.
@@ -1887,11 +1892,13 @@ void ReadableByteStreamController::PullSteps(ScriptState* script_state,
     //      element size        1,
     //      view constructor    %Uint8Array%,
     //      reader type         "default".
+    const size_t chunk_size =
+        base::checked_cast<size_t>(auto_allocate_chunk_size);
     auto* ctor = &CreateAsArrayBufferView<DOMUint8Array>;
     PullIntoDescriptor* pull_into_descriptor =
         MakeGarbageCollected<PullIntoDescriptor>(
-            buffer, auto_allocate_chunk_size, /*byte_offset=*/0,
-            auto_allocate_chunk_size, /*bytes_filled=*/0, /*minimum_fill=*/1,
+            buffer, chunk_size, /*byte_offset=*/0, chunk_size,
+            /*bytes_filled=*/0, /*minimum_fill=*/1,
             /*element_size=*/1, ctor, ViewType::kTypedArray,
             ReaderType::kDefault);
     //   d. Append pullIntoDescriptor as the last element of
