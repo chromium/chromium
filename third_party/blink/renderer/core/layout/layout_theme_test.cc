@@ -9,6 +9,7 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
+#include "third_party/blink/renderer/core/css/style_color.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -21,6 +22,9 @@
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "third_party/blink/renderer/platform/web_test_support.h"
+#include "ui/color/color_provider.h"
+#include "ui/color/color_provider_utils.h"
 
 namespace blink {
 
@@ -113,6 +117,19 @@ TEST_F(LayoutThemeTest, AppearanceAdjustsDisplayOfWidgets) {
   EXPECT_EQ(EDisplay::kInlineBlock,
             GetElementById("cell_button")->GetComputedStyle()->Display());
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(LayoutThemeTest, HighlightOpacityInForcedColors) {
+  ScopedWebTestMode web_test_mode(false);
+  const auto color_provider =
+      ui::CreateEmulatedForcedColorsColorProvider(/*dark_mode=*/false);
+  const ColorThemeInfo theme_info{.color_provider = color_provider.get(),
+                                  .in_forced_colors = true};
+  EXPECT_TRUE(LayoutTheme::GetTheme()
+                  .SystemColor(CSSValueID::kHighlight, theme_info)
+                  .IsOpaque());
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // The expectations in the tests below are relying on LayoutThemeDefault.
 // LayoutThemeMac doesn't inherit from that class.

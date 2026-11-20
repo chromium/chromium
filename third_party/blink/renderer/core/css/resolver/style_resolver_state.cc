@@ -157,6 +157,7 @@ ColorThemeInfo StyleResolverState::GetColorThemeInfo() const {
   return {
       .color_provider = GetDocument().GetColorProviderForPainting(color_scheme),
       .color_scheme = color_scheme,
+      .in_forced_colors = GetDocument().InForcedColorsMode(),
       .accent_color = StyleBuilder().ResolveMirroredAccentColor(color_scheme),
       .can_expose_system_accent_color = CanExposeSystemAccentColor()};
 }

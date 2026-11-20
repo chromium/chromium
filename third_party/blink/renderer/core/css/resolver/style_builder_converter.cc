@@ -3644,6 +3644,7 @@ static const CSSValue& ComputeRegisteredPropertyValue(
           : ColorThemeInfo{
                 .color_provider = document.GetColorProviderForPainting(
                     mojom::blink::ColorScheme::kLight),
+                .in_forced_colors = document.InForcedColorsMode(),
                 .can_expose_system_accent_color =
                     document.IsInWebAppScope() && document.IsInitialProfile()};
 

@@ -62,6 +62,7 @@ class CSSValue;
 struct ColorThemeInfo {
   raw_ptr<const ui::ColorProvider> color_provider = nullptr;
   mojom::blink::ColorScheme color_scheme = mojom::blink::ColorScheme::kLight;
+  bool in_forced_colors = false;
   // When set, this is the resolved `accent-color` that the
   // `AccentColor`/`AccentColorText` keywords mirror. A null value means those
   // keywords should fall back to the system accent color.

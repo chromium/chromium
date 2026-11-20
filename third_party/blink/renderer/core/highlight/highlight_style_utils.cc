@@ -108,6 +108,7 @@ Color ForcedColor(const ComputedStyle& originating_style,
   const ColorThemeInfo theme_info{
       .color_provider = color_provider,
       .color_scheme = UsedColorScheme(originating_style, pseudo_style),
+      .in_forced_colors = true,
       .can_expose_system_accent_color = can_expose_system_accent_color};
   if (property.IDEquals(CSSPropertyID::kBackgroundColor)) {
     return ForcedBackgroundColor(pseudo, theme_info);
@@ -131,7 +132,8 @@ std::optional<Color> DefaultForegroundColor(
             /*theme_info=*/
             {.color_provider =
                  document.GetColorProviderForPainting(color_scheme),
-             .color_scheme = color_scheme});
+             .color_scheme = color_scheme,
+             .in_forced_colors = document.InForcedColorsMode()});
       }
       if (!LayoutTheme::GetTheme().SupportsSelectionForegroundColors()) {
         if (originating_style.VisitedDependentColor(GetCSSPropertyColor())
@@ -157,6 +159,7 @@ std::optional<Color> DefaultForegroundColor(
           /*theme_info=*/
           {.color_provider = document.GetColorProviderForPainting(color_scheme),
            .color_scheme = color_scheme,
+           .in_forced_colors = document.InForcedColorsMode(),
            .can_expose_system_accent_color =
                document.IsInWebAppScope() && document.IsInitialProfile()});
     case kPseudoIdTargetText:
@@ -165,6 +168,7 @@ std::optional<Color> DefaultForegroundColor(
           /*theme_info=*/
           {.color_provider = document.GetColorProviderForPainting(color_scheme),
            .color_scheme = color_scheme,
+           .in_forced_colors = document.InForcedColorsMode(),
            .can_expose_system_accent_color =
                document.IsInWebAppScope() && document.IsInitialProfile()});
     case kPseudoIdSpellingError:
@@ -191,7 +195,8 @@ Color DefaultBackgroundColor(
             /*theme_info=*/
             {.color_provider =
                  document.GetColorProviderForPainting(color_scheme),
-             .color_scheme = color_scheme});
+             .color_scheme = color_scheme,
+             .in_forced_colors = document.InForcedColorsMode()});
       }
       return document.GetFrame()->Selection().FrameIsFocusedAndActive()
                  ? LayoutTheme::GetTheme().ActiveSelectionBackgroundColor(
@@ -205,6 +210,7 @@ Color DefaultBackgroundColor(
           /*theme_info=*/
           {.color_provider = document.GetColorProviderForPainting(color_scheme),
            .color_scheme = color_scheme,
+           .in_forced_colors = document.InForcedColorsMode(),
            .can_expose_system_accent_color =
                document.IsInWebAppScope() && document.IsInitialProfile()});
     case kPseudoIdTargetText:

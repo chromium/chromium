@@ -663,6 +663,7 @@ TEST_F(WebViewTest, SetBaseBackgroundColorWithColorScheme) {
       {.color_provider = web_view->GetPage()->GetColorProviderForPainting(
            color_scheme, /*in_forced_colors=*/true),
        .color_scheme = color_scheme,
+       .in_forced_colors = true,
        .can_expose_system_accent_color =
            document->IsInWebAppScope() && document->IsInitialProfile()});
   EXPECT_EQ(system_background_color, frame_view->BaseBackgroundColor());

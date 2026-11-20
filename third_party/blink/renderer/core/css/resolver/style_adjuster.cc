@@ -1077,6 +1077,7 @@ void StyleAdjuster::AdjustForForcedColorsMode(ComputedStyleBuilder& builder,
   const ColorThemeInfo theme_info{
       .color_provider = document.GetColorProviderForPainting(color_scheme),
       .color_scheme = color_scheme,
+      .in_forced_colors = document.InForcedColorsMode(),
       .accent_color = builder.ResolveMirroredAccentColor(color_scheme),
       .can_expose_system_accent_color =
           document.IsInWebAppScope() && document.IsInitialProfile()};

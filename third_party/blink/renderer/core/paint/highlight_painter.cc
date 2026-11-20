@@ -203,6 +203,7 @@ TextPaintStyle TextPaintStyleForTextMatch(const TextMatchMarker& marker,
           /*theme_info=*/
           {.color_provider = document.GetColorProviderForPainting(color_scheme),
            .color_scheme = color_scheme,
+           .in_forced_colors = document.InForcedColorsMode(),
            .can_expose_system_accent_color =
                document.IsInWebAppScope() && document.IsInitialProfile()});
   // Comparing against the value of the 'color' property doesn't always make
@@ -586,6 +587,7 @@ void HighlightPainter::PaintNonCssMarkers(Phase phase) {
                   {.color_provider = document.GetColorProviderForPainting(
                        originating_style_.UsedColorScheme()),
                    .color_scheme = originating_style_.UsedColorScheme(),
+                   .in_forced_colors = document.InForcedColorsMode(),
                    .can_expose_system_accent_color =
                        document.IsInWebAppScope() &&
                        document.IsInitialProfile()});

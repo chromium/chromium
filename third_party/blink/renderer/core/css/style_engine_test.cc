@@ -3436,7 +3436,8 @@ TEST_F(StyleEngineTest, ColorSchemeBaseBackgroundChange) {
       /*theme_info=*/
       {.color_provider =
            GetDocument().GetColorProviderForPainting(color_scheme),
-       .color_scheme = color_scheme});
+       .color_scheme = color_scheme,
+       .in_forced_colors = GetDocument().InForcedColorsMode()});
 
   EXPECT_EQ(system_background_color,
             GetDocument().View()->BaseBackgroundColor());

@@ -831,6 +831,12 @@ Color LayoutTheme::SystemColorFromColorProvider(
           color_provider->GetColor(ui::kColorCssSystemGrayText);
       break;
     case CSSValueID::kHighlight:
+      if (theme_info.in_forced_colors) {
+        // Preserve the forced palette instead of applying selection opacity.
+        system_theme_color =
+            color_provider->GetColor(ui::kColorCssSystemHighlight);
+        break;
+      }
       return SystemHighlightFromColorProvider(color_scheme, color_provider);
     case CSSValueID::kHighlighttext:
       system_theme_color =

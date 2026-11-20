@@ -989,11 +989,15 @@ void Canvas2DRecorderContext::setStrokeStyle(v8::Isolate* isolate,
 ColorParseResult Canvas2DRecorderContext::ParseColorOrCurrentColor(
     const String& color_string,
     Color& color) const {
+  const HTMLCanvasElement* canvas = HostAsHTMLCanvasElement();
+  const bool in_forced_colors =
+      canvas && canvas->GetDocument().InForcedColorsMode();
   const ColorParseResult parse_result = ParseCanvasColorString(
       color_string, color,
       /*theme_info=*/
       {.color_provider = GetColorProvider(),
        .color_scheme = color_scheme_,
+       .in_forced_colors = in_forced_colors,
        .can_expose_system_accent_color = CanExposeSystemAccentColor()},
       /*has_style_context=*/HostAsHTMLCanvasElement() != nullptr);
   if (parse_result == ColorParseResult::kCurrentColor) {
@@ -1020,6 +1024,7 @@ ColorParseResult Canvas2DRecorderContext::ParseColorOrCurrentColor(
         .theme_info = {
             .color_provider = GetColorProvider(),
             .color_scheme = color_scheme_,
+            .in_forced_colors = in_forced_colors,
             .can_expose_system_accent_color = CanExposeSystemAccentColor()}};
     const StyleColor style_color = ResolveColorValue(*color_value, context);
     color = style_color.Resolve(GetCurrentColor(), color_scheme_);

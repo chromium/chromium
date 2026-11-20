@@ -403,6 +403,7 @@ static Color ResolveStopColor(const CSSToLengthConversionData& conversion_data,
       .theme_info = {
           .color_provider = document.GetColorProviderForPainting(color_scheme),
           .color_scheme = color_scheme,
+          .in_forced_colors = document.InForcedColorsMode(),
           .accent_color = style.ResolveMirroredAccentColor(),
           .can_expose_system_accent_color =
               document.IsInWebAppScope() && document.IsInitialProfile()}};

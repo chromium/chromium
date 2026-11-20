@@ -90,6 +90,7 @@ StyleRuleFontPaletteValues::GetOverrideColorsAsVector(
       .theme_info = {.color_provider = document.GetColorProviderForPainting(
                          used_color_scheme),
                      .color_scheme = used_color_scheme,
+                     .in_forced_colors = document.InForcedColorsMode(),
                      .can_expose_system_accent_color =
                          document.IsInWebAppScope() &&
                          document.IsInitialProfile()},

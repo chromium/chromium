@@ -4858,7 +4858,8 @@ void StyleEngine::UpdateForcedBackgroundColor() {
       /*theme_info=*/
       {.color_provider = GetDocument().GetPage()->GetColorProviderForPainting(
            color_scheme, forced_colors_ != ForcedColors::kNone),
-       .color_scheme = color_scheme});
+       .color_scheme = color_scheme,
+       .in_forced_colors = forced_colors_ != ForcedColors::kNone});
 }
 
 mojom::blink::ColorScheme StyleEngine::AdjustAboutBlankColorScheme(

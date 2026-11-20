@@ -39,7 +39,9 @@ void SetCanvasAndColorScheme(const Document& document,
   Color color = StyleColor::ColorFromKeyword(
       CSSValueID::kCanvas,
       /*theme_info=*/
-      {.color_provider = color_provider, .color_scheme = color_scheme});
+      {.color_provider = color_provider,
+       .color_scheme = color_scheme,
+       .in_forced_colors = document.InForcedColorsMode()});
   builder.SetDarkColorScheme(color_scheme == mojom::blink::ColorScheme::kDark);
   builder.SetBackgroundColor(StyleColor(color, CSSValueID::kCanvas));
 }
