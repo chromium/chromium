@@ -315,6 +315,8 @@ class COMPONENT_EXPORT(PRIVATE_INSIGHTS) PrivateInsightsService
                            PopulationNameFinchParam);
   FRIEND_TEST_ALL_PREFIXES(PrivateInsightsServiceTest,
                            DefaultServerUriMatchesBranding);
+  FRIEND_TEST_ALL_PREFIXES(PrivateInsightsServiceTest, DefaultPopulationName);
+  FRIEND_TEST_ALL_PREFIXES(PrivateInsightsServiceTest, DefaultUploadInterval);
   FRIEND_TEST_ALL_PREFIXES(PrivateInsightsServiceTest, LogContextualCueEvent);
   FRIEND_TEST_ALL_PREFIXES(PrivateInsightsServiceTest,
                            SerializeEventsToQueryResult);

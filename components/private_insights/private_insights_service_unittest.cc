@@ -439,6 +439,46 @@ TEST_P(PrivateInsightsServiceTest, DefaultServerUriMatchesBranding) {
 #endif
 }
 
+// Without an `fcp_population_name_contextual_cues` param, Contextual Cues
+// events go to the population that the Desktop Finch study has always sent.
+TEST_P(PrivateInsightsServiceTest, DefaultPopulationName) {
+  TestingPrefServiceSimple local_state;
+  PrivateInsightsService service(&local_state, tmp_profile_dir_.GetPath(),
+                                 test_shared_url_loader_factory_);
+
+  events::ContextualCueLogEvent event;
+  service.LogContextualCueEvent(event);
+
+  service.TriggerUpload();
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(service.sequence_checker_);
+    return !service.is_upload_running_;
+  }));
+  EXPECT_EQ(mock_run_federated_computation_call_count_, 1);
+  EXPECT_EQ(GetLastPopulationName(), "chrome/private_insights/contextual_cues");
+}
+
+// Without an `upload_interval` param, clients upload every 10 minutes, the
+// interval the Desktop Finch study has always used.
+TEST_P(PrivateInsightsServiceTest, DefaultUploadInterval) {
+  PrivateInsightsMetricsServiceAccessor::
+      SetForceIsMetricsReportingEnabledPrefLookupForTesting(true);
+
+  TestingPrefServiceSimple local_state;
+  local_state.registry()->RegisterBooleanPref(
+      metrics::prefs::kMetricsReportingEnabled, true);
+
+  PrivateInsightsService service(&local_state, tmp_profile_dir_.GetPath(),
+                                 test_shared_url_loader_factory_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(service.sequence_checker_);
+  service.Init();
+  EXPECT_TRUE(service.upload_timer_.IsRunning());
+  EXPECT_EQ(service.upload_timer_.GetCurrentDelay(), base::Minutes(10));
+
+  PrivateInsightsMetricsServiceAccessor::
+      SetForceIsMetricsReportingEnabledPrefLookupForTesting(false);
+}
+
 TEST_P(PrivateInsightsServiceTest, LogContextualCueEvent) {
   base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList scoped_feature_list;

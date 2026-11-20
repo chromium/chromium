@@ -5,10 +5,18 @@
 #include "components/private_insights/private_insights_features.h"
 
 #include "base/time/time.h"
+#include "build/build_config.h"
 
 namespace private_insights {
 
-BASE_FEATURE(kPrivateInsightsFeature, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPrivateInsightsFeature,
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 BASE_FEATURE(kPrivateInsightsUploadTaskPipeline,
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -16,11 +24,11 @@ BASE_FEATURE(kPrivateInsightsUploadTaskPipeline,
 BASE_FEATURE(kPrivateInsightsStorageAccess, base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<base::TimeDelta> kPrivateInsightsUploadInterval{
-    &kPrivateInsightsFeature, "upload_interval", base::Minutes(30)};
+    &kPrivateInsightsFeature, "upload_interval", base::Minutes(10)};
 
 const base::FeatureParam<std::string> kFcpPopulationNameContextualCues{
     &kPrivateInsightsFeature, "fcp_population_name_contextual_cues",
-    "private_insights/contextual_cues"};
+    "chrome/private_insights/contextual_cues"};
 
 const base::FeatureParam<std::string> kFcpPopulationNameStorageAccess{
     &kPrivateInsightsFeature, "fcp_population_name_storage_access",

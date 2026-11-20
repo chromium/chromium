@@ -14,7 +14,8 @@
 
 namespace private_insights {
 
-// Enables Private Insights.
+// Enables Private Insights. Enabled by default on Windows, Mac, Linux and
+// ChromeOS, and disabled elsewhere.
 COMPONENT_EXPORT(PRIVATE_INSIGHTS)
 BASE_DECLARE_FEATURE(kPrivateInsightsFeature);
 

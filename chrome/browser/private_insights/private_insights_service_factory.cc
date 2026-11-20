@@ -83,4 +83,10 @@ bool PrivateInsightsServiceFactory::ServiceIsCreatedWithBrowserContext() const {
   return true;
 }
 
+bool PrivateInsightsServiceFactory::ServiceIsNULLWhileTesting() const {
+  // The service requires local state, which most unit tests don't set up.
+  // Tests that need the service install a testing factory.
+  return true;
+}
+
 }  // namespace private_insights
