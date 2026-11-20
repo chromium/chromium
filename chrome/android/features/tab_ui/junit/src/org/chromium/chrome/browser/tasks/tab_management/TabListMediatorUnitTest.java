@@ -8121,6 +8121,23 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
+    public void testDataProvider_PrepareHiding_RemovesObserversFromTabOfAnotherModel() {
+        setUpProviderMediator(TabListLayoutType.GROUPED, /* supportsModifierMultiSelect= */ false);
+        Tab otherModelTab = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
+        when(mTabModel.getTabById(TAB3_ID)).thenReturn(null);
+        when(mTabListDataProvider.getTabById(TAB3_ID)).thenReturn(otherModelTab);
+        mMediator.resetWithListOfTabs(
+                List.of(mTab1, otherModelTab), /* tabGroupSyncIds= */ null, /* quickMode= */ false);
+        mDataObserver.onDataReset(List.of(createTabItem(TAB1_ID), createTabItem(TAB3_ID)));
+        verify(otherModelTab).addObserver(mTabObserverCaptor.getValue());
+
+        mMediator.prepareHiding();
+
+        // The current TabModel doesn't have the tab, but its observers are still removed.
+        verify(otherModelTab).removeObserver(mTabObserverCaptor.getValue());
+    }
+
+    @Test
     public void testDataProvider_OnDataReset_IgnoresEmptyGroup() {
         setUpProviderMediator(TabListLayoutType.GROUPED, /* supportsModifierMultiSelect= */ false);
         mMediator.resetWithListOfTabs(
@@ -8356,7 +8373,7 @@ public class TabListMediatorUnitTest {
         verify(mTab1, times(1)).addObserver(mTabObserverCaptor.getValue());
 
         mMediator.prepareHiding();
-        verify(mTab1, times(2)).removeObserver(mTabObserverCaptor.getValue());
+        verify(mTab1, times(1)).removeObserver(mTabObserverCaptor.getValue());
         mMediator.resetWithListOfTabs(
                 List.of(mTab1, mTab2), /* tabGroupSyncIds= */ null, /* quickMode= */ false);
         mDataObserver.onDataReset(items);

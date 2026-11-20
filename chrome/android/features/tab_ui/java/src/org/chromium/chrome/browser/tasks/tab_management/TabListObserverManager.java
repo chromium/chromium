@@ -105,6 +105,18 @@ class TabListObserverManager {
         return tabs;
     }
 
+    /**
+     * Returns every observed {@link Tab}. Returns a copy so callers can detach tabs while
+     * iterating.
+     */
+    List<Tab> getObservedTabs() {
+        List<Tab> tabs = new ArrayList<>();
+        for (int i = 0; i < mObservedTabs.size(); i++) {
+            tabs.add(mObservedTabs.valueAt(i));
+        }
+        return tabs;
+    }
+
     /** Unregisters all active observers. */
     void destroy() {
         for (int i = 0; i < mObservedTabs.size(); i++) {

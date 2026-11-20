@@ -2751,11 +2751,11 @@ public class TabListMediator implements TabListNotificationHandler {
 
     private void removeObservers(@Nullable TabModel tabModel) {
         if (tabModel == null) return;
-        // Observers are added when tabs are shown via addTabInfoToModel(). When switching
-        // filters the TabObservers should be removed from all the tabs in the previous model.
-        // If no observer was added this will no-op. Previously this was only done in
-        // destroy(), but that left observers behind on the inactive model.
-        for (Tab tab : tabModel) {
+        // Observers are added when tabs are shown via addObserversForTab(). Remove them from every
+        // observed tab, which can come from TabModels other than this one when a provider is set.
+        // The observer manager returns a copy since removeObserversForTab() mutates the observed
+        // set.
+        for (Tab tab : mObserverManager.getObservedTabs()) {
             removeObserversForTab(tab);
         }
         tabModel.removeObserver(mTabModelObserver);
