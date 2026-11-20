@@ -786,6 +786,20 @@ if (_is_default_toolchain) {
     }
   }
 
+  if (use_webview_pinlist) {
+    # gclient reads this txt file to pick the pinlist version to download. It
+    # has no effect on the build. It is listed so that GN analyze treats a
+    # version roll, which only changes this file, as affecting WebView.
+    group("pinlist_version_dep") {
+      data = [ "//android_webview/build/android-webview-arm64.pinlist.txt" ]
+    }
+
+    android_assets("pinlist_assets") {
+      sources = [ "//android_webview/pinlist/arm64/pinlist.meta" ]
+      deps = [ ":pinlist_version_dep" ]
+    }
+  }
+
   android_assets("pak_file_assets") {
     sources = [
       "$target_gen_dir/chrome_100_percent.pak",

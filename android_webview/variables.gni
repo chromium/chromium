@@ -12,6 +12,10 @@ declare_args() {
   # default for all prestable builds.
   webview_devui_show_icon =
       android_channel != "stable" && !use_stable_package_name
+
+  # Whether to package the arm64 pinlist.meta into standalone 64-bit WebView
+  # APKs and bundles.
+  use_webview_pinlist = false
 }
 
 # We can't include an icon for anything with the Stable channel package name

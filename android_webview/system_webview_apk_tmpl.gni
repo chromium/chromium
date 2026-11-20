@@ -126,6 +126,9 @@ template("system_webview_apk_or_module_tmpl") {
       "//android_webview:locale_pak_assets",
       "//android_webview:pak_file_assets",
     ]
+    if (use_webview_pinlist && _include_64_bit_webview) {
+      deps += [ "//android_webview:pinlist_assets" ]
+    }
 
     # Only the .build_config.json is used from this target, and it's fine if
     # it contains more assets than we need (always use the 64_32 variant).
