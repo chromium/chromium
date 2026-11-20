@@ -755,6 +755,9 @@ crbug.com/587350667 [ ASan ] InternalOneTapTestCase/testNoConsent [ Crash ]
 crbug.com/587312040 GeminiContainerTestCase [ Pass Failure ]
 
 # Gardening suppression 2026-11-20
+crbug.com/584668727 [ iPad Device ] ChromeTestCaseTestCase/testLoadURLFailsWhenInTabGrid [ Pass Failure ]
+crbug.com/512425968 [ iOS27.3 Simulator ] GoogleServicesSettingsTestCase/testCancelAllowChromeSignin [ Failure ]
+crbug.com/584625508 [ iOS27.3 Simulator ] ManageAccountsTableTestCase/testRemoveAccountSeveralTime [ Failure ]
 crbug.com/40752508 [ iOS27 iPad ] TabGridTestCase/testDragAndDropAtEdgeToCreateNewWindow [ Pass Failure ]
 crbug.com/427699033 [ iOS27 iPad ] TabGridTestCase/testIncognitoDragAndDropAtEdgeToCreateNewWindow [ Pass Failure ]
 crbug.com/588393258 PasswordManagerSearchTestCase/testPasswordsDeletionNavigation [ Pass Failure Crash ]
