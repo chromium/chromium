@@ -99,4 +99,7 @@ BASE_FEATURE_PARAM(int,
 BASE_FEATURE(kEnterpriseGlicActorAttribution,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEnterpriseCustomMessageImprovements,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace enterprise_connectors

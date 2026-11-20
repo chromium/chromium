@@ -93,6 +93,11 @@ BASE_DECLARE_FEATURE_PARAM(int, kCdpAttributionMaxPendingExtractions);
 // attribution). See crbug.com/570683671.
 BASE_DECLARE_FEATURE(kEnterpriseGlicActorAttribution);
 
+// Controls UI improvements for admin-defined custom messages shown on
+// enterprise warn and block dialogs and pages, such as keeping the buttons
+// visible when the message is long and showing the company logo.
+BASE_DECLARE_FEATURE(kEnterpriseCustomMessageImprovements);
+
 }  // namespace enterprise_connectors
 
 #endif  // COMPONENTS_ENTERPRISE_CONNECTORS_CORE_FEATURES_H_
