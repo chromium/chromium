@@ -90,8 +90,6 @@ BASE_FEATURE(kLensSearchNotFoundOnPageToast,
 
 BASE_FEATURE(kLensSearchAimM3, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kLensSearchAimM3EnUs, base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kLensSearchAimM3UseAimEligibility,
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLensSearchReinvocationAffordance,
              base::FEATURE_DISABLED_BY_DEFAULT);

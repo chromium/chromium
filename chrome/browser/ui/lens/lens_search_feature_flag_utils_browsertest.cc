@@ -7,7 +7,6 @@
 #include <memory>
 #include <optional>
 #include <tuple>
-#include <vector>
 
 #include "base/i18n/language_tag.h"
 #include "base/test/bind.h"
@@ -311,71 +310,28 @@ IN_PROC_BROWSER_TEST_F(LensSearchFeatureFlagsUtilsAimM3EnUsUsesEligibilityTest,
   EXPECT_FALSE(lens::IsAimM3Enabled(browser()->GetProfile()));
 }
 
-// Test fixture for verifying that other users follow the
-// kLensSearchAimM3UseAimEligibility flag. This is parameterized on whether the
-// flag is enabled.
-class LensSearchFeatureFlagsUtilsAimM3FollowsUseEligibilityFlagTest
-    : public LensSearchFeatureFlagsUtilsBrowserTestBase,
-      public testing::WithParamInterface<bool> {
- public:
-  LensSearchFeatureFlagsUtilsAimM3FollowsUseEligibilityFlagTest() {
-    std::vector<base::test::FeatureRef> enabled_features;
-    if (ShouldUseAimEligibility()) {
-      enabled_features.push_back(
-          lens::features::kLensSearchAimM3UseAimEligibility);
-    }
-    // Also enable the main M3 feature, since that would be the state for users
-    // who would be using the eligibility service.
-    enabled_features.push_back(lens::features::kLensSearchAimM3);
-    feature_list_.InitWithFeatures(enabled_features, {});
-  }
-  ~LensSearchFeatureFlagsUtilsAimM3FollowsUseEligibilityFlagTest() override =
-      default;
-
-  bool ShouldUseAimEligibility() const { return GetParam(); }
-
- protected:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_P(
-    LensSearchFeatureFlagsUtilsAimM3FollowsUseEligibilityFlagTest,
-    TestIsAimM3Enabled_OtherUsersFollowUseAimEligibilityFlag) {
+IN_PROC_BROWSER_TEST_F(LensSearchFeatureFlagsUtilsAimM3EnabledTest,
+                       TestIsAimM3Enabled_OtherUsersUseAimEligibilityService) {
   // Set locale to something other than en-US.
   ScopedBrowserLocale scoped_locale{"en-GB"};
   g_browser_process->variations_service()->OverrideStoredPermanentCountry("gb");
 
-  if (ShouldUseAimEligibility()) {
-    // When the eligibility service returns eligible, IsAimM3Enabled should be
-    // true.
-    SetUpAimEligibilityService(/*is_locally_eligible=*/true,
-                               /*is_server_eligible=*/true,
-                               /*server_eligibility_enabled=*/true,
-                               /*is_csb_eligible=*/true);
-    EXPECT_TRUE(lens::IsAimM3Enabled(browser()->GetProfile()));
+  // When the eligibility service returns eligible, IsAimM3Enabled should be
+  // true.
+  SetUpAimEligibilityService(/*is_locally_eligible=*/true,
+                             /*is_server_eligible=*/true,
+                             /*server_eligibility_enabled=*/true,
+                             /*is_csb_eligible=*/true);
+  EXPECT_TRUE(lens::IsAimM3Enabled(browser()->GetProfile()));
 
-    // When the eligibility service returns ineligible, IsAimM3Enabled should be
-    // false.
-    SetUpAimEligibilityService(/*is_locally_eligible=*/false,
-                               /*is_server_eligible=*/false,
-                               /*server_eligibility_enabled=*/false,
-                               /*is_csb_eligible=*/true);
-    EXPECT_FALSE(lens::IsAimM3Enabled(browser()->GetProfile()));
-  } else {
-    // If not using the AIM service, the result depends on kLensSearchAimM3. In
-    // this test fixture, we have it enabled.
-    SetUpAimEligibilityService(/*is_locally_eligible=*/true,
-                               /*is_server_eligible=*/false,
-                               /*server_eligibility_enabled=*/false,
-                               /*is_csb_eligible=*/true);
-    EXPECT_TRUE(lens::IsAimM3Enabled(browser()->GetProfile()));
-  }
+  // When the eligibility service returns ineligible, IsAimM3Enabled should be
+  // false.
+  SetUpAimEligibilityService(/*is_locally_eligible=*/false,
+                             /*is_server_eligible=*/false,
+                             /*server_eligibility_enabled=*/false,
+                             /*is_csb_eligible=*/true);
+  EXPECT_FALSE(lens::IsAimM3Enabled(browser()->GetProfile()));
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    LensSearchFeatureFlagsUtilsAimM3FollowsUseEligibilityFlagTest,
-    testing::Bool());
 
 // Test action chip functionality with frequency capping enabled.
 class LensSearchFeatureFlagsUtilsFrequencyCapEnabledTest
