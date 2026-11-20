@@ -1065,8 +1065,7 @@ public class ContentSettingsResources {
                 R.string.website_settings_protected_content_block
             };
         } else if (contentType == ContentSettingsType.SENSORS) {
-            if (DeviceFeatureMap.isEnabled(
-                    DeviceFeatureList.SENSORS_ALLOW_ASK_BLOCK_PERMISSION_MODEL)) {
+            if (DeviceFeatureMap.isEnabled(DeviceFeatureList.GENERIC_SENSOR_EXTRA_CLASSES)) {
                 return new int[] {
                     R.string.website_settings_motion_and_light_sensors_allow,
                     R.string.website_settings_motion_and_light_sensors_ask,
