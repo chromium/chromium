@@ -385,7 +385,8 @@ TEST_F(OriginTest, UnsafelyCreateUniqueOnInvalidInput) {
                {"unknown-scheme", "example.com"},
                {"host-only", "\r", 0},
                {"host-only", "example.com", 22},
-               {"file", "", 123}};  // file: shouldn't have a port.
+               {"host-only", "", 0},  // Only file: may have an empty host.
+               {"file", "", 123}};    // file: shouldn't have a port.
 
   for (const auto& test : cases) {
     SCOPED_TRACE(testing::Message()
