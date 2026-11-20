@@ -38,7 +38,8 @@ class WebAudioMediaStreamAudioSinkTest : public testing::Test {
                  int source_buffer_size,
                  int context_sample_rate,
                  base::TimeDelta platform_buffer_duration,
-                 uint32_t render_quantum_frames) {
+                 uint32_t render_quantum_frames,
+                 bool set_format = true) {
     source_params_.Reset(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
                          media::ChannelLayoutConfig::Mono(), source_sample_rate,
                          source_buffer_size);
@@ -56,7 +57,9 @@ class WebAudioMediaStreamAudioSinkTest : public testing::Test {
     source_provider_ = std::make_unique<WebAudioMediaStreamAudioSink>(
         component_, context_sample_rate, platform_buffer_duration,
         render_quantum_frames);
-    source_provider_->OnSetFormat(source_params_);
+    if (set_format) {
+      source_provider_->OnSetFormat(source_params_);
+    }
   }
 
   test::TaskEnvironment task_environment_;
@@ -127,6 +130,22 @@ TEST_F(WebAudioMediaStreamAudioSinkTest, VerifyDataFlow) {
     EXPECT_NEAR(0.5f, sink_bus_->channel(1)[0], 0.001f);
     EXPECT_DOUBLE_EQ(sink_bus_->channel(0)[0], sink_bus_->channel(1)[0]);
   }
+}
+
+TEST_F(WebAudioMediaStreamAudioSinkTest, ProvidesSilenceBeforeSetFormat) {
+  Configure(/*source_sample_rate=*/48000, /*source_buffer_size=*/480,
+            /*context_sample_rate=*/44100,
+            /*platform_buffer_duration=*/base::Milliseconds(10),
+            /*render_quantum_frames=*/128, /*set_format=*/false);
+
+  // Fill the sink AudioBus with non-zero values.
+  std::ranges::for_each(sink_bus_->AllChannels(), [](const auto& channel) {
+    std::ranges::fill(channel, 0.5f);
+  });
+
+  source_provider_->ProvideInput(sink_bus_->AllChannels(),
+                                 sink_params_.frames_per_buffer());
+  EXPECT_TRUE(sink_bus_->AreFramesZero());
 }
 
 TEST_F(WebAudioMediaStreamAudioSinkTest,

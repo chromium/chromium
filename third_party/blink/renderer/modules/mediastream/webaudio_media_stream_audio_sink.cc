@@ -187,8 +187,11 @@ void WebAudioMediaStreamAudioSink::ProvideInput(
   }
 
   base::AutoLock auto_lock(lock_);
-  if (!audio_converter_)
+  if (!audio_converter_) {
+    // Provide silence until the source format is set by OnSetFormat().
+    output_wrapper_->Zero();
     return;
+  }
 
   TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("mediastream"),
               "WebAudioMediaStreamAudioSink::ProvideInput under lock",
