@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/data_model/valuables/valuable_types.h"
+#include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_wallet_util.h"
 #include "components/autofill/core/browser/webdata/autofill_ai/entity_sync_util.h"
 #include "components/sync/protocol/autofill_valuable_specifics.pb.h"
 #include "components/sync/protocol/entity_data.h"
@@ -251,6 +252,7 @@ AutofillValuableSpecifics CreateSpecificsFromLoyaltyCard(
   for (const GURL& merchant_domain : card.merchant_domains()) {
     *loyalty_card->add_merchant_domains() = merchant_domain.spec();
   }
+  specifics.set_pass_view_url(card.pass_view_url().possibly_invalid_spec());
 
   return specifics;
 }
@@ -261,12 +263,21 @@ LoyaltyCard CreateAutofillLoyaltyCardFromSpecifics(
   // the conversion will succeed.
   const auto& repeated_domains = specifics.loyalty_card().merchant_domains();
   std::vector<GURL> domains(repeated_domains.begin(), repeated_domains.end());
-  return LoyaltyCard(
+  LoyaltyCard card(
       ValuableId(specifics.id()), specifics.loyalty_card().merchant_name(),
       specifics.loyalty_card().program_name(),
       GURL(specifics.loyalty_card().program_logo()),
       specifics.loyalty_card().loyalty_card_number(), std::move(domains),
       /*use_date=*/{}, /*use_count=*/0);
+  // The pass view URL is optional. Invalid URLs are rejected by
+  // `ValuableSyncBridge::IsEntityDataValid()` when
+  // `kAutofillAiWalletServerProvidedDeepLink` is enabled. Otherwise they are
+  // dropped here rather than persisted.
+  if (GURL pass_view_url(specifics.pass_view_url());
+      IsValidWalletManagementUrl(pass_view_url)) {
+    card.set_pass_view_url(std::move(pass_view_url));
+  }
+  return card;
 }
 
 std::unique_ptr<syncer::EntityData> CreateEntityDataFromValuableMetadata(

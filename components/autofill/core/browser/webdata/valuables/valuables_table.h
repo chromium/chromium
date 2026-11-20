@@ -113,6 +113,12 @@ class ValuablesTable : public WebDatabaseTable {
 
   bool AddValuableMetadata(const ValuableMetadata& metadata) const;
 
+  // Inserts `card` into the loyalty cards table, replacing any card with the
+  // same id, and replaces its merchant domains and adds its metadata. Must be
+  // called inside a transaction. Returns `true` if the card and its merchant
+  // domains were written.
+  bool InsertOrReplaceLoyaltyCard(const LoyaltyCard& card) const;
+
   // Renames the database table from `loyalty_card` to `loyalty_cards` and
   // renames the following columns:
   //   * `guid` to `loyalty_card_id`.
@@ -121,6 +127,9 @@ class ValuablesTable : public WebDatabaseTable {
 
   // Adds `valuables_metadata` table.
   bool MigrateToVersion148AddMetadataTable();
+
+  // Adds the `pass_view_url` column to the `loyalty_cards` table.
+  bool MigrateToVersion163AddLoyaltyCardPassViewUrl();
 };
 
 }  // namespace autofill

@@ -2507,4 +2507,41 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion161ToCurrent) {
     }
   }
 }
+
+// Version 163 adds a `pass_view_url` column to the `loyalty_cards` table.
+TEST_F(WebDatabaseMigrationTest, MigrateVersion162ToCurrent) {
+  ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_162.sql")));
+
+  // Verify pre-conditions.
+  {
+    sql::Database connection(sql::test::kTestTag);
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    EXPECT_EQ(162, VersionFromConnection(&connection));
+    EXPECT_FALSE(connection.DoesColumnExist("loyalty_cards", "pass_view_url"));
+
+    ASSERT_TRUE(connection.Execute(
+        "INSERT INTO loyalty_cards (loyalty_card_id, merchant_name, "
+        "program_name, program_logo, loyalty_card_number) VALUES ('123', "
+        "'Merchant', 'Program', '', '1234');"));
+  }
+
+  DoMigration();
+
+  // Verify post-conditions.
+  {
+    sql::Database connection(sql::test::kTestTag);
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    EXPECT_EQ(WebDatabase::kCurrentVersionNumber,
+              VersionFromConnection(&connection));
+    EXPECT_TRUE(connection.DoesColumnExist("loyalty_cards", "pass_view_url"));
+
+    // Existing loyalty cards are kept, with an empty `pass_view_url`.
+    sql::Statement s(connection.GetUniqueStatement(
+        "SELECT loyalty_card_id, pass_view_url FROM loyalty_cards"));
+    ASSERT_TRUE(s.Step());
+    EXPECT_EQ("123", s.ColumnString(0));
+    EXPECT_EQ("", s.ColumnString(1));
+    EXPECT_FALSE(s.Step());
+  }
+}
 }  // anonymous namespace

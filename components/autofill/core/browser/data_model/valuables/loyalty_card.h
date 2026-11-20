@@ -77,6 +77,11 @@ class LoyaltyCard final {
     merchant_domains_ = std::move(merchant_domains);
   }
 
+  const GURL& pass_view_url() const { return pass_view_url_; }
+  void set_pass_view_url(GURL pass_view_url) {
+    pass_view_url_ = std::move(pass_view_url);
+  }
+
   base::Time use_date() const { return valuable_metadata_.use_date; }
   int64_t use_count() const { return valuable_metadata_.use_count; }
 
@@ -123,6 +128,10 @@ class LoyaltyCard final {
 
   // The list of merchant domains associated to this card.
   std::vector<GURL> merchant_domains_;
+
+  // The server-provided URL to view this pass in Google Wallet. Either empty or
+  // a valid Wallet management URL.
+  GURL pass_view_url_;
 
   // Metadata for this loyalty card.
   ValuableMetadata valuable_metadata_;

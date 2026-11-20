@@ -55,6 +55,34 @@ TEST_F(ValuablesTableTest, GetLoyaltyCardById) {
             std::nullopt);
 }
 
+// Tests that `SetLoyaltyCards()` persists the pass view URL.
+TEST_F(ValuablesTableTest, SetLoyaltyCards_PassViewUrl) {
+  LoyaltyCard card1 = test::CreateLoyaltyCard();
+  card1.set_pass_view_url(GURL("https://pay.google.com/gp/v/valuable/1"));
+  // `card2` has no pass view URL.
+  const LoyaltyCard card2 = test::CreateLoyaltyCard2();
+  ASSERT_TRUE(valuables_table().SetLoyaltyCards({card1, card2}));
+  EXPECT_EQ(valuables_table().GetLoyaltyCardById(card1.id()), card1);
+  EXPECT_EQ(valuables_table().GetLoyaltyCardById(card2.id()), card2);
+  EXPECT_TRUE(valuables_table()
+                  .GetLoyaltyCardById(card2.id())
+                  ->pass_view_url()
+                  .is_empty());
+}
+
+// Tests that `AddOrUpdateLoyaltyCard()` persists and updates the pass view
+// URL.
+TEST_F(ValuablesTableTest, AddOrUpdateLoyaltyCard_PassViewUrl) {
+  LoyaltyCard card = test::CreateLoyaltyCard();
+  card.set_pass_view_url(GURL("https://pay.google.com/gp/v/valuable/1"));
+  ASSERT_TRUE(valuables_table().AddOrUpdateLoyaltyCard(card));
+  EXPECT_EQ(valuables_table().GetLoyaltyCardById(card.id()), card);
+
+  card.set_pass_view_url(GURL("https://pay.google.com/gp/v/valuable/2"));
+  ASSERT_TRUE(valuables_table().AddOrUpdateLoyaltyCard(card));
+  EXPECT_EQ(valuables_table().GetLoyaltyCardById(card.id()), card);
+}
+
 TEST_F(ValuablesTableTest, AddOrUpdateLoyaltyCard) {
   LoyaltyCard card1 = test::CreateLoyaltyCard();
   LoyaltyCard card2 = test::CreateLoyaltyCard2();

@@ -314,12 +314,12 @@ TEST_F(ValuableSyncBridgeTest, IsEntityDataValid_MissingManagementUrl) {
   EXPECT_TRUE(
       bridge().IsEntityDataValid(*CreateEntityDataFromSpecifics(specifics)));
   histogram_tester.ExpectUniqueSample(
-      "Autofill.Ai.ValuableSync.ManagementUrlStatus",
+      "Autofill.ValuableSync.ManagementUrlStatus",
       ValuableSyncBridge::AutofillAiWalletManagementUrlSyncStatus::
           kMissingOrEmpty,
       1);
   histogram_tester.ExpectUniqueSample(
-      "Autofill.Ai.ValuableSync.ManagementUrlStatus.Vehicle",
+      "Autofill.ValuableSync.ManagementUrlStatus.Vehicle",
       ValuableSyncBridge::AutofillAiWalletManagementUrlSyncStatus::
           kMissingOrEmpty,
       1);
@@ -338,10 +338,10 @@ TEST_F(ValuableSyncBridgeTest, IsEntityDataValid_ValidManagementUrl) {
   EXPECT_TRUE(
       bridge().IsEntityDataValid(*CreateEntityDataFromSpecifics(specifics)));
   histogram_tester.ExpectUniqueSample(
-      "Autofill.Ai.ValuableSync.ManagementUrlStatus",
+      "Autofill.ValuableSync.ManagementUrlStatus",
       ValuableSyncBridge::AutofillAiWalletManagementUrlSyncStatus::kValid, 1);
   histogram_tester.ExpectUniqueSample(
-      "Autofill.Ai.ValuableSync.ManagementUrlStatus.Vehicle",
+      "Autofill.ValuableSync.ManagementUrlStatus.Vehicle",
       ValuableSyncBridge::AutofillAiWalletManagementUrlSyncStatus::kValid, 1);
 }
 
@@ -359,10 +359,10 @@ TEST_F(ValuableSyncBridgeTest, IsEntityDataValid_InvalidManagementUrl) {
   EXPECT_FALSE(
       bridge().IsEntityDataValid(*CreateEntityDataFromSpecifics(specifics)));
   histogram_tester.ExpectUniqueSample(
-      "Autofill.Ai.ValuableSync.ManagementUrlStatus",
+      "Autofill.ValuableSync.ManagementUrlStatus",
       ValuableSyncBridge::AutofillAiWalletManagementUrlSyncStatus::kInvalid, 1);
   histogram_tester.ExpectUniqueSample(
-      "Autofill.Ai.ValuableSync.ManagementUrlStatus.Vehicle",
+      "Autofill.ValuableSync.ManagementUrlStatus.Vehicle",
       ValuableSyncBridge::AutofillAiWalletManagementUrlSyncStatus::kInvalid, 1);
 }
 
@@ -381,10 +381,10 @@ TEST_F(ValuableSyncBridgeTest,
       bridge().IsEntityDataValid(*CreateEntityDataFromSpecifics(specifics)));
   // The illegal URL is still counted, though.
   histogram_tester.ExpectUniqueSample(
-      "Autofill.Ai.ValuableSync.ManagementUrlStatus",
+      "Autofill.ValuableSync.ManagementUrlStatus",
       ValuableSyncBridge::AutofillAiWalletManagementUrlSyncStatus::kInvalid, 1);
   histogram_tester.ExpectUniqueSample(
-      "Autofill.Ai.ValuableSync.ManagementUrlStatus.Vehicle",
+      "Autofill.ValuableSync.ManagementUrlStatus.Vehicle",
       ValuableSyncBridge::AutofillAiWalletManagementUrlSyncStatus::kInvalid, 1);
 }
 
@@ -398,6 +398,79 @@ TEST_F(ValuableSyncBridgeTest, IsEntityDataValid_NonEmptyId) {
   // Invalid case.
   entity->specifics.mutable_autofill_valuable()->set_id(kInvalidId);
   EXPECT_FALSE(bridge().IsEntityDataValid(*entity));
+}
+
+// Tests that loyalty cards without a pass view URL are counted but considered
+// valid.
+TEST_F(ValuableSyncBridgeTest,
+       IsLoyaltyCardEntityDataValid_MissingPassViewUrl) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAiWalletServerProvidedDeepLink};
+  sync_pb::AutofillValuableSpecifics specifics = TestLoyaltyCardSpecifics(kId1);
+  specifics.clear_pass_view_url();
+
+  base::HistogramTester histogram_tester;
+  EXPECT_TRUE(
+      bridge().IsEntityDataValid(*CreateEntityDataFromSpecifics(specifics)));
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.ValuableSync.ManagementUrlStatus.LoyaltyCard",
+      ValuableSyncBridge::AutofillAiWalletManagementUrlSyncStatus::
+          kMissingOrEmpty,
+      1);
+}
+
+// Tests a successful check of loyalty cards with a pass view URL.
+TEST_F(ValuableSyncBridgeTest, IsLoyaltyCardEntityDataValid_ValidPassViewUrl) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAiWalletServerProvidedDeepLink};
+  sync_pb::AutofillValuableSpecifics specifics = TestLoyaltyCardSpecifics(kId1);
+  specifics.set_pass_view_url("https://pay.google.com/gp/v/valuable/123");
+
+  base::HistogramTester histogram_tester;
+  EXPECT_TRUE(
+      bridge().IsEntityDataValid(*CreateEntityDataFromSpecifics(specifics)));
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.ValuableSync.ManagementUrlStatus.LoyaltyCard",
+      ValuableSyncBridge::AutofillAiWalletManagementUrlSyncStatus::kValid, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.ValuableSync.ManagementUrlStatus",
+      ValuableSyncBridge::AutofillAiWalletManagementUrlSyncStatus::kValid, 1);
+}
+
+// Tests that loyalty cards with an invalid pass view URL are counted and
+// flagged as illegal.
+TEST_F(ValuableSyncBridgeTest,
+       IsLoyaltyCardEntityDataValid_InvalidPassViewUrl) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAiWalletServerProvidedDeepLink};
+  sync_pb::AutofillValuableSpecifics specifics = TestLoyaltyCardSpecifics(kId1);
+  specifics.set_pass_view_url("https://illegal.site.com/");
+
+  base::HistogramTester histogram_tester;
+  EXPECT_FALSE(
+      bridge().IsEntityDataValid(*CreateEntityDataFromSpecifics(specifics)));
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.ValuableSync.ManagementUrlStatus.LoyaltyCard",
+      ValuableSyncBridge::AutofillAiWalletManagementUrlSyncStatus::kInvalid, 1);
+}
+
+// Tests that loyalty cards with an invalid pass view URL are counted but not
+// flagged as illegal if the Wallet server-provided deep link feature is not
+// enabled.
+TEST_F(ValuableSyncBridgeTest,
+       IsLoyaltyCardEntityDataValid_InvalidPassViewUrl_FeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kAutofillAiWalletServerProvidedDeepLink);
+  sync_pb::AutofillValuableSpecifics specifics = TestLoyaltyCardSpecifics(kId1);
+  specifics.set_pass_view_url("https://illegal.site.com/");
+
+  base::HistogramTester histogram_tester;
+  EXPECT_TRUE(
+      bridge().IsEntityDataValid(*CreateEntityDataFromSpecifics(specifics)));
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.ValuableSync.ManagementUrlStatus.LoyaltyCard",
+      ValuableSyncBridge::AutofillAiWalletManagementUrlSyncStatus::kInvalid, 1);
 }
 
 TEST_F(ValuableSyncBridgeTest, IsLoyaltyCardEntityDataValid) {

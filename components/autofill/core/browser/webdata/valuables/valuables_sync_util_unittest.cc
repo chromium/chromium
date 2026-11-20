@@ -85,6 +85,44 @@ TEST(LoyaltyCardSyncUtilTest, CreateAutofillLoyaltyCardFromSpecifics) {
                                    TestLoyaltyCardSpecifics(kId1)));
 }
 
+// Tests that a valid Wallet pass view URL is converted in both directions.
+TEST(LoyaltyCardSyncUtilTest, PassViewUrl_RoundTrip) {
+  const GURL kPassViewUrl("https://pay.google.com/gp/v/valuable/1");
+  sync_pb::AutofillValuableSpecifics specifics = TestLoyaltyCardSpecifics(kId1);
+  specifics.set_pass_view_url(kPassViewUrl.spec());
+
+  LoyaltyCard card = CreateAutofillLoyaltyCardFromSpecifics(specifics);
+  EXPECT_EQ(card.pass_view_url(), kPassViewUrl);
+  EXPECT_EQ(CreateSpecificsFromLoyaltyCard(card, /*base_specifics=*/{})
+                .pass_view_url(),
+            kPassViewUrl.spec());
+}
+
+// Tests that invalid or non-Google pass view URLs are dropped without
+// rejecting the loyalty card.
+TEST(LoyaltyCardSyncUtilTest, PassViewUrl_InvalidUrlsAreDropped) {
+  for (const char* url : {"not a url", "http://pay.google.com/gp/v/valuable/1",
+                          "https://example.com/pass"}) {
+    SCOPED_TRACE(url);
+    sync_pb::AutofillValuableSpecifics specifics =
+        TestLoyaltyCardSpecifics(kId1);
+    specifics.set_pass_view_url(url);
+    LoyaltyCard card = CreateAutofillLoyaltyCardFromSpecifics(specifics);
+    EXPECT_TRUE(card.pass_view_url().is_empty());
+    EXPECT_EQ(card, TestLoyaltyCard());
+  }
+}
+
+// Tests that a pass view URL from `base_specifics` is cleared if the loyalty
+// card has none, so that invalid URLs do not stay around.
+TEST(LoyaltyCardSyncUtilTest, PassViewUrl_OverwritesBaseSpecifics) {
+  sync_pb::AutofillValuableSpecifics base_specifics;
+  base_specifics.set_pass_view_url("https://example.com/pass");
+  EXPECT_EQ(CreateSpecificsFromLoyaltyCard(TestLoyaltyCard(), base_specifics)
+                .pass_view_url(),
+            "");
+}
+
 TEST(LoyaltyCardSyncUtilTest, TrimAutofillValuableSpecificsDataForCaching) {
   EXPECT_EQ(TrimAutofillValuableSpecificsDataForCaching(
                 TestLoyaltyCardSpecifics(kId1))

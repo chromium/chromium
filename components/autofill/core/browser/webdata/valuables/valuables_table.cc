@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/check_deref.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
@@ -38,6 +39,7 @@ constexpr std::string_view kLoyaltyCardMerchantName = "merchant_name";
 constexpr std::string_view kLoyaltyCardProgramName = "program_name";
 constexpr std::string_view kLoyaltyCardProgramLogo = "program_logo";
 constexpr std::string_view kLoyaltyCardNumber = "loyalty_card_number";
+constexpr std::string_view kLoyaltyCardPassViewUrl = "pass_view_url";
 
 constexpr std::string_view kLoyaltyCardMerchantDomainTable =
     "loyalty_card_merchant_domain";
@@ -93,8 +95,8 @@ std::optional<ValuableMetadata> GetValuableMetadataFromDb(
 
 // Expects that `s` is pointing to a query result containing `kLoyaltyCardId`,
 // `kLoyaltyCardMerchantName`, `kLoyaltyCardProgramName`,
-// `kLoyaltyCardProgramLogo` and `kLoyaltyCardNumber` in that order.
-// Constructs a `LoyaltyCard` from that data.
+// `kLoyaltyCardProgramLogo`, `kLoyaltyCardNumber` and `kLoyaltyCardPassViewUrl`
+// in that order. Constructs a `LoyaltyCard` from that data.
 std::optional<LoyaltyCard> LoyaltyCardFromStatement(sql::Database* db,
                                                     sql::Statement& s) {
   ValuableId loyalty_card_id = ValuableId(s.ColumnString(0));
@@ -115,6 +117,9 @@ std::optional<LoyaltyCard> LoyaltyCardFromStatement(sql::Database* db,
       GetMerchantDomainsForLoyaltyCardId(db, loyalty_card_id),
       /*use_date=*/use_date,
       /*use_count=*/use_count);
+  if (GURL pass_view_url(s.ColumnStringView(5)); pass_view_url.is_valid()) {
+    card.set_pass_view_url(std::move(pass_view_url));
+  }
 
   // Ignore invalid loyalty cards, for more information see
   // `LoyaltyCard::IsValid()`. Loyalty cards coming from sync should be valid,
@@ -148,12 +153,14 @@ bool ValuablesTable::CreateTablesIfNecessary() {
 }
 
 bool ValuablesTable::InitLoyaltyCardsTable() {
-  return CreateTableIfNotExists(db(), kLoyaltyCardsTable,
-                                {{kLoyaltyCardId, "TEXT PRIMARY KEY NOT NULL"},
-                                 {kLoyaltyCardMerchantName, "TEXT NOT NULL"},
-                                 {kLoyaltyCardProgramName, "TEXT NOT NULL"},
-                                 {kLoyaltyCardProgramLogo, "TEXT NOT NULL"},
-                                 {kLoyaltyCardNumber, "TEXT NOT NULL"}});
+  return CreateTableIfNotExists(
+      db(), kLoyaltyCardsTable,
+      {{kLoyaltyCardId, "TEXT PRIMARY KEY NOT NULL"},
+       {kLoyaltyCardMerchantName, "TEXT NOT NULL"},
+       {kLoyaltyCardProgramName, "TEXT NOT NULL"},
+       {kLoyaltyCardProgramLogo, "TEXT NOT NULL"},
+       {kLoyaltyCardNumber, "TEXT NOT NULL"},
+       {kLoyaltyCardPassViewUrl, "TEXT NOT NULL DEFAULT ''"}});
 }
 
 bool ValuablesTable::InitLoyaltyCardMerchantDomainTable() {
@@ -194,6 +201,12 @@ bool ValuablesTable::MigrateToVersion148AddMetadataTable() {
                            {kUseDate, "INTEGER NOT NULL DEFAULT 0"}});
 }
 
+bool ValuablesTable::MigrateToVersion163AddLoyaltyCardPassViewUrl() {
+  return !db()->DoesTableExist(kLoyaltyCardsTable) ||
+         AddColumnIfNotExists(db(), kLoyaltyCardsTable, kLoyaltyCardPassViewUrl,
+                              "TEXT NOT NULL DEFAULT ''");
+}
+
 bool ValuablesTable::MigrateToVersion(int version,
                                       bool* update_compatible_version) {
   switch (version) {
@@ -203,6 +216,9 @@ bool ValuablesTable::MigrateToVersion(int version,
     case 148:
       *update_compatible_version = false;
       return MigrateToVersion148AddMetadataTable();
+    case 163:
+      *update_compatible_version = false;
+      return MigrateToVersion163AddLoyaltyCardPassViewUrl();
   }
   return true;
 }
@@ -212,7 +228,7 @@ std::vector<LoyaltyCard> ValuablesTable::GetLoyaltyCards() const {
   sql::CachedSelectBuilder(
       SQL_FROM_HERE, *db(), query, kLoyaltyCardsTable,
       {kLoyaltyCardId, kLoyaltyCardMerchantName, kLoyaltyCardProgramName,
-       kLoyaltyCardProgramLogo, kLoyaltyCardNumber});
+       kLoyaltyCardProgramLogo, kLoyaltyCardNumber, kLoyaltyCardPassViewUrl});
   std::vector<LoyaltyCard> result;
   while (query.Step()) {
     if (std::optional<LoyaltyCard> loyalty_card =
@@ -241,18 +257,6 @@ bool ValuablesTable::SetLoyaltyCards(
   response &= sql::DeleteAllRows(*db(), kLoyaltyCardsTable);
   response &= sql::DeleteAllRows(*db(), kLoyaltyCardMerchantDomainTable);
 
-  sql::Statement insert_cards;
-  sql::CachedInsertBuilder(
-      SQL_FROM_HERE, *db(), insert_cards, kLoyaltyCardsTable,
-      {kLoyaltyCardId, kLoyaltyCardMerchantName, kLoyaltyCardProgramName,
-       kLoyaltyCardProgramLogo, kLoyaltyCardNumber});
-
-  sql::Statement insert_card_merchant_domains;
-  sql::CachedInsertBuilder(SQL_FROM_HERE, *db(), insert_card_merchant_domains,
-                           kLoyaltyCardMerchantDomainTable,
-                           {kLoyaltyCardId, kMerchantDomain},
-                           /*or_replace=*/true);
-
   for (const LoyaltyCard& loyalty_card : loyalty_cards) {
     if (!loyalty_card.IsValid()) {
       // Should never happen. Invalid entities are filtered out in
@@ -261,26 +265,7 @@ bool ValuablesTable::SetLoyaltyCards(
       response = false;
       continue;
     }
-    int index = 0;
-    insert_cards.BindString(index++, loyalty_card.id().value());
-    insert_cards.BindString(index++, loyalty_card.merchant_name());
-    insert_cards.BindString(index++, loyalty_card.program_name());
-    insert_cards.BindString(index++, loyalty_card.program_logo().spec());
-    insert_cards.BindString(index++, loyalty_card.loyalty_card_number());
-    response &= insert_cards.Run();
-    insert_cards.Reset(/*clear_bound_vars=*/true);
-
-    for (const GURL& merchant_domain : loyalty_card.merchant_domains()) {
-      // Insert new loyalty_card_merchant_domain values.
-      insert_card_merchant_domains.BindString(0, loyalty_card.id().value());
-      insert_card_merchant_domains.BindString(1, merchant_domain.spec());
-      response &= insert_card_merchant_domains.Run();
-      insert_card_merchant_domains.Reset(/*clear_bound_vars=*/true);
-    }
-
-    // Add the loyalty card's metadata. This is not a critical operation, so
-    // execution proceeds even if it fails.
-    AddValuableMetadata(loyalty_card.metadata());
+    response &= InsertOrReplaceLoyaltyCard(loyalty_card);
   }
 
   transaction.Commit();
@@ -293,7 +278,7 @@ std::optional<LoyaltyCard> ValuablesTable::GetLoyaltyCardById(
   sql::SelectBuilder(
       *db(), query, kLoyaltyCardsTable,
       {kLoyaltyCardId, kLoyaltyCardMerchantName, kLoyaltyCardProgramName,
-       kLoyaltyCardProgramLogo, kLoyaltyCardNumber},
+       kLoyaltyCardProgramLogo, kLoyaltyCardNumber, kLoyaltyCardPassViewUrl},
       base::StrCat({"WHERE ", kLoyaltyCardId, " = ?"}));
   query.BindString(0, loyalty_card_id.value());
   if (query.is_valid() && query.Step()) {
@@ -308,15 +293,19 @@ bool ValuablesTable::AddOrUpdateLoyaltyCard(const LoyaltyCard& card) {
   }
 
   sql::Transaction transaction(db());
-  if (!transaction.Begin()) {
-    return false;
-  }
+  return transaction.Begin() && InsertOrReplaceLoyaltyCard(card) &&
+         transaction.Commit();
+}
 
+bool ValuablesTable::InsertOrReplaceLoyaltyCard(const LoyaltyCard& card) const {
+  // The caller owns the transaction, so that it can combine this write with
+  // other writes in a single transaction.
+  CHECK(db()->HasActiveTransactions());
   sql::Statement s;
   sql::CachedInsertBuilder(
       SQL_FROM_HERE, *db(), s, kLoyaltyCardsTable,
       {kLoyaltyCardId, kLoyaltyCardMerchantName, kLoyaltyCardProgramName,
-       kLoyaltyCardProgramLogo, kLoyaltyCardNumber},
+       kLoyaltyCardProgramLogo, kLoyaltyCardNumber, kLoyaltyCardPassViewUrl},
       /*or_replace=*/true);
 
   int index = 0;
@@ -325,6 +314,7 @@ bool ValuablesTable::AddOrUpdateLoyaltyCard(const LoyaltyCard& card) {
   s.BindString(index++, card.program_name());
   s.BindString(index++, card.program_logo().spec());
   s.BindString(index++, card.loyalty_card_number());
+  s.BindString(index++, card.pass_view_url().spec());
 
   if (!s.Run()) {
     return false;
@@ -354,8 +344,7 @@ bool ValuablesTable::AddOrUpdateLoyaltyCard(const LoyaltyCard& card) {
   // Add the loyalty card's metadata. This is not a critical operation, so
   // execution proceeds even if it fails.
   AddValuableMetadata(card.metadata());
-
-  return transaction.Commit();
+  return true;
 }
 
 bool ValuablesTable::RemoveLoyaltyCard(ValuableId loyalty_card_id) {

@@ -79,6 +79,33 @@ constexpr bool IsLoyaltyCardSyncEnabled() {
 #endif
 }
 
+// Tests whether `specifics` has an empty or valid Wallet management URL and
+// logs the validation status to UMA. `valuable_type` is the metrics name of
+// the valuable's type (e.g. "LoyaltyCard" or "Passport").
+bool HasEmptyOrValidManagementUrl(
+    const sync_pb::AutofillValuableSpecifics& specifics,
+    std::string_view valuable_type) {
+  const auto status =
+      specifics.pass_view_url().empty()
+          ? AutofillAiWalletManagementUrlSyncStatus::kMissingOrEmpty
+      : IsValidWalletManagementUrl(GURL(specifics.pass_view_url()))
+          ? AutofillAiWalletManagementUrlSyncStatus::kValid
+          : AutofillAiWalletManagementUrlSyncStatus::kInvalid;
+  constexpr char kHistogramPrefix[] =
+      "Autofill.ValuableSync.ManagementUrlStatus";
+  base::UmaHistogramEnumeration(kHistogramPrefix, status);
+  base::UmaHistogramEnumeration(
+      base::StrCat({kHistogramPrefix, ".", valuable_type}), status);
+
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillAiWalletServerProvidedDeepLink)) {
+    // Tolerate invalid management URLs if the feature is not enabled.
+    return true;
+  }
+
+  return status != AutofillAiWalletManagementUrlSyncStatus::kInvalid;
+}
+
 // Tests if the valuable `specifics` are valid and can be converted into an
 // Autofill class instance using `CreateAutofillLoyaltyCardFromSpecifics()`.
 bool AreAutofillLoyaltyCardSpecificsValid(
@@ -93,7 +120,8 @@ bool AreAutofillLoyaltyCardSpecificsValid(
   return !specifics.id().empty() && specifics.has_loyalty_card() &&
          !specifics.loyalty_card().loyalty_card_number().empty() &&
          !specifics.loyalty_card().merchant_name().empty() &&
-         HasEmptyOrValidProgramLogo(specifics);
+         HasEmptyOrValidProgramLogo(specifics) &&
+         HasEmptyOrValidManagementUrl(specifics, "LoyaltyCard");
 }
 
 // Tests if the valuable `specifics` are valid and can be converted into an
@@ -114,34 +142,6 @@ bool AreAutofillOfferSpecificsValid(
          GURL(specifics.pass_view_url()).is_valid() && has_valid_issuer_domains;
 }
 
-// Tests whether `specifics` has an empty or valid Wallet management URL and
-// logs the validation status to UMA.
-bool HasEmptyOrValidManagementUrl(
-    const sync_pb::AutofillValuableSpecifics& specifics,
-    EntityType entity_type) {
-  const auto status =
-      specifics.pass_view_url().empty()
-          ? AutofillAiWalletManagementUrlSyncStatus::kMissingOrEmpty
-      : IsValidWalletManagementUrl(GURL(specifics.pass_view_url()))
-          ? AutofillAiWalletManagementUrlSyncStatus::kValid
-          : AutofillAiWalletManagementUrlSyncStatus::kInvalid;
-  constexpr std::string_view kHistogramPrefix =
-      "Autofill.Ai.ValuableSync.ManagementUrlStatus";
-  base::UmaHistogramEnumeration(kHistogramPrefix, status);
-  base::UmaHistogramEnumeration(
-      base::StrCat(
-          {kHistogramPrefix, ".", EntityTypeToMetricsString(entity_type)}),
-      status);
-
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillAiWalletServerProvidedDeepLink)) {
-    // Tolerate invalid management URLs if the feature is not enabled.
-    return true;
-  }
-
-  return status != AutofillAiWalletManagementUrlSyncStatus::kInvalid;
-}
-
 // Tests whether the `EntityInstance` represented by the `specifics` meets the
 // AutofillAi import constraints and has an empty or valid management URL.
 bool AreAutofillAiSpecificsValid(
@@ -157,8 +157,8 @@ bool AreAutofillAiSpecificsValid(
       base::StrCat({"Autofill.Ai.ImportConstraintsMet.WalletSync.",
                     EntityTypeToMetricsString(entity->type())}),
       meets_import_constraints);
-  const bool has_valid_management_url =
-      HasEmptyOrValidManagementUrl(specifics, entity->type());
+  const bool has_valid_management_url = HasEmptyOrValidManagementUrl(
+      specifics, EntityTypeToMetricsString(entity->type()));
   return meets_import_constraints && has_valid_management_url;
 }
 
