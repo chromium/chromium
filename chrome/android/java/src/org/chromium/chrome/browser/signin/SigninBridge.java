@@ -24,7 +24,9 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileAttributesStorage;
 import org.chromium.chrome.browser.signin.services.AccountPreviewDataService;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -552,12 +554,15 @@ final class SigninBridge {
         final @Nullable AccountInfo targetAccountInfo =
                 identityManager.findExtendedAccountInfoByEmailAddress(payload.getEmail());
 
-        boolean isTargetAccountSignedIn =
-                primaryAccountInfo != null
-                        && targetAccountInfo != null
-                        && primaryAccountInfo.getId().equals(targetAccountInfo.getId());
+        // TODO(crbug.com/565219205): If the target account is signed in to another profile,
+        // redirect the user to that profile. Until then, the "already signed in" message is shown
+        // even though the account isn't signed in to the current profile, which doesn't show it in
+        // its account picker either.
+        boolean isTargetAccountSignedInToAnyProfile =
+                targetAccountInfo != null
+                        && isSignedInToAnyProfile(primaryAccountInfo, targetAccountInfo);
 
-        if (isTargetAccountSignedIn) {
+        if (isTargetAccountSignedInToAnyProfile) {
             SigninMetricsUtils.recordCrossDeviceInitialState(
                     payload.getExternalEntryPoint(),
                     CrossDeviceInitialState.SIGNED_IN_WITH_TARGET_ACCOUNT);
@@ -590,6 +595,21 @@ final class SigninBridge {
         recordCrossDeviceFlowStart(
                 payload.getExternalEntryPoint(), primaryAccountInfo, targetAccountInfo);
         context.startActivity(intent);
+    }
+
+    /**
+     * Returns whether {@code account} is the primary account of the current profile or, with
+     * multi-profile, of another non-omitted profile. The other profiles are only read if needed.
+     */
+    private static boolean isSignedInToAnyProfile(
+            @Nullable AccountInfo primaryAccountInfo, AccountInfo account) {
+        if (primaryAccountInfo != null && primaryAccountInfo.getId().equals(account.getId())) {
+            return true;
+        }
+        return ChromeFeatureList.sAndroidMultiprofile.isEnabled()
+                && SigninFeatureMap.isEnabled(
+                        SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS)
+                && ProfileAttributesStorage.get().isPrimaryAccountForAnyProfile(account.getId());
     }
 
     private static void recordCrossDeviceFlowStart(

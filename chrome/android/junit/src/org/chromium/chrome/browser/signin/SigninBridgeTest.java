@@ -58,9 +58,12 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.profiles.FakeProfileAttributesStorage;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileAttributesStorage;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsInTab;
 import org.chromium.chrome.browser.signin.services.AccountPreviewDataService;
@@ -104,6 +107,7 @@ import org.chromium.url.GURL;
 import java.lang.ref.WeakReference;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * JUnit tests for the class {@link SigninBridge}.
@@ -960,6 +964,34 @@ public class SigninBridgeTest {
                         eq(
                                 CrossDeviceInitialState
                                         .SIGNED_IN_WITH_DIFFERENT_ACCOUNT_TARGET_ACCOUNT_ON_DEVICE));
+    }
+
+    @Test
+    @EnableFeatures({
+        SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS,
+        ChromeFeatureList.ANDROID_MULTIPROFILE
+    })
+    public void testSigninDeepLinkFlow_targetAccountSignedInToOtherProfile() {
+        Context context = Robolectric.buildActivity(Activity.class).get();
+        lenient().when(mWindowAndroidMock.getContext()).thenReturn(new WeakReference<>(context));
+        SigninAndHistorySyncActivityLauncherImpl.setLauncherForTest(
+                mSigninAndHistorySyncActivityLauncherMock);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        var profileAttributesStorage = new FakeProfileAttributesStorage();
+        profileAttributesStorage.setPrimaryAccountIds(List.of(TestAccounts.ACCOUNT1.getId()));
+        ProfileAttributesStorage.setInstanceForTesting(profileAttributesStorage);
+        var payload =
+                new SigninDeepLinkPayload(
+                        /* externalEntryPoint= */ ExternalEntryPoint.DESKTOP_DEFAULT,
+                        /* email= */ TestAccounts.ACCOUNT1.getEmail());
+
+        SigninBridge.startSigninDeepLinkFlow(mWindowAndroidMock, mProfileMock, payload);
+
+        verifyNoInteractions(mSigninAndHistorySyncActivityLauncherMock);
+        verify(mSigninMetricsUtilsJniMock)
+                .recordCrossDeviceInitialState(
+                        eq(ExternalEntryPoint.DESKTOP_DEFAULT),
+                        eq(CrossDeviceInitialState.SIGNED_IN_WITH_TARGET_ACCOUNT));
     }
 
     private void verifyBottomSheetStartSigninFlow(@Nullable CoreAccountId accountId) {

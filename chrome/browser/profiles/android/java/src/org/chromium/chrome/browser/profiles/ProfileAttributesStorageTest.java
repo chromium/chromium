@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.profiles;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.never;
@@ -72,6 +73,13 @@ public class ProfileAttributesStorageTest {
     public void getPrimaryAccountIdsForAllProfiles_skipsSignedOutAndOmittedProfiles() {
         assertEquals(
                 List.of(new CoreAccountId(GAIA_ID)), mStorage.getPrimaryAccountIdsForAllProfiles());
+    }
+
+    @Test
+    public void isPrimaryAccountForAnyProfile_checksSignedInProfiles() {
+        assertTrue(mStorage.isPrimaryAccountForAnyProfile(new CoreAccountId(GAIA_ID)));
+        assertFalse(mStorage.isPrimaryAccountForAnyProfile(new CoreAccountId(OMITTED_GAIA_ID)));
+        assertFalse(mStorage.isPrimaryAccountForAnyProfile(new CoreAccountId(new GaiaId("other"))));
     }
 
     @Test

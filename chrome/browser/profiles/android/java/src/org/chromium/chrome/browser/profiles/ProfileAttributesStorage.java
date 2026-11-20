@@ -75,6 +75,11 @@ public class ProfileAttributesStorage {
         return accountIds;
     }
 
+    /** Returns whether the account is the primary account of a profile that isn't omitted. */
+    public boolean isPrimaryAccountForAnyProfile(CoreAccountId accountId) {
+        return getPrimaryAccountIdsForAllProfiles().contains(accountId);
+    }
+
     public void addObserver(Observer observer) {
         mObservers.addObserver(observer);
     }
