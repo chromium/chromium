@@ -33,7 +33,6 @@
 #include "chrome/browser/ash/camera_mic/vm_camera_mic_manager.h"
 #include "chrome/browser/ash/extensions/media_player_api.h"
 #include "chrome/browser/ash/extensions/media_player_event_router.h"
-#include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -50,6 +49,8 @@
 #include "components/session_manager/core/session_manager.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/user_manager/user_manager.h"
+#include "components/webrtc/media_capture_dispatcher.h"
+#include "components/webrtc/media_capture_indicator.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/render_view_host.h"
@@ -62,6 +63,7 @@
 #include "media/capture/video/video_capture_device_enumeration_mode_util.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "services/video_capture/public/mojom/video_capture_service.mojom.h"
+#include "ui/base/accelerators/accelerator.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -96,7 +98,7 @@ MediaCaptureState& operator|=(MediaCaptureState& lhs, MediaCaptureState rhs) {
   return lhs;
 }
 
-void GetMediaCaptureState(const MediaStreamCaptureIndicator* indicator,
+void GetMediaCaptureState(const webrtc::MediaCaptureIndicator* indicator,
                           content::WebContents* web_contents,
                           MediaCaptureState* media_state_out) {
   bool video = indicator->IsCapturingVideo(web_contents);
@@ -110,7 +112,7 @@ void GetMediaCaptureState(const MediaStreamCaptureIndicator* indicator,
   }
 }
 
-void GetBrowserMediaCaptureState(const MediaStreamCaptureIndicator* indicator,
+void GetBrowserMediaCaptureState(const webrtc::MediaCaptureIndicator* indicator,
                                  const content::BrowserContext* context,
                                  MediaCaptureState* media_state_out) {
   ash::BrowserController::GetInstance()->ForEachBrowser(
@@ -130,7 +132,7 @@ void GetBrowserMediaCaptureState(const MediaStreamCaptureIndicator* indicator,
       });
 }
 
-void GetAppMediaCaptureState(const MediaStreamCaptureIndicator* indicator,
+void GetAppMediaCaptureState(const webrtc::MediaCaptureIndicator* indicator,
                              content::BrowserContext* context,
                              MediaCaptureState* media_state_out) {
   const extensions::AppWindowRegistry::AppWindowList& apps =
@@ -145,9 +147,10 @@ void GetAppMediaCaptureState(const MediaStreamCaptureIndicator* indicator,
   }
 }
 
-void GetExtensionMediaCaptureState(const MediaStreamCaptureIndicator* indicator,
-                                   content::BrowserContext* context,
-                                   MediaCaptureState* media_state_out) {
+void GetExtensionMediaCaptureState(
+    const webrtc::MediaCaptureIndicator* indicator,
+    content::BrowserContext* context,
+    MediaCaptureState* media_state_out) {
   for (content::RenderFrameHost* host :
        extensions::ProcessManager::Get(context)->GetAllFrames()) {
     content::WebContents* web_contents =
@@ -169,25 +172,24 @@ MediaCaptureState GetMediaCaptureStateOfAllWebContents(
     return MediaCaptureState::kNone;
   }
 
-  scoped_refptr<MediaStreamCaptureIndicator> indicator =
-      MediaCaptureDevicesDispatcher::GetInstance()
-          ->GetMediaStreamCaptureIndicator();
+  const webrtc::MediaCaptureIndicator* indicator =
+      webrtc::MediaCaptureDispatcher::GetInstance()->GetCaptureIndicator();
 
   MediaCaptureState media_state = MediaCaptureState::kNone;
   // Browser windows
-  GetBrowserMediaCaptureState(indicator.get(), context, &media_state);
+  GetBrowserMediaCaptureState(indicator, context, &media_state);
   if (media_state == MediaCaptureState::kAudioVideo) {
     return MediaCaptureState::kAudioVideo;
   }
 
   // App windows
-  GetAppMediaCaptureState(indicator.get(), context, &media_state);
+  GetAppMediaCaptureState(indicator, context, &media_state);
   if (media_state == MediaCaptureState::kAudioVideo) {
     return MediaCaptureState::kAudioVideo;
   }
 
   // Extensions
-  GetExtensionMediaCaptureState(indicator.get(), context, &media_state);
+  GetExtensionMediaCaptureState(indicator, context, &media_state);
 
   return media_state;
 }
@@ -226,7 +228,8 @@ MediaClientImpl::MediaClientImpl()
                   ash::PrivacyHubNotificationClickDelegate>(base::BindRepeating(
                   ash::PrivacyHubNotificationController::OpenSupportUrl,
                   ash::SensorDisabledNotificationDelegate::Sensor::kCamera))}) {
-  MediaCaptureDevicesDispatcher::GetInstance()->AddObserver(this);
+  media_capture_observation_.Observe(
+      webrtc::MediaCaptureDispatcher::GetInstance());
   browser_observation_.Observe(ash::BrowserController::GetInstance());
   ash::VmCameraMicManager::Get()->AddObserver(this);
 
@@ -262,7 +265,6 @@ MediaClientImpl::~MediaClientImpl() {
     media_controller_->SetClient(nullptr);
   }
 
-  MediaCaptureDevicesDispatcher::GetInstance()->RemoveObserver(this);
   ash::VmCameraMicManager::Get()->RemoveObserver(this);
 
   if (base::SysInfo::IsRunningOnChromeOS() &&
@@ -355,8 +357,8 @@ void MediaClientImpl::OnRequestUpdate(int render_process_id,
                                       blink::mojom::MediaStreamType stream_type,
                                       const content::MediaRequestState state) {
   CHECK(base::CurrentUIThread::IsSet(), base::NotFatalUntil::M162);
-  // The PostTask is necessary because the state of MediaStreamCaptureIndicator
-  // gets updated after this.
+  // The PostTask is necessary because the state of
+  // webrtc::MediaCaptureIndicator gets updated after this.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&MediaClientImpl::RequestCaptureState,
                                 weak_ptr_factory_.GetWeakPtr()));

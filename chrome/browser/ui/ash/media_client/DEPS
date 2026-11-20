@@ -4,12 +4,13 @@ include_rules = [
   # Whenever possible, avoid adding new //chrome dependencies to this list.
   "+chrome/browser/ash/camera_mic",
   "+chrome/browser/ash/extensions",
-  "+chrome/browser/media/webrtc",
   "+chrome/browser/picture_in_picture",
   "+chrome/browser/profiles/profile.h",
   "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
   "+chrome/browser/ui/tab_contents",
 
+  "+components/webrtc/media_capture_dispatcher.h",
+  "+components/webrtc/media_capture_indicator.h",
   "+ui/message_center",
 ]
 

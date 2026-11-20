@@ -16,12 +16,16 @@
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/camera_mic/vm_camera_mic_manager.h"
-#include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chromeos/ash/components/browser_delegate/browser_controller.h"
+#include "components/webrtc/media_capture_dispatcher.h"
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
 #include "media/capture/video/chromeos/mojom/cros_camera_service.mojom.h"
 #include "services/video_capture/public/mojom/video_source_provider.mojom.h"
 #include "ui/base/accelerators/media_keys_listener.h"
+
+namespace content {
+class BrowserContext;
+}  // namespace content
 
 using GetSourceInfosResult =
     video_capture::mojom::VideoSourceProvider::GetSourceInfosResult;
@@ -29,7 +33,7 @@ using GetSourceInfosResult =
 class MediaClientImpl : public ash::MediaClient,
                         public ash::VmCameraMicManager::Observer,
                         public ash::BrowserController::Observer,
-                        public MediaCaptureDevicesDispatcher::Observer,
+                        public webrtc::MediaCaptureDispatcher::Observer,
                         public media::CameraPrivacySwitchObserver,
                         public media::CameraActiveClientObserver {
  public:
@@ -61,7 +65,7 @@ class MediaClientImpl : public ash::MediaClient,
   void RequestCaptureState() override;
   void SuspendMediaSessions() override;
 
-  // MediaCaptureDevicesDispatcher::Observer:
+  // webrtc::MediaCaptureDispatcher::Observer:
   void OnRequestUpdate(int render_process_id,
                        int render_frame_id,
                        blink::mojom::MediaStreamType stream_type,
@@ -205,6 +209,9 @@ class MediaClientImpl : public ash::MediaClient,
   base::ScopedObservation<ash::BrowserController,
                           ash::BrowserController::Observer>
       browser_observation_{this};
+  base::ScopedObservation<webrtc::MediaCaptureDispatcher,
+                          webrtc::MediaCaptureDispatcher::Observer>
+      media_capture_observation_{this};
 
   SEQUENCE_CHECKER(sequence_checker_);
 
