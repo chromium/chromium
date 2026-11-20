@@ -197,6 +197,12 @@ class PDFExtensionTest : public PDFExtensionTestBase {
         &PDFExtensionTest::HandleTextPlainRequest, base::Unretained(this)));
   }
 
+  extensions::mime_handler::MimeHandlerStreamManager*
+  GetMimeHandlerStreamManager() {
+    return extensions::mime_handler::MimeHandlerStreamManager::FromWebContents(
+        GetActiveWebContents());
+  }
+
  private:
   std::unique_ptr<net::test_server::HttpResponse> HandleTextPlainRequest(
       const net::test_server::HttpRequest& request) {
@@ -3499,19 +3505,9 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionZoomTest, DefaultZoomEmbed) {
   TestDefaultZoom(extension_host);
 }
 
-// PDF extension tests for the OOPIF PDF viewer.
-class PDFExtensionOopifTest : public PDFExtensionTestBase {
- public:
-  extensions::mime_handler::MimeHandlerStreamManager*
-  GetMimeHandlerStreamManager() {
-    return extensions::mime_handler::MimeHandlerStreamManager::FromWebContents(
-        GetActiveWebContents());
-  }
-};
-
 // Test that an embed-embedded PDF can send and receive postMessage() messages
 // to and from its embedder.
-IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, OopifPdfPostMessageEmbed) {
+IN_PROC_BROWSER_TEST_F(PDFExtensionTest, PostMessageEmbed) {
   // Load the HTML containing an embed embedding a PDF.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/pdf/pdf_embed.html")));
@@ -3527,8 +3523,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, OopifPdfPostMessageEmbed) {
 
 // Tests that `FindFullPagePdfExtensionHost` fails to find the PDF extension
 // host on a non-PDF page.
-IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest,
-                       FindFullPagePdfExtensionHostNonPdf) {
+IN_PROC_BROWSER_TEST_F(PDFExtensionTest, FindFullPagePdfExtensionHostNonPdf) {
   // Navigate to a non-PDF page.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/title1.html")));
@@ -3540,8 +3535,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest,
 
 // Tests that `FindFullPagePdfExtensionHost` fails to find the PDF extension
 // host on an embedded PDF.
-IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest,
-                       FindFullPagePdfExtensionHostEmbedPdf) {
+IN_PROC_BROWSER_TEST_F(PDFExtensionTest, FindFullPagePdfExtensionHostEmbedPdf) {
   // Load page with embedded PDF and make sure it succeeds.
   ASSERT_TRUE(LoadPdfInFirstChild(
       embedded_test_server()->GetURL("/pdf/pdf_embed.html")));
@@ -3553,7 +3547,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest,
 
 // Tests that `FindFullPagePdfExtensionHost` finds the correct PDF extension
 // host on a full-page PDF.
-IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest,
+IN_PROC_BROWSER_TEST_F(PDFExtensionTest,
                        FindFullPagePdfExtensionHostFullPagePdf) {
   // Load a full-page PDF and make sure it succeeds.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -3574,7 +3568,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest,
 // Tests that `FindFullPagePdfExtensionHost` finds the correct PDF extension
 // host on a full-page PDF loaded with MIME type params.
 IN_PROC_BROWSER_TEST_F(
-    PDFExtensionOopifTest,
+    PDFExtensionTest,
     FindFullPagePdfExtensionHostFullPagePdfWithMimeTypeParam) {
   // Load a full-page PDF with MIME type param and make sure it succeeds.
   const char kPdfFullPageWithMimeTypeParam[] =
@@ -3604,7 +3598,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // Test that re-navigating to the same PDF successfully loads the PDF.
-IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, NavigateToSamePdf) {
+IN_PROC_BROWSER_TEST_F(PDFExtensionTest, NavigateToSamePdf) {
   const GURL pdf_url = embedded_test_server()->GetURL("/pdf/test.pdf");
   WebContents* web_contents = GetActiveWebContents();
 
@@ -3643,7 +3637,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, NavigateToSamePdf) {
 // Content-Security-Policy: sandbox header.
 
 // Test that navigating to a different PDF successfully loads the PDF.
-IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, NavigateToDifferentPdf) {
+IN_PROC_BROWSER_TEST_F(PDFExtensionTest, NavigateToDifferentPdf) {
   const GURL pdf_url = embedded_test_server()->GetURL("/pdf/test.pdf");
   WebContents* web_contents = GetActiveWebContents();
 
@@ -3681,7 +3675,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, NavigateToDifferentPdf) {
 }
 
 // Test that the inner frames in a full page PDF can't be accessed.
-IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, FailToAccessInnerFramesFullPage) {
+IN_PROC_BROWSER_TEST_F(PDFExtensionTest, FailToAccessInnerFramesFullPage) {
   // Load a direct PDF URL full page.
   ASSERT_TRUE(LoadPdf(embedded_test_server()->GetURL("/pdf/test.pdf")));
 
@@ -3696,7 +3690,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, FailToAccessInnerFramesFullPage) {
 }
 
 // Test that the inner frames in an embed-embedded PDF can't be accessed.
-IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, FailToAccessInnerFramesEmbed) {
+IN_PROC_BROWSER_TEST_F(PDFExtensionTest, FailToAccessInnerFramesEmbed) {
   // Load the HTML containing an embed embedding a PDF.
   ASSERT_TRUE(LoadPdfInFirstChild(
       embedded_test_server()->GetURL("/pdf/pdf_embed.html")));
@@ -3706,7 +3700,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, FailToAccessInnerFramesEmbed) {
 }
 
 // Test that the inner frames in an iframe-embedded PDF can't be accessed.
-IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, FailToAccessInnerFramesIframe) {
+IN_PROC_BROWSER_TEST_F(PDFExtensionTest, FailToAccessInnerFramesIframe) {
   // Load the HTML containing an iframe embedding a PDF.
   ASSERT_TRUE(LoadPdfInFirstChild(
       embedded_test_server()->GetURL("/pdf/test-iframe.html")));
@@ -3716,7 +3710,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, FailToAccessInnerFramesIframe) {
 }
 
 // Tests that a data URL to a PDF loads successfully.
-IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, LoadDataUrlPdfFullPage) {
+IN_PROC_BROWSER_TEST_F(PDFExtensionTest, LoadDataUrlPdfFullPage) {
   // The data URL to load a simple PDF page.
   const char kDataUrlPdfFullPage[] =
       "data:application/pdf;base64,"
@@ -3732,7 +3726,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, LoadDataUrlPdfFullPage) {
 
 // Tests that a data URL to a HTML page embedding a PDF in an embed loads
 // successfully.
-IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, LoadDataUrlPdfEmbed) {
+IN_PROC_BROWSER_TEST_F(PDFExtensionTest, LoadDataUrlPdfEmbed) {
   const std::string url =
       embedded_test_server()->GetURL("/pdf/test.pdf").spec();
   const std::string data_url =
@@ -3747,7 +3741,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, LoadDataUrlPdfEmbed) {
 
 // Tests that a data URL to a HTML page embedding a PDF in an iframe loads
 // successfully.
-IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, LoadDataUrlPdfIframe) {
+IN_PROC_BROWSER_TEST_F(PDFExtensionTest, LoadDataUrlPdfIframe) {
   const std::string url =
       embedded_test_server()->GetURL("/pdf/test.pdf").spec();
   const std::string data_url =
@@ -3762,7 +3756,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, LoadDataUrlPdfIframe) {
 
 // If the document.body of the PDF viewer is replaced, there should no longer
 // be a PDF stream.
-IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, ReplaceDocumentBody) {
+IN_PROC_BROWSER_TEST_F(PDFExtensionTest, ReplaceDocumentBody) {
   ASSERT_TRUE(LoadPdf(embedded_test_server()->GetURL("/pdf/test.pdf")));
   WebContents* web_contents = GetActiveWebContents();
   EXPECT_TRUE(
@@ -3790,7 +3784,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, ReplaceDocumentBody) {
 
 // If the document.body of the PDF viewer is replaced, any subframes appended
 // should be able to navigate.
-IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, ReplaceDocumentBodyWithIframe) {
+IN_PROC_BROWSER_TEST_F(PDFExtensionTest, ReplaceDocumentBodyWithIframe) {
   ASSERT_TRUE(LoadPdf(embedded_test_server()->GetURL("/pdf/test.pdf")));
   WebContents* contents = GetActiveWebContents();
   EXPECT_TRUE(
@@ -3819,7 +3813,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, ReplaceDocumentBodyWithIframe) {
 }
 
 // Subframes appended to the original document.body should be able to navigate.
-IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, DocumentBodyAppendIframe) {
+IN_PROC_BROWSER_TEST_F(PDFExtensionTest, DocumentBodyAppendIframe) {
   ASSERT_TRUE(LoadPdf(embedded_test_server()->GetURL("/pdf/test.pdf")));
   WebContents* contents = GetActiveWebContents();
 
@@ -3841,7 +3835,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, DocumentBodyAppendIframe) {
 // Loading a PDF in a subframe without a corresponding FrameNavigationEntry
 // should not cause a crash. See https://crbug.com/358084015 and
 // https://crbug.com/40467594.
-IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, SubframePDFMissingFrameEntry) {
+IN_PROC_BROWSER_TEST_F(PDFExtensionTest, SubframePDFMissingFrameEntry) {
   WebContents* contents = GetActiveWebContents();
 
   // Navigate to a test page, and then navigate same-document.
@@ -3879,8 +3873,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, SubframePDFMissingFrameEntry) {
 // Ensure that when the only other PDF instance closes in the middle of another
 // PDF's extension frame load, the PDF extension frame can still complete its
 // subsequent navigation. See https://crbug.com/40214326.
-IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest,
-                       PdfExtensionLoadedWhileOldPdfCloses) {
+IN_PROC_BROWSER_TEST_F(PDFExtensionTest, PdfExtensionLoadedWhileOldPdfCloses) {
   const GURL main_url(embedded_test_server()->GetURL("/pdf/test.pdf"));
 
   // Load a test PDF in the first tab.
@@ -3950,9 +3943,8 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest,
 }
 
 // Test that the PDF embedder frame can't postMessage() to the PDF content
-// frame. OOPIF PDF only, since GuestView PDF's embedder frame doesn't have a
-// proxy host to the content frame.
-IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest,
+// frame.
+IN_PROC_BROWSER_TEST_F(PDFExtensionTest,
                        BlockPdfEmbedderFramePostMessageToContentFrame) {
   ASSERT_TRUE(LoadPdf(embedded_test_server()->GetURL("/pdf/test.pdf")));
 
@@ -3987,8 +3979,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest,
 // cancels them, and posts a task to navigate to the original URL instead.
 // Triggering profile destruction after this task is posted but before it runs
 // has previously led to issues in https://crbug.com/40061670.
-IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest,
-                       PdfNavigationDuringProfileShutdown) {
+IN_PROC_BROWSER_TEST_F(PDFExtensionTest, PdfNavigationDuringProfileShutdown) {
   // Open an Incognito window.
   BrowserWindowInterface* incognito = CreateIncognitoBrowser();
   content::WebContents* incognito_contents =
@@ -4064,7 +4055,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest,
 
 // Test that the PDF.LoadStatus2 metric is incremented only after the PDF fully
 // loads.
-IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, MetricsPDFLoadStatusPartialLoad) {
+IN_PROC_BROWSER_TEST_F(PDFExtensionTest, MetricsPDFLoadStatusPartialLoad) {
   const char kPdfLoadStatusMetric[] = "PDF.LoadStatus2";
   base::HistogramTester histograms;
 
@@ -4105,7 +4096,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, MetricsPDFLoadStatusPartialLoad) {
 
 // Test that loading a blob PDF inside an embedder page with strict CSP should
 // still have styling.
-IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest,
+IN_PROC_BROWSER_TEST_F(PDFExtensionTest,
                        EmbedderCSPDoesNotBlockPdfIframeStyling) {
   const GURL main_url(
       embedded_test_server()->GetURL("/pdf/blob_pdf_iframe_csp.html"));
@@ -4138,7 +4129,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest,
 // same-origin PDF, a permission request from the outer page must not be
 // attributed to the PDF Viewer extension, while a request from inside the
 // extension subtree must be.
-IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest,
+IN_PROC_BROWSER_TEST_F(PDFExtensionTest,
                        OuterPageSameOriginPdfDoesNotInheritExtensionOrigin) {
   // Outer a.com page embeds a same-origin a.com PDF.
   const GURL outer_url =
@@ -4190,7 +4181,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest,
 // Geolocation is a delegated permission that requires a secure context;
 // 127.0.0.1 and localhost are distinct origins that are both potentially
 // trustworthy, mirroring the two-site reproduction over plain http.
-IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest,
+IN_PROC_BROWSER_TEST_F(PDFExtensionTest,
                        SameOriginPdfDoesNotLeakGeolocationAcrossOrigins) {
   static constexpr char kRequestGeolocation[] = R"(
     new Promise(resolve => {
@@ -4251,12 +4242,12 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest,
 // Tests for `features::kPdfOpaqueOrigin`, which makes the PDF content frame
 // (the one hosting the plugin, in the PDF process) commit an opaque origin
 // whose precursor is the origin of the PDF URL.
-class PDFExtensionOpaqueOriginTest : public PDFExtensionOopifTest {
+class PDFExtensionOpaqueOriginTest : public PDFExtensionTest {
  public:
   std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
       const override {
     std::vector<base::test::FeatureRefAndParams> enabled =
-        PDFExtensionOopifTest::GetEnabledFeatures();
+        PDFExtensionTest::GetEnabledFeatures();
     enabled.push_back({::features::kPdfOpaqueOrigin, {}});
     return enabled;
   }
@@ -4354,8 +4345,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOpaqueOriginTest,
   EXPECT_EQ(1, content::EvalJs(content_frame, "1"));
 }
 
-class PDFExtensionOopifBlockPdfFrameNavigationTest
-    : public PDFExtensionOopifTest {
+class PDFExtensionBlockPdfFrameNavigationTest : public PDFExtensionTest {
  public:
   // Override PDFExtensionTestBase::SetUpCommandLine() to enable
   // `features::kRenderDocument`, which requires a parameter.
@@ -4439,7 +4429,7 @@ class PDFExtensionOopifBlockPdfFrameNavigationTest
 
 // Test that navigations in the inner PDF frames fail if they aren't for PDF
 // viewer setup in a full page PDF.
-IN_PROC_BROWSER_TEST_F(PDFExtensionOopifBlockPdfFrameNavigationTest,
+IN_PROC_BROWSER_TEST_F(PDFExtensionBlockPdfFrameNavigationTest,
                        NonPdfNavigationFullPage) {
   // Load a direct PDF URL full page.
   const GURL pdf_url = embedded_test_server()->GetURL("/pdf/test.pdf");
@@ -4454,7 +4444,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifBlockPdfFrameNavigationTest,
 
 // Test that navigations in the inner PDF frames fail if they aren't for PDF
 // viewer setup in an embed-embedded PDF.
-IN_PROC_BROWSER_TEST_F(PDFExtensionOopifBlockPdfFrameNavigationTest,
+IN_PROC_BROWSER_TEST_F(PDFExtensionBlockPdfFrameNavigationTest,
                        NonPdfNavigationEmbed) {
   // Load the HTML containing an embed embedding a PDF.
   const GURL url = embedded_test_server()->GetURL("/pdf/pdf_embed.html");
@@ -4469,7 +4459,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifBlockPdfFrameNavigationTest,
 
 // Test that navigations in the inner PDF frames fail if they aren't for PDF
 // viewer setup in an iframe-embedded PDF.
-IN_PROC_BROWSER_TEST_F(PDFExtensionOopifBlockPdfFrameNavigationTest,
+IN_PROC_BROWSER_TEST_F(PDFExtensionBlockPdfFrameNavigationTest,
                        NonPdfNavigationIframe) {
   // Load the HTML containing an iframe embedding a PDF.
   const GURL url = embedded_test_server()->GetURL("/pdf/test-iframe.html");
@@ -4485,7 +4475,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifBlockPdfFrameNavigationTest,
 // Test that after the PDF load in a full page PDF, the PDF extension frame
 // cannot re-navigate to the PDF extension URL and the PDF content frame cannot
 // re-navigate to the PDF URL.
-IN_PROC_BROWSER_TEST_F(PDFExtensionOopifBlockPdfFrameNavigationTest,
+IN_PROC_BROWSER_TEST_F(PDFExtensionBlockPdfFrameNavigationTest,
                        SameUrlNavigationFullPage) {
   // Load a direct PDF URL full page.
   const GURL pdf_url = embedded_test_server()->GetURL("/pdf/test.pdf");
@@ -4501,7 +4491,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifBlockPdfFrameNavigationTest,
 // Test that after the PDF load in an embed-embedded PDF, the PDF extension
 // frame cannot re-navigate to the PDF extension URL and the PDF content frame
 // cannot re-navigate to the PDF URL.
-IN_PROC_BROWSER_TEST_F(PDFExtensionOopifBlockPdfFrameNavigationTest,
+IN_PROC_BROWSER_TEST_F(PDFExtensionBlockPdfFrameNavigationTest,
                        SameUrlNavigationEmbed) {
   // Load the HTML containing an embed embedding a PDF.
   const GURL url = embedded_test_server()->GetURL("/pdf/pdf_embed.html");
@@ -4517,7 +4507,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifBlockPdfFrameNavigationTest,
 // Test that after the PDF load in an iframe-embedded PDF, the PDF extension
 // frame cannot re-navigate to the PDF extension URL and the PDF content frame
 // cannot re-navigate to the PDF URL.
-IN_PROC_BROWSER_TEST_F(PDFExtensionOopifBlockPdfFrameNavigationTest,
+IN_PROC_BROWSER_TEST_F(PDFExtensionBlockPdfFrameNavigationTest,
                        SameUrlNavigationIframe) {
   // Load the HTML containing an iframe embedding a PDF.
   const GURL url = embedded_test_server()->GetURL("/pdf/test-iframe.html");

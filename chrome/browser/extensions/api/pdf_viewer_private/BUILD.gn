@@ -78,7 +78,6 @@ source_set("unit_tests") {
     "//extensions/browser/mime_handler:stream_container",
     "//extensions/browser/mime_handler:test_helpers",
     "//pdf:content_restriction",
-    "//pdf:features",
     "//services/network/public/mojom:url_loader_base",
     "//url",
   ]

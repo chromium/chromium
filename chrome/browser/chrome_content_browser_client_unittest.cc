@@ -269,7 +269,6 @@
 #if BUILDFLAG(ENABLE_PDF)
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/test_renderer_host.h"
-#include "pdf/pdf_features.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 using ::content::BrowsingDataFilterBuilder;
@@ -3047,17 +3046,9 @@ TEST_F(ChromeContentBrowserClientAIPrefsTest,
             blink::mojom::PreferredColorScheme::kDark);
 }
 #if BUILDFLAG(ENABLE_PDF)
-class ChromeContentBrowserClientOopifPdfTest
-    : public ChromeRenderViewHostTestHarness {
- public:
-  ChromeContentBrowserClientOopifPdfTest() = default;
-  ~ChromeContentBrowserClientOopifPdfTest() override = default;
+using ChromeContentBrowserClientPdfTest = ChromeRenderViewHostTestHarness;
 
- private:
-  base::test::ScopedFeatureList feature_list_{chrome_pdf::features::kPdfOopif};
-};
-
-TEST_F(ChromeContentBrowserClientOopifPdfTest,
+TEST_F(ChromeContentBrowserClientPdfTest,
        OverrideLocalURLCrossOriginEmbedderPolicy) {
   NiceMock<content::MockNavigationHandle> navigation_handle;
   navigation_handle.set_render_frame_host(main_rfh());

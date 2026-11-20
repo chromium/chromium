@@ -103,7 +103,6 @@
 
 #if BUILDFLAG(ENABLE_PDF)
 #include "chrome/browser/pdf/test_mime_handler_stream_manager.h"
-#include "pdf/pdf_features.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -1856,9 +1855,7 @@ IN_PROC_BROWSER_TEST_P(HostedAppSitePerProcessTest,
 #if BUILDFLAG(ENABLE_PDF)
 class HostedAppSitePerProcessPDFTest : public HostedAppSitePerProcessTest {
  public:
-  HostedAppSitePerProcessPDFTest() {
-    feature_list_.InitAndEnableFeature(chrome_pdf::features::kPdfOopif);
-  }
+  HostedAppSitePerProcessPDFTest() = default;
 
   HostedAppSitePerProcessPDFTest(const HostedAppSitePerProcessPDFTest&) =
       delete;
@@ -1875,7 +1872,6 @@ class HostedAppSitePerProcessPDFTest : public HostedAppSitePerProcessTest {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   pdf::TestMimeHandlerStreamManagerFactory factory_;
 };
 

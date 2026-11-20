@@ -5123,10 +5123,6 @@ source_set("core_unit_tests") {
     ]
   }
 
-  if (enable_pdf) {
-    deps += [ "//pdf:features" ]
-  }
-
   if (is_win) {
     sources += [
       "chrome_browser_main_win_unittest.cc",

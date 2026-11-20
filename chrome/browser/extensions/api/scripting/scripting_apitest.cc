@@ -45,11 +45,6 @@
 #include "chrome/test/base/ui_test_utils.h"
 #endif
 
-#if BUILDFLAG(ENABLE_PDF)
-#include "base/test/scoped_feature_list.h"
-#include "pdf/pdf_features.h"
-#endif  // BUILDFLAG(ENABLE_PDF)
-
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
@@ -163,19 +158,9 @@ IN_PROC_BROWSER_TEST_F(ScriptingAPITest, NestedWebContents) {
 }
 
 #if BUILDFLAG(ENABLE_PDF)
-class ScriptingAPIOopifPdfTest : public ScriptingAPITest {
- public:
-  ScriptingAPIOopifPdfTest() {
-    feature_list_.InitAndEnableFeature(chrome_pdf::features::kPdfOopif);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 // Validate that extensions are not allowed to execute scripts within the PDF
 // extension frame and the PDF content frame.
-IN_PROC_BROWSER_TEST_F(ScriptingAPIOopifPdfTest, PdfFrames) {
+IN_PROC_BROWSER_TEST_F(ScriptingAPITest, PdfFrames) {
   OpenURLInCurrentTab(
       embedded_test_server()->GetURL("a.com", "/page_with_embedded_pdf.html"));
 

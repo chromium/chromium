@@ -3242,7 +3242,6 @@ source_set("browser_tests") {
       "//extensions/renderer:unit_test_support",
       "//google_apis/common:test_support",
       "//google_apis/drive",
-      "//pdf:features",
       "//services/network/public/cpp:ip_address_space_overrides_test_utils",
       "//ui/accessibility:test_support",
       "//ui/actions:actions_headers",

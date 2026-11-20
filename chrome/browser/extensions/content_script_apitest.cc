@@ -88,7 +88,6 @@
 
 #if BUILDFLAG(ENABLE_PDF)
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
-#include "pdf/pdf_features.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -2147,21 +2146,9 @@ IN_PROC_BROWSER_TEST_F(ContentScriptRelatedFrameTest,
 // suite.
 
 #if BUILDFLAG(ENABLE_PDF)
-// A test suite for exercising the behavior of content script injection into
-// PDF-related frames.
-class ContentScriptRelatedPdfFrameTest : public ContentScriptRelatedFrameTest {
- public:
-  ContentScriptRelatedPdfFrameTest() {
-    feature_list_.InitAndEnableFeature(chrome_pdf::features::kPdfOopif);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 // Test that content scripts can execute in the PDF embedder frame, but not in
 // the PDF extension frame nor PDF content frame.
-IN_PROC_BROWSER_TEST_F(ContentScriptRelatedPdfFrameTest, PdfFrames) {
+IN_PROC_BROWSER_TEST_F(ContentScriptRelatedFrameTest, PdfFrames) {
   // Navigate to a full-page PDF.
   content::WebContents* tab = NavigateTab(
       embedded_test_server()->GetURL("example.com", "/pdf/test.pdf"));

@@ -9,7 +9,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/pdf/pdf_handler_stream_delegate.h"
@@ -21,12 +20,10 @@
 #include "content/public/test/web_contents_tester.h"
 #include "extensions/browser/api/constants.h"
 #include "extensions/browser/api_test_utils.h"
-#include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 #include "extensions/browser/mime_handler/mime_handler_stream_manager.h"
 #include "extensions/browser/mime_handler/mime_handler_test_helpers.h"
 #include "extensions/browser/mime_handler/stream_container.h"
 #include "pdf/buildflags.h"
-#include "pdf/pdf_features.h"
 
 #if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
 #include "base/strings/string_number_conversions.h"
@@ -88,7 +85,6 @@ class PdfViewerPrivateApiUnitTest : public ChromeRenderViewHostTestHarness {
 
  protected:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(chrome_pdf::features::kPdfOopif);
     ChromeRenderViewHostTestHarness::SetUp();
 
     mime_handler::MimeHandlerStreamManager::Create(web_contents());
@@ -191,7 +187,6 @@ class PdfViewerPrivateApiUnitTest : public ChromeRenderViewHostTestHarness {
 #endif  // BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 #if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
   raw_ptr<extensions::TestEventRouter> event_router_ = nullptr;
   SaveToDriveFlow::CreateCallback create_save_to_drive_flow_callback_;

@@ -206,13 +206,7 @@ TEST_F(ReadAnythingTranslateObserverTest,
 }
 
 #if BUILDFLAG(ENABLE_PDF)
-class ReadAnythingTranslateObserverOopifPdfTest
-    : public ReadAnythingTranslateObserverTest {
- private:
-  base::test::ScopedFeatureList feature_list_{chrome_pdf::features::kPdfOopif};
-};
-
-TEST_F(ReadAnythingTranslateObserverOopifPdfTest,
+TEST_F(ReadAnythingTranslateObserverTest,
        Observe_DisplayedContentsDiffersFromTab_ObservesTabLanguage) {
   std::unique_ptr<content::WebContents> contents_without_client =
       CreateTestWebContents();
