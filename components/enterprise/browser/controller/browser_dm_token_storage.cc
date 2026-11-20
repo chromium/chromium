@@ -12,7 +12,6 @@
 #include <utility>
 
 #include "base/base64.h"
-#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -21,7 +20,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/syslog_logging.h"
-#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
 #include "components/policy/core/common/policy_logger.h"
@@ -31,10 +29,7 @@ namespace policy {
 
 namespace {
 
-#if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
-constexpr char kAlwaysEnroll[] = "always-enroll";
 constexpr char kFakeEnrollmentToken[] = "fake-enrollment-token";
-#endif
 
 constexpr char kInvalidTokenValue[] = "INVALID_DM_TOKEN";
 
@@ -253,13 +248,9 @@ void BrowserDMTokenStorage::InitIfNeeded() {
 std::string BrowserDMTokenStorage::InitEnrollmentToken() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::string enrollment_token = delegate_->InitEnrollmentToken();
-#if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  if (enrollment_token.empty() &&
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          policy::switches::kUseFakeDmserver) == kAlwaysEnroll) {
+  if (enrollment_token.empty() && policy::FakeDmserverAlwaysEnrolls()) {
     return kFakeEnrollmentToken;
   }
-#endif
   return enrollment_token;
 }
 

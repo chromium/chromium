@@ -69,12 +69,21 @@ Optional arguments:
 
 ### Step 3: Launch Chrome
 
-When launching Chromium or Chrome, tell it to use your local server. For
-Chromium builds, use `--use-fake-dmserver` to configure the default DMServer URL
-and automatically enable cloud management:
+When launching Chromium or Chrome, tell it to use your local server. Use
+`--use-fake-dmserver` to configure the default DMServer URL and automatically
+enable cloud management:
 
 ```bash
 ./out/Default/chrome --use-fake-dmserver
+```
+
+The `--use-fake-dmserver` switch is available only when the
+`allow_fake_dmserver` GN arg is true. The arg is true by default in Chromium
+builds on Linux, and false in Google Chrome builds. To use the switch in a local
+Google Chrome build, add this line to `args.gn`:
+
+```
+allow_fake_dmserver = true
 ```
 
 To enroll the browser in Chrome Browser Cloud Management (CBCM) without
@@ -87,8 +96,8 @@ configuring an OS-level `CloudManagementEnrollmentToken`, use:
 This supplies a dummy enrollment token when no token is provided by the
 operating system, allowing machine-level enrollment to proceed immediately.
 
-Alternatively, or for Google Chrome builds where `--use-fake-dmserver` is not
-available, specify the parameters manually:
+Alternatively, or for builds where `allow_fake_dmserver` is false, specify the
+parameters manually:
 
 ```bash
 # Replace the URL with the host and port from the previous step

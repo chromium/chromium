@@ -22,7 +22,6 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/pass_key.h"
-#include "build/branding_buildflags.h"
 #include "components/policy/core/common/cloud/cloud_policy_refresh_scheduler.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
@@ -39,10 +38,8 @@ namespace policy {
 
 namespace {
 
-#if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
 const char kDefaultFakeDmserverUrl[] =
     "http://127.0.0.1:6112/device_management";
-#endif
 
 // The URL for the device management server.
 const char kDefaultDeviceManagementServerUrl[] =
@@ -129,15 +126,10 @@ bool BrowserPolicyConnector::ProviderHasPolicies(
 }
 
 std::string BrowserPolicyConnector::GetDeviceManagementUrl() const {
-#if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kUseFakeDmserver)) {
-    return GetUrlOverride(switches::kDeviceManagementUrl,
-                          kDefaultFakeDmserverUrl);
-  }
-#endif
   return GetUrlOverride(switches::kDeviceManagementUrl,
-                        kDefaultDeviceManagementServerUrl);
+                        IsFakeDmserverEnabled()
+                            ? kDefaultFakeDmserverUrl
+                            : kDefaultDeviceManagementServerUrl);
 }
 
 std::string BrowserPolicyConnector::GetRealtimeReportingUrl() const {

@@ -9,8 +9,8 @@
 #include "base/functional/callback_helpers.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/task_environment.h"
-#include "build/branding_buildflags.h"
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
+#include "components/policy/buildflags/buildflags.h"
 #include "components/policy/core/common/policy_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -234,7 +234,7 @@ TEST_F(BrowserDMTokenStorageTest, ClientIdTooLong) {
   EXPECT_EQ(newStorage.RetrieveClientId(), "");
 }
 
-#if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(ALLOW_FAKE_DMSERVER)
 constexpr char kAlwaysEnroll[] = "always-enroll";
 constexpr char kFakeEnrollmentToken[] = "fake-enrollment-token";
 

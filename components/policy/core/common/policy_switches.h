@@ -5,8 +5,8 @@
 #ifndef COMPONENTS_POLICY_CORE_COMMON_POLICY_SWITCHES_H_
 #define COMPONENTS_POLICY_CORE_COMMON_POLICY_SWITCHES_H_
 
-#include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "components/policy/buildflags/buildflags.h"
 #include "components/policy/policy_export.h"
 
 namespace policy {
@@ -27,11 +27,20 @@ extern const char kDisablePolicyKeyVerification[];
 extern const char kForceDeviceOwnership[];
 #endif
 
-#if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(ALLOW_FAKE_DMSERVER)
 extern const char kUseFakeDmserver[];
 #endif
 
 }  // namespace switches
+
+// Returns true if this build allows fake_dmserver, and --use-fake-dmserver is
+// on the command line.
+bool IsFakeDmserverEnabled();
+
+// Returns true if `IsFakeDmserverEnabled()`, and the switch requests automatic
+// enrollment (--use-fake-dmserver=always-enroll).
+bool FakeDmserverAlwaysEnrolls();
+
 }  // namespace policy
 
 #endif  // COMPONENTS_POLICY_CORE_COMMON_POLICY_SWITCHES_H_

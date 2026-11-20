@@ -106,10 +106,9 @@ bool ChromeBrowserCloudManagementController::IsEnabled() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return true;
 #else
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  return command_line->HasSwitch(
-             ::switches::kEnableChromeBrowserCloudManagement) ||
-         command_line->HasSwitch(policy::switches::kUseFakeDmserver);
+  return policy::IsFakeDmserverEnabled() ||
+         base::CommandLine::ForCurrentProcess()->HasSwitch(
+             ::switches::kEnableChromeBrowserCloudManagement);
 #endif
 }
 
