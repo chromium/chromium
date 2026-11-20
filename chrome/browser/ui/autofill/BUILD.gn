@@ -412,6 +412,7 @@ source_set("unit_tests") {
 
   if (is_mac) {
     sources += [ "autofill_popup_controller_impl_mac_unittest.mm" ]
+    deps += [ "//chrome/browser/ui/cocoa" ]
   }
 }
 

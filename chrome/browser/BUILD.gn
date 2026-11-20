@@ -5376,6 +5376,7 @@ if (!is_android) {
         "//chrome/browser/bookmarks:test_support",
         "//chrome/browser/prefs",
         "//chrome/browser/shortcuts",
+        "//chrome/browser/ui/cocoa",
         "//chrome/browser/ui/startup",
         "//chrome/test/base:test_utils_mac",
         "//ui/events:test_support",
