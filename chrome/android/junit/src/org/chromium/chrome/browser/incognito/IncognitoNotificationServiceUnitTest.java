@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.incognito;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -17,8 +18,13 @@ import android.content.Context;
 import android.content.Intent;
 
 import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
@@ -29,12 +35,16 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.profiles.ProfileManagerJni;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabHost;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabHostRegistry;
 import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
+import org.chromium.content.browser.BrowserStartupControllerImpl;
 
 import java.util.HashMap;
 import java.util.List;
@@ -44,6 +54,11 @@ import java.util.Map;
 @RunWith(BaseRobolectricTestRunner.class)
 @NullMarked
 public class IncognitoNotificationServiceUnitTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock private ProfileManager.Natives mProfileManagerJni;
+    @Mock private BrowserStartupControllerImpl mBrowserStartupController;
+
     private @Nullable IncognitoTabHost mRegisteredHost;
 
     private static class TestChromeTabbedActivity extends ChromeTabbedActivity {
@@ -90,6 +105,12 @@ public class IncognitoNotificationServiceUnitTest {
         public int getTaskId() {
             return mTaskId;
         }
+    }
+
+    @Before
+    public void setUp() {
+        ProfileManagerJni.setInstanceForTesting(mProfileManagerJni);
+        BrowserStartupControllerImpl.overrideInstanceForTest(mBrowserStartupController);
     }
 
     @After
@@ -232,6 +253,85 @@ public class IncognitoNotificationServiceUnitTest {
         verify(regularWithIncognitoTask).finishAndRemoveTask();
         verify(finishingRegularTask).finishAndRemoveTask();
         verify(deadRecentsTask).finishAndRemoveTask();
+    }
+
+    @Test
+    public void testCloseAllIncognitoNotification_destroysLoadedProfilesPrimaryOtrProfiles() {
+        when(mBrowserStartupController.isFullBrowserStarted()).thenReturn(true);
+
+        Profile profileWithActiveOtrA = mock(Profile.class);
+        Profile activeOtrA = mock(Profile.class);
+        when(profileWithActiveOtrA.getPrimaryOtrProfile(/* createIfNeeded= */ false))
+                .thenReturn(activeOtrA);
+
+        Profile profileWithActiveOtrB = mock(Profile.class);
+        Profile activeOtrB = mock(Profile.class);
+        when(profileWithActiveOtrB.getPrimaryOtrProfile(/* createIfNeeded= */ false))
+                .thenReturn(activeOtrB);
+
+        Profile profileWithShuttingDownOtr = mock(Profile.class);
+        Profile shuttingDownOtr = mock(Profile.class);
+        when(shuttingDownOtr.shutdownStarted()).thenReturn(true);
+        when(profileWithShuttingDownOtr.getPrimaryOtrProfile(/* createIfNeeded= */ false))
+                .thenReturn(shuttingDownOtr);
+
+        Profile profileWithoutOtr = mock(Profile.class);
+
+        when(mProfileManagerJni.getLoadedProfiles())
+                .thenReturn(
+                        List.of(
+                                profileWithActiveOtrA,
+                                profileWithActiveOtrB,
+                                profileWithShuttingDownOtr,
+                                profileWithoutOtr));
+
+        IncognitoNotificationServiceImpl service = new IncognitoNotificationServiceImpl();
+        service.onHandleIntent(null);
+
+        verify(mProfileManagerJni).destroyWhenAppropriate(activeOtrA);
+        verify(mProfileManagerJni).destroyWhenAppropriate(activeOtrB);
+        verify(mProfileManagerJni, never()).destroyWhenAppropriate(shuttingDownOtr);
+        verify(profileWithActiveOtrA, never()).getPrimaryOtrProfile(/* createIfNeeded= */ true);
+        verify(profileWithActiveOtrB, never()).getPrimaryOtrProfile(/* createIfNeeded= */ true);
+        verify(profileWithShuttingDownOtr, never())
+                .getPrimaryOtrProfile(/* createIfNeeded= */ true);
+        verify(profileWithoutOtr, never()).getPrimaryOtrProfile(/* createIfNeeded= */ true);
+        verify(mProfileManagerJni, never()).getLastUsedRegularProfile();
+    }
+
+    @Test
+    public void testCloseAllIncognitoNotification_skipsDestroyWhenIncognitoModelActive() {
+        when(mBrowserStartupController.isFullBrowserStarted()).thenReturn(true);
+        // The incognito model can remain active while closing after its tabs are closed.
+        mRegisteredHost =
+                new IncognitoTabHost() {
+                    private boolean mHasIncognitoTabs = true;
+
+                    @Override
+                    public boolean hasIncognitoTabs() {
+                        return mHasIncognitoTabs;
+                    }
+
+                    @Override
+                    public void closeAllIncognitoTabs() {
+                        mHasIncognitoTabs = false;
+                    }
+
+                    @Override
+                    public void closeAllIncognitoTabsOnInit() {}
+
+                    @Override
+                    public boolean isActiveModel() {
+                        return true;
+                    }
+                };
+        IncognitoTabHostRegistry.getInstance().register(mRegisteredHost);
+
+        IncognitoNotificationServiceImpl service = new IncognitoNotificationServiceImpl();
+        service.onHandleIntent(null);
+
+        verify(mProfileManagerJni, never()).getLoadedProfiles();
+        verify(mProfileManagerJni, never()).destroyWhenAppropriate(any());
     }
 
     private static AppTask createTabbedTask(Map<AppTask, RecentTaskInfo> taskInfos, int taskId) {

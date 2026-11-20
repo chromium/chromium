@@ -62,6 +62,7 @@ public class IncognitoNotificationServiceImpl extends SplitCompatIntentService.I
                 PostTask.runSynchronously(
                         TaskTraits.UI_DEFAULT, this::getRegularOnlyTaskIdsAndCloseIncognitoTabs);
 
+        // TODO(crbug.com/40254448): Update once incognito tab state storage is scoped per profile.
         boolean clearedIncognito = IncognitoTabPersistence.deleteIncognitoStateFiles();
         RecordHistogram.recordBooleanHistogram(
                 "Android.IncognitoNotification.FileNotDeleted", !clearedIncognito);
@@ -80,11 +81,12 @@ public class IncognitoNotificationServiceImpl extends SplitCompatIntentService.I
 
                     if (BrowserStartupController.getInstance().isFullBrowserStarted()
                             && !IncognitoTabHostUtils.isIncognitoTabModelActive()) {
-                        Profile otrProfile =
-                                ProfileManager.getLastUsedRegularProfile()
-                                        .getPrimaryOtrProfile(/* createIfNeeded= */ false);
-                        if (otrProfile != null && !otrProfile.shutdownStarted()) {
-                            ProfileManager.destroyWhenAppropriate(otrProfile);
+                        for (Profile profile : ProfileManager.getLoadedProfiles()) {
+                            Profile otrProfile =
+                                    profile.getPrimaryOtrProfile(/* createIfNeeded= */ false);
+                            if (otrProfile != null && !otrProfile.shutdownStarted()) {
+                                ProfileManager.destroyWhenAppropriate(otrProfile);
+                            }
                         }
                     }
                 });
