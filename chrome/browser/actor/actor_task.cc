@@ -718,7 +718,10 @@ void ActorTask::AddActorSurface(ActorSurfaceHandle actor_surface_handle,
   const tabs::TabHandle tab_handle = actor_surface_handle.GetTabHandle();
   journal_->Log(
       GURL(), id(), "ActorTask::AddTab",
-      JournalDetailsBuilder().Add("tab_id", tab_handle.raw_value()).Build());
+      JournalDetailsBuilder()
+          .AddActorSurface(actor_surface_handle.raw_value(),
+                           actor_surface_handle.GetTabHandle().raw_value())
+          .Build());
 
   controlled_tabs_.emplace(
       actor_surface_handle,
@@ -759,7 +762,10 @@ void ActorTask::OnActorSurfacePromoted(
   const tabs::TabHandle tab_handle = tab->GetHandle();
   journal_->Log(
       GURL(), id(), "ActorTask::OnActorSurfacePromoted",
-      JournalDetailsBuilder().Add("tab_id", tab_handle.raw_value()).Build());
+      JournalDetailsBuilder()
+          .AddActorSurface(actor_surface_handle.raw_value(),
+                           actor_surface_handle.GetTabHandle().raw_value())
+          .Build());
 
   // Outside actor control, `DidTabEnterActorControl()` does this on resume.
   if (IsActingOnActorSurface(actor_surface_handle)) {
@@ -828,7 +834,10 @@ void ActorTask::RemoveActorSurface(ActorSurfaceHandle actor_surface_handle) {
     const tabs::TabHandle tab_handle = actor_surface_handle.GetTabHandle();
     journal_->Log(
         GURL(), id(), "ActorTask::RemoveTab",
-        JournalDetailsBuilder().Add("tab_id", tab_handle.raw_value()).Build());
+        JournalDetailsBuilder()
+            .AddActorSurface(actor_surface_handle.raw_value(),
+                             actor_surface_handle.GetTabHandle().raw_value())
+            .Build());
 
     // Notify the UI of the tab removal.
     // We call this synchronously since a Stop will destroy the ActorTask
@@ -858,10 +867,12 @@ void ActorTask::ObserveActorSurfaceOnce(
     return;
   }
 
-  const tabs::TabHandle tab_handle = actor_surface_handle.GetTabHandle();
   journal_->Log(
       GURL(), id(), "ObserveTabOnce",
-      JournalDetailsBuilder().Add("tab_id", tab_handle.raw_value()).Build());
+      JournalDetailsBuilder()
+          .AddActorSurface(actor_surface_handle.raw_value(),
+                           actor_surface_handle.GetTabHandle().raw_value())
+          .Build());
 
   auto itr = to_observe_tabs_
                  .emplace(actor_surface_handle,
@@ -899,7 +910,8 @@ void ActorTask::OnActorSurfaceWillDetach(
   journal_->Log(
       GURL(), id(), "Acting Tab Deleted",
       JournalDetailsBuilder()
-          .Add("tab_id", actor_surface_handle.GetTabHandle().raw_value())
+          .AddActorSurface(actor_surface_handle.raw_value(),
+                           actor_surface_handle.GetTabHandle().raw_value())
           .Build());
 
   service_->StopTask(id(), StoppedReason::kTabDetached);
@@ -1168,7 +1180,8 @@ bool ActorTask::CheckCrossProfileAndLog(ActorSurface* actor_surface,
     journal_->Log(
         GURL(), id(), method_name,
         JournalDetailsBuilder()
-            .Add("tab_id", actor_surface_handle.GetTabHandle().raw_value())
+            .AddActorSurface(actor_surface_handle.raw_value(),
+                             actor_surface_handle.GetTabHandle().raw_value())
             .AddError(!actor_surface ? "Tab does not exist"
                                      : "Cross-profile access denied")
             .Build());

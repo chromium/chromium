@@ -6,10 +6,12 @@
 
 #include <memory>
 #include <optional>
+#include <vector>
 
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/strings/to_string.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/test_future.h"
@@ -33,6 +35,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/actor/core/actor_switches.h"
+#include "components/actor/core/journal_details_builder.h"
 #include "components/actor/core/task_source_info.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/actor/transport/proto/actuation_transport.pb.h"
@@ -350,6 +353,35 @@ TEST_F(ActorKeyedServiceTest, InitialHeadlessSurfaceAssociationOnCreate) {
   ASSERT_TRUE(task);
   EXPECT_TRUE(task->HasActorSurface(handle));
   EXPECT_TRUE(task->IsActingOnActorSurface(handle));
+}
+
+// The journal identifies a tab by its tab ID and a headless surface, which has
+// no tab, by its surface ID.
+TEST_F(ActorKeyedServiceTest, JournalDetailsAddActorSurface) {
+  auto mock_tab = CreateMockTab();
+  const ActorSurfaceHandle tab_surface =
+      ActorSurfaceHandle::From(mock_tab->GetHandle());
+  std::vector<mojom::JournalDetailsPtr> tab_details =
+      JournalDetailsBuilder()
+          .AddActorSurface(tab_surface.raw_value(),
+                           tab_surface.GetTabHandle().raw_value())
+          .Build();
+  ASSERT_EQ(tab_details.size(), 1u);
+  EXPECT_EQ(tab_details[0]->key, "tab_id");
+  EXPECT_EQ(tab_details[0]->value,
+            base::ToString(mock_tab->GetHandle().raw_value()));
+
+  ScopedHeadlessActorSurface headless =
+      ActorKeyedService::Get(profile())->CreateHeadlessActorSurface();
+  const ActorSurfaceHandle handle = headless.actor_surface_handle();
+  std::vector<mojom::JournalDetailsPtr> headless_details =
+      JournalDetailsBuilder()
+          .AddActorSurface(handle.raw_value(),
+                           handle.GetTabHandle().raw_value())
+          .Build();
+  ASSERT_EQ(headless_details.size(), 1u);
+  EXPECT_EQ(headless_details[0]->key, "actor_surface_id");
+  EXPECT_EQ(headless_details[0]->value, base::ToString(handle.raw_value()));
 }
 
 // `actuation_tab_id` can come from the web client, so a surface ID that another

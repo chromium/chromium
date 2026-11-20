@@ -60,6 +60,14 @@ class JournalDetailsBuilder {
   JournalDetailsBuilder& AddUiState(ActorUiMode mode) &;
   JournalDetailsBuilder AddUiState(ActorUiMode mode) &&;
 
+  // Adds an actor surface. `tab_id` is 0 if the surface has no tab. Logs
+  // "tab_id" with `tab_id` if it is set, or "actor_surface_id" with
+  // `actor_surface_id` otherwise.
+  JournalDetailsBuilder& AddActorSurface(int32_t actor_surface_id,
+                                         int32_t tab_id) &;
+  JournalDetailsBuilder AddActorSurface(int32_t actor_surface_id,
+                                        int32_t tab_id) &&;
+
   std::vector<mojom::JournalDetailsPtr> Build() && {
     return std::move(details_);
   }

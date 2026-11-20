@@ -480,7 +480,8 @@ mojom::ActionResultPtr PageTool::TimeOfUseValidation(
   journal().Log(
       JournalURL(), task_id(), "TimeOfUseValidation",
       JournalDetailsBuilder()
-          .Add("tab_handle", actor_surface_handle_.GetTabHandle().raw_value())
+          .AddActorSurface(actor_surface_handle_.raw_value(),
+                           actor_surface_handle_.GetTabHandle().raw_value())
           .Build());
 
   RenderFrameHost* frame =
@@ -711,10 +712,12 @@ void PageTool::Invoke(DeprecatedToolCallback callback) {
 
 void PageTool::Cancel() {
   if (chrome_render_frame_.is_bound()) {
-    journal().Log(JournalURL(), task_id(), "PageTool::Cancel",
-                  JournalDetailsBuilder()
-                      .Add("tab_handle", actor_surface_handle_.GetTabHandle())
-                      .Build());
+    journal().Log(
+        JournalURL(), task_id(), "PageTool::Cancel",
+        JournalDetailsBuilder()
+            .AddActorSurface(actor_surface_handle_.raw_value(),
+                             actor_surface_handle_.GetTabHandle().raw_value())
+            .Build());
 
     chrome_render_frame_->CancelTool(task_id());
   }
@@ -787,10 +790,12 @@ void PageTool::OnRenderFrameGone() {
 
 void PageTool::OnTimeout() {
   if (chrome_render_frame_.is_bound()) {
-    journal().Log(JournalURL(), task_id(), "PageTool::OnTimeout",
-                  JournalDetailsBuilder()
-                      .Add("tab_handle", actor_surface_handle_.GetTabHandle())
-                      .Build());
+    journal().Log(
+        JournalURL(), task_id(), "PageTool::OnTimeout",
+        JournalDetailsBuilder()
+            .AddActorSurface(actor_surface_handle_.raw_value(),
+                             actor_surface_handle_.GetTabHandle().raw_value())
+            .Build());
 
     chrome_render_frame_->CancelTool(task_id());
   }
