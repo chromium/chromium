@@ -720,6 +720,8 @@ should be able to be added at any place in this file.
       summary="For iOSReplaceSyncPromosWithSignInPromos feature"/>
   <variant name="_iOSSafariImportFeature"
       summary="For reminder of the Safari import workflow."/>
+  <variant name="_iOSSafetyPromoDesktop"
+      summary="For iOSSafetyPromoDesktop feature"/>
   <variant name="_iOSSavedTabGroupClosed"
       summary="For Saved Tab Group closed for the first time."/>
   <variant name="_iOSSettingsInOverflowMenuBubbleFeature"

@@ -150,6 +150,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHiOSPasswordPromoDesktopFeature,
     &kIPHiOSPaymentPromoDesktopFeature,
     &kIPHiOSPriceTrackingDesktopFeature,
+    &kIPHiOSSafetyPromoDesktopFeature,
     &kIPHiOSTabGroupsDesktopFeature,
 // keep-sorted end
 #endif  // BUILDFLAG(IS_ANDROID)

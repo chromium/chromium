@@ -1153,6 +1153,9 @@ BASE_FEATURE(kIPHiOSTabGroupsDesktopFeature,
 BASE_FEATURE(kIPHiOSPriceTrackingDesktopFeature,
              "IPH_iOSPriceTrackingDesktop",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHiOSSafetyPromoDesktopFeature,
+             "IPH_iOSSafetyPromoDesktop",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN)

@@ -663,6 +663,8 @@ DEFINE_VARIATION_PARAM(kIPHiOSTabGroupsDesktopFeature,
                        "IPH_iOSTabGroupsDesktop");
 DEFINE_VARIATION_PARAM(kIPHiOSPriceTrackingDesktopFeature,
                        "IPH_iOSPriceTrackingDesktop");
+DEFINE_VARIATION_PARAM(kIPHiOSSafetyPromoDesktopFeature,
+                       "IPH_iOSSafetyPromoDesktop");
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN)
@@ -807,6 +809,7 @@ inline constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHiOSPasswordPromoDesktopFeature),
         VARIATION_ENTRY(kIPHiOSPaymentPromoDesktopFeature),
         VARIATION_ENTRY(kIPHiOSPriceTrackingDesktopFeature),
+        VARIATION_ENTRY(kIPHiOSSafetyPromoDesktopFeature),
         VARIATION_ENTRY(kIPHiOSTabGroupsDesktopFeature),
 // keep-sorted end
 #endif  // BUILDFLAG(IS_ANDROID)

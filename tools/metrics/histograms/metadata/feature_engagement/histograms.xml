@@ -538,6 +538,8 @@ chromium-metrics-reviews@google.com.
       summary="account row in settings page"/>
   <variant name="IPH_iOSSafariImportFeature"
       summary="Showing the Safari Import entry point on iOS"/>
+  <variant name="IPH_iOSSafetyPromoDesktop"
+      summary="showing the safety desktop to mobile promo on desktop"/>
   <variant name="IPH_iOSSavedTabGroupClosed"
       summary="showing the IPH when closing a saved tab group for the first
                time"/>
