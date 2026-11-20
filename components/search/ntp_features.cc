@@ -354,6 +354,11 @@ BASE_FEATURE(kNtpWidgetPlatform, base::FEATURE_DISABLED_BY_DEFAULT);
 // If enabled, the Launchpad widget will be shown on the NTP.
 BASE_FEATURE(kNtpLaunchpadWidget, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, lazily pins the most recently committed desktop
+// `chrome://new-tab-page/` renderer process per profile for warm reuse,
+// releasing it under moderate or critical memory pressure.
+BASE_FEATURE(kKeepNtpRendererAlive, base::FEATURE_DISABLED_BY_DEFAULT);
+
 const char kNtpModuleIgnoredCriteriaThreshold[] =
     "NtpModuleIgnoredCriteriaThreshold";
 const char kNtpModuleIgnoredHaTSDelayTimeParam[] =

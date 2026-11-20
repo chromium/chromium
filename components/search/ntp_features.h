@@ -109,6 +109,7 @@ BASE_DECLARE_FEATURE(kNtpShortcutsReorder);
 BASE_DECLARE_FEATURE(kNtpLazyLoadComposebox);
 BASE_DECLARE_FEATURE(kNtpWidgetPlatform);
 BASE_DECLARE_FEATURE(kNtpLaunchpadWidget);
+BASE_DECLARE_FEATURE(kKeepNtpRendererAlive);
 
 // Parameter for controlling the luminosity difference for NTP elements on light
 // backgrounds.

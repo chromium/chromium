@@ -45,6 +45,12 @@
 #include "ui/webui/webui_util.h"
 #include "url/gurl.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/webui/new_tab_page/ntp_renderer_keep_alive.h"
+#include "content/public/browser/page.h"
+#include "content/public/browser/render_frame_host.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 bool NewTabPageUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
   Profile* profile = Profile::FromBrowserContext(browser_context);
@@ -327,6 +333,15 @@ void NewTabPageUI::DidStartNavigation(
     OnLoad();
     RecordNewTabPageNavigationMetrics(profile_, now);
   }
+}
+
+void NewTabPageUI::PrimaryPageChanged(content::Page& page) {
+#if !BUILDFLAG(IS_ANDROID)
+  if (&page.GetMainDocument() == web_ui()->GetRenderFrameHost()) {
+    NtpRendererKeepAlive::MaybePin(profile_,
+                                   page.GetMainDocument().GetProcess());
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 void NewTabPageUI::OnLoad() {

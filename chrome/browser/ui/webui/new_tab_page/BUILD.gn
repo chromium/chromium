@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/compiler/compiler.gni")
+import("//extensions/buildflags/buildflags.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 import("//ui/webui/webui_features.gni")
@@ -258,7 +259,6 @@ source_set("impl") {
     ":mojo_bindings",
     "//base",
     "//chrome/app/theme:theme_resources",
-    "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/new_tab_page:resources",
     "//chrome/browser/resources/new_tab_shared:resources",
     "//chrome/browser/search/background",
@@ -269,7 +269,6 @@ source_set("impl") {
     "//chrome/common:constants",
     "//components/google/core/common",
     "//components/search",
-    "//components/search_engines",
     "//content/public/browser",
     "//content/public/common",
     "//services/network/public/mojom",
@@ -278,6 +277,27 @@ source_set("impl") {
     "//ui/webui/tracked_element",
     "//url",
   ]
+  if (is_android) {
+    deps += [
+      "//chrome/browser/profiles:profile",
+      "//components/search_engines",
+    ]
+  } else {
+    sources += [ "ntp_renderer_keep_alive.cc" ]
+    public = [ "ntp_renderer_keep_alive.h" ]
+    public_deps += [
+      "//chrome/browser/profiles:profile",
+      "//components/prefs",
+      "//components/search_engines",
+    ]
+    deps += [
+      "//chrome/browser/search",
+      "//extensions/buildflags",
+    ]
+    if (enable_extensions_core) {
+      deps += [ "//chrome/browser/extensions" ]
+    }
+  }
 }
 
 source_set("unit_tests") {
@@ -329,12 +349,23 @@ source_set("unit_tests") {
     "//ui/native_theme:test_support",
   ]
   if (!is_android) {
+    sources += [ "ntp_renderer_keep_alive_unittest.cc" ]
     deps += [
       "//chrome/browser/desktop_to_mobile_promos:utils",
       "//chrome/browser/ui/hats:test_support",
       "//chrome/browser/ui/views/side_panel/customize_chrome",
       "//chrome/browser/ui/webui/util",
+      "//chrome/common:constants",
+      "//components/prefs",
+      "//extensions/buildflags",
     ]
+    if (enable_extensions_core) {
+      deps += [
+        "//chrome/browser/extensions",
+        "//extensions/browser",
+        "//extensions/common",
+      ]
+    }
   }
 }
 

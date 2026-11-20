@@ -59,6 +59,7 @@ class RefCountedMemory;
 namespace content {
 class BrowserContext;
 class NavigationHandle;
+class Page;
 class WebUI;
 }  // namespace content
 
@@ -159,6 +160,7 @@ class NewTabPageUI : public ui::MojoWebUIController,
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
   void OnColorProviderChanged() override;
+  void PrimaryPageChanged(content::Page& page) override;
 
   // Called when the NTP (re)loads. Sets mutable load time data.
   void OnLoad();
