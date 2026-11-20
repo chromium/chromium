@@ -15,6 +15,8 @@
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/save_card_bottom_sheet_mutator.h"
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 
+class AutofillBottomSheetTabHelper;
+
 // Represents the different types of save card actions that the bottom sheet can
 // handle.
 enum class SaveCardActionType {
@@ -35,6 +37,11 @@ enum class SaveCardActionType {
 - (instancetype)initWithUIModel:
                     (std::unique_ptr<autofill::SaveCardBottomSheetModel>)model
         autofillCommandsHandler:(id<AutofillCommands>)autofillCommandsHandler;
+
+// Initialize this mediator with the tab helper that holds the save card
+// bottomsheet model.
+- (instancetype)initWithTabHelper:(AutofillBottomSheetTabHelper*)tabHelper
+          autofillCommandsHandler:(id<AutofillCommands>)autofillCommandsHandler;
 
 - (void)disconnect;
 

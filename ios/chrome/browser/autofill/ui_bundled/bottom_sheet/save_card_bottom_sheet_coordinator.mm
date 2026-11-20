@@ -7,9 +7,12 @@
 #import <memory>
 #import <utility>
 
+#import "base/check.h"
+#import "base/feature_list.h"
 #import "components/autofill/ios/browser/credit_card_save_metrics_ios.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/save_card_bottom_sheet_model.h"
+#import "ios/chrome/browser/autofill/model/features.h"
 #import "ios/chrome/browser/autofill/scan_save_and_fill/ui/payments_scan_save_and_fill_edit_view_controller.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/save_card_bottom_sheet_delegate.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/save_card_bottom_sheet_mediator.h"
@@ -52,11 +55,13 @@
                                    browser:(Browser*)browser {
   self = [super initWithBaseViewController:baseViewController browser:browser];
   if (self) {
-    AutofillBottomSheetTabHelper* tabHelper =
-        AutofillBottomSheetTabHelper::FromWebState(
-            browser->GetWebStateList()->GetActiveWebState());
-    _saveCardBottomSheetModel = tabHelper->TakeSaveCardBottomSheetModel();
-    CHECK(_saveCardBottomSheetModel);
+    AutofillBottomSheetTabHelper* tabHelper = [self tabHelper];
+    if (base::FeatureList::IsEnabled(kAutofillReshowSavePromptOnTabReturn)) {
+      CHECK(tabHelper && tabHelper->GetSaveCardBottomSheetModel());
+    } else {
+      _saveCardBottomSheetModel = tabHelper->TakeSaveCardBottomSheetModel();
+      CHECK(_saveCardBottomSheetModel);
+    }
   }
   return self;
 }
@@ -64,11 +69,19 @@
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  _mediator = [[SaveCardBottomSheetMediator alloc]
-              initWithUIModel:std::move(_saveCardBottomSheetModel)
-      autofillCommandsHandler:HandlerForProtocol(
-                                  self.browser->GetCommandDispatcher(),
-                                  AutofillCommands)];
+  if (base::FeatureList::IsEnabled(kAutofillReshowSavePromptOnTabReturn)) {
+    _mediator = [[SaveCardBottomSheetMediator alloc]
+              initWithTabHelper:[self tabHelper]
+        autofillCommandsHandler:HandlerForProtocol(
+                                    self.browser->GetCommandDispatcher(),
+                                    AutofillCommands)];
+  } else {
+    _mediator = [[SaveCardBottomSheetMediator alloc]
+                initWithUIModel:std::move(_saveCardBottomSheetModel)
+        autofillCommandsHandler:HandlerForProtocol(
+                                    self.browser->GetCommandDispatcher(),
+                                    AutofillCommands)];
+  }
   SaveCardActionType actionType = [_mediator actionType];
 
   if (actionType == SaveCardActionType::kUpload ||
@@ -144,6 +157,14 @@
 }
 
 #pragma mark - Private
+
+// Returns the `AutofillBottomSheetTabHelper` for the active `WebState`.
+- (AutofillBottomSheetTabHelper*)tabHelper {
+  web::WebState* activeWebState =
+      self.browser->GetWebStateList()->GetActiveWebState();
+  CHECK(activeWebState);
+  return AutofillBottomSheetTabHelper::FromWebState(activeWebState);
+}
 
 - (void)setInitialVoiceOverFocus {
   if (_saveCardViewController) {

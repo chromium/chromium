@@ -6,8 +6,11 @@
 
 #import <memory>
 #import <optional>
+#import <tuple>
 #import <utility>
 
+#import "base/feature_list.h"
+#import "base/memory/raw_ptr.h"
 #import "base/scoped_observation.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/timer/timer.h"
@@ -17,7 +20,9 @@
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/autofill/ios/browser/credit_card_save_metrics_ios.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/save_card_bottom_sheet_model.h"
+#import "ios/chrome/browser/autofill/model/features.h"
 #import "ios/chrome/browser/autofill/model/message/autofill_legal_message_line.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/save_card_bottom_sheet_consumer.h"
 #import "ios/chrome/browser/autofill/ui_bundled/util/autofill_credit_card_util.h"
@@ -75,6 +80,7 @@ std::pair<NSString*, NSString*> ParseExpirationDate(NSString* expirationDate) {
   // The model layer component providing resources and callbacks for
   // saving the card or rejecting the card upload.
   std::unique_ptr<autofill::SaveCardBottomSheetModel> _saveCardBottomSheetModel;
+  raw_ptr<AutofillBottomSheetTabHelper> _tabHelper;
   __weak id<AutofillCommands> _autofillCommandsHandler;
   std::optional<ModelObserverBridge> _modelObserverBridge;
 
@@ -84,6 +90,9 @@ std::pair<NSString*, NSString*> ParseExpirationDate(NSString* expirationDate) {
 
   // Indicates whether bottom sheet is already in the process of dismissing.
   BOOL _dismissing;
+
+  // Indicates whether dismissal was triggered by clicking a legal message link.
+  BOOL _dismissedForLinkClick;
 
   // Stored values for the editable flow.
   NSString* _cardNumber;
@@ -111,9 +120,38 @@ std::pair<NSString*, NSString*> ParseExpirationDate(NSString* expirationDate) {
   return self;
 }
 
+- (instancetype)initWithTabHelper:(AutofillBottomSheetTabHelper*)tabHelper
+          autofillCommandsHandler:
+              (id<AutofillCommands>)autofillCommandsHandler {
+  CHECK(tabHelper);
+  self = [super init];
+  if (self) {
+    _tabHelper = tabHelper;
+    _autofillCommandsHandler = autofillCommandsHandler;
+    autofill::SaveCardBottomSheetModel* model = [self model];
+    if (model) {
+      _modelObserverBridge.emplace(model, self);
+    }
+  }
+  return self;
+}
+
 - (void)disconnect {
+  _autoDismissConfirmationTimer.Stop();
   _modelObserverBridge.reset();
   _saveCardBottomSheetModel.reset();
+  if (base::FeatureList::IsEnabled(kAutofillReshowSavePromptOnTabReturn) &&
+      !_dismissedForLinkClick && _tabHelper) {
+    std::ignore = _tabHelper->TakeSaveCardBottomSheetModel();
+  }
+  _tabHelper = nullptr;
+}
+
+- (autofill::SaveCardBottomSheetModel*)model {
+  if (base::FeatureList::IsEnabled(kAutofillReshowSavePromptOnTabReturn)) {
+    return _tabHelper ? _tabHelper->GetSaveCardBottomSheetModel() : nullptr;
+  }
+  return _saveCardBottomSheetModel.get();
 }
 
 - (void)onBottomSheetDismissedWithLinkClicked:(BOOL)linkClicked {
@@ -123,41 +161,40 @@ std::pair<NSString*, NSString*> ParseExpirationDate(NSString* expirationDate) {
   if (_dismissing) {
     return;
   }
-  switch (_saveCardBottomSheetModel->save_card_state()) {
-      // Bottomsheet is being dismissed before being accepted due to being
-      // swiped away, tab changed or link clicked. Dismissal due to swipe or tab
-      // change cannot be distinguished, both the actions are logged under the
-      // same bottomsheet result `kSwiped`, reasoning that users are more likely
-      // to dismiss the bottomsheet with a swipe than by switching tabs (e.g by
-      // opening a link from another app).
+  if (base::FeatureList::IsEnabled(kAutofillReshowSavePromptOnTabReturn) &&
+      linkClicked) {
+    // User tapped legal terms link; suppress cancellation and prompt result
+    // logging so the prompt can be restored when returning to this tab.
+    _dismissedForLinkClick = YES;
+    _dismissing = YES;
+    return;
+  }
+
+  autofill::SaveCardBottomSheetModel* model = [self model];
+  CHECK(model);
+  switch (model->save_card_state()) {
     case autofill::SaveCardBottomSheetModel::SaveCardState::kOffered:
-      _saveCardBottomSheetModel->OnCanceled();
+      model->OnCanceled();
       autofill::autofill_metrics::LogSaveCreditCardPromptResultIOS(
           linkClicked ? autofill::autofill_metrics::
                             SaveCreditCardPromptResultIOS::kLinkClicked
                       : autofill::autofill_metrics::
                             SaveCreditCardPromptResultIOS::kSwiped,
-          _saveCardBottomSheetModel->is_for_upload(),
-          _saveCardBottomSheetModel->save_card_delegate()
-              ->GetSaveCreditCardOptions(),
+          model->is_for_upload(),
+          model->save_card_delegate()->GetSaveCreditCardOptions(),
           SaveCreditCardPromptOverlayType::kBottomSheet);
       break;
-    // Upload save bottomsheet is being dismissed while showing loading state
-    // due to being swiped away, tab changed or link clicked.
     case autofill::SaveCardBottomSheetModel::SaveCardState::kSaveInProgress:
-      CHECK(_saveCardBottomSheetModel->is_for_upload());
+      CHECK(model->is_for_upload());
       autofill::autofill_metrics::LogCreditCardUploadLoadingViewResultMetric(
           autofill::autofill_metrics::LegacySaveCardPromptResult::kClosed);
       break;
-    // Bottomsheet is being dismissed while showing success confirmation state
-    // due to being swiped away, tab changed or link clicked.
     case autofill::SaveCardBottomSheetModel::SaveCardState::kSaved:
       autofill::autofill_metrics::
           LogCreditCardUploadConfirmationViewResultMetric(
               autofill::autofill_metrics::LegacySaveCardPromptResult::kClosed,
-              /*is_card_uploaded=*/_saveCardBottomSheetModel->is_for_upload());
+              /*is_card_uploaded=*/model->is_for_upload());
       break;
-    // Bottomsheet would have already been dismissed on failure.
     case autofill::SaveCardBottomSheetModel::SaveCardState::kFailed:
       NOTREACHED();
   }
@@ -175,64 +212,62 @@ std::pair<NSString*, NSString*> ParseExpirationDate(NSString* expirationDate) {
     return;
   }
 
-  [self.consumer
-      setAboveTitleImage:NativeImage(
-                             _saveCardBottomSheetModel->logo_icon_id())];
+  autofill::SaveCardBottomSheetModel* model = [self model];
+  if (!model) {
+    return;
+  }
+
+  [self.consumer setAboveTitleImage:NativeImage(model->logo_icon_id())];
   [self.consumer
       setAboveTitleImageDescription:base::SysUTF16ToNSString(
-                                        _saveCardBottomSheetModel
-                                            ->logo_icon_description())];
-  [self.consumer
-      setTitle:base::SysUTF16ToNSString(_saveCardBottomSheetModel->title())];
-  [self.consumer setSubtitle:base::SysUTF16ToNSString(
-                                 _saveCardBottomSheetModel->subtitle())];
-  [self.consumer
-      setAcceptActionText:base::SysUTF16ToNSString(
-                              _saveCardBottomSheetModel->accept_button_text())];
-  [self.consumer
-      setCancelActionText:base::SysUTF16ToNSString(
-                              _saveCardBottomSheetModel->cancel_button_text())];
+                                        model->logo_icon_description())];
+  [self.consumer setTitle:base::SysUTF16ToNSString(model->title())];
+  [self.consumer setSubtitle:base::SysUTF16ToNSString(model->subtitle())];
+  [self.consumer setAcceptActionText:base::SysUTF16ToNSString(
+                                         model->accept_button_text())];
+  [self.consumer setCancelActionText:base::SysUTF16ToNSString(
+                                         model->cancel_button_text())];
 
-  if (_saveCardBottomSheetModel->is_for_upload()) {
+  if (model->is_for_upload()) {
     [self.consumer setLegalMessages:[AutofillLegalMessageLine
-                                        convertFrom:_saveCardBottomSheetModel
-                                                        ->legal_messages()]];
+                                        convertFrom:model->legal_messages()]];
   }
 
   [self.consumer
       setCardNameAndLastFourDigits:base::SysUTF16ToNSString(
-                                       _saveCardBottomSheetModel
-                                           ->card_name_last_four_digits())
+                                       model->card_name_last_four_digits())
                 withCardExpiryDate:base::SysUTF16ToNSString(
-                                       _saveCardBottomSheetModel
-                                           ->card_expiry_date())
-                       andCardIcon:NativeImage(_saveCardBottomSheetModel
-                                                   ->issuer_icon_id())
+                                       model->card_expiry_date())
+                       andCardIcon:NativeImage(model->issuer_icon_id())
          andCardAccessibilityLabel:base::SysUTF16ToNSString(
-                                       _saveCardBottomSheetModel
+                                       model
                                            ->card_accessibility_description())];
 
-  autofill::autofill_metrics::LogSaveCreditCardPromptOfferMetricIos(
-      autofill::autofill_metrics::SaveCardPromptOffer::kShown,
-      _saveCardBottomSheetModel->is_for_upload(),
-      _saveCardBottomSheetModel->save_card_delegate()
-          ->GetSaveCreditCardOptions(),
-      SaveCreditCardPromptOverlayType::kBottomSheet);
+  // Log kShown strictly once; suppress on tab-return reshow.
+  if (!model->has_been_shown()) {
+    model->set_has_been_shown(true);
+    autofill::autofill_metrics::LogSaveCreditCardPromptOfferMetricIos(
+        autofill::autofill_metrics::SaveCardPromptOffer::kShown,
+        model->is_for_upload(),
+        model->save_card_delegate()->GetSaveCreditCardOptions(),
+        SaveCreditCardPromptOverlayType::kBottomSheet);
 
-  autofill::autofill_metrics::LogSaveCreditCardPromptResultIOS(
-      autofill::autofill_metrics::SaveCreditCardPromptResultIOS::kShown,
-      _saveCardBottomSheetModel->is_for_upload(),
-      _saveCardBottomSheetModel->save_card_delegate()
-          ->GetSaveCreditCardOptions(),
-      SaveCreditCardPromptOverlayType::kBottomSheet);
+    autofill::autofill_metrics::LogSaveCreditCardPromptResultIOS(
+        autofill::autofill_metrics::SaveCreditCardPromptResultIOS::kShown,
+        model->is_for_upload(),
+        model->save_card_delegate()->GetSaveCreditCardOptions(),
+        SaveCreditCardPromptOverlayType::kBottomSheet);
+  }
   [self updateSaveButtonStatus];
 }
 
 - (SaveCardActionType)actionType {
-  if (_saveCardBottomSheetModel->save_card_delegate()->is_for_upload()) {
+  autofill::SaveCardBottomSheetModel* model = [self model];
+  CHECK(model);
+  if (model->save_card_delegate()->is_for_upload()) {
     return SaveCardActionType::kUpload;
   }
-  if (_saveCardBottomSheetModel->save_card_delegate()->is_for_local_save()) {
+  if (model->save_card_delegate()->is_for_local_save()) {
     return SaveCardActionType::kLocal;
   }
   return SaveCardActionType::kSaveScanAndFill;
@@ -241,13 +276,16 @@ std::pair<NSString*, NSString*> ParseExpirationDate(NSString* expirationDate) {
 #pragma mark - SaveCardBottomSheetDataSource
 
 - (AboveTitleImageLogoType)logoType {
-  return _saveCardBottomSheetModel->is_for_upload() ? kGoogleWalletLogo
-                                                    : kChromeLogo;
+  autofill::SaveCardBottomSheetModel* model = [self model];
+  CHECK(model);
+  return model->is_for_upload() ? kGoogleWalletLogo : kChromeLogo;
 }
 
 - (NSString*)logoAccessibilityLabel {
+  autofill::SaveCardBottomSheetModel* model = [self model];
+  CHECK(model);
   return base::SysUTF16ToNSString(
-      _saveCardBottomSheetModel->is_for_upload()
+      model->is_for_upload()
           ? l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_GOOGLE_WALLET_LOGO_ACCESSIBLE_NAME)
           : l10n_util::GetStringUTF16(
@@ -257,35 +295,36 @@ std::pair<NSString*, NSString*> ParseExpirationDate(NSString* expirationDate) {
 #pragma mark - SaveCardBottomSheetMutator
 
 - (void)didAccept {
-  _saveCardBottomSheetModel->OnAccepted();
+  autofill::SaveCardBottomSheetModel* model = [self model];
+  CHECK(model);
+  model->OnAccepted();
   autofill::autofill_metrics::LogSaveCreditCardPromptResultIOS(
       autofill::autofill_metrics::SaveCreditCardPromptResultIOS::kAccepted,
-      _saveCardBottomSheetModel->is_for_upload(),
-      _saveCardBottomSheetModel->save_card_delegate()
-          ->GetSaveCreditCardOptions(),
+      model->is_for_upload(),
+      model->save_card_delegate()->GetSaveCreditCardOptions(),
       SaveCreditCardPromptOverlayType::kBottomSheet);
 
-  if (_saveCardBottomSheetModel->is_for_upload()) {
+  if (model->is_for_upload()) {
     [_consumer showLoadingStateWithAccessibilityLabel:
                    base::SysUTF16ToNSString(
-                       _saveCardBottomSheetModel
-                           ->loading_accessibility_description())];
+                       model->loading_accessibility_description())];
     autofill::autofill_metrics::LogCreditCardUploadLoadingViewShownMetric(
         /*is_shown=*/true);
   } else {
-    // Since the card is saved locally on the device, immediately confirm saving
-    // the card within the bottom sheet.
+    // Since the card is saved locally on the device, immediately confirm
+    // saving the card within the bottom sheet.
     [self showConfirmationForUploadSave:NO];
   }
 }
 
 - (void)didCancel {
-  _saveCardBottomSheetModel->OnCanceled();
+  autofill::SaveCardBottomSheetModel* model = [self model];
+  CHECK(model);
+  model->OnCanceled();
   autofill::autofill_metrics::LogSaveCreditCardPromptResultIOS(
       autofill::autofill_metrics::SaveCreditCardPromptResultIOS::kDenied,
-      _saveCardBottomSheetModel->is_for_upload(),
-      _saveCardBottomSheetModel->save_card_delegate()
-          ->GetSaveCreditCardOptions(),
+      model->is_for_upload(),
+      model->save_card_delegate()->GetSaveCreditCardOptions(),
       SaveCreditCardPromptOverlayType::kBottomSheet);
   _dismissing = YES;
   [_autofillCommandsHandler dismissSaveCardBottomSheet];
@@ -357,8 +396,9 @@ std::pair<NSString*, NSString*> ParseExpirationDate(NSString* expirationDate) {
   details.expiration_date_month = base::SysNSStringToUTF16(parsedMonth);
   details.expiration_date_year = base::SysNSStringToUTF16(parsedYear);
 
-  _saveCardBottomSheetModel->OnUpdatedAndAcceptedForSaveAndFill(
-      std::move(details));
+  autofill::SaveCardBottomSheetModel* model = [self model];
+  CHECK(model);
+  model->OnUpdatedAndAcceptedForSaveAndFill(std::move(details));
 }
 
 - (BOOL)isValidValue:(NSString*)value forField:(AutofillCreditCardUIType)type {
@@ -440,9 +480,11 @@ std::pair<NSString*, NSString*> ParseExpirationDate(NSString* expirationDate) {
 
 - (void)dimissConfirmationStateOnTimeout {
   _autoDismissConfirmationTimer.Stop();
+  autofill::SaveCardBottomSheetModel* model = [self model];
+  CHECK(model);
   autofill::autofill_metrics::LogCreditCardUploadConfirmationViewResultMetric(
       autofill::autofill_metrics::LegacySaveCardPromptResult::kNotInteracted,
-      /*is_card_uploaded=*/_saveCardBottomSheetModel->is_for_upload());
+      /*is_card_uploaded=*/model->is_for_upload());
   _dismissing = YES;
   [_autofillCommandsHandler dismissSaveCardBottomSheet];
 }

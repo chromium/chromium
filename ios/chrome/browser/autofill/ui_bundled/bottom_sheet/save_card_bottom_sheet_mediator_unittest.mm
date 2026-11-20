@@ -7,6 +7,7 @@
 #import <Foundation/Foundation.h>
 
 #import <string>
+#import <tuple>
 #import <variant>
 
 #import "base/functional/callback_helpers.h"
@@ -14,6 +15,7 @@
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
 #import "components/autofill/core/browser/payments/autofill_save_card_ui_info.h"
@@ -24,12 +26,17 @@
 #import "components/autofill/ios/browser/credit_card_save_metrics_ios.h"
 #import "components/grit/components_scaled_resources.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_java_script_feature.h"
+#import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/save_card_bottom_sheet_model.h"
+#import "ios/chrome/browser/autofill/model/features.h"
 #import "ios/chrome/browser/autofill/model/message/autofill_legal_message_line.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_credit_card_ui_type.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/save_card_bottom_sheet_consumer.h"
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 #import "ios/chrome/browser/shared/ui/util/accessibility_util.h"
+#import "ios/web/public/test/fakes/fake_web_frames_manager.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest_mac.h"
@@ -208,6 +215,40 @@ class SaveCardBottomSheetMediatorTest : public PlatformTest {
   }
 
  protected:
+  AutofillBottomSheetTabHelper* CreateTabHelperForWebState(
+      web::FakeWebState* web_state) {
+    auto frames_manager = std::make_unique<web::FakeWebFramesManager>();
+    web::ContentWorld content_world =
+        AutofillBottomSheetJavaScriptFeature::GetInstance()
+            ->GetSupportedContentWorld();
+    web_state->SetWebFramesManager(content_world, std::move(frames_manager));
+    AutofillBottomSheetTabHelper::CreateForWebState(web_state);
+    return AutofillBottomSheetTabHelper::FromWebState(web_state);
+  }
+
+  MockSaveCardBottomSheetModel* StageMockModelInTabHelper(
+      AutofillBottomSheetTabHelper* tab_helper,
+      bool for_upload) {
+    using Variant = std::variant<
+        autofill::payments::PaymentsAutofillClient::LocalSaveCardPromptCallback,
+        autofill::payments::PaymentsAutofillClient::
+            UploadSaveCardPromptCallback,
+        autofill::payments::PaymentsAutofillClient::
+            CardSaveAndFillDialogCallback>;
+    auto model = std::make_unique<MockSaveCardBottomSheetModel>(
+        CreateAutofillSaveCardUiInfo(for_upload),
+        for_upload
+            ? Variant(autofill::payments::PaymentsAutofillClient::
+                          UploadSaveCardPromptCallback(base::DoNothing()))
+            : Variant(autofill::payments::PaymentsAutofillClient::
+                          LocalSaveCardPromptCallback(base::DoNothing())),
+        autofill::payments::PaymentsAutofillClient::SaveCreditCardOptions()
+            .with_num_strikes(0));
+    MockSaveCardBottomSheetModel* model_ptr = model.get();
+    tab_helper->ShowSaveCardBottomSheet(std::move(model));
+    return model_ptr;
+  }
+
   void TestCommonAttributesOfConsumer(
       FakeSaveCardBottomSheetConsumer* consumer) {
     ASSERT_NE(nil, consumer.aboveTitleImage);
@@ -410,6 +451,23 @@ TEST_F(SaveCardBottomSheetMediatorTest,
   EXPECT_OCMOCK_VERIFY(mock_consumer_);
 }
 
+// Tests that disconnecting the mediator while the confirmation state timer is
+// running cancels the timer so it does not auto-dismiss after teardown.
+TEST_F(SaveCardBottomSheetMediatorTest,
+       DisconnectStopsAutoDismissConfirmationTimer) {
+  mediator_.consumer = mock_consumer_;
+
+  OCMExpect([mock_consumer_ showConfirmationState]);
+  [mediator_ onCreditCardUploadCompleted:YES];
+
+  model_ = nullptr;
+  [mediator_ disconnect];
+
+  OCMReject([mock_autofill_commands_handler_ dismissSaveCardBottomSheet]);
+  task_environment()->FastForwardBy(kConfirmationDismissDelay);
+  EXPECT_OCMOCK_VERIFY(mock_consumer_);
+}
+
 // Test that on bottomsheet's autodismissal due to timeout in confirmation
 // state, confirmation result `kNotInteracted` is logged.
 TEST_F(SaveCardBottomSheetMediatorTest,
@@ -478,6 +536,219 @@ TEST_F(SaveCardBottomSheetMediatorTest,
           {kSaveCreditCardPromptResultIOSPrefix, kSavingWithoutCvcSuffix}),
       SaveCreditCardPromptResultIOS::kLinkClicked,
       /*expected_count=*/1);
+}
+
+// Tests that when `kAutofillReshowSavePromptOnTabReturn` is enabled, tapping a
+// legal link sets dismissing and suppresses cancellation and prompt result
+// metric logging, preserving the model for reshow.
+TEST_F(
+    SaveCardBottomSheetMediatorTest,
+    BottomSheetDismissed_OnLinkClicked_WhenReshowFeatureEnabled_SuppressesCancellation) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kAutofillReshowSavePromptOnTabReturn);
+  base::HistogramTester histogram_tester;
+
+  web::FakeWebState web_state;
+  AutofillBottomSheetTabHelper* tab_helper =
+      CreateTabHelperForWebState(&web_state);
+  MockSaveCardBottomSheetModel* model_ptr =
+      StageMockModelInTabHelper(tab_helper, /*for_upload=*/true);
+
+  SaveCardBottomSheetMediator* mediator = [[SaveCardBottomSheetMediator alloc]
+            initWithTabHelper:tab_helper
+      autofillCommandsHandler:mock_autofill_commands_handler_];
+
+  EXPECT_EQ(model_ptr->save_card_state(),
+            autofill::SaveCardBottomSheetModel::SaveCardState::kOffered);
+  EXPECT_EQ([mediator isDismissingForTesting], NO);
+  EXPECT_CALL(*model_ptr, OnCanceled()).Times(0);
+
+  [mediator onBottomSheetDismissedWithLinkClicked:YES];
+
+  EXPECT_EQ([mediator isDismissingForTesting], YES);
+  histogram_tester.ExpectTotalCount(
+      base::StrCat(
+          {kSaveCreditCardPromptResultIOSPrefix, kSavingWithoutCvcSuffix}),
+      0);
+
+  [mediator disconnect];
+  EXPECT_EQ(tab_helper->GetSaveCardBottomSheetModel(), model_ptr);
+  std::ignore = tab_helper->TakeSaveCardBottomSheetModel();
+}
+
+// Tests that when `kAutofillReshowSavePromptOnTabReturn` is enabled, swiping
+// down to dismiss the bottom sheet calls `OnCanceled()` on the model.
+TEST_F(SaveCardBottomSheetMediatorTest,
+       BottomSheetDismissed_OnSwiped_WhenReshowFeatureEnabled_CallsOnCanceled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kAutofillReshowSavePromptOnTabReturn);
+  base::HistogramTester histogram_tester;
+
+  web::FakeWebState web_state;
+  AutofillBottomSheetTabHelper* tab_helper =
+      CreateTabHelperForWebState(&web_state);
+  MockSaveCardBottomSheetModel* model_ptr =
+      StageMockModelInTabHelper(tab_helper, /*for_upload=*/true);
+
+  SaveCardBottomSheetMediator* mediator = [[SaveCardBottomSheetMediator alloc]
+            initWithTabHelper:tab_helper
+      autofillCommandsHandler:mock_autofill_commands_handler_];
+
+  EXPECT_EQ(model_ptr->save_card_state(),
+            autofill::SaveCardBottomSheetModel::SaveCardState::kOffered);
+  EXPECT_EQ([mediator isDismissingForTesting], NO);
+  EXPECT_CALL(*model_ptr, OnCanceled()).Times(1);
+
+  [mediator onBottomSheetDismissedWithLinkClicked:NO];
+
+  EXPECT_EQ([mediator isDismissingForTesting], YES);
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat(
+          {kSaveCreditCardPromptResultIOSPrefix, kSavingWithoutCvcSuffix}),
+      SaveCreditCardPromptResultIOS::kSwiped,
+      /*expected_count=*/1);
+
+  [mediator disconnect];
+  EXPECT_EQ(tab_helper->GetSaveCardBottomSheetModel(), nullptr);
+}
+
+// Tests that when `kAutofillReshowSavePromptOnTabReturn` is enabled, setting
+// the consumer logs `kShown` strictly once and marks the model as having been
+// shown. Subsequent consumer connections (e.g. on prompt reshow) do not log
+// `kShown` again.
+TEST_F(SaveCardBottomSheetMediatorTest,
+       SetConsumer_WhenReshowFeatureEnabled_LogsShownStrictlyOnce) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kAutofillReshowSavePromptOnTabReturn);
+  base::HistogramTester histogram_tester;
+
+  web::FakeWebState web_state;
+  AutofillBottomSheetTabHelper* tab_helper =
+      CreateTabHelperForWebState(&web_state);
+  MockSaveCardBottomSheetModel* model_ptr =
+      StageMockModelInTabHelper(tab_helper, /*for_upload=*/true);
+
+  SaveCardBottomSheetMediator* mediator = [[SaveCardBottomSheetMediator alloc]
+            initWithTabHelper:tab_helper
+      autofillCommandsHandler:mock_autofill_commands_handler_];
+
+  EXPECT_FALSE(model_ptr->has_been_shown());
+
+  FakeSaveCardBottomSheetConsumer* consumer =
+      [[FakeSaveCardBottomSheetConsumer alloc] init];
+  mediator.consumer = consumer;
+
+  EXPECT_TRUE(model_ptr->has_been_shown());
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat(
+          {kSaveCreditCardPromptResultIOSPrefix, kSavingWithoutCvcSuffix}),
+      SaveCreditCardPromptResultIOS::kShown,
+      /*expected_count=*/1);
+
+  // Re-setting consumer (simulating reshow or view recreation) does not re-log
+  // kShown.
+  FakeSaveCardBottomSheetConsumer* consumer2 =
+      [[FakeSaveCardBottomSheetConsumer alloc] init];
+  mediator.consumer = consumer2;
+
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat(
+          {kSaveCreditCardPromptResultIOSPrefix, kSavingWithoutCvcSuffix}),
+      SaveCreditCardPromptResultIOS::kShown,
+      /*expected_count=*/1);
+
+  [mediator disconnect];
+  EXPECT_EQ(tab_helper->GetSaveCardBottomSheetModel(), nullptr);
+}
+
+// Tests that when `kAutofillReshowSavePromptOnTabReturn` is enabled and the
+// mediator is initialized with the tab helper, `didAccept` borrows the model,
+// calls `OnAccepted()`, and logs `kAccepted`.
+TEST_F(SaveCardBottomSheetMediatorTest,
+       InitWithTabHelper_DidAcceptInvokesOnAccepted) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kAutofillReshowSavePromptOnTabReturn);
+  base::HistogramTester histogram_tester;
+
+  web::FakeWebState web_state;
+  AutofillBottomSheetTabHelper* tab_helper =
+      CreateTabHelperForWebState(&web_state);
+  MockSaveCardBottomSheetModel* model_ptr =
+      StageMockModelInTabHelper(tab_helper, /*for_upload=*/false);
+
+  SaveCardBottomSheetMediator* mediator = [[SaveCardBottomSheetMediator alloc]
+            initWithTabHelper:tab_helper
+      autofillCommandsHandler:mock_autofill_commands_handler_];
+
+  EXPECT_CALL(*model_ptr, OnAccepted()).Times(1);
+  EXPECT_NE(tab_helper->GetSaveCardBottomSheetModel(), nullptr);
+  [mediator didAccept];
+  EXPECT_NE(tab_helper->GetSaveCardBottomSheetModel(), nullptr);
+
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({kSaveCreditCardPromptResultIOSPrefixForLocalSave,
+                    kSavingWithoutCvcSuffix}),
+      SaveCreditCardPromptResultIOS::kAccepted,
+      /*expected_count=*/1);
+
+  [mediator disconnect];
+  EXPECT_EQ(tab_helper->GetSaveCardBottomSheetModel(), nullptr);
+}
+
+// Tests that when `kAutofillReshowSavePromptOnTabReturn` is enabled and the
+// mediator is initialized with the tab helper, `didTapSave` borrows the model
+// from the tab helper, calls `OnUpdatedAndAcceptedForSaveAndFill`, and
+// `disconnect` cleans up the model.
+TEST_F(SaveCardBottomSheetMediatorTest,
+       InitWithTabHelper_DidTapSaveInvokesOnUpdatedAndAcceptedForSaveAndFill) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kAutofillReshowSavePromptOnTabReturn);
+
+  web::FakeWebState web_state;
+  AutofillBottomSheetTabHelper* tab_helper =
+      CreateTabHelperForWebState(&web_state);
+  MockSaveCardBottomSheetModel* model_ptr =
+      StageMockModelInTabHelper(tab_helper, /*for_upload=*/false);
+
+  SaveCardBottomSheetMediator* mediator = [[SaveCardBottomSheetMediator alloc]
+            initWithTabHelper:tab_helper
+      autofillCommandsHandler:mock_autofill_commands_handler_];
+
+  EXPECT_CALL(*model_ptr, OnUpdatedAndAcceptedForSaveAndFill(testing::_))
+      .Times(1);
+  EXPECT_NE(tab_helper->GetSaveCardBottomSheetModel(), nullptr);
+  [mediator didTapSave];
+  EXPECT_NE(tab_helper->GetSaveCardBottomSheetModel(), nullptr);
+
+  [mediator disconnect];
+  EXPECT_EQ(tab_helper->GetSaveCardBottomSheetModel(), nullptr);
+}
+
+// Tests that when `kAutofillReshowSavePromptOnTabReturn` is enabled and
+// dismissal is triggered by a legal link click, `disconnect` leaves the model
+// pending in the tab helper so it can be reshown upon tab return.
+TEST_F(SaveCardBottomSheetMediatorTest,
+       InitWithTabHelper_DismissWithLinkClickedLeavesModelPending) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kAutofillReshowSavePromptOnTabReturn);
+
+  web::FakeWebState web_state;
+  AutofillBottomSheetTabHelper* tab_helper =
+      CreateTabHelperForWebState(&web_state);
+  MockSaveCardBottomSheetModel* model_ptr =
+      StageMockModelInTabHelper(tab_helper, /*for_upload=*/false);
+
+  SaveCardBottomSheetMediator* mediator = [[SaveCardBottomSheetMediator alloc]
+            initWithTabHelper:tab_helper
+      autofillCommandsHandler:mock_autofill_commands_handler_];
+
+  [mediator onBottomSheetDismissedWithLinkClicked:YES];
+  [mediator disconnect];
+
+  EXPECT_EQ(tab_helper->GetSaveCardBottomSheetModel(), model_ptr);
+
+  // Clean up model from tab helper.
+  std::ignore = tab_helper->TakeSaveCardBottomSheetModel();
 }
 
 // Test that `OnCanceled` is called on the model when bottomsheet is dismissed
