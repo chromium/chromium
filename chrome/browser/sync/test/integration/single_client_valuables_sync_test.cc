@@ -5,16 +5,19 @@
 #include <variant>
 #include <vector>
 
+#include "base/containers/span.h"
+#include "base/memory/raw_ref.h"
+#include "base/scoped_observation.h"
 #include "base/test/protobuf_matchers.h"
 #include "chrome/browser/autofill/autofill_entity_data_manager_factory.h"
 #include "chrome/browser/autofill/valuables_data_manager_factory.h"
 #include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
+#include "chrome/browser/sync/test/integration/status_change_checker.h"
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
-#include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager_test_util.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/data_manager/valuables/valuables_data_manager.h"
-#include "components/autofill/core/browser/data_manager/valuables/valuables_data_manager_test_util.h"
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/test_utils/entity_data_test_util.h"
 #include "components/autofill/core/browser/test_utils/valuables_data_test_util.h"
@@ -28,11 +31,9 @@ namespace {
 
 using autofill::AttributeTypeName;
 using autofill::AutofillEntityDataManagerFactory;
-using autofill::EntityDataChangedWaiter;
 using autofill::EntityDataManager;
 using autofill::EntityInstance;
 using autofill::LoyaltyCard;
-using autofill::ValuablesDataChangedWaiter;
 using autofill::ValuablesDataManager;
 using autofill::ValuablesDataManagerFactory;
 using autofill::test::CreateLoyaltyCard;
@@ -41,6 +42,7 @@ using base::test::EqualsProto;
 using sync_datatype_helper::test;
 using testing::Contains;
 using testing::ElementsAre;
+using testing::SizeIs;
 using testing::UnorderedElementsAre;
 
 // AUTOFILL_VALUABLE is responsible for syncing AutofillAi EntityInstances (like
@@ -148,6 +150,78 @@ class FakeServerSpecificsChecker
   const Matcher matcher_;
 };
 
+// Helper class to wait until `ValuablesDataManager`'s loyalty cards match a
+// given predicate and no WebDatabase queries are in flight.
+class LoyaltyCardsMatchChecker : public StatusChangeChecker,
+                                 public ValuablesDataManager::Observer {
+ public:
+  using Matcher = testing::Matcher<std::vector<LoyaltyCard>>;
+
+  LoyaltyCardsMatchChecker(ValuablesDataManager& vdm, const Matcher& matcher)
+      : vdm_(vdm), matcher_(matcher) {
+    scoped_observation_.Observe(&vdm);
+  }
+
+  // StatusChangeChecker implementation.
+  bool IsExitConditionSatisfied(std::ostream* os) override {
+    if (vdm_->HasPendingQueries()) {
+      *os << "Waiting for pending ValuablesDataManager queries to complete.";
+      return false;
+    }
+    *os << "Waiting for loyalty cards to match: ";
+    testing::StringMatchResultListener listener;
+    bool matches = testing::ExplainMatchResult(
+        matcher_, vdm_->GetLoyaltyCards(), &listener);
+    *os << listener.str();
+    return matches;
+  }
+
+  // ValuablesDataManager::Observer implementation.
+  void OnValuablesDataChanged() override { CheckExitCondition(); }
+
+ private:
+  const base::raw_ref<ValuablesDataManager> vdm_;
+  const Matcher matcher_;
+  base::ScopedObservation<ValuablesDataManager, ValuablesDataManager::Observer>
+      scoped_observation_{this};
+};
+
+// Helper class to wait until `EntityDataManager`'s entity instances match a
+// given predicate and no WebDatabase queries are in flight.
+class EntityInstancesMatchChecker : public StatusChangeChecker,
+                                    public EntityDataManager::Observer {
+ public:
+  using Matcher = testing::Matcher<base::span<const EntityInstance>>;
+
+  EntityInstancesMatchChecker(EntityDataManager& edm, const Matcher& matcher)
+      : edm_(edm), matcher_(matcher) {
+    scoped_observation_.Observe(&edm);
+  }
+
+  // StatusChangeChecker implementation.
+  bool IsExitConditionSatisfied(std::ostream* os) override {
+    if (edm_->HasPendingQueries()) {
+      *os << "Waiting for pending EntityDataManager queries to complete.";
+      return false;
+    }
+    *os << "Waiting for entity instances to match: ";
+    testing::StringMatchResultListener listener;
+    bool matches = testing::ExplainMatchResult(
+        matcher_, edm_->GetEntityInstances(), &listener);
+    *os << listener.str();
+    return matches;
+  }
+
+  // EntityDataManager::Observer implementation.
+  void OnEntityInstancesChanged() override { CheckExitCondition(); }
+
+ private:
+  const base::raw_ref<EntityDataManager> edm_;
+  const Matcher matcher_;
+  base::ScopedObservation<EntityDataManager, EntityDataManager::Observer>
+      scoped_observation_{this};
+};
+
 class SingleClientValuablesSyncTest
     : public SyncTest,
       public testing::WithParamInterface<SyncTest::SetupSyncMode> {
@@ -214,19 +288,15 @@ class SingleClientValuablesSyncTest
   }
 
   void WaitForNumberOfLoyaltyCards(size_t expected_count) {
-    ValuablesDataManager& vdm = GetValuablesDataManager();
-    while (vdm.GetLoyaltyCards().size() != expected_count ||
-           vdm.HasPendingQueries()) {
-      ValuablesDataChangedWaiter(&vdm).Wait();
-    }
+    EXPECT_TRUE(LoyaltyCardsMatchChecker(GetValuablesDataManager(),
+                                         SizeIs(expected_count))
+                    .Wait());
   }
 
   void WaitForNumberOfEntityInstances(size_t expected_count) {
-    EntityDataManager& edm = GetEntityDataManager();
-    while (edm.GetEntityInstances().size() != expected_count ||
-           edm.HasPendingQueries()) {
-      EntityDataChangedWaiter(&edm).Wait();
-    }
+    EXPECT_TRUE(EntityInstancesMatchChecker(GetEntityDataManager(),
+                                            SizeIs(expected_count))
+                    .Wait());
   }
 
  private:
@@ -300,23 +370,19 @@ IN_PROC_BROWSER_TEST_P(SingleClientValuablesSyncTest,
   SetFakeServerValuables({loyalty_card1, vehicle1});
   ASSERT_TRUE(SetupSync());
   ValuablesDataManager& vdm = GetValuablesDataManager();
-  ASSERT_THAT(vdm.GetLoyaltyCards(), ElementsAre(loyalty_card1));
+  ASSERT_TRUE(LoyaltyCardsMatchChecker(vdm, ElementsAre(loyalty_card1)).Wait());
   EntityDataManager& edm = GetEntityDataManager();
-  ASSERT_THAT(edm.GetEntityInstances(), UnorderedElementsAre(vehicle1));
+  ASSERT_TRUE(
+      EntityInstancesMatchChecker(edm, UnorderedElementsAre(vehicle1)).Wait());
 
   // Put some completely new data in the sync server and trigger full update.
   const LoyaltyCard loyalty_card2 = CreateLoyaltyCard2();
   const EntityInstance vehicle2 =
       GetServerVehicleEntityInstanceWithRandomGuid();
-  {
-    ValuablesDataChangedWaiter vdm_waiter(&vdm);
-    EntityDataChangedWaiter edm_waiter(&edm);
-    SetFakeServerValuables({loyalty_card2, vehicle2});
-    std::move(vdm_waiter).Wait();
-    std::move(edm_waiter).Wait();
-  }
-  EXPECT_THAT(vdm.GetLoyaltyCards(), ElementsAre(loyalty_card2));
-  EXPECT_THAT(edm.GetEntityInstances(), UnorderedElementsAre(vehicle2));
+  SetFakeServerValuables({loyalty_card2, vehicle2});
+  EXPECT_TRUE(LoyaltyCardsMatchChecker(vdm, ElementsAre(loyalty_card2)).Wait());
+  EXPECT_TRUE(
+      EntityInstancesMatchChecker(edm, UnorderedElementsAre(vehicle2)).Wait());
 }
 
 // Valuables should get cleared from the database when the user disables
@@ -375,9 +441,10 @@ IN_PROC_BROWSER_TEST_P(SingleClientValuablesSyncTest,
   SetFakeServerValuables({loyalty_card1, vehicle1});
   ASSERT_TRUE(SetupSync());
   ValuablesDataManager& vdm = GetValuablesDataManager();
-  ASSERT_THAT(vdm.GetLoyaltyCards(), ElementsAre(loyalty_card1));
+  ASSERT_TRUE(LoyaltyCardsMatchChecker(vdm, ElementsAre(loyalty_card1)).Wait());
   EntityDataManager& edm = GetEntityDataManager();
-  ASSERT_THAT(edm.GetEntityInstances(), UnorderedElementsAre(vehicle1));
+  ASSERT_TRUE(
+      EntityInstancesMatchChecker(edm, UnorderedElementsAre(vehicle1)).Wait());
 
   // Incremental Update #1: switch to incremental mode and inject loyalty_card2
   // and vehicle2.
