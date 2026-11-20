@@ -1528,10 +1528,6 @@ void FrameSinkVideoCapturerImpl::OnFrameReadyForDelivery(
           "Viz.FrameSinkVideoCapturer.NV12.TotalDuration", sample,
           base::Milliseconds(1), base::Seconds(1), 50);
     }
-
-    UMA_HISTOGRAM_CUSTOM_TIMES("Viz.FrameSinkVideoCapturer.TotalDuration",
-                               sample, base::Milliseconds(1), base::Seconds(1),
-                               50);
   }
 
   // Ensure frames are delivered in-order by using a min-heap, and only
