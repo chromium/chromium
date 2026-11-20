@@ -30,7 +30,8 @@ struct OnDeviceModelUiMetadata {
 
   // High-level capability category used for grouping and metrics.
   OnDeviceModelCategory category = OnDeviceModelCategory::kGeneralPurpose;
-  // Localized user-facing title of the capability (e.g. "General purpose").
+  // Localized user-facing title of the capability (e.g. "General-purpose
+  // writing").
   std::u16string category_title;
   // Localized description of what the capability does.
   std::u16string category_description;

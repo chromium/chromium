@@ -39,40 +39,40 @@ TEST(OnDeviceModelUiMetadataTest, GeneralPurposeModels) {
   auto gemma4 = GetOnDeviceModelUiMetadata(OnDeviceBaseModel::kGemma4);
   ASSERT_TRUE(gemma4.has_value());
   EXPECT_EQ(gemma4->category, OnDeviceModelCategory::kGeneralPurpose);
-  EXPECT_EQ(gemma4->category_title, u"General purpose");
+  EXPECT_EQ(gemma4->category_title, u"General-purpose writing");
   EXPECT_EQ(gemma4->category_description,
-            u"Helps to write, summarize, and more");
+            u"Helps write, rewrite, and summarize text");
   EXPECT_EQ(gemma4->model_display_name, u"Gemma 4");
   EXPECT_THAT(
       gemma4->details,
       ElementsAre(
-          u"Helps you draft, rephrase, and organize text on sites that use it",
+          u"Helps draft, rephrase, and organize text on sites that use it",
           u"Handles many tasks, so one download covers multiple features"));
 
   auto nano_gpu = GetOnDeviceModelUiMetadata(OnDeviceBaseModel::kV3NanoGpu);
   ASSERT_TRUE(nano_gpu.has_value());
   EXPECT_EQ(nano_gpu->category, OnDeviceModelCategory::kGeneralPurpose);
-  EXPECT_EQ(nano_gpu->category_title, u"General purpose");
+  EXPECT_EQ(nano_gpu->category_title, u"General-purpose writing");
   EXPECT_EQ(nano_gpu->category_description,
-            u"Helps to write, summarize, and more");
+            u"Helps write, rewrite, and summarize text");
   EXPECT_EQ(nano_gpu->model_display_name, u"Gemini Nano");
   EXPECT_THAT(
       nano_gpu->details,
       ElementsAre(
-          u"Helps you draft, rephrase, and organize text on sites that use it",
+          u"Helps draft, rephrase, and organize text on sites that use it",
           u"Handles many tasks, so one download covers multiple features"));
 
   auto nano_cpu = GetOnDeviceModelUiMetadata(OnDeviceBaseModel::kV3NanoCpu);
   ASSERT_TRUE(nano_cpu.has_value());
   EXPECT_EQ(nano_cpu->category, OnDeviceModelCategory::kGeneralPurpose);
-  EXPECT_EQ(nano_cpu->category_title, u"General purpose");
+  EXPECT_EQ(nano_cpu->category_title, u"General-purpose writing");
   EXPECT_EQ(nano_cpu->category_description,
-            u"Helps to write, summarize, and more");
+            u"Helps write, rewrite, and summarize text");
   EXPECT_EQ(nano_cpu->model_display_name, u"Gemini Nano");
   EXPECT_THAT(
       nano_cpu->details,
       ElementsAre(
-          u"Helps you draft, rephrase, and organize text on sites that use it",
+          u"Helps draft, rephrase, and organize text on sites that use it",
           u"Handles many tasks, so one download covers multiple features"));
 }
 
@@ -88,14 +88,14 @@ TEST(OnDeviceModelUiMetadataTest, LiveTranscriptionModel) {
       OnDeviceBaseModel::kSpeechRecognitionSmallExpert);
   ASSERT_TRUE(speech.has_value());
   EXPECT_EQ(speech->category, OnDeviceModelCategory::kLiveTranscription);
-  EXPECT_EQ(speech->category_title, u"Live transcription");
+  EXPECT_EQ(speech->category_title, u"Speech recognition");
   EXPECT_EQ(speech->category_description,
-            u"Transcribes speech to text in real time");
-  EXPECT_EQ(speech->model_display_name, u"Live Caption and Transcription");
+            u"Turns speech into text, like captions");
+  EXPECT_EQ(speech->model_display_name, u"Gemma 500M");
   EXPECT_THAT(
       speech->details,
       ElementsAre(u"Works on sites that support live audio transcription",
-                  u"Downloads separately for each language you use"));
+                  u"Downloads once for all languages you use"));
 }
 
 TEST(OnDeviceModelUiMetadataTest, ProofreadingAndSummarizingModels) {
@@ -118,9 +118,7 @@ TEST(OnDeviceModelUiMetadataTest, ProofreadingAndSummarizingModels) {
   ASSERT_TRUE(proofreader.has_value());
   EXPECT_EQ(proofreader->category, OnDeviceModelCategory::kProofreading);
   EXPECT_EQ(proofreader->category_title, u"Proofreading");
-  EXPECT_EQ(proofreader->category_description,
-            u"High-speed syntax and typographical checking without content "
-            u"alteration");
+  EXPECT_EQ(proofreader->category_description, u"Checks spelling and grammar");
   EXPECT_EQ(proofreader->model_display_name, u"Gemma 197M");
   EXPECT_THAT(
       proofreader->details,
@@ -134,7 +132,7 @@ TEST(OnDeviceModelUiMetadataTest, ProofreadingAndSummarizingModels) {
   EXPECT_EQ(summarizer->category, OnDeviceModelCategory::kSummarizing);
   EXPECT_EQ(summarizer->category_title, u"Summarizing");
   EXPECT_EQ(summarizer->category_description,
-            u"Condensing long-form web content into concise takeaways");
+            u"Turns long pages of text into key points");
   EXPECT_EQ(summarizer->model_display_name, u"Gemma 197M");
   EXPECT_THAT(
       summarizer->details,

@@ -516,8 +516,6 @@ void AddAiStrings(content::WebUIDataSource* html_source) {
       {"onDeviceAiConsiderWhenOff",
        IDS_SETTINGS_ON_DEVICE_AI_CONSIDER_WHEN_OFF},
       {"onDeviceAiConsiderStorage", IDS_SETTINGS_ON_DEVICE_AI_CONSIDER_STORAGE},
-      {"onDeviceAiConsiderSitePrivacy",
-       IDS_SETTINGS_ON_DEVICE_AI_CONSIDER_SITE_PRIVACY},
       {"onDeviceAiTurnOffDialogTitle",
        IDS_SETTINGS_ON_DEVICE_AI_TURN_OFF_DIALOG_TITLE},
       {"onDeviceAiTurnOffDialogBody",

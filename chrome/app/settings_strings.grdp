@@ -3642,36 +3642,38 @@
     <message name="IDS_SETTINGS_SYSTEM_FEATURE_ON_DEVICE_AI_ENABLED_LABEL" desc="Label for the toggle that allows or prevents chrome to download on device GenAI models to local disk.">
       On-device AI
     </message>
-    <!-- TODO(crbug.com/573643364): Make these translatable when finalized. -->
-    <message name="IDS_SETTINGS_ON_DEVICE_AI_SECTION_TITLE" translateable="false" desc="Title of the card in Settings > AI page that contains the On-device AI entry point row, shown when the On-device AI settings subpage is available.">
+    <message name="IDS_SETTINGS_ON_DEVICE_AI_SECTION_TITLE" desc="Title of the card in Settings > AI page that contains the On-device AI entry point row, shown when the On-device AI settings subpage is available.">
       On your device
     </message>
-    <message name="IDS_SETTINGS_ON_DEVICE_AI_WHEN_ON_FEATURES" translateable="false" desc="Bullet point in the 'When on' column of the On-device AI settings subpage. Lists example features that on-device AI helps with.">
-      Helps you summarize, proofread, caption, and more
+    <message name="IDS_SETTINGS_ON_DEVICE_AI_ROW_SUB_LABEL" desc="Sublabel for the On-device AI entry point row in Settings > AI page. Clicking the row opens the On-device AI settings subpage, where the user manages the AI models that run on their device.">
+      Manage AI used for features like writing help and more
     </message>
-    <message name="IDS_SETTINGS_ON_DEVICE_AI_CONSIDER_SITE_PRIVACY" translateable="false" desc="Bullet point in the 'Things to consider' column of the On-device AI settings subpage. Explains that sites have their own privacy policies.">
-      Sites have their own privacy policies
+    <message name="IDS_SETTINGS_ON_DEVICE_AI_CAPABILITIES_LABEL" desc="Label for the global toggle in the On-device AI settings subpage that turns on-device AI on or off.">
+      Use on-device AI
     </message>
-    <message name="IDS_SETTINGS_ON_DEVICE_AI_TURN_OFF_DIALOG_TITLE" translateable="false" desc="Title of the confirmation dialog shown when the user turns off the On-device AI toggle in the On-device AI settings subpage.">
+    <message name="IDS_SETTINGS_ON_DEVICE_AI_WHEN_ON_FEATURES" desc="Bullet point in the 'When on' column of the On-device AI settings subpage. Lists example tasks that on-device AI helps websites with. 'Caption' is a verb here, meaning to generate captions for audio.">
+      Helps sites summarize, proofread, caption, and more
+    </message>
+    <message name="IDS_SETTINGS_ON_DEVICE_AI_TURN_OFF_DIALOG_TITLE" desc="Title of the confirmation dialog shown when the user turns off the On-device AI toggle in the On-device AI settings subpage.">
       Turn off on-device AI?
     </message>
-    <message name="IDS_SETTINGS_ON_DEVICE_AI_TURN_OFF_DIALOG_CONFIRM_BUTTON" translateable="false" desc="Label of the button that confirms turning off on-device AI in the confirmation dialog of the On-device AI settings subpage.">
+    <message name="IDS_SETTINGS_ON_DEVICE_AI_TURN_OFF_DIALOG_CONFIRM_BUTTON" desc="Label of the button that confirms turning off on-device AI in the confirmation dialog of the On-device AI settings subpage.">
       Turn off
     </message>
-    <message name="IDS_SETTINGS_ON_DEVICE_AI_MODELS_HEADER" translateable="false" desc="Header of the section in the On-device AI settings subpage that lists the AI models downloaded to the device.">
+    <message name="IDS_SETTINGS_ON_DEVICE_AI_MODELS_HEADER" desc="Header of the section in the On-device AI settings subpage that lists the AI models downloaded to the device.">
       AI models on this device
     </message>
-    <message name="IDS_SETTINGS_ON_DEVICE_AI_NO_MODELS" translateable="false" desc="Placeholder text shown in the On-device AI settings subpage when no AI models are downloaded to the device.">
+    <message name="IDS_SETTINGS_ON_DEVICE_AI_NO_MODELS" desc="Placeholder text shown in the On-device AI settings subpage when no AI models are downloaded to the device.">
       No on-device AI added
     </message>
-    <message name="IDS_SETTINGS_ON_DEVICE_AI_MODEL_EXPAND_A11Y_LABEL" translateable="false" desc="Accessibility label for the button that expands or collapses the details of a downloaded on-device AI model. Only visible by screen reader software.">
+    <message name="IDS_SETTINGS_ON_DEVICE_AI_MODEL_EXPAND_A11Y_LABEL" desc="Accessibility label for the arrow button that expands or collapses the details of a downloaded on-device AI model in the On-device AI settings subpage. Spoken by screen readers when the button gets focus but not visually rendered.">
       Show details for <ph name="MODEL_CATEGORY">$1<ex>General-purpose writing</ex></ph>
     </message>
-    <message name="IDS_SETTINGS_ON_DEVICE_AI_MODEL_DELETE_A11Y_LABEL" translateable="false" desc="Accessibility label for the button that deletes a downloaded on-device AI model. Only visible by screen reader software.">
+    <message name="IDS_SETTINGS_ON_DEVICE_AI_MODEL_DELETE_A11Y_LABEL" desc="Accessibility label for the trash can button that deletes a downloaded on-device AI model in the On-device AI settings subpage. Spoken by screen readers when the button gets focus but not visually rendered.">
       Delete <ph name="MODEL_CATEGORY">$1<ex>General-purpose writing</ex></ph>
     </message>
-    <message name="IDS_SETTINGS_ON_DEVICE_AI_MODEL_METADATA" translateable="false" desc="Metadata line under an on-device AI capability row showing the model name and size separated by a middle dot (·).">
-      <ph name="MODEL_NAME">$1<ex>Gemini Nano</ex></ph> · <ph name="SIZE">$2<ex>2.0 GB</ex></ph>
+    <message name="IDS_SETTINGS_ON_DEVICE_AI_MODEL_METADATA" desc="Metadata line under an on-device AI capability row showing the name of the AI model and the approximate storage space it uses on the device, separated by a middle dot (·). 'about' means 'approximately'.">
+      <ph name="MODEL_NAME">$1<ex>Gemini Nano</ex></ph> · about <ph name="SIZE">$2<ex>2.0 GB</ex></ph>
     </message>
     <message name="IDS_SETTINGS_ON_DEVICE_AI_MODEL_REMOVED_TOAST_LABEL" desc="Label of the toast shown in the On-device AI settings subpage after the user deletes a downloaded on-device AI model.">
       '<ph name="MODEL_CATEGORY">$1<ex>General-purpose writing</ex></ph>' removed

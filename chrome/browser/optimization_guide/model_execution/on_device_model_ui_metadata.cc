@@ -132,7 +132,7 @@ std::u16string GetBaseModelDisplayName(OnDeviceBaseModel base_model) {
     case OnDeviceBaseModel::kSummarizerSmallExpert:
       return u"Gemma 197M";
     case OnDeviceBaseModel::kSpeechRecognitionSmallExpert:
-      return u"Live Caption and Transcription";
+      return u"Gemma 500M";
     case OnDeviceBaseModel::kUnknown:
     case OnDeviceBaseModel::kClassifier:
     case OnDeviceBaseModel::kLanguageDetection:

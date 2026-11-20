@@ -358,7 +358,7 @@ TEST_F(OnDeviceAiSettingsHandlerTest,
   EXPECT_EQ(l10n_util::GetStringUTF8(
                 IDS_ON_DEVICE_MODEL_CATEGORY_LIVE_TRANSCRIPTION_DESCRIPTION),
             *row2.FindString("description"));
-  EXPECT_EQ("Live Caption and Transcription", *row2.FindString("modelName"));
+  EXPECT_EQ("Gemma 500M", *row2.FindString("modelName"));
   EXPECT_EQ(base::UTF16ToUTF8(ui::FormatBytes(kAsrSize)),
             *row2.FindString("size"));
 }

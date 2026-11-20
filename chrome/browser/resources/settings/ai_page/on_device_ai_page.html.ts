@@ -52,10 +52,6 @@ export function getHtml(this: SettingsOnDeviceAiPageElement) {
           <cr-icon icon="settings20:download" aria-hidden="true"></cr-icon>
           <div class="secondary">$i18n{onDeviceAiConsiderStorage}</div>
         </li>
-        <li>
-          <cr-icon icon="settings20:globe" aria-hidden="true"></cr-icon>
-          <div class="secondary">$i18n{onDeviceAiConsiderSitePrivacy}</div>
-        </li>
       </ul>
     </div>
   </div>
