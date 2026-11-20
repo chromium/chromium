@@ -13670,12 +13670,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kRemoteActorCredentialSharingDescription, kOsDesktop,
      MULTI_VALUE_TYPE(kRemoteActorCredentialSharingChoices)},
 
-    {"autofill-gmail-otp",
-     flag_descriptions::kAutofillGmailOtpPreLaunchMetricsName,
-     flag_descriptions::kAutofillGmailOtpPreLaunchMetricsDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(autofill::features::kAutofillGmailOtpPreLaunchMetrics)},
-
     {"autofill-show-gmail-otp-suggestions",
      flag_descriptions::kAutofillShowGmailOtpSuggestionsName,
      flag_descriptions::kAutofillShowGmailOtpSuggestionsDescription, kOsDesktop,

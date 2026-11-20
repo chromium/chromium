@@ -1379,14 +1379,6 @@
     "expiry_milestone": 161
   },
   {
-    "name": "autofill-gmail-otp",
-    "owners": [
-      "kazinova@google.com",
-      "passwordmanager-mobile-eng@google.com"
-    ],
-    "expiry_milestone": 160
-  },
-  {
     "name": "autofill-ignore-payments-churned-users-strikes-for-testing",
     "owners": [ "vinnypersky@google.com", "payments-autofill-team@google.com" ],
     "expiry_milestone": 160
