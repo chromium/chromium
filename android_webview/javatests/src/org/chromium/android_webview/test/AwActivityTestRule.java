@@ -160,6 +160,13 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
 
     @Override
     protected void after() {
+        for (WeakReference<Activity> activityRef : mReparentedActivities) {
+            CriteriaHelper.pollUiThread(
+                    () -> GarbageCollectionTestUtils.canBeGarbageCollected(activityRef),
+                    "Reparented Activity context should be garbage collected.");
+        }
+        mReparentedActivities.clear();
+
         if (needsAwContentsCleanup()) {
             ThreadUtils.runOnUiThreadBlocking(
                     () -> {
@@ -184,13 +191,6 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
             }
         }
         mActivitiesCreatedInTests.clear();
-
-        for (WeakReference<Activity> activityRef : mReparentedActivities) {
-            CriteriaHelper.pollUiThread(
-                    () -> GarbageCollectionTestUtils.canBeGarbageCollected(activityRef),
-                    "Reparented Activity context should be garbage collected.");
-        }
-        mReparentedActivities.clear();
 
         super.after();
     }

@@ -83,6 +83,10 @@ import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.MaxAndroidSdkLevel;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
+import org.chromium.components.content_capture.ContentCaptureConsumer;
+import org.chromium.components.content_capture.ContentCaptureFrame;
+import org.chromium.components.content_capture.FrameSession;
+import org.chromium.components.content_capture.OnscreenContentProvider;
 import org.chromium.components.signin.GAIAServiceType;
 import org.chromium.content_public.browser.test.util.RenderProcessHostUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
@@ -2210,6 +2214,78 @@ public class AwContentsTest extends AwParameterizedTest {
         AwTestContainerView newView =
                 mActivityTestRule.reparentAwContents(oldView, android.R.style.Theme_Black);
 
+        Assert.assertNotNull(newView);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    public void testReparentAwContentsContentCapture() throws Throwable {
+        mActivityTestRule.startBrowserProcess();
+        TestAwContentsClient client = new TestAwContentsClient();
+        AwTestContainerView oldView =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(client, false);
+        CallbackHelper capturedHelper = new CallbackHelper();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    AwContents awContents = oldView.getAwContents();
+                    OnscreenContentProvider provider =
+                            new OnscreenContentProvider(
+                                    oldView.getContext(), oldView, awContents.getWebContents());
+                    // On devices with a platform ContentCapture service, PlatformContentCapture-
+                    // Consumer retains the old View's ContentCaptureSession (and thus Activity).
+                    // Add a consumer referencing oldView so this leak check runs even on devices
+                    // without a ContentCapture service enabled.
+                    provider.addConsumer(
+                            new ContentCaptureConsumer() {
+                                @Override
+                                public void onContentCaptureFlushed(
+                                        FrameSession parentFrame,
+                                        ContentCaptureFrame contentCaptureFrame) {}
+
+                                @Override
+                                public void onContentCaptured(
+                                        FrameSession parentFrame,
+                                        ContentCaptureFrame contentCaptureFrame) {
+                                    capturedHelper.notifyCalled();
+                                }
+
+                                @Override
+                                public void onContentUpdated(
+                                        FrameSession parentFrame,
+                                        ContentCaptureFrame contentCaptureFrame) {}
+
+                                @Override
+                                public void onSessionRemoved(FrameSession session) {}
+
+                                @Override
+                                public void onContentRemoved(
+                                        FrameSession session, long[] removedIds) {}
+
+                                @Override
+                                public void onTitleUpdated(ContentCaptureFrame mainFrame) {}
+
+                                @Override
+                                public void onFaviconUpdated(ContentCaptureFrame mainFrame) {}
+
+                                @Override
+                                public boolean shouldCapture(String[] urls) {
+                                    return oldView.getContext() != null;
+                                }
+                            });
+                    awContents.setOnscreenContentProvider(provider);
+                });
+
+        mActivityTestRule.loadDataSync(
+                oldView.getAwContents(),
+                client.getOnPageFinishedHelper(),
+                "<html><body><p>Hello</p></body></html>",
+                "text/html",
+                false);
+        capturedHelper.waitForCallback(0);
+
+        AwTestContainerView newView = mActivityTestRule.reparentAwContents(oldView);
         Assert.assertNotNull(newView);
     }
 

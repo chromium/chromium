@@ -1511,6 +1511,13 @@ public class AwContents implements SmartClipProvider {
                     "The new container view must be detached from the window before adopting.");
         }
         recordAdoptResult(AdoptResult.SUCCESS);
+        // Clear mOnscreenContentProvider so the old provider's ContentCaptureSession doesn't keep
+        // the previous Activity alive. This is safe because mOnscreenContentProvider is already
+        // nullable until WebViewChromium#onProvideContentCaptureStructure() creates a new one when
+        // the new WebView is attached.
+        // TODO(crbug.com/567873021): Move OnscreenContentProvider over to the ViewHost abstraction
+        // once it lands so it stays tied to the View lifecycle instead of AwContents.
+        setOnscreenContentProvider(null);
         updateContext(newContainerView.getContext());
         mPrimaryInternalAccessAdapter = internalAccessAdapter;
         setInternalAccessAdapter(internalAccessAdapter);
@@ -2335,7 +2342,8 @@ public class AwContents implements SmartClipProvider {
         return sLocalGlobalVisibleRect;
     }
 
-    public void setOnscreenContentProvider(OnscreenContentProvider onscreenContentProvider) {
+    public void setOnscreenContentProvider(
+            @Nullable OnscreenContentProvider onscreenContentProvider) {
         if (mOnscreenContentProvider != null) {
             mOnscreenContentProvider.destroy();
         }
