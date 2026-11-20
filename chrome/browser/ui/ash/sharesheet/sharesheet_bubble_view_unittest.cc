@@ -6,10 +6,14 @@
 
 #include <algorithm>
 #include <memory>
+#include <string>
+#include <string_view>
 
 #include "ash/frame/frame_view_ash.h"
 #include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "ash/wm/window_util.h"
+#include "base/files/file_path.h"
+#include "base/i18n/language_tag.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -27,16 +31,20 @@
 #include "chromeos/resources/grit/chromeos_strings.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
+#include "storage/browser/file_system/file_system_url.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/test/clipboard_test_util.h"
 #include "ui/base/clipboard/test/test_clipboard.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/l10n/test/scoped_application_locale.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/controls/native/native_view_host.h"
 #include "ui/views/test/test_widget_builder.h"
 #include "ui/views/test/widget_test.h"
@@ -420,6 +428,40 @@ TEST_F(SharesheetBubbleViewTest, TextPreviewMultipleFiles) {
   ASSERT_EQ(title_text->GetViewAccessibility().GetCachedName(),
             u"2 files file.pdf, text.txt");
   CloseBubble();
+}
+
+// Tests that the tooltip listing the shared file names uses the list
+// separator of the current locale.
+TEST_F(SharesheetBubbleViewTest, TextPreviewMultipleFilesListFormat) {
+  storage::FileSystemURL url1 = ::sharesheet::FileInDownloads(
+      profile(), base::FilePath(::sharesheet::kTestPdfFile));
+  storage::FileSystemURL url2 = ::sharesheet::FileInDownloads(
+      profile(), base::FilePath(::sharesheet::kTestTextFile));
+
+  struct {
+    base::i18n::LanguageTag locale;
+    std::u16string_view expected_tooltip;
+  } test_cases[] = {
+      {base::i18n::GetKnownLanguageTag("en-US"), u"file.pdf, text.txt"},
+      {base::i18n::GetKnownLanguageTag("ja"), u"file.pdf、text.txt"},
+      {base::i18n::GetKnownLanguageTag("ar"), u"file.pdf وtext.txt"},
+  };
+  for (const auto& tc : test_cases) {
+    SCOPED_TRACE(tc.locale);
+    ui::test::ScopedApplicationLocale locale(tc.locale);
+    ShowAndVerifyBubble(
+        apps_util::MakeShareIntent(
+            {url1.ToGURL(), url2.ToGURL()},
+            {::sharesheet::kMimeTypePdf, ::sharesheet::kMimeTypeText}),
+        ::sharesheet::LaunchSource::kUnknown);
+
+    views::View* text_views = sharesheet_bubble_view()->GetViewByID(
+        SharesheetViewID::HEADER_VIEW_TEXT_PREVIEW_ID);
+    ASSERT_EQ(text_views->children().size(), 2u);
+    auto* title_text = static_cast<views::Label*>(text_views->children()[1]);
+    EXPECT_EQ(title_text->GetTooltipText(), tc.expected_tooltip);
+    CloseBubble();
+  }
 }
 
 TEST_F(SharesheetBubbleViewTest, URLPreviewAverage) {

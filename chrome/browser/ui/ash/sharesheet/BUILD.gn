@@ -27,6 +27,7 @@ static_library("sharesheet") {
     "//ash",
     "//ash/public/cpp",
     "//base",
+    "//base:i18n",
     "//chrome/browser:flags",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/file_manager",
@@ -52,6 +53,7 @@ source_set("unit_tests") {
   deps = [
     ":sharesheet",
     "//ash",
+    "//base/i18n:language_tag",
     "//base/test:test_support",
     "//chrome/browser",
     "//chrome/browser/sharesheet",
@@ -60,6 +62,7 @@ source_set("unit_tests") {
     "//chromeos/components/sharesheet:constants",
     "//chromeos/resources:strings",
     "//ui/base/clipboard:clipboard_test_support",
+    "//ui/base/l10n/test:test_support",
   ]
 }
 

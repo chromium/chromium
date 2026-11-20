@@ -17,10 +17,11 @@
 #include "ash/style/style_util.h"
 #include "ash/style/typography.h"
 #include "base/functional/bind.h"
+#include "base/i18n/icubridge/icu_bridge.h"
+#include "base/i18n/icubridge/list_formatter.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/file_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -63,12 +64,6 @@
 #include "ui/views/view_class_properties.h"
 
 namespace {
-
-// Concatenates all the strings in |file_names| with a comma delineator.
-const std::u16string ConcatenateFileNames(
-    const std::vector<std::u16string>& file_names) {
-  return base::JoinString(file_names, u", ");
-}
 
 gfx::ImageSkia CreateMimeTypeIcon(const gfx::ImageSkia& file_type_icon,
                                   const gfx::Size& image_size) {
@@ -316,7 +311,9 @@ void SharesheetHeaderView::ShowTextPreview() {
       CHECK_NE(size, 0u, base::NotFatalUntil::M162);
       file_text =
           l10n_util::GetPluralStringFUTF16(IDS_SHARESHEET_FILES_LABEL, size);
-      filenames_tooltip_text = ConcatenateFileNames(file_names);
+      filenames_tooltip_text = base::i18n::IcuBridge::GetInstance()
+                                   .list_formatter()
+                                   ->FormatNarrowList(file_names);
     }
     auto file_label = CreatePreviewLabel(file_text);
     if (!filenames_tooltip_text.empty()) {
