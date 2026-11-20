@@ -370,6 +370,16 @@ void RuntimeAPI::OnExtensionLoaded(content::BrowserContext* browser_context,
                                   extension->id(), base::Version(), true));
   }
 
+  // `kInstall` and `kUpdate` take precedence over `kBrowserUpdate` and
+  // `kStartup`. `LazyEventDispatchUtil` and `RuntimeAPI` observe
+  // `ExtensionRegistry` separately, so either one may see the load first. This
+  // check handles the order where `LazyEventDispatchUtil` calls
+  // `OnExtensionInstalledAndLoaded()` before this method runs. The erase in
+  // `OnExtensionInstalledAndLoaded()` handles the other order.
+  if (pending_install_load_versions_.contains(extension->id())) {
+    return;
+  }
+
   // Dispatch `runtime.onExtensionLoaded` with reason `kBrowserUpdate` after a
   // browser update, or `kStartup` otherwise. Pick the reason now, because
   // `OnExtensionsReady()` can reset the browser update flag before the task
@@ -393,9 +403,9 @@ void RuntimeAPI::OnExtensionUnloaded(content::BrowserContext* browser_context,
   // `MaybeDispatchInstallOrUpdateLoadedEvent()` task hasn't run yet:
   // - If the extension stays unloaded, that pending `kInstall` or `kUpdate`
   //   event wouldn't be dispatched anyway, since the extension isn't enabled.
-  // - If the extension is re-enabled before that task runs, a stale entry
-  //   would make `OnExtensionEnabled()` skip `kEnable`, so `kEnable` is
-  //   dispatched instead.
+  // - If the extension loads again before that task runs, a stale entry would
+  //   make that load skip its own event (such as `kEnable`, `kReload`, or
+  //   `kStartup`) and dispatch the old `kInstall` or `kUpdate` instead.
   pending_install_load_versions_.erase(extension->id());
   // Likewise drop any pending `kStartup` or `kBrowserUpdate` event, so that a
   // later enable gets only `kEnable` and an extension that stays unloaded gets
@@ -953,6 +963,10 @@ void RuntimeAPI::OnExtensionInstalledAndLoaded(
   // dispatch `kEnable`.
   pending_install_load_versions_.insert_or_assign(extension->id(),
                                                   previous_version);
+  // `kInstall` and `kUpdate` take precedence over `kBrowserUpdate` and
+  // `kStartup`, so drop any of those that `OnExtensionLoaded()` posted for the
+  // same load during browser startup.
+  pending_startup_load_extensions_.erase(extension->id());
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&RuntimeAPI::MaybeDispatchInstallOrUpdateLoadedEvent,
@@ -990,8 +1004,8 @@ void RuntimeAPI::MaybeDispatchStartupLoadedEvent(
     const ExtensionId& extension_id,
     api::runtime::OnLoadedReason reason) {
   if (!pending_startup_load_extensions_.erase(extension_id)) {
-    // Either `OnExtensionEnabled()` or `OnExtensionUnloaded()` dropped the
-    // event.
+    // `OnExtensionEnabled()`, `OnExtensionInstalledAndLoaded()`, or
+    // `OnExtensionUnloaded()` dropped the event.
     return;
   }
 

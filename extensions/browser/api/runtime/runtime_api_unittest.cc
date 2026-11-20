@@ -35,6 +35,7 @@
 #include "extensions/browser/service_worker/service_worker_task_queue.h"
 #include "extensions/browser/service_worker/worker_id.h"
 #include "extensions/browser/test_event_router_observer.h"
+#include "extensions/browser/test_extensions_browser_client.h"
 #include "extensions/browser/unloaded_extension_reason.h"
 #include "extensions/common/api/runtime.h"
 #include "extensions/common/extension.h"
@@ -622,6 +623,149 @@ TEST_F(RuntimeAPIOnExtensionLoadedPrecedenceTest,
   RunPostedDispatchTasks();
 
   EXPECT_THAT(GetOnExtensionLoadedDetails(observer), testing::IsEmpty());
+}
+
+// Verifies that `runtime.onExtensionLoaded` is dispatched only with reason
+// `kUpdate` when an extension loads with a pending update during browser
+// startup. `kUpdate` takes precedence over `kStartup`.
+TEST_F(RuntimeAPIOnExtensionLoadedPrecedenceTest,
+       PendingUpdateThenLoadDuringStartupDispatchesOnlyUpdate) {
+  TestEventRouterObserver observer(EventRouter::Get(browser_context()));
+
+  // Notify the update first, then the load.
+  NotifyInstalledAndLoaded(/*previous_version=*/base::Version("0.0.1"));
+  NotifyLoaded();
+  RunPostedDispatchTasks();
+
+  // Verify that only `kUpdate` was dispatched, with the pre-update version.
+  EXPECT_THAT(GetOnExtensionLoadedDetails(observer),
+              testing::ElementsAre(testing::Pair("update", "0.0.1")));
+}
+
+// Same as `PendingUpdateThenLoadDuringStartupDispatchesOnlyUpdate`, but
+// `RuntimeAPI` gets the load notification before the update notification.
+TEST_F(RuntimeAPIOnExtensionLoadedPrecedenceTest,
+       LoadThenPendingUpdateDuringStartupDispatchesOnlyUpdate) {
+  TestEventRouterObserver observer(EventRouter::Get(browser_context()));
+
+  // Notify the load first, then the update.
+  NotifyLoaded();
+  NotifyInstalledAndLoaded(/*previous_version=*/base::Version("0.0.1"));
+  RunPostedDispatchTasks();
+
+  // Verify that only `kUpdate` was dispatched, with the pre-update version.
+  EXPECT_THAT(GetOnExtensionLoadedDetails(observer),
+              testing::ElementsAre(testing::Pair("update", "0.0.1")));
+}
+
+// Verifies that `runtime.onExtensionLoaded` is dispatched only with reason
+// `kInstall` when an extension loads with a pending install during browser
+// startup. `kInstall` takes precedence over `kStartup`.
+TEST_F(RuntimeAPIOnExtensionLoadedPrecedenceTest,
+       PendingInstallThenLoadDuringStartupDispatchesOnlyInstall) {
+  TestEventRouterObserver observer(EventRouter::Get(browser_context()));
+
+  // Notify the install first, then the load.
+  NotifyInstalledAndLoaded(/*previous_version=*/base::Version());
+  NotifyLoaded();
+  RunPostedDispatchTasks();
+
+  // Verify that only `kInstall` was dispatched.
+  EXPECT_THAT(GetOnExtensionLoadedDetails(observer),
+              testing::ElementsAre(testing::Pair("install", "")));
+}
+
+// Verifies that if an extension is updated while it was disabled, then it was
+// later enabled during browser startup:
+// - `runtime.onExtensionLoaded` is dispatched only with reason `kUpdate`.
+//   `kUpdate` takes precedence over `kEnable` and `kStartup`.
+// - `runtime.onEnabled` is dispatched exactly once.
+TEST_F(RuntimeAPIOnExtensionLoadedPrecedenceTest,
+       EnableWithPendingUpdateDuringStartupDispatchesOnlyUpdate) {
+  TestEventRouterObserver observer(EventRouter::Get(browser_context()));
+
+  // Send the notifications in the order that
+  // `ExtensionRegistrar::EnableExtension()` triggers them for an extension that
+  // was updated while disabled and is enabled during startup.
+  NotifyInstalledAndLoaded(/*previous_version=*/base::Version("0.0.1"));
+  NotifyLoaded();
+  NotifyEnabled();
+  RunPostedDispatchTasks();
+
+  // Verify that only `kUpdate` was dispatched, with the pre-update version.
+  EXPECT_THAT(GetOnExtensionLoadedDetails(observer),
+              testing::ElementsAre(testing::Pair("update", "0.0.1")));
+
+  // Verify that `runtime.onEnabled` was dispatched once.
+  EXPECT_EQ(1, CountOnEnabledEvents(observer));
+}
+
+// A `TestExtensionsBrowserClient` that reports that the browser was updated
+// since the last run.
+class BrowserUpdateTestExtensionsBrowserClient
+    : public TestExtensionsBrowserClient {
+ public:
+  bool DidVersionUpdate(content::BrowserContext* context) override {
+    return true;
+  }
+};
+
+// Test fixture like `RuntimeAPIOnExtensionLoadedPrecedenceTest`, for the first
+// browser startup after a browser update.
+class RuntimeAPIOnExtensionLoadedPrecedenceAfterBrowserUpdateTest
+    : public RuntimeAPIOnExtensionLoadedPrecedenceTest {
+ public:
+  void SetUp() override {
+    SetExtensionsBrowserClient(
+        std::make_unique<BrowserUpdateTestExtensionsBrowserClient>());
+    // `RuntimeAPI` checks `DidVersionUpdate()` when `SetUp()` creates it.
+    RuntimeAPIOnExtensionLoadedPrecedenceTest::SetUp();
+
+    // Add a lazy listener for `runtime.onInstalled`, because
+    // `RuntimeEventRouter::DispatchOnInstalledEvent()` dispatches the
+    // `"chrome_update"` reason only to an extension that listens for it.
+    EventRouter::Get(browser_context())
+        ->listeners()
+        .AddListener(EventListener::CreateLazyListener(
+            api::runtime::OnInstalled::kEventName, extension()->id(),
+            browser_context(), /*is_for_service_worker=*/false,
+            /*service_worker_scope=*/GURL(), /*filter=*/std::nullopt));
+  }
+
+ protected:
+  // Returns the `details.reason` of each `runtime.onInstalled` event that
+  // `observer` saw, in dispatch order.
+  static std::vector<std::string> GetOnInstalledReasons(
+      const TestEventRouterObserver& observer) {
+    std::vector<std::string> reasons;
+    for (const std::unique_ptr<Event>& event : observer.all_events()) {
+      if (event->event_name == api::runtime::OnInstalled::kEventName) {
+        reasons.push_back(*event->args()[0].GetDict().FindString("reason"));
+      }
+    }
+    return reasons;
+  }
+};
+
+// Verifies that when an extension loads with a pending update during the first
+// browser startup after a browser update:
+// - `runtime.onExtensionLoaded` is dispatched only with reason `kUpdate`.
+//   `kUpdate` takes precedence over `kBrowserUpdate`.
+// - `runtime.onInstalled` is still dispatched with reasons `"chrome_update"`
+//   and `"update"`.
+TEST_F(RuntimeAPIOnExtensionLoadedPrecedenceAfterBrowserUpdateTest,
+       PendingUpdateThenLoadDuringBrowserUpdateDispatchesOnlyUpdate) {
+  TestEventRouterObserver observer(EventRouter::Get(browser_context()));
+
+  // Notify the update first, then the load.
+  NotifyInstalledAndLoaded(/*previous_version=*/base::Version("0.0.1"));
+  NotifyLoaded();
+  RunPostedDispatchTasks();
+
+  EXPECT_THAT(GetOnExtensionLoadedDetails(observer),
+              testing::ElementsAre(testing::Pair("update", "0.0.1")));
+  EXPECT_THAT(GetOnInstalledReasons(observer),
+              testing::UnorderedElementsAre("chrome_update", "update"));
 }
 
 }  // namespace extensions

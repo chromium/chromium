@@ -3523,6 +3523,126 @@ IN_PROC_BROWSER_TEST_F(RuntimeBrowserUpdateEnableLifecycleEventsApiTest,
   EXPECT_FALSE(loaded_browser_update_failure_listener()->was_satisfied());
 }
 
+// Test fixture for an extension whose update is delayed until the next browser
+// startup, so that the extension loads with a pending update. The test's
+// `ExtensionTestMessageListener`s need to be created in
+// `CreatedBrowserMainParts()` so that we catch the events when the extension
+// loads on browser start (before the test case runs).
+class RuntimeDelayedUpdateAtStartupLifecycleEventsApiTest
+    : public RuntimeEnableDuringStartupLifecycleEventsApiTest {
+ public:
+  RuntimeDelayedUpdateAtStartupLifecycleEventsApiTest() = default;
+  ~RuntimeDelayedUpdateAtStartupLifecycleEventsApiTest() override = default;
+
+  void CreatedBrowserMainParts(content::BrowserMainParts* main_parts) override {
+    if (!IsPreTest()) {
+      // Guard against `kStartup` not being suppressed for the pending update.
+      // If the extension receives `"loaded:startup:"`, the wait on
+      // `loaded_update_listener_` fails immediately.
+      loaded_update_listener_ =
+          std::make_unique<ExtensionTestMessageListener>("loaded:update:1.0");
+      loaded_update_listener_->set_failure_message("loaded:startup:");
+      installed_listener_ = std::make_unique<ExtensionTestMessageListener>(
+          "installed:update:1.0");
+      loaded_startup_failure_listener_ =
+          std::make_unique<ExtensionTestMessageListener>("loaded:startup:");
+      loaded_enable_failure_listener_ =
+          std::make_unique<ExtensionTestMessageListener>("loaded:enable:2.0");
+      enabled_failure_listener_ =
+          std::make_unique<ExtensionTestMessageListener>("enabled");
+    }
+    RuntimeEnableDuringStartupLifecycleEventsApiTest::CreatedBrowserMainParts(
+        main_parts);
+  }
+
+ protected:
+  ExtensionTestMessageListener* loaded_update_listener() {
+    return loaded_update_listener_.get();
+  }
+  ExtensionTestMessageListener* installed_listener() {
+    return installed_listener_.get();
+  }
+  const ExtensionTestMessageListener* loaded_startup_failure_listener() const {
+    return loaded_startup_failure_listener_.get();
+  }
+  const ExtensionTestMessageListener* loaded_enable_failure_listener() const {
+    return loaded_enable_failure_listener_.get();
+  }
+  const ExtensionTestMessageListener* enabled_failure_listener() const {
+    return enabled_failure_listener_.get();
+  }
+
+ private:
+  std::unique_ptr<ExtensionTestMessageListener> loaded_update_listener_;
+  std::unique_ptr<ExtensionTestMessageListener> installed_listener_;
+  std::unique_ptr<ExtensionTestMessageListener>
+      loaded_startup_failure_listener_;
+  std::unique_ptr<ExtensionTestMessageListener> loaded_enable_failure_listener_;
+  std::unique_ptr<ExtensionTestMessageListener> enabled_failure_listener_;
+};
+
+// Installs version 1.0 of the extension and updates it to version 2.0 while its
+// service worker is still running, so that the update is delayed until the
+// next browser startup.
+IN_PROC_BROWSER_TEST_F(RuntimeDelayedUpdateAtStartupLifecycleEventsApiTest,
+                       PRE_OnExtensionLoadedOnDelayedUpdateAtStartup) {
+  // Install version 1.0. Its service worker still runs after it receives
+  // `chrome.runtime.onExtensionLoaded`, so the extension isn't idle.
+  ObserveServiceWorkerRegistrationBeforeInstallOnAndroid();
+  TestExtensionDir dir;
+  const Extension* extension =
+      InstallLifecycleEventsTestExtension(dir, InstallType::kPacked);
+  ASSERT_TRUE(extension);
+  const ExtensionId extension_id = extension->id();
+
+  // Update the extension to version 2.0 without `install_immediately`, so that
+  // the update is delayed while the extension isn't idle.
+  WriteLifecycleEventsTestExtension(dir, /*version=*/"2.0",
+                                    /*extra_manifest_keys=*/"");
+  base::FilePath crx_v2 = dir.Pack("v2.crx");
+  ASSERT_FALSE(crx_v2.empty());
+  UpdateExtensionWaitForIdle(extension_id, crx_v2, /*expected_change=*/0);
+  ASSERT_TRUE(ExtensionPrefs::Get(profile())
+                  ->GetDelayedInstallExtensionInfo(extension_id)
+                  .has_value());
+
+  // Persist the install and the delayed update.
+  WaitForExtensionPersistedBeforeRestartOnAndroid();
+}
+
+// Test that when an extension's delayed update finishes during browser
+// startup:
+// - `chrome.runtime.onExtensionLoaded` is fired only with reason `"update"`
+//   and `previousVersion` set to the version from before the update.
+// - `chrome.runtime.onInstalled` is fired with reason `"update"`.
+// - `chrome.runtime.onEnabled` is not fired, and
+//   `chrome.runtime.onExtensionLoaded` is not fired with reason `"enable"`.
+IN_PROC_BROWSER_TEST_F(RuntimeDelayedUpdateAtStartupLifecycleEventsApiTest,
+                       OnExtensionLoadedOnDelayedUpdateAtStartup) {
+  // Wait for the events that the extension receives when its delayed update
+  // finishes.
+  {
+    SCOPED_TRACE("Waiting for update extension loaded event message");
+    ASSERT_TRUE(loaded_update_listener()->WaitUntilSatisfied());
+  }
+  {
+    SCOPED_TRACE("Waiting for update install event message");
+    ASSERT_TRUE(installed_listener()->WaitUntilSatisfied());
+  }
+
+  // Round-trip a script through the service worker so that a late
+  // `"loaded:startup:"`, `"loaded:enable:2.0"`, or `"enabled"` message would
+  // have arrived, then verify that none of them did.
+  const Extension* extension = GetEnabledLifecycleEventsTestExtension();
+  ASSERT_TRUE(extension);
+  ASSERT_EQ("done",
+            ExecuteScriptInBackgroundPage(
+                extension->id(), "chrome.test.sendScriptResult('done');"));
+  EXPECT_FALSE(loaded_startup_failure_listener()->was_satisfied());
+  EXPECT_FALSE(loaded_enable_failure_listener()->was_satisfied());
+  EXPECT_FALSE(enabled_failure_listener()->was_satisfied());
+}
+
 class RuntimeAsyncListenerRegistrationApiTest : public ExtensionApiTest {
  private:
   base::test::ScopedFeatureList feature_list_{
