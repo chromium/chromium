@@ -62,8 +62,8 @@ void ReplacedLayoutAlgorithm::LayoutCanvasChildren() {
     // Since this only works with drawElementImage(), we ignore relative
     // placement and put the element at (0,0) because it will be drawn
     // explicitly by the user.
-    container_builder_.AddResult(*result,
-                                 LogicalOffset(LayoutUnit(), LayoutUnit()));
+    container_builder_.AddResult(*result, LogicalOffset(),
+                                 /*margins=*/BoxStrut());
   }
 }
 
@@ -96,7 +96,7 @@ void ReplacedLayoutAlgorithm::LayoutMediaChildren() {
         To<BlockNode>(child).Layout(space_builder.ToConstraintSpace());
     LogicalOffset offset = converter.ToLogical(
         new_rect.offset, result->GetPhysicalFragment().Size());
-    container_builder_.AddResult(*result, offset);
+    container_builder_.AddResult(*result, offset, /*margins=*/BoxStrut());
   }
 }
 
@@ -115,7 +115,8 @@ void ReplacedLayoutAlgorithm::LayoutImageReplacementChildren() {
   space_builder.SetIsFixedBlockSize(true);
 
   const LayoutResult* result = child.Layout(space_builder.ToConstraintSpace());
-  container_builder_.AddResult(*result, BorderPadding().StartOffset());
+  container_builder_.AddResult(*result, BorderPadding().StartOffset(),
+                               /*margins=*/BoxStrut());
 }
 
 }  // namespace blink
