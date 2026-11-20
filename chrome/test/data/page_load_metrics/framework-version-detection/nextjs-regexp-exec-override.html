@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+<body>
+<script>
+  window.next = {version: '13.3.2-canary.11'};
+  // Framework detection must not run page script, so this override must not
+  // affect the detected version.
+  RegExp.prototype.exec = () => ['99.98', '99', '98'];
+</script>
+</body>

@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<body>
+  <script>
+
+// Framework detection must not run page script, so versions exposed only via
+// getters must not be read.
+window.next = {};
+Object.defineProperty(window.next, 'version', {get: () => '13.3'});
+Object.defineProperty(window, 'Vue', {get: () => ({version: '2.1'})});
+  </script>
+</body>
