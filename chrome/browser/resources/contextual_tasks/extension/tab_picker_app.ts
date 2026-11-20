@@ -7,6 +7,7 @@ import 'chrome://resources/cr_components/composebox/composebox_tab_favicon.js';
 import 'chrome://resources/cr_components/composebox/icons.html.js';
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 
 import type {SmartTabSharingState} from 'chrome://contextual-tasks/contextual_tasks.mojom-webui.js';
@@ -82,6 +83,12 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
         reflect: true,
       },
       inputState: {type: Object},
+      // Set through the `dogfood-feedback-enabled` attribute by
+      // tab_picker.html.
+      dogfoodFeedbackEnabled: {
+        type: Boolean,
+        reflect: true,
+      },
     };
   }
 
@@ -94,6 +101,7 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
   accessor useUnbounded: boolean = true;
   accessor darkMode: boolean = false;
   accessor inputState: InputState|null = null;
+  accessor dogfoodFeedbackEnabled: boolean = false;
 
   protected accessor sharingTabsText_: string = '';
   protected accessor singleTabIndex_: number = -1;
@@ -704,6 +712,49 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
           index, hasActiveTab);
     }
     this.fire('tab-selected', {tab, selected: !isSelected});
+  }
+
+  private cancelAndCloseTabMenu_() {
+    this.shouldOpenMenu_ = false;
+    ++this.openMenuRequestId_;
+    this.cancelCloseTimer_();
+    if (this.$.tabMenu.open) {
+      this.$.tabMenu.close();
+    }
+  }
+
+  protected onDogfoodFeedbackPointerenter_() {
+    this.pointerDownOnTrigger_ = false;
+    this.setFocusOutlineVisible_(false);
+    this.cancelAndCloseTabMenu_();
+  }
+
+  protected onDogfoodFeedbackPointermove_() {
+    this.setFocusOutlineVisible_(false);
+  }
+
+  protected onDogfoodFeedbackPointerdown_() {
+    this.pointerDownOnTrigger_ = true;
+    this.setFocusOutlineVisible_(false);
+    this.cancelAndCloseTabMenu_();
+  }
+
+  protected onDogfoodFeedbackPointerleave_() {
+    this.pointerDownOnTrigger_ = false;
+  }
+
+  protected onDogfoodFeedbackFocus_() {
+    if (!this.pointerDownOnTrigger_) {
+      this.setFocusOutlineVisible_(true);
+    }
+    this.cancelAndCloseTabMenu_();
+  }
+
+  protected onDogfoodFeedbackClick_() {
+    this.pointerDownOnTrigger_ = false;
+    this.setFocusOutlineVisible_(false);
+    this.cancelAndCloseTabMenu_();
+    ExtensionBrowserProxyImpl.getInstance().handler.openDogfoodFeedback();
   }
 
   private async openTabMenu_(focusFirstItem: boolean = false) {

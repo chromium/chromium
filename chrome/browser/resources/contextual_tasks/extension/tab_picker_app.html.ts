@@ -31,35 +31,50 @@ ${this.shouldShowSingleTabItem_() ? html`
     ` : ''}
   </button>
 ` : ''}
-<button id="shareTabsTrigger" class="dropdown-item"
-    role="${this.isStsActiveRow_() ? 'menuitemcheckbox' : 'menuitem'}"
-    aria-checked="${this.isStsActiveRow_() ? 'true' : nothing}"
-    aria-haspopup="${this.isStsActiveRow_() ? nothing : 'menu'}"
-    aria-expanded="${this.isStsActiveRow_() ? nothing : this.tabMenuOpen}"
-    @pointerenter="${this.onShareTabsRowPointerenter_}"
-    @pointermove="${this.onShareTabsRowPointermove_}"
-    @pointerdown="${this.onShareTabsRowPointerdown_}"
-    @pointerleave="${this.onShareTabsRowPointerleave_}"
-    @focus="${this.onShareTabsRowFocus_}" @click="${this.onShareTabsRowClick_}"
-    @keydown="${this.onShareTabsRowKeydown_}">
-  <cr-icon
-      icon="${this.isStsActiveRow_() ? 'composebox:screensaverAuto' :
-                                       'composebox:tab'}">
-  </cr-icon>
-  <span class="tab-title">
-    ${this.isStsActiveRow_() ? this.getShareOpenTabsText_() :
-                             this.sharingTabsText_}
-  </span>
-  ${this.isStsActiveRow_() ? html`
-    <cr-icon id="smartTabSharingActiveCheck" class="share-tabs-check"
-        icon="cr:check">
+<div class="share-tabs-row">
+  <button id="shareTabsTrigger" class="dropdown-item"
+      role="${this.isStsActiveRow_() ? 'menuitemcheckbox' : 'menuitem'}"
+      aria-checked="${this.isStsActiveRow_() ? 'true' : nothing}"
+      aria-haspopup="${this.isStsActiveRow_() ? nothing : 'menu'}"
+      aria-expanded="${this.isStsActiveRow_() ? nothing : this.tabMenuOpen}"
+      @pointerenter="${this.onShareTabsRowPointerenter_}"
+      @pointermove="${this.onShareTabsRowPointermove_}"
+      @pointerdown="${this.onShareTabsRowPointerdown_}"
+      @pointerleave="${this.onShareTabsRowPointerleave_}"
+      @focus="${this.onShareTabsRowFocus_}"
+      @click="${this.onShareTabsRowClick_}"
+      @keydown="${this.onShareTabsRowKeydown_}">
+    <cr-icon
+        icon="${this.isStsActiveRow_() ? 'composebox:screensaverAuto' :
+                                         'composebox:tab'}">
     </cr-icon>
-  ` : html`
-    <composebox-favicon-group .tabs="${this.selectedTabs}">
-    </composebox-favicon-group>
-    <cr-icon class="share-tabs-arrow" icon="cr:chevron-right"></cr-icon>
-  `}
-</button>
+    <span class="tab-title">
+      ${this.isStsActiveRow_() ? this.getShareOpenTabsText_() :
+                               this.sharingTabsText_}
+    </span>
+    ${this.isStsActiveRow_() ? html`
+      <cr-icon id="smartTabSharingActiveCheck" class="share-tabs-check"
+          icon="cr:check">
+      </cr-icon>
+    ` : html`
+      <composebox-favicon-group .tabs="${this.selectedTabs}">
+      </composebox-favicon-group>
+      <cr-icon class="share-tabs-arrow" icon="cr:chevron-right"></cr-icon>
+    `}
+  </button>
+  ${this.dogfoodFeedbackEnabled ? html`
+    <cr-icon-button id="dogfoodFeedbackButton"
+        title="$i18n{dogfoodFeedbackTooltip}"
+        aria-label="$i18n{dogfoodFeedbackTooltip}"
+        @pointerenter="${this.onDogfoodFeedbackPointerenter_}"
+        @pointermove="${this.onDogfoodFeedbackPointermove_}"
+        @pointerdown="${this.onDogfoodFeedbackPointerdown_}"
+        @pointerleave="${this.onDogfoodFeedbackPointerleave_}"
+        @focus="${this.onDogfoodFeedbackFocus_}"
+        @click="${this.onDogfoodFeedbackClick_}">
+    </cr-icon-button>
+  ` : ''}
+</div>
 
 <cr-action-menu id="tabMenu" role-description="menu" non-modal
     @close="${this.onMenuClose_}"

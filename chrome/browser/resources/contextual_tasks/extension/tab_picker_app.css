@@ -128,6 +128,32 @@
   --iron-icon-width: 20px;
 }
 
+.share-tabs-row {
+  position: relative;
+  width: 100%;
+}
+
+#dogfoodFeedbackButton {
+  --cr-icon-button-active-background-color: rgba(31, 31, 31, 0.12);
+  --cr-icon-button-fill-color: var(--tab-picker-item-color);
+  --cr-icon-button-focus-outline-color: var(--tab-picker-focus-outline-color);
+  --cr-icon-button-hover-background-color: rgba(31, 31, 31, 0.08);
+  --cr-icon-button-margin-end: 0;
+  --cr-icon-button-margin-start: 0;
+  --cr-icon-button-size: 28px;
+  --cr-icon-image:
+      url(chrome://resources/cr_components/searchbox/icons/dogfood.svg);
+  inset-inline-end: 44px;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+:host([dark-mode]) #dogfoodFeedbackButton {
+  --cr-icon-button-active-background-color: rgba(227, 227, 227, 0.12);
+  --cr-icon-button-hover-background-color: rgba(227, 227, 227, 0.1);
+}
+
 composebox-favicon-group {
   --composebox-favicon-border-color: var(--tab-picker-favicon-border-color);
   --composebox-favicon-more-items-color:
@@ -136,6 +162,15 @@ composebox-favicon-group {
       var(--tab-picker-favicon-skeleton-color);
   margin-inline-end: 10px;
   margin-inline-start: auto;
+}
+
+:host([dogfood-feedback-enabled]) composebox-favicon-group {
+  margin-inline-end: 42px;
+}
+
+:host([dogfood-feedback-enabled])
+    #shareTabsTrigger > .tab-title:has(+ #smartTabSharingActiveCheck) {
+  margin-inline-end: 36px;
 }
 
 .share-tabs-arrow {

@@ -244,6 +244,105 @@ suite('TabPickerTest', () => {
         '20px', triggerStyle.getPropertyValue('--iron-icon-width').trim());
   });
 
+  test('Hides dogfood feedback button by default', () => {
+    assertFalse(app.dogfoodFeedbackEnabled);
+    assertFalse(app.hasAttribute('dogfood-feedback-enabled'));
+    assertEquals(null, app.shadowRoot.querySelector('#dogfoodFeedbackButton'));
+  });
+
+  test('Shows dogfood feedback button when attribute is set', async () => {
+    // tab_picker.html sets the attribute through a template replacement.
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    const dogfoodApp = document.createElement('tab-picker-app');
+    dogfoodApp.setAttribute('dogfood-feedback-enabled', '');
+    document.body.appendChild(dogfoodApp);
+    await microtasksFinished();
+
+    assertTrue(dogfoodApp.dogfoodFeedbackEnabled);
+    const button = dogfoodApp.shadowRoot.querySelector<HTMLElement>(
+        '#dogfoodFeedbackButton');
+    assertTrue(!!button);
+    assertTrue(isVisible(button));
+    assertFalse(dogfoodApp.$.shareTabsTrigger.contains(button));
+    assertEquals('Submit Contextual Tasks Dogfood Feedback', button.title);
+    assertEquals(
+        'Submit Contextual Tasks Dogfood Feedback',
+        button.getAttribute('aria-label'));
+  });
+
+  test('Places dogfood feedback button to the left of the arrow', async () => {
+    app.dogfoodFeedbackEnabled = true;
+    await microtasksFinished();
+    assertTrue(app.hasAttribute('dogfood-feedback-enabled'));
+
+    const button =
+        app.shadowRoot.querySelector<HTMLElement>('#dogfoodFeedbackButton');
+    const faviconGroup = app.$.shareTabsTrigger.querySelector<HTMLElement>(
+        'composebox-favicon-group');
+    const arrow =
+        app.$.shareTabsTrigger.querySelector<HTMLElement>('.share-tabs-arrow');
+    assertTrue(!!button);
+    assertTrue(!!faviconGroup);
+    assertTrue(!!arrow);
+    const faviconRect = faviconGroup.getBoundingClientRect();
+    const buttonRect = button.getBoundingClientRect();
+    const arrowRect = arrow.getBoundingClientRect();
+    assertTrue(Math.round(faviconRect.right) <= Math.round(buttonRect.left));
+    assertTrue(Math.round(buttonRect.right) <= Math.round(arrowRect.left));
+
+    assertEquals(
+        'rgba(31,31,31,0.08)',
+        getComputedStyle(button)
+            .getPropertyValue('--cr-icon-button-hover-background-color')
+            .replace(/\s+/g, ''));
+    app.setAttribute('dark-mode', '');
+    assertEquals(
+        'rgba(227,227,227,0.1)',
+        getComputedStyle(button)
+            .getPropertyValue('--cr-icon-button-hover-background-color')
+            .replace(/\s+/g, ''));
+  });
+
+  test(
+      'Dogfood feedback button opens feedback form and keeps menu closed',
+      async () => {
+        app.dogfoodFeedbackEnabled = true;
+        await microtasksFinished();
+
+        const button =
+            app.shadowRoot.querySelector<HTMLElement>('#dogfoodFeedbackButton');
+        assertTrue(!!button);
+
+        // Moving the pointer across the trigger onto the feedback button
+        // cancels the in-flight menu open, and pointerdown + click opens the
+        // feedback form without opening #tabMenu.
+        app.$.shareTabsTrigger.dispatchEvent(new PointerEvent('pointerenter'));
+        app.$.shareTabsTrigger.dispatchEvent(new PointerEvent('pointerleave'));
+        button.dispatchEvent(new PointerEvent('pointerenter'));
+        button.dispatchEvent(new PointerEvent('pointerdown'));
+        button.click();
+
+        await extensionBrowserProxy.handler.whenCalled('openDogfoodFeedback');
+        assertEquals(
+            1,
+            extensionBrowserProxy.handler.getCallCount('openDogfoodFeedback'));
+        await microtasksFinished();
+        assertFalse(app.$.tabMenu.open);
+
+        // If #tabMenu is already open, interacting with the feedback button
+        // closes it, and pressing ArrowRight while focused does not reopen it.
+        await app.openTabMenuForTesting();
+        assertTrue(app.$.tabMenu.open);
+        button.dispatchEvent(new PointerEvent('pointerenter'));
+        assertFalse(app.$.tabMenu.open);
+
+        button.focus();
+        button.dispatchEvent(
+            new KeyboardEvent('keydown', {key: 'ArrowRight', bubbles: true}));
+        await microtasksFinished();
+        assertFalse(app.$.tabMenu.open);
+      });
+
   test(
       'Opens tab menu on pointerenter and closes on pointerleave with delay',
       async () => {
