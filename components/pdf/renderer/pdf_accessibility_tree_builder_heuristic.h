@@ -309,7 +309,9 @@ class PdfAccessibilityTreeBuilderHeuristic {
                            LineHelper* line_helper,
                            size_t* text_run_index);
 
-  void AddLinkToParaNode(const chrome_pdf::AccessibilityLinkInfo& link,
+  // Adds `link` to `para_node`. Returns false if the link has no text. Then
+  // `*text_run_index` is moved back, so the caller revisits the current run.
+  bool AddLinkToParaNode(const chrome_pdf::AccessibilityLinkInfo& link,
                          ui::AXNodeData* para_node,
                          ui::AXNodeData** previous_on_line_node,
                          LineHelper* line_helper,

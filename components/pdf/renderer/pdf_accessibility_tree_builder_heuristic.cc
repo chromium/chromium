@@ -3174,15 +3174,11 @@ void PdfAccessibilityTreeBuilderHeuristic::BuildPageTree() {
     if (IsObjectWithRangeInTextRun(builder_->links(), current_link_index_,
                                    text_run_index)) {
       BuildStaticNode(&static_text_state);
-      const chrome_pdf::AccessibilityLinkInfo& link =
-          (builder_->links())[current_link_index_++];
-      AddLinkToParaNode(link, block_node, &previous_on_line_node, &line_helper,
-                        &text_run_index);
-
-      if (link.text_range.count == 0) {
+      if (!AddLinkToParaNode((builder_->links())[current_link_index_++],
+                             block_node, &previous_on_line_node, &line_helper,
+                             &text_run_index)) {
         continue;
       }
-
     } else if (IsObjectInTextRun(images, current_image_index_,
                                  text_run_index)) {
       BuildStaticNode(&static_text_state);
@@ -3748,7 +3744,7 @@ void PdfAccessibilityTreeBuilderHeuristic::AddTextToObjectNode(
       NormalizeTextRunIndex(object_end_text_run_index, *text_run_index);
 }
 
-void PdfAccessibilityTreeBuilderHeuristic::AddLinkToParaNode(
+bool PdfAccessibilityTreeBuilderHeuristic::AddLinkToParaNode(
     const chrome_pdf::AccessibilityLinkInfo& link,
     ui::AXNodeData* para_node,
     ui::AXNodeData** previous_on_line_node,
@@ -3761,7 +3757,7 @@ void PdfAccessibilityTreeBuilderHeuristic::AddLinkToParaNode(
   // text. Push it ahead of the current text run.
   if (link.text_range.count == 0) {
     --(*text_run_index);
-    return;
+    return false;
   }
 
   // Make the text runs contained by the link children of
@@ -3769,6 +3765,7 @@ void PdfAccessibilityTreeBuilderHeuristic::AddLinkToParaNode(
   AddTextToObjectNode(link.text_range.index, link.text_range.count, link_node,
                       para_node, previous_on_line_node, line_helper,
                       text_run_index);
+  return true;
 }
 
 void PdfAccessibilityTreeBuilderHeuristic::AddImageToParaNode(
