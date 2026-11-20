@@ -10,7 +10,7 @@ import {HELP_BUBBLE_DISMISSED_EVENT, HELP_BUBBLE_TIMED_OUT_EVENT, HelpBubbleElem
 import type {HelpBubbleButtonParams} from 'chrome://resources/cr_components/help_bubble/help_bubble.mojom-webui.js';
 import {HelpBubbleArrowPosition} from 'chrome://resources/cr_components/help_bubble/help_bubble.mojom-webui.js';
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 interface WaitForSuccessParams {
@@ -60,6 +60,15 @@ suite('CrComponentsHelpBubbleTest', () => {
     // notice: we hide the entire main section here, not just the mainBody
     assertTrue(
         helpBubble.$.main.hidden, `${fnName} - main element should be hidden`);
+
+    // Verify that the top-level element is described by the body.
+    // Unfortunately, `element.ariaDescribedByElements` is a readonly array, so
+    // it needs to be copied to use `assertArrayEquals()`.
+    const mainElement = helpBubble.$.topContainer.parentElement!;
+    const describedBy: Element[] = [];
+    mainElement.ariaDescribedByElements!.forEach(
+        (el: Element) => describedBy.push(el));
+    assertArrayEquals(describedBy, [helpBubble.$.topBody]);
   }
 
   /**
@@ -88,6 +97,15 @@ suite('CrComponentsHelpBubbleTest', () => {
     assertFalse(
         helpBubble.$.main.hidden,
         `${fnName} - main element should not be hidden`);
+
+    // Verify that the top-level element is described by the body.
+    // Unfortunately, `element.ariaDescribedByElements` is a readonly array, so
+    // it needs to be copied to use `assertArrayEquals()`.
+    const mainElement = helpBubble.$.topContainer.parentElement!;
+    const describedBy: Element[] = [];
+    mainElement.ariaDescribedByElements!.forEach(
+        (el: Element) => describedBy.push(el));
+    assertArrayEquals(describedBy, [helpBubble.$.mainBody]);
   }
 
   /**
