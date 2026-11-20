@@ -597,7 +597,7 @@ void ReplacedPainter::PaintBoxDecorationBackgroundWithRect(
 void ReplacedPainter::PaintBackground(
     const PaintInfo& paint_info,
     const PhysicalRect& paint_rect,
-    const Color& background_color,
+    const AnimatedColor& background_color,
     BackgroundBleedAvoidance bleed_avoidance) {
   if (layout_replaced_.BackgroundTransfersToView()) {
     return;

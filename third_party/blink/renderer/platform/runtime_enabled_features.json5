@@ -1459,6 +1459,10 @@
       public: true,
     },
     {
+      name: "CompositeColorAnimation",
+      depends_on: ["TrackAnimatedSources"],
+    },
+    {
       name: "CompositedSelectionUpdate",
       public: true,
       status: {

@@ -94,6 +94,7 @@ namespace blink {
 
 using std::max;
 
+class AnimatedColor;
 class AppliedTextDecoration;
 class ContentData;
 class CounterDirectives;
@@ -2484,6 +2485,9 @@ class ComputedStyle final : public ComputedStyleBase {
       const blink::Color& unvisited_color,
       const Longhand& color_property,
       bool* is_current_color = nullptr) const;
+
+  CORE_EXPORT AnimatedColor
+  VisitedDependentAnimatedColor(const Longhand& color_property) const;
 
   // Used to resolve gap decoration colors for painting.
   CORE_EXPORT blink::Color VisitedDependentGapColor(const StyleColor& gap_color,

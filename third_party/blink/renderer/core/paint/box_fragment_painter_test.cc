@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/paint/box_fragment_painter.h"
 
 #include <algorithm>
+#include <optional>
 #include <vector>
 
 #include "base/test/scoped_feature_list.h"
@@ -23,7 +24,10 @@
 #include "third_party/blink/renderer/core/paint/paint_controller_paint_test.h"
 #include "third_party/blink/renderer/core/paint/paint_event.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
+#include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
+#include "third_party/blink/renderer/platform/graphics/paint/drawing_display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record_builder.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 using testing::ElementsAre;
 
@@ -52,6 +56,28 @@ class BoxFragmentPainterTest : public PaintControllerPaintTest {
   explicit BoxFragmentPainterTest(
       LocalFrameClient* local_frame_client = nullptr)
       : PaintControllerPaintTest(local_frame_client) {}
+
+ protected:
+  std::optional<cc::PaintColor> GetBackgroundPaintColor(const char* id) {
+    const DisplayItemClientId client_id = GetLayoutBoxByElementId(id)->Id();
+    for (const DisplayItem& item : ContentDisplayItems()) {
+      if (item.ClientId() != client_id) {
+        continue;
+      }
+      const PaintRecord& record = To<DrawingDisplayItem>(item).GetPaintRecord();
+      if (!record.empty()) {
+        return static_cast<const cc::PaintOpWithFlags&>(record.GetFirstOp())
+            .flags.getPaintColor();
+      }
+    }
+    return std::nullopt;
+  }
+
+  cc::DeferredPropertyKey GetBackgroundColorKey(const char* id) {
+    return {
+        CompositorElementIdFromDOMNodeId(GetElementById(id)->GetDomNodeId()),
+        cc::DeferredPropertyType::kBackgroundColor};
+  }
 };
 
 INSTANTIATE_PAINT_TEST_SUITE_P(BoxFragmentPainterTest);
@@ -1228,6 +1254,41 @@ TEST_P(BoxFragmentPainterTest,
       EXPECT_NE(item.GetType(), DisplayItem::kBoxDecorationBackground);
     }
   }
+}
+
+TEST_P(BoxFragmentPainterTest, AnimatedBackgroundRecordsDeferredPaintColor) {
+  ScopedCompositeColorAnimationForTest enabled(true);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes fade_in {
+        from { background-color: transparent; }
+        to { background-color: blue; }
+      }
+      @keyframes from_black {
+        from { background-color: black; }
+        to { background-color: blue; }
+      }
+      div { width: 40px; height: 40px; }
+      #rect { animation: fade_in 10s steps(1, end); }
+      #inherited { background-color: inherit; position: relative; }
+      #rounded { border-radius: 6px; animation: from_black 10s steps(1, end); }
+    </style>
+    <div id="rect"><div id="inherited"></div></div>
+    <div id="rounded"></div>
+  )HTML");
+
+  // Transparent start frames (including inherited sources without a local
+  // animation) still record a keyed op so raster can update the color.
+  const cc::DeferredPropertyKey rect_key = GetBackgroundColorKey("rect");
+  EXPECT_EQ(GetBackgroundPaintColor("rect"),
+            cc::PaintColor(SkColors::kTransparent, rect_key));
+  EXPECT_EQ(GetBackgroundPaintColor("inherited"),
+            cc::PaintColor(SkColors::kTransparent, rect_key));
+
+  // Black matches default FillFlags(), checking FillRoundedRect sets the key.
+  const cc::DeferredPropertyKey rounded_key = GetBackgroundColorKey("rounded");
+  EXPECT_EQ(GetBackgroundPaintColor("rounded"),
+            cc::PaintColor(SkColors::kBlack, rounded_key));
 }
 
 }  // namespace blink

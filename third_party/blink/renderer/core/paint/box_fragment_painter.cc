@@ -1960,7 +1960,7 @@ void BoxFragmentPainter::PaintBoxDecorationBackgroundForBlockInInline(
 void BoxFragmentPainter::PaintBackground(
     const PaintInfo& paint_info,
     const PhysicalRect& paint_rect,
-    const Color& background_color,
+    const AnimatedColor& background_color,
     BackgroundBleedAvoidance bleed_avoidance) {
   const auto& layout_box = To<LayoutBox>(*box_fragment_.GetLayoutObject());
   if (layout_box.BackgroundTransfersToView())
@@ -1969,7 +1969,7 @@ void BoxFragmentPainter::PaintBackground(
     return;
 
   const ComputedStyle* style_to_use = &box_fragment_.Style();
-  Color background_color_to_use = background_color;
+  AnimatedColor background_color_to_use = background_color;
   if (box_fragment_.GetBoxType() == PhysicalFragment::kPageBorderBox) {
     // The page border box fragment paints the document background.
     // See https://drafts.csswg.org/css-page-3/#painting
@@ -2397,7 +2397,7 @@ PhysicalRect BoxFragmentPainter::AdjustRectForScrolledContent(
 }
 
 BoxPainterBase::FillLayerInfo BoxFragmentPainter::GetFillLayerInfo(
-    const Color& color,
+    const AnimatedColor& color,
     const FillLayer& bg_layer,
     BackgroundBleedAvoidance bleed_avoidance,
     bool is_painting_background_in_contents_space,

@@ -26,7 +26,7 @@ class BoxModelObjectPainter : public BoxPainterBase {
 
  protected:
   BoxPainterBase::FillLayerInfo GetFillLayerInfo(
-      const Color&,
+      const AnimatedColor&,
       const FillLayer&,
       BackgroundBleedAvoidance,
       bool is_painting_background_in_contents_space,

@@ -31,6 +31,7 @@
 #include <memory>
 
 #include "base/dcheck_is_on.h"
+#include "cc/paint/paint_color.h"
 #include "cc/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/geometry/dash_array.h"
@@ -309,17 +310,36 @@ class PLATFORM_EXPORT GraphicsContext {
 
   void FillRect(const gfx::Rect&, const AutoDarkMode& auto_dark_mode);
   void FillRect(const gfx::Rect&,
-                const Color&,
+                const cc::PaintColor&,
                 const AutoDarkMode& auto_dark_mode,
                 SkBlendMode = SkBlendMode::kSrcOver);
+  void FillRect(const gfx::Rect& rect,
+                const Color& color,
+                const AutoDarkMode& auto_dark_mode,
+                SkBlendMode xfer_mode = SkBlendMode::kSrcOver) {
+    FillRect(rect, cc::PaintColor(color.toSkColor4f()), auto_dark_mode,
+             xfer_mode);
+  }
   void FillRect(const gfx::RectF&, const AutoDarkMode& auto_dark_mode);
   void FillRect(const gfx::RectF&,
-                const Color&,
+                const cc::PaintColor&,
                 const AutoDarkMode& auto_dark_mode,
                 SkBlendMode = SkBlendMode::kSrcOver);
+  void FillRect(const gfx::RectF& rect,
+                const Color& color,
+                const AutoDarkMode& auto_dark_mode,
+                SkBlendMode xfer_mode = SkBlendMode::kSrcOver) {
+    FillRect(rect, cc::PaintColor(color.toSkColor4f()), auto_dark_mode,
+             xfer_mode);
+  }
   void FillRoundedRect(const FloatRoundedRect&,
-                       const Color&,
+                       const cc::PaintColor&,
                        const AutoDarkMode& auto_dark_mode);
+  void FillRoundedRect(const FloatRoundedRect& rrect,
+                       const Color& color,
+                       const AutoDarkMode& auto_dark_mode) {
+    FillRoundedRect(rrect, cc::PaintColor(color.toSkColor4f()), auto_dark_mode);
+  }
   void FillContouredRect(const ContouredRect&,
                          const Color&,
                          const AutoDarkMode& auto_dark_mode);

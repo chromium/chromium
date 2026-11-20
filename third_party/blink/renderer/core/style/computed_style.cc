@@ -69,6 +69,7 @@
 #include "third_party/blink/renderer/core/layout/map_coordinates_flags.h"
 #include "third_party/blink/renderer/core/paint/compositing/compositing_reason_finder.h"
 #include "third_party/blink/renderer/core/paint/contoured_border_geometry.h"
+#include "third_party/blink/renderer/core/style/animated_color.h"
 #include "third_party/blink/renderer/core/style/applied_text_decoration.h"
 #include "third_party/blink/renderer/core/style/basic_shapes.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
@@ -2572,6 +2573,12 @@ bool ComputedStyle::HasBackground() const {
   if (HasCurrentBackgroundColorAnimation()) {
     return true;
   }
+  // When background color could change on the compositor thread, trigger
+  // repaint even if transparent to collect the artifacts needed to update it.
+  if (RuntimeEnabledFeatures::CompositeColorAnimationEnabled() &&
+      GetAnimatedSource(CSSPropertyID::kBackgroundColor).IsValid()) {
+    return true;
+  }
   return HasBackgroundImage();
 }
 
@@ -3149,6 +3156,25 @@ AnimatedSource ComputedStyle::GetAnimatedSource(CSSPropertyID property) const {
       : css_property.IsInherited() ? InheritedAnimatedSources()
                                    : NonInheritedAnimatedSources();
   return sources.Get(*tracked);
+}
+
+AnimatedColor ComputedStyle::VisitedDependentAnimatedColor(
+    const Longhand& color_property) const {
+  // Resolve the color, which paint keeps as the fallback when animated.
+  const blink::Color color = VisitedDependentColor(color_property);
+  if (!RuntimeEnabledFeatures::CompositeColorAnimationEnabled()) {
+    return color;
+  }
+
+  // Return the plain color when no animation drives this property.
+  const AnimatedSource source = GetAnimatedSource(color_property.PropertyID());
+  if (!source.IsValid()) {
+    return color;
+  }
+
+  // Valid sources only exist for properties in AnimatedSourceProperty.
+  return AnimatedColor(color, source,
+                       *GetAnimatedSourceProperty(color_property.PropertyID()));
 }
 
 ComputedStyleBuilder::ComputedStyleBuilder(const ComputedStyle& style)

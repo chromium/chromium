@@ -31,6 +31,9 @@ class CORE_EXPORT AnimatedSourceHandle {
   // Returns true if this handle references a valid element.
   constexpr bool IsValid() const { return animator_ != kInvalidDOMNodeId; }
 
+  // Returns the referenced element's DOMNodeId, or kInvalidDOMNodeId if none.
+  constexpr DOMNodeId GetDOMNodeId() const { return animator_; }
+
   // Returns true if this handle matches the given element.
   // Note: Guaranteed not to allocate.
   bool IsOwnedBy(const Element& element) const;

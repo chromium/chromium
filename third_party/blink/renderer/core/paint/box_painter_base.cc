@@ -57,7 +57,7 @@ using CompositedPaintStatus = ElementAnimations::CompositedPaintStatus;
 
 void BoxPainterBase::PaintFillLayers(
     const PaintInfo& paint_info,
-    const Color& c,
+    const AnimatedColor& c,
     const FillLayer& fill_layer,
     const PhysicalRect& rect,
     const BoxBackgroundPaintContext& bg_paint_context,
@@ -615,7 +615,7 @@ BoxPainterBase::FillLayerInfo::FillLayerInfo(
     const Document& doc,
     const ComputedStyle& style,
     bool is_scroll_container,
-    Color bg_color,
+    const AnimatedColor& bg_color,
     const FillLayer& layer,
     BackgroundBleedAvoidance bleed_avoidance,
     PhysicalBoxSides sides_to_include,
@@ -1098,7 +1098,7 @@ inline bool PaintFastBottomLayer(const Document& document,
     if (!PaintBGColorWithPaintWorklet(document, info, node, style, color_border,
                                       context)) {
       context.FillRoundedRect(
-          color_border, info.color,
+          color_border, info.color.ToPaintColor(),
           PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kBackground));
     }
   }
@@ -1253,7 +1253,7 @@ void PaintFillLayerBackground(const Document& document,
                                       FloatRoundedRect(background_rect),
                                       context)) {
       context.FillRect(
-          background_rect, info.color,
+          background_rect, info.color.ToPaintColor(),
           PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kBackground));
     }
   }
@@ -1332,7 +1332,7 @@ PhysicalBoxStrut ComputeSnappedBorders(
 
 void BoxPainterBase::PaintFillLayer(
     const PaintInfo& paint_info,
-    const Color& color,
+    const AnimatedColor& color,
     const FillLayer& bg_layer,
     const PhysicalRect& rect,
     BackgroundBleedAvoidance bleed_avoidance,

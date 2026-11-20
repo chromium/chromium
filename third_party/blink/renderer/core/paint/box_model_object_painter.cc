@@ -60,7 +60,7 @@ PhysicalRect BoxModelObjectPainter::AdjustRectForScrolledContent(
 }
 
 BoxPainterBase::FillLayerInfo BoxModelObjectPainter::GetFillLayerInfo(
-    const Color& color,
+    const AnimatedColor& color,
     const FillLayer& bg_layer,
     BackgroundBleedAvoidance bleed_avoidance,
     bool is_painting_background_in_contents_space,

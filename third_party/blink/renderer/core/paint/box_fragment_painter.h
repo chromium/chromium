@@ -113,7 +113,7 @@ class CORE_EXPORT BoxFragmentPainter : public BoxPainterBase {
 
  protected:
   BoxPainterBase::FillLayerInfo GetFillLayerInfo(
-      const Color&,
+      const AnimatedColor&,
       const FillLayer&,
       BackgroundBleedAvoidance,
       bool is_painting_background_in_contents_space,
@@ -215,7 +215,7 @@ class CORE_EXPORT BoxFragmentPainter : public BoxPainterBase {
   void PaintMask(const PaintInfo&, const PhysicalOffset& paint_offset);
   void PaintBackground(const PaintInfo&,
                        const PhysicalRect&,
-                       const Color& background_color,
+                       const AnimatedColor& background_color,
                        BackgroundBleedAvoidance = kBackgroundBleedNone);
   void PaintCaretsIfNeeded(const ScopedPaintState&,
                            const PaintInfo&,

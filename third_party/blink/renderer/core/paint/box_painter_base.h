@@ -9,10 +9,10 @@
 #include "third_party/blink/renderer/core/layout/geometry/box_sides.h"
 #include "third_party/blink/renderer/core/layout/geometry/box_strut.h"
 #include "third_party/blink/renderer/core/paint/paint_flags.h"
+#include "third_party/blink/renderer/core/style/animated_color.h"
 #include "third_party/blink/renderer/core/style/style_image.h"
 #include "third_party/blink/renderer/platform/geometry/physical_offset.h"
 #include "third_party/blink/renderer/platform/geometry/physical_size.h"
-#include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/skia/include/core/SkBlendMode.h"
@@ -52,14 +52,14 @@ class BoxPainterBase {
       : document_(document), style_(style), node_(node) {}
 
   void PaintFillLayers(const PaintInfo&,
-                       const Color&,
+                       const AnimatedColor&,
                        const FillLayer&,
                        const PhysicalRect&,
                        const BoxBackgroundPaintContext&,
                        BackgroundBleedAvoidance = kBackgroundBleedNone);
 
   void PaintFillLayer(const PaintInfo&,
-                      const Color&,
+                      const AnimatedColor&,
                       const FillLayer&,
                       const PhysicalRect&,
                       BackgroundBleedAvoidance,
@@ -125,7 +125,7 @@ class BoxPainterBase {
     FillLayerInfo(const Document&,
                   const ComputedStyle&,
                   bool is_scroll_container,
-                  Color bg_color,
+                  const AnimatedColor& bg_color,
                   const FillLayer&,
                   BackgroundBleedAvoidance,
                   PhysicalBoxSides sides_to_include,
@@ -137,7 +137,7 @@ class BoxPainterBase {
     // outlive the StyleImage.  This would normally be a raw pointer, if not for
     // the Oilpan tooling complaints.
     StyleImage* image;
-    Color color;
+    AnimatedColor color;
 
     RespectImageOrientationEnum respect_image_orientation;
     PhysicalBoxSides sides_to_include;
@@ -183,7 +183,7 @@ class BoxPainterBase {
       const PhysicalBoxStrut& borders,
       const PhysicalRect&) const = 0;
   virtual FillLayerInfo GetFillLayerInfo(
-      const Color&,
+      const AnimatedColor&,
       const FillLayer&,
       BackgroundBleedAvoidance,
       bool is_painting_background_in_contents_space,

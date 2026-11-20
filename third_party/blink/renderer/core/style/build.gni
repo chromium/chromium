@@ -5,9 +5,12 @@
 blink_core_sources_style = [
   "anchor_specifier_value.cc",
   "anchor_specifier_value.h",
+  "animated_color.cc",
+  "animated_color.h",
   "animated_source_handle.cc",
   "animated_source_handle.h",
   "animated_source_properties_bitset.h",
+  "animated_value.h",
   "applied_text_decoration.cc",
   "applied_text_decoration.h",
   "basic_shapes.cc",

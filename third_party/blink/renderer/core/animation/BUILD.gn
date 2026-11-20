@@ -224,6 +224,8 @@ blink_core_sources("animation") {
     "image_slice_property_functions.h",
     "inert_effect.cc",
     "inert_effect.h",
+    "inherited_animations/deferred_property_utils.cc",
+    "inherited_animations/deferred_property_utils.h",
     "inherited_animations/inherited_animation_tracker.cc",
     "inherited_animations/inherited_animation_tracker.h",
     "interpolable_aspect_ratio.cc",
