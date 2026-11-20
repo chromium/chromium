@@ -65,6 +65,21 @@
   width: 100%;
 }
 
+#historyControls {
+  align-items: center;
+  box-sizing: border-box;
+  display: flex;
+  gap: 8px;
+  margin: 16px auto 8px;
+  max-width: var(--cluster-max-width);
+  padding: 0 16px;
+  width: 100%;
+}
+
+#groupViewButton {
+  margin-inline-start: auto;
+}
+
 #tabsScrollContainer {
   overflow: auto;
   height: 100%;

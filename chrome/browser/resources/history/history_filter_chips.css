@@ -11,11 +11,6 @@
 
 :host {
   display: block;
-  margin: 16px auto 8px;
-  max-width: var(--cluster-max-width);
-  width: 100%;
-  padding: 0 16px;
-  box-sizing: border-box;
 }
 
 .filter-chip-container {

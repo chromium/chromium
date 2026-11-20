@@ -15,6 +15,7 @@ export type {CrA11yAnnouncerMessagesSentEvent} from 'chrome://resources/cr_eleme
 export {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 export {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 export {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
+export {CrChipElement} from 'chrome://resources/cr_elements/cr_chip/cr_chip.js';
 export {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 export {CrRouter} from 'chrome://resources/js/cr_router.js';
 export {getTrustedHTML} from 'chrome://resources/js/static_types.js';

@@ -3,10 +3,13 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_components/history_clusters/clusters.js';
+import 'chrome://resources/cr_elements/cr_chip/cr_chip.js';
 import 'chrome://resources/cr_elements/cr_drawer/cr_drawer.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
 import 'chrome://resources/cr_elements/cr_page_selector/cr_page_selector.js';
 import 'chrome://resources/cr_elements/cr_tabs/cr_tabs.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 // <if expr="not is_chromeos">
 import './history_cross_device_signin_promo.js';
 import './history_sync_promo.js';
@@ -16,6 +19,7 @@ import './history_toolbar.js';
 import './history_filter_chips.js';
 import './query_manager.js';
 import './router.js';
+import './shared_icons.html.js';
 import './side_bar.js';
 import './synced_device_manager.js';
 import '/strings.m.js';
@@ -166,6 +170,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
       isBrowsingHistoryFilterByTimePeriodEnabled_: {type: Boolean},
       timePeriodOptions_: {type: Array},
       selectedTimePeriodOptionId_: {type: Number},
+      historyPageRefreshEnabled_: {type: Boolean},
     };
   }
 
@@ -245,6 +250,8 @@ export class HistoryAppElement extends HistoryAppElementBase {
   protected accessor timePeriodOptions_: TimePeriodOption[] = [];
   protected accessor selectedTimePeriodOptionId_: TimePeriodOptionId =
       TimePeriodOptionId.kAllTime;
+  private accessor historyPageRefreshEnabled_: boolean =
+      loadTimeData.getBoolean('isHistoryPageRefreshEnabled');
 
   private callbackRouter_: PageCallbackRouter;
   private foreignSessionCallbackRouter_: ForeignSessionPageCallbackRouter;
@@ -365,7 +372,8 @@ export class HistoryAppElement extends HistoryAppElementBase {
     }
 
     if (changedPrivateProperties.has('showHistoryClusters_')) {
-      this.showTabs_ = this.showHistoryClusters_;
+      this.showTabs_ =
+          this.showHistoryClusters_ && !this.historyPageRefreshEnabled_;
     }
 
     if (changedPrivateProperties.has('selectedTab_')) {
@@ -884,6 +892,21 @@ export class HistoryAppElement extends HistoryAppElementBase {
     return (this.showActorFilter_() || this.showDeviceFilter_() ||
             this.showDomainFilter_() || this.showTimePeriodFilter_()) &&
         !this.getShowResultsByGroup_();
+  }
+
+  protected showGroupViewButton_(): boolean {
+    return this.historyPageRefreshEnabled_ && this.showHistoryClusters_;
+  }
+
+  protected getGroupViewButtonIcon_(): string {
+    return this.getShowResultsByGroup_() ? 'cr:check' : 'history20:grid-view';
+  }
+
+  protected onGroupViewButtonClick_() {
+    this.selectedTab_ =
+        this.selectedTab_ === TABBED_PAGES.indexOf(Page.HISTORY_CLUSTERS) ?
+        TABBED_PAGES.indexOf(Page.HISTORY) :
+        TABBED_PAGES.indexOf(Page.HISTORY_CLUSTERS);
   }
 
   // TODO(crub.com/509908129): Add static stylesheet in history.html

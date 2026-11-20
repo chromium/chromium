@@ -90,6 +90,8 @@ content::WebUIDataSource* HistoryUtil::PopulateCommonSourceForHistory(
       {"searchPrompt", IDS_HISTORY_SEARCH_PROMPT},
       {"searchResult", IDS_HISTORY_SEARCH_RESULT},
       {"searchResults", IDS_HISTORY_SEARCH_RESULTS},
+      {"sortByGroupsButtonLabel",
+       IDS_HISTORY_CLUSTERS_SORT_BY_GROUPS_BUTTON_LABEL},
       {"sourceFilterAllActors", IDS_HISTORY_ACTOR_FILTER_ALL_ACTORS},
       {"sourceFilterChipsAriaLabel",
        IDS_HISTORY_SOURCE_FILTER_CHIPS_ARIA_LABEL},

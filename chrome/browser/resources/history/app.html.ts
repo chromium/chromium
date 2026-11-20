@@ -52,21 +52,34 @@ export function getHtml(this: HistoryAppElement) {
           </cr-tabs>
         </div>
       ` : ''}
-      ${this.showFilterChips_() ? html`
-        <history-filter-chips id="historyFilterChips"
-            .devices="${this.devices_}"
-            .domain="${this.domain_}"
-            .timePeriodOptions="${this.timePeriodOptions_}"
-            .showActorFilter="${this.showActorFilter_()}"
-            .showDeviceFilter="${this.showDeviceFilter_()}"
-            .showDomainFilter="${this.showDomainFilter_()}"
-            .showTimePeriodFilter="${this.showTimePeriodFilter_()}"
-            .userVisits="${this.includeUserVisits_}"
-            .actorVisits="${this.includeActorVisits_}"
-            .clientIds="${this.clientIds_}"
-            .selectedTimePeriodOptionId="${this.selectedTimePeriodOptionId_}"
-            @filter-changed="${this.onFilterChanged_}">
-        </history-filter-chips>
+      ${this.showFilterChips_() || this.showGroupViewButton_() ? html`
+        <div id="historyControls">
+          ${this.showFilterChips_() ? html`
+            <history-filter-chips id="historyFilterChips"
+                .devices="${this.devices_}"
+                .domain="${this.domain_}"
+                .timePeriodOptions="${this.timePeriodOptions_}"
+                .showActorFilter="${this.showActorFilter_()}"
+                .showDeviceFilter="${this.showDeviceFilter_()}"
+                .showDomainFilter="${this.showDomainFilter_()}"
+                .showTimePeriodFilter="${this.showTimePeriodFilter_()}"
+                .userVisits="${this.includeUserVisits_}"
+                .actorVisits="${this.includeActorVisits_}"
+                .clientIds="${this.clientIds_}"
+                .selectedTimePeriodOptionId="${
+                    this.selectedTimePeriodOptionId_}"
+                @filter-changed="${this.onFilterChanged_}">
+            </history-filter-chips>
+          ` : ''}
+          ${this.showGroupViewButton_() ? html`
+            <cr-chip id="groupViewButton"
+                ?selected="${this.getShowResultsByGroup_()}"
+                @click="${this.onGroupViewButtonClick_}">
+              <cr-icon icon="${this.getGroupViewButtonIcon_()}"></cr-icon>
+              $i18n{sortByGroupsButtonLabel}
+            </cr-chip>
+          ` : ''}
+        </div>
       ` : ''}
       <div id="tabsScrollContainer" class="cr-scrollable">
         <div class="cr-scrollable-top-shadow" ?hidden="${this.showTabs_}"></div>

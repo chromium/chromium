@@ -123,12 +123,13 @@ import {navigateTo} from './test_util.js';
       assertEquals('history', sidebar.$.menu.selected);
       assertEquals('chrome://history/', window.location.href);
 
-      const historyTabs = app.shadowRoot.querySelector('cr-tabs');
-      assertEquals(!!historyTabs, isHistoryClustersEnabled);
+      const groupViewButton =
+          app.shadowRoot.querySelector<HTMLElement>('#groupViewButton');
+      assertEquals(!!groupViewButton, isHistoryClustersEnabled);
 
       if (isHistoryClustersEnabled) {
-        assertTrue(!!historyTabs);
-        historyTabs.selected = 1;
+        assertTrue(!!groupViewButton);
+        groupViewButton.click();
         await microtasksFinished();
         assertEquals('grouped', sidebar.$.menu.selected);
         assertEquals('chrome://history/grouped', window.location.href);
@@ -146,7 +147,7 @@ import {navigateTo} from './test_util.js';
         assertEquals('grouped', sidebar.$.menu.selected);
         assertEquals('chrome://history/grouped', window.location.href);
 
-        historyTabs.selected = 0;
+        groupViewButton.click();
         await microtasksFinished();
         assertEquals('history', sidebar.$.menu.selected);
         assertEquals('chrome://history/', window.location.href);
@@ -195,9 +196,10 @@ import {navigateTo} from './test_util.js';
               'chrome://history/?q=' + searchTerm, window.location.href);
 
           if (isHistoryClustersEnabled) {
-            const tabs = app.shadowRoot.querySelector('cr-tabs');
-            assertTrue(!!tabs);
-            tabs.selected = 1;
+            const groupViewButton =
+                app.shadowRoot.querySelector<HTMLElement>('#groupViewButton');
+            assertTrue(!!groupViewButton);
+            groupViewButton.click();
             await microtasksFinished();
             assertEquals('grouped', sidebar.$.menu.selected);
             assertEquals(searchTerm, app.$.toolbar.searchTerm);
@@ -211,13 +213,7 @@ import {navigateTo} from './test_util.js';
         'routing to chrome://history/syncedTabs works correctly',
         async function() {
           navigateTo('/syncedTabs', app);
-          if (isHistoryClustersEnabled) {
-            // cr-tabs can change their selected value, but these should be
-            // ignored since /syncedTabs is not a tabbed page.
-            const historyTabs = app.shadowRoot.querySelector('cr-tabs')!;
-            historyTabs.selected = -1;
-            await microtasksFinished();
-          }
+          await microtasksFinished();
           assertEquals('chrome://history/syncedTabs', window.location.href);
         });
   });

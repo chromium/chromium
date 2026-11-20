@@ -147,6 +147,8 @@ content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
   source->AddBoolean("isCriticalActionsEnabled", is_critical_actions_enabled);
   source->AddBoolean("isCriticalActionsChatLinkoutsEnabled",
                      is_critical_actions_chat_linkouts_enabled);
+  source->AddBoolean("isHistoryPageRefreshEnabled",
+                     features::IsHistoryPageRefreshEnabled());
 
   source->AddString("webuiRefresh2026", features::IsWebuiRefresh2026Enabled()
                                             ? "webui-refresh-2026"

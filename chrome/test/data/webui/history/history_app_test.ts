@@ -5,10 +5,11 @@
 // clang-format off
 import 'chrome://history/history.js';
 
-import type {HistoryAppElement, HistoryFilterChipsElement} from 'chrome://history/history.js';
-import {BrowserProxyImpl, CrRouter, TimePeriodOptionId} from 'chrome://history/history.js';
+import type {CrChipElement, HistoryAppElement, HistoryFilterChipsElement} from 'chrome://history/history.js';
+import {BrowserProxyImpl, CrRouter, historyClustersBrowserProxyFactory, PageHandlerRemote, TimePeriodOptionId} from 'chrome://history/history.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, isChildVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {COLORS_CSS_SELECTOR} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 // <if expr="not is_chromeos">
@@ -813,6 +814,127 @@ suite('WebuiRefresh2026', function() {
     assertEquals(null, document.body.querySelector(COLORS_CSS_SELECTOR));
   });
   // </if>
+});
+
+// Tests the group view button, which switches between the by-date and the
+// by-group view when HistoryPageRefresh is enabled.
+suite('GroupViewButton', function() {
+  let element: HistoryAppElement;
+  let browserProxy: TestHistoryBrowserProxy;
+
+  setup(() => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    loadTimeData.overrideValues({
+      isHistoryClustersEnabled: true,
+      isHistoryClustersVisible: true,
+      lastSelectedTab: 0,
+    });
+    const clustersHandler = TestMock.fromClass(PageHandlerRemote);
+    const {instance} =
+        historyClustersBrowserProxyFactory.createForTest(clustersHandler);
+    historyClustersBrowserProxyFactory.setInstance(instance);
+
+    browserProxy = new TestHistoryBrowserProxy();
+    BrowserProxyImpl.setInstance(browserProxy);
+
+    window.history.replaceState({}, '', '/');
+    CrRouter.resetForTesting();
+    element = document.createElement('history-app');
+    document.body.appendChild(element);
+    return microtasksFinished();
+  });
+
+  test('TogglesView', async () => {
+    // With HistoryPageRefresh, the views are switched with the group view
+    // button, which sits in the controls row, not with <cr-tabs>.
+    assertEquals(null, element.shadowRoot.querySelector('cr-tabs'));
+    const groupViewButton =
+        element.shadowRoot.querySelector<CrChipElement>('#groupViewButton');
+    assertTrue(!!groupViewButton);
+    assertTrue(isChildVisible(element, '#groupViewButton'));
+    assertFalse(groupViewButton.selected);
+    const icon = groupViewButton.querySelector('cr-icon');
+    assertTrue(!!icon);
+    assertEquals('history20:grid-view', icon.icon);
+
+    // Clicking the button switches to the grouped view.
+    browserProxy.handler.resetResolver('setLastSelectedTab');
+    groupViewButton.click();
+    await microtasksFinished();
+
+    assertTrue(groupViewButton.selected);
+    assertTrue(isChildVisible(element, '#groupViewButton'));
+    assertEquals('cr:check', icon.icon);
+    assertEquals('chrome://history/grouped', window.location.href);
+    assertEquals(
+        1, await browserProxy.handler.whenCalled('setLastSelectedTab'));
+
+    // Clicking the button again switches back to the by-date view.
+    browserProxy.handler.resetResolver('setLastSelectedTab');
+    groupViewButton.click();
+    await microtasksFinished();
+
+    assertFalse(groupViewButton.selected);
+    assertEquals('history20:grid-view', icon.icon);
+    assertEquals('chrome://history/', window.location.href);
+    assertEquals(
+        0, await browserProxy.handler.whenCalled('setLastSelectedTab'));
+  });
+});
+
+// Tests the pre-HistoryPageRefresh UI, where the by-date and by-group views are
+// switched with <cr-tabs> instead of the group view button. Clean-up together
+// with features::kHistoryPageRefresh.
+suite('HistoryPageRefreshDisabled', function() {
+  let element: HistoryAppElement;
+  let browserProxy: TestHistoryBrowserProxy;
+
+  setup(() => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    loadTimeData.overrideValues({
+      isHistoryClustersEnabled: true,
+      isHistoryClustersVisible: true,
+      lastSelectedTab: 0,
+    });
+    const clustersHandler = TestMock.fromClass(PageHandlerRemote);
+    const {instance} =
+        historyClustersBrowserProxyFactory.createForTest(clustersHandler);
+    historyClustersBrowserProxyFactory.setInstance(instance);
+
+    browserProxy = new TestHistoryBrowserProxy();
+    BrowserProxyImpl.setInstance(browserProxy);
+
+    window.history.replaceState({}, '', '/');
+    CrRouter.resetForTesting();
+    element = document.createElement('history-app');
+    document.body.appendChild(element);
+    return microtasksFinished();
+  });
+
+  test('TabsToggleView', async () => {
+    assertEquals(null, element.shadowRoot.querySelector('#groupViewButton'));
+    const tabs = element.shadowRoot.querySelector('cr-tabs');
+    assertTrue(!!tabs);
+    assertEquals(0, tabs.selected);
+
+    // Selecting the second tab switches to the grouped view.
+    browserProxy.handler.resetResolver('setLastSelectedTab');
+    tabs.selected = 1;
+    await microtasksFinished();
+    assertEquals('chrome://history/grouped', window.location.href);
+    assertEquals('grouped', element.$.contentSideBar.$.menu.selected);
+    assertEquals(
+        1, await browserProxy.handler.whenCalled('setLastSelectedTab'));
+
+    // Selecting the first tab switches back to the by-date view.
+    browserProxy.handler.resetResolver('setLastSelectedTab');
+    tabs.selected = 0;
+    await microtasksFinished();
+    assertEquals('chrome://history/', window.location.href);
+    assertEquals('history', element.$.contentSideBar.$.menu.selected);
+    assertEquals(
+        0, await browserProxy.handler.whenCalled('setLastSelectedTab'));
+  });
 });
 
 // <if expr="is_android">

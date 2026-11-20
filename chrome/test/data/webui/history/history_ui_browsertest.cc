@@ -5,6 +5,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/android_buildflags.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "components/history_clusters/core/features.h"
@@ -20,15 +21,22 @@ class HistoryUIBrowserTest : public WebUIMochaBrowserTest {
  protected:
   HistoryUIBrowserTest() {
     set_test_loader_host(chrome::kChromeUIHistoryHost);
+    scoped_feature_list_.InitWithFeatures(
+        {
+            // IsHistoryPageRefreshEnabled() also requires kWebuiRefresh2026.
+            features::kWebuiRefresh2026,
+            features::kHistoryPageRefresh,
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
+            // On Desktop Android the History WebUI is still behind a flag, so
+            // the tests have to turn it on themselves.
+            chrome::android::kAndroidDesktopWebUiHistory,
+#endif  // BUILDFLAG(IS_DESKTOP_ANDROID)
+        },
+        {});
   }
 
  private:
-#if BUILDFLAG(IS_DESKTOP_ANDROID)
-  // On Desktop Android the History WebUI is still behind a flag, so the
-  // tests have to turn it on themselves.
-  base::test::ScopedFeatureList scoped_feature_list_{
-      chrome::android::kAndroidDesktopWebUiHistory};
-#endif  // BUILDFLAG(IS_DESKTOP_ANDROID)
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 using HistoryTest = HistoryUIBrowserTest;
@@ -318,3 +326,28 @@ IN_PROC_BROWSER_TEST_F(HistoryTest, HistoryAppUnoPhase2FollowUpTest) {
           "runMochaSuite('HistoryAppUnoPhase2FollowUpTest')");
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
+
+// History Clusters are disabled on Android.
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(HistoryTest, GroupViewButton) {
+  RunTest("history/history_app_test.js", "runMochaSuite('GroupViewButton')");
+}
+
+// Tests the pre-HistoryPageRefresh UI (cr-tabs). Clean-up together with
+// features::kHistoryPageRefresh.
+class HistoryPageRefreshDisabledTest : public HistoryUIBrowserTest {
+ protected:
+  HistoryPageRefreshDisabledTest() {
+    scoped_feature_list_.InitAndDisableFeature(features::kHistoryPageRefresh);
+  }
+
+ private:
+  // Nested: overrides the base fixture's feature list.
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(HistoryPageRefreshDisabledTest, Tabs) {
+  RunTest("history/history_app_test.js",
+          "runMochaSuite('HistoryPageRefreshDisabled')");
+}
+#endif  // !BUILDFLAG(IS_ANDROID)

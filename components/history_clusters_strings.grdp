@@ -15,6 +15,9 @@
   <message name="IDS_HISTORY_CLUSTERS_BY_GROUP_TAB_LABEL" desc="A label for the section in Chrome History (chrome://history) where a list of history items organized into groups of pages are shown to the user.">
     By group
   </message>
+  <message name="IDS_HISTORY_CLUSTERS_SORT_BY_GROUPS_BUTTON_LABEL" desc="A label for the toggle button in Chrome History (chrome://history) that switches between the chronological list view and the grouped history view.">
+    Sort by groups
+  </message>
   <message name="IDS_HISTORY_CLUSTERS_BY_DATE_TAB_LABEL" desc="A label for the section in Chrome History (chrome://history) where a list of history items are shown to the user.">
     By date
   </message>
