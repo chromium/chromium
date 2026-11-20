@@ -287,7 +287,8 @@ public class HeaderInterceptorTest extends AwParameterizedTest {
                     new AwNavigationParams(
                             requestUrl,
                             /* shouldReplaceCurrentEntry= */ false,
-                            hashMapOf("X-Contents-Header", "First-Value")));
+                            hashMapOf("X-Contents-Header", "First-Value"),
+                            /* referrer= */ null));
 
             assertThat(server.getRequestCount(REQUEST_PATH)).isEqualTo(1);
             HTTPRequest lastRequest = server.getLastRequest(REQUEST_PATH);
@@ -308,7 +309,8 @@ public class HeaderInterceptorTest extends AwParameterizedTest {
                     new AwNavigationParams(
                             requestUrl,
                             /* shouldReplaceCurrentEntry= */ false,
-                            hashMapOf("X-Contents-Header", "First-Value")));
+                            hashMapOf("X-Contents-Header", "First-Value"),
+                            /* referrer= */ null));
 
             assertThat(server.getRequestCount(REQUEST_PATH)).isEqualTo(1);
             HTTPRequest lastRequest = server.getLastRequest(REQUEST_PATH);
@@ -334,7 +336,8 @@ public class HeaderInterceptorTest extends AwParameterizedTest {
                     new AwNavigationParams(
                             requestUrl,
                             /* shouldReplaceCurrentEntry= */ false,
-                            hashMapOf("X-Contents-Header", "First-Value")));
+                            hashMapOf("X-Contents-Header", "First-Value"),
+                            /* referrer= */ null));
 
             assertThat(server.getRequestCount(REQUEST_PATH)).isEqualTo(1);
             assertThat(normalizeHeaders(tracker.getLastRequest().getRequestHeaders()))

@@ -498,6 +498,10 @@ public class Features {
     // Prefetch queue is drained prior to loading the URL in the WebView Navigate method.
     public static final String WEBVIEW_NAVIGATE_DRAIN_PREFETCH = "WEBVIEW_NAVIGATE_DRAIN_PREFETCH";
 
+    // NavigationParameters.Builder#setReferrer
+    // NavigationParametersBoundaryInterface.getReferrer
+    public static final String WEBVIEW_NAVIGATE_REFERRER = "WEBVIEW_NAVIGATE_REFERRER";
+
     // WebSettingsCompat.setDownloadFaviconsEnabled
     // WebSettingsCompat.getDownloadFaviconsEnabled
     public static final String DOWNLOAD_FAVICONS_ENABLED = "DOWNLOAD_FAVICONS_ENABLED";

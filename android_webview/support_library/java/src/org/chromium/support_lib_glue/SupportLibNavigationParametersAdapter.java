@@ -8,6 +8,7 @@ import org.chromium.android_webview.AwNavigationParams;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.support_lib_boundary.NavigationParametersBoundaryInterface;
 import org.chromium.support_lib_boundary.util.BoundaryInterfaceReflectionUtil;
+import org.chromium.support_lib_boundary.util.Features;
 
 import java.lang.reflect.InvocationHandler;
 
@@ -25,7 +26,12 @@ public class SupportLibNavigationParametersAdapter {
     }
 
     public AwNavigationParams toAwNavigationParams(String url) {
+        String referrer = null;
+        if (BoundaryInterfaceReflectionUtil.containsFeature(
+                mImpl.getSupportedFeatures(), Features.WEBVIEW_NAVIGATE_REFERRER)) {
+            referrer = mImpl.getReferrer();
+        }
         return new AwNavigationParams(
-                url, mImpl.getShouldReplaceCurrentEntry(), mImpl.getAdditionalHeaders());
+                url, mImpl.getShouldReplaceCurrentEntry(), mImpl.getAdditionalHeaders(), referrer);
     }
 }

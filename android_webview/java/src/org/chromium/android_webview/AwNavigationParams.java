@@ -13,18 +13,20 @@ import java.util.Map;
 /**
  * Parameters to {@link AwContents#navigate}.
  *
- * <p>Note: This object does no validation - the url may be null, so check that before using.
+ * <p>Note: This object does no validation, so check its values before using.
  */
 public class AwNavigationParams {
     public final String url;
     public final boolean shouldReplaceCurrentEntry;
     public final Map<String, String> extraHeaders;
+    public final @Nullable String referrer;
 
     /** Constructs this object specifying all parameters. */
     public AwNavigationParams(
             String url,
             boolean shouldReplaceCurrentEntry,
-            @Nullable Map<String, String> extraHeaders) {
+            @Nullable Map<String, String> extraHeaders,
+            @Nullable String referrer) {
         // Note: If this gets more complex, consider a builder.
         this.url = url;
         this.shouldReplaceCurrentEntry = shouldReplaceCurrentEntry;
@@ -33,10 +35,15 @@ public class AwNavigationParams {
         } else {
             this.extraHeaders = new HashMap<>(extraHeaders);
         }
+        this.referrer = referrer;
     }
 
     /** Constructs the object with default values. */
     public AwNavigationParams(String url) {
-        this(url, /* shouldReplaceCurrentEntry= */ false, /* extraHeaders= */ null);
+        this(
+                url,
+                /* shouldReplaceCurrentEntry= */ false,
+                /* extraHeaders= */ null,
+                /* referrer= */ null);
     }
 }
