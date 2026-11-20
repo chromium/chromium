@@ -44,6 +44,8 @@ class CORE_EXPORT DateTimeChooserClient : public GarbageCollectedMixin {
   virtual ~DateTimeChooserClient();
   void Trace(Visitor* visitor) const override {}
 
+  // Returns false if the client has been disconnected from its owner element.
+  virtual bool HasOwnerElement() const { return true; }
   virtual Element& OwnerElement() const = 0;
   // Called when user picked a value.
   virtual void DidChooseValue(const String&) = 0;

@@ -37,9 +37,12 @@
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
+#include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
+#include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/page/page_popup_client.h"
 #include "third_party/blink/renderer/core/page/page_popup_controller.h"
 #include "third_party/blink/renderer/core/page/popup_opening_observer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
@@ -53,6 +56,7 @@
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
+#include "third_party/blink/renderer/platform/text/platform_locale.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "ui/accessibility/ax_mode.h"
@@ -1049,6 +1053,441 @@ TEST_F(InternalPopupMenuTest, PopupRemainsOpenAfterInputUserActivation) {
   popup->ClosePopup();
   popup->WidgetHostDisconnectedForTesting();
   test::RunPendingTasks();
+}
+
+namespace {
+
+class NestedRunLoopOnBlurListener final : public NativeEventListener {
+ public:
+  void Invoke(ExecutionContext*, Event*) override {
+    ++blur_count_;
+    test::RunPendingTasks();
+  }
+
+  int BlurCount() const { return blur_count_; }
+
+ private:
+  int blur_count_ = 0;
+};
+
+class NestedRunLoopPagePopupClient final
+    : public GarbageCollected<NestedRunLoopPagePopupClient>,
+      public PagePopupClient {
+ public:
+  NestedRunLoopPagePopupClient(ChromeClient& chrome_client, Element& owner)
+      : chrome_client_(chrome_client), owner_(owner) {}
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(chrome_client_);
+    visitor->Trace(owner_);
+    PagePopupClient::Trace(visitor);
+  }
+
+  void WriteDocument(SegmentedBuffer& data) override {
+    PagePopupClient::AddLiteral("<!DOCTYPE html><body></body>", data);
+    // Spin a nested run loop so the Mojo PopupWidgetHost disconnect (from
+    // FakeLocalFrameHost dropping the receiver) is delivered while
+    // WebPagePopupImpl is still being constructed/initialized.
+    test::RunPendingTasks();
+  }
+
+  Element& OwnerElement() override { return *owner_; }
+  ChromeClient& GetChromeClient() override { return *chrome_client_; }
+  Locale& GetLocale() override { return Locale::DefaultLocale(); }
+  void SetValueAndClosePopup(int, const String&, bool) override {}
+  void SetValue(const String&) override {}
+  void CancelPopup() override { ++cancel_count_; }
+  void DidClosePopup() override { ++did_close_count_; }
+
+  int CancelCount() const { return cancel_count_; }
+  int DidCloseCount() const { return did_close_count_; }
+
+ private:
+  Member<ChromeClient> chrome_client_;
+  Member<Element> owner_;
+  int cancel_count_ = 0;
+  int did_close_count_ = 0;
+};
+
+}  // namespace
+
+// Regression test for crbug.com/586391223: if a nested run loop delivers the
+// PopupWidgetHost disconnect while WebPagePopupImpl is still being initialized,
+// it must not self-delete mid-construction or leave a dangling pointer in
+// WebViewImpl.
+TEST_F(InternalPopupMenuTest, DisconnectDuringPopupInitialization) {
+  if (!RuntimeEnabledFeatures::PagePopupEnabled()) {
+    return;
+  }
+
+  frame_test_helpers::WebViewHelper web_view_helper;
+  WebViewImpl* web_view = web_view_helper.Initialize();
+  web_view->MainFrameViewWidget()->Resize(gfx::Size(800, 600));
+
+  WebURL base_url = url_test_helpers::ToKURL("http://example.com/");
+  frame_test_helpers::LoadHTMLString(web_view->MainFrameImpl(), R"HTML(
+    <!DOCTYPE html>
+    <input id="date" type="date">
+  )HTML",
+                                     base_url);
+
+  Document& document =
+      *web_view->MainFrameImpl()->GetDocument().Unwrap<Document>();
+  document.View()->UpdateAllLifecyclePhasesForTest();
+
+  Element* date = document.getElementById(AtomicString("date"));
+  ASSERT_TRUE(date);
+
+  auto* client = MakeGarbageCollected<NestedRunLoopPagePopupClient>(
+      web_view->GetChromeClient(), *date);
+  WebPagePopupImpl* popup = web_view->OpenPagePopup(client);
+  EXPECT_EQ(nullptr, popup);
+  EXPECT_EQ(nullptr, web_view->GetPagePopup());
+  EXPECT_EQ(1, client->CancelCount());
+  test::RunPendingTasks();
+}
+
+// Regression test for crbug.com/586391223: a forced opener layout during popup
+// creation can run script (via slot recalc moving an iframe with a previewed
+// temporal input into a <canvas> subtree) that spins a nested run loop and
+// delivers the browser's PopupWidgetHost disconnect.
+TEST_F(InternalPopupMenuTest, DisconnectDuringPopupConstruction) {
+#if DCHECK_IS_ON()
+  // Reaching this path trips a separate, pre-existing DCHECK:
+  // SlotAssignment::RecalcAssignment() holds a FlatTreeTraversalForbiddenScope
+  // while DateTimeEditElement::GetLayout() focuses a rebuilt sub-field.
+  // See crbug.com/574469802.
+  GTEST_SKIP() << "Blocked by a pre-existing DCHECK in Element::Focus()";
+#else
+  if (!RuntimeEnabledFeatures::PagePopupEnabled()) {
+    return;
+  }
+
+  frame_test_helpers::WebViewHelper web_view_helper;
+  WebViewImpl* web_view = web_view_helper.Initialize();
+  web_view->MainFrameViewWidget()->Resize(gfx::Size(800, 600));
+  web_view->MainFrameViewWidget()->SetFocus(true);
+
+  WebURL base_url = url_test_helpers::ToKURL("http://example.com/");
+  frame_test_helpers::LoadHTMLString(web_view->MainFrameImpl(), R"HTML(
+    <!DOCTYPE html>
+    <div id="host">
+      <template shadowrootmode="open">
+        <slot name="a"></slot>
+        <canvas><slot name="b"></slot></canvas>
+      </template>
+      <iframe id="child" slot="a"></iframe>
+    </div>
+  )HTML",
+                                     base_url);
+
+  WebLocalFrameImpl* child_frame =
+      To<WebLocalFrameImpl>(web_view->MainFrameImpl()->FirstChild());
+  ASSERT_TRUE(child_frame);
+  frame_test_helpers::LoadHTMLString(child_frame, R"HTML(
+    <!DOCTYPE html>
+    <input id="month" type="month">
+  )HTML",
+                                     base_url);
+
+  Document& top_document =
+      *web_view->MainFrameImpl()->GetDocument().Unwrap<Document>();
+  Document& child_document = *child_frame->GetDocument().Unwrap<Document>();
+  top_document.View()->UpdateAllLifecyclePhasesForTest();
+
+  Element* iframe = top_document.getElementById(AtomicString("child"));
+  ASSERT_TRUE(iframe);
+  Persistent<HTMLInputElement> month = To<HTMLInputElement>(
+      child_document.getElementById(AtomicString("month")));
+  ASSERT_TRUE(month);
+
+  // Give the temporal input a dirty value and a previewed suggested value,
+  // focus one of its sub-fields, and then make its cached field layout
+  // parameters stale via the `value` attribute (step base).
+  month->SetValue("2026-01");
+  month->SetSuggestedValue(String("2026-02"));
+  month->Focus();
+  ASSERT_TRUE(child_document.FocusedElement());
+  month->setAttribute(html_names::kValueAttr, AtomicString("2026-03"));
+
+  auto* blur_listener = MakeGarbageCollected<NestedRunLoopOnBlurListener>();
+  month->addEventListener(event_type_names::kBlur, blur_listener);
+
+  // Move the iframe into the slot inside <canvas> without flushing layout.
+  iframe->setAttribute(html_names::kSlotAttr, AtomicString("b"));
+
+  LocalFrame::NotifyUserActivation(
+      child_document.GetFrame(),
+      mojom::blink::UserActivationNotificationType::kTest);
+  month->showPicker(ASSERT_NO_EXCEPTION);
+
+  EXPECT_EQ(1, blur_listener->BlurCount());
+
+  test::RunPendingTasks();
+  EXPECT_FALSE(month->IsPickerVisible());
+  EXPECT_FALSE(web_view->GetPagePopup());
+#endif
+}
+
+namespace {
+
+class SelfClosingPagePopupClient final
+    : public GarbageCollected<SelfClosingPagePopupClient>,
+      public PagePopupClient {
+ public:
+  SelfClosingPagePopupClient(ChromeClient& chrome_client, Element& owner)
+      : chrome_client_(chrome_client), owner_(owner) {}
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(chrome_client_);
+    visitor->Trace(owner_);
+    PagePopupClient::Trace(visitor);
+  }
+
+  void WriteDocument(SegmentedBuffer& data) override {
+    PagePopupClient::AddLiteral(
+        "<!DOCTYPE html><body><script>window.close();</script></body>", data);
+  }
+
+  Element& OwnerElement() override { return *owner_; }
+  ChromeClient& GetChromeClient() override { return *chrome_client_; }
+  Locale& GetLocale() override { return Locale::DefaultLocale(); }
+  void SetValueAndClosePopup(int, const String&, bool) override {}
+  void SetValue(const String&) override {}
+  void CancelPopup() override {}
+  void DidClosePopup() override { ++did_close_count_; }
+
+  int DidCloseCount() const { return did_close_count_; }
+
+ private:
+  Member<ChromeClient> chrome_client_;
+  Member<Element> owner_;
+  int did_close_count_ = 0;
+};
+
+class ChangeInputTypeOnEventListener final : public NativeEventListener {
+ public:
+  explicit ChangeInputTypeOnEventListener(HTMLInputElement* input)
+      : input_(input) {}
+
+  void Invoke(ExecutionContext*, Event*) override {
+    ++count_;
+    if (input_) {
+      input_->setType(input_type_names::kText);
+    }
+  }
+
+  int Count() const { return count_; }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(input_);
+    NativeEventListener::Trace(visitor);
+  }
+
+ private:
+  Member<HTMLInputElement> input_;
+  int count_ = 0;
+};
+
+}  // namespace
+
+// Regression test for crbug.com/586391223: if popup script closes the popup
+// synchronously during ForceSynchronousDocumentInstall(), OpenPagePopup() must
+// not return a closed popup or leak its self-reference.
+TEST_F(InternalPopupMenuTest, PopupClosedByScriptDuringInitialization) {
+  if (!RuntimeEnabledFeatures::PagePopupEnabled()) {
+    return;
+  }
+
+  frame_test_helpers::WebViewHelper web_view_helper;
+  WebViewImpl* web_view = web_view_helper.Initialize();
+  web_view->MainFrameViewWidget()->Resize(gfx::Size(800, 600));
+
+  WebURL base_url = url_test_helpers::ToKURL("http://example.com/");
+  frame_test_helpers::LoadHTMLString(web_view->MainFrameImpl(), R"HTML(
+    <!DOCTYPE html>
+    <input id="date" type="date">
+  )HTML",
+                                     base_url);
+
+  Document& document =
+      *web_view->MainFrameImpl()->GetDocument().Unwrap<Document>();
+  document.View()->UpdateAllLifecyclePhasesForTest();
+
+  Element* date = document.getElementById(AtomicString("date"));
+  ASSERT_TRUE(date);
+
+  auto* client = MakeGarbageCollected<SelfClosingPagePopupClient>(
+      web_view->GetChromeClient(), *date);
+  WebPagePopupImpl* popup = web_view->OpenPagePopup(client);
+  EXPECT_EQ(nullptr, popup);
+  EXPECT_EQ(nullptr, web_view->GetPagePopup());
+  EXPECT_EQ(1, client->DidCloseCount());
+  test::RunPendingTasks();
+}
+
+// Regression test for crbug.com/586391223: synchronous script during
+// CancelPagePopup() may change the opening date input's type, clearing its
+// PickerIndicatorOwner before the popup is created.
+TEST_F(InternalPopupMenuTest, OpenDatePopupWhenOwnerChangesTypeDuringCancel) {
+  if (!RuntimeEnabledFeatures::PagePopupEnabled()) {
+    return;
+  }
+
+  frame_test_helpers::WebViewHelper web_view_helper;
+  WebViewImpl* web_view = web_view_helper.Initialize();
+  if (web_view->GetChromeClient().UseExternalPopupMenus()) {
+    return;
+  }
+  web_view->MainFrameViewWidget()->Resize(gfx::Size(800, 600));
+
+  WebURL base_url = url_test_helpers::ToKURL("http://example.com/");
+  frame_test_helpers::LoadHTMLString(web_view->MainFrameImpl(), R"HTML(
+    <!DOCTYPE html>
+    <select id="select">
+      <option>1</option>
+      <option>2</option>
+    </select>
+    <input id="date" type="date">
+  )HTML",
+                                     base_url);
+
+  Document& document =
+      *web_view->MainFrameImpl()->GetDocument().Unwrap<Document>();
+  document.View()->UpdateAllLifecyclePhasesForTest();
+
+  auto* select =
+      To<HTMLSelectElement>(document.getElementById(AtomicString("select")));
+  ASSERT_TRUE(select);
+  auto* date =
+      To<HTMLInputElement>(document.getElementById(AtomicString("date")));
+  ASSERT_TRUE(date);
+
+  select->ShowPopup();
+  ASSERT_TRUE(select->PopupIsVisible());
+  ASSERT_TRUE(web_view->GetPagePopup());
+  web_view->GetPagePopup()->DidShowPopup();
+
+  select->ProvisionalSelectionChanged(1);
+  auto* listener = MakeGarbageCollected<ChangeInputTypeOnEventListener>(date);
+  select->addEventListener(event_type_names::kChange, listener);
+
+  LocalFrame::NotifyUserActivation(
+      document.GetFrame(), mojom::blink::UserActivationNotificationType::kTest);
+  date->showPicker(ASSERT_NO_EXCEPTION);
+
+  EXPECT_EQ(1, listener->Count());
+  EXPECT_EQ(input_type_names::kText, date->type());
+  EXPECT_FALSE(date->IsPickerVisible());
+  EXPECT_EQ(nullptr, web_view->GetPagePopup());
+  test::RunPendingTasks();
+}
+
+namespace {
+
+class ReentrantOpeningPagePopupClient final
+    : public GarbageCollected<ReentrantOpeningPagePopupClient>,
+      public PagePopupClient {
+ public:
+  ReentrantOpeningPagePopupClient(ChromeClient& chrome_client,
+                                  Element& owner,
+                                  PagePopupClient* inner_client,
+                                  bool self_close_after_reentrant_open = false)
+      : chrome_client_(chrome_client),
+        owner_(owner),
+        inner_client_(inner_client),
+        self_close_after_reentrant_open_(self_close_after_reentrant_open) {}
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(chrome_client_);
+    visitor->Trace(owner_);
+    visitor->Trace(inner_client_);
+    PagePopupClient::Trace(visitor);
+  }
+
+  void WriteDocument(SegmentedBuffer& data) override {
+    if (self_close_after_reentrant_open_) {
+      PagePopupClient::AddLiteral(
+          "<!DOCTYPE html><body><script>window.close();</script></body>", data);
+    } else {
+      PagePopupClient::AddLiteral("<!DOCTYPE html><body></body>", data);
+    }
+    if (inner_client_) {
+      PagePopupClient* inner = inner_client_.Release();
+      if (PagePopup* inner_popup = chrome_client_->OpenPagePopup(inner)) {
+        inner_popup_handle_ = To<WebPagePopupImpl>(inner_popup)->GetHandle();
+      }
+    }
+  }
+
+  Element& OwnerElement() override { return *owner_; }
+  ChromeClient& GetChromeClient() override { return *chrome_client_; }
+  Locale& GetLocale() override { return Locale::DefaultLocale(); }
+  void SetValueAndClosePopup(int, const String&, bool) override {}
+  void SetValue(const String&) override {}
+  void CancelPopup() override {}
+  void DidClosePopup() override { ++did_close_count_; }
+
+  WebPagePopup::Handle InnerPopupHandle() const { return inner_popup_handle_; }
+  int DidCloseCount() const { return did_close_count_; }
+
+ private:
+  Member<ChromeClient> chrome_client_;
+  Member<Element> owner_;
+  Member<PagePopupClient> inner_client_;
+  bool self_close_after_reentrant_open_ = false;
+  WebPagePopup::Handle inner_popup_handle_;
+  int did_close_count_ = 0;
+};
+
+}  // namespace
+
+// Regression test for crbug.com/586391223: if a second popup is opened
+// re-entrantly while the outer popup is still initializing, the outer
+// OpenPagePopup() must close its popup cleanly without clobbering the inner
+// popup or double-registering the popup mouse wheel listener.
+TEST_F(InternalPopupMenuTest, OpenPopupReentrantlyDuringInitialization) {
+  if (!RuntimeEnabledFeatures::PagePopupEnabled()) {
+    return;
+  }
+
+  frame_test_helpers::WebViewHelper web_view_helper;
+  WebViewImpl* web_view = web_view_helper.Initialize();
+  web_view->MainFrameViewWidget()->Resize(gfx::Size(800, 600));
+
+  WebURL base_url = url_test_helpers::ToKURL("http://example.com/");
+  frame_test_helpers::LoadHTMLString(web_view->MainFrameImpl(), R"HTML(
+    <!DOCTYPE html>
+    <select id="sel">
+      <option>1</option>
+    </select>
+  )HTML",
+                                     base_url);
+
+  Document& document =
+      *web_view->MainFrameImpl()->GetDocument().Unwrap<Document>();
+  document.View()->UpdateAllLifecyclePhasesForTest();
+
+  auto* sel =
+      To<HTMLSelectElement>(document.getElementById(AtomicString("sel")));
+  ASSERT_TRUE(sel);
+
+  for (bool self_close : {false, true}) {
+    auto* inner_client = MakeGarbageCollected<InternalPopupMenu>(
+        &web_view->GetChromeClient(), *sel);
+    auto* outer_client = MakeGarbageCollected<ReentrantOpeningPagePopupClient>(
+        web_view->GetChromeClient(), *sel, inner_client, self_close);
+
+    WebPagePopupImpl* outer_popup = web_view->OpenPagePopup(outer_client);
+    EXPECT_EQ(nullptr, outer_popup);
+    EXPECT_EQ(1, outer_client->DidCloseCount());
+    ASSERT_TRUE(web_view->GetPagePopup());
+    EXPECT_EQ(outer_client->InnerPopupHandle(),
+              web_view->GetPagePopup()->GetHandle());
+
+    test::RunPendingTasks();
+    EXPECT_EQ(nullptr, web_view->GetPagePopup());
+  }
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)

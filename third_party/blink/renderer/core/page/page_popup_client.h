@@ -64,6 +64,8 @@ class CORE_EXPORT PagePopupClient : public GarbageCollectedMixin {
   //  - window.setValueAndClosePopup(number, string, bool).
   virtual void WriteDocument(SegmentedBuffer&) = 0;
 
+  // Returns false if the client has been disconnected from its owner element.
+  virtual bool HasOwnerElement() const { return true; }
   virtual Element& OwnerElement() = 0;
 
   virtual ChromeClient& GetChromeClient() = 0;

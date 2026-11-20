@@ -133,6 +133,7 @@
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/frame/web_remote_frame_impl.h"
 #include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
+#include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/html/html_plugin_element.h"
@@ -195,6 +196,7 @@
 #include "third_party/icu/source/common/unicode/uscript.h"
 #include "ui/base/mojom/menu_source_type.mojom-blink.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
@@ -1073,27 +1075,61 @@ WebPagePopupImpl* WebViewImpl::OpenPagePopup(PagePopupClient* client) {
   // through this early return. Note that `WebPagePopupImpl::Create` call below
   // asynchronously prevents multiple popups with a single user activation
   // anyway.
-  if (page_popup_) {
+  if (is_closing_ || page_popup_) {
     return nullptr;
   }
+
+  auto get_valid_opener_frame = [&]() -> LocalFrame* {
+    if (!client->HasOwnerElement()) {
+      return nullptr;
+    }
+    Document& owner_document = client->OwnerElement().GetDocument();
+    LocalFrame* opener_frame = owner_document.GetFrame();
+    if (!opener_frame || opener_frame->GetPage() != page_.Get() ||
+        !owner_document.IsActive() || !owner_document.View()) {
+      return nullptr;
+    }
+    return opener_frame;
+  };
 
   // CancelPagePopup() above (and NotifyPopupOpeningObservers() in the callers)
   // can run author script synchronously, before the popup client has recorded
-  // the popup it is about to open. That script may move the owner element into
-  // a document that belongs to a different WebView, or into one that is no
-  // longer active. A popup created in that state would be bound to `this`
-  // through `opener_web_view_` while ChromeClientImpl::DocumentDetached() no
-  // longer recognizes it as ours, so it would outlive `this`. Refuse to open
-  // the popup unless the owner still lives in an active document of our Page.
-  Document& owner_document = client->OwnerElement().GetDocument();
-  LocalFrame* opener_frame = owner_document.GetFrame();
-  if (!opener_frame || opener_frame->GetPage() != page_.Get() ||
-      !owner_document.IsActive()) {
+  // the popup it is about to open. That script may detach the owner element
+  // from its client, move it into a document that belongs to a different
+  // WebView, or into one that is no longer active. A popup created in that
+  // state would be bound to `this` through `opener_web_view_` while
+  // ChromeClientImpl::DocumentDetached() no longer recognizes it as ours, so it
+  // would outlive `this`. Refuse to open the popup unless the owner still lives
+  // in an active document of our Page.
+  if (!get_valid_opener_frame()) {
     return nullptr;
   }
 
+  // Compute the owner element's bounding rect before creating the popup widget
+  // or sending CreateNewPopupWidget(). Updating opener style/layout can
+  // synchronously run author script (e.g., blur events and nested run loops,
+  // see crbug.com/586391223). Re-validate all invariants afterward.
+  Element& owner_element = client->OwnerElement();
+  owner_element.GetDocument().UpdateStyleAndLayoutForNode(
+      &owner_element, DocumentUpdateReason::kPagePopup);
+  if (is_closing_ || page_popup_) {
+    return nullptr;
+  }
+
+  LocalFrame* opener_frame = get_valid_opener_frame();
+  if (!opener_frame) {
+    return nullptr;
+  }
+
+  gfx::RectF owner_client_rect =
+      client->OwnerElement().GetBoundingClientRectNoLifecycleUpdate();
+
   WebLocalFrameImpl* web_opener_frame =
       WebLocalFrameImpl::FromFrame(opener_frame);
+  WebFrameWidgetImpl* opener_widget = web_opener_frame->LocalRootFrameWidget();
+  if (!opener_widget) {
+    return nullptr;
+  }
 
   mojo::PendingAssociatedRemote<mojom::blink::Widget> widget;
   mojo::PendingAssociatedReceiver<mojom::blink::Widget> widget_receiver =
@@ -1112,18 +1148,29 @@ WebPagePopupImpl* WebViewImpl::OpenPagePopup(PagePopupClient* client) {
   opener_frame->GetLocalFrameHostRemote().CreateNewPopupWidget(
       std::move(popup_widget_host_receiver), std::move(widget_host_receiver),
       std::move(widget));
-  WebFrameWidgetImpl* opener_widget = web_opener_frame->LocalRootFrameWidget();
 
   AgentGroupScheduler& agent_group_scheduler =
       opener_frame->GetPage()->GetPageScheduler()->GetAgentGroupScheduler();
-  // The returned WebPagePopup is self-referencing, so the pointer here is not
-  // an owning pointer. It is de-referenced by the PopupWidgetHost disconnecting
-  // and calling Close().
-  page_popup_ = WebPagePopupImpl::Create(
+  // The returned WebPagePopup is self-referencing, so the reference held by
+  // `page_popup_` is only one of two references. The self-reference is released
+  // when PopupWidgetHost disconnects and calls Close().
+  scoped_refptr<WebPagePopupImpl> popup = WebPagePopupImpl::Create(
       std::move(popup_widget_host), std::move(widget_host),
       std::move(widget_receiver), this, agent_group_scheduler,
-      opener_widget->GetOriginalScreenInfos(), client);
-  EnablePopupMouseWheelEventListener(web_opener_frame->LocalRoot());
+      opener_widget->GetOriginalScreenInfos(), client, owner_client_rect);
+  if (!popup) {
+    return nullptr;
+  }
+  LocalFrame* current_opener_frame = get_valid_opener_frame();
+  if (is_closing_ || page_popup_ || !current_opener_frame) {
+    popup->ClearOpenerWebView();
+    popup->ClosePopup();
+    return nullptr;
+  }
+  page_popup_ = std::move(popup);
+  EnablePopupMouseWheelEventListener(
+      WebLocalFrameImpl::FromFrame(current_opener_frame)->LocalRoot());
+  page_popup_->Show();
   return page_popup_.get();
 }
 

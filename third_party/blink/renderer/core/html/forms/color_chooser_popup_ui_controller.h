@@ -66,6 +66,7 @@ class CORE_EXPORT ColorChooserPopupUIController final
   void SetValueAndClosePopup(int, const String&, bool) override;
   void SetValue(const String&) override;
   void CancelPopup() override;
+  bool HasOwnerElement() const override { return client_ != nullptr; }
   Element& OwnerElement() override;
   void DidClosePopup() override;
   PagePopupController* CreatePagePopupController(Page&, PagePopup&) override;
