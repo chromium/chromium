@@ -94,6 +94,7 @@
 #include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+#include "url/url_constants.h"
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
 #if BUILDFLAG(IS_MAC)
@@ -1616,17 +1617,12 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
   HostContentSettingsMapFactory::GetForProfile(GetBrowser()->GetProfile())
       ->SetDefaultContentSetting(ContentSettingsType::COOKIES,
                                  CONTENT_SETTING_SESSION_ONLY);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowser(), GURL(url::kAboutBlankURL)));
 }
 
-// TODO(crbug.com/40925336): Test is flaky on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_SessionOnlyStorageRemoved DISABLED_SessionOnlyStorageRemoved
-#else
-#define MAYBE_SessionOnlyStorageRemoved SessionOnlyStorageRemoved
-#endif
 // Restart to delete session only storage.
 IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
-                       MAYBE_SessionOnlyStorageRemoved) {
+                       SessionOnlyStorageRemoved) {
   // All cookies should have been deleted.
   ExpectTotalModelCount(0);
   GURL url = embedded_test_server()->GetURL("/browsing_data/site_data.html");
