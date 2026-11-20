@@ -38,7 +38,7 @@ namespace {
 
 inline std::unique_ptr<TemplateURLData> PrepopulatedEngineToTemplateURLData(
     const PrepopulatedEngine* engine) {
-  return TemplateURLDataFromPrepopulatedEngine(*engine);
+  return engine ? TemplateURLDataFromPrepopulatedEngine(*engine) : nullptr;
 }
 
 std::vector<std::unique_ptr<TemplateURLData>>
@@ -83,25 +83,24 @@ enum class SearchProviderOverrideStatus {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/search/enums.xml:SearchProviderOverrideStatus)
 
-std::unique_ptr<TemplateURLData> FindPrepopulatedEngineInternal(
-    PrefService& prefs,
+const PrepopulatedEngine* FindPrepopulatedEngineInternal(
     const std::vector<raw_ptr<const PrepopulatedEngine>>&
         regional_prepopulated_engines,
     int prepopulated_id,
     bool use_first_as_fallback) {
-  // This could be more efficient. We load all URLs but keep only one.
-  std::vector<std::unique_ptr<TemplateURLData>> prepopulated_engines =
-      GetPrepopulatedEngines(prefs, regional_prepopulated_engines);
-  CHECK(!prepopulated_engines.empty());
+  // The regional list should never be empty because we always fall back to a
+  // default non-empty regional list, even when `use_first_as_fallback` is
+  // false.
+  CHECK(!regional_prepopulated_engines.empty());
 
-  for (auto& engine : prepopulated_engines) {
-    if (engine->prepopulate_id == prepopulated_id) {
-      return std::move(engine);
+  for (const PrepopulatedEngine* engine : regional_prepopulated_engines) {
+    if (engine->id == prepopulated_id) {
+      return engine;
     }
   }
 
   if (use_first_as_fallback) {
-    return std::move(prepopulated_engines[0]);
+    return regional_prepopulated_engines[0];
   }
 
   return nullptr;
@@ -183,9 +182,9 @@ std::unique_ptr<TemplateURLData> GetPrepopulatedEngine(
     const std::vector<raw_ptr<const PrepopulatedEngine>>&
         regional_prepopulated_engines,
     int prepopulated_id) {
-  return FindPrepopulatedEngineInternal(prefs, regional_prepopulated_engines,
-                                        prepopulated_id,
-                                        /*use_first_as_fallback=*/false);
+  return PrepopulatedEngineToTemplateURLData(FindPrepopulatedEngineInternal(
+      regional_prepopulated_engines, prepopulated_id,
+      /*use_first_as_fallback=*/false));
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -251,13 +250,9 @@ std::unique_ptr<TemplateURLData> GetPrepopulatedEngineFromFullList(
     int prepopulated_id) {
   // TODO(crbug.com/531675190): Refactor to better share code with
   // `GetPrepopulatedEngine()`.
-  if (auto* matched_engine = GetPrepopulatedEngineFromBuiltInData(
-          prepopulated_id, regional_prepopulated_engines, regional_variants);
-      matched_engine) {
-    return PrepopulatedEngineToTemplateURLData(matched_engine);
-  }
-
-  return {};
+  return PrepopulatedEngineToTemplateURLData(
+      GetPrepopulatedEngineFromBuiltInData(
+          prepopulated_id, regional_prepopulated_engines, regional_variants));
 }
 
 std::unique_ptr<TemplateURLData> GetPrepopulatedEngineFromFullList(
@@ -268,13 +263,9 @@ std::unique_ptr<TemplateURLData> GetPrepopulatedEngineFromFullList(
     std::u16string_view keyword) {
   // TODO(crbug.com/531675190): Refactor to better share code with
   // `GetPrepopulatedEngine()`.
-  if (auto* matched_engine = GetPrepopulatedEngineFromBuiltInData(
-          keyword, regional_prepopulated_engines, regional_variants);
-      matched_engine) {
-    return PrepopulatedEngineToTemplateURLData(matched_engine);
-  }
-
-  return {};
+  return PrepopulatedEngineToTemplateURLData(
+      GetPrepopulatedEngineFromBuiltInData(
+          keyword, regional_prepopulated_engines, regional_variants));
 }
 
 std::vector<raw_ptr<const PrepopulatedEngine>> GetAllPrepopulatedEngines(
@@ -311,9 +302,9 @@ std::unique_ptr<TemplateURLData> GetPrepopulatedFallbackSearch(
     PrefService& prefs,
     const std::vector<raw_ptr<const PrepopulatedEngine>>&
         regional_prepopulated_engines) {
-  return FindPrepopulatedEngineInternal(prefs, regional_prepopulated_engines,
-                                        google.id,
-                                        /*use_first_as_fallback=*/true);
+  return PrepopulatedEngineToTemplateURLData(
+      FindPrepopulatedEngineInternal(regional_prepopulated_engines, google.id,
+                                     /*use_first_as_fallback=*/true));
 }
 
 }  // namespace TemplateURLPrepopulateData
