@@ -28,6 +28,7 @@ specific_include_rules = {
     "+chrome/browser/sync/data_type_store_service_factory.h",
   ],
   ".*test(_.*)?\\.(cc|h)": [
+    "+chrome/browser/ash/login/test/chrome_user_session_test_environment_delegate.h",
     "+chrome/browser/ash/system_web_apps/test_support",
     "+chrome/browser/global_features.h",
     "+chrome/browser/web_applications/test",

@@ -4,21 +4,25 @@
 
 #include "chrome/browser/ash/printing/cups_print_job_notification.h"
 
+#include <optional>
+
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/check_deref.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/login/test/chrome_user_session_test_environment_delegate.h"
 #include "chrome/browser/ash/printing/cups_print_job.h"
 #include "chrome/browser/ash/printing/cups_print_job_notification_manager.h"
 #include "chrome/browser/ash/printing/fake_cups_print_job_manager.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/branded_strings.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/services/app_service/public/cpp/app_types.h"
-#include "components/user_manager/scoped_user_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/test/browser_task_environment.h"
@@ -49,26 +53,43 @@ constexpr char16_t kPrinterName16[] = u"printer";
 class CupsPrintJobNotificationTest : public testing::Test,
                                      public testing::WithParamInterface<bool> {
  protected:
-  CupsPrintJobNotificationTest()
-      : print_job_manager_(&profile_),
-        notification_manager_(&profile_, &print_job_manager_) {}
-
   void SetUp() override {
     testing::Test::SetUp();
     message_center::MessageCenter::Initialize();
 
-    user_ = fake_user_manager_->AddUser(user_manager::StubAccountId());
-    fake_user_manager_->LoginUser(user_manager::StubAccountId());
-    AnnotatedAccountId::Set(&profile_, user_manager::StubAccountId());
+    auto* browser_process = TestingBrowserProcess::GetGlobal();
+    user_session_test_environment_ =
+        std::make_unique<test::UserSessionTestEnvironment>(
+            browser_process->local_state(),
+            std::make_unique<test::ChromeUserSessionTestEnvironmentDelegate>(
+                browser_process));
+    const AccountId& account_id = user_manager::StubAccountId();
+    user_ = user_session_test_environment_->AddRegularUser(account_id);
+    ASSERT_TRUE(user_);
+    user_session_test_environment_->LogIn(account_id);
+    profile_ = static_cast<TestingProfile*>(Profile::FromBrowserContext(
+        BrowserContextHelper::Get()->GetBrowserContextByAccountId(account_id)));
+    ASSERT_TRUE(profile_);
+
+    print_job_manager_ = std::make_unique<FakeCupsPrintJobManager>(profile_);
+    notification_manager_ = std::make_unique<CupsPrintJobNotificationManager>(
+        profile_, print_job_manager_.get());
 
     // Wait for AppServiceProxy to be ready.
-    app_service_test_.SetUp(&profile_);
+    app_service_test_.emplace();
+    app_service_test_->SetUp(profile_);
     if (IsWebPrintingTest()) {
       AddIWA(kAppId, kAppName);
     }
   }
 
   void TearDown() override {
+    app_service_test_.reset();
+    notification_manager_.reset();
+    print_job_manager_.reset();
+    profile_ = nullptr;
+    user_ = nullptr;
+    user_session_test_environment_.reset();
     message_center::MessageCenter::Shutdown();
     testing::Test::TearDown();
   }
@@ -101,8 +122,8 @@ class CupsPrintJobNotificationTest : public testing::Test,
 
   std::unique_ptr<CupsPrintJobNotification> CreateNotificationForJob(
       base::WeakPtr<CupsPrintJob> job) {
-    return std::make_unique<CupsPrintJobNotification>(&notification_manager_,
-                                                      job, &profile_);
+    return std::make_unique<CupsPrintJobNotification>(
+        notification_manager_.get(), job, profile_);
   }
 
   std::u16string GetExpectedNotificationAppName() const {
@@ -121,19 +142,19 @@ class CupsPrintJobNotificationTest : public testing::Test,
     app->readiness = apps::Readiness::kReady;
     app->short_name = short_name;
     apps.push_back(std::move(app));
-    app_service_test_.proxy()->OnApps(std::move(apps), apps::AppType::kWeb,
-                                      /*should_notify_initialized=*/false);
+    app_service_test_->proxy()->OnApps(std::move(apps), apps::AppType::kWeb,
+                                       /*should_notify_initialized=*/false);
   }
 
   content::BrowserTaskEnvironment task_environment_;
-  user_manager::TypedScopedUserManager<FakeChromeUserManager>
-      fake_user_manager_{std::make_unique<FakeChromeUserManager>()};
-  raw_ptr<const user_manager::User> user_;
-  TestingProfile profile_;
-  FakeCupsPrintJobManager print_job_manager_;
-  CupsPrintJobNotificationManager notification_manager_;
+  std::unique_ptr<test::UserSessionTestEnvironment>
+      user_session_test_environment_;
+  raw_ptr<const user_manager::User> user_ = nullptr;
+  raw_ptr<TestingProfile> profile_ = nullptr;
+  std::unique_ptr<FakeCupsPrintJobManager> print_job_manager_;
+  std::unique_ptr<CupsPrintJobNotificationManager> notification_manager_;
 
-  apps::AppServiceTest app_service_test_;
+  std::optional<apps::AppServiceTest> app_service_test_;
 };
 
 // Validates notification for the CLIENT_UNAUTHORIZED error.
