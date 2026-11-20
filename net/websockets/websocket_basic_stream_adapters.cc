@@ -50,6 +50,13 @@ int WebSocketClientSocketHandleAdapter::Write(
     CompletionOnceCallback callback,
     const NetworkTrafficAnnotationTag& traffic_annotation) {
   CHECK(!write_callback_);
+
+  // Only the final write, which closes the send side, may be empty. The TCP
+  // implementation doesn't allow zero byte writes, so simply return early.
+  if (buf_len == 0 && is_final_write) {
+    return OK;
+  }
+
   CHECK_GT(buf_len, 0);
 
   // `is_final_write` is ignored: StreamSocket offers no half-close, and RFC
@@ -176,7 +183,8 @@ int WebSocketSpdyStreamAdapter::Write(
   CHECK(headers_sent_);
   DCHECK(!write_callback_);
   DCHECK(callback);
-  DCHECK_LT(0, buf_len);
+  // Only the final write, which closes the send side, may be empty.
+  DCHECK(buf_len > 0 || (buf_len == 0 && is_final_write));
 
   if (!stream_ || end_stream_sent_) {
     return stream_error_;
@@ -196,9 +204,9 @@ void WebSocketSpdyStreamAdapter::Disconnect() {
     // 8441 section 5: either our END_STREAM was never sent, or the peer has
     // not sent theirs and its read side is being abandoned. Both are the RST
     // exception, and DetachDelegate() cancels the stream. An orderly close
-    // needs no work here, because the END_STREAM rides on the Close frame
-    // written through Write() and the stream is gone by the time the layer
-    // above disconnects.
+    // needs no work here, because the END_STREAM is sent by the final Write()
+    // once the closing handshake completes and the stream is gone by the time
+    // the layer above disconnects.
     stream_->DetachDelegate();
     stream_ = nullptr;
   }
@@ -235,10 +243,10 @@ void WebSocketSpdyStreamAdapter::OnDataReceived(
     // The peer half-closed the stream with an END_STREAM, which RFC 8441
     // section 5 makes the orderly closure. Report it to the reader as the end
     // of the stream once anything already buffered has been read; the layer
-    // above answers with a Close frame, and the END_STREAM that closes our
-    // half rides on that write. Nothing is sent from here, both because a
-    // write may be in flight and because doing so would finish the send side
-    // before that Close frame could be written.
+    // above answers with a Close frame, and sends the END_STREAM that closes
+    // our half in a final write once that is done. Nothing is sent from here,
+    // both because a write may be in flight and because doing so would finish
+    // the send side before that Close frame could be written.
     CHECK(headers_sent_);
     end_stream_received_ = true;
     if (read_callback_ && read_data_.IsEmpty()) {
@@ -415,7 +423,8 @@ int WebSocketQuicStreamAdapter::Write(
   base::AutoReset disallow_callback(&in_callback_disallowed_scope_, true);
 
   DCHECK(!write_callback_);
-  CHECK_GT(buf_len, 0);
+  // Only the final write, which closes the send side, may be empty.
+  CHECK(buf_len > 0 || (buf_len == 0 && is_final_write));
   DCHECK(callback);
 
   if (!websocket_quic_spdy_stream_) {
@@ -582,7 +591,8 @@ void WebSocketQuicStreamAdapter::ClearStream() {
 
 void WebSocketQuicStreamAdapter::OnCanWriteNewData() {
   if (write_callback_) {
-    CHECK_GT(write_length_, 0);
+    // The final write may be empty, carrying only the FIN.
+    CHECK_GE(write_length_, 0);
     CHECK(!in_callback_disallowed_scope_);
     auto callback = std::move(write_callback_);
     std::move(callback).Run(write_length_);

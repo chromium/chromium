@@ -112,7 +112,9 @@ class NET_EXPORT_PRIVATE WebSocketBasicStream final : public WebSocketStream {
     // remaining writes itself. `buf` must remain valid until the write
     // completes. `is_final_write` is true when this is the last data that will
     // ever be written, so an implementation may close the send side once the
-    // whole buffer has been consumed.
+    // whole buffer has been consumed. `buf_len` may be 0 only when
+    // `is_final_write` is true, in which case the write only closes the send
+    // side and reports 0 on success.
     virtual int Write(
         IOBuffer* buf,
         int buf_len,
@@ -141,6 +143,7 @@ class NET_EXPORT_PRIVATE WebSocketBasicStream final : public WebSocketStream {
                  CompletionOnceCallback callback) override;
 
   int WriteFrames(std::vector<std::unique_ptr<WebSocketFrame>>* frames,
+                  bool shutdown,
                   CompletionOnceCallback callback) override;
 
   void Close() override;
@@ -231,7 +234,7 @@ class NET_EXPORT_PRIVATE WebSocketBasicStream final : public WebSocketStream {
   // for our purposes.
   WebSocketMaskingKeyGeneratorFunction generate_websocket_masking_key_;
 
-  // User callback saved for asynchronous writes and reads.
+  // User callback saved for asynchronous reads.
   CompletionOnceCallback read_callback_;
 
   // Used to assemble FrameChunks into Frames.

@@ -272,6 +272,10 @@ class NET_EXPORT WebSocketChannel {
   // Returns true if state_ is SEND_CLOSED, CLOSE_WAIT or CLOSED.
   bool InClosingState() const;
 
+  // Returns true if Close frames have been both received and written, so a
+  // transport failure no longer makes the closure unclean.
+  bool IsClosingHandshakeComplete() const;
+
   // Calls WebSocketStream::WriteFrames() with the appropriate arguments
   [[nodiscard]] ChannelState WriteFrames();
 
@@ -447,6 +451,11 @@ class NET_EXPORT WebSocketChannel {
 
   // True if we're waiting for OnReadDone() callback.
   bool is_reading_ = false;
+
+  // True if the peer closed the connection while our Close frame was still
+  // being written. Reading stops, and OnWriteDone() drops the channel once the
+  // write completes.
+  bool read_closed_ = false;
 };
 
 }  // namespace net

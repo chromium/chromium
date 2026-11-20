@@ -59,6 +59,7 @@ class WebSocketFuzzedStream final : public WebSocketStream {
   }
 
   int WriteFrames(std::vector<std::unique_ptr<WebSocketFrame>>* frames,
+                  bool shutdown,
                   CompletionOnceCallback callback) override {
     return ERR_FILE_NOT_FOUND;
   }

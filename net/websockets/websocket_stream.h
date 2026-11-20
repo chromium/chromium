@@ -270,7 +270,14 @@ class NET_EXPORT_PRIVATE WebSocketStream {
   // object. Implementations of WriteFrames() should be robust against
   // this. This generally means returning to the event loop immediately after
   // calling the callback.
+  //
+  // If `shutdown` is true this must be the last call to WriteFrames(), and the
+  // send side of the transport is closed (with a FIN or END_STREAM) once all of
+  // `frames` have been written. Reading continues as normal afterwards. In this
+  // case `frames` may be empty, and the write still completes through the
+  // return value or `callback` as usual.
   virtual int WriteFrames(std::vector<std::unique_ptr<WebSocketFrame>>* frames,
+                          bool shutdown,
                           CompletionOnceCallback callback) = 0;
 
   // Closes the stream. All pending I/O operations (if any) are cancelled

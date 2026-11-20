@@ -65,14 +65,16 @@ int WebSocketDeflateStream::ReadFrames(
 
 int WebSocketDeflateStream::WriteFrames(
     std::vector<std::unique_ptr<WebSocketFrame>>* frames,
+    bool shutdown,
     CompletionOnceCallback callback) {
   deflater_outputs_.clear();
   int result = Deflate(frames);
   if (result != OK)
     return result;
-  if (frames->empty())
+  if (frames->empty() && !shutdown) {
     return OK;
-  return stream_->WriteFrames(frames, std::move(callback));
+  }
+  return stream_->WriteFrames(frames, shutdown, std::move(callback));
 }
 
 void WebSocketDeflateStream::Close() {

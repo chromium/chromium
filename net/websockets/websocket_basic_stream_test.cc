@@ -1029,7 +1029,7 @@ TEST_F(WebSocketBasicStreamSocketWriteTest, WriteAtOnce) {
   MockWrite writes[] = {MockWrite(SYNCHRONOUS, kWriteFrame)};
   CreateStream(base::span<MockRead>(), writes);
 
-  EXPECT_THAT(stream_->WriteFrames(&frames_, cb_.callback()), IsOk());
+  EXPECT_THAT(stream_->WriteFrames(&frames_, false, cb_.callback()), IsOk());
 }
 
 // Check that completely async writing works.
@@ -1037,7 +1037,7 @@ TEST_F(WebSocketBasicStreamSocketWriteTest, AsyncWriteAtOnce) {
   MockWrite writes[] = {MockWrite(ASYNC, kWriteFrame)};
   CreateStream(base::span<MockRead>(), writes);
 
-  ASSERT_THAT(stream_->WriteFrames(&frames_, cb_.callback()),
+  ASSERT_THAT(stream_->WriteFrames(&frames_, false, cb_.callback()),
               IsError(ERR_IO_PENDING));
   EXPECT_THAT(cb_.WaitForResult(), IsOk());
 }
@@ -1052,7 +1052,7 @@ TEST_F(WebSocketBasicStreamSocketWriteTest, WriteInBits) {
       MockWrite(ASYNC, kWriteFrame.subspan(8u, kWriteFrame.size() - 8u))};
   CreateStream(base::span<MockRead>(), writes);
 
-  ASSERT_THAT(stream_->WriteFrames(&frames_, cb_.callback()),
+  ASSERT_THAT(stream_->WriteFrames(&frames_, false, cb_.callback()),
               IsError(ERR_IO_PENDING));
   EXPECT_THAT(cb_.WaitForResult(), IsOk());
 }
@@ -1070,7 +1070,7 @@ TEST_F(WebSocketBasicStreamSocketWriteTest, WriteNullptrPong) {
   header.payload_length = 0;
   std::vector<std::unique_ptr<WebSocketFrame>> frames;
   frames.push_back(std::move(frame));
-  EXPECT_THAT(stream_->WriteFrames(&frames, cb_.callback()), IsOk());
+  EXPECT_THAT(stream_->WriteFrames(&frames, false, cb_.callback()), IsOk());
 }
 
 // An Adapter that records the `is_final_write` argument of each Write() and
@@ -1128,25 +1128,23 @@ class WebSocketBasicStreamWriteFinTest : public TestWithTaskEnvironment {
   std::unique_ptr<WebSocketBasicStream> stream_;
 };
 
-// A Close frame is the last frame an endpoint may send, so writing one closes
-// the send side of the transport. Nothing else does. In particular this must
-// not follow `header.final`, which is the message fragmentation bit and is set
-// on every unfragmented frame.
-TEST_F(WebSocketBasicStreamWriteFinTest, OnlyCloseFrameSetsFin) {
+// Only the caller decides when the send side is closed, which the channel does
+// once the closing handshake completes. The stream must not infer it from the
+// frames, in particular not from a Close frame, because some servers treat a
+// half-close before the closing handshake completes as an abnormal closure.
+TEST_F(WebSocketBasicStreamWriteFinTest, CloseFrameDoesNotImplyFin) {
   const struct {
     std::string_view description;
     WebSocketFrameHeader::OpCode opcode;
     bool final;
-    bool expected_final_write;
   } kCases[] = {
-      {"unfragmented text", WebSocketFrameHeader::kOpCodeText, true, false},
-      {"first fragment", WebSocketFrameHeader::kOpCodeText, false, false},
-      {"final continuation", WebSocketFrameHeader::kOpCodeContinuation, true,
-       false},
-      {"binary", WebSocketFrameHeader::kOpCodeBinary, true, false},
-      {"ping", WebSocketFrameHeader::kOpCodePing, true, false},
-      {"pong", WebSocketFrameHeader::kOpCodePong, true, false},
-      {"close", WebSocketFrameHeader::kOpCodeClose, true, true},
+      {"unfragmented text", WebSocketFrameHeader::kOpCodeText, true},
+      {"first fragment", WebSocketFrameHeader::kOpCodeText, false},
+      {"final continuation", WebSocketFrameHeader::kOpCodeContinuation, true},
+      {"binary", WebSocketFrameHeader::kOpCodeBinary, true},
+      {"ping", WebSocketFrameHeader::kOpCodePing, true},
+      {"pong", WebSocketFrameHeader::kOpCodePong, true},
+      {"close", WebSocketFrameHeader::kOpCodeClose, true},
   };
 
   for (const auto& test_case : kCases) {
@@ -1155,22 +1153,31 @@ TEST_F(WebSocketBasicStreamWriteFinTest, OnlyCloseFrameSetsFin) {
 
     std::vector<std::unique_ptr<WebSocketFrame>> frames;
     frames.push_back(MakeEmptyFrame(test_case.opcode, test_case.final));
-    EXPECT_THAT(stream_->WriteFrames(&frames, cb_.callback()), IsOk());
+    EXPECT_THAT(stream_->WriteFrames(&frames, false, cb_.callback()), IsOk());
 
-    EXPECT_THAT(adapter->is_final_writes(),
-                ElementsAre(test_case.expected_final_write));
+    EXPECT_THAT(adapter->is_final_writes(), ElementsAre(false));
   }
 }
 
-// Frames are combined into a single write, so a batch ending in a Close frame
-// closes the send side once all of it has been written.
-TEST_F(WebSocketBasicStreamWriteFinTest, CloseFrameBatchedWithDataSetsFin) {
+// With `shutdown` set the send side is closed on the same write as the frames.
+TEST_F(WebSocketBasicStreamWriteFinTest, ShutdownSetsFin) {
   FinRecordingAdapter* adapter = CreateStreamOverFinRecordingAdapter();
 
   std::vector<std::unique_ptr<WebSocketFrame>> frames;
   frames.push_back(MakeEmptyFrame(WebSocketFrameHeader::kOpCodeText, true));
   frames.push_back(MakeEmptyFrame(WebSocketFrameHeader::kOpCodeClose, true));
-  EXPECT_THAT(stream_->WriteFrames(&frames, cb_.callback()), IsOk());
+  EXPECT_THAT(stream_->WriteFrames(&frames, true, cb_.callback()), IsOk());
+
+  EXPECT_THAT(adapter->is_final_writes(), ElementsAre(true));
+}
+
+// With `shutdown` set and no frames, an empty write still closes the send
+// side.
+TEST_F(WebSocketBasicStreamWriteFinTest, ShutdownWithoutFramesSetsFin) {
+  FinRecordingAdapter* adapter = CreateStreamOverFinRecordingAdapter();
+
+  std::vector<std::unique_ptr<WebSocketFrame>> frames;
+  EXPECT_THAT(stream_->WriteFrames(&frames, true, cb_.callback()), IsOk());
 
   EXPECT_THAT(adapter->is_final_writes(), ElementsAre(true));
 }
@@ -1200,7 +1207,7 @@ TEST_F(WebSocketBasicStreamSocketTest, WriteNonNulMask) {
   std::vector<std::unique_ptr<WebSocketFrame>> frames;
   frames.push_back(std::move(frame));
 
-  EXPECT_THAT(stream_->WriteFrames(&frames, cb_.callback()), IsOk());
+  EXPECT_THAT(stream_->WriteFrames(&frames, false, cb_.callback()), IsOk());
 }
 
 TEST_F(WebSocketBasicStreamSocketTest, GetExtensionsWorks) {

@@ -158,6 +158,10 @@ class WebSocketChannel::SendBuffer {
   // Return a pointer to the frames_ for write purposes.
   std::vector<std::unique_ptr<WebSocketFrame>>* frames() { return &frames_; }
 
+  // Returns true if no frames were added. Unlike frames(), this is not
+  // affected by WriteFrames() consuming the frames.
+  bool empty() const { return buffers_.empty(); }
+
  private:
   // References of each WebSocketFrame.data;
   std::vector<scoped_refptr<IOBuffer>> buffers_;
@@ -330,6 +334,14 @@ void WebSocketChannel::SetState(State new_state) {
                           .Set("old_state", StateToString(old_state))
                           .Set("new_state", StateToString(new_state));
                     });
+}
+
+bool WebSocketChannel::IsClosingHandshakeComplete() const {
+  // In CLOSE_WAIT our Close frame is the last frame queued, so it has been
+  // written once nothing is left to write except, possibly, the empty write
+  // that only carries the end of stream.
+  return state_ == CLOSE_WAIT &&
+         (!data_being_sent_ || data_being_sent_->empty());
 }
 
 bool WebSocketChannel::InClosingState() const {
@@ -569,13 +581,17 @@ ChannelState WebSocketChannel::WriteFrames() {
     // WebSocketStream and destroying it cancels all callbacks.
     result = stream_->WriteFrames(
         data_being_sent_->frames(),
+        // Our Close frame is the last frame queued in these states, so
+        // whichever write empties the queue also closes the send side.
+        state_ == RECV_CLOSED || state_ == CLOSE_WAIT,
         base::BindOnce(base::IgnoreResult(&WebSocketChannel::OnWriteDone),
                        base::Unretained(this), false));
     if (result != ERR_IO_PENDING) {
       if (OnWriteDone(true, result) == CHANNEL_DELETED)
         return CHANNEL_DELETED;
-      // OnWriteDone() returns CHANNEL_DELETED on error. Here |state_| is
-      // guaranteed to be the same as before OnWriteDone() call.
+      // OnWriteDone() returns CHANNEL_DELETED on error, or once our Close
+      // frame is written after the peer closed the connection. Here |state_|
+      // is guaranteed to be the same as before OnWriteDone() call.
     }
   } while (result == OK && data_being_sent_);
   return CHANNEL_ALIVE;
@@ -587,26 +603,56 @@ ChannelState WebSocketChannel::OnWriteDone(bool synchronous, int result) {
   DCHECK_NE(ERR_IO_PENDING, result);
   DCHECK(data_being_sent_);
   switch (result) {
-    case OK:
+    case OK: {
+      const bool sent_frames = !data_being_sent_->empty();
       if (data_to_send_next_) {
         data_being_sent_ = std::move(data_to_send_next_);
-        if (!synchronous)
+        const bool only_end_of_stream_left = data_being_sent_->empty();
+        // An empty write later will fail to call OnSendDataFrameDone, so it's
+        // done here instead.
+        if (sent_frames && only_end_of_stream_left) {
+          event_interface_->OnSendDataFrameDone();
+        }
+        if (!synchronous) {
           return WriteFrames();
+        }
       } else {
         data_being_sent_.reset();
-        event_interface_->OnSendDataFrameDone();
+        // An empty write only carries the end of stream, so no frames were
+        // sent.
+        if (sent_frames) {
+          event_interface_->OnSendDataFrameDone();
+        }
+        if (read_closed_) {
+          // The peer closed the connection while we were writing our Close
+          // frame, which has now been written, completing the handshake.
+          DCHECK_EQ(CLOSE_WAIT, state_);
+          stream_->Close();
+          SetState(CLOSED);
+          DoDropChannel(true, received_close_code_, received_close_reason_);
+          return CHANNEL_DELETED;
+        }
       }
       return CHANNEL_ALIVE;
+    }
 
-    // If a recoverable error condition existed, it would go here.
+      // If a recoverable error condition existed, it would go here.
 
     default:
       DCHECK_LT(result, 0)
           << "WriteFrames() should only return OK or ERR_ codes";
 
+      // The peer may have torn down the transport once it had our Close, so
+      // failing to send the end of stream doesn't make the closure unclean.
+      bool close_handshake_complete = IsClosingHandshakeComplete();
+
       stream_->Close();
       SetState(CLOSED);
-      DoDropChannel(false, kWebSocketErrorAbnormalClosure, "");
+      if (close_handshake_complete) {
+        DoDropChannel(true, received_close_code_, received_close_reason_);
+      } else {
+        DoDropChannel(false, kWebSocketErrorAbnormalClosure, "");
+      }
       return CHANNEL_DELETED;
   }
 }
@@ -615,7 +661,7 @@ ChannelState WebSocketChannel::ReadFrames() {
   DCHECK(stream_);
   DCHECK(state_ == CONNECTED || state_ == SEND_CLOSED || state_ == CLOSE_WAIT);
   DCHECK(read_frames_.empty());
-  if (is_reading_) {
+  if (is_reading_ || read_closed_) {
     return CHANNEL_ALIVE;
   }
 
@@ -645,6 +691,9 @@ ChannelState WebSocketChannel::ReadFrames() {
     }
     if (OnReadDone(true, result) == CHANNEL_DELETED) {
       return CHANNEL_DELETED;
+    }
+    if (read_closed_) {
+      return CHANNEL_ALIVE;
     }
     DCHECK_NE(CLOSED, state_);
     // TODO(crbug.com/41479064): Remove this CHECK.
@@ -692,6 +741,20 @@ ChannelState WebSocketChannel::OnReadDone(bool synchronous, int result) {
       DCHECK_LT(result, 0)
           << "ReadFrames() should only return OK or ERR_ codes";
 
+      if (result == ERR_CONNECTION_CLOSED && state_ == CLOSE_WAIT &&
+          !IsClosingHandshakeComplete()) {
+        // The peer has only closed its send side, so our Close frame can still
+        // be written. OnWriteDone() drops the channel once it has been.
+        is_reading_ = false;
+        read_closed_ = true;
+        return CHANNEL_ALIVE;
+      }
+
+      // The closure is only clean once both Close frames have been exchanged.
+      // After that it doesn't matter how the transport was torn down, e.g. the
+      // remote responding to an END_STREAM with a RST.
+      bool close_handshake_complete = IsClosingHandshakeComplete();
+
       stream_->Close();
       SetState(CLOSED);
 
@@ -701,7 +764,7 @@ ChannelState WebSocketChannel::OnReadDone(bool synchronous, int result) {
       if (has_received_close_frame_) {
         code = received_close_code_;
         reason = received_close_reason_;
-        was_clean = (result == ERR_CONNECTION_CLOSED);
+        was_clean = close_handshake_complete;
       }
 
       DoDropChannel(was_clean, code, reason);
@@ -893,6 +956,20 @@ ChannelState WebSocketChannel::HandleCloseFrame(uint16_t code,
       has_received_close_frame_ = true;
       received_close_code_ = code;
       received_close_reason_ = reason;
+
+      if (!data_being_sent_) {
+        // Our Close frame has been written, so only the end of stream remains.
+        data_being_sent_ = std::make_unique<SendBuffer>();
+        return WriteFrames();
+      }
+      if (!data_to_send_next_) {
+        // Our Close frame is being written without an end of stream. Queue an
+        // empty write, which OnWriteDone() sends with the end of stream once it
+        // completes.
+        data_to_send_next_ = std::make_unique<SendBuffer>();
+      }
+      // Otherwise our Close frame is still queued, and is written with the end
+      // of stream because the state is now CLOSE_WAIT.
       break;
 
     default:

@@ -60,6 +60,7 @@ class NET_EXPORT_PRIVATE WebSocketDeflateStream : public WebSocketStream {
   int ReadFrames(std::vector<std::unique_ptr<WebSocketFrame>>* frames,
                  CompletionOnceCallback callback) override;
   int WriteFrames(std::vector<std::unique_ptr<WebSocketFrame>>* frames,
+                  bool shutdown,
                   CompletionOnceCallback callback) override;
   void Close() override;
   std::string GetSubProtocol() const override;

@@ -199,6 +199,7 @@ int WebSocketBasicStream::ReadFrames(
 
 int WebSocketBasicStream::WriteFrames(
     std::vector<std::unique_ptr<WebSocketFrame>>* frames,
+    bool shutdown,
     CompletionOnceCallback callback) {
   // This function always concatenates all frames into a single buffer.
   // TODO(ricea): Investigate whether it would be better in some cases to
@@ -206,20 +207,15 @@ int WebSocketBasicStream::WriteFrames(
 
   // First calculate the size of the buffer we need to allocate.
   int total_size = CalculateSerializedSizeAndTurnOnMaskBit(frames);
-  if (total_size == 0) {
+  if (total_size == 0 && !shutdown) {
     return OK;
   }
   auto combined_buffer = base::MakeRefCounted<IOBufferWithSize>(total_size);
 
   base::span<uint8_t> dest = combined_buffer->span();
-  // A Close frame is the last frame an endpoint may send, so writing one also
-  // closes the send side of the transport.
-  bool is_final_write = false;
   for (const auto& frame : *frames) {
     net_log_.AddEvent(net::NetLogEventType::WEBSOCKET_SENT_FRAME_HEADER,
                       [&] { return NetLogFrameHeaderParam(&frame->header); });
-    is_final_write |=
-        frame->header.opcode == WebSocketFrameHeader::kOpCodeClose;
     WebSocketMaskingKey mask = generate_websocket_masking_key_();
     int result = WriteWebSocketFrameHeader(frame->header, &mask, dest);
     DCHECK_NE(ERR_INVALID_ARGUMENT, result)
@@ -239,12 +235,11 @@ int WebSocketBasicStream::WriteFrames(
   DCHECK(dest.empty()) << "Buffer size calculation was wrong; " << dest.size()
                        << " bytes left over.";
 
-  // The adapter writes the whole buffer or fails, so `is_final_write` can never
-  // end up applied to a partial write. The buffer is carried by the callback to
-  // keep it alive until an asynchronous write completes.
+  // The adapter writes the whole buffer or fails. The buffer is carried by the
+  // callback to keep it alive until an asynchronous write completes.
   IOBuffer* buf = combined_buffer.get();
   int result = connection_->Write(
-      buf, total_size, is_final_write,
+      buf, total_size, shutdown,
       base::BindOnce(
           [](const scoped_refptr<IOBufferWithSize>& buffer,
              CompletionOnceCallback callback, int result) {
