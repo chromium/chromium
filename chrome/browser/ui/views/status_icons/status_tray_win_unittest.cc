@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/status_icons/status_tray_win.h"
 
-#include <commctrl.h>
 #include <shellapi.h>
 #include <stddef.h>
 
@@ -38,6 +37,11 @@
 #include "chrome/browser/ui/views/status_icons/status_icon_win.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
+#include "ui/display/win/screen_win.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/point_conversions.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
@@ -245,28 +249,96 @@ TEST_F(StatusTrayWinTest, CreateIconAndMenu) {
 }
 
 TEST_F(StatusTrayWinTest, ClickOnIcon) {
-  // Create an icon, send a fake click event, make sure observer is called.
+  // Create an icon, send fake v4 click and keyboard select events, and make
+  // sure observer is called once per primary activation and not on right-click.
   StatusTrayWin tray;
 
   StatusIconWin* icon = CreateStatusIcon(tray);
   FakeStatusIconObserver observer;
   icon->AddObserver(&observer);
-  // Mimic a click.
-  tray.WndProc(nullptr, icon->message_id(), icon->icon_id(), WM_LBUTTONDOWN);
-  // Mimic a right-click - observer should not be called.
-  tray.WndProc(nullptr, icon->message_id(), icon->icon_id(), WM_RBUTTONDOWN);
+  // Mimic a mouse left-click sequence under NOTIFYICON_VERSION_4
+  // (WM_LBUTTONDOWN followed by NIN_SELECT). Only NIN_SELECT should fire.
+  tray.WndProc(nullptr, icon->message_id(), 0,
+               MAKELPARAM(WM_LBUTTONDOWN, icon->icon_id()));
+  tray.WndProc(nullptr, icon->message_id(), 0,
+               MAKELPARAM(NIN_SELECT, icon->icon_id()));
   EXPECT_EQ(1u, observer.status_icon_click_count());
+
+  // Mimic keyboard Enter/Space / Narrator activation (NIN_KEYSELECT).
+  tray.WndProc(nullptr, icon->message_id(), 0,
+               MAKELPARAM(NIN_KEYSELECT, icon->icon_id()));
+  EXPECT_EQ(2u, observer.status_icon_click_count());
+
+  // Mimic a right-click sequence - observer should not be called.
+  tray.WndProc(nullptr, icon->message_id(), 0,
+               MAKELPARAM(WM_RBUTTONDOWN, icon->icon_id()));
+  tray.WndProc(nullptr, icon->message_id(), 0,
+               MAKELPARAM(WM_RBUTTONUP, icon->icon_id()));
+  tray.WndProc(nullptr, icon->message_id(), 0,
+               MAKELPARAM(WM_CONTEXTMENU, icon->icon_id()));
+  EXPECT_EQ(2u, observer.status_icon_click_count());
   icon->RemoveObserver(&observer);
 }
 
 TEST_F(StatusTrayWinTest, ContextMenu) {
-  // Create icon and context menu.
   StatusTrayWin tray;
   StatusIconWin* icon = CreateStatusIcon(tray);
   CreateContextMenu(*icon);
 
-  // Trigger the context menu.
-  tray.WndProc(nullptr, icon->message_id(), icon->icon_id(), WM_RBUTTONDOWN);
+  std::optional<gfx::Point> last_anchor;
+  std::optional<ui::mojom::MenuSourceType> last_source_type;
+  size_t menu_run_count = 0;
+  icon->SetMenuRunnerCallbackForTesting(base::BindLambdaForTesting(
+      [&](const gfx::Point& anchor, ui::mojom::MenuSourceType source_type) {
+        last_anchor = anchor;
+        last_source_type = source_type;
+        ++menu_run_count;
+      }));
+
+  gfx::Point expected_anchor(100, 200);
+  if (auto* screen_win = display::win::GetScreenWin()) {
+    expected_anchor = gfx::ToFlooredPoint(
+        screen_win->ScreenToDIPPoint(gfx::PointF(expected_anchor)));
+  }
+
+  // Keyboard context menu (Shift+F10 / Menu key) passes kKeyboard and DIPs.
+  tray.WndProc(nullptr, icon->message_id(), MAKEWPARAM(100, 200),
+               MAKELPARAM(WM_CONTEXTMENU, icon->icon_id()));
+  EXPECT_EQ(1u, menu_run_count);
+  EXPECT_EQ(expected_anchor, last_anchor);
+  EXPECT_EQ(ui::mojom::MenuSourceType::kKeyboard, last_source_type);
+
+  // Mouse right-click (WM_RBUTTONDOWN -> WM_RBUTTONUP -> WM_CONTEXTMENU) passes
+  // kMouse.
+  tray.WndProc(nullptr, icon->message_id(), MAKEWPARAM(100, 200),
+               MAKELPARAM(WM_RBUTTONDOWN, icon->icon_id()));
+  tray.WndProc(nullptr, icon->message_id(), MAKEWPARAM(100, 200),
+               MAKELPARAM(WM_RBUTTONUP, icon->icon_id()));
+  tray.WndProc(nullptr, icon->message_id(), MAKEWPARAM(100, 200),
+               MAKELPARAM(WM_CONTEXTMENU, icon->icon_id()));
+  EXPECT_EQ(2u, menu_run_count);
+  EXPECT_EQ(ui::mojom::MenuSourceType::kMouse, last_source_type);
+
+  // An aborted right-drag (WM_RBUTTONDOWN without WM_RBUTTONUP) must not
+  // misclassify a subsequent keyboard WM_CONTEXTMENU as kMouse.
+  tray.WndProc(nullptr, icon->message_id(), MAKEWPARAM(100, 200),
+               MAKELPARAM(WM_RBUTTONDOWN, icon->icon_id()));
+  tray.WndProc(nullptr, icon->message_id(), MAKEWPARAM(100, 200),
+               MAKELPARAM(WM_CONTEXTMENU, icon->icon_id()));
+  EXPECT_EQ(3u, menu_run_count);
+  EXPECT_EQ(ui::mojom::MenuSourceType::kKeyboard, last_source_type);
+
+  // Menu-only icon (no StatusIconObserver) opens its menu with kKeyboard on
+  // NIN_KEYSELECT and kMouse on NIN_SELECT.
+  tray.WndProc(nullptr, icon->message_id(), MAKEWPARAM(100, 200),
+               MAKELPARAM(NIN_KEYSELECT, icon->icon_id()));
+  EXPECT_EQ(4u, menu_run_count);
+  EXPECT_EQ(ui::mojom::MenuSourceType::kKeyboard, last_source_type);
+
+  tray.WndProc(nullptr, icon->message_id(), MAKEWPARAM(100, 200),
+               MAKELPARAM(NIN_SELECT, icon->icon_id()));
+  EXPECT_EQ(5u, menu_run_count);
+  EXPECT_EQ(ui::mojom::MenuSourceType::kMouse, last_source_type);
 }
 
 TEST_F(StatusTrayWinTest, ClickOnBalloon) {
@@ -275,8 +347,9 @@ TEST_F(StatusTrayWinTest, ClickOnBalloon) {
   StatusIconWin* icon = CreateStatusIcon(tray);
   FakeStatusIconObserver observer;
   icon->AddObserver(&observer);
-  // Mimic a click.
-  tray.WndProc(nullptr, icon->message_id(), icon->icon_id(), TB_INDETERMINATE);
+  // Mimic a balloon click under NOTIFYICON_VERSION_4.
+  tray.WndProc(nullptr, icon->message_id(), 0,
+               MAKELPARAM(NIN_BALLOONUSERCLICK, icon->icon_id()));
   EXPECT_TRUE(observer.balloon_clicked());
   icon->RemoveObserver(&observer);
 }
@@ -288,7 +361,7 @@ TEST_F(StatusTrayWinTest, HandleOldIconId) {
   UINT icon_id = icon->icon_id();
 
   tray.RemoveStatusIcon(icon);
-  tray.WndProc(nullptr, message_id, icon_id, WM_LBUTTONDOWN);
+  tray.WndProc(nullptr, message_id, 0, MAKELPARAM(NIN_SELECT, icon_id));
 }
 
 TEST_F(StatusTrayWinTest, EnsureVisibleTest) {
@@ -313,23 +386,26 @@ TEST_F(StatusTrayWinTest, EnsureVisibleTest) {
 TEST_F(StatusTrayWinTest, ResetAndUpdatesRunInOrderOffUI) {
   StatusTrayWin tray;
   StatusIconWin* icon = CreateStatusIcon(tray);
-  ASSERT_TRUE(shell_->WaitForCalls(3));
+  ASSERT_TRUE(shell_->WaitForCalls(4));
   shell_->Clear();
 
   icon->ResetIcon();
   icon->SetToolTip(u"updated tooltip");
-  ASSERT_TRUE(shell_->WaitForCalls(3));
+  ASSERT_TRUE(shell_->WaitForCalls(4));
 
   const auto calls = shell_->calls();
-  ASSERT_EQ(3u, calls.size());
+  ASSERT_EQ(4u, calls.size());
   EXPECT_EQ(NIM_DELETE, calls[0].message);
   EXPECT_EQ(NIM_ADD, calls[1].message);
-  EXPECT_EQ(NIM_MODIFY, calls[2].message);
+  EXPECT_EQ(NIM_SETVERSION, calls[2].message);
+  EXPECT_EQ(NOTIFYICON_VERSION_4, calls[2].data.uVersion);
+  EXPECT_EQ(NIM_MODIFY, calls[3].message);
   EXPECT_EQ(calls[0].runner, calls[1].runner);
   EXPECT_EQ(calls[0].runner, calls[2].runner);
+  EXPECT_EQ(calls[0].runner, calls[3].runner);
   EXPECT_EQ(icon->message_id(), calls[1].data.uCallbackMessage);
   EXPECT_TRUE(calls[1].data.uFlags & NIF_ICON);
-  EXPECT_STREQ(L"updated tooltip", calls[2].data.szTip);
+  EXPECT_STREQ(L"updated tooltip", calls[3].data.szTip);
   for (const auto& call : calls) {
     EXPECT_NE(GetCurrentThreadId(), call.thread_id);
     EXPECT_TRUE(call.window_valid);
@@ -340,22 +416,33 @@ TEST_F(StatusTrayWinTest, ResetAndUpdatesRunInOrderOffUI) {
 TEST_F(StatusTrayWinTest, TaskbarCreatedRestoresAllIcons) {
   StatusTrayWin tray;
   StatusIconWin* first = CreateStatusIcon(tray);
+  first->SetToolTip(u"test tooltip");
   StatusIconWin* second = CreateStatusIcon(tray);
-  ASSERT_TRUE(shell_->WaitForCalls(6));
+  ASSERT_TRUE(shell_->WaitForCalls(9));
   shell_->Clear();
 
   SendMessage(first->window(), RegisterWindowMessage(L"TaskbarCreated"), 0, 0);
-  ASSERT_TRUE(shell_->WaitForCalls(4));
+  ASSERT_TRUE(shell_->WaitForCalls(6));
 
   const auto calls = shell_->calls();
-  ASSERT_EQ(4u, calls.size());
+  ASSERT_EQ(6u, calls.size());
   EXPECT_EQ(NIM_DELETE, calls[0].message);
   EXPECT_EQ(NIM_ADD, calls[1].message);
   EXPECT_EQ(first->icon_id(), calls[1].data.uID);
-  EXPECT_EQ(NIM_DELETE, calls[2].message);
-  EXPECT_EQ(NIM_ADD, calls[3].message);
-  EXPECT_EQ(second->icon_id(), calls[3].data.uID);
-  EXPECT_EQ(calls[0].runner, calls[3].runner);
+  EXPECT_TRUE(calls[1].data.uFlags & NIF_SHOWTIP);
+  EXPECT_TRUE(calls[1].data.uFlags & NIF_TIP);
+  EXPECT_STREQ(L"test tooltip", calls[1].data.szTip);
+  EXPECT_EQ(NIM_SETVERSION, calls[2].message);
+  EXPECT_EQ(first->icon_id(), calls[2].data.uID);
+  EXPECT_EQ(NOTIFYICON_VERSION_4, calls[2].data.uVersion);
+  EXPECT_EQ(NIM_DELETE, calls[3].message);
+  EXPECT_EQ(NIM_ADD, calls[4].message);
+  EXPECT_EQ(second->icon_id(), calls[4].data.uID);
+  EXPECT_TRUE(calls[4].data.uFlags & NIF_SHOWTIP);
+  EXPECT_EQ(NIM_SETVERSION, calls[5].message);
+  EXPECT_EQ(second->icon_id(), calls[5].data.uID);
+  EXPECT_EQ(NOTIFYICON_VERSION_4, calls[5].data.uVersion);
+  EXPECT_EQ(calls[0].runner, calls[5].runner);
 }
 
 TEST_F(StatusTrayWinTest, BlockedResetDoesNotBlockUIOrTrayDestruction) {
@@ -364,7 +451,7 @@ TEST_F(StatusTrayWinTest, BlockedResetDoesNotBlockUIOrTrayDestruction) {
   const HWND window = icon->window();
   const UINT message = icon->message_id();
   const UINT id = icon->icon_id();
-  ASSERT_TRUE(shell_->WaitForCalls(3));
+  ASSERT_TRUE(shell_->WaitForCalls(4));
   shell_->Clear();
   shell_->Block(NIM_DELETE);
   icon->ResetIcon();
@@ -378,7 +465,7 @@ TEST_F(StatusTrayWinTest, BlockedResetDoesNotBlockUIOrTrayDestruction) {
   tray.reset();
   EXPECT_TRUE(IsWindow(window));
   // The still-live window must no longer call the destroyed tray.
-  SendMessage(window, message, id, WM_LBUTTONDOWN);
+  SendMessage(window, message, 0, MAKELPARAM(NIN_SELECT, id));
   SendMessage(window, RegisterWindowMessage(L"TaskbarCreated"), 0, 0);
 
   // A new tray must be able to register its window while the old one is alive.
@@ -387,7 +474,7 @@ TEST_F(StatusTrayWinTest, BlockedResetDoesNotBlockUIOrTrayDestruction) {
   EXPECT_NE(window, new_icon->window());
   shell_->Release();
   ASSERT_TRUE(base::test::RunUntil([&] { return !IsWindow(window); }));
-  ASSERT_TRUE(shell_->WaitForCalls(6));
+  ASSERT_TRUE(shell_->WaitForCalls(7));
   EXPECT_FALSE(IsWindow(window));
   for (const auto& call : shell_->calls()) {
     EXPECT_TRUE(call.window_valid);
@@ -398,7 +485,7 @@ TEST_F(StatusTrayWinTest, BlockedResetDoesNotBlockUIOrTrayDestruction) {
 TEST_F(StatusTrayWinTest, QueuedImagesSurviveUpdatesAndIconDestruction) {
   StatusTrayWin tray;
   StatusIconWin* icon = CreateStatusIcon(tray);
-  ASSERT_TRUE(shell_->WaitForCalls(3));
+  ASSERT_TRUE(shell_->WaitForCalls(4));
   shell_->Clear();
   shell_->Block(NIM_MODIFY);
   icon->SetImage(gfx::test::CreateImageSkia(16, 16));
@@ -427,7 +514,7 @@ TEST_F(StatusTrayWinTest, ReusedIconIdIsDeletedBeforeReplacementIsAdded) {
   StatusTrayWin tray;
   auto* first = tray.CreateStatusIcon(StatusTray::BACKGROUND_MODE_ICON,
                                       gfx::test::CreateImageSkia(16, 16), u"");
-  ASSERT_TRUE(shell_->WaitForCalls(3));
+  ASSERT_TRUE(shell_->WaitForCalls(4));
   shell_->Clear();
   shell_->Block(NIM_DELETE);
   tray.RemoveStatusIcon(first).reset();
@@ -435,12 +522,15 @@ TEST_F(StatusTrayWinTest, ReusedIconIdIsDeletedBeforeReplacementIsAdded) {
   tray.CreateStatusIcon(StatusTray::BACKGROUND_MODE_ICON,
                         gfx::test::CreateImageSkia(16, 16), u"");
   shell_->Release();
-  ASSERT_TRUE(shell_->WaitForCalls(4));
+  ASSERT_TRUE(shell_->WaitForCalls(5));
   const auto calls = shell_->calls();
-  ASSERT_EQ(4u, calls.size());
+  ASSERT_EQ(5u, calls.size());
   EXPECT_EQ(NIM_DELETE, calls[0].message);
   EXPECT_EQ(NIM_ADD, calls[1].message);
+  EXPECT_EQ(NIM_SETVERSION, calls[2].message);
+  EXPECT_EQ(NOTIFYICON_VERSION_4, calls[2].data.uVersion);
   EXPECT_EQ(calls[0].data.uID, calls[1].data.uID);
+  EXPECT_EQ(calls[0].data.uID, calls[2].data.uID);
   EXPECT_EQ(calls[0].runner, calls[1].runner);
 }
 

@@ -8,6 +8,7 @@
 #include <windows.h>
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/scoped_refptr.h"
@@ -98,6 +99,11 @@ class StatusTrayWin : public StatusTray {
   // Manages changes performed on a background thread to manipulate visibility
   // of notification icons.
   std::unique_ptr<StatusTrayStateChangerProxy> state_changer_proxy_;
+
+  // Records the icon ID that most recently received WM_RBUTTONUP so WndProc
+  // can distinguish mouse right-clicks from keyboard (Shift+F10 / Menu key)
+  // context-menu requests under NOTIFYICON_VERSION_4.
+  std::optional<UINT> pending_mouse_context_menu_icon_id_;
 
   base::WeakPtrFactory<StatusTrayWin> weak_factory_{this};
 };

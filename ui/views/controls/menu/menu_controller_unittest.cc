@@ -2898,8 +2898,6 @@ TEST_F(MenuControllerTest, WidgetStateChangeCancelsMenu) {
   EXPECT_EQ(MenuController::ExitType::kAll, menu_controller()->exit_type());
 }
 
-// TODO(pkasting): The test below fails most of the time on Wayland; not clear
-// it's important to support this case.
 #if BUILDFLAG(ENABLE_DESKTOP_AURA)
 class DesktopMenuControllerTest : public MenuControllerTest {
  public:
@@ -2907,6 +2905,14 @@ class DesktopMenuControllerTest : public MenuControllerTest {
   void SetUp() override {
     set_native_widget_type(NativeWidgetType::kDesktop);
     MenuControllerTest::SetUp();
+#if BUILDFLAG(IS_OZONE)
+    // Parentless popup menus are not supported on Wayland because xdg_popup
+    // requires a parent window. See crbug.com/529612149.
+    if (::ui::OzonePlatform::RunningOnWaylandForTest()) {
+      GTEST_SKIP() << "Parentless menus are not supported on Wayland "
+                      "(crbug.com/529612149)";
+    }
+#endif
   }
 };
 
@@ -2916,13 +2922,51 @@ class DesktopMenuControllerTest : public MenuControllerTest {
 TEST_F(DesktopMenuControllerTest, RunWithoutWidgetDoesntCrash) {
   // Don't show menu yet; test runs menu with null owner widget.
   CreateMenu({.show = false});
-#if BUILDFLAG(IS_OZONE)
-  if (::ui::OzonePlatform::RunningOnWaylandForTest()) {
-    GTEST_SKIP() << "Fails on Wayland";
-  }
-#endif
   menu_controller()->Run(nullptr, nullptr, menu_item(), gfx::Rect(),
                          MenuAnchorPosition::kTopLeft);
+}
+
+TEST_F(DesktopMenuControllerTest,
+       FirstMenuItemSelectedWhenOpenedFromKeyboardWithoutParent) {
+  // System tray context menus (e.g. StatusIconWin) open with `parent ==
+  // nullptr`. Ensure keyboard-invoked menus still auto-select the first item.
+  if (!PlatformStyle::kAutoSelectFirstMenuItemFromKeyboard) {
+    GTEST_SKIP() << "Behavior not present on this platform";
+  }
+  CreateMenu({.show = false});
+  MenuItemView* root = menu_item();
+  MenuItemView* item1 = root->GetSubmenu()->GetMenuItemAt(0);
+  MenuItemView* item2 = root->GetSubmenu()->GetMenuItemAt(1);
+  MenuItemView* item3 = root->GetSubmenu()->GetMenuItemAt(2);
+
+  menu_controller()->Run(/*parent=*/nullptr, /*button_controller=*/nullptr,
+                         root, gfx::Rect(), MenuAnchorPosition::kTopLeft,
+                         ui::mojom::MenuSourceType::kKeyboard,
+                         /*menu_type=*/MenuController::MenuType::kNormal,
+                         /*is_nested_drag=*/false);
+
+  EXPECT_TRUE(item1->IsSelected());
+  EXPECT_FALSE(item2->IsSelected());
+  EXPECT_FALSE(item3->IsSelected());
+}
+
+TEST_F(DesktopMenuControllerTest,
+       NoItemSelectedWhenOpenedFromMouseWithoutParent) {
+  if (!PlatformStyle::kAutoSelectFirstMenuItemFromKeyboard) {
+    GTEST_SKIP() << "Behavior not present on this platform";
+  }
+  CreateMenu({.show = false});
+  MenuItemView* root = menu_item();
+
+  menu_controller()->Run(/*parent=*/nullptr, /*button_controller=*/nullptr,
+                         root, gfx::Rect(), MenuAnchorPosition::kTopLeft,
+                         ui::mojom::MenuSourceType::kMouse,
+                         /*menu_type=*/MenuController::MenuType::kNormal,
+                         /*is_nested_drag=*/false);
+
+  EXPECT_FALSE(root->GetSubmenu()->GetMenuItemAt(0)->IsSelected());
+  EXPECT_FALSE(root->GetSubmenu()->GetMenuItemAt(1)->IsSelected());
+  EXPECT_FALSE(root->GetSubmenu()->GetMenuItemAt(2)->IsSelected());
 }
 #endif  // BUILDFLAG(ENABLE_DESKTOP_AURA)
 

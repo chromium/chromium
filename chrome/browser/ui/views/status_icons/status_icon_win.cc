@@ -73,10 +73,7 @@ StatusIconWin::StatusIconWin(base::WeakPtr<StatusTrayWin> tray,
       icon_id_(id),
       window_(std::move(window)),
       message_id_(message) {
-  auto icon_data = InitIconData();
-  icon_data->uFlags = NIF_MESSAGE;
-  icon_data->uCallbackMessage = message_id_;
-  NotifyIcon(NIM_ADD, std::move(icon_data));
+  AddIcon();
 }
 
 StatusIconWin::~StatusIconWin() {
@@ -84,15 +81,21 @@ StatusIconWin::~StatusIconWin() {
   NotifyIcon(NIM_DELETE, InitIconData());
 }
 
-void StatusIconWin::HandleClickEvent(const gfx::Point& cursor_pos,
-                                     bool left_mouse_click) {
+void StatusIconWin::HandleActivation(const gfx::Point& cursor_pos,
+                                     bool is_primary_activation,
+                                     ui::mojom::MenuSourceType source_type) {
   // Pass to the observer if appropriate.
-  if (left_mouse_click && HasObservers()) {
+  if (is_primary_activation && HasObservers()) {
     DispatchClickEvent();
     return;
   }
 
   if (!menu_model_) {
+    return;
+  }
+
+  if (menu_runner_callback_) {
+    menu_runner_callback_.Run(cursor_pos, source_type);
     return;
   }
 
@@ -105,8 +108,7 @@ void StatusIconWin::HandleClickEvent(const gfx::Point& cursor_pos,
   menu_runner_ = std::make_unique<views::MenuRunner>(
       menu_model_, views::MenuRunner::HAS_MNEMONICS);
   menu_runner_->RunMenuAt(nullptr, nullptr, gfx::Rect(cursor_pos, gfx::Size()),
-                          views::MenuAnchorPosition::kTopLeft,
-                          ui::mojom::MenuSourceType::kMouse);
+                          views::MenuAnchorPosition::kTopLeft, source_type);
 }
 
 void StatusIconWin::HandleBalloonClickEvent() {
@@ -118,24 +120,13 @@ void StatusIconWin::HandleBalloonClickEvent() {
 void StatusIconWin::ResetIcon() {
   // Delete any previously existing icon.
   NotifyIcon(NIM_DELETE, InitIconData());
-
-  auto icon_data = InitIconData();
-  icon_data->uFlags = NIF_MESSAGE;
-  icon_data->uCallbackMessage = message_id_;
-  icon_data->hIcon = icon_ ? icon_->data.get() : nullptr;
-  // If we have an image, then set the NIF_ICON flag, which tells
-  // Shell_NotifyIcon() to set the image for the status icon it creates.
-  if (icon_data->hIcon) {
-    icon_data->uFlags |= NIF_ICON;
-  }
-  // Re-add our icon.
-  NotifyIcon(NIM_ADD, std::move(icon_data));
+  AddIcon();
 }
 
 void StatusIconWin::SetImage(const gfx::ImageSkia& image) {
   // Create the icon.
   auto icon_data = InitIconData();
-  icon_data->uFlags = NIF_ICON;
+  icon_data->uFlags = NIF_ICON | NIF_SHOWTIP;
   icon_ = base::MakeRefCounted<Icon>(
       IconUtil::CreateHICONFromSkBitmap(*image.bitmap()));
   icon_data->hIcon = icon_->data.get();
@@ -143,10 +134,10 @@ void StatusIconWin::SetImage(const gfx::ImageSkia& image) {
 }
 
 void StatusIconWin::SetToolTip(const std::u16string& tool_tip) {
-  // Create the icon.
+  tooltip_ = tool_tip;
   auto icon_data = InitIconData();
-  icon_data->uFlags = NIF_TIP;
-  base::wcslcpy(icon_data->szTip, base::as_wcstr(tool_tip));
+  icon_data->uFlags = NIF_TIP | NIF_SHOWTIP;
+  base::wcslcpy(icon_data->szTip, base::as_wcstr(tooltip_));
   NotifyIcon(NIM_MODIFY, std::move(icon_data));
 }
 
@@ -156,7 +147,7 @@ void StatusIconWin::DisplayBalloon(
     const std::u16string& contents,
     const message_center::NotifierId& notifier_id) {
   auto icon_data = InitIconData();
-  icon_data->uFlags = NIF_INFO;
+  icon_data->uFlags = NIF_INFO | NIF_SHOWTIP;
   icon_data->dwInfoFlags = NIIF_INFO;
   base::wcslcpy(icon_data->szInfoTitle, base::as_wcstr(title));
   base::wcslcpy(icon_data->szInfo, base::as_wcstr(contents));
@@ -198,6 +189,27 @@ void StatusIconWin::UpdatePlatformContextMenu(StatusIconMenuModel* menu) {
   menu_model_ = menu;
 }
 
+void StatusIconWin::AddIcon() {
+  // Include NIF_SHOWTIP so Windows keeps rendering standard OS szTip hover
+  // tooltips after opting into NOTIFYICON_VERSION_4.
+  auto icon_data = InitIconData();
+  icon_data->uFlags = NIF_MESSAGE | NIF_SHOWTIP;
+  icon_data->uCallbackMessage = message_id_;
+  icon_data->hIcon = icon_ ? icon_->data.get() : nullptr;
+  if (icon_data->hIcon) {
+    icon_data->uFlags |= NIF_ICON;
+  }
+  if (!tooltip_.empty()) {
+    icon_data->uFlags |= NIF_TIP;
+    base::wcslcpy(icon_data->szTip, base::as_wcstr(tooltip_));
+  }
+  NotifyIcon(NIM_ADD, std::move(icon_data));
+
+  auto version_data = InitIconData();
+  version_data->uVersion = NOTIFYICON_VERSION_4;
+  NotifyIcon(NIM_SETVERSION, std::move(version_data));
+}
+
 std::unique_ptr<NOTIFYICONDATA> StatusIconWin::InitIconData() const {
   auto data = std::make_unique<NOTIFYICONDATA>();
   data->cbSize = sizeof(NOTIFYICONDATA);
@@ -210,6 +222,11 @@ std::unique_ptr<NOTIFYICONDATA> StatusIconWin::InitIconData() const {
 void StatusIconWin::SetShellNotifyIconForTesting(
     ShellNotifyIconCallback callback) {
   GetShellNotifyIconCallback() = std::move(callback);
+}
+
+void StatusIconWin::SetMenuRunnerCallbackForTesting(
+    MenuRunnerCallback callback) {
+  menu_runner_callback_ = std::move(callback);
 }
 
 void StatusIconWin::NotifyIcon(DWORD message,

@@ -10,6 +10,7 @@
 #include <shellapi.h>
 
 #include <memory>
+#include <string>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -19,6 +20,7 @@
 #include "base/win/scoped_gdi_object.h"
 #include "chrome/browser/status_icons/status_icon.h"
 #include "chrome/browser/ui/views/status_icons/status_tray_win.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 
 namespace gfx {
 class Point;
@@ -42,15 +44,23 @@ class StatusIconWin : public StatusIcon {
   // owns a copy of the callback, just as it owns its notification data.
   static void SetShellNotifyIconForTesting(ShellNotifyIconCallback callback);
 
+  using MenuRunnerCallback =
+      base::RepeatingCallback<void(const gfx::Point&,
+                                   ui::mojom::MenuSourceType)>;
+  void SetMenuRunnerCallbackForTesting(MenuRunnerCallback callback);
+
   StatusIconWin(const StatusIconWin&) = delete;
   StatusIconWin& operator=(const StatusIconWin&) = delete;
 
   ~StatusIconWin() override;
 
-  // Handles a click event from the user - if |left_button_click| is true and
-  // there is a registered observer, passes the click event to the observer,
-  // otherwise displays the context menu if there is one.
-  void HandleClickEvent(const gfx::Point& cursor_pos, bool left_button_click);
+  // Handles a click or keyboard activation event from the user. If
+  // `is_primary_activation` is true and there is a registered observer, passes
+  // the activation to the observer; otherwise displays the context menu if
+  // there is one.
+  void HandleActivation(const gfx::Point& cursor_pos,
+                        bool is_primary_activation,
+                        ui::mojom::MenuSourceType source_type);
 
   // Handles a click on the balloon from the user.
   void HandleBalloonClickEvent();
@@ -76,6 +86,7 @@ class StatusIconWin : public StatusIcon {
   void UpdatePlatformContextMenu(StatusIconMenuModel* menu) override;
 
  private:
+  void AddIcon();
   std::unique_ptr<NOTIFYICONDATA> InitIconData() const;
   void NotifyIcon(DWORD message, std::unique_ptr<NOTIFYICONDATA> data);
   void UpdateIconVisibility();
@@ -92,6 +103,9 @@ class StatusIconWin : public StatusIcon {
   // The message identifier used for status icon messages.
   UINT message_id_;
 
+  // Cached tooltip text restored across `ResetIcon()` (`TaskbarCreated`).
+  std::u16string tooltip_;
+
   // Requests retain these resources independently of subsequent updates and
   // destruction of this object.
   using Icon = base::RefCountedData<base::win::ScopedGDIObject<HICON>>;
@@ -103,6 +117,8 @@ class StatusIconWin : public StatusIcon {
 
   // Context menu associated with this icon (if any).
   std::unique_ptr<views::MenuRunner> menu_runner_;
+
+  MenuRunnerCallback menu_runner_callback_;
 
   base::WeakPtrFactory<StatusIconWin> weak_factory_{this};
 };

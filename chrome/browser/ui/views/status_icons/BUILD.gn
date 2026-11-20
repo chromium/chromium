@@ -80,6 +80,7 @@ source_set("status_icons") {
     public_deps += [
       "//base",
       "//chrome/browser/status_icons",
+      "//ui/base/mojom:ui_base_types",
     ]
     deps += [
       "//chrome/browser/lifetime",
@@ -107,6 +108,10 @@ if (is_win || use_dbus) {
 
     if (is_win) {
       sources += [ "status_tray_win_unittest.cc" ]
+      deps += [
+        "//ui/display",
+        "//ui/gfx/geometry",
+      ]
     }
 
     if (use_dbus) {

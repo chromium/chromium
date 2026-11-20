@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ui/views/status_icons/status_tray_win.h"
 
-#include <commctrl.h>
+#include <shellapi.h>
+#include <stdint.h>
+#include <windowsx.h>
 #include <wrl/client.h>
 
 #include <utility>
@@ -25,8 +27,11 @@
 #include "chrome/browser/ui/views/status_icons/status_icon_win.h"
 #include "chrome/browser/ui/views/status_icons/status_tray_state_changer_win.h"
 #include "chrome/common/chrome_constants.h"
-#include "ui/display/screen.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
+#include "ui/display/win/screen_win.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/point_conversions.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/win/window_impl.h"
 
@@ -38,6 +43,14 @@ const UINT kBaseIconId = 2;
 
 UINT ReservedIconId(StatusTray::StatusIconType type) {
   return kBaseIconId + static_cast<UINT>(type);
+}
+
+gfx::Point AnchorPointFromWParam(WPARAM wparam) {
+  gfx::PointF anchor_pos(GET_X_LPARAM(wparam), GET_Y_LPARAM(wparam));
+  if (auto* screen_win = display::win::GetScreenWin()) {
+    anchor_pos = screen_win->ScreenToDIPPoint(anchor_pos);
+  }
+  return gfx::ToFlooredPoint(anchor_pos);
 }
 
 }  // namespace
@@ -170,7 +183,7 @@ void StatusTrayWin::Window::Detach() {
 }
 
 StatusTrayWin::StatusTrayWin()
-    : next_icon_id_(1),
+    : next_icon_id_(0),
       taskbar_created_message_(RegisterWindowMessage(L"TaskbarCreated")) {
   window_ = base::MakeRefCounted<Window>(this);
 }
@@ -196,6 +209,7 @@ LRESULT CALLBACK StatusTrayWin::WndProc(HWND hwnd,
                                         WPARAM wparam,
                                         LPARAM lparam) {
   if (message == taskbar_created_message_) {
+    pending_mouse_context_menu_icon_id_.reset();
     // We need to reset all of our icons because the taskbar went away.
     for (const auto& i : status_icons()) {
       auto* win_icon = static_cast<StatusIconWin*>(i.icon.get());
@@ -204,11 +218,16 @@ LRESULT CALLBACK StatusTrayWin::WndProc(HWND hwnd,
     return TRUE;
   } else if (message == kStatusIconMessage) {
     StatusIconWin* win_icon = nullptr;
+    // Under NOTIFYICON_VERSION_4, HIWORD(lparam) carries the 16-bit icon ID,
+    // LOWORD(lparam) carries the notification event, and wparam carries the
+    // anchor screen coordinates.
+    const UINT icon_id = HIWORD(lparam);
+    const UINT event = LOWORD(lparam);
 
     // Find the selected status icon.
     for (const auto& i : status_icons()) {
       auto* current_win_icon = static_cast<StatusIconWin*>(i.icon.get());
-      if (current_win_icon->icon_id() == wparam) {
+      if (current_win_icon->icon_id() == icon_id) {
         win_icon = current_win_icon;
         break;
       }
@@ -221,19 +240,41 @@ LRESULT CALLBACK StatusTrayWin::WndProc(HWND hwnd,
       return TRUE;
     }
 
-    switch (lparam) {
-      case TB_INDETERMINATE:
+    switch (event) {
+      case NIN_BALLOONUSERCLICK:
+        pending_mouse_context_menu_icon_id_.reset();
         win_icon->HandleBalloonClickEvent();
+        return TRUE;
+
+      case WM_RBUTTONUP:
+        pending_mouse_context_menu_icon_id_ = icon_id;
         return TRUE;
 
       case WM_LBUTTONDOWN:
       case WM_RBUTTONDOWN:
-      case WM_CONTEXTMENU:
-        // Walk our icons, find which one was clicked on, and invoke its
-        // HandleClickEvent() method.
-        gfx::Point cursor_pos(display::Screen::Get()->GetCursorScreenPoint());
-        win_icon->HandleClickEvent(cursor_pos, lparam == WM_LBUTTONDOWN);
+        pending_mouse_context_menu_icon_id_.reset();
         return TRUE;
+
+      case NIN_SELECT:
+      case NIN_KEYSELECT:
+        pending_mouse_context_menu_icon_id_.reset();
+        win_icon->HandleActivation(AnchorPointFromWParam(wparam),
+                                   /*is_primary_activation=*/true,
+                                   event == NIN_KEYSELECT
+                                       ? ui::mojom::MenuSourceType::kKeyboard
+                                       : ui::mojom::MenuSourceType::kMouse);
+        return TRUE;
+
+      case WM_CONTEXTMENU: {
+        const bool from_mouse = pending_mouse_context_menu_icon_id_ == icon_id;
+        pending_mouse_context_menu_icon_id_.reset();
+        win_icon->HandleActivation(AnchorPointFromWParam(wparam),
+                                   /*is_primary_activation=*/false,
+                                   from_mouse
+                                       ? ui::mojom::MenuSourceType::kMouse
+                                       : ui::mojom::MenuSourceType::kKeyboard);
+        return TRUE;
+      }
     }
   } else if (message == WM_ENDSESSION) {
     // If Chrome is in background-only mode, this is the only notification
@@ -264,8 +305,11 @@ std::unique_ptr<StatusIcon> StatusTrayWin::CreatePlatformStatusIcon(
 }
 
 UINT StatusTrayWin::NextIconId() {
-  UINT icon_id = next_icon_id_++;
-  return kBaseIconId + static_cast<UINT>(NAMED_STATUS_ICON_COUNT) + icon_id;
+  constexpr UINT kFirstDynamicIconId =
+      kBaseIconId + static_cast<UINT>(NAMED_STATUS_ICON_COUNT) + 1;
+  constexpr UINT kDynamicIconIdSpan = UINT16_MAX - kFirstDynamicIconId + 1;
+  const UINT offset = next_icon_id_++ % kDynamicIconIdSpan;
+  return kFirstDynamicIconId + offset;
 }
 
 void StatusTrayWin::SetStatusTrayStateChangerProxyForTest(
