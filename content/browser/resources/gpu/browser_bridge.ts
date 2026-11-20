@@ -46,7 +46,6 @@ interface GpuInfo {
   ANGLEFeatures?: AngleFeature[];
   basicInfo: Data[];
   basicInfoForHardwareGpu: Data[];
-  compositorInfo: Data[];
   dawnInfo?: string[];
   devicePerfInfo: Data[];
   diagnostics?: Data[];

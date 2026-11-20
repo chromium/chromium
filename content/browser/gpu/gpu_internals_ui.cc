@@ -297,18 +297,6 @@ base::DictValue GetGpuInfo() {
   return info;
 }
 
-base::ListValue CompositorInfo() {
-  base::ListValue compositor_info;
-
-  compositor_info.Append(display::BuildGpuInfoEntry(
-      "Tile Update Mode",
-      IsZeroCopyUploadEnabled() ? "Zero-copy" : "One-copy"));
-
-  compositor_info.Append(display::BuildGpuInfoEntry(
-      "Partial Raster", IsPartialRasterEnabled() ? "Enabled" : "Disabled"));
-  return compositor_info;
-}
-
 base::ListValue GetDisplayInfo() {
   base::ListValue display_info;
   const std::vector<display::Display> displays =
@@ -828,7 +816,6 @@ base::DictValue GpuMessageHandler::GetGpuInfoDict() {
                        std::move(gpu_info_for_hardware_gpu_val));
     }
   }
-  gpu_info_val.Set("compositorInfo", CompositorInfo());
   gpu_info_val.Set("displayInfo", GetDisplayInfo());
   gpu_info_val.Set("videoAcceleratorsInfo", GetVideoAcceleratorsInfo());
   gpu_info_val.Set("ANGLEFeatures", GetANGLEFeatures());
