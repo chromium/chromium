@@ -5533,6 +5533,52 @@ TEST_F(HostResolverManagerDnsTest,
               CreateExpected("127.0.0.1", 443), CreateExpected("::1", 443)))));
 }
 
+TEST_F(HostResolverManagerDnsTest,
+       DnsPlatform_Ipv6UnreachableWithEmptyConfigDisablesAAAA) {
+  if (!features::IsDnsPlatformSupported()) {
+    GTEST_SKIP() << "Platform DNS is not supported.";
+  }
+
+#if BUILDFLAG(IS_WIN)
+  FAIL() << "Empty DnsConfig on Windows historically preserves AAAA for "
+            "NRPT/DirectAccess before DnsConfigServiceWin loads; verify "
+            "InitializeJobKeyAndIPAddress() before enabling Platform DNS.";
+#else
+  for (InsecureDnsMode mode : {InsecureDnsMode::kEnabledPlatformNoSystem,
+                               InsecureDnsMode::kEnabledPlatform}) {
+    SCOPED_TRACE(static_cast<int>(mode));
+
+    CreateResolverWithLimitsAndParams(kMaxJobs, DefaultParams(proc_),
+                                      /*ipv6_reachable=*/false,
+                                      /*check_ipv6_on_wifi=*/true);
+
+    MockDnsClientRuleList rules;
+    AddDnsRule(&rules, "ipv4_only.test", dns_protocol::kTypeA,
+               MockDnsClientRule::ResultType::kOk, /*delay=*/false);
+    AddDnsRule(&rules, "ipv4_only.test", dns_protocol::kTypeAAAA,
+               MockDnsClientRule::ResultType::kUnexpected, /*delay=*/false);
+
+    // Leave `DnsConfig` empty (simulating cold start before `DnsConfig`
+    // hydration). Platform DNS can still run insecure transactions, so `AAAA`
+    // must be disabled when IPv6 is unreachable.
+    auto dns_client =
+        std::make_unique<MockDnsClient>(DnsConfig(), std::move(rules));
+    mock_dns_client_ = dns_client.get();
+    resolver_->SetDnsClientForTesting(std::move(dns_client));
+    resolver_->SetInsecureDnsClientEnabled(
+        mode, /*additional_dns_types_enabled=*/true);
+
+    ResolveHostResponseHelper response(resolver_->CreateRequest(
+        HostPortPair("ipv4_only.test", 80), NetworkAnonymizationKey(),
+        handles::kInvalidNetworkHandle, NetLogWithSource(), std::nullopt,
+        resolve_context_.get()));
+    EXPECT_THAT(response.result_error(), IsOk());
+    EXPECT_THAT(response.request()->GetAddressResults(),
+                testing::ElementsAre(CreateExpected("127.0.0.1", 80)));
+  }
+#endif  // BUILDFLAG(IS_WIN)
+}
+
 TEST_F(HostResolverManagerDnsTest, StrictEch_NoSystemFallback) {
   // Add a rule to `proc_` (the system resolver) for "nx", which fails in
   // MockDnsClient. If fallback to the system resolver were allowed, this query

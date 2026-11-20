@@ -863,7 +863,9 @@ void HostResolverManager::InitializeJobKeyAndIPAddress(
   bool use_local_ipv6 = true;
   if (dns_client_) {
     const DnsConfig& config = dns_client_->GetEffectiveConfig();
-    if (!config.nameservers.empty() || !config.doh_config.servers().empty()) {
+    if (!config.nameservers.empty() ||
+        dns_client_->CanUseSecureDnsTransactions() ||
+        dns_client_->CanUseInsecureDnsTransactions(out_job_key.GetEchMode())) {
       use_local_ipv6 = config.use_local_ipv6;
     }
   }
