@@ -1940,6 +1940,12 @@ void RasterDecoderImpl::DoWritePixelsINTERNAL(GLint x_offset,
   }
 
   viz::SharedImageFormat dest_format = dest_shared_image->format();
+  // Multiplanar shared images are written with WritePixelsYUV.
+  if (dest_format.is_multi_plane()) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glWritePixels",
+                       "Destination shared image must be single-plane.");
+    return;
+  }
   if (SkColorTypeBytesPerPixel(viz::ToClosestSkColorType(dest_format)) !=
       SkColorTypeBytesPerPixel(static_cast<SkColorType>(src_sk_color_type))) {
     LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glWritePixels",
@@ -1952,13 +1958,6 @@ void RasterDecoderImpl::DoWritePixelsINTERNAL(GLint x_offset,
   // pixel data.
   sk_sp<SkColorSpace> color_space;
   if (pixels_offset > 0) {
-    // For multiplanar formats write is per plane, and source color
-    // space must be nullptr to allow letting Skia assume srgb color space.
-    if (dest_format.is_multi_plane()) {
-      LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glWritePixels",
-                         "Unexpected color space for multiplanar shared image");
-      return;
-    }
     void* color_space_bytes =
         GetSharedMemoryAs<void*>(shm_id, shm_offset, pixels_offset);
     if (!color_space_bytes) {

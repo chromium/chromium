@@ -4,6 +4,7 @@
 
 #include "gpu/command_buffer/service/raster_decoder.h"
 
+#include <algorithm>
 #include <array>
 #include <cstddef>
 #include <cstdint>
@@ -1221,6 +1222,47 @@ TEST_F(RasterDecoderOOPTest,
       EXPECT_NE(*uv_pixmap.addr16(x, y), 0xCDCDu);
     }
   }
+}
+
+// WritePixels only supports single-plane destinations (multiplanar images are
+// written with WritePixelsYUV). A multiplanar destination must produce a GL
+// error rather than crash the GPU process.
+TEST_F(RasterDecoderOOPTest, WritePixelsMultiplanarDestinationFails) {
+  gpu::Mailbox dest_mailbox = gpu::Mailbox::Generate();
+  SharedImageInfo dest_si_info(
+      viz::MultiPlaneFormat::kNV12, gfx::Size(2, 2),
+      gfx::ColorSpace::CreateREC709(), kTopLeft_GrSurfaceOrigin,
+      kOpaque_SkAlphaType,
+      SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE,
+      "TestLabel");
+  auto dest_backing_unique =
+      std::make_unique<CpuSurfaceTestImageBacking>(dest_mailbox, dest_si_info);
+  auto dest_ref = shared_image_manager()->Register(
+      std::move(dest_backing_unique), &memory_tracker_);
+
+  // One byte per pixel, matching the Y plane of NV12.
+  constexpr GLuint kWidth = 2;
+  constexpr GLuint kHeight = 2;
+  // SAFETY: the shared memory buffer is kSharedBufferSize bytes, far larger
+  // than the kWidth * kHeight bytes written here.
+  std::ranges::fill(UNSAFE_BUFFERS(base::span(
+                        static_cast<uint8_t*>(shared_memory_address_.get()),
+                        kWidth * kHeight)),
+                    0x42);
+
+  auto& cmd = *GetImmediateAs<cmds::WritePixelsINTERNALImmediate>();
+  cmd.Init(/*x_offset=*/0, /*y_offset=*/0, kWidth, kHeight,
+           /*src_row_bytes=*/kWidth, kAlpha_8_SkColorType, kPremul_SkAlphaType,
+           shared_memory_id_, shared_memory_offset_,
+           /*pixels_offset=*/0, reinterpret_cast<GLbyte*>(&dest_mailbox));
+  EXPECT_EQ(error::kNoError, ExecuteImmediateCmd(cmd, sizeof(dest_mailbox)));
+  EXPECT_EQ(GL_INVALID_OPERATION, GetGLError());
+
+  SharedImageRepresentationFactory repr_factory(shared_image_manager(),
+                                                nullptr);
+  auto dest_repr = repr_factory.ProduceSkia(dest_mailbox, context_state_.get());
+  ASSERT_TRUE(dest_repr);
+  EXPECT_FALSE(dest_repr->IsCleared());
 }
 
 TEST_F(RasterDecoderOOPTest, MakeCurrentAndDestroyWithGrContextTypeNone) {
