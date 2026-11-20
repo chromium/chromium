@@ -61,7 +61,7 @@ class MaybeRenderEarlyTest : public testing::Test {
   }
 
   std::vector<std::unique_ptr<NiceMock<MockImage>>> owned_images_;
-  std::vector<raw_ptr<MockImage, VectorExperimental>> images_;
+  std::vector<raw_ptr<MockImage>> images_;
 };
 
 TEST_F(MaybeRenderEarlyTest, EmptyVector) {

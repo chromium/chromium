@@ -348,7 +348,7 @@ class CAPTURE_EXPORT RequestManager final
 
   // StreamBufferManager does not own the ResultMetadataObservers.  The
   // observers are responsible for removing itself before self-destruction.
-  absl::flat_hash_set<raw_ptr<ResultMetadataObserver, CtnExperimental>>
+  absl::flat_hash_set<raw_ptr<ResultMetadataObserver>>
       result_metadata_observers_;
 
   // The list of settings to set/override once in the capture request.

@@ -74,16 +74,15 @@ class MIDI_EXPORT MidiManagerAndroid final
   // All ports held in |devices_|. Each device has ownership of ports, but we
   // can store pointers here because a device will keep its ports while it is
   // alive.
-  std::vector<raw_ptr<MidiInputPortAndroid, VectorExperimental>>
-      all_input_ports_ GUARDED_BY(lock_);
+  std::vector<raw_ptr<MidiInputPortAndroid>> all_input_ports_ GUARDED_BY(lock_);
   // A dictionary from a port to its index.
   // input_port_to_index_[all_input_ports_[i]] == i for each valid |i|.
   absl::flat_hash_map<MidiInputPortAndroid*, size_t> input_port_to_index_
       GUARDED_BY(lock_);
 
   // Ditto for output ports.
-  std::vector<raw_ptr<MidiOutputPortAndroid, VectorExperimental>>
-      all_output_ports_ GUARDED_BY(lock_);
+  std::vector<raw_ptr<MidiOutputPortAndroid>> all_output_ports_
+      GUARDED_BY(lock_);
   absl::flat_hash_map<MidiOutputPortAndroid*, size_t> output_port_to_index_
       GUARDED_BY(lock_);
 

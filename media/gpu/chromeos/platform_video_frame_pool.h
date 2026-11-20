@@ -127,8 +127,8 @@ class MEDIA_GPU_EXPORT PlatformVideoFramePool : public DmabufVideoFramePool {
   base::circular_deque<scoped_refptr<FrameResource>> free_frames_
       GUARDED_BY(lock_);
   // Mapping from the frame's tracking token to the original frame.
-  std::map<base::UnguessableToken, raw_ptr<FrameResource, CtnExperimental>>
-      frames_in_use_ GUARDED_BY(lock_);
+  std::map<base::UnguessableToken, raw_ptr<FrameResource>> frames_in_use_
+      GUARDED_BY(lock_);
 
   // The maximum number of frames created by the pool.
   size_t max_num_frames_ GUARDED_BY(lock_) = 0;

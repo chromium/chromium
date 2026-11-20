@@ -323,8 +323,8 @@ class FakeV4L2Impl::OpenedDevice {
       // We only support device-owned buffers
       return Error(EINVAL);
     }
-    incoming_queue_ = std::queue<raw_ptr<FakeV4L2Buffer, CtnExperimental>>();
-    outgoing_queue_ = std::queue<raw_ptr<FakeV4L2Buffer, CtnExperimental>>();
+    incoming_queue_ = std::queue<raw_ptr<FakeV4L2Buffer>>();
+    outgoing_queue_ = std::queue<raw_ptr<FakeV4L2Buffer>>();
     device_buffers_.clear();
     uint32_t target_buffer_count = std::min(bufs->count, kMaxBufferCount);
     bufs->count = target_buffer_count;
@@ -438,8 +438,8 @@ class FakeV4L2Impl::OpenedDevice {
       return Error(EINVAL);
     should_quit_frame_production_loop_.Set();
     frame_production_thread_.Stop();
-    incoming_queue_ = std::queue<raw_ptr<FakeV4L2Buffer, CtnExperimental>>();
-    outgoing_queue_ = std::queue<raw_ptr<FakeV4L2Buffer, CtnExperimental>>();
+    incoming_queue_ = std::queue<raw_ptr<FakeV4L2Buffer>>();
+    outgoing_queue_ = std::queue<raw_ptr<FakeV4L2Buffer>>();
     return kSuccessReturnValue;
   }
 
@@ -565,8 +565,8 @@ class FakeV4L2Impl::OpenedDevice {
   v4l2_fract timeperframe_;
   base::flat_set<uint32_t> control_event_subscriptions_;
   std::vector<FakeV4L2Buffer> device_buffers_;
-  std::queue<raw_ptr<FakeV4L2Buffer, CtnExperimental>> incoming_queue_;
-  std::queue<raw_ptr<FakeV4L2Buffer, CtnExperimental>> outgoing_queue_;
+  std::queue<raw_ptr<FakeV4L2Buffer>> incoming_queue_;
+  std::queue<raw_ptr<FakeV4L2Buffer>> outgoing_queue_;
   std::queue<v4l2_event> pending_events_;
   base::WaitableEvent wait_for_outgoing_queue_event_;
   base::Thread frame_production_thread_;

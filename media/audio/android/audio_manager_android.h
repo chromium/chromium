@@ -212,12 +212,10 @@ class MEDIA_EXPORT AudioManagerAndroid : public AudioManagerBase {
  private:
   using DeviceCache =
       base::flat_map<android::AudioDeviceId, android::AudioDevice>;
-  using OutputStreams =
-      base::flat_set<raw_ptr<MuteableAudioOutputStream, CtnExperimental>>;
+  using OutputStreams = base::flat_set<raw_ptr<MuteableAudioOutputStream>>;
   using BluetoothOutputStreams =
-      base::flat_set<raw_ptr<AAudioBluetoothOutputStream, CtnExperimental>>;
-  using InputStreams =
-      base::flat_set<raw_ptr<AudioInputStream, CtnExperimental>>;
+      base::flat_set<raw_ptr<AAudioBluetoothOutputStream>>;
+  using InputStreams = base::flat_set<raw_ptr<AudioInputStream>>;
 
   enum class AudioDeviceDirection {
     kInput,   // Audio source

@@ -63,7 +63,7 @@ class GpuMaybeRenderEarlyImpl {
   }
 
   // Outstanding images that should be considered for early rendering.
-  std::vector<raw_ptr<CodecImage, VectorExperimental>> images_;
+  std::vector<raw_ptr<CodecImage>> images_;
 
   // Current image group to which new images (frames) will be added.  We'll
   // replace this when SetImageGroup() is called.

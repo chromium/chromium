@@ -71,7 +71,7 @@ class LogEventDispatcher {
 
    private:
     base::OnceClosure deletion_cb_;
-    std::vector<raw_ptr<RawEventSubscriber, VectorExperimental>> subscribers_;
+    std::vector<raw_ptr<RawEventSubscriber>> subscribers_;
   };
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
