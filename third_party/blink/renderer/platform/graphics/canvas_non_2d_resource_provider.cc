@@ -14,7 +14,6 @@
 #include "base/memory/safety_checks.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/process_memory_dump.h"
@@ -274,9 +273,6 @@ CanvasNon2DResourceProvider::~CanvasNon2DResourceProvider() {
   if (!is_software_) {
     FlushForImageListener::Get()->RemoveObserver(this);
   }
-
-  UMA_HISTOGRAM_EXACT_LINEAR("Blink.Canvas.MaximumInflightResources",
-                             max_inflight_resources_, 20);
 }
 
 scoped_refptr<CanvasResource>
@@ -298,9 +294,6 @@ CanvasNon2DResourceProvider::NewOrRecycledResource() {
       resource->Initialize(CreateWeakPtr());
     }
     ++num_inflight_resources_;
-    if (num_inflight_resources_ > max_inflight_resources_) {
-      max_inflight_resources_ = num_inflight_resources_;
-    }
   }
   DCHECK(resource->HasOneRef());
   return resource;

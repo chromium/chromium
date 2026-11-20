@@ -517,7 +517,6 @@ class MODULES_EXPORT BaseRenderingContext2D
   scoped_refptr<CanvasResource> resource_;
   bool is_accelerated_ = false;
   int num_inflight_resources_ = 0;
-  int max_inflight_resources_ = 0;
   sk_sp<SkSurface> surface_;
   std::unique_ptr<CanvasImageProvider> canvas_image_provider_;
   // Initialized on GPU-composited SharedImage backing creation and checked to

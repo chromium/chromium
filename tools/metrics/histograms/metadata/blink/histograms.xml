@@ -373,17 +373,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.Canvas.MaximumInflightResources"
-    units="canvas resources" expires_after="2026-09-27">
-  <owner>aaronhk@chromium.org</owner>
-  <owner>fserb@chromium.org</owner>
-  <summary>
-    Reports the maximum number or canvas resources used at any one time by a
-    canvas resource provider. Logged in the destructor of
-    CanvasResourceProvider.
-  </summary>
-</histogram>
-
 <histogram name="Blink.Canvas.RasterDuration{BlinkCanvasRasterDurationType}"
     units="microseconds" expires_after="2027-05-09">
   <owner>aaronhk@chromium.org</owner>

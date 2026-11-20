@@ -237,7 +237,6 @@ class PLATFORM_EXPORT CanvasNon2DResourceProvider
   scoped_refptr<viz::RasterContextProvider> raster_context_provider_;
 
   int num_inflight_resources_ = 0;
-  int max_inflight_resources_ = 0;
 
   base::WeakPtrFactory<CanvasNon2DResourceProvider> weak_ptr_factory_{this};
 };

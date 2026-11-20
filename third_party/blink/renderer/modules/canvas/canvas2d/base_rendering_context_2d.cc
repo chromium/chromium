@@ -285,15 +285,12 @@ void BaseRenderingContext2D::ResetSharedImagePool() {
   if (!image_pool_) {
     return;
   }
-  base::UmaHistogramExactLinear("Blink.Canvas.MaximumInflightResources",
-                                max_inflight_resources_, 20);
   resource_client_weak_ptr_factory_.InvalidateWeakPtrs();
   resource_recycler_.reset();
   image_pool_.reset();
   resource_.reset();
   is_accelerated_ = false;
   num_inflight_resources_ = 0;
-  max_inflight_resources_ = 0;
   must_preserve_content_on_copy_on_write_ = true;
   current_resource_has_write_access_ = false;
   is_cleared_ = false;
@@ -351,9 +348,6 @@ scoped_refptr<CanvasResource> BaseRenderingContext2D::NewOrRecycledResource() {
       resource->Initialize(resource_client_weak_ptr_factory_.GetWeakPtr());
     }
     ++num_inflight_resources_;
-    if (num_inflight_resources_ > max_inflight_resources_) {
-      max_inflight_resources_ = num_inflight_resources_;
-    }
   }
   DCHECK(resource->HasOneRef());
   return resource;
