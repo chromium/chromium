@@ -10,10 +10,10 @@
 #import "base/test/scoped_feature_list.h"
 #import "base/values.h"
 #import "components/enterprise/data_controls/core/browser/test_utils.h"
+#import "components/policy/core/common/policy_pref_names.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/enterprise/data_protection/model/data_protection_tab_helper.h"
 #import "ios/chrome/browser/enterprise/data_protection/public/features.h"
-#import "ios/chrome/browser/enterprise/data_protection/public/pref_names.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -124,7 +124,7 @@ class ScreenshotDelegateTest : public PlatformTest {
   // Sets the DisableScreenshots policy.
   void SetDisableScreenshotsPolicy(bool disabled) {
     profile_->GetTestingPrefService()->SetManagedPref(
-        enterprise_data_protection::kDisableScreenshots, base::Value(disabled));
+        policy::policy_prefs::kDisableScreenshots, base::Value(disabled));
   }
 
   // Sets up a Data Controls policy to block screenshots for the given `url`.

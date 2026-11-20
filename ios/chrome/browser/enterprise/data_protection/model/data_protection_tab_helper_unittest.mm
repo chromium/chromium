@@ -19,6 +19,7 @@
 #import "components/enterprise/data_controls/core/browser/prefs.h"
 #import "components/enterprise/data_controls/core/browser/test_utils.h"
 #import "components/enterprise/data_protection/data_protection_url_lookup_service.h"
+#import "components/policy/core/common/policy_pref_names.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
 #import "components/safe_browsing/core/browser/realtime/chrome_enterprise_url_lookup_service.h"
@@ -33,7 +34,6 @@
 #import "ios/chrome/browser/enterprise/data_protection/model/data_protection_url_lookup_service_factory.h"
 #import "ios/chrome/browser/enterprise/data_protection/model/watermark_request_config.h"
 #import "ios/chrome/browser/enterprise/data_protection/public/features.h"
-#import "ios/chrome/browser/enterprise/data_protection/public/pref_names.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
 #import "ios/chrome/browser/safe_browsing/model/chrome_enterprise_url_lookup_service_factory.h"
@@ -250,7 +250,7 @@ class DataProtectionTabHelperTest : public PlatformTest {
 
   void SetDisableScreenshotsPolicy(bool disabled) {
     profile_->GetTestingPrefService()->SetManagedPref(
-        enterprise_data_protection::kDisableScreenshots, base::Value(disabled));
+        policy::policy_prefs::kDisableScreenshots, base::Value(disabled));
   }
 
   web::WebTaskEnvironment task_environment_;

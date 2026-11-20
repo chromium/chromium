@@ -47,7 +47,6 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/browser_closed_waiter.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/crx_file/id_util.h"
@@ -55,6 +54,7 @@
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_delegate.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/security_interstitials/content/security_interstitial_controller_client.h"
 #include "components/security_interstitials/content/security_interstitial_page.h"
@@ -1638,7 +1638,8 @@ IN_PROC_BROWSER_TEST_F(
   GURL url = embedded_test_server()->GetURL("a.test", "/english_page.html");
   ASSERT_TRUE(NavigateToURL(web_contents(), url));
 
-  profile()->GetPrefs()->SetBoolean(prefs::kDisableScreenshots, true);
+  profile()->GetPrefs()->SetBoolean(policy::policy_prefs::kDisableScreenshots,
+                                    true);
 
   ASSERT_TRUE(RunExtensionTest(
       "debugger_disable_screenshots",
@@ -1676,7 +1677,8 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     SitePerProcessDebuggerExtensionApiStrictPolicyEnabledTest,
     BrowserTargetAllowedForTrustedExtensionWhenScreenshotsDisabled) {
-  profile()->GetPrefs()->SetBoolean(prefs::kDisableScreenshots, true);
+  profile()->GetPrefs()->SetBoolean(policy::policy_prefs::kDisableScreenshots,
+                                    true);
 
   scoped_refptr<const Extension> component_trusted_extension =
       ExtensionBuilder("Some Trusted Extension")
@@ -1983,7 +1985,8 @@ IN_PROC_BROWSER_TEST_F(
   GURL url = embedded_test_server()->GetURL("a.test", "/english_page.html");
   ASSERT_TRUE(NavigateToURL(web_contents(), url));
 
-  profile()->GetPrefs()->SetBoolean(prefs::kDisableScreenshots, true);
+  profile()->GetPrefs()->SetBoolean(policy::policy_prefs::kDisableScreenshots,
+                                    true);
 
   ASSERT_TRUE(RunExtensionTest("debugger_disable_screenshots",
                                {.custom_arg = "debuggerAllowed"}))

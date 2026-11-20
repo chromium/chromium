@@ -372,7 +372,7 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     prefs::kManagedDefaultWebHidGuardSetting,
     base::Value::Type::INTEGER },
   { key::kDisableScreenshots,
-    prefs::kDisableScreenshots,
+    policy_prefs::kDisableScreenshots,
     base::Value::Type::BOOLEAN },
   { key::kForcePermissionPolicyUnloadDefaultEnabled,
     policy_prefs::kForcePermissionPolicyUnloadDefaultEnabled,

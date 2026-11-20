@@ -37,8 +37,8 @@
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
-#include "chrome/common/pref_names.h"
 #include "components/enterprise/buildflags/buildflags.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "content/public/browser/devtools_agent_host.h"
@@ -1418,7 +1418,8 @@ ExtensionFunction::ResponseAction DebuggerAttachFunction::Run() {
   // capabilities.
   // Details: crbug.com/533240995, crbug.com/561948316
   if (strict_policy_restrictions && !ExtensionIsTrusted(*extension()) &&
-      profile->GetPrefs()->GetBoolean(prefs::kDisableScreenshots)) {
+      profile->GetPrefs()->GetBoolean(
+          policy::policy_prefs::kDisableScreenshots)) {
     return RespondNow(Error(kDebuggerDisabledByScreenshotPolicy));
   }
 

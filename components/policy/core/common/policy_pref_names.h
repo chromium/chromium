@@ -271,6 +271,10 @@ inline constexpr char kLocalNetworkAccessPermissionsPolicyDefaultEnabled[] =
 inline constexpr char kBackForwardCacheForWebSocketsAllowed[] =
     "policy.back_forward_cache_for_web_sockets_allowed";
 
+// Boolean preference controlled by the DisableScreenshots enterprise policy.
+// Resides in both profile prefs and local state (on ChromeOS).
+inline constexpr char kDisableScreenshots[] = "disable_screenshots";
+
 }  // namespace policy_prefs
 }  // namespace policy
 

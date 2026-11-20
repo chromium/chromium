@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "ash/constants/chrome_pref_names.h"
 #include "ash/shell.h"
 #include "base/barrier_callback.h"
 #include "base/functional/bind.h"
@@ -19,6 +18,7 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_restriction_set.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chromeos/ash/experiences/screenshot_area/screenshot_area.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkPixmap.h"
@@ -36,7 +36,7 @@ bool IsScreenshotsDisabledByPolicy() {
   }
   PrefService* local_state = ash::Shell::Get()->local_state();
   return local_state &&
-         local_state->GetBoolean(ash::chrome_prefs::kDisableScreenshots);
+         local_state->GetBoolean(policy::policy_prefs::kDisableScreenshots);
 }
 
 // Helper method to collect all png_data before calling OnAllScreenshotsTaken

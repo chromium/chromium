@@ -70,6 +70,7 @@
 #include "components/lens/lens_metadata.mojom-shared.h"
 #include "components/lens/lens_overlay_mime_type.h"
 #include "components/lens/lens_overlay_permission_utils.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/search.h"
 #include "components/search_engines/template_url_service.h"
@@ -203,7 +204,7 @@ ScreenshotArea ConvertToScreenshotArea(const aura::Window* window,
 }
 
 bool IsScreenCaptureDisabledByPolicy(PrefService& local_state) {
-  return local_state.GetBoolean(ash::chrome_prefs::kDisableScreenshots);
+  return local_state.GetBoolean(policy::policy_prefs::kDisableScreenshots);
 }
 
 void CaptureFileFinalized(

@@ -833,6 +833,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
   registry->RegisterBooleanPref(policy::policy_prefs::kForceGoogleSafeSearch,
                                 false);
+  registry->RegisterBooleanPref(policy::policy_prefs::kDisableScreenshots,
+                                false);
 
   // Preferences related to the new Safety Check Manager.
   registry->RegisterStringPref(

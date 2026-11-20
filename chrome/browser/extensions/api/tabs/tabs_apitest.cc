@@ -426,7 +426,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiCaptureTest, MAYBE_CaptureVisibleFile) {
 #define MAYBE_CaptureVisibleDisabled CaptureVisibleDisabled
 #endif
 IN_PROC_BROWSER_TEST_F(ExtensionApiCaptureTest, MAYBE_CaptureVisibleDisabled) {
-  profile()->GetPrefs()->SetBoolean(prefs::kDisableScreenshots, true);
+  profile()->GetPrefs()->SetBoolean(policy::policy_prefs::kDisableScreenshots,
+                                    true);
   ASSERT_TRUE(RunExtensionTest("tabs/capture_visible_tab/test_disabled"))
       << message_;
 }

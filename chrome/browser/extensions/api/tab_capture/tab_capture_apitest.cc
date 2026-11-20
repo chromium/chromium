@@ -31,7 +31,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/common/pref_names.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -1036,7 +1036,8 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, ScreenshotsDisabledByPreferences) {
   content::WebContents* web_contents = GetActiveWebContents();
   ASSERT_TRUE(web_contents);
 
-  profile()->GetPrefs()->SetBoolean(prefs::kDisableScreenshots, true);
+  profile()->GetPrefs()->SetBoolean(policy::policy_prefs::kDisableScreenshots,
+                                    true);
 
   auto capture_function = base::MakeRefCounted<TabCaptureCaptureFunction>();
   capture_function->set_extension(extension.get());

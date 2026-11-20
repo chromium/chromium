@@ -12,6 +12,7 @@
 #import "base/values.h"
 #import "components/enterprise/connectors/core/connectors_prefs.h"
 #import "components/enterprise/data_controls/core/browser/prefs.h"
+#import "components/policy/core/common/policy_pref_names.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
@@ -503,7 +504,7 @@ bool AreEnterpriseLookupsEnabled(const ProfileIOS& profile) {
   _prefObserverBridge->ObserveChangesForPreference(
       enterprise_connectors::kEnterpriseRealTimeUrlCheckMode, &_prefRegistrar);
   _prefObserverBridge->ObserveChangesForPreference(
-      enterprise_data_protection::kDisableScreenshots, &_prefRegistrar);
+      policy::policy_prefs::kDisableScreenshots, &_prefRegistrar);
 }
 
 // Returns whether the overall Tab Grid should be shielded based on enterprise

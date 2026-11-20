@@ -10,7 +10,6 @@ include_rules = [
   "+ios/chrome/browser/enterprise/client_certificates",
   "+ios/chrome/browser/enterprise/common",
   "+ios/chrome/browser/enterprise/connectors/reporting",
-  "+ios/chrome/browser/enterprise/data_protection/public",
   "+ios/chrome/browser/enterprise/groups/model",
   "+ios/chrome/browser/enterprise/identifiers",
   "+ios/chrome/browser/enterprise/signals/model",

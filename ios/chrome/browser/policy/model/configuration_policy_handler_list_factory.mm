@@ -65,7 +65,6 @@
 #import "components/unified_consent/pref_names.h"
 #import "components/variations/pref_names.h"
 #import "components/variations/service/variations_service.h"
-#import "ios/chrome/browser/enterprise/data_protection/public/pref_names.h"
 #import "ios/chrome/browser/policy/model/browser_signin_policy_handler.h"
 #import "ios/chrome/browser/policy/model/gemini_spark_settings_policy_handler.h"
 #import "ios/chrome/browser/policy/model/new_tab_page_location_policy_handler.h"
@@ -108,7 +107,7 @@ constexpr auto kSimplePolicyMap = std::to_array<PolicyToPreferenceMapEntry>({
     prefs::kSafeBrowsingProceedAnywayDisabled,
     base::Value::Type::BOOLEAN },
   { policy::key::kDisableScreenshots,
-    enterprise_data_protection::kDisableScreenshots,
+    policy::policy_prefs::kDisableScreenshots,
     base::Value::Type::BOOLEAN },
   { policy::key::kEditBookmarksEnabled,
     bookmarks::prefs::kEditBookmarksEnabled,

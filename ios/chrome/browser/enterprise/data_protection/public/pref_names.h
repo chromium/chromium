@@ -13,11 +13,6 @@ namespace enterprise_data_protection {
 // display for the tab.
 extern const char kDataProtectionWatermarkedTabs[];
 
-// Boolean preference set by the DisableScreenshots enterprise policy.
-// TODO(crbug.com/582326248): Consolidate `kDisableScreenshots` into
-// `policy::policy_prefs::kDisableScreenshots` across platforms.
-inline constexpr char kDisableScreenshots[] = "disable_screenshots";
-
 // Registers the profile prefs for the data protection component.
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 

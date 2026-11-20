@@ -1849,6 +1849,7 @@ source_set("chrome_extensions_browser_client") {
     "//components/content_settings/core/browser",
     "//components/embedder_support:user_agent",
     "//components/enterprise/buildflags",
+    "//components/policy/core/common:common_constants",
     "//components/privacy_sandbox:privacy_sandbox_prefs",
     "//components/proxy_config",
     "//components/safe_browsing/content/browser",

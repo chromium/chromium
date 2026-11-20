@@ -2586,7 +2586,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   registry->RegisterBooleanPref(prefs::kLensDesktopNTPSearchEnabled, true);
 #endif
 
-  registry->RegisterBooleanPref(prefs::kDisableScreenshots, false);
+  registry->RegisterBooleanPref(policy::policy_prefs::kDisableScreenshots,
+                                false);
   registry->RegisterDictionaryPref(prefs::kContextMenuAnimationState);
   registry->RegisterListPref(
       webauthn::pref_names::kRemoteDesktopAllowedOrigins);
@@ -2697,7 +2698,8 @@ void RegisterUserProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
 }
 
 void RegisterScreenshotPrefs(PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(prefs::kDisableScreenshots, false);
+  registry->RegisterBooleanPref(policy::policy_prefs::kDisableScreenshots,
+                                false);
 }
 
 void RegisterGeminiSettingsPrefs(user_prefs::PrefRegistrySyncable* registry) {

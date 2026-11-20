@@ -42,6 +42,7 @@ source_set("impl") {
     "//chrome/browser/ui/navigator",
     "//chrome/browser/ui/qrcode_generator",
     "//chrome/common:constants",
+    "//components/policy/core/common:common_constants",
     "//components/prefs",
     "//components/tabs:public",
     "//components/vector_icons",

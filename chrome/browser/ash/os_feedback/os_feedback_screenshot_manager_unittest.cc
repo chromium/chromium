@@ -8,7 +8,6 @@
 #include <string>
 #include <utility>
 
-#include "ash/constants/chrome_pref_names.h"
 #include "ash/shell.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -33,6 +32,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/account_id/account_id.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/reporting/client/mock_report_queue_provider.h"
 #include "components/reporting/client/report_queue_provider_test_helper.h"
@@ -173,7 +173,7 @@ class OsFeedbackScreenshotManagerAshTest : public ChromeAshTestBase {
       manager->DeleteScreenshotData();
     }
     ash::Shell::Get()->local_state()->SetBoolean(
-        ash::chrome_prefs::kDisableScreenshots, false);
+        policy::policy_prefs::kDisableScreenshots, false);
     // Destroy any lazily-created DlpContentManagerAsh singleton before
     // ChromeAshTestBase::TearDown() tears down ash::Shell and its
     // ActivationClient.
@@ -313,7 +313,7 @@ TEST_F(OsFeedbackScreenshotManagerAshTest, TakeScreenshotAllowed) {
 TEST_F(OsFeedbackScreenshotManagerAshTest,
        DoNotTakeScreenshotIfDisabledByPolicy) {
   ash::Shell::Get()->local_state()->SetBoolean(
-      ash::chrome_prefs::kDisableScreenshots, true);
+      policy::policy_prefs::kDisableScreenshots, true);
 
   base::test::TestFuture<bool> future;
   auto* manager = OsFeedbackScreenshotManager::GetInstance();
@@ -431,7 +431,7 @@ TEST_F(OsFeedbackScreenshotManagerAshTest,
   EXPECT_FALSE(future.IsReady());
 
   ash::Shell::Get()->local_state()->SetBoolean(
-      ash::chrome_prefs::kDisableScreenshots, true);
+      policy::policy_prefs::kDisableScreenshots, true);
   std::move(warn_callback).Run(/*should_proceed=*/true);
 
   EXPECT_FALSE(future.Get());

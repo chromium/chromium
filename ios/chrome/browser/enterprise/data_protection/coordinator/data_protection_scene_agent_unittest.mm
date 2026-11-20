@@ -9,6 +9,7 @@
 #import "components/enterprise/connectors/core/connectors_prefs.h"
 #import "components/enterprise/data_controls/core/browser/prefs.h"
 #import "components/enterprise/data_controls/core/browser/test_utils.h"
+#import "components/policy/core/common/policy_pref_names.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/scoped_user_pref_update.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
@@ -137,7 +138,7 @@ class DataProtectionSceneAgentTestBase : public PlatformTest {
   // Sets the DisableScreenshots policy.
   void SetDisableScreenshotsPolicy(bool disabled) {
     profile_->GetTestingPrefService()->SetManagedPref(
-        enterprise_data_protection::kDisableScreenshots, base::Value(disabled));
+        policy::policy_prefs::kDisableScreenshots, base::Value(disabled));
   }
 
   // Adds an expectation for a call to `applyScreenshotProtection` with the

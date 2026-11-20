@@ -15,6 +15,7 @@
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/common/pref_names.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/engine/cycle/entity_change_metric_recording.h"
@@ -124,10 +125,11 @@ IN_PROC_BROWSER_TEST_P(TwoClientPreferencesSyncTest,
   ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(StringPrefMatchChecker(prefs::kHomePage).Wait());
-  ASSERT_TRUE(BooleanPrefMatchChecker(prefs::kDisableScreenshots).Wait());
+  ASSERT_TRUE(BooleanPrefMatchChecker(policy::policy_prefs::kDisableScreenshots)
+                  .Wait());
 
   // This pref is not syncable.
-  ChangeBooleanPref(0, prefs::kDisableScreenshots);
+  ChangeBooleanPref(0, policy::policy_prefs::kDisableScreenshots);
 
   // This pref is syncable.
   ChangeStringPref(0, prefs::kHomePage, "http://news.google.com");
@@ -135,7 +137,7 @@ IN_PROC_BROWSER_TEST_P(TwoClientPreferencesSyncTest,
   // Wait until the syncable pref is synced, then expect that the non-syncable
   // one is still out of sync.
   ASSERT_TRUE(StringPrefMatchChecker(prefs::kHomePage).Wait());
-  ASSERT_FALSE(BooleanPrefMatches(prefs::kDisableScreenshots));
+  ASSERT_FALSE(BooleanPrefMatches(policy::policy_prefs::kDisableScreenshots));
 }
 
 IN_PROC_BROWSER_TEST_P(TwoClientPreferencesSyncTest, E2E_ENABLED(StringPref)) {

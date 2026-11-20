@@ -50,15 +50,6 @@ inline constexpr char kSafeBrowsingForTrustedSourcesEnabled[] =
 inline constexpr char kRestrictYouTubeCookiesDeletion[] =
     "restrict_youtube_cookies_deletion";
 
-// Disables screenshot accelerators and extension APIs.
-// This setting resides both in profile prefs and local state. Accelerator
-// handling code reads local state, while extension APIs use profile pref.
-inline constexpr char kDisableScreenshots[] = "disable_screenshots";
-#if BUILDFLAG(IS_CHROMEOS)
-static_assert(std::string_view(kDisableScreenshots) ==
-              std::string_view(ash::chrome_prefs::kDisableScreenshots));
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 // A boolean specifying whether the partial download bubble (which shows up
 // automatically when downloads are complete) should be enabled. True (partial
 // bubble will show automatically) by default.

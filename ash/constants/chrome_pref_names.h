@@ -24,7 +24,6 @@ inline constexpr char kAudioCaptureAllowed[] = "hardware.audio_capture_enabled";
 inline constexpr char kDevToolsAvailability[] = "devtools.availability";
 inline constexpr char kDisableAuthNegotiateCnameLookup[] =
     "auth.disable_negotiate_cname_lookup";
-inline constexpr char kDisableScreenshots[] = "disable_screenshots";
 inline constexpr char kDnsOverHttpsMode[] = "dns_over_https.mode";
 inline constexpr char kDnsOverHttpsTemplates[] = "dns_over_https.templates";
 inline constexpr char kDownloadDefaultDirectory[] =

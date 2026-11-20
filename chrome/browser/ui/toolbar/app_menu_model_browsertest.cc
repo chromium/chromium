@@ -61,6 +61,7 @@
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/search/ntp_features.h"
@@ -83,7 +84,6 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
 #include "chromeos/constants/chromeos_features.h"
-#include "components/policy/core/common/policy_pref_names.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -420,7 +420,7 @@ IN_PROC_BROWSER_TEST_F(AppMenuModelTest, DoNotShowShareSubMenuItem) {
 #if !BUILDFLAG(IS_CHROMEOS)
   prefs->SetBoolean(prefs::kDesktopSharingHubEnabled, false);
 #endif
-  prefs->SetBoolean(prefs::kDisableScreenshots, true);
+  prefs->SetBoolean(policy::policy_prefs::kDisableScreenshots, true);
 
   AppMenuModel model(this, browser());
   model.Init();

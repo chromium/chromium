@@ -47,6 +47,7 @@ static_library("capture_mode") {
     "//components/drive",
     "//components/lens",
     "//components/lens:enterprise_policy",
+    "//components/policy/core/common:common_constants",
     "//components/search",
     "//components/session_manager/core",
     "//components/user_manager",

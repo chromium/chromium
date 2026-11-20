@@ -10,6 +10,7 @@
 #import "components/content_settings/core/browser/content_settings_utils.h"
 #import "components/enterprise/data_protection/data_protection_url_lookup_service.h"
 #import "components/enterprise/data_protection/utils.h"
+#import "components/policy/core/common/policy_pref_names.h"
 #import "components/safe_browsing/core/browser/realtime/chrome_enterprise_url_lookup_service.h"
 #import "components/safe_browsing/core/browser/realtime/url_lookup_service_base.h"
 #import "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
@@ -22,7 +23,6 @@
 #import "ios/chrome/browser/enterprise/data_protection/model/data_protection_url_lookup_service_factory.h"
 #import "ios/chrome/browser/enterprise/data_protection/model/watermark_request_config.h"
 #import "ios/chrome/browser/enterprise/data_protection/public/features.h"
-#import "ios/chrome/browser/enterprise/data_protection/public/pref_names.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request_cancel_handler.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
@@ -109,7 +109,7 @@ DataProtectionTabHelper::DataProtectionTabHelper(web::WebState* web_state)
   // `base::Unretained(this)` is safe because `pref_change_registrar_` is
   // owned by `this` and cleared in `WebStateDestroyed()` and the destructor.
   pref_change_registrar_.Add(
-      enterprise_data_protection::kDisableScreenshots,
+      policy::policy_prefs::kDisableScreenshots,
       base::BindRepeating(
           &DataProtectionTabHelper::NotifyScreenshotProtectionIfChanged,
           base::Unretained(this)));

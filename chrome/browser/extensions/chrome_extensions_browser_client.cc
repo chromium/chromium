@@ -83,6 +83,7 @@
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/event_args.h"
 #include "ui/base/page_transition_types.h"
@@ -868,7 +869,8 @@ ChromeExtensionsBrowserClient::IsScreenshotRestricted(
     content::WebContents* web_contents) const {
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  if (profile->GetPrefs()->GetBoolean(prefs::kDisableScreenshots)) {
+  if (profile->GetPrefs()->GetBoolean(
+          policy::policy_prefs::kDisableScreenshots)) {
     return base::unexpected(
         extensions::ScreenshotAccessError::kDisabledByPreferences);
   }

@@ -8,9 +8,9 @@
 
 #import "base/test/scoped_feature_list.h"
 #import "base/values.h"
+#import "components/policy/core/common/policy_pref_names.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/enterprise/data_protection/public/features.h"
-#import "ios/chrome/browser/enterprise/data_protection/public/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -18,7 +18,7 @@
 
 namespace {
 
-using enterprise_data_protection::kDisableScreenshots;
+using policy::policy_prefs::kDisableScreenshots;
 
 // Test fixture for `IsScreenshotsDisabledByPolicy()`.
 class DataProtectionPolicyUtilsTest : public PlatformTest {

@@ -26,10 +26,10 @@
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
-#include "chrome/common/pref_names.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/embedder_support/user_agent_utils.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -503,7 +503,8 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest,
   ASSERT_TRUE(CreateControlledFrame(
       app_frame, embedded_https_test_server().GetURL("/index.html")));
 
-  profile()->GetPrefs()->SetBoolean(prefs::kDisableScreenshots, true);
+  profile()->GetPrefs()->SetBoolean(policy::policy_prefs::kDisableScreenshots,
+                                    true);
 
   const std::string script = R"(
     (async function() {

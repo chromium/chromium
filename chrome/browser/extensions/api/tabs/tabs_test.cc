@@ -175,7 +175,6 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/wm/window_pin_util.h"
 #include "chrome/browser/chromeos/policy/dlp/test/mock_dlp_content_manager.h"
-#include "chrome/common/pref_names.h"
 #endif
 
 namespace extensions {
@@ -4795,7 +4794,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
   content::WaitForLoadStop(web_contents);
 
   // Disable screenshot.
-  profile()->GetPrefs()->SetBoolean(prefs::kDisableScreenshots, true);
+  profile()->GetPrefs()->SetBoolean(policy::policy_prefs::kDisableScreenshots,
+                                    true);
 
   // Run the function and check result.
   std::string error = utils::RunFunctionAndReturnError(

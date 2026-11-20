@@ -40,6 +40,7 @@ static_library("os_feedback") {
     "//components/account_id",
     "//components/feedback",
     "//components/feedback/content",
+    "//components/policy/core/common:common_constants",
     "//components/prefs",
     "//components/signin/public/identity_manager",
     "//content/public/browser",
@@ -67,7 +68,6 @@ source_set("unit_tests") {
   deps = [
     ":os_feedback",
     "//ash",
-    "//ash/constants",
     "//base",
     "//base/test:test_support",
     "//chrome/browser/chromeos/policy/dlp",
@@ -80,6 +80,7 @@ source_set("unit_tests") {
     "//chrome/test/base:testing_browser_process",
     "//components/account_id",
     "//components/keyed_service/core",
+    "//components/policy/core/common:common_constants",
     "//components/prefs",
     "//components/reporting/client:mock_report_queue_provider",
     "//components/reporting/util:status",

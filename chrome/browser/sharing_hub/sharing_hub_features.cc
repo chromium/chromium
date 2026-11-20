@@ -7,6 +7,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
@@ -30,7 +31,7 @@ bool SharingHubDisabledByPolicy(content::BrowserContext* context) {
 // TODO(crbug.com/40798792): possibly apply to Android features.
 bool ScreenshotsDisabledByPolicy(content::BrowserContext* context) {
   const PrefService* prefs = Profile::FromBrowserContext(context)->GetPrefs();
-  return prefs->GetBoolean(prefs::kDisableScreenshots);
+  return prefs->GetBoolean(policy::policy_prefs::kDisableScreenshots);
 }
 
 }  // namespace
