@@ -4,19 +4,33 @@
 
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/repack.gni")
+import("//ui/webui/resources/tools/minify_js.gni")
+
+minify_js("minify_headless_command_js") {
+  in_folder = "."
+  in_files = [ "headless_command.js" ]
+  out_folder = "$target_gen_dir/minified"
+}
 
 grit("headless_command_resources") {
   source = "headless_command.grd"
+
+  _headless_command_js = "$target_gen_dir/minified/headless_command.js"
+  grit_flags = [
+    "-E",
+    "headless_command_js=" + rebase_path(_headless_command_js, root_build_dir),
+  ]
+
   inputs = [
     "headless_command.html",
-    "headless_command.js",
+    _headless_command_js,
   ]
   outputs = [
     "grit/headless_command_resources.h",
     "$root_gen_dir/components/headless/command_handler/headless_command_resources.pak",
   ]
 
-  use_brotli = true
+  deps = [ ":minify_headless_command_js" ]
 }
 
 repack("headless_command_resources_pack") {
