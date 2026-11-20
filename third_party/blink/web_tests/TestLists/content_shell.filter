@@ -241,13 +241,10 @@ external/wpt/service-workers/service-worker/fetch-event-referrer-policy.https.ht
 external/wpt/service-workers/service-worker/navigate-window.https.html
 external/wpt/service-workers/service-worker/partitioned-matchAll.tentative.https.html
 external/wpt/shadow-dom/accesskey.tentative.html
-external/wpt/shadow-dom/Document-caretPositionFromPoint.tentative.html
-external/wpt/shadow-dom/focus/focus-pseudo-on-shadow-host-1.html
-external/wpt/shadow-dom/focus/focus-pseudo-on-shadow-host-2.html
-external/wpt/shadow-dom/focus-navigation/delegatesFocus-highlight-sibling.html
-external/wpt/shadow-dom/focus-navigation/focus-navigation-slot-fallback.html
 external/wpt/shadow-dom/focus-navigation/reading-flow/grid-order-with-iframe.html
-external/wpt/shadow-dom/reference-target/tentative/*
+external/wpt/shadow-dom/reference-target/tentative/label-descendant.html
+external/wpt/shadow-dom/reference-target/tentative/label-for.html
+external/wpt/shadow-dom/reference-target/tentative/label-lifetime.html
 external/wpt/speech-api/SpeechSynthesisEvent-properties.html
 external/wpt/speech-api/SpeechSynthesis-pause-resume.tentative.html
 external/wpt/speech-api/SpeechSynthesis-speak-events.html
