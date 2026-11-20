@@ -185,6 +185,10 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Anchored message ignored"/>
   <int value="4" label="Chip clicked"/>
   <int value="5" label="Chip ignored"/>
+  <int value="6" label="Anchored message dismissed"/>
+  <int value="7" label="Chip dismissed"/>
+  <int value="8" label="Anchored message settings opened"/>
+  <int value="9" label="Chip settings opened"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/contextual_tasks/search_journey_tracker.h:SearchJourneyCueOutcome) -->
@@ -199,6 +203,8 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Replaced by new search"/>
   <int value="5" label="Intermediate tab"/>
   <int value="6" label="State cleared (e.g. default search provider changed)"/>
+  <int value="7" label="Cue dismissed"/>
+  <int value="8" label="Cue settings opened"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/contextual_tasks/search_journey_tracker.h:SearchJourneyEndReason) -->

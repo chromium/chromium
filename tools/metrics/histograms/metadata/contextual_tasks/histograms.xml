@@ -1052,8 +1052,8 @@ chromium-metrics-reviews@google.com.
     Recorded once when an ABA search journey ends, if the journey's contextual
     cue was eligible to show on the first qualifying return to the source tab.
     Records whether the cue showed, whether it first showed as the expanded
-    anchored message or the collapsed chip, and whether the user clicked it to
-    restore the journey in the side panel.
+    anchored message or the collapsed chip, and whether the user clicked it,
+    dismissed it, opened settings from it, or ignored it.
   </summary>
 </histogram>
 
@@ -1066,8 +1066,8 @@ chromium-metrics-reviews@google.com.
     journey's contextual cue was eligible to show on the first qualifying return
     to the source tab. Records whether the cue showed, whether it first showed
     as the expanded anchored message or the collapsed chip, and whether the user
-    clicked it to restore the journey in the side panel. A journey labeled with
-    several hints is recorded once for each.
+    clicked it, dismissed it, opened settings from it, or ignored it. A journey
+    labeled with several hints is recorded once for each.
   </summary>
   <token key="JourneyType" variants="AbaSearchJourneyType"/>
 </histogram>
@@ -1082,8 +1082,8 @@ chromium-metrics-reviews@google.com.
     source tab on a different page; the source tab was closed or discarded
     (including when its window closed); the search tab committed a different
     search, or a new journey started for the source tab; the user switched to
-    another tab; or all journeys were cleared, usually because the default
-    search provider changed.
+    another tab; all journeys were cleared, usually because the default search
+    provider changed; or the user dismissed the cue or opened settings from it.
   </summary>
 </histogram>
 

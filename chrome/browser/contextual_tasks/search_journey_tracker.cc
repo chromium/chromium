@@ -93,17 +93,31 @@ SearchJourneyCueOutcome GetCueOutcome(const JourneyState& journey,
   if (!journey.cue_shown) {
     return SearchJourneyCueOutcome::kNoCue;
   }
-  const bool clicked = reason == SearchJourneyEndReason::kRestored;
-  if (!journey.cue_shown_as_anchored_message) {
-    return clicked ? SearchJourneyCueOutcome::kChipClicked
-                   : SearchJourneyCueOutcome::kChipIgnored;
+  const bool anchored = journey.cue_shown_as_anchored_message;
+  switch (reason) {
+    case SearchJourneyEndReason::kRestored:
+      if (!anchored) {
+        return SearchJourneyCueOutcome::kChipClicked;
+      }
+      return journey.cue_chip_clicked
+                 ? SearchJourneyCueOutcome::kAnchoredMessageCollapsedThenClicked
+                 : SearchJourneyCueOutcome::kAnchoredMessageClicked;
+    case SearchJourneyEndReason::kCueDismissed:
+      return anchored ? SearchJourneyCueOutcome::kAnchoredMessageDismissed
+                      : SearchJourneyCueOutcome::kChipDismissed;
+    case SearchJourneyEndReason::kCueSettingsOpened:
+      return anchored ? SearchJourneyCueOutcome::kAnchoredMessageSettingsOpened
+                      : SearchJourneyCueOutcome::kChipSettingsOpened;
+    case SearchJourneyEndReason::kExpired:
+    case SearchJourneyEndReason::kSourceTabNavigated:
+    case SearchJourneyEndReason::kSourceTabClosed:
+    case SearchJourneyEndReason::kReplacedByNewSearch:
+    case SearchJourneyEndReason::kIntermediateTab:
+    case SearchJourneyEndReason::kStateCleared:
+      return anchored ? SearchJourneyCueOutcome::kAnchoredMessageIgnored
+                      : SearchJourneyCueOutcome::kChipIgnored;
   }
-  if (!clicked) {
-    return SearchJourneyCueOutcome::kAnchoredMessageIgnored;
-  }
-  return journey.cue_chip_clicked
-             ? SearchJourneyCueOutcome::kAnchoredMessageCollapsedThenClicked
-             : SearchJourneyCueOutcome::kAnchoredMessageClicked;
+  NOTREACHED();
 }
 
 // Records why `journey` ended and, if its cue was eligible, what happened to
@@ -476,17 +490,23 @@ void SearchJourneyTracker::OnJourneyCueChipClicked(SessionID source_tab_id) {
 
 void SearchJourneyTracker::OnJourneyCueDismissed(SessionID source_tab_id) {
   auto it = active_journeys_.find(source_tab_id);
-  if (it != active_journeys_.end() && it->second.cue_shown) {
-    RecordCueSliceMetrics("Dismissed", it->second);
+  if (it == active_journeys_.end() || !it->second.cue_shown) {
+    return;
   }
+  RecordCueSliceMetrics("Dismissed", it->second);
+  RecordJourneyEnd(it->second, SearchJourneyEndReason::kCueDismissed);
+  active_journeys_.erase(it);
 }
 
 void SearchJourneyTracker::OnJourneyCueSuggestionsSettingsOpened(
     SessionID source_tab_id) {
   auto it = active_journeys_.find(source_tab_id);
-  if (it != active_journeys_.end() && it->second.cue_shown) {
-    RecordCueSliceMetrics("SettingsOpened", it->second);
+  if (it == active_journeys_.end() || !it->second.cue_shown) {
+    return;
   }
+  RecordCueSliceMetrics("SettingsOpened", it->second);
+  RecordJourneyEnd(it->second, SearchJourneyEndReason::kCueSettingsOpened);
+  active_journeys_.erase(it);
 }
 
 void SearchJourneyTracker::OnTabDestroyed(SessionID tab_id) {

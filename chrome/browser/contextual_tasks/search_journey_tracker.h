@@ -78,7 +78,11 @@ enum class SearchJourneyEndReason {
   // All journeys were cleared, usually because the default search provider
   // changed. Rarely, the profile shut down before its tabs closed.
   kStateCleared = 6,
-  kMaxValue = kStateCleared,
+  // The user explicitly dismissed the contextual cue.
+  kCueDismissed = 7,
+  // The user opened suggestions settings from the contextual cue menu.
+  kCueSettingsOpened = 8,
+  kMaxValue = kCueSettingsOpened,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_tasks/enums.xml:SearchJourneyEndReason)
 
@@ -96,14 +100,24 @@ enum class SearchJourneyCueOutcome {
   // user later clicked the chip and then the re-shown anchored message.
   kAnchoredMessageCollapsedThenClicked = 2,
   // The cue showed as the expanded anchored message, but the journey ended
-  // without a click.
+  // without a click, dismissal, or settings open.
   kAnchoredMessageIgnored = 3,
   // The cue showed as the collapsed chip, and the user clicked it.
   kChipClicked = 4,
   // The cue showed as the collapsed chip, but the journey ended without a
-  // click.
+  // click, dismissal, or settings open.
   kChipIgnored = 5,
-  kMaxValue = kChipIgnored,
+  // The cue showed as the expanded anchored message, and the user dismissed it.
+  kAnchoredMessageDismissed = 6,
+  // The cue showed as the collapsed chip, and the user dismissed it.
+  kChipDismissed = 7,
+  // The cue showed as the expanded anchored message, and the user opened
+  // suggestions settings from its menu.
+  kAnchoredMessageSettingsOpened = 8,
+  // The cue showed as the collapsed chip, and the user opened suggestions
+  // settings from its menu.
+  kChipSettingsOpened = 9,
+  kMaxValue = kChipSettingsOpened,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_tasks/enums.xml:SearchJourneyCueOutcome)
 
@@ -294,11 +308,12 @@ class SearchJourneyTracker : public KeyedService,
   void OnJourneyCueChipClicked(SessionID source_tab_id);
 
   // Records that the user dismissed the contextual cue for the journey whose
-  // Tab A is `source_tab_id`.
+  // Tab A is `source_tab_id`, and removes that journey from active tracking.
   void OnJourneyCueDismissed(SessionID source_tab_id);
 
   // Records that the user opened the suggestions settings from the contextual
-  // cue for the journey whose Tab A is `source_tab_id`.
+  // cue for the journey whose Tab A is `source_tab_id`, and removes that
+  // journey from active tracking.
   void OnJourneyCueSuggestionsSettingsOpened(SessionID source_tab_id);
 
   // Clears copy records for `tab_id` and any journey whose Tab A is `tab_id`.

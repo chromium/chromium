@@ -1057,15 +1057,13 @@ TEST_F(SearchJourneyTrackerTest, RecordsCueDismissedMetrics) {
   base::HistogramTester histogram_tester;
   const std::u16string kQuery = u"how do ocean tides work";
   tracker_.OnCopyRecorded(kSourceTab1, kNavEntryId, kQuery);
-  StartJourney(kSourceTab1, kSearchTab1, kQuery);
-  ASSERT_TRUE(tracker_.OnAimPromoParamsReceived(
-      kSearchTab1, kQuery, CreatePromoParams(),
-      {AimPromoQueryHint::kEduConceptual}));
+  StartEligibleJourney(kQuery, {AimPromoQueryHint::kEduConceptual});
 
-  // A dismissal before the cue shows isn't recorded.
+  // A dismissal before the cue shows isn't recorded and keeps the journey.
   tracker_.OnJourneyCueDismissed(kSourceTab1);
   histogram_tester.ExpectTotalCount(
       "ContextualTasks.SearchJourney.Cue.Dismissed.CopyMatch", 0);
+  EXPECT_TRUE(GetJourney(kSourceTab1));
 
   tracker_.OnJourneyCueShown(kSourceTab1, /*is_anchored_message=*/true);
   tracker_.OnJourneyCueDismissed(kSourceTab1);
@@ -1082,13 +1080,37 @@ TEST_F(SearchJourneyTrackerTest, RecordsCueDismissedMetrics) {
       "ContextualTasks.SearchJourney.Cue.Dismissed.WordCount", 5, 1);
   histogram_tester.ExpectTotalCount(
       "ContextualTasks.SearchJourney.Cue.SettingsOpened.CopyMatch", 0);
-  // Dismissing the cue doesn't end the journey.
-  EXPECT_TRUE(GetJourney(kSourceTab1));
+  histogram_tester.ExpectUniqueSample("ContextualTasks.SearchJourney.EndReason",
+                                      SearchJourneyEndReason::kCueDismissed, 1);
+  for (const char* histogram : {
+           "ContextualTasks.SearchJourney.CueOutcome",
+           "ContextualTasks.SearchJourney.CueOutcome.CopyMatch",
+           "ContextualTasks.SearchJourney.CueOutcome.EduConceptual",
+       }) {
+    histogram_tester.ExpectUniqueSample(
+        histogram, SearchJourneyCueOutcome::kAnchoredMessageDismissed, 1);
+  }
+  EXPECT_FALSE(GetJourney(kSourceTab1));
+}
+
+TEST_F(SearchJourneyTrackerTest, RecordsChipDismissedOutcome) {
+  base::HistogramTester histogram_tester;
+  StartEligibleJourney(u"quantum computing");
+  tracker_.OnJourneyCueShown(kSourceTab1, /*is_anchored_message=*/false);
+
+  tracker_.OnJourneyCueDismissed(kSourceTab1);
+
+  histogram_tester.ExpectUniqueSample("ContextualTasks.SearchJourney.EndReason",
+                                      SearchJourneyEndReason::kCueDismissed, 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.SearchJourney.CueOutcome",
+      SearchJourneyCueOutcome::kChipDismissed, 1);
+  EXPECT_FALSE(GetJourney(kSourceTab1));
 }
 
 TEST_F(SearchJourneyTrackerTest, RecordsCueSettingsOpenedMetrics) {
   base::HistogramTester histogram_tester;
-  StartJourney(kSourceTab1, kSearchTab1, u"quantum computing");
+  StartEligibleJourney(u"quantum computing");
   tracker_.OnJourneyCueShown(kSourceTab1, /*is_anchored_message=*/false);
 
   tracker_.OnJourneyCueSuggestionsSettingsOpened(kSourceTab1);
@@ -1102,6 +1124,29 @@ TEST_F(SearchJourneyTrackerTest, RecordsCueSettingsOpenedMetrics) {
       AimPromoQueryHint::kNone, 1);
   histogram_tester.ExpectTotalCount(
       "ContextualTasks.SearchJourney.Cue.Dismissed.CopyMatch", 0);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.SearchJourney.EndReason",
+      SearchJourneyEndReason::kCueSettingsOpened, 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.SearchJourney.CueOutcome",
+      SearchJourneyCueOutcome::kChipSettingsOpened, 1);
+  EXPECT_FALSE(GetJourney(kSourceTab1));
+}
+
+TEST_F(SearchJourneyTrackerTest, RecordsAnchoredMessageSettingsOpenedOutcome) {
+  base::HistogramTester histogram_tester;
+  StartEligibleJourney(u"quantum computing");
+  tracker_.OnJourneyCueShown(kSourceTab1, /*is_anchored_message=*/true);
+
+  tracker_.OnJourneyCueSuggestionsSettingsOpened(kSourceTab1);
+
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.SearchJourney.EndReason",
+      SearchJourneyEndReason::kCueSettingsOpened, 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.SearchJourney.CueOutcome",
+      SearchJourneyCueOutcome::kAnchoredMessageSettingsOpened, 1);
+  EXPECT_FALSE(GetJourney(kSourceTab1));
 }
 
 TEST_F(SearchJourneyTrackerTest,

@@ -917,9 +917,15 @@ IN_PROC_BROWSER_TEST_F(SearchJourneyCueBrowserTest, RecordsCueDismissal) {
 
   histogram_tester.ExpectUniqueSample(
       "ContextualTasks.SearchJourney.Cue.Dismissed.WordCount", 4, 1);
+  histogram_tester.ExpectUniqueSample("ContextualTasks.SearchJourney.EndReason",
+                                      SearchJourneyEndReason::kCueDismissed, 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.SearchJourney.CueOutcome",
+      SearchJourneyCueOutcome::kAnchoredMessageDismissed, 1);
   EXPECT_EQ(user_action_tester.GetActionCount(
                 "ContextualTasks.SearchJourney.Cue.Clicked"),
             0);
+  EXPECT_TRUE(tracker()->GetActiveJourneysForTesting().empty());
 }
 
 // Tests that the cue shows at most once per journey, even if the user returns
