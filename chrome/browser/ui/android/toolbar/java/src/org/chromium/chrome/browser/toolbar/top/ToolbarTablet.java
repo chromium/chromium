@@ -52,6 +52,7 @@ import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
 import org.chromium.chrome.browser.toolbar.ToolbarTabController;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.back_button.BackButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.download_button.DownloadButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.extensions.ExtensionsToolbarCoordinator;
@@ -638,6 +639,12 @@ public class ToolbarTablet extends ToolbarLayout {
 
     @Override
     protected void updateOptionalButton(ButtonData buttonData) {
+        // TTC has a dedicated button on large screens, which shows when TTC is the toolbar
+        // shortcut, so the TTC shortcut doesn't also take the optional button.
+        if (buttonData.getButtonSpec().getButtonVariant() == AdaptiveToolbarButtonVariant.TTC) {
+            hideOptionalButton();
+            return;
+        }
         if (mOptionalButton == null) {
             ViewStub viewStub = findViewById(R.id.optional_button_stub);
             mOptionalButton = (ImageButton) viewStub.inflate();

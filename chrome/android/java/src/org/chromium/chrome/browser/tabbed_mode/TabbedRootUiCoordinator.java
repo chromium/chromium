@@ -246,6 +246,7 @@ import org.chromium.chrome.browser.toolbar.ToolbarIntentMetadata;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarBehavior;
 import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer;
+import org.chromium.chrome.browser.ttc.TtcEntryPoint;
 import org.chromium.chrome.browser.ttc.TtcSessionCoordinator;
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.chrome.browser.ui.actions.ActionRegistry;
@@ -1587,7 +1588,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 mChromeAndroidTaskSupplier,
                 mBrowserControlsManager,
                 mIsVerticalTabsActiveSupplier,
-                mIsGlicPinnedSupplier);
+                mIsGlicPinnedSupplier,
+                TtcEntryPoint.from(mWindowAndroid));
     }
 
     /** Returns the {@link LeadingButtonDelegate} for the tab strip's leading button. */

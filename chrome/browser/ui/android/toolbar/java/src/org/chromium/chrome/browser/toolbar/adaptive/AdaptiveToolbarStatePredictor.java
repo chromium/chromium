@@ -195,6 +195,7 @@ public class AdaptiveToolbarStatePredictor {
             case AdaptiveToolbarButtonVariant.OPEN_IN_BROWSER:
             case AdaptiveToolbarButtonVariant.GLIC:
             case AdaptiveToolbarButtonVariant.ASK_GOOGLE:
+            case AdaptiveToolbarButtonVariant.TTC:
                 return true;
             case AdaptiveToolbarButtonVariant.UNKNOWN:
             case AdaptiveToolbarButtonVariant.NONE:
@@ -203,7 +204,6 @@ public class AdaptiveToolbarStatePredictor {
             case AdaptiveToolbarButtonVariant.READER_MODE:
             case AdaptiveToolbarButtonVariant.PRICE_INSIGHTS:
             case AdaptiveToolbarButtonVariant.TAB_GROUPING:
-            case AdaptiveToolbarButtonVariant.TTC:
                 return false;
             default:
                 assert false : "Invalid adaptive toolbar button variant: " + variant;

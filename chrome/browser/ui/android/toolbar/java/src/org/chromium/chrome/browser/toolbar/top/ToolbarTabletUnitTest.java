@@ -386,6 +386,20 @@ public final class ToolbarTabletUnitTest {
     }
 
     @Test
+    public void testTtcShortcutDoesNotTakeOptionalButton() {
+        updateOptionalButton(
+                /* buttonVariant= */ AdaptiveToolbarButtonVariant.SHARE,
+                R.string.adaptive_toolbar_button_preference_share);
+        assertEquals(
+                View.VISIBLE, mToolbarTablet.getOptionalButtonViewForTesting().getVisibility());
+
+        // The dedicated TTC button shows the TTC shortcut on large screens.
+        updateOptionalButton(
+                /* buttonVariant= */ AdaptiveToolbarButtonVariant.TTC, /* tooltipTextResId= */ 0);
+        assertEquals(View.GONE, mToolbarTablet.getOptionalButtonViewForTesting().getVisibility());
+    }
+
+    @Test
     public void testTtcButtonActiveState() {
         View ttcButton = mToolbarTablet.findViewById(R.id.ttc_toolbar_button);
         Drawable defaultBackground = ttcButton.getBackground();

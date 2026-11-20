@@ -265,6 +265,27 @@ public class AdaptiveToolbarStatePredictorTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.TTC)
+    public void testTtcManualOverride() {
+        AdaptiveToolbarFeatures.setDefaultSegmentForTesting(AdaptiveToolbarFeatures.SHARE);
+
+        AdaptiveToolbarStatePredictor statePredictor =
+                buildStatePredictor(
+                        true,
+                        AdaptiveToolbarButtonVariant.TTC,
+                        List.of(AdaptiveToolbarButtonVariant.VOICE));
+
+        // TTC is never predicted, but shows when it's chosen in settings.
+        UiState expected =
+                new UiState(
+                        true,
+                        new ArrayList<Integer>(List.of(AdaptiveToolbarButtonVariant.TTC)),
+                        AdaptiveToolbarButtonVariant.TTC,
+                        AdaptiveToolbarButtonVariant.VOICE);
+        statePredictor.recomputeUiState(verifyResultCallback(expected));
+    }
+
+    @Test
     @EnableFeatures(ChromeFeatureList.GLIC)
     @DisableFeatures(ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL)
     public void testGlicEnabled_ManualOverride() {

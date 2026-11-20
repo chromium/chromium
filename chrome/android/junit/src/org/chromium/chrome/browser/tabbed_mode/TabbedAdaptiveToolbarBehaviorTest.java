@@ -56,6 +56,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonController;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
+import org.chromium.chrome.browser.ttc.TtcEntryPoint;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 
 import java.util.List;
@@ -70,6 +71,7 @@ public class TabbedAdaptiveToolbarBehaviorTest {
     @Mock private Profile mProfile;
     @Mock private ActorKeyedService mActorKeyedService;
     @Mock private ActorTask mActorTask;
+    @Mock private TtcEntryPoint mTtcEntryPoint;
     @Mock private GlicEnabling.Natives mGlicEnablingJniMock;
     @Mock private GlicKeyedService mGlicKeyedService;
     @Mock private AdaptiveToolbarButtonController mAdaptiveToolbarButtonController;
@@ -121,7 +123,8 @@ public class TabbedAdaptiveToolbarBehaviorTest {
                         () -> mChromeAndroidTask,
                         mBrowserControlsVisibilityManager,
                         mIsVerticalTabsActiveSupplier,
-                        mIsGlicPinnedSupplier);
+                        mIsGlicPinnedSupplier,
+                        mTtcEntryPoint);
     }
 
     @Test
