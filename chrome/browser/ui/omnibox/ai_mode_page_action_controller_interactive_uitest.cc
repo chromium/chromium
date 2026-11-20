@@ -159,6 +159,19 @@ IN_PROC_BROWSER_TEST_F(AiModePageActionControllerInteractiveUiTest,
                   CheckChipVisible(/*visible=*/false));
 }
 
+// chrome:// pages have no zero-prefix suggestions, so focusing the omnibox on
+// one leaves the popup closed and the AIM chip hidden.
+IN_PROC_BROWSER_TEST_F(AiModePageActionControllerInteractiveUiTest,
+                       InternalChromePageOmniboxFocused) {
+  RunTestSequence(
+      InteractiveBrowserWindowTestApi::InstrumentTab(kTabId),
+      InteractiveBrowserWindowTestApi::NavigateWebContents(
+          kTabId, GURL(chrome::kChromeUIVersionURL)),
+      InteractiveBrowserWindowTestApi::WaitForWebContentsReady(kTabId),
+      ui::test::InteractiveTestApi::FocusElement(kOmniboxElementId),
+      CheckChipVisible(/*visible=*/false));
+}
+
 IN_PROC_BROWSER_TEST_F(AiModePageActionControllerInteractiveUiTest,
                        HiddenWhenOmniboxBlurred) {
   RunTestSequence(OpenTabWithPageUrlAndFocusOmnibox(),

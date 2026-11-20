@@ -62,6 +62,7 @@
 #include "chrome/browser/ui/immersive/immersive_mode_controller.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
+#include "chrome/browser/ui/omnibox/ai_mode_page_action_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
@@ -11055,6 +11056,19 @@ class FullWebUIOmniboxAimInteractiveTestBase
   ~FullWebUIOmniboxAimInteractiveTestBase() override = default;
 
  protected:
+  // Checks the browser-side AIM button visibility, which is what drives the
+  // `aimButtonVisible_` property of the Full WebUI popup.
+  auto CheckShouldShowAimButton(bool expected) {
+    return CheckResult(
+        [this]() {
+          LocationBar* location_bar =
+              BrowserWindow::FromBrowser(browser())->GetLocationBar();
+          return omnibox::AiModePageActionController::ShouldShowPageAction(
+              browser()->GetProfile(), *location_bar);
+        },
+        expected, "CheckShouldShowAimButton");
+  }
+
   static std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures(
       bool force_enable_aim) {
     std::vector<base::test::FeatureRefAndParams> features = {
@@ -11990,6 +12004,63 @@ INSTANTIATE_TEST_SUITE_P(All,
                            return info.param ? "WebUIToolbarEnabled"
                                              : "WebUIToolbarDisabled";
                          });
+
+// Focusing the omnibox on a web page shows zero-prefix suggestions, so the AIM
+// entrypoint button should be visible in the Full WebUI popup, like it is in
+// the Views omnibox.
+IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxAimInteractiveTest,
+                       AimButtonVisibleOnWebPages) {
+  RunTestSequence(
+      SetAimEligibleResponse(),
+      OpenInitialTabAndFocusOmnibox(kTab1, GetTestPageUrl()),
+      WaitForPopupTransitionLockout(),
+      WaitForPopupState(OmniboxPopupState::kFull),
+      InAnyContext(WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
+                                        "el => el.aimButtonVisible_")),
+      CheckShouldShowAimButton(true));
+}
+
+// Focusing the omnibox on an internal chrome:// page shows no zero-prefix
+// suggestions. The Full WebUI popup stays open to host the input row, but like
+// the Views omnibox (whose popup stays closed), the AIM entrypoint button
+// should be hidden.
+IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxAimInteractiveTest,
+                       AimButtonHiddenOnInternalChromePages) {
+  RunTestSequence(
+      SetAimEligibleResponse(),
+      OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
+      WaitForPopupTransitionLockout(),
+      WaitForPopupState(OmniboxPopupState::kFull), WaitForOmniboxFocus(true),
+      InAnyContext(WaitForElementToRender(kPopupWebView, kPopupSearchbox)),
+      CheckShouldShowAimButton(false),
+      InAnyContext(CheckJsResultAt(kPopupWebView, kPopupSearchbox,
+                                   "el => el.aimButtonVisible_", false)));
+}
+
+// Same as above, but for a view-source: page, which no zero-prefix provider
+// supports either. Checking for visible suggestions rather than for specific
+// schemes covers this case too.
+IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxAimInteractiveTest,
+                       AimButtonHiddenOnViewSourcePages) {
+  const GURL view_source_url("view-source:" + GetTestPageUrl().spec());
+  RunTestSequence(
+      SetAimEligibleResponse(),
+      OpenInitialTabAndFocusOmnibox(kTab1, view_source_url),
+      WaitForPopupTransitionLockout(),
+      WaitForPopupState(OmniboxPopupState::kFull), WaitForOmniboxFocus(true),
+      InAnyContext(WaitForElementToRender(kPopupWebView, kPopupSearchbox)),
+      // Let any zero-prefix query finish, so the check below isn't racing it.
+      PollUntil(
+          [this]() {
+            return GetActiveOmniboxController()
+                ->autocomplete_controller()
+                ->done();
+          },
+          "WaitForAutocompleteDone"),
+      CheckShouldShowAimButton(false),
+      InAnyContext(CheckJsResultAt(kPopupWebView, kPopupSearchbox,
+                                   "el => el.aimButtonVisible_", false)));
+}
 
 class FullWebUIOmniboxSimplificationInteractiveTest
     : public FullWebUIOmniboxAimInteractiveTestBase {

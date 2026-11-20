@@ -33,6 +33,7 @@
 #include "components/favicon/core/favicon_service.h"
 #include "components/favicon_base/favicon_types.h"
 #include "components/keyed_service/core/service_access_type.h"
+#include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/omnibox_client.h"
@@ -242,10 +243,15 @@ bool AiModePageActionController::ShouldShowPageAction(
   // popup. In this case, we suppress the AIM page action in order to ensure
   // that it doesn't get visually "sandwiched" in between the other page actions
   // that show up in this state.
+  //
+  // The classic popup is only open when there are results, but the Full WebUI
+  // popup hosts the omnibox input row itself and stays open whenever the
+  // omnibox is focused, so also check for results.
+  const bool suggestions_visible =
+      omnibox_controller->IsPopupOpen() && !result.empty();
   const auto page_classification = edit_model->GetPageClassification();
   if (has_focus && !edit_model->user_input_in_progress() &&
-      !location_bar.GetOmniboxController()->IsPopupOpen() &&
-      !omnibox::IsNTPPage(page_classification)) {
+      !suggestions_visible && !omnibox::IsNTPPage(page_classification)) {
     return false;
   }
 
