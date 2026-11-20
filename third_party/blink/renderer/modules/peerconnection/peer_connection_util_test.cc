@@ -158,4 +158,14 @@ TEST(PeerConnectionUtilTest, AudioLevelConversionFromUintIsLossless) {
   EXPECT_EQ(audio_level_dbov, converted_audio_level_dbov);
 }
 
+TEST(PeerConnectionUtilTest, IsValidRid) {
+  EXPECT_FALSE(IsValidRid(""));
+  EXPECT_TRUE(IsValidRid("0"));
+  EXPECT_FALSE(IsValidRid("foo-bar"));
+  EXPECT_FALSE(IsValidRid("foo_bar"));
+  EXPECT_FALSE(IsValidRid(String(u"(╯°□°)╯︵ ┻━┻")));
+  EXPECT_TRUE(IsValidRid(String(std::string(16, 'a'))));
+  EXPECT_FALSE(IsValidRid(String(std::string(17, 'a'))));
+}
+
 }  // namespace blink

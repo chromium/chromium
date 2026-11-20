@@ -16,6 +16,8 @@
 #include "third_party/blink/renderer/core/timing/worker_global_scope_performance.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
+#include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
 
@@ -114,6 +116,18 @@ uint8_t FromLinearAudioLevel(double linear_audio_level) {
     return 0u;
   }
   return static_cast<uint8_t>(std::round(audio_level_dbov));
+}
+
+bool IsValidRid(const String& rid) {
+  if (rid.empty() || rid.length() > 16) {
+    return false;
+  }
+  for (wtf_size_t i = 0; i < rid.length(); ++i) {
+    if (!IsAsciiAlphanumeric(rid[i])) {
+      return false;
+    }
+  }
+  return true;
 }
 
 }  // namespace blink

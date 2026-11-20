@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
@@ -60,6 +61,13 @@ CalculateRTCEncodedFrameTimeDelta(ExecutionContext*, base::TimeDelta);
 // as defined in RFC 6464.
 MODULES_EXPORT double ToLinearAudioLevel(uint8_t audio_level_dbov);
 MODULES_EXPORT uint8_t FromLinearAudioLevel(double linear_audio_level);
+
+// Matches WebRTC's IsLegalRsidName() (RFC 8852: alphanumeric, <= 16 chars),
+// which Chromium also applies to rids in addTransceiver()/setParameters().
+// This is stricter than the RFC 8851 §10 ABNF the spec cites; the difference
+// is only the error name (TypeError vs NotFoundError) for rids that could
+// never have been negotiated.
+MODULES_EXPORT bool IsValidRid(const String& rid);
 
 }  // namespace blink
 
