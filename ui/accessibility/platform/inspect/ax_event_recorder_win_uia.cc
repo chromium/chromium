@@ -283,6 +283,7 @@ AXEventRecorderWinUia::Thread::EventHandler::EventHandler(
 AXEventRecorderWinUia::Thread::EventHandler::~EventHandler() = default;
 
 void AXEventRecorderWinUia::Thread::EventHandler::CleanUp() {
+  base::AutoLock lock(lock_);
   owner_ = nullptr;
   root_.Reset();
 }
@@ -290,16 +291,11 @@ void AXEventRecorderWinUia::Thread::EventHandler::CleanUp() {
 IFACEMETHODIMP
 AXEventRecorderWinUia::Thread::EventHandler::HandleFocusChangedEvent(
     IUIAutomationElement* sender) {
-  if (!owner_ || !IsCallerFromAllowedModule(RETURN_ADDRESS())) {
+  if (!IsCallerFromAllowedModule(RETURN_ADDRESS())) {
     return S_OK;
   }
-
-  // Prevent races with CleanUp() by taking local references to objects we need.
-  // CleanUp() resets root_ and nulls owner_, so we must capture these before
-  // any use that could race with cleanup on another thread.
-  Microsoft::WRL::ComPtr<IUIAutomationElement> root = root_;
-  Microsoft::WRL::ComPtr<IUIAutomation> uia = owner_->uia_;
-  if (!root || !uia) {
+  base::AutoLock lock(lock_);
+  if (!owner_ || !root_ || !owner_->uia_) {
     return S_OK;
   }
 
@@ -310,10 +306,11 @@ AXEventRecorderWinUia::Thread::EventHandler::HandleFocusChangedEvent(
   Microsoft::WRL::ComPtr<IUIAutomationElement> element_found;
   Microsoft::WRL::ComPtr<IUIAutomationCondition> condition;
 
-  uia->CreatePropertyCondition(UIA_RuntimeIdPropertyId, id_variant, &condition);
+  owner_->uia_->CreatePropertyCondition(UIA_RuntimeIdPropertyId, id_variant,
+                                        &condition);
   CHECK(condition);
-  root->FindFirst(TreeScope::TreeScope_Subtree, condition.Get(),
-                  &element_found);
+  root_->FindFirst(TreeScope::TreeScope_Subtree, condition.Get(),
+                   &element_found);
   if (!element_found) {
     VLOG(1) << "Ignoring UIA focus event outside our frame";
     return S_OK;
@@ -349,8 +346,13 @@ AXEventRecorderWinUia::Thread::EventHandler::HandlePropertyChangedEvent(
     IUIAutomationElement* sender,
     PROPERTYID property_id,
     VARIANT new_value) {
-  if (!owner_ || !IsCallerFromAllowedModule(RETURN_ADDRESS()))
+  if (!IsCallerFromAllowedModule(RETURN_ADDRESS())) {
     return S_OK;
+  }
+  base::AutoLock lock(lock_);
+  if (!owner_) {
+    return S_OK;
+  }
 
   std::string prop_str = UiaIdentifierToStringPretty(property_id);
   if (prop_str.empty()) {
@@ -369,8 +371,13 @@ AXEventRecorderWinUia::Thread::EventHandler::HandleStructureChangedEvent(
     IUIAutomationElement* sender,
     StructureChangeType change_type,
     SAFEARRAY* runtime_id) {
-  if (!owner_ || !IsCallerFromAllowedModule(RETURN_ADDRESS()))
+  if (!IsCallerFromAllowedModule(RETURN_ADDRESS())) {
     return S_OK;
+  }
+  base::AutoLock lock(lock_);
+  if (!owner_) {
+    return S_OK;
+  }
 
   std::string type_str;
   switch (change_type) {
@@ -405,8 +412,13 @@ IFACEMETHODIMP
 AXEventRecorderWinUia::Thread::EventHandler::HandleAutomationEvent(
     IUIAutomationElement* sender,
     EVENTID event_id) {
-  if (!owner_ || !IsCallerFromAllowedModule(RETURN_ADDRESS()))
+  if (!IsCallerFromAllowedModule(RETURN_ADDRESS())) {
     return S_OK;
+  }
+  base::AutoLock lock(lock_);
+  if (!owner_) {
+    return S_OK;
+  }
 
   if (event_id == owner_->shutdown_sentinel_) {
     // This is a sentinel value that tells us the tests are finished.
@@ -438,7 +450,11 @@ AXEventRecorderWinUia::Thread::EventHandler::HandleChangesEvent(
     IUIAutomationElement* sender,
     UiaChangeInfo* uia_changes,
     int changes_count) {
-  if (!owner_ || !IsCallerFromAllowedModule(RETURN_ADDRESS())) {
+  if (!IsCallerFromAllowedModule(RETURN_ADDRESS())) {
+    return S_OK;
+  }
+  base::AutoLock lock(lock_);
+  if (!owner_) {
     return S_OK;
   }
 

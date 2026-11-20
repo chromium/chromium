@@ -20,7 +20,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/process/process_handle.h"
 #include "base/run_loop.h"
+#include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/thread_annotations.h"
 #include "base/threading/platform_thread.h"
 #include "ui/accessibility/platform/inspect/ax_event_recorder.h"
 #include "ui/accessibility/platform/inspect/ax_inspect.h"
@@ -123,18 +125,21 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXEventRecorderWinUia
                                         UiaChangeInfo* uia_changes,
                                         int changes_count) override;
 
-      // Points to the event recorder to receive notifications.
-      raw_ptr<AXEventRecorderWinUia::Thread> owner_ = nullptr;
-
      private:
-      std::pair<uintptr_t, uintptr_t> allowed_module_address_range_;
       bool IsCallerFromAllowedModule(void* return_address);
-
       std::string GetSenderInfo(IUIAutomationElement* sender);
 
-      Microsoft::WRL::ComPtr<IUIAutomationElement> root_;
+      std::pair<uintptr_t, uintptr_t> allowed_module_address_range_;
 
-      std::vector<int32_t> last_focused_runtime_id_;
+      // Synchronizes COM MTA event callbacks with `CleanUp()`.
+      base::Lock lock_;
+
+      // Points to the event recorder to receive notifications.
+      raw_ptr<AXEventRecorderWinUia::Thread> owner_ GUARDED_BY(lock_) = nullptr;
+
+      Microsoft::WRL::ComPtr<IUIAutomationElement> root_ GUARDED_BY(lock_);
+
+      std::vector<int32_t> last_focused_runtime_id_ GUARDED_BY(lock_);
     };
     Microsoft::WRL::ComPtr<EventHandler> uia_event_handler_;
   };
