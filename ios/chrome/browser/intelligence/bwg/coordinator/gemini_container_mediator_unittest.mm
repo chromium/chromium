@@ -29,6 +29,7 @@
 #import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/assistant/coordinator/assistant_container_commands.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_detent.h"
+#import "ios/chrome/browser/assistant/ui/assistant_container_view_controller.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/fullscreen/public/fullscreen_metrics.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/test/test_fullscreen_controller.h"
@@ -2430,7 +2431,8 @@ class GeminiContainerMediatorZeroStateTest
 };
 
 // Tests that detaching the active tab's page context hides zero-state
-// suggestions and resets the medium detent to its default, and that
+// suggestions and sizes the medium detent to the remaining content, but at
+// least to half of the large detent height reported by the container, and that
 // re-attaching it fetches them again and sizes the detent to the content.
 TEST_F(GeminiContainerMediatorZeroStateTest,
        TestSuggestionsHiddenWhenActiveTabDetachedAndRestoredOnAttach) {
@@ -2438,12 +2440,28 @@ TEST_F(GeminiContainerMediatorZeroStateTest,
   ASSERT_EQ(std::optional<NSInteger>(kContentHeight),
             container_handler_.mediumDetentHeight);
 
+  id container = OCMClassMock([AssistantContainerViewController class]);
+  OCMStub([container heightForDetent:AssistantContainerDetent::kLarge])
+      .andReturn(520);
+  [mediator_ assistantContainerDidUpdateDetentHeights:container];
+
+  // Without suggestions, content shorter than the minimum uses the minimum.
+  container_consumer_.contentHeight = 180.0;
   [mediator_ didDetachTabWithID:ActiveTabID()];
   EXPECT_TRUE(zero_state_consumer_.hidden);
-  EXPECT_EQ(std::nullopt, container_handler_.mediumDetentHeight);
+  EXPECT_EQ(std::optional<NSInteger>(260),
+            container_handler_.mediumDetentHeight);
 
-  // Input plate changes while suggestions are hidden size the detent to the
-  // content again.
+  // A large detent height change (e.g. rotation) re-applies the minimum.
+  id resized_container = OCMClassMock([AssistantContainerViewController class]);
+  OCMStub([resized_container heightForDetent:AssistantContainerDetent::kLarge])
+      .andReturn(400);
+  [mediator_ assistantContainerDidUpdateDetentHeights:resized_container];
+  EXPECT_EQ(std::optional<NSInteger>(200),
+            container_handler_.mediumDetentHeight);
+
+  // Without suggestions, content taller than the minimum uses the content
+  // height.
   constexpr CGFloat kNanoBananaContentHeight = 300.0;
   container_consumer_.contentHeight = kNanoBananaContentHeight;
   [mediator_ inputPlateDidChangeNanoBananaAttachment:YES];
@@ -2451,6 +2469,8 @@ TEST_F(GeminiContainerMediatorZeroStateTest,
             container_handler_.mediumDetentHeight);
   container_consumer_.contentHeight = kContentHeight;
 
+  // With suggestions, the detent is sized to the content even when shorter
+  // than the minimum.
   [mediator_ didAttachTabWithID:ActiveTabID()];
   EXPECT_FALSE(zero_state_consumer_.hidden);
   EXPECT_EQ(std::optional<NSInteger>(kContentHeight),

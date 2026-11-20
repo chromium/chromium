@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_container_mediator.h"
 
+#import <algorithm>
 #import <memory>
 #import <optional>
 #import <utility>
@@ -25,6 +26,7 @@
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "ios/chrome/browser/assistant/coordinator/assistant_container_commands.h"
+#import "ios/chrome/browser/assistant/ui/assistant_container_detent.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_view_controller.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/fullscreen/public/fullscreen_metrics.h"
@@ -115,6 +117,10 @@ namespace {
 // Maximum time to wait for full page context generation before presenting the
 // container when the invocation auto-submits its prompt.
 constexpr base::TimeDelta kAutoSubmitPageContextTimeout = base::Seconds(2);
+// Minimum zero-state medium detent height, as a ratio of the large detent
+// height. This is a Gemini zero-state requirement, independent of the
+// container's own default medium detent.
+constexpr CGFloat kMinZeroStateDetentHeightRatio = 0.5;
 
 // Returns whether a page context in computation `state` can be shared with
 // Gemini.
@@ -238,6 +244,10 @@ class GeminiContainerMediatorTabHelperObserver
   // Full page context generated during `prepareForPresentation` to seed the
   // initial UI state when `didPresentContainer` is called.
   GeminiPageContext* _initialPageContext;
+  // Last large detent height reported by the assistant container, or a
+  // non-positive value until it is computed. This is used to calculate the
+  // medium detent height in zero state.
+  NSInteger _lastLargeDetentHeight;
 }
 
 - (instancetype)
@@ -567,9 +577,18 @@ class GeminiContainerMediatorTabHelperObserver
 
 - (void)assistantContainerDidUpdateDetentHeights:
     (AssistantContainerViewController*)container {
+  // The large detent height changes with the container size (e.g. rotation),
+  // so re-apply the no-suggestions minimum.
+  NSInteger largeDetentHeight = [container heightForDetent:kLarge];
+  if (largeDetentHeight != _lastLargeDetentHeight) {
+    _lastLargeDetentHeight = largeDetentHeight;
+    [self updateZeroStateMediumDetentHeight];
+  }
+
   if (_stateManager.currentUIState.actuating) {
     return;
   }
+
   NSInteger collapsedHeight = [container heightForDetent:kMinimized];
   NSInteger extendedHeight = [container heightForDetent:kMedium];
 
@@ -836,6 +855,10 @@ class GeminiContainerMediatorTabHelperObserver
   return identity.userGivenName;
 }
 
+- (void)zeroStateContentSizeDidChange {
+  [self updateZeroStateMediumDetentHeight];
+}
+
 #pragma mark - Private
 
 - (void)applyUserPrefsToPageContext:(GeminiPageContext*)geminiPageContext {
@@ -1032,11 +1055,7 @@ class GeminiContainerMediatorTabHelperObserver
   }
   ++_zeroStateSuggestionsRequestID;
   [self.zeroStateConsumer setZeroStateSuggestions:suggestions];
-  if (suggestions && suggestions.count == 0) {
-    [self resetZeroStateMediumDetentHeight];
-  } else {
-    [self updateZeroStateMediumDetentHeight];
-  }
+  [self updateZeroStateMediumDetentHeight];
 }
 
 // Returns whether the page context of `tabHelper` can be attached: the user
@@ -1054,19 +1073,9 @@ class GeminiContainerMediatorTabHelperObserver
                                                  tabHelper->GetClientId())];
 }
 
-// Resets the medium detent height of the assistant container to its default
-// when in zero state. Used when suggestions are hidden since the remaining
-// content is too short for a content-sized detent.
-- (void)resetZeroStateMediumDetentHeight {
-  if (!_stateManager.currentUIState.zeroStateVisible ||
-      !IsIOSGeminiBottomSheetMigrationEnabled()) {
-    return;
-  }
-  [self.containerHandler setAssistantContainerMediumDetentHeight:std::nullopt];
-}
-
 // Updates the medium detent height of the assistant container to match the
-// consumer's content height when in zero state.
+// consumer's content height when in zero state. The minimum height is equal
+// to half of the full detent height
 - (void)updateZeroStateMediumDetentHeight {
   if (!_stateManager.currentUIState.zeroStateVisible ||
       !IsIOSGeminiBottomSheetMigrationEnabled()) {
@@ -1074,8 +1083,12 @@ class GeminiContainerMediatorTabHelperObserver
   }
   CGFloat contentHeight = [self.consumer contentHeight];
   if (contentHeight > 0) {
-    [self.containerHandler
-        setAssistantContainerMediumDetentHeight:ceil(contentHeight)];
+    // TODO(crbug.com/588419256): Make this calculation in the assistant
+    // container
+    NSInteger height =
+        ceil(std::max(contentHeight,
+                      _lastLargeDetentHeight * kMinZeroStateDetentHeightRatio));
+    [self.containerHandler setAssistantContainerMediumDetentHeight:height];
   }
 }
 
