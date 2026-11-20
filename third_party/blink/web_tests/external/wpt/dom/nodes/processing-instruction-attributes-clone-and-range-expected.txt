@@ -1,0 +1,84 @@
+This is a testharness.js-based test.
+Found 40 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] cloneNode() reflects attributes modified before cloning (source: html-dom)
+  assert_array_equals: attribute names expected property 0 to be "x" but got "c" (expected array ["x", "c"] got ["c", "x"])
+[FAIL] Live range inside processing instruction data is collapsed by setAttribute() of an existing attribute (source: html-dom)
+  assert_equals: startOffset expected 0 but got 6
+[FAIL] Live range ending inside processing instruction data is updated by setAttribute() of an existing attribute (source: html-dom)
+  assert_equals: endOffset expected 0 but got 5
+[FAIL] Live range inside processing instruction data is collapsed by setAttribute() of a new attribute (source: html-dom)
+  assert_equals: startOffset expected 0 but got 6
+[FAIL] Live range ending inside processing instruction data is updated by setAttribute() of a new attribute (source: html-dom)
+  assert_equals: endOffset expected 0 but got 5
+[FAIL] Live range inside processing instruction data is collapsed by removeAttribute() (source: html-dom)
+  assert_equals: startOffset expected 0 but got 6
+[FAIL] Live range ending inside processing instruction data is updated by removeAttribute() (source: html-dom)
+  assert_equals: endOffset expected 0 but got 5
+[FAIL] Live range inside processing instruction data is collapsed by toggleAttribute() (source: html-dom)
+  assert_equals: startOffset expected 0 but got 6
+[FAIL] Live range ending inside processing instruction data is updated by toggleAttribute() (source: html-dom)
+  assert_equals: endOffset expected 0 but got 5
+[FAIL] appendData() updates processing instruction attributes (source: html-dom)
+  assert_array_equals: attribute names expected property 0 to be "a" but got "c" (expected array ["a", "x", "c"] got ["c", "a", "x"])
+[FAIL] cloneNode() reflects attributes modified before cloning (source: html-parser)
+  assert_array_equals: attribute names expected property 0 to be "x" but got "c" (expected array ["x", "c"] got ["c", "x"])
+[FAIL] Live range inside processing instruction data is collapsed by setAttribute() of an existing attribute (source: html-parser)
+  assert_equals: startOffset expected 0 but got 6
+[FAIL] Live range ending inside processing instruction data is updated by setAttribute() of an existing attribute (source: html-parser)
+  assert_equals: endOffset expected 0 but got 5
+[FAIL] Live range inside processing instruction data is collapsed by setAttribute() of a new attribute (source: html-parser)
+  assert_equals: startOffset expected 0 but got 6
+[FAIL] Live range ending inside processing instruction data is updated by setAttribute() of a new attribute (source: html-parser)
+  assert_equals: endOffset expected 0 but got 5
+[FAIL] Live range inside processing instruction data is collapsed by removeAttribute() (source: html-parser)
+  assert_equals: startOffset expected 0 but got 6
+[FAIL] Live range ending inside processing instruction data is updated by removeAttribute() (source: html-parser)
+  assert_equals: endOffset expected 0 but got 5
+[FAIL] Live range inside processing instruction data is collapsed by toggleAttribute() (source: html-parser)
+  assert_equals: startOffset expected 0 but got 6
+[FAIL] Live range ending inside processing instruction data is updated by toggleAttribute() (source: html-parser)
+  assert_equals: endOffset expected 0 but got 5
+[FAIL] appendData() updates processing instruction attributes (source: html-parser)
+  assert_array_equals: attribute names expected property 0 to be "a" but got "c" (expected array ["a", "x", "c"] got ["c", "a", "x"])
+[FAIL] cloneNode() reflects attributes modified before cloning (source: xml-dom)
+  assert_array_equals: attribute names expected property 0 to be "x" but got "c" (expected array ["x", "c"] got ["c", "x"])
+[FAIL] Live range inside processing instruction data is collapsed by setAttribute() of an existing attribute (source: xml-dom)
+  assert_equals: startOffset expected 0 but got 6
+[FAIL] Live range ending inside processing instruction data is updated by setAttribute() of an existing attribute (source: xml-dom)
+  assert_equals: endOffset expected 0 but got 5
+[FAIL] Live range inside processing instruction data is collapsed by setAttribute() of a new attribute (source: xml-dom)
+  assert_equals: startOffset expected 0 but got 6
+[FAIL] Live range ending inside processing instruction data is updated by setAttribute() of a new attribute (source: xml-dom)
+  assert_equals: endOffset expected 0 but got 5
+[FAIL] Live range inside processing instruction data is collapsed by removeAttribute() (source: xml-dom)
+  assert_equals: startOffset expected 0 but got 6
+[FAIL] Live range ending inside processing instruction data is updated by removeAttribute() (source: xml-dom)
+  assert_equals: endOffset expected 0 but got 5
+[FAIL] Live range inside processing instruction data is collapsed by toggleAttribute() (source: xml-dom)
+  assert_equals: startOffset expected 0 but got 6
+[FAIL] Live range ending inside processing instruction data is updated by toggleAttribute() (source: xml-dom)
+  assert_equals: endOffset expected 0 but got 5
+[FAIL] appendData() updates processing instruction attributes (source: xml-dom)
+  assert_array_equals: attribute names expected property 0 to be "a" but got "c" (expected array ["a", "x", "c"] got ["c", "a", "x"])
+[FAIL] cloneNode() reflects attributes modified before cloning (source: xml-parser)
+  assert_array_equals: attribute names expected property 0 to be "x" but got "c" (expected array ["x", "c"] got ["c", "x"])
+[FAIL] Live range inside processing instruction data is collapsed by setAttribute() of an existing attribute (source: xml-parser)
+  assert_equals: startOffset expected 0 but got 6
+[FAIL] Live range ending inside processing instruction data is updated by setAttribute() of an existing attribute (source: xml-parser)
+  assert_equals: endOffset expected 0 but got 5
+[FAIL] Live range inside processing instruction data is collapsed by setAttribute() of a new attribute (source: xml-parser)
+  assert_equals: startOffset expected 0 but got 6
+[FAIL] Live range ending inside processing instruction data is updated by setAttribute() of a new attribute (source: xml-parser)
+  assert_equals: endOffset expected 0 but got 5
+[FAIL] Live range inside processing instruction data is collapsed by removeAttribute() (source: xml-parser)
+  assert_equals: startOffset expected 0 but got 6
+[FAIL] Live range ending inside processing instruction data is updated by removeAttribute() (source: xml-parser)
+  assert_equals: endOffset expected 0 but got 5
+[FAIL] Live range inside processing instruction data is collapsed by toggleAttribute() (source: xml-parser)
+  assert_equals: startOffset expected 0 but got 6
+[FAIL] Live range ending inside processing instruction data is updated by toggleAttribute() (source: xml-parser)
+  assert_equals: endOffset expected 0 but got 5
+[FAIL] appendData() updates processing instruction attributes (source: xml-parser)
+  assert_array_equals: attribute names expected property 0 to be "a" but got "c" (expected array ["a", "x", "c"] got ["c", "a", "x"])
+Harness: the test ran to completion.
+

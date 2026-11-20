@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Shadow root adopted into a document with a null registry and back
+  assert_equals: element registry in a document with a null registry expected null but got object "[object CustomElementRegistry]"
+[FAIL] Shadow root with a null registry cloned into a document with a global registry
+  assert_equals: shadow root registry expected null but got object "[object CustomElementRegistry]"
+Harness: the test ran to completion.
+

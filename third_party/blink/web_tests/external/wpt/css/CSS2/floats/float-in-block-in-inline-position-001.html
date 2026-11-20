@@ -47,6 +47,7 @@ const positionIn = id => {
     return { left: probe.left - box.left, top: probe.top - box.top };
 };
 
+setup({ explicit_done: true });
 document.fonts.ready.then(() => {
   for (const shape of ["nested", "sibling"]) {
     for (const kind of ["selfCollapsing", "withBorder"]) {
@@ -65,5 +66,6 @@ document.fonts.ready.then(() => {
     }, `The float lands in the same place whether the ${kind === "withBorder" ? "bordered" : "self collapsing"} `
          + `block is nested in an inline box or a sibling of inline content`);
   }
+  done();
 });
 </script>

@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] The blocked URI in the security policy violation event for an embed element should be the original URI, not an intermediate one, after more than one redirect.
+  assert_unreached: object-src should have blocked the redirect target, but the embed loaded it. Reached unreachable code
+Harness: the test ran to completion.
+

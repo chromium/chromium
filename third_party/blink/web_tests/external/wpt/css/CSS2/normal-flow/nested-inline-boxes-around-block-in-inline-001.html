@@ -21,6 +21,7 @@ const rect = id => document.getElementById(id).getBoundingClientRect();
 // 20px line of text, then the block's 16px margin and 40px height, then a 20px line of text.
 const EXPECTED_HEIGHT = 20 + 16 + 40 + 20;
 
+setup({ explicit_done: true });
 document.fonts.ready.then(() => {
   test(() => {
     assert_equals(rect("inner").height, EXPECTED_HEIGHT,
@@ -43,5 +44,6 @@ document.fonts.ready.then(() => {
     assert_equals(block.top - rect("inner").top, 36, "the block starts below the first line and its margin");
     assert_equals(rect("inner").bottom, block.bottom + 20, "one line of text follows the block");
   }, "A block level box nested in inline boxes is positioned by its margin");
+  done();
 });
 </script>

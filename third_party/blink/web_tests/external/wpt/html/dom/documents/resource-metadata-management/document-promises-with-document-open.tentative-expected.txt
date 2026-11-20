@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] document.parsed, document.contentLoaded, and document.loaded with document.open()
+  assert_not_equals: document.open() must reset document.parsed got disallowed value undefined
+Harness: the test ran to completion.
+

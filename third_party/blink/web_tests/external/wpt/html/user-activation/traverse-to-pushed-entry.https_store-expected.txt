@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[PRECONDITION_FAILED] User activation propagation across a traversal to an entry that is not the one its document was last shown for
+  Could have been BFCached but actually wasn't
+Harness: the test ran to completion.
+

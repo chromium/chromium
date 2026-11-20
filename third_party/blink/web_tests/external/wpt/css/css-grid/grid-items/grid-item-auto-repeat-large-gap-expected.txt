@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Auto-fill creates one repetition when large gaps exceed the available width
+  assert_equals: expected "100000px 100000px 100000px 100000px 1px 1px 1px" but got "100000px 0px 0px 0px 0px 0px 0px"
+Harness: the test ran to completion.
+

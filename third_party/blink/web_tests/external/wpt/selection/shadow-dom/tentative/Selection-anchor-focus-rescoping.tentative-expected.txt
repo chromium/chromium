@@ -1,0 +1,35 @@
+This is a testharness.js-based test.
+[FAIL] Open shadow tree, setBaseAndExtent(openShadowText, 1, openShadowText, 5): anchorNode and focusNode are rescoped out of the shadow tree
+  assert_false: anchorNode Text node "Open shadow text" is in a shadow tree expected false got true
+[FAIL] Open shadow tree, setBaseAndExtent(openShadowText, 1, openShadowText, 5): anchor is (body, index of openHost), focus is (body, index of openHost + 1)
+  assert_equals: anchorNode expected Element node <body>\n<div id="light">Light text</div>\n<div id="openHost... but got Text node "Open shadow text"
+[FAIL] Open shadow tree, setBaseAndExtent(openShadowText, 5, openShadowText, 1): anchorNode and focusNode are rescoped out of the shadow tree
+  assert_false: anchorNode Text node "Open shadow text" is in a shadow tree expected false got true
+[FAIL] Open shadow tree, setBaseAndExtent(openShadowText, 5, openShadowText, 1): anchor is (body, index of openHost + 1), focus is (body, index of openHost)
+  assert_equals: anchorNode expected Element node <body>\n<div id="light">Light text</div>\n<div id="openHost... but got Text node "Open shadow text"
+[FAIL] Closed shadow tree, setBaseAndExtent(closedShadowText, 1, closedShadowText, 5): anchorNode and focusNode are rescoped out of the shadow tree
+  assert_false: anchorNode Text node "Closed shadow text" is in a shadow tree expected false got true
+[FAIL] Closed shadow tree, setBaseAndExtent(closedShadowText, 1, closedShadowText, 5): anchor is (body, index of closedHost), focus is (body, index of closedHost + 1)
+  assert_equals: anchorNode expected Element node <body>\n<div id="light">Light text</div>\n<div id="openHost... but got Text node "Closed shadow text"
+[FAIL] Nested shadow tree, setBaseAndExtent(innerShadowText, 1, innerShadowText, 5): anchorNode and focusNode are rescoped out of the shadow tree
+  assert_false: anchorNode Text node "Inner shadow text" is in a shadow tree expected false got true
+[FAIL] Nested shadow tree, setBaseAndExtent(innerShadowText, 1, innerShadowText, 5): anchor is (body, index of outerHost), focus is (body, index of outerHost + 1)
+  assert_equals: anchorNode expected Element node <body>\n<div id="light">Light text</div>\n<div id="openHost... but got Text node "Inner shadow text"
+[FAIL] Nested shadow tree, setBaseAndExtent(innerShadowText, 5, innerShadowText, 1): anchorNode and focusNode are rescoped out of the shadow tree
+  assert_false: anchorNode Text node "Inner shadow text" is in a shadow tree expected false got true
+[FAIL] Nested shadow tree, setBaseAndExtent(innerShadowText, 5, innerShadowText, 1): anchor is (body, index of outerHost + 1), focus is (body, index of outerHost)
+  assert_equals: anchorNode expected Element node <body>\n<div id="light">Light text</div>\n<div id="openHost... but got Text node "Inner shadow text"
+[FAIL] Outer shadow tree, into a child of the inner host, setBaseAndExtent(outerShadowText, 1, innerAText, 3): anchorNode and focusNode are rescoped out of the shadow tree
+  assert_false: anchorNode Text node "Outer shadow text" is in a shadow tree expected false got true
+[FAIL] Outer shadow tree, into a child of the inner host, setBaseAndExtent(outerShadowText, 1, innerAText, 3): anchor is (body, index of outerHost), focus is (body, index of outerHost + 1)
+  assert_equals: anchorNode expected Element node <body>\n<div id="light">Light text</div>\n<div id="openHost... but got Text node "Outer shadow text"
+[FAIL] Outer shadow tree, slotted nodes in reverse order, setBaseAndExtent(innerAText, 1, innerBText, 3): anchorNode and focusNode are rescoped out of the shadow tree
+  assert_false: anchorNode Text node "Inner A" is in a shadow tree expected false got true
+[FAIL] Outer shadow tree, slotted nodes in reverse order, setBaseAndExtent(innerAText, 1, innerBText, 3): anchor is (body, index of outerHost), focus is (body, index of outerHost + 1)
+  assert_equals: anchorNode expected Element node <body>\n<div id="light">Light text</div>\n<div id="openHost... but got Text node "Inner A"
+[FAIL] Outer shadow tree, slotted nodes in reverse order, setBaseAndExtent(innerBText, 3, innerAText, 1): anchorNode and focusNode are rescoped out of the shadow tree
+  assert_false: anchorNode Text node "Inner B" is in a shadow tree expected false got true
+[FAIL] Outer shadow tree, slotted nodes in reverse order, setBaseAndExtent(innerBText, 3, innerAText, 1): anchor is (body, index of outerHost + 1), focus is (body, index of outerHost)
+  assert_equals: anchorNode expected Element node <body>\n<div id="light">Light text</div>\n<div id="openHost... but got Text node "Inner B"
+Harness: the test ran to completion.
+

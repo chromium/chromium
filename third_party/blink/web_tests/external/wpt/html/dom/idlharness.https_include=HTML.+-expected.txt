@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 72 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 76 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] HTMLElement interface: attribute headingOffset
   assert_own_property: expected property "headingOffset" missing
 [FAIL] HTMLElement interface: attribute headingReset
@@ -18,6 +18,14 @@ Found 72 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_inherits: property "controls" not found in prototype chain
 [FAIL] HTMLImageElement interface: new Image() must inherit property "controls" with the proper type
   assert_inherits: property "controls" not found in prototype chain
+[FAIL] HTMLEmbedElement interface: attribute hspace
+  assert_true: The prototype object must have a property "hspace" expected true got false
+[FAIL] HTMLEmbedElement interface: attribute vspace
+  assert_true: The prototype object must have a property "vspace" expected true got false
+[FAIL] HTMLEmbedElement interface: document.createElement("embed") must inherit property "hspace" with the proper type
+  assert_inherits: property "hspace" not found in prototype chain
+[FAIL] HTMLEmbedElement interface: document.createElement("embed") must inherit property "vspace" with the proper type
+  assert_inherits: property "vspace" not found in prototype chain
 [FAIL] HTMLMediaElement interface: document.createElement("video") must inherit property "fastSeek(double)" with the proper type
   assert_inherits: property "fastSeek" not found in prototype chain
 [FAIL] HTMLMediaElement interface: calling fastSeek(double) on document.createElement("video") with too few arguments must throw TypeError

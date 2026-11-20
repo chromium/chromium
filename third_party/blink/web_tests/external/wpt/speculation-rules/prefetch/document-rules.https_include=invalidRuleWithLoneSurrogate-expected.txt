@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Uncaught TypeError: Line: 1, column: 176, Unsupported encoding. JSON and all string literals must contain valid Unicode characters.
+[FAIL] a lone surrogate in an invalid rule does not invalidate the ruleset
+  assert_equals: the valid sibling rule still triggers a prefetch expected 1 but got 0
+Harness: the test ran to completion.
+

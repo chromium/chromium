@@ -1,0 +1,21 @@
+This is a testharness.js-based test.
+[FAIL] Element with the global registry in a shadow root with a scoped registry, whose host is adopted into a document with a global registry
+  assert_equals: after adoption expected object "[object CustomElementRegistry]" but got object "[object CustomElementRegistry]"
+[FAIL] Element with the global registry in a shadow root with a null registry, whose host is adopted into a document with a global registry
+  assert_equals: after adoption expected object "[object CustomElementRegistry]" but got object "[object CustomElementRegistry]"
+[FAIL] Element given the global registry by initialize() in a shadow root with a scoped registry, whose host is adopted into a document with a global registry
+  assert_equals: after adoption expected object "[object CustomElementRegistry]" but got object "[object CustomElementRegistry]"
+[FAIL] Element with the global registry in a shadow root with a scoped registry, whose host is adopted into a document without a browsing context
+  assert_equals: after adoption expected null but got object "[object CustomElementRegistry]"
+[FAIL] Element with the global registry in a shadow root with a null registry, whose host is adopted into a document without a browsing context
+  assert_equals: after adoption expected null but got object "[object CustomElementRegistry]"
+[FAIL] Element given the global registry by initialize() in a shadow root with a scoped registry, whose host is adopted into a document without a browsing context
+  assert_equals: after adoption expected null but got object "[object CustomElementRegistry]"
+[FAIL] Element with the global registry in a shadow root with a scoped registry, whose host is adopted into a document without a browsing context and then into a document with a global registry
+  assert_equals: after adoption into a document without a browsing context expected null but got object "[object CustomElementRegistry]"
+[FAIL] Element with the global registry in a shadow root with a scoped registry, whose host is appended to another document, is upgraded by that document's registry
+  assert_equals: after appending expected object "[object CustomElementRegistry]" but got object "[object CustomElementRegistry]"
+[FAIL] Element with a null registry whose parent has the global registry in a shadow root with a scoped registry, whose host is adopted into a document with a global registry
+  assert_equals: after adoption expected object "[object CustomElementRegistry]" but got null
+Harness: the test ran to completion.
+

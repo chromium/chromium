@@ -1,4 +1,5 @@
 This is a testharness.js-based test.
+Found 10 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["stylewithcss","false"],["bold",""]] "<span style=font-weight:100>fo[o</span><span style=font-weight:200>b]ar</span>" queryCommandValue("bold") before
   assert_equals: Wrong result returned expected "" but got "false"
 [FAIL] [["stylewithcss","false"],["bold",""]] "<span style=font-weight:100>fo[o</span><span style=font-weight:200>b]ar</span>" queryCommandValue("bold") after
@@ -11,5 +12,13 @@ This is a testharness.js-based test.
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "abc<b><i>def</i></b>ghi" but got "abc<i><b>def</b></i>ghi"
 [FAIL] [["stylewithcss","false"],["bold",""]] "abc{<i>def</i>}ghi" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "abc<b><i>def</i></b>ghi" but got "abc<i><b>def</b></i>ghi"
+[FAIL] [["stylewithcss","false"],["bold",""]] "<span contenteditable=\\"false\\">ab[c</span>d]ef": execCommand("bold", false, "") return value
+  assert_equals: expected true but got false
+[FAIL] [["stylewithcss","false"],["bold",""]] "<span contenteditable=\\"false\\">ab[c</span>d]ef" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<span contenteditable=\\"false\\">abc</span><b>d</b>ef" but got "<span contenteditable=\\"false\\">abc</span>def"
+[FAIL] [["stylewithcss","false"],["bold",""]] "<span contenteditable=\\"false\\">ab[c</span>def<span contenteditable=\\"false\\">g]hi</span>": execCommand("bold", false, "") return value
+  assert_equals: expected true but got false
+[FAIL] [["stylewithcss","false"],["bold",""]] "<span contenteditable=\\"false\\">ab[c</span>def<span contenteditable=\\"false\\">g]hi</span>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<span contenteditable=\\"false\\">abc</span><b>def</b><span contenteditable=\\"false\\">ghi</span>" but got "<span contenteditable=\\"false\\">abc</span>def<span contenteditable=\\"false\\">ghi</span>"
 Harness: the test ran to completion.
 

@@ -257,6 +257,30 @@
     @assert pixel 50,25 == 0,255,0,255;
   expected: green
 
+- name: 2d.fillStyle.parse.current.stylesheet
+  desc: currentColor should take into account color set by CSS stylesheet
+  canvas_types: ['HtmlCanvas']
+  code: |
+    var styleSheet = document.createElement("style")
+    styleSheet.textContent = "canvas { color: #0f0; }"
+    document.head.appendChild(styleSheet)
+
+    document.body.setAttribute('style', 'color: #f00');
+    ctx.fillStyle = 'currentColor';
+    ctx.fillRect(0, 0, 100, 50);
+    @assert pixel 50,25 == 0,255,0,255;
+  expected: green
+
+- name: 2d.fillStyle.parse.current.inherited
+  desc: currentColor should take into account color inherited from ancestor elements
+  canvas_types: ['HtmlCanvas']
+  code: |
+    document.body.setAttribute('style', 'color: #0f0');
+    ctx.fillStyle = 'currentColor';
+    ctx.fillRect(0, 0, 100, 50);
+    @assert pixel 50,25 == 0,255,0,255;
+  expected: green
+
 - name: 2d.fillStyle.parse.current.changed
   desc: currentColor is computed when the attribute is set, not when it is painted
   canvas_types: ['HtmlCanvas']
@@ -265,6 +289,18 @@
     ctx.fillStyle = '#f00';
     ctx.fillStyle = 'currentColor';
     canvas.setAttribute('style', 'color: #f00');
+    ctx.fillRect(0, 0, 100, 50);
+    @assert pixel 50,25 == 0,255,0,255;
+  expected: green
+
+- name: 2d.fillStyle.parse.current.notcached
+  desc: Setting fillStyle to currentColor always re-computes it
+  canvas_types: ['HtmlCanvas']
+  code: |
+    canvas.setAttribute('style', 'color: #f00');
+    ctx.fillStyle = 'currentColor';
+    canvas.setAttribute('style', 'color: #0f0');
+    ctx.fillStyle = 'currentColor';
     ctx.fillRect(0, 0, 100, 50);
     @assert pixel 50,25 == 0,255,0,255;
   expected: green
@@ -362,6 +398,18 @@
   code: |
     @assert ctx.strokeStyle === '#000000';
 
+- name: 2d.strokeStyle.parse.current.notcached
+  desc: Setting strokeStyle to currentColor always re-computes it
+  canvas_types: ['HtmlCanvas']
+  code: |
+    canvas.setAttribute('style', 'color: #f00');
+    ctx.strokeStyle = 'currentColor';
+    canvas.setAttribute('style', 'color: #0f0');
+    ctx.strokeStyle = 'currentColor';
+    ctx.lineWidth = 1000;
+    ctx.strokeRect(0, 0, 100, 50);
+    @assert pixel 50,25 == 0,255,0,255;
+  expected: green
 
 - name: 2d.gradient.object.type
   desc: window.CanvasGradient exists and has the right properties

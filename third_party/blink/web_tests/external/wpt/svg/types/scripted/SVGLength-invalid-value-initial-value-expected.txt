@@ -1,0 +1,68 @@
+This is a testharness.js-based test.
+Found 32 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] rect rx: value = -20 takes the initial value
+  assert_equals: computed value is the initial value expected "auto" but got "-20px"
+[FAIL] rect rx: valueAsString = "-20" takes the initial value
+  assert_equals: computed value is the initial value expected "auto" but got "-20px"
+[FAIL] rect rx: newValueSpecifiedUnits(PX, -20) takes the initial value
+  assert_equals: computed value is the initial value expected "auto" but got "-20px"
+[FAIL] rect rx: valueInSpecifiedUnits = -20 takes the initial value
+  assert_equals: computed value is the initial value expected "auto" but got "-20px"
+[FAIL] rect ry: value = -20 takes the initial value
+  assert_equals: computed value is the initial value expected "auto" but got "-20px"
+[FAIL] rect ry: valueAsString = "-20" takes the initial value
+  assert_equals: computed value is the initial value expected "auto" but got "-20px"
+[FAIL] rect ry: newValueSpecifiedUnits(PX, -20) takes the initial value
+  assert_equals: computed value is the initial value expected "auto" but got "-20px"
+[FAIL] rect ry: valueInSpecifiedUnits = -20 takes the initial value
+  assert_equals: computed value is the initial value expected "auto" but got "-20px"
+[FAIL] ellipse rx: value = -20 takes the initial value
+  assert_equals: computed value is the initial value expected "auto" but got "-20px"
+[FAIL] ellipse rx: valueAsString = "-20" takes the initial value
+  assert_equals: computed value is the initial value expected "auto" but got "-20px"
+[FAIL] ellipse rx: newValueSpecifiedUnits(PX, -20) takes the initial value
+  assert_equals: computed value is the initial value expected "auto" but got "-20px"
+[FAIL] ellipse rx: valueInSpecifiedUnits = -20 takes the initial value
+  assert_equals: computed value is the initial value expected "auto" but got "-20px"
+[FAIL] ellipse ry: value = -20 takes the initial value
+  assert_equals: computed value is the initial value expected "auto" but got "-20px"
+[FAIL] ellipse ry: valueAsString = "-20" takes the initial value
+  assert_equals: computed value is the initial value expected "auto" but got "-20px"
+[FAIL] ellipse ry: newValueSpecifiedUnits(PX, -20) takes the initial value
+  assert_equals: computed value is the initial value expected "auto" but got "-20px"
+[FAIL] ellipse ry: valueInSpecifiedUnits = -20 takes the initial value
+  assert_equals: computed value is the initial value expected "auto" but got "-20px"
+[FAIL] circle r: value = -20 takes the initial value
+  assert_equals: computed value is the initial value expected "0px" but got "-20px"
+[FAIL] circle r: valueAsString = "-20" takes the initial value
+  assert_equals: computed value is the initial value expected "0px" but got "-20px"
+[FAIL] circle r: newValueSpecifiedUnits(PX, -20) takes the initial value
+  assert_equals: computed value is the initial value expected "0px" but got "-20px"
+[FAIL] circle r: valueInSpecifiedUnits = -20 takes the initial value
+  assert_equals: computed value is the initial value expected "0px" but got "-20px"
+[FAIL] rect width: newValueSpecifiedUnits(PX, -20) reads back like markup
+  assert_equals: unitType expected 1 but got 5
+[FAIL] rect height: newValueSpecifiedUnits(PX, -20) reads back like markup
+  assert_equals: unitType expected 1 but got 5
+[FAIL] image width: newValueSpecifiedUnits(PX, -20) reads back like markup
+  assert_equals: unitType expected 1 but got 5
+[FAIL] image height: newValueSpecifiedUnits(PX, -20) reads back like markup
+  assert_equals: unitType expected 1 but got 5
+[FAIL] use width: newValueSpecifiedUnits(PX, -20) reads back like markup
+  assert_equals: unitType expected 1 but got 5
+[FAIL] use height: newValueSpecifiedUnits(PX, -20) reads back like markup
+  assert_equals: unitType expected 1 but got 5
+[FAIL] pattern width: newValueSpecifiedUnits(PX, -20) reads back like markup
+  assert_equals: unitType expected 1 but got 5
+[FAIL] pattern height: newValueSpecifiedUnits(PX, -20) reads back like markup
+  assert_equals: unitType expected 1 but got 5
+[FAIL] svg width: newValueSpecifiedUnits(PX, -20) reads back like markup
+  assert_equals: unitType expected 1 but got 5
+[FAIL] svg height: newValueSpecifiedUnits(PX, -20) reads back like markup
+  assert_equals: unitType expected 1 but got 5
+[FAIL] outermost svg width: newValueSpecifiedUnits(PX, -20) reads back like markup
+  assert_equals: unitType expected 1 but got 5
+[FAIL] outermost svg height: newValueSpecifiedUnits(PX, -20) reads back like markup
+  assert_equals: unitType expected 1 but got 5
+Harness: the test ran to completion.
+

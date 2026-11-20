@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] streamBeforeHTMLUnsafe({ runScripts: true }) flushes text before mid-parse referenceChild removal and discards trailing characters
+  assert_unreached: Should have rejected: undefined Reached unreachable code
+[FAIL] streamAppendHTML() into <textarea> coalesces U+0000 replacement characters in RCDATA mode via replace data
+  assert_equals: expected "hello world\\ufffd!" but got "hello world!"
+Harness: the test ran to completion.
+

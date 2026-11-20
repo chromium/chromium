@@ -1,0 +1,470 @@
+This is a testharness.js-based test.
+Found 233 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Invalid attribute value: "\\0" (source: html-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute("attr", value);\n        }" did not throw
+[FAIL] Invalid attribute value: "a\\0b" (source: html-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute("attr", value);\n        }" did not throw
+[FAIL] Invalid attribute value: "\\b" (source: html-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute("attr", value);\n        }" did not throw
+[FAIL] Invalid attribute value: "\\v" (source: html-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute("attr", value);\n        }" did not throw
+[FAIL] Invalid attribute value: "\\f" (source: html-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute("attr", value);\n        }" did not throw
+[FAIL] Invalid attribute value: "\\x0e" (source: html-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute("attr", value);\n        }" did not throw
+[FAIL] Invalid attribute value: "\\x1f" (source: html-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute("attr", value);\n        }" did not throw
+[FAIL] Invalid attribute value: "U+d800" (source: html-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute("attr", value);\n        }" did not throw
+[FAIL] Invalid attribute value: "U+dfff" (source: html-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute("attr", value);\n        }" did not throw
+[FAIL] Invalid attribute value: "aU+d800b" (source: html-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute("attr", value);\n        }" did not throw
+[FAIL] Invalid attribute value: "U+dc00U+d800" (source: html-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute("attr", value);\n        }" did not throw
+[FAIL] Invalid attribute value: "\\ufffe" (source: html-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute("attr", value);\n        }" did not throw
+[FAIL] Invalid attribute value: "\\uffff" (source: html-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute("attr", value);\n        }" did not throw
+[FAIL] Invalid attribute value: "a\\ufffeb" (source: html-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute("attr", value);\n        }" did not throw
+[FAIL] Invalid attribute name: "$" (source: html-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "$foo" (source: html-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "a$b" (source: html-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "a\\"b" (source: html-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "a'b" (source: html-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "a<b" (source: html-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "a&b" (source: html-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "a?b" (source: html-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "-" (source: html-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "-foo" (source: html-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "." (source: html-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: ".foo" (source: html-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "0" (source: html-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "0foo" (source: html-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "·" (source: html-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "·a" (source: html-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "̀a" (source: html-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "‿a" (source: html-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "ª" (source: html-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "aª" (source: html-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "º" (source: html-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "aº" (source: html-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "×" (source: html-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "a×" (source: html-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "÷" (source: html-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "a÷" (source: html-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: ";" (source: html-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: " " (source: html-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "U+d800" (source: html-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "\\ufffe" (source: html-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "\\uffff" (source: html-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "󰀀" (source: html-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "􏿿" (source: html-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Valid attribute name: ":" (source: html-dom)
+  assert_equals: expected (string) "value" but got (object) null
+[FAIL] Valid attribute name: ":foo" (source: html-dom)
+  assert_equals: expected (string) "value" but got (object) null
+[FAIL] Valid attribute name: "foo:" (source: html-dom)
+  assert_equals: expected (string) "value" but got (object) null
+[FAIL] Valid attribute name: "a:b" (source: html-dom)
+  assert_equals: expected (string) "value" but got (object) null
+[FAIL] Valid attribute name: "a:b:c" (source: html-dom)
+  assert_equals: expected (string) "value" but got (object) null
+[FAIL] Valid pseudo-attribute: ":a=\\"1\\"" (source: html-dom)
+  assert_true: expected true got false
+[FAIL] Valid pseudo-attribute: "a:b=\\"1\\"" (source: html-dom)
+  assert_true: expected true got false
+[FAIL] Valid pseudo-attribute: "a:-b=\\"1\\"" (source: html-dom)
+  assert_true: expected true got false
+[FAIL] Valid pseudo-attribute: "a=\\"a\\tb\\"" (source: html-dom)
+  assert_equals: expected "a\\tb" but got "a b"
+[FAIL] Valid pseudo-attribute: "a=\\"a\\nb\\"" (source: html-dom)
+  assert_equals: expected "a\\nb" but got "a b"
+[FAIL] Removing a non-existent PI attribute doesn't normalize data from html-dom
+  assert_array_equals: expected property 0 to be "a" but got "c" (expected array ["a", "c"] got ["c", "a"])
+[FAIL] Invalid attribute value: "\\0" (source: html-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute("attr", value);\n        }" did not throw
+[FAIL] Invalid attribute value: "a\\0b" (source: html-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute("attr", value);\n        }" did not throw
+[FAIL] Invalid attribute value: "\\b" (source: html-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute("attr", value);\n        }" did not throw
+[FAIL] Invalid attribute value: "\\v" (source: html-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute("attr", value);\n        }" did not throw
+[FAIL] Invalid attribute value: "\\f" (source: html-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute("attr", value);\n        }" did not throw
+[FAIL] Invalid attribute value: "\\x0e" (source: html-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute("attr", value);\n        }" did not throw
+[FAIL] Invalid attribute value: "\\x1f" (source: html-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute("attr", value);\n        }" did not throw
+[FAIL] Invalid attribute value: "U+d800" (source: html-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute("attr", value);\n        }" did not throw
+[FAIL] Invalid attribute value: "U+dfff" (source: html-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute("attr", value);\n        }" did not throw
+[FAIL] Invalid attribute value: "aU+d800b" (source: html-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute("attr", value);\n        }" did not throw
+[FAIL] Invalid attribute value: "U+dc00U+d800" (source: html-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute("attr", value);\n        }" did not throw
+[FAIL] Invalid attribute value: "\\ufffe" (source: html-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute("attr", value);\n        }" did not throw
+[FAIL] Invalid attribute value: "\\uffff" (source: html-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute("attr", value);\n        }" did not throw
+[FAIL] Invalid attribute value: "a\\ufffeb" (source: html-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute("attr", value);\n        }" did not throw
+[FAIL] Invalid attribute name: "$" (source: html-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "$foo" (source: html-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "a$b" (source: html-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "a\\"b" (source: html-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "a'b" (source: html-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "a<b" (source: html-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "a&b" (source: html-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "a?b" (source: html-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "-" (source: html-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "-foo" (source: html-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "." (source: html-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: ".foo" (source: html-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "0" (source: html-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "0foo" (source: html-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "·" (source: html-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "·a" (source: html-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "̀a" (source: html-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "‿a" (source: html-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "ª" (source: html-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "aª" (source: html-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "º" (source: html-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "aº" (source: html-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "×" (source: html-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "a×" (source: html-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "÷" (source: html-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "a÷" (source: html-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: ";" (source: html-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: " " (source: html-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "U+d800" (source: html-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "\\ufffe" (source: html-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "\\uffff" (source: html-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "󰀀" (source: html-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "􏿿" (source: html-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Valid attribute name: ":" (source: html-parser)
+  assert_equals: expected (string) "value" but got (object) null
+[FAIL] Valid attribute name: ":foo" (source: html-parser)
+  assert_equals: expected (string) "value" but got (object) null
+[FAIL] Valid attribute name: "foo:" (source: html-parser)
+  assert_equals: expected (string) "value" but got (object) null
+[FAIL] Valid attribute name: "a:b" (source: html-parser)
+  assert_equals: expected (string) "value" but got (object) null
+[FAIL] Valid attribute name: "a:b:c" (source: html-parser)
+  assert_equals: expected (string) "value" but got (object) null
+[FAIL] Valid pseudo-attribute: ":a=\\"1\\"" (source: html-parser)
+  assert_true: expected true got false
+[FAIL] Valid pseudo-attribute: "a:b=\\"1\\"" (source: html-parser)
+  assert_true: expected true got false
+[FAIL] Valid pseudo-attribute: "a:-b=\\"1\\"" (source: html-parser)
+  assert_true: expected true got false
+[FAIL] Valid pseudo-attribute: "a=\\"a\\tb\\"" (source: html-parser)
+  assert_equals: expected "a\\tb" but got "a b"
+[FAIL] Valid pseudo-attribute: "a=\\"a\\nb\\"" (source: html-parser)
+  assert_equals: expected "a\\nb" but got "a b"
+[FAIL] Valid pseudo-attribute: "a=\\">\\"" (source: html-parser)
+  assert_equals: data is preserved verbatim expected "a=\\">\\"" but got "a=\\""
+[FAIL] Removing a non-existent PI attribute doesn't normalize data from html-parser
+  assert_array_equals: expected property 0 to be "a" but got "c" (expected array ["a", "c"] got ["c", "a"])
+[FAIL] Invalid attribute value: "\\0" (source: xml-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute("attr", value);\n        }" did not throw
+[FAIL] Invalid attribute value: "a\\0b" (source: xml-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute("attr", value);\n        }" did not throw
+[FAIL] Invalid attribute value: "\\b" (source: xml-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute("attr", value);\n        }" did not throw
+[FAIL] Invalid attribute value: "\\v" (source: xml-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute("attr", value);\n        }" did not throw
+[FAIL] Invalid attribute value: "\\f" (source: xml-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute("attr", value);\n        }" did not throw
+[FAIL] Invalid attribute value: "\\x0e" (source: xml-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute("attr", value);\n        }" did not throw
+[FAIL] Invalid attribute value: "\\x1f" (source: xml-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute("attr", value);\n        }" did not throw
+[FAIL] Invalid attribute value: "U+d800" (source: xml-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute("attr", value);\n        }" did not throw
+[FAIL] Invalid attribute value: "U+dfff" (source: xml-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute("attr", value);\n        }" did not throw
+[FAIL] Invalid attribute value: "aU+d800b" (source: xml-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute("attr", value);\n        }" did not throw
+[FAIL] Invalid attribute value: "U+dc00U+d800" (source: xml-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute("attr", value);\n        }" did not throw
+[FAIL] Invalid attribute value: "\\ufffe" (source: xml-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute("attr", value);\n        }" did not throw
+[FAIL] Invalid attribute value: "\\uffff" (source: xml-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute("attr", value);\n        }" did not throw
+[FAIL] Invalid attribute value: "a\\ufffeb" (source: xml-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute("attr", value);\n        }" did not throw
+[FAIL] Invalid attribute name: "$" (source: xml-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "$foo" (source: xml-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "a$b" (source: xml-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "a\\"b" (source: xml-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "a'b" (source: xml-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "a<b" (source: xml-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "a&b" (source: xml-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "a?b" (source: xml-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "-" (source: xml-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "-foo" (source: xml-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "." (source: xml-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: ".foo" (source: xml-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "0" (source: xml-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "0foo" (source: xml-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "·" (source: xml-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "·a" (source: xml-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "̀a" (source: xml-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "‿a" (source: xml-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "ª" (source: xml-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "aª" (source: xml-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "º" (source: xml-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "aº" (source: xml-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "×" (source: xml-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "a×" (source: xml-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "÷" (source: xml-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "a÷" (source: xml-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: ";" (source: xml-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: " " (source: xml-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "U+d800" (source: xml-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "\\ufffe" (source: xml-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "\\uffff" (source: xml-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "󰀀" (source: xml-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "􏿿" (source: xml-dom)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Valid attribute name: ":" (source: xml-dom)
+  assert_equals: expected (string) "value" but got (object) null
+[FAIL] Valid attribute name: ":foo" (source: xml-dom)
+  assert_equals: expected (string) "value" but got (object) null
+[FAIL] Valid attribute name: "foo:" (source: xml-dom)
+  assert_equals: expected (string) "value" but got (object) null
+[FAIL] Valid attribute name: "a:b" (source: xml-dom)
+  assert_equals: expected (string) "value" but got (object) null
+[FAIL] Valid attribute name: "a:b:c" (source: xml-dom)
+  assert_equals: expected (string) "value" but got (object) null
+[FAIL] Valid pseudo-attribute: ":a=\\"1\\"" (source: xml-dom)
+  assert_true: expected true got false
+[FAIL] Valid pseudo-attribute: "a:b=\\"1\\"" (source: xml-dom)
+  assert_true: expected true got false
+[FAIL] Valid pseudo-attribute: "a:-b=\\"1\\"" (source: xml-dom)
+  assert_true: expected true got false
+[FAIL] Valid pseudo-attribute: "a=\\"a\\tb\\"" (source: xml-dom)
+  assert_equals: expected "a\\tb" but got "a b"
+[FAIL] Valid pseudo-attribute: "a=\\"a\\nb\\"" (source: xml-dom)
+  assert_equals: expected "a\\nb" but got "a b"
+[FAIL] Removing a non-existent PI attribute doesn't normalize data from xml-dom
+  assert_array_equals: expected property 0 to be "a" but got "c" (expected array ["a", "c"] got ["c", "a"])
+[FAIL] Invalid attribute value: "\\0" (source: xml-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute("attr", value);\n        }" did not throw
+[FAIL] Invalid attribute value: "a\\0b" (source: xml-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute("attr", value);\n        }" did not throw
+[FAIL] Invalid attribute value: "\\b" (source: xml-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute("attr", value);\n        }" did not throw
+[FAIL] Invalid attribute value: "\\v" (source: xml-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute("attr", value);\n        }" did not throw
+[FAIL] Invalid attribute value: "\\f" (source: xml-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute("attr", value);\n        }" did not throw
+[FAIL] Invalid attribute value: "\\x0e" (source: xml-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute("attr", value);\n        }" did not throw
+[FAIL] Invalid attribute value: "\\x1f" (source: xml-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute("attr", value);\n        }" did not throw
+[FAIL] Invalid attribute value: "U+d800" (source: xml-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute("attr", value);\n        }" did not throw
+[FAIL] Invalid attribute value: "U+dfff" (source: xml-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute("attr", value);\n        }" did not throw
+[FAIL] Invalid attribute value: "aU+d800b" (source: xml-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute("attr", value);\n        }" did not throw
+[FAIL] Invalid attribute value: "U+dc00U+d800" (source: xml-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute("attr", value);\n        }" did not throw
+[FAIL] Invalid attribute value: "\\ufffe" (source: xml-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute("attr", value);\n        }" did not throw
+[FAIL] Invalid attribute value: "\\uffff" (source: xml-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute("attr", value);\n        }" did not throw
+[FAIL] Invalid attribute value: "a\\ufffeb" (source: xml-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute("attr", value);\n        }" did not throw
+[FAIL] Invalid attribute name: "$" (source: xml-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "$foo" (source: xml-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "a$b" (source: xml-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "a\\"b" (source: xml-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "a'b" (source: xml-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "a<b" (source: xml-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "a&b" (source: xml-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "a?b" (source: xml-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "-" (source: xml-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "-foo" (source: xml-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "." (source: xml-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: ".foo" (source: xml-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "0" (source: xml-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "0foo" (source: xml-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "·" (source: xml-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "·a" (source: xml-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "̀a" (source: xml-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "‿a" (source: xml-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "ª" (source: xml-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "aª" (source: xml-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "º" (source: xml-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "aº" (source: xml-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "×" (source: xml-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "a×" (source: xml-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "÷" (source: xml-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "a÷" (source: xml-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: ";" (source: xml-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: " " (source: xml-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "U+d800" (source: xml-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "\\ufffe" (source: xml-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "\\uffff" (source: xml-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "󰀀" (source: xml-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Invalid attribute name: "􏿿" (source: xml-parser)
+  assert_throws_dom: function "() => {\n          pi.setAttribute(name, "value");\n        }" did not throw
+[FAIL] Valid attribute name: ":" (source: xml-parser)
+  assert_equals: expected (string) "value" but got (object) null
+[FAIL] Valid attribute name: ":foo" (source: xml-parser)
+  assert_equals: expected (string) "value" but got (object) null
+[FAIL] Valid attribute name: "foo:" (source: xml-parser)
+  assert_equals: expected (string) "value" but got (object) null
+[FAIL] Valid attribute name: "a:b" (source: xml-parser)
+  assert_equals: expected (string) "value" but got (object) null
+[FAIL] Valid attribute name: "a:b:c" (source: xml-parser)
+  assert_equals: expected (string) "value" but got (object) null
+[FAIL] Valid pseudo-attribute: ":a=\\"1\\"" (source: xml-parser)
+  assert_true: expected true got false
+[FAIL] Valid pseudo-attribute: "a:b=\\"1\\"" (source: xml-parser)
+  assert_true: expected true got false
+[FAIL] Valid pseudo-attribute: "a:-b=\\"1\\"" (source: xml-parser)
+  assert_true: expected true got false
+[FAIL] Valid pseudo-attribute: "a=\\"a\\tb\\"" (source: xml-parser)
+  assert_equals: expected "a\\tb" but got "a b"
+[FAIL] Valid pseudo-attribute: "a=\\"a\\nb\\"" (source: xml-parser)
+  assert_equals: expected "a\\nb" but got "a b"
+[FAIL] Removing a non-existent PI attribute doesn't normalize data from xml-parser
+  assert_array_equals: expected property 0 to be "a" but got "c" (expected array ["a", "c"] got ["c", "a"])
+Harness: the test ran to completion.
+

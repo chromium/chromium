@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] crossorigin=anonymous: a cross-origin script without CORS headers fails
+  assert_equals: expected "error" but got "load"
+Harness: the test ran to completion.
+

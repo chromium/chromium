@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+[FAIL] Transferring a port from a closed port detaches it (transfer sequence)
+  assert_throws_dom: function "() => new MessageChannel().port1.postMessage(0, [port1])" did not throw
+[FAIL] Transferring a port from a closed port detaches it (StructuredSerializeOptions)
+  assert_throws_dom: function "() => structuredClone(0, { transfer: [port1] })" did not throw
+[FAIL] Transferring both ports of a channel from a closed port detaches both
+  assert_throws_dom: function "() => structuredClone(0, { transfer: [port1] })" did not throw
+[FAIL] Transferring a port and an ArrayBuffer from a closed port detaches both
+  assert_equals: expected 0 but got 8
+[FAIL] Transferring the formerly entangled port from a closed port detaches it
+  assert_throws_dom: function "() => structuredClone(0, { transfer: [port2] })" did not throw
+Harness: the test ran to completion.
+

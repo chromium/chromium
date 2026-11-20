@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] reporting-subresource-corp
+  assert_equals: expected (string) "corp" but got (undefined) undefined
+Harness: the test ran to completion.
+

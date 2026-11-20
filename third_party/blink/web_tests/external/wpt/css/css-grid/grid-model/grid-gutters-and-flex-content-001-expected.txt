@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] .grid 7
+  assert_equals: \n<div class="grid gridMinContentAndMinMaxFixedMinContentAndFlex gridRowColumnGaps" data-expected-width="100" data-expected-height="149">\n    <div style="grid-column: 2 / span 2;" data-expected-width="81">XXXXX</div>\n    <div style="grid-column: 1 / -1; grid-row: 2;" data-expected-width="100">XXX XXX XXX</div>\n    <div style="grid-column: 1 / span 2; grid-row: 3;" data-expected-width="40">XXXX XXXX</div>\n        <div style="grid-column: 1; grid-row: 4;" data-expected-width="0" data-expected-height="0"></div>\n    </div>\nwidth expected 81 but got 80
+[FAIL] .grid 8
+  assert_equals: \n<div class="grid gridMaxContentAndMinMaxFixedMaxContentAndFlex gridRowColumnGaps" data-expected-width="100" data-expected-height="139">\n    <div style="grid-column: 2 / span 2;" data-expected-width="90">XX</div>\n    <div style="grid-column: 1 / -1; grid-row: 2;" data-expected-width="109">XXX XXX XXX</div>\n    <div style="grid-column: 1 / span 2; grid-row: 3;" data-expected-width="90">XXXX XXXX</div>\n        <div style="grid-column: 1; grid-row: 4;" data-expected-width="0" data-expected-height="0"></div>\n    </div>\nwidth expected 90 but got 39
+Harness: the test ran to completion.
+

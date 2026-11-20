@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Formatting elements created by adoption agency don't get a removed is= attribute
+  assert_equals: expected "<b>a</b><p><b>b</b>c</p>" but got "<b>a<p>bc</p></b>"
+[FAIL] Formatting elements created by reconstructing don't get a removed is= attribute
+  assert_equals: expected "<p><b>a</b></p><b>b</b>" but got "<p><b>a</b></p>b"
+Harness: the test ran to completion.
+

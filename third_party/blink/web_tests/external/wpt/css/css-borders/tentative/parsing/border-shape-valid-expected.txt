@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] e.style['border-shape'] = "circle() border-box circle() content-box" should set the property value
+  assert_equals: serialization should be canonical expected "circle() circle() content-box" but got "circle() border-box circle() content-box"
+Harness: the test ran to completion.
+

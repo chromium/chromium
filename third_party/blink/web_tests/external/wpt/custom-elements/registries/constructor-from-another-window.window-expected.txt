@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Upgrade with another window's global registry and a constructor from this window
+  assert_true: upgraded expected true got false
+[FAIL] Upgrade with a scoped registry and a constructor from another window
+  assert_true: upgraded expected true got false
+Harness: the test ran to completion.
+

@@ -1,0 +1,108 @@
+This is a testharness.js-based test.
+Found 52 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] e.style['width'] = "stretch(10px)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['width'] = "stretch(10%)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['width'] = "stretch(calc(10% - 0.5em))" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['height'] = "stretch(10px)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['height'] = "stretch(10%)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['height'] = "stretch(calc(10% - 0.5em))" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['min-width'] = "stretch(10px)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['min-width'] = "stretch(10%)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['min-width'] = "stretch(calc(10% - 0.5em))" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['min-height'] = "stretch(10px)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['min-height'] = "stretch(10%)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['min-height'] = "stretch(calc(10% - 0.5em))" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['max-width'] = "stretch(10px)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['max-width'] = "stretch(10%)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['max-width'] = "stretch(calc(10% - 0.5em))" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['max-height'] = "stretch(10px)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['max-height'] = "stretch(10%)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['max-height'] = "stretch(calc(10% - 0.5em))" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['inline-size'] = "stretch(10px)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['inline-size'] = "stretch(10%)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['inline-size'] = "stretch(calc(10% - 0.5em))" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['block-size'] = "stretch(10px)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['block-size'] = "stretch(10%)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['block-size'] = "stretch(calc(10% - 0.5em))" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['min-inline-size'] = "stretch(10px)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['min-inline-size'] = "stretch(10%)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['min-inline-size'] = "stretch(calc(10% - 0.5em))" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['min-block-size'] = "stretch(10px)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['min-block-size'] = "stretch(10%)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['min-block-size'] = "stretch(calc(10% - 0.5em))" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['max-inline-size'] = "stretch(10px)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['max-inline-size'] = "stretch(10%)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['max-inline-size'] = "stretch(calc(10% - 0.5em))" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['max-block-size'] = "stretch(10px)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['max-block-size'] = "stretch(10%)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['max-block-size'] = "stretch(calc(10% - 0.5em))" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] Property min-width value 'stretch(10px)'
+  assert_true: 'stretch(10px)' is a supported value for min-width. expected true got false
+[FAIL] Property min-width value 'stretch(20%)'
+  assert_true: 'stretch(20%)' is a supported value for min-width. expected true got false
+[FAIL] Property min-width value 'stretch(calc(10% + 40px))'
+  assert_true: 'stretch(calc(10% + 40px))' is a supported value for min-width. expected true got false
+[FAIL] Property min-width value 'stretch(calc(10px + 0.5em))'
+  assert_true: 'stretch(calc(10px + 0.5em))' is a supported value for min-width. expected true got false
+[FAIL] Property min-height value 'stretch(10px)'
+  assert_true: 'stretch(10px)' is a supported value for min-height. expected true got false
+[FAIL] Property min-height value 'stretch(20%)'
+  assert_true: 'stretch(20%)' is a supported value for min-height. expected true got false
+[FAIL] Property min-height value 'stretch(calc(10% + 40px))'
+  assert_true: 'stretch(calc(10% + 40px))' is a supported value for min-height. expected true got false
+[FAIL] Property min-height value 'stretch(calc(10px + 0.5em))'
+  assert_true: 'stretch(calc(10px + 0.5em))' is a supported value for min-height. expected true got false
+[FAIL] Property max-width value 'stretch(10px)'
+  assert_true: 'stretch(10px)' is a supported value for max-width. expected true got false
+[FAIL] Property max-width value 'stretch(20%)'
+  assert_true: 'stretch(20%)' is a supported value for max-width. expected true got false
+[FAIL] Property max-width value 'stretch(calc(10% + 40px))'
+  assert_true: 'stretch(calc(10% + 40px))' is a supported value for max-width. expected true got false
+[FAIL] Property max-width value 'stretch(calc(10px + 0.5em))'
+  assert_true: 'stretch(calc(10px + 0.5em))' is a supported value for max-width. expected true got false
+[FAIL] Property max-height value 'stretch(10px)'
+  assert_true: 'stretch(10px)' is a supported value for max-height. expected true got false
+[FAIL] Property max-height value 'stretch(20%)'
+  assert_true: 'stretch(20%)' is a supported value for max-height. expected true got false
+[FAIL] Property max-height value 'stretch(calc(10% + 40px))'
+  assert_true: 'stretch(calc(10% + 40px))' is a supported value for max-height. expected true got false
+[FAIL] Property max-height value 'stretch(calc(10px + 0.5em))'
+  assert_true: 'stretch(calc(10px + 0.5em))' is a supported value for max-height. expected true got false
+Harness: the test ran to completion.
+

@@ -1,0 +1,27 @@
+This is a testharness.js-based test.
+[FAIL] no-referrer is a known referrer policy
+  assert_equals: expected (string) "no-referrer" but got (undefined) undefined
+[FAIL] no-referrer-when-downgrade is a known referrer policy
+  assert_equals: expected (string) "no-referrer-when-downgrade" but got (undefined) undefined
+[FAIL] same-origin is a known referrer policy
+  assert_equals: expected (string) "same-origin" but got (undefined) undefined
+[FAIL] origin is a known referrer policy
+  assert_equals: expected (string) "origin" but got (undefined) undefined
+[FAIL] strict-origin is a known referrer policy
+  assert_equals: expected (string) "strict-origin" but got (undefined) undefined
+[FAIL] origin-when-cross-origin is a known referrer policy
+  assert_equals: expected (string) "origin-when-cross-origin" but got (undefined) undefined
+[FAIL] strict-origin-when-cross-origin is a known referrer policy
+  assert_equals: expected (string) "strict-origin-when-cross-origin" but got (undefined) undefined
+[FAIL] unsafe-url is a known referrer policy
+  assert_equals: expected (string) "unsafe-url" but got (undefined) undefined
+[FAIL] missing referrerpolicy reflects as the empty string
+  assert_equals: expected (string) "" but got (undefined) undefined
+[FAIL] invalid referrerpolicy reflects as the empty string
+  assert_equals: expected (string) "" but got (undefined) undefined
+[FAIL] setting an invalid referrerPolicy preserves the content attribute
+  assert_equals: expected (string) "invalid-policy" but got (object) null
+[FAIL] a freshly created image element reflects the empty string
+  assert_equals: expected (string) "" but got (undefined) undefined
+Harness: the test ran to completion.
+

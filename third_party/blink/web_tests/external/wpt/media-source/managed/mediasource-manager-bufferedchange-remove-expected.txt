@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] remove() of part of the buffered data fires bufferedchange reporting the removed range
+  assert_implements: ManagedMediaSource is supported undefined
+[FAIL] remove() of all buffered data fires bufferedchange reporting all ranges as removed
+  assert_implements: ManagedMediaSource is supported undefined
+[FAIL] remove() of an unbuffered range does not fire bufferedchange
+  assert_implements: ManagedMediaSource is supported undefined
+Harness: the test ran to completion.
+

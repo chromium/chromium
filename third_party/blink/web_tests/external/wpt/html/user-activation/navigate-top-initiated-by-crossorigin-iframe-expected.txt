@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] User activation propagation across a navigation of a top-level frame initiated by a cross-origin iframe
+  assert_equals: Sticky bit after the top-level frame was navigated by a cross-origin iframe expected false but got true
+Harness: the test ran to completion.
+

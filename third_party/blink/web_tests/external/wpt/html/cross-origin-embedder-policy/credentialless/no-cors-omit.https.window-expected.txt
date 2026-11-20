@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] CacheStorage match() of a cross-origin no-cors resource without credentials or CORP
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'match' on 'Cache'"
+Harness: the test ran to completion.
+

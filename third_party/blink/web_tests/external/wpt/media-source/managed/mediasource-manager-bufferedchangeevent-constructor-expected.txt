@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+[FAIL] BufferedChangeEvent constructed with empty ranges
+  assert_implements: BufferedChangeEvent is supported undefined
+[FAIL] BufferedChangeEvent constructor honours EventInit members
+  assert_implements: BufferedChangeEvent is supported undefined
+[FAIL] BufferedChangeEvent attributes are [SameObject]
+  assert_implements: BufferedChangeEvent is supported undefined
+[FAIL] BufferedChangeEvent constructor rejects non-TimeRanges members
+  assert_implements: BufferedChangeEvent is supported undefined
+[FAIL] BufferedChangeEvent constructed with non-empty ranges reports them
+  assert_implements: ManagedMediaSource is supported undefined
+Harness: the test ran to completion.
+

@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] event and promise ordering when navigate() is called to a cross-document destination, interrupting another navigate() to a cross-document destination
+  assert_array_equals: lengths differ, expected array ["navigate", "AbortSignal abort", "navigateerror", "navigate", "promise microtask"] length 5, got ["navigate", "AbortSignal abort", "navigateerror", "navigate", "committed rejected 1", "finished rejected 1", "promise microtask"] length 7
+Harness: the test ran to completion.
+

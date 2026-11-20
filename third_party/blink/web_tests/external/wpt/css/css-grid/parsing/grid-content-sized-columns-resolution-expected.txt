@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+[FAIL] Element 'gridMinContentAndMaxContentFixed' grid-template-columns value computes to '60px 30px'
+  assert_equals: expected "60px 30px" but got "20px 70px"
+[FAIL] Element 'gridMaxContentFixedAndAuto' grid-template-columns value computes to '15px 75px'
+  assert_equals: expected "15px 75px" but got "65px 25px"
+[FAIL] Element 'gridFixedMinContentAndMaxContentUnsortedConstrained' grid-template-columns value computes to '30px 50px'
+  assert_equals: expected "30px 50px" but got "10px 70px"
+[FAIL] Element 'gridAutoMaxContentUnsortedConstrained' grid-template-columns value computes to '40px 50px'
+  assert_equals: expected "40px 50px" but got "0px 90px"
+[FAIL] Element 'gridFixedMinContentAndMaxContentUnsorted' grid-template-columns value computes to '30px 50px'
+  assert_equals: expected "30px 50px" but got "10px 70px"
+Harness: the test ran to completion.
+

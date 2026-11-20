@@ -1,0 +1,12 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Error: Should have the permission granted to continue but found denied
+[NOTRUN] showNotification keeps a blob URL alive for a icon
+[NOTRUN] showNotification keeps a blob URL alive for a image
+[NOTRUN] showNotification keeps a blob URL alive for a badge
+[NOTRUN] showNotification keeps a blob URL alive for a action icon
+[NOTRUN] showNotification handles a revoked blob URL for a icon
+[NOTRUN] showNotification handles a revoked blob URL for a image
+[NOTRUN] showNotification handles a revoked blob URL for a badge
+[NOTRUN] showNotification handles a revoked blob URL for a action icon
+Harness: the test ran to completion.
+

@@ -1,0 +1,27 @@
+This is a testharness.js-based test.
+[FAIL] getFile() resolves a file
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'filesystem')"
+[FAIL] getFile() accepts an absolute path
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'filesystem')"
+[FAIL] getFile() returns a new entry for each call
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'filesystem')"
+[FAIL] getFile() rejects a directory: ""
+  Cannot read properties of null (reading 'filesystem')
+[FAIL] getFile() rejects a directory: null
+  Cannot read properties of null (reading 'filesystem')
+[FAIL] getFile() rejects a directory: undefined
+  Cannot read properties of null (reading 'filesystem')
+[FAIL] getFile() rejects a directory: "/"
+  Cannot read properties of null (reading 'filesystem')
+[FAIL] getFile() rejects a directory: "."
+  Cannot read properties of null (reading 'filesystem')
+[FAIL] getFile() rejects a missing path
+  Cannot read properties of null (reading 'filesystem')
+[FAIL] getFile() rejects an invalid path: "\\u0000"
+  Cannot read properties of null (reading 'filesystem')
+[FAIL] getFile() rejects an invalid path: "\\\\"
+  Cannot read properties of null (reading 'filesystem')
+[FAIL] getFile() rejects the create option
+  Cannot read properties of null (reading 'filesystem')
+Harness: the test ran to completion.
+

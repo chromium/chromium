@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] Consecutive document.write() calls inside an unclosed <textarea> flush pending text at the end of each write
+  assert_equals: expected "initial appended" but got "initial"
+[FAIL] Consecutive document.write() calls inside an unclosed <title> flush pending text and update document.title at the end of each write
+  assert_equals: expected "Hello World" but got "Hello"
+[FAIL] Consecutive document.write() calls inside an unclosed <style> flush pending text at the end of each write
+  assert_equals: expected "body { color: rgb(1, 2, 3); }" but got "body { color: rgb(1, 2, "
+Harness: the test ran to completion.
+

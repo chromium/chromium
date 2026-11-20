@@ -7,5 +7,7 @@ This is a testharness.js-based test.
   assert_equals: expected "rgb(7, 8, 9)" but got "rgb(0, 0, 0)"
 [FAIL] random-item() expands in a shorthand property
   assert_equals: expected "1px" but got "0px"
+[FAIL] auto random-item() nested inside auto random-item() have independent random base values
+  assert_true: inner and outer random-item() shared a random base value expected true got false
 Harness: the test ran to completion.
 

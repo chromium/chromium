@@ -514,6 +514,11 @@
 
     @assert ctx.measureText(' AB').width === 150;
     @assert ctx.measureText('AB ').width === 150;
+
+    @assert ctx.measureText('AB\x09').width === 150;
+    @assert ctx.measureText('AB\x0d').width === 150;
+    @assert ctx.measureText('\x09').width === 50;
+    @assert ctx.measureText('あ\x09').width === ctx.measureText('あ ').width;
   variants:
   - *load-font-variant-definition
 

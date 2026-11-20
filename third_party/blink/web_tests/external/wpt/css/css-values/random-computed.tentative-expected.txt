@@ -1,10 +1,20 @@
 This is a testharness.js-based test.
-Found 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Property border-image-slice value 'random(10%, 30%)'
   assert_greater_than_equal: random(10%, 30%) expected a number greater than or equal to 10 but got NaN
 [FAIL] Custom property with random() inside transform() should have 'fixed'
   assert_true: expected true got false
 [FAIL] random() with percentages inside multiple nested functions should have 'fixed'
   assert_true: expected true got false
+[FAIL] random() shared by property in chained typed attr()
+  assert_true: Random values should be equal expected true got false
+[FAIL] random() shared by property in typed attr() uses a distinct ua-early prefix
+  assert_true: Random values should be equal expected true got false
+[FAIL] random() in typed attr() uses ua-early indices that increase across the declaration
+  assert_false: Random values should not be equal expected false got true
+[FAIL] random() in typed attr() is indexed separately from the rest of the declaration
+  assert_true: Random values should be equal expected true got false
+[FAIL] random() in typed attr() is substituted into the final property declaration
+  assert_true: Random values should be equal expected true got false
 Harness: the test ran to completion.
 

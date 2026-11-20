@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] currentColor should take into account color set by CSS stylesheet
+  assert_equals: Green channel of the pixel at (50, 25) expected 255 but got 0
+Harness: the test ran to completion.
+

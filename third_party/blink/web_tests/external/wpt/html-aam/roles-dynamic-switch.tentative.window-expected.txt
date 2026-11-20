@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Disconnected <input type=checkbox switch>
-  assert_equals: expected "" but got "none"
-Harness: the test ran to completion.

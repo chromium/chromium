@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+[FAIL] Setup code
+  Cannot read properties of undefined (reading 'then')
+[FAIL] The promises are stable, distinct objects
+  assert_not_equals: parsed vs. contentLoaded got disallowed value undefined
+[FAIL] The promise getters are unscopable
+  assert_true: parsed expected true got undefined
+[FAIL] document.parsed
+  promise_test: test body must return a 'thenable' object (received undefined)
+[FAIL] document.contentLoaded
+  promise_test: test body must return a 'thenable' object (received undefined)
+[FAIL] document.loaded
+  promise_test: test body must return a 'thenable' object (received undefined)
+Harness: the test ran to completion.
+

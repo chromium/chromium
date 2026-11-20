@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+[FAIL] Dragging the thumb to the other end and releasing outside the switch toggles it
+  assert_true: expected true got false
+[FAIL] Dragging the thumb of a switch that is on to the other end and releasing outside the switch toggles it
+  assert_false: expected false got true
+[FAIL] Dragging the thumb to the other end and back does not fire a click event
+  assert_false: expected false got true
+[FAIL] Dragging the thumb of a right-to-left switch from right to left toggles it
+  assert_true: expected true got false
+[FAIL] Dragging the thumb of a vertical switch from top to bottom toggles it
+  assert_true: expected true got false
+Harness: the test ran to completion.
+
