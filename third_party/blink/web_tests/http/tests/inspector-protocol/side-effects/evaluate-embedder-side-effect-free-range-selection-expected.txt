@@ -1,0 +1,22 @@
+Tests that Range read-only methods and Selection.containsNode() are side-effect-free.
+Expression `window.getSelection().containsNode(connectedText, true)`
+has side effect: false, expected: false
+Expression `range.cloneRange().getBoundingClientRect()`
+has side effect: false, expected: false
+Expression `range.getClientRects()`
+has side effect: false, expected: false
+Expression `range.intersectsNode(div)`
+has side effect: false, expected: false
+Expression `range.isPointInRange(connectedText, 0)`
+has side effect: false, expected: false
+Expression `range.comparePoint(connectedText, 0)`
+has side effect: false, expected: false
+Expression `range.compareBoundaryPoints(Range.START_TO_START, range)`
+has side effect: false, expected: false
+Expression `window.getSelection().getRangeAt(0)`
+has side effect: true, expected: true
+Expression `window.getSelection().getComposedRanges()`
+has side effect: true, expected: true
+Expression `range.collapse(true)`
+has side effect: true, expected: true
+

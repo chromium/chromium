@@ -39,7 +39,7 @@
     const unsigned short START_TO_END = 1;
     const unsigned short END_TO_END = 2;
     const unsigned short END_TO_START = 3;
-    [RaisesException] short compareBoundaryPoints(unsigned short how, Range sourceRange);
+    [Affects=Nothing, RaisesException] short compareBoundaryPoints(unsigned short how, Range sourceRange);
 
     [RaisesException, CEReactions] undefined deleteContents();
     [NewObject, RaisesException, CEReactions] DocumentFragment extractContents();
@@ -47,20 +47,20 @@
     [RaisesException, CEReactions] undefined insertNode(Node node);
     [RaisesException, CEReactions] undefined surroundContents(Node newParent);
 
-    [NewObject] Range cloneRange();
+    [Affects=Nothing, NewObject] Range cloneRange();
     [MeasureAs=RangeDetach] undefined detach();
 
-    [RaisesException] boolean isPointInRange(Node node, unsigned long offset);
-    [RaisesException] short comparePoint(Node node, unsigned long offset);
+    [Affects=Nothing, RaisesException] boolean isPointInRange(Node node, unsigned long offset);
+    [Affects=Nothing, RaisesException] short comparePoint(Node node, unsigned long offset);
 
-    [RaisesException] boolean intersectsNode(Node node);
+    [Affects=Nothing, RaisesException] boolean intersectsNode(Node node);
 
     stringifier;
 
     // CSSOM View Module
     // https://drafts.csswg.org/cssom-view/#extensions-to-the-range-interface
-    [Measure] DOMRectList getClientRects();
-    [Measure] DOMRect getBoundingClientRect();
+    [Affects=Nothing, Measure] DOMRectList getClientRects();
+    [Affects=Nothing, Measure] DOMRect getBoundingClientRect();
 
     // DOM Parsing and Serialization
     // https://w3c.github.io/DOM-Parsing/#extensions-to-the-range-interface

@@ -55,7 +55,7 @@
                                                                                  Node? extentNode, unsigned long extentOffset);
     [MeasureAs=SelectionSelectAllChildren, RaisesException] void selectAllChildren(Node node);
     [MeasureAs=SelectionDeleteDromDocument, CEReactions] void deleteFromDocument();
-    [MeasureAs=SelectionContainsNode] boolean containsNode(Node node, optional boolean allowPartialContainment = false);
+    [Affects=Nothing, MeasureAs=SelectionContainsNode] boolean containsNode(Node node, optional boolean allowPartialContainment = false);
     [MeasureAs=SelectionDOMString] stringifier;
 
     [MeasureAs=SelectionDirection] readonly attribute DOMString direction;
