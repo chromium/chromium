@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/platform/image-encoders/image_encoder_utils.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
+#include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "ui/gfx/hdr_metadata.h"
@@ -83,7 +84,10 @@ ImageDataBuffer::ImageDataBuffer(scoped_refptr<StaticBitmapImage> image) {
     if (SkImageInfo::ByteSizeOverflowed(size))
       return;
 
-    sk_sp<SkData> data = SkData::MakeUninitialized(size);
+    // Zero-initialize the destination buffer as GPU readback may fail silently
+    // without writing to `pixmap_` when `kDisableErrorHandlingForReadback` is
+    // enabled.
+    sk_sp<SkData> data = SkData::MakeZeroInitialized(size);
     pixmap_ = {info, data->writable_data(), info.minRowBytes()};
     if (!paint_image.readPixels(info, pixmap_.writable_addr(), row_bytes, 0,
                                 0)) {
