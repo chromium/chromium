@@ -105,6 +105,29 @@ ScriptPromise<IDLUndefined> RTCEncodedUnderlyingSourceWrapper::Cancel(
   return ToResolvedUndefinedPromise(script_state);
 }
 
+void RTCEncodedUnderlyingSourceWrapper::AddPendingKeyFrameRequest(
+    Vector<String> rids,
+    ScriptPromiseResolver<IDLUndefined>* resolver) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!rids.empty());
+  if (video_from_encoder_underlying_source_) {
+    video_from_encoder_underlying_source_->AddPendingKeyFrameRequest(
+        std::move(rids), resolver);
+  } else {
+    resolver->Detach();
+  }
+}
+
+bool RTCEncodedUnderlyingSourceWrapper::RemovePendingKeyFrameRequest(
+    ScriptPromiseResolver<IDLUndefined>* resolver) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (video_from_encoder_underlying_source_) {
+    return video_from_encoder_underlying_source_->RemovePendingKeyFrameRequest(
+        resolver);
+  }
+  return false;
+}
+
 void RTCEncodedUnderlyingSourceWrapper::Trace(Visitor* visitor) const {
   visitor->Trace(script_state_);
   visitor->Trace(audio_from_encoder_underlying_source_);

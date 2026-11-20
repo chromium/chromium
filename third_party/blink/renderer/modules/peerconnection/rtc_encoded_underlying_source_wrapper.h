@@ -6,11 +6,13 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_RTC_ENCODED_UNDERLYING_SOURCE_WRAPPER_H_
 
 #include <memory>
+#include <utility>
 
 #include "base/sequence_checker.h"
 #include "base/unguessable_token.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/streams/underlying_source_base.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -20,6 +22,7 @@
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
@@ -54,6 +57,11 @@ class MODULES_EXPORT RTCEncodedUnderlyingSourceWrapper
 
   VideoTransformer GetVideoTransformer();
   AudioTransformer GetAudioTransformer();
+
+  void AddPendingKeyFrameRequest(Vector<String> rids,
+                                 ScriptPromiseResolver<IDLUndefined>* resolver);
+  bool RemovePendingKeyFrameRequest(
+      ScriptPromiseResolver<IDLUndefined>* resolver);
 
   void Clear();
   void Trace(Visitor*) const override;

@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_video_frame.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/webrtc/api/frame_transformer_interface.h"
@@ -148,5 +149,50 @@ TEST_F(RTCEncodedUnderlyingSourceWrapperTest, VideoCancelStream) {
   EXPECT_CALL(disconnect_callback_, Run());
   NonThrowableExceptionState exception_state;
   stream->cancel(v8_scope.GetScriptState(), exception_state);
+}
+
+TEST_F(RTCEncodedUnderlyingSourceWrapperTest,
+       PendingKeyFrameRequestsForwardedToVideoUnderlyingSource) {
+  V8TestingScope v8_scope;
+  ScriptState* script_state = v8_scope.GetScriptState();
+  auto* source = CreateSource(script_state);
+  ReadableStream::CreateWithCountQueueingStrategy(script_state, source, 0);
+
+  source->CreateVideoUnderlyingSource(
+      CrossThreadBindOnce(disconnect_callback_.Get()),
+      base::UnguessableToken::Create());
+
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
+  ScriptPromiseTester promise_tester(script_state, resolver->Promise());
+  source->AddPendingKeyFrameRequest({g_empty_string}, resolver);
+
+  auto key_frame = std::make_unique<NiceMock<MockTransformableVideoFrame>>();
+  ON_CALL(*key_frame, IsKeyFrame()).WillByDefault(testing::Return(true));
+  source->GetVideoTransformer().Run(std::move(key_frame));
+
+  promise_tester.WaitUntilSettled();
+  EXPECT_TRUE(promise_tester.IsFulfilled());
+
+  EXPECT_CALL(disconnect_callback_, Run());
+  source->Close();
+}
+
+TEST_F(RTCEncodedUnderlyingSourceWrapperTest,
+       PendingKeyFrameRequestsDetachedWithoutVideoSource) {
+  V8TestingScope v8_scope;
+  ScriptState* script_state = v8_scope.GetScriptState();
+  auto* source = CreateSource(script_state);
+  ReadableStream::CreateWithCountQueueingStrategy(script_state, source, 0);
+
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
+  ScriptPromiseTester promise_tester(script_state, resolver->Promise());
+  source->AddPendingKeyFrameRequest({g_empty_string}, resolver);
+  resolver = nullptr;
+  ThreadState::Current()->CollectAllGarbageForTesting();
+  v8_scope.PerformMicrotaskCheckpoint();
+  EXPECT_FALSE(promise_tester.IsFulfilled());
+  EXPECT_FALSE(promise_tester.IsRejected());
 }
 }  // namespace blink

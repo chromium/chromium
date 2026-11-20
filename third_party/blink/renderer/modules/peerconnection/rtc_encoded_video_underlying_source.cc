@@ -43,6 +43,19 @@ namespace blink {
 // queuing is reported by the stream controller as a negative desired size.
 const int RTCEncodedVideoUnderlyingSource::kMinQueueDesiredSize = -60;
 
+RTCEncodedVideoUnderlyingSource::PendingKeyFrameRequest::PendingKeyFrameRequest(
+    Vector<String> remaining_rids,
+    ScriptPromiseResolver<IDLUndefined>* resolver)
+    : remaining_rids(std::move(remaining_rids)), resolver(resolver) {}
+
+RTCEncodedVideoUnderlyingSource::PendingKeyFrameRequest::
+    ~PendingKeyFrameRequest() = default;
+
+void RTCEncodedVideoUnderlyingSource::PendingKeyFrameRequest::Trace(
+    Visitor* visitor) const {
+  visitor->Trace(resolver);
+}
+
 RTCEncodedVideoUnderlyingSource::RTCEncodedVideoUnderlyingSource(
     ScriptState* script_state,
     CrossThreadOnceClosure disconnect_callback)
@@ -87,6 +100,7 @@ ScriptPromise<IDLUndefined> RTCEncodedVideoUnderlyingSource::Cancel(
     ScriptValue reason,
     ExceptionState&) {
   DCHECK(task_runner_->BelongsToCurrentThread());
+  ClearPendingKeyFrameRequests();
   if (disconnect_callback_)
     std::move(disconnect_callback_).Run();
   return ToResolvedUndefinedPromise(script_state);
@@ -95,6 +109,7 @@ ScriptPromise<IDLUndefined> RTCEncodedVideoUnderlyingSource::Cancel(
 void RTCEncodedVideoUnderlyingSource::ContextDestroyed() {
   DCHECK(task_runner_->BelongsToCurrentThread());
   realm_thread_type_lease_ = std::nullopt;
+  ClearPendingKeyFrameRequests();
   if (disconnect_callback_) {
     std::move(disconnect_callback_).Run();
   }
@@ -104,6 +119,7 @@ void RTCEncodedVideoUnderlyingSource::ContextDestroyed() {
 void RTCEncodedVideoUnderlyingSource::Trace(Visitor* visitor) const {
   visitor->Trace(script_state_);
   visitor->Trace(controller_override_);
+  visitor->Trace(pending_keyframe_requests_);
   UnderlyingSourceBase::Trace(visitor);
 }
 
@@ -144,6 +160,10 @@ void RTCEncodedVideoUnderlyingSource::OnFrameFromSource(
         << " encoded video frames due to too many already being queued.";
     return;
   }
+  bool is_key_frame = webrtc_frame->IsKeyFrame();
+  String frame_rid = webrtc_frame->Rid()
+                         ? String::FromUtf8(*webrtc_frame->Rid())
+                         : g_empty_string;
   RTCEncodedVideoFrame* encoded_frame;
   if (enable_frame_restrictions_) {
     encoded_frame = MakeGarbageCollected<RTCEncodedVideoFrame>(
@@ -156,12 +176,58 @@ void RTCEncodedVideoUnderlyingSource::OnFrameFromSource(
       realm_is_boostable_context_ && !realm_thread_type_lease_.has_value()) {
     realm_thread_type_lease_.emplace(base::ThreadType::kPresentation);
   }
+  if (is_key_frame && !pending_keyframe_requests_.empty()) {
+    EraseIf(pending_keyframe_requests_,
+            [&](const Member<PendingKeyFrameRequest>& request) {
+              wtf_size_t erased = Erase(request->remaining_rids, frame_rid);
+              if (erased > 0 && request->remaining_rids.empty()) {
+                request->resolver->Resolve();
+                return true;
+              }
+              return false;
+            });
+  }
   GetController()->Enqueue(encoded_frame);
+}
+
+void RTCEncodedVideoUnderlyingSource::AddPendingKeyFrameRequest(
+    Vector<String> rids,
+    ScriptPromiseResolver<IDLUndefined>* resolver) {
+  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(!rids.empty());
+  if (!disconnect_callback_ || !GetExecutionContext()) {
+    resolver->Detach();
+    return;
+  }
+  for (String& rid : rids) {
+    if (rid.IsNull()) {
+      rid = g_empty_string;
+    }
+  }
+  pending_keyframe_requests_.push_back(
+      MakeGarbageCollected<PendingKeyFrameRequest>(std::move(rids), resolver));
+}
+
+bool RTCEncodedVideoUnderlyingSource::RemovePendingKeyFrameRequest(
+    ScriptPromiseResolver<IDLUndefined>* resolver) {
+  DCHECK(task_runner_->BelongsToCurrentThread());
+  return EraseIf(pending_keyframe_requests_,
+                 [resolver](const Member<PendingKeyFrameRequest>& request) {
+                   return request->resolver == resolver;
+                 }) > 0;
+}
+
+void RTCEncodedVideoUnderlyingSource::ClearPendingKeyFrameRequests() {
+  for (auto& request : pending_keyframe_requests_) {
+    request->resolver->Detach();
+  }
+  pending_keyframe_requests_.clear();
 }
 
 void RTCEncodedVideoUnderlyingSource::Close() {
   DCHECK(task_runner_->BelongsToCurrentThread());
   realm_thread_type_lease_ = std::nullopt;
+  ClearPendingKeyFrameRequests();
   if (disconnect_callback_)
     std::move(disconnect_callback_).Run();
 
@@ -173,6 +239,7 @@ void RTCEncodedVideoUnderlyingSource::Close() {
 void RTCEncodedVideoUnderlyingSource::OnSourceTransferStartedOnTaskRunner() {
   DCHECK(task_runner_->BelongsToCurrentThread());
   realm_thread_type_lease_ = std::nullopt;
+  ClearPendingKeyFrameRequests();
   disconnect_callback_.Reset();
   // This can potentially be called before the stream is constructed and so
   // Controller() is still unset.
