@@ -17,6 +17,7 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/i18n/language_tag.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
@@ -107,7 +108,7 @@ void AlternativeStateNameMapUpdater::PopulateAlternativeStateNameMap(
         base::UTF16ToUTF8(profile->GetRawInfo(ADDRESS_HOME_COUNTRY)));
 
     const AlternativeStateNameMap::StateName state_name(profile->GetInfo(
-        ADDRESS_HOME_STATE, address_data_manager_->app_locale()));
+        ADDRESS_HOME_STATE, address_data_manager_->app_locale().tag_string()));
     const AlternativeStateNameMap::StateName normalized_state =
         AlternativeStateNameMap::NormalizeStateName(state_name);
 

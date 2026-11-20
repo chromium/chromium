@@ -21,6 +21,7 @@
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
+#include "base/i18n/language_tag.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -132,7 +133,7 @@ void AddMetadataToResult(MemorySearchResult& entry,
                          const FormGroup& form_group,
                          MemoryDataType metadata_type,
                          MemoryDataType primary_type,
-                         const std::string& app_locale) {
+                         std::string_view app_locale) {
   if (std::optional<FieldType> field_type = ToFieldType(metadata_type)) {
     AddMetadataToResult(entry, metadata_type, primary_type,
                         form_group.GetInfo(*field_type, app_locale));
@@ -206,7 +207,7 @@ MemorySearchResult CreateResultFromAddressProfile(
     const AutofillProfile& profile,
     std::u16string value,
     MemoryDataType memory_data_type,
-    const std::string& app_locale) {
+    std::string_view app_locale) {
   MemorySearchResult entry = MemorySearchResult(
       memory_data_type, GetMemoryDataTypeNameForI18n(memory_data_type),
       std::move(value), profile.GetRankingScore(base::Time::Now()));
@@ -248,8 +249,8 @@ std::vector<MemorySearchResult> FetchDataFromAddressProfiles(
     MemoryDataType memory_data_type,
     base::optional_ref<const RawValueQuery> query) {
   std::vector<MemorySearchResult> entries;
-  std::string app_locale =
-      personal_data_manager.address_data_manager().app_locale();
+  const std::string_view app_locale =
+      personal_data_manager.address_data_manager().app_locale().tag_string();
 
   for (const AutofillProfile* profile :
        personal_data_manager.address_data_manager().GetProfiles()) {
@@ -260,7 +261,7 @@ std::vector<MemorySearchResult> FetchDataFromAddressProfiles(
       if (!profile->HasRawInfo(ADDRESS_HOME_STREET_ADDRESS)) {
         continue;
       }
-      value = GetEnvelopeStyleAddress(*profile, app_locale,
+      value = GetEnvelopeStyleAddress(*profile, std::string(app_locale),
                                       /*include_recipient=*/false,
                                       /*include_country=*/true);
       base::ReplaceChars(
@@ -480,7 +481,9 @@ std::vector<MemorySearchResult> AutofillDataProvider::GetAutofillData(
                 ToAttributeType(memory_data_type)) {
           type_entries = FetchAutofillAiAttributeData(
               entity_data_manager_, *attribute_type,
-              personal_data_manager_->address_data_manager().app_locale(),
+              personal_data_manager_->address_data_manager()
+                  .app_locale()
+                  .tag_string(),
               query);
         }
         break;
@@ -544,8 +547,8 @@ std::vector<MemorySearchResult> AutofillDataProvider::FetchCreditCardData(
     MemoryDataType memory_data_type,
     base::optional_ref<const RawValueQuery> query) {
   std::vector<MemorySearchResult> entries;
-  const std::string& app_locale =
-      personal_data_manager_->address_data_manager().app_locale();
+  const std::string_view app_locale =
+      personal_data_manager_->address_data_manager().app_locale().tag_string();
   for (const CreditCard* credit_card : GetCreditCardsToSuggest(
            personal_data_manager_->payments_data_manager())) {
     // Content queries are matched against the raw values, which are only

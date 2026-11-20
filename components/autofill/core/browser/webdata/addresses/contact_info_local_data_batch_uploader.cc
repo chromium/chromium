@@ -12,6 +12,7 @@
 
 #include "base/check_deref.h"
 #include "base/functional/callback.h"
+#include "base/i18n/language_tag.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_quality/addresses/address_import_requirement_util.h"
@@ -62,7 +63,8 @@ void ContactInfoLocalDataBatchUploader::GetLocalDataDescription(
 
   syncer::LocalDataDescription local_data;
   local_data.type = syncer::DataType::CONTACT_INFO;
-  const std::string& app_locale = GetAddressDataManager().app_locale();
+  const std::string_view app_locale =
+      GetAddressDataManager().app_locale().tag_string();
   for (const AutofillProfile* profile : local_profiles) {
     syncer::LocalDataItemModel item;
     item.id = profile->guid();

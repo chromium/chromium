@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/form_import/addresses/autofill_profile_import_process.h"
 
+#include "base/i18n/language_tag.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -1179,7 +1180,7 @@ TEST_F(AutofillProfileImportProcessTest, NameEmail_Work_SupersetImport) {
       test::OnlyAddressProfile(AutofillProfile::RecordType::kAccountWork);
   const AutofillProfile observed_profile =
       test::SupersetProfileOf({account_name_email_profile, work_profile},
-                              address_data_manager().app_locale(),
+                              address_data_manager().app_locale().tag_string(),
                               AutofillProfile::RecordType::kLocalOrSyncable);
 
   address_data_manager().AddProfile(account_name_email_profile);
@@ -1229,7 +1230,7 @@ TEST_F(AutofillProfileImportProcessTest, NameEmail_Home_SupersetImport) {
       test::OnlyAddressProfile(AutofillProfile::RecordType::kAccountHome);
   const AutofillProfile observed_profile =
       test::SupersetProfileOf({account_name_email_profile, home_profile},
-                              address_data_manager().app_locale(),
+                              address_data_manager().app_locale().tag_string(),
                               AutofillProfile::RecordType::kLocalOrSyncable);
 
   address_data_manager().AddProfile(home_profile);
@@ -1283,7 +1284,7 @@ TEST_F(AutofillProfileImportProcessTest,
       test::OnlyAddressProfile(AutofillProfile::RecordType::kAccountHome);
   const AutofillProfile observed_profile =
       test::SupersetProfileOf({account_name_email_profile, home_profile},
-                              address_data_manager().app_locale(),
+                              address_data_manager().app_locale().tag_string(),
                               AutofillProfile::RecordType::kLocalOrSyncable);
 
   address_data_manager().AddProfile(home_profile);
@@ -1318,7 +1319,7 @@ TEST_F(AutofillProfileImportProcessTest,
       test::OnlyAddressProfile(AutofillProfile::RecordType::kAccountHome);
   const AutofillProfile observed_profile =
       test::SupersetProfileOf({account_name_email_profile, home_profile},
-                              address_data_manager().app_locale(),
+                              address_data_manager().app_locale().tag_string(),
                               AutofillProfile::RecordType::kLocalOrSyncable);
 
   address_data_manager().AddProfile(home_profile);

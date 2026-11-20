@@ -22,6 +22,7 @@
 #include "base/containers/span.h"
 #include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
+#include "base/i18n/language_tag.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/optional_util.h"
@@ -592,7 +593,7 @@ AddressFormDataImporter::ExtractAddressProfileFromSection(
       "Autofill", "default_country",
       *address_data_manager().GetDefaultCountryCodeForNewAddress());
   SCOPED_CRASH_KEY_STRING32("Autofill", "app_locale",
-                            address_data_manager().app_locale());
+                            address_data_manager().app_locale().tag_string());
   SCOPED_CRASH_KEY_NUMBER("Autofill", "country_source",
                           std::to_underlying(import_metadata.country_source));
 

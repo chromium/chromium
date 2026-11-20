@@ -7,11 +7,13 @@
 #include <memory>
 #include <vector>
 
+#include "base/i18n/language_tag.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 
 namespace autofill {
 
-TestAddressDataManager::TestAddressDataManager(const std::string& app_locale)
+TestAddressDataManager::TestAddressDataManager(
+    const base::i18n::LanguageTag& app_locale)
     : AddressDataManager(/*webdata_service=*/nullptr,
                          /*pref_service=*/nullptr,
                          /*sync_service=*/nullptr,

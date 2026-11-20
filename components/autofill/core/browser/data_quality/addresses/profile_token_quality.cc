@@ -21,6 +21,7 @@
 #include "base/containers/circular_deque.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
+#include "base/i18n/language_tag.h"
 #include "base/rand_util.h"
 #include "base/strings/levenshtein_distance.h"
 #include "base/strings/string_util.h"
@@ -48,13 +49,13 @@ ObservationType GetObservationTypeForEditedField(
     std::u16string_view edited_value,
     const AutofillProfile& profile,
     const std::vector<const AutofillProfile*>& other_profiles,
-    const std::string& app_locale) {
+    const base::i18n::LanguageTag& app_locale) {
   if (edited_value.empty()) {
     return ObservationType::kEditedValueCleared;
   }
 
   if (base::LevenshteinDistance(
-          base::ToLowerASCII(profile.GetInfo(type, app_locale)),
+          base::ToLowerASCII(profile.GetInfo(type, app_locale.tag_string())),
           base::ToLowerASCII(edited_value),
           ProfileTokenQuality::kMaximumLevenshteinDistance) <=
       ProfileTokenQuality::kMaximumLevenshteinDistance) {
@@ -67,8 +68,8 @@ ObservationType GetObservationTypeForEditedField(
     const l10n::CaseInsensitiveCompare compare;
     return std::ranges::any_of(types, [&](FieldType type) {
       return profile.HasInfo(type) &&
-             compare.StringsEqual(edited_value,
-                                  profile.GetInfo(type, app_locale));
+             compare.StringsEqual(
+                 edited_value, profile.GetInfo(type, app_locale.tag_string()));
     });
   };
 
@@ -259,7 +260,7 @@ ObservationType ProfileTokenQuality::GetObservationTypeFromField(
     const AutofillField& field,
     std::u16string_view current_field_value,
     const std::vector<const AutofillProfile*>& other_profiles,
-    const std::string& app_locale) const {
+    const base::i18n::LanguageTag& app_locale) const {
   CHECK(field.autofill_source_profile_guid() == profile_->guid());
   DCHECK(!std::ranges::contains(
       other_profiles, profile_->guid(),

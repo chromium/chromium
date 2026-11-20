@@ -51,7 +51,7 @@ class AutofillSettingsMetricsTest : public AutofillMetricsBaseTest,
                        /*identity_manager=*/nullptr,
                        /*strike_database=*/nullptr,
                        /*variation_country_code=*/GeoIpCountryCode("US"),
-                       "en-US");
+                       base::i18n::GetKnownLanguageTag("en-US"));
   }
 
   void CreatePaymentsDataManager() {

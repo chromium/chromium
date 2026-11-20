@@ -8,7 +8,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <string>
 #include <string_view>
 #include <type_traits>
 #include <utility>
@@ -22,6 +21,10 @@
 #include "base/types/strong_alias.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/signatures.h"
+
+namespace base::i18n {
+class LanguageTag;
+}  // namespace base::i18n
 
 namespace autofill {
 
@@ -234,7 +237,7 @@ class ProfileTokenQuality {
       const AutofillField& field,
       std::u16string_view current_field_value,
       const std::vector<const AutofillProfile*>& other_profiles,
-      const std::string& app_locale) const;
+      const base::i18n::LanguageTag& app_locale) const;
 
   // The profile for which observations are collected.
   raw_ref<AutofillProfile> profile_;

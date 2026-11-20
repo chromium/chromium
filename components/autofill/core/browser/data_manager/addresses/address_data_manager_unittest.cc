@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/i18n/language_tag.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
@@ -122,7 +123,7 @@ class AddressDataManagerTest : public testing::Test {
     address_data_manager_ = std::make_unique<AddressDataManager>(
         profile_database_service_, prefs_.get(), &sync_service_,
         identity_test_env_.identity_manager(), &strike_database_,
-        GeoIpCountryCode("US"), "en-US");
+        GeoIpCountryCode("US"), base::i18n::GetKnownLanguageTag("en-US"));
     address_data_manager_->LoadProfiles();
     if (wait_for_on_address_data_changed) {
       WaitForOnAddressDataChanged();

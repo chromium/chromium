@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/i18n/language_tag.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -99,7 +100,7 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence {
                      signin::IdentityManager* identity_manager,
                      strike_database::StrikeDatabaseBase* strike_database,
                      GeoIpCountryCode variation_country_code,
-                     std::string app_locale);
+                     const base::i18n::LanguageTag& app_locale);
 
   ~AddressDataManager() override;
   AddressDataManager(const AddressDataManager&) = delete;
@@ -284,7 +285,7 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence {
 
   bool has_initial_load_finished() const { return has_initial_load_finished_; }
 
-  const std::string& app_locale() const { return app_locale_; }
+  const base::i18n::LanguageTag& app_locale() const { return app_locale_; }
 
   void SetSyncServiceForTest(syncer::SyncService* sync_service) {
     sync_service_ = sync_service;
@@ -481,7 +482,7 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence {
   // Only to be used for testing.
   bool auto_accept_address_imports_for_testing_ = false;
 
-  const std::string app_locale_;
+  const base::i18n::LanguageTag app_locale_;
 
   base::WeakPtrFactory<AddressDataManager> weak_ptr_factory_{this};
 };

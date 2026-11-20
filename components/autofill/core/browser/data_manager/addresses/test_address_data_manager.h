@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/i18n/language_tag.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/strike_database/test_inmemory_strike_database.h"
@@ -17,7 +18,8 @@ namespace autofill {
 // fully synchronous.
 class TestAddressDataManager : public AddressDataManager {
  public:
-  explicit TestAddressDataManager(const std::string& app_locale = "en-US");
+  explicit TestAddressDataManager(const base::i18n::LanguageTag& app_locale =
+                                      base::i18n::GetKnownLanguageTag("en-US"));
   ~TestAddressDataManager() override;
 
   using AddressDataManager::GetProfileMigrationStrikeDatabase;

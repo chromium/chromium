@@ -11,6 +11,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <variant>
 #include <vector>
@@ -26,6 +27,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/function_ref.h"
 #include "base/i18n/case_conversion.h"
+#include "base/i18n/language_tag.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -194,7 +196,7 @@ bool ShouldTransliterateMainTextToKatakana(
 // handles type-specific formatting.
 std::u16string GetProfileSuggestionMainText(
     const AutofillProfile& profile,
-    const std::string& app_locale,
+    std::string_view app_locale,
     const FormFieldData& trigger_field,
     const FieldType trigger_field_type) {
   if (trigger_field_type == ADDRESS_HOME_STREET_ADDRESS) {
@@ -454,13 +456,13 @@ std::vector<AutofillProfile> GetProfilesToSuggest(
     FieldType trigger_field_type,
     const FieldTypeSet& field_types) {
   // Get the profiles with text to suggest, which are already sorted.
-  std::vector<ProfileWithText> profiles_to_suggest =
-      base::ToVector(address_data.GetProfilesToSuggest(),
-                     [&](const AutofillProfile* profile) -> ProfileWithText {
-                       return {profile, GetProfileSuggestionMainText(
-                                            *profile, address_data.app_locale(),
-                                            trigger_field, trigger_field_type)};
-                     });
+  std::vector<ProfileWithText> profiles_to_suggest = base::ToVector(
+      address_data.GetProfilesToSuggest(),
+      [&](const AutofillProfile* profile) -> ProfileWithText {
+        return {profile, GetProfileSuggestionMainText(
+                             *profile, address_data.app_locale().tag_string(),
+                             trigger_field, trigger_field_type)};
+      });
 
   // Erase profiles which has empty value for the trigger field type.
   std::erase_if(profiles_to_suggest, [](const ProfileWithText& profile) {
@@ -494,7 +496,7 @@ std::vector<AutofillProfile> GetProfilesToSuggest(
   // another profile that is later removed by another filtering strategy.
   profiles_to_suggest = DeduplicatedProfilesForSuggestions(
       profiles_to_suggest, field_types,
-      AutofillProfileComparator(address_data.app_locale()));
+      AutofillProfileComparator(address_data.app_locale().tag_string()));
 
   // For field-by-field filling suggestions, we also want to remove suggestions
   // that have the same value as the trigger field. Such suggestions would be
@@ -758,8 +760,8 @@ MaybeFetchAddressOnTypingSuggestionData(
         if (seen_profile_data.size() == kMaxValuesToUsePerFieldType) {
           break;
         }
-        std::u16string suggestion_text =
-            profile->GetInfo(type, address_data_manager.app_locale());
+        std::u16string suggestion_text = profile->GetInfo(
+            type, address_data_manager.app_locale().tag_string());
         const std::u16string profile_data =
             NormalizeForComparisonForType(suggestion_text, type);
         if (profile_data.empty() ||
@@ -791,8 +793,8 @@ MaybeFetchAddressOnTypingSuggestionData(
         continue;
       }
 
-      std::u16string suggestion_text =
-          profile->GetInfo(type, address_data_manager.app_locale());
+      std::u16string suggestion_text = profile->GetInfo(
+          type, address_data_manager.app_locale().tag_string());
       const std::u16string profile_data =
           NormalizeForComparisonForType(suggestion_text, type);
       if (profile_data.empty()) {

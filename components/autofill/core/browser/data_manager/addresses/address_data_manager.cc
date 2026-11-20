@@ -20,6 +20,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/language_tag.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/buildflag.h"
@@ -104,12 +105,12 @@ AddressDataManager::AddressDataManager(
     signin::IdentityManager* identity_manager,
     strike_database::StrikeDatabaseBase* strike_database,
     GeoIpCountryCode variation_country_code,
-    std::string app_locale)
+    const base::i18n::LanguageTag& app_locale)
     : variation_country_code_(std::move(variation_country_code)),
       webdata_service_(webdata_service),
       identity_manager_(identity_manager),
       sync_service_(sync_service),
-      app_locale_(std::move(app_locale)) {
+      app_locale_(app_locale) {
   if (webdata_service_) {
     // The `webdata_service_` is null when the TestPDM is used.
     webdata_service_observer_.Observe(webdata_service_.get());
@@ -287,7 +288,7 @@ void AddressDataManager::AddProfile(const AutofillProfile& profile) {
   if (!webdata_service_ || !IsAutofillProfileEnabled()) {
     return;
   }
-  if (profile.IsEmpty(app_locale_)) {
+  if (profile.IsEmpty(app_locale_.tag_string())) {
     // TODO(crbug.com/40100455): This call is only used to notify tests to stop
     // waiting. Since no profile is added, this case shouldn't trigger
     // `OnAddressDataChanged()`.
@@ -382,7 +383,7 @@ void AddressDataManager::RecordUseOf(const AutofillProfile& profile) {
 AddressCountryCode AddressDataManager::GetDefaultCountryCodeForNewAddress()
     const {
   return AutofillCountry::GetDefaultCountryCodeForNewAddress(
-      variation_country_code_, app_locale_);
+      variation_country_code_, app_locale_.tag_string());
 }
 
 bool AddressDataManager::IsProfileMigrationBlocked(

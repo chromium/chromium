@@ -17,6 +17,7 @@
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/i18n/language_tag.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
@@ -357,8 +358,10 @@ void AddressDataCleaner::MaybeCleanupAddressData() {
   // expensive operation, known to cause ANRs and shutdown hangs.
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&CleanupAddressData, address_data_manager_->app_locale(),
-                     should_run_deduplication, std::move(profiles_with_action)),
+      base::BindOnce(
+          &CleanupAddressData,
+          std::string(address_data_manager_->app_locale().tag_string()),
+          should_run_deduplication, std::move(profiles_with_action)),
       base::BindOnce(&ApplyProfileActions,
                      address_data_manager_->GetWeakPtr()));
 }

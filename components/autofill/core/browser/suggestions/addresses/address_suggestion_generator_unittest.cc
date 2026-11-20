@@ -101,8 +101,6 @@ class AddressSuggestionGeneratorTest : public testing::Test {
         .test_address_data_manager();
   }
 
-  const std::string& app_locale() { return address_data().app_locale(); }
-
   TestAutofillClient* autofill_client() { return &autofill_client_; }
 
   std::vector<Suggestion> GetSuggestionsForProfiles(
