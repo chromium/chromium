@@ -125,10 +125,6 @@ class BASE_EXPORT HistogramBase {
     // defining or creating a histogram.
     kIsPersistent = 0x40,
 
-    // Indicates that the histogram should be collected by PUMA, and its type is
-    // PUMA for Regional Capabilities.
-    kPumaRcTargetedHistogramFlag = 0x80,
-
     // Mask of flags indicating that the histogram should be persisted in PMA
     // files. Currently, only UMA-targeted histograms (including stability
     // histograms, which include `kUmaTargetedHistogramFlag`) are persisted.
@@ -143,8 +139,7 @@ class BASE_EXPORT HistogramBase {
 
     // A combination of all flags used in tests.
     kAllFlags = kUmaTargetedHistogramFlag | kUmaStabilityHistogramFlag |
-                kIPCSerializationSourceFlag | kCallbackExists | kIsPersistent |
-                kPumaRcTargetedHistogramFlag,
+                kIPCSerializationSourceFlag | kCallbackExists | kIsPersistent,
   };
 
   // Histogram data inconsistency types.

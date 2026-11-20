@@ -18,7 +18,6 @@
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/metrics/histogram_snapshot_manager.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "base/metrics/record_histogram_checker.h"
@@ -30,8 +29,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
-
-using testing::_;
 
 // Class to make sure any manipulations we do to the min log level are
 // contained (i.e., do not affect other unit tests).
@@ -1040,41 +1037,6 @@ TEST_P(StatisticsRecorderTest, GetHistogramsExcludeFlags) {
                   true, HistogramBase::Flags::kUmaTargetedHistogramFlag |
                             HistogramBase::Flags::kIPCSerializationSourceFlag),
               UnorderedElementsAre(histograms[0]));
-}
-
-class MockHistogramSnapshotManager : public base::HistogramSnapshotManager {
- public:
-  MockHistogramSnapshotManager() = default;
-  ~MockHistogramSnapshotManager() override = default;
-
-  MOCK_METHOD(void,
-              RecordDelta,
-              (const base::HistogramBase& histogram,
-               const base::HistogramSamples& snapshot),
-              (override));
-};
-
-TEST_P(StatisticsRecorderTest, PrepareDeltasDoesNotExcludeHistograms) {
-  Histogram* histogram =
-      CreateHistogram("TestHistogramPrepareDeltasExclude", 1, 1000, 10);
-
-  // Set kPumaRcTargetedHistogramFlag, this is a flag excluded by default by
-  // GetHistograms.
-  histogram->SetFlags(HistogramBase::Flags::kPumaRcTargetedHistogramFlag);
-
-  histogram->Add(12);
-
-  // Register histogram.
-  EXPECT_EQ(histogram,
-            StatisticsRecorder::RegisterOrDeleteDuplicate(histogram));
-
-  MockHistogramSnapshotManager histogram_manager;
-
-  EXPECT_CALL(histogram_manager, RecordDelta(_, _)).Times(1);
-
-  StatisticsRecorder::PrepareDeltas(
-      true, HistogramBase::Flags::kNoFlags,
-      HistogramBase::Flags::kPumaRcTargetedHistogramFlag, &histogram_manager);
 }
 
 }  // namespace base

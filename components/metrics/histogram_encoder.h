@@ -21,9 +21,9 @@ class HistogramSamples;
 namespace metrics {
 
 // Allows specifying a list of histogram names (separated with a comma) to be
-// skipped/excluded during serialization of metrics logs (UMA and PUMA). Note
-// that the histograms will still be recorded locally -- they just won't be put
-// into logs (and therefore won't be uploaded).
+// skipped/excluded during serialization of metrics logs. Note that the
+// histograms will still be recorded locally -- they just won't be put into logs
+// (and therefore won't be uploaded).
 BASE_DECLARE_FEATURE(kHistogramDenylist);
 
 // Record any changes (histogram deltas of counts from |snapshot|) into
