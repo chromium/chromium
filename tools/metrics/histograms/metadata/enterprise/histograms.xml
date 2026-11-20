@@ -3411,6 +3411,29 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Enterprise.ExtensibleEnterpriseSSO.Failure.Reason"
+    enum="ExtensibleEnterpriseSSOFailureReason" expires_after="2027-06-01">
+  <owner>ydago@chromium.org</owner>
+  <owner>ssolarewicz@chromium.org</owner>
+  <owner>cec-growth@google.com</owner>
+  <summary>
+    Records why Extensible Enterprise SSO on macOS failed before IdP
+    authentication. Emitted once per checked HTTP(S) navigation or redirect when
+    the OS capability check times out or cannot authorize the URL, including
+    URLs that cannot be converted to NSURL.
+
+    Without origin filtering, all HTTP(S) navigations and redirects in
+    non-off-the-record profiles are checked when Extensible Enterprise SSO is
+    enabled, so ordinary URLs without a matching SSO extension also record that
+    the OS cannot perform authorization. With origin filtering enabled, only
+    origins configured in the SSO extension's MDM payload are checked.
+
+    Not emitted for non-HTTP(S) URLs, for URLs supported by the OS (even if the
+    IdP is blocked by ExtensibleEnterpriseSSOBlocklist), or if the provider is
+    destroyed before the check finishes.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.ExtensibleEnterpriseSSO.Okta.Failure.Reason"
     enum="OktaSSOFailureReason" expires_after="2026-12-01">
   <owner>ssolarewicz@chromium.org</owner>

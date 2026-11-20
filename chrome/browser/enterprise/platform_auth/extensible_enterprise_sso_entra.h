@@ -43,6 +43,9 @@ class HttpRequestHeaders;
 - (net::HttpRequestHeaders)getHeadersFromHttpResponse:
     (NSHTTPURLResponse*)response;
 
+// `auth_provider` must be non-null and is retained by the delegate. Does not
+// check whether the provider can perform the authorization: that check can
+// block, so callers do it before creating the delegate.
 - (instancetype)initWithAuthorizationSingleSignOnProvider:
     (ASAuthorizationSingleSignOnProvider*)auth_provider
     NS_DESIGNATED_INITIALIZER;

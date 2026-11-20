@@ -3012,6 +3012,15 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Re-registration unsuccessful"/>
 </enum>
 
+<!-- LINT.IfChange(ExtensibleEnterpriseSSOFailureReason) -->
+
+<enum name="ExtensibleEnterpriseSSOFailureReason">
+  <int value="0" label="OS cannot perform authorization for the URL"/>
+  <int value="1" label="Capability check timed out"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/enterprise/platform_auth/extensible_enterprise_sso_provider_mac.h:FailureReason) -->
+
 <!-- LINT.IfChange(ExtensionActorAttributionResult) -->
 
 <enum name="ExtensionActorAttributionResult">

@@ -149,7 +149,7 @@ class ExtensibleEnterpriseSsoOriginFilteringBrowserTest
   // Stubs `ASAuthorizationSingleSignOnProvider` so that every URL the real
   // provider is asked to authenticate is recorded in `requested_urls_`. The
   // mock reports that it can't perform authorization, so `GetData()` completes
-  // synchronously with empty headers and the navigation proceeds.
+  // with empty headers and the navigation proceeds.
   void MockSsoProvider() {
     mock_sso_provider_ =
         OCMClassMock([ASAuthorizationSingleSignOnProvider class]);

@@ -88,6 +88,7 @@ source_set("unit_tests") {
       "extensible_enterprise_sso_entra_unittest.mm",
       "extensible_enterprise_sso_metadata_unittest.cc",
       "extensible_enterprise_sso_prefs_handler_unittest.cc",
+      "extensible_enterprise_sso_provider_mac_unittest.mm",
       "platform_auth_proxying_url_loader_factory_unittest.cc",
       "scoped_cf_prefs_observer_override.cc",
       "scoped_cf_prefs_observer_override.h",

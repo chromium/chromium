@@ -7,6 +7,7 @@
 #import <AuthenticationServices/AuthenticationServices.h>
 #import <Foundation/Foundation.h>
 
+#import "base/check.h"
 #import "base/strings/sys_string_conversions.h"
 #import "chrome/browser/enterprise/platform_auth/extensible_enterprise_sso_metadata.h"
 #import "chrome/browser/enterprise/platform_auth/extensible_enterprise_sso_policy_handler.h"
@@ -128,7 +129,6 @@ void AddMSAuthHeadersFromSSOCookiesResponse(
 - (instancetype)initWithAuthorizationSingleSignOnProvider:
     (ASAuthorizationSingleSignOnProvider*)auth_provider {
   CHECK(auth_provider);
-  CHECK([auth_provider canPerformAuthorization]);
   if ((self = [super init])) {
     self->_auth_provider = auth_provider;
   }

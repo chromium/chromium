@@ -6,8 +6,20 @@
 #define CHROME_BROWSER_ENTERPRISE_PLATFORM_AUTH_PLATFORM_AUTH_FEATURES_H_
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
+#include "base/time/time.h"
 
 namespace enterprise_auth {
+
+// Kill switch. When enabled, the Mac Extensible Enterprise SSO provider checks
+// whether the OS can authenticate a URL on a background sequence instead of on
+// the UI thread.
+BASE_DECLARE_FEATURE(kExtensibleEnterpriseSSOAsyncCapabilityCheck);
+
+// How long a navigation waits for the background capability check before
+// continuing without SSO headers.
+BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
+                           kExtensibleEnterpriseSSOAsyncCapabilityCheckTimeout);
 
 // Enables extensible enterprise SSO support for the Ping Identity IdP.
 BASE_DECLARE_FEATURE(kPingSso);
