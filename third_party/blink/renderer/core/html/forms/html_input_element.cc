@@ -1378,21 +1378,12 @@ void HTMLInputElement::DidChangeIsInCanvasSubtree(
     CanvasSubtreePropagation propagation_behavior) {
   TextControlElement::DidChangeIsInCanvasSubtree(propagation_behavior);
   // Hide suggested values when under canvas, to prevent leaking this
-  // information to javascript. SetSuggestedValue() always rebuilds the view,
-  // which can mutate the DOM, move focus, and run script, and this can be
-  // called during slot assignment recalc (crbug.com/574469802). So the value
-  // is cleared later in the document lifecycle, before paint.
+  // information to javascript. Skip when there is nothing to hide:
+  // SetSuggestedValue() always rebuilds the view, which can move focus and run
+  // script during slot assignment recalc (crbug.com/574469802).
   if (IsInCanvasSubtree() && !SuggestedValue().IsNull()) {
-    ScheduleClearSuggestedValueForCanvas();
+    SetSuggestedValue(String());
   }
-}
-
-bool HTMLInputElement::ClearSuggestedValueForCanvas() {
-  if (SuggestedValue().IsNull()) {
-    return false;
-  }
-  SetSuggestedValue(String());
-  return true;
 }
 
 void HTMLInputElement::SetInnerEditorValue(const String& value) {

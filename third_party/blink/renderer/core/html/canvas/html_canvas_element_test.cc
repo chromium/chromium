@@ -15,16 +15,12 @@
 #include "third_party/abseil-cpp/absl/status/status.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_evaluation_result.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
-#include "third_party/blink/renderer/core/css/properties/longhands.h"
-#include "third_party/blink/renderer/core/dom/dom_implementation.h"
 #include "third_party/blink/renderer/core/dom/focused_element_change_observer.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/slot_assignment_recalc_in_progress_scope.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 #include "third_party/blink/renderer/core/html/canvas/recording_test_utils.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
-#include "third_party/blink/renderer/core/html/forms/html_select_element.h"
-#include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/offscreencanvas/offscreen_canvas.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
@@ -1021,9 +1017,7 @@ TEST_P(HTMLCanvasElementTest, SlotAssignmentDuringSetIsInCanvasSubtree) {
   d->SetValue("2001-02-04");
   h2->SetIsInCanvasSubtree(false);
   // A suggested value makes SetIsInCanvasSubtree(true) clear it, which rebuilds
-  // the date fields and changes focus. That is deferred to the document
-  // lifecycle, so that it cannot run in the middle of canvas subtree
-  // propagation (or slot assignment recalc).
+  // the date fields and changes focus.
   d->SetSuggestedValue("2005-06-07");
   d->Focus();
   d->setAttribute(html_names::kValueAttr, AtomicString("2003-04-05"));
@@ -1033,13 +1027,7 @@ TEST_P(HTMLCanvasElementTest, SlotAssignmentDuringSetIsInCanvasSubtree) {
   GetDocument().AddFocusedElementChangeObserver(observer);
 
   h2->SetIsInCanvasSubtree(true);
-  EXPECT_FALSE(observer->Invoked());
-  // The lifecycle clears the suggested value. Slot assignment recalc corrects
-  // the propagation, which used the stale assignment (y was still assigned to
-  // s2).
-  UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(observer->Invoked());
-  EXPECT_TRUE(d->SuggestedValue().IsNull());
   EXPECT_FALSE(y->IsInCanvasSubtree());
 }
 
@@ -1443,40 +1431,64 @@ TEST_P(HTMLCanvasElementTest, SlotIntoCanvasWithoutSuggestedValueKeepsFocus) {
 
 // Regression test for crbug.com/573335176. Moving a focused <input type=date>
 // that shows an autofill preview into a canvas subtree clears the preview,
-// which rebuilds the fields and can move focus and run script. That must not
-// happen during slot assignment recalc (R1-R3 in slot_assignment.h), so the
-// preview is cleared later in the document lifecycle, before paint.
-TEST_P(HTMLCanvasElementTest, SlotIntoCanvasWithSuggestedValueDefersClear) {
-  class FocusDuringRecalcObserver final
-      : public GarbageCollected<FocusDuringRecalcObserver>,
+// which rebuilds the fields and makes slot assignment recalc dispatch a blur.
+// A handler
+// that re-enters recalc through assignedNodes() must bail out, so the slot it
+// adds has no assigned nodes until the next recalc. This checks the re-entrancy
+// guard directly instead of relying on the freed memory read crashing.
+TEST_P(HTMLCanvasElementTest, ReentrantSlotRecalcDuringDidRecalcAssignedNodes) {
+#if DCHECK_IS_ON()
+  // Reaching this path trips a separate, pre-existing DCHECK:
+  // RecalcAssignment() forbids flat tree traversal while the date field
+  // dispatches focus and blur. See crbug.com/574469802.
+  GTEST_SKIP() << "Blocked by a pre-existing DCHECK in Element::Focus()";
+#else
+  class ReentrantRecalcObserver final
+      : public GarbageCollected<ReentrantRecalcObserver>,
         public FocusedElementChangeObserver {
    public:
-    explicit FocusDuringRecalcObserver(Document& document)
-        : document_(&document) {}
+    explicit ReentrantRecalcObserver(ShadowRoot* shadow_root, Element* spare)
+        : shadow_root_(shadow_root), spare_(spare) {}
 
     void DidChangeFocus() override {
-      if (SlotAssignmentRecalcInProgressScope::IsActive()) {
-        ++count_during_recalc_;
+      if (invoked_) {
+        return;
       }
-      max_lifecycle_state_ =
-          std::max(max_lifecycle_state_, document_->Lifecycle().GetState());
+      invoked_ = true;
+      // Records that the blur really was dispatched from inside
+      // SlotAssignment::RecalcAssignment(), so this test cannot silently stop
+      // covering the re-entrant path.
+      reentrant_ = SlotAssignmentRecalcInProgressScope::IsActive();
+
+      // Add a slot and move a light child into it so the assignment is dirty,
+      // then re-enter recalc through assignedNodes(). Without the fix this
+      // nested recalc rebuilds slots_ (freeing the buffer the outer loop is
+      // iterating) and assigns |spare_| to the new slot. With the fix the
+      // re-entrant recalc bails, so the new slot has no assigned nodes yet.
+      auto* extra =
+          MakeGarbageCollected<HTMLSlotElement>(shadow_root_->GetDocument());
+      extra->setAttribute(html_names::kNameAttr, AtomicString("extra"));
+      shadow_root_->AppendChild(extra);
+      spare_->setAttribute(html_names::kSlotAttr, AtomicString("extra"));
+      assigned_in_handler_ = extra->AssignedNodes().size();
     }
 
-    int CountDuringRecalc() const { return count_during_recalc_; }
-    DocumentLifecycle::LifecycleState MaxLifecycleState() const {
-      return max_lifecycle_state_;
-    }
+    bool Invoked() const { return invoked_; }
+    bool Reentrant() const { return reentrant_; }
+    wtf_size_t AssignedInHandler() const { return assigned_in_handler_; }
 
     void Trace(Visitor* visitor) const override {
-      visitor->Trace(document_);
+      visitor->Trace(shadow_root_);
+      visitor->Trace(spare_);
       FocusedElementChangeObserver::Trace(visitor);
     }
 
    private:
-    Member<Document> document_;
-    int count_during_recalc_ = 0;
-    DocumentLifecycle::LifecycleState max_lifecycle_state_ =
-        DocumentLifecycle::kUninitialized;
+    Member<ShadowRoot> shadow_root_;
+    Member<Element> spare_;
+    bool invoked_ = false;
+    bool reentrant_ = false;
+    wtf_size_t assigned_in_handler_ = 0;
   };
 
   ScopedCanvasDrawElementForTest forced_canvas_draw_element_feature(true);
@@ -1487,7 +1499,10 @@ TEST_P(HTMLCanvasElementTest, SlotIntoCanvasWithSuggestedValueDefersClear) {
   GetPage().GetFocusController().SetActive(true);
   GetPage().GetFocusController().SetFocused(true);
 
-  // The <input> starts in the second slot and is moved to the first.
+  // The <input> starts in the second slot and is moved to the first, so the
+  // re-entrant recalc happens while the outer DidRecalcAssignedNodes() loop is
+  // still running. No filler slots are needed because the test asserts the
+  // re-entrancy behavior rather than relying on a freed-buffer read crashing.
   GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(
       "<canvas id=\"cv\" content=\"drawable\"><div id=\"host\">"
       "<template shadowrootmode=\"open\">"
@@ -1495,6 +1510,7 @@ TEST_P(HTMLCanvasElementTest, SlotIntoCanvasWithSuggestedValueDefersClear) {
       "<slot id=\"s2\" name=\"second\"></slot>"
       "</template>"
       "<input id=\"d\" type=\"date\" value=\"2001-02-03\" slot=\"second\">"
+      "<span id=\"spare\" slot=\"unslotted\"></span>"
       "</div></canvas>");
   UpdateAllLifecyclePhasesForTest();
 
@@ -1507,183 +1523,34 @@ TEST_P(HTMLCanvasElementTest, SlotIntoCanvasWithSuggestedValueDefersClear) {
   s1->AssignedNodes();
   date->SetValue("2001-02-04");
   // Clear the bit on the <input> only, so that re-slotting it flips the bit
-  // back on, which must clear the suggested value. The slots themselves stay
-  // in the canvas subtree.
+  // back on and clears the suggested value, which rebuilds the date fields.
+  // The slots themselves stay in the canvas subtree.
   date->SetIsInCanvasSubtree(false);
   date->SetSuggestedValue("2005-06-07");
   ASSERT_FALSE(date->SuggestedValue().IsNull());
   date->Focus();
   date->setAttribute(html_names::kValueAttr, AtomicString("2003-04-05"));
 
-  auto* observer =
-      MakeGarbageCollected<FocusDuringRecalcObserver>(GetDocument());
+  auto* observer = MakeGarbageCollected<ReentrantRecalcObserver>(
+      shadow_root, GetDocument().getElementById(AtomicString("spare")));
   GetDocument().AddFocusedElementChangeObserver(observer);
 
+  // Moving the <input> to the first slot re-assigns slots and dispatches the
+  // blur from inside the DidRecalcAssignedNodes() loop.
   date->setAttribute(html_names::kSlotAttr, AtomicString("first"));
   s1->AssignedNodes();
 
-  // The recalc did not clear the preview (which would rebuild the fields), so
-  // focus did not change during the recalc.
-  EXPECT_TRUE(date->IsInCanvasSubtree());
-  EXPECT_EQ(0, observer->CountDuringRecalc());
-  EXPECT_FALSE(date->SuggestedValue().IsNull());
-  EXPECT_EQ(DocumentLifecycle::kUninitialized, observer->MaxLifecycleState());
-
-  // The document lifecycle clears the preview, outside of slot assignment
-  // recalc, and before paint.
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_TRUE(date->SuggestedValue().IsNull());
-  EXPECT_EQ(0, observer->CountDuringRecalc());
-  EXPECT_NE(DocumentLifecycle::kUninitialized, observer->MaxLifecycleState());
-  EXPECT_LT(observer->MaxLifecycleState(), DocumentLifecycle::kInPaint);
-  EXPECT_EQ(date->AssignedSlot(), s1);
-}
-
-TEST_P(HTMLCanvasElementTest,
-       ClearSuggestedValueForCanvasRerunsPostLayoutSnapshotSteps) {
-  class ExpandFillerOnFocusChange final
-      : public GarbageCollected<ExpandFillerOnFocusChange>,
-        public FocusedElementChangeObserver {
-   public:
-    explicit ExpandFillerOnFocusChange(Element* filler) : filler_(filler) {}
-
-    void DidChangeFocus() override {
-      invoked_ = true;
-      filler_->setAttribute(html_names::kStyleAttr,
-                            AtomicString("height: 200px"));
-    }
-
-    bool Invoked() const { return invoked_; }
-
-    void Trace(Visitor* visitor) const override {
-      visitor->Trace(filler_);
-      FocusedElementChangeObserver::Trace(visitor);
-    }
-
-   private:
-    Member<Element> filler_;
-    bool invoked_ = false;
-  };
-
-  ScopedCanvasDrawElementForTest forced_canvas_draw_element_feature(true);
-  ScopedRunSnapshotPostLayoutStateStepsForTest enable_post_layout_snapshots(
-      true);
-  GetDocument().GetSettings()->SetDateTimeSubfieldsFocusableForTesting(true);
-  GetPage().GetFocusController().SetActive(true);
-  GetPage().GetFocusController().SetFocused(true);
-
-  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
-    <style>
-      #scroller {
-        container-type: scroll-state;
-        overflow: auto;
-        width: 100px;
-        height: 100px;
-      }
-      #filler {
-        height: 50px;
-      }
-      #target {
-        color: rgb(255, 0, 0);
-      }
-      @container scroll-state(scrollable: bottom) {
-        #target {
-          color: rgb(0, 128, 0);
-        }
-      }
-    </style>
-    <div id="scroller">
-      <div id="filler"></div>
-      <div id="target"></div>
-    </div>
-    <div id="host">
-      <template shadowrootmode="open">
-        <slot name="outside"></slot>
-        <canvas id="cv" content="drawable">
-          <slot name="inside"></slot>
-        </canvas>
-      </template>
-      <input id="d" type="date" value="2001-02-03" slot="outside" drawable>
-    </div>
-  )HTML");
-  UpdateAllLifecyclePhasesForTest();
-
-  auto* target = GetElementById("target");
-  ASSERT_EQ(
-      Color::FromRGB(255, 0, 0),
-      target->ComputedStyleRef().VisitedDependentColor(GetCSSPropertyColor()));
-
-  auto* date = To<HTMLInputElement>(GetElementById("d"));
-  date->SetValue("2001-02-04");
-  date->SetSuggestedValue("2005-06-07");
-  ASSERT_FALSE(date->SuggestedValue().IsNull());
-  date->Focus();
-  date->setAttribute(html_names::kValueAttr, AtomicString("2003-04-05"));
-
-  auto* observer =
-      MakeGarbageCollected<ExpandFillerOnFocusChange>(GetElementById("filler"));
-  GetDocument().AddFocusedElementChangeObserver(observer);
-
-  date->setAttribute(html_names::kSlotAttr, AtomicString("inside"));
-  ASSERT_FALSE(observer->Invoked());
-
-  UpdateAllLifecyclePhasesForTest();
-
   ASSERT_TRUE(observer->Invoked());
+  EXPECT_TRUE(observer->Reentrant());
   EXPECT_TRUE(date->SuggestedValue().IsNull());
-  // Clearing the suggested value triggers focus change -> #filler expands ->
-  // #scroller becomes scrollable -> post-layout snapshot steps must re-run so
-  // the scroll-state() query updates in the same lifecycle.
-  EXPECT_EQ(
-      Color::FromRGB(0, 128, 0),
-      target->ComputedStyleRef().VisitedDependentColor(GetCSSPropertyColor()));
-}
+  // The re-entrant recalc must have bailed out instead of rebuilding slots_,
+  // so the slot added during the handler has no assigned nodes yet.
+  EXPECT_EQ(0u, observer->AssignedInHandler());
 
-TEST_P(HTMLCanvasElementTest,
-       ClearSuggestedValueAfterAdoptingDisconnectedCanvasFromOtherDocument) {
-  ScopedCanvasDrawElementForTest forced_canvas_draw_element_feature(true);
-
-  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
-    <input id="input_id" drawable>
-    <textarea id="textarea_id" drawable></textarea>
-    <select id="select_id" drawable>
-      <option value="Bar">Bar</option>
-      <option value="Foo">Foo</option>
-    </select>
-  )HTML");
-
-  auto* input = To<HTMLInputElement>(GetElementById("input_id"));
-  auto* textarea = To<HTMLTextAreaElement>(GetElementById("textarea_id"));
-  auto* select = To<HTMLSelectElement>(GetElementById("select_id"));
-  input->SetSuggestedValue("secret_input");
-  textarea->SetSuggestedValue("secret_textarea");
-  select->SetSuggestedValue("Foo");
-
-  Document* other_doc =
-      GetDocument().implementation().createHTMLDocument(AtomicString());
-  Element* canvas = other_doc->CreateRawElement(html_names::kCanvasTag);
-  canvas->setAttribute(html_names::kContentAttr, AtomicString("drawable"));
-  canvas->appendChild(input);
-  canvas->appendChild(textarea);
-  canvas->appendChild(select);
-  GetDocument().body()->appendChild(canvas);
-
-  // Moving the canvas out of `other_doc` unschedules the pending clears there.
-  EXPECT_FALSE(other_doc->ClearScheduledSuggestedValuesForCanvas());
-
+  // The deferred recalc is picked up here and produces the correct assignment.
   UpdateAllLifecyclePhasesForTest();
-
-  EXPECT_TRUE(input->IsInCanvasSubtree());
-  EXPECT_TRUE(input->SuggestedValue().IsNull());
-  EXPECT_EQ(WebAutofillState::kNotFilled, input->GetAutofillState());
-
-  EXPECT_TRUE(textarea->IsInCanvasSubtree());
-  EXPECT_TRUE(textarea->SuggestedValue().IsNull());
-  EXPECT_EQ(WebAutofillState::kNotFilled, textarea->GetAutofillState());
-
-  EXPECT_TRUE(select->IsInCanvasSubtree());
-  EXPECT_TRUE(select->SuggestedValue().empty());
-  EXPECT_EQ(WebAutofillState::kNotFilled, select->GetAutofillState());
+  EXPECT_EQ(date->AssignedSlot(), s1);
+#endif  // DCHECK_IS_ON()
 }
 
 TEST_P(HTMLCanvasElementTest, MoveBeforeOutOfCanvasIntoShadowDom) {

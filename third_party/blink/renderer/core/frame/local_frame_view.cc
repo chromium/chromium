@@ -2728,23 +2728,6 @@ void LocalFrameView::UpdateLifecyclePhasesInternal(
 
   auto old_force_commit_criteria = ForceCommitCriteria();
 
-  // Runs `func` on every non-throttled local frame view, with script allowed.
-  // Returns true if `func` returned true for any of them, meaning the
-  // lifecycle needs to be repeated.
-  auto run_with_script_allowed = [this](auto func) -> bool {
-    ScriptForbiddenScope::AllowUserAgentScript allow_script;
-    base::AutoReset<DocumentLifecycle::LifecycleState> saved_target_state(
-        &target_state_, DocumentLifecycle::kUninitialized);
-    bool result = false;
-    ForAllNonThrottledLocalFrameViews(
-        [&func, &result](LocalFrameView& frame_view) {
-          if (func(frame_view)) {
-            result = true;
-          }
-        });
-    return result;
-  };
-
   // Run style, layout, compositing, and prepaint lifecycle phases, followed by
   // post-layout steps (such as post-layout intersection observations, resize
   // observations, container query list notifications, and view transitions).
@@ -2847,27 +2830,20 @@ void LocalFrameView::UpdateLifecyclePhasesInternal(
     if (needs_to_repeat_lifecycle)
       continue;
 
-    // Clear the suggested (autofill preview) values of form controls that
-    // entered a canvas subtree. That rebuilds their user-agent shadow trees,
-    // which can move focus and run script, so it can't be done where they
-    // enter the canvas subtree (e.g. during slot assignment recalc). It must
-    // happen before paint, so that the suggested values are never painted
-    // into a canvas. See
-    // HTMLFormControlElementWithState::ScheduleClearSuggestedValueForCanvas().
-    if (run_with_script_allowed([](LocalFrameView& frame_view) {
-          return frame_view.frame_->GetDocument()
-              ->ClearScheduledSuggestedValuesForCanvas();
-        })) {
-      if (RuntimeEnabledFeatures::RunSnapshotPostLayoutStateStepsEnabled()) {
-        should_run_post_layout_snapshot_client_steps = true;
-      }
-      continue;
-    }
+    {
+      ScriptForbiddenScope::AllowUserAgentScript allow_script;
+      base::AutoReset<DocumentLifecycle::LifecycleState> saved_target_state(
+          &target_state_, DocumentLifecycle::kUninitialized);
 
+      ForAllNonThrottledLocalFrameViews(
+          [&needs_to_repeat_lifecycle,
+           &target_state](LocalFrameView& frame_view) {
+            bool result = frame_view.RunResizeObserverSteps(target_state);
+            needs_to_repeat_lifecycle = needs_to_repeat_lifecycle || result;
+          });
+    }
     // Only run the rest of the steps here if resize observer is done.
-    if (run_with_script_allowed([target_state](LocalFrameView& frame_view) {
-          return frame_view.RunResizeObserverSteps(target_state);
-        })) {
+    if (needs_to_repeat_lifecycle) {
       if (RuntimeEnabledFeatures::RunSnapshotPostLayoutStateStepsEnabled()) {
         should_run_post_layout_snapshot_client_steps = true;
       }
@@ -2883,14 +2859,20 @@ void LocalFrameView::UpdateLifecyclePhasesInternal(
     if (should_run_container_query_list_steps &&
         RuntimeEnabledFeatures::ElementMatchContainerEnabled()) {
       should_run_container_query_list_steps = false;
-      if (run_with_script_allowed([](LocalFrameView& frame_view) {
-            return frame_view.RunContainerQueryListSteps();
-          })) {
-        if (RuntimeEnabledFeatures::RunSnapshotPostLayoutStateStepsEnabled()) {
-          should_run_post_layout_snapshot_client_steps = true;
-        }
-        continue;
+      ScriptForbiddenScope::AllowUserAgentScript allow_script;
+      base::AutoReset<DocumentLifecycle::LifecycleState> saved_target_state(
+          &target_state_, DocumentLifecycle::kUninitialized);
+      ForAllNonThrottledLocalFrameViews(
+          [&needs_to_repeat_lifecycle](LocalFrameView& frame_view) {
+            bool result = frame_view.RunContainerQueryListSteps();
+            needs_to_repeat_lifecycle = needs_to_repeat_lifecycle || result;
+          });
+    }
+    if (needs_to_repeat_lifecycle) {
+      if (RuntimeEnabledFeatures::RunSnapshotPostLayoutStateStepsEnabled()) {
+        should_run_post_layout_snapshot_client_steps = true;
       }
+      continue;
     }
 
     // ViewTransition mutates the tree and mirrors post layout transform for
