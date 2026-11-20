@@ -35,6 +35,7 @@ class DocumentServiceBase;
 class NavigationOrDocumentHandle;
 class PageImpl;
 class RenderFrameHostImpl;
+class ServiceWorkerClient;
 
 // Container for arbitrary document-associated feature-specific data. Should
 // be reset when committing a cross-document navigation in this
@@ -242,6 +243,13 @@ class CONTENT_EXPORT DocumentAssociatedData : public base::SupportsUserData {
     renderer_accessible_http_cache_write_enabled_ = enabled;
   }
 
+  base::WeakPtr<ServiceWorkerClient> service_worker_client() const {
+    return service_worker_client_;
+  }
+  void set_service_worker_client(
+      base::WeakPtr<ServiceWorkerClient> service_worker_client) {
+    service_worker_client_ = std::move(service_worker_client);
+  }
  private:
   const blink::DocumentToken token_;
   std::unique_ptr<PageImpl> owned_page_;
@@ -281,6 +289,9 @@ class CONTENT_EXPORT DocumentAssociatedData : public base::SupportsUserData {
   // recreated (e.g. following a Network Service crash).
   bool renderer_accessible_http_cache_write_enabled_ = false;
 
+  // The ServiceWorkerClient associated with this committed document. Set upon
+  // navigation commit in TakeNewDocumentPropertiesFromNavigation().
+  base::WeakPtr<ServiceWorkerClient> service_worker_client_;
   base::WeakPtrFactory<RenderFrameHostImpl> weak_factory_;
 };
 

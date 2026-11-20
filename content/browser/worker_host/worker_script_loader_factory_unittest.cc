@@ -361,6 +361,61 @@ TEST_F(WorkerScriptLoaderFactoryTest, RejectUnsafeRedirectTarget) {
   EXPECT_EQ(net::ERR_UNSAFE_REDIRECT, client.completion_status().error_code);
 }
 
+TEST_F(WorkerScriptLoaderFactoryTest, BlobUrlWorkerParentOriginMismatch) {
+  const GURL parent_url("https://other.example.com/index.html");
+  const url::Origin parent_origin = url::Origin::Create(parent_url);
+  ScopedServiceWorkerClient parent_client =
+      helper_->context()
+          ->service_worker_client_owner()
+          .CreateServiceWorkerClientForWindow(/*are_ancestors_secure=*/true,
+                                              FrameTreeNodeId());
+  parent_client->UpdateUrls(parent_url, parent_origin,
+                            blink::StorageKey::CreateFirstParty(parent_origin));
+
+  // A blob URL from a different origin than `parent_client` must not create a
+  // service worker client or inherit `parent_client`'s storage key/controller.
+  const GURL different_origin_blob_url(
+      "blob:https://www.example.com/49146318-7a89-4041-9bcc-36e6b6eeef86");
+  const url::Origin different_blob_origin =
+      url::Origin::Create(different_origin_blob_url);
+  auto mismatched_handle = std::make_unique<ServiceWorkerMainResourceHandle>(
+      helper_->context_wrapper(), base::DoNothing(),
+      parent_client->client_uuid(), parent_client.AsWeakPtr());
+  auto mismatched_factory = std::make_unique<WorkerScriptLoaderFactory>(
+      kProcessId, DedicatedOrSharedWorkerToken(),
+      net::IsolationInfo::CreateForInternalRequest(different_blob_origin),
+      mismatched_handle.get(), browser_context_getter_,
+      network_loader_factory_);
+
+  network::TestURLLoaderClient mismatched_client;
+  mojo::PendingRemote<network::mojom::URLLoader> mismatched_loader =
+      CreateTestLoaderAndStart(different_origin_blob_url,
+                               mismatched_factory.get(), &mismatched_client);
+  mismatched_client.RunUntilResponseReceived();
+  EXPECT_FALSE(mismatched_handle->service_worker_client());
+
+  // Positive control: a blob URL with the same origin as `parent_client`
+  // creates a service worker client and inherits `parent_client`'s key.
+  const GURL same_origin_blob_url(
+      "blob:https://other.example.com/49146318-7a89-4041-9bcc-36e6b6eeef86");
+  auto matching_handle = std::make_unique<ServiceWorkerMainResourceHandle>(
+      helper_->context_wrapper(), base::DoNothing(),
+      parent_client->client_uuid(), parent_client.AsWeakPtr());
+  auto matching_factory = std::make_unique<WorkerScriptLoaderFactory>(
+      kProcessId, DedicatedOrSharedWorkerToken(),
+      net::IsolationInfo::CreateForInternalRequest(parent_origin),
+      matching_handle.get(), browser_context_getter_, network_loader_factory_);
+
+  network::TestURLLoaderClient matching_client;
+  mojo::PendingRemote<network::mojom::URLLoader> matching_loader =
+      CreateTestLoaderAndStart(same_origin_blob_url, matching_factory.get(),
+                               &matching_client);
+  matching_client.RunUntilResponseReceived();
+  ASSERT_TRUE(matching_handle->service_worker_client());
+  EXPECT_EQ(parent_client->key(),
+            matching_handle->service_worker_client()->key());
+}
+
 // TODO(falken): Add a test for a shared worker that's controlled by a service
 // worker.
 

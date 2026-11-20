@@ -20,6 +20,7 @@
 #include "content/browser/service_worker/service_worker_loader_helpers.h"
 #include "content/browser/service_worker/service_worker_main_resource_handle.h"
 #include "content/browser/service_worker/service_worker_object_host.h"
+#include "content/browser/service_worker/service_worker_security_utils.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/origin_util.h"
@@ -51,13 +52,27 @@ bool SchemeMaySupportRedirectingToHTTPS(BrowserContext* browser_context,
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
+bool CanInheritControllerFromParent(
+    const GURL& blob_url,
+    base::WeakPtr<ServiceWorkerClient> parent_service_worker_client) {
+  if (!blob_url.SchemeIsBlob() || !parent_service_worker_client) {
+    return false;
+  }
+  return service_worker_security_utils::
+      AreOriginsCompatibleForServiceWorkerClient(
+          url::Origin::Create(blob_url),
+          parent_service_worker_client->key().origin());
+}
+
 // Returns true if a ServiceWorkerMainResourceLoaderInterceptor should be
 // created for a worker with this |url|.
 bool ShouldCreateForWorker(
     const GURL& url,
     base::WeakPtr<ServiceWorkerClient> parent_service_worker_client) {
-  // Blob URL can be controlled by a parent's controller.
-  if (url.SchemeIsBlob() && parent_service_worker_client) {
+  // Blob URL can be controlled by a parent's controller if they have the same
+  // origin.
+  if (CanInheritControllerFromParent(url,
+                                     std::move(parent_service_worker_client))) {
     return true;
   }
   // Create the handler even for insecure HTTP since it's used in the
@@ -258,8 +273,8 @@ void ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader(
     // https://w3c.github.io/ServiceWorker/#control-and-use-worker-client
     base::WeakPtr<ServiceWorkerClient> parent_service_worker_client =
         handle_->parent_service_worker_client();
-    if (parent_service_worker_client &&
-        tentative_resource_request.url.SchemeIsBlob()) {
+    if (CanInheritControllerFromParent(tentative_resource_request.url,
+                                       parent_service_worker_client)) {
       handle_->service_worker_client()->InheritControllerFrom(
           *parent_service_worker_client,
           net::SimplifyUrlForRequest(tentative_resource_request.url));
