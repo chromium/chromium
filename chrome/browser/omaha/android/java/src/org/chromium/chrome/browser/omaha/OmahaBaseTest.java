@@ -757,8 +757,8 @@ public class OmahaBaseTest {
         }
 
         /**
-         * Build a simulated response from the Omaha server indicating an update is available.
-         * The response changes based on the device type.
+         * Build a simulated response from the Omaha server indicating an update is available. The
+         * response changes based on the device type.
          */
         private String buildServerResponseString(boolean isOnTablet, boolean sendInstallEvent) {
             String response = "";

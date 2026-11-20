@@ -158,7 +158,6 @@ if (is_android) {
       "//chrome/browser/ntp_customization:java",
       "//chrome/browser/omaha/android:java",
       "//chrome/browser/omaha/android:ui_java",
-      "//chrome/browser/omaha/android:update_proto_java",
       "//chrome/browser/open_in_app/android:java",
       "//chrome/browser/optimization_guide/android:java",
       "//chrome/browser/page_image_service/android:java",
@@ -1084,33 +1083,6 @@ if (is_android) {
     ]
 
     deps = [ ":chrome_junit_tests_helper" ]
-  }
-
-  robolectric_library("chrome_junit_tests_org.chromium.chrome.browser.omaha") {
-    sources = [
-      "src/org/chromium/chrome/browser/omaha/AttributeFinder.java",
-      "src/org/chromium/chrome/browser/omaha/ExponentialBackoffSchedulerTest.java",
-      "src/org/chromium/chrome/browser/omaha/MockRequestGenerator.java",
-      "src/org/chromium/chrome/browser/omaha/OmahaBaseTest.java",
-      "src/org/chromium/chrome/browser/omaha/RequestGeneratorTest.java",
-      "src/org/chromium/chrome/browser/omaha/ResponseParserTest.java",
-      "src/org/chromium/chrome/browser/omaha/StringSanitizerTest.java",
-      "src/org/chromium/chrome/browser/omaha/UpdateMenuItemHelperTest.java",
-      "src/org/chromium/chrome/browser/omaha/VersionNumberTest.java",
-      "src/org/chromium/chrome/browser/omaha/inline/InAppUpdateControllerTest.java",
-      "src/org/chromium/chrome/browser/omaha/inline/InAppUpdateInstallerTest.java",
-      "src/org/chromium/chrome/browser/omaha/inline/InAppUpdatePolicyTest.java",
-      "src/org/chromium/chrome/browser/omaha/inline/InAppUpdateRestartSchedulerTest.java",
-      "src/org/chromium/chrome/browser/omaha/inline/InAppUpdateRestartTaskTest.java",
-      "src/org/chromium/chrome/browser/omaha/metrics/UpdateSuccessMetricsTest.java",
-    ]
-
-    deps = [
-      ":chrome_junit_tests_helper",
-      "$google_play_services_package:google_play_services_tasks_java",
-      "//third_party/android_deps:chromium_play_services_availability_java",
-      "//third_party/android_deps:playcore_app_update_java",
-    ]
   }
 
   robolectric_library(

@@ -11,6 +11,8 @@ import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -20,18 +22,19 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 /**
- * Pulls out a given tag attribute's value from the XML.
- * Assumes that the same tag doesn't appear twice with the same attribute.
+ * Pulls out a given tag attribute's value from the XML. Assumes that the same tag doesn't appear
+ * twice with the same attribute.
  */
+@NullMarked
 public class AttributeFinder extends DefaultHandler {
     private static final String TAG = "AttributeFinder";
 
     private final String mDesiredTag;
-    private final String mDesiredAttribute;
+    private final @Nullable String mDesiredAttribute;
     private boolean mTagFound;
-    private String mValue;
+    private @Nullable String mValue;
 
-    public AttributeFinder(String xml, String tag, String attribute) {
+    public AttributeFinder(String xml, String tag, @Nullable String attribute) {
         mDesiredTag = tag;
         mDesiredAttribute = attribute;
 
@@ -62,7 +65,7 @@ public class AttributeFinder extends DefaultHandler {
         return mTagFound;
     }
 
-    public String getValue() {
+    public @Nullable String getValue() {
         return mValue;
     }
 }

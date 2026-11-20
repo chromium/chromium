@@ -37,7 +37,8 @@ public class ResponseParserTest {
 
     /**
      * Create XML for testing.
-     * @param xmlProtocol Version number of the protocol.  Expected to be "3.0" for valid XML.
+     *
+     * @param xmlProtocol Version number of the protocol. Expected to be "3.0" for valid XML.
      * @param elapsedSeconds Number of seconds since server midnight.
      * @param appStatus Status to use for the <app> element.
      * @param addInstall Whether or not to add an install event.
@@ -189,6 +190,7 @@ public class ResponseParserTest {
 
     /**
      * Runs a test that is expected to pass.
+     *
      * @param appStatus Status to use for the <app> element.
      * @param addInstall Whether or not to add an install event.
      * @param addPing Whether or not to add a ping.
@@ -226,6 +228,7 @@ public class ResponseParserTest {
 
     /**
      * Runs a test that is expected to fail in a particular way.
+     *
      * @param xml XML to parse.
      * @param expectedErrorCode Expected error code.
      * @param expectInstall Whether or not the parser should expect an install event.
