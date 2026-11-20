@@ -250,6 +250,10 @@ const base::FeatureParam<base::TimeDelta>
 
 BASE_FEATURE(kActorStabilizeOncePerBundle, base::FEATURE_DISABLED_BY_DEFAULT);
 
+const base::FeatureParam<bool> kActorBundleSameDocumentNavigationIsBoundary{
+    &kActorStabilizeOncePerBundle, "same_document_navigation_is_boundary",
+    true};
+
 // Experiment with different tool execution delays and timeouts for Actor.
 BASE_FEATURE(kActorPageToolTimeout, base::FEATURE_ENABLED_BY_DEFAULT);
 

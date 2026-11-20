@@ -2251,7 +2251,7 @@ TEST_F(ExecutionEngineStabilizeOncePerBundleTest,
 }
 
 TEST_F(ExecutionEngineStabilizeOncePerBundleTest,
-       NavigationMidBundleSettlesBeforeNextAction) {
+       NavigationMidBundleAndBoundaryParam) {
   fake_chrome_render_frame_.SetNextToolHook(base::BindLambdaForTesting([&]() {
     content::NavigationSimulator::CreateRendererInitiated(
         GURL("http://localhost/#section"), main_rfh())
@@ -2265,6 +2265,25 @@ TEST_F(ExecutionEngineStabilizeOncePerBundleTest,
   EXPECT_EQ(fake_chrome_render_frame_.page_stability_monitor_count(), 2);
   EXPECT_THAT(observation_delays(),
               testing::ElementsAre(base::Seconds(1), base::Seconds(2)));
+
+  base::test::ScopedFeatureList params;
+  params.InitAndEnableFeatureWithParameters(
+      kActorStabilizeOncePerBundle,
+      {{kActorBundleSameDocumentNavigationIsBoundary.name, "false"}});
+  fake_chrome_render_frame_.SetNextToolHook(base::BindLambdaForTesting([&]() {
+    content::NavigationSimulator::CreateRendererInitiated(
+        GURL("http://localhost/#step2"), main_rfh())
+        ->CommitSameDocument();
+  }));
+  ActResultFuture res2;
+  task_->Act(ToRequestList(MakeBundleClickRequest(base::Seconds(3)),
+                           MakeBundleClickRequest(base::Seconds(4))),
+             res2.GetCallback());
+  ExpectOkResult(res2);
+  EXPECT_EQ(fake_chrome_render_frame_.page_stability_monitor_count(), 3);
+  EXPECT_THAT(observation_delays(),
+              testing::ElementsAre(base::Seconds(1), base::Seconds(2),
+                                   base::Seconds(4)));
 }
 
 TEST_F(ExecutionEngineStabilizeOncePerBundleTest,

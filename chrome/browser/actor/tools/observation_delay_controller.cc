@@ -623,7 +623,8 @@ void ObservationDelayController::DidStartNavigation(
   if (state_ == State::kInitial) {
     if (!navigation_handle->IsSameDocument()) {
       pre_wait_navigation_type_ = PreWaitNavigationType::kCrossDocument;
-    } else if (pre_wait_navigation_type_ == PreWaitNavigationType::kNone) {
+    } else if (kActorBundleSameDocumentNavigationIsBoundary.Get() &&
+               pre_wait_navigation_type_ == PreWaitNavigationType::kNone) {
       pre_wait_navigation_type_ = PreWaitNavigationType::kSameDocument;
     }
     return;

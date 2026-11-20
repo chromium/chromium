@@ -194,6 +194,8 @@ extern const base::FeatureParam<base::TimeDelta>
 // same-local-root page actions in a bundle and waits once at the end of the
 // bundle (or at a bundle boundary).
 BASE_DECLARE_FEATURE(kActorStabilizeOncePerBundle);
+extern const base::FeatureParam<bool>
+    kActorBundleSameDocumentNavigationIsBoundary;
 
 // Tool execution delay and timeout parameters for Actor.
 BASE_DECLARE_FEATURE(kActorPageToolTimeout);
