@@ -526,7 +526,8 @@ void PaintTiming::FlushPaintTimingsOnFramePresentedCallback(
     if (data->ShouldNotifyClientsOnFramePresented()) {
       ForEachClient([&](PaintTimingClient* client) {
         client->OnFramePresented(data->image_records, data->text_records,
-                                 paint_timing_info);
+                                 raw_presentation_timestamp, paint_timing_info,
+                                 data->navigation_id);
       });
     }
     pending_presentation_data_.pop_front();
@@ -644,7 +645,8 @@ void PaintTiming::FlushPaintTimingsOnFramePresented(
   if (data.ShouldNotifyClientsOnFramePresented()) {
     ForEachClient([&](PaintTimingClient* client) {
       client->OnFramePresented(data.image_records, data.text_records,
-                               *data.paint_timing_info);
+                               data.raw_presentation_timestamp,
+                               *data.paint_timing_info, data.navigation_id);
     });
   }
 

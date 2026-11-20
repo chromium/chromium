@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/soft-navigation-heuristics/resources/soft-navigation-test-helper.js"></script>
+
+<button id="navigateButton">Click Me!</button>
+
+<div id="content"></div>
+
+<script>
+  // Regression test for crbug.com/584594613: removing and garbage collecting
+  // an interaction-attributed element between paint and presentation feedback
+  // must not crash when evaluating the ICP candidate.
+  async function runTest(t, url, htmlContent) {
+    navigateButton.addEventListener("click", () => {
+      history.pushState({}, '', url);
+      content.innerHTML = htmlContent;
+      requestAnimationFrame(async () => {
+        // Remove and GC the element after it has been rendered, but before
+        // presentation feedback runs. Avoid referencing the child element from
+        // JS and flush layout so no strong references keep it alive during GC.
+        await scheduler.yield();
+        content.innerHTML = '';
+        void content.offsetTop;
+        gc({type: 'major', execution: 'sync', flavor: 'last-resort'});
+      });
+    }, {once: true});
+
+    const softNavPromise =
+        SoftNavigationTestHelper.getPerformanceEntries("soft-navigation");
+
+    if (test_driver) {
+      test_driver.click(navigateButton);
+    }
+
+    const helper = new SoftNavigationTestHelper(t);
+    const entries = await helper.withTimeoutMessage(
+        softNavPromise, "Soft navigation entry never arrived.", 3000);
+    assert_equals(entries.length, 1, 'Expected exactly one soft navigation.');
+    assert_true(
+        entries[0].name.endsWith(url),
+        'Unexpected Soft Navigation URL.');
+  }
+
+  promise_test(t => {
+    const url = '/soft-nav-gc-image';
+    // base64 encoded /images/lcp-16x16.png so the image loads synchronously.
+    const src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAArElEQVR4AZTQgQaEQBCA4b9pturiHPcu9/4PdMCp2trJybKwbMVi8Jn9TcXHeAdegWFn2HgE+o0+4Ix2O+ba6Na28V53Oi+3NI2XWxo1Lej2+QOiRgw13KKF3UDaHTW1yXmJWNI0i5zrzieNm7WgU8nxjmEWCXKlJOn9+CHqdkUt3x1LkkYnibsvatwkeXdB40bJuwuaatX8gukmucZ9NS8paOpR8pKCRv97DgBllRV8uazI0wAAAABJRU5ErkJggg==';
+    const htmlContent = `<img src="${src}"></img>`;
+    return runTest(t, url, htmlContent);
+  }, 'Removing and GCing an image ICP candidate after rendering does not crash');
+
+  promise_test(t => {
+    const url = '/soft-nav-gc-text';
+    const htmlContent = '<div>Text Content</div>';
+    return runTest(t, url, htmlContent);
+  }, 'Removing and GCing a text ICP candidate after rendering does not crash');
+</script>

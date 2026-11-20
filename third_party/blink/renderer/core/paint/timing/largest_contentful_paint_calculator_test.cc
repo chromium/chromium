@@ -25,9 +25,11 @@
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record_builder.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
+#include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkSurface.h"
@@ -471,7 +473,7 @@ TEST_F(LargestContentfulPaintCalculatorTest, RemoveLargestPendingImage) {
   // painted image, but it relies on another contentful paint to trigger the
   // LCP candidate update.
   GetElementById("large")->remove();
-  GetLargestContentfulPaintCalculator()->MaybeFlushCandidates();
+  GetLargestContentfulPaintCalculator()->MaybeFlushMetricsCandidates();
   EXPECT_EQ(CurrentLcpCandidate()->size(), 9u);
   EXPECT_EQ(LcpDetailsForReporting().image_paint_size, 9u);
   EXPECT_GT(LcpDetailsForReporting().image_paint_time, 0u);
@@ -512,7 +514,7 @@ TEST_F(LargestContentfulPaintCalculatorTest,
   AdvanceClock(base::Milliseconds(100));
 
   GetElementById("large")->remove();
-  GetLargestContentfulPaintCalculator()->MaybeFlushCandidates();
+  GetLargestContentfulPaintCalculator()->MaybeFlushMetricsCandidates();
   EXPECT_EQ(CurrentLcpCandidate()->size(), 9u);
   EXPECT_EQ(LcpDetailsForReporting().image_paint_size, 9u);
   EXPECT_GT(LcpDetailsForReporting().image_paint_time, 0u);
@@ -559,7 +561,7 @@ TEST_F(LargestContentfulPaintCalculatorTest, MulitiplePendingImages) {
   // this should fall back to the largest painted image, not the next largest
   // pending image, which isn't supported.
   GetElementById("largest")->remove();
-  GetLargestContentfulPaintCalculator()->MaybeFlushCandidates();
+  GetLargestContentfulPaintCalculator()->MaybeFlushMetricsCandidates();
   EXPECT_EQ(CurrentLcpCandidate()->size(), 9u);
   EXPECT_EQ(LcpDetailsForReporting().image_paint_size, 9u);
   EXPECT_GT(LcpDetailsForReporting().image_paint_time, 0u);
@@ -657,6 +659,35 @@ TEST_F(LargestContentfulPaintCalculatorTest,
   EXPECT_EQ(empty_rect_result.entropy, 0.0);
   EXPECT_FALSE(empty_rect_result.is_viewport_covered);
 
+  trace_analyzer::Stop();
+}
+
+TEST_F(LargestContentfulPaintCalculatorTest,
+       ImageContentReplacedAndGCedBetweenPaintAndPresentation) {
+  SetMainFrameBodyContent(R"HTML(
+    <!DOCTYPE html>
+    <img id='target' width=100 height=150 />
+  )HTML");
+  WeakPersistent<ImageResourceContent> content =
+      SetImageContent("target", 100, 150, 1500);
+  ASSERT_TRUE(content);
+
+  SimulateRendering();
+  EXPECT_EQ(LcpCandidateCount(), 0u);
+
+  // Replace the image content and GC the original `ImageResourceContent`
+  // before presentation feedback arrives. Because the <img> remains connected
+  // with the same LayoutObject, `WasNodeRemoved()` is false while the queued
+  // `ImageRecord` has a null `MediaTiming`.
+  SetImageContent("target", 10, 10, 100);
+  test::RunPendingTasks();
+  ThreadState::Current()->CollectAllGarbageForTesting();
+  EXPECT_FALSE(content);
+
+  SimulatePresentationTime();
+
+  EXPECT_EQ(LcpCandidateCount(), 0u);
+  EXPECT_EQ(LcpDetailsForReporting().image_paint_size, 15000u);
   trace_analyzer::Stop();
 }
 
