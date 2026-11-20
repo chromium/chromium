@@ -7,12 +7,15 @@
 
 #include "base/auto_reset.h"
 #include "base/callback_list.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/threading/thread_restrictions.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
@@ -31,6 +34,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
+#include "chrome/browser/ui/views/location_bar/omnibox_popup_file_selector.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_aim_popup_webui_content.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_aim_presenter.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_closer.h"
@@ -56,7 +60,6 @@
 #include "components/permissions/test/mock_permission_request.h"
 #include "components/permissions/test/permission_request_observer.h"
 #include "components/variations/service/variations_service.h"
-#include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_controller.h"
@@ -66,7 +69,6 @@
 #include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
-#include "third_party/blink/public/mojom/choosers/file_chooser.mojom.h"
 #include "third_party/omnibox_proto/model_mode.pb.h"
 #include "third_party/omnibox_proto/searchbox_config.pb.h"
 #include "ui/actions/actions.h"
@@ -93,29 +95,6 @@ std::unique_ptr<KeyedService> BuildMockAimEligibilityService(
   ON_CALL(*service, GetLocaleImpl()).WillByDefault(testing::Return("en-US"));
   return service;
 }
-
-class TestFileSelectListener : public content::FileSelectListener {
- public:
-  TestFileSelectListener() = default;
-
-  bool file_selected() const { return file_selected_; }
-  bool canceled() const { return canceled_; }
-
-  void FileSelected(std::vector<blink::mojom::FileChooserFileInfoPtr> files,
-                    const base::FilePath& base_dir,
-                    blink::mojom::FileChooserParams::Mode mode) override {
-    file_selected_ = true;
-  }
-
-  void FileSelectionCanceled() override { canceled_ = true; }
-
- protected:
-  ~TestFileSelectListener() override = default;
-
- private:
-  bool file_selected_ = false;
-  bool canceled_ = false;
-};
 
 }  // namespace
 
@@ -536,7 +515,7 @@ IN_PROC_BROWSER_TEST_P(OmniboxAimPopupKeepOpenBrowserTest,
 
 // Verifies that opening a file chooser creates a deactivation blocker that
 // prevents the AIM popup from closing on activation loss, and that cancelling
-// the file selection proxies FileSelectionCanceled and releases the blocker.
+// the file selection notifies listeners and releases the blocker.
 IN_PROC_BROWSER_TEST_P(OmniboxAimPopupKeepOpenBrowserTest,
                        FileChooserCancellationReleasesDeactivationBlocker) {
   auto* content = ShowPopupAndGetWebUIContent();
@@ -547,23 +526,31 @@ IN_PROC_BROWSER_TEST_P(OmniboxAimPopupKeepOpenBrowserTest,
   // Wait for popup state transition delayed task to finish.
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return !location_bar()->in_popup_state_transition(); }));
-  // Register FakeSelectFileDialog factory so FileSelectHelper uses it.
+  // Register FakeSelectFileDialog factory so OmniboxPopupFileSelector uses it.
   ui::FakeSelectFileDialog::Factory* factory =
       ui::FakeSelectFileDialog::RegisterFactory();
   bool dialog_opened = false;
   factory->SetOpenCallback(
       base::BindLambdaForTesting([&]() { dialog_opened = true; }));
 
-  // Run the file chooser.
-  auto test_listener = base::MakeRefCounted<TestFileSelectListener>();
-  blink::mojom::FileChooserParams params;
-  params.mode = blink::mojom::FileChooserParams::Mode::kOpen;
-  content->GetWebContents()->GetDelegate()->RunFileChooser(
-      content->GetWebContents()->GetPrimaryMainFrame(), test_listener, params);
+  OmniboxPopupFileSelector* file_selector =
+      location_bar()->GetOmniboxPopupFileSelector();
+  ASSERT_TRUE(file_selector);
+  bool dialog_closed = false;
+  file_selector->set_file_chooser_closed_callback(
+      base::BindLambdaForTesting([&]() { dialog_closed = true; }));
+  base::ScopedClosureRunner reset_closed_callback(base::BindOnce(
+      &OmniboxPopupFileSelector::set_file_chooser_closed_callback,
+      file_selector->GetWeakPtr(), base::NullCallback()));
+
+  file_selector->OpenFileUploadDialog(
+      content->GetWebContents(), /*is_image=*/false,
+      location_bar()->GetOmniboxController()->edit_model(),
+      /*image_encoding_options=*/std::nullopt, /*was_ai_mode_open=*/true);
   ASSERT_TRUE(base::test::RunUntil([&]() { return dialog_opened; }));
 
   if (IsKeepOpenEnabled()) {
-    // Verify a deactivation blocker was created by `RunFileChooser`.
+    // Verify a deactivation blocker was created by `OpenFileUploadDialog`.
     EXPECT_TRUE(presenter->has_active_blockers());
 
     // Simulate loss of widget activation while file dialog is open.
@@ -584,9 +571,8 @@ IN_PROC_BROWSER_TEST_P(OmniboxAimPopupKeepOpenBrowserTest,
     ASSERT_TRUE(dialog);
     dialog->CallFileSelectionCanceled();
 
-    // Verify cancellation was proxied to our listener and the blocker was
-    // released via `OnFileChooserClosed`.
-    EXPECT_TRUE(test_listener->canceled());
+    // Verify cancellation was notified and the blocker was released.
+    EXPECT_TRUE(dialog_closed);
     EXPECT_FALSE(presenter->has_active_blockers());
 
     // Simulate loss of widget activation immediately after the file dialog has
@@ -650,13 +636,13 @@ IN_PROC_BROWSER_TEST_P(OmniboxAimPopupKeepOpenBrowserTest,
     ASSERT_TRUE(dialog);
     dialog->CallFileSelectionCanceled();
 
-    // Verify cancellation was still proxied to our listener.
-    EXPECT_TRUE(test_listener->canceled());
+    // Verify cancellation was still notified.
+    EXPECT_TRUE(dialog_closed);
   }
 }
 
-// Verifies that selecting a file in the file chooser proxies `FileSelected`
-// and releases the deactivation blocker via `OnFileChooserClosed`.
+// Verifies that selecting a file in the file chooser notifies listeners and
+// releases the deactivation blocker.
 IN_PROC_BROWSER_TEST_P(OmniboxAimPopupKeepOpenBrowserTest,
                        FileChooserSelectionReleasesDeactivationBlocker) {
   auto* content = ShowPopupAndGetWebUIContent();
@@ -669,21 +655,52 @@ IN_PROC_BROWSER_TEST_P(OmniboxAimPopupKeepOpenBrowserTest,
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return !location_bar()->in_popup_state_transition(); }));
 
-  // Register FakeSelectFileDialog factory so FileSelectHelper uses it.
+  // Register FakeSelectFileDialog factory so OmniboxPopupFileSelector uses it.
   ui::FakeSelectFileDialog::Factory* factory =
       ui::FakeSelectFileDialog::RegisterFactory();
   bool dialog_opened = false;
   factory->SetOpenCallback(
       base::BindLambdaForTesting([&]() { dialog_opened = true; }));
 
-  // Run the file chooser via `WebContentsDelegate` (invokes `RunFileChooser`).
-  auto test_listener = base::MakeRefCounted<TestFileSelectListener>();
-  blink::mojom::FileChooserParams params;
-  params.mode = blink::mojom::FileChooserParams::Mode::kOpen;
-  params.accept_types.push_back(u".txt");
+  OmniboxPopupFileSelector* file_selector =
+      location_bar()->GetOmniboxPopupFileSelector();
+  ASSERT_TRUE(file_selector);
+  bool dialog_closed = false;
+  file_selector->set_file_chooser_closed_callback(
+      base::BindLambdaForTesting([&]() { dialog_closed = true; }));
+  base::test::TestFuture<void> ai_mode_opened;
+  file_selector->set_open_ai_mode_callback(
+      ai_mode_opened.GetRepeatingCallback());
+  base::ScopedClosureRunner reset_callbacks(base::BindOnce(
+      [](base::WeakPtr<OmniboxPopupFileSelector> selector) {
+        if (selector) {
+          selector->set_file_chooser_closed_callback(base::NullCallback());
+          selector->set_open_ai_mode_callback(base::NullCallback());
+        }
+      },
+      file_selector->GetWeakPtr()));
 
-  content->GetWebContents()->GetDelegate()->RunFileChooser(
-      content->GetWebContents()->GetPrimaryMainFrame(), test_listener, params);
+  base::ScopedTempDir temp_dir;
+  base::ScopedClosureRunner delete_temp_dir(base::BindOnce(
+      [](base::ScopedTempDir* dir) {
+        base::ScopedAllowBlockingForTesting allow_blocking;
+        if (dir->IsValid()) {
+          EXPECT_TRUE(dir->Delete());
+        }
+      },
+      &temp_dir));
+  base::FilePath file_path;
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+    file_path = temp_dir.GetPath().AppendASCII("test.txt");
+    ASSERT_TRUE(base::WriteFile(file_path, "test content"));
+  }
+
+  file_selector->OpenFileUploadDialog(
+      content->GetWebContents(), /*is_image=*/false,
+      location_bar()->GetOmniboxController()->edit_model(),
+      /*image_encoding_options=*/std::nullopt, /*was_ai_mode_open=*/true);
   ASSERT_TRUE(base::test::RunUntil([&]() { return dialog_opened; }));
 
   if (IsKeepOpenEnabled()) {
@@ -693,17 +710,19 @@ IN_PROC_BROWSER_TEST_P(OmniboxAimPopupKeepOpenBrowserTest,
     EXPECT_FALSE(presenter->has_active_blockers());
   }
 
-  // Simulate selecting a file in the dialog.
+  // Simulate selecting a file in the dialog. `OpenFileUploadDialog` opens a
+  // multi-file dialog with `include_all_files = true` and leaves
+  // `file_types.extensions` empty when `kLensSendRawFileMediaTypes` is enabled,
+  // so `CallMultiFilesSelected` works regardless of that feature state.
   ui::FakeSelectFileDialog* dialog = factory->GetLastDialog();
   ASSERT_TRUE(dialog);
-  ASSERT_TRUE(dialog->CallFileSelected(
-      base::FilePath(FILE_PATH_LITERAL("test.txt")), "txt"));
+  dialog->CallMultiFilesSelected({file_path});
 
-  // Verify the selection event was proxied to our listener and the
-  // deactivation blocker was released (`OnFileChooserClosed` called).
-  ASSERT_TRUE(
-      base::test::RunUntil([&]() { return test_listener->file_selected(); }));
+  // Verify the selection event was notified and the deactivation blocker was
+  // released.
+  EXPECT_TRUE(dialog_closed);
   EXPECT_FALSE(presenter->has_active_blockers());
+  ASSERT_TRUE(ai_mode_opened.Wait());
 }
 
 // Verifies that closing a file selection dialog triggers focus restoration

@@ -665,6 +665,9 @@ void FileSelectHelper::RunFileChooser(
 
   Profile* profile = Profile::FromBrowserContext(
       render_frame_host->GetProcess()->GetBrowserContext());
+  // Top Chrome WebUIs can share TopChromeWebUIProfile across users and must
+  // not open a renderer file chooser directly.
+  CHECK(!profile->IsTopChromeWebUIProfile());
 
   // FileSelectHelper will keep itself alive until it sends the result
   // message.
@@ -680,6 +683,7 @@ void FileSelectHelper::EnumerateDirectory(
     scoped_refptr<content::FileSelectListener> listener,
     const base::FilePath& path) {
   Profile* profile = Profile::FromBrowserContext(tab->GetBrowserContext());
+  CHECK(!profile->IsTopChromeWebUIProfile());
   // FileSelectHelper will keep itself alive until it sends the result
   // message.
   scoped_refptr<FileSelectHelper> file_select_helper(
