@@ -59,6 +59,12 @@ clang_toolchain("v8_snapshot") {
     ozone_platform_headless = true
     ozone_platform_gbm = false
     ozone_platform_drm = false
+
+    # current_os = "linux" turns on V8 builtins PGO for official builds. The
+    # ChromeOS target leaves it off (see pgo.gni), and the ChromeOS ebuild
+    # does not download the profiles. Keep it off so code_cache_generator's
+    # builtins match the target's snapshot_blob.bin.
+    v8_enable_builtins_optimization = false
   }
 
   extra_cflags = cros_v8_snapshot_extra_cflags
