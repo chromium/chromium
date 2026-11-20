@@ -1962,13 +1962,15 @@ InspectorCSSAgent::CustomPropertiesForNode(Element* element) {
       std::make_unique<
           protocol::Array<protocol::CSS::CSSPropertyRegistration>>());
   Document& document = element->GetDocument();
-  auto style_sheets = document_to_css_style_sheets_.find(&document);
-  if (style_sheets == document_to_css_style_sheets_.end()) {
+  const ComputedStyle* style = element->EnsureComputedStyle();
+  if (!style) {
     return result;
   }
 
-  const ComputedStyle* style = element->EnsureComputedStyle();
-  if (!style) {
+  // Check after EnsureComputedStyle(): style resolution can synchronously
+  // re-enter the agent (e.g. via FontsUpdated()) and mutate
+  // `document_to_css_style_sheets_`.
+  if (!document_to_css_style_sheets_.Contains(&document)) {
     return result;
   }
 
@@ -1988,6 +1990,15 @@ InspectorCSSAgent::CustomPropertiesForNode(Element* element) {
     }
 
     if (StyleRuleProperty* rule = registration->PropertyRule()) {
+      // Look up the stylesheets per rule rather than holding an iterator across
+      // BindStyleSheet(), which can synchronously flush pending notifications
+      // (e.g. via Audits.issueAdded) and mutate
+      // `document_to_css_style_sheets_`.
+      DocumentStyleSheets::iterator style_sheets =
+          document_to_css_style_sheets_.find(&document);
+      if (style_sheets == document_to_css_style_sheets_.end()) {
+        continue;
+      }
       // Find CSSOM wrapper.
       CSSPropertyRule* property_rule = nullptr;
       for (CSSStyleSheet* style_sheet : *style_sheets->value) {
@@ -2049,11 +2060,29 @@ static CSSRuleType* FindCSSRuleInSet(
   return nullptr;
 }
 
+// Looks up the document's stylesheet set on each search rather than holding an
+// iterator across EnsureComputedStyle() or BindStyleSheet(), both of which can
+// synchronously flush pending notifications and mutate `style_sheets_map`.
+template <class CSSRuleType, class DocumentStyleSheetsMap>
+static CSSRuleType* FindCSSRuleInDocumentStyleSheets(
+    const DocumentStyleSheetsMap& style_sheets_map,
+    Document& document,
+    base::FunctionRef<bool(CSSRuleType&)> filter_callback) {
+  auto style_sheets = style_sheets_map.find(&document);
+  if (style_sheets == style_sheets_map.end()) {
+    return nullptr;
+  }
+  return FindCSSRuleInSet<CSSRuleType>(*style_sheets->value, filter_callback);
+}
+
+template <class DocumentStyleSheetsMap>
 static CSSFontPaletteValuesRule* FindFontPaletteValuesRule(
-    GCedHeapHashSet<Member<CSSStyleSheet>>& css_rules,
+    const DocumentStyleSheetsMap& style_sheets_map,
+    Document& document,
     StyleRuleFontPaletteValues* values_rule) {
-  return FindCSSRuleInSet<CSSFontPaletteValuesRule>(
-      css_rules, [&values_rule](CSSFontPaletteValuesRule& css_rule) {
+  return FindCSSRuleInDocumentStyleSheets<CSSFontPaletteValuesRule>(
+      style_sheets_map, document,
+      [&values_rule](CSSFontPaletteValuesRule& css_rule) {
         return css_rule.FontPaletteValues() == values_rule;
       });
 }
@@ -2087,23 +2116,28 @@ FontFeatureTypesFromFontVariantAlternates(
 
 std::unique_ptr<protocol::Array<protocol::CSS::CSSAtRule>>
 InspectorCSSAgent::FontAtRulesForNodes(HeapVector<Member<Element>>& elements) {
-  Document& document = elements[0]->GetDocument();
-  auto style_sheets = document_to_css_style_sheets_.find(&document);
-  if (style_sheets == document_to_css_style_sheets_.end()) {
-    return {};
-  }
-
   HeapHashSet<Member<CSSFontPaletteValuesRule>> seen_font_palette_values_rules;
   HeapHashMap<Member<CSSFontFeatureValuesRule>,
               HashSet<StyleRuleFontFeature::FeatureType>>
       seen_font_feature_values_rules;
   HeapHashSet<Member<CSSFontFaceRule>> seen_font_face_rules;
 
-  auto result = std::make_unique<protocol::Array<protocol::CSS::CSSAtRule>>();
+  std::unique_ptr<protocol::Array<protocol::CSS::CSSAtRule>> result;
   for (Element* element : elements) {
     const ComputedStyle* style = element->EnsureComputedStyle();
     if (!style) {
       continue;
+    }
+
+    // Check after each EnsureComputedStyle(): style resolution can
+    // synchronously re-enter the agent (e.g. via FontsUpdated()) and mutate
+    // `document_to_css_style_sheets_`.
+    Document& document = element->GetDocument();
+    if (!document_to_css_style_sheets_.Contains(&document)) {
+      continue;
+    }
+    if (!result) {
+      result = std::make_unique<protocol::Array<protocol::CSS::CSSAtRule>>();
     }
 
     const AtomicString& family_name =
@@ -2116,8 +2150,8 @@ InspectorCSSAgent::FontAtRulesForNodes(HeapVector<Member<Element>>& elements) {
               palette->GetPaletteValuesName(), family_name);
       if (rule) {
         // Find CSSOM wrapper.
-        CSSFontPaletteValuesRule* values_rule =
-            FindFontPaletteValuesRule(*style_sheets->value, rule);
+        CSSFontPaletteValuesRule* values_rule = FindFontPaletteValuesRule(
+            document_to_css_style_sheets_, document, rule);
 
         if (values_rule &&
             !seen_font_palette_values_rules.Contains(values_rule)) {
@@ -2147,8 +2181,8 @@ InspectorCSSAgent::FontAtRulesForNodes(HeapVector<Member<Element>>& elements) {
         for (const auto& rule : *feature_values_rules) {
           // Find CSSOM wrapper.
           CSSFontFeatureValuesRule* values_rule =
-              FindCSSRuleInSet<CSSFontFeatureValuesRule>(
-                  *style_sheets->value,
+              FindCSSRuleInDocumentStyleSheets<CSSFontFeatureValuesRule>(
+                  document_to_css_style_sheets_, document,
                   [&rule](CSSFontFeatureValuesRule& css_rule) {
                     bool result = css_rule.FontFeatureValues() == rule;
                     return result;
@@ -2184,16 +2218,18 @@ InspectorCSSAgent::FontAtRulesForNodes(HeapVector<Member<Element>>& elements) {
       }
     }
 
-    CSSFontFaceRule* font_face_rule = FindCSSRuleInSet<CSSFontFaceRule>(
-        *style_sheets->value, [&family_name](CSSFontFaceRule& css_rule) {
-          auto* family = DynamicTo<CSSFontFamilyValue>(
-              css_rule.StyleRule()->Properties().GetPropertyCSSValue(
-                  AtRuleDescriptorID::FontFamily));
-          if (!family) {
-            return false;
-          }
-          return family->Value() == family_name;
-        });
+    CSSFontFaceRule* font_face_rule =
+        FindCSSRuleInDocumentStyleSheets<CSSFontFaceRule>(
+            document_to_css_style_sheets_, document,
+            [&family_name](CSSFontFaceRule& css_rule) {
+              auto* family = DynamicTo<CSSFontFamilyValue>(
+                  css_rule.StyleRule()->Properties().GetPropertyCSSValue(
+                      AtRuleDescriptorID::FontFamily));
+              if (!family) {
+                return false;
+              }
+              return family->Value() == family_name;
+            });
     if (font_face_rule && !seen_font_face_rules.Contains(font_face_rule)) {
       seen_font_face_rules.insert(font_face_rule);
       InspectorStyleSheet* inspector_style_sheet =

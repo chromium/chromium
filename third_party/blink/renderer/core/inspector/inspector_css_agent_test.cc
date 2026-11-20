@@ -6,30 +6,93 @@
 
 #include <algorithm>
 
+#include "third_party/blink/public/mojom/devtools/devtools_agent.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_font_face_descriptors.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview_string.h"
+#include "third_party/blink/renderer/core/core_probe_sink.h"
+#include "third_party/blink/renderer/core/css/css_font_face.h"
+#include "third_party/blink/renderer/core/css/css_font_face_source.h"
+#include "third_party/blink/renderer/core/css/css_font_selector.h"
 #include "third_party/blink/renderer/core/css/css_function_rule.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_style_declaration.h"
 #include "third_party/blink/renderer/core/css/css_style_rule.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
+#include "third_party/blink/renderer/core/css/font_face.h"
+#include "third_party/blink/renderer/core/css/font_face_cache.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
+#include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/inspector/inspected_frames.h"
+#include "third_party/blink/renderer/core/inspector/inspector_audits_agent.h"
 #include "third_party/blink/renderer/core/inspector/inspector_dom_agent.h"
 #include "third_party/blink/renderer/core/inspector/inspector_network_agent.h"
 #include "third_party/blink/renderer/core/inspector/inspector_resource_container.h"
 #include "third_party/blink/renderer/core/inspector/inspector_resource_content_loader.h"
+#include "third_party/blink/renderer/core/inspector/inspector_session_state.h"
 #include "third_party/blink/renderer/core/inspector/inspector_style_resolver.h"
 #include "third_party/blink/renderer/core/inspector/inspector_style_sheet.h"
+#include "third_party/blink/renderer/core/inspector/protocol/protocol.h"
+#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
+
+namespace {
+
+// Triggers InspectorCSSAgent::FontsUpdated() synchronously when font resolution
+// looks up this source during Element::EnsureComputedStyle().
+class ReentrantFontFaceSource final : public CSSFontFaceSource {
+ public:
+  explicit ReentrantFontFaceSource(InspectorCSSAgent* agent) : agent_(agent) {}
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(agent_);
+    CSSFontFaceSource::Trace(visitor);
+  }
+
+ protected:
+  const SimpleFontData* CreateFontData(
+      const FontDescription&,
+      const FontSelectionCapabilities&) override {
+    if (agent_) {
+      agent_->FontsUpdated(nullptr, g_null_atom, nullptr);
+    }
+    return nullptr;
+  }
+
+ private:
+  WeakMember<InspectorCSSAgent> agent_;
+};
+
+// Mirrors DevToolsSession::FlushProtocolNotifications(), triggered when an
+// attached agent (e.g. InspectorAuditsAgent) calls GetFrontend()->flush().
+class FlushingFrontendChannel : public protocol::FrontendChannel {
+ public:
+  void SetCSSAgent(InspectorCSSAgent* css_agent) { css_agent_ = css_agent; }
+  void SendProtocolResponse(int,
+                            std::unique_ptr<protocol::Serializable>) override {}
+  void SendProtocolNotification(
+      std::unique_ptr<protocol::Serializable>) override {}
+  void FlushProtocolNotifications() override {
+    if (css_agent_) {
+      css_agent_->FlushPendingProtocolNotifications();
+    }
+  }
+
+ private:
+  Persistent<InspectorCSSAgent> css_agent_;
+};
+
+}  // namespace
 
 class InspectorCSSAgentTest : public PageTestBase {
  public:
@@ -194,6 +257,111 @@ class InspectorCSSAgentTest : public PageTestBase {
     agent->stopRuleUsageTracking(&result);
     return result;
   }
+
+  void TearDown() override {
+    channel_.SetCSSAgent(nullptr);
+    if (audits_agent_) {
+      audits_agent_->Dispose();
+      audits_agent_ = nullptr;
+    }
+    if (attached_agent_) {
+      attached_agent_->Dispose();
+      attached_agent_ = nullptr;
+    }
+    PageTestBase::TearDown();
+  }
+
+  // Wires a CSS agent and Audits agent to a flushing frontend channel and probe
+  // sink so FontsUpdated() and Audits.issueAdded synchronously flush pending
+  // stylesheet updates as in a live CDP session.
+  InspectorCSSAgent* CreateAttachedInspectorCSSAgent() {
+    CHECK(!attached_agent_);
+    attached_agent_ = CreateInspectorCSSAgent();
+    LocalFrame* frame = GetDocument().GetFrame();
+    channel_.SetCSSAgent(attached_agent_);
+    attached_agent_->Init(frame->GetProbeSink(), &dispatcher_, &session_state_,
+                          V8SessionHolder(), ClientIsTrusted(true));
+    frame->GetProbeSink()->AddInspectorCSSAgent(attached_agent_);
+
+    audits_agent_ = MakeGarbageCollected<InspectorAuditsAgent>(
+        attached_agent_->network_agent_,
+        &frame->GetPage()->GetInspectorIssueStorage(),
+        attached_agent_->inspected_frames_,
+        /*web_autofill_client=*/nullptr);
+    audits_agent_->Init(frame->GetProbeSink(), &dispatcher_, &session_state_,
+                        V8SessionHolder(), ClientIsTrusted(true));
+    audits_agent_->enable();
+    return attached_agent_;
+  }
+
+  // Sets up an attached agent with a 9-document map (4 invalidated) and a
+  // `"Reentrant"` font that calls FontsUpdated() during EnsureComputedStyle().
+  InspectorCSSAgent* SetUpEnsureComputedStyleReentrancy() {
+    InspectorCSSAgent* agent = CreateAttachedInspectorCSSAgent();
+    SeedMapForShrinkOnFlush(agent);
+    // An unsupported format leaves `sources_` empty so our custom source runs
+    // directly on lookup without starting a network or local font load.
+    auto* font_face = FontFace::Create(
+        GetDocument().GetExecutionContext(), AtomicString("Reentrant"),
+        MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferViewOrString>(
+            String("url('') format('svg')")),
+        FontFaceDescriptors::Create());
+    font_face->CssFontFace()->AddSource(
+        MakeGarbageCollected<ReentrantFontFaceSource>(agent));
+    GetDocument()
+        .GetStyleEngine()
+        .GetFontSelector()
+        ->GetFontFaceCache()
+        ->AddFontFace(font_face, /*css_connected=*/false);
+    return agent;
+  }
+
+  // Sets up an attached agent with a 9-document map (4 invalidated) and unbound
+  // stylesheets so the first BindStyleSheet() parses the sheet and triggers
+  // Audits.issueAdded -> FlushPendingProtocolNotifications().
+  InspectorCSSAgent* SetUpBindStyleSheetReentrancy() {
+    InspectorCSSAgent* agent = CreateAttachedInspectorCSSAgent();
+    agent->css_style_sheet_to_inspector_style_sheet_.clear();
+    agent->id_to_inspector_style_sheet_.clear();
+    SeedMapForShrinkOnFlush(agent);
+    return agent;
+  }
+
+  // Seeds 8 dummy documents alongside `&GetDocument()` (9 keys -> 32 buckets)
+  // and marks 4 invalidated so FlushPendingProtocolNotifications() erases them
+  // (9 -> 5 keys -> 16 buckets), triggering a rehash.
+  void SeedMapForShrinkOnFlush(InspectorCSSAgent* agent) {
+    for (int i = 0; i < 8; ++i) {
+      Document* doc =
+          Document::CreateForTest(*GetDocument().GetExecutionContext());
+      agent->document_to_css_style_sheets_.Set(
+          doc, MakeGarbageCollected<GCedHeapHashSet<Member<CSSStyleSheet>>>());
+      if (i < 4) {
+        agent->ActiveStyleSheetsUpdated(doc);
+      }
+    }
+  }
+
+  void ExpectFlushedAndShrunk(const InspectorCSSAgent* agent) {
+    EXPECT_TRUE(agent->invalidated_documents_.empty());
+    EXPECT_EQ(5u, agent->document_to_css_style_sheets_.size());
+  }
+
+  auto CustomPropertiesForNode(InspectorCSSAgent* agent, Element* element) {
+    return agent->CustomPropertiesForNode(element);
+  }
+  AtRules FontAtRulesForNodes(InspectorCSSAgent* agent,
+                              HeapVector<Member<Element>>& elements) {
+    return agent->FontAtRulesForNodes(elements);
+  }
+
+ private:
+  FlushingFrontendChannel channel_;
+  protocol::UberDispatcher dispatcher_{&channel_};
+  InspectorSessionState session_state_{
+      mojom::blink::DevToolsSessionState::New()};
+  Persistent<InspectorCSSAgent> attached_agent_;
+  Persistent<InspectorAuditsAgent> audits_agent_;
 };
 
 TEST_F(InspectorCSSAgentTest, NoFunctions) {
@@ -1650,6 +1818,96 @@ TEST_F(InspectorCSSAgentTest, TakeCoverageDeltaNestedStyleRules) {
       ".used { color: cyan; }",
   };
   EXPECT_EQ(used_rule_texts, expected);
+}
+
+TEST_F(InspectorCSSAgentTest,
+       CustomPropertiesForNodeReentrancyDuringEnsureComputedStyle) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @property --x { syntax: "<number>"; inherits: false; initial-value: 0; }
+      #scope { --x: 1; font-family: Reentrant; width: 10ch; }
+    </style>
+    <div style="display: none"><div id=scope></div></div>
+  )HTML");
+  InspectorCSSAgent* agent = SetUpEnsureComputedStyleReentrancy();
+  Element* scope = GetElementById("scope");
+  ASSERT_FALSE(scope->GetComputedStyle());
+
+  auto [property_rules, registrations] = CustomPropertiesForNode(agent, scope);
+
+  ExpectFlushedAndShrunk(agent);
+  ASSERT_EQ(1u, property_rules->size());
+  EXPECT_EQ("--x", property_rules->at(0)->getPropertyName()->getText());
+  EXPECT_TRUE(registrations->empty());
+}
+
+TEST_F(InspectorCSSAgentTest,
+       CustomPropertiesForNodeReentrancyDuringBindStyleSheet) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @property invalid {}
+      @property --a { syntax: "<number>"; inherits: false; initial-value: 0; }
+      @property --b { syntax: "<number>"; inherits: false; initial-value: 0; }
+      #scope { --a: 1; --b: 2; }
+    </style>
+    <div id=scope></div>
+  )HTML");
+  InspectorCSSAgent* agent = SetUpBindStyleSheetReentrancy();
+
+  auto [property_rules, registrations] =
+      CustomPropertiesForNode(agent, GetElementById("scope"));
+
+  ExpectFlushedAndShrunk(agent);
+  EXPECT_EQ(2u, property_rules->size());
+  EXPECT_TRUE(registrations->empty());
+}
+
+TEST_F(InspectorCSSAgentTest,
+       FontAtRulesForNodesReentrancyDuringEnsureComputedStyle) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @font-face { font-family: CustomFont; src: url('') format('svg'); }
+      #styled { font-family: CustomFont; }
+      #scope { font-family: Reentrant, CustomFont; width: 10ch; }
+    </style>
+    <div id=styled></div>
+    <div style="display: none"><div id=scope></div></div>
+  )HTML");
+  InspectorCSSAgent* agent = SetUpEnsureComputedStyleReentrancy();
+  Element* scope = GetElementById("scope");
+  ASSERT_FALSE(scope->GetComputedStyle());
+  HeapVector<Member<Element>> elements = {GetElementById("styled"), scope};
+
+  AtRules rules = FontAtRulesForNodes(agent, elements);
+
+  ExpectFlushedAndShrunk(agent);
+  ASSERT_TRUE(rules);
+  EXPECT_EQ(1u, rules->size());
+}
+
+TEST_F(InspectorCSSAgentTest,
+       FontAtRulesForNodesReentrancyDuringBindStyleSheet) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @property invalid {}
+      @font-palette-values --pal { font-family: CustomFont; base-palette: 0; }
+      @font-feature-values CustomFont { @swash { fancy: 1; } }
+      #scope {
+        font-family: CustomFont;
+        font-palette: --pal;
+        font-variant-alternates: swash(fancy);
+      }
+    </style>
+    <div id=scope></div>
+  )HTML");
+  InspectorCSSAgent* agent = SetUpBindStyleSheetReentrancy();
+  HeapVector<Member<Element>> elements = {GetElementById("scope")};
+
+  AtRules rules = FontAtRulesForNodes(agent, elements);
+
+  ExpectFlushedAndShrunk(agent);
+  ASSERT_TRUE(rules);
+  EXPECT_EQ(2u, rules->size());
 }
 
 }  // namespace blink
