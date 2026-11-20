@@ -158,10 +158,8 @@ base::expected<void, Result> VerifyKB(const sdjwt::Jwt& kb_jwt,
 
   // - Compute the SHA-256 hash of the EVT and verify it matches sd_hash
   std::string computed_hash = crypto::SHA256HashString(evt_string);
-  std::string computed_hash_b64;
-  base::Base64UrlEncode(computed_hash,
-                        base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &computed_hash_b64);
+  std::string computed_hash_b64 = base::Base64UrlEncode(
+      computed_hash, base::Base64UrlEncodePolicy::OMIT_PADDING);
 
   if (kb_payload.sd_hash.value() != computed_hash_b64) {
     return base::unexpected(Result::kKbInvalidSdHash);

@@ -785,10 +785,8 @@ void EmailVerificationRequest::OnTokenAndKeysFetchComplete(
 
   std::array<uint8_t, 32> sd_jwt_sha256 =
       crypto::hash::Sha256(token->data.value().token->GetString());
-  std::string sd_hash;
-  base::Base64UrlEncode(sd_jwt_sha256,
-                        base::Base64UrlEncodePolicy::OMIT_PADDING, &sd_hash);
-  payload.sd_hash = sdjwt::Base64String(sd_hash);
+  payload.sd_hash = sdjwt::Base64String(base::Base64UrlEncode(
+      sd_jwt_sha256, base::Base64UrlEncodePolicy::OMIT_PADDING));
 
   sdjwt::Jwt kb_jwt;
   kb_jwt.header = *header.ToJson();

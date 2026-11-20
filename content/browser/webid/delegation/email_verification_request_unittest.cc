@@ -4,6 +4,7 @@
 
 #include "content/browser/webid/delegation/email_verification_request.h"
 
+#include "base/base64url.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
@@ -698,10 +699,8 @@ TEST_F(EmailVerificationRequestTest, SuccessfulVerification) {
 
   std::string sd_jwt_sha256 =
       crypto::SHA256HashString(sd_jwt_kb->sd_jwt.Serialize());
-  std::string sd_hash_expected;
-  base::Base64UrlEncode(sd_jwt_sha256,
-                        base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &sd_hash_expected);
+  std::string sd_hash_expected = base::Base64UrlEncode(
+      sd_jwt_sha256, base::Base64UrlEncodePolicy::OMIT_PADDING);
   ASSERT_EQ(kb_payload->sd_hash.value(), sd_hash_expected);
   histogram_tester.ExpectUniqueSample("Blink.Evp.Status.IsVerifiable",
                                       EmailVerificationRequestResult::kSuccess,

@@ -4,7 +4,6 @@
 
 #include "content/browser/webid/delegation/jwt_signer.h"
 
-#include "base/base64.h"
 #include "base/base64url.h"
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
@@ -135,17 +134,12 @@ TEST_F(JwtSignerTest, CreateJwt) {
 
   EXPECT_TRUE(signature);
 
-  std::string header_base64;
-  base::Base64UrlEncode(issued.header.value(),
-                        base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &header_base64);
-
-  std::string payload_base64;
-  base::Base64UrlEncode(issued.payload.value(),
-                        base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &payload_base64);
-
-  std::string message = header_base64 + "." + payload_base64;
+  std::string message =
+      base::Base64UrlEncode(issued.header.value(),
+                            base::Base64UrlEncodePolicy::OMIT_PADDING) +
+      "." +
+      base::Base64UrlEncode(issued.payload.value(),
+                            base::Base64UrlEncodePolicy::OMIT_PADDING);
   VerifyEs256(public_key, base::as_byte_span(*signature), message);
 }
 
@@ -349,9 +343,8 @@ TEST_F(JwtSignerTest, ExportPublicKeyEdDsa) {
   EXPECT_FALSE(jwk->x.empty());
 
   std::array<uint8_t, 32> public_key_raw = private_key.ToEd25519PublicKey();
-  std::string expected_x;
-  base::Base64UrlEncode(public_key_raw,
-                        base::Base64UrlEncodePolicy::OMIT_PADDING, &expected_x);
+  std::string expected_x = base::Base64UrlEncode(
+      public_key_raw, base::Base64UrlEncodePolicy::OMIT_PADDING);
   EXPECT_EQ(jwk->x, expected_x);
 }
 

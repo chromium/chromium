@@ -4,7 +4,6 @@
 
 #include "sd_jwt.h"
 
-#include "base/base64.h"
 #include "base/base64url.h"
 #include "base/containers/span.h"
 #include "base/json/json_reader.h"
@@ -34,10 +33,8 @@ std::optional<std::string> Base64UrlDecode(const std::string_view& base64) {
 }
 
 Base64String Base64UrlEncode(const std::string_view& str) {
-  std::string base64;
-  base::Base64UrlEncode(str, base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &base64);
-  return Base64String(base64);
+  return Base64String(
+      base::Base64UrlEncode(str, base::Base64UrlEncodePolicy::OMIT_PADDING));
 }
 
 }  // namespace
@@ -207,10 +204,9 @@ Base64String Disclosure::Serialize() const {
 
 std::optional<Base64String> Disclosure::Digest(Hasher hasher) const {
   Base64String disclosure = Serialize();
-  std::string result;
-  base::Base64UrlEncode(hasher.Run(disclosure.value()),
-                        base::Base64UrlEncodePolicy::OMIT_PADDING, &result);
-  return Base64String(result);
+  return Base64String(
+      base::Base64UrlEncode(hasher.Run(disclosure.value()),
+                            base::Base64UrlEncodePolicy::OMIT_PADDING));
 }
 
 // static
@@ -218,10 +214,8 @@ Base64String Disclosure::CreateSalt() {
   const size_t salt_size = 32;
   std::array<uint8_t, salt_size> salt_bytes;
   crypto::RandBytes(salt_bytes);
-  std::string salt;
-  base::Base64UrlEncode(salt_bytes, base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &salt);
-  return Base64String(salt);
+  return Base64String(base::Base64UrlEncode(
+      salt_bytes, base::Base64UrlEncodePolicy::OMIT_PADDING));
 }
 
 std::optional<SdJwt> SdJwt::From(const base::ListValue& list) {
@@ -606,8 +600,8 @@ bool Jwt::Sign(Signer signer) {
     return false;
   }
 
-  base::Base64UrlEncode(*sig, base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &signature.value());
+  signature = Base64String(
+      base::Base64UrlEncode(*sig, base::Base64UrlEncodePolicy::OMIT_PADDING));
 
   return true;
 }
@@ -689,10 +683,6 @@ std::optional<SdJwtKb> SdJwtKb::Create(const SdJwt& presentation,
                                        Signer signer) {
   std::string serialization = presentation.Serialize();
 
-  std::string hash;
-  base::Base64UrlEncode(hasher.Run(serialization),
-                        base::Base64UrlEncodePolicy::OMIT_PADDING, &hash);
-
   Header header;
   header.typ = "kb+jwt";
   header.alg = "ES256";
@@ -701,7 +691,8 @@ std::optional<SdJwtKb> SdJwtKb::Create(const SdJwt& presentation,
   payload.aud = aud;
   payload.nonce = nonce;
   payload.iat = iat;
-  payload.sd_hash = Base64String(hash);
+  payload.sd_hash = Base64String(base::Base64UrlEncode(
+      hasher.Run(serialization), base::Base64UrlEncodePolicy::OMIT_PADDING));
 
   Jwt kb_jwt;
   auto header_json = header.ToJson();

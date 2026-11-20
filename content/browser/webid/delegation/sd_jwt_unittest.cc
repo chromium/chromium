@@ -4,7 +4,6 @@
 
 #include "content/browser/webid/delegation/sd_jwt.h"
 
-#include "base/base64.h"
 #include "base/base64url.h"
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
@@ -201,8 +200,8 @@ TEST_F(SdJwtTest, JwtVerification) {
   sdjwt::Jwk jwk;
   jwk.kty = "OKP";
   jwk.crv = "Ed25519";
-  base::Base64UrlEncode(pub_bytes, base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &jwk.x);
+  jwk.x = base::Base64UrlEncode(pub_bytes,
+                                base::Base64UrlEncodePolicy::OMIT_PADDING);
 
   Jwt token;
   token.header = JSONString(R"({"alg":"EdDSA","kid":"test_kid","typ":"JWT"})");
@@ -579,14 +578,13 @@ TEST_F(SdJwtTest, SdJwtKb_Bind) {
   //           Base64(["fake-salt1","name","Sam"])~)"
   //  }
   //
-  std::string base64;
-  base::Base64UrlEncode(
+  std::string base64 = base::Base64UrlEncode(
       "Signed(eyJhbGciOiJFUzI1NiIsInR5cCI6ImtiK2p3dCJ9."
       "eyJhdWQiOiJodHRwczovL3ZlcmlmaWVyLmV4YW1wbGUiLCJpYXQiOjEyMzQsIm5"
       "vbmNlIjoiX19mYWtlX25vbmNlX18iLCJzZF9oYXNoIjoiVTJoaE1qVTJLR0ZIVm"
       "1oYVIxWjVMbU5IUmpWaVJ6bG9Xa0V1YzJsbmJtRjBkWEpsZmxkNVNtMVpWM1JzV"
       "EZoT2FHSklVWGhKYVhkcFltMUdkRnBUU1hOSmJFNW9ZbE5LWkg0cCJ9)",
-      base::Base64UrlEncodePolicy::OMIT_PADDING, &base64);
+      base::Base64UrlEncodePolicy::OMIT_PADDING);
 
   EXPECT_STREQ(kb.signature->c_str(), base64.c_str());
 }

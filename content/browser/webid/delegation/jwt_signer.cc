@@ -6,7 +6,6 @@
 
 #include <map>
 
-#include "base/base64.h"
 #include "base/base64url.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
@@ -69,11 +68,8 @@ std::optional<std::string> BIGNUMToPadded(const BIGNUM* value,
     return std::nullopt;
   }
 
-  std::string base64;
-  base::Base64UrlEncode(base::as_byte_span(padded_bytes),
-                        base::Base64UrlEncodePolicy::OMIT_PADDING, &base64);
-
-  return base64;
+  return base::Base64UrlEncode(padded_bytes,
+                               base::Base64UrlEncodePolicy::OMIT_PADDING);
 }
 
 std::optional<std::string> BIGNUMToBase64(const BIGNUM* value) {
@@ -201,11 +197,8 @@ std::optional<Jwk> ExportPublicKeyEdDsa(
 
   std::array<uint8_t, 32> public_key_raw = private_key.ToEd25519PublicKey();
 
-  std::string x_base64;
-  base::Base64UrlEncode(public_key_raw,
-                        base::Base64UrlEncodePolicy::OMIT_PADDING, &x_base64);
-
-  jwk.x = x_base64;
+  jwk.x = base::Base64UrlEncode(public_key_raw,
+                                base::Base64UrlEncodePolicy::OMIT_PADDING);
 
   return jwk;
 }

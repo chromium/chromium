@@ -110,10 +110,8 @@ TokenContext CreateTokenContext(const TokenOptions& options = TokenOptions()) {
   kb_payload.iat = options.kb_iat;
 
   std::string sd_jwt_sha256 = crypto::SHA256HashString(evt_string);
-  std::string sd_hash;
-  base::Base64UrlEncode(sd_jwt_sha256,
-                        base::Base64UrlEncodePolicy::OMIT_PADDING, &sd_hash);
-  kb_payload.sd_hash = sdjwt::Base64String(sd_hash);
+  kb_payload.sd_hash = sdjwt::Base64String(base::Base64UrlEncode(
+      sd_jwt_sha256, base::Base64UrlEncodePolicy::OMIT_PADDING));
 
   sdjwt::Jwt kb_jwt;
   kb_jwt.header = *kb_header.ToJson();
