@@ -109,6 +109,16 @@ import("//tools/grit/grit_args.gni")
 _strip_resource_files = is_android && is_official_build
 _css_minifier = "//tools/grit/minimize_css.py"
 
+# On Mac ASan, executables depend on sanitizer_runtime_bundle_data, and GN
+# propagates bundle_data through action() (https://crbug.com/gn/95). Depending
+# directly on a host tool would therefore add it to every create_bundle() above
+# a grit action, which breaks bundles that do not set bundle_executable_dir
+# (https://crbug.com/983200). //tools/grit:*_mac_asan_workaround absorb it
+# instead. bundle_data does not propagate across toolchains, so the workaround
+# is only needed, and only defined, when the action is in the host toolchain.
+_use_mac_asan_bundle_workaround =
+    is_mac && is_asan && current_toolchain == host_toolchain
+
 grit_resource_id_target = "//tools/gritsettings:default_resource_ids"
 grit_resource_id_file =
     get_label_info(grit_resource_id_target, "target_gen_dir") +
@@ -292,7 +302,7 @@ template("grit") {
         "--zstd",
         rebase_path(_zstd_executable, root_build_dir),
       ]
-      if (is_mac && is_asan) {
+      if (_use_mac_asan_bundle_workaround) {
         deps += [ "//tools/grit:zstd_mac_asan_workaround" ]
       } else {
         deps += [ _zstd_target ]
@@ -374,7 +384,7 @@ template("grit") {
     }
 
     if (defined(invoker.use_brotli) && invoker.use_brotli) {
-      if (is_mac && is_asan) {
+      if (_use_mac_asan_bundle_workaround) {
         deps += [ "//tools/grit:brotli_mac_asan_workaround" ]
       } else {
         deps += [ "//third_party/brotli:brotli($host_toolchain)" ]

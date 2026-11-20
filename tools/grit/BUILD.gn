@@ -77,8 +77,8 @@ group("grit_python_unittests") {
   ]
 }
 
-# See https://crbug.com/983200
-if (is_mac && is_asan) {
+# See https://crbug.com/983200 and https://crbug.com/gn/95.
+if (is_mac && is_asan && current_toolchain == host_toolchain) {
   create_bundle("brotli_mac_asan_workaround") {
     bundle_root_dir = "$target_out_dir/$target_name"
     bundle_executable_dir = bundle_root_dir
