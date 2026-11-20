@@ -741,6 +741,8 @@ base::DictValue ContextualTasksUI::GetContextualTasksLoadTimeData(
            features::IsWebUIRoundedIconsEnabled() ? "webui-rounded-icons" : "");
 
   AddZeroStateStrings(dict, profile);
+  dict.Merge(contextual_tasks::ContextualTasksUIBase::
+                 GetDogfoodFeedbackLoadTimeData());
 
   return dict;
 }

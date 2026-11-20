@@ -66,6 +66,7 @@ class ContextualTasksExtensionServiceWorkerHandler
   void SetTaskId(const base::Uuid& uuid) override;
   void GetLensCropPreview(GetLensCropPreviewCallback callback) override;
   void RemoveLensCrop() override;
+  void OpenDogfoodFeedback() override;
 
  private:
   void AcquireServiceWorkerKeepalive();

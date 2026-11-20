@@ -1008,4 +1008,26 @@ bool ShouldUseDarkModeForProfile(Profile* profile) {
 #endif
 }
 
+GURL GetFeedbackPageUrl(BrowserWindowInterface* browser,
+                        content::WebContents* fallback_web_contents) {
+  GURL page_url = fallback_web_contents
+                      ? fallback_web_contents->GetLastCommittedURL()
+                      : GURL();
+  if (!browser) {
+    return page_url;
+  }
+  if (auto* tab_list = TabListInterface::From(browser)) {
+    if (auto* active_tab = tab_list->GetActiveTab()) {
+      if (active_tab->GetContents()) {
+        const GURL& committed_url =
+            active_tab->GetContents()->GetLastCommittedURL();
+        if (!committed_url.is_empty()) {
+          page_url = committed_url;
+        }
+      }
+    }
+  }
+  return page_url;
+}
+
 }  // namespace contextual_tasks

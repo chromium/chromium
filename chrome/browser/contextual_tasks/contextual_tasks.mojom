@@ -354,6 +354,11 @@ interface ExtensionPageHandler {
   // Removes the active Lens region crop, clearing region selection
   // and closing the Lens overlay.
   RemoveLensCrop();
+
+  // Opens Chrome's feedback form for Contextual Tasks dogfood feedback, in the
+  // browser window hosting the extension frame. No-op if the dogfood feedback
+  // button is disabled, or when called from the Service Worker.
+  OpenDogfoodFeedback();
 };
 
 // Extension-side handler for requests from the browser process.

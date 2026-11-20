@@ -260,6 +260,7 @@ export class TestExtensionPageHandler extends TestBrowserProxy implements
       'getHandshakeMessage',
       'getLensCropPreview',
       'onWebviewMessage',
+      'openDogfoodFeedback',
       'removeLensCrop',
       'setTaskId',
       'updateComposeboxHeight',
@@ -280,6 +281,10 @@ export class TestExtensionPageHandler extends TestBrowserProxy implements
   removeLensCrop() {
     this.methodCalled('removeLensCrop');
     return Promise.resolve();
+  }
+
+  openDogfoodFeedback() {
+    this.methodCalled('openDogfoodFeedback');
   }
 
   getHandshakeMessage(_documentId: string|null = null) {
@@ -341,6 +346,7 @@ export class TestToolbarPageHandler extends TestBrowserProxy implements
       'openManageAccountUi',
       'openLogOutFlow',
       'openFeedbackUi',
+      'openDogfoodFeedback',
       'moveTaskUiToNewTab',
       'showThreadHistory',
       'onFileClickedFromSourcesMenu',
@@ -380,6 +386,10 @@ export class TestToolbarPageHandler extends TestBrowserProxy implements
 
   openFeedbackUi() {
     this.methodCalled('openFeedbackUi');
+  }
+
+  openDogfoodFeedback() {
+    this.methodCalled('openDogfoodFeedback');
   }
 
   moveTaskUiToNewTab() {

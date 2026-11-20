@@ -305,6 +305,9 @@ void ContextualTasksExtensionServiceWorkerHandler::GetLensCropPreview(
 
 void ContextualTasksExtensionServiceWorkerHandler::RemoveLensCrop() {}
 
+// The Service Worker has no browser window to open the form in.
+void ContextualTasksExtensionServiceWorkerHandler::OpenDogfoodFeedback() {}
+
 content::RenderFrameHost* ContextualTasksExtensionServiceWorkerHandler::
     GetValidatedMainFrameForDocumentId(
         const std::string& document_id_str) const {
