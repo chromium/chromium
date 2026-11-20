@@ -16,6 +16,7 @@
 #import "base/values.h"
 #import "components/prefs/pref_service.h"
 #import "components/prefs/scoped_user_pref_update.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/level_up/model/level_up_metrics.h"
 #import "ios/chrome/browser/level_up/model/level_up_service_observer.h"
 #import "ios/chrome/browser/level_up/model/tasks/task_factories.h"
@@ -543,7 +544,9 @@ LevelUpService::GetStatTriggerUserActions() const {
 void LevelUpService::PopulateTasks() {
   tasks_[TaskType::kTabGroups] = CreateTabGroupsTaskInfo();
   tasks_[TaskType::kAutofill] = CreateAutofillTaskInfo();
-  tasks_[TaskType::kGemini] = CreateGeminiTaskInfo();
+  if (IsPageActionMenuEnabled()) {
+    tasks_[TaskType::kGemini] = CreateGeminiTaskInfo();
+  }
   tasks_[TaskType::kPaymentMethods] = CreatePaymentMethodsTaskInfo();
   tasks_[TaskType::kClearBrowsingData] = CreateClearBrowsingDataTaskInfo();
   tasks_[TaskType::kSafeBrowsing] = CreateSafeBrowsingTaskInfo();
