@@ -3026,11 +3026,6 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
 // Mac only: File > Open Location only exists on Mac.
 IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
                        FocusLocationCommandExitsKeywordMode) {
-  if (IsWebUIToolbarEnabled()) {
-    // TODO(crbug.com/546101626): `WebUILocationBar` handles keyword mode
-    // differently.
-    GTEST_SKIP() << "WebUILocationBar restores the wrong text.";
-  }
   AddKeywordSearchEngine(u"kw");
   RunTestSequence(
       // Open an NTP and wait for the popup.
@@ -7454,11 +7449,6 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
 // selects all text in the Omnibox without reopening the suggestions dropdown.
 IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
                        FocusLocationBarAfterBlurSelectsAll) {
-  if (IsWebUIToolbarEnabled()) {
-    GTEST_SKIP()
-        << "TODO(crbug.com/571374047): Ensure this test works properly when "
-           "WebUI toolbar is enabled.";
-  }
   RunTestSequence(
       // 1. Open the WebUI omnibox.
       OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
