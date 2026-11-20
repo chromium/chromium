@@ -4,6 +4,11 @@
 
 #include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
 
+#include <cstdint>
+#include <memory>
+#include <utility>
+#include <vector>
+
 #include "base/compiler_specific.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/null_task_runner.h"
@@ -15,11 +20,13 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
+#include "third_party/blink/renderer/platform/graphics/image_data_buffer.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/test/fake_gles2_interface.h"
 #include "third_party/blink/renderer/platform/graphics/test/fake_web_graphics_context_3d_provider.h"
 #include "third_party/blink/renderer/platform/graphics/test/gpu_test_utils.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/core/SkSurface.h"
 
 namespace blink {
@@ -38,6 +45,23 @@ class MockGLES2InterfaceWithSyncTokenSupport : public viz::TestGLES2Interface {
  public:
   MOCK_METHOD1(GenUnverifiedSyncTokenCHROMIUM, void(GLbyte*));
   MOCK_METHOD1(WaitSyncTokenCHROMIUM, void(const GLbyte*));
+};
+
+class SilentReadbackFailureRasterInterface : public viz::TestRasterInterface {
+ public:
+  bool ReadbackImagePixels(const gpu::Mailbox& source_mailbox,
+                           const gfx::Size& source_size,
+                           const SkImageInfo& dst_info,
+                           GLuint dst_row_bytes,
+                           int src_x,
+                           int src_y,
+                           int plane_index,
+                           void* dst_pixels) override {
+    // Simulates `RasterImplementation::ReadbackImagePixels()` returning true
+    // when `kDisableErrorHandlingForReadback` is enabled and GPU readback fails
+    // without writing to `dst_pixels`.
+    return true;
+  }
 };
 
 GLbyte SyncTokenMatcher(const gpu::SyncToken& token) {
@@ -130,6 +154,34 @@ TEST_F(AcceleratedStaticBitmapImageTest, CopyToTextureSynchronization) {
     // SyncTokens internally and the client-visible SyncToken is empty.
     EXPECT_FALSE(bitmap->GetSyncToken().HasData());
   }
+}
+
+TEST_F(AcceleratedStaticBitmapImageTest,
+       ImageDataBufferZeroesPixelsOnSilentReadbackFailure) {
+  SharedGpuContext::Reset();
+  context_provider_ = viz::TestContextProvider::CreateRaster(
+      std::make_unique<SilentReadbackFailureRasterInterface>());
+  InitializeSharedGpuContext(context_provider_.get());
+
+  auto bitmap = CreateBitmap(gpu::SHARED_IMAGE_USAGE_RASTER_READ);
+  ASSERT_NE(bitmap, nullptr);
+  const SkImageInfo image_info =
+      bitmap->PaintImageForCurrentFrame().GetSkImageInfo();
+  const size_t bitmap_size = image_info.computeMinByteSize();
+  ASSERT_GT(bitmap_size, 0u);
+
+  // Allocate, fill with non-zero bytes, and free a same-sized SkData right
+  // before readback so the head of the allocator's freelist for this size
+  // class contains non-zero bytes.
+  const std::vector<uint8_t> non_zero_pattern(bitmap_size, 0xAB);
+  sk_sp<SkData> dirty_data =
+      SkData::MakeWithCopy(non_zero_pattern.data(), non_zero_pattern.size());
+  ASSERT_NE(dirty_data, nullptr);
+  dirty_data.reset();
+
+  std::unique_ptr<ImageDataBuffer> buffer = ImageDataBuffer::Create(bitmap);
+  ASSERT_NE(buffer, nullptr);
+  EXPECT_THAT(buffer->PixelData(), testing::Each(0u));
 }
 
 }  // namespace
