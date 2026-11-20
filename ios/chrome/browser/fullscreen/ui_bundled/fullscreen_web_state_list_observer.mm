@@ -35,6 +35,7 @@ void FullscreenWebStateListObserver::SetWebStateList(
   }
   if (web_state_list_) {
     web_state_list_->RemoveObserver(this);
+    activated_web_states_.clear();
   }
   web_state_list_ = web_state_list;
   if (web_state_list_) {
