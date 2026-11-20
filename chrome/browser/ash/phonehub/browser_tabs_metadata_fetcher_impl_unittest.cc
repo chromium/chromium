@@ -7,6 +7,7 @@
 #include <deque>
 
 #include "ash/constants/chrome_webui_url_constants.h"
+#include "base/rand_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/favicon/core/history_ui_favicon_request_handler.h"
 #include "components/favicon_base/favicon_types.h"
@@ -121,7 +122,7 @@ class BrowserTabsMetadataFetcherImplTest : public testing::Test {
         .WillRepeatedly(
             [&](auto, favicon_base::FaviconImageCallback callback) {
               // Randomize the order in which callbacks may return.
-              if (std::rand() % 2) {
+              if (base::RandBool()) {
                 favicon_request_handler_responses_.emplace_front(
                     std::move(callback));
               } else {

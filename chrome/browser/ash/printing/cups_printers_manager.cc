@@ -20,6 +20,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
+#include "base/rand_util.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_util.h"
@@ -490,7 +491,7 @@ class CupsPrintersManagerImpl
     }
 
     // Choose a random int between the selected interval.
-    return interval.first + (rand() % (interval.second - interval.first + 1));
+    return base::RandIntInclusive(interval.first, interval.second);
   }
 
   // Starts printer status requests for all Saved and recently used printers
