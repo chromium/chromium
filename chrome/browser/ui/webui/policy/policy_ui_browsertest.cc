@@ -1612,9 +1612,13 @@ std::unique_ptr<net::test_server::HttpResponse> HandleIwaConfigRequest(
 
 }  // namespace
 
-class WebAppManagedConfigurationPolicyUITest : public PolicyUITestBase {
+class WebAppManagedConfigurationPolicyUITest
+    : public base::test::WithFeatureOverride,
+      public PolicyUITestBase {
  public:
-  WebAppManagedConfigurationPolicyUITest() {
+  WebAppManagedConfigurationPolicyUITest()
+      : base::test::WithFeatureOverride(
+            policy::features::kPolicyPageMojoMigration) {
     scoped_feature_list_.InitWithFeatures(
         {
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -1790,7 +1794,9 @@ class WebAppManagedConfigurationPolicyUITest : public PolicyUITestBase {
   web_app::OsIntegrationTestOverrideBlockingRegistration faked_os_integration_;
 };
 
-IN_PROC_BROWSER_TEST_F(WebAppManagedConfigurationPolicyUITest,
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(WebAppManagedConfigurationPolicyUITest);
+
+IN_PROC_BROWSER_TEST_P(WebAppManagedConfigurationPolicyUITest,
                        IwaManagedConfigurationTableSurfacedOnPage) {
   web_app::IsolatedWebAppUrlInfo url_info = InstallTestIwa();
   const std::string serialized_origin = url_info.origin().Serialize();
@@ -1823,7 +1829,7 @@ IN_PROC_BROWSER_TEST_F(WebAppManagedConfigurationPolicyUITest,
               testing::Pointee(testing::Eq("42")));
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppManagedConfigurationPolicyUITest,
+IN_PROC_BROWSER_TEST_P(WebAppManagedConfigurationPolicyUITest,
                        PwaManagedConfigurationTableSurfacedOnPage) {
   constexpr char kDocsAppName[] = "Docs Progressive Web App";
   constexpr char kSheetsAppName[] = "Sheets Progressive Web App";
@@ -1875,7 +1881,7 @@ IN_PROC_BROWSER_TEST_F(WebAppManagedConfigurationPolicyUITest,
   EXPECT_TRUE(WaitForWebAppTableWithHeading(serialized_origin, kSheetsAppName));
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     WebAppManagedConfigurationPolicyUITest,
     IwaManagedConfigurationTableRemovedWhenConfigurationCleared) {
   web_app::IsolatedWebAppUrlInfo url_info = InstallTestIwa();
@@ -1892,7 +1898,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(WaitForWebAppTableGone(serialized_origin));
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     WebAppManagedConfigurationPolicyUITest,
     IwaManagedConfigurationTableSurfacedWhenInstalledAfterConfigurationSet) {
   std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> bundle =
@@ -1940,7 +1946,7 @@ IN_PROC_BROWSER_TEST_F(
               testing::Pointee(testing::Eq(serialized_origin)));
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     WebAppManagedConfigurationPolicyUITest,
     IwaManagedConfigurationTableHeadingUpdatedWhenAppUninstalled) {
   web_app::IsolatedWebAppUrlInfo url_info = InstallTestIwa();

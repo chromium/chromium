@@ -497,6 +497,145 @@ TEST_F(WebAppManagedConfigurationValueProviderTest,
 }
 
 TEST_F(WebAppManagedConfigurationValueProviderTest,
+       GetValuesMojo_EmptyWhenNoManagedConfigurations) {
+  auto provider =
+      WebAppManagedConfigurationValueProvider::Create(profile_.get());
+  ASSERT_TRUE(provider);
+
+  EXPECT_TRUE(provider->GetValuesMojo().empty());
+  EXPECT_TRUE(provider->GetNamesMojo().empty());
+}
+
+TEST_F(WebAppManagedConfigurationValueProviderTest,
+       GetValuesMojo_ReturnsIwaManagedConfiguration) {
+  web_app::IsolatedWebAppUrlInfo url_info = InstallTestIwa();
+  const std::string serialized_origin = url_info.origin().Serialize();
+  const std::string scope_key = url_info.origin().GetURL().spec();
+  SetManagedConfigurationPref(url_info.origin());
+
+  SetPolicy(policy_map_, key::kManagedConfigurationPerOrigin,
+            base::Value(base::ListValue()));
+
+  auto provider =
+      WebAppManagedConfigurationValueProvider::Create(profile_.get());
+  ASSERT_TRUE(provider);
+
+  base::DictValue config;
+  config.Set("config_str", "test_value");
+  config.Set("config_int", 42);
+  managed_config_api()->SetConfigurationForTesting(url_info.origin(),
+                                                   std::move(config));
+  task_environment_.RunUntilIdle();
+
+  PolicyGroupMojoMap values = provider->GetValuesMojo();
+  ASSERT_TRUE(values.contains(scope_key));
+  const mojom::PolicyGroupPtr& iwa_table = values.at(scope_key);
+  EXPECT_EQ(iwa_table->name, kTestIwaAppName);
+  EXPECT_EQ(iwa_table->id, serialized_origin);
+  EXPECT_FALSE(iwa_table->is_extension);
+  EXPECT_TRUE(iwa_table->is_web_app);
+  EXPECT_FALSE(iwa_table->for_signin_screen);
+
+  ASSERT_TRUE(iwa_table->policies.contains("config_str"));
+  const mojom::PolicyPtr& config_str = iwa_table->policies.at("config_str");
+  EXPECT_EQ(config_str->name, "config_str");
+  EXPECT_EQ(config_str->value, base::Value("test_value"));
+  EXPECT_EQ(config_str->level, mojom::PolicyLevel::kMandatory);
+  EXPECT_EQ(config_str->scope, mojom::PolicyScope::kUser);
+  EXPECT_EQ(config_str->source, "cloud");
+
+  ASSERT_TRUE(iwa_table->policies.contains("config_int"));
+  EXPECT_EQ(iwa_table->policies.at("config_int")->value, base::Value(42));
+
+  PolicyGroupNamesMojoMap names = provider->GetNamesMojo();
+  ASSERT_TRUE(names.contains(scope_key));
+  EXPECT_EQ(names.at(scope_key)->name, kTestIwaAppName);
+  EXPECT_THAT(names.at(scope_key)->policy_names,
+              testing::UnorderedElementsAre("config_str", "config_int"));
+}
+
+TEST_F(WebAppManagedConfigurationValueProviderTest,
+       GetValuesMojo_ReturnsMultipleSectionsForMultiplePwasOnSameOrigin) {
+  const GURL docs_url("https://docs.example.com/document/index.html");
+  const GURL sheets_url("https://docs.example.com/spreadsheets/index.html");
+  const std::string docs_scope = "https://docs.example.com/document/";
+  const std::string sheets_scope = "https://docs.example.com/spreadsheets/";
+  const url::Origin shared_origin = url::Origin::Create(docs_url);
+  const std::string serialized_origin = shared_origin.Serialize();
+
+  web_app::test::InstallDummyWebApp(profile_.get(), "Docs App", docs_url);
+  web_app::test::InstallDummyWebApp(profile_.get(), "Sheets App", sheets_url);
+  SetManagedConfigurationPref(shared_origin);
+
+  auto provider =
+      WebAppManagedConfigurationValueProvider::Create(profile_.get());
+  ASSERT_TRUE(provider);
+
+  base::DictValue config;
+  config.Set("shared_config_key", "shared_config_val");
+  managed_config_api()->SetConfigurationForTesting(shared_origin,
+                                                   std::move(config));
+  task_environment_.RunUntilIdle();
+
+  PolicyGroupMojoMap values = provider->GetValuesMojo();
+  ASSERT_TRUE(values.contains(docs_scope));
+  EXPECT_EQ(values.at(docs_scope)->name, "Docs App");
+  EXPECT_EQ(values.at(docs_scope)->id, serialized_origin);
+  ASSERT_TRUE(values.contains(sheets_scope));
+  EXPECT_EQ(values.at(sheets_scope)->name, "Sheets App");
+  EXPECT_EQ(values.at(sheets_scope)->id, serialized_origin);
+
+  // Both sections carry their own copy of the shared configuration.
+  for (const std::string& scope : {docs_scope, sheets_scope}) {
+    ASSERT_TRUE(values.at(scope)->policies.contains("shared_config_key"));
+    EXPECT_EQ(values.at(scope)->policies.at("shared_config_key")->value,
+              base::Value("shared_config_val"));
+  }
+
+  PolicyGroupNamesMojoMap names = provider->GetNamesMojo();
+  ASSERT_TRUE(names.contains(docs_scope));
+  EXPECT_EQ(names.at(docs_scope)->name, "Docs App");
+  ASSERT_TRUE(names.contains(sheets_scope));
+  EXPECT_EQ(names.at(sheets_scope)->name, "Sheets App");
+}
+
+TEST_F(WebAppManagedConfigurationValueProviderTest,
+       GetValuesMojo_ReturnsUninstalledOriginManagedConfiguration) {
+  const url::Origin uninstalled_origin =
+      url::Origin::Create(GURL("https://uninstalled-app.example.com"));
+  const std::string serialized_origin = uninstalled_origin.Serialize();
+
+  SetManagedConfigurationPref(uninstalled_origin);
+
+  auto provider =
+      WebAppManagedConfigurationValueProvider::Create(profile_.get());
+  ASSERT_TRUE(provider);
+
+  base::DictValue config;
+  config.Set("uninstalled_config_key", true);
+  managed_config_api()->SetConfigurationForTesting(uninstalled_origin,
+                                                   std::move(config));
+  task_environment_.RunUntilIdle();
+
+  PolicyGroupMojoMap values = provider->GetValuesMojo();
+  ASSERT_TRUE(values.contains(serialized_origin));
+  const mojom::PolicyGroupPtr& origin_table = values.at(serialized_origin);
+  EXPECT_EQ(origin_table->name, "");
+  EXPECT_EQ(origin_table->id, serialized_origin);
+  EXPECT_TRUE(origin_table->is_web_app);
+
+  // Without a ManagedConfigurationPerOrigin policy entry, the entries fall back
+  // to the defaults the UI assumes for legacy entries.
+  ASSERT_TRUE(origin_table->policies.contains("uninstalled_config_key"));
+  const mojom::PolicyPtr& entry =
+      origin_table->policies.at("uninstalled_config_key");
+  EXPECT_EQ(entry->value, base::Value(true));
+  EXPECT_EQ(entry->level, mojom::PolicyLevel::kMandatory);
+  EXPECT_EQ(entry->scope, mojom::PolicyScope::kMachine);
+  EXPECT_EQ(entry->source, "");
+}
+
+TEST_F(WebAppManagedConfigurationValueProviderTest,
        GetValues_ReturnsPwaManagedConfiguration) {
   constexpr char kTestPwaAppName[] = "Test Progressive Web App";
   const GURL pwa_url("https://example.com/app/index.html");

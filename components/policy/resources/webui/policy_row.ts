@@ -130,7 +130,10 @@ export class PolicyRowElement extends CrLitElement {
   }
 
   protected getSourceText(): string {
-    if (!this.policy || this.unset) {
+    // Entries without a source (e.g. web app managed configurations when the
+    // ManagedConfigurationPerOrigin policy metadata is unavailable) have no
+    // localized source string to look up.
+    if (!this.policy || this.unset || !this.policy.source) {
       return '';
     }
     return loadTimeData.getString(this.policy.source);

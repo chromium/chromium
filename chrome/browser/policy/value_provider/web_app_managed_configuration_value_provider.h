@@ -39,7 +39,9 @@ class WebAppManagedConfigurationValueProvider
 
   // policy::PolicyValueProvider:
   base::DictValue GetValues() override;
+  policy::PolicyGroupMojoMap GetValuesMojo() const override;
   base::DictValue GetNames() override;
+  policy::PolicyGroupNamesMojoMap GetNamesMojo() const override;
   void Refresh() override;
 
   // web_app::WebAppInstallManagerObserver:
@@ -70,8 +72,16 @@ class WebAppManagedConfigurationValueProvider
   raw_ref<web_app::WebAppProvider> web_app_provider_;
   raw_ref<ManagedConfigurationAPI> managed_configuration_api_;
 
+  // The managed configurations, keyed by app scope (or serialized origin when
+  // no app is installed), in both the legacy `base::Value` and the Mojo
+  // representation. Both are rebuilt together in
+  // `OnAllOriginConfigurationsLoaded()`.
+  // TODO(crbug.com/40897784): Remove the `base::Value` versions once the
+  // migration is complete.
   base::DictValue values_;
   base::DictValue names_;
+  policy::PolicyGroupMojoMap values_mojo_;
+  policy::PolicyGroupNamesMojoMap names_mojo_;
 
   base::ScopedObservation<web_app::WebAppInstallManager,
                           web_app::WebAppInstallManagerObserver>
