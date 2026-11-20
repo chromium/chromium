@@ -64,6 +64,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kEarlyTopAppForSandboxedRenderer,
     &features::kStrictHighRankProcessLRU,
     &features::kFedCm,
+    &features::kFedCmActiveModeMultipleIdentityProviders,
     &features::kFedCmNativeIdPs,
     &features::kHidePastePopupOnGSB,
     &features::kNoSelectionMenuCaching,

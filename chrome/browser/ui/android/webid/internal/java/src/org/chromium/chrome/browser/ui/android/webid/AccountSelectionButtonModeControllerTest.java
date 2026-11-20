@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -48,6 +49,7 @@ import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.D
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.HeaderType;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ItemProperties;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
+import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderData;
 import org.chromium.chrome.browser.ui.android.webid.data.RelyingPartyData;
 import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.components.ukm.UkmRecorderJni;
@@ -732,6 +734,55 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
     }
 
     /**
+     * Tests that the request permission dialog shown for a passive mode request with multiple
+     * identity providers is titled with the selected account's identity provider and shows its RP
+     * icon, and that back shows the active mode account chooser for multiple identity providers,
+     * where selecting another identity provider's account titles the dialog with that one.
+     */
+    @Test
+    @EnableFeatures(ChromeFeatureList.FED_CM_IDP_LINKS)
+    public void testRequestPermissionFromPassiveSheetWithMultipleIdps() {
+        // `mIdpData2` offers to use a different account, which in passive mode means that it has a
+        // filtered out account.
+        showRequestPermissionFromPassiveSheet(
+                Arrays.asList(mNewUserAccount, mNewUserAccountForIdp2, mFilteredOutAccountForIdp2),
+                Arrays.asList(mIdpData, mIdpData2),
+                mNewUserAccountForIdp2);
+
+        PropertyModel headerModel = mModel.get(ItemProperties.HEADER);
+        assertEquals(HeaderType.REQUEST_PERMISSION_MODAL, headerModel.get(TYPE));
+        assertEquals(mTestEtldPlusOne1, headerModel.get(IDP_FOR_DISPLAY));
+        assertSame(
+                mIdpData2.getClientMetadata().getBrandIconBitmap(), headerModel.get(RP_BRAND_ICON));
+        assertTrue(headerModel.get(IS_MULTI_IDP_REQUEST));
+
+        assertTrue(mBottomSheetContent.handleBackPress());
+
+        headerModel = mModel.get(ItemProperties.HEADER);
+        assertEquals(HeaderType.SIGN_IN, headerModel.get(TYPE));
+        assertTrue(headerModel.get(IS_SHOWING_MULTIPLE_IDPS));
+        // One row per account.
+        // TODO(crbug.com/581411351): `mIdpData2` has no row to use a different account until there
+        // is an IDP picker.
+        assertEquals(3, mSheetAccountItems.size());
+        assertEquals(
+                mNewUserAccount, mSheetAccountItems.get(0).model.get(AccountProperties.ACCOUNT));
+        assertTrue(mSheetAccountItems.get(0).model.get(AccountProperties.SHOW_IDP));
+
+        mMediator.setComponentShowTime(-1000);
+        mSheetAccountItems
+                .get(0)
+                .model
+                .get(AccountProperties.ON_CLICK_LISTENER)
+                .onResult(new ButtonData(mNewUserAccount, /* idpMetadata= */ null));
+
+        headerModel = mModel.get(ItemProperties.HEADER);
+        assertEquals(HeaderType.REQUEST_PERMISSION_MODAL, headerModel.get(TYPE));
+        assertEquals(mTestEtldPlusOne2, headerModel.get(IDP_FOR_DISPLAY));
+        verify(mMockDelegate, never()).onAccountSelected(any());
+    }
+
+    /**
      * Tests that continuing or dismissing on the request permission dialog shown for a passive mode
      * request doesn't record `Button.*` UMA or UKM metrics.
      */
@@ -820,12 +871,22 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
      * replaces the passive mode one for a passive mode request with {@code accounts}.
      */
     private void showRequestPermissionFromPassiveSheet(List<Account> accounts) {
+        showRequestPermissionFromPassiveSheet(accounts, Arrays.asList(mIdpData), mNewUserAccount);
+    }
+
+    /**
+     * Shows the request permission dialog for {@code account}, as when the active mode sheet
+     * replaces the passive mode one for a passive mode request with {@code accounts} and {@code
+     * idpDataList}.
+     */
+    private void showRequestPermissionFromPassiveSheet(
+            List<Account> accounts, List<IdentityProviderData> idpDataList, Account account) {
         when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
         mMediator.showRequestPermissionFromPassiveSheet(
                 new RelyingPartyData(
                         mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null),
                 accounts,
-                Arrays.asList(mIdpData),
-                mNewUserAccount);
+                idpDataList,
+                account);
     }
 }

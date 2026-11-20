@@ -32,6 +32,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.blink.mojom.RpContext;
 import org.chromium.blink.mojom.RpMode;
@@ -49,6 +50,7 @@ import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderData;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
 import org.chromium.chrome.browser.ui.android.webid.data.RelyingPartyData;
 import org.chromium.content.webid.IdentityRequestDialogDismissReason;
+import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
@@ -247,14 +249,13 @@ public class AccountSelectionWidgetModeControllerTest extends AccountSelectionJU
 
     /**
      * Tests that passive mode never populates the identity provider's links on the disclosure text,
-     * even with `FedCmIdpLinks` enabled. With a single identity provider, the active mode sheet
-     * asks for permission instead, so this uses multiple identity providers, where the passive mode
-     * sheet still asks for permission itself.
+     * even with `FedCmIdpLinks` enabled. This uses multiple identity providers without
+     * `FedCmActiveModeMultipleIdentityProviders`, where the passive mode sheet still asks for
+     * permission itself instead of switching to the active mode sheet.
      */
-    // TODO(crbug.com/584300659): Update or remove this test once passive mode also switches to
-    // the active mode sheet with multiple identity providers.
     @Test
     @EnableFeatures(ChromeFeatureList.FED_CM_IDP_LINKS)
+    @DisableFeatures(ContentFeatures.FED_CM_ACTIVE_MODE_MULTIPLE_IDENTITY_PROVIDERS)
     public void testDataSharingConsentHasNoIdpLinks() {
         when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
         // Build a genuinely distinct second IdP (`mIdpDataWithUseDifferentAccount` and
@@ -365,6 +366,35 @@ public class AccountSelectionWidgetModeControllerTest extends AccountSelectionJU
     }
 
     /**
+     * Tests that with `FedCmIdpLinks` and `FedCmActiveModeMultipleIdentityProviders`, selecting a
+     * new account in the account chooser for multiple identity providers switches to the active
+     * mode sheet for permission without notifying the delegate that the account was selected.
+     */
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.FED_CM_IDP_LINKS,
+        ContentFeatures.FED_CM_ACTIVE_MODE_MULTIPLE_IDENTITY_PROVIDERS
+    })
+    public void testSelectingNewAccountWithMultipleIdpsSwitchesToActiveSheet() {
+        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
+        RelyingPartyData rpData = createRpData();
+        // `mIdpData2` offers to use a different account, which in passive mode means that it has a
+        // filtered out account.
+        List<Account> accounts =
+                Arrays.asList(mAnaAccount, mNewUserAccountForIdp2, mFilteredOutAccountForIdp2);
+        List<IdentityProviderData> idpDataList = Arrays.asList(mIdpData, mIdpData2);
+        mMediator.showAccounts(
+                rpData, accounts, idpDataList, /* newAccounts= */ Collections.emptyList());
+
+        clickAccount(mNewUserAccountForIdp2);
+
+        verify(mMockActiveSheetSwitcher)
+                .switchToActiveSheetForPermission(
+                        rpData, accounts, idpDataList, mNewUserAccountForIdp2);
+        verify(mMockDelegate, never()).onAccountSelected(any());
+    }
+
+    /**
      * Tests that with `FedCmIdpLinks`, selecting a returning account still shows the verifying
      * sheet in the passive mode sheet.
      */
@@ -403,6 +433,35 @@ public class AccountSelectionWidgetModeControllerTest extends AccountSelectionJU
         clickContinueButton();
 
         verify(mMockDelegate).onAccountSelected(mNewUserAccount);
+        assertEquals(HeaderType.VERIFY, mModel.get(ItemProperties.HEADER).get(TYPE));
+        verify(mMockActiveSheetSwitcher, never())
+                .switchToActiveSheetForPermission(any(), any(), any(), any());
+    }
+
+    /**
+     * Tests that with `FedCmActiveModeMultipleIdentityProviders` but without `FedCmIdpLinks`,
+     * selecting a new account in the account chooser for multiple identity providers asks for
+     * permission in the passive mode sheet, and continuing there selects the account.
+     */
+    @Test
+    @EnableFeatures(ContentFeatures.FED_CM_ACTIVE_MODE_MULTIPLE_IDENTITY_PROVIDERS)
+    public void testSelectingNewAccountWithMultipleIdpsWithoutIdpLinksSelectsAccount() {
+        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
+        mMediator.showAccounts(
+                createRpData(),
+                Arrays.asList(mAnaAccount, mNewUserAccountForIdp2, mFilteredOutAccountForIdp2),
+                Arrays.asList(mIdpData, mIdpData2),
+                /* newAccounts= */ Collections.emptyList());
+
+        clickAccount(mNewUserAccountForIdp2);
+
+        assertEquals(HeaderType.SIGN_IN, mModel.get(ItemProperties.HEADER).get(TYPE));
+        assertTrue(containsItemOfType(mModel, ItemProperties.DATA_SHARING_CONSENT));
+        verify(mMockDelegate, never()).onAccountSelected(any());
+
+        clickContinueButton();
+
+        verify(mMockDelegate).onAccountSelected(mNewUserAccountForIdp2);
         assertEquals(HeaderType.VERIFY, mModel.get(ItemProperties.HEADER).get(TYPE));
         verify(mMockActiveSheetSwitcher, never())
                 .switchToActiveSheetForPermission(any(), any(), any(), any());

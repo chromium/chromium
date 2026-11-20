@@ -53,7 +53,9 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.content.webid.IdentityRequestDialogDismissReason;
 import org.chromium.content.webid.IdentityRequestDialogLinkType;
+import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.KeyboardVisibilityDelegate.KeyboardVisibilityListener;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -151,8 +153,8 @@ class AccountSelectionMediator {
     private boolean mIsShowingMultipleIdps;
 
     // Whether this is a multi-IDP request: based on the IDPs requested while the loading sheet is
-    // shown, then on the IDPs passed to showAccounts(). Unlike `mIsShowingMultipleIdps`, it stays
-    // set after the dialog narrows to a single account's IDP.
+    // shown, then on those passed to `showAccounts()` or `showRequestPermissionFromPassiveSheet()`.
+    // Unlike `mIsShowingMultipleIdps`, it stays set once the dialog narrows to one account's IDP.
     private boolean mIsMultiIdpRequest;
 
     // The account that the user has selected.
@@ -702,13 +704,14 @@ class AccountSelectionMediator {
         assert mRpMode == RpMode.ACTIVE;
         assert mHeaderType == HeaderType.NONE;
         assert !mWasDismissed;
-        // Only requests with a single identity provider switch to this sheet, see
-        // `shouldSwitchToActiveSheetForPermission()`.
-        assert idpDataList.size() == 1;
         mSwitchedFromPassiveSheet = true;
         mRpData = rpData;
         mAccounts = accounts;
         mIdpDataListForShowAccounts = idpDataList;
+        // Like in active mode with multiple identity providers, the request permission dialog then
+        // shows the RP icon of `account`'s identity provider, and back shows the account chooser
+        // without login rows, see `updateSheet()`.
+        mIsMultiIdpRequest = idpDataList.size() > 1;
         // Title the sheet with the identity provider of `account`.
         IdentityProviderData idpData = account.getIdentityProviderData();
         mIdpForDisplay = idpData.getIdpForDisplay();
@@ -1469,19 +1472,21 @@ class AccountSelectionMediator {
      * Returns whether selecting {@code account} in the passive mode sheet replaces it with the
      * active mode sheet's request permission dialog, which also shows the identity provider's
      * links, instead of asking for permission in the passive mode sheet. If so, the passive mode
-     * sheet doesn't show disclosure text for {@code account}. True only with `FedCmIdpLinks`, a
-     * single identity provider and an account that needs permission to share its fields.
+     * sheet doesn't show disclosure text for {@code account}. True only with `FedCmIdpLinks` and an
+     * account that needs permission to share its fields. With multiple identity providers, it also
+     * requires `FedCmActiveModeMultipleIdentityProviders`.
      */
     private boolean shouldSwitchToActiveSheetForPermission(Account account) {
-        // Like on desktop, switching with multiple identity providers would also need
-        // `FedCmActiveModeMultipleIdentityProviders`, which Java can't read yet. So with several,
-        // the passive mode sheet asks for permission itself.
-        // TODO(crbug.com/584300659): Also switch with multiple identity providers, like desktop
-        // does since crrev.com/c/8778095.
+        // Like on desktop, require `FedCmActiveModeMultipleIdentityProviders` with multiple
+        // identity providers, since back on the active mode sheet then shows its account chooser
+        // for multiple identity providers, which is otherwise only shown in active mode with that
+        // flag.
         return ChromeFeatureList.sFedCmIdpLinks.isEnabled()
                 && mRpMode == RpMode.PASSIVE
                 && account.getFields().length > 0
-                && assertNonNull(mIdpDataListForShowAccounts).size() == 1;
+                && (assertNonNull(mIdpDataListForShowAccounts).size() == 1
+                        || ContentFeatureMap.isEnabled(
+                                ContentFeatures.FED_CM_ACTIVE_MODE_MULTIPLE_IDENTITY_PROVIDERS));
     }
 
     private void recordCloseSheetMetrics() {
