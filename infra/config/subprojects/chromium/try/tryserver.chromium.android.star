@@ -518,7 +518,6 @@ try_.orchestrator_builder(
     coverage_test_types = ["unit", "overall"],
     cq_settings = try_.cq_settings(
         on_default_cq = True,
-        reuse_max_commit_distance = 800 if settings.is_main else None,
     ),
     experiments = {
         # go/nplus1shardsproposal
@@ -1192,7 +1191,6 @@ try_.orchestrator_builder(
     coverage_test_types = ["unit", "overall"],
     cq_settings = try_.cq_settings(
         on_default_cq = True,
-        reuse_max_commit_distance = 800 if settings.is_main else None,
     ),
     experiments = {
         # go/nplus1shardsproposal
@@ -1239,7 +1237,6 @@ try_.orchestrator_builder(
     coverage_test_types = ["unit", "overall"],
     cq_settings = try_.cq_settings(
         on_default_cq = True,
-        reuse_max_commit_distance = 800 if settings.is_main else None,
     ),
     experiments = {
         "chromium.add_one_test_shard": 10,
@@ -1449,7 +1446,6 @@ try_.builder(
     contact_team_email = "clank-engprod@google.com",
     cq_settings = try_.cq_settings(
         on_default_cq = True,
-        reuse_max_commit_distance = 800 if settings.is_main else None,
     ),
     experiments = {
         # crbug/940930

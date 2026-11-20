@@ -74,20 +74,18 @@ whether passing builds from an earlier run on the same patchset (or an
 equivalent patchset across trivial rebases or commit message edits) are still
 fresh enough to reuse instead of rebuilding from scratch.
 
-Whether a passing build can be reused depends on the reuse window configured
-for the target branch and builder:
+Whether a passing build can be reused depends on the target branch and builder:
 
-- **Commit-distance reuse window**: Builders configured with a commit-distance
-  window (e.g. `800` commits on `main`) evaluate freshness based on how many
-  commits have landed since the build ran rather than wall-clock time. A
-  passing build remains reusable as long as the target branch has not advanced
-  beyond that threshold, even if more than 24 hours have elapsed (such as over
-  a quiet weekend or holiday). Conversely, during high-volume weekday commit
-  surges, builds expire once the branch advances past the commit threshold.
-- **Time-based reuse window (24-hour default)**: If a builder or target branch
-  (such as a milestone release branch) does not use a commit-distance window,
-  passing builds can be reused for up to **24 hours** from when they were
-  created.
+- **Commit-distance reuse window (`main`)**: Reusable CQ builders targeting
+  `main` use a **1300-commit** reuse window rather than wall-clock time. A
+  passing build remains reusable as long as `main` has not advanced by more than
+  1300 commits since the build ran, even if more than 24 hours have elapsed
+  (such as over a quiet weekend or holiday). Conversely, during high-volume
+  weekday commit surges, builds expire once `main` advances past 1300 commits.
+- **Time-based reuse window (24-hour fallback)**: Milestone release branches,
+  builders explicitly opted out of commit-distance reuse, and builders that do
+  not emit gitiles commit metadata reuse passing builds for up to **24 hours**
+  from when they were created.
 
 ## Options
 

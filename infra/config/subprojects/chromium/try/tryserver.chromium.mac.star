@@ -16,7 +16,6 @@ load("//lib/gpu.star", "gpu")
 load("//lib/siso.star", "siso")
 load("//lib/try_constants.star", "try_constants")
 load("//lib/xcode.star", "xcode")
-load("//project.star", "settings")
 
 try_.defaults.set(
     executable = try_constants.DEFAULT_EXECUTABLE,
@@ -203,7 +202,6 @@ try_.orchestrator_builder(
     coverage_test_types = ["overall", "unit"],
     cq_settings = try_.cq_settings(
         on_default_cq = True,
-        reuse_max_commit_distance = 800 if settings.is_main else None,
     ),
     experiments = {
         # go/nplus1shardsproposal
@@ -291,7 +289,6 @@ try_.orchestrator_builder(
     coverage_test_types = ["overall", "unit"],
     cq_settings = try_.cq_settings(
         on_default_cq = True,
-        reuse_max_commit_distance = 800 if settings.is_main else None,
     ),
     experiments = {
         # go/nplus1shardsproposal
@@ -594,7 +591,6 @@ try_.builder(
     contact_team_email = "bling-engprod@google.com",
     cq_settings = try_.cq_settings(
         on_default_cq = True,
-        reuse_max_commit_distance = 800 if settings.is_main else None,
     ),
     experiments = {
         # crbug.com/940930
@@ -802,7 +798,6 @@ try_.orchestrator_builder(
     coverage_test_types = ["overall", "unit"],
     cq_settings = try_.cq_settings(
         on_default_cq = True,
-        reuse_max_commit_distance = 800 if settings.is_main else None,
     ),
     experiments = {
         # go/nplus1shardsproposal

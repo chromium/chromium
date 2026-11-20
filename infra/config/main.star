@@ -12,6 +12,7 @@ load("@chromium-luci//branches.star", "branches")
 load("@chromium-luci//builders.star", "os")
 load("@chromium-luci//chromium_luci.star", "chromium_luci")
 load("@chromium-luci//targets.star", "targets")
+load("@chromium-luci//try.star", "try_")
 load(
     "//lib/builder_exemptions.star",
     "exempted_from_contact_builders",
@@ -538,6 +539,7 @@ luci.realm(
     ],
 )
 
+try_.defaults.set(reuse_max_commit_distance = 1300 if settings.is_main else None)
 luci.builder.defaults.test_presentation.set(resultdb.test_presentation(grouping_keys = ["status", "v.test_suite"]))
 
 exec("//swarming.star")

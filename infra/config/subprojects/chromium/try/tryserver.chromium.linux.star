@@ -436,7 +436,6 @@ try_.builder(
     contact_team_email = "chrome-fuzzing-core@google.com",
     cq_settings = try_.cq_settings(
         on_default_cq = True,
-        reuse_max_commit_distance = 800 if settings.is_main else None,
     ),
     experiments = {
         # crbug/940930
@@ -495,7 +494,6 @@ try_.orchestrator_builder(
     # use_orchestrator_pool = True,
     cq_settings = try_.cq_settings(
         on_default_cq = True,
-        reuse_max_commit_distance = 800 if settings.is_main else None,
     ),
     experiments = {
         # go/nplus1shardsproposal
@@ -775,7 +773,6 @@ try_.orchestrator_builder(
     # use_orchestrator_pool = True,
     cq_settings = try_.cq_settings(
         on_default_cq = True,
-        reuse_max_commit_distance = 800 if settings.is_main else None,
     ),
     experiments = {
         # go/nplus1shardsproposal
@@ -940,7 +937,6 @@ try_.builder(
     contact_team_email = "chrome-linux-engprod@google.com",
     cq_settings = try_.cq_settings(
         on_default_cq = True,
-        reuse_max_commit_distance = 800 if settings.is_main else None,
     ),
     experiments = {
         # crbug/940930
@@ -1051,7 +1047,6 @@ try_.orchestrator_builder(
     # use_orchestrator_pool = True,
     cq_settings = try_.cq_settings(
         on_default_cq = True,
-        reuse_max_commit_distance = 800 if settings.is_main else None,
     ),
     experiments = {
         # go/nplus1shardsproposal

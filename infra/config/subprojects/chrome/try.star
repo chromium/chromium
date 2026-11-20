@@ -50,6 +50,10 @@ def chrome_internal_verifier(
             **kwargs
         )
     else:
+        kwargs.setdefault(
+            "reuse_max_commit_distance",
+            None if kwargs.get("disable_reuse") else try_.defaults.reuse_max_commit_distance.get(),
+        )
         branches.cq_tryjob_verifier(
             builder = builder_full_path,
             cq_group = "cq",
