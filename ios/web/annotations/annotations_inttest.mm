@@ -371,8 +371,7 @@ class AnnotationTextManagerViewportTest : public AnnotationTextManagerTest {
 
 // Tests page text extraction.
 // Covers: PageLoaded, OnTextExtracted, StartExtractingText.
-// TODO(crbug.com/587336202): Flaky on iOS 18.5 simulators.
-TEST_F(AnnotationTextManagerViewportTest, DISABLED_ExtractText) {
+TEST_F(AnnotationTextManagerViewportTest, ExtractText) {
   LoadHtmlAndExtractText("<html><body>"
                          "<p>You'll find it on</p>"
                          "<p>Castro Street, <span>Mountain View</span>, CA</p>"
@@ -386,8 +385,7 @@ TEST_F(AnnotationTextManagerViewportTest, DISABLED_ExtractText) {
 }
 
 // Tests page text extraction with different type of tags.
-// TODO(crbug.com/587336202): Flaky on iOS 18.5 simulators.
-TEST_F(AnnotationTextManagerViewportTest, DISABLED_ExtractTextTags) {
+TEST_F(AnnotationTextManagerViewportTest, ExtractTextTags) {
   LoadHtmlAndExtractText("<html><body>"
                          "<div>abc<div>def<span>ghi</span><em>jkl</em>mno</div>"
                          "pqr</div>"
@@ -436,8 +434,7 @@ TEST_F(AnnotationTextManagerViewportTest, CheckMetadata) {
   EXPECT_EQ("", observer()->extracted_text());
 }
 
-// TODO(crbug.com/587336202): Flaky on iOS 18.5 simulators.
-TEST_F(AnnotationTextManagerViewportTest, DISABLED_CheckWkMetadata) {
+TEST_F(AnnotationTextManagerViewportTest, CheckWkMetadata) {
   int seq_id = observer()->seq_id();
 
   LoadHtmlAndExtractText(
