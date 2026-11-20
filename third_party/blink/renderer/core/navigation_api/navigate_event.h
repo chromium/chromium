@@ -77,7 +77,7 @@ class NavigateEvent final : public Event,
   String downloadRequest() const { return download_request_; }
   ScriptValue info() const { return info_; }
   bool hasUAVisualTransition() const { return has_ua_visual_transition_; }
-  Element* sourceElement() const { return source_element_.Get(); }
+  Element* sourceElement() const;
   void intercept(NavigationInterceptOptions*, ExceptionState&);
   void deferPageSwap(NavigationDeferPageSwapOptions*, ExceptionState&);
 
