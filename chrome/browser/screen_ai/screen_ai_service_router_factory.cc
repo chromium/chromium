@@ -4,6 +4,7 @@
 
 #include "chrome/browser/screen_ai/screen_ai_service_router_factory.h"
 
+#include "chrome/browser/screen_ai/screen_ai_library_provider_impl.h"
 #include "chrome/browser/screen_ai/screen_ai_service_router.h"
 #include "content/public/browser/browser_context.h"
 
@@ -42,7 +43,8 @@ std::unique_ptr<KeyedService>
 ScreenAIServiceRouterFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* /*context*/) const {
   return base::WrapUnique<screen_ai::ScreenAIServiceRouter>(
-      new screen_ai::ScreenAIServiceRouter);
+      new screen_ai::ScreenAIServiceRouter(
+          std::make_unique<screen_ai::ScreenAILibraryProviderImpl>()));
 }
 
 // static

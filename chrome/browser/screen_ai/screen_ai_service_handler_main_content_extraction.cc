@@ -16,7 +16,6 @@
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/screen_ai/screen_ai_install_state.h"
 #include "chrome/browser/screen_ai/screen_ai_service_handler_base.h"
 #include "chrome/browser/screen_ai/screen_ai_service_router.h"
 #include "content/public/browser/network_service_instance.h"
@@ -41,7 +40,9 @@ const base::FilePath::CharType kMainContentExtractionFilesList[] =
 namespace screen_ai {
 
 ScreenAIServiceHandlerMainContentExtraction::
-    ScreenAIServiceHandlerMainContentExtraction() = default;
+    ScreenAIServiceHandlerMainContentExtraction(
+        ScreenAILibraryProvider* library_provider)
+    : ScreenAIServiceHandlerBase(library_provider) {}
 ScreenAIServiceHandlerMainContentExtraction::
     ~ScreenAIServiceHandlerMainContentExtraction() = default;
 
@@ -69,11 +70,13 @@ void ScreenAIServiceHandlerMainContentExtraction::BindService(
 }
 
 void ScreenAIServiceHandlerMainContentExtraction::LoadModelFilesAndInitialize(
+    const base::FilePath& library_binary_path,
     base::TimeTicks request_start_time) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce(&ComponentFiles::Load, kMainContentExtractionFilesList),
+      base::BindOnce(&ComponentFiles::Load, library_binary_path,
+                     kMainContentExtractionFilesList),
       base::BindOnce(
           &ScreenAIServiceHandlerMainContentExtraction::InitializeService,
           weak_ptr_factory_.GetWeakPtr(), request_start_time,

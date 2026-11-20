@@ -82,6 +82,9 @@ source_set("screen_ai_service_router_factory") {
   sources = [
     "resource_monitor.cc",
     "resource_monitor.h",
+    "screen_ai_library_provider.h",
+    "screen_ai_library_provider_impl.cc",
+    "screen_ai_library_provider_impl.h",
     "screen_ai_service_handler_base.cc",
     "screen_ai_service_handler_base.h",
     "screen_ai_service_handler_main_content_extraction.cc",

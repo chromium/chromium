@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -16,6 +17,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/process/process.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
@@ -23,7 +25,7 @@
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/screen_ai/screen_ai_install_state.h"
+#include "chrome/browser/screen_ai/screen_ai_library_provider.h"
 #include "chrome/browser/screen_ai/screen_ai_service_router.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/service_process_host.h"
@@ -42,11 +44,11 @@ bool IsModelFileContentReadable(base::File& file) {
   if (!file.IsValid()) {
     return false;
   }
-  int file_size = file.GetLength();
-  if (!file_size) {
+  int64_t file_size = file.GetLength();
+  if (file_size <= 0) {
     return false;
   }
-  std::vector<uint8_t> buffer(file_size);
+  std::vector<uint8_t> buffer(base::checked_cast<size_t>(file_size));
   return file.ReadAndCheck(0, base::span(buffer));
 }
 
@@ -81,6 +83,13 @@ ComponentFiles::ComponentFiles(
 #else
     base::FilePath relative_path(relative_file_path);
 #endif
+    // The files list comes from the disk. Do not let it point outside of the
+    // component folder.
+    if (relative_path.IsAbsolute() || relative_path.ReferencesParent()) {
+      VLOG(0) << "Invalid file path in " << files_list_file_name;
+      model_files_.clear();
+      return;
+    }
     const base::FilePath full_path = component_folder.Append(relative_path);
     model_files_[relative_path] =
         base::File(full_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
@@ -106,15 +115,18 @@ ComponentFiles::~ComponentFiles() {
 }
 
 std::unique_ptr<ComponentFiles> ComponentFiles::Load(
+    const base::FilePath& library_binary_path,
     const base::FilePath::CharType* files_list_file_name) {
-  return std::make_unique<ComponentFiles>(
-      screen_ai::ScreenAIInstallState::GetInstance()
-          ->get_component_binary_path(),
-      files_list_file_name);
+  return std::make_unique<ComponentFiles>(library_binary_path,
+                                          files_list_file_name);
 }
 
-ScreenAIServiceHandlerBase::ScreenAIServiceHandlerBase()
-    : screen_ai_service_shutdown_handler_(this) {}
+ScreenAIServiceHandlerBase::ScreenAIServiceHandlerBase(
+    ScreenAILibraryProvider* library_provider)
+    : library_provider_(library_provider),
+      screen_ai_service_shutdown_handler_(this) {
+  CHECK(library_provider_);
+}
 
 ScreenAIServiceHandlerBase::~ScreenAIServiceHandlerBase() = default;
 
@@ -225,12 +237,12 @@ void ScreenAIServiceHandlerBase::CallPendingStatusRequests(bool successful) {
 }
 
 void ScreenAIServiceHandlerBase::LaunchIfNotRunning() {
-  ScreenAIInstallState::GetInstance()->SetLastUsageTime();
+  library_provider_->SetLastUsageTime();
   if (screen_ai_service_factory_.is_bound()) {
     return;
   }
 
-  auto* state_instance = ScreenAIInstallState::GetInstance();
+  base::FilePath binary_path = library_provider_->GetBinaryPath();
 
   // To have a smooth user experience, the callers of the service should ensure
   // that the component is downloaded before promising it to the users and
@@ -238,10 +250,18 @@ void ScreenAIServiceHandlerBase::LaunchIfNotRunning() {
   // If it is not done, the calling feature will receive no reply when it tries
   // to use this service. However, they can detect it by using an on-disconnect
   // handler.
-  if (!state_instance->IsComponentAvailable()) {
+  if (binary_path.empty()) {
     VLOG(0) << "ScreenAI service launch triggered when component is not "
                "available.";
-    state_instance->DownloadComponent();
+    library_provider_->Download();
+    return;
+  }
+
+  // The library is loaded before the sandbox is set up, so only accept a full
+  // path that does not go through a parent directory.
+  if (!binary_path.IsAbsolute() || binary_path.ReferencesParent()) {
+    VLOG(0) << "ScreenAI service launch triggered with an invalid library "
+               "path.";
     return;
   }
 
@@ -250,7 +270,6 @@ void ScreenAIServiceHandlerBase::LaunchIfNotRunning() {
     return;
   }
 
-  base::FilePath binary_path = state_instance->get_component_binary_path();
 #if BUILDFLAG(IS_WIN)
   std::vector<base::FilePath> preload_libraries = {binary_path};
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -328,7 +347,8 @@ void ScreenAIServiceHandlerBase::InitializeServiceIfNeeded() {
     return;
   }
 
-  LoadModelFilesAndInitialize(request_start_time);
+  LoadModelFilesAndInitialize(library_provider_->GetBinaryPath(),
+                              request_start_time);
 }
 
 void ScreenAIServiceHandlerBase::SetLibraryLoadState(

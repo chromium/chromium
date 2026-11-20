@@ -20,7 +20,8 @@ namespace screen_ai {
 class ScreenAIServiceHandlerMainContentExtraction
     : public ScreenAIServiceHandlerBase {
  public:
-  ScreenAIServiceHandlerMainContentExtraction();
+  explicit ScreenAIServiceHandlerMainContentExtraction(
+      ScreenAILibraryProvider* library_provider);
   ScreenAIServiceHandlerMainContentExtraction(
       const ScreenAIServiceHandlerMainContentExtraction&) = delete;
   ScreenAIServiceHandlerMainContentExtraction& operator=(
@@ -31,7 +32,8 @@ class ScreenAIServiceHandlerMainContentExtraction
       mojo::PendingReceiver<mojom::Screen2xMainContentExtractor> receiver);
 
  private:
-  void LoadModelFilesAndInitialize(base::TimeTicks request_start_time) override;
+  void LoadModelFilesAndInitialize(const base::FilePath& library_binary_path,
+                                   base::TimeTicks request_start_time) override;
 
   std::string GetServiceName() const override;
   bool IsConnectionBound() const override;

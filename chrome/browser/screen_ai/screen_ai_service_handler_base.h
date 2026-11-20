@@ -9,6 +9,7 @@
 #include <set>
 #include <string_view>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/screen_ai/resource_monitor.h"
@@ -22,13 +23,14 @@ class Process;
 
 namespace screen_ai {
 
+class ScreenAILibraryProvider;
+
 using ServiceStateCallback = base::OnceCallback<void(bool)>;
 
 // Base class for ScreenAI service management.
 class ScreenAIServiceHandlerBase
     : screen_ai::mojom::ScreenAIServiceShutdownHandler {
  public:
-  ScreenAIServiceHandlerBase();
   ScreenAIServiceHandlerBase(const ScreenAIServiceHandlerBase&) = delete;
   ScreenAIServiceHandlerBase& operator=(const ScreenAIServiceHandlerBase&) =
       delete;
@@ -53,6 +55,12 @@ class ScreenAIServiceHandlerBase
   bool IsProcessRunningForTesting();
 
  protected:
+  // Only the service handlers can create this class, as it is allowed to load
+  // the library before the sandbox is set up. `library_provider` must not be
+  // null and must outlive this object.
+  explicit ScreenAIServiceHandlerBase(
+      ScreenAILibraryProvider* library_provider);
+
   std::string GetMetricFullName(std::string_view metric_name) const;
 
   // Initialzies the service if it's not already done.
@@ -95,13 +103,17 @@ class ScreenAIServiceHandlerBase
   // Returns the service name.
   virtual std::string GetServiceName() const = 0;
 
-  // Loads the library model files and initializes the service.
+  // Loads the model files of the library at `library_binary_path` and
+  // initializes the service.
   virtual void LoadModelFilesAndInitialize(
+      const base::FilePath& library_binary_path,
       base::TimeTicks request_start_time) = 0;
 
   virtual bool IsConnectionBound() const = 0;
   virtual bool IsServiceEnabled() const = 0;
   virtual void ResetConnection() = 0;
+
+  const raw_ptr<ScreenAILibraryProvider> library_provider_;
 
   // Pending requests to receive service state for each service type.
   std::vector<ServiceStateCallback> pending_state_requests_;
@@ -132,6 +144,7 @@ class ComponentFiles {
   ~ComponentFiles();
 
   static std::unique_ptr<ComponentFiles> Load(
+      const base::FilePath& library_binary_path,
       const base::FilePath::CharType* files_list_file_name);
 
   base::flat_map<base::FilePath, base::File> model_files_;

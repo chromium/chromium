@@ -20,7 +20,7 @@ namespace screen_ai {
 
 class ScreenAIServiceHandlerOCR : public ScreenAIServiceHandlerBase {
  public:
-  ScreenAIServiceHandlerOCR();
+  explicit ScreenAIServiceHandlerOCR(ScreenAILibraryProvider* library_provider);
   ScreenAIServiceHandlerOCR(const ScreenAIServiceHandlerOCR&) = delete;
   ScreenAIServiceHandlerOCR& operator=(const ScreenAIServiceHandlerOCR&) =
       delete;
@@ -29,7 +29,8 @@ class ScreenAIServiceHandlerOCR : public ScreenAIServiceHandlerBase {
   void BindService(mojo::PendingReceiver<mojom::ScreenAIAnnotator> receiver);
 
  private:
-  void LoadModelFilesAndInitialize(base::TimeTicks request_start_time) override;
+  void LoadModelFilesAndInitialize(const base::FilePath& library_binary_path,
+                                   base::TimeTicks request_start_time) override;
 
   std::string GetServiceName() const override;
   bool IsConnectionBound() const override;

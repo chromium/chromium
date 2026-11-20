@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SCREEN_AI_SCREEN_AI_SERVICE_ROUTER_H_
 #define CHROME_BROWSER_SCREEN_AI_SCREEN_AI_SERVICE_ROUTER_H_
 
+#include <memory>
 #include <optional>
 
 #include "base/scoped_observation.h"
@@ -17,6 +18,8 @@
 #include "services/screen_ai/public/mojom/screen_ai_service.mojom.h"
 
 namespace screen_ai {
+
+class ScreenAILibraryProvider;
 
 // TODO(crbug.com/417378344): Split this class and its factory to two separate
 // classes for OCR and main content extraction.
@@ -60,9 +63,13 @@ class ScreenAIServiceRouter : public KeyedService,
  private:
   friend class ScreenAIServiceRouterFactory;
 
-  ScreenAIServiceRouter();
+  explicit ScreenAIServiceRouter(
+      std::unique_ptr<ScreenAILibraryProvider> library_provider);
 
   ScreenAIServiceHandlerBase* GetHandler(Service service);
+
+  // Gives the handlers access to the library. Outlives them.
+  std::unique_ptr<ScreenAILibraryProvider> library_provider_;
 
   std::unique_ptr<ScreenAIServiceHandlerOCR> ocr_handler_;
   std::unique_ptr<ScreenAIServiceHandlerMainContentExtraction> mce_handler_;

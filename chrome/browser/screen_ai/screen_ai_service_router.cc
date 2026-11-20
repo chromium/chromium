@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -19,6 +20,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/screen_ai/screen_ai_install_state.h"
+#include "chrome/browser/screen_ai/screen_ai_library_provider.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/browser/service_process_host_passkeys.h"
@@ -59,7 +61,11 @@ void RecordComponentAvailability(bool available) {
 
 namespace screen_ai {
 
-ScreenAIServiceRouter::ScreenAIServiceRouter() = default;
+ScreenAIServiceRouter::ScreenAIServiceRouter(
+    std::unique_ptr<ScreenAILibraryProvider> library_provider)
+    : library_provider_(std::move(library_provider)) {
+  CHECK(library_provider_);
+}
 
 ScreenAIServiceRouter::~ScreenAIServiceRouter() = default;
 
@@ -76,13 +82,15 @@ ScreenAIServiceHandlerBase* ScreenAIServiceRouter::GetHandler(Service service) {
     case Service::kMainContentExtraction:
       if (!mce_handler_) {
         mce_handler_ =
-            std::make_unique<ScreenAIServiceHandlerMainContentExtraction>();
+            std::make_unique<ScreenAIServiceHandlerMainContentExtraction>(
+                library_provider_.get());
       }
       return mce_handler_.get();
 
     case Service::kOCR:
       if (!ocr_handler_) {
-        ocr_handler_ = std::make_unique<ScreenAIServiceHandlerOCR>();
+        ocr_handler_ = std::make_unique<ScreenAIServiceHandlerOCR>(
+            library_provider_.get());
       }
       return ocr_handler_.get();
   }
