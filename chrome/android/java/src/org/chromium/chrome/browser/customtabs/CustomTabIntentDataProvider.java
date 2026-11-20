@@ -818,6 +818,30 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
             if (fedCmId != -1) {
                 builder.setFedCmId(fedCmId);
             }
+            if (customTabMode == CustomTabProfileType.REGULAR) {
+                builder.setEmbedderTabId(
+                        IntentUtils.safeGetStringExtra(
+                                intent, CustomTabResumeManager.EXTRA_EMBEDDER_TAB_ID));
+                builder.setRestoreTab(
+                        IntentUtils.safeGetBooleanExtra(
+                                intent, CustomTabResumeManager.EXTRA_RESTORE_TAB, false));
+                if (IntentUtils.safeHasExtra(
+                        intent, CustomTabResumeManager.EXTRA_MAX_RESUMPTION_TABS)) {
+                    builder.setMaxResumptionTabs(
+                            IntentUtils.safeGetIntExtra(
+                                    intent,
+                                    CustomTabResumeManager.EXTRA_MAX_RESUMPTION_TABS,
+                                    CustomTabResumeManager.DEFAULT_MAX_RESUMPTION_TABS));
+                }
+                if (IntentUtils.safeHasExtra(
+                        intent, CustomTabResumeManager.EXTRA_RESUMPTION_TAB_TTL_MS)) {
+                    builder.setResumptionTabTtlMs(
+                            IntentUtils.safeGetLongExtra(
+                                    intent,
+                                    CustomTabResumeManager.EXTRA_RESUMPTION_TAB_TTL_MS,
+                                    CustomTabResumeManager.DEFAULT_RESUMPTION_TAB_TTL_MS));
+                }
+            }
 
             mDataHolder = builder.build();
         }
@@ -2153,6 +2177,31 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     @Override
     public CustomTabIntentDataHolder getCustomTabIntentDataHolder() {
         return mDataHolder;
+    }
+
+    @Override
+    public @Nullable String getEmbedderTabId() {
+        return mDataHolder.mEmbedderTabId;
+    }
+
+    @Override
+    public boolean isRestoreTabRequested() {
+        return mDataHolder.mRestoreTab;
+    }
+
+    @Override
+    public void clearResumptionExtras() {
+        mDataHolder.clearResumptionExtras();
+    }
+
+    @Override
+    public @Nullable Integer getMaxResumptionTabs() {
+        return mDataHolder.mMaxResumptionTabs;
+    }
+
+    @Override
+    public @Nullable Long getResumptionTabTtlMs() {
+        return mDataHolder.mResumptionTabTtlMs;
     }
 
     @Override

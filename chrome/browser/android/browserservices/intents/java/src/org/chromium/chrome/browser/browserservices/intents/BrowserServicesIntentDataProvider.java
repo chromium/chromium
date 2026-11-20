@@ -886,6 +886,32 @@ public abstract class BrowserServicesIntentDataProvider {
         return false;
     }
 
+    /** Returns the embedder-supplied tab identifier for tab resumption, or null if not set. */
+    public @Nullable String getEmbedderTabId() {
+        return null;
+    }
+
+    /** Returns whether restoring a previously closed tab was requested. */
+    public boolean isRestoreTabRequested() {
+        return false;
+    }
+
+    /** Clears resumption state when a reparented tab takes precedence over tab resumption. */
+    public void clearResumptionExtras() {}
+
+    /** Returns the maximum number of resumption tabs retained, or null to use the default. */
+    public @Nullable Integer getMaxResumptionTabs() {
+        return null;
+    }
+
+    /**
+     * Returns the time-to-live in milliseconds for retained resumption tabs, or null to use the
+     * default.
+     */
+    public @Nullable Long getResumptionTabTtlMs() {
+        return null;
+    }
+
     /** Returns the FedCM request identifier associated with the intent, or null if not set. */
     public @Nullable Integer getFedCmId() {
         return null;

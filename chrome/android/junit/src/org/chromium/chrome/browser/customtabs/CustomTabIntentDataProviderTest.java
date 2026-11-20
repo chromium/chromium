@@ -130,6 +130,10 @@ public class CustomTabIntentDataProviderTest {
         Intent intent = new CustomTabsIntent.Builder().build().intent;
         intent.setData(Uri.parse("https://www.example.com/regular"));
         setIsTrustedCustomTab(intent);
+        intent.putExtra(CustomTabResumeManager.EXTRA_EMBEDDER_TAB_ID, "embedder-tab-123");
+        intent.putExtra(CustomTabResumeManager.EXTRA_RESTORE_TAB, true);
+        intent.putExtra(CustomTabResumeManager.EXTRA_MAX_RESUMPTION_TABS, 12);
+        intent.putExtra(CustomTabResumeManager.EXTRA_RESUMPTION_TAB_TTL_MS, 86_400_000L);
         intent.putExtra(IntentHandler.EXTRA_FEDCM_ID, 77);
         intent.putExtra(CustomTabIntentDataProvider.EXTRA_TRANSLUCENT_BACKGROUND, 0x99112233);
 
@@ -147,6 +151,10 @@ public class CustomTabIntentDataProviderTest {
 
         CustomTabIntentDataHolder holder = originalProvider.getCustomTabIntentDataHolder();
         assertNotNull(holder);
+        assertEquals("embedder-tab-123", originalProvider.getEmbedderTabId());
+        assertTrue(originalProvider.isRestoreTabRequested());
+        assertEquals(Integer.valueOf(12), originalProvider.getMaxResumptionTabs());
+        assertEquals(Long.valueOf(86_400_000L), originalProvider.getResumptionTabTtlMs());
         assertEquals(Integer.valueOf(77), originalProvider.getFedCmId());
         assertTrue(originalProvider.hasTranslucentBackgroundColor());
 
@@ -169,13 +177,57 @@ public class CustomTabIntentDataProviderTest {
                         new Intent(), mContext, COLOR_SCHEME_DARK, restoredHolder);
         noUmaOnRestore.assertExpected();
 
+        assertEquals("embedder-tab-123", restoredProvider.getEmbedderTabId());
+        assertTrue(restoredProvider.isRestoreTabRequested());
+        assertEquals(Integer.valueOf(12), restoredProvider.getMaxResumptionTabs());
+        assertEquals(Long.valueOf(86_400_000L), restoredProvider.getResumptionTabTtlMs());
         assertEquals(Integer.valueOf(77), restoredProvider.getFedCmId());
         assertTrue(restoredProvider.hasTranslucentBackgroundColor());
 
         CustomTabIntentDataProvider defaultProvider =
                 new CustomTabIntentDataProvider(new Intent(), mContext, COLOR_SCHEME_LIGHT);
+        assertNull(defaultProvider.getEmbedderTabId());
+        assertFalse(defaultProvider.isRestoreTabRequested());
+        assertNull(defaultProvider.getMaxResumptionTabs());
+        assertNull(defaultProvider.getResumptionTabTtlMs());
         assertNull(defaultProvider.getFedCmId());
         assertFalse(defaultProvider.hasTranslucentBackgroundColor());
+    }
+
+    @Test
+    public void testEphemeralCct_ignoresResumptionExtras() {
+        Intent intent = new CustomTabsIntent.Builder().build().intent;
+        intent.putExtra(CustomTabsIntent.EXTRA_ENABLE_EPHEMERAL_BROWSING, true);
+        intent.putExtra(CustomTabResumeManager.EXTRA_EMBEDDER_TAB_ID, "ephemeral-tab-id");
+        intent.putExtra(CustomTabResumeManager.EXTRA_RESTORE_TAB, true);
+        intent.putExtra(CustomTabResumeManager.EXTRA_MAX_RESUMPTION_TABS, 10);
+        intent.putExtra(CustomTabResumeManager.EXTRA_RESUMPTION_TAB_TTL_MS, 60_000L);
+
+        CustomTabIntentDataProvider provider =
+                new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        assertEquals(CustomTabProfileType.EPHEMERAL, provider.getCustomTabMode());
+        assertNull(provider.getEmbedderTabId());
+        assertFalse(provider.isRestoreTabRequested());
+        assertNull(provider.getMaxResumptionTabs());
+        assertNull(provider.getResumptionTabTtlMs());
+
+        Parcel parcel = Parcel.obtain();
+        CustomTabIntentDataHolder restoredHolder;
+        try {
+            provider.getCustomTabIntentDataHolder().writeToParcel(parcel, 0);
+            parcel.setDataPosition(0);
+            restoredHolder = CustomTabIntentDataHolder.CREATOR.createFromParcel(parcel);
+        } finally {
+            parcel.recycle();
+        }
+
+        CustomTabIntentDataProvider restoredProvider =
+                new CustomTabIntentDataProvider(
+                        new Intent(), mContext, COLOR_SCHEME_LIGHT, restoredHolder);
+        assertNull(restoredProvider.getEmbedderTabId());
+        assertFalse(restoredProvider.isRestoreTabRequested());
+        assertNull(restoredProvider.getMaxResumptionTabs());
+        assertNull(restoredProvider.getResumptionTabTtlMs());
     }
 
     @Test
@@ -186,6 +238,10 @@ public class CustomTabIntentDataProviderTest {
                 intent, BrowserServicesIntentDataProvider.IncognitoCctCallerId.READ_LATER);
         intent.setPackage(mContext.getPackageName());
         IntentUtils.addTrustedIntentExtras(intent);
+        intent.putExtra(CustomTabResumeManager.EXTRA_EMBEDDER_TAB_ID, "incognito-tab-id");
+        intent.putExtra(CustomTabResumeManager.EXTRA_RESTORE_TAB, true);
+        intent.putExtra(CustomTabResumeManager.EXTRA_MAX_RESUMPTION_TABS, 5);
+        intent.putExtra(CustomTabResumeManager.EXTRA_RESUMPTION_TAB_TTL_MS, 30_000L);
 
         int countBeforeLaunch =
                 RecordHistogram.getHistogramTotalCountForTesting(
@@ -201,6 +257,10 @@ public class CustomTabIntentDataProviderTest {
 
         CustomTabIntentDataHolder holder = originalProvider.getCustomTabIntentDataHolder();
         assertNotNull(holder);
+        assertNull(originalProvider.getEmbedderTabId());
+        assertFalse(originalProvider.isRestoreTabRequested());
+        assertNull(originalProvider.getMaxResumptionTabs());
+        assertNull(originalProvider.getResumptionTabTtlMs());
 
         Parcel parcel = Parcel.obtain();
         CustomTabIntentDataHolder restoredHolder;
@@ -216,9 +276,15 @@ public class CustomTabIntentDataProviderTest {
                 HistogramWatcher.newBuilder()
                         .expectNoRecords(CustomTabsFeatureUsage.CUSTOM_TABS_FEATURE_USAGE_HISTOGRAM)
                         .build();
-        new IncognitoCustomTabIntentDataProvider(
-                new Intent(), mContext, COLOR_SCHEME_DARK, restoredHolder);
+        IncognitoCustomTabIntentDataProvider restoredProvider =
+                new IncognitoCustomTabIntentDataProvider(
+                        new Intent(), mContext, COLOR_SCHEME_DARK, restoredHolder);
         noUmaOnRestore.assertExpected();
+
+        assertNull(restoredProvider.getEmbedderTabId());
+        assertFalse(restoredProvider.isRestoreTabRequested());
+        assertNull(restoredProvider.getMaxResumptionTabs());
+        assertNull(restoredProvider.getResumptionTabTtlMs());
     }
 
     @Test

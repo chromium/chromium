@@ -634,6 +634,16 @@ public class CustomTabActivityTabControllerUnitTest {
         env.mIntent.putExtra(IntentHandler.EXTRA_SKIP_LOAD_ON_REPARENTING, true);
         env.mIntent.putExtra(CustomTabResumeManager.EXTRA_EMBEDDER_TAB_ID, "session-1");
         env.mIntent.putExtra(CustomTabResumeManager.EXTRA_RESTORE_TAB, true);
+        when(env.intentDataProvider.getEmbedderTabId()).thenReturn("session-1");
+        when(env.intentDataProvider.isRestoreTabRequested()).thenReturn(true);
+        doAnswer(
+                        invocation -> {
+                            when(env.intentDataProvider.getEmbedderTabId()).thenReturn(null);
+                            when(env.intentDataProvider.isRestoreTabRequested()).thenReturn(false);
+                            return null;
+                        })
+                .when(env.intentDataProvider)
+                .clearResumptionExtras();
         when(env.connection.getClientPackageNameForSession(env.session))
                 .thenReturn("com.example.app");
 
@@ -671,8 +681,10 @@ public class CustomTabActivityTabControllerUnitTest {
                         .hasParamsForTabId(transferredTab.getId()));
         assertTrue(
                 env.mIntent.getBooleanExtra(IntentHandler.EXTRA_SKIP_LOAD_ON_REPARENTING, false));
+        assertFalse(env.mIntent.hasExtra(CustomTabResumeManager.EXTRA_EMBEDDER_TAB_ID));
+        assertFalse(env.mIntent.hasExtra(CustomTabResumeManager.EXTRA_RESTORE_TAB));
         assertFalse(CustomTabResumeManager.shouldCreateTabResumeManager(env.intentDataProvider));
-        assertFalse(CustomTabResumeManager.isTabResumptionRequested(env.mIntent));
+        assertFalse(CustomTabResumeManager.isTabResumptionRequested(env.intentDataProvider));
         verify(env.resumeManager, never())
                 .maybeRestoreTab(any(), any(), any(), anyBoolean(), any(), any(), any());
     }

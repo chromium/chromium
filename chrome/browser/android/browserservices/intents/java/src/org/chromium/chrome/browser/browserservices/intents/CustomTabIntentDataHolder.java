@@ -117,6 +117,10 @@ public class CustomTabIntentDataHolder implements Parcelable {
     public final int mAndroidBrowserHelperVersion;
     public final @Nullable WindowFeatures mRequestedWindowFeatures;
     public final @Nullable Integer mIncognitoCctCallerId;
+    public @Nullable String mEmbedderTabId;
+    public boolean mRestoreTab;
+    public final @Nullable Integer mMaxResumptionTabs;
+    public final @Nullable Long mResumptionTabTtlMs;
     public final @Nullable Integer mFedCmId;
 
     private CustomTabIntentDataHolder(Builder builder) {
@@ -187,6 +191,10 @@ public class CustomTabIntentDataHolder implements Parcelable {
         mAndroidBrowserHelperVersion = builder.mAndroidBrowserHelperVersion;
         mRequestedWindowFeatures = builder.mRequestedWindowFeatures;
         mIncognitoCctCallerId = builder.mIncognitoCctCallerId;
+        mEmbedderTabId = builder.mEmbedderTabId;
+        mRestoreTab = builder.mRestoreTab;
+        mMaxResumptionTabs = builder.mMaxResumptionTabs;
+        mResumptionTabTtlMs = builder.mResumptionTabTtlMs;
         mFedCmId = builder.mFedCmId;
     }
 
@@ -263,6 +271,10 @@ public class CustomTabIntentDataHolder implements Parcelable {
         mRequestedWindowFeatures =
                 windowFeaturesBundle != null ? new WindowFeatures(windowFeaturesBundle) : null;
         mIncognitoCctCallerId = (Integer) in.readValue(classLoader);
+        mEmbedderTabId = in.readString();
+        mRestoreTab = in.readBoolean();
+        mMaxResumptionTabs = readNullableInt(in);
+        mResumptionTabTtlMs = readNullableLong(in);
         mFedCmId = readNullableInt(in);
     }
 
@@ -340,6 +352,10 @@ public class CustomTabIntentDataHolder implements Parcelable {
         dest.writeBundle(
                 mRequestedWindowFeatures != null ? mRequestedWindowFeatures.toBundle() : null);
         dest.writeValue(mIncognitoCctCallerId);
+        dest.writeString(mEmbedderTabId);
+        dest.writeBoolean(mRestoreTab);
+        writeNullableInt(dest, mMaxResumptionTabs);
+        writeNullableLong(dest, mResumptionTabTtlMs);
         writeNullableInt(dest, mFedCmId);
     }
 
@@ -412,6 +428,12 @@ public class CustomTabIntentDataHolder implements Parcelable {
      */
     public void setSecondaryToolbarSwipeUpPendingIntent(@Nullable PendingIntent pendingIntent) {
         mSecondaryToolbarSwipeUpPendingIntent = pendingIntent;
+    }
+
+    /** Clears resumption state so a reparented tab neither restores nor overwrites saved state. */
+    public void clearResumptionExtras() {
+        mEmbedderTabId = null;
+        mRestoreTab = false;
     }
 
     private static @Nullable TrustedWebActivityDisplayMode readTwaDisplayMode(
@@ -551,6 +573,20 @@ public class CustomTabIntentDataHolder implements Parcelable {
         return in.readInt();
     }
 
+    private static void writeNullableLong(Parcel dest, @Nullable Long value) {
+        if (value == null) {
+            dest.writeBoolean(false);
+        } else {
+            dest.writeBoolean(true);
+            dest.writeLong(value);
+        }
+    }
+
+    private static @Nullable Long readNullableLong(Parcel in) {
+        if (!in.readBoolean()) return null;
+        return in.readLong();
+    }
+
     public static final class Builder {
         private @Nullable SessionHolder mSessionHolder;
         private @Nullable String mClientPackageName;
@@ -625,6 +661,10 @@ public class CustomTabIntentDataHolder implements Parcelable {
         private int mAndroidBrowserHelperVersion;
         private @Nullable WindowFeatures mRequestedWindowFeatures;
         private @Nullable Integer mIncognitoCctCallerId;
+        private @Nullable String mEmbedderTabId;
+        private boolean mRestoreTab;
+        private @Nullable Integer mMaxResumptionTabs;
+        private @Nullable Long mResumptionTabTtlMs;
         private @Nullable Integer mFedCmId;
 
         public Builder setSessionHolder(@Nullable SessionHolder sessionHolder) {
@@ -969,6 +1009,26 @@ public class CustomTabIntentDataHolder implements Parcelable {
 
         public Builder setIncognitoCctCallerId(@Nullable Integer incognitoCctCallerId) {
             mIncognitoCctCallerId = incognitoCctCallerId;
+            return this;
+        }
+
+        public Builder setEmbedderTabId(@Nullable String embedderTabId) {
+            mEmbedderTabId = embedderTabId;
+            return this;
+        }
+
+        public Builder setRestoreTab(boolean restoreTab) {
+            mRestoreTab = restoreTab;
+            return this;
+        }
+
+        public Builder setMaxResumptionTabs(@Nullable Integer maxResumptionTabs) {
+            mMaxResumptionTabs = maxResumptionTabs;
+            return this;
+        }
+
+        public Builder setResumptionTabTtlMs(@Nullable Long resumptionTabTtlMs) {
+            mResumptionTabTtlMs = resumptionTabTtlMs;
             return this;
         }
 

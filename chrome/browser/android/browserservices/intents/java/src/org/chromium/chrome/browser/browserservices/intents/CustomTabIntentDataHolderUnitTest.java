@@ -151,6 +151,10 @@ public class CustomTabIntentDataHolderUnitTest {
         assertEquals(0, restored.mAndroidBrowserHelperVersion);
         assertNull(restored.mRequestedWindowFeatures);
         assertNull(restored.mIncognitoCctCallerId);
+        assertNull(restored.mEmbedderTabId);
+        assertFalse(restored.mRestoreTab);
+        assertNull(restored.mMaxResumptionTabs);
+        assertNull(restored.mResumptionTabTtlMs);
         assertNull(restored.mFedCmId);
         assertSame(
                 restored.mLightColorSchemeParams,
@@ -328,6 +332,10 @@ public class CustomTabIntentDataHolderUnitTest {
                         .setAndroidBrowserHelperVersion(42)
                         .setRequestedWindowFeatures(new WindowFeatures(10, 20, 300, 400))
                         .setIncognitoCctCallerId(IncognitoCctCallerId.DOWNLOAD_HOME)
+                        .setEmbedderTabId("embedder-tab-42")
+                        .setRestoreTab(true)
+                        .setMaxResumptionTabs(30)
+                        .setResumptionTabTtlMs(3_000_000_000L)
                         .setFedCmId(77)
                         .build();
 
@@ -476,16 +484,44 @@ public class CustomTabIntentDataHolderUnitTest {
         assertEquals(
                 Integer.valueOf(IncognitoCctCallerId.DOWNLOAD_HOME),
                 restored.mIncognitoCctCallerId);
+        assertEquals("embedder-tab-42", restored.mEmbedderTabId);
+        assertTrue(restored.mRestoreTab);
+        assertEquals(Integer.valueOf(30), restored.mMaxResumptionTabs);
+        assertEquals(Long.valueOf(3_000_000_000L), restored.mResumptionTabTtlMs);
         assertEquals(Integer.valueOf(77), restored.mFedCmId);
     }
 
     @Test
     public void testParcelRoundTrip_explicitNullOptionalFields() {
         CustomTabIntentDataHolder original =
-                new CustomTabIntentDataHolder.Builder().setFedCmId(null).build();
+                new CustomTabIntentDataHolder.Builder()
+                        .setEmbedderTabId(null)
+                        .setRestoreTab(false)
+                        .setMaxResumptionTabs(null)
+                        .setResumptionTabTtlMs(null)
+                        .setFedCmId(null)
+                        .build();
         CustomTabIntentDataHolder restored = roundTripThroughParcel(original);
 
+        assertNull(restored.mEmbedderTabId);
+        assertFalse(restored.mRestoreTab);
+        assertNull(restored.mMaxResumptionTabs);
+        assertNull(restored.mResumptionTabTtlMs);
         assertNull(restored.mFedCmId);
+    }
+
+    @Test
+    public void testParcelRoundTrip_clearResumptionExtrasSurvives() {
+        CustomTabIntentDataHolder holder =
+                new CustomTabIntentDataHolder.Builder()
+                        .setEmbedderTabId("session-1")
+                        .setRestoreTab(true)
+                        .build();
+        holder.clearResumptionExtras();
+
+        CustomTabIntentDataHolder restored = roundTripThroughParcel(holder);
+        assertNull(restored.mEmbedderTabId);
+        assertFalse(restored.mRestoreTab);
     }
 
     @Test

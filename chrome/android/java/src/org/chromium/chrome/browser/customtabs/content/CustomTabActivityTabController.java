@@ -486,7 +486,7 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
         boolean needsShow = false;
         Tab tab;
         if (checkIfTabReparentingParamsExistForIntent(mIntent)) {
-            CustomTabResumeManager.clearResumptionExtras(mIntent);
+            CustomTabResumeManager.clearResumptionExtras(mIntentDataProvider);
             int reparentingTabIdFromIntent = IntentHandler.getTabId(mIntent);
             AsyncTabParams params =
                     AsyncTabParamsManagerSingleton.getInstance().remove(reparentingTabIdFromIntent);
