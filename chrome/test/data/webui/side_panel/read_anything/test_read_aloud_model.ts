@@ -34,7 +34,7 @@ export class TestReadAloudModel extends TestBrowserProxy implements
   }
 
   getHighlightForCurrentSegmentIndex(index: number, phrases: boolean):
-      Array<{node: ReadAloudNode, start: number, length: number}> {
+      Segment[] {
     this.methodCalled('getHighlightForCurrentSegmentIndex', index, phrases);
     return this.highlightsForCurrentSegmentIndex_;
   }
@@ -43,8 +43,7 @@ export class TestReadAloudModel extends TestBrowserProxy implements
     this.currentTextSegments_ = segments;
   }
 
-  getCurrentTextSegments():
-      Array<{node: ReadAloudNode, start: number, length: number}> {
+  getCurrentTextSegments(): Segment[] {
     this.methodCalled('getCurrentTextSegments');
     return this.currentTextSegments_;
   }
