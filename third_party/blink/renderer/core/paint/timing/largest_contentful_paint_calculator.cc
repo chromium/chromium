@@ -285,28 +285,19 @@ LargestContentfulPaintCalculator::UpdateLargestContentfulPaint(
 
   // Finally, compute the pending LCP entry and corresponding trace data, if
   // there's a new web-exposed value.
-  //
-  // TODO(crbug.com/454082773): `Node` and `MediaTiming` are held weakly by
-  // `PaintTimingRecord` and can be garbage collected between paint and
-  // presentation time. Remove these null checks once `PaintTimingRecord` holds
-  // them strongly.
   if (new_candidate_size > old_candidate_size) {
     if (largest_painted_image_size_ >= largest_painted_text_size_) {
       CHECK(image_candidate);
-      if (image_candidate->GetMediaTiming() && image_candidate->GetNode()) {
-        candidate_data.lcp_entry =
-            CreateLargestContentfulPaintEntry(*image_candidate);
-        candidate_data.lcp_trace_data =
-            CreateWebExposedLcpCandidateTraceData(*image_candidate);
-      }
+      candidate_data.lcp_entry =
+          CreateLargestContentfulPaintEntry(*image_candidate);
+      candidate_data.lcp_trace_data =
+          CreateWebExposedLcpCandidateTraceData(*image_candidate);
     } else {
       CHECK(text_candidate);
-      if (text_candidate->GetNode()) {
-        candidate_data.lcp_entry =
-            CreateLargestContentfulPaintEntry(*text_candidate);
-        candidate_data.lcp_trace_data =
-            CreateWebExposedLcpCandidateTraceData(*text_candidate);
-      }
+      candidate_data.lcp_entry =
+          CreateLargestContentfulPaintEntry(*text_candidate);
+      candidate_data.lcp_trace_data =
+          CreateWebExposedLcpCandidateTraceData(*text_candidate);
     }
   }
 
@@ -380,16 +371,14 @@ void LargestContentfulPaintCalculator::MaybeFlushMetricsCandidates() {
 LargestImagePaintDetails
 LargestContentfulPaintCalculator::CreateLargestImagePaintDetails(
     const ImageRecord& image_record) const {
+  const MediaTiming* timing = image_record.GetMediaTiming();
   LargestImagePaintDetails image_details;
-  if (const MediaTiming* timing = image_record.GetMediaTiming()) {
-    image_details.type = ComputeImageLargestContentfulPaintType(
-        *timing, window_performance_->DomWindow());
-    image_details.resource_load_timings.discovery_time =
-        timing->DiscoveryTime();
-    image_details.resource_load_timings.load_start = timing->LoadStart();
-    image_details.resource_load_timings.load_end = timing->LoadEnd();
-  }
-  image_details.request_priority = image_record.RequestPriority();
+  image_details.type = ComputeImageLargestContentfulPaintType(
+      *timing, window_performance_->DomWindow());
+  image_details.request_priority = timing->RequestPriority();
+  image_details.resource_load_timings.discovery_time = timing->DiscoveryTime();
+  image_details.resource_load_timings.load_start = timing->LoadStart();
+  image_details.resource_load_timings.load_end = timing->LoadEnd();
   image_details.paint_size = image_record.EffectiveVisualSize();
   image_details.bpp = image_record.EntropyForLCP();
   return image_details;
@@ -400,9 +389,6 @@ LargestContentfulPaintCalculator::CreateLargestContentfulPaintEntry(
     const ImageRecord& largest_image) {
   const MediaTiming* media_timing = largest_image.GetMediaTiming();
   Node* image_node = largest_image.GetNode();
-
-  CHECK(media_timing);
-  CHECK(image_node);
 
   const KURL& url = media_timing->Url();
   const String& image_string = url.GetString();
@@ -429,7 +415,6 @@ LargestContentfulPaintCalculator::CreateLargestContentfulPaintEntry(
     const TextRecord& largest_text) {
   CHECK(window_performance_);
   Node* text_node = largest_text.GetNode();
-  CHECK(text_node);
 
   // Do not expose element attribution from shadow trees. Also note that @page
   // margin boxes do not create Element nodes.
@@ -557,7 +542,6 @@ LargestContentfulPaintCalculator::CreateWebExposedLcpCandidateTraceData(
   if (const auto* image_record = DynamicTo<ImageRecord>(record)) {
     value->SetString("type", "image");
     const MediaTiming* media_timing = image_record->GetMediaTiming();
-    CHECK(media_timing);
     value->SetDouble("imageDiscoveryTime",
                      window_performance_->MonotonicTimeToDOMHighResTimeStamp(
                          media_timing->DiscoveryTime()));
@@ -660,10 +644,9 @@ bool LargestContentfulPaintCalculator::IsEligibleForLcp(
   // `Node` or `MediaTiming` can be removed and GCed before the next paint.
   // Ignore these records.
   //
-  // TODO(crbug.com/562498378): We should keep a strong reference to the
-  // `VideoTiming` rather than ignoring these records since the behavior depends
-  // on garbage collection.
-  if (!record.GetMediaTiming() || record.WasNodeRemoved()) {
+  // TODO(crbug.com/454082773): Remove this check once LCP candidates are
+  // evaluated at paint time.
+  if (record.WasNodeRemoved()) {
     return false;
   }
 

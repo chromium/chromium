@@ -10,7 +10,6 @@
 #include <type_traits>
 
 #include "base/time/time.h"
-#include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/paint/timing/effective_visual_size_result.h"
 #include "third_party/blink/renderer/core/paint/timing/lcp_objects.h"
@@ -110,7 +109,7 @@ class CORE_EXPORT PaintTimingRecord
   }
 
  private:
-  const WeakMember<Node> node_;
+  const Member<Node> node_;
   const WeakMember<LayoutObject> node_layout_object_;
   const gfx::RectF root_visual_rect_;
   bool is_needed_for_lcp_ = false;
@@ -177,10 +176,6 @@ class CORE_EXPORT ImageRecord final : public PaintTimingRecord {
   // determine whether the image is a potential LCP candidate.
   double EntropyForLCP() const { return effective_visual_size_result_.entropy; }
 
-  // Returns the image's loading priority. Will return `std::nullopt` if there
-  // is no `media_timing`.
-  std::optional<WebURLRequest::Priority> RequestPriority() const;
-
   // Returns or sets whether the image is sufficiently loaded to be considered
   // for reporting. This is set for all media based on the `media_timing_`'s
   // IsSufficientContentLoadedForPaint(), except for animated images with
@@ -222,7 +217,7 @@ class CORE_EXPORT ImageRecord final : public PaintTimingRecord {
 
  private:
   const WeakMember<const LayoutObject> image_generating_layout_object_;
-  const WeakMember<const MediaTiming> media_timing_;
+  const Member<const MediaTiming> media_timing_;
   Member<HeapTimeTicks> metrics_timestamp_override_;
   const MediaRecordIdHash hash_;
   base::TimeTicks load_time_;

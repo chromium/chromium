@@ -496,17 +496,9 @@ OptionalPaintTimingCallback SoftNavigationHeuristics::OnPaintFinished(
       records_per_context;
   auto get_records_for_record =
       [&](const PaintTimingRecord& record) -> ContextRecords* {
-    Node* node = record.GetNode();
-    // TODO(crbug.com/454082773): `node` can be null if it's removed from the
-    // DOM and GCed between queuing `record` for processing and the end of the
-    // subsequent paint. This can happen for <video> since first video frame is
-    // queued for processing out side of paint. We should either support these
-    // records or filter them at the PaintTiming layer.
-    if (!node) {
-      return nullptr;
-    }
     SoftNavigationContext* context =
-        paint_attribution_tracker_->GetSoftNavigationContextForNode(node);
+        paint_attribution_tracker_->GetSoftNavigationContextForNode(
+            record.GetNode());
     if (!context || !context->IsRecordingLargestContentfulPaint()) {
       return nullptr;
     }

@@ -1597,9 +1597,10 @@ TEST_P(ImagePaintTimingDetectorTest,
 }
 
 // Ensure that when changing a <video>'s src between notifying paint timing and
-// the subsequent frame, and GCing the corresponding `VideoTiming`, that the
-// first video frame is ignored and doesn't cause a CHECK failure. Regression
-// test for crbug.com/562498378.
+// the subsequent frame that the first video frame is not ignored and doesn't
+// cause a CHECK failure. Regression test for crbug.com/562498378 (previously
+// the `video_timing` would be GCed since it was not held strongly by the
+// ImageRecord).
 TEST_P(ImagePaintTimingDetectorTest,
        VideoSourceChangedBetweenFirstFrameAndMainFrame) {
   SetMainFrameBodyContent(R"HTML(
@@ -1616,17 +1617,13 @@ TEST_P(ImagePaintTimingDetectorTest,
   video_timing->SetContentSizeForEntropy(1024 * 1024);
   SimulateFirstVideoFrame(GetElementById("target"), video_timing, 300, 100);
 
-  // In production, the `video_timing` is kept alive by the <video> element.
-  // Since `ImageRecord` holds `video_timing` weakly, changing the video src and
-  // rendering the new first frame between the initial first video frame
-  // notification and subsequent main frame makes the `video_timing` eligible
-  // for GC, leaving the `ImageRecord` with a null `MediaTiming` at the end of
-  // paint. Simulate this by GCing the `video_timing` before the next paint.
+  // `video_timing` is kept alive by the ImageRecord until paint, so it
+  // shouldn't be GCed.
   ThreadState::Current()->CollectAllGarbageForTesting();
-  EXPECT_FALSE(video_timing);
+  EXPECT_TRUE(video_timing);
   SimulateRenderingAndPresentationTime();
-  EXPECT_EQ(LcpCandidateCount(), 0u);
-  EXPECT_EQ(LcpDetailsForReporting().image_paint_size, 0u);
+  EXPECT_EQ(LcpCandidateCount(), 1u);
+  EXPECT_GT(LcpDetailsForReporting().image_paint_size, 0u);
 }
 
 class ImagePaintTimingDetectorTransparentPlaceholderImageTest

@@ -509,15 +509,20 @@ TEST_P(ElementTimingTest,
   SimulateRendering();
   test::RunPendingTasks();
 
-  // Run GC. This should collect `target`, but an entry should still be emitted
-  // because the frame was presented.
+  // Run GC. `target` is still held strongly by the `TextRecord` queued for LCP
+  // until presentation time.
+  // TODO(crbug.com/454082773): Move `EXPECT_FALSE(target)` back here once LCP
+  // candidates are evaluated at paint time.
   ThreadState::Current()->CollectAllGarbageForTesting();
-  EXPECT_FALSE(target);
 
   SimulatePresentationTime();
 
   EXPECT_THAT(GetElementTimingEntries(),
               ElementsAre(AllOf(ForId("target"), ForElement(nullptr))));
+
+  // Ensure `target` is collected after presentation completes.
+  ThreadState::Current()->CollectAllGarbageForTesting();
+  EXPECT_FALSE(target);
 }
 
 TEST_P(ElementTimingTest,
@@ -535,15 +540,20 @@ TEST_P(ElementTimingTest,
   GetElementById("target")->remove();
   // Run any pending tasks to clear references to the target node.
   test::RunPendingTasks();
-  // Run GC. This should collect `target`, but an entry should still be emitted
-  // because the frame was presented.
+  // Run GC. `target` is still held strongly by the `ImageRecord` queued for LCP
+  // until presentation time.
+  // TODO(crbug.com/454082773): Move `EXPECT_FALSE(target)` back here once LCP
+  // candidates are evaluated at paint time.
   ThreadState::Current()->CollectAllGarbageForTesting();
-  EXPECT_FALSE(target);
 
   SimulatePresentationTime();
 
   EXPECT_THAT(GetElementTimingEntries(),
               ElementsAre(AllOf(ForId("target"), ForElement(nullptr))));
+
+  // Ensure `target` is collected after presentation completes.
+  ThreadState::Current()->CollectAllGarbageForTesting();
+  EXPECT_FALSE(target);
 }
 
 TEST_P(ElementTimingTest, AttributeChangedBetweenPaintAndPresentation) {

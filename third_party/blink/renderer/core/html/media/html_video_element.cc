@@ -113,9 +113,6 @@ constexpr int kVisibilityThreshold = 10000;
 
 constexpr base::TimeDelta kTemporaryResourceDeletionDelay = base::Seconds(3);
 
-// If enabled, VideoTiming is held as a strong member of HTMLVideoElement.
-BASE_FEATURE(kKeepVideoTimingAlive, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 //
@@ -167,7 +164,6 @@ void HTMLVideoElement::Trace(Visitor* visitor) const {
   visitor->Trace(wake_lock_);
   visitor->Trace(remoting_interstitial_);
   visitor->Trace(picture_in_picture_interstitial_);
-  visitor->Trace(video_timing_);
   visitor->Trace(cache_deleting_timer_);
   Supplementable<HTMLVideoElement>::Trace(visitor);
   HTMLMediaElement::Trace(visitor);
@@ -808,6 +804,7 @@ void HTMLVideoElement::OnFirstFrame(base::TimeTicks frame_time,
   // picture-in-picture video may return false here.
   if (layout_object &&
       layout_object->FirstFragment().HasLocalBorderBoxProperties()) {
+    // PaintTiming manages the lifetime of `video_timing`.
     VideoTiming* video_timing = MakeGarbageCollected<VideoTiming>();
     video_timing->SetFirstVideoFrameTime(frame_time);
     video_timing->SetIsSufficientContentLoadedForPaint();
@@ -819,12 +816,6 @@ void HTMLVideoElement::OnFirstFrame(base::TimeTicks frame_time,
         *layout_object, videoVisibleSize(), *video_timing,
         layout_object->FirstFragment().LocalBorderBoxProperties(),
         layout_object->AbsoluteBoundingBoxRect());
-
-    if (base::FeatureList::IsEnabled(kKeepVideoTimingAlive)) {
-      // Keep VideoTiming alive as a strong member so it isn't garbage collected
-      // before being reported as LCP.
-      video_timing_ = video_timing;
-    }
   }
 
   MaybeEnterImmersivePictureInPicture();

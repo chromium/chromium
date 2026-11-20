@@ -208,9 +208,7 @@ TextRecord* LargestContentfulPaintManager::GetLargestIgnoredTextIfNotRemoved()
 ImageRecord* LargestContentfulPaintManager::GetLargestIgnoredImageIfNotRemoved()
     const {
   ImageRecord* record = largest_ignored_image_;
-  return record && !record->WasNodeRemoved() && !!record->GetMediaTiming()
-             ? record
-             : nullptr;
+  return record && !record->WasNodeRemoved() ? record : nullptr;
 }
 
 void LargestContentfulPaintManager::MaybeUpdateLargestIgnoredText(
@@ -239,7 +237,6 @@ void LargestContentfulPaintManager::MaybeUpdateLargestIgnoredImage(
     return;
   }
 
-  CHECK(record->GetMediaTiming());
   // TODO(crbug.com/449779010): This should probably be based on first frame for
   // animated images.
   if (!record->GetMediaTiming()->IsSufficientContentLoadedForPaint()) {

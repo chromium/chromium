@@ -675,19 +675,25 @@ TEST_F(LargestContentfulPaintCalculatorTest,
   SimulateRendering();
   EXPECT_EQ(LcpCandidateCount(), 0u);
 
-  // Replace the image content and GC the original `ImageResourceContent`
-  // before presentation feedback arrives. Because the <img> remains connected
-  // with the same LayoutObject, `WasNodeRemoved()` is false while the queued
-  // `ImageRecord` has a null `MediaTiming`.
+  // Replace the image content and run GC before presentation feedback arrives.
+  // `content` is still held strongly by the `ImageRecord` queued for LCP until
+  // presentation time, so the candidate is emitted cleanly.
+  // TODO(crbug.com/454082773): Move `EXPECT_FALSE(content)` back here once LCP
+  // candidates are evaluated at paint time.
   SetImageContent("target", 10, 10, 100);
   test::RunPendingTasks();
   ThreadState::Current()->CollectAllGarbageForTesting();
-  EXPECT_FALSE(content);
 
   SimulatePresentationTime();
 
-  EXPECT_EQ(LcpCandidateCount(), 0u);
+  EXPECT_EQ(LcpCandidateCount(), 1u);
+  EXPECT_EQ(CurrentLcpCandidate()->size(), 15000u);
   EXPECT_EQ(LcpDetailsForReporting().image_paint_size, 15000u);
+
+  // Ensure the replaced `ImageResourceContent` is collected after presentation
+  // completes.
+  ThreadState::Current()->CollectAllGarbageForTesting();
+  EXPECT_FALSE(content);
   trace_analyzer::Stop();
 }
 

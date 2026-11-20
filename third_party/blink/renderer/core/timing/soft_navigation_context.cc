@@ -105,7 +105,6 @@ void SoftNavigationContext::AddPaintedArea(
   painted_area_ += rect.size().GetArea();
 
   Node* node = record->GetNode();
-  CHECK(node);
 
   TRACE_EVENT_INSTANT(
       "loading", "SoftNavigationContext::AttributablePaintInAnimationFrame",
