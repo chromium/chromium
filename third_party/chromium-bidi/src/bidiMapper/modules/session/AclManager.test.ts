@@ -540,7 +540,6 @@ describe('AclManager', () => {
       for (const command of [
         'network.addIntercept',
         'goog:cdp.sendCommand',
-        'script.callFunction',
         'unknown.command',
       ]) {
         assert.throws(
@@ -625,13 +624,20 @@ describe('AclManager', () => {
       'browsingContext.locateNodes',
       'browsingContext.navigate',
       'browsingContext.reload',
+      'browsingContext.traverseHistory',
       'input.performActions',
+      'input.releaseActions',
     ];
 
     it('covers every supported ACL command with a target rule test', () => {
       assert.sameMembers(
         [...SUPPORTED_ACL_COMMANDS],
-        [...NO_TARGET_COMMANDS, ...CONTEXT_TARGET_COMMANDS, 'script.evaluate'],
+        [
+          ...NO_TARGET_COMMANDS,
+          ...CONTEXT_TARGET_COMMANDS,
+          'script.callFunction',
+          'script.evaluate',
+        ],
       );
     });
 
@@ -723,122 +729,124 @@ describe('AclManager', () => {
       }
     });
 
-    it('checks `target.context` against the ACL of its top-level navigable', async () => {
-      aclManager.enable();
-      await aclManager.updateAcl({
-        perNavigable: {[TOP_LEVEL_CONTEXT_1]: {commands: ['script.evaluate']}},
-      });
+    for (const command of ['script.callFunction', 'script.evaluate'] as const) {
+      it(`checks \`target.context\` against the ACL of its top-level navigable for \`${command}\``, async () => {
+        aclManager.enable();
+        await aclManager.updateAcl({
+          perNavigable: {[TOP_LEVEL_CONTEXT_1]: {commands: [command]}},
+        });
 
-      for (const context of [
-        TOP_LEVEL_CONTEXT_1,
-        CHILD_CONTEXT,
-        GRANDCHILD_CONTEXT,
-      ]) {
-        assert.doesNotThrow(() =>
-          aclManager.assertCommandAllowed('script.evaluate', {
-            target: {context, sandbox: SANDBOX},
-          }),
-        );
-      }
-      for (const params of [
-        {target: {context: CHILD_CONTEXT_2, sandbox: SANDBOX}},
-        // `script` commands run in `target`, not in `context`.
-        {
-          context: TOP_LEVEL_CONTEXT_1,
-          target: {context: CHILD_CONTEXT_2, sandbox: SANDBOX},
-        },
-      ]) {
-        assert.throws(
-          () => aclManager.assertCommandAllowed('script.evaluate', params),
-          UnsupportedOperationException,
-          `Command 'script.evaluate' is not allowed by the session ACL for browsing context '${CHILD_CONTEXT_2}'.`,
-        );
-      }
-      for (const params of [
-        // Targets without a string `target.context` get only the `default` ACL.
-        {target: {context: 42, sandbox: SANDBOX}},
-        {target: {realm: 'window-realm'}},
-        {target: {realm: 'window-realm', sandbox: SANDBOX}},
-        {target: {realm: 42}},
-        {target: {}},
-        {target: null},
-        {target: TOP_LEVEL_CONTEXT_1},
-        {},
-        null,
-      ]) {
-        assert.throws(
-          () => aclManager.assertCommandAllowed('script.evaluate', params),
-          UnsupportedOperationException,
-          "Command 'script.evaluate' is not allowed by the session ACL.",
-        );
-      }
-    });
-
-    it('requires a browsing context target with a non-empty sandbox for `script.evaluate`', async () => {
-      const sandboxRequiredMessage =
-        "Command 'script.evaluate' in restricted sessions requires a browsing context target with a non-empty 'sandbox'.";
-      aclManager.enable();
-      for (const acl of [
-        {default: {commands: ['script.evaluate']}},
-        {
-          perNavigable: {
-            [TOP_LEVEL_CONTEXT_1]: {commands: ['script.evaluate']},
-          },
-        },
-      ]) {
-        await aclManager.updateAcl(acl);
-
-        assert.doesNotThrow(() =>
-          aclManager.assertCommandAllowed('script.evaluate', {
-            target: {context: TOP_LEVEL_CONTEXT_1, sandbox: SANDBOX},
-          }),
-        );
-        // `CommandProcessor` strips `realm` when `context` is present.
-        assert.doesNotThrow(() =>
-          aclManager.assertCommandAllowed('script.evaluate', {
-            target: {
-              context: TOP_LEVEL_CONTEXT_1,
-              sandbox: SANDBOX,
-              realm: 'ignored-realm',
-            },
-          }),
-        );
-
+        for (const context of [
+          TOP_LEVEL_CONTEXT_1,
+          CHILD_CONTEXT,
+          GRANDCHILD_CONTEXT,
+        ]) {
+          assert.doesNotThrow(() =>
+            aclManager.assertCommandAllowed(command, {
+              target: {context, sandbox: SANDBOX},
+            }),
+          );
+        }
         for (const params of [
-          // Omitted or empty `sandbox` runs in the page's main world.
-          {target: {context: TOP_LEVEL_CONTEXT_1}},
-          {target: {context: TOP_LEVEL_CONTEXT_1, sandbox: undefined}},
-          {target: {context: TOP_LEVEL_CONTEXT_1, sandbox: ''}},
-          {target: {context: TOP_LEVEL_CONTEXT_1, sandbox: 42}},
+          {target: {context: CHILD_CONTEXT_2, sandbox: SANDBOX}},
+          // `script` commands run in `target`, not in `context`.
+          {
+            context: TOP_LEVEL_CONTEXT_1,
+            target: {context: CHILD_CONTEXT_2, sandbox: SANDBOX},
+          },
         ]) {
           assert.throws(
-            () => aclManager.assertCommandAllowed('script.evaluate', params),
+            () => aclManager.assertCommandAllowed(command, params),
+            UnsupportedOperationException,
+            `Command '${command}' is not allowed by the session ACL for browsing context '${CHILD_CONTEXT_2}'.`,
+          );
+        }
+        for (const params of [
+          // Targets without a string `target.context` get only the `default` ACL.
+          {target: {context: 42, sandbox: SANDBOX}},
+          {target: {realm: 'window-realm'}},
+          {target: {realm: 'window-realm', sandbox: SANDBOX}},
+          {target: {realm: 42}},
+          {target: {}},
+          {target: null},
+          {target: TOP_LEVEL_CONTEXT_1},
+          {},
+          null,
+        ]) {
+          assert.throws(
+            () => aclManager.assertCommandAllowed(command, params),
+            UnsupportedOperationException,
+            `Command '${command}' is not allowed by the session ACL.`,
+          );
+        }
+      });
+
+      it(`requires a browsing context target with a non-empty sandbox for \`${command}\``, async () => {
+        const sandboxRequiredMessage =
+          "Restricted sessions require a browsing context target with a non-empty 'sandbox'.";
+        aclManager.enable();
+        for (const acl of [
+          {default: {commands: [command]}},
+          {
+            perNavigable: {
+              [TOP_LEVEL_CONTEXT_1]: {commands: [command]},
+            },
+          },
+        ]) {
+          await aclManager.updateAcl(acl);
+
+          assert.doesNotThrow(() =>
+            aclManager.assertCommandAllowed(command, {
+              target: {context: TOP_LEVEL_CONTEXT_1, sandbox: SANDBOX},
+            }),
+          );
+          // `CommandProcessor` strips `realm` when `context` is present.
+          assert.doesNotThrow(() =>
+            aclManager.assertCommandAllowed(command, {
+              target: {
+                context: TOP_LEVEL_CONTEXT_1,
+                sandbox: SANDBOX,
+                realm: 'ignored-realm',
+              },
+            }),
+          );
+
+          for (const params of [
+            // Omitted or empty `sandbox` runs in the page's main world.
+            {target: {context: TOP_LEVEL_CONTEXT_1}},
+            {target: {context: TOP_LEVEL_CONTEXT_1, sandbox: undefined}},
+            {target: {context: TOP_LEVEL_CONTEXT_1, sandbox: ''}},
+            {target: {context: TOP_LEVEL_CONTEXT_1, sandbox: 42}},
+          ]) {
+            assert.throws(
+              () => aclManager.assertCommandAllowed(command, params),
+              UnsupportedOperationException,
+              sandboxRequiredMessage,
+            );
+          }
+        }
+
+        // With a `default` grant, `realm` and malformed targets pass the ACL
+        // check and must still be rejected by the sandbox check.
+        await aclManager.updateAcl({default: {commands: [command]}});
+        for (const params of [
+          // `realm` targets can address the page's main world or workers.
+          {target: {realm: 'window-realm'}},
+          {target: {realm: 'window-realm', sandbox: SANDBOX}},
+          {target: {context: 42, sandbox: SANDBOX}},
+          {target: {}},
+          {target: null},
+          {},
+          null,
+        ]) {
+          assert.throws(
+            () => aclManager.assertCommandAllowed(command, params),
             UnsupportedOperationException,
             sandboxRequiredMessage,
           );
         }
-      }
-
-      // With a `default` grant, `realm` and malformed targets pass the ACL
-      // check and must still be rejected by the sandbox check.
-      await aclManager.updateAcl({default: {commands: ['script.evaluate']}});
-      for (const params of [
-        // `realm` targets can address the page's main world or workers.
-        {target: {realm: 'window-realm'}},
-        {target: {realm: 'window-realm', sandbox: SANDBOX}},
-        {target: {context: 42, sandbox: SANDBOX}},
-        {target: {}},
-        {target: null},
-        {},
-        null,
-      ]) {
-        assert.throws(
-          () => aclManager.assertCommandAllowed('script.evaluate', params),
-          UnsupportedOperationException,
-          sandboxRequiredMessage,
-        );
-      }
-    });
+      });
+    }
   });
 
   describe('isEventAllowed', () => {

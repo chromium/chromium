@@ -99,7 +99,7 @@ const SANDBOXED_SCRIPT_TARGET_RULE: AclCommandRule = {
       target.sandbox === ''
     ) {
       throw new UnsupportedOperationException(
-        "Command 'script.evaluate' in restricted sessions requires a browsing context target with a non-empty 'sandbox'.",
+        "Restricted sessions require a browsing context target with a non-empty 'sandbox'.",
       );
     }
   },
@@ -126,7 +126,12 @@ const SUPPORTED_ACL_COMMAND_RULES: ReadonlyMap<
   ['browsingContext.locateNodes', CONTEXT_TARGET_RULE],
   ['browsingContext.navigate', CONTEXT_TARGET_RULE],
   ['browsingContext.reload', CONTEXT_TARGET_RULE],
+  ['browsingContext.traverseHistory', CONTEXT_TARGET_RULE],
   ['input.performActions', CONTEXT_TARGET_RULE],
+  ['input.releaseActions', CONTEXT_TARGET_RULE],
+  // Require a named sandbox for `script.callFunction` too, because default or
+  // `{realm}` targets share globals with the page.
+  ['script.callFunction', SANDBOXED_SCRIPT_TARGET_RULE],
   ['script.evaluate', SANDBOXED_SCRIPT_TARGET_RULE],
   // keep-sorted end
 ]);

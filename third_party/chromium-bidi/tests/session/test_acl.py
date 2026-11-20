@@ -191,28 +191,42 @@ async def test_acl_session_status_allowed(websocket):
     assert status == AnyExtending({"ready": False, "message": "already connected"})
 
 
+def make_script_command(method, target):
+    if method == "script.callFunction":
+        return {
+            "method": "script.callFunction",
+            "params": {
+                "functionDeclaration": "() => [1 + 1, typeof window.PAGE_GLOBAL]",
+                "target": target,
+                "awaitPromise": False,
+            },
+        }
+    return {
+        "method": "script.evaluate",
+        "params": {
+            "expression": "[1 + 1, typeof window.PAGE_GLOBAL]",
+            "target": target,
+            "awaitPromise": False,
+        },
+    }
+
+
 @pytest.mark.asyncio
 @pytest.mark.parametrize("capabilities", [RESTRICTED_SESSION], indirect=True)
 @pytest.mark.parametrize("initial_acl", [GET_TREE_ACL], indirect=True)
+@pytest.mark.parametrize("method", ["script.callFunction", "script.evaluate"])
 async def test_acl_not_granted_script_rejected_for_target_context(
-    websocket, context_id
+    websocket, context_id, method
 ):
     with pytest.raises(Exception) as exception_info:
         await execute_command(
             websocket,
-            {
-                "method": "script.evaluate",
-                "params": {
-                    "expression": "1 + 1",
-                    "target": {"context": context_id, "sandbox": "agent"},
-                    "awaitPromise": False,
-                },
-            },
+            make_script_command(method, {"context": context_id, "sandbox": "agent"}),
         )
 
     assert exception_info.value.args[0] == {
         "error": "unsupported operation",
-        "message": f"Command 'script.evaluate' is not allowed by the session ACL for browsing context '{context_id}'.",
+        "message": f"Command '{method}' is not allowed by the session ACL for browsing context '{context_id}'.",
     }
 
 
@@ -220,9 +234,20 @@ async def test_acl_not_granted_script_rejected_for_target_context(
 @pytest.mark.parametrize("capabilities", [RESTRICTED_SESSION], indirect=True)
 @pytest.mark.parametrize(
     "initial_acl",
-    [{"default": {"commands": ["browsingContext.getTree", "script.evaluate"]}}],
+    [
+        {
+            "default": {
+                "commands": [
+                    "browsingContext.getTree",
+                    "script.callFunction",
+                    "script.evaluate",
+                ]
+            }
+        }
+    ],
     indirect=True,
 )
+@pytest.mark.parametrize("method", ["script.callFunction", "script.evaluate"])
 @pytest.mark.parametrize(
     "make_target",
     [
@@ -233,24 +258,17 @@ async def test_acl_not_granted_script_rejected_for_target_context(
     ids=["missing_sandbox", "empty_sandbox", "realm_target"],
 )
 async def test_acl_script_requires_non_empty_sandbox(
-    websocket, context_id, sandbox_realm, make_target
+    websocket, context_id, sandbox_realm, method, make_target
 ):
     with pytest.raises(Exception) as exception_info:
         await execute_command(
             websocket,
-            {
-                "method": "script.evaluate",
-                "params": {
-                    "expression": "1 + 1",
-                    "target": make_target(context_id, sandbox_realm),
-                    "awaitPromise": False,
-                },
-            },
+            make_script_command(method, make_target(context_id, sandbox_realm)),
         )
 
     assert exception_info.value.args[0] == {
         "error": "unsupported operation",
-        "message": "Command 'script.evaluate' in restricted sessions requires a browsing context target with a non-empty 'sandbox'.",
+        "message": "Restricted sessions require a browsing context target with a non-empty 'sandbox'.",
     }
 
 
@@ -264,6 +282,7 @@ async def test_acl_script_requires_non_empty_sandbox(
                 "commands": [
                     "browsingContext.getTree",
                     "browsingContext.navigate",
+                    "script.callFunction",
                     "script.evaluate",
                 ]
             }
@@ -271,7 +290,10 @@ async def test_acl_script_requires_non_empty_sandbox(
     ],
     indirect=True,
 )
-async def test_acl_default_script_allowed_in_sandbox(websocket, context_id, html):
+@pytest.mark.parametrize("method", ["script.callFunction", "script.evaluate"])
+async def test_acl_default_script_allowed_in_sandbox(
+    websocket, context_id, html, method
+):
     url = html("<script>window.PAGE_GLOBAL = 'from_page';</script>")
     await execute_command(
         websocket,
@@ -283,14 +305,7 @@ async def test_acl_default_script_allowed_in_sandbox(websocket, context_id, html
 
     result = await execute_command(
         websocket,
-        {
-            "method": "script.evaluate",
-            "params": {
-                "expression": "[1 + 1, typeof window.PAGE_GLOBAL]",
-                "target": {"context": context_id, "sandbox": "agent"},
-                "awaitPromise": False,
-            },
-        },
+        make_script_command(method, {"context": context_id, "sandbox": "agent"}),
     )
 
     assert result == AnyExtending(
@@ -305,6 +320,93 @@ async def test_acl_default_script_allowed_in_sandbox(websocket, context_id, html
             },
         }
     )
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("capabilities", [RESTRICTED_SESSION], indirect=True)
+@pytest.mark.parametrize("initial_acl", [GET_TREE_ACL], indirect=True)
+async def test_acl_traverse_history_allowed_when_granted(websocket, context_id, html):
+    traverse_command = {
+        "method": "browsingContext.traverseHistory",
+        "params": {"context": context_id, "delta": -1},
+    }
+    with pytest.raises(Exception) as exception_info:
+        await execute_command(websocket, traverse_command)
+    assert exception_info.value.args[0] == {
+        "error": "unsupported operation",
+        "message": f"Command 'browsingContext.traverseHistory' is not allowed by the session ACL for browsing context '{context_id}'.",
+    }
+
+    await execute_command(
+        websocket,
+        {
+            "method": "goog:session.setAcl",
+            "params": {
+                "acl": {
+                    "default": {"commands": ["browsingContext.getTree"]},
+                    "perNavigable": {
+                        context_id: {
+                            "commands": [
+                                "browsingContext.navigate",
+                                "browsingContext.traverseHistory",
+                            ]
+                        }
+                    },
+                }
+            },
+        },
+    )
+    first_url = html("first")
+    second_url = html("second")
+    await execute_command(
+        websocket,
+        {
+            "method": "browsingContext.navigate",
+            "params": {"context": context_id, "url": first_url, "wait": "complete"},
+        },
+    )
+    await execute_command(
+        websocket,
+        {
+            "method": "browsingContext.navigate",
+            "params": {"context": context_id, "url": second_url, "wait": "complete"},
+        },
+    )
+
+    assert await execute_command(websocket, traverse_command) == {}
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("capabilities", [RESTRICTED_SESSION], indirect=True)
+@pytest.mark.parametrize("initial_acl", [GET_TREE_ACL], indirect=True)
+async def test_acl_release_actions_allowed_when_granted(websocket, context_id):
+    release_command = {
+        "method": "input.releaseActions",
+        "params": {"context": context_id},
+    }
+    with pytest.raises(Exception) as exception_info:
+        await execute_command(websocket, release_command)
+    assert exception_info.value.args[0] == {
+        "error": "unsupported operation",
+        "message": f"Command 'input.releaseActions' is not allowed by the session ACL for browsing context '{context_id}'.",
+    }
+
+    await execute_command(
+        websocket,
+        {
+            "method": "goog:session.setAcl",
+            "params": {
+                "acl": {
+                    "default": {"commands": ["browsingContext.getTree"]},
+                    "perNavigable": {
+                        context_id: {"commands": ["input.releaseActions"]}
+                    },
+                }
+            },
+        },
+    )
+
+    assert await execute_command(websocket, release_command) == {}
 
 
 @pytest.mark.asyncio
