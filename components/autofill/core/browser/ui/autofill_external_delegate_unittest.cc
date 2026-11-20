@@ -5488,6 +5488,71 @@ TEST_F(AutofillExternalDelegateTest,
                                1);
 }
 
+// Tests that showing merged Address and Autocomplete suggestions reports
+// `kAutofillAvailable` for accessibility while still emitting Autocomplete
+// shown metrics.
+TEST_F(AutofillExternalDelegateTest,
+       AutocompleteShownWithAddress_MetricsAndA11yEmitted) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAutofillLabelSensitiveAutocomplete);
+  base::HistogramTester histogram;
+  IssueOnQuery();
+
+  Suggestion autocomplete_suggestion(u"auto@example.com",
+                                     SuggestionType::kAutocompleteEntry);
+  autocomplete_suggestion.payload = AutocompleteSearchResultLabelSensitive(
+      u"auto@example.com", MatchingType::kName, /*query_name=*/u"email",
+      /*query_label=*/u"Email", /*count=*/1);
+  std::vector<Suggestion> suggestions = {
+      CreateAutofillSuggestion(SuggestionType::kAddressEntry,
+                               u"addr@example.com"),
+      Suggestion(SuggestionType::kSeparator), autocomplete_suggestion};
+
+  OnSuggestionsReturned(queried_field(), suggestions);
+  EXPECT_CALL(autofill_driver(),
+              RendererShouldSetSuggestionAvailability(
+                  queried_field().global_id(),
+                  mojom::AutofillSuggestionAvailability::kAutofillAvailable));
+  external_delegate().OnSuggestionsShown(suggestions, /*metadata=*/{});
+
+  histogram.ExpectBucketCount("Autocomplete.Events3",
+                              AutofillMetrics::AUTOCOMPLETE_SUGGESTIONS_SHOWN,
+                              1);
+  histogram.ExpectUniqueSample("Autocomplete.NameBasedSuggestions",
+                               AutofillMetrics::AUTOCOMPLETE_SUGGESTIONS_SHOWN,
+                               1);
+}
+
+// Tests that showing merged Address and Autocomplete suggestions still
+// suppresses Autocomplete shown metrics when triggered by typing.
+TEST_F(AutofillExternalDelegateTest,
+       AutocompleteShownWithAddress_TypingDoesNotEmitShownMetrics) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAutofillLabelSensitiveAutocomplete);
+  base::HistogramTester histogram;
+  IssueOnQuery(AutofillSuggestionTriggerSource::kTextFieldValueChanged);
+
+  Suggestion autocomplete_suggestion(u"auto@example.com",
+                                     SuggestionType::kAutocompleteEntry);
+  autocomplete_suggestion.payload = AutocompleteSearchResultLabelSensitive(
+      u"auto@example.com", MatchingType::kName, /*query_name=*/u"email",
+      /*query_label=*/u"Email", /*count=*/1);
+  std::vector<Suggestion> suggestions = {
+      CreateAutofillSuggestion(SuggestionType::kAddressEntry,
+                               u"addr@example.com"),
+      Suggestion(SuggestionType::kSeparator), autocomplete_suggestion};
+
+  OnSuggestionsReturned(queried_field(), suggestions);
+  EXPECT_CALL(autofill_driver(),
+              RendererShouldSetSuggestionAvailability(
+                  queried_field().global_id(),
+                  mojom::AutofillSuggestionAvailability::kAutofillAvailable));
+  external_delegate().OnSuggestionsShown(suggestions, /*metadata=*/{});
+
+  histogram.ExpectTotalCount("Autocomplete.Events3", 0);
+  histogram.ExpectTotalCount("Autocomplete.NameBasedSuggestions", 0);
+}
+
 // Tests that accepting an autocomplete suggestion with a matching type emits to
 // the corresponding matching-type histogram.
 TEST_F(AutofillExternalDelegateTest,

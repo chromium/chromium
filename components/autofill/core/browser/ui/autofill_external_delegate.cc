@@ -719,9 +719,11 @@ void AutofillExternalDelegate::OnSuggestionsShown(
                    SuggestionType::kAutocompleteEntry)) {
       OnAutofillAvailabilityEvent(
           mojom::AutofillSuggestionAvailability::kAutocompleteAvailable);
-      if (autofill_metrics::ShouldLogAutofillSuggestionShown(trigger_source_)) {
-        AutofillMetrics::OnAutocompleteSuggestionsShown(suggestions);
-      }
+    }
+
+    if (shown_suggestion_types.contains(SuggestionType::kAutocompleteEntry) &&
+        autofill_metrics::ShouldLogAutofillSuggestionShown(trigger_source_)) {
+      AutofillMetrics::OnAutocompleteSuggestionsShown(suggestions);
     }
 
     if (shown_suggestion_types.contains(
