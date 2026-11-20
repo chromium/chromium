@@ -43,6 +43,9 @@ public class MediaRouteChooserDialogManager extends BaseMediaRouteDialogManager 
         private boolean mIsSinkSelected;
 
         public Fragment() {
+            // Android uses this constructor to restore the fragment after process death. Make sure
+            // MediaRouter is created with MediaRouterContext before the dialog gets it.
+            BrowserMediaRouter.getAndroidMediaRouter();
             mHandler.post(Fragment.this::dismiss);
         }
 

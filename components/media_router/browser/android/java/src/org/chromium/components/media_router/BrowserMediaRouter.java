@@ -55,6 +55,7 @@ public class BrowserMediaRouter implements MediaRouteManager {
     private static final String PLACEHOLDER_SINK_NAME = "placeholder-sink";
 
     private static final List<BrowserMediaRouter> sInstances = new ArrayList<>();
+    private static @Nullable MediaRouterContext sMediaRouterContext;
     private static @Nullable Boolean sNeedsLocalNetworkPermissionForTesting;
     private static @Nullable Boolean sLocalNetworkPermissionGranted;
 
@@ -142,12 +143,22 @@ public class BrowserMediaRouter implements MediaRouteManager {
         return mSinksPerSource;
     }
 
-    /** Obtains the {@link MediaRouter} instance. */
+    /**
+     * Obtains the {@link MediaRouter} instance. All Chrome code must get the MediaRouter through
+     * this method, so that the first call creates it with a {@link MediaRouterContext}.
+     */
     public static MediaRouter getAndroidMediaRouter() {
+        Context appContext = ContextUtils.getApplicationContext();
+        // MediaRouter keeps the context from the first call. The app context only changes in
+        // tests, which reset MediaRouter between test cases.
+        if (sMediaRouterContext == null || sMediaRouterContext.getBaseContext() != appContext) {
+            sMediaRouterContext = new MediaRouterContext(appContext);
+            ResettersForTesting.register(() -> sMediaRouterContext = null);
+        }
         // Some manufacturers have an implementation that causes StrictMode
         // violations. See https://crbug.com/818325.
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            return MediaRouter.getInstance(ContextUtils.getApplicationContext());
+            return MediaRouter.getInstance(sMediaRouterContext);
         }
     }
 

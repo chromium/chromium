@@ -15,7 +15,6 @@ import android.util.SparseArray;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.core.app.NotificationManagerCompat;
-import androidx.mediarouter.media.MediaRouter;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.SplitCompatService;
@@ -34,6 +33,7 @@ import org.chromium.components.browser_ui.notifications.ForegroundServiceUtils;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 import org.chromium.components.browser_ui.notifications.NotificationWrapperBuilder;
+import org.chromium.components.media_router.BrowserMediaRouter;
 
 /** A class that provides Chrome-specific behavior to {@link MediaNotificationController}. */
 @NullMarked
@@ -256,7 +256,7 @@ class ChromeMediaNotificationControllerDelegate implements MediaNotificationCont
     public void onMediaSessionUpdated(MediaSessionCompat session) {
         // Tell the MediaRouter about the session, so that Chrome can control the volume
         // on the remote cast device (if any).
-        MediaRouter.getInstance(getContext()).setMediaSessionCompat(session);
+        BrowserMediaRouter.getAndroidMediaRouter().setMediaSessionCompat(session);
     }
 
     @Override
