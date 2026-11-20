@@ -186,7 +186,9 @@ def SymbolizeOptions(parser):
   )
   symbolization_options.add_option(
     '--local_build_dir',
-    help='Optional path to a local build directory containing symbol files.',
+    help='Optional path to a local build directory containing symbol files. '
+    'On Android, secondary-ABI build directories inside it (e.g. '
+    'android_clang_arm/) are also searched.',
     dest='local_build_dir',
   )
   symbolization_options.add_option(

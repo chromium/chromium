@@ -254,6 +254,14 @@ Windows is not currently supported with this script.
 tools/tracing/symbolize_trace [trace_file] --local_build_dir=LOCAL_BUILD_DIR
 ```
 
+*   On Android, the script searches `LOCAL_BUILD_DIR/lib.unstripped` and any
+    secondary-ABI folders inside the build directory, for example
+    `out/Release/android_clang_arm/lib.unstripped` in an arm64 build. This
+    lets traces that contain both 64-bit and 32-bit processes (such as WebView
+    with a 64-bit browser and a 32-bit renderer) be symbolized in one run.
+    Pass the main build directory (for example `out/Release`), not the
+    secondary-ABI folder.
+
 #### For official builds:
 
 1.  Skip this step for Mac and Linux. Build dump_syms by running: ninja -C

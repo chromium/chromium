@@ -343,8 +343,8 @@ class ExtractBreakpadTestCase(unittest.TestCase):
     )
     metadata.InitializeForTesting(
       modules={
-        '/subdir.so': '34984AB4EF948D',
-        '/unstripped.so': '34984AB4EF948C0000000000000000000',
+        '/subdir.so': {'34984AB4EF948D'},
+        '/unstripped.so': {'34984AB4EF948C0000000000000000000'},
       }
     )
     extracted_files = [subdir_symbols, unstripped_symbols]

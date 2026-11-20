@@ -134,7 +134,30 @@ class ExtractMetadataTestCase(unittest.TestCase):
     self.assertEqual(extractor.version_code, '857854')
     self.assertEqual(
       extractor.modules,
-      {'/libmonochrome.so': '3284389AB83CD', '/chrome.so': 'ABCDEF'},
+      {'/libmonochrome.so': {'3284389AB83CD'}, '/chrome.so': {'ABCDEF'}},
+    )
+
+  def testExtractMetadataSameModuleNameMultipleIds(self):
+    # 32-bit and 64-bit builds of the same library share a name but have
+    # different module IDs.
+    def side_effect(*args):
+      params = self._CreateRunQueryResultsFromValues(
+        modules=[
+          {'name': '/libwebviewchromium.so', 'build_id': '0A07AB57'},
+          {'name': '/libwebviewchromium.so', 'build_id': '892E74C4'},
+        ],
+      )
+      return params[args]
+
+    extractor = metadata_extractor.MetadataExtractor(
+      self.trace_processor_path, self.trace_file
+    )
+    trace_processor.RunQuery = mock.MagicMock(side_effect=side_effect)
+    extractor.Initialize()
+
+    self.assertEqual(
+      extractor.modules,
+      {'/libwebviewchromium.so': {'0A07AB57', '892E74C4'}},
     )
 
   def testExtractMetadataEmptyList(self):
@@ -295,13 +318,14 @@ class ExtractMetadataTestCase(unittest.TestCase):
     )
     extractor.InitializeForTesting(
       modules={
-        'name': '13423EDFAB2',
-        'name2': '321468945',
-        'name3': '4093492737482',
+        'name': {'13423EDFAB2'},
+        'name2': {'321468945', '7777'},
+        'name3': {'4093492737482'},
       }
     )
     self.assertEqual(
-      extractor.GetModuleIds(), {'13423EDFAB2', '321468945', '4093492737482'}
+      extractor.GetModuleIds(),
+      {'13423EDFAB2', '321468945', '7777', '4093492737482'},
     )
 
   def testGetModuleIdsEmpty(self):

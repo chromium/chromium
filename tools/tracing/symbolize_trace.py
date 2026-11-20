@@ -44,7 +44,9 @@ def SymbolizeTrace(trace_file, options):
 
   need_cleanup = False
   if options.local_breakpad_dir is None:
-    breakpad_file_extractor.EnsureDumpSymsBinary(
+    # Resolve dump_syms once against the primary build dir; secondary-ABI
+    # build dirs searched later don't contain their own dump_syms binary.
+    options.dump_syms_path = breakpad_file_extractor.EnsureDumpSymsBinary(
       options.dump_syms_path, options.local_build_dir
     )
 
@@ -128,27 +130,41 @@ def _EnsureBreakpadSymbols(trace_file, options):
   flag_utils.GetTracingLogger().info(trace_metadata)
 
   if options.local_build_dir is not None:
-    # Extract breakpad symbol files from binaries in |options.local_build_dir|.
-    if not breakpad_file_extractor.ExtractBreakpadFiles(
-      options.dump_syms_path,
-      options.local_build_dir,
-      options.breakpad_output_dir,
-      search_unstripped=True,
-      module_ids=breakpad_file_extractor.GetModuleIdsToSymbolize(
-        trace_metadata
-      ),
-    ):
+    # Extract breakpad symbol files from binaries in |options.local_build_dir|
+    # and in any secondary-ABI build dirs inside it (e.g. android_clang_arm/
+    # for 32-bit libraries in a 64-bit Android build), since a trace can
+    # contain both 32-bit and 64-bit copies of the same library.
+    module_ids = breakpad_file_extractor.GetModuleIdsToSymbolize(trace_metadata)
+    build_dirs = _GetBuildDirsWithSymbols(options.local_build_dir)
+    did_extract = False
+    for build_dir in build_dirs:
+      # Extract each build dir into its own staging dir, so that same-named
+      # libraries from different ABIs don't overwrite each other before
+      # they're renamed to '<module_id>.breakpad'.
+      staging_dir = tempfile.mkdtemp(dir=options.breakpad_output_dir)
+      try:
+        if breakpad_file_extractor.ExtractBreakpadFiles(
+          options.dump_syms_path,
+          build_dir,
+          staging_dir,
+          search_unstripped=True,
+          module_ids=module_ids,
+        ):
+          did_extract = True
+          rename_breakpad.RenameBreakpadFiles(
+            staging_dir, options.breakpad_output_dir
+          )
+      finally:
+        shutil.rmtree(staging_dir, ignore_errors=True)
+
+    if not did_extract:
       raise Exception(
-        'No breakpad symbols could be extracted from files in: %s xor %s'
-        % (
-          options.local_build_dir,
-          os.path.join(options.local_build_dir, 'lib.unstripped'),
+        'No breakpad symbols could be extracted from files in: %s'
+        % ', '.join(
+          '%s xor %s' % (d, os.path.join(d, 'lib.unstripped'))
+          for d in build_dirs
         )
       )
-
-    rename_breakpad.RenameBreakpadFiles(
-      options.breakpad_output_dir, options.breakpad_output_dir
-    )
     return
 
   # Fetch trace breakpad symbols from GCS
@@ -161,6 +177,30 @@ def _EnsureBreakpadSymbols(trace_file, options):
     options.breakpad_output_dir,
     options.dump_syms_path,
   )
+
+
+def _GetBuildDirsWithSymbols(local_build_dir):
+  """Returns |local_build_dir| plus any secondary-ABI build dirs inside it.
+
+  Android builds put libraries for the secondary ABI (e.g. 32-bit arm in an
+  arm64 build) under a toolchain subdirectory such as
+  |local_build_dir|/android_clang_arm/lib.unstripped. Any immediate
+  subdirectory that has a 'lib.unstripped' directory is treated as one.
+
+  Args:
+    local_build_dir: The primary local build directory.
+
+  Returns:
+    List of build directories to search, starting with |local_build_dir|.
+  """
+  build_dirs = [local_build_dir]
+  if not os.path.isdir(local_build_dir):
+    return build_dirs
+  for entry in sorted(os.listdir(local_build_dir)):
+    subdir = os.path.join(local_build_dir, entry)
+    if os.path.isdir(os.path.join(subdir, 'lib.unstripped')):
+      build_dirs.append(subdir)
+  return build_dirs
 
 
 def _Symbolize(trace_file, symbolizer_path, breakpad_output_dir, output_file):

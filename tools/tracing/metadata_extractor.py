@@ -50,8 +50,10 @@ class MetadataExtractor:
       base::SysInfo::OperatingSystemArchitecture() (eg: 'x86_64).
     bitness: integer of architecture bitness (eg. 32, 64).
     version_code: version code of chrome used by Android play store.
-    modules: map from module name to module debug ID, for all
-      modules that need symbolization.
+    modules: map from module name to the set of module debug IDs seen for
+      that name, for all modules that need symbolization. A name can map to
+      several IDs, e.g. when 32-bit and 64-bit builds of the same library are
+      loaded in different processes.
   """
 
   def __init__(self, trace_processor_path, trace_file):
@@ -97,7 +99,7 @@ class MetadataExtractor:
     self.Initialize()
     if self.modules is None:
       return None
-    return set(self.modules.values())
+    return set().union(*self.modules.values())
 
   def Initialize(self):
     """Extracts metadata from perfetto system trace."""
@@ -128,7 +130,7 @@ class MetadataExtractor:
     self.bitness = self._GetIntValueFromQuery(BITNESS_QUERY)
     self.version_code = self._GetIntValueFromQuery(VERSION_CODE_QUERY)
 
-    # Parse module to be a mapping between module name and debug id
+    # Parse module to be a mapping between module name and debug ids.
     self.modules = self._ExtractValidModuleMap()
 
   def _ParseOSName(self, raw_os_name):
@@ -204,7 +206,7 @@ class MetadataExtractor:
       return None
 
   def _ExtractValidModuleMap(self):
-    """Extracts valid module name to module debug ID map/dict from trace."""
+    """Extracts valid module name to module debug IDs map/dict from trace."""
     try:
       query_result = trace_processor.RunQuery(
         self._trace_processor_path, self._trace_file, MODULES_QUERY
@@ -218,7 +220,7 @@ class MetadataExtractor:
           row_debug_id is None or row_debug_id == '/missing'
         ):
           continue
-        module_map[row_name] = row_debug_id.upper()
+        module_map.setdefault(row_name, set()).add(row_debug_id.upper())
 
       if not module_map:
         return None
