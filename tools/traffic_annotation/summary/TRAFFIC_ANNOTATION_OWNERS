@@ -2,11 +2,15 @@
 # Eastern Time
 nicolaso@chromium.org
 
+# Temporary for API annotation project bulk approvals
+jani@google.com
+
 # Central European Time
 # Please pick a random reviewer:
 #
-# cat tools/traffic_annotation/summary/TRAFFIC_ANNOTATION_OWNERS \
-#   | tail -n+10 | shuf | head -n 1
+# sed -nE '/^# Central European Time/,/^\s*$/p' \
+#   tools/traffic_annotation/summary/TRAFFIC_ANNOTATION_OWNERS \
+#   | grep -vE '^\s*(#|$)' | shuf -n 1
 #
 dullweber@chromium.org
 mkwst@chromium.org
@@ -14,6 +18,3 @@ msramek@chromium.org
 olesiamarukhno@google.com
 radchuk@google.com
 sideyilmaz@chromium.org
-
-# Temporary for API annotation project bulk approvals
-jani@google.com
