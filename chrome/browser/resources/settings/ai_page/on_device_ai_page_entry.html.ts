@@ -4,6 +4,7 @@
 
 import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
+import {OnDeviceModelStatus} from './on_device_ai_browser_proxy.js';
 import type {SettingsOnDeviceAiPageEntryElement} from './on_device_ai_page_entry.js';
 
 export function getHtml(this: SettingsOnDeviceAiPageEntryElement) {
@@ -17,9 +18,7 @@ export function getHtml(this: SettingsOnDeviceAiPageEntryElement) {
       ${this.capability.description}
     </div>
     <div id="modelMetadata" class="secondary">
-      ${this.i18n(
-          'onDeviceAiModelMetadata', this.capability.modelName,
-          this.capability.size)}
+      ${this.getMetadataText_()}
     </div>
   </div>
   <cr-expand-button id="expand" no-hover ?expanded="${this.expanded_}"
@@ -28,11 +27,16 @@ export function getHtml(this: SettingsOnDeviceAiPageEntryElement) {
           'onDeviceAiModelExpandA11yLabel', this.capability.categoryTitle)}">
   </cr-expand-button>
   <div class="separator"></div>
-  <cr-icon-button id="delete" iron-icon="settings20:delete"
-      title="$i18n{delete}" @click="${this.onDeleteClick_}"
-      aria-label="${this.i18n(
-          'onDeviceAiModelDeleteA11yLabel', this.capability.categoryTitle)}">
-  </cr-icon-button>
+  ${this.capability.status === OnDeviceModelStatus.READY ? html`
+    <cr-icon-button id="delete" iron-icon="settings20:delete"
+        title="$i18n{delete}" @click="${this.onDeleteClick_}"
+        aria-label="${this.i18n(
+            'onDeviceAiModelDeleteA11yLabel', this.capability.categoryTitle)}">
+    </cr-icon-button>
+  ` : html`
+    <cr-icon id="statusIcon" icon="${this.getStatusIcon_()}" aria-hidden="true">
+    </cr-icon>
+  `}
 </div>
 <cr-collapse id="collapse" ?opened="${this.expanded_}">
   <ul id="modelDetailsList">

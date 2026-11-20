@@ -8,7 +8,8 @@ import {OnDeviceModelCategory, OnDeviceModelStatus} from 'chrome://settings/lazy
 // These helpers return a new object on every call, so that tests never share
 // state with each other or with the element under test.
 
-export function createGemmaCapability(): OnDeviceAiCapability {
+export function createGemmaCapability(
+    overrides: Partial<OnDeviceAiCapability> = {}): OnDeviceAiCapability {
   return {
     id: 1,
     status: OnDeviceModelStatus.READY,
@@ -21,10 +22,12 @@ export function createGemmaCapability(): OnDeviceAiCapability {
       'Helps you draft, rephrase, and organize text on sites that use it',
       'Handles many tasks, so one download covers multiple features',
     ],
+    ...overrides,
   };
 }
 
-export function createAsrCapability(): OnDeviceAiCapability {
+export function createAsrCapability(
+    overrides: Partial<OnDeviceAiCapability> = {}): OnDeviceAiCapability {
   return {
     id: 2,
     status: OnDeviceModelStatus.READY,
@@ -34,5 +37,6 @@ export function createAsrCapability(): OnDeviceAiCapability {
     modelName: 'Live Caption and Transcription',
     size: '3.0 GB',
     details: ['Works on sites that support live audio transcription'],
+    ...overrides,
   };
 }

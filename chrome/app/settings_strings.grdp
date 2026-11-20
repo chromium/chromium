@@ -3678,6 +3678,12 @@
     <message name="IDS_SETTINGS_ON_DEVICE_AI_MODEL_REMOVED_TOAST_LABEL" desc="Label of the toast shown in the On-device AI settings subpage after the user deletes a downloaded on-device AI model.">
       '<ph name="MODEL_CATEGORY">$1<ex>General-purpose writing</ex></ph>' removed
     </message>
+    <message name="IDS_SETTINGS_ON_DEVICE_AI_MODEL_DOWNLOADING" desc="Status text shown under an on-device AI capability row when the model is currently downloading.">
+      Downloading...
+    </message>
+    <message name="IDS_SETTINGS_ON_DEVICE_AI_MODEL_UPDATING" desc="Status text shown under an on-device AI capability row when the model is currently updating.">
+      Updating...
+    </message>
 
     <message name="IDS_PAGE_NOT_AVAILABLE_FOR_GUEST_HEADING" desc="This is the heading for the page not available for guest.">
       <ph name="PAGE_NAME">$1<ex>Bookmarks</ex></ph> is not available to Guest users.

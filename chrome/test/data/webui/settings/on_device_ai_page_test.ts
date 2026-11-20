@@ -39,6 +39,14 @@ suite('OnDeviceAiPage', function() {
     return page.shadowRoot.querySelectorAll('settings-on-device-ai-page-entry');
   }
 
+  function clickDeleteButton(index: number) {
+    const deleteButton =
+        getModelEntries()[index]!.shadowRoot.querySelector<HTMLElement>(
+            '#delete');
+    assertTrue(!!deleteButton);
+    deleteButton.click();
+  }
+
   setup(async function() {
     const prefsBrowserProxy = new TestPrefsBrowserProxy([]);
     PrefsBrowserProxy.setInstance(prefsBrowserProxy);
@@ -211,6 +219,28 @@ suite('OnDeviceAiPage', function() {
     assertDeepEquals(createGemmaCapability(), entries[0]!.capability);
   });
 
+  test(
+      'models section lists downloading and updating models', async function() {
+        const downloadingCapability =
+            createGemmaCapability({status: OnDeviceModelStatus.DOWNLOADING});
+        const updatingCapability =
+            createAsrCapability({status: OnDeviceModelStatus.UPDATING});
+        testBrowserProxy.reset();
+        testBrowserProxy.setGetOnDeviceAiCapabilitiesResponse([
+          downloadingCapability,
+          updatingCapability,
+          createGemmaCapability(
+              {id: 3, status: OnDeviceModelStatus.DOWNLOADABLE}),
+        ]);
+        await createPage();
+
+        assertFalse(!!page.shadowRoot.querySelector('#noModels'));
+        const entries = getModelEntries();
+        assertEquals(2, entries.length);
+        assertDeepEquals(downloadingCapability, entries[0]!.capability);
+        assertDeepEquals(updatingCapability, entries[1]!.capability);
+      });
+
   test('delete button removes model', async function() {
     testBrowserProxy.reset();
     testBrowserProxy.setGetOnDeviceAiCapabilitiesResponse(
@@ -228,7 +258,7 @@ suite('OnDeviceAiPage', function() {
       {...createGemmaCapability(), status: OnDeviceModelStatus.DOWNLOADABLE},
       createAsrCapability(),
     ]);
-    getModelEntries()[0]!.$.delete.click();
+    clickDeleteButton(0);
     assertEquals(
         createGemmaCapability().id,
         await testBrowserProxy.whenCalled('deleteOnDeviceAiCapability'));
@@ -250,7 +280,7 @@ suite('OnDeviceAiPage', function() {
     testBrowserProxy.setDeleteOnDeviceAiCapabilityResponse([
       {...createGemmaCapability(), status: OnDeviceModelStatus.DOWNLOADABLE},
     ]);
-    getModelEntries()[0]!.$.delete.click();
+    clickDeleteButton(0);
     await testBrowserProxy.whenCalled('deleteOnDeviceAiCapability');
     await microtasksFinished();
 
@@ -269,7 +299,7 @@ suite('OnDeviceAiPage', function() {
       createGemmaCapability(),
       {...createAsrCapability(), status: OnDeviceModelStatus.DOWNLOADABLE},
     ]);
-    getModelEntries()[1]!.$.delete.click();
+    clickDeleteButton(1);
     await testBrowserProxy.whenCalled('deleteOnDeviceAiCapability');
     await microtasksFinished();
 

@@ -147,8 +147,10 @@ export class SettingsOnDeviceAiPageElement extends
   }
 
   private updateCapabilities_(capabilities: OnDeviceAiCapability[]) {
-    this.capabilities_ =
-        capabilities.filter(item => item.status === OnDeviceModelStatus.READY);
+    this.capabilities_ = capabilities.filter(
+        item => item.status === OnDeviceModelStatus.READY ||
+            item.status === OnDeviceModelStatus.DOWNLOADING ||
+            item.status === OnDeviceModelStatus.UPDATING);
   }
 
   private setOnDeviceAiPref_(onDeviceAiEnabled: OnDeviceAiEnabled) {

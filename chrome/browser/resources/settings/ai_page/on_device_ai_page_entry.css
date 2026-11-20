@@ -34,11 +34,21 @@
   }
 }
 
-#modelIcon {
+#modelIcon,
+#statusIcon {
   --iron-icon-fill-color: var(--cr-secondary-text-color);
   --iron-icon-height: 20px;
   --iron-icon-width: 20px;
+}
+
+#modelIcon {
   margin-inline-end: 16px;
+}
+
+/* Match .separator + cr-icon-button's slot so the separator stays aligned. */
+#statusIcon {
+  margin-block: 6px;
+  margin-inline: calc(6px + var(--cr-icon-ripple-margin)) 6px;
 }
 
 #modelDetails {

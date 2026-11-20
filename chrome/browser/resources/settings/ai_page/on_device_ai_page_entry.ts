@@ -13,6 +13,7 @@ import type {CrCollapseElement} from 'chrome://resources/cr_elements/cr_collapse
 import type {CrExpandButtonElement} from 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import type {CrIconElement} from 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
+import {assertNotReached, assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {OnDeviceAiCapability} from './on_device_ai_browser_proxy.js';
@@ -31,7 +32,6 @@ const CATEGORY_ICONS: Record<OnDeviceModelCategory, string> = {
 export interface SettingsOnDeviceAiPageEntryElement {
   $: {
     collapse: CrCollapseElement,
-    delete: HTMLElement,
     expand: CrExpandButtonElement,
     modelDescription: HTMLElement,
     modelDetailsList: HTMLElement,
@@ -93,6 +93,37 @@ export class SettingsOnDeviceAiPageEntryElement extends
 
   protected onDeleteClick_() {
     this.fire('delete-click', this.capability.id);
+  }
+
+  protected getMetadataText_(): string {
+    switch (this.capability.status) {
+      case OnDeviceModelStatus.READY:
+        return this.i18n(
+            'onDeviceAiModelMetadata', this.capability.modelName,
+            this.capability.size);
+      case OnDeviceModelStatus.DOWNLOADING:
+        return this.i18n('onDeviceAiModelDownloading');
+      case OnDeviceModelStatus.UPDATING:
+        return this.i18n('onDeviceAiModelUpdating');
+      case OnDeviceModelStatus.DOWNLOADABLE:
+        assertNotReached();
+      default:
+        assertNotReachedCase(this.capability.status);
+    }
+  }
+
+  protected getStatusIcon_(): string {
+    switch (this.capability.status) {
+      case OnDeviceModelStatus.DOWNLOADING:
+        return 'settings20:downloading';
+      case OnDeviceModelStatus.UPDATING:
+        return 'settings20:update';
+      case OnDeviceModelStatus.READY:
+      case OnDeviceModelStatus.DOWNLOADABLE:
+        assertNotReached();
+      default:
+        assertNotReachedCase(this.capability.status);
+    }
   }
 }
 

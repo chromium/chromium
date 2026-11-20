@@ -4,16 +4,25 @@
 
 import 'chrome://settings/lazy_load.js';
 
+import type {CrIconElement} from 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import type {OnDeviceAiCapability, SettingsOnDeviceAiPageEntryElement} from 'chrome://settings/lazy_load.js';
-import {OnDeviceModelCategory} from 'chrome://settings/lazy_load.js';
+import {OnDeviceModelCategory, OnDeviceModelStatus} from 'chrome://settings/lazy_load.js';
 import {loadTimeData} from 'chrome://settings/settings.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {createAsrCapability, createGemmaCapability} from './on_device_ai_page_test_util.js';
 
 suite('OnDeviceAiPageEntry', function() {
   let entry: SettingsOnDeviceAiPageEntryElement;
+
+  function getDeleteButton(): HTMLElement|null {
+    return entry.shadowRoot.querySelector<HTMLElement>('#delete');
+  }
+
+  function getStatusIcon(): CrIconElement|null {
+    return entry.shadowRoot.querySelector<CrIconElement>('#statusIcon');
+  }
 
   setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -36,10 +45,34 @@ suite('OnDeviceAiPageEntry', function() {
         loadTimeData.getStringF(
             'onDeviceAiModelExpandA11yLabel', capability.categoryTitle),
         entry.$.expand.ariaLabel);
+    const deleteButton = getDeleteButton();
+    assertTrue(!!deleteButton);
+    assertNull(getStatusIcon());
     assertEquals(
         loadTimeData.getStringF(
             'onDeviceAiModelDeleteA11yLabel', capability.categoryTitle),
-        entry.$.delete.ariaLabel);
+        deleteButton.ariaLabel);
+  }
+
+  async function assertInProgressStatusRendered(
+      status: OnDeviceModelStatus.DOWNLOADING|OnDeviceModelStatus.UPDATING,
+      expectedMetadataStringId: string, expectedIcon: string) {
+    const capability = createGemmaCapability({status});
+    entry.capability = capability;
+    await microtasksFinished();
+
+    assertEquals(
+        capability.categoryTitle, entry.$.modelTitle.textContent.trim());
+    assertEquals(
+        capability.description, entry.$.modelDescription.textContent.trim());
+    assertEquals(
+        loadTimeData.getString(expectedMetadataStringId),
+        entry.$.modelMetadata.textContent.trim());
+    assertNull(getDeleteButton());
+    const statusIcon = getStatusIcon();
+    assertTrue(!!statusIcon);
+    assertTrue(isVisible(statusIcon));
+    assertEquals(expectedIcon, statusIcon.icon);
   }
 
   test('renders and updates capability details', async function() {
@@ -64,6 +97,18 @@ suite('OnDeviceAiPageEntry', function() {
       await microtasksFinished();
       assertEquals(icon, entry.$.modelIcon.icon);
     }
+  });
+
+  test('renders downloading status', async function() {
+    await assertInProgressStatusRendered(
+        OnDeviceModelStatus.DOWNLOADING, 'onDeviceAiModelDownloading',
+        'settings20:downloading');
+  });
+
+  test('renders updating status', async function() {
+    await assertInProgressStatusRendered(
+        OnDeviceModelStatus.UPDATING, 'onDeviceAiModelUpdating',
+        'settings20:update');
   });
 
   test('expand button toggles details', async function() {
@@ -93,7 +138,9 @@ suite('OnDeviceAiPageEntry', function() {
   test('delete button fires delete-click event', async function() {
     const deleteEventPromise =
         eventToPromise<CustomEvent<number>>('delete-click', entry);
-    entry.$.delete.click();
+    const deleteButton = getDeleteButton();
+    assertTrue(!!deleteButton);
+    deleteButton.click();
     const event = await deleteEventPromise;
     assertEquals(createGemmaCapability().id, event.detail);
   });
