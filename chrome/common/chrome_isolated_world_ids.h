@@ -19,9 +19,6 @@ enum ChromeIsolatedWorldIDs {
   // Isolated world ID for internal Chrome features.
   ISOLATED_WORLD_ID_CHROME_INTERNAL,
 
-  // Isolated world ID for Autofill custom form control scripts.
-  ISOLATED_WORLD_ID_AUTOFILL_CUSTOM_FORM_CONTROLS,
-
   // Isolated world ID for Chrome Actor.
   ISOLATED_WORLD_ID_ACTOR,
 
