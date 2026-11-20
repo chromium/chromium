@@ -99,6 +99,7 @@ constexpr absl::Overload PreToolEventsFn{
     NoUiEvents<ExitFullscreenToolRequest>,
     NoUiEvents<FileUploadToolRequest>,
     NoUiEvents<FindAndHighlightToolRequest>,
+    NoUiEvents<GetScreenshotToolRequest>,
     NoUiEvents<HistoryBackToolRequest>,
     NoUiEvents<HistoryForwardToolRequest>,
 #if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
@@ -161,6 +162,7 @@ constexpr absl::Overload PostToolEventsFn{
     NoUiEvents<FileUploadToolRequest>,
     NoUiEvents<FindAndHighlightToolRequest>,
     NoUiEvents<ExecuteJsToolRequest>,
+    NoUiEvents<GetScreenshotToolRequest>,
     NoUiEvents<HistoryBackToolRequest>,
     NoUiEvents<HistoryForwardToolRequest>,
 #if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)

@@ -13,6 +13,7 @@
 #include "chrome/browser/actor/tools/file_upload_tool_request.h"
 #include "chrome/browser/actor/tools/find_and_highlight_tool_request.h"
 #include "chrome/browser/actor/tools/gemini_panel_tool_request.h"
+#include "chrome/browser/actor/tools/get_screenshot_tool_request.h"
 #include "chrome/browser/actor/tools/history_tool_request.h"
 #include "chrome/browser/actor/tools/load_and_extract_content_tool_request.h"
 #include "chrome/browser/actor/tools/media_control_tool_request.h"
@@ -61,6 +62,7 @@ class ToolRequestVisitorFunctor {
   virtual void Apply(const FileUploadToolRequest&) = 0;
   virtual void Apply(const FindAndHighlightToolRequest&) = 0;
   virtual void Apply(const ExecuteJsToolRequest&) = 0;
+  virtual void Apply(const GetScreenshotToolRequest&) = 0;
   virtual void Apply(const HistoryBackToolRequest&) = 0;
   virtual void Apply(const HistoryForwardToolRequest&) = 0;
 #if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)

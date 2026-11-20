@@ -32,6 +32,7 @@ using ToolRequestVariant = std::variant<ActivateTabToolRequest,
                                         FileUploadToolRequest,
                                         FindAndHighlightToolRequest,
                                         ExecuteJsToolRequest,
+                                        GetScreenshotToolRequest,
                                         HistoryBackToolRequest,
                                         HistoryForwardToolRequest,
 #if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)

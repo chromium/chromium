@@ -23,6 +23,7 @@
 #include "chrome/browser/actor/tools/file_upload_tool_request.h"
 #include "chrome/browser/actor/tools/find_and_highlight_tool_request.h"
 #include "chrome/browser/actor/tools/gemini_panel_tool_request.h"
+#include "chrome/browser/actor/tools/get_screenshot_tool_request.h"
 #include "chrome/browser/actor/tools/history_tool_request.h"
 #include "chrome/browser/actor/tools/media_control_tool_request.h"
 #include "chrome/browser/actor/tools/move_mouse_tool_request.h"
@@ -572,6 +573,17 @@ TEST(ToolRegistryTest, CloseGeminiPanelToolDefinition) {
                                              base::Value(base::DictValue())));
 }
 
+TEST(ToolRegistryTest, GetScreenshotToolDefinition) {
+  const std::optional<ToolDefinition> definition =
+      GetScreenshotToolRequest::GetToolDefinition();
+  ASSERT_TRUE(definition.has_value());
+  EXPECT_EQ(definition->id, ToolId::kGetScreenshot);
+  EXPECT_EQ(definition->name, GetScreenshotToolRequest::kModelFacingName);
+  EXPECT_THAT(definition->parameters_json_schema,
+              base::test::DictionaryHasValue("properties",
+                                             base::Value(base::DictValue())));
+}
+
 TEST(ToolRegistryTest, GetAllToolsContainsNavigateTool) {
   base::test::ScopedFeatureList scoped_feature_list(features::kGlicActor);
   content::BrowserTaskEnvironment task_environment;
@@ -952,6 +964,18 @@ TEST(ToolRegistryTest, GetAllToolsContainsCloseGeminiPanelTool) {
 
   EXPECT_TRUE(std::ranges::contains(service->tool_registry().GetAllTools(),
                                     ToolId::kCloseGeminiPanel,
+                                    &ToolDefinition::id));
+}
+
+TEST(ToolRegistryTest, GetAllToolsContainsGetScreenshotTool) {
+  base::test::ScopedFeatureList scoped_feature_list(features::kGlicActor);
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  ActorKeyedService* service = ActorKeyedService::Get(&profile);
+  ASSERT_TRUE(service);
+
+  EXPECT_TRUE(std::ranges::contains(service->tool_registry().GetAllTools(),
+                                    ToolId::kGetScreenshot,
                                     &ToolDefinition::id));
 }
 

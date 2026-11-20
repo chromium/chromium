@@ -106,7 +106,9 @@ enum class ToolId {
   // Searches within the currently active website using its search bar or
   // OpenSearch Description Document (OSDD) template.
   kSiteBasedSearch = 40,
-  kMaxValue = kSiteBasedSearch,
+  // Captures a screenshot of the active webpage's current viewport.
+  kGetScreenshot = 41,
+  kMaxValue = kGetScreenshot,
 };
 // In-memory metadata and parameter schema for a shared browser tool. Prefer
 // building instances with `ToolDefinitionBuilder`.

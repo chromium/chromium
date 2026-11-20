@@ -76,6 +76,9 @@ class ConvertToVariantFn : public ToolRequestVisitorFunctor {
   void Apply(const ExecuteJsToolRequest& tr) override {
     var_ = ToolRequestVariant(tr);
   }
+  void Apply(const GetScreenshotToolRequest& tr) override {
+    var_ = ToolRequestVariant(tr);
+  }
   void Apply(const HistoryBackToolRequest& tr) override {
     var_ = ToolRequestVariant(tr);
   }
