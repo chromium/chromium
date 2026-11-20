@@ -213,6 +213,7 @@ public class TipsOptInCoordinator {
                         mContext.getResources())
                 .ensureInitializedAndDisabled(ChannelId.TIPS_V2);
 
+        TipsUtils.updateTipsNotificationsOptInEligibilityPref(mSharedPreferences);
         recordOptInPromoEventType(OptInPromoEventType.DECLINED);
         dismiss();
     }

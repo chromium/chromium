@@ -349,4 +349,24 @@ public class EducationalTipCardProviderSignalHandlerUnitTest {
         assertTrue(
                 inputContext.getEntryValue("has_theme_tip_bottom_sheet_been_shown").booleanValue);
     }
+
+    @Test
+    public void testCreateInputContext_TipsNotificationsPromoCard() {
+        ChromeSharedPreferences.getInstance()
+                .removeKey(ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_ELIGIBLE);
+        InputContext inputContext =
+                EducationalTipCardProviderSignalHandler.createInputContext(
+                        ModuleType.TIPS_NOTIFICATIONS_PROMO, mActionDelegate, mProfile, mTracker);
+        assertEquals(2, inputContext.getSizeForTesting());
+        assertEquals(
+                0.0f, inputContext.getEntryValue("is_eligible_to_tips_opt_in").floatValue, 0.01);
+
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_ELIGIBLE, true);
+        inputContext =
+                EducationalTipCardProviderSignalHandler.createInputContext(
+                        ModuleType.TIPS_NOTIFICATIONS_PROMO, mActionDelegate, mProfile, mTracker);
+        assertEquals(
+                1.0f, inputContext.getEntryValue("is_eligible_to_tips_opt_in").floatValue, 0.01);
+    }
 }

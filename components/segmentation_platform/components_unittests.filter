@@ -105,6 +105,7 @@
 *TabletProductivityUserModelTest.*
 *TipsManagerTest.*
 *TipsNotificationsEphemeralModuleTest.*
+*TipsNotificationsPromoTest.*
 *TipsNotificationsRankerTest.*
 *TrainingDataCacheTest.*
 *TrainingDataCollectorImplTest.*

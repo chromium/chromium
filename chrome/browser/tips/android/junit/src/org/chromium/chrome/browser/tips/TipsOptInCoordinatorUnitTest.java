@@ -16,6 +16,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_ELIGIBLE;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_PROMO_ACCEPTED;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_PROMO_LAST_SHOWN_TIMESTAMP;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_PROMO_SHOW_COUNT;
@@ -272,6 +273,7 @@ public class TipsOptInCoordinatorUnitTest {
 
     @Test
     public void testOnOptInDeclined() {
+        NotificationProxyUtils.setNotificationEnabledForTest(true);
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Notifications.Tips.OptInPromo.EventType2",
@@ -282,6 +284,8 @@ public class TipsOptInCoordinatorUnitTest {
 
         verify(mBottomSheetController).hideContent(any(), eq(true));
         histogramWatcher.assertExpected();
+        // Decliners remain eligible for the passive Magic Stack card.
+        assertTrue(mSharedPreferenceManager.readBoolean(TIPS_NOTIFICATIONS_OPT_IN_ELIGIBLE, false));
 
         // Verify channel exists and is disabled.
         BaseNotificationManagerProxyFactory.create()

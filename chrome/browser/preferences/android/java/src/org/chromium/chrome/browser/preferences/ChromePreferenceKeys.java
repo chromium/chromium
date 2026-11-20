@@ -1090,6 +1090,10 @@ public final class ChromePreferenceKeys {
     public static final String TAB_OR_GROUP_TEARING_MAX_INSTANCES_FAILURE_COUNT =
             "Chrome.TabOrGroupTearing.MaxInstancesFailureCount";
 
+    // Whether the user is eligible to see the Tips Notifications Opt In Magic Stack card.
+    public static final String TIPS_NOTIFICATIONS_OPT_IN_ELIGIBLE =
+            "Chrome.TipsNotifications.OptInEligible";
+
     // Whether the Tips Notifications Opt In promo has been accepted.
     public static final String TIPS_NOTIFICATIONS_OPT_IN_PROMO_ACCEPTED =
             "Chrome.TipsNotifications.OptInAccepted";
@@ -1373,6 +1377,7 @@ public final class ChromePreferenceKeys {
                 TAB_PERSISTENCE_SHADOW_WRITTEN_STORE.pattern(),
                 TAB_PERSISTENCE_STORE_MANAGER_VERSION,
                 TAB_STORE_METRICS.pattern(),
+                TIPS_NOTIFICATIONS_OPT_IN_ELIGIBLE,
                 TIPS_NOTIFICATIONS_OPT_IN_PROMO_ACCEPTED,
                 TIPS_NOTIFICATIONS_OPT_IN_PROMO_SHOW_COUNT,
                 TIPS_NOTIFICATIONS_OPT_IN_PROMO_LAST_SHOWN_TIMESTAMP,

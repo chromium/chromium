@@ -18,6 +18,7 @@
 #include "components/segmentation_platform/embedder/home_modules/quick_delete_promo.h"
 #include "components/segmentation_platform/embedder/home_modules/tab_group_promo.h"
 #include "components/segmentation_platform/embedder/home_modules/tab_group_sync_promo.h"
+#include "components/segmentation_platform/embedder/home_modules/tips_notifications_promo.h"
 #include "components/segmentation_platform/public/constants.h"
 #include "components/segmentation_platform/public/features.h"
 
@@ -63,6 +64,11 @@ HomeModulesCardRegistryAndroid::HomeModulesCardRegistryAndroid(
         std::make_unique<QuickDeletePromo>(profile_prefs_));
   }
 
+  if (TipsNotificationsPromo::IsEnabled(profile_prefs_)) {
+    all_cards_by_priority_.push_back(
+        std::make_unique<TipsNotificationsPromo>(profile_prefs_));
+  }
+
   InitializeAfterAddingCards();
 }
 
@@ -84,6 +90,7 @@ void HomeModulesCardRegistryAndroid::RegisterProfilePrefs(
   NtpThemePromo::RegisterProfilePrefs(registry);
   AuxiliarySearchPromo::RegisterProfilePrefs(registry);
   HistorySyncPromo::RegisterProfilePrefs(registry);
+  TipsNotificationsPromo::RegisterProfilePrefs(registry);
 }
 
 void HomeModulesCardRegistryAndroid::NotifyCardShown(

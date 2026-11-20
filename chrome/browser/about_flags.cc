@@ -2486,6 +2486,14 @@ const FeatureEntry::FeatureParam kNtpThemePromoHideArm[] = {
     {segmentation_platform::features::kEphemeralCardRankerForceHideCardParam,
      segmentation_platform::kNtpThemePromo},
 };
+const FeatureEntry::FeatureParam kTipsNotificationsPromoShowArm[] = {
+    {segmentation_platform::features::kEphemeralCardRankerForceShowCardParam,
+     segmentation_platform::kTipsNotificationsPromo},
+};
+const FeatureEntry::FeatureParam kTipsNotificationsPromoHideArm[] = {
+    {segmentation_platform::features::kEphemeralCardRankerForceHideCardParam,
+     segmentation_platform::kTipsNotificationsPromo},
+};
 
 const FeatureEntry::FeatureVariation kEphemeralCardRankerCardOverrideOptions[] =
     {
@@ -2503,6 +2511,10 @@ const FeatureEntry::FeatureVariation kEphemeralCardRankerCardOverrideOptions[] =
         {"- Force hide quick delete promo", kQuickDeletePromoHideArm, nullptr},
         {"- Force show ntp theme promo", kNtpThemePromoShowArm, nullptr},
         {"- Force hide ntp theme promo", kNtpThemePromoHideArm, nullptr},
+        {"- Force show tips notifications promo",
+         kTipsNotificationsPromoShowArm, nullptr},
+        {"- Force hide tips notifications promo",
+         kTipsNotificationsPromoHideArm, nullptr},
 };
 
 const FeatureEntry::FeatureParam kAndroidVerticalTabs_EnableByDefault[] = {

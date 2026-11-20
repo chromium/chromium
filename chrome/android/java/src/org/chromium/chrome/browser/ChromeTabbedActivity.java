@@ -4287,6 +4287,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         }
 
         TipsUtils.scheduleOrCancelTipsNotification(getProfileProviderSupplier(), windowAndroid);
+        TipsUtils.updateTipsNotificationsOptInEligibilityPref(
+                ChromeSharedPreferences.getInstance());
 
         if (ChromeFeatureList.sAndroidStartupImprovements.isEnabled()) {
             if (FindsFeatures.sChromeFinds.isEnabled()) {

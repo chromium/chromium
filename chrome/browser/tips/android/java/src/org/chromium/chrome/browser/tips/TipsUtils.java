@@ -394,6 +394,58 @@ public class TipsUtils {
     }
 
     /**
+     * Refreshes the cached answer to whether the Magic Stack Tips notifications opt-in card can be
+     * shown. Magic Stack ranking needs the answer synchronously, but the channel lookup is async.
+     *
+     * <p>Users who declined the opt-in sheet stay eligible, since a blocked channel still counts as
+     * not enabled: the card is passive and is the only in-app way back after a decline. Users with
+     * app notifications off are not eligible.
+     *
+     * @param sharedPreferences The {@link SharedPreferencesManager} to write the cached state to.
+     */
+    public static void updateTipsNotificationsOptInEligibilityPref(
+            SharedPreferencesManager sharedPreferences) {
+        if (!isTipsNotificationsFeatureAvailable()) {
+            writeOptInEligibilityPrefIfChanged(sharedPreferences, false);
+            return;
+        }
+
+        // Accepting is permanent and acceptOptIn() already cleared the pref, so there is nothing
+        // left to refresh.
+        if (sharedPreferences.readBoolean(
+                ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_PROMO_ACCEPTED, false)) {
+            return;
+        }
+
+        if (!areAppNotificationsEnabled()) {
+            writeOptInEligibilityPrefIfChanged(sharedPreferences, false);
+            return;
+        }
+
+        areTipsNotificationsEnabled(
+                (enabled) -> {
+                    // Read again, since the user may have accepted during the lookup.
+                    boolean accepted =
+                            sharedPreferences.readBoolean(
+                                    ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_PROMO_ACCEPTED,
+                                    false);
+                    writeOptInEligibilityPrefIfChanged(
+                            sharedPreferences,
+                            areAppNotificationsEnabled() && !enabled && !accepted);
+                });
+    }
+
+    private static void writeOptInEligibilityPrefIfChanged(
+            SharedPreferencesManager sharedPreferences, boolean eligible) {
+        if (sharedPreferences.readBoolean(
+                        ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_ELIGIBLE, false)
+                != eligible) {
+            sharedPreferences.writeBoolean(
+                    ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_ELIGIBLE, eligible);
+        }
+    }
+
+    /**
      * Check if both app-level and tips notifications are enabled.
      *
      * @param callback Callback to return the result.
@@ -445,6 +497,9 @@ public class TipsUtils {
             Callback<Boolean> onComplete) {
         sharedPreferences.writeBoolean(
                 ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_PROMO_ACCEPTED, true);
+        // Accepting opt-in immediately disqualifies the Magic Stack card.
+        sharedPreferences.writeBoolean(
+                ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_ELIGIBLE, false);
         isTipsChannelCreated(
                 channelExists -> {
                     if (!channelExists) {

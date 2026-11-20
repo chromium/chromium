@@ -77,6 +77,9 @@ const char kHasThemeTipBottomSheetBeenShown[] =
     "has_theme_tip_bottom_sheet_been_shown";
 const char kThemeTipBottomSheetShownCount[] =
     "theme_tip_bottom_sheet_shown_count";
+const char kIsEligibleToTipsOptIn[] = "is_eligible_to_tips_opt_in";
+const char kTipsNotificationsPromoShownCount[] =
+    "tips_notifications_promo_shown_count";
 
 const char kAuxiliarySearchAvailable[] = "auxiliary_search_available";
 
@@ -128,6 +131,7 @@ inline constexpr char kTabGroupSyncPromo[] = "TabGroupSyncPromo";
 inline constexpr char kQuickDeletePromo[] = "QuickDeletePromo";
 inline constexpr char kHistorySyncPromo[] = "HistorySyncPromo";
 inline constexpr char kNtpThemePromo[] = "NtpThemePromo";
+inline constexpr char kTipsNotificationsPromo[] = "TipsNotificationsPromo";
 
 // General limits for emphemeral android modules.
 // This controls the display frequency limit for the general educational tip

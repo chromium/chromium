@@ -10,6 +10,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyBoolean;
+import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -558,6 +560,8 @@ public class TipsUtilsUnitTest {
 
         verify(mSharedPreferences)
                 .writeBoolean(ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_PROMO_ACCEPTED, true);
+        verify(mSharedPreferences)
+                .writeBoolean(ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_ELIGIBLE, false);
         verify(mOnOptInComplete).onResult(true);
         BaseNotificationManagerProxyFactory.create()
                 .getNotificationChannel(
@@ -711,6 +715,127 @@ public class TipsUtilsUnitTest {
         scheduleOrCancelTipsNotification();
 
         verify(mTipsPromoHandler).getCustomSignals(mWindowAndroid);
+    }
+
+    @Test
+    public void testUpdateTipsNotificationsOptInEligibilityPref_Eligible() {
+        NotificationProxyUtils.setNotificationEnabledForTest(true);
+
+        TipsUtils.updateTipsNotificationsOptInEligibilityPref(mSharedPreferences);
+        ShadowLooper.idleMainLooper();
+
+        verify(mSharedPreferences)
+                .writeBoolean(ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_ELIGIBLE, true);
+    }
+
+    @Test
+    public void testUpdateTipsNotificationsOptInEligibilityPref_Unchanged_SkipsWrite() {
+        NotificationProxyUtils.setNotificationEnabledForTest(true);
+        when(mSharedPreferences.readBoolean(
+                        ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_ELIGIBLE, false))
+                .thenReturn(true);
+
+        TipsUtils.updateTipsNotificationsOptInEligibilityPref(mSharedPreferences);
+        ShadowLooper.idleMainLooper();
+
+        verify(mSharedPreferences, never())
+                .writeBoolean(
+                        eq(ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_ELIGIBLE), anyBoolean());
+    }
+
+    @Test
+    public void testUpdateTipsNotificationsOptInEligibilityPref_AppNotificationsOff() {
+        NotificationProxyUtils.setNotificationEnabledForTest(false);
+        when(mSharedPreferences.readBoolean(
+                        ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_ELIGIBLE, false))
+                .thenReturn(true);
+
+        TipsUtils.updateTipsNotificationsOptInEligibilityPref(mSharedPreferences);
+
+        verify(mSharedPreferences)
+                .writeBoolean(ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_ELIGIBLE, false);
+    }
+
+    @Test
+    public void testUpdateTipsNotificationsOptInEligibilityPref_AlreadyAccepted() {
+        NotificationProxyUtils.setNotificationEnabledForTest(true);
+        when(mSharedPreferences.readBoolean(
+                        ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_PROMO_ACCEPTED, false))
+                .thenReturn(true);
+
+        TipsUtils.updateTipsNotificationsOptInEligibilityPref(mSharedPreferences);
+        ShadowLooper.idleMainLooper();
+
+        verify(mSharedPreferences, never())
+                .writeBoolean(
+                        eq(ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_ELIGIBLE), anyBoolean());
+    }
+
+    @Test
+    public void testUpdateTipsNotificationsOptInEligibilityPref_AcceptedDuringLookup() {
+        NotificationProxyUtils.setNotificationEnabledForTest(true);
+        when(mSharedPreferences.readBoolean(
+                        ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_ELIGIBLE, false))
+                .thenReturn(true);
+        when(mSharedPreferences.readBoolean(
+                        ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_PROMO_ACCEPTED, false))
+                .thenReturn(false, true);
+
+        TipsUtils.updateTipsNotificationsOptInEligibilityPref(mSharedPreferences);
+        ShadowLooper.idleMainLooper();
+
+        verify(mSharedPreferences)
+                .writeBoolean(ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_ELIGIBLE, false);
+    }
+
+    @Test
+    public void testUpdateTipsNotificationsOptInEligibilityPref_ChannelEnabled() {
+        NotificationProxyUtils.setNotificationEnabledForTest(true);
+        when(mSharedPreferences.readBoolean(
+                        ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_ELIGIBLE, false))
+                .thenReturn(true);
+        new ChannelsInitializer(
+                        BaseNotificationManagerProxyFactory.create(),
+                        ChromeChannelDefinitions.getInstance(),
+                        mActivity.getResources())
+                .ensureInitialized(ChannelId.TIPS_V2);
+        ShadowLooper.idleMainLooper();
+
+        TipsUtils.updateTipsNotificationsOptInEligibilityPref(mSharedPreferences);
+        ShadowLooper.idleMainLooper();
+
+        verify(mSharedPreferences)
+                .writeBoolean(ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_ELIGIBLE, false);
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.ANDROID_TIPS_NOTIFICATIONS)
+    public void testUpdateTipsNotificationsOptInEligibilityPref_FeatureDisabled() {
+        NotificationProxyUtils.setNotificationEnabledForTest(true);
+        when(mSharedPreferences.readBoolean(
+                        ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_ELIGIBLE, false))
+                .thenReturn(true);
+
+        TipsUtils.updateTipsNotificationsOptInEligibilityPref(mSharedPreferences);
+        ShadowLooper.idleMainLooper();
+
+        verify(mSharedPreferences)
+                .writeBoolean(ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_ELIGIBLE, false);
+    }
+
+    @Test
+    public void testUpdateTipsNotificationsOptInEligibilityPref_UnsupportedDevice() {
+        NotificationProxyUtils.setNotificationEnabledForTest(true);
+        DeviceInfo.setIsAutomotiveForTesting(true);
+        when(mSharedPreferences.readBoolean(
+                        ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_ELIGIBLE, false))
+                .thenReturn(true);
+
+        TipsUtils.updateTipsNotificationsOptInEligibilityPref(mSharedPreferences);
+        ShadowLooper.idleMainLooper();
+
+        verify(mSharedPreferences)
+                .writeBoolean(ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_ELIGIBLE, false);
     }
 
     private void scheduleOrCancelTipsNotification() {
