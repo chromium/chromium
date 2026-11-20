@@ -9,6 +9,8 @@
 #import "base/metrics/histogram_functions.h"
 #import "ios/chrome/browser/geolocation/model/geolocation_manager.h"
 #import "ios/web/public/js_messaging/script_message.h"
+#import "ios/web/public/js_messaging/script_message_dict_value.h"
+#import "ios/web/public/js_messaging/script_message_value.h"
 
 namespace {
 
@@ -89,14 +91,13 @@ GeolocationAPIUsageJavaScriptFeature::GetScriptMessageHandlerName() const {
 void GeolocationAPIUsageJavaScriptFeature::ScriptMessageReceived(
     web::WebState* web_state,
     const web::ScriptMessage& script_message) {
-  const base::DictValue* script_dict =
-      script_message.legacy_body() ? script_message.legacy_body()->GetIfDict()
-                                   : nullptr;
+  const web::ScriptMessageValue& body = script_message.body();
+  const web::ScriptMessageDictValue* script_dict = body.GetIfDict();
   if (!script_dict) {
     return;
   }
 
-  const std::string* api =
+  std::optional<std::string> api =
       script_dict->FindString(kScriptMessageResponseAPINameKey);
   if (!api) {
     return;
