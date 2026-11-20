@@ -115,10 +115,9 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
     // (checks commands and configures the ACL), so both see the same session
     // ACL.
     const aclManager = new AclManager(this.#browsingContextStorage);
-    if (restrictedMode === true) {
-      // In restricted mode, enforce the ACL, empty by default, before
-      // `session.new`.
-      aclManager.setEnabled(true);
+    if (restrictedMode) {
+      // Restricted mode requires enabling ACL.
+      aclManager.enable();
     }
     this.#eventManager = new EventManager(
       this.#browsingContextStorage,
