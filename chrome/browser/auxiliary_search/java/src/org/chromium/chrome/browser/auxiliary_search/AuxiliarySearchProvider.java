@@ -45,12 +45,20 @@ import java.util.concurrent.TimeUnit;
 @NullMarked
 public class AuxiliarySearchProvider {
     /** The version of tab donation's metadata. */
-    @IntDef({MetaDataVersion.V1, MetaDataVersion.MULTI_TYPE_V2, MetaDataVersion.NUM_ENTRIES})
+    @IntDef({
+        MetaDataVersion.V1,
+        MetaDataVersion.MULTI_TYPE_V2,
+        MetaDataVersion.MULTI_TYPE_V3,
+        MetaDataVersion.NUM_ENTRIES
+    })
     @Retention(RetentionPolicy.SOURCE)
     @interface MetaDataVersion {
         int V1 = 0;
+        // Stores 32-bit visit IDs. Files of this version are still read, but no longer written.
         int MULTI_TYPE_V2 = 1;
-        int NUM_ENTRIES = 2;
+        // Stores 64-bit visit IDs.
+        int MULTI_TYPE_V3 = 2;
+        int NUM_ENTRIES = 3;
     }
 
     @VisibleForTesting static final String TASK_CREATED_TIME = "TaskCreatedTime";
@@ -173,7 +181,7 @@ public class AuxiliarySearchProvider {
                         stream.writeUTF(tab.getUrl().getSpec());
                         stream.writeLong(tab.getTimestampMillis());
                     } else if (entry instanceof AuxiliarySearchDataEntry dataEntry) {
-                        assert version == MetaDataVersion.MULTI_TYPE_V2;
+                        assert version == MetaDataVersion.MULTI_TYPE_V3;
                         @AuxiliarySearchEntryType int type = dataEntry.type;
                         stream.writeInt(type);
                         if (type == AuxiliarySearchEntryType.TAB) {
@@ -184,7 +192,7 @@ public class AuxiliarySearchProvider {
                             } else if (type == AuxiliarySearchEntryType.TOP_SITE) {
                                 stream.writeInt(dataEntry.score);
                             }
-                            stream.writeInt(dataEntry.visitId);
+                            stream.writeLong(dataEntry.visitId);
                         }
                         stream.writeUTF(dataEntry.title);
                         stream.writeUTF(dataEntry.url.getSpec());
@@ -227,11 +235,12 @@ public class AuxiliarySearchProvider {
                 String url = stream.readUTF();
                 long timeStamp = stream.readLong();
                 entry = (T) createAuxiliarySearchEntry(id, title, url, timeStamp);
-            } else if (version == MetaDataVersion.MULTI_TYPE_V2) {
+            } else if (version == MetaDataVersion.MULTI_TYPE_V2
+                    || version == MetaDataVersion.MULTI_TYPE_V3) {
                 int type = stream.readInt();
                 int id = Tab.INVALID_TAB_ID;
                 String appId = null;
-                int visitId = Tab.INVALID_TAB_ID;
+                long visitId = Tab.INVALID_TAB_ID;
                 int score = -1;
                 if (type == AuxiliarySearchEntryType.TAB) {
                     id = stream.readInt();
@@ -241,7 +250,11 @@ public class AuxiliarySearchProvider {
                     } else if (type == AuxiliarySearchEntryType.TOP_SITE) {
                         score = stream.readInt();
                     }
-                    visitId = stream.readInt();
+                    // Files saved before MULTI_TYPE_V3 store 32-bit visit IDs.
+                    visitId =
+                            version == MetaDataVersion.MULTI_TYPE_V2
+                                    ? stream.readInt()
+                                    : stream.readLong();
                 }
                 String title = stream.readUTF();
                 String url = stream.readUTF();

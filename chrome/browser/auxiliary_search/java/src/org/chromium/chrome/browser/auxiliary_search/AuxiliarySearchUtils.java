@@ -95,7 +95,7 @@ public class AuxiliarySearchUtils {
         if (entry instanceof Tab || entry instanceof AuxiliarySearchEntry) {
             return MetaDataVersion.V1;
         }
-        return MetaDataVersion.MULTI_TYPE_V2;
+        return MetaDataVersion.MULTI_TYPE_V3;
     }
 
     /** Returns the schema version cached in the shared preference. */

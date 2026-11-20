@@ -5,6 +5,8 @@
 #include "chrome/browser/auxiliary_search/auxiliary_search_provider.h"
 
 #include <algorithm>
+#include <array>
+#include <limits>
 
 #include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
@@ -13,10 +15,11 @@
 #include "base/barrier_callback.h"
 #include "base/check.h"
 #include "base/check_deref.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
-#include "base/hash/hash.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/android/persisted_tab_data/sensitivity_persisted_tab_data_android.h"
 #include "chrome/browser/android/tab_android.h"
@@ -32,7 +35,9 @@
 #include "components/visited_url_ranking/public/url_visit.h"
 #include "components/visited_url_ranking/public/url_visit_util.h"
 #include "components/visited_url_ranking/public/visited_url_ranking_service.h"
+#include "crypto/hash.h"
 #include "url/android/gurl_android.h"
+#include "url/gurl.h"
 #include "url/url_constants.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -139,6 +144,14 @@ void OnDataReady(JNIEnv* env,
                  std::vector<jni_zero::ScopedJavaLocalRef<jobject>> entries,
                  const visited_url_ranking::URLVisitsMetadata& metadata) {
   Java_AuxiliarySearchBridge_onDataReady(env, entries, j_callback);
+}
+
+// Converts the first 8 bytes of a SHA-256 `digest` to a non-negative 63-bit
+// visit ID.
+int64_t ToVisitId(base::span<const uint8_t, crypto::hash::kSha256Size> digest) {
+  return static_cast<int64_t>(
+      base::U64FromBigEndian(digest.first<8u>()) &
+      static_cast<uint64_t>(std::numeric_limits<int64_t>::max()));
 }
 
 }  // namespace
@@ -261,6 +274,28 @@ static void JNI_AuxiliarySearchBridge_GetCustomTabs(
   CHECK(profile);
   CHECK_DEREF(AuxiliarySearchProviderFactory::GetForProfile(profile))
       .GetCustomTabs(env, j_url, j_begin_time, j_callback_obj);
+}
+
+// static
+int64_t AuxiliarySearchProvider::GetCustomTabVisitId(std::string_view url_key) {
+  return ToVisitId(crypto::hash::Sha256(url_key));
+}
+
+// static
+int64_t AuxiliarySearchProvider::GetTopSiteVisitId(
+    const GURL& url,
+    const std::u16string& title) {
+  crypto::hash::Hasher hasher(crypto::hash::kSha256);
+  // Prefixes each field with its length, so that moving characters between the
+  // URL and the title changes the visit ID.
+  const std::string& url_spec = url.possibly_invalid_spec();
+  hasher.Update(base::U64ToBigEndian(url_spec.size()));
+  hasher.Update(url_spec);
+  hasher.Update(base::U64ToBigEndian(title.size()));
+  hasher.Update(base::as_byte_span(title));
+  std::array<uint8_t, crypto::hash::kSha256Size> digest;
+  hasher.Finish(digest);
+  return ToVisitId(digest);
 }
 
 // static

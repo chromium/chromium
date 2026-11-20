@@ -164,7 +164,7 @@ public class AuxiliarySearchUtilsUnitTest {
                         /* visitId= */ -1,
                         /* score= */ 0);
         assertEquals(
-                MetaDataVersion.MULTI_TYPE_V2, AuxiliarySearchUtils.getMetadataVersion(dataEntry));
+                MetaDataVersion.MULTI_TYPE_V3, AuxiliarySearchUtils.getMetadataVersion(dataEntry));
     }
 
     @Test

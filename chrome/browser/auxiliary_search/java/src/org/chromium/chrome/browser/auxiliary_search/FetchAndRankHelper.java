@@ -34,7 +34,7 @@ class FetchAndRankHelper {
             long lastActiveTime,
             int tabId,
             @JniType("std::string") @Nullable String appId,
-            int visitId) {
+            long visitId) {
         return new AuxiliarySearchDataEntry(
                 type,
                 url,

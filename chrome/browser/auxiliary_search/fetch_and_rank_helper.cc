@@ -11,7 +11,6 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/functional/bind.h"
-#include "base/hash/hash.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/auxiliary_search/auxiliary_search_provider.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
@@ -249,7 +248,8 @@ void FetchAndRankHelper::OnRanked(URLVisitsMetadata url_visits_metadata,
                       .InMillisecondsSinceUnixEpoch(),
                   kInvalidTabId,
                   history_data.last_app_id.value_or(std::string()),
-                  std::abs(static_cast<int>(base::Hash(aggregate.url_key)))));
+                  AuxiliarySearchProvider::GetCustomTabVisitId(
+                      aggregate.url_key)));
             }},
         fetcher_entry.second);
   }

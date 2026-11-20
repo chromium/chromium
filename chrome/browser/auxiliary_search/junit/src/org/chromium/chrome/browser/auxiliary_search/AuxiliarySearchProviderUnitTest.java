@@ -21,6 +21,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
@@ -48,7 +49,13 @@ import org.chromium.ui.test.util.MockitoHelper;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 
@@ -59,6 +66,7 @@ public class AuxiliarySearchProviderUnitTest {
     private static final String TAB_URL = "https://tab.google.com/";
 
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
+    public @Rule TemporaryFolder mTemporaryFolder = new TemporaryFolder();
 
     private @Mock AuxiliarySearchBridge.Natives mMockAuxiliarySearchBridgeJni;
     private @Mock FaviconHelper.Natives mMockFaviconHelperJni;
@@ -189,8 +197,8 @@ public class AuxiliarySearchProviderUnitTest {
     }
 
     @Test
-    public void testSaveAndReadDonationMetadataAsync_V2() {
-        @MetaDataVersion int metaDataVersion = MetaDataVersion.MULTI_TYPE_V2;
+    public void testSaveAndReadDonationMetadataAsync_V3() {
+        @MetaDataVersion int metaDataVersion = MetaDataVersion.MULTI_TYPE_V3;
         long now = TimeUtils.uptimeMillis();
         // The entries include 2 elements, and the second one will be saved to the metadata file.
         // This is because testSaveAndReadDonationMetadataAsyncImpl() sets the starting index to 1.
@@ -215,8 +223,8 @@ public class AuxiliarySearchProviderUnitTest {
     }
 
     @Test
-    public void testSaveAndReadDonationMetadataAsync_V2_TopSite() {
-        @MetaDataVersion int metaDataVersion = MetaDataVersion.MULTI_TYPE_V2;
+    public void testSaveAndReadDonationMetadataAsync_V3_TopSite() {
+        @MetaDataVersion int metaDataVersion = MetaDataVersion.MULTI_TYPE_V3;
         long now = TimeUtils.uptimeMillis();
         // The entries include 2 elements, and the second one will be saved to the metadata file.
         // This is because testSaveAndReadDonationMetadataAsyncImpl() sets the starting index to 1.
@@ -242,8 +250,8 @@ public class AuxiliarySearchProviderUnitTest {
     }
 
     @Test
-    public void testSaveAndReadDonationMetadataAsync_V2_CustomTabs() {
-        @MetaDataVersion int metaDataVersion = MetaDataVersion.MULTI_TYPE_V2;
+    public void testSaveAndReadDonationMetadataAsync_V3_CustomTabs() {
+        @MetaDataVersion int metaDataVersion = MetaDataVersion.MULTI_TYPE_V3;
         long now = TimeUtils.uptimeMillis();
         // The entries include 3 elements, and the second and third ones will be saved to the
         // metadata file. This is because testSaveAndReadDonationMetadataAsyncImpl() sets the
@@ -272,6 +280,53 @@ public class AuxiliarySearchProviderUnitTest {
                     entry = (AuxiliarySearchDataEntry) entryList.get(1);
                     assertEquals(AuxiliarySearchTestHelper.APP_ID_2, entry.appId);
                 });
+    }
+
+    @Test
+    public void testReadSavedMetadataFile_V2() throws IOException {
+        int visitId = 4;
+        long lastActiveTime = 1L;
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        DataOutputStream stream = new DataOutputStream(output);
+        // Header: the version and the entry count.
+        stream.writeInt(MetaDataVersion.MULTI_TYPE_V2);
+        stream.writeInt(1);
+        // A top site entry in the MULTI_TYPE_V2 layout: the type, score, 32-bit visit ID, title,
+        // URL and last active time.
+        stream.writeInt(AuxiliarySearchEntryType.TOP_SITE);
+        stream.writeInt(AuxiliarySearchTestHelper.SCORE_2);
+        stream.writeInt(visitId);
+        stream.writeUTF(AuxiliarySearchTestHelper.TITLE_2);
+        stream.writeUTF(JUnitTestGURLs.URL_2.getSpec());
+        stream.writeLong(lastActiveTime);
+        stream.flush();
+
+        List<AuxiliarySearchDataEntry> entries =
+                AuxiliarySearchProvider.readSavedMetadataFile(
+                        new DataInputStream(new ByteArrayInputStream(output.toByteArray())));
+        assertEquals(1, entries.size());
+
+        AuxiliarySearchDataEntry entry = entries.get(0);
+        assertEquals(AuxiliarySearchEntryType.TOP_SITE, entry.type);
+        assertEquals(AuxiliarySearchTestHelper.SCORE_2, entry.score);
+        assertEquals(visitId, entry.visitId);
+        assertEquals(AuxiliarySearchTestHelper.TITLE_2, entry.title);
+        assertEquals(JUnitTestGURLs.URL_2, entry.url);
+        assertEquals(lastActiveTime, entry.lastActiveTime);
+    }
+
+    @Test
+    public void testSaveAndReadMetadataFile_V3_TopSite() throws IOException {
+        testSaveAndReadMetadataFileImpl(
+                AuxiliarySearchTestHelper.createAuxiliarySearchDataEntries_TopSite(
+                        TimeUtils.uptimeMillis()));
+    }
+
+    @Test
+    public void testSaveAndReadMetadataFile_V3_CustomTabs() throws IOException {
+        testSaveAndReadMetadataFileImpl(
+                AuxiliarySearchTestHelper.createAuxiliarySearchDataEntries_CustomTabs(
+                        TimeUtils.uptimeMillis()));
     }
 
     @Test
@@ -317,5 +372,21 @@ public class AuxiliarySearchProviderUnitTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> AuxiliarySearchBackgroundTask.readDonationMetadataAsync(mContext, callback));
+    }
+
+    private void testSaveAndReadMetadataFileImpl(List<AuxiliarySearchDataEntry> entries)
+            throws IOException {
+        File metadataFile = mTemporaryFolder.newFile();
+        mAuxiliarySearchProvider.saveTabMetadataToFile(
+                metadataFile,
+                MetaDataVersion.MULTI_TYPE_V3,
+                entries,
+                /* startIndex= */ 0,
+                entries.size());
+
+        // The entries include visit IDs larger than Integer.MAX_VALUE.
+        try (DataInputStream stream = new DataInputStream(new FileInputStream(metadataFile))) {
+            assertEquals(entries, AuxiliarySearchProvider.readSavedMetadataFile(stream));
+        }
     }
 }

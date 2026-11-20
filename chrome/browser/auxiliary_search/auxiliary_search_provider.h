@@ -7,8 +7,12 @@
 
 #include <jni.h>
 #include <stddef.h>
+#include <stdint.h>
 
 #include <memory>
+#include <string>
+#include <string_view>
+#include <vector>
 
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/callback_forward.h"
@@ -21,6 +25,7 @@ namespace visited_url_ranking {
 class VisitedURLRankingService;
 }  // namespace visited_url_ranking
 
+class GURL;
 class TabAndroid;
 
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.auxiliary_search
@@ -59,6 +64,17 @@ class AuxiliarySearchProvider : public KeyedService {
       const base::android::JavaRef<jobject>& j_url,
       int64_t j_begin_time,
       const base::android::JavaRef<jobject>& j_callback_obj) const;
+
+  // The visit IDs below are non-negative 63-bit values that are stable across
+  // restarts, so donating the same entry again replaces its previous document.
+
+  // Computes the visit ID of a Custom Tab entry from the `url_key` of its URL
+  // visit aggregate.
+  static int64_t GetCustomTabVisitId(std::string_view url_key);
+
+  // Computes the visit ID of a top site entry from its `url` and `title`.
+  static int64_t GetTopSiteVisitId(const GURL& url,
+                                   const std::u16string& title);
 
   static void EnsureFactoryBuilt();
 

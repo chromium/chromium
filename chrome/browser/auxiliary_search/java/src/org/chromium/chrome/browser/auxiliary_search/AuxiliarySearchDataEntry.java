@@ -28,7 +28,7 @@ public class AuxiliarySearchDataEntry {
 
     // visitId is used for non local Tabs. For local Tabs, its value is {@link Tab.INVALID_TAB_ID},
     // use tabId instead.
-    public final int visitId;
+    public final long visitId;
 
     // {@link score} is used for most visited sites.
     public final int score;
@@ -50,7 +50,7 @@ public class AuxiliarySearchDataEntry {
             long lastActiveTime,
             int tabId,
             @Nullable String appId,
-            int visitId,
+            long visitId,
             int score) {
         this.type = type;
         this.url = url;

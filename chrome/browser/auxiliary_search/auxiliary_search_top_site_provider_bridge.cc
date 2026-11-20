@@ -11,9 +11,7 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/containers/flat_set.h"
-#include "base/hash/hash.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/auxiliary_search/auxiliary_search_provider.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/history/top_sites_factory.h"
@@ -129,8 +127,7 @@ void AuxiliarySearchTopSiteProviderBridge::OnURLsAvailable(
         tile.title, tile.last_visit_time.InMillisecondsSinceUnixEpoch(),
         kInvalidTabId,
         /*appId=*/std::string(),
-        std::abs(static_cast<int>(
-            base::Hash(tile.url.spec() + base::UTF16ToUTF8(tile.title)))),
+        AuxiliarySearchProvider::GetTopSiteVisitId(tile.url, tile.title),
         convertSiteSuggestionScore(index++)));
   }
 

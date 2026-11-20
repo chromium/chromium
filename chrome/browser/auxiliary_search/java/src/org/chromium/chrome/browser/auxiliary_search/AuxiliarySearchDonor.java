@@ -424,7 +424,7 @@ public class AuxiliarySearchDonor {
 
         AuxiliarySearchDataEntry dataEntry = (AuxiliarySearchDataEntry) entry;
         boolean isTab = dataEntry.type == AuxiliarySearchEntryType.TAB;
-        int entryId = isTab ? dataEntry.tabId : dataEntry.visitId;
+        long entryId = isTab ? dataEntry.tabId : dataEntry.visitId;
         String documentId = getDocumentId(dataEntry.type, entryId);
         if (counts != null) {
             counts[dataEntry.type] += 1;
@@ -636,7 +636,7 @@ public class AuxiliarySearchDonor {
     }
 
     @VisibleForTesting
-    public static String getDocumentId(int type, int id) {
+    public static String getDocumentId(int type, long id) {
         switch (type) {
             case AuxiliarySearchEntryType.TAB:
                 return TAB_PREFIX + id;

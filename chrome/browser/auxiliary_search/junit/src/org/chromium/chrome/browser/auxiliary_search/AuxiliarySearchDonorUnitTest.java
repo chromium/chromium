@@ -244,7 +244,7 @@ public class AuxiliarySearchDonorUnitTest {
                         /* visitId= */ -1,
                         /* score= */ 0);
 
-        int visitId = 100;
+        long visitId = (long) Integer.MAX_VALUE + 100L;
         int type2 = AuxiliarySearchEntryType.CUSTOM_TAB;
         AuxiliarySearchDataEntry entry2 =
                 new AuxiliarySearchDataEntry(
@@ -257,7 +257,7 @@ public class AuxiliarySearchDonorUnitTest {
                         visitId,
                         /* score= */ 0);
 
-        int visitId3 = 101;
+        long visitId3 = (long) Integer.MAX_VALUE + 101L;
         int type3 = AuxiliarySearchEntryType.TOP_SITE;
         AuxiliarySearchDataEntry entry3 =
                 new AuxiliarySearchDataEntry(
@@ -317,7 +317,7 @@ public class AuxiliarySearchDonorUnitTest {
             String url,
             String title,
             long lastAccessTimeStamp,
-            int id,
+            long id,
             long documentTtlMs,
             int score,
             String source,
@@ -375,19 +375,20 @@ public class AuxiliarySearchDonorUnitTest {
     @Test
     public void testGetDocumentId() {
         int id = 10;
+        long largeId = (long) Integer.MAX_VALUE + 10L;
         String tabDocumentId = "Tab-10";
-        String customTabDocumentId = "CustomTab-10";
-        String topSiteDocumentId = "TopSite-10";
+        String customTabDocumentId = "CustomTab-2147483657";
+        String topSiteDocumentId = "TopSite-2147483657";
 
         assertEquals(
                 tabDocumentId,
                 AuxiliarySearchDonor.getDocumentId(AuxiliarySearchEntryType.TAB, id));
         assertEquals(
                 customTabDocumentId,
-                AuxiliarySearchDonor.getDocumentId(AuxiliarySearchEntryType.CUSTOM_TAB, id));
+                AuxiliarySearchDonor.getDocumentId(AuxiliarySearchEntryType.CUSTOM_TAB, largeId));
         assertEquals(
                 topSiteDocumentId,
-                AuxiliarySearchDonor.getDocumentId(AuxiliarySearchEntryType.TOP_SITE, id));
+                AuxiliarySearchDonor.getDocumentId(AuxiliarySearchEntryType.TOP_SITE, largeId));
     }
 
     @Test

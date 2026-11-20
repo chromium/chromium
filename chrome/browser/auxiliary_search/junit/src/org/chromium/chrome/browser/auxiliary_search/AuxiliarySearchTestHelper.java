@@ -16,8 +16,8 @@ import java.util.List;
 public class AuxiliarySearchTestHelper {
     static final int TAB_ID_1 = 1;
     static final int TAB_ID_2 = 2;
-    static final int VISIT_ID_1 = 3;
-    static final int VISIT_ID_2 = 4;
+    static final long VISIT_ID_1 = 3L;
+    static final long VISIT_ID_2 = (long) Integer.MAX_VALUE + 4L;
     static final int SCORE_1 = 111;
     static final int SCORE_2 = 112;
     static final String TITLE_1 = "Title 1";

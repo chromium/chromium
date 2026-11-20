@@ -101,7 +101,7 @@ public class AuxiliarySearchTopSiteProviderBridge {
             long lastActiveTime,
             int tabId,
             @JniType("std::string") @Nullable String appId,
-            int visitId,
+            long visitId,
             int score) {
         return new AuxiliarySearchDataEntry(
                 type,
