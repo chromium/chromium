@@ -18,8 +18,6 @@
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_updater.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_browser_agent.h"
-#import "ios/chrome/browser/intelligence/bwg/model/gemini_service.h"
-#import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_coordinator.h"
 #import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
@@ -63,6 +61,7 @@
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/toolbar/coordinator/buttons/toolbar_buttons_mediator.h"
 #import "ios/chrome/browser/toolbar/coordinator/main_toolbar_mediator.h"
 #import "ios/chrome/browser/toolbar/coordinator/toolbar_mediator.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/adaptive_toolbar_view_controller.h"
@@ -184,6 +183,7 @@ inline LayoutStateToolbarPassKey PassKey() {
                                       PrimaryToolbarViewControllerDelegate,
                                       ReaderModeChipCommands,
                                       LegacyToolbarMediatorDelegate,
+                                      ToolbarButtonsMediatorDelegate,
                                       ToolbarCommands,
                                       ToolbarMediatorDelegate>
 
@@ -227,6 +227,9 @@ inline LayoutStateToolbarPassKey PassKey() {
   BOOL _fakeboxPinned;
   /// Command handler for showing the IPH.
   id<HelpCommands> _helpHandler;
+  /// Mediator for the state of the toolbars' control buttons, shared by the
+  /// toolbars.
+  ToolbarButtonsMediator* _toolbarButtonsMediator;
   /// Top toolbar mediator.
   ToolbarMediator* _topToolbarMediator;
   /// Top toolbar view controller.
@@ -307,6 +310,7 @@ inline LayoutStateToolbarPassKey PassKey() {
   BOOL isToolbarAtBottom = [self isToolbarPositionBottom];
 
   if (IsChromeNextIaEnabled()) {
+    [self createToolbarButtonsMediator];
     _topLocationBarCoordinator =
         [self createLocationBarCoordinatorActive:!isToolbarAtBottom
                                      topPosition:YES
@@ -444,6 +448,8 @@ inline LayoutStateToolbarPassKey PassKey() {
   }
 
   if (IsChromeNextIaEnabled()) {
+    [_toolbarButtonsMediator disconnect];
+    _toolbarButtonsMediator = nil;
     [_topToolbarMediator disconnect];
     _topToolbarMediator = nil;
     [_topLocationBarCoordinator stop];
@@ -937,7 +943,12 @@ inline LayoutStateToolbarPassKey PassKey() {
         break;
     }
 
-    [mediator updateConsumerWithWebState:webState animated:NO];
+    [mediator updateConsumerWithWebState:webState];
+    // Does nothing if `toolbar` doesn't show the button state (i.e. doesn't
+    // have the omnibox).
+    [_toolbarButtonsMediator updateConsumer:toolbar
+                               withWebState:webState
+                                   animated:NO];
 
     UIView* toolbarView = toolbar.view;
     // The toolbar must be in the view hierarchy to be snapshotted.
@@ -960,9 +971,12 @@ inline LayoutStateToolbarPassKey PassKey() {
           toolbarSnapshot, imageRect.origin.x, windowWidth);
     }
 
-    [mediator updateConsumerWithWebState:self.browser->GetWebStateList()
-                                             ->GetActiveWebState()
-                                animated:NO];
+    web::WebState* activeWebState =
+        self.browser->GetWebStateList()->GetActiveWebState();
+    [mediator updateConsumerWithWebState:activeWebState];
+    [_toolbarButtonsMediator updateConsumer:toolbar
+                               withWebState:activeWebState
+                                   animated:NO];
 
     return toolbarSnapshot;
   }
@@ -1237,7 +1251,21 @@ inline LayoutStateToolbarPassKey PassKey() {
 
 #pragma mark - ToolbarMediatorDelegate
 
-- (void)toolbarMediatorDidTapAssistantInIncognito:(ToolbarMediator*)mediator {
+- (void)toolbarMediator:(ToolbarMediator*)mediator
+    didUpdateHasOmnibox:(BOOL)hasOmnibox {
+  // Only the toolbar with the omnibox shows its control buttons, so only it
+  // gets their state.
+  if (hasOmnibox) {
+    [_toolbarButtonsMediator addConsumer:mediator.consumer];
+  } else {
+    [_toolbarButtonsMediator removeConsumer:mediator.consumer];
+  }
+}
+
+#pragma mark - ToolbarButtonsMediatorDelegate
+
+- (void)toolbarButtonsMediatorDidTapAssistantInIncognito:
+    (ToolbarButtonsMediator*)mediator {
   base::RecordAction(
       base::UserMetricsAction("MobileToolbarAssistantIncognitoTapped"));
   id<SnackbarCommands> snackbarHandler = HandlerForProtocol(
@@ -1425,6 +1453,7 @@ inline LayoutStateToolbarPassKey PassKey() {
         HandlerForProtocol(browser->GetCommandDispatcher(), GeminiCommands);
   }
   toolbarViewController.buttonFactory = toolbarButtonFactory;
+  toolbarViewController.buttonsMutator = _toolbarButtonsMediator;
   toolbarViewController.mutator = mediator;
   toolbarViewController.browserCoordinatorHandler =
       HandlerForProtocol(dispatcher, BrowserCoordinatorCommands);
@@ -1474,58 +1503,58 @@ inline LayoutStateToolbarPassKey PassKey() {
   return coordinator;
 }
 
+// Creates the mediator of the control buttons, shared by the surfaces showing
+// them.
+- (void)createToolbarButtonsMediator {
+  Browser* browser = self.browser;
+  CommandDispatcher* dispatcher = browser->GetCommandDispatcher();
+  BrowserActionFactory* actionFactory = [[BrowserActionFactory alloc]
+      initWithBrowser:browser
+             scenario:kMenuScenarioHistogramToolbarMenu];
+  ProfileIOS* regularProfile = self.profile->GetOriginalProfile();
+
+  _toolbarButtonsMediator = [[ToolbarButtonsMediator alloc]
+          initWithIncognito:self.profile->IsOffTheRecord()
+               webStateList:browser->GetWebStateList()
+              actionFactory:actionFactory
+                    profile:regularProfile
+                prefService:regularProfile->GetPrefs()
+      authenticationService:AuthenticationServiceFactory::GetForProfile(
+                                regularProfile)
+         geminiBrowserAgent:GeminiBrowserAgent::FromBrowser(browser)];
+  _toolbarButtonsMediator.navigationBrowserAgent =
+      WebNavigationBrowserAgent::FromBrowser(browser);
+  _toolbarButtonsMediator.tabBasedIPHAgent =
+      TabBasedIPHBrowserAgent::FromBrowser(browser);
+  _toolbarButtonsMediator.geminiHandler =
+      HandlerForProtocol(dispatcher, GeminiCommands);
+  _toolbarButtonsMediator.baseViewController = self.baseViewController;
+  _toolbarButtonsMediator.delegate = self;
+}
+
 // Creates a new toolbar mediator.
 - (ToolbarMediator*)createToolbarMediatorTopPosition:(BOOL)topPosition {
   CHECK(IsChromeNextIaEnabled());
 
   Browser* browser = self.browser;
-  BrowserActionFactory* actionFactory = [[BrowserActionFactory alloc]
-      initWithBrowser:browser
-             scenario:kMenuScenarioHistogramToolbarMenu];
-
-  BOOL isIncognito = self.profile->IsOffTheRecord();
   DefaultBrowserBannerPromoAppAgent* agent = nil;
-  if (topPosition && !isIncognito) {
+  if (topPosition && !self.profile->IsOffTheRecord()) {
     agent = [DefaultBrowserBannerPromoAppAgent
         agentFromApp:browser->GetSceneState().profileState.appState];
   }
 
-  ProfileIOS* regularProfile = self.profile->GetOriginalProfile();
-  AuthenticationService* authService =
-      AuthenticationServiceFactory::GetForProfile(regularProfile);
-  GeminiService* geminiService =
-      GeminiServiceFactory::GetForProfile(regularProfile);
-  GeminiBrowserAgent* geminiBrowserAgent =
-      GeminiBrowserAgent::FromBrowser(browser);
-
   ToolbarMediator* toolbarMediator = [[ToolbarMediator alloc]
-                 initWithIncognito:isIncognito
-                      webStateList:browser->GetWebStateList()
-                     actionFactory:actionFactory
-                           profile:regularProfile
-                       prefService:regularProfile->GetPrefs()
+              initWithWebStateList:browser->GetWebStateList()
               fullscreenController:FullscreenController::FromBrowser(browser)
             fullscreenBrowserAgent:FullscreenBrowserAgent::FromBrowser(browser)
                        topPosition:topPosition
-      defaultBrowserBannerAppAgent:agent
-             authenticationService:authService
-                     geminiService:geminiService
-                geminiBrowserAgent:geminiBrowserAgent];
-  toolbarMediator.navigationBrowserAgent =
-      WebNavigationBrowserAgent::FromBrowser(browser);
-  toolbarMediator.tabBasedIPHAgent =
-      TabBasedIPHBrowserAgent::FromBrowser(browser);
+      defaultBrowserBannerAppAgent:agent];
   if (IsFullscreenRefactoringEnabled()) {
     toolbarMediator.fullscreenCommands =
         HandlerForProtocol(browser->GetCommandDispatcher(), FullscreenCommands);
   }
   toolbarMediator.settingsHandler =
       HandlerForProtocol(browser->GetCommandDispatcher(), SettingsCommands);
-  toolbarMediator.geminiHandler =
-      HandlerForProtocol(browser->GetCommandDispatcher(), GeminiCommands);
-  toolbarMediator.baseViewController = self.baseViewController;
-  toolbarMediator.sceneHandler =
-      HandlerForProtocol(browser->GetCommandDispatcher(), SceneCommands);
   toolbarMediator.delegate = self;
   toolbarMediator.browserLayoutState = _browserLayoutState;
 

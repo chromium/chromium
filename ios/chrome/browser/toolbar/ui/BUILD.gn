@@ -11,6 +11,7 @@ source_set("ui") {
     "toolbar_view_controller.h",
     "toolbar_view_controller.mm",
   ]
+  public_deps = [ ":buttons_consumer" ]
   deps = [
     ":constants",
     ":height_delegate",
@@ -41,6 +42,14 @@ source_set("ui") {
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
     "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("buttons_consumer") {
+  sources = [
+    "toolbar_buttons_consumer.h",
+    "toolbar_buttons_mutator.h",
   ]
   frameworks = [ "UIKit.framework" ]
 }

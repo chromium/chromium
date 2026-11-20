@@ -1,0 +1,82 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("buttons") {
+  sources = [
+    "toolbar_buttons_mediator.h",
+    "toolbar_buttons_mediator.mm",
+  ]
+  public_deps = [ "//ios/chrome/browser/toolbar/ui:buttons_consumer" ]
+  deps = [
+    "//base",
+    "//components/policy/core/common:common_constants",
+    "//components/prefs",
+    "//components/prefs/ios",
+    "//ios/chrome/browser/bubble/model",
+    "//ios/chrome/browser/intelligence/actor/model:tab_helper",
+    "//ios/chrome/browser/intelligence/bwg/model:browser_agent",
+    "//ios/chrome/browser/intelligence/bwg/utils:availability",
+    "//ios/chrome/browser/intelligence/bwg/utils:constants",
+    "//ios/chrome/browser/ntp/model",
+    "//ios/chrome/browser/ntp/model:util",
+    "//ios/chrome/browser/reader_mode/model",
+    "//ios/chrome/browser/shared/model/url",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/model/web_state_list:utils",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/toolbar/ui/buttons:menus",
+    "//ios/chrome/browser/web/model",
+    "//ios/web/public",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "toolbar_buttons_mediator_unittest.mm" ]
+  deps = [
+    ":buttons",
+    "//base",
+    "//base/i18n:language_tag",
+    "//base/test:test_support",
+    "//components/application_locale_storage",
+    "//components/policy/core/common:common_constants",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager:test_support",
+    "//components/sync_preferences:test_support",
+    "//components/tab_groups",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/fullscreen/model",
+    "//ios/chrome/browser/fullscreen/ui_bundled/test",
+    "//ios/chrome/browser/intelligence/actor/model:tab_helper",
+    "//ios/chrome/browser/intelligence/actor/public:actor_control_state",
+    "//ios/chrome/browser/intelligence/bwg/model:browser_agent",
+    "//ios/chrome/browser/intelligence/features",
+    "//ios/chrome/browser/menu/public",
+    "//ios/chrome/browser/menu/ui_bundled",
+    "//ios/chrome/browser/ntp/model",
+    "//ios/chrome/browser/optimization_guide/model",
+    "//ios/chrome/browser/policy/model:policy_util",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/signin/model:fake_system_identity_manager",
+    "//ios/chrome/browser/signin/model:test_support",
+    "//ios/chrome/browser/sync/model",
+    "//ios/chrome/browser/sync/model:test_support",
+    "//ios/chrome/browser/web/model",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
+    "//testing/gtest",
+    "//third_party/ocmock",
+    "//ui/base",
+    "//url",
+  ]
+}
