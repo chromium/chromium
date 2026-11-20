@@ -45,6 +45,7 @@
 #import "ios/chrome/browser/intelligence/contextual_cueing/contextual_cueing_cap_tracker_service.h"
 #import "ios/chrome/browser/intelligence/contextual_cueing/contextual_cueing_cap_tracker_service_factory.h"
 #import "ios/chrome/browser/intelligence/contextual_cueing/features.h"
+#import "ios/chrome/browser/intelligence/on_device_category_classifier/in_process_category_classification_service_factory.h"
 #import "ios/chrome/browser/intelligence/on_device_category_classifier/on_device_page_classification_service.h"
 #import "ios/chrome/browser/intelligence/on_device_category_classifier/on_device_page_classification_service_factory.h"
 #import "ios/chrome/browser/intelligence/page_classification/features.h"
@@ -146,6 +147,17 @@ ContextualCueingTabHelper::ContextualCueingTabHelper(web::WebState* web_state)
       if (identity_manager) {
         identity_manager_observation_.Observe(identity_manager);
       }
+
+      syncer::SyncService* sync_service =
+          SyncServiceFactory::GetForProfile(profile);
+      if (sync_service) {
+        is_history_sync_enabled_ =
+            sync_service->GetUserSettings()->GetSelectedTypes().Has(
+                syncer::UserSelectableType::kHistory);
+        sync_service_observation_.Observe(sync_service);
+      }
+
+      MaybeWarmUpOnDeviceClassifier();
     }
   }
 }
@@ -450,6 +462,7 @@ void ContextualCueingTabHelper::WebStateDestroyed(web::WebState* web_state) {
   pref_change_registrar_.Reset();
   gemini_service_observation_.Reset();
   identity_manager_observation_.Reset();
+  sync_service_observation_.Reset();
   web_state_observation_.Reset();
   web_state_ = nullptr;
 }
@@ -1007,6 +1020,23 @@ void ContextualCueingTabHelper::OnIdentityManagerShutdown(
   identity_manager_observation_.Reset();
 }
 
+#pragma mark - syncer::SyncServiceObserver
+
+void ContextualCueingTabHelper::OnStateChanged(syncer::SyncService* sync) {
+  bool history_sync_enabled =
+      sync && sync->GetUserSettings()->GetSelectedTypes().Has(
+                  syncer::UserSelectableType::kHistory);
+  if (history_sync_enabled == is_history_sync_enabled_) {
+    return;
+  }
+  is_history_sync_enabled_ = history_sync_enabled;
+  OnSuggestionsPreferenceChanged();
+}
+
+void ContextualCueingTabHelper::OnSyncShutdown(syncer::SyncService* sync) {
+  sync_service_observation_.Reset();
+}
+
 #pragma mark - Private
 
 bool ContextualCueingTabHelper::IsGeminiSuggestionsSettingEnabled() const {
@@ -1031,8 +1061,11 @@ void ContextualCueingTabHelper::OnSuggestionsPreferenceChanged() {
     return;
   }
 
-  bool is_eligible = IsGeminiSuggestionsSettingEnabled() &&
-                     IsUserEligibleForContextualCues(profile);
+  bool is_eligible =
+      IsGeminiSuggestionsSettingEnabled() &&
+      (IsIgnoreContextualCueingThresholdsEnabled() ||
+       (IsUserEligibleForContextualCues(profile) &&
+        (!IsUserSignedIn(profile) || IsHistorySyncEnabled(profile))));
   if (!is_eligible) {
     // As on navigation, `CancelClassification()` tears down the cue's infobar
     // or chip, so no click can follow for it. Ending its presentation also
@@ -1041,7 +1074,36 @@ void ContextualCueingTabHelper::OnSuggestionsPreferenceChanged() {
     CancelClassification();
     categories_.reset();
     page_classification_result_.reset();
+    return;
   }
+
+  MaybeWarmUpOnDeviceClassifier();
+}
+
+void ContextualCueingTabHelper::MaybeWarmUpOnDeviceClassifier() {
+  if (!web_state_ ||
+      !IsGeminiContextualSuggestionsCuesOnDeviceClassifierEnabled()) {
+    return;
+  }
+
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
+  if (!profile || profile->IsOffTheRecord() ||
+      InProcessCategoryClassificationServiceFactory::GetForProfileIfExists(
+          profile) ||
+      !IsGeminiSuggestionsSettingEnabled()) {
+    return;
+  }
+
+  if (!IsIgnoreContextualCueingThresholdsEnabled()) {
+    if (GetPageClassificationMode() == PageClassificationMode::kVerticalsOnly ||
+        !IsUserEligibleForContextualCues(profile) ||
+        (IsUserSignedIn(profile) && !IsHistorySyncEnabled(profile))) {
+      return;
+    }
+  }
+
+  InProcessCategoryClassificationServiceFactory::GetForProfile(profile);
 }
 
 void ContextualCueingTabHelper::DismissFeatureEngagementPromo() {
