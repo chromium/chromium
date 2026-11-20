@@ -3,13 +3,13 @@
 // found in the LICENSE file.
 
 import type {TemplateResult} from '//resources/lit/v3_0/lit.rollup.js';
-import type {OrganizerAction, OrganizerListSectionClient, OrganizerListSectionDelegate, OrganizerListSectionItem, OrganizerSection} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
+import type {OrganizerAction, OrganizerListSectionClient, OrganizerListSectionDelegate, OrganizerListSectionItem} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
+import {SectionId} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 
 export class TestSectionDelegate implements
     OrganizerListSectionDelegate<unknown> {
-  private id_: string;
+  private id_: SectionId;
   private header_: string;
-  private histogramSectionName_: OrganizerSection;
   private items_: Array<OrganizerListSectionItem<unknown>>;
   getZeroState?: () => TemplateResult;
   shouldAlwaysShowZeroState?: () => boolean;
@@ -32,12 +32,10 @@ export class TestSectionDelegate implements
 
   constructor(
       header: string, items: Array<OrganizerListSectionItem<unknown>> = [],
-      zeroState?: TemplateResult, id: string = 'open-tabs',
-      alwaysShowZeroState: boolean = false,
-      histogramSectionName: OrganizerSection = 'OpenTabs') {
+      zeroState?: TemplateResult, id: SectionId = SectionId.kOpenTabs,
+      alwaysShowZeroState: boolean = false) {
     this.id_ = id;
     this.header_ = header;
-    this.histogramSectionName_ = histogramSectionName;
     this.items_ = items;
     if (zeroState) {
       this.getZeroState = () => zeroState;
@@ -63,16 +61,12 @@ export class TestSectionDelegate implements
     return this.destroyCount_;
   }
 
-  getId(): string {
+  getId(): SectionId {
     return this.id_;
   }
 
   getHeader(): string {
     return this.header_;
-  }
-
-  getHistogramSectionName(): OrganizerSection {
-    return this.histogramSectionName_;
   }
 
   getItems(): Promise<Array<OrganizerListSectionItem<unknown>>> {

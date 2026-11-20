@@ -7,7 +7,6 @@
 
 #include <memory>
 #include <optional>
-#include <string>
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
@@ -42,11 +41,12 @@ class OrganizerPanelPageHandler : public organizer_panel::mojom::PageHandler {
   // organizer_panel::mojom::PageHandler:
   void ShowUI() override;
   void ClosePanel() override;
-  void GetSectionState(const std::string& section_id,
+  void GetSectionState(organizer_panel::mojom::SectionId section_id,
                        GetSectionStateCallback callback) override;
-  void SetSectionExpanded(const std::string& section_id,
+  void SetSectionExpanded(organizer_panel::mojom::SectionId section_id,
                           bool expanded) override;
-  void SetSectionShowAll(const std::string& section_id, bool show_all) override;
+  void SetSectionShowAll(organizer_panel::mojom::SectionId section_id,
+                         bool show_all) override;
 
  private:
   void OnBrowserWindowInterfaceChanged();

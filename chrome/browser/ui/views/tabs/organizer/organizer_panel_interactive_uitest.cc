@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string>
 #include <string_view>
+#include <utility>
 
 #include "base/callback_list.h"
 #include "base/metrics/statistics_recorder.h"
@@ -33,6 +35,7 @@
 #include "chrome/browser/ui/views/tabs/organizer/organizer_panel_view.h"
 #include "chrome/browser/ui/views/tabs/organizer/organizer_tray_view.h"
 #include "chrome/browser/ui/views/test/vertical_tabs_interactive_test_mixin.h"
+#include "chrome/browser/ui/webui/organizer_panel/organizer_panel.mojom-shared.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_preload_manager_test_api.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_preload_state.h"
 #include "chrome/common/pref_names.h"
@@ -450,10 +453,13 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelUiTest, TrayClosesOnEscPressed) {
 
 namespace {
 
-constexpr char kOpenTabCountJs[] =
-    "el => "
-    "Array.from(el.shadowRoot.querySelectorAll('organizer-list-section'))"
-    ".find(s => s.delegate?.getId() === 'open-tabs')?.items.length ?? -1";
+std::string GetOpenTabCountJs() {
+  return content::JsReplace(
+      "el => "
+      "Array.from(el.shadowRoot.querySelectorAll('organizer-list-section'))"
+      ".find(s => s.delegate?.getId() === $1)?.items.length ?? -1",
+      std::to_underlying(organizer_panel::mojom::SectionId::kOpenTabs));
+}
 
 }  // namespace
 
@@ -470,7 +476,7 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelUiTest,
         SetVerticalTabsEnabled(false),
         Do([&]() { preload_api.SetPreloadedContents(nullptr); }),
         OpenOrganizerPanel(), WaitForPanelLoad(),
-        CheckJsResultAt(kWebContentsId, kListQuery, kOpenTabCountJs, 1));
+        CheckJsResultAt(kWebContentsId, kListQuery, GetOpenTabCountJs(), 1));
     waiter.Wait();
   }
   histogram_tester.ExpectTotalCount("Tabs.Organizer.TimeToShow", 1);
@@ -489,7 +495,7 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelUiTest,
                     OpenOrganizerPanel());
     waiter.Wait();
     RunTestSequence(
-        CheckJsResultAt(kWebContentsId, kListQuery, kOpenTabCountJs, 2));
+        CheckJsResultAt(kWebContentsId, kListQuery, GetOpenTabCountJs(), 2));
   }
   histogram_tester.ExpectTotalCount("Tabs.Organizer.TimeToShow", 2);
   histogram_tester.ExpectTotalCount(
@@ -519,7 +525,7 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelUiTest, RecordsTimeToShowPreloaded) {
       "Tabs.Organizer.TimeToShow.PreloadedWebContents");
   RunTestSequence(
       OpenOrganizerPanel(), WaitForPanelLoad(),
-      CheckJsResultAt(kWebContentsId, kListQuery, kOpenTabCountJs, 2));
+      CheckJsResultAt(kWebContentsId, kListQuery, GetOpenTabCountJs(), 2));
   waiter.Wait();
   histogram_tester.ExpectTotalCount("Tabs.Organizer.TimeToShow", 1);
   histogram_tester.ExpectTotalCount(

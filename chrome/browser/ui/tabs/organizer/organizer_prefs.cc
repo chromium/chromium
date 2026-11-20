@@ -9,8 +9,8 @@
 #include <optional>
 #include <string_view>
 
-#include "base/notreached.h"
 #include "base/values.h"
+#include "chrome/browser/ui/webui/organizer_panel/organizer_panel.mojom-shared.h"
 #include "chrome/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
@@ -24,9 +24,23 @@ constexpr std::string_view kOpenTabsSectionId = "open-tabs";
 constexpr std::string_view kRecentlyClosedSectionId = "recently-closed";
 constexpr std::string_view kTabGroupsSectionId = "tab-groups";
 
+std::string_view GetSectionIdString(
+    organizer_panel::mojom::SectionId section_id) {
+  switch (section_id) {
+    case organizer_panel::mojom::SectionId::kCrossDeviceTabs:
+      return kCrossDeviceTabsSectionId;
+    case organizer_panel::mojom::SectionId::kOpenTabs:
+      return kOpenTabsSectionId;
+    case organizer_panel::mojom::SectionId::kRecentlyClosed:
+      return kRecentlyClosedSectionId;
+    case organizer_panel::mojom::SectionId::kTabGroups:
+      return kTabGroupsSectionId;
+  }
+}
+
 SectionState ReadSectionState(const base::DictValue& expanded_dict,
                               const base::DictValue& show_all_dict,
-                              SectionId section_id) {
+                              organizer_panel::mojom::SectionId section_id) {
   const std::string_view section_key = GetSectionIdString(section_id);
   SectionState state;
   if (std::optional<bool> expanded = expanded_dict.FindBool(section_key)) {
@@ -48,30 +62,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterDictionaryPref(prefs::kOrganizerPanelSectionsShowAll);
 }
 
-std::string_view GetSectionIdString(SectionId section_id) {
-  switch (section_id) {
-    case SectionId::kCrossDeviceTabs:
-      return kCrossDeviceTabsSectionId;
-    case SectionId::kOpenTabs:
-      return kOpenTabsSectionId;
-    case SectionId::kRecentlyClosed:
-      return kRecentlyClosedSectionId;
-    case SectionId::kTabGroups:
-      return kTabGroupsSectionId;
-  }
-}
-
-SectionId GetSectionIdFromString(std::string_view section_id) {
-  for (size_t i = 0; i < kSectionCount; ++i) {
-    const auto id = static_cast<SectionId>(i);
-    if (GetSectionIdString(id) == section_id) {
-      return id;
-    }
-  }
-  NOTREACHED() << "Unknown section ID \"" << section_id << "\".";
-}
-
-SectionState GetSectionState(const PrefService& prefs, SectionId section_id) {
+SectionState GetSectionState(const PrefService& prefs,
+                             organizer_panel::mojom::SectionId section_id) {
   return ReadSectionState(prefs.GetDict(prefs::kOrganizerPanelSectionsExpanded),
                           prefs.GetDict(prefs::kOrganizerPanelSectionsShowAll),
                           section_id);
@@ -85,7 +77,7 @@ std::array<SectionStateEntry, kSectionCount> GetAllSectionStates(
       prefs.GetDict(prefs::kOrganizerPanelSectionsShowAll);
   std::array<SectionStateEntry, kSectionCount> entries;
   for (size_t i = 0; i < kSectionCount; ++i) {
-    const auto section_id = static_cast<SectionId>(i);
+    const auto section_id = static_cast<organizer_panel::mojom::SectionId>(i);
     entries[i] = {
         .section_id = section_id,
         .state = ReadSectionState(expanded_dict, show_all_dict, section_id),
@@ -95,14 +87,14 @@ std::array<SectionStateEntry, kSectionCount> GetAllSectionStates(
 }
 
 void SetSectionExpanded(PrefService& prefs,
-                        SectionId section_id,
+                        organizer_panel::mojom::SectionId section_id,
                         bool expanded) {
   ScopedDictPrefUpdate update(&prefs, prefs::kOrganizerPanelSectionsExpanded);
   update->Set(GetSectionIdString(section_id), expanded);
 }
 
 void SetSectionShowAll(PrefService& prefs,
-                       SectionId section_id,
+                       organizer_panel::mojom::SectionId section_id,
                        bool show_all) {
   ScopedDictPrefUpdate update(&prefs, prefs::kOrganizerPanelSectionsShowAll);
   update->Set(GetSectionIdString(section_id), show_all);

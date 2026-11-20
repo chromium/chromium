@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/views/animations/tab_strip_animations.h"
 #include "chrome/browser/ui/views/tabs/organizer/organizer_panel_host.h"
 #include "chrome/browser/ui/views/tabs/organizer/organizer_panel_view.h"
+#include "chrome/browser/ui/webui/organizer_panel/organizer_panel.mojom-shared.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_preload_manager.h"
@@ -77,24 +78,25 @@ void OnVerticalTabStripAnimation(
 }
 
 // LINT.IfChange(OrganizerSection)
-std::string_view GetHistogramSectionName(organizer::SectionId section_id) {
+std::string_view GetHistogramSectionName(
+    organizer_panel::mojom::SectionId section_id) {
   switch (section_id) {
-    case organizer::SectionId::kCrossDeviceTabs:
+    case organizer_panel::mojom::SectionId::kCrossDeviceTabs:
       return "CrossDeviceTabs";
-    case organizer::SectionId::kOpenTabs:
+    case organizer_panel::mojom::SectionId::kOpenTabs:
       return "OpenTabs";
-    case organizer::SectionId::kRecentlyClosed:
+    case organizer_panel::mojom::SectionId::kRecentlyClosed:
       return "RecentlyClosed";
-    case organizer::SectionId::kTabGroups:
+    case organizer_panel::mojom::SectionId::kTabGroups:
       return "TabGroups";
   }
 }
-// LINT.ThenChange(//tools/metrics/histograms/metadata/tab/histograms.xml:OrganizerSection)
+// LINT.ThenChange(//chrome/browser/resources/organizer_panel/organizer_list_section.ts:OrganizerSection)
 
 bool ShouldRecordSectionMetrics(Profile& profile,
-                                organizer::SectionId section_id) {
+                                organizer_panel::mojom::SectionId section_id) {
   switch (section_id) {
-    case organizer::SectionId::kCrossDeviceTabs: {
+    case organizer_panel::mojom::SectionId::kCrossDeviceTabs: {
       if (!organizer_panel::IsOrganizerPanelForeignTabsEnabled()) {
         return false;
       }
@@ -103,10 +105,10 @@ bool ShouldRecordSectionMetrics(Profile& profile,
       return identity_manager &&
              identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
     }
-    case organizer::SectionId::kRecentlyClosed:
+    case organizer_panel::mojom::SectionId::kRecentlyClosed:
       return !profile.IsIncognitoProfile();
-    case organizer::SectionId::kOpenTabs:
-    case organizer::SectionId::kTabGroups:
+    case organizer_panel::mojom::SectionId::kOpenTabs:
+    case organizer_panel::mojom::SectionId::kTabGroups:
       return true;
   }
 }

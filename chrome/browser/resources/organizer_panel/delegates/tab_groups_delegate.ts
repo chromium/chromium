@@ -10,9 +10,10 @@ import type {TemplateResult} from '//resources/lit/v3_0/lit.rollup.js';
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import {TabGroupDotSize} from '/tab_group_shared/tab_group_dot.js';
 
-import type {OrganizerAction, OrganizerListSectionClient, OrganizerListSectionDelegate, OrganizerSection} from '../organizer_list_section_delegate.js';
+import type {OrganizerAction, OrganizerListSectionClient, OrganizerListSectionDelegate} from '../organizer_list_section_delegate.js';
 import type {OrganizerListSectionItem} from '../organizer_list_section_item.js';
 import {OrganizerListSectionItemIconType} from '../organizer_list_section_item.js';
+import {SectionId} from '../organizer_panel.mojom-webui.js';
 import type {BrowserProxy, TabGroup} from '../tab_groups.mojom-webui.js';
 import {browserProxyFactory} from '../tab_groups.mojom-webui.js';
 
@@ -50,16 +51,12 @@ export class TabGroupsDelegate implements
     this.client_ = undefined;
   }
 
-  getId(): string {
-    return 'tab-groups';
+  getId(): SectionId {
+    return SectionId.kTabGroups;
   }
 
   getHeader(): string {
     return loadTimeData.getString('tabGroups');
-  }
-
-  getHistogramSectionName(): OrganizerSection {
-    return 'TabGroups';
   }
 
   async getItems(): Promise<Array<OrganizerListSectionItem<TabGroup>>> {

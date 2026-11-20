@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/views/tabs/organizer/layout_constants.h"
 #include "chrome/browser/ui/views/tabs/organizer/organizer_panel_test.h"
 #include "chrome/browser/ui/views/tabs/organizer/organizer_panel_view.h"
+#include "chrome/browser/ui/webui/organizer_panel/organizer_panel.mojom-shared.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_preload_manager.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/signin/public/base/consent_level.h"
@@ -211,9 +212,10 @@ TEST_F(OrganizerPanelControllerTest, RecordsSectionStateMetricsOnOpen) {
   controller()->SetOrganizerVisible(false);
 
   organizer::SetSectionExpanded(*profile_.GetPrefs(),
-                                organizer::SectionId::kOpenTabs, false);
-  organizer::SetSectionShowAll(*profile_.GetPrefs(),
-                               organizer::SectionId::kOpenTabs, true);
+                                organizer_panel::mojom::SectionId::kOpenTabs,
+                                false);
+  organizer::SetSectionShowAll(
+      *profile_.GetPrefs(), organizer_panel::mojom::SectionId::kOpenTabs, true);
 
   controller()->SetOrganizerVisible(true);
   histogram_tester.ExpectBucketCount(

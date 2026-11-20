@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {browserProxyFactory, OrganizerListSectionItemIconType, PageHandlerRemote, RecentTabsDelegate, SplitTabLayout} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
+import {browserProxyFactory, OrganizerListSectionItemIconType, PageHandlerRemote, RecentTabsDelegate, SectionId, SplitTabLayout} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import type {OrganizerListSectionClient, OrganizerListSectionItem, PageRemote, ProfileData, RecentlyClosedSplitView, RecentlyClosedTab, RecentlyClosedTabGroup} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {render} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -132,9 +132,8 @@ suite('RecentTabsDelegateTest', () => {
   });
 
   test('returns id and header', () => {
-    assertEquals('recently-closed', delegate.getId());
+    assertEquals(SectionId.kRecentlyClosed, delegate.getId());
     assertEquals('Recently closed', delegate.getHeader());
-    assertEquals('RecentlyClosed', delegate.getHistogramSectionName());
     assertEquals('OpenRecentlyClosedEntry', delegate.getItemClickAction());
   });
 

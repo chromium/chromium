@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/webui/organizer_panel/organizer_panel_page_handler.h"
 
-#include <string>
 #include <utility>
 
 #include "base/check.h"
@@ -72,25 +71,24 @@ void OrganizerPanelPageHandler::ClosePanel() {
 }
 
 void OrganizerPanelPageHandler::GetSectionState(
-    const std::string& section_id,
+    organizer_panel::mojom::SectionId section_id,
     GetSectionStateCallback callback) {
-  const organizer::SectionState state = organizer::GetSectionState(
-      GetPrefs(), organizer::GetSectionIdFromString(section_id));
+  const organizer::SectionState state =
+      organizer::GetSectionState(GetPrefs(), section_id);
   std::move(callback).Run(organizer_panel::mojom::SectionState::New(
       state.expanded, state.show_all));
 }
 
 void OrganizerPanelPageHandler::SetSectionExpanded(
-    const std::string& section_id,
+    organizer_panel::mojom::SectionId section_id,
     bool expanded) {
-  organizer::SetSectionExpanded(
-      GetPrefs(), organizer::GetSectionIdFromString(section_id), expanded);
+  organizer::SetSectionExpanded(GetPrefs(), section_id, expanded);
 }
 
-void OrganizerPanelPageHandler::SetSectionShowAll(const std::string& section_id,
-                                                  bool show_all) {
-  organizer::SetSectionShowAll(
-      GetPrefs(), organizer::GetSectionIdFromString(section_id), show_all);
+void OrganizerPanelPageHandler::SetSectionShowAll(
+    organizer_panel::mojom::SectionId section_id,
+    bool show_all) {
+  organizer::SetSectionShowAll(GetPrefs(), section_id, show_all);
 }
 
 void OrganizerPanelPageHandler::OnBrowserWindowInterfaceChanged() {
@@ -123,11 +121,12 @@ void OrganizerPanelPageHandler::UpdateInTrayView(
 
 void OrganizerPanelPageHandler::OnSectionsStateChanged() {
   page_->OnSectionsStateChanged(
-      base::MakeFlatMap<std::string, organizer_panel::mojom::SectionStatePtr>(
+      base::MakeFlatMap<organizer_panel::mojom::SectionId,
+                        organizer_panel::mojom::SectionStatePtr>(
           organizer::GetAllSectionStates(GetPrefs()), {},
           [](const organizer::SectionStateEntry& entry) {
             return std::make_pair(
-                std::string(organizer::GetSectionIdString(entry.section_id)),
+                entry.section_id,
                 organizer_panel::mojom::SectionState::New(
                     entry.state.expanded, entry.state.show_all));
           }));

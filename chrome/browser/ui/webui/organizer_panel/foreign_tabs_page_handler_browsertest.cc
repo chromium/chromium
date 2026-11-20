@@ -37,9 +37,12 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#include <utility>
+
 #include "chrome/browser/signin/cross_device_signin_promo_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/webui/organizer_panel/organizer_panel.mojom-shared.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_preload_manager_test_api.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/signin/public/base/consent_level.h"
@@ -497,7 +500,9 @@ IN_PROC_BROWSER_TEST_F(ForeignTabsPageHandlerPreloadPromoBrowserTest,
           {once: true});
     });
   )";
-  constexpr char kWaitForVisibleAndRefreshForeignTabsJs[] = R"(
+  const std::string wait_for_visible_and_refresh_foreign_tabs_js =
+      content::JsReplace(
+          R"(
     (async () => {
       if (document.visibilityState !== 'visible') {
         await new Promise(resolve => {
@@ -510,16 +515,18 @@ IN_PROC_BROWSER_TEST_F(ForeignTabsPageHandlerPreloadPromoBrowserTest,
       }
       const app = document.querySelector('organizer-panel-app');
       const sections = Array.from(
-          app.$.list.shadowRoot.querySelectorAll('organizer-list-section'));
+          app.$$.list.shadowRoot.querySelectorAll('organizer-list-section'));
       const foreignSection =
-          sections.find(s => s.delegate?.getId() === 'cross-device-tabs');
+          sections.find(s => s.delegate?.getId() === $1);
       if (!foreignSection) {
         return false;
       }
       await foreignSection.delegate.getItems();
       return true;
     })();
-  )";
+  )",
+          std::to_underlying(
+              organizer_panel::mojom::SectionId::kCrossDeviceTabs));
 
   // Wait until preload completes its initial load and hides the WebContents.
   // Preloading must not trigger ShouldStartShowingCrossDeviceSigninPromo.
@@ -530,8 +537,9 @@ IN_PROC_BROWSER_TEST_F(ForeignTabsPageHandlerPreloadPromoBrowserTest,
   auto* const controller = OrganizerPanelController::From(browser());
   ASSERT_TRUE(controller);
   controller->SetOrganizerVisible(true, /*immediate=*/true);
-  ASSERT_EQ(true, content::EvalJs(preloaded_contents,
-                                  kWaitForVisibleAndRefreshForeignTabsJs));
+  ASSERT_EQ(true,
+            content::EvalJs(preloaded_contents,
+                            wait_for_visible_and_refresh_foreign_tabs_js));
 
   histogram_tester.ExpectUniqueSample(
       "Signin.CrossDeviceSigninPromo.ShouldShowResult.ForeignTabs",
@@ -543,8 +551,9 @@ IN_PROC_BROWSER_TEST_F(ForeignTabsPageHandlerPreloadPromoBrowserTest,
   preloaded_contents->WasHidden();
   ASSERT_EQ("hidden", content::EvalJs(preloaded_contents, kWaitForHiddenJs));
   preloaded_contents->WasShown();
-  ASSERT_EQ(true, content::EvalJs(preloaded_contents,
-                                  kWaitForVisibleAndRefreshForeignTabsJs));
+  ASSERT_EQ(true,
+            content::EvalJs(preloaded_contents,
+                            wait_for_visible_and_refresh_foreign_tabs_js));
 
   histogram_tester.ExpectTotalCount(
       "Signin.CrossDeviceSigninPromo.ShouldShowResult.ForeignTabs", 1);

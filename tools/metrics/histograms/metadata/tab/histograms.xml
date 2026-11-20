@@ -60,7 +60,7 @@ chromium-metrics-reviews@google.com.
   <variant name="TabGroups" summary="Tab groups"/>
 </variants>
 
-<!-- LINT.ThenChange(//chrome/browser/resources/organizer_panel/organizer_list_section_delegate.ts:OrganizerSection, //chrome/browser/ui/tabs/organizer/organizer_panel_controller.cc:OrganizerSection) -->
+<!-- LINT.ThenChange(//chrome/browser/ui/webui/organizer_panel/organizer_panel.mojom:OrganizerSection) -->
 
 <variants name="RecentlyClosedType">
   <variant name="Bulk" summary="RecentlyClosedBulkEvent"/>

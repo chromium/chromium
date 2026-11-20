@@ -6,7 +6,6 @@
 
 #include <memory>
 #include <optional>
-#include <string>
 #include <utility>
 
 #include "base/containers/flat_map.h"
@@ -66,8 +65,9 @@ class FakeOrganizerPanelPage : public organizer_panel::mojom::Page {
   }
 
   void OnSectionsStateChanged(
-      base::flat_map<std::string, organizer_panel::mojom::SectionStatePtr>
-          sections_state) override {
+      base::flat_map<organizer_panel::mojom::SectionId,
+                     organizer_panel::mojom::SectionStatePtr> sections_state)
+      override {
     sections_state_ = std::move(sections_state);
     Notify(sections_state_changed_quit_closure_);
   }
@@ -82,7 +82,8 @@ class FakeOrganizerPanelPage : public organizer_panel::mojom::Page {
 
   std::optional<bool> is_in_tray_view() const { return is_in_tray_view_; }
 
-  const base::flat_map<std::string, organizer_panel::mojom::SectionStatePtr>&
+  const base::flat_map<organizer_panel::mojom::SectionId,
+                       organizer_panel::mojom::SectionStatePtr>&
   sections_state() const {
     return sections_state_;
   }
@@ -102,7 +103,8 @@ class FakeOrganizerPanelPage : public organizer_panel::mojom::Page {
 
   mojo::Receiver<organizer_panel::mojom::Page> receiver_{this};
   std::optional<bool> is_in_tray_view_;
-  base::flat_map<std::string, organizer_panel::mojom::SectionStatePtr>
+  base::flat_map<organizer_panel::mojom::SectionId,
+                 organizer_panel::mojom::SectionStatePtr>
       sections_state_;
   base::OnceClosure is_in_tray_view_changed_quit_closure_;
   base::OnceClosure sections_state_changed_quit_closure_;
@@ -134,7 +136,7 @@ class TestHandlerHarness {
   }
 
   organizer_panel::mojom::SectionStatePtr GetSectionState(
-      const std::string& section_id) {
+      organizer_panel::mojom::SectionId section_id) {
     base::test::TestFuture<organizer_panel::mojom::SectionStatePtr> future;
     handler_remote_->GetSectionState(section_id, future.GetCallback());
     return future.Take();
@@ -240,10 +242,12 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelPageHandlerBrowserTest,
                        GetAndSetSectionExpandedUpdatesPrefAndNotifiesPage) {
   TestHandlerHarness harness(active_web_contents());
 
-  EXPECT_EQ(organizer_panel::mojom::SectionState::New(true, false),
-            harness.GetSectionState("open-tabs"));
+  EXPECT_EQ(
+      organizer_panel::mojom::SectionState::New(true, false),
+      harness.GetSectionState(organizer_panel::mojom::SectionId::kOpenTabs));
 
-  harness.handler_remote()->SetSectionExpanded("open-tabs", false);
+  harness.handler_remote()->SetSectionExpanded(
+      organizer_panel::mojom::SectionId::kOpenTabs, false);
   harness.page().WaitForSectionsStateChanged();
 
   const base::DictValue& sections_expanded =
@@ -253,15 +257,21 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelPageHandlerBrowserTest,
   EXPECT_THAT(
       harness.page().sections_state(),
       testing::ElementsAre(
-          testing::Pair("cross-device-tabs", IsSectionState(true, false)),
-          testing::Pair("open-tabs", IsSectionState(false, false)),
-          testing::Pair("recently-closed", IsSectionState(true, false)),
-          testing::Pair("tab-groups", IsSectionState(true, false))));
+          testing::Pair(organizer_panel::mojom::SectionId::kCrossDeviceTabs,
+                        IsSectionState(true, false)),
+          testing::Pair(organizer_panel::mojom::SectionId::kOpenTabs,
+                        IsSectionState(false, false)),
+          testing::Pair(organizer_panel::mojom::SectionId::kRecentlyClosed,
+                        IsSectionState(true, false)),
+          testing::Pair(organizer_panel::mojom::SectionId::kTabGroups,
+                        IsSectionState(true, false))));
 
-  EXPECT_EQ(organizer_panel::mojom::SectionState::New(false, false),
-            harness.GetSectionState("open-tabs"));
-  EXPECT_EQ(organizer_panel::mojom::SectionState::New(true, false),
-            harness.GetSectionState("tab-groups"));
+  EXPECT_EQ(
+      organizer_panel::mojom::SectionState::New(false, false),
+      harness.GetSectionState(organizer_panel::mojom::SectionId::kOpenTabs));
+  EXPECT_EQ(
+      organizer_panel::mojom::SectionState::New(true, false),
+      harness.GetSectionState(organizer_panel::mojom::SectionId::kTabGroups));
 
   {
     ScopedDictPrefUpdate update(browser()->GetProfile()->GetPrefs(),
@@ -272,17 +282,22 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelPageHandlerBrowserTest,
   EXPECT_THAT(
       harness.page().sections_state(),
       testing::ElementsAre(
-          testing::Pair("cross-device-tabs", IsSectionState(true, false)),
-          testing::Pair("open-tabs", IsSectionState(false, false)),
-          testing::Pair("recently-closed", IsSectionState(true, false)),
-          testing::Pair("tab-groups", IsSectionState(false, false))));
+          testing::Pair(organizer_panel::mojom::SectionId::kCrossDeviceTabs,
+                        IsSectionState(true, false)),
+          testing::Pair(organizer_panel::mojom::SectionId::kOpenTabs,
+                        IsSectionState(false, false)),
+          testing::Pair(organizer_panel::mojom::SectionId::kRecentlyClosed,
+                        IsSectionState(true, false)),
+          testing::Pair(organizer_panel::mojom::SectionId::kTabGroups,
+                        IsSectionState(false, false))));
 }
 
 IN_PROC_BROWSER_TEST_F(OrganizerPanelPageHandlerBrowserTest,
                        GetAndSetSectionShowAllUpdatesPrefAndNotifiesPage) {
   TestHandlerHarness harness(active_web_contents());
 
-  harness.handler_remote()->SetSectionShowAll("open-tabs", true);
+  harness.handler_remote()->SetSectionShowAll(
+      organizer_panel::mojom::SectionId::kOpenTabs, true);
   harness.page().WaitForSectionsStateChanged();
 
   const base::DictValue& sections_show_all =
@@ -292,13 +307,18 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelPageHandlerBrowserTest,
   EXPECT_THAT(
       harness.page().sections_state(),
       testing::ElementsAre(
-          testing::Pair("cross-device-tabs", IsSectionState(true, false)),
-          testing::Pair("open-tabs", IsSectionState(true, true)),
-          testing::Pair("recently-closed", IsSectionState(true, false)),
-          testing::Pair("tab-groups", IsSectionState(true, false))));
+          testing::Pair(organizer_panel::mojom::SectionId::kCrossDeviceTabs,
+                        IsSectionState(true, false)),
+          testing::Pair(organizer_panel::mojom::SectionId::kOpenTabs,
+                        IsSectionState(true, true)),
+          testing::Pair(organizer_panel::mojom::SectionId::kRecentlyClosed,
+                        IsSectionState(true, false)),
+          testing::Pair(organizer_panel::mojom::SectionId::kTabGroups,
+                        IsSectionState(true, false))));
 
-  EXPECT_EQ(organizer_panel::mojom::SectionState::New(true, true),
-            harness.GetSectionState("open-tabs"));
+  EXPECT_EQ(
+      organizer_panel::mojom::SectionState::New(true, true),
+      harness.GetSectionState(organizer_panel::mojom::SectionId::kOpenTabs));
 
   {
     ScopedDictPrefUpdate update(browser()->GetProfile()->GetPrefs(),
@@ -309,10 +329,14 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelPageHandlerBrowserTest,
   EXPECT_THAT(
       harness.page().sections_state(),
       testing::ElementsAre(
-          testing::Pair("cross-device-tabs", IsSectionState(true, false)),
-          testing::Pair("open-tabs", IsSectionState(true, true)),
-          testing::Pair("recently-closed", IsSectionState(true, false)),
-          testing::Pair("tab-groups", IsSectionState(true, true))));
+          testing::Pair(organizer_panel::mojom::SectionId::kCrossDeviceTabs,
+                        IsSectionState(true, false)),
+          testing::Pair(organizer_panel::mojom::SectionId::kOpenTabs,
+                        IsSectionState(true, true)),
+          testing::Pair(organizer_panel::mojom::SectionId::kRecentlyClosed,
+                        IsSectionState(true, false)),
+          testing::Pair(organizer_panel::mojom::SectionId::kTabGroups,
+                        IsSectionState(true, true))));
 }
 
 IN_PROC_BROWSER_TEST_F(OrganizerPanelPageHandlerBrowserTest,

@@ -9,9 +9,10 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {TemplateResult} from '//resources/lit/v3_0/lit.rollup.js';
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {OrganizerAction, OrganizerListSectionClient, OrganizerListSectionDelegate, OrganizerSection} from '../organizer_list_section_delegate.js';
+import type {OrganizerAction, OrganizerListSectionClient, OrganizerListSectionDelegate} from '../organizer_list_section_delegate.js';
 import type {OrganizerListSectionItem} from '../organizer_list_section_item.js';
 import type {OrganizerListSectionItemDescriptionPart} from '../organizer_list_section_item_description.js';
+import {SectionId} from '../organizer_panel.mojom-webui.js';
 import type {BrowserProxy, ProfileData, RecentlyClosedSplitView, RecentlyClosedTab, RecentlyClosedTabGroup, TabsRemovedInfo} from '../tab_search.mojom-webui.js';
 import {browserProxyFactory} from '../tab_search.mojom-webui.js';
 
@@ -60,16 +61,12 @@ export class RecentTabsDelegate implements
     this.client_ = undefined;
   }
 
-  getId(): string {
-    return 'recently-closed';
+  getId(): SectionId {
+    return SectionId.kRecentlyClosed;
   }
 
   getHeader(): string {
     return loadTimeData.getString('recentlyClosed');
-  }
-
-  getHistogramSectionName(): OrganizerSection {
-    return 'RecentlyClosed';
   }
 
   async getItems():

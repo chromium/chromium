@@ -13,6 +13,7 @@ source_set("organizer") {
     "//base",
     "//chrome/browser/ui/animation",
     "//chrome/browser/ui/views/tabs/organizer:organizer_panel_host",
+    "//chrome/browser/ui/webui/organizer_panel:mojo_bindings_shared",
     "//chrome/browser/ui/webui/top_chrome",
     "//components/site_engagement/content",
     "//ui/base/unowned_user_data",

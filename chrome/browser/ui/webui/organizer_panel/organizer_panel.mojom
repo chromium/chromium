@@ -4,6 +4,16 @@
 
 module organizer_panel.mojom;
 
+// LINT.IfChange(OrganizerSection)
+// Identifiers for sections in the organizer panel.
+enum SectionId {
+  kCrossDeviceTabs = 0,
+  kOpenTabs = 1,
+  kRecentlyClosed = 2,
+  kTabGroups = 3,
+};
+// LINT.ThenChange(//chrome/browser/ui/tabs/organizer/organizer_panel_controller.cc:OrganizerSection)
+
 // Persisted display state for an organizer panel section.
 struct SectionState {
   bool expanded = true;
@@ -16,7 +26,7 @@ interface Page {
   OnIsInTrayViewChanged(bool in_tray_view);
 
   // Called when the persisted state of sections changes.
-  OnSectionsStateChanged(map<string, SectionState> sections_state);
+  OnSectionsStateChanged(map<SectionId, SectionState> sections_state);
 };
 
 // Browser-side handler for general panel requests from WebUI page.
@@ -28,13 +38,13 @@ interface PageHandler {
   ClosePanel();
 
   // Returns the persisted state for the section with the given ID.
-  GetSectionState(string section_id) => (SectionState state);
+  GetSectionState(SectionId section_id) => (SectionState state);
 
   // Sets whether the section with the given ID is expanded.
-  SetSectionExpanded(string section_id, bool expanded);
+  SetSectionExpanded(SectionId section_id, bool expanded);
 
   // Sets whether the section with the given ID shows all items.
-  SetSectionShowAll(string section_id, bool show_all);
+  SetSectionShowAll(SectionId section_id, bool show_all);
 };
 
 // Factory interface to bootstrap communication between WebUI and browser.

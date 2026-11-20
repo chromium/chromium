@@ -6,7 +6,7 @@ import '//resources/cr_elements/cr_collapse/cr_collapse.js';
 import './organizer_list_section_header.js';
 import './organizer_list_section_item.js';
 
-import {assert} from '//resources/js/assert.js';
+import {assert, assertNotReachedCase} from '//resources/js/assert.js';
 import type {PropertyValues, TemplateResult} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement, nothing} from '//resources/lit/v3_0/lit.rollup.js';
 
@@ -17,11 +17,28 @@ import type {OrganizerListSectionHeaderElement} from './organizer_list_section_h
 import {OrganizerSectionMenuOption} from './organizer_list_section_header.js';
 import type {HighlightableOrganizerListSectionItem, OrganizerListSectionItem, OrganizerListSectionItemElement} from './organizer_list_section_item.js';
 import type {BrowserProxy, SectionState} from './organizer_panel.mojom-webui.js';
-import {browserProxyFactory} from './organizer_panel.mojom-webui.js';
+import {browserProxyFactory, SectionId} from './organizer_panel.mojom-webui.js';
 import type {SearchOptions} from './search_utils.js';
 import {search} from './search_utils.js';
 
 export const INITIAL_ITEM_COUNT = 3;
+
+// LINT.IfChange(OrganizerSection)
+function getHistogramSectionName(sectionId: SectionId): string {
+  switch (sectionId) {
+    case SectionId.kCrossDeviceTabs:
+      return 'CrossDeviceTabs';
+    case SectionId.kOpenTabs:
+      return 'OpenTabs';
+    case SectionId.kRecentlyClosed:
+      return 'RecentlyClosed';
+    case SectionId.kTabGroups:
+      return 'TabGroups';
+    default:
+      assertNotReachedCase(sectionId);
+  }
+}
+// LINT.ThenChange(//tools/metrics/histograms/metadata/tab/histograms.xml:OrganizerSection)
 
 // LINT.IfChange(OrganizerSectionToggleAction)
 /**
@@ -143,7 +160,7 @@ export class OrganizerListSectionElement extends CrLitElement implements
         'change', this.onReducedMotionChange_);
     this.sectionStateChangedListenerId_ =
         this.browserProxy_.callbackRouter.onSectionsStateChanged.addListener(
-            (sectionsState: Record<string, SectionState>) => {
+            (sectionsState: Partial<Record<SectionId, SectionState>>) => {
               this.onSectionsStateChanged_(sectionsState);
             });
     this.syncDelegate_();
@@ -258,7 +275,8 @@ export class OrganizerListSectionElement extends CrLitElement implements
     this.noAnimation_ = false;
   }
 
-  private onSectionsStateChanged_(sectionsState: Record<string, SectionState>) {
+  private onSectionsStateChanged_(
+      sectionsState: Partial<Record<SectionId, SectionState>>) {
     assert(this.delegate);
     const state = sectionsState[this.delegate.getId()];
     assert(state);
@@ -312,7 +330,7 @@ export class OrganizerListSectionElement extends CrLitElement implements
     assert(this.delegate);
     chrome.metricsPrivate.recordEnumerationValue(
         `Tabs.Organizer.Section.${
-            this.delegate.getHistogramSectionName()}.ToggleAction`,
+            getHistogramSectionName(this.delegate.getId())}.ToggleAction`,
         e.detail.expanded ? OrganizerSectionToggleAction.EXPAND :
                             OrganizerSectionToggleAction.COLLAPSE,
         OrganizerSectionToggleAction.COUNT);
@@ -328,7 +346,7 @@ export class OrganizerListSectionElement extends CrLitElement implements
     this.showAll_ = showAll;
     chrome.metricsPrivate.recordEnumerationValue(
         `Tabs.Organizer.Section.${
-            this.delegate.getHistogramSectionName()}.MenuAction`,
+            getHistogramSectionName(this.delegate.getId())}.MenuAction`,
         e.detail.option, OrganizerSectionMenuOption.COUNT);
     this.browserProxy_.handler.setSectionShowAll(
         this.delegate.getId(), this.showAll_);
