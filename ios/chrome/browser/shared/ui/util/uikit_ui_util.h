@@ -102,8 +102,8 @@ UIInterfaceOrientation GetInterfaceOrientation(UIWindow* window);
 // Returns the height of the keyboard in the current orientation.
 CGFloat CurrentKeyboardHeight(NSValue* keyboardFrameValue);
 
-// Returns the visible height of the keyboard in the given window based on the
-// notification.
+// Returns the visible height of a docked keyboard overlapping `window` based
+// on `notification`, or 0 for floating, undocked, or offscreen keyboards.
 CGFloat VisibleKeyboardHeightFromNotification(NSNotification* notification,
                                               UIWindow* window);
 

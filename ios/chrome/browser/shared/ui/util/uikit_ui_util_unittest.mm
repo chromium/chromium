@@ -22,6 +22,9 @@
 
 namespace {
 
+// Height in points used for docked keyboard frames in tests.
+constexpr CGFloat kDockedKeyboardHeight = 250.0;
+
 using UIKitUIUtilTest = PlatformTest;
 
 // Verify the assumption about UIViewController that on iPad and iOS 13+ all
@@ -230,6 +233,149 @@ TEST_F(UIKitUIUtilTest, TestCanShowTabStrip) {
         mutableTraits.verticalSizeClass = UIUserInterfaceSizeClassCompact;
       }];
   EXPECT_FALSE(CanShowTabStrip(compactXCompact));
+}
+
+// Returns a keyboard frame-change notification from `screen` whose end frame is
+// `frame`.
+NSNotification* KeyboardNotificationWithFrame(UIScreen* screen, CGRect frame) {
+  return
+      [NSNotification notificationWithName:UIKeyboardWillChangeFrameNotification
+                                    object:screen
+                                  userInfo:@{
+                                    UIKeyboardFrameEndUserInfoKey :
+                                        [NSValue valueWithCGRect:frame],
+                                  }];
+}
+
+class VisibleKeyboardHeightTest : public PlatformTest {
+ protected:
+  void SetUp() override {
+    PlatformTest::SetUp();
+    window_ = [[UIWindow alloc]
+        initWithWindowScene:chrome_test_util::GetAnyWindowScene()];
+    screen_ = window_.windowScene.screen;
+    ASSERT_TRUE(screen_);
+    screen_bounds_ = screen_.coordinateSpace.bounds;
+    ASSERT_FALSE(CGRectIsEmpty(screen_bounds_));
+    window_.frame = screen_bounds_;
+  }
+
+  // Returns a full-width frame of `height` anchored to the bottom of
+  // `screen_bounds_`.
+  CGRect DockedKeyboardFrame(CGFloat height) const {
+    return CGRectMake(0, CGRectGetHeight(screen_bounds_) - height,
+                      CGRectGetWidth(screen_bounds_), height);
+  }
+
+  // Returns the visible keyboard height for `frame` using `screen` (which may
+  // be nil or a different screen) as the notification object.
+  CGFloat VisibleHeightForFrame(CGRect frame, UIScreen* screen) const {
+    return VisibleKeyboardHeightFromNotification(
+        KeyboardNotificationWithFrame(screen, frame), window_);
+  }
+
+  // Returns the visible keyboard height for `frame` using `screen_` as the
+  // notification object.
+  CGFloat VisibleHeightForFrame(CGRect frame) const {
+    return VisibleHeightForFrame(frame, screen_);
+  }
+
+  UIWindow* window_;
+  UIScreen* screen_;
+  CGRect screen_bounds_;
+};
+
+// Tests that `VisibleKeyboardHeightFromNotification` returns the visible height
+// of a docked keyboard on screen, partially offscreen during interactive
+// dismissal, and 0 once dismissed offscreen.
+TEST_F(VisibleKeyboardHeightTest, DockedFullScreen) {
+  CGRect docked_frame = DockedKeyboardFrame(kDockedKeyboardHeight);
+  EXPECT_EQ(VisibleHeightForFrame(docked_frame), kDockedKeyboardHeight);
+
+  // Partially offscreen docked keyboard (e.g., interactive scroll dismissal).
+  constexpr CGFloat kOffscreenOffset = 75.0;
+  EXPECT_EQ(
+      VisibleHeightForFrame(CGRectOffset(docked_frame, 0, kOffscreenOffset)),
+      kDockedKeyboardHeight - kOffscreenOffset);
+
+  // Dismissed keyboard offscreen below the window.
+  CGRect offscreen_frame =
+      CGRectMake(0, CGRectGetHeight(screen_bounds_),
+                 CGRectGetWidth(screen_bounds_), kDockedKeyboardHeight);
+  EXPECT_EQ(VisibleHeightForFrame(offscreen_frame), 0.0);
+}
+
+// Tests that `VisibleKeyboardHeightFromNotification` returns 0 for floating
+// (narrower than the screen) and undocked (raised above the bottom edge)
+// keyboards.
+TEST_F(VisibleKeyboardHeightTest, FloatingAndUndocked) {
+  constexpr CGFloat kHeight = 200.0;
+  CGFloat floating_width = CGRectGetWidth(screen_bounds_) / 2.0;
+
+  // Floating keyboard positioned above the bottom edge.
+  CGRect floating_mid_screen =
+      CGRectMake(40.0, CGRectGetHeight(screen_bounds_) - kHeight - 100.0,
+                 floating_width, kHeight);
+  EXPECT_EQ(VisibleHeightForFrame(floating_mid_screen), 0.0);
+
+  // Floating keyboard dragged down to touch the bottom edge.
+  CGRect floating_at_bottom = CGRectMake(
+      40.0, CGRectGetHeight(screen_bounds_) - kHeight, floating_width, kHeight);
+  EXPECT_EQ(VisibleHeightForFrame(floating_at_bottom), 0.0);
+
+  // Full-width undocked keyboard raised above the bottom edge.
+  CGRect undocked_frame = CGRectMake(0, CGRectGetHeight(screen_bounds_) - 350.0,
+                                     CGRectGetWidth(screen_bounds_), kHeight);
+  EXPECT_EQ(VisibleHeightForFrame(undocked_frame), 0.0);
+}
+
+// Tests that `VisibleKeyboardHeightFromNotification` handles windowed mode
+// (partial overlap and window completely above the docked keyboard).
+TEST_F(VisibleKeyboardHeightTest, WindowedMode) {
+  CGRect docked_frame = DockedKeyboardFrame(kDockedKeyboardHeight);
+
+  // Window raised 100pt above the bottom of the screen partially overlaps the
+  // docked keyboard by `kDockedKeyboardHeight - 100.0`.
+  constexpr CGFloat kBottomMargin = 100.0;
+  window_.frame =
+      CGRectMake(20.0, 40.0, CGRectGetWidth(screen_bounds_) - 40.0,
+                 CGRectGetHeight(screen_bounds_) - 40.0 - kBottomMargin);
+  EXPECT_EQ(VisibleHeightForFrame(docked_frame),
+            kDockedKeyboardHeight - kBottomMargin);
+
+  // Window completely above the docked keyboard has 0 overlap.
+  window_.frame = CGRectMake(
+      20.0, 20.0, CGRectGetWidth(screen_bounds_) - 40.0,
+      CGRectGetHeight(screen_bounds_) - kDockedKeyboardHeight - 40.0);
+  EXPECT_EQ(VisibleHeightForFrame(docked_frame), 0.0);
+}
+
+// Tests that `VisibleKeyboardHeightFromNotification` handles nil inputs,
+// empty frames, detached windows, nil notification objects, and cross-screen
+// notifications.
+TEST_F(VisibleKeyboardHeightTest, ScreenAndNilInputs) {
+  CGRect docked_frame = DockedKeyboardFrame(kDockedKeyboardHeight);
+
+  EXPECT_EQ(VisibleKeyboardHeightFromNotification(
+                KeyboardNotificationWithFrame(screen_, docked_frame), nil),
+            0.0);
+  EXPECT_EQ(VisibleKeyboardHeightFromNotification(nil, window_), 0.0);
+  EXPECT_EQ(VisibleHeightForFrame(CGRectZero), 0.0);
+
+  // Nil notification object falls back to `window.windowScene.screen`.
+  EXPECT_EQ(VisibleHeightForFrame(docked_frame, nil), kDockedKeyboardHeight);
+
+  // Detached window without a screen returns 0.
+  UIWindow* detached_window = [[UIWindow alloc] initWithFrame:screen_bounds_];
+  ASSERT_FALSE(detached_window.windowScene.screen);
+  EXPECT_EQ(VisibleKeyboardHeightFromNotification(
+                KeyboardNotificationWithFrame(screen_, docked_frame),
+                detached_window),
+            0.0);
+
+  // Notification from a different screen returns 0.
+  UIScreen* other_screen = OCMClassMock([UIScreen class]);
+  EXPECT_EQ(VisibleHeightForFrame(docked_frame, other_screen), 0.0);
 }
 
 }  // namespace

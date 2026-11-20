@@ -178,22 +178,41 @@ CGFloat CurrentKeyboardHeight(NSValue* keyboardFrameValue) {
 
 CGFloat VisibleKeyboardHeightFromNotification(NSNotification* notification,
                                               UIWindow* window) {
-  if (!window) {
+  UIScreen* screen = window.windowScene.screen;
+  if (!screen) {
     return 0;
   }
-  NSDictionary* user_info = notification.userInfo;
-  CGRect keyboard_frame =
-      [user_info[UIKeyboardFrameEndUserInfoKey] CGRectValue];
 
-  id<UICoordinateSpace> from_coordinate_space =
-      ((UIScreen*)notification.object).coordinateSpace;
+  UIScreen* notification_screen =
+      base::apple::ObjCCast<UIScreen>(notification.object);
+  if (notification_screen && notification_screen != screen) {
+    return 0;
+  }
+
+  CGRect keyboard_frame = [base::apple::ObjCCast<NSValue>(
+      notification.userInfo[UIKeyboardFrameEndUserInfoKey]) CGRectValue];
+  if (CGRectIsEmpty(keyboard_frame)) {
+    return 0;
+  }
+
+  // Ignore floating or undocked keyboards (e.g., on iPad), which do not occupy
+  // the bottom edge of the screen. Allow a 1pt tolerance for fractional scale
+  // rounding.
+  constexpr CGFloat kKeyboardFrameTolerance = 1.0;
+  CGRect screen_bounds = screen.coordinateSpace.bounds;
+  if (CGRectGetWidth(keyboard_frame) <
+          CGRectGetWidth(screen_bounds) - kKeyboardFrameTolerance ||
+      CGRectGetMaxY(keyboard_frame) <
+          CGRectGetMaxY(screen_bounds) - kKeyboardFrameTolerance) {
+    return 0;
+  }
 
   CGRect keyboard_frame_in_window =
-      [from_coordinate_space convertRect:keyboard_frame
-                       toCoordinateSpace:window.coordinateSpace];
+      [screen.coordinateSpace convertRect:keyboard_frame
+                        toCoordinateSpace:window.coordinateSpace];
 
-  return CGRectIntersection(keyboard_frame_in_window, window.bounds)
-      .size.height;
+  return CGRectGetHeight(
+      CGRectIntersection(keyboard_frame_in_window, window.bounds));
 }
 
 UIImage* ImageWithColor(UIColor* color) {

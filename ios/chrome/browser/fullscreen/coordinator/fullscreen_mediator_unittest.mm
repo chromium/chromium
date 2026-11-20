@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/web/model/web_view_proxy/web_view_proxy_tab_helper.h"
+#import "ios/chrome/test/app/uikit_test_util.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
@@ -640,4 +641,65 @@ TEST_F(FullscreenMediatorTest, KeyboardInsetUpdatesScrollViewContentInsetOnly) {
   // Hide the keyboard.
   agent_->SetKeyboardObscuredInset(0.0);
   EXPECT_EQ(scroll_view.contentInset.bottom, expected_resting_bottom_inset);
+}
+
+// Tests that transitioning from a docked keyboard to a floating keyboard via
+// `UIKeyboardWillChangeFrameNotification` clears the keyboard bottom inset.
+TEST_F(FullscreenMediatorTest, KeyboardTransitionFromDockedToFloating) {
+  auto [scroll_view, scroll_view_proxy] = SetUpActiveWebStateWithScrollView();
+
+  UIWindow* window = [[UIWindow alloc]
+      initWithWindowScene:chrome_test_util::GetAnyWindowScene()];
+  UIScreen* screen = window.windowScene.screen;
+  ASSERT_TRUE(screen);
+  CGRect screen_bounds = screen.coordinateSpace.bounds;
+  ASSERT_FALSE(CGRectIsEmpty(screen_bounds));
+  window.frame = screen_bounds;
+
+  UIView* web_view = [[UIView alloc] initWithFrame:window.bounds];
+  [window addSubview:web_view];
+  static_cast<web::FakeWebState*>(
+      browser_->GetWebStateList()->GetActiveWebState())
+      ->SetView(web_view);
+
+  auto post_keyboard_frame = ^(NSNotificationName name, CGRect frame) {
+    [[NSNotificationCenter defaultCenter]
+        postNotificationName:name
+                      object:screen
+                    userInfo:@{
+                      UIKeyboardFrameEndUserInfoKey :
+                          [NSValue valueWithCGRect:frame],
+                    }];
+  };
+
+  constexpr CGFloat kDockedKeyboardHeight = 250.0;
+  CGRect docked_frame =
+      CGRectMake(0, CGRectGetHeight(screen_bounds) - kDockedKeyboardHeight,
+                 CGRectGetWidth(screen_bounds), kDockedKeyboardHeight);
+  CGRect floating_frame =
+      CGRectMake(40.0, CGRectGetHeight(screen_bounds) - 300.0,
+                 CGRectGetWidth(screen_bounds) / 2.0, 200.0);
+
+  // Show a docked keyboard.
+  post_keyboard_frame(UIKeyboardWillShowNotification, docked_frame);
+  EXPECT_EQ(agent_->keyboard_obscured_inset(), kDockedKeyboardHeight);
+  EXPECT_EQ(scroll_view.contentInset.bottom, kDockedKeyboardHeight);
+
+  // Switch to a floating keyboard (narrower than the screen).
+  post_keyboard_frame(UIKeyboardWillChangeFrameNotification, floating_frame);
+  EXPECT_EQ(agent_->keyboard_obscured_inset(), 0.0);
+  EXPECT_EQ(scroll_view.contentInset.bottom, 0.0);
+
+  // Redock the keyboard.
+  post_keyboard_frame(UIKeyboardWillChangeFrameNotification, docked_frame);
+  EXPECT_EQ(agent_->keyboard_obscured_inset(), kDockedKeyboardHeight);
+  EXPECT_EQ(scroll_view.contentInset.bottom, kDockedKeyboardHeight);
+
+  // Hide the keyboard.
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:UIKeyboardWillHideNotification
+                    object:screen
+                  userInfo:nil];
+  EXPECT_EQ(agent_->keyboard_obscured_inset(), 0.0);
+  EXPECT_EQ(scroll_view.contentInset.bottom, 0.0);
 }
