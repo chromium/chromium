@@ -700,7 +700,15 @@ enum class SigninFunnelEvent {
   kManagementNoticeShown = 12,
   kManagementNoticeAccepted = 13,
   kManagementNoticeDeclined = 14,
-  kMaxValue = kManagementNoticeDeclined,
+  // The account picker bottom sheet was shown in its collapsed state, with an
+  // account to sign in with. Unlike `kPromoShownWithAccount`, this is also
+  // recorded when the sheet was opened from another sign-in promo or button.
+  kBottomSheetShownWithAccount = 15,
+  // The account picker bottom sheet was shown in its zero-account state, with
+  // no account on the device. Unlike `kPromoShownNoAccount`, this is also
+  // recorded when the sheet was opened from another sign-in promo or button.
+  kBottomSheetShownNoAccount = 16,
+  kMaxValue = kBottomSheetShownNoAccount,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:SigninFunnelEvent)
 

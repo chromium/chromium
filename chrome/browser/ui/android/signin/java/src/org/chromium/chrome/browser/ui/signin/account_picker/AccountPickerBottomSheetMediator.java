@@ -52,6 +52,7 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.components.signin.metrics.SigninFunnelEvent;
 import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.google_apis.gaia.CoreAccountId;
 import org.chromium.ui.base.WindowAndroid;
@@ -253,8 +254,12 @@ public class AccountPickerBottomSheetMediator
                                 this::onConfirmManagementCancelClicked,
                                 accountPickerBottomSheetStrings);
                 initializeAccountPickerAccountAndModel(accountId);
+                logBottomSheetShown();
                 break;
             case AccountPickerLaunchMode.SEAMLESS_SIGNIN:
+                // Seamless sign-in is started from a sign-in promo, which already logged the
+                // funnel impression and the sign-in button click. Later steps (errors, completion)
+                // are logged as they happen.
                 assert requestDisplayBottomSheet != null
                         : "Seamless sign-in requires a display request callback.";
                 assert accountId != null : "Seamless sign-in requires an initial account ID.";
@@ -547,6 +552,17 @@ public class AccountPickerBottomSheetMediator
         mModel.set(AccountPickerBottomSheetProperties.VIEW_STATE, mInitialViewState);
     }
 
+    /** Logs that the bottom sheet was shown with or without accounts in the sign-in funnel. */
+    private void logBottomSheetShown() {
+        if (mInitializedWithNoAccount) {
+            SigninMetricsUtils.logSigninFunnelEvent(
+                    mSigninAccessPoint, SigninFunnelEvent.BOTTOM_SHEET_SHOWN_NO_ACCOUNT);
+        } else if (mInitialViewState == ViewState.COLLAPSED_ACCOUNT_LIST) {
+            SigninMetricsUtils.logSigninFunnelEvent(
+                    mSigninAccessPoint, SigninFunnelEvent.BOTTOM_SHEET_SHOWN_WITH_ACCOUNT);
+        }
+    }
+
     private void updateAccounts(List<AccountInfo> accounts) {
         if (mIsSeamlessSignin) {
             if (mSelectedAccount != null
@@ -636,6 +652,8 @@ public class AccountPickerBottomSheetMediator
 
         // Clicking on the selected account when the account list is collapsed will expand the
         // account list and make the account list visible
+        SigninMetricsUtils.logSigninFunnelEvent(
+                mSigninAccessPoint, SigninFunnelEvent.CHOOSE_OTHER_ACCOUNT_CLICKED);
         mModel.set(AccountPickerBottomSheetProperties.VIEW_STATE, ViewState.EXPANDED_ACCOUNT_LIST);
     }
 
@@ -648,6 +666,8 @@ public class AccountPickerBottomSheetMediator
         switch (viewState) {
             case ViewState.COLLAPSED_ACCOUNT_LIST -> {
                 assert !mIsSeamlessSignin;
+                SigninMetricsUtils.logSigninFunnelEvent(
+                        mSigninAccessPoint, SigninFunnelEvent.SIGNIN_BUTTON_CLICKED);
                 launchDeviceLockIfNeededAndSignIn();
             }
             case ViewState.SIGNIN_GENERAL_ERROR -> {
@@ -662,6 +682,8 @@ public class AccountPickerBottomSheetMediator
             }
             case ViewState.NO_ACCOUNTS -> {
                 assert !mIsSeamlessSignin;
+                SigninMetricsUtils.logSigninFunnelEvent(
+                        mSigninAccessPoint, SigninFunnelEvent.ADD_ACCOUNT_CLICKED);
                 addAccount();
             }
             case ViewState.SIGNIN_AUTH_ERROR -> {
@@ -703,6 +725,11 @@ public class AccountPickerBottomSheetMediator
      */
     private void onAccountPickerDismissClicked() {
         assert !mIsSeamlessSignin : "Account picker sheet is not supported for seamless sign-in";
+        @ViewState int viewState = mModel.get(AccountPickerBottomSheetProperties.VIEW_STATE);
+        if (viewState == ViewState.COLLAPSED_ACCOUNT_LIST || viewState == ViewState.NO_ACCOUNTS) {
+            SigninMetricsUtils.logSigninFunnelEvent(
+                    mSigninAccessPoint, SigninFunnelEvent.SIGNIN_DECLINED_BUTTON_CLICKED);
+        }
         mDismissalLogger.logDismissedButtonClick();
         mDismissBottomSheet.run();
         mAccountPickerDelegate.onSignInCancel();

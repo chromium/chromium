@@ -1558,6 +1558,8 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="ManagementNoticeShown"/>
   <int value="13" label="ManagementNoticeAccepted"/>
   <int value="14" label="ManagementNoticeDeclined"/>
+  <int value="15" label="BottomSheetShownWithAccount"/>
+  <int value="16" label="BottomSheetShownNoAccount"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/signin/public/base/signin_metrics.h:SigninFunnelEvent) -->

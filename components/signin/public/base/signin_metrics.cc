@@ -84,6 +84,40 @@ std::string_view GetSigninFunnelAccessPointName(AccessPoint access_point) {
       return "RecentTabs";
     case AccessPoint::kSettingsAutofillAndPasswords:
       return "SettingsAutofillAndPasswords";
+    case AccessPoint::kSettings:
+      return "Settings";
+    case AccessPoint::kExtensions:
+      return "Extensions";
+    case AccessPoint::kWebSignin:
+      return "WebSignin";
+    case AccessPoint::kSafetyCheck:
+      return "SafetyCheck";
+    case AccessPoint::kSendTabToSelfPromo:
+      return "SendTabToSelfPromo";
+    case AccessPoint::kNtpSignedOutIcon:
+      return "NtpSignedOutIcon";
+    case AccessPoint::kNtpFeedCardMenuPromo:
+      return "NtpFeedCardMenuPromo";
+    case AccessPoint::kNtpFeedBottomPromo:
+      return "NtpFeedBottomPromo";
+    case AccessPoint::kSetUpList:
+      return "SetUpList";
+    case AccessPoint::kCctAccountMismatchNotification:
+      return "CctAccountMismatchNotification";
+    case AccessPoint::kCollaborationShareTabGroup:
+      return "CollaborationShareTabGroup";
+    case AccessPoint::kGlicLaunchButton:
+      return "GlicLaunchButton";
+    case AccessPoint::kCollaborationLeaveOrDeleteTabGroup:
+      return "CollaborationLeaveOrDeleteTabGroup";
+    case AccessPoint::kHistorySyncEducationalTip:
+      return "HistorySyncEducationalTip";
+    case AccessPoint::kAccountMenuSignedOutState:
+      return "AccountMenuSignedOutState";
+    case AccessPoint::kHistoryPage:
+      return "HistoryPage";
+    case AccessPoint::kTipsNotification:
+      return "TipsNotification";
     default:
       return std::string_view();
   }

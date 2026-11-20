@@ -119,6 +119,7 @@ import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.components.signin.metrics.SigninFunnelEvent;
 import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.components.signin.test.util.FakeIdentityManager;
@@ -256,6 +257,94 @@ public class AccountPickerBottomSheetTest {
 
         checkCollapsedAccountListForWebSignin(TestAccounts.ACCOUNT1);
         accountConsistencyHistogram.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    public void testCollapsedSheetPromoShownAndContinueAsClicked() {
+        var funnelWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                "Signin.SigninFunnel.WebSignin",
+                                SigninFunnelEvent.BOTTOM_SHEET_SHOWN_WITH_ACCOUNT,
+                                SigninFunnelEvent.SIGNIN_BUTTON_CLICKED)
+                        .build();
+
+        buildAndShowBottomSheet(AccountPickerLaunchMode.DEFAULT);
+        clickContinueButtonAndCheckSignInInProgressSheet();
+
+        funnelWatcher.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    public void testCollapsedSheetPromoShownAndDismissClicked() {
+        var funnelWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                "Signin.SigninFunnel.WebSignin",
+                                SigninFunnelEvent.BOTTOM_SHEET_SHOWN_WITH_ACCOUNT,
+                                SigninFunnelEvent.SIGNIN_DECLINED_BUTTON_CLICKED)
+                        .build();
+
+        buildAndShowBottomSheet(AccountPickerLaunchMode.DEFAULT);
+        waitForView(withText(R.string.signin_account_picker_dismiss_button)).click();
+
+        funnelWatcher.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    public void testCollapsedSheetPromoShownAndChooseOtherAccountClicked() {
+        var funnelWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                "Signin.SigninFunnel.WebSignin",
+                                SigninFunnelEvent.BOTTOM_SHEET_SHOWN_WITH_ACCOUNT,
+                                SigninFunnelEvent.CHOOSE_OTHER_ACCOUNT_CLICKED)
+                        .build();
+
+        buildAndShowCollapsedThenExpandedBottomSheet();
+
+        funnelWatcher.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    public void testZeroAccountSheetPromoShownAndAddAccountClicked() {
+        var funnelWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                "Signin.SigninFunnel.WebSignin",
+                                SigninFunnelEvent.BOTTOM_SHEET_SHOWN_NO_ACCOUNT,
+                                SigninFunnelEvent.ADD_ACCOUNT_CLICKED)
+                        .build();
+
+        mAccountManagerTestRule.removeAllAccounts();
+        buildAndShowZeroAccountBottomSheet();
+        checkZeroAccountBottomSheet();
+        waitForView(withText(R.string.signin_add_account_to_device)).click();
+
+        funnelWatcher.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    public void testZeroAccountSheetThenAccountAppearsLogsBottomSheetShownOnce() {
+        var funnelWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Signin.SigninFunnel.WebSignin",
+                                SigninFunnelEvent.BOTTOM_SHEET_SHOWN_NO_ACCOUNT)
+                        .build();
+
+        mAccountManagerTestRule.removeAllAccounts();
+        buildAndShowZeroAccountBottomSheet();
+        checkZeroAccountBottomSheet();
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        checkCollapsedAccountListForWebSignin(TestAccounts.ACCOUNT1);
+
+        funnelWatcher.assertExpected();
     }
 
     @Test
@@ -2083,6 +2172,29 @@ public class AccountPickerBottomSheetTest {
 
     private void buildAndShowBottomSheet(@AccountPickerLaunchMode int launchMode) {
         buildAndShowBottomSheetForAccount(launchMode, null);
+    }
+
+    /** Shows the collapsed bottom sheet when there are no accounts on the device. */
+    private void buildAndShowZeroAccountBottomSheet() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCoordinator =
+                            new AccountPickerBottomSheetCoordinator(
+                                    mActivityTestRule.getActivity().getWindowAndroid(),
+                                    mFakeIdentityManager,
+                                    mSigninManagerMock,
+                                    mAccountPreviewDataServiceMock,
+                                    mActivityTestRule.getActivity().getModalDialogManager(),
+                                    getBottomSheetController(),
+                                    mAccountPickerDelegateMock,
+                                    getBottomSheetStrings(),
+                                    new SigninTestUtil.CustomDeviceLockActivityLauncher(),
+                                    AccountPickerLaunchMode.DEFAULT,
+                                    /* isWebSignin= */ mSigninAccessPoint
+                                            == SigninAccessPoint.WEB_SIGNIN,
+                                    mSigninAccessPoint,
+                                    /* selectedAccountId= */ null);
+                });
     }
 
     private void buildAndShowCollapsedThenExandedBottomSheetForAccount(AccountInfo accountInfo) {

@@ -392,6 +392,8 @@ TEST(LogSigninFunnelEventTest, RecordsHistogramForSupportedAccessPoint) {
                        SigninFunnelEvent::kSigninDeclinedButtonClicked);
   LogSigninFunnelEvent(AccessPoint::kSettingsAutofillAndPasswords,
                        SigninFunnelEvent::kPromoShownWithAccount);
+  LogSigninFunnelEvent(AccessPoint::kWebSignin,
+                       SigninFunnelEvent::kPromoShownNoAccount);
 
   histogram_tester.ExpectUniqueSample("Signin.SigninFunnel.StartPage",
                                       SigninFunnelEvent::kPromoShownWithAccount,
@@ -415,12 +417,15 @@ TEST(LogSigninFunnelEventTest, RecordsHistogramForSupportedAccessPoint) {
       "Signin.SigninFunnel.SettingsAutofillAndPasswords",
       SigninFunnelEvent::kPromoShownWithAccount,
       /*expected_bucket_count=*/1);
-  EXPECT_EQ(6, histogram_tester.GetTotalCountForPrefix("Signin.SigninFunnel."));
+  histogram_tester.ExpectUniqueSample("Signin.SigninFunnel.WebSignin",
+                                      SigninFunnelEvent::kPromoShownNoAccount,
+                                      /*expected_bucket_count=*/1);
+  EXPECT_EQ(7, histogram_tester.GetTotalCountForPrefix("Signin.SigninFunnel."));
 }
 
 TEST(LogSigninFunnelEventTest, ChecksForUnsupportedAccessPoint) {
   EXPECT_CHECK_DEATH(LogSigninFunnelEvent(
-      AccessPoint::kSettings, SigninFunnelEvent::kPromoShownWithAccount));
+      AccessPoint::kPasswordBubble, SigninFunnelEvent::kPromoShownWithAccount));
 }
 
 }  // namespace

@@ -57,6 +57,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.signin.services.SigninFlowTimestampsLogger.FlowVariant;
@@ -70,6 +71,7 @@ import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.components.signin.metrics.SigninFunnelEvent;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -236,6 +238,33 @@ public class AccountPickerModalDialogTest {
                 () -> {
                     verify(mAccountPickerDelegateMock).onSignInCancel();
                 });
+    }
+
+    @Test
+    @MediumTest
+    public void testDialog_zeroAccountDismissViaCloseButtonLogsSigninDeclined() {
+        // The zero-account screen has no bottom dismiss button, so the dialog close button is the
+        // only way to decline from that screen.
+        mAccountManagerTestRule.removeAllAccounts();
+        var funnelWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                "Signin.SigninFunnel.WebSignin",
+                                SigninFunnelEvent.BOTTOM_SHEET_SHOWN_NO_ACCOUNT,
+                                SigninFunnelEvent.SIGNIN_DECLINED_BUTTON_CLICKED)
+                        .build();
+        buildAndShowDialog();
+        onView(allOf(withText(R.string.signin_add_account_to_device), isDisplayed()))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
+
+        onView(withId(R.id.account_picker_dialog_close_button)).inRoot(isDialog()).perform(click());
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    verify(mAccountPickerDelegateMock).onSignInCancel();
+                });
+        funnelWatcher.assertExpected();
     }
 
     @Test

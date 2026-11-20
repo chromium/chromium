@@ -184,17 +184,39 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(SigninFunnelAccessPoints) -->
 
 <variants name="SigninFunnelAccessPoints">
+  <variant name="AccountMenuSignedOutState"
+      summary="Account menu signed out state"/>
   <variant name="BookmarkManager" summary="Bookmark manager"/>
+  <variant name="CctAccountMismatchNotification"
+      summary="CCT account mismatch notification"/>
   <variant name="CollaborationJoinTabGroup"
       summary="Collaboration join tab group"/>
+  <variant name="CollaborationLeaveOrDeleteTabGroup"
+      summary="Collaboration leave or delete tab group"/>
+  <variant name="CollaborationShareTabGroup"
+      summary="Collaboration share tab group"/>
   <variant name="DeepLinkDefault" summary="Deep link"/>
+  <variant name="Extensions" summary="Extensions"/>
   <variant name="ForcedSignin" summary="Forced sign-in"/>
   <variant name="FullscreenSigninPromo" summary="Fullscreen sign-in promo"/>
+  <variant name="GlicLaunchButton" summary="Glic launch button"/>
+  <variant name="HistoryPage" summary="History page"/>
+  <variant name="HistorySyncEducationalTip"
+      summary="History sync educational tip"/>
+  <variant name="NtpFeedBottomPromo" summary="NTP feed bottom promo"/>
+  <variant name="NtpFeedCardMenuPromo" summary="NTP feed card menu promo"/>
   <variant name="NtpFeedTopPromo" summary="NTP feed top promo"/>
+  <variant name="NtpSignedOutIcon" summary="NTP signed-out icon"/>
   <variant name="RecentTabs" summary="Recent tabs"/>
+  <variant name="SafetyCheck" summary="Safety check"/>
+  <variant name="SendTabToSelfPromo" summary="Send tab to self promo"/>
+  <variant name="Settings" summary="Settings"/>
   <variant name="SettingsAutofillAndPasswords"
       summary="Autofill and passwords settings"/>
+  <variant name="SetUpList" summary="Set up list"/>
   <variant name="StartPage" summary="Start page (FRE)"/>
+  <variant name="TipsNotification" summary="Tips notification"/>
+  <variant name="WebSignin" summary="Web sign-in"/>
 </variants>
 
 <!-- LINT.ThenChange(//components/signin/public/base/signin_metrics.cc:GetSigninFunnelAccessPointName) -->
