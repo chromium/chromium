@@ -295,7 +295,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreVerticalTabsInteractiveTest,
   // browsers (which happens every 250 commands during normal usage).
   SessionService* const session_service =
       SessionServiceFactory::GetForProfile(browser()->GetProfile());
-  session_service->ResetFromCurrentBrowsers();
+  session_service->ResetFromCurrentBrowsersForTesting();
 
   // Quit and restore.
   BrowserWindowInterface* const restored_browser =

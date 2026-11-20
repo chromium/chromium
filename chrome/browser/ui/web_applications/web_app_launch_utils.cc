@@ -429,7 +429,8 @@ void ReparentWebContentsIntoBrowserImpl(BrowserWindowInterface* source_browser,
   // by either the app service or the regular service
   SessionServiceBase* target_service =
       GetAppropriateSessionServiceForProfile(target_browser);
-  target_service->ResetFromCurrentBrowsers();
+  target_service->ResetFromCurrentBrowsers(
+      SessionServiceBase::ResetReason::kWebAppReparenting);
 }
 
 std::optional<webapps::AppId> GetWebAppForActiveTab(

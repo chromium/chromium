@@ -83,7 +83,8 @@ AppSessionServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* profile) const {
   std::unique_ptr<AppSessionService> service =
       std::make_unique<AppSessionService>(static_cast<Profile*>(profile));
-  service->ResetFromCurrentBrowsers();
+  service->ResetFromCurrentBrowsers(
+      SessionServiceBase::ResetReason::kServiceStartup);
   return service;
 }
 

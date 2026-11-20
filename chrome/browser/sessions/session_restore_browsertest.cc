@@ -1443,7 +1443,7 @@ class SessionRestoreTabGroupsTest : public SessionRestoreTest {
     // The test parameter determines whether to do a command reset.
     SessionService* const session_service =
         SessionServiceFactory::GetForProfile(browser->GetProfile());
-    session_service->ResetFromCurrentBrowsers();
+    session_service->ResetFromCurrentBrowsersForTesting();
 
     return SessionRestoreTest::QuitBrowserAndRestore(browser);
   }
@@ -6031,7 +6031,7 @@ class SessionRestoreFocusModeTest : public SessionRestoreTest {
       BrowserWindowInterface* browser) {
     SessionService* const session_service =
         SessionServiceFactory::GetForProfile(browser->GetProfile());
-    session_service->ResetFromCurrentBrowsers();
+    session_service->ResetFromCurrentBrowsersForTesting();
 
     return SessionRestoreTest::QuitBrowserAndRestore(browser);
   }

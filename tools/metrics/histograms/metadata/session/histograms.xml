@@ -417,6 +417,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Session.ResetFromCurrentBrowsers.{Reason}.HasPendingTabCloses"
+    enum="Boolean" expires_after="2027-11-09">
+  <owner>dljames@chromium.org</owner>
+  <owner>musalmaan@chromium.org</owner>
+  <summary>
+    Recorded each time SessionService::ResetFromCurrentBrowsers() runs an
+    immediate rebuild of the session file from open browsers due to {Reason}
+    while saving is enabled (not recorded for AppSessionService). True if the
+    last window was partway through closing and had already-closed tabs in
+    pending_tab_close_ids_ that are dropped by the synchronous rebuild.
+  </summary>
+  <token key="Reason">
+    <variant name="NavigationIndexOutOfRange"
+        summary="a navigation index outside the tab's persisted range"/>
+    <variant name="ServiceStartup"
+        summary="initial SessionService construction"/>
+    <variant name="WebAppReparenting"
+        summary="reparenting a WebContents into a non-app browser window
+                 (e.g. out of a web app)"/>
+  </token>
+</histogram>
+
 <histogram name="Session.Restore.SettingChanged.{SessionRestoreInfobarType}"
     enum="Boolean" expires_after="2027-04-11">
   <owner>musalmaan@chromium.org</owner>

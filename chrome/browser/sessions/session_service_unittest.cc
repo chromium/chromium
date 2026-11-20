@@ -20,6 +20,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
@@ -279,7 +280,7 @@ TEST_F(SessionServiceTest, PlatformSessionIdSurvivesReset) {
   service()->SetPlatformSessionIdForTesting("some-platform-session-id");
   helper_.SaveNow();
 
-  service()->ResetFromCurrentBrowsers();
+  service()->ResetFromCurrentBrowsersForTesting();
   EXPECT_TRUE(helper_.HasPendingReset());
   // The test has no browsers. Schedule a command so that the reset writes a
   // new session file in any case.
@@ -1484,6 +1485,29 @@ TEST_F(SessionServiceTest, ObserverNotifiedOnDestruction) {
   EXPECT_CALL(observer, OnDestroying(service()));
 
   DestroySessionService();
+}
+
+TEST_F(SessionServiceTest,
+       ResetFromCurrentBrowsersDisabledSavingDoesNotRecordMetric) {
+  base::HistogramTester histogram_tester;
+  helper_.SetSavingEnabled(false);
+
+  service()->ResetFromCurrentBrowsers(
+      SessionServiceBase::ResetReason::kServiceStartup);
+  service()->ResetFromCurrentBrowsers(
+      SessionServiceBase::ResetReason::kNavigationIndexOutOfRange);
+  service()->ResetFromCurrentBrowsers(
+      SessionServiceBase::ResetReason::kWebAppReparenting);
+
+  histogram_tester.ExpectTotalCount(
+      "Session.ResetFromCurrentBrowsers.ServiceStartup.HasPendingTabCloses", 0);
+  histogram_tester.ExpectTotalCount(
+      "Session.ResetFromCurrentBrowsers.NavigationIndexOutOfRange."
+      "HasPendingTabCloses",
+      0);
+  histogram_tester.ExpectTotalCount(
+      "Session.ResetFromCurrentBrowsers.WebAppReparenting.HasPendingTabCloses",
+      0);
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
