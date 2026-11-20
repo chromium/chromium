@@ -73,6 +73,14 @@ public class PendingTabClosureManagerTest {
         }
 
         @Override
+        public Tab getTabById(int tabId) {
+            for (Tab tab : mTabs) {
+                if (tab.getId() == tabId) return tab;
+            }
+            return null;
+        }
+
+        @Override
         public boolean isIncognito() {
             return false;
         }
@@ -197,6 +205,7 @@ public class PendingTabClosureManagerTest {
         delegateInOrder.verify(mDelegate).insertUndoneTabClosureAt(eq(tab0), eq(0));
         // Still in rewound state as the tab continues to exist.
         checkRewoundState(mPendingTabClosureManager, tabList, true);
+        Assert.assertFalse(mPendingTabClosureManager.isClosurePending(tab0.getId()));
     }
 
     @Test
@@ -299,7 +308,8 @@ public class PendingTabClosureManagerTest {
         delegateInOrder
                 .verify(mDelegate)
                 .finalizeClosure(eq(tab0), eq(TabClosingSource.GRID_TAB_SWITCHER));
-        checkRewoundState(mPendingTabClosureManager, new Tab[] {tab1}, false);
+        checkRewoundState(mPendingTabClosureManager, new Tab[] {tab1}, true);
+        Assert.assertFalse(mPendingTabClosureManager.isClosurePending(tab1.getId()));
     }
 
     @Test
@@ -318,6 +328,8 @@ public class PendingTabClosureManagerTest {
 
         mPendingTabClosureManager.cancelTabClosure(tab0.getId());
         checkRewoundState(mPendingTabClosureManager, tabList, true);
+        Assert.assertFalse(mPendingTabClosureManager.isClosurePending(tab0.getId()));
+        Assert.assertTrue(mPendingTabClosureManager.isClosurePending(tab1.getId()));
         delegateInOrder.verify(mDelegate).insertUndoneTabClosureAt(eq(tab0), eq(0));
 
         mPendingTabClosureManager.commitTabClosure(tab1.getId());
@@ -325,7 +337,8 @@ public class PendingTabClosureManagerTest {
         delegateInOrder
                 .verify(mDelegate)
                 .finalizeClosure(eq(tab1), eq(TabClosingSource.GRID_TAB_SWITCHER));
-        checkRewoundState(mPendingTabClosureManager, new Tab[] {tab0}, false);
+        checkRewoundState(mPendingTabClosureManager, new Tab[] {tab0}, true);
+        Assert.assertFalse(mPendingTabClosureManager.isClosurePending(tab0.getId()));
     }
 
     @Test
@@ -549,5 +562,18 @@ public class PendingTabClosureManagerTest {
         Assert.assertEquals(tab0, rewoundList.getTabAt(0));
 
         verify(mDelegate, never()).getAllTabs();
+    }
+
+    @Test
+    public void testIsClosurePending_ShortCircuitsWhenNoPendingClosures() {
+        FakeTabModel spyTabModel = spy(new FakeTabModel());
+        PendingTabClosureManager manager = new PendingTabClosureManager(spyTabModel, mDelegate);
+        Tab tab0 = new MockTab(0, mProfile);
+        spyTabModel.setTabs(new Tab[] {tab0});
+        manager.resetState();
+
+        Assert.assertFalse(manager.isClosurePending(tab0.getId()));
+        verify(spyTabModel, never()).getTabById(tab0.getId());
+        manager.destroy();
     }
 }

@@ -219,7 +219,7 @@ public class PendingTabClosureManager {
          *     this model and not in {@code mTabModel}. {@code null} otherwise.
          */
         public @Nullable Tab getPendingRewindTab(int tabId) {
-            if (mTabModel.getTabById(tabId) != null) return null;
+            if (!hasPendingClosures() || mTabModel.getTabById(tabId) != null) return null;
             for (Tab tab : mRewoundTabs) {
                 if (tab.getId() == tabId) return tab;
             }
