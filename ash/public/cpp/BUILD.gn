@@ -403,7 +403,7 @@ component("cpp") {
     "//chromeos/ash/services/nearby/public/mojom",
     "//chromeos/ash/services/network_config:in_process_instance",
     "//chromeos/dbus/power:power_manager_proto",
-    "//chromeos/strings:strings_grit",
+    "//chromeos/resources:strings",
     "//chromeos/ui/base",
     "//chromeos/ui/clipboard_history",
     "//chromeos/ui/frame",

@@ -49,7 +49,7 @@ static_library("mahi") {
     "//chromeos/ash/experiences/settings_ui",
     "//chromeos/components/magic_boost/public/cpp",
     "//chromeos/components/mahi/public/cpp",
-    "//chromeos/strings:strings_grit",
+    "//chromeos/resources:strings",
     "//components/account_id",
     "//components/feedback",
     "//components/history/core/browser",

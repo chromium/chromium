@@ -156,7 +156,7 @@ static_library("apps") {
     "//chromeos/ash/components/file_manager:constants",
     "//chromeos/ash/components/system_web_apps:system_web_app_type",
     "//chromeos/constants",
-    "//chromeos/strings:strings_grit",
+    "//chromeos/resources:strings",
     "//components/application_locale_storage",
     "//components/content_settings/core/common",
     "//components/drive",

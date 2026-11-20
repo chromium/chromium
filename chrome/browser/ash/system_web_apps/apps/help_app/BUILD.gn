@@ -60,7 +60,7 @@ static_library("help_app") {
     "//chromeos/ash/experiences/settings_ui",
     "//chromeos/ash/services/multidevice_setup/public/cpp:prefs",
     "//chromeos/constants",
-    "//chromeos/strings",
+    "//chromeos/resources:strings",
     "//components/application_locale_storage",
     "//components/language/core/browser",
     "//components/prefs",

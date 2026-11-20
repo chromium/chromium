@@ -54,7 +54,7 @@ static_library("device") {
     "//chromeos/ash/experiences/settings_ui/resources:strings",
     "//chromeos/components/magic_boost/public/cpp",
     "//chromeos/constants",
-    "//chromeos/strings",
+    "//chromeos/resources:strings",
     "//components/spellcheck/browser",
     "//components/user_manager",
     "//content/public/browser",

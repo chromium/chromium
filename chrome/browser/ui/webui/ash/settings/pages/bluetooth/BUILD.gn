@@ -34,7 +34,7 @@ static_library("bluetooth") {
     "//chrome/browser/ui/webui/ash/settings/search/mojom",
     "//chromeos/ash/components/network",
     "//chromeos/ash/experiences/settings_ui/resources:strings",
-    "//chromeos/strings",
+    "//chromeos/resources:strings",
     "//components/cross_device/logging",
     "//components/prefs",
     "//content/public/browser",

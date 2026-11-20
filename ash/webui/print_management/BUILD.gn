@@ -20,7 +20,7 @@ static_library("print_management") {
     "//ash/webui/print_management/resources",
     "//ash/webui/web_applications",
     "//chromeos/components/print_management/mojom",
-    "//chromeos/strings/",
+    "//chromeos/resources:strings",
     "//content/public/browser",
     "//ui/base",
     "//ui/webui",

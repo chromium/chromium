@@ -71,7 +71,7 @@ static_library("lock_screen_reauth") {
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/login/auth",
     "//chromeos/ash/components/login/auth/public:challenge_response_key",
-    "//chromeos/strings",
+    "//chromeos/resources:strings",
     "//chromeos/version",
     "//components/account_id",
     "//components/application_locale_storage",

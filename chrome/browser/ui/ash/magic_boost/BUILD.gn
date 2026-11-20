@@ -26,7 +26,7 @@ source_set("magic_boost") {
     "//chrome/browser/ui/ash/read_write_cards",
     "//chromeos/components/magic_boost/public/cpp",
     "//chromeos/components/mahi/public/cpp",
-    "//chromeos/strings:strings_grit",
+    "//chromeos/resources:strings",
     "//chromeos/ui/vector_icons",
     "//components/application_locale_storage",
     "//ui/color",
@@ -78,7 +78,7 @@ source_set("unit_tests") {
     "//chromeos/components/magic_boost/public/cpp",
     "//chromeos/components/magic_boost/test:fake_magic_boost_state",
     "//chromeos/components/mahi/public/cpp",
-    "//chromeos/strings",
+    "//chromeos/resources:strings",
     "//components/metrics",
     "//components/metrics:test_support",
     "//components/variations:test_support",
@@ -94,7 +94,7 @@ source_set("magic_boost_constants") {
 
   deps = [
     "//build:branding_buildflags",
-    "//chromeos/strings:strings_grit",
+    "//chromeos/resources:strings",
   ]
 
   if (is_chrome_branded) {

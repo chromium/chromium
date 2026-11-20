@@ -15,7 +15,7 @@ component("views") {
   ]
 
   deps = [
-    "//chromeos/strings:strings_grit",
+    "//chromeos/resources:strings",
     "//ui/color",
     "//ui/views",
   ]

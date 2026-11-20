@@ -22,7 +22,7 @@ static_library("strings_provider") {
     "//ash/constants",
     "//chromeos/ash/components/login/login_state",
     "//chromeos/ash/components/network",
-    "//chromeos/strings:strings_grit",
+    "//chromeos/resources:strings",
     "//components/login",
     "//components/strings:components_strings",
     "//content/public/browser",

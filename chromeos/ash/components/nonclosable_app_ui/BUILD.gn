@@ -16,7 +16,7 @@ component("nonclosable_app_ui") {
     "//ash/constants",
     "//ash/public/cpp",
     "//base",
-    "//chromeos/strings",
+    "//chromeos/resources:strings",
     "//ui/base",
   ]
 }

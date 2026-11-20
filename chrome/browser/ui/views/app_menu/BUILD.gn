@@ -203,7 +203,7 @@ source_set("impl") {
 
   if (is_chromeos) {
     deps += [
-      "//chromeos/strings",
+      "//chromeos/resources:strings",
       "//chromeos/ui/frame",
     ]
   }

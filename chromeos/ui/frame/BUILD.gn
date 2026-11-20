@@ -69,7 +69,7 @@ source_set("frame") {
     "//ash/constants",
     "//base",
     "//chromeos/constants/",
-    "//chromeos/strings:strings_grit",
+    "//chromeos/resources:strings",
     "//chromeos/ui/base",
     "//chromeos/ui/vector_icons",
     "//chromeos/ui/wm",

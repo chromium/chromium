@@ -132,7 +132,7 @@ static_library("shelf") {
     "//chromeos/ash/experiences/arc:prefs",
     "//chromeos/ash/experiences/settings_ui",
     "//chromeos/constants",
-    "//chromeos/strings:strings_grit",
+    "//chromeos/resources:strings",
     "//chromeos/ui/wm",
     "//components/app_constants",
     "//components/crx_file",

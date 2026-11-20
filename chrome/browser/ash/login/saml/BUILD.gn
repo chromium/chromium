@@ -59,7 +59,7 @@ static_library("saml") {
     "//chromeos/ash/components/login/auth/public:authpublic",
     "//chromeos/ash/components/osauth/impl",
     "//chromeos/ash/components/settings",
-    "//chromeos/strings",
+    "//chromeos/resources:strings",
     "//components/prefs",
     "//components/signin/public/base",
     "//components/vector_icons",

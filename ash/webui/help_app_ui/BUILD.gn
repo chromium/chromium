@@ -53,7 +53,7 @@ static_library("help_app_ui") {
     "//chromeos/ash/components/system",
     "//chromeos/ash/components/system_web_apps:system_web_app_type",
     "//chromeos/constants",
-    "//chromeos/strings",
+    "//chromeos/resources:strings",
     "//components/keyed_service/content",
     "//components/prefs",
     "//content/public/browser",

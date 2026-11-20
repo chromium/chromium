@@ -10,7 +10,7 @@ component("version") {
   deps = [
     "//base",
     "//base:i18n",
-    "//chromeos/strings",
+    "//chromeos/resources:strings",
   ]
   sources = [
     "version_loader.cc",

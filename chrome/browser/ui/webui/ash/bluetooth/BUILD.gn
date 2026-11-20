@@ -23,7 +23,7 @@ static_library("bluetooth") {
     "//chrome/browser/ui/webui:theme_source",
     "//chrome/browser/ui/webui/ash/system_web_dialog",
     "//chromeos/ash/components/network",
-    "//chromeos/strings",
+    "//chromeos/resources:strings",
     "//components/session_manager/core",
     "//components/strings:components_strings",
     "//content/public/browser",

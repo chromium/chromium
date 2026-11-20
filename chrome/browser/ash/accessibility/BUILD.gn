@@ -51,7 +51,7 @@ static_library("accessibility") {
     "//chromeos/ash/experiences/settings_ui",
     "//chromeos/ash/resources:resources_grit",
     "//chromeos/dbus/power",
-    "//chromeos/strings",
+    "//chromeos/resources:strings",
     "//components/account_id",
     "//components/application_locale_storage",
     "//components/input",

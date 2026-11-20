@@ -35,7 +35,7 @@ static_library("projector_app") {
     "//ash/webui/resources:media_app_bundle_resources",
     "//ash/webui/resources:projector_app_bundle_resources",
     "//ash/webui/resources:projector_common_resources",
-    "//chromeos/strings",
+    "//chromeos/resources:strings",
     "//components/prefs",
     "//components/signin/public/identity_manager",
     "//content/public/browser",

@@ -35,7 +35,7 @@ static_library("recorder_app") {
     "//chromeos/ash/components/media_device_salt:media_device_salt_service_provider",
     "//chromeos/ash/components/signin:identity_manager_provider",
     "//chromeos/ash/experiences/system_web_apps/types",
-    "//chromeos/strings",
+    "//chromeos/resources:strings",
     "//components/application_locale_storage",
     "//components/consent_auditor",
     "//components/feedback",

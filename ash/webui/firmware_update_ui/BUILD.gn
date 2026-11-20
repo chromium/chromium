@@ -18,7 +18,7 @@ static_library("firmware_update_ui") {
     "//ash/webui/firmware_update_ui/mojom",
     "//ash/webui/firmware_update_ui/resources",
     "//chromeos/ash/components/fwupd",
-    "//chromeos/strings/",
+    "//chromeos/resources:strings",
     "//content/public/browser",
     "//dbus",
     "//ui/chromeos",

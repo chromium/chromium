@@ -41,7 +41,7 @@ static_library("media_app_ui") {
     "//chromeos/ash/components/specialized_features",
     "//chromeos/ash/components/system_web_apps:system_web_app_type",
     "//chromeos/constants",
-    "//chromeos/strings",
+    "//chromeos/resources:strings",
     "//components/prefs",
     "//components/variations/service",
     "//content/public/browser",

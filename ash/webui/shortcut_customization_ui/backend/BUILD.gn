@@ -32,7 +32,7 @@ static_library("backend") {
     "//chromeos/ash/components/local_search_service",
     "//chromeos/ash/components/local_search_service/public/cpp",
     "//chromeos/ash/components/local_search_service/public/mojom",
-    "//chromeos/strings",
+    "//chromeos/resources:strings",
     "//components/prefs",
     "//ui/base/ime/ash",
     "//ui/events/ash",

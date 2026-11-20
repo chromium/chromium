@@ -315,7 +315,7 @@ static_library("screens") {
     "//chromeos/dbus/power:power_manager_proto",
     "//chromeos/dbus/tpm_manager",
     "//chromeos/dbus/tpm_manager:tpm_manager_proto",
-    "//chromeos/strings",
+    "//chromeos/resources:strings",
     "//components/application_locale_storage",
     "//components/consent_auditor",
     "//components/drive",

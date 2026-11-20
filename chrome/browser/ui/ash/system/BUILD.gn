@@ -133,7 +133,7 @@ source_set("browser_tests") {
     "//chromeos/ash/components/install_attributes:test_support",
     "//chromeos/ash/components/policy/device_policy:test_support",
     "//chromeos/ash/components/settings",
-    "//chromeos/strings",
+    "//chromeos/resources:strings",
     "//components/account_id",
     "//components/media_router/browser",
     "//components/media_router/browser:test_support",

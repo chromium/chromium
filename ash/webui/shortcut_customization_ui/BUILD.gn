@@ -28,7 +28,7 @@ static_library("shortcut_customization_ui") {
     "//ash/webui/shortcut_customization_ui/resources",
     "//ash/webui/system_apps/public:system_web_app_config",
     "//chromeos/ash/components/local_search_service/public/cpp",
-    "//chromeos/strings",
+    "//chromeos/resources:strings",
     "//components/keyed_service/content",
     "//components/user_prefs",
     "//content/public/browser",

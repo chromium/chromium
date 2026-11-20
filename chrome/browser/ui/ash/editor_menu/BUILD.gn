@@ -92,7 +92,7 @@ source_set("views") {
     "//build:branding_buildflags",
     "//chromeos/ash/components/editor_menu/public/cpp",
     "//chromeos/constants",
-    "//chromeos/strings:strings_grit",
+    "//chromeos/resources:strings",
     "//chromeos/ui/vector_icons",
     "//components/application_locale_storage",
     "//components/vector_icons",

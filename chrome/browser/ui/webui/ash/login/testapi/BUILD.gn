@@ -25,7 +25,7 @@ static_library("testapi") {
     "//chromeos/ash/components/assistant:buildflags",
     "//chromeos/ash/components/install_attributes",
     "//chromeos/ash/components/login/auth/public:authpublic",
-    "//chromeos/strings",
+    "//chromeos/resources:strings",
     "//components/account_id",
     "//components/login",
     "//components/metrics",

@@ -415,7 +415,7 @@ if (!is_android) {
       deps += [
         ":browser_commands_chromeos",
         "//chrome/browser/ui/ash/multi_user",
-        "//chromeos/strings",
+        "//chromeos/resources:strings",
       ]
     }
     if (is_win || is_mac || is_linux) {

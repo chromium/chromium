@@ -308,7 +308,7 @@ static_library("login") {
     "//chromeos/constants",
     "//chromeos/dbus/constants",
     "//chromeos/dbus/power",
-    "//chromeos/strings",
+    "//chromeos/resources:strings",
     "//chromeos/version",
     "//components/application_locale_storage",
     "//components/content_settings/core/common",

@@ -59,7 +59,7 @@ static_library("ui") {
     "//chrome/browser/ash/arc/input_overlay/db/proto",
     "//chrome/browser/resources:component_extension_resources",
     "//chromeos/ash/experiences/arc",
-    "//chromeos/strings:strings_grit",
+    "//chromeos/resources:strings",
     "//ui/base",
     "//ui/chromeos",
     "//ui/chromeos/styles:cros_styles_views_generator",

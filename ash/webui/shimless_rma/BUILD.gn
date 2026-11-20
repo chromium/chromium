@@ -21,7 +21,7 @@ static_library("shimless_rma") {
     "//ash/webui/shimless_rma/mojom",
     "//ash/webui/shimless_rma/resources",
     "//build:branding_buildflags",
-    "//chromeos/strings/",
+    "//chromeos/resources:strings",
     "//content/public/browser",
     "//dbus",
     "//ui/chromeos",

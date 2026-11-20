@@ -29,7 +29,7 @@ source_set("help") {
       "//chromeos/ash/components/network",
       "//chromeos/ash/components/settings",
       "//chromeos/dbus/power",
-      "//chromeos/strings:strings_grit",
+      "//chromeos/resources:strings",
       "//components/policy/core/common",
       "//content/public/browser",
       "//ui/base",

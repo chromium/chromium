@@ -29,7 +29,7 @@ static_library("scanning") {
     "//ash/webui/common/mojom",
     "//ash/webui/scanning/mojom",
     "//ash/webui/scanning/resources",
-    "//chromeos/strings/",
+    "//chromeos/resources:strings",
     "//content/public/browser",
     "//ui/base",
     "//ui/gfx",

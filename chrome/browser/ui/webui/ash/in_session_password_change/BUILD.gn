@@ -39,7 +39,7 @@ static_library("in_session_password_change") {
     "//chrome/browser/resources/gaia_auth_host:resources",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/login/auth/public:authpublic",
-    "//chromeos/strings",
+    "//chromeos/resources:strings",
     "//components/prefs",
     "//components/strings:components_strings",
     "//components/user_manager",

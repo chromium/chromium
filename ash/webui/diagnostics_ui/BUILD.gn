@@ -29,7 +29,7 @@ static_library("diagnostics_ui") {
     "//ash/webui/diagnostics_ui/resources",
     "//chromeos/ash/components/feature_usage",
     "//chromeos/ash/components/login/login_state",
-    "//chromeos/strings/",
+    "//chromeos/resources:strings",
     "//content/public/browser",
     "//ui/base",
     "//ui/chromeos/strings:strings_provider",

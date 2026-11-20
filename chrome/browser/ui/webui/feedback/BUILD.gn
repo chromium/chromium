@@ -62,7 +62,7 @@ if (!is_android) {
     if (is_chromeos) {
       deps += [
         "//chrome/browser/ash/arc:arc_util",
-        "//chromeos/strings",
+        "//chromeos/resources:strings",
       ]
     }
   }

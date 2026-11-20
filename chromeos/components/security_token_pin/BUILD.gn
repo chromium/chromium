@@ -16,7 +16,7 @@ component("security_token_pin") {
   deps = [
     "//base",
     "//base:i18n",
-    "//chromeos/strings",
+    "//chromeos/resources:strings",
     "//ui/base",
   ]
 }

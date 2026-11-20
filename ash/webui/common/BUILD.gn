@@ -14,7 +14,7 @@ static_library("keyboard_diagram_strings") {
   ]
 
   deps = [
-    "//chromeos/strings/",
+    "//chromeos/resources:strings",
     "//content/public/browser",
     "//ui/base",
   ]
@@ -28,7 +28,7 @@ static_library("shortcut_input_key_strings") {
 
   deps = [
     "//ash",
-    "//chromeos/strings/",
+    "//chromeos/resources:strings",
     "//content/public/browser",
     "//ui/base",
     "//ui/events/ash",
@@ -47,7 +47,7 @@ source_set("sea_pen") {
   deps = [
     "//ash/constants",
     "//ash/webui/common/mojom:sea_pen",
-    "//chromeos/strings/",
+    "//chromeos/resources:strings",
     "//content/public/browser",
     "//ui/base",
   ]

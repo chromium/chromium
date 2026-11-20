@@ -46,7 +46,7 @@ static_library("on_task") {
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/browser_delegate",
     "//chromeos/ash/components/system_web_apps:system_web_app_type",
-    "//chromeos/strings:strings_grit",
+    "//chromeos/resources:strings",
     "//chromeos/ui/frame",
     "//components/keyed_service/content",
     "//components/policy/core/browser",
@@ -122,7 +122,7 @@ source_set("browser_tests") {
     "//chromeos/ash/components/boca/on_task:util",
     "//chromeos/ash/components/boca/proto",
     "//chromeos/ash/components/browser_delegate",
-    "//chromeos/strings:strings_grit",
+    "//chromeos/resources:strings",
     "//chromeos/ui/wm",
     "//ui/base",
   ]

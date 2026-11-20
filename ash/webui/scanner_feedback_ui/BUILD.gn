@@ -19,7 +19,7 @@ static_library("scanner_feedback_ui") {
     "//ash/constants",
     "//ash/webui/common:trusted_types_util",
     "//ash/webui/scanner_feedback_ui/resources",
-    "//chromeos/strings",
+    "//chromeos/resources:strings",
     "//content/public/browser",
   ]
 

@@ -155,7 +155,7 @@ source_set("impl") {
     deps += [
       "//ash/public/cpp",
       "//chromeos/ash/components/browser_context_helper",
-      "//chromeos/strings:strings_grit",
+      "//chromeos/resources:strings",
       "//components/user_manager",
       "//ui/message_center",
     ]

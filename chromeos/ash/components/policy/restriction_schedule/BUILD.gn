@@ -23,7 +23,7 @@ source_set("restriction_schedule") {
 
   public_deps = [
     "//base",
-    "//chromeos/strings",
+    "//chromeos/resources:strings",
     "//components/prefs",
   ]
 
