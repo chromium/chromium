@@ -4,10 +4,6 @@
 
 package org.chromium.chrome.browser.omnibox.status;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doReturn;
-
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 
 import android.app.Activity;
@@ -20,20 +16,14 @@ import android.widget.LinearLayout;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.test.filters.MediumTest;
 
-import org.jni_zero.JniUniquePtr;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.params.ParameterAnnotations.UseMethodParameter;
 import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
@@ -43,19 +33,12 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
-import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifier;
-import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifierJni;
-import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.PermissionIconResource;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
 import org.chromium.chrome.browser.omnibox.status.StatusView.IconTransitionType;
-import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.toolbar.LocationBarModel;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.chrome.test.util.ToolbarUnitTestUtils;
 import org.chromium.components.browser_ui.site_settings.ContentSettingsResources;
 import org.chromium.components.browser_ui.util.DrawableUtils;
 import org.chromium.components.browser_ui.widget.CompositeTouchDelegate;
@@ -91,15 +74,8 @@ public class StatusViewRenderTest {
                     .setRevision(RENDER_TEST_REVISION)
                     .build();
 
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-
-    @Mock private ChromeAutocompleteSchemeClassifier.Natives mChromeAutocompleteSchemeClassifierJni;
-    @Mock private Profile mProfile;
-    @Mock private Profile mIncognitoProfile;
-
     private StatusView mStatusView;
     private PropertyModel mStatusModel;
-    private LocationBarModel mLocationBarModel;
     private Drawable mBackground;
 
     @BeforeClass
@@ -110,14 +86,6 @@ public class StatusViewRenderTest {
 
     @Before
     public void setUp() {
-        ChromeAutocompleteSchemeClassifierJni.setInstanceForTesting(
-                mChromeAutocompleteSchemeClassifierJni);
-        doAnswer(invocation -> JniUniquePtr.createForTesting(1L))
-                .when(mChromeAutocompleteSchemeClassifierJni)
-                .createAutocompleteClassifier(any());
-
-        doReturn(true).when(mIncognitoProfile).isOffTheRecord();
-
         runOnUiThreadBlocking(
                 () -> {
                     ViewGroup view = new LinearLayout(sActivity);
@@ -136,14 +104,6 @@ public class StatusViewRenderTest {
                                     .findViewById(R.id.location_bar_status);
                     mStatusView.setCompositeTouchDelegate(new CompositeTouchDelegate(view));
                     mStatusView.setIconAnimationDurationForTesting(0);
-                    mLocationBarModel =
-                            new LocationBarModel(
-                                    mStatusView.getContext(),
-                                    NewTabPageDelegate.EMPTY,
-                                    url -> url.getSpec(),
-                                    ToolbarUnitTestUtils.OFFLINE_STATUS,
-                                    ObservableSuppliers.createNonNull(ControlsPosition.TOP));
-                    mLocationBarModel.setTab(null, mProfile);
                     mStatusModel = new PropertyModel.Builder(StatusProperties.ALL_KEYS).build();
                     PropertyModelChangeProcessor.create(
                             mStatusModel, mStatusView, new StatusViewBinder());
@@ -163,42 +123,9 @@ public class StatusViewRenderTest {
                 });
     }
 
-    @After
-    public void tearDown() throws Exception {
-        runOnUiThreadBlocking(() -> mLocationBarModel.destroy());
-    }
-
     private void renderStatusView(String id) throws IOException {
         CriteriaHelper.pollUiThread(() -> !mStatusView.isStatusIconAnimating());
         mRenderTestRule.render(mStatusView, id);
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"RenderTest"})
-    public void testStatusViewIncognitoWithIcon() throws IOException {
-        runOnUiThreadBlocking(
-                () -> {
-                    mLocationBarModel.setTab(null, mIncognitoProfile);
-                    mStatusView.setIncognitoBadgeVisibility(true);
-                    mStatusModel.set(
-                            StatusProperties.STATUS_ICON_RESOURCE,
-                            new StatusIconResource(R.drawable.ic_search_24dp, 0));
-                });
-        renderStatusView("status_view_incognito_with_icon");
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"RenderTest"})
-    public void testStatusViewIncognitoNoIcon() throws IOException {
-        runOnUiThreadBlocking(
-                () -> {
-                    mLocationBarModel.setTab(null, mIncognitoProfile);
-                    mStatusView.setIncognitoBadgeVisibility(true);
-                    mStatusModel.set(StatusProperties.STATUS_ICON_RESOURCE, null);
-                });
-        renderStatusView("status_view_incognito_no_icon");
     }
 
     @Test

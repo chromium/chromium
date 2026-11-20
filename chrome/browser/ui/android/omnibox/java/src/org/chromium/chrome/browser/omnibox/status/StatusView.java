@@ -14,7 +14,6 @@ import android.view.MotionEvent;
 import android.view.TouchDelegate;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewStub;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction;
 import android.widget.ImageView;
@@ -32,7 +31,6 @@ import org.chromium.base.TimeUtils;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
-import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
@@ -63,7 +61,6 @@ public class StatusView extends LinearLayout {
     public static final int ICON_ROTATION_DURATION_MS = 250;
     private static final int ICON_ROTATION_DEGREES = 180;
 
-    private @Nullable View mIncognitoBadge;
     // The default value is 0, which matches R.dimen.location_bar_start_padding.
     private int mTouchDelegateStartOffset;
     private int mTouchDelegateEndOffset;
@@ -544,28 +541,10 @@ public class StatusView extends LinearLayout {
         mVerboseStatusTextView.setMaxWidth(width);
     }
 
-    /**
-     * @param incognitoBadgeVisible Whether or not the incognito badge is visible.
-     */
-    void setIncognitoBadgeVisibility(boolean incognitoBadgeVisible) {
-        // Initialize the incognito badge on the first time it becomes visible.
-        if (mIncognitoBadge == null && !incognitoBadgeVisible) return;
-        if (mIncognitoBadge == null) initializeIncognitoBadge();
-
-        mIncognitoBadge.setVisibility(incognitoBadgeVisible ? View.VISIBLE : View.GONE);
-        updateTouchDelegate();
-    }
-
     void setBrowserControlsVisibilityDelegate(
             @Nullable BrowserStateBrowserControlsVisibilityDelegate
                     browserControlsVisibilityDelegate) {
         mBrowserControlsVisibilityDelegate = browserControlsVisibilityDelegate;
-    }
-
-    @EnsuresNonNull("mIncognitoBadge")
-    private void initializeIncognitoBadge() {
-        ViewStub viewStub = findViewById(R.id.location_bar_incognito_badge_stub);
-        mIncognitoBadge = viewStub.inflate();
     }
 
     /**

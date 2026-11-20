@@ -219,9 +219,7 @@ public class StatusMediator
                 });
 
         mProfileSupplier = profileSupplier;
-
         mPageInfoAction = pageInfoAction;
-        mModel.set(StatusProperties.INCOGNITO_BADGE_VISIBLE, false);
 
         mFuseboxStateSupplier = fuseboxStateSupplier;
         mFuseboxLayoutModeSupplier = fuseboxLayoutModeSupplier;

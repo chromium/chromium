@@ -97,104 +97,16 @@ public class StatusViewUnitTest {
     }
 
     @Test
-    public void testIncognitoBadgeVisibility() {
-        // Verify that the incognito badge is not inflated by default.
-        assertFalse(mStatusModel.get(StatusProperties.INCOGNITO_BADGE_VISIBLE));
-        assertNull(mStatusView.findViewById(R.id.location_bar_incognito_badge));
-
-        // Set incognito badge visible.
-        mStatusModel.set(StatusProperties.INCOGNITO_BADGE_VISIBLE, true);
-        performLayout();
-        View badge = mStatusView.findViewById(R.id.location_bar_incognito_badge);
-        assertNotNull(badge);
-        assertEquals(View.VISIBLE, badge.getVisibility());
-
-        // Set incognito badge gone.
-        mStatusModel.set(StatusProperties.INCOGNITO_BADGE_VISIBLE, false);
-        performLayout();
-        assertEquals(View.GONE, badge.getVisibility());
-    }
-
-    @Test
-    public void testTouchDelegate_nullWhenIncognitoStatusIconInvisible() {
-        // Verify that the incognito badge is not inflated by default.
-        assertFalse(mStatusModel.get(StatusProperties.INCOGNITO_BADGE_VISIBLE));
-        assertNull(mStatusView.findViewById(R.id.location_bar_incognito_badge));
-
-        // Set incognito badge visible.
-        mStatusModel.set(StatusProperties.INCOGNITO_BADGE_VISIBLE, true);
-        performLayout();
-        View badge = mStatusView.findViewById(R.id.location_bar_incognito_badge);
-        assertNotNull(badge);
-        assertEquals(View.VISIBLE, badge.getVisibility());
-
-        mStatusModel.set(StatusProperties.STATUS_ICON_RESOURCE, null);
-        performLayout();
-        assertNull(mStatusView.getTouchDelegateForTesting());
-    }
-
-    @Test
-    public void testTouchDelegate_notNullWhenIncognitoStatusIconVisible() {
-        // Verify that the incognito badge is not inflated by default.
-        assertFalse(mStatusModel.get(StatusProperties.INCOGNITO_BADGE_VISIBLE));
-        assertNull(mStatusView.findViewById(R.id.location_bar_incognito_badge));
-
-        // Set incognito badge visible.
-        mStatusModel.set(StatusProperties.INCOGNITO_BADGE_VISIBLE, true);
-        performLayout();
-        View badge = mStatusView.findViewById(R.id.location_bar_incognito_badge);
-        assertNotNull(badge);
-        assertEquals(View.VISIBLE, badge.getVisibility());
-
+    public void testTouchDelegate_togglesWithStatusIconVisibility() {
         mStatusModel.set(
                 StatusProperties.STATUS_ICON_RESOURCE,
                 new StatusIconResource(R.drawable.ic_search_24dp, /* tint= */ 0));
         performLayout();
         assertNotNull(mStatusView.getTouchDelegateForTesting());
-    }
-
-    @Test
-    public void statusView_goneWhenIncognitoBadgeVisible() {
-        // Set location_bar_status_icon is VISIBLE in the beginning.
-        mStatusModel.set(
-                StatusProperties.STATUS_ICON_RESOURCE,
-                new StatusIconResource(R.drawable.ic_search_24dp, /* tint= */ 0));
-        performLayout();
-        View securityView = mStatusView.getSecurityView();
-        assertEquals(View.VISIBLE, securityView.getVisibility());
-
-        // Verify that the incognito badge is not inflated by default.
-        assertFalse(mStatusModel.get(StatusProperties.INCOGNITO_BADGE_VISIBLE));
-        assertNull(mStatusView.findViewById(R.id.location_bar_incognito_badge));
-
-        // Set incognito badge visible.
-        mStatusModel.set(StatusProperties.INCOGNITO_BADGE_VISIBLE, true);
-        performLayout();
-        View badge = mStatusView.findViewById(R.id.location_bar_incognito_badge);
-        assertNotNull(badge);
-        assertEquals(View.VISIBLE, badge.getVisibility());
 
         mStatusModel.set(StatusProperties.STATUS_ICON_RESOURCE, null);
         performLayout();
-        assertEquals(View.GONE, securityView.getVisibility());
-    }
-
-    @Test
-    public void testSearchEngineLogo_incognito_noMarginEnd() {
-        // Set incognito badge visible.
-        mStatusModel.set(StatusProperties.INCOGNITO_BADGE_VISIBLE, true);
-        performLayout();
-        View badge = mStatusView.findViewById(R.id.location_bar_incognito_badge);
-        assertNotNull(badge);
-        assertEquals(View.VISIBLE, badge.getVisibility());
-
-        mStatusModel.set(
-                StatusProperties.STATUS_ICON_RESOURCE,
-                new StatusIconResource(R.drawable.ic_logo_googleg_24dp, /* tint= */ 0));
-        performLayout();
-        ViewGroup.MarginLayoutParams params =
-                (ViewGroup.MarginLayoutParams) badge.getLayoutParams();
-        assertEquals(0, params.getMarginEnd());
+        assertNull(mStatusView.getTouchDelegateForTesting());
     }
 
     @Test

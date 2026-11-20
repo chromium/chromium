@@ -481,7 +481,6 @@ android_resources("java_resources") {
     "java/res/layout/location_bar.xml",
     "java/res/layout/location_status.xml",
     "java/res/layout/location_status_icon.xml",
-    "java/res/layout/location_status_incognito_badge.xml",
     "java/res/layout/omnibox_answer_suggestion.xml",
     "java/res/layout/omnibox_back_button.xml",
     "java/res/layout/omnibox_basic_suggestion.xml",
@@ -532,11 +531,7 @@ android_library("unit_device_javatests") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//chrome/android:chrome_app_java_resources",
-    "//chrome/browser/browser_controls/android:java",
     "//chrome/browser/flags:java",
-    "//chrome/browser/profiles/android:java",
-    "//chrome/browser/tab:java",
-    "//chrome/browser/ui/android/toolbar:java",
     "//chrome/test/android:chrome_java_test_support_common",
     "//components/browser_ui/site_settings/android:java",
     "//components/browser_ui/util/android:java",
@@ -556,12 +551,10 @@ android_library("unit_device_javatests") {
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_java",
     "//third_party/hamcrest:hamcrest_library_java",
-    "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java_test_support",
     "//ui/android:ui_no_recycler_view_java",
-    "//url:gurl_java",
   ]
 }
 

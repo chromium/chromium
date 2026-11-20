@@ -6,8 +6,6 @@ found in the LICENSE file.
 -->
 <resources>
     <!-- go/keep-sorted start group_start_regex=<dimen -->
-    <dimen name="incognito_badge_lateral_padding_end">0dp</dimen>
-    <dimen name="incognito_badge_lateral_padding_start">8dp</dimen>
     <dimen name="location_bar_action_icon_width">48dp</dimen>
     <dimen name="location_bar_height">48dp</dimen>
     <dimen name="location_bar_icon_margin_end">0dp</dimen>

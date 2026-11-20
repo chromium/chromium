@@ -400,22 +400,18 @@ public final class StatusMediatorUnitTest {
     }
 
     @Test
-    public void testIncognitoStateChange() {
-        assertFalse(mModel.get(StatusProperties.INCOGNITO_BADGE_VISIBLE));
-
+    public void searchEngineLogo_shownOnIncognitoNtp() {
         doReturn(true).when(mNewTabPageDelegate).isIncognitoNewTabPageCurrentlyVisible();
         mMediator.updateLocationBarIcon(IconTransitionType.CROSSFADE);
 
         assertEquals(
                 R.drawable.ic_logo_googleg_20dp,
                 mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getIconRes());
-        assertFalse(mModel.get(StatusProperties.INCOGNITO_BADGE_VISIBLE));
 
         mMediator.beginInput(mFuseboxSessionState);
         assertEquals(
                 R.drawable.ic_logo_googleg_20dp,
                 mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getIconRes());
-        assertFalse(mModel.get(StatusProperties.INCOGNITO_BADGE_VISIBLE));
     }
 
     @Test

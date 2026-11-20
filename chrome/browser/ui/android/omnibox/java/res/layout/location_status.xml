@@ -36,15 +36,6 @@ found in the LICENSE file.
         app:layout_constraintTop_toBottomOf="@id/location_bar_attachments"
         app:layout_constraintHorizontal_chainStyle="spread_inside"
         app:layout_constraintHorizontal_weight="0">
-        <!-- End padding is adjusted programmatically. -->
-        <ViewStub
-            android:id="@+id/location_bar_incognito_badge_stub"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout="@layout/location_status_incognito_badge"
-            android:inflatedId="@+id/location_bar_incognito_badge"
-            android:focusable="false"/>
 
         <include layout="@layout/location_status_icon"/>
         <TextView

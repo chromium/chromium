@@ -233,10 +233,6 @@ public class StatusProperties {
     /** Whether animations are turned on. */
     static final WritableBooleanPropertyKey ANIMATIONS_ENABLED = new WritableBooleanPropertyKey();
 
-    /** Whether the incognito badge is visible. */
-    static final WritableBooleanPropertyKey INCOGNITO_BADGE_VISIBLE =
-            new WritableBooleanPropertyKey();
-
     /** The omnibox resource provider. */
     static final ReadableObjectPropertyKey<OmniboxResourceProvider> RESOURCE_PROVIDER =
             new ReadableObjectPropertyKey<>();
@@ -306,7 +302,6 @@ public class StatusProperties {
                 // go/keep-sorted start
                 ALPHA,
                 ANIMATIONS_ENABLED,
-                INCOGNITO_BADGE_VISIBLE,
                 RESOURCE_PROVIDER,
                 SEPARATOR_COLOR,
                 SHOW_STATUS_VIEW,

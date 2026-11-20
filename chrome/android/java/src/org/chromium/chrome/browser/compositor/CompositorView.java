@@ -928,7 +928,7 @@ public class CompositorView extends FrameLayout
             mResourceManager.preloadResources(
                     AndroidResourceType.STATIC,
                     StaticResourcePreloads.getSynchronousResources(getContext()),
-                    StaticResourcePreloads.getAsynchronousResources(getContext()));
+                    StaticResourcePreloads.getAsynchronousResources());
             mResourceManager.preloadResources(
                     AndroidResourceType.SYSTEM,
                     SystemResourcePreloads.getSynchronousResources(),
