@@ -505,17 +505,9 @@ std::vector<omnibox::InputType> InputStateModel::GetCurrentInputTypes(
       input_types.push_back(omnibox::InputType::INPUT_TYPE_DRIVE);
       continue;
     }
-    switch (file_info.mime_type) {
-      case lens::MimeType::kImage:
-        input_types.push_back(omnibox::InputType::INPUT_TYPE_LENS_IMAGE);
-        break;
-      case lens::MimeType::kPdf:
-        input_types.push_back(omnibox::InputType::INPUT_TYPE_LENS_FILE);
-        break;
-      default:
-        input_types.push_back(omnibox::InputType::INPUT_TYPE_UNSPECIFIED);
-        break;
-    }
+    input_types.push_back(file_info.mime_type == lens::MimeType::kImage
+                              ? omnibox::InputType::INPUT_TYPE_LENS_IMAGE
+                              : omnibox::InputType::INPUT_TYPE_LENS_FILE);
     // LINT.ThenChange(//components/contextual_search/input_state_model_routing.cc:CountAttachments)
   }
   input_types.insert(input_types.end(), num_pending_tabs,

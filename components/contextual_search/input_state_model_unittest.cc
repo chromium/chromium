@@ -853,6 +853,18 @@ TEST_F(InputStateModelTest, ModelWithAllowAllInputsIsNotDisabled) {
               UnorderedElementsAre(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO));
 }
 
+TEST_F(InputStateModelTest, GetCurrentInputTypesTreatsNonImageFilesAsLensFile) {
+  std::vector<FileInfo> file_infos(2);
+  file_infos[0].mime_type_string = "application/pdf";
+  file_infos[1].mime_type_string = "text/plain";
+  ON_CALL(session_handle_, GetUploadedContextFileInfos())
+      .WillByDefault(testing::Return(file_infos));
+
+  EXPECT_THAT(InputStateModel::GetCurrentInputTypes(&session_handle_),
+              testing::ElementsAre(omnibox::InputType::INPUT_TYPE_LENS_FILE,
+                                   omnibox::InputType::INPUT_TYPE_LENS_FILE));
+}
+
 class InputStateModelCompatibilityTest : public InputStateModelTest {
  public:
   void SetUp() override {

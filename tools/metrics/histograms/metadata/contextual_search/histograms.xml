@@ -430,6 +430,8 @@ chromium-metrics-reviews@google.com.
     and navigated to AIM. Emits one sample per unique input type attached to the
     query (e.g. adding 2 images + 1 file at the time of query submission will
     log 2 samples, 1 sample to the image bucket + 1 sample to the file bucket).
+    Since M160, every manually uploaded file that Chrome does not classify as an
+    image is logged as LensFile.
   </summary>
   <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
 </histogram>
