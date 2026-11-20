@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "components/speech/endpointer/endpointer.h"
 #include "components/speech/speech_recognizer_fsm.h"
 #include "content/browser/speech/speech_recognition_engine.h"
@@ -113,6 +114,14 @@ class CONTENT_EXPORT SpeechRecognizerImpl
   // Returns the time span of captured audio samples since the start of capture.
   int GetElapsedTimeMs() const;
 
+  // Fills in missing result timestamps from the endpointer's speech onset and
+  // offset, then sends the results to the listener. A final result covers the
+  // speech since the previous final result. Known limits: a noise burst with no
+  // result can pull the next start earlier, and a final result that arrives
+  // after the next utterance starts ends at its arrival time.
+  void DeliverRecognitionResults(
+      const std::vector<media::mojom::WebSpeechRecognitionResultPtr>& results);
+
   // Calculates the input volume to be displayed in the UI, triggering the
   // OnAudioLevelsChange event accordingly.
   void UpdateSignalAndNoiseLevels(const float& rms, bool clip_detected);
@@ -154,6 +163,7 @@ class CONTENT_EXPORT SpeechRecognizerImpl
   speech::Endpointer endpointer_;
   scoped_refptr<media::AudioCapturerSource> audio_capturer_source_;
   int num_samples_recorded_;
+  base::TimeDelta last_result_end_time_;
   float audio_level_;
   bool provisional_results_;
   bool end_of_utterance_;

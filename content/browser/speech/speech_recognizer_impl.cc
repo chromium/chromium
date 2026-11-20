@@ -504,6 +504,7 @@ SpeechRecognizerImpl::StartRecording(const FSMEventArgs&) {
 
   DVLOG(1) << "SpeechRecognizerImpl starting audio capture.";
   num_samples_recorded_ = 0;
+  last_result_end_time_ = base::TimeDelta();
   audio_level_ = 0;
   end_of_utterance_ = false;
 
@@ -719,7 +720,7 @@ SpeechRecognizerImpl::FSMState SpeechRecognizerImpl::ProcessIntermediateResult(
     CHECK_EQ(STATE_RECOGNIZING, state_, base::NotFatalUntil::M159);
   }
 
-  listener()->OnRecognitionResults(session_id(), event_args.engine_results);
+  DeliverRecognitionResults(event_args.engine_results);
   return STATE_RECOGNIZING;
 }
 
@@ -743,7 +744,7 @@ SpeechRecognizerImpl::ProcessFinalResult(const FSMEventArgs& event_args) {
   }
 
   if (provisional_results_pending) {
-    listener()->OnRecognitionResults(session_id(), results);
+    DeliverRecognitionResults(results);
     // We don't end the recognition if a provisional result is received in
     // STATE_WAITING_FINAL_RESULT. A definitive result will come next and will
     // end the recognition.
@@ -762,7 +763,7 @@ SpeechRecognizerImpl::ProcessFinalResult(const FSMEventArgs& event_args) {
     //  4. The speech recognition engine, therefore, emits an empty result to
     //     notify that the recognition is ended with no error, yet neither any
     //     further result.
-    listener()->OnRecognitionResults(session_id(), results);
+    DeliverRecognitionResults(results);
   }
 
   listener()->OnRecognitionEnd(session_id());
@@ -792,6 +793,41 @@ void SpeechRecognizerImpl::CloseAudioCapturerSource() {
 
 int SpeechRecognizerImpl::GetElapsedTimeMs() const {
   return (num_samples_recorded_ * 1000) / sample_rate_;
+}
+
+void SpeechRecognizerImpl::DeliverRecognitionResults(
+    const std::vector<media::mojom::WebSpeechRecognitionResultPtr>& results) {
+  base::TimeDelta audio_time =
+      base::Microseconds(endpointer_.audio_frame_time_us());
+  for (const auto& result : results) {
+    if (!result->audio_start_time.has_value() ||
+        !result->audio_end_time.has_value()) {
+      base::TimeDelta start = last_result_end_time_;
+      if (endpointer_.speech_start_time_us() >= 0) {
+        start = std::max(
+            start, base::Microseconds(endpointer_.speech_start_time_us()));
+      }
+      // Use the detected offset whenever speech ended after `start`, even if a
+      // previous final result already reset the onset.
+      base::TimeDelta end = audio_time;
+      if (endpointer_.speech_end_time_us() >= 0 &&
+          base::Microseconds(endpointer_.speech_end_time_us()) > start) {
+        end = base::Microseconds(endpointer_.speech_end_time_us());
+      }
+      // Keep engine-supplied times, and never start after the end.
+      result->audio_end_time = result->audio_end_time.value_or(end);
+      result->audio_start_time = result->audio_start_time.value_or(
+          std::min(start, *result->audio_end_time));
+      result->audio_end_time =
+          std::max(*result->audio_end_time, *result->audio_start_time);
+      if (!result->is_provisional) {
+        last_result_end_time_ =
+            std::max(last_result_end_time_, *result->audio_end_time);
+        endpointer_.reset_speech_start_time();
+      }
+    }
+  }
+  listener()->OnRecognitionResults(session_id(), results);
 }
 
 void SpeechRecognizerImpl::UpdateSignalAndNoiseLevels(const float& rms,

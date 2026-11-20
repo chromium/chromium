@@ -120,8 +120,8 @@ EpStatus Endpointer::ProcessAudio(base::span<const int16_t> audio_data,
       waiting_for_speech_possibly_complete_timeout_ = false;
       waiting_for_speech_complete_timeout_ = false;
       // Trigger SpeechInputDidStart event on first detection.
-      if (false == speech_previously_detected_) {
-        speech_previously_detected_ = true;
+      speech_previously_detected_ = true;
+      if (speech_start_time_us_ < 0) {
         speech_start_time_us_ = ep_time;
       }
     }
@@ -146,7 +146,7 @@ EpStatus Endpointer::ProcessAudio(base::span<const int16_t> audio_data,
             (long_speech_length_us_ > 0) &&
             (long_speech_input_complete_silence_length_us_ > 0);
         int64_t requested_silence_length;
-        if (has_stepped_silence &&
+        if (has_stepped_silence && speech_start_time_us_ >= 0 &&
             (ep_time - speech_start_time_us_) > long_speech_length_us_) {
           requested_silence_length =
               long_speech_input_complete_silence_length_us_;

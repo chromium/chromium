@@ -8,8 +8,12 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
+#include <string>
+#include <utility>
 #include <vector>
 
+#include "base/byte_size.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
@@ -17,11 +21,15 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/byte_conversions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/strings/string_view_util.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/test/gmock_callback_support.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread.h"
+#include "base/time/time.h"
 #include "content/browser/speech/network_speech_recognition_engine_impl.h"
 #include "content/public/browser/google_streaming_api.pb.h"
 #include "content/public/browser/speech_recognition_audio_forwarder_config.h"
@@ -39,6 +47,8 @@
 #include "media/base/audio_sample_types.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/test_helpers.h"
+#include "media/mojo/mojom/speech_recognition_result.mojom.h"
+#include "mojo/public/cpp/bindings/clone_traits.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/data_pipe_utils.h"
@@ -98,20 +108,6 @@ class SpeechRecognizerImplTest : public SpeechRecognitionEventListener,
         /*enabled_features=*/{},
         /*disabled_features=*/{features::kAudioServiceOutOfProcess});
 
-    // SpeechRecognizer takes ownership of sr_engine.
-    std::unique_ptr<NetworkSpeechRecognitionEngineImpl> sr_engine =
-        std::make_unique<NetworkSpeechRecognitionEngineImpl>(
-            base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-                &url_loader_factory_));
-    NetworkSpeechRecognitionEngineImpl::Config config;
-    config.audio_num_bits_per_sample =
-        SpeechRecognizerImpl::kNumBitsPerAudioSample;
-    config.audio_sample_rate = SpeechRecognizerImpl::kAudioSampleRate;
-    config.filter_profanities = false;
-    sr_engine->SetConfig(config);
-
-    const int kTestingSessionId = 1;
-
     audio_manager_ = std::make_unique<media::MockAudioManager>(
         std::make_unique<media::TestAudioThread>(true));
     audio_manager_->SetInputStreamParameters(
@@ -120,9 +116,7 @@ class SpeechRecognizerImplTest : public SpeechRecognitionEventListener,
         std::make_unique<media::AudioSystemImpl>(audio_manager_.get());
     SpeechRecognizerImpl::SetAudioEnvironmentForTesting(
         audio_system_.get(), audio_capturer_source_.get());
-    recognizer_ = new SpeechRecognizerImpl(this, audio_system_.get(),
-                                           kTestingSessionId, false, false,
-                                           std::move(sr_engine), std::nullopt);
+    ConfigureRecognizer(/*continuous=*/false, /*provisional_results=*/false);
 
     const int channels = SpeechRecognizerImpl::kChannelLayoutConfig.channels();
 
@@ -144,6 +138,184 @@ class SpeechRecognizerImplTest : public SpeechRecognitionEventListener,
   ~SpeechRecognizerImplTest() override {
     SpeechRecognizerImpl::SetAudioEnvironmentForTesting(nullptr, nullptr);
     audio_manager_->Shutdown();
+  }
+
+  void ConfigureRecognizer(bool continuous, bool provisional_results) {
+    auto sr_engine = std::make_unique<NetworkSpeechRecognitionEngineImpl>(
+        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+            &url_loader_factory_));
+    NetworkSpeechRecognitionEngineImpl::Config config;
+    config.audio_num_bits_per_sample =
+        SpeechRecognizerImpl::kNumBitsPerAudioSample;
+    config.audio_sample_rate = SpeechRecognizerImpl::kAudioSampleRate;
+    config.filter_profanities = false;
+    config.continuous = continuous;
+    config.interim_results = provisional_results;
+    sr_engine->SetConfig(config);
+
+    constexpr int kTestingSessionId = 1;
+    recognizer_ = new SpeechRecognizerImpl(
+        this, audio_system_.get(), kTestingSessionId, continuous,
+        provisional_results, std::move(sr_engine), std::nullopt);
+    downstream_data_pipe_.reset();
+    downstream_bytes_sent_ = 0;
+  }
+
+  void SendStreamingProtoEvent(const proto::SpeechRecognitionEvent& event) {
+    if (!downstream_data_pipe_.is_valid()) {
+      const network::TestURLLoaderFactory::PendingRequest* downstream_request =
+          nullptr;
+      ASSERT_TRUE(GetDownstreamRequest(&downstream_request));
+      auto head = network::mojom::URLResponseHead::New();
+      head->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+          net::HttpUtil::AssembleRawHeaders("HTTP/1.1 200 OK\n\n"));
+      mojo::ScopedDataPipeProducerHandle producer_handle;
+      mojo::ScopedDataPipeConsumerHandle consumer_handle;
+      ASSERT_EQ(mojo::CreateDataPipe(nullptr, producer_handle, consumer_handle),
+                MOJO_RESULT_OK);
+      downstream_request->client->OnReceiveResponse(
+          std::move(head), std::move(consumer_handle), std::nullopt);
+      downstream_data_pipe_ = std::move(producer_handle);
+    }
+
+    std::string msg_string;
+    event.SerializeToString(&msg_string);
+    auto msg_size_bytes =
+        base::U32ToBigEndian(base::checked_cast<uint32_t>(msg_string.size()));
+    msg_string.insert(0u, base::as_string_view(msg_size_bytes));
+    downstream_bytes_sent_ += msg_string.size();
+
+    base::span<const uint8_t> remaining = base::as_byte_span(msg_string);
+    while (!remaining.empty()) {
+      size_t written = 0;
+      const MojoResult mojo_result = downstream_data_pipe_->WriteData(
+          remaining, MOJO_WRITE_DATA_FLAG_NONE, written);
+      if (mojo_result == MOJO_RESULT_OK) {
+        remaining = remaining.subspan(written);
+        continue;
+      }
+      ASSERT_EQ(MOJO_RESULT_SHOULD_WAIT, mojo_result);
+      base::RunLoop().RunUntilIdle();
+    }
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void StartCapture() {
+    // Wait for EVENT_PREPARE and EVENT_START processing, which starts capture.
+    base::RunLoop capture_started_loop;
+    EXPECT_CALL(*audio_capturer_source_, Start())
+        .WillOnce(base::test::RunClosure(capture_started_loop.QuitClosure()));
+    recognizer_->StartRecognition(
+        media::AudioDeviceDescription::kDefaultDeviceId);
+    capture_started_loop.Run();
+  }
+
+  // Captures `packets` 100ms packets of low-energy noise, speech, or silence.
+  void CaptureNoise(int packets) {
+    FillPacketWithNoise();
+    CapturePackets(packets);
+  }
+  void CaptureSpeech(int packets) {
+    FillPacketWithTestWaveform();
+    CapturePackets(packets);
+  }
+  void CaptureSilence(int packets) {
+    audio_bus_->Zero();
+    CapturePackets(packets);
+  }
+  void CapturePackets(int packets) {
+    for (int i = 0; i < packets; ++i) {
+      Capture(audio_bus_.get());
+    }
+    base::RunLoop().RunUntilIdle();
+  }
+
+  static proto::SpeechRecognitionEvent MakeEvent() {
+    proto::SpeechRecognitionEvent event;
+    event.set_status(proto::SpeechRecognitionEvent::STATUS_SUCCESS);
+    return event;
+  }
+
+  static void AddResult(proto::SpeechRecognitionEvent& event,
+                        bool final,
+                        const std::string& transcript) {
+    proto::SpeechRecognitionResult* result = event.add_result();
+    result->set_final(final);
+    proto::SpeechRecognitionAlternative* alternative =
+        result->add_alternative();
+    alternative->set_transcript(transcript);
+    if (final) {
+      alternative->set_confidence(0.9f);
+    } else {
+      result->set_stability(0.8f);
+    }
+  }
+
+  // Responds to the downstream request with `event` in a single response.
+  void SendResponse(const proto::SpeechRecognitionEvent& event) {
+    std::string msg_string;
+    event.SerializeToString(&msg_string);
+    auto msg_size_bytes =
+        base::U32ToBigEndian(base::checked_cast<uint32_t>(msg_string.size()));
+    msg_string.insert(0u, base::as_string_view(msg_size_bytes));
+    const network::TestURLLoaderFactory::PendingRequest* downstream_request;
+    ASSERT_TRUE(GetDownstreamRequest(&downstream_request));
+    url_loader_factory_.AddResponse(downstream_request->request.url.spec(),
+                                    msg_string);
+  }
+
+  static media::mojom::WebSpeechRecognitionResultPtr MakeEngineResult(
+      std::optional<base::TimeDelta> audio_start_time,
+      std::optional<base::TimeDelta> audio_end_time) {
+    auto result = media::mojom::WebSpeechRecognitionResult::New();
+    result->hypotheses.push_back(
+        media::mojom::SpeechRecognitionHypothesis::New(u"hello", 0.9));
+    result->is_provisional = false;
+    result->audio_start_time = audio_start_time;
+    result->audio_end_time = audio_end_time;
+    return result;
+  }
+
+  // Delivers `results` as if they came from the recognition engine.
+  void SendEngineResults(
+      std::vector<media::mojom::WebSpeechRecognitionResultPtr> results) {
+    static_cast<SpeechRecognitionEngine::Delegate*>(recognizer_.get())
+        ->OnSpeechRecognitionEngineResults(results);
+    base::RunLoop().RunUntilIdle();
+  }
+
+  // Sends a streaming event with a single result.
+  void SendStreamingResult(bool final, const std::string& transcript) {
+    proto::SpeechRecognitionEvent event = MakeEvent();
+    AddResult(event, final, transcript);
+    SendStreamingProtoEvent(event);
+  }
+
+  // Stops a streaming session and waits for recognition to end.
+  void StopStreamingSession() {
+    recognizer_->StopAudioCapture();
+    base::RunLoop().RunUntilIdle();
+    CloseStreamingDownstream();
+    ASSERT_TRUE(base::test::RunUntil([&] { return recognition_ended_; }));
+  }
+
+  // The start and end of `last_results_[index]` in milliseconds.
+  using Times = std::pair<int64_t, int64_t>;
+  Times ResultTimes(size_t index) const {
+    const auto& result = last_results_[index];
+    return {result->audio_start_time->InMilliseconds(),
+            result->audio_end_time->InMilliseconds()};
+  }
+
+  void CloseStreamingDownstream() {
+    const network::TestURLLoaderFactory::PendingRequest* downstream_request =
+        nullptr;
+    ASSERT_TRUE(GetDownstreamRequest(&downstream_request));
+    network::URLLoaderCompletionStatus status(net::OK);
+    status.decoded_body_length = base::ByteSize(downstream_bytes_sent_);
+    downstream_request->client->OnComplete(status);
+    downstream_data_pipe_.reset();
+    base::RunLoop().RunUntilIdle();
   }
 
   [[nodiscard]] bool GetUpstreamRequest(
@@ -206,6 +378,7 @@ class SpeechRecognizerImplTest : public SpeechRecognitionEventListener,
       const std::vector<media::mojom::WebSpeechRecognitionResultPtr>& results)
       override {
     result_received_ = true;
+    last_results_ = mojo::Clone(results);
   }
 
   void OnRecognitionError(
@@ -301,6 +474,8 @@ class SpeechRecognizerImplTest : public SpeechRecognitionEventListener,
   std::unique_ptr<media::MockAudioManager> audio_manager_;
   std::unique_ptr<media::AudioSystem> audio_system_;
   scoped_refptr<MockCapturerSource> audio_capturer_source_;
+  mojo::ScopedDataPipeProducerHandle downstream_data_pipe_;
+  size_t downstream_bytes_sent_ = 0;
   bool recognition_started_;
   bool recognition_ended_;
   bool result_received_;
@@ -311,6 +486,7 @@ class SpeechRecognizerImplTest : public SpeechRecognitionEventListener,
   media::mojom::SpeechRecognitionErrorCode error_;
   std::vector<uint8_t> audio_packet_;
   std::unique_ptr<media::AudioBus> audio_bus_;
+  std::vector<media::mojom::WebSpeechRecognitionResultPtr> last_results_;
   float volume_;
   float noise_volume_;
 };
@@ -533,6 +709,14 @@ TEST_F(SpeechRecognizerImplTest, StopWithData) {
 
   EXPECT_TRUE(recognition_ended_);
   EXPECT_TRUE(result_received_);
+  // No speech was detected, so the result spans all audio the endpointer
+  // processed, which skips the first chunk.
+  ASSERT_EQ(1u, last_results_.size());
+  EXPECT_EQ(base::TimeDelta(), last_results_[0]->audio_start_time);
+  EXPECT_EQ(base::Milliseconds(
+                (kNumChunks - 1) *
+                NetworkSpeechRecognitionEngineImpl::kAudioPacketIntervalMs),
+            last_results_[0]->audio_end_time);
   EXPECT_EQ(media::mojom::SpeechRecognitionErrorCode::kNone, error_);
   CheckFinalEventsConsistency();
 }
@@ -743,6 +927,194 @@ TEST_F(SpeechRecognizerImplTest, SetInputVolumeCallback) {
   EXPECT_FALSE(recognition_ended_);
   recognizer_->AbortRecognition();
   base::RunLoop().RunUntilIdle();
+  CheckFinalEventsConsistency();
+}
+
+TEST_F(SpeechRecognizerImplTest, OneShotEndpointerTimestamps) {
+  StartCapture();
+  // Silence through environment estimation, speech (500..1000ms), then silence
+  // until the endpointer completes the utterance. Times are on the endpointer
+  // clock, which starts after the first chunk.
+  CaptureSilence(6);
+  CaptureSpeech(5);
+  EXPECT_TRUE(sound_started_);
+  CaptureSilence(10);
+  EXPECT_TRUE(audio_ended_);
+  EXPECT_FALSE(recognition_ended_);
+
+  proto::SpeechRecognitionEvent event = MakeEvent();
+  AddResult(event, /*final=*/true, "hello");
+  SendResponse(event);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(recognition_ended_);
+  ASSERT_EQ(1u, last_results_.size());
+  EXPECT_EQ(Times(600, 1300), ResultTimes(0));
+  CheckFinalEventsConsistency();
+}
+
+TEST_F(SpeechRecognizerImplTest,
+       ContinuousEndpointerTimestampsAndPreservesEngineTimestamps) {
+  ConfigureRecognizer(/*continuous=*/true, /*provisional_results=*/true);
+  StartCapture();
+  // Silence through environment estimation, then the first utterance
+  // (500..1000ms).
+  CaptureSilence(6);
+  CaptureSpeech(5);
+  EXPECT_TRUE(sound_started_);
+
+  // An interim result mid-utterance spans from the onset to the latest audio.
+  SendStreamingResult(/*final=*/false, "hel");
+  ASSERT_EQ(1u, last_results_.size());
+  EXPECT_EQ(Times(600, 1000), ResultTimes(0));
+
+  // After a pause (1000..1500ms), the final result ends at the offset.
+  CaptureSilence(5);
+  SendStreamingResult(/*final=*/true, "hello");
+  ASSERT_EQ(1u, last_results_.size());
+  EXPECT_EQ(Times(600, 1300), ResultTimes(0));
+
+  // Quiet (1500..2000ms), the second utterance (2000..2500ms), then silence.
+  CaptureSilence(5);
+  CaptureSpeech(5);
+  CaptureSilence(5);
+  SendStreamingResult(/*final=*/true, "world");
+  ASSERT_EQ(1u, last_results_.size());
+  EXPECT_EQ(Times(2100, 2800), ResultTimes(0));
+
+  // Engine timestamps, e.g. from SODA, are kept as is.
+  std::vector<media::mojom::WebSpeechRecognitionResultPtr> results;
+  results.push_back(
+      MakeEngineResult(base::Milliseconds(123), base::Milliseconds(456)));
+  SendEngineResults(std::move(results));
+  ASSERT_EQ(1u, last_results_.size());
+  EXPECT_EQ(Times(123, 456), ResultTimes(0));
+
+  // An engine-supplied end is kept, and the start never lands after it.
+  results.clear();
+  results.push_back(MakeEngineResult(std::nullopt, base::Milliseconds(300)));
+  SendEngineResults(std::move(results));
+  ASSERT_EQ(1u, last_results_.size());
+  EXPECT_EQ(Times(300, 300), ResultTimes(0));
+
+  recognizer_->AbortRecognition();
+  base::RunLoop().RunUntilIdle();
+  CheckFinalEventsConsistency();
+}
+
+TEST_F(SpeechRecognizerImplTest,
+       ContinuousEndpointerTimestampsAfterFalseStart) {
+  ConfigureRecognizer(/*continuous=*/true, /*provisional_results=*/true);
+  StartCapture();
+  CaptureNoise(6);
+  CaptureSpeech(5);
+  CaptureSilence(5);
+  SendStreamingResult(/*final=*/true, "hi");
+  ASSERT_EQ(1u, last_results_.size());
+  EXPECT_EQ(Times(600, 1300), ResultTimes(0));
+
+  // A short noise burst (1500..1700ms) gets an interim result that is never
+  // finalized.
+  CaptureSpeech(2);
+  SendStreamingResult(/*final=*/false, "uh");
+  ASSERT_EQ(1u, last_results_.size());
+  EXPECT_EQ(Times(1600, 1700), ResultTimes(0));
+
+  // After 1.5s of silence, a real utterance (3200..3700ms) and its result.
+  // Known limit: the false start pulls the start earlier, but never before the
+  // previous final result's end.
+  CaptureSilence(15);
+  CaptureSpeech(5);
+  CaptureSilence(6);
+  SendStreamingResult(/*final=*/true, "hello");
+  ASSERT_EQ(1u, last_results_.size());
+  EXPECT_EQ(Times(1600, 4000), ResultTimes(0));
+
+  StopStreamingSession();
+  CheckFinalEventsConsistency();
+}
+
+TEST_F(SpeechRecognizerImplTest,
+       ContinuousEndpointerTimestampsWhenNextUtteranceStartsEarly) {
+  ConfigureRecognizer(/*continuous=*/true, /*provisional_results=*/true);
+  StartCapture();
+  CaptureNoise(6);
+  // The first utterance (500..1000ms) and a pause, then the second utterance
+  // (1600..2000ms) starts before the first final result arrives.
+  CaptureSpeech(5);
+  CaptureSilence(6);
+  CaptureSpeech(4);
+  proto::SpeechRecognitionEvent overlap = MakeEvent();
+  AddResult(overlap, /*final=*/true, "first");
+  AddResult(overlap, /*final=*/false, "sec");
+  SendStreamingProtoEvent(overlap);
+  ASSERT_EQ(2u, last_results_.size());
+  // Known limit: the final result runs to its arrival time, and the next
+  // utterance's results start where it ended.
+  EXPECT_EQ(Times(600, 2000), ResultTimes(0));
+  EXPECT_EQ(Times(2000, 2000), ResultTimes(1));
+
+  // The second utterance ends, and its final result ends at the offset.
+  CaptureSilence(6);
+  SendStreamingResult(/*final=*/true, "second");
+  ASSERT_EQ(1u, last_results_.size());
+  EXPECT_EQ(Times(2000, 2300), ResultTimes(0));
+
+  StopStreamingSession();
+  CheckFinalEventsConsistency();
+}
+
+TEST_F(SpeechRecognizerImplTest,
+       ContinuousEndpointerTimestampsWithMidSentencePause) {
+  ConfigureRecognizer(/*continuous=*/true, /*provisional_results=*/true);
+  StartCapture();
+  CaptureNoise(6);
+  // One sentence with a pause long enough to confirm an offset: speech
+  // (500..1000ms), silence (1000..1400ms), then more speech (1400..1700ms).
+  CaptureSpeech(5);
+  CaptureSilence(4);
+  CaptureSpeech(3);
+
+  // Several interim chunks in one event all cover the sentence so far.
+  proto::SpeechRecognitionEvent interim = MakeEvent();
+  AddResult(interim, /*final=*/false, "hello wor");
+  AddResult(interim, /*final=*/false, "ld");
+  SendStreamingProtoEvent(interim);
+  ASSERT_EQ(2u, last_results_.size());
+  EXPECT_EQ(Times(600, 1700), ResultTimes(0));
+  EXPECT_EQ(Times(600, 1700), ResultTimes(1));
+
+  // The final result arrives before the second part's offset is confirmed,
+  // and still covers the whole sentence.
+  CaptureSpeech(2);
+  SendStreamingResult(/*final=*/true, "hello world");
+  ASSERT_EQ(1u, last_results_.size());
+  EXPECT_EQ(Times(600, 1900), ResultTimes(0));
+
+  StopStreamingSession();
+  CheckFinalEventsConsistency();
+}
+
+TEST_F(SpeechRecognizerImplTest,
+       ContinuousEndpointerTimestampsWhenClauseFinalizedMidSpeech) {
+  ConfigureRecognizer(/*continuous=*/true, /*provisional_results=*/true);
+  StartCapture();
+  CaptureNoise(6);
+  // The engine finalizes a clause while speech continues (500..1000ms).
+  CaptureSpeech(5);
+  SendStreamingResult(/*final=*/true, "first");
+  ASSERT_EQ(1u, last_results_.size());
+  EXPECT_EQ(Times(600, 1000), ResultTimes(0));
+
+  // Speech continues (1000..1500ms), then pauses. The next final result ends
+  // at the detected offset rather than its arrival time.
+  CaptureSpeech(5);
+  CaptureSilence(6);
+  SendStreamingResult(/*final=*/true, "second");
+  ASSERT_EQ(1u, last_results_.size());
+  EXPECT_EQ(Times(1000, 1800), ResultTimes(0));
+
+  StopStreamingSession();
   CheckFinalEventsConsistency();
 }
 

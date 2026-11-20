@@ -101,6 +101,14 @@ class Endpointer {
 
   bool speech_input_complete() const { return speech_input_complete_; }
 
+  // Speech timing in microseconds of processed audio, or -1 if unset. The
+  // start is the first speech onset since reset_speech_start_time(), and the
+  // end is the latest offset, which is cleared when speech resumes.
+  int64_t speech_start_time_us() const { return speech_start_time_us_; }
+  int64_t speech_end_time_us() const { return speech_end_time_us_; }
+  int64_t audio_frame_time_us() const { return audio_frame_time_us_; }
+  void reset_speech_start_time() { speech_start_time_us_ = -1; }
+
   // RMS background noise level in dB.
   float NoiseLevelDb() const { return energy_endpointer_.GetNoiseLevelDb(); }
 

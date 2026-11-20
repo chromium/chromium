@@ -227,4 +227,53 @@ TEST(EndpointerTest, StartSessionPreservesEnvironmentWhenRequested) {
   wrapper.EndSession();
 }
 
+TEST(EndpointerTest, SpeechTimestampsAcrossUtterances) {
+  const int sample_rate = 16000;
+  const int frame_size = sample_rate / kFrameRate;
+  base::FixedArray<int16_t> samples(frame_size);
+
+  Endpointer endpointer(sample_rate);
+  endpointer.StartSession();
+  endpointer.SetEnvironmentEstimationMode();
+
+  auto process_frames = [&](int num_frames, bool speech) {
+    srand(1);
+    float gain = speech ? 2000.0f : 1.0f;
+    for (int f = 0; f < num_frames; ++f) {
+      for (int i = 0; i < frame_size; ++i) {
+        float rand_num = static_cast<float>(rand() - (RAND_MAX / 2)) /
+                         static_cast<float>(RAND_MAX);
+        samples[i] = static_cast<int16_t>(gain * rand_num);
+      }
+      scoped_refptr<AudioChunk> frame(
+          new AudioChunk(base::as_writable_byte_span(samples), 2));
+      endpointer.ProcessAudio(*frame, nullptr);
+    }
+  };
+
+  // Noise estimation + silence, then first utterance (25..74), then silence.
+  process_frames(20, false);
+  endpointer.SetUserInputMode();
+  process_frames(5, false);
+  process_frames(50, true);
+  process_frames(30, false);
+
+  const int64_t utterance1_start = endpointer.speech_start_time_us();
+  const int64_t utterance1_end = endpointer.speech_end_time_us();
+  EXPECT_GE(utterance1_start, 500000);
+  EXPECT_GT(utterance1_end, utterance1_start);
+
+  // Reset onset tracking for the next utterance and feed utterance 2 + silence.
+  endpointer.reset_speech_start_time();
+  EXPECT_EQ(-1, endpointer.speech_start_time_us());
+
+  process_frames(50, true);
+  process_frames(30, false);
+
+  EXPECT_GT(endpointer.speech_start_time_us(), utterance1_end);
+  EXPECT_GT(endpointer.speech_end_time_us(), endpointer.speech_start_time_us());
+
+  endpointer.EndSession();
+}
+
 }  // namespace speech
