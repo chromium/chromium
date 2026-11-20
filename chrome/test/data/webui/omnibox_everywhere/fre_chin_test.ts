@@ -7,7 +7,7 @@ import 'chrome://omnibox-everywhere.top-chrome/fre_chin.js';
 import {FreChinMode} from 'chrome://omnibox-everywhere.top-chrome/fre_chin.js';
 import type {FreChinElement, ShowHotkeyDropdownDetail} from 'chrome://omnibox-everywhere.top-chrome/fre_chin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 suite('FreChinTest', () => {
@@ -220,7 +220,8 @@ suite('FreChinTest', () => {
     const rootStyle = document.documentElement.style;
     const darkTokens: Array<[string, string]> = [
       ['--color-new-tab-page-background', 'rgb(60, 60, 60)'],
-      ['--color-sys-omnibox-container', 'rgb(60, 60, 60)'],
+      ['--color-sys-omnibox-container', 'rgb(34, 36, 42)'],
+      ['--color-sys-outline', 'rgb(142, 145, 143)'],
       ['--color-sys-surface-container-high', 'rgb(42, 42, 42)'],
       ['--color-sys-on-surface', 'rgb(227, 227, 227)'],
     ];
@@ -229,7 +230,15 @@ suite('FreChinTest', () => {
     try {
       const q = (sel: string) =>
           window.getComputedStyle(freChin.shadowRoot.querySelector(sel)!);
-      assertEquals('rgb(60, 60, 60)', q('.chin-container').backgroundColor);
+      const chinStyle = q('.chin-container');
+      if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        assertEquals('rgb(34, 36, 42)', chinStyle.backgroundColor);
+        assertEquals('solid', chinStyle.borderTopStyle);
+        assertEquals('1px', chinStyle.borderTopWidth);
+        assertNotEquals('rgba(0, 0, 0, 0)', chinStyle.borderTopColor);
+      } else {
+        assertEquals('rgb(60, 60, 60)', chinStyle.backgroundColor);
+      }
       assertEquals('rgb(42, 42, 42)', q('.dropdown-trigger').backgroundColor);
       assertEquals('rgb(227, 227, 227)', q('.to-search-label').color);
 

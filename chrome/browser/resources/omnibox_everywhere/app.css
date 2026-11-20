@@ -366,7 +366,8 @@ cr-most-visited:not([hide-title]) {
 
   #mostVisitedContainer {
     outline: 1px solid
-        color-mix(in srgb, var(--color-sys-outline) 20%, transparent);
+        color-mix(in srgb, var(--color-sys-outline) 25%,
+            var(--color-sys-omnibox-container));
     outline-offset: -1px;
   }
 

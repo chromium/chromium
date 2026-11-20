@@ -7,7 +7,7 @@ import 'chrome://omnibox-everywhere.top-chrome/fre_modal.js';
 import type {FreModalElement} from 'chrome://omnibox-everywhere.top-chrome/fre_modal.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {isMac} from 'chrome://resources/js/platform.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 suite('FreModalTest', () => {
@@ -124,7 +124,8 @@ suite('FreModalTest', () => {
     const rootStyle = document.documentElement.style;
     const darkTokens: Array<[string, string]> = [
       ['--color-new-tab-page-background', 'rgb(60, 60, 60)'],
-      ['--color-sys-omnibox-container', 'rgb(60, 60, 60)'],
+      ['--color-sys-omnibox-container', 'rgb(34, 36, 42)'],
+      ['--color-sys-outline', 'rgb(142, 145, 143)'],
       ['--color-sys-surface', 'rgb(31, 31, 31)'],
       ['--color-sys-surface-container-high', 'rgb(42, 42, 42)'],
       ['--color-sys-on-surface', 'rgb(227, 227, 227)'],
@@ -134,7 +135,15 @@ suite('FreModalTest', () => {
     try {
       const q = (sel: string) =>
           window.getComputedStyle(freModal.shadowRoot.querySelector(sel)!);
-      assertEquals('rgb(60, 60, 60)', q('.fre-card').backgroundColor);
+      const cardStyle = q('.fre-card');
+      if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        assertEquals('rgb(34, 36, 42)', cardStyle.backgroundColor);
+        assertEquals('solid', cardStyle.borderTopStyle);
+        assertEquals('1px', cardStyle.borderTopWidth);
+        assertNotEquals('rgba(0, 0, 0, 0)', cardStyle.borderTopColor);
+      } else {
+        assertEquals('rgb(60, 60, 60)', cardStyle.backgroundColor);
+      }
       assertEquals('rgb(31, 31, 31)', q('.second-container').backgroundColor);
       assertEquals('rgb(42, 42, 42)', q('.list-item').backgroundColor);
       assertEquals('rgb(227, 227, 227)', q('.title').color);
