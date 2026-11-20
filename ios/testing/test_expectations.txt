@@ -755,3 +755,7 @@ crbug.com/587350667 [ ASan ] InternalOneTapTestCase/testNoConsent [ Crash ]
 # Gardening suppression 2026-11-19
 crbug.com/587935331 [ iPad Simulator ] ReadingListAccountStorageTestCase/testMoveItemThenRefreshSignIn [ Pass Failure ]
 crbug.com/587312040 GeminiContainerTestCase [ Pass Failure ]
+
+# Gardening suppression 2026-11-20
+crbug.com/40752508 [ iOS27 iPad ] TabGridTestCase/testDragAndDropAtEdgeToCreateNewWindow [ Pass Failure ]
+crbug.com/427699033 [ iOS27 iPad ] TabGridTestCase/testIncognitoDragAndDropAtEdgeToCreateNewWindow [ Pass Failure ]
