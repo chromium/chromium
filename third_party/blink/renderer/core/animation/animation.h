@@ -65,6 +65,7 @@ namespace blink {
 class AnimationTimeline;
 class AnimationTrigger;
 class Element;
+class KeyframeEffect;
 class PaintArtifactCompositor;
 class StyleChangeReasonForTracing;
 class TreeScope;
@@ -568,6 +569,12 @@ class CORE_EXPORT Animation : public EventTarget,
                                  String variable_name,
                                  ExceptionState& exception_state);
 
+  // Returns true if the animation has no visible change. Uses the cached
+  // compositing disposition only when
+  // `compositor_property_animations_have_no_effect_` is true, ensuring its
+  // no-visible-change result remains valid.
+  bool CalculateAnimationHasNoEffect(const KeyframeEffect*) const;
+
   void CheckCanStartAnimationOnCompositorInternal();
   void CreateCompositorAnimation(std::optional<int> replaced_cc_animation_id);
   void DestroyCompositorAnimation();
@@ -813,7 +820,7 @@ class CORE_EXPORT Animation : public EventTarget,
   // has no visible change: either that's the only reason for not running it on
   // the compositor, or none of its values can change while it's in play.
   // Updated in |Animation::PreCommit|.
-  bool animation_has_no_effect_;
+  bool animation_has_no_effect_ = false;
   // True is we have paused this animation in anticipation of a future trigger
   // event.
   bool paused_for_trigger_ = false;

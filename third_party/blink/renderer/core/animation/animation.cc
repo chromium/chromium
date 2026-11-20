@@ -428,8 +428,7 @@ Animation::Animation(ExecutionContext* execution_context,
       compositor_pending_(false),
       compositor_group_(PendingAnimations::kCompositorGroupAutoAssign),
       effect_suppressed_(false),
-      compositor_property_animations_have_no_effect_(false),
-      animation_has_no_effect_(false) {
+      compositor_property_animations_have_no_effect_(false) {
   if (execution_context && !execution_context->IsContextDestroyed())
     SetExecutionContext(execution_context);
 
@@ -743,6 +742,18 @@ V8AnimationPlayState Animation::playState() const {
   return V8AnimationPlayState(CalculateAnimationPlayState());
 }
 
+bool Animation::CalculateAnimationHasNoEffect(
+    const KeyframeEffect* keyframe_effect) const {
+  // A static effect has no visible change until a phase boundary, so it
+  // doesn't need main thread ticks even if it can't be composited for
+  // another reason, e.g. because it affects an !important property.
+  return compositor_property_animations_have_no_effect_ &&
+         (compositing_decision_.disposition ==
+              CompositorAnimations::kAnimationHasNoVisibleChange ||
+          (RuntimeEnabledFeatures::SkipTickingStaticAnimationsEnabled() &&
+           HasOnlyStaticProperties(keyframe_effect)));
+}
+
 bool Animation::PreCommit(
     int compositor_group,
     const PaintArtifactCompositor* paint_artifact_compositor,
@@ -874,19 +885,14 @@ bool Animation::PreCommit(
       compositor_property_animations_have_no_effect_ =
           compositing_decision_.disposition &
           CompositorAnimations::kAnimationHasNoVisibleChange;
-      // A static effect has no visible change until a phase boundary, so it
-      // doesn't need main thread ticks even if it can't be composited for
-      // another reason, e.g. because it affects an !important property.
-      animation_has_no_effect_ =
-          compositing_decision_.disposition ==
-              CompositorAnimations::kAnimationHasNoVisibleChange ||
-          (compositor_property_animations_have_no_effect_ &&
-           RuntimeEnabledFeatures::SkipTickingStaticAnimationsEnabled() &&
-           HasOnlyStaticProperties(keyframe_effect));
+      animation_has_no_effect_ = CalculateAnimationHasNoEffect(keyframe_effect);
       compositing_decision_.ReportHistogramsAndTracing(*this);
 
       DCHECK_EQ(V8AnimationPlayState::Enum::kRunning,
                 CalculateAnimationPlayState());
+    } else {
+      animation_has_no_effect_ = CalculateAnimationHasNoEffect(
+          DynamicTo<KeyframeEffect>(content_.Get()));
     }
   }
 
