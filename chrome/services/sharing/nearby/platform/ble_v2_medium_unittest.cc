@@ -9,7 +9,9 @@
 #include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -1005,6 +1007,85 @@ TEST_F(BleV2MediumTest, AdvertisementsAreConnectable_GattAdvertisement) {
       fake_adapter_
           ->GetRegisteredAdvertisementConnectable(service1_bluetooth_uuid_)
           .value());
+}
+
+TEST_F(BleV2MediumTest,
+       ConnectToGattServer_ConcurrentWithDeviceChangedUpdates) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{::features::kEnableNearbyBleV2},
+      /*disabled_features=*/{});
+
+  CountDownLatch scanning_started_latch(1);
+  CountDownLatch first_advertisement_latch(1);
+  bool first_discovered = false;
+  api::ble_v2::BleMedium::ScanningCallback scanning_callback = {
+      .start_scanning_result =
+          [&scanning_started_latch](absl::Status status) {
+            scanning_started_latch.CountDown();
+          },
+      .advertisement_found_cb =
+          [this, &first_advertisement_latch, &first_discovered](
+              api::ble_v2::BlePeripheral::UniqueId peripheral_id,
+              const api::ble_v2::BleAdvertisementData& advertisement_data) {
+            if (!first_discovered) {
+              first_discovered = true;
+              first_advertisement_latch.CountDown();
+              OnPeripheralDiscovered();
+            }
+          }};
+
+  auto scanning_session = ble_v2_medium_->StartScanning(
+      kFastAdvertisementServiceUuid1, {}, std::move(scanning_callback));
+  ASSERT_NE(scanning_session, nullptr);
+  EXPECT_TRUE(scanning_started_latch.Await().Ok());
+
+  base::flat_map<device::BluetoothUUID, std::vector<uint8_t>> service_data_map;
+  service_data_map.insert_or_assign(service1_bluetooth_uuid_,
+                                    GetByteVector(kDeviceServiceData1Str));
+
+  fake_adapter_->SetConnectToDeviceResult(
+      bluetooth::mojom::ConnectResult::FAILED, /*fake_device=*/nullptr);
+
+  base::RunLoop discovered_run_loop;
+  SetOnExpectedPeripheralsDiscoveredCallback(discovered_run_loop.QuitClosure());
+  fake_adapter_->NotifyDeviceAdded(
+      CreateDeviceInfo(kDeviceAddress, service_data_map));
+  discovered_run_loop.Run();
+  EXPECT_TRUE(first_advertisement_latch.Await().Ok());
+
+  constexpr int kIterations = 200;
+  bool worker_done = false;
+  base::RunLoop worker_done_loop;
+
+  base::RepeatingClosure post_device_changed;
+  post_device_changed = base::BindLambdaForTesting([&]() {
+    if (worker_done) {
+      return;
+    }
+    fake_adapter_->NotifyDeviceChanged(
+        CreateDeviceInfo(kDeviceAddress, service_data_map));
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, post_device_changed);
+  });
+  post_device_changed.Run();
+
+  base::ThreadPool::PostTaskAndReply(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(
+          [](BleV2MediumTest* test) {
+            for (int i = 0; i < kIterations; ++i) {
+              test->CallConnectToGattServer(/*expected_success=*/false);
+            }
+          },
+          base::Unretained(this)),
+      base::BindLambdaForTesting([&]() {
+        worker_done = true;
+        worker_done_loop.Quit();
+      }));
+
+  worker_done_loop.Run();
+  EXPECT_TRUE(scanning_session->stop_scanning().ok());
 }
 
 }  // namespace nearby::chrome

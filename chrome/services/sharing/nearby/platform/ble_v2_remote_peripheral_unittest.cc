@@ -4,6 +4,10 @@
 
 #include "chrome/services/sharing/nearby/platform/ble_v2_remote_peripheral.h"
 
+#include <atomic>
+#include <thread>
+#include <vector>
+
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -55,6 +59,34 @@ TEST_F(BleV2RemotePeripheralTest, CanNotUpdateWithDifferentAddress) {
   auto device_info2 = bluetooth::mojom::DeviceInfo::New();
   device_info2->address = "different address";
   EXPECT_DCHECK_DEATH(peripheral.UpdateDeviceInfo(std::move(device_info2)));
+}
+
+TEST_F(BleV2RemotePeripheralTest, ConcurrentGetAddressAndUpdateDeviceInfo) {
+  auto device_info = bluetooth::mojom::DeviceInfo::New();
+  device_info->address = kAddress;
+  BleV2RemotePeripheral peripheral{std::move(device_info)};
+
+  std::atomic<bool> stop{false};
+  std::vector<std::thread> readers;
+  for (int i = 0; i < 4; ++i) {
+    readers.emplace_back([&]() {
+      while (!stop.load(std::memory_order_relaxed)) {
+        EXPECT_EQ(peripheral.GetAddress(), kAddress);
+        EXPECT_EQ(peripheral.GetUniqueId(), kUniqueId);
+      }
+    });
+  }
+
+  for (int i = 0; i < 5000; ++i) {
+    auto updated_info = bluetooth::mojom::DeviceInfo::New();
+    updated_info->address = kAddress;
+    peripheral.UpdateDeviceInfo(std::move(updated_info));
+  }
+
+  stop.store(true, std::memory_order_relaxed);
+  for (auto& reader : readers) {
+    reader.join();
+  }
 }
 
 }  // namespace nearby::chrome

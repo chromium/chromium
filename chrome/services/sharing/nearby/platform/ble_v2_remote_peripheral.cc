@@ -29,8 +29,8 @@ namespace nearby::chrome {
 
 BleV2RemotePeripheral::BleV2RemotePeripheral(
     bluetooth::mojom::DeviceInfoPtr device_info)
-    : device_info_(std::move(device_info)),
-      unique_id_(GenerateUniqueId(device_info_->address)) {}
+    : address_(std::move(device_info->address)),
+      unique_id_(GenerateUniqueId(address_)) {}
 
 BleV2RemotePeripheral::BleV2RemotePeripheral(BleV2RemotePeripheral&&) = default;
 
@@ -40,7 +40,7 @@ BleV2RemotePeripheral& BleV2RemotePeripheral::operator=(
 BleV2RemotePeripheral::~BleV2RemotePeripheral() = default;
 
 std::string BleV2RemotePeripheral::GetAddress() const {
-  return device_info_->address;
+  return address_;
 }
 
 BleV2RemotePeripheral::UniqueId BleV2RemotePeripheral::GetUniqueId() const {
@@ -49,8 +49,7 @@ BleV2RemotePeripheral::UniqueId BleV2RemotePeripheral::GetUniqueId() const {
 
 void BleV2RemotePeripheral::UpdateDeviceInfo(
     bluetooth::mojom::DeviceInfoPtr device_info) {
-  DCHECK_EQ(device_info_->address, device_info->address);
-  device_info_ = std::move(device_info);
+  DCHECK_EQ(address_, device_info->address);
 }
 
 }  // namespace nearby::chrome

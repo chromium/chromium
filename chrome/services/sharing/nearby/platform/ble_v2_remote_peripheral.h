@@ -29,7 +29,7 @@ class BleV2RemotePeripheral : public api::ble_v2::BlePeripheral {
   void UpdateDeviceInfo(bluetooth::mojom::DeviceInfoPtr device_info);
 
  private:
-  bluetooth::mojom::DeviceInfoPtr device_info_;
+  std::string address_;
   uint64_t unique_id_;
 };
 

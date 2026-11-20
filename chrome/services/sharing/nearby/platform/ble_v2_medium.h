@@ -9,6 +9,8 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
+#include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "chrome/services/sharing/nearby/platform/ble_v2_remote_peripheral.h"
 #include "device/bluetooth/public/mojom/adapter.mojom.h"
@@ -113,7 +115,8 @@ class BleV2Medium : public ::nearby::api::ble_v2::BleMedium,
   bool IsScanning();
   uint64_t GenerateUniqueSessionId();
   chrome::BleV2RemotePeripheral* GetDiscoveredBlePeripheral(
-      const std::string& address);
+      const std::string& address)
+      EXCLUSIVE_LOCKS_REQUIRED(discovered_ble_peripherals_lock_);
 
   void DoRegisterGattServices(
       BleV2GattServer* gatt_server,
@@ -170,12 +173,16 @@ class BleV2Medium : public ::nearby::api::ble_v2::BleMedium,
   // Saving scanning callbacks, keyed by session ids.
   std::map<uint64_t, ScanningCallback> session_id_to_scanning_callback_map_;
 
-  // Keyed by address of advertising remote device. Note: References to these
-  // BlePeripherals are passed to Nearby Connections. This is safe because, for
-  // std::map, insert/emplace do not invalidate references, and the erase
-  // operation only invalidates the reference to the erased element.
+  base::Lock discovered_ble_peripherals_lock_;
+
+  // Keyed by address of advertising remote device. Note: In BLE V2, Nearby
+  // Connections is only passed BlePeripheral::UniqueId by value rather than
+  // BleV2RemotePeripheral& references; pointers/references into
+  // |discovered_ble_peripherals_map_| must not escape the
+  // |discovered_ble_peripherals_lock_| scope.
   std::map<std::string, chrome::BleV2RemotePeripheral>
-      discovered_ble_peripherals_map_;
+      discovered_ble_peripherals_map_
+          GUARDED_BY(discovered_ble_peripherals_lock_);
 
   // Group registered advertisements with the same bluetooth service uuid.
   std::map<device::BluetoothUUID,

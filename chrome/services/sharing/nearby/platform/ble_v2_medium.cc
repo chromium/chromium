@@ -367,7 +367,10 @@ std::unique_ptr<BleV2Medium::ScanningSession> BleV2Medium::StartScanning(
   }
 
   if (!IsScanning()) {
-    discovered_ble_peripherals_map_.clear();
+    {
+      base::AutoLock lock(discovered_ble_peripherals_lock_);
+      discovered_ble_peripherals_map_.clear();
+    }
     service_uuid_to_session_ids_map_.clear();
     session_id_to_scanning_callback_map_.clear();
 
@@ -511,17 +514,23 @@ std::unique_ptr<api::ble_v2::GattClient> BleV2Medium::ConnectToGattServer(
     return nullptr;
   }
 
-  auto it = std::find_if(discovered_ble_peripherals_map_.begin(),
-                         discovered_ble_peripherals_map_.end(),
-                         [&peripheral_id](const auto& address_device_pair) {
-                           return address_device_pair.second.GetUniqueId() ==
-                                  peripheral_id;
-                         });
+  std::string address;
+  {
+    base::AutoLock lock(discovered_ble_peripherals_lock_);
+    auto it = std::find_if(discovered_ble_peripherals_map_.begin(),
+                           discovered_ble_peripherals_map_.end(),
+                           [&peripheral_id](const auto& address_device_pair) {
+                             return address_device_pair.second.GetUniqueId() ==
+                                    peripheral_id;
+                           });
 
-  if (it == discovered_ble_peripherals_map_.end()) {
-    LOG(WARNING) << __func__
-                 << ": no match for device at peripheral_id=" << peripheral_id;
-    return nullptr;
+    if (it == discovered_ble_peripherals_map_.end()) {
+      LOG(WARNING) << __func__
+                   << ": no match for device at peripheral_id="
+                   << peripheral_id;
+      return nullptr;
+    }
+    address = it->second.GetAddress();
   }
 
   base::WaitableEvent connect_to_gatt_server_waitable_event;
@@ -530,7 +539,7 @@ std::unique_ptr<api::ble_v2::GattClient> BleV2Medium::ConnectToGattServer(
   task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&BleV2Medium::DoConnectToGattServer,
-                     base::Unretained(this), &device, it->second.GetAddress(),
+                     base::Unretained(this), &device, address,
                      &connect_to_gatt_server_waitable_event));
   base::ScopedAllowBaseSyncPrimitives allow_wait;
   connect_to_gatt_server_waitable_event.Wait();
@@ -640,17 +649,21 @@ void BleV2Medium::DeviceAdded(bluetooth::mojom::DeviceInfoPtr device) {
                                service_data_pair.second.end())}});
   }
 
-  // Add a new or update the existing discovered peripheral. Note: Because
-  // BleV2RemotePeripherals are passed by reference to NearbyConnections, if a
-  // BleV2RemotePeripheral already exists with the given address, the reference
-  // should not be invalidated, the update functions should be called instead.
-  const std::string& address = device->address;
-  auto* existing_ble_peripheral = GetDiscoveredBlePeripheral(address);
-  if (existing_ble_peripheral) {
-    existing_ble_peripheral->UpdateDeviceInfo(std::move(device));
-  } else {
-    discovered_ble_peripherals_map_.emplace(
-        address, chrome::BleV2RemotePeripheral(std::move(device)));
+  // Add a new or update the existing discovered peripheral. Note: In BLE V2,
+  // Nearby Connections is only passed BlePeripheral::UniqueId by value rather
+  // than BleV2RemotePeripheral& references; pointers/references into
+  // `discovered_ble_peripherals_map_` must not escape the
+  // `discovered_ble_peripherals_lock_` scope.
+  const std::string address = device->address;
+  {
+    base::AutoLock lock(discovered_ble_peripherals_lock_);
+    auto* existing_ble_peripheral = GetDiscoveredBlePeripheral(address);
+    if (existing_ble_peripheral) {
+      existing_ble_peripheral->UpdateDeviceInfo(std::move(device));
+    } else {
+      discovered_ble_peripherals_map_.emplace(
+          address, chrome::BleV2RemotePeripheral(std::move(device)));
+    }
   }
 
   for (const auto& service_uuid : bluetooth_service_set) {
@@ -669,16 +682,21 @@ void BleV2Medium::DeviceAdded(bluetooth::mojom::DeviceInfoPtr device) {
       // Fetch the BleV2RemotePeripheral with the same `address` again because
       // previously fetched pointers may have been invalidated while iterating
       // through the IDs.
-      auto* ble_peripheral = GetDiscoveredBlePeripheral(address);
-      if (!ble_peripheral) {
-        LOG(WARNING) << __func__
-                     << " Can't find previously discovered ble peripheral.";
-        continue;
+      api::ble_v2::BlePeripheral::UniqueId unique_id;
+      {
+        base::AutoLock lock(discovered_ble_peripherals_lock_);
+        auto* ble_peripheral = GetDiscoveredBlePeripheral(address);
+        if (!ble_peripheral) {
+          LOG(WARNING) << __func__
+                       << " Can't find previously discovered ble peripheral.";
+          continue;
+        }
+        unique_id = ble_peripheral->GetUniqueId();
       }
 
       if (scanning_callback_iter->second.advertisement_found_cb) {
         scanning_callback_iter->second.advertisement_found_cb(
-            ble_peripheral->GetUniqueId(), advertisement_data);
+            unique_id, advertisement_data);
       }
     }
   }
@@ -811,7 +829,10 @@ void BleV2Medium::Shutdown(base::WaitableEvent* shutdown_waitable_event) {
   gatt_server_.reset();
   adapter_.reset();
   discovery_session_.reset();
-  discovered_ble_peripherals_map_.clear();
+  {
+    base::AutoLock lock(discovered_ble_peripherals_lock_);
+    discovered_ble_peripherals_map_.clear();
+  }
   session_id_to_scanning_callback_map_.clear();
   service_uuid_to_session_ids_map_.clear();
   registered_advertisements_map_.clear();
