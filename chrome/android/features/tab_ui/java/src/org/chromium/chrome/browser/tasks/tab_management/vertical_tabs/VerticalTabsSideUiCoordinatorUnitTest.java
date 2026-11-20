@@ -113,19 +113,19 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
         setWindowWidthPx(mWideWindowWidth);
         mTabListView = new View(mActivity);
         when(mMockTabListCoordinator.getView()).thenReturn(mTabListView);
-        mCollapseController =
-                new VerticalTabRailCollapseController(
-                        mMockTabListCoordinator::setRailCollapseState,
-                        mMockTabListCoordinator::setCollapseButtonEnabled,
-                        mMockWindowAndroid);
-        when(mMockTabListCoordinator.getCollapseController()).thenReturn(mCollapseController);
+        createCoordinator();
+    }
 
+    private void createCoordinator() {
         mCoordinator =
                 new VerticalTabsSideUiCoordinator(
                         mActivity,
                         mMockWindowAndroid,
                         mMockSideUiCoordinator,
-                        mMockTabListCoordinator,
+                        collapseController -> {
+                            mCollapseController = collapseController;
+                            return mMockTabListCoordinator;
+                        },
                         mIsVerticalTabsActiveSupplier);
     }
 
@@ -927,13 +927,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
         mTabListView = new View(mActivity);
         when(mMockTabListCoordinator.getView()).thenReturn(mTabListView);
 
-        mCoordinator =
-                new VerticalTabsSideUiCoordinator(
-                        mActivity,
-                        mMockWindowAndroid,
-                        mMockSideUiCoordinator,
-                        mMockTabListCoordinator,
-                        mIsVerticalTabsActiveSupplier);
+        createCoordinator();
 
         assertShowableWidth(ViewUtils.dpToPx(mActivity, 300), mWideWindowWidth);
     }
@@ -943,6 +937,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
         verify(mMockWindowAndroid).addActivityStateObserver(mCoordinator);
         mCoordinator.destroy();
         verify(mMockWindowAndroid).removeActivityStateObserver(mCoordinator);
+        verify(mMockWindowAndroid).removeActivityStateObserver(mCollapseController);
         mCoordinator = null;
     }
 

@@ -46,7 +46,7 @@ import org.chromium.ui.base.WindowAndroid;
  * deferral ends.
  */
 @NullMarked
-class VerticalTabRailCollapseController implements WindowAndroid.ActivityStateObserver {
+public class VerticalTabRailCollapseController implements WindowAndroid.ActivityStateObserver {
     /**
      * Delegate that carries out a user-requested rail state change. At most one may be registered;
      * when none is, the controller applies the change itself.

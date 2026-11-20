@@ -47,6 +47,7 @@ import org.chromium.ui.base.WindowAndroid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 
 /**
  * Coordinator that acts as a container for the Vertical Tab List within the Side UI framework. This
@@ -107,14 +108,19 @@ public class VerticalTabsSideUiCoordinator
             Activity activity,
             WindowAndroid windowAndroid,
             SideUiCoordinator sideUiCoordinator,
-            VerticalTabListCoordinator tabListCoordinator,
+            Function<VerticalTabRailCollapseController, VerticalTabListCoordinator>
+                    tabListCoordinatorFactory,
             SettableNonNullObservableSupplier<Boolean> isVerticalTabsActiveSupplier) {
         mAnchorSide = AnchorSide.LEFT;
 
         mSideUiCoordinator = sideUiCoordinator;
         mWindowAndroid = windowAndroid;
-        mTabListCoordinator = tabListCoordinator;
-        mCollapseController = mTabListCoordinator.getCollapseController();
+        mCollapseController =
+                new VerticalTabRailCollapseController(
+                        this::applyRailCollapseState,
+                        this::applyCollapseButtonEnabled,
+                        windowAndroid);
+        mTabListCoordinator = tabListCoordinatorFactory.apply(mCollapseController);
         mIsVerticalTabsActiveSupplier = isVerticalTabsActiveSupplier;
         mCommittedResizeWidthDp = VerticalTabUtils.getUserResizedWidthDpFromSharedPref();
         mSideUiCoordinator.addObserver(this);
@@ -171,6 +177,7 @@ public class VerticalTabsSideUiCoordinator
         // applied to a half-destroyed list.
         mTabListCoordinator.setExternalDragObserver(null);
         mTabListCoordinator.destroy();
+        mCollapseController.destroy();
         mIsVerticalTabsActiveSupplier.set(false);
     }
 
@@ -209,6 +216,14 @@ public class VerticalTabsSideUiCoordinator
      */
     public boolean canActivateTabLayoutToggleMenu() {
         return mSideUiCoordinator.canShowSideUi(SideUiId.VERTICAL_TABS);
+    }
+
+    private void applyRailCollapseState(@RailCollapseState int railCollapseState) {
+        mTabListCoordinator.setRailCollapseState(railCollapseState);
+    }
+
+    private void applyCollapseButtonEnabled(boolean enabled) {
+        mTabListCoordinator.setCollapseButtonEnabled(enabled);
     }
 
     /**

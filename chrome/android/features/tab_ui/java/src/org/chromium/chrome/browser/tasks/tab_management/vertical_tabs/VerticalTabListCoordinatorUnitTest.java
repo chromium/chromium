@@ -281,6 +281,7 @@ public class VerticalTabListCoordinatorUnitTest {
     private final AtomicInteger mDragHandlerCreationCount = new AtomicInteger();
 
     private VerticalTabListCoordinator mCoordinator;
+    private VerticalTabRailCollapseController mCollapseController;
     private int mMinPinnedTabGap;
     private int mMinPinnedTabWidth;
 
@@ -1608,6 +1609,7 @@ public class VerticalTabListCoordinatorUnitTest {
                 ObservableSuppliers.createNonNull(0);
 
         // Pass our custom widthSupplier to the constructor.
+        mCollapseController = createCollapseController();
         mCoordinator =
                 new VerticalTabListCoordinator(
                         mActivity,
@@ -1630,7 +1632,8 @@ public class VerticalTabListCoordinatorUnitTest {
                         mUndoBarThrottle,
                         mBrowserControlsStateProvider,
                         mBackPressManager,
-                        () -> mTabWindowManager);
+                        () -> mTabWindowManager,
+                        mCollapseController);
 
         View containerView = mCoordinator.getView();
         containerView.setVisibility(View.VISIBLE);
@@ -1654,14 +1657,14 @@ public class VerticalTabListCoordinatorUnitTest {
         // and is not overwritten by the hover-expanded container layout width.
         mCoordinator.setVerticalTabsReservedWidth(52);
         assertEquals(52, (int) widthSupplier.get());
-        mCoordinator.getCollapseController().toggleCollapseState();
-        mCoordinator.getCollapseController().setHovering(true);
+        mCollapseController.toggleCollapseState();
+        mCollapseController.setHovering(true);
         containerView.layout(0, 0, 240, 500);
         assertEquals(
                 "Width supplier should retain reserved width during hover-expand.",
                 52,
                 (int) widthSupplier.get());
-        mCoordinator.getCollapseController().setHovering(false);
+        mCollapseController.setHovering(false);
 
         // Simulate layout change when container is hidden (visibility GONE).
         containerView.setVisibility(View.GONE);
@@ -1923,9 +1926,7 @@ public class VerticalTabListCoordinatorUnitTest {
                         .getContainerModelForTesting()
                         .get(VerticalTabListProperties.IS_COLLAPSE_BUTTON_ENABLED));
 
-        mCoordinator
-                .getCollapseController()
-                .setWindowWidthBoundary(WindowWidthBoundary.FORCED_COLLAPSED);
+        mCollapseController.setWindowWidthBoundary(WindowWidthBoundary.FORCED_COLLAPSED);
 
         assertFalse(
                 mCoordinator
@@ -1938,9 +1939,7 @@ public class VerticalTabListCoordinatorUnitTest {
         collapseButton.performClick();
         verify(mMockRailStateChangeDelegate, never()).handleUserRequestedStateChange();
 
-        mCoordinator
-                .getCollapseController()
-                .setWindowWidthBoundary(WindowWidthBoundary.FULLY_EXPANDABLE);
+        mCollapseController.setWindowWidthBoundary(WindowWidthBoundary.FULLY_EXPANDABLE);
 
         assertTrue(
                 mCoordinator
@@ -1956,7 +1955,7 @@ public class VerticalTabListCoordinatorUnitTest {
         FeatureOverrides.overrideParam(
                 ChromeFeatureList.ANDROID_VERTICAL_TABS, "expand_on_hover", true);
         createCoordinator();
-        mCoordinator.getCollapseController().toggleCollapseState();
+        mCollapseController.toggleCollapseState();
 
         View containerView = mCoordinator.getView();
         containerView.layout(0, 0, 200, 500);
@@ -1970,7 +1969,7 @@ public class VerticalTabListCoordinatorUnitTest {
                 VerticalTabRailHoverController.HOVER_DEBOUNCE_MS, TimeUnit.MILLISECONDS);
         assertEquals(
                 RailCollapseState.EXPANDED_FOR_HOVERING,
-                mCoordinator.getCollapseController().getEffectiveRailCollapseState());
+                mCollapseController.getEffectiveRailCollapseState());
         // The collapse toggle above already notified the delegate once.
         verify(mMockRailStateChangeDelegate, times(2)).handleUserRequestedStateChange();
 
@@ -1980,8 +1979,7 @@ public class VerticalTabListCoordinatorUnitTest {
         hoverExit.setSource(InputDevice.SOURCE_MOUSE);
         containerView.dispatchGenericMotionEvent(hoverExit);
         assertEquals(
-                RailCollapseState.COLLAPSED,
-                mCoordinator.getCollapseController().getEffectiveRailCollapseState());
+                RailCollapseState.COLLAPSED, mCollapseController.getEffectiveRailCollapseState());
         verify(mMockRailStateChangeDelegate, times(3)).handleUserRequestedStateChange();
     }
 
@@ -1991,7 +1989,7 @@ public class VerticalTabListCoordinatorUnitTest {
         FeatureOverrides.overrideParam(
                 ChromeFeatureList.ANDROID_VERTICAL_TABS, "expand_on_hover", true);
         createCoordinator();
-        mCoordinator.getCollapseController().toggleCollapseState();
+        mCollapseController.toggleCollapseState();
         clearInvocations(mMockRailStateChangeDelegate);
 
         View containerView = mCoordinator.getView();
@@ -2006,8 +2004,7 @@ public class VerticalTabListCoordinatorUnitTest {
         hoverEnterOnButton.setSource(InputDevice.SOURCE_MOUSE);
         containerView.dispatchGenericMotionEvent(hoverEnterOnButton);
         assertEquals(
-                RailCollapseState.COLLAPSED,
-                mCoordinator.getCollapseController().getEffectiveRailCollapseState());
+                RailCollapseState.COLLAPSED, mCollapseController.getEffectiveRailCollapseState());
         verify(mMockRailStateChangeDelegate, never()).handleUserRequestedStateChange();
 
         // Moving off the button without leaving the rail expands it.
@@ -2019,7 +2016,7 @@ public class VerticalTabListCoordinatorUnitTest {
                 VerticalTabRailHoverController.HOVER_DEBOUNCE_MS, TimeUnit.MILLISECONDS);
         assertEquals(
                 RailCollapseState.EXPANDED_FOR_HOVERING,
-                mCoordinator.getCollapseController().getEffectiveRailCollapseState());
+                mCollapseController.getEffectiveRailCollapseState());
         verify(mMockRailStateChangeDelegate).handleUserRequestedStateChange();
     }
 
@@ -4380,6 +4377,7 @@ public class VerticalTabListCoordinatorUnitTest {
         when(mTabSwitcherDragHandler.startGroupDragAction(any(), any(), any(), any()))
                 .thenReturn(true);
 
+        mCollapseController = createCollapseController();
         mCoordinator =
                 new VerticalTabListCoordinator(
                         mActivity,
@@ -4402,14 +4400,20 @@ public class VerticalTabListCoordinatorUnitTest {
                         mUndoBarThrottle,
                         mBrowserControlsStateProvider,
                         mBackPressManager,
-                        () -> mTabWindowManager);
+                        () -> mTabWindowManager,
+                        mCollapseController);
+        mCollapseController.setRailStateChangeDelegate(mMockRailStateChangeDelegate);
+    }
 
-        mCoordinator
-                .getCollapseController()
-                .setRailStateChangeDelegate(mMockRailStateChangeDelegate);
+    private VerticalTabRailCollapseController createCollapseController() {
+        return new VerticalTabRailCollapseController(
+                state -> mCoordinator.setRailCollapseState(state),
+                enabled -> mCoordinator.setCollapseButtonEnabled(enabled),
+                mWindowAndroid);
     }
 
     private void createCoordinatorWithoutMockDragHandlers() {
+        mCollapseController = createCollapseController();
         mCoordinator =
                 new VerticalTabListCoordinator(
                         mActivity,
@@ -4432,11 +4436,9 @@ public class VerticalTabListCoordinatorUnitTest {
                         mUndoBarThrottle,
                         mBrowserControlsStateProvider,
                         mBackPressManager,
-                        () -> mTabWindowManager);
-
-        mCoordinator
-                .getCollapseController()
-                .setRailStateChangeDelegate(mMockRailStateChangeDelegate);
+                        () -> mTabWindowManager,
+                        mCollapseController);
+        mCollapseController.setRailStateChangeDelegate(mMockRailStateChangeDelegate);
     }
 
     /** Helper method to create a basic mock {@link Tab} with initialized state and URL. */
@@ -4743,7 +4745,7 @@ public class VerticalTabListCoordinatorUnitTest {
         DeviceInfo.setIsDesktopForTesting(true);
         FeatureOverrides.overrideParam(
                 ChromeFeatureList.ANDROID_VERTICAL_TABS, "expand_on_hover", true);
-        mCoordinator.getCollapseController().toggleCollapseState();
+        mCollapseController.toggleCollapseState();
         mCoordinator.setRailCollapseState(RailCollapseState.COLLAPSED);
     }
 
@@ -4769,7 +4771,7 @@ public class VerticalTabListCoordinatorUnitTest {
                 VerticalTabRailHoverController.HOVER_DEBOUNCE_MS, TimeUnit.MILLISECONDS);
         assertEquals(
                 RailCollapseState.EXPANDED_FOR_HOVERING,
-                mCoordinator.getCollapseController().getEffectiveRailCollapseState());
+                mCollapseController.getEffectiveRailCollapseState());
 
         mCoordinator.setRailCollapseState(RailCollapseState.EXPANDED_FOR_HOVERING);
         clearInvocations(mMockRailStateChangeDelegate);
@@ -5427,7 +5429,7 @@ public class VerticalTabListCoordinatorUnitTest {
 
         assertEquals(
                 RailCollapseState.EXPANDED_FOR_HOVERING,
-                mCoordinator.getCollapseController().getEffectiveRailCollapseState());
+                mCollapseController.getEffectiveRailCollapseState());
     }
 
     /** A drag from this window over a user-collapsed rail does not expand it. */
@@ -5443,8 +5445,7 @@ public class VerticalTabListCoordinatorUnitTest {
                 VerticalTabRailHoverController.HOVER_DEBOUNCE_MS, TimeUnit.MILLISECONDS);
 
         assertEquals(
-                RailCollapseState.COLLAPSED,
-                mCoordinator.getCollapseController().getEffectiveRailCollapseState());
+                RailCollapseState.COLLAPSED, mCollapseController.getEffectiveRailCollapseState());
     }
 
     @Test

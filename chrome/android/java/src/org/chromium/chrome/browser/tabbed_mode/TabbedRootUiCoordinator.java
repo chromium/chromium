@@ -2587,30 +2587,32 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             mActivity,
                             mWindowAndroid,
                             mSideUiCoordinator,
-                            new VerticalTabListCoordinator(
-                                    mActivity,
-                                    assumeNonNull(mTabModelSelectorSupplier.get()),
-                                    assumeNonNull(mProfileSupplier.get()),
-                                    mVerticalTabsActionDelegate,
-                                    mWindowAndroid,
-                                    mActivityResultTracker,
-                                    assumeNonNull(mMultiInstanceManager),
-                                    assumeNonNull(mSnackbarManagerSupplier.get()),
-                                    getDesktopWindowStateManager(),
-                                    mShareDelegateSupplier,
-                                    mDataSharingTabManager,
-                                    mIsVerticalTabsActiveSupplier,
-                                    mVerticalTabsWidthSupplier,
-                                    canActivateTabLayoutToggleMenu(),
-                                    mActivity.findViewById(
-                                            R.id.vertical_tab_hover_card_holder_stub),
-                                    mActivity.findViewById(
-                                            R.id.vertical_tab_group_hover_card_holder_stub),
-                                    mTabContentManagerSupplier,
-                                    mUndoGroupSnackbarController,
-                                    mBrowserControlsManager,
-                                    mBackPressManager,
-                                    TabWindowManagerSingleton::getInstance),
+                            collapseController ->
+                                    new VerticalTabListCoordinator(
+                                            mActivity,
+                                            assumeNonNull(mTabModelSelectorSupplier.get()),
+                                            assumeNonNull(mProfileSupplier.get()),
+                                            mVerticalTabsActionDelegate,
+                                            mWindowAndroid,
+                                            mActivityResultTracker,
+                                            assumeNonNull(mMultiInstanceManager),
+                                            assumeNonNull(mSnackbarManagerSupplier.get()),
+                                            getDesktopWindowStateManager(),
+                                            mShareDelegateSupplier,
+                                            mDataSharingTabManager,
+                                            mIsVerticalTabsActiveSupplier,
+                                            mVerticalTabsWidthSupplier,
+                                            canActivateTabLayoutToggleMenu(),
+                                            mActivity.findViewById(
+                                                    R.id.vertical_tab_hover_card_holder_stub),
+                                            mActivity.findViewById(
+                                                    R.id.vertical_tab_group_hover_card_holder_stub),
+                                            mTabContentManagerSupplier,
+                                            mUndoGroupSnackbarController,
+                                            mBrowserControlsManager,
+                                            mBackPressManager,
+                                            TabWindowManagerSingleton::getInstance,
+                                            collapseController),
                             mIsVerticalTabsActiveSupplier);
             if (mToolbarManager != null) {
                 mToolbarManager.setVerticalTabsAutoHiddenSupplier(

@@ -392,6 +392,7 @@ public class VerticalTabListCoordinator {
      * @param browserControlsStateProvider Provider for browser controls sizing and state.
      * @param backPressManager Manager for intercepting system back press and physical ESC keys.
      * @param tabWindowManagerSupplier Supplier for the {@link TabWindowManager}.
+     * @param collapseController The controller that owns the rail collapse state.
      */
     @SuppressLint("ClickableViewAccessibility")
     public VerticalTabListCoordinator(
@@ -415,7 +416,8 @@ public class VerticalTabListCoordinator {
             @Nullable UndoBarThrottle undoBarThrottle,
             BrowserControlsStateProvider browserControlsStateProvider,
             BackPressManager backPressManager,
-            Supplier<TabWindowManager> tabWindowManagerSupplier) {
+            Supplier<TabWindowManager> tabWindowManagerSupplier,
+            VerticalTabRailCollapseController collapseController) {
         mCanActivateTabLayoutToggleMenuSupplier = canActivateTabLayoutToggleMenuSupplier;
         mVerticalTabsActiveSupplier = verticalTabsActiveSupplier;
         mVerticalTabsWidthSupplier = verticalTabsWidthSupplier;
@@ -440,9 +442,7 @@ public class VerticalTabListCoordinator {
         } else {
             mTabUnderlineManager = null;
         }
-        mCollapseController =
-                new VerticalTabRailCollapseController(
-                        this::setRailCollapseState, this::setCollapseButtonEnabled, mWindowAndroid);
+        mCollapseController = collapseController;
         mModelList = new TabListModel();
 
         mContainerView =
@@ -1011,7 +1011,6 @@ public class VerticalTabListCoordinator {
         mRecyclerView.removeOnScrollListener(mOnScrollListener);
 
         mRailHoverController.destroy();
-        mCollapseController.destroy();
         if (mTabUnderlineManager != null) {
             mTabUnderlineManager.destroy();
         }
@@ -1046,11 +1045,6 @@ public class VerticalTabListCoordinator {
 
     public VerticalTabPinnedDropIndicatorDecoration getPinnedDropIndicatorDecorationForTesting() {
         return mPinnedDropIndicatorDecoration;
-    }
-
-    /** Returns the {@link VerticalTabRailCollapseController} for managing rail collapse state. */
-    VerticalTabRailCollapseController getCollapseController() {
-        return mCollapseController;
     }
 
     /**
