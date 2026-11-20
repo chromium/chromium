@@ -405,7 +405,9 @@ public abstract class FullscreenHtmlApiHandlerBase
                     @Override
                     protected void onTabUnregistered(Tab tab) {
                         // A tab that left this window belongs to its new owner: stop tracking it
-                        // without touching its attributes.
+                        // and keep its display attributes. Drop its deferred enter, though: that
+                        // runnable is bound to this handler, and the new window would run it here.
+                        setEnterFullscreenRunnable(tab, null);
                         if (tab == mTabPendingFullscreen) mTabPendingFullscreen = null;
                     }
 

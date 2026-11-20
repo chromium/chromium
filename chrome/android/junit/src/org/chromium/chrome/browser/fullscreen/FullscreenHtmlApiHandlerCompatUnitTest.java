@@ -949,11 +949,13 @@ public class FullscreenHtmlApiHandlerCompatUnitTest {
         assertNull(getStoredFullscreenOptions(newActiveTab));
     }
 
-    @Test
-    @Config(sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
-    public void testStoreFullscreenOptions_unregisteredPendingTab_stopsTrackingIt() {
-        // Give the selector a tab model so the handler's tab observer receives registration
-        // events for it.
+    /**
+     * Initializes the handler with a tab model holding {@link #mTab}, so that the handler's tab
+     * observer receives registration events for it.
+     *
+     * @return The tab model observer, to remove the tab with.
+     */
+    private TabModelObserver initializeWithRegisteredTab() {
         doReturn(ObservableSuppliers.createMonotonic(mTabModel))
                 .when(mTabModelSelector)
                 .getCurrentTabModelSupplier();
@@ -973,19 +975,50 @@ public class FullscreenHtmlApiHandlerCompatUnitTest {
                         TabLaunchType.FROM_CHROME_UI,
                         TabCreationState.LIVE_IN_FOREGROUND,
                         false);
+        return modelObserver.getValue();
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    public void testStoreFullscreenOptions_unregisteredPendingTab_stopsTrackingIt() {
+        TabModelObserver modelObserver = initializeWithRegisteredTab();
 
         setUpTabForParkedFullscreen();
         mFullscreenHtmlApiHandlerCompat.onEnterFullscreen(
                 mTab, new FullscreenOptions(false, false, INVALID_DISPLAY));
 
         // The tab is reparented to another window.
-        modelObserver.getValue().tabRemoved(mTab);
+        modelObserver.tabRemoved(mTab);
         Tab newActiveTab = Mockito.mock(Tab.class);
         doReturn(new UserDataHost()).when(newActiveTab).getUserDataHost();
         mFullscreenHtmlApiHandlerCompat.setTabForTesting(newActiveTab);
         mFullscreenHtmlApiHandlerCompat.exitPersistentFullscreenMode();
 
         assertStoredDisplay(mTab, getActivityDisplayId());
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    public void testOnTabUnregistered_clearsDeferredEnterKeepsDisplay() {
+        TabModelObserver modelObserver = initializeWithRegisteredTab();
+        setUpTabForDeferredFullscreen();
+        FullscreenManager.Observer observer = Mockito.mock(FullscreenManager.Observer.class);
+        mFullscreenHtmlApiHandlerCompat.addObserver(observer);
+        mFullscreenHtmlApiHandlerCompat.onEnterFullscreen(
+                mTab, new FullscreenOptions(false, false, INVALID_DISPLAY));
+        assertNotNull(TabAttributes.from(mTab).get(TabAttributeKeys.ENTER_FULLSCREEN));
+
+        // The tab is reparented to another window.
+        modelObserver.tabRemoved(mTab);
+
+        assertNull(
+                "The deferred enter is bound to this handler and must not travel with the tab.",
+                TabAttributes.from(mTab).get(TabAttributeKeys.ENTER_FULLSCREEN));
+        assertStoredDisplay(mTab, getActivityDisplayId());
+        doReturn(true).when(mTab).isUserInteractable();
+        mFullscreenHtmlApiHandlerCompat.onTabInteractable(mTab);
+        assertFalse(mFullscreenHtmlApiHandlerCompat.getPersistentFullscreenMode());
+        verify(observer, never()).onEnterFullscreen(any(), any());
     }
 
     @Test
