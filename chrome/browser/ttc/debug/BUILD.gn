@@ -20,17 +20,21 @@ source_set("debug") {
     "ttc_debug_tools_service_factory.h",
     "ttc_session_audio_recorder.cc",
     "ttc_session_audio_recorder.h",
+    "ttc_tool_effect_verifier.cc",
+    "ttc_tool_effect_verifier.h",
   ]
   public_deps = [
     "//base",
     "//components/keyed_service/core",
     "//components/ttc/app/public",
+    "//content/public/browser",
   ]
   deps = [
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ttc/core:features",
     "//components/actor/core",
     "//components/page_content_annotations/content",
+    "//net",
     "//url",
   ]
 }
@@ -69,17 +73,21 @@ source_set("unit_tests") {
     "ttc_debug_session_unittest.cc",
     "ttc_debug_tools_service_unittest.cc",
     "ttc_session_audio_recorder_unittest.cc",
+    "ttc_tool_effect_verifier_unittest.cc",
   ]
   deps = [
     ":debug",
     "//base/test:test_support",
     "//chrome/browser/ttc/core:features",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_render_view_host_test_harness",
     "//components/actor/core:journal",
     "//components/actor/public/mojom:mojo_bindings_shared",
     "//components/page_content_annotations/content",
     "//components/ttc/app/public",
+    "//content/public/browser",
     "//content/test:test_support",
+    "//net",
     "//testing/gmock",
     "//testing/gtest",
     "//url",
