@@ -146,7 +146,9 @@
                     identityManager:identityManager
                   accountReconcilor:accountReconcilor
                     userPrefService:profile->GetPrefs()
-                        accessPoint:self.accessPoint];
+                        accessPoint:self.accessPoint
+               prepareChangeProfile:_prepareChangeProfile
+               continuationProvider:_continuationProvider];
   self.consistencyPromoSigninMediator.delegate = self;
   // Create ConsistencySheetNavigationController so it can be giving as the base
   // view controller for the account coordinator.
@@ -218,6 +220,7 @@
 - (void)stopAnimated:(BOOL)animated {
   _confirmChangeProfile = nil;
   _prepareChangeProfile = nil;
+  _continuationProvider.Reset();
   [self stopAlertCoordinator];
   [self stopAddAccountCoordinatorAnimated:animated];
   if (self.navigationController) {
@@ -681,16 +684,6 @@
                               (const std::optional<base::TimeDelta>&)timeout {
   return std::make_unique<signin::WebSigninTracker>(
       identityManager, accountReconcilor, signin_account, callback, timeout);
-}
-
-- (ChangeProfileContinuation)changeProfileContinuation {
-  if (_prepareChangeProfile) {
-    _prepareChangeProfile();
-  };
-  // TODO(crbug.com/375605572): Store the provider in the mediator.
-  // This currently can’t be done, because OCMock raise exception when a mocked
-  // method gets a parameter whose type is a once or repeating callback.
-  return _continuationProvider.Run();
 }
 
 #pragma mark - NSObject

@@ -9,6 +9,7 @@
 #import <memory>
 #import <optional>
 
+#import "base/functional/callback_helpers.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/browser/web_signin_tracker.h"
@@ -17,6 +18,7 @@
 #import "components/test/ios/test_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_delegate.h"
+#import "ios/chrome/browser/authentication/ui_bundled/not_reached_continuation.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -76,7 +78,10 @@ class ConsistencyPromoSigninMediatorTest : public PlatformTest {
   }
 
   ConsistencyPromoSigninMediator* BuildConsistencyPromoSigninMediator(
-      signin_metrics::AccessPoint access_point) {
+      signin_metrics::AccessPoint access_point,
+      ProceduralBlock prepare_change_profile = nil,
+      const ChangeProfileContinuationProvider& continuation_provider =
+          NotReachedContinuationProvider()) {
     ChromeAccountManagerService* chrome_account_manager_service =
         ChromeAccountManagerServiceFactory::GetForProfile(profile_);
     AuthenticationService* auth_service =
@@ -91,7 +96,9 @@ class ConsistencyPromoSigninMediatorTest : public PlatformTest {
                       identityManager:identity_manager
                     accountReconcilor:account_reconcilor
                       userPrefService:GetPrefService()
-                          accessPoint:access_point];
+                          accessPoint:access_point
+                 prepareChangeProfile:prepare_change_profile
+                 continuationProvider:continuation_provider];
     mediator_.delegate = mediator_delegate_mock_;
     return mediator_;
   }
@@ -516,6 +523,53 @@ TEST_F(ConsistencyPromoSigninMediatorTest,
 
   [mediator_ disconnectWithResult:base::unexpected(
                                       SigninCoordinatorResultCanceledByUser)];
+}
+
+// Tests that `authenticationFlowWillSwitchProfileWithReadyCompletion:` invokes
+// `prepareChangeProfile` and forwards the continuation from
+// `continuationProvider`.
+TEST_F(ConsistencyPromoSigninMediatorTest,
+       AuthenticationFlowWillSwitchProfile) {
+  __block bool prepare_change_profile_called = false;
+  __block bool continuation_provider_called = false;
+  __block bool continuation_called = false;
+  __block bool ready_completion_called = false;
+
+  ChangeProfileContinuationProvider continuation_provider =
+      base::BindRepeating(^ChangeProfileContinuation() {
+        EXPECT_TRUE(prepare_change_profile_called);
+        continuation_provider_called = true;
+        return base::BindOnce(
+            ^(SceneState* scene_state, base::OnceClosure closure) {
+              continuation_called = true;
+              std::move(closure).Run();
+            });
+      });
+
+  mediator_ = BuildConsistencyPromoSigninMediator(
+      signin_metrics::AccessPoint::kWebSignin,
+      ^{
+        prepare_change_profile_called = true;
+      },
+      continuation_provider);
+
+  // Simulate the authentication flow requesting a profile switch.
+  [(id<AuthenticationFlowDelegate>)mediator_
+      authenticationFlowWillSwitchProfileWithReadyCompletion:
+          base::BindOnce(^(ChangeProfileContinuation continuation) {
+            ready_completion_called = true;
+            EXPECT_TRUE(prepare_change_profile_called);
+            EXPECT_TRUE(continuation_provider_called);
+            // Simulate the profile switch running the continuation.
+            std::move(continuation).Run(nil, base::DoNothing());
+          })];
+
+  EXPECT_TRUE(ready_completion_called);
+  EXPECT_TRUE(continuation_called);
+
+  // Simulate the coordinator stopping the mediator after the profile switch.
+  [mediator_
+      disconnectWithResult:base::unexpected(SigninCoordinatorProfileSwitch)];
 }
 
 }  // namespace

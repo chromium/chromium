@@ -13,7 +13,7 @@
 #import "base/functional/callback_forward.h"
 #import "base/ios/block_types.h"
 #import "components/signin/public/browser/web_signin_tracker.h"
-#import "ios/chrome/app/change_profile_continuation.h"
+#import "ios/chrome/browser/authentication/ui_bundled/change_profile_continuation_provider.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 
 class AccountReconcilor;
@@ -100,9 +100,6 @@ typedef NS_ENUM(NSInteger, ConsistencyPromoSigninMediatorError) {
                           withTimeout:
                               (const std::optional<base::TimeDelta>&)timeout;
 
-// Returns a ChangeProfileContinuation.
-- (ChangeProfileContinuation)changeProfileContinuation;
-
 @end
 
 // Mediator for ConsistencyPromoSigninCoordinator.
@@ -112,6 +109,11 @@ typedef NS_ENUM(NSInteger, ConsistencyPromoSigninMediatorError) {
 
 - (instancetype)init NS_UNAVAILABLE;
 
+// Initializes the mediator.
+// `prepareChangeProfile` is a block to execute before a profile switch (can be
+// nil).
+// `continuationProvider` provides the continuation to execute after a profile
+// switch.
 - (instancetype)
     initWithAccountManagerService:
         (ChromeAccountManagerService*)accountManagerService
@@ -120,6 +122,9 @@ typedef NS_ENUM(NSInteger, ConsistencyPromoSigninMediatorError) {
                 accountReconcilor:(AccountReconcilor*)accountReconcilor
                   userPrefService:(PrefService*)userPrefService
                       accessPoint:(signin_metrics::AccessPoint)accessPoint
+             prepareChangeProfile:(ProceduralBlock)prepareChangeProfile
+             continuationProvider:
+                 (const ChangeProfileContinuationProvider&)continuationProvider
     NS_DESIGNATED_INITIALIZER;
 
 // Disconnects the mediator. Passed by const ref because OCMock calls

@@ -63,12 +63,20 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
   // Observer for auth service status changes.
   std::unique_ptr<AuthenticationServiceObserverBridge>
       _authServiceObserverBridge;
+
+  // Block to execute before a change in profile.
+  ProceduralBlock _prepareChangeProfile;
+  // Provides the continuation to run after a change in profile.
+  ChangeProfileContinuationProvider _continuationProvider;
 }
 
 @end
 
 @implementation ConsistencyPromoSigninMediator
 
+// `continuationProvider` is passed by const ref because OCMock calls
+// `NSGetSizeAndAlignment()` on mocked Objective-C arguments, which throws on
+// by-value `base::RepeatingCallback` Objective-C type encodings.
 - (instancetype)
     initWithAccountManagerService:
         (ChromeAccountManagerService*)accountManagerService
@@ -76,7 +84,10 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
                   identityManager:(signin::IdentityManager*)identityManager
                 accountReconcilor:(AccountReconcilor*)accountReconcilor
                   userPrefService:(PrefService*)userPrefService
-                      accessPoint:(signin_metrics::AccessPoint)accessPoint {
+                      accessPoint:(signin_metrics::AccessPoint)accessPoint
+             prepareChangeProfile:(ProceduralBlock)prepareChangeProfile
+             continuationProvider:(const ChangeProfileContinuationProvider&)
+                                      continuationProvider {
   self = [super init];
   if (self) {
     CHECK(identityManager);
@@ -84,12 +95,15 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
     CHECK(authenticationService->SigninEnabled());
     CHECK(accountReconcilor);
     CHECK(userPrefService);
+    CHECK(continuationProvider);
     _accountManagerService = accountManagerService;
     _authenticationService = authenticationService;
     _identityManager = identityManager;
     _accountReconcilor = accountReconcilor;
     _prefService = userPrefService;
     _accessPoint = accessPoint;
+    _prepareChangeProfile = [prepareChangeProfile copy];
+    _continuationProvider = continuationProvider;
     _authServiceObserverBridge =
         std::make_unique<AuthenticationServiceObserverBridge>(
             authenticationService, self);
@@ -185,6 +199,8 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
   _identityManager = nullptr;
   _accountReconcilor = nullptr;
   _prefService = nullptr;
+  _prepareChangeProfile = nil;
+  _continuationProvider.Reset();
   _authServiceObserverBridge.reset();
   _identityManagerObserverBridge.reset();
   _webSigninTracker.reset();
@@ -299,7 +315,10 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
     (ReadyForProfileSwitchingCompletion)readyCompletion {
   _authenticationFlow.delegate = nil;
   _authenticationFlow = nil;
-  std::move(readyCompletion).Run([self.delegate changeProfileContinuation]);
+  if (_prepareChangeProfile) {
+    _prepareChangeProfile();
+  }
+  std::move(readyCompletion).Run(_continuationProvider.Run());
 }
 
 #pragma mark - Private

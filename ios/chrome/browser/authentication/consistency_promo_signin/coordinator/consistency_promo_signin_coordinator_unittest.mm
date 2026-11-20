@@ -122,7 +122,9 @@ class ConsistencyPromoSigninCoordinatorTest : public PlatformTest {
                         accountReconcilor:ios::OCM::AnyPointer<
                                               AccountReconcilor>()
                           userPrefService:ios::OCM::AnyPointer<PrefService>()
-                              accessPoint:access_point_])
+                              accessPoint:access_point_
+                     prepareChangeProfile:nil
+                     continuationProvider:NotReachedContinuationProvider()])
         .ignoringNonObjectArgs()
         .andReturn(mediator_mock_);
     OCMExpect([base_view_controller_mock_ presentViewController:[OCMArg any]
