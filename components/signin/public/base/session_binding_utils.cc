@@ -34,26 +34,14 @@ namespace signin {
 
 namespace {
 
-std::string Base64UrlEncode(std::string_view data) {
-  std::string output;
-  base::Base64UrlEncode(data, base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &output);
-  return output;
-}
-
-std::string Base64UrlEncode(base::span<const uint8_t> data) {
-  std::string output;
-  base::Base64UrlEncode(data, base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &output);
-  return output;
-}
-
 base::DictValue CreatePublicKeyInfo(base::span<const uint8_t> pubkey) {
   return base::DictValue()
       .Set("kty",
            "accounts.google.com/.well-known/kty/"
            "SubjectPublicKeyInfo")
-      .Set("SubjectPublicKeyInfo", Base64UrlEncode(pubkey));
+      .Set("SubjectPublicKeyInfo",
+           base::Base64UrlEncode(pubkey,
+                                 base::Base64UrlEncodePolicy::OMIT_PADDING));
 }
 
 base::DictValue CreateHybridPublicKeyInfo(
@@ -61,7 +49,9 @@ base::DictValue CreateHybridPublicKeyInfo(
   return base::DictValue()
       .Set("kty",
            "type.googleapis.com/google.crypto.tink.EciesAeadHkdfPublicKey")
-      .Set("TinkKeysetPublicKeyInfo", Base64UrlEncode(ephemeral_public_key));
+      .Set("TinkKeysetPublicKeyInfo",
+           base::Base64UrlEncode(ephemeral_public_key,
+                                 base::Base64UrlEncodePolicy::OMIT_PADDING));
 }
 
 std::optional<std::string> CreateHeaderAndPayloadWithCustomPayload(
@@ -89,8 +79,12 @@ std::optional<std::string> CreateHeaderAndPayloadWithCustomPayload(
     return std::nullopt;
   }
 
-  return base::StrCat({Base64UrlEncode(*header_serialized), ".",
-                       Base64UrlEncode(*payload_serialized)});
+  return base::StrCat(
+      {base::Base64UrlEncode(*header_serialized,
+                             base::Base64UrlEncodePolicy::OMIT_PADDING),
+       ".",
+       base::Base64UrlEncode(*payload_serialized,
+                             base::Base64UrlEncodePolicy::OMIT_PADDING)});
 }
 
 GURL RemoveQueryAndFragment(const GURL& original) {
@@ -125,15 +119,16 @@ std::optional<std::string> CreateKeyRegistrationHeaderAndPayloadForTokenBinding(
     crypto::sign::SignatureKind algorithm,
     base::span<const uint8_t> pubkey,
     base::Time timestamp) {
-  std::string jti =
-      std::visit(absl::Overload{[](const TokenBindingAuthCode& auth_code) {
-                                  return Base64UrlEncode(
-                                      crypto::hash::Sha256(auth_code.value()));
-                                },
-                                [](const TokenBindingChallenge& challenge) {
-                                  return challenge.value();
-                                }},
-                 auth_code_or_challenge);
+  std::string jti = std::visit(
+      absl::Overload{[](const TokenBindingAuthCode& auth_code) {
+                       return base::Base64UrlEncode(
+                           crypto::hash::Sha256(auth_code.value()),
+                           base::Base64UrlEncodePolicy::OMIT_PADDING);
+                     },
+                     [](const TokenBindingChallenge& challenge) {
+                       return challenge.value();
+                     }},
+      auth_code_or_challenge);
   auto payload =
       base::DictValue()
           .Set("sub", client_id)
@@ -182,7 +177,9 @@ std::optional<std::string> CreateKeyAssertionHeaderAndPayload(
                      .Set("sub", client_id)
                      .Set("aud", RemoveQueryAndFragment(destination_url).spec())
                      .Set("jti", challenge)
-                     .Set("iss", Base64UrlEncode(crypto::hash::Sha256(pubkey)))
+                     .Set("iss", base::Base64UrlEncode(
+                                     crypto::hash::Sha256(pubkey),
+                                     base::Base64UrlEncodePolicy::OMIT_PADDING))
                      .Set("namespace", name_space);
   if (!ephemeral_public_key.empty()) {
     payload.Set("ephemeral_key",
@@ -212,7 +209,10 @@ std::optional<std::string> AppendSignatureToHeaderAndPayload(
     signature = base::span(*signature_holder);
   }
 
-  return base::StrCat({header_and_payload, ".", Base64UrlEncode(signature)});
+  return base::StrCat(
+      {header_and_payload, ".",
+       base::Base64UrlEncode(signature,
+                             base::Base64UrlEncodePolicy::OMIT_PADDING)});
 }
 
 std::string DecryptValueWithEphemeralKey(

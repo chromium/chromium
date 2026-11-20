@@ -58,13 +58,6 @@ base::Value Base64UrlEncodedJsonToValue(std::string_view input) {
   return std::move(*result);
 }
 
-std::string Base64UrlEncode(std::string_view input) {
-  std::string result;
-  base::Base64UrlEncode(input, base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &result);
-  return result;
-}
-
 }  // namespace
 
 TEST(SessionBindingUtilsTest, ParseSignatureAlgorithmList) {
@@ -283,7 +276,9 @@ TEST_P(SessionBindingUtilsEphemeralKeyParamTest,
                 "kty",
                 "type.googleapis.com/google.crypto.tink.EciesAeadHkdfPublicKey")
             .Set("TinkKeysetPublicKeyInfo",
-                 Base64UrlEncode(ephemeral_key->ExportPublicKey())));
+                 base::Base64UrlEncode(
+                     ephemeral_key->ExportPublicKey(),
+                     base::Base64UrlEncodePolicy::OMIT_PADDING)));
   }
 
   EXPECT_EQ(actual_header, expected_header);

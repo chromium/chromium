@@ -170,11 +170,8 @@ std::string EncryptValueWithEphemeralKey(
   if (!encrypted_value) {
     return std::string();
   }
-  std::string base64_encrypted_value;
-  base::Base64UrlEncode(*encrypted_value,
-                        base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &base64_encrypted_value);
-  return base64_encrypted_value;
+  return base::Base64UrlEncode(*encrypted_value,
+                               base::Base64UrlEncodePolicy::OMIT_PADDING);
 }
 
 }  // namespace signin
