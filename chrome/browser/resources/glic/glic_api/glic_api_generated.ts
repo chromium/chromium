@@ -574,6 +574,9 @@ export enum HostCapability {
   // Indicates that the host supports isolated-world JavaScript execution for
   // browser actuation.
   EXECUTE_JS = 21,
+  // Indicates that the current profile is eligible to switch to another
+  // assistant provider via switchAssistant().
+  SWITCH_ASSISTANT = 22,
 }
 
 // Lists capabilities that the glic web client may support.
@@ -581,6 +584,32 @@ export enum ClientCapabilities {
   // The glic web client does not use favicons in TabData, so they can
   // be omitted from TabData.
   IGNORES_TAB_DATA_FAVICONS = 0,
+}
+
+// Target assistant for switching the profile's active assistant provider.
+export enum AssistantTarget {
+  // Unknown or unsupported target (e.g. sent by a newer web client). Always
+  // rejected.
+  UNKNOWN = 0,
+  // Consumer Gemini in Chrome (GiC).
+  GEMINI_CONSUMER = 1,
+  // Gemini Enterprise in Chrome (GEiC).
+  GEMINI_ENTERPRISE = 2,
+}
+
+// Result of attempting to switch the active assistant provider.
+export enum SwitchAssistantResult {
+  UNKNOWN = 0,
+  // The assistant selection preference was updated to the requested target and
+  // a browser relaunch was initiated.
+  SUCCESS = 1,
+  // Switching to the requested assistant target is not allowed for the current
+  // profile (e.g. no machine-scoped `GeminiEnterpriseUrl` policy,
+  // off-the-record or managed profile, consumer Gemini disabled by
+  // `GeminiSettings` policy, or already latched to the requested target).
+  ERROR_NOT_ALLOWED = 2,
+  // The requested assistant target is unknown or unsupported.
+  ERROR_INVALID_TARGET = 3,
 }
 
 // Describes the duration of the actions in the task.  This is used by the actor
@@ -1568,6 +1597,20 @@ export declare interface OpenSettingsOptions {
   // Optionally select a field to be highlighted while opening the Glic settings
   // page.
   highlightField?: SettingsPageField;
+}
+
+// Options for `SwitchAssistant`.
+export declare interface SwitchAssistantOptions {
+  // The assistant target to switch the current profile to.
+  target: AssistantTarget;
+}
+
+// Response for `SwitchAssistant`. A struct (rather than a bare enum) so that
+// fields can be added later without breaking the glic API's backwards
+// compatibility.
+export declare interface SwitchAssistantResponse {
+  // The result of attempting to switch the active assistant provider.
+  result: SwitchAssistantResult;
 }
 
 // Contains information about the task.

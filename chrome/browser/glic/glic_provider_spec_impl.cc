@@ -16,6 +16,7 @@
 #include "base/notreached.h"
 #include "base/types/optional_util.h"
 #include "build/build_config.h"
+#include "chrome/browser/glic/gemini_enterprise/geic_enabling.h"
 #include "chrome/browser/glic/gemini_enterprise/geic_guest_url.h"
 #include "chrome/browser/glic/gemini_enterprise/geic_sign_in_controller.h"
 #include "chrome/browser/glic/gemini_enterprise/geic_url_allowlist.h"
@@ -330,6 +331,11 @@ class GeminiGlicProviderSpec final : public GlicProviderSpec {
            base::FeatureList::IsEnabled(features::kGlicCic);
   }
   bool PinOnBindEnabled() const override { return true; }
+  bool CanSwitchToProvider(Profile& profile,
+                           GlicProvider target) const override {
+    return target == GlicProvider::kGeminiEnterprise &&
+           geic::CanSwitchBetweenGeminiProvidersInSettings(&profile);
+  }
 
  private:
   const bool can_switch_between_gemini_providers_;
@@ -464,6 +470,11 @@ class GeminiEnterpriseGlicProviderSpec final : public GlicProviderSpec,
   // link clicks (e.g. Send feedback, Help, citations) should not be auto-pinned
   // as shared tab context.
   bool PinOnBindEnabled() const override { return false; }
+  bool CanSwitchToProvider(Profile& profile,
+                           GlicProvider target) const override {
+    return target == GlicProvider::kGemini &&
+           geic::CanSwitchBetweenGeminiProvidersInSettings(&profile);
+  }
 
   // GeicSpec impl.
   const geic::GeicGuestUrl* GetGeicGuestUrl() const override {

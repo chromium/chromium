@@ -122,6 +122,7 @@ chromium-metrics-reviews@google.com.
   <variant name="SubscribeToTabData"/>
   <variant name="SubscribeToTabFavicon"/>
   <variant name="SubscribeToZoomLevel"/>
+  <variant name="SwitchAssistant"/>
   <variant name="SwitchConversation"/>
   <variant name="UninterruptActorTask"/>
   <variant name="UnpinAllTabs"/>
@@ -170,6 +171,17 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/gemini_enterprise/gemini_enterprise.mojom:AuthTabPurpose, //chrome/browser/glic/gemini_enterprise/glic_gemini_enterprise_manager.cc:GeicAuthTabPurposeSuffix) -->
+
+<!-- LINT.IfChange(GlicAssistantTarget) -->
+
+<variants name="GlicAssistantTarget">
+  <variant name="GeminiConsumer" summary="consumer Gemini in Chrome (GiC)"/>
+  <variant name="GeminiEnterprise"
+      summary="Gemini Enterprise in Chrome (GEiC)"/>
+  <variant name="Unknown" summary="an unknown or unsupported assistant target"/>
+</variants>
+
+<!-- LINT.ThenChange(//chrome/browser/glic/host/glic.mojom:AssistantTarget, //chrome/browser/glic/host/glic_assistant_switcher.cc:GlicAssistantTargetSuffix) -->
 
 <!-- LINT.IfChange(GlicInvocationSource) -->
 
@@ -3888,6 +3900,19 @@ ApiRequestType variants; see go/geic-metrics-split. -->
     {GlicProvider}.
   </summary>
   <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.SwitchAssistant.Result.{Target}"
+    enum="GlicSwitchAssistantResult" expires_after="2027-07-04">
+  <owner>ssalbiz@google.com</owner>
+  <owner>glic-dev@google.com</owner>
+  <summary>
+    Records the result of a Glic web client request to switch the active
+    assistant provider to {Target} and relaunch the browser. Recorded each time
+    the web client calls switchAssistant. Scope: {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+  <token key="Target" variants="GlicAssistantTarget"/>
 </histogram>
 
 <histogram name="Glic{GlicProvider}.Tab.DaisyChainDepth" units="count"

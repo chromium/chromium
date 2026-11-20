@@ -637,6 +637,7 @@ chromium-metrics-reviews@google.com.
   <int value="112" label="OnOptinRejected"/>
   <int value="113" label="OnUserInputHeldForOnboarding"/>
   <int value="114" label="SetGuestUrlQueryParam"/>
+  <int value="115" label="SwitchAssistant"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/public/glic_api_metrics.h:GlicHostApiRequestId) -->
@@ -1461,6 +1462,17 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/browser_ui/glic_selection_widget_controller.cc:GlicSelectionAction) -->
+
+<!-- LINT.IfChange(GlicSwitchAssistantResult) -->
+
+<enum name="GlicSwitchAssistantResult">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="Error: Not allowed"/>
+  <int value="3" label="Error: Invalid target"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/glic/host/glic.mojom:SwitchAssistantResult) -->
 
 <!-- LINT.IfChange(GlicSwitchConversationTarget) -->
 

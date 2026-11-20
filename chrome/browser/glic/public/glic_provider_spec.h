@@ -253,6 +253,13 @@ class GlicProviderSpec {
   // Whether daisy-chained tabs (e.g. tabs opened via CreateTab or link clicks)
   // are automatically pinned as shared context when bound to a Glic instance.
   virtual bool PinOnBindEnabled() const = 0;
+  // Whether `profile` is currently eligible to switch its active assistant
+  // provider to `target`. Unlike `CanSwitchBetweenGeminiProviders()`, which is
+  // latched at startup for the Settings UI, this checks live policy and profile
+  // eligibility so mid-session policy changes are respected before committing a
+  // restart. Returns false if `profile` is already latched to `target`.
+  virtual bool CanSwitchToProvider(Profile& profile,
+                                   GlicProvider target) const = 0;
 
  private:
   // Implements `GetProviderKey()`.

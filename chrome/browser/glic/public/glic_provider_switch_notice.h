@@ -22,9 +22,10 @@ namespace glic {
 // user last onboarded to. The notice is due when the latched provider differs
 // from it.
 //
-// A switch the user makes themselves from the Glic relaunch prompt or Settings
-// isn't reported: those call `RecordUserInitiatedProviderSwitch()` first,
-// directly or through `SwitchAssistantSelection()`.
+// A switch the user makes themselves from the Glic relaunch prompt, Settings,
+// or the in-panel switch API isn't reported: those call
+// `RecordUserInitiatedProviderSwitch()` first, directly or through
+// `SwitchAssistantSelection()`.
 
 class GlicProviderLatchFactory;
 

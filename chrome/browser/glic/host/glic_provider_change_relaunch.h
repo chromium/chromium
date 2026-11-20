@@ -12,11 +12,14 @@ class Profile;
 
 namespace glic {
 
+// Restarts Chrome immediately to apply a provider change.
+void RestartBrowserNow();
+
 // Relaunches Chrome if `profile` has a pending provider change.
 void MaybeRelaunchForProviderChange(Profile* profile);
 
-// Runs `callback` instead of restarting Chrome in
-// `MaybeRelaunchForProviderChange()` while the returned object is alive.
+// Runs `callback` instead of restarting Chrome in `RestartBrowserNow()` while
+// the returned object is alive.
 [[nodiscard]] base::AutoReset<base::RepeatingClosure>
 SetRestartCallbackForTesting(base::RepeatingClosure callback);
 

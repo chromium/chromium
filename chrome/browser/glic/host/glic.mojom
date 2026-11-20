@@ -1593,6 +1593,12 @@ interface WebClientHandler {
   // tooltip) so Chrome stops considering it visible for ClosedWhileShown
   // tracking.
   OnTooltipHidden();
+
+  // Switches the active assistant selection preference for the current profile
+  // to `options.target` and triggers a browser relaunch if switching is
+  // allowed (advertised via `HostCapability.kSwitchAssistant`).
+  SwitchAssistant(SwitchAssistantOptions options)
+      => (SwitchAssistantResponse response);
 };
 
 // Accesses zero state suggestions from the web client.
@@ -2613,6 +2619,9 @@ enum HostCapability {
   // Indicates that the host supports isolated-world JavaScript execution for
   // browser actuation.
   kExecuteJs = 21,
+  // Indicates that the current profile is eligible to switch to another
+  // assistant provider via switchAssistant().
+  kSwitchAssistant = 22,
 };
 
 // @generate glic_api
@@ -2621,4 +2630,57 @@ enum ClientCapabilities {
   // The glic web client does not use favicons in TabData, so they can
   // be omitted from TabData.
   kIgnoresTabDataFavicons = 0,
+};
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(AssistantTarget)
+// @generate glic_api
+// Target assistant for switching the profile's active assistant provider.
+[Extensible]
+enum AssistantTarget {
+  // Unknown or unsupported target (e.g. sent by a newer web client). Always
+  // rejected.
+  [Default] kUnknown = 0,
+  // Consumer Gemini in Chrome (GiC).
+  kGeminiConsumer = 1,
+  // Gemini Enterprise in Chrome (GEiC).
+  kGeminiEnterprise = 2,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/histograms.xml:GlicAssistantTarget, //chrome/browser/glic/host/glic_assistant_switcher.cc:GlicAssistantTargetSuffix)
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(SwitchAssistantResult)
+// @generate glic_api
+// Result of attempting to switch the active assistant provider.
+enum SwitchAssistantResult {
+  kUnknown = 0,
+  // The assistant selection preference was updated to the requested target and
+  // a browser relaunch was initiated.
+  kSuccess = 1,
+  // Switching to the requested assistant target is not allowed for the current
+  // profile (e.g. no machine-scoped `GeminiEnterpriseUrl` policy,
+  // off-the-record or managed profile, consumer Gemini disabled by
+  // `GeminiSettings` policy, or already latched to the requested target).
+  kErrorNotAllowed = 2,
+  // The requested assistant target is unknown or unsupported.
+  kErrorInvalidTarget = 3,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicSwitchAssistantResult)
+
+// @generate glic_api
+// Options for `SwitchAssistant`.
+struct SwitchAssistantOptions {
+  // The assistant target to switch the current profile to.
+  AssistantTarget target;
+};
+
+// @generate glic_api
+// Response for `SwitchAssistant`. A struct (rather than a bare enum) so that
+// fields can be added later without breaking the glic API's backwards
+// compatibility.
+struct SwitchAssistantResponse {
+  // The result of attempting to switch the active assistant provider.
+  SwitchAssistantResult result;
 };

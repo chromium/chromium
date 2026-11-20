@@ -202,6 +202,7 @@ source_set("browser_tests") {
     "//chrome/browser/glic:impl",
     "//chrome/browser/glic:mojo_bindings",
     "//chrome/browser/glic/public:features",
+    "//chrome/browser/glic/public:provider",
     "//chrome/browser/glic/test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/signin",
@@ -219,6 +220,17 @@ source_set("browser_tests") {
     "//testing/gtest",
     "//url",
   ]
+
+  if (is_win || is_mac || is_linux || is_chromeos) {
+    deps += [
+      "//components/policy:generated",
+      "//components/policy/core/browser",
+      "//components/policy/core/common",
+      "//components/policy/core/common:test_support",
+      "//net:test_support",
+      "//testing/gmock",
+    ]
+  }
 
   if (enterprise_data_controls && !is_android) {
     sources += [ "geic_paste_policy_browsertest.cc" ]

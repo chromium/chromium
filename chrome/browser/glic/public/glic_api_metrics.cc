@@ -224,6 +224,8 @@ std::string_view ToString(GlicHostApiRequestId request_id) {
       return "OnUserInputHeldForOnboarding";
     case GlicHostApiRequestId::kSetGuestUrlQueryParam:
       return "SetGuestUrlQueryParam";
+    case GlicHostApiRequestId::kSwitchAssistant:
+      return "SwitchAssistant";
   }
   return "";
 }

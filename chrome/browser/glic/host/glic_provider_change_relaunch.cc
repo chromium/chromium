@@ -19,12 +19,22 @@ namespace glic {
 
 namespace {
 
-base::RepeatingClosure& RestartCallbackForTesting() {
+base::RepeatingClosure& GetRestartCallbackOverride() {
   static base::NoDestructor<base::RepeatingClosure> callback;
   return *callback;
 }
 
 }  // namespace
+
+void RestartBrowserNow() {
+  if (GetRestartCallbackOverride()) {
+    GetRestartCallbackOverride().Run();
+    return;
+  }
+  // TODO(b/578040846): Warn about open incognito/isolated windows before
+  // relaunching (see BrowserLifetimeHandler).
+  chrome::AttemptRestart();
+}
 
 void MaybeRelaunchForProviderChange(Profile* profile) {
   if (GlicEnabling::GetPendingProviderChange(profile) ==
@@ -37,18 +47,12 @@ void MaybeRelaunchForProviderChange(Profile* profile) {
   // Only `profile` is marked: other profiles that pick up a provider change
   // from this relaunch didn't see the prompt, so they still get the notice.
   RecordUserInitiatedProviderSwitch(*profile);
-  if (RestartCallbackForTesting()) {
-    RestartCallbackForTesting().Run();
-    return;
-  }
-  // TODO(b/578040846): Warn about open incognito/isolated windows before
-  // relaunching (see BrowserLifetimeHandler).
-  chrome::AttemptRestart();
+  RestartBrowserNow();
 }
 
 base::AutoReset<base::RepeatingClosure> SetRestartCallbackForTesting(
     base::RepeatingClosure callback) {
-  return base::AutoReset<base::RepeatingClosure>(&RestartCallbackForTesting(),
+  return base::AutoReset<base::RepeatingClosure>(&GetRestartCallbackOverride(),
                                                  std::move(callback));
 }
 

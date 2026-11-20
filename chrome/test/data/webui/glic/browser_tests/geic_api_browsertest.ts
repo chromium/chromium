@@ -5,9 +5,26 @@
 // cc_file_path: chrome/browser/glic/gemini_enterprise/geic_api_browsertest.cc
 
 import type {GeicBrowserHost} from '/glic/glic_api/glic_api.js';
-import {AuthTabPurpose, CloseAuthTabResult, CloseSignInTabResult, OpenAuthTabResult, OpenSignInTabResult} from '/glic/glic_api/glic_api.js';
+import {                  //
+  AssistantTarget,        //
+  AuthTabPurpose,         //
+  CloseAuthTabResult,     //
+  CloseSignInTabResult,   //
+  HostCapability,         //
+  OpenAuthTabResult,      //
+  OpenSignInTabResult,    //
+  SwitchAssistantResult,  //
+} from '/glic/glic_api/glic_api.js';
 
-import {ApiTestFixtureBase, assertDefined, assertEquals, assertFalse, assertTrue, observeSequence, testMain} from './browser_test_base.js';
+import {               //
+  ApiTestFixtureBase,  //
+  assertDefined,       //
+  assertEquals,        //
+  assertFalse,         //
+  assertTrue,          //
+  observeSequence,     //
+  testMain,            //
+} from './browser_test_base.js';
 
 class GlicGeicApiBrowserTest extends ApiTestFixtureBase {
   override async setUpTest() {
@@ -130,7 +147,6 @@ class GlicGeicApiBrowserTest extends ApiTestFixtureBase {
         (await geic.closeAuthTab({purpose})).result,
         CloseAuthTabResult.NO_AUTH_TAB);
   }
-
   // `window.open()` from the GEiC guest opens a plain tab that the web client
   // can't reach: it returns no window handle, so a popup-based auth flow can't
   // observe or close it. Auth flows must use `openAuthTab()`, whose tab Chrome
@@ -157,6 +173,63 @@ class GlicGeicApiBrowserTest extends ApiTestFixtureBase {
     assertEquals(
         (await geic.closeAuthTab({purpose})).result,
         CloseAuthTabResult.CLOSED_ACTIVE);
+  }
+
+  async testGeicSwitchAssistantNotAllowed() {
+    assertDefined(this.host.getHostCapabilities);
+    assertDefined(this.host.switchAssistant);
+    assertFalse(
+        this.host.getHostCapabilities().has(HostCapability.SWITCH_ASSISTANT));
+
+    // An unknown target is rejected.
+    assertEquals(
+        (await this.host.switchAssistant({target: AssistantTarget.UNKNOWN}))
+            .result,
+        SwitchAssistantResult.ERROR_INVALID_TARGET);
+
+    assertEquals(
+        (await this.host.switchAssistant({
+          target: AssistantTarget.GEMINI_CONSUMER,
+        })).result,
+        SwitchAssistantResult.ERROR_NOT_ALLOWED);
+
+    assertEquals(
+        (await this.host.switchAssistant({
+          target: AssistantTarget.GEMINI_ENTERPRISE,
+        })).result,
+        SwitchAssistantResult.ERROR_NOT_ALLOWED);
+  }
+
+  async testGeicSwitchAssistant() {
+    assertDefined(this.host.getHostCapabilities);
+    assertDefined(this.host.switchAssistant);
+    assertTrue(
+        this.host.getHostCapabilities().has(HostCapability.SWITCH_ASSISTANT));
+
+    assertEquals(
+        (await this.host.switchAssistant({
+          target: AssistantTarget.GEMINI_CONSUMER,
+        })).result,
+        SwitchAssistantResult.SUCCESS);
+  }
+
+  async testSwitchAssistantFromConsumer() {
+    assertDefined(this.host.getHostCapabilities);
+    assertDefined(this.host.switchAssistant);
+    assertFalse(
+        this.host.getHostCapabilities().has(HostCapability.SWITCH_ASSISTANT));
+
+    assertEquals(
+        (await this.host.switchAssistant({
+          target: AssistantTarget.GEMINI_CONSUMER,
+        })).result,
+        SwitchAssistantResult.ERROR_NOT_ALLOWED);
+
+    assertEquals(
+        (await this.host.switchAssistant({
+          target: AssistantTarget.GEMINI_ENTERPRISE,
+        })).result,
+        SwitchAssistantResult.ERROR_NOT_ALLOWED);
   }
 }
 

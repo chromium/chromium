@@ -44,6 +44,7 @@
 #include "chrome/browser/glic/host/glic.mojom-shared.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_annotation_manager.h"
+#include "chrome/browser/glic/host/glic_assistant_switcher.h"
 #include "chrome/browser/glic/host/glic_client_data_storage.h"
 #include "chrome/browser/glic/host/glic_cookie_synchronizer.h"
 #include "chrome/browser/glic/host/glic_page_handler.h"
@@ -1622,6 +1623,12 @@ class GlicWebClientHandler
   void OnTooltipHidden() override {
     LogApiRequest(GlicHostApiRequestId::kOnTooltipHidden);
     host().instance_metrics().OnTooltipHidden();
+  }
+
+  void SwitchAssistant(mojom::SwitchAssistantOptionsPtr options,
+                       SwitchAssistantCallback callback) override {
+    LogApiRequest(GlicHostApiRequestId::kSwitchAssistant);
+    glic::SwitchAssistant(*profile_, options->target, std::move(callback));
   }
 
   void SetSyntheticExperimentState(const std::string& trial_name,

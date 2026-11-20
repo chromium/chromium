@@ -106,6 +106,8 @@ export import Skill = generated.Skill;
 export import SkillPreview = generated.SkillPreview;
 export import SkillsPayload = generated.SkillsPayload;
 export import SuggestionContent = generated.SuggestionContent;
+export import SwitchAssistantOptions = generated.SwitchAssistantOptions;
+export import SwitchAssistantResponse = generated.SwitchAssistantResponse;
 export import TabContextOptions = generated.TabContextOptions;
 export import TabContextResult = generated.TabContextResult;
 export import TabData = generated.TabData;
@@ -126,6 +128,7 @@ export import ActorTaskState = generated.ActorTaskState;
 export import ActorTaskStopReason = generated.ActorTaskStopReason;
 export import ActuationTarget = generated.ActuationTarget;
 export import AdditionalContextSource = generated.AdditionalContextSource;
+export import AssistantTarget = generated.AssistantTarget;
 export import AuthTabPurpose = generated.AuthTabPurpose;
 export import CancelActionsResult = generated.CancelActionsResult;
 export import CaptureRegionErrorReason = generated.CaptureRegionErrorReason;
@@ -168,6 +171,7 @@ export import ScrollToErrorReason = generated.ScrollToErrorReason;
 export import SettingsPageField = generated.SettingsPageField;
 export import SkillSource = generated.SkillSource;
 export import SkillsWebClientEvent = generated.SkillsWebClientEvent;
+export import SwitchAssistantResult = generated.SwitchAssistantResult;
 export import SwitchConversationErrorReason =
     generated.SwitchConversationErrorReason;
 export import TaskDuration = generated.TaskDuration;
@@ -1442,6 +1446,27 @@ export declare interface GlicBrowserHost {
    * silently ignored as a no-op.
    */
   setGuestUrlQueryParam?(key: string, value: string|null): Promise<void>;
+
+  /**
+   * Switches the active assistant selection preference for the current profile
+   * to `options.target` and triggers a browser relaunch if switching is
+   * allowed.
+   *
+   * Callers should check
+   * `getHostCapabilities()?.has(HostCapability.SWITCH_ASSISTANT)` before
+   * presenting switching UI. Note that `HostCapability.SWITCH_ASSISTANT` is
+   * snapshotted when the web client initializes and `switchAssistant()`
+   * re-checks live eligibility on the browser side, so callers should still
+   * handle `SwitchAssistantResult.ERROR_NOT_ALLOWED` if policy changes
+   * mid-session.
+   *
+   * Not available in older Chrome versions.
+   *
+   * @param options The assistant target to switch to.
+   * @returns The response, whose `result` is the outcome of the switch attempt.
+   */
+  switchAssistant?
+      (options: SwitchAssistantOptions): Promise<SwitchAssistantResponse>;
 }
 
 /**

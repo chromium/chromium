@@ -9,6 +9,7 @@ import type {PageMetadata as PageMetadataMojo} from '../ai_page_content_metadata
 import {ContentSettingsType} from '../content_settings_types.mojom-webui.js';
 import {enumFromClient, enumToClient} from '../enum_conversions.js';
 import {                                               //
+  AssistantTarget as AssistantTargetMojo,              //
   CaptureRegionObserverReceiver,                       //
   PinCandidatesObserverReceiver,                       //
   PromptType as PromptTypeMojo,                        //
@@ -80,6 +81,8 @@ import type {                                  //
              PromptType,                       //
              ResizeWindowOptions,              //
              SendTabToSelfDevice,              //
+             SwitchAssistantOptions,           //
+             SwitchAssistantResponse,          //
              TabContextOptions,                //
              TabContextResult,                 //
              TabData,                          //
@@ -1068,6 +1071,20 @@ export class GlicBrowserHostImpl implements GlicBrowserHost,
 
   getGeicClient(): GeicBrowserHost {
     return this.geicClient;
+  }
+
+  // `options` and `target` are typed as required, but untyped JS callers may
+  // omit them. Fall back to kUnknown (rejected by the browser) rather than
+  // sending null for a non-nullable mojo field, which would close the pipe.
+  // Unrecognized numeric targets (e.g. from a newer web client) are passed
+  // through as-is; the browser deserializes them to kUnknown because
+  // `AssistantTarget` is [Extensible], and rejects them.
+  async switchAssistant?
+      (options: SwitchAssistantOptions): Promise<SwitchAssistantResponse> {
+    const {response} = await this.handler.switchAssistant({
+      target: enumFromClient(options?.target) ?? AssistantTargetMojo.kUnknown,
+    });
+    return {result: enumToClient(response.result)};
   }
 
   setSyntheticExperimentState(trialName: string, groupName: string): void {
