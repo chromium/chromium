@@ -39,7 +39,7 @@ export function getHtml(this: VoiceSelectionDialogElement) {
           ${group.language}
         </div>
         ${group.voices.map((voiceItem, voiceIndex) => html`
-          <div class="voice-row">
+          <div class="voice-row" @keydown="${this.onVoiceRowKeydown_}">
             <!-- LEFT: Play/Stop Preview Button & Adjacent Spinner -->
             <div class="preview-group">
               <cr-icon-button id="preview-icon"

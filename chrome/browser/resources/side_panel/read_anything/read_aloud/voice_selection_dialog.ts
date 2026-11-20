@@ -17,6 +17,7 @@ import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {ToolbarEvent} from '../content/read_anything_types.js';
 import {spinnerDebounceTimeout} from '../shared/common.js';
+import {isBackwardArrow, isForwardArrow, isHorizontalArrow} from '../shared/keyboard_util.js';
 
 import type {AudioBrowserProxy} from './audio_browser_proxy.js';
 import {AudioBrowserProxyImpl} from './audio_browser_proxy.js';
@@ -182,13 +183,20 @@ export class VoiceSelectionDialogElement extends CrLitElement implements
             '#preview-icon[tabindex="0"]') ??
         cancelButton;
     const activeElement = this.shadowRoot.activeElement;
+    const isPreviewFocused = activeElement?.id === 'preview-icon';
 
     if (e.shiftKey) {
-      if (activeElement === firstFocusable ||
+      if (isPreviewFocused || activeElement === firstFocusable ||
           activeElement === this.$.voiceSelectionDialog) {
         e.preventDefault();
         saveButton.focus();
       }
+    } else if (isPreviewFocused && activeElement !== firstFocusable) {
+      e.preventDefault();
+      (this.$.voiceRadioGroup.querySelector<HTMLElement>(
+           'cr-radio-button[checked]') ??
+       this.$.voiceRadioGroup.querySelector<HTMLElement>('cr-radio-button'))
+          ?.focus();
     } else if (activeElement === saveButton) {
       e.preventDefault();
       firstFocusable.focus();
@@ -227,6 +235,51 @@ export class VoiceSelectionDialogElement extends CrLitElement implements
                                                                              -1;
   }
 
+  protected onVoiceRowKeydown_(e: KeyboardEvent) {
+    // Let tab and vertical arrow key events pass through since those events
+    // don't affect navigation within a voice row.
+    if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey ||
+        !(e.target instanceof HTMLElement) || !isHorizontalArrow(e.key)) {
+      return;
+    }
+
+    // Only handle key events from the row's focusable controls (preview icon
+    // button or radio button).
+    const isPreview = e.target.id === 'preview-icon';
+    const isRadio = e.target.tagName === 'CR-RADIO-BUTTON';
+    if (!isPreview && !isRadio) {
+      return;
+    }
+
+    // Stop cr-radio-group from using horizontal arrows to cycle rows.
+    e.preventDefault();
+    e.stopPropagation();
+    const row = e.currentTarget as HTMLElement;
+    if (isPreview && isForwardArrow(e.key)) {
+      // Return focus to this row's radio button so screen readers announce the
+      // voice option. If focus started on an unselected row's preview button
+      // (e.g. via mouse), stage that voice so radio selection and roving
+      // tabindex stay in sync.
+      const voice = this.getVoiceItemForPreview_(e.target)?.voice;
+      if (voice && !areVoicesEqual(this.candidateVoice_, voice)) {
+        this.candidateVoice_ = voice;
+      }
+      row.querySelector<HTMLElement>('cr-radio-button')?.focus();
+    } else if (isRadio && isBackwardArrow(e.key)) {
+      // Unselected preview buttons use tabindex="-1" to keep Tab concise, so
+      // focus #preview-icon explicitly to let keyboard and screen-reader users
+      // reach this voice's preview button and hear its voice-specific label.
+      row.querySelector<HTMLElement>('#preview-icon')?.focus();
+    }
+  }
+
+  private getVoiceItemForPreview_(previewButton: HTMLElement): VoiceDropdownItem
+      |undefined {
+    const groupIndex = Number(previewButton.dataset['groupIndex']);
+    const voiceIndex = Number(previewButton.dataset['voiceIndex']);
+    return this.voiceGroups_[groupIndex]?.voices[voiceIndex];
+  }
+
   protected onVoiceRadioGroupSelectedChanged_(e: CustomEvent<{value: string}>) {
     const selectedVoiceName = e.detail.value;
     if (!selectedVoiceName) {
@@ -244,10 +297,8 @@ export class VoiceSelectionDialogElement extends CrLitElement implements
   protected onVoicePreviewClick_(e: Event) {
     e.stopImmediatePropagation();
 
-    const currentTarget = e.currentTarget as HTMLElement;
-    const groupIndex = Number(currentTarget.dataset['groupIndex']);
-    const voiceIndex = Number(currentTarget.dataset['voiceIndex']);
-    const voiceItem = this.voiceGroups_[groupIndex]?.voices[voiceIndex];
+    const voiceItem =
+        this.getVoiceItemForPreview_(e.currentTarget as HTMLElement);
     if (!voiceItem) {
       return;
     }

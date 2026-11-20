@@ -66,6 +66,25 @@ suite('VoiceSelectionDialog', () => {
         '#voiceRadioGroup')!;
   }
 
+  function getSaveButton(): CrButtonElement {
+    return dialog.$.voiceSelectionDialog.querySelector<CrButtonElement>(
+        '#saveButton')!;
+  }
+
+  function dispatchKeyDown(
+      target: HTMLElement, key: string,
+      options?: KeyboardEventInit): KeyboardEvent {
+    const event = new KeyboardEvent('keydown', {
+      key,
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+      ...options,
+    });
+    target.dispatchEvent(event);
+    return event;
+  }
+
   function getGroupTitles(): NodeListOf<HTMLElement> {
     return dialog.$.voiceSelectionDialog.querySelectorAll<HTMLElement>(
         '.lang-group-title');
@@ -93,7 +112,6 @@ suite('VoiceSelectionDialog', () => {
       previewTooltip: 'Preview voice',
       previewVoiceLabel: 'Preview $1',
       stopLabel: 'Stop preview',
-      readingModeLanguageMenuItemLabel: 'Select $1',
       readingModeVoiceMenuDownloading: 'Downloading $1',
     });
 
@@ -186,9 +204,11 @@ suite('VoiceSelectionDialog', () => {
 
         const selectedPreview = getPreviewButtonForVoice(googleNaturalVoice);
         const unselectedPreview = getPreviewButtonForVoice(googleStandardVoice);
+        const italianPreview = getPreviewButtonForVoice(googleItalianVoice);
 
         assertEquals('0', selectedPreview.getAttribute('tabindex'));
         assertEquals('-1', unselectedPreview.getAttribute('tabindex'));
+        assertEquals('-1', italianPreview.getAttribute('tabindex'));
       });
 
   test(
@@ -344,11 +364,9 @@ suite('VoiceSelectionDialog', () => {
         await drawDialog();
 
         const naturalPreview = getPreviewButtonForVoice(googleNaturalVoice);
-
-        assertEquals('0', naturalPreview.getAttribute('tabindex'));
-
         const standardPreview = getPreviewButtonForVoice(googleStandardVoice);
 
+        assertEquals('0', naturalPreview.getAttribute('tabindex'));
         assertEquals('-1', standardPreview.getAttribute('tabindex'));
       });
 
@@ -633,22 +651,16 @@ suite('VoiceSelectionDialog', () => {
   });
 
   test('Tab on Save button wraps focus to active preview button', async () => {
+    // Override setup()'s row 0 default to verify wrap targets the active row.
+    dialog.selectedVoice = googleStandardVoice;
     await drawDialog();
-    const saveButton =
-        dialog.$.voiceSelectionDialog.querySelector<CrButtonElement>(
-            '#saveButton')!;
-    const activePreview = getPreviewButtonForVoice(googleNaturalVoice);
+    const saveButton = getSaveButton();
+    const activePreview = getPreviewButtonForVoice(googleStandardVoice);
 
     saveButton.focus();
     assertEquals(saveButton, dialog.shadowRoot.activeElement);
 
-    const tabEvent = new KeyboardEvent('keydown', {
-      key: 'Tab',
-      bubbles: true,
-      cancelable: true,
-      composed: true,
-    });
-    saveButton.dispatchEvent(tabEvent);
+    const tabEvent = dispatchKeyDown(saveButton, 'Tab');
 
     assertTrue(tabEvent.defaultPrevented);
     assertEquals(activePreview, dialog.shadowRoot.activeElement);
@@ -657,22 +669,16 @@ suite('VoiceSelectionDialog', () => {
   test(
       'Shift+Tab on active preview button wraps focus to Save button',
       async () => {
+        // Select row 1 (not setup()'s row 0) so row 0 precedes activePreview.
+        dialog.selectedVoice = googleStandardVoice;
         await drawDialog();
-        const saveButton =
-            dialog.$.voiceSelectionDialog.querySelector<CrButtonElement>(
-                '#saveButton')!;
-        const activePreview = getPreviewButtonForVoice(googleNaturalVoice);
+        const saveButton = getSaveButton();
+        const activePreview = getPreviewButtonForVoice(googleStandardVoice);
 
         assertEquals(
             dialog.$.voiceSelectionDialog, dialog.shadowRoot.activeElement);
-        const initialShiftTab = new KeyboardEvent('keydown', {
-          key: 'Tab',
-          shiftKey: true,
-          bubbles: true,
-          cancelable: true,
-          composed: true,
-        });
-        dialog.$.voiceSelectionDialog.dispatchEvent(initialShiftTab);
+        const initialShiftTab = dispatchKeyDown(
+            dialog.$.voiceSelectionDialog, 'Tab', {shiftKey: true});
 
         assertTrue(initialShiftTab.defaultPrevented);
         assertEquals(saveButton, dialog.shadowRoot.activeElement);
@@ -680,17 +686,126 @@ suite('VoiceSelectionDialog', () => {
         activePreview.focus();
         assertEquals(activePreview, dialog.shadowRoot.activeElement);
 
-        const previewShiftTab = new KeyboardEvent('keydown', {
-          key: 'Tab',
-          shiftKey: true,
-          bubbles: true,
-          cancelable: true,
-          composed: true,
-        });
-        activePreview.dispatchEvent(previewShiftTab);
+        const previewShiftTab =
+            dispatchKeyDown(activePreview, 'Tab', {shiftKey: true});
 
         assertTrue(previewShiftTab.defaultPrevented);
         assertEquals(saveButton, dialog.shadowRoot.activeElement);
+      });
+
+  test(
+      'Tab and Shift+Tab from mouse-focused unselected preview button' +
+          ' preserve 4-stop loop',
+      async () => {
+        // Select middle row 1 so unselected rows exist both above and below.
+        dialog.selectedVoice = googleStandardVoice;
+        await drawDialog();
+        const saveButton = getSaveButton();
+        const firstPreview = getPreviewButtonForVoice(googleNaturalVoice);
+        const standardRadio = getDropdownItemForVoice(googleStandardVoice);
+        const italianPreview = getPreviewButtonForVoice(googleItalianVoice);
+
+        // Unselected preview buttons both above (firstPreview) and below
+        // (italianPreview) the active row wrap Shift+Tab to Save and move Tab
+        // to the active radio without mutating candidate selection.
+        for (const preview of [firstPreview, italianPreview]) {
+          preview.focus();
+          const shiftTab = dispatchKeyDown(preview, 'Tab', {shiftKey: true});
+          assertTrue(shiftTab.defaultPrevented);
+          assertEquals(saveButton, dialog.shadowRoot.activeElement);
+          assertEquals(googleStandardVoice.name, getRadioGroup().selected);
+
+          preview.focus();
+          const tab = dispatchKeyDown(preview, 'Tab');
+          assertTrue(tab.defaultPrevented);
+          assertEquals(standardRadio, dialog.shadowRoot.activeElement);
+          assertEquals(
+              standardRadio.$.button, standardRadio.shadowRoot.activeElement);
+          assertEquals(googleStandardVoice.name, getRadioGroup().selected);
+        }
+
+        // Missing candidate (!hasSelectedVoice_): Tab from mouse-focused
+        // non-first preview falls back to first visible radio (Radio[0]).
+        dialog.selectedVoice =
+            createSpeechSynthesisVoice({name: 'Missing Voice', lang: 'fr-FR'});
+        await microtasksFinished();
+        const naturalRadio = getDropdownItemForVoice(googleNaturalVoice);
+        italianPreview.focus();
+        const tabMissingCandidate = dispatchKeyDown(italianPreview, 'Tab');
+        assertTrue(tabMissingCandidate.defaultPrevented);
+        assertEquals(naturalRadio, dialog.shadowRoot.activeElement);
+        assertEquals(
+            naturalRadio.$.button, naturalRadio.shadowRoot.activeElement);
+      });
+
+  test(
+      'horizontal arrow keys switch focus between preview button and radio' +
+          ' button in the same row while vertical arrows on preview do not' +
+          ' change selection',
+      async () => {
+        await drawDialog();
+
+        const naturalPreview = getPreviewButtonForVoice(googleNaturalVoice);
+        const naturalRadio = getDropdownItemForVoice(googleNaturalVoice);
+        const standardPreview = getPreviewButtonForVoice(googleStandardVoice);
+        const standardRadio = getDropdownItemForVoice(googleStandardVoice);
+        const italianPreview = getPreviewButtonForVoice(googleItalianVoice);
+        const italianRadio = getDropdownItemForVoice(googleItalianVoice);
+
+        // Vertical arrow on preview button does not hijack focus or selection
+        naturalPreview.focus();
+        dispatchKeyDown(naturalPreview, 'ArrowDown');
+        assertEquals(naturalPreview, dialog.shadowRoot.activeElement);
+        assertEquals(googleNaturalVoice.name, getRadioGroup().selected);
+
+        // Active row (k = m): ArrowRight -> radio, ArrowLeft -> preview
+        dispatchKeyDown(naturalPreview, 'ArrowRight');
+        assertEquals(naturalRadio, dialog.shadowRoot.activeElement);
+        assertEquals(googleNaturalVoice.name, getRadioGroup().selected);
+
+        dispatchKeyDown(naturalRadio, 'ArrowLeft');
+        assertEquals(naturalPreview, dialog.shadowRoot.activeElement);
+
+        // Unselected row (k != m): backward arrow stays on preview; forward
+        // arrow moves to row's radio, stages it, and syncs roving tabindex.
+        standardPreview.focus();
+        dispatchKeyDown(standardPreview, 'ArrowLeft');
+        assertEquals(standardPreview, dialog.shadowRoot.activeElement);
+        assertEquals(googleNaturalVoice.name, getRadioGroup().selected);
+
+        dispatchKeyDown(standardPreview, 'ArrowRight');
+        await microtasksFinished();
+        assertEquals(standardRadio, dialog.shadowRoot.activeElement);
+        assertEquals(googleStandardVoice.name, getRadioGroup().selected);
+        assertEquals('0', standardPreview.getAttribute('tabindex'));
+        assertEquals('-1', naturalPreview.getAttribute('tabindex'));
+
+        // Forward arrow on radio button stays on radio button without cycling
+        dispatchKeyDown(standardRadio, 'ArrowRight');
+        await microtasksFinished();
+        assertEquals(standardRadio, dialog.shadowRoot.activeElement);
+        assertEquals(googleStandardVoice.name, getRadioGroup().selected);
+
+        // Backward arrow on radio button moves back to row's preview button
+        dispatchKeyDown(standardRadio, 'ArrowLeft');
+        assertEquals(standardPreview, dialog.shadowRoot.activeElement);
+        assertEquals(googleStandardVoice.name, getRadioGroup().selected);
+
+        // RTL: ArrowLeft is forward (preview -> radio), ArrowRight is backward
+        document.documentElement.dir = 'rtl';
+        try {
+          italianPreview.focus();
+          dispatchKeyDown(italianPreview, 'ArrowLeft');
+          await microtasksFinished();
+          assertEquals(italianRadio, dialog.shadowRoot.activeElement);
+          assertEquals(googleItalianVoice.name, getRadioGroup().selected);
+          assertEquals('0', italianPreview.getAttribute('tabindex'));
+
+          dispatchKeyDown(italianRadio, 'ArrowRight');
+          assertEquals(italianPreview, dialog.shadowRoot.activeElement);
+        } finally {
+          document.documentElement.dir = '';
+        }
       });
 
   test(
