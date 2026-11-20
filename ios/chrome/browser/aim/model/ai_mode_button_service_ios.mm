@@ -66,6 +66,7 @@ CGFloat GetAimButtonIconPointSize() {
     case AimButtonRefactorArm::kFocusComposeboxAimQuickAction:
     case AimButtonRefactorArm::kImageGenerationQuickAction:
     case AimButtonRefactorArm::kAttachImageQuickAction:
+    case AimButtonRefactorArm::kGenerateAndAttachQuickActions:
     case AimButtonRefactorArm::kDisabled:
       return IsNewTabPageUICleanupEnabled()
                  ? kQuickActionsSymbolPointSizeUICleanup

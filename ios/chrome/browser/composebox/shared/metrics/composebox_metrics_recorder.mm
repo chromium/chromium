@@ -136,13 +136,11 @@ std::string GetStringForEntrypoint(ComposeboxEntrypoint entrypoint) {
   switch (entrypoint) {
     case ComposeboxEntrypoint::kNTPAIMButton:
       return ".NTPAIMButton";
-    case ComposeboxEntrypoint::kNTPAttachImageButton: {
-      AimButtonRefactorArm arm = GetAimButtonRefactorArm();
-      CHECK(arm == AimButtonRefactorArm::kAttachImageQuickAction ||
-            arm == AimButtonRefactorArm::kImageGenerationQuickAction);
+    case ComposeboxEntrypoint::kNTPAttachImageButton:
+      CHECK(AreAimMerchandisingQuickActionsEnabled());
       return ".NTPAttachImageButton";
-    }
     case ComposeboxEntrypoint::kNTPImageGenerationButton:
+      CHECK(IsImageGenerationQuickActionEnabled());
       return ".NTPImageGenerationButton";
     case ComposeboxEntrypoint::kNTPFakebox:
       return ".NTPFakebox";

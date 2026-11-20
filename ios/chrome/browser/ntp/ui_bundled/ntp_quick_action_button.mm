@@ -143,8 +143,7 @@ UIImage* IconForSymbolWithLayoutType(Symbol symbol,
 
 + (instancetype)aimImageGenerationButton:
     (NTPQuickActionButtonLayout)layoutType {
-  CHECK_EQ(GetAimButtonRefactorArm(),
-           AimButtonRefactorArm::kImageGenerationQuickAction);
+  CHECK(IsImageGenerationQuickActionEnabled());
   return [[NTPQuickActionButton alloc]
                    initWithTitle:GetNSString(IDS_IOS_NTP_QUICK_ACTIONS_CREATE)
                             icon:IconForSymbolWithLayoutType(SymbolImageCreate,
@@ -161,9 +160,7 @@ UIImage* IconForSymbolWithLayoutType(Symbol symbol,
 }
 
 + (instancetype)aimAttachImageButton:(NTPQuickActionButtonLayout)layoutType {
-  AimButtonRefactorArm arm = GetAimButtonRefactorArm();
-  CHECK(arm == AimButtonRefactorArm::kImageGenerationQuickAction ||
-        arm == AimButtonRefactorArm::kAttachImageQuickAction);
+  CHECK(AreAimMerchandisingQuickActionsEnabled());
   return [[NTPQuickActionButton alloc]
                    initWithTitle:GetNSString(IDS_IOS_NTP_QUICK_ACTIONS_ADD)
                             icon:IconForSymbolWithLayoutType(

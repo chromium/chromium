@@ -74,20 +74,13 @@
 }
 
 - (void)recordAIMImageGenerationButtonTapped {
-  if (GetAimButtonRefactorArm() !=
-      AimButtonRefactorArm::kImageGenerationQuickAction) {
-    return;
-  }
+  CHECK(IsImageGenerationQuickActionEnabled());
   base::RecordAction(
       base::UserMetricsAction(kNTPAIMImageGenerationButtonTappedAction));
 }
 
 - (void)recordAIMAttachImageButtonTapped {
-  AimButtonRefactorArm arm = GetAimButtonRefactorArm();
-  if (arm != AimButtonRefactorArm::kImageGenerationQuickAction &&
-      arm != AimButtonRefactorArm::kAttachImageQuickAction) {
-    return;
-  }
+  CHECK(AreAimMerchandisingQuickActionsEnabled());
   base::RecordAction(
       base::UserMetricsAction(kNTPAIMAttachImageButtonTappedAction));
 }

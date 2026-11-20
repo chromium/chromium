@@ -103,14 +103,13 @@ const CGFloat kSnackbarBottomMargin = 10;
 contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
     ComposeboxEntrypoint entrypoint) {
   switch (entrypoint) {
-    case ComposeboxEntrypoint::kNTPAttachImageButton: {
-      AimButtonRefactorArm arm = GetAimButtonRefactorArm();
-      CHECK(arm == AimButtonRefactorArm::kAttachImageQuickAction ||
-            arm == AimButtonRefactorArm::kImageGenerationQuickAction);
+    case ComposeboxEntrypoint::kNTPAttachImageButton:
+      CHECK(AreAimMerchandisingQuickActionsEnabled());
       return contextual_search::ContextualSearchSource::kNewTabPage;
-    }
-    case ComposeboxEntrypoint::kNTPAIMButton:
     case ComposeboxEntrypoint::kNTPImageGenerationButton:
+      CHECK(IsImageGenerationQuickActionEnabled());
+      return contextual_search::ContextualSearchSource::kNewTabPage;
+    case ComposeboxEntrypoint::kNTPAIMButton:
     case ComposeboxEntrypoint::kNTPPlusButton:
       return contextual_search::ContextualSearchSource::kNewTabPage;
     case ComposeboxEntrypoint::kNTPFakebox:

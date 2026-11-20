@@ -152,6 +152,36 @@ AimButtonRefactorArm GetAimButtonRefactorArm() {
   return AimButtonRefactorArm::kDisabled;
 }
 
+bool IsImageGenerationQuickActionEnabled() {
+  switch (GetAimButtonRefactorArm()) {
+    case AimButtonRefactorArm::kImageGenerationQuickAction:
+    case AimButtonRefactorArm::kGenerateAndAttachQuickActions:
+      return true;
+    case AimButtonRefactorArm::kAttachImageQuickAction:
+    case AimButtonRefactorArm::kFocusComposeboxAimQuickAction:
+    case AimButtonRefactorArm::kAimAsModule:
+    case AimButtonRefactorArm::kAimAsMvt:
+    case AimButtonRefactorArm::kNoChips:
+    case AimButtonRefactorArm::kDisabled:
+      return false;
+  }
+}
+
+bool AreAimMerchandisingQuickActionsEnabled() {
+  switch (GetAimButtonRefactorArm()) {
+    case AimButtonRefactorArm::kImageGenerationQuickAction:
+    case AimButtonRefactorArm::kAttachImageQuickAction:
+    case AimButtonRefactorArm::kGenerateAndAttachQuickActions:
+      return true;
+    case AimButtonRefactorArm::kFocusComposeboxAimQuickAction:
+    case AimButtonRefactorArm::kAimAsModule:
+    case AimButtonRefactorArm::kAimAsMvt:
+    case AimButtonRefactorArm::kNoChips:
+    case AimButtonRefactorArm::kDisabled:
+      return false;
+  }
+}
+
 bool IsConsistentLogoDoodleHeightEnabled() {
   return base::FeatureList::IsEnabled(kConsistentLogoDoodleHeight);
 }

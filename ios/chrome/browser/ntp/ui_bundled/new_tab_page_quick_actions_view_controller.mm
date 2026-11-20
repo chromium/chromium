@@ -79,9 +79,7 @@ constexpr CGFloat kCompactButtonWidth = 80.0;
 
 - (void)setAIMImageGenerationAllowed:(BOOL)imageGenerationAllowed
                  attachImagesAllowed:(BOOL)attachmentsAllowed {
-  AimButtonRefactorArm arm = GetAimButtonRefactorArm();
-  CHECK(arm == AimButtonRefactorArm::kImageGenerationQuickAction ||
-        arm == AimButtonRefactorArm::kAttachImageQuickAction);
+  CHECK(AreAimMerchandisingQuickActionsEnabled());
   if (imageGenerationAllowed == _aimImageGenerationAllowed &&
       attachmentsAllowed == _aimAttachImagesAllowed) {
     return;
@@ -143,7 +141,8 @@ constexpr CGFloat kCompactButtonWidth = 80.0;
       ]];
       break;
     }
-    case AimButtonRefactorArm::kImageGenerationQuickAction: {
+    case AimButtonRefactorArm::kImageGenerationQuickAction:
+    case AimButtonRefactorArm::kGenerateAndAttachQuickActions: {
       _aimButton = [NTPQuickActionButton
           aimButtonWithTitle:_aimTitle
                         icon:_aimIcon
@@ -227,8 +226,7 @@ constexpr CGFloat kCompactButtonWidth = 80.0;
         constraintEqualToConstant:QuickActionsHeight()],
   ]];
 
-  if (arm == AimButtonRefactorArm::kImageGenerationQuickAction ||
-      arm == AimButtonRefactorArm::kAttachImageQuickAction) {
+  if (AreAimMerchandisingQuickActionsEnabled()) {
     [self registerForTraitChanges:@[
       UITraitHorizontalSizeClass.class, UITraitVerticalSizeClass.class
     ]
@@ -253,6 +251,7 @@ constexpr CGFloat kCompactButtonWidth = 80.0;
       stackView.distribution = UIStackViewDistributionFillEqually;
       break;
     case AimButtonRefactorArm::kImageGenerationQuickAction:
+    case AimButtonRefactorArm::kGenerateAndAttachQuickActions:
     case AimButtonRefactorArm::kAimAsModule:
     case AimButtonRefactorArm::kAimAsMvt:
     case AimButtonRefactorArm::kNoChips:
@@ -264,52 +263,77 @@ constexpr CGFloat kCompactButtonWidth = 80.0;
 // Updates the visibility of the Quick Action buttons based on eligibility and
 // policy.
 - (void)updateButtonVisibility {
-  AimButtonRefactorArm arm = GetAimButtonRefactorArm();
-  if (arm == AimButtonRefactorArm::kImageGenerationQuickAction) {
-    BOOL showAttachImagesButton =
-        !_aimImageGenerationAllowed && _aimAttachImagesAllowed;
-    BOOL showIncognitoSearchButton =
-        _incognitoAllowed && !showAttachImagesButton;
+  switch (GetAimButtonRefactorArm()) {
+    case AimButtonRefactorArm::kImageGenerationQuickAction: {
+      BOOL showAttachImagesButton =
+          !_aimImageGenerationAllowed && _aimAttachImagesAllowed;
+      BOOL showIncognitoSearchButton =
+          _incognitoAllowed && !showAttachImagesButton;
 
-    if (!showIncognitoSearchButton) {
-      // Deactivate the fixed width constraint before hiding so `UIStackView`'s
-      // hiding constraint does not transiently conflict with it.
-      _incognitoSearchButtonWidthConstraint.active = NO;
+      if (!showIncognitoSearchButton) {
+        // Deactivate the fixed width constraint before hiding so
+        // `UIStackView`'s hiding constraint does not transiently conflict with
+        // it.
+        _incognitoSearchButtonWidthConstraint.active = NO;
+      }
+      _aimImageGenerationButton.hidden = !_aimImageGenerationAllowed;
+      _aimAttachImageButton.hidden = !showAttachImagesButton;
+      _incognitoSearchButton.hidden = !showIncognitoSearchButton;
+
+      [self updateButtonStackConstraints];
+      return;
     }
-    _aimImageGenerationButton.hidden = !_aimImageGenerationAllowed;
-    _aimAttachImageButton.hidden = !showAttachImagesButton;
-    _incognitoSearchButton.hidden = !showIncognitoSearchButton;
+    case AimButtonRefactorArm::kAttachImageQuickAction: {
+      BOOL showAttachImagesButton = _aimAttachImagesAllowed;
+      BOOL showIncognitoSearchButton =
+          _incognitoAllowed && !showAttachImagesButton;
 
-    [self updateButtonStackConstraints];
-    return;
-  }
+      if (!showIncognitoSearchButton) {
+        // Deactivate the fixed width constraint before hiding so
+        // `UIStackView`'s hiding constraint does not transiently conflict with
+        // it.
+        _incognitoSearchButtonWidthConstraint.active = NO;
+      }
+      _aimAttachImageButton.hidden = !showAttachImagesButton;
+      _incognitoSearchButton.hidden = !showIncognitoSearchButton;
 
-  if (arm == AimButtonRefactorArm::kAttachImageQuickAction) {
-    BOOL showAttachImagesButton = _aimAttachImagesAllowed;
-    BOOL showIncognitoSearchButton =
-        _incognitoAllowed && !showAttachImagesButton;
-
-    if (!showIncognitoSearchButton) {
-      // Deactivate the fixed width constraint before hiding so `UIStackView`'s
-      // hiding constraint does not transiently conflict with it.
-      _incognitoSearchButtonWidthConstraint.active = NO;
+      [self updateButtonStackConstraints];
+      return;
     }
-    _aimAttachImageButton.hidden = !showAttachImagesButton;
-    _incognitoSearchButton.hidden = !showIncognitoSearchButton;
+    case AimButtonRefactorArm::kGenerateAndAttachQuickActions: {
+      BOOL showAttachImagesButton = _aimAttachImagesAllowed;
+      BOOL showIncognitoSearchButton =
+          _incognitoAllowed && !showAttachImagesButton;
 
-    [self updateButtonStackConstraints];
-    return;
+      if (!showIncognitoSearchButton) {
+        // Deactivate the fixed width constraint before hiding so
+        // `UIStackView`'s hiding constraint does not transiently conflict with
+        // it.
+        _incognitoSearchButtonWidthConstraint.active = NO;
+      }
+      _aimImageGenerationButton.hidden = !_aimImageGenerationAllowed;
+      _aimAttachImageButton.hidden = !showAttachImagesButton;
+      _incognitoSearchButton.hidden = !showIncognitoSearchButton;
+
+      [self updateButtonStackConstraints];
+      return;
+    }
+    case AimButtonRefactorArm::kFocusComposeboxAimQuickAction:
+    case AimButtonRefactorArm::kDisabled:
+      _incognitoSearchButton.hidden = !_incognitoAllowed;
+      return;
+    case AimButtonRefactorArm::kNoChips:
+    case AimButtonRefactorArm::kAimAsModule:
+    case AimButtonRefactorArm::kAimAsMvt:
+      // No quick actions row.
+      NOTREACHED();
   }
-
-  _incognitoSearchButton.hidden = !_incognitoAllowed;
 }
 
 // Updates the horizontal constraints for the button stack view based on the
 // layout environment.
 - (void)updateButtonStackConstraints {
-  AimButtonRefactorArm arm = GetAimButtonRefactorArm();
-  CHECK(arm == AimButtonRefactorArm::kImageGenerationQuickAction ||
-        arm == AimButtonRefactorArm::kAttachImageQuickAction);
+  CHECK(AreAimMerchandisingQuickActionsEnabled());
   NSUInteger numberOfVisibleButtons = [self numberOfVisibleButtons];
 
   BOOL showAllButtonTitles =
@@ -356,15 +380,12 @@ constexpr CGFloat kCompactButtonWidth = 80.0;
 }
 
 - (void)didTapAIMImageGenerationButton {
-  CHECK_EQ(GetAimButtonRefactorArm(),
-           AimButtonRefactorArm::kImageGenerationQuickAction);
+  CHECK(IsImageGenerationQuickActionEnabled());
   [self.NTPShortcutsHandler openAIMImageGeneration];
 }
 
 - (void)didTapAIMAttachImageButton {
-  AimButtonRefactorArm arm = GetAimButtonRefactorArm();
-  CHECK(arm == AimButtonRefactorArm::kAttachImageQuickAction ||
-        arm == AimButtonRefactorArm::kImageGenerationQuickAction);
+  CHECK(AreAimMerchandisingQuickActionsEnabled());
   [self.NTPShortcutsHandler openAIMAttachImage];
 }
 

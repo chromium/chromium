@@ -539,9 +539,7 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
 
 - (void)setComposeboxInputStateManager:
     (ComposeboxInputStateManager*)composeboxInputStateManager {
-  AimButtonRefactorArm arm = GetAimButtonRefactorArm();
-  if (arm != AimButtonRefactorArm::kImageGenerationQuickAction &&
-      arm != AimButtonRefactorArm::kAttachImageQuickAction) {
+  if (!AreAimMerchandisingQuickActionsEnabled()) {
     return;
   }
 
@@ -675,13 +673,13 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
   _backgroundCustomizationService = nullptr;
   _imageFetcherService = nullptr;
   self.placeholderService = nullptr;
-  AimButtonRefactorArm arm = GetAimButtonRefactorArm();
-  if (arm == AimButtonRefactorArm::kImageGenerationQuickAction ||
-      arm == AimButtonRefactorArm::kAttachImageQuickAction) {
+
+  if (AreAimMerchandisingQuickActionsEnabled()) {
     [self.composeboxInputStateManager disconnect];
     self.composeboxInputStateManager.delegate = nil;
     self.composeboxInputStateManager = nil;
   }
+
   _fullscreenBrowserAgentObserverBridge.reset();
   _fullscreenBrowserAgent = nullptr;
   [_bottomOmniboxEnabled stop];
@@ -775,8 +773,7 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
   _signedInIdentity = self.authService->GetPrimaryIdentity();
   [self updateAccountImage];
   [self updateAccountErrorBadge];
-  if (GetAimButtonRefactorArm() ==
-      AimButtonRefactorArm::kImageGenerationQuickAction) {
+  if (IsImageGenerationQuickActionEnabled()) {
     [self updateAIMQuickActionsAvailability];
   }
 }
@@ -905,9 +902,7 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
     aimAllowed = _aiModeButtonServiceIOS->IsButtonAvailable();
   }
 
-  AimButtonRefactorArm arm = GetAimButtonRefactorArm();
-  if (arm == AimButtonRefactorArm::kImageGenerationQuickAction ||
-      arm == AimButtonRefactorArm::kAttachImageQuickAction) {
+  if (AreAimMerchandisingQuickActionsEnabled()) {
     [self updateAIMQuickActionsAvailability];
   } else {
     BOOL fuseboxEligible = NO;
@@ -943,9 +938,7 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
 // Updates the availability of the AI Mode buttons in the Quick Actions row
 // based on tool and input state availability.
 - (void)updateAIMQuickActionsAvailability {
-  AimButtonRefactorArm arm = GetAimButtonRefactorArm();
-  CHECK(arm == AimButtonRefactorArm::kImageGenerationQuickAction ||
-        arm == AimButtonRefactorArm::kAttachImageQuickAction);
+  CHECK(AreAimMerchandisingQuickActionsEnabled());
 
   BOOL fuseboxEligible = [self.composeboxInputStateManager isEligibleToAIM];
 
@@ -953,10 +946,8 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
       [self.composeboxInputStateManager computeUIInputStateWithFavicon:nil
                                                    attachedWebStateIDs:{}];
   BOOL imageGenerationAllowed =
-      arm == AimButtonRefactorArm::kAttachImageQuickAction
-          ? NO
-          : _signedInIdentity &&
-                [inputState isToolAvailable:ComposeboxMode::kImageGeneration];
+      IsImageGenerationQuickActionEnabled() && _signedInIdentity &&
+      [inputState isToolAvailable:ComposeboxMode::kImageGeneration];
   BOOL attachImagesAllowed =
       [inputState isAttachmentAvailable:ComposeboxAttachmentOption::kGallery] &&
       inputState.remainingNumberOfImagesAllowed > 0;
@@ -1295,9 +1286,7 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
 
 - (void)inputStateManagerDidUpdateUIState:
     (ComposeboxInputStateManager*)manager {
-  AimButtonRefactorArm arm = GetAimButtonRefactorArm();
-  if (arm != AimButtonRefactorArm::kImageGenerationQuickAction &&
-      arm != AimButtonRefactorArm::kAttachImageQuickAction) {
+  if (!AreAimMerchandisingQuickActionsEnabled()) {
     return;
   }
   [self updateAIMQuickActionsAvailability];

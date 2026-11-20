@@ -321,9 +321,7 @@ constexpr CGFloat kPadFormSheetMinHeight = 300.0;
     _quickActionsViewController.NTPShortcutsHandler = self.NTPShortcutsHandler;
     [_quickActionsViewController setIncognitoAllowed:_incognitoAllowed];
 
-    AimButtonRefactorArm arm = GetAimButtonRefactorArm();
-    if (arm == AimButtonRefactorArm::kImageGenerationQuickAction ||
-        arm == AimButtonRefactorArm::kAttachImageQuickAction) {
+    if (AreAimMerchandisingQuickActionsEnabled()) {
       [_quickActionsViewController
           setAIMImageGenerationAllowed:_aimImageGenerationAllowed
                    attachImagesAllowed:_aimAttachImagesAllowed];
@@ -1464,9 +1462,7 @@ constexpr CGFloat kPadFormSheetMinHeight = 300.0;
 
 - (void)setAIMImageGenerationAllowed:(BOOL)imageGenerationAllowed
                  attachImagesAllowed:(BOOL)attachmentsAllowed {
-  AimButtonRefactorArm arm = GetAimButtonRefactorArm();
-  CHECK(arm == AimButtonRefactorArm::kImageGenerationQuickAction ||
-        arm == AimButtonRefactorArm::kAttachImageQuickAction);
+  CHECK(AreAimMerchandisingQuickActionsEnabled());
   if (imageGenerationAllowed == _aimImageGenerationAllowed &&
       attachmentsAllowed == _aimAttachImagesAllowed) {
     return;

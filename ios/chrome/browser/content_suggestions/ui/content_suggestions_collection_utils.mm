@@ -465,6 +465,7 @@ bool ShouldRedistributeHeaderSpace() {
     case AimButtonRefactorArm::kFocusComposeboxAimQuickAction:
     case AimButtonRefactorArm::kImageGenerationQuickAction:
     case AimButtonRefactorArm::kAttachImageQuickAction:
+    case AimButtonRefactorArm::kGenerateAndAttachQuickActions:
     case AimButtonRefactorArm::kDisabled:
       return false;
     case AimButtonRefactorArm::kAimAsModule:

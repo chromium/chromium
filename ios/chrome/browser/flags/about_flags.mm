@@ -1215,6 +1215,9 @@ constexpr FeatureEntry::FeatureParam kAimButtonRefactorAimAsMvt[] = {
     {kAimButtonRefactorArmParam, "5"}};
 constexpr FeatureEntry::FeatureParam kAimButtonRefactorNoChips[] = {
     {kAimButtonRefactorArmParam, "6"}};
+constexpr FeatureEntry::FeatureParam
+    kAimButtonRefactorGenerateAndAttachQuickActions[] = {
+        {kAimButtonRefactorArmParam, "7"}};
 
 constexpr FeatureEntry::FeatureVariation kAimButtonRefactorVariations[] = {
     {" - Focus Composebox AIM Quick Action",
@@ -1226,6 +1229,8 @@ constexpr FeatureEntry::FeatureVariation kAimButtonRefactorVariations[] = {
     {" - AIM as Module", kAimButtonRefactorAimAsModule, nullptr},
     {" - AIM as MVT", kAimButtonRefactorAimAsMvt, nullptr},
     {" - No Chips", kAimButtonRefactorNoChips, nullptr},
+    {" - Generate and Attach Quick Actions",
+     kAimButtonRefactorGenerateAndAttachQuickActions, nullptr},
 };
 
 constexpr FeatureEntry::FeatureParam

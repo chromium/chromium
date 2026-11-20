@@ -52,6 +52,9 @@ enum class AimButtonRefactorArm {
   kAimAsMvt = 5,
   // Remove the AIM button and the Quick Actions row from the NTP.
   kNoChips = 6,
+  // Present the AIM button in the Quick Actions row alongside both image
+  // generation and attach images chips.
+  kGenerateAndAttachQuickActions = 7,
 };
 
 #pragma mark - Feature declarations
@@ -158,6 +161,14 @@ bool IsAimEnabledInNtp();
 
 // Returns the active arm for the AimButtonRefactor feature.
 AimButtonRefactorArm GetAimButtonRefactorArm();
+
+// Whether the current AimButtonRefactor arm surfaces the image generation quick
+// action chip.
+bool IsImageGenerationQuickActionEnabled();
+
+// Whether the current AimButtonRefactor arm surfaces any AIM merchandising
+// quick action chips (image generation or attach image).
+bool AreAimMerchandisingQuickActionsEnabled();
 
 // Whether the NTP Logo and Doodle should have a consistent height.
 bool IsConsistentLogoDoodleHeightEnabled();

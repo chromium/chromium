@@ -585,6 +585,7 @@
     case AimButtonRefactorArm::kFocusComposeboxAimQuickAction:
     case AimButtonRefactorArm::kImageGenerationQuickAction:
     case AimButtonRefactorArm::kAttachImageQuickAction:
+    case AimButtonRefactorArm::kGenerateAndAttachQuickActions:
       [_composeboxInputStateManager disconnect];
       _composeboxInputStateManager = nil;
       _contextualSearchSession.reset();
@@ -778,17 +779,14 @@
   [self stopSigninCoordinator];
   [self dismissCustomizationMenu];
   [self dismissMultimodalActionsMenu];
-  AimButtonRefactorArm arm = GetAimButtonRefactorArm();
-  if (arm == AimButtonRefactorArm::kAttachImageQuickAction ||
-      arm == AimButtonRefactorArm::kImageGenerationQuickAction) {
+
+  if (AreAimMerchandisingQuickActionsEnabled()) {
     [self dismissComposeboxPicker];
   }
 }
 
 - (void)dismissComposeboxPicker {
-  AimButtonRefactorArm arm = GetAimButtonRefactorArm();
-  CHECK(arm == AimButtonRefactorArm::kAttachImageQuickAction ||
-        arm == AimButtonRefactorArm::kImageGenerationQuickAction);
+  CHECK(AreAimMerchandisingQuickActionsEnabled());
   [_composeboxPickerPresenter dismissPicker];
   _composeboxPickerPresenter.delegate = nil;
   _composeboxPickerPresenter = nil;
@@ -903,6 +901,7 @@
     case AimButtonRefactorArm::kFocusComposeboxAimQuickAction:
     case AimButtonRefactorArm::kImageGenerationQuickAction:
     case AimButtonRefactorArm::kAttachImageQuickAction:
+    case AimButtonRefactorArm::kGenerateAndAttachQuickActions:
       [self createComposeboxInputStateManager];
       break;
     case AimButtonRefactorArm::kAimAsModule:
@@ -915,10 +914,9 @@
 
 // Create instance of composeboxInputStateManager for AIM quick actions.
 - (void)createComposeboxInputStateManager {
-  AimButtonRefactorArm arm = GetAimButtonRefactorArm();
-  CHECK(arm == AimButtonRefactorArm::kFocusComposeboxAimQuickAction ||
-        arm == AimButtonRefactorArm::kAttachImageQuickAction ||
-        arm == AimButtonRefactorArm::kImageGenerationQuickAction);
+  CHECK(AreAimMerchandisingQuickActionsEnabled() ||
+        GetAimButtonRefactorArm() ==
+            AimButtonRefactorArm::kFocusComposeboxAimQuickAction);
 
   ProfileIOS* profile = self.browser->GetProfile();
 
@@ -1087,9 +1085,7 @@
     NTPMediator.imageUpdater = self.headerView;
   }
   NTPMediator.logoMediator = _searchEngineLogoMediator;
-  AimButtonRefactorArm arm = GetAimButtonRefactorArm();
-  if (arm == AimButtonRefactorArm::kImageGenerationQuickAction ||
-      arm == AimButtonRefactorArm::kAttachImageQuickAction) {
+  if (AreAimMerchandisingQuickActionsEnabled()) {
     NTPMediator.composeboxInputStateManager = _composeboxInputStateManager;
   }
 
@@ -2523,6 +2519,7 @@
       return NO;
     case AimButtonRefactorArm::kAttachImageQuickAction:
     case AimButtonRefactorArm::kImageGenerationQuickAction:
+    case AimButtonRefactorArm::kGenerateAndAttachQuickActions:
     case AimButtonRefactorArm::kFocusComposeboxAimQuickAction:
       return [_composeboxInputStateManager isEligibleToAIM];
   }
@@ -2560,9 +2557,7 @@
 // selecting from the gallery.
 - (void)openComposeboxWithImages:
     (NSArray<ComposeboxPickerImageResult*>*)images {
-  AimButtonRefactorArm arm = GetAimButtonRefactorArm();
-  CHECK(arm == AimButtonRefactorArm::kAttachImageQuickAction ||
-        arm == AimButtonRefactorArm::kImageGenerationQuickAction);
+  CHECK(AreAimMerchandisingQuickActionsEnabled());
   CHECK_GT(images.count, 0u);
   [self dismissComposeboxPicker];
 
@@ -2698,8 +2693,7 @@
 }
 
 - (void)openAIMImageGeneration {
-  CHECK_EQ(GetAimButtonRefactorArm(),
-           AimButtonRefactorArm::kImageGenerationQuickAction);
+  CHECK(IsImageGenerationQuickActionEnabled());
   RecordHomeAction(IOSHomeActionType::kQuickActionAIMImageGeneration,
                    [self isStartSurface]);
   [self.NTPMetricsRecorder recordAIMImageGenerationButtonTapped];
@@ -2712,9 +2706,7 @@
 }
 
 - (void)openAIMAttachImage {
-  AimButtonRefactorArm arm = GetAimButtonRefactorArm();
-  CHECK(arm == AimButtonRefactorArm::kAttachImageQuickAction ||
-        arm == AimButtonRefactorArm::kImageGenerationQuickAction);
+  CHECK(AreAimMerchandisingQuickActionsEnabled());
   RecordHomeAction(IOSHomeActionType::kQuickActionAIMAttachImage,
                    [self isStartSurface]);
   [self.NTPMetricsRecorder recordAIMAttachImageButtonTapped];
@@ -2865,9 +2857,7 @@
 - (void)composeboxPickerPresenter:(ComposeboxPickerPresenter*)presenter
                     didPickImages:
                         (NSArray<ComposeboxPickerImageResult*>*)results {
-  AimButtonRefactorArm arm = GetAimButtonRefactorArm();
-  CHECK(arm == AimButtonRefactorArm::kAttachImageQuickAction ||
-        arm == AimButtonRefactorArm::kImageGenerationQuickAction);
+  CHECK(AreAimMerchandisingQuickActionsEnabled());
   CHECK_EQ(_composeboxPickerPresenter, presenter);
   CHECK_GT(results.count, 0u);
 
