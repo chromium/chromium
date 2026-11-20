@@ -166,6 +166,7 @@
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/slot_assignment.h"
 #include "third_party/blink/renderer/core/dom/slot_assignment_recalc_forbidden_scope.h"
+#include "third_party/blink/renderer/core/dom/slot_assignment_recalc_in_progress_scope.h"
 #include "third_party/blink/renderer/core/dom/space_split_string.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/dom/user_action_element_traversal.h"
@@ -4617,7 +4618,8 @@ void Element::SetIsInCanvasSubtree(
   if (propagation_behavior == CanvasSubtreePropagation::kOnlyIfChanged &&
       value == IsInCanvasSubtree()) {
 #if DCHECK_IS_ON()
-    if (!GetDocument().IsSlotAssignmentRecalcForbidden()) {
+    if (!GetDocument().IsSlotAssignmentRecalcForbidden() &&
+        !SlotAssignmentRecalcInProgressScope::IsActive()) {
       VerifySubtreeIsInCanvas(value);
     }
 #endif

@@ -93,8 +93,10 @@ void ThrowStackOverflowException(
 
 void ThrowScriptForbiddenException(v8::Isolate* isolate) {
   // Script must not run during slot assignment recalc (rule R1 in
-  // slot_assignment.h). Attempting it is a violation even where script is
-  // forbidden, since the caller expected the script to run.
+  // slot_assignment.h). SlotAssignmentRecalcInProgressScope forbids script, so
+  // every attempt to run script during recalc ends up here. Attempting it is a
+  // violation even though it is blocked, since the caller expected the script
+  // to run.
   SlotAssignmentRecalcInProgressScope::CheckNotActiveIfMainThread(
       SlotAssignmentInvariant::kNoScriptOrEventDispatch);
   V8ThrowException::ThrowError(isolate, "Script execution is forbidden.");

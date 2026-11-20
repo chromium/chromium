@@ -66,9 +66,11 @@ class ShadowRoot;
 //     (pass 1, where flat tree traversal is forbidden), because that data is
 //     only partly updated.
 //
-// R1-R5 and R7 are checked by SlotAssignmentRecalcInProgressScope. R6 is
-// checked indirectly: a side effect that reads a dirty shadow root triggers a
-// re-entrant recalc (R4), and reading partly updated data violates R7.
+// R1-R5 and R7 are checked in release builds by
+// SlotAssignmentRecalcInProgressScope, behind the
+// EnforceSlotAssignmentInvariants feature. R6 is checked indirectly: a side
+// effect that reads a dirty shadow root triggers a re-entrant recalc (R4), and
+// reading partly updated data violates R7.
 //
 // Recalc hooks
 // ------------
