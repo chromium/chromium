@@ -135,14 +135,14 @@ class SvgMarkupTheme {
 class ViewHighlight extends SvgMarkupItem {
   static ROLE = MARKUP_ROLE.HIGHLIGHT;
   static {
-    SvgMarkupTheme.registerCss(this.ROLE, ['> rect'], ['stroke'], ['fill']);
+    SvgMarkupTheme.registerCss(this.ROLE, ['> path'], ['stroke'], ['fill']);
   }
 
   constructor() {
     super(g_svg.init('g').get());
 
     this.rectElt =
-        g_svg.init('rect').strokeWidth('1').strokeDasharray('2,2').get();
+        g_svg.init('path').strokeWidth('1').strokeDasharray('2,2').get();
 
     g_svg.edit(this.root).append(this.rectElt);
 
@@ -155,7 +155,7 @@ class ViewHighlight extends SvgMarkupItem {
     const sTop = visOpts.w2sFloor(this.rect.top);
     const sRight = visOpts.w2sFloor(this.rect.right);
     const sBottom = visOpts.w2sFloor(this.rect.bottom);
-    g_svg.edit(this.rectElt).innerRect(sLeft, sTop, sRight, sBottom);
+    g_svg.edit(this.rectElt).pathInnerRect(sLeft, sTop, sRight, sBottom);
   }
 
   /**

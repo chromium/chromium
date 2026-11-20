@@ -46,15 +46,31 @@ class SvgEditor {
   }
 
   /**
-   * Given integer rectangle pixel (boundary) coordinates, sizes <rect>
-   * (assumed selected) to fit within with sharp boundaries (if 1px thick).
+   * Given integer rectangle pixel (boundary) coordinates, updates <path>
+   * (assumed selected) to render an inner rectangle with sharp boundaries (if
+   * 1px thick), degrading to a 1px line for thin rectangles and an empty path
+   * for zero-area rectangles.
+   * @param {number} iLeft
+   * @param {number} iTop
+   * @param {number} iRight
+   * @param {number} iBottom
    * @return {!SvgEditor}
    */
-  innerRect(iLeft, iTop, iRight, iBottom) {
-    return this.attr('x', iLeft + 0.5)
-        .attr('y', iTop + 0.5)
-        .attr('width', iRight - iLeft - 1)
-        .attr('height', iBottom - iTop - 1);
+  pathInnerRect(iLeft, iTop, iRight, iBottom) {
+    const w = iRight - iLeft;
+    const h = iBottom - iTop;
+    let d = '';
+    if (w >= 2 && h >= 2) {
+      d = `M${iLeft + 0.5} ${iTop + 0.5}` +
+          ` H${iRight - 0.5} V${iBottom - 0.5} H${iLeft + 0.5} Z`;
+    } else if (w >= 1 && h >= 0 && h <= 1) {
+      // Degenerate horizontal line (or 1x1 pixel when w === 1).
+      d = `M${iLeft} ${iTop + 0.5} H${iRight}`;
+    } else if (h >= 1 && w >= 0 && w <= 1) {
+      // Degenerate vertical line.
+      d = `M${iLeft + 0.5} ${iTop} V${iBottom}`;
+    }
+    return this.attr('d', d);
   }
 
   /**

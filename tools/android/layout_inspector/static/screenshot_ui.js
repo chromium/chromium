@@ -152,10 +152,10 @@ class ScreenshotVis {
     }
 
     const st = this.el.inner.style;
-    const [sw, sh] = this.visOpts.sDims;
-    st.setProperty('--screenshot-width', `${Math.round(sw)}px`);
-    st.setProperty('--screenshot-height', `${Math.round(sh)}px`);
-    g_svg.edit(this.el.svgMarkup).viewBoxDims(...this.visOpts.sDims);
+    const [sw, sh] = this.visOpts.sDims.map(Math.round);
+    st.setProperty('--screenshot-width', `${sw}px`);
+    st.setProperty('--screenshot-height', `${sh}px`);
+    g_svg.edit(this.el.svgMarkup).viewBoxDims(sw, sh);
   }
 
   /**
@@ -202,7 +202,6 @@ class ScreenshotVis {
 
   updateScale() {
     this._applyRescale();
-    this.hoverHighlight.redraw(this.visOpts);
   }
 }
 
@@ -226,15 +225,20 @@ class ScreenshotController {
     this._bindAll();
   }
 
+  _updateScaleAndInfo() {
+    this.vis.withTransaction(() => {
+      this.vis.updateScale();
+      this.vis.screenshotInfoVis.update();
+    });
+  }
+
   clear() {
     this.vis.clear();
   }
 
   initScreenshot() {
     this.vis.setScreenshot(this.model.imgScreenshot);
-    this.vis.withTransaction(() => {
-      this.vis.updateScale();
-    });
+    this._updateScaleAndInfo();
   }
 
   setHover(index) {
@@ -242,10 +246,7 @@ class ScreenshotController {
   }
 
   updateZoom() {
-    this.vis.withTransaction(() => {
-      this.vis.updateScale();
-      this.vis.screenshotInfoVis.update();
-    });
+    this._updateScaleAndInfo();
   }
 
   _bindViewportResize() {
