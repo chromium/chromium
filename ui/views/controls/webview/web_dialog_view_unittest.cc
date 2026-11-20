@@ -144,6 +144,10 @@ class WebDialogViewUnitTest : public views::test::WidgetTest {
 
   void ResetWebDialogDelegate() { web_dialog_delegate_.reset(); }
 
+  void DisableUrlLoadForTest(WebDialogView* view) {
+    view->disable_url_load_for_test_ = true;
+  }
+
   content::BrowserContext* browser_context() { return browser_context_.get(); }
 
  protected:
@@ -322,6 +326,33 @@ TEST_F(WebDialogViewUnitTest, WebDialogViewClosedFromWebUI) {
   WaitForWidgetDestroyed();
 
   EXPECT_EQ("{\"closed\":true}", web_dialog_delegate()->closed_json_retval());
+}
+
+TEST_F(WebDialogViewUnitTest, AddingDescendantViewDoesNotReinitDialog) {
+  ASSERT_EQ(web_dialog_view(),
+            web_dialog_view()->web_contents()->GetDelegate());
+  web_dialog_view()->web_contents()->SetDelegate(nullptr);
+
+  // Adding a descendant view after the dialog is attached to a widget must not
+  // re-run dialog initialization.
+  web_dialog_view()->AddChildView(std::make_unique<View>());
+  EXPECT_EQ(nullptr, web_dialog_view()->web_contents()->GetDelegate());
+}
+
+TEST_F(WebDialogViewUnitTest, AddingToParentViewBeforeWidget) {
+  TestWebDialogViewWebDialogDelegate delegate;
+  auto parent = std::make_unique<View>();
+  auto* dialog = parent->AddChildView(std::make_unique<WebDialogView>(
+      browser_context(), &delegate,
+      std::make_unique<ui::test::TestWebContentsHandler>()));
+  DisableUrlLoadForTest(dialog);
+  EXPECT_EQ(nullptr, dialog->web_contents());
+
+  std::unique_ptr<Widget> widget =
+      CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
+  widget->SetContentsView(std::move(parent));
+  ASSERT_NE(nullptr, dialog->web_contents());
+  EXPECT_EQ(dialog, dialog->web_contents()->GetDelegate());
 }
 
 }  // namespace views
