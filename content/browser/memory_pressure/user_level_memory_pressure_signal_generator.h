@@ -53,17 +53,10 @@ class UserLevelMemoryPressureSignalGenerator
   void StartPeriodicTimer(base::TimeDelta interval);
   void OnTimerFired();
 
-  void StartReportingTimer();
-  void OnReportingTimerFired();
-
   static base::ByteSize
   GetTotalPrivateFootprintVisibleOrHigherPriorityRenderers();
 
   void HandleMemoryPressureLevel(base::MemoryPressureLevel level);
-
-  static void ReportBeforeAfterMetrics(
-      base::ByteSize total_pmf_visible_or_higher_priority_renderers,
-      const char* suffix_name);
 
   static std::optional<base::ByteSize> GetPrivateFootprint(
       const base::Process& process);
@@ -75,7 +68,6 @@ class UserLevelMemoryPressureSignalGenerator
   base::TimeDelta measure_interval_;
   base::TimeDelta minimum_interval_;
   base::OneShotTimer periodic_measuring_timer_;
-  base::OneShotTimer delayed_report_timer_;
 
   base::MemoryPressureLevel current_level_ = base::MEMORY_PRESSURE_LEVEL_NONE;
 

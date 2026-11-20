@@ -20,11 +20,9 @@
 #include "base/memory/memory_pressure_level.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/process/process.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_restrictions.h"
@@ -163,33 +161,10 @@ void UserLevelMemoryPressureSignalGenerator::OnTimerFired() {
   if (total_pmf > memory_threshold_) {
     level = base::MEMORY_PRESSURE_LEVEL_CRITICAL;
     interval = minimum_interval_;
-
-    ReportBeforeAfterMetrics(total_pmf, "Before");
-    StartReportingTimer();
   }
 
   HandleMemoryPressureLevel(level);
   StartPeriodicTimer(interval);
-}
-
-void UserLevelMemoryPressureSignalGenerator::StartReportingTimer() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Don't try to start the timer in tests that don't support it.
-  if (!base::SequencedTaskRunner::HasCurrentDefault()) {
-    return;
-  }
-  delayed_report_timer_.Start(
-      FROM_HERE, base::Seconds(10),
-      base::BindOnce(
-          &UserLevelMemoryPressureSignalGenerator::OnReportingTimerFired,
-          base::Unretained(this)));
-}
-
-void UserLevelMemoryPressureSignalGenerator::OnReportingTimerFired() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::ByteSize total_pmf =
-      GetTotalPrivateFootprintVisibleOrHigherPriorityRenderers();
-  ReportBeforeAfterMetrics(total_pmf, "After");
 }
 
 // static
@@ -272,20 +247,6 @@ void UserLevelMemoryPressureSignalGenerator::HandleMemoryPressureLevel(
   current_level_ = level;
   SetCurrentVote(level);
   SendCurrentVote(true);
-}
-
-// static
-void UserLevelMemoryPressureSignalGenerator::ReportBeforeAfterMetrics(
-    base::ByteSize total_pmf_visible_or_higher_priority_renderers,
-    const char* suffix_name) {
-  std::string metric_name_total_pmf_visible_or_higher_priority_renderers =
-      base::StringPrintf(
-          "Memory.Experimental.UserLevelMemoryPressureSignal."
-          "TotalPrivateMemoryFootprintVisibleOrHigherPriorityRenderers%s",
-          suffix_name);
-  base::UmaHistogramMemoryLargeMB(
-      metric_name_total_pmf_visible_or_higher_priority_renderers,
-      total_pmf_visible_or_higher_priority_renderers);
 }
 
 namespace {
