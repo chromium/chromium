@@ -42,6 +42,7 @@ import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProviderSupplier;
@@ -92,6 +93,7 @@ public class TipsUtilsUnitTest {
         mWindowAndroid = new WindowAndroid(mActivity, /* occlusionTrackingAllowed= */ false);
         TipsSchedulerBridgeJni.setInstanceForTesting(mTipsSchedulerBridgeJni);
         when(mProfileProvider.getOriginalProfile()).thenReturn(mProfile);
+        NotificationProxyUtils.setNotificationEnabledForTest(true);
     }
 
     @After
@@ -413,17 +415,18 @@ public class TipsUtilsUnitTest {
     public void testShouldShowTipsOptInPromo_AllConditionsMet() {
         assertTrue(
                 TipsUtils.shouldShowTipsOptInPromo(
-                        /* notificationsEnabled= */ false,
+                        /* tipsChannelCreated= */ false,
                         mSharedPreferences,
                         /* timeSinceLastBackgroundedMs= */ TimeUnit.HOURS.toMillis(
                                 TipsUtils.APP_BACKGROUNDED_HOURS_FOR_PROMO + 1)));
     }
 
     @Test
-    public void testShouldShowTipsOptInPromo_NotificationsEnabled() {
+    public void testShouldShowTipsOptInPromo_TipsChannelCreated() {
+        // The channel exists once the user accepted (enabled) or declined (blocked) the promo.
         assertFalse(
                 TipsUtils.shouldShowTipsOptInPromo(
-                        /* notificationsEnabled= */ true,
+                        /* tipsChannelCreated= */ true,
                         mSharedPreferences,
                         /* timeSinceLastBackgroundedMs= */ TimeUnit.HOURS.toMillis(
                                 TipsUtils.APP_BACKGROUNDED_HOURS_FOR_PROMO + 1)));
@@ -437,7 +440,7 @@ public class TipsUtilsUnitTest {
 
         assertFalse(
                 TipsUtils.shouldShowTipsOptInPromo(
-                        /* notificationsEnabled= */ false,
+                        /* tipsChannelCreated= */ false,
                         mSharedPreferences,
                         /* timeSinceLastBackgroundedMs= */ TimeUnit.HOURS.toMillis(
                                 TipsUtils.APP_BACKGROUNDED_HOURS_FOR_PROMO + 1)));
@@ -451,7 +454,7 @@ public class TipsUtilsUnitTest {
 
         assertFalse(
                 TipsUtils.shouldShowTipsOptInPromo(
-                        /* notificationsEnabled= */ false,
+                        /* tipsChannelCreated= */ false,
                         mSharedPreferences,
                         /* timeSinceLastBackgroundedMs= */ TimeUnit.HOURS.toMillis(
                                 TipsUtils.APP_BACKGROUNDED_HOURS_FOR_PROMO + 1)));
@@ -473,7 +476,7 @@ public class TipsUtilsUnitTest {
 
         assertTrue(
                 TipsUtils.shouldShowTipsOptInPromo(
-                        /* notificationsEnabled= */ false,
+                        /* tipsChannelCreated= */ false,
                         mSharedPreferences,
                         /* timeSinceLastBackgroundedMs= */ TimeUnit.HOURS.toMillis(
                                 TipsUtils.APP_BACKGROUNDED_HOURS_FOR_PROMO + 1)));
@@ -494,7 +497,7 @@ public class TipsUtilsUnitTest {
 
         assertFalse(
                 TipsUtils.shouldShowTipsOptInPromo(
-                        /* notificationsEnabled= */ false,
+                        /* tipsChannelCreated= */ false,
                         mSharedPreferences,
                         /* timeSinceLastBackgroundedMs= */ TimeUnit.HOURS.toMillis(
                                 TipsUtils.APP_BACKGROUNDED_HOURS_FOR_PROMO + 1)));
@@ -507,19 +510,43 @@ public class TipsUtilsUnitTest {
         ChromeFeatureList.USER_EDUCATION_INTERRUPTIVE_COOLDOWN_GROUP
     })
     public void testMaybeShowTipsOptInPromo_CooldownGroupEnabledAndNullProfile_DoesNotShow() {
+        maybeShowTipsOptInPromo(/* profile= */ null);
+
+        verify(mOnShowCallback, never()).onResult(any());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_TIPS_NOTIFICATIONS)
+    @DisableFeatures(ChromeFeatureList.USER_EDUCATION_INTERRUPTIVE_COOLDOWN_GROUP)
+    public void testMaybeShowTipsOptInPromo_ConditionsMet_Shows() {
+        maybeShowTipsOptInPromo(mProfile);
+
+        verify(mOnShowCallback).onResult(any());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_TIPS_NOTIFICATIONS)
+    @DisableFeatures(ChromeFeatureList.USER_EDUCATION_INTERRUPTIVE_COOLDOWN_GROUP)
+    public void testMaybeShowTipsOptInPromo_AppNotificationsDisabled_DoesNotShow() {
         NotificationProxyUtils.setNotificationEnabledForTest(false);
 
+        maybeShowTipsOptInPromo(mProfile);
+
+        verify(mOnShowCallback, never()).onResult(any());
+    }
+
+    private void maybeShowTipsOptInPromo(@Nullable Profile profile) {
         TipsUtils.maybeShowTipsOptInPromo(
                 mActivity,
-                /* profile= */ null,
+                profile,
                 mock(BottomSheetController.class),
                 mock(SnackbarManager.class),
                 mSharedPreferences,
                 /* timeSinceLastBackgroundedMs= */ TimeUnit.HOURS.toMillis(
                         TipsUtils.APP_BACKGROUNDED_HOURS_FOR_PROMO + 1),
                 mOnShowCallback);
-
-        verify(mOnShowCallback, never()).onResult(any());
+        // Let the asynchronous channel lookup finish.
+        ShadowLooper.idleMainLooper();
     }
 
     @Test
@@ -534,7 +561,7 @@ public class TipsUtilsUnitTest {
 
         assertFalse(
                 TipsUtils.shouldShowTipsOptInPromo(
-                        /* notificationsEnabled= */ false,
+                        /* tipsChannelCreated= */ false,
                         mSharedPreferences,
                         /* timeSinceLastBackgroundedMs= */ TimeUnit.HOURS.toMillis(
                                 TipsUtils.APP_BACKGROUNDED_HOURS_FOR_PROMO + 1)));
@@ -544,7 +571,7 @@ public class TipsUtilsUnitTest {
     public void testShouldShowTipsOptInPromo_TimeSinceBackgroundedTooShort() {
         assertFalse(
                 TipsUtils.shouldShowTipsOptInPromo(
-                        /* notificationsEnabled= */ false,
+                        /* tipsChannelCreated= */ false,
                         mSharedPreferences,
                         /* timeSinceLastBackgroundedMs= */ TimeUnit.HOURS.toMillis(
                                 TipsUtils.APP_BACKGROUNDED_HOURS_FOR_PROMO - 1)));

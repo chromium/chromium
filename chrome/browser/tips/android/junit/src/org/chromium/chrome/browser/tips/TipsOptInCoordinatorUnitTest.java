@@ -10,8 +10,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyBoolean;
-import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -52,6 +52,7 @@ import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitio
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tips.TipsOptInCoordinator.TipsOptInSheetContent;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
@@ -112,9 +113,13 @@ public class TipsOptInCoordinatorUnitTest {
     public void testShowBottomSheet() {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
-                        "Notifications.Tips.OptInPromo.EventType2",
+                        "Notifications.Tips.OptInPromo.EventType3",
                         TipsOptInCoordinator.OptInPromoEventType.SHOWN);
 
+        mTipsOptInCoordinator.showBottomSheet();
+        verify(mBottomSheetController).requestShowContent(any(), eq(true));
+
+        // Nothing is counted until the sheet opens.
         assertEquals(
                 -1,
                 mSharedPreferenceManager.readInt(TIPS_NOTIFICATIONS_OPT_IN_PROMO_SHOW_COUNT, -1));
@@ -123,8 +128,7 @@ public class TipsOptInCoordinatorUnitTest {
                 mSharedPreferenceManager.readLong(
                         TIPS_NOTIFICATIONS_OPT_IN_PROMO_LAST_SHOWN_TIMESTAMP, -1L));
 
-        mTipsOptInCoordinator.showBottomSheet();
-        verify(mBottomSheetController).requestShowContent(any(), eq(true));
+        openSheet();
 
         assertEquals(
                 1,
@@ -158,47 +162,148 @@ public class TipsOptInCoordinatorUnitTest {
     @Test
     public void testSheetContent_onBackPressed() {
         HistogramWatcher histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Notifications.Tips.OptInPromo.EventType2",
-                        TipsOptInCoordinator.OptInPromoEventType.IGNORED);
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                "Notifications.Tips.OptInPromo.EventType3",
+                                TipsOptInCoordinator.OptInPromoEventType.SHOWN,
+                                TipsOptInCoordinator.OptInPromoEventType.IGNORED)
+                        .build();
 
+        openSheet();
         mBottomSheetContent.onBackPressed();
-        verify(mBottomSheetController).hideContent(any(), eq(true));
+        verify(mBottomSheetController)
+                .hideContent(any(), eq(true), eq(StateChangeReason.BACK_PRESS));
+        mBottomSheetObserverCaptor.getValue().onSheetClosed(StateChangeReason.BACK_PRESS);
 
         histogramWatcher.assertExpected();
     }
 
     @Test
-    public void testBottomSheetObserver() {
+    public void testSheetClosedByUser_recordsIgnored() {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
-                        .expectIntRecordTimes(
-                                "Notifications.Tips.OptInPromo.EventType2",
-                                TipsOptInCoordinator.OptInPromoEventType.IGNORED,
-                                2)
+                        .expectIntRecords(
+                                "Notifications.Tips.OptInPromo.EventType3",
+                                TipsOptInCoordinator.OptInPromoEventType.SHOWN,
+                                TipsOptInCoordinator.OptInPromoEventType.IGNORED)
                         .build();
 
         BottomSheetObserver observer = mBottomSheetObserverCaptor.getValue();
-        observer.onSheetOpened(StateChangeReason.NONE);
-
+        openSheet();
         observer.onSheetClosed(StateChangeReason.TAP_SCRIM);
-        verify(mBottomSheetController).removeObserver(eq(observer));
 
-        clearInvocations(mBottomSheetController);
-
+        // Nothing else is recorded once there's an outcome.
+        observer.onSheetOpened(StateChangeReason.NONE);
         observer.onSheetClosed(StateChangeReason.SWIPE);
-        verify(mBottomSheetController).removeObserver(eq(observer));
+        mTipsOptInCoordinator.destroy();
 
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testSheetHiddenBySystem_recordsClosedBySystemOnDestroy() {
+        HistogramWatcher shownWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Notifications.Tips.OptInPromo.EventType3",
+                        TipsOptInCoordinator.OptInPromoEventType.SHOWN);
+        openSheet();
+        // The sheet may open again, so there's no outcome yet.
+        mBottomSheetObserverCaptor.getValue().onSheetClosed(StateChangeReason.NONE);
+        shownWatcher.assertExpected();
+
+        HistogramWatcher closedWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Notifications.Tips.OptInPromo.EventType3",
+                        TipsOptInCoordinator.OptInPromoEventType.CLOSED_BY_SYSTEM);
+        mTipsOptInCoordinator.destroy();
+        closedWatcher.assertExpected();
+    }
+
+    @Test
+    public void testSheetHiddenBySystemAndShownAgain_recordsOneShowAndOutcome() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                "Notifications.Tips.OptInPromo.EventType3",
+                                TipsOptInCoordinator.OptInPromoEventType.SHOWN,
+                                TipsOptInCoordinator.OptInPromoEventType.IGNORED)
+                        .build();
+
+        // E.g. the omnibox is focused and then loses focus.
+        openSheet();
+        mBottomSheetObserverCaptor.getValue().onSheetClosed(StateChangeReason.NONE);
+        openSheet();
+        mBottomSheetObserverCaptor.getValue().onSheetClosed(StateChangeReason.SWIPE);
+        mTipsOptInCoordinator.destroy();
+
+        assertEquals(
+                1, mSharedPreferenceManager.readInt(TIPS_NOTIFICATIONS_OPT_IN_PROMO_SHOW_COUNT, 0));
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testOtherSheet_isIgnored() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Notifications.Tips.OptInPromo.EventType3")
+                        .build();
+        when(mBottomSheetController.getCurrentSheetContent())
+                .thenReturn(mock(BottomSheetContent.class));
+
+        BottomSheetObserver observer = mBottomSheetObserverCaptor.getValue();
+        observer.onSheetOpened(StateChangeReason.NONE);
+        observer.onSheetClosed(StateChangeReason.SWIPE);
+
+        verify(mBottomSheetController, never()).removeObserver(any());
+        verify(mTracker, never()).dismissed(any());
+        assertFalse(mBottomSheetContent.getBackPressStateChangedSupplier().get());
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testDestroyWhileOpen_recordsClosedBySystem() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                "Notifications.Tips.OptInPromo.EventType3",
+                                TipsOptInCoordinator.OptInPromoEventType.SHOWN,
+                                TipsOptInCoordinator.OptInPromoEventType.CLOSED_BY_SYSTEM)
+                        .build();
+
+        openSheet();
+        mTipsOptInCoordinator.destroy();
+
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testDestroyBeforeOpen_recordsNothing() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Notifications.Tips.OptInPromo.EventType3")
+                        .build();
+
+        mTipsOptInCoordinator.showBottomSheet();
+        mTipsOptInCoordinator.destroy();
+
+        verify(mBottomSheetController).removeObserver(mBottomSheetObserverCaptor.getValue());
+        assertEquals(
+                -1,
+                mSharedPreferenceManager.readInt(TIPS_NOTIFICATIONS_OPT_IN_PROMO_SHOW_COUNT, -1));
         histogramWatcher.assertExpected();
     }
 
     @Test
     public void testOnOptInAccepted() {
         HistogramWatcher histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Notifications.Tips.OptInPromo.EventType2",
-                        TipsOptInCoordinator.OptInPromoEventType.ACCEPTED);
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                "Notifications.Tips.OptInPromo.EventType3",
+                                TipsOptInCoordinator.OptInPromoEventType.SHOWN,
+                                TipsOptInCoordinator.OptInPromoEventType.ACCEPTED)
+                        .build();
 
+        openSheet();
         mTipsOptInCoordinator.onOptInAccepted();
         Shadows.shadowOf(Looper.getMainLooper()).idle();
 
@@ -276,7 +381,7 @@ public class TipsOptInCoordinatorUnitTest {
         NotificationProxyUtils.setNotificationEnabledForTest(true);
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
-                        "Notifications.Tips.OptInPromo.EventType2",
+                        "Notifications.Tips.OptInPromo.EventType3",
                         TipsOptInCoordinator.OptInPromoEventType.DECLINED);
 
         mTipsOptInCoordinator.onOptInDeclined();
@@ -297,6 +402,71 @@ public class TipsOptInCoordinatorUnitTest {
                                     NotificationManager.IMPORTANCE_NONE, channel.getImportance());
                         });
         Shadows.shadowOf(Looper.getMainLooper()).idle();
+    }
+
+    @Test
+    public void testOnOptInAccepted_DuplicateActions_Ignored() {
+        NotificationProxyUtils.setNotificationEnabledForTest(false);
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                "Notifications.Tips.OptInPromo.EventType3",
+                                TipsOptInCoordinator.OptInPromoEventType.SHOWN,
+                                TipsOptInCoordinator.OptInPromoEventType.ACCEPTED)
+                        .build();
+
+        openSheet();
+        mTipsOptInCoordinator.onOptInAccepted();
+        mTipsOptInCoordinator.onOptInAccepted();
+        mTipsOptInCoordinator.onOptInDeclined();
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
+
+        assertEquals(
+                Settings.ACTION_APP_NOTIFICATION_SETTINGS,
+                Shadows.shadowOf(mActivity).getNextStartedActivity().getAction());
+        assertNull(Shadows.shadowOf(mActivity).getNextStartedActivity());
+        verify(mBottomSheetController).hideContent(any(), eq(true));
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testOnOptInDeclined_DuplicateActions_Ignored() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                "Notifications.Tips.OptInPromo.EventType3",
+                                TipsOptInCoordinator.OptInPromoEventType.SHOWN,
+                                TipsOptInCoordinator.OptInPromoEventType.DECLINED)
+                        .build();
+
+        openSheet();
+        mTipsOptInCoordinator.onOptInDeclined();
+        mTipsOptInCoordinator.onOptInDeclined();
+        mTipsOptInCoordinator.onOptInAccepted();
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
+
+        verify(mBottomSheetController).hideContent(any(), eq(true));
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testButtonActionAfterSheetClosed_Ignored() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                "Notifications.Tips.OptInPromo.EventType3",
+                                TipsOptInCoordinator.OptInPromoEventType.SHOWN,
+                                TipsOptInCoordinator.OptInPromoEventType.IGNORED)
+                        .build();
+
+        openSheet();
+        mBottomSheetObserverCaptor.getValue().onSheetClosed(StateChangeReason.SWIPE);
+        mTipsOptInCoordinator.onOptInAccepted();
+        mTipsOptInCoordinator.onOptInDeclined();
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
+
+        verify(mBottomSheetController, never()).hideContent(any(), anyBoolean());
+        histogramWatcher.assertExpected();
     }
 
     @Test
@@ -344,9 +514,34 @@ public class TipsOptInCoordinatorUnitTest {
     @Test
     public void testTrackerDismissedOnSheetClosed() {
         mTipsOptInCoordinator.showBottomSheet();
+        openSheet();
         verify(mTracker, never()).dismissed(FeatureConstants.ANDROID_TIPS_OPT_IN_PROMO_FEATURE);
 
         mBottomSheetObserverCaptor.getValue().onSheetClosed(StateChangeReason.TAP_SCRIM);
+        verify(mTracker).dismissed(FeatureConstants.ANDROID_TIPS_OPT_IN_PROMO_FEATURE);
+    }
+
+    @Test
+    public void testTrackerNotDismissedWhileHidden() {
+        openSheet();
+        // E.g. the omnibox is focused. The sheet may open again, so the tracker stays blocked.
+        mBottomSheetObserverCaptor.getValue().onSheetClosed(StateChangeReason.NONE);
+        verify(mTracker, never()).dismissed(FeatureConstants.ANDROID_TIPS_OPT_IN_PROMO_FEATURE);
+
+        mTipsOptInCoordinator.destroy();
+        verify(mTracker).dismissed(FeatureConstants.ANDROID_TIPS_OPT_IN_PROMO_FEATURE);
+    }
+
+    @Test
+    public void testTrackerDismissedWhenReplacedWhileHidden() {
+        BottomSheetObserver observer = mBottomSheetObserverCaptor.getValue();
+        openSheet();
+        observer.onSheetClosed(StateChangeReason.NONE);
+
+        observer.onSheetContentChanged(mBottomSheetContent);
+        verify(mTracker, never()).dismissed(FeatureConstants.ANDROID_TIPS_OPT_IN_PROMO_FEATURE);
+
+        observer.onSheetContentChanged(mock(BottomSheetContent.class));
         verify(mTracker).dismissed(FeatureConstants.ANDROID_TIPS_OPT_IN_PROMO_FEATURE);
     }
 
@@ -356,5 +551,10 @@ public class TipsOptInCoordinatorUnitTest {
 
         mTipsOptInCoordinator.showBottomSheet();
         verify(mTracker).dismissed(FeatureConstants.ANDROID_TIPS_OPT_IN_PROMO_FEATURE);
+    }
+
+    private void openSheet() {
+        when(mBottomSheetController.getCurrentSheetContent()).thenReturn(mBottomSheetContent);
+        mBottomSheetObserverCaptor.getValue().onSheetOpened(StateChangeReason.NONE);
     }
 }

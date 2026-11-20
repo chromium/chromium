@@ -715,10 +715,13 @@ public class TipsUtils {
             long timeSinceLastBackgroundedMs,
             Callback<TipsOptInCoordinator> onShowCallback) {
         if (isTipsNotificationsFeatureAvailable()) {
-            TipsUtils.areTipsNotificationsEnabled(
-                    (enabled) -> {
+            // Skip users with Chrome notifications off, since accepting would only send them to
+            // system settings. Checked here to avoid the asynchronous channel lookup.
+            if (!shouldAlwaysShowOptInPromo() && !areAppNotificationsEnabled()) return;
+            TipsUtils.isTipsChannelCreated(
+                    (channelCreated) -> {
                         if (shouldShowTipsOptInPromo(
-                                enabled, sharedPreferences, timeSinceLastBackgroundedMs)) {
+                                channelCreated, sharedPreferences, timeSinceLastBackgroundedMs)) {
                             if (!isActivityValid(activity)) {
                                 return;
                             }
@@ -757,16 +760,25 @@ public class TipsUtils {
         return activity != null && !activity.isFinishing() && !activity.isDestroyed();
     }
 
+    /**
+     * Returns whether the Tips opt-in promo should be shown.
+     *
+     * @param tipsChannelCreated Whether the Tips notification channel exists. It's created when the
+     *     user makes a choice, e.g. accepting (enabled) or declining (blocked) the promo.
+     * @param sharedPreferences The {@link SharedPreferencesManager} to use.
+     * @param timeSinceLastBackgroundedMs The time since the app was last backgrounded.
+     */
     @VisibleForTesting
     static boolean shouldShowTipsOptInPromo(
-            boolean notificationsEnabled,
+            boolean tipsChannelCreated,
             SharedPreferencesManager sharedPreferences,
             long timeSinceLastBackgroundedMs) {
         if (shouldAlwaysShowOptInPromo()) {
             return true;
         }
 
-        if (notificationsEnabled
+        // Skip users who already made a choice.
+        if (tipsChannelCreated
                 || sharedPreferences.readBoolean(
                         ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_PROMO_ACCEPTED, false)
                 || timeSinceLastBackgroundedMs

@@ -1398,16 +1398,17 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Notifications.Tips.OptInPromo.EventType2"
+<histogram name="Notifications.Tips.OptInPromo.EventType3"
     enum="TipsNotificationsOptInPromoEventType" expires_after="2027-03-21">
   <owner>wylieb@google.com</owner>
   <owner>bjfong@google.com</owner>
   <summary>
-    Records the event type for user actions on the Tips Opt In Promo. This is
-    recorded on show, on promo acceptance, on promo decline, and on promo
-    ignore. Declining the promo includes clicking the negative button. Ignoring
-    the promo includes dismissal by scrim touch, backpress, and swipe away. This
-    is for Android only.
+    Records the event type for user actions on the Tips Opt In Promo. Shown is
+    recorded once, when the sheet opens. After that, exactly one of the other
+    events is recorded: acceptance, decline (the negative button), ignore
+    (dismissal by scrim touch, back press, or swipe away), or closed by system
+    (closed without a user choice, e.g. by navigation, omnibox focus, another
+    sheet, or the activity being destroyed). This is for Android only.
   </summary>
 </histogram>
 
