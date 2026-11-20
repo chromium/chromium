@@ -48,6 +48,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/renderer/platform/graphics/exported_canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/canvas_utils.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/drawing_buffer_test_helpers.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
@@ -1371,6 +1372,64 @@ TEST_F(DrawingBufferTest, SoftwareCompositorResourceRecycling) {
   // Returning the resource from the current provider should recycle cleanly.
   std::move(release_callback3).Run(gpu::SyncToken(), false /* lost_resource */);
   EXPECT_EQ(1, drawing_buffer_->RecycledSoftwareResourceCount());
+
+  drawing_buffer_->BeginDestruction();
+}
+
+TEST_F(DrawingBufferTest, SoftwareCompositorExportCanvasResource) {
+  auto sw_sii = base::MakeRefCounted<gpu::TestSharedImageInterface>();
+  auto sw_sii_provider =
+      std::make_unique<TestWebGraphicsSharedImageInterfaceProvider>(sw_sii);
+
+  drawing_buffer_->BeginDestruction();
+
+  Platform::WebGLContextInfo context_info;
+  context_info.using_gpu_compositing = false;
+
+  auto gl = std::make_unique<GLES2InterfaceForTests>();
+  auto provider =
+      std::make_unique<WebGraphicsContext3DProviderForTests>(std::move(gl));
+  GLES2InterfaceForTests* gl_ptr =
+      static_cast<GLES2InterfaceForTests*>(provider->ContextGL());
+
+  gfx::Size initial_size(kInitialWidth, kInitialHeight);
+  drawing_buffer_ = DrawingBufferForTests::Create(
+      std::move(provider), std::move(sw_sii_provider), context_info, gl_ptr,
+      initial_size, DrawingBuffer::kPreserve, kDisableMultisampling);
+  ASSERT_NE(drawing_buffer_, nullptr);
+
+  EXPECT_FALSE(drawing_buffer_->MarkContentsChanged());
+  scoped_refptr<ExportedCanvasResource> exported1 =
+      drawing_buffer_->ExportCanvasResource();
+  ASSERT_NE(exported1, nullptr);
+  EXPECT_EQ(1u, sw_sii->shared_image_count());
+  EXPECT_EQ(0, drawing_buffer_->RecycledSoftwareResourceCount());
+
+  // Software DrawingBuffer SharedImages have bottom-left origin; Bitmap() must
+  // preserve that orientation.
+  scoped_refptr<StaticBitmapImage> bitmap = exported1->Bitmap();
+  ASSERT_NE(bitmap, nullptr);
+  EXPECT_EQ(ImageOrientationEnum::kOriginBottomLeft,
+            bitmap->Orientation().Orientation());
+  bitmap.reset();
+
+  // Without a new draw, ExportCanvasResource() returns nullptr.
+  EXPECT_EQ(nullptr, drawing_buffer_->ExportCanvasResource());
+
+  // Dropping the ExportedCanvasResource recycles the software resource for the
+  // next frame.
+  const gpu::Mailbox first_mailbox =
+      exported1->GetSharedImageForTesting()->mailbox();
+  exported1.reset();
+  EXPECT_EQ(1, drawing_buffer_->RecycledSoftwareResourceCount());
+
+  EXPECT_TRUE(drawing_buffer_->MarkContentsChanged());
+  scoped_refptr<ExportedCanvasResource> exported2 =
+      drawing_buffer_->ExportCanvasResource();
+  ASSERT_NE(exported2, nullptr);
+  EXPECT_EQ(1u, sw_sii->shared_image_count());
+  EXPECT_EQ(first_mailbox, exported2->GetSharedImageForTesting()->mailbox());
+  exported2.reset();
 
   drawing_buffer_->BeginDestruction();
 }

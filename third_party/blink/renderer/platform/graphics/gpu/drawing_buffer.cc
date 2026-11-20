@@ -907,11 +907,14 @@ scoped_refptr<ExportedCanvasResource> DrawingBuffer::ExportCanvasResource() {
     return nullptr;
   }
 
-  CHECK(IsUsingGpuCompositing());
+  const bool using_gpu_compositing = IsUsingGpuCompositing();
   gpu::SyncToken sync_token;
   viz::ReleaseCallback out_release_callback;
   scoped_refptr<gpu::ClientSharedImage> client_si =
-      ExportSharedImageFromBackBuffer(sync_token, &out_release_callback);
+      using_gpu_compositing
+          ? ExportSharedImageFromBackBuffer(sync_token, &out_release_callback)
+          : ExportSoftwareSharedImageFromBackBuffer(sync_token,
+                                                    &out_release_callback);
   if (!client_si) {
     return nullptr;
   }
@@ -919,9 +922,11 @@ scoped_refptr<ExportedCanvasResource> DrawingBuffer::ExportCanvasResource() {
   return base::MakeRefCounted<ExportedCanvasResource>(
       client_si, sync_token,
       viz::TransferableResource::ResourceSource::kDrawingBuffer, hdr_metadata_,
-      context_provider_->GetWeakPtr(), /*accelerated_raster=*/true,
+      using_gpu_compositing ? context_provider_->GetWeakPtr() : nullptr,
+      /*accelerated_raster=*/using_gpu_compositing,
       /*wait_sync_token=*/base::NullCallback(), std::move(out_release_callback),
-      /*use_legacy_external_canvas_resource_bitmap_path=*/true);
+      /*use_legacy_external_canvas_resource_bitmap_path=*/
+      using_gpu_compositing);
 }
 
 DrawingBuffer::ColorBuffer::ColorBuffer(
