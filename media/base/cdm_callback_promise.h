@@ -15,10 +15,10 @@
 
 namespace media {
 
-typedef base::OnceCallback<void(CdmPromise::Exception exception_code,
-                                uint32_t system_code,
-                                const std::string& error_message)>
-    PromiseRejectedCB;
+using PromiseRejectedCB =
+    base::OnceCallback<void(CdmPromise::Exception exception_code,
+                            uint32_t system_code,
+                            const std::string& error_message)>;
 
 template <typename... T>
 class MEDIA_EXPORT CdmCallbackPromise : public CdmPromiseTemplate<T...> {

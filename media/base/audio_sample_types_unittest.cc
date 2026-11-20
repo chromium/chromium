@@ -210,19 +210,18 @@ TYPED_TEST_P(SampleTypeTraitsTest, ConvertExampleValues) {
 
 REGISTER_TYPED_TEST_SUITE_P(SampleTypeTraitsTest, ConvertExampleValues);
 
-typedef ::testing::Types<UnsignedInt8ToFloat32TestConfig,
-                         SignedInt16ToFloat32TestConfig,
-                         SignedInt32ToFloat32TestConfig,
-                         Float32ToUnsignedInt8TestConfig,
-                         Float32ToSignedInt16TestConfig,
-                         Float32ToSignedInt32TestConfig,
-                         UnsignedInt8ToFloat64TestConfig,
-                         SignedInt16ToFloat64TestConfig,
-                         SignedInt32ToFloat64TestConfig,
-                         Float64ToUnsignedInt8TestConfig,
-                         Float64ToSignedInt16TestConfig,
-                         Float64ToSignedInt32TestConfig>
-    TestConfigs;
+using TestConfigs = ::testing::Types<UnsignedInt8ToFloat32TestConfig,
+                                     SignedInt16ToFloat32TestConfig,
+                                     SignedInt32ToFloat32TestConfig,
+                                     Float32ToUnsignedInt8TestConfig,
+                                     Float32ToSignedInt16TestConfig,
+                                     Float32ToSignedInt32TestConfig,
+                                     UnsignedInt8ToFloat64TestConfig,
+                                     SignedInt16ToFloat64TestConfig,
+                                     SignedInt32ToFloat64TestConfig,
+                                     Float64ToUnsignedInt8TestConfig,
+                                     Float64ToSignedInt16TestConfig,
+                                     Float64ToSignedInt32TestConfig>;
 INSTANTIATE_TYPED_TEST_SUITE_P(CommonTypes, SampleTypeTraitsTest, TestConfigs);
 
 }  // namespace media

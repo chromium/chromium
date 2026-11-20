@@ -431,7 +431,7 @@ class EWMATestScenario {
   float expected_max_ = 0.0f;
 };
 
-typedef testing::TestWithParam<EWMATestScenario> VectorMathEWMAAndMaxPowerTest;
+using VectorMathEWMAAndMaxPowerTest = testing::TestWithParam<EWMATestScenario>;
 
 TEST_P(VectorMathEWMAAndMaxPowerTest, Correctness) {
   GetParam().RunTest();

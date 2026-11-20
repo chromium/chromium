@@ -100,8 +100,8 @@ class MEDIA_EXPORT MimeUtil {
                                         const PlatformInfo& platform_info);
 
  private:
-  typedef base::flat_set<int> CodecSet;
-  typedef base::flat_map<std::string, CodecSet> MediaFormatMappings;
+  using CodecSet = base::flat_set<int>;
+  using MediaFormatMappings = base::flat_map<std::string, CodecSet>;
 
   // Initializes the supported media types into hash sets for faster lookup.
   void InitializeMimeTypeMaps();

@@ -129,8 +129,8 @@ class MEDIA_EXPORT StreamParserBuffer : public DecoderBuffer {
   // Value used to signal an invalid decoder config ID.
   enum { kInvalidConfigId = -1 };
 
-  typedef DemuxerStream::Type Type;
-  typedef StreamParser::TrackId TrackId;
+  using Type = DemuxerStream::Type;
+  using TrackId = StreamParser::TrackId;
 
   static scoped_refptr<StreamParserBuffer> CreateEOSBuffer(
       std::optional<ConfigVariant> next_config = std::nullopt);

@@ -23,9 +23,9 @@ namespace media {
 // as the series progresses.
 class MEDIA_EXPORT SerialRunner {
  public:
-  typedef base::OnceCallback<void(base::OnceClosure)> BoundClosure;
-  typedef base::OnceCallback<void(PipelineStatusCallback)>
-      BoundPipelineStatusCallback;
+  using BoundClosure = base::OnceCallback<void(base::OnceClosure)>;
+  using BoundPipelineStatusCallback =
+      base::OnceCallback<void(PipelineStatusCallback)>;
 
   // Serial queue of bound functions to run.
   class MEDIA_EXPORT Queue {

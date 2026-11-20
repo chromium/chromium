@@ -39,7 +39,7 @@ class ScopedSLObject {
   SLType obj_;
 };
 
-typedef ScopedSLObject<SLObjectItf, const SLObjectItf_*> ScopedSLObjectItf;
+using ScopedSLObjectItf = ScopedSLObject<SLObjectItf, const SLObjectItf_*>;
 
 // Guesses the channel mask for a given channel count. Android does not offer a
 // way to configure the layout, so this will be incorrect for less common

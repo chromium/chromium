@@ -12,9 +12,9 @@
 namespace avrt {
 
 // Function pointers
-typedef BOOL (WINAPI *AvRevertMmThreadCharacteristicsFn)(HANDLE);
-typedef HANDLE (WINAPI *AvSetMmThreadCharacteristicsFn)(LPCWSTR, LPDWORD);
-typedef BOOL (WINAPI *AvSetMmThreadPriorityFn)(HANDLE, AVRT_PRIORITY);
+using AvRevertMmThreadCharacteristicsFn = BOOL(WINAPI*)(HANDLE);
+using AvSetMmThreadCharacteristicsFn = HANDLE(WINAPI*)(LPCWSTR, LPDWORD);
+using AvSetMmThreadPriorityFn = BOOL(WINAPI*)(HANDLE, AVRT_PRIORITY);
 
 HMODULE g_avrt = NULL;
 AvRevertMmThreadCharacteristicsFn g_revert_mm_thread_characteristics = NULL;

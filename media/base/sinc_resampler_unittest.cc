@@ -254,7 +254,7 @@ class SinusoidalLinearChirpSource {
   int current_index_;
 };
 
-typedef std::tuple<int, int, double, double, double> SincResamplerTestData;
+using SincResamplerTestData = std::tuple<int, int, double, double, double>;
 class SincResamplerTest : public testing::TestWithParam<SincResamplerTestData> {
  public:
   SincResamplerTest()

@@ -92,7 +92,7 @@ class MEDIA_EXPORT Decryptor {
                                       DecoderInitCB init_cb) = 0;
 
   // Helper structure for managing multiple decoded audio buffers per input.
-  typedef std::list<scoped_refptr<AudioBuffer> > AudioFrames;
+  using AudioFrames = std::list<scoped_refptr<AudioBuffer>>;
 
   // Indicates completion of audio/video decrypt-and-decode operation.
   //

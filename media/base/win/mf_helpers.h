@@ -292,14 +292,13 @@ class MEDIA_EXPORT SharedImageReadLock
 //                            has already been copied and the texture can be fed
 //                            to the encoder directly.
 //   hr: Indicating success or failure of the resource generation.
-typedef base::OnceCallback<void(
+using ResourceAvailableCB = base::OnceCallback<void(
     scoped_refptr<VideoFrame> frame,
     Microsoft::WRL::ComPtr<IMFSample> sample,
     std::optional<base::win::ScopedHandle> texture_handle,
     Microsoft::WRL::ComPtr<SharedImageReadLock> scoped_read_access,
     std::optional<bool> texture_has_been_copied,
-    HRESULT hr)>
-    ResourceAvailableCB;
+    HRESULT hr)>;
 
 // Generates a resource (IMFSample or shared texture handle) from a shared
 // image backed video frame.

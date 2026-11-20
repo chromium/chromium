@@ -19,8 +19,8 @@
 
 namespace media {
 
-typedef StreamParser::TrackId TrackId;
-typedef StreamParser::BufferQueue BufferQueue;
+using TrackId = StreamParser::TrackId;
+using BufferQueue = StreamParser::BufferQueue;
 
 const int kEnd = -1;
 const std::array<const uint8_t, 1> kFakeData = {0xFF};

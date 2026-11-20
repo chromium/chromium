@@ -4,9 +4,9 @@
 
 #ifndef MEDIA_AUDIO_IOS_AUDIO_PRIVATE_API_H_
 #define MEDIA_AUDIO_IOS_AUDIO_PRIVATE_API_H_
-typedef UInt32 AudioObjectPropertyScope;
-typedef UInt32 AudioObjectID;
-typedef AudioObjectID AudioDeviceID;
+using AudioObjectPropertyScope = UInt32;
+using AudioObjectID = UInt32;
+using AudioDeviceID = AudioObjectID;
 
 constexpr UInt32 kAudioObjectUnknown = 0;
 

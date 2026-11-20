@@ -34,8 +34,8 @@ static constexpr int kSampleRate = 48000;
 static constexpr int kSineCycles = 4;
 
 // Tuple of <input rate, output rate, output channel layout config, epsilon>.
-typedef std::tuple<int, int, ChannelLayoutConfig, double>
-    AudioConverterTestData;
+using AudioConverterTestData =
+    std::tuple<int, int, ChannelLayoutConfig, double>;
 class AudioConverterTest
     : public testing::TestWithParam<AudioConverterTestData> {
  public:

@@ -126,7 +126,7 @@ class MEDIA_EXPORT AudioConverter {
   void CreateUnmixedAudioIfNecessary(int frames);
 
   // Set of inputs for Convert().
-  typedef std::list<raw_ptr<InputCallback, CtnExperimental>> InputCallbackSet;
+  using InputCallbackSet = std::list<raw_ptr<InputCallback, CtnExperimental>>;
   InputCallbackSet transform_inputs_;
 
   // Used to buffer data between the client and the output device in cases where

@@ -83,7 +83,7 @@ template <typename KeyType,
           class NumericLimits = std::numeric_limits<KeyType>>
 class IntervalMapConstIterator {
  public:
-  typedef std::map<KeyType, ValueType, Compare> MapType;
+  using MapType = std::map<KeyType, ValueType, Compare>;
   IntervalMapConstIterator() {}
   IntervalMapConstIterator(const MapType* map,
                            typename MapType::const_iterator iter)
@@ -160,9 +160,9 @@ template <typename KeyType,
           class NumericLimits = std::numeric_limits<KeyType>>
 class IntervalMap {
  public:
-  typedef std::map<KeyType, ValueType, Compare> MapType;
-  typedef IntervalMapConstIterator<KeyType, ValueType, Compare, NumericLimits>
-      const_iterator;
+  using MapType = std::map<KeyType, ValueType, Compare>;
+  using const_iterator =
+      IntervalMapConstIterator<KeyType, ValueType, Compare, NumericLimits>;
   IntervalMap() {
     // Adding an explicit entry for the default interval is not strictly needed,
     // but simplifies the code a lot.

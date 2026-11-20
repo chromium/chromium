@@ -400,7 +400,7 @@ class KeySystemsTest : public testing::Test {
     return test_media_client_.GetSupportedKeySystems(std::move(cb));
   }
 
-  typedef std::vector<std::string> CodecVector;
+  using CodecVector = std::vector<std::string>;
 
   const CodecVector& no_codecs() const { return no_codecs_; }
 

@@ -83,7 +83,7 @@ class MEDIA_EXPORT StreamParser {
 
   // Indicates completion of parser initialization.
   //   params - Stream parameters.
-  typedef base::OnceCallback<void(const InitParameters& params)> InitCB;
+  using InitCB = base::OnceCallback<void(const InitParameters& params)>;
 
   // Indicates when new stream configurations have been parsed.
   // First parameter - An object containing information about media tracks as
@@ -92,29 +92,29 @@ class MEDIA_EXPORT StreamParser {
   // Return value - True if the new configurations are accepted.
   //                False if the new configurations are not supported
   //                and indicates that a parsing error should be signalled.
-  typedef base::RepeatingCallback<bool(std::unique_ptr<MediaTracks>)>
-      NewConfigCB;
+  using NewConfigCB =
+      base::RepeatingCallback<bool(std::unique_ptr<MediaTracks>)>;
 
   // New stream buffers have been parsed.
   // First parameter - A map of track ids to queues of newly parsed buffers.
   // Return value - True indicates that the buffers are accepted.
   //                False if something was wrong with the buffers and a parsing
   //                error should be signalled.
-  typedef base::RepeatingCallback<bool(const BufferQueueMap&)> NewBuffersCB;
+  using NewBuffersCB = base::RepeatingCallback<bool(const BufferQueueMap&)>;
 
   // Signals the beginning of a new media segment.
-  typedef base::RepeatingCallback<void()> NewMediaSegmentCB;
+  using NewMediaSegmentCB = base::RepeatingCallback<void()>;
 
   // Signals the end of a media segment.
-  typedef base::RepeatingCallback<void()> EndMediaSegmentCB;
+  using EndMediaSegmentCB = base::RepeatingCallback<void()>;
 
   // A new potentially encrypted stream has been parsed.
   // First parameter - The type of the initialization data associated with the
   //                   stream.
   // Second parameter - The initialization data associated with the stream.
-  typedef base::RepeatingCallback<void(EmeInitDataType,
-                                       const std::vector<uint8_t>&)>
-      EncryptedMediaInitDataCB;
+  using EncryptedMediaInitDataCB =
+      base::RepeatingCallback<void(EmeInitDataType,
+                                   const std::vector<uint8_t>&)>;
 
   StreamParser();
 

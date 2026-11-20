@@ -109,9 +109,9 @@ SLresult slCreateEngine(SLObjectItf* engine,
                         SLuint32 num_interfaces,
                         SLInterfaceID* interface_ids,
                         SLboolean* interfaces_required) {
-  typedef SLresult (*SlCreateEngineSignature)(SLObjectItf*, SLuint32,
-                                              SLEngineOption*, SLuint32,
-                                              SLInterfaceID*, SLboolean*);
+  using SlCreateEngineSignature =
+      SLresult (*)(SLObjectItf*, SLuint32, SLEngineOption*, SLuint32,
+                   SLInterfaceID*, SLboolean*);
   base::NativeLibrary handle = LibraryHandle();
   if (!handle)
     return SL_RESULT_INTERNAL_ERROR;

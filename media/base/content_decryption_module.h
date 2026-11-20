@@ -30,11 +30,11 @@ struct ContentDecryptionModuleTraits;
 template <typename... T>
 class CdmPromiseTemplate;
 
-typedef CdmPromiseTemplate<std::string> NewSessionCdmPromise;
-typedef CdmPromiseTemplate<> SimpleCdmPromise;
-typedef CdmPromiseTemplate<CdmKeyInformation::KeyStatus> KeyStatusCdmPromise;
+using NewSessionCdmPromise = CdmPromiseTemplate<std::string>;
+using SimpleCdmPromise = CdmPromiseTemplate<>;
+using KeyStatusCdmPromise = CdmPromiseTemplate<CdmKeyInformation::KeyStatus>;
 
-typedef std::vector<std::unique_ptr<CdmKeyInformation>> CdmKeysInfo;
+using CdmKeysInfo = std::vector<std::unique_ptr<CdmKeyInformation>>;
 
 // Type of license required when creating/loading a session.
 // Must be consistent with the values specified in the spec:

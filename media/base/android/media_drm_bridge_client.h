@@ -35,7 +35,7 @@ using UUID = std::vector<uint8_t>;
 // provide customized additions to Android's media handling.
 class MEDIA_EXPORT MediaDrmBridgeClient {
  public:
-  typedef absl::flat_hash_map<std::string, UUID> KeySystemUuidMap;
+  using KeySystemUuidMap = absl::flat_hash_map<std::string, UUID>;
 
   MediaDrmBridgeClient();
 
