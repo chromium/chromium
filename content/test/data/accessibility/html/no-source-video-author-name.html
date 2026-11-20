@@ -3,9 +3,14 @@ Unplayable media elements (no source, so networkState is NETWORK_EMPTY) must
 take their accessible name from the author like any other element:
 aria-labelledby, then aria-label, then title, else no name. The disabled
 state still signals that the media cannot be played.
+
+The elements are block-level so that the whitespace between them does not
+produce static text nodes; those nodes were not reliably present in the
+dumped tree, which made this test flaky.
 -->
 <!DOCTYPE html>
 <html>
+<style>span, video, a { display: block; }</style>
 <body>
 <span id="label1">Label one</span>
 <span id="label2">Label two</span>

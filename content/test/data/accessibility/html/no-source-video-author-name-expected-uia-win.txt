@@ -2,18 +2,12 @@ Document
 ++Group IsControlElement=false
 ++++Group IsControlElement=false
 ++++++Text Name='Label one'
-++++Text Name=' '
 ++++Group IsControlElement=false
 ++++++Text Name='Label two'
-++++Text Name=' '
 ++++Group Name='Label one Label two' IsEnabled=false
-++++Text Name=' '
 ++++Group Name='Product demo' IsEnabled=false
-++++Text Name=' '
 ++++Group Name='Video title' IsEnabled=false
-++++Text Name=' '
 ++++Group IsEnabled=false IsControlElement=false
-++++Text Name=' '
 ++++Hyperlink Name='Watch'
 ++++++Group IsEnabled=false IsControlElement=false
 ++++++Text Name='Watch' IsControlElement=false

@@ -2,18 +2,12 @@
 ++[section]
 ++++[section] label-for=[video]
 ++++++[static] name='Label one'
-++++[static] name=' '
 ++++[section] label-for=[video]
 ++++++[static] name='Label two'
-++++[static] name=' '
 ++++[video] name='Label one Label two' labelled-by=[section,section]
-++++[static] name=' '
 ++++[video] name='Product demo' description='Hover text' description-from:tooltip
-++++[static] name=' '
 ++++[video] name='Video title'
-++++[static] name=' '
 ++++[video]
-++++[static] name=' '
 ++++[link] name='Watch'
 ++++++[video]
 ++++++[static] name='Watch'
