@@ -9,6 +9,8 @@
 ../../../third_party/catapult/devil/devil/android/sdk/version_codes.py
 ../../../third_party/catapult/devil/devil/constants/__init__.py
 ../../../third_party/catapult/devil/devil/constants/exit_codes.py
+../../../third_party/protobuf/python/google/__init__.py
+../../../third_party/protobuf/python/google/protobuf/__init__.py
 ../../../third_party/protobuf/python/google/protobuf/descriptor.py
 ../../../third_party/protobuf/python/google/protobuf/descriptor_database.py
 ../../../third_party/protobuf/python/google/protobuf/descriptor_pb2.py

@@ -1,4 +1,4 @@
-#!/usr/bin/env vpython3
+#!/usr/bin/env python3
 # Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -10,52 +10,29 @@ required for .isolate files.
 """
 
 import argparse
-import importlib.abc
 import os
 import shlex
+import subprocess
 import sys
 
 # Don't use any helper modules, or else they will end up in the results.
 
 
 _SRC_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
-
-
-class _ProtobufPathFinder(importlib.abc.MetaPathFinder):
-    """Ensures in-tree protobuf is prioritized when added to sys.path."""
-
-    _importing = False
-
-    def find_spec(self, fullname, path, target=None):
-        if not fullname.startswith('google.protobuf') or self._importing:
-            return None
-
-        protobuf_dir = os.path.join(
-            _SRC_ROOT, 'third_party', 'protobuf', 'python'
-        )
-        if not any(os.path.abspath(p) == protobuf_dir for p in sys.path):
-            return None
-
-        self._importing = True
-        try:
-            import google.protobuf
-
-            sub_dir = os.path.join(protobuf_dir, 'google', 'protobuf')
-            if (
-                os.path.exists(sub_dir)
-                and sub_dir not in google.protobuf.__path__
-            ):
-                google.protobuf.__path__.insert(0, sub_dir)
-        finally:
-            self._importing = False
-        return None
+_CPYTHON3_ROOT = os.path.join(_SRC_ROOT, 'third_party', 'cpython3')
+_HERMETIC_PYTHON = os.path.join(
+    _CPYTHON3_ROOT,
+    'host',
+    'bin',
+    'python3.exe' if os.name == 'nt' else 'python3',
+)
 
 
 def ComputePythonDependencies():
     """Gets the paths of imported non-system python modules.
 
     A path is assumed to be a "system" import if it is outside of chromium's
-    src/.
+    src/ or inside the hermetic cpython3 toolchain.
 
     Returns:
       List of absolute paths.
@@ -69,10 +46,11 @@ def ComputePythonDependencies():
         and m.__name__ != '__main__'
     )
 
+    cpython3_prefix = _CPYTHON3_ROOT + os.sep
     src_paths = set()
     for path in module_paths:
         path = os.path.abspath(path)  # paths can be relative before python 3.9.
-        if not path.startswith(_SRC_ROOT):
+        if not path.startswith(_SRC_ROOT) or path.startswith(cpython3_prefix):
             continue
 
         if path.endswith('.pyc') or (
@@ -118,6 +96,13 @@ def _FindPythonInDirectory(directory, allow_test):
                 allow_test or not filename.endswith('_test.py')
             ):
                 yield os.path.join(root, filename)
+
+
+def _UsesVpython(module_path):
+    """Returns whether |module_path| has a vpython shebang line."""
+    with open(module_path, encoding='utf-8', errors='replace') as f:
+        first_line = f.readline()
+    return first_line.startswith('#!') and 'vpython' in first_line
 
 
 def _FindVpythonSpec(module_path):
@@ -205,26 +190,22 @@ def main():
     if not modules:
         parser.error('Input directory does not contain any python files!')
 
-    custom_spec = _FindVpythonSpec(modules[0])
-    is_vpython = 'vpython' in sys.executable
-    if not is_vpython or (custom_spec and not options.did_relaunch):
-        # Prevent infinite relaunch if something goes awry.
-        assert not options.did_relaunch
-        cmd = ['vpython3']
-        if custom_spec:
-            cmd.extend(['-vpython-spec', custom_spec])
-        os.execvp('vpython3', cmd + sys.argv + ['--did-relaunch'])
-
-    # Work-around for protobuf library not being loadable via importlib.
-    # This is needed due to compile_resources.py and protoc_java.py.
-    # When a script explicitly adds third_party/protobuf/python to sys.path,
-    # ensure google.protobuf.__path__ prioritizes the in-tree directory,
-    # while preserving vpython's site-packages for other scripts.
-    sys.meta_path.insert(0, _ProtobufPathFinder())
-
-    import importlib._bootstrap_external
-
-    importlib._bootstrap_external._NamespacePath.sort = lambda self, **_: 0
+    use_vpython = any(_UsesVpython(m) for m in modules)
+    custom_spec = _FindVpythonSpec(modules[0]) if use_vpython else None
+    # Always relaunch into the interpreter environment the target script uses:
+    # vpython3 (with any custom spec) for vpython shebangs, or hermetic
+    # cpython3 -BES otherwise (matching GN actions without writing .pyc files).
+    if not options.did_relaunch:
+        if use_vpython:
+            relaunch_cmd = ['vpython3.bat' if os.name == 'nt' else 'vpython3']
+            if custom_spec:
+                relaunch_cmd.extend(['-vpython-spec', custom_spec])
+        else:
+            relaunch_cmd = [_HERMETIC_PYTHON, '-BES']
+        relaunch_cmd += sys.argv + ['--did-relaunch']
+        if os.name == 'nt':
+            return subprocess.call(relaunch_cmd)
+        os.execvp(relaunch_cmd[0], relaunch_cmd)
 
     paths_set = set()
     try:
@@ -234,7 +215,7 @@ def main():
     except Exception:
         # Output extra diagnostics when loading the script fails.
         sys.stderr.write('Error running print_python_deps.py.\n')
-        sys.stderr.write('is_vpython={}\n'.format(is_vpython))
+        sys.stderr.write('use_vpython={}\n'.format(use_vpython))
         sys.stderr.write('did_relaunch={}\n'.format(options.did_relaunch))
         sys.stderr.write('python={}\n'.format(sys.executable))
         raise
@@ -250,14 +231,13 @@ def main():
 
     paths = [os.path.relpath(p, options.root) for p in paths_set]
 
-    normalized_cmdline = _NormalizeCommandLine(options)
     out = (
         open(options.output, 'w', newline='') if options.output else sys.stdout
     )
     with out:
         if not options.no_header:
             out.write('# Generated by running:\n')
-            out.write('#   %s\n' % normalized_cmdline)
+            out.write('#   %s\n' % _NormalizeCommandLine(options))
         prefix = '//' if options.gn_paths else ''
         for path in sorted(paths):
             out.write(prefix + path.replace('\\', '/') + '\n')

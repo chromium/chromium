@@ -4,11 +4,17 @@
 # found in the LICENSE file.
 """Utilities that fill gap between platforms."""
 
-load("@builtin//runtime.star", "runtime")
 load("@builtin//struct.star", "module")
 
-# Python binary name for host actions.
-__python_bin = "../../third_party/cpython3/host/bin/python3"
+# Python command prefix for host actions.
+# LINT.IfChange(python_bin)
+__python_bin = "../../third_party/cpython3/host/bin/python3 -ES"
+# LINT.ThenChange(
+#     //.gn:script_executable,
+#     //build/toolchain/apple/toolchain.gni:coverage_wrapper,
+#     //build/toolchain/gcc_toolchain.gni:coverage_wrapper,
+#     //build/toolchain/win/toolchain.gni:coverage_wrapper,
+# )
 
 # Python binary name for remote Linux worker actions (cross-compilation from Windows/macOS).
 __remote_python_bin = "../../third_party/cpython3/linux-amd64/bin/python3"

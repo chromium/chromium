@@ -50,13 +50,7 @@ def CallAndWriteDepfileIfStale(
     input_strings = list(input_strings or [])
     output_paths = list(output_paths or [])
 
-    # Exclude cpython3 stdlib paths because RBE uses linux-amd64 while local
-    # builds use host, which would otherwise show up as changed inputs.
-    input_paths += [
-        p
-        for p in print_python_deps.ComputePythonDependencies()
-        if '/third_party/cpython3/' not in p.replace('\\', '/')
-    ]
+    input_paths += print_python_deps.ComputePythonDependencies()
 
     CallAndRecordIfStale(
         on_stale_md5,

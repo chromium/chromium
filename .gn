@@ -12,7 +12,15 @@ import("//third_party/angle/dotfile_settings.gni")
 buildconfig = "//build/config/BUILDCONFIG.gn"
 
 # The hermetic Python interpreter to use by default.
-script_executable = "//third_party/cpython3/host/bin/python3"
+# Ignore PYTHON* env vars and disable site/site-packages to ensure actions are
+# reproducible.
+# LINT.IfChange(script_executable)
+script_executable = [
+  "//third_party/cpython3/host/bin/python3",
+  "-ES",
+]
+
+# LINT.ThenChange(//build/config/siso/platform.star:python_bin)
 
 # These arguments override the default values for items in a declare_args
 # block. "gn args" in turn can override these.

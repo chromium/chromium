@@ -6,4 +6,3 @@
 ../../third_party/pyjson5/src/json5/version.py
 flags_utils.py
 generate_expired_list.py
-vpython.toml

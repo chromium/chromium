@@ -213,7 +213,11 @@ template("single_gcc_toolchain") {
             rebase_path(toolchain_coverage_instrumentation_input_file,
                         root_build_dir)
       }
-      coverage_wrapper = "$python_path ${_coverage_wrapper} "
+
+      # LINT.IfChange(coverage_wrapper)
+      coverage_wrapper = "$python_path -ES ${_coverage_wrapper} "
+
+      # LINT.ThenChange(//build/config/siso/platform.star:python_bin)
     }
 
     cc = compiler_prefix + invoker.cc
