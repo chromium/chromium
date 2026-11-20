@@ -206,6 +206,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "boolean_disabling_policy_handler_unittest.cc",
+    "browser_policy_connector_unittest.cc",
     "configuration_policy_handler_list_unittest.cc",
     "configuration_policy_handler_unittest.cc",
     "configuration_policy_pref_store_unittest.cc",
@@ -229,6 +230,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//build:android_buildflags",
     "//components/policy:generated",
+    "//components/policy/buildflags",
     "//components/policy/core/common:test_support",
     "//components/policy/resources/webui/mojom:mojo_bindings",
     "//components/prefs:test_support",

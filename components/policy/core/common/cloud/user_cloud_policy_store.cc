@@ -22,6 +22,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/policy/core/common/features.h"
 #include "components/policy/core/common/policy_logger.h"
+#include "components/policy/core/common/policy_switches.h"
 #include "components/policy/proto/cloud_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/policy/proto/policy_signing_key.pb.h"
@@ -102,12 +103,14 @@ void StorePolicyToDiskOnBackgroundThread(
       << "Storing policy to " << policy_path.value();
   std::string data;
   if (!policy.SerializeToString(&data)) {
-    DLOG_POLICY(WARNING, POLICY_PROCESSING) << "Failed to serialize policy data";
+    DLOG_POLICY(WARNING, POLICY_PROCESSING)
+        << "Failed to serialize policy data";
     return;
   }
 
-  if (!WriteStringToFile(policy_path, data))
+  if (!WriteStringToFile(policy_path, data)) {
     return;
+  }
 
   if (policy.has_new_public_key()) {
     // Write the new public key and its verification signature/key to a file.
@@ -279,8 +282,9 @@ PolicyLoadResult DesktopCloudPolicyStore::LoadPolicyFromDisk(
 
   result.status = policy::LOAD_RESULT_SUCCESS;
 
-  if (key_path.empty())
+  if (key_path.empty()) {
     return result;
+  }
 
   if (!base::ReadFileToStringWithMaxSize(key_path, &data, kKeySizeLimit) ||
       !result.key.ParseFromString(data)) {
@@ -492,8 +496,9 @@ void DesktopCloudPolicyStore::OnPolicyToStoreValidated(
                           key_path_, *validator->policy()));
 
   // If the key was rotated, update our local cache of the key.
-  if (validator->policy()->has_new_public_key())
+  if (validator->policy()->has_new_public_key()) {
     persisted_policy_key_ = validator->policy()->new_public_key();
+  }
 
   InstallPolicy(std::move(validator->policy_data()), validator,
                 persisted_policy_key_);
@@ -568,7 +573,7 @@ void UserCloudPolicyStore::Validate(
   // Validate the account id if the user is signed in. The account_id_ can
   // be empty during initial policy load because this happens before the
   // Prefs subsystem is initialized.
-  if (account_id_.is_valid()) {
+  if (account_id_.is_valid() && !IsFakeDmserverEnabled()) {
     VLOG_POLICY(1, POLICY_PROCESSING)
         << PolicyTypeLogPrefix(policy_type(), std::string())
         << "Validating account: " << account_id_;

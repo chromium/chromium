@@ -21,8 +21,8 @@ Create a simple JSON file with the policies you want to test (e.g.,
 > (for example, `alice@example.com`). Other domains will fail validation or
 > cause `fake_dmserver` to return an HTTP 400 error.
 
-Here is a minimal example, where you log into Chromium as alice@example.com and
-want both machine-level and user-level policies.
+Here is a minimal example for testing both machine-level and user-level
+policies.
 
 ```json
 {
@@ -70,8 +70,8 @@ Optional arguments:
 ### Step 3: Launch Chrome
 
 When launching Chromium or Chrome, tell it to use your local server. Use
-`--use-fake-dmserver` to configure the default DMServer URL and automatically
-enable cloud management:
+`--use-fake-dmserver` to configure default DMServer and real-time reporting
+URLs, and automatically enable cloud management:
 
 ```bash
 ./out/Default/chrome --use-fake-dmserver
@@ -165,8 +165,9 @@ define the actual policies to be applied.
 *   `policy_user`: (String) The user ID (e.g., email address) to embed in
     policy responses. On desktop, this must use one of the supported signature
     domains (`example.com`, `chromepolicytest.com`, or `managedchrome.com`), and
-    defaults to `username@example.com` if omitted. For user policies, it must
-    also match the signed-in profile account.
+    defaults to `username@example.com` if omitted. When using
+    `--use-fake-dmserver`, you can sign into the browser with any managed
+    account without matching `policy_user`.
 *   `managed_users`: (Array of Strings) A list of users that the server should
     treat as managed. Use `"*"` to treat all users as managed.
 *   `device_affiliation_ids`: (Array of Strings) A list of affiliation IDs for

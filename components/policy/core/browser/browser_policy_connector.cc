@@ -40,6 +40,8 @@ namespace {
 
 const char kDefaultFakeDmserverUrl[] =
     "http://127.0.0.1:6112/device_management";
+constexpr char kDefaultFakeDmserverRealtimeReportingUrl[] =
+    "http://127.0.0.1:6112/realtime_reporting";
 
 // The URL for the device management server.
 const char kDefaultDeviceManagementServerUrl[] =
@@ -134,7 +136,9 @@ std::string BrowserPolicyConnector::GetDeviceManagementUrl() const {
 
 std::string BrowserPolicyConnector::GetRealtimeReportingUrl() const {
   return GetUrlOverride(switches::kRealtimeReportingUrl,
-                        kDefaultRealtimeReportingServerUrl);
+                        IsFakeDmserverEnabled()
+                            ? kDefaultFakeDmserverRealtimeReportingUrl
+                            : kDefaultRealtimeReportingServerUrl);
 }
 
 std::string BrowserPolicyConnector::GetEncryptedReportingUrl() const {

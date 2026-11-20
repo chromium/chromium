@@ -13,11 +13,13 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "components/account_id/account_id.h"
+#include "components/policy/buildflags/buildflags.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/mock_cloud_external_data_manager.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
@@ -522,6 +524,21 @@ TEST_F(UserCloudPolicyStoreTest, LoadValidationError) {
   ASSERT_FALSE(store4->policy());
   store4->RemoveObserver(&observer_);
 }
+
+#if BUILDFLAG(ALLOW_FAKE_DMSERVER)
+TEST_F(UserCloudPolicyStoreTest, UseFakeDmserverSkipsAccountValidation) {
+  base::test::ScopedCommandLine scoped_command_line;
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kUseFakeDmserver);
+  AccountId other_account_id = AccountId::FromUserEmailGaiaId(
+      "foobar@foobar.com", GaiaId("another-gaia-id"));
+  store_->SetSigninAccountId(other_account_id);
+
+  StorePolicyAndEnsureLoaded(policy_.policy());
+  VerifyPolicyMap(store_.get());
+  EXPECT_EQ(CloudPolicyStore::STATUS_OK, store_->status());
+}
+#endif
 
 TEST_F(UserCloudPolicyStoreTest, KeyRotation) {
   // Make sure when we load data from disk with a different key, that we trigger
