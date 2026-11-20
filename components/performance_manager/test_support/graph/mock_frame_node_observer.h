@@ -33,6 +33,10 @@ class LenientMockFrameNodeObserver : public FrameNodeObserver {
                const ProcessNode*,
                const FrameNode*),
               (override));
+  MOCK_METHOD(void,
+              OnParentOrOuterDocumentChanged,
+              (const FrameNode*, const FrameNode*),
+              (override));
   MOCK_METHOD(void, OnIsActiveChanged, (const FrameNode*), (override));
   MOCK_METHOD(void, OnNetworkAlmostIdleChanged, (const FrameNode*), (override));
   MOCK_METHOD(void,

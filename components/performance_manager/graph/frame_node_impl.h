@@ -57,9 +57,10 @@ class FrameNodeImpl
   // Construct a frame node associated with a `process_node`, a `page_node` and
   // optionally with a `parent_frame_node`. For the main frame of `page_node`
   // the `parent_frame_node` parameter should be nullptr. For <fencedframe>s,
-  // and MPArch aware <webview>s,  `outer_document_for_inner_frame_root` should
-  // be set to its outer document, nullptr otherwise. `render_frame_id` is the
-  // routing id of the frame (from RenderFrameHost::GetRoutingID).
+  // MPArch aware <webview>s and <persistentwidget>s,
+  // `outer_document_for_inner_frame_root` should be set to its outer document,
+  // nullptr otherwise. `render_frame_id` is the routing id of the frame (from
+  // RenderFrameHost::GetRoutingID).
   FrameNodeImpl(ProcessNodeImpl* process_node,
                 PageNodeImpl* page_node,
                 FrameNodeImpl* parent_frame_node,
@@ -168,6 +169,31 @@ class FrameNodeImpl
   void SetIsImportant(bool is_important);
   void SetResidentSetEstimate(base::ByteSize rss_estimate);
   void SetPrivateFootprintEstimate(base::ByteSize private_footprint_estimate);
+
+  // Updates the outer document of this inner frame root. This may only be
+  // called on a frame node that was created with a non-null
+  // `outer_document_for_inner_frame_root`. `outer_document` may be null, in
+  // which case this inner frame root is detached from any outer document, but
+  // is still not considered to be an outermost main frame. Notifies
+  // FrameNodeObserver::OnParentOrOuterDocumentChanged().
+  //
+  // A detached inner frame root keeps its last known viewport intersection and
+  // IsIntersectingLargeArea() state. When it is attached to a new outer
+  // document, it adopts that document's IsIntersectingLargeArea() state, and
+  // its viewport intersection is updated the next time
+  // SetViewportIntersection() is called.
+  //
+  // This is only expected to be used for the root of a <persistentwidget>
+  // inner frame tree, which can outlive or move between embedding documents.
+  // It is a CHECK failure to call this if blink::features::kPersistentWidgetAPI
+  // is disabled.
+  void SetOuterDocumentForInnerFrameRoot(FrameNodeImpl* outer_document);
+
+  // Returns true if this frame node is the root of an inner frame tree (e.g.
+  // an MPArch <webview> or a <persistentwidget>). This is constant over the
+  // lifetime of the frame node, even if the inner frame root's outer document
+  // changes or is cleared.
+  bool is_inner_frame_root() const;
 
   // Invoked when a navigation is committed in the frame.
   void OnNavigationCommitted(GURL url,
@@ -318,8 +344,19 @@ class FrameNodeImpl
   mojo::Receiver<mojom::DocumentCoordinationUnit> receiver_{this};
 
   const raw_ptr<FrameNodeImpl, DanglingUntriaged> parent_frame_node_;
-  const raw_ptr<FrameNodeImpl, DanglingUntriaged>
+  // Not const because the outer document of a <persistentwidget> inner frame
+  // root can change. See SetOuterDocumentForInnerFrameRoot().
+  // TODO(crbug.com/537818859): Make this `const` again if <persistentwidget>
+  // no longer needs to change it.
+  // TODO(crbug.com/537818859): Remove DanglingUntriaged once inner frame roots
+  // are always detached from their outer document in OnBeforeLeavingGraph().
+  raw_ptr<FrameNodeImpl, DanglingUntriaged>
       outer_document_for_inner_frame_root_;
+  // See is_inner_frame_root(). This is only needed because
+  // `outer_document_for_inner_frame_root_` can become null. If that member is
+  // made `const` again, this can be removed and replaced with
+  // `outer_document_for_inner_frame_root_ != nullptr`.
+  const bool is_inner_frame_root_;
   const raw_ptr<PageNodeImpl, DanglingUntriaged> page_node_;
   const raw_ptr<ProcessNodeImpl, DanglingUntriaged> process_node_;
   // The routing id of the frame.

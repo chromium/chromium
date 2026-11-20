@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/dcheck_is_on.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/trace_event/typed_macros.h"
@@ -19,6 +20,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/message.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/tracing_support.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom.h"
 #include "third_party/perfetto/include/perfetto/tracing/tracing.h"
@@ -67,6 +69,7 @@ FrameNodeImpl::FrameNodeImpl(
     bool is_active)
     : parent_frame_node_(parent_frame_node),
       outer_document_for_inner_frame_root_(outer_document_for_inner_frame_root),
+      is_inner_frame_root_(outer_document_for_inner_frame_root != nullptr),
       page_node_(page_node),
       process_node_(process_node),
       render_frame_id_(render_frame_id),
@@ -102,6 +105,51 @@ FrameNodeImpl::~FrameNodeImpl() {
   DCHECK(child_worker_nodes_.empty());
   DCHECK(opened_page_nodes_.empty());
   DCHECK(embedded_page_nodes_.empty());
+}
+
+void FrameNodeImpl::SetOuterDocumentForInnerFrameRoot(
+    FrameNodeImpl* outer_document) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // The outer document of an inner frame root is constant unless
+  // <persistentwidget> is enabled.
+  CHECK(base::FeatureList::IsEnabled(blink::features::kPersistentWidgetAPI));
+  CHECK(is_inner_frame_root_);
+  CHECK(!parent_frame_node_);
+  CHECK_NE(outer_document, this);
+  if (outer_document_for_inner_frame_root_ == outer_document) {
+    return;
+  }
+  // Inner frame roots share the page node of their outer document. This is
+  // relied upon in OnBeforeLeavingGraph() to find the inner frame roots of a
+  // frame node that is leaving the graph.
+  DCHECK(!outer_document || outer_document->page_node() == page_node_);
+
+  FrameNodeImpl* previous_outer_document =
+      outer_document_for_inner_frame_root_.get();
+  outer_document_for_inner_frame_root_ = outer_document;
+
+  if (CanSetAndNotifyProperty()) {
+    DCHECK(!outer_document || graph()->NodeInGraph(outer_document));
+    for (auto& observer : GetObservers()) {
+      observer.OnParentOrOuterDocumentChanged(this, previous_outer_document);
+    }
+
+    // `is_intersecting_large_area_` was either inherited from or reported
+    // relative to the previous outer document. Adopt the state of the new
+    // outer document until the next update is received for this frame.
+    //
+    // Note: This is intentionally not reset when `outer_document` is null. A
+    // detached inner frame root keeps its last known state, like in
+    // GetViewportIntersection().
+    if (outer_document) {
+      SetIsIntersectingLargeAreaImpl(outer_document->IsIntersectingLargeArea());
+    }
+  }
+}
+
+bool FrameNodeImpl::is_inner_frame_root() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return is_inner_frame_root_;
 }
 
 void FrameNodeImpl::Bind(
@@ -320,9 +368,17 @@ bool FrameNodeImpl::HasFreezingOriginTrialOptOut() const {
 
 ViewportIntersection FrameNodeImpl::GetViewportIntersection() const {
   if (!parent_or_outer_document_or_embedder()) {
-    // The outermost main frame or embedder is always intersecting with the
-    // viewport.
-    return ViewportIntersection::kIntersecting;
+    if (is_inner_frame_root_) {
+      // Note: An inner frame root that is detached from its outer document (see
+      // SetOuterDocumentForInnerFrameRoot()) is not an outermost main frame, so
+      // it keeps its last known viewport intersection.
+      CHECK(
+          base::FeatureList::IsEnabled(blink::features::kPersistentWidgetAPI));
+    } else {
+      // The outermost main frame or embedder is always intersecting with the
+      // viewport.
+      return ViewportIntersection::kIntersecting;
+    }
   }
   return viewport_intersection_.value();
 }
@@ -492,6 +548,15 @@ void FrameNodeImpl::SetViewportIntersection(
   // The outermost main frame or embedder is always fully intersecting with the
   // viewport, so it is not tracked.
   if (!parent_or_outer_document_or_embedder()) {
+    if (is_inner_frame_root_) {
+      // An inner frame root that is detached from its outer document (see
+      // SetOuterDocumentForInnerFrameRoot()) is not rendered in any outer
+      // document. Ignore viewport intersection updates until it is attached
+      // again.
+      CHECK(
+          base::FeatureList::IsEnabled(blink::features::kPersistentWidgetAPI));
+      return;
+    }
     mojo::ReportBadMessage(
         "The viewport intersection is never sent for the outermost main "
         "frame.");
@@ -821,6 +886,25 @@ void FrameNodeImpl::OnBeforeLeavingGraph() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   DCHECK(child_frame_nodes_.empty());
+
+  // The inner frame tree of an MPArch <webview> never outlives its outer
+  // document, but the inner frame tree of a <persistentwidget> can. Detach any
+  // inner frame roots whose outer document is this frame node so that they
+  // don't keep a dangling pointer to it. Inner frame roots are always main
+  // frames of the same page as their outer document, so only that page's main
+  // frames need to be checked.
+  if (base::FeatureList::IsEnabled(blink::features::kPersistentWidgetAPI)) {
+    // TODO(crbug.com/537818859): Always detach inner frame roots here (possibly
+    // by tracking them in a NodeSet that mirrors
+    // `outer_document_for_inner_frame_root_`, like `child_frame_nodes_` mirrors
+    // `parent_frame_node_`), and remove DanglingUntriaged from
+    // `outer_document_for_inner_frame_root_`.
+    for (FrameNodeImpl* main_frame_node : page_node_->main_frame_nodes()) {
+      if (main_frame_node->outer_document_for_inner_frame_root_ == this) {
+        main_frame_node->SetOuterDocumentForInnerFrameRoot(nullptr);
+      }
+    }
+  }
 
   SeverPageRelationshipsAndMaybeReparent();
 }

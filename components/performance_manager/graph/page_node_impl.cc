@@ -10,6 +10,7 @@
 
 #include "base/byte_size.h"
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
@@ -27,6 +28,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/perfetto/include/perfetto/tracing/tracing.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
@@ -485,7 +487,15 @@ FrameNodeImpl* PageNodeImpl::primary_main_frame_node() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (FrameNodeImpl* frame : main_frame_nodes()) {
     if (frame->IsActive() && !frame->parent_or_outer_document()) {
-      return frame;
+      if (frame->is_inner_frame_root()) {
+        // An inner frame root is never the primary main frame, even if it is
+        // currently detached from its outer document (see
+        // FrameNodeImpl::SetOuterDocumentForInnerFrameRoot()).
+        CHECK(base::FeatureList::IsEnabled(
+            blink::features::kPersistentWidgetAPI));
+      } else {
+        return frame;
+      }
     }
   }
   return nullptr;

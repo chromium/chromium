@@ -12,6 +12,7 @@
 #include "base/task/task_traits.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gtest_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/public/mojom/coordination_unit.mojom.h"
@@ -25,6 +26,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom.h"
 #include "third_party/blink/public/mojom/frame/viewport_intersection_state.mojom.h"
 #include "url/origin.h"
@@ -1114,6 +1116,301 @@ TEST_F(FrameNodeImplTest, ResetCoordinationUnitReceiverOnDiscard) {
   child_frame_run_loop.Run();
   EXPECT_FALSE(main_frame_remote.is_connected());
   EXPECT_FALSE(child_frame_remote.is_connected());
+}
+
+TEST_F(FrameNodeImplTest, SetOuterDocumentForInnerFrameRoot) {
+  base::test::ScopedFeatureList feature_list(
+      blink::features::kPersistentWidgetAPI);
+
+  auto process = CreateNode<ProcessNodeImpl>();
+  auto page = CreateNode<PageNodeImpl>();
+  auto main_frame = CreateFrameNodeAutoId(process.get(), page.get());
+  auto child_frame =
+      CreateFrameNodeAutoId(process.get(), page.get(), main_frame.get());
+  auto inner_root = CreateNode<FrameNodeImpl>(
+      process.get(), page.get(), /*parent_frame_node=*/nullptr,
+      /*outer_document_for_inner_frame_root=*/main_frame.get(),
+      NextTestFrameRoutingId());
+  const FrameNode* public_inner_root = inner_root.get();
+
+  EXPECT_FALSE(main_frame->is_inner_frame_root());
+  EXPECT_FALSE(child_frame->is_inner_frame_root());
+  EXPECT_TRUE(inner_root->is_inner_frame_root());
+  EXPECT_TRUE(inner_root->IsMainFrame());
+  EXPECT_EQ(main_frame.get(), public_inner_root->GetParentOrOuterDocument());
+  EXPECT_EQ(main_frame.get(),
+            public_inner_root->GetParentOrOuterDocumentOrEmbedder());
+  EXPECT_EQ(main_frame.get(), page->primary_main_frame_node());
+
+  inner_root->SetViewportIntersection(ViewportIntersection::kNotIntersecting);
+  EXPECT_EQ(ViewportIntersection::kNotIntersecting,
+            inner_root->GetViewportIntersection());
+
+  MockObserver obs(graph());
+
+  // Move the inner frame root to a different outer document.
+  EXPECT_CALL(
+      obs, OnParentOrOuterDocumentChanged(inner_root.get(), main_frame.get()));
+  inner_root->SetOuterDocumentForInnerFrameRoot(child_frame.get());
+  testing::Mock::VerifyAndClear(&obs);
+  EXPECT_EQ(child_frame.get(), public_inner_root->GetParentOrOuterDocument());
+  EXPECT_EQ(child_frame.get(),
+            public_inner_root->GetParentOrOuterDocumentOrEmbedder());
+
+  // The viewport intersection is not recalculated when the outer document
+  // changes. It keeps its last known value until an update is received for the
+  // new outer document.
+  EXPECT_EQ(ViewportIntersection::kNotIntersecting,
+            inner_root->GetViewportIntersection());
+  EXPECT_CALL(obs, OnViewportIntersectionChanged(inner_root.get()));
+  EXPECT_CALL(obs, OnIsIntersectingLargeAreaChanged(inner_root.get()));
+  inner_root->SetViewportIntersection(ViewportIntersection::kIntersecting);
+  testing::Mock::VerifyAndClear(&obs);
+  EXPECT_EQ(ViewportIntersection::kIntersecting,
+            inner_root->GetViewportIntersection());
+
+  EXPECT_CALL(obs, OnViewportIntersectionChanged(inner_root.get()));
+  EXPECT_CALL(obs, OnIsIntersectingLargeAreaChanged(inner_root.get()));
+  inner_root->SetViewportIntersection(ViewportIntersection::kNotIntersecting);
+  testing::Mock::VerifyAndClear(&obs);
+  EXPECT_EQ(ViewportIntersection::kNotIntersecting,
+            inner_root->GetViewportIntersection());
+
+  // Setting the same outer document again doesn't notify.
+  inner_root->SetOuterDocumentForInnerFrameRoot(child_frame.get());
+  testing::Mock::VerifyAndClear(&obs);
+
+  // Detach the inner frame root.
+  EXPECT_CALL(
+      obs, OnParentOrOuterDocumentChanged(inner_root.get(), child_frame.get()));
+  inner_root->SetOuterDocumentForInnerFrameRoot(nullptr);
+  testing::Mock::VerifyAndClear(&obs);
+  EXPECT_FALSE(public_inner_root->GetParentOrOuterDocument());
+  EXPECT_FALSE(public_inner_root->GetParentOrOuterDocumentOrEmbedder());
+
+  // A detached inner frame root is still not an outermost main frame.
+  EXPECT_TRUE(inner_root->is_inner_frame_root());
+  EXPECT_EQ(main_frame.get(), page->primary_main_frame_node());
+  EXPECT_EQ(ViewportIntersection::kNotIntersecting,
+            inner_root->GetViewportIntersection());
+
+  // Viewport intersection updates are ignored (and not reported as bad
+  // messages) while detached.
+  inner_root->SetViewportIntersection(ViewportIntersection::kIntersecting);
+  EXPECT_EQ(ViewportIntersection::kNotIntersecting,
+            inner_root->GetViewportIntersection());
+  testing::Mock::VerifyAndClear(&obs);
+
+  // Re-attach the inner frame root.
+  EXPECT_CALL(obs, OnParentOrOuterDocumentChanged(inner_root.get(), nullptr));
+  inner_root->SetOuterDocumentForInnerFrameRoot(main_frame.get());
+  testing::Mock::VerifyAndClear(&obs);
+  EXPECT_EQ(main_frame.get(), public_inner_root->GetParentOrOuterDocument());
+
+  // The last known viewport intersection is kept until an update is received,
+  // and updates are handled again now that the inner frame root is attached.
+  EXPECT_EQ(ViewportIntersection::kNotIntersecting,
+            inner_root->GetViewportIntersection());
+  EXPECT_CALL(obs, OnViewportIntersectionChanged(inner_root.get()));
+  EXPECT_CALL(obs, OnIsIntersectingLargeAreaChanged(inner_root.get()));
+  inner_root->SetViewportIntersection(ViewportIntersection::kIntersecting);
+  testing::Mock::VerifyAndClear(&obs);
+  EXPECT_EQ(ViewportIntersection::kIntersecting,
+            inner_root->GetViewportIntersection());
+  EXPECT_TRUE(inner_root->IsIntersectingLargeArea());
+}
+
+// A detached inner frame root keeps its last known kIntersecting viewport
+// intersection, with and without IsIntersectingLargeArea().
+TEST_F(FrameNodeImplTest, DetachedInnerFrameRootKeepsIntersectingState) {
+  base::test::ScopedFeatureList feature_list(
+      blink::features::kPersistentWidgetAPI);
+
+  for (const bool is_intersecting_large_area : {true, false}) {
+    SCOPED_TRACE(is_intersecting_large_area);
+
+    auto process = CreateNode<ProcessNodeImpl>();
+    auto page = CreateNode<PageNodeImpl>();
+    auto main_frame = CreateFrameNodeAutoId(process.get(), page.get());
+    auto inner_root = CreateNode<FrameNodeImpl>(
+        process.get(), page.get(), /*parent_frame_node=*/nullptr,
+        /*outer_document_for_inner_frame_root=*/main_frame.get(),
+        NextTestFrameRoutingId());
+
+    inner_root->SetViewportIntersection(ViewportIntersection::kIntersecting);
+    inner_root->SetIsIntersectingLargeArea(is_intersecting_large_area);
+    EXPECT_EQ(ViewportIntersection::kIntersecting,
+              inner_root->GetViewportIntersection());
+    EXPECT_EQ(is_intersecting_large_area,
+              inner_root->IsIntersectingLargeArea());
+
+    MockObserver obs(graph());
+
+    // Detaching only notifies that the outer document changed.
+    EXPECT_CALL(obs, OnParentOrOuterDocumentChanged(inner_root.get(),
+                                                    main_frame.get()));
+    inner_root->SetOuterDocumentForInnerFrameRoot(nullptr);
+    testing::Mock::VerifyAndClear(&obs);
+    EXPECT_EQ(ViewportIntersection::kIntersecting,
+              inner_root->GetViewportIntersection());
+    EXPECT_EQ(is_intersecting_large_area,
+              inner_root->IsIntersectingLargeArea());
+
+    // Viewport intersection updates are ignored while detached.
+    inner_root->SetViewportIntersection(ViewportIntersection::kNotIntersecting);
+    testing::Mock::VerifyAndClear(&obs);
+    EXPECT_EQ(ViewportIntersection::kIntersecting,
+              inner_root->GetViewportIntersection());
+    EXPECT_EQ(is_intersecting_large_area,
+              inner_root->IsIntersectingLargeArea());
+  }
+}
+
+// An inner frame root adopts the IsIntersectingLargeArea() state of its new
+// outer document, but keeps its last known state while detached.
+TEST_F(FrameNodeImplTest, OuterDocumentChangeUpdatesIsIntersectingLargeArea) {
+  base::test::ScopedFeatureList feature_list(
+      blink::features::kPersistentWidgetAPI);
+
+  auto process = CreateNode<ProcessNodeImpl>();
+  auto other_process = CreateNode<ProcessNodeImpl>();
+  auto page = CreateNode<PageNodeImpl>();
+  auto main_frame = CreateFrameNodeAutoId(process.get(), page.get());
+  // A local root that doesn't intersect with a large area of the viewport.
+  auto small_frame =
+      CreateFrameNodeAutoId(other_process.get(), page.get(), main_frame.get());
+  small_frame->SetViewportIntersection(ViewportIntersection::kIntersecting);
+  small_frame->SetIsIntersectingLargeArea(false);
+  ASSERT_TRUE(main_frame->IsIntersectingLargeArea());
+  ASSERT_FALSE(small_frame->IsIntersectingLargeArea());
+
+  // The inner frame root receives its own IsIntersectingLargeArea() updates.
+  auto inner_root = CreateNode<FrameNodeImpl>(
+      process.get(), page.get(), /*parent_frame_node=*/nullptr,
+      /*outer_document_for_inner_frame_root=*/main_frame.get(),
+      NextTestFrameRoutingId());
+  inner_root->SetViewportIntersection(ViewportIntersection::kIntersecting);
+  inner_root->SetIsIntersectingLargeArea(true);
+  EXPECT_TRUE(inner_root->IsIntersectingLargeArea());
+
+  MockObserver obs(graph());
+
+  // Moving to an outer document that doesn't intersect with a large area
+  // updates the inner frame root, after notifying that the outer document
+  // changed.
+  {
+    InSequence seq;
+    EXPECT_CALL(obs, OnParentOrOuterDocumentChanged(inner_root.get(),
+                                                    main_frame.get()));
+    EXPECT_CALL(obs, OnIsIntersectingLargeAreaChanged(inner_root.get()));
+  }
+  inner_root->SetOuterDocumentForInnerFrameRoot(small_frame.get());
+  testing::Mock::VerifyAndClear(&obs);
+  EXPECT_FALSE(inner_root->IsIntersectingLargeArea());
+
+  // The state is kept while detached.
+  EXPECT_CALL(
+      obs, OnParentOrOuterDocumentChanged(inner_root.get(), small_frame.get()));
+  inner_root->SetOuterDocumentForInnerFrameRoot(nullptr);
+  testing::Mock::VerifyAndClear(&obs);
+  EXPECT_FALSE(inner_root->IsIntersectingLargeArea());
+
+  // Re-attaching to an outer document that intersects with a large area
+  // updates the inner frame root again.
+  {
+    InSequence seq;
+    EXPECT_CALL(obs, OnParentOrOuterDocumentChanged(inner_root.get(), nullptr));
+    EXPECT_CALL(obs, OnIsIntersectingLargeAreaChanged(inner_root.get()));
+  }
+  inner_root->SetOuterDocumentForInnerFrameRoot(main_frame.get());
+  testing::Mock::VerifyAndClear(&obs);
+  EXPECT_TRUE(inner_root->IsIntersectingLargeArea());
+}
+
+TEST_F(FrameNodeImplDeathTest, SetOuterDocumentForNonInnerFrameRoot) {
+  base::test::ScopedFeatureList feature_list(
+      blink::features::kPersistentWidgetAPI);
+
+  auto process = CreateNode<ProcessNodeImpl>();
+  auto page = CreateNode<PageNodeImpl>();
+  auto main_frame = CreateFrameNodeAutoId(process.get(), page.get());
+  auto child_frame =
+      CreateFrameNodeAutoId(process.get(), page.get(), main_frame.get());
+  auto other_main_frame = CreateFrameNodeAutoId(process.get(), page.get());
+
+  // Only frame nodes created as inner frame roots can change their outer
+  // document.
+  EXPECT_CHECK_DEATH(
+      other_main_frame->SetOuterDocumentForInnerFrameRoot(main_frame.get()));
+  EXPECT_CHECK_DEATH(
+      child_frame->SetOuterDocumentForInnerFrameRoot(main_frame.get()));
+}
+
+TEST_F(FrameNodeImplDeathTest, SetOuterDocumentWithFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(blink::features::kPersistentWidgetAPI);
+
+  auto process = CreateNode<ProcessNodeImpl>();
+  auto page = CreateNode<PageNodeImpl>();
+  auto main_frame = CreateFrameNodeAutoId(process.get(), page.get());
+  auto child_frame =
+      CreateFrameNodeAutoId(process.get(), page.get(), main_frame.get());
+  auto inner_root = CreateNode<FrameNodeImpl>(
+      process.get(), page.get(), /*parent_frame_node=*/nullptr,
+      /*outer_document_for_inner_frame_root=*/main_frame.get(),
+      NextTestFrameRoutingId());
+
+  // The outer document of an inner frame root can only change or be cleared if
+  // kPersistentWidgetAPI is enabled.
+  EXPECT_CHECK_DEATH(
+      inner_root->SetOuterDocumentForInnerFrameRoot(child_frame.get()));
+  EXPECT_CHECK_DEATH(inner_root->SetOuterDocumentForInnerFrameRoot(nullptr));
+}
+
+TEST_F(FrameNodeImplTest, OuterDocumentRemovedBeforeInnerFrameRoot) {
+  base::test::ScopedFeatureList feature_list(
+      blink::features::kPersistentWidgetAPI);
+
+  auto process = CreateNode<ProcessNodeImpl>();
+  auto page = CreateNode<PageNodeImpl>();
+  auto main_frame = CreateFrameNodeAutoId(process.get(), page.get());
+  auto child_frame =
+      CreateFrameNodeAutoId(process.get(), page.get(), main_frame.get());
+  auto inner_root = CreateNode<FrameNodeImpl>(
+      process.get(), page.get(), /*parent_frame_node=*/nullptr,
+      /*outer_document_for_inner_frame_root=*/child_frame.get(),
+      NextTestFrameRoutingId());
+  const FrameNode* public_inner_root = inner_root.get();
+  EXPECT_EQ(child_frame.get(), public_inner_root->GetParentOrOuterDocument());
+
+  MockObserver obs(graph());
+  {
+    InSequence seq;
+    // The inner frame root is detached before observers are notified that the
+    // outer document is being removed.
+    EXPECT_CALL(obs, OnParentOrOuterDocumentChanged(inner_root.get(),
+                                                    child_frame.get()));
+    EXPECT_CALL(obs, OnBeforeFrameNodeRemoved(child_frame.get()));
+    EXPECT_CALL(
+        obs, OnFrameNodeRemoved(child_frame.get(), main_frame.get(), page.get(),
+                                process.get(), main_frame.get()));
+  }
+  child_frame.reset();
+  testing::Mock::VerifyAndClear(&obs);
+
+  // The inner frame root no longer points to the removed outer document, and
+  // is still not treated as an outermost main frame.
+  EXPECT_FALSE(public_inner_root->GetParentOrOuterDocument());
+  EXPECT_FALSE(public_inner_root->GetParentOrOuterDocumentOrEmbedder());
+  EXPECT_TRUE(inner_root->is_inner_frame_root());
+  EXPECT_EQ(main_frame.get(), page->primary_main_frame_node());
+  inner_root->SetViewportIntersection(ViewportIntersection::kIntersecting);
+
+  // The inner frame root can be removed after its outer document.
+  EXPECT_CALL(obs, OnBeforeFrameNodeRemoved(inner_root.get()));
+  EXPECT_CALL(obs, OnFrameNodeRemoved(inner_root.get(), nullptr, page.get(),
+                                      process.get(), nullptr));
+  inner_root.reset();
 }
 
 }  // namespace performance_manager

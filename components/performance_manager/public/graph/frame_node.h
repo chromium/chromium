@@ -104,7 +104,10 @@ class FrameNode : public TypedNode<FrameNode> {
   // <fencedframe>). Unlike GetParentOrOuterDocumentOrEmbedder(), this does
   // not traverse to embedders (e.g. GuestViews). This is a constant over the
   // lifetime of the frame, except that it will always be null during the
-  // OnBeforeFrameNodeAdded() and OnFrameNodeRemoved() notifications.
+  // OnBeforeFrameNodeAdded() and OnFrameNodeRemoved() notifications, and that
+  // the outer document of a <persistentwidget> root can change or become null
+  // (see FrameNodeObserver::OnParentOrOuterDocumentChanged()). The latter only
+  // happens if blink::features::kPersistentWidgetAPI is enabled.
   //
   // This method is equivalent to RenderFrameHost::GetParentOrOuterDocument().
   virtual const FrameNode* GetParentOrOuterDocument() const = 0;
@@ -113,7 +116,10 @@ class FrameNode : public TypedNode<FrameNode> {
   // which will either be a parent (for <iframe>s) or outer document (for
   // <fencedframe> or an embedder (e.g. GuestViews)). This is a constant over
   // the lifetime of the frame, except that it will always be null during the
-  // OnBeforeFrameNodeAdded() and OnFrameNodeRemoved() notifications.
+  // OnBeforeFrameNodeAdded() and OnFrameNodeRemoved() notifications, and that
+  // the outer document of a <persistentwidget> root can change or become null
+  // (see FrameNodeObserver::OnParentOrOuterDocumentChanged()). The latter only
+  // happens if blink::features::kPersistentWidgetAPI is enabled.
   //
   // This method is equivalent to
   // RenderFrameHost::GetParentOrOuterDocumentOrEmbedder().
@@ -372,6 +378,16 @@ class FrameNodeObserver : public base::CheckedObserver {
       const FrameNode* previous_parent_or_outer_document_or_embedder) {}
 
   // Notifications of property changes.
+
+  // Invoked when the outer document of an inner frame root changes while the
+  // frame node is in the graph. This only happens for the root of a
+  // <persistentwidget> inner frame tree, which can outlive or move between
+  // embedding documents. The new outer document, which can be null if the
+  // inner frame root is detached, is returned by GetParentOrOuterDocument().
+  // `previous_parent_or_outer_document` is the previously returned value.
+  virtual void OnParentOrOuterDocumentChanged(
+      const FrameNode* frame_node,
+      const FrameNode* previous_parent_or_outer_document) {}
 
   // Invoked when the IsActive property changes.
   virtual void OnIsActiveChanged(const FrameNode* frame_node) {}
