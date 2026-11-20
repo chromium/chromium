@@ -156,13 +156,12 @@ inline bool Quarantine(void* object, size_t object_size, size_t alignment) {
   // but it can be cold in cache. So, prefetches it to avoid stall.
   PA_PREFETCH_FOR_WRITE(object);
 
-  if (!partition_alloc::IsManagedByPartitionAlloc(
-          reinterpret_cast<uintptr_t>(object))) [[unlikely]] {
-    return false;
-  }
-
   partition_alloc::UntaggedSlotStart slot_start =
       partition_alloc::SlotStart::Unchecked(object).Untag();
+  if (!partition_alloc::IsManagedByPartitionAlloc(slot_start.value()))
+      [[unlikely]] {
+    return false;
+  }
 
   // TODO(yukishiino): It may and may not be more performative to get the root
   // via `FromAddrInFirstSuperpage(internal::ObjectPtr2Addr(object))`.
