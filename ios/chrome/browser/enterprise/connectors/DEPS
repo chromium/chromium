@@ -1,7 +1,14 @@
 include_rules = [
   # keep-sorted start
+  "+ios/chrome/browser/history/model",
   "+ios/chrome/browser/safe_browsing/model",
   "+ios/chrome/browser/signin/model",
   "+ios/components/enterprise/analysis",
   # keep-sorted end
 ]
+
+specific_include_rules = {
+  "ios_enterprise_interstitial_unittest\\.mm": [
+    "+components/history/core/test/history_service_test_util.h",
+  ],
+}

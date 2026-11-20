@@ -11,10 +11,11 @@ namespace security_interstitials {
 IOSBlockingPageMetricsHelper::IOSBlockingPageMetricsHelper(
     web::WebState* web_state,
     const GURL& request_url,
-    const security_interstitials::MetricsHelper::ReportDetails report_details)
+    security_interstitials::MetricsHelper::ReportDetails report_details,
+    history::HistoryService* history_service)
     : security_interstitials::MetricsHelper(request_url,
                                             report_details,
-                                            nullptr) {}
+                                            history_service) {}
 
 IOSBlockingPageMetricsHelper::~IOSBlockingPageMetricsHelper() {}
 

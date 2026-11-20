@@ -8,6 +8,10 @@
 #include "components/security_interstitials/core/metrics_helper.h"
 #include "url/gurl.h"
 
+namespace history {
+class HistoryService;
+}
+
 namespace web {
 class WebState;
 }
@@ -20,11 +24,13 @@ namespace security_interstitials {
 class IOSBlockingPageMetricsHelper
     : public security_interstitials::MetricsHelper {
  public:
+  // If `history_service` is non-null, it is used to look up prior visits to
+  // the host of `request_url` so that `.repeat_visit` decisions are recorded.
   IOSBlockingPageMetricsHelper(
       web::WebState* web_state,
       const GURL& request_url,
-      const security_interstitials::MetricsHelper::ReportDetails
-          report_details);
+      security_interstitials::MetricsHelper::ReportDetails report_details,
+      history::HistoryService* history_service = nullptr);
 
   IOSBlockingPageMetricsHelper(const IOSBlockingPageMetricsHelper&) = delete;
   IOSBlockingPageMetricsHelper& operator=(const IOSBlockingPageMetricsHelper&) =

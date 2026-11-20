@@ -6,13 +6,19 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/time/time.h"
 #include "chrome/browser/enterprise/connectors/interstitials/enterprise_block_controller_client.h"
 #include "chrome/browser/enterprise/connectors/interstitials/enterprise_block_page.h"
 #include "chrome/browser/enterprise/connectors/interstitials/enterprise_warn_controller_client.h"
 #include "chrome/browser/enterprise/connectors/interstitials/enterprise_warn_page.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/history/core/browser/history_service.h"
+#include "components/history/core/browser/history_types.h"
+#include "components/history/core/test/history_service_test_util.h"
+#include "components/keyed_service/core/service_access_type.h"
 #include "components/safe_browsing/content/browser/interstitials/base_ui_manager.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/security_interstitials/core/controller_client.h"
@@ -37,6 +43,13 @@ class TestEnterpriseWarnPage : public EnterpriseWarnPage {
   using EnterpriseWarnPage::OnInterstitialClosing;
 };
 
+class TestEnterpriseBlockControllerClient
+    : public EnterpriseBlockControllerClient {
+ public:
+  using EnterpriseBlockControllerClient::EnterpriseBlockControllerClient;
+  void GoBack() override {}
+};
+
 class TestEnterpriseWarnControllerClient
     : public EnterpriseWarnControllerClient {
  public:
@@ -47,8 +60,12 @@ class TestEnterpriseWarnControllerClient
 
 constexpr char kBlockDecisionHistogram[] =
     "interstitial.enterprise_block.decision";
+constexpr char kBlockRepeatVisitDecisionHistogram[] =
+    "interstitial.enterprise_block.decision.repeat_visit";
 constexpr char kWarnDecisionHistogram[] =
     "interstitial.enterprise_warn.decision";
+constexpr char kWarnRepeatVisitDecisionHistogram[] =
+    "interstitial.enterprise_warn.decision.repeat_visit";
 constexpr char kTestUrl[] = "http://example.com";
 constexpr char kTestBlockMessage[] = "Test block message";
 constexpr char kTestWarnMessage[] = "Test warn message";
@@ -73,7 +90,10 @@ class EnterprisePageTest : public testing::Test {
  public:
   EnterprisePageTest() : profile_manager_(TestingBrowserProcess::GetGlobal()) {
     EXPECT_TRUE(profile_manager_.SetUp());
-    profile_ = profile_manager_.CreateTestingProfile("test-user");
+    profile_ = profile_manager_.CreateTestingProfile(
+        "test-user", {TestingProfile::TestingFactory{
+                         HistoryServiceFactory::GetInstance(),
+                         HistoryServiceFactory::GetDefaultFactory()}});
   }
 
   content::WebContents* web_contents() {
@@ -82,6 +102,18 @@ class EnterprisePageTest : public testing::Test {
       web_contents_ = content::WebContents::Create(params);
     }
     return web_contents_.get();
+  }
+
+  history::HistoryService* history_service() {
+    return HistoryServiceFactory::GetForProfile(
+        profile_, ServiceAccessType::EXPLICIT_ACCESS);
+  }
+
+  // Waits until the history backend has handled all pending requests and their
+  // replies (e.g. the visit count lookup started by `MetricsHelper`) have run.
+  void WaitForHistory() {
+    history::BlockUntilHistoryProcessesPendingRequests(history_service());
+    task_environment_.RunUntilIdle();
   }
 
  private:
@@ -412,4 +444,125 @@ TEST_F(EnterprisePageTest, EnterpriseWarn_DontProceedNotRecordedAfterProceed) {
       kWarnDecisionHistogram,
       security_interstitials::MetricsHelper::DONT_PROCEED, 0);
 }
+
+TEST_F(EnterprisePageTest, EnterpriseWarn_RepeatVisitRecordedOnDontProceed) {
+  base::HistogramTester histograms;
+  const GURL url("https://exampleurl.net");
+
+  history_service()->AddPage(url, base::Time::Now() - base::Days(1),
+                             history::SOURCE_BROWSED);
+  WaitForHistory();
+
+  TestEnterpriseWarnPage test_page(
+      nullptr, web_contents(), url,
+      safe_browsing::SafeBrowsingBlockingPage::UnsafeResourceList(),
+      std::make_unique<TestEnterpriseWarnControllerClient>(web_contents(),
+                                                           url));
+  WaitForHistory();
+
+  test_page.OnInterstitialClosing();
+
+  histograms.ExpectTotalCount(kWarnRepeatVisitDecisionHistogram, 2);
+  histograms.ExpectBucketCount(kWarnRepeatVisitDecisionHistogram,
+                               security_interstitials::MetricsHelper::SHOW, 1);
+  histograms.ExpectBucketCount(
+      kWarnRepeatVisitDecisionHistogram,
+      security_interstitials::MetricsHelper::DONT_PROCEED, 1);
+}
+
+TEST_F(EnterprisePageTest, EnterpriseWarn_RepeatVisitRecordedOnProceed) {
+  base::HistogramTester histograms;
+  const GURL url("https://exampleurl.net");
+
+  history_service()->AddPage(url, base::Time::Now() - base::Days(1),
+                             history::SOURCE_BROWSED);
+  WaitForHistory();
+
+  TestEnterpriseWarnPage test_page(
+      nullptr, web_contents(), url,
+      safe_browsing::SafeBrowsingBlockingPage::UnsafeResourceList(),
+      std::make_unique<TestEnterpriseWarnControllerClient>(web_contents(),
+                                                           url));
+  WaitForHistory();
+
+  test_page.CommandReceived(
+      base::NumberToString(security_interstitials::CMD_PROCEED));
+  test_page.OnInterstitialClosing();
+
+  histograms.ExpectTotalCount(kWarnRepeatVisitDecisionHistogram, 2);
+  histograms.ExpectBucketCount(kWarnRepeatVisitDecisionHistogram,
+                               security_interstitials::MetricsHelper::SHOW, 1);
+  histograms.ExpectBucketCount(kWarnRepeatVisitDecisionHistogram,
+                               security_interstitials::MetricsHelper::PROCEED,
+                               1);
+}
+
+TEST_F(EnterprisePageTest, EnterpriseWarn_RepeatVisitNotRecordedOnFirstVisit) {
+  base::HistogramTester histograms;
+  const GURL url("https://exampleurl.net");
+
+  TestEnterpriseWarnPage test_page(
+      nullptr, web_contents(), url,
+      safe_browsing::SafeBrowsingBlockingPage::UnsafeResourceList(),
+      std::make_unique<TestEnterpriseWarnControllerClient>(web_contents(),
+                                                           url));
+  WaitForHistory();
+
+  test_page.OnInterstitialClosing();
+
+  histograms.ExpectBucketCount(
+      kWarnDecisionHistogram,
+      security_interstitials::MetricsHelper::DONT_PROCEED, 1);
+  histograms.ExpectTotalCount(kWarnRepeatVisitDecisionHistogram, 0);
+}
+
+TEST_F(EnterprisePageTest, EnterpriseBlock_RepeatVisitRecordedOnDontProceed) {
+  base::HistogramTester histograms;
+  const GURL url("https://exampleurl.net");
+
+  // Simulate a visit to the host from before it was blocked.
+  history_service()->AddPage(url, base::Time::Now() - base::Days(1),
+                             history::SOURCE_BROWSED);
+  WaitForHistory();
+
+  TestEnterpriseBlockPage test_page(
+      nullptr, web_contents(), url,
+      safe_browsing::SafeBrowsingBlockingPage::UnsafeResourceList(),
+      std::make_unique<TestEnterpriseBlockControllerClient>(web_contents(),
+                                                            url));
+  WaitForHistory();
+
+  test_page.CommandReceived(
+      base::NumberToString(security_interstitials::CMD_DONT_PROCEED));
+
+  // `PROCEEDING_DISABLED` is not a repeat visit decision, so only the paired
+  // `SHOW` and `DONT_PROCEED` are recorded.
+  histograms.ExpectTotalCount(kBlockRepeatVisitDecisionHistogram, 2);
+  histograms.ExpectBucketCount(kBlockRepeatVisitDecisionHistogram,
+                               security_interstitials::MetricsHelper::SHOW, 1);
+  histograms.ExpectBucketCount(
+      kBlockRepeatVisitDecisionHistogram,
+      security_interstitials::MetricsHelper::DONT_PROCEED, 1);
+}
+
+TEST_F(EnterprisePageTest, EnterpriseBlock_RepeatVisitNotRecordedOnFirstVisit) {
+  base::HistogramTester histograms;
+  const GURL url("https://exampleurl.net");
+
+  TestEnterpriseBlockPage test_page(
+      nullptr, web_contents(), url,
+      safe_browsing::SafeBrowsingBlockingPage::UnsafeResourceList(),
+      std::make_unique<TestEnterpriseBlockControllerClient>(web_contents(),
+                                                            url));
+  WaitForHistory();
+
+  test_page.CommandReceived(
+      base::NumberToString(security_interstitials::CMD_DONT_PROCEED));
+
+  histograms.ExpectBucketCount(
+      kBlockDecisionHistogram,
+      security_interstitials::MetricsHelper::DONT_PROCEED, 1);
+  histograms.ExpectTotalCount(kBlockRepeatVisitDecisionHistogram, 0);
+}
+
 }  // namespace
