@@ -1,4 +1,4 @@
-rainhard@chromium.org
+file://chrome/browser/resources/settings/privacy_page/OWNERS
 
 # For AI Mode Search settings.
 per-file ai_mode_search_page.*=file://components/contextual_tasks/OWNERS
