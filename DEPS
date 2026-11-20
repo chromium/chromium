@@ -3595,13 +3595,13 @@ deps = {
 
   'src/chrome/app/theme/default_100_percent/google_chrome': {
       'url': Var('chrome_git') + '/chrome/theme/default_100_percent/google_chrome.git' + '@' +
-        '9359113b3b02b52b09c252d90effa04c37401629',
+        '516a5d2977210d4e5ab6e80110c9725a9d2a1426',
       'condition': 'checkout_src_internal',
   },
 
   'src/chrome/app/theme/default_200_percent/google_chrome': {
       'url': Var('chrome_git') + '/chrome/theme/default_200_percent/google_chrome.git' + '@' +
-        'b8e53e3f7dd5f195627859c052ad9a94c45cae8d',
+        'e770d86107e9ec6d6cf1d4053a82ab4464652575',
       'condition': 'checkout_src_internal',
   },
 
