@@ -25,6 +25,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.glic.GlicNudgeActivity;
 import org.chromium.chrome.browser.glic.SecondaryAction;
+import org.chromium.chrome.browser.glic.SecondaryIcon;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask.NativeBrowserWindowInterface;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskFeature.InitInfo;
 
@@ -82,8 +83,24 @@ public class GlicSplitButtonDelegateBridgeUnitTest {
         mBridge.onActorTaskListBubbleDismissed();
         verify(mNativesMock).onActorTaskListBubbleDismissed(NATIVE_BRIDGE_PTR);
 
-        mBridge.updateSplitButtonUi(SecondaryAction.TEXT, "Acting on 1 tab");
-        verify(mDelegateMock).updateSplitButtonUi(SecondaryAction.TEXT, "Acting on 1 tab");
+        mBridge.updateSplitButtonUi(
+                SecondaryAction.TEXT, SecondaryIcon.CURSOR_SPARK, "Acting on 1 tab");
+        verify(mDelegateMock)
+                .updateSplitButtonUi(
+                        SecondaryAction.TEXT, SecondaryIcon.CURSOR_SPARK, "Acting on 1 tab");
+
+        mBridge.updateSplitButtonUi(SecondaryAction.TEXT, SecondaryIcon.TASK_SPARK, "Task done");
+        verify(mDelegateMock)
+                .updateSplitButtonUi(SecondaryAction.TEXT, SecondaryIcon.TASK_SPARK, "Task done");
+
+        mBridge.updateSplitButtonUi(
+                SecondaryAction.TEXT, SecondaryIcon.CHAT_SPARK, "Response ready");
+        verify(mDelegateMock)
+                .updateSplitButtonUi(
+                        SecondaryAction.TEXT, SecondaryIcon.CHAT_SPARK, "Response ready");
+
+        mBridge.updateSplitButtonUi(SecondaryAction.CHEVRON, SecondaryIcon.NONE, "");
+        verify(mDelegateMock).updateSplitButtonUi(SecondaryAction.CHEVRON, SecondaryIcon.NONE, "");
 
         // Removing the feature destroys the native bridge and stops forwarding.
         mBridge.onFeatureRemoved();

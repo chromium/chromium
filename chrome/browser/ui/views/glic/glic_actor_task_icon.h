@@ -10,10 +10,12 @@
 #include <string>
 
 #include "base/callback_list.h"
+#include "base/feature_list.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/glic/browser_ui/glic_split_button_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_split_button_delegate.h"
 #include "chrome/browser/glic/browser_ui/glic_split_button_ui_state.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/glic/glic_base_shim.h"
@@ -22,9 +24,11 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_variant.h"
 #include "ui/compositor/layer.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/menu_button_controller.h"
 #include "ui/views/layout/box_layout.h"
@@ -186,10 +190,10 @@ class GlicActorTaskIcon : public GlicBaseShim<T> {
   // Sets the task icon to its default colors, label, and tooltip text.
   void SetTaskIconToDefault() {
     SetText(std::u16string());
-    // TODO(b/582808470): Use a generalized Activity Hub tooltip string when
-    // `features::kGlicActivityHub` is enabled.
-    this->SetTooltipText(
-        l10n_util::GetStringUTF16(IDS_ACTOR_TASK_INDICATOR_TOOLTIP));
+    this->SetTooltipText(l10n_util::GetStringUTF16(
+        base::FeatureList::IsEnabled(features::kGlicActivityHub)
+            ? IDS_GLIC_ACTIVITY_INDICATOR_TOOLTIP
+            : IDS_ACTOR_TASK_INDICATOR_TOOLTIP));
     SetDefaultColors();
   }
 
@@ -204,9 +208,7 @@ class GlicActorTaskIcon : public GlicBaseShim<T> {
         delegate.ShowGlicSecondaryButton();
         break;
       case GlicSplitButtonUiState::SecondaryAction::kText:
-        // TODO(b/582808470): Plumb per-alert secondary icons (e.g. chat spark
-        // vs. task completion) on `GlicSplitButtonUiState`.
-        this->SetVectorIcon(kCursorSparkIcon);
+        this->SetVectorIcon(GetSecondaryVectorIcon(state.secondary_icon));
         if (state.secondary_label.empty()) {
           SetTaskIconToDefault();
           delegate.ShowGlicSecondaryButton();
@@ -294,6 +296,20 @@ class GlicActorTaskIcon : public GlicBaseShim<T> {
   }
 
  private:
+  static const gfx::VectorIcon& GetSecondaryVectorIcon(
+      GlicSplitButtonUiState::SecondaryIcon icon) {
+    switch (icon) {
+      case GlicSplitButtonUiState::SecondaryIcon::kNone:
+      case GlicSplitButtonUiState::SecondaryIcon::kCursorSpark:
+        return kCursorSparkIcon;
+      case GlicSplitButtonUiState::SecondaryIcon::kTaskSpark:
+        return features::IsRoundedIconsEnabled() ? kTaskSparkIcon
+                                                 : kTaskSparkOldIcon;
+      case GlicSplitButtonUiState::SecondaryIcon::kChatSpark:
+        return vector_icons::kChatSparkIcon;
+    }
+  }
+
   void OnBrowserWindowDidBecomeActive(BrowserWindowInterface* bwi) {
     UpdateInkdropHoverColor(true);
   }

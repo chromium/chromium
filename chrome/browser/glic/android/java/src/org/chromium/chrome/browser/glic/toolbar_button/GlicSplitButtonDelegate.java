@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.glic.toolbar_button;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.glic.SecondaryAction;
+import org.chromium.chrome.browser.glic.SecondaryIcon;
 
 import java.util.List;
 
@@ -99,7 +100,12 @@ public interface GlicSplitButtonDelegate {
      * Called when native C++ updates the split button secondary UI state.
      *
      * @param secondaryAction The {@link SecondaryAction} to display.
+     * @param secondaryIcon The {@link SecondaryIcon} to display when secondaryAction is {@link
+     *     SecondaryAction#TEXT}.
      * @param secondaryLabel Text string when secondaryAction is {@link SecondaryAction#TEXT}.
      */
-    default void updateSplitButtonUi(@SecondaryAction int secondaryAction, String secondaryLabel) {}
+    default void updateSplitButtonUi(
+            @SecondaryAction int secondaryAction,
+            @SecondaryIcon int secondaryIcon,
+            String secondaryLabel) {}
 }

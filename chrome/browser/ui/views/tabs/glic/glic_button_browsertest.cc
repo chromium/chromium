@@ -2,9 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
+
 #include "base/callback_list.h"
 #include "base/test/run_until.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/glic/browser_ui/glic_split_button_ui_state.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
@@ -35,19 +39,23 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/prefs/pref_service.h"
+#include "components/vector_icons/vector_icons.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/mojom/menu_source_type.mojom-shared.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/events/event_constants.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/mouse_watcher.h"
@@ -112,6 +120,15 @@ bool NormalIconIsResource(views::LabelButton* button, int resource_id) {
       ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(resource_id);
   return expected &&
          model->GetImage().AsImageSkia().BackedBySameObjectAs(*expected);
+}
+
+const gfx::VectorIcon* GetButtonVectorIcon(const views::LabelButton* button) {
+  const std::optional<ui::ImageModel>& model =
+      button->GetImageModel(views::Button::STATE_NORMAL);
+  if (!model.has_value() || !model->IsVectorIcon()) {
+    return nullptr;
+  }
+  return model->GetVectorIcon().vector_icon();
 }
 
 // By default the button shows the Glic spark.
@@ -511,27 +528,59 @@ IN_PROC_BROWSER_TEST_F(ToolbarGlicActivityHubTest,
   EXPECT_TRUE(secondary_button->GetVisible());
   EXPECT_TRUE(secondary_button->IsFocusable());
   EXPECT_EQ(secondary_button->GetText(), u"");
+  EXPECT_EQ(GetButtonVectorIcon(secondary_button),
+            &vector_icons::kKeyboardArrowDownIcon);
+  EXPECT_EQ(secondary_button->GetTooltipText(),
+            l10n_util::GetStringUTF16(IDS_GLIC_ACTIVITY_INDICATOR_TOOLTIP));
   EXPECT_EQ(primary_button->GetText(), default_label);
 
-  // 2. Transition from kChevron to kText with label collapses primary button.
+  // 2. Transition from kChevron to kText alerts collapses primary button and
+  // updates per-alert icons and tooltips.
   state.secondary_action = GlicSplitButtonUiState::SecondaryAction::kText;
+  state.secondary_icon = GlicSplitButtonUiState::SecondaryIcon::kCursorSpark;
   state.secondary_label = u"Check task";
   UpdateGlicSplitButtonUi(state);
   EXPECT_TRUE(secondary_button->GetVisible());
   EXPECT_TRUE(secondary_button->IsFocusable());
   EXPECT_TRUE(toolbar_view->GetIsShowingGlicSecondaryNudge());
   EXPECT_EQ(secondary_button->GetText(), u"Check task");
+  EXPECT_EQ(secondary_button->GetTooltipText(), u"Check task");
+  EXPECT_EQ(GetButtonVectorIcon(secondary_button), &kCursorSparkIcon);
   EXPECT_EQ(primary_button->GetText(), u"");
+
+  state.secondary_icon = GlicSplitButtonUiState::SecondaryIcon::kTaskSpark;
+  state.secondary_label = u"Task done";
+  UpdateGlicSplitButtonUi(state);
+  EXPECT_TRUE(toolbar_view->GetIsShowingGlicSecondaryNudge());
+  EXPECT_EQ(secondary_button->GetText(), u"Task done");
+  EXPECT_EQ(secondary_button->GetTooltipText(), u"Task done");
+  EXPECT_EQ(
+      GetButtonVectorIcon(secondary_button),
+      features::IsRoundedIconsEnabled() ? &kTaskSparkIcon : &kTaskSparkOldIcon);
+
+  state.secondary_icon = GlicSplitButtonUiState::SecondaryIcon::kChatSpark;
+  state.secondary_label = u"Response ready";
+  UpdateGlicSplitButtonUi(state);
+  EXPECT_TRUE(toolbar_view->GetIsShowingGlicSecondaryNudge());
+  EXPECT_EQ(secondary_button->GetText(), u"Response ready");
+  EXPECT_EQ(secondary_button->GetTooltipText(), u"Response ready");
+  EXPECT_EQ(GetButtonVectorIcon(secondary_button),
+            &vector_icons::kChatSparkIcon);
 
   // 3. Transition from kText back to kChevron clears the secondary label,
   // restores the primary button label, and keeps the chevron focusable.
   state.secondary_action = GlicSplitButtonUiState::SecondaryAction::kChevron;
+  state.secondary_icon = GlicSplitButtonUiState::SecondaryIcon::kNone;
   state.secondary_label = u"";
   UpdateGlicSplitButtonUi(state);
   EXPECT_TRUE(secondary_button->GetVisible());
   EXPECT_TRUE(secondary_button->IsFocusable());
   EXPECT_FALSE(toolbar_view->GetIsShowingGlicSecondaryNudge());
   EXPECT_EQ(secondary_button->GetText(), u"");
+  EXPECT_EQ(GetButtonVectorIcon(secondary_button),
+            &vector_icons::kKeyboardArrowDownIcon);
+  EXPECT_EQ(secondary_button->GetTooltipText(),
+            l10n_util::GetStringUTF16(IDS_GLIC_ACTIVITY_INDICATOR_TOOLTIP));
   EXPECT_EQ(primary_button->GetText(), default_label);
 
   // 4. Transition from kChevron to kNone hides the secondary button.

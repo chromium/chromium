@@ -116,7 +116,7 @@ class GlicSplitButtonDelegateAndroid : public GlicSplitButtonDelegate {
   void UpdateGlicSplitButtonUi(const GlicSplitButtonUiState& state) override {
     Java_GlicSplitButtonDelegateBridge_updateSplitButtonUi(
         AttachCurrentThread(), j_delegate_, state.secondary_action,
-        state.secondary_label);
+        state.secondary_icon, state.secondary_label);
   }
 
   void ShowActivityListBubble() override {

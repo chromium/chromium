@@ -44,6 +44,7 @@ import org.chromium.chrome.browser.glic.GlicNudgeActivity;
 import org.chromium.chrome.browser.glic.GlicPrefNames;
 import org.chromium.chrome.browser.glic.GlicUtils;
 import org.chromium.chrome.browser.glic.SecondaryAction;
+import org.chromium.chrome.browser.glic.SecondaryIcon;
 import org.chromium.chrome.browser.glic.toolbar_button.ActorTaskRowData;
 import org.chromium.chrome.browser.glic.toolbar_button.GlicButtonDelegate;
 import org.chromium.chrome.browser.glic.toolbar_button.GlicSplitButtonDelegate;
@@ -267,10 +268,15 @@ public class StripLayoutTrailingButtonsCoordinator {
 
                 @Override
                 public void updateSplitButtonUi(
-                        @SecondaryAction int secondaryAction, String secondaryLabel) {
+                        @SecondaryAction int secondaryAction,
+                        @SecondaryIcon int secondaryIcon,
+                        String secondaryLabel) {
                     // TODO(b/582740696): Swap mGlicActorButton's drawable to a chevron when
-                    // secondaryAction == SecondaryAction.CHEVRON once Android Activity Hub UI is
-                    // supported; for now both TEXT and CHEVRON keep ic_arrow_selector_spark_16dp.
+                    // secondaryAction == SecondaryAction.CHEVRON, to the per-alert drawable for
+                    // secondaryIcon, and adopt IDS_GLIC_ACTIVITY_INDICATOR_TOOLTIP (adding
+                    // formatter_data="android_java") for the button's default accessibility/tooltip
+                    // string once Android Activity Hub UI is supported; for now both TEXT and
+                    // CHEVRON keep ic_arrow_selector_spark_16dp.
                     mIsGlicActorButtonShowing = (secondaryAction != SecondaryAction.NONE);
                     mActorNudgeLabel =
                             (secondaryAction == SecondaryAction.TEXT && !secondaryLabel.isEmpty())

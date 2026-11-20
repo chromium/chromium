@@ -21,7 +21,22 @@ struct GlicSplitButtonUiState {
     kChevron = 2,
   };
 
+  // Icon shown in the secondary pill when `secondary_action` is `kText`.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.glic
+  enum class SecondaryIcon {
+    // No alert-specific icon (used when `secondary_action` is `kNone` or
+    // `kChevron`).
+    kNone = 0,
+    // Activity requires user attention (cursor spark).
+    kCursorSpark = 1,
+    // One or more automated tasks finished (completed task spark).
+    kTaskSpark = 2,
+    // Background conversation response is ready (chat spark).
+    kChatSpark = 3,
+  };
+
   SecondaryAction secondary_action = SecondaryAction::kNone;
+  SecondaryIcon secondary_icon = SecondaryIcon::kNone;
   std::u16string secondary_label;
 
   bool operator==(const GlicSplitButtonUiState& other) const = default;

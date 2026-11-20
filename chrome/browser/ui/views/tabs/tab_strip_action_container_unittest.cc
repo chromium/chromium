@@ -5,13 +5,16 @@
 #include "chrome/browser/ui/views/tabs/tab_strip_action_container.h"
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/check_deref.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_split_button_controller.h"
+#include "chrome/browser/glic/browser_ui/glic_split_button_ui_state.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
@@ -22,22 +25,31 @@
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
+#include "chrome/browser/ui/views/tabs/glic/tab_strip_glic_actor_task_icon.h"
 #include "chrome/browser/ui/views/tabs/glic/tab_strip_glic_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_nudge_button.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/tabs/public/mock_tab_interface.h"
+#include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_web_contents_factory.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
+#include "ui/gfx/vector_icon_types.h"
+#include "ui/views/controls/button/button.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/widget/widget.h"
 
@@ -54,12 +66,22 @@
 
 namespace {
 using testing::SizeIs;
+
+const gfx::VectorIcon* GetButtonVectorIcon(const views::LabelButton* button) {
+  const std::optional<ui::ImageModel>& image_model =
+      button->GetImageModel(views::Button::STATE_NORMAL);
+  if (!image_model.has_value() || !image_model->IsVectorIcon()) {
+    return nullptr;
+  }
+  return image_model->GetVectorIcon().vector_icon();
+}
 }  // namespace
 
 class TabStripActionContainerTest : public ChromeViewsTestBase {
  public:
   explicit TabStripActionContainerTest(
-      const std::vector<base::test::FeatureRef>& additional_features = {})
+      const std::vector<base::test::FeatureRef>& additional_features = {},
+      const std::vector<base::test::FeatureRef>& disabled_features = {})
       : animation_mode_reset_(gfx::AnimationTestApi::SetRichAnimationRenderMode(
             gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED)) {
     std::vector<base::test::FeatureRefAndParams> enabled_features = {
@@ -70,7 +92,6 @@ class TabStripActionContainerTest : public ChromeViewsTestBase {
     for (const auto& feature : additional_features) {
       enabled_features.emplace_back(*feature, base::FieldTrialParams{});
     }
-    std::vector<base::test::FeatureRef> disabled_features;
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                        disabled_features);
   }
@@ -279,7 +300,8 @@ class TabStripActionContainerActivityHubTest
     : public TabStripActionContainerTest {
  public:
   TabStripActionContainerActivityHubTest()
-      : TabStripActionContainerTest({features::kGlicActivityHub}) {}
+      : TabStripActionContainerTest(
+            {features::kGlicActivityHub, features::kRoundedIcons}) {}
 };
 
 TEST_F(TabStripActionContainerActivityHubTest,
@@ -337,17 +359,25 @@ TEST_F(TabStripActionContainerActivityHubTest,
   tab_strip_action_container_->UpdateGlicSplitButtonUi(state);
   EXPECT_TRUE(secondary_button->GetVisible());
   EXPECT_EQ(secondary_button->GetText(), u"");
+  EXPECT_EQ(GetButtonVectorIcon(secondary_button),
+            &vector_icons::kKeyboardArrowDownIcon);
+  EXPECT_EQ(secondary_button->GetTooltipText(),
+            l10n_util::GetStringUTF16(IDS_GLIC_ACTIVITY_INDICATOR_TOOLTIP));
   EXPECT_TRUE(tab_strip_action_container_->GetIsShowingGlicNudge());
   EXPECT_EQ(primary_button->GetText(), u"Summarize");
 
   // 2. Transition from kChevron to kText dismisses the primary nudge and
   // collapses the primary button.
   state.secondary_action = glic::GlicSplitButtonUiState::SecondaryAction::kText;
+  state.secondary_icon =
+      glic::GlicSplitButtonUiState::SecondaryIcon::kCursorSpark;
   state.secondary_label = u"Check task";
   tab_strip_action_container_->UpdateGlicSplitButtonUi(state);
   EXPECT_TRUE(secondary_button->GetVisible());
   EXPECT_TRUE(tab_strip_action_container_->GetIsShowingGlicSecondaryNudge());
   EXPECT_EQ(secondary_button->GetText(), u"Check task");
+  EXPECT_EQ(secondary_button->GetTooltipText(), u"Check task");
+  EXPECT_EQ(GetButtonVectorIcon(secondary_button), &kCursorSparkIcon);
   EXPECT_FALSE(tab_strip_action_container_->GetIsShowingGlicNudge());
   EXPECT_EQ(primary_button->GetText(), u"");
 
@@ -355,10 +385,15 @@ TEST_F(TabStripActionContainerActivityHubTest,
   // expands the primary button back to its default label.
   state.secondary_action =
       glic::GlicSplitButtonUiState::SecondaryAction::kChevron;
+  state.secondary_icon = glic::GlicSplitButtonUiState::SecondaryIcon::kNone;
   state.secondary_label = u"";
   tab_strip_action_container_->UpdateGlicSplitButtonUi(state);
   EXPECT_TRUE(secondary_button->GetVisible());
   EXPECT_EQ(secondary_button->GetText(), u"");
+  EXPECT_EQ(GetButtonVectorIcon(secondary_button),
+            &vector_icons::kKeyboardArrowDownIcon);
+  EXPECT_EQ(secondary_button->GetTooltipText(),
+            l10n_util::GetStringUTF16(IDS_GLIC_ACTIVITY_INDICATOR_TOOLTIP));
   EXPECT_EQ(primary_button->GetText(), default_label);
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return !tab_strip_action_container_->GetIsShowingGlicSecondaryNudge();
@@ -369,6 +404,99 @@ TEST_F(TabStripActionContainerActivityHubTest,
   tab_strip_action_container_->UpdateGlicSplitButtonUi(state);
   EXPECT_TRUE(
       base::test::RunUntil([&]() { return !secondary_button->GetVisible(); }));
+}
+
+TEST_F(TabStripActionContainerActivityHubTest,
+       UpdateGlicSplitButtonUiPerAlertIconsAndTooltips) {
+  gfx::ScopedAnimationDurationScaleMode disable_animations(
+      gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  BuildGlicContainer(/*use_otr_profile=*/false);
+
+  auto* secondary_button = tab_strip_action_container_->glic_secondary_button();
+  ASSERT_TRUE(secondary_button);
+  EXPECT_EQ(secondary_button->GetTooltipText(),
+            l10n_util::GetStringUTF16(IDS_GLIC_ACTIVITY_INDICATOR_TOOLTIP));
+
+  // Transition directly across kText alerts while the nudge remains open.
+  glic::GlicSplitButtonUiState state;
+  state.secondary_action = glic::GlicSplitButtonUiState::SecondaryAction::kText;
+  state.secondary_icon =
+      glic::GlicSplitButtonUiState::SecondaryIcon::kChatSpark;
+  state.secondary_label = u"Response ready";
+  tab_strip_action_container_->UpdateGlicSplitButtonUi(state);
+  EXPECT_TRUE(tab_strip_action_container_->GetIsShowingGlicSecondaryNudge());
+  EXPECT_EQ(GetButtonVectorIcon(secondary_button),
+            &vector_icons::kChatSparkIcon);
+  EXPECT_EQ(secondary_button->GetTooltipText(), u"Response ready");
+
+  state.secondary_icon =
+      glic::GlicSplitButtonUiState::SecondaryIcon::kTaskSpark;
+  state.secondary_label = u"2 tasks done";
+  tab_strip_action_container_->UpdateGlicSplitButtonUi(state);
+  EXPECT_EQ(GetButtonVectorIcon(secondary_button), &kTaskSparkIcon);
+  EXPECT_EQ(secondary_button->GetTooltipText(), u"2 tasks done");
+
+  state.secondary_icon =
+      glic::GlicSplitButtonUiState::SecondaryIcon::kCursorSpark;
+  state.secondary_label = u"Check your task";
+  tab_strip_action_container_->UpdateGlicSplitButtonUi(state);
+  EXPECT_EQ(GetButtonVectorIcon(secondary_button), &kCursorSparkIcon);
+  EXPECT_EQ(secondary_button->GetTooltipText(), u"Check your task");
+
+  // Reverting to kChevron restores chevron icon and Activity Hub tooltip.
+  state.secondary_action =
+      glic::GlicSplitButtonUiState::SecondaryAction::kChevron;
+  state.secondary_icon = glic::GlicSplitButtonUiState::SecondaryIcon::kNone;
+  state.secondary_label = u"";
+  tab_strip_action_container_->UpdateGlicSplitButtonUi(state);
+  EXPECT_EQ(GetButtonVectorIcon(secondary_button),
+            &vector_icons::kKeyboardArrowDownIcon);
+  EXPECT_EQ(secondary_button->GetTooltipText(),
+            l10n_util::GetStringUTF16(IDS_GLIC_ACTIVITY_INDICATOR_TOOLTIP));
+}
+
+class TabStripActionContainerActivityHubLegacyIconsTest
+    : public TabStripActionContainerTest {
+ public:
+  TabStripActionContainerActivityHubLegacyIconsTest()
+      : TabStripActionContainerTest(
+            {features::kGlicActivityHub},
+            {features::kRoundedIcons, features::kDesktopGlowUp}) {}
+};
+
+TEST_F(TabStripActionContainerActivityHubLegacyIconsTest,
+       TaskSparkUsesOldIconWhenRoundedIconsDisabled) {
+  gfx::ScopedAnimationDurationScaleMode disable_animations(
+      gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  BuildGlicContainer(/*use_otr_profile=*/false);
+
+  auto* secondary_button = tab_strip_action_container_->glic_secondary_button();
+  ASSERT_TRUE(secondary_button);
+
+  glic::GlicSplitButtonUiState state;
+  state.secondary_action = glic::GlicSplitButtonUiState::SecondaryAction::kText;
+  state.secondary_icon =
+      glic::GlicSplitButtonUiState::SecondaryIcon::kTaskSpark;
+  state.secondary_label = u"Task done";
+  tab_strip_action_container_->UpdateGlicSplitButtonUi(state);
+  EXPECT_TRUE(tab_strip_action_container_->GetIsShowingGlicSecondaryNudge());
+  EXPECT_EQ(GetButtonVectorIcon(secondary_button), &kTaskSparkOldIcon);
+  EXPECT_EQ(secondary_button->GetTooltipText(), u"Task done");
+}
+
+TEST_F(TabStripActionContainerTest,
+       LegacySecondaryButtonDefaultIconAndTooltip) {
+  BuildGlicContainer(/*use_otr_profile=*/false);
+  auto* secondary_button = tab_strip_action_container_->glic_secondary_button();
+  ASSERT_TRUE(secondary_button);
+  EXPECT_EQ(GetButtonVectorIcon(secondary_button), &kCursorSparkIcon);
+  EXPECT_EQ(secondary_button->GetTooltipText(),
+            l10n_util::GetStringUTF16(IDS_ACTOR_TASK_INDICATOR_TOOLTIP));
+
+  tab_strip_action_container_->ShowGlicSecondaryButton();
+  EXPECT_EQ(GetButtonVectorIcon(secondary_button), &kCursorSparkIcon);
+  EXPECT_EQ(secondary_button->GetTooltipText(),
+            l10n_util::GetStringUTF16(IDS_ACTOR_TASK_INDICATOR_TOOLTIP));
 }
 
 TEST_F(TabStripActionContainerTest, MAYBE(GlicButtonUpdateLabel)) {

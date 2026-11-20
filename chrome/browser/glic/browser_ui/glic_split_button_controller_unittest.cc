@@ -413,6 +413,8 @@ TEST_F(GlicSplitButtonControllerTest, SplitButtonUiStateDefault) {
   ASSERT_TRUE(tab_strip_controller_delegate()->last_ui_state().has_value());
   EXPECT_EQ(tab_strip_controller_delegate()->last_ui_state()->secondary_action,
             GlicSplitButtonUiState::SecondaryAction::kNone);
+  EXPECT_EQ(tab_strip_controller_delegate()->last_ui_state()->secondary_icon,
+            GlicSplitButtonUiState::SecondaryIcon::kNone);
 }
 
 TEST_F(GlicSplitButtonControllerTest, SplitButtonUiStateSingleActiveActivity) {
@@ -425,6 +427,8 @@ TEST_F(GlicSplitButtonControllerTest, SplitButtonUiStateSingleActiveActivity) {
   ASSERT_TRUE(tab_strip_controller_delegate()->last_ui_state().has_value());
   EXPECT_EQ(tab_strip_controller_delegate()->last_ui_state()->secondary_action,
             GlicSplitButtonUiState::SecondaryAction::kChevron);
+  EXPECT_EQ(tab_strip_controller_delegate()->last_ui_state()->secondary_icon,
+            GlicSplitButtonUiState::SecondaryIcon::kNone);
 }
 
 TEST_F(GlicSplitButtonControllerTest,
@@ -438,12 +442,16 @@ TEST_F(GlicSplitButtonControllerTest,
   ASSERT_TRUE(tab_strip_controller_delegate()->last_ui_state().has_value());
   EXPECT_EQ(tab_strip_controller_delegate()->last_ui_state()->secondary_action,
             GlicSplitButtonUiState::SecondaryAction::kText);
+  EXPECT_EQ(tab_strip_controller_delegate()->last_ui_state()->secondary_icon,
+            GlicSplitButtonUiState::SecondaryIcon::kCursorSpark);
 
   // Once viewed, the alert nudge reverts to the split chevron.
   activity_manager->MarkActivitySeen(
       GlicActivityKey{GlicActivityType::kConversationResponse, "conv-1"});
   EXPECT_EQ(tab_strip_controller_delegate()->last_ui_state()->secondary_action,
             GlicSplitButtonUiState::SecondaryAction::kChevron);
+  EXPECT_EQ(tab_strip_controller_delegate()->last_ui_state()->secondary_icon,
+            GlicSplitButtonUiState::SecondaryIcon::kNone);
 }
 
 TEST_F(GlicSplitButtonControllerTest, SplitButtonUiStateNeedsAttention) {
@@ -456,6 +464,8 @@ TEST_F(GlicSplitButtonControllerTest, SplitButtonUiStateNeedsAttention) {
   ASSERT_TRUE(tab_strip_controller_delegate()->last_ui_state().has_value());
   EXPECT_EQ(tab_strip_controller_delegate()->last_ui_state()->secondary_action,
             GlicSplitButtonUiState::SecondaryAction::kText);
+  EXPECT_EQ(tab_strip_controller_delegate()->last_ui_state()->secondary_icon,
+            GlicSplitButtonUiState::SecondaryIcon::kCursorSpark);
   EXPECT_EQ(tab_strip_controller_delegate()->last_ui_state()->secondary_label,
             l10n_util::GetPluralStringFUTF16(
                 IDS_ACTOR_TASK_NUDGE_CHECK_TASK_LABEL, 1));
@@ -476,6 +486,8 @@ TEST_F(GlicSplitButtonControllerTest, SplitButtonUiStateCompleteTasks) {
   ASSERT_TRUE(tab_strip_controller_delegate()->last_ui_state().has_value());
   EXPECT_EQ(tab_strip_controller_delegate()->last_ui_state()->secondary_action,
             GlicSplitButtonUiState::SecondaryAction::kText);
+  EXPECT_EQ(tab_strip_controller_delegate()->last_ui_state()->secondary_icon,
+            GlicSplitButtonUiState::SecondaryIcon::kTaskSpark);
   EXPECT_EQ(tab_strip_controller_delegate()->last_ui_state()->secondary_label,
             l10n_util::GetPluralStringFUTF16(
                 IDS_ACTOR_TASK_NUDGE_TASK_COMPLETE_LABEL, 1));
@@ -601,8 +613,80 @@ TEST_F(GlicSplitButtonControllerTest,
   ASSERT_TRUE(tab_strip_controller_delegate()->last_ui_state().has_value());
   EXPECT_EQ(tab_strip_controller_delegate()->last_ui_state()->secondary_action,
             GlicSplitButtonUiState::SecondaryAction::kText);
+  EXPECT_EQ(tab_strip_controller_delegate()->last_ui_state()->secondary_icon,
+            GlicSplitButtonUiState::SecondaryIcon::kChatSpark);
   EXPECT_EQ(tab_strip_controller_delegate()->last_ui_state()->secondary_label,
             l10n_util::GetStringUTF16(IDS_GLIC_ACTIVITY_RESPONSE_READY));
+}
+
+TEST_F(GlicSplitButtonControllerTest,
+       SplitButtonUiStateIconFollowsAlertPriorityLadder) {
+  base::test::ScopedFeatureList actor_ui_feature;
+  actor_ui_feature.InitAndEnableFeature(features::kGlicActorUi);
+
+  auto* actor_service = static_cast<actor::ActorKeyedServiceFake*>(
+      actor::ActorKeyedServiceFactory::GetActorKeyedService(profile()));
+  ASSERT_TRUE(actor_service);
+  auto& activity_manager = glic_keyed_service()->activity_manager_impl();
+
+  // 1. Conversation response ready -> kChatSpark.
+  activity_manager.OnConversationActivityStateChanged(
+      "conv-done", {.state = GlicActivityState::kCompleted});
+  ASSERT_TRUE(tab_strip_controller_delegate()->last_ui_state().has_value());
+  EXPECT_EQ(tab_strip_controller_delegate()->last_ui_state()->secondary_action,
+            GlicSplitButtonUiState::SecondaryAction::kText);
+  EXPECT_EQ(tab_strip_controller_delegate()->last_ui_state()->secondary_icon,
+            GlicSplitButtonUiState::SecondaryIcon::kChatSpark);
+
+  // 2. Completed actor task outranks response ready -> kTaskSpark.
+  actor::TaskId task_id = actor_service->CreateTaskForTesting();
+  actor_service->StopTaskForTesting(
+      task_id, actor::ActorTask::StoppedReason::kTaskComplete);
+  EXPECT_EQ(tab_strip_controller_delegate()->last_ui_state()->secondary_action,
+            GlicSplitButtonUiState::SecondaryAction::kText);
+  EXPECT_EQ(tab_strip_controller_delegate()->last_ui_state()->secondary_icon,
+            GlicSplitButtonUiState::SecondaryIcon::kTaskSpark);
+
+  // 3. Needs-attention alert outranks completed task -> kCursorSpark.
+  activity_manager.OnConversationActivityStateChanged(
+      "conv-attn", {.state = GlicActivityState::kNeedsAttention});
+  EXPECT_EQ(tab_strip_controller_delegate()->last_ui_state()->secondary_action,
+            GlicSplitButtonUiState::SecondaryAction::kText);
+  EXPECT_EQ(tab_strip_controller_delegate()->last_ui_state()->secondary_icon,
+            GlicSplitButtonUiState::SecondaryIcon::kCursorSpark);
+
+  // 4. Marking attention alert seen steps down to kTaskSpark.
+  activity_manager.MarkActivitySeen(
+      GlicActivityKey{GlicActivityType::kConversationResponse, "conv-attn"});
+  EXPECT_EQ(tab_strip_controller_delegate()->last_ui_state()->secondary_action,
+            GlicSplitButtonUiState::SecondaryAction::kText);
+  EXPECT_EQ(tab_strip_controller_delegate()->last_ui_state()->secondary_icon,
+            GlicSplitButtonUiState::SecondaryIcon::kTaskSpark);
+
+  // 5. Marking completed task seen steps down to kChatSpark.
+  activity_manager.MarkActivitySeen(task_id);
+  EXPECT_EQ(tab_strip_controller_delegate()->last_ui_state()->secondary_action,
+            GlicSplitButtonUiState::SecondaryAction::kText);
+  EXPECT_EQ(tab_strip_controller_delegate()->last_ui_state()->secondary_icon,
+            GlicSplitButtonUiState::SecondaryIcon::kChatSpark);
+
+  // 6. Marking remaining conversation seen steps down to kChevron + kNone.
+  activity_manager.MarkActivitySeen(
+      GlicActivityKey{GlicActivityType::kConversationResponse, "conv-done"});
+  EXPECT_EQ(tab_strip_controller_delegate()->last_ui_state()->secondary_action,
+            GlicSplitButtonUiState::SecondaryAction::kChevron);
+  EXPECT_EQ(tab_strip_controller_delegate()->last_ui_state()->secondary_icon,
+            GlicSplitButtonUiState::SecondaryIcon::kNone);
+
+  // 7. Destroying remaining activities hides secondary button -> kNone + kNone.
+  activity_manager.OnConversationDestroyed("conv-attn");
+  activity_manager.OnConversationDestroyed("conv-done");
+  task_environment().FastForwardBy(base::Seconds(
+      features::kGlicActorUiCompletedTaskExpiryDelaySeconds.Get()));
+  EXPECT_EQ(tab_strip_controller_delegate()->last_ui_state()->secondary_action,
+            GlicSplitButtonUiState::SecondaryAction::kNone);
+  EXPECT_EQ(tab_strip_controller_delegate()->last_ui_state()->secondary_icon,
+            GlicSplitButtonUiState::SecondaryIcon::kNone);
 }
 
 TEST_F(GlicSplitButtonControllerTest,
@@ -612,6 +696,8 @@ TEST_F(GlicSplitButtonControllerTest,
   ASSERT_TRUE(tab_strip_controller_delegate()->last_ui_state().has_value());
   EXPECT_EQ(tab_strip_controller_delegate()->last_ui_state()->secondary_action,
             GlicSplitButtonUiState::SecondaryAction::kNone);
+  EXPECT_EQ(tab_strip_controller_delegate()->last_ui_state()->secondary_icon,
+            GlicSplitButtonUiState::SecondaryIcon::kNone);
 
   // When an idle registered conversation exists off the active tab, the chevron
   // appears.
@@ -622,6 +708,8 @@ TEST_F(GlicSplitButtonControllerTest,
   ASSERT_TRUE(tab_strip_controller_delegate()->last_ui_state().has_value());
   EXPECT_EQ(tab_strip_controller_delegate()->last_ui_state()->secondary_action,
             GlicSplitButtonUiState::SecondaryAction::kChevron);
+  EXPECT_EQ(tab_strip_controller_delegate()->last_ui_state()->secondary_icon,
+            GlicSplitButtonUiState::SecondaryIcon::kNone);
 
   // Destroying the conversation hides the chevron again.
   activity_manager.OnConversationDestroyed("conv-1");
@@ -629,6 +717,8 @@ TEST_F(GlicSplitButtonControllerTest,
   ASSERT_TRUE(tab_strip_controller_delegate()->last_ui_state().has_value());
   EXPECT_EQ(tab_strip_controller_delegate()->last_ui_state()->secondary_action,
             GlicSplitButtonUiState::SecondaryAction::kNone);
+  EXPECT_EQ(tab_strip_controller_delegate()->last_ui_state()->secondary_icon,
+            GlicSplitButtonUiState::SecondaryIcon::kNone);
 }
 
 TEST_F(GlicSplitButtonControllerTest,

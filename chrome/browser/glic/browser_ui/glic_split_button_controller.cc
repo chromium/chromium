@@ -279,16 +279,20 @@ GlicSplitButtonUiState GlicSplitButtonController::ComputeSplitButtonUiState()
   switch (activity_nudge_state.text) {
     case GlicActivityNudgeState::Text::kNeedsAttention:
       state.secondary_action = GlicSplitButtonUiState::SecondaryAction::kText;
+      state.secondary_icon =
+          GlicSplitButtonUiState::SecondaryIcon::kCursorSpark;
       state.secondary_label = l10n_util::GetPluralStringFUTF16(
           IDS_ACTOR_TASK_NUDGE_CHECK_TASK_LABEL, std::max<size_t>(1, count));
       break;
     case GlicActivityNudgeState::Text::kCompleteTasks:
       state.secondary_action = GlicSplitButtonUiState::SecondaryAction::kText;
+      state.secondary_icon = GlicSplitButtonUiState::SecondaryIcon::kTaskSpark;
       state.secondary_label = l10n_util::GetPluralStringFUTF16(
           IDS_ACTOR_TASK_NUDGE_TASK_COMPLETE_LABEL, std::max<size_t>(1, count));
       break;
     case GlicActivityNudgeState::Text::kResponseReady:
       state.secondary_action = GlicSplitButtonUiState::SecondaryAction::kText;
+      state.secondary_icon = GlicSplitButtonUiState::SecondaryIcon::kChatSpark;
       state.secondary_label =
           l10n_util::GetStringUTF16(IDS_GLIC_ACTIVITY_RESPONSE_READY);
       break;

@@ -17676,6 +17676,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_GLIC_ACTIVITY_ERROR" desc="Status text shown in the Glic Activity Hub when a Gemini activity encountered an error.">
       Something went wrong
     </message>
+    <message name="IDS_GLIC_ACTIVITY_INDICATOR_TOOLTIP" desc="Tooltip text and accessible name for the secondary split button next to the Gemini button in the tab strip or toolbar when no alert text label is shown. Clicking the button opens a bubble listing the user's active and recent Gemini chats and tasks. [CHAR_LIMIT=60]">
+      Check your activity
+    </message>
 
     <!-- Toast Strings-->
     <if expr="not is_android">
