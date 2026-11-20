@@ -1741,7 +1741,6 @@ bool RenderThreadImpl::RendererIsBackgrounded() const {
 void RenderThreadImpl::OnRendererBackgrounded() {
   UpdateForegroundCrashKey(/*foreground=*/false);
   main_thread_scheduler_->SetRendererBackgrounded(true);
-  discardable_memory_allocator_->OnBackgrounded();
   base::allocator::PartitionAllocSupport::Get()->OnBackgrounded();
   blink::OnProcessBackgrounded();
 }
@@ -1749,7 +1748,6 @@ void RenderThreadImpl::OnRendererBackgrounded() {
 void RenderThreadImpl::OnRendererForegrounded() {
   UpdateForegroundCrashKey(/*foreground=*/true);
   main_thread_scheduler_->SetRendererBackgrounded(false);
-  discardable_memory_allocator_->OnForegrounded();
   base::allocator::PartitionAllocSupport::Get()->OnForegrounded(
       MainFrameCounter::has_main_frame());
   blink::OnProcessForegrounded();

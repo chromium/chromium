@@ -1196,11 +1196,6 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="1" label="Loaded"/>
 </enum>
 
-<enum name="BooleanLockingSuccess">
-  <int value="0" label="Locking failed"/>
-  <int value="1" label="Locking succeeded"/>
-</enum>
-
 <enum name="BooleanMainFrame">
   <int value="0" label="Subframe"/>
   <int value="1" label="Main frame"/>

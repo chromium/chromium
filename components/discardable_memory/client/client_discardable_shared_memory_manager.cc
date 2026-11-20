@@ -16,8 +16,6 @@
 #include "base/memory/page_size.h"
 #include "base/memory_coordinator/traits.h"
 #include "base/memory_coordinator/utils.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/numerics/checked_math.h"
 #include "base/process/memory.h"
 #include "base/strings/string_number_conversions.h"
@@ -127,10 +125,7 @@ bool ClientDiscardableSharedMemoryManager::DiscardableMemoryImpl::Lock() {
   if (span_ && manager_->LockSpan(span_.get()))
     last_locked_ = base::TimeTicks();
 
-  bool locked = is_locked();
-  UMA_HISTOGRAM_BOOLEAN("Memory.Discardable.LockingSuccess", locked);
-
-  return locked;
+  return is_locked();
 }
 
 void ClientDiscardableSharedMemoryManager::DiscardableMemoryImpl::Unlock() {
@@ -242,16 +237,6 @@ ClientDiscardableSharedMemoryManager::~ClientDiscardableSharedMemoryManager() {
   bool posted = io_task_runner_->DeleteSoon(FROM_HERE, manager_mojo_.release());
   if (!posted)
     manager_mojo_.reset();
-}
-
-void ClientDiscardableSharedMemoryManager::OnForegrounded() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  foregrounded_ = true;
-}
-
-void ClientDiscardableSharedMemoryManager::OnBackgrounded() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  foregrounded_ = false;
 }
 
 void ClientDiscardableSharedMemoryManager::OnUpdateMemoryLimit() {
@@ -398,13 +383,6 @@ bool ClientDiscardableSharedMemoryManager::OnMemoryDump(
     base::trace_event::ProcessMemoryDump* pmd) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   base::AutoLock lock(lock_);
-  if (foregrounded_) {
-    const size_t total_size = heap_->GetSize() / 1024;                // in KiB
-
-    base::UmaHistogramCounts1M("Memory.Discardable.VirtualSize.Foreground",
-                               total_size);
-  }
-
   return heap_->OnMemoryDump(args, pmd);
 }
 

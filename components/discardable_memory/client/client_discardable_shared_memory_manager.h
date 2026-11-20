@@ -72,15 +72,6 @@ class DISCARDABLE_MEMORY_EXPORT ClientDiscardableSharedMemoryManager
   // Purge all unlocked memory that was allocated by this manager.
   void BackgroundPurge();
 
-  // Change the state of this to either backgrounded or foregrounded. These
-  // states should match the state that is found in |RenderThreadImpl|. We
-  // initially set the state to backgrounded, since we may not know the state we
-  // are in when we construct this. This avoids accidentally collecting data
-  // from this while we are in the background, at the cost of potentially losing
-  // some data near the time this is created.
-  void OnForegrounded();
-  void OnBackgrounded();
-
   void SetBytesAllocatedLimitForTesting(base::ByteSize limit) {
     bytes_allocated_limit_for_testing_ = static_cast<size_t>(limit.InBytes());
   }
@@ -207,12 +198,6 @@ class DISCARDABLE_MEMORY_EXPORT ClientDiscardableSharedMemoryManager
   std::set<raw_ptr<DiscardableMemoryImpl, SetExperimental>> allocated_memory_
       GUARDED_BY(lock_);
   size_t bytes_allocated_limit_for_testing_ = 0;
-
-  // Used in metrics to distinguish in-use consumers from background ones. We
-  // initialize this to false to avoid getting any data before we are certain
-  // we're in the foreground. This is parallel to what we do in
-  // RenderThreadImpl.
-  bool foregrounded_ = false;
 
   base::AsyncMemoryConsumerRegistration memory_consumer_registration_;
 

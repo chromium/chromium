@@ -1344,26 +1344,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Memory.Discardable.LockingSuccess"
-    enum="BooleanLockingSuccess" expires_after="2023-05-07">
-  <owner>thiabaud@google.com</owner>
-  <owner>lizeb@chromium.org</owner>
-  <summary>
-    Boolean metric which tracks whether or not discardable memory had already
-    been discarded when an attempt is made to lock it.
-  </summary>
-</histogram>
-
-<histogram name="Memory.Discardable.VirtualSize.Foreground" units="KiB"
-    expires_after="2023-03-19">
-  <owner>thiabaud@google.com</owner>
-  <owner>lizeb@chromium.org</owner>
-  <summary>
-    Virtual memory used by ClientDiscardableMemoryManager in the foreground
-    only. Recorded during |OnMemoryDump|.
-  </summary>
-</histogram>
-
 <histogram name="Memory.Dump.Type.{DetailLevel}" enum="MemoryDumpType"
     expires_after="2027-05-02">
   <owner>joenotcharles@google.com</owner>
