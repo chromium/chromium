@@ -1658,7 +1658,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                         R.id.ttc_menu_id,
                         R.string.ttc_entrypoint_label,
                         shouldShowIconBeforeItem()
-                                ? R.drawable.ic_mic_white_24dp
+                                ? R.drawable.ic_audio_spark_24dp
                                 : Resources.ID_NULL,
                         isMenuIconAtStart()));
     }
