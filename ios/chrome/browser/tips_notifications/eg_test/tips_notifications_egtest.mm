@@ -50,9 +50,14 @@ void MaybeTapAllowOnPopup() {
   [ChromeEarlGreyUI waitForAppToIdle];
   XCUIApplication* springboardApplication = [[XCUIApplication alloc]
       initWithBundleIdentifier:@"com.apple.springboard"];
-  // Wait for allow or ok button to appear.
-  auto button = [springboardApplication.buttons elementBoundByIndex:1];
-  if ([button waitForExistenceWithTimeout:5]) {
+  // The lookup is scoped to an alert because on iPad, SpringBoard exposes other
+  // buttons even when no alert is shown. Tapping one of them while a Tips
+  // notification banner is on screen makes XCUITest wait for the banner to go
+  // away, so the notification can no longer be tapped.
+  XCUIElement* alert = springboardApplication.alerts.firstMatch;
+  if ([alert waitForExistenceWithTimeout:5]) {
+    // The `Allow` or `OK` button is the second button of the alert.
+    XCUIElement* button = [alert.buttons elementBoundByIndex:1];
     // Wait for the magic stack to settle behind the alert.
     // Otherwise the test flakes when a snackbar is presented right after the
     // permissions alert is dismissed.
@@ -187,20 +192,19 @@ void MaybeDismissNotification() {
   [self turnOffTipsNotifications];
 }
 
-// Tests triggering and interacting with each of the Tips notifications.
+// Tests triggering and interacting with the What's New, Omnibox Position and
+// Default Browser Tips notifications. The Docking and Signin notifications are
+// covered by `testDockingAndSigninNotifications`: chaining all of them in one
+// test makes XCUITest stall on slow bots right before the last notification is
+// tapped, while the banner auto-dismisses.
 - (void)testTriggerNotifications {
-  [SigninEarlGrey addFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
-  [ChromeEarlGreyUI waitForAppToIdle];
-
   MaybeDismissNotification();
 
   [self optInToTipsNotifications:{
                                      TipsNotificationType::kWhatsNew,
                                      TipsNotificationType::kOmniboxPosition,
                                      TipsNotificationType::kDefaultBrowser,
-                                     TipsNotificationType::kDocking,
-                                     TipsNotificationType::kSignin,
-                                 }];
+  }];
 
   // Wait for and tap the What's New notification.
   TapNotification();
@@ -249,6 +253,20 @@ void MaybeDismissNotification() {
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::NavigationBarCancelButton()]
       performAction:grey_tap()];
+}
+
+// Tests triggering and interacting with the Docking and Signin Tips
+// notifications.
+- (void)testDockingAndSigninNotifications {
+  [SigninEarlGrey addFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  MaybeDismissNotification();
+
+  [self optInToTipsNotifications:{
+                                     TipsNotificationType::kDocking,
+                                     TipsNotificationType::kSignin,
+  }];
 
   // Wait for and tap the Docking promo notification.
   TapNotification();
