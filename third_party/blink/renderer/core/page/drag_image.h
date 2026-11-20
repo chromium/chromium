@@ -59,6 +59,9 @@ class CORE_EXPORT DragImage {
                                            const String& label,
                                            float device_scale_factor);
 
+  // The padding above and below the label of a link drag image, in DIPs.
+  static constexpr float kDragLabelBorderY = 2;
+
   DragImage(const DragImage&) = delete;
   DragImage& operator=(const DragImage&) = delete;
   ~DragImage();

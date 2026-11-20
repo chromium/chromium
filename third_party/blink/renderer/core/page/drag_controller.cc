@@ -26,6 +26,7 @@
 
 #include "third_party/blink/renderer/core/page/drag_controller.h"
 
+#include <cmath>
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
@@ -108,7 +109,6 @@ using ui::mojom::blink::DragOperation;
 namespace {
 
 constexpr int kMaxOriginalImageArea = 1500 * 1500;
-constexpr int kLinkDragBorderInset = 2;
 #if BUILDFLAG(IS_ANDROID)
 // Android handles drag image transparency at the browser level
 constexpr float kDragImageAlpha = 1.00f;
@@ -1183,18 +1183,27 @@ std::unique_ptr<DragImage> DragImageForLink(const KURL& link_url,
 
 gfx::Rect DragRectForLink(const DragImage* link_image,
                           const gfx::Point& origin,
+                          float device_scale_factor,
                           float page_scale_factor) {
   if (!link_image) {
     return gfx::Rect(origin, gfx::Size());
   }
 
   const gfx::Size image_size = link_image->Size();
-  // Offset the image so that the cursor is horizontally centered.
-  gfx::PointF image_offset(-image_size.width() / 2.f, -kLinkDragBorderInset);
+  // Offset the image so that the cursor is horizontally centered and as far
+  // below its top edge as the label padding. The image is drawn in DIPs on a
+  // canvas scaled by the device scale factor (see DragImage::Create()), so
+  // scale the inset the same way. Round it up so that it isn't smaller than
+  // the padding once the cursor offset is floored to DIPs, e.g. with a device
+  // scale factor of 1.2. This is exact only with a page scale factor of 1, see
+  // the TODO in DoSystemDrag().
+  gfx::PointF image_offset(
+      -image_size.width() / 2.f,
+      -std::ceil(DragImage::kDragLabelBorderY * device_scale_factor));
   // |origin| is in the coordinate space of the frame's contents, which is
   // already in physical pixels, like the size of |link_image|. Only the page
-  // scale factor needs to be undone, as DoSystemDrag() converts the drag rect
-  // to the viewport.
+  // scale factor needs to be undone, as DoSystemDrag() maps the origin of the
+  // drag rect, but not its size, to the viewport.
   // TODO(crbug.com/331670940): Unify this calculation with the
   // `DragImageForImage` scaling code.
   image_offset.Scale(1.f / page_scale_factor);
@@ -1343,6 +1352,7 @@ DragOverlay DetermineDragOverlay(
         DragImageForLink(link_url, drag_origin_hit_test_result.TextContent(),
                          device_scale_factor);
     overlay_rect = DragRectForLink(drag_image.get(), mouse_dragged_point,
+                                   device_scale_factor,
                                    frame->GetPage()->PageScaleFactor());
   }
   return DragOverlay{std::move(drag_image), overlay_rect};

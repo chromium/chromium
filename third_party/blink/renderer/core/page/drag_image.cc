@@ -62,8 +62,6 @@ namespace blink {
 namespace {
 
 const float kDragLabelBorderX = 4;
-// Keep border_y in synch with DragController::LinkDragBorderInset.
-const float kDragLabelBorderY = 2;
 const float kLabelBorderYOffset = 2;
 
 const float kMaxDragLabelWidth = 300;

@@ -91,6 +91,45 @@ class DragControllerTest : public RenderingTest {
   DragMockChromeClient& GetChromeClient() const override {
     return *chrome_client_;
   }
+
+  // Drags a link at (5, 10) and returns the cursor offset in physical pixels,
+  // the same units as the size of the generated link drag image.
+  gfx::Vector2d DragLinkAndGetCursorOffset(gfx::Size& link_image_size) {
+    SetBodyInnerHTML(R"HTML(
+      <style>
+        * { margin: 0; }
+        a {
+          width: 50px;
+          height: 40px;
+          font-size: 30px;
+          display: block;
+        }
+      </style>
+      <a id='drag' href='https://foobarbaz.com'>foobarbaz</a>
+    )HTML");
+
+    WebMouseEvent mouse_event(WebInputEvent::Type::kMouseDown,
+                              WebInputEvent::kNoModifiers,
+                              WebInputEvent::GetStaticTimeStampForTests());
+    mouse_event.button = WebMouseEvent::Button::kLeft;
+    mouse_event.SetFrameScale(1);
+    mouse_event.SetPositionInWidget(5, 10);
+
+    auto& drag_state = GetFrame().GetPage()->GetDragController().GetDragState();
+    drag_state.drag_type_ = kDragSourceActionLink;
+    drag_state.drag_src_ = GetElementById("drag");
+    drag_state.drag_data_transfer_ = DataTransfer::Create(
+        DataTransfer::kDragAndDrop, DataTransferAccessPolicy::kWritable,
+        DataObject::Create());
+    const gfx::Point drag_initiation_location(5, 10);
+    EXPECT_TRUE(PopulateAndStartDrag(GetFrame(), drag_state, mouse_event,
+                                     drag_initiation_location));
+
+    link_image_size = GetChromeClient().last_drag_image_size;
+    EXPECT_GT(link_image_size.Area64(), 0u);
+    return GetChromeClient().last_cursor_offset;
+  }
+
   void PerformDragAndDropFromTextareaToTargetElement(
       HTMLTextAreaElement* drag_text_area,
       DataObject* data_object,
@@ -772,48 +811,37 @@ TEST_F(DragControllerTest, DragLinkWithPageScaleFactor) {
   EXPECT_NEAR(expected_offset.y(), GetChromeClient().last_cursor_offset.y(), 1);
 }
 
-// The link drag image is generated at the device scale factor, and the cursor
-// offset is in the same physical pixels, so the cursor should be horizontally
-// centered on the image. Previously the offset was divided by the device scale
-// factor, which put the cursor at 1 / (2 * device_scale_factor) of the image
-// width, eg: 25% with a device scale factor of 2.
+// The cursor should be horizontally centered on the link drag image, and 2
+// DIPs (4 physical pixels) below its top edge, like the padding of the label.
 TEST_F(DragControllerTest, DragLinkWithDeviceScaleFactor) {
-  SetBodyInnerHTML(R"HTML(
-    <style>
-      * { margin: 0; }
-      a {
-        width: 50px;
-        height: 40px;
-        font-size: 30px;
-        display: block;
-      }
-    </style>
-    <a id='drag' href='https://foobarbaz.com'>foobarbaz</a>
-  )HTML");
   GetChromeClient().SetDeviceScaleFactor(2);
+  gfx::Size link_image_size;
+  gfx::Vector2d cursor_offset = DragLinkAndGetCursorOffset(link_image_size);
+  EXPECT_NEAR(link_image_size.width() / 2, cursor_offset.x(), 1);
+  EXPECT_EQ(4, cursor_offset.y());
+}
 
-  WebMouseEvent mouse_event(WebInputEvent::Type::kMouseDown,
-                            WebInputEvent::kNoModifiers,
-                            WebInputEvent::GetStaticTimeStampForTests());
-  mouse_event.button = WebMouseEvent::Button::kRight;
-  mouse_event.SetFrameScale(1);
-  mouse_event.SetPositionInWidget(5, 10);
+// With a fractional device scale factor, the 2.4 pixel inset is rounded up to
+// 3 pixels, so that it is still 2 DIPs once the cursor offset is floored to
+// DIPs.
+TEST_F(DragControllerTest, DragLinkWithFractionalDeviceScaleFactor) {
+  GetChromeClient().SetDeviceScaleFactor(1.2);
+  gfx::Size link_image_size;
+  gfx::Vector2d cursor_offset = DragLinkAndGetCursorOffset(link_image_size);
+  EXPECT_NEAR(link_image_size.width() / 2, cursor_offset.x(), 1);
+  EXPECT_EQ(3, cursor_offset.y());
+}
 
-  auto& drag_state = GetFrame().GetPage()->GetDragController().GetDragState();
-  drag_state.drag_type_ = kDragSourceActionLink;
-  drag_state.drag_src_ = GetElementById("drag");
-  drag_state.drag_data_transfer_ = DataTransfer::Create(
-      DataTransfer::kDragAndDrop, DataTransferAccessPolicy::kWritable,
-      DataObject::Create());
-  const gfx::Point drag_initiation_location(5, 10);
-  EXPECT_TRUE(PopulateAndStartDrag(GetFrame(), drag_state, mouse_event,
-                                   drag_initiation_location));
-
-  gfx::Size link_image_size = GetChromeClient().last_drag_image_size;
-  EXPECT_GT(link_image_size.Area64(), 0u);
-  gfx::Vector2d expected_offset(link_image_size.width() / 2, 2);
-  EXPECT_NEAR(expected_offset.x(), GetChromeClient().last_cursor_offset.x(), 1);
-  EXPECT_NEAR(expected_offset.y(), GetChromeClient().last_cursor_offset.y(), 1);
+// The page scale factor is undone in DragRectForLink() and reapplied when the
+// drag rect is mapped to the viewport. With an inset that is a multiple of the
+// page scale factor, it doesn't change the cursor offset.
+TEST_F(DragControllerTest, DragLinkWithDeviceAndPageScaleFactor) {
+  GetChromeClient().SetDeviceScaleFactor(2);
+  GetFrame().GetPage()->SetPageScaleFactor(2);
+  gfx::Size link_image_size;
+  gfx::Vector2d cursor_offset = DragLinkAndGetCursorOffset(link_image_size);
+  EXPECT_NEAR(link_image_size.width() / 2, cursor_offset.x(), 1);
+  EXPECT_EQ(4, cursor_offset.y());
 }
 
 // Verify that drag and drop of URL from textarea to textarea drops the entire
