@@ -261,6 +261,8 @@ std::unique_ptr<SeedResponse> MaybeImportFirstRunSeed(
 
 }  // namespace
 
+BASE_FEATURE(kVariationsHttpFallback, base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_CHROMEOS)
 // This is a utility which syncs the policy-managed value of
 // |prefs::kDeviceVariationsRestrictionsByPolicy| into
@@ -925,9 +927,10 @@ void VariationsService::OnSimpleLoaderComplete(
 
 bool VariationsService::MaybeRetryOverHTTP() {
   // If the current fetch attempt was over an HTTPS connection, retry the
-  // fetch immediately over an HTTP connection. We only do this if an insecure
-  // variations URL is set and its scheme is HTTP.
-  if (!last_request_was_http_retry_ &&
+  // fetch immediately over an HTTP connection. We only do this if HTTP fallback
+  // is enabled and an insecure variations URL is set with an HTTP scheme.
+  if (base::FeatureList::IsEnabled(kVariationsHttpFallback) &&
+      !last_request_was_http_retry_ &&
       !insecure_variations_server_url_.is_empty() &&
       insecure_variations_server_url_.SchemeIs(url::kHttpScheme)) {
     return DoFetchFromURL(insecure_variations_server_url_, true);
