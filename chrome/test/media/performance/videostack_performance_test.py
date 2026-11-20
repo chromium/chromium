@@ -95,6 +95,12 @@ def run_performance_test(video_file: str, driver: webdriver, args):
     Returns:
         subprocess.Popen: The Popen object for the ffmpeg recording process.
     """
+    original_video = os.path.join(common.server.VIDEO_DIR, video_file)
+    if not os.path.isfile(original_video):
+        raise FileNotFoundError(
+            f"Reference video not found on host: {original_video}"
+        )
+
     # force video output to mp4
     output_file = os.path.join(
         common.RECORDINGS_DIR, video_file.replace('.webm', '.mp4')
@@ -221,7 +227,7 @@ def run_performance_test(video_file: str, driver: webdriver, args):
         logging.info("recording finished.")
 
         results = common.video_analyzer.from_original_video(
-            output_file, f"/usr/local/cipd/videostack_videos_30s/{video_file}"
+            output_file, original_video
         )
 
         if not results:
@@ -240,7 +246,6 @@ def run_performance_test(video_file: str, driver: webdriver, args):
         for metric in common.METRICS:
             record(metric)
 
-        original_video = f"/usr/local/cipd/videostack_videos_30s/{video_file}"
         common.calculate_psnr_ssim(video_file, output_file, original_video)
 
         logging.warning('Video analysis result of %s: %s', video_file, results)
@@ -337,6 +342,7 @@ def _run_tests(reporter):
                 video['name'], "HEVC is disabled on ChromeOS (b/512198717)."
             )
 
+    first_clip_error = None
     try:
         with reporter.case(test_results.SETUP_CASE):
             driver, tunnel_proc, actual_version = setup_test_environment(
@@ -347,8 +353,19 @@ def _run_tests(reporter):
                 logging.info("Skipping HEVC on ChromeOS: %s", video['name'])
                 continue
             logging.info("Starting test for video: %s", video['name'])
-            with reporter.case(video['name']):
-                run_video_case(video['name'], driver, args)
+            try:
+                with reporter.case(video['name']):
+                    run_video_case(video['name'], driver, args)
+            except common.RemoteDeviceError:
+                raise
+            except Exception as e:
+                # `reporter.case()` already recorded FAIL for this clip.
+                # Continue so the remaining videos still run, then re-raise
+                # after the loop.
+                if first_clip_error is None:
+                    first_clip_error = e
+        if first_clip_error is not None:
+            raise first_clip_error
     finally:
         common.teardown_test_environment(driver, tunnel_proc, args)
         # Last, since it raises if the upload fails.

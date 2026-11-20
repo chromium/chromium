@@ -643,7 +643,7 @@ class ScriptWiringTest(unittest.TestCase):
             videostack_test, '--sender', 'dut', '--sender-os', 'cros'
         )
 
-        hevc = output['tests']['1080p60fpsHEVC_boat_yt_sync.mp4']
+        hevc = output['tests']['1080p60fpsHEVC_boat_sync.mp4']
         self.assertEqual(hevc['actual'], Status.SKIP)
         self.assertEqual(hevc['expected'], Status.SKIP)
         self.assertIn('b/512198717', hevc['skip_reason'])

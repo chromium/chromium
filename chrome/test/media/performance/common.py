@@ -134,7 +134,7 @@ _CONNECT_ATTEMPTS = 20
 VIDEOS = [
     {'name': '1080p30fpsAV1_foodmarket_sync.mp4', 'fps': 30},
     {'name': '1080p30fpsH264_foodmarket_yt_sync.mp4', 'fps': 30},
-    {'name': '1080p60fpsHEVC_boat_yt_sync.mp4', 'fps': 60},
+    {'name': '1080p60fpsHEVC_boat_sync.mp4', 'fps': 60},
     {'name': '1080p60fpsVP9_boat_yt_sync.webm', 'fps': 60},
 ]
 
