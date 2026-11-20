@@ -17076,7 +17076,6 @@
     "RateLimitProxyConfigPolls": [
         {
             "platforms": [
-                "ios",
                 "windows"
             ],
             "experiments": [
