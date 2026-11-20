@@ -101,6 +101,10 @@ TEST_F(HeapProfilingDataSourceTest, EmitSamples) {
       heap_samples_count++;
       const auto& sample = packet.stack_sample();
       EXPECT_TRUE(sample.has_callstack_iid());
+      // Object count and object size follower weights.
+      ASSERT_EQ(sample.follower_weights_size(), 2);
+      uint64_t object_size = sample.follower_weights(1);
+      EXPECT_TRUE(object_size == 1024u || object_size == 2048u) << object_size;
     }
     if (packet.sequence_flags() &
         perfetto::protos::TracePacket::SEQ_INCREMENTAL_STATE_CLEARED) {

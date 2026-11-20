@@ -27,6 +27,17 @@ class COMPONENT_EXPORT(TRACING_CPP) TracingHeapProfileBuilder {
   STACK_ALLOCATED();
 
  public:
+  // Names of the StackSample follower counters emitted alongside the primary
+  // per-allocator counter (whose weight is the Poisson-scaled `Sample::total`
+  // in bytes). Declared once per sequence in
+  // StackSampleDefaults.follower_descriptors, in this order:
+  //   - kObjectCountCounterName (UNIT_COUNT): estimated live object count,
+  //     max(1, round(total / size)). Additive across samples.
+  //   - kObjectSizeCounterName (UNIT_BYTES): `Sample::size`, the unscaled size
+  //     of the sampled allocation.
+  static constexpr char kObjectCountCounterName[] = "object_count";
+  static constexpr char kObjectSizeCounterName[] = "object_size";
+
   explicit TracingHeapProfileBuilder(HeapProfilingIncrementalState* incr_state);
   ~TracingHeapProfileBuilder();
 
@@ -34,14 +45,16 @@ class COMPONENT_EXPORT(TRACING_CPP) TracingHeapProfileBuilder {
   TracingHeapProfileBuilder& operator=(const TracingHeapProfileBuilder&) =
       delete;
 
-  // Writes a single stack sample to the trace packet.
+  // Writes a single stack sample to the trace packet, with the sample's total
+  // as the primary weight and its object count and size as follower weights.
   // This may also write interned data (mappings, frames, callstacks) to the
   // packet if they haven't been emitted yet in the current sequence.
   void WriteSample(perfetto::protos::pbzero::TracePacket* trace_packet,
                    const base::SamplingHeapProfiler::Sample& sample,
                    base::ModuleCache& module_cache);
 
-  // Writes the default configuration for stack samples (e.g. the source name).
+  // Writes the default configuration for stack samples (the source name and
+  // the follower counter descriptors).
   static void WriteDefaults(
       perfetto::protos::pbzero::TracePacket* trace_packet);
 

@@ -16,6 +16,7 @@
 #include "third_party/perfetto/protos/perfetto/trace/profiling/profile_common.pb.h"
 #include "third_party/perfetto/protos/perfetto/trace/profiling/stack_sample.pb.h"
 #include "third_party/perfetto/protos/perfetto/trace/trace_packet.pb.h"
+#include "third_party/perfetto/protos/perfetto/trace/trace_packet_defaults.pb.h"
 
 namespace tracing {
 namespace {
@@ -66,6 +67,14 @@ TEST_F(TracingHeapProfileBuilderTest, WriteDefaults) {
   ASSERT_TRUE(defaults.has_stack_sample_defaults());
   EXPECT_EQ(defaults.stack_sample_defaults().source(),
             "org.chromium.native_heap_profiler");
+
+  const auto& followers =
+      defaults.stack_sample_defaults().follower_descriptors();
+  ASSERT_EQ(followers.size(), 2);
+  EXPECT_EQ(followers[0].name(), "object_count");
+  EXPECT_EQ(followers[0].unit(), perfetto::protos::StackSample::UNIT_COUNT);
+  EXPECT_EQ(followers[1].name(), "object_size");
+  EXPECT_EQ(followers[1].unit(), perfetto::protos::StackSample::UNIT_BYTES);
 }
 
 TEST_F(TracingHeapProfileBuilderTest, WriteSampleFirstTime) {
@@ -98,6 +107,10 @@ TEST_F(TracingHeapProfileBuilderTest, WriteSampleFirstTime) {
   EXPECT_GT(stack_sample.callstack_iid(), 0u);
   ASSERT_TRUE(stack_sample.has_task_context());
   EXPECT_EQ(stack_sample.task_context().tid(), 123u);
+  // Object count (1000 / 100) and object size.
+  ASSERT_EQ(stack_sample.follower_weights_size(), 2);
+  EXPECT_EQ(stack_sample.follower_weights(0), 10u);
+  EXPECT_EQ(stack_sample.follower_weights(1), 100u);
 
   // Verify interned_data.
   ASSERT_TRUE(parsed.has_interned_data());
@@ -259,6 +272,39 @@ TEST_F(TracingHeapProfileBuilderTest, WriteSampleEmptyModulePath) {
   ASSERT_EQ(interned.mappings_size(), 1);
   EXPECT_EQ(interned.mappings(0).path_string_ids_size(), 0);
   EXPECT_EQ(interned.mapping_paths_size(), 0);
+}
+
+TEST_F(TracingHeapProfileBuilderTest, WriteSampleObjectCount) {
+  struct {
+    size_t size;
+    size_t total;
+    uint64_t expected_object_count;
+  } kCases[] = {
+      {100, 1000, 10},     // Exact multiple.
+      {40000, 65536, 2},   // 1.6384 rounds up.
+      {50000, 65536, 1},   // 1.31072 rounds down.
+      {300000, 65536, 1},  // 0.218453 rounds to 0, clamped to 1.
+  };
+
+  TracingHeapProfileBuilder builder(&incr_state_);
+  for (const auto& test_case : kCases) {
+    SCOPED_TRACE(testing::Message()
+                 << "size=" << test_case.size << " total=" << test_case.total);
+    base::SamplingHeapProfiler::Sample sample(test_case.size, test_case.total);
+    sample.stack = {reinterpret_cast<const void*>(0x1100)};
+
+    protozero::HeapBuffered<perfetto::protos::pbzero::TracePacket> packet;
+    builder.WriteSample(packet.get(), sample, module_cache_);
+    std::vector<uint8_t> serialized = packet.SerializeAsArray();
+    perfetto::protos::TracePacket parsed;
+    ASSERT_TRUE(parsed.ParseFromArray(serialized.data(), serialized.size()));
+
+    const auto& stack_sample = parsed.stack_sample();
+    ASSERT_EQ(stack_sample.follower_weights_size(), 2);
+    EXPECT_EQ(stack_sample.follower_weights(0),
+              test_case.expected_object_count);
+    EXPECT_EQ(stack_sample.follower_weights(1), test_case.size);
+  }
 }
 
 }  // namespace

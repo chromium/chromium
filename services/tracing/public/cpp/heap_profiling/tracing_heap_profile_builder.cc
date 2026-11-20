@@ -4,15 +4,19 @@
 
 #include "services/tracing/public/cpp/heap_profiling/tracing_heap_profile_builder.h"
 
+#include <algorithm>
+#include <array>
 #include <utility>
 
 #include "base/auto_reset.h"
+#include "base/check_op.h"
 #include "base/hash/hash.h"
 #include "base/process/process.h"
 #include "base/profiler/module_cache.h"
 #include "base/threading/platform_thread.h"
 #include "services/tracing/public/cpp/heap_profiling/heap_profiling_data_source.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_data_source_names.h"
+#include "third_party/perfetto/include/perfetto/protozero/proto_utils.h"
 #include "third_party/perfetto/include/perfetto/tracing/platform.h"
 #include "third_party/perfetto/protos/perfetto/trace/interned_data/interned_data.pbzero.h"
 #include "third_party/perfetto/protos/perfetto/trace/profiling/profile_common.pbzero.h"
@@ -21,6 +25,21 @@
 #include "third_party/perfetto/protos/perfetto/trace/trace_packet_defaults.pbzero.h"
 
 namespace tracing {
+
+namespace {
+
+// Estimated number of live objects represented by `sample`. Matches
+// heap_profiling::MergeSamples(), which computes `inuse_objects` for the
+// heap profiling service's reports.
+uint64_t EstimateObjectCount(const base::SamplingHeapProfiler::Sample& sample) {
+  // PoissonAllocationSampler only samples an allocation once the accumulated
+  // bytes, increased by the allocation's size, cross the sampling threshold, so
+  // sampled allocations always have a non-zero size.
+  DCHECK_GT(sample.size, 0u);
+  return std::max<uint64_t>((sample.total + sample.size / 2) / sample.size, 1);
+}
+
+}  // namespace
 
 TracingHeapProfileBuilder::TracingHeapProfileBuilder(
     HeapProfilingIncrementalState* incr_state)
@@ -37,6 +56,25 @@ void TracingHeapProfileBuilder::WriteDefaults(
   auto* defaults = trace_packet->set_trace_packet_defaults();
   auto* stack_sample_defaults = defaults->set_stack_sample_defaults();
   stack_sample_defaults->set_source(kNativeHeapProfilerSourceName);
+
+  // Follower counters shared by all samples on this sequence, positional with
+  // StackSample.follower_weights written by WriteSample(). The primary counter
+  // (per allocator) carries the Poisson-scaled live bytes.
+  auto* object_count = stack_sample_defaults->add_follower_descriptors();
+  object_count->set_name(kObjectCountCounterName);
+  object_count->set_unit(
+      perfetto::protos::pbzero::StackSample::Unit::UNIT_COUNT);
+  object_count->set_description(
+      "Estimated number of live objects attributed to the sample: "
+      "max(1, round(total / size)).");
+
+  auto* object_size = stack_sample_defaults->add_follower_descriptors();
+  object_size->set_name(kObjectSizeCounterName);
+  object_size->set_unit(
+      perfetto::protos::pbzero::StackSample::Unit::UNIT_BYTES);
+  object_size->set_description(
+      "Size of the sampled allocation, not scaled by the sampling probability. "
+      "Summed across samples, this is the unscaled sampled bytes.");
 }
 
 void TracingHeapProfileBuilder::WriteSample(
@@ -65,6 +103,21 @@ void TracingHeapProfileBuilder::WriteSample(
   stack_sample->set_primary_descriptor_iid(counter_iid);
   stack_sample->set_primary_weight(sample.total);
   stack_sample->set_callstack_iid(callstack_iid);
+
+  // Positional with the StackSampleDefaults.follower_descriptors written by
+  // WriteDefaults(). The packed varints are encoded directly, as the generated
+  // set_follower_weights() does, because protozero::PackedVarInt isn't exported
+  // from the Perfetto component (and reserves an 8 KiB stack buffer).
+  constexpr size_t kMaxVarIntSize = 10;
+  std::array<uint8_t, 2 * kMaxVarIntSize> follower_weights;
+  uint8_t* follower_weights_end = protozero::proto_utils::WriteVarInt(
+      EstimateObjectCount(sample), follower_weights.data());
+  follower_weights_end = protozero::proto_utils::WriteVarInt(
+      static_cast<uint64_t>(sample.size), follower_weights_end);
+  stack_sample->AppendBytes(
+      perfetto::protos::pbzero::StackSample::kFollowerWeightsFieldNumber,
+      follower_weights.data(),
+      static_cast<size_t>(follower_weights_end - follower_weights.data()));
 
   auto* task_context = stack_sample->set_task_context();
   task_context->set_pid(perfetto::Platform::GetCurrentProcessId());
