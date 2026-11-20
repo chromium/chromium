@@ -1119,4 +1119,103 @@ TEST_F(NodeTest, PseudoAwareSiblingTraversalAllPseudos) {
   EXPECT_EQ(after2->PseudoAwarePreviousSibling(), child2);
 }
 
+TEST_F(NodeTest, moveBefore_SlotAssignedNodesDetachAndPreserve) {
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
+    <div id="move_to"></div>
+    <div id="host" style="display: contents">
+      <template shadowrootmode="open">
+        <div id="same_tree_src">
+          <slot id="s1" name="s1" style="display: block"></slot>
+        </div>
+        <div id="same_tree_dest"></div>
+        <div id="subtree">
+          <slot id="s2" name="s2"></slot>
+          <div id="nested_host">
+            <template shadowrootmode="open">
+              <slot id="nested_slot"></slot>
+            </template>
+            <div id="nested_assigned">Nested</div>
+          </div>
+        </div>
+      </template>
+      <div id="assigned1" slot="s1">Assigned 1</div>
+      <div id="assigned2" slot="s2">Assigned 2</div>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* move_to = GetElementById("move_to");
+  Element* host = GetElementById("host");
+  ShadowRoot* shadow_root = host->GetShadowRoot();
+  Element* same_tree_src =
+      shadow_root->getElementById(AtomicString("same_tree_src"));
+  Element* same_tree_dest =
+      shadow_root->getElementById(AtomicString("same_tree_dest"));
+  Element* slot1 = shadow_root->getElementById(AtomicString("s1"));
+  Element* subtree = shadow_root->getElementById(AtomicString("subtree"));
+  Element* nested_host =
+      shadow_root->getElementById(AtomicString("nested_host"));
+  Element* nested_assigned =
+      nested_host->QuerySelector(AtomicString("#nested_assigned"));
+  Element* assigned1 = GetElementById("assigned1");
+  Element* assigned2 = GetElementById("assigned2");
+
+  // 1. Moving a <slot> (directly or via an ancestor) within the same shadow
+  // tree does not detach its assigned nodes during removal.
+  const ComputedStyle* old_assigned1_style = assigned1->GetComputedStyle();
+  const LayoutObject* old_assigned1_layout = assigned1->GetLayoutObject();
+  const ComputedStyle* old_slot1_style = slot1->GetComputedStyle();
+  const LayoutObject* old_slot1_layout = slot1->GetLayoutObject();
+  ASSERT_TRUE(old_assigned1_style);
+  ASSERT_TRUE(old_assigned1_layout);
+  ASSERT_TRUE(old_slot1_style);
+  ASSERT_TRUE(old_slot1_layout);
+
+  same_tree_dest->moveBefore(slot1, nullptr, ASSERT_NO_EXCEPTION);
+  EXPECT_EQ(assigned1->GetComputedStyle(), old_assigned1_style);
+  EXPECT_EQ(assigned1->GetLayoutObject(), old_assigned1_layout);
+  EXPECT_EQ(slot1->GetComputedStyle(), old_slot1_style);
+  EXPECT_EQ(slot1->GetLayoutObject(), old_slot1_layout);
+
+  same_tree_src->moveBefore(same_tree_dest, nullptr, ASSERT_NO_EXCEPTION);
+  EXPECT_EQ(assigned1->GetComputedStyle(), old_assigned1_style);
+  EXPECT_EQ(assigned1->GetLayoutObject(), old_assigned1_layout);
+
+  UpdateAllLifecyclePhasesForTest();
+  ASSERT_TRUE(assigned1->GetLayoutObject());
+  ASSERT_TRUE(slot1->GetComputedStyle());
+
+  // 2. Moving a <slot> between trees synchronously detaches its assigned nodes
+  // during removal while preserving ComputedStyle on the moved <slot> itself.
+  const ComputedStyle* slot1_style_before_cross_move =
+      slot1->GetComputedStyle();
+  move_to->moveBefore(slot1, nullptr, ASSERT_NO_EXCEPTION);
+  EXPECT_FALSE(assigned1->GetLayoutObject());
+  EXPECT_FALSE(assigned1->GetComputedStyle());
+  EXPECT_EQ(slot1->GetComputedStyle(), slot1_style_before_cross_move);
+
+  UpdateAllLifecyclePhasesForTest();
+
+  // 3. Moving a subtree across trees synchronously detaches assigned nodes of
+  // descendant <slot>s in the same TreeScope (cleaning up StyleRecalcRoot if an
+  // assigned node was dirty), without detaching assigned nodes of <slot>s in a
+  // nested shadow host's TreeScope.
+  assigned2->SetInlineStyleProperty(CSSPropertyID::kColor, "red");
+  EXPECT_EQ(GetStyleRecalcRoot(), assigned2);
+  const ComputedStyle* old_nested_style = nested_assigned->GetComputedStyle();
+  const LayoutObject* old_nested_layout = nested_assigned->GetLayoutObject();
+  ASSERT_TRUE(old_nested_style);
+  ASSERT_TRUE(old_nested_layout);
+
+  move_to->moveBefore(subtree, nullptr, ASSERT_NO_EXCEPTION);
+  EXPECT_FALSE(assigned2->GetLayoutObject());
+  EXPECT_FALSE(assigned2->GetComputedStyle());
+  EXPECT_FALSE(assigned2->NeedsStyleRecalc());
+  EXPECT_EQ(nested_assigned->GetComputedStyle(), old_nested_style);
+  EXPECT_EQ(nested_assigned->GetLayoutObject(), old_nested_layout);
+
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(nested_assigned->GetLayoutObject());
+}
+
 }  // namespace blink

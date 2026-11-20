@@ -370,18 +370,22 @@ TEST_P(HTMLCanvasElementTest, IsCanvasOrInCanvasSubtreeInIframe) {
   EXPECT_TRUE(inner_canvas->IsCanvasOrInCanvasSubtree());
   EXPECT_TRUE(inner_canvas->IsInCanvasSubtree());
 
-  GetDocument().SetStatePreservingAtomicMoveInProgress(true);
+  GetDocument().SetStatePreservingAtomicMoveType(
+      Document::AtomicMoveType::kSameTree);
   div->AppendChild(iframe);
-  GetDocument().SetStatePreservingAtomicMoveInProgress(false);
+  GetDocument().SetStatePreservingAtomicMoveType(
+      Document::AtomicMoveType::kNone);
   EXPECT_FALSE(iframe->IsCanvasOrInCanvasSubtree());
   EXPECT_FALSE(inner_div->IsCanvasOrInCanvasSubtree());
   EXPECT_FALSE(inner_div->IsInCanvasSubtree());
   EXPECT_TRUE(inner_canvas->IsCanvasOrInCanvasSubtree());
   EXPECT_FALSE(inner_canvas->IsInCanvasSubtree());
 
-  GetDocument().SetStatePreservingAtomicMoveInProgress(true);
+  GetDocument().SetStatePreservingAtomicMoveType(
+      Document::AtomicMoveType::kSameTree);
   canvas->AppendChild(iframe);
-  GetDocument().SetStatePreservingAtomicMoveInProgress(false);
+  GetDocument().SetStatePreservingAtomicMoveType(
+      Document::AtomicMoveType::kNone);
   EXPECT_TRUE(iframe->IsCanvasOrInCanvasSubtree());
   EXPECT_TRUE(inner_div->IsCanvasOrInCanvasSubtree());
   EXPECT_TRUE(inner_div->IsInCanvasSubtree());
@@ -427,9 +431,11 @@ TEST_P(HTMLCanvasElementTest, IsCanvasOrInCanvasSubtreeInShadowInIframe) {
   EXPECT_TRUE(inner_div->IsInCanvasSubtree());
 
   // Move iframe out of canvas.
-  GetDocument().SetStatePreservingAtomicMoveInProgress(true);
+  GetDocument().SetStatePreservingAtomicMoveType(
+      Document::AtomicMoveType::kSameTree);
   div->AppendChild(iframe);
-  GetDocument().SetStatePreservingAtomicMoveInProgress(false);
+  GetDocument().SetStatePreservingAtomicMoveType(
+      Document::AtomicMoveType::kNone);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(iframe->IsCanvasOrInCanvasSubtree());
   EXPECT_FALSE(host->IsCanvasOrInCanvasSubtree());
@@ -438,9 +444,11 @@ TEST_P(HTMLCanvasElementTest, IsCanvasOrInCanvasSubtreeInShadowInIframe) {
   EXPECT_FALSE(inner_div->IsInCanvasSubtree());
 
   // Move iframe back into canvas.
-  GetDocument().SetStatePreservingAtomicMoveInProgress(true);
+  GetDocument().SetStatePreservingAtomicMoveType(
+      Document::AtomicMoveType::kSameTree);
   canvas->AppendChild(iframe);
-  GetDocument().SetStatePreservingAtomicMoveInProgress(false);
+  GetDocument().SetStatePreservingAtomicMoveType(
+      Document::AtomicMoveType::kNone);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(iframe->IsCanvasOrInCanvasSubtree());
   EXPECT_TRUE(host->IsCanvasOrInCanvasSubtree());
@@ -482,9 +490,11 @@ TEST_P(HTMLCanvasElementTest, IsCanvasOrInCanvasSubtreeInNestedShadowInIframe) {
   EXPECT_TRUE(inner_div->IsCanvasOrInCanvasSubtree());
 
   // Move iframe out of canvas.
-  GetDocument().SetStatePreservingAtomicMoveInProgress(true);
+  GetDocument().SetStatePreservingAtomicMoveType(
+      Document::AtomicMoveType::kSameTree);
   div->AppendChild(iframe);
-  GetDocument().SetStatePreservingAtomicMoveInProgress(false);
+  GetDocument().SetStatePreservingAtomicMoveType(
+      Document::AtomicMoveType::kNone);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(iframe->IsCanvasOrInCanvasSubtree());
   EXPECT_FALSE(host1->IsCanvasOrInCanvasSubtree());
@@ -492,9 +502,11 @@ TEST_P(HTMLCanvasElementTest, IsCanvasOrInCanvasSubtreeInNestedShadowInIframe) {
   EXPECT_FALSE(inner_div->IsCanvasOrInCanvasSubtree());
 
   // Move iframe back into canvas.
-  GetDocument().SetStatePreservingAtomicMoveInProgress(true);
+  GetDocument().SetStatePreservingAtomicMoveType(
+      Document::AtomicMoveType::kSameTree);
   canvas->AppendChild(iframe);
-  GetDocument().SetStatePreservingAtomicMoveInProgress(false);
+  GetDocument().SetStatePreservingAtomicMoveType(
+      Document::AtomicMoveType::kNone);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(iframe->IsCanvasOrInCanvasSubtree());
   EXPECT_TRUE(host1->IsCanvasOrInCanvasSubtree());

@@ -30,6 +30,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_DOCUMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_DOCUMENT_H_
 
+#include <cstdint>
 #include <memory>
 #include <optional>
 
@@ -422,11 +423,22 @@ class CORE_EXPORT Document : public ContainerNode,
 
   SelectorQueryCache& GetSelectorQueryCache();
 
-  void SetStatePreservingAtomicMoveInProgress(bool value) {
-    state_preserving_atomic_move_in_progress_ = value;
+  enum class AtomicMoveType : uint8_t {
+    // Atomic move not in progress
+    kNone,
+    // Atomic move of a node between parent nodes in the same TreeScope
+    kSameTree,
+    // Atomic move of a node between parent nodes in different TreeScopes
+    kBetweenTrees,
+  };
+  void SetStatePreservingAtomicMoveType(AtomicMoveType type) {
+    state_preserving_atomic_move_type_ = type;
   }
   bool StatePreservingAtomicMoveInProgress() const {
-    return state_preserving_atomic_move_in_progress_;
+    return state_preserving_atomic_move_type_ != AtomicMoveType::kNone;
+  }
+  bool StatePreservingAtomicMoveBetweenTrees() const {
+    return state_preserving_atomic_move_type_ == AtomicMoveType::kBetweenTrees;
   }
 
   // Focus Management.
@@ -3324,11 +3336,11 @@ class CORE_EXPORT Document : public ContainerNode,
   HeapVector<Member<HTMLInputElement>> elements_needing_shadow_tree_;
 
   // See https://github.com/whatwg/dom/issues/1255 and
-  // https://crbug.com/40150299. This flag is consulted via its getter, by any
+  // https://crbug.com/40150299. This state is consulted via its getters, by any
   // code in the Node insertion/removal path that's interested in NOT resetting
   // certain state, when the insertion is triggered via the state-preserving
   // atomic move API (so far, `Node#moveBefore()`).
-  bool state_preserving_atomic_move_in_progress_ = false;
+  AtomicMoveType state_preserving_atomic_move_type_ = AtomicMoveType::kNone;
 
   // See VisitedLinkPassKey class description.
   std::optional<net::SchemefulSite> cached_top_frame_site_for_visited_links_ =

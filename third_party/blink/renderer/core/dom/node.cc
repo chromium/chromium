@@ -794,7 +794,10 @@ void Node::moveBefore(Node* new_child,
   // impossible for nested `moveBefore()` calls to occur. Assert that no atomic
   // move is already in progress.
   DCHECK(!GetDocument().StatePreservingAtomicMoveInProgress());
-  GetDocument().SetStatePreservingAtomicMoveInProgress(true);
+  GetDocument().SetStatePreservingAtomicMoveType(
+      GetTreeScope() == new_child->GetTreeScope()
+          ? Document::AtomicMoveType::kSameTree
+          : Document::AtomicMoveType::kBetweenTrees);
 
   ContainerNode* old_parent = new_child->parentNode();
   auto* moved_element = DynamicTo<Element>(new_child);
@@ -806,7 +809,8 @@ void Node::moveBefore(Node* new_child,
   }
 
   insertBefore(new_child, ref_child, exception_state);
-  GetDocument().SetStatePreservingAtomicMoveInProgress(false);
+  GetDocument().SetStatePreservingAtomicMoveType(
+      Document::AtomicMoveType::kNone);
 
   if (exception_state.HadException()) {
     return;

@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/dom/child_frame_disconnector.h"
 #include "third_party/blink/renderer/core/dom/child_list_mutation_scope.h"
 #include "third_party/blink/renderer/core/dom/class_collection.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatch_forbidden_scope.h"
@@ -70,6 +71,7 @@
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/html/html_html_element.h"
+#include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/html/html_stream.h"
 #include "third_party/blink/renderer/core/html/html_tag_collection.h"
 #include "third_party/blink/renderer/core/html/html_template_element.h"
@@ -1078,9 +1080,21 @@ void ContainerNode::RemoveBetween(Node* previous_child,
 
   DCHECK_EQ(old_child.parentNode(), this);
 
-  if (InActiveDocument() &&
-      !GetDocument().StatePreservingAtomicMoveInProgress()) {
-    old_child.DetachLayoutTree();
+  if (InActiveDocument()) {
+    if (!GetDocument().StatePreservingAtomicMoveInProgress()) {
+      old_child.DetachLayoutTree();
+    } else if (IsInShadowTree() &&
+               GetDocument().StatePreservingAtomicMoveBetweenTrees() &&
+               ContainingShadowRoot()->HasSlotAssignment()) {
+      // Moving a <slot> between trees leaves its assigned nodes in the host's
+      // light tree without a layout parent once the <slot> is no longer in this
+      // shadow tree, so detach their layout trees before removal.
+      for (HTMLSlotElement* slot =
+               Traversal<HTMLSlotElement>::InclusiveFirstWithin(old_child);
+           slot; slot = Traversal<HTMLSlotElement>::Next(*slot, &old_child)) {
+        slot->DetachAssignedNodesLayoutTree();
+      }
+    }
   }
 
   if (next_child)

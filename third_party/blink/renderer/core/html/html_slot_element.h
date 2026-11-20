@@ -90,6 +90,7 @@ class CORE_EXPORT HTMLSlotElement final : public HTMLElement {
 
   void AttachLayoutTreeForSlotChildren(AttachContext&);
   void DetachLayoutTree(bool performing_reattach) final;
+  void DetachAssignedNodesLayoutTree(bool performing_reattach = false);
   void RebuildDistributedChildrenLayoutTrees(WhitespaceAttacher&);
 
   void AttributeChanged(const AttributeModificationParams&) final;

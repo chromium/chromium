@@ -57,9 +57,11 @@ TEST_P(HTMLFrameOwnerTest, InsertWithContentFrameCrashes) {
   ASSERT_TRUE(el && el->ContentFrame());
 
   // Set up the invalid state:
-  GetDocument().SetStatePreservingAtomicMoveInProgress(true);
+  GetDocument().SetStatePreservingAtomicMoveType(
+      Document::AtomicMoveType::kSameTree);
   container->removeChild(el);
-  GetDocument().SetStatePreservingAtomicMoveInProgress(false);
+  GetDocument().SetStatePreservingAtomicMoveType(
+      Document::AtomicMoveType::kNone);
 
   // Verify explosions:
   ASSERT_FALSE(el->isConnected());

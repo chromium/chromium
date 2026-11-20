@@ -440,6 +440,11 @@ void HTMLSlotElement::AttachLayoutTreeForSlotChildren(AttachContext& context) {
 }
 
 void HTMLSlotElement::DetachLayoutTree(bool performing_reattach) {
+  DetachAssignedNodesLayoutTree(performing_reattach);
+  HTMLElement::DetachLayoutTree(performing_reattach);
+}
+
+void HTMLSlotElement::DetachAssignedNodesLayoutTree(bool performing_reattach) {
   if (SupportsAssignment()) {
     auto* host = OwnerShadowHost();
     // Defensive copy to prevent UAF from sync recalc. See crbug.com/497830330.
@@ -455,11 +460,11 @@ void HTMLSlotElement::DetachLayoutTree(bool performing_reattach) {
       // 4. It might have been marked style-dirty in its new location and
       //    calling DetachLayoutTree here would have incorrectly cleared those
       //    dirty bits.
-      if (host == node->parentNode())
+      if (host == node->parentNode()) {
         node->DetachLayoutTree(performing_reattach);
+      }
     }
   }
-  HTMLElement::DetachLayoutTree(performing_reattach);
 }
 
 void HTMLSlotElement::RebuildDistributedChildrenLayoutTrees(
