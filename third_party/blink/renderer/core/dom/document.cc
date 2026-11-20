@@ -3354,9 +3354,7 @@ void Document::NotifyDisplayLockChangedForSVGResources(const Element& element) {
   // `element` can only be a descendant of an SVG resource target if it has a
   // <foreignObject> flat-tree ancestor.
   const SVGForeignObjectElement* enclosing_foreign_object = nullptr;
-  if (element.isConnected() &&
-      !SlotAssignmentRecalcInProgressScope::IsFlatTreeTraversalForbidden() &&
-      !IsSlotAssignmentDirty()) {
+  if (element.isConnected() && !IsSlotAssignmentDirty()) {
     if (svg_extensions_ && svg_extensions_->MayContainForeignObjects()) {
       for (const Node& ancestor : FlatTreeTraversal::AncestorsOf(element)) {
         if (const auto* foreign_object =

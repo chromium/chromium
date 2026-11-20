@@ -61,7 +61,6 @@
 #include "third_party/blink/renderer/core/dom/indexed_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/slot_assignment_engine.h"
-#include "third_party/blink/renderer/core/dom/slot_assignment_recalc_in_progress_scope.h"
 #include "third_party/blink/renderer/core/editing/character_range_mapper.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
@@ -7311,8 +7310,7 @@ void AXObject::SetNeedsToUpdateChildren(bool update) {
 
 // static
 bool AXObject::CanSafelyUseFlatTreeTraversalNow(Document& document) {
-  return !SlotAssignmentRecalcInProgressScope::IsFlatTreeTraversalForbidden() &&
-         !document.GetSlotAssignmentEngine().HasPendingSlotAssignmentRecalc();
+  return !document.GetSlotAssignmentEngine().HasPendingSlotAssignmentRecalc();
 }
 
 bool AXObject::ShouldDestroyWhenDetachingFromParent() const {

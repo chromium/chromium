@@ -1170,8 +1170,7 @@ void DisplayLockContext::DetermineIfSubtreeHasTopLayerElement() {
   if (!ConnectedToView())
     return;
 
-  if (SlotAssignmentRecalcInProgressScope::IsFlatTreeTraversalForbidden() ||
-      SlotAssignmentRecalcInProgressScope::IsActive()) {
+  if (SlotAssignmentRecalcInProgressScope::IsActive()) {
     ScheduleTopLayerCheck();
     return;
   }

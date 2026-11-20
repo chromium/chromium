@@ -53,7 +53,6 @@
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/slot_assignment_engine.h"
-#include "third_party/blink/renderer/core/dom/slot_assignment_recalc_in_progress_scope.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
 #include "third_party/blink/renderer/core/events/event_util.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
@@ -189,12 +188,9 @@ bool IsDisplayLocked(const Node* node, bool inclusive = false) {
   if (!node)
     return false;
   // The IsDisplayLockedPreventingPaint() function may attempt to do
-  // a flat tree traversal of ancestors. If we're in a flat tree traversal
-  // forbidden scope, return false. Additionally, flat tree traversal
-  // might call AssignedSlot, so if we're in a slot assignment recalc
-  // forbidden scope, return false.
-  if (SlotAssignmentRecalcInProgressScope::IsFlatTreeTraversalForbidden() ||
-      node->GetDocument()
+  // a flat tree traversal of ancestors, which may call AssignedSlot, so if
+  // slot assignment is dirty, return false.
+  if (node->GetDocument()
           .GetSlotAssignmentEngine()
           .HasPendingSlotAssignmentRecalc()) {
     return false;  // Cannot safely perform this check now.
