@@ -4,18 +4,22 @@
 
 #include "chrome/browser/safe_browsing/network_context_service.h"
 
+#include <utility>
+
 #include "base/feature_list.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/common/content_features.h"
+#include "net/http/http_auth_preferences.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace safe_browsing {
 
-NetworkContextService::NetworkContextService(Profile* profile) {
+NetworkContextService::NetworkContextService(Profile* profile)
+    : is_off_the_record_(profile->IsOffTheRecord()) {
   proxy_config_monitor_ = std::make_unique<ProxyConfigMonitor>(profile);
   network_context_ = SafeBrowsingNetworkContext::Create(
-      /*is_off_the_record=*/false, profile->GetPath(),
+      is_off_the_record_, profile->GetPath(),
       base::FeatureList::IsEnabled(features::kTriggerNetworkDataMigration),
       base::BindRepeating(&NetworkContextService::CreateNetworkContextParams,
                           // This is safe because `this` owns
@@ -41,7 +45,16 @@ network::mojom::NetworkContext* NetworkContextService::GetNetworkContext() {
 
 scoped_refptr<network::SharedURLLoaderFactory>
 NetworkContextService::GetURLLoaderFactory() {
+  if (url_loader_factory_for_testing_) {
+    return url_loader_factory_for_testing_;
+  }
   return network_context_->GetURLLoaderFactory();
+}
+
+void NetworkContextService::SetURLLoaderFactoryForTesting(
+    scoped_refptr<network::SharedURLLoaderFactory>
+        url_loader_factory_for_testing) {
+  url_loader_factory_for_testing_ = std::move(url_loader_factory_for_testing);
 }
 
 void NetworkContextService::FlushNetworkInterfaceForTesting() {
@@ -50,9 +63,16 @@ void NetworkContextService::FlushNetworkInterfaceForTesting() {
 
 network::mojom::NetworkContextParamsPtr
 NetworkContextService::CreateNetworkContextParams() {
-  auto params = SystemNetworkContextManager::GetInstance()
-                    ->CreateDefaultNetworkContextParams();
+  network::mojom::NetworkContextParamsPtr params =
+      SystemNetworkContextManager::GetInstance()
+          ->CreateDefaultNetworkContextParams();
   proxy_config_monitor_->AddToNetworkContextParams(params.get());
+  if (is_off_the_record_) {
+    params->http_auth_static_network_context_params =
+        network::mojom::HttpAuthStaticNetworkContextParams::New();
+    params->http_auth_static_network_context_params->allow_default_credentials =
+        net::HttpAuthPreferences::DISALLOW_DEFAULT_CREDENTIALS;
+  }
   return params;
 }
 
