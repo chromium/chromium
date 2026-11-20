@@ -281,10 +281,13 @@ source_set("unit_tests") {
       "glic_selection_widget_controller_unittest.cc",
       "glic_selection_widget_unittest.cc",
       "glic_split_button_controller_unittest.cc",
+      "tab_underline_controller_unittest.cc",
     ]
   }
   deps = [
     ":browser_ui",
+    ":glow",
+    ":glow_impl",
     ":impl",
     "//base/test:test_support",
     "//chrome/browser:global_features",
@@ -311,6 +314,9 @@ source_set("unit_tests") {
       "//chrome/app:generated_resources",
       "//chrome/browser/actor",
       "//chrome/browser/content_settings:content_settings_factory",
+      "//chrome/browser/contextual_tasks",
+      "//chrome/browser/dictation",
+      "//chrome/browser/dictation:test_support",
       "//chrome/browser/glic/suggestions",
       "//chrome/browser/tab_list:test_support",
       "//chrome/browser/ui/browser_window/test:test_support",
@@ -318,6 +324,7 @@ source_set("unit_tests") {
       "//chrome/test/base:chrome_render_view_host_test_harness",
       "//components/content_settings/core/browser",
       "//components/content_settings/core/common",
+      "//components/contextual_tasks/public:feature_list",
       "//components/tabs:test_support",
       "//ui/base",
     ]

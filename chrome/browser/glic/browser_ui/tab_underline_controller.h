@@ -5,9 +5,7 @@
 #ifndef CHROME_BROWSER_GLIC_BROWSER_UI_TAB_UNDERLINE_CONTROLLER_H_
 #define CHROME_BROWSER_GLIC_BROWSER_UI_TAB_UNDERLINE_CONTROLLER_H_
 
-#include <list>
-#include <optional>
-#include <string>
+#include <set>
 #include <vector>
 
 #include "base/callback_list.h"
@@ -18,7 +16,6 @@
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "components/tabs/public/tab_interface.h"
-#include "ui/views/view_observer.h"
 
 class BrowserWindowInterface;
 
@@ -161,15 +158,9 @@ class TabUnderlineController
 
   bool IsAnyGlicPanelShowing() const;
 
-  std::string UpdateReasonToString(UpdateUnderlineReason reason);
-
-  void AddReasonForDebugging(UpdateUnderlineReason reason);
-
   // Helper methods to check feature flags for Glic and contextual tasks.
   bool ShouldUseSignalsForGlicUnderlines();
   bool ShouldUseSignalsForContextualTasks();
-
-  std::string UpdateReasonsToString() const;
 
   BrowserWindowInterface* GetBrowserWindowInterface();
 
@@ -195,9 +186,6 @@ class TabUnderlineController
   base::ScopedObservation<contextual_tasks::ActiveTaskContextProvider,
                           contextual_tasks::ActiveTaskContextProvider::Observer>
       contextual_task_observation_{this};
-
-  static constexpr size_t kNumReasonsToKeep = 10u;
-  std::list<std::string> underline_update_reasons_;
 
   // The current set of active sources for the underline. The underline is
   // hidden only when this bitmask is UnderlineSource::kNone.
