@@ -2668,6 +2668,61 @@ recorded in the same way, even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="Accessibility.PdfHeuristics.TableCountPerPage" units="tables"
+    expires_after="2027-08-01">
+  <owner>kristislee@google.com</owner>
+  <owner>komo-eng@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records the number of heuristically detected tables on a page of an untagged
+    PDF document, including pages with no tables. Pages with no text aren't
+    recorded. Recorded once per page when the page's accessibility tree is
+    built.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.PdfHeuristics.TableMaxCellLength"
+    units="characters" expires_after="2027-08-01">
+  <owner>kristislee@google.com</owner>
+  <owner>komo-eng@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records the number of characters in the longest cell of a heuristically
+    detected table in an untagged PDF document. High values suggest a paragraph
+    was pulled into a cell. Recorded once per table when the page's
+    accessibility tree is built.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.PdfHeuristics.TablePopulatedCellPercentage"
+    units="%" expires_after="2027-08-01">
+  <owner>kristislee@google.com</owner>
+  <owner>komo-eng@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records the percentage of cells with text in a heuristically detected table
+    in an untagged PDF document. Grids with fewer than 50% populated cells
+    aren't detected as tables, so values are always 50 or more. Recorded once
+    per table when the page's accessibility tree is built.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.PdfHeuristics.Table{Dimension}Count"
+    units="count" expires_after="2027-08-01">
+  <owner>kristislee@google.com</owner>
+  <owner>komo-eng@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records the number of {Dimension} in a heuristically detected table in an
+    untagged PDF document. Recorded once per table when the page's accessibility
+    tree is built.
+  </summary>
+  <token key="Dimension">
+    <variant name="Column" summary="columns"/>
+    <variant name="Row" summary="rows"/>
+  </token>
+</histogram>
+
 <histogram name="Accessibility.PdfHeuristics.{Depth}{ListType}ListItemCount"
     units="items" expires_after="2027-08-01">
   <owner>kristislee@google.com</owner>

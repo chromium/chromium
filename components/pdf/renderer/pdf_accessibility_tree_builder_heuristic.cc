@@ -2613,14 +2613,53 @@ base::flat_set<size_t> GetAnnotatedRunIndices(
   return base::flat_set<size_t>(std::move(indices));
 }
 
+// Records the size of `table` and how full its cells are.
+//
+// A very long cell suggests a paragraph next to the table was pulled into it.
+void RecordTableShapeMetrics(
+    const HeuristicTable& table,
+    base::span<const chrome_pdf::AccessibilityTextRunInfo> text_runs) {
+  base::UmaHistogramCounts100("Accessibility.PdfHeuristics.TableRowCount",
+                              table.rows.size());
+  base::UmaHistogramCounts100("Accessibility.PdfHeuristics.TableColumnCount",
+                              table.rows[0].cells.size());
+
+  size_t cell_count = 0;
+  size_t populated_cell_count = 0;
+  size_t max_cell_length = 0;
+  for (const HeuristicTableRow& row : table.rows) {
+    cell_count += row.cells.size();
+    for (const HeuristicTableCell& cell : row.cells) {
+      if (cell.text_run_indices.empty()) {
+        continue;
+      }
+      ++populated_cell_count;
+      size_t cell_length = 0;
+      for (size_t run_index : cell.text_run_indices) {
+        cell_length += text_runs[run_index].len;
+      }
+      max_cell_length = std::max(max_cell_length, cell_length);
+    }
+  }
+  base::UmaHistogramPercentage(
+      "Accessibility.PdfHeuristics.TablePopulatedCellPercentage",
+      base::ClampRound(100.0 * populated_cell_count / cell_count));
+  base::UmaHistogramCounts1000("Accessibility.PdfHeuristics.TableMaxCellLength",
+                               max_cell_length);
+}
+
 // Detects grid tables on the page and collects the text runs in them. Skips
 // tables with a run covered by a link, highlight, or graphic. Returns no
-// tables when heuristic enhancements are disabled.
+// tables when heuristic enhancements are disabled or the page has no text.
+// Records table metrics.
 PageTables ComputePageTables(
     const PdfAccessibilityTreeBuilder& builder,
     const std::vector<chrome_pdf::AccessibilityFormGraphicInfo>& graphics) {
   PageTables result;
-  if (!features::IsPdfAccessibilityHeuristicEnhancementsEnabled()) {
+  // Skip pages with no text, such as scanned pages without OCR, so they don't
+  // crowd the 0 bucket of Accessibility.PdfHeuristics.TableCountPerPage.
+  if (!features::IsPdfAccessibilityHeuristicEnhancementsEnabled() ||
+      builder.text_runs().empty()) {
     return result;
   }
   // Leave runs covered by annotations in normal flow so their nodes stay
@@ -2633,6 +2672,8 @@ PageTables ComputePageTables(
                              builder.highlights(), graphics);
   result.tables = DetectGridTables(builder.text_runs(), builder.ruling_lines(),
                                    annotated_run_indices);
+  base::UmaHistogramCounts100("Accessibility.PdfHeuristics.TableCountPerPage",
+                              result.tables.size());
   if (result.tables.empty()) {
     return result;
   }
@@ -2643,6 +2684,7 @@ PageTables ComputePageTables(
         result.tables.end());
   std::vector<size_t> table_text_run_indices;
   for (const HeuristicTable& table : result.tables) {
+    RecordTableShapeMetrics(table, builder.text_runs());
     base::Extend(table_text_run_indices, GetTableTextRunIndices(table));
   }
   result.table_text_run_indices =

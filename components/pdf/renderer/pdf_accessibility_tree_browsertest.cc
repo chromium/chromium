@@ -9744,6 +9744,93 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicGridTableEmptyCellAndSameLineRuns) {
                 ax::mojom::IntAttribute::kPreviousOnLineId));
 }
 
+TEST_F(PdfAccessibilityTreeTest, HeuristicGridTableShapeMetrics) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  // Table grid ruling lines: 3 rows x 2 cols, so swapping rows and columns
+  // fails. The top-left cell holds two runs, and the bottom-right cell is
+  // empty.
+  constexpr float kRowBoundaries[] = {50.0f, 80.0f, 110.0f, 140.0f};
+  page_objects_.line_segments =
+      CreateGridLineSegments(kGridTableColumnBoundaries, kRowBoundaries);
+
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"A1", "x", "B1", "A2", "B2", "A3"},
+      {
+          gfx::RectF(55.0f, 55.0f, 20.0f, 12.0f),   // "A1"
+          gfx::RectF(78.0f, 55.0f, 15.0f, 12.0f),   // "x"
+          gfx::RectF(105.0f, 55.0f, 40.0f, 12.0f),  // "B1"
+          gfx::RectF(55.0f, 85.0f, 40.0f, 12.0f),   // "A2"
+          gfx::RectF(105.0f, 85.0f, 40.0f, 12.0f),  // "B2"
+          gfx::RectF(55.0f, 115.0f, 40.0f, 12.0f),  // "A3"
+      });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
+  CheckGridTable(page->GetChildAtIndex(0u),
+                 {{"A1x", "B1"}, {"A2", "B2"}, {"A3", ""}});
+
+  // 5 of 6 cells have text, and the longest cell is "A1x".
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.PdfHeuristics.TableCountPerPage", 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.PdfHeuristics.TableRowCount", 3, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.PdfHeuristics.TableColumnCount", 2, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.PdfHeuristics.TablePopulatedCellPercentage", 83, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.PdfHeuristics.TableMaxCellLength", 3, 1);
+}
+
+TEST_F(PdfAccessibilityTreeTest, HeuristicGridTableNoTablesOnPage) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"First", "Second"}, {
+                               gfx::RectF(50.0f, 10.0f, 100.0f, 12.0f),
+                               gfx::RectF(50.0f, 30.0f, 100.0f, 12.0f),
+                           });
+  ASSERT_NE(nullptr, page);
+
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.PdfHeuristics.TableCountPerPage", 0, 1);
+  histogram_tester.ExpectTotalCount("Accessibility.PdfHeuristics.TableRowCount",
+                                    0);
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.PdfHeuristics.TableColumnCount", 0);
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.PdfHeuristics.TablePopulatedCellPercentage", 0);
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.PdfHeuristics.TableMaxCellLength", 0);
+}
+
+// Pages with no text, such as scanned pages without OCR, don't record a table
+// count.
+TEST_F(PdfAccessibilityTreeTest, HeuristicGridTableNoTextOnPage) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  page_objects_.line_segments = CreateGridLineSegments(
+      kGridTableColumnBoundaries, kGridTableRowBoundaries);
+
+  const ui::AXNode* page = SetUpUniformHeuristicPage({}, {});
+  ASSERT_NE(nullptr, page);
+
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.PdfHeuristics.TableCountPerPage", 0);
+}
+
 TEST_F(PdfAccessibilityTreeTest, HeuristicGridTableParagraphTableAtEndOfPage) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -10065,6 +10152,7 @@ TEST_F(PdfAccessibilityTreeTest,
 }
 
 TEST_F(PdfAccessibilityTreeTest, HeuristicGridTableFeatureDisabled) {
+  base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       {}, {::features::kPdfAccessibilityHeuristicEnhancements,
@@ -10088,9 +10176,12 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicGridTableFeatureDisabled) {
   for (size_t i = 0; i < page->GetChildCount(); ++i) {
     EXPECT_NE(ax::mojom::Role::kTable, page->GetChildAtIndex(i)->GetRole());
   }
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.PdfHeuristics.TableCountPerPage", 0);
 }
 
 TEST_F(PdfAccessibilityTreeTest, HeuristicGridTableBackToBackTables) {
+  base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       {::features::kPdfAccessibilityHeuristicEnhancements},
@@ -10126,6 +10217,11 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicGridTableBackToBackTables) {
   CheckGridTable(page->GetChildAtIndex(1u), {{"A1", "B1"}, {"A2", "B2"}});
   CheckGridTable(page->GetChildAtIndex(2u), {{"C1", "D1"}, {"C2", "D2"}});
   CheckParagraph(page->GetChildAtIndex(3u), "Outro");
+
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.PdfHeuristics.TableCountPerPage", 2, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.PdfHeuristics.TableRowCount", 2, 2);
 }
 
 // Images in a table aren't added to its cells yet. The image goes in the
