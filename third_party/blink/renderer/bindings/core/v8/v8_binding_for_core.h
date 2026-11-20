@@ -500,7 +500,7 @@ CORE_EXPORT LocalFrame* ToLocalFrameIfNotDetached(v8::Local<v8::Context>);
 
 CORE_EXPORT v8::Local<v8::Value> FromJSONString(
     ScriptState* script_state,
-    const String& stringified_json,
+    const StringView& stringified_json,
     std::optional<v8::ScriptOrigin> origin = std::nullopt);
 
 CORE_EXPORT Vector<String> GetOwnPropertyNames(v8::Isolate*,

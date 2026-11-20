@@ -379,8 +379,7 @@ v8::Local<v8::Value> XMLHttpRequest::ResponseJSON(ScriptState* script_state) {
   // Catch syntax error. Swallows an exception (when thrown) as the
   // spec says. https://xhr.spec.whatwg.org/#response-body
   v8::TryCatch try_catch(script_state->GetIsolate());
-  v8::Local<v8::Value> json =
-      FromJSONString(script_state, response_text_.ToString());
+  v8::Local<v8::Value> json = FromJSONString(script_state, response_text_);
   if (try_catch.HasCaught()) {
     return v8::Null(script_state->GetIsolate());
   }
