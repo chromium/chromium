@@ -15,7 +15,6 @@
 #include "base/types/expected.h"
 #include "build/build_config.h"
 #include "chrome/browser/glic/gemini_enterprise/geic_guest_url.h"
-#include "chrome/browser/glic/gemini_enterprise/geic_sign_in_controller.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_provider_spec.h"
@@ -183,17 +182,7 @@ GURL GetGeicSkillsUrl(Profile* profile) {
       glic::GetGlicProviderSpec(profile).GetGeicSpec();
   const GeicGuestUrl* guest_url =
       geic_spec ? geic_spec->GetGeicGuestUrl() : nullptr;
-  if (!guest_url) {
-    return GURL();
-  }
-  GURL skills_url = guest_url->SkillsUrl();
-  // Carries the Workforce session index (`csesidx`) that the side panel uses,
-  // so Workforce Identity hosts don't redirect through the Auth Portal.
-  if (const glic::GeicSignInController* controller =
-          glic::GeicSignInController::GetIfExists(profile)) {
-    skills_url = controller->ResolveGuestUrl(std::move(skills_url));
-  }
-  return skills_url;
+  return guest_url ? guest_url->SkillsUrl() : GURL();
 }
 
 }  // namespace geic

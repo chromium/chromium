@@ -19,7 +19,6 @@ source_set("geic_enabling") {
   public_deps = [ ":guest_url" ]
 
   deps = [
-    ":gemini_enterprise",
     "//base",
     "//chrome/browser/glic",
     "//chrome/browser/glic/public:features",

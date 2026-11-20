@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
@@ -18,6 +19,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/glic/gemini_enterprise/geic_guest_url.h"
+#include "chrome/browser/glic/gemini_enterprise/geic_sign_in_controller.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/metrics/variations/google_groups_manager_factory.h"
@@ -36,10 +38,15 @@
 #include "components/variations/service/google_groups_manager.h"
 #include "components/variations/service/google_groups_manager_prefs.h"
 #include "components/variations/variations_seed_processor.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/navigation_simulator.h"
+#include "content/public/test/test_renderer_host.h"
+#include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace geic {
 namespace {
@@ -564,6 +571,40 @@ TEST_F(GeicEnablingTest, GetGeicSkillsUrl) {
           "https://gemini.cloud.google/work/cid/abc123/side-panel"),
       GURL("https://gemini.cloud.google/work/cid/abc123/customize/skills"));
   EXPECT_EQ(get_skills_url_for_finch_guest_url(""), GURL());
+
+  // Does not forward `csesidx` from `glic::GeicSignInController`.
+  {
+    base::test::ScopedFeatureList workforce_feature_list;
+    workforce_feature_list.InitWithFeaturesAndParameters(
+        {{features::kGeic,
+          {{"enabled", "true"},
+           {"geic-guest-url",
+            "https://vertexaisearch.cloud.google/home/cid/abc123"}}}},
+        {});
+    TestingProfile workforce_profile;
+    content::RenderViewHostTestEnabler rvh_test_enabler;
+    std::unique_ptr<content::WebContents> signin_contents =
+        content::WebContentsTester::CreateTestWebContents(&workforce_profile,
+                                                          nullptr);
+    glic::GeicSignInController* controller =
+        glic::GeicSignInController::GetForProfile(&workforce_profile);
+    base::RunLoop run_loop;
+    controller->ObserveSignInContentsForTesting(
+        signin_contents.get(),
+        url::Origin::Create(GURL("https://vertexaisearch.cloud.google")),
+        run_loop.QuitClosure());
+    content::NavigationSimulator::NavigateAndCommitFromBrowser(
+        signin_contents.get(),
+        GURL("https://vertexaisearch.cloud.google/side-panel?csesidx=42"));
+    run_loop.Run();
+    ASSERT_EQ(
+        controller->ResolveGuestUrl(
+            GURL("https://vertexaisearch.cloud.google/side-panel")),
+        GURL("https://vertexaisearch.cloud.google/side-panel?csesidx=42"));
+    EXPECT_EQ(
+        GetGeicSkillsUrl(&workforce_profile),
+        GURL("https://vertexaisearch.cloud.google/home/cid/abc123/r/skills"));
+  }
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
