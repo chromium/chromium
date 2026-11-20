@@ -23,6 +23,8 @@
 #include "components/autofill/core/browser/test_utils/valuables_data_test_util.h"
 #include "components/autofill/core/browser/webdata/autofill_ai/entity_sync_util.h"
 #include "components/sync/base/features.h"
+#include "components/sync/protocol/sync_enums.pb.h"
+#include "components/sync/test/fake_server.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
@@ -569,8 +571,9 @@ IN_PROC_BROWSER_TEST_P(SingleClientValuablesSyncTest,
           Contains(EqualsProto(AsAutofillValuableSpecifics(updated_vehicle3))))
           .Wait());
 
-  EXPECT_THAT(edm.GetEntityInstances(),
-              UnorderedElementsAre(vehicle2, updated_vehicle3));
+  EXPECT_TRUE(EntityInstancesMatchChecker(
+                  edm, UnorderedElementsAre(vehicle2, updated_vehicle3))
+                  .Wait());
 }
 
 // Verifies that simultaneous local and remote changes are applied consistently.
@@ -601,8 +604,9 @@ IN_PROC_BROWSER_TEST_P(SingleClientValuablesSyncTest,
           Contains(EqualsProto(AsAutofillValuableSpecifics(updated_vehicle1))))
           .Wait());
 
-  EXPECT_THAT(edm.GetEntityInstances(),
-              UnorderedElementsAre(updated_vehicle1, vehicle2));
+  EXPECT_TRUE(EntityInstancesMatchChecker(
+                  edm, UnorderedElementsAre(updated_vehicle1, vehicle2))
+                  .Wait());
 }
 
 // Verifies that simultaneous local and remote changes are applied consistently.
@@ -619,24 +623,30 @@ IN_PROC_BROWSER_TEST_P(
   WaitForNumberOfEntityInstances(1);
   ASSERT_THAT(edm.GetEntityInstances(), UnorderedElementsAre(vehicle1));
 
-  // Commit some completely new data in the sync server.
-  const EntityInstance vehicle2 =
-      GetServerVehicleEntityInstanceWithRandomGuid();
-  const EntityInstance server_updated_vehicle1 =
-      vehicle1.CopyWithUpdatedAttribute(
-          MakeAttribute(AttributeTypeName::kVehicleModel, u"A3"));
-  // This will trigger a sync update to the client. It overrides the `vehicle1`.
-  SetFakeServerValuables({server_updated_vehicle1, vehicle2});
+  // Reject commits temporarily so the local modification cannot overwrite the
+  // server entity before the conflicting remote update is downloaded.
+  GetFakeServer()->TriggerCommitError(sync_pb::SyncEnums::TRANSIENT_ERROR);
 
   // Make a local change simultaneous with the server change. Update vehicle.
   const EntityInstance locally_updated_vehicle1 =
       vehicle1.CopyWithUpdatedAttribute(
           MakeAttribute(AttributeTypeName::kVehicleModel, u"Q2"));
   edm.AddOrUpdateEntityInstance(locally_updated_vehicle1);
+
+  // Commit conflicting data in the sync server, triggering a sync update to the
+  // client.
+  const EntityInstance vehicle2 =
+      GetServerVehicleEntityInstanceWithRandomGuid();
+  const EntityInstance server_updated_vehicle1 =
+      vehicle1.CopyWithUpdatedAttribute(
+          MakeAttribute(AttributeTypeName::kVehicleModel, u"A3"));
+  SetFakeServerValuables({server_updated_vehicle1, vehicle2});
+
   // The commit is never applied. The server update is preferred.
-  WaitForNumberOfEntityInstances(2);
-  EXPECT_THAT(edm.GetEntityInstances(),
-              UnorderedElementsAre(server_updated_vehicle1, vehicle2));
+  EXPECT_TRUE(EntityInstancesMatchChecker(
+                  edm, UnorderedElementsAre(server_updated_vehicle1, vehicle2))
+                  .Wait());
+  GetFakeServer()->TriggerCommitError(sync_pb::SyncEnums::SUCCESS);
 }
 
 // Verifies that server updates override client entities.

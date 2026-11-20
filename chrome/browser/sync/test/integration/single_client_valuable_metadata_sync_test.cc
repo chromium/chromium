@@ -14,6 +14,8 @@
 #include "components/sync/base/features.h"
 #include "components/sync/protocol/autofill_valuable_metadata_specifics.pb.h"
 #include "components/sync/protocol/entity_data.h"
+#include "components/sync/protocol/sync_enums.pb.h"
+#include "components/sync/test/fake_server.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -405,6 +407,10 @@ IN_PROC_BROWSER_TEST_P(SingleClientValuableMetadataSyncTest,
   ASSERT_EQ(1u, GetEntityInstances().size());
   ASSERT_THAT(GetMetadataEntries(), ElementsAre(vehicle.metadata()));
 
+  // Reject commits temporarily so the local usage update cannot overwrite the
+  // server entity before the conflicting remote update is downloaded.
+  GetFakeServer()->TriggerCommitError(sync_pb::SyncEnums::TRANSIENT_ERROR);
+
   // Simulate a local usage update.
   base::Time last_used = base::Time::FromSecondsSinceUnixEpoch(500);
   edm->RecordEntityUsed(vehicle.guid(), last_used);
@@ -419,10 +425,12 @@ IN_PROC_BROWSER_TEST_P(SingleClientValuableMetadataSyncTest,
       conflicting_metadata,
       sync_pb::AutofillValuableMetadataSpecifics::VEHICLE_REGISTRATION);
 
-  while (GetMetadataEntries().empty() ||
+  while (edm->HasPendingQueries() || GetMetadataEntries().empty() ||
          GetMetadataEntries()[0].use_count != conflicting_metadata.use_count) {
     EntityDataChangedWaiter(edm).Wait();
   }
+  GetFakeServer()->TriggerCommitError(sync_pb::SyncEnums::SUCCESS);
+
   // Check that server data wins.
   EXPECT_THAT(GetMetadataEntries(), ElementsAre(conflicting_metadata));
 }

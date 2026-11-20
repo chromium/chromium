@@ -18,6 +18,7 @@
 #include "components/browser_sync/browser_sync_switches.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_prefs.h"
+#include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync/service/sync_service_impl.h"
 #include "components/sync/test/fake_server.h"
 #include "content/public/test/browser_test.h"
@@ -149,23 +150,29 @@ IN_PROC_BROWSER_TEST_P(SingleClientExtensionsSyncTest, UninstallWinsConflicts) {
   std::string id0 = InstallExtension(GetProfile(0), 0);
   ASSERT_TRUE(TestServerExtensionIds({id0}).Wait());
 
-  // Simulate a delete at the server.
   std::vector<sync_pb::SyncEntity> server_extensions =
       GetFakeServer()->GetSyncEntitiesByDataType(syncer::EXTENSIONS);
   ASSERT_EQ(1ul, server_extensions.size());
-  std::unique_ptr<syncer::LoopbackServerEntity> tombstone(
-      syncer::PersistentTombstoneEntity::CreateFromEntity(
-          server_extensions[0]));
-  GetFakeServer()->InjectEntity(std::move(tombstone));
+
+  // Reject commits temporarily so the local modification cannot overwrite the
+  // server tombstone before the remote deletion is downloaded.
+  GetFakeServer()->TriggerCommitError(sync_pb::SyncEnums::TRANSIENT_ERROR);
 
   // Modify the extension in the local profile to cause a conflict.
   DisableExtension(GetProfile(0), 0);
   ASSERT_EQ(1u, GetInstalledExtensions(GetProfile(0)).size());
 
+  // Simulate a concurrent delete at the server.
+  std::unique_ptr<syncer::LoopbackServerEntity> tombstone(
+      syncer::PersistentTombstoneEntity::CreateFromEntity(
+          server_extensions[0]));
+  GetFakeServer()->InjectEntity(std::move(tombstone));
+
   // Expect the extension to get uninstalled locally.
   AwaitMatchStatusChangeChecker checker(base::BindRepeating(
       &ExtensionCountCheck, GetProfile(0), /*expected_count=*/0u));
   EXPECT_TRUE(checker.Wait());
+  GetFakeServer()->TriggerCommitError(sync_pb::SyncEnums::SUCCESS);
   EXPECT_TRUE(GetInstalledExtensions(GetProfile(0)).empty());
 
   // Expect the extension to remain uninstalled at the server.
