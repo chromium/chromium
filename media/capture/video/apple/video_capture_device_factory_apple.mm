@@ -26,6 +26,7 @@
 #if BUILDFLAG(IS_MAC)
 #import <IOKit/audio/IOAudioTypes.h>
 
+#include "base/message_loop/message_pump_apple.h"
 #import "media/capture/video/mac/video_capture_device_decklink_mac.h"
 #import "media/capture/video/mac/video_capture_metrics_mac.h"
 #endif
@@ -41,10 +42,16 @@ void EnsureRunsOnCFRunLoopEnabledThread() {
   if (!has_checked_cfrunloop_for_video_capture) {
     base::apple::ScopedCFTypeRef<CFRunLoopMode> mode(
         CFRunLoopCopyCurrentMode(CFRunLoopGetCurrent()));
-    CHECK(mode)
+    if (mode) {
+      has_checked_cfrunloop_for_video_capture = true;
+      return;
+    }
+    // During startup, `MessagePumpNSApplication` may drain ready tasks right
+    // before `-[NSApplication run]` enters the main `CFRunLoop`, so no mode is
+    // active yet. Do not latch the one-time flag until a live mode is seen.
+    CHECK(base::message_pump_apple::IsDrainingStartupTasks())
         << "The MacOS video capture code must be run on a CFRunLoop-enabled "
            "thread";
-    has_checked_cfrunloop_for_video_capture = true;
   }
 }
 #endif

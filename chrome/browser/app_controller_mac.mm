@@ -584,6 +584,10 @@ Profile* GetLastProfileMac() {
 // called without any initialized Profile.
 - (BOOL)isProfileReady;
 
+// Replays `-applicationDidFinishLaunching:` if AppKit delivered it while the
+// Enterprise startup dialog was showing.
+- (void)enterpriseStartupDialogClosed;
+
 // Reset `_keepAlive` if Chrome is running in hidden mode, recreating it when
 // Chrome is no longer hidden.
 - (void)resetKeepAliveWhileHidden;
@@ -718,6 +722,10 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
   // |_startupTabs| so that they can go in the first browser window/tab.
   StartupTabs _startupTabs;
   BOOL _startupComplete;
+
+  // Deferred `NSApplicationDidFinishLaunchingNotification` received while the
+  // Enterprise startup dialog was showing.
+  NSNotification* __strong _deferredFinishLaunchingNotification;
 
   // Outlets for testing close tab/window menu items.
   NSMenuItem* __strong _cmdWMenuItemForTesting;
@@ -931,8 +939,6 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
 // (NSApplicationDelegate protocol) This is the Apple-approved place to override
 // the default handlers.
 - (void)applicationWillFinishLaunching:(NSNotification*)notification {
-  NSWindow.allowsAutomaticWindowTabbing = NO;
-
   [self initShareMenu];
 }
 
@@ -1294,13 +1300,20 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
 // This is called after profiles have been loaded and preferences registered.
 // It is safe to access the default profile here.
 - (void)applicationDidFinishLaunching:(NSNotification*)notify {
+  if (_isShuttingDown) {
+    return;
+  }
+
   if (g_browser_process->browser_policy_connector()
           ->chrome_browser_cloud_management_controller()
           ->IsEnterpriseStartupDialogShowing()) {
-    // As Chrome is not ready when the Enterprise startup dialog is being shown.
-    // Store the notification as it will be reposted when the dialog is closed.
+    // As Chrome is not ready when the Enterprise startup dialog is being shown,
+    // store the notification so it can be replayed when the dialog closes.
+    _deferredFinishLaunchingNotification = notify;
     return;
   }
+
+  CHECK(!_startupComplete);
 
   [self setUpdateCheckInterval];
 
@@ -2549,6 +2562,15 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
               ->IsEnterpriseStartupDialogShowing();
 }
 
+- (void)enterpriseStartupDialogClosed {
+  if (!_deferredFinishLaunchingNotification) {
+    return;
+  }
+  NSNotification* notify = _deferredFinishLaunchingNotification;
+  _deferredFinishLaunchingNotification = nil;
+  [self applicationDidFinishLaunching:notify];
+}
+
 #pragma mark - HandoffObserverDelegate
 
 - (void)handoffContentsChanged:(content::WebContents*)webContents {
@@ -2751,10 +2773,7 @@ void EnterpriseStartupDialogClosed() {
              ->chrome_browser_cloud_management_controller()
              ->IsEnterpriseStartupDialogShowing(),
         base::NotFatalUntil::M155);
-  NSNotification* notify = [NSNotification
-      notificationWithName:NSApplicationDidFinishLaunchingNotification
-                    object:NSApp];
-  [AppController.sharedController applicationDidFinishLaunching:notify];
+  [AppController.sharedController enterpriseStartupDialogClosed];
 }
 
 void RunInLastProfileSafely(

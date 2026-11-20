@@ -183,8 +183,9 @@ bool IsOpeningNewWindow();
 // already existed, notify the AppController of the profile in use.
 void CreateGuestProfileIfNeeded();
 
-// Called when Enterprise startup dialog is close and repost
-// applicationDidFinished notification.
+// Called when the Enterprise startup dialog closes. Replays
+// `-applicationDidFinishLaunching:` if it was deferred while the dialog was
+// showing.
 void EnterpriseStartupDialogClosed();
 
 // Tells RunInSafeProfile() or RunInSpecificSafeProfile() what to do if the

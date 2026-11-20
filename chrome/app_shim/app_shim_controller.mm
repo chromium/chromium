@@ -313,7 +313,7 @@ void AppShimController::PreInitFeatureState(
        "MojoFixGeometricBufferGrowth", "MojoFixGeometricBufferGrowth2",
        "UseNSURLDataForGURLConversion",
        "SonomaAccessibilityActivationRefinements", "FeatureParamWithCache",
-       "UseMachVouchers"});
+       "UseMachVouchers", "MacPumpTasksBeforeFinishLaunching"});
 }
 
 // static
