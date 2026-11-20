@@ -62,7 +62,7 @@ INSTANTIATE_TEST_SUITE_P(
                     "http://sites.google.com/view/e14s-test",
                     "http://amazon/com/test",
                     "http://not-amazon.com/test",
-                    "http://.com/test"
+                    "http://.com/test",
                     "http://somesite.pdf.specialviewer.com"));
 
 TEST_P(DoesNotContain, Url) {
