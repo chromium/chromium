@@ -4,7 +4,6 @@
 
 #include <memory>
 
-#include "build/android_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
@@ -112,15 +111,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionInspectionBrowserTest,
 
 // Tests that executing "Inspect Popup" from the action context menu opens the
 // popup host and attaches DevTools inspecting the popup page.
-// TODO(crbug.com/586621446): Flaky/failing on Desktop Android due to a toolbar
-// layout race when popping out the action button before showing the popup.
-#if BUILDFLAG(IS_DESKTOP_ANDROID)
-#define MAYBE_InspectPopupFromContextMenu DISABLED_InspectPopupFromContextMenu
-#else
-#define MAYBE_InspectPopupFromContextMenu InspectPopupFromContextMenu
-#endif
 IN_PROC_BROWSER_TEST_F(ExtensionInspectionBrowserTest,
-                       MAYBE_InspectPopupFromContextMenu) {
+                       InspectPopupFromContextMenu) {
   static constexpr char kManifest[] =
       R"({
            "name": "Inspect Popup Context Menu Test Extension",
@@ -175,17 +167,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionInspectionBrowserTest,
 // Tests that uninstalling an extension while its popup is being inspected does
 // not crash and cleanly closes both the popup host and the DevTools window.
 // Regression test for crbug.com/541264637.
-// TODO(crbug.com/586621446): Flaky/failing on Desktop Android due to a toolbar
-// layout race when popping out the action button before showing the popup.
-#if BUILDFLAG(IS_DESKTOP_ANDROID)
-#define MAYBE_UninstallExtensionWhileInspectingPopup \
-  DISABLED_UninstallExtensionWhileInspectingPopup
-#else
-#define MAYBE_UninstallExtensionWhileInspectingPopup \
-  UninstallExtensionWhileInspectingPopup
-#endif
 IN_PROC_BROWSER_TEST_F(ExtensionInspectionBrowserTest,
-                       MAYBE_UninstallExtensionWhileInspectingPopup) {
+                       UninstallExtensionWhileInspectingPopup) {
   static constexpr char kManifest[] =
       R"({
            "name": "Inspect Popup Uninstall Test Extension",

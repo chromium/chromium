@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.toolbar.extensions;
 import android.content.Context;
 import android.transition.ChangeBounds;
 import android.transition.Transition;
+import android.transition.TransitionListenerAdapter;
 import android.transition.TransitionManager;
 import android.util.AttributeSet;
 import android.view.View;
@@ -16,9 +17,11 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.ItemAnimator.ItemAnimatorFinishedListener;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.ui.base.ViewUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +42,11 @@ public class ExtensionActionListRecyclerView extends RecyclerView {
 
     /** Runnables to run after all animations end. */
     private final List<Runnable> mOnAnimationsFinishedRunnables = new ArrayList<>();
+
+    private final Runnable mFinishLayoutAndAnimationsRunnable =
+            this::maybeFinishLayoutAndAnimations;
+    private final ItemAnimatorFinishedListener mOnItemAnimatorFinishedListener =
+            this::scheduleFinishLayoutAndAnimations;
 
     private @Nullable Transition mLastTransition;
 
@@ -88,17 +96,41 @@ public class ExtensionActionListRecyclerView extends RecyclerView {
         // this} even when items are updated without animation, most notably during initialization.
         mLayoutChangeListener =
                 (v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
-                    post(
-                            () -> {
-                                if (mItemAnimator.isRunning()) {
-                                    return;
-                                }
-
-                                updateRecyclerViewWidth();
-                                runAllOnAnimationsFinishedRunnables();
-                            });
+                    scheduleFinishLayoutAndAnimations();
                 };
         addOnLayoutChangeListener(mLayoutChangeListener);
+    }
+
+    private void scheduleFinishLayoutAndAnimations() {
+        removeCallbacks(mFinishLayoutAndAnimationsRunnable);
+        post(mFinishLayoutAndAnimationsRunnable);
+    }
+
+    private void maybeFinishLayoutAndAnimations() {
+        if (!isAttachedToWindow() || getAdapter() == null) {
+            return;
+        }
+        if (isLayoutRequested()) {
+            return;
+        }
+        if (hasPendingAdapterUpdates()) {
+            ViewUtils.requestLayout(
+                    this, "ExtensionActionListRecyclerView.maybeFinishLayoutAndAnimations");
+            return;
+        }
+        // Check isRunning() before registering the listener because isRunning(listener) invokes
+        // the listener synchronously when nothing is running, which would repost in a loop.
+        if (mItemAnimator.isRunning()) {
+            mItemAnimator.isRunning(mOnItemAnimatorFinishedListener);
+            return;
+        }
+        if (mLastTransition != null) {
+            return;
+        }
+        if (updateRecyclerViewWidth()) {
+            return;
+        }
+        runAllOnAnimationsFinishedRunnables();
     }
 
     public void setTransitionRoot(ViewGroup transitionRoot) {
@@ -146,19 +178,30 @@ public class ExtensionActionListRecyclerView extends RecyclerView {
         if (mLayoutChangeListener != null) {
             removeOnLayoutChangeListener(mLayoutChangeListener);
         }
+        removeCallbacks(mFinishLayoutAndAnimationsRunnable);
+        mLastTransition = null;
     }
 
-    private void updateRecyclerViewWidth() {
+    private int getDesiredWidth() {
         int itemWidth =
                 getContext().getResources().getDimensionPixelSize(R.dimen.toolbar_button_width);
-        assert getAdapter() != null;
-        int newWidth = itemWidth * getAdapter().getItemCount();
+        Adapter<?> adapter = getAdapter();
+        assert adapter != null;
+        return itemWidth * adapter.getItemCount();
+    }
 
-        if (getLayoutParams().width != newWidth) {
-            final var lp = getLayoutParams();
+    private boolean updateRecyclerViewWidth() {
+        ViewGroup.LayoutParams lp = getLayoutParams();
+        if (lp == null) {
+            return false;
+        }
+        int newWidth = getDesiredWidth();
+        if (lp.width != newWidth) {
             lp.width = newWidth;
             setLayoutParams(lp);
+            return true;
         }
+        return false;
     }
 
     /**
@@ -185,7 +228,10 @@ public class ExtensionActionListRecyclerView extends RecyclerView {
         @Override
         public void runPendingAnimations() {
             assert mTransitionRoot != null;
-            if (mHasPendingRemovals || mHasPendingAdditions) {
+            if ((mHasPendingRemovals || mHasPendingAdditions)
+                    && getAdapter() != null
+                    && getLayoutParams() != null
+                    && getLayoutParams().width != getDesiredWidth()) {
                 TransitionManager.endTransitions(mTransitionRoot);
 
                 long startDelay = mHasPendingRemovals ? getRemoveDuration() : 0;
@@ -197,31 +243,31 @@ public class ExtensionActionListRecyclerView extends RecyclerView {
                 matchRecyclerView.setInterpolator(mAccelerateDecelerateInterpolator);
 
                 matchRecyclerView.addListener(
-                        new Transition.TransitionListener() {
+                        new TransitionListenerAdapter() {
                             @Override
                             public void onTransitionEnd(Transition transition) {
-                                transition.removeListener(this);
-                                if (transition == mLastTransition) {
-                                    runAllOnAnimationsFinishedRunnables();
-                                    mLastTransition = null;
-                                }
+                                onTransitionFinished(transition);
                             }
 
                             @Override
-                            public void onTransitionCancel(Transition transition) {}
+                            public void onTransitionCancel(Transition transition) {
+                                onTransitionFinished(transition);
+                            }
 
                             @Override
                             public void onTransitionStart(Transition transition) {
                                 // Track the last transition, because we only want to run {@code
-                                // mOnAllAnimationEnded} after all transitions end.
+                                // mOnAnimationsFinishedRunnables} after all transitions end.
                                 mLastTransition = transition;
                             }
 
-                            @Override
-                            public void onTransitionPause(Transition transition) {}
-
-                            @Override
-                            public void onTransitionResume(Transition transition) {}
+                            private void onTransitionFinished(Transition transition) {
+                                transition.removeListener(this);
+                                if (transition == mLastTransition) {
+                                    mLastTransition = null;
+                                    scheduleFinishLayoutAndAnimations();
+                                }
+                            }
                         });
 
                 TransitionManager.beginDelayedTransition(mTransitionRoot, matchRecyclerView);
@@ -229,6 +275,13 @@ public class ExtensionActionListRecyclerView extends RecyclerView {
             }
 
             super.runPendingAnimations();
+            mHasPendingRemovals = false;
+            mHasPendingAdditions = false;
+        }
+
+        @Override
+        public void endAnimations() {
+            super.endAnimations();
             mHasPendingRemovals = false;
             mHasPendingAdditions = false;
         }
