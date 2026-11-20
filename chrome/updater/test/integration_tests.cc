@@ -143,15 +143,13 @@ void ExpectNoUpdateSequence(
     const std::string& app_id,
     const base::Version& updater_version = base::Version(kUpdaterVersion),
     std::optional<base::Version> app_version = std::nullopt) {
-  base::DictValue app_expectation = base::DictValue().Set("appid", app_id);
-  if (app_version) {
-    app_expectation.Set("version", app_version->GetString());
-  }
   test_server.ExpectOnce(
       {request::GetUpdaterUserAgentMatcher(updater_version),
-       request::GetJSONContentMatcher(base::DictValue().SetByDottedPath(
-           "request.apps",
-           base::ListValue().Append(std::move(app_expectation))))},
+       request::GetJSONContentMatcher(
+           app_version
+               ? json::HasApp(app_id,
+                              json::HasKey("version", app_version->GetString()))
+               : json::HasApp(app_id))},
       base::BindRepeating(
           [](const std::string& app_id, ProtocolVersion protocol_version) {
             if (protocol_version == ProtocolVersion::kV4) {
@@ -224,22 +222,17 @@ void ExpectInstallEvent(
     const std::string& app_id,
     std::optional<int> event_result = std::nullopt,
     std::optional<std::string> prev_version = std::nullopt) {
-  base::DictValue event_expectation = base::DictValue().Set("eventtype", 2);
+  std::vector<json::ValueMatcher> event_matchers = {
+      json::HasKey("eventtype", 2)};
   if (event_result) {
-    event_expectation.Set("eventresult", *event_result);
+    event_matchers.push_back(json::HasKey("eventresult", *event_result));
   }
   if (prev_version) {
-    event_expectation.Set("previousversion", *prev_version);
+    event_matchers.push_back(json::HasKey("previousversion", *prev_version));
   }
-  base::DictValue app_expectation =
-      base::DictValue()
-          .Set("appid", app_id)
-          .Set("events",
-               base::ListValue().Append(std::move(event_expectation)));
   test_server.ExpectOnce(
-      {request::GetJSONContentMatcher(base::DictValue().SetByDottedPath(
-          "request.apps",
-          base::ListValue().Append(std::move(app_expectation))))},
+      {request::GetJSONContentMatcher(json::HasApp(
+          app_id, json::HasEvent(testing::AllOfArray(event_matchers))))},
       absl::StrFormat(")]}'\n"
                       R"({"response":{)"
                       R"(  "protocol":"3.1",)"

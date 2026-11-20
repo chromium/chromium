@@ -71,6 +71,7 @@
 #include "chrome/updater/registration_data.h"
 #include "chrome/updater/service_proxy_factory.h"
 #include "chrome/updater/test/dm_policy_builder.h"
+#include "chrome/updater/test/json_matchers.h"
 #include "chrome/updater/test/request_matcher.h"
 #include "chrome/updater/test/server.h"
 #include "chrome/updater/test/test_scope.h"
@@ -84,6 +85,7 @@
 #include "components/update_client/utils.h"
 #include "crypto/sha2.h"
 #include "net/http/http_status_code.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "third_party/re2/src/re2/re2.h"
@@ -446,6 +448,21 @@ class ScopedAppInstallTimeout {
   base::test::ScopedRunLoopTimeout timeout_{FROM_HERE, base::Minutes(3)};
 };
 
+// Matches a dict with `key` equal to `value`, or without `key` if `value` is
+// empty.
+json::ValueMatcher HasStringOrLacksKey(std::string key,
+                                       const std::string& value) {
+  return value.empty() ? json::LacksKey(std::move(key))
+                       : json::HasKey(std::move(key), value);
+}
+
+// Matches a dict with `key` set to `true` if `value` is true, else a dict
+// without `key`.
+json::ValueMatcher HasTrueOrLacksKey(std::string key, bool value) {
+  return value ? json::HasKey(std::move(key), true)
+               : json::LacksKey(std::move(key));
+}
+
 }  // namespace
 
 AppUpdateExpectation::AppUpdateExpectation(
@@ -803,32 +820,27 @@ void ExpectAppsUpdateSequence(UpdaterScope scope,
       request::GetUpdaterUserAgentMatcher(updater_version),
       request::GetScopeMatcher(scope),
       request::GetUpdaterEnableUpdatesMatcher(),
-      request::GetJSONContentMatcher(
-          base::DictValue().Set("request", request_attributes.Clone())),
   };
+  std::vector<json::ValueMatcher> content_matchers;
+  if (!request_attributes.empty()) {
+    content_matchers.push_back(json::UpdateRequest(
+        json::Covers(base::Value(request_attributes.Clone()))));
+  }
   std::vector<ScopedServer::ResponseBodyProvider> app_response_providers;
   for (const AppUpdateExpectation& app : apps) {
     ASSERT_TRUE(app.from_version.IsValid()) << app.app_id;
-    base::DictValue app_expectation;
-    app_expectation.Set("appid", app.app_id);
-    app_expectation.Set("version", app.from_version.GetString());
-    app_expectation.Set("release_channel",
-                        app.target_channel.empty()
-                            ? base::Value()
-                            : base::Value(app.target_channel));
-    app_expectation.Set(
-        "updatecheck",
-        base::DictValue()
-            .Set("updatedisabled",
-                 app.update_disabled ? base::Value(true) : base::Value())
-            .Set("rollback_allowed",
-                 app.allow_rollback ? base::Value(true) : base::Value())
-            .Set("targetversionprefix",
-                 app.target_version_prefix.empty()
-                     ? base::Value()
-                     : base::Value(app.target_version_prefix)));
-    update_check_matchers.push_back(
-        request::GetAppJSONContentMatcher(app_expectation));
+    content_matchers.push_back(json::HasApp(
+        app.app_id,
+        testing::AllOf(
+            json::HasKey("version", app.from_version.GetString()),
+            HasStringOrLacksKey("release_channel", app.target_channel),
+            json::HasKey(
+                "updatecheck",
+                testing::AllOf(
+                    HasTrueOrLacksKey("updatedisabled", app.update_disabled),
+                    HasTrueOrLacksKey("rollback_allowed", app.allow_rollback),
+                    HasStringOrLacksKey("targetversionprefix",
+                                        app.target_version_prefix))))));
 
     if (!app.custom_app_response.empty()) {
       app_response_providers.push_back(base::BindRepeating(
@@ -871,6 +883,10 @@ void ExpectAppsUpdateSequence(UpdaterScope scope,
         },
         app.app_id, download_codebase, app.to_version, crx_path,
         run_action.AsUTF8Unsafe(), app.args, app.response_status, false));
+  }
+  if (!content_matchers.empty()) {
+    update_check_matchers.push_back(
+        request::GetJSONContentMatcher(testing::AllOfArray(content_matchers)));
   }
   test_server.ExpectOnce(
       std::move(update_check_matchers),
@@ -918,33 +934,31 @@ void ExpectAppsUpdateSequence(UpdaterScope scope,
       }
     }
 
-    // A null value in `event` requires the ping to omit the key.
-    std::optional<base::DictValue> event;
+    std::vector<json::ValueMatcher> event_matchers;
     if (app.should_update) {
       // A success ping never has an error category, but it can carry the
       // installer's result code, such as `ERROR_SUCCESS_REBOOT_REQUIRED`, so
-      // `event` does not constrain `errorcode`.
-      event = base::DictValue()
-                  .Set("eventresult", 1)
-                  .Set("eventtype", app.is_install ? 2 : 3)
-                  .Set("errorcat", base::Value());
+      // these matchers don't check `errorcode`.
+      event_matchers = {json::HasKey("eventresult", 1),
+                        json::HasKey("eventtype", app.is_install ? 2 : 3),
+                        json::LacksKey("errorcat")};
     } else if (app.custom_app_response.empty() && app.response_status == "ok") {
       // Expect an error ping for an app offered an update it did not apply.
-      event =
-          base::DictValue()
-              .Set("eventresult", 0)
-              .Set("eventtype", app.event_type)
-              .Set("errorcat",
-                   app.error_category == UpdateService::ErrorCategory::kNone
-                       ? base::Value()
-                       : base::Value(std::to_underlying(app.error_category)))
-              .Set("errorcode", app.error_code == 0
-                                    ? base::Value()
-                                    : base::Value(app.error_code));
+      event_matchers = {
+          json::HasKey("eventresult", 0),
+          json::HasKey("eventtype", app.event_type),
+          app.error_category == UpdateService::ErrorCategory::kNone
+              ? json::LacksKey("errorcat")
+              : json::HasKey("errorcat",
+                             std::to_underlying(app.error_category)),
+          app.error_code == 0 ? json::LacksKey("errorcode")
+                              : json::HasKey("errorcode", app.error_code)};
     }
-    if (event) {
-      event->Set("nextversion", app.to_version.GetString());
-      event->Set("previousversion", app.from_version.GetString());
+    if (!event_matchers.empty()) {
+      event_matchers.push_back(
+          json::HasKey("nextversion", app.to_version.GetString()));
+      event_matchers.push_back(
+          json::HasKey("previousversion", app.from_version.GetString()));
       const base::Version& installed_version =
           app.should_update ? app.to_version : app.from_version;
       post_check_expectations.emplace_back(
@@ -952,12 +966,11 @@ void ExpectAppsUpdateSequence(UpdaterScope scope,
               request::GetPathMatcher(test_server.update_path()),
               request::GetUpdaterUserAgentMatcher(updater_version),
               request::GetScopeMatcher(scope),
-              request::GetAppJSONContentMatcher(
-                  base::DictValue()
-                      .Set("appid", app.app_id)
-                      .Set("version", installed_version.GetString())
-                      .Set("events",
-                           base::ListValue().Append(std::move(*event)))),
+              request::GetJSONContentMatcher(json::HasApp(
+                  app.app_id,
+                  testing::AllOf(
+                      json::HasKey("version", installed_version.GetString()),
+                      json::HasEvent(testing::AllOfArray(event_matchers))))),
           },
           ")]}'\n");
     }

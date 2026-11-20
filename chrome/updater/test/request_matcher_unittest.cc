@@ -14,7 +14,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/test/gtest_util.h"
-#include "base/values.h"
 #include "base/version.h"
 #include "chrome/updater/branded_constants.h"
 #include "chrome/updater/test/http_request.h"
@@ -62,20 +61,6 @@ testing::AssertionResult FailsWithMessage(const Matcher& matcher,
            << expected_message << "].";
   }
   return testing::AssertionSuccess();
-}
-
-// Substring of the `GetAppJSONContentMatcher()` failure message for an app list
-// without a matching entry.
-constexpr char kAppJSONMismatch[] =
-    "Request JSON content mismatch: .request.apps";
-
-// Returns a matcher for app `{app-1}` with an event of type 3.
-Matcher MakeApp1EventsMatcher() {
-  return GetAppJSONContentMatcher(
-      base::DictValue()
-          .Set("appid", "{app-1}")
-          .Set("events", base::ListValue().Append(
-                             base::DictValue().Set("eventtype", 3))));
 }
 
 }  // namespace
@@ -277,43 +262,6 @@ TEST(RequestMatcherTest, GetContentMatcher) {
 }
 
 TEST(RequestMatcherTest, GetJSONContentMatcher) {
-  Matcher matcher = GetJSONContentMatcher(base::DictValue().Set(
-      "request",
-      base::DictValue()
-          .Set("protocol", "4.0")
-          .Set("apps", base::ListValue().Append(
-                           base::DictValue().Set("appid", "{app-1}")))));
-
-  HttpRequest request;
-  EXPECT_TRUE(FailsWithMessage(matcher, request, "is not a JSON dict"));
-  EXPECT_TRUE(FailsWithMessage(matcher, request, "{app-1}"));
-
-  request.decoded_content = "not valid json";
-  EXPECT_TRUE(FailsWithMessage(matcher, request, "is not a JSON dict"));
-
-  request.decoded_content = R"({
-    "request": {
-      "protocol": "4.0",
-      "extra": true,
-      "apps": [
-        {"appid": "{other}"},
-        {"appid": "{APP-1}", "version": "1.0"}
-      ]
-    }
-  })";
-  EXPECT_TRUE(matcher.Run(request));
-
-  request.decoded_content = R"({
-    "request": {
-      "protocol": "3.1",
-      "apps": [{"appid": "{app-1}"}]
-    }
-  })";
-  EXPECT_TRUE(FailsWithMessage(
-      matcher, request, R"(.request.protocol: is "3.1", expected "4.0")"));
-}
-
-TEST(RequestMatcherTest, GetJSONContentMatcherWithValueMatcher) {
   Matcher matcher = GetJSONContentMatcher(
       json::HasApp("{app-1}", json::HasKey("version", "1.0")));
 
@@ -324,6 +272,12 @@ TEST(RequestMatcherTest, GetJSONContentMatcherWithValueMatcher) {
   HttpRequest request;
   EXPECT_TRUE(FailsWithMessage(matcher, request, "is not a JSON dict"));
   EXPECT_TRUE(FailsWithMessage(matcher, request, kExpected));
+
+  request.decoded_content = "not valid json";
+  EXPECT_TRUE(FailsWithMessage(matcher, request, "is not a JSON dict"));
+
+  request.decoded_content = R"({"request": {}})";
+  EXPECT_TRUE(FailsWithMessage(matcher, request, ".request.apps: is missing"));
 
   request.decoded_content =
       R"({"request": {"apps": [{"appid": "{app-1}", "version": "2.0"}]}})";
@@ -362,157 +316,6 @@ TEST(RequestMatcherTest, GetJSONContentMatcherRenamesProtocolV3Names) {
     "apps": [{"appid": "{app-1}", "events": [{"eventtype": 3}]}]
   }})";
   EXPECT_TRUE(matcher.Run(request));
-}
-
-TEST(RequestMatcherTest, GetAppJSONContentMatcherRequiresAppList) {
-  Matcher matcher = MakeApp1EventsMatcher();
-
-  // The failure messages name the expected app.
-  HttpRequest request;
-  EXPECT_TRUE(FailsWithMessage(matcher, request, "is not a JSON dict"));
-  EXPECT_TRUE(FailsWithMessage(matcher, request, "{app-1}"));
-
-  request.decoded_content = R"({"request": {}})";
-  EXPECT_TRUE(FailsWithMessage(matcher, request, ".request.apps: is missing"));
-  EXPECT_TRUE(FailsWithMessage(matcher, request, "{app-1}"));
-}
-
-TEST(RequestMatcherTest, GetAppJSONContentMatcherMatchesV4) {
-  Matcher matcher = MakeApp1EventsMatcher();
-
-  // Any app may match, and app ids compare case-insensitively.
-  HttpRequest request;
-  request.decoded_content = R"({"request": {"apps": [
-    {"appid": "{other}"},
-    {"appid": "{APP-1}", "events": [{"eventtype": 14}, {"eventtype": 3}]}
-  ]}})";
-  EXPECT_TRUE(matcher.Run(request));
-
-  request.decoded_content = R"({"request": {"apps": [
-    {"appid": "{app-1}", "events": [{"eventtype": 14}]}
-  ]}})";
-  EXPECT_TRUE(FailsWithMessage(matcher, request, kAppJSONMismatch));
-
-  // `events` in the needle does not match `event` in a V4 entry.
-  request.decoded_content = R"({"request": {"apps": [
-    {"appid": "{app-1}", "event": [{"eventtype": 3}]}
-  ]}})";
-  EXPECT_TRUE(FailsWithMessage(matcher, request, kAppJSONMismatch));
-}
-
-TEST(RequestMatcherTest, GetAppJSONContentMatcherMatchesV3) {
-  Matcher matcher = MakeApp1EventsMatcher();
-
-  // Protocol V3 uses `request.app` and `event`.
-  HttpRequest request;
-  request.decoded_content = R"({"request": {"app": [
-    {"appid": "{app-1}", "event": [{"eventtype": 3}]}
-  ]}})";
-  EXPECT_TRUE(matcher.Run(request));
-
-  request.decoded_content = R"({"request": {"app": [
-    {"appid": "{app-1}", "event": [{"eventtype": 2}]}
-  ]}})";
-  EXPECT_TRUE(FailsWithMessage(matcher, request, kAppJSONMismatch));
-
-  // `events` in the needle does not match `events` in a V3 entry.
-  request.decoded_content = R"({"request": {"app": [
-    {"appid": "{app-1}", "events": [{"eventtype": 3}]}
-  ]}})";
-  EXPECT_TRUE(FailsWithMessage(matcher, request, kAppJSONMismatch));
-}
-
-TEST(RequestMatcherTest, GetAppJSONContentMatcherWithoutEvents) {
-  // A needle without events matches either protocol.
-  Matcher matcher =
-      GetAppJSONContentMatcher(base::DictValue().Set("appid", "{app-1}"));
-
-  HttpRequest request;
-  request.decoded_content = R"({"request": {"app": [{"appid": "{app-1}"}]}})";
-  EXPECT_TRUE(matcher.Run(request));
-  request.decoded_content = R"({"request": {"apps": [{"appid": "{app-1}"}]}})";
-  EXPECT_TRUE(matcher.Run(request));
-  request.decoded_content = R"({"request": {"apps": [{"appid": "{app-2}"}]}})";
-  EXPECT_TRUE(FailsWithMessage(matcher, request, kAppJSONMismatch));
-}
-
-TEST(RequestMatcherTest, GetAppJSONContentMatcherSkipsNonDictEntries) {
-  Matcher matcher = MakeApp1EventsMatcher();
-
-  HttpRequest request;
-  request.decoded_content = R"({"request": {"apps": [
-    "{app-1}", 3, null, ["{app-1}"],
-    {"appid": "{app-1}", "events": [{"eventtype": 3}]}
-  ]}})";
-  EXPECT_TRUE(matcher.Run(request));
-
-  request.decoded_content = R"({"request": {"apps": ["{app-1}"]}})";
-  EXPECT_TRUE(FailsWithMessage(matcher, request, kAppJSONMismatch));
-}
-
-TEST(RequestMatcherTest, GetAppJSONContentMatcherPrefersAppsList) {
-  Matcher matcher = MakeApp1EventsMatcher();
-  Matcher appid_matcher =
-      GetAppJSONContentMatcher(base::DictValue().Set("appid", "{app-1}"));
-
-  // If both lists are present, the matcher searches only `request.apps`, with
-  // the protocol V4 needle.
-  HttpRequest request;
-  request.decoded_content = R"({"request": {
-    "apps": [{"appid": "{app-2}"}],
-    "app": [{"appid": "{app-1}"}]
-  }})";
-  EXPECT_TRUE(FailsWithMessage(appid_matcher, request, kAppJSONMismatch));
-  request.decoded_content = R"({"request": {
-    "apps": [{"appid": "{app-1}", "events": [{"eventtype": 3}]}],
-    "app": [{"appid": "{app-2}"}]
-  }})";
-  EXPECT_TRUE(matcher.Run(request));
-
-  // A non-list `request.apps` falls back to `request.app`.
-  request.decoded_content = R"({"request": {
-    "apps": null,
-    "app": [{"appid": "{app-1}", "event": [{"eventtype": 3}]}]
-  }})";
-  EXPECT_TRUE(matcher.Run(request));
-}
-
-TEST(RequestMatcherTest, GetAppJSONContentMatcherNullValueForbidsKey) {
-  // A null dict value requires the entry to omit the key or set it to null.
-  Matcher matcher = GetAppJSONContentMatcher(
-      base::DictValue()
-          .Set("appid", "{app-1}")
-          .Set("events",
-               base::ListValue().Append(base::DictValue()
-                                            .Set("eventtype", 3)
-                                            .Set("errorcat", base::Value()))));
-
-  HttpRequest request;
-  request.decoded_content = R"({"request": {"apps": [
-    {"appid": "{app-1}", "events": [{"eventtype": 3}]}
-  ]}})";
-  EXPECT_TRUE(matcher.Run(request));
-  request.decoded_content = R"({"request": {"apps": [
-    {"appid": "{app-1}", "events": [{"eventtype": 3, "errorcat": null}]}
-  ]}})";
-  EXPECT_TRUE(matcher.Run(request));
-  request.decoded_content = R"({"request": {"apps": [
-    {"appid": "{app-1}", "events": [{"eventtype": 3, "errorcat": 1}]}
-  ]}})";
-  EXPECT_TRUE(FailsWithMessage(matcher, request, kAppJSONMismatch));
-  request.decoded_content = R"({"request": {"app": [
-    {"appid": "{app-1}", "event": [{"eventtype": 3}]}
-  ]}})";
-  EXPECT_TRUE(matcher.Run(request));
-  request.decoded_content = R"({"request": {"app": [
-    {"appid": "{app-1}", "event": [{"eventtype": 3, "errorcat": 1}]}
-  ]}})";
-  EXPECT_TRUE(FailsWithMessage(matcher, request, kAppJSONMismatch));
-}
-
-TEST(RequestMatcherTest, GetAppJSONContentMatcherRejectsV3EventKey) {
-  EXPECT_CHECK_DEATH(std::ignore = GetAppJSONContentMatcher(
-                         base::DictValue().Set("event", base::ListValue())));
 }
 
 TEST(RequestMatcherTest, GetScopeMatcher) {

@@ -361,20 +361,4 @@ Matcher GetJSONContentMatcher(json::ValueMatcher matcher) {
       });
 }
 
-Matcher GetJSONContentMatcher(const base::DictValue& expected_target) {
-  return GetJSONContentMatcher(
-      json::Covers(base::Value(expected_target.Clone())));
-}
-
-Matcher GetAppJSONContentMatcher(const base::DictValue& expected_app) {
-  CHECK(!expected_app.contains("event"))
-      << "Use the protocol V4 name `events`.";
-  json::ValueMatcher app_matcher =
-      json::Covers(base::Value(expected_app.Clone()));
-  const std::string* app_id = expected_app.FindString("appid");
-  return GetJSONContentMatcher(
-      app_id ? json::HasApp(*app_id, std::move(app_matcher))
-             : json::HasAppMatching(std::move(app_matcher)));
-}
-
 }  // namespace updater::test::request

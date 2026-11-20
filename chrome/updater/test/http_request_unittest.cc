@@ -67,4 +67,14 @@ TEST(HttpRequestTest, ParseJsonContentKeepsV3NamesNextToV4Names) {
               Optional(IsJson(kContent)));
 }
 
+TEST(HttpRequestTest, ParseJsonContentReplacesNonListApps) {
+  EXPECT_THAT(ParseJsonContent(MakeRequest(R"({"request": {
+    "apps": null,
+    "app": [{"appid": "a", "event": [{"eventtype": 3}]}]
+  }})")),
+              Optional(IsJson(R"({"request": {
+    "apps": [{"appid": "a", "events": [{"eventtype": 3}]}]
+  }})")));
+}
+
 }  // namespace updater::test
