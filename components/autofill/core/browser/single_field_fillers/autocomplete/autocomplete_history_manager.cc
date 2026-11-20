@@ -25,6 +25,7 @@
 #include "base/time/time.h"
 #include "base/version_info/version_info.h"
 #include "components/autofill/core/browser/at_memory/at_memory_enablement_util.h"
+#include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/payments/iban.h"
 #include "components/autofill/core/browser/data_quality/validation.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -47,6 +48,7 @@
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/autofill_regexes.h"
 #include "components/autofill/core/common/credit_card_number_validation.h"
+#include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/html_field_types.h"
@@ -54,6 +56,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/webdata/common/web_data_results.h"
 #include "components/webdata/common/web_data_service_base.h"
+#include "url/gurl.h"
 
 namespace autofill {
 
@@ -270,6 +273,14 @@ bool IsHtmlFieldTypeSaveable(HtmlFieldType field_type) {
   NOTREACHED();
 }
 
+// Checks both the live `field.parsed_autocomplete()` and the cached
+// `autofill_field->html_type()`:
+// - `field.parsed_autocomplete()` covers uncached form submissions (`form` is
+//   null) and dynamically injected fields (`autofill_field` is null).
+// - `autofill_field->html_type()` covers cached fields whose `autocomplete`
+//   attribute was dynamically removed by JavaScript before submission
+//   (`FormStructure::UpdateFormData()` preserves the previously seen
+//   `html_type()` when the new attribute is empty).
 bool IsHtmlFieldTypeSaveable(const FormFieldData& field,
                              const AutofillField* autofill_field) {
   // Autofill does not parse password-related autocomplete attributes into
@@ -285,6 +296,33 @@ bool IsHtmlFieldTypeSaveable(const FormFieldData& field,
           IsHtmlFieldTypeSaveable(autofill_field->html_type()));
 }
 
+// Collects all policy data categories associated with `field` and
+// `autofill_field`. Including HTML autocomplete types ensures that category
+// toggles (e.g., `kAutofillCreditCardEnabled`) and `AutofillTypesBlocked`
+// enterprise policies are enforced even when `form` or `autofill_field` is
+// null, or when `autofill_field->Type()` was rationalized to `UNKNOWN_TYPE`.
+DenseSet<AutofillClient::AutofillPolicyDataCategory>
+GetPolicyDataCategoriesForField(const FormFieldData& field,
+                                const AutofillField* autofill_field) {
+  DenseSet<AutofillClient::AutofillPolicyDataCategory> categories;
+  auto add_type = [&](const AutofillType& type) {
+    categories.insert_all(
+        AutofillPolicyService::GetAutofillPolicyDataCategoriesForType(type));
+  };
+  auto add_html_type = [&](HtmlFieldType html_type) {
+    add_type(
+        AutofillType(HtmlFieldTypeToBestCorrespondingFieldType(html_type)));
+  };
+  if (autofill_field) {
+    add_type(autofill_field->Type());
+    add_html_type(autofill_field->html_type());
+  }
+  if (field.parsed_autocomplete()) {
+    add_html_type(field.parsed_autocomplete()->field_type);
+  }
+  return categories;
+}
+
 // Returns true if the given `field` in `form` and its value are valid to be
 // saved as a new or updated Autocomplete entry.
 // We put the following restriction on stored FormFields:
@@ -292,7 +330,7 @@ bool IsHtmlFieldTypeSaveable(const FormFieldData& field,
 //  - neither empty nor whitespace-only value
 //  - text field
 //  - autocomplete is not disabled
-//  - field data category is not blocked by policy for the form's URL
+//  - field data category is not blocked by policy for the form's or field's URL
 //  - field type is eligible (e.g. not a CVC or promo code)
 //  - field was not autofilled by a structured product (e.g., Address,
 //    Payments)
@@ -333,15 +371,22 @@ bool IsFieldValueSaveable(const FormFieldData& field,
   const AutofillField* autofill_field =
       form ? form->GetFieldById(field.global_id()) : nullptr;
 
-  if (pref_service && form && autofill_field) {
-    const GURL& url = form->main_frame_origin().GetURL();
+  if (pref_service) {
+    const auto is_category_blocked_for_url =
+        [&](const GURL& url,
+            AutofillClient::AutofillPolicyDataCategory category) {
+          return AutofillPolicyService::IsAutofillTypeBlockedByPolicyFromPref(
+              *pref_service, url, category);
+        };
+    const GURL field_url = field.origin().GetURL();
+    const GURL main_frame_url =
+        form ? form->main_frame_origin().GetURL() : GURL();
     if (std::ranges::any_of(
-            AutofillPolicyService::GetAutofillPolicyDataCategoriesForType(
-                autofill_field->Type()),
+            GetPolicyDataCategoriesForField(field, autofill_field),
             [&](AutofillClient::AutofillPolicyDataCategory category) {
-              return AutofillPolicyService::
-                  IsAutofillTypeBlockedByPolicyFromPref(*pref_service, url,
-                                                        category);
+              return is_category_blocked_for_url(field_url, category) ||
+                     (form && main_frame_url != field_url &&
+                      is_category_blocked_for_url(main_frame_url, category));
             })) {
       return false;
     }
@@ -358,9 +403,14 @@ bool IsFieldValueSaveable(const FormFieldData& field,
     return false;
   }
 
+  // Fall back to `field.is_autofilled_according_to_renderer()` when
+  // `autofill_field` is unavailable or lost its modifier history (e.g. uncached
+  // form submission, dynamically injected field, or cache eviction). Blink and
+  // iOS set this flag on autofill and clear it if the user edits the field.
   const bool was_autofilled =
-      autofill_field &&
-      autofill_field->all_modifiers().contains(FieldModifier::kAutofill);
+      (autofill_field &&
+       autofill_field->all_modifiers().contains(FieldModifier::kAutofill)) ||
+      field.is_autofilled_according_to_renderer();
   const bool was_autocompleted_and_later_modified =
       autofill_field &&
       autofill_field->filling_product() == FillingProduct::kAutocomplete &&
