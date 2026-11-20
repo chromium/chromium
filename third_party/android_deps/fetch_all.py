@@ -161,7 +161,14 @@ def RunCommand(args, print_stdout=False, cwd=None):
     # Explicitly set JAVA_HOME since some bots do not have this already set.
     env = os.environ.copy()
     env['JAVA_HOME'] = _JAVA_HOME
-    p = subprocess.Popen(args, stdout=stdout, cwd=cwd, env=env)
+    # stdin=DEVNULL: none of these commands read input, and a Gradle client
+    # that inherits a terminal it does not own (e.g. the script run from a
+    # background job) is stopped by SIGTTOU after the build and never exits.
+    p = subprocess.Popen(args,
+                         stdin=subprocess.DEVNULL,
+                         stdout=stdout,
+                         cwd=cwd,
+                         env=env)
     pout, _ = p.communicate()
     if p.returncode != 0:
         RaiseCommandException(args, p.returncode, None, pout)
@@ -186,6 +193,7 @@ def RunCommandAndGetOutput(args):
     env = os.environ.copy()
     env['JAVA_HOME'] = _JAVA_HOME
     p = subprocess.Popen(args,
+                         stdin=subprocess.DEVNULL,
                          stdout=subprocess.PIPE,
                          stderr=subprocess.PIPE,
                          env=env)
