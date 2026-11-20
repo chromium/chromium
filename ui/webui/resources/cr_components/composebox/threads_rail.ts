@@ -163,7 +163,7 @@ export class ThreadsRailElement extends ThreadsRailElementBase {
     recordThreadsRailAction(ThreadsRailAction.RAIL_BACKGROUND_CLICKED);
   }
 
-  protected onItemClick_(e: Event): void {
+  protected onItemClick_(e: MouseEvent): void {
     const index = Number((e.currentTarget as HTMLElement).dataset['index']);
     const item = this.getItems_()[index];
     if (!item) {
@@ -173,7 +173,7 @@ export class ThreadsRailElement extends ThreadsRailElementBase {
     switch (item.clientAction) {
       case LhsClientAction.EXPAND_RAIL:
         recordThreadsRailAction(ThreadsRailAction.EXPAND_RAIL_ITEM_CLICKED);
-        this.fire('expand-rail');
+        this.fire('expand-rail', e);
         return;
       case LhsClientAction.FOCUS_REALBOX_AIM:
         recordThreadsRailAction(

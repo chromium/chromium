@@ -52,7 +52,8 @@ interface NtpLhsSetThemeMessage {
   iconSize?: number;
 }
 
-type ChromeToSearchLhsMessage = NtpLhsSetThemeMessage;
+type ChromeToSearchLhsMessage =
+    NtpLhsSetThemeMessage|{type: NtpLhsMessageType.NTP_LHS_FOCUS};
 
 // Maps each `NtpLhsThemePalette` key to its corresponding
 // `--color-new-tab-page-threads-rail-<suffix>` CSS variable from
@@ -87,6 +88,7 @@ export enum NtpLhsMessageType {
   NTP_LHS_NEW_THREAD = 'NTP_LHS_NEW_THREAD',
   NTP_LHS_NAVIGATE = 'NTP_LHS_NAVIGATE',
   NTP_LHS_SET_THEME = 'NTP_LHS_SET_THEME',
+  NTP_LHS_FOCUS = 'NTP_LHS_FOCUS',
 }
 
 export interface NtpLhsReadyMessage {
@@ -229,6 +231,7 @@ export class LeftHandSideElement extends CrLitElement {
   private ghostLoaderShownTime_: number|null = null;
   private lastHiddenTime_: number|null = null;
   private hadFocusBeforeUpdate_: boolean = false;
+  private focusCloseOnExpand_: boolean = false;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -322,12 +325,23 @@ export class LeftHandSideElement extends CrLitElement {
       case LhsView.FOLDED:
         this.$.folded.focusItemWithAction(LhsClientAction.EXPAND_RAIL);
         break;
-      case LhsView.GHOST_LOADER:
-        this.shadowRoot.querySelector<HTMLElement>('#ghostLoader')?.focus();
+      case LhsView.GHOST_LOADER: {
+        const selector =
+            this.focusCloseOnExpand_ ? 'ntp-lhs-ghost-loader' : '#ghostLoader';
+        this.shadowRoot.querySelector<HTMLElement>(selector)?.focus();
         break;
-      case LhsView.EXPANDED:
-        this.getExpandedIframe_()?.focus();
+      }
+      case LhsView.EXPANDED: {
+        const expanded = this.getExpandedIframe_();
+        expanded?.focus();
+        if (this.focusCloseOnExpand_) {
+          const message: ChromeToSearchLhsMessage = {
+            type: NtpLhsMessageType.NTP_LHS_FOCUS,
+          };
+          expanded?.postMessage(message);
+        }
         break;
+      }
       default:
         break;
     }
@@ -399,11 +413,13 @@ export class LeftHandSideElement extends CrLitElement {
   }
 
   protected async onFoldedClick_() {
-    await this.expand_();
+    await this.expand_(false);
   }
 
-  protected async onExpandRail_() {
-    await this.expand_();
+  protected async onExpandRail_(e: CustomEvent<MouseEvent>) {
+    // Check `sourceCapabilities` rather than `detail === 0` since Blink sets
+    // `detail = 1` on accessibility actions (`kFromAccessibility`).
+    await this.expand_(e.detail.sourceCapabilities === null);
   }
 
   // Lets the user close the rail from the ghost loader, e.g. when the expanded
@@ -451,7 +467,7 @@ export class LeftHandSideElement extends CrLitElement {
     }
   }
 
-  private async expand_() {
+  private async expand_(focusCloseButton: boolean) {
     if (!this.hasExpanded_) {
       this.hasExpanded_ = true;
       // Record whether the expanded iframe was already preloaded and ready at
@@ -470,6 +486,7 @@ export class LeftHandSideElement extends CrLitElement {
     }
     this.cancelPreloadTimer_();
     await this.preloadExpanded_();
+    this.focusCloseOnExpand_ = focusCloseButton;
     this.isExpanded_ = true;
   }
 

@@ -120,6 +120,10 @@ export class LhsGhostLoaderElement extends CrLitElement {
   protected readonly closeTooltipPosition_: TooltipPosition =
       isRTL() ? TooltipPosition.LEFT : TooltipPosition.RIGHT;
 
+  override focus(options?: FocusOptions) {
+    this.shadowRoot.getElementById('closeButton')!.focus(options);
+  }
+
   // NTP: the close button is functional, unlike the other placeholders, so
   // that the user can close the rail when the expanded LHS iframe does not
   // load.

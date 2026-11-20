@@ -19,7 +19,7 @@ import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {installMock, LAYOUT_TOLERANCE_PX} from './test_support.js';
+import {installMock, keydown, LAYOUT_TOLERANCE_PX} from './test_support.js';
 
 const EXPANDED_LHS_ORIGIN = 'https://www.google.com';
 const EXPANDED_LHS_URL = `${EXPANDED_LHS_ORIGIN}/search?nem=341`;
@@ -71,6 +71,12 @@ suite('NewTabPageLeftHandSideTest', () => {
     assertTrue(!!iframe);
     assertTrue(!!iframe.contentWindow);
     return iframe.contentWindow;
+  }
+
+  function getFocusMessages() {
+    return windowProxy.getArgs('postMessage')
+        .filter(
+            ([, message]) => message.type === NtpLhsMessageType.NTP_LHS_FOCUS);
   }
 
   function postLhsMessage(
@@ -350,7 +356,7 @@ suite('NewTabPageLeftHandSideTest', () => {
     const folded = leftHandSide.$.folded;
     assertFalse(isGhostLoaderVisible());
 
-    folded.fire('expand-rail');
+    folded.fire('expand-rail', new MouseEvent('click'));
     await microtasksFinished();
     assertEquals(1, windowProxy.getCallCount('ensureLazyLoaded'));
     const expanded = getExpandedIframe();
@@ -554,7 +560,7 @@ suite('NewTabPageLeftHandSideTest', () => {
 
         // Expand via keyboard at t=1000.
         windowProxy.setResultFor('now', 1000);
-        folded.fire('expand-rail');
+        folded.fire('expand-rail', new MouseEvent('click'));
         await microtasksFinished();
 
         assertEquals(
@@ -1511,7 +1517,7 @@ suite('NewTabPageLeftHandSideTest', () => {
 
         // Expand via keyboard at t=1000.
         windowProxy.setResultFor('now', 1000);
-        folded.fire('expand-rail');
+        folded.fire('expand-rail', new MouseEvent('click'));
         await microtasksFinished();
 
         assertEquals(
@@ -1756,6 +1762,10 @@ suite('NewTabPageLeftHandSideTest', () => {
             expanded.shadowRoot.querySelector<HTMLIFrameElement>('#iframe')!;
         assertEquals(expanded, leftHandSide.shadowRoot.activeElement);
         assertEquals(iframe, expanded.shadowRoot.activeElement);
+        const calls = getFocusMessages();
+        assertEquals(1, calls.length);
+        const [, message] = calls[0];
+        assertDeepEquals({type: NtpLhsMessageType.NTP_LHS_FOCUS}, message);
         assertEquals(
             loadTimeData.getString('aimThreadsHistoryLabel'),
             iframe.getAttribute('aria-label'));
@@ -1768,7 +1778,7 @@ suite('NewTabPageLeftHandSideTest', () => {
       });
 
   test(
-      'focuses ghost loader before ready and hands focus to iframe on ready',
+      'focuses ghost loader container on mouse open and iframe on ready',
       async () => {
         loadTimeData.overrideValues({lhsRailConfig: EXPAND_RAIL_CONFIG});
         await createLeftHandSide();
@@ -1777,7 +1787,13 @@ suite('NewTabPageLeftHandSideTest', () => {
         const expandButton =
             folded.shadowRoot.querySelector<HTMLElement>('[data-index="0"]')!;
         expandButton.focus();
-        expandButton.click();
+        expandButton.dispatchEvent(new PointerEvent('click', {
+          bubbles: true,
+          composed: true,
+          detail: 1,
+          sourceCapabilities:
+              new InputDeviceCapabilities({firesTouchEvents: false}),
+        }));
         await microtasksFinished();
 
         // Focus lands on the ghost loader container itself rather than its
@@ -1786,6 +1802,7 @@ suite('NewTabPageLeftHandSideTest', () => {
         assertEquals('-1', ghostLoader.getAttribute('tabindex'));
         assertEquals('none', getComputedStyle(ghostLoader).outlineStyle);
         assertEquals(ghostLoader, leftHandSide.shadowRoot.activeElement);
+        assertEquals(0, getFocusMessages().length);
 
         // Once NTP_LHS_READY arrives, focus transfers from the ghost loader to
         // the expanded iframe.
@@ -1797,7 +1814,39 @@ suite('NewTabPageLeftHandSideTest', () => {
             expanded.shadowRoot.querySelector<HTMLIFrameElement>('#iframe')!;
         assertEquals(expanded, leftHandSide.shadowRoot.activeElement);
         assertEquals(iframe, expanded.shadowRoot.activeElement);
+        assertEquals(0, getFocusMessages().length);
       });
+
+  [{input: 'mouse', firesTouchEvents: false, expectedCount: 1},
+   {input: 'accessibility', firesTouchEvents: null, expectedCount: 2},
+  ].forEach(({input, firesTouchEvents, expectedCount}) => {
+    test(`focus messages count after ${input} reopen`, async () => {
+      loadTimeData.overrideValues({lhsRailConfig: EXPAND_RAIL_CONFIG});
+      await createLeftHandSide();
+      const folded = leftHandSide.$.folded;
+      const expandButton =
+          folded.shadowRoot.querySelector<HTMLElement>('[data-index="0"]')!;
+      expandButton.click();
+      await microtasksFinished();
+      postLhsMessage({type: NtpLhsMessageType.NTP_LHS_READY});
+      await microtasksFinished();
+      assertEquals(1, getFocusMessages().length);
+      postLhsMessage({type: NtpLhsMessageType.NTP_LHS_CLOSE});
+      await microtasksFinished();
+
+      expandButton.dispatchEvent(new PointerEvent('click', {
+        bubbles: true,
+        composed: true,
+        detail: 1,
+        sourceCapabilities: firesTouchEvents === null ?
+            null :
+            new InputDeviceCapabilities({firesTouchEvents}),
+      }));
+      await microtasksFinished();
+      assertFalse(getExpandedIframe()!.inert);
+      assertEquals(expectedCount, getFocusMessages().length);
+    });
+  });
 
   test(
       'does not steal external focus on NTP_LHS_READY or NTP_LHS_CLOSE',
@@ -1807,8 +1856,12 @@ suite('NewTabPageLeftHandSideTest', () => {
         const externalButton = document.createElement('button');
         document.body.appendChild(externalButton);
 
-        await expandLeftHandSide();
-        assertEquals(getGhostLoader(), leftHandSide.shadowRoot.activeElement);
+        const folded = leftHandSide.$.folded;
+        const expandButton =
+            folded.shadowRoot.querySelector<HTMLElement>('[data-index="0"]')!;
+        expandButton.click();
+        await microtasksFinished();
+        assertEquals(leftHandSide, document.activeElement);
 
         // User moves focus outside the rail while the iframe is still loading.
         externalButton.focus();
@@ -1819,6 +1872,7 @@ suite('NewTabPageLeftHandSideTest', () => {
         await microtasksFinished();
         assertEquals(externalButton, document.activeElement);
         assertEquals(null, leftHandSide.shadowRoot.activeElement);
+        assertEquals(0, getFocusMessages().length);
 
         postLhsMessage({type: NtpLhsMessageType.NTP_LHS_CLOSE});
         await microtasksFinished();
@@ -1827,7 +1881,7 @@ suite('NewTabPageLeftHandSideTest', () => {
       });
 
   test(
-      'restores focus to Open sidebar when closing from ghost loader',
+      'can close the loading sidebar with Enter immediately after keyboard open',
       async () => {
         loadTimeData.overrideValues({lhsRailConfig: EXPAND_RAIL_CONFIG});
         await createLeftHandSide();
@@ -1836,13 +1890,15 @@ suite('NewTabPageLeftHandSideTest', () => {
         const expandButton =
             folded.shadowRoot.querySelector<HTMLElement>('[data-index="0"]')!;
 
-        await expandLeftHandSide();
+        expandButton.focus();
+        keydown(expandButton, 'Enter');
+        await microtasksFinished();
+
         const closeButton =
             getGhostLoaderShadowRoot().querySelector<HTMLElement>(
                 '#closeButton')!;
-        closeButton.focus();
         assertEquals(closeButton, getGhostLoaderShadowRoot().activeElement);
-        closeButton.click();
+        keydown(closeButton, 'Enter');
         await microtasksFinished();
         assertEquals(folded, leftHandSide.shadowRoot.activeElement);
         assertEquals(expandButton, folded.shadowRoot.activeElement);
