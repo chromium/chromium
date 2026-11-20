@@ -67,6 +67,21 @@ TEST(GlicProviderSpecImplTest, GeminiEnterpriseSupportsSsrFollowsGeicSsr) {
   }
 }
 
+TEST(GlicProviderSpecImplTest, GeminiRequiresNoWebviewWhenGlicCicEnabled) {
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(features::kGlicCic);
+    EXPECT_FALSE(
+        CreateGlicProviderSpec(GlicProvider::kGemini, {})->RequiresNoWebview());
+  }
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(features::kGlicCic);
+    EXPECT_TRUE(
+        CreateGlicProviderSpec(GlicProvider::kGemini, {})->RequiresNoWebview());
+  }
+}
+
 TEST(GlicProviderSpecImplTest,
      GeminiSupportsApiBundleResourceFollowsGlicApiBundleResource) {
   {
@@ -79,10 +94,20 @@ TEST(GlicProviderSpecImplTest,
   // kGeicApiBundleResource only applies to Gemini Enterprise.
   {
     base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatures({features::kGeicApiBundleResource},
-                                  {features::kGlicApiBundleResource});
+    feature_list.InitWithFeatures(
+        {features::kGeicApiBundleResource},
+        {features::kGlicApiBundleResource, features::kGlicCic});
     EXPECT_FALSE(CreateGlicProviderSpec(GlicProvider::kGemini, {})
                      ->SupportsApiBundleResource());
+  }
+  // Enabling kGlicCic also enables the API bundle resource.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        {features::kGlicCic},
+        {features::kGlicApiBundleResource, features::kGeicApiBundleResource});
+    EXPECT_TRUE(CreateGlicProviderSpec(GlicProvider::kGemini, {})
+                    ->SupportsApiBundleResource());
   }
 }
 
@@ -98,10 +123,20 @@ TEST(GlicProviderSpecImplTest,
   // kGlicApiBundleResource only applies to consumer Gemini.
   {
     base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatures({features::kGlicApiBundleResource},
-                                  {features::kGeicApiBundleResource});
+    feature_list.InitWithFeatures(
+        {features::kGlicApiBundleResource},
+        {features::kGeicApiBundleResource, features::kGlicCic});
     EXPECT_FALSE(CreateGlicProviderSpec(GlicProvider::kGeminiEnterprise, {})
                      ->SupportsApiBundleResource());
+  }
+  // Enabling kGlicCic also enables the API bundle resource.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        {features::kGlicCic},
+        {features::kGlicApiBundleResource, features::kGeicApiBundleResource});
+    EXPECT_TRUE(CreateGlicProviderSpec(GlicProvider::kGeminiEnterprise, {})
+                    ->SupportsApiBundleResource());
   }
 }
 

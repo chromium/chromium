@@ -460,4 +460,8 @@ const base::FeatureParam<base::TimeDelta>
 BASE_FEATURE(kGlicApiBundleResource, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicDrivePicker, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kGlicCic, base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<std::string> kGlicCicUrl{
+    &kGlicCic, "url", "https://glic-cic.apps.corp.google.com/"};
 }  // namespace features

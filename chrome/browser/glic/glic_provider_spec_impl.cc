@@ -160,7 +160,9 @@ class GeminiGlicProviderSpec final : public GlicProviderSpec {
   }
   std::string_view GetMetricsInfix() const override { return "Consumer"; }
   bool IsActuationSupported() const override { return true; }
-  bool RequiresNoWebview() const override { return false; }
+  bool RequiresNoWebview() const override {
+    return base::FeatureList::IsEnabled(features::kGlicCic);
+  }
   GURL GetUnlocalizedGuestUrl(Profile* profile) const override {
     auto* command_line = base::CommandLine::ForCurrentProcess();
     bool has_glic_guest_url =
@@ -316,7 +318,8 @@ class GeminiGlicProviderSpec final : public GlicProviderSpec {
     return base::FeatureList::IsEnabled(features::kGlicSsr);
   }
   bool SupportsApiBundleResource() const override {
-    return base::FeatureList::IsEnabled(features::kGlicApiBundleResource);
+    return base::FeatureList::IsEnabled(features::kGlicApiBundleResource) ||
+           base::FeatureList::IsEnabled(features::kGlicCic);
   }
   bool PinOnBindEnabled() const override { return true; }
 
@@ -442,7 +445,8 @@ class GeminiEnterpriseGlicProviderSpec final : public GlicProviderSpec,
     return base::FeatureList::IsEnabled(features::kGeicSsr);
   }
   bool SupportsApiBundleResource() const override {
-    return base::FeatureList::IsEnabled(features::kGeicApiBundleResource);
+    return base::FeatureList::IsEnabled(features::kGeicApiBundleResource) ||
+           base::FeatureList::IsEnabled(features::kGlicCic);
   }
   // GEiC uses explicit single-tab attachment; tabs created via CreateTab or
   // link clicks (e.g. Send feedback, Help, citations) should not be auto-pinned

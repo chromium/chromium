@@ -329,6 +329,12 @@ extern const base::FeatureParam<base::TimeDelta>
 BASE_DECLARE_FEATURE(kGlicApiBundleResource);
 
 BASE_DECLARE_FEATURE(kGlicDrivePicker);
+
+// Enables loading the Google-internal CiC client inside the Glic guest via a
+// browser-process proxy while keeping Blink's committed origin at the Glic
+// guest origin.
+BASE_DECLARE_FEATURE(kGlicCic);
+extern const base::FeatureParam<std::string> kGlicCicUrl;
 }  // namespace features
 
 #endif  // CHROME_BROWSER_GLIC_PUBLIC_FEATURES_H_

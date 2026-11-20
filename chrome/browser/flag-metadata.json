@@ -5803,6 +5803,15 @@
     "expiry_milestone": 170
   },
   {
+    "name": "glic-cic",
+    "owners": [
+      "bryantchandler@chromium.org",
+      "harringtond@chromium.org",
+      "//chrome/browser/glic/OWNERS"
+    ],
+    "expiry_milestone": 170
+  },
+  {
     "name": "glic-context-menu-below-search",
     "owners": [ "sanaakbani@google.com", "//chrome/browser/glic/OWNERS" ],
     "expiry_milestone": 160

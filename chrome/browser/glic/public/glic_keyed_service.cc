@@ -320,7 +320,8 @@ bool GlicKeyedService::IsNoWebviewEnabled(content::BrowserContext* context) {
   // profiles.
   Profile* profile = Profile::FromBrowserContext(context);
   return profile && profile->IsRegularProfile() &&
-         base::FeatureList::IsEnabled(features::kGlicNoWebview);
+         (base::FeatureList::IsEnabled(features::kGlicNoWebview) ||
+          base::FeatureList::IsEnabled(features::kGlicCic));
 }
 
 bool GlicKeyedService::IsNoWebviewEnabled() const {

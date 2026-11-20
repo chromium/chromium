@@ -1969,6 +1969,11 @@ inline constexpr char kGlicChromeStatusIconWinName[] =
     "Glic Chrome Status Icon Windows";
 inline constexpr char kGlicChromeStatusIconWinDescription[] =
     "Use an alt logo as glic OS status bar icon on Windows.";
+inline constexpr char kGlicCicName[] = "Glic CiC (UNSAFE)";
+inline constexpr char kGlicCicDescription[] =
+    "Proxies Glic panel requests to the CiC server while preserving the Glic "
+    "guest origin. Use with caution; intended for development and testing "
+    "only.";
 inline constexpr char kGlicContextMenuBelowSearchName[] =
     "Glic Context Menu Below Search";
 inline constexpr char kGlicContextMenuBelowSearchDescription[] =

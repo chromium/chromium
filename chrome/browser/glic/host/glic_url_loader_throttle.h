@@ -9,6 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/global_routing_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -130,6 +131,16 @@ class GlicSubresourceProxyingURLLoaderFactory
   const bool inject_headers_;
   const bool serve_api_bundle_;
 };
+
+// Installs Glic's browser-process URLLoaderFactory proxies when applicable,
+// ordering `GlicSubresourceProxyingURLLoaderFactory` before
+// `GlicCicProxyingURLLoaderFactory` so `chrome__glic_api.js` is always served
+// from memory.
+void MaybeProxyURLLoaderFactory(
+    content::RenderFrameHost* frame,
+    content::ContentBrowserClient::URLLoaderFactoryType type,
+    const url::Origin& request_initiator,
+    network::URLLoaderFactoryBuilder& factory_builder);
 
 }  // namespace glic
 

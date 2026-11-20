@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
+#include "chrome/browser/glic/host/glic_cic_proxy_loader.h"
 #include "chrome/browser/glic/host/guest_source.h"
 #include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/public/features.h"
@@ -419,6 +420,25 @@ void GlicSubresourceProxyingURLLoaderFactory::HandleBundleRequest(
 
 void GlicSubresourceProxyingURLLoaderFactory::OnTargetFactoryError() {
   DisconnectReceiversAndDestroy();
+}
+
+void MaybeProxyURLLoaderFactory(
+    content::RenderFrameHost* frame,
+    content::ContentBrowserClient::URLLoaderFactoryType type,
+    const url::Origin& request_initiator,
+    network::URLLoaderFactoryBuilder& factory_builder) {
+  if (type == content::ContentBrowserClient::URLLoaderFactoryType::
+                  kDocumentSubResource) {
+    GlicSubresourceProxyingURLLoaderFactory::MaybeProxyRequest(
+        frame, request_initiator, factory_builder);
+  }
+  if (type ==
+          content::ContentBrowserClient::URLLoaderFactoryType::kNavigation ||
+      type == content::ContentBrowserClient::URLLoaderFactoryType::
+                  kDocumentSubResource) {
+    GlicCicProxyingURLLoaderFactory::MaybeProxyRequest(
+        frame, type, request_initiator, factory_builder);
+  }
 }
 
 }  // namespace glic
