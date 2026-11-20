@@ -204,7 +204,9 @@ WebTouchPoint CreateWebTouchPoint(const MotionEvent& event,
 
   CHECK_GE(major_radius, 0, base::NotFatalUntil::M163);
   CHECK_GE(minor_radius, 0, base::NotFatalUntil::M163);
-  CHECK_GE(major_radius, minor_radius, base::NotFatalUntil::M163);
+  // TODO(crbug.com/583528977): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_GE(major_radius, minor_radius);
   // Orientation lies in [-180, 180] for a stylus, and [-90, 90] for other
   // touchscreen inputs. There are exceptions on Android when a device is
   // rotated, yielding touch orientations in the range of [-180, 180].
