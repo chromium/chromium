@@ -35,6 +35,7 @@
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/locked_fullscreen/arc_locked_fullscreen_manager.h"
 #include "chrome/browser/ash/arc/session/arc_service_launcher.h"
+#include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/multidevice_setup/multidevice_setup_service_factory.h"
 #include "chrome/browser/ash/scanner/chrome_scanner_delegate.h"
@@ -92,6 +93,8 @@
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/common/constants.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "storage/browser/file_system/file_system_context.h"
+#include "storage/browser/file_system/file_system_url.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
@@ -429,6 +432,30 @@ base::FilePath ChromeShellDelegate::GetPrimaryUserDownloadsFolder() const {
   }
 
   return file_manager::util::GetDownloadsFolder(user);
+}
+
+base::FilePath ChromeShellDelegate::CrackFileSystemUrl(
+    const GURL& file_system_url) const {
+  // TODO(crbug.com/278643115): Take the account_id from the callers.
+  const session_manager::Session* const active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  if (!active_session) {
+    return base::FilePath();
+  }
+
+  content::BrowserContext* const browser_context =
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          active_session->account_id());
+  if (!browser_context) {
+    return base::FilePath();
+  }
+
+  storage::FileSystemContext* const file_system_context =
+      file_manager::util::GetFileManagerFileSystemContext(browser_context);
+  return file_system_context
+             ? file_system_context->CrackURLInFirstPartyContext(file_system_url)
+                   .path()
+             : base::FilePath();
 }
 
 void ChromeShellDelegate::OpenFeedbackDialog(

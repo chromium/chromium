@@ -184,6 +184,13 @@ base::FilePath TestShellDelegate::GetPrimaryUserDownloadsFolder() const {
   return base::FilePath();
 }
 
+base::FilePath TestShellDelegate::CrackFileSystemUrl(
+    const GURL& file_system_url) const {
+  return crack_file_system_url_callback_
+             ? crack_file_system_url_callback_.Run(file_system_url)
+             : base::FilePath();
+}
+
 void TestShellDelegate::OpenFeedbackDialog(
     ShellDelegate::FeedbackSource source,
     const std::string& description_template,

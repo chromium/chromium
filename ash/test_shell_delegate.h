@@ -72,6 +72,12 @@ class TestShellDelegate : public ShellDelegate {
     send_specialized_feature_feedback_callback_ = std::move(cb);
   }
 
+  using CrackFileSystemUrlCallback =
+      base::RepeatingCallback<base::FilePath(const GURL&)>;
+  void SetCrackFileSystemUrlCallback(CrackFileSystemUrlCallback cb) {
+    crack_file_system_url_callback_ = std::move(cb);
+  }
+
   // Overridden from ShellDelegate:
   std::unique_ptr<CaptureModeDelegate> CreateCaptureModeDelegate(
       PrefService* local_state) const override;
@@ -123,6 +129,7 @@ class TestShellDelegate : public ShellDelegate {
   void SetSessionRestoreInProgress(bool in_progress);
   bool IsLoggingRedirectDisabled() const override;
   base::FilePath GetPrimaryUserDownloadsFolder() const override;
+  base::FilePath CrackFileSystemUrl(const GURL& file_system_url) const override;
   void OpenFeedbackDialog(FeedbackSource source,
                           const std::string& description_template,
                           const std::string& category_tag) override;
@@ -163,6 +170,7 @@ class TestShellDelegate : public ShellDelegate {
   UserEducationDelegateFactory user_education_delegate_factory_;
   SendSpecializedFeatureFeedbackCallback
       send_specialized_feature_feedback_callback_;
+  CrackFileSystemUrlCallback crack_file_system_url_callback_;
 
   std::unique_ptr<network::TestURLLoaderFactory> url_loader_factory_;
 

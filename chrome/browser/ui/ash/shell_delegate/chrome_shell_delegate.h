@@ -92,6 +92,7 @@ class ChromeShellDelegate : public ash::ShellDelegate,
   int GetUiDevToolsPort() const override;
   bool IsLoggingRedirectDisabled() const override;
   base::FilePath GetPrimaryUserDownloadsFolder() const override;
+  base::FilePath CrackFileSystemUrl(const GURL& file_system_url) const override;
   void OpenFeedbackDialog(ShellDelegate::FeedbackSource source,
                           const std::string& description_template,
                           const std::string& category_tag) override;

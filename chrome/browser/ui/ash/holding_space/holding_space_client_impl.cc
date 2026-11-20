@@ -149,13 +149,6 @@ void HoldingSpaceClientImpl::CopyImageToClipboard(const HoldingSpaceItem& item,
       }).Then(std::move(callback)));
 }
 
-base::FilePath HoldingSpaceClientImpl::CrackFileSystemUrl(
-    const GURL& file_system_url) const {
-  return file_manager::util::GetFileManagerFileSystemContext(profile_)
-      ->CrackURLInFirstPartyContext(file_system_url)
-      .path();
-}
-
 bool HoldingSpaceClientImpl::IsDriveDisabled() const {
   return profile_->GetPrefs()->GetBoolean(drive::prefs::kDisableDrive);
 }

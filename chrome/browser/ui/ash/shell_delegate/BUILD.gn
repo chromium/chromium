@@ -67,6 +67,7 @@ static_library("shell_delegate") {
     "//components/version_info",
     "//content/public/browser",
     "//extensions/browser",
+    "//storage/browser",
     "//ui/aura",
     "//ui/base",
     "//url",

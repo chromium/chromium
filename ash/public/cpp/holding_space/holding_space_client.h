@@ -11,8 +11,6 @@
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "base/functional/callback_forward.h"
 
-class GURL;
-
 namespace base {
 class FilePath;
 }  // namespace base
@@ -36,10 +34,6 @@ class ASH_PUBLIC_EXPORT HoldingSpaceClient {
   // via the supplied `callback`.
   virtual void CopyImageToClipboard(const HoldingSpaceItem& item,
                                     SuccessCallback callback) = 0;
-
-  // Returns the file path from cracking the specified `file_system_url`.
-  virtual base::FilePath CrackFileSystemUrl(
-      const GURL& file_system_url) const = 0;
 
   // Returns the value of the `drive::prefs::kDisableDrive` pref, indicating
   // whether Google Drive has been disabled.

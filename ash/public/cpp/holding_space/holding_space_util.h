@@ -7,7 +7,6 @@
 
 #include <string>
 #include <string_view>
-#include <vector>
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/holding_space/holding_space_file.h"
@@ -15,27 +14,9 @@
 #include "base/containers/flat_set.h"
 #include "ui/gfx/geometry/size.h"
 
-namespace base {
-class FilePath;
-}  // namespace base
-
-namespace ui {
-class OSExchangeData;
-}  // namespace ui
-
 namespace ash {
 
 namespace holding_space_util {
-
-// Returns the file paths extracted from the specified `data` at one of two
-// possible storage locations, either:
-// (a) the file system sources storage location used by the Files app, or
-// (b) the filenames storage location if and only if:
-//     * no file paths were extracted from (a), and
-//     * `fallback_to_filenames` is `true`.
-ASH_PUBLIC_EXPORT std::vector<base::FilePath> ExtractFilePaths(
-    const ui::OSExchangeData& data,
-    bool fallback_to_filenames);
 
 // Returns the set of all defined holding space file system types. This differs
 // from `base::EnumSet<HoldingSpaceFile::FileSystemType, ...>::All()` which

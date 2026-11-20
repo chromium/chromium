@@ -190,6 +190,10 @@ class ASH_EXPORT ShellDelegate {
   // primary user Downloads folder if user has already logged in.
   virtual base::FilePath GetPrimaryUserDownloadsFolder() const = 0;
 
+  // Returns the file path from cracking the specified `file_system_url`.
+  virtual base::FilePath CrackFileSystemUrl(
+      const GURL& file_system_url) const = 0;
+
   // Opens the feedback page with pre-populated `source` and
   // `description_template` fields. Note, this will only be used by features
   // before they are fully launched or removed.
