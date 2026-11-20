@@ -21,6 +21,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
+#include "chrome/browser/memory_details.h"
 #include "chrome/browser/metrics/metrics_memory_details.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/url_constants.h"
@@ -89,7 +90,11 @@ class TestMemoryDetails : public MetricsMemoryDetails {
   size_t CountPageTitles() {
     size_t count = 0;
     for (const ProcessMemoryInformation& process : ChromeBrowser()->processes) {
-      if (process.process_type == content::PROCESS_TYPE_RENDERER) {
+      // Exclude `chrome://` WebUI renderer processes (such as the WebUI
+      // toolbar and its asynchronously prewarmed spare WebContents), as these
+      // tests only verify title collection for web pages.
+      if (process.process_type == content::PROCESS_TYPE_RENDERER &&
+          process.renderer_type != ProcessMemoryInformation::RENDERER_CHROME) {
         count += process.titles.size();
       }
     }
