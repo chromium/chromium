@@ -20,6 +20,7 @@ from test_helpers import (
     ANY_SHARED_ID,
     AnyExtending,
     execute_command,
+    get_tree,
     goto_url,
     read_JSON_message,
     send_JSON_command,
@@ -181,6 +182,46 @@ async def test_locate_nodes_context_locator_unknown(websocket, context_id):
     await assert_context_locator_unknown_context(
         websocket, context_id, "non_existing_context"
     )
+
+
+@pytest.mark.asyncio
+async def test_locate_nodes_context_locator_other_tab_iframe(
+    websocket, context_id, another_context_id, html, iframe
+):
+    await goto_url(
+        websocket,
+        another_context_id,
+        html(iframe(html("<div>other</div>"))),
+    )
+    tree = await get_tree(websocket, another_context_id)
+    other_iframe_id = tree["contexts"][0]["children"][0]["context"]
+
+    with pytest.raises(
+        Exception,
+        match=re.escape(
+            str(
+                {
+                    "error": "invalid argument",
+                    "message": (
+                        f"Context {other_iframe_id} is not a child of context {context_id}"
+                    ),
+                }
+            )
+        ),
+    ):
+        await execute_command(
+            websocket,
+            {
+                "method": "browsingContext.locateNodes",
+                "params": {
+                    "context": context_id,
+                    "locator": {
+                        "type": "context",
+                        "value": {"context": other_iframe_id},
+                    },
+                },
+            },
+        )
 
 
 @pytest.mark.parametrize(

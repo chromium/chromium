@@ -121,8 +121,8 @@ const SUPPORTED_ACL_COMMAND_RULES: ReadonlyMap<
   // Lists all tabs; `root` only filters the result.
   ['browsingContext.getTree', NO_TARGET_RULE],
   ['browsingContext.handleUserPrompt', CONTEXT_TARGET_RULE],
-  // TODO: Also check `locator.value.context` for `{type: 'context'}` locators
-  // when `perNavigable` grants become settable.
+  // `{type: 'context'}` locators require `locator.value.context` to be a direct
+  // child of `params.context`, so they stay in the same top-level navigable.
   ['browsingContext.locateNodes', CONTEXT_TARGET_RULE],
   ['browsingContext.navigate', CONTEXT_TARGET_RULE],
   ['browsingContext.reload', CONTEXT_TARGET_RULE],

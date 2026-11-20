@@ -2047,6 +2047,11 @@ export class BrowsingContextImpl {
     if (!parent) {
       throw new InvalidArgumentException('This context has no container');
     }
+    if (parent.id !== this.id) {
+      throw new InvalidArgumentException(
+        `Context ${contextId} is not a child of context ${this.id}`,
+      );
+    }
     try {
       const {backendNodeId} = await parent.#cdpTarget.cdpClient.sendCommand(
         'DOM.getFrameOwner',
