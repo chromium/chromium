@@ -3220,11 +3220,23 @@ ci.thin_tester(
             "win10_nvidia_gtx_1660_stable",
         ],
         per_test_modifications = {
+            "webgpu_blink_web_tests": targets.remove(
+                reason = "crbug.com/570690123",
+            ),
+            "webgpu_blink_web_tests_with_backend_validation": targets.remove(
+                reason = "crbug.com/570690123",
+            ),
             "webgpu_cts_fxc_with_validation_tests": targets.remove(
                 reason = [
                     "Disable testing with validation on x86 where they frequently OOM.",
                     "See crbug.com/1444815.",
                 ],
+            ),
+            "webgpu_swiftshader_blink_web_tests": targets.remove(
+                reason = "crbug.com/570690123",
+            ),
+            "webgpu_swiftshader_blink_web_tests_with_backend_validation": targets.remove(
+                reason = "crbug.com/570690123",
             ),
         },
     ),
@@ -3454,11 +3466,23 @@ ci.thin_tester(
             "win10_nvidia_gtx_1660_stable",
         ],
         per_test_modifications = {
+            "webgpu_blink_web_tests": targets.remove(
+                reason = "crbug.com/570690123",
+            ),
+            "webgpu_blink_web_tests_with_backend_validation": targets.remove(
+                reason = "crbug.com/570690123",
+            ),
             "webgpu_cts_fxc_with_validation_tests": targets.remove(
                 reason = [
                     "Disable testing with validation on x86 where they frequently OOM.",
                     "See crbug.com/1444815.",
                 ],
+            ),
+            "webgpu_swiftshader_blink_web_tests": targets.remove(
+                reason = "crbug.com/570690123",
+            ),
+            "webgpu_swiftshader_blink_web_tests_with_backend_validation": targets.remove(
+                reason = "crbug.com/570690123",
             ),
         },
     ),
