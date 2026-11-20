@@ -791,35 +791,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="ContentSuggestions.Feed.{PlayType}Video.PlayError"
-    enum="FeedVideoPlayError" expires_after="2023-01-20">
-  <owner>jianli@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: records errors occurred during the video playing, in {PlayType}
-    mode. Upon the successful initialization of the embedded player, the video
-    starts to play and any error occurs since then is reported here.
-  </summary>
-  <token key="PlayType">
-    <variant name="AutoplayMuted"/>
-    <variant name="NormalUnmuted"/>
-  </token>
-</histogram>
-
-<histogram name="ContentSuggestions.Feed.{PlayType}Video.PlayEvent"
-    enum="FeedVideoPlayEvent" expires_after="2023-01-20">
-  <owner>jianli@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: records events triggered during the video playing, in {PlayType}
-    mode.
-  </summary>
-  <token key="PlayType">
-    <variant name="AutoplayMuted"/>
-    <variant name="NormalUnmuted"/>
-  </token>
-</histogram>
-
 <histogram name="ContentSuggestions.{FeedType}.Activity"
     enum="FeedActivityBucket" expires_after="2025-09-28">
   <owner>guiperez@google.com</owner>
