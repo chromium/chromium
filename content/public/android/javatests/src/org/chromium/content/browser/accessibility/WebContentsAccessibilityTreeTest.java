@@ -1144,8 +1144,16 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    @DisableFeatures(AccessibilityFeatures.ACCESSIBILITY_MAP_TO_NEW_CLASS_NAMES)
     public void test_ariaTerm() {
         performAriaTest("aria-term.html");
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(AccessibilityFeatures.ACCESSIBILITY_MAP_TO_NEW_CLASS_NAMES)
+    public void test_ariaTerm_newClass() {
+        performAriaTest("aria-term.html", "aria-term-new-class-feature");
     }
 
     @Test
@@ -2299,8 +2307,16 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    @DisableFeatures(AccessibilityFeatures.ACCESSIBILITY_MAP_TO_NEW_CLASS_NAMES)
     public void test_dd() {
         performHtmlTest("dd.html");
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(AccessibilityFeatures.ACCESSIBILITY_MAP_TO_NEW_CLASS_NAMES)
+    public void test_dd_newClass() {
+        performHtmlTest("dd.html", "dd-new-class-feature");
     }
 
     @Test
@@ -2323,8 +2339,16 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    @DisableFeatures(AccessibilityFeatures.ACCESSIBILITY_MAP_TO_NEW_CLASS_NAMES)
     public void test_dfn() {
         performHtmlTest("dfn.html");
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(AccessibilityFeatures.ACCESSIBILITY_MAP_TO_NEW_CLASS_NAMES)
+    public void test_dfn_newClass() {
+        performHtmlTest("dfn.html", "dfn-new-class-feature");
     }
 
     @Test
@@ -2347,8 +2371,16 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    @DisableFeatures(AccessibilityFeatures.ACCESSIBILITY_MAP_TO_NEW_CLASS_NAMES)
     public void test_dl() {
         performHtmlTest("dl.html");
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(AccessibilityFeatures.ACCESSIBILITY_MAP_TO_NEW_CLASS_NAMES)
+    public void test_dl_newClass() {
+        performHtmlTest("dl.html", "dl-new-class-feature");
     }
 
     @Test

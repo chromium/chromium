@@ -2582,6 +2582,7 @@ data/accessibility/aria/aria-term-expected-auralinux.txt
 data/accessibility/aria/aria-term-expected-blink.txt
 data/accessibility/aria/aria-term-expected-mac.txt
 data/accessibility/aria/aria-term-expected-win.txt
+data/accessibility/aria/aria-term-new-class-feature-expected-android-external.txt
 data/accessibility/aria/aria-term.html
 data/accessibility/aria/aria-textbox-expected-android-assist-data.txt
 data/accessibility/aria/aria-textbox-expected-android-external.txt
@@ -4809,6 +4810,7 @@ data/accessibility/html/dd-expected-fuchsia.txt
 data/accessibility/html/dd-expected-mac.txt
 data/accessibility/html/dd-expected-uia-win.txt
 data/accessibility/html/dd-expected-win.txt
+data/accessibility/html/dd-new-class-feature-expected-android-external.txt
 data/accessibility/html/dd.html
 data/accessibility/html/del-expected-android-assist-data.txt
 data/accessibility/html/del-expected-android-external.txt
@@ -4853,6 +4855,7 @@ data/accessibility/html/dfn-expected-fuchsia.txt
 data/accessibility/html/dfn-expected-mac.txt
 data/accessibility/html/dfn-expected-uia-win.txt
 data/accessibility/html/dfn-expected-win.txt
+data/accessibility/html/dfn-new-class-feature-expected-android-external.txt
 data/accessibility/html/dfn.html
 data/accessibility/html/dialog-expected-android-assist-data.txt
 data/accessibility/html/dialog-expected-android-external.txt
@@ -4890,6 +4893,7 @@ data/accessibility/html/dl-expected-fuchsia.txt
 data/accessibility/html/dl-expected-mac.txt
 data/accessibility/html/dl-expected-uia-win.txt
 data/accessibility/html/dl-expected-win.txt
+data/accessibility/html/dl-new-class-feature-expected-android-external.txt
 data/accessibility/html/dl.html
 data/accessibility/html/dt-expected-android-assist-data.txt
 data/accessibility/html/dt-expected-android-external.txt
