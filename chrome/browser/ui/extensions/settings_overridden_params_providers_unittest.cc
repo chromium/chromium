@@ -36,7 +36,7 @@
 #include "chrome/browser/extensions/settings_api_helpers.h"
 #include "chrome/browser/image_fetcher/image_fetcher_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_key.h"
+#include "chrome/browser/profiles/profile_key.h"  // IWYU pragma: keep
 #include "chrome/browser/resources_util.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/extensions/controlled_home_dialog_controller.h"
@@ -61,6 +61,7 @@
 #include "components/regional_capabilities/regional_capabilities_switches.h"
 #include "components/search_engines/search_engines_test_util.h"
 #include "components/search_engines/template_url.h"
+#include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_data_util.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/sync/model/string_ordinal.h"
@@ -72,6 +73,7 @@
 #include "extensions/browser/extension_prefs_helper.h"
 #include "extensions/browser/extension_prefs_helper_factory.h"
 #include "extensions/browser/extension_registrar.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/install_flag.h"
 #include "extensions/browser/permissions/permissions_updater.h"
 #include "extensions/browser/ui_util.h"
@@ -79,6 +81,8 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/common/extension_id.h"
+#include "extensions/common/extension_set.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "skia/ext/image_operations.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -149,23 +153,7 @@ class SettingsOverriddenParamsProvidersUnitTest
     SetUpExtensionService();
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-    auto* image_fetcher_service = static_cast<MockImageFetcherService*>(
-        ImageFetcherServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-            profile()->GetProfileKey(),
-            base::BindRepeating(
-                [](SimpleFactoryKey* key) -> std::unique_ptr<KeyedService> {
-                  return std::make_unique<MockImageFetcherService>();
-                })));
-    ASSERT_TRUE(image_fetcher_service);
-    EXPECT_CALL(*image_fetcher_service->mock_image_fetcher(),
-                FetchImageAndData_(_, _, _, _))
-        .WillRepeatedly([](const GURL&,
-                           image_fetcher::ImageDataFetcherCallback*,
-                           image_fetcher::ImageFetcherCallback* callback,
-                           image_fetcher::ImageFetcherParams) {
-          std::move(*callback).Run(gfx::Image(),
-                                   image_fetcher::RequestMetadata());
-        });
+    SetUpMockImageFetcherForProfile(profile());
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
     search_test_utils::WaitForTemplateURLServiceToLoad(GetTemplateURLService());
@@ -214,10 +202,12 @@ class SettingsOverriddenParamsProvidersUnitTest
             /*incognito_pref_store=*/false));
   }
 
-  // Installs `extension` with active permissions granted and advances mock time
-  // so sequential extension installations have strictly increasing timestamps.
+  // Installs `extension` with active permissions granted, advances mock time so
+  // sequential installations have strictly increasing timestamps, and returns
+  // the enabled instance from the registry.
   const extensions::Extension* InstallExtension(
       scoped_refptr<const extensions::Extension> extension) {
+    const extensions::ExtensionId id = extension->id();
     task_environment()->FastForwardBy(base::Seconds(1));
     extensions::PermissionsUpdater(profile()).GrantActivePermissions(
         extension.get());
@@ -225,7 +215,10 @@ class SettingsOverriddenParamsProvidersUnitTest
         extension.get(), syncer::StringOrdinal::CreateInitialOrdinal(),
         extensions::kInstallFlagInstallImmediately);
     task_environment()->FastForwardBy(base::Seconds(1));
-    return extension.get();
+    const extensions::Extension* enabled_extension =
+        registry()->enabled_extensions().GetByID(id);
+    CHECK(enabled_extension);
+    return enabled_extension;
   }
 
   std::string GenerateUniqueExtensionId(std::string_view seed) {
@@ -246,21 +239,47 @@ class SettingsOverriddenParamsProvidersUnitTest
                             std::move(chrome_url_overrides))
             .Build();
 
-    InstallExtension(extension);
-    EXPECT_EQ(extension, ExtensionUrlOverrides::GetExtensionControllingURL(
-                             chrome::ChromeUINewTabURLAsGURL(), profile()));
+    const extensions::Extension* installed_extension =
+        InstallExtension(std::move(extension));
+    EXPECT_EQ(installed_extension,
+              ExtensionUrlOverrides::GetExtensionControllingURL(
+                  chrome::ChromeUINewTabURLAsGURL(), profile()));
 
-    return extension.get();
+    return installed_extension;
   }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  // Installs the mock image fetcher on the given profile.
+  void SetUpMockImageFetcherForProfile(Profile* target_profile) {
+    CHECK(target_profile);
+    auto* image_fetcher_service = static_cast<MockImageFetcherService*>(
+        ImageFetcherServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+            target_profile->GetProfileKey(),
+            base::BindRepeating(
+                [](SimpleFactoryKey* key) -> std::unique_ptr<KeyedService> {
+                  return std::make_unique<MockImageFetcherService>();
+                })));
+    CHECK(image_fetcher_service);
+    EXPECT_CALL(*image_fetcher_service->mock_image_fetcher(),
+                FetchImageAndData_(_, _, _, _))
+        .WillRepeatedly([](const GURL&,
+                           image_fetcher::ImageDataFetcherCallback*,
+                           image_fetcher::ImageFetcherCallback* callback,
+                           image_fetcher::ImageFetcherParams) {
+          std::move(*callback).Run(gfx::Image(),
+                                   image_fetcher::RequestMetadata());
+        });
+  }
+
   // Makes asynchronous parameter collection synchronous for testing, by waiting
   // in a run loop for icon resource fetching to complete.
   std::optional<ExtensionSettingsOverriddenDialog::Params>
-  GetSearchOverriddenParamsSync(Profile* target_profile = nullptr) {
-    if (!target_profile) {
-      target_profile = profile();
-    }
+  GetSearchOverriddenParamsSync() {
+    return GetSearchOverriddenParamsSync(profile());
+  }
+
+  std::optional<ExtensionSettingsOverriddenDialog::Params>
+  GetSearchOverriddenParamsSync(Profile* target_profile) {
     std::optional<ExtensionSettingsOverriddenDialog::Params> result;
     base::RunLoop run_loop;
     settings_overridden_params::GetSearchOverriddenParamsThenRun(
@@ -298,9 +317,11 @@ class SettingsOverriddenParamsProvidersUnitTest
       search_provider.Set("name", name);
       search_provider.Set("keyword", keyword);
       search_provider.Set("encoding", "UTF-8");
-      search_provider.Set("favicon_url",
-                          favicon_url ? favicon_url->spec()
-                                      : "https://example.com/favicon.ico");
+    }
+    if (favicon_url) {
+      search_provider.Set("favicon_url", favicon_url->spec());
+    } else if (!prepopulated_id) {
+      search_provider.Set("favicon_url", "https://example.com/favicon.ico");
     }
 
     extensions::ExtensionBuilder builder(name);
@@ -1346,13 +1367,14 @@ TEST_F(ExtensionControllingSearchExplicitChoiceParamsUnitTest,
   const TemplateURL* const primary_turl = FindPrepopulatedTemplateURL();
   ASSERT_TRUE(primary_turl);
 
+  const GURL manifest_favicon_url("https://example.com/manifest_favicon.ico");
   const extensions::Extension* extension = InstallCustomSearchExtension(
       "PrimaryPrepopulatedExtension",
       base::UTF16ToUTF8(primary_turl->keyword()), primary_turl->url(),
-      primary_turl->prepopulate_id(),
-      GURL("https://example.com/manifest_favicon.ico"));
+      primary_turl->prepopulate_id(), manifest_favicon_url);
   ASSERT_TRUE(extension);
 
+  ExpectNoIconFetch(manifest_favicon_url);
   const ui::ImageModel expected_secondary_icon =
       SetUpExpectedEngineIcon(*secondary_turl);
   const ui::ImageModel expected_primary_icon =
