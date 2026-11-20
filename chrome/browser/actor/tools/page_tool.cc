@@ -414,7 +414,13 @@ void PageTool::Validate(ToolCallback callback) {
 void PageTool::OnInitializeToolComplete(ToolCallback callback,
                                         mojom::InitializeToolResultPtr result) {
   if (result->is_error_result()) {
-    std::move(callback).Run(std::move(result->get_error_result()));
+    mojom::ActionResultPtr error_result = std::move(result->get_error_result());
+    // Only ExecuteJsToolHost accepts and sanitizes `execute_js_response`.
+    // TODO(crbug.com/574534362): Enforce per-tool response fields in the type
+    // system (e.g., via a Mojom union or per-tool IPC return types) instead of
+    // stripping unrelated fields here.
+    error_result->execute_js_response.reset();
+    std::move(callback).Run(std::move(error_result));
     return;
   }
   CHECK(result->is_success_point());
@@ -762,6 +768,11 @@ void PageTool::FinishInvoke(mojom::ActionResultPtr result) {
 
   timeout_timer_.Stop();
   frame_change_observer_.reset();
+
+  // Only ExecuteJsToolHost accepts and sanitizes `execute_js_response`.
+  // TODO(crbug.com/574534362): Enforce per-tool response fields in the type
+  // system instead of stripping unrelated fields here.
+  result->execute_js_response.reset();
 
   std::move(invoke_callback_).Run(std::move(result));
 

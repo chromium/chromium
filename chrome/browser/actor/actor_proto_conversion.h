@@ -193,7 +193,10 @@ void CopyScriptToolResults(
 }
 
 // Copies ExecuteJS action results in `action_results` to the input proto. For a
-// failed action, copies the JavaScript error the renderer reported, if any.
+// failed action, copies the JavaScript error and/or console output the renderer
+// reported, if any. Only ExecuteJsToolHost retains `execute_js_response` (after
+// `ExecuteJsToolHost::SanitizeResponse()`); non-ExecuteJS renderer tool hosts
+// strip it at the IPC boundary.
 template <typename T>
 void CopyExecuteJsResults(
     T& proto,
@@ -201,15 +204,24 @@ void CopyExecuteJsResults(
   for (size_t i = 0; i < action_results.size(); ++i) {
     const mojom::ActionResult& result = *action_results[i].result;
     const auto& response = result.execute_js_response;
+    const bool has_console_logs = response && !response->console_logs.empty();
     if (IsOk(result) && response) {
       auto* execute_js_result = proto.add_execute_js_results();
       execute_js_result->set_index_of_execute_js_action(i);
       execute_js_result->set_result(response->result);
       execute_js_result->set_truncated(response->truncated);
-    } else if (response && response->js_error_message) {
+      if (has_console_logs) {
+        execute_js_result->set_console_logs(response->console_logs);
+      }
+    } else if (response && (response->js_error_message || has_console_logs)) {
       auto* execute_js_result = proto.add_execute_js_results();
       execute_js_result->set_index_of_execute_js_action(i);
-      execute_js_result->set_js_error_message(*response->js_error_message);
+      if (response->js_error_message) {
+        execute_js_result->set_js_error_message(*response->js_error_message);
+      }
+      if (has_console_logs) {
+        execute_js_result->set_console_logs(response->console_logs);
+      }
     }
   }
 }

@@ -232,6 +232,14 @@ struct ExecuteJsResponse {
   // set, `result` is empty. Only set by the renderer, when it can describe the
   // error. Mirrors ExecuteJsResult.js_error_message in actions_data.proto.
   string? js_error_message;
+
+  // Human-readable console output (`console.{log,info,warn,error}`) captured
+  // inside the actor's isolated world while the script ran. Empty when no
+  // console output was captured. Capped at `actor::kExecuteJsMaxConsoleLines`
+  // lines and `actor::kExecuteJsMaxConsoleBytes` bytes. Diagnostic only;
+  // callers must not parse this string programmatically. Mirrors
+  // ExecuteJsResult.console_logs in actions_data.proto.
+  string console_logs;
 };
 
 // Represents the outcome of tool initialization.
@@ -316,8 +324,9 @@ struct ActionResult {
   ScriptToolResponse? script_tool_response;
 
   // If the action is execute_js, provides the result of that execution. This
-  // is only populated if the execution was successful, or if it failed with a
-  // JavaScript error that the renderer could describe.
+  // is populated when the execution succeeded, failed with a JavaScript error
+  // that the renderer could describe, or captured console output before
+  // failing or timing out.
   ExecuteJsResponse? execute_js_response;
 
   // Time at which execution of the action was complete and page

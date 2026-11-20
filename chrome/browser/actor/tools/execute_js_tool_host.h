@@ -11,6 +11,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/tools/tool.h"
+#include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "components/actor/public/mojom/actor_types.mojom-forward.h"
 #include "components/tabs/public/tab_interface.h"
@@ -46,6 +47,10 @@ class ExecuteJsToolHost : public Tool, content::WebContentsObserver {
   void UpdateTaskBeforeInvoke(ActorTask& task,
                               ToolCallback callback) const override;
   ActorSurfaceHandle GetTargetActorSurface() const override;
+
+  // Enforces UTF-8 validity and size/line caps on a renderer-supplied response
+  // before forwarding it to callers or protos.
+  static void SanitizeResponse(mojom::ExecuteJsResponse& response);
 
  private:
   enum class Lifecycle { kInitial, kInvokeSent, kDone };

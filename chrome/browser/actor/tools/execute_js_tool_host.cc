@@ -5,6 +5,7 @@
 #include "chrome/browser/actor/tools/execute_js_tool_host.h"
 
 #include <algorithm>
+#include <cstddef>
 #include <string>
 #include <utility>
 
@@ -16,6 +17,7 @@
 #include "chrome/browser/actor/aggregated_journal_render_frame_binder.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor/actor_constants.h"
+#include "components/actor/core/actor_util.h"
 #include "components/actor/core/aggregated_journal.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/optimization_guide/content/browser/page_content_proto_util.h"
@@ -182,6 +184,45 @@ ActorSurfaceHandle ExecuteJsToolHost::GetTargetActorSurface() const {
   return actor_surface_handle_;
 }
 
+// static
+void ExecuteJsToolHost::SanitizeResponse(mojom::ExecuteJsResponse& response) {
+  if (!base::IsStringUTF8AllowingNoncharacters(response.result)) {
+    response.result.clear();
+    response.truncated = false;
+  } else if (response.result.size() > kExecuteJsMaxResultBytes) {
+    TruncateValidUtf8ToByteSize(response.result, kExecuteJsMaxResultBytes);
+    response.truncated = true;
+  }
+  if (response.js_error_message) {
+    if (!base::IsStringUTF8AllowingNoncharacters(*response.js_error_message)) {
+      response.js_error_message.reset();
+    } else if (response.js_error_message->size() >
+               kExecuteJsMaxErrorMessageBytes) {
+      TruncateValidUtf8ToByteSize(*response.js_error_message,
+                                  kExecuteJsMaxErrorMessageBytes);
+    }
+  }
+  if (!response.console_logs.empty()) {
+    if (!base::IsStringUTF8AllowingNoncharacters(response.console_logs)) {
+      response.console_logs.clear();
+    } else {
+      if (response.console_logs.size() > kExecuteJsMaxConsoleBytes) {
+        TruncateValidUtf8ToByteSize(response.console_logs,
+                                    kExecuteJsMaxConsoleBytes);
+      }
+      size_t line_breaks = 0;
+      for (size_t pos = 0;
+           (pos = response.console_logs.find('\n', pos)) != std::string::npos;
+           ++pos) {
+        if (++line_breaks == kExecuteJsMaxConsoleLines) {
+          response.console_logs.resize(pos);
+          break;
+        }
+      }
+    }
+  }
+}
+
 void ExecuteJsToolHost::OnToolInvoked(mojom::ActionResultPtr result) {
   if (lifecycle_ == Lifecycle::kDone) {
     return;
@@ -191,12 +232,10 @@ void ExecuteJsToolHost::OnToolInvoked(mojom::ActionResultPtr result) {
   auto callback = std::move(tool_done_callback_);
   TearDown();
 
-  // The renderer already truncates long results, but don't rely on it.
-  if (mojom::ExecuteJsResponse* response = result->execute_js_response.get();
-      response && response->result.size() > kExecuteJsMaxResultBytes) {
-    response->result = std::string(base::TruncateUTF8ToByteSize(
-        response->result, kExecuteJsMaxResultBytes));
-    response->truncated = true;
+  // The renderer already truncates long results and console output, but don't
+  // rely on it.
+  if (mojom::ExecuteJsResponse* response = result->execute_js_response.get()) {
+    SanitizeResponse(*response);
   }
 
   if (callback) {

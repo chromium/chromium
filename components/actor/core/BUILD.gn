@@ -93,6 +93,7 @@ source_set("core") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "actor_util_unittest.cc",
     "aggregated_journal_serializer_unittest.cc",
     "aggregated_journal_unittest.cc",
     "page_stability_monitor_delegate_unittest.cc",

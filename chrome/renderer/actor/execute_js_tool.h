@@ -6,6 +6,7 @@
 #define CHROME_RENDERER_ACTOR_EXECUTE_JS_TOOL_H_
 
 #include <cstdint>
+#include <memory>
 #include <string>
 
 #include "base/memory/weak_ptr.h"
@@ -18,6 +19,8 @@ class RenderFrame;
 }
 
 namespace actor {
+
+class ConsoleCapture;
 
 // A tool that executes a dynamic JavaScript code string in the target frame,
 // in the actor's isolated world.
@@ -42,6 +45,11 @@ class ExecuteJsTool : public ToolBase {
   void OnPromiseTimeout();
 
   mojom::ExecuteJsActionPtr action_;
+
+  // Active console capture for the synchronous portion of Execute().
+  // Transferred to PendingPromise if the script returns a pending promise, or
+  // reset on completion, Cancel(), or destruction.
+  std::unique_ptr<ConsoleCapture> console_capture_;
 
   // While waiting for a promise the script returned, the key of the pending
   // wait in the registry the promise reactions look it up in. 0 otherwise.
