@@ -9,7 +9,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/webui_url_constants.h"
-#include "chrome/browser/ui/webui/ash/office_fallback/office_fallback.mojom.h"
+#include "ash/webui/common/mojom/office_fallback.mojom.h"
 #include "chrome/browser/ui/webui/ash/office_fallback/office_fallback_page_handler.h"
 #include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"

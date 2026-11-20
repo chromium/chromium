@@ -50,6 +50,12 @@ mojom("webui_syslog_emitter") {
   webui_module_path = "/"
 }
 
+mojom("office_fallback") {
+  sources = [ "office_fallback.mojom" ]
+  public_deps = [ "//mojo/public/mojom/base" ]
+  webui_module_path = "/"
+}
+
 mojom("sea_pen") {
   webui_module_path = "/"
   sources = [

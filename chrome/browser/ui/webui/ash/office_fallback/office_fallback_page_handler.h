@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_OFFICE_FALLBACK_OFFICE_FALLBACK_PAGE_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_OFFICE_FALLBACK_OFFICE_FALLBACK_PAGE_HANDLER_H_
 
+#include "ash/webui/common/mojom/office_fallback.mojom.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/webui/ash/office_fallback/office_fallback.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
