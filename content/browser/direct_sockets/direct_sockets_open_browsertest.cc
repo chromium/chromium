@@ -725,6 +725,58 @@ IN_PROC_BROWSER_TEST_P(DirectSocketsSharedWorkerExposureBrowserTest, Exposure) {
                 .Set("TCPServerSocket", expected_typeof));
 }
 
+IN_PROC_BROWSER_TEST_P(DirectSocketsSharedWorkerExposureBrowserTest,
+                       DataUrlSharedWorkerThrowsNotAllowedError) {
+  if (!ShouldBeExposed()) {
+    return;
+  }
+
+  // Spawns a data URL SharedWorker from an isolated secure context (so the
+  // worker inherits a secure context and exposes the Direct Sockets
+  // constructors on `self`, despite having an opaque origin) and verifies that
+  // constructing `TCPSocket`, `UDPSocket`, and `TCPServerSocket` synchronously
+  // throws `NotAllowedError` rather than binding `DirectSocketsService` and
+  // triggering a `mojo::ReportBadMessage` renderer kill.
+  static constexpr char kDataSharedWorkerScript[] = R"(
+    new Promise((resolve, reject) => {
+      const code = `
+        onconnect = e => {
+          const port = e.ports[0];
+          port.start();
+          const check = fn => {
+            try {
+              fn();
+              return 'unexpected-success';
+            } catch (err) {
+              return err.name;
+            }
+          };
+          port.postMessage({
+            typeofTcp: typeof TCPSocket,
+            tcpResult: check(() => new TCPSocket('127.0.0.1', 80)),
+            udpResult: check(() => new UDPSocket({
+              remoteAddress: '127.0.0.1',
+              remotePort: 80,
+            })),
+            serverResult: check(() => new TCPServerSocket('127.0.0.1')),
+          });
+        };
+      `;
+      const worker = new SharedWorker(
+          'data:text/javascript,' + encodeURIComponent(code));
+      worker.onerror = () => reject('worker-error');
+      worker.port.onmessage = e => resolve(e.data);
+    });
+  )";
+
+  EXPECT_EQ(EvalJs(shell(), kDataSharedWorkerScript),
+            base::DictValue()
+                .Set("typeofTcp", "function")
+                .Set("tcpResult", "NotAllowedError")
+                .Set("udpResult", "NotAllowedError")
+                .Set("serverResult", "NotAllowedError"));
+}
+
 using DirectSocketsServiceWorkerExposureBrowserTest =
     DirectSocketsWorkerExposureBrowserTest<WorkerType::kService>;
 

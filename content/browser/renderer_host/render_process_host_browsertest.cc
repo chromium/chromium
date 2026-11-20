@@ -31,6 +31,7 @@
 #include "base/threading/hang_watcher.h"
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
+#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/viz/host/gpu_client.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
@@ -84,10 +85,15 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "services/network/public/cpp/cross_origin_embedder_policy.h"
+#include "services/network/public/cpp/document_isolation_policy.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/renderer_process_security_state.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/features.h"
@@ -3363,4 +3369,29 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTestBase, StartupTimings) {
     EXPECT_LE(respawn_timings.launch_complete, rph->GetProcessLaunchedTime());
   }
 }
+
+IN_PROC_BROWSER_TEST_F(RenderProcessHostTestBase,
+                       BindCacheStorageOpaqueStorageKeyDropped) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("/simple_page.html")));
+
+  RenderProcessHost* rph =
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess();
+  ASSERT_TRUE(rph);
+
+  mojo::Remote<blink::mojom::CacheStorage> cache_storage;
+  const storage::BucketLocator opaque_bucket =
+      storage::BucketLocator::ForDefaultBucket(
+          blink::StorageKey::CreateFirstParty(url::Origin()));
+  rph->BindCacheStorage(network::CrossOriginEmbedderPolicy(),
+                        /*coep_reporter_remote=*/mojo::NullRemote(),
+                        network::DocumentIsolationPolicy(),
+                        /*dip_reporter_remote=*/mojo::NullRemote(),
+                        opaque_bucket,
+                        cache_storage.BindNewPipeAndPassReceiver());
+  cache_storage.FlushForTesting();
+  EXPECT_FALSE(cache_storage.is_connected());
+}
+
 }  // namespace content

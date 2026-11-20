@@ -840,7 +840,8 @@ bool ServiceWorkerGlobalScope::CrossOriginIsolatedCapability() const {
 }
 
 bool ServiceWorkerGlobalScope::IsIsolatedContext() const {
-  return Agent::IsIsolatedContext();
+  const SecurityOrigin* origin = GetSecurityOrigin();
+  return Agent::IsIsolatedContext() && origin && !origin->IsOpaque();
 }
 
 void ServiceWorkerGlobalScope::importScripts(

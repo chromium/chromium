@@ -2389,6 +2389,12 @@ void RenderProcessHostImpl::BindCacheStorage(
     const storage::BucketLocator& bucket_locator,
     mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M152);
+  if (bucket_locator.storage_key.origin().opaque()) {
+    // Opaque origins aren't valid for CacheStorage access (and serializing an
+    // opaque StorageKey in QuotaDatabase hits a DCHECK), so drop the receiver
+    // matching BindIndexedDB() below.
+    return;
+  }
 
   storage_partition_impl_->GetCacheStorageControl()->AddReceiver(
       cross_origin_embedder_policy, std::move(coep_reporter_remote),

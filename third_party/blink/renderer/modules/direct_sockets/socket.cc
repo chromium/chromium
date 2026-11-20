@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/scheduler/public/scheduling_policy.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
@@ -99,6 +100,13 @@ bool Socket::CheckContextAndPermissions(ScriptState* script_state,
   }
 
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
+  if (!execution_context->GetSecurityOrigin() ||
+      execution_context->GetSecurityOrigin()->IsOpaque()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotAllowedError,
+        "Direct Sockets are not allowed in opaque-origin contexts.");
+    return false;
+  }
   if (execution_context->IsIsolatedContext()) {
     if (!execution_context->CrossOriginIsolatedCapability()) {
       exception_state.ThrowDOMException(
