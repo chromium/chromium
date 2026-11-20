@@ -276,9 +276,14 @@ bool ManifestAssetManager::ComponentContext::SetUninstallComplete() {
   }
   install_dir_ = std::nullopt;
   version_ = std::nullopt;
+  const Manifest::UninstallReason reason =
+      std::exchange(uninstall_reason_, Manifest::UninstallReason::kUnknown);
   // Keep `kNeverInstalled` when cleaning up incomplete registrations.
   if (install_state_ == OnDeviceModelControl::ModelInstallState::kInstalled) {
-    install_state_ = OnDeviceModelControl::ModelInstallState::kUninstalled;
+    install_state_ =
+        reason == Manifest::UninstallReason::kObsolete
+            ? OnDeviceModelControl::ModelInstallState::kUninstalledObsolete
+            : OnDeviceModelControl::ModelInstallState::kUninstalled;
     return true;
   }
   return false;
@@ -326,13 +331,15 @@ ManifestAssetManager::ComponentContext::SetReady(
                        OnDeviceModelControl::ModelInstallState::kInstalled);
 }
 
-void ManifestAssetManager::ComponentContext::SetUninstalling() {
+void ManifestAssetManager::ComponentContext::SetUninstalling(
+    Manifest::UninstallReason reason) {
   CHECK(state_ != ComponentState::kRegistering &&
         state_ != ComponentState::kUninstalling);
   state_ = ComponentState::kUninstalling;
   requested_version_ = kUninstallingVersion;
   install_dir_ = std::nullopt;
   version_ = std::nullopt;
+  uninstall_reason_ = reason;
 }
 
 void ManifestAssetManager::ComponentContext::SetOrphaned(
@@ -470,7 +477,10 @@ ManifestAssetManager::AssetLedger::GetModelInstallState(
     if (context.install_state() == ModelInstallState::kInstalled) {
       return ModelInstallState::kInstalled;
     }
-    if (context.install_state() == ModelInstallState::kUninstalled) {
+    if (context.install_state() == ModelInstallState::kUninstalledObsolete) {
+      result = ModelInstallState::kUninstalledObsolete;
+    } else if (context.install_state() == ModelInstallState::kUninstalled &&
+               result == ModelInstallState::kNeverInstalled) {
       result = ModelInstallState::kUninstalled;
     }
   }
@@ -904,7 +914,7 @@ void ManifestAssetManager::RecordEvictableAssetsCount() const {
       evictable_assets_count);
 }
 
-void ManifestAssetManager::RecordUninstallReason(
+Manifest::UninstallReason ManifestAssetManager::RecordUninstallReason(
     const ComponentContext& context,
     const proto::OnDemandComponent* component) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -920,6 +930,7 @@ void ManifestAssetManager::RecordUninstallReason(
       "OptimizationGuide.ModelExecution.OnDeviceModelUninstallReason." +
           ConvertComponentKeyToUmaModelName(context.asset_id()),
       log_reason);
+  return log_reason;
 }
 
 void ManifestAssetManager::UpdateRegistrations() {
@@ -950,8 +961,7 @@ void ManifestAssetManager::UpdateRegistrations() {
         factory_->manifest().GetAssetByPublicKey(public_key);
     if (!ShouldInstallOrRetain(context, component)) {
       if (context.NeedsCleanup()) {
-        RecordUninstallReason(context, component);
-        context.SetUninstalling();
+        context.SetUninstalling(RecordUninstallReason(context, component));
 
         keys_to_save.push_back(public_key);
         // Uninstall the component which will delete the model files, after a

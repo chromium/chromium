@@ -228,7 +228,7 @@ class ManifestAssetManager : public UsageTracker::Observer,
     // Resets the context after the component was uninstalled, whether by this
     // manager or by something else (e.g. the component updater unregistered
     // it). A registration in flight is left to complete. Returns whether
-    // `install_state_` transitioned from `kInstalled` to `kUninstalled`.
+    // `install_state_` transitioned out of `kInstalled`.
     bool SetUninstallComplete();
     void SetRegistering(const std::string& target_version);
     void SetRegistered();
@@ -237,7 +237,7 @@ class ManifestAssetManager : public UsageTracker::Observer,
     OnDeviceModelControl::ModelInstallState SetReady(
         const base::FilePath& install_dir,
         const base::Version& version);
-    void SetUninstalling();
+    void SetUninstalling(Manifest::UninstallReason reason);
     void SetOrphaned(const std::optional<base::Version>& version);
 
    private:
@@ -251,6 +251,8 @@ class ManifestAssetManager : public UsageTracker::Observer,
     ComponentState state_ = ComponentState::kNotRegistered;
     std::optional<base::FilePath> install_dir_;
     std::optional<base::Version> version_;
+    Manifest::UninstallReason uninstall_reason_ =
+        Manifest::UninstallReason::kUnknown;
   };
 
   // Persists component contexts and base model installation history in prefs.
@@ -333,8 +335,9 @@ class ManifestAssetManager : public UsageTracker::Observer,
   bool IsEvictionEnabled() const;
 
   void RecordEvictableAssetsCount() const;
-  void RecordUninstallReason(const ComponentContext& context,
-                             const proto::OnDemandComponent* component) const;
+  Manifest::UninstallReason RecordUninstallReason(
+      const ComponentContext& context,
+      const proto::OnDemandComponent* component) const;
 
   // Updates each component to move towards it's intended state.
   // May defer actions due to pending operations, like disk space evaluation

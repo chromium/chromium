@@ -112,15 +112,14 @@ void SetPageActionState(PrefService& local_state,
   }
 }
 
-// Returns true if an earlier foundational model was ever installed on device.
-// TODO(crbug.com/581470910): Distinguish manifest-driven model upgrades from
-// prior installs that were evicted or user-removed long ago.
-bool HasPriorFoundationalModel(const OnDeviceModelControl& model_control) {
+// Returns true if an earlier foundational model is installed or obsolete.
+bool HasReplacedFoundationalModel(const OnDeviceModelControl& model_control) {
   using ModelInstallState = OnDeviceModelControl::ModelInstallState;
   for (OnDeviceBaseModel model :
        {OnDeviceBaseModel::kV3NanoCpu, OnDeviceBaseModel::kV3NanoGpu}) {
-    if (model_control.GetModelInstallState(model) !=
-        ModelInstallState::kNeverInstalled) {
+    const ModelInstallState state = model_control.GetModelInstallState(model);
+    if (state == ModelInstallState::kInstalled ||
+        state == ModelInstallState::kUninstalledObsolete) {
       return true;
     }
   }
@@ -196,7 +195,7 @@ void AIPageActionController::OnModelSessionCreated(OnDeviceBaseModel base_model,
 
   SetPageActionState(*local_state_, base_model, PageActionState::kShown);
 
-  const bool is_updated = HasPriorFoundationalModel(*model_control_);
+  const bool is_updated = HasReplacedFoundationalModel(*model_control_);
   const std::u16string chip_label =
       l10n_util::GetStringUTF16(is_updated ? IDS_ON_DEVICE_AI_UPDATED_CHIP_LABEL
                                            : IDS_ON_DEVICE_AI_READY_TITLE);
@@ -237,7 +236,7 @@ void AIPageActionController::ShowBubble(actions::ActionItem* action_item) {
   }
 
   chip_collapse_timer_.Stop();
-  const bool is_updated = HasPriorFoundationalModel(*model_control_);
+  const bool is_updated = HasReplacedFoundationalModel(*model_control_);
   const std::u16string title = l10n_util::GetStringUTF16(
       is_updated ? IDS_ON_DEVICE_AI_UPDATED_BUBBLE_TITLE
                  : IDS_ON_DEVICE_AI_READY_TITLE);

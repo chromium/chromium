@@ -134,6 +134,15 @@ class AIPageActionControllerBrowserTest : public InProcessBrowserTest {
     });
   }
 
+  void SeedNanoV3State(OnDeviceModelControl::ModelInstallState state) {
+    ScopedDictPrefUpdate(g_browser_process->local_state(),
+                         optimization_guide::model_execution::prefs::
+                             localstate::kManifestAssetLedger)
+        ->Set("nano_key", base::DictValue()
+                              .Set("asset_id", "nano_v3_gpu_component")
+                              .Set("install_state", static_cast<int>(state)));
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -167,16 +176,8 @@ IN_PROC_BROWSER_TEST_F(AIPageActionControllerBrowserTest, AddedChipAndBubble) {
 
 IN_PROC_BROWSER_TEST_F(AIPageActionControllerBrowserTest,
                        UpdatedChipAndBubble) {
-  ScopedDictPrefUpdate(g_browser_process->local_state(),
-                       optimization_guide::model_execution::prefs::localstate::
-                           kManifestAssetLedger)
-      ->Set(
-          "nano_key",
-          base::DictValue()
-              .Set("asset_id", "nano_v3_gpu_component")
-              .Set("install_state",
-                   static_cast<int>(
-                       OnDeviceModelControl::ModelInstallState::kUninstalled)));
+  SeedNanoV3State(
+      OnDeviceModelControl::ModelInstallState::kUninstalledObsolete);
   controller().OnModelInstalled(OnDeviceBaseModel::kGemma4);
   controller().OnModelSessionCreated(OnDeviceBaseModel::kGemma4,
                                      browser()->GetActiveTabInterface());
@@ -198,6 +199,18 @@ IN_PROC_BROWSER_TEST_F(AIPageActionControllerBrowserTest,
   EXPECT_EQ(
       GURL("chrome://settings/ai/onDeviceAi"),
       browser()->GetTabStripModel()->GetActiveWebContents()->GetVisibleURL());
+}
+
+IN_PROC_BROWSER_TEST_F(AIPageActionControllerBrowserTest,
+                       NonObsoleteUninstallShowsAdded) {
+  SeedNanoV3State(OnDeviceModelControl::ModelInstallState::kUninstalled);
+  controller().OnModelInstalled(OnDeviceBaseModel::kGemma4);
+  controller().OnModelSessionCreated(OnDeviceBaseModel::kGemma4,
+                                     browser()->GetActiveTabInterface());
+
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_ON_DEVICE_AI_READY_TITLE),
+            chip().GetText());
+  EXPECT_TRUE(IsExpandedChipShowing());
 }
 
 IN_PROC_BROWSER_TEST_F(AIPageActionControllerBrowserTest,

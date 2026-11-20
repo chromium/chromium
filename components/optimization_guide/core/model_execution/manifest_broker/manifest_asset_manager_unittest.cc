@@ -2129,13 +2129,13 @@ TEST_F(ManifestAssetManagerTest, ModelInstallStateAndObserverEvents) {
       manifest_broker_state_->GetModelInstallState(OnDeviceBaseModel::kGemma4));
   EXPECT_THAT(observer.installed_events_, testing::IsEmpty());
 
-  // Retiring an installed model records `kUninstalled` and notifies once.
+  // Retiring an installed model records `kUninstalledObsolete` and notifies.
   UpdateManifest(DummyManifest());
   EXPECT_TRUE(component_state_.WaitForUninstall(gemma4_v2.public_key));
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return !observer.uninstalled_events_.empty(); }));
   EXPECT_EQ(
-      ModelInstallState::kUninstalled,
+      ModelInstallState::kUninstalledObsolete,
       manifest_broker_state_->GetModelInstallState(OnDeviceBaseModel::kGemma4));
   EXPECT_THAT(observer.uninstalled_events_,
               testing::ElementsAre(OnDeviceBaseModel::kGemma4));
@@ -2143,8 +2143,21 @@ TEST_F(ManifestAssetManagerTest, ModelInstallStateAndObserverEvents) {
   SimulateShutdown();
   Startup();
   EXPECT_EQ(
-      ModelInstallState::kUninstalled,
+      ModelInstallState::kUninstalledObsolete,
       manifest_broker_state_->GetModelInstallState(OnDeviceBaseModel::kGemma4));
+
+  // Reinstalling and then deleting by user request records `kUninstalled`.
+  MakeAssetsInstallable(DummyManifest().Add(gemma4_v2));
+  ASSERT_TRUE(WaitForClient(mojom::OnDeviceFeature::kCompose));
+  EXPECT_EQ(
+      ModelInstallState::kInstalled,
+      manifest_broker_state_->GetModelInstallState(OnDeviceBaseModel::kGemma4));
+  manifest_broker_state_->UninstallCapability(OnDeviceBaseModel::kGemma4);
+  EXPECT_TRUE(component_state_.WaitForUninstall(gemma4_v2.public_key));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return manifest_broker_state_->GetModelInstallState(
+               OnDeviceBaseModel::kGemma4) == ModelInstallState::kUninstalled;
+  }));
 }
 
 TEST_F(ManifestAssetManagerTest, ModelInstallStateFromExistingPrefs) {
@@ -2162,6 +2175,13 @@ TEST_F(ManifestAssetManagerTest, ModelInstallStateFromExistingPrefs) {
                    .Set("asset_id", "nano_v3_cpu_component")
                    .Set("requested_version", "")
                    .Set("install_state",
+                        static_cast<int>(
+                            ModelInstallState::kUninstalledObsolete)))
+          .Set("uninstalled_key",
+               base::DictValue()
+                   .Set("asset_id", "classifier_component")
+                   .Set("requested_version", "")
+                   .Set("install_state",
                         static_cast<int>(ModelInstallState::kUninstalled)))
           .Set("uninstalling_key",
                base::DictValue()
@@ -2174,9 +2194,12 @@ TEST_F(ManifestAssetManagerTest, ModelInstallStateFromExistingPrefs) {
   EXPECT_EQ(ModelInstallState::kInstalled,
             ManifestAssetManager::GetModelInstallState(
                 prefs, OnDeviceBaseModel::kV3NanoGpu));
-  EXPECT_EQ(ModelInstallState::kUninstalled,
+  EXPECT_EQ(ModelInstallState::kUninstalledObsolete,
             ManifestAssetManager::GetModelInstallState(
                 prefs, OnDeviceBaseModel::kV3NanoCpu));
+  EXPECT_EQ(ModelInstallState::kUninstalled,
+            ManifestAssetManager::GetModelInstallState(
+                prefs, OnDeviceBaseModel::kClassifier));
   EXPECT_EQ(ModelInstallState::kNeverInstalled,
             ManifestAssetManager::GetModelInstallState(
                 prefs, OnDeviceBaseModel::kGemma4));

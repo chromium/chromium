@@ -375,7 +375,9 @@ class OnDeviceModelControl {
     kInstalled = 1,
     // Previously installed and later uninstalled.
     kUninstalled = 2,
-    kMaxValue = kUninstalled,
+    // Previously installed and retired as obsolete by a manifest update.
+    kUninstalledObsolete = 3,
+    kMaxValue = kUninstalledObsolete,
   };
 
   // Observes base model lifecycle events without replaying history.
