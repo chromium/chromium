@@ -328,6 +328,14 @@ bool XkbComposer::FilterKeyPress(xkb_keysym_t keysym, int event_flags) {
 
     case XKB_COMPOSE_COMPOSED:
       composed_character_ = GetComposedUtf16(state_.get());
+      if (dead_acute_c_produces_cedilla_ && sequence_.size() == 1 &&
+          sequence_[0] == XKB_KEY_dead_acute) {
+        if (composed_character_ == u"\u0107") {
+          composed_character_ = u"\u00E7";
+        } else if (composed_character_ == u"\u0106") {
+          composed_character_ = u"\u00C7";
+        }
+      }
       xkb_compose_state_reset(state_.get());
       sequence_.clear();
       preedit_string_.clear();

@@ -303,8 +303,12 @@ WaylandInputMethodContext::WaylandInputMethodContext(
                   ->AsWeakPtr()),
       text_input_v1_(nullptr),
       character_composer_(kPreeditStringMode) {
-  character_composer_.set_dead_acute_c_produces_cedilla(
-      ShouldComposeCedillaForDeadAcuteC(*base::Environment::Create()));
+  const bool cedilla =
+      ShouldComposeCedillaForDeadAcuteC(*base::Environment::Create());
+  character_composer_.set_dead_acute_c_produces_cedilla(cedilla);
+#if BUILDFLAG(USE_XKBCOMMON)
+  xkb_composer_.set_dead_acute_c_produces_cedilla(cedilla);
+#endif
   window_->set_focus_client(this);
   Init();
 #if BUILDFLAG(USE_XKBCOMMON)

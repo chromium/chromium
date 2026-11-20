@@ -72,6 +72,13 @@ class COMPONENT_EXPORT(EVENTS_OZONE_LAYOUT) XkbComposer {
   }
   const std::u16string& preedit_string() const { return preedit_string_; }
 
+  // When enabled, Dead<acute> followed by c/C composes U+00E7/U+00C7 (c with
+  // cedilla) where the compose table gives U+0107/U+0106 (c with acute), as
+  // GTK's "cedilla" input method does.
+  void set_dead_acute_c_produces_cedilla(bool enabled) {
+    dead_acute_c_produces_cedilla_ = enabled;
+  }
+
  private:
   struct ComposeTableDeleter {
     void operator()(xkb_compose_table* table) const;
@@ -83,6 +90,7 @@ class COMPONENT_EXPORT(EVENTS_OZONE_LAYOUT) XkbComposer {
   void UpdatePreeditString();
 
   bool initialized_ = false;
+  bool dead_acute_c_produces_cedilla_ = false;
   std::unique_ptr<xkb_compose_table, ComposeTableDeleter> table_;
   std::unique_ptr<xkb_compose_state, ComposeStateDeleter> state_;
   std::vector<xkb_keysym_t> sequence_;

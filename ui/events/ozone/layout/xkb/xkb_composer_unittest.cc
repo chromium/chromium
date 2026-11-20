@@ -113,6 +113,26 @@ TEST(XkbComposerTest, DeadKeysAndCancellationDropsSequence) {
   EXPECT_FALSE(composer.FilterKeyPress(XKB_KEY_c, EF_NONE));
 }
 
+TEST(XkbComposerTest, DeadAcuteCProducesCedilla) {
+  XkbComposer composer;
+  ASSERT_TRUE(composer.SetComposeTableFromBuffer(R"(
+<dead_acute> <c> : "ć" cacute
+<dead_acute> <C> : "Ć" Cacute
+)"));
+
+  EXPECT_TRUE(composer.FilterKeyPress(XKB_KEY_dead_acute, EF_NONE));
+  EXPECT_TRUE(composer.FilterKeyPress(XKB_KEY_c, EF_NONE));
+  EXPECT_EQ(composer.composed_character(), u"ć");
+
+  composer.set_dead_acute_c_produces_cedilla(true);
+  EXPECT_TRUE(composer.FilterKeyPress(XKB_KEY_dead_acute, EF_NONE));
+  EXPECT_TRUE(composer.FilterKeyPress(XKB_KEY_c, EF_NONE));
+  EXPECT_EQ(composer.composed_character(), u"ç");
+  EXPECT_TRUE(composer.FilterKeyPress(XKB_KEY_dead_acute, EF_NONE));
+  EXPECT_TRUE(composer.FilterKeyPress(XKB_KEY_C, EF_SHIFT_DOWN));
+  EXPECT_EQ(composer.composed_character(), u"Ç");
+}
+
 TEST(XkbComposerTest, ShortcutModifiersNotInterceptedAndCancelPending) {
   XkbComposer composer;
   ASSERT_TRUE(
