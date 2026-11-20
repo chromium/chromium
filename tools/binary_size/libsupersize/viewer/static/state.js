@@ -442,8 +442,9 @@ function _startListeners() {
     document.body.classList.add('show-options');
   }
 
-  /** Disables some fields when method_count or relocations is set. */
-  function setMethodCountModeUI() {
+  /** Updates mode-dependent fields when method_count or relocations is set. */
+  function updateModeUI() {
+    let minSizeLabel = 'Minimum size (bytes)';
     if (state.stMethodCount.get()) {
       g_el.selByteUnit.setAttribute('disabled', '');
       g_el.fsTypesFilter.setAttribute('disabled', '');
@@ -452,15 +453,18 @@ function _startListeners() {
       g_el.selByteUnit.setAttribute('disabled', '');
       g_el.fsTypesFilter.removeAttribute('disabled');
       g_el.spanSizeHeader.textContent = 'Relocations';
+      minSizeLabel = 'Minimum relocations';
     } else {
       g_el.selByteUnit.removeAttribute('disabled');
       g_el.fsTypesFilter.removeAttribute('disabled');
       g_el.spanSizeHeader.textContent = 'Size';
     }
+    /** @type {!NodeListOf<!HTMLLabelElement>} */ (g_el.nbMinSize.labels)[0]
+        .textContent = minSizeLabel;
   }
-  setMethodCountModeUI();
-  state.stMethodCount.addObserver(setMethodCountModeUI);
-  state.stRelocations.addObserver(setMethodCountModeUI);
+  updateModeUI();
+  state.stMethodCount.addObserver(updateModeUI);
+  state.stRelocations.addObserver(updateModeUI);
 
   g_el.cbMethodCount.addEventListener('change', () => {
     if (g_el.cbMethodCount.checked) {

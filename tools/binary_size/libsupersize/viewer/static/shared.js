@@ -116,7 +116,7 @@
  * @property {string} includeRegex
  * @property {string} excludeRegex
  * @property {string} includeSections
- * @property {number} minSymbolSize
+ * @property {number} minSymbolSize - Minimum symbol PSS (bytes or relocations).
  * @property {number} flagToFilter
  * @property {boolean} nonOverhead
  * @property {boolean} disassemblyMode

@@ -73,10 +73,12 @@ void TreeBuilder::Build(std::unique_ptr<BaseLens> lens,
                         char separator,
                         bool method_count_mode,
                         std::vector<FilterFunc> filters,
-                        bool relocations_mode) {
+                        bool relocations_mode,
+                        int minimum_size) {
   lens_ = std::move(lens);
   method_count_mode_ = method_count_mode;
   relocations_mode_ = relocations_mode;
+  minimum_size_ = minimum_size;
   filters_ = filters;
   sep_ = separator;
 
@@ -95,7 +97,8 @@ void TreeBuilder::Build(std::unique_ptr<BaseLens> lens,
   absl::flat_hash_map<GroupedPath, uint32_t> key_to_entry;
   absl::flat_hash_map<std::tuple<const char*, size_t, const char*>, uint32_t>
       fast_key_to_entry;
-  const bool has_filters = !filters_.empty() || relocations_mode_;
+  const bool has_filters =
+      !filters_.empty() || relocations_mode_ || minimum_size_ > 0;
   for (const BaseSymbol* sym : symbols_) {
     const char* path = sym->GroupingPath();
     std::string_view group = lens_->ParentName(*sym);
@@ -477,6 +480,12 @@ bool TreeBuilder::ShouldIncludeSymbol(const GroupedPath& id_path,
           (!delta.After() || delta.After()->RelocationCount() == 0)) {
         return false;
       }
+    }
+  }
+  if (minimum_size_ > 0) {
+    float size = relocations_mode_ ? symbol.RelocationPss() : symbol.Pss();
+    if ((diff_mode_ ? std::abs(size) : size) < minimum_size_) {
+      return false;
     }
   }
   for (const auto& filter : filters_) {
