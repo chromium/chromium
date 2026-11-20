@@ -21,6 +21,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/affiliations/affiliation_service_factory.h"
 #include "chrome/browser/autofill/autofill_entity_data_manager_factory.h"
+#include "chrome/browser/autofill/cross_tab_copy_paste_tracker_factory.h"
 #include "chrome/browser/autofill/mock_autofill_agent.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/autofill/ui/ui_util.h"
@@ -33,6 +34,8 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
+#include "chrome/browser/user_education/user_education_service.h"
+#include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -55,6 +58,7 @@
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/gmail_otp_opt_in_result.h"
 #include "components/autofill/core/browser/integrators/password_form_classification.h"
+#include "components/autofill/core/browser/metrics/cross_tab_copy_paste_tracker.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
 #include "components/autofill/core/browser/test_utils/entity_data_test_util.h"
@@ -71,10 +75,14 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/personal_context/core/personal_context_eligibility_service.h"
+#include "components/personal_context/core/personal_context_prefs.h"
 #include "components/personal_context/core/personal_context_types.h"
 #include "components/prefs/pref_service.h"
 #include "components/security_state/core/security_state.h"
+#include "components/sessions/content/session_tab_helper.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/unified_consent/pref_names.h"
+#include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -289,6 +297,10 @@ class ChromeAutofillClientTest : public ChromeRenderViewHostTestHarness {
  protected:
   TestChromeAutofillClient* client() {
     return test_autofill_client_injector_[web_contents()];
+  }
+
+  TestChromeAutofillClient* client(content::WebContents* web_contents) {
+    return test_autofill_client_injector_[web_contents];
   }
 
   ContentAutofillDriver* driver(content::RenderFrameHost* rfh) {
@@ -726,6 +738,14 @@ class ChromeAutofillClientTestWithMockWindow : public ChromeAutofillClientTest {
         .WillByDefault(Return(mocks.mock_tab_weak_factory.GetWeakPtr()));
   }
 
+  void SetUpMockTabAndWindow(content::WebContents* web_contents,
+                             Profile* profile,
+                             TabAndWindowMocks& mocks) {
+    SetUpMockTabAndWindow(
+        base::BindRepeating([](content::WebContents* wc) { return wc; },
+                            web_contents),
+        profile, mocks);
+  }
   std::unique_ptr<TestAutofillDriverInjector<MockContentAutofillDriver>>
       driver_injector_;
 
@@ -1008,6 +1028,342 @@ TEST_F(ChromeAutofillClientTestWithMockWindow,
 }
 
 #endif  //  !BUILDFLAG(IS_ANDROID)
+
+#if (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+     BUILDFLAG(IS_CHROMEOS))
+
+// Tests that `ShowAutofillAtMemoryPromo` is propagated to the browser user
+// education service when AtMemory is enabled.
+TEST_F(ChromeAutofillClientTestWithMockWindow,
+       ShowAutofillAtMemoryPromo_Enabled) {
+  base::test::ScopedFeatureList feature_list(features::kAutofillAtMemory);
+  InitializePersonalContextEligibilityService();
+  EXPECT_CALL(*personal_context_eligibility_service(), GetEligibilityState())
+      .WillRepeatedly(
+          Return(personal_context::PersonalContextEligibilityState::kEligible));
+
+  MockBrowserUserEducationInterface mock_user_education(
+      &mock_browser_window_interface());
+  EXPECT_CALL(mock_user_education,
+              MaybeShowFeaturePromo(testing::Truly(
+                  [](const user_education::FeaturePromoParams& params) {
+                    return &*params.feature ==
+                           &feature_engagement::kIPHAutofillAtMemoryFeature;
+                  })))
+      .WillOnce(Return(true));
+
+  client()->ShowAutofillAtMemoryPromo();
+}
+
+// Tests that `ShowAutofillAtMemoryPromo` is not propagated to the browser user
+// education service when AtMemory eligibility checks fail.
+TEST_F(ChromeAutofillClientTestWithMockWindow,
+       ShowAutofillAtMemoryPromo_ServiceDisabled) {
+  base::test::ScopedFeatureList feature_list(features::kAutofillAtMemory);
+  InitializePersonalContextEligibilityService();
+  EXPECT_CALL(*personal_context_eligibility_service(), GetEligibilityState())
+      .WillRepeatedly(Return(personal_context::PersonalContextEligibilityState::
+                                 kDisabledNotEligible));
+
+  MockBrowserUserEducationInterface mock_user_education(
+      &mock_browser_window_interface());
+  EXPECT_CALL(mock_user_education, MaybeShowFeaturePromo).Times(0);
+
+  client()->ShowAutofillAtMemoryPromo();
+}
+
+// Tests that `ShowAutofillAtMemoryPromo` is not propagated to the browser user
+// education service when AtMemory feature is disabled.
+TEST_F(ChromeAutofillClientTestWithMockWindow,
+       ShowAutofillAtMemoryPromo_FeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kAutofillAtMemory);
+  InitializePersonalContextEligibilityService();
+  EXPECT_CALL(*personal_context_eligibility_service(), GetEligibilityState())
+      .WillRepeatedly(
+          Return(personal_context::PersonalContextEligibilityState::kEligible));
+
+  MockBrowserUserEducationInterface mock_user_education(
+      &mock_browser_window_interface());
+  EXPECT_CALL(mock_user_education, MaybeShowFeaturePromo).Times(0);
+
+  client()->ShowAutofillAtMemoryPromo();
+}
+
+// Tests that `ShowAutofillAtMemoryPromo` is not propagated to the browser user
+// education service when the Personal Context toggle is off.
+TEST_F(ChromeAutofillClientTestWithMockWindow,
+       ShowAutofillAtMemoryPromo_PersonalContextToggleOff) {
+  base::test::ScopedFeatureList feature_list(features::kAutofillAtMemory);
+  InitializePersonalContextEligibilityService();
+  EXPECT_CALL(*personal_context_eligibility_service(), GetEligibilityState())
+      .WillRepeatedly(
+          Return(personal_context::PersonalContextEligibilityState::kEligible));
+  profile()->GetPrefs()->SetBoolean(
+      personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
+      false);
+
+  MockBrowserUserEducationInterface mock_user_education(
+      &mock_browser_window_interface());
+  EXPECT_CALL(mock_user_education, MaybeShowFeaturePromo).Times(0);
+
+  client()->ShowAutofillAtMemoryPromo();
+}
+
+// Tests that `AtMemoryCopyPasteObserver` does not track copy/paste signals and
+// does not trigger the promo for incognito profiles.
+TEST_F(ChromeAutofillClientTestWithMockWindow,
+       AtMemoryCopyPasteObserver_IncognitoNoTracking) {
+  base::test::ScopedFeatureList feature_list(features::kAutofillAtMemory);
+
+  // Verify that for regular profiles, the tracker exists.
+  Profile* regular_profile = profile();
+  EXPECT_NE(
+      CrossTabCopyPasteTrackerFactory::GetForBrowserContext(regular_profile),
+      nullptr);
+
+  // Create an `OffTheRecord` (incognito) profile.
+  Profile* incognito_profile =
+      regular_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  ASSERT_TRUE(incognito_profile);
+
+  // Verify that for incognito profile, the tracker factory returns nullptr.
+  EXPECT_EQ(
+      CrossTabCopyPasteTrackerFactory::GetForBrowserContext(incognito_profile),
+      nullptr);
+
+  // Create web contents and client for the incognito profile.
+  std::unique_ptr<content::WebContents> incognito_main_web_contents =
+      content::WebContentsTester::CreateTestWebContents(incognito_profile,
+                                                        nullptr);
+  TestChromeAutofillClient* incognito_main_client =
+      client(incognito_main_web_contents.get());
+  ASSERT_TRUE(incognito_main_client);
+
+  // Setup a secondary `WebContents` for pasting (so the copy and paste are
+  // in different tabs).
+  std::unique_ptr<content::WebContents> incognito_secondary_web_contents =
+      content::WebContentsTester::CreateTestWebContents(incognito_profile,
+                                                        nullptr);
+  TestChromeAutofillClient* incognito_secondary_client =
+      client(incognito_secondary_web_contents.get());
+  ASSERT_TRUE(incognito_secondary_client);
+
+  // Setup mock tab/window for the incognito `WebContents`.
+  TabAndWindowMocks incognito_main_mocks;
+  SetUpMockTabAndWindow(incognito_main_web_contents.get(), incognito_profile,
+                        incognito_main_mocks);
+
+  // Setup mock tab/window for the incognito `WebContents`.
+  TabAndWindowMocks incognito_secondary_mocks;
+  SetUpMockTabAndWindow(incognito_secondary_web_contents.get(),
+                        incognito_profile, incognito_secondary_mocks);
+
+  // Create mock user education for both windows.
+  MockBrowserUserEducationInterface incognito_main_mock_user_education(
+      &incognito_main_mocks.mock_window);
+  MockBrowserUserEducationInterface incognito_secondary_mock_user_education(
+      &incognito_secondary_mocks.mock_window);
+
+  // Verify that `MaybeShowFeaturePromo` is not called for either window.
+  EXPECT_CALL(incognito_main_mock_user_education, MaybeShowFeaturePromo)
+      .Times(0);
+  EXPECT_CALL(incognito_secondary_mock_user_education, MaybeShowFeaturePromo)
+      .Times(0);
+
+  // Create `SessionTabHelper` for both tabs to give them valid IDs.
+  sessions::SessionTabHelper::CreateForWebContents(
+      incognito_main_web_contents.get(),
+      sessions::SessionTabHelper::DelegateLookup());
+  sessions::SessionTabHelper::CreateForWebContents(
+      incognito_secondary_web_contents.get(),
+      sessions::SessionTabHelper::DelegateLookup());
+
+  // Copy on the first tab, and paste on the second tab.
+  test_api(*incognito_main_client)
+      .at_memory_copy_paste_observer()
+      .OnTextCopiedToClipboard(
+          incognito_main_web_contents->GetPrimaryMainFrame(), u"some text");
+  test_api(*incognito_secondary_client)
+      .at_memory_copy_paste_observer()
+      .OnPaste();
+}
+
+// Tests that `AtMemoryCopyPasteObserver` tracks copy/paste signals and
+// triggers the promo for regular profiles.
+TEST_F(ChromeAutofillClientTestWithMockWindow,
+       AtMemoryCopyPasteObserver_RegularProfileTracking) {
+  base::test::ScopedFeatureList feature_list(features::kAutofillAtMemory);
+  InitializePersonalContextEligibilityService();
+  EXPECT_CALL(*personal_context_eligibility_service(), GetEligibilityState())
+      .WillRepeatedly(
+          Return(personal_context::PersonalContextEligibilityState::kEligible));
+
+  // Setup a secondary `WebContents` for pasting (so the copy and paste are in
+  // different tabs).
+  std::unique_ptr<content::WebContents> secondary_web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  TestChromeAutofillClient* secondary_client =
+      client(secondary_web_contents.get());
+  ASSERT_TRUE(secondary_client);
+
+  // Setup mock tab/window for the secondary `WebContents`.
+  TabAndWindowMocks secondary_mocks;
+  SetUpMockTabAndWindow(secondary_web_contents.get(), profile(),
+                        secondary_mocks);
+
+  // Create mock user education for both windows.
+  MockBrowserUserEducationInterface mock_user_education(
+      &mock_browser_window_interface());
+  MockBrowserUserEducationInterface secondary_mock_user_education(
+      &secondary_mocks.mock_window);
+
+  // Expect the promo to be shown on the SECONDARY tab (where the paste
+  // happens).
+  EXPECT_CALL(secondary_mock_user_education,
+              MaybeShowFeaturePromo(testing::Truly(
+                  [](const user_education::FeaturePromoParams& params) {
+                    return &*params.feature ==
+                           &feature_engagement::kIPHAutofillAtMemoryFeature;
+                  })))
+      .WillOnce(Return(true));
+
+  // The promo should not be shown on the primary tab (where the copy happens).
+  EXPECT_CALL(mock_user_education, MaybeShowFeaturePromo).Times(0);
+
+  // Create `SessionTabHelper` for both tabs to give them valid IDs.
+  sessions::SessionTabHelper::CreateForWebContents(
+      web_contents(), sessions::SessionTabHelper::DelegateLookup());
+  sessions::SessionTabHelper::CreateForWebContents(
+      secondary_web_contents.get(),
+      sessions::SessionTabHelper::DelegateLookup());
+
+  // Copy on the first tab, and paste on the second tab.
+  test_api(*client()).at_memory_copy_paste_observer().OnTextCopiedToClipboard(
+      web_contents()->GetPrimaryMainFrame(), u"some text");
+  test_api(*secondary_client).at_memory_copy_paste_observer().OnPaste();
+}
+
+// Tests that `AtMemoryCopyPasteObserver` detects hotkey paste events via
+// `DidGetUserInteraction` and triggers the promo when an editable element is
+// focused.
+TEST_F(ChromeAutofillClientTestWithMockWindow,
+       AtMemoryCopyPasteObserver_HotkeyPasteDidGetUserInteraction) {
+  base::test::ScopedFeatureList feature_list(features::kAutofillAtMemory);
+  InitializePersonalContextEligibilityService();
+  EXPECT_CALL(*personal_context_eligibility_service(), GetEligibilityState())
+      .WillRepeatedly(
+          Return(personal_context::PersonalContextEligibilityState::kEligible));
+
+  std::unique_ptr<content::WebContents> secondary_web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  TestChromeAutofillClient* secondary_client =
+      client(secondary_web_contents.get());
+  ASSERT_TRUE(secondary_client);
+
+  TabAndWindowMocks secondary_mocks;
+  SetUpMockTabAndWindow(secondary_web_contents.get(), profile(),
+                        secondary_mocks);
+
+  MockBrowserUserEducationInterface secondary_mock_user_education(
+      &secondary_mocks.mock_window);
+
+  EXPECT_CALL(secondary_mock_user_education,
+              MaybeShowFeaturePromo(testing::Truly(
+                  [](const user_education::FeaturePromoParams& params) {
+                    return &*params.feature ==
+                           &feature_engagement::kIPHAutofillAtMemoryFeature;
+                  })))
+      .WillOnce(Return(true));
+
+  sessions::SessionTabHelper::CreateForWebContents(
+      web_contents(), sessions::SessionTabHelper::DelegateLookup());
+  sessions::SessionTabHelper::CreateForWebContents(
+      secondary_web_contents.get(),
+      sessions::SessionTabHelper::DelegateLookup());
+
+  // Copy on the first tab.
+  test_api(*client()).at_memory_copy_paste_observer().OnTextCopiedToClipboard(
+      web_contents()->GetPrimaryMainFrame(), u"some text");
+
+  // Simulate Ctrl+V / Cmd+V via `DidGetUserInteraction` on the second tab.
+#if BUILDFLAG(IS_MAC)
+  constexpr int modifiers = blink::WebInputEvent::kMetaKey;
+#else
+  constexpr int modifiers = blink::WebInputEvent::kControlKey;
+#endif
+  blink::WebKeyboardEvent paste_event(blink::WebInputEvent::Type::kRawKeyDown,
+                                      modifiers, base::TimeTicks::Now());
+  paste_event.windows_key_code = ui::VKEY_V;
+
+  // Focus an editable element in the second tab.
+  content::FocusWebContentsOnFrame(
+      secondary_web_contents.get(),
+      secondary_web_contents->GetPrimaryMainFrame());
+  content::RenderFrameHostTester::For(
+      secondary_web_contents->GetPrimaryMainFrame())
+      ->SimulateFocusedElementChanged(/*is_editable_element=*/true,
+                                      /*is_richly_editable_element=*/false);
+
+  test_api(*secondary_client)
+      .at_memory_copy_paste_observer()
+      .DidGetUserInteraction(paste_event);
+}
+
+// Tests that `AtMemoryCopyPasteObserver` does not trigger the promo when a
+// hotkey paste occurs and no editable element is focused.
+TEST_F(ChromeAutofillClientTestWithMockWindow,
+       AtMemoryCopyPasteObserver_HotkeyPasteDidGetUserInteraction_NotEditable) {
+  base::test::ScopedFeatureList feature_list(features::kAutofillAtMemory);
+  InitializePersonalContextEligibilityService();
+  EXPECT_CALL(*personal_context_eligibility_service(), GetEligibilityState())
+      .WillRepeatedly(
+          Return(personal_context::PersonalContextEligibilityState::kEligible));
+
+  std::unique_ptr<content::WebContents> secondary_web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  TestChromeAutofillClient* secondary_client =
+      client(secondary_web_contents.get());
+  ASSERT_TRUE(secondary_client);
+
+  TabAndWindowMocks secondary_mocks;
+  SetUpMockTabAndWindow(secondary_web_contents.get(), profile(),
+                        secondary_mocks);
+
+  MockBrowserUserEducationInterface secondary_mock_user_education(
+      &secondary_mocks.mock_window);
+
+  EXPECT_CALL(secondary_mock_user_education, MaybeShowFeaturePromo).Times(0);
+
+  sessions::SessionTabHelper::CreateForWebContents(
+      web_contents(), sessions::SessionTabHelper::DelegateLookup());
+  sessions::SessionTabHelper::CreateForWebContents(
+      secondary_web_contents.get(),
+      sessions::SessionTabHelper::DelegateLookup());
+
+  // Copy on the first tab.
+  test_api(*client()).at_memory_copy_paste_observer().OnTextCopiedToClipboard(
+      web_contents()->GetPrimaryMainFrame(), u"some text");
+
+  // Simulate Ctrl+V / Cmd+V via `DidGetUserInteraction` on the second tab.
+#if BUILDFLAG(IS_MAC)
+  constexpr int modifiers = blink::WebInputEvent::kMetaKey;
+#else
+  constexpr int modifiers = blink::WebInputEvent::kControlKey;
+#endif
+  blink::WebKeyboardEvent paste_event(blink::WebInputEvent::Type::kRawKeyDown,
+                                      modifiers, base::TimeTicks::Now());
+  paste_event.windows_key_code = ui::VKEY_V;
+
+  // No content editable is focused by default.
+
+  test_api(*secondary_client)
+      .at_memory_copy_paste_observer()
+      .DidGetUserInteraction(paste_event);
+}
+
+#endif  // (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS))
 
 // Tests that if there is no enablement service available to the profile, client
 // defaults to kDisabledNotEligible state.

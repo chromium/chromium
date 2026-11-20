@@ -202,6 +202,40 @@ source_set("autofill_field_promo_view_impl_impl") {
   ]
 }
 
+source_set("at_memory_promo_bubble_view") {
+  public = [ "at_memory_promo_bubble_view.h" ]
+  public_deps = [
+    ":autofill_location_bar_bubble",
+    "//components/user_education/common",
+    "//ui/base/metadata",
+  ]
+}
+
+source_set("at_memory_promo_bubble_view_impl") {
+  sources = [ "at_memory_promo_bubble_view.cc" ]
+  public_deps = [ ":at_memory_promo_bubble_view" ]
+  deps = [
+    "//base",
+    "//chrome/app/theme:theme_resources",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/actions:actions_headers",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/navigator",
+    "//chrome/browser/ui/views:layout_provider",
+    "//chrome/browser/ui/views/frame:browser_view_header",
+    "//chrome/browser/ui/views/frame:toolbar_button_provider",
+    "//chrome/browser/ui/views/user_education",
+    "//components/personal_context/core",
+    "//components/strings:components_strings",
+    "//components/user_education/common",
+    "//content/public/browser",
+    "//ui/base",
+    "//ui/base/metadata",
+    "//ui/base/mojom:ui_base_types",
+    "//ui/views",
+  ]
+}
+
 source_set("autofill_bubble_handler_impl") {
   public = [ "autofill_bubble_handler_impl.h" ]
   sources = [ "autofill_bubble_handler_impl.cc" ]

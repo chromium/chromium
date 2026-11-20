@@ -349,9 +349,14 @@ void ChromeAutofillClient::AtMemoryCopyPasteObserver::OnPaste() {
   }
   const SessionID current_tab_id =
       sessions::SessionTabHelper::IdForTab(client_->web_contents());
-  tracker->OnPaste(
-      current_tab_id,
-      client_->web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
+  if (tracker->OnPaste(current_tab_id, client_->web_contents()
+                                           ->GetPrimaryMainFrame()
+                                           ->GetPageUkmSourceId())) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+    client_->ShowAutofillAtMemoryPromo();
+#endif
+  }
 }
 
 // Observes direct user interaction events to detect hotkey paste (e.g., Ctrl+V,
@@ -398,6 +403,25 @@ void ChromeAutofillClient::AtMemoryCopyPasteObserver::DidGetUserInteraction(
 
   OnPaste();
 }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+void ChromeAutofillClient::ShowAutofillAtMemoryPromo() {
+  // TODO(crbug.com/519061643) Double check if we also need to check a field
+  // url here.
+  if (!MayPerformAtMemoryAction(AtMemoryAction::kShowIph, *this,
+                                GetLastCommittedPrimaryMainFrameURL())) {
+    return;
+  }
+  auto* user_education_interface =
+      BrowserUserEducationInterface::MaybeGetForWebContentsInTab(
+          web_contents());
+  if (user_education_interface) {
+    user_education_interface->MaybeShowFeaturePromo(
+        feature_engagement::kIPHAutofillAtMemoryFeature);
+  }
+}
+#endif
 
 base::WeakPtr<AutofillClient> ChromeAutofillClient::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
