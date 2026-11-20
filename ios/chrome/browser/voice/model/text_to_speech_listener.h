@@ -26,6 +26,10 @@ class WebState;
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
+// Stops observing `webState` and resets it to null. Should be called by the
+// owner before releasing the listener.
+- (void)disconnect;
+
 @end
 
 @protocol TextToSpeechListenerDelegate <NSObject>

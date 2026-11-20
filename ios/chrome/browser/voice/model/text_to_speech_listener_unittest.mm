@@ -73,6 +73,7 @@ class TextToSpeechListenerTest : public PlatformTest {
   TextToSpeechListenerTest()
       : web_client_(std::make_unique<web::FakeWebClient>()) {}
 
+  // PlatformTest:
   void SetUp() override {
     PlatformTest::SetUp();
 
@@ -92,6 +93,11 @@ class TextToSpeechListenerTest : public PlatformTest {
     delegate_ = [[TestTTSListenerDelegate alloc] init];
     listener_ = [[TextToSpeechListener alloc] initWithWebState:web_state()
                                                       delegate:delegate_];
+  }
+
+  void TearDown() override {
+    [listener_ disconnect];
+    PlatformTest::TearDown();
   }
 
   void TestExtraction(NSString* html, NSData* expected_audio_data) {

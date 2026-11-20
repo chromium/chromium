@@ -50,12 +50,16 @@
   return self;
 }
 
-- (void)dealloc {
+- (void)disconnect {
   if (_webState) {
     _webState->RemoveObserver(_webStateObserver.get());
     _webStateObserver.reset();
     _webState = nullptr;
   }
+}
+
+- (void)dealloc {
+  [self disconnect];
 }
 
 #pragma mark - CRWWebStateObserver
