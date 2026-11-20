@@ -123,6 +123,7 @@ source_set("impl") {
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/omnibox_everywhere",
     "//chrome/browser/ui/webui/omnibox_popup",
+    "//chrome/browser/ui/webui/omnibox_popup:dogfood_feedback",
     "//chrome/browser/user_education",
     "//components/input",
     "//components/keep_alive_registry",

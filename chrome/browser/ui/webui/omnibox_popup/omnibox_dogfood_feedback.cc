@@ -13,14 +13,16 @@
 #include "base/strings/string_util.h"
 #include "chrome/browser/feedback/public/feedback_source.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
+#include "chrome/browser/profiles/profile.h"
 
 namespace omnibox_dogfood_feedback {
 
 namespace {
 
 // Dogfood only, so not translated.
-constexpr char kDescriptionTemplate[] =
-    "go/omnibox-dogfood\n\n"
+constexpr char kOmniboxDescriptionHeader[] = "go/omnibox-dogfood";
+constexpr char kDescriptionTemplateBody[] =
+    "\n\n"
     "DESCRIPTION of issue:\n\n"
     "REPRO STEPS:\n\n"
     "EXPECTED RESULTS:\n\n"
@@ -71,10 +73,23 @@ void AppendRelevantOverrides(std::string_view state,
 }  // namespace
 
 void ShowFeedbackForm(BrowserWindowInterface* browser) {
-  chrome::ShowFeedbackPage(browser, feedback::kFeedbackSourceOmnibox,
-                           kDescriptionTemplate,
-                           /*description_placeholder_text=*/"", kCategoryTag,
-                           internal::GetDiagnostics());
+  chrome::ShowFeedbackPage(
+      browser, feedback::kFeedbackSourceOmnibox,
+      base::StrCat({kOmniboxDescriptionHeader, kDescriptionTemplateBody}),
+      /*description_placeholder_text=*/"", kCategoryTag,
+      internal::GetDiagnostics());
+}
+
+void ShowFeedbackForm(Profile* profile,
+                      const GURL& page_url,
+                      std::string_view description_header,
+                      feedback::FeedbackSource source,
+                      const std::string& category_tag) {
+  chrome::ShowFeedbackPage(
+      page_url, profile ? profile->GetOriginalProfile() : nullptr, source,
+      base::StrCat({description_header, kDescriptionTemplateBody}),
+      /*description_placeholder_text=*/"", category_tag,
+      internal::GetDiagnostics());
 }
 
 namespace internal {
@@ -82,7 +97,8 @@ namespace internal {
 bool IsRelevantFeature(std::string_view name) {
   const std::string lower_name = base::ToLowerASCII(name);
   return lower_name.find("omnibox") != std::string::npos ||
-         lower_name.find("webui") != std::string::npos;
+         lower_name.find("webui") != std::string::npos ||
+         lower_name.find("contextual") != std::string::npos;
 }
 
 std::string GetDiagnostics() {
@@ -90,7 +106,7 @@ std::string GetDiagnostics() {
   std::string disable_overrides;
   base::FeatureList::GetInstance()->GetFeatureOverrides(&enable_overrides,
                                                         &disable_overrides);
-  std::string out = "Omnibox dogfood feedback diagnostics:\n";
+  std::string out = "Dogfood feedback diagnostics:\n";
   AppendRelevantOverrides("enabled", enable_overrides, out);
   AppendRelevantOverrides("disabled", disable_overrides, out);
   return out;

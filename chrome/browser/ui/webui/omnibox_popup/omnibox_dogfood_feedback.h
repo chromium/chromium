@@ -8,7 +8,11 @@
 #include <string>
 #include <string_view>
 
+#include "chrome/browser/feedback/public/feedback_source.h"
+
 class BrowserWindowInterface;
+class GURL;
+class Profile;
 
 namespace omnibox_dogfood_feedback {
 
@@ -16,9 +20,19 @@ namespace omnibox_dogfood_feedback {
 // in the Full WebUI omnibox.
 void ShowFeedbackForm(BrowserWindowInterface* browser);
 
+// Opens the same form as above, for dogfood feedback buttons on other
+// surfaces, with `page_url`, `description_header` (placed at the top of the
+// description template), `source`, and `category_tag`.
+void ShowFeedbackForm(Profile* profile,
+                      const GURL& page_url,
+                      std::string_view description_header,
+                      feedback::FeedbackSource source,
+                      const std::string& category_tag);
+
 namespace internal {
 
-// Returns whether `name` contains "omnibox" or "webui", ignoring case.
+// Returns whether `name` contains "omnibox", "webui", or "contextual",
+// ignoring case.
 bool IsRelevantFeature(std::string_view name);
 
 // Returns every relevant feature whose state was overridden (by Finch,
