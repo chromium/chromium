@@ -535,6 +535,30 @@ TEST_F(SandboxedRarAnalyzerTest, AnalyzeRarWithLargeDictionaryEntry) {
               testing::Eq("evil.exe"))));
 }
 
+TEST_F(SandboxedRarAnalyzerTest, AnalyzeRarWithSolidDictionaryGrowth) {
+  // Verifies that a solid entry whose declared dictionary size exceeds the
+  // already-allocated unpack window is rejected cleanly instead of triggering
+  // a fatal abort in Unpack::Init().
+  // solid_dictionary_growth.rar contains: "readme.txt" (128 KiB dictionary,
+  // allocating a 256 KiB window), "dummy.bin" (solid entry declaring a 512 KiB
+  // dictionary), "evil.exe".
+  base::FilePath path;
+  ASSERT_NO_FATAL_FAILURE(path = GetFilePath("solid_dictionary_growth.rar"));
+
+  safe_browsing::ArchiveAnalyzerResults results;
+  AnalyzeFile(path, &results);
+
+  EXPECT_FALSE(results.success);
+  EXPECT_EQ(results.analysis_result,
+            safe_browsing::ArchiveAnalysisResult::kFailedDuringIteration);
+  EXPECT_FALSE(results.has_executable);
+  EXPECT_THAT(
+      results.archived_binary,
+      testing::UnorderedElementsAre(testing::Property(
+          &safe_browsing::ClientDownloadRequest_ArchivedBinary::file_path,
+          testing::Eq("readme.txt"))));
+}
+
 TEST_F(SandboxedRarAnalyzerTest, CanDeleteDuringExecution) {
   base::FilePath file_path;
   ASSERT_NO_FATAL_FAILURE(file_path = GetFilePath("small_archive.rar"));

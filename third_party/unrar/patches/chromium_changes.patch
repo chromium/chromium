@@ -43,7 +43,7 @@ index db1cb533823bf..8dde040e02fa0 100644
      bool Open(const std::wstring &Name,uint Mode=FMF_READ) override;
      int Read(void *Data,size_t Size) override;
 diff --git a/src/arcread.cpp b/src/arcread.cpp
-index 7cfa30bf6f40b..204023fb52ed2 100644
+index 7cfa30bf6f40b..4423c682d2879 100644
 --- a/src/arcread.cpp
 +++ b/src/arcread.cpp
 @@ -160,7 +160,11 @@ size_t Archive::ReadHeader15()
@@ -59,6 +59,16 @@ index 7cfa30bf6f40b..204023fb52ed2 100644
      Raw.SetCrypt(&HeadersCrypt);
  #endif
    }
+@@ -1501,7 +1505,8 @@ bool Archive::ReadSubData(std::vector<byte> *UnpData,File *DestFile,bool TestMod
+ 
+   SubDataIO.Init();
+   Unpack Unpack(&SubDataIO);
+-  Unpack.Init(SubHead.WinSize,false);
++  if (!Unpack.Init(SubHead.WinSize,false))
++    return false;
+ 
+   if (DestFile==NULL)
+   {
 diff --git a/src/blake2s.hpp b/src/blake2s.hpp
 index 90b7885fde18a..4d30fe8685745 100644
 --- a/src/blake2s.hpp
@@ -301,20 +311,24 @@ index 065350f94af55..5c539faf0d82a 100644
  
  
 diff --git a/src/extract.cpp b/src/extract.cpp
-index 892ef0c8712e4..17ad224cc5fc9 100644
+index 892ef0c8712e4..48578d5f98c55 100644
 --- a/src/extract.cpp
 +++ b/src/extract.cpp
-@@ -902,6 +902,9 @@ bool CmdExtract::ExtractCurrentFile(Archive &Arc,size_t HeaderSize,bool &Repeat)
+@@ -902,6 +902,13 @@ bool CmdExtract::ExtractCurrentFile(Archive &Arc,size_t HeaderSize,bool &Repeat)
              UnstoreFile(DataIO,Arc.FileHead.UnpSize);
            else
            {
 +#if defined (UNRAR_NO_EXCEPTIONS)
-+            Unp->Init(Arc.FileHead.WinSize,Arc.FileHead.Solid);
++            if (!Unp->Init(Arc.FileHead.WinSize,Arc.FileHead.Solid))
++            {
++              ErrHandler.SetErrorCode(RARX_MEMORY);
++              return false;
++            }
 +#else
              try
              {
                Unp->Init(Arc.FileHead.WinSize,Arc.FileHead.Solid);
-@@ -912,6 +915,7 @@ bool CmdExtract::ExtractCurrentFile(Archive &Arc,size_t HeaderSize,bool &Repeat)
+@@ -912,6 +919,7 @@ bool CmdExtract::ExtractCurrentFile(Archive &Arc,size_t HeaderSize,bool &Repeat)
                  uiMsg(UIERROR_EXTRDICTOUTMEM,Arc.FileName,uint(Arc.FileHead.WinSize/0x40000000+(Arc.FileHead.WinSize%0x40000000!=0 ? 1 : 0)));
                throw;
              }
@@ -1138,7 +1152,7 @@ index 2d867b3aefef0..81cf99e380896 100644
  #else
  #define charnext(s) ((s)+1)
 diff --git a/src/unpack.cpp b/src/unpack.cpp
-index a5950ea1ac4e2..cdb89239f7a90 100644
+index a5950ea1ac4e2..3f99e24d8a23c 100644
 --- a/src/unpack.cpp
 +++ b/src/unpack.cpp
 @@ -1,3 +1,9 @@
@@ -1173,12 +1187,21 @@ index a5950ea1ac4e2..cdb89239f7a90 100644
    UnpThreadPool=new ThreadPool(MaxUserThreads);
  }
  #endif
+@@ -75,7 +87,7 @@ void Unpack::SetThreads(uint Threads)
+ // We get 64-bit WinSize, so we still can check and quit for dictionaries
+ // exceeding a threshold in 32-bit builds. Then we convert WinSize to size_t
+ // MaxWinSize.
+-void Unpack::Init(uint64 WinSize,bool Solid)
++bool Unpack::Init(uint64 WinSize,bool Solid)
+ {
+   // Minimum window size must be at least twice more than maximum possible
+   // size of filter block, which is 0x10000 in RAR now. If window size is
 @@ -87,7 +99,7 @@ void Unpack::Init(uint64 WinSize,bool Solid)
      WinSize=MinAllocSize;
  
    if (WinSize>Min(0x10000000000ULL,UNPACK_MAX_DICT)) // Window size must not exceed 1 TB.
 -    throw std::bad_alloc();
-+    UNRAR_FATAL_BAD_ALLOC(WinSize);
++    return false;
  
    // 32-bit build can't unpack dictionaries exceeding 32-bit even in theory.
    // Also we've not verified if WrapUp and WrapDown work properly in 32-bit
@@ -1187,16 +1210,24 @@ index a5950ea1ac4e2..cdb89239f7a90 100644
    // we prohibit >2GB dictionaries for 32-bit build here.
    if (WinSize>0x80000000 && sizeof(size_t)<=4)
 -    throw std::bad_alloc();
-+    UNRAR_FATAL_BAD_ALLOC(WinSize);
++    return false;
  
    // Solid block shall use the same window size for all files.
    // But if Window isn't initialized when Solid is set, it means that
-@@ -120,23 +132,27 @@ void Unpack::Init(uint64 WinSize,bool Solid)
+@@ -113,30 +125,34 @@ void Unpack::Init(uint64 WinSize,bool Solid)
+   // Use the already allocated window when processing non-solid files
+   // with reducing dictionary sizes.
+   if (WinSize<=AllocWinSize)
+-    return;
++    return true;
+ 
+   // Archiving code guarantees that window size does not grow in the same
+   // solid stream. So if we are here, we are either creating a new window
    // or increasing the size of non-solid window. So we could safely reject
    // current window data without copying them to a new window.
    if (Solid && (Window!=NULL || Fragmented && WinSize>FragWindow.GetWinSize()))
 -    throw std::bad_alloc();
-+    UNRAR_FATAL_BAD_ALLOC(WinSize);
++    return false;
  
    Alloc.delete_l<byte>(Window); // delete Window;
    Window=nullptr;
@@ -1221,7 +1252,15 @@ index a5950ea1ac4e2..cdb89239f7a90 100644
      else
      {
        if (WinSize>FragWindow.GetWinSize())
-@@ -219,7 +235,7 @@ void Unpack::UnpInitData(bool Solid)
+@@ -154,6 +170,7 @@ void Unpack::Init(uint64 WinSize,bool Solid)
+ 
+     AllocWinSize=WinSize;
+   }
++  return true;
+ }
+ 
+ 
+@@ -219,7 +236,7 @@ void Unpack::UnpInitData(bool Solid)
      UnpPtr=WrPtr=0;
      PrevPtr=0;
      FirstWinDone=false;
@@ -1230,6 +1269,19 @@ index a5950ea1ac4e2..cdb89239f7a90 100644
    }
    // Filters never share several solid files, so we can safely reset them
    // even in solid archive.
+diff --git a/src/unpack.hpp b/src/unpack.hpp
+index 397480a555216..a5355d9e33092 100644
+--- a/src/unpack.hpp
++++ b/src/unpack.hpp
+@@ -382,7 +382,7 @@ class Unpack:PackDef
+   public:
+     Unpack(ComprDataIO *DataIO);
+     ~Unpack();
+-    void Init(uint64 WinSize,bool Solid);
++    bool Init(uint64 WinSize,bool Solid);
+     void AllowLargePages(bool Allow) {Alloc.AllowLargePages(Allow);}
+     void DoUnpack(uint Method,bool Solid);
+     bool IsFileExtracted() {return FileExtracted;}
 diff --git a/src/unpack30.cpp b/src/unpack30.cpp
 index 1fb0615a6be10..684e6a82b6e62 100644
 --- a/src/unpack30.cpp

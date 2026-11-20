@@ -382,7 +382,7 @@ class Unpack:PackDef
   public:
     Unpack(ComprDataIO *DataIO);
     ~Unpack();
-    void Init(uint64 WinSize,bool Solid);
+    bool Init(uint64 WinSize,bool Solid);
     void AllowLargePages(bool Allow) {Alloc.AllowLargePages(Allow);}
     void DoUnpack(uint Method,bool Solid);
     bool IsFileExtracted() {return FileExtracted;}

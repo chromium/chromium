@@ -903,7 +903,11 @@ bool CmdExtract::ExtractCurrentFile(Archive &Arc,size_t HeaderSize,bool &Repeat)
           else
           {
 #if defined (UNRAR_NO_EXCEPTIONS)
-            Unp->Init(Arc.FileHead.WinSize,Arc.FileHead.Solid);
+            if (!Unp->Init(Arc.FileHead.WinSize,Arc.FileHead.Solid))
+            {
+              ErrHandler.SetErrorCode(RARX_MEMORY);
+              return false;
+            }
 #else
             try
             {

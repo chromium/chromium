@@ -95,6 +95,8 @@ class RarReader {
   bool HeaderDecryptionFailed() const;
   // Indicates whether there was a disk error since the last ExtractNextEntry().
   bool HasWriteError() const;
+  // Indicates whether an unrecoverable error occurred while iterating entries.
+  bool HasError() const;
 
  private:
   // The temporary file used for extracting each entry. This allows RAR
@@ -120,6 +122,9 @@ class RarReader {
 
   // Whether a write error occurred.
   bool write_error_ = false;
+
+  // Whether an unrecoverable error occurred while iterating entries.
+  bool has_error_ = false;
 };
 
 }  // namespace third_party_unrar

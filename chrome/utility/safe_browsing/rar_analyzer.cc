@@ -51,6 +51,12 @@ bool RarAnalyzer::ResumeExtraction() {
     return false;
   }
 
+  if (reader_.HasError()) {
+    results()->analysis_result = ArchiveAnalysisResult::kFailedDuringIteration;
+    results()->success = false;
+    return true;
+  }
+
   if (results()->encryption_info.password_status !=
           EncryptionInfo::kKnownIncorrect &&
       results()->encryption_info.is_encrypted) {

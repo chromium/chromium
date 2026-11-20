@@ -48,5 +48,7 @@ Notable changes from upstream:
   libfuzzer target:
   - Limit the max dictionary size allowed for unpacking files to 1 GB rather
     than 64 GB.
+- Return a boolean from Unpack::Init() instead of terminating on invalid or
+  unsupported dictionary sizes (e.g., solid dictionary growth).
 
 All these changes are included in one patch file (chromium_changes.patch)

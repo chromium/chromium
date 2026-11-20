@@ -56,6 +56,7 @@ bool RarReader::Open(std::unique_ptr<RarReaderDelegate> delegate,
                      base::File temp_file) {
   reader_ = std::move(delegate);
   temp_file_ = std::move(temp_file);
+  has_error_ = false;
 
   command_ = std::make_unique<CommandData>();
   // Unrar forbids empty passwords, but requires that a password be provided for
@@ -108,6 +109,9 @@ bool RarReader::Open(std::unique_ptr<RarReaderDelegate> delegate,
 }
 
 bool RarReader::ExtractNextEntry() {
+  if (has_error_) {
+    return false;
+  }
   write_error_ = false;
   bool success = true, repeat = true;
   while (success || repeat) {
@@ -170,6 +174,11 @@ bool RarReader::ExtractNextEntry() {
         archive_->SeekToNext();
         return true;
       }
+
+      if (!repeat) {
+        has_error_ = true;
+        return false;
+      }
     }
   }
 
@@ -194,6 +203,10 @@ bool RarReader::HeaderDecryptionFailed() const {
 
 bool RarReader::HasWriteError() const {
    return write_error_;
+}
+
+bool RarReader::HasError() const {
+  return has_error_;
 }
 
 }  // namespace third_party_unrar

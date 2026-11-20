@@ -1505,7 +1505,8 @@ bool Archive::ReadSubData(std::vector<byte> *UnpData,File *DestFile,bool TestMod
 
   SubDataIO.Init();
   Unpack Unpack(&SubDataIO);
-  Unpack.Init(SubHead.WinSize,false);
+  if (!Unpack.Init(SubHead.WinSize,false))
+    return false;
 
   if (DestFile==NULL)
   {

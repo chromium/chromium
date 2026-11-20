@@ -87,7 +87,7 @@ void Unpack::SetThreads(uint Threads)
 // We get 64-bit WinSize, so we still can check and quit for dictionaries
 // exceeding a threshold in 32-bit builds. Then we convert WinSize to size_t
 // MaxWinSize.
-void Unpack::Init(uint64 WinSize,bool Solid)
+bool Unpack::Init(uint64 WinSize,bool Solid)
 {
   // Minimum window size must be at least twice more than maximum possible
   // size of filter block, which is 0x10000 in RAR now. If window size is
@@ -99,7 +99,7 @@ void Unpack::Init(uint64 WinSize,bool Solid)
     WinSize=MinAllocSize;
 
   if (WinSize>Min(0x10000000000ULL,UNPACK_MAX_DICT)) // Window size must not exceed 1 TB.
-    UNRAR_FATAL_BAD_ALLOC(WinSize);
+    return false;
 
   // 32-bit build can't unpack dictionaries exceeding 32-bit even in theory.
   // Also we've not verified if WrapUp and WrapDown work properly in 32-bit
@@ -107,7 +107,7 @@ void Unpack::Init(uint64 WinSize,bool Solid)
   // distances. Since such version is unlikely to allocate >2GB anyway,
   // we prohibit >2GB dictionaries for 32-bit build here.
   if (WinSize>0x80000000 && sizeof(size_t)<=4)
-    UNRAR_FATAL_BAD_ALLOC(WinSize);
+    return false;
 
   // Solid block shall use the same window size for all files.
   // But if Window isn't initialized when Solid is set, it means that
@@ -125,14 +125,14 @@ void Unpack::Init(uint64 WinSize,bool Solid)
   // Use the already allocated window when processing non-solid files
   // with reducing dictionary sizes.
   if (WinSize<=AllocWinSize)
-    return;
+    return true;
 
   // Archiving code guarantees that window size does not grow in the same
   // solid stream. So if we are here, we are either creating a new window
   // or increasing the size of non-solid window. So we could safely reject
   // current window data without copying them to a new window.
   if (Solid && (Window!=NULL || Fragmented && WinSize>FragWindow.GetWinSize()))
-    UNRAR_FATAL_BAD_ALLOC(WinSize);
+    return false;
 
   Alloc.delete_l<byte>(Window); // delete Window;
   Window=nullptr;
@@ -170,6 +170,7 @@ void Unpack::Init(uint64 WinSize,bool Solid)
 
     AllocWinSize=WinSize;
   }
+  return true;
 }
 
 
