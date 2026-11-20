@@ -5,12 +5,16 @@
 package org.chromium.chrome.browser.tab;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.app.Activity;
 import android.graphics.Color;
 import android.view.View;
+import android.widget.FrameLayout;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -20,9 +24,19 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.UnownedUserDataHost;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProviderSupplier;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.ui.base.WindowAndroid;
+
+import java.lang.ref.WeakReference;
 
 /** Unit tests for the {@link TabViewManager} class. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -33,6 +47,11 @@ public class TabViewManagerUnitTest {
     @Mock private TabViewProvider mTabViewProvider0;
     @Mock private TabViewProvider mTabViewProvider1;
     @Mock private TabViewProvider mTabViewProvider2;
+    @Mock private BrowserControlsStateProvider mBrowserControlsA;
+    @Mock private BrowserControlsStateProvider mBrowserControlsB;
+    @Mock private TabDelegateFactory mTabDelegateFactory;
+    @Mock private TabWebContentsDelegateAndroid mTabWebContentsDelegate;
+    @Mock private Profile mProfile;
 
     private final View mTabView0 = new View(ContextUtils.getApplicationContext());
     private final View mTabView1 = new View(ContextUtils.getApplicationContext());
@@ -44,8 +63,17 @@ public class TabViewManagerUnitTest {
 
     private TabViewManagerImpl mTabViewManager;
 
+    // Held here because the mocked windows only keep weak references to it.
+    private Activity mActivity;
+
+    // Held here because UnownedUserDataHost keeps only weak references to its data.
+    private MonotonicObservableSupplier<BrowserControlsStateProvider> mBrowserControlsSupplierA;
+    private MonotonicObservableSupplier<BrowserControlsStateProvider> mBrowserControlsSupplierB;
+    private WindowAndroid mWindowB;
+
     @Before
     public void setUp() {
+        mActivity = Robolectric.buildActivity(Activity.class).get();
         TabBrowserControlsOffsetHelper.setInstanceForTesting(mTabBrowserControlsOffsetHelper);
         when(mTabBrowserControlsOffsetHelper.contentOffset()).thenReturn(0);
         when(mTabBrowserControlsOffsetHelper.bottomControlsOffset()).thenReturn(0);
@@ -147,6 +175,74 @@ public class TabViewManagerUnitTest {
         verify(mTab).setCustomView(null, null);
         verifyTabViewProviderOnShownCalled(mTabViewProvider1, 1);
         verifyTabViewProviderOnHiddenCalled(mTabViewProvider1, 1);
+    }
+
+    @Test
+    public void testMarginsFollowBrowserControlsOfNewWindowAfterReparenting() {
+        TabImpl tab = createTabShowingViewInWindowA();
+
+        tab.updateAttachment(/* window= */ null, /* tabDelegateFactory= */ null);
+        verify(mBrowserControlsA).removeObserver(any());
+
+        // Adding a higher-priority provider while detached must not rebind to the old window.
+        tab.getTabViewManager().addTabViewProvider(mTabViewProvider0);
+        verify(mBrowserControlsA, times(1)).addObserver(any());
+
+        tab.updateAttachment(mWindowB, mTabDelegateFactory);
+
+        Assert.assertEquals(
+                200, ((FrameLayout.LayoutParams) mTabView0.getLayoutParams()).topMargin);
+        verify(mBrowserControlsB).addObserver(any());
+    }
+
+    @Test
+    public void testMarginsFollowBrowserControlsOfNewWindowAfterWindowOnlySwap() {
+        TabImpl tab = createTabShowingViewInWindowA();
+
+        // The tab is not detached first, so the adapter is still bound to window A.
+        tab.updateAttachment(mWindowB, /* tabDelegateFactory= */ null);
+
+        verify(mBrowserControlsA).removeObserver(any());
+        Assert.assertEquals(
+                200, ((FrameLayout.LayoutParams) mTabView1.getLayoutParams()).topMargin);
+        verify(mBrowserControlsB).addObserver(any());
+    }
+
+    /**
+     * Returns a tab attached to a window whose top controls are 100px tall, showing {@link
+     * #mTabView1}. {@link #mWindowB} has 200px tall top controls.
+     */
+    private TabImpl createTabShowingViewInWindowA() {
+        when(mBrowserControlsA.getTopControlsHeight()).thenReturn(100);
+        when(mBrowserControlsB.getTopControlsHeight()).thenReturn(200);
+        mBrowserControlsSupplierA = ObservableSuppliers.createMonotonic(mBrowserControlsA);
+        mBrowserControlsSupplierB = ObservableSuppliers.createMonotonic(mBrowserControlsB);
+        WindowAndroid windowA = mockWindow(mBrowserControlsSupplierA);
+        mWindowB = mockWindow(mBrowserControlsSupplierB);
+
+        when(mTabDelegateFactory.createWebContentsDelegate(any()))
+                .thenReturn(mTabWebContentsDelegate);
+        TabImpl tab = new TabImpl(1, mProfile, TabLaunchType.FROM_CHROME_UI);
+        tab.updateAttachment(windowA, mTabDelegateFactory);
+        verify(mBrowserControlsA, never()).addObserver(any());
+
+        tab.getTabViewManager().addTabViewProvider(mTabViewProvider1);
+        Assert.assertEquals(
+                100, ((FrameLayout.LayoutParams) mTabView1.getLayoutParams()).topMargin);
+        verify(mBrowserControlsA, times(1)).addObserver(any());
+        return tab;
+    }
+
+    private WindowAndroid mockWindow(
+            MonotonicObservableSupplier<BrowserControlsStateProvider> browserControlsSupplier) {
+        UnownedUserDataHost host = new UnownedUserDataHost();
+        BrowserControlsStateProviderSupplier.attach(host, browserControlsSupplier);
+        WindowAndroid window = mock(WindowAndroid.class);
+        when(window.getActivity()).thenReturn(new WeakReference<>(mActivity));
+        when(window.getContext()).thenReturn(new WeakReference<>(mActivity));
+        when(window.getOcclusionSupplier()).thenReturn(ObservableSuppliers.alwaysFalse());
+        when(window.getUnownedUserDataHost()).thenReturn(host);
+        return window;
     }
 
     private void verifyTabViewProviderOnShownCalled(

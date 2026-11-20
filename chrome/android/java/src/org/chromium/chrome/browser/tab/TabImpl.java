@@ -508,6 +508,7 @@ class TabImpl implements Tab {
 
         updateWindowAndroid(window);
 
+        mTabViewManager.onAttachedToWindow();
         mNativePageController.onAttachToWindow();
 
         // Notify observers only on a full re-attachment (reparenting), not on a window-only swap
@@ -524,6 +525,7 @@ class TabImpl implements Tab {
         // detached so callers of getWindowAndroid() do not crash with NullPointerException, while
         // callers (e.g. ReparentingTask#detach()) clear webContents.setTopLevelNativeWindow(null).
         updateIsDetachedFromActivity(/* window= */ null);
+        mTabViewManager.onDetachedFromWindow();
         mNativePageController.onDetachFromWindow(getActivity(mWindowAndroid));
 
         // Clear the current tab supplier during detachment/reparenting to indicate that the
