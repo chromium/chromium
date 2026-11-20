@@ -19,10 +19,12 @@ include_rules = [
   "+chrome/browser/ash/camera_mic",
   "+chrome/browser/ash/crostini",
   "+chrome/browser/ash/system_web_apps",
-  "+chrome/browser/media/webrtc",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/ash/system_web_apps",
   "+chrome/common/webui_url_constants.h",
+
+  "+components/webrtc/media_capture_dispatcher.h",
+  "+components/webrtc/media_capture_indicator.h",
 ]
 
 specific_include_rules = {
@@ -44,10 +46,12 @@ specific_include_rules = {
     "+chrome/browser/ui/tabs/tab_strip_model.h",
   ],
   "video_conference_media_listener_browsertest\\.cc": [
-    "+chrome/browser/ui/ash/main_extra_parts/chrome_browser_main_extra_parts_ash.h",
+    "+chrome/browser/media/webrtc/media_capture_devices_dispatcher.h",
+    "+chrome/browser/media/webrtc/media_stream_capture_indicator.h",
     "+chrome/browser/ui/tabs/tab_strip_model.h",
   ],
   "video_conference_integration_browsertest\\.cc": [
+    "+chrome/browser/media/webrtc/webrtc_browsertest_base.h",
     "+chrome/common/chrome_switches.h",
   ],
 }

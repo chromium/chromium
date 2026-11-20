@@ -22,7 +22,7 @@
 #include "chrome/browser/ash/video_conference/video_conference_manager_client_common.h"
 #include "chrome/browser/ash/video_conference/video_conference_web_app.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
-#include "chrome/browser/ui/ash/main_extra_parts/chrome_browser_main_extra_parts_ash.h"
+#include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/navigation_controller.h"
@@ -62,7 +62,7 @@ class FakeVideoConferenceMediaListener : public VideoConferenceMediaListener {
 
   ~FakeVideoConferenceMediaListener() override = default;
 
-  // MediaStreamCaptureIndicator::Observer overrides
+  // webrtc::MediaCaptureIndicator::Observer overrides
   void OnIsCapturingVideoChanged(content::WebContents* contents,
                                  bool is_capturing_video) override {
     state_.video_capture_count += is_capturing_video ? 1 : -1;

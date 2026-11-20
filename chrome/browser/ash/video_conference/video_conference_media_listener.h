@@ -10,7 +10,7 @@
 #include "ash/system/video_conference/video_conference_common.h"
 #include "base/functional/callback_forward.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
+#include "components/webrtc/media_capture_indicator.h"
 #include "content/public/browser/web_contents.h"
 
 namespace ash {
@@ -23,7 +23,7 @@ class VideoConferenceWebApp;
 // class is also responsible for notifying the `VideoConferenceManagerClient`
 // owning it of any observed capturing changes.
 class VideoConferenceMediaListener
-    : public MediaStreamCaptureIndicator::Observer {
+    : public webrtc::MediaCaptureIndicator::Observer {
  public:
   VideoConferenceMediaListener(
       base::RepeatingCallback<void()> media_usage_update_callback,
@@ -42,7 +42,7 @@ class VideoConferenceMediaListener
   void SetSystemMediaDeviceStatus(VideoConferenceMediaDevice device,
                                   bool enabled);
 
-  // MediaStreamCaptureIndicator::Observer overrides
+  // webrtc::MediaCaptureIndicator::Observer overrides
   void OnIsCapturingVideoChanged(content::WebContents* contents,
                                  bool is_capturing_video) override;
   void OnIsCapturingAudioChanged(content::WebContents* contents,
@@ -81,8 +81,8 @@ class VideoConferenceMediaListener
                                const std::u16string&)>
       device_used_while_disabled_callback_;
 
-  base::ScopedObservation<MediaStreamCaptureIndicator,
-                          MediaStreamCaptureIndicator::Observer>
+  base::ScopedObservation<webrtc::MediaCaptureIndicator,
+                          webrtc::MediaCaptureIndicator::Observer>
       observation_{this};
 };
 

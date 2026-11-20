@@ -7,10 +7,9 @@
 #include <string>
 #include <utility>
 
-#include "base/memory/scoped_refptr.h"
 #include "chrome/browser/ash/video_conference/video_conference_manager_client_common.h"
 #include "chrome/browser/ash/video_conference/video_conference_web_app.h"
-#include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
+#include "components/webrtc/media_capture_dispatcher.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -27,9 +26,8 @@ VideoConferenceMediaListener::VideoConferenceMediaListener(
       create_vc_web_app_callback_(std::move(create_vc_web_app_callback)),
       device_used_while_disabled_callback_(
           std::move(device_used_while_disabled_callback)) {
-  observation_.Observe(MediaCaptureDevicesDispatcher::GetInstance()
-                           ->GetMediaStreamCaptureIndicator()
-                           .get());
+  observation_.Observe(
+      webrtc::MediaCaptureDispatcher::GetInstance()->GetCaptureIndicator());
 }
 
 VideoConferenceMediaListener::~VideoConferenceMediaListener() = default;
