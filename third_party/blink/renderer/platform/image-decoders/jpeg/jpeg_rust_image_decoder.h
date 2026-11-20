@@ -46,6 +46,8 @@ class PLATFORM_EXPORT JpegRustImageDecoder final : public SkiaImageDecoderBase {
   SkCodec::Result OnIncrementalDecode(wtf_size_t) override;
 
  private:
+  std::unique_ptr<SkCodec> CreateCompleteInputCodec(SkCodec::Result*) const;
+
   SkYUVAPixmapInfo yuva_pixmap_info_;
   scoped_refptr<SegmentReader> gainmap_data_;
   Vector<SkISize> supported_decode_sizes_;

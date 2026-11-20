@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/platform/image-decoders/segment_reader.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "third_party/skia/experimental/rust_jpeg/decoder/SkJpegRustDecoder.h"
 #include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/private/SkJpegMetadataDecoder.h"
 
@@ -48,12 +49,15 @@ namespace {
 
 class SnapshotCountingReader final : public SegmentReader {
  public:
-  explicit SnapshotCountingReader(scoped_refptr<SegmentReader> reader)
-      : reader_(std::move(reader)) {}
+  explicit SnapshotCountingReader(
+      scoped_refptr<SegmentReader> reader,
+      size_t max_segment_size = std::numeric_limits<size_t>::max())
+      : reader_(std::move(reader)), max_segment_size_(max_segment_size) {}
 
   size_t size() const override { return reader_->size(); }
   base::span<const uint8_t> GetSomeData(size_t position) const override {
-    return reader_->GetSomeData(position);
+    auto data = reader_->GetSomeData(position);
+    return data.first(std::min(data.size(), max_segment_size_));
   }
   sk_sp<const SkData> GetAsSkData() const override {
     ++snapshot_count_;
@@ -64,6 +68,7 @@ class SnapshotCountingReader final : public SegmentReader {
  private:
   ~SnapshotCountingReader() override = default;
   const scoped_refptr<SegmentReader> reader_;
+  const size_t max_segment_size_;
   mutable unsigned snapshot_count_ = 0;
 };
 
@@ -1641,11 +1646,9 @@ TEST(JPEGImageDecoderTest, RustFinalPackedProgressivePixelsMatchNative) {
       }
     }
     EXPECT_EQ(rust->Failed(), native->Failed());
-    EXPECT_EQ(final_reader->snapshot_count(),
-              snapshots_before_decode + (grow_first ? 1u : 0u));
+    EXPECT_EQ(final_reader->snapshot_count(), snapshots_before_decode);
     rust->DecodeFrameBufferAtIndex(0);
-    EXPECT_EQ(final_reader->snapshot_count(),
-              snapshots_before_decode + (grow_first ? 1u : 0u));
+    EXPECT_EQ(final_reader->snapshot_count(), snapshots_before_decode);
   }
 }
 
@@ -1714,10 +1717,8 @@ TEST(JPEGImageDecoderTest, RustFinalInputMatchesOneShotAfterReaderDetach) {
             if (!truncate) {
               EXPECT_EQ(frame->GetStatus(), ImageFrame::kFrameComplete);
               EXPECT_FALSE(decoder->Failed());
-              EXPECT_EQ(final_reader->snapshot_count(), 0u);
-            } else {
-              EXPECT_EQ(final_reader->snapshot_count(), 1u);
             }
+            EXPECT_EQ(final_reader->snapshot_count(), 0u);
             const unsigned snapshots_after_decode =
                 final_reader->snapshot_count();
             decoder->DecodeFrameBufferAtIndex(0);
@@ -1976,6 +1977,99 @@ TEST(JPEGImageDecoderTest, PartialRgbDecodeBlocksYuvDecoding) {
 }
 
 class RustJPEGYuvTest : public testing::TestWithParam<const char*> {};
+
+TEST_P(RustJPEGYuvTest, DecodesSegmentedInputWithoutSnapshot) {
+  for (bool truncate : {false, true}) {
+    SCOPED_TRACE(truncate);
+    Vector<char> bytes = ReadFile(GetParam());
+    ASSERT_GT(bytes.size(), 2u);
+    ASSERT_EQ(static_cast<uint8_t>(bytes[bytes.size() - 2]), 0xff);
+    ASSERT_EQ(static_cast<uint8_t>(bytes.back()), 0xd9);
+    if (truncate) {
+      bytes.resize(bytes.size() - 2);
+    }
+    for (bool grow_first : {false, true}) {
+      SCOPED_TRACE(grow_first);
+      const size_t prefix_size = grow_first ? bytes.size() / 2 : bytes.size();
+      auto data = SharedBuffer::Create(base::span(bytes).first(prefix_size));
+      auto reader = base::MakeRefCounted<SnapshotCountingReader>(
+          SegmentReader::CreateFromSharedBuffer(data), 17);
+      auto decoder = CreateRustJPEGDecoder();
+      if (grow_first) {
+        decoder->SetData(reader, false);
+        ASSERT_TRUE(decoder->IsSizeAvailable());
+        EXPECT_FALSE(decoder->CanDecodeToYUV());
+        data->Append(base::span(bytes).subspan(prefix_size));
+      }
+      decoder->SetData(reader, true);
+      ASSERT_TRUE(decoder->IsSizeAvailable());
+      ASSERT_TRUE(decoder->CanDecodeToYUV());
+      const unsigned snapshots_before_decode = reader->snapshot_count();
+
+      // Preserve the immutable-data entry point's handling of truncated scans,
+      // including baseline inputs that it cannot finish without EOI.
+      SkCodec::Result reference_result;
+      auto reference = SkJpegRustDecoder::Decode(
+          SkData::MakeWithCopy(bytes.data(), bytes.size()), &reference_result);
+      ASSERT_TRUE(reference);
+      SkYUVAPixmapInfo reference_info;
+      ASSERT_TRUE(reference->queryYUVAInfo(
+          SkYUVAPixmapInfo::SupportedDataTypes::All(), &reference_info));
+      std::array<Vector<uint8_t>, cc::kNumYUVPlanes> storage;
+      std::array<Vector<uint8_t>, cc::kNumYUVPlanes> expected;
+      std::array<SkPixmap, cc::kNumYUVPlanes> reference_pixmaps;
+      std::array<void*, cc::kNumYUVPlanes> planes;
+      std::array<wtf_size_t, cc::kNumYUVPlanes> strides;
+      constexpr uint8_t kPadding = 0xa5;
+      for (int plane = 0; plane < cc::kNumYUVPlanes; ++plane) {
+        const auto index = static_cast<cc::YUVIndex>(plane);
+        const gfx::Size size = decoder->DecodedYUVSize(index);
+        strides[plane] = decoder->DecodedYUVWidthBytes(index) + 7;
+        storage[plane] =
+            Vector<uint8_t>(strides[plane] * size.height(), kPadding);
+        planes[plane] = storage[plane].data();
+        ASSERT_EQ(reference_info.planeInfo(plane).dimensions(),
+                  SkISize::Make(size.width(), size.height()));
+        expected[plane] = storage[plane];
+        reference_pixmaps[plane] =
+            SkPixmap(reference_info.planeInfo(plane), expected[plane].data(),
+                     strides[plane]);
+      }
+      const auto reference_planes = SkYUVAPixmaps::FromExternalPixmaps(
+          reference_info.yuvaInfo(), reference_pixmaps.data());
+      ASSERT_TRUE(reference_planes.isValid());
+      reference_result = reference->getYUVAPlanes(reference_planes);
+      const bool expected_success = reference_result == SkCodec::kSuccess;
+      if (!truncate) {
+        ASSERT_TRUE(expected_success);
+      }
+      decoder->SetImagePlanes(
+          std::make_unique<ImagePlanes>(planes, strides, kGray_8_SkColorType));
+      for (int attempt = 0; attempt < 2; ++attempt) {
+        decoder->DecodeToYUV();
+        ASSERT_EQ(decoder->Failed(), !expected_success);
+        EXPECT_EQ(decoder->HasDisplayableYUVData(), expected_success);
+        EXPECT_EQ(reader->snapshot_count(), snapshots_before_decode);
+        for (int plane = 0; plane < cc::kNumYUVPlanes; ++plane) {
+          EXPECT_EQ(storage[plane], expected[plane]);
+        }
+        if (decoder->Failed()) {
+          break;
+        }
+      }
+      for (int plane = 0; plane < cc::kNumYUVPlanes; ++plane) {
+        const auto index = static_cast<cc::YUVIndex>(plane);
+        const gfx::Size size = decoder->DecodedYUVSize(index);
+        for (int row = 0; row < size.height(); ++row) {
+          for (wtf_size_t column = size.width(); column < strides[plane];
+               ++column) {
+            ASSERT_EQ(storage[plane][row * strides[plane] + column], kPadding);
+          }
+        }
+      }
+    }
+  }
+}
 
 TEST_P(RustJPEGYuvTest, MatchesLegacyPlanesWithPadding) {
   base::test::ScopedFeatureList features(skia::kRustyJpegFeature);

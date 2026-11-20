@@ -10,6 +10,7 @@
 #include "base/no_destructor.h"
 #include "third_party/blink/renderer/platform/image-decoders/jpeg/jpeg_image_decoder.h"
 #include "third_party/blink/renderer/platform/image-decoders/segment_reader.h"
+#include "third_party/blink/renderer/platform/image-decoders/skia/segment_stream.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/skia/experimental/rust_jpeg/decoder/SkJpegRustDecoder.h"
 #include "third_party/skia/include/core/SkData.h"
@@ -163,11 +164,9 @@ void JpegRustImageDecoder::DecodeToYUV() {
     return;
   }
 
-  // Raw YUV decoding is non-incremental here. An immutable stream distinguishes
-  // final EOF from a temporary suspension and preserves truncated JPEG output.
+  // Raw YUV decoding needs final EOF semantics even if EOI is missing.
   SkCodec::Result result;
-  auto complete_codec =
-      SkJpegRustDecoder::Decode(data_->GetAsSkData(), &result);
+  auto complete_codec = CreateCompleteInputCodec(&result);
   if (!complete_codec) {
     SetFailed();
     return;
@@ -212,6 +211,16 @@ bool JpegRustImageDecoder::GetGainmapInfoAndData(
   return true;
 }
 
+std::unique_ptr<SkCodec> JpegRustImageDecoder::CreateCompleteInputCodec(
+    SkCodec::Result* result) const {
+  DCHECK(IsAllDataReceived());
+  DCHECK(data_);
+  auto stream = std::make_unique<SegmentStream>();
+  stream->SetReader(data_);
+  return SkJpegRustDecoder::Decode(std::move(stream), result,
+                                   SkJpegRustDecoder::InputState::kComplete);
+}
+
 std::unique_ptr<SkCodec> JpegRustImageDecoder::OnCreateSkCodec(
     std::unique_ptr<SkStream> stream,
     SkCodec::Result* result) {
@@ -245,13 +254,7 @@ SkCodec::Result JpegRustImageDecoder::OnIncrementalDecode(wtf_size_t index) {
   }
   retried_complete_input_ = true;
   DCHECK_EQ(index, 0u);
-  DCHECK(data_);
-  auto encoded_data = data_->GetAsSkData();
-  if (!encoded_data) {
-    return SkCodec::kErrorInInput;
-  }
-
-  auto complete_codec = SkJpegRustDecoder::Decode(encoded_data, &result);
+  auto complete_codec = CreateCompleteInputCodec(&result);
   if (!complete_codec) {
     return result;
   }
