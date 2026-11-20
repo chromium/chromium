@@ -4628,6 +4628,7 @@ test("base_unittests") {
       "android/scudo_purge_coordinator_unittest.cc",
       "android/sys_utils_unittest.cc",
       "android/token_android_unittest.cc",
+      "android/trace_event_binding_unittest.cc",
       "android/unguessable_token_android_unittest.cc",
     ]
 
@@ -6630,6 +6631,7 @@ if (is_android) {
     sources = [
       "test/android/java/src/org/chromium/base/InputHintCheckerTestUtil.java",
       "test/android/java/src/org/chromium/base/JniAndroidTestUtils.java",
+      "test/android/java/src/org/chromium/base/TraceEventNativeTestSupport.java",
     ]
   }
 
@@ -6650,6 +6652,7 @@ if (is_android) {
       "test/android/java/src/org/chromium/base/InputHintCheckerTestUtil.java",
       "test/android/java/src/org/chromium/base/JavaHandlerThreadHelpers.java",
       "test/android/java/src/org/chromium/base/JniAndroidTestUtils.java",
+      "test/android/java/src/org/chromium/base/TraceEventNativeTestSupport.java",
     ]
   }
 }  # is_android
