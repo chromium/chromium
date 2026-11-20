@@ -277,11 +277,7 @@ void HistoryClustersService::UpdateClusters() {
     update_clusters_task_ =
         std::make_unique<HistoryClustersServiceTaskUpdateClusterTriggerability>(
             weak_ptr_factory_.GetWeakPtr(), backend_.get(), history_service_,
-            received_synced_visit_since_last_update_,
-            base::BindOnce(
-                &RecordUpdateClustersLatencyHistogram,
-                "History.Clusters.Backend.UpdateClusterTriggerability.Total",
-                base::ElapsedTimer()));
+            received_synced_visit_since_last_update_);
 
     // Reset state for next iteration.
     received_synced_visit_since_last_update_ = false;
