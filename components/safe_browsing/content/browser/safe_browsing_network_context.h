@@ -41,13 +41,15 @@ class SafeBrowsingNetworkContext {
   // Returns a SharedURLLoaderFactory.
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory();
 
-  // Returns a NetworkContext.
+  // Returns a `NetworkContext`, or `nullptr` after `ServiceShuttingDown()` has
+  // been called.
   network::mojom::NetworkContext* GetNetworkContext();
 
   // Flushes NetworkContext and URLLoaderFactory pipes.
   void FlushForTesting();
 
-  // Called at shutdown to ensure that the URLLoaderFactory is cleaned up.
+  // Called at shutdown to tear down the `NetworkContext` and `URLLoaderFactory`
+  // pipes and prevent further `NetworkContext` creation.
   void ServiceShuttingDown();
 
  private:

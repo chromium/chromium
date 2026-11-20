@@ -157,6 +157,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "client_side_detection/client_side_detection_feature_cache_unittest.cc",
+    "safe_browsing_network_context_unittest.cc",
     "threat_details/client_report_util_unittest.cc",
     "url_checker/async_check_tracker_unittest.cc",
   ]
@@ -185,7 +186,11 @@ source_set("unit_tests") {
     "//components/variations",
     "//components/version_info",
     "//content/test:test_support",
+    "//mojo/public/cpp/bindings",
+    "//net/traffic_annotation:test_support",
     "//services/network:test_support",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
     "//testing/gmock",
     "//testing/gtest",
   ]
@@ -205,7 +210,6 @@ source_set("unit_tests") {
       "//components/safe_browsing/core/common/hashprefix_realtime:hash_realtime_utils",
       "//components/security_interstitials/content:security_interstitial_page",
       "//components/security_interstitials/core",
-      "//net/traffic_annotation:test_support",
     ]
   }
 

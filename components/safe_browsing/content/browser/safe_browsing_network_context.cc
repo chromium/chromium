@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/trace_event/trace_event.h"
 #include "components/safe_browsing/core/browser/utils/url_loader_factory_params.h"
@@ -41,12 +42,17 @@ class SafeBrowsingNetworkContext::SharedURLLoaderFactory
 
   void Reset() {
     DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+    shutting_down_ = true;
+    network_context_params_factory_.Reset();
     url_loader_factory_.reset();
     network_context_.reset();
   }
 
   network::mojom::NetworkContext* GetNetworkContext() {
     DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+    if (shutting_down_) {
+      return nullptr;
+    }
     if (!network_context_ || !network_context_.is_connected()) {
       network_context_.reset();
       content::CreateNetworkContextInNetworkService(
@@ -80,6 +86,9 @@ class SafeBrowsingNetworkContext::SharedURLLoaderFactory
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)
       override {
     DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+    if (shutting_down_) {
+      return;
+    }
     GetURLLoaderFactory()->CreateLoaderAndStart(
         std::move(loader), request_id, options, request, std::move(client),
         traffic_annotation);
@@ -87,6 +96,10 @@ class SafeBrowsingNetworkContext::SharedURLLoaderFactory
 
   void Clone(mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver)
       override {
+    CHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+    if (shutting_down_) {
+      return;
+    }
     GetURLLoaderFactory()->Clone(std::move(receiver));
   }
 
@@ -97,6 +110,7 @@ class SafeBrowsingNetworkContext::SharedURLLoaderFactory
 
   network::mojom::URLLoaderFactory* GetURLLoaderFactory() {
     DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+    CHECK(!shutting_down_);
     if (!url_loader_factory_ || !url_loader_factory_.is_connected()) {
       url_loader_factory_.reset();
       GetNetworkContext()->CreateURLLoaderFactory(
@@ -135,6 +149,10 @@ class SafeBrowsingNetworkContext::SharedURLLoaderFactory
 
   base::FilePath user_data_dir_;
   bool trigger_migration_;
+  // Set to true once `Reset()` is called (on shutdown or destruction) to
+  // prevent recreating the `NetworkContext` or invoking
+  // `network_context_params_factory_`.
+  bool shutting_down_ = false;
   NetworkContextParamsFactory network_context_params_factory_;
   mojo::Remote<network::mojom::NetworkContext> network_context_;
   mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_;
@@ -152,6 +170,7 @@ SafeBrowsingNetworkContext::SafeBrowsingNetworkContext(
 
 SafeBrowsingNetworkContext::~SafeBrowsingNetworkContext() {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  url_loader_factory_->Reset();
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>

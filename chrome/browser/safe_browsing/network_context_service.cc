@@ -13,14 +13,16 @@
 namespace safe_browsing {
 
 NetworkContextService::NetworkContextService(Profile* profile) {
+  proxy_config_monitor_ = std::make_unique<ProxyConfigMonitor>(profile);
   network_context_ = std::make_unique<SafeBrowsingNetworkContext>(
       profile->GetPath(),
       base::FeatureList::IsEnabled(features::kTriggerNetworkDataMigration),
       base::BindRepeating(&NetworkContextService::CreateNetworkContextParams,
                           // This is safe because `this` owns
-                          // `network_context_`.
+                          // `network_context_`, which clears this callback on
+                          // `ServiceShuttingDown()` and destruction (before
+                          // `proxy_config_monitor_` is destroyed).
                           base::Unretained(this)));
-  proxy_config_monitor_ = std::make_unique<ProxyConfigMonitor>(profile);
 }
 
 NetworkContextService::~NetworkContextService() = default;

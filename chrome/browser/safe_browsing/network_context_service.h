@@ -39,8 +39,8 @@ class NetworkContextService : public KeyedService {
  private:
   network::mojom::NetworkContextParamsPtr CreateNetworkContextParams();
 
-  std::unique_ptr<SafeBrowsingNetworkContext> network_context_;
   std::unique_ptr<ProxyConfigMonitor> proxy_config_monitor_;
+  std::unique_ptr<SafeBrowsingNetworkContext> network_context_;
 };
 
 }  // namespace safe_browsing
