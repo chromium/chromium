@@ -575,7 +575,7 @@ TEST_F(AmbientPhotoControllerTest, ShouldResumeWhenHaveMoreTopics) {
   task_environment()->FastForwardBy(kTopicFetchInterval);
 
   FetchTopics();
-  task_environment()->RunUntilIdle();
+  ASSERT_TRUE(RunUntilNextTopicsAdded(/*num_expected_topics=*/2));
   photo_controller()->ambient_backend_model()->GetCurrentAndNextImages(
       /*current_image=*/nullptr,
       /*next_image=*/&image);
