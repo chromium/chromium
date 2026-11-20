@@ -4,9 +4,9 @@
 
 package org.chromium.components.signin.test.util;
 
-
 import androidx.annotation.MainThread;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -20,11 +20,12 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /** Fake implementation of {@link IdentityManager} for testing. */
 @NullMarked
 public class FakeIdentityManager implements IdentityManager {
-    private final List<Observer> mObservers = new ArrayList<>();
+    private final CopyOnWriteArrayList<Observer> mObservers = new CopyOnWriteArrayList<>();
     private final Map<CoreAccountId, AccountInfo> mExtendedAccountInfos = new LinkedHashMap<>();
     private @Nullable CoreAccountInfo mPrimaryAccount;
     private boolean mIsOnExtendedAccountInfoUpdatedBlocked;
@@ -34,7 +35,7 @@ public class FakeIdentityManager implements IdentityManager {
 
     @Override
     public void addObserver(Observer observer) {
-        ThreadUtils.runOnUiThreadBlocking(() -> mObservers.add(observer));
+        ThreadUtils.runOnUiThreadBlocking(() -> mObservers.addIfAbsent(observer));
     }
 
     @Override
@@ -101,14 +102,12 @@ public class FakeIdentityManager implements IdentityManager {
                 () -> {
                     mExtendedAccountInfos.put(accountInfo.getId(), accountInfo);
                     if (mRefreshTokensLoadingState == RefreshTokensLoadingState.SUCCEEDED) {
-                        for (Observer observer : mObservers) {
-                            observer.onRefreshTokenUpdatedForAccount(accountInfo);
-                        }
+                        notifyObservers(
+                                observer -> observer.onRefreshTokenUpdatedForAccount(accountInfo));
                     }
                     if (!mIsOnExtendedAccountInfoUpdatedBlocked) {
-                        for (Observer observer : mObservers) {
-                            observer.onExtendedAccountInfoUpdated(accountInfo);
-                        }
+                        notifyObservers(
+                                observer -> observer.onExtendedAccountInfoUpdated(accountInfo));
                     }
                 });
     }
@@ -129,9 +128,9 @@ public class FakeIdentityManager implements IdentityManager {
                             mPrimaryAccount != null
                                     ? PrimaryAccountChangeEvent.Type.SET
                                     : PrimaryAccountChangeEvent.Type.CLEARED;
-                    for (Observer observer : mObservers) {
-                        observer.onPrimaryAccountChanged(new PrimaryAccountChangeEvent(eventType));
-                    }
+                    PrimaryAccountChangeEvent eventDetails =
+                            new PrimaryAccountChangeEvent(eventType);
+                    notifyObservers(observer -> observer.onPrimaryAccountChanged(eventDetails));
                 });
     }
 
@@ -144,14 +143,13 @@ public class FakeIdentityManager implements IdentityManager {
                         mPrimaryAccount = null;
                     }
                     if (mRefreshTokensLoadingState == RefreshTokensLoadingState.SUCCEEDED) {
-                        for (Observer observer : mObservers) {
-                            observer.onRefreshTokenRemovedForAccount(accountId);
-                        }
+                        notifyObservers(
+                                observer -> observer.onRefreshTokenRemovedForAccount(accountId));
                     }
                     if (!mIsOnExtendedAccountInfoUpdatedBlocked && removedAccountInfo != null) {
-                        for (Observer observer : mObservers) {
-                            observer.onExtendedAccountInfoUpdated(removedAccountInfo);
-                        }
+                        notifyObservers(
+                                observer ->
+                                        observer.onExtendedAccountInfoUpdated(removedAccountInfo));
                     }
                 });
     }
@@ -179,11 +177,21 @@ public class FakeIdentityManager implements IdentityManager {
                 () -> {
                     mRefreshTokensLoadingState = refreshTokensLoadingState;
                     if (mRefreshTokensLoadingState != RefreshTokensLoadingState.IN_PROGRESS) {
-                        for (Observer observer : mObservers) {
-                            observer.onRefreshTokensLoaded(mRefreshTokensLoadingState);
-                        }
+                        notifyObservers(
+                                observer ->
+                                        observer.onRefreshTokensLoaded(mRefreshTokensLoadingState));
                     }
                 });
+    }
+
+    @MainThread
+    private void notifyObservers(Callback<Observer> notification) {
+        ThreadUtils.assertOnUiThread();
+        for (Observer observer : mObservers) {
+            if (mObservers.contains(observer)) {
+                notification.onResult(observer);
+            }
+        }
     }
 
     public void setIsClearPrimaryAccountAllowed(boolean isAllowed) {

@@ -33,8 +33,6 @@ import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
-import org.chromium.components.signin.identitymanager.IdentityManager;
-import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.components.signin.test.util.FakeIdentityManager;
@@ -168,12 +166,7 @@ public class SigninSnackbarControllerTest {
         SnackbarManager.SnackbarController controller = snackbarCaptor.getValue().getController();
         assertEquals(1, mIdentityManager.getObserverCount());
 
-        // Notify the controller directly rather than via FakeIdentityManager#setPrimaryAccount,
-        // since FakeIdentityManager doesn't support removing observers during notification.
-        // TODO(crbug.com/575422582): Remove once FakeIdentityManager uses ObserverList.
-        ((IdentityManager.Observer) controller)
-                .onPrimaryAccountChanged(
-                        new PrimaryAccountChangeEvent(PrimaryAccountChangeEvent.Type.CLEARED));
+        mIdentityManager.setPrimaryAccount(null);
 
         verify(mSnackbarManager).dismissSnackbars(controller);
         assertEquals(0, mIdentityManager.getObserverCount());
