@@ -83,6 +83,22 @@ class OnDeviceTranslationServiceTest : public testing::Test {
                      : mojo::Remote<mojom::OnDeviceTranslator>();
   }
 
+  // Translates `input` with `translator` and returns the output.
+  std::optional<std::string> Translate(
+      const mojo::Remote<mojom::OnDeviceTranslator>& translator,
+      const std::string& input) {
+    std::optional<std::string> output_out;
+    base::RunLoop run_loop;
+    translator->Translate(input,
+                          base::BindLambdaForTesting(
+                              [&](const std::optional<std::string>& output) {
+                                output_out = output;
+                                run_loop.Quit();
+                              }));
+    run_loop.Run();
+    return output_out;
+  }
+
  private:
   base::test::TaskEnvironment task_environment_;
   mojo::Remote<mojom::OnDeviceTranslationService> service_remote_;
@@ -160,6 +176,28 @@ TEST_F(OnDeviceTranslationServiceTest, TranslateFailure) {
         run_loop.Quit();
       }));
   run_loop.Run();
+}
+
+// Tests that a second config, which appends a language pack as the browser
+// does when a new pack is installed, keeps the translators that the service
+// already created and makes the new pack usable.
+TEST_F(OnDeviceTranslationServiceTest, NewConfigKeepsExistingTranslators) {
+  auto file_operation_proxy1 =
+      SendConfig({{"en", "ja"}}, {{"0/dict.dat", "En to Ja - "}});
+  mojo::Remote<mojom::OnDeviceTranslator> en_ja = CreateTranslator("en", "ja");
+  ASSERT_TRUE(en_ja);
+  EXPECT_FALSE(CanTranslate("en", "es"));
+
+  auto file_operation_proxy2 = SendConfig(
+      {{"en", "ja"}, {"en", "es"}},
+      {{"0/dict.dat", "En to Ja - "}, {"1/dict.dat", "En to Es - "}});
+  EXPECT_TRUE(CanTranslate("en", "es"));
+  EXPECT_EQ(Translate(en_ja, "test"), "En to Ja - test");
+
+  mojo::Remote<mojom::OnDeviceTranslator> en_es = CreateTranslator("en", "es");
+  ASSERT_TRUE(en_es);
+  EXPECT_EQ(Translate(en_es, "test"), "En to Es - test");
+  EXPECT_EQ(Translate(en_ja, "test"), "En to Ja - test");
 }
 
 }  // namespace

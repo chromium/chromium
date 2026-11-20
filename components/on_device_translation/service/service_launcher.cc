@@ -43,21 +43,53 @@ std::string ToString(const base::FilePath& path) {
 }
 
 std::vector<base::FilePath> GetLanguagePackInfo(
-    OnDeviceTranslationInstaller* installer,
+    const std::vector<LanguagePackPath>& language_packs,
     std::vector<mojom::OnDeviceTranslationLanguagePackagePtr>& packages) {
   CHECK(packages.empty());
   std::vector<base::FilePath> package_paths;
-  for (const auto& it : kLanguagePackComponentConfigMap) {
-    auto file_path = installer->GetLanguagePackPath(it.first);
-    if (!file_path.empty()) {
-      packages.push_back(mojom::OnDeviceTranslationLanguagePackage::New(
-          std::string(ToLanguageCode(it.second->language1)),
-          std::string(ToLanguageCode(it.second->language2))));
-      package_paths.push_back(file_path);
-    }
+  for (const auto& [language_pack, file_path] : language_packs) {
+    CHECK(!file_path.empty());
+    const LanguagePackComponentConfig& config =
+        GetLanguagePackComponentConfig(language_pack);
+    packages.push_back(mojom::OnDeviceTranslationLanguagePackage::New(
+        std::string(ToLanguageCode(config.language1)),
+        std::string(ToLanguageCode(config.language2))));
+    package_paths.push_back(file_path);
   }
-
   return package_paths;
+}
+
+// Sends the config for `language_packs` to `service`, and binds the file
+// operation proxy that serves their files on a background sequence.
+void SendServiceConfig(mojom::OnDeviceTranslationService& service,
+                       const std::vector<LanguagePackPath>& language_packs) {
+  auto config = OnDeviceTranslationServiceConfig::New();
+  mojo::PendingReceiver<FileOperationProxy> proxy_receiver =
+      config->file_operation_proxy.InitWithNewPipeAndPassReceiver();
+  std::vector<base::FilePath> package_paths =
+      GetLanguagePackInfo(language_packs, config->packages);
+  service.SetServiceConfig(std::move(config));
+
+  scoped_refptr<base::SequencedTaskRunner> task_runner =
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
+  // Create the FileOperationProxy which lives in the background thread of
+  // `task_runner`.
+  // Bind the self-owned receiver on the background thread.
+  task_runner->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](mojo::PendingReceiver<mojom::FileOperationProxy> receiver,
+             scoped_refptr<base::SequencedTaskRunner> task_runner,
+             std::vector<base::FilePath> package_paths) {
+            mojo::MakeSelfOwnedReceiver(
+                std::make_unique<FileOperationProxyImpl>(
+                    // Note: Ensure the constructor doesn't also bind the
+                    // receiver!
+                    task_runner, std::move(package_paths)),
+                std::move(receiver));
+          },
+          std::move(proxy_receiver), task_runner, std::move(package_paths)));
 }
 }  // namespace
 
@@ -74,7 +106,8 @@ class OnDeviceTranslationServiceLauncherImpl
 
   mojo::PendingRemote<mojom::OnDeviceTranslationService> Launch(
       std::string_view service_display_name_suffix,
-      OnDeviceTranslationInstaller* installer) override {
+      OnDeviceTranslationInstaller* installer,
+      const std::vector<LanguagePackPath>& language_packs) override {
     mojo::PendingRemote<mojom::OnDeviceTranslationService> remote;
 
     CHECK(installer);
@@ -105,37 +138,16 @@ class OnDeviceTranslationServiceLauncherImpl
 #endif
             .Pass());
 
-    auto config = OnDeviceTranslationServiceConfig::New();
-    mojo::PendingReceiver<FileOperationProxy> proxy_receiver =
-        config->file_operation_proxy.InitWithNewPipeAndPassReceiver();
     mojo::Remote<mojom::OnDeviceTranslationService> service_remote(
         std::move(remote));
-    std::vector<base::FilePath> package_paths =
-        GetLanguagePackInfo(installer, config->packages);
-    service_remote->SetServiceConfig(std::move(config));
-
-    scoped_refptr<base::SequencedTaskRunner> task_runner =
-        base::ThreadPool::CreateSequencedTaskRunner(
-            {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
-    // Create the FileOperationProxy which lives in the background thread of
-    // `task_runner`.
-    // Bind the self-owned receiver on the background thread.
-    task_runner->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            [](mojo::PendingReceiver<mojom::FileOperationProxy> receiver,
-               scoped_refptr<base::SequencedTaskRunner> task_runner,
-               std::vector<base::FilePath> package_paths) {
-              mojo::MakeSelfOwnedReceiver(
-                  std::make_unique<FileOperationProxyImpl>(
-                      // Note: Ensure the constructor doesn't also bind the
-                      // receiver!
-                      task_runner, std::move(package_paths)),
-                  std::move(receiver));
-            },
-            std::move(proxy_receiver), task_runner, std::move(package_paths)));
-
+    SendServiceConfig(*service_remote.get(), language_packs);
     return service_remote.Unbind();
+  }
+
+  void UpdateLanguagePacks(
+      mojom::OnDeviceTranslationService& service,
+      const std::vector<LanguagePackPath>& language_packs) override {
+    SendServiceConfig(service, language_packs);
   }
 };
 

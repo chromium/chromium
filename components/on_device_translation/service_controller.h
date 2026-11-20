@@ -19,13 +19,13 @@
 #include "components/on_device_translation/installer.h"
 #include "components/on_device_translation/public/mojom/on_device_translation_service.mojom.h"
 #include "components/on_device_translation/public/mojom/translator.mojom.h"
+#include "components/on_device_translation/service/service_launcher.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace on_device_translation {
 
-class OnDeviceTranslationServiceLauncher;
 enum class LanguagePackKey;
 
 class OnDeviceTranslationController {
@@ -163,6 +163,9 @@ class OnDeviceTranslationServiceController
   // the service is running or is started successfully.
   bool MaybeStartService();
 
+  // Updates or resets the running service after a language pack changes.
+  void UpdateRunningServiceLanguagePack(LanguagePackKey lang_pack);
+
   void MaybeRunPendingTasks();
 
   // Rejects and removes the pending tasks for which `predicate` returns true.
@@ -182,6 +185,11 @@ class OnDeviceTranslationServiceController
   // this amount of time, the service will be terminated.
   base::TimeDelta service_idle_timeout_;
   mojo::Remote<mojom::OnDeviceTranslationService> service_remote_;
+
+  // The language packs that the running service has, in the order it got
+  // them.
+  std::vector<LanguagePackPath> service_language_packs_;
+
   // The pending tasks that are waiting for the language packs to be installed.
   std::vector<PendingTask> pending_tasks_;
 

@@ -5,6 +5,9 @@
 #ifndef COMPONENTS_ON_DEVICE_TRANSLATION_TEST_FAKE_INSTALLER_H_
 #define COMPONENTS_ON_DEVICE_TRANSLATION_TEST_FAKE_INSTALLER_H_
 
+#include <map>
+#include <set>
+
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
@@ -42,12 +45,19 @@ class FakeOnDeviceTranslationInstaller : public OnDeviceTranslationInstaller {
   // Makes the pending download of `language_pack` fail with `error`.
   void FailLanguagePackInstallNow(LanguagePackKey language_pack,
                                   InstallError error = InstallError::kFailed);
+  // Makes `GetLanguagePackPath()` return `path` for `language_pack`, for
+  // example to stand for a newer version.
+  void SetLanguagePackPath(LanguagePackKey language_pack, base::FilePath path);
+  // Makes `IsInit()` return false again, as on desktop while the library
+  // component registers at startup.
+  void ResetInit() { is_init_ = false; }
 
  private:
   base::FilePath fake_install_dir_;
   bool is_init_ = false;
   std::set<LanguagePackKey> installed_lang_packs_;
   std::set<LanguagePackKey> registered_lang_packs_;
+  std::map<LanguagePackKey, base::FilePath> language_pack_paths_;
   base::ObserverList<OnDeviceTranslationInstaller::Observer> observers_;
   base::WeakPtrFactory<FakeOnDeviceTranslationInstaller> weak_ptr_factory_{
       this};

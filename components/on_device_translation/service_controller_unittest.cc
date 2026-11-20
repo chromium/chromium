@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
@@ -25,6 +26,9 @@
 namespace on_device_translation {
 namespace {
 
+using ::testing::_;
+using ::testing::ElementsAre;
+using ::testing::Pair;
 using ::testing::UnorderedElementsAre;
 using CreateTranslatorError =
     OnDeviceTranslationController::CreateTranslatorError;
@@ -35,7 +39,13 @@ class MockServiceLauncher : public OnDeviceTranslationServiceLauncher {
   MOCK_METHOD(mojo::PendingRemote<mojom::OnDeviceTranslationService>,
               Launch,
               (std::string_view service_display_name_suffix,
-               OnDeviceTranslationInstaller* installer),
+               OnDeviceTranslationInstaller* installer,
+               const std::vector<LanguagePackPath>& language_packs),
+              (override));
+  MOCK_METHOD(void,
+              UpdateLanguagePacks,
+              (mojom::OnDeviceTranslationService & service,
+               const std::vector<LanguagePackPath>& language_packs),
               (override));
 };
 
@@ -294,6 +304,120 @@ TEST_F(OnDeviceTranslationServiceControllerTest,
   service_controller_->CreateTranslator("en", "es", future.GetCallback());
   fake_installer_->FailLibraryInstallNow();
   EXPECT_FALSE(future.IsReady());
+}
+
+TEST_F(OnDeviceTranslationServiceControllerTest,
+       NewLanguagePackIsAddedToRunningService) {
+  FakeOnDeviceTranslationService fake_service;
+  fake_installer_->InitNow(base::DoNothing());
+  fake_installer_->InstallLanguagePackNow(LanguagePackKey::kEn_Es);
+  EXPECT_CALL(*mock_launcher_,
+              Launch(_, _, ElementsAre(Pair(LanguagePackKey::kEn_Es, _))))
+      .WillOnce(testing::Return(
+          testing::ByMove(fake_service.BindNewPipeAndPassRemote())));
+  base::test::TestFuture<base::expected<
+      mojo::PendingRemote<mojom::OnDeviceTranslator>, CreateTranslatorError>>
+      en_es_future;
+  service_controller_->CreateTranslator("en", "es", en_es_future.GetCallback());
+  ASSERT_TRUE(en_es_future.Get().has_value());
+  ASSERT_TRUE(service_controller_->IsServiceRunning());
+
+  // A new language pack goes to the running service, after the packs that the
+  // service already has.
+  EXPECT_CALL(
+      *mock_launcher_,
+      UpdateLanguagePacks(_, ElementsAre(Pair(LanguagePackKey::kEn_Es, _),
+                                         Pair(LanguagePackKey::kEn_Ja, _))));
+  fake_installer_->InstallLanguagePackNow(LanguagePackKey::kEn_Ja);
+  EXPECT_TRUE(service_controller_->IsServiceRunning());
+
+  // An update of a language pack that the service has keeps the service.
+  fake_installer_->InstallLanguagePackNow(LanguagePackKey::kEn_Es);
+  EXPECT_TRUE(service_controller_->IsServiceRunning());
+
+  // The next translator comes from the same service.
+  EXPECT_CALL(*mock_launcher_, Launch).Times(0);
+  base::test::TestFuture<base::expected<
+      mojo::PendingRemote<mojom::OnDeviceTranslator>, CreateTranslatorError>>
+      en_ja_future;
+  service_controller_->CreateTranslator("en", "ja", en_ja_future.GetCallback());
+  EXPECT_TRUE(en_ja_future.Get().has_value());
+}
+
+// Tests that the running service keeps the paths that it got for its packs
+// when a newer version of a pack is installed. The service may have read some
+// files of the old version already.
+TEST_F(OnDeviceTranslationServiceControllerTest,
+       RunningServiceKeepsPathsOfItsLanguagePacks) {
+  FakeOnDeviceTranslationService fake_service;
+  const base::FilePath old_en_es_path(FILE_PATH_LITERAL("/packs/en_es/1"));
+  const base::FilePath new_en_es_path(FILE_PATH_LITERAL("/packs/en_es/2"));
+  const base::FilePath en_ja_path(FILE_PATH_LITERAL("/packs/en_ja/1"));
+  fake_installer_->InitNow(base::DoNothing());
+  fake_installer_->SetLanguagePackPath(LanguagePackKey::kEn_Es, old_en_es_path);
+  fake_installer_->SetLanguagePackPath(LanguagePackKey::kEn_Ja, en_ja_path);
+  fake_installer_->InstallLanguagePackNow(LanguagePackKey::kEn_Es);
+  EXPECT_CALL(
+      *mock_launcher_,
+      Launch(_, _, ElementsAre(Pair(LanguagePackKey::kEn_Es, old_en_es_path))))
+      .WillOnce(testing::Return(
+          testing::ByMove(fake_service.BindNewPipeAndPassRemote())));
+  base::test::TestFuture<base::expected<
+      mojo::PendingRemote<mojom::OnDeviceTranslator>, CreateTranslatorError>>
+      future;
+  service_controller_->CreateTranslator("en", "es", future.GetCallback());
+  ASSERT_TRUE(future.Get().has_value());
+
+  // A newer version of en-es lands, then en-ja.
+  fake_installer_->SetLanguagePackPath(LanguagePackKey::kEn_Es, new_en_es_path);
+  fake_installer_->InstallLanguagePackNow(LanguagePackKey::kEn_Es);
+  EXPECT_CALL(*mock_launcher_,
+              UpdateLanguagePacks(
+                  _, ElementsAre(Pair(LanguagePackKey::kEn_Es, old_en_es_path),
+                                 Pair(LanguagePackKey::kEn_Ja, en_ja_path))));
+  fake_installer_->InstallLanguagePackNow(LanguagePackKey::kEn_Ja);
+  EXPECT_TRUE(service_controller_->IsServiceRunning());
+}
+
+// Tests that a new pack restarts the service, instead of crashing, when its
+// path isn't known yet because the library is not ready.
+TEST_F(OnDeviceTranslationServiceControllerTest,
+       NewLanguagePackWithoutLibraryStopsRunningService) {
+  FakeOnDeviceTranslationService fake_service;
+  fake_installer_->InitNow(base::DoNothing());
+  fake_installer_->InstallLanguagePackNow(LanguagePackKey::kEn_Es);
+  EXPECT_CALL(*mock_launcher_, Launch)
+      .WillOnce(testing::Return(
+          testing::ByMove(fake_service.BindNewPipeAndPassRemote())));
+  base::test::TestFuture<base::expected<
+      mojo::PendingRemote<mojom::OnDeviceTranslator>, CreateTranslatorError>>
+      future;
+  service_controller_->CreateTranslator("en", "es", future.GetCallback());
+  ASSERT_TRUE(future.Get().has_value());
+
+  fake_installer_->ResetInit();
+  EXPECT_CALL(*mock_launcher_, UpdateLanguagePacks).Times(0);
+  fake_installer_->InstallLanguagePackNow(LanguagePackKey::kEn_Ja);
+  EXPECT_FALSE(service_controller_->IsServiceRunning());
+}
+
+TEST_F(OnDeviceTranslationServiceControllerTest,
+       UninstalledLanguagePackStopsRunningService) {
+  FakeOnDeviceTranslationService fake_service;
+  fake_installer_->InitNow(base::DoNothing());
+  fake_installer_->InstallLanguagePackNow(LanguagePackKey::kEn_Es);
+  EXPECT_CALL(*mock_launcher_, Launch)
+      .WillOnce(testing::Return(
+          testing::ByMove(fake_service.BindNewPipeAndPassRemote())));
+  base::test::TestFuture<base::expected<
+      mojo::PendingRemote<mojom::OnDeviceTranslator>, CreateTranslatorError>>
+      future;
+  service_controller_->CreateTranslator("en", "es", future.GetCallback());
+  ASSERT_TRUE(future.Get().has_value());
+
+  EXPECT_CALL(*mock_launcher_, UpdateLanguagePacks).Times(0);
+  fake_installer_->UnInstallLanguagePack(LanguagePackKey::kEn_Es);
+  EXPECT_FALSE(service_controller_->IsServiceRunning());
 }
 
 }  // namespace

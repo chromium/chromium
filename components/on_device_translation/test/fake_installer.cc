@@ -35,7 +35,17 @@ base::FilePath FakeOnDeviceTranslationInstaller::GetLibraryPath() const {
 
 base::FilePath FakeOnDeviceTranslationInstaller::GetLanguagePackPath(
     LanguagePackKey language_pack) const {
+  auto it = language_pack_paths_.find(language_pack);
+  if (it != language_pack_paths_.end()) {
+    return it->second;
+  }
   return fake_install_dir_.AppendASCII(GetPackageInstallDirName(language_pack));
+}
+
+void FakeOnDeviceTranslationInstaller::SetLanguagePackPath(
+    LanguagePackKey language_pack,
+    base::FilePath path) {
+  language_pack_paths_[language_pack] = std::move(path);
 }
 
 void FakeOnDeviceTranslationInstaller::Init(

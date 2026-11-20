@@ -24,6 +24,7 @@ source_set("file_operation_proxy") {
 
 source_set("launcher_interface") {
   sources = [ "service_launcher.h" ]
+  public_deps = [ "//base" ]
   deps = [
     "//components/on_device_translation/public/mojom",
     "//mojo/public/cpp/bindings",

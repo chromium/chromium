@@ -340,7 +340,7 @@ void OnDeviceTranslationServiceController::OnLanguagePackInstalled(
 
 void OnDeviceTranslationServiceController::OnLanguagePackInstallationChanged(
     const LanguagePackKey lang_pack) {
-  service_remote_.reset();
+  UpdateRunningServiceLanguagePack(lang_pack);
   MaybeRunPendingTasks();
 }
 
@@ -394,6 +394,46 @@ void OnDeviceTranslationServiceController::RejectPendingTasks(
   }
 }
 
+void OnDeviceTranslationServiceController::UpdateRunningServiceLanguagePack(
+    LanguagePackKey lang_pack) {
+  if (!service_remote_) {
+    return;
+  }
+  const bool installed =
+      installer_->InstalledLanguagePacks().contains(lang_pack);
+  const bool service_has_pack = std::ranges::contains(
+      service_language_packs_, lang_pack, &LanguagePackPath::first);
+  if (installed && !service_has_pack) {
+    base::FilePath path = installer_->IsInit()
+                              ? installer_->GetLanguagePackPath(lang_pack)
+                              : base::FilePath();
+    if (path.empty()) {
+      // The path of the new language pack isn't known yet. The next request
+      // starts a new service with every installed pack.
+      service_remote_.reset();
+      return;
+    }
+
+    // Add the new language pack to the running service. Restarting the
+    // service would break the translators of every page that uses it. The
+    // packs that the service has keep the paths that it got, even if a
+    // newer version was installed since.
+    service_language_packs_.emplace_back(lang_pack, std::move(path));
+    launcher_->UpdateLanguagePacks(*service_remote_.get(),
+                                   service_language_packs_);
+    return;
+  }
+  if (!installed && service_has_pack) {
+    // The files of the language pack are gone, so translators that use it
+    // can't work. The next request starts a new service.
+    service_remote_.reset();
+  }
+
+  // Otherwise, when a language pack that the service has is updated, the
+  // component updater keeps the old version until the next browser start, so
+  // the service keeps using it. The next service gets the new version.
+}
+
 void OnDeviceTranslationServiceController::MaybeRunPendingTasks() {
   if (pending_tasks_.empty()) {
     return;
@@ -425,11 +465,20 @@ bool OnDeviceTranslationServiceController::MaybeStartService() {
     return true;
   }
 
+  std::vector<LanguagePackPath> language_packs;
+  for (LanguagePackKey language_pack : installer_->InstalledLanguagePacks()) {
+    base::FilePath path = installer_->GetLanguagePackPath(language_pack);
+    if (!path.empty()) {
+      language_packs.emplace_back(language_pack, std::move(path));
+    }
+  }
   mojo::PendingRemote<mojom::OnDeviceTranslationService> pending_remote =
-      launcher_->Launch(service_display_name_suffix_, installer_);
+      launcher_->Launch(service_display_name_suffix_, installer_,
+                        language_packs);
   if (!pending_remote.is_valid()) {
     return false;
   }
+  service_language_packs_ = std::move(language_packs);
 
   service_remote_.Bind(std::move(pending_remote));
   service_remote_.reset_on_disconnect();
