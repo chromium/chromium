@@ -218,7 +218,7 @@ export class LensSearchboxElement extends LensSearchboxElementBase implements
         /*isOnFocus=*/ !input);
   }
 
-  override handleKeyNavigation(e: KeyboardEvent) {
+  override async handleKeyNavigation(e: KeyboardEvent) {
     if (this.showThumbnail) {
       const thumbnail =
           this.shadowRoot.querySelector<HTMLElement>('cr-searchbox-thumbnail');
@@ -261,7 +261,7 @@ export class LensSearchboxElement extends LensSearchboxElementBase implements
         e.preventDefault();
       }
     }
-    super.handleKeyNavigation(e);
+    await super.handleKeyNavigation(e);
   }
 
   queryInputAutocomplete() {

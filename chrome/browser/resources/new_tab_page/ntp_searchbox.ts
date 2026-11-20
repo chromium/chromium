@@ -425,7 +425,7 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
         !(this.dropdownIsVisible && this.composeButtonEnabled);
   }
 
-  override handleKeyNavigation(e: KeyboardEvent) {
+  override async handleKeyNavigation(e: KeyboardEvent) {
     if (this.composeButtonEnabled && e.key === 'Tab' &&
         this.$.input === this.shadowRoot.activeElement &&
         this.acceptInlineAutocomplete(e)) {
@@ -440,7 +440,7 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
       return;
     }
 
-    super.handleKeyNavigation(e);
+    await super.handleKeyNavigation(e);
   }
 
   protected onInputFocusin_() {

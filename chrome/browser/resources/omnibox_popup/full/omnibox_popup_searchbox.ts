@@ -2856,7 +2856,7 @@ export class OmniboxPopupSearchboxElement extends
         this.selectedMatchIndex !== -1;
   }
 
-  override handleKeyNavigation(e: KeyboardEvent) {
+  override async handleKeyNavigation(e: KeyboardEvent) {
     // Ignore key navigation (including ESC) during active IME text composition
     // (e.g. Japanese/Chinese/Korean) so the OS IME engine handles the key
     // first.
@@ -2923,7 +2923,7 @@ export class OmniboxPopupSearchboxElement extends
             return;
           }
         }
-        super.handleKeyNavigation(e);
+        await super.handleKeyNavigation(e);
         return;
       }
 
@@ -2966,7 +2966,7 @@ export class OmniboxPopupSearchboxElement extends
       }
     }
 
-    super.handleKeyNavigation(e);
+    await super.handleKeyNavigation(e);
   }
 
   private handleEscapeKey_() {

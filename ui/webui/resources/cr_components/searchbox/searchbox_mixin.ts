@@ -1552,7 +1552,7 @@ export interface SearchboxMixinInterface extends
   getDropdownElement(): SearchboxDropdownElement;
   getInputElement(): SearchboxInputElement;
   getWrapperElement(): HTMLElement;
-  handleKeyNavigation(e: KeyboardEvent): void;
+  handleKeyNavigation(e: KeyboardEvent): Promise<void>;
   handleVirtualFocusEnter(e: KeyboardEvent): boolean;
   handleVirtualFocusSpace(e: KeyboardEvent): boolean;
   getSelectionA11yLabel(
@@ -1567,11 +1567,11 @@ export interface SearchboxMixinInterface extends
   unfreezeActiveQueryId(): void;
 
   navigateToMatch(matchIndex: number, e: KeyboardEvent|MouseEvent): void;
-  onAutocompleteResultChanged(result: AutocompleteResult|null): void;
+  onAutocompleteResultChanged(result: AutocompleteResult|null): Promise<void>;
   onInputFocusChanged(e: CustomEvent<{value: string}>): void;
   onInputWrapperFocusout(e: FocusEvent): void;
   updateStateForKeydown(e: KeyboardEvent): void;
-  onInputWrapperKeydown(e: KeyboardEvent): void;
+  onInputWrapperKeydown(e: KeyboardEvent): Promise<void>;
   onMatchClick(): void;
   onMatchFocusin(e: CustomEvent<number>): void;
   onKeywordClick(e: Event): void;
