@@ -160,10 +160,7 @@ DeclarativePerformanceObserver::DeclarativePerformanceObserver(
 }
 
 DeclarativePerformanceObserver::~DeclarativePerformanceObserver() {
-  if (render_frame_host().GetLifecycleState() !=
-      RenderFrameHost::LifecycleState::kPrerendering) {
-    EndSessionAndFlush();
-  }
+  EndSessionAndFlush();
   base::UmaHistogramMemoryKB("DeclarativePerformanceObserver.PeakBufferSize",
                              peak_buffer_bytes_ / 1024);
   base::UmaHistogramBoolean(
@@ -320,6 +317,15 @@ void DeclarativePerformanceObserver::AppendSessionEndEntry() {
 
 void DeclarativePerformanceObserver::EndSessionAndFlush() {
   if (is_session_ended_) {
+    return;
+  }
+  // A prerendered page discarded without activation was never presented to the
+  // user, so reporting its timeline would attribute a page view that never
+  // happened. The lifecycle state is still kPrerendering on every discard path:
+  // neither ClosePage(kPrerenderDiscard) nor FrameTree::Shutdown() transitions
+  // it before the frame is deleted.
+  if (render_frame_host().GetLifecycleState() ==
+      RenderFrameHost::LifecycleState::kPrerendering) {
     return;
   }
   AppendSessionEndEntry();

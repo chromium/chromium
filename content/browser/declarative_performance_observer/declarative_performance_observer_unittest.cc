@@ -17,7 +17,10 @@
 #include "base/values.h"
 #include "content/browser/declarative_performance_observer/declarative_performance_observer_coordinator.h"
 #include "content/browser/declarative_performance_observer/declarative_performance_observer_store.h"
+#include "content/browser/preloading/prerender/prerender_host.h"
+#include "content/browser/preloading/prerender/prerender_host_registry.h"
 #include "content/browser/storage_partition_impl.h"
+#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/navigation_throttle_registry.h"
@@ -27,11 +30,13 @@
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/navigation_simulator.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_throttle.h"
 #include "content/public/test/test_navigation_throttle_inserter.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_storage_partition.h"
 #include "content/public/test/test_utils.h"
+#include "content/public/test/web_contents_tester.h"
 #include "content/test/storage_partition_test_helpers.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -161,10 +166,14 @@ class DeclarativePerformanceObserverTest : public RenderViewHostTestHarness {
   }
 
   void CreateObserver(NavigationHandle* navigation_handle) {
-    DeclarativePerformanceObserver::CreateForCurrentDocument(main_rfh(),
+    CreateObserverFor(main_rfh(), navigation_handle);
+  }
+
+  void CreateObserverFor(RenderFrameHost* rfh,
+                         NavigationHandle* navigation_handle) {
+    DeclarativePerformanceObserver::CreateForCurrentDocument(rfh,
                                                              navigation_handle);
-    auto* observer =
-        DeclarativePerformanceObserver::GetForCurrentDocument(main_rfh());
+    auto* observer = DeclarativePerformanceObserver::GetForCurrentDocument(rfh);
     if (observer) {
       observer->SetStoragePartitionForTesting(&storage_partition_);
     }
@@ -886,6 +895,57 @@ TEST_F(DeclarativePerformanceObserverTest, RecordsPrerenderActivation) {
   EXPECT_EQ(*(nav_entry->FindString("entryType")), "navigation");
   EXPECT_EQ(*(nav_entry->FindString("deliveryType")), "navigational-prefetch");
   EXPECT_EQ(*(nav_entry->FindDouble("activationStart")), 123.0);
+}
+
+class DeclarativePerformanceObserverPrerenderTest
+    : public DeclarativePerformanceObserverTest {
+ private:
+  test::ScopedPrerenderFeatureList prerender_feature_list_;
+};
+
+TEST_F(DeclarativePerformanceObserverPrerenderTest,
+       SkipsReportForDiscardedPrerender) {
+  const GURL kInitialURL("https://example.com/index.html");
+  const GURL kPrerenderURL("https://example.com/prerender.html");
+
+  test::ScopedPrerenderWebContentsDelegate delegate(*web_contents());
+  WebContentsTester::For(web_contents())->NavigateAndCommit(kInitialURL);
+
+  RenderFrameHost* prerender_rfh =
+      WebContentsTester::For(web_contents())
+          ->AddPrerenderAndCommitNavigation(kPrerenderURL);
+  ASSERT_TRUE(prerender_rfh);
+  ASSERT_EQ(prerender_rfh->GetLifecycleState(),
+            RenderFrameHost::LifecycleState::kPrerendering);
+
+  auto policy = network::mojom::DeclarativePerformanceObserverPolicy::New();
+  policy->reporting_endpoint = "telemetry";
+  policy->entry_types.push_back(
+      network::mojom::PerformanceEntryType::kNavigation);
+
+  MockNavigationHandle navigation_handle(kPrerenderURL, prerender_rfh);
+  navigation_handle.set_has_committed(true);
+  ON_CALL(navigation_handle, GetDeclarativePerformanceObserverPolicy())
+      .WillByDefault(testing::Return(policy.get()));
+  NavigationHandleTiming timing;
+  ON_CALL(navigation_handle, GetNavigationHandleTiming())
+      .WillByDefault(testing::ReturnRef(timing));
+  CreateObserverFor(prerender_rfh, &navigation_handle);
+
+  auto* registry =
+      static_cast<WebContentsImpl*>(web_contents())->GetPrerenderHostRegistry();
+  PrerenderHost* host = registry->FindHostByUrlForTesting(kPrerenderURL);
+  ASSERT_TRUE(host);
+  // PrerenderHostRegistry erases the host from its map synchronously but
+  // destroys the PrerenderHost, and with it the RenderFrameHost, on a later
+  // task. The flush under test runs from RenderFrameDeleted, so wait for that
+  // rather than for the registry lookup to start failing.
+  RenderFrameDeletedObserver deleted_observer(prerender_rfh);
+  registry->CancelHost(host->prerender_host_id(),
+                       PrerenderFinalStatus::kDestroyed);
+  ASSERT_TRUE(deleted_observer.WaitUntilDeleted());
+
+  EXPECT_TRUE(network_context_.reports().empty());
 }
 
 TEST_F(DeclarativePerformanceObserverTest,
