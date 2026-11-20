@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
+#include <string>
+
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/run_until.h"
@@ -41,16 +44,26 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "base/strings/stringprintf.h"
+#include "base/values.h"
 #include "chrome/browser/extensions/api/downloads/downloads_api.h"
 #include "chrome/browser/extensions/api/tabs/tabs_api.h"
+#include "chrome/browser/extensions/api/tabs/tabs_constants.h"
+#include "chrome/browser/extensions/api/tabs/tabs_windows_api.h"
 #include "chrome/browser/extensions/api/tabs/windows_api.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
+#include "chrome/browser/extensions/window_controller.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/extensions/api/windows.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "extensions/browser/api_test_utils.h"
+#include "extensions/browser/background_script_executor.h"
+#include "extensions/browser/event_router.h"
+#include "extensions/browser/test_event_router_observer.h"
+#include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/test/test_extension_dir.h"
+#include "ui/base/base_window.h"
 #endif
 
 namespace {
@@ -325,18 +338,506 @@ IN_PROC_BROWSER_TEST_F(DocumentPipExtensionFoundationBrowserTest,
   auto* host = GetDocumentPipHost();
   ASSERT_TRUE(host);
   auto* child = host->GetChildWebContents();
-  std::string error;
-  auto* controller = extensions::ExtensionTabUtil::GetControllerInProfileWithId(
-      browser()->GetProfile(), host->GetSessionId().id(), false, &error);
-  ASSERT_TRUE(controller) << error;
-  const GURL options_url = extension->GetResourceURL("options.html");
-  ASSERT_TRUE(controller->OpenOptionsPage(extension.get(), options_url, true));
+  ASSERT_TRUE(extensions::ExtensionTabUtil::OpenOptionsPageFromWebContents(
+      extension.get(), child));
   ASSERT_EQ(2, browser()->GetTabStripModel()->count());
   auto* options = browser()->GetTabStripModel()->GetActiveWebContents();
   ASSERT_TRUE(content::WaitForLoadStop(options));
-  EXPECT_EQ(options_url, options->GetLastCommittedURL());
+  EXPECT_EQ(extension->GetResourceURL("options.html"),
+            options->GetLastCommittedURL());
   EXPECT_EQ(u"PiP options", options->GetTitle());
   EXPECT_EQ(child, host->GetChildWebContents());
+}
+
+namespace {
+
+bool HasWindowEventForId(const extensions::TestEventRouterObserver& observer,
+                         const std::string& event_name,
+                         int window_id) {
+  return std::ranges::any_of(observer.all_events(), [&](const auto& event) {
+    if (event->event_name != event_name || event->args().empty()) {
+      return false;
+    }
+    const base::Value& first_arg = event->args()[0];
+    if (first_arg.is_dict()) {
+      return first_arg.GetDict().FindInt("id") == window_id;
+    }
+    return first_arg.is_int() && first_arg.GetInt() == window_id;
+  });
+}
+
+void WaitForWindowEventForId(extensions::TestEventRouterObserver& observer,
+                             const std::string& event_name,
+                             int window_id) {
+  while (!HasWindowEventForId(observer, event_name, window_id)) {
+    observer.ClearEvents();
+    observer.WaitForEventWithName(event_name);
+  }
+}
+
+bool HasWindowBoundsChangedEvent(
+    const extensions::TestEventRouterObserver& observer,
+    int window_id,
+    int expected_width,
+    int expected_height) {
+  return std::ranges::any_of(observer.all_events(), [&](const auto& event) {
+    if (event->event_name !=
+            extensions::api::windows::OnBoundsChanged::kEventName ||
+        event->args().empty() || !event->args()[0].is_dict()) {
+      return false;
+    }
+    const base::DictValue& dict = event->args()[0].GetDict();
+    return dict.FindInt("id") == window_id &&
+           dict.FindInt("width") == expected_width &&
+           dict.FindInt("height") == expected_height;
+  });
+}
+
+void WaitForWindowBoundsChangedEvent(
+    extensions::TestEventRouterObserver& observer,
+    int window_id,
+    int expected_width,
+    int expected_height) {
+  while (!HasWindowBoundsChangedEvent(observer, window_id, expected_width,
+                                      expected_height)) {
+    observer.ClearEvents();
+    observer.WaitForEventWithName(
+        extensions::api::windows::OnBoundsChanged::kEventName);
+  }
+}
+
+}  // namespace
+
+class DocumentPipExtensionApiParityBrowserTest
+    : public DocumentPipStandaloneBrowserTestBase,
+      public testing::WithParamInterface<bool> {
+ public:
+  DocumentPipExtensionApiParityBrowserTest() {
+    scoped_feature_list_.InitWithFeatureStates(
+        {{blink::features::kDocumentPictureInPictureAPI, true},
+         {features::kDocumentPipStandaloneWindow, GetParam()}});
+  }
+
+  void SetUpOnMainThread() override {
+    DocumentPipStandaloneBrowserTestBase::SetUpOnMainThread();
+    extension_ = extensions::ExtensionBuilder("PiP API Parity")
+                     .AddAPIPermission("tabs")
+                     .AddHostPermission("<all_urls>")
+                     .Build();
+  }
+
+ protected:
+  template <typename Function>
+  scoped_refptr<Function> NewFunction() {
+    auto function = base::MakeRefCounted<Function>();
+    function->set_extension(extension_.get());
+    return function;
+  }
+
+  bool QueryContainsTab(const std::string& args_json, int tab_id) {
+    const auto result =
+        extensions::api_test_utils::RunFunctionAndReturnSingleResult(
+            NewFunction<extensions::TabsQueryFunction>(), args_json,
+            browser()->GetProfile());
+    if (!result || !result->is_list()) {
+      ADD_FAILURE() << "Unexpected TabsQueryFunction result for: " << args_json;
+      return false;
+    }
+    return std::ranges::any_of(result->GetList(), [&](const base::Value& item) {
+      return item.is_dict() && item.GetDict().FindInt("id") == tab_id;
+    });
+  }
+
+  scoped_refptr<const extensions::Extension> extension_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         DocumentPipExtensionApiParityBrowserTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "Standalone" : "BrowserBacked";
+                         });
+
+IN_PROC_BROWSER_TEST_P(DocumentPipExtensionApiParityBrowserTest,
+                       WindowsApiAndEventsParity) {
+  Profile* profile = browser()->GetProfile();
+  ASSERT_NE(nullptr,
+            extensions::TabsWindowsAPI::Get(profile)->windows_event_router());
+  auto* event_router = extensions::EventRouter::Get(profile);
+  content::RenderProcessHost* process =
+      OpenerWebContents()->GetPrimaryMainFrame()->GetProcess();
+  event_router->AddEventListenerForURL(
+      extensions::api::windows::OnCreated::kEventName, process,
+      extension_->url());
+  event_router->AddEventListenerForURL(
+      extensions::api::windows::OnBoundsChanged::kEventName, process,
+      extension_->url());
+  event_router->AddEventListenerForURL(
+      extensions::api::windows::OnRemoved::kEventName, process,
+      extension_->url());
+
+  extensions::TestEventRouterObserver event_observer(event_router);
+
+  ASSERT_NO_FATAL_FAILURE(OpenDocumentPipWindow());
+  content::WebContents* child =
+      PictureInPictureWindowManager::GetInstance()->GetChildWebContents();
+  ASSERT_NE(nullptr, child);
+  const int pip_window_id =
+      sessions::SessionTabHelper::IdForWindowContainingTab(child).id();
+  const int pip_tab_id = sessions::SessionTabHelper::IdForTab(child).id();
+  ASSERT_GT(pip_window_id, 0);
+  ASSERT_GT(pip_tab_id, 0);
+
+  extensions::WindowController* controller =
+      extensions::ExtensionTabUtil::GetWindowControllerOfTab(child);
+  ASSERT_NE(nullptr, controller);
+  EXPECT_EQ(GetParam(), controller->GetBrowserWindowInterface() == nullptr);
+
+  WaitForWindowEventForId(event_observer,
+                          extensions::api::windows::OnCreated::kEventName,
+                          pip_window_id);
+
+  namespace utils = extensions::api_test_utils;
+  const auto get_result = utils::RunFunctionAndReturnSingleResult(
+      NewFunction<extensions::WindowsGetFunction>(),
+      base::StringPrintf(R"([%d, {"populate": true}])", pip_window_id),
+      profile);
+  ASSERT_TRUE(get_result);
+  const base::DictValue& window = get_result->GetDict();
+  EXPECT_EQ(pip_window_id, window.FindInt("id"));
+  EXPECT_EQ("normal", *window.FindString("type"));
+  EXPECT_EQ("normal", *window.FindString("state"));
+  EXPECT_EQ(true, window.FindBool("alwaysOnTop"));
+  EXPECT_EQ(false, window.FindBool("incognito"));
+  const base::ListValue* tabs = window.FindList("tabs");
+  ASSERT_TRUE(tabs);
+  ASSERT_EQ(1u, tabs->size());
+  const base::DictValue& tab = (*tabs)[0].GetDict();
+  EXPECT_EQ(pip_tab_id, tab.FindInt("id"));
+  EXPECT_EQ(pip_window_id, tab.FindInt("windowId"));
+  EXPECT_EQ(0, tab.FindInt("index"));
+  EXPECT_EQ(true, tab.FindBool("active"));
+  EXPECT_EQ(true, tab.FindBool("highlighted"));
+
+  auto contains_pip_window = [&](const std::string& args_json) {
+    const auto all_result = utils::RunFunctionAndReturnSingleResult(
+        NewFunction<extensions::WindowsGetAllFunction>(), args_json, profile);
+    if (!all_result || !all_result->is_list()) {
+      ADD_FAILURE() << "Unexpected WindowsGetAllFunction result";
+      return false;
+    }
+    return std::ranges::any_of(
+        all_result->GetList(), [&](const base::Value& w) {
+          return w.is_dict() && w.GetDict().FindInt("id") == pip_window_id;
+        });
+  };
+  EXPECT_TRUE(contains_pip_window(R"([{"populate": true}])"));
+  EXPECT_TRUE(contains_pip_window(R"([{"windowTypes": ["normal"]}])"));
+  EXPECT_FALSE(contains_pip_window(R"([{"windowTypes": ["popup"]}])"));
+
+  const int new_width = *window.FindInt("width") - 40;
+  const int new_height = *window.FindInt("height") - 40;
+  event_observer.ClearEvents();
+  const auto update_result = utils::RunFunctionAndReturnSingleResult(
+      NewFunction<extensions::WindowsUpdateFunction>(),
+      base::StringPrintf(R"([%d, {"width": %d, "height": %d}])", pip_window_id,
+                         new_width, new_height),
+      profile);
+  ASSERT_TRUE(update_result);
+  EXPECT_EQ(new_width, update_result->GetDict().FindInt("width"));
+  EXPECT_EQ(new_height, update_result->GetDict().FindInt("height"));
+  ASSERT_NE(nullptr, controller->window());
+  EXPECT_EQ(new_width, controller->window()->GetBounds().width());
+  EXPECT_EQ(new_height, controller->window()->GetBounds().height());
+  WaitForWindowBoundsChangedEvent(event_observer, pip_window_id, new_width,
+                                  new_height);
+
+  for (const char* state : {"fullscreen", "maximized", "minimized"}) {
+    EXPECT_EQ(extensions::tabs_constants::kNotAllowedForPictureInPictureError,
+              utils::RunFunctionAndReturnError(
+                  NewFunction<extensions::WindowsUpdateFunction>(),
+                  base::StringPrintf(R"([%d, {"state": "%s"}])", pip_window_id,
+                                     state),
+                  profile));
+  }
+
+  event_observer.ClearEvents();
+  content::WebContentsDestroyedWatcher destroyed(child);
+  EXPECT_TRUE(
+      utils::RunFunction(NewFunction<extensions::WindowsRemoveFunction>(),
+                         base::StringPrintf("[%d]", pip_window_id), profile));
+  destroyed.Wait();
+  WaitForWindowEventForId(event_observer,
+                          extensions::api::windows::OnRemoved::kEventName,
+                          pip_window_id);
+  EXPECT_FALSE(
+      PictureInPictureWindowManager::GetInstance()->IsInPictureInPicture());
+  EXPECT_NE(nullptr, OpenerWebContents());
+  EXPECT_EQ(1, browser()->GetTabStripModel()->count());
+}
+
+IN_PROC_BROWSER_TEST_P(DocumentPipExtensionApiParityBrowserTest,
+                       TabsApiAndCloseParity) {
+  Profile* profile = browser()->GetProfile();
+  ASSERT_NO_FATAL_FAILURE(OpenDocumentPipWindow());
+  content::WebContents* child =
+      PictureInPictureWindowManager::GetInstance()->GetChildWebContents();
+  ASSERT_NE(nullptr, child);
+  const int pip_window_id =
+      sessions::SessionTabHelper::IdForWindowContainingTab(child).id();
+  const int pip_tab_id = sessions::SessionTabHelper::IdForTab(child).id();
+
+  namespace utils = extensions::api_test_utils;
+
+  const auto tab_result = utils::RunFunctionAndReturnSingleResult(
+      NewFunction<extensions::TabsGetFunction>(),
+      base::StringPrintf("[%d]", pip_tab_id), profile);
+  ASSERT_TRUE(tab_result);
+  const base::DictValue& tab = tab_result->GetDict();
+  EXPECT_EQ(pip_tab_id, tab.FindInt("id"));
+  EXPECT_EQ(pip_window_id, tab.FindInt("windowId"));
+  EXPECT_EQ(0, tab.FindInt("index"));
+  EXPECT_EQ(true, tab.FindBool("active"));
+  EXPECT_EQ(true, tab.FindBool("highlighted"));
+  EXPECT_EQ(false, tab.FindBool("pinned"));
+  EXPECT_EQ(false, tab.FindBool("incognito"));
+
+  const auto selected_result = utils::RunFunctionAndReturnSingleResult(
+      NewFunction<extensions::TabsGetSelectedFunction>(),
+      base::StringPrintf("[%d]", pip_window_id), profile);
+  ASSERT_TRUE(selected_result);
+  EXPECT_EQ(pip_tab_id, selected_result->GetDict().FindInt("id"));
+  EXPECT_EQ(0, selected_result->GetDict().FindInt("index"));
+
+  const auto all_in_window = utils::RunFunctionAndReturnSingleResult(
+      NewFunction<extensions::TabsGetAllInWindowFunction>(),
+      base::StringPrintf("[%d]", pip_window_id), profile);
+  ASSERT_TRUE(all_in_window);
+  ASSERT_EQ(1u, all_in_window->GetList().size());
+  EXPECT_EQ(pip_tab_id, all_in_window->GetList()[0].GetDict().FindInt("id"));
+
+  EXPECT_TRUE(QueryContainsTab(
+      base::StringPrintf(R"([{"windowId": %d}])", pip_window_id), pip_tab_id));
+  EXPECT_TRUE(QueryContainsTab("[{}]", pip_tab_id));
+  EXPECT_TRUE(QueryContainsTab(R"([{"active": true}])", pip_tab_id));
+  EXPECT_TRUE(QueryContainsTab(R"([{"highlighted": true}])", pip_tab_id));
+  EXPECT_TRUE(QueryContainsTab(R"([{"windowType": "normal"}])", pip_tab_id));
+  EXPECT_FALSE(QueryContainsTab(
+      base::StringPrintf(R"([{"windowId": %d, "windowType": "popup"}])",
+                         pip_window_id),
+      pip_tab_id));
+  EXPECT_FALSE(QueryContainsTab(
+      base::StringPrintf(R"([{"windowId": %d, "active": false}])",
+                         pip_window_id),
+      pip_tab_id));
+  EXPECT_FALSE(QueryContainsTab(
+      base::StringPrintf(R"([{"windowId": %d, "pinned": true}])",
+                         pip_window_id),
+      pip_tab_id));
+
+  EXPECT_TRUE(utils::RunFunction(
+      NewFunction<extensions::TabsUpdateFunction>(),
+      base::StringPrintf(R"([%d, {"muted": true}])", pip_tab_id), profile));
+  EXPECT_TRUE(child->IsAudioMuted());
+  EXPECT_TRUE(QueryContainsTab(
+      base::StringPrintf(R"([{"windowId": %d, "muted": true}])", pip_window_id),
+      pip_tab_id));
+
+  EXPECT_TRUE(utils::RunFunction(
+      NewFunction<extensions::TabsUpdateFunction>(),
+      base::StringPrintf(R"([%d, {"muted": false}])", pip_tab_id), profile));
+  EXPECT_FALSE(child->IsAudioMuted());
+
+  EXPECT_EQ(extensions::tabs_constants::kNotAllowedForPictureInPictureError,
+            utils::RunFunctionAndReturnError(
+                NewFunction<extensions::TabsUpdateFunction>(),
+                base::StringPrintf(R"([%d, {"url": "https://example.com/"}])",
+                                   pip_tab_id),
+                profile));
+  EXPECT_EQ(extensions::tabs_constants::kNotAllowedForPictureInPictureError,
+            utils::RunFunctionAndReturnError(
+                NewFunction<extensions::TabsReloadFunction>(),
+                base::StringPrintf("[%d]", pip_tab_id), profile));
+  EXPECT_EQ(extensions::tabs_constants::kNotAllowedForPictureInPictureError,
+            utils::RunFunctionAndReturnError(
+                NewFunction<extensions::TabsDiscardFunction>(),
+                base::StringPrintf("[%d]", pip_tab_id), profile));
+
+  EXPECT_TRUE(utils::RunFunction(NewFunction<extensions::TabsSetZoomFunction>(),
+                                 base::StringPrintf("[%d, 1.5]", pip_tab_id),
+                                 profile));
+  const auto zoom_result = utils::RunFunctionAndReturnSingleResult(
+      NewFunction<extensions::TabsGetZoomFunction>(),
+      base::StringPrintf("[%d]", pip_tab_id), profile);
+  ASSERT_TRUE(zoom_result);
+  ASSERT_TRUE(zoom_result->is_double());
+  EXPECT_NEAR(1.5, zoom_result->GetDouble(), 1e-6);
+
+  content::WebContentsDestroyedWatcher destroyed(child);
+  EXPECT_TRUE(utils::RunFunction(NewFunction<extensions::TabsRemoveFunction>(),
+                                 base::StringPrintf("[[%d]]", pip_tab_id),
+                                 profile));
+  destroyed.Wait();
+  EXPECT_FALSE(
+      PictureInPictureWindowManager::GetInstance()->IsInPictureInPicture());
+  EXPECT_NE(nullptr, OpenerWebContents());
+  EXPECT_EQ(1, browser()->GetTabStripModel()->count());
+}
+
+IN_PROC_BROWSER_TEST_P(DocumentPipExtensionApiParityBrowserTest,
+                       ScriptingAndMessagingParity) {
+  extensions::TestExtensionDir extension_dir;
+  extension_dir.WriteManifest(R"({
+    "name": "PiP Scripting Parity",
+    "manifest_version": 3,
+    "version": "1.0",
+    "permissions": ["scripting", "tabs"],
+    "host_permissions": ["<all_urls>"],
+    "background": {"service_worker": "sw.js"},
+    "web_accessible_resources": [{
+      "resources": ["frame.html", "frame.js"],
+      "matches": ["<all_urls>"]
+    }]
+  })");
+  extension_dir.WriteFile(FILE_PATH_LITERAL("sw.js"), "// Ready\n");
+  extension_dir.WriteFile(FILE_PATH_LITERAL("frame.html"),
+                          "<!doctype html><script src=\"frame.js\"></script>");
+  extension_dir.WriteFile(FILE_PATH_LITERAL("frame.js"), R"(
+    (async () => {
+      try {
+        const currentTab = await chrome.tabs.getCurrent();
+        const currentWindow = await chrome.windows.getCurrent();
+        const currentWindowTabs =
+            await chrome.tabs.query({currentWindow: true});
+        await chrome.runtime.sendMessage({
+          kind: 'frame-report',
+          ok: true,
+          currentTab,
+          currentWindow,
+          currentWindowTabs,
+        });
+      } catch (e) {
+        await chrome.runtime.sendMessage({
+          kind: 'frame-report',
+          ok: false,
+          error: String(e),
+        });
+      }
+    })();
+  )");
+
+  Profile* profile = browser()->GetProfile();
+  extensions::ChromeTestExtensionLoader loader(profile);
+  scoped_refptr<const extensions::Extension> extension =
+      loader.LoadExtension(extension_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  ASSERT_NO_FATAL_FAILURE(OpenDocumentPipWindow());
+  content::WebContents* child =
+      PictureInPictureWindowManager::GetInstance()->GetChildWebContents();
+  ASSERT_NE(nullptr, child);
+  const int pip_window_id =
+      sessions::SessionTabHelper::IdForWindowContainingTab(child).id();
+  const int pip_tab_id = sessions::SessionTabHelper::IdForTab(child).id();
+
+  const std::string script = base::StringPrintf(
+      R"((async () => {
+        try {
+          const pipTabId = %d;
+          let contentSenderTab = null;
+          const frameReportPromise = new Promise((resolve) => {
+            chrome.runtime.onMessage.addListener(function listener(
+                msg, sender, sendResponse) {
+              if (msg.kind === 'content-ping') {
+                contentSenderTab = sender.tab;
+                sendResponse({ack: true});
+                return false;
+              }
+              if (msg.kind === 'frame-report') {
+                chrome.runtime.onMessage.removeListener(listener);
+                sendResponse({ack: true});
+                resolve(msg);
+                return false;
+              }
+              return false;
+            });
+          });
+
+          const results = await chrome.scripting.executeScript({
+            target: {tabId: pipTabId},
+            func: async (frameUrl) => {
+              document.title = 'PiP Scripted Title';
+              const reply = await chrome.runtime.sendMessage(
+                  {kind: 'content-ping'});
+              const iframe = document.createElement('iframe');
+              iframe.src = frameUrl;
+              document.body.appendChild(iframe);
+              return {
+                ack: reply.ack,
+                hasHello: document.body.innerText.includes('Hello, world.'),
+              };
+            },
+            args: [chrome.runtime.getURL('frame.html')],
+          });
+
+          const frameReport = await frameReportPromise;
+          if (!frameReport.ok) {
+            chrome.test.sendScriptResult({ok: false, error: frameReport.error});
+            return;
+          }
+          chrome.test.sendScriptResult({
+            ok: true,
+            ack: results[0].result.ack,
+            hasHello: results[0].result.hasHello,
+            senderTabId: contentSenderTab.id,
+            senderWindowId: contentSenderTab.windowId,
+            senderTabIndex: contentSenderTab.index,
+            senderTabActive: contentSenderTab.active,
+            senderTabHighlighted: contentSenderTab.highlighted,
+            frameTabId: frameReport.currentTab.id,
+            frameTabWindowId: frameReport.currentTab.windowId,
+            frameTabIndex: frameReport.currentTab.index,
+            frameWindowId: frameReport.currentWindow.id,
+            frameWindowType: frameReport.currentWindow.type,
+            frameWindowAlwaysOnTop: frameReport.currentWindow.alwaysOnTop,
+            frameQueryCount: frameReport.currentWindowTabs.length,
+            frameQueryTabId: frameReport.currentWindowTabs[0].id,
+          });
+        } catch (e) {
+          chrome.test.sendScriptResult({ok: false, error: String(e)});
+        }
+      })();)",
+      pip_tab_id);
+
+  base::Value value = extensions::BackgroundScriptExecutor::ExecuteScript(
+      profile, extension->id(), script,
+      extensions::BackgroundScriptExecutor::ResultCapture::kSendScriptResult);
+  ASSERT_TRUE(value.is_dict());
+  const base::DictValue& dict = value.GetDict();
+  ASSERT_EQ(true, dict.FindBool("ok"))
+      << (dict.FindString("error") ? *dict.FindString("error") : "");
+
+  EXPECT_EQ(true, dict.FindBool("ack"));
+  EXPECT_EQ(true, dict.FindBool("hasHello"));
+  EXPECT_EQ(u"PiP Scripted Title", child->GetTitle());
+
+  EXPECT_EQ(pip_tab_id, dict.FindInt("senderTabId"));
+  EXPECT_EQ(pip_window_id, dict.FindInt("senderWindowId"));
+  EXPECT_EQ(0, dict.FindInt("senderTabIndex"));
+  EXPECT_EQ(true, dict.FindBool("senderTabActive"));
+  EXPECT_EQ(true, dict.FindBool("senderTabHighlighted"));
+
+  EXPECT_EQ(pip_tab_id, dict.FindInt("frameTabId"));
+  EXPECT_EQ(pip_window_id, dict.FindInt("frameTabWindowId"));
+  EXPECT_EQ(0, dict.FindInt("frameTabIndex"));
+  EXPECT_EQ(pip_window_id, dict.FindInt("frameWindowId"));
+  EXPECT_EQ("normal", *dict.FindString("frameWindowType"));
+  EXPECT_EQ(true, dict.FindBool("frameWindowAlwaysOnTop"));
+  EXPECT_EQ(1, dict.FindInt("frameQueryCount"));
+  EXPECT_EQ(pip_tab_id, dict.FindInt("frameQueryTabId"));
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 

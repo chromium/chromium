@@ -345,9 +345,14 @@ if (!is_android) {
     if (enable_extensions_core) {
       deps += [
         "//chrome/browser/extensions",
+        "//chrome/browser/extensions:test_support",
+        "//chrome/common/extensions/api",
         "//components/sessions",
+        "//extensions:test_support",
         "//extensions/browser",
+        "//extensions/browser:test_support",
         "//extensions/common",
+        "//ui/base",
       ]
     }
 
