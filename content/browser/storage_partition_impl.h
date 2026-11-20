@@ -654,6 +654,7 @@ class CONTENT_EXPORT StoragePartitionImpl
 
   friend class BackgroundSyncManagerTest;
   friend class BackgroundSyncServiceImplTestHarness;
+  friend class BlinkNotificationServiceImplTest;
   friend class CookieStoreManagerTest;
   friend class PaymentAppContentUnitTestBase;
   friend class ServiceWorkerRegistrationTest;

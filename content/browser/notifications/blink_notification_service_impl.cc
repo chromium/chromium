@@ -329,6 +329,16 @@ void BlinkNotificationServiceImpl::DisplayPersistentNotification(
     return;
   }
 
+  // `service_worker_registration_id` comes from the renderer, and click and
+  // close events are later dispatched to the registration stored with the
+  // notification. A normal renderer only sends the ID of a live registration
+  // with its own storage key, so reject any other ID before anything is
+  // written or replaced.
+  if (!registration || registration->key() != storage_key_) {
+    std::move(callback).Run(PersistentNotificationError::DATABASE_ERROR);
+    return;
+  }
+
   base::UmaHistogramBoolean(
       "Notifications.PersistentNotificationThirdPartyCount",
       storage_key_if_3psp_enabled.IsThirdPartyContext());

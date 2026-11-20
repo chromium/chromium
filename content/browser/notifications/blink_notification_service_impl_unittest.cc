@@ -17,15 +17,22 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/time/time.h"
+#include "content/browser/notifications/notification_event_dispatcher_impl.h"
 #include "content/browser/notifications/platform_notification_context_impl.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
+#include "content/browser/service_worker/fake_service_worker.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
+#include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/notification_database_data.h"
+#include "content/public/browser/weak_document_ptr.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/persistent_notification_status.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_permission_manager.h"
 #include "content/public/test/mock_render_process_host.h"
@@ -37,6 +44,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/functions.h"
+#include "net/base/schemeful_site.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/notifications/notification_constants.h"
@@ -46,6 +54,7 @@
 #include "third_party/blink/public/mojom/notifications/notification_service.mojom.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom.h"
+#include "third_party/blink/public/mojom/storage_key/ancestor_chain_bit.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
@@ -62,11 +71,56 @@ namespace content {
 namespace {
 
 const char kTestOrigin[] = "https://example.com";
-const char kTestServiceWorkerUrl[] = "https://example.com/sw.js";
+const char kOtherTestOrigin[] = "https://other.test";
 const char kBadMessageInvalidNotificationTriggerTimestamp[] =
     "Received an invalid notification trigger timestamp.";
 const char kBadMessageEmptyNotificationId[] =
     "Received an empty notification ID.";
+
+// Counts the notification events that reach the service worker.
+class NotificationEventCountingServiceWorker : public FakeServiceWorker {
+ public:
+  explicit NotificationEventCountingServiceWorker(
+      EmbeddedWorkerTestHelper* helper)
+      : FakeServiceWorker(helper) {}
+  ~NotificationEventCountingServiceWorker() override = default;
+
+  int click_count() const { return click_count_; }
+  int close_count() const { return close_count_; }
+
+  // FakeServiceWorker:
+  void DispatchNotificationClickEvent(
+      const std::string& notification_id,
+      const blink::PlatformNotificationData& notification_data,
+      int action_index,
+      const std::optional<std::u16string>& reply,
+      DispatchNotificationClickEventCallback callback) override {
+    ++click_count_;
+    FakeServiceWorker::DispatchNotificationClickEvent(
+        notification_id, notification_data, action_index, reply,
+        std::move(callback));
+  }
+  void DispatchNotificationCloseEvent(
+      const std::string& notification_id,
+      const blink::PlatformNotificationData& notification_data,
+      DispatchNotificationCloseEventCallback callback) override {
+    ++close_count_;
+    FakeServiceWorker::DispatchNotificationCloseEvent(
+        notification_id, notification_data, std::move(callback));
+  }
+
+ private:
+  int click_count_ = 0;
+  int close_count_ = 0;
+};
+
+// Returns the storage key of `kTestOrigin` embedded in `kOtherTestOrigin`.
+blink::StorageKey CreateThirdPartyTestStorageKey() {
+  return blink::StorageKey::Create(url::Origin::Create(GURL(kTestOrigin)),
+                                   net::SchemefulSite(GURL(kOtherTestOrigin)),
+                                   blink::mojom::AncestorChainBit::kCrossSite,
+                                   /*third_party_partitioning_allowed=*/true);
+}
 
 class MockNonPersistentNotificationListener
     : public blink::mojom::NonPersistentNotificationListener {
@@ -163,11 +217,19 @@ class BlinkNotificationServiceImplTest : public ::testing::Test {
 
   void RegisterServiceWorker(
       scoped_refptr<ServiceWorkerRegistration>* service_worker_registration) {
+    RegisterServiceWorkerForKey(GURL(kTestOrigin), storage_key_,
+                                service_worker_registration);
+  }
+
+  void RegisterServiceWorkerForKey(
+      const GURL& scope,
+      const blink::StorageKey& storage_key,
+      scoped_refptr<ServiceWorkerRegistration>* service_worker_registration) {
     int64_t service_worker_registration_id =
         blink::mojom::kInvalidServiceWorkerRegistrationId;
 
     blink::mojom::ServiceWorkerRegistrationOptions options;
-    options.scope = GURL(kTestOrigin);
+    options.scope = scope;
 
     {
       auto fetch_client_settings_object =
@@ -176,7 +238,7 @@ class BlinkNotificationServiceImplTest : public ::testing::Test {
           blink::mojom::PolicyContainerPolicies::New();
       base::RunLoop run_loop;
       embedded_worker_helper_->context()->RegisterServiceWorker(
-          GURL(kTestServiceWorkerUrl), storage_key_, options,
+          scope.Resolve("sw.js"), storage_key, options,
           std::move(fetch_client_settings_object),
           base::BindOnce(
               &BlinkNotificationServiceImplTest::DidRegisterServiceWorker,
@@ -195,7 +257,7 @@ class BlinkNotificationServiceImplTest : public ::testing::Test {
     {
       base::RunLoop run_loop;
       embedded_worker_helper_->context()->registry().FindRegistrationForId(
-          service_worker_registration_id, storage_key_,
+          service_worker_registration_id, storage_key,
           base::BindOnce(&BlinkNotificationServiceImplTest::
                              DidFindServiceWorkerRegistration,
                          base::Unretained(this), service_worker_registration,
@@ -427,6 +489,21 @@ class BlinkNotificationServiceImplTest : public ::testing::Test {
         GetPermissionResultForWorker(
             PermissionTypeMatcher(blink::PermissionType::NOTIFICATIONS), _, _))
         .WillByDefault(Return(PermissionResult(permission_status)));
+  }
+
+  // Makes the default storage partition of `browser_context_` use the test
+  // service worker and notification contexts. `NotificationEventDispatcherImpl`
+  // reads both contexts from the storage partition.
+  void UseTestContextsInStoragePartition() {
+    auto* partition = static_cast<StoragePartitionImpl*>(
+        browser_context_.GetDefaultStoragePartition());
+    partition->service_worker_context_->Shutdown();
+    partition->platform_notification_context_->Shutdown();
+    RunAllTasksUntilIdle();
+
+    partition->service_worker_context_ =
+        embedded_worker_helper_->context_wrapper();
+    partition->platform_notification_context_ = notification_context_;
   }
 
  protected:
@@ -939,6 +1016,245 @@ TEST_F(BlinkNotificationServiceImplTest,
 
   EXPECT_EQ(1u, bad_messages_.size());
   EXPECT_EQ(kBadMessageEmptyNotificationId, bad_messages_[0]);
+}
+
+TEST_F(BlinkNotificationServiceImplTest,
+       DisplayPersistentNotificationRejectsOtherOriginRegistration) {
+  SetPermissionStatus(blink::mojom::PermissionStatus::GRANTED);
+
+  scoped_refptr<ServiceWorkerRegistration> registration;
+  RegisterServiceWorker(&registration);
+
+  scoped_refptr<ServiceWorkerRegistration> other_registration;
+  RegisterServiceWorkerForKey(GURL(kOtherTestOrigin),
+                              blink::StorageKey::CreateFirstParty(
+                                  url::Origin::Create(GURL(kOtherTestOrigin))),
+                              &other_registration);
+
+  blink::PlatformNotificationData notification_data;
+  notification_data.title = u"Initial title";
+  notification_data.tag = "tag";
+  DisplayPersistentNotificationSync(registration->id(), notification_data,
+                                    blink::NotificationResources());
+  ASSERT_EQ(blink::mojom::PersistentNotificationError::NONE,
+            display_persistent_callback_result_);
+  RunAllTasksUntilIdle();
+
+  // Use the registration of another origin with the same tag.
+  notification_data.title = u"Other title";
+  DisplayPersistentNotificationSync(other_registration->id(), notification_data,
+                                    blink::NotificationResources());
+  EXPECT_EQ(blink::mojom::PersistentNotificationError::DATABASE_ERROR,
+            display_persistent_callback_result_);
+  RunAllTasksUntilIdle();
+  EXPECT_TRUE(bad_messages_.empty());
+
+  // The own notification is not replaced.
+  std::vector<NotificationDatabaseData> notification_datas =
+      GetNotificationDataFromContextSync(registration->id(), "",
+                                         /*include_triggered=*/false);
+  ASSERT_EQ(1u, notification_datas.size());
+  EXPECT_EQ(u"Initial title", notification_datas[0].notification_data.title);
+  EXPECT_EQ(registration->id(),
+            notification_datas[0].service_worker_registration_id);
+  EXPECT_TRUE(GetNotificationDataFromContextSync(other_registration->id(), "",
+                                                 /*include_triggered=*/false)
+                  .empty());
+  EXPECT_EQ(1u, GetDisplayedNotifications().size());
+}
+
+TEST_F(BlinkNotificationServiceImplTest,
+       DisplayPersistentNotificationRejectsPartitionedRegistration) {
+  SetPermissionStatus(blink::mojom::PermissionStatus::GRANTED);
+
+  // A registration of the same origin, but with a third-party storage key.
+  scoped_refptr<ServiceWorkerRegistration> partitioned_registration;
+  RegisterServiceWorkerForKey(GURL(kTestOrigin),
+                              CreateThirdPartyTestStorageKey(),
+                              &partitioned_registration);
+
+  DisplayPersistentNotificationSync(partitioned_registration->id(),
+                                    blink::PlatformNotificationData(),
+                                    blink::NotificationResources());
+  EXPECT_EQ(blink::mojom::PersistentNotificationError::DATABASE_ERROR,
+            display_persistent_callback_result_);
+  RunAllTasksUntilIdle();
+  EXPECT_TRUE(bad_messages_.empty());
+
+  EXPECT_TRUE(GetNotificationDataFromContextSync(partitioned_registration->id(),
+                                                 "",
+                                                 /*include_triggered=*/false)
+                  .empty());
+  EXPECT_EQ(0u, GetDisplayedNotifications().size());
+}
+
+// A third-party context can show a notification with a registration that has
+// the same third-party storage key.
+TEST_F(BlinkNotificationServiceImplTest,
+       DisplayPersistentNotificationFromThirdPartyContext) {
+  SetPermissionStatus(blink::mojom::PermissionStatus::GRANTED);
+
+  const blink::StorageKey third_party_storage_key =
+      CreateThirdPartyTestStorageKey();
+  mojo::Remote<blink::mojom::NotificationService>
+      third_party_notification_service_remote;
+  notification_context_->CreateService(
+      &render_process_host_, third_party_storage_key,
+      /*document_url=*/GURL(), WeakDocumentPtr(),
+      RenderProcessHost::NotificationServiceCreatorType::kServiceWorker,
+      third_party_notification_service_remote.BindNewPipeAndPassReceiver());
+
+  scoped_refptr<ServiceWorkerRegistration> partitioned_registration;
+  RegisterServiceWorkerForKey(GURL(kTestOrigin), third_party_storage_key,
+                              &partitioned_registration);
+
+  base::test::TestFuture<blink::mojom::PersistentNotificationError>
+      display_future;
+  third_party_notification_service_remote->DisplayPersistentNotification(
+      partitioned_registration->id(), blink::PlatformNotificationData(),
+      blink::NotificationResources(), display_future.GetCallback());
+  EXPECT_EQ(blink::mojom::PersistentNotificationError::NONE,
+            display_future.Get());
+  RunAllTasksUntilIdle();
+  EXPECT_TRUE(bad_messages_.empty());
+
+  EXPECT_EQ(
+      1u, GetNotificationDataFromContextSync(partitioned_registration->id(), "",
+                                             /*include_triggered=*/false)
+              .size());
+  EXPECT_EQ(1u, GetDisplayedNotifications().size());
+}
+
+TEST_F(BlinkNotificationServiceImplTest,
+       DisplayPersistentNotificationRejectsUnknownRegistration) {
+  SetPermissionStatus(blink::mojom::PermissionStatus::GRANTED);
+
+  scoped_refptr<ServiceWorkerRegistration> registration;
+  RegisterServiceWorker(&registration);
+
+  blink::PlatformNotificationData notification_data;
+  notification_data.title = u"Initial title";
+  notification_data.tag = "tag";
+  DisplayPersistentNotificationSync(registration->id(), notification_data,
+                                    blink::NotificationResources());
+  ASSERT_EQ(blink::mojom::PersistentNotificationError::NONE,
+            display_persistent_callback_result_);
+  RunAllTasksUntilIdle();
+
+  // Use a registration ID that does not exist with the same tag.
+  constexpr int64_t kUnknownRegistrationId = 9999;
+  notification_data.title = u"Other title";
+  DisplayPersistentNotificationSync(kUnknownRegistrationId, notification_data,
+                                    blink::NotificationResources());
+  EXPECT_EQ(blink::mojom::PersistentNotificationError::DATABASE_ERROR,
+            display_persistent_callback_result_);
+  RunAllTasksUntilIdle();
+  EXPECT_TRUE(bad_messages_.empty());
+
+  // The own notification is not deleted by the tag replacement.
+  std::vector<NotificationDatabaseData> notification_datas =
+      GetNotificationDataFromContextSync(registration->id(), "",
+                                         /*include_triggered=*/false);
+  ASSERT_EQ(1u, notification_datas.size());
+  EXPECT_EQ(u"Initial title", notification_datas[0].notification_data.title);
+  EXPECT_EQ(1u, GetDisplayedNotifications().size());
+}
+
+// `NotificationEventDispatcherImpl` must not dispatch events to a registration
+// of another origin, even if a database row stores the ID of that registration
+// (for example a row written before `BlinkNotificationServiceImpl` checked the
+// registration). This test is in this file because this fixture already has
+// the service worker and notification contexts that the dispatcher needs.
+TEST_F(BlinkNotificationServiceImplTest,
+       DispatchEventsSkipRegistrationOfOtherOrigin) {
+  SetPermissionStatus(blink::mojom::PermissionStatus::GRANTED);
+  UseTestContextsInStoragePartition();
+
+  auto* own_worker =
+      embedded_worker_helper_
+          ->AddNewPendingServiceWorker<NotificationEventCountingServiceWorker>(
+              embedded_worker_helper_.get());
+  scoped_refptr<ServiceWorkerRegistration> registration;
+  RegisterServiceWorker(&registration);
+
+  auto* other_worker =
+      embedded_worker_helper_
+          ->AddNewPendingServiceWorker<NotificationEventCountingServiceWorker>(
+              embedded_worker_helper_.get());
+  scoped_refptr<ServiceWorkerRegistration> other_registration;
+  RegisterServiceWorkerForKey(GURL(kOtherTestOrigin),
+                              blink::StorageKey::CreateFirstParty(
+                                  url::Origin::Create(GURL(kOtherTestOrigin))),
+                              &other_registration);
+
+  blink::PlatformNotificationData notification_data;
+  notification_data.tag = "tag";
+  DisplayPersistentNotificationSync(registration->id(), notification_data,
+                                    blink::NotificationResources());
+  ASSERT_EQ(blink::mojom::PersistentNotificationError::NONE,
+            display_persistent_callback_result_);
+  RunAllTasksUntilIdle();
+
+  std::set<std::string> notification_ids = GetDisplayedNotifications();
+  ASSERT_EQ(1u, notification_ids.size());
+  const std::string notification_id = *notification_ids.begin();
+
+  // A click on the own notification reaches the own service worker.
+  {
+    base::test::TestFuture<PersistentNotificationStatus> click_future;
+    NotificationEventDispatcherImpl::GetInstance()
+        ->DispatchNotificationClickEvent(
+            &browser_context_, notification_id, GURL(kTestOrigin),
+            /*action_index=*/std::nullopt, /*reply=*/std::nullopt,
+            click_future.GetCallback());
+    EXPECT_EQ(PersistentNotificationStatus::kSuccess, click_future.Get());
+    EXPECT_EQ(1, own_worker->click_count());
+  }
+
+  // Write a row with the same origin and tag that stores the registration of
+  // the other origin. The display fails, but the row replaces the old one and
+  // the displayed notification keeps the same ID. This uses on purpose that
+  // `WriteNotificationData()` does not roll back the row when the display
+  // fails. If a rollback is added, this test must write the row in another
+  // way.
+  constexpr int64_t kPersistentNotificationId = 2;
+  NotificationDatabaseData database_data;
+  database_data.origin = GURL(kTestOrigin);
+  database_data.service_worker_registration_id = other_registration->id();
+  database_data.notification_data = notification_data;
+  base::test::TestFuture<bool, std::string> write_future;
+  notification_context_->WriteNotificationData(
+      kPersistentNotificationId, other_registration->id(), GURL(kTestOrigin),
+      database_data, write_future.GetCallback<bool, const std::string&>());
+  EXPECT_FALSE(write_future.Get<0>());
+  RunAllTasksUntilIdle();
+  ASSERT_EQ(1u, GetNotificationDataFromContextSync(other_registration->id(), "",
+                                                   /*include_triggered=*/false)
+                    .size());
+  ASSERT_EQ(1u, GetDisplayedNotifications().count(notification_id));
+
+  base::test::TestFuture<PersistentNotificationStatus> click_future;
+  NotificationEventDispatcherImpl::GetInstance()
+      ->DispatchNotificationClickEvent(
+          &browser_context_, notification_id, GURL(kTestOrigin),
+          /*action_index=*/std::nullopt, /*reply=*/std::nullopt,
+          click_future.GetCallback());
+  EXPECT_EQ(PersistentNotificationStatus::kServiceWorkerMissing,
+            click_future.Get());
+
+  base::test::TestFuture<PersistentNotificationStatus> close_future;
+  NotificationEventDispatcherImpl::GetInstance()
+      ->DispatchNotificationCloseEvent(
+          &browser_context_, notification_id, GURL(kTestOrigin),
+          /*by_user=*/true, close_future.GetCallback());
+  EXPECT_EQ(PersistentNotificationStatus::kServiceWorkerMissing,
+            close_future.Get());
+
+  RunAllTasksUntilIdle();
+  EXPECT_EQ(1, own_worker->click_count());
+  EXPECT_EQ(0, own_worker->close_count());
+  EXPECT_EQ(0, other_worker->click_count());
+  EXPECT_EQ(0, other_worker->close_count());
 }
 
 }  // namespace content
