@@ -831,7 +831,10 @@ if (!is_android) {
       "//ui/compositor",
     ]
     if (is_linux) {
-      deps += [ "//ui/linux:display_server_utils" ]
+      deps += [
+        "//ui/base",
+        "//ui/linux:display_server_utils",
+      ]
     }
     if (is_chromeos) {
       deps += [ "//ash:test_support" ]

@@ -25,6 +25,7 @@
 #include "ui/compositor/compositor_switches.h"
 
 #if BUILDFLAG(IS_LINUX)
+#include "ui/base/ui_base_switches.h"
 #include "ui/linux/display_server_utils.h"
 #endif
 
@@ -223,6 +224,13 @@ class InteractiveUITestSuiteRunner : public ChromeTestSuiteRunner {
 int main(int argc, char** argv) {
   base::CommandLine::Init(argc, argv);
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+
+#if BUILDFLAG(IS_LINUX)
+  // Disable GTK's async IM module so synthetic X11 key events dispatch
+  // synchronously through InputMethodAuraLinux instead of racing with
+  // XEventWaiter's marker event or targeting GTK4's dummy surface.
+  command_line->AppendSwitch(switches::kDisableGtkIme);
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
   // Force software-gl. This is necessary for mus tests to avoid an msan warning

@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
@@ -85,7 +84,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ozone_buildflags.h"
 #include "ui/base/test/ui_controls.h"
-#include "ui/base/ui_base_switches.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -343,17 +341,6 @@ class AppMenuSearchInteractiveTest : public InteractiveBrowserTest {
         {features::kAppMenuGlowUp, features::kChroMenuSearch}, {});
   }
   ~AppMenuSearchInteractiveTest() override = default;
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    InteractiveBrowserTest::SetUpCommandLine(command_line);
-#if BUILDFLAG(IS_LINUX)
-    // On Linux with GTK4, GtkIMMulticontext re-injects unhandled non-printable
-    // keys onto an offscreen dummy GtkWindow when a TextInputClient is focused.
-    // Disable the GTK IME module so synthetic X11 key events route through
-    // InputMethodAuraLinux synchronously.
-    command_line->AppendSwitch(switches::kDisableGtkIme);
-#endif
-  }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;

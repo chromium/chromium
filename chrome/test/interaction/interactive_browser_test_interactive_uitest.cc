@@ -13,6 +13,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -27,14 +28,18 @@
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/interaction/tracked_element_webcontents.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/page_navigator.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -602,16 +607,40 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest, FocusElement) {
                         true));
 }
 
-IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest, SendKeyPress) {
+// Runs keyboard tests with the WebUI toolbar explicitly toggled on vs. off, as
+// enabling it replaces the native omnibox textfield.
+class InteractiveBrowserTestKeyboardUiTest
+    : public InteractiveBrowserTestUiTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  InteractiveBrowserTestKeyboardUiTest() {
+    if (GetParam()) {
+      feature_list_.InitWithFeatures(
+          {features::kInitialWebUI, features::kWebUIToolbar}, {});
+    } else {
+      feature_list_.InitWithFeatures(
+          {}, {features::kInitialWebUI, features::kWebUIToolbar});
+    }
+  }
+  ~InteractiveBrowserTestKeyboardUiTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(InteractiveBrowserTestKeyboardUiTest, SendKeyPress) {
+  WaitForInitialWebUIToolbar(browser());
+
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTextfieldId);
 
   auto delegate = std::make_unique<views::BubbleDialogDelegate>(
       BrowserView::GetBrowserViewForBrowser(browser())->toolbar(),
       views::BubbleBorder::TOP_LEFT);
+  delegate->set_close_on_deactivate(/*close=*/false);
   auto textfield = std::make_unique<views::Textfield>();
   textfield->SetProperty(views::kElementIdentifierKey, kTextfieldId);
   textfield->SetAccessibleName(u"Test Textfield");
-  textfield->SetPreferredSize(gfx::Size(100, 30));
+  textfield->SetPreferredSize(gfx::Size(/*width=*/100, /*height=*/30));
   delegate->SetContentsView(std::move(textfield));
 
   auto bubble_widget =
@@ -619,13 +648,24 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest, SendKeyPress) {
   bubble_widget->Show();
 
   RunTestSequence(
-      WaitForShow(kTextfieldId), FocusElement(kTextfieldId),
-      SendKeyPress(kTextfieldId, ui::VKEY_A),
+      SetOnIncompatibleAction(
+          OnIncompatibleAction::kHaltTest,
+          "Some Linux window managers do not allow programmatically "
+          "raising/activating windows. This invalidates the rest of the test."),
+      WaitForShow(kTextfieldId), ActivateSurface(kTextfieldId),
+      FocusElement(kTextfieldId), SendKeyPress(kTextfieldId, ui::VKEY_A),
       SendKeyPress(kTextfieldId, ui::VKEY_B, ui::EF_SHIFT_DOWN),
       CheckViewProperty(kTextfieldId, &views::Textfield::GetText, u"aB"));
 
   bubble_widget->CloseNow();
 }
+
+INSTANTIATE_TEST_SUITE_P(,
+                         InteractiveBrowserTestKeyboardUiTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "WebUIToolbar" : "ViewsToolbar";
+                         });
 
 IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
                        MaybeEnterInteractiveMode) {
