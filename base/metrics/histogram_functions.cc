@@ -9,6 +9,7 @@
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/sparse_histogram.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
 
 namespace base {
@@ -324,15 +325,15 @@ void UmaHistogramMemoryKB(const char* name, int sample_kb) {
 }
 
 void UmaHistogramMemoryKB(std::string_view name, ByteSize sample) {
-  UmaHistogramMemoryKB(name, static_cast<int>(sample.InKiB()));
+  UmaHistogramMemoryKB(name, saturated_cast<int>(sample.InKiB()));
 }
 
 void UmaHistogramMemoryKB(const std::string& name, ByteSize sample) {
-  UmaHistogramMemoryKB(name, static_cast<int>(sample.InKiB()));
+  UmaHistogramMemoryKB(name, saturated_cast<int>(sample.InKiB()));
 }
 
 void UmaHistogramMemoryKB(const char* name, ByteSize sample) {
-  UmaHistogramMemoryKB(name, static_cast<int>(sample.InKiB()));
+  UmaHistogramMemoryKB(name, saturated_cast<int>(sample.InKiB()));
 }
 
 void UmaHistogramMemoryMB(std::string_view name, int sample_mb) {
@@ -348,15 +349,15 @@ void UmaHistogramMemoryMB(const char* name, int sample_mb) {
 }
 
 void UmaHistogramMemoryMB(std::string_view name, ByteSize sample) {
-  UmaHistogramMemoryMB(name, static_cast<int>(sample.InMiB()));
+  UmaHistogramMemoryMB(name, saturated_cast<int>(sample.InMiB()));
 }
 
 void UmaHistogramMemoryMB(const std::string& name, ByteSize sample) {
-  UmaHistogramMemoryMB(name, static_cast<int>(sample.InMiB()));
+  UmaHistogramMemoryMB(name, saturated_cast<int>(sample.InMiB()));
 }
 
 void UmaHistogramMemoryMB(const char* name, ByteSize sample) {
-  UmaHistogramMemoryMB(name, static_cast<int>(sample.InMiB()));
+  UmaHistogramMemoryMB(name, saturated_cast<int>(sample.InMiB()));
 }
 
 void UmaHistogramMemoryLargeMB(std::string_view name, int sample_mb) {
@@ -372,15 +373,15 @@ void UmaHistogramMemoryLargeMB(const char* name, int sample_mb) {
 }
 
 void UmaHistogramMemoryLargeMB(std::string_view name, ByteSize sample) {
-  UmaHistogramMemoryLargeMB(name, static_cast<int>(sample.InMiB()));
+  UmaHistogramMemoryLargeMB(name, saturated_cast<int>(sample.InMiB()));
 }
 
 void UmaHistogramMemoryLargeMB(const std::string& name, ByteSize sample) {
-  UmaHistogramMemoryLargeMB(name, static_cast<int>(sample.InMiB()));
+  UmaHistogramMemoryLargeMB(name, saturated_cast<int>(sample.InMiB()));
 }
 
 void UmaHistogramMemoryLargeMB(const char* name, ByteSize sample) {
-  UmaHistogramMemoryLargeMB(name, static_cast<int>(sample.InMiB()));
+  UmaHistogramMemoryLargeMB(name, saturated_cast<int>(sample.InMiB()));
 }
 
 void UmaHistogramSparse(std::string_view name, int sample) {

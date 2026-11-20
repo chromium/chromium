@@ -4,6 +4,7 @@
 
 #include "base/metrics/histogram_functions.h"
 
+#include "base/byte_size.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
@@ -121,6 +122,48 @@ TEST(HistogramFunctionsTest, Counts) {
   EXPECT_THAT(tester.GetAllSamples(histogram),
               testing::ElementsAre(Bucket(0, 1), Bucket(1, 1), Bucket(16, 3),
                                    Bucket(54, 1), Bucket(100, 2)));
+}
+
+TEST(HistogramFunctionsTest, MemoryKBByteSize) {
+  std::string histogram("Testing.UMA.HistogramMemoryKB.ByteSize");
+  HistogramTester tester;
+  UmaHistogramMemoryKB(histogram, KiB(2000));
+  tester.ExpectUniqueSample(histogram, 2000, 1);
+
+  // A number of KiB too large for an int goes in the overflow bucket instead
+  // of wrapping around to a negative value.
+  UmaHistogramMemoryKB(histogram, ByteSize::Max());
+  tester.ExpectBucketCount(histogram, 500000, 1);
+  tester.ExpectBucketCount(histogram, 0, 0);
+  tester.ExpectTotalCount(histogram, 2);
+}
+
+TEST(HistogramFunctionsTest, MemoryMBByteSize) {
+  std::string histogram("Testing.UMA.HistogramMemoryMB.ByteSize");
+  HistogramTester tester;
+  UmaHistogramMemoryMB(histogram, MiB(10));
+  tester.ExpectUniqueSample(histogram, 10, 1);
+
+  // A number of MiB too large for an int goes in the overflow bucket instead
+  // of wrapping around to a negative value.
+  UmaHistogramMemoryMB(histogram, ByteSize::Max());
+  tester.ExpectBucketCount(histogram, 1000, 1);
+  tester.ExpectBucketCount(histogram, 0, 0);
+  tester.ExpectTotalCount(histogram, 2);
+}
+
+TEST(HistogramFunctionsTest, MemoryLargeMBByteSize) {
+  std::string histogram("Testing.UMA.HistogramMemoryLargeMB.ByteSize");
+  HistogramTester tester;
+  UmaHistogramMemoryLargeMB(histogram, MiB(10));
+  tester.ExpectUniqueSample(histogram, 10, 1);
+
+  // A number of MiB too large for an int goes in the overflow bucket instead
+  // of wrapping around to a negative value.
+  UmaHistogramMemoryLargeMB(histogram, ByteSize::Max());
+  tester.ExpectBucketCount(histogram, 64000, 1);
+  tester.ExpectBucketCount(histogram, 0, 0);
+  tester.ExpectTotalCount(histogram, 2);
 }
 
 TEST(HistogramFunctionsTest, Times) {
