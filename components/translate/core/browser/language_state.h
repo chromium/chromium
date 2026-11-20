@@ -46,8 +46,10 @@ class LanguageState {
   // Should be called when the language of the page has been determined.
   // |page_level_translation_criteria_met| when false indicates that the browser
   // should not offer to translate the page.
-  void LanguageDetermined(std::string_view page_language,
-                          bool page_level_translation_criteria_met);
+  void LanguageDetermined(
+      std::string_view page_language,
+      bool page_level_translation_criteria_met,
+      std::optional<base::i18n::LanguageTag> html_root_language = std::nullopt);
 
   // Returns the language the current page should be translated to, based on the
   // previous page languages and the transition.  This should be called after
@@ -70,6 +72,12 @@ class LanguageState {
   // of length 0 to 3 or "zh-CN" or "zh-TW".
   const std::string& current_language() const { return current_lang_; }
   void SetCurrentLanguage(std::string_view language);
+
+  // Returns the HTML declared root language (e.g. from <html lang="...">),
+  // or std::nullopt if absent or unparseable as a language tag.
+  const std::optional<base::i18n::LanguageTag>& html_root_language() const {
+    return html_root_language_;
+  }
 
   bool page_level_translation_criteria_met() const {
     return page_level_translation_criteria_met_;
@@ -174,6 +182,7 @@ class LanguageState {
   // yet.
   std::string source_lang_;
   std::string current_lang_;
+  std::optional<base::i18n::LanguageTag> html_root_language_;
 
   // Same as above but for the previous page.
   std::string prev_source_lang_;

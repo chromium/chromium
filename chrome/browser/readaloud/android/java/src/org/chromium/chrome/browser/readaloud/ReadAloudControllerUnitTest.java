@@ -1806,6 +1806,80 @@ public class ReadAloudControllerUnitTest {
     }
 
     @Test
+    public void testPlayTranslatedTab_legacy_tabLanguageUnd_doesNotFallBackToHtmlLanguage() {
+        Locale.setDefault(Locale.US);
+
+        mFakeTranslateBridge.setIsPageTranslated(true);
+        mFakeTranslateBridge.setCurrentLanguage("und");
+        mFakeTranslateBridge.setHtmlLanguage("es");
+        mTab.setGurlOverrideForTesting(new GURL("https://es.wikipedia.org/wiki/Google"));
+
+        mController.playTab(mTab, ReadAloudController.Entrypoint.MAGIC_TOOLBAR);
+        resolvePromises();
+
+        // On legacy Read Aloud, HTML language fallback is disabled to avoid entry point
+        // regressions, so "und" falls back to the device locale.
+        verify(mPlaybackHooks).createPlayback(mPlaybackArgsCaptor.capture(), any());
+        assertEquals("en", mPlaybackArgsCaptor.getValue().getLanguage());
+    }
+
+    @Test
+    public void testGetLanguageForNewPlayback_legacyUndDoesNotFallBackToHtmlLanguage() {
+        Locale.setDefault(Locale.forLanguageTag("fr-FR"));
+
+        mFakeTranslateBridge.setCurrentLanguage("und");
+        mFakeTranslateBridge.setHtmlLanguage("es");
+
+        assertEquals("fr", mController.getLanguageForNewPlayback(mTab));
+    }
+
+    @Test
+    @EnableFeatures(ReadAloudFeatures.READ_ALOUD_NATIVE)
+    public void testGetLanguageForNewPlayback_undFallsBackToHtmlLanguage() {
+        Locale.setDefault(Locale.US);
+
+        mFakeTranslateBridge.setCurrentLanguage("und");
+        mFakeTranslateBridge.setHtmlLanguage("es");
+
+        assertEquals("es", mController.getLanguageForNewPlayback(mTab));
+    }
+
+    @Test
+    @EnableFeatures(ReadAloudFeatures.READ_ALOUD_NATIVE)
+    public void testGetLanguageForNewPlayback_undWithEnglishHtmlLanguageFallsBackToDeviceLocale() {
+        Locale.setDefault(Locale.forLanguageTag("pl-PL"));
+
+        mFakeTranslateBridge.setCurrentLanguage("und");
+        mFakeTranslateBridge.setHtmlLanguage("en-US");
+
+        assertEquals("pl", mController.getLanguageForNewPlayback(mTab));
+    }
+
+    @Test
+    @EnableFeatures(ReadAloudFeatures.READ_ALOUD_NATIVE)
+    public void testGetLanguageForNewPlayback_undNormalizesHtmlLanguage() {
+        Locale.setDefault(Locale.US);
+
+        mFakeTranslateBridge.setCurrentLanguage("und");
+        mFakeTranslateBridge.setHtmlLanguage(" ES_mx ");
+
+        assertEquals("es", mController.getLanguageForNewPlayback(mTab));
+    }
+
+    @Test
+    @EnableFeatures(ReadAloudFeatures.READ_ALOUD_NATIVE)
+    public void
+            testGetLanguageForNewPlayback_undWithMalformedHtmlLanguageFallsBackToDeviceLocale() {
+        Locale.setDefault(Locale.forLanguageTag("fr-FR"));
+        mFakeTranslateBridge.setCurrentLanguage("und");
+
+        for (String malformed : new String[] {"-", "_", "-es"}) {
+            mFakeTranslateBridge.setHtmlLanguage(malformed);
+            assertEquals("fr", mController.getLanguageForNewPlayback(mTab));
+        }
+    }
+
+    @Test
     public void testPlayUntranslatedTab() {
         mFakeTranslateBridge.setIsPageTranslated(false);
         mFakeTranslateBridge.setCurrentLanguage("fr");

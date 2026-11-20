@@ -35,6 +35,7 @@ public class FakeTranslateBridgeJni implements TranslateBridge.Natives {
     private final TreeMap<String, LanguageItem> mChromeLanguages;
     private boolean mAppLanguagePromptShown;
     private String mCurrentLanguage;
+    private String mHtmlLanguage;
     private boolean mIsPageTranslated;
     private final Map<WebContents, Map<Long, TranslationObserver>> mObservers = new HashMap<>();
     private static long sObserverPtr;
@@ -168,6 +169,20 @@ public class FakeTranslateBridgeJni implements TranslateBridge.Natives {
     @Override
     public String getCurrentLanguage(WebContents webContents) {
         return mCurrentLanguage;
+    }
+
+    @Override
+    public String getHtmlLanguage(WebContents webContents) {
+        return mHtmlLanguage;
+    }
+
+    /**
+     * Set the web content's HTML declared language for testing.
+     *
+     * @param language String value of what getHtmlLanguage should return.
+     */
+    public void setHtmlLanguage(String language) {
+        mHtmlLanguage = language;
     }
 
     @Override

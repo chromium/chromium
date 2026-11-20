@@ -262,6 +262,16 @@ public class TranslateBridge {
     }
 
     /**
+     * Get the HTML declared language for the page.
+     *
+     * @param webContents Web contents to get the HTML language for
+     * @return The HTML language code or empty string if no language detected.
+     */
+    public static String getHtmlLanguage(WebContents webContents) {
+        return TranslateBridgeJni.get().getHtmlLanguage(webContents);
+    }
+
+    /**
      * Add an observer for translation events.
      *
      * @param webContents WebContents to observe.
@@ -369,5 +379,8 @@ public class TranslateBridge {
 
         @JniType("std::string")
         String getCurrentLanguage(@JniType("content::WebContents*") WebContents webContents);
+
+        @JniType("std::string")
+        String getHtmlLanguage(@JniType("content::WebContents*") WebContents webContents);
     }
 }

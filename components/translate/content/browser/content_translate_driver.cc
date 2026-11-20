@@ -480,7 +480,8 @@ void ContentTranslateDriver::RegisterPage(
   BindMainTranslateAgent(page_seq_no, std::move(translate_agent));
 
   translate_manager_->GetLanguageState()->LanguageDetermined(
-      details.adopted_language, page_level_translation_criteria_met);
+      details.adopted_language, page_level_translation_criteria_met,
+      GetLanguageTagFromString(details.html_root_language));
 
   if (IsPdfTranslation()) {
 #if BUILDFLAG(ENABLE_PDF)

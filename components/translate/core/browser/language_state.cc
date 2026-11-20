@@ -45,6 +45,7 @@ void LanguageState::DidNavigate(bool is_same_document_navigation,
     prev_current_lang_ = current_lang_;
     source_lang_.clear();
     current_lang_.clear();
+    html_root_language_.reset();
   }
 
   SetIsPageTranslated(false);
@@ -63,7 +64,8 @@ void LanguageState::DidNavigate(bool is_same_document_navigation,
 
 void LanguageState::LanguageDetermined(
     std::string_view page_language,
-    bool page_level_translation_criteria_met) {
+    bool page_level_translation_criteria_met,
+    std::optional<base::i18n::LanguageTag> html_root_language) {
   if (is_same_document_navigation_ && !source_lang_.empty()) {
     // Same-document navigation, we don't expect our states to change.
     // Note that we'll set the languages if source_lang_ is empty.  This might
@@ -73,6 +75,7 @@ void LanguageState::LanguageDetermined(
   page_level_translation_criteria_met_ = page_level_translation_criteria_met;
   source_lang_ = page_language;
   current_lang_ = page_language;
+  html_root_language_ = std::move(html_root_language);
   SetIsPageTranslated(false);
 }
 

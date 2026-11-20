@@ -195,5 +195,32 @@ TEST(LanguageStateTest, PdfTranslatability) {
             language_state.pdf_translatability_status());
 }
 
+TEST(LanguageStateTest, HtmlRootLanguageLifecycle) {
+  MockTranslateDriver driver;
+  LanguageState language_state(&driver);
+  EXPECT_FALSE(language_state.html_root_language().has_value());
+
+  const base::i18n::LanguageTag es_tag = GetKnownLanguageTag("es");
+  language_state.LanguageDetermined("und", true, es_tag);
+  EXPECT_EQ(es_tag, language_state.html_root_language());
+
+  // Same-document navigation preserves html_root_language.
+  language_state.DidNavigate(/*is_same_document_navigation=*/true,
+                             /*is_main_frame=*/true, /*reload=*/false, "",
+                             false);
+  EXPECT_EQ(es_tag, language_state.html_root_language());
+
+  // Reload preserves html_root_language.
+  language_state.DidNavigate(/*is_same_document_navigation=*/false,
+                             /*is_main_frame=*/true, /*reload=*/true, "",
+                             false);
+  EXPECT_EQ(es_tag, language_state.html_root_language());
+
+  // Cross-document main-frame navigation clears html_root_language.
+  language_state.DidNavigate(/*is_same_document_navigation=*/false,
+                             /*is_main_frame=*/true, /*reload=*/false, "",
+                             false);
+  EXPECT_FALSE(language_state.html_root_language().has_value());
+}
 }  // namespace translate
 

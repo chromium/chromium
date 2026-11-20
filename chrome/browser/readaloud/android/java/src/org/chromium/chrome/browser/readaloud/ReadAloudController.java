@@ -1675,11 +1675,15 @@ public class ReadAloudController
       return ImmutableList.of(PlaybackMode.OVERVIEW);
     }
 
-    private String getLanguageForNewPlayback(Tab tab) {
+    @VisibleForTesting
+    String getLanguageForNewPlayback(Tab tab) {
         WebContents webContents = tab.getWebContents();
         String language =
                 webContents == null ? null : TranslateBridge.getCurrentLanguage(webContents);
-        if (language == null || language.isEmpty() || language.equals("und")) {
+        if (isLanguageUndetermined(language)) {
+            language = getHtmlLanguageFallback(webContents);
+        }
+        if (isLanguageUndetermined(language)) {
             language = Locale.getDefault().getLanguage();
         }
 
@@ -1691,6 +1695,29 @@ public class ReadAloudController
         return getLanguage(language);
     }
 
+    private static boolean isLanguageUndetermined(@Nullable String language) {
+        return language == null || language.isEmpty() || language.equals("und");
+    }
+
+    private @Nullable String getHtmlLanguageFallback(@Nullable WebContents webContents) {
+        if (!ReadAloudFeatures.isNativeEnabled() || webContents == null) {
+            return null;
+        }
+        String htmlLanguage = TranslateBridge.getHtmlLanguage(webContents);
+        if (htmlLanguage == null) {
+            return null;
+        }
+        String normalizedHtmlLang = htmlLanguage.trim().toLowerCase(Locale.ROOT).replace('_', '-');
+        String baseHtmlLang = getLanguage(normalizedHtmlLang);
+        // Skip "en*" HTML tags: if html_lang is English and Translate returned "und",
+        // the ML model confidently detected a non-English language on an English
+        // template.
+        if (baseHtmlLang.isEmpty() || baseHtmlLang.equals("und") || baseHtmlLang.equals("en")) {
+            return null;
+        }
+        return baseHtmlLang;
+    }
+
     /** A utility function doing null checks. */
     boolean isTranslated(Tab tab) {
         return tab.getWebContents() == null
@@ -1700,8 +1727,9 @@ public class ReadAloudController
 
     /** If language string includes locale, strip it and map to ReadAloud language code. */
     private String getLanguage(String language) {
-        if (language.contains("-")) {
-            language = language.split("-")[0];
+        int dashIndex = language.indexOf('-');
+        if (dashIndex != -1) {
+            language = language.substring(0, dashIndex);
         }
         // TODO(crbug.com/573188805): Update readaloud_voices.textproto to match the modern ISO 639
         // language code standard and remove this mapping.

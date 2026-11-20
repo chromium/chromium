@@ -413,6 +413,16 @@ static std::string JNI_TranslateBridge_GetCurrentLanguage(
   return client->GetLanguageState().current_language();
 }
 
+static std::string JNI_TranslateBridge_GetHtmlLanguage(
+    content::WebContents* web_contents) {
+  ChromeTranslateClient* client =
+      ChromeTranslateClient::FromWebContents(web_contents);
+  CHECK(client);
+  const std::optional<base::i18n::LanguageTag>& html_language =
+      client->GetLanguageState().html_root_language();
+  return html_language ? std::string(html_language->tag_string()) : "";
+}
+
 static bool JNI_TranslateBridge_IsPageTranslated(
     content::WebContents* web_contents) {
   ChromeTranslateClient* client =
