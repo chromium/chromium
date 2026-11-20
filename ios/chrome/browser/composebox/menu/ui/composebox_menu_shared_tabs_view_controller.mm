@@ -10,6 +10,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "components/url_formatter/elide_url.h"
 #import "ios/chrome/browser/composebox/menu/coordinator/composebox_menu_shared_tab.h"
+#import "ios/chrome/browser/composebox/menu/ui/composebox_menu_list_cell.h"
 #import "ios/chrome/browser/composebox/shared/ui/composebox_ui_constants.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -271,8 +272,8 @@ UIButtonConfiguration* CreateHeaderButtonConfiguration(UIImage* image) {
   __weak __typeof(self) weakSelf = self;
   UICollectionViewCellRegistration* cellRegistration =
       [UICollectionViewCellRegistration
-          registrationWithCellClass:[UICollectionViewListCell class]
-               configurationHandler:^(UICollectionViewListCell* cell,
+          registrationWithCellClass:[ComposeboxMenuListCell class]
+               configurationHandler:^(ComposeboxMenuListCell* cell,
                                       NSIndexPath* indexPath,
                                       ComposeboxMenuSharedTab* tab) {
                  [weakSelf configureListCell:cell
@@ -300,7 +301,7 @@ UIButtonConfiguration* CreateHeaderButtonConfiguration(UIImage* image) {
       .active = YES;
 }
 
-- (void)configureListCell:(UICollectionViewListCell*)cell
+- (void)configureListCell:(ComposeboxMenuListCell*)cell
               atIndexPath:(NSIndexPath*)indexPath
                   withTab:(ComposeboxMenuSharedTab*)tab {
   UIListContentConfiguration* content = [cell defaultContentConfiguration];
