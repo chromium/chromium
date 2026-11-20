@@ -1999,12 +1999,6 @@ inline constexpr char kUpdateTabGroupColorsName[] = "UpdateTabGroupColors";
 inline constexpr char kUpdateTabGroupColorsDescription[] =
     "Enables the UpdateTabGroupColors feature.";
 
-inline constexpr char kUpdatedFRESequenceName[] =
-    "Update the sequence of the First Run screens";
-inline constexpr char kUpdatedFRESequenceDescription[] =
-    "Updates the sequence of the FRE screens to show the DB promo first, "
-    "remove the Sin-In & Sync screens, or both.";
-
 inline constexpr char kUseFeedEligibilityServiceName[] =
     "[iOS] Use the new feed eligibility service";
 inline constexpr char kUseFeedEligibilityServiceDescription[] =

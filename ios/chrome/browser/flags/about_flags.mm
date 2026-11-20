@@ -629,20 +629,6 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
         {"Long period", kAutofillThrottleFilteredDocFormScanLongPeriodParam,
          nullptr}};
 
-constexpr FeatureEntry::FeatureParam kUpdatedFirstRunSequenceArm1[] = {
-    {first_run::kUpdatedFirstRunSequenceParam, "1"}};
-constexpr FeatureEntry::FeatureParam kUpdatedFirstRunSequenceArm2[] = {
-    {first_run::kUpdatedFirstRunSequenceParam, "2"}};
-constexpr FeatureEntry::FeatureParam kUpdatedFirstRunSequenceArm3[] = {
-    {first_run::kUpdatedFirstRunSequenceParam, "3"}};
-
-constexpr FeatureEntry::FeatureVariation kUpdatedFirstRunSequenceVariations[] =
-    {{" - Default browser promo first", kUpdatedFirstRunSequenceArm1, nullptr},
-     {" - Remove sign in & sync conditionally", kUpdatedFirstRunSequenceArm2,
-      nullptr},
-     {" - DB promo first and remove sign in & sync",
-      kUpdatedFirstRunSequenceArm3, nullptr}};
-
 constexpr FeatureEntry::FeatureParam kSlowFullscreenTransitionSpeed[] = {
     {kFullscreenTransitionSpeedParam, "0"}};
 constexpr FeatureEntry::FeatureParam kDefaultFullscreenTransitionSpeed[] = {
@@ -738,6 +724,8 @@ constexpr FeatureEntry::FeatureVariation kFREAblationVariations[] = {
     {" - Skip All Except Sign-in and Choice",
      kFREAblationSkipAllExceptSignInAndChoice, nullptr}};
 
+constexpr FeatureEntry::FeatureParam kBestFeaturesScreenInFirstRunArm1[] = {
+    {first_run::kBestFeaturesScreenInFirstRunParam, "1"}};
 constexpr FeatureEntry::FeatureParam kBestFeaturesScreenInFirstRunArm2[] = {
     {first_run::kBestFeaturesScreenInFirstRunParam, "2"}};
 constexpr FeatureEntry::FeatureParam kBestFeaturesScreenInFirstRunArm3[] = {
@@ -750,7 +738,7 @@ constexpr FeatureEntry::FeatureParam kBestFeaturesScreenInFirstRunArm6[] = {
 constexpr FeatureEntry::FeatureVariation
     kBestFeaturesScreenInFirstRunVariations[] = {
         {" - Variant A: General screen, after DB promo",
-         kUpdatedFirstRunSequenceArm1, nullptr},
+         kBestFeaturesScreenInFirstRunArm1, nullptr},
         {" - Variant B: General screen, before DB promo",
          kBestFeaturesScreenInFirstRunArm2, nullptr},
         {" - Variant C: General screen with passwords item",
@@ -1965,11 +1953,6 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
     {"update-tab-group-colors", flag_descriptions::kUpdateTabGroupColorsName,
      flag_descriptions::kUpdateTabGroupColorsDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(tab_groups::kUpdateTabGroupColors)},
-    {"updated-fre-screens-sequence", flag_descriptions::kUpdatedFRESequenceName,
-     flag_descriptions::kUpdatedFRESequenceDescription, flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(first_run::kUpdatedFirstRunSequence,
-                                    kUpdatedFirstRunSequenceVariations,
-                                    "UpdatedFirstRunSequence")},
     {"download-auto-deletion", flag_descriptions::kDownloadAutoDeletionName,
      flag_descriptions::kDownloadAutoDeletionDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kDownloadAutoDeletionFeatureEnabled)},

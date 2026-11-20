@@ -552,10 +552,9 @@ TEST_F(
 TEST_F(DefaultBrowserScreenCoordinatorTest,
        PresentsAnimatedPromoWhenBothFlagsEnabled) {
   scoped_feature_list_.InitWithFeatures(
-      /*enabled_features=*/{first_run::kAnimatedDefaultBrowserPromoInFRE,
-                            first_run::
-                                kAndroidSwitcherDefaultBrowserPromoInFRE},
-      /*disabled_features=*/{first_run::kUpdatedFirstRunSequence});
+      {first_run::kAnimatedDefaultBrowserPromoInFRE,
+       first_run::kAndroidSwitcherDefaultBrowserPromoInFRE},
+      {});
   SignIn();
 
   [coordinator_ start];

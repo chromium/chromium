@@ -46,14 +46,6 @@ enum class BestFeaturesScreenVariationType {
   kBestOfApp = 7,
 };
 
-// Enum to represent arms of feature kUpdatedFirstRunSequence.
-enum class UpdatedFRESequenceVariationType {
-  kDisabled,
-  kDBPromoFirst,
-  kRemoveSignInSync,
-  kDBPromoFirstAndRemoveSignInSync,
-};
-
 // Enum to represent variations of feature
 // `kAndroidSwitcherDefaultBrowserPromoInFRE`.
 enum class AndroidSwitcherDefaultBrowserPromoInFREVariationType {
@@ -91,9 +83,6 @@ BASE_DECLARE_FEATURE(kAnimatedDefaultBrowserPromoInFRE);
 // FRE sequence.
 BASE_DECLARE_FEATURE(kBestFeaturesScreenInFirstRun);
 
-// Feature to enable updates to the sequence of the first run screens.
-BASE_DECLARE_FEATURE(kUpdatedFirstRunSequence);
-
 // Feature flag (killswitch) to enable presenting post FRE IPH promos in
 // FirstRunProfileAgent instead of FirstRunCoordinator.
 BASE_DECLARE_FEATURE(kPostFREIphInProfileAgent);
@@ -116,10 +105,6 @@ extern const char kAnimatedDefaultBrowserPromoInFREExperimentType[];
 // Name of the parameter that indicates which variation of the
 //  kBestFeaturesScreenInFirstRun feature will be displayed.
 extern const char kBestFeaturesScreenInFirstRunParam[];
-
-// Name of the param that indicates which variation of the
-// kUpdatedFirstRunSequence is enabled.
-extern const char kUpdatedFirstRunSequenceParam[];
 
 // Name of the parameter that indicates which variation of the
 // `kAndroidSwitcherDefaultBrowserPromoInFRE` feature is enabled.
@@ -152,12 +137,7 @@ extern const char kFREAblationParamSkipAllExceptSignInAndChoice[];
 // enabled or `kDisabled` if the feature is disabled.
 BestFeaturesScreenVariationType GetBestFeaturesScreenVariationType();
 
-// Returns which variation of the kUpdatedFirstRunSequence feature is enabled or
-// `kDisabled` if the feature is disabled.
-UpdatedFRESequenceVariationType GetUpdatedFRESequenceVariation();
-
-// Whether the Default Browser Experiment in the FRE is enabled. This feature is
-// disabled when kUpdatedFirstRunSequence is enabled.
+// Whether the Default Browser Experiment in the FRE is enabled.
 bool IsAnimatedDefaultBrowserPromoInFREEnabled();
 
 // Returns the experimental arm for the Animated DBP in FRE experiment, which

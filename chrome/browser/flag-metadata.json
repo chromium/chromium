@@ -9776,11 +9776,6 @@
     "expiry_milestone": 170
   },
   {
-    "name": "updated-fre-screens-sequence",
-    "owners": [ "hiramahmood@google.com", "bling-pandamonium@google.com" ],
-    "expiry_milestone": 156
-  },
-  {
     "name": "use-android-staging-smds",
     "owners": [
       "cros-device-enablement@google.com",

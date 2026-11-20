@@ -192,7 +192,6 @@ void RecordDeviceSwitcherSignalMetrics(
     _localState = GetApplicationContext()->GetLocalState();
     _firstScreenInFRESequence =
         !first_run::IsAnimatedDefaultBrowserPromoInFREEnabled() &&
-        base::FeatureList::IsEnabled(first_run::kUpdatedFirstRunSequence) &&
         !_localState->GetBoolean(prefs::kEulaAccepted);
   }
   return self;

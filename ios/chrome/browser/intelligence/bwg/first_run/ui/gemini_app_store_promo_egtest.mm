@@ -117,8 +117,6 @@ void SimulateGeminiPromoURLOpening() {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
   config.additional_args.push_back(
-      "--disable-features=UpdatedFirstRunSequence");
-  config.additional_args.push_back(
       "--disable-features=AnimatedDefaultBrowserPromoInFRE");
   config.features_enabled.push_back(kPageActionMenu);
   config.iph_feature_enabled = "IPH_iOSGeminiExternalAppStoreEvent";

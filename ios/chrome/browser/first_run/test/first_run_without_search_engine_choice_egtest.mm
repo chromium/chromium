@@ -75,10 +75,6 @@ id<GREYMatcher> ManageUMALinkMatcher() {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
   config.features_disabled.push_back(kAuthenticationFlowReauthFirstKillswitch);
-  // TODO(crbug.com/556834550): Enable feature and remove
-  // FirstRunWithUpdatedFRESequenceTestCase.
-  config.additional_args.push_back(
-      "--disable-features=UpdatedFirstRunSequence");
   config.additional_args.push_back(
       "--disable-features=AnimatedDefaultBrowserPromoInFRE");
   return config;
@@ -1310,14 +1306,14 @@ TAG_SMOKE_TEST(FirstRunWithoutSearchEngineChoiceTestCase,
 
 @end
 
-// Test first run stages with the updated FRE sequence. When there are no
-// identities on the account, the sign-in/sync screens are skipped and the DB
-// promo is shown first with the UMA disclaimer.
-@interface FirstRunWithUpdatedFRESequenceTestCase : FirstRunTestCaseBase
+// Test first run stages when there are no identities on the device. The
+// Sign-In and History Sync screens are skipped and the Default Browser promo is
+// shown first with the UMA disclaimer.
+@interface FirstRunWithoutAccountTestCase : FirstRunTestCaseBase
 
 @end
 
-@implementation FirstRunWithUpdatedFRESequenceTestCase
+@implementation FirstRunWithoutAccountTestCase
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
@@ -1331,13 +1327,13 @@ TAG_SMOKE_TEST(FirstRunWithoutSearchEngineChoiceTestCase,
 
 #pragma mark - No Account Tests
 
-// Tests FRE with UMA default value.
+// Tests FRE with UMA default value when there are no accounts on the device.
 - (void)testWithoutAccount_UMAChecked {
   // Verify DB promo is first in the FRE and the disclaimer string.
   [self verifyDefaultBrowserIsDisplayedWithScreenIntent:
             FREDefaultBrowserIntent::kRegular];
-  // Skip default browser promo.
-  [[self class] dismissDefaultBrowser];
+  // Skip default browser promo and remaining screens.
+  [[self class] dismissDefaultBrowserAndRemainingScreens];
   // Check that UMA is on.
   GREYAssertTrue(
       [FirstRunAppInterface isUMACollectionEnabled],
@@ -1349,7 +1345,7 @@ TAG_SMOKE_TEST(FirstRunWithoutSearchEngineChoiceTestCase,
       assertWithMatcher:grey_nil()];
 }
 
-// Tests FRE with UMA off.
+// Tests FRE with UMA off when there are no accounts on the device.
 - (void)testWithoutAccount_UMAUnchecked {
   // Verify DB promo and disclaimer string.
   [self verifyDefaultBrowserIsDisplayedWithScreenIntent:
@@ -1373,8 +1369,8 @@ TAG_SMOKE_TEST(FirstRunWithoutSearchEngineChoiceTestCase,
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::NavigationBarDoneButton()]
       performAction:grey_tap()];
-  // Skip default browser promo.
-  [[self class] dismissDefaultBrowser];
+  // Skip default browser promo and remaining screens.
+  [[self class] dismissDefaultBrowserAndRemainingScreens];
   // Check that UMA is off.
   GREYAssertFalse(
       [FirstRunAppInterface isUMACollectionEnabled],
@@ -1397,8 +1393,8 @@ TAG_SMOKE_TEST(FirstRunWithoutSearchEngineChoiceTestCase,
   // Verify DB promo with no UMA footer.
   [self verifyDefaultBrowserIsDisplayedWithScreenIntent:
             FREDefaultBrowserIntent::kEnterpriseWithoutUMADisclaimer];
-  // Skip default browser promo.
-  [[self class] dismissDefaultBrowser];
+  // Skip default browser promo and remaining screens.
+  [[self class] dismissDefaultBrowserAndRemainingScreens];
   // Check that UMA is off.
   GREYAssertFalse(
       [FirstRunAppInterface isUMACollectionEnabled],

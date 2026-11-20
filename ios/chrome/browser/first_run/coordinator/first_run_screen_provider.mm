@@ -86,7 +86,7 @@ void ApplyFREAblationIfNeeded(std::vector<ScreenType>& screens) {
 }
 
 // Helper function to add the Best Features, Default Browser Promo, and Address
-// Bar screens when kUpdatedFirstRunSequence is disabled.
+// Bar screens.
 void AddDBPromoAndBestFeaturesScreens(std::vector<ScreenType>& screens) {
   using enum first_run::BestFeaturesScreenVariationType;
   first_run::BestFeaturesScreenVariationType bestFeaturesType =
@@ -126,47 +126,18 @@ std::vector<ScreenType> FirstRunScreenSequenceForProfile(ProfileIOS* profile) {
       *profile, /*is_first_run_entrypoint=*/true,
       /*app_started_via_external_intent=*/false);
 
-  first_run::UpdatedFRESequenceVariationType variationType =
-      shouldDisplayChoiceScreen
-          ? first_run::UpdatedFRESequenceVariationType::kDisabled
-          : first_run::GetUpdatedFRESequenceVariation();
-
   BOOL hasIdentities =
       ChromeAccountManagerServiceFactory::GetForProfile(profile)
           ->HasIdentities();
 
-  switch (variationType) {
-    case first_run::UpdatedFRESequenceVariationType::kDisabled:
-      screens.push_back(ScreenType::kSignIn);
-      screens.push_back(ScreenType::kHistorySync);
-      if (shouldDisplayChoiceScreen) {
-        screens.push_back(ScreenType::kChoice);
-      }
-      // Only add best features screen if feature
-      // kUpdatedFirstRunSequence is disabled for now.
-      AddDBPromoAndBestFeaturesScreens(screens);
-      break;
-    case first_run::UpdatedFRESequenceVariationType::kDBPromoFirst:
-      screens.push_back(ScreenType::kDefaultBrowserPromo);
-      screens.push_back(ScreenType::kSignIn);
-      screens.push_back(ScreenType::kHistorySync);
-      break;
-    case first_run::UpdatedFRESequenceVariationType::kRemoveSignInSync:
-      if (hasIdentities) {
-        screens.push_back(ScreenType::kSignIn);
-        screens.push_back(ScreenType::kHistorySync);
-      }
-      screens.push_back(ScreenType::kDefaultBrowserPromo);
-      break;
-    case first_run::UpdatedFRESequenceVariationType::
-        kDBPromoFirstAndRemoveSignInSync:
-      screens.push_back(ScreenType::kDefaultBrowserPromo);
-      if (hasIdentities) {
-        screens.push_back(ScreenType::kSignIn);
-        screens.push_back(ScreenType::kHistorySync);
-      }
-      break;
+  if (hasIdentities || shouldDisplayChoiceScreen) {
+    screens.push_back(ScreenType::kSignIn);
+    screens.push_back(ScreenType::kHistorySync);
+    if (shouldDisplayChoiceScreen) {
+      screens.push_back(ScreenType::kChoice);
+    }
   }
+  AddDBPromoAndBestFeaturesScreens(screens);
 
   if (IsBestOfAppLensInteractivePromoEnabled()) {
     screens.push_back(ScreenType::kLensInteractivePromo);

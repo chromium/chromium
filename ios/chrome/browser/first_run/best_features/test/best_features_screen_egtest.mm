@@ -16,6 +16,7 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/chrome/test/earl_grey/test_switches.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -98,9 +99,11 @@ id<GREYMatcher> SharePasswordsTitle() {
   // Show the First Run UI at startup.
   config.additional_args.push_back("-FirstRunForceEnabled");
   config.additional_args.push_back("true");
+  // Add a fake identity at startup so the Sign-In screen is included in the FRE
+  // sequence.
+  config.additional_args.push_back(std::string("-") +
+                                   test_switches::kAddFakeIdentitiesAtStartup);
   // Disable conflicting experiments/features.
-  config.additional_args.push_back(
-      "--disable-features=UpdatedFirstRunSequence");
   config.additional_args.push_back(
       "--disable-features=AnimatedDefaultBrowserPromoInFRE");
   config.additional_args.push_back(
@@ -155,8 +158,12 @@ id<GREYMatcher> SharePasswordsTitle() {
       waitForUIElementToAppearWithMatcher:
           grey_accessibilityID(
               first_run::kFirstRunSignInScreenAccessibilityIdentifier)];
+  // The startup identity may not have been cleared (e.g. for the first test of
+  // the suite), so only add it if needed.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  if (![SigninEarlGrey isIdentityAdded:fakeIdentity]) {
+    [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  }
   // Sign in.
   [self tapPromoButton:chrome_test_util::ButtonStackPrimaryButton()];
   // Skip history/tab sync.

@@ -20,6 +20,7 @@ source_set("eg2_tests") {
     "//ios/chrome/common/ui/button_stack:constants",
     "//ios/chrome/common/ui/promo_style:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:switches",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ui/base",
   ]

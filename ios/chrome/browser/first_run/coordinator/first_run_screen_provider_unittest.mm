@@ -111,14 +111,10 @@ class FirstRunScreenProviderTest : public PlatformTest {
   policy::PolicyMap policy_map_;
 };
 
-// Tests that when the search engine choice screen is required, any active
-// UpdatedFirstRunSequence variation is disabled, and the sequence falls back to
-// the standard control sequence (which includes kChoice).
-TEST_F(FirstRunScreenProviderTest, FallbackToDisabledWhenChoiceScreenEligible) {
-  feature_list_.InitAndEnableFeatureWithParameters(
-      first_run::kUpdatedFirstRunSequence,
-      {{"updated-first-run-sequence-param", "2"}});  // kRemoveSignInSync
-
+// Tests that when the search engine choice screen is required, the sequence
+// starts with kSignIn, kHistorySync, and kChoice even without device
+// identities.
+TEST_F(FirstRunScreenProviderTest, ChoiceScreenEligibleShowsSignInAndChoice) {
   // Force choice screen eligibility.
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kForceSearchEngineChoiceScreen);
@@ -129,21 +125,18 @@ TEST_F(FirstRunScreenProviderTest, FallbackToDisabledWhenChoiceScreenEligible) {
       [[FirstRunScreenProvider alloc] initForProfile:profile.get()];
   std::vector<ScreenType> screens = GetScreensSequence(provider);
 
-  // Assert that `kChoice` is included in the sequence.
-  EXPECT_TRUE(std::ranges::contains(screens, ScreenType::kChoice));
-
-  // Assert that `kSignIn` is the first screen.
-  ASSERT_FALSE(screens.empty());
-  EXPECT_EQ(screens.front(), ScreenType::kSignIn);
+  // Assert that the sequence starts with `kSignIn`, `kHistorySync`, then
+  // `kChoice`.
+  ASSERT_GE(screens.size(), 3u);
+  EXPECT_EQ(screens[0], ScreenType::kSignIn);
+  EXPECT_EQ(screens[1], ScreenType::kHistorySync);
+  EXPECT_EQ(screens[2], ScreenType::kChoice);
 }
 
 // Tests that when the search engine choice screen is NOT required (e.g., in US
-// region), the UpdatedFirstRunSequence variation remains active.
-TEST_F(FirstRunScreenProviderTest, KeepUpdatedSequenceWhenNotChoiceEligible) {
-  feature_list_.InitAndEnableFeatureWithParameters(
-      first_run::kUpdatedFirstRunSequence,
-      {{"updated-first-run-sequence-param", "2"}});  // kRemoveSignInSync
-
+// region) and there are no device identities, sign-in is skipped and
+// kDefaultBrowserPromo is the first screen.
+TEST_F(FirstRunScreenProviderTest, NoIdentitiesSkipsSignIn) {
   // Create a profile in the US (non-choice eligible).
   std::unique_ptr<TestProfileIOS> profile = CreateProfile("US");
 
@@ -299,6 +292,31 @@ TEST_F(FirstRunScreenProviderTest,
   EXPECT_THAT(GetDeferredScreens(),
               ::testing::ElementsAre(ScreenType::kHistorySync,
                                      ScreenType::kDefaultBrowserPromo));
+}
+
+// Tests that when the search engine choice screen is NOT required and there
+// are identities on the device, the sequence starts with kSignIn and
+// kHistorySync, followed by kDefaultBrowserPromo.
+TEST_F(FirstRunScreenProviderTest, WithIdentitiesShowsSignInBeforeDBPromo) {
+  AddIdentityOnDevice();
+
+  // Create a profile in the US (non-choice eligible).
+  std::unique_ptr<TestProfileIOS> profile = CreateProfile("US");
+
+  // Get the screen sequence from the provider.
+  FirstRunScreenProvider* provider =
+      [[FirstRunScreenProvider alloc] initForProfile:profile.get()];
+  std::vector<ScreenType> screens = GetScreensSequence(provider);
+
+  // Assert that `kChoice` is NOT included.
+  EXPECT_FALSE(std::ranges::contains(screens, ScreenType::kChoice));
+
+  // Assert that the sequence starts with `kSignIn`, `kHistorySync`, then
+  // `kDefaultBrowserPromo`.
+  ASSERT_GE(screens.size(), 3u);
+  EXPECT_EQ(screens[0], ScreenType::kSignIn);
+  EXPECT_EQ(screens[1], ScreenType::kHistorySync);
+  EXPECT_EQ(screens[2], ScreenType::kDefaultBrowserPromo);
 }
 
 }  // namespace

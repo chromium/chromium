@@ -17,8 +17,6 @@ BASE_FEATURE(kBestFeaturesScreenInFirstRun,
              "BestFeaturesScreenInFirstRunExperience",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kUpdatedFirstRunSequence, base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kPostFREIphInProfileAgent, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidSwitcherDefaultBrowserPromoInFRE,
@@ -34,8 +32,6 @@ const char kAnimatedDefaultBrowserPromoInFREExperimentType[] =
 
 const char kBestFeaturesScreenInFirstRunParam[] =
     "BestFeaturesScreenInFirstRunParam";
-
-const char kUpdatedFirstRunSequenceParam[] = "updated-first-run-sequence-param";
 
 const char kAndroidSwitcherDefaultBrowserPromoInFREParam[] =
     "android-switcher-default-browser-promo-in-fre-param";
@@ -68,12 +64,6 @@ BASE_FEATURE_PARAM(int,
                    &kBestFeaturesScreenInFirstRun,
                    kBestFeaturesScreenInFirstRunParam,
                    1);
-
-BASE_FEATURE_PARAM(int,
-                   kUpdatedFirstRunSequenceParamFeature,
-                   &kUpdatedFirstRunSequence,
-                   kUpdatedFirstRunSequenceParam,
-                   2);
 
 BASE_FEATURE_PARAM(
     int,
@@ -151,17 +141,8 @@ BestFeaturesScreenVariationType GetBestFeaturesScreenVariationType() {
   return static_cast<BestFeaturesScreenVariationType>(param);
 }
 
-UpdatedFRESequenceVariationType GetUpdatedFRESequenceVariation() {
-  if (!base::FeatureList::IsEnabled(kUpdatedFirstRunSequence)) {
-    return UpdatedFRESequenceVariationType::kDisabled;
-  }
-  return static_cast<UpdatedFRESequenceVariationType>(
-      kUpdatedFirstRunSequenceParamFeature.Get());
-}
-
 bool IsAnimatedDefaultBrowserPromoInFREEnabled() {
-  return base::FeatureList::IsEnabled(kAnimatedDefaultBrowserPromoInFRE) &&
-         !base::FeatureList::IsEnabled(first_run::kUpdatedFirstRunSequence);
+  return base::FeatureList::IsEnabled(kAnimatedDefaultBrowserPromoInFRE);
 }
 
 AnimatedDefaultBrowserPromoInFREExperimentType
