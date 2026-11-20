@@ -28,11 +28,16 @@ class CastRuntimeHistogramSnapshotManager
   std::vector<cast::metrics::Histogram> GetDeltas() {
     DCHECK(deltas_.empty());
 
+    // Merge histogram deltas from registered HistogramProviders (such as
+    // metrics::SubprocessMetricsProvider for GPU and renderer child processes)
+    // into StatisticsRecorder before snapshotting deltas.
+    base::StatisticsRecorder::ImportProvidedHistogramsSync();
+
     // Gather all histogram deltas, which will be sent to RecordDelta() and
     // buffered in |deltas_|.
     base::StatisticsRecorder::PrepareDeltas(
-        // Only return in-memory/non-persisted histograms.
-        false,
+        // Include persistent histograms as well as in-memory histograms.
+        true,
         // Do not set flags on histograms.
         base::Histogram::kNoFlags,
         // Only upload metrics marked for UMA upload.

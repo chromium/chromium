@@ -7,13 +7,36 @@
 #include <memory>
 #include <string_view>
 
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
+#include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/metrics/persistent_histogram_allocator.h"
+#include "base/metrics/record_histogram_checker.h"
+#include "base/metrics/sample_vector.h"
 #include "base/metrics/statistics_recorder.h"
+#include "base/threading/platform_thread.h"
 #include "chromecast/cast_core/runtime/browser/cast_runtime_metrics_test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromecast {
 namespace {
+
+// Ignore histograms emitted on background threads (e.g., Android runtime or
+// periodic PartitionAlloc tasks in org.chromium.native_test) so they cannot
+// pollute the temporary StatisticsRecorder during SetUp() or test assertions.
+class TestThreadRecordHistogramChecker : public base::RecordHistogramChecker {
+ public:
+  bool ShouldRecord(uint32_t histogram_hash) const override {
+    return base::PlatformThread::CurrentId() == test_thread_id_;
+  }
+
+ private:
+  const base::PlatformThreadId test_thread_id_ =
+      base::PlatformThread::CurrentId();
+};
 
 const cast::metrics::Histogram* LookupHistogram(
     std::string_view name,
@@ -35,8 +58,12 @@ class CastRuntimeHistogramFlattenerTest : public ::testing::Test {
     // for each test.
     statistics_recorder_ =
         base::StatisticsRecorder::CreateTemporaryForTesting();
+    base::StatisticsRecorder::SetRecordChecker(
+        std::make_unique<TestThreadRecordHistogramChecker>());
 
-    // Ensure existing deltas from previous tests in the process are cleared.
+    // Drain any histogram recorded by a background thread before the checker
+    // was installed, then verify the recorder starts clean.
+    (void)GetHistogramDeltas();
     ASSERT_TRUE(GetHistogramDeltas().empty());
   }
 
@@ -161,6 +188,67 @@ TEST_F(CastRuntimeHistogramFlattenerTest, SeparateBuckets) {
   UMA_HISTOGRAM_COUNTS_1M(kHistName, 13000);
   deltas = GetHistogramDeltas();
   EXPECT_EQ(2, GetCount(13000, LookupHistogram(kHistName, deltas)));
+}
+
+class FakeSubprocessHistogramProvider
+    : public base::StatisticsRecorder::HistogramProvider {
+ public:
+  FakeSubprocessHistogramProvider() {
+    base::StatisticsRecorder::RegisterHistogramProvider(
+        weak_factory_.GetWeakPtr());
+  }
+
+  void MergeHistogramDeltas(bool async,
+                            base::OnceClosure done_callback) override {
+    base::UmaHistogramBoolean("Subprocess.Video.SubVsyncCollision", true);
+    std::move(done_callback).Run();
+  }
+
+ private:
+  base::WeakPtrFactory<FakeSubprocessHistogramProvider> weak_factory_{this};
+};
+
+TEST_F(CastRuntimeHistogramFlattenerTest, ImportsProvidedSubprocessHistograms) {
+  FakeSubprocessHistogramProvider provider;
+
+  auto deltas = GetHistogramDeltas();
+  const cast::metrics::Histogram* delta =
+      LookupHistogram("Subprocess.Video.SubVsyncCollision", deltas);
+  ASSERT_NE(nullptr, delta);
+  EXPECT_EQ(1, GetCount(1, delta));
+}
+
+TEST_F(CastRuntimeHistogramFlattenerTest, ImportsPersistentHistograms) {
+  base::GlobalHistogramAllocator* old_allocator =
+      base::GlobalHistogramAllocator::ReleaseForTesting();
+  base::ScopedClosureRunner restore_allocator(base::BindOnce(
+      [](base::GlobalHistogramAllocator* previous) {
+        base::GlobalHistogramAllocator::ReleaseForTesting();
+        if (previous) {
+          base::GlobalHistogramAllocator::Set(previous);
+        }
+      },
+      old_allocator));
+
+  base::GlobalHistogramAllocator::CreateWithLocalMemory(
+      64 << 10, 0, "CastRuntimeHistogramFlattenerTest");
+  ASSERT_NE(nullptr, base::GlobalHistogramAllocator::Get());
+  base::PersistentSampleVector::
+      ResetMountExistingCountsStorageResultForTesting();
+
+  constexpr char kPersistentHistName[] =
+      "Subprocess.Video.PersistentSubVsyncCollision";
+  base::UmaHistogramBoolean(kPersistentHistName, true);
+  base::HistogramBase* histogram =
+      base::StatisticsRecorder::FindHistogram(kPersistentHistName);
+  ASSERT_NE(nullptr, histogram);
+  EXPECT_TRUE(histogram->HasFlags(base::HistogramBase::kIsPersistent));
+
+  auto deltas = GetHistogramDeltas();
+  const cast::metrics::Histogram* delta =
+      LookupHistogram(kPersistentHistName, deltas);
+  ASSERT_NE(nullptr, delta);
+  EXPECT_EQ(1, GetCount(1, delta));
 }
 
 }  // namespace chromecast

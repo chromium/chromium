@@ -14,10 +14,12 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/persistent_histogram_allocator.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/string_split.h"
@@ -62,6 +64,8 @@
 #include "chromecast/ui/display_settings_manager_impl.h"
 #include "components/input/switches.h"
 #include "components/memory_pressure/multi_source_memory_pressure_monitor.h"
+#include "components/metrics/content/subprocess_metrics_provider.h"
+#include "components/metrics/persistent_histograms.h"
 #include "components/prefs/pref_service.h"
 #include "components/viz/common/switches.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -478,6 +482,25 @@ int CastBrowserMainParts::PreCreateThreads() {
 #endif
 
   service_connector_ = cast_content_browser_client_->CreateServiceConnector();
+
+  // Initialize a local-memory GlobalHistogramAllocator (if not already set up)
+  // before child processes launch. Both
+  // BrowserChildProcessHostImpl::CreateMetricsAllocator() and
+  // RenderProcessHostImpl::CreateMetricsAllocator() require
+  // base::GlobalHistogramAllocator::Get() to be non-null before allocating
+  // shared-memory PersistentHistogramAllocator segments for GPU and renderer
+  // child processes.
+  if (!base::GlobalHistogramAllocator::Get()) {
+    InstantiatePersistentHistograms(
+        /*metrics_dir=*/base::FilePath(),
+        /*persistent_histograms_enabled=*/true,
+        kPersistentHistogramStorageLocalMemory);
+  }
+
+  // Initialize SubprocessMetricsProvider so that PersistentHistogramAllocator
+  // segments from GPU and renderer child processes are registered with
+  // base::StatisticsRecorder and merged when harvesting UMA histogram deltas.
+  ::metrics::SubprocessMetricsProvider::CreateInstance();
 
   cast_browser_process_->SetPrefService(
       cast_content_browser_client_->GetCastFeatureListCreator()
