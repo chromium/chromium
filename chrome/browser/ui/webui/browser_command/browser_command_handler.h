@@ -6,11 +6,15 @@
 #define CHROME_BROWSER_UI_WEBUI_BROWSER_COMMAND_BROWSER_COMMAND_HANDLER_H_
 
 #include <memory>
+#include <optional>
+#include <string>
+#include <vector>
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/command_updater_delegate.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
+#include "chrome/browser/glic/public/glic_whats_new_invoke.h"
 #include "chrome/browser/ui/user_education/start_tutorial_in_page.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -51,7 +55,9 @@ class BrowserCommandHandler : public CommandUpdaterDelegate,
           pending_page_handler,
       Profile* profile,
       std::vector<browser_command::mojom::Command> supported_commands,
-      content::WebContents* web_contents);
+      content::WebContents* web_contents,
+      std::optional<glic::InvokeFromWhatsNewPasskey> glic_passkey =
+          std::nullopt);
   ~BrowserCommandHandler() override;
 
   // browser_command::mojom::CommandHandler:
@@ -96,9 +102,11 @@ class BrowserCommandHandler : public CommandUpdaterDelegate,
   virtual void OpenPasswordManager();
   virtual void OpenAISettings();
   virtual void OpenGlic();
+  virtual void OpenGlicForQuizzes();
   virtual void OpenGlicSettings();
   virtual void OpenSplitView();
   virtual void EnableVerticalTabs();
+  void OpenGlicInternal(bool for_quizzes);
   void StartTabGroupTutorial();
   void OpenNTPAndStartCustomizeChromeTutorial();
   void StartPasswordManagerTutorial();
@@ -110,6 +118,7 @@ class BrowserCommandHandler : public CommandUpdaterDelegate,
   std::unique_ptr<CommandUpdater> command_updater_;
   mojo::Receiver<browser_command::mojom::CommandHandler> page_handler_;
   raw_ptr<content::WebContents> web_contents_;
+  std::optional<glic::InvokeFromWhatsNewPasskey> glic_passkey_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_BROWSER_COMMAND_BROWSER_COMMAND_HANDLER_H_

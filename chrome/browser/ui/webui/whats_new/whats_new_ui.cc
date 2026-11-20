@@ -8,6 +8,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/version.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/glic/public/glic_whats_new_invoke.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -146,7 +147,8 @@ void WhatsNewUI::CreateBrowserCommandHandler(
       });
   command_handler_ = std::make_unique<BrowserCommandHandler>(
       std::move(pending_handler), profile_, supported_commands,
-      web_ui()->GetWebContents());
+      web_ui()->GetWebContents(),
+      glic::InvokeFromWhatsNewPasskeyProvider::GetPassKey());
 }
 
 WhatsNewUI::~WhatsNewUI() = default;

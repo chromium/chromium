@@ -10,13 +10,17 @@ source_set("browser_command") {
     "browser_command_handler.h",
   ]
 
+  public_deps = [
+    "//chrome/browser/glic",
+    "//ui/webui/resources/js/browser_command:mojo_bindings",
+  ]
+
   deps = [
     "//base",
     "//chrome/app:command_ids",
     "//chrome/browser:browser_process",
     "//chrome/browser:command_updater_impl",
     "//chrome/browser/feedback",
-    "//chrome/browser/glic",
     "//chrome/browser/new_tab_page",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/search",
@@ -45,7 +49,6 @@ source_set("browser_command") {
     "//net",
     "//ui/base",
     "//ui/base/interaction",
-    "//ui/webui/resources/js/browser_command:mojo_bindings",
     "//url",
   ]
 }

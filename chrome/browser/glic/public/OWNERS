@@ -1,2 +1,4 @@
 per-file glic_passkeys.h=set noparent
 per-file glic_passkeys.h=file://chrome/browser/glic/API_OWNERS
+per-file glic_whats_new_invoke.*=set noparent
+per-file glic_whats_new_invoke.*=file://chrome/browser/glic/API_OWNERS

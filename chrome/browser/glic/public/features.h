@@ -295,14 +295,9 @@ BASE_DECLARE_FEATURE_PARAM(std::string, kGlicBrowserCommandFallbackUrl);
 BASE_DECLARE_FEATURE(kGlicWhatsNewQuizzes);
 
 // Enabled alongside a What's New module feature flag to invoke Glic via
-// `GlicKeyedService::Invoke` when the module's CTA is clicked.
-// `kGlicBrowserCommandInvokePrompt` pre-fills (without submitting) the prompt.
-// Because this parameter provides a single unlocalized string, any Finch study
-// setting a non-empty prompt must be locale-filtered.
-// TODO(crbug.com/586567250): Temporary stopgap for M159; replace with
-// per-module prompt support.
+// `GlicKeyedService::Invoke` (or `InvokeWithAutoSubmit` for approved modules
+// such as `kGlicWhatsNewQuizzes`) when the module's CTA is clicked.
 BASE_DECLARE_FEATURE(kGlicBrowserCommandInvoke);
-BASE_DECLARE_FEATURE_PARAM(std::string, kGlicBrowserCommandInvokePrompt);
 
 // Test only. When enabled, Android drops incoming Glic experimental triggering
 // TriggerActuationRequest messages without replying or acking, as if the FCM

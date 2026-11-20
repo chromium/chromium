@@ -1139,6 +1139,7 @@ source_set("unit_tests") {
       "//chrome/browser/ui/tabs:test_support",
       "//chrome/browser/ui/views/drive_picker_host",
       "//chrome/browser/ui/views/drive_picker_host:mojo_bindings",
+      "//chrome/browser/ui/webui/browser_command",
       "//chrome/browser/ui/webui/drive_picker_host:drive_picker_host_request",
       "//chrome/common:chrome_features",
       "//chrome/test/base:scoped_metrics_service",
