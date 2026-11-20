@@ -253,44 +253,6 @@ extern const base::FeatureParam<std::string> kHomepageURLForLens;
 COMPONENT_EXPORT(LENS_FEATURES)
 extern const base::FeatureParam<bool> kEnableLensHtmlRedirectFix;
 
-// Enable Lens loading state removal on
-// DocumentOnLoadCompletedInPrimaryMainFrame.
-// TODO(crbug.com/40916154): Clean up unused listeners and flags after
-// determining which ones we want to listen to for server-side rendering
-// backends.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern const base::FeatureParam<bool>
-    kDismissLoadingStateOnDocumentOnLoadCompletedInPrimaryMainFrame;
-
-// Enable Lens loading state removal on DomContentLoaded.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern const base::FeatureParam<bool> kDismissLoadingStateOnDomContentLoaded;
-
-// Enable Lens loading state removal on DidFinishNavigation.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern const base::FeatureParam<bool> kDismissLoadingStateOnDidFinishNavigation;
-
-// Enable Lens loading state removal on NavigationEntryCommitted.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern const base::FeatureParam<bool>
-    kDismissLoadingStateOnNavigationEntryCommitted;
-
-// Enable Lens loading state removal on DidFinishLoad.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern const base::FeatureParam<bool> kDismissLoadingStateOnDidFinishLoad;
-
-// Enable Lens loading state removal on PrimaryPageChanged.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern const base::FeatureParam<bool> kDismissLoadingStateOnPrimaryPageChanged;
-
-// Enables Lens fullscreen search on Desktop platforms.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern const base::FeatureParam<bool> kEnableFullscreenSearch;
-
-// Enable "open in new tab" option in side panel.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern const base::FeatureParam<bool> kLensOverlayEnableOpenInNewTab;
-
 // Whether the EDU action chip should be disabled by glic.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern const base::FeatureParam<bool> kLensOverlayEduActionChipDisabledByGlic;
