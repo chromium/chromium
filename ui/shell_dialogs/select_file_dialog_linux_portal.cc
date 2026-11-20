@@ -225,24 +225,10 @@ SelectFileDialogLinuxPortal::BuildFilterSet() {
         continue;
       }
 
-      // We want to allow ASCII case-insensitive matches for the extension on
-      // a per-character basis, since that's what
-      // https://html.spec.whatwg.org/multipage/input.html#attr-input-accept
-      // suggests.  For example, we should accept file.txt, file.TXT, or
-      // file.tXt.  To do this, we expand characters with ASCII case
-      // equivalents to be represented by [aA], as documented in
+      // Allow ASCII case-insensitive matches for the extension on a
+      // per-character basis, using the [aA] glob syntax documented in
       // https://flatpak.github.io/xdg-desktop-portal/docs/doc-org.freedesktop.portal.FileChooser.html
-      std::string pattern("*.");
-      for (char c : extension) {
-        char lower = base::ToLowerASCII(c);
-        char upper = base::ToUpperASCII(c);
-        if (upper != lower) {
-          pattern.append({'[', lower, upper, ']'});
-        } else {
-          pattern.append({c});
-        }
-      }
-      filter.patterns.push_back(pattern);
+      filter.patterns.push_back(GetCaseInsensitiveExtensionPattern(extension));
 
       // Save the original form for use as a fallback description.
       original_patterns.push_back("*." + extension);

@@ -11,6 +11,8 @@
 
 #include <memory>
 #include <set>
+#include <string>
+#include <string_view>
 
 #include "base/nix/xdg_util.h"
 #include "ui/aura/window.h"
@@ -29,6 +31,14 @@ class SHELL_DIALOGS_EXPORT SelectFileDialogLinux : public SelectFileDialog {
   // Returns true if the SelectFileDialog class returned by
   // NewSelectFileDialogImplKDE will actually work.
   static bool CheckKDEDialogWorksOnUIThread(std::string& kdialog_version);
+
+  // Returns a glob pattern that matches file names ending in `extension`,
+  // compared ASCII case-insensitively per character, as
+  // https://html.spec.whatwg.org/multipage/input.html#attr-input-accept
+  // suggests. For example, "txt" gives "*.[tT][xX][tT]", which matches
+  // file.txt, file.TXT and file.tXt.
+  static std::string GetCaseInsensitiveExtensionPattern(
+      std::string_view extension);
 
   // BaseShellDialog implementation.
   void ListenerDestroyed() override;

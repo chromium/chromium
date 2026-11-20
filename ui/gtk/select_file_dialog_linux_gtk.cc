@@ -575,12 +575,12 @@ void SelectFileDialogLinuxGtk::AddFilters(GtkFileChooser* chooser) {
       if (!current_extension.empty()) {
         if (!filter)
           filter = gtk_file_filter_new();
-        for (std::string pattern :
-             {"*." + base::ToLowerASCII(current_extension),
-              "*." + base::ToUpperASCII(current_extension)}) {
-          gtk_file_filter_add_pattern(filter, pattern.c_str());
-          fallback_labels.insert(pattern);
-        }
+        // Match the extension case-insensitively, so that e.g. "Rmd" files
+        // are shown for an "rmd" filter.
+        gtk_file_filter_add_pattern(
+            filter,
+            GetCaseInsensitiveExtensionPattern(current_extension).c_str());
+        fallback_labels.insert("*." + current_extension);
       }
     }
     // We didn't find any non-empty extensions to filter on.
