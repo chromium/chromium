@@ -5,21 +5,26 @@
 #import "ios/chrome/browser/settings/ui_bundled/settings_navigation_controller.h"
 
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 #import <objc/runtime.h>
 
 #import <memory>
 
 #import "base/functional/bind.h"
+#import "base/memory/raw_ptr.h"
 #import "base/test/metrics/user_action_tester.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
 #import "components/search_engines/template_url_service.h"
+#import "components/signin/public/base/signin_metrics.h"
 #import "components/sync/test/test_sync_service.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_visibility_browser_agent.h"
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/metrics/model/activity_reporter.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
+#import "ios/chrome/browser/settings/manage_accounts/public/manage_accounts_table_view_controller_constants.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
@@ -27,9 +32,12 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/test_sync_service_utils.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -227,6 +235,96 @@ TEST_F(SettingsNavigationControllerTest, ActivityReporting) {
   [settingsController cleanUpSettings];
   [settingsController setValue:nil forKey:@"activityReporter"];
   [mockInstance stopMocking];
+}
+
+// Tests that `-cleanUpSettings` on an accounts controller created with
+// `closeSettingsOnAddAccount` set to `YES` stops `ManageAccountsCoordinator`
+// without calling `-closeSettings` on the delegate.
+TEST_F(SettingsNavigationControllerTest,
+       CleanUpAccountsControllerDoesNotCloseSettings) {
+  // Add an identity on the device and sign in with it.
+  FakeSystemIdentity* fake_identity = [FakeSystemIdentity fakeIdentity1];
+  FakeSystemIdentityManager::FromSystemIdentityManager(
+      GetApplicationContext()->GetSystemIdentityManager())
+      ->AddIdentity(fake_identity);
+  AuthenticationServiceFactory::GetForProfile(profile_.get())
+      ->SignIn(fake_identity, signin_metrics::AccessPoint::kSettings);
+
+  // The strict mock fails the test if any delegate method is called.
+  id strict_delegate =
+      OCMStrictProtocolMock(@protocol(SettingsNavigationControllerDelegate));
+  @autoreleasepool {
+    UIViewController* base_view_controller = [[UIViewController alloc] init];
+    SettingsNavigationController* settings_controller =
+        [SettingsNavigationController
+                   accountsControllerForBrowser:browser_.get()
+                             baseViewController:base_view_controller
+                                       delegate:strict_delegate
+                      closeSettingsOnAddAccount:YES
+                              showSignoutButton:YES
+                                 showDoneButton:NO
+            signoutDismissalByParentCoordinator:NO];
+    EXPECT_EQ(1U, settings_controller.viewControllers.count);
+
+    // Simulate the settings being cleaned up.
+    [settings_controller cleanUpSettings];
+  }
+  EXPECT_OCMOCK_VERIFY(strict_delegate);
+}
+
+// Tests that tapping the Done button on an accounts controller notifies the
+// delegate to close settings once without recursing when the delegate calls
+// `-cleanUpSettings`.
+TEST_F(SettingsNavigationControllerTest,
+       CloseAccountsControllerFromDoneButtonWithoutRecursion) {
+  base::UserActionTester user_action_tester;
+  // Add an identity on the device and sign in with it.
+  FakeSystemIdentity* fake_identity = [FakeSystemIdentity fakeIdentity1];
+  FakeSystemIdentityManager::FromSystemIdentityManager(
+      GetApplicationContext()->GetSystemIdentityManager())
+      ->AddIdentity(fake_identity);
+  AuthenticationServiceFactory::GetForProfile(profile_.get())
+      ->SignIn(fake_identity, signin_metrics::AccessPoint::kSettings);
+
+  id strict_delegate =
+      OCMStrictProtocolMock(@protocol(SettingsNavigationControllerDelegate));
+  @autoreleasepool {
+    UIViewController* base_view_controller = [[UIViewController alloc] init];
+    SettingsNavigationController* settings_controller =
+        [SettingsNavigationController
+                   accountsControllerForBrowser:browser_.get()
+                             baseViewController:base_view_controller
+                                       delegate:strict_delegate
+                      closeSettingsOnAddAccount:NO
+                              showSignoutButton:NO
+                                 showDoneButton:YES
+            signoutDismissalByParentCoordinator:YES];
+    __weak SettingsNavigationController* weak_settings_controller =
+        settings_controller;
+    ASSERT_EQ(1U, settings_controller.viewControllers.count);
+
+    UIBarButtonItem* done_button =
+        settings_controller.topViewController.navigationItem.rightBarButtonItem;
+    ASSERT_NE(nil, done_button);
+    EXPECT_NSEQ(kSettingsAccountsTableViewDoneButtonId,
+                done_button.accessibilityIdentifier);
+
+    OCMExpect([strict_delegate closeSettings])
+        .andDo(^(NSInvocation* invocation) {
+          // Simulate the delegate cleaning up settings while closing them.
+          [weak_settings_controller cleanUpSettings];
+        });
+
+    // Simulate the user tapping the Done button.
+    [UIApplication.sharedApplication sendAction:done_button.action
+                                             to:done_button.target
+                                           from:done_button
+                                       forEvent:nil];
+
+    EXPECT_EQ(
+        1, user_action_tester.GetActionCount("Signin_AccountsTableView_Close"));
+  }
+  EXPECT_OCMOCK_VERIFY(strict_delegate);
 }
 
 }  // namespace
