@@ -323,8 +323,16 @@ IN_PROC_BROWSER_TEST_F(PredictionModelStoreBrowserTest,
 
 // Tests that two similar profiles share the model, and the model is not
 // redownloaded.
+// TODO(crbug.com/588420399): Re-enable after deflaking DownloadStatus race on
+// MSan.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_TestSimilarProfilesShareModel \
+  DISABLED_TestSimilarProfilesShareModel
+#else
+#define MAYBE_TestSimilarProfilesShareModel TestSimilarProfilesShareModel
+#endif
 IN_PROC_BROWSER_TEST_F(PredictionModelStoreBrowserTest,
-                       TestSimilarProfilesShareModel) {
+                       MAYBE_TestSimilarProfilesShareModel) {
   ModelFileObserver model_file_observer;
   RegisterAndWaitForModelUpdate(&model_file_observer);
 
@@ -386,8 +394,18 @@ IN_PROC_BROWSER_TEST_F(PredictionModelStoreBrowserTest,
 
 // Tests that two similar profiles share the model, and the model is not
 // redownloaded, based on server returned model cache key.
-IN_PROC_BROWSER_TEST_F(PredictionModelStoreBrowserTest,
-                       TestSimilarProfilesShareModelWithServerModelCacheKey) {
+// TODO(crbug.com/588420399): Re-enable after deflaking DownloadStatus race on
+// MSan.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_TestSimilarProfilesShareModelWithServerModelCacheKey \
+  DISABLED_TestSimilarProfilesShareModelWithServerModelCacheKey
+#else
+#define MAYBE_TestSimilarProfilesShareModelWithServerModelCacheKey \
+  TestSimilarProfilesShareModelWithServerModelCacheKey
+#endif
+IN_PROC_BROWSER_TEST_F(
+    PredictionModelStoreBrowserTest,
+    MAYBE_TestSimilarProfilesShareModelWithServerModelCacheKey) {
   ModelFileObserver model_file_observer_foo, model_file_observer_bar;
   set_server_model_cache_key(CreateModelCacheKey(kTestLocaleFoo));
   {
