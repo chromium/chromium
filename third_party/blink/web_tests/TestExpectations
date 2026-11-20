@@ -1970,7 +1970,6 @@ crbug.com/517158243 external/wpt/webdriver/tests/bidi/browsing_context/start_scr
 crbug.com/517158243 external/wpt/webdriver/tests/bidi/browsing_context/stop_screencast/invalid.py [ Failure ]
 crbug.com/517158243 external/wpt/webdriver/tests/bidi/browsing_context/stop_screencast/stop_screencast.py [ Failure ]
 crbug.com/573055465 external/wpt/webdriver/tests/bidi/emulation/set_media_features_override/invalid.py [ Failure ]
-crbug.com/563673588 external/wpt/webdriver/tests/bidi/input/perform_actions/duration.py [ Failure Pass ]
 crbug.com/575786309 external/wpt/webdriver/tests/bidi/input/perform_actions/pointer_touch_simultaneous.py [ Failure ]
 crbug.com/576638536 external/wpt/webdriver/tests/bidi/log/entry_added/console.py [ Failure ]  # Flaky output
 crbug.com/494337166 external/wpt/webdriver/tests/classic/add_cookie/add.py [ Failure ]
@@ -2129,6 +2128,7 @@ crbug.com/571887243 [ Android ] external/wpt/webdriver/tests/bidi/external/bluet
 crbug.com/571887243 [ Android ] external/wpt/webdriver/tests/bidi/external/bluetooth/simulate_preconnected_peripheral/simulate_preconnected_peripheral.py [ Failure ]
 crbug.com/571887243 [ Android ] external/wpt/webdriver/tests/bidi/external/bluetooth/simulate_service/invalid.py [ Failure ]
 crbug.com/571887243 [ Android ] external/wpt/webdriver/tests/bidi/external/bluetooth/simulate_service/simulate_service.py [ Failure ]
+crbug.com/537425486 crbug.com/568009421 [ Android ] external/wpt/webdriver/tests/bidi/input/perform_actions/duration.py [ Failure ]  # Flaky output
 crbug.com/576634463 [ Android ] external/wpt/webdriver/tests/bidi/input/perform_actions/key_events.py [ Failure Timeout ]
 crbug.com/568009421 [ Android ] external/wpt/webdriver/tests/bidi/input/perform_actions/pointer_mouse_modifier.py [ Skip Timeout ]
 crbug.com/576638543 [ Android ] external/wpt/webdriver/tests/bidi/input/perform_actions/pointer_touch.py [ Skip Timeout ]

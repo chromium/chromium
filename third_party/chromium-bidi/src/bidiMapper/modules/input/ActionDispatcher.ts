@@ -55,6 +55,30 @@ const IS_MAC_DECL = (() => {
   return navigator.platform.toLowerCase().includes('mac');
 }).toString();
 
+/** Resolves on the next animation frame of a visible document. */
+const WAIT_FOR_ANIMATION_FRAME_DECL = (() => {
+  return new Promise<void>((resolve) => {
+    // Hidden documents run no animation frames; Blink then flushes queued
+    // input with a fallback timer instead.
+    if (document.visibilityState !== 'visible') {
+      resolve();
+      return;
+    }
+    const onVisibilityChange = () => {
+      if (document.visibilityState !== 'visible') {
+        document.removeEventListener('visibilitychange', onVisibilityChange);
+        cancelAnimationFrame(rafId);
+        resolve();
+      }
+    };
+    const rafId = requestAnimationFrame(() => {
+      document.removeEventListener('visibilitychange', onVisibilityChange);
+      resolve();
+    });
+    document.addEventListener('visibilitychange', onVisibilityChange);
+  });
+}).toString();
+
 async function getElementCenter(
   context: BrowsingContextImpl,
   element: Script.SharedReference,
@@ -124,6 +148,42 @@ export class ActionDispatcher {
   // non-rAF-aligned and immediately flush queued `kMouseMove` events when pipelined behind them.
   // See https://crbug.com/411434092.
   #pendingMovePromises: Promise<unknown>[] = [];
+  /**
+   * Set when a `mouseWheel` or `touchMove` CDP command is sent during
+   * `dispatchActions`, because those commands can resolve before the renderer
+   * main thread dispatches the corresponding DOM event:
+   *
+   * 1. In Blink, `wheel` listeners on `window`/`document`/`body` default to
+   *    `{passive: true}` (`EventTarget::SetDefaultAddEventListenerOptions`),
+   *    passive `touchstart`/`touchmove` listeners register as
+   *    `EventHandlerRegistry::kTouchStartOrMoveEventPassive`, and `pointermove`
+   *    listeners register as `EventHandlerRegistry::kPointerEvent` (which
+   *    `EventHandlerRegistry` reports to cc as passive `kTouchStartOrMove`
+   *    listeners).
+   * 2. When no blocking `wheel` listener, blocking `touchstart`/`touchmove`
+   *    listener, or non-`auto` `touch-action` (`EventHandlerRegistry::kTouchAction`,
+   *    such as `touch-action: none`) is present, the renderer compositor handles
+   *    `kMouseWheel` and `kTouchMove` as non-blocking
+   *    (`InputEventResultState::kSetNonBlocking`).
+   * 3. `MainThreadEventQueue::HandleEvent` enqueues `kMouseWheel` and
+   *    `kTouchMove` as rAF-aligned events (`IsRafAlignedEvent`) to be
+   *    dispatched at the next `BeginMainFrame`, and immediately invokes the
+   *    browser ack callback on the compositor thread before main-thread DOM
+   *    dispatch.
+   * 4. Browser `InputHandler` (`OnInputEventAck` / `TouchEmulator`) resolves
+   *    `Input.dispatchMouseEvent` / `Input.dispatchTouchEvent` as soon as that
+   *    compositor ack arrives, while the event is still sitting in
+   *    `MainThreadEventQueue` awaiting `BeginMainFrame`.
+   *
+   * By contrast, `kMouseMove` is acknowledged only after main-thread dispatch,
+   * and discrete events (`keyDown`, `keyUp`, `pointerDown`, `pointerUp`) are
+   * non-rAF-aligned and posted immediately to the main thread, flushing any
+   * earlier rAF-aligned events queued in the same `MainThreadEventQueue` in
+   * FIFO order. See `#flushPendingRafAlignedInput`.
+   */
+  #hasPendingRafAlignedInput = false;
+  #pendingRafFlush?: Promise<void>;
+  #inFlightHiddenSandboxWarmup?: Promise<unknown>;
 
   constructor(
     inputState: InputState,
@@ -156,17 +216,88 @@ export class ActionDispatcher {
     await Promise.allSettled(promises);
   }
 
+  /**
+   * Flushes any pending rAF-aligned `wheel` or `touchMove` DOM events queued in
+   * `MainThreadEventQueue` (see `#waitForRafAlignedInput`).
+   */
+  async #flushPendingRafAlignedInput(): Promise<void> {
+    if (this.#hasPendingRafAlignedInput) {
+      this.#hasPendingRafAlignedInput = false;
+      const flush = this.#waitForRafAlignedInput();
+      this.#pendingRafFlush = flush;
+      try {
+        await flush;
+      } finally {
+        if (this.#pendingRafFlush === flush) {
+          this.#pendingRafFlush = undefined;
+        }
+      }
+      return;
+    }
+    if (this.#pendingRafFlush) {
+      await this.#pendingRafFlush;
+    }
+  }
+
+  /**
+   * Flushes deferred `mouseMoved` commands and pending rAF-aligned input in
+   * parallel so both can settle in the same animation frame.
+   */
+  async #flushPendingInput(): Promise<void> {
+    await Promise.all([
+      this.#flushPendingMovePromises(),
+      this.#flushPendingRafAlignedInput(),
+    ]);
+  }
+
+  /**
+   * Starts creating the local-root hidden sandbox so `Page.createIsolatedWorld`
+   * overlaps with in-flight input dispatch instead of delaying the first
+   * `requestAnimationFrame` flush. Only tracks the in-flight creation so
+   * `#waitForRafAlignedInput()` always resolves the live realm from
+   * `BrowsingContextImpl`.
+   */
+  #warmUpLocalRootHiddenSandbox(): void {
+    if (this.#hasPendingRafAlignedInput || this.#inFlightHiddenSandboxWarmup) {
+      return;
+    }
+    try {
+      const localRootContext = this.#browsingContextStorage.getContext(
+        this.#context.cdpTarget.id,
+      );
+      // Swallow warmup rejections so an aborted command or destroyed context
+      // never causes an unhandled rejection; `#waitForRafAlignedInput()`
+      // queries `getOrCreateHiddenSandbox()` again after awaiting this promise.
+      const warmup = localRootContext
+        .getOrCreateHiddenSandbox()
+        .catch(() => undefined)
+        .finally(() => {
+          if (this.#inFlightHiddenSandboxWarmup === warmup) {
+            this.#inFlightHiddenSandboxWarmup = undefined;
+          }
+        });
+      this.#inFlightHiddenSandboxWarmup = warmup;
+    } catch {
+      // Ignore if the context is already gone; `#waitForRafAlignedInput` handles it.
+    }
+  }
+
   /** Must be called while holding `InputState.queue`. */
   async dispatchActions(
     optionsByTick: readonly (readonly Readonly<ActionOption>[])[],
   ): Promise<void> {
+    this.#hasPendingRafAlignedInput = false;
+    this.#inFlightHiddenSandboxWarmup = undefined;
     try {
       for (const options of optionsByTick) {
         await this.dispatchTickActions(options);
       }
     } finally {
-      // Ensure any trailing deferred `mouseMoved` commands settle before `performActions` completes.
-      await this.#flushPendingMovePromises();
+      // Ensure any trailing deferred `mouseMoved` commands and queued
+      // rAF-aligned `wheel`/`touchMove` DOM events settle before
+      // `performActions` completes.
+      await this.#flushPendingInput();
+      this.#inFlightHiddenSandboxWarmup = undefined;
     }
   }
 
@@ -181,10 +312,11 @@ export class ActionDispatcher {
       }
     }
     if (this.#tickDuration > 0) {
-      // Complete any deferred moves before starting a timed tick or pause duration.
-      await this.#flushPendingMovePromises();
+      // Complete any deferred moves and queued rAF-aligned input before
+      // starting a timed tick or pause duration.
+      await this.#flushPendingInput();
     }
-    // Record tick start after flushing prior moves so interpolation timing is accurate.
+    // Record tick start after flushing prior input so interpolation timing is accurate.
     this.#tickStart = performance.now();
     const promises: Promise<void>[] = [];
     if (this.#tickDuration > 0) {
@@ -208,6 +340,61 @@ export class ActionDispatcher {
     // Advance simulated time by the tick's specified duration, ignoring actual
     // CDP command execution time.
     this.#simulatedTime += this.#tickDuration;
+  }
+
+  /**
+   * Waits until the target's local-root renderer has processed a
+   * `BeginMainFrame` so pending rAF-aligned `wheel` or `touchMove` DOM events
+   * queued in `MainThreadEventQueue` are dispatched before subsequent
+   * DOM-dependent coordinate queries or `input.performActions` completion:
+   * https://w3c.github.io/webdriver/#dfn-dispatch-actions-inner
+   *
+   * In Blink (`WidgetBase::BeginMainFrame`),
+   * `MainThreadEventQueue::DispatchRafAlignedInput` runs at the start of
+   * `BeginMainFrame` before `requestAnimationFrame` callbacks execute. Waiting
+   * in the local-root context (`this.#context.cdpTarget.id`) targets the
+   * widget that owns the `MainThreadEventQueue` for same-target child frames
+   * and avoids waiting on a render-throttled same-target child frame.
+   *
+   * Limitations:
+   * - Async `touchmove` throttling: once a touch drag actively scrolls the
+   *   page, the browser sends `kTouchMove` events as non-blocking
+   *   (`!OriginallyCancelable()`), and with the default
+   *   `kUnthrottledWhenGsuUnconsumed` policy (`ShouldThrottleAsyncTouchMoves()`),
+   *   `MainThreadEventQueue::DispatchRafAlignedInput` holds back a lone async
+   *   `kTouchMove` (`moved_beyond_slop_region && !OriginallyCancelable()`) if
+   *   less than 200ms (`kDefaultAsyncTouchMoveInterval`) has elapsed since the
+   *   previous one. A `performActions` call that ends mid-drag with the touch
+   *   pointer still pressed while scrolling can therefore resolve before that
+   *   held-back `pointermove`; sequences ending with `pointerUp` (`touchEnd`)
+   *   flush the queue immediately.
+   * - Cross-site (out-of-process) iframes: CDP input is dispatched to
+   *   `this.#context.cdpTarget` and routed by `InputHandler` to the widget
+   *   under the target point (`GetRenderWidgetHostAtPointAsynchronously`). If
+   *   that point hits an out-of-process iframe, the event is queued in that
+   *   iframe renderer's `MainThreadEventQueue`, which is not covered by this
+   *   target's animation frame. Conversely, when `performActions` targets an
+   *   OOPIF whose local root is render-throttled (e.g. scrolled out of the
+   *   parent viewport, `display: none`, or display-locked), Blink suppresses
+   *   `requestAnimationFrame` in that OOPIF even while `document.visibilityState`
+   *   remains `'visible'`.
+   */
+  async #waitForRafAlignedInput(): Promise<void> {
+    try {
+      await this.#inFlightHiddenSandboxWarmup;
+      const localRootContext = this.#browsingContextStorage.getContext(
+        this.#context.cdpTarget.id,
+      );
+      const hiddenSandboxRealm =
+        await localRootContext.getOrCreateHiddenSandbox();
+      await hiddenSandboxRealm.callFunction(
+        WAIT_FOR_ANIMATION_FRAME_DECL,
+        true,
+      );
+    } catch {
+      // The input may navigate or close the context, which discards its
+      // pending events.
+    }
   }
 
   async #dispatchAction({id, action}: Readonly<ActionOption>) {
@@ -555,6 +742,7 @@ export class ActionDispatcher {
             if (source.pressed.size !== 0) {
               // Ensure any prior deferred mouse moves complete before dispatching touch movement.
               await this.#flushPendingMovePromises();
+              this.#warmUpLocalRootHiddenSandbox();
               await this.#context.cdpTarget.cdpClient.sendCommand(
                 'Input.dispatchTouchEvent',
                 {
@@ -576,6 +764,7 @@ export class ActionDispatcher {
                   modifiers,
                 },
               );
+              this.#hasPendingRafAlignedInput = true;
             }
             break;
         }
@@ -594,8 +783,9 @@ export class ActionDispatcher {
     if (this.#context.id === this.#context.cdpTarget.id) {
       return {x: 0, y: 0};
     }
-    // Flush deferred moves before querying frame layout in case prior moves affected it.
-    await this.#flushPendingMovePromises();
+    // Flush deferred moves and queued rAF-aligned input before querying frame
+    // layout in case prior ticks affected it.
+    await this.#flushPendingInput();
     // https://github.com/w3c/webdriver/pull/1847 proposes dispatching events from
     // the top-level browsing context. This implementation dispatches it on the top-most
     // same-target frame, which is not top-level one in case of OOPiF.
@@ -631,8 +821,9 @@ export class ActionDispatcher {
         targetY = startY + offsetY + frameOffset.y;
         break;
       default: {
-        // Flush deferred moves before querying element bounds so hover/move layout effects apply first.
-        await this.#flushPendingMovePromises();
+        // Flush deferred moves and queued rAF-aligned input before querying
+        // element bounds so layout/scroll effects from prior ticks apply first.
+        await this.#flushPendingInput();
         const {x: posX, y: posY} = await getElementCenter(
           this.#context,
           origin.element,
@@ -701,6 +892,7 @@ export class ActionDispatcher {
       if (deltaX !== 0 || deltaY !== 0) {
         // --- Platform-specific code begins here ---
         const {modifiers} = keyState;
+        this.#warmUpLocalRootHiddenSandbox();
         await this.#context.cdpTarget.cdpClient.sendCommand(
           'Input.dispatchMouseEvent',
           {
@@ -712,6 +904,7 @@ export class ActionDispatcher {
             modifiers,
           },
         );
+        this.#hasPendingRafAlignedInput = true;
         // --- Platform-specific code ends here ---
 
         currentDeltaX += deltaX;
