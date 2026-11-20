@@ -225,7 +225,11 @@ void SegmentStream::SetNewPlaylist(scoped_refptr<MediaPlaylist> playlist) {
         // later will use the new active playlist's queue.
         return;
       }
-      starting_segment_index = highest_segment_index_.Next();
+      // Right after a reset nothing has been played, so segments seen earlier
+      // (e.g. while paused) must not be filtered out of the new playlist.
+      starting_segment_index = awaiting_manifest_after_reset_
+                                   ? SegmentIndex(0, 0)
+                                   : highest_segment_index_.Next();
     } else {
       starting_segment_index = SegmentIndex(*front_segment);
     }
@@ -245,6 +249,7 @@ void SegmentStream::SetNewPlaylist(scoped_refptr<MediaPlaylist> playlist) {
     }
   }
 
+  awaiting_manifest_after_reset_ = false;
   segments_ = std::move(new_queue);
 
   if (should_flush_live_segment_queue) {
@@ -280,6 +285,7 @@ size_t SegmentStream::QueueSize() const {
 void SegmentStream::ResetExpectingFutureManifest(base::TimeDelta time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   segments_ = {};
+  awaiting_manifest_after_reset_ = true;
   next_segment_start_ = time;
   previous_segment_init_segment_.reset();
   last_popped_segment_pdt_.reset();

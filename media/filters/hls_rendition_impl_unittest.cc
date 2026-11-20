@@ -302,6 +302,7 @@ const std::string kGapPlaylist =
 
 using testing::_;
 using testing::ElementsAreArray;
+using testing::InSequence;
 using testing::NiceMock;
 using testing::Return;
 
@@ -795,14 +796,20 @@ TEST_F(HlsRenditionImplUnittest, TestPauseAndUnpause) {
   task_environment_.RunUntilIdle();
 
   // Now the user waits for 190 seconds. Media time hasn't moved, so a seek
-  // will be required. The segment queue will be reset, and old data will be
-  // cleared (190 + mediatime (10) + segment_duration (10)). Then a new manifest
-  // will be fetched, and the first segment will be loaded. The segment data
+  // will be required. The segment queue will be reset, the parser state will
+  // be reset and old data cleared entirely. Then a new manifest will be
+  // fetched, and the first segment will be loaded. The segment data
   // handler will check ranges to see if the time is found, and then the seek
   // handler will check ranges to get the new seek point. Then a seek will be
   // requested to the start of the range.
   std::string newcontent = "newcontent";
-  EXPECT_CALL(*mock_mdeh_, Remove(_, base::Seconds(0), base::Seconds(210)));
+  {
+    // ResetParserState() flushes the parser, which may emit frames into the
+    // buffer, so Remove() has to come after it.
+    InSequence seq;
+    EXPECT_CALL(*mock_mdeh_, ResetParserState("test", kInfiniteDuration, _));
+    EXPECT_CALL(*mock_mdeh_, Remove(_, base::Seconds(0), kInfiniteDuration));
+  }
   EXPECT_CALL(*mock_hrh_, UpdateRenditionManifestUri("test", _, _))
       .WillOnce([&rendition, &manifest_uri](std::string role, GURL uri,
                                             HlsDemuxerStatusCallback cb) {
@@ -1228,7 +1235,13 @@ TEST_F(HlsRenditionImplUnittest, SeekWithBadContentCausesError) {
   rendition->CheckState(base::Seconds(10), 0.0, BindCheckState(kNoTimestamp));
   task_environment_.RunUntilIdle();
 
-  EXPECT_CALL(*mock_mdeh_, Remove(_, base::Seconds(0), base::Seconds(210)));
+  {
+    // ResetParserState() flushes the parser, which may emit frames into the
+    // buffer, so Remove() has to come after it.
+    InSequence seq;
+    EXPECT_CALL(*mock_mdeh_, ResetParserState("test", kInfiniteDuration, _));
+    EXPECT_CALL(*mock_mdeh_, Remove(_, base::Seconds(0), kInfiniteDuration));
+  }
   EXPECT_CALL(*mock_hrh_, UpdateRenditionManifestUri("test", _, _))
       .WillOnce([&rendition, &manifest_uri](std::string role, GURL uri,
                                             HlsDemuxerStatusCallback cb) {
@@ -1239,6 +1252,13 @@ TEST_F(HlsRenditionImplUnittest, SeekWithBadContentCausesError) {
         rendition->UpdatePlaylist(std::move(parsed).value());
         std::move(cb).Run(OkStatus());
       });
+  // The re-fetched playlist is accepted after a reset, so its segment is
+  // fetched and appended. The content is bad though: no buffered range comes
+  // out of it, and the rendition gives up.
+  std::string bad_content = "bad content";
+  RespondToUrl("http://example.com/playlist_4500Kb_14551245.ts", bad_content);
+  RequireAppend(base::as_byte_span(bad_content));
+  RespondWithRange(base::Seconds(0), base::Seconds(0));
   EXPECT_CALL(*mock_hrh_, Quit(_));
   task_environment_.FastForwardBy(base::Seconds(190));
   rendition->CheckState(base::Seconds(10), 1.0, BindCheckState(kNoTimestamp));

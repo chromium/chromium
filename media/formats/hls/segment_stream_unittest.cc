@@ -586,10 +586,13 @@ TEST(SegmentStreamUnittest, ResetExpectingFutureManifestResetsState) {
   // Because state was reset, first segment from new playlist requires init
   // segment.
   std::tie(segment, start, end, need_init) = segment_stream->GetNextSegment();
-  ASSERT_EQ(segment->GetUri().GetPath(), "/a4.mp4");
+  ASSERT_EQ(segment->GetUri().GetPath(), "/a3.mp4");
   ASSERT_TRUE(need_init);
 
-  // Subsequent segment with same init URI does not require init segment.
+  // Subsequent segments with same init URI do not require init segment.
+  std::tie(segment, start, end, need_init) = segment_stream->GetNextSegment();
+  ASSERT_EQ(segment->GetUri().GetPath(), "/a4.mp4");
+  ASSERT_FALSE(need_init);
   std::tie(segment, start, end, need_init) = segment_stream->GetNextSegment();
   ASSERT_EQ(segment->GetUri().GetPath(), "/a5.mp4");
   ASSERT_FALSE(need_init);
@@ -605,6 +608,75 @@ TEST(SegmentStreamUnittest, ResetExpectingFutureManifestResetsState) {
   std::tie(segment, start, end, need_init) = segment_stream->GetNextSegment();
   ASSERT_EQ(segment->GetUri().GetPath(), "/a6.mp4");
   ASSERT_TRUE(need_init);
+}
+
+TEST(SegmentStreamUnittest, ResetIgnoresSeenIndexForUnchangedPlaylist) {
+  auto make_playlist = [] {
+    return CreateMediaPlaylist("#EXT-X-TARGETDURATION:10", "#EXT-X-VERSION:1",
+                               "#EXT-X-MEDIA-SEQUENCE:0",
+                               "#EXT-X-MEDIA-PLAYLIST-TYPE:LIVE", "#EXTINF:10,",
+                               "a0.mp4", "#EXTINF:10,", "a1.mp4", "#EXTINF:10,",
+                               "a2.mp4", "#EXTINF:10,", "a3.mp4");
+  };
+  auto segment_stream =
+      std::make_unique<SegmentStream>(make_playlist(), /*seekable=*/false);
+
+  // `highest_segment_index_` is already at a3 from the initial playlist, as
+  // after a pause with no new segments.
+  segment_stream->ResetExpectingFutureManifest(base::Seconds(100));
+  ASSERT_TRUE(segment_stream->Exhausted());
+
+  // The server has not published anything newer yet.
+  segment_stream->SetNewPlaylist(make_playlist());
+
+  // Must not stay exhausted: playback resumes 3 segments from the live edge.
+  ASSERT_FALSE(segment_stream->Exhausted());
+  ASSERT_EQ(segment_stream->QueueSize(), 3u);
+  auto [segment, start, end, need_init] = segment_stream->GetNextSegment();
+  ASSERT_EQ(segment->GetUri().GetPath(), "/a1.mp4");
+}
+
+TEST(SegmentStreamUnittest, ResetWithPlaylistAdvancedByOneKeepsLiveEdgeWindow) {
+  auto segment_stream = std::make_unique<SegmentStream>(
+      CreateMediaPlaylist("#EXT-X-TARGETDURATION:10", "#EXT-X-VERSION:1",
+                          "#EXT-X-MEDIA-SEQUENCE:0",
+                          "#EXT-X-MEDIA-PLAYLIST-TYPE:LIVE", "#EXTINF:10,",
+                          "a0.mp4", "#EXTINF:10,", "a1.mp4", "#EXTINF:10,",
+                          "a2.mp4", "#EXTINF:10,", "a3.mp4"),
+      /*seekable=*/false);
+
+  segment_stream->ResetExpectingFutureManifest(base::Seconds(100));
+
+  // Only a4 is newer than `highest_segment_index_`, but right after a reset the
+  // last 3 segments of the new playlist are queued.
+  segment_stream->SetNewPlaylist(CreateMediaPlaylist(
+      "#EXT-X-TARGETDURATION:10", "#EXT-X-VERSION:1", "#EXT-X-MEDIA-SEQUENCE:1",
+      "#EXT-X-MEDIA-PLAYLIST-TYPE:LIVE", "#EXTINF:10,", "a1.mp4", "#EXTINF:10,",
+      "a2.mp4", "#EXTINF:10,", "a3.mp4", "#EXTINF:10,", "a4.mp4"));
+
+  ASSERT_EQ(segment_stream->QueueSize(), 3u);
+  auto [segment, start, end, need_init] = segment_stream->GetNextSegment();
+  ASSERT_EQ(segment->GetUri().GetPath(), "/a2.mp4");
+}
+
+TEST(SegmentStreamUnittest, StalePlaylistWithoutResetStaysExhausted) {
+  auto make_playlist = [] {
+    return CreateMediaPlaylist("#EXT-X-TARGETDURATION:10", "#EXT-X-VERSION:1",
+                               "#EXT-X-MEDIA-SEQUENCE:0",
+                               "#EXT-X-MEDIA-PLAYLIST-TYPE:LIVE", "#EXTINF:10,",
+                               "a0.mp4", "#EXTINF:10,", "a1.mp4", "#EXTINF:10,",
+                               "a2.mp4", "#EXTINF:10,", "a3.mp4");
+  };
+  auto segment_stream =
+      std::make_unique<SegmentStream>(make_playlist(), /*seekable=*/false);
+  while (!segment_stream->Exhausted()) {
+    segment_stream->GetNextSegment();
+  }
+
+  // Normal playback: nothing new in the refreshed playlist means nothing to
+  // fetch yet. Already-played segments must not be re-queued.
+  segment_stream->SetNewPlaylist(make_playlist());
+  ASSERT_TRUE(segment_stream->Exhausted());
 }
 
 }  // namespace media::hls

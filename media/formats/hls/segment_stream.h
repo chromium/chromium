@@ -105,6 +105,10 @@ class MEDIA_EXPORT SegmentStream {
   scoped_refptr<MediaPlaylist> active_playlist_;
 
   SegmentIndex highest_segment_index_ = {0, 0};
+
+  // True between ResetExpectingFutureManifest() and the next SetNewPlaylist().
+  bool awaiting_manifest_after_reset_ = false;
+
   std::optional<GURL> previous_segment_init_segment_;
 
   std::optional<base::Time> last_popped_segment_pdt_;
