@@ -21,7 +21,8 @@ enum class MobilePromoOnDesktopPromoType {
   kAutofillPromo = 3,
   kTabGroups = 4,
   kPriceTracking = 5,
-  kMaxValue = kPriceTracking,
+  kSafety = 6,
+  kMaxValue = kSafety,
 };
 // LINT.ThenChange(/components/sync/protocol/sync_enums.proto:MobilePromoOnDesktopPromoType)
 

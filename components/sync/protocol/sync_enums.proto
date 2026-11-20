@@ -254,6 +254,7 @@ message SyncEnums {
     PROMO_TYPE_AUTOFILL = 3;
     PROMO_TYPE_TAB_GROUPS = 4;
     PROMO_TYPE_PRICE_TRACKING = 5;
+    PROMO_TYPE_SAFETY = 6;
   }
   // LINT.ThenChange(/components/desktop_to_mobile_promos/features.h:MobilePromoOnDesktopPromoType)
 

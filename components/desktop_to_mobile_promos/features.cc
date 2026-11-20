@@ -94,6 +94,10 @@ bool MobilePromoOnDesktopTypeEnabled(
       feature = is_qr_code ? &kMobilePromoOnDesktopWithQRCodeWave1
                            : &kMobilePromoOnDesktopWithReminderWave1;
       break;
+    case MobilePromoOnDesktopPromoType::kSafety:
+      feature = is_qr_code ? &kMobilePromoOnDesktopWithQRCodeWave2
+                           : &kMobilePromoOnDesktopWithReminderWave2;
+      break;
     default:
       return false;
   }

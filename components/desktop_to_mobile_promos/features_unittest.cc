@@ -28,7 +28,8 @@ class MobilePromoOnDesktopFeaturesTest : public testing::Test {
 TEST_F(MobilePromoOnDesktopFeaturesTest, DefaultAllPromos) {
   base::test::ScopedFeatureList features;
   features.InitWithFeatures({kMobilePromoOnDesktopWithReminder,
-                             kMobilePromoOnDesktopWithReminderWave1},
+                             kMobilePromoOnDesktopWithReminderWave1,
+                             kMobilePromoOnDesktopWithReminderWave2},
                             {});
   // No param set -> All promos enabled.
   EXPECT_TRUE(MobilePromoOnDesktopTypeEnabled(
@@ -41,6 +42,8 @@ TEST_F(MobilePromoOnDesktopFeaturesTest, DefaultAllPromos) {
       MobilePromoOnDesktopPromoType::kPriceTracking));
   EXPECT_TRUE(MobilePromoOnDesktopTypeEnabled(
       MobilePromoOnDesktopPromoType::kTabGroups));
+  EXPECT_TRUE(
+      MobilePromoOnDesktopTypeEnabled(MobilePromoOnDesktopPromoType::kSafety));
 }
 
 TEST_F(MobilePromoOnDesktopFeaturesTest, SingleInteger) {
@@ -55,6 +58,16 @@ TEST_F(MobilePromoOnDesktopFeaturesTest, SingleInteger) {
       MobilePromoOnDesktopPromoType::kPriceTracking));
   EXPECT_FALSE(MobilePromoOnDesktopTypeEnabled(
       MobilePromoOnDesktopPromoType::kTabGroups));
+}
+
+TEST_F(MobilePromoOnDesktopFeaturesTest, Wave2SingleInteger) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(
+      kMobilePromoOnDesktopWithQRCodeWave2,
+      {{kMobilePromoOnDesktopPromoTypeParam, "6"}});  // kSafety = 6
+
+  EXPECT_TRUE(
+      MobilePromoOnDesktopTypeEnabled(MobilePromoOnDesktopPromoType::kSafety));
 }
 
 TEST_F(MobilePromoOnDesktopFeaturesTest, CommaSeparatedList) {
