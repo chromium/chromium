@@ -41,6 +41,22 @@
 #include "ui/ozone/platform/wayland/test/test_wayland_server_thread.h"
 #include "ui/ozone/platform/wayland/test/wayland_test.h"
 
+#if BUILDFLAG(USE_XKBCOMMON)
+#include <linux/input.h>
+#include <xkbcommon/xkbcommon-keysyms.h>
+
+#include "base/memory/free_deleter.h"
+#include "base/memory/platform_shared_memory_region.h"
+#include "base/memory/shared_memory_mapping.h"
+#include "base/memory/unsafe_shared_memory_region.h"
+#include "base/test/scoped_feature_list.h"
+#include "ui/events/keycodes/scoped_xkb.h"
+#include "ui/events/ozone/layout/keyboard_layout_engine.h"
+#include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
+#include "ui/ozone/common/features.h"
+#include "ui/ozone/platform/wayland/test/test_keyboard.h"
+#endif
+
 using ::testing::_;
 using ::testing::DoAll;
 using ::testing::InSequence;
@@ -202,6 +218,7 @@ class TestInputMethodContextDelegate : public LinuxInputMethodContextDelegate {
 
   void OnCommit(const std::u16string& text) override {
     was_on_commit_called_ = true;
+    was_on_commit_called_before_preedit_ = !was_on_preedit_changed_called_;
     last_commit_text_ = text;
   }
   void OnConfirmCompositionText(bool keep_selection) override {
@@ -235,6 +252,9 @@ class TestInputMethodContextDelegate : public LinuxInputMethodContextDelegate {
   }
 
   bool was_on_commit_called() const { return was_on_commit_called_; }
+  bool was_on_commit_called_before_preedit() const {
+    return was_on_commit_called_before_preedit_;
+  }
 
   const std::optional<ui::CompositionText>& last_preedit() {
     return last_on_preedit_changed_args_;
@@ -269,9 +289,18 @@ class TestInputMethodContextDelegate : public LinuxInputMethodContextDelegate {
     return virtual_keyboard_bounds_;
   }
 
+  void ClearExpectations() {
+    was_on_commit_called_ = false;
+    was_on_commit_called_before_preedit_ = false;
+    last_commit_text_.reset();
+    was_on_preedit_changed_called_ = false;
+    last_on_preedit_changed_args_.reset();
+  }
+
  private:
   gfx::AcceleratedWidget client_window_key_;
   bool was_on_commit_called_ = false;
+  bool was_on_commit_called_before_preedit_ = false;
   std::optional<std::u16string> last_commit_text_;
   std::optional<bool> last_on_confirm_composition_arg_;
   bool was_on_preedit_changed_called_ = false;
@@ -1849,6 +1878,283 @@ TEST_P(WaylandInputMethodContextTest,
   EXPECT_FALSE(input_method_context_->DispatchKeyEvent(*event));
   EXPECT_FALSE(input_method_context_delegate_->was_on_commit_called());
 }
+
+#if BUILDFLAG(USE_XKBCOMMON)
+namespace {
+
+std::string CreateXkbKeymapString(const char* variant) {
+  std::unique_ptr<xkb_context, XkbContextDeleter> xkb_context(
+      xkb_context_new(XKB_CONTEXT_NO_FLAGS));
+  xkb_rule_names names = {
+      .rules = nullptr,
+      .model = "pc105",
+      .layout = "us",
+      .variant = variant,
+      .options = "compose:ralt",
+  };
+  std::unique_ptr<xkb_keymap, XkbKeymapDeleter> xkb_keymap(
+      xkb_keymap_new_from_names(xkb_context.get(), &names,
+                                XKB_KEYMAP_COMPILE_NO_FLAGS));
+  if (!xkb_keymap) {
+    return std::string();
+  }
+  std::unique_ptr<char, base::FreeDeleter> keymap_str(
+      xkb_keymap_get_as_string(xkb_keymap.get(), XKB_KEYMAP_FORMAT_TEXT_V1));
+  return keymap_str ? std::string(keymap_str.get()) : std::string();
+}
+
+// Installs a US International keymap (dead_acute on the quote key) with Right
+// Alt mapped to Multi_key, so the layout engine resolves keysyms for the
+// synthetic key events below.
+void SetXkbComposeTestKeymap() {
+  const std::string keymap = CreateXkbKeymapString("intl");
+  ASSERT_FALSE(keymap.empty());
+  ASSERT_TRUE(KeyboardLayoutEngineManager::GetKeyboardLayoutEngine()
+                  ->SetCurrentLayoutFromBuffer(keymap));
+}
+
+std::unique_ptr<KeyEvent> CreateKeyEventForXkbComposer(
+    KeyboardCode keyboard_code,
+    DomCode dom_code,
+    DomKey dom_key,
+    int flags = EF_NONE) {
+  auto event =
+      std::make_unique<KeyEvent>(EventType::kKeyPressed, keyboard_code,
+                                 dom_code, flags, dom_key, EventTimeForNow());
+  SetKeyboardImeFlags(event.get(), kPropertyKeyboardImeIgnoredFlag);
+  return event;
+}
+
+}  // namespace
+
+TEST_P(WaylandInputMethodContextTest, XkbComposerCustomComposeAndCancel) {
+  SetXkbComposeTestKeymap();
+  ASSERT_TRUE(
+      input_method_context_->xkb_composer_for_testing()
+          .SetComposeTableFromBuffer("<a> : \"ä\" adiaeresis\n"
+                                     "<Multi_key> <o> : \"ö\" U00F6\n"
+                                     "<Multi_key> <t> <u> : \"👍\"\n"
+                                     "<dead_acute> <c> : \"ç\" ccedilla\n"));
+
+  // Single-key compose sequence (<a> -> "ä") commits directly without sending
+  // an empty preedit update.
+  auto event = CreateKeyEventForXkbComposer(VKEY_A, DomCode::US_A,
+                                            DomKey::FromCharacter('a'));
+  EXPECT_TRUE(input_method_context_->DispatchKeyEvent(*event));
+  EXPECT_FALSE(input_method_context_delegate_->was_on_preedit_changed_called());
+  EXPECT_TRUE(input_method_context_delegate_->was_on_commit_called());
+  EXPECT_EQ(input_method_context_delegate_->last_commit_text(), u"ä");
+  EXPECT_EQ(
+      input_method_context_->predicted_state_for_testing().surrounding_text,
+      u"ä");
+  input_method_context_delegate_->ClearExpectations();
+
+  // Custom 2-key Multi_key sequence (<Multi_key> <o> -> "ö").
+  event = CreateKeyEventForXkbComposer(VKEY_COMPOSE, DomCode::ALT_RIGHT,
+                                       DomKey::COMPOSE);
+  EXPECT_TRUE(input_method_context_->DispatchKeyEvent(*event));
+  EXPECT_TRUE(input_method_context_delegate_->was_on_preedit_changed_called());
+  EXPECT_FALSE(input_method_context_delegate_->was_on_commit_called());
+  EXPECT_EQ(input_method_context_delegate_->last_preedit()->text, u"·");
+
+  input_method_context_delegate_->ClearExpectations();
+  event = CreateKeyEventForXkbComposer(VKEY_O, DomCode::US_O,
+                                       DomKey::FromCharacter('o'));
+  EXPECT_TRUE(input_method_context_->DispatchKeyEvent(*event));
+  EXPECT_TRUE(input_method_context_delegate_->was_on_commit_called());
+  EXPECT_TRUE(
+      input_method_context_delegate_->was_on_commit_called_before_preedit());
+  EXPECT_TRUE(input_method_context_delegate_->was_on_preedit_changed_called());
+  EXPECT_EQ(input_method_context_delegate_->last_preedit()->text, u"");
+  EXPECT_EQ(input_method_context_delegate_->last_commit_text(), u"ö");
+  EXPECT_EQ(
+      input_method_context_->predicted_state_for_testing().surrounding_text,
+      u"äö");
+  EXPECT_TRUE(input_method_context_->predicted_state_for_testing()
+                  .composition.is_empty());
+
+  // Non-BMP emoji sequence (<Multi_key> <t> <u> -> "👍").
+  input_method_context_delegate_->ClearExpectations();
+  EXPECT_TRUE(
+      input_method_context_->DispatchKeyEvent(*CreateKeyEventForXkbComposer(
+          VKEY_COMPOSE, DomCode::ALT_RIGHT, DomKey::COMPOSE)));
+  EXPECT_TRUE(
+      input_method_context_->DispatchKeyEvent(*CreateKeyEventForXkbComposer(
+          VKEY_T, DomCode::US_T, DomKey::FromCharacter('t'))));
+  EXPECT_EQ(input_method_context_delegate_->last_preedit()->text, u"t");
+  input_method_context_delegate_->ClearExpectations();
+  EXPECT_TRUE(
+      input_method_context_->DispatchKeyEvent(*CreateKeyEventForXkbComposer(
+          VKEY_U, DomCode::US_U, DomKey::FromCharacter('u'))));
+  EXPECT_EQ(input_method_context_delegate_->last_commit_text(), u"👍");
+
+  // Locale-style dead-key override (<dead_acute> <c> -> "ç").
+  input_method_context_delegate_->ClearExpectations();
+  EXPECT_TRUE(
+      input_method_context_->DispatchKeyEvent(*CreateKeyEventForXkbComposer(
+          VKEY_UNKNOWN, DomCode::QUOTE,
+          DomKey::DeadKeyFromCombiningCharacter(0x0301))));
+  EXPECT_EQ(input_method_context_delegate_->last_preedit()->text, u"´");
+  input_method_context_delegate_->ClearExpectations();
+  EXPECT_TRUE(
+      input_method_context_->DispatchKeyEvent(*CreateKeyEventForXkbComposer(
+          VKEY_C, DomCode::US_C, DomKey::FromCharacter('c'))));
+  EXPECT_EQ(input_method_context_delegate_->last_commit_text(), u"ç");
+
+  // Unmatched sequence (<Multi_key> <x>) cancels: clears preedit, drops key.
+  input_method_context_delegate_->ClearExpectations();
+  EXPECT_TRUE(
+      input_method_context_->DispatchKeyEvent(*CreateKeyEventForXkbComposer(
+          VKEY_COMPOSE, DomCode::ALT_RIGHT, DomKey::COMPOSE)));
+  EXPECT_EQ(input_method_context_delegate_->last_preedit()->text, u"·");
+  input_method_context_delegate_->ClearExpectations();
+  EXPECT_TRUE(
+      input_method_context_->DispatchKeyEvent(*CreateKeyEventForXkbComposer(
+          VKEY_X, DomCode::US_X, DomKey::FromCharacter('x'))));
+  EXPECT_TRUE(input_method_context_delegate_->was_on_preedit_changed_called());
+  EXPECT_EQ(input_method_context_delegate_->last_preedit()->text, u"");
+  EXPECT_FALSE(input_method_context_delegate_->was_on_commit_called());
+
+  // Subsequent unmatched key is not consumed.
+  input_method_context_delegate_->ClearExpectations();
+  EXPECT_FALSE(
+      input_method_context_->DispatchKeyEvent(*CreateKeyEventForXkbComposer(
+          VKEY_X, DomCode::US_X, DomKey::FromCharacter('x'))));
+}
+
+TEST_P(WaylandInputMethodContextTest, XkbComposerHexInputAndFallback) {
+  SetXkbComposeTestKeymap();
+  ASSERT_TRUE(input_method_context_->xkb_composer_for_testing()
+                  .SetComposeTableFromBuffer("<Multi_key> <o> : \"ö\"\n"));
+
+  // Ctrl+Shift+U hex input remains handled by CharacterComposer.
+  EXPECT_TRUE(
+      input_method_context_->DispatchKeyEvent(*CreateKeyEventForXkbComposer(
+          VKEY_U, DomCode::US_U, DomKey::FromCharacter('U'),
+          EF_CONTROL_DOWN | EF_SHIFT_DOWN)));
+  EXPECT_EQ(input_method_context_delegate_->last_preedit()->text, u"u");
+
+  EXPECT_TRUE(
+      input_method_context_->DispatchKeyEvent(*CreateKeyEventForXkbComposer(
+          VKEY_F, DomCode::US_F, DomKey::FromCharacter('f'))));
+  EXPECT_TRUE(
+      input_method_context_->DispatchKeyEvent(*CreateKeyEventForXkbComposer(
+          VKEY_6, DomCode::DIGIT6, DomKey::FromCharacter('6'))));
+  EXPECT_EQ(input_method_context_delegate_->last_preedit()->text, u"uf6");
+
+  input_method_context_delegate_->ClearExpectations();
+  EXPECT_TRUE(
+      input_method_context_->DispatchKeyEvent(*CreateKeyEventForXkbComposer(
+          VKEY_RETURN, DomCode::ENTER, DomKey::ENTER)));
+  EXPECT_EQ(input_method_context_delegate_->last_commit_text(), u"ö");
+
+  // Fallback to CharacterComposer when no compose table loads.
+  input_method_context_->xkb_composer_for_testing()
+      .DisableComposeTableForTesting();
+  input_method_context_delegate_->ClearExpectations();
+  EXPECT_TRUE(
+      input_method_context_->DispatchKeyEvent(*CreateKeyEventForXkbComposer(
+          VKEY_UNKNOWN, DomCode::QUOTE,
+          DomKey::DeadKeyFromCombiningCharacter(0x0301))));
+  EXPECT_TRUE(
+      input_method_context_->DispatchKeyEvent(*CreateKeyEventForXkbComposer(
+          VKEY_A, DomCode::US_A, DomKey::FromCharacter('a'))));
+  EXPECT_EQ(input_method_context_delegate_->last_commit_text(), u"á");
+}
+
+TEST_P(WaylandInputMethodContextTest, XkbComposerKillSwitchFallsBack) {
+  SetXkbComposeTestKeymap();
+  base::test::ScopedFeatureList disable_xkb_compose;
+  disable_xkb_compose.InitAndDisableFeature(kWaylandXkbCompose);
+
+  ASSERT_TRUE(input_method_context_->xkb_composer_for_testing()
+                  .SetComposeTableFromBuffer("<dead_acute> <c> : \"ç\"\n"));
+
+  // With kWaylandXkbCompose disabled, CharacterComposer's built-in en_US table
+  // composes <dead_acute> <c> -> "ć" rather than the XkbComposer override "ç".
+  EXPECT_TRUE(
+      input_method_context_->DispatchKeyEvent(*CreateKeyEventForXkbComposer(
+          VKEY_UNKNOWN, DomCode::QUOTE,
+          DomKey::DeadKeyFromCombiningCharacter(0x0301))));
+  EXPECT_TRUE(
+      input_method_context_->DispatchKeyEvent(*CreateKeyEventForXkbComposer(
+          VKEY_C, DomCode::US_C, DomKey::FromCharacter('c'))));
+  EXPECT_EQ(input_method_context_delegate_->last_commit_text(), u"ć");
+}
+
+TEST_P(WaylandInputMethodContextTest, XkbComposerEndToEndWlKeyboardKeysyms) {
+  // Send a real XKB keymap with Right Alt mapped to Multi_key (compose:ralt).
+  const std::string keymap_str = CreateXkbKeymapString("");
+  ASSERT_FALSE(keymap_str.empty());
+  PostToServerAndWait([surface_id = surface_id_,
+                       keymap_str](wl::TestWaylandServerThread* server) {
+    const std::string_view keymap(keymap_str);
+    const size_t keymap_size = keymap.size() + 1;
+    base::UnsafeSharedMemoryRegion region =
+        base::UnsafeSharedMemoryRegion::Create(keymap_size);
+    base::WritableSharedMemoryMapping mapping = region.Map();
+    ASSERT_TRUE(mapping.IsValid());
+    auto span = mapping.GetMemoryAsSpan<char>();
+    span.copy_prefix_from(keymap);
+    span[keymap.size()] = '\0';
+    base::subtle::PlatformSharedMemoryRegion platform_region =
+        base::UnsafeSharedMemoryRegion::TakeHandleForSerialization(
+            std::move(region));
+
+    auto* keyboard = server->seat()->keyboard()->resource();
+    auto* surface = server->GetObject<wl::MockSurface>(surface_id)->resource();
+    wl_keyboard_send_keymap(keyboard, WL_KEYBOARD_KEYMAP_FORMAT_XKB_V1,
+                            platform_region.GetPlatformHandle().fd,
+                            keymap_size);
+    wl::ScopedWlArray empty({});
+    wl_keyboard_send_enter(keyboard, server->GetNextSerial(), surface,
+                           empty.get());
+    wl_keyboard_send_repeat_info(keyboard, 0, 0);
+  });
+
+  ASSERT_TRUE(input_method_context_->xkb_composer_for_testing()
+                  .SetComposeTableFromBuffer("<Multi_key> <u> : \"ü\"\n"));
+
+  std::vector<std::unique_ptr<Event>> dispatched_events;
+  EXPECT_CALL(delegate_, DispatchEvent(_)).WillRepeatedly([&](Event* event) {
+    dispatched_events.push_back(event->Clone());
+  });
+
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    auto* keyboard = server->seat()->keyboard()->resource();
+    wl_keyboard_send_key(keyboard, server->GetNextSerial(),
+                         server->GetNextTime(), KEY_RIGHTALT,
+                         WL_KEYBOARD_KEY_STATE_PRESSED);
+    wl_keyboard_send_key(keyboard, server->GetNextSerial(),
+                         server->GetNextTime(), KEY_RIGHTALT,
+                         WL_KEYBOARD_KEY_STATE_RELEASED);
+    wl_keyboard_send_key(keyboard, server->GetNextSerial(),
+                         server->GetNextTime(), KEY_U,
+                         WL_KEYBOARD_KEY_STATE_PRESSED);
+    wl_keyboard_send_key(keyboard, server->GetNextSerial(),
+                         server->GetNextTime(), KEY_U,
+                         WL_KEYBOARD_KEY_STATE_RELEASED);
+  });
+
+  ASSERT_EQ(dispatched_events.size(), 4u);
+  const KeyEvent* ralt_press = dispatched_events[0]->AsKeyEvent();
+  const KeyEvent* ralt_release = dispatched_events[1]->AsKeyEvent();
+  const KeyEvent* u_press = dispatched_events[2]->AsKeyEvent();
+  const KeyEvent* u_release = dispatched_events[3]->AsKeyEvent();
+  ASSERT_EQ(ralt_press->type(), EventType::kKeyPressed);
+  ASSERT_EQ(u_press->type(), EventType::kKeyPressed);
+
+  // Key releases are not filtered and leave the sequence pending.
+  EXPECT_TRUE(input_method_context_->DispatchKeyEvent(*ralt_press));
+  EXPECT_FALSE(input_method_context_->DispatchKeyEvent(*ralt_release));
+  EXPECT_EQ(input_method_context_delegate_->last_preedit()->text, u"·");
+
+  input_method_context_delegate_->ClearExpectations();
+  EXPECT_TRUE(input_method_context_->DispatchKeyEvent(*u_press));
+  EXPECT_EQ(input_method_context_delegate_->last_commit_text(), u"ü");
+  EXPECT_FALSE(input_method_context_->DispatchKeyEvent(*u_release));
+}
+#endif  // BUILDFLAG(USE_XKBCOMMON)
 
 class WaylandInputMethodContextNoKeyboardTest
     : public WaylandInputMethodContextTest {

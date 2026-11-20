@@ -49,6 +49,8 @@
 #include "ui/ozone/public/ozone_switches.h"
 
 #if BUILDFLAG(USE_XKBCOMMON)
+#include <xkbcommon/xkbcommon-keysyms.h>
+
 #include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
 #include "ui/events/ozone/layout/xkb/xkb_keyboard_layout_engine.h"
 #endif
@@ -305,6 +307,11 @@ WaylandInputMethodContext::WaylandInputMethodContext(
       ShouldComposeCedillaForDeadAcuteC(*base::Environment::Create()));
   window_->set_focus_client(this);
   Init();
+#if BUILDFLAG(USE_XKBCOMMON)
+  if (IsWaylandXkbComposeEnabled()) {
+    XkbComposer::LoadDefaultComposeTable();
+  }
+#endif
 }
 
 WaylandInputMethodContext::~WaylandInputMethodContext() {
@@ -401,6 +408,42 @@ bool WaylandInputMethodContext::DispatchKeyEvent(const KeyEvent& key_event) {
 
   // This is the fallback key event which was not consumed by IME.
   // So, process it inside Chrome.
+#if BUILDFLAG(USE_XKBCOMMON)
+  // CharacterComposer keeps handling Ctrl+Shift+U hex input, sequences it
+  // already started, and keys until the XKB compose table has loaded.
+  if (IsWaylandXkbComposeEnabled() &&
+      character_composer_.preedit_string().empty() &&
+      (xkb_composer_.is_composing() ||
+       !CharacterComposer::IsHexModeStartKey(key_event)) &&
+      xkb_composer_.EnsureInitialized()) {
+    const KeyboardLayoutEngine* layout_engine =
+        KeyboardLayoutEngineManager::GetKeyboardLayoutEngine();
+    std::optional<uint32_t> keysym =
+        layout_engine
+            ? layout_engine->LookupKeysym(key_event.code(), key_event.flags())
+            : std::nullopt;
+    if (keysym.has_value() || xkb_composer_.is_composing()) {
+      const bool had_preedit = !xkb_composer_.preedit_string().empty();
+      if (!xkb_composer_.FilterKeyPress(keysym.value_or(XKB_KEY_NoSymbol),
+                                        key_event.flags())) {
+        return MaybeCommitNonBmpCharacter(key_event);
+      }
+      const std::u16string& composed = xkb_composer_.composed_character();
+      if (!composed.empty()) {
+        surrounding_text_tracker_.OnInsertText(
+            composed,
+            TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+        ime_delegate_->OnCommit(composed);
+      }
+      const std::u16string& preedit = xkb_composer_.preedit_string();
+      if (had_preedit || !preedit.empty()) {
+        UpdatePreeditText(preedit);
+      }
+      return true;
+    }
+  }
+#endif
+
   if (!character_composer_.FilterKeyPress(key_event)) {
     return MaybeCommitNonBmpCharacter(key_event);
   }
@@ -458,6 +501,9 @@ void WaylandInputMethodContext::UpdatePreeditText(
 
 void WaylandInputMethodContext::Reset() {
   character_composer_.Reset();
+#if BUILDFLAG(USE_XKBCOMMON)
+  xkb_composer_.Reset();
+#endif
   // TODO(b/269964109): In ChromeOS, 'reset' means to reset the composition
   // only, excluding surrounding text etc. In Wayland, text-input-v1 doesn't
   // define what state is reset in a 'reset' call. However, based on the

@@ -13,4 +13,10 @@ bool KeyboardLayoutEngine::LookupNativeKeycode(uint32_t native_keycode,
   return false;
 }
 
+std::optional<uint32_t> KeyboardLayoutEngine::LookupKeysym(
+    DomCode dom_code,
+    int event_flags) const {
+  return std::nullopt;
+}
+
 }  // namespace ui

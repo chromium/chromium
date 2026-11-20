@@ -41,6 +41,8 @@ component("layout") {
     configs += [ ":xkbcommon" ]
 
     sources += [
+      "xkb/xkb_composer.cc",
+      "xkb/xkb_composer.h",
       "xkb/xkb_evdev_codes.cc",
       "xkb/xkb_evdev_codes.h",
       "xkb/xkb_key_code_converter.h",
@@ -61,6 +63,7 @@ source_set("unittests") {
   if (use_xkbcommon) {
     sources += [
       "keyboard_layout_engine_unittest.cc",
+      "xkb/xkb_composer_unittest.cc",
       "xkb/xkb_keyboard_layout_engine_unittest.cc",
       "xkb/xkb_modifier_converter_unittest.cc",
     ]
@@ -70,6 +73,7 @@ source_set("unittests") {
   deps = [
     ":layout",
     "//base",
+    "//base/test:test_support",
     "//testing/gtest",
     "//ui/events",
     "//ui/events:dom_keycode_converter",

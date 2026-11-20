@@ -48,6 +48,10 @@ class COMPONENT_EXPORT(UI_BASE_IME_TYPES) CharacterComposer {
 
   void Reset();
 
+  // Returns true if `event` is the Ctrl+Shift+U press that switches an idle
+  // composer to hexadecimal input mode.
+  static bool IsHexModeStartKey(const ui::KeyEvent& event);
+
   // Filters keypress.
   // Returns true if the keypress is recognized as a part of composition
   // sequence.

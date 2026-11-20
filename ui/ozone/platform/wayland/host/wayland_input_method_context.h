@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/nix/xdg_util.h"
+#include "ui/base/buildflags.h"
 #include "ui/base/ime/character_composer.h"
 #include "ui/base/ime/linux/linux_input_method_context.h"
 #include "ui/base/ime/surrounding_text_tracker.h"
@@ -23,6 +24,10 @@
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/ozone/platform/wayland/host/zwp_text_input_v1.h"
 #include "ui/ozone/platform/wayland/host/zwp_text_input_v3.h"
+
+#if BUILDFLAG(USE_XKBCOMMON)
+#include "ui/events/ozone/layout/xkb/xkb_composer.h"
+#endif
 
 namespace base {
 class Environment;
@@ -116,6 +121,10 @@ class WaylandInputMethodContext : public LinuxInputMethodContext,
     desktop_environment_ = desktop_environment;
   }
 
+#if BUILDFLAG(USE_XKBCOMMON)
+  XkbComposer& xkb_composer_for_testing() { return xkb_composer_; }
+#endif
+
  private:
   void CreateTextInput();
   void Focus(bool skip_virtual_keyboard_update);
@@ -177,6 +186,9 @@ class WaylandInputMethodContext : public LinuxInputMethodContext,
   // An object to compose a character from a sequence of key presses
   // including dead key etc.
   CharacterComposer character_composer_;
+#if BUILDFLAG(USE_XKBCOMMON)
+  XkbComposer xkb_composer_;
+#endif
 
   // Stores the parameters required for OnCursorPosition.
   // The index moved by SetSurroundingText due to the maximum length of wayland

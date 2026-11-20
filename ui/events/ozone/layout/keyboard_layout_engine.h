@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -91,6 +92,12 @@ class COMPONENT_EXPORT(EVENTS_OZONE_LAYOUT) KeyboardLayoutEngine {
                                    int event_flags,
                                    DomKey* dom_key,
                                    KeyboardCode* key_code) const;
+
+  // Returns the platform keysym (e.g. xkb_keysym_t) for `dom_code` and
+  // `event_flags`, or std::nullopt when keysym lookup is unsupported or no
+  // keymap is active.
+  virtual std::optional<uint32_t> LookupKeysym(DomCode dom_code,
+                                               int event_flags) const;
 
   // Tests may need to wait for the keyboard layout to be fully initialised.
   // The implementation should run |closure| when it is ready to handle calls to

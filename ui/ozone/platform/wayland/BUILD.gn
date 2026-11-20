@@ -627,6 +627,7 @@ source_set("wayland_unittests") {
 
   import("//ui/base/ui_features.gni")
   if (use_xkbcommon) {
+    configs += [ "//ui/events/ozone/layout:xkbcommon" ]
     deps += [ "//ui/events/keycodes:xkb" ]
   }
 

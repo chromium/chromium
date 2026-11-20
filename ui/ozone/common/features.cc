@@ -54,6 +54,11 @@ const base::FeatureParam<double> kWaylandUnscaledTouchpadScrollingNewFactor{
 // when GTK would do so (pt_BR locales or the "cedilla" input method).
 BASE_FEATURE(kWaylandCedillaCompose, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Controls whether Ozone/Wayland composes dead-key and Multi_key sequences via
+// libxkbcommon (honouring ~/.XCompose, $XCOMPOSEFILE, and locale Compose
+// tables) instead of the static CharacterComposer sequence table.
+BASE_FEATURE(kWaylandXkbCompose, base::FEATURE_ENABLED_BY_DEFAULT);
+
 bool IsWaylandOverlayDelegationEnabled() {
   return base::FeatureList::IsEnabled(kWaylandOverlayDelegation);
 }
@@ -88,6 +93,10 @@ bool IsWaylandUnscaledTouchpadScrollingEnabled() {
 
 double GetWaylandUnscaledTouchpadScrollingNewFactor() {
   return kWaylandUnscaledTouchpadScrollingNewFactor.Get();
+}
+
+bool IsWaylandXkbComposeEnabled() {
+  return base::FeatureList::IsEnabled(kWaylandXkbCompose);
 }
 
 }  // namespace ui

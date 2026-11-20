@@ -58,6 +58,8 @@ class COMPONENT_EXPORT(EVENTS_OZONE_LAYOUT) XkbKeyboardLayoutEngine
                            int flags,
                            DomKey* dom_key,
                            KeyboardCode* key_code) const override;
+  std::optional<uint32_t> LookupKeysym(DomCode dom_code,
+                                       int flags) const override;
 
   void SetInitCallbackForTest(base::OnceClosure closure) override;
 

@@ -148,6 +148,16 @@ void CharacterComposer::Reset() {
   composition_mode_ = KEY_SEQUENCE_MODE;
 }
 
+// static
+bool CharacterComposer::IsHexModeStartKey(const ui::KeyEvent& event) {
+  // Other modifiers like Alt are ignored.  When CapsLock is on, the key is
+  // Ctrl+Shift+u (not U), so it does not start hex mode.
+  return event.key_code() == VKEY_U &&
+         (event.flags() &
+          (EF_SHIFT_DOWN | EF_CONTROL_DOWN | EF_CAPS_LOCK_ON)) ==
+             (EF_SHIFT_DOWN | EF_CONTROL_DOWN);
+}
+
 bool CharacterComposer::FilterKeyPress(const ui::KeyEvent& event) {
   if (event.type() != EventType::kKeyPressed &&
       event.type() != EventType::kKeyReleased) {
@@ -162,11 +172,7 @@ bool CharacterComposer::FilterKeyPress(const ui::KeyEvent& event) {
   preedit_string_.clear();
 
   // When the user presses Ctrl+Shift+U, maybe switch to HEX_MODE.
-  // We don't care about other modifiers like Alt.  When CapsLock is on, we do
-  // nothing because what we receive is Ctrl+Shift+u (not U).
-  if (event.key_code() == VKEY_U &&
-      (event.flags() & (EF_SHIFT_DOWN | EF_CONTROL_DOWN | EF_CAPS_LOCK_ON)) ==
-          (EF_SHIFT_DOWN | EF_CONTROL_DOWN)) {
+  if (IsHexModeStartKey(event)) {
     if (composition_mode_ == KEY_SEQUENCE_MODE && compose_buffer_.empty()) {
       // There is no ongoing composition.  Let's switch to HEX_MODE.
       composition_mode_ = HEX_MODE;

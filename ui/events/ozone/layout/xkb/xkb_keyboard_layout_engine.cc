@@ -945,6 +945,28 @@ bool XkbKeyboardLayoutEngine::LookupXkbKeycode(DomCode dom_code,
   return true;
 }
 
+std::optional<uint32_t> XkbKeyboardLayoutEngine::LookupKeysym(DomCode dom_code,
+                                                              int flags) const {
+  if (!xkb_state_ || dom_code == DomCode::NONE) {
+    return std::nullopt;
+  }
+  xkb_keycode_t xkb_keycode =
+      key_code_converter_->DomCodeToXkbKeyCode(dom_code);
+  if (xkb_keycode == key_code_converter_->InvalidXkbKeyCode()) {
+    return std::nullopt;
+  }
+  xkb_keysym_t xkb_keysym = XKB_KEY_NoSymbol;
+  uint32_t character = 0;
+  std::ignore = XkbLookup(xkb_keycode, EventFlagsToXkbFlags(flags), &xkb_keysym,
+                          &character);
+#if BUILDFLAG(IS_CHROMEOS)
+  if (dom_code == DomCode::PRINT_SCREEN && xkb_keysym == XKB_KEY_Print) {
+    xkb_keysym = XKB_KEY_3270_PrintScreen;
+  }
+#endif
+  return xkb_keysym;
+}
+
 void XkbKeyboardLayoutEngine::SetInitCallbackForTest(
     base::OnceClosure closure) {
   if (xkb_state_) {
