@@ -32,25 +32,6 @@ using KeyWithMods = std::pair<KeyboardCode, EventFlags>;
 constexpr char kDesktopInterface[] = "org.gnome.desktop.interface";
 constexpr char kGtkKeyTheme[] = "gtk-key-theme";
 constexpr char kEmacsKeyTheme[] = "Emacs";
-
-bool HasValidStringKey(GSettings* settings, const char* key_name) {
-  GSettingsSchema* raw_schema = nullptr;
-  g_object_get(settings, "settings-schema", &raw_schema, nullptr);
-  if (!raw_schema) {
-    return false;
-  }
-  std::unique_ptr<GSettingsSchema, decltype(&g_settings_schema_unref)> schema(
-      raw_schema, &g_settings_schema_unref);
-  if (!g_settings_schema_has_key(schema.get(), key_name)) {
-    return false;
-  }
-  std::unique_ptr<GSettingsSchemaKey, decltype(&g_settings_schema_key_unref)>
-      key(g_settings_schema_get_key(schema.get(), key_name),
-          &g_settings_schema_key_unref);
-  return key &&
-         g_variant_type_equal(g_settings_schema_key_get_value_type(key.get()),
-                              G_VARIANT_TYPE_STRING);
-}
 #endif
 
 // This should contain at least all of the bindings in gtk/gtk-keys.css.emacs.
@@ -107,7 +88,7 @@ LinuxKeyBindingsHandler::LinuxKeyBindingsHandler()
 LinuxKeyBindingsHandler::LinuxKeyBindingsHandler(
     ScopedGObject<GSettings> settings)
     : settings_(std::move(settings)) {
-  if (!settings_ || !HasValidStringKey(settings_.get(), kGtkKeyTheme)) {
+  if (!GSettingsHasKey(settings_.get(), kGtkKeyTheme, G_VARIANT_TYPE_STRING)) {
     settings_.Reset();
     return;
   }

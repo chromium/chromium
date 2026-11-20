@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/features.gni")
+import("//build/config/ui.gni")
 import("//chrome/common/features.gni")
 import("//components/safe_browsing/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
@@ -162,6 +163,7 @@ source_set("notifications") {
 }
 
 source_set("impl") {
+  defines = []
   sources = [
     "metrics/notification_metrics_logger.cc",
     "metrics/notification_metrics_logger_factory.cc",
@@ -335,6 +337,11 @@ source_set("impl") {
         "//chrome/app/theme:chrome_unscaled_resources_grit",
         "//chrome/browser/themes",
       ]
+
+      if (use_glib && use_gio) {
+        defines += [ "USE_GSETTINGS" ]
+        deps += [ "//ui/base/glib" ]
+      }
     }
   }
 
@@ -429,6 +436,7 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
 
+  defines = []
   sources = [
     "metrics/notification_metrics_logger_unittest.cc",
     "notification_display_queue_unittest.cc",
@@ -544,6 +552,11 @@ source_set("unit_tests") {
         "//dbus:test_support",
         "//ui/linux:test_support",
       ]
+
+      if (use_glib && use_gio) {
+        defines += [ "USE_GSETTINGS" ]
+        deps += [ "//ui/base/glib" ]
+      }
     }
   }
 }

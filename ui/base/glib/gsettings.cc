@@ -65,6 +65,31 @@ ScopedGObject<GSettings> GSettingsNew(const char* schema) {
   return settings;
 }
 
+bool GSettingsHasKey(GSettings* settings,
+                     const char* key_name,
+                     const GVariantType* expected_type) {
+  if (!settings || !key_name) {
+    return false;
+  }
+  GSettingsSchema* raw_schema = nullptr;
+  g_object_get(settings, "settings-schema", &raw_schema, nullptr);
+  if (!raw_schema) {
+    return false;
+  }
+  std::unique_ptr<GSettingsSchema, GSettingsSchemaDeleter> schema(raw_schema);
+  if (!g_settings_schema_has_key(schema.get(), key_name)) {
+    return false;
+  }
+  if (!expected_type) {
+    return true;
+  }
+  std::unique_ptr<GSettingsSchemaKey, GSettingsSchemaKeyDeleter> key(
+      g_settings_schema_get_key(schema.get(), key_name));
+  return key &&
+         g_variant_type_equal(g_settings_schema_key_get_value_type(key.get()),
+                              expected_type);
+}
+
 bool AreGdkWaylandFontSchemasValid() {
   // These must be kept in sync with update_xft_settings() in GDK's
   // gdk/wayland/gdkscreen-wayland.c.

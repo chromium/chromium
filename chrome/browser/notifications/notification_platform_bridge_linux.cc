@@ -30,6 +30,7 @@
 #include "base/files/scoped_file.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/number_formatting.h"
 #include "base/logging.h"
@@ -83,6 +84,14 @@
 #include "ui/message_center/public/cpp/notification.h"
 #include "url/origin.h"
 
+#if defined(USE_GSETTINGS)
+#include <gio/gio.h>
+
+#include "ui/base/glib/gsettings.h"
+#include "ui/base/glib/scoped_gobject.h"
+#include "ui/base/glib/scoped_gsignal.h"
+#endif
+
 namespace {
 
 // DBus name / path.
@@ -132,6 +141,17 @@ const char kCloseButtonId[] = "close";
 const char kDefaultButtonId[] = "default";
 const char kInlineReplyButtonId[] = "inline-reply";
 const char kSettingsButtonId[] = "settings";
+
+// The server name GNOME Shell reports in GetServerInformation.
+constexpr char kGnomeShellServerName[] = "gnome-shell";
+
+#if defined(USE_GSETTINGS)
+// GNOME Shell disables notification banners (Do Not Disturb) by setting this
+// key to false.
+constexpr char kGnomeNotificationsSchema[] = "org.gnome.desktop.notifications";
+constexpr char kGnomeShowBannersKey[] = "show-banners";
+constexpr char kGnomeShowBannersSignal[] = "changed::show-banners";
+#endif
 
 // Max image size; specified in the FDO notification specification.
 const int kMaxImageWidth = 200;
@@ -235,6 +255,7 @@ uint8_t NotificationPriorityToFdoUrgency(int priority) {
       return URGENCY_LOW;
     case message_center::HIGH_PRIORITY:
     case message_center::MAX_PRIORITY:
+    case message_center::SYSTEM_PRIORITY:
       return URGENCY_CRITICAL;
     case message_center::DEFAULT_PRIORITY:
       return URGENCY_NORMAL;
@@ -310,13 +331,20 @@ bool ShouldOmitAppIconForImagePath(const std::string& server_name) {
 }
 
 bool ShouldMarkPersistentNotificationsAsCritical(
-    const std::string& server_name) {
+    const std::string& server_name,
+    std::optional<bool> gnome_show_banners) {
+  // GNOME Shell shows critical notifications even when banners are disabled
+  // (Do Not Disturb), so don't mark notifications as critical while DND is on.
+  if (server_name == kGnomeShellServerName &&
+      !gnome_show_banners.value_or(true)) {
+    return false;
+  }
   // Gnome-based desktops intentionally disregard the notification timeout
   // and hide a notification automatically unless it is marked as critical.
   // https://github.com/linuxmint/Cinnamon/issues/7179
-  // For this reason, we mark a notification that should not time out as
-  // critical unless we are on KDE Plasma or Raspberry Pi (wf-panel-pi)
-  // which follows the notification spec.
+  // For this reason, mark a notification that should not time out as
+  // critical unless on KDE Plasma or Raspberry Pi (wf-panel-pi), which follow
+  // the notification spec.
   return server_name != "Plasma" && server_name != "wf-panel-pi";
 }
 
@@ -424,6 +452,16 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
             &NotificationPlatformBridgeLinuxImpl::OnAppTerminating,
             weak_factory_.GetWeakPtr()));
   }
+
+#if defined(USE_GSETTINGS)
+  using GSettingsFactory = base::OnceCallback<ScopedGObject<GSettings>()>;
+
+  NotificationPlatformBridgeLinuxImpl(scoped_refptr<dbus::Bus> bus,
+                                      GSettingsFactory gsettings_factory)
+      : NotificationPlatformBridgeLinuxImpl(std::move(bus)) {
+    gsettings_factory_ = std::move(gsettings_factory);
+  }
+#endif
 
   NotificationPlatformBridgeLinuxImpl(
       const NotificationPlatformBridgeLinuxImpl&) = delete;
@@ -570,7 +608,17 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
     notifications_.clear();
     using_portal_ = false;
     portal_version_ = kPortalMinVersion;
+    gnome_show_banners_.reset();
+#if defined(USE_GSETTINGS)
+    show_banners_signal_.Reset();
+    notification_settings_.Reset();
+    gsettings_factory_.Reset();
+#endif
     weak_factory_.InvalidateWeakPtrs();
+  }
+
+  void SetGnomeShowBannersForTesting(std::optional<bool> show_banners) {
+    gnome_show_banners_ = show_banners;
   }
 
  private:
@@ -695,6 +743,39 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
             weak_factory_.GetWeakPtr()));
   }
 
+  // Reads and watches org.gnome.desktop.notifications show-banners.  If the
+  // schema or key is missing, `gnome_show_banners_` stays nullopt and
+  // persistent notifications keep being marked as critical.
+  void WatchGnomeShowBanners() {
+#if defined(USE_GSETTINGS)
+    if (notification_settings_ || !gsettings_factory_) {
+      return;
+    }
+    ScopedGObject<GSettings> settings = std::move(gsettings_factory_).Run();
+    if (!ui::GSettingsHasKey(settings.get(), kGnomeShowBannersKey,
+                             G_VARIANT_TYPE_BOOLEAN)) {
+      return;
+    }
+    notification_settings_ = std::move(settings);
+    show_banners_signal_ = ScopedGSignal(
+        notification_settings_.get(), kGnomeShowBannersSignal,
+        base::BindRepeating(
+            &NotificationPlatformBridgeLinuxImpl::OnGnomeShowBannersChanged,
+            weak_factory_.GetWeakPtr()));
+    // GSettings only emits "changed" for keys that have been read.
+    OnGnomeShowBannersChanged(notification_settings_.get(),
+                              kGnomeShowBannersKey);
+#endif
+  }
+
+#if defined(USE_GSETTINGS)
+  void OnGnomeShowBannersChanged(GSettings* settings, const char* key) {
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
+    gnome_show_banners_ =
+        g_settings_get_boolean(settings, kGnomeShowBannersKey) != FALSE;
+  }
+#endif
+
   void OnGetServerInfoResponse(
       dbus_utils::
           CallMethodResult<std::string, std::string, std::string, std::string>
@@ -705,6 +786,9 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
           result.value();
       server_name_ = std::move(server_name);
       server_version_ = base::Version(std::move(server_version));
+    }
+    if (server_name_ == kGnomeShellServerName) {
+      WatchGnomeShowBanners();
     }
 
     connected_signals_barrier_ = base::BarrierClosure(
@@ -1022,7 +1106,8 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
 
     uint8_t urgency =
         notification->never_timeout() &&
-                ShouldMarkPersistentNotificationsAsCritical(server_name_)
+                ShouldMarkPersistentNotificationsAsCritical(server_name_,
+                                                            gnome_show_banners_)
             ? URGENCY_CRITICAL
             : NotificationPriorityToFdoUrgency(notification->priority());
     hints.emplace("urgency", dbus_utils::Variant::Wrap<"y">(urgency));
@@ -1190,6 +1275,7 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
         priority_str = "high";
         break;
       case message_center::MAX_PRIORITY:
+      case message_center::SYSTEM_PRIORITY:
         priority_str = "urgent";
         break;
       case message_center::DEFAULT_PRIORITY:
@@ -1717,20 +1803,60 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
   // Identifies the next "Notify" call (see NotificationData).
   uint64_t next_notify_request_id_ = 1;
 
+  // The value of show-banners, or nullopt if unknown or not on GNOME Shell.
+  std::optional<bool> gnome_show_banners_;
+
+#if defined(USE_GSETTINGS)
+  GSettingsFactory gsettings_factory_;
+  ScopedGObject<GSettings> notification_settings_;
+  ScopedGSignal show_banners_signal_;
+#endif
+
   base::WeakPtrFactory<NotificationPlatformBridgeLinuxImpl> weak_factory_{this};
 };
 
 NotificationPlatformBridgeLinux::NotificationPlatformBridgeLinux()
-    : NotificationPlatformBridgeLinux(
-          dbus_thread_linux::GetSharedSessionBus()) {}
+#if defined(USE_GSETTINGS)
+    : impl_(std::make_unique<NotificationPlatformBridgeLinuxImpl>(
+          dbus_thread_linux::GetSharedSessionBus(),
+          base::BindOnce(
+              [] { return ui::GSettingsNew(kGnomeNotificationsSchema); }))) {
+#else
+    : impl_(std::make_unique<NotificationPlatformBridgeLinuxImpl>(
+          dbus_thread_linux::GetSharedSessionBus())) {
+#endif
+  impl_->Init();
+}
 
 NotificationPlatformBridgeLinux::NotificationPlatformBridgeLinux(
     scoped_refptr<dbus::Bus> bus)
-    : impl_(std::make_unique<NotificationPlatformBridgeLinuxImpl>(bus)) {
+    : NotificationPlatformBridgeLinux(std::move(bus),
+                                      /*notification_settings=*/nullptr) {}
+
+NotificationPlatformBridgeLinux::NotificationPlatformBridgeLinux(
+    scoped_refptr<dbus::Bus> bus,
+    GSettings* notification_settings)
+#if defined(USE_GSETTINGS)
+    : impl_(std::make_unique<NotificationPlatformBridgeLinuxImpl>(
+          std::move(bus),
+          notification_settings
+              ? base::BindOnce(
+                    [](ScopedGObject<GSettings> settings) { return settings; },
+                    WrapGObject(notification_settings))
+              : NotificationPlatformBridgeLinuxImpl::GSettingsFactory())) {
+#else
+    : impl_(std::make_unique<NotificationPlatformBridgeLinuxImpl>(
+          std::move(bus))) {
+#endif
   impl_->Init();
 }
 
 NotificationPlatformBridgeLinux::~NotificationPlatformBridgeLinux() = default;
+
+void NotificationPlatformBridgeLinux::SetGnomeShowBannersForTesting(
+    std::optional<bool> show_banners) {
+  impl_->SetGnomeShowBannersForTesting(show_banners);  // IN-TEST
+}
 
 void NotificationPlatformBridgeLinux::Display(
     NotificationHandler::Type notification_type,

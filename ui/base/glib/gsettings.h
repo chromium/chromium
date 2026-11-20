@@ -8,12 +8,23 @@
 #include "ui/base/glib/scoped_gobject.h"
 
 using GSettings = struct _GSettings;
+using GVariantType = struct _GVariantType;
 
 namespace ui {
 
 // Creates a new GSettings object for the given schema.  If the schema does not
 // exist, this will return nullptr.
 ScopedGObject<GSettings> GSettingsNew(const char* schema);
+
+// Returns true if `settings` has a key named `key_name` whose value type
+// matches `expected_type` (or any type if `expected_type` is null).  A missing
+// key causes `g_settings_get_*()` to abort via `g_error()`; a wrong-typed key
+// logs `g_critical` and returns a fallback value (`FALSE` for
+// `g_settings_get_boolean()`, `nullptr` for `g_settings_get_string()`) rather
+// than aborting.
+bool GSettingsHasKey(GSettings* settings,
+                     const char* key_name,
+                     const GVariantType* expected_type = nullptr);
 
 // GDK3's Wayland backend reads font rendering settings from GSettings using
 // g_settings_get_enum(), which aborts the process if a key is missing or is not

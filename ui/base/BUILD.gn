@@ -1359,6 +1359,9 @@ test("ui_base_unittests") {
       "glib/glib_callback_unittest.cc",
       "glib/scoped_gsignal_unittest.cc",
     ]
+    if (use_gio) {
+      sources += [ "glib/gsettings_unittest.cc" ]
+    }
     deps += [ "//ui/base/glib" ]
   }
 

@@ -6,6 +6,7 @@
 
 #include <dbus/dbus-shared.h>
 
+#include <array>
 #include <map>
 #include <memory>
 #include <vector>
@@ -44,6 +45,14 @@
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
+#if defined(USE_GSETTINGS)
+#define G_SETTINGS_ENABLE_BACKEND 1
+#include <gio/gio.h>
+#include <gio/gsettingsbackend.h>
+
+#include "ui/base/glib/scoped_gobject.h"
+#endif
+
 using message_center::ButtonInfo;
 using message_center::Notification;
 using message_center::SettingsButtonHandler;
@@ -57,6 +66,28 @@ const char kPortalDesktopName[] = "org.freedesktop.portal.Desktop";
 const char kPortalDesktopPath[] = "/org/freedesktop/portal/desktop";
 const char kPortalNotificationInterface[] =
     "org.freedesktop.portal.Notification";
+
+#if defined(USE_GSETTINGS)
+constexpr char kGnomeNotificationsSchema[] = "org.gnome.desktop.notifications";
+constexpr char kGnomeShowBannersKey[] = "show-banners";
+
+ScopedGObject<GSettings> CreateMemorySettings(const char* schema_id) {
+  GSettingsSchemaSource* source = g_settings_schema_source_get_default();
+  if (!source) {
+    return {};
+  }
+  std::unique_ptr<GSettingsSchema, decltype(&g_settings_schema_unref)> schema(
+      g_settings_schema_source_lookup(source, schema_id, /*recursive=*/true),
+      &g_settings_schema_unref);
+  if (!schema) {
+    return {};
+  }
+  ScopedGObject<GSettingsBackend> backend =
+      TakeGObject(g_memory_settings_backend_new());
+  return TakeGObject(
+      g_settings_new_full(schema.get(), backend.get(), /*path=*/nullptr));
+}
+#endif
 
 class NotificationBuilder {
  public:
@@ -132,6 +163,11 @@ class NotificationBuilder {
     return *this;
   }
 
+  NotificationBuilder& SetSystemPriority() {
+    notification_.SetSystemPriority();
+    return *this;
+  }
+
   NotificationBuilder& SetTitle(const std::u16string& title) {
     notification_.set_title(title);
     return *this;
@@ -168,6 +204,7 @@ struct NotificationRequest {
   bool silent = false;
   std::string app_icon;
   std::string image_path;
+  uint8_t urgency = 0;
 };
 
 struct TestParams {
@@ -244,8 +281,8 @@ NotificationRequest ParseRequest(dbus::MethodCall* method_call) {
   EXPECT_TRUE(reader.PopString(&str));                  // app_name
   EXPECT_TRUE(reader.PopUint32(&request.replaces_id));  // replaces_id
   EXPECT_TRUE(reader.PopString(&request.app_icon));     // app_icon
-  EXPECT_TRUE(reader.PopString(&request.summary));  // summary
-  EXPECT_TRUE(reader.PopString(&request.body));     // body
+  EXPECT_TRUE(reader.PopString(&request.summary));      // summary
+  EXPECT_TRUE(reader.PopString(&request.body));         // body
 
   {
     dbus::MessageReader actions_reader(nullptr);
@@ -272,6 +309,8 @@ NotificationRequest ParseRequest(dbus::MethodCall* method_call) {
         bool suppress_sound;
         EXPECT_TRUE(dict_entry_reader.PopVariantOfBool(&suppress_sound));
         request.silent = suppress_sound;
+      } else if (str == "urgency") {
+        EXPECT_TRUE(dict_entry_reader.PopVariantOfByte(&request.urgency));
       } else if (str == "x-kde-origin-name") {
         std::string x_kde_origin_name;
         EXPECT_TRUE(dict_entry_reader.PopVariantOfString(&x_kde_origin_name));
@@ -897,7 +936,9 @@ class NotificationPlatformBridgeLinuxTest : public testing::Test {
   }
 
   void TearDown() override {
-    notification_bridge_linux_->CleanUp();
+    if (notification_bridge_linux_) {
+      notification_bridge_linux_->CleanUp();
+    }
     content::RunAllTasksUntilIdle();
     notification_bridge_linux_.reset();
     display_service_tester_.reset();
@@ -922,7 +963,9 @@ class NotificationPlatformBridgeLinuxTest : public testing::Test {
   }
 
  protected:
-  void CreateNotificationBridgeLinux(const TestParams& test_params) {
+  void CreateNotificationBridgeLinux(
+      const TestParams& test_params,
+      GSettings* notification_settings = nullptr) {
     test_params_ = test_params;
 
     EXPECT_CALL(
@@ -968,8 +1011,8 @@ class NotificationPlatformBridgeLinuxTest : public testing::Test {
       fake_notification_proxy_->SetServerVersion(test_params.server_version);
     }
 
-    notification_bridge_linux_ =
-        base::WrapUnique(new NotificationPlatformBridgeLinux(mock_bus_));
+    notification_bridge_linux_ = base::WrapUnique(
+        new NotificationPlatformBridgeLinux(mock_bus_, notification_settings));
     notification_bridge_linux_->SetReadyCallback(
         base::BindOnce(&NotificationPlatformBridgeLinuxTest::
                            MockableNotificationBridgeReadyCallback,
@@ -1009,6 +1052,12 @@ class NotificationPlatformBridgeLinuxTest : public testing::Test {
     writer.AppendUint32(reason);
     fake_notification_proxy_->FireSignal("NotificationClosed", &signal);
   }
+
+  void SetGnomeShowBanners(std::optional<bool> show_banners) {
+    notification_bridge_linux_->SetGnomeShowBannersForTesting(show_banners);
+  }
+
+  void CleanUpBridge() { notification_bridge_linux_->CleanUp(); }
 
   void MockableNotificationBridgeReadyCallback(bool success) {
     EXPECT_FALSE(ready_called_);
@@ -1204,6 +1253,287 @@ TEST_F(NotificationPlatformBridgeLinuxTest, NotificationTimeoutsNoPersistence) {
       NotificationBuilder("2").SetNeverTimeout(true).GetResult(), nullptr);
   content::RunAllTasksUntilIdle();
 }
+
+TEST_F(NotificationPlatformBridgeLinuxTest,
+       NeverTimeoutUrgencyFollowsGnomeShowBanners) {
+  constexpr uint8_t kUrgencyNormal = 1;
+  constexpr uint8_t kUrgencyCritical = 2;
+  std::vector<uint8_t> urgencies;
+  fake_notification_proxy_->SetNotifyCallback(base::BindLambdaForTesting(
+      [&](const NotificationRequest& request) -> uint32_t {
+        urgencies.push_back(request.urgency);
+        return urgencies.size();
+      }));
+
+  CreateNotificationBridgeLinux(TestParams().SetServerName("gnome-shell"));
+  auto display = [&](const std::string& id) {
+    notification_bridge_linux_->Display(
+        NotificationHandler::Type::WEB_PERSISTENT, profile(),
+        NotificationBuilder(id).SetNeverTimeout(true).GetResult(), nullptr);
+    content::RunAllTasksUntilIdle();
+  };
+
+  // Unknown show-banners (e.g. missing schema): keep the current behavior.
+  SetGnomeShowBanners(std::nullopt);
+  display("1");
+  // Banners enabled: critical, so GNOME Shell doesn't auto-hide it.
+  SetGnomeShowBanners(true);
+  display("2");
+  // Do Not Disturb: normal urgency, so GNOME Shell doesn't show a banner.
+  SetGnomeShowBanners(false);
+  display("3");
+  EXPECT_THAT(
+      urgencies,
+      testing::ElementsAre(kUrgencyCritical, kUrgencyCritical, kUrgencyNormal));
+}
+
+TEST_F(NotificationPlatformBridgeLinuxTest,
+       NeverTimeoutUrgencyIgnoresShowBannersOnOtherServers) {
+  constexpr uint8_t kUrgencyCritical = 2;
+  std::optional<uint8_t> urgency;
+  fake_notification_proxy_->SetNotifyCallback(base::BindLambdaForTesting(
+      [&](const NotificationRequest& request) -> uint32_t {
+        urgency = request.urgency;
+        return 1;
+      }));
+
+  CreateNotificationBridgeLinux(TestParams().SetServerName("cinnamon"));
+  SetGnomeShowBanners(false);
+  notification_bridge_linux_->Display(
+      NotificationHandler::Type::WEB_PERSISTENT, profile(),
+      NotificationBuilder("1").SetNeverTimeout(true).GetResult(), nullptr);
+  content::RunAllTasksUntilIdle();
+  EXPECT_EQ(kUrgencyCritical, urgency);
+}
+
+TEST_F(NotificationPlatformBridgeLinuxTest,
+       SystemAndHighPriorityStayCriticalWhileGnomeShowBannersDisabled) {
+  constexpr uint8_t kUrgencyNormal = 1;
+  constexpr uint8_t kUrgencyCritical = 2;
+  std::vector<uint8_t> urgencies;
+  fake_notification_proxy_->SetNotifyCallback(base::BindLambdaForTesting(
+      [&](const NotificationRequest& request) -> uint32_t {
+        urgencies.push_back(request.urgency);
+        return urgencies.size();
+      }));
+
+  CreateNotificationBridgeLinux(TestParams().SetServerName("gnome-shell"));
+  SetGnomeShowBanners(false);
+  notification_bridge_linux_->Display(
+      NotificationHandler::Type::WEB_PERSISTENT, profile(),
+      NotificationBuilder("1").SetSystemPriority().GetResult(), nullptr);
+  notification_bridge_linux_->Display(
+      NotificationHandler::Type::WEB_PERSISTENT, profile(),
+      NotificationBuilder("2")
+          .SetNeverTimeout(true)
+          .SetPriority(message_center::HIGH_PRIORITY)
+          .GetResult(),
+      nullptr);
+  notification_bridge_linux_->Display(
+      NotificationHandler::Type::WEB_PERSISTENT, profile(),
+      NotificationBuilder("3")
+          .SetNeverTimeout(true)
+          .SetPriority(message_center::MAX_PRIORITY)
+          .GetResult(),
+      nullptr);
+  notification_bridge_linux_->Display(
+      NotificationHandler::Type::WEB_PERSISTENT, profile(),
+      NotificationBuilder("4").SetNeverTimeout(true).GetResult(), nullptr);
+  content::RunAllTasksUntilIdle();
+  EXPECT_THAT(urgencies,
+              testing::ElementsAre(kUrgencyCritical, kUrgencyCritical,
+                                   kUrgencyCritical, kUrgencyNormal));
+}
+
+TEST_F(NotificationPlatformBridgeLinuxTest,
+       SystemPriorityMapsToCriticalOnPlasma) {
+  constexpr uint8_t kUrgencyCritical = 2;
+  std::optional<uint8_t> urgency;
+  fake_notification_proxy_->SetNotifyCallback(base::BindLambdaForTesting(
+      [&](const NotificationRequest& request) -> uint32_t {
+        urgency = request.urgency;
+        return 1;
+      }));
+
+  CreateNotificationBridgeLinux(TestParams().SetServerName("Plasma"));
+  notification_bridge_linux_->Display(
+      NotificationHandler::Type::WEB_PERSISTENT, profile(),
+      NotificationBuilder("1").SetSystemPriority().GetResult(), nullptr);
+  content::RunAllTasksUntilIdle();
+  EXPECT_EQ(kUrgencyCritical, urgency);
+}
+
+#if defined(USE_GSETTINGS)
+TEST_F(NotificationPlatformBridgeLinuxTest,
+       WatchGnomeShowBannersFollowsGSettingsSignal) {
+  ScopedGObject<GSettings> settings =
+      CreateMemorySettings(kGnomeNotificationsSchema);
+  if (!settings) {
+    GTEST_SKIP() << kGnomeNotificationsSchema
+                 << " GSettings schema is not installed.";
+  }
+  ASSERT_TRUE(
+      g_settings_set_boolean(settings.get(), kGnomeShowBannersKey, TRUE));
+
+  constexpr uint8_t kUrgencyNormal = 1;
+  constexpr uint8_t kUrgencyCritical = 2;
+  std::vector<uint8_t> urgencies;
+  fake_notification_proxy_->SetNotifyCallback(base::BindLambdaForTesting(
+      [&](const NotificationRequest& request) -> uint32_t {
+        urgencies.push_back(request.urgency);
+        return urgencies.size();
+      }));
+
+  CreateNotificationBridgeLinux(TestParams().SetServerName("gnome-shell"),
+                                settings.get());
+  auto display_persistent = [&](const std::string& id) {
+    notification_bridge_linux_->Display(
+        NotificationHandler::Type::WEB_PERSISTENT, profile(),
+        NotificationBuilder(id).SetNeverTimeout(true).GetResult(), nullptr);
+    content::RunAllTasksUntilIdle();
+  };
+
+  // Banners initially enabled: persistent notification is critical.
+  display_persistent("1");
+
+  // Disable banners dynamically via GSettings: persistent notification drops
+  // to normal, while SetSystemPriority() stays critical without NOTREACHED().
+  ASSERT_TRUE(
+      g_settings_set_boolean(settings.get(), kGnomeShowBannersKey, FALSE));
+  display_persistent("2");
+  notification_bridge_linux_->Display(
+      NotificationHandler::Type::WEB_PERSISTENT, profile(),
+      NotificationBuilder("3").SetSystemPriority().GetResult(), nullptr);
+  content::RunAllTasksUntilIdle();
+
+  // Re-enable banners dynamically via GSettings: persistent notification
+  // returns to critical.
+  ASSERT_TRUE(
+      g_settings_set_boolean(settings.get(), kGnomeShowBannersKey, TRUE));
+  display_persistent("4");
+
+  EXPECT_THAT(urgencies,
+              testing::ElementsAre(kUrgencyCritical, kUrgencyNormal,
+                                   kUrgencyCritical, kUrgencyCritical));
+}
+
+TEST_F(NotificationPlatformBridgeLinuxTest,
+       WatchGnomeShowBannersReadsInitialFalseValue) {
+  ScopedGObject<GSettings> settings =
+      CreateMemorySettings(kGnomeNotificationsSchema);
+  if (!settings) {
+    GTEST_SKIP() << kGnomeNotificationsSchema
+                 << " GSettings schema is not installed.";
+  }
+  ASSERT_TRUE(
+      g_settings_set_boolean(settings.get(), kGnomeShowBannersKey, FALSE));
+
+  constexpr uint8_t kUrgencyNormal = 1;
+  std::optional<uint8_t> urgency;
+  fake_notification_proxy_->SetNotifyCallback(base::BindLambdaForTesting(
+      [&](const NotificationRequest& request) -> uint32_t {
+        urgency = request.urgency;
+        return 1;
+      }));
+
+  CreateNotificationBridgeLinux(TestParams().SetServerName("gnome-shell"),
+                                settings.get());
+  notification_bridge_linux_->Display(
+      NotificationHandler::Type::WEB_PERSISTENT, profile(),
+      NotificationBuilder("1").SetNeverTimeout(true).GetResult(), nullptr);
+  content::RunAllTasksUntilIdle();
+  EXPECT_EQ(kUrgencyNormal, urgency);
+}
+
+TEST_F(NotificationPlatformBridgeLinuxTest,
+       WatchGnomeShowBannersIgnoresSchemaMissingKey) {
+  constexpr std::array kSchemasWithoutShowBanners = {
+      "org.gnome.desktop.interface",
+      "org.gnome.settings-daemon.plugins.xsettings",
+      "org.gtk.Settings.FileChooser",
+      "org.gnome.desktop.wm.preferences",
+  };
+  ScopedGObject<GSettings> other_settings;
+  for (const char* schema_id : kSchemasWithoutShowBanners) {
+    other_settings = CreateMemorySettings(schema_id);
+    if (other_settings) {
+      break;
+    }
+  }
+  if (!other_settings) {
+    GTEST_SKIP() << "Could not find a test schema without show-banners.";
+  }
+
+  constexpr uint8_t kUrgencyCritical = 2;
+  std::optional<uint8_t> urgency;
+  fake_notification_proxy_->SetNotifyCallback(base::BindLambdaForTesting(
+      [&](const NotificationRequest& request) -> uint32_t {
+        urgency = request.urgency;
+        return 1;
+      }));
+
+  CreateNotificationBridgeLinux(TestParams().SetServerName("gnome-shell"),
+                                other_settings.get());
+  notification_bridge_linux_->Display(
+      NotificationHandler::Type::WEB_PERSISTENT, profile(),
+      NotificationBuilder("1").SetNeverTimeout(true).GetResult(), nullptr);
+  content::RunAllTasksUntilIdle();
+  EXPECT_EQ(kUrgencyCritical, urgency);
+}
+
+TEST_F(NotificationPlatformBridgeLinuxTest,
+       WatchGnomeShowBannersIgnoredOnOtherServers) {
+  ScopedGObject<GSettings> settings =
+      CreateMemorySettings(kGnomeNotificationsSchema);
+  if (!settings) {
+    GTEST_SKIP() << kGnomeNotificationsSchema
+                 << " GSettings schema is not installed.";
+  }
+  ASSERT_TRUE(
+      g_settings_set_boolean(settings.get(), kGnomeShowBannersKey, FALSE));
+
+  constexpr uint8_t kUrgencyCritical = 2;
+  std::optional<uint8_t> urgency;
+  fake_notification_proxy_->SetNotifyCallback(base::BindLambdaForTesting(
+      [&](const NotificationRequest& request) -> uint32_t {
+        urgency = request.urgency;
+        return 1;
+      }));
+
+  CreateNotificationBridgeLinux(TestParams().SetServerName("cinnamon"),
+                                settings.get());
+  notification_bridge_linux_->Display(
+      NotificationHandler::Type::WEB_PERSISTENT, profile(),
+      NotificationBuilder("1").SetNeverTimeout(true).GetResult(), nullptr);
+  content::RunAllTasksUntilIdle();
+  EXPECT_EQ(kUrgencyCritical, urgency);
+}
+
+TEST_F(NotificationPlatformBridgeLinuxTest,
+       CleanUpDisconnectsShowBannersSignal) {
+  ScopedGObject<GSettings> settings =
+      CreateMemorySettings(kGnomeNotificationsSchema);
+  if (!settings) {
+    GTEST_SKIP() << kGnomeNotificationsSchema
+                 << " GSettings schema is not installed.";
+  }
+  ASSERT_TRUE(
+      g_settings_set_boolean(settings.get(), kGnomeShowBannersKey, TRUE));
+
+  CreateNotificationBridgeLinux(TestParams().SetServerName("gnome-shell"),
+                                settings.get());
+  CleanUpBridge();
+  content::RunAllTasksUntilIdle();
+  notification_bridge_linux_.reset();
+
+  // Mutating GSettings after CleanUp() and destruction must not fire the
+  // disconnected signal handler.
+  ASSERT_TRUE(
+      g_settings_set_boolean(settings.get(), kGnomeShowBannersKey, FALSE));
+  ASSERT_TRUE(
+      g_settings_set_boolean(settings.get(), kGnomeShowBannersKey, TRUE));
+}
+#endif  // defined(USE_GSETTINGS)
 
 TEST_F(NotificationPlatformBridgeLinuxTest,
        NotificationTimeoutWithPersistence) {
@@ -2298,6 +2628,25 @@ TEST_F(NotificationPlatformBridgeLinuxTest, PortalFullSerialization) {
       nullptr);
   content::RunAllTasksUntilIdle();
   EXPECT_TRUE(add_notification_called);
+}
+
+TEST_F(NotificationPlatformBridgeLinuxTest, PortalSystemPriorityMapsToUrgent) {
+  fake_portal_notification_proxy_->SetPortalVersion(2);
+
+  std::optional<std::string> priority;
+  fake_portal_notification_proxy_->SetAddNotificationCallback(
+      base::BindLambdaForTesting([&](const PortalNotificationRequest& request) {
+        priority = request.priority;
+      }));
+
+  CreateNotificationBridgeLinux(
+      TestParams().SetFdoNameHasOwner(false).SetPortalNameHasOwner(true));
+
+  notification_bridge_linux_->Display(
+      NotificationHandler::Type::WEB_PERSISTENT, profile(),
+      NotificationBuilder("1").SetSystemPriority().GetResult(), nullptr);
+  content::RunAllTasksUntilIdle();
+  EXPECT_EQ("urgent", priority);
 }
 
 TEST_F(NotificationPlatformBridgeLinuxTest,

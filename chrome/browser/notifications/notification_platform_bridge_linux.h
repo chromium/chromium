@@ -6,12 +6,15 @@
 #define CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_PLATFORM_BRIDGE_LINUX_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/notifications/notification_platform_bridge.h"
 
 class NotificationPlatformBridgeLinuxImpl;
+
+using GSettings = struct _GSettings;
 
 namespace dbus {
 class Bus;
@@ -44,8 +47,17 @@ class NotificationPlatformBridgeLinux : public NotificationPlatformBridge {
  private:
   friend class NotificationPlatformBridgeLinuxTest;
 
-  // Constructor only used in unit testing.
+  // Constructor only used in unit testing. Does not watch system GSettings.
   explicit NotificationPlatformBridgeLinux(scoped_refptr<dbus::Bus> bus);
+
+  // Constructor only used in unit testing. Watches `notification_settings` (if
+  // non-null) when the server is GNOME Shell instead of reading system
+  // GSettings.
+  NotificationPlatformBridgeLinux(scoped_refptr<dbus::Bus> bus,
+                                  GSettings* notification_settings);
+
+  // Overrides the value of org.gnome.desktop.notifications show-banners.
+  void SetGnomeShowBannersForTesting(std::optional<bool> show_banners);
 
   void CleanUp();
 
