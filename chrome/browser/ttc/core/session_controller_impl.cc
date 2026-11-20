@@ -16,6 +16,7 @@
 #include "base/location.h"
 #include "base/no_destructor.h"
 #include "base/state_transitions.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/types/pass_key.h"
@@ -37,6 +38,7 @@
 #include "components/actor/core/journal_details_builder.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/ttc/app/public/conversation.h"
+#include "components/ttc/app/public/error_codes.h"
 #include "components/ttc/app/public/tab_context_info.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
@@ -48,6 +50,11 @@
 #if BUILDFLAG(ENABLE_SPEECH_SERVICE)
 #include "chrome/browser/ttc/core/hotl/soda_hotl_installer.h"
 #endif
+
+#if BUILDFLAG(ENABLE_TTC_DEBUG_TOOLS)
+#include "chrome/browser/ttc/debug/ttc_debug_session.h"
+#include "chrome/browser/ttc/debug/ttc_debug_tools_service.h"
+#endif  // BUILDFLAG(ENABLE_TTC_DEBUG_TOOLS)
 
 namespace ttc {
 
@@ -109,6 +116,13 @@ SessionControllerImpl::SessionControllerImpl(
                    .GetJournal(),
                actor_task_holder_.task_id()),
       tool_controller_(*this) {
+#if BUILDFLAG(ENABLE_TTC_DEBUG_TOOLS)
+  if (TtcDebugToolsService* debug_tools =
+          TtcDebugToolsService::Get(service.profile())) {
+    debug_session_ = debug_tools->BeginSession(&journal_);
+  }
+#endif  // BUILDFLAG(ENABLE_TTC_DEBUG_TOOLS)
+
   // Not using AddObserver() because its immediate callback would reach Java on
   // Android before the session is stored. The view starts initializing anyway.
   observers_.AddObserver(session_view_.get());
@@ -153,6 +167,16 @@ SessionControllerImpl::~SessionControllerImpl() {
   GetJournal().Log(
       "TtcSessionEnd",
       actor::JournalDetailsBuilder().Add("state", session_lifecycle_).Build());
+
+#if BUILDFLAG(ENABLE_TTC_DEBUG_TOOLS)
+  // Ended while `journal_`, which the record logs its open turn to, still
+  // exists. The record ignores whatever `conversation_` still reports while
+  // it's destroyed.
+  if (debug_session_) {
+    CHECK_DEREF(TtcDebugToolsService::Get(GetProfile()))
+        .EndSession(debug_session_);
+  }
+#endif  // BUILDFLAG(ENABLE_TTC_DEBUG_TOOLS)
 }
 
 SessionJournalImpl& SessionControllerImpl::GetJournal() {
@@ -160,8 +184,11 @@ SessionJournalImpl& SessionControllerImpl::GetJournal() {
 }
 
 DebugSink* SessionControllerImpl::GetDebugSink() {
-  // Nothing records sessions yet.
+#if BUILDFLAG(ENABLE_TTC_DEBUG_TOOLS)
+  return debug_session_;
+#else
   return nullptr;
+#endif  // BUILDFLAG(ENABLE_TTC_DEBUG_TOOLS)
 }
 
 void SessionControllerImpl::AddObserver(SessionController::Observer* observer) {
@@ -277,6 +304,11 @@ void SessionControllerImpl::OnError(ErrorCode error) {
                                    .AddError(error)
                                    .Add("fatal", is_fatal)
                                    .Build());
+#if BUILDFLAG(ENABLE_TTC_DEBUG_TOOLS)
+  if (debug_session_) {
+    debug_session_->OnError(base::ToString(error));
+  }
+#endif  // BUILDFLAG(ENABLE_TTC_DEBUG_TOOLS)
 
   if (session_lifecycle_ == SessionLifecycle::kFinished) {
     return;
@@ -469,6 +501,12 @@ void SessionControllerImpl::OnPageContextFetched(
   CHECK_EQ(&contents->GetPrimaryPage(), &page);
 
   if (!result.has_value()) {
+#if BUILDFLAG(ENABLE_TTC_DEBUG_TOOLS)
+    if (debug_session_) {
+      debug_session_->OnPageContextFetchFailed(contents->GetLastCommittedURL(),
+                                               result.error());
+    }
+#endif  // BUILDFLAG(ENABLE_TTC_DEBUG_TOOLS)
     // Replace the model's context with just the tab, so that it doesn't keep
     // using context of a page that's no longer shown, or whose content isn't
     // available (e.g. a PDF). Only share the origin of a page whose context

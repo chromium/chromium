@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ttc/app/app_browser_test_base.h"
 
+#include <string>
 #include <utility>
 
 #include "base/check_deref.h"
@@ -256,6 +257,17 @@ void AppBrowserTestBase::RespondServerError(
     optimization_guide::proto::ServerErrorNotification::ErrorCode error_code,
     std::string_view error_message) {
   SimulateResponse(MakeServerErrorFrame(error_code, error_message));
+}
+
+void AppBrowserTestBase::SendServerAudio(base::span<const int16_t> samples,
+                                         int64_t sequence_number) {
+  optimization_guide::proto::TtcServerFrame frame;
+  optimization_guide::proto::AudioChunk* chunk =
+      frame.mutable_server_content()->mutable_audio_output();
+  chunk->set_sequence_number(sequence_number);
+  chunk->set_audio_data(std::string(
+      reinterpret_cast<const char*>(samples.data()), samples.size_bytes()));
+  SimulateResponse(frame);
 }
 
 bool AppBrowserTestBase::WaitForServiceState(ServiceState state) {

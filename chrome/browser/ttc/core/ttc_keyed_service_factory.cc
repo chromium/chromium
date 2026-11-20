@@ -10,9 +10,14 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ttc/core/buildflags.h"
 #include "chrome/browser/ttc/core/features.h"
 #include "chrome/browser/ttc/core/ttc_keyed_service.h"
 #include "content/public/browser/browser_context.h"
+
+#if BUILDFLAG(ENABLE_TTC_DEBUG_TOOLS)
+#include "chrome/browser/ttc/debug/ttc_debug_tools_service_factory.h"
+#endif  // BUILDFLAG(ENABLE_TTC_DEBUG_TOOLS)
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/glic/public/glic_enabling.h"
@@ -42,6 +47,10 @@ TtcKeyedServiceFactory::TtcKeyedServiceFactory(
   DependsOn(actor::ActorKeyedServiceFactory::GetInstance());
   DependsOn(page_content_annotations::PageContentExtractionServiceFactory::
                 GetInstance());
+#if BUILDFLAG(ENABLE_TTC_DEBUG_TOOLS)
+  // The debug tools must outlive this service, whose sessions report to them.
+  DependsOn(TtcDebugToolsServiceFactory::GetInstance());
+#endif  // BUILDFLAG(ENABLE_TTC_DEBUG_TOOLS)
 }
 
 TtcKeyedServiceFactory::~TtcKeyedServiceFactory() = default;

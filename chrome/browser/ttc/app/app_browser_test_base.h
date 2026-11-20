@@ -5,12 +5,15 @@
 #ifndef CHROME_BROWSER_TTC_APP_APP_BROWSER_TEST_BASE_H_
 #define CHROME_BROWSER_TTC_APP_APP_BROWSER_TEST_BASE_H_
 
+#include <stdint.h>
+
 #include <memory>
 #include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/span.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ttc/core/states.h"
@@ -123,6 +126,11 @@ class AppBrowserTestBase : public PlatformBrowserTest {
   void RespondServerError(
       optimization_guide::proto::ServerErrorNotification::ErrorCode error_code,
       std::string_view error_message = "");
+
+  // Sends `samples` to the client as a chunk of the server's audio output, as
+  // if it came from the server.
+  void SendServerAudio(base::span<const int16_t> samples,
+                       int64_t sequence_number);
 
   // Runs until the service reaches `state`. Returns false if it timed out
   // first.

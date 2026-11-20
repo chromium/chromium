@@ -13,6 +13,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ttc/debug/ttc_debug_session.h"
+#include "components/page_content_annotations/content/page_context_fetcher.h"
+#include "url/gurl.h"
 
 namespace ttc {
 
@@ -553,38 +555,36 @@ void TtcDebugSession::OnActorJournalEntry(std::string_view event,
   }
 }
 
-void TtcDebugSession::OnPageContextFailed(std::string_view url,
-                                          std::string_view error) {
+void TtcDebugSession::OnPageContextFetchFailed(
+    const GURL& url,
+    page_content_annotations::FetchPageContextError error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (ended_) {
     return;
   }
-  RaiseIssue(
-      "page_context_failed",
-      {.severity = IssueSeverity::kWarning,
-       .category = IssueCategory::kPageContext,
-       .title = "Page context unavailable",
-       .detail = base::StrCat({"The page's content couldn't be "
-                               "extracted (",
-                               error,
-                               "), so the model may be working from a "
-                               "stale or empty view of the page."}),
-       .evidence = {{"url", std::string(url)}, {"error", std::string(error)}}});
-}
-
-void TtcDebugSession::OnPageContextBlocked(std::string_view url) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (ended_) {
+  if (error == page_content_annotations::FetchPageContextError::
+                   kPageContextNotEligible) {
+    RaiseIssue(base::StrCat({"page_context_blocked:", url.spec()}),
+               {.severity = IssueSeverity::kInfo,
+                .category = IssueCategory::kPageContext,
+                .title = "Model can't see this page",
+                .detail = "Page context isn't sent for this URL (unsupported "
+                          "or blocked page), so the model doesn't know what's "
+                          "on it.",
+                .evidence = {{"url", url.spec()}}});
     return;
   }
-  RaiseIssue(base::StrCat({"page_context_blocked:", url}),
-             {.severity = IssueSeverity::kInfo,
+  const std::string error_name = page_content_annotations::ToString(error);
+  RaiseIssue("page_context_failed",
+             {.severity = IssueSeverity::kWarning,
               .category = IssueCategory::kPageContext,
-              .title = "Model can't see this page",
-              .detail = "Page context isn't sent for this URL (unsupported or "
-                        "blocked page), so the model doesn't know what's on "
-                        "it.",
-              .evidence = {{"url", std::string(url)}}});
+              .title = "Page context unavailable",
+              .detail = base::StrCat({"The page's content couldn't be "
+                                      "extracted (",
+                                      error_name,
+                                      "), so the model may be working from a "
+                                      "stale or empty view of the page."}),
+              .evidence = {{"url", url.spec()}, {"error", error_name}}});
 }
 
 // ---------------------------------------------------------------------------

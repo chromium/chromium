@@ -10,6 +10,7 @@
 
 #include "base/check_deref.h"
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/ttc/app/public/audio_controller.h"
 #include "chrome/browser/ttc/app/public/audio_envelope.h"
 #include "chrome/browser/ttc/core/actor_task_holder.h"
+#include "chrome/browser/ttc/core/buildflags.h"
 #include "chrome/browser/ttc/core/session_controller.h"
 #include "chrome/browser/ttc/core/session_end_condition_detector.h"
 #include "chrome/browser/ttc/core/session_journal_impl.h"
@@ -46,6 +48,7 @@ class PointerInputObserver;
 class PointerTracker;
 class SessionInactivityDetector;
 class SessionView;
+class TtcDebugSession;
 class TtcKeyedService;
 
 class SessionControllerImpl : public SessionController,
@@ -159,6 +162,14 @@ class SessionControllerImpl : public SessionController,
 
   ActorTaskHolder actor_task_holder_;
   SessionJournalImpl journal_;
+#if BUILDFLAG(ENABLE_TTC_DEBUG_TOOLS)
+  // The TTC debug tools' record of this session, which TtcDebugToolsService
+  // owns and keeps for review after the session ends. Null unless the tools
+  // are enabled. The service outlives this object (TtcKeyedServiceFactory
+  // depends on its factory) and keeps the record at least until it's ended
+  // here.
+  raw_ptr<TtcDebugSession> debug_session_;
+#endif  // BUILDFLAG(ENABLE_TTC_DEBUG_TOOLS)
   ToolController tool_controller_;
 
   // Both null unless kTtcGetPointer is enabled; the observer also while there

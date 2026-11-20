@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/optimization_guide/mock_remote_model_executor.h"
@@ -60,17 +59,6 @@ class TtcHotlProtocolBrowserTest : public AppBrowserTestBase {
         frame.mutable_model_turn_state_update();
     update->set_state(state);
     update->set_generation_id(generation_id);
-    SimulateResponse(frame);
-  }
-
-  void SendServerAudio(base::span<const int16_t> samples,
-                       int64_t sequence_number) {
-    proto::TtcServerFrame frame;
-    proto::AudioChunk* chunk =
-        frame.mutable_server_content()->mutable_audio_output();
-    chunk->set_sequence_number(sequence_number);
-    chunk->set_audio_data(std::string(
-        reinterpret_cast<const char*>(samples.data()), samples.size_bytes()));
     SimulateResponse(frame);
   }
 

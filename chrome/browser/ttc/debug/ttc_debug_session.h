@@ -28,8 +28,14 @@
 #include "chrome/browser/ttc/debug/ttc_session_audio_recorder.h"
 #include "components/ttc/app/public/debug_sink.h"
 
+class GURL;
+
 namespace base {
 class TickClock;
+}
+
+namespace page_content_annotations {
+enum class FetchPageContextError;
 }
 
 namespace ttc {
@@ -386,9 +392,12 @@ class TtcDebugSession final : public DebugSink {
                            std::string_view details,
                            bool has_error);
 
-  // Page context.
-  void OnPageContextFailed(std::string_view url, std::string_view error);
-  void OnPageContextBlocked(std::string_view url);
+  // Fetching the page context of the voice-focused tab, which shows `url`,
+  // failed with `error`. Recorded as blocked if the page may not share its
+  // context, and as a failure otherwise.
+  void OnPageContextFetchFailed(
+      const GURL& url,
+      page_content_annotations::FetchPageContextError error);
 
  private:
   // Returns `text` cut to at most `max_length` bytes, ending in an ellipsis

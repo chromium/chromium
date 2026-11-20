@@ -14,15 +14,18 @@
 #include "base/strings/string_util.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "components/page_content_annotations/content/page_context_fetcher.h"
 #include "components/ttc/app/public/debug_sink.h"
 #include "components/ttc/app/public/server_journal_event.h"
 #include "components/ttc/app/public/session_journal.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace ttc {
 namespace {
 
+using page_content_annotations::FetchPageContextError;
 using EventKind = TtcDebugSession::EventKind;
 using Health = TtcDebugSession::Health;
 using IssueSeverity = TtcDebugSession::IssueSeverity;
@@ -666,19 +669,27 @@ TEST_F(TtcDebugSessionTest, TransportLossRaisedAndResolvedOnReconnect) {
 }
 
 TEST_F(TtcDebugSessionTest, PageContextFailureResolvedByNextContextUpdate) {
-  session_->OnPageContextFailed("https://example.com/",
-                                "kPageContextNotEligible");
+  session_->OnPageContextFetchFailed(
+      GURL("https://example.com/"), FetchPageContextError::kWebContentsChanged);
   EXPECT_TRUE(OpenIssue("page_context_failed"));
+  EXPECT_FALSE(OpenIssue("page_context_blocked:https://example.com/"));
   session_->OnClientFrame(DebugSink::ContextUpdate{
       .url = "https://example.com/", .content_bytes = 1234});
   EXPECT_FALSE(OpenIssue("page_context_failed"));
   EXPECT_TRUE(HasEvent(EventKind::kContextSent));
+}
 
-  session_->OnPageContextBlocked("chrome://settings/");
+// A page that may not share its context is reported once, as blocked, and not
+// as a failed fetch as well.
+TEST_F(TtcDebugSessionTest, IneligiblePageIsBlockedNotFailed) {
+  session_->OnPageContextFetchFailed(
+      GURL("chrome://settings/"),
+      FetchPageContextError::kPageContextNotEligible);
   const TtcDebugSession::Issue* blocked =
       OpenIssue("page_context_blocked:chrome://settings/");
   ASSERT_TRUE(blocked);
   EXPECT_EQ(blocked->severity, TtcDebugSession::IssueSeverity::kInfo);
+  EXPECT_FALSE(OpenIssue("page_context_failed"));
 }
 
 TEST_F(TtcDebugSessionTest, ActorStepsAreAttachedToTheRunningTool) {
@@ -929,17 +940,17 @@ TEST_F(TtcDebugSessionTest, LateReplyAfterNewSpeechStartsNewTurn) {
 }
 
 TEST_F(TtcDebugSessionTest, ServerFrameErrorsAreClassified) {
-  session_->OnServerFrame(DebugSink::ServerError{
-      .code = "MalformedAudioChunk",
-      .message = "malformed audio chunk of 3 bytes"});
+  session_->OnServerFrame(
+      DebugSink::ServerError{.code = "MalformedAudioChunk",
+                             .message = "malformed audio chunk of 3 bytes"});
   const TtcDebugSession::Issue* malformed = OpenIssue("malformed_audio");
   ASSERT_TRUE(malformed);
   EXPECT_EQ(malformed->severity, IssueSeverity::kWarning);
   EXPECT_FALSE(AnyIssue("server_error:MalformedAudioChunk"));
 
-  session_->OnServerFrame(DebugSink::ServerError{
-      .code = "UnparsableServerFrame",
-      .message = "unparsable server frame of 3 bytes"});
+  session_->OnServerFrame(
+      DebugSink::ServerError{.code = "UnparsableServerFrame",
+                             .message = "unparsable server frame of 3 bytes"});
   const TtcDebugSession::Issue* error =
       OpenIssue("server_error:UnparsableServerFrame");
   ASSERT_TRUE(error);

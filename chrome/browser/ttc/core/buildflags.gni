@@ -9,4 +9,10 @@ declare_args() {
   # Enabled by default on Desktop and Desktop Android; disabled by default on
   # Android Mobile (can be overridden via args.gn).
   enable_ttc_webui = !is_android || is_desktop_android
+
+  # Enables the TTC debug tools (chrome://ttc-internals) and the recording of
+  # TTC sessions that feeds them. They're meant to be used side by side with
+  # the tab being debugged, which phones can't do, so they're built on Desktop
+  # and Desktop Android only.
+  enable_ttc_debug_tools = !is_android || is_desktop_android
 }

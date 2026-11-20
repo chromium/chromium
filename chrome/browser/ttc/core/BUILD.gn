@@ -10,7 +10,10 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 buildflag_header("buildflags") {
   header = "buildflags.h"
-  flags = [ "ENABLE_TTC_WEBUI=$enable_ttc_webui" ]
+  flags = [
+    "ENABLE_TTC_DEBUG_TOOLS=$enable_ttc_debug_tools",
+    "ENABLE_TTC_WEBUI=$enable_ttc_webui",
+  ]
 }
 
 if (is_android) {
@@ -202,6 +205,9 @@ source_set("impl") {
     "//ui/gfx/geometry",
     "//url",
   ]
+  if (enable_ttc_debug_tools) {
+    deps += [ "//chrome/browser/ttc/debug" ]
+  }
   if (enable_speech_service) {
     sources += [
       "hotl/soda_hotl_installer.cc",
@@ -366,6 +372,9 @@ source_set("unit_tests") {
     "//components/account_id:test_support",
     "//google_apis",
   ]
+  if (enable_ttc_debug_tools) {
+    deps += [ "//chrome/browser/ttc/debug" ]
+  }
   if (enable_speech_service) {
     sources += [
       "hotl/soda_hotl_installer_unittest.cc",

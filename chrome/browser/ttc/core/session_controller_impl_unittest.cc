@@ -12,10 +12,13 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_deref.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/to_string.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/test/power_monitor_test.h"
@@ -24,6 +27,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
+#include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/critical_actions/critical_action_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ttc/app/public/audio_controller.h"
@@ -38,10 +42,15 @@
 #include "chrome/browser/ttc/core/test_utils.h"
 #include "chrome/browser/ttc/core/ttc_keyed_service.h"
 #include "chrome/browser/ttc/core/ttc_keyed_service_factory.h"
+#if BUILDFLAG(ENABLE_TTC_DEBUG_TOOLS)
+#include "chrome/browser/ttc/debug/ttc_debug_session.h"
+#include "chrome/browser/ttc/debug/ttc_debug_tools_service.h"
+#endif  // BUILDFLAG(ENABLE_TTC_DEBUG_TOOLS)
 #include "chrome/test/base/testing_profile.h"
 #include "components/critical_actions/core/browser/critical_action_service.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/ttc/app/public/conversation.h"
+#include "components/ttc/app/public/debug_sink.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -209,6 +218,49 @@ TEST_F(TtcSessionControllerImplTest,
 
   controller.RemoveObserver(&observer);
 }
+
+#if BUILDFLAG(ENABLE_TTC_DEBUG_TOOLS)
+// With the debug tools off (the default), nothing is created for them and the
+// pipeline gets no sink to report into.
+TEST_F(TtcSessionControllerImplTest, NoDebugSinkWhenDebugToolsDisabled) {
+  ASSERT_FALSE(base::FeatureList::IsEnabled(kTtcDebugTools));
+  SessionControllerImpl controller(*service_);
+  EXPECT_EQ(controller.GetDebugSink(), nullptr);
+  EXPECT_EQ(TtcDebugToolsService::Get(&profile_), nullptr);
+
+  // Reports that would go to the debug tools are skipped.
+  controller.OnError(ErrorCode::kInternalBackendError);
+}
+
+TEST_F(TtcSessionControllerImplTest, DebugSinkWhenDebugToolsEnabled) {
+  base::test::ScopedFeatureList debug_tools_feature(kTtcDebugTools);
+  auto controller = std::make_unique<SessionControllerImpl>(*service_);
+  TtcDebugToolsService* debug_tools = TtcDebugToolsService::Get(&profile_);
+  ASSERT_NE(debug_tools, nullptr);
+  TtcDebugSession* session = debug_tools->current_session();
+  ASSERT_NE(session, nullptr);
+  // The pipeline reports straight into the record.
+  DebugSink* debug_sink = controller->GetDebugSink();
+  ASSERT_EQ(debug_sink, session);
+
+  // Session errors reach the record.
+  controller->OnError(ErrorCode::kInternalBackendError);
+  EXPECT_EQ(session->GetSnapshot().last_error,
+            base::ToString(ErrorCode::kInternalBackendError));
+
+  // A tool call opens a turn. When the session ends, the record closes the
+  // turn and logs it to the session journal, which still exists then.
+  actor::ActorJournalRecorder journal_recorder(
+      CHECK_DEREF(actor::ActorKeyedService::Get(&profile_)).GetJournal());
+  debug_sink->OnServerFrame(DebugSink::ToolCall{
+      .call_id = "call-1", .name = "navigate", .arguments_json = "{}"});
+  EXPECT_TRUE(journal_recorder.GetEntries("TtcDebugTurn").empty());
+  controller.reset();
+  ASSERT_EQ(debug_tools->current_session(), session);
+  EXPECT_TRUE(session->ended());
+  EXPECT_EQ(journal_recorder.GetEntries("TtcDebugTurn").size(), 1u);
+}
+#endif  // BUILDFLAG(ENABLE_TTC_DEBUG_TOOLS)
 
 TEST_F(TtcSessionControllerImplTest, SendTextInputForwardsToConversation) {
   SessionControllerImpl controller(*service_);
