@@ -173,6 +173,9 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIDetailedView
   // Updates the display states of UI elements for casting devices.
   void UpdateCastingState();
 
+  // Hides the start casting button and updates the casting state.
+  void HideStartCastingButton();
+
   // Creates a separator line between the media view and device selector view.
   void CreateDeviceSelectorViewSeparator();
 

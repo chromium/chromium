@@ -5,11 +5,14 @@
 #include "chrome/browser/ui/ash/global_media_controls/media_notification_provider_impl.h"
 
 #include <memory>
+#include <string>
+#include <vector>
 
 #include "ash/system/media/media_notification_provider_observer.h"
 #include "ash/test_shell_delegate.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/media/router/chrome_media_router_factory.h"
@@ -188,8 +191,10 @@ class MediaNotificationProviderImplTest : public ChromeAshTestBase {
     ChromeAshTestBase::TearDown();
   }
 
-  void SimulateShowNotification(base::UnguessableToken id,
-                                MediaSessionInfoPtr session_info = nullptr) {
+  void SimulateShowNotification(
+      base::UnguessableToken id,
+      MediaSessionInfoPtr session_info = nullptr,
+      std::optional<base::UnguessableToken> source_id = std::nullopt) {
     if (!session_info) {
       session_info = MediaSessionInfo::New();
       session_info->is_controllable = true;
@@ -198,6 +203,7 @@ class MediaNotificationProviderImplTest : public ChromeAshTestBase {
     AudioFocusRequestStatePtr focus(AudioFocusRequestState::New());
     focus->request_id = id;
     focus->session_info = std::move(session_info);
+    focus->source_id = source_id;
 
     provider_->media_session_item_producer_for_testing()->OnFocusGained(
         std::move(focus));
@@ -389,6 +395,139 @@ TEST_F(MediaNotificationProviderImplTest,
       .NotifyClick(ui::MouseEvent(
           ui::EventType::kMousePressed, gfx::Point(0, 0), gfx::Point(0, 0),
           ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
+}
+
+// Regression test for https://crbug.com/587111021. Stopping a Tab Mirroring
+// session from the footer must remove the footer once the route ends, without
+// reopening the bubble.
+TEST_F(MediaNotificationProviderImplTest,
+       RemoveCastFooterViewWhenTabMirroringRouteEnds) {
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile_, nullptr);
+  sessions::SessionTabHelper::CreateForWebContents(web_contents.get(),
+                                                   base::NullCallback());
+  content::MediaSession::Get(web_contents.get());
+  int tab_id = sessions::SessionTabHelper::IdForTab(web_contents.get()).id();
+
+  const std::string route_id = "route_123";
+  std::vector<media_router::MediaRoute> current_routes{media_router::MediaRoute(
+      route_id, media_router::MediaSource::ForTab(tab_id), "sink_1",
+      "Test Cast Route", true)};
+  EXPECT_CALL(*media_router_, GetCurrentRoutes())
+      .WillRepeatedly(testing::ReturnPointee(&current_routes));
+
+  auto request_id =
+      content::MediaSession::GetRequestIdFromWebContents(web_contents.get());
+  SimulateShowNotification(request_id);
+
+  auto notification_list_view = CreateNotificationListView();
+  auto items = notification_list_view->items_for_testing();
+  ASSERT_EQ(1u, items.size());
+  global_media_controls::MediaItemUIView* media_item_ui_view =
+      items.begin()->second.get();
+  global_media_controls::MediaItemUIFooter* footer_view =
+      media_item_ui_view->footer_view_for_testing();
+  ASSERT_NE(nullptr, footer_view);
+
+  // Click on the "Stop casting" button.
+  EXPECT_CALL(*media_router_, TerminateRoute(route_id));
+  views::Button* stop_casting_button =
+      static_cast<views::Button*>(footer_view->children()[0]);
+  views::test::ButtonTestApi(stop_casting_button)
+      .NotifyClick(ui::MouseEvent(
+          ui::EventType::kMousePressed, gfx::Point(0, 0), gfx::Point(0, 0),
+          ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
+  testing::Mock::VerifyAndClearExpectations(media_router_.get());
+
+  // The Media Router removes the route and notifies its observers.
+  current_routes.clear();
+  EXPECT_CALL(*media_router_, GetCurrentRoutes())
+      .WillRepeatedly(testing::ReturnPointee(&current_routes));
+  for (auto& observer : media_router_->routes_observers()) {
+    observer.OnRoutesUpdated(current_routes);
+  }
+
+  EXPECT_EQ(nullptr, media_item_ui_view->footer_view_for_testing());
+  EXPECT_EQ(1u, notification_list_view->items_for_testing().size());
+
+  // Closing the bubble stops observing routes.
+  provider_->OnBubbleClosing();
+  EXPECT_TRUE(media_router_->routes_observers().empty());
+}
+
+// Starting a Tab Mirroring session while the bubble is open must add the
+// footer, without reopening the bubble.
+TEST_F(MediaNotificationProviderImplTest,
+       AddCastFooterViewWhenTabMirroringRouteStarts) {
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile_, nullptr);
+  sessions::SessionTabHelper::CreateForWebContents(web_contents.get(),
+                                                   base::NullCallback());
+  content::MediaSession::Get(web_contents.get());
+  int tab_id = sessions::SessionTabHelper::IdForTab(web_contents.get()).id();
+
+  std::vector<media_router::MediaRoute> current_routes;
+  EXPECT_CALL(*media_router_, GetCurrentRoutes())
+      .WillRepeatedly(testing::ReturnPointee(&current_routes));
+
+  // Give the item a source ID and a device service so that it has a device
+  // selector.
+  MockDeviceService device_service;
+  provider_->set_device_service_for_testing(&device_service);
+  auto request_id =
+      content::MediaSession::GetRequestIdFromWebContents(web_contents.get());
+  SimulateShowNotification(request_id, /*session_info=*/nullptr,
+                           base::UnguessableToken::Create());
+
+  auto notification_list_view = CreateNotificationListView();
+  auto items = notification_list_view->items_for_testing();
+  ASSERT_EQ(1u, items.size());
+  global_media_controls::MediaItemUIView* media_item_ui_view =
+      items.begin()->second.get();
+  EXPECT_EQ(nullptr, media_item_ui_view->footer_view_for_testing());
+  ASSERT_NE(nullptr, media_item_ui_view->device_selector_view_for_testing());
+
+  // Cast devices are available, so the start casting button is shown.
+  global_media_controls::MediaItemUIDetailedView* detailed_view =
+      media_item_ui_view->view_for_testing();
+  detailed_view->UpdateDeviceSelectorAvailability(/*has_devices=*/true);
+  ASSERT_TRUE(detailed_view->GetStartCastingButtonForTesting()->GetVisible());
+
+  current_routes.emplace_back("route_123",
+                              media_router::MediaSource::ForTab(tab_id),
+                              "sink_1", "Test Cast Route", true);
+  for (auto& observer : media_router_->routes_observers()) {
+    observer.OnRoutesUpdated(current_routes);
+  }
+
+  global_media_controls::MediaItemUIFooter* footer_view =
+      media_item_ui_view->footer_view_for_testing();
+  ASSERT_NE(nullptr, footer_view);
+  EXPECT_TRUE(footer_view->GetVisible());
+  // The device selector is removed along with the start casting button that
+  // toggles it.
+  EXPECT_EQ(nullptr, media_item_ui_view->device_selector_view_for_testing());
+  EXPECT_FALSE(detailed_view->GetStartCastingButtonForTesting()->GetVisible());
+
+  provider_->OnBubbleClosing();
+}
+
+// If the list view is destroyed without OnBubbleClosing(), the next route
+// update stops route observation.
+TEST_F(MediaNotificationProviderImplTest,
+       StopObservingRoutesWhenListViewDestroyed) {
+  EXPECT_CALL(*media_router_, GetCurrentRoutes())
+      .WillRepeatedly(testing::Return(std::vector<media_router::MediaRoute>{}));
+  auto notification_list_view = CreateNotificationListView();
+  ASSERT_FALSE(media_router_->routes_observers().empty());
+
+  notification_list_view.reset();
+  for (auto& observer : media_router_->routes_observers()) {
+    observer.OnRoutesUpdated({});
+  }
+  // Route observation stops asynchronously.
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return media_router_->routes_observers().empty(); }));
 }
 
 TEST_F(MediaNotificationProviderImplTest,

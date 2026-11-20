@@ -565,6 +565,9 @@ void MediaItemUIDetailedView::UpdateFooterView(
   }
   if (footer_view) {
     footer_view_ = button_container_->AddChildView(std::move(footer_view));
+    // Do not show the start casting button while the item is being cast and
+    // shows the stop casting button, as in UpdateDeviceSelectorAvailability().
+    HideStartCastingButton();
   }
   picture_in_picture_button_->SetVisible(!footer_view_);
 }
@@ -580,6 +583,21 @@ void MediaItemUIDetailedView::UpdateDeviceSelector(
   if (device_selector_view) {
     CreateDeviceSelectorViewSeparator();
     device_selector_view_ = AddChildView(std::move(device_selector_view));
+    UpdateCastingState();
+  } else {
+    // The start casting button toggles the device selector, so it cannot be
+    // shown without one. A new device selector shows it again through
+    // UpdateDeviceSelectorAvailability() once it finds devices.
+    HideStartCastingButton();
+  }
+}
+
+void MediaItemUIDetailedView::HideStartCastingButton() {
+  if (!start_casting_button_->GetVisible()) {
+    return;
+  }
+  start_casting_button_->SetVisible(false);
+  if (device_selector_view_) {
     UpdateCastingState();
   }
 }

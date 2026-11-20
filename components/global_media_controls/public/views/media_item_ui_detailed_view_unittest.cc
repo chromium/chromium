@@ -506,6 +506,28 @@ TEST_F(MediaItemUIDetailedViewTest, UpdateDeviceSelector) {
   EXPECT_NE(view()->GetDeviceSelectorSeparatorForTesting(), nullptr);
 }
 
+// Removing the device selector hides the start casting button, which would
+// otherwise toggle a device selector that no longer exists.
+TEST_F(MediaItemUIDetailedViewTest,
+       RemoveDeviceSelectorHidesStartCastingButton) {
+  view()->UpdateDeviceSelectorAvailability(/*has_devices=*/true);
+  ASSERT_TRUE(view()->GetStartCastingButtonForTesting()->GetVisible());
+
+  device_selector_ = nullptr;
+  view()->UpdateDeviceSelector(nullptr);
+  EXPECT_FALSE(view()->GetStartCastingButtonForTesting()->GetVisible());
+}
+
+// Adding a stop casting footer hides the start casting button.
+TEST_F(MediaItemUIDetailedViewTest, AddFooterHidesStartCastingButton) {
+  view()->UpdateDeviceSelectorAvailability(/*has_devices=*/true);
+  ASSERT_TRUE(view()->GetStartCastingButtonForTesting()->GetVisible());
+
+  view()->UpdateFooterView(std::make_unique<NiceMock<MockMediaItemUIFooter>>());
+  EXPECT_FALSE(view()->GetStartCastingButtonForTesting()->GetVisible());
+  EXPECT_FALSE(view()->GetDeviceSelectorForTesting()->GetVisible());
+}
+
 #if BUILDFLAG(IS_CHROMEOS)
 TEST_F(MediaItemUIDetailedViewTest, ChapterList) {
   base::test::ScopedFeatureList scoped_feature_list;

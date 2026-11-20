@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/ash/global_media_controls/media_notification_provider_impl.h"
 
+#include <utility>
+#include <vector>
+
 #include "ash/shell.h"
 #include "ash/system/cast/media_cast_audio_selector_view.h"
 #include "ash/system/media/media_color_theme.h"
@@ -11,8 +14,13 @@
 #include "ash/system/media/media_notification_provider_observer.h"
 #include "ash/system/media/media_tray.h"
 #include "ash/system/status_area_widget.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/location.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/global_media_controls/cast_media_notification_producer_keyed_service.h"
 #include "chrome/browser/ui/ash/global_media_controls/cast_media_notification_producer_keyed_service_factory.h"
@@ -27,6 +35,11 @@
 #include "components/global_media_controls/public/views/media_item_ui_detailed_view.h"
 #include "components/global_media_controls/public/views/media_item_ui_list_view.h"
 #include "components/global_media_controls/public/views/media_item_ui_view.h"
+#include "components/media_message_center/media_notification_item.h"
+#include "components/media_router/browser/media_router.h"
+#include "components/media_router/browser/media_router_factory.h"
+#include "components/media_router/browser/media_routes_observer.h"
+#include "components/media_router/common/media_route.h"
 #include "content/public/browser/media_session.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/media_session/public/cpp/media_session_service.h"
@@ -34,6 +47,35 @@
 #include "url/origin.h"
 
 namespace ash {
+
+class MediaNotificationProviderImpl::RoutesObserver
+    : public media_router::MediaRoutesObserver {
+ public:
+  RoutesObserver(media_router::MediaRouter* router,
+                 base::RepeatingClosure on_routes_updated)
+      : media_router::MediaRoutesObserver(router),
+        on_routes_updated_(std::move(on_routes_updated)) {}
+  RoutesObserver(const RoutesObserver&) = delete;
+  RoutesObserver& operator=(const RoutesObserver&) = delete;
+  ~RoutesObserver() override = default;
+
+  // media_router::MediaRoutesObserver:
+  void OnRoutesUpdated(
+      const std::vector<media_router::MediaRoute>& routes) override {
+    on_routes_updated_.Run();
+  }
+
+ private:
+  base::RepeatingClosure on_routes_updated_;
+};
+
+MediaNotificationProviderImpl::ShownSessionItem::ShownSessionItem() = default;
+MediaNotificationProviderImpl::ShownSessionItem::ShownSessionItem(
+    const ShownSessionItem&) = default;
+MediaNotificationProviderImpl::ShownSessionItem&
+MediaNotificationProviderImpl::ShownSessionItem::operator=(
+    const ShownSessionItem&) = default;
+MediaNotificationProviderImpl::ShownSessionItem::~ShownSessionItem() = default;
 
 MediaNotificationProviderImpl::MediaNotificationProviderImpl(
     media_session::MediaSessionService* service)
@@ -115,6 +157,10 @@ MediaNotificationProviderImpl::GetMediaNotificationListView(
   media_item_ui_list_view_ = media_item_ui_list_view->GetWeakPtr();
   entry_point_ = entry_point;
   show_devices_for_item_id_ = show_devices_for_item_id;
+  shown_session_items_.clear();
+  // Restart route observation, since the active profile may have changed.
+  StopObservingRoutes();
+  StartObservingRoutes();
   item_manager_->SetDialogDelegate(this);
   base::UmaHistogramEnumeration("Media.GlobalMediaControls.EntryPoint",
                                 entry_point_);
@@ -122,6 +168,8 @@ MediaNotificationProviderImpl::GetMediaNotificationListView(
 }
 
 void MediaNotificationProviderImpl::OnBubbleClosing() {
+  StopObservingRoutes();
+  shown_session_items_.clear();
   item_manager_->SetDialogDelegate(nullptr);
 }
 
@@ -221,6 +269,7 @@ MediaNotificationProviderImpl::ShowMediaItem(
   item_ui_observer_set_.Observe(id, item_ui_ptr);
 
   media_item_ui_list_view_->ShowItem(id, std::move(item_ui));
+  UpdateShownSessionItem(id, item);
   for (auto& observer : observers_) {
     observer.OnNotificationListViewSizeChanged();
   }
@@ -228,6 +277,7 @@ MediaNotificationProviderImpl::ShowMediaItem(
 }
 
 void MediaNotificationProviderImpl::HideMediaItem(const std::string& id) {
+  shown_session_items_.erase(id);
   if (!media_item_ui_list_view_) {
     return;
   }
@@ -250,6 +300,7 @@ void MediaNotificationProviderImpl::RefreshMediaItem(
   media_item_ui->UpdateFooterView(BuildFooterView(id, item));
   media_item_ui->UpdateDeviceSelector(
       BuildDeviceSelectorView(id, item, entry_point_, show_devices));
+  UpdateShownSessionItem(id, item);
 
   for (auto& observer : observers_) {
     observer.OnNotificationListViewSizeChanged();
@@ -299,6 +350,94 @@ MediaNotificationProviderImpl::GetDeviceService(
 Profile* MediaNotificationProviderImpl::GetProfile() {
   return profile_for_testing_ ? profile_for_testing_.get()
                               : ProfileManager::GetActiveUserProfile();
+}
+
+void MediaNotificationProviderImpl::UpdateShownSessionItem(
+    const std::string& id,
+    base::WeakPtr<media_message_center::MediaNotificationItem> item) {
+  if (!item || item->GetSourceType() !=
+                   media_message_center::SourceType::kLocalMediaSession) {
+    shown_session_items_.erase(id);
+    return;
+  }
+
+  ShownSessionItem& shown_item = shown_session_items_[id];
+  shown_item.item = item;
+  std::optional<media_router::MediaRoute> route =
+      GetSessionRoute(id, item, GetProfile());
+  shown_item.route_id =
+      route ? std::make_optional(route->media_route_id()) : std::nullopt;
+}
+
+void MediaNotificationProviderImpl::StartObservingRoutes() {
+  if (routes_observer_) {
+    return;
+  }
+  Profile* profile = GetProfile();
+  if (!profile || !media_router::MediaRouterEnabled(profile)) {
+    return;
+  }
+  media_router::MediaRouter* router =
+      media_router::MediaRouterFactory::GetApiForBrowserContext(profile);
+  if (!router) {
+    return;
+  }
+  routes_observer_ = std::make_unique<RoutesObserver>(
+      router,
+      base::BindRepeating(&MediaNotificationProviderImpl::OnRoutesUpdated,
+                          weak_factory_.GetWeakPtr()));
+}
+
+void MediaNotificationProviderImpl::StopObservingRoutes() {
+  routes_observer_.reset();
+}
+
+void MediaNotificationProviderImpl::OnRoutesUpdated() {
+  if (!media_item_ui_list_view_) {
+    // The list view can go away without OnBubbleClosing(), e.g. when the
+    // media tray is destroyed with its bubble open. Stop observing routes
+    // asynchronously, since observers may not modify the Media Router's
+    // observer list while it is being notified.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &MediaNotificationProviderImpl::StopObservingRoutesIfNoListView,
+            weak_factory_.GetWeakPtr()));
+    return;
+  }
+
+  // Collect the items first, since refreshing an item updates
+  // `shown_session_items_`.
+  Profile* const profile = GetProfile();
+  std::vector<std::pair<
+      std::string, base::WeakPtr<media_message_center::MediaNotificationItem>>>
+      items_to_refresh;
+  for (const auto& [id, shown_item] : shown_session_items_) {
+    if (!shown_item.item) {
+      continue;
+    }
+    std::optional<media_router::MediaRoute> route =
+        GetSessionRoute(id, shown_item.item, profile);
+    std::optional<std::string> route_id =
+        route ? std::make_optional(route->media_route_id()) : std::nullopt;
+    if (route_id != shown_item.route_id) {
+      items_to_refresh.emplace_back(id, shown_item.item);
+    }
+  }
+
+  for (const auto& [id, item] : items_to_refresh) {
+    // Skip items hidden while refreshing earlier items.
+    if (shown_session_items_.contains(id)) {
+      RefreshMediaItem(id, item);
+    }
+  }
+}
+
+void MediaNotificationProviderImpl::StopObservingRoutesIfNoListView() {
+  if (!media_item_ui_list_view_) {
+    StopObservingRoutes();
+    shown_session_items_.clear();
+  }
 }
 
 }  // namespace ash
