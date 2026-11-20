@@ -431,6 +431,17 @@ class FullWebUIOmniboxInteractiveTestBase
   }
 
  protected:
+  // Returns the URL for a test web page served over HTTPS, starting the
+  // embedded HTTPS test server on first use.
+  GURL GetTestPageUrl(std::string_view path = "/title1.html") {
+    if (!embedded_https_test_server().Started()) {
+      embedded_https_test_server().SetSSLConfig(
+          net::EmbeddedTestServer::CERT_OK);
+      CHECK(embedded_https_test_server().Start());
+    }
+    return embedded_https_test_server().GetURL(path);
+  }
+
   auto GetActivePopupWebView() {
     return base::BindLambdaForTesting([this]() -> views::View* {
       return GetPopupWebUIContentForBrowser(browser());
@@ -8611,7 +8622,7 @@ class FullWebUIOmniboxTabTraversalInteractiveTest
     return Steps(
         WaitForBrowserActive(), AddInstrumentedTab(kTab1, page_url_),
         WaitForWebContentsReady(kTab1), WaitForPopupTransitionLockout(),
-        AddInstrumentedTab(kTab2, GURL("chrome://version/")),
+        AddInstrumentedTab(kTab2, GetTestPageUrl()),
         WaitForWebContentsReady(kTab2), FocusOmniboxAndWaitForPopupReady(),
         InAnyContext(WaitForElementToRender(kPopupWebView, kComposeButton)),
         InputWebUIText(kTypedText),
@@ -11225,7 +11236,7 @@ class FullWebUIOmniboxAimInteractiveTestBase
   auto OpenAimPopup() {
     return Steps(
         SetAimEligibleResponse(),
-        OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
+        OpenInitialTabAndFocusOmnibox(kTab1, GetTestPageUrl()),
         InAnyContext(WaitForOmniboxAimStateReady(kPopupWebView)),
         InAnyContext(WaitForElementToRender(kPopupWebView, kComposeButton)),
         // Click the compose button with a DOM click rather than a real mouse
@@ -11306,9 +11317,16 @@ IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxAimInteractiveTest,
   }
   RunTestSequence(
       SetAimEligibleResponse(),
-      OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
+      OpenInitialTabAndFocusOmnibox(kTab1, GetTestPageUrl()),
       InAnyContext(WaitForOmniboxAimStateReady(kPopupWebView)),
       InAnyContext(WaitForElementToRender(kPopupWebView, kComposeButton)),
+      // Type and press Escape to revert to the page URL with the dropdown
+      // collapsed while keeping the omnibox focused.
+      InputWebUIText("a"),
+      WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
+                           "(el) => el.dropdownIsVisible === true"),
+      WaitForPopupTransitionLockout(),
+      InAnyContext(SendKeyPress(kPopupWebView, ui::VKEY_ESCAPE, ui::EF_NONE)),
       InAnyContext(
           WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
                                "(el) => el.dropdownIsVisible === false")),
@@ -11337,16 +11355,17 @@ IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxAimInteractiveTest,
 // composebox should return to the omnibox to its original state.
 IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxAimInteractiveTest,
                        ExitAimRestoresFocusAndInput_CancelIcon) {
-  const std::string kOriginalUrl = "chrome://version";
+  const std::string original_url =
+      GetTestPageUrl().spec().substr(strlen("https://"));
   RunTestSequence(
       OpenAimPopup(),
       InAnyContext(WaitForElementToRender(kAimPopupWebView, kCancelIcon)),
       ClickPopupElement(kAimPopupWebView, kCancelIcon), WaitForAimPopupHidden(),
-      WaitForWebUIInputValue(kOriginalUrl), WaitForOmniboxFocus(true),
+      WaitForWebUIInputValue(original_url), WaitForOmniboxFocus(true),
       // TODO(crbug.com/564894332): When a URL is restored to the Omnibox, the
       // cursor should be at the end of the text (kQuery.length(),
       // kQuery.length()), not the beginning.
-      CheckWebUIInputSelection(0, kOriginalUrl.length()));
+      CheckWebUIInputSelection(0, original_url.length()));
 }
 
 // Dismissing the AIM popup by clicking outside should hand the composebox
@@ -11610,7 +11629,7 @@ IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxAimHintInteractiveTest,
                        ShowsHintOncePerFocusSessionWithinLimits) {
   RunTestSequence(
       SetAimEligibleResponse(),
-      OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
+      OpenInitialTabAndFocusOmnibox(kTab1, GetTestPageUrl()),
       CheckAimHintImpressions(0),
       // Clearing the input shows the hint. Only the popup counts the
       // impression, not the Views omnibox that it covers.
@@ -11886,9 +11905,7 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxAimPopupFlowsInteractiveTest,
 //   3. Closes the Full WebUI popup and blurs the omnibox back to steady state.
 IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxAimPopupFlowsInteractiveTest,
                        EscapeFromAimPopupUnwindsInThreeStages) {
-  embedded_https_test_server().SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
-  ASSERT_TRUE(embedded_https_test_server().Start());
-  const GURL page_url = embedded_https_test_server().GetURL("/title1.html");
+  const GURL page_url = GetTestPageUrl();
   const std::string display_url = page_url.spec().substr(strlen("https://"));
   static constexpr char kDraft[] = "aim draft";
   static constexpr int kDraftLength = std::char_traits<char>::length(kDraft);
