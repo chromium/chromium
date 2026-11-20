@@ -175,7 +175,7 @@ describe('EventManager', () => {
     let emittedEvents: string[];
 
     beforeEach(() => {
-      aclManager.setEnabled(true);
+      aclManager.enable();
       emittedEvents = [];
       eventManager.on(EventManagerEvents.Event, ({event}) => {
         emittedEvents.push(event);
@@ -183,7 +183,7 @@ describe('EventManager', () => {
     });
 
     it('allows subscribing to modules and sends only events in the ACL', async () => {
-      aclManager.setAcl({
+      await aclManager.updateAcl({
         default: {
           events: [ChromiumBidi.BrowsingContext.EventNames.NavigationCommitted],
         },
@@ -214,7 +214,7 @@ describe('EventManager', () => {
       eventManager.registerEvent(NAVIGATION_COMMITTED_EVENT, SOME_CONTEXT);
       assert.isEmpty(emittedEvents);
 
-      aclManager.setAcl({
+      await aclManager.updateAcl({
         perNavigable: {
           [SOME_CONTEXT]: {
             events: [
@@ -233,11 +233,13 @@ describe('EventManager', () => {
       const event = ChromiumBidi.BrowsingContext.EventNames.NavigationCommitted;
       await eventManager.subscribe([event], [], [], SOME_CHANNEL);
 
-      aclManager.setAcl({perNavigable: {[SOME_CONTEXT]: {events: [event]}}});
+      await aclManager.updateAcl({
+        perNavigable: {[SOME_CONTEXT]: {events: [event]}},
+      });
       eventManager.registerGlobalEvent(NAVIGATION_COMMITTED_EVENT);
       assert.isEmpty(emittedEvents);
 
-      aclManager.setAcl({default: {events: [event]}});
+      await aclManager.updateAcl({default: {events: [event]}});
       eventManager.registerGlobalEvent(NAVIGATION_COMMITTED_EVENT);
       assert.deepEqual(emittedEvents, [event]);
     });
@@ -273,7 +275,7 @@ describe('EventManager', () => {
       );
       assert.isEmpty(emittedEvents);
 
-      aclManager.setAcl({
+      await aclManager.updateAcl({
         default: {events: [ChromiumBidi.Log.EventNames.LogEntryAdded]},
       });
       await eventManager.subscribe(

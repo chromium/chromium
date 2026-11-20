@@ -19,6 +19,7 @@ import type {CdpClient} from '../cdp/CdpClient.js';
 import type {CdpConnection} from '../cdp/CdpConnection.js';
 import {
   Exception,
+  InvalidSessionIdException,
   UnknownCommandException,
   UnknownErrorException,
   type ChromiumBidi,
@@ -60,6 +61,12 @@ import {OutgoingMessage} from './OutgoingMessage.js';
 export const enum CommandProcessorEvents {
   Response = 'response',
 }
+
+/** Commands that WebDriver BiDi accepts before the session is created. */
+const STATIC_COMMANDS: ReadonlySet<string> = new Set([
+  'session.new',
+  'session.status',
+] satisfies ChromiumBidi.Command['method'][]);
 
 interface CommandProcessorEventsMap extends Record<string | symbol, unknown> {
   [CommandProcessorEvents.Response]: {
@@ -174,6 +181,17 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
   async #processCommand(
     command: ChromiumBidi.Command,
   ): Promise<ChromiumBidi.ResultData> {
+    // WebDriver BiDi accepts only static commands before the session is
+    // created.
+    if (
+      !STATIC_COMMANDS.has(command.method) &&
+      !this.#sessionProcessor.isCreated()
+    ) {
+      throw new InvalidSessionIdException(
+        `Command '${command.method}' requires a session. Call 'session.new' first.`,
+      );
+    }
+
     // Restricted sessions can run only the commands that their ACL grants.
     // Check before parsing, so that a disallowed command fails with an ACL
     // error rather than a parameter validation error.

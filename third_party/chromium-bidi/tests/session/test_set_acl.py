@@ -14,9 +14,11 @@
 # limitations under the License.
 
 import pytest
+import pytest_asyncio
 from test_helpers import AnyExtending, execute_command
 
 RESTRICTED_SESSION = {"goog:sessionType": "restricted"}
+GET_TREE_ACL = {"default": {"commands": ["browsingContext.getTree"]}}
 REASON = "Fill in the checkout form."
 
 
@@ -30,7 +32,17 @@ async def set_acl(websocket, params):
     )
 
 
+@pytest_asyncio.fixture(autouse=True)
+async def initial_acl(request, websocket):
+    # Runs before `context_id` so tests can seed `browsingContext.getTree`.
+    acl = getattr(request, "param", None)
+    if acl is not None:
+        await set_acl(websocket, {"acl": acl})
+
+
 @pytest.mark.asyncio
+@pytest.mark.parametrize("capabilities", [RESTRICTED_SESSION], indirect=True)
+@pytest.mark.parametrize("initial_acl", [GET_TREE_ACL], indirect=True)
 async def test_set_acl_returns_acl_in_effect(websocket, context_id):
     result = await set_acl(
         websocket,
@@ -65,6 +77,8 @@ async def test_set_acl_returns_acl_in_effect(websocket, context_id):
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize("capabilities", [RESTRICTED_SESSION], indirect=True)
+@pytest.mark.parametrize("initial_acl", [GET_TREE_ACL], indirect=True)
 async def test_set_acl_is_idempotent(websocket, context_id):
     acl = {
         "default": {"commands": ["browsingContext.getTree"], "events": []},
@@ -130,18 +144,36 @@ async def test_set_acl_grants_and_retracts_access(websocket):
 
 
 @pytest.mark.asyncio
+async def test_set_acl_in_standard_session_is_unsupported(websocket):
+    with pytest.raises(Exception) as exception_info:
+        await set_acl(websocket, {"acl": {}})
+
+    assert exception_info.value.args[0] == {
+        "error": "unsupported operation",
+        "message": (
+            "Command 'goog:session.setAcl' requires a restricted session. "
+            'Request capability "goog:sessionType": "restricted" in '
+            "session.new."
+        ),
+    }
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("capabilities", [RESTRICTED_SESSION], indirect=True)
 async def test_set_acl_malformed_acl_is_invalid_argument(websocket):
     with pytest.raises(Exception, match="invalid argument"):
         await set_acl(websocket, {"acl": None})
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize("capabilities", [RESTRICTED_SESSION], indirect=True)
 async def test_set_acl_non_string_reason_is_invalid_argument(websocket):
     with pytest.raises(Exception, match="invalid argument"):
         await set_acl(websocket, {"acl": {}, "reason": 1})
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize("capabilities", [RESTRICTED_SESSION], indirect=True)
 async def test_set_acl_without_acl_is_invalid_argument(websocket):
     with pytest.raises(Exception, match="invalid argument"):
         await set_acl(websocket, {})

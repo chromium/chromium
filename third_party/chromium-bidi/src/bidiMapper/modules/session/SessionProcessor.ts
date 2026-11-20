@@ -24,11 +24,30 @@ import {
   InvalidArgumentException,
   Session,
   SessionNotCreatedException,
+  UnsupportedOperationException,
 } from '../../../protocol/protocol.js';
 import type {MapperOptions} from '../../MapperOptions.js';
 
 import type {AclManager} from './AclManager.js';
 import type {EventManager} from './EventManager.js';
+
+// Predicates returning true when a `MapperOptions` capability is allowed in a
+// restricted `session.new`. Typed against `keyof MapperOptions` so any new
+// Mapper option triggers a compile error until classified here.
+const RESTRICTED_CAPABILITY_RULES = {
+  acceptInsecureCerts(value: unknown): boolean {
+    return value !== true;
+  },
+  unhandledPromptBehavior(value: unknown): boolean {
+    return value === undefined || value === null;
+  },
+  'goog:prerenderingDisabled'(value: unknown): boolean {
+    return value !== true;
+  },
+  'goog:disableNetworkDurableMessages'(value: unknown): boolean {
+    return value !== true;
+  },
+} satisfies Record<keyof MapperOptions, (value: unknown) => boolean>;
 
 export class SessionProcessor {
   #eventManager: EventManager;
@@ -41,6 +60,11 @@ export class SessionProcessor {
   // sessions are allowed unless `'goog:sessionType': 'restricted'` is
   // requested.
   #restrictedMode: boolean;
+  // `#creating` blocks concurrent or duplicate `session.new` calls once
+  // `#initConnection` starts, while `#created` (returned by `isCreated()`)
+  // stays false until initialization completes so other commands still fail
+  // with `invalid session id` while `session.new` is in flight.
+  #creating = false;
   #created = false;
 
   constructor(
@@ -59,6 +83,11 @@ export class SessionProcessor {
 
   status(): Session.StatusResult {
     return {ready: false, message: 'already connected'};
+  }
+
+  /** Whether `session.new` succeeded and created the session. */
+  isCreated(): boolean {
+    return this.#created;
   }
 
   #mergeCapabilities(
@@ -100,12 +129,10 @@ export class SessionProcessor {
       match.unhandledPromptBehavior,
     );
 
-    const sessionType = this.#getSessionType(match['goog:sessionType']);
-    if (sessionType === undefined) {
-      // Omit unset/`null` `goog:sessionType` so it is absent from matched capabilities.
+    // Other values of `goog:sessionType` are ignored: the session is not
+    // restricted, and the result omits the value.
+    if (match['goog:sessionType'] !== 'restricted') {
       delete match['goog:sessionType'];
-    } else {
-      match['goog:sessionType'] = sessionType;
     }
 
     return match;
@@ -155,52 +182,49 @@ export class SessionProcessor {
     }
   }
 
-  #getSessionType(capabilityValue: unknown): 'restricted' | undefined {
-    // WebDriver treats `null` capabilities as unset.
-    if (capabilityValue === undefined || capabilityValue === null) {
-      return undefined;
-    }
-    if (typeof capabilityValue !== 'string') {
-      throw new InvalidArgumentException(
-        `Unexpected 'goog:sessionType' type: ${typeof capabilityValue}`,
-      );
-    }
-    if (capabilityValue !== 'restricted') {
-      throw new InvalidArgumentException(
-        `Unexpected 'goog:sessionType' value: ${capabilityValue}`,
-      );
-    }
-    return 'restricted';
-  }
-
   async new(params: Session.NewParameters): Promise<Session.NewResult> {
-    if (this.#created) {
-      throw new Error('Session has been already created.');
+    if (this.#created || this.#creating) {
+      throw new SessionNotCreatedException('Session has been already created.');
     }
 
     const matchedCapabilities = this.#mergeCapabilities(params.capabilities);
 
-    if (
-      this.#restrictedMode &&
-      matchedCapabilities['goog:sessionType'] !== 'restricted'
-    ) {
+    const isRestricted =
+      matchedCapabilities['goog:sessionType'] === 'restricted';
+
+    if (this.#restrictedMode && !isRestricted) {
       // In restricted mode, only restricted sessions can be created.
       throw new SessionNotCreatedException(
         'Only restricted sessions are allowed. Request capability "goog:sessionType": "restricted".',
       );
     }
 
-    this.#created = true;
-
-    if (matchedCapabilities['goog:sessionType'] === 'restricted') {
-      // A restricted session starts with an empty ACL until `goog:session.setAcl` grants permissions.
-      this.#aclManager.setEnabled(true);
-      this.#aclManager.setAcl({});
+    if (isRestricted) {
+      // Reject restricted capabilities before `#creating` is set, so the client
+      // can retry.
+      for (const [name, isAllowedInRestrictedMode] of Object.entries(
+        RESTRICTED_CAPABILITY_RULES,
+      )) {
+        if (!isAllowedInRestrictedMode(matchedCapabilities[name])) {
+          throw new SessionNotCreatedException(
+            `Capability '${name}' is not allowed in restricted sessions.`,
+          );
+        }
+      }
     }
-    await this.#initConnection(matchedCapabilities);
+
+    this.#creating = true;
+
+    if (isRestricted) {
+      // The ACL is still empty: `goog:session.setAcl` fails before the session
+      // is created.
+      this.#aclManager.enable();
+    }
+    await this.#initConnection(isRestricted ? {} : matchedCapabilities);
 
     const version =
       await this.#browserCdpClient.sendCommand('Browser.getVersion');
+    this.#created = true;
 
     return {
       sessionId: 'unknown',
@@ -220,6 +244,12 @@ export class SessionProcessor {
   async setAcl(
     params: GoogSession.SetAclParameters,
   ): Promise<GoogSession.SetAclResult> {
+    // Only `session.new` decides whether the session is restricted.
+    if (!this.#aclManager.isEnabled()) {
+      throw new UnsupportedOperationException(
+        `Command 'goog:session.setAcl' requires a restricted session. Request capability "goog:sessionType": "restricted" in session.new.`,
+      );
+    }
     return await this.#aclManager.updateAcl(params.acl, params.reason);
   }
 
