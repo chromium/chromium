@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_DEDICATED_WORKER_H_
 
 #include <memory>
+#include <optional>
 
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-shared.h"
@@ -45,7 +46,8 @@ class WebDedicatedWorker {
       CrossVariantMojoReceiver<mojom::ReportingObserverInterfaceBase>
           coep_reporting_observer,
       CrossVariantMojoReceiver<mojom::ReportingObserverInterfaceBase>
-          dip_reporting_observer) = 0;
+          dip_reporting_observer,
+      const std::optional<WebSecurityOrigin>& updated_origin) = 0;
 
   // Called when content::DedicatedWorkerHost failed to start loading the main
   // worker script in the browser process.

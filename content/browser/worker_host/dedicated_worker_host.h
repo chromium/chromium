@@ -329,6 +329,12 @@ class CONTENT_EXPORT DedicatedWorkerHost final
   // Sets up the observer of network service crash.
   void ObserveNetworkServiceCrash(StoragePartitionImpl* storage_partition_impl);
 
+  // Creates a PendingURLLoaderFactoryBundle for non-network subresource
+  // requests from this worker.
+  std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
+  CreateSubresourceLoaderFactoryBundle(
+      RenderFrameHostImpl* ancestor_render_frame_host);
+
   // Creates a network factory for subresource requests from this worker. The
   // network factory is meant to be passed to the renderer.
   mojo::PendingRemote<network::mojom::URLLoaderFactory>
@@ -342,6 +348,8 @@ class CONTENT_EXPORT DedicatedWorkerHost final
 
   // Returns whether creator and worker's COEP values are compatible.
   bool CheckCOEP();
+
+  void UpdateIsolationInfoAndStorageAccessForOpaqueOrigin();
 
   base::WeakPtr<CrossOriginEmbedderPolicyReporter> GetWorkerCoepReporter();
 
@@ -377,11 +385,15 @@ class CONTENT_EXPORT DedicatedWorkerHost final
   // The storage key of this worker. This is used for storage partitioning and
   // for retrieving the origin of this worker
   // (https://html.spec.whatwg.org/C/#concept-settings-object-origin).
-  const blink::StorageKey worker_storage_key_;
-  // Opaque-origin StorageKey handed to nested workers when this worker is
-  // CSP-sandboxed without `allow-same-origin`. Derived once so that sibling
-  // nested workers share one opaque origin, like workers of a sandboxed
-  // document.
+  // Updated to an opaque StorageKey in `DidStartScriptLoad()` if the worker
+  // script response includes a CSP sandbox directive without
+  // `allow-same-origin` (when `kCSPSandboxedWorkerOpaqueOrigin` is enabled).
+  blink::StorageKey worker_storage_key_;
+  // Fallback opaque-origin StorageKey handed to nested workers when this worker
+  // is CSP-sandboxed without `allow-same-origin` and `worker_storage_key_`
+  // remains non-opaque (e.g., when `kCSPSandboxedWorkerOpaqueOrigin` is
+  // disabled). Derived once so that sibling nested workers share one opaque
+  // origin, like workers of a sandboxed document.
   std::optional<blink::StorageKey> nested_worker_storage_key_for_sandbox_;
 
   // The origin used by this dedicated worker on the renderer side. This will
@@ -389,11 +401,12 @@ class CONTENT_EXPORT DedicatedWorkerHost final
   // case of data: URL workers when the feature is disabled.
   // TODO(crbug.com/40051700): Remove this when the feature is enabled by
   // default.
-  const url::Origin renderer_origin_;
+  url::Origin renderer_origin_;
 
-  // The IsolationInfo associated with this worker. Same as that of the
-  // frame or the worker that created this worker.
-  const net::IsolationInfo isolation_info_;
+  // The IsolationInfo associated with this worker. Initialized from the frame
+  // or the worker that created this worker, and updated if this worker has an
+  // opaque origin.
+  net::IsolationInfo isolation_info_;
 
   const base::UnguessableToken reporting_source_;
 

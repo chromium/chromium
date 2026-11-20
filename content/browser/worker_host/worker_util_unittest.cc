@@ -6,13 +6,45 @@
 
 #include "base/command_line.h"
 #include "base/test/scoped_command_line.h"
+#include "base/unguessable_token.h"
 #include "content/public/common/content_switches.h"
+#include "net/base/schemeful_site.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
+#include "third_party/blink/public/mojom/storage_key/ancestor_chain_bit.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+#include "url/scheme_host_port.h"
 
 namespace content {
+
+TEST(WorkerUtilTest, DeriveOpaqueStorageKey) {
+  const url::Origin kOrigin =
+      url::Origin::Create(GURL("https://example.com:8443"));
+  const blink::StorageKey kFirstPartyKey =
+      blink::StorageKey::CreateFirstParty(kOrigin);
+
+  const blink::StorageKey opaque_key = DeriveOpaqueStorageKey(kFirstPartyKey);
+  EXPECT_TRUE(opaque_key.origin().opaque());
+  EXPECT_EQ(opaque_key.origin().GetTupleOrPrecursorTupleIfOpaque(),
+            url::SchemeHostPort("https", "example.com", 8443));
+  EXPECT_EQ(opaque_key.top_level_site(), net::SchemefulSite(kOrigin));
+  EXPECT_EQ(opaque_key.ancestor_chain_bit(),
+            blink::mojom::AncestorChainBit::kCrossSite);
+  EXPECT_TRUE(opaque_key.IsThirdPartyContext());
+  EXPECT_FALSE(opaque_key.nonce().has_value());
+
+  const base::UnguessableToken nonce = base::UnguessableToken::Create();
+  const blink::StorageKey kNoncedKey =
+      blink::StorageKey::CreateWithNonce(kOrigin, nonce);
+  const blink::StorageKey opaque_nonced_key =
+      DeriveOpaqueStorageKey(kNoncedKey);
+  EXPECT_TRUE(opaque_nonced_key.origin().opaque());
+  EXPECT_EQ(opaque_nonced_key.origin().GetTupleOrPrecursorTupleIfOpaque(),
+            url::SchemeHostPort("https", "example.com", 8443));
+  EXPECT_EQ(opaque_nonced_key.nonce(), nonce);
+}
 
 TEST(WorkerUtilTest, DoesCreatorAllowFileUrlSupport) {
   const url::Origin kHttpOrigin =

@@ -4,7 +4,9 @@
 
 #include "third_party/blink/renderer/core/loader/worker_fetch_context.h"
 
+#include "base/feature_list.h"
 #include "base/task/single_thread_task_runner.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/public/platform/web_url_request.h"
@@ -58,6 +60,26 @@ WorkerFetchContext::WorkerFetchContext(
 }
 
 net::SiteForCookies WorkerFetchContext::GetSiteForCookies() const {
+  // Return an empty `SiteForCookies` (withholding SameSite cookies) if the
+  // fetch client's origin is opaque, or if this is a worker whose own global
+  // scope has an opaque origin (e.g. a CSP-sandboxed module worker, whose
+  // static `import` fetches still use the creator document's non-opaque
+  // `FetchClientSettingsObject`).
+  //
+  // Exclude worklets (`WorkletGlobalScope`) from the `global_scope_` check:
+  // worklets always have an opaque global scope origin by spec, but
+  // `worklet.addModule()` fetches scripts on behalf of the owning document and
+  // should still send the document's SameSite cookies unless the document's
+  // `FetchClientSettingsObject` origin is itself opaque.
+  if (base::FeatureList::IsEnabled(features::kCSPSandboxedWorkerOpaqueOrigin) &&
+      ((global_scope_->IsWorkerGlobalScope() &&
+        global_scope_->GetSecurityOrigin()->IsOpaque()) ||
+       GetResourceFetcherProperties()
+           .GetFetchClientSettingsObject()
+           .GetSecurityOrigin()
+           ->IsOpaque())) {
+    return net::SiteForCookies();
+  }
   return web_context_->SiteForCookies();
 }
 

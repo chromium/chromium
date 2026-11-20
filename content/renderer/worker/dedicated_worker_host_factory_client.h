@@ -90,7 +90,8 @@ class DedicatedWorkerHostFactoryClient final
       mojo::PendingReceiver<blink::mojom::ReportingObserver>
           coep_reporting_observer,
       mojo::PendingReceiver<blink::mojom::ReportingObserver>
-          dip_reporting_observer) override;
+          dip_reporting_observer,
+      const std::optional<url::Origin>& updated_origin) override;
   void OnScriptLoadStartFailed() override;
 
   // |worker_| owns |this|.

@@ -84,7 +84,13 @@ interface DedicatedWorkerHostFactoryClient {
 
       // Used by a DocumentIsolationPolicyReporter to send reports to the
       // ReportingObservers.
-      pending_receiver<ReportingObserver>? dip_reporting_observer_receiver);
+      pending_receiver<ReportingObserver>? dip_reporting_observer_receiver,
+
+      // Set when the worker's renderer origin changed after fetching the main
+      // script (e.g., to a new opaque origin due to a CSP `sandbox` header
+      // without `allow-same-origin`), so the browser and renderer use the same
+      // opaque origin nonce.
+      url.mojom.Origin? updated_origin);
 
   // Called when the worker host fails to start loading the main worker script.
   // This is called after OnWorkerHostCreated(). This is never called when

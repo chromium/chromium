@@ -33,12 +33,14 @@
 #include <memory>
 
 #include "base/check_is_test.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_id_helper.h"
 #include "base/trace_event/typed_macros.h"
 #include "base/types/pass_key.h"
 #include "net/storage_access_api/status.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/worker_main_script_load_parameters.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-blink.h"
@@ -291,6 +293,16 @@ void DedicatedWorkerGlobalScope::Initialize(
     // TODO(mkwst): This needs a spec.
     is_isolated_context_ = false;
 
+    GetRuntimeFeatureStateOverrideContext()->SetDirectSocketsForceDisabled();
+  }
+
+  // Clear inherited Storage Access API status and isolated-context capabilities
+  // when the worker has an opaque origin (e.g. from CSP `sandbox` without
+  // `allow-same-origin`).
+  if (base::FeatureList::IsEnabled(features::kCSPSandboxedWorkerOpaqueOrigin) &&
+      GetSecurityOrigin()->IsOpaque()) {
+    storage_access_api_status_ = net::StorageAccessApiStatus::kNone;
+    is_isolated_context_ = false;
     GetRuntimeFeatureStateOverrideContext()->SetDirectSocketsForceDisabled();
   }
 

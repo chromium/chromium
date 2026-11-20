@@ -27,11 +27,13 @@
 
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 
+#include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/typed_macros.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/metrics/public/cpp/mojo_ukm_recorder.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/javascript_framework_detection.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom-blink.h"
@@ -951,6 +953,13 @@ WorkerGlobalScope::WorkerGlobalScope(
   InstanceCounters::IncrementCounter(
       InstanceCounters::kWorkerGlobalScopeCounter);
 
+  if (!creation_params->script_url.ProtocolIsData() &&
+      base::FeatureList::IsEnabled(features::kCSPSandboxedWorkerOpaqueOrigin) &&
+      creation_params->origin_to_use &&
+      creation_params->origin_to_use->IsOpaque()) {
+    SetSandboxOriginToUse(creation_params->origin_to_use->IsolatedCopy());
+  }
+
   // https://html.spec.whatwg.org/C/#run-a-worker
   // 4. Set worker global scope's HTTPS state to response's HTTPS state. [spec
   // text]
@@ -1018,7 +1027,8 @@ NOINLINE void WorkerGlobalScope::InitializeURL(const KURL& url) {
     // for local origins, and the logic doesn't work here, so we have this
     // DCHECK instead.
     auto origin = SecurityOrigin::Create(url);
-    DCHECK(origin->IsOpaque() || origin->IsLocal());
+    DCHECK(origin->IsOpaque() || origin->IsLocal() ||
+           GetSecurityOrigin()->CanReadContent(url));
   } else {
     DCHECK(GetSecurityOrigin()->CanReadContent(url));
   }

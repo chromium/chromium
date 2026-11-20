@@ -397,6 +397,8 @@ BASE_FEATURE(kContentSchemeIsLocal,
 BASE_FEATURE(kCreateImageBitmapOrientationNone,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kCSPSandboxedWorkerOpaqueOrigin, base::FEATURE_ENABLED_BY_DEFAULT);
+
 // When enabled, Declarative CSS Modules will generate a DataURI instead of a
 // Blob URL in the generated Import Map.
 BASE_FEATURE(kDeclarativeCSSModulesUseDataURI,

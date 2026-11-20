@@ -269,6 +269,9 @@ class CORE_EXPORT WorkerOrWorkletGlobalScope
 
   bool IsCreatorSecureContext() const { return is_creator_secure_context_; }
 
+  void SetSandboxOriginToUse(
+      scoped_refptr<SecurityOrigin> sandbox_origin_to_use);
+
  private:
   void InitializeWebFetchContextIfNeeded();
   ResourceFetcher* CreateFetcherInternal(const FetchClientSettingsObject&,
@@ -329,6 +332,11 @@ class CORE_EXPORT WorkerOrWorkletGlobalScope
 
   // This tracks deprecation features that have been used.
   Deprecation deprecation_;
+
+  // Browser-provided opaque origin to adopt in `SetSandboxFlags()` when a
+  // worker is sandboxed to an opaque origin via Content-Security-Policy, so the
+  // renderer and browser share the same opaque origin nonce.
+  scoped_refptr<SecurityOrigin> sandbox_origin_to_use_;
 };
 
 template <>

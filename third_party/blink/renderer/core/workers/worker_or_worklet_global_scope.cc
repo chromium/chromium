@@ -550,13 +550,22 @@ WorkerOrWorkletGlobalScope::GetTaskRunner(TaskType type) {
   return GetThread()->GetTaskRunner(type);
 }
 
+void WorkerOrWorkletGlobalScope::SetSandboxOriginToUse(
+    scoped_refptr<SecurityOrigin> sandbox_origin_to_use) {
+  sandbox_origin_to_use_ = std::move(sandbox_origin_to_use);
+}
+
 void WorkerOrWorkletGlobalScope::SetSandboxFlags(
     network::mojom::blink::WebSandboxFlags mask) {
   GetSecurityContext().SetSandboxFlags(mask);
   if (IsSandboxed(network::mojom::blink::WebSandboxFlags::kOrigin) &&
       !GetSecurityOrigin()->IsOpaque()) {
-    GetSecurityContext().SetSecurityOrigin(
-        GetSecurityOrigin()->DeriveNewOpaqueOrigin());
+    if (sandbox_origin_to_use_) {
+      GetSecurityContext().SetSecurityOrigin(std::move(sandbox_origin_to_use_));
+    } else {
+      GetSecurityContext().SetSecurityOrigin(
+          GetSecurityOrigin()->DeriveNewOpaqueOrigin());
+    }
   }
 }
 

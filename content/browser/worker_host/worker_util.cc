@@ -17,20 +17,22 @@
 
 namespace content {
 
+blink::StorageKey DeriveOpaqueStorageKey(const blink::StorageKey& storage_key) {
+  url::Origin opaque_origin = storage_key.origin().DeriveNewOpaqueOrigin();
+  if (storage_key.nonce()) {
+    return blink::StorageKey::CreateWithNonce(opaque_origin,
+                                              storage_key.nonce().value());
+  }
+  return blink::StorageKey::Create(opaque_origin, storage_key.top_level_site(),
+                                   blink::mojom::AncestorChainBit::kCrossSite);
+}
+
 blink::StorageKey CalculateWorkerStorageKey(
     const GURL& script_url,
     const blink::StorageKey& creator_storage_key,
     bool is_opaque_origin_enabled) {
   if (script_url.SchemeIs(url::kDataScheme) && is_opaque_origin_enabled) {
-    url::Origin opaque_origin =
-        creator_storage_key.origin().DeriveNewOpaqueOrigin();
-    if (creator_storage_key.nonce()) {
-      return blink::StorageKey::CreateWithNonce(
-          opaque_origin, creator_storage_key.nonce().value());
-    }
-    return blink::StorageKey::Create(
-        opaque_origin, creator_storage_key.top_level_site(),
-        blink::mojom::AncestorChainBit::kCrossSite);
+    return DeriveOpaqueStorageKey(creator_storage_key);
   }
   return creator_storage_key;
 }

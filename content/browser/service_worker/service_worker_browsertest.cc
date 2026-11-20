@@ -4373,7 +4373,8 @@ class TestDedicatedWorkerFactoryClient
       mojo::PendingReceiver<blink::mojom::ReportingObserver>
           coep_reporting_observer,
       mojo::PendingReceiver<blink::mojom::ReportingObserver>
-          dip_reporting_observer) override {
+          dip_reporting_observer,
+      const std::optional<url::Origin>& updated_origin) override {
     load_started_ = true;
     has_service_worker_container_ = !service_worker_container_info.is_null();
     if (main_script_load_params && main_script_load_params->response_head) {

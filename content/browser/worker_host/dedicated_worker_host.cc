@@ -59,6 +59,7 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "net/base/isolation_info.h"
+#include "net/cookies/cookie_setting_override.h"
 #include "net/http/http_response_headers.h"
 #include "net/storage_access_api/status.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -176,6 +177,11 @@ DedicatedWorkerHost::DedicatedWorkerHost(
   // TODO(https://crbug.com/11990077): Once we add more stuff to
   // `blink::StorageKey`, DCHECK that `storage_key` is consistent with
   // `isolation_info_` here (i.e. their origin and top frame origin match).
+  if (base::FeatureList::IsEnabled(
+          blink::features::kCSPSandboxedWorkerOpaqueOrigin) &&
+      worker_storage_key_.origin().opaque()) {
+    UpdateIsolationInfoAndStorageAccessForOpaqueOrigin();
+  }
 
   scoped_process_host_observation_.Observe(worker_process_host_.get());
 
@@ -604,6 +610,29 @@ void DedicatedWorkerHost::DidStartScriptLoad(
   worker_client_security_state_->document_isolation_policy =
       creator_client_security_state_->document_isolation_policy;
 
+  policy_container_host_ = base::MakeRefCounted<PolicyContainerHost>(
+      std::move(result->policy_container_policies));
+
+  // A worker sandboxed without `allow-same-origin` has an opaque origin. Update
+  // the browser-side worker storage key, renderer origin, isolation info, and
+  // storage access status to match the opaque origin before creating reporters
+  // and subresource loader factories.
+  const bool is_csp_sandboxed =
+      IsSandboxedToOpaqueOrigin(policy_container_host_->policies());
+  const bool had_initial_opaque_storage_key =
+      worker_storage_key_.origin().opaque();
+  bool did_update_storage_key_for_csp_sandbox = false;
+  if (is_csp_sandboxed &&
+      base::FeatureList::IsEnabled(
+          blink::features::kCSPSandboxedWorkerOpaqueOrigin)) {
+    if (!had_initial_opaque_storage_key) {
+      worker_storage_key_ = DeriveOpaqueStorageKey(worker_storage_key_);
+      renderer_origin_ = worker_storage_key_.origin();
+      did_update_storage_key_for_csp_sandbox = true;
+    }
+    UpdateIsolationInfoAndStorageAccessForOpaqueOrigin();
+  }
+
   auto* storage_partition = GetStoragePartitionImpl();
 
   // Create a COEP reporter with worker's policy.
@@ -648,8 +677,10 @@ void DedicatedWorkerHost::DidStartScriptLoad(
     ObserveNetworkServiceCrash(GetStoragePartitionImpl());
   }
 
-  policy_container_host_ = base::MakeRefCounted<PolicyContainerHost>(
-      std::move(result->policy_container_policies));
+  if (did_update_storage_key_for_csp_sandbox) {
+    result->subresource_loader_factories =
+        CreateSubresourceLoaderFactoryBundle(ancestor_render_frame_host);
+  }
 
   // Set up the default network loader factory.
   bool bypass_redirect_checks = false;
@@ -664,19 +695,17 @@ void DedicatedWorkerHost::DidStartScriptLoad(
   // the CacheStorageSideDataWriter for its precursor origin's CacheStorage
   // entry. This is a security fix with no web-observable behavior and is not
   // behind a kill switch.
-  const bool is_csp_sandboxed =
-      IsSandboxedToOpaqueOrigin(policy_container_host_->policies());
-  const bool has_opaque_storage_key = worker_storage_key_.origin().opaque();
-  if (is_csp_sandboxed || has_opaque_storage_key) {
+  if ((is_csp_sandboxed || worker_storage_key_.origin().opaque()) &&
+      result->main_script_load_params->response_head) {
     result->main_script_load_params->response_head
         ->cache_storage_side_data_writer.reset();
   }
   // An opaque-origin worker is not eligible to use service workers (mirroring
-  // `NavigationRequest::CommitNavigation()`). For an opaque StorageKey the
-  // interceptor never created a ServiceWorkerClient, so dropping the handle is
-  // unconditional; only the CSP-sandbox-derived drop is web-observable and
-  // guarded by the kill switch.
-  if (has_opaque_storage_key ||
+  // `NavigationRequest::CommitNavigation()`). For a worker that already had an
+  // opaque StorageKey before script load, the interceptor never created a
+  // ServiceWorkerClient, so dropping the handle is unconditional; only the
+  // CSP-sandbox-derived drop is web-observable and guarded by the kill switch.
+  if (had_initial_opaque_storage_key ||
       (is_csp_sandboxed &&
        base::FeatureList::IsEnabled(
            features::kServiceWorkerDropHandleForCSPSandboxedWorker))) {
@@ -715,7 +744,10 @@ void DedicatedWorkerHost::DidStartScriptLoad(
       std::move(controller),
       BindAndPassRemoteForBackForwardCacheControllerHost(),
       policy_container_host_->CreatePolicyContainerForBlink(),
-      std::move(coep_reporting_observer), std::move(dip_reporting_observer));
+      std::move(coep_reporting_observer), std::move(dip_reporting_observer),
+      did_update_storage_key_for_csp_sandbox
+          ? std::make_optional(renderer_origin_)
+          : std::nullopt);
   if (auto service_worker_client = GetServiceWorkerClient()) {
     service_worker_client->SetContainerReady();
   }
@@ -763,6 +795,28 @@ DedicatedWorkerHost::CreateNetworkFactoryForSubresources(
     dip_reporter_->Clone(dip_reporter.InitWithNewPipeAndPassReceiver());
   }
 
+  net::CookieSettingOverrides cookie_setting_overrides =
+      ancestor_render_frame_host->GetCookieSettingOverrides();
+  const bool is_opaque_worker =
+      base::FeatureList::IsEnabled(
+          blink::features::kCSPSandboxedWorkerOpaqueOrigin) &&
+      worker_storage_key_.origin().opaque();
+  if (is_opaque_worker) {
+    if (storage_access_api_status_ == net::StorageAccessApiStatus::kNone) {
+      cookie_setting_overrides.Remove(
+          net::CookieSettingOverride::kStorageAccessGrantEligible);
+      cookie_setting_overrides.Remove(
+          net::CookieSettingOverride::kStorageAccessGrantEligibleViaHeader);
+    }
+    if (!policy_container_host_ ||
+        (policy_container_host_->policies().sandbox_flags &
+         network::mojom::WebSandboxFlags::kAllowSameSiteNoneCookies) !=
+            network::mojom::WebSandboxFlags::kNone) {
+      cookie_setting_overrides.Remove(
+          net::CookieSettingOverride::kAllowSameSiteNoneCookiesInSandbox);
+    }
+  }
+
   // Use the creator's origin for `factory_params` to allow the worker to
   // perform fetches that use the "Outside Settings" origin as the initiator
   // (e.g., static imports in module workers).
@@ -782,13 +836,22 @@ DedicatedWorkerHost::CreateNetworkFactoryForSubresources(
               ? network::mojom::TrustTokenOperationPolicyVerdict::
                     kPotentiallyPermit
               : network::mojom::TrustTokenOperationPolicyVerdict::kForbid,
-          ancestor_render_frame_host->GetCookieSettingOverrides(),
-          network_restrictions_id_,
+          cookie_setting_overrides, network_restrictions_id_,
           /*renderer_accessible_http_cache_write_enabled=*/false,
           "DedicatedWorkerHost::CreateNetworkFactoryForSubresources");
   // Worker subresources are not outermost-main-frame requests even when their
   // creator frame is outermost.
   factory_params->is_outermost_main_frame = false;
+  if (is_opaque_worker) {
+    factory_params->require_cross_site_request_for_cookies = true;
+    if (policy_container_host_ &&
+        IsSandboxedToOpaqueOrigin(policy_container_host_->policies()) &&
+        !base::CommandLine::ForCurrentProcess()->HasSwitch(
+            switches::kDisableWebSecurity)) {
+      factory_params->disable_web_security = false;
+      factory_params->is_orb_enabled = true;
+    }
+  }
 
   RenderFrameHost* frame = nullptr;
   if (base::FeatureList::IsEnabled(
@@ -867,10 +930,36 @@ bool DedicatedWorkerHost::CheckCOEP() {
   return false;
 }
 
+void DedicatedWorkerHost::UpdateIsolationInfoAndStorageAccessForOpaqueOrigin() {
+  CHECK(worker_storage_key_.origin().opaque());
+  if (!isolation_info_.IsEmpty()) {
+    isolation_info_ = net::IsolationInfo::Create(
+        net::IsolationInfo::RequestType::kOther,
+        *isolation_info_.top_frame_origin(), worker_storage_key_.origin(),
+        net::SiteForCookies(), isolation_info_.nonce(),
+        isolation_info_.GetNetworkIsolationPartition(),
+        isolation_info_.frame_ancestor_relation().has_value()
+            ? std::optional(
+                  net::IsolationInfo::FrameAncestorRelation::kCrossSite)
+            : std::nullopt);
+  }
+  storage_access_api_status_ = net::StorageAccessApiStatus::kNone;
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 void DedicatedWorkerHost::CreateDirectSocketsService(
     mojo::PendingReceiver<blink::mojom::DirectSocketsService> receiver) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
+  if (!worker_client_security_state_) {
+    return;
+  }
+  if (base::FeatureList::IsEnabled(
+          blink::features::kCSPSandboxedWorkerOpaqueOrigin) &&
+      GetWorkerStorageKey().origin().opaque()) {
+    broker_receiver_.ReportBadMessage(
+        "Direct Sockets is not allowed for opaque-origin dedicated workers.");
+    return;
+  }
   RenderFrameHostImpl* ancestor_render_frame_host =
       GetAncestorRenderFrameHost();
   // The ancestor frame may have already been closed. In that case, the worker
@@ -909,12 +998,19 @@ void DedicatedWorkerHost::CreateWebSocketConnector(
     receiver.ResetWithReason(0, "The parent frame has already been gone.");
     return;
   }
+  if (!worker_client_security_state_) {
+    receiver.ResetWithReason(0, "The worker script has not loaded yet.");
+    return;
+  }
   // TODO(crbug.com/379869738) Remove GetUnsafeValue.
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<WebSocketConnectorImpl>(
           ancestor_render_frame_host->GetGlobalId(), ancestor_document_,
           GetWorkerStorageKey().origin(),
-          ancestor_render_frame_host->GetIsolationInfoForSubresources(),
+          base::FeatureList::IsEnabled(
+              blink::features::kCSPSandboxedWorkerOpaqueOrigin)
+              ? isolation_info_
+              : ancestor_render_frame_host->GetIsolationInfoForSubresources(),
           worker_client_security_state_->Clone(), storage_access_api_status_,
           network_restrictions_id_, GetToken().value()),
       std::move(receiver));
@@ -929,6 +1025,10 @@ void DedicatedWorkerHost::CreateWebTransportConnector(
     // The ancestor frame may have already been closed. In that case, the worker
     // will soon be terminated too, so abort the connection.
     receiver.ResetWithReason(0, "The parent frame has already been gone.");
+    return;
+  }
+  if (!worker_client_security_state_) {
+    receiver.ResetWithReason(0, "The worker script has not loaded yet.");
     return;
   }
   mojo::MakeSelfOwnedReceiver(
@@ -1216,21 +1316,10 @@ void DedicatedWorkerHost::OnNetworkServiceCrash() {
   UpdateSubresourceLoaderFactories();
 }
 
-void DedicatedWorkerHost::UpdateSubresourceLoaderFactories() {
-  // Ignore DevTools attempts to update loader factories before
-  // the main script started loading.
-  if (!subresource_loader_updater_.is_bound()) {
-    return;
-  }
-
+std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
+DedicatedWorkerHost::CreateSubresourceLoaderFactoryBundle(
+    RenderFrameHostImpl* ancestor_render_frame_host) {
   auto* storage_partition_impl = GetStoragePartitionImpl();
-
-  RenderFrameHostImpl* ancestor_render_frame_host =
-      GetAncestorRenderFrameHost();
-  if (!ancestor_render_frame_host) {
-    return;
-  }
-
   // Get a storage domain.
   auto partition_domain =
       ancestor_render_frame_host->GetSiteInstance()->GetPartitionDomain(
@@ -1244,14 +1333,31 @@ void DedicatedWorkerHost::UpdateSubresourceLoaderFactories() {
       render_frame_host_id ? RenderFrameHostImpl::FromID(*render_frame_host_id)
                            : nullptr;
 
+  return WorkerScriptFetcher::CreateFactoryBundle(
+      WorkerScriptFetcher::LoaderType::kSubResource,
+      worker_process_host_->GetDeprecatedID(), storage_partition_impl,
+      partition_domain, file_url_support_,
+      /*filesystem_url_support=*/true, creator_render_frame_host,
+      worker_storage_key_, network::mojom::RequestDestination::kWorker);
+}
+
+void DedicatedWorkerHost::UpdateSubresourceLoaderFactories() {
+  // Ignore DevTools attempts to update loader factories before
+  // the main script started loading.
+  if (!subresource_loader_updater_.is_bound()) {
+    return;
+  }
+
+  RenderFrameHostImpl* ancestor_render_frame_host =
+      GetAncestorRenderFrameHost();
+  if (!ancestor_render_frame_host) {
+    return;
+  }
+
   // Recreate the default URLLoaderFactory.
   std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
-      subresource_loader_factories = WorkerScriptFetcher::CreateFactoryBundle(
-          WorkerScriptFetcher::LoaderType::kSubResource,
-          worker_process_host_->GetDeprecatedID(), storage_partition_impl,
-          partition_domain, file_url_support_,
-          /*filesystem_url_support=*/true, creator_render_frame_host,
-          worker_storage_key_, network::mojom::RequestDestination::kWorker);
+      subresource_loader_factories =
+          CreateSubresourceLoaderFactoryBundle(ancestor_render_frame_host);
 
   bool bypass_redirect_checks = false;
   subresource_loader_factories->pending_default_factory() =
@@ -1320,6 +1426,9 @@ void DedicatedWorkerHost::BindCacheStorageForBucket(
 void DedicatedWorkerHost::BindCacheStorageInternal(
     mojo::PendingReceiver<blink::mojom::CacheStorage> receiver,
     const storage::BucketLocator& bucket_locator) {
+  if (!worker_client_security_state_) {
+    return;
+  }
   mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
       coep_reporter;
   if (GetWorkerCoepReporter()) {

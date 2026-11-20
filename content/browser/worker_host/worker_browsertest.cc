@@ -70,6 +70,7 @@
 #include "net/http/http_response_headers.h"
 #include "net/ssl/client_cert_identity.h"
 #include "net/ssl/ssl_server_config.h"
+#include "net/storage_access_api/status.h"
 #include "net/test/embedded_test_server/connection_tracker.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -92,6 +93,7 @@
 #include "third_party/blink/public/common/runtime_feature_state/runtime_feature_state_context.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom.h"
 #include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom.h"
 #include "third_party/blink/public/mojom/frame/policy_container.mojom.h"
@@ -213,6 +215,94 @@ class WorkerFinalResponseURLObserver : public DedicatedWorkerService::Observer,
       shared_worker_observation_{this};
 };
 
+// Serves CSP-sandboxed worker scripts over HTTP(S) (both classic and ES module
+// workers). By default the response carries `Content-Security-Policy: sandbox
+// allow-scripts` (sandboxed to an opaque origin), but you can add
+// `allow-same-origin` to the response by including it in the URL query params.
+std::unique_ptr<net::test_server::HttpResponse> ServeCSPSandboxedWorkerScript(
+    const net::test_server::HttpRequest& request) {
+  const GURL url = request.GetURL();
+  if (url.path() != "/workers/csp_sandbox_worker.js" &&
+      url.path() != "/workers/csp_sandbox_module_worker.js") {
+    return nullptr;
+  }
+  auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+  response->set_code(net::HTTP_OK);
+  response->set_content_type("text/javascript");
+  response->AddCustomHeader("Content-Security-Policy",
+                            url.query().contains("allow-same-origin")
+                                ? "sandbox allow-scripts allow-same-origin"
+                                : "sandbox allow-scripts");
+  if (url.path() == "/workers/csp_sandbox_module_worker.js") {
+    // Serves an ES module worker that statically imports `/workers/empty.js`
+    // (exercising `CreateOutsideSettingsFetcher` + `WorkerFetchContext`) and
+    // posts `'done'` once evaluated.
+    response->set_content(
+        base::StrCat({"import '/workers/empty.js?", url.query(),
+                      "';\nself.postMessage('done');\n"}));
+    return response;
+  }
+  // Serves a classic worker script that receives probe options via `onmessage`
+  // and exercises origin- and StorageKey-scoped capabilities inside the worker:
+  // 1. `params.fetchUrl`: Credentialed subresource `fetch()` so
+  //    `MonitorRequestCookies` records which cookies were sent.
+  // 2. `params.checkBlobFetch`: Creates and fetches a `Blob` URL inside the
+  //    worker to verify Blink's opaque origin nonce matches `BlobUrlRegistry`.
+  // 3. `params.checkNestedBlobWorker`: Spawns a nested `new Worker(blobUrl)`
+  //    that opens a `WebSocket` to `params.wsUrl`, testing that nested `blob:`
+  //    workers inherit the opaque origin and WebSocket isolation.
+  // 4. `params.channelName`: Posts on `BroadcastChannel` to test whether it is
+  //    isolated from (or shared with) the creator page.
+  // 5. `params.wsUrl`: Connects a `WebSocket` to `/echo-request-headers` to
+  //    capture the handshake `Origin` and `Cookie` headers, then replies with
+  //    `{workerOrigin, blobText, nestedResult, wsHeaders}`.
+  response->set_content(R"(
+    const runChecks = async (params, reply) => {
+      if (params.fetchUrl) {
+        await fetch(params.fetchUrl, {mode: 'no-cors', credentials: 'include'});
+      }
+      let blobText = null;
+      if (params.checkBlobFetch !== false) {
+        const u = URL.createObjectURL(new Blob(['blob-ok']));
+        blobText = await (await fetch(u)).text();
+        URL.revokeObjectURL(u);
+      }
+      let nestedResult = null;
+      if (params.checkNestedBlobWorker) {
+        const code = `const ws = new WebSocket(${JSON.stringify(params.wsUrl)});
+          ws.onmessage = e => { ws.close(); postMessage(
+            {nestedOrigin: self.origin, wsHeaders: JSON.parse(e.data)}); };
+          ws.onerror = () => postMessage({error: 'nested-ws-error'});`;
+        const u = URL.createObjectURL(
+            new Blob([code], {type: 'text/javascript'}));
+        nestedResult = await new Promise(r => {
+          const w = new Worker(u);
+          w.onmessage = e => { URL.revokeObjectURL(u); r(e.data); };
+          w.onerror = () => { URL.revokeObjectURL(u); r({error: 'err'}); };
+        });
+      }
+      if (params.channelName) {
+        const bc = new BroadcastChannel(params.channelName);
+        bc.postMessage('from-worker');
+        bc.close();
+      }
+      const wsHeaders = params.wsUrl ? await new Promise(r => {
+        const ws = new WebSocket(params.wsUrl);
+        ws.onmessage = e => { ws.close(); r(JSON.parse(e.data)); };
+        ws.onerror = () => r({error: 'ws-error'});
+      }) : null;
+      reply({
+        workerOrigin: self.origin,
+        blobText,
+        nestedResult,
+        wsHeaders,
+      });
+    };
+    self.onmessage = e => runChecks(e.data, d => self.postMessage(d));
+  )");
+  return response;
+}
+
 }  // namespace
 
 class WorkerTest : public ContentBrowserTest {
@@ -225,8 +315,11 @@ class WorkerTest : public ContentBrowserTest {
         base::BindOnce(&WorkerTest::OnSelectClientCertificate,
                        base::Unretained(this)));
     ssl_server_.AddDefaultHandlers(GetTestDataFilePath());
+    net::test_server::InstallDefaultWebSocketHandlers(&ssl_server_);
     ssl_server_.RegisterRequestHandler(base::BindRepeating(
         &WorkerTest::MonitorRequestCookies, base::Unretained(this)));
+    ssl_server_.RegisterRequestHandler(
+        base::BindRepeating(&ServeCSPSandboxedWorkerScript));
     ssl_server_.SetSSLConfig(
         net::test_server::EmbeddedTestServer::CERT_TEST_NAMES);
     ASSERT_TRUE(ssl_server_.Start());
@@ -346,6 +439,121 @@ class WorkerTest : public ContentBrowserTest {
 
   net::test_server::EmbeddedTestServer* ssl_server() { return &ssl_server_; }
 
+  void SetAllCookiesForHost(std::string_view host) {
+    BrowserContext* context = shell()->web_contents()->GetBrowserContext();
+    const GURL cookie_url = ssl_server_.GetURL(host, "/");
+    ASSERT_TRUE(SetCookie(
+        context, cookie_url,
+        base::StrCat({kSameSiteStrictCookie, "; SameSite=Strict; Secure"})));
+    SetSameSiteLaxCookie(host);
+    ASSERT_TRUE(SetCookie(
+        context, cookie_url,
+        base::StrCat({kSameSiteNoneCookie, "; SameSite=None; Secure"})));
+    SetPartitionedCookie(host, kFirstPartyPartitionedCookie,
+                         net::CookiePartitionKey::AncestorChainBit::kSameSite);
+    SetPartitionedCookie(host, kCrossSitePartitionedCookie,
+                         net::CookiePartitionKey::AncestorChainBit::kCrossSite);
+  }
+
+  static std::string ExpectedCrossSiteCookies() {
+    return base::JoinString({kSameSiteNoneCookie, kCrossSitePartitionedCookie},
+                            "; ");
+  }
+
+  static std::string ExpectedFirstPartyCookies() {
+    return base::JoinString({kSameSiteStrictCookie, kSameSiteLaxCookie,
+                             kSameSiteNoneCookie, kFirstPartyPartitionedCookie},
+                            "; ");
+  }
+
+  void GrantPermission(const GURL& requesting_url,
+                       const GURL& embedding_url,
+                       blink::PermissionType permission) {
+    base::test::TestFuture<PermissionControllerImpl::OverrideStatus> future;
+    static_cast<PermissionControllerImpl*>(
+        shell()->web_contents()->GetBrowserContext()->GetPermissionController())
+        ->SetPermissionOverride(url::Origin::Create(requesting_url),
+                                url::Origin::Create(embedding_url), permission,
+                                blink::mojom::PermissionStatus::GRANTED,
+                                future.GetCallback());
+    ASSERT_EQ(future.Get(),
+              PermissionControllerImpl::OverrideStatus::kOverrideSet);
+  }
+
+  static void ExpectWebSocketHeaders(
+      const base::DictValue& dict,
+      std::string_view expected_origin,
+      std::optional<std::string_view> expected_cookie) {
+    const base::DictValue* ws_headers = dict.FindDict("wsHeaders");
+    ASSERT_TRUE(ws_headers);
+    const std::string* origin = ws_headers->FindString("origin");
+    ASSERT_TRUE(origin);
+    EXPECT_EQ(expected_origin, *origin);
+    const std::string* cookie = ws_headers->FindString("cookie");
+    if (expected_cookie.has_value()) {
+      ASSERT_TRUE(cookie);
+      EXPECT_EQ(*expected_cookie, *cookie);
+    } else {
+      EXPECT_EQ(nullptr, cookie);
+    }
+  }
+
+  // Spawns a worker at `worker_path` from the active page, probes the worker
+  // from `ServeCSPSandboxedWorkerScript`, and returns the worker's reply.
+  base::DictValue RunCSPSandboxedWorkerProbe(std::string_view kind,
+                                             std::string_view worker_path,
+                                             const GURL& ws_url,
+                                             std::string_view fetch_path,
+                                             bool expect_same_origin) {
+    const GURL fetch_url = ssl_server_.GetURL("a.test", fetch_path);
+    base::Value result =
+        EvalJs(shell(), JsReplace(R"(
+      (async () => {
+        const channel = $1 + '-' + ($5 ? 'same-origin' : 'sandboxed');
+        let receivedBroadcast = false;
+        const bc = new BroadcastChannel(channel);
+        const bcDone = new Promise(r => {
+          bc.onmessage = () => { receivedBroadcast = true; r(); };
+          if (!$5) setTimeout(r, 50);
+        });
+        const msg = {
+          wsUrl: $3,
+          fetchUrl: $4,
+          channelName: channel,
+          checkBlobFetch: $5,
+        };
+        const data = await new Promise(async (resolve, reject) => {
+          const w = new Worker($2);
+          w.onmessage = e => resolve(e.data);
+          w.onerror = () => reject('dedicated-worker-error');
+          w.postMessage(msg);
+        });
+        await bcDone;
+        bc.close();
+        return {...data, receivedBroadcast};
+      })()
+    )",
+                                  kind, worker_path, ws_url, fetch_url,
+                                  expect_same_origin))
+            .TakeValue();
+    EXPECT_TRUE(result.is_dict());
+    return std::move(result).TakeDict();
+  }
+
+  GURL SetUpHTTPWorkerTestPage() {
+    net::test_server::InstallDefaultWebSocketHandlers(embedded_test_server());
+    embedded_test_server()->RegisterRequestHandler(
+        base::BindRepeating(&ServeCSPSandboxedWorkerScript));
+    EXPECT_TRUE(embedded_test_server()->Start());
+    EXPECT_TRUE(SetCookie(shell()->web_contents()->GetBrowserContext(),
+                          embedded_test_server()->GetURL("a.test", "/"),
+                          "http-lax-cookie=1; SameSite=Lax"));
+    EXPECT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL(
+                                           "a.test", "/workers/simple.html")));
+    return net::test_server::ToWebSocketUrl(
+        embedded_test_server()->GetURL("a.test", "/echo-request-headers"));
+  }
+
  private:
   base::OnceClosure OnSelectClientCertificate(
       content::WebContents* web_contents,
@@ -432,6 +640,76 @@ class WorkerTestWithAllowFileAccessFromFiles : public WorkerTest {
 IN_PROC_BROWSER_TEST_F(WorkerTestWithAllowFileAccessFromFiles,
                        SingleWorkerFromFile) {
   RunTest(GetTestFileURL("single_worker.html"));
+}
+
+class WorkerTestWithoutSiteIsolation : public WorkerTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    WorkerTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(switches::kDisableSiteIsolation);
+  }
+};
+
+// Verify that when a `file://` page with
+// `allow_universal_access_from_file_urls` spawns a cross-origin worker whose
+// response has `Content-Security-Policy: sandbox allow-scripts`, the worker
+// transitions to an opaque origin without hitting
+// `WorkerGlobalScope::InitializeURL()`'s universal-access `DCHECK` and drops
+// universal cross-origin access in both Blink and the Network Service.
+IN_PROC_BROWSER_TEST_F(
+    WorkerTestWithoutSiteIsolation,
+    CSPSandboxedWorkerFromUniversalAccessFileDropsUniversalAccess) {
+  blink::web_pref::WebPreferences prefs =
+      shell()->web_contents()->GetOrCreateWebPreferences();
+  prefs.allow_universal_access_from_file_urls = true;
+  shell()->web_contents()->SetWebPreferences(prefs);
+  ASSERT_TRUE(NavigateToURL(shell(), GetTestFileURL("simple.html")));
+
+  // Intercept the worker main script request to `a.test` and serve a script
+  // with `CSP: sandbox allow-scripts`. When messaged with `cors_url`, the
+  // worker attempts a cross-origin CORS `fetch()` and posts back `self.origin`
+  // and whether `fetch()` was rejected.
+  const GURL worker_url =
+      ssl_server()->GetURL("a.test", "/workers/csp_sandbox_from_file.js");
+  const GURL cors_url = ssl_server()->GetURL("b.test", "/title1.html");
+  URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
+      [&](URLLoaderInterceptor::RequestParams* params) {
+        if (params->url_request.url != worker_url) {
+          return false;
+        }
+        static constexpr char kHeaders[] =
+            "HTTP/1.1 200 OK\nContent-Type: text/javascript\n"
+            "Content-Security-Policy: sandbox allow-scripts\n\n";
+        static constexpr char kBody[] = R"(
+          self.onmessage = async e => {
+            const corsFetchError = await fetch(e.data, {mode: 'cors'}).then(
+                () => 'unexpected-success', err => err.name);
+            self.postMessage({workerOrigin: self.origin, corsFetchError});
+          };
+        )";
+        URLLoaderInterceptor::WriteResponse(kHeaders, kBody,
+                                            params->client.get(), std::nullopt,
+                                            params->url_request.url);
+        return true;
+      }));
+
+  // Start the worker from the `file://` page and pass `cors_url` (`b.test`).
+  base::Value result = EvalJs(shell(), JsReplace(R"(
+    new Promise((resolve, reject) => {
+      const w = new Worker($1);
+      w.onmessage = e => resolve(e.data);
+      w.onerror = () => reject('worker-error');
+      w.postMessage($2);
+    })
+  )",
+                                                 worker_url, cors_url))
+                           .TakeValue();
+  ASSERT_TRUE(result.is_dict());
+  // The CSP-sandboxed worker must have an opaque `"null"` origin and its CORS
+  // fetch to `b.test` must fail with `TypeError` rather than succeeding via
+  // inherited `file://` universal access.
+  EXPECT_EQ(*result.GetDict().FindString("workerOrigin"), "null");
+  EXPECT_EQ(*result.GetDict().FindString("corsFetchError"), "TypeError");
 }
 
 IN_PROC_BROWSER_TEST_F(WorkerTest, HttpPageCantCreateFileWorker) {
@@ -1630,6 +1908,161 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(expected_cookies, GetReceivedCookie("/workers/empty.html"));
 }
 
+// Verify a CSP-sandboxed worker created from a cross-site frame with an active
+// Storage Access API grant has it's storage access status cleared.
+IN_PROC_BROWSER_TEST_F(
+    WorkerTest,
+    CSPSandboxedStorageAccessWorkersClearStorageAccessStatus) {
+  // Set an unpartitioned `SameSite=None` cookie on `a.test` and block
+  // third-party cookies so a cross-site `a.test` iframe can only send that
+  // cookie when Storage Access API (`kAccessViaAPI`) is active.
+  BrowserContext* context = shell()->web_contents()->GetBrowserContext();
+  ASSERT_TRUE(SetCookie(
+      context, ssl_server()->GetURL("a.test", "/"),
+      base::StrCat({kSameSiteNoneCookie, "; SameSite=None; Secure"})));
+  StoragePartition* partition = context->GetDefaultStoragePartition();
+  partition->GetCookieManagerForBrowserProcess()->BlockThirdPartyCookies(true);
+  partition->FlushNetworkInterfaceForTesting();
+
+  // Navigate the top-level page to `b.test`, embed a cross-site `a.test`
+  // iframe, and grant `STORAGE_ACCESS_GRANT` permission to `(a.test, b.test)`.
+  const GURL top_url = ssl_server()->GetURL("b.test", "/title1.html");
+  const GURL subframe_url =
+      ssl_server()->GetURL("a.test", "/workers/simple.html");
+  ASSERT_TRUE(NavigateToURL(shell(), top_url));
+  RenderFrameHost* main_rfh = shell()->web_contents()->GetPrimaryMainFrame();
+  ASSERT_TRUE(ExecJs(main_rfh, JsReplace(R"(
+    new Promise(resolve => {
+      const f = document.createElement('iframe');
+      f.src = $1;
+      f.onload = resolve;
+      document.body.appendChild(f);
+    })
+  )",
+                                         subframe_url)));
+  RenderFrameHost* subframe_rfh = ChildFrameAt(main_rfh, 0);
+  ASSERT_TRUE(subframe_rfh);
+  GrantPermission(subframe_url, top_url,
+                  blink::PermissionType::STORAGE_ACCESS_GRANT);
+
+  // Monitor the subresource requests made by the two workers.
+  const GURL sandboxed_mod_url =
+      ssl_server()->GetURL("a.test", "/workers/empty.js?saa-sandboxed");
+  const GURL same_origin_mod_url =
+      ssl_server()->GetURL("a.test", "/workers/empty.js?saa-allow-same-origin");
+  URLLoaderMonitor monitor({sandboxed_mod_url, same_origin_mod_url});
+
+  // Activate Storage Access in the `a.test` iframe and start two
+  // DedicatedWorkers: one with `CSP: sandbox allow-scripts` (opaque origin) and
+  // one with `CSP: sandbox allow-scripts allow-same-origin`.
+  EXPECT_EQ("done", EvalJs(subframe_rfh, R"(
+    (async () => {
+      await document.requestStorageAccess();
+      const runMod = url => new Promise((resolve, reject) => {
+        const w = new Worker(url, {type: 'module'});
+        w.onmessage = e => resolve(e.data);
+        w.onerror = () => reject('module-worker-error');
+      });
+      await runMod('/workers/csp_sandbox_module_worker.js?saa-sandboxed');
+      return await runMod(
+          '/workers/csp_sandbox_module_worker.js?saa-allow-same-origin');
+    })()
+  )"));
+
+  // Without `allow-same-origin`, the worker's fetch must clear storage access
+  // status to `kNone` and withhold the `a.test` cookie.
+  std::optional<network::ResourceRequest> sandboxed_req =
+      monitor.GetRequestInfo(sandboxed_mod_url);
+  ASSERT_TRUE(sandboxed_req.has_value());
+  EXPECT_EQ(net::StorageAccessApiStatus::kNone,
+            sandboxed_req->storage_access_api_status);
+  EXPECT_EQ(kNoCookie, GetReceivedCookie("/workers/empty.js?saa-sandboxed"));
+
+  // With `allow-same-origin`, the worker retains `kAccessViaAPI` and sends the
+  // unpartitioned `SameSite=None` cookie.
+  std::optional<network::ResourceRequest> same_origin_req =
+      monitor.GetRequestInfo(same_origin_mod_url);
+  ASSERT_TRUE(same_origin_req.has_value());
+  EXPECT_EQ(net::StorageAccessApiStatus::kAccessViaAPI,
+            same_origin_req->storage_access_api_status);
+  EXPECT_EQ(kSameSiteNoneCookie,
+            GetReceivedCookie("/workers/empty.js?saa-allow-same-origin"));
+}
+
+// Verify that CSP-sandboxed DedicatedWorkers use an opaque origin and
+// cross-site cookie semantics unless `allow-same-origin` is specified.
+IN_PROC_BROWSER_TEST_F(WorkerTest,
+                       CSPSandboxedDedicatedWorkerWebSocketAndSubresources) {
+  // Populate `a.test` with cookies and then navigate to it.
+  SetAllCookiesForHost("a.test");
+  const GURL page_url = ssl_server()->GetURL("a.test", "/workers/simple.html");
+  ASSERT_TRUE(NavigateToURL(shell(), page_url));
+  const GURL ws_url = net::test_server::ToWebSocketUrl(
+      ssl_server()->GetURL("a.test", "/echo-request-headers"));
+
+  // 1. HTTPS classic DedicatedWorker sandboxed without `allow-same-origin`.
+  base::DictValue sandboxed = RunCSPSandboxedWorkerProbe(
+      "dedicated", "/workers/csp_sandbox_worker.js", ws_url,
+      "/workers/empty.js?dw-sandboxed", /*expect_same_origin=*/false);
+  EXPECT_EQ(*sandboxed.FindString("workerOrigin"), "null");
+  ASSERT_TRUE(sandboxed.FindBool("receivedBroadcast").has_value());
+  EXPECT_FALSE(sandboxed.FindBool("receivedBroadcast").value());
+  ExpectWebSocketHeaders(sandboxed, "null", ExpectedCrossSiteCookies());
+  EXPECT_EQ(GetReceivedCookie("/workers/empty.js?dw-sandboxed"),
+            ExpectedCrossSiteCookies());
+
+  // 2. ES module DedicatedWorker sandboxed without `allow-same-origin`.
+  EXPECT_EQ("done", EvalJs(shell(), R"(
+    new Promise((resolve, reject) => {
+      const w = new Worker('/workers/csp_sandbox_module_worker.js?m-sandboxed',
+                           {type: 'module'});
+      w.onmessage = e => resolve(e.data);
+      w.onerror = () => reject('module-worker-error');
+    })
+  )"));
+  EXPECT_EQ(GetReceivedCookie("/workers/empty.js?m-sandboxed"),
+            ExpectedCrossSiteCookies());
+
+  // 3. HTTPS classic DedicatedWorker sandboxed with `allow-same-origin`.
+  base::DictValue same_origin = RunCSPSandboxedWorkerProbe(
+      "dedicated", "/workers/csp_sandbox_worker.js?allow-same-origin", ws_url,
+      "/workers/empty.js?dw-allow-same-origin", /*expect_same_origin=*/true);
+  const std::string page_origin = url::Origin::Create(page_url).Serialize();
+  EXPECT_EQ(*same_origin.FindString("workerOrigin"), page_origin);
+  EXPECT_EQ(*same_origin.FindString("blobText"), "blob-ok");
+  ASSERT_TRUE(same_origin.FindBool("receivedBroadcast").has_value());
+  EXPECT_TRUE(same_origin.FindBool("receivedBroadcast").value());
+  ExpectWebSocketHeaders(same_origin, page_origin, ExpectedFirstPartyCookies());
+  EXPECT_EQ(GetReceivedCookie("/workers/empty.js?dw-allow-same-origin"),
+            ExpectedFirstPartyCookies());
+
+  // 4. HTTP CSP-sandboxed DedicatedWorker with nested `blob:` worker.
+  const GURL http_ws_url = SetUpHTTPWorkerTestPage();
+  base::Value http_res = EvalJs(shell(), JsReplace(R"(
+    new Promise((resolve, reject) => {
+      const w = new Worker('/workers/csp_sandbox_worker.js');
+      w.onmessage = e => resolve(e.data);
+      w.onerror = () => reject('http-worker-error');
+      w.postMessage({wsUrl: $1, checkNestedBlobWorker: true});
+    })
+  )",
+                                                   http_ws_url))
+                             .TakeValue();
+  ASSERT_TRUE(http_res.is_dict());
+
+  // Verify worker blob URL fetch succeeds (browser and Blink share the same
+  // opaque origin nonce), WebSocket sends null origin and no `SameSite=Lax`
+  // cookie, and the nested blob worker inherits an opaque null origin and
+  // WebSocket isolation.
+  EXPECT_EQ(*http_res.GetDict().FindString("workerOrigin"), "null");
+  EXPECT_EQ(*http_res.GetDict().FindString("blobText"), "blob-ok");
+  ExpectWebSocketHeaders(http_res.GetDict(), "null", std::nullopt);
+  const base::DictValue* nested = http_res.GetDict().FindDict("nestedResult");
+  ASSERT_TRUE(nested);
+  EXPECT_EQ(*nested->FindString("nestedOrigin"), "null");
+  ExpectWebSocketHeaders(*nested, "null", std::nullopt);
+}
+
 // Test for the SharedWorker extendedLifetime option.
 // See: https://github.com/whatwg/html/issues/10997
 class SharedWorkerExtendedLifetimeBrowserTest : public ContentBrowserTest {
@@ -2180,7 +2613,8 @@ class TestDedicatedWorkerHostFactoryClient
       mojo::PendingReceiver<blink::mojom::ReportingObserver>
           coep_reporting_observer,
       mojo::PendingReceiver<blink::mojom::ReportingObserver>
-          dip_reporting_observer) override {
+          dip_reporting_observer,
+      const std::optional<url::Origin>& updated_origin) override {
     script_load_started_ = true;
     service_worker_container_info_ = std::move(service_worker_container_info);
     main_script_load_params_ = std::move(main_script_load_params);

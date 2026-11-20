@@ -34,6 +34,12 @@ CONTENT_EXPORT blink::StorageKey CalculateWorkerStorageKey(
     const blink::StorageKey& creator_storage_key,
     bool is_opaque_origin_enabled);
 
+// Returns a new StorageKey with a unique opaque origin derived from
+// `storage_key`, preserving its precursor origin, top-level site, and nonce (if
+// any), and marking the ancestor chain bit as cross-site.
+CONTENT_EXPORT blink::StorageKey DeriveOpaqueStorageKey(
+    const blink::StorageKey& storage_key);
+
 // Returns the origin that should be used by the worker on the renderer side.
 // This will almost always be the same as the origin of `worker_storage_key`,
 // except in the case of data: URL workers when the kDataUrlWorkerOpaqueOrigin

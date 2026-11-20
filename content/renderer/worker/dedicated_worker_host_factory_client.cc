@@ -122,7 +122,8 @@ void DedicatedWorkerHostFactoryClient::OnScriptLoadStarted(
     mojo::PendingReceiver<blink::mojom::ReportingObserver>
         coep_reporting_observer,
     mojo::PendingReceiver<blink::mojom::ReportingObserver>
-        dip_reporting_observer) {
+        dip_reporting_observer,
+    const std::optional<url::Origin>& updated_origin) {
   DCHECK(main_script_load_params);
   DCHECK(pending_subresource_loader_factory_bundle);
 
@@ -166,7 +167,10 @@ void DedicatedWorkerHostFactoryClient::OnScriptLoadStarted(
       std::move(worker_main_script_load_params),
       std::move(back_forward_cache_controller_host),
       ToWebPolicyContainer(std::move(policy_container)),
-      std::move(coep_reporting_observer), std::move(dip_reporting_observer));
+      std::move(coep_reporting_observer), std::move(dip_reporting_observer),
+      updated_origin
+          ? std::make_optional<blink::WebSecurityOrigin>(*updated_origin)
+          : std::nullopt);
 }
 
 void DedicatedWorkerHostFactoryClient::OnScriptLoadStartFailed() {

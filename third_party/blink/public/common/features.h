@@ -275,6 +275,12 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kContentSchemeIsLocal);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kCreateImageBitmapOrientationNone);
 
+// Killswitch for updating browser-side worker hosts (and syncing renderer
+// worker state) to use an opaque origin, StorageKey, and isolation info when a
+// worker is sandboxed by CSP without `allow-same-origin`.
+// See https://crbug.com/576714376.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kCSPSandboxedWorkerOpaqueOrigin);
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDeclarativeCSSModulesUseDataURI);
 
 // Controls whether capture-early-failures is supported/used for Declarative
