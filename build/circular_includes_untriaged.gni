@@ -114,6 +114,7 @@ allow_circular_includes_from_untriaged = [
   "//chrome/browser/media/webrtc:webrtc",
   "//chrome/browser/policy:onc",
   "//chrome/browser/push_messaging:service_impl_public",
+  "//chrome/browser/renderer_context_menu:renderer_context_menu",
   "//chrome/browser/safe_browsing:safe_browsing",
   "//chrome/browser/search:search",
   "//chrome/browser/sync:sync",
