@@ -114,7 +114,7 @@ BASE_FEATURE(kKeyboardLockHeldEscExitsTabFullscreen,
 BASE_FEATURE(kLinuxPerProfileAppId, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-BASE_FEATURE(kTabStripDeclutter, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kTabStripDeclutter, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(bool,
                    kTabStripDeclutterActiveTabCloseHideEnabled,
                    &kTabStripDeclutter,
@@ -127,7 +127,7 @@ BASE_FEATURE_PARAM(int,
                    kTabStripDeclutterMaxTabWidthForCloseHide,
                    &kTabStripDeclutter,
                    100);
-BASE_FEATURE(kToolbarGlowUp, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kToolbarGlowUp, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(bool,
                    kToolbarGlowUpReloadEnabled,
                    &kToolbarGlowUp,
@@ -149,7 +149,7 @@ BASE_FEATURE_PARAM(bool,
                    &kMenuSimplification,
                    false);
 BASE_FEATURE(kTabGroupColorRefresh, base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kWebuiRefresh2026, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kWebuiRefresh2026, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAppMenuGlowUp, base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables the redesigned Settings 2026 refresh features and search UX.
 BASE_FEATURE(kSettingsRefresh2026, base::FEATURE_DISABLED_BY_DEFAULT);
