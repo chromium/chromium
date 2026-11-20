@@ -22,11 +22,14 @@
 #include "components/services/storage/public/mojom/service_worker_database.mojom.h"
 #include "components/services/storage/public/mojom/service_worker_storage_control.mojom.h"
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom.h"
+#include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/navigation_preload_state.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 #include "url/origin.h"
+
+class GURL;
 
 namespace base {
 class Location;
@@ -278,12 +281,13 @@ class ServiceWorkerDatabase {
   // returns an error.
   Status PurgeUncommittedResourceIds(const std::vector<int64_t>& ids);
 
-  // Deletes all data for |keys|, namely, unique origin, registrations and
-  // resource records.
+  // Deletes all data for |keys|, namely, unique origin, registrations,
+  // resource records and synthetic response entries.
   //
   // Specifically, this will delete data from any context where the origin
   // matches or where the context is cross-site and the origin is same-site with
-  // the top-level-site.
+  // the top-level-site. Synthetic response entries without a valid
+  // `StorageKey` are also removed.
   //
   // Resources are moved to the purgeable list. Returns OK if
   // they are successfully deleted or not found in the database. Otherwise,
@@ -291,6 +295,38 @@ class ServiceWorkerDatabase {
   Status DeleteAllDataForOrigins(
       const std::set<url::Origin>& origins,
       std::vector<int64_t>* newly_purgeable_resources);
+
+  // Synthetic response entries hold the response head that a synthetic
+  // response is created from. They are independent of registration records.
+  // At most one entry is stored per `StorageKey`, and at most
+  // `kMaxSyntheticResponseEntries` in total.
+  static constexpr size_t kMaxSyntheticResponseEntries = 32;
+
+  // Stores `response_head`, captured now for `scope`, as the entry of `key`,
+  // replacing an existing one. Cookie headers are not stored. Evicts the
+  // entries captured the longest ago when the total exceeds the limit. `key`
+  // must be a first-party key, `scope` must be same-origin with it and
+  // `response_head.headers` must be non-null.
+  Status WriteSyntheticResponseEntry(
+      const blink::StorageKey& key,
+      const GURL& scope,
+      const network::mojom::URLResponseHead& response_head);
+
+  // Reads the entry of `key` into `response_head`. Unless the entry was
+  // captured for `scope` no more than `max_age` ago, deletes it and returns
+  // kErrorNotFound, as when there is no entry.
+  Status ReadSyntheticResponseEntry(
+      const blink::StorageKey& key,
+      const GURL& scope,
+      base::TimeDelta max_age,
+      network::mojom::URLResponseHeadPtr* response_head);
+
+  // Populates `keys` with the `StorageKey`s that have an entry.
+  Status GetSyntheticResponseStorageKeys(std::vector<blink::StorageKey>* keys);
+
+  // Deletes the entries of `keys`. Returns OK when a key has no entry.
+  Status DeleteSyntheticResponseEntries(
+      const std::vector<blink::StorageKey>& keys);
 
   // Completely deletes the contents of the database.
   // Be careful using this function.
@@ -442,6 +478,8 @@ class ServiceWorkerDatabase {
                            UserData_UninitializedDatabase);
   FRIEND_TEST_ALL_PREFIXES(ServiceWorkerDatabaseTest, DestroyDatabase);
   FRIEND_TEST_ALL_PREFIXES(ServiceWorkerDatabaseTest, InvalidWebFeature);
+  FRIEND_TEST_ALL_PREFIXES(ServiceWorkerDatabaseTest,
+                           SyntheticResponseEntries_UnknownFormat);
   FRIEND_TEST_ALL_PREFIXES(ServiceWorkerDatabaseTest,
                            NoCrossOriginEmbedderPolicyValue);
   FRIEND_TEST_ALL_PREFIXES(ServiceWorkerDatabaseTest, NoFetchHandlerType);

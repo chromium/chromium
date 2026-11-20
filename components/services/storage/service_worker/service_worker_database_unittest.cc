@@ -17,12 +17,19 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/scoped_mock_clock_override.h"
 #include "base/unguessable_token.h"
 #include "components/services/storage/service_worker/service_worker_database.pb.h"
 #include "net/base/features.h"
+#include "net/http/http_response_headers.h"
+#include "net/http/http_util.h"
+#include "net/ssl/ssl_info.h"
+#include "net/test/cert_test_util.h"
+#include "net/test/test_data_directory.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -38,8 +45,10 @@ namespace storage {
 
 namespace {
 
+using ::testing::Contains;
 using ::testing::ElementsAreArray;
 using ::testing::IsEmpty;
+using ::testing::Not;
 
 using RegistrationData = mojom::ServiceWorkerRegistrationData;
 using RegistrationDataPtr = mojom::ServiceWorkerRegistrationDataPtr;
@@ -4149,6 +4158,184 @@ TEST(ServiceWorkerDatabaseTest, ExtensionStoreRestore) {
   // network::mojom::IPAddressSpace::kUnknown
   histogram_tester.ExpectBucketCount(
       "ServiceWorker.ChromeExtensionUpdateIPAddressSpace", 3, 1);
+}
+
+TEST(ServiceWorkerDatabaseTest, SyntheticResponseEntries) {
+  base::ScopedMockClockOverride clock;
+  base::ScopedTempDir database_dir;
+  ASSERT_TRUE(database_dir.CreateUniqueTempDir());
+
+  const blink::StorageKey key_a =
+      blink::StorageKey::CreateFromStringForTesting("https://a.example");
+  const blink::StorageKey key_b =
+      blink::StorageKey::CreateFromStringForTesting("https://b.example");
+  const blink::StorageKey key_c =
+      blink::StorageKey::CreateFromStringForTesting("https://c.example");
+  const GURL scope_a("https://a.example/app");
+  const GURL scope_b("https://b.example/app");
+  const base::TimeDelta kMaxAge = base::Hours(1);
+
+  auto response_head = network::mojom::URLResponseHead::New();
+  response_head->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+      net::HttpUtil::AssembleRawHeaders(
+          "HTTP/1.1 200 OK\r\n"
+          "Content-Type: text/html\r\n"
+          "Connection: keep-alive\r\n"
+          "Content-Security-Policy: script-src 'self'\r\n"
+          "Set-Cookie: sid=secret1; Secure; HttpOnly\r\n"
+          "Set-Cookie2: sid2=secret2\r\n"
+          "Clear-Site-Data: \"cookies\"\r\n\r\n"));
+  response_head->response_type = network::mojom::FetchResponseType::kBasic;
+  response_head->timing_allow_passed = true;
+  net::SSLInfo ssl_info;
+  ssl_info.cert =
+      net::ImportCertFromFile(net::GetTestCertsDirectory(), "ok_cert.pem");
+  ASSERT_TRUE(ssl_info.is_valid());
+  response_head->ssl_info = ssl_info;
+
+  base::HistogramTester histogram_tester;
+  {
+    std::unique_ptr<ServiceWorkerDatabase> database(
+        CreateDatabase(database_dir.GetPath()));
+    EXPECT_EQ(
+        ServiceWorkerDatabase::Status::kOk,
+        database->WriteSyntheticResponseEntry(key_a, scope_a, *response_head));
+    EXPECT_EQ(
+        ServiceWorkerDatabase::Status::kOk,
+        database->WriteSyntheticResponseEntry(key_b, scope_b, *response_head));
+  }
+
+  // The entries survive reopening the database.
+  std::unique_ptr<ServiceWorkerDatabase> database(
+      CreateDatabase(database_dir.GetPath()));
+  std::vector<blink::StorageKey> keys;
+  EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
+            database->GetSyntheticResponseStorageKeys(&keys));
+  EXPECT_THAT(keys, ElementsAreArray({key_a, key_b}));
+
+  // Cookie headers are dropped. The other headers, including hop-by-hop ones,
+  // and the fields stored outside the headers are restored.
+  network::mojom::URLResponseHeadPtr stored_head;
+  ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
+            database->ReadSyntheticResponseEntry(key_a, scope_a, kMaxAge,
+                                                 &stored_head));
+  EXPECT_FALSE(stored_head->headers->HasHeader("Set-Cookie"));
+  EXPECT_FALSE(stored_head->headers->HasHeader("Set-Cookie2"));
+  EXPECT_FALSE(stored_head->headers->HasHeader("Clear-Site-Data"));
+  EXPECT_TRUE(stored_head->headers->HasHeaderValue("Connection", "keep-alive"));
+  EXPECT_TRUE(stored_head->headers->HasHeaderValue("Content-Security-Policy",
+                                                   "script-src 'self'"));
+  EXPECT_EQ("text/html", stored_head->mime_type);
+  EXPECT_EQ(network::mojom::FetchResponseType::kBasic,
+            stored_head->response_type);
+  EXPECT_TRUE(stored_head->timing_allow_passed);
+  ASSERT_TRUE(stored_head->ssl_info.has_value());
+  EXPECT_TRUE(stored_head->ssl_info->is_valid());
+  histogram_tester.ExpectTotalCount("Net.HttpResponseCode2", 0);
+
+  // An entry captured for another scope, or longer ago than the maximum age,
+  // is deleted instead of returned.
+  EXPECT_EQ(ServiceWorkerDatabase::Status::kErrorNotFound,
+            database->ReadSyntheticResponseEntry(
+                key_a, GURL("https://a.example/other"), kMaxAge, &stored_head));
+  clock.Advance(kMaxAge + base::Seconds(1));
+  EXPECT_EQ(ServiceWorkerDatabase::Status::kErrorNotFound,
+            database->ReadSyntheticResponseEntry(key_b, scope_b, kMaxAge,
+                                                 &stored_head));
+  EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
+            database->GetSyntheticResponseStorageKeys(&keys));
+  EXPECT_THAT(keys, IsEmpty());
+
+  // `DeleteSyntheticResponseEntries()` and `DeleteAllDataForOrigins()` delete
+  // only the entries of the given keys and origins.
+  for (const blink::StorageKey& key : {key_a, key_b, key_c}) {
+    EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
+              database->WriteSyntheticResponseEntry(key, key.origin().GetURL(),
+                                                    *response_head));
+  }
+  EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
+            database->DeleteSyntheticResponseEntries({key_a}));
+  std::vector<int64_t> newly_purgeable_resources;
+  EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
+            database->DeleteAllDataForOrigins({key_b.origin()},
+                                              &newly_purgeable_resources));
+  EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
+            database->GetSyntheticResponseStorageKeys(&keys));
+  EXPECT_THAT(keys, ElementsAreArray({key_c}));
+
+  // Writing more entries than the limit evicts the ones captured the longest
+  // ago, and overwriting an existing entry refreshes its capture time.
+  auto scope_for = [](size_t i) {
+    return GURL("https://s" + base::NumberToString(i) + ".example/app");
+  };
+  auto key_for = [&](size_t i) {
+    return blink::StorageKey::CreateFirstParty(
+        url::Origin::Create(scope_for(i)));
+  };
+  for (size_t i = 0; i < ServiceWorkerDatabase::kMaxSyntheticResponseEntries;
+       ++i) {
+    clock.Advance(base::Seconds(1));
+    EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
+              database->WriteSyntheticResponseEntry(key_for(i), scope_for(i),
+                                                    *response_head));
+  }
+  // Refresh `s0` so `s1` becomes the oldest entry, then write `s32`.
+  clock.Advance(base::Seconds(1));
+  EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
+            database->WriteSyntheticResponseEntry(key_for(0), scope_for(0),
+                                                  *response_head));
+  clock.Advance(base::Seconds(1));
+  EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
+            database->WriteSyntheticResponseEntry(key_for(32), scope_for(32),
+                                                  *response_head));
+  EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
+            database->GetSyntheticResponseStorageKeys(&keys));
+  EXPECT_EQ(ServiceWorkerDatabase::kMaxSyntheticResponseEntries, keys.size());
+  EXPECT_THAT(keys, Not(Contains(key_c)));
+  EXPECT_THAT(keys, Not(Contains(key_for(1))));
+  EXPECT_THAT(keys, Contains(key_for(0)));
+  EXPECT_THAT(keys, Contains(key_for(32)));
+}
+
+// An entry in an unknown format is treated as absent and deleted, both when
+// it is read and when another entry is written.
+TEST(ServiceWorkerDatabaseTest, SyntheticResponseEntries_UnknownFormat) {
+  std::unique_ptr<ServiceWorkerDatabase> database(CreateDatabaseInMemory());
+
+  const blink::StorageKey key_a =
+      blink::StorageKey::CreateFromStringForTesting("https://a.example");
+  const blink::StorageKey key_b =
+      blink::StorageKey::CreateFromStringForTesting("https://b.example");
+  const blink::StorageKey key_c =
+      blink::StorageKey::CreateFromStringForTesting("https://c.example");
+  const GURL scope_b("https://b.example/app");
+  auto response_head = network::mojom::URLResponseHead::New();
+  response_head->headers =
+      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK");
+  ASSERT_EQ(
+      ServiceWorkerDatabase::Status::kOk,
+      database->WriteSyntheticResponseEntry(key_b, scope_b, *response_head));
+
+  leveldb::WriteBatch batch;
+  batch.Put("SYNTHETIC_RESPONSE_HEADER:" + key_a.Serialize(), "unknown");
+  batch.Put("SYNTHETIC_RESPONSE_HEADER:" + key_c.Serialize(), "unknown");
+  ASSERT_EQ(ServiceWorkerDatabase::Status::kOk, database->WriteBatch(&batch));
+
+  network::mojom::URLResponseHeadPtr stored_head;
+  EXPECT_EQ(ServiceWorkerDatabase::Status::kErrorNotFound,
+            database->ReadSyntheticResponseEntry(key_a, key_a.origin().GetURL(),
+                                                 base::Hours(1), &stored_head));
+  std::vector<blink::StorageKey> keys;
+  EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
+            database->GetSyntheticResponseStorageKeys(&keys));
+  EXPECT_THAT(keys, ElementsAreArray({key_b, key_c}));
+
+  EXPECT_EQ(
+      ServiceWorkerDatabase::Status::kOk,
+      database->WriteSyntheticResponseEntry(key_b, scope_b, *response_head));
+  EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
+            database->GetSyntheticResponseStorageKeys(&keys));
+  EXPECT_THAT(keys, ElementsAreArray({key_b}));
 }
 
 }  // namespace storage

@@ -5,7 +5,11 @@
 #ifndef COMPONENTS_SERVICES_STORAGE_SERVICE_WORKER_SERVICE_WORKER_RESOURCE_OPS_H_
 #define COMPONENTS_SERVICES_STORAGE_SERVICE_WORKER_SERVICE_WORKER_RESOURCE_OPS_H_
 
+#include <memory>
+
+#include "base/containers/span.h"
 #include "base/memory/weak_ptr.h"
+#include "base/pickle.h"
 #include "components/services/storage/public/cpp/big_io_buffer.h"
 #include "components/services/storage/public/mojom/service_worker_storage_control.mojom.h"
 #include "components/services/storage/service_worker/service_worker_disk_cache.h"
@@ -14,6 +18,23 @@
 #include "net/base/hash_value.h"
 
 namespace storage {
+
+// Deserializes a `net::HttpResponseInfo` pickle into `URLResponseHead`.
+// Returns null if `data` cannot be parsed, was marked truncated, or has no
+// HTTP headers.
+network::mojom::URLResponseHeadPtr ConvertPickleToURLResponseHead(
+    base::span<const uint8_t> data);
+
+// Serializes `response_head` to a `net::HttpResponseInfo` pickle. When
+// `skip_transient_headers` is true, drops cookie, challenge, hop-by-hop,
+// non-cacheable, range, and security-state headers (used for cached script
+// resources). When false, strips only cookie headers (`Set-Cookie`,
+// `Set-Cookie2`, `Clear-Site-Data`) via
+// `net::HttpResponseHeaders::PERSIST_SANS_COOKIES` while preserving all other
+// headers.
+std::unique_ptr<base::Pickle> ConvertURLResponseHeadToPickle(
+    const network::mojom::URLResponseHead& response_head,
+    bool skip_transient_headers);
 
 // Creates and owns a service worker disk cacke entry.
 class DiskEntryCreator {

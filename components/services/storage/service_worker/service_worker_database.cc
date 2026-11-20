@@ -4,11 +4,13 @@
 
 #include "components/services/storage/service_worker/service_worker_database.h"
 
+#include <algorithm>
 #include <optional>
 #include <string_view>
 
 #include "base/byte_size.h"
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/debug/crash_logging.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -16,7 +18,9 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/pickle.h"
 #include "base/stl_util.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -24,10 +28,13 @@
 #include "components/services/storage/filesystem_proxy_factory.h"
 #include "components/services/storage/public/mojom/service_worker_database.mojom-forward.h"
 #include "components/services/storage/service_worker/service_worker_database.pb.h"
+#include "components/services/storage/service_worker/service_worker_resource_ops.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/public/mojom/ip_address_space.mojom-shared.h"
 #include "services/network/public/mojom/referrer_policy.mojom.h"
 #include "services/network/public/mojom/service_worker_router_info.mojom-shared.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/service_worker/service_worker_router_rule.h"
@@ -103,6 +110,10 @@
 //   key: "REGID_TO_ORIGIN:" + <int64_t 'registration_id'>
 //   value: <StorageKey>
 //
+//   key: "SYNTHETIC_RESPONSE_HEADER:" + <StorageKey>
+//   value: <base::Pickle of format version, capture time, GURL 'scope', fetch
+//          response type, timing-allow flag and HttpResponseInfo pickle>
+//
 //   OBSOLETE: https://crbug.com/539713
 //   key: "INITDATA_DISKCACHE_MIGRATION_NOT_NEEDED"
 //   value: <empty>
@@ -138,8 +149,10 @@ const char kKeySeparator = '\x00';
 
 const char kUncommittedResIdKeyPrefix[] = "URES:";
 const char kPurgeableResIdKeyPrefix[] = "PRES:";
+const char kSyntheticResponseHeaderKeyPrefix[] = "SYNTHETIC_RESPONSE_HEADER:";
 
 const int64_t kCurrentSchemaVersion = 2;
+const uint32_t kSyntheticResponsePickleVersion = 1;
 
 const int kRouterRuleVersion = 1;
 
@@ -251,6 +264,23 @@ std::string CreateRegistrationIdToStorageKey(int64_t registration_id) {
                             base::NumberToString(registration_id).c_str());
 }
 
+std::string CreateSyntheticResponseHeaderKey(const blink::StorageKey& key) {
+  return base::StrCat(
+      {service_worker_internals::kSyntheticResponseHeaderKeyPrefix,
+       key.Serialize()});
+}
+
+std::optional<blink::StorageKey> ParseSyntheticResponseHeaderKey(
+    const leveldb::Slice& db_key) {
+  std::optional<std::string_view> serialized_key = base::RemovePrefix(
+      std::string_view(db_key.data(), db_key.size()),
+      service_worker_internals::kSyntheticResponseHeaderKeyPrefix);
+  if (!serialized_key) {
+    return std::nullopt;
+  }
+  return blink::StorageKey::Deserialize(*serialized_key);
+}
+
 void PutUniqueOriginToBatch(const blink::StorageKey& key,
                             leveldb::WriteBatch* batch) {
   // Value should be empty.
@@ -290,6 +320,78 @@ ServiceWorkerDatabase::Status LevelDBStatusToServiceWorkerDBStatus(
     return ServiceWorkerDatabase::Status::kErrorNotSupported;
   else
     return ServiceWorkerDatabase::Status::kErrorFailed;
+}
+
+// Calls `visitor` with the LevelDB key and value of each synthetic response
+// entry.
+template <typename Visitor>
+ServiceWorkerDatabase::Status ForEachSyntheticResponseEntry(leveldb::DB* db,
+                                                            Visitor visitor) {
+  const leveldb::Slice prefix(
+      service_worker_internals::kSyntheticResponseHeaderKeyPrefix);
+  std::unique_ptr<leveldb::Iterator> itr(
+      db->NewIterator(leveldb::ReadOptions()));
+  for (itr->Seek(prefix); itr->Valid() && itr->key().starts_with(prefix);
+       itr->Next()) {
+    visitor(itr->key(), itr->value());
+  }
+  return LevelDBStatusToServiceWorkerDBStatus(itr->status());
+}
+
+// Reads the leading fields of a synthetic response entry value. Returns false
+// if the value is in an unknown format.
+bool ReadSyntheticResponseCapturedTime(base::PickleIterator& iter,
+                                       base::Time* captured_time) {
+  uint32_t version = 0;
+  int64_t captured_time_us = 0;
+  if (!iter.ReadUInt32(&version) ||
+      version != service_worker_internals::kSyntheticResponsePickleVersion ||
+      !iter.ReadInt64(&captured_time_us)) {
+    return false;
+  }
+  *captured_time = base::Time::FromDeltaSinceWindowsEpoch(
+      base::Microseconds(captured_time_us));
+  return true;
+}
+
+// Returns the response head held by the synthetic response entry `value` if it
+// was captured for `scope` no more than `max_age` ago. Returns null otherwise,
+// including when `value` is in an unknown format.
+network::mojom::URLResponseHeadPtr ParseSyntheticResponseEntry(
+    std::string_view value,
+    const GURL& scope,
+    base::TimeDelta max_age) {
+  auto iter = base::PickleIterator::WithData(base::as_byte_span(value));
+  base::Time captured_time;
+  std::string_view stored_scope;
+  int response_type = 0;
+  bool timing_allow_passed = false;
+  // Reject entries in an unknown pickle version, expired entries (`magnitude()`
+  // also expires an entry whose capture time is far in the future, e.g. after
+  // the clock was set back), entries captured for another scope, or entries
+  // with an unknown `FetchResponseType` enum value.
+  if (!ReadSyntheticResponseCapturedTime(iter, &captured_time) ||
+      (base::Time::Now() - captured_time).magnitude() > max_age ||
+      !iter.ReadStringPiece(&stored_scope) || stored_scope != scope.spec() ||
+      !iter.ReadInt(&response_type) ||
+      !network::mojom::IsKnownEnumValue(
+          static_cast<network::mojom::FetchResponseType>(response_type)) ||
+      !iter.ReadBool(&timing_allow_passed)) {
+    return nullptr;
+  }
+  std::optional<base::span<const uint8_t>> http_info_bytes = iter.ReadData();
+  if (!http_info_bytes) {
+    return nullptr;
+  }
+  network::mojom::URLResponseHeadPtr response_head =
+      ConvertPickleToURLResponseHead(*http_info_bytes);
+  if (!response_head) {
+    return nullptr;
+  }
+  response_head->response_type =
+      static_cast<network::mojom::FetchResponseType>(response_type);
+  response_head->timing_allow_passed = timing_allow_passed;
+  return response_head;
 }
 
 base::ByteSize AccumulateResourceSizeInBytes(
@@ -2395,6 +2497,183 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::DeleteAllDataForOrigins(
     }
   }
 
+  // Synthetic response entries are stored for first-party `StorageKey`s only,
+  // so matching the origin is sufficient. An entry whose key cannot be parsed
+  // is deleted because its origin is unknown.
+  status = ForEachSyntheticResponseEntry(
+      db_.get(), [&](leveldb::Slice db_key, leveldb::Slice) {
+        std::optional<blink::StorageKey> key =
+            ParseSyntheticResponseHeaderKey(db_key);
+        if (!key || origins.contains(key->origin())) {
+          batch.Delete(db_key);
+        }
+      });
+  HandleReadResult(FROM_HERE, status);
+  return status == Status::kOk ? WriteBatch(&batch) : status;
+}
+
+ServiceWorkerDatabase::Status
+ServiceWorkerDatabase::WriteSyntheticResponseEntry(
+    const blink::StorageKey& key,
+    const GURL& scope,
+    const network::mojom::URLResponseHead& response_head) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(key.IsFirstPartyContext());
+  DCHECK(key.origin().IsSameOriginWith(scope));
+  DCHECK(response_head.headers);
+
+  Status status = LazyOpen(/*create_if_missing=*/true);
+  if (status != Status::kOk) {
+    return status;
+  }
+
+  const std::string entry_key = CreateSyntheticResponseHeaderKey(key);
+  leveldb::WriteBatch batch;
+  // Do not call `PutUniqueOriginToBatch()`: `kUniqueOriginKey` backs
+  // `GetStorageKeysWithRegistrations()` for keys with stored registrations,
+  // whereas synthetic response entries can exist without a registration and
+  // are enumerated separately via `GetSyntheticResponseStorageKeys()` and
+  // `ForEachSyntheticResponseEntry()`.
+
+  // Collect the capture times of the other entries to keep the total within
+  // `kMaxSyntheticResponseEntries`. Entries in an unknown format are deleted.
+  std::vector<std::pair<base::Time, std::string>> other_entries;
+  other_entries.reserve(kMaxSyntheticResponseEntries);
+  status = ForEachSyntheticResponseEntry(
+      db_.get(), [&](leveldb::Slice db_key, leveldb::Slice value) {
+        if (db_key == entry_key) {
+          return;
+        }
+        auto iter = base::PickleIterator::WithData(base::as_byte_span(value));
+        base::Time captured_time;
+        if (ReadSyntheticResponseCapturedTime(iter, &captured_time)) {
+          other_entries.emplace_back(captured_time, db_key.ToString());
+        } else {
+          batch.Delete(db_key);
+        }
+      });
+  HandleReadResult(FROM_HERE, status);
+  if (status != Status::kOk) {
+    return status;
+  }
+  if (other_entries.size() >= kMaxSyntheticResponseEntries) {
+    // Evict the entries captured the longest ago to make room for this one.
+    std::ranges::sort(other_entries);
+    const size_t evict_count =
+        other_entries.size() - kMaxSyntheticResponseEntries + 1;
+    for (size_t i = 0; i < evict_count; ++i) {
+      batch.Delete(other_entries[i].second);
+    }
+  }
+
+  base::Pickle pickle;
+  pickle.WriteUInt32(service_worker_internals::kSyntheticResponsePickleVersion);
+  pickle.WriteInt64(
+      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+  pickle.WriteString(scope.spec());
+  pickle.WriteInt(static_cast<int>(response_head.response_type));
+  pickle.WriteBool(response_head.timing_allow_passed);
+  // Pass `skip_transient_headers=false` so hop-by-hop and security-state
+  // headers are retained for header-consistency checks against subsequent
+  // network responses.
+  pickle.WriteData(
+      ConvertURLResponseHeadToPickle(response_head,
+                                     /*skip_transient_headers=*/false)
+          ->AsBytes());
+
+  std::string_view bytes = pickle.AsStringView();
+  batch.Put(entry_key, leveldb::Slice(bytes.data(), bytes.size()));
+  return WriteBatch(&batch);
+}
+
+ServiceWorkerDatabase::Status ServiceWorkerDatabase::ReadSyntheticResponseEntry(
+    const blink::StorageKey& key,
+    const GURL& scope,
+    base::TimeDelta max_age,
+    network::mojom::URLResponseHeadPtr* response_head) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(response_head);
+  *response_head = nullptr;
+
+  Status status = LazyOpen(/*create_if_missing=*/false);
+  if (IsNewOrNonexistentDatabase(status)) {
+    return Status::kErrorNotFound;
+  }
+  if (status != Status::kOk) {
+    return status;
+  }
+
+  const std::string entry_key = CreateSyntheticResponseHeaderKey(key);
+  std::string value;
+  status = LevelDBStatusToServiceWorkerDBStatus(
+      db_->Get(leveldb::ReadOptions(), entry_key, &value));
+  HandleReadResult(FROM_HERE,
+                   status == Status::kErrorNotFound ? Status::kOk : status);
+  if (status != Status::kOk) {
+    return status;
+  }
+
+  *response_head = ParseSyntheticResponseEntry(value, scope, max_age);
+  if (*response_head) {
+    return Status::kOk;
+  }
+  // The entry is too old, was captured for another scope or is in an unknown
+  // format, so it can no longer be used.
+  leveldb::WriteBatch batch;
+  batch.Delete(entry_key);
+  status = WriteBatch(&batch);
+  return status == Status::kOk ? Status::kErrorNotFound : status;
+}
+
+ServiceWorkerDatabase::Status
+ServiceWorkerDatabase::GetSyntheticResponseStorageKeys(
+    std::vector<blink::StorageKey>* keys) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(keys);
+  keys->clear();
+
+  Status status = LazyOpen(/*create_if_missing=*/false);
+  if (IsNewOrNonexistentDatabase(status)) {
+    return Status::kOk;
+  }
+  if (status != Status::kOk) {
+    return status;
+  }
+
+  status = ForEachSyntheticResponseEntry(
+      db_.get(), [&](leveldb::Slice db_key, leveldb::Slice) {
+        if (std::optional<blink::StorageKey> key =
+                ParseSyntheticResponseHeaderKey(db_key)) {
+          keys->push_back(std::move(*key));
+        }
+      });
+  HandleReadResult(FROM_HERE, status);
+  if (status != Status::kOk) {
+    keys->clear();
+  }
+  return status;
+}
+
+ServiceWorkerDatabase::Status
+ServiceWorkerDatabase::DeleteSyntheticResponseEntries(
+    const std::vector<blink::StorageKey>& keys) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (keys.empty()) {
+    return Status::kOk;
+  }
+
+  Status status = LazyOpen(/*create_if_missing=*/false);
+  if (IsNewOrNonexistentDatabase(status)) {
+    return Status::kOk;
+  }
+  if (status != Status::kOk) {
+    return status;
+  }
+
+  leveldb::WriteBatch batch;
+  for (const blink::StorageKey& key : keys) {
+    batch.Delete(CreateSyntheticResponseHeaderKey(key));
+  }
   return WriteBatch(&batch);
 }
 

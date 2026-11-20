@@ -35,10 +35,20 @@ enum {
   kResponseMetadataIndex = 2,
 };
 
-// Convert an HttpResponseInfo retrieved from disk_cache to URLResponseHead.
-network::mojom::URLResponseHeadPtr ConvertHttpResponseInfo(
-    const net::HttpResponseInfo& http_info,
-    int64_t response_data_size) {
+}  // namespace
+
+network::mojom::URLResponseHeadPtr ConvertPickleToURLResponseHead(
+    base::span<const uint8_t> data) {
+  net::HttpResponseInfo http_info;
+  bool response_truncated = false;
+  // Reject truncated HTTP metadata or responses without headers, which cannot
+  // form a valid response head.
+  if (!http_info.InitFromPickle(base::PickleIterator::WithData(data),
+                                &response_truncated) ||
+      response_truncated || !http_info.headers) {
+    return nullptr;
+  }
+
   auto response_head = network::mojom::URLResponseHead::New();
 
   response_head->request_time = http_info.request_time;
@@ -46,15 +56,14 @@ network::mojom::URLResponseHeadPtr ConvertHttpResponseInfo(
   response_head->headers = http_info.headers;
   response_head->headers->GetMimeType(&response_head->mime_type);
   response_head->headers->GetCharset(&response_head->charset);
-  response_head->content_length = response_data_size;
   response_head->was_fetched_via_spdy = http_info.was_fetched_via_spdy;
   response_head->was_alpn_negotiated = http_info.was_alpn_negotiated;
   response_head->connection_info = http_info.connection_info;
   response_head->alpn_negotiated_protocol = http_info.alpn_negotiated_protocol;
   response_head->remote_endpoint = http_info.remote_endpoint;
   response_head->cert_status = http_info.ssl_info.cert_status;
-  // See ConvertToPickle(), where an invalid ssl_info is put into storage in
-  // case of |response_head->ssl_info| being nullptr. Here we restore
+  // See ConvertURLResponseHeadToPickle(), where an invalid ssl_info is put into
+  // storage in case of |response_head.ssl_info| being nullptr. Here we restore
   // |response_head->ssl_info| to nullptr if we got the invalid ssl_info from
   // storage.
   if (http_info.ssl_info.is_valid())
@@ -63,30 +72,35 @@ network::mojom::URLResponseHeadPtr ConvertHttpResponseInfo(
   return response_head;
 }
 
-// Convert a URLResponseHead to base::Pickle. Used to persist the response to
-// disk.
-std::unique_ptr<base::Pickle> ConvertToPickle(
-    network::mojom::URLResponseHeadPtr response_head) {
+std::unique_ptr<base::Pickle> ConvertURLResponseHeadToPickle(
+    const network::mojom::URLResponseHead& response_head,
+    bool skip_transient_headers) {
   net::HttpResponseInfo response_info;
-  response_info.headers = response_head->headers;
-  if (response_head->ssl_info.has_value()) {
-    response_info.ssl_info = *response_head->ssl_info;
+  if (skip_transient_headers) {
+    response_info.headers = response_head.headers;
+  } else {
+    base::Pickle headers_pickle;
+    response_head.headers->Persist(
+        &headers_pickle, net::HttpResponseHeaders::PERSIST_SANS_COOKIES);
+    base::PickleIterator iter(headers_pickle);
+    response_info.headers =
+        base::MakeRefCounted<net::HttpResponseHeaders>(&iter);
+  }
+  if (response_head.ssl_info.has_value()) {
+    response_info.ssl_info = *response_head.ssl_info;
     DCHECK(response_info.ssl_info.is_valid());
   }
-  response_info.was_fetched_via_spdy = response_head->was_fetched_via_spdy;
-  response_info.was_alpn_negotiated = response_head->was_alpn_negotiated;
+  response_info.was_fetched_via_spdy = response_head.was_fetched_via_spdy;
+  response_info.was_alpn_negotiated = response_head.was_alpn_negotiated;
   response_info.alpn_negotiated_protocol =
-      response_head->alpn_negotiated_protocol;
-  response_info.connection_info = response_head->connection_info;
-  response_info.remote_endpoint = response_head->remote_endpoint;
-  response_info.response_time = response_head->response_time;
+      response_head.alpn_negotiated_protocol;
+  response_info.connection_info = response_head.connection_info;
+  response_info.remote_endpoint = response_head.remote_endpoint;
+  response_info.response_time = response_head.response_time;
 
-  const bool kSkipTransientHeaders = true;
-  const bool kTruncated = false;
-  return response_info.MakePickle(kSkipTransientHeaders, kTruncated);
+  return response_info.MakePickle(skip_transient_headers,
+                                  /*response_truncated=*/false);
 }
-
-}  // namespace
 
 DiskEntryCreator::DiskEntryCreator(
     int64_t resource_id,
@@ -524,23 +538,17 @@ void ServiceWorkerResourceReaderImpl::DidReadHttpResponseInfo(
     return;
   }
 
-  // Deserialize the http info structure, ensuring we got headers.
-  base::PickleIterator pickle_iter = base::PickleIterator::WithData(
+  response_head_ = ConvertPickleToURLResponseHead(
       buffer->span().first(base::checked_cast<size_t>(status)));
-  auto http_info = std::make_unique<net::HttpResponseInfo>();
-  bool response_truncated = false;
-  if (!http_info->InitFromPickle(pickle_iter, &response_truncated) ||
-      !http_info->headers.get()) {
+  if (!response_head_) {
     FailReadResponseHead(net::ERR_FAILED);
     return;
   }
-  DCHECK(!response_truncated);
 
   int64_t response_data_size =
       entry_opener_.entry()->GetSize(kResponseContentIndex);
+  response_head_->content_length = response_data_size;
   expected_total_size_ = response_data_size;
-
-  response_head_ = ConvertHttpResponseInfo(*http_info, response_data_size);
 
   int64_t metadata_size =
       entry_opener_.entry()->GetSize(kResponseMetadataIndex);
@@ -676,7 +684,8 @@ void ServiceWorkerResourceWriterImpl::WriteResponseHeadToEntry(
   write_callback_ = std::move(callback);
 
   std::unique_ptr<const base::Pickle> pickle =
-      ConvertToPickle(std::move(response_head));
+      ConvertURLResponseHeadToPickle(*response_head,
+                                     /*skip_transient_headers=*/true);
   auto buffer = base::MakeRefCounted<net::PickledIOBuffer>(std::move(pickle));
 
   size_t write_amount = buffer->size();
