@@ -51,10 +51,10 @@ constexpr char kChallengeRedirectedHistogram[] =
 // like a 3DS message.
 std::string CreateFormData(std::string_view key,
                            std::string_view message_json) {
-  std::string encoded_message;
-  base::Base64UrlEncode(message_json, base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &encoded_message);
-  return base::StrCat({key, "=", encoded_message});
+  return base::StrCat(
+      {key, "=",
+       base::Base64UrlEncode(message_json,
+                             base::Base64UrlEncodePolicy::OMIT_PADDING)});
 }
 
 class WebPaymentsMetricsRecorderTest : public PlatformTest {

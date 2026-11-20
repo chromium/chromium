@@ -417,9 +417,8 @@ TEST_F(LensOverlayMediatorTest, SuggestSignals) {
 
   // Expected signals are base64 URL encoded, but otherwise identical to what
   // was passed.
-  std::string expected_signals;
-  Base64UrlEncode("xyz", base::Base64UrlEncodePolicy::INCLUDE_PADDING,
-                  &expected_signals);
+  std::string expected_signals = base::Base64UrlEncode(
+      "xyz", base::Base64UrlEncodePolicy::INCLUDE_PADDING);
 
   EXPECT_TRUE(lens_omnibox_client_->GetLensOverlaySuggestInputs()
                   ->has_encoded_image_signals());

@@ -76,13 +76,10 @@ TEST_F(RemoteActorPayloadParserTest, UrlSafeBase64Decoding) {
   std::vector<uint8_t> ciphertext =
       aead.Seal(base::as_byte_span(proto_bytes), nonce, /*additional_data=*/{});
 
-  std::string url_payload;
-  base::Base64UrlEncode(ciphertext, base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &url_payload);
-
-  std::string url_nonce;
-  base::Base64UrlEncode(nonce, base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &url_nonce);
+  std::string url_payload = base::Base64UrlEncode(
+      ciphertext, base::Base64UrlEncodePolicy::OMIT_PADDING);
+  std::string url_nonce =
+      base::Base64UrlEncode(nonce, base::Base64UrlEncodePolicy::OMIT_PADDING);
 
   base::expected<RemoteActorPasswordUploadRequest, RemoteActorParsingError>
       result = ParseRemoteActorPayload(url_payload, url_nonce, key);

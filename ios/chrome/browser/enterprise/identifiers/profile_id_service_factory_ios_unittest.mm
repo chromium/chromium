@@ -42,13 +42,11 @@ class ProfileIdServiceFactoryIOSTest : public PlatformTest {
 
  protected:
   std::string GetTestProfileId(const ProfileIOS* profile) {
-    std::string encoded_string;
     std::string device_id = kFakeDeviceID;
-    base::Base64UrlEncode(
+    return base::Base64UrlEncode(
         base::SHA1HashString(profile->GetPrefs()->GetString(kProfileGUIDPref) +
                              device_id),
-        base::Base64UrlEncodePolicy::OMIT_PADDING, &encoded_string);
-    return encoded_string;
+        base::Base64UrlEncodePolicy::OMIT_PADDING);
   }
 
   void SetProfileIdService(ProfileIOS* profile) {

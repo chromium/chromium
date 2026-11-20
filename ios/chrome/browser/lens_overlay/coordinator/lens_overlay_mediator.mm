@@ -512,9 +512,9 @@ typedef NS_ENUM(NSUInteger, LensOverlayFilterState) {
     return;
   }
 
-  std::string encodedString;
-  Base64UrlEncode(base::apple::NSDataToSpan(result.suggestSignals),
-                  base::Base64UrlEncodePolicy::INCLUDE_PADDING, &encodedString);
+  std::string encodedString =
+      base::Base64UrlEncode(base::apple::NSDataToSpan(result.suggestSignals),
+                            base::Base64UrlEncodePolicy::INCLUDE_PADDING);
 
   if (!encodedString.empty()) {
     lens::proto::LensOverlaySuggestInputs response;
