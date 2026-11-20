@@ -1518,6 +1518,9 @@ public class AwContents implements SmartClipProvider {
         // TODO(crbug.com/567873021): Move OnscreenContentProvider over to the ViewHost abstraction
         // once it lands so it stays tied to the View lifecycle instead of AwContents.
         setOnscreenContentProvider(null);
+        // Cancel any open JS dialogs so that dialogs shown in the previous Activity don't leave the
+        // page blocked if that Activity is destroyed.
+        mContentsClientBridge.cancelPendingJsDialogs();
         updateContext(newContainerView.getContext());
         mPrimaryInternalAccessAdapter = internalAccessAdapter;
         setInternalAccessAdapter(internalAccessAdapter);

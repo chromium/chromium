@@ -14,8 +14,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "content/public/browser/client_certificate_delegate.h"
-#include "content/public/test/browser_task_environment.h"
 #include "content/public/browser/javascript_dialog_manager.h"
+#include "content/public/test/browser_task_environment.h"
 #include "net/cert/x509_certificate.h"
 #include "net/ssl/ssl_cert_request_info.h"
 #include "net/ssl/ssl_private_key.h"
@@ -193,6 +193,38 @@ TEST_F(AwContentsClientBridgeTest, PendingJsDialogsCanceledOnDestruction) {
   EXPECT_FALSE(success_result)
       << "The dialog callback should return false for success when dropped "
       << "due to bridge destruction.";
+}
+
+TEST_F(AwContentsClientBridgeTest, CancelPendingJsDialogs) {
+  int call_count = 0;
+  bool success_result = true;
+  std::u16string user_input_result = u"non-empty";
+
+  auto callback = base::BindOnce(
+      [](int* call_count, bool* success_result,
+         std::u16string* user_input_result, bool success,
+         const std::u16string& user_input) {
+        (*call_count)++;
+        *success_result = success;
+        *user_input_result = user_input;
+      },
+      &call_count, &success_result, &user_input_result);
+
+  bridge_->RunJavaScriptDialog(content::JAVASCRIPT_DIALOG_TYPE_CONFIRM,
+                               GURL("https://example.com"), std::u16string(),
+                               std::u16string(), std::move(callback));
+
+  bridge_->CancelPendingJsDialogs();
+
+  EXPECT_EQ(1, call_count);
+  EXPECT_FALSE(success_result);
+  EXPECT_TRUE(user_input_result.empty());
+
+  // Canceling again or destroying the bridge must not invoke the callback
+  // twice.
+  bridge_->CancelPendingJsDialogs();
+  bridge_.reset();
+  EXPECT_EQ(1, call_count);
 }
 
 }  // namespace android_webview

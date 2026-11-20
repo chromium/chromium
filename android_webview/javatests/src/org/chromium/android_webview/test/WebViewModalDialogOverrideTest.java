@@ -27,6 +27,7 @@ import org.chromium.content_public.browser.GestureStateListener;
 import org.chromium.content_public.browser.test.util.WebContentsUtils;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 /** Tests for callbacks implementing JS alerts and prompts. */
 @RunWith(Parameterized.class)
@@ -184,6 +185,50 @@ public class WebViewModalDialogOverrideTest extends AwParameterizedTest {
     @Feature({"AndroidWebView"})
     public void testOverrideConfirmHandlingConfirmed_WithReparenting() throws Throwable {
         runConfirmHandlingConfirmed(true);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testReparentingCancelsPendingJsDialog() throws Throwable {
+        final CallbackHelper dialogShownHelper = new CallbackHelper();
+        final AtomicReference<JsResultReceiver> pendingResult = new AtomicReference<>();
+        TestAwContentsClient client =
+                new TestAwContentsClient() {
+                    @Override
+                    public void handleJsConfirm(String url, String message, JsResultReceiver res) {
+                        pendingResult.set(res);
+                        dialogShownHelper.notifyCalled();
+                    }
+                };
+        AwTestContainerView view = mActivityTestRule.createAwTestContainerViewOnMainSync(client);
+        final AwContents awContents = view.getAwContents();
+        AwActivityTestRule.enableJavaScriptOnUiThread(awContents);
+
+        mActivityTestRule.loadDataSync(
+                awContents, client.getOnPageFinishedHelper(), EMPTY_PAGE, "text/html", false);
+
+        int callCount = dialogShownHelper.getCallCount();
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        awContents.evaluateJavaScriptForTests(
+                                "setTimeout(() => { window.confirmResult = confirm('open'); }, 0)",
+                                null));
+        dialogShownHelper.waitForCallback(callCount);
+
+        AwTestContainerView newView = mActivityTestRule.reparentAwContents(view);
+
+        String result =
+                mActivityTestRule.executeJavaScriptAndWaitForResult(
+                        newView.getAwContents(), client, "window.confirmResult");
+        Assert.assertEquals("false", result);
+
+        // Completing the stale dialog result after reparenting should be a harmless no-op.
+        pendingResult.get().confirm();
+        Assert.assertEquals(
+                "2",
+                mActivityTestRule.executeJavaScriptAndWaitForResult(
+                        newView.getAwContents(), client, "1 + 1"));
     }
 
     /*

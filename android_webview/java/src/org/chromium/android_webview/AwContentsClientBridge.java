@@ -561,6 +561,11 @@ public class AwContentsClientBridge {
         AwContentsClientBridgeJni.get().cancelJsResult(mNativeContentsClientBridge, id);
     }
 
+    void cancelPendingJsDialogs() {
+        if (mNativeContentsClientBridge == null) return;
+        AwContentsClientBridgeJni.get().cancelPendingJsDialogs(mNativeContentsClientBridge);
+    }
+
     @NativeMethods
     interface Natives {
         void takeSafeBrowsingAction(
@@ -583,5 +588,7 @@ public class AwContentsClientBridge {
                 @JniType("std::optional<std::u16string>") @Nullable String prompt);
 
         void cancelJsResult(JniPtr<NativeAwContentsClientBridge> self, int id);
+
+        void cancelPendingJsDialogs(JniPtr<NativeAwContentsClientBridge> self);
     }
 }

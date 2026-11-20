@@ -144,6 +144,7 @@ class AwContentsClientBridge {
       const base::android::JavaRef<jobject>& private_key_ref);
   void ConfirmJsResult(int id, std::optional<std::u16string> prompt);
   void CancelJsResult(int id);
+  void CancelPendingJsDialogs();
 
   void TakeSafeBrowsingAction(int action, bool reporting, int request_id);
 
