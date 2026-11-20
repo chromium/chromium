@@ -140,7 +140,8 @@ struct LogicalLineItem {
       WritingDirectionMode container_writing_direction);
   static LogicalLineItem PositionedFloat(
       const InlineItem& inline_item,
-      const InlineItemResult::OptionalPositionedFloat& positioned_float);
+      const InlineItemResult::OptionalPositionedFloat& positioned_float,
+      WritingDirectionMode container_writing_direction);
   static LogicalLineItem UnpositionedFloat(const InlineItem& inline_item,
                                            InlineItemTextIndex item_index);
 
@@ -390,10 +391,13 @@ inline LogicalLineItem LogicalLineItem::OutOfFlowPositioned(
 
 inline LogicalLineItem LogicalLineItem::PositionedFloat(
     const InlineItem& inline_item,
-    const InlineItemResult::OptionalPositionedFloat& positioned_float) {
+    const InlineItemResult::OptionalPositionedFloat& positioned_float,
+    WritingDirectionMode container_writing_direction) {
   DCHECK(positioned_float->layout_result);
   LogicalLineItem line_item;
   line_item.layout_result = positioned_float->layout_result;
+  line_item.margins =
+      positioned_float->margins.ConvertToPhysical(container_writing_direction);
   line_item.bfc_offset = positioned_float->bfc_offset;
   line_item.bidi_level = inline_item.BidiLevel();
   return line_item;

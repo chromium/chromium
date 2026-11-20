@@ -1835,7 +1835,8 @@ void BlockLayoutAlgorithm::HandleFloat(
       positioned_float.bfc_offset, bfc_offset, float_inline_size,
       container_builder_.InlineSize(), constraint_space.Direction());
 
-  container_builder_.AddResult(*positioned_float.layout_result, logical_offset);
+  container_builder_.AddResult(*positioned_float.layout_result, logical_offset,
+                               positioned_float.margins);
 }
 
 LayoutResult::EStatus BlockLayoutAlgorithm::HandleNewFormattingContext(

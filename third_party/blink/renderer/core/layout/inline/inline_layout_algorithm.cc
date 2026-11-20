@@ -912,6 +912,8 @@ void InlineLayoutAlgorithm::PlaceFloatingObjects(
       }
       if (!break_token || !break_token->IsBreakBefore()) {
         child.layout_result = std::move(positioned_float.layout_result);
+        child.margins = positioned_float.margins.ConvertToPhysical(
+            GetConstraintSpace().GetWritingDirection());
         child.bfc_offset = positioned_float.bfc_offset;
         child.unpositioned_float = nullptr;
       }

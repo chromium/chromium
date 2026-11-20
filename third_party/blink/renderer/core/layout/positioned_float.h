@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/bfc_offset.h"
+#include "third_party/blink/renderer/core/layout/geometry/box_strut.h"
 #include "third_party/blink/renderer/core/layout/layout_result.h"
 
 namespace blink {
@@ -22,11 +23,13 @@ struct CORE_EXPORT PositionedFloat {
   PositionedFloat(const LayoutResult* layout_result,
                   const BlockBreakToken* break_before_token,
                   const BfcOffset& bfc_offset,
+                  const BoxStrut& margins,
                   LayoutUnit tallest_unbreakable_block_size,
                   LayoutUnit minimum_space_shortage)
       : layout_result(layout_result),
         break_before_token(break_before_token),
         bfc_offset(bfc_offset),
+        margins(margins),
         tallest_unbreakable_block_size(tallest_unbreakable_block_size),
         minimum_space_shortage(minimum_space_shortage) {}
   PositionedFloat(PositionedFloat&&) noexcept = default;
@@ -41,6 +44,7 @@ struct CORE_EXPORT PositionedFloat {
   Member<const LayoutResult> layout_result;
   Member<const BlockBreakToken> break_before_token;
   BfcOffset bfc_offset;
+  BoxStrut margins;
   LayoutUnit tallest_unbreakable_block_size;
   LayoutUnit minimum_space_shortage;
 };

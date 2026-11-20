@@ -468,17 +468,14 @@ PositionedFloat PositionFloat(UnpositionedFloat* unpositioned_float,
       // so that we don't make room for the the parts that end up before the
       // fragmentainer start.
       DCHECK(parent_space.IsInitialColumnBalancingPass());
-      PhysicalBoxStrut margins = physical_fragment.Margins();
-      BoxStrut logical_margins =
-          margins.ConvertToLogical(parent_space.GetWritingDirection());
       tallest_unbreakable_block_size = CalculateUnbreakableBlockSize(
           parent_space, *layout_result,
-          fragmentainer_block_offset - logical_margins.block_start);
+          fragmentainer_block_offset - fragment_margins.block_start);
     }
   }
 
   return PositionedFloat(layout_result, break_before_token, float_bfc_offset,
-                         tallest_unbreakable_block_size,
+                         fragment_margins, tallest_unbreakable_block_size,
                          minimum_space_shortage);
 }
 

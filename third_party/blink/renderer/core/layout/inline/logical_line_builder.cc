@@ -330,7 +330,8 @@ InlineBoxState* LogicalLineBuilder::HandleItemResults(
       if (item_result.positioned_float) {
         if (!item_result.positioned_float->break_before_token) {
           line_box->AddChild(LogicalLineItem::PositionedFloat(
-              item, item_result.positioned_float));
+              item, item_result.positioned_float,
+              constraint_space_.GetWritingDirection()));
         }
       } else {
         line_box->AddChild(
