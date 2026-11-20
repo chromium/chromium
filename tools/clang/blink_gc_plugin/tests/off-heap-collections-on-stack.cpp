@@ -54,7 +54,7 @@ class WithCollections : public GarbageCollected<WithCollections> {
   std::map<const Mixin, int> map_const_;
   std::vector<std::pair<Base, int>> vector_pair_;
   std::array<Base, 4> array_;
-  std::array<HeapVector<Base>, 4> array_of_vectors_;
+  std::array<HeapVector<Member<Base>>, 4> array_of_vectors_;
 
   std::set<Member<Base>> member_set_;
   std::vector<WeakMember<Base>> member_vector_;
@@ -107,7 +107,7 @@ class StackAllocated {
   // Good collections on stack:
   std::array<Base*, 4> array_ptr_;
   std::array<Member<Base>, 4> member_array_;
-  std::array<HeapVector<Base>, 4> array_of_vectors_;
+  std::array<HeapVector<Member<Base>>, 4> array_of_vectors_;
 };
 
 void DisallowedUseOfCollections() {
@@ -165,7 +165,7 @@ void DisallowedUseOfCollections() {
   HashMap<Member<Base>, bool> wtf_member_hash_map_key;
   HashMap<double, const Member<Base>> wtf_member_hash_map_value;
 
-  // Good collections:
+  // Bad heap collections:
   blink::HeapHashSet<Base> heap_hash_set;
   blink::HeapDeque<Derived> heap_deque;
   blink::HeapVector<Mixin> heap_vector;
@@ -173,7 +173,15 @@ void DisallowedUseOfCollections() {
   blink::HeapHashCountedSet<Derived> heap_hash_counted_set;
   blink::HeapHashMap<Mixin, bool> heap_hash_map_key;
   blink::HeapHashMap<double, Base> heap_hash_map_value;
-  blink::HeapVector<Member<Base>> heap_member_vector;
+
+  // Good collections:
+  blink::HeapHashSet<Member<Base>> good_heap_hash_set;
+  blink::HeapDeque<Member<Derived>> good_heap_deque;
+  blink::HeapVector<Member<Mixin>> good_heap_vector;
+  blink::HeapLinkedHashSet<Member<Base>> good_heap_linked_hash_set;
+  blink::HeapHashCountedSet<Member<Derived>> good_heap_hash_counted_set;
+  blink::HeapHashMap<Member<Mixin>, bool> good_heap_hash_map_key;
+  blink::HeapHashMap<double, Member<Base>> good_heap_hash_map_value;
   std::set<UntracedMember<Base>> set_untraced;
   (void)set_untraced;
 
@@ -183,7 +191,7 @@ void DisallowedUseOfCollections() {
   (void)array_ptr;
   std::array<Member<Base>, 4> member_array;
   (void)member_array;
-  std::array<HeapVector<Base>, 4> array_of_vectors;
+  std::array<HeapVector<Member<Base>>, 4> array_of_vectors;
   (void)array_of_vectors;
 
   GC_PLUGIN_IGNORE("For testing")
@@ -198,5 +206,21 @@ void DisallowedUseOfCollections() {
   (void)new Vector<Base>;
   (void)new Vector<Member<Base>>;
 }
+
+std::vector<Base*> ReturnStdVectorOfPtrs();
+Vector<Base*> ReturnWtfVectorOfPtrs();
+std::array<Base, 4> ReturnStdArrayOfObjects();
+std::array<Base*, 4> ReturnStdArrayOfPtrs();  // Good (on stack)
+blink::HeapVector<Base> ReturnHeapVector();
+blink::HeapVector<Member<Base>> ReturnGoodHeapVector();      // Good
+std::vector<Base*> ReturnDeletedStdVectorOfPtrs() = delete;  // Good
+GC_PLUGIN_IGNORE("For testing")
+std::set<Base> ReturnIgnoredSet();  // Good
+std::vector<Member<Base>> ReturnStdVectorOfMembers();
+Vector<WeakMember<Base>> ReturnWtfVectorOfWeakMembers();
+std::array<Member<Base>, 4> ReturnStdArrayOfMembers();              // Good
+std::vector<Member<Base>> ReturnDeletedVectorOfMembers() = delete;  // Good
+GC_PLUGIN_IGNORE("For testing")
+std::set<Member<Base>> ReturnIgnoredSetOfMembers();  // Good
 
 }  // namespace blink

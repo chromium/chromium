@@ -104,4 +104,15 @@ void CollectionsOfStackAllocated() {
   std::vector<StackObject*> vector_ptr;
   (void)vector_ptr;
 }
+
+std::vector<StackObject> ReturnStdVectorOfStackObjects();
+std::array<StackObject, 4> ReturnStdArrayOfStackObjects();     // Good
+std::vector<StackObject*> ReturnStdVectorOfStackObjectPtrs();  // Good
+GC_PLUGIN_IGNORE("For testing")
+std::set<StackObject> ReturnIgnoredSetOfStackObjects();  // Good
+STACK_ALLOCATED_IGNORE("For testing")
+std::set<StackObject> ReturnStackAllocatedIgnoredSet();  // Good
+void TakeVectorOfStackObjectsByRef(const std::vector<StackObject>&) {
+  TakeVectorOfStackObjectsByRef(ReturnStdVectorOfStackObjects());
+}
 }

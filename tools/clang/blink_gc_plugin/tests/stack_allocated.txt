@@ -90,4 +90,7 @@ stack_allocated.cpp:90:3: warning: [blink-gc] Disallowed collection 'map<blink::
 ./heap/stubs.h:32:3: note: expanded from macro 'STACK_ALLOCATED_IGNORE'
   __attribute__((annotate("stack_allocated_ignore")))
   ^
-24 warnings generated.
+stack_allocated.cpp:108:1: warning: [blink-gc] Disallowed collection 'vector<blink::StackObject>' found; 'StackObject' is a stack-allocated type. STL collections cannot hold stack-allocated objects.
+std::vector<StackObject> ReturnStdVectorOfStackObjects();
+^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+25 warnings generated.

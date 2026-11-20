@@ -23,4 +23,13 @@ class OnGCedHeap : public GarbageCollected<OnGCedHeap> {
 ./ptrs_to_traceable_class.h:52:3: note: [blink-gc] std::unique_ptr field 'unique' to a traceable class declared here:
   std::unique_ptr<Traceable> unique;
   ^
-2 warnings generated.
+./ptrs_to_traceable_class.h:38:3: warning: [blink-gc] Disallowed use of 'unique_ptr<blink::Traceable>' found; 'Traceable' is a garbage-collected type. std::unique_ptr cannot hold garbage-collected objects.
+  std::unique_ptr<Traceable> unique;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+./ptrs_to_traceable_class.h:52:3: warning: [blink-gc] Disallowed use of 'unique_ptr<blink::Traceable>' found; 'Traceable' is a garbage-collected type. std::unique_ptr cannot hold garbage-collected objects.
+  std::unique_ptr<Traceable> unique;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ptrs_to_traceable_class.cpp:16:3: warning: [blink-gc] Disallowed use of 'unique_ptr<blink::Traceable>' found; 'Traceable' is a garbage-collected type. std::unique_ptr cannot hold garbage-collected objects.
+  std::unique_ptr<Traceable> unique;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+5 warnings generated.

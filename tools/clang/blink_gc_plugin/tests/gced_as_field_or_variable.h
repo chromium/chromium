@@ -21,6 +21,8 @@ class Mixin : public GarbageCollectedMixin {
 
 class OtherGCed : public GarbageCollected<OtherGCed> {
  public:
+  OtherGCed operator=(const OtherGCed&) = delete;  // OK (deleted)
+
   void Trace(Visitor* v) const {
     v->Trace(gced_);
     v->Trace(mixin_);
@@ -28,15 +30,23 @@ class OtherGCed : public GarbageCollected<OtherGCed> {
     v->Trace(map_);
     v->Trace(gced_vector_);
     v->Trace(gced_map_);
+    v->Trace(member_vector_);
+    v->Trace(member_map_);
+    v->Trace(member_gced_vector_);
+    v->Trace(member_gced_map_);
   }
 
  private:
   GCed gced_;
   Mixin mixin_;
-  HeapVector<GCed> vector_;     // OK
-  HeapHashMap<GCed, int> map_;  // OK
+  HeapVector<GCed> vector_;              // Not OK
+  HeapHashMap<GCed, int> map_;           // Not OK
   GCedHeapVector<GCed> gced_vector_;     // Not OK
   GCedHeapHashMap<GCed, int> gced_map_;  // Not OK
+  HeapVector<Member<GCed>> member_vector_;                      // OK
+  HeapHashMap<Member<GCed>, int> member_map_;                   // OK
+  Member<GCedHeapVector<Member<GCed>>> member_gced_vector_;     // OK
+  Member<GCedHeapHashMap<Member<GCed>, int>> member_gced_map_;  // OK
 };
 
 }  // namespace blink

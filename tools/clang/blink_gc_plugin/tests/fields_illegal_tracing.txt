@@ -59,4 +59,13 @@ void HeapObject::Trace(Visitor* visitor) const {
 ./fields_illegal_tracing.h:57:3: note: [blink-gc] Untraceable field 'm_obj4' declared here:
   std::unique_ptr<HeapObject> m_obj4;
   ^
-10 warnings generated.
+./fields_illegal_tracing.h:39:3: warning: [blink-gc] Disallowed use of 'unique_ptr<blink::HeapObject>' found; 'HeapObject' is a garbage-collected type. std::unique_ptr cannot hold garbage-collected objects.
+  std::unique_ptr<HeapObject> m_obj4;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+./fields_illegal_tracing.h:57:3: warning: [blink-gc] Disallowed use of 'unique_ptr<blink::HeapObject>' found; 'HeapObject' is a garbage-collected type. std::unique_ptr cannot hold garbage-collected objects.
+  std::unique_ptr<HeapObject> m_obj4;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+./fields_illegal_tracing.h:69:3: warning: [blink-gc] Disallowed use of 'unique_ptr<blink::HeapObject>' found; 'HeapObject' is a garbage-collected type. std::unique_ptr cannot hold garbage-collected objects.
+  std::unique_ptr<HeapObject> m_obj4;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+13 warnings generated.

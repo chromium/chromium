@@ -17,4 +17,10 @@ class TemplatedObject final : public GarbageCollected<TemplatedObject<T>> {
 ./templated_class_with_local_class_requires_trace.h:38:5: note: [blink-gc] Untraceable field 'm_object' declared here:
     std::unique_ptr<HeapObject> m_object;
     ^
-3 warnings generated.
+./templated_class_with_local_class_requires_trace.h:38:5: warning: [blink-gc] Disallowed use of 'unique_ptr<blink::HeapObject>' found; 'HeapObject' is a garbage-collected type. std::unique_ptr cannot hold garbage-collected objects.
+    std::unique_ptr<HeapObject> m_object;
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+./templated_class_with_local_class_requires_trace.h:43:3: warning: [blink-gc] Disallowed use of 'unique_ptr<blink::HeapObject>' found; 'HeapObject' is a garbage-collected type. std::unique_ptr cannot hold garbage-collected objects.
+  std::unique_ptr<T> m_uniqueRef;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+5 warnings generated.

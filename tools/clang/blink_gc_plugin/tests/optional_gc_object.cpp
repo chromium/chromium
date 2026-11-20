@@ -344,4 +344,28 @@ class OnStack {
   base::raw_ref<Member<Base>&> raw_ref_field9_;
 };
 
+absl::optional<Base> ReturnAbslOptionalBase();
+std::optional<Base> ReturnStdOptionalBase();
+absl::optional<Traceable> ReturnAbslOptionalTraceable();  // OK on stack
+std::optional<Member<Base>> ReturnStdOptionalMember();    // OK on stack
+std::optional<Base*> ReturnStdOptionalBasePtr();          // OK on stack
+base::raw_ptr<Base> ReturnRawPtrBase();
+base::raw_ptr<Traceable> ReturnRawPtrTraceable();
+base::raw_ptr<Member<Base>> ReturnRawPtrMember();
+base::raw_ref<Base> ReturnRawRefBase();
+std::unique_ptr<Base> ReturnUniquePtrBase();
+std::unique_ptr<Traceable> ReturnUniquePtrTraceable();
+std::unique_ptr<Member<Base>> ReturnUniquePtrMember();
+GC_PLUGIN_IGNORE("For testing")
+std::optional<Base> ReturnIgnoredStdOptionalBase();  // OK
+void TakeOptionalByRef(const std::optional<Base>&) {
+  TakeOptionalByRef(ReturnStdOptionalBase());
+}
+void TakeRawPtrByRef(const base::raw_ptr<Base>&) {
+  TakeRawPtrByRef(ReturnRawPtrBase());
+}
+void TakeUniquePtrByRef(const std::unique_ptr<Base>&) {
+  TakeUniquePtrByRef(ReturnUniquePtrBase());
+}
+
 }  // namespace blink

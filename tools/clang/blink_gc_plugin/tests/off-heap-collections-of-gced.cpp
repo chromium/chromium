@@ -29,6 +29,14 @@ class WithCollections : public GarbageCollected<WithCollections> {
     v->Trace(heap_hash_map_key_);
     v->Trace(heap_hash_map_value_);
 
+    v->Trace(good_heap_hash_set_);
+    v->Trace(good_heap_deque_);
+    v->Trace(good_heap_vector_);
+    v->Trace(good_heap_linked_hash_set_);
+    v->Trace(good_heap_hash_counted_set_);
+    v->Trace(good_heap_hash_map_key_);
+    v->Trace(good_heap_hash_map_value_);
+
     // The following calls are not needed and are added merely to silence false
     // untraced field errors.
     v->Trace(wtf_hash_set_);
@@ -49,7 +57,7 @@ class WithCollections : public GarbageCollected<WithCollections> {
   std::map<const Mixin, int> map_const_;
   std::vector<std::pair<Base, int>> vector_pair_;
   std::array<Base, 4> array_;
-  std::array<HeapVector<Base>, 4> array_of_vectors_;
+  std::array<HeapVector<Member<Base>>, 4> array_of_vectors_;
 
   // Bad WTF collections:
   HashSet<Base> wtf_hash_set_;
@@ -60,7 +68,7 @@ class WithCollections : public GarbageCollected<WithCollections> {
   HashMap<Mixin, bool> wtf_hash_map_key_;
   HashMap<double, const Base> wtf_hash_map_value_;
 
-  // Good collections:
+  // Bad heap collections:
   blink::HeapHashSet<Base> heap_hash_set_;
   blink::HeapDeque<Derived> heap_deque_;
   blink::HeapVector<Mixin> heap_vector_;
@@ -68,6 +76,15 @@ class WithCollections : public GarbageCollected<WithCollections> {
   blink::HeapHashCountedSet<Derived> heap_hash_counted_set_;
   blink::HeapHashMap<Mixin, bool> heap_hash_map_key_;
   blink::HeapHashMap<double, Base> heap_hash_map_value_;
+
+  // Good heap collections:
+  blink::HeapHashSet<Member<Base>> good_heap_hash_set_;
+  blink::HeapDeque<Member<Derived>> good_heap_deque_;
+  blink::HeapVector<Member<Mixin>> good_heap_vector_;
+  blink::HeapLinkedHashSet<Member<Base>> good_heap_linked_hash_set_;
+  blink::HeapHashCountedSet<Member<Derived>> good_heap_hash_counted_set_;
+  blink::HeapHashMap<Member<Mixin>, bool> good_heap_hash_map_key_;
+  blink::HeapHashMap<double, Member<Base>> good_heap_hash_map_value_;
 
   GC_PLUGIN_IGNORE("For testing")
   std::set<Base> ignored_set_;
@@ -84,7 +101,7 @@ class StackAllocated {
 
  private:
   std::array<Base, 4> array_;
-  std::array<HeapVector<Base>, 4> array_of_vectors_;
+  std::array<HeapVector<Member<Base>>, 4> array_of_vectors_;
 };
 
 void DisallowedUseOfCollections() {
@@ -115,7 +132,7 @@ void DisallowedUseOfCollections() {
   HashMap<Mixin, bool> wtf_hash_map_key;
   HashMap<double, const Base> wtf_hash_map_value;
 
-  // Good collections:
+  // Bad heap collections:
   blink::HeapHashSet<Base> heap_hash_set;
   blink::HeapDeque<Derived> heap_deque;
   blink::HeapVector<Mixin> heap_vector;
@@ -124,14 +141,40 @@ void DisallowedUseOfCollections() {
   blink::HeapHashMap<Mixin, bool> heap_hash_map_key;
   blink::HeapHashMap<double, Base> heap_hash_map_value;
 
+  // Good heap collections:
+  blink::HeapHashSet<Member<Base>> good_heap_hash_set;
+  blink::HeapDeque<Member<Derived>> good_heap_deque;
+  blink::HeapVector<Member<Mixin>> good_heap_vector;
+  blink::HeapLinkedHashSet<Member<Base>> good_heap_linked_hash_set;
+  blink::HeapHashCountedSet<Member<Derived>> good_heap_hash_counted_set;
+  blink::HeapHashMap<Member<Mixin>, bool> good_heap_hash_map_key;
+  blink::HeapHashMap<double, Member<Base>> good_heap_hash_map_value;
+
   std::array<Base, 4> array;
   (void)array;
-  std::array<HeapVector<Base>, 4> array_of_vectors;
+  std::array<HeapVector<Member<Base>>, 4> array_of_vectors;
   (void)array_of_vectors;
 
   GC_PLUGIN_IGNORE("For testing")
   std::set<Base> ignored_set;
   (void)ignored_set;
 }
+
+std::vector<Base*> ReturnStdVectorOfPtrs();
+Vector<Base*> ReturnWtfVectorOfPtrs();
+std::array<Base, 4> ReturnStdArrayOfObjects();
+std::array<Base*, 4> ReturnStdArrayOfPtrs();  // Good (on stack)
+blink::HeapVector<Base> ReturnHeapVector();
+blink::HeapVector<Member<Base>> ReturnGoodHeapVector();      // Good
+std::vector<Base*> ReturnDeletedStdVectorOfPtrs() = delete;  // Good
+GC_PLUGIN_IGNORE("For testing")
+std::set<Base> ReturnIgnoredSet();  // Good
+void TakeVectorByRef(const std::vector<Base*>&) {
+  TakeVectorByRef(ReturnStdVectorOfPtrs());
+}
+std::array<std::pair<Base*, Base>, 4> ReturnStdArrayOfPair();
+std::array<std::pair<Member<Base>*, Base>, 4> ReturnStdArrayOfMemberPtrGCed();
+blink::HeapHashMap<Member<Base>, Base> ReturnHeapHashMapOfMemberAndGCed();
+blink::HeapVector<std::pair<Member<Base>, Base>> ReturnHeapVectorOfPair();
 
 }  // namespace blink

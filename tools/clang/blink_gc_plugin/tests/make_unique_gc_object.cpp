@@ -6,11 +6,15 @@
 
 namespace blink {
 
+void TakeUniquePtrByRef(const std::unique_ptr<Base>&) {}
+
 void DisallowedUseOfUniquePtr() {
   auto owned_base = std::make_unique<Base>();
   auto owned_base_array = std::make_unique<Base[]>(1);
   auto owned_derived = std::make_unique<Derived>();
   auto owned_mixin = base::WrapUnique(static_cast<Mixin*>(nullptr));
+  TakeUniquePtrByRef(std::make_unique<Base>());
+  new std::unique_ptr<Base>;
 }
 
 }  // namespace blink

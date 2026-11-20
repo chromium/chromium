@@ -88,8 +88,11 @@ class DiagnosticsReporter {
   void NoteOverriddenNonVirtualTrace(clang::CXXMethodDecl* overridden);
 
   // Used by FindBadPatterns.
+  void UniquePtrUsedWithGC(const clang::Decl* decl,
+                           const clang::CXXRecordDecl* unique_ptr,
+                           const clang::CXXRecordDecl* gc_type);
   void UniquePtrUsedWithGC(const clang::Expr* expr,
-                           const clang::FunctionDecl* bad_function,
+                           const clang::CXXRecordDecl* unique_ptr,
                            const clang::CXXRecordDecl* gc_type);
   void OptionalDeclUsedWithGC(const clang::Decl* decl,
                               const clang::CXXRecordDecl* optional,
@@ -133,14 +136,19 @@ class DiagnosticsReporter {
   void CollectionOfStackAllocated(const clang::Expr* expr,
                                   const clang::CXXRecordDecl* collection,
                                   const clang::CXXRecordDecl* stack_allocated);
-  void MemberOnStack(const clang::VarDecl* var);
+  void MemberOnStack(const clang::NamedDecl* var);
   void AdditionalPadding(const clang::RecordDecl* var, size_t padding);
   void WeakPtrToGCed(const clang::Decl* decl,
+                     const clang::CXXRecordDecl* weak_ptr,
+                     const clang::CXXRecordDecl* gc_type);
+  void WeakPtrToGCed(const clang::Expr* expr,
                      const clang::CXXRecordDecl* weak_ptr,
                      const clang::CXXRecordDecl* gc_type);
   void GCedField(const clang::FieldDecl* field,
                  const clang::CXXRecordDecl* gctype);
   void GCedVar(const clang::VarDecl* var, const clang::CXXRecordDecl* gctype);
+  void GCedReturn(const clang::FunctionDecl* func,
+                  const clang::CXXRecordDecl* gctype);
 
  private:
   clang::DiagnosticBuilder ReportDiagnostic(
@@ -178,6 +186,7 @@ class DiagnosticsReporter {
   unsigned diag_weak_ptr_to_gc_managed_class_;
   unsigned diag_gced_field_;
   unsigned diag_gced_var_;
+  unsigned diag_gced_return_;
 
   unsigned diag_base_requires_tracing_note_;
   unsigned diag_field_requires_tracing_note_;

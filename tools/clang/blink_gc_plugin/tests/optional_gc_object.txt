@@ -373,4 +373,31 @@ optional_gc_object.cpp:343:3: warning: [blink-gc] Disallowed raw_ptr or raw_ref 
 optional_gc_object.cpp:344:3: warning: [blink-gc] Disallowed raw_ptr or raw_ref field or variable of type 'raw_ref<cppgc::internal::BasicMember<blink::Base, cppgc::internal::StrongMemberTag, cppgc::internal::WriteBarrierPolicyImpl, cppgc::internal::CheckingPolicyImpl, cppgc::internal::StorateTypeImpl> &>' found; 'BasicMember<blink::Base, cppgc::internal::StrongMemberTag, cppgc::internal::WriteBarrierPolicyImpl, cppgc::internal::CheckingPolicyImpl, cppgc::internal::StorateTypeImpl>' is a garbage-collected or traceable type. Raw_ptr and raw_ref field and variable cannot hold garbage-collected or traceable objects.
   base::raw_ref<Member<Base>&> raw_ref_field9_;
   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-117 warnings generated.
+optional_gc_object.cpp:347:1: warning: [blink-gc] Disallowed optional field or variable of type 'optional<blink::Base>' found; 'Base' is a garbage-collected or traceable type. Optional fields and variables cannot hold garbage-collected or traceable objects.
+absl::optional<Base> ReturnAbslOptionalBase();
+^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+optional_gc_object.cpp:348:1: warning: [blink-gc] Disallowed optional field or variable of type 'optional<blink::Base>' found; 'Base' is a garbage-collected or traceable type. Optional fields and variables cannot hold garbage-collected or traceable objects.
+std::optional<Base> ReturnStdOptionalBase();
+^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+optional_gc_object.cpp:352:1: warning: [blink-gc] Disallowed raw_ptr or raw_ref field or variable of type 'raw_ptr<blink::Base>' found; 'Base' is a garbage-collected or traceable type. Raw_ptr and raw_ref field and variable cannot hold garbage-collected or traceable objects.
+base::raw_ptr<Base> ReturnRawPtrBase();
+^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+optional_gc_object.cpp:353:1: warning: [blink-gc] Disallowed raw_ptr or raw_ref field or variable of type 'raw_ptr<blink::Traceable>' found; 'Traceable' is a garbage-collected or traceable type. Raw_ptr and raw_ref field and variable cannot hold garbage-collected or traceable objects.
+base::raw_ptr<Traceable> ReturnRawPtrTraceable();
+^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+optional_gc_object.cpp:354:1: warning: [blink-gc] Disallowed raw_ptr or raw_ref field or variable of type 'raw_ptr<cppgc::internal::BasicMember<blink::Base, cppgc::internal::StrongMemberTag, cppgc::internal::WriteBarrierPolicyImpl, cppgc::internal::CheckingPolicyImpl, cppgc::internal::StorateTypeImpl>>' found; 'BasicMember<blink::Base, cppgc::internal::StrongMemberTag, cppgc::internal::WriteBarrierPolicyImpl, cppgc::internal::CheckingPolicyImpl, cppgc::internal::StorateTypeImpl>' is a garbage-collected or traceable type. Raw_ptr and raw_ref field and variable cannot hold garbage-collected or traceable objects.
+base::raw_ptr<Member<Base>> ReturnRawPtrMember();
+^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+optional_gc_object.cpp:355:1: warning: [blink-gc] Disallowed raw_ptr or raw_ref field or variable of type 'raw_ref<blink::Base>' found; 'Base' is a garbage-collected or traceable type. Raw_ptr and raw_ref field and variable cannot hold garbage-collected or traceable objects.
+base::raw_ref<Base> ReturnRawRefBase();
+^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+optional_gc_object.cpp:356:1: warning: [blink-gc] Disallowed use of 'unique_ptr<blink::Base>' found; 'Base' is a garbage-collected type. std::unique_ptr cannot hold garbage-collected objects.
+std::unique_ptr<Base> ReturnUniquePtrBase();
+^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+optional_gc_object.cpp:357:1: warning: [blink-gc] Disallowed use of 'unique_ptr<blink::Traceable>' found; 'Traceable' is a garbage-collected type. std::unique_ptr cannot hold garbage-collected objects.
+std::unique_ptr<Traceable> ReturnUniquePtrTraceable();
+^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+optional_gc_object.cpp:358:1: warning: [blink-gc] Disallowed use of 'unique_ptr<cppgc::internal::BasicMember<blink::Base, cppgc::internal::StrongMemberTag, cppgc::internal::WriteBarrierPolicyImpl, cppgc::internal::CheckingPolicyImpl, cppgc::internal::StorateTypeImpl>>' found; 'BasicMember<blink::Base, cppgc::internal::StrongMemberTag, cppgc::internal::WriteBarrierPolicyImpl, cppgc::internal::CheckingPolicyImpl, cppgc::internal::StorateTypeImpl>' is a garbage-collected type. std::unique_ptr cannot hold garbage-collected objects.
+std::unique_ptr<Member<Base>> ReturnUniquePtrMember();
+^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+126 warnings generated.

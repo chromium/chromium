@@ -17,4 +17,16 @@ void MethodWithArg(Member<HeapObject>) {}
 member_on_stack.cpp:21:25: warning: [blink-gc] Member variable  declared on stack here (use raw pointer or reference instead):
 void MethodWithConstArg(const Member<HeapObject>) {}
                         ^~~~~~~~~~~~~~~~~~~~~~~~
-6 warnings generated.
+member_on_stack.cpp:25:1: warning: [blink-gc] Member variable ReturnMember declared on stack here (use raw pointer or reference instead):
+Member<HeapObject> ReturnMember();
+^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+member_on_stack.cpp:26:1: warning: [blink-gc] Member variable ReturnWeakMember declared on stack here (use raw pointer or reference instead):
+WeakMember<HeapObject> ReturnWeakMember();
+^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+member_on_stack.cpp:33:42: warning: [blink-gc] Member variable operator() declared on stack here (use raw pointer or reference instead):
+  auto lambda = []() -> Member<HeapObject> { return ReturnMember(); };
+                                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+member_on_stack.cpp:38:3: warning: [blink-gc] Member variable operator() declared on stack here (use raw pointer or reference instead):
+  Member<HeapObject> operator()();
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+10 warnings generated.

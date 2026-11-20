@@ -20,13 +20,16 @@ using namespace clang::ast_matchers;
 
 namespace {
 
+TypeMatcher TypeOrArrayOf(TypeMatcher matcher) {
+  return anyOf(matcher, hasCanonicalType(arrayType(hasElementType(matcher))));
+}
+
 TypeMatcher GarbageCollectedType() {
   auto has_gc_base = hasCanonicalType(hasDeclaration(
       cxxRecordDecl(isDerivedFrom(hasAnyName("::cppgc::GarbageCollected",
                                              "::cppgc::GarbageCollectedMixin")))
           .bind("gctype")));
-  return anyOf(has_gc_base,
-               hasCanonicalType(arrayType(hasElementType(has_gc_base))));
+  return TypeOrArrayOf(has_gc_base);
 }
 
 TypeMatcher MemberType() {
@@ -39,8 +42,7 @@ TypeMatcher MemberType() {
                   cxxRecordDecl(
                       hasName("::cppgc::internal::WeakMemberTag"))))))))
           .bind("member")));
-  return anyOf(has_member_base,
-               hasCanonicalType(arrayType(hasElementType(has_member_base))));
+  return TypeOrArrayOf(has_member_base);
 }
 
 TypeMatcher TraceableType() {
@@ -53,8 +55,7 @@ TypeMatcher TraceableType() {
                          hasDeclaration(cxxRecordDecl(isSameOrDerivedFrom(
                              hasName("cppgc::Visitor")))))))))))))
           .bind("traceable")));
-  return anyOf(has_gc_base,
-               hasCanonicalType(arrayType(hasElementType(has_gc_base))));
+  return TypeOrArrayOf(has_gc_base);
 }
 
 TypeMatcher StackAllocatedType() {
@@ -62,9 +63,7 @@ TypeMatcher StackAllocatedType() {
       hasDeclaration(cxxRecordDecl(isSameOrDerivedFrom(has(typeAliasDecl(
                                        hasName("IsStackAllocatedTypeMarker")))))
                          .bind("stack_allocated")));
-  return anyOf(
-      has_stack_allocated_marker,
-      hasCanonicalType(arrayType(hasElementType(has_stack_allocated_marker))));
+  return TypeOrArrayOf(has_stack_allocated_marker);
 }
 
 TypeMatcher StdPairContaining(TypeMatcher matcher) {
@@ -72,46 +71,67 @@ TypeMatcher StdPairContaining(TypeMatcher matcher) {
       hasName("::std::pair"), hasAnyTemplateArgument(refersToType(matcher)))));
 }
 
-class UniquePtrGarbageCollectedMatcher : public MatchFinder::MatchCallback {
- public:
-  explicit UniquePtrGarbageCollectedMatcher(DiagnosticsReporter& diagnostics)
-      : diagnostics_(diagnostics) {}
+TypeMatcher TypeOrStdPairContaining(TypeMatcher matcher) {
+  return anyOf(matcher, StdPairContaining(matcher));
+}
 
-  void Register(MatchFinder& match_finder) {
-    // Matches any application of make_unique where the template argument is
-    // known to refer to a garbage-collected type.
-    auto make_unique_matcher =
-        callExpr(
-            callee(functionDecl(
-                       hasAnyName("::std::make_unique", "::base::WrapUnique"),
-                       hasTemplateArgument(
-                           0, refersToType(GarbageCollectedType())))
-                       .bind("badfunc")))
-            .bind("bad");
-    match_finder.addDynamicMatcher(make_unique_matcher, this);
-  }
+TypeMatcher RawPtrOrRef(TypeMatcher matcher) {
+  return anyOf(pointerType(pointee(matcher)).bind("ptr"),
+               referenceType(pointee(matcher)).bind("ptr"));
+}
 
-  void run(const MatchFinder::MatchResult& result) override {
-    auto* bad_use = result.Nodes.getNodeAs<clang::Expr>("bad");
-    auto* bad_function = result.Nodes.getNodeAs<clang::FunctionDecl>("badfunc");
-    auto* gc_type = result.Nodes.getNodeAs<clang::CXXRecordDecl>("gctype");
-    diagnostics_.UniquePtrUsedWithGC(bad_use, bad_function, gc_type);
-  }
+TypeMatcher TypeOrRawPtrOrRef(TypeMatcher matcher) {
+  return anyOf(matcher, RawPtrOrRef(matcher));
+}
 
- private:
-  DiagnosticsReporter& diagnostics_;
-};
+// As opposed to definitions, declarations of function templates (e.g. with
+// unfulfilled requires-clauses or in unevaluated contexts like std::declval)
+// and methods of class template specializations get instantiated and as such
+// are observable in the clang AST as functions without a body. If such a
+// function or method takes or returns a disallowed type, we should not alert on
+// it since it is never actually used. Same applies to deleted or implicitly
+// generated functions (e.g. a captureless lambda's static __invoke).
+DeclarationMatcher UninstantiatedOrDeletedFunction() {
+  return functionDecl(
+      anyOf(isDeleted(), isImplicit(),
+            allOf(unless(hasBody(stmt())),
+                  anyOf(hasParent(functionTemplateDecl()),
+                        hasAncestor(classTemplateSpecializationDecl())))));
+}
 
-TypeMatcher GcedOrMemberOrTraceableOrPtrOrRef() {
-  auto gced_or_member_or_traceable =
-      anyOf(GarbageCollectedType(), MemberType(), TraceableType());
-  return anyOf(gced_or_member_or_traceable,
-               pointerType(pointee(gced_or_member_or_traceable)).bind("ptr"),
-               referenceType(pointee(gced_or_member_or_traceable)).bind("ptr"));
+auto FieldWithType(TypeMatcher type) {
+  return fieldDecl(hasType(type));
+}
+
+auto VarWithType(TypeMatcher type) {
+  return varDecl(
+      hasType(type),
+      unless(parmVarDecl(hasAncestor(UninstantiatedOrDeletedFunction()))));
+}
+
+auto FunctionReturningType(TypeMatcher type) {
+  return functionDecl(returns(type), unless(UninstantiatedOrDeletedFunction()));
+}
+
+auto NewExprWithType(TypeMatcher type) {
+  return cxxNewExpr(has(cxxConstructExpr(hasType(type))));
+}
+
+void RegisterBadDeclAndNewMatchers(MatchFinder& match_finder,
+                                   MatchFinder::MatchCallback* callback,
+                                   TypeMatcher type) {
+  match_finder.addDynamicMatcher(FieldWithType(type).bind("bad_decl"),
+                                 callback);
+  match_finder.addDynamicMatcher(VarWithType(type).bind("bad_decl"), callback);
+  match_finder.addDynamicMatcher(FunctionReturningType(type).bind("bad_decl"),
+                                 callback);
+  match_finder.addDynamicMatcher(NewExprWithType(type).bind("bad_new"),
+                                 callback);
 }
 
 bool IsOnStack(const clang::Decl* decl, RecordCache& record_cache) {
-  if (llvm::dyn_cast<const clang::VarDecl>(decl)) {
+  if (llvm::dyn_cast<const clang::VarDecl>(decl) ||
+      llvm::dyn_cast<const clang::FunctionDecl>(decl)) {
     return true;
   }
   const clang::FieldDecl* field_decl =
@@ -149,6 +169,11 @@ AST_MATCHER_P(clang::TemplateArgument,
                       });
 }
 
+auto HasTemplateArgWithType(TypeMatcher type) {
+  auto arg = refersToType(type);
+  return hasAnyTemplateArgument(anyOf(arg, parameterPackHasAnyElement(arg)));
+}
+
 class OptionalOrRawPtrOrVariantToGCedMatcher
     : public MatchFinder::MatchCallback {
  public:
@@ -157,35 +182,39 @@ class OptionalOrRawPtrOrVariantToGCedMatcher
       : diagnostics_(diagnostics), record_cache_(record_cache) {}
 
   void Register(MatchFinder& match_finder) {
-    // Matches fields, variables, and new-expressions of type std::optional,
-    // absl::optional, base::raw_ptr, base::raw_ref, std::variant, or
-    // absl::variant where a template argument is known to refer to a
-    // garbage-collected, traceable, or Member type. Neither optional nor
-    // variant are safe to use with concurrent marking (if the active state or
-    // stored type changes while the object is concurrently being marked, Oilpan
-    // can fail to trace it properly, leading to UAFs and memory corruptions),
-    // and raw_ptr/raw_ref must not be used to reference Oilpan-managed types.
-    auto gced_arg = refersToType(GcedOrMemberOrTraceableOrPtrOrRef());
-    auto gced_type = hasType(
+    // Matches fields, variables, return types, and new-expressions of type
+    // std::optional, absl::optional, base::raw_ptr, base::raw_ref,
+    // std::variant, absl::variant, or std::unique_ptr where a template argument
+    // is known to refer to a garbage-collected, traceable, or Member type.
+    // Neither optional nor variant are safe to use with concurrent marking (if
+    // the active state or stored type changes while the object is concurrently
+    // being marked, Oilpan can fail to trace it properly, leading to UAFs and
+    // memory corruptions), and raw_ptr/raw_ref/unique_ptr must not be used to
+    // reference Oilpan-managed types.
+    // Check GarbageCollectedType() by value before non-GCed or pointer/ref
+    // types so that on-stack variants with multiple GC-related alternatives
+    // (e.g. std::variant<Member<Base>, Base>) match the disallowed by-value
+    // GCed alternative rather than stopping on the allowed one.
+    auto non_gced_or_ptr =
+        anyOf(MemberType(), TraceableType(),
+              RawPtrOrRef(anyOf(GarbageCollectedType(), MemberType(),
+                                TraceableType())));
+    auto gced_type = hasCanonicalType(hasDeclaration(
         classTemplateSpecializationDecl(
             hasAnyName("::absl::optional", "::std::optional", "::base::raw_ptr",
-                       "::base::raw_ref", "::absl::variant", "::std::variant"),
-            hasAnyTemplateArgument(
-                anyOf(gced_arg, parameterPackHasAnyElement(gced_arg))))
-            .bind("type"));
-    auto field = fieldDecl(gced_type).bind("bad_decl");
-    auto var = varDecl(gced_type).bind("bad_decl");
-    auto new_expression =
-        cxxNewExpr(has(cxxConstructExpr(gced_type))).bind("bad_new");
-    match_finder.addDynamicMatcher(field, this);
-    match_finder.addDynamicMatcher(var, this);
-    match_finder.addDynamicMatcher(new_expression, this);
+                       "::base::raw_ref", "::absl::variant", "::std::variant",
+                       "::std::unique_ptr"),
+            anyOf(HasTemplateArgWithType(GarbageCollectedType()),
+                  HasTemplateArgWithType(non_gced_or_ptr)))
+            .bind("type")));
+    RegisterBadDeclAndNewMatchers(match_finder, this, gced_type);
   }
 
   void run(const MatchFinder::MatchResult& result) override {
     auto* type = result.Nodes.getNodeAs<clang::CXXRecordDecl>("type");
     bool is_optional = (type->getName() == "optional");
     bool is_variant = (type->getName() == "variant");
+    bool is_unique_ptr = (type->getName() == "unique_ptr");
     auto* arg_type = result.Nodes.getNodeAs<clang::CXXRecordDecl>("gctype");
     bool is_gced = arg_type;
     if (!arg_type) {
@@ -213,6 +242,9 @@ class OptionalOrRawPtrOrVariantToGCedMatcher
       } else if (is_variant) {
         diagnostics_.VariantUsedWithGC(bad_decl, type,
                                        arg_type ? arg_type : member);
+      } else if (is_unique_ptr) {
+        diagnostics_.UniquePtrUsedWithGC(bad_decl, type,
+                                         arg_type ? arg_type : member);
       } else {
         diagnostics_.RawPtrOrRefDeclUsedWithGC(bad_decl, type,
                                                arg_type ? arg_type : member);
@@ -229,6 +261,9 @@ class OptionalOrRawPtrOrVariantToGCedMatcher
       } else if (is_variant) {
         diagnostics_.VariantUsedWithGC(bad_new, type,
                                        arg_type ? arg_type : member);
+      } else if (is_unique_ptr) {
+        diagnostics_.UniquePtrUsedWithGC(bad_new, type,
+                                         arg_type ? arg_type : member);
       } else {
         diagnostics_.RawPtrOrRefNewExprUsedWithGC(bad_new, type,
                                                   arg_type ? arg_type : member);
@@ -251,27 +286,24 @@ class CollectionOfGarbageCollectedMatcher : public MatchFinder::MatchCallback {
         options_(options) {}
 
   void Register(MatchFinder& match_finder, bool check_stack_allocated) {
-    auto gced_ptr_or_ref =
-        anyOf(GarbageCollectedType(),
-              pointerType(pointee(GarbageCollectedType())).bind("ptr"),
-              referenceType(pointee(GarbageCollectedType())).bind("ptr"));
-    auto gced_ptr_ref_or_pair =
-        anyOf(gced_ptr_or_ref, StdPairContaining(gced_ptr_or_ref));
-    auto member_ptr_or_ref =
-        anyOf(MemberType(), pointerType(pointee(MemberType())),
-              referenceType(pointee(MemberType())));
-    auto member_ptr_ref_or_pair =
-        anyOf(member_ptr_or_ref, StdPairContaining(member_ptr_or_ref));
-    auto gced_or_member = anyOf(gced_ptr_ref_or_pair, member_ptr_ref_or_pair);
+    auto gced_or_member = TypeOrStdPairContaining(
+        TypeOrRawPtrOrRef(anyOf(GarbageCollectedType(), MemberType())));
+    auto gced_or_member_ptr = TypeOrStdPairContaining(anyOf(
+        TypeOrRawPtrOrRef(GarbageCollectedType()), RawPtrOrRef(MemberType())));
     auto stack_allocated_or_pair =
-        anyOf(StackAllocatedType(), StdPairContaining(StackAllocatedType()));
+        TypeOrStdPairContaining(StackAllocatedType());
     auto has_wtf_collection_name =
         hasAnyName("::blink::Vector", "::blink::Deque", "::blink::HashSet",
                    "::blink::LinkedHashSet", "::blink::HashCountedSet",
                    "::blink::HashMap");
     auto has_std_collection_name =
         hasAnyName("::std::vector", "::std::map", "::std::unordered_map",
-                   "::std::set", "::std::unordered_set", "::std::array");
+                   "::std::set", "::std::unordered_set");
+    auto has_gced_collection_name = hasAnyName(
+        "::blink::BasicHeapVector", "::blink::BasicHeapDeque",
+        "::blink::BasicHeapHashSet", "::blink::BasicHeapLinkedHashSet",
+        "::blink::BasicHeapHashCountedSet", "::blink::BasicHeapHashMap",
+        "::blink::GCedHeapLinkedStack");
     auto partition_allocator = hasCanonicalType(
         hasDeclaration(cxxRecordDecl(hasName("::blink::PartitionAllocator"))));
     // WTF collections already static_assert against stack-allocated types.
@@ -293,20 +325,36 @@ class CollectionOfGarbageCollectedMatcher : public MatchFinder::MatchCallback {
                   has_std_collection_name,
                   hasAnyTemplateArgument(refersToType(gced_or_member)))
                   .bind("collection");
-    auto any_collection = hasType(hasCanonicalType(
-        hasDeclaration(anyOf(wtf_collection_decl, std_collection_decl))));
-    auto collection_field = fieldDecl(any_collection).bind("bad_decl");
-    auto collection_var = varDecl(any_collection).bind("bad_decl");
-    auto collection_new_expression =
-        cxxNewExpr(has(cxxConstructExpr(any_collection))).bind("bad_new");
-    match_finder.addDynamicMatcher(collection_field, this);
-    match_finder.addDynamicMatcher(collection_var, this);
-    match_finder.addDynamicMatcher(collection_new_expression, this);
+    // std::array of Members or stack-allocated types is fine as long as
+    // tracing/field rules are satisfied (enforced by another checker). Check
+    // by-value GCed types before raw pointers/references to GCed or Member
+    // types so that on-stack std::array<std::pair<GCed*, GCed>, N> or
+    // std::array<std::pair<Member<GCed>*, GCed>, N> matches the disallowed
+    // by-value GCed element rather than stopping on the allowed pointer/ref.
+    auto std_array_decl =
+        classTemplateSpecializationDecl(
+            hasName("::std::array"),
+            anyOf(hasAnyTemplateArgument(refersToType(
+                      TypeOrStdPairContaining(GarbageCollectedType()))),
+                  hasAnyTemplateArgument(
+                      refersToType(TypeOrStdPairContaining(RawPtrOrRef(
+                          anyOf(GarbageCollectedType(), MemberType())))))))
+            .bind("collection");
+    auto gced_collection_decl =
+        classTemplateSpecializationDecl(
+            has_gced_collection_name,
+            hasAnyTemplateArgument(refersToType(gced_or_member_ptr)))
+            .bind("collection");
+    auto any_collection_type = hasCanonicalType(
+        hasDeclaration(anyOf(wtf_collection_decl, std_collection_decl,
+                             std_array_decl, gced_collection_decl)));
+    RegisterBadDeclAndNewMatchers(match_finder, this, any_collection_type);
   }
 
   void run(const MatchFinder::MatchResult& result) override {
     auto* collection =
         result.Nodes.getNodeAs<clang::CXXRecordDecl>("collection");
+    assert(collection);
     auto* gc_type = result.Nodes.getNodeAs<clang::CXXRecordDecl>("gctype");
     auto* member = result.Nodes.getNodeAs<clang::CXXRecordDecl>("member");
     auto* stack_allocated =
@@ -321,20 +369,12 @@ class CollectionOfGarbageCollectedMatcher : public MatchFinder::MatchCallback {
         assert(options_.enable_off_heap_collections_of_gced_on_stack_check);
         return;
       }
-      if (collection->getNameAsString() == "array") {
-        if (member || stack_allocated) {
-          // std::array of Members or stack-allocated types is fine as long as
-          // tracing/field rules are satisfied (which is enforced by another
-          // checker).
-          return;
-        }
-        if (result.Nodes.getNodeAs<clang::Type>("ptr") &&
-            IsOnStack(bad_decl, record_cache_)) {
-          // On stack std::array of raw pointers to GCed type is allowed.
-          // Note: this may miss cases of std::array<std::pair<GCed, GCed*>>,
-          // but such cases don't currently exist in the codebase.
-          return;
-        }
+      if (collection->getName() == "array" &&
+          result.Nodes.getNodeAs<clang::Type>("ptr") &&
+          IsOnStack(bad_decl, record_cache_)) {
+        // On stack std::array of raw pointers/references to GCed or Member
+        // types is allowed.
+        return;
       }
       if (gc_type) {
         diagnostics_.CollectionOfGCed(bad_decl, collection, gc_type);
@@ -378,13 +418,13 @@ class MemberOnStackMatcher : public MatchFinder::MatchCallback {
       : diagnostics_(diagnostics) {}
 
   void Register(MatchFinder& match_finder) {
-    auto class_member_variable_matcher =
-        varDecl(hasType(MemberType())).bind("var");
-    match_finder.addDynamicMatcher(class_member_variable_matcher, this);
+    match_finder.addDynamicMatcher(VarWithType(MemberType()).bind("var"), this);
+    match_finder.addDynamicMatcher(
+        FunctionReturningType(MemberType()).bind("var"), this);
   }
 
   void run(const MatchFinder::MatchResult& result) override {
-    auto* member = result.Nodes.getNodeAs<clang::VarDecl>("var");
+    auto* member = result.Nodes.getNodeAs<clang::NamedDecl>("var");
     if (Config::IsIgnoreAnnotated(member)) {
       return;
     }
@@ -404,28 +444,27 @@ class WeakPtrToGCedMatcher : public MatchFinder::MatchCallback {
     // Matches declarations of type base::WeakPtr and base::WeakPtrFactory
     // where the template argument is known to refer to a garbage-collected
     // type.
-    auto weak_ptr_type = hasType(
+    auto weak_ptr_decl = hasCanonicalType(hasDeclaration(
         classTemplateSpecializationDecl(
             hasAnyName("::base::WeakPtr", "::base::WeakPtrFactory"),
             hasTemplateArgument(0, refersToType(GarbageCollectedType())))
-            .bind("weak_ptr"));
-    auto weak_ptr_field = fieldDecl(weak_ptr_type).bind("bad_decl");
-    auto weak_ptr_var = varDecl(weak_ptr_type).bind("bad_decl");
-    auto weak_ptr_new_expression =
-        cxxNewExpr(has(cxxConstructExpr(weak_ptr_type))).bind("bad_decl");
-    match_finder.addDynamicMatcher(weak_ptr_field, this);
-    match_finder.addDynamicMatcher(weak_ptr_var, this);
-    match_finder.addDynamicMatcher(weak_ptr_new_expression, this);
+            .bind("weak_ptr")));
+    RegisterBadDeclAndNewMatchers(match_finder, this, weak_ptr_decl);
   }
 
   void run(const MatchFinder::MatchResult& result) override {
-    auto* decl = result.Nodes.getNodeAs<clang::Decl>("bad_decl");
-    if (Config::IsIgnoreAnnotated(decl)) {
-      return;
-    }
     auto* weak_ptr = result.Nodes.getNodeAs<clang::CXXRecordDecl>("weak_ptr");
     auto* gc_type = result.Nodes.getNodeAs<clang::CXXRecordDecl>("gctype");
-    diagnostics_.WeakPtrToGCed(decl, weak_ptr, gc_type);
+    if (auto* decl = result.Nodes.getNodeAs<clang::Decl>("bad_decl")) {
+      if (Config::IsIgnoreAnnotated(decl)) {
+        return;
+      }
+      diagnostics_.WeakPtrToGCed(decl, weak_ptr, gc_type);
+    } else {
+      auto* bad_new = result.Nodes.getNodeAs<clang::Expr>("bad_new");
+      assert(bad_new);
+      diagnostics_.WeakPtrToGCed(bad_new, weak_ptr, gc_type);
+    }
   }
 
  private:
@@ -498,7 +537,7 @@ class PaddingInGCedMatcher : public MatchFinder::MatchCallback {
 
   void Register(MatchFinder& match_finder) {
     auto member_field_matcher =
-        cxxRecordDecl(has(fieldDecl(hasType(MemberType())).bind("field")),
+        cxxRecordDecl(has(FieldWithType(MemberType()).bind("field")),
                       isDisallowedNewClass())
             .bind("record");
     match_finder.addMatcher(member_field_matcher, this);
@@ -575,41 +614,37 @@ class GCedVarOrField : public MatchFinder::MatchCallback {
       : diagnostics_(diagnostics) {}
 
   void Register(MatchFinder& match_finder) {
-    auto gced_field =
-        fieldDecl(hasType(GarbageCollectedType())).bind("bad_field");
-    // As opposed to definitions, declarations of function templates with
-    // unfulfilled requires-clauses get instantiated and as such are
-    // observable in the clang AST (as functions without a body). If such a
-    // method takes a GCed type as a parameter, we should not alert on it
-    // since the method is never actually used. This is common in Blink due to
-    // the implementation of the variant CHECK_* and DCHECK_* macros
-    // (specifically the DEFINE_CHECK_OP_IMPL macro).
-    auto unimplemented_template_instance_parameter =
-        parmVarDecl(hasAncestor(functionDecl(hasParent(functionTemplateDecl()),
-                                             unless(hasBody(stmt())))));
-    auto gced_var = varDecl(hasType(GarbageCollectedType()),
-                            unless(unimplemented_template_instance_parameter))
-                        .bind("bad_var");
-    match_finder.addDynamicMatcher(gced_field, this);
-    match_finder.addDynamicMatcher(gced_var, this);
+    match_finder.addDynamicMatcher(
+        FieldWithType(GarbageCollectedType()).bind("bad_field"), this);
+    match_finder.addDynamicMatcher(
+        VarWithType(GarbageCollectedType()).bind("bad_var"), this);
+    match_finder.addDynamicMatcher(
+        FunctionReturningType(GarbageCollectedType()).bind("bad_return"), this);
   }
 
   void run(const MatchFinder::MatchResult& result) override {
     const auto* gctype = result.Nodes.getNodeAs<clang::CXXRecordDecl>("gctype");
     assert(gctype);
-    const auto* field = result.Nodes.getNodeAs<clang::FieldDecl>("bad_field");
-    if (field) {
+    if (const auto* field =
+            result.Nodes.getNodeAs<clang::FieldDecl>("bad_field")) {
       if (Config::IsIgnoreAnnotated(field)) {
         return;
       }
       diagnostics_.GCedField(field, gctype);
-    } else {
-      const auto* var = result.Nodes.getNodeAs<clang::VarDecl>("bad_var");
-      assert(var);
+    } else if (const auto* var =
+                   result.Nodes.getNodeAs<clang::VarDecl>("bad_var")) {
       if (Config::IsIgnoreAnnotated(var)) {
         return;
       }
       diagnostics_.GCedVar(var, gctype);
+    } else {
+      const auto* func =
+          result.Nodes.getNodeAs<clang::FunctionDecl>("bad_return");
+      assert(func);
+      if (Config::IsIgnoreAnnotated(func)) {
+        return;
+      }
+      diagnostics_.GCedReturn(func, gctype);
     }
   }
 
@@ -624,9 +659,6 @@ void FindBadPatterns(clang::ASTContext& ast_context,
                      RecordCache& record_cache,
                      const BlinkGCPluginOptions& options) {
   MatchFinder match_finder;
-
-  UniquePtrGarbageCollectedMatcher unique_ptr_gc(diagnostics);
-  unique_ptr_gc.Register(match_finder);
 
   OptionalOrRawPtrOrVariantToGCedMatcher optional_or_rawptr_or_variant_gc(
       diagnostics, record_cache);

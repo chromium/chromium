@@ -139,10 +139,27 @@ void DisallowedUseOfCollections() {
 
   std::array<Member<Base>, 4> array;
   (void)array;
+  (void)new std::array<std::pair<int, Member<Base>*>, 4>;
 
   GC_PLUGIN_IGNORE("For testing")
   std::set<Member<Base>> ignored_set;
   (void)ignored_set;
 }
+
+std::vector<Member<Base>> ReturnStdVectorOfMembers();
+Vector<WeakMember<Base>> ReturnWtfVectorOfWeakMembers();
+std::array<Member<Base>, 4> ReturnStdArrayOfMembers();              // Good
+blink::HeapVector<Member<Base>> ReturnHeapVectorOfMembers();        // Good
+std::vector<UntracedMember<Base>> ReturnVectorOfUntracedMembers();  // Good
+GC_PLUGIN_IGNORE("For testing")
+std::set<Member<Base>> ReturnIgnoredSetOfMembers();  // Good
+void TakeVectorOfMembersByRef(const std::vector<Member<Base>>&) {
+  TakeVectorOfMembersByRef(ReturnStdVectorOfMembers());
+}
+blink::HeapHashMap<Member<Base>, Member<Base>*> ReturnHeapHashMapOfMemberPtr();
+std::array<std::pair<Base*, Member<Base>*>, 4>
+ReturnStdArrayOfMemberPtr();  // Good (on stack)
+std::array<std::pair<const Member<Base>&, int>, 4>
+ReturnStdArrayOfMemberRef();  // Good (on stack)
 
 }  // namespace blink

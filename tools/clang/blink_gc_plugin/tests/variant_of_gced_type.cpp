@@ -177,4 +177,17 @@ class OnStack {
   std::variant<Member<Base>&> variant_field18_;
 };
 
+absl::variant<int, Base> ReturnAbslVariantGCed();
+std::variant<int, Derived> ReturnStdVariantGCed();
+absl::variant<int, Traceable> ReturnAbslVariantTraceable();  // OK on stack
+std::variant<int, Member<Base>> ReturnStdVariantMember();    // OK on stack
+std::variant<int, Base*> ReturnStdVariantBasePtr();          // OK on stack
+GC_PLUGIN_IGNORE("For testing")
+std::variant<int, Base> ReturnIgnoredStdVariantGCed();  // OK
+void TakeVariantByRef(const std::variant<int, Derived>&) {
+  TakeVariantByRef(ReturnStdVariantGCed());
+}
+std::variant<Member<Base>, Base> ReturnStdVariantMemberAndGCed();
+std::variant<Base*, Base> ReturnStdVariantPtrAndGCed();
+
 }  // namespace blink
