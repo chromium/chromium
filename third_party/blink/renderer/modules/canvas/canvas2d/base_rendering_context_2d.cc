@@ -397,9 +397,11 @@ bool BaseRenderingContext2D::Is2DCanvasAccelerated() const {
 
 base::ByteSize BaseRenderingContext2D::AllocatedBufferSize() const {
   base::ByteSize result;
+  if (image_pool_) {
+    result += image_pool_->EstimatedSizeInBytes();
+  }
   if (resource_) {
-    result += resource_->GetSharedImage()->EstimatedSizeInBytes() *
-              num_inflight_resources_;
+    result += resource_->GetSharedImage()->EstimatedSizeInBytes();
   }
   if (surface_) {
     result += base::ByteSize(

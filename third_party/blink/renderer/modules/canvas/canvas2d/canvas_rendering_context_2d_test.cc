@@ -3170,7 +3170,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   Context2D()->fillRect(3, 3, 1, 1);
 
   ASSERT_TRUE(Context2D()->HasBacking());
-  EXPECT_EQ(Context2D()->NumInflightResourcesForTesting(), 1);
+  EXPECT_FALSE(Context2D()->HasUnusedResourcesForTesting());
 
   // Invoking PrepareTransferableResource() has a precondition that a CC layer
   // be present.
@@ -3188,7 +3188,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
 
   // Note that the write did not in of itself trigger copy-on-write since
   // rasterization has not occurred yet.
-  EXPECT_EQ(Context2D()->NumInflightResourcesForTesting(), 1);
+  EXPECT_FALSE(Context2D()->HasUnusedResourcesForTesting());
 
   // Emulate sending the canvas' resource to the display compositor, which
   // forces copy-on-write before rasterization as the display compositor has a
@@ -3196,24 +3196,25 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   ASSERT_TRUE(CanvasElement().PrepareTransferableResource(&resources[1],
                                                           &callbacks[1]));
   EXPECT_NE(resources[0].mailbox(), resources[1].mailbox());
-  EXPECT_EQ(Context2D()->NumInflightResourcesForTesting(), 2);
+  EXPECT_FALSE(Context2D()->HasUnusedResourcesForTesting());
 
   // Emulate the display compositor releasing the first resource. The released
   // resource should be saved for recycling (i.e., it should not be dropped).
   std::move(callbacks[0]).Run(gpu::SyncToken(), false);
-  EXPECT_EQ(Context2D()->NumInflightResourcesForTesting(), 2);
+  EXPECT_TRUE(Context2D()->HasUnusedResourcesForTesting());
 
   // Move the page to the background. This should cause resource recycling to be
   // disabled and the previously-released resource to now be dropped.
   SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
-  EXPECT_EQ(Context2D()->NumInflightResourcesForTesting(), 1);
+  EXPECT_FALSE(Context2D()->HasUnusedResourcesForTesting());
 
   // Emulate the display compositor releasing the second resource. The resource
   // should not be dropped because it's the current render target for the canvas
   // and so the canvas itself still has a reference on this resource. This
   // resource should be dropped only if the canvas is hibernated.
   std::move(callbacks[1]).Run(gpu::SyncToken(), false);
-  EXPECT_EQ(Context2D()->NumInflightResourcesForTesting(), 1);
+  EXPECT_TRUE(Context2D()->HasBacking());
+  EXPECT_FALSE(Context2D()->HasUnusedResourcesForTesting());
 }
 
 TEST_P(CanvasRenderingContext2DTestAccelerated,
