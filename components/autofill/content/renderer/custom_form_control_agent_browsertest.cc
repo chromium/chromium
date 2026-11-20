@@ -4,7 +4,6 @@
 
 #include "components/autofill/content/renderer/custom_form_control_agent.h"
 
-#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>
@@ -24,7 +23,6 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/unique_ids.h"
-#include "content/public/common/isolated_world_ids.h"
 #include "content/public/renderer/render_frame.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
@@ -47,9 +45,6 @@ using ::testing::Property;
 // A minimal script that returns an empty manager.
 constexpr char kValidScript[] =
     "function createCustomFormControlManager() { return {}; }";
-
-// Any isolated world id that the test doesn't otherwise use.
-constexpr int32_t kWorldId = content::ISOLATED_WORLD_ID_CONTENT_END + 1;
 
 // A script whose manager detects the elements with the ids `state` and
 // `country` as custom selects. Only `state` is active.
@@ -152,7 +147,7 @@ class CustomFormControlAgentTest : public test::AutofillRendererTest {
  protected:
   void SetUp() override {
     test::AutofillRendererTest::SetUp();
-    autofill_agent().EnableCustomFormControlScripts(kWorldId, registry_);
+    autofill_agent().EnableCustomFormControlScripts(registry_);
   }
 
   // Binds `remote` to the agent through `registry`, as the browser does.
@@ -257,7 +252,7 @@ class CustomFormControlAgentTest : public test::AutofillRendererTest {
     CreateAutofillAgent(child, /*password_autofill_agent=*/nullptr,
                         /*password_generation_agent=*/nullptr, &child_registry)
         .release()
-        ->EnableCustomFormControlScripts(kWorldId, child_registry);
+        ->EnableCustomFormControlScripts(child_registry);
     const blink::DocumentToken document = child_frame->GetDocument().Token();
     if (!Bind(remote, child_registry) ||
         !LoadUnsafeScript(remote, document, script)) {
@@ -384,8 +379,7 @@ TEST_F(CustomFormControlAgentTest, DropsReplyIfScriptDetachesFrame) {
                           /*password_generation_agent=*/nullptr,
                           &child_registry)
           .release();
-  child_autofill_agent->EnableCustomFormControlScripts(kWorldId,
-                                                       child_registry);
+  child_autofill_agent->EnableCustomFormControlScripts(child_registry);
   Remote remote;
   ASSERT_TRUE(Bind(remote, child_registry));
 
@@ -493,8 +487,7 @@ TEST_F(CustomFormControlAgentTest, DropsDetectReplyIfScriptDetachesFrame) {
                           /*password_generation_agent=*/nullptr,
                           &child_registry)
           .release();
-  child_autofill_agent->EnableCustomFormControlScripts(kWorldId,
-                                                       child_registry);
+  child_autofill_agent->EnableCustomFormControlScripts(child_registry);
   Remote remote;
   ASSERT_TRUE(Bind(remote, child_registry));
   static constexpr char kDetachingScript[] = R"(

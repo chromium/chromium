@@ -597,7 +597,6 @@ void AutofillAgent::BindPendingReceiver(
 }
 
 void AutofillAgent::EnableCustomFormControlScripts(
-    int32_t world_id,
     blink::AssociatedInterfaceRegistry& registry) {
   CHECK(base::FeatureList::IsEnabled(
       features::kAutofillCustomFormControlScripts));
@@ -605,7 +604,7 @@ void AutofillAgent::EnableCustomFormControlScripts(
     return;
   }
   custom_form_control_agent_ =
-      std::make_unique<CustomFormControlAgent>(this, world_id, registry);
+      std::make_unique<CustomFormControlAgent>(this, registry);
 }
 
 CustomFormControlScriptExecutor*

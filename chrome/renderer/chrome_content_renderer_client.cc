@@ -793,9 +793,7 @@ void ChromeContentRendererClient::RenderFrameCreated(
         std::move(password_generation_agent), associated_interfaces);
     if (base::FeatureList::IsEnabled(
             autofill::features::kAutofillCustomFormControlScripts)) {
-      autofill_agent->EnableCustomFormControlScripts(
-          ISOLATED_WORLD_ID_AUTOFILL_CUSTOM_FORM_CONTROLS,
-          *associated_interfaces);
+      autofill_agent->EnableCustomFormControlScripts(*associated_interfaces);
     }
   }
 

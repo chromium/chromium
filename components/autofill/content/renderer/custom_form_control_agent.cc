@@ -36,10 +36,9 @@ namespace autofill {
 
 CustomFormControlAgent::CustomFormControlAgent(
     AutofillAgent* autofill_agent,
-    int32_t world_id,
     blink::AssociatedInterfaceRegistry& registry)
     : autofill_agent_(CHECK_DEREF(autofill_agent)),
-      executor_(autofill_agent_->unsafe_render_frame(), world_id) {
+      executor_(autofill_agent_->unsafe_render_frame()) {
   // The registry belongs to the frame. The weak pointer drops requests that
   // arrive after this is destroyed.
   registry.AddInterface<mojom::CustomFormControlAgent>(base::BindRepeating(

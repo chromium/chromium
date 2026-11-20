@@ -27,11 +27,10 @@
 #include "components/autofill/content/renderer/custom_form_control_util.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
-#include "third_party/blink/public/platform/web_isolated_world_info.h"
-#include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_element.h"
@@ -39,7 +38,6 @@
 #include "third_party/blink/public/web/web_form_element.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_script_source.h"
-#include "url/origin.h"
 #include "v8/include/v8-container.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-exception.h"
@@ -66,12 +64,13 @@ namespace {
 //   })())(undefined)
 //
 // - The inner function keeps the script's top-level declarations local, so
-//   that they don't become globals of the isolated world, which would leak
-//   into scripts loaded later for the same document.
+//   that they don't become globals of the main world, where they could clash
+//   with the page's globals and leak into scripts loaded later for the same
+//   document.
 // - The outer function's parameter shadows the entry point's name, so that if
 //   `script` doesn't declare it, the lookup doesn't fall through to the
-//   world's global object, which would find a function that an earlier script
-//   for the same document assigned to `window.createCustomFormControlManager`.
+//   global object, which would find a function that the page or an earlier
+//   script assigned to `window.createCustomFormControlManager`.
 // - The two functions are separate scopes, so that a script that declares the
 //   entry point with `let` or `const` doesn't fail with a SyntaxError for
 //   redeclaring the outer function's parameter.
@@ -139,34 +138,6 @@ v8::Isolate* GetIsolate(content::RenderFrame* render_frame) {
 blink::WebDocument GetDocument(content::RenderFrame* render_frame) {
   return render_frame ? render_frame->GetWebFrame()->GetDocument()
                       : blink::WebDocument();
-}
-
-// Sets the Content Security Policy, origin and name of the isolated world, once
-// per renderer process. These are global to the renderer process, so they also
-// apply to the world's contexts in other frames. Must always be called with the
-// same `world_id`.
-void EnsureIsolatedWorldSetUp(int32_t world_id) {
-  // Only accessed on the renderer main thread.
-  static std::optional<int32_t> last_used_world_id;
-  if (last_used_world_id) {
-    CHECK_EQ(*last_used_world_id, world_id);
-    return;
-  }
-  last_used_world_id = world_id;
-
-  // No eval, no script loading, no network requests.
-  static constexpr char kWorldCsp[] =
-      "default-src 'none'; script-src 'none'; connect-src 'none'";
-  blink::WebIsolatedWorldInfo info;
-  // An isolated world's origin can only add to what its requests may access
-  // (e.g. for extensions); requests are still made with the page's origin. An
-  // opaque origin adds nothing. Blink requires an origin to set a Content
-  // Security Policy.
-  info.security_origin = blink::WebSecurityOrigin(url::Origin());
-  info.content_security_policy = blink::WebString::FromUtf8(kWorldCsp);
-  info.human_readable_name =
-      blink::WebString::FromUtf8("Autofill custom form controls");
-  blink::SetIsolatedWorldInfo(world_id, info);
 }
 
 v8::MaybeLocal<v8::Value> GetProperty(v8::Isolate* isolate,
@@ -371,14 +342,8 @@ struct CustomFormControlScriptExecutor::PendingCall {
 };
 
 CustomFormControlScriptExecutor::CustomFormControlScriptExecutor(
-    content::RenderFrame* render_frame,
-    int32_t world_id)
-    : content::RenderFrameObserver(render_frame), world_id_(world_id) {
-  CHECK_GT(world_id_, blink::kMainDOMWorldId);
-  CHECK(!blink::IsEqualOrExceedEmbedderWorldIdLimit(world_id_));
-  // Before any script runs in the world.
-  EnsureIsolatedWorldSetUp(world_id_);
-}
+    content::RenderFrame* render_frame)
+    : content::RenderFrameObserver(render_frame) {}
 
 CustomFormControlScriptExecutor::~CustomFormControlScriptExecutor() {
   CHECK(!pending_call_);  // OnDestruct() runs the pending call.
@@ -396,22 +361,14 @@ bool CustomFormControlScriptExecutor::LoadScript(std::string_view script) {
   }
 
   blink::WebLocalFrame* frame = render_frame()->GetWebFrame();
-  // All worlds of the frame, including the page's main world, share the
-  // frame's isolate (the renderer main thread's V8 instance); each world has
-  // its own context in it. `world_id_` selects the isolated world's context, so
-  // the script doesn't share globals with the page.
   v8::Isolate* isolate = frame->GetAgentGroupScheduler()->Isolate();
   v8::HandleScope handle_scope(isolate);
   // Running the script may detach the frame, e.g. through event handlers of the
   // page that the script triggers, or by calling `frameElement.remove()` in an
-  // iframe. That releases the world's script context and destroys the
+  // iframe. That releases the main world's script context and destroys the
   // `RenderFrame`.
-  v8::Local<v8::Value> manager =
-      frame->ExecuteScriptInIsolatedWorldAndReturnValue(
-          world_id_,
-          blink::WebScriptSource(
-              blink::WebString::FromUtf8(WrapScript(script))),
-          blink::BackForwardCacheAware::kAllow);
+  v8::Local<v8::Value> manager = frame->ExecuteScriptAndReturnValue(
+      blink::WebScriptSource(blink::WebString::FromUtf8(WrapScript(script))));
   // Don't keep a manager of a released context: if the script detached the
   // frame, `WillReleaseScriptContext()` has already run and wouldn't drop it.
   // (Navigations that the script starts commit asynchronously, after this
@@ -519,8 +476,7 @@ void CustomFormControlScriptExecutor::CallFunction(
     return;
   }
   v8::HandleScope handle_scope(isolate);
-  v8::Local<v8::Context> context =
-      frame->GetScriptContextFromWorldId(isolate, world_id_);
+  v8::Local<v8::Context> context = frame->MainWorldScriptContext();
   if (context.IsEmpty()) {
     std::move(callback).Run(isolate, {}, {});
     return;
@@ -633,7 +589,7 @@ void CustomFormControlScriptExecutor::SetCallbackForPromise(
 void CustomFormControlScriptExecutor::OnPromiseFulfilled(
     const v8::FunctionCallbackInfo<v8::Value>& info) {
   if (CustomFormControlScriptExecutor* executor = GetWaitingExecutor(info)) {
-    // The reactions run in the isolated world's context.
+    // The reactions run in the main world's context.
     executor->RunPendingCallback(
         info.GetIsolate(), info.GetIsolate()->GetCurrentContext(), info[0]);
   }
@@ -717,7 +673,7 @@ void CustomFormControlScriptExecutor::SetValue(
 void CustomFormControlScriptExecutor::WillReleaseScriptContext(
     v8::Local<v8::Context> context,
     int32_t world_id) {
-  if (world_id == world_id_) {
+  if (world_id == content::ISOLATED_WORLD_ID_GLOBAL) {
     manager_.Reset();
     // The promise of a pending call can no longer settle.
     if (pending_call_) {

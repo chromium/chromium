@@ -4,7 +4,6 @@
 
 #include "components/autofill/content/renderer/custom_form_control_script_executor.h"
 
-#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>
@@ -20,18 +19,14 @@
 #include "base/test/test_future.h"
 #include "components/autofill/content/renderer/custom_form_control_util.h"
 #include "components/autofill/core/common/form_field_data.h"
-#include "content/public/common/isolated_world_ids.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/test/render_view_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
-#include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_element.h"
 #include "third_party/blink/public/web/web_frame.h"
 #include "third_party/blink/public/web/web_local_frame.h"
-#include "third_party/blink/public/web/web_script_source.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-exception.h"
 #include "v8/include/v8-local-handle.h"
@@ -65,9 +60,6 @@ class CustomFormControlScriptExecutorTestApi {
 
 namespace {
 
-// Any isolated world id that the test doesn't otherwise use.
-constexpr int32_t kWorldId = content::ISOLATED_WORLD_ID_CONTENT_END + 1;
-
 using Argument = CustomFormControlScriptExecutorTestApi::Argument;
 using MayReturnPromise =
     CustomFormControlScriptExecutorTestApi::MayReturnPromise;
@@ -91,8 +83,8 @@ class CustomFormControlScriptExecutorTest : public content::RenderViewTest {
   void SetUp() override {
     content::RenderViewTest::SetUp();
     LoadHTML("<div>Hello</div>");
-    executor_ = std::make_unique<CustomFormControlScriptExecutor>(
-        GetMainRenderFrame(), kWorldId);
+    executor_ =
+        std::make_unique<CustomFormControlScriptExecutor>(GetMainRenderFrame());
   }
 
   void TearDown() override {
@@ -107,24 +99,6 @@ class CustomFormControlScriptExecutorTest : public content::RenderViewTest {
         base::UTF8ToUTF16("typeof " + expression + " === 'undefined' ? 1 : 0"),
         &result));
     return result == 1;
-  }
-
-  // Evaluates `expression` in the executor's isolated world of the main frame
-  // and returns the result if it is a string.
-  std::optional<std::string> EvaluateInIsolatedWorld(
-      const std::string& expression) {
-    v8::Isolate* isolate = GetMainFrame()->GetAgentGroupScheduler()->Isolate();
-    v8::HandleScope handle_scope(isolate);
-    v8::Local<v8::Value> result =
-        GetMainFrame()->ExecuteScriptInIsolatedWorldAndReturnValue(
-            kWorldId,
-            blink::WebScriptSource(blink::WebString::FromUtf8(expression)),
-            blink::BackForwardCacheAware::kAllow);
-    // Converting other values would run script (e.g. `toString()`).
-    if (result.IsEmpty() || !result->IsString()) {
-      return std::nullopt;
-    }
-    return ToUtf8(isolate, result.As<v8::String>());
   }
 
   struct CallResult {
@@ -244,20 +218,30 @@ TEST_F(CustomFormControlScriptExecutorTest, FailsWithoutValidManager) {
   }
 }
 
-// Tests that the script's declarations and globals aren't visible to the page.
-TEST_F(CustomFormControlScriptExecutorTest, ScriptDoesNotLeakIntoMainWorld) {
+// Tests that the script's top-level declarations don't become globals of the
+// page.
+TEST_F(CustomFormControlScriptExecutorTest, DeclarationsDoNotLeakIntoPage) {
   ASSERT_TRUE(executor_->LoadScript(R"(
-    window.leaked = 1;
+    var leaked = 1;
     function createCustomFormControlManager() { return {}; }
   )"));
   EXPECT_TRUE(IsUndefinedInMainWorld("createCustomFormControlManager"));
-  EXPECT_TRUE(IsUndefinedInMainWorld("window.leaked"));
+  EXPECT_TRUE(IsUndefinedInMainWorld("leaked"));
+}
+
+// Tests that a script that doesn't declare the entry point doesn't pick up a
+// global of the page with the entry point's name.
+TEST_F(CustomFormControlScriptExecutorTest, IgnoresGlobalsOfPage) {
+  ExecuteJavaScriptForTests(
+      "window.createCustomFormControlManager = () => ({});");
+  EXPECT_FALSE(executor_->LoadScript("var x = 1;"));
+  EXPECT_FALSE(executor_->has_manager());
 }
 
 // Tests that a script that doesn't declare the entry point doesn't pick up a
 // global left by an earlier script.
 TEST_F(CustomFormControlScriptExecutorTest, IgnoresGlobalsOfEarlierScripts) {
-  // Leave a global with the entry point's name in the isolated world.
+  // Leave a global with the entry point's name.
   ASSERT_TRUE(executor_->LoadScript(R"(
     window.createCustomFormControlManager = () => ({});
     function createCustomFormControlManager() { return {}; }
@@ -300,7 +284,7 @@ TEST_F(CustomFormControlScriptExecutorTest,
     const x = 1;
     function createCustomFormControlManager() { return {}; }
   )"));
-  // Redeclaring `x` would throw if it were a global of the isolated world.
+  // Redeclaring `x` would throw if it were a global.
   EXPECT_TRUE(executor_->LoadScript(R"(
     const x = 2;
     function createCustomFormControlManager() { return {}; }
@@ -315,11 +299,22 @@ TEST_F(CustomFormControlScriptExecutorTest, LoadFailsIfFrameIsDetached) {
   LoadHTML("<iframe src='about:blank'></iframe>");
   content::RenderFrame* child = content::RenderFrame::FromWebFrame(
       GetMainFrame()->FirstChild()->ToWebLocalFrame());
-  CustomFormControlScriptExecutor child_executor(child, kWorldId);
+  CustomFormControlScriptExecutor child_executor(child);
   EXPECT_FALSE(child_executor.LoadScript(R"(
     frameElement.remove();
     function createCustomFormControlManager() { return {}; }
   )"));
+  EXPECT_FALSE(child_executor.has_manager());
+}
+
+// Tests that loading fails in a frame sandboxed without `allow-scripts`, where
+// the page's own scripts can't run either.
+TEST_F(CustomFormControlScriptExecutorTest, LoadFailsInSandboxedFrame) {
+  LoadHTML("<iframe sandbox src='about:blank'></iframe>");
+  content::RenderFrame* child = content::RenderFrame::FromWebFrame(
+      GetMainFrame()->FirstChild()->ToWebLocalFrame());
+  CustomFormControlScriptExecutor child_executor(child);
+  EXPECT_FALSE(child_executor.LoadScript(kValidScript));
   EXPECT_FALSE(child_executor.has_manager());
 }
 
@@ -329,7 +324,7 @@ TEST_F(CustomFormControlScriptExecutorTest, DropsManagerOnFrameDetach) {
   LoadHTML("<iframe src='about:blank'></iframe>");
   blink::WebLocalFrame* child = GetMainFrame()->FirstChild()->ToWebLocalFrame();
   CustomFormControlScriptExecutor child_executor(
-      content::RenderFrame::FromWebFrame(child), kWorldId);
+      content::RenderFrame::FromWebFrame(child));
   ASSERT_TRUE(child_executor.LoadScript(kValidScript));
 
   ExecuteJavaScriptForTests("document.querySelector('iframe').remove();");
@@ -362,30 +357,31 @@ TEST_F(CustomFormControlScriptExecutorTest,
   EXPECT_TRUE(executor_->has_manager());
 }
 
-// Tests that the isolated world's Content Security Policy blocks `eval()` and
-// `new Function()` in scripts, without affecting the page.
-TEST_F(CustomFormControlScriptExecutorTest, IsolatedWorldBlocksEval) {
-  ASSERT_TRUE(executor_->LoadScript(kValidScript));
-  EXPECT_EQ(EvaluateInIsolatedWorld(
-                "try { eval('1'); 'allowed' } catch (e) { 'blocked' }"),
-            "blocked");
-  EXPECT_EQ(EvaluateInIsolatedWorld(
-                "try { new Function('1'); 'allowed' } catch (e) { 'blocked' }"),
-            "blocked");
-  // The page's own scripts may still use `eval()`.
-  int result = 0;
-  EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(u"eval('1 + 1')", &result));
-  EXPECT_EQ(result, 2);
+constexpr char kEvalScript[] = R"(
+  function createCustomFormControlManager() {
+    return {
+      tryEval() {
+        try { eval('1'); return 'allowed'; } catch (e) { return 'blocked'; }
+      },
+    };
+  }
+)";
+
+// Tests that scripts may use `eval()` if the page's Content Security Policy
+// allows it.
+TEST_F(CustomFormControlScriptExecutorTest, PageWithoutCspAllowsEval) {
+  ASSERT_TRUE(executor_->LoadScript(kEvalScript));
+  EXPECT_EQ(Call("tryEval"), "allowed");
 }
 
-// Tests that scripts can still access the DOM of their frame under the
-// isolated world's Content Security Policy.
-TEST_F(CustomFormControlScriptExecutorTest, IsolatedWorldCanAccessDom) {
-  LoadHTML("<div id=target>Hello</div>");
-  ASSERT_TRUE(executor_->LoadScript(kValidScript));
-  EXPECT_EQ(
-      EvaluateInIsolatedWorld("document.getElementById('target').textContent"),
-      "Hello");
+// Tests that the page's Content Security Policy applies to scripts, e.g. blocks
+// `eval()` without 'unsafe-eval'. Together with `PageWithoutCspAllowsEval`,
+// this shows that the page's policy, not one of the executor, applies.
+TEST_F(CustomFormControlScriptExecutorTest, PageCspBlocksEval) {
+  LoadHTML(R"(<meta http-equiv="Content-Security-Policy"
+                   content="script-src 'unsafe-inline'">)");
+  ASSERT_TRUE(executor_->LoadScript(kEvalScript));
+  EXPECT_EQ(Call("tryEval"), "blocked");
 }
 
 // Tests that calls pass DOM nodes and strings to the manager's methods, with
@@ -406,9 +402,9 @@ TEST_F(CustomFormControlScriptExecutorTest, CallsFunctionWithArguments) {
             "target,text,true,manager");
 }
 
-// Tests that calls run in the isolated world, so that properties they set on
-// DOM nodes aren't visible to the page.
-TEST_F(CustomFormControlScriptExecutorTest, CallsUseIsolatedWorld) {
+// Tests that calls run in the main world, so that properties they set on DOM
+// nodes are visible to the page.
+TEST_F(CustomFormControlScriptExecutorTest, CallsUseMainWorld) {
   LoadHTML("<div id=target></div>");
   ASSERT_TRUE(executor_->LoadScript(R"(
     function createCustomFormControlManager() {
@@ -416,8 +412,10 @@ TEST_F(CustomFormControlScriptExecutorTest, CallsUseIsolatedWorld) {
     }
   )"));
   EXPECT_EQ(Call("mark", {GetTarget()}), "1");
-  EXPECT_TRUE(
-      IsUndefinedInMainWorld("document.getElementById('target').marked"));
+  int marked = 0;
+  EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(
+      u"document.getElementById('target').marked", &marked));
+  EXPECT_EQ(marked, 1);
 }
 
 constexpr char kClosePopoverScript[] = R"(
@@ -726,18 +724,18 @@ TEST_F(CustomFormControlScriptExecutorTest, MicrotasksRunAfterCall) {
   EXPECT_EQ(Call("queuesMicrotask"), "ok");
   EXPECT_EQ(Call("microtaskRan"), "false");
   // Running a script in the page performs a microtask checkpoint afterwards,
-  // which also runs the isolated world's microtasks.
+  // which also runs the script's microtasks.
   ExecuteJavaScriptForTests("0;");
   EXPECT_EQ(Call("microtaskRan"), "true");
 }
 
 // Tests that a call fails, without crashing, if the method detaches the frame,
-// which releases the isolated world's script context during the call.
+// which releases the main world's script context during the call.
 TEST_F(CustomFormControlScriptExecutorTest, CallFailsIfFrameIsDetached) {
   LoadHTML("<iframe src='about:blank'></iframe>");
   blink::WebLocalFrame* child = GetMainFrame()->FirstChild()->ToWebLocalFrame();
   CustomFormControlScriptExecutor child_executor(
-      content::RenderFrame::FromWebFrame(child), kWorldId);
+      content::RenderFrame::FromWebFrame(child));
   ASSERT_TRUE(child_executor.LoadScript(R"(
     function createCustomFormControlManager() {
       return { detach() { frameElement.remove(); return 'detached'; } };
@@ -995,8 +993,10 @@ TEST_F(CustomFormControlScriptExecutorTest, LoadScriptFailsPendingCall) {
   EXPECT_TRUE(executor_->has_manager());
   // The promise's reaction finds no waiting call.
   ASSERT_TRUE(base::test::RunUntil([&] {
-    return EvaluateInIsolatedWorld("String(window.resolved === true)") ==
-           "true";
+    int resolved = 0;
+    return ExecuteJavaScriptAndReturnIntValue(u"window.resolved ? 1 : 0",
+                                              &resolved) &&
+           resolved == 1;
   }));
 }
 
@@ -1050,7 +1050,7 @@ TEST_F(CustomFormControlScriptExecutorTest, FailsPendingCallOnFrameDetach) {
   LoadHTML("<iframe src='about:blank'></iframe>");
   blink::WebLocalFrame* child = GetMainFrame()->FirstChild()->ToWebLocalFrame();
   CustomFormControlScriptExecutor child_executor(
-      content::RenderFrame::FromWebFrame(child), kWorldId);
+      content::RenderFrame::FromWebFrame(child));
   ASSERT_TRUE(child_executor.LoadScript(kAsyncScript));
   CallResult never;
   CustomFormControlScriptExecutorTestApi(&child_executor)

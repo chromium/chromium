@@ -43,7 +43,6 @@
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/test_utils/autofill_form_test_util.h"
 #include "components/autofill/core/common/unique_ids.h"
-#include "content/public/common/isolated_world_ids.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_utils.h"
@@ -295,9 +294,7 @@ TEST_F(AutofillAgentTest, EnableCustomFormControlScripts) {
       features::kAutofillCustomFormControlScripts};
   EXPECT_FALSE(autofill_agent().custom_form_control_script_executor());
   blink::AssociatedInterfaceRegistry registry;
-  // Any isolated world id that the test doesn't otherwise use.
-  autofill_agent().EnableCustomFormControlScripts(
-      /*world_id=*/content::ISOLATED_WORLD_ID_CONTENT_END + 1, registry);
+  autofill_agent().EnableCustomFormControlScripts(registry);
   mojo::AssociatedRemote<mojom::CustomFormControlAgent> remote;
   mojo::ScopedInterfaceEndpointHandle handle =
       remote.BindNewEndpointAndPassDedicatedReceiver().PassHandle();
@@ -311,6 +308,27 @@ TEST_F(AutofillAgentTest, EnableCustomFormControlScripts) {
   EXPECT_TRUE(executor->has_manager());
 }
 
+// Tests that the agent's executor runs scripts in the page's main world: the
+// script sees the page's globals, and the page sees what the script sets.
+TEST_F(AutofillAgentTest, CustomFormControlScriptsRunInMainWorld) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillCustomFormControlScripts};
+  blink::AssociatedInterfaceRegistry registry;
+  autofill_agent().EnableCustomFormControlScripts(registry);
+  LoadHTML("<script>var pageValue = 1;</script>");
+  ASSERT_TRUE(
+      autofill_agent().custom_form_control_script_executor()->LoadScript(R"(
+        function createCustomFormControlManager() {
+          document.body.scriptValue = pageValue + 1;
+          return {};
+        }
+      )"));
+  int value = 0;
+  ASSERT_TRUE(
+      ExecuteJavaScriptAndReturnIntValue(u"document.body.scriptValue", &value));
+  EXPECT_EQ(value, 2);
+}
+
 // Tests that `ExtractFormData()` extracts standard and custom form controls.
 TEST_F(AutofillAgentTest, ExtractFormData_CustomFormControls) {
   base::test::ScopedFeatureList feature_list;
@@ -319,9 +337,7 @@ TEST_F(AutofillAgentTest, ExtractFormData_CustomFormControls) {
        features::kAutofillCustomFormControlExtraction},
       {});
   blink::AssociatedInterfaceRegistry registry;
-  // Any isolated world id that the test doesn't otherwise use.
-  autofill_agent().EnableCustomFormControlScripts(
-      /*world_id=*/content::ISOLATED_WORLD_ID_CONTENT_END + 1, registry);
+  autofill_agent().EnableCustomFormControlScripts(registry);
   LoadHTML(R"(<form id="f"><div id="custom"></div><input id="input"></form>)");
   ASSERT_TRUE(
       autofill_agent().custom_form_control_script_executor()->LoadScript(R"(

@@ -27,14 +27,14 @@ struct CustomFormControlOptions;
 enum class CustomFormControlSetValueResult;
 struct SelectOption;
 
-// Runs the custom form control script of the current document in an isolated
-// world, so that the script can access the frame's DOM without sharing globals
-// with the page or with other features.
+// Runs the custom form control script of the current document in the page's
+// main world, so that the script is subject to the same security restrictions
+// as the page's own scripts (e.g. the page's Content Security Policy).
 //
 // A script must declare `function createCustomFormControlManager()`, which
 // returns the script's manager: an object whose methods detect, read and fill
 // the page's custom form controls (e.g. select-like widgets that aren't
-// <select> elements). The executor keeps the manager until the isolated world's
+// <select> elements). The executor keeps the manager until the main world's
 // script context is released, e.g. when a new document is committed or the
 // frame is detached.
 //
@@ -42,20 +42,13 @@ struct SelectOption;
 // destroyed only after `content::RenderFrameObserver::OnDestruct()` has
 // fired (i.e., all observers have been notified).
 //
-// The isolated world has a restrictive Content Security Policy: scripts can
-// access the frame's DOM, but can't use `eval()`, load scripts or make network
-// requests.
+// The script shares globals and prototypes with the page, so the page can
+// observe and tamper with what the script does (e.g. by overriding built-ins or
+// DOM APIs that the script uses).
+// The results of calls are therefore untrusted and validated.
 class CustomFormControlScriptExecutor : public content::RenderFrameObserver {
  public:
-  // `world_id` is the id of the isolated world to run scripts in, which is
-  // chosen by the creator (Chrome passes
-  // `ISOLATED_WORLD_ID_AUTOFILL_CUSTOM_FORM_CONTROLS`). It must be a valid
-  // embedder world id: positive, since 0 is the page's main world, and below
-  // Blink's limit for embedder world ids. The constructor sets up the world's
-  // Content Security Policy, which applies in all frames of the renderer
-  // process.
-  CustomFormControlScriptExecutor(content::RenderFrame* render_frame,
-                                  int32_t world_id);
+  explicit CustomFormControlScriptExecutor(content::RenderFrame* render_frame);
   CustomFormControlScriptExecutor(const CustomFormControlScriptExecutor&) =
       delete;
   CustomFormControlScriptExecutor& operator=(
@@ -64,11 +57,13 @@ class CustomFormControlScriptExecutor : public content::RenderFrameObserver {
 
   // Runs `script` and keeps the manager returned by its
   // `createCustomFormControlManager()`, replacing any previous one. Returns
-  // false, and keeps no manager, if the script throws an exception, doesn't
-  // declare `createCustomFormControlManager()`, or the function's result isn't
-  // an object or is a function, array or promise (e.g. because the function is
-  // `async`). A call that awaits resolution of a promise of the previous
-  // manager fails first.
+  // false, and keeps no manager, if the frame can't run scripts (e.g. because
+  // JavaScript is disabled or the frame is sandboxed without `allow-scripts`),
+  // the script throws an exception, doesn't declare
+  // `createCustomFormControlManager()`, or the function's result isn't an
+  // object or is a function, array or promise (e.g. because the function is
+  // `async`). A call that awaits resolution of a
+  // promise of the previous manager fails first.
   bool LoadScript(std::string_view script);
 
   // Returns whether a manager is loaded for the current document.
@@ -112,7 +107,7 @@ class CustomFormControlScriptExecutor : public content::RenderFrameObserver {
   // passed as `undefined` if it is `std::nullopt`.
   using Argument = std::variant<blink::WebNode, std::optional<std::u16string>>;
 
-  // Runs with the isolate, the isolated world's context (which is entered) and
+  // Runs with the isolate, the main world's context (which is entered) and
   // the value the method returned, so that the caller can convert the value to
   // C++ in that context. The context and the value are empty if the call
   // failed. The isolate is then null if the frame is gone. The callback runs
@@ -124,7 +119,7 @@ class CustomFormControlScriptExecutor : public content::RenderFrameObserver {
   // A call that waits for its promise.
   struct PendingCall;
 
-  // Calls the manager's method `function_name` with `arguments` in the isolated
+  // Calls the manager's method `function_name` with `arguments` in the main
   // world. Then runs `callback` with the result. This is a helper function for
   // public methods that hide the V8 types from the public interface.
   //
@@ -160,7 +155,7 @@ class CustomFormControlScriptExecutor : public content::RenderFrameObserver {
                     std::vector<Argument> arguments,
                     ResultCallback callback);
 
-  // Converts `argument` to a value of the current (isolated world) context. DOM
+  // Converts `argument` to a value of the current (main world) context. DOM
   // nodes are wrapped for that context. Returns an empty handle if the argument
   // can't be converted.
   static v8::MaybeLocal<v8::Value> ToV8Value(v8::Isolate* isolate,
@@ -168,7 +163,7 @@ class CustomFormControlScriptExecutor : public content::RenderFrameObserver {
 
   // content::RenderFrameObserver:
   //
-  // Called before a script context of the frame is destroyed: for the isolated
+  // Called before a script context of the frame is destroyed: for the main
   // world's context, when a new document is committed in the frame or when the
   // frame is detached. The manager belongs to that context, so it must not
   // keep the context (and the document) alive. Also fails `pending_call_`,
@@ -209,9 +204,6 @@ class CustomFormControlScriptExecutor : public content::RenderFrameObserver {
   void RunPendingCallback(v8::Isolate* isolate,
                           v8::Local<v8::Context> context,
                           v8::MaybeLocal<v8::Value> value);
-
-  // The isolated world that scripts run in.
-  const int32_t world_id_;
 
   // The manager of the current document, or empty if no script is loaded.
   v8::Global<v8::Object> manager_;

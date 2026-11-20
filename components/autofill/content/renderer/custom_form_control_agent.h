@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_AUTOFILL_CONTENT_RENDERER_CUSTOM_FORM_CONTROL_AGENT_H_
 #define COMPONENTS_AUTOFILL_CONTENT_RENDERER_CUSTOM_FORM_CONTROL_AGENT_H_
 
-#include <cstdint>
 #include <string>
 
 #include "base/memory/raw_ref.h"
@@ -35,11 +34,10 @@ class AutofillAgent;
 // The frame's `AutofillAgent` owns the `CustomFormControlAgent`.
 class CustomFormControlAgent : public mojom::CustomFormControlAgent {
  public:
-  // Runs scripts in the isolated world `world_id` of `autofill_agent`'s frame
-  // (see `CustomFormControlScriptExecutor`), and registers the interface in
+  // Runs scripts in the main world of `autofill_agent`'s frame (see
+  // `CustomFormControlScriptExecutor`), and registers the interface in
   // `registry`, the frame's registry. `autofill_agent` must outlive this.
   CustomFormControlAgent(AutofillAgent* autofill_agent,
-                         int32_t world_id,
                          blink::AssociatedInterfaceRegistry& registry);
   CustomFormControlAgent(const CustomFormControlAgent&) = delete;
   CustomFormControlAgent& operator=(const CustomFormControlAgent&) = delete;

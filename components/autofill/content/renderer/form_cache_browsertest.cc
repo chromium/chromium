@@ -26,7 +26,6 @@
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
-#include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/render_view_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
@@ -632,9 +631,7 @@ TEST_F(FormCacheBrowserTest, CustomFormControls) {
        features::kAutofillCustomFormControlExtraction},
       {});
   blink::AssociatedInterfaceRegistry registry;
-  // Any isolated world id that the test doesn't otherwise use.
-  autofill_agent().EnableCustomFormControlScripts(
-      /*world_id=*/content::ISOLATED_WORLD_ID_CONTENT_END + 1, registry);
+  autofill_agent().EnableCustomFormControlScripts(registry);
   LoadHTML(R"(
     <form id="f">
       <div id="custom1"></div>
