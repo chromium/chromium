@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_LOCATION_BAR_HOST_H_
 
 #include <memory>
-#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
@@ -58,8 +57,6 @@ class OmniboxPopupLocationBarHost : public OmniboxPopupHost,
   // No-op: the content fills LocationBarView, so it caches no content height.
   void ResetContentHeightForTabSwitch() override {}
   void DeactivateAndKillFocus() override;
-  std::optional<FocusStateToRestore> TakeFocusStateToRestoreAfterModalDialog()
-      override;
 
   // OmniboxPopupContentDelegate:
   bool ShouldReceiveFocus() const override;

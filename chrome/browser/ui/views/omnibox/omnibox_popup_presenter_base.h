@@ -250,9 +250,6 @@ class OmniboxPopupPresenterBase
 
   void DeactivateAndKillFocus() override = 0;
 
-  std::optional<FocusStateToRestore> TakeFocusStateToRestoreAfterModalDialog()
-      override;
-
   // Returns whether the WebUI content view receives focus.
   bool ShouldReceiveFocus() const override;
 

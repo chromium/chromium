@@ -130,11 +130,6 @@ bool OmniboxPopupLocationBarHost::CompletedFirstVisuallyNonEmptyPaint() {
 
 void OmniboxPopupLocationBarHost::DeactivateAndKillFocus() {}
 
-std::optional<OmniboxPopupHost::FocusStateToRestore>
-OmniboxPopupLocationBarHost::TakeFocusStateToRestoreAfterModalDialog() {
-  return std::nullopt;
-}
-
 bool OmniboxPopupLocationBarHost::ShouldReceiveFocus() const {
   return true;
 }

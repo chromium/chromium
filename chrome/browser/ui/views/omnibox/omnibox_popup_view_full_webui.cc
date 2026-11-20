@@ -127,20 +127,18 @@ void OmniboxPopupViewFullWebUI::SyncNativeStateToWebUI(bool query_zps,
   SyncNativeStateToWebUIImpl(
       query_zps ? omnibox_popup::mojom::MatchesUpdate::kQueryZps
                 : omnibox_popup::mojom::MatchesUpdate::kDefault,
-      show_full_url, /*focus_state_to_restore=*/std::nullopt);
+      show_full_url);
 }
 
 void OmniboxPopupViewFullWebUI::SyncNativeStateToWebUIPreservingMatches() {
   SyncNativeStateToWebUIImpl(
       omnibox_popup::mojom::MatchesUpdate::kPreserveMatches,
-      /*show_full_url=*/false, /*focus_state_to_restore=*/std::nullopt);
+      /*show_full_url=*/false);
 }
 
 void OmniboxPopupViewFullWebUI::SyncNativeStateToWebUIImpl(
     omnibox_popup::mojom::MatchesUpdate matches_update,
-    bool show_full_url,
-    std::optional<OmniboxPopupHost::FocusStateToRestore>
-        focus_state_to_restore) {
+    bool show_full_url) {
   TRACE_EVENT("omnibox", "OmniboxPopupViewFullWebUI::SyncNativeStateToWebUI",
               "matches_update", matches_update);
   auto* edit_model = controller()->edit_model();
@@ -232,16 +230,6 @@ void OmniboxPopupViewFullWebUI::SyncNativeStateToWebUIImpl(
     // URL is unelided too, since the selection is relative to it.
     selection = handler_selection;
     should_show_full_url = popup_handler->show_full_url() && !full_url.empty();
-  }
-
-  // Restore the selection the omnibox had before a modal dialog blurred it, if
-  // the text sent is still the text it had. See `OnFocus()`.
-  if (focus_state_to_restore &&
-      focus_state_to_restore->text ==
-          (should_show_full_url ? full_url : text) &&
-      focus_state_to_restore->selection.GetMax() <=
-          focus_state_to_restore->text.length()) {
-    selection = focus_state_to_restore->selection;
   }
 
   bool selection_changed = selection != handler_selection;
@@ -566,22 +554,6 @@ void OmniboxPopupViewFullWebUI::OnFocus(bool query_zps,
     last_consumed_native_selection_.reset();
   }
 
-  // A modal dialog closes the popup while it's shown. When the omnibox is
-  // refocused after the dialog closes, restore the selection the omnibox had,
-  // and whether it showed the full URL. The Views omnibox also restores its
-  // selection when its window is reactivated. Take the state before
-  // `OnSetFocus()` below, which focuses the omnibox. Take it even if the focus
-  // requests a different selection, so that it isn't left for a later refocus.
-  std::optional<OmniboxPopupHost::FocusStateToRestore> focus_state_to_restore;
-  if (changed) {
-    std::optional<OmniboxPopupHost::FocusStateToRestore> restored =
-        popup_host()->TakeFocusStateToRestoreAfterModalDialog();
-    if (restored && !query_zps && !show_full_url) {
-      show_full_url = restored->show_full_url;
-      focus_state_to_restore = std::move(restored);
-    }
-  }
-
   controller()->popup_state_manager()->SetPopupState(OmniboxPopupState::kFull);
   controller()->edit_model()->OnSetFocus(/*control_down=*/false);
 
@@ -595,7 +567,7 @@ void OmniboxPopupViewFullWebUI::OnFocus(bool query_zps,
     SyncNativeStateToWebUIImpl(
         query_zps ? omnibox_popup::mojom::MatchesUpdate::kQueryZps
                   : omnibox_popup::mojom::MatchesUpdate::kDefault,
-        show_full_url, std::move(focus_state_to_restore));
+        show_full_url);
   } else if (auto* popup_handler = GetPopupHandler()) {
     // If the popup was already open (`!changed`), explicitly send
     // `SetFocus(true, query_zps, select_all, show_full_url)` via IPC to ensure

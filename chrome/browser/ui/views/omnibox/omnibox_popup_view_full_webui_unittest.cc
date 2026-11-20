@@ -63,10 +63,6 @@ class RecordingPopupHost : public OmniboxPopupHost {
   void DeactivateAndKillFocus() override {
     calls_->push_back("DeactivateAndKillFocus");
   }
-  std::optional<FocusStateToRestore> TakeFocusStateToRestoreAfterModalDialog()
-      override {
-    return std::nullopt;
-  }
 
   void set_shown(bool shown) { shown_ = shown; }
 

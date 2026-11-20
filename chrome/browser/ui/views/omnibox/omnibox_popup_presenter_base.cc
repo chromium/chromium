@@ -989,11 +989,6 @@ void OmniboxPopupPresenterBase::UnregisterBlocker() {
 
 void OmniboxPopupPresenterBase::OnFileSelectionClosed() {}
 
-std::optional<OmniboxPopupHost::FocusStateToRestore>
-OmniboxPopupPresenterBase::TakeFocusStateToRestoreAfterModalDialog() {
-  return std::nullopt;
-}
-
 views::Widget* OmniboxPopupPresenterBase::GetBrowserWidget() {
   views::Widget* widget = delegate().GetLocationBarWidget();
   return widget ? widget->GetTopLevelWidget() : nullptr;

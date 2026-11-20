@@ -60,8 +60,8 @@ class OmniboxPopupViewFullWebUI : public OmniboxPopupViewWebUI,
   // synchronizes full input state (`SyncNativeStateToWebUI()`). If the popup
   // was already open, sends a dedicated `SetFocus(true)` Mojo IPC to ensure
   // DOM input focus in the WebUI is restored without resetting input state.
-  // If a modal dialog blurred the omnibox and closed the popup, restores the
-  // selection the omnibox had instead.
+  // Restores the selection saved when the omnibox was blurred, e.g. by a modal
+  // dialog, unless the focus requests its own selection.
   void OnFocus(bool query_zps, bool select_all, bool show_full_url) override;
   void FocusSearchWithDefaultSearchEngineKeywordMode() override;
   // Called when the native omnibox loses focus. Sends a dedicated
@@ -116,14 +116,10 @@ class OmniboxPopupViewFullWebUI : public OmniboxPopupViewWebUI,
   // Implements `SyncNativeStateToWebUI()` and
   // `SyncNativeStateToWebUIPreservingMatches()`. For
   // `MatchesUpdate::kPreserveMatches`, the input state is sent even if
-  // unchanged, so that WebUI stops any in-flight query. If set, and its text is
-  // the text sent, `focus_state_to_restore` overrides the selection sent. See
-  // `OnFocus()`.
+  // unchanged, so that WebUI stops any in-flight query.
   void SyncNativeStateToWebUIImpl(
       omnibox_popup::mojom::MatchesUpdate matches_update,
-      bool show_full_url,
-      std::optional<OmniboxPopupHost::FocusStateToRestore>
-          focus_state_to_restore);
+      bool show_full_url);
 
   // Caches the last text string sent to the WebUI to avoid redundant IPCs.
   // Null after a state reset (e.g., tab switch).
@@ -142,9 +138,6 @@ class OmniboxPopupViewFullWebUI : public OmniboxPopupViewWebUI,
   // The selection and unelided state saved when the omnibox is blurred, and
   // restored when it's focused again, as `OmniboxViewViews` does with its own
   // `saved_selection_for_focus_change_`. Saved per tab in `OmniboxState`.
-  // TODO(b/574630952): Restore the selection after a modal dialog from these
-  // too, so `OmniboxPopupFullPresenter` only tracks whether the dialog
-  // interrupted focus, and remove `FocusStateToRestore`'s selection.
   gfx::Range saved_selection_for_focus_change_ = gfx::Range::InvalidRange();
   bool saved_show_full_url_for_focus_change_ = false;
 

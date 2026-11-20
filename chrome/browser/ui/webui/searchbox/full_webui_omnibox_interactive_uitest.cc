@@ -3769,6 +3769,30 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxFocusRestoreInteractiveTest,
   RunTestSequence(CheckActiveTabIndex(0), WaitForRestoredSelection(2, 7));
 }
 
+// Verifies that canceling a tab drag with a focused omnibox restores focus and
+// the exact selection. `TabDragController::RevertDrag()` ends the drag before
+// it reselects the dragged tab, so the omnibox is refocused once that's done.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxFocusRestoreInteractiveTest,
+                       TabDragCanceledRestoresSelection) {
+  if (!CanTestTabDragging()) {
+    GTEST_SKIP() << "Tab dragging with a move loop isn't supported.";
+  }
+  RunTestSequence(SetUpTabsWithOmniboxSelection(2, 7));
+
+  gfx::Point start_point;
+  TabDragController* controller = StartTabDrag(1, &start_point);
+  ASSERT_TRUE(controller);
+  TabStrip* tab_strip = BrowserView::GetBrowserViewForBrowser(browser())
+                            ->horizontal_tab_strip_for_testing();
+  const gfx::Rect tab0_bounds = tab_strip->tab_at(0)->GetBoundsInScreen();
+  ASSERT_EQ(TabDragController::Liveness::kAlive,
+            controller->Drag(gfx::Point(tab0_bounds.x() + 10,
+                                        tab0_bounds.CenterPoint().y())));
+  controller->EndDrag(EndDragReason::kCancel);
+
+  RunTestSequence(CheckActiveTabIndex(1), WaitForRestoredSelection(2, 7));
+}
+
 // Verifies that dragging a tab with a focused omnibox out into a new window
 // and straight back into its tab strip, before the new window's WebUI loads,
 // restores focus and the exact selection.
