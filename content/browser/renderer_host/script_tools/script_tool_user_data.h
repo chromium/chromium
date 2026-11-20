@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_RENDERER_HOST_MODEL_CONTEXT_USER_DATA_H_
-#define CONTENT_BROWSER_RENDERER_HOST_MODEL_CONTEXT_USER_DATA_H_
+#ifndef CONTENT_BROWSER_RENDERER_HOST_SCRIPT_TOOLS_SCRIPT_TOOL_USER_DATA_H_
+#define CONTENT_BROWSER_RENDERER_HOST_SCRIPT_TOOLS_SCRIPT_TOOL_USER_DATA_H_
 
 #include <map>
 #include <memory>
@@ -117,15 +117,15 @@ class CONTENT_EXPORT ContinuedToolExecution {
 // be redeemed by a same-origin document in the primary page, for example after
 // the tool's frame navigates, or in another frame. The tool execution's caller
 // must outlive the continuation to receive its result.
-class CONTENT_EXPORT ModelContextContinuationManager
-    : public WebContentsUserData<ModelContextContinuationManager> {
+class CONTENT_EXPORT ScriptToolContinuationManager
+    : public WebContentsUserData<ScriptToolContinuationManager> {
  public:
-  static ModelContextContinuationManager* GetForRenderFrameHost(
+  static ScriptToolContinuationManager* GetForRenderFrameHost(
       RenderFrameHost& rfh);
-  static ModelContextContinuationManager* GetOrCreateForRenderFrameHost(
+  static ScriptToolContinuationManager* GetOrCreateForRenderFrameHost(
       RenderFrameHost& rfh);
 
-  ~ModelContextContinuationManager() override;
+  ~ScriptToolContinuationManager() override;
 
   void RegisterExternalExecution(
       RenderFrameHost& target_rfh,
@@ -170,15 +170,15 @@ class CONTENT_EXPORT ModelContextContinuationManager
   void OnDocumentDestroyed(
       const blink::DocumentToken& destroyed_document_token);
 
-  base::WeakPtr<ModelContextContinuationManager> GetWeakPtr() {
+  base::WeakPtr<ScriptToolContinuationManager> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
 
  private:
-  friend class WebContentsUserData<ModelContextContinuationManager>;
+  friend class WebContentsUserData<ScriptToolContinuationManager>;
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 
-  explicit ModelContextContinuationManager(WebContents* web_contents);
+  explicit ScriptToolContinuationManager(WebContents* web_contents);
 
   ContinuedToolExecution* FindByToken(const blink::ContinuationToken& token);
 
@@ -227,12 +227,12 @@ class CONTENT_EXPORT ModelContextContinuationManager
   std::map<blink::ToolInvocationToken, std::unique_ptr<ContinuedToolExecution>>
       continuations_;
 
-  base::WeakPtrFactory<ModelContextContinuationManager> weak_factory_{this};
+  base::WeakPtrFactory<ScriptToolContinuationManager> weak_factory_{this};
 };
 
 // Associated with the Page, managing pending tool executions within a given
 // frame tree. This must be `Page`-scoped instead of document-scoped, and
-// therefore differs from `ModelContextUserData`, since tool executions are
+// therefore differs from `ScriptToolUserData`, since tool executions are
 // fundamentally cross-document, and it's easiest to have a centralized place to
 // manage them.
 //
@@ -243,8 +243,8 @@ class CONTENT_EXPORT ModelContextContinuationManager
 // happen in the inverse, when the caller's script aborts its execution. To
 // simplify the "finding" of tool caller and callee, we centralize all pending
 // execution data here.
-class CONTENT_EXPORT ModelContextPageUserData
-    : public PageUserData<ModelContextPageUserData> {
+class CONTENT_EXPORT ScriptToolPageUserData
+    : public PageUserData<ScriptToolPageUserData> {
  public:
   struct PendingScriptToolExecution {
     PendingScriptToolExecution();
@@ -267,15 +267,15 @@ class CONTENT_EXPORT ModelContextPageUserData
     bool awaiting_continuation = false;
   };
 
-  explicit ModelContextPageUserData(Page& page);
-  ~ModelContextPageUserData() override;
+  explicit ScriptToolPageUserData(Page& page);
+  ~ScriptToolPageUserData() override;
 
   // Returns true if there is an outstanding tool execution for `invocation_id`.
   bool HasPendingScriptToolExecution(
       const blink::ToolInvocationToken& invocation_id) const;
 
   // When the `ExecuteRemoteScriptTool()` IPC is called on
-  // `blink.mojom.ModelContextHost` (i.e., `ModelContextUserData`), this method
+  // `blink.mojom.ModelContextHost` (i.e., `ScriptToolUserData`), this method
   // is called, and the callback to resolve/reject the Promise in the renderer
   // is added to `pending_script_tool_executions_`.
   void AddPendingScriptToolExecution(
@@ -287,7 +287,7 @@ class CONTENT_EXPORT ModelContextPageUserData
   // for `invocation_id` mints `token`. Marks the execution as awaiting the
   // continuation, and waits for the continuation's result.
   void OnContinuationTokenCreated(
-      ModelContextContinuationManager& continuation_manager,
+      ScriptToolContinuationManager& continuation_manager,
       const blink::ToolInvocationToken& invocation_id,
       const blink::ContinuationToken& token);
   // When the browser process calls the `ExecuteScriptTool()` IPC on
@@ -320,10 +320,10 @@ class CONTENT_EXPORT ModelContextPageUserData
   void CancelPendingScriptToolExecutionsForDocument(
       const blink::DocumentToken& document_token);
 
-  base::WeakPtr<ModelContextPageUserData> GetWeakPtr();
+  base::WeakPtr<ScriptToolPageUserData> GetWeakPtr();
 
  private:
-  friend class PageUserData<ModelContextPageUserData>;
+  friend class PageUserData<ScriptToolPageUserData>;
   PAGE_USER_DATA_KEY_DECL();
 
   static void SendCancelScriptToolToTarget(
@@ -333,20 +333,20 @@ class CONTENT_EXPORT ModelContextPageUserData
   std::map<blink::ToolInvocationToken, PendingScriptToolExecution>
       pending_script_tool_executions_;
 
-  base::WeakPtrFactory<ModelContextPageUserData> weak_factory_{this};
+  base::WeakPtrFactory<ScriptToolPageUserData> weak_factory_{this};
 };
 
-// `ModelContextUserData` tracks registered tools and handles communication with
+// `ScriptToolUserData` tracks registered tools and handles communication with
 // `blink::ModelContext` It is created on-demand when the renderer first
 // accesses `document.modelContext`. If it does not exist for a frame, it means
 // that frame has not used the API yet and does not need to receive broadcasts
 // like `toolchange`.
-class CONTENT_EXPORT ModelContextUserData
+class CONTENT_EXPORT ScriptToolUserData
     : public blink::mojom::ModelContextHost,
-      public DocumentUserData<ModelContextUserData> {
+      public DocumentUserData<ScriptToolUserData> {
  public:
-  explicit ModelContextUserData(RenderFrameHost* rfh);
-  ~ModelContextUserData() override;
+  explicit ScriptToolUserData(RenderFrameHost* rfh);
+  ~ScriptToolUserData() override;
 
   static void Bind(
       RenderFrameHost* rfh,
@@ -385,9 +385,9 @@ class CONTENT_EXPORT ModelContextUserData
   bool script_tools_waiting() const { return script_tools_waiting_; }
 
  private:
-  friend class DocumentUserData<ModelContextUserData>;
-  friend class ModelContextPageUserData;
-  friend class ModelContextContinuationManager;
+  friend class DocumentUserData<ScriptToolUserData>;
+  friend class ScriptToolPageUserData;
+  friend class ScriptToolContinuationManager;
 
   DOCUMENT_USER_DATA_KEY_DECL();
 
@@ -405,9 +405,9 @@ class CONTENT_EXPORT ModelContextUserData
   // via unsettled Promises passed to modelContext.waitForToolsUntil().
   bool script_tools_waiting_ = false;
 
-  base::WeakPtrFactory<ModelContextUserData> weak_factory_{this};
+  base::WeakPtrFactory<ScriptToolUserData> weak_factory_{this};
 };
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_RENDERER_HOST_MODEL_CONTEXT_USER_DATA_H_
+#endif  // CONTENT_BROWSER_RENDERER_HOST_SCRIPT_TOOLS_SCRIPT_TOOL_USER_DATA_H_

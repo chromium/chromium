@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/renderer_host/model_context_user_data.h"
+#include "content/browser/renderer_host/script_tools/script_tool_user_data.h"
 
 #include <utility>
 #include <vector>
@@ -65,9 +65,9 @@ class ScriptToolsReadyObserver : public WebContentsObserver {
 
 }  // namespace
 
-class ModelContextUserDataBrowserTest : public ContentBrowserTest {
+class ScriptToolUserDataBrowserTest : public ContentBrowserTest {
  public:
-  ModelContextUserDataBrowserTest() {
+  ScriptToolUserDataBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
         {blink::features::kWebMCP, blink::features::kWebMCPWaitForToolsUntil},
         {});
@@ -108,8 +108,8 @@ class ModelContextUserDataBrowserTest : public ContentBrowserTest {
 
 // Ensures that a frame reports the expected ready states across document load
 // and `waitForToolsUntil()` promises.
-IN_PROC_BROWSER_TEST_F(ModelContextUserDataBrowserTest, ReadyStateTransitions) {
-  EXPECT_FALSE(ModelContextUserData::GetForCurrentDocument(main_rfh()));
+IN_PROC_BROWSER_TEST_F(ScriptToolUserDataBrowserTest, ReadyStateTransitions) {
+  EXPECT_FALSE(ScriptToolUserData::GetForCurrentDocument(main_rfh()));
   EXPECT_EQ(main_rfh()->GetScriptToolsReadyState(), ReadyState::kReady);
 
   ScriptToolsReadyObserver observer(web_contents());
@@ -139,7 +139,7 @@ IN_PROC_BROWSER_TEST_F(ModelContextUserDataBrowserTest, ReadyStateTransitions) {
 // not transition back through `kLoading` in those cases.
 // TODO(crbug.com/555173199): Fix this once the spec resolves on the document
 // lifecycle to wait for.
-IN_PROC_BROWSER_TEST_F(ModelContextUserDataBrowserTest,
+IN_PROC_BROWSER_TEST_F(ScriptToolUserDataBrowserTest,
                        ReplacementDocumentAndDocumentOpen) {
   ASSERT_TRUE(MarkScriptToolsWaiting());
   ScriptToolsReadyObserver observer(web_contents());
@@ -171,7 +171,7 @@ IN_PROC_BROWSER_TEST_F(ModelContextUserDataBrowserTest,
 
 // Ensures that a promise created in another document still settles when
 // resolved after that document's frame is removed.
-IN_PROC_BROWSER_TEST_F(ModelContextUserDataBrowserTest,
+IN_PROC_BROWSER_TEST_F(ScriptToolUserDataBrowserTest,
                        PromiseFromRemovedDocumentResolvedAfterRemoval) {
   RenderFrameHost* child =
       CreateSubframe(static_cast<WebContentsImpl*>(web_contents()), "child",
@@ -201,7 +201,7 @@ IN_PROC_BROWSER_TEST_F(ModelContextUserDataBrowserTest,
 
 // Ensures that a promise waiting on a timer in a removed document never
 // settles, leaving the parent document's tools in the waiting state.
-IN_PROC_BROWSER_TEST_F(ModelContextUserDataBrowserTest,
+IN_PROC_BROWSER_TEST_F(ScriptToolUserDataBrowserTest,
                        TimerPromiseFromRemovedDocumentNeverSettles) {
   RenderFrameHost* child =
       CreateSubframe(static_cast<WebContentsImpl*>(web_contents()), "child",
@@ -227,7 +227,7 @@ IN_PROC_BROWSER_TEST_F(ModelContextUserDataBrowserTest,
 }
 
 // Ensures that a crashed renderer reports the correct state.
-IN_PROC_BROWSER_TEST_F(ModelContextUserDataBrowserTest, CrashedRenderer) {
+IN_PROC_BROWSER_TEST_F(ScriptToolUserDataBrowserTest, CrashedRenderer) {
   ASSERT_TRUE(MarkScriptToolsWaiting());
 
   ScopedAllowRendererCrashes allow_renderer_crashes(web_contents());
@@ -237,13 +237,13 @@ IN_PROC_BROWSER_TEST_F(ModelContextUserDataBrowserTest, CrashedRenderer) {
   process->Shutdown(0);
   crash_observer.Wait();
 
-  EXPECT_TRUE(ModelContextUserData::GetForCurrentDocument(main_rfh()));
+  EXPECT_TRUE(ScriptToolUserData::GetForCurrentDocument(main_rfh()));
   EXPECT_EQ(main_rfh()->GetScriptToolsReadyState(), ReadyState::kNoRenderer);
 }
 
 // Ensures that a frame where WebMCP is not enabled reports a bad message if it
 // updates its script tools ready state.
-IN_PROC_BROWSER_TEST_F(ModelContextUserDataBrowserTest,
+IN_PROC_BROWSER_TEST_F(ScriptToolUserDataBrowserTest,
                        FrameWithoutToolsPolicyIsKilled) {
   // No `allow` attribute, so the `tools` permissions policy is disabled in
   // this cross-origin iframe.
@@ -255,15 +255,15 @@ IN_PROC_BROWSER_TEST_F(ModelContextUserDataBrowserTest,
 
   mojo::FakeMessageDispatchContext fake_dispatch_context;
   mojo::test::BadMessageObserver bad_message_observer;
-  ModelContextUserData::GetOrCreateForCurrentDocument(child)
-      ->SetScriptToolsReady(false);
+  ScriptToolUserData::GetOrCreateForCurrentDocument(child)->SetScriptToolsReady(
+      false);
   EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
             "WebMCPWaitForToolsUntil is not enabled.");
 }
 
-class ModelContextContinuationManagerBrowserTest : public ContentBrowserTest {
+class ScriptToolContinuationManagerBrowserTest : public ContentBrowserTest {
  public:
-  ModelContextContinuationManagerBrowserTest() {
+  ScriptToolContinuationManagerBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
         {blink::features::kWebMCP, blink::features::kWebMCPContinuations}, {});
   }
@@ -286,7 +286,7 @@ class ModelContextContinuationManagerBrowserTest : public ContentBrowserTest {
 
 // Destroying the registration of a browser-initiated tool execution unregisters
 // it, so the target document can no longer request a continuation token for it.
-IN_PROC_BROWSER_TEST_F(ModelContextContinuationManagerBrowserTest,
+IN_PROC_BROWSER_TEST_F(ScriptToolContinuationManagerBrowserTest,
                        DestroyingRegistrationUnregistersExecution) {
   const blink::ToolInvocationToken registered_id;
   const blink::ToolInvocationToken unregistered_id;
@@ -299,7 +299,7 @@ IN_PROC_BROWSER_TEST_F(ModelContextContinuationManagerBrowserTest,
       .reset();
 
   auto* manager =
-      ModelContextContinuationManager::GetForRenderFrameHost(main_rfh());
+      ScriptToolContinuationManager::GetForRenderFrameHost(main_rfh());
   ASSERT_TRUE(manager);
   EXPECT_FALSE(manager->RequestContinuationToken(main_rfh(), unregistered_id));
   std::optional<blink::ContinuationToken> token =
@@ -311,14 +311,14 @@ IN_PROC_BROWSER_TEST_F(ModelContextContinuationManagerBrowserTest,
 // Destroying the registration after the target document requested a
 // continuation token detaches the caller from the continuation, but leaves the
 // token redeemable.
-IN_PROC_BROWSER_TEST_F(ModelContextContinuationManagerBrowserTest,
+IN_PROC_BROWSER_TEST_F(ScriptToolContinuationManagerBrowserTest,
                        DestroyingRegistrationDetachesContinuation) {
   const blink::ToolInvocationToken invocation_id;
   std::unique_ptr<ScriptToolExecutionRegistration> registration =
       RegisterExternalScriptToolExecution(main_rfh(), invocation_id, "tool",
                                           "{}", base::DoNothing());
   auto* manager =
-      ModelContextContinuationManager::GetForRenderFrameHost(main_rfh());
+      ScriptToolContinuationManager::GetForRenderFrameHost(main_rfh());
   ASSERT_TRUE(manager);
   std::optional<blink::ContinuationToken> token =
       manager->RequestContinuationToken(main_rfh(), invocation_id);
@@ -329,10 +329,10 @@ IN_PROC_BROWSER_TEST_F(ModelContextContinuationManagerBrowserTest,
   EXPECT_EQ(manager->GetContinuationToken(invocation_id), token);
 }
 
-class ModelContextContinuationManagerBackForwardCacheBrowserTest
-    : public ModelContextContinuationManagerBrowserTest {
+class ScriptToolContinuationManagerBackForwardCacheBrowserTest
+    : public ScriptToolContinuationManagerBrowserTest {
  public:
-  ModelContextContinuationManagerBackForwardCacheBrowserTest() {
+  ScriptToolContinuationManagerBackForwardCacheBrowserTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         GetDefaultEnabledBackForwardCacheFeaturesForTesting(),
         GetDefaultDisabledBackForwardCacheFeaturesForTesting());
@@ -345,9 +345,8 @@ class ModelContextContinuationManagerBackForwardCacheBrowserTest
 // A browser-initiated execution isn't registered for a document that isn't
 // active, because it can't request a continuation token, and no registration
 // is returned.
-IN_PROC_BROWSER_TEST_F(
-    ModelContextContinuationManagerBackForwardCacheBrowserTest,
-    RegistrationSkippedForInactiveDocument) {
+IN_PROC_BROWSER_TEST_F(ScriptToolContinuationManagerBackForwardCacheBrowserTest,
+                       RegistrationSkippedForInactiveDocument) {
   RenderFrameHostWrapper cached_rfh(&main_rfh());
   ASSERT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title2.html")));
@@ -358,7 +357,7 @@ IN_PROC_BROWSER_TEST_F(
       *cached_rfh.get(), blink::ToolInvocationToken(), "tool", "{}",
       base::DoNothing()));
   EXPECT_FALSE(
-      ModelContextContinuationManager::GetForRenderFrameHost(main_rfh()));
+      ScriptToolContinuationManager::GetForRenderFrameHost(main_rfh()));
 }
 
 }  // namespace content

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/renderer_host/model_context_user_data.h"
+#include "content/browser/renderer_host/script_tools/script_tool_user_data.h"
 
 #include <algorithm>
 #include <optional>
@@ -94,7 +94,7 @@ class ScriptToolExecutionRegistrationImpl
     }
   }
 
-  void set_manager(base::WeakPtr<ModelContextContinuationManager> manager) {
+  void set_manager(base::WeakPtr<ScriptToolContinuationManager> manager) {
     manager_ = std::move(manager);
   }
 
@@ -132,7 +132,7 @@ class ScriptToolExecutionRegistrationImpl
     std::move(callback_).Run(std::move(result), std::move(redeeming_document));
   }
 
-  base::WeakPtr<ModelContextContinuationManager> manager_;
+  base::WeakPtr<ScriptToolContinuationManager> manager_;
   const blink::ToolInvocationToken invocation_id_;
   ScriptToolContinuationCompletedCallback callback_;
   base::WeakPtrFactory<ScriptToolExecutionRegistrationImpl> weak_factory_{this};
@@ -194,9 +194,9 @@ void ContinuedToolExecution::Complete(
   }
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(ModelContextContinuationManager);
+WEB_CONTENTS_USER_DATA_KEY_IMPL(ScriptToolContinuationManager);
 
-ModelContextContinuationManager::ExternalExecution::ExternalExecution(
+ScriptToolContinuationManager::ExternalExecution::ExternalExecution(
     blink::DocumentToken tool_owner_document_token,
     std::string tool_name,
     std::string input_arguments,
@@ -208,34 +208,34 @@ ModelContextContinuationManager::ExternalExecution::ExternalExecution(
       on_token_created(std::move(on_token_created)),
       on_completed(std::move(on_completed)) {}
 
-ModelContextContinuationManager::ExternalExecution::ExternalExecution(
+ScriptToolContinuationManager::ExternalExecution::ExternalExecution(
     ExternalExecution&&) = default;
-ModelContextContinuationManager::ExternalExecution&
-ModelContextContinuationManager::ExternalExecution::operator=(
+ScriptToolContinuationManager::ExternalExecution&
+ScriptToolContinuationManager::ExternalExecution::operator=(
     ExternalExecution&&) = default;
-ModelContextContinuationManager::ExternalExecution::~ExternalExecution() =
+ScriptToolContinuationManager::ExternalExecution::~ExternalExecution() =
     default;
 
 // static
-ModelContextContinuationManager*
-ModelContextContinuationManager::GetForRenderFrameHost(RenderFrameHost& rfh) {
+ScriptToolContinuationManager*
+ScriptToolContinuationManager::GetForRenderFrameHost(RenderFrameHost& rfh) {
   WebContents* web_contents = WebContents::FromRenderFrameHost(&rfh);
   return web_contents ? FromWebContents(web_contents) : nullptr;
 }
 
 // static
-ModelContextContinuationManager*
-ModelContextContinuationManager::GetOrCreateForRenderFrameHost(
+ScriptToolContinuationManager*
+ScriptToolContinuationManager::GetOrCreateForRenderFrameHost(
     RenderFrameHost& rfh) {
   WebContents* web_contents = WebContents::FromRenderFrameHost(&rfh);
   return web_contents ? GetOrCreateForWebContents(web_contents) : nullptr;
 }
 
-ModelContextContinuationManager::ModelContextContinuationManager(
+ScriptToolContinuationManager::ScriptToolContinuationManager(
     WebContents* web_contents)
-    : WebContentsUserData<ModelContextContinuationManager>(*web_contents) {}
+    : WebContentsUserData<ScriptToolContinuationManager>(*web_contents) {}
 
-ModelContextContinuationManager::~ModelContextContinuationManager() {
+ScriptToolContinuationManager::~ScriptToolContinuationManager() {
   // The completion callbacks run below may destroy registrations of
   // browser-initiated executions, which must not call back into `this`.
   weak_factory_.InvalidateWeakPtrs();
@@ -249,7 +249,7 @@ ModelContextContinuationManager::~ModelContextContinuationManager() {
   }
 }
 
-void ModelContextContinuationManager::RegisterExternalExecution(
+void ScriptToolContinuationManager::RegisterExternalExecution(
     RenderFrameHost& target_rfh,
     const blink::ToolInvocationToken& invocation_id,
     std::string tool_name,
@@ -267,7 +267,7 @@ void ModelContextContinuationManager::RegisterExternalExecution(
                         std::move(on_completed)));
 }
 
-void ModelContextContinuationManager::UnregisterExternalExecution(
+void ScriptToolContinuationManager::UnregisterExternalExecution(
     const blink::ToolInvocationToken& invocation_id) {
   external_executions_.erase(invocation_id);
   // If the target document requested a continuation token, the caller no
@@ -279,7 +279,7 @@ void ModelContextContinuationManager::UnregisterExternalExecution(
 }
 
 std::optional<blink::ContinuationToken>
-ModelContextContinuationManager::RequestContinuationToken(
+ScriptToolContinuationManager::RequestContinuationToken(
     RenderFrameHost& rfh,
     const blink::ToolInvocationToken& invocation_id) {
   if (!IsWebMCPContinuationsEnabled(rfh)) {
@@ -312,7 +312,7 @@ ModelContextContinuationManager::RequestContinuationToken(
   bool is_page_execution = false;
   ScriptToolContinuationTokenCreatedCallback on_token_created;
   ContinuedToolExecution::CompletionCallback on_completed;
-  auto* page_data = ModelContextPageUserData::GetForPage(rfh.GetPage());
+  auto* page_data = ScriptToolPageUserData::GetForPage(rfh.GetPage());
   if (const auto* pending_execution =
           page_data ? page_data->FindPendingScriptToolExecution(invocation_id)
                     : nullptr) {
@@ -352,7 +352,7 @@ ModelContextContinuationManager::RequestContinuationToken(
           rfh.GetLastCommittedOrigin(), std::move(tool_name),
           std::move(input_arguments),
           blink::features::kWebMCPContinuationTimeout.Get(),
-          base::BindOnce(&ModelContextContinuationManager::OnTokenExpired,
+          base::BindOnce(&ScriptToolContinuationManager::OnTokenExpired,
                          weak_factory_.GetWeakPtr(), invocation_id)));
   if (is_page_execution) {
     page_data->OnContinuationTokenCreated(*this, invocation_id, new_token);
@@ -365,7 +365,7 @@ ModelContextContinuationManager::RequestContinuationToken(
   return new_token;
 }
 
-void ModelContextContinuationManager::RedeemContinuationToken(
+void ScriptToolContinuationManager::RedeemContinuationToken(
     RenderFrameHost& rfh,
     const blink::ContinuationToken& token,
     blink::mojom::ModelContextHost::RedeemContinuationTokenCallback reply) {
@@ -391,7 +391,7 @@ void ModelContextContinuationManager::RedeemContinuationToken(
 }
 
 std::optional<blink::ContinuationToken>
-ModelContextContinuationManager::GetContinuationToken(
+ScriptToolContinuationManager::GetContinuationToken(
     const blink::ToolInvocationToken& tool_invocation_id) const {
   auto it = continuations_.find(tool_invocation_id);
   if (it == continuations_.end()) {
@@ -400,13 +400,13 @@ ModelContextContinuationManager::GetContinuationToken(
   return it->second->token();
 }
 
-bool ModelContextContinuationManager::IsInvocationIdInUse(
+bool ScriptToolContinuationManager::IsInvocationIdInUse(
     const blink::ToolInvocationToken& invocation_id) const {
   return external_executions_.contains(invocation_id) ||
          continuations_.contains(invocation_id);
 }
 
-void ModelContextContinuationManager::WaitForContinuation(
+void ScriptToolContinuationManager::WaitForContinuation(
     const blink::ContinuationToken& token,
     ContinuedToolExecution::CompletionCallback callback) {
   ContinuedToolExecution* continuation = FindByToken(token);
@@ -419,7 +419,7 @@ void ModelContextContinuationManager::WaitForContinuation(
   continuation->SetCompletionCallback(std::move(callback));
 }
 
-void ModelContextContinuationManager::CancelContinuation(
+void ScriptToolContinuationManager::CancelContinuation(
     const blink::ContinuationToken& token) {
   ContinuedToolExecution* continuation = FindByToken(token);
   if (!continuation) {
@@ -429,7 +429,7 @@ void ModelContextContinuationManager::CancelContinuation(
     if (RenderFrameHost* redeeming_rfh =
             continuation->redeeming_document().AsRenderFrameHostIfValid()) {
       if (auto* redeeming_data =
-              ModelContextUserData::GetForCurrentDocument(redeeming_rfh)) {
+              ScriptToolUserData::GetForCurrentDocument(redeeming_rfh)) {
         if (redeeming_data->model_context_remote_.is_bound()) {
           redeeming_data->model_context_remote_->CancelScriptTool(
               continuation->step_invocation_id());
@@ -449,7 +449,7 @@ void ModelContextContinuationManager::CancelContinuation(
   continuation->CancelCompletionCallback();
 }
 
-void ModelContextContinuationManager::OnDocumentDestroyed(
+void ScriptToolContinuationManager::OnDocumentDestroyed(
     const blink::DocumentToken& destroyed_document_token) {
   std::erase_if(external_executions_, [&](const auto& entry) {
     return entry.second.tool_owner_document_token == destroyed_document_token;
@@ -470,7 +470,7 @@ void ModelContextContinuationManager::OnDocumentDestroyed(
   }
 }
 
-ContinuedToolExecution* ModelContextContinuationManager::FindByToken(
+ContinuedToolExecution* ScriptToolContinuationManager::FindByToken(
     const blink::ContinuationToken& token) {
   for (auto& [tool_invocation_id, continuation] : continuations_) {
     if (continuation->token() == token) {
@@ -480,7 +480,7 @@ ContinuedToolExecution* ModelContextContinuationManager::FindByToken(
   return nullptr;
 }
 
-void ModelContextContinuationManager::StartResumedExecution(
+void ScriptToolContinuationManager::StartResumedExecution(
     const blink::ToolInvocationToken& tool_invocation_id) {
   auto it = continuations_.find(tool_invocation_id);
   if (it == continuations_.end()) {
@@ -500,7 +500,7 @@ void ModelContextContinuationManager::StartResumedExecution(
     return;
   }
   auto* redeeming_data =
-      ModelContextUserData::GetForCurrentDocument(redeeming_rfh);
+      ScriptToolUserData::GetForCurrentDocument(redeeming_rfh);
   if (!redeeming_data || !redeeming_data->model_context_remote_.is_bound()) {
     FailAndRemove(tool_invocation_id,
                   "Redeeming document has no bound ModelContext.");
@@ -511,11 +511,11 @@ void ModelContextContinuationManager::StartResumedExecution(
   redeeming_data->model_context_remote_->ResumeScriptTool(
       continuation->step_invocation_id(), continuation->token(),
       continuation->tool_name(), continuation->input_arguments(),
-      base::BindOnce(&ModelContextContinuationManager::OnResumedToolCompleted,
+      base::BindOnce(&ScriptToolContinuationManager::OnResumedToolCompleted,
                      weak_factory_.GetWeakPtr(), tool_invocation_id));
 }
 
-void ModelContextContinuationManager::OnResumedToolCompleted(
+void ScriptToolContinuationManager::OnResumedToolCompleted(
     const blink::ToolInvocationToken& tool_invocation_id,
     const std::optional<std::string>& result,
     std::optional<blink::mojom::ScriptToolErrorCode> error_code) {
@@ -532,12 +532,12 @@ void ModelContextContinuationManager::OnResumedToolCompleted(
   continuation->Complete(base::ok(result.value_or(std::string())));
 }
 
-void ModelContextContinuationManager::OnTokenExpired(
+void ScriptToolContinuationManager::OnTokenExpired(
     const blink::ToolInvocationToken& tool_invocation_id) {
   FailAndRemove(tool_invocation_id, "Continuation token expired.");
 }
 
-void ModelContextContinuationManager::FailAndRemove(
+void ScriptToolContinuationManager::FailAndRemove(
     const blink::ToolInvocationToken& tool_invocation_id,
     const std::string& error_message) {
   auto it = continuations_.find(tool_invocation_id);
@@ -551,25 +551,25 @@ void ModelContextContinuationManager::FailAndRemove(
   }
 }
 
-DOCUMENT_USER_DATA_KEY_IMPL(ModelContextUserData);
+DOCUMENT_USER_DATA_KEY_IMPL(ScriptToolUserData);
 
-ModelContextUserData::ModelContextUserData(RenderFrameHost* rfh)
-    : DocumentUserData<ModelContextUserData>(rfh) {}
+ScriptToolUserData::ScriptToolUserData(RenderFrameHost* rfh)
+    : DocumentUserData<ScriptToolUserData>(rfh) {}
 
 // TODO(https://crbug.com/508285989): In the destructor, implement the implicit
 // unregistering of all `script_tools_` and invoking `NotifyToolChange()` on any
 // relevant documents. Right now, the destructor only supports the cancelling of
 // pending tool execution in the calling renderer process, when the tool host's
 // document is destroyed.
-ModelContextUserData::~ModelContextUserData() {
+ScriptToolUserData::~ScriptToolUserData() {
   auto& rfh_impl = static_cast<RenderFrameHostImpl&>(render_frame_host());
   if (auto* continuation_manager =
-          ModelContextContinuationManager::GetForRenderFrameHost(
+          ScriptToolContinuationManager::GetForRenderFrameHost(
               render_frame_host())) {
     continuation_manager->OnDocumentDestroyed(rfh_impl.GetDocumentToken());
   }
   auto& page = render_frame_host().GetPage();
-  auto* page_data = ModelContextPageUserData::GetForPage(page);
+  auto* page_data = ScriptToolPageUserData::GetForPage(page);
   if (page_data) {
     page_data->CancelPendingScriptToolExecutionsForDocument(
         rfh_impl.GetDocumentToken());
@@ -577,21 +577,21 @@ ModelContextUserData::~ModelContextUserData() {
 }
 
 // static
-void ModelContextUserData::Bind(
+void ScriptToolUserData::Bind(
     RenderFrameHost* rfh,
     mojo::PendingAssociatedReceiver<blink::mojom::ModelContextHost> receiver) {
-  auto* user_data = ModelContextUserData::GetForCurrentDocument(rfh);
+  auto* user_data = ScriptToolUserData::GetForCurrentDocument(rfh);
   if (user_data) {
     // TODO(crbug.com/573662751): Migrate to mojo::ReportBadMessage.
     bad_message::ReceivedBadMessage(rfh->GetProcess(),
                                     bad_message::RFHI_WEBMCP_DUPLICATE_BIND);
     return;
   }
-  user_data = ModelContextUserData::GetOrCreateForCurrentDocument(rfh);
+  user_data = ScriptToolUserData::GetOrCreateForCurrentDocument(rfh);
   user_data->receiver_.Bind(std::move(receiver));
 }
 
-void ModelContextUserData::BindModelContext(
+void ScriptToolUserData::BindModelContext(
     mojo::PendingAssociatedRemote<blink::mojom::ModelContext> model_context) {
   if (model_context_remote_.is_bound()) {
     // TODO(crbug.com/573662751): Migrate to mojo::ReportBadMessage.
@@ -603,7 +603,7 @@ void ModelContextUserData::BindModelContext(
   model_context_remote_.Bind(std::move(model_context));
 }
 
-void ModelContextUserData::RegisterScriptTool(
+void ScriptToolUserData::RegisterScriptTool(
     blink::mojom::ScriptToolPtr tool,
     RegisterScriptToolCallback callback) {
   if (!IsWebMCPEnabled(render_frame_host())) {
@@ -673,7 +673,7 @@ void ModelContextUserData::RegisterScriptTool(
   std::move(callback).Run();
 }
 
-void ModelContextUserData::UnregisterScriptTool(
+void ScriptToolUserData::UnregisterScriptTool(
     const blink::ScriptToolToken& tool_id) {
   if (!IsWebMCPEnabled(render_frame_host())) {
     // TODO(crbug.com/573662751): Migrate to mojo::ReportBadMessage.
@@ -701,7 +701,7 @@ void ModelContextUserData::UnregisterScriptTool(
   NotifyToolChange(exposed_origins);
 }
 
-void ModelContextUserData::GetScriptTools(
+void ScriptToolUserData::GetScriptTools(
     const std::vector<url::Origin>& from_origins,
     GetScriptToolsCallback callback) {
   if (!IsWebMCPEnabled(render_frame_host())) {
@@ -736,7 +736,7 @@ void ModelContextUserData::GetScriptTools(
       return RenderFrameHost::FrameIterationAction::kContinue;
     }
 
-    auto* data = ModelContextUserData::GetForCurrentDocument(rfh);
+    auto* data = ScriptToolUserData::GetForCurrentDocument(rfh);
     if (!data) {
       return RenderFrameHost::FrameIterationAction::kContinue;
     }
@@ -777,7 +777,7 @@ void ModelContextUserData::GetScriptTools(
   std::move(callback).Run(std::move(all_tools));
 }
 
-void ModelContextUserData::ExecuteRemoteScriptTool(
+void ScriptToolUserData::ExecuteRemoteScriptTool(
     const blink::ToolInvocationToken& invocation_id,
     const blink::ScriptToolToken& tool_id,
     const blink::FrameToken& tool_owner_frame_token,
@@ -795,7 +795,7 @@ void ModelContextUserData::ExecuteRemoteScriptTool(
   }
 
   auto* existing_page_data =
-      ModelContextPageUserData::GetForPage(render_frame_host().GetPage());
+      ScriptToolPageUserData::GetForPage(render_frame_host().GetPage());
   if (!blink::IsValidScriptToolToken(invocation_id) ||
       (existing_page_data &&
        existing_page_data->HasPendingScriptToolExecution(invocation_id))) {
@@ -818,7 +818,7 @@ void ModelContextUserData::ExecuteRemoteScriptTool(
   // browser-initiated execution, which `RequestContinuationToken()` would
   // otherwise ignore in favor of this execution.
   if (auto* continuation_manager =
-          ModelContextContinuationManager::GetForRenderFrameHost(
+          ScriptToolContinuationManager::GetForRenderFrameHost(
               render_frame_host());
       continuation_manager &&
       continuation_manager->IsInvocationIdInUse(invocation_id)) {
@@ -871,7 +871,7 @@ void ModelContextUserData::ExecuteRemoteScriptTool(
     return;
   }
 
-  auto* target_data = ModelContextUserData::GetForCurrentDocument(target_rfh);
+  auto* target_data = ScriptToolUserData::GetForCurrentDocument(target_rfh);
   // Don't kill the renderer, since legitimate script can target the wrong
   // document, including one that has never touched its `modelContext` accessor,
   // and therefore does not have `target_data`. However, if our API ever moves
@@ -918,9 +918,9 @@ void ModelContextUserData::ExecuteRemoteScriptTool(
 
   // At this point, it is safe to invoke the tool in the target renderer pointed
   // to by `target_data`.
-  ModelContextPageUserData* page_data =
-      ModelContextPageUserData::GetOrCreateForPage(target_rfh->GetPage());
-  ModelContextPageUserData::PendingScriptToolExecution execution;
+  ScriptToolPageUserData* page_data =
+      ScriptToolPageUserData::GetOrCreateForPage(target_rfh->GetPage());
+  ScriptToolPageUserData::PendingScriptToolExecution execution;
   execution.caller_token =
       static_cast<RenderFrameHostImpl&>(render_frame_host()).GetDocumentToken();
   execution.target_token = target_rfh->GetDocumentToken();
@@ -933,7 +933,7 @@ void ModelContextUserData::ExecuteRemoteScriptTool(
   target_data->model_context_remote_->ExecuteScriptTool(
       invocation_id, tool_id, input_arguments,
       base::BindOnce(
-          [](base::WeakPtr<ModelContextPageUserData> page_data,
+          [](base::WeakPtr<ScriptToolPageUserData> page_data,
              blink::ToolInvocationToken invocation_id,
              const std::optional<std::string>& result,
              std::optional<blink::mojom::ScriptToolErrorCode> error_code) {
@@ -949,7 +949,7 @@ void ModelContextUserData::ExecuteRemoteScriptTool(
           page_data->GetWeakPtr(), invocation_id));
 }
 
-void ModelContextUserData::CancelRemoteScriptTool(
+void ScriptToolUserData::CancelRemoteScriptTool(
     const blink::ToolInvocationToken& invocation_id) {
   if (!IsWebMCPEnabled(render_frame_host())) {
     // TODO(crbug.com/573662751): Migrate to mojo::ReportBadMessage.
@@ -964,13 +964,13 @@ void ModelContextUserData::CancelRemoteScriptTool(
         bad_message::RFHI_WEBMCP_INVALID_INVOCATION_ID);
     return;
   }
-  if (ModelContextPageUserData* page_data =
-          ModelContextPageUserData::GetForPage(render_frame_host().GetPage())) {
+  if (ScriptToolPageUserData* page_data =
+          ScriptToolPageUserData::GetForPage(render_frame_host().GetPage())) {
     page_data->CancelPendingScriptToolExecution(invocation_id);
   }
 }
 
-void ModelContextUserData::SetScriptToolsReady(bool ready) {
+void ScriptToolUserData::SetScriptToolsReady(bool ready) {
   if (!IsWebMCPEnabled(render_frame_host()) ||
       !base::FeatureList::IsEnabled(
           blink::features::kWebMCPWaitForToolsUntil)) {
@@ -985,11 +985,11 @@ void ModelContextUserData::SetScriptToolsReady(bool ready) {
   }
 }
 
-void ModelContextUserData::RequestContinuationToken(
+void ScriptToolUserData::RequestContinuationToken(
     const blink::ToolInvocationToken& invocation_id,
     RequestContinuationTokenCallback callback) {
   auto* continuation_manager =
-      ModelContextContinuationManager::GetOrCreateForRenderFrameHost(
+      ScriptToolContinuationManager::GetOrCreateForRenderFrameHost(
           render_frame_host());
   if (!continuation_manager) {
     std::move(callback).Run(std::nullopt);
@@ -999,7 +999,7 @@ void ModelContextUserData::RequestContinuationToken(
       render_frame_host(), invocation_id));
 }
 
-void ModelContextUserData::RedeemContinuationToken(
+void ScriptToolUserData::RedeemContinuationToken(
     const blink::ContinuationToken& token,
     RedeemContinuationTokenCallback callback) {
   // Check this before looking up `continuation_manager`, which doesn't exist
@@ -1013,8 +1013,7 @@ void ModelContextUserData::RedeemContinuationToken(
     return;
   }
   auto* continuation_manager =
-      ModelContextContinuationManager::GetForRenderFrameHost(
-          render_frame_host());
+      ScriptToolContinuationManager::GetForRenderFrameHost(render_frame_host());
   if (!continuation_manager) {
     std::move(callback).Run(false);
     return;
@@ -1023,7 +1022,7 @@ void ModelContextUserData::RedeemContinuationToken(
                                                 std::move(callback));
 }
 
-void ModelContextUserData::NotifyToolChange(
+void ScriptToolUserData::NotifyToolChange(
     const std::vector<url::Origin>& exposed_origins) {
   RenderFrameHost& rfh = render_frame_host();
   url::Origin tool_owner_origin = rfh.GetLastCommittedOrigin();
@@ -1042,7 +1041,7 @@ void ModelContextUserData::NotifyToolChange(
     if (IsScriptToolExposedToOrigin(
             tool_owner_origin, exposed_origins,
             /*accessing_origin=*/frame->GetLastCommittedOrigin())) {
-      auto* data = ModelContextUserData::GetForCurrentDocument(frame);
+      auto* data = ScriptToolUserData::GetForCurrentDocument(frame);
       if (!data) {
         return RenderFrameHost::FrameIterationAction::kContinue;
       }
@@ -1055,43 +1054,43 @@ void ModelContextUserData::NotifyToolChange(
   });
 }
 
-PAGE_USER_DATA_KEY_IMPL(ModelContextPageUserData);
+PAGE_USER_DATA_KEY_IMPL(ScriptToolPageUserData);
 
-ModelContextPageUserData::PendingScriptToolExecution::
+ScriptToolPageUserData::PendingScriptToolExecution::
     PendingScriptToolExecution() = default;
-ModelContextPageUserData::PendingScriptToolExecution::
-    PendingScriptToolExecution(PendingScriptToolExecution&&) = default;
-ModelContextPageUserData::PendingScriptToolExecution&
-ModelContextPageUserData::PendingScriptToolExecution::operator=(
+ScriptToolPageUserData::PendingScriptToolExecution::PendingScriptToolExecution(
     PendingScriptToolExecution&&) = default;
-ModelContextPageUserData::PendingScriptToolExecution::
+ScriptToolPageUserData::PendingScriptToolExecution&
+ScriptToolPageUserData::PendingScriptToolExecution::operator=(
+    PendingScriptToolExecution&&) = default;
+ScriptToolPageUserData::PendingScriptToolExecution::
     ~PendingScriptToolExecution() = default;
 
-ModelContextPageUserData::ModelContextPageUserData(Page& page)
-    : PageUserData<ModelContextPageUserData>(page) {}
+ScriptToolPageUserData::ScriptToolPageUserData(Page& page)
+    : PageUserData<ScriptToolPageUserData>(page) {}
 
-ModelContextPageUserData::~ModelContextPageUserData() = default;
+ScriptToolPageUserData::~ScriptToolPageUserData() = default;
 
-bool ModelContextPageUserData::HasPendingScriptToolExecution(
+bool ScriptToolPageUserData::HasPendingScriptToolExecution(
     const blink::ToolInvocationToken& invocation_id) const {
   return pending_script_tool_executions_.contains(invocation_id);
 }
 
-void ModelContextPageUserData::AddPendingScriptToolExecution(
+void ScriptToolPageUserData::AddPendingScriptToolExecution(
     const blink::ToolInvocationToken& invocation_id,
     PendingScriptToolExecution execution) {
   pending_script_tool_executions_.emplace(invocation_id, std::move(execution));
 }
 
-const ModelContextPageUserData::PendingScriptToolExecution*
-ModelContextPageUserData::FindPendingScriptToolExecution(
+const ScriptToolPageUserData::PendingScriptToolExecution*
+ScriptToolPageUserData::FindPendingScriptToolExecution(
     const blink::ToolInvocationToken& invocation_id) const {
   auto it = pending_script_tool_executions_.find(invocation_id);
   return it != pending_script_tool_executions_.end() ? &it->second : nullptr;
 }
 
-void ModelContextPageUserData::OnContinuationTokenCreated(
-    ModelContextContinuationManager& continuation_manager,
+void ScriptToolPageUserData::OnContinuationTokenCreated(
+    ScriptToolContinuationManager& continuation_manager,
     const blink::ToolInvocationToken& invocation_id,
     const blink::ContinuationToken& token) {
   auto it = pending_script_tool_executions_.find(invocation_id);
@@ -1102,7 +1101,7 @@ void ModelContextPageUserData::OnContinuationTokenCreated(
   continuation_manager.WaitForContinuation(
       token,
       base::BindOnce(
-          [](base::WeakPtr<ModelContextPageUserData> self,
+          [](base::WeakPtr<ScriptToolPageUserData> self,
              blink::ToolInvocationToken invocation_id,
              base::expected<std::string, std::string> cont_result,
              WeakDocumentPtr redeeming_document) {
@@ -1127,7 +1126,7 @@ void ModelContextPageUserData::OnContinuationTokenCreated(
           GetWeakPtr(), invocation_id));
 }
 
-void ModelContextPageUserData::CompletePendingScriptToolExecution(
+void ScriptToolPageUserData::CompletePendingScriptToolExecution(
     const blink::ToolInvocationToken& invocation_id,
     const std::optional<std::string>& result,
     std::optional<blink::mojom::ExecuteRemoteScriptToolError> error) {
@@ -1158,21 +1157,21 @@ void ModelContextPageUserData::CompletePendingScriptToolExecution(
   pending_script_tool_executions_.erase(it);
 }
 
-void ModelContextPageUserData::SendCancelScriptToolToTarget(
+void ScriptToolPageUserData::SendCancelScriptToolToTarget(
     WeakDocumentPtr target_document,
     const blink::ToolInvocationToken& invocation_id) {
   RenderFrameHost* target_rfh = target_document.AsRenderFrameHostIfValid();
   if (!target_rfh) {
     return;
   }
-  auto* target_data = ModelContextUserData::GetForCurrentDocument(target_rfh);
+  auto* target_data = ScriptToolUserData::GetForCurrentDocument(target_rfh);
   if (!target_data || !target_data->model_context_remote_.is_bound()) {
     return;
   }
   target_data->model_context_remote_->CancelScriptTool(invocation_id);
 }
 
-void ModelContextPageUserData::CancelPendingScriptToolExecution(
+void ScriptToolPageUserData::CancelPendingScriptToolExecution(
     const blink::ToolInvocationToken& invocation_id) {
   // We are here because a caller document aborted its execution signal for a
   // tool. However, it is possible that no pending execution exists for this
@@ -1197,7 +1196,7 @@ void ModelContextPageUserData::CancelPendingScriptToolExecution(
   // If the tool created a continuation token, cancel any actively executing
   // resumed continuation step while leaving any unredeemed token redeemable.
   if (auto* continuation_manager =
-          ModelContextContinuationManager::GetForRenderFrameHost(
+          ScriptToolContinuationManager::GetForRenderFrameHost(
               page().GetMainDocument())) {
     if (std::optional<blink::ContinuationToken> token =
             continuation_manager->GetContinuationToken(invocation_id)) {
@@ -1211,10 +1210,10 @@ void ModelContextPageUserData::CancelPendingScriptToolExecution(
   }
 }
 
-void ModelContextPageUserData::CancelPendingScriptToolExecutionsForDocument(
+void ScriptToolPageUserData::CancelPendingScriptToolExecutionsForDocument(
     const blink::DocumentToken& document_token) {
-  ModelContextContinuationManager* continuation_manager =
-      ModelContextContinuationManager::GetForRenderFrameHost(
+  ScriptToolContinuationManager* continuation_manager =
+      ScriptToolContinuationManager::GetForRenderFrameHost(
           page().GetMainDocument());
 
   for (auto it = pending_script_tool_executions_.begin();
@@ -1247,7 +1246,7 @@ void ModelContextPageUserData::CancelPendingScriptToolExecutionsForDocument(
     // tool, then it's too late to send a cancellation IPC to it. During
     // document destruction, document weak pointers like `target_document` below
     // are still valid, but they point to a `RenderFrameHostImpl` whose user
-    // data (thus `ModelContextUserData`) has already been cleared. So it's
+    // data (thus `ScriptToolUserData`) has already been cleared. So it's
     // impossible to grab a remote to the renderer and send the IPC.
     if (!is_target) {
       SendCancelScriptToolToTarget(execution.target_document, invocation_id);
@@ -1263,7 +1262,7 @@ void ModelContextPageUserData::CancelPendingScriptToolExecutionsForDocument(
   }
 }
 
-base::WeakPtr<ModelContextPageUserData> ModelContextPageUserData::GetWeakPtr() {
+base::WeakPtr<ScriptToolPageUserData> ScriptToolPageUserData::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
@@ -1284,7 +1283,7 @@ RegisterExternalScriptToolExecution(
   auto registration =
       std::make_unique<ScriptToolExecutionRegistrationImpl>(invocation_id);
   if (auto* continuation_manager =
-          ModelContextContinuationManager::GetOrCreateForRenderFrameHost(
+          ScriptToolContinuationManager::GetOrCreateForRenderFrameHost(
               target_rfh)) {
     continuation_manager->RegisterExternalExecution(
         target_rfh, invocation_id, std::move(tool_name),

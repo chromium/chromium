@@ -49,7 +49,7 @@ class CONTENT_EXPORT ScriptToolExecutionRegistration {
 };
 
 // Registers a browser-initiated script tool execution (such as from
-// `actor::ScriptToolHost`) so that `ModelContextContinuationManager` can look
+// `actor::ScriptToolHost`) so that `ScriptToolContinuationManager` can look
 // up its target document, `tool_name`, and `input_arguments` if the tool
 // requests a continuation token. The caller should keep the returned
 // registration until the tool execution finishes.

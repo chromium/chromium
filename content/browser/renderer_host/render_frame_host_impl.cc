@@ -138,7 +138,6 @@
 #include "content/browser/renderer_host/local_network_access_util.h"
 #include "content/browser/renderer_host/media/peer_connection_tracker_host.h"
 #include "content/browser/renderer_host/mixed_content_checker.h"
-#include "content/browser/renderer_host/model_context_user_data.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/browser/renderer_host/navigation_metrics_utils.h"
@@ -159,6 +158,7 @@
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
+#include "content/browser/renderer_host/script_tools/script_tool_user_data.h"
 #include "content/browser/renderer_host/text_input_manager.h"
 #include "content/browser/renderer_host/unbounded_surface_host_impl.h"
 #include "content/browser/renderer_host/unbounded_surface_window.h"
@@ -17394,13 +17394,13 @@ bool RenderFrameHostImpl::ShouldResetDocumentAssociatedDataAtCommit() const {
 }
 
 void RenderFrameHostImpl::ResetStateForReplacedRendererDocument() {
-  // Drop the replaced Document's ModelContextUserData. `ModelContextHost` is
+  // Drop the replaced Document's ScriptToolUserData. `ModelContextHost` is
   // navigation-associated, so the binds from the replaced and the new Document
   // are processed in order with the IPC that reports the replacement.
   // TODO(crbug.com/576419973): Do this for all Document scoped user data.
-  if (ModelContextUserData::GetForCurrentDocument(this)) {
+  if (ScriptToolUserData::GetForCurrentDocument(this)) {
     const auto previous_state = GetScriptToolsReadyState();
-    ModelContextUserData::DeleteForCurrentDocument(this);
+    ScriptToolUserData::DeleteForCurrentDocument(this);
     if (previous_state != GetScriptToolsReadyState()) {
       delegate_->ScriptToolsReadyStateChanged(this);
     }
@@ -19754,7 +19754,7 @@ RenderFrameHostImpl::GetScriptToolsReadyState() {
   if (!IsDOMContentLoaded()) {
     return ScriptToolsReadyState::kLoading;
   }
-  auto* user_data = ModelContextUserData::GetForCurrentDocument(this);
+  auto* user_data = ScriptToolUserData::GetForCurrentDocument(this);
   if (user_data && user_data->script_tools_waiting()) {
     return ScriptToolsReadyState::kWaiting;
   }
