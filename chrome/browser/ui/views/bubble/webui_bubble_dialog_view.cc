@@ -116,15 +116,17 @@ void WebUIBubbleDialogView::ClearContentsWrapper() {
   CHECK_EQ(web_view_->web_contents(), contents_wrapper_->web_contents(),
            base::NotFatalUntil::M162);
   web_view_->SetWebContents(nullptr);
-  if (contents_wrapper_->web_contents()) {
-    contents_wrapper_->web_contents()->WasHidden();
-  }
+  contents_wrapper_->web_contents()->WasHidden();
   contents_wrapper_->SetHost(nullptr);
   contents_wrapper_ = nullptr;
 }
 
 base::WeakPtr<WebUIBubbleDialogView> WebUIBubbleDialogView::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
+}
+
+void WebUIBubbleDialogView::OnWidgetClosing(views::Widget* widget) {
+  ClearContentsWrapper();
 }
 
 gfx::Size WebUIBubbleDialogView::CalculatePreferredSize(
@@ -150,15 +152,14 @@ void WebUIBubbleDialogView::AddedToWidget() {
   // This view needs to be added to the widget before setting itself as the host
   // of the contents, so that the contents' resizing request can be propagated
   // to the widget.
+  views::Widget* widget = GetWidget();
   contents_wrapper_->SetHost(weak_factory_.GetWeakPtr());
-  RegisterWindowClosingCallback(
-      base::BindOnce(&WebUIBubbleDialogView::ClearContentsWrapper,
-                     weak_factory_.GetWeakPtr()));
+  bubble_widget_observation_.Observe(widget);
   web_view_->holder()->SetNativeViewCornerRadii(
       gfx::RoundedCornersF(GetCornerRadius()));
 
 #if defined(USE_AURA)
-  aura::Window* window = GetWidget()->GetNativeView();
+  aura::Window* window = widget->GetNativeView();
   if (ShouldUseEventHandlerForBubbleDrag(window)) {
     event_handler_ = std::make_unique<WebUIBubbleEventHandlerAura>();
     window->AddPreTargetHandler(event_handler_.get());
@@ -203,12 +204,6 @@ void WebUIBubbleDialogView::CloseUI() {
   if (!GetWidget() || GetWidget()->IsClosed()) {
     return;
   }
-  // `CloseWithReason()` closes the native widget asynchronously, so the
-  // `RegisterWindowClosingCallback()` registered in `AddedToWidget()` does not
-  // run until native widget teardown. Clear the wrapper synchronously so the
-  // `WebContents` is immediately hidden and detached, allowing cached wrappers
-  // to be reused or reset before widget destruction completes.
-  ClearContentsWrapper();
   GetWidget()->CloseWithReason(
       views::Widget::ClosedReason::kCloseButtonClicked);
 }

@@ -10,13 +10,12 @@
 #include <string>
 #include <utility>
 #include <variant>
-#include <vector>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
@@ -32,13 +31,14 @@
 #include "ui/views/bubble/bubble_anchor.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_observer.h"
 
 class GURL;
 class WebUIBubbleDialogView;
 
 // WebUIBubbleManager handles the creation / destruction of the WebUI bubble.
 // This is needed to deal with the asynchronous presentation of WebUI.
-class WebUIBubbleManager {
+class WebUIBubbleManager : public views::WidgetObserver {
  public:
   using Anchor = std::variant<raw_ptr<views::View>, gfx::Rect>;
 
@@ -51,7 +51,7 @@ class WebUIBubbleManager {
 
   WebUIBubbleManager(const WebUIBubbleManager&) = delete;
   const WebUIBubbleManager& operator=(const WebUIBubbleManager&) = delete;
-  virtual ~WebUIBubbleManager();
+  ~WebUIBubbleManager() override;
 
   // Show the bubble. The widget is created synchronously. If the contents is
   // preloaded, the bubble will show immediately. Otherwise, the widget is
@@ -84,6 +84,9 @@ class WebUIBubbleManager {
     return *contents_warmup_level_;
   }
 
+  // views::WidgetObserver:
+  void OnWidgetDestroying(views::Widget* widget) override;
+
   base::WeakPtr<WebUIBubbleDialogView> bubble_view_for_testing() {
     return bubble_view_;
   }
@@ -97,7 +100,7 @@ class WebUIBubbleManager {
  protected:
   WebUIBubbleManager();
 
-  virtual std::unique_ptr<WebUIBubbleDialogView> CreateWebUIBubbleDialog(
+  virtual base::WeakPtr<WebUIBubbleDialogView> CreateWebUIBubbleDialog(
       Anchor anchor,
       views::BubbleBorder::Arrow arrow) = 0;
 
@@ -119,20 +122,11 @@ class WebUIBubbleManager {
 
  private:
   void ResetContentsWrapper();
-  void OnBubbleWidgetClosed(views::Widget::ClosedReason reason);
-  void DestroyClosingWidgets();
+
+  base::WeakPtr<WebUIBubbleDialogView> bubble_view_;
 
   // Stores a cached WebUIContentsWrapper for reuse in the WebUIBubbleDialog.
   std::unique_ptr<WebUIContentsWrapper> cached_contents_wrapper_;
-
-  // Owns the currently active bubble widget (`CLIENT_OWNS_WIDGET`), if any.
-  std::unique_ptr<views::Widget> bubble_widget_;
-
-  // Holds closed bubble widgets pending asynchronous destruction so a widget is
-  // never destroyed re-entrantly on a `WidgetObserver` stack (e.g. focus loss).
-  std::vector<std::unique_ptr<views::Widget>> closing_widgets_;
-
-  base::WeakPtr<WebUIBubbleDialogView> bubble_view_;
 
   // Tracks whether the current bubble was created by reusing a preloaded web
   // contents.
@@ -145,14 +139,15 @@ class WebUIBubbleManager {
   // A timer controlling how long the |cached_web_view_| is cached for.
   std::unique_ptr<base::RetainingOneShotTimer> cache_timer_;
 
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      bubble_widget_observation_{this};
+
   // This is necessary to prevent a bug closing the active tab in the bubble.
   // See https://crbug.com/40153251.
   std::unique_ptr<CloseBubbleOnTabActivationHelper> close_bubble_helper_;
 
   // Controls whether `close_bubble_helper_` is set when ShowBubble() is called.
   bool disable_close_bubble_helper_ = false;
-
-  base::WeakPtrFactory<WebUIBubbleManager> weak_factory_{this};
 };
 
 template <typename T>
@@ -170,7 +165,7 @@ class WebUIBubbleManagerImpl : public WebUIBubbleManager {
 
  private:
   // WebUIBubbleManager:
-  std::unique_ptr<WebUIBubbleDialogView> CreateWebUIBubbleDialog(
+  base::WeakPtr<WebUIBubbleDialogView> CreateWebUIBubbleDialog(
       Anchor anchor,
       views::BubbleBorder::Arrow arrow) override;
   WebUIContentsWrapper* GetContentsWrapper() override;
@@ -197,7 +192,7 @@ std::unique_ptr<WebUIBubbleManager> WebUIBubbleManager::Create(
 }
 
 template <typename T>
-std::unique_ptr<WebUIBubbleDialogView>
+base::WeakPtr<WebUIBubbleDialogView>
 WebUIBubbleManagerImpl<T>::CreateWebUIBubbleDialog(
     Anchor anchor,
     views::BubbleBorder::Arrow arrow) {
@@ -253,7 +248,10 @@ WebUIBubbleManagerImpl<T>::CreateWebUIBubbleDialog(
         std::move(widget_initialization_callback_));
   }
 
-  return bubble_view;
+  auto weak_ptr = bubble_view->GetWeakPtr();
+  views::BubbleDialogDelegateView::CreateBubble(std::move(bubble_view));
+
+  return weak_ptr;
 }
 
 template <typename T>

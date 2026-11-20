@@ -19,6 +19,7 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_observer.h"
 
 #if defined(USE_AURA)
 class WebUIBubbleEventHandlerAura;
@@ -32,7 +33,8 @@ class WebView;
 // NOTE: The anchor rect takes precedence over the anchor view in this class.
 // This is the opposite of the behaviour specified in the
 // BubbleDialogDelegateView base class.
-class WebUIBubbleDialogView : public views::BubbleDialogDelegateView,
+class WebUIBubbleDialogView : public views::WidgetObserver,
+                              public views::BubbleDialogDelegateView,
                               public WebUIContentsWrapper::Host,
                               public web_modal::WebContentsModalDialogHost {
   METADATA_HEADER(WebUIBubbleDialogView, views::BubbleDialogDelegateView)
@@ -57,6 +59,9 @@ class WebUIBubbleDialogView : public views::BubbleDialogDelegateView,
   views::WebView* web_view() { return web_view_; }
   void ClearContentsWrapper();
   base::WeakPtr<WebUIBubbleDialogView> GetWeakPtr();
+
+  // views::WidgetObserver
+  void OnWidgetClosing(views::Widget* widget) override;
 
   // views::BubbleDialogDelegateView:
   gfx::Size CalculatePreferredSize(
@@ -124,6 +129,9 @@ class WebUIBubbleDialogView : public views::BubbleDialogDelegateView,
   std::optional<SkRegion> draggable_region_;
 
   base::ObserverList<web_modal::ModalDialogHostObserver> observer_list_;
+
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      bubble_widget_observation_{this};
 
 #if defined(USE_AURA)
   // Pre target event handler used to enable draggable bubbles for non platform

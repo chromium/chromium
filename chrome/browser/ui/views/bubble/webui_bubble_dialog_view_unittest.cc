@@ -152,49 +152,6 @@ TEST_P(WebUIBubbleDialogViewTest, CloseUIClearsContentsWrapper) {
   EXPECT_EQ(nullptr, web_view()->web_contents());
 }
 
-TEST_P(WebUIBubbleDialogViewTest, WidgetDestructionClearsContentsWrapper) {
-  UniqueWidgetPtr anchor_widget = CreateTestWidget(
-      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
-  anchor_widget->Show();
-  auto profile = std::make_unique<TestingProfile>();
-  auto wrapper = std::make_unique<TestWebUIContentsWrapper>(profile.get());
-
-  auto bubble_dialog = std::make_unique<WebUIBubbleDialogView>(
-      views::BubbleAnchor(anchor_widget->GetContentsView()),
-      wrapper->GetWeakPtr());
-  auto* bubble_dialog_ptr = bubble_dialog.get();
-  Widget* widget =
-      BubbleDialogDelegateView::CreateBubble(std::move(bubble_dialog));
-  EXPECT_EQ(bubble_dialog_ptr, wrapper->GetHost().get());
-
-  widget->CloseNow();
-  EXPECT_EQ(nullptr, wrapper->GetHost().get());
-}
-
-TEST_P(WebUIBubbleDialogViewTest,
-       WidgetCloseAfterProfileDestructionDoesNotCrash) {
-  UniqueWidgetPtr anchor_widget = CreateTestWidget(
-      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
-  anchor_widget->Show();
-  auto profile = std::make_unique<TestingProfile>();
-  auto wrapper = std::make_unique<TestWebUIContentsWrapper>(profile.get());
-
-  auto bubble_dialog = std::make_unique<WebUIBubbleDialogView>(
-      views::BubbleAnchor(anchor_widget->GetContentsView()),
-      wrapper->GetWeakPtr());
-  Widget* widget =
-      BubbleDialogDelegateView::CreateBubble(std::move(bubble_dialog));
-
-  // Simulate asynchronous widget close during shutdown where the profile is
-  // destroyed before the widget finishes destroying.
-  widget->Close();
-  profile.reset();
-  EXPECT_EQ(nullptr, wrapper->web_contents());
-
-  widget->CloseNow();
-  EXPECT_EQ(nullptr, wrapper->GetHost().get());
-}
-
 TEST_P(WebUIBubbleDialogViewTest, GetAnchorRectWithProvidedAnchorRect) {
   UniqueWidgetPtr anchor_widget = std::make_unique<Widget>();
   Widget::InitParams params =

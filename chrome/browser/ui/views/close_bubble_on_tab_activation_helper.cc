@@ -31,9 +31,9 @@ void CloseBubbleOnTabActivationHelper::OnTabStripModelChanged(
 
   if (owner_bubble_) {
     views::Widget* bubble_widget = owner_bubble_->GetWidget();
-    owner_bubble_ = nullptr;
     if (bubble_widget) {
       bubble_widget->Close();
     }
+    owner_bubble_ = nullptr;
   }
 }
