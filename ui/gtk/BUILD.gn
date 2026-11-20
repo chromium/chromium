@@ -85,6 +85,7 @@ component("gtk") {
     "native_theme_gtk.h",
     "os_settings_provider_gtk.h",
     "select_file_dialog_linux_gtk.h",
+    "window_frame_provider_gtk.h",
   ]
 
   sources = [
@@ -114,7 +115,6 @@ component("gtk") {
     "settings_provider_gtk.cc",
     "settings_provider_gtk.h",
     "window_frame_provider_gtk.cc",
-    "window_frame_provider_gtk.h",
   ]
 
   if (enable_printing) {
@@ -213,6 +213,7 @@ if (use_gtk) {
       "native_theme_gtk_unittest.cc",
       "run_all_unittests.cc",
       "select_file_dialog_linux_gtk_unittest.cc",
+      "window_frame_provider_gtk_unittest.cc",
     ]
 
     deps = [
@@ -220,6 +221,7 @@ if (use_gtk) {
       "//base",
       "//base/test:test_support",
       "//testing/gtest",
+      "//ui/base",
       "//ui/base/glib",
       "//ui/color",
       "//ui/color:mixers",
