@@ -63,8 +63,11 @@ public class ScrollCaptureCallbackRenderTest {
     @Rule
     public RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(2)
-                    .setDescription("new test html")
+                    .setRevision(3)
+                    .setDescription(
+                            "FractionalScrollOffsets enabled: scrollBy no longer truncates"
+                                    + " sub-pixel offset, so bottom-viewport captures shift"
+                                    + " by up to one physical pixel.")
                     .setBugComponent(RenderTestRule.Component.UI_BROWSER_SHARING)
                     .build();
 
