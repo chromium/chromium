@@ -22,6 +22,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/browser/page.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_media_capture_id.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -216,11 +217,26 @@ void TabCaptureAccessHandler::HandleRequest(
       capture_policy::GetIncludableWebContentsFilter(request.security_origin,
                                                      capture_level);
 
-  content::WebContents* target_web_contents =
-      content::WebContents::FromRenderFrameHost(
-          content::RenderFrameHost::FromID(request.render_process_id,
-                                           request.render_frame_id));
-  if (!can_show_web_contents.Run(target_web_contents)) {
+  // For tab capture, `request.render_process_id` and `request.render_frame_id`
+  // identify the target tab's primary main frame recorded at stream ID
+  // creation time rather than the requesting frame.
+  content::RenderFrameHost* const target_rfh = content::RenderFrameHost::FromID(
+      request.render_process_id, request.render_frame_id);
+  if (!target_rfh || !target_rfh->IsActive()) {
+    tab_capture_registry->KillUnverifiedRequest(request.render_process_id,
+                                                request.render_frame_id);
+    std::move(callback).Run(blink::mojom::StreamDevicesSet(),
+                            blink::mojom::MediaStreamRequestResult::
+                                FAILED_DUE_TO_SHUTDOWN_NO_RFH_IN_HANDLER,
+                            /*ui=*/nullptr);
+    return;
+  }
+
+  content::WebContents* const target_web_contents =
+      content::WebContents::FromRenderFrameHost(target_rfh);
+  if (!target_web_contents || !can_show_web_contents.Run(target_web_contents)) {
+    tab_capture_registry->KillUnverifiedRequest(request.render_process_id,
+                                                request.render_frame_id);
     std::move(callback).Run(
         blink::mojom::StreamDevicesSet(),
         blink::mojom::MediaStreamRequestResult::CAPTURE_NOT_ALLOWED_BY_POLICY,
@@ -232,8 +248,8 @@ void TabCaptureAccessHandler::HandleRequest(
   // tabCapture.getMediaStreamId().
   // TODO(crbug.com/40571241): Deprecate tabCaptureRegistry soon.
   const std::string extension_id = extension ? extension->id() : "";
-  if (!tab_capture_registry->VerifyRequest(
-          request.render_process_id, request.render_frame_id, extension_id)) {
+  if (!tab_capture_registry->VerifyRequest(request.render_process_id,
+                                           request.render_frame_id)) {
     std::move(callback).Run(
         blink::mojom::StreamDevicesSet(),
         blink::mojom::MediaStreamRequestResult::REGISTRY_REQUEST_UNVERIFIED,
@@ -265,9 +281,8 @@ void TabCaptureAccessHandler::HandleRequest(
   if (!capturing_extension_id.empty()) {
     std::string error;
     if (!capturing_extension ||
-        (target_web_contents &&
-         !extensions::TabCaptureRegistry::CanCaptureWebContents(
-             *capturing_extension, *profile, *target_web_contents, error))) {
+        !extensions::TabCaptureRegistry::CanCaptureWebContents(
+            *capturing_extension, *profile, *target_web_contents, error)) {
       std::move(callback).Run(
           blink::mojom::StreamDevicesSet(),
           blink::mojom::MediaStreamRequestResult::CAPTURE_NOT_ALLOWED_BY_POLICY,
@@ -282,7 +297,7 @@ void TabCaptureAccessHandler::HandleRequest(
         target_web_contents, url::Origin::Create(request.security_origin));
   }
 
-  if (!capturing_extension_id.empty() && target_web_contents) {
+  if (!capturing_extension_id.empty()) {
     media_ui = std::make_unique<TabCaptureExtensionPolicyUI>(
         target_web_contents, capturing_extension_id, std::move(media_ui));
   }

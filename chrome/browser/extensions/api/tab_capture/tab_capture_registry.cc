@@ -85,6 +85,17 @@ class TabCaptureRegistry::LiveRequest : public content::WebContentsObserver {
            render_frame_id_ == render_frame_id;
   }
 
+  // Returns whether the originally targeted RenderFrameHost is still the
+  // active primary main frame of the observed WebContents.
+  bool IsTargetingCurrentPrimaryMainFrame() const {
+    content::RenderFrameHost* const main_frame =
+        web_contents() ? web_contents()->GetPrimaryMainFrame() : nullptr;
+    return main_frame && main_frame->IsActive() &&
+           WasTargettingRenderFrameID(
+               main_frame->GetProcess()->GetDeprecatedID(),
+               main_frame->GetRoutingID());
+  }
+
   void UpdateCaptureState(TabCaptureState next_capture_state) {
     // This method can get duplicate calls if both audio and video were
     // requested, so return early to avoid duplicate dispatching of status
@@ -109,6 +120,16 @@ class TabCaptureRegistry::LiveRequest : public content::WebContentsObserver {
     is_fullscreened_ = entered_fullscreen;
     if (capture_state_ == tab_capture::TabCaptureState::kActive) {
       registry_->DispatchStatusChangeEvent(this);
+    }
+  }
+
+  // A request that has not been verified yet was authorized for the page shown
+  // when it was added. Drop it when the tab shows a different page, including
+  // when a page is restored from the back/forward cache, so that it can neither
+  // be redeemed for the new page nor block new requests for this tab.
+  void PrimaryPageChanged(content::Page& page) override {
+    if (!is_verified_) {
+      registry_->KillRequest(this);  // Deletes |this|.
     }
   }
 
@@ -215,8 +236,7 @@ std::string TabCaptureRegistry::AddRequest(
 }
 
 bool TabCaptureRegistry::VerifyRequest(int render_process_id,
-                                       int render_frame_id,
-                                       const std::string& extension_id) {
+                                       int render_frame_id) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   LiveRequest* const request = FindRequest(render_process_id, render_frame_id);
@@ -230,8 +250,24 @@ bool TabCaptureRegistry::VerifyRequest(int render_process_id,
     return false;
   }
 
+  if (!request->IsTargetingCurrentPrimaryMainFrame()) {
+    // Clean up the unverified request so it cannot remain wedged in kPending.
+    KillRequest(request);
+    return false;
+  }
+
   request->SetIsVerified();
   return true;
+}
+
+void TabCaptureRegistry::KillUnverifiedRequest(int render_process_id,
+                                               int render_frame_id) {
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
+
+  LiveRequest* const request = FindRequest(render_process_id, render_frame_id);
+  if (request && !request->is_verified()) {
+    KillRequest(request);
+  }
 }
 
 void TabCaptureRegistry::OnRequestUpdate(

@@ -52,6 +52,7 @@
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/base/filename_util.h"
+#include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/gl/gl_switches.h"
 #include "url/gurl.h"
@@ -96,6 +97,13 @@ class TabCaptureApiTest : public ExtensionApiTest {
     SetUpTabCaptureCommandLine(command_line);
   }
 
+  void SetUpOnMainThread() override {
+    ExtensionApiTest::SetUpOnMainThread();
+    // Lets tests load pages from a host that is not potentially trustworthy
+    // (unlike localhost) from the embedded test server.
+    host_resolver()->AddRule("example.com", "127.0.0.1");
+  }
+
   void AddExtensionToCommandLineAllowlist() {
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
         switches::kAllowlistedExtensionID, kExtensionId);
@@ -129,6 +137,7 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, StartTabCapture) {
 // Tests API behaviors, including info queries, and constraints violations.
 IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, ApiTests) {
   AddExtensionToCommandLineAllowlist();
+  ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("tab_capture/api_tests",
                                {.extension_url = "api_tests.html"}))
       << message_;
@@ -618,13 +627,37 @@ class TabCaptureApiPolicyTest : public ExtensionApiTestWithManagementPolicy {
         }
       }
 
+      let lastStreamId = '';
+
       async function getMediaStreamId(tabId) {
         captureResult = 'none';
+        lastStreamId = '';
         try {
-          await chrome.tabCapture.getMediaStreamId({targetTabId: tabId});
+          lastStreamId =
+              await chrome.tabCapture.getMediaStreamId({targetTabId: tabId});
           captureResult = 'success';
         } catch (e) {
           captureResult = e.message;
+        }
+      }
+
+      async function redeemLastMediaStreamId() {
+        captureResult = 'none';
+        try {
+          const constraints = {
+            mandatory: {
+              chromeMediaSource: 'tab',
+              chromeMediaSourceId: lastStreamId,
+            },
+          };
+          const stream = await navigator.mediaDevices.getUserMedia({
+            audio: false,
+            video: constraints,
+          });
+          captureResult = 'success';
+          stream.getVideoTracks()[0].stop();
+        } catch (e) {
+          captureResult = e.name;
         }
       }
 
@@ -665,6 +698,10 @@ class TabCaptureApiPolicyTest : public ExtensionApiTestWithManagementPolicy {
     EXPECT_TRUE(
         content::ExecJs(extension_contents_,
                         base::StringPrintf("getMediaStreamId(%d);", tab_id)));
+  }
+  void RedeemLastMediaStreamId() {
+    EXPECT_TRUE(
+        content::ExecJs(extension_contents_, "redeemLastMediaStreamId();"));
   }
   void StartCapture() {
     EXPECT_TRUE(content::ExecJs(extension_contents_, "startCapture();"));
@@ -869,6 +906,78 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiPolicyTest,
 
   ASSERT_TRUE(content::NavigateToURL(web_contents2, GURL(kValidChromeURL)));
   EXPECT_EQ("stopped", GetCaptureState());
+}
+
+// Tests that a stream ID obtained via tabCapture.getMediaStreamId() can be
+// redeemed on the same page view, but cannot be redeemed after the target tab
+// navigates cross-origin (such as to another extension's page or another web
+// host).
+IN_PROC_BROWSER_TEST_F(
+    TabCaptureApiPolicyTest,
+    PreNavigationStreamIdRejectedAfterCrossOriginNavigation) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  TestExtensionDir other_dir;
+  other_dir.WriteManifest(R"({
+    "name": "Other Extension",
+    "version": "0.1",
+    "manifest_version": 3
+  })");
+  other_dir.WriteFile(FILE_PATH_LITERAL("other.html"),
+                      "<!doctype html><p>Other extension page</p>");
+  const Extension* other_extension = LoadExtension(other_dir.UnpackedPath());
+  ASSERT_TRUE(other_extension);
+
+  // 1. Redeeming on the granted page view without cross-origin navigation
+  // succeeds.
+  content::WebContents* const web_contents1 =
+      OpenNewTabAndGrantActiveTab("b.test");
+  GetMediaStreamIdForTab(ExtensionTabUtil::GetTabId(web_contents1));
+  ASSERT_EQ("success", GetCaptureResult());
+  RedeemLastMediaStreamId();
+  EXPECT_EQ("success", GetCaptureResult());
+
+  // 2. Redeeming a pre-navigation stream ID after navigating to another
+  // extension's page is rejected.
+  content::WebContents* const web_contents2 =
+      OpenNewTabAndGrantActiveTab("b.test");
+  GetMediaStreamIdForTab(ExtensionTabUtil::GetTabId(web_contents2));
+  ASSERT_EQ("success", GetCaptureResult());
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents2, other_extension->GetResourceURL("other.html")));
+  RedeemLastMediaStreamId();
+  EXPECT_EQ("AbortError", GetCaptureResult());
+
+  // 3. Redeeming a pre-navigation stream ID after navigating cross-origin to
+  // another web host is rejected, and does not leave the tab wedged in a
+  // pending capture state.
+  content::WebContents* const web_contents3 =
+      OpenNewTabAndGrantActiveTab("b.test");
+  GetMediaStreamIdForTab(ExtensionTabUtil::GetTabId(web_contents3));
+  ASSERT_EQ("success", GetCaptureResult());
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents3, embedded_test_server()->GetURL("a.test", "/simple.html")));
+  RedeemLastMediaStreamId();
+  EXPECT_EQ("AbortError", GetCaptureResult());
+
+  ActiveTabPermissionGranter::FromWebContents(web_contents3)
+      ->GrantIfRequested(extension(), base::DoNothing());
+  GetMediaStreamIdForTab(ExtensionTabUtil::GetTabId(web_contents3));
+  ASSERT_EQ("success", GetCaptureResult());
+  RedeemLastMediaStreamId();
+  EXPECT_EQ("success", GetCaptureResult());
+
+  // 4. Navigating back to the original page (e.g. via BFCache) still rejects
+  // a stream ID minted before the forward navigation.
+  content::WebContents* const web_contents4 =
+      OpenNewTabAndGrantActiveTab("b.test");
+  GetMediaStreamIdForTab(ExtensionTabUtil::GetTabId(web_contents4));
+  ASSERT_EQ("success", GetCaptureResult());
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents4, embedded_test_server()->GetURL("a.test", "/simple.html")));
+  ASSERT_TRUE(content::HistoryGoBack(web_contents4));
+  RedeemLastMediaStreamId();
+  EXPECT_EQ("AbortError", GetCaptureResult());
 }
 
 // Tests the interaction between tab capture and hosts on which the user has

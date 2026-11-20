@@ -124,7 +124,16 @@ const testsToRun = [
   },
 
   function getCapturedTabs() {
-    chrome.tabs.create({active: true}, function(secondTab) {
+    let secondTab = null;
+    let isComplete = false;
+
+    function onTabComplete(tab) {
+      if (isComplete) {
+        return;
+      }
+      isComplete = true;
+      secondTab = tab;
+
       // chrome.tabCapture.capture() will only capture the active tab.
       chrome.test.assertTrue(secondTab.active);
 
@@ -141,12 +150,17 @@ const testsToRun = [
 
       // Step 4: After the second tab is closed, check that getCapturedTabs()
       // returns no info at all about the second tab.
-      chrome.tabs.onRemoved.addListener(function() {
+      const onRemovedListener = function(removedTabId) {
+        if (removedTabId !== secondTab.id) {
+          return;
+        }
+        chrome.tabs.onRemoved.removeListener(onRemovedListener);
         tabCapture.getCapturedTabs(function checkNoInfos(infos) {
           checkInfoForSecondTabHasStatus(infos, null);
           chrome.test.succeed();
         });
-      });
+      };
+      chrome.tabs.onRemoved.addListener(onRemovedListener);
 
       let activeStream = null;
 
@@ -172,6 +186,23 @@ const testsToRun = [
         activeStream = stream;
         tabCapture.getCapturedTabs(capturedTabsAfterStartCapture);
       });
+    }
+
+    const onUpdatedListener = function(tabId, changeInfo, tab) {
+      if (changeInfo.status === 'complete' && secondTab &&
+          secondTab.id === tabId) {
+        chrome.tabs.onUpdated.removeListener(onUpdatedListener);
+        onTabComplete(tab);
+      }
+    };
+
+    chrome.tabs.onUpdated.addListener(onUpdatedListener);
+    chrome.tabs.create({active: true}, function(tab) {
+      secondTab = tab;
+      if (tab.status === 'complete') {
+        chrome.tabs.onUpdated.removeListener(onUpdatedListener);
+        onTabComplete(tab);
+      }
     });
   },
 
@@ -250,7 +281,9 @@ const testsToRun = [
     let isComplete = false;
 
     function onTabComplete(tabId) {
-      if (isComplete) return;
+      if (isComplete) {
+        return;
+      }
       isComplete = true;
       tabCapture.getMediaStreamId(
           {consumerTabId: tabId}, function(streamId) {
@@ -283,10 +316,13 @@ const testsToRun = [
 
   function getMediaStreamIdWithCallerTabWithoutSecuredUrl() {
     let createdTabId;
+    let insecureUrl;
     let isComplete = false;
 
     function onTabComplete(tabId) {
-      if (isComplete) return;
+      if (isComplete) {
+        return;
+      }
       isComplete = true;
       tabCapture.getMediaStreamId({consumerTabId: tabId}, function(streamId) {
         chrome.test.assertTrue(typeof streamId === 'undefined');
@@ -302,7 +338,7 @@ const testsToRun = [
         if (createdTabId === tabId) {
           chrome.tabs.onUpdated.removeListener(listener);
           onTabComplete(tabId);
-        } else if (createdTabId === undefined && tab.url === 'http://example.com/fun.html') {
+        } else if (createdTabId === undefined && tab.url === insecureUrl) {
           chrome.tabs.onUpdated.removeListener(listener);
           onTabComplete(tabId);
         }
@@ -310,12 +346,16 @@ const testsToRun = [
     };
 
     chrome.tabs.onUpdated.addListener(listener);
-    chrome.tabs.create({url: 'http://example.com/fun.html'}, function(tab) {
-      createdTabId = tab.id;
-      if (tab.status === 'complete') {
-        chrome.tabs.onUpdated.removeListener(listener);
-        onTabComplete(tab.id);
-      }
+    chrome.test.getConfig(function(config) {
+      // Use a host other than localhost, which is always treated as secure.
+      insecureUrl = `http://example.com:${config.testServer.port}/simple.html`;
+      chrome.tabs.create({url: insecureUrl}, function(tab) {
+        createdTabId = tab.id;
+        if (tab.status === 'complete') {
+          chrome.tabs.onUpdated.removeListener(listener);
+          onTabComplete(tab.id);
+        }
+      });
     });
   },
 ];

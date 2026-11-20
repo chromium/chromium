@@ -87,15 +87,20 @@ class TabCaptureRegistry : public BrowserContextKeyedAPI,
                          int caller_render_process_id,
                          std::optional<int> restrict_to_render_frame_id);
 
-  // Called by MediaStreamDevicesController to verify the request before
-  // creating the stream.  |render_process_id| and |render_frame_id| are used to
-  // look-up a WebContents instance, which should match the |target_contents|
-  // from the prior call to AddRequest().  In addition, a request is not
-  // verified unless the |extension_id| also matches AND the request itself is
-  // in the PENDING state.
-  bool VerifyRequest(int render_process_id,
-                     int render_frame_id,
-                     const std::string& extension_id);
+  // Called by TabCaptureAccessHandler to verify the request before creating the
+  // stream. `render_process_id` and `render_frame_id` identify the frame of
+  // `target_contents` recorded by the prior call to AddRequest(). A request is
+  // verified only if that frame is still the active primary main frame of
+  // `target_contents`, the request has not been verified before, and the
+  // request is in the NONE or PENDING state. Note that a request that has not
+  // been verified is dropped when the primary page of `target_contents`
+  // changes.
+  bool VerifyRequest(int render_process_id, int render_frame_id);
+
+  // Removes an unverified request for (`render_process_id`, `render_frame_id`)
+  // if one exists, preventing it from remaining stuck in the PENDING state
+  // after an early rejection in TabCaptureAccessHandler.
+  void KillUnverifiedRequest(int render_process_id, int render_frame_id);
 
   // Returns whether `extension` is permitted to capture `target_contents`.
   // Disallows capturing hosts blocked by enterprise policy, hosts restricted by
