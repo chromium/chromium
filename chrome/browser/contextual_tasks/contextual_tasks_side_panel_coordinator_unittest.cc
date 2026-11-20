@@ -57,6 +57,7 @@
 #include "components/contextual_tasks/public/features.h"
 #include "components/contextual_tasks/public/host_override.h"
 #include "components/contextual_tasks/public/mock_contextual_tasks_service.h"
+#include "components/contextual_tasks/public/prefs.h"
 #include "components/lens/contextual_input.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "components/omnibox/browser/mock_aim_eligibility_service.h"
@@ -637,6 +638,50 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
   coordinator_->Show(false,
                      omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT);
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       ShowDoesNotCountSessionsBeforeAnyTooltipAcknowledged) {
+  PrefService* prefs = profile_->GetPrefs();
+  ASSERT_EQ(prefs->GetInteger(kContextualTasksSessionCountPostOnboarding), -1);
+
+  coordinator_->Show(false,
+                     omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT);
+
+  EXPECT_EQ(prefs->GetInteger(kContextualTasksSessionCountPostOnboarding), -1);
+}
+
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       ShowCountsSessionsAfterAskGoogleTooltipAcknowledged) {
+  PrefService* prefs = profile_->GetPrefs();
+  ASSERT_EQ(prefs->GetInteger(kContextualTasksSessionCountPostOnboarding), -1);
+  prefs->SetInteger(kContextualTasksAskGTooltipDismissedCount, 1);
+
+  coordinator_->Show(false,
+                     omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT);
+  EXPECT_EQ(prefs->GetInteger(kContextualTasksSessionCountPostOnboarding), 1);
+
+  // Two sessions after the acknowledgement reach the default
+  // `ContextualTasksPinPromoSessionDelay`.
+  coordinator_->Show(false,
+                     omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT);
+  EXPECT_EQ(prefs->GetInteger(kContextualTasksSessionCountPostOnboarding), 2);
+  EXPECT_GE(prefs->GetInteger(kContextualTasksSessionCountPostOnboarding),
+            GetContextualTasksNumSessionsBeforeRequestPinPromo());
+}
+
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       ShowDoesNotResetSessionCountWhenAskGoogleTooltipAcknowledged) {
+  PrefService* prefs = profile_->GetPrefs();
+  prefs->SetInteger(kContextualTasksSessionCountPostOnboarding, 3);
+  prefs->SetInteger(kContextualTasksAskGTooltipDismissedCount, 1);
+
+  coordinator_->Show(false,
+                     omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT);
+
+  EXPECT_EQ(prefs->GetInteger(kContextualTasksSessionCountPostOnboarding), 4);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(ContextualTasksSidePanelCoordinatorTest, GetActiveEntrySource) {
   ContextualTask task(base::Uuid::GenerateRandomV4());

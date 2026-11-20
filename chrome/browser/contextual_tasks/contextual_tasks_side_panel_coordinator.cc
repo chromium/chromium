@@ -763,6 +763,15 @@ void ContextualTasksSidePanelCoordinator::Show(
     // initialized (>= 0).
     int post_onboarding_sessions =
         pref_service_->GetInteger(kContextualTasksSessionCountPostOnboarding);
+    // Ask Google entry points show the Ask Google privacy notice instead of the
+    // onboarding tooltip, and accepting it does not initialize the count.
+    // Treat that acknowledgement as onboarding so these users can still reach
+    // the pinning promo.
+    if (post_onboarding_sessions < 0 &&
+        pref_service_->GetInteger(kContextualTasksAskGTooltipDismissedCount) >
+            0) {
+      post_onboarding_sessions = 0;
+    }
     if (post_onboarding_sessions >= 0) {
       post_onboarding_sessions++;
       pref_service_->SetInteger(kContextualTasksSessionCountPostOnboarding,
