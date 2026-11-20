@@ -429,7 +429,7 @@ class AURA_EXPORT WindowTreeHost : public ui::ImeKeyEventDispatcher,
   // it.
   bool ShouldThrottle() const;
 
-  static const base::flat_set<raw_ptr<WindowTreeHost, CtnExperimental>>&
+  static const base::flat_set<raw_ptr<WindowTreeHost>>&
   GetThrottledHostsForTesting();
 
   // Moves the cursor to the specified location. This method is internally used

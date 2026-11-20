@@ -365,7 +365,7 @@ class AURA_EXPORT NativeWindowOcclusionTrackerWin
   // Map of HWND to root app windows. Maintained on the UI thread, and used
   // to send occlusion state notifications to Windows from
   // `root_window_hwnds_occlusion_state_`.
-  base::flat_map<HWND, raw_ptr<Window, CtnExperimental>> hwnd_root_window_map_;
+  base::flat_map<HWND, raw_ptr<Window>> hwnd_root_window_map_;
 
   // This is set by UpdateOcclusionState. It is currently only used by tests.
   int num_visible_root_windows_ = 0;

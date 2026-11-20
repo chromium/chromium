@@ -45,7 +45,7 @@ AXAuraObjWrapper* AXViewObjWrapper::GetParent() {
 }
 
 void AXViewObjWrapper::GetChildren(
-    std::vector<raw_ptr<AXAuraObjWrapper, VectorExperimental>>* out_children) {
+    std::vector<raw_ptr<AXAuraObjWrapper>>* out_children) {
   const ViewAccessibility& view_accessibility = view_->GetViewAccessibility();
 
   // Ignore this view's descendants if it has a child tree.

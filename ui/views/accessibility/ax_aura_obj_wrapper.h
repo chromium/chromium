@@ -36,8 +36,7 @@ class VIEWS_EXPORT AXAuraObjWrapper {
   // Traversal and serialization.
   virtual AXAuraObjWrapper* GetParent() = 0;
   virtual void GetChildren(
-      std::vector<raw_ptr<AXAuraObjWrapper, VectorExperimental>>*
-          out_children) = 0;
+      std::vector<raw_ptr<AXAuraObjWrapper>>* out_children) = 0;
   virtual void Serialize(ui::AXNodeData* out_node_data) = 0;
   virtual ui::AXNodeID GetUniqueId() const = 0;
   virtual std::string ToString() const = 0;
@@ -48,8 +47,7 @@ class VIEWS_EXPORT AXAuraObjWrapper {
   const AXAuraObjCache* cache() const { return aura_obj_cache_; }
 
  protected:
-  std::optional<std::vector<raw_ptr<AXAuraObjWrapper, VectorExperimental>>>
-      cached_children_;
+  std::optional<std::vector<raw_ptr<AXAuraObjWrapper>>> cached_children_;
 
   // The cache associated with this wrapper. Subclasses should initialize this
   // cache on construction.

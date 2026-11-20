@@ -31,8 +31,7 @@ void MetaDataCache::AddClassMetaData(
   class_data_cache_.push_back(class_data.release());
 }
 
-std::vector<raw_ptr<ClassMetaData, VectorExperimental>>&
-MetaDataCache::GetCachedTypes() {
+std::vector<raw_ptr<ClassMetaData>>& MetaDataCache::GetCachedTypes() {
   return class_data_cache_;
 }
 

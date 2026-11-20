@@ -101,8 +101,7 @@ class COMPONENT_EXPORT(UI_BASE_METADATA) ClassMetaData {
   virtual ~ClassMetaData();
 
   std::string_view type_name() const { return type_name_; }
-  const std::vector<raw_ptr<MemberMetaDataBase, VectorExperimental>>& members()
-      const {
+  const std::vector<raw_ptr<MemberMetaDataBase>>& members() const {
     return members_;
   }
   const std::string_view file() const { return file_; }
@@ -177,7 +176,7 @@ class COMPONENT_EXPORT(UI_BASE_METADATA) ClassMetaData {
   // `type_name_` is a static string stored in the binary.
   std::string_view type_name_;
   mutable std::string unique_name_;
-  std::vector<raw_ptr<MemberMetaDataBase, VectorExperimental>> members_;
+  std::vector<raw_ptr<MemberMetaDataBase>> members_;
   raw_ptr<ClassMetaData> parent_class_meta_data_ = nullptr;
   const std::string_view file_;
   const int line_ = 0;

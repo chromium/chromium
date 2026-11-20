@@ -24,8 +24,7 @@ views::AXAuraObjWrapper* AXRootObjWrapper::GetParent() {
 }
 
 void AXRootObjWrapper::GetChildren(
-    std::vector<raw_ptr<views::AXAuraObjWrapper, VectorExperimental>>*
-        out_children) {
+    std::vector<raw_ptr<views::AXAuraObjWrapper>>* out_children) {
   aura_obj_cache_->GetTopLevelWindows(out_children);
 }
 

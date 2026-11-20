@@ -32,7 +32,7 @@ class VIEWS_EXAMPLES_EXPORT RadioButtonExample : public ExampleBase {
   void StatusButtonPressed();
 
   // Group of 3 radio buttons.
-  std::vector<raw_ptr<RadioButton, VectorExperimental>> radio_buttons_;
+  std::vector<raw_ptr<RadioButton>> radio_buttons_;
 };
 
 }  // namespace examples

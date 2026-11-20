@@ -113,7 +113,7 @@ class AuraContext::NativeCursorManager : public wm::NativeCursorManager {
   }
 
   // The set of hosts to notify of changes in cursor state.
-  base::flat_set<raw_ptr<aura::WindowTreeHost, CtnExperimental>> hosts_;
+  base::flat_set<raw_ptr<aura::WindowTreeHost>> hosts_;
 
   wm::CursorLoader cursor_loader_;
 };

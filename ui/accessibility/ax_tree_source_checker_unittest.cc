@@ -88,7 +88,7 @@ class FakeAXTreeSource
 
  private:
   std::vector<FakeAXNode> nodes_;
-  std::map<AXNodeID, raw_ptr<FakeAXNode, CtnExperimental>> id_to_node_;
+  std::map<AXNodeID, raw_ptr<FakeAXNode>> id_to_node_;
   AXNodeID root_id_;
 };
 

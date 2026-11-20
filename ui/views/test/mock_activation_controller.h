@@ -61,7 +61,7 @@ class MockActivationController : public views::WidgetObserver,
   void OnWidgetDestroying(Widget* widget) override;
   void OnWidgetVisibilityChanged(Widget* widget, bool visible) override;
 
-  using WidgetList = std::vector<raw_ptr<Widget, VectorExperimental>>;
+  using WidgetList = std::vector<raw_ptr<Widget>>;
 
   Widget* FindActivatableWidget(Widget* skip_widget = nullptr);
 

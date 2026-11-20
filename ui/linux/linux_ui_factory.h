@@ -33,8 +33,7 @@ LinuxUiTheme* GetLinuxUiTheme(SystemTheme system_theme);
 
 // Returns all `LinuxUiTheme`s that have been created.
 COMPONENT_EXPORT(LINUX_UI_FACTORY)
-const std::vector<raw_ptr<LinuxUiTheme, VectorExperimental>>&
-GetLinuxUiThemes();
+const std::vector<raw_ptr<LinuxUiTheme>>& GetLinuxUiThemes();
 
 COMPONENT_EXPORT(LINUX_UI_FACTORY)
 SystemTheme GetDefaultSystemTheme();

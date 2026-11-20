@@ -244,7 +244,7 @@ class LayoutConsensusGroup {
   }
 
  private:
-  base::flat_set<raw_ptr<View, CtnExperimental>> children_;
+  base::flat_set<raw_ptr<View>> children_;
 };
 
 class LayoutConsensusView : public View {

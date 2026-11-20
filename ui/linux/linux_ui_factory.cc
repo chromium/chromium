@@ -34,10 +34,8 @@ namespace ui {
 
 namespace {
 
-std::vector<raw_ptr<LinuxUiTheme, VectorExperimental>>& GetLinuxUiThemesImpl() {
-  static base::NoDestructor<
-      std::vector<raw_ptr<LinuxUiTheme, VectorExperimental>>>
-      themes;
+std::vector<raw_ptr<LinuxUiTheme>>& GetLinuxUiThemesImpl() {
+  static base::NoDestructor<std::vector<raw_ptr<LinuxUiTheme>>> themes;
   return *themes;
 }
 
@@ -178,8 +176,7 @@ LinuxUiTheme* GetLinuxUiTheme(SystemTheme system_theme) {
   }
 }
 
-const std::vector<raw_ptr<LinuxUiTheme, VectorExperimental>>&
-GetLinuxUiThemes() {
+const std::vector<raw_ptr<LinuxUiTheme>>& GetLinuxUiThemes() {
   return GetLinuxUiThemesImpl();
 }
 

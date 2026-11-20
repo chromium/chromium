@@ -129,7 +129,7 @@ class VIEWS_EXAMPLES_EXPORT DesignerExample : public ExampleBase,
     View* layout_panel() { return layout_panel_; }
 
    private:
-    std::vector<raw_ptr<GrabHandle, VectorExperimental>> grab_handles_;
+    std::vector<raw_ptr<GrabHandle>> grab_handles_;
     raw_ptr<View> layout_panel_ = nullptr;
   };
 
@@ -178,8 +178,7 @@ class VIEWS_EXAMPLES_EXPORT DesignerExample : public ExampleBase,
   raw_ptr<View> dragging_ = nullptr;
   gfx::Point last_mouse_pos_;
   std::vector<std::unique_ptr<DesignerPropertyEditor>> active_editors_;
-  std::vector<raw_ptr<DesignerPropertyEditor, VectorExperimental>>
-      display_list_;
+  std::vector<raw_ptr<DesignerPropertyEditor>> display_list_;
   raw_ptr<InPlaceEditor> active_inplace_editor_ = nullptr;
 
   GrabHandles grab_handles_;

@@ -324,9 +324,7 @@ class AXFragmentRootMapWin {
   }
 
  private:
-  absl::flat_hash_map<gfx::AcceleratedWidget,
-                      raw_ptr<AXFragmentRootWin, CtnExperimental>>
-      map_;
+  absl::flat_hash_map<gfx::AcceleratedWidget, raw_ptr<AXFragmentRootWin>> map_;
 };
 
 AXFragmentRootWin::AXFragmentRootWin(gfx::AcceleratedWidget widget,

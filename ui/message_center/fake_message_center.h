@@ -120,7 +120,7 @@ class FakeMessageCenter : public MessageCenter {
       observers_;
   NotificationList notifications_;
   NotificationList::Notifications visible_notifications_;
-  std::vector<raw_ptr<NotificationBlocker, VectorExperimental>> blockers_;
+  std::vector<raw_ptr<NotificationBlocker>> blockers_;
   bool has_message_center_view_ = true;
 };
 

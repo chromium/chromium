@@ -38,8 +38,7 @@ class PortalSettingsLinux {
   PortalSettingsLinux();
   PortalSettingsLinux(
       scoped_refptr<dbus::Bus> bus,
-      const std::vector<raw_ptr<LinuxUiTheme, VectorExperimental>>*
-          linux_ui_themes);
+      const std::vector<raw_ptr<LinuxUiTheme>>* linux_ui_themes);
   PortalSettingsLinux(const PortalSettingsLinux&) = delete;
   PortalSettingsLinux& operator=(const PortalSettingsLinux&) = delete;
   ~PortalSettingsLinux();
@@ -91,8 +90,7 @@ class PortalSettingsLinux {
 
   void SetAccentColor(dbus_utils::Variant variant);
 
-  raw_ptr<const std::vector<raw_ptr<LinuxUiTheme, VectorExperimental>>>
-      linux_ui_themes_;
+  raw_ptr<const std::vector<raw_ptr<LinuxUiTheme>>> linux_ui_themes_;
 
   scoped_refptr<dbus::Bus> bus_;
   raw_ptr<dbus::ObjectProxy> settings_proxy_;

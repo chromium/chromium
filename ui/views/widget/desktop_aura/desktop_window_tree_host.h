@@ -49,8 +49,7 @@ class DesktopNativeWidgetAura;
 
 class VIEWS_EXPORT DesktopWindowTreeHost {
  public:
-  using WindowTreeHosts =
-      std::set<raw_ptr<aura::WindowTreeHost, SetExperimental>>;
+  using WindowTreeHosts = std::set<raw_ptr<aura::WindowTreeHost>>;
 
   virtual ~DesktopWindowTreeHost() = default;
 

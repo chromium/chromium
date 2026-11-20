@@ -82,8 +82,7 @@ bool FindDescendantRoleWithMaxDepth(const AXPlatformNodeBase* node,
 }
 
 // Map from each AXPlatformNode's unique id to its instance.
-using UniqueIdMap =
-    absl::flat_hash_map<int32_t, raw_ptr<AXPlatformNode, CtnExperimental>>;
+using UniqueIdMap = absl::flat_hash_map<int32_t, raw_ptr<AXPlatformNode>>;
 UniqueIdMap& GetUniqueIdMap() {
   static base::NoDestructor<UniqueIdMap> map;
   return *map;

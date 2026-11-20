@@ -36,7 +36,7 @@ AXAuraObjWrapper* AXVirtualViewWrapper::GetParent() {
 }
 
 void AXVirtualViewWrapper::GetChildren(
-    std::vector<raw_ptr<AXAuraObjWrapper, VectorExperimental>>* out_children) {
+    std::vector<raw_ptr<AXAuraObjWrapper>>* out_children) {
   for (const auto& child : virtual_view_->children()) {
     out_children->push_back(child->GetOrCreateWrapper(aura_obj_cache_));
   }

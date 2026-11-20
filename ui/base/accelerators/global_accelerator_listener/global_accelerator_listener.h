@@ -145,8 +145,7 @@ class COMPONENT_EXPORT(GLOBAL_ACCELERATOR_LISTENER) GlobalAcceleratorListener {
 
   // The map of accelerators that have been successfully registered as global
   // accelerators and their observer.
-  typedef std::map<ui::Accelerator, raw_ptr<Observer, CtnExperimental>>
-      AcceleratorMap;
+  typedef std::map<ui::Accelerator, raw_ptr<Observer>> AcceleratorMap;
   AcceleratorMap accelerator_map_;
 
   // Keeps track of whether shortcut handling is currently suspended.

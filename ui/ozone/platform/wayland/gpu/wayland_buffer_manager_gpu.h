@@ -310,7 +310,7 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
   mojo::AssociatedReceiver<ozone::mojom::WaylandBufferManagerGpu>
       associated_receiver_{this};
 
-  std::map<gfx::AcceleratedWidget, raw_ptr<WaylandSurfaceGpu, CtnExperimental>>
+  std::map<gfx::AcceleratedWidget, raw_ptr<WaylandSurfaceGpu>>
       widget_to_surface_map_;  // Guarded by |lock_|.
 
   // Supported shared imageformats and modifiers sent by the Wayland compositor

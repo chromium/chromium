@@ -35,7 +35,7 @@ class VIEWS_EXPORT MessageBoxView : public BoxLayoutView {
   METADATA_HEADER(MessageBoxView, BoxLayoutView)
 
  public:
-  using MessageLabels = std::vector<raw_ptr<views::Label, VectorExperimental>>;
+  using MessageLabels = std::vector<raw_ptr<views::Label>>;
 
   // |detect_directionality| indicates whether |message|'s directionality is
   // auto-detected.

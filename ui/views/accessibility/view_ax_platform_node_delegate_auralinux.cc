@@ -198,7 +198,7 @@ class AuraLinuxApplication : public ui::AXPlatformNodeDelegate,
   ui::AXPlatformNode::Pointer ax_platform_node_;
   const ui::AXUniqueId unique_id_{ui::AXUniqueId::Create()};
   mutable ui::AXNodeData data_;
-  std::vector<raw_ptr<Widget, VectorExperimental>> widgets_;
+  std::vector<raw_ptr<Widget>> widgets_;
   base::ScopedMultiSourceObservation<Widget, WidgetObserver>
       widget_observations_{this};
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>

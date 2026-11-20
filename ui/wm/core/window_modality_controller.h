@@ -78,7 +78,7 @@ class COMPONENT_EXPORT(UI_WM) WindowModalityController
 
   raw_ptr<aura::Env> env_;
 
-  std::vector<raw_ptr<aura::Window, VectorExperimental>> windows_;
+  std::vector<raw_ptr<aura::Window>> windows_;
 
   raw_ptr<ui::EventTarget> event_target_;
 };

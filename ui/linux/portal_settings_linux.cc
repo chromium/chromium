@@ -31,8 +31,7 @@ PortalSettingsLinux::PortalSettingsLinux()
 
 PortalSettingsLinux::PortalSettingsLinux(
     scoped_refptr<dbus::Bus> bus,
-    const std::vector<raw_ptr<LinuxUiTheme, VectorExperimental>>*
-        linux_ui_themes)
+    const std::vector<raw_ptr<LinuxUiTheme>>* linux_ui_themes)
     : linux_ui_themes_(linux_ui_themes),
       bus_(bus),
       settings_proxy_(bus_->GetObjectProxy(

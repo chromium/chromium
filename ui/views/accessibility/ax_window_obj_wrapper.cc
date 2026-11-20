@@ -134,7 +134,7 @@ AXAuraObjWrapper* AXWindowObjWrapper::GetParent() {
 }
 
 void AXWindowObjWrapper::GetChildren(
-    std::vector<raw_ptr<AXAuraObjWrapper, VectorExperimental>>* out_children) {
+    std::vector<raw_ptr<AXAuraObjWrapper>>* out_children) {
   // Ignore this window's descendants if it has a child tree.
   if (window_->GetProperty(ui::kChildAXTreeID) &&
       ui::AXTreeID::FromString(*(window_->GetProperty(ui::kChildAXTreeID))) !=

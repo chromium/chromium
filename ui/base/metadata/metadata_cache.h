@@ -33,12 +33,12 @@ class COMPONENT_EXPORT(UI_BASE_METADATA) MetaDataCache {
   static MetaDataCache* GetInstance();
 
   void AddClassMetaData(std::unique_ptr<ClassMetaData> class_data);
-  std::vector<raw_ptr<ClassMetaData, VectorExperimental>>& GetCachedTypes();
+  std::vector<raw_ptr<ClassMetaData>>& GetCachedTypes();
 
  private:
   ~MetaDataCache();
 
-  std::vector<raw_ptr<ClassMetaData, VectorExperimental>> class_data_cache_;
+  std::vector<raw_ptr<ClassMetaData>> class_data_cache_;
 };
 
 // These functions are rarely called directly, rather they are called from

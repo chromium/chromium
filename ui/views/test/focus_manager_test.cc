@@ -106,7 +106,7 @@ void FocusManagerTest::RemoveNativeViewFocusChangeListener(
 }
 
 void FocusManagerTest::SetAccessiblePanes(
-    const std::vector<raw_ptr<View, VectorExperimental>>& panes) {
+    const std::vector<raw_ptr<View>>& panes) {
   accessible_panes_ = panes;
 }
 

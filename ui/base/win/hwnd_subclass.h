@@ -75,7 +75,7 @@ class COMPONENT_EXPORT(UI_BASE) HWNDSubclass {
   explicit HWNDSubclass(HWND target);
 
   HWND target_;
-  std::vector<raw_ptr<HWNDMessageFilter, VectorExperimental>> filters_;
+  std::vector<raw_ptr<HWNDMessageFilter>> filters_;
   WNDPROC original_wnd_proc_;
   ui::ViewProp prop_;
 };

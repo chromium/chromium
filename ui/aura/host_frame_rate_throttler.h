@@ -22,8 +22,7 @@ class AURA_EXPORT HostFrameRateThrottler {
   void AddHost(WindowTreeHost* host);
   void RemoveHost(WindowTreeHost* host);
 
-  const base::flat_set<raw_ptr<WindowTreeHost, CtnExperimental>>& hosts()
-      const {
+  const base::flat_set<raw_ptr<WindowTreeHost>>& hosts() const {
     return hosts_;
   }
 
@@ -36,7 +35,7 @@ class AURA_EXPORT HostFrameRateThrottler {
   void UpdateHostFrameSinkManager();
 
   // Set of hosts that are currently throttled.
-  base::flat_set<raw_ptr<WindowTreeHost, CtnExperimental>> hosts_;
+  base::flat_set<raw_ptr<WindowTreeHost>> hosts_;
 };
 
 }  // namespace aura

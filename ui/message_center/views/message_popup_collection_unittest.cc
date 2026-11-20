@@ -66,9 +66,7 @@ class MockMessagePopupCollection : public DesktopMessagePopupCollection {
     new_popup_height_ = new_popup_height;
   }
 
-  std::vector<raw_ptr<MockMessagePopupView, VectorExperimental>>& popups() {
-    return popups_;
-  }
+  std::vector<raw_ptr<MockMessagePopupView>>& popups() { return popups_; }
 
   bool popup_timer_started() const { return popup_timer_started_; }
 
@@ -120,7 +118,7 @@ class MockMessagePopupCollection : public DesktopMessagePopupCollection {
  private:
   gfx::NativeWindow context_;
 
-  std::vector<raw_ptr<MockMessagePopupView, VectorExperimental>> popups_;
+  std::vector<raw_ptr<MockMessagePopupView>> popups_;
 
   bool popup_timer_started_ = false;
   bool is_primary_display_ = true;

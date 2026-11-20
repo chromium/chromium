@@ -84,7 +84,7 @@ class TestAXEventObserver : public AXUpdateObserver {
 
   // AXUpdateObserver:
   void OnViewEvent(View* view, ax::mojom::Event event_type) override {
-    std::vector<raw_ptr<AXAuraObjWrapper, VectorExperimental>> out_children;
+    std::vector<raw_ptr<AXAuraObjWrapper>> out_children;
     AXAuraObjWrapper* ax_obj = cache_->GetOrCreate(view->GetWidget());
     ax_obj->GetChildren(&out_children);
   }

@@ -166,7 +166,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) OneShotAccessibilityTreeSearch final {
   bool onscreen_only_ = false;
   std::string search_text_;
   std::vector<AccessibilityMatchPredicate> predicates_;
-  std::vector<raw_ptr<BrowserAccessibility, VectorExperimental>> matches_;
+  std::vector<raw_ptr<BrowserAccessibility>> matches_;
   bool did_search_ = false;
 };
 

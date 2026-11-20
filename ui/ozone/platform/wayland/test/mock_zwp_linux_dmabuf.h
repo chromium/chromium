@@ -36,8 +36,8 @@ class MockZwpLinuxDmabufV1 : public GlobalObject {
                     wl_resource* resource,
                     uint32_t params_id));
 
-  const std::vector<raw_ptr<TestZwpLinuxBufferParamsV1, VectorExperimental>>&
-  buffer_params() const {
+  const std::vector<raw_ptr<TestZwpLinuxBufferParamsV1>>& buffer_params()
+      const {
     return buffer_params_;
   }
 
@@ -46,8 +46,7 @@ class MockZwpLinuxDmabufV1 : public GlobalObject {
   void OnBufferParamsDestroyed(TestZwpLinuxBufferParamsV1* params);
 
  private:
-  std::vector<raw_ptr<TestZwpLinuxBufferParamsV1, VectorExperimental>>
-      buffer_params_;
+  std::vector<raw_ptr<TestZwpLinuxBufferParamsV1>> buffer_params_;
 };
 
 }  // namespace wl

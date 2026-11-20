@@ -373,15 +373,14 @@ class UI_ANDROID_EXPORT ViewAndroid {
 
     raw_ptr<ViewAndroid> view_;
     IterationType type_;
-    std::list<raw_ptr<ViewAndroid, CtnExperimental>>::iterator it_;
+    std::list<raw_ptr<ViewAndroid>>::iterator it_;
   };
 
   // Safely advances any active iterators currently pointing to `child_it`
   // before a mutation (e.g. Remove, MoveToFront) changes the list.
-  void StepIteratorsOver(
-      std::list<raw_ptr<ViewAndroid, CtnExperimental>>::iterator child_it);
+  void StepIteratorsOver(std::list<raw_ptr<ViewAndroid>>::iterator child_it);
 
-  std::list<raw_ptr<ViewAndroid, CtnExperimental>> children_;
+  std::list<raw_ptr<ViewAndroid>> children_;
 
   // Tracks all active iterators traversing the `children_` list, allowing
   // real-time updates when the list structure changes (e.g. RemoveChild).

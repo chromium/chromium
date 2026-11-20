@@ -30,7 +30,7 @@ AXAuraObjWrapper* AXWidgetObjWrapper::GetParent() {
 }
 
 void AXWidgetObjWrapper::GetChildren(
-    std::vector<raw_ptr<AXAuraObjWrapper, VectorExperimental>>* out_children) {
+    std::vector<raw_ptr<AXAuraObjWrapper>>* out_children) {
   if (!widget_->IsVisible() || !widget_->GetRootView() ||
       !widget_->GetRootView()->GetVisible()) {
     return;

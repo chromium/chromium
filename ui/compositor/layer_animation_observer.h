@@ -48,8 +48,7 @@ class COMPOSITOR_EXPORT LayerAnimationObserver  {
       LayerAnimationSequence* sequence) = 0;
 
  protected:
-  typedef std::set<raw_ptr<LayerAnimationSequence, SetExperimental>>
-      AttachedSequences;
+  typedef std::set<raw_ptr<LayerAnimationSequence>> AttachedSequences;
 
   LayerAnimationObserver();
   virtual ~LayerAnimationObserver();

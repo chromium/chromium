@@ -25,8 +25,7 @@ void SetHostDispatcher(WindowTreeHost* host,
                        std::unique_ptr<WindowEventDispatcher> dispatcher);
 void DisableIME(WindowTreeHost* host);
 void DisableNativeWindowOcclusionTracking(WindowTreeHost* host);
-const base::flat_set<raw_ptr<WindowTreeHost, CtnExperimental>>&
-GetThrottledHosts();
+const base::flat_set<raw_ptr<WindowTreeHost>>& GetThrottledHosts();
 bool AcceleratedWidgetMadeVisible(WindowTreeHost* host);
 
 }  // namespace test

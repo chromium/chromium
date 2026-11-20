@@ -125,8 +125,7 @@ class PortalSettingsLinuxTest : public testing::Test {
         });
 
     mock_linux_ui_ = std::make_unique<MockLinuxUi>();
-    linux_ui_themes_ = std::vector<raw_ptr<LinuxUiTheme, VectorExperimental>>{
-        mock_linux_ui_.get()};
+    linux_ui_themes_ = std::vector<raw_ptr<LinuxUiTheme>>{mock_linux_ui_.get()};
 
     // In production, each toolkit's `SetColorScheme()`/`SetAccentColor()` route
     // the value through its `OsSettingsProvider`, which is what drives the web
@@ -172,7 +171,7 @@ class PortalSettingsLinuxTest : public testing::Test {
   }
 
   std::unique_ptr<MockLinuxUi> mock_linux_ui_;
-  std::vector<raw_ptr<LinuxUiTheme, VectorExperimental>> linux_ui_themes_;
+  std::vector<raw_ptr<LinuxUiTheme>> linux_ui_themes_;
 
   MockOsSettingsProvider os_settings_provider_;
 

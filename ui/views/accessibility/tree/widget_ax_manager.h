@@ -45,12 +45,12 @@ class AXVirtualView;
 class ViewAccessibility;
 class Widget;
 
-using ViewAccessibilityAXTreeSerializer = ui::AXTreeSerializer<
-    ViewAccessibility*,
-    std::vector<raw_ptr<ViewAccessibility, VectorExperimental>>,
-    ui::AXTreeUpdate*,
-    ui::AXTreeData*,
-    ui::AXNodeData>;
+using ViewAccessibilityAXTreeSerializer =
+    ui::AXTreeSerializer<ViewAccessibility*,
+                         std::vector<raw_ptr<ViewAccessibility>>,
+                         ui::AXTreeUpdate*,
+                         ui::AXTreeData*,
+                         ui::AXNodeData>;
 
 // This class owns and manages the accessibility tree for a Widget. It is owned
 // by the `widget_` and must never outlive its owner. This is currently under

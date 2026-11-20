@@ -95,14 +95,14 @@ void AXTreeSourceViews::CacheChildrenIfNeeded(AXAuraObjWrapper* node) {
 }
 
 size_t AXTreeSourceViews::GetChildCount(AXAuraObjWrapper* node) const {
-  std::vector<raw_ptr<AXAuraObjWrapper, VectorExperimental>> children;
+  std::vector<raw_ptr<AXAuraObjWrapper>> children;
   node->GetChildren(&children);
   return children.size();
 }
 
 AXAuraObjWrapper* AXTreeSourceViews::ChildAt(AXAuraObjWrapper* node,
                                              size_t index) const {
-  std::vector<raw_ptr<AXAuraObjWrapper, VectorExperimental>> children;
+  std::vector<raw_ptr<AXAuraObjWrapper>> children;
   node->GetChildren(&children);
   return children[index];
 }
@@ -179,7 +179,7 @@ std::string AXTreeSourceViews::ToString(AXAuraObjWrapper* root,
   root->Serialize(&data);
   std::string output = prefix + data.ToString() + '\n';
 
-  std::vector<raw_ptr<AXAuraObjWrapper, VectorExperimental>> children;
+  std::vector<raw_ptr<AXAuraObjWrapper>> children;
   root->GetChildren(&children);
 
   prefix += prefix[0];

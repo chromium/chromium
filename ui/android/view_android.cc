@@ -386,7 +386,7 @@ void ViewAndroid::RemoveChild(ViewAndroid* child) {
   if (GetWindowAndroid()) {
     child->OnDetachedFromWindow();
   }
-  std::list<raw_ptr<ViewAndroid, CtnExperimental>>::iterator it =
+  std::list<raw_ptr<ViewAndroid>>::iterator it =
       std::ranges::find(children_, child);
   CHECK(it != children_.end());
 
@@ -1015,7 +1015,7 @@ void ViewAndroid::ScopedChildrenIter::ViewDestroyed() {
 }
 
 void ViewAndroid::StepIteratorsOver(
-    std::list<raw_ptr<ViewAndroid, CtnExperimental>>::iterator child_it) {
+    std::list<raw_ptr<ViewAndroid>>::iterator child_it) {
   for (auto* node = active_iters_.head(); node != active_iters_.end();
        node = node->next()) {
     if (node->value()->it_ == child_it) {

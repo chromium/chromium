@@ -114,7 +114,7 @@ class GbmSurfaceFactory : public SurfaceFactoryOzone {
 
   const raw_ptr<DrmThreadProxy> drm_thread_proxy_;
 
-  std::map<gfx::AcceleratedWidget, raw_ptr<GbmSurfaceless, CtnExperimental>>
+  std::map<gfx::AcceleratedWidget, raw_ptr<GbmSurfaceless>>
       widget_to_surface_map_;
 
   GetProtectedNativePixmapCallback get_protected_native_pixmap_callback_;

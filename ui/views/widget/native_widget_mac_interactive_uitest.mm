@@ -258,8 +258,7 @@ class WidgetActivationRecorder : public WidgetObserver {
 
   ~WidgetActivationRecorder() override = default;
 
-  const std::vector<raw_ptr<Widget, VectorExperimental>>& activated_widgets()
-      const {
+  const std::vector<raw_ptr<Widget>>& activated_widgets() const {
     return activated_widgets_;
   }
 
@@ -270,7 +269,7 @@ class WidgetActivationRecorder : public WidgetObserver {
     }
   }
 
-  std::vector<raw_ptr<Widget, VectorExperimental>> activated_widgets_;
+  std::vector<raw_ptr<Widget>> activated_widgets_;
   base::ScopedMultiSourceObservation<Widget, WidgetObserver>
       widget_observations_{this};
 };
