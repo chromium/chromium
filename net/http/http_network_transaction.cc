@@ -1935,8 +1935,6 @@ int HttpNetworkTransaction::DoReadBodyComplete(int result) {
     // error with an alternative service, mark that alternative service broken.
     if (!enable_alternative_services_ &&
         retried_alternative_service_.protocol != NextProto::kProtoUnknown) {
-      HistogramBrokenAlternateProtocolLocation(
-          BROKEN_ALTERNATE_PROTOCOL_LOCATION_HTTP_NETWORK_TRANSACTION);
       session_->http_server_properties()->MarkAlternativeServiceBroken(
           retried_alternative_service_, network_anonymization_key_);
     }

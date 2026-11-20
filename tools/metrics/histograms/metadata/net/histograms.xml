@@ -1266,15 +1266,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.AlternateProtocolBrokenLocation"
-    enum="BrokenAlternateProtocolLocation" expires_after="2024-02-25">
-  <owner>dschinazi@chromium.org</owner>
-  <owner>src/net/OWNERS</owner>
-  <summary>
-    Breakdown of the locations when SetBrokenAlternateProtocol is called.
-  </summary>
-</histogram>
-
 <histogram name="Net.AlternateProtocolUsage" enum="AlternateProtocolUsage"
     expires_after="2027-04-04">
   <owner>dschinazi@chromium.org</owner>

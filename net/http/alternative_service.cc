@@ -25,12 +25,6 @@ void HistogramAlternateProtocolUsage(AlternateProtocolUsage usage,
   }
 }
 
-void HistogramBrokenAlternateProtocolLocation(
-    BrokenAlternateProtocolLocation location) {
-  UMA_HISTOGRAM_ENUMERATION("Net.AlternateProtocolBrokenLocation", location,
-                            BROKEN_ALTERNATE_PROTOCOL_LOCATION_MAX);
-}
-
 bool IsAlternateProtocolValid(NextProto protocol) {
   switch (protocol) {
     case NextProto::kProtoUnknown:

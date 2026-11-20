@@ -27,20 +27,6 @@ namespace net {
 NET_EXPORT void HistogramAlternateProtocolUsage(AlternateProtocolUsage usage,
                                                 bool is_google_host);
 
-enum BrokenAlternateProtocolLocation {
-  BROKEN_ALTERNATE_PROTOCOL_LOCATION_HTTP_STREAM_FACTORY_JOB = 0,
-  BROKEN_ALTERNATE_PROTOCOL_LOCATION_QUIC_SESSION_POOL = 1,
-  BROKEN_ALTERNATE_PROTOCOL_LOCATION_HTTP_STREAM_FACTORY_JOB_ALT = 2,
-  BROKEN_ALTERNATE_PROTOCOL_LOCATION_HTTP_STREAM_FACTORY_JOB_MAIN = 3,
-  BROKEN_ALTERNATE_PROTOCOL_LOCATION_QUIC_HTTP_STREAM = 4,
-  BROKEN_ALTERNATE_PROTOCOL_LOCATION_HTTP_NETWORK_TRANSACTION = 5,
-  BROKEN_ALTERNATE_PROTOCOL_LOCATION_MAX,
-};
-
-// Log a histogram to reflect |location|.
-NET_EXPORT void HistogramBrokenAlternateProtocolLocation(
-    BrokenAlternateProtocolLocation location);
-
 // Returns true if |protocol| is a valid protocol.
 NET_EXPORT bool IsAlternateProtocolValid(NextProto protocol);
 

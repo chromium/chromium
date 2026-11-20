@@ -3097,9 +3097,6 @@ void QuicSessionPool::ProcessGoingAwaySession(
   // from the peer, we should consider blocking this differently so that we
   // still race TCP but we don't consider the session connected until the
   // handshake has been confirmed.
-  HistogramBrokenAlternateProtocolLocation(
-      BROKEN_ALTERNATE_PROTOCOL_LOCATION_QUIC_SESSION_POOL);
-
   // Since the session was active, there's no longer an HttpStreamFactory::Job
   // running which can mark it broken, unless the TCP job also fails. So to
   // avoid not using QUIC when we otherwise could, we mark it as recently

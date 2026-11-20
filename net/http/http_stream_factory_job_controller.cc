@@ -1348,8 +1348,6 @@ void HttpStreamFactory::JobController::MaybeReportBrokenAlternativeService(
   // Report brokenness if alternative job failed.
   base::UmaHistogramSparse(histogram_name_for_failure, -alt_job_net_error);
 
-  HistogramBrokenAlternateProtocolLocation(
-      BROKEN_ALTERNATE_PROTOCOL_LOCATION_HTTP_STREAM_FACTORY_JOB_ALT);
   session_->http_server_properties()->MarkAlternativeServiceBroken(
       alt_service, request_info_.network_anonymization_key);
 }
