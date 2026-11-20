@@ -9,7 +9,6 @@
 #include <memory>
 #include <optional>
 #include <string>
-#include <string_view>
 #include <utility>
 
 #include "base/base64url.h"
@@ -52,16 +51,12 @@ static std::string ShortenTo64Characters(const std::string& input) {
 
 static base::DictValue CreateJSONDictionary(base::span<const uint8_t> key,
                                             base::span<const uint8_t> key_id) {
-  std::string key_string, key_id_string;
-  base::Base64UrlEncode(key, base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &key_string);
-  base::Base64UrlEncode(key_id, base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &key_id_string);
-
   base::DictValue jwk;
   jwk.Set(kKeyTypeTag, kKeyTypeOct);
-  jwk.Set(kKeyTag, key_string);
-  jwk.Set(kKeyIdTag, key_id_string);
+  jwk.Set(kKeyTag, base::Base64UrlEncode(
+                       key, base::Base64UrlEncodePolicy::OMIT_PADDING));
+  jwk.Set(kKeyIdTag, base::Base64UrlEncode(
+                         key_id, base::Base64UrlEncodePolicy::OMIT_PADDING));
   return jwk;
 }
 
@@ -289,13 +284,8 @@ void CreateLicenseRequest(const KeyIdList& key_ids,
   base::DictValue request;
   base::ListValue list;
   for (const auto& key_id : key_ids) {
-    std::string key_id_string;
-    base::Base64UrlEncode(
-        std::string_view(reinterpret_cast<const char*>(key_id.data()),
-                         key_id.size()),
-        base::Base64UrlEncodePolicy::OMIT_PADDING, &key_id_string);
-
-    list.Append(key_id_string);
+    list.Append(base::Base64UrlEncode(
+        key_id, base::Base64UrlEncodePolicy::OMIT_PADDING));
   }
   request.Set(kKeyIdsTag, std::move(list));
 
@@ -321,13 +311,8 @@ base::DictValue MakeKeyIdsDictionary(const KeyIdList& key_ids) {
   base::DictValue dictionary;
   base::ListValue list;
   for (const auto& key_id : key_ids) {
-    std::string key_id_string;
-    base::Base64UrlEncode(
-        std::string_view(reinterpret_cast<const char*>(key_id.data()),
-                         key_id.size()),
-        base::Base64UrlEncodePolicy::OMIT_PADDING, &key_id_string);
-
-    list.Append(key_id_string);
+    list.Append(base::Base64UrlEncode(
+        key_id, base::Base64UrlEncodePolicy::OMIT_PADDING));
   }
   dictionary.Set(kKeyIdsTag, std::move(list));
   return dictionary;
