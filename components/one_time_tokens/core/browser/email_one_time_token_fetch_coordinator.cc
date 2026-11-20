@@ -19,11 +19,8 @@ namespace one_time_tokens {
 namespace {
 
 std::string EncodeMessageReference(const EncryptedMessageReference& reference) {
-  std::string encoded_reference;
-  base::Base64UrlEncode(reference.value(),
-                        base::Base64UrlEncodePolicy::INCLUDE_PADDING,
-                        &encoded_reference);
-  return encoded_reference;
+  return base::Base64UrlEncode(reference.value(),
+                               base::Base64UrlEncodePolicy::INCLUDE_PADDING);
 }
 
 }  // namespace

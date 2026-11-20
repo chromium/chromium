@@ -202,11 +202,8 @@ CreateClientCertificateState(
 }
 
 std::string HashAndEncodeString(const std::string& spki_bytes) {
-  std::string encoded_string;
-  base::Base64UrlEncode(crypto::SHA256HashString(spki_bytes),
-                        base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &encoded_string);
-  return encoded_string;
+  return base::Base64UrlEncode(crypto::SHA256HashString(spki_bytes),
+                               base::Base64UrlEncodePolicy::OMIT_PADDING);
 }
 
 connectors_internals::mojom::Int32ValuePtr ToMojomValue(

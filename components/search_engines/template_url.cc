@@ -1340,10 +1340,9 @@ std::string TemplateURLRef::HandleReplacements(
           std::vector<uint8_t> serialized_searchbox_stats(searchbox_stats_size);
           search_terms_args.searchbox_stats.SerializeWithCachedSizesToArray(
               &serialized_searchbox_stats[0]);
-          std::string encoded_searchbox_stats;
-          base::Base64UrlEncode(serialized_searchbox_stats,
-                                base::Base64UrlEncodePolicy::OMIT_PADDING,
-                                &encoded_searchbox_stats);
+          std::string encoded_searchbox_stats =
+              base::Base64UrlEncode(serialized_searchbox_stats,
+                                    base::Base64UrlEncodePolicy::OMIT_PADDING);
           HandleReplacement("gs_lcrp", encoded_searchbox_stats, replacement,
                             &url);
           base::UmaHistogramCounts1000(

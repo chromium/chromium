@@ -33,12 +33,8 @@ blink::WebCryptoAlgorithm CreateRsaOaepAlgorithm(
 std::string Base64EncodeUrlSafe(const std::vector<uint8_t>& input) {
   // The JSON web signature spec says that padding is omitted.
   // https://tools.ietf.org/html/draft-ietf-jose-json-web-signature-36#section-2
-  std::string base64url_encoded;
-  base::Base64UrlEncode(
-      std::string_view(reinterpret_cast<const char*>(input.data()),
-                       input.size()),
-      base::Base64UrlEncodePolicy::OMIT_PADDING, &base64url_encoded);
-  return base64url_encoded;
+  return base::Base64UrlEncode(input,
+                               base::Base64UrlEncodePolicy::OMIT_PADDING);
 }
 
 base::DictValue CreatePublicKeyJwkDict(

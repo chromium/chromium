@@ -53,13 +53,11 @@ bool CreateEncryptedPayloadForTesting(std::string_view payload,
     return false;
   }
 
-  std::string encoded_salt, encoded_public_key;
-
   // Create base64url encoded representations of the salt and local public key.
-  base::Base64UrlEncode(salt, base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &encoded_salt);
-  base::Base64UrlEncode(public_key, base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &encoded_public_key);
+  std::string encoded_salt =
+      base::Base64UrlEncode(salt, base::Base64UrlEncodePolicy::OMIT_PADDING);
+  std::string encoded_public_key = base::Base64UrlEncode(
+      public_key, base::Base64UrlEncodePolicy::OMIT_PADDING);
 
   // Write the Encryption header value to |*message|.
   std::stringstream encryption_header;

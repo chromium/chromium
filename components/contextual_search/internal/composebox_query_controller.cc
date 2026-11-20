@@ -780,12 +780,10 @@ void ComposeboxQueryController::CreateSearchUrl(
         added_inputs.turn_title_thumbnail_size() > 0) {
       std::string serialized_proto;
       CHECK(added_inputs.SerializeToString(&serialized_proto));
-      std::string encoded_proto;
-      base::Base64UrlEncode(serialized_proto,
-                            base::Base64UrlEncodePolicy::OMIT_PADDING,
-                            &encoded_proto);
       search_url_request_info->additional_params.insert(
-          {kAddedInputsQueryParameterKey, encoded_proto});
+          {kAddedInputsQueryParameterKey,
+           base::Base64UrlEncode(serialized_proto,
+                                 base::Base64UrlEncodePolicy::OMIT_PADDING)});
     }
 
     // Add the amc param to indicate that the query was generated from a client
@@ -1819,11 +1817,9 @@ ComposeboxQueryController::CreateSuggestInputs(
     if (contextual_inputs->inputs_size() > 0) {
       std::string serialized_contextual_inputs;
       if (contextual_inputs->SerializeToString(&serialized_contextual_inputs)) {
-        std::string encoded_contextual_inputs;
-        base::Base64UrlEncode(serialized_contextual_inputs,
-                              base::Base64UrlEncodePolicy::OMIT_PADDING,
-                              &encoded_contextual_inputs);
-        suggest_inputs->set_encoded_contextual_inputs(encoded_contextual_inputs);
+        suggest_inputs->set_encoded_contextual_inputs(
+            base::Base64UrlEncode(serialized_contextual_inputs,
+                                  base::Base64UrlEncodePolicy::OMIT_PADDING));
       }
     }
   } else if (file_info && file_info->request_id.has_value()) {
@@ -3214,13 +3210,10 @@ void ComposeboxQueryController::AddEncodedVisualSearchInteractionLogDataParam(
 
   std::string serialized_proto;
   CHECK(interaction_data->SerializeToString(&serialized_proto));
-  std::string encoded_proto;
-  base::Base64UrlEncode(serialized_proto,
-                        base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &encoded_proto);
-
   url_params_map.insert(
-      {kVisualSearchInteractionQueryParameterKey, encoded_proto});
+      {kVisualSearchInteractionQueryParameterKey,
+       base::Base64UrlEncode(serialized_proto,
+                             base::Base64UrlEncodePolicy::OMIT_PADDING)});
 }
 
 std::optional<lens::LensOverlayVisualSearchInteractionData>

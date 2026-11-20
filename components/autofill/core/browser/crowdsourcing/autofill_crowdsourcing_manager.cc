@@ -574,10 +574,8 @@ std::optional<std::string> GetAPIQueryPayload(
   if (!query.SerializeToString(&serialized_query))
     return std::nullopt;
 
-  std::string payload;
-  base::Base64UrlEncode(serialized_query,
-                        base::Base64UrlEncodePolicy::INCLUDE_PADDING, &payload);
-  return std::move(payload);
+  return base::Base64UrlEncode(serialized_query,
+                               base::Base64UrlEncodePolicy::INCLUDE_PADDING);
 }
 
 std::string GetAPIKeyForUrl(version_info::Channel channel) {

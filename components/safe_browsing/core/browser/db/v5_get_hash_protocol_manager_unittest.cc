@@ -89,11 +89,10 @@ class V5GetHashProtocolManagerTest : public ::testing::Test {
     for (const auto& prefix : prefixes) {
       request.add_hash_prefixes(prefix);
     }
-    std::string request_data, request_base64;
+    std::string request_data;
     request.SerializeToString(&request_data);
-    base::Base64UrlEncode(request_data,
-                          base::Base64UrlEncodePolicy::INCLUDE_PADDING,
-                          &request_base64);
+    std::string request_base64 = base::Base64UrlEncode(
+        request_data, base::Base64UrlEncodePolicy::INCLUDE_PADDING);
     std::string url = base::StrCat(
         {"https://safebrowsing.googleapis.com/v5/hashes:search?$req=",
          request_base64, "&$ct=application/x-protobuf"});

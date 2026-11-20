@@ -56,10 +56,8 @@ GURL GetListSecurityDomainMembersURL(
 
 GURL GetGetSecurityDomainMemberURL(const GURL& server_url,
                                    base::span<const uint8_t> public_key) {
-  std::string encoded_public_key;
-  base::Base64UrlEncode(std::string(public_key.begin(), public_key.end()),
-                        base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &encoded_public_key);
+  std::string encoded_public_key = base::Base64UrlEncode(
+      public_key, base::Base64UrlEncodePolicy::OMIT_PADDING);
   return GURL(server_url.spec() + kSecurityDomainMemberNamePrefix +
               encoded_public_key + "?view=2" +
               "&request_header.force_master_read=true");

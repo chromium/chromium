@@ -21,9 +21,7 @@ std::optional<std::string> ConvertBase64toBase64Url(
     return std::nullopt;
   }
 
-  std::string encoded;
-  base::Base64UrlEncode(decoded, encode_policy, &encoded);
-  return encoded;
+  return base::Base64UrlEncode(decoded, encode_policy);
 }
 
 }  // namespace private_ai

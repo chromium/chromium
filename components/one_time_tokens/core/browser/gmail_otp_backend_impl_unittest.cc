@@ -60,14 +60,12 @@ class GmailOtpBackendImplTest : public testing::Test {
 
  protected:
   std::string GetExpectedUrl(const std::string& unencoded_reference) {
-    std::string encoded_reference;
-    base::Base64UrlEncode(unencoded_reference,
-                          base::Base64UrlEncodePolicy::INCLUDE_PADDING,
-                          &encoded_reference);
     GURL url = net::AppendQueryParameter(
         GURL("https://onetimetoken.pa.googleapis.com/v1/"
              "onetimetokens:fetchEmail"),
-        "encryptedMessageReference", encoded_reference);
+        "encryptedMessageReference",
+        base::Base64UrlEncode(unencoded_reference,
+                              base::Base64UrlEncodePolicy::INCLUDE_PADDING));
     return net::AppendQueryParameter(url, "alt", "proto").spec();
   }
 

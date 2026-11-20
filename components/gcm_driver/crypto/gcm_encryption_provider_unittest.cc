@@ -565,14 +565,11 @@ void GCMEncryptionProviderTest::TestEncryptionRoundTrip(
           public_key, server_public_key, shared_secret, auth_secret, salt,
           kExampleMessage, &record_size, &ciphertext));
 
-      std::string encoded_salt, encoded_key;
-
       // Compile the incoming GCM message, including the required headers.
-      base::Base64UrlEncode(salt, base::Base64UrlEncodePolicy::INCLUDE_PADDING,
-                            &encoded_salt);
-      base::Base64UrlEncode(server_public_key,
-                            base::Base64UrlEncodePolicy::INCLUDE_PADDING,
-                            &encoded_key);
+      std::string encoded_salt = base::Base64UrlEncode(
+          salt, base::Base64UrlEncodePolicy::INCLUDE_PADDING);
+      std::string encoded_key = base::Base64UrlEncode(
+          server_public_key, base::Base64UrlEncodePolicy::INCLUDE_PADDING);
 
       std::stringstream encryption_header;
       encryption_header << "rs=" << base::NumberToString(record_size) << ";";

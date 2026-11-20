@@ -685,18 +685,14 @@ void AutocompleteProviderTest::RunSearchboxStatsTest(
     std::string serialized_searchbox_stats;
     result_.match_at(i)->search_terms_args->searchbox_stats.SerializeToString(
         &serialized_searchbox_stats);
-    std::string encoded_searchbox_stats;
-    base::Base64UrlEncode(serialized_searchbox_stats,
-                          base::Base64UrlEncodePolicy::OMIT_PADDING,
-                          &encoded_searchbox_stats);
+    std::string encoded_searchbox_stats = base::Base64UrlEncode(
+        serialized_searchbox_stats, base::Base64UrlEncodePolicy::OMIT_PADDING);
     std::string expected_serialized_searchbox_stats;
     sbs_test_data[i].expected_searchbox_stats.SerializeToString(
         &expected_serialized_searchbox_stats);
-    std::string expected_encoded_searchbox_stats;
-    base::Base64UrlEncode(expected_serialized_searchbox_stats,
-                          base::Base64UrlEncodePolicy::OMIT_PADDING,
-
-                          &expected_encoded_searchbox_stats);
+    std::string expected_encoded_searchbox_stats =
+        base::Base64UrlEncode(expected_serialized_searchbox_stats,
+                              base::Base64UrlEncodePolicy::OMIT_PADDING);
     EXPECT_EQ(expected_encoded_searchbox_stats, encoded_searchbox_stats);
   }
 }

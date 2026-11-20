@@ -170,12 +170,10 @@ GURL AppendContextualInputsParams(
     const std::string& lns_surface) {
   std::string serialized_contextual_inputs;
   CHECK(contextual_inputs.SerializeToString(&serialized_contextual_inputs));
-  std::string encoded_contextual_inputs;
-  base::Base64UrlEncode(serialized_contextual_inputs,
-                        base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &encoded_contextual_inputs);
   GURL result_url = net::AppendOrReplaceQueryParameter(
-      url, kContextualInputsParameterKey, encoded_contextual_inputs);
+      url, kContextualInputsParameterKey,
+      base::Base64UrlEncode(serialized_contextual_inputs,
+                            base::Base64UrlEncodePolicy::OMIT_PADDING));
   result_url = net::AppendOrReplaceQueryParameter(
       result_url, kSearchSessionIdParameterKey, search_session_id);
   return net::AppendOrReplaceQueryParameter(result_url, kLnsSurfaceParameterKey,
@@ -1238,12 +1236,10 @@ GURL GetUrlForMultimodalSearch(
   if (request_id) {
     std::string serialized_request_id;
     CHECK(request_id->SerializeToString(&serialized_request_id));
-    std::string encoded_request_id;
-    base::Base64UrlEncode(serialized_request_id,
-                          base::Base64UrlEncodePolicy::OMIT_PADDING,
-                          &encoded_request_id);
     result_url = net::AppendOrReplaceQueryParameter(
-        result_url, kVisualRequestIdQueryParameter, encoded_request_id);
+        result_url, kVisualRequestIdQueryParameter,
+        base::Base64UrlEncode(serialized_request_id,
+                              base::Base64UrlEncodePolicy::OMIT_PADDING));
   }
 
   if (invocation_source.has_value()) {

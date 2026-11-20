@@ -82,10 +82,9 @@ std::optional<std::string> ProfileIdService::GetProfileIdWithGuidAndDeviceId(
     return profile_id;
   }
 
-  std::string encoded_string;
-  base::Base64UrlEncode(base::SHA1HashString(profile_guid + device_id),
-                        base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &encoded_string);
+  std::string encoded_string =
+      base::Base64UrlEncode(base::SHA1HashString(profile_guid + device_id),
+                            base::Base64UrlEncodePolicy::OMIT_PADDING);
 
   if (encoded_string.empty())
     return RecordError(Error::kProfileIdURLEncodeFailure);

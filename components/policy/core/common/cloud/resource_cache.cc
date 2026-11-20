@@ -30,11 +30,8 @@ bool Base64UrlEncode(const std::set<std::string>& input,
       NOTREACHED();
     }
 
-    std::string encoded;
-    base::Base64UrlEncode(plain, base::Base64UrlEncodePolicy::INCLUDE_PADDING,
-                          &encoded);
-
-    output->insert(encoded);
+    output->insert(base::Base64UrlEncode(
+        plain, base::Base64UrlEncodePolicy::INCLUDE_PADDING));
   }
   return true;
 }
@@ -227,11 +224,8 @@ bool ResourceCache::VerifyKeyPath(const std::string& key,
     NOTREACHED();
   }
 
-  std::string encoded;
-  base::Base64UrlEncode(key, base::Base64UrlEncodePolicy::INCLUDE_PADDING,
-                        &encoded);
-
-  *path = cache_dir_.AppendASCII(encoded);
+  *path = cache_dir_.AppendASCII(
+      base::Base64UrlEncode(key, base::Base64UrlEncodePolicy::INCLUDE_PADDING));
   return allow_create ? base::CreateDirectory(*path) :
                         base::DirectoryExists(*path);
 }
@@ -248,11 +242,8 @@ bool ResourceCache::VerifyKeyPathAndGetSubkeyPath(const std::string& key,
   if (!VerifyKeyPath(key, allow_create_key, &key_path))
     return false;
 
-  std::string encoded;
-  base::Base64UrlEncode(subkey, base::Base64UrlEncodePolicy::INCLUDE_PADDING,
-                        &encoded);
-
-  *path = key_path.AppendASCII(encoded);
+  *path = key_path.AppendASCII(base::Base64UrlEncode(
+      subkey, base::Base64UrlEncodePolicy::INCLUDE_PADDING));
   return true;
 }
 

@@ -234,12 +234,10 @@ std::string V5UpdateProtocolManager::GetBase64SerializedUpdateRequestProto(
   }
 
   // Serialize and Base64 encode.
-  std::string request_data, request_base64;
+  std::string request_data;
   request.SerializeToString(&request_data);
-  base::Base64UrlEncode(request_data,
-                        base::Base64UrlEncodePolicy::INCLUDE_PADDING,
-                        &request_base64);
-  return request_base64;
+  return base::Base64UrlEncode(request_data,
+                               base::Base64UrlEncodePolicy::INCLUDE_PADDING);
 }
 
 void V5UpdateProtocolManager::OnURLLoaderComplete(

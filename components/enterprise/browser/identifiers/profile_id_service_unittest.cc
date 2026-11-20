@@ -78,11 +78,10 @@ TEST_F(ProfileIdServiceTest, GetProfileId_Success) {
   profile_prefs_.SetString(kProfileGUIDPref, kFakeProfileGUID);
   EXPECT_CALL(*mock_delegate_, GetDeviceId()).WillOnce(Return(kFakeDeviceId));
 
-  std::string encoded_string;
-  base::Base64UrlEncode(base::SHA1HashString(std::string(kFakeProfileGUID) +
-                                             std::string(kFakeDeviceId)),
-                        base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &encoded_string);
+  std::string encoded_string =
+      base::Base64UrlEncode(base::SHA1HashString(std::string(kFakeProfileGUID) +
+                                                 std::string(kFakeDeviceId)),
+                            base::Base64UrlEncodePolicy::OMIT_PADDING);
   EXPECT_EQ(encoded_string, service_->GetProfileId());
   histogram_tester_.ExpectTotalCount(kProfildeIdErrorHistogramName, 0);
   histogram_tester_.ExpectUniqueSample(kProfildeIdStatusHistogramName, true, 1);

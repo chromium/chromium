@@ -170,11 +170,10 @@ void ParseFullHashInfo(
         UserReadableTimeFromMillisSinceEpoch(full_hash_info.positive_expiry()));
   }
   if (full_hash_info.has_full_hash()) {
-    std::string full_hash;
-    base::Base64UrlEncode(full_hash_info.full_hash(),
-                          base::Base64UrlEncodePolicy::INCLUDE_PADDING,
-                          &full_hash);
-    full_hash_info_dict.Set("Full hash (base64)", std::move(full_hash));
+    full_hash_info_dict.Set(
+        "Full hash (base64)",
+        base::Base64UrlEncode(full_hash_info.full_hash(),
+                              base::Base64UrlEncodePolicy::INCLUDE_PADDING));
   }
   if (full_hash_info.list_identifier().has_platform_type()) {
     full_hash_info_dict.Set("platform_type",
@@ -196,11 +195,10 @@ void ParseFullHashCache(const FullHashCacheInfo::FullHashCache& full_hash_cache,
   base::DictValue full_hash_cache_parsed;
 
   if (full_hash_cache.has_hash_prefix()) {
-    std::string hash_prefix;
-    base::Base64UrlEncode(full_hash_cache.hash_prefix(),
-                          base::Base64UrlEncodePolicy::INCLUDE_PADDING,
-                          &hash_prefix);
-    full_hash_cache_parsed.Set("Hash prefix (base64)", std::move(hash_prefix));
+    full_hash_cache_parsed.Set(
+        "Hash prefix (base64)",
+        base::Base64UrlEncode(full_hash_cache.hash_prefix(),
+                              base::Base64UrlEncodePolicy::INCLUDE_PADDING));
   }
   if (full_hash_cache.cached_hash_prefix_info().has_negative_expiry()) {
     full_hash_cache_parsed.Set(
@@ -411,22 +409,18 @@ std::string SerializeHPRTLookupPing(const HPRTLookupRequest& ping) {
   base::DictValue inner_request_dict;
   base::ListValue encoded_hash_prefixes;
   for (const auto& hash_prefix : ping.inner_request.hash_prefixes()) {
-    std::string encoded_hash_prefix;
-    base::Base64UrlEncode(hash_prefix,
-                          base::Base64UrlEncodePolicy::INCLUDE_PADDING,
-                          &encoded_hash_prefix);
-    encoded_hash_prefixes.Append(std::move(encoded_hash_prefix));
+    encoded_hash_prefixes.Append(base::Base64UrlEncode(
+        hash_prefix, base::Base64UrlEncodePolicy::INCLUDE_PADDING));
   }
   inner_request_dict.Set("hash_prefixes (base64)",
                          std::move(encoded_hash_prefixes));
 
   request_dict.Set("inner_request", std::move(inner_request_dict));
   request_dict.Set("relay_url", ping.relay_url_spec);
-  std::string encoded_ohttp_key;
-  base::Base64UrlEncode(ping.ohttp_key,
-                        base::Base64UrlEncodePolicy::INCLUDE_PADDING,
-                        &encoded_ohttp_key);
-  request_dict.Set("ohttp_public_key (base64)", std::move(encoded_ohttp_key));
+  request_dict.Set(
+      "ohttp_public_key (base64)",
+      base::Base64UrlEncode(ping.ohttp_key,
+                            base::Base64UrlEncodePolicy::INCLUDE_PADDING));
 
   return SerializeJson(request_dict);
 }

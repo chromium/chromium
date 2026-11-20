@@ -27,10 +27,8 @@ constexpr char kChallengeResponseHistogram[] =
     "Payments.ThreeDSecure.ChallengeResponse";
 
 std::string Base64UrlEncodeString(std::string_view input) {
-  std::string encoded;
-  base::Base64UrlEncode(input, base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &encoded);
-  return encoded;
+  return base::Base64UrlEncode(input,
+                               base::Base64UrlEncodePolicy::OMIT_PADDING);
 }
 
 std::string CreateCResJson(std::string_view trans_status) {

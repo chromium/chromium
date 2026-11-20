@@ -528,9 +528,8 @@ void FeedNetworkImpl::SendQueryRequest(
     base::OnceCallback<void(QueryRequestResult)> callback) {
   std::string binary_proto;
   request.SerializeToString(&binary_proto);
-  std::string base64proto;
-  base::Base64UrlEncode(
-      binary_proto, base::Base64UrlEncodePolicy::INCLUDE_PADDING, &base64proto);
+  std::string base64proto = base::Base64UrlEncode(
+      binary_proto, base::Base64UrlEncodePolicy::INCLUDE_PADDING);
 
   GURL url = GetFeedQueryURL(request.feed_request().feed_query().reason());
   if (url.is_empty())

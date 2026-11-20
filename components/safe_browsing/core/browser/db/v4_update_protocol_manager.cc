@@ -157,11 +157,10 @@ std::string V4UpdateProtocolManager::GetBase64SerializedUpdateRequestProto() {
                                                  config_);
 
   // Serialize and Base64 encode.
-  std::string req_data, req_base64;
+  std::string req_data;
   request.SerializeToString(&req_data);
-  base::Base64UrlEncode(req_data, base::Base64UrlEncodePolicy::INCLUDE_PADDING,
-                        &req_base64);
-  return req_base64;
+  return base::Base64UrlEncode(req_data,
+                               base::Base64UrlEncodePolicy::INCLUDE_PADDING);
 }
 
 bool V4UpdateProtocolManager::ParseUpdateResponse(

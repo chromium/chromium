@@ -475,10 +475,8 @@ void PingManager::AttachThreatDetailsAndLaunchSurvey(
     return;
   }
 
-  std::string url_encoded_serialized_report;
-  base::Base64UrlEncode(serialized_report,
-                        base::Base64UrlEncodePolicy::INCLUDE_PADDING,
-                        &url_encoded_serialized_report);
+  std::string url_encoded_serialized_report = base::Base64UrlEncode(
+      serialized_report, base::Base64UrlEncodePolicy::INCLUDE_PADDING);
   std::string user_action = kUserActionUnknown;
   bool learn_more_clicked = false;
   bool show_more_clicked = false;

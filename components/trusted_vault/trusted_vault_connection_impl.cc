@@ -151,11 +151,9 @@ const trusted_vault_pb::SharedMemberKey* FindKeyWithHighestEpoch(
 }
 
 std::string GetSecurityDomainMemberName(const SecureBoxPublicKey& public_key) {
-  std::string encoded_public_key;
-  base::Base64UrlEncode(public_key.ExportToBytes(),
-                        base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &encoded_public_key);
-  return kSecurityDomainMemberNamePrefix + encoded_public_key;
+  return kSecurityDomainMemberNamePrefix +
+         base::Base64UrlEncode(public_key.ExportToBytes(),
+                               base::Base64UrlEncodePolicy::OMIT_PADDING);
 }
 
 trusted_vault_pb::SecurityDomainMember CreateSecurityDomainMember(

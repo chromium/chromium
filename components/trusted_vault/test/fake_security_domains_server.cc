@@ -70,10 +70,8 @@ bool ValidateJoinSecurityDomainsRequest(
     return false;
   }
 
-  std::string encoded_public_key;
-  base::Base64UrlEncode(member.public_key(),
-                        base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &encoded_public_key);
+  std::string encoded_public_key = base::Base64UrlEncode(
+      member.public_key(), base::Base64UrlEncodePolicy::OMIT_PADDING);
   if (member.name() != kSecurityDomainMemberNamePrefix + encoded_public_key) {
     DVLOG(1) << "JoinSecurityDomains request has inconsistent member name ("
              << member.name() << ") and public key (" << member.public_key()
@@ -528,9 +526,8 @@ FakeSecurityDomainsServer::HandleListSecurityDomainMembersRequest(
     trusted_vault_pb::SecurityDomainMember* member =
         response_pb.add_security_domain_members();
 
-    std::string encoded_public_key;
-    base::Base64UrlEncode(public_key, base::Base64UrlEncodePolicy::OMIT_PADDING,
-                          &encoded_public_key);
+    std::string encoded_public_key = base::Base64UrlEncode(
+        public_key, base::Base64UrlEncodePolicy::OMIT_PADDING);
     member->set_name(kSecurityDomainMemberNamePrefix + encoded_public_key);
     member->set_public_key(public_key);
 
@@ -575,10 +572,8 @@ FakeSecurityDomainsServer::HandleGetSecurityDomainMemberRequest(
   }
   trusted_vault_pb::SecurityDomainMember member;
 
-  std::string encoded_public_key;
-  base::Base64UrlEncode(member_public_key,
-                        base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &encoded_public_key);
+  std::string encoded_public_key = base::Base64UrlEncode(
+      member_public_key, base::Base64UrlEncodePolicy::OMIT_PADDING);
 
   member.set_name(kSecurityDomainMemberNamePrefix + encoded_public_key);
   member.set_public_key(member_public_key);

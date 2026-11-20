@@ -130,10 +130,8 @@ trusted_vault_pb::ListSecurityDomainMembersResponse MakeSecurityDomainMembers(
         SecureBoxPublicKey::CreateByImport(member_info.public_key);
     CHECK(public_key);
 
-    std::string encoded_public_key;
-    base::Base64UrlEncode(member_info.public_key,
-                          base::Base64UrlEncodePolicy::OMIT_PADDING,
-                          &encoded_public_key);
+    std::string encoded_public_key = base::Base64UrlEncode(
+        member_info.public_key, base::Base64UrlEncodePolicy::OMIT_PADDING);
 
     trusted_vault_pb::SecurityDomainMember* member =
         response.add_security_domain_members();
@@ -226,10 +224,8 @@ signin::AccessTokenInfo MakeAccessTokenInfo(const std::string& access_token) {
 const trusted_vault_pb::RotatedSharedMemberKey* FindRotatedSharedMemberKey(
     const trusted_vault_pb::RotateSharedKeyRequest& request,
     const SecureBoxPublicKey& public_key) {
-  std::string encoded_public_key;
-  base::Base64UrlEncode(public_key.ExportToBytes(),
-                        base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &encoded_public_key);
+  std::string encoded_public_key = base::Base64UrlEncode(
+      public_key.ExportToBytes(), base::Base64UrlEncodePolicy::OMIT_PADDING);
   const std::string member_name =
       kSecurityDomainMemberNamePrefix + encoded_public_key;
   auto it = std::ranges::find_if(
@@ -447,10 +443,8 @@ TEST_P(TrustedVaultConnectionImplTest,
   AssignBytesToProtoString(key_pair->public_key().ExportToBytes(),
                            &public_key_string);
 
-  std::string encoded_public_key;
-  base::Base64UrlEncode(public_key_string,
-                        base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &encoded_public_key);
+  std::string encoded_public_key = base::Base64UrlEncode(
+      public_key_string, base::Base64UrlEncodePolicy::OMIT_PADDING);
 
   const trusted_vault_pb::SecurityDomainMember& member =
       deserialized_body.security_domain_member();
@@ -510,10 +504,8 @@ TEST_P(TrustedVaultConnectionImplTest,
   AssignBytesToProtoString(key_pair->public_key().ExportToBytes(),
                            &public_key_string);
 
-  std::string encoded_public_key;
-  base::Base64UrlEncode(public_key_string,
-                        base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &encoded_public_key);
+  std::string encoded_public_key = base::Base64UrlEncode(
+      public_key_string, base::Base64UrlEncodePolicy::OMIT_PADDING);
 
   const trusted_vault_pb::SecurityDomainMember& member =
       deserialized_body.security_domain_member();

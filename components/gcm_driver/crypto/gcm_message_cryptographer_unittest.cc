@@ -610,7 +610,7 @@ TEST_F(GCMMessageCryptographerTestVectorTest, EncryptionVectorsDraft03) {
   GCMMessageCryptographer cryptographer(
       GCMMessageCryptographer::Version::DRAFT_03);
 
-  std::string ecdh_shared_secret, auth_secret, salt, ciphertext, output;
+  std::string ecdh_shared_secret, auth_secret, salt, ciphertext;
   size_t record_size = 0;
 
   for (size_t i = 0; i < std::size(kEncryptionTestVectorsDraft03); ++i) {
@@ -640,8 +640,8 @@ TEST_F(GCMMessageCryptographerTestVectorTest, EncryptionVectorsDraft03) {
                                       kEncryptionTestVectorsDraft03[i].input,
                                       &record_size, &ciphertext));
 
-    base::Base64UrlEncode(ciphertext, base::Base64UrlEncodePolicy::OMIT_PADDING,
-                          &output);
+    std::string output = base::Base64UrlEncode(
+        ciphertext, base::Base64UrlEncodePolicy::OMIT_PADDING);
 
     EXPECT_EQ(kEncryptionTestVectorsDraft03[i].record_size, record_size);
     EXPECT_EQ(kEncryptionTestVectorsDraft03[i].output, output);
@@ -699,7 +699,7 @@ TEST_F(GCMMessageCryptographerTestVectorTest, EncryptionVectorsDraft08) {
   GCMMessageCryptographer cryptographer(
       GCMMessageCryptographer::Version::DRAFT_08);
 
-  std::string ecdh_shared_secret, auth_secret, salt, ciphertext, output;
+  std::string ecdh_shared_secret, auth_secret, salt, ciphertext;
   size_t record_size = 0;
 
   for (size_t i = 0; i < std::size(kEncryptionTestVectorsDraft08); ++i) {
@@ -729,8 +729,8 @@ TEST_F(GCMMessageCryptographerTestVectorTest, EncryptionVectorsDraft08) {
                                       kEncryptionTestVectorsDraft08[i].input,
                                       &record_size, &ciphertext));
 
-    base::Base64UrlEncode(ciphertext, base::Base64UrlEncodePolicy::OMIT_PADDING,
-                          &output);
+    std::string output = base::Base64UrlEncode(
+        ciphertext, base::Base64UrlEncodePolicy::OMIT_PADDING);
 
     EXPECT_EQ(kEncryptionTestVectorsDraft08[i].record_size, record_size);
     EXPECT_EQ(kEncryptionTestVectorsDraft08[i].output, output);
@@ -844,7 +844,7 @@ TEST_F(GCMMessageCryptographerReferenceTest, ReferenceDraft03) {
   ASSERT_TRUE(base::Base64UrlDecode(
         kSalt, base::Base64UrlDecodePolicy::IGNORE_PADDING, &salt));
 
-  std::string encoded_ciphertext, ciphertext, plaintext;
+  std::string ciphertext, plaintext;
   size_t record_size = 0;
 
   // Now verify that encrypting a message with the given information yields the
@@ -856,8 +856,8 @@ TEST_F(GCMMessageCryptographerReferenceTest, ReferenceDraft03) {
                                     sender_shared_secret, auth_secret, salt,
                                     kPlaintext, &record_size, &ciphertext));
 
-  base::Base64UrlEncode(ciphertext, base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &encoded_ciphertext);
+  std::string encoded_ciphertext = base::Base64UrlEncode(
+      ciphertext, base::Base64UrlEncodePolicy::OMIT_PADDING);
   ASSERT_EQ(kCiphertext, encoded_ciphertext);
 
   // And verify that decrypting the message yields the plaintext again.

@@ -121,9 +121,8 @@ std::string Cup::PrepareRequestParameters(std::string_view request_body) {
 
   // The nonce is an opaque string to the server, so the exact encoding does not
   // matter. Use base64url as it is slightly more compact than hex.
-  std::string nonce_b64;
-  base::Base64UrlEncode(nonce, base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &nonce_b64);
+  std::string nonce_b64 =
+      base::Base64UrlEncode(nonce, base::Base64UrlEncodePolicy::OMIT_PADDING);
 
   request_query_cup2key_ =
       absl::StrFormat("%s:%s", GetKeyIdForVersion(key_version_), nonce_b64);

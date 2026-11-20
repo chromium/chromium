@@ -2371,9 +2371,8 @@ std::string TemplateURLService::GetSessionToken() {
   if (current_time > token_expiration_time_) {
     std::array<uint8_t, 12> raw_data;
     base::RandBytes(raw_data);
-    base::Base64UrlEncode(raw_data,
-                          base::Base64UrlEncodePolicy::INCLUDE_PADDING,
-                          &current_token_);
+    current_token_ = base::Base64UrlEncode(
+        raw_data, base::Base64UrlEncodePolicy::INCLUDE_PADDING);
   }
 
   // Extend expiration time another 60 seconds.

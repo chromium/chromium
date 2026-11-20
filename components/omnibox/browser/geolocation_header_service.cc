@@ -84,10 +84,10 @@ std::optional<std::string> SerializeXGeoHeader(
 
   // Base64UrlEncode directly translates to Base64.URL_SAFE. INCLUDE_PADDING
   // matches NO_WRAP | URL_SAFE's output on Android.
-  std::string encoded;
-  base::Base64UrlEncode(serialized_proto,
-                        base::Base64UrlEncodePolicy::INCLUDE_PADDING, &encoded);
-  return base::StrCat({kLocationProtoPrefix, encoded});
+  return base::StrCat(
+      {kLocationProtoPrefix,
+       base::Base64UrlEncode(serialized_proto,
+                             base::Base64UrlEncodePolicy::INCLUDE_PADDING)});
 }
 
 void RecordPrimeLocationOutcome(GeolocationHeaderPrimeLocationOutcome outcome) {

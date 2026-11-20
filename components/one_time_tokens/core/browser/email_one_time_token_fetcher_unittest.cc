@@ -105,12 +105,10 @@ class EmailOneTimeTokenFetcherTest : public testing::Test {
   }
 
   std::string GetExpectedUrl() {
-    std::string encoded_reference;
-    base::Base64UrlEncode(kEncryptedMessageReference,
-                          base::Base64UrlEncodePolicy::INCLUDE_PADDING,
-                          &encoded_reference);
     GURL url = net::AppendQueryParameter(
-        GURL(kServiceUrl), "encryptedMessageReference", encoded_reference);
+        GURL(kServiceUrl), "encryptedMessageReference",
+        base::Base64UrlEncode(kEncryptedMessageReference,
+                              base::Base64UrlEncodePolicy::INCLUDE_PADDING));
     return net::AppendQueryParameter(url, "alt", "proto").spec();
   }
 
@@ -540,13 +538,11 @@ TEST_F(EmailOneTimeTokenFetcherTest, FetchEmailOneTimeToken_CustomEndpointUrl) {
 
   // Helper to construct expected custom URL.
   auto get_expected_custom_url = []() {
-    std::string encoded_reference;
-    base::Base64UrlEncode(kEncryptedMessageReference,
-                          base::Base64UrlEncodePolicy::INCLUDE_PADDING,
-                          &encoded_reference);
     GURL url = GetOneTimeTokenServiceUrl("v1/onetimetokens:fetchEmail");
-    url = net::AppendQueryParameter(url, "encryptedMessageReference",
-                                    encoded_reference);
+    url = net::AppendQueryParameter(
+        url, "encryptedMessageReference",
+        base::Base64UrlEncode(kEncryptedMessageReference,
+                              base::Base64UrlEncodePolicy::INCLUDE_PADDING));
     return net::AppendQueryParameter(url, "alt", "proto").spec();
   };
 

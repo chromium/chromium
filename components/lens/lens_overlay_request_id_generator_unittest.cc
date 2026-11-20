@@ -430,10 +430,8 @@ TEST_F(LensOverlayRequestIdGeneratorTest, ParseRequestId_ValidRequestId) {
   std::string serialized_request_id;
   ASSERT_TRUE(original_request_id.SerializeToString(&serialized_request_id));
 
-  std::string encoded_request_id;
-  base::Base64UrlEncode(serialized_request_id,
-                        base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &encoded_request_id);
+  std::string encoded_request_id = base::Base64UrlEncode(
+      serialized_request_id, base::Base64UrlEncodePolicy::OMIT_PADDING);
 
   std::unique_ptr<lens::LensOverlayRequestId> parsed_request_id =
       lens::LensOverlayRequestIdGenerator::ParseRequestId(encoded_request_id);
@@ -451,10 +449,8 @@ TEST_F(LensOverlayRequestIdGeneratorTest, ParseRequestId_InvalidBase64) {
 }
 
 TEST_F(LensOverlayRequestIdGeneratorTest, ParseRequestId_InvalidProto) {
-  std::string encoded_request_id;
-  base::Base64UrlEncode("not a proto",
-                        base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &encoded_request_id);
+  std::string encoded_request_id = base::Base64UrlEncode(
+      "not a proto", base::Base64UrlEncodePolicy::OMIT_PADDING);
 
   std::unique_ptr<lens::LensOverlayRequestId> parsed_request_id =
       lens::LensOverlayRequestIdGenerator::ParseRequestId(encoded_request_id);

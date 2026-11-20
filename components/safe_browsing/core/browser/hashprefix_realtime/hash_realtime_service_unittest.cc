@@ -275,12 +275,10 @@ class HashRealTimeServiceTest : public PlatformTest {
   }
   std::string GetExpectedRequestUrl(
       const std::unique_ptr<V5::SearchHashesRequest>& request) {
-    std::string expected_request_base64;
     std::string expected_request_data;
     request->SerializeToString(&expected_request_data);
-    base::Base64UrlEncode(expected_request_data,
-                          base::Base64UrlEncodePolicy::INCLUDE_PADDING,
-                          &expected_request_base64);
+    std::string expected_request_base64 = base::Base64UrlEncode(
+        expected_request_data, base::Base64UrlEncodePolicy::INCLUDE_PADDING);
     return "https://safebrowsing.googleapis.com/v5/hashes:search?$req=" +
            expected_request_base64 + "&$ct=application/x-protobuf" + key_param_;
   }

@@ -141,12 +141,10 @@ void EmailOneTimeTokenFetcher::StartOneTimeTokenServiceCall(
   GURL url = GetOneTimeTokenServiceUrl("v1/onetimetokens:fetchEmail");
 
   // TODO(crbug.com/486806779): figure out correct encoding.
-  std::string encoded_reference;
-  base::Base64UrlEncode(encrypted_message_reference_,
-                        base::Base64UrlEncodePolicy::INCLUDE_PADDING,
-                        &encoded_reference);
-  url = net::AppendQueryParameter(url, "encryptedMessageReference",
-                                  encoded_reference);
+  url = net::AppendQueryParameter(
+      url, "encryptedMessageReference",
+      base::Base64UrlEncode(encrypted_message_reference_,
+                            base::Base64UrlEncodePolicy::INCLUDE_PADDING));
   url = net::AppendQueryParameter(url, "alt", "proto");
   resource_request->url = url;
   resource_request->method = "GET";

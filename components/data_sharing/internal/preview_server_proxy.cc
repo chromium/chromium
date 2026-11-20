@@ -302,11 +302,10 @@ void PreviewServerProxy::GetSharedDataPreview(
       "collaborations/{collaborationId}/dataTypes/{data_type}/"
       "sharedEntities:preview";
   std::string shared_entities_preview_path = kSharedEntitiesPreviewPath;
-  std::string encoded_id;
-  base::Base64UrlEncode(group_token.group_id.value(),
-                        base::Base64UrlEncodePolicy::OMIT_PADDING, &encoded_id);
-  base::ReplaceFirstSubstringAfterOffset(&shared_entities_preview_path, 0,
-                                         "{collaborationId}", encoded_id);
+  base::ReplaceFirstSubstringAfterOffset(
+      &shared_entities_preview_path, 0, "{collaborationId}",
+      base::Base64UrlEncode(group_token.group_id.value(),
+                            base::Base64UrlEncodePolicy::OMIT_PADDING));
   base::ReplaceFirstSubstringAfterOffset(&shared_entities_preview_path, 0,
                                          "{data_type}", data_type_str);
   std::string url_str = GetPreviewServerURLString();

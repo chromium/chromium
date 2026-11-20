@@ -542,11 +542,10 @@ std::string V4GetHashProtocolManager::GetHashRequest(
   }
 
   // Serialize and Base64 encode.
-  std::string req_data, req_base64;
+  std::string req_data;
   req.SerializeToString(&req_data);
-  base::Base64UrlEncode(req_data, base::Base64UrlEncodePolicy::INCLUDE_PADDING,
-                        &req_base64);
-  return req_base64;
+  return base::Base64UrlEncode(req_data,
+                               base::Base64UrlEncodePolicy::INCLUDE_PADDING);
 }
 
 void V4GetHashProtocolManager::GetHashUrlAndHeaders(

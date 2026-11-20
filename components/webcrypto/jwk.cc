@@ -400,13 +400,8 @@ void JwkWriter::SetBytes(std::string_view member_name,
                          base::span<const uint8_t> value) {
   // The JSON web signature spec says that padding is omitted.
   // https://tools.ietf.org/html/draft-ietf-jose-json-web-signature-36#section-2
-  std::string base64url_encoded;
-  base::Base64UrlEncode(
-      std::string_view(reinterpret_cast<const char*>(value.data()),
-                       value.size()),
-      base::Base64UrlEncodePolicy::OMIT_PADDING, &base64url_encoded);
-
-  dict_.Set(member_name, std::move(base64url_encoded));
+  dict_.Set(member_name, base::Base64UrlEncode(
+                             value, base::Base64UrlEncodePolicy::OMIT_PADDING));
 }
 
 void JwkWriter::ToJson(std::vector<uint8_t>* utf8_bytes) const {

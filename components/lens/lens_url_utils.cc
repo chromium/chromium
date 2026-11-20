@@ -151,11 +151,8 @@ bool IsLensMWebResult(const GURL& url) {
 std::string Base64EncodeRequestId(lens::LensOverlayRequestId request_id) {
   std::string serialized_request_id;
   CHECK(request_id.SerializeToString(&serialized_request_id));
-  std::string encoded_request_id;
-  base::Base64UrlEncode(serialized_request_id,
-                        base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &encoded_request_id);
-  return encoded_request_id;
+  return base::Base64UrlEncode(serialized_request_id,
+                               base::Base64UrlEncodePolicy::OMIT_PADDING);
 }
 
 std::string VitQueryParamValueForMimeType(MimeType mime_type) {

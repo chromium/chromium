@@ -55,12 +55,8 @@ std::string NormalizeSenderInfo(const std::string& application_server_key) {
     return application_server_key;
   }
 
-  std::string encoded_application_server_key;
-  base::Base64UrlEncode(application_server_key,
-                        base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &encoded_application_server_key);
-
-  return encoded_application_server_key;
+  return base::Base64UrlEncode(application_server_key,
+                               base::Base64UrlEncodePolicy::OMIT_PADDING);
 }
 
 bool WasPushSuccessful(
