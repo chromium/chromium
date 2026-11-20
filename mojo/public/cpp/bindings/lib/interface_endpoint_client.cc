@@ -157,8 +157,7 @@ class ThreadSafeInterfaceEndpointClientProxy : public ThreadSafeProxy {
 
     // |lock| protects access to |pending_responses|.
     base::Lock lock;
-    std::vector<raw_ptr<SyncResponseInfo, VectorExperimental>> pending_responses
-        GUARDED_BY(lock);
+    std::vector<raw_ptr<SyncResponseInfo>> pending_responses GUARDED_BY(lock);
 
    private:
     friend class base::RefCountedThreadSafe<InProgressSyncCalls>;

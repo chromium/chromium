@@ -26,8 +26,7 @@ class RendererFuzzerBase {
 
 class RendererFuzzing {
  private:
-  std::unordered_map<std::string, raw_ptr<RendererFuzzerBase, CtnExperimental>>
-      fuzzers_;
+  std::unordered_map<std::string, raw_ptr<RendererFuzzerBase>> fuzzers_;
 
  public:
   bool RegisterFuzzer(RendererFuzzerBase* fuzzer) {

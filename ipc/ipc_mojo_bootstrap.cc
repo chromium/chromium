@@ -106,8 +106,7 @@ class ControllerMemoryDumpProvider
 
  private:
   base::Lock lock_;
-  std::set<raw_ptr<ChannelAssociatedGroupController, SetExperimental>>
-      controllers_;
+  std::set<raw_ptr<ChannelAssociatedGroupController>> controllers_;
 };
 
 ControllerMemoryDumpProvider& GetMemoryDumpProvider() {

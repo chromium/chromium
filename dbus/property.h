@@ -347,8 +347,7 @@ class CHROME_DBUS_EXPORT PropertySet {
   // names as used in D-Bus method calls and signals. The base pointer
   // restricts property access via this map to type-unsafe and non-specific
   // actions only.
-  typedef std::map<const std::string, raw_ptr<PropertyBase, CtnExperimental>>
-      PropertiesMap;
+  typedef std::map<const std::string, raw_ptr<PropertyBase>> PropertiesMap;
   PropertiesMap properties_map_;
 
   // Weak pointer factory as D-Bus callbacks may last longer than these

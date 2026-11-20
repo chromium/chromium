@@ -232,8 +232,7 @@ class GCM_EXPORT MCSClient {
   base::circular_deque<MCSPacketInternal> to_resend_;
 
   // Map of collapse keys to their pending messages.
-  std::map<CollapseKey, raw_ptr<ReliablePacketInfo, CtnExperimental>>
-      collapse_key_map_;
+  std::map<CollapseKey, raw_ptr<ReliablePacketInfo>> collapse_key_map_;
 
   // Last device_to_server stream id acknowledged by the server.
   StreamId last_device_to_server_stream_id_received_;
