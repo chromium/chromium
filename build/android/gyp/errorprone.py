@@ -352,6 +352,7 @@ ERRORPRONE_WARNINGS_TO_ENABLE = [
     'BinderIdentityRestoredDangerously',
     'EmptyIf',
     'EqualsBrokenForNull',
+    'FieldCanBeFinal',
     'FieldCanBeLocal',
     'FieldCanBeStatic',
     'InvalidThrows',
@@ -484,14 +485,6 @@ def main():
     errorprone_flags.extend(
         '-Xep:{}:WARN'.format(x) for x in ERRORPRONE_WARNINGS_TO_ENABLE
     )
-    if options.has_chromium_plugin:
-        # A faster copy of FieldCanBeFinal (which is off by default, since it is
-        # experimental). It does nothing without this flag.
-        # Do not pass FieldCanBeFinal via -Xep (to enable or disable). Enabling
-        # it turns on the slow built-in check, and since Error Prone applies
-        # -Xep flags to every check whose name or altNames match, disabling it
-        # also disables FieldCanBeFinalFast.
-        errorprone_flags += ['-XepOpt:FieldCanBeFinalFast:Enabled=true']
     if options.testonly:
         errorprone_flags.extend(
             '-Xep:{}:OFF'.format(x)
