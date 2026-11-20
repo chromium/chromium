@@ -2351,15 +2351,16 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateFilesBrowserTest, FilesUpload) {
 
   run_loop.Run();
 
+  // Ensure `ContentAnalysisDelegate` is destroyed before checking final
+  // upload and acknowledgement counts.
+  content_analysis_run_loop.Run();
+
   EXPECT_TRUE(called);
 
   // There should have been 1 request per file (2 files) and 1 for
   // authentication.
   ASSERT_EQ(FakeBinaryUploadServiceStorage()->requests_count(), 3);
   ASSERT_EQ(FakeBinaryUploadServiceStorage()->ack_count(), 2);
-
-  // Ensure the ContentAnalysisDelegate is destroyed before the end of the test.
-  content_analysis_run_loop.Run();
 }
 
 IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateFilesBrowserTest,
@@ -2499,15 +2500,17 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateFilesBrowserTest,
       DeepScanAccessPoint::UPLOAD);
 
   run_loop.Run();
+
+  // Ensure `ContentAnalysisDelegate` is destroyed before checking final
+  // upload and acknowledgement counts.
+  content_analysis_run_loop.Run();
+
   EXPECT_TRUE(called);
 
   // There should have been 1 request per file (3 files) and 1 for
   // authentication.
   ASSERT_EQ(FakeBinaryUploadServiceStorage()->requests_count(), 4);
   ASSERT_EQ(FakeBinaryUploadServiceStorage()->ack_count(), 3);
-
-  // Ensure the ContentAnalysisDelegate is destroyed before the end of the test.
-  content_analysis_run_loop.Run();
 }
 
 // This class tests how ContentAnalysisDelegate handles files that can't be
