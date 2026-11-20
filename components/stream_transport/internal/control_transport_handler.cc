@@ -9,6 +9,7 @@
 
 #include "base/logging.h"
 #include "base/sequence_checker.h"
+#include "components/stream_transport/internal/metrics_utils.h"
 #include "components/stream_transport/internal/proto/transport_messages.pb.h"
 #include "components/stream_transport/public/transport_session.h"
 
@@ -31,18 +32,21 @@ void ControlTransportHandler::OnMessage(PayloadType payload_type,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   browser_actuator::ControlCommand command;
   if (!command.ParseFromString(serialized_payload)) {
+    RecordDownstreamControlCommand(DownstreamControlCommand::kUnspecified);
     DLOG(WARNING) << "Failed to parse ControlCommand payload";
     return;
   }
 
   switch (command.command_case()) {
     case browser_actuator::ControlCommand::kCloseChannel: {
+      RecordDownstreamControlCommand(DownstreamControlCommand::kCloseChannel);
       if (close_channel_cb_) {
         close_channel_cb_.Run();
       }
       break;
     }
     case browser_actuator::ControlCommand::kCloseSession: {
+      RecordDownstreamControlCommand(DownstreamControlCommand::kCloseSession);
       if (close_session_cb_ && session()) {
         std::string session_id(session()->GetSessionId());
         close_session_cb_.Run(session_id);
@@ -50,6 +54,7 @@ void ControlTransportHandler::OnMessage(PayloadType payload_type,
       break;
     }
     case browser_actuator::ControlCommand::kStartSession: {
+      RecordDownstreamControlCommand(DownstreamControlCommand::kStartSession);
       browser_actuator::ControlCommand command_ack;
       command_ack.mutable_start_session_ack();
       auto result = SendUpstreamMessage(PayloadType::kControl, command_ack);
@@ -60,8 +65,11 @@ void ControlTransportHandler::OnMessage(PayloadType payload_type,
       break;
     }
     case browser_actuator::ControlCommand::kStartSessionAck:
+      RecordDownstreamControlCommand(
+          DownstreamControlCommand::kStartSessionAck);
       break;
     case browser_actuator::ControlCommand::COMMAND_NOT_SET:
+      RecordDownstreamControlCommand(DownstreamControlCommand::kUnspecified);
       DLOG(WARNING) << "Received unexpected command case, skipping: "
                     << static_cast<int>(command.command_case());
       break;

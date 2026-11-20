@@ -64,6 +64,29 @@ inline void RecordDownstreamPayloadDropped(DownstreamPayloadDropReason reason) {
                                 reason);
 }
 
+// Command variant of a downstream control payload delivered to
+// `ControlTransportHandler::OnMessage()`. Values 1-4 mirror the
+// `ControlCommand` proto oneof field numbers, with `kUnspecified` used for
+// unset, unrecognized, or unparsable payloads. These values are persisted to
+// logs. Entries should not be renumbered and numeric values should never be
+// reused.
+//
+// LINT.IfChange(DownstreamControlCommand)
+enum class DownstreamControlCommand {
+  kUnspecified = 0,
+  kCloseChannel = 1,
+  kCloseSession = 2,
+  kStartSession = 3,
+  kStartSessionAck = 4,
+  kMaxValue = kStartSessionAck,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/stream_transport/enums.xml:StreamTransportDownstreamControlCommand)
+
+inline void RecordDownstreamControlCommand(DownstreamControlCommand command) {
+  base::UmaHistogramEnumeration("StreamTransport.Downstream.ControlCommand",
+                                command);
+}
+
 inline void RecordInitIngressSource(InitIngressSource ingress_source) {
   base::UmaHistogramEnumeration("StreamTransport.InitIngressSource",
                                 ingress_source);

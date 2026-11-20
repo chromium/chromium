@@ -11,6 +11,8 @@
 #include "base/functional/callback_helpers.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "components/stream_transport/internal/metrics_utils.h"
 #include "components/stream_transport/internal/proto/transport_messages.pb.h"
 #include "components/stream_transport/public/common.h"
 #include "components/stream_transport/public/payload_type_mapping.h"
@@ -64,6 +66,7 @@ class MockTransportSession : public TransportSession {
 };
 
 TEST(ControlTransportHandlerTest, OnMessageStartSessionSendsAck) {
+  base::HistogramTester histogram_tester;
   MockTransportSession session("session_1");
   ControlTransportHandler handler(&session, base::DoNothing(),
                                   base::DoNothing());
@@ -84,9 +87,14 @@ TEST(ControlTransportHandlerTest, OnMessageStartSessionSendsAck) {
   command.mutable_start_session();
 
   handler.OnMessage(PayloadType::kControl, command.SerializeAsString());
+
+  histogram_tester.ExpectUniqueSample(
+      "StreamTransport.Downstream.ControlCommand",
+      DownstreamControlCommand::kStartSession, 1);
 }
 
 TEST(ControlTransportHandlerTest, OnMessageCloseChannel) {
+  base::HistogramTester histogram_tester;
   bool close_channel_called = false;
   bool close_session_called = false;
 
@@ -104,9 +112,13 @@ TEST(ControlTransportHandlerTest, OnMessageCloseChannel) {
 
   EXPECT_TRUE(close_channel_called);
   EXPECT_FALSE(close_session_called);
+  histogram_tester.ExpectUniqueSample(
+      "StreamTransport.Downstream.ControlCommand",
+      DownstreamControlCommand::kCloseChannel, 1);
 }
 
 TEST(ControlTransportHandlerTest, OnMessageCloseSession) {
+  base::HistogramTester histogram_tester;
   bool close_channel_called = false;
   std::string closed_session_id;
 
@@ -125,9 +137,13 @@ TEST(ControlTransportHandlerTest, OnMessageCloseSession) {
 
   EXPECT_FALSE(close_channel_called);
   EXPECT_EQ(closed_session_id, "session_1");
+  histogram_tester.ExpectUniqueSample(
+      "StreamTransport.Downstream.ControlCommand",
+      DownstreamControlCommand::kCloseSession, 1);
 }
 
 TEST(ControlTransportHandlerTest, OnMessageCloseSessionWithNullSessionNoops) {
+  base::HistogramTester histogram_tester;
   bool close_channel_called = false;
   bool close_session_called = false;
 
@@ -144,9 +160,13 @@ TEST(ControlTransportHandlerTest, OnMessageCloseSessionWithNullSessionNoops) {
 
   EXPECT_FALSE(close_channel_called);
   EXPECT_FALSE(close_session_called);
+  histogram_tester.ExpectUniqueSample(
+      "StreamTransport.Downstream.ControlCommand",
+      DownstreamControlCommand::kCloseSession, 1);
 }
 
 TEST(ControlTransportHandlerTest, OnMessageUnsetCommand) {
+  base::HistogramTester histogram_tester;
   bool close_channel_called = false;
   bool close_session_called = false;
 
@@ -164,12 +184,16 @@ TEST(ControlTransportHandlerTest, OnMessageUnsetCommand) {
 
   EXPECT_FALSE(close_channel_called);
   EXPECT_FALSE(close_session_called);
+  histogram_tester.ExpectUniqueSample(
+      "StreamTransport.Downstream.ControlCommand",
+      DownstreamControlCommand::kUnspecified, 1);
 }
 
 // The handler receives raw bytes, so a payload that is not a ControlCommand
 // surfaces as a parse failure rather than as a type mismatch. It must be
 // dropped without invoking any callback.
 TEST(ControlTransportHandlerTest, MalformedPayloadIsIgnored) {
+  base::HistogramTester histogram_tester;
   bool close_channel_called = false;
   bool close_session_called = false;
 
@@ -185,6 +209,9 @@ TEST(ControlTransportHandlerTest, MalformedPayloadIsIgnored) {
 
   EXPECT_FALSE(close_channel_called);
   EXPECT_FALSE(close_session_called);
+  histogram_tester.ExpectUniqueSample(
+      "StreamTransport.Downstream.ControlCommand",
+      DownstreamControlCommand::kUnspecified, 1);
 }
 
 TEST(ControlTransportHandlerTest, FactoryGetFactoryId) {
@@ -237,6 +264,7 @@ TEST(ControlTransportHandlerTest, ExpectedTypeUrlMatchesControlCommand) {
 }
 
 TEST(ControlTransportHandlerTest, OnMessageStartSessionAckIsSilentNoop) {
+  base::HistogramTester histogram_tester;
   MockTransportSession session("session_1");
   bool close_channel_called = false;
   bool close_session_called = false;
@@ -256,6 +284,9 @@ TEST(ControlTransportHandlerTest, OnMessageStartSessionAckIsSilentNoop) {
 
   EXPECT_FALSE(close_channel_called);
   EXPECT_FALSE(close_session_called);
+  histogram_tester.ExpectUniqueSample(
+      "StreamTransport.Downstream.ControlCommand",
+      DownstreamControlCommand::kStartSessionAck, 1);
 }
 
 }  // namespace

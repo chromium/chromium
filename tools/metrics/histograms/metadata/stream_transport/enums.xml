@@ -24,6 +24,18 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<!-- LINT.IfChange(StreamTransportDownstreamControlCommand) -->
+
+<enum name="StreamTransportDownstreamControlCommand">
+  <int value="0" label="Unspecified"/>
+  <int value="1" label="CloseChannel"/>
+  <int value="2" label="CloseSession"/>
+  <int value="3" label="StartSession"/>
+  <int value="4" label="StartSessionAck"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/stream_transport/internal/metrics_utils.h:DownstreamControlCommand) -->
+
 <!-- LINT.IfChange(StreamTransportPayloadDropReason) -->
 
 <enum name="StreamTransportPayloadDropReason">

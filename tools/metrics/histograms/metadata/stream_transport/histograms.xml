@@ -47,6 +47,22 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/stream_transport/public/common.h:PayloadType, //components/stream_transport/internal/metrics_utils.h:PayloadTypeToMetricSuffix) -->
 
+<histogram name="StreamTransport.Downstream.ControlCommand"
+    enum="StreamTransportDownstreamControlCommand" expires_after="2027-10-01">
+  <owner>wenyufu@chromium.org</owner>
+  <owner>anushamuley@google.com</owner>
+  <owner>src/components/stream_transport/OWNERS</owner>
+  <summary>
+    Records the command variant of each downstream control payload delivered to
+    ControlTransportHandler::OnMessage. Emitted once per delivered
+    PayloadType::kControl payload across all platforms except iOS, covering
+    protobuf parse failures and unset or unrecognized command fields (recorded
+    as Unspecified), and each handled ControlCommand variant. Payloads discarded
+    before handler delivery are tracked separately in
+    StreamTransport.Downstream.PayloadDropped.
+  </summary>
+</histogram>
+
 <histogram name="StreamTransport.Downstream.PayloadDropped"
     enum="StreamTransportPayloadDropReason" expires_after="2027-09-01">
   <owner>wenyufu@chromium.org</owner>
