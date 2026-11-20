@@ -191,6 +191,10 @@ class MockContextualTasksUiService : public ContextualTasksUiService {
               (const base::Uuid& task_id),
               (override));
   MOCK_METHOD(bool,
+              IsTaskWaitingForUrl,
+              (const base::Uuid& task_id),
+              (override));
+  MOCK_METHOD(bool,
               HandleNavigation,
               (content::OpenURLParams url_params,
                content::WebContents* source_contents,
@@ -2869,6 +2873,57 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
   GURL expected_url(
       "https://www.google.com/search?udm=50&q=test&cs=0&gsc=2&hl=en");
   EXPECT_EQ(cached_wc->GetVisibleURL(), expected_url);
+}
+
+TEST_F(
+    ContextualTasksSidePanelCoordinatorTest,
+    Show_WaitingForUrl_ReplacesInitialEntryWhenUrlCommits_WithRearchitectureFlag) {
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitAndEnableFeature(
+      kContextualTasksSidePanelRearchitecture);
+
+  auto* mock_ui_service = static_cast<MockContextualTasksUiService*>(
+      ContextualTasksUiServiceFactory::GetForBrowserContext(profile_.get()));
+
+  ContextualTask expected_task(base::Uuid::GenerateRandomV4());
+  ON_CALL(*mock_controller_, GetContextualTaskForTab(_))
+      .WillByDefault(Return(expected_task));
+  ON_CALL(*mock_ui_service, GetInitialUrlForTask(expected_task.GetTaskId()))
+      .WillByDefault(Return(std::nullopt));
+  ON_CALL(*mock_ui_service, IsTaskWaitingForUrl(expected_task.GetTaskId()))
+      .WillByDefault(Return(true));
+
+  EXPECT_CALL(*mock_panel_host_, Show(_)).Times(1);
+
+  coordinator_->Show(
+      /*transition_from_tab=*/false,
+      omnibox::ChromeAimEntryPoint::
+          DESKTOP_CHROME_LENS_CONTEXTUAL_SEARCHBOX_ENTRY_POINT,
+      /*use_no_animation=*/true);
+
+  content::WebContents* cached_wc =
+      GetWebContentsForTaskForTesting(expected_task.GetTaskId());
+  ASSERT_TRUE(cached_wc);
+  EXPECT_TRUE(cached_wc->GetVisibleURL().is_empty());
+  EXPECT_EQ(cached_wc->GetController().GetPendingEntry(), nullptr);
+  ASSERT_NE(cached_wc->GetController().GetLastCommittedEntry(), nullptr);
+  EXPECT_TRUE(
+      cached_wc->GetController().GetLastCommittedEntry()->IsInitialEntry());
+
+  // When the initial results URL arrives and commits, it replaces the initial
+  // `NavigationEntry` at index 0 so back-navigation stops at the initial page.
+  ON_CALL(*mock_ui_service, IsTaskWaitingForUrl(expected_task.GetTaskId()))
+      .WillByDefault(Return(false));
+  const GURL results_url =
+      ContextualTasksUiService::AddRequiredSidePanelUrlChanges(
+          GURL("https://www.google.com/search?vsrid=123&lns_mode=un"),
+          cached_wc);
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(cached_wc,
+                                                             results_url);
+
+  EXPECT_EQ(cached_wc->GetLastCommittedURL(), results_url);
+  EXPECT_EQ(cached_wc->GetController().GetEntryCount(), 1);
+  EXPECT_FALSE(cached_wc->GetController().CanGoBack());
 }
 
 TEST_F(ContextualTasksSidePanelCoordinatorTest,

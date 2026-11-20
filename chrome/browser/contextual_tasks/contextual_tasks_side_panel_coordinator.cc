@@ -2314,16 +2314,17 @@ void ContextualTasksSidePanelCoordinator::MaybeCreateCachedWebContents(
   // Create new WebContents for the task.
   if (auto* ui_service = GetUiService()) {
     ui_service->SetInitialEntryPointForTask(task_id, entry_point);
-    GURL url;
+    std::optional<GURL> url;
     if (IsContextualTasksSidePanelRearchitectureEnabled()) {
       if (std::optional<GURL> initial_url =
               ui_service->GetInitialUrlForTask(task_id)) {
         url = *initial_url;
-      } else if (ui_service->IsTaskWaitingForUrl(task_id)) {
-        url = GURL("about:blank");
-      } else {
+      } else if (!ui_service->IsTaskWaitingForUrl(task_id)) {
         url = ui_service->GetDefaultAiPageUrlForTask(task_id);
       }
+      // Leave `url` unset when `IsTaskWaitingForUrl()` is true so `WebContents`
+      // stays on its initial `NavigationEntry` and the first real navigation
+      // replaces index 0 (`CanGoBack() == false`).
     } else {
       url = ui_service->GetContextualTaskUrlForTask(task_id);
     }
@@ -2335,10 +2336,12 @@ void ContextualTasksSidePanelCoordinator::MaybeCreateCachedWebContents(
           contextual_search_service_, browser_window_,
           contextual_tasks_service_, this, web_contents, task_id);
       ContextualTasksPanelThreadObserver::CreateForWebContents(web_contents);
-      // Apply required side panel URL params before the initial load, as the
-      // `WebContents` is not attached to a side panel yet.
-      url = ContextualTasksUiService::AddRequiredSidePanelUrlChanges(
-          url, web_contents);
+      if (url.has_value()) {
+        // Apply required side panel URL params before the initial load, as the
+        // `WebContents` is not attached to a side panel yet.
+        url = ContextualTasksUiService::AddRequiredSidePanelUrlChanges(
+            *url, web_contents);
+      }
     }
     // Insert into `task_id_to_web_contents_cache_` before calling `LoadURL()`
     // so that `IsWebContentsInPanel()` returns true during the initial
@@ -2349,9 +2352,11 @@ void ContextualTasksSidePanelCoordinator::MaybeCreateCachedWebContents(
             base::BindOnce(&ContextualTasksSidePanelCoordinator::
                                RecordTimeToFirstContentfulPaint,
                            weak_ptr_factory_.GetWeakPtr()));
-    web_contents->GetController().LoadURL(url, content::Referrer(),
-                                          ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
-                                          std::string());
+    if (url.has_value()) {
+      web_contents->GetController().LoadURL(*url, content::Referrer(),
+                                            ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
+                                            std::string());
+    }
   }
 }
 
