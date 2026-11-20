@@ -246,7 +246,11 @@
 #endif
 
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
+#include "chrome/browser/sessions/app_session_service.h"
+#include "chrome/browser/sessions/app_session_service_factory.h"
 #include "chrome/browser/sessions/exit_type_service.h"
+#include "chrome/browser/sessions/session_service.h"
+#include "chrome/browser/sessions/session_service_factory.h"
 #endif
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -905,6 +909,16 @@ void BrowserProcessImpl::EndSession() {
           ExitTypeService::GetInstanceForProfile(profile);
       if (exit_type_service) {
         exit_type_service->SetCurrentSessionExitType(ExitType::kForcedShutdown);
+      }
+      // Session commands are normally written on a timer, which won't fire
+      // before the process is terminated.
+      if (SessionService* session_service =
+              SessionServiceFactory::GetForProfileIfExisting(profile)) {
+        session_service->SaveNow(rundown_counter->GetRundownClosure());
+      }
+      if (AppSessionService* app_session_service =
+              AppSessionServiceFactory::GetForProfileIfExisting(profile)) {
+        app_session_service->SaveNow(rundown_counter->GetRundownClosure());
       }
 #endif
       if (profile->GetPrefs()) {

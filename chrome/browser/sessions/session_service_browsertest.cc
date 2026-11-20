@@ -6,12 +6,16 @@
 
 #include <ranges>
 
+#include "base/files/file_enumerator.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
@@ -32,10 +36,14 @@
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/command_storage_manager.h"
+#include "components/sessions/core/command_storage_manager_test_helper.h"
 #include "components/sessions/core/session_command.h"
+#include "components/sessions/core/session_constants.h"
 #include "components/sessions/core/session_id.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/test/browser_test.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
+#include "ui/gfx/geometry/rect.h"
 #include "url/url_constants.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -487,4 +495,60 @@ IN_PROC_BROWSER_TEST_F(SessionServiceBrowserTest,
       true, 1);
 
   CloseBrowserSynchronously(browser());
+}
+
+namespace {
+
+// Returns the total size of the session files (not the tab or app ones) in
+// `dir`. Queries each file with GetFileSize() rather than
+// FileEnumerator::FileInfo::GetSize() because on Windows, FindFirstFile()
+// reads the directory entry, whose size stays 0 while the session file handle
+// is still open for writing.
+int64_t GetSessionFilesSize(const base::FilePath& dir) {
+  int64_t size = 0;
+  base::FileEnumerator files(
+      dir, /*recursive=*/false, base::FileEnumerator::FILES,
+      base::FilePath::StringType(sessions::kSessionFileNamePrefix) +
+          FILE_PATH_LITERAL("_*"));
+  for (base::FilePath path = files.Next(); !path.empty(); path = files.Next()) {
+    size += base::GetFileSize(path).value_or(0);
+  }
+  return size;
+}
+
+}  // namespace
+
+// BrowserProcessImpl::EndSession() is called before the process is terminated
+// at logout. Session commands are normally written on a timer that won't fire
+// before then, so EndSession() must write them and wait for the write.
+IN_PROC_BROWSER_TEST_F(SessionServiceBrowserTest,
+                       EndSessionWritesPendingCommands) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  SessionServiceTestHelper helper(service());
+  sessions::CommandStorageManagerTestHelper storage_helper(
+      helper.command_storage_manager());
+
+  // Write whatever is pending, so that the size below only grows with the
+  // commands added afterwards.
+  helper.command_storage_manager()->Save();
+  storage_helper.RunMessageLoopUntilBackendDone();
+  const base::FilePath sessions_dir = browser()->GetProfile()->GetPath().Append(
+      storage_helper.ShouldWriteCleartextFiles()
+          ? sessions::kSessionsDirectory
+          : sessions::kEncryptedSessionsDirectory);
+  const int64_t size_before = GetSessionFilesSize(sessions_dir);
+  ASSERT_GT(size_before, 0);
+
+  service()->SetWindowBounds(browser()->GetSessionID(),
+                             gfx::Rect(10, 20, 300, 400),
+                             ui::mojom::WindowShowState::kNormal);
+  ASSERT_TRUE(helper.HasPendingSave());
+
+  g_browser_process->EndSession();
+
+  // Read the files right away, without running any tasks: EndSession() must
+  // have waited for the backend to write the commands.
+  EXPECT_FALSE(helper.HasPendingSave());
+  EXPECT_TRUE(helper.command_storage_manager()->pending_commands().empty());
+  EXPECT_GT(GetSessionFilesSize(sessions_dir), size_before);
 }

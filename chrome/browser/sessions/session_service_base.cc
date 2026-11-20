@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -274,6 +275,12 @@ void SessionServiceBase::SetWindowBounds(
 
   ScheduleCommand(
       sessions::CreateSetWindowBoundsCommand(window_id, bounds, show_state));
+}
+
+void SessionServiceBase::SaveNow(base::OnceClosure done_callback) {
+  CHECK(done_callback);
+  CHECK(command_storage_manager_);
+  command_storage_manager_->SaveNow(std::move(done_callback));
 }
 
 void SessionServiceBase::SetWindowWorkspace(SessionID window_id,

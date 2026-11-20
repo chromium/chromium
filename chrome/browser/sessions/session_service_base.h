@@ -100,6 +100,11 @@ class SessionServiceBase : public sessions::CommandStorageManagerDelegate,
                        const gfx::Rect& bounds,
                        ui::mojom::WindowShowState show_state);
 
+  // Writes all pending commands to disk now, and runs `done_callback` on the
+  // backend task runner once they are written. Used when the session is ending
+  // and the process is terminated without a normal shutdown.
+  void SaveNow(base::OnceClosure done_callback);
+
   // Sets the workspace the window resides in.
   void SetWindowWorkspace(SessionID window_id, const std::string& workspace);
 
