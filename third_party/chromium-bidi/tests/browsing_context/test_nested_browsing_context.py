@@ -18,6 +18,7 @@ from anys import ANY_STR
 from test_helpers import (
     ANY_TIMESTAMP,
     ANY_UUID,
+    AnyExtending,
     execute_command,
     get_tree,
     goto_url,
@@ -513,3 +514,91 @@ async def test_nestedBrowsingContext_navigateToParentOrigin_eventsEmittedOnce(
         "browsingContext.load",
     ]
     assert message["result"]["result"] == {"type": "string", "value": "BACK"}
+
+
+@pytest.mark.asyncio
+async def test_browsingContext_removeSameOriginParentOfCrossOriginIframe_singleContextDestroyedEmitted(
+    websocket,
+    context_id,
+    html,
+    iframe,
+    url_example_another_origin,
+    read_messages,
+):
+    same_origin_child_url = html(iframe(url_example_another_origin))
+    top_url = html(iframe(same_origin_child_url))
+    await goto_url(websocket, context_id, top_url, "complete")
+
+    tree = await get_tree(websocket, context_id)
+    child_info = tree["contexts"][0]["children"][0]
+    child_id = child_info["context"]
+    grandchild_id = child_info["children"][0]["context"]
+
+    child_realms = await execute_command(
+        websocket,
+        {"method": "script.getRealms", "params": {"context": child_id}},
+    )
+    grandchild_realms = await execute_command(
+        websocket,
+        {"method": "script.getRealms", "params": {"context": grandchild_id}},
+    )
+    expected_destroyed_realms = {
+        child_realms["realms"][0]["realm"],
+        grandchild_realms["realms"][0]["realm"],
+    }
+
+    await subscribe(
+        websocket,
+        ["browsingContext.contextDestroyed", "script.realmDestroyed"],
+    )
+
+    # Removing the same-origin parent disposes it before an out-of-process
+    # grandchild finishes detaching; wait for both realms to be destroyed and
+    # verify only one `contextDestroyed` event is emitted.
+    remove_cmd_id = await send_JSON_command(
+        websocket,
+        {
+            "method": "script.evaluate",
+            "params": {
+                "expression": "document.querySelector('iframe').remove()",
+                "awaitPromise": True,
+                "target": {"context": context_id},
+            },
+        },
+    )
+
+    # Sorted: the command result first, then events by method. The flush done by
+    # `check_no_other_messages` catches a late duplicate `contextDestroyed`.
+    [remove_result, context_destroyed, *realms_destroyed] = await read_messages(
+        4, check_no_other_messages=True
+    )
+
+    assert remove_result == AnyExtending({"type": "success", "id": remove_cmd_id})
+    assert {
+        message["params"]["realm"] for message in realms_destroyed
+    } == expected_destroyed_realms
+    assert context_destroyed == {
+        "type": "event",
+        "method": "browsingContext.contextDestroyed",
+        "params": {
+            "context": child_id,
+            "parent": context_id,
+            "url": same_origin_child_url,
+            "userContext": "default",
+            "originalOpener": None,
+            "clientWindow": ANY_STR,
+            "children": [
+                {
+                    "context": grandchild_id,
+                    "url": url_example_another_origin,
+                    "userContext": "default",
+                    "originalOpener": None,
+                    "clientWindow": ANY_STR,
+                    "children": [],
+                }
+            ],
+        },
+    }
+
+    tree = await get_tree(websocket, context_id)
+    assert tree["contexts"][0]["children"] == []

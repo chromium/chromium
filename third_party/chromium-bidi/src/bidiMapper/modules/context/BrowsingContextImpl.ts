@@ -185,7 +185,17 @@ export class BrowsingContextImpl {
 
     browsingContextStorage.addContext(context);
     if (!context.isTopLevelContext()) {
-      context.parent!.addChild(context.id);
+      // The parent context may not be in storage yet (e.g. reconnect) or may
+      // have been disposed ahead of an out-of-process child target.
+      context.parent?.addChild(context.id);
+    }
+    // Re-link any out-of-process children that outlived a previous instance of
+    // this parent frame or attached before it.
+    for (const existingContext of browsingContextStorage.getAllContexts()) {
+      if (existingContext.parentId === context.id) {
+        context.addChild(existingContext.id);
+        existingContext.#initListeners();
+      }
     }
 
     // Hold on the `contextCreated` event until the target is unblocked. This is required,
@@ -250,15 +260,19 @@ export class BrowsingContextImpl {
       browsingContextId: this.id,
     });
 
-    // Delete context from the parent.
-    if (!this.isTopLevelContext()) {
-      this.parent!.#children.delete(this.id);
+    // Delete context from the parent. An out-of-process descendant's target
+    // can detach after an ancestor frame was already disposed; in that case
+    // `this.top` stops below the top-level context and the ancestor's
+    // `contextDestroyed` event already covered this subtree.
+    const parent = this.parent;
+    if (parent !== null) {
+      parent.#children.delete(this.id);
     }
 
     // Fail all ongoing navigations.
     this.#failLifecycleIfNotFinished();
 
-    if (emitContextDestroyed) {
+    if (emitContextDestroyed && this.top.isTopLevelContext()) {
       this.#eventManager.registerEvent(
         {
           type: 'event',
@@ -269,7 +283,7 @@ export class BrowsingContextImpl {
       );
     }
 
-    // Dispose children after the events are emitted.
+    // Dispose same-target children after the events are emitted.
     this.#deleteAllChildren();
 
     this.#eventManager.clearBufferedEvents(this.id);
@@ -327,12 +341,14 @@ export class BrowsingContextImpl {
     this.#initListeners();
   }
 
-  /** Returns the parent context. */
+  /** Returns the parent context, or null if top-level or already disposed. */
   get parent(): BrowsingContextImpl | null {
     if (this.parentId === null) {
       return null;
     }
-    return this.#browsingContextStorage.getContext(this.parentId);
+    // Return null instead of throwing when an ancestor frame was disposed
+    // before an out-of-process descendant's target detached.
+    return this.#browsingContextStorage.findContext(this.parentId) ?? null;
   }
 
   /** Returns all direct children contexts. */
@@ -372,7 +388,17 @@ export class BrowsingContextImpl {
   }
 
   #deleteAllChildren(emitContextDestroyed: boolean = false) {
-    this.directChildren.map((child) => child.dispose(emitContextDestroyed));
+    // Dispose only same-process children (frames without their own target),
+    // including ones inherited from a parent session before this frame moved to
+    // its own target. Out-of-process children (`child.cdpTarget.id ===
+    // child.id`) own their `CdpTarget` and are disposed on
+    // `Target.detachedFromTarget`, preventing a parent renderer from evicting
+    // and re-attaching them.
+    for (const child of this.directChildren) {
+      if (child.cdpTarget.id !== child.id) {
+        child.dispose(emitContextDestroyed);
+      }
+    }
   }
 
   get cdpTarget(): CdpTarget {
@@ -861,9 +887,8 @@ export class BrowsingContextImpl {
       if (
         !params.frameId &&
         this.#parentId &&
-        this.#cdpTarget.cdpClient !==
-          this.#browsingContextStorage.getContext(this.#parentId)?.cdpTarget
-            .cdpClient
+        // Use `this.parent` so a disposed parent frame does not throw.
+        this.#cdpTarget.cdpClient !== this.parent?.cdpTarget.cdpClient
       ) {
         // If CDP event `Page.javascriptDialogClosed` does not have a frameId, this
         // heuristic emits the event only for top-level per-cdp target context, ignoring
@@ -911,9 +936,8 @@ export class BrowsingContextImpl {
       if (
         !params.frameId &&
         this.#parentId &&
-        this.#cdpTarget.cdpClient !==
-          this.#browsingContextStorage.getContext(this.#parentId)?.cdpTarget
-            .cdpClient
+        // Use `this.parent` so a disposed parent frame does not throw.
+        this.#cdpTarget.cdpClient !== this.parent?.cdpTarget.cdpClient
       ) {
         // If CDP event `Page.javascriptDialogClosed` does not have a frameId, this
         // heuristic emits the event only for top-level per-cdp target context, ignoring

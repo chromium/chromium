@@ -56,6 +56,9 @@ const CHILD_FRAME_ID = 'CHILD_FRAME';
 // Out-of-process child frame of `TOP_FRAME_ID`, hosted by `OOPIF_SESSION_ID`.
 const OOPIF_FRAME_ID = 'OOPIF_FRAME';
 const OOPIF_SESSION_ID = 'OOPIF_SESSION';
+// Out-of-process grandchild frame, hosted by `NESTED_OOPIF_SESSION_ID`.
+const NESTED_OOPIF_FRAME_ID = 'NESTED_OOPIF_FRAME';
+const NESTED_OOPIF_SESSION_ID = 'NESTED_OOPIF_SESSION';
 
 const OTHER_TAB_TARGET_ID = 'OTHER_TAB_TARGET';
 const OTHER_TAB_SESSION_ID = 'OTHER_TAB_SESSION';
@@ -89,6 +92,14 @@ function frameTreeForSession(
           id: OOPIF_FRAME_ID,
           parentId: TOP_FRAME_ID,
           loaderId: 'OOPIF_LOADER',
+          url: OOPIF_URL,
+        },
+      };
+    case NESTED_OOPIF_SESSION_ID:
+      return {
+        frame: {
+          id: NESTED_OOPIF_FRAME_ID,
+          loaderId: 'NESTED_OOPIF_LOADER',
           url: OOPIF_URL,
         },
       };
@@ -193,6 +204,7 @@ describe('CdpTargetManager', () => {
   let browsingContextStorage: BrowsingContextStorage;
   let realmStorage: RealmStorage;
   let debugErrorLog: sinon.SinonSpy;
+  let eventManager: EventManager;
 
   beforeEach(() => {
     connection = new FakeCdpConnection();
@@ -203,7 +215,7 @@ describe('CdpTargetManager', () => {
     const logger: LoggerFn = (type) =>
       type === LogType.debugError ? debugErrorLog : undefined;
     const userContextStorage = new UserContextStorage(browserClient);
-    const eventManager = new EventManager(
+    eventManager = new EventManager(
       browsingContextStorage,
       userContextStorage,
       new AclManager(browsingContextStorage),
@@ -366,6 +378,279 @@ describe('CdpTargetManager', () => {
       });
 
       assert.isFalse(browsingContextStorage.hasContext(OOPIF_FRAME_ID));
+    });
+
+    it('keeps a nested OOPIF when its same-process parent is detached', () => {
+      // Attach an out-of-process grandchild beneath same-process `CHILD_FRAME_ID`.
+      pageClient.receive('Page.frameAttached', {
+        frameId: NESTED_OOPIF_FRAME_ID,
+        parentFrameId: CHILD_FRAME_ID,
+      });
+      pageClient.receive(
+        'Target.attachedToTarget',
+        attachedToTarget(
+          NESTED_OOPIF_SESSION_ID,
+          NESTED_OOPIF_FRAME_ID,
+          'iframe',
+          OOPIF_URL,
+        ),
+      );
+      const registerEventSpy = sinon.spy(eventManager, 'registerEvent');
+
+      // Detaching `CHILD_FRAME_ID` on `pageClient` must not cascade into
+      // `NESTED_OOPIF_FRAME_ID`, which is hosted by its own target.
+      pageClient.receive('Page.frameSubtreeWillBeDetached', {
+        frameId: CHILD_FRAME_ID,
+      });
+
+      assert.isFalse(browsingContextStorage.hasContext(CHILD_FRAME_ID));
+      assert.strictEqual(
+        sessionOf(NESTED_OOPIF_FRAME_ID),
+        NESTED_OOPIF_SESSION_ID,
+      );
+
+      // Re-attaching `CHILD_FRAME_ID` and `NESTED_OOPIF_FRAME_ID` on `pageClient`
+      // must not rebind `NESTED_OOPIF_FRAME_ID`, and must keep it in the tree.
+      pageClient.receive('Page.frameAttached', {
+        frameId: CHILD_FRAME_ID,
+        parentFrameId: TOP_FRAME_ID,
+      });
+      pageClient.receive('Page.frameAttached', {
+        frameId: NESTED_OOPIF_FRAME_ID,
+        parentFrameId: CHILD_FRAME_ID,
+      });
+
+      assert.strictEqual(
+        sessionOf(NESTED_OOPIF_FRAME_ID),
+        NESTED_OOPIF_SESSION_ID,
+      );
+      assert.deepStrictEqual(
+        browsingContextStorage
+          .getContext(CHILD_FRAME_ID)
+          .directChildren.map((child) => child.id),
+        [NESTED_OOPIF_FRAME_ID],
+      );
+
+      const destroyedIds = registerEventSpy
+        .getCalls()
+        .filter(
+          (call) => call.args[0].method === 'browsingContext.contextDestroyed',
+        )
+        .map((call) => call.args[1]);
+      assert.deepStrictEqual(destroyedIds, [CHILD_FRAME_ID]);
+    });
+
+    it('disposes a nested OOPIF cleanly when its target detaches after its parent', () => {
+      // Real Chrome removes a same-process parent frame before the browser
+      // detaches the nested OOPIF target; only one `contextDestroyed` event
+      // (for the parent subtree) should be emitted.
+      pageClient.receive('Page.frameAttached', {
+        frameId: NESTED_OOPIF_FRAME_ID,
+        parentFrameId: CHILD_FRAME_ID,
+      });
+      pageClient.receive(
+        'Target.attachedToTarget',
+        attachedToTarget(
+          NESTED_OOPIF_SESSION_ID,
+          NESTED_OOPIF_FRAME_ID,
+          'iframe',
+          OOPIF_URL,
+        ),
+      );
+      const registerEventSpy = sinon.spy(eventManager, 'registerEvent');
+
+      pageClient.receive('Page.frameSubtreeWillBeDetached', {
+        frameId: CHILD_FRAME_ID,
+      });
+      pageClient.receive('Target.detachedFromTarget', {
+        sessionId: NESTED_OOPIF_SESSION_ID,
+        targetId: NESTED_OOPIF_FRAME_ID,
+      });
+
+      assert.isFalse(browsingContextStorage.hasContext(NESTED_OOPIF_FRAME_ID));
+      const destroyedEvents = registerEventSpy
+        .getCalls()
+        .filter(
+          (call) => call.args[0].method === 'browsingContext.contextDestroyed',
+        );
+      assert.lengthOf(destroyedEvents, 1);
+      assert.strictEqual(destroyedEvents[0]!.args[1], CHILD_FRAME_ID);
+    });
+
+    it('emits only one contextDestroyed when two nested OOPIFs detach bottom-up after their same-process ancestor', () => {
+      // Build `TOP -> CHILD (same-process) -> OOPIF -> NESTED_OOPIF`.
+      const secondOopifFrameId = 'SECOND_OOPIF_FRAME';
+      const secondOopifSessionId = 'SECOND_OOPIF_SESSION';
+      pageClient.receive('Page.frameAttached', {
+        frameId: secondOopifFrameId,
+        parentFrameId: CHILD_FRAME_ID,
+      });
+      pageClient.receive(
+        'Target.attachedToTarget',
+        attachedToTarget(
+          secondOopifSessionId,
+          secondOopifFrameId,
+          'iframe',
+          OOPIF_URL,
+        ),
+      );
+      const secondOopifClient = connection.getCdpClient(secondOopifSessionId);
+      secondOopifClient.receive('Page.frameAttached', {
+        frameId: NESTED_OOPIF_FRAME_ID,
+        parentFrameId: secondOopifFrameId,
+      });
+      secondOopifClient.receive(
+        'Target.attachedToTarget',
+        attachedToTarget(
+          NESTED_OOPIF_SESSION_ID,
+          NESTED_OOPIF_FRAME_ID,
+          'iframe',
+          OOPIF_URL,
+        ),
+      );
+      const registerEventSpy = sinon.spy(eventManager, 'registerEvent');
+
+      // Detach `CHILD_FRAME_ID` first, then detach `NESTED_OOPIF` before
+      // `secondOopifFrameId` (matching `FrameTreeNode::ResetChildren` order).
+      pageClient.receive('Page.frameSubtreeWillBeDetached', {
+        frameId: CHILD_FRAME_ID,
+      });
+      secondOopifClient.receive('Target.detachedFromTarget', {
+        sessionId: NESTED_OOPIF_SESSION_ID,
+        targetId: NESTED_OOPIF_FRAME_ID,
+      });
+      pageClient.receive('Target.detachedFromTarget', {
+        sessionId: secondOopifSessionId,
+        targetId: secondOopifFrameId,
+      });
+
+      assert.isFalse(browsingContextStorage.hasContext(secondOopifFrameId));
+      assert.isFalse(browsingContextStorage.hasContext(NESTED_OOPIF_FRAME_ID));
+      const destroyedIds = registerEventSpy
+        .getCalls()
+        .filter(
+          (call) => call.args[0].method === 'browsingContext.contextDestroyed',
+        )
+        .map((call) => call.args[1]);
+      assert.deepStrictEqual(destroyedIds, [CHILD_FRAME_ID]);
+    });
+  });
+
+  describe('parent document change and target disposal', () => {
+    it('keeps an OOPIF context across parent Page.lifecycleEvent init', () => {
+      const oopifContext = browsingContextStorage.getContext(OOPIF_FRAME_ID);
+      const registerEventSpy = sinon.spy(eventManager, 'registerEvent');
+
+      // A parent renderer reporting a new document (`init`) can only dispose
+      // same-process children; the OOPIF remains owned by its own target.
+      pageClient.receive('Page.lifecycleEvent', {
+        frameId: TOP_FRAME_ID,
+        loaderId: 'NEW_TOP_LOADER',
+        name: 'init',
+        timestamp: 0,
+      });
+      pageClient.receive('Page.frameAttached', {
+        frameId: OOPIF_FRAME_ID,
+        parentFrameId: TOP_FRAME_ID,
+      });
+
+      assert.isFalse(browsingContextStorage.hasContext(CHILD_FRAME_ID));
+      assert.strictEqual(
+        browsingContextStorage.getContext(OOPIF_FRAME_ID),
+        oopifContext,
+      );
+      assert.strictEqual(sessionOf(OOPIF_FRAME_ID), OOPIF_SESSION_ID);
+      const destroyedIds = registerEventSpy
+        .getCalls()
+        .filter(
+          (call) => call.args[0].method === 'browsingContext.contextDestroyed',
+        )
+        .map((call) => call.args[1]);
+      assert.deepStrictEqual(destroyedIds, [CHILD_FRAME_ID]);
+    });
+
+    it('keeps an OOPIF context across parent Page.frameNavigated until its target detaches', () => {
+      const oopifContext = browsingContextStorage.getContext(OOPIF_FRAME_ID);
+
+      // `Page.frameNavigated` on the parent session must not silently evict an
+      // attached OOPIF or allow `Page.frameAttached` to rebind it.
+      pageClient.receive('Page.frameNavigated', {
+        frame: {
+          id: TOP_FRAME_ID,
+          loaderId: 'NEW_TOP_LOADER',
+          url: 'http://top-navigated.test/',
+        },
+        type: 'Navigation',
+      });
+      pageClient.receive('Page.frameAttached', {
+        frameId: OOPIF_FRAME_ID,
+        parentFrameId: TOP_FRAME_ID,
+      });
+
+      assert.isFalse(browsingContextStorage.hasContext(CHILD_FRAME_ID));
+      assert.strictEqual(
+        browsingContextStorage.getContext(OOPIF_FRAME_ID),
+        oopifContext,
+      );
+      assert.strictEqual(sessionOf(OOPIF_FRAME_ID), OOPIF_SESSION_ID);
+
+      // Once the browser detaches the OOPIF target, the OOPIF is disposed.
+      pageClient.receive('Target.detachedFromTarget', {
+        sessionId: OOPIF_SESSION_ID,
+        targetId: OOPIF_FRAME_ID,
+      });
+      assert.isFalse(browsingContextStorage.hasContext(OOPIF_FRAME_ID));
+    });
+
+    it('keeps a grandchild OOPIF when its parent OOPIF target detaches first', () => {
+      // Attach a grandchild OOPIF through `OOPIF_SESSION_ID`.
+      const oopifClient = connection.getCdpClient(OOPIF_SESSION_ID);
+      oopifClient.receive('Page.frameAttached', {
+        frameId: NESTED_OOPIF_FRAME_ID,
+        parentFrameId: OOPIF_FRAME_ID,
+      });
+      oopifClient.receive(
+        'Target.attachedToTarget',
+        attachedToTarget(
+          NESTED_OOPIF_SESSION_ID,
+          NESTED_OOPIF_FRAME_ID,
+          'iframe',
+          OOPIF_URL,
+        ),
+      );
+      const registerEventSpy = sinon.spy(eventManager, 'registerEvent');
+
+      // Detaching `OOPIF_SESSION_ID` on `pageClient` must not evict
+      // `NESTED_OOPIF_FRAME_ID` or let `pageClient` re-attach it.
+      pageClient.receive('Target.detachedFromTarget', {
+        sessionId: OOPIF_SESSION_ID,
+        targetId: OOPIF_FRAME_ID,
+      });
+      pageClient.receive('Page.frameAttached', {
+        frameId: NESTED_OOPIF_FRAME_ID,
+        parentFrameId: TOP_FRAME_ID,
+      });
+
+      assert.isFalse(browsingContextStorage.hasContext(OOPIF_FRAME_ID));
+      assert.strictEqual(
+        sessionOf(NESTED_OOPIF_FRAME_ID),
+        NESTED_OOPIF_SESSION_ID,
+      );
+
+      // When the grandchild target detaches later, no second `contextDestroyed`
+      // event is emitted because `OOPIF_FRAME_ID` already covered the subtree.
+      oopifClient.receive('Target.detachedFromTarget', {
+        sessionId: NESTED_OOPIF_SESSION_ID,
+        targetId: NESTED_OOPIF_FRAME_ID,
+      });
+      assert.isFalse(browsingContextStorage.hasContext(NESTED_OOPIF_FRAME_ID));
+      const destroyedIds = registerEventSpy
+        .getCalls()
+        .filter(
+          (call) => call.args[0].method === 'browsingContext.contextDestroyed',
+        )
+        .map((call) => call.args[1]);
+      assert.deepStrictEqual(destroyedIds, [OOPIF_FRAME_ID]);
     });
   });
 
