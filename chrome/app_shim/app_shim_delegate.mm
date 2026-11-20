@@ -25,13 +25,7 @@
 - (void)applicationDidFinishLaunching:(NSNotification*)notification {
   id user_notification = [notification.userInfo
       objectForKey:NSApplicationLaunchUserNotificationKey];
-  NSNumber* is_default_launch_number =
-      base::apple::ObjCCast<NSNumber>([notification.userInfo
-          objectForKey:NSApplicationLaunchIsDefaultLaunchKey]);
-  bool is_default_launch =
-      is_default_launch_number ? [is_default_launch_number boolValue] : true;
-  _appShimController->OnAppFinishedLaunching(user_notification != nil,
-                                             is_default_launch);
+  _appShimController->OnAppFinishedLaunching(user_notification != nil);
 }
 
 - (BOOL)application:(NSApplication*)app openFile:(NSString*)filename {
