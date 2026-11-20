@@ -82,8 +82,14 @@ void DateTimeChooserImpl::Trace(Visitor* visitor) const {
 }
 
 void DateTimeChooserImpl::EndChooser() {
-  if (!popup_)
+  if (!popup_) {
+    if (client_) {
+      DateTimeChooserClient* client = client_;
+      client_ = nullptr;
+      client->DidEndChooser();
+    }
     return;
+  }
   if (chrome_client_) {
     chrome_client_->ClosePagePopup(popup_);
   }
@@ -296,7 +302,11 @@ void DateTimeChooserImpl::DidClosePopup() {
   To<HTMLFormControlElement>(OwnerElement()).SetFreezeHoverForOpenPopup(false);
   DCHECK(client_);
   popup_ = nullptr;
-  client_->DidEndChooser();
+  if (client_) {
+    DateTimeChooserClient* client = client_;
+    client_ = nullptr;
+    client->DidEndChooser();
+  }
 }
 
 void DateTimeChooserImpl::AdjustSettings(Settings& popup_settings) {

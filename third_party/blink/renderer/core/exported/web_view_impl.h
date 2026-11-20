@@ -1029,6 +1029,9 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   // native restoration. Reset on each lifecycle update.
   bool last_page_lifecycle_state_update_restored_from_bfcache_ = false;
 
+  // Whether we're currently in Close().
+  bool is_closing_ = false;
+
   // All the registered observers.
   base::ObserverList<WebViewObserver> observers_;
 };
