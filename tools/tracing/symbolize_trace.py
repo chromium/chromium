@@ -203,6 +203,40 @@ def _GetBuildDirsWithSymbols(local_build_dir):
   return build_dirs
 
 
+def _LinkBreakpadFiles(breakpad_dir, link_dir):
+  """Links breakpad files into |link_dir| under every lookup name.
+
+  Each '<module_id>.breakpad' file in |breakpad_dir| is linked under its own
+  name and, for Chrome module IDs, also under the name Perfetto's breakpad
+  symbolizer currently looks up. This keeps |breakpad_dir| unchanged, so
+  cached breakpad dirs keep the standard naming.
+
+  Args:
+    breakpad_dir: Directory containing '<module_id>.breakpad' files.
+    link_dir: Empty directory to create the links in.
+  """
+  for filename in os.listdir(breakpad_dir):
+    if not filename.endswith('.breakpad'):
+      continue
+
+    target = os.path.abspath(os.path.join(breakpad_dir, filename))
+    # Standard name, looked up by Perfetto versions with the fix.
+    os.symlink(target, os.path.join(link_dir, filename))
+
+    # Chrome records module IDs as 33-character hex strings. Perfetto currently
+    # hex-encodes the module ID again to build the lookup filename, e.g.
+    # '892E...0' -> '3839...30.breakpad'.
+    # TODO(crbug.com/586951445): Remove once Perfetto is fixed to avoid the
+    # double encoding.
+    module_id = filename[: -len('.breakpad')]
+    if len(module_id) != 33:
+      continue
+    perfetto_name = module_id.encode('ascii').hex() + '.breakpad'
+    perfetto_path = os.path.join(link_dir, perfetto_name)
+    if not os.path.exists(perfetto_path):
+      os.symlink(target, perfetto_path)
+
+
 def _Symbolize(trace_file, symbolizer_path, breakpad_output_dir, output_file):
   """ "Symbolizes a trace.
 
@@ -215,29 +249,45 @@ def _Symbolize(trace_file, symbolizer_path, breakpad_output_dir, output_file):
   Raises:
     RuntimeError: If _RunSymbolizer() fails to execute the given command.
   """
-  # Set environment variable as location of stored breakpad files.
-  symbolize_env = os.environ.copy()
-  symbolize_env['BREAKPAD_SYMBOL_DIR'] = os.path.join(breakpad_output_dir, '')
   cmd = [symbolizer_path, 'symbolize', trace_file]
 
-  # Open temporary file where symbols can be stored.
-  with tempfile.TemporaryFile(mode='wb+') as temp_symbol_file:
-    _RunSymbolizer(cmd, symbolize_env, temp_symbol_file)
+  # Set environment variable as location of stored breakpad files. Point it at
+  # a temp dir that also exposes each file under the name Perfetto looks up.
+  with tempfile.TemporaryDirectory(
+    prefix='breakpad_symbolizer_'
+  ) as symbolizer_breakpad_dir:
+    _LinkBreakpadFiles(breakpad_output_dir, symbolizer_breakpad_dir)
+    symbolize_env = os.environ.copy()
+    symbolize_env['BREAKPAD_SYMBOL_DIR'] = os.path.join(
+      symbolizer_breakpad_dir, ''
+    )
 
-    # Write trace data and symbol data to the same file.
-    temp_symbol_file.seek(0)
-    symbol_data = temp_symbol_file.read()
-    with open(trace_file, 'rb') as f:
-      trace_data = f.read()
-    with open(output_file, 'wb') as f:
-      f.write(trace_data)
-      f.write(symbol_data)
-      flag_utils.GetTracingLogger().info(
-        'Symbolized %s(%d bytes) with %d bytes of symbol data',
-        os.path.abspath(trace_file),
-        len(trace_data),
-        len(symbol_data),
-      )
+    # Open temporary file where symbols can be stored.
+    with tempfile.TemporaryFile(mode='wb+') as temp_symbol_file:
+      _RunSymbolizer(cmd, symbolize_env, temp_symbol_file)
+
+      # Write trace data and symbol data to the same file.
+      temp_symbol_file.seek(0)
+      symbol_data = temp_symbol_file.read()
+
+  with open(trace_file, 'rb') as f:
+    trace_data = f.read()
+  with open(output_file, 'wb') as f:
+    f.write(trace_data)
+    f.write(symbol_data)
+    flag_utils.GetTracingLogger().info(
+      'Symbolized %s(%d bytes) with %d bytes of symbol data',
+      os.path.abspath(trace_file),
+      len(trace_data),
+      len(symbol_data),
+    )
+  if not symbol_data:
+    flag_utils.GetTracingLogger().warning(
+      'No symbols were added to the trace. Check that the breakpad files in '
+      '%s match the module IDs in the trace. Rerun with --verbose for '
+      'details.',
+      breakpad_output_dir,
+    )
 
 
 def _RunSymbolizer(cmd, env, stdout):
