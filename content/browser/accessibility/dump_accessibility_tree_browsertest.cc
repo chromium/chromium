@@ -79,9 +79,6 @@ void DumpAccessibilityTreeTest::SetUpCommandLine(
   // Enable AOMAriaRelationshipProperties
   command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
                                   "AOMAriaRelationshipProperties");
-  // Enable ariaOwnsElements, which is still behind its own flag.
-  command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
-                                  "AOMAriaRelationshipPropertiesAriaOwns");
   // Enable headingoffset/headingreset attributes
   command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
                                   "HeadingOffset");
@@ -1084,16 +1081,6 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityAriaControlsReferenceTarget) {
   RunAriaTest(FILE_PATH_LITERAL("aria-controls-reference-target.html"));
-}
-
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       AccessibilityAriaOwnsElements) {
-  RunAriaTest(FILE_PATH_LITERAL("ariaOwnsElements.html"));
-}
-
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       AccessibilityAriaOwnsElementsInternals) {
-  RunAriaTest(FILE_PATH_LITERAL("ariaOwnsElements-internals.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
@@ -2753,13 +2740,6 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityCustomElementWithAriaOwnsInsideSlot) {
   RunHtmlTest(
       FILE_PATH_LITERAL("custom-element-with-aria-owns-inside-slot.html"));
-}
-
-IN_PROC_BROWSER_TEST_P(
-    DumpAccessibilityTreeTest,
-    AccessibilityCustomElementWithAriaOwnsElementsCrossShadow) {
-  RunHtmlTest(FILE_PATH_LITERAL(
-      "custom-element-with-ariaOwnsElements-cross-shadow.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityEm) {

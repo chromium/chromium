@@ -17,7 +17,6 @@
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
-#include "third_party/blink/renderer/core/html/custom/element_internals.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/html_dialog_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
@@ -4226,90 +4225,6 @@ TEST_F(AccessibilityTest, LayoutlessTextHiddenViaStyleUpdatesDynamically) {
   ASSERT_NE(nullptr, text);
   EXPECT_FALSE(text->IsHiddenViaStyle());
   EXPECT_TRUE(text->IsVisible());
-}
-
-// An aria-owns content attribute on the host takes precedence over
-// ElementInternals, even when it is empty, matching
-// Element::ElementsFromAttributeOrInternals().
-TEST_F(AccessibilityTest, HasARIAOwnsHostAttributeOverridesInternals) {
-  SetBodyInnerHTML(R"HTML(
-      <x-owner id="owner"></x-owner>
-      <div id="target"></div>
-      )HTML");
-
-  auto* owner = To<HTMLElement>(GetElementById("owner"));
-  Element* target = GetElementById("target");
-  EXPECT_FALSE(AXObject::HasARIAOwns(owner));
-
-  // Element references on ElementInternals.
-  ElementInternals& internals = owner->EnsureElementInternals();
-  auto* elements = MakeGarbageCollected<GCedHeapVector<Member<Element>>>();
-  elements->push_back(target);
-  internals.setAriaOwnsElements(elements);
-  EXPECT_TRUE(AXObject::HasARIAOwns(owner));
-
-  // An empty host attribute means the author asked to own nothing.
-  owner->setAttribute(html_names::kAriaOwnsAttr, g_empty_atom);
-  EXPECT_FALSE(AXObject::HasARIAOwns(owner));
-
-  // A non-empty host attribute is used as is.
-  owner->setAttribute(html_names::kAriaOwnsAttr, AtomicString("target"));
-  EXPECT_TRUE(AXObject::HasARIAOwns(owner));
-
-  // Removing the host attribute restores the internals references.
-  owner->removeAttribute(html_names::kAriaOwnsAttr);
-  EXPECT_TRUE(AXObject::HasARIAOwns(owner));
-
-  // IDs set via ElementInternals are still honored.
-  internals.setAriaOwnsElements(nullptr);
-  EXPECT_FALSE(AXObject::HasARIAOwns(owner));
-  internals.setAttribute(html_names::kAriaOwnsAttr, AtomicString("target"));
-  EXPECT_TRUE(AXObject::HasARIAOwns(owner));
-  owner->setAttribute(html_names::kAriaOwnsAttr, g_empty_atom);
-  EXPECT_FALSE(AXObject::HasARIAOwns(owner));
-}
-
-// The tree follows the same precedence: an empty aria-owns content attribute
-// on the host drops the children owned via ElementInternals, and removing the
-// attribute restores them.
-TEST_F(AccessibilityTest, EmptyAriaOwnsOnHostDropsInternalsOwnedChildren) {
-  SetBodyInnerHTML(R"HTML(
-      <x-owner id="owner" style="display: block"></x-owner>
-      <div id="container">
-        <div id="target">Target</div>
-      </div>
-      )HTML");
-
-  auto* owner = To<HTMLElement>(GetElementById("owner"));
-  auto* elements = MakeGarbageCollected<GCedHeapVector<Member<Element>>>();
-  elements->push_back(GetElementById("target"));
-  owner->EnsureElementInternals().setAriaOwnsElements(elements);
-  UpdateAllLifecyclePhasesForTest();
-
-  AXObject* ax_owner = GetAXObjectByElementId("owner");
-  ASSERT_NE(nullptr, ax_owner);
-  AXObject* ax_target = GetAXObjectByElementId("target");
-  ASSERT_NE(nullptr, ax_target);
-  EXPECT_TRUE(GetAXObjectCache().IsAriaOwned(ax_target));
-  EXPECT_EQ(ax_owner, ax_target->ParentObject());
-
-  owner->setAttribute(html_names::kAriaOwnsAttr, g_empty_atom);
-  UpdateAllLifecyclePhasesForTest();
-
-  ax_target = GetAXObjectByElementId("target");
-  ASSERT_NE(nullptr, ax_target);
-  EXPECT_FALSE(GetAXObjectCache().IsAriaOwned(ax_target));
-  EXPECT_EQ(GetAXObjectByElementId("container"), ax_target->ParentObject());
-
-  owner->removeAttribute(html_names::kAriaOwnsAttr);
-  UpdateAllLifecyclePhasesForTest();
-
-  ax_owner = GetAXObjectByElementId("owner");
-  ASSERT_NE(nullptr, ax_owner);
-  ax_target = GetAXObjectByElementId("target");
-  ASSERT_NE(nullptr, ax_target);
-  EXPECT_TRUE(GetAXObjectCache().IsAriaOwned(ax_target));
-  EXPECT_EQ(ax_owner, ax_target->ParentObject());
 }
 
 }  // namespace test

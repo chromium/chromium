@@ -303,12 +303,16 @@ class MODULES_EXPORT AXRelationCache {
   // Returns the parent of the given object due to aria-owns.
   AXObject* GetAriaOwnedParent(const AXObject*) const;
 
-  // Returns true if |candidate|, referenced from |owner| via ariaOwnsElements
-  // (on the element or on ElementInternals), is in a TreeScope from which
-  // |owner| may own it. Only same-scope references are honored for now, which
-  // matches how aria-owns IDs are resolved.
-  static bool IsOwnsCandidateInOwnerScope(const Element& owner,
-                                          const Element& candidate);
+  // Given an object that has explicitly set elements for aria-owns, update the
+  // internal state to reflect the new set of children owned by this object.
+  // Note that |owned_children| will be the AXObjects corresponding to the
+  // elements in |attr_associated_elements|. These elements are validated -
+  // exist in the DOM, and are a descendant of a shadow including ancestor.
+  void UpdateAriaOwnsFromAttrAssociatedElementsWithCleanLayout(
+      AXObject* owner,
+      const GCedHeapVector<Member<Element>>& attr_associated_elements,
+      HeapVector<Member<AXObject>>& owned_children,
+      bool force);
 
   // If any object is related to this object via <label for>, aria-owns,
   // aria-describedby, aria-labeledby or interestfor, update the text for the
