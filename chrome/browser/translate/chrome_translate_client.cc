@@ -161,11 +161,10 @@ class ChromeTranslateClient::ReadAnythingObserver
 };
 #endif
 
-void ChromeTranslateClient::TriggerPdfTranslation() {
+void ChromeTranslateClient::OnPdfTranslationRequested() {
 #if !BUILDFLAG(IS_ANDROID)
-  if (!IsReadingModeOpen()) {
-    opened_side_panel_for_pdf_translation_ = true;
-  }
+  // Observe Reading Mode whether or not it's already open, so that the
+  // translation is reverted when it closes.
   tabs::TabInterface* tab =
       tabs::TabInterface::MaybeGetFromContents(web_contents());
   if (tab) {
@@ -181,6 +180,12 @@ void ChromeTranslateClient::TriggerPdfTranslation() {
       controller->AddObserver(read_anything_observer_.get());
     }
   }
+  // If Reading Mode is already open, the translation was dispatched directly,
+  // so there's nothing to show.
+  if (IsReadingModeOpen()) {
+    return;
+  }
+  opened_side_panel_for_pdf_translation_ = true;
   read_anything::ReadAnythingEntryPointController::ShowUI(
       tab ? tab->GetBrowserWindowInterface() : nullptr,
       ReadAnythingOpenTrigger::kPdfTranslation,

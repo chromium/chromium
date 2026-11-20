@@ -71,8 +71,12 @@ class TranslateClient {
   // Returns true if the URL can be translated.
   virtual bool IsTranslatableURL(const GURL& url) = 0;
 
-  // Triggers PDF translation.
-  virtual void TriggerPdfTranslation() {}
+  // Called when a PDF translation is requested. If Reading Mode isn't open, the
+  // translation is pending until the client opens Reading Mode and it shows the
+  // PDF's content. If Reading Mode is already open, the translation has already
+  // been dispatched. In both cases, closing Reading Mode should revert the
+  // translation.
+  virtual void OnPdfTranslationRequested() {}
 
   // Reverts PDF translation.
   virtual void RevertPdfTranslation() {}

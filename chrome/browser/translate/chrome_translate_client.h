@@ -120,7 +120,7 @@ class ChromeTranslateClient
                        translate::TranslateErrors error_type,
                        bool triggered_from_menu) override;
   bool IsTranslatableURL(const GURL& url) override;
-  void TriggerPdfTranslation() override;
+  void OnPdfTranslationRequested() override;
   void RevertPdfTranslation() override;
   void OnSidePanelClosed();
   bool IsReadingModeOpen() const override;

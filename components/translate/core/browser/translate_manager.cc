@@ -540,9 +540,19 @@ void TranslateManager::DoTranslatePage(std::string_view translate_script,
                                        std::string_view source_lang,
                                        std::string_view target_lang) {
   language_state_.set_translation_pending(true);
-  if (translate_driver_->GetContentsMimeType() == kPdfMimeType &&
-      base::FeatureList::IsEnabled(translate::kEnableTranslatePdf) &&
-      !translate_client_->IsReadingModeOpen()) {
+  if (translate_driver_->GetContentsMimeType() != kPdfMimeType ||
+      !base::FeatureList::IsEnabled(translate::kEnableTranslatePdf)) {
+    translate_driver_->TranslatePage(page_seq_no_, translate_script,
+                                     source_lang, target_lang);
+    return;
+  }
+
+  if (translate_client_->IsReadingModeOpen()) {
+    // Reading Mode already shows the PDF's content, so translate it directly.
+    translate_driver_->TranslatePage(page_seq_no_, translate_script,
+                                     source_lang, target_lang);
+  } else {
+    // The PDF is translated once Reading Mode is open and shows its content.
     std::optional<LanguageTag> parsed_source =
         base::i18n::GetLanguageTagFromString(source_lang)
             .value_or(base::i18n::GetKnownLanguageTag("und"));
@@ -557,12 +567,10 @@ void TranslateManager::DoTranslatePage(std::string_view translate_script,
 
     language_state_.SetPendingTranslationLanguages(*parsed_source,
                                                    *parsed_target);
-    translate_client_->TriggerPdfTranslation();
-
-  } else {
-    translate_driver_->TranslatePage(page_seq_no_, translate_script,
-                                     source_lang, target_lang);
   }
+  // Notify the client in both cases. See
+  // TranslateClient::OnPdfTranslationRequested().
+  translate_client_->OnPdfTranslationRequested();
 }
 
 // Notifies |g_error_callback_list_| of translate errors.

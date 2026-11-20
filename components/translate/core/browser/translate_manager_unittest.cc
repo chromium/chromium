@@ -1197,7 +1197,7 @@ TEST_F(TranslateManagerTest, TranslatePage_UntranslatablePdf) {
               ShowTranslateUI(translate::TRANSLATE_STEP_TRANSLATING, _, _, _,
                               _))
       .Times(0);
-  EXPECT_CALL(mock_translate_client_, TriggerPdfTranslation()).Times(0);
+  EXPECT_CALL(mock_translate_client_, OnPdfTranslationRequested()).Times(0);
 
   // The error is shown asynchronously, so that the translate bubble has
   // finished switching its view by the time the error arrives.
@@ -1213,7 +1213,7 @@ TEST_F(TranslateManagerTest, TranslatePage_UntranslatablePdf) {
                               "en", TranslateErrors::TRANSLATION_ERROR,
                               /*triggered_from_menu=*/true))
       .WillOnce(Return(true));
-  EXPECT_CALL(mock_translate_client_, TriggerPdfTranslation()).Times(0);
+  EXPECT_CALL(mock_translate_client_, OnPdfTranslationRequested()).Times(0);
   base::RunLoop().RunUntilIdle();
 }
 
@@ -1880,8 +1880,8 @@ TEST_F(TranslateManagerTest, DoTranslatePagePDF) {
   ON_CALL(mock_translate_client_, GetAcceptLanguagesService())
       .WillByDefault(::testing::Return(&accept_languages));
 
-  // Expect that TriggerPdfTranslation is called on the mock client.
-  EXPECT_CALL(mock_translate_client_, TriggerPdfTranslation()).Times(1);
+  // Expect that OnPdfTranslationRequested is called on the mock client.
+  EXPECT_CALL(mock_translate_client_, OnPdfTranslationRequested()).Times(1);
 
   // Calling TranslatePage should trigger the script request.
   translate_manager_->GetLanguageState()->LanguageDetermined("fr", true);
@@ -1901,6 +1901,54 @@ TEST_F(TranslateManagerTest, DoTranslatePagePDF) {
             expected_source);
   EXPECT_EQ(translate_manager_->GetLanguageState()->pending_target_language(),
             expected_target);
+}
+
+TEST_F(TranslateManagerTest, DoTranslatePagePDF_ReadingModeOpen) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(translate::kEnableTranslatePdf);
+
+  PrepareTranslateManager();
+  driver_.SetPageMimeType(kPdfMimeType);
+
+  // Setup TestURLLoaderFactory to intercept script request and return success.
+  network::TestURLLoaderFactory test_url_loader_factory;
+  scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory =
+      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+          &test_url_loader_factory);
+  TranslateDownloadManager::GetInstance()->set_url_loader_factory(
+      test_shared_loader_factory);
+
+  test_url_loader_factory.SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        test_url_loader_factory.AddResponse(request.url.spec(),
+                                            "dummy_script_content");
+      }));
+
+  ON_CALL(mock_translate_client_, IsTranslatableURL(_))
+      .WillByDefault(::testing::Return(true));
+  ON_CALL(mock_translate_client_, ShowTranslateUI(_, _, _, _, _))
+      .WillByDefault(::testing::Return(true));
+  ON_CALL(mock_translate_client_, IsReadingModeOpen())
+      .WillByDefault(::testing::Return(true));
+  language::AcceptLanguagesService accept_languages(&prefs_,
+                                                    accept_languages_prefs);
+  ON_CALL(mock_translate_client_, GetAcceptLanguagesService())
+      .WillByDefault(::testing::Return(&accept_languages));
+
+  // Reading Mode already shows the PDF's content, so the PDF is translated
+  // directly rather than pending, but the client is still notified so that
+  // closing Reading Mode reverts the translation.
+  EXPECT_CALL(mock_translate_client_, OnPdfTranslationRequested()).Times(1);
+
+  translate_manager_->GetLanguageState()->LanguageDetermined("fr", true);
+  translate_manager_->TranslatePage("fr", "en", false);
+
+  // Run loop to let URL loader finish fetching the script.
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return driver_.TranslatePage_is_called(); }));
+  EXPECT_FALSE(translate_manager_->GetLanguageState()
+                   ->pending_source_language()
+                   .has_value());
 }
 
 TEST_F(TranslateManagerTest, RevertTranslationTriggersRevertPdfTranslation) {

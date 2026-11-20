@@ -252,7 +252,8 @@ class TranslateBubbleViewPdfBrowserTest : public TranslateBubbleViewBrowserTest 
   base::test::ScopedFeatureList feature_list_;
 };
 
-// Test that TriggerPdfTranslation displays the Reading Mode side panel for PDF pages.
+// Test that OnPdfTranslationRequested displays the Reading Mode side panel for
+// PDF pages.
 IN_PROC_BROWSER_TEST_F(TranslateBubbleViewPdfBrowserTest,
                        PdfTranslateBubbleDisplay) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -263,7 +264,7 @@ IN_PROC_BROWSER_TEST_F(TranslateBubbleViewPdfBrowserTest,
           browser()->tab_strip_model()->GetActiveWebContents());
   ASSERT_TRUE(client);
 
-  client->TriggerPdfTranslation();
+  client->OnPdfTranslationRequested();
 
   SidePanelUI* side_panel_ui = SidePanelUI::From(browser());
   ASSERT_TRUE(side_panel_ui);
