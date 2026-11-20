@@ -6,6 +6,8 @@ assert(!is_android)
 
 source_set("record_replay") {
   sources = [
+    "record_replay_mes_client.cc",
+    "record_replay_mes_client.h",
     "recording_artifacts.cc",
     "recording_artifacts.h",
     "skill_audio_capturer.cc",
@@ -37,11 +39,15 @@ source_set("record_replay") {
     "//chrome/browser/ui:browser_manager_service",
     "//chrome/browser/ui/tabs:tab_strip",
     "//components/capture_mode",
+    "//components/optimization_guide/core",
+    "//components/optimization_guide/proto:optimization_guide_proto",
     "//media",
     "//media/mojo/common",
     "//media/mojo/mojom",
     "//mojo/public/cpp/bindings",
+    "//skia",
     "//third_party/blink/public/common:headers",
+    "//ui/gfx/codec",
   ]
 
   if (is_chromeos) {
@@ -55,6 +61,7 @@ source_set("record_replay") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "record_replay_mes_client_unittest.cc",
     "recording_artifacts_unittest.cc",
     "skill_audio_capturer_unittest.cc",
     "skill_recording_service_factory_unittest.cc",
@@ -77,6 +84,9 @@ source_set("unit_tests") {
     "//chrome/browser/ui/webui/context_hub:mojo_bindings_shared",
     "//chrome/common",
     "//chrome/test:test_support",
+    "//components/optimization_guide/core",
+    "//components/optimization_guide/core:test_support",
+    "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/page_content_annotations/content",
     "//content/public/browser",
     "//content/test:test_support",
@@ -84,10 +94,12 @@ source_set("unit_tests") {
     "//media/mojo/common",
     "//media/mojo/mojom",
     "//mojo/public/cpp/bindings",
+    "//skia",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/blink/public/common:headers",
     "//ui/base:test_support",
+    "//ui/gfx/codec",
     "//url",
   ]
 
