@@ -26,6 +26,7 @@ source_set("tests") {
     ":cpp",
     "//base",
     "//base/test:test_support",
+    "//mojo/public/cpp/bindings",
     "//services/image_annotation:lib",
     "//testing/gmock",
     "//testing/gtest",

@@ -6,11 +6,15 @@
 
 #include <cmath>
 #include <limits>
+#include <memory>
 
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
+#include "base/run_loop.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/image_annotation/image_annotation_metrics.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -147,6 +151,36 @@ TEST(ImageProcessorTest, ImageContent) {
                                      4 * max_dim * max_dim /* sample */,
                                      1 /* count */);
   histogram_tester.ExpectTotalCount(metrics_internal::kSourcePixelCount, 2);
+}
+
+TEST(ImageProcessorTest, DestroyedDuringGetPixels) {
+  base::test::TaskEnvironment test_task_env;
+  base::HistogramTester histogram_tester;
+
+  std::unique_ptr<ImageProcessor> processor;
+  processor = std::make_unique<ImageProcessor>(base::BindRepeating(
+      [](std::unique_ptr<ImageProcessor>* processor) {
+        processor->reset();
+        return GenCheckerboardBitmap(16);
+      },
+      &processor));
+
+  mojo::Remote<mojom::ImageProcessor> remote(processor->GetPendingRemote());
+  base::RunLoop run_loop;
+  remote.set_disconnect_handler(run_loop.QuitClosure());
+
+  bool callback_called = false;
+  remote->GetJpgImageData(base::BindOnce(
+      [](bool* callback_called, const std::vector<uint8_t>&, const int32_t,
+         const int32_t) { *callback_called = true; },
+      &callback_called));
+  run_loop.Run();
+  base::ThreadPoolInstance::Get()->FlushForTesting();
+
+  EXPECT_EQ(processor, nullptr);
+  EXPECT_FALSE(remote.is_connected());
+  EXPECT_FALSE(callback_called);
+  histogram_tester.ExpectTotalCount(metrics_internal::kSourcePixelCount, 0);
 }
 
 }  // namespace image_annotation
