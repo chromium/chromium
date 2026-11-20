@@ -28,6 +28,10 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "chrome/browser/ui/immersive/immersive_mode_controller.h"
+#endif
+
 class AppMenuControl;
 class LocationBar;
 class OmniboxPopupPresenterDelegate;
@@ -46,6 +50,9 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
                                   public views::WidgetObserver,
                                   public views::FocusChangeListener,
                                   public ui::EventObserver,
+#if BUILDFLAG(IS_MAC)
+                                  public ImmersiveModeController::Observer,
+#endif
                                   public AppMenuButtonObserver,
                                   public views::ViewObserver {
  public:
@@ -182,6 +189,17 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
   // AppMenuButtonObserver:
   void AppMenuClosed() override;
 
+#if BUILDFLAG(IS_MAC)
+  // ImmersiveModeController::Observer:
+  // Closes an unfocused kFull popup, keeping its draft, when the immersive
+  // toolbar hides. Refocusing the omnibox reopens it.
+  void OnImmersiveRevealEnded() override;
+  void OnImmersiveModeControllerDestroyed() override;
+
+  // Returns whether immersive fullscreen has hidden the toolbar.
+  bool IsImmersiveToolbarHidden() const;
+#endif  // BUILDFLAG(IS_MAC)
+
   // views::ViewObserver:
   void OnViewVisibilityChanged(views::View* observed_view,
                                views::View* starting_view,
@@ -292,6 +310,13 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
   // shown. See `UpdatePopupOcclusion()`.
   base::ScopedMultiSourceObservation<views::View, views::ViewObserver>
       occluding_view_observations_{this};
+#if BUILDFLAG(IS_MAC)
+  // Observed from the first `Show()`. See `OnImmersiveRevealEnded()`.
+  base::ScopedObservation<ImmersiveModeController,
+                          ImmersiveModeController::Observer>
+      immersive_mode_observation_{this};
+#endif  // BUILDFLAG(IS_MAC)
+
 #if BUILDFLAG(IS_CHROMEOS)
   // Observed while shown: the immersive reveal moves the top container
   // without resizing the location bar, and immersive fullscreen reparents it.

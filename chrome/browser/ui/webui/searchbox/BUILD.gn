@@ -384,8 +384,10 @@ if (enable_webui_ntp && !is_android) {
       ]
     }
     if (is_mac) {
-      deps +=
-          [ "//chrome/browser/ui/views/omnibox:native_widget_mac_test_util" ]
+      deps += [
+        "//chrome/browser/ui/views/frame:immersive_mode_controller_mac",
+        "//chrome/browser/ui/views/omnibox:native_widget_mac_test_util",
+      ]
     }
     if (enable_dice_support && !is_mac) {
       deps += [

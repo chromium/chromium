@@ -110,6 +110,17 @@ void OmniboxPopupFullPresenter::Show() {
   }
   OmniboxPopupPresenterBase::Show();
   if (!was_shown) {
+#if BUILDFLAG(IS_MAC)
+    // The controller may not exist yet when this presenter is created.
+    if (!immersive_mode_observation_.IsObserving()) {
+      BrowserWindowInterface* browser = location_bar()->GetBrowser();
+      if (auto* immersive_controller =
+              browser ? ImmersiveModeController::From(browser) : nullptr) {
+        immersive_mode_observation_.Observe(immersive_controller);
+      }
+    }
+#endif  // BUILDFLAG(IS_MAC)
+
     // Set the request time to now when the popup is first shown. This ensures
     // that latency is measured from the user interaction to show, even if the
     // WebUI was preloaded at startup.
@@ -827,6 +838,31 @@ void OmniboxPopupFullPresenter::AppMenuClosed() {
   }
 }
 
+#if BUILDFLAG(IS_MAC)
+void OmniboxPopupFullPresenter::OnImmersiveRevealEnded() {
+  if (IsImmersiveToolbarHidden() && !controller()->edit_model()->has_focus() &&
+      controller()->popup_state_manager()->popup_state() ==
+          OmniboxPopupState::kFull) {
+    controller()->popup_state_manager()->SetPopupState(
+        OmniboxPopupState::kNone);
+  }
+}
+
+void OmniboxPopupFullPresenter::OnImmersiveModeControllerDestroyed() {
+  immersive_mode_observation_.Reset();
+}
+
+bool OmniboxPopupFullPresenter::IsImmersiveToolbarHidden() const {
+  if (!immersive_mode_observation_.IsObserving()) {
+    return false;
+  }
+  const ImmersiveModeController* immersive_controller =
+      immersive_mode_observation_.GetSource();
+  return immersive_controller->IsEnabled() &&
+         !immersive_controller->IsRevealed();
+}
+#endif  // BUILDFLAG(IS_MAC)
+
 void OmniboxPopupFullPresenter::OnFileDialogOpened() {
   file_dialog_open_ = true;
   OnModalDialogShown();
@@ -1069,6 +1105,16 @@ void OmniboxPopupFullPresenter::DeactivatePopupAndKillFocus(
           controller()->client()->FocusWebContents();
         }
       });
+
+#if BUILDFLAG(IS_MAC)
+  // The toolbar may have hidden before the blur finished.
+  if (IsImmersiveToolbarHidden() &&
+      controller()->popup_state_manager()->popup_state() ==
+          OmniboxPopupState::kFull) {
+    controller()->popup_state_manager()->SetPopupState(
+        OmniboxPopupState::kNone);
+  }
+#endif  // BUILDFLAG(IS_MAC)
 }
 
 void OmniboxPopupFullPresenter::OnWidgetPresentedChanged(bool presented) {

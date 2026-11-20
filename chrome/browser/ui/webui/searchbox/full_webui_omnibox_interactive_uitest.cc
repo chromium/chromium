@@ -248,6 +248,7 @@
 #endif
 
 #if BUILDFLAG(IS_MAC)
+#include "chrome/browser/ui/views/frame/immersive_mode_controller_mac.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_native_widget_mac_test_util.h"
 #endif
 
@@ -5121,9 +5122,8 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
 }
 
 // Verifies that, with "Always Show Toolbar in Full Screen" turned off, the
-// toolbar hides after the omnibox is blurred with a draft, even though the
-// popup stays open for the draft, and that the popup leaves the screen with
-// the toolbar. Refocusing the omnibox reveals both again.
+// toolbar hides after the omnibox is blurred with a draft, closing the popup
+// but keeping the draft, and that refocusing the omnibox reveals both again.
 IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
                        BlurWithDraftInFullscreenLetsToolbarAutohide) {
   // The test profile is discarded afterwards, so the pref isn't restored.
@@ -5131,19 +5131,6 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
                                                   false);
   ImmersiveModeController* immersive_controller =
       ImmersiveModeController::From(browser());
-  // Whether the popup is entirely above the top of the screen.
-  auto is_popup_offscreen = [this]() {
-    views::Widget* popup_widget = GetPopupWidget(browser());
-    if (!popup_widget) {
-      return false;
-    }
-    const gfx::Rect display_bounds =
-        display::Screen::Get()
-            ->GetDisplayNearestWindow(browser()->GetWindow()->GetNativeWindow())
-            .bounds();
-    return popup_widget->GetWindowBoundsInScreen().bottom() <=
-           display_bounds.y();
-  };
   RunTestSequence(
       WaitForBrowserActive(),
       AddInstrumentedTab(kTab1, GURL("chrome://version/")),
@@ -5154,14 +5141,13 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
                    ui::EF_PLATFORM_ACCELERATOR),
       WaitForPopupReady(), WaitForPopupActive(), InputWebUIText("test draft"),
       WaitForWebUIInputValue("test draft"), ClickWebPageBody(kTab1),
-      WaitForVisibleOmniboxUnfocused(),
-      CheckPopupState(OmniboxPopupState::kFull), CheckUserInputInProgress(true),
       PollUntil(
           [immersive_controller]() {
             return !immersive_controller->IsRevealed();
           },
           "WaitForToolbarHidden"),
-      PollUntil(is_popup_offscreen, "WaitForPopupOffscreen"),
+      WaitForPopupState(OmniboxPopupState::kNone), WaitForPopupDismissed(),
+      CheckUserInputInProgress(true),
       SendKeyPress(kBrowserViewElementId, ui::VKEY_L,
                    ui::EF_PLATFORM_ACCELERATOR),
       WaitForPopupActive(), WaitForWebUIInputValue("test draft"),
@@ -5169,9 +5155,83 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
           [immersive_controller]() {
             return immersive_controller->IsRevealed();
           },
+          "WaitForToolbarRevealed"));
+}
+
+// Verifies that, with "Always Show Toolbar in Full Screen" turned off, a popup
+// kept open for a draft while the toolbar is revealed (e.g. by hovering the top
+// of the screen) closes when the toolbar hides, keeping the draft, and that
+// refocusing the omnibox reopens it.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       DraftPopupClosesWhenFullscreenToolbarHides) {
+  // The test profile is discarded afterwards, so the pref isn't restored.
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kShowFullscreenToolbar,
+                                                  false);
+  ImmersiveModeController* immersive_controller =
+      ImmersiveModeController::From(browser());
+  std::unique_ptr<ImmersiveRevealedLock> revealed_lock;
+  RunTestSequence(
+      WaitForBrowserActive(),
+      AddInstrumentedTab(kTab1, GURL("chrome://version/")),
+      WaitForWebContentsReady(kTab1),
+      Do([this]() { ui_test_utils::ToggleFullscreenModeAndWait(browser()); }),
+      WaitForPopupTransitionLockout(), Do([&]() {
+        revealed_lock = immersive_controller->GetRevealedLock(
+            ImmersiveModeController::ANIMATE_REVEAL_NO);
+      }),
+      PollUntil(
+          [immersive_controller]() {
+            return immersive_controller->IsRevealed();
+          },
           "WaitForToolbarRevealed"),
-      PollUntil([is_popup_offscreen]() { return !is_popup_offscreen(); },
-                "WaitForPopupOnscreen"));
+      SendKeyPress(kBrowserViewElementId, ui::VKEY_L,
+                   ui::EF_PLATFORM_ACCELERATOR),
+      WaitForPopupReady(), WaitForPopupActive(), InputWebUIText("test draft"),
+      WaitForWebUIInputValue("test draft"), ClickWebPageBody(kTab1),
+      WaitForVisibleOmniboxUnfocused(),
+      CheckPopupState(OmniboxPopupState::kFull),
+      Do([&]() { revealed_lock.reset(); }),
+      PollUntil(
+          [immersive_controller]() {
+            return !immersive_controller->IsRevealed();
+          },
+          "WaitForToolbarHidden"),
+      WaitForPopupState(OmniboxPopupState::kNone), WaitForPopupDismissed(),
+      CheckUserInputInProgress(true), WaitForOmniboxText(u"test draft"),
+      SendKeyPress(kBrowserViewElementId, ui::VKEY_L,
+                   ui::EF_PLATFORM_ACCELERATOR),
+      WaitForPopupActive(), CheckPopupState(OmniboxPopupState::kFull),
+      WaitForWebUIInputValue("test draft"));
+}
+
+// Verifies that, with "Always Show Toolbar in Full Screen" turned off, if the
+// toolbar finishes hiding while the omnibox still has focus, blurring the
+// omnibox closes the popup kept open for the draft, so the next reveal shows
+// the location bar instead of the popup.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       BlurAfterFullscreenToolbarHidesClosesDraftPopup) {
+  // The test profile is discarded afterwards, so the pref isn't restored.
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kShowFullscreenToolbar,
+                                                  false);
+  auto* immersive_controller = static_cast<ImmersiveModeControllerMac*>(
+      ImmersiveModeController::From(browser()));
+  RunTestSequence(
+      WaitForBrowserActive(),
+      AddInstrumentedTab(kTab1, GURL("chrome://version/")),
+      WaitForWebContentsReady(kTab1),
+      Do([this]() { ui_test_utils::ToggleFullscreenModeAndWait(browser()); }),
+      WaitForPopupTransitionLockout(),
+      SendKeyPress(kBrowserViewElementId, ui::VKEY_L,
+                   ui::EF_PLATFORM_ACCELERATOR),
+      WaitForPopupReady(), WaitForPopupActive(), InputWebUIText("test draft"),
+      WaitForWebUIInputValue("test draft"),
+      // The toolbar finishes hiding before the blur reaches the omnibox.
+      Do([immersive_controller]() {
+        immersive_controller->OnImmersiveModeToolbarRevealChanged(false);
+      }),
+      CheckPopupState(OmniboxPopupState::kFull), ClickWebPageBody(kTab1),
+      WaitForPopupState(OmniboxPopupState::kNone), WaitForPopupDismissed(),
+      CheckUserInputInProgress(true));
 }
 
 // Verifies that leaving fullscreen closes a popup kept open for a draft typed

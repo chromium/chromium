@@ -58,6 +58,7 @@ source_set("omnibox") {
     "//chrome/browser/ui:view_ids",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/color:color_headers",
+    "//chrome/browser/ui/immersive:immersive_mode_controller",
     "//chrome/browser/ui/location_bar",
     "//chrome/browser/ui/omnibox",
     "//chrome/browser/ui/tabs:tab_strip",
