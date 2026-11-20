@@ -213,16 +213,6 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Screenshot"/>
 </enum>
 
-<enum name="CustomTabsParallelRequestStatusOnStart">
-  <int value="0" label="No Parallel Request was requested"/>
-  <int value="1" label="Parallel request successfully started"/>
-  <int value="2" label="Failure: Chrome was not initialized"/>
-  <int value="3" label="Failure: Calling application not authorized"/>
-  <int value="4" label="Failure: Invalid URL"/>
-  <int value="5" label="Failure: Invalid referrer"/>
-  <int value="6" label="Failure: Invalid referrer for the calling session"/>
-</enum>
-
 <enum name="CustomTabsPartialCustomTabType">
   <int value="0" label="No type"/>
   <int value="1" label="Partial Custom Tab is a bottom-sheet"/>

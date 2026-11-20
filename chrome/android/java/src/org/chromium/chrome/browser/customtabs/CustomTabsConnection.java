@@ -1165,11 +1165,6 @@ public class CustomTabsConnection {
     @ParallelRequestStatus
     int handleParallelRequest(@Nullable SessionHolder session, Intent intent) {
         int status = maybeStartParallelRequest(session, intent);
-        RecordHistogram.recordEnumeratedHistogram(
-                "CustomTabs.ParallelRequestStatusOnStart",
-                status,
-                ParallelRequestStatus.NUM_ENTRIES);
-
         if (mLogRequests) {
             Log.w(TAG, "handleParallelRequest() = %s", PARALLEL_REQUEST_MESSAGES[status]);
         }
