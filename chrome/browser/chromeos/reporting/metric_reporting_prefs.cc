@@ -3,14 +3,15 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/chromeos/reporting/metric_reporting_prefs.h"
+
 #include <algorithm>
 
 #include "base/check.h"
 #include "base/values.h"
 #include "chrome/browser/chromeos/reporting/metric_default_utils.h"
+#include "chromeos/ash/components/metrics_reporting/reporting_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/pref_registry/pref_registry_syncable.h"
-#include "components/reporting/metrics/reporting_settings.h"
 #include "url/gurl.h"
 
 namespace reporting {

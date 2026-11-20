@@ -8,7 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/reporting/metrics/sampler.h"
+#include "chromeos/ash/components/metrics_reporting/sampler.h"
 #include "services/network/public/cpp/network_quality_tracker.h"
 
 namespace reporting {

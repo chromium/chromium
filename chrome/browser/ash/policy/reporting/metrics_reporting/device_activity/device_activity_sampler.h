@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_REPORTING_METRICS_REPORTING_DEVICE_ACTIVITY_DEVICE_ACTIVITY_SAMPLER_H_
 #define CHROME_BROWSER_ASH_POLICY_REPORTING_METRICS_REPORTING_DEVICE_ACTIVITY_DEVICE_ACTIVITY_SAMPLER_H_
 
-#include "components/reporting/metrics/sampler.h"
+#include "chromeos/ash/components/metrics_reporting/sampler.h"
 
 namespace reporting {
 

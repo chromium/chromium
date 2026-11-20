@@ -9,10 +9,10 @@
 
 #include "base/functional/bind.h"
 #include "base/time/time.h"
-#include "components/reporting/metrics/metric_rate_controller.h"
-#include "components/reporting/metrics/metric_report_queue.h"
-#include "components/reporting/metrics/reporting_settings.h"
-#include "components/reporting/metrics/sampler.h"
+#include "chromeos/ash/components/metrics_reporting/metric_rate_controller.h"
+#include "chromeos/ash/components/metrics_reporting/metric_report_queue.h"
+#include "chromeos/ash/components/metrics_reporting/reporting_settings.h"
+#include "chromeos/ash/components/metrics_reporting/sampler.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 
 namespace reporting {

@@ -6,7 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/time/time.h"
-#include "components/reporting/metrics/metric_rate_controller.h"
+#include "chromeos/ash/components/metrics_reporting/metric_rate_controller.h"
 
 namespace reporting::metrics {
 namespace {

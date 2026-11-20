@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/metric_reporting_manager.h"
-#include "components/reporting/metrics/fakes/fake_metric_report_queue.h"
+#include "chromeos/ash/components/metrics_reporting/fakes/fake_metric_report_queue.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace reporting::test {

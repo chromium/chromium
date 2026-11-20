@@ -8,9 +8,9 @@
 
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "components/reporting/metrics/fakes/fake_metric_report_queue.h"
-#include "components/reporting/metrics/fakes/fake_reporting_settings.h"
-#include "components/reporting/metrics/fakes/fake_sampler.h"
+#include "chromeos/ash/components/metrics_reporting/fakes/fake_metric_report_queue.h"
+#include "chromeos/ash/components/metrics_reporting/fakes/fake_reporting_settings.h"
+#include "chromeos/ash/components/metrics_reporting/fakes/fake_sampler.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

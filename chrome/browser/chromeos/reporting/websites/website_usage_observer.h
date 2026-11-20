@@ -16,7 +16,7 @@
 #include "chrome/browser/apps/app_service/metrics/website_metrics.h"
 #include "chrome/browser/chromeos/reporting/websites/website_metrics_retriever_interface.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/reporting/metrics/reporting_settings.h"
+#include "chromeos/ash/components/metrics_reporting/reporting_settings.h"
 #include "url/gurl.h"
 
 namespace reporting {

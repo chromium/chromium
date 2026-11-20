@@ -12,7 +12,7 @@ static_library("kiosk_heartbeat") {
 
   deps = [
     "//base",
-    "//components/reporting/metrics:metrics_data_collection",
+    "//chromeos/ash/components/metrics_reporting",
     "//components/reporting/proto:metric_data_proto",
   ]
 }

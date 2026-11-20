@@ -7,9 +7,9 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
+#include "chromeos/ash/components/metrics_reporting/sampler.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
-#include "components/reporting/metrics/sampler.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 
 namespace reporting {

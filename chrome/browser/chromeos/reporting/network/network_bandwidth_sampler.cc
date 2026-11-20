@@ -8,7 +8,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/reporting/metrics/sampler.h"
+#include "chromeos/ash/components/metrics_reporting/sampler.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"

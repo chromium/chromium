@@ -9,7 +9,7 @@
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/reporting/metrics/sampler.h"
+#include "chromeos/ash/components/metrics_reporting/sampler.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 
 namespace reporting {

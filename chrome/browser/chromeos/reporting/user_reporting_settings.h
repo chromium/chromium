@@ -17,8 +17,8 @@
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
+#include "chromeos/ash/components/metrics_reporting/reporting_settings.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "components/reporting/metrics/reporting_settings.h"
 
 namespace reporting {
 

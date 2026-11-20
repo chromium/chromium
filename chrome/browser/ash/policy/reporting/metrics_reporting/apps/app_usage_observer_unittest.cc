@@ -16,7 +16,7 @@
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics_service_test_base.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/metric_reporting_prefs.h"
-#include "components/reporting/metrics/fakes/fake_reporting_settings.h"
+#include "chromeos/ash/components/metrics_reporting/fakes/fake_reporting_settings.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/instance.h"

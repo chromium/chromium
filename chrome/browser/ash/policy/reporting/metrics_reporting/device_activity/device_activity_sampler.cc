@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/device_activity/device_activity_sampler.h"
 
-#include "components/reporting/metrics/sampler.h"
+#include "chromeos/ash/components/metrics_reporting/sampler.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "ui/base/idle/idle.h"
 

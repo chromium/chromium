@@ -12,8 +12,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/task/task_runner.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/metrics_reporting/sampler.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
-#include "components/reporting/metrics/sampler.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 

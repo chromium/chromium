@@ -10,7 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
-#include "components/reporting/metrics/metric_event_observer.h"
+#include "chromeos/ash/components/metrics_reporting/metric_event_observer.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"

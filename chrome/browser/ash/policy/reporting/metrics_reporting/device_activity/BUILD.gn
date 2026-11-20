@@ -12,7 +12,7 @@ static_library("device_activity") {
 
   deps = [
     "//base",
-    "//components/reporting/metrics:metrics_data_collection",
+    "//chromeos/ash/components/metrics_reporting",
     "//components/reporting/proto:metric_data_proto",
     "//ui/base/idle",
   ]

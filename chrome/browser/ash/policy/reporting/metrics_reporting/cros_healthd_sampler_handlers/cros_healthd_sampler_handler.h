@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_REPORTING_METRICS_REPORTING_CROS_HEALTHD_SAMPLER_HANDLERS_CROS_HEALTHD_SAMPLER_HANDLER_H_
 #define CHROME_BROWSER_ASH_POLICY_REPORTING_METRICS_REPORTING_CROS_HEALTHD_SAMPLER_HANDLERS_CROS_HEALTHD_SAMPLER_HANDLER_H_
 
+#include "chromeos/ash/components/metrics_reporting/sampler.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
-#include "components/reporting/metrics/sampler.h"
 
 namespace reporting {
 

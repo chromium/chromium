@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "components/reporting/metrics/reporting_settings.h"
+#include "chromeos/ash/components/metrics_reporting/reporting_settings.h"
 #include "url/gurl.h"
 
 namespace user_prefs {

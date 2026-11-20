@@ -10,8 +10,8 @@
 #include "base/containers/queue.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "chromeos/ash/components/metrics_reporting/sampler.h"
 #include "chromeos/services/network_health/public/mojom/network_diagnostics.mojom.h"
-#include "components/reporting/metrics/sampler.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 

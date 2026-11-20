@@ -27,9 +27,9 @@ static_library("cros_healthd_sampler_handlers") {
 
   deps = [
     "//base",
+    "//chromeos/ash/components/metrics_reporting",
     "//chromeos/ash/services/cros_healthd/public/cpp",
     "//chromeos/ash/services/cros_healthd/public/mojom",
-    "//components/reporting/metrics:metrics_data_collection",
     "//components/reporting/proto:metric_data_proto",
     "//third_party/abseil-cpp:absl",
   ]

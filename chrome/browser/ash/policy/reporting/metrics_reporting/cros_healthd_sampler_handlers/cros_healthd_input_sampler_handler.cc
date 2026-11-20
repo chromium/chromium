@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/logging.h"
-#include "components/reporting/metrics/sampler.h"
+#include "chromeos/ash/components/metrics_reporting/sampler.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 
 namespace reporting {

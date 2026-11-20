@@ -10,9 +10,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/chromeos/reporting/metric_reporting_prefs.h"
+#include "chromeos/ash/components/metrics_reporting/sampler.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "components/reporting/metrics/sampler.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 

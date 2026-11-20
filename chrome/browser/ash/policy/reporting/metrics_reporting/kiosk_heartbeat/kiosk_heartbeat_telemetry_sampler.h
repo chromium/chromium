@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_REPORTING_METRICS_REPORTING_KIOSK_HEARTBEAT_KIOSK_HEARTBEAT_TELEMETRY_SAMPLER_H_
 #define CHROME_BROWSER_ASH_POLICY_REPORTING_METRICS_REPORTING_KIOSK_HEARTBEAT_KIOSK_HEARTBEAT_TELEMETRY_SAMPLER_H_
 
-#include "components/reporting/metrics/sampler.h"
+#include "chromeos/ash/components/metrics_reporting/sampler.h"
 
 namespace reporting {
 // Sampler used to create KioskHeartbeat messages to be sent via ERP controlled

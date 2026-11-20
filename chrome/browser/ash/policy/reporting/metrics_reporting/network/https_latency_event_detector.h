@@ -7,7 +7,7 @@
 
 #include <optional>
 
-#include "components/reporting/metrics/periodic_event_collector.h"
+#include "chromeos/ash/components/metrics_reporting/periodic_event_collector.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 
 namespace reporting {

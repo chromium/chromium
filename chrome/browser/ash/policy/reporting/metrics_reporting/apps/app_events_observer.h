@@ -16,8 +16,8 @@
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/apps/app_platform_metrics_retriever.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/reporting/metrics/metric_event_observer.h"
-#include "components/reporting/metrics/reporting_settings.h"
+#include "chromeos/ash/components/metrics_reporting/metric_event_observer.h"
+#include "chromeos/ash/components/metrics_reporting/reporting_settings.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 

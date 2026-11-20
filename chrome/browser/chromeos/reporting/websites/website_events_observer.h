@@ -13,8 +13,8 @@
 #include "base/thread_annotations.h"
 #include "chrome/browser/apps/app_service/metrics/website_metrics.h"
 #include "chrome/browser/chromeos/reporting/websites/website_metrics_retriever_interface.h"
-#include "components/reporting/metrics/metric_event_observer.h"
-#include "components/reporting/metrics/reporting_settings.h"
+#include "chromeos/ash/components/metrics_reporting/metric_event_observer.h"
+#include "chromeos/ash/components/metrics_reporting/reporting_settings.h"
 #include "content/public/browser/web_contents.h"
 
 namespace reporting {

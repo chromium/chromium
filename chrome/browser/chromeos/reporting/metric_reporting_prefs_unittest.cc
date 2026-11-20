@@ -5,8 +5,8 @@
 #include "chrome/browser/chromeos/reporting/metric_reporting_prefs.h"
 
 #include "base/values.h"
+#include "chromeos/ash/components/metrics_reporting/fakes/fake_reporting_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
-#include "components/reporting/metrics/fakes/fake_reporting_settings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"

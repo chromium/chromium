@@ -7,8 +7,8 @@
 
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_metric_sampler.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_sampler_handlers/cros_healthd_sampler_handler.h"
+#include "chromeos/ash/components/metrics_reporting/sampler.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
-#include "components/reporting/metrics/sampler.h"
 
 namespace reporting {
 
