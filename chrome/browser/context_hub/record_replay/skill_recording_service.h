@@ -10,6 +10,7 @@
 #include <optional>
 #include <string>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -33,17 +34,22 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+namespace optimization_guide {
+class RemoteModelExecutor;
+}  // namespace optimization_guide
+
 namespace context_hub {
 
+class RecordReplayMesClient;
 class SkillAudioCapturer;
 class TabActiveObserver;
 
 // Per-profile service that manages in-memory recording sessions for capturing
 // user actions to generate skills.
-class SkillRecordingService : public KeyedService,
-                              public TabStripModelObserver,
-                              public BrowserTabStripTrackerDelegate,
-                              public BrowserCollectionObserver {
+class SkillRecordingService final : public KeyedService,
+                                    public TabStripModelObserver,
+                                    public BrowserTabStripTrackerDelegate,
+                                    public BrowserCollectionObserver {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -57,7 +63,10 @@ class SkillRecordingService : public KeyedService,
   };
 
   // `profile` must be non-null and must outlive this `SkillRecordingService`.
-  explicit SkillRecordingService(Profile* profile);
+  // `model_executor` may be null; if non-null, it must outlive `this`.
+  SkillRecordingService(
+      Profile* profile,
+      optimization_guide::RemoteModelExecutor* model_executor);
   SkillRecordingService(const SkillRecordingService&) = delete;
   SkillRecordingService& operator=(const SkillRecordingService&) = delete;
   ~SkillRecordingService() override;
@@ -68,7 +77,8 @@ class SkillRecordingService : public KeyedService,
   void RemoveObserver(Observer* obs);
 
   // Starts a new recording session if one is not already active, clearing any
-  // artifacts from a previous session.
+  // artifacts and cancelling any in-flight skill generation from a previous
+  // session.
   void StartRecording();
 
   // Stops the current recording session if one is active. Captured artifacts
@@ -86,6 +96,20 @@ class SkillRecordingService : public KeyedService,
   // screenshot.
   void CaptureAction(browser::context_hub::mojom::SkillRecordingActionType type,
                      std::string description);
+
+  using GenerateSkillCallback =
+      base::OnceCallback<void(std::optional<std::string> skill_instructions)>;
+
+  // Generates skill instructions from the most recently recorded session's
+  // actions, transcripts, and screenshots via MES. Asynchronously resolves
+  // `callback` with `std::nullopt` if called while a recording session is
+  // active, after `Shutdown()`, when the recorded session is empty, when
+  // `model_executor` is null, when another skill generation request is
+  // already in flight, or when model execution fails. Note that `callback`
+  // may be invoked synchronously (including re-entrantly during
+  // `StartRecording()` or `Shutdown()`) with `std::nullopt` if an in-flight
+  // request is cancelled.
+  void GenerateSkillFromRecording(GenerateSkillCallback callback);
 
   // Forwards a transcript update to `OnTranscriptUpdate()` for testing
   // observer notifications and transcript handling.
@@ -130,6 +154,7 @@ class SkillRecordingService : public KeyedService,
   void ObserveWebContents(content::WebContents* web_contents);
 
   const raw_ref<Profile> profile_;
+  bool is_shut_down_ = false;
   std::optional<base::TimeTicks> start_time_;
   RecordingArtifacts artifacts_;
   base::ObserverList<Observer> observers_;
@@ -139,6 +164,7 @@ class SkillRecordingService : public KeyedService,
   base::ScopedObservation<ProfileBrowserCollection, BrowserCollectionObserver>
       browser_collection_observation_{this};
   std::unique_ptr<SkillAudioCapturer> audio_capturer_;
+  std::unique_ptr<RecordReplayMesClient> mes_client_;
 
   base::WeakPtrFactory<SkillRecordingService> weak_ptr_factory_{this};
 };

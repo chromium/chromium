@@ -9,6 +9,8 @@
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/context_hub/record_replay/skill_recording_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_manager_service_factory.h"
 #include "chrome/browser/ui/webui/context_hub/context_hub.mojom-features.h"
@@ -36,6 +38,7 @@ SkillRecordingServiceFactory::SkillRecordingServiceFactory()
               .WithRegular(ProfileSelection::kOriginalOnly)
               .Build()) {
   DependsOn(BrowserManagerServiceFactory::GetInstance());
+  DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
 }
 
 SkillRecordingServiceFactory::~SkillRecordingServiceFactory() = default;
@@ -47,6 +50,9 @@ SkillRecordingServiceFactory::BuildServiceInstanceForBrowserContext(
           browser::context_hub::mojom::kRecordReplay)) {
     return nullptr;
   }
-  return std::make_unique<context_hub::SkillRecordingService>(
-      Profile::FromBrowserContext(context));
+  Profile* profile = Profile::FromBrowserContext(context);
+  OptimizationGuideKeyedService* opt_guide =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
+  return std::make_unique<context_hub::SkillRecordingService>(profile,
+                                                              opt_guide);
 }

@@ -89,7 +89,7 @@ class TabActiveObserverTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   content::RenderViewHostTestEnabler rvh_test_enabler_;
   TestingProfile profile_;
-  SkillRecordingService service_{&profile_};
+  SkillRecordingService service_{&profile_, /*model_executor=*/nullptr};
   std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<TabActiveObserver> observer_;
 };

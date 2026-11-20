@@ -8,13 +8,16 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/callback_list.h"
 #include "base/check_deref.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
@@ -32,6 +35,12 @@
 #include "chrome/browser/ui/webui/context_hub/context_hub.mojom-shared.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/optimization_guide/core/feature_registry/feature_keys.h"
+#include "components/optimization_guide/core/model_execution/remote_model_executor.h"
+#include "components/optimization_guide/core/model_execution/test/mock_remote_model_executor.h"
+#include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
+#include "components/optimization_guide/core/optimization_guide_proto_util.h"
+#include "components/optimization_guide/proto/features/context_hub.pb.h"
 #include "components/page_content_annotations/content/page_context_fetcher.h"
 #include "components/page_content_annotations/content/page_context_fetcher_manager.h"
 #include "content/public/browser/render_frame_host.h"
@@ -46,6 +55,7 @@
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/common/input/web_pointer_properties.h"
+#include "third_party/protobuf/src/google/protobuf/message_lite.h"
 #include "ui/base/test/mock_base_window.h"
 #include "url/gurl.h"
 
@@ -58,7 +68,15 @@
 namespace context_hub {
 namespace {
 
+using ::base::test::TestFuture;
 using browser::context_hub::mojom::SkillRecordingActionType;
+using ::testing::_;
+using ::testing::AllOf;
+using ::testing::HasSubstr;
+using ::testing::Matcher;
+using ::testing::NiceMock;
+using ::testing::Not;
+using ::testing::WithArg;
 
 page_content_annotations::FetchPageContextResultCallbackArg
 CreateSuccessfulScreenshotResult() {
@@ -77,6 +95,15 @@ CreateFailedFetchResult() {
       page_content_annotations::FetchPageContextErrorDetails{
           page_content_annotations::FetchPageContextError::kUnknown,
           "Failed to fetch page context"});
+}
+
+optimization_guide::OptimizationGuideModelExecutionResult
+CreateSkillGenerationMesResult(std::string_view skill_instructions) {
+  optimization_guide::proto::ContextHubResponse response;
+  response.mutable_memory_bank_chat_response()->set_text_response(
+      skill_instructions);
+  return optimization_guide::OptimizationGuideModelExecutionResult(
+      base::ok(optimization_guide::AnyWrapProto(response)), nullptr);
 }
 
 class TestBrowserInstance {
@@ -207,13 +234,38 @@ class SkillRecordingServiceTest : public testing::Test {
         ->SimulateUserInteraction(mouse_event);
   }
 
+  void ExpectExecuteModel(Matcher<std::string> user_command_matcher,
+                          std::string_view response_text) {
+    std::string response_str(response_text);
+    EXPECT_CALL(
+        mock_model_executor_,
+        ExecuteModel(optimization_guide::ModelBasedCapabilityKey::kContextHub,
+                     _, _, _))
+        .WillOnce([user_command_matcher = std::move(user_command_matcher),
+                   response_str = std::move(response_str)](
+                      optimization_guide::ModelBasedCapabilityKey feature,
+                      const google::protobuf::MessageLite& request_metadata,
+                      const optimization_guide::ModelExecutionOptions& options,
+                      optimization_guide::
+                          OptimizationGuideModelExecutionResultCallback
+                              callback) mutable {
+          const auto& request =
+              static_cast<const optimization_guide::proto::ContextHubRequest&>(
+                  request_metadata);
+          EXPECT_THAT(request.user_command(), user_command_matcher);
+          std::move(callback).Run(CreateSkillGenerationMesResult(response_str),
+                                  nullptr);
+        });
+  }
+
   const tabs::TabModel::PreventFeatureInitializationForTesting
       prevent_tab_features_;
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   content::RenderViewHostTestEnabler rvh_test_enabler_;
   TestingProfile profile_;
-  SkillRecordingService service_{&profile_};
+  NiceMock<optimization_guide::MockRemoteModelExecutor> mock_model_executor_;
+  SkillRecordingService service_{&profile_, &mock_model_executor_};
 };
 
 TEST_F(SkillRecordingServiceTest, InitialState) {
@@ -668,5 +720,175 @@ TEST_F(SkillRecordingServiceTest, CapsRecordedTranscriptsAtMaxLimit) {
   EXPECT_EQ(result.transcripts.back().text, "Segment");
 }
 
+TEST_F(SkillRecordingServiceTest,
+       GenerateSkillFromRecording_DelegatesRecordedSessionToModelExecutor) {
+  service_.StartRecording();
+  task_environment_.FastForwardBy(base::Milliseconds(150));
+  service_.CaptureAction(SkillRecordingActionType::kLeftClick,
+                         "Mouse Clicked at X:10, Y:20");
+  service_.StopRecording();
+
+  ExpectExecuteModel(HasSubstr("Mouse Clicked at X:10, Y:20"),
+                     "1. Click at (10, 20)");
+
+  TestFuture<std::optional<std::string>> action_session_future;
+  service_.GenerateSkillFromRecording(action_session_future.GetCallback());
+  EXPECT_EQ(action_session_future.Get(), "1. Click at (10, 20)");
+
+  // A session containing only finalized voice transcripts (no actions) must
+  // also delegate to `ExecuteModel()` with only the new session's artifacts.
+  service_.StartRecording();
+  service_.OnTranscriptUpdateForTesting("Open settings",
+                                        base::Milliseconds(100),
+                                        /*is_final=*/true);
+  service_.StopRecording();
+
+  ExpectExecuteModel(AllOf(HasSubstr("Open settings"),
+                           Not(HasSubstr("Mouse Clicked at X:10, Y:20"))),
+                     "1. Open settings");
+
+  TestFuture<std::optional<std::string>> transcript_session_future;
+  service_.GenerateSkillFromRecording(transcript_session_future.GetCallback());
+  EXPECT_EQ(transcript_session_future.Get(), "1. Open settings");
+}
+
+TEST_F(SkillRecordingServiceTest,
+       StartRecordingCancelsInFlightSkillGeneration) {
+  service_.StartRecording();
+  service_.CaptureAction(SkillRecordingActionType::kLeftClick,
+                         "First session action");
+  service_.StopRecording();
+
+  // Capture the `ExecuteModel()` completion callback without invoking it to
+  // keep the MES request suspended in flight after the `ThreadPool`
+  // request-building task finishes.
+  TestFuture<optimization_guide::OptimizationGuideModelExecutionResultCallback>
+      execute_called_future;
+  EXPECT_CALL(mock_model_executor_, ExecuteModel(_, _, _, _))
+      .WillOnce(WithArg<3>(
+          [&](optimization_guide::OptimizationGuideModelExecutionResultCallback
+                  callback) {
+            execute_called_future.SetValue(std::move(callback));
+          }));
+
+  bool cancelled_callback_ran = false;
+  TestFuture<std::optional<std::string>> reentrant_future;
+  // Verify recording state is already updated when `StartRecording()`
+  // synchronously invokes the cancelled callback.
+  service_.GenerateSkillFromRecording(base::BindLambdaForTesting(
+      [&](std::optional<std::string> skill_instructions) {
+        cancelled_callback_ran = true;
+        EXPECT_EQ(skill_instructions, std::nullopt);
+        EXPECT_TRUE(service_.is_recording());
+        EXPECT_TRUE(service_.artifacts().actions.empty());
+
+        // Re-entrant calls during cancellation must be safely rejected.
+        service_.StartRecording();
+        service_.GenerateSkillFromRecording(reentrant_future.GetCallback());
+        EXPECT_FALSE(reentrant_future.IsReady());
+      }));
+  optimization_guide::OptimizationGuideModelExecutionResultCallback
+      stale_mes_callback = execute_called_future.Take();
+  EXPECT_FALSE(cancelled_callback_ran);
+
+  // Starting a new recording session must cancel the in-flight MES request from
+  // the previous session and resolve its callback with `std::nullopt`.
+  service_.StartRecording();
+  EXPECT_TRUE(cancelled_callback_ran);
+  EXPECT_EQ(reentrant_future.Get(), std::nullopt);
+  service_.StopRecording();
+
+  std::move(stale_mes_callback)
+      .Run(CreateSkillGenerationMesResult("Stale response"), nullptr);
+}
+
+TEST_F(SkillRecordingServiceTest, ShutdownCancelsInFlightSkillGeneration) {
+  service_.StartRecording();
+  service_.CaptureAction(SkillRecordingActionType::kLeftClick,
+                         "Recorded session action");
+  service_.StopRecording();
+
+  // Capture the `ExecuteModel()` completion callback without invoking it to
+  // keep the MES request suspended in flight after the `ThreadPool`
+  // request-building task finishes.
+  TestFuture<optimization_guide::OptimizationGuideModelExecutionResultCallback>
+      execute_called_future;
+  EXPECT_CALL(mock_model_executor_, ExecuteModel(_, _, _, _))
+      .WillOnce(WithArg<3>(
+          [&](optimization_guide::OptimizationGuideModelExecutionResultCallback
+                  callback) {
+            execute_called_future.SetValue(std::move(callback));
+          }));
+
+  bool cancelled_callback_ran = false;
+  service_.GenerateSkillFromRecording(base::BindLambdaForTesting(
+      [&](std::optional<std::string> skill_instructions) {
+        cancelled_callback_ran = true;
+        EXPECT_EQ(skill_instructions, std::nullopt);
+        // Re-entrant `Shutdown()` and `StartRecording()` during `Shutdown()`
+        // must be safely ignored.
+        service_.Shutdown();
+        service_.StartRecording();
+        EXPECT_FALSE(service_.is_recording());
+      }));
+  optimization_guide::OptimizationGuideModelExecutionResultCallback
+      stale_mes_callback = execute_called_future.Take();
+  EXPECT_FALSE(cancelled_callback_ran);
+
+  // Shutting down `SkillRecordingService` must cancel the in-flight MES request
+  // and resolve its callback with `std::nullopt`.
+  service_.Shutdown();
+  EXPECT_TRUE(cancelled_callback_ran);
+
+  std::move(stale_mes_callback)
+      .Run(CreateSkillGenerationMesResult("Stale response"), nullptr);
+}
+
+TEST_F(SkillRecordingServiceTest,
+       GenerateSkillFromRecording_EmptySessionOrAfterShutdown) {
+  EXPECT_CALL(mock_model_executor_, ExecuteModel(_, _, _, _)).Times(0);
+
+  TestFuture<std::optional<std::string>> empty_session_future;
+  service_.GenerateSkillFromRecording(empty_session_future.GetCallback());
+  EXPECT_FALSE(empty_session_future.IsReady());
+  EXPECT_EQ(empty_session_future.Get(), std::nullopt);
+
+  service_.StartRecording();
+  service_.CaptureAction(SkillRecordingActionType::kLeftClick,
+                         "Mouse Clicked at X:10, Y:20");
+
+  // Calling `GenerateSkillFromRecording()` while a recording is still active
+  // must fail gracefully without calling `ExecuteModel()`.
+  TestFuture<std::optional<std::string>> active_recording_future;
+  service_.GenerateSkillFromRecording(active_recording_future.GetCallback());
+  EXPECT_FALSE(active_recording_future.IsReady());
+  EXPECT_EQ(active_recording_future.Get(), std::nullopt);
+
+  service_.StopRecording();
+
+  // Calling `StartRecording()` or `GenerateSkillFromRecording()` after
+  // `Shutdown()` must also fail gracefully without calling `ExecuteModel()`.
+  service_.Shutdown();
+  service_.StartRecording();
+  EXPECT_FALSE(service_.is_recording());
+  TestFuture<std::optional<std::string>> shutdown_future;
+  service_.GenerateSkillFromRecording(shutdown_future.GetCallback());
+  EXPECT_FALSE(shutdown_future.IsReady());
+  EXPECT_EQ(shutdown_future.Get(), std::nullopt);
+
+  // A service constructed without a `RemoteModelExecutor` must also return
+  // `std::nullopt`.
+  SkillRecordingService service_without_executor(&profile_,
+                                                 /*model_executor=*/nullptr);
+  service_without_executor.StartRecording();
+  service_without_executor.CaptureAction(SkillRecordingActionType::kLeftClick,
+                                         "Mouse Clicked at X:10, Y:20");
+  service_without_executor.StopRecording();
+  TestFuture<std::optional<std::string>> no_executor_future;
+  service_without_executor.GenerateSkillFromRecording(
+      no_executor_future.GetCallback());
+  EXPECT_FALSE(no_executor_future.IsReady());
+  EXPECT_EQ(no_executor_future.Get(), std::nullopt);
+}
 }  // namespace
 }  // namespace context_hub

@@ -15,8 +15,11 @@
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/location.h"
 #include "base/strings/string_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "chrome/browser/context_hub/record_replay/record_replay_mes_client.h"
 #include "chrome/browser/context_hub/record_replay/recording_artifacts.h"
 #include "chrome/browser/context_hub/record_replay/skill_audio_capturer.h"
 #include "chrome/browser/context_hub/record_replay/tab_active_observer.h"
@@ -67,11 +70,16 @@ BrowserWindowInterface* GetLastActiveBrowser(Profile& profile) {
 
 }  // namespace
 
-SkillRecordingService::SkillRecordingService(Profile* profile)
-    : profile_(CHECK_DEREF(profile)) {}
+SkillRecordingService::SkillRecordingService(
+    Profile* profile,
+    optimization_guide::RemoteModelExecutor* model_executor)
+    : profile_(CHECK_DEREF(profile)),
+      mes_client_(model_executor
+                      ? std::make_unique<RecordReplayMesClient>(model_executor)
+                      : nullptr) {}
 
 SkillRecordingService::~SkillRecordingService() {
-  StopRecording();
+  Shutdown();
 }
 
 void SkillRecordingService::AddObserver(Observer* obs) {
@@ -83,7 +91,7 @@ void SkillRecordingService::RemoveObserver(Observer* obs) {
 }
 
 void SkillRecordingService::StartRecording() {
-  if (is_recording()) {
+  if (is_shut_down_ || is_recording()) {
     return;
   }
   artifacts_ = RecordingArtifacts();
@@ -107,6 +115,10 @@ void SkillRecordingService::StartRecording() {
                             base::Unretained(this)));
   }
   audio_capturer_->Start();
+
+  if (mes_client_) {
+    mes_client_->CancelPendingRequest();
+  }
 }
 
 void SkillRecordingService::StopRecording() {
@@ -160,6 +172,17 @@ void SkillRecordingService::CaptureAction(
       BindScreenshotCapturedCallback(action_index));
 }
 
+void SkillRecordingService::GenerateSkillFromRecording(
+    GenerateSkillCallback callback) {
+  if (is_shut_down_ || is_recording() || !mes_client_) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
+    return;
+  }
+
+  mes_client_->GenerateSkillFromRecording(artifacts_, std::move(callback));
+}
+
 void SkillRecordingService::OnTranscriptUpdateForTesting(
     const std::string& text,
     base::TimeDelta timestamp,
@@ -174,9 +197,14 @@ SkillRecordingService::BindScreenshotCapturedCallbackForTesting(
 }
 
 void SkillRecordingService::Shutdown() {
+  if (is_shut_down_) {
+    return;
+  }
+  is_shut_down_ = true;
   StopRecording();
   artifacts_ = RecordingArtifacts();
   audio_capturer_.reset();
+  mes_client_.reset();
 }
 
 void SkillRecordingService::OnTabStripModelChanged(
