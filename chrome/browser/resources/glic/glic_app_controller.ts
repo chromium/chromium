@@ -52,9 +52,9 @@ interface PageElementTypes {
   locationMismatchHelpButton: HTMLButtonElement;
   ineligibleAccountHelpButton: HTMLButtonElement;
   ineligibleAccountPanel: HTMLElement;
-  relaunchRequiredPanel: HTMLElement;
-  relaunchHeadline: HTMLElement;
-  relaunchBody: HTMLElement;
+  providerChangePanel: HTMLElement;
+  providerChangeHeadline: HTMLElement;
+  providerChangeBody: HTMLElement;
   relaunchButton: HTMLButtonElement;
   continueButton: HTMLButtonElement;
 }
@@ -67,7 +67,7 @@ const $: PageElementTypes = new Proxy({}, {
 
 type PanelId = 'loadingPanel'|'guestPanel'|'offlinePanel'|'errorPanel'|
     'unavailablePanel'|'ineligibleAccountPanel'|'disabledByAdminPanel'|
-    'signInPanel'|'locationMismatchPanel'|'relaunchRequiredPanel';
+    'signInPanel'|'locationMismatchPanel'|'providerChangePanel';
 
 type ProviderChangeState =
     WebUiState.kPendingProviderChangeGeminiToGeic|
@@ -1159,11 +1159,11 @@ export class GlicAppController implements WebviewDelegate {
   // the panel is reused.
   private showProviderChangePanel(state: ProviderChangeState): void {
     const {header, body, showContinueButton} = PROVIDER_CHANGE_PANELS[state];
-    $.relaunchHeadline.textContent = loadTimeData.getString(header);
-    $.relaunchBody.textContent = loadTimeData.getString(body);
+    $.providerChangeHeadline.textContent = loadTimeData.getString(header);
+    $.providerChangeBody.textContent = loadTimeData.getString(body);
     $.relaunchButton.hidden = showContinueButton;
     $.continueButton.hidden = !showContinueButton;
-    this.showPanel('relaunchRequiredPanel');
+    this.showPanel('providerChangePanel');
   }
 
   clientReadyStateChanged(ready: boolean): void {

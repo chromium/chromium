@@ -31,7 +31,7 @@ type ProviderChangePanelType =
 interface ProviderChangePanel {
   header: string;
   // Each entry is shown as a separate paragraph. glic_overlay.html has three
-  // paragraph elements (relaunchBody1-3), so a body has at most three.
+  // paragraph elements (providerChangeBody1-3), so a body has at most three.
   body: string[];
   // Whether to show the continue button instead of the relaunch button.
   showContinueButton: boolean;
@@ -85,11 +85,11 @@ interface PageElementTypes {
   disabledByAdminPanel: HTMLElement;
   signInPanel: HTMLElement;
   locationMismatchPanel: HTMLElement;
-  relaunchRequiredPanel: HTMLElement;
-  relaunchHeadline: HTMLElement;
-  relaunchBody1: HTMLElement;
-  relaunchBody2: HTMLElement;
-  relaunchBody3: HTMLElement;
+  providerChangePanel: HTMLElement;
+  providerChangeHeadline: HTMLElement;
+  providerChangeBody1: HTMLElement;
+  providerChangeBody2: HTMLElement;
+  providerChangeBody3: HTMLElement;
   retry: HTMLElement;
   reload: HTMLElement;
   showError: HTMLElement;
@@ -152,8 +152,12 @@ export class GlicOverlayElement extends HTMLElement {
 
   private showProviderChangePanel(type: ProviderChangePanelType): void {
     const {header, body, showContinueButton} = PROVIDER_CHANGE_PANELS[type];
-    $.relaunchHeadline.textContent = loadTimeData.getString(header);
-    const paragraphs = [$.relaunchBody1, $.relaunchBody2, $.relaunchBody3];
+    $.providerChangeHeadline.textContent = loadTimeData.getString(header);
+    const paragraphs = [
+      $.providerChangeBody1,
+      $.providerChangeBody2,
+      $.providerChangeBody3,
+    ];
     paragraphs.forEach((paragraph, i) => {
       const key = body[i];
       paragraph.textContent = key ? loadTimeData.getString(key) : '';
@@ -161,7 +165,7 @@ export class GlicOverlayElement extends HTMLElement {
     });
     $.relaunchButton.hidden = showContinueButton;
     $.continueButton.hidden = !showContinueButton;
-    $.relaunchRequiredPanel.hidden = false;
+    $.providerChangePanel.hidden = false;
   }
 
   private showError(errorType: ErrorPanelType): void {

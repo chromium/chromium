@@ -73,27 +73,27 @@ suite('GlicOverlayTest', () => {
       {type: ErrorPanelType.kSignIn, id: 'signInPanel'},
       {
         type: ErrorPanelType.kPendingProviderChangeGeminiToGeic,
-        id: 'relaunchRequiredPanel',
+        id: 'providerChangePanel',
       },
       {
         type: ErrorPanelType.kPendingProviderChangeGeicToGemini,
-        id: 'relaunchRequiredPanel',
+        id: 'providerChangePanel',
       },
       {
         type: ErrorPanelType.kPendingProviderChangeGeicToOtherGeic,
-        id: 'relaunchRequiredPanel',
+        id: 'providerChangePanel',
       },
       {
         type: ErrorPanelType.kProviderSwitchNoticeGeminiToGeic,
-        id: 'relaunchRequiredPanel',
+        id: 'providerChangePanel',
       },
       {
         type: ErrorPanelType.kProviderSwitchNoticeGeicToGemini,
-        id: 'relaunchRequiredPanel',
+        id: 'providerChangePanel',
       },
       {
         type: ErrorPanelType.kProviderSwitchNoticeGeicToOtherGeic,
-        id: 'relaunchRequiredPanel',
+        id: 'providerChangePanel',
       },
       {type: ErrorPanelType.kLocationMismatch, id: 'locationMismatchPanel'},
     ];
@@ -153,12 +153,12 @@ suite('GlicOverlayTest', () => {
       remote.setOverlayState({error: type});
       await remote.$.flushForTesting();
 
-      assertFalse(getElement('relaunchRequiredPanel').hidden);
+      assertFalse(getElement('providerChangePanel').hidden);
       assertEquals(
           loadTimeData.getString(header),
-          getElement('relaunchHeadline').textContent);
+          getElement('providerChangeHeadline').textContent);
       for (let i = 0; i < 3; i++) {
-        const paragraph = getElement(`relaunchBody${i + 1}`);
+        const paragraph = getElement(`providerChangeBody${i + 1}`);
         const key = body[i];
         if (key) {
           assertFalse(paragraph.hidden);
@@ -194,16 +194,16 @@ suite('GlicOverlayTest', () => {
       remote.setOverlayState({error: type});
       await remote.$.flushForTesting();
 
-      assertFalse(getElement('relaunchRequiredPanel').hidden);
+      assertFalse(getElement('providerChangePanel').hidden);
       assertEquals(
           loadTimeData.getString(header),
-          getElement('relaunchHeadline').textContent);
+          getElement('providerChangeHeadline').textContent);
       assertEquals(
           loadTimeData.getString(body),
-          getElement('relaunchBody1').textContent);
-      assertFalse(getElement('relaunchBody1').hidden);
-      assertTrue(getElement('relaunchBody2').hidden);
-      assertTrue(getElement('relaunchBody3').hidden);
+          getElement('providerChangeBody1').textContent);
+      assertFalse(getElement('providerChangeBody1').hidden);
+      assertTrue(getElement('providerChangeBody2').hidden);
+      assertTrue(getElement('providerChangeBody3').hidden);
       assertTrue(getElement('relaunchButton').hidden);
       assertFalse(getElement('continueButton').hidden);
     }

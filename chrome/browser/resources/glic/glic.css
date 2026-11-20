@@ -237,7 +237,7 @@ webview {
 }
 
 /* GEiC relaunch prompt. */
-#relaunchRequiredPanel {
+#providerChangePanel {
   /* Google Sans Flex only applies where the OS has it installed; Glic doesn't
    * load web fonts. */
   --relaunch-font: 'Google Sans Flex', Roboto, sans-serif;
@@ -253,7 +253,7 @@ webview {
 }
 
 @media (prefers-color-scheme: dark) {
-  #relaunchRequiredPanel {
+  #providerChangePanel {
     --relaunch-accent: #1f3b9b;
     --relaunch-glow-inner: color-mix(in srgb, var(--relaunch-accent) 75%,
         transparent);
@@ -265,13 +265,13 @@ webview {
   }
 }
 
-#relaunchRequiredPanel .container {
+#providerChangePanel .container {
   isolation: isolate;
   position: relative;
 }
 
 /* Soft blue glow along the bottom of the panel, behind the card. */
-#relaunchRequiredPanel .container::before {
+#providerChangePanel .container::before {
   background: radial-gradient(ellipse 110% 45% at 50% 100%,
       var(--relaunch-glow-inner), var(--relaunch-glow-outer) 50%,
       transparent 100%);
@@ -284,12 +284,12 @@ webview {
 
 /* The 16px side padding plus the 352px max card width make up the mock's
  * 384px side panel. */
-#relaunchRequiredPanel .notice {
+#providerChangePanel .notice {
   background-color: transparent;
   padding: 0 16px;
 }
 
-#relaunchRequiredPanel .relaunch-card {
+#providerChangePanel .relaunch-card {
   align-items: center;
   background-color: var(--relaunch-card-background);
   border: 1px solid var(--relaunch-card-border);
@@ -303,13 +303,13 @@ webview {
   width: 100%;
 }
 
-#relaunchRequiredPanel .spark-icon {
+#providerChangePanel .spark-icon {
   height: 32px;
   margin-bottom: 16px;
   width: 32px;
 }
 
-#relaunchRequiredPanel .headline {
+#providerChangePanel .headline {
   font-family: var(--relaunch-font);
   font-size: 20px;
   font-weight: 420;
@@ -317,21 +317,21 @@ webview {
   margin: 0 0 12px;
 }
 
-#relaunchRequiredPanel .relaunch-body {
+#providerChangePanel .relaunch-body {
   display: flex;
   flex-direction: column;
   gap: 8px;
   margin-bottom: 16px;
 }
 
-#relaunchRequiredPanel .notice-message {
+#providerChangePanel .notice-message {
   font-family: var(--relaunch-font);
   line-height: 17px;
   margin: 0;
 }
 
-#relaunchRequiredPanel #relaunchButton,
-#relaunchRequiredPanel #continueButton {
+#providerChangePanel #relaunchButton,
+#providerChangePanel #continueButton {
   background-color: var(--relaunch-accent);
   border: none;
   color: var(--relaunch-button-text);

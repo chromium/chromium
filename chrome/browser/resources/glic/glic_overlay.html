@@ -192,8 +192,7 @@
           </div>
         </div>
       </section>
-      <!-- TODO(crbug.com/582415970): Rename the relaunchRequired* and relaunch* IDs, since the provider switch notice also uses this panel. -->
-      <section hidden class="dialog panel" id="relaunchRequiredPanel">
+      <section hidden class="dialog panel" id="providerChangePanel">
         <div class="container">
           <div class="header">
             <img class="logo" src="glic_logo.svg" alt="" aria-hidden="true">
@@ -208,11 +207,11 @@
                    finalizes it. -->
               <img class="spark-icon" src="geic_spark.png" alt=""
                   aria-hidden="true">
-              <p class="headline" id="relaunchHeadline"></p>
+              <p class="headline" id="providerChangeHeadline"></p>
               <div class="relaunch-body">
-                <p class="notice-message" id="relaunchBody1"></p>
-                <p class="notice-message" id="relaunchBody2" hidden></p>
-                <p class="notice-message" id="relaunchBody3" hidden></p>
+                <p class="notice-message" id="providerChangeBody1"></p>
+                <p class="notice-message" id="providerChangeBody2" hidden></p>
+                <p class="notice-message" id="providerChangeBody3" hidden></p>
               </div>
               <cr-button class="tonal-button"
                 id="relaunchButton"
