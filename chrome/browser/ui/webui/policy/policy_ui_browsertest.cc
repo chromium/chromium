@@ -2070,10 +2070,8 @@ namespace {
 
 }  // namespace
 
-// TODO(crbug.com/587108581): Flaky on Linux and Mac.
-IN_PROC_BROWSER_TEST_P(
-    PolicyUITest,
-    DISABLED_SmallScreenDefaultValueColumnAndManualOverride) {
+IN_PROC_BROWSER_TEST_P(PolicyUITest,
+                       SmallScreenDefaultValueColumnAndManualOverride) {
   SetHomepageAndUrlBlocklistPolicies(provider_);
 
   // Start at a narrow viewport (`<= 768px`) to verify that `value` is the only

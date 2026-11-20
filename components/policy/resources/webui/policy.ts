@@ -164,18 +164,24 @@ async function sortChromePoliciesBy(col: string): Promise<string> {
   return table.mostRecentSortedColumn;
 }
 
+const smallScreenMediaQuery = window.matchMedia('(max-width: 768px)');
+let smallScreenMediaQueryMatches = smallScreenMediaQuery.matches;
+smallScreenMediaQuery.addEventListener('change', e => {
+  smallScreenMediaQueryMatches = e.matches;
+});
+
 async function waitForSmallScreenMediaQuery(expectedMatches: boolean):
     Promise<boolean> {
-  const mql = window.matchMedia('(max-width: 768px)');
-  if (mql.matches !== expectedMatches) {
-    await new Promise(
-        resolve => mql.addEventListener('change', resolve, {once: true}));
+  if (smallScreenMediaQueryMatches !== expectedMatches) {
+    await new Promise(resolve => {
+      smallScreenMediaQuery.addEventListener('change', resolve, {once: true});
+    });
   }
   const app = document.querySelector('policy-app')!;
   const table = getChromePolicyTable()!;
   await app.updateComplete;
   await table.updateComplete;
-  return mql.matches === expectedMatches;
+  return smallScreenMediaQueryMatches === expectedMatches;
 }
 
 function getPrecedenceRowValue() {
