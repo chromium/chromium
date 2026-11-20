@@ -242,6 +242,11 @@ class ServiceWorkerVersionTest
     version->OnScriptEvaluationStart();
   }
 
+  bool RequestTermination(ServiceWorkerVersion* version) {
+    return version->OnRequestTermination(
+        /*observed_keepalive_sequence_number=*/0);
+  }
+
   void SimulateDispatchEvent(ServiceWorkerMetrics::EventType event_type) {
     std::optional<blink::ServiceWorkerStatusCode> status;
     base::RunLoop run_loop;
@@ -3409,6 +3414,141 @@ TEST_P(
   run_loop.Run();
   ASSERT_TRUE(status.has_value());
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk, status.value());
+}
+
+// Verifies that NavigateClient() keeps the version alive across
+// service_worker_client_utils::NavigateClient() when the last external
+// reference is dropped before NotifyClientNavigated() runs
+// (crbug.com/583907056).
+TEST_P(ServiceWorkerVersionTest,
+       NavigateClient_VersionDestroyedDuringNavigation) {
+  ASSERT_EQ(blink::ServiceWorkerStatusCode::kOk,
+            StartServiceWorker(version_.get()));
+  StopTimeoutTimer(version_.get());
+  ResetWorkerHost(version_.get());
+  std::optional<CommittedServiceWorkerClient> client = ActivateWithControllee();
+
+  ServiceWorkerVersion* raw_version = version_.get();
+  base::WeakPtr<ServiceWorkerVersion> weak_version = version_->GetWeakPtr();
+  bool callback_called = false;
+
+  static_cast<blink::mojom::ServiceWorkerHost*>(raw_version)
+      ->NavigateClient(
+          (*client)->client_uuid(), scope_.Resolve("page.html"),
+          base::BindLambdaForTesting(
+              [&](bool success,
+                  blink::mojom::ServiceWorkerClientInfoPtr client_info,
+                  const std::optional<std::string>& error_msg) {
+                callback_called = true;
+                (*client)->SetControllerRegistration(
+                    nullptr, /*notify_controllerchange=*/false);
+                registration_->SetActiveVersion(nullptr);
+                registration_.reset();
+                version_.reset();
+              }));
+
+  EXPECT_TRUE(callback_called);
+  EXPECT_FALSE(weak_version);
+}
+
+// Verifies that OpenWindow() keeps the version alive across
+// service_worker_client_utils::OpenWindow() when the last external reference is
+// dropped before NotifyWindowOpened() runs.
+TEST_P(ServiceWorkerVersionTest, OpenNewTab_VersionDestroyedDuringOpenWindow) {
+  ASSERT_EQ(blink::ServiceWorkerStatusCode::kOk,
+            StartServiceWorker(version_.get()));
+  version_->SetStatus(ServiceWorkerVersion::ACTIVATED);
+  version_->StartRequest(ServiceWorkerMetrics::EventType::NOTIFICATION_CLICK,
+                         base::DoNothing());
+
+  StopTimeoutTimer(version_.get());
+  ResetWorkerHost(version_.get());
+  ServiceWorkerVersion* raw_version = version_.get();
+  base::WeakPtr<ServiceWorkerVersion> weak_version = version_->GetWeakPtr();
+  bool callback_called = false;
+
+  static_cast<blink::mojom::ServiceWorkerHost*>(raw_version)
+      ->OpenNewTab(scope_.Resolve("page.html"),
+                   base::BindLambdaForTesting(
+                       [&](bool success,
+                           blink::mojom::ServiceWorkerClientInfoPtr client_info,
+                           const std::optional<std::string>& error_msg) {
+                         callback_called = true;
+                         registration_.reset();
+                         version_.reset();
+                       }));
+
+  EXPECT_TRUE(callback_called);
+  EXPECT_FALSE(weak_version);
+}
+
+// Verifies that OnNoWorkInBrowser() keeps the version alive across
+// ServiceWorkerRegistration::OnNoWork() when synchronous activation of a
+// waiting version drops `registration_->active_version_` before `observers_`
+// are notified.
+TEST_P(ServiceWorkerVersionTest,
+       OnNoWorkInBrowser_VersionDestroyedDuringActivation) {
+  auto* client = helper_->AddNewPendingInstanceClient<
+      DelayedFakeEmbeddedWorkerInstanceClient>(helper_.get());
+  client->UnblockStartWorker();
+
+  ASSERT_EQ(blink::ServiceWorkerStatusCode::kOk,
+            StartServiceWorker(version_.get()));
+  ResetWorkerHost(version_.get());
+  version_->SetStatus(ServiceWorkerVersion::ACTIVATED);
+  registration_->SetActiveVersion(version_);
+
+  int request_id = version_->StartRequest(
+      ServiceWorkerMetrics::EventType::FETCH_MAIN_FRAME, base::DoNothing());
+
+  scoped_refptr<ServiceWorkerVersion> waiting_version =
+      CreateNewServiceWorkerVersion(
+          helper_->context()->registry(), registration_.get(),
+          GURL("https://www.example.com/test/service_worker_v2.js"),
+          blink::mojom::ScriptType::kClassic);
+  waiting_version->set_fetch_handler_type(
+      ServiceWorkerVersion::FetchHandlerType::kNotSkippable);
+  waiting_version->SetStatus(ServiceWorkerVersion::INSTALLED);
+  registration_->SetWaitingVersion(waiting_version);
+
+  // Calling SkipWaiting() while `version_` has an in-flight request marks
+  // `registration_` ready to activate once work finishes and requests idle
+  // termination ASAP (`needs_to_be_terminated_asap_ = true`).
+  static_cast<blink::mojom::ServiceWorkerHost*>(waiting_version.get())
+      ->SkipWaiting(base::DoNothing());
+  waiting_version.reset();
+
+  // With DevTools attached and `needs_to_be_terminated_asap_` set,
+  // OnRequestTermination() transitions `version_` to `kStopping` with
+  // `worker_is_idle_on_renderer_ = true` while `request_id` is still in-flight.
+  version_->SetDevToolsAttached(true);
+  EXPECT_TRUE(RequestTermination(version_.get()));
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopping, version_->running_status());
+
+  struct NoWorkObserver : public ServiceWorkerVersion::Observer {
+    void OnNoWork(ServiceWorkerVersion* version) override {
+      ++no_work_count;
+      version->RemoveObserver(this);
+    }
+    int no_work_count = 0;
+  } observer;
+  version_->AddObserver(&observer);
+
+  StopTimeoutTimer(version_.get());
+  ServiceWorkerVersion* raw_version = version_.get();
+  base::WeakPtr<ServiceWorkerVersion> weak_version = version_->GetWeakPtr();
+  // Drop the test's reference so `registration_->active_version_` holds the
+  // sole reference to `raw_version`.
+  version_.reset();
+  ASSERT_TRUE(weak_version);
+  EXPECT_TRUE(raw_version->HasOneRef());
+
+  // Finishing the last request calls OnNoWorkInBrowser(), which invokes
+  // registration_->OnNoWork() -> ActivateWaitingVersion(), replacing
+  // `registration_->active_version_` before `observers_` are notified.
+  EXPECT_TRUE(raw_version->FinishRequest(request_id, /*was_handled=*/true));
+  EXPECT_EQ(1, observer.no_work_count);
+  EXPECT_FALSE(weak_version);
 }
 
 }  // namespace service_worker_version_unittest
