@@ -100,6 +100,7 @@ public class ProfileTokenUtilsTest {
         assertTrue(IntentUtils.isTrustedIntentFromSelf(intent));
         // Encoded tokens are persisted, so the encoding must not change.
         assertEquals(ENCODED_TOKEN, intent.getStringExtra(ProfileTokenUtils.PROFILE_TOKEN_EXTRA));
+        assertEquals(ENCODED_TOKEN, intent.getIdentifier());
         assertFalse(intent.hasExtra(ProfileTokenUtils.LEGACY_PROFILE_TOKEN_EXTRA));
     }
 
@@ -196,13 +197,13 @@ public class ProfileTokenUtilsTest {
     }
 
     @Test
-    public void testSetProfileScopedIdentity() {
+    public void testAddProfileToIntent_ProfileScopedIdentity() {
         Intent intent = createIntent();
-        ProfileTokenUtils.setProfileScopedIdentity(mProfile, intent);
+        ProfileTokenUtils.addProfileToIntent(mProfile, intent);
         Intent sameIntent = createIntent();
-        ProfileTokenUtils.setProfileScopedIdentity(mProfile, sameIntent);
+        ProfileTokenUtils.addProfileToIntent(mProfile, sameIntent);
         Intent otherProfileIntent = createIntent();
-        ProfileTokenUtils.setProfileScopedIdentity(mOtherProfile, otherProfileIntent);
+        ProfileTokenUtils.addProfileToIntent(mOtherProfile, otherProfileIntent);
 
         assertEquals(ENCODED_TOKEN, intent.getIdentifier());
         assertTrue(intent.filterEquals(sameIntent));
@@ -210,15 +211,29 @@ public class ProfileTokenUtilsTest {
         assertFalse(intent.filterEquals(createIntent()));
     }
 
+    @Test(expected = AssertionError.class)
+    public void testAddProfileToIntent_ExistingIdentifierAsserts() {
+        Intent intent = createIntent();
+        intent.setIdentifier("custom_identifier");
+        ProfileTokenUtils.addProfileToIntent(mProfile, intent);
+    }
+
+    @Test(expected = AssertionError.class)
+    public void testAddProfileToIntent_CalledTwiceAsserts() {
+        Intent intent = createIntent();
+        ProfileTokenUtils.addProfileToIntent(mProfile, intent);
+        ProfileTokenUtils.addProfileToIntent(mOtherProfile, intent);
+    }
+
     @Test
-    public void testSetProfileScopedIdentity_PendingIntent() {
+    public void testAddProfileToIntent_PendingIntent() {
         Context context = ContextUtils.getApplicationContext();
         Intent intent = createIntent();
-        ProfileTokenUtils.setProfileScopedIdentity(mProfile, intent);
+        ProfileTokenUtils.addProfileToIntent(mProfile, intent);
         Intent sameIntent = createIntent();
-        ProfileTokenUtils.setProfileScopedIdentity(mProfile, sameIntent);
+        ProfileTokenUtils.addProfileToIntent(mProfile, sameIntent);
         Intent otherProfileIntent = createIntent();
-        ProfileTokenUtils.setProfileScopedIdentity(mOtherProfile, otherProfileIntent);
+        ProfileTokenUtils.addProfileToIntent(mOtherProfile, otherProfileIntent);
 
         PendingIntent pendingIntent =
                 PendingIntent.getActivity(context, /* requestCode= */ 0, intent, 0);

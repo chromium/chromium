@@ -383,7 +383,7 @@ public class PriceDropNotificationManagerImpl implements PriceDropNotificationMa
         if (!ChromeFeatureList.sNotificationTrampolineNoNewTask.isEnabled()) {
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
         }
-        addProfileToIntent(intent);
+        ProfileTokenUtils.addProfileToIntent(mProfile, intent);
         return intent;
     }
 
@@ -423,24 +423,13 @@ public class PriceDropNotificationManagerImpl implements PriceDropNotificationMa
             intent.putExtra(EXTRA_OFFER_ID, offerId);
             if (clusterId != null) intent.putExtra(EXTRA_PRODUCT_CLUSTER_ID, clusterId);
             intent.putExtra(EXTRA_NOTIFICATION_ID, notificationId);
-            addProfileToIntent(intent);
+            ProfileTokenUtils.addProfileToIntent(mProfile, intent);
             if (!ChromeFeatureList.sNotificationTrampolineNoNewTask.isEnabled()) {
                 intent.addFlags(
                         Intent.FLAG_ACTIVITY_NEW_DOCUMENT | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
             }
             return intent;
         }
-    }
-
-    /**
-     * Adds this Profile's token to {@code intent}, which also lets the notification's per-Profile
-     * tag be recovered when the intent is handled. Also scopes the intent's identity to the
-     * Profile, because PendingIntents that differ only in their extras are treated as the same
-     * PendingIntent, and the same offer can have a notification in more than one Profile.
-     */
-    private void addProfileToIntent(Intent intent) {
-        ProfileTokenUtils.addProfileToIntent(mProfile, intent);
-        ProfileTokenUtils.setProfileScopedIdentity(mProfile, intent);
     }
 
     @Override

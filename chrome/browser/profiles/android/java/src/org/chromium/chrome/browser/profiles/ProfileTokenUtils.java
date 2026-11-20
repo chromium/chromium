@@ -54,13 +54,24 @@ public final class ProfileTokenUtils {
 
     /**
      * Adds the {@link Profile} to the intent so that it can be retrieved by the receiving component
-     * with {@link #retrieveProfileFromIntent}. Also marks the intent as trusted.
+     * with {@link #retrieveProfileFromIntent}. Also marks the intent as trusted and sets its {@link
+     * Intent#setIdentifier(String) identifier} to the encoded Profile token so that PendingIntents
+     * created from otherwise equal intents for different Profiles are distinct, rather than sharing
+     * (and overwriting) one PendingIntent. Per-notification or per-action uniqueness within the
+     * same Profile belongs in the PendingIntent {@code requestCode}. Setting the identifier doesn't
+     * affect how the intent is resolved.
+     *
+     * <p>The intent must not already have an identifier set.
      *
      * @param profile The {@link Profile} that should be associated with the intent.
      * @param intent The intent that will store the {@link Profile}.
      */
     public static void addProfileToIntent(Profile profile, Intent intent) {
-        intent.putExtra(PROFILE_TOKEN_EXTRA, encodeToken(profile));
+        assert intent.getIdentifier() == null
+                : "Intent already has an identifier: " + intent.getIdentifier();
+        String encodedToken = encodeToken(profile);
+        intent.putExtra(PROFILE_TOKEN_EXTRA, encodedToken);
+        intent.setIdentifier(encodedToken);
         IntentUtils.addTrustedIntentExtras(intent);
     }
 
@@ -98,20 +109,6 @@ public final class ProfileTokenUtils {
             return;
         }
         new ProfileResolver().resolveProfile(legacyToken, profileCallback);
-    }
-
-    /**
-     * Makes the intent's identity specific to the {@link Profile}, so that PendingIntents created
-     * from otherwise equal intents for different Profiles are distinct, rather than sharing (and
-     * overwriting) one PendingIntent. Per-notification or per-action uniqueness within the same
-     * Profile belongs in the PendingIntent {@code requestCode}. This doesn't affect how the intent
-     * is resolved.
-     *
-     * @param profile The {@link Profile} the intent is for.
-     * @param intent The intent to update.
-     */
-    public static void setProfileScopedIdentity(Profile profile, Intent intent) {
-        intent.setIdentifier(encodeToken(profile));
     }
 
     /**

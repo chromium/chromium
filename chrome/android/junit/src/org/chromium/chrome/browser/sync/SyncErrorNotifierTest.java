@@ -82,7 +82,7 @@ public class SyncErrorNotifierTest {
         mNotificationTag = ProfileTokenUtils.getNotificationTag("SyncUI", mProfile);
         when(mTrustedVaultClient.getProxyIntentFactory()).thenReturn(mTrustedVaultProxyIntent);
         when(mTrustedVaultProxyIntent.createKeyRetrievalProxyIntent(any(), anyInt(), anyInt()))
-                .thenAnswer(invocation -> new Intent());
+                .thenAnswer(invocation -> new Intent().setPackage(mContext.getPackageName()));
     }
 
     @Test

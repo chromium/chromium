@@ -291,8 +291,9 @@ public class PriceDropNotificationManagerUnitTest {
                 expectedTag,
                 ProfileTokenUtils.getNotificationTagFromIntent(
                         PriceDropNotifier.NOTIFICATION_TAG, intent));
-        Intent expectedIdentity = new Intent();
-        ProfileTokenUtils.setProfileScopedIdentity(mMockProfile, expectedIdentity);
+        Intent expectedIdentity =
+                new Intent().setPackage(ContextUtils.getApplicationContext().getPackageName());
+        ProfileTokenUtils.addProfileToIntent(mMockProfile, expectedIdentity);
         assertEquals(expectedIdentity.getIdentifier(), intent.getIdentifier());
     }
 

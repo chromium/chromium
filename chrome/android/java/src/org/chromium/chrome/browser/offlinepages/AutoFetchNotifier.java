@@ -182,21 +182,18 @@ public class AutoFetchNotifier {
             @JniType("Profile*") Profile profile, int inProgressCount) {
         Context context = ContextUtils.getApplicationContext();
 
-        // Create intents for cancellation, both by pressing 'cancel', and swiping away. The
-        // profile-scoped identity makes the PendingIntents distinct per profile.
+        // Create intents for cancellation, both by pressing 'cancel', and swiping away.
         Intent cancelButtonIntent = new Intent(context, InProgressCancelReceiver.class);
         cancelButtonIntent.putExtra(Browser.EXTRA_APPLICATION_ID, context.getPackageName());
         cancelButtonIntent.putExtra(EXTRA_ACTION, NotificationAction.CANCEL_PRESSED);
         cancelButtonIntent.setPackage(context.getPackageName());
         ProfileTokenUtils.addProfileToIntent(profile, cancelButtonIntent);
-        ProfileTokenUtils.setProfileScopedIdentity(profile, cancelButtonIntent);
 
         Intent deleteIntent = new Intent(context, InProgressCancelReceiver.class);
         deleteIntent.putExtra(Browser.EXTRA_APPLICATION_ID, context.getPackageName());
         deleteIntent.putExtra(EXTRA_ACTION, NotificationAction.DISMISSED);
         deleteIntent.setPackage(context.getPackageName());
         ProfileTokenUtils.addProfileToIntent(profile, deleteIntent);
-        ProfileTokenUtils.setProfileScopedIdentity(profile, deleteIntent);
 
         String title =
                 context.getResources()
@@ -379,7 +376,6 @@ public class AutoFetchNotifier {
         // TODO(crbug.com/40254448): Honor the profile token when IntentHandler routes ACTION_VIEW
         // intents.
         ProfileTokenUtils.addProfileToIntent(profile, clickIntent);
-        ProfileTokenUtils.setProfileScopedIdentity(profile, clickIntent);
 
         clickIntent.setPackage(context.getPackageName());
 

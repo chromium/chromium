@@ -205,9 +205,10 @@ public class SyncErrorNotifier implements SyncService.SyncStateChangedListener {
     private void showNotification(Intent intentTriggeredOnClick) {
         // Converting |intentTriggeredOnClick| into a PendingIntent is needed because it will be
         // handed over to the Android notification manager, a foreign application.
-        // FLAG_UPDATE_CURRENT ensures any cached intent extras are updated. The Profile-scoped
-        // identity keeps Profiles from sharing (and overwriting) each other's PendingIntent.
-        ProfileTokenUtils.setProfileScopedIdentity(mProfile, intentTriggeredOnClick);
+        // FLAG_UPDATE_CURRENT ensures any cached intent extras are updated. Adding the Profile also
+        // sets a Profile-scoped identity so Profiles do not share or overwrite each other's
+        // PendingIntent.
+        ProfileTokenUtils.addProfileToIntent(mProfile, intentTriggeredOnClick);
         PendingIntentProvider pendingIntent =
                 PendingIntentProvider.getActivity(
                         ContextUtils.getApplicationContext(),
@@ -256,9 +257,8 @@ public class SyncErrorNotifier implements SyncService.SyncStateChangedListener {
      *
      * @return the intent for opening the passphrase activity
      */
-    private Intent createPassphraseIntent() {
+    private static Intent createPassphraseIntent() {
         Intent intent = new Intent(ContextUtils.getApplicationContext(), PassphraseActivity.class);
-        ProfileTokenUtils.addProfileToIntent(mProfile, intent);
         // This activity will become the start of a new task on this history stack.
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         // Clears the task stack above this activity if it already exists.
