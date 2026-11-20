@@ -231,7 +231,7 @@ void SortStrings16(const std::string& locale,
 // locale. This is similar to CheckAndResolveLocale, except that it excludes
 // some languages from being shown.
 COMPONENT_EXPORT(UI_BASE)
-bool IsUserFacingUILocale(std::string_view locale);
+bool IsUserFacingUILocale(const base::i18n::LanguageTag& locale);
 
 // Returns the subset of locales from GetAcceptLanguages which should be shown
 // to the user as a supported UI locale.

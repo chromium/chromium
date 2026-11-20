@@ -10,6 +10,7 @@
 #include <array>
 #include <cstring>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <thread>
@@ -757,6 +758,11 @@ TEST_F(L10nUtilTest, GetUserFacingUILocaleList) {
   // Esperanto. Unlikely to be localised and historically included in
   // GetSupportedIcuLocales.
   EXPECT_FALSE(locales.contains("eo"));
+  EXPECT_FALSE(l10n_util::IsUserFacingUILocale(GetKnownLanguageTag("und")));
+  std::optional<LanguageTag> eo = GetLanguageTagFromString("eo");
+  ASSERT_TRUE(eo);
+  EXPECT_FALSE(l10n_util::IsUserFacingUILocale(*eo));
+  EXPECT_TRUE(l10n_util::IsUserFacingUILocale(GetKnownLanguageTag("en-GB")));
 }
 
 TEST_F(L10nUtilTest, PlatformLocalesIsSorted) {

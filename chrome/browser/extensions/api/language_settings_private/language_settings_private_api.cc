@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <string_view>
@@ -248,7 +249,9 @@ LanguageSettingsPrivateGetLanguageListFunction::Run() {
       language.supports_translate = true;
     }
 
-    if (l10n_util::IsUserFacingUILocale(entry.code)) {
+    if (std::optional<base::i18n::LanguageTag> locale =
+            base::i18n::GetLanguageTagFromString(entry.code);
+        locale && l10n_util::IsUserFacingUILocale(*locale)) {
       language.supports_ui = true;
     }
 #if BUILDFLAG(IS_CHROMEOS)

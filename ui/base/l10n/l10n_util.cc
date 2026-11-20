@@ -489,28 +489,23 @@ void SortStrings16(const std::string& locale,
   SortVectorWithStringKey(locale, strings, false);
 }
 
-bool IsUserFacingUILocale(std::string_view locale) {
+bool IsUserFacingUILocale(const LanguageTag& locale) {
   // As there are many callers of IsUserFacingUILocale and
   // GetUserFacingUILocaleList from threads where I/O is prohibited, do not
   // perform I/O here.
   const std::optional<std::string> resolved_locale =
-      l10n_util::CheckAndResolveLocale(locale,
+      l10n_util::CheckAndResolveLocale(locale.tag_string(),
                                        CheckLocaleMode::kUseKnownLocalesList);
   if (!resolved_locale) {
     return false;
   }
 
   // Locales that have strings on disk should always be shown to the user.
-  if (resolved_locale == locale) {
+  if (*resolved_locale == locale.tag_string()) {
     return true;
   }
 
-  std::optional<base::i18n::LanguageTag> language_tag =
-      base::i18n::GetLanguageTagFromString(locale);
-  if (!language_tag) {
-    return false;
-  }
-  const std::string_view language = language_tag->language_subtag();
+  const std::string_view language = locale.language_subtag();
 
   // Chinese locales (other than the ones that have strings on disk) should not
   // be shown.
@@ -531,7 +526,7 @@ const std::vector<std::string>& GetUserFacingUILocaleList() {
   static base::NoDestructor<std::vector<std::string>> available_locales([] {
     std::vector<std::string> locales;
     for (const LanguageTag& tag : GetAcceptLanguageTags()) {
-      if (IsUserFacingUILocale(tag.tag_string())) {
+      if (IsUserFacingUILocale(tag)) {
         locales.emplace_back(tag.tag_string());
       }
     }
