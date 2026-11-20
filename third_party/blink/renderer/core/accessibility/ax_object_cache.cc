@@ -203,16 +203,19 @@ bool AXObjectCache::IsInsideFocusableElementOrARIAWidget(const Node& node) {
   const Node* cur_node = &node;
   do {
     if (const auto* element = DynamicTo<Element>(cur_node)) {
-      if (element->IsFocusable())
+      if (element->IsFocusable()) {
         return true;
+      }
       String role = element->getAttribute(html_names::kRoleAttr);
-      if (!role.empty() && IncludesARIAWidgetRole(role))
+      if (!role.empty() && IncludesARIAWidgetRole(role)) {
         return true;
-      if (HasInteractiveARIAAttribute(*element))
+      }
+      if (HasInteractiveARIAAttribute(*element)) {
         return true;
+      }
     }
     cur_node = cur_node->parentNode();
-  } while (cur_node && !IsA<HTMLBodyElement>(node));
+  } while (cur_node && !IsA<HTMLBodyElement>(cur_node));
   return false;
 }
 

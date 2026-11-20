@@ -285,6 +285,14 @@ TEST_F(AccessibilityTest, IsARIAWidget) {
       *root->getElementById(AtomicString("focusable"))));
   EXPECT_TRUE(AXObjectCache::IsInsideFocusableElementOrARIAWidget(
       *root->getElementById(AtomicString("focusable-parent"))));
+
+  // A focusable <body> (e.g. via tabindex="-1") should not cause every element
+  // on the page to be treated as inside a focusable element, because traversal
+  // stops at <body>.
+  GetDocument().body()->setAttribute(html_names::kTabindexAttr,
+                                     AtomicString("-1"));
+  EXPECT_FALSE(AXObjectCache::IsInsideFocusableElementOrARIAWidget(
+      *root->getElementById(AtomicString("plain"))));
 }
 
 TEST_F(AccessibilityTest, HistogramTest) {
