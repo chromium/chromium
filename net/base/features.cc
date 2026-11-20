@@ -458,6 +458,10 @@ BASE_FEATURE_PARAM(bool,
                    kAsyncDnsQuicJobKeepHostResolverJobAliveForCache,
                    &kAsyncDnsQuicJob,
                    true);
+BASE_FEATURE_PARAM(bool,
+                   kAsyncDnsQuicJobAbortOnNetworkChange,
+                   &kAsyncDnsQuicJob,
+                   true);
 
 BASE_FEATURE(kAdjustQuicSlowTimerDelay, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(base::TimeDelta,

@@ -543,6 +543,8 @@ class HttpStreamFactoryJobControllerTestBase : public TestWithTaskEnvironment {
                                             bool async_quic_session,
                                             bool expect_broken = false,
                                             std::string alternate_host = "");
+  void TestMainJobSucceedsAfterConnectionChangedWithAsyncDnsQuicJob(
+      bool async_quic_session);
   void TestAltJobSucceedsAfterMainJobSucceeded(
       bool alt_job_retried_on_non_default_network,
       bool async_quic_session);
@@ -4183,6 +4185,80 @@ TEST_F(HttpStreamFactoryJobControllerTest,
 TEST_F(HttpStreamFactoryJobControllerTest,
        MainJobSucceedsAfterInternetDisconnectedAsyncQuicSession) {
   TestMainJobSucceedsAfterIgnoredError(ERR_INTERNET_DISCONNECTED, true);
+}
+
+void HttpStreamFactoryJobControllerTestBase::
+    TestMainJobSucceedsAfterConnectionChangedWithAsyncDnsQuicJob(
+        bool async_quic_session) {
+  SetAsyncQuicSession(async_quic_session);
+  AddScopedFeatureList().InitAndEnableFeature(features::kAsyncDnsQuicJob);
+  session_deps_.host_resolver->rules()->AddIPLiteralRule(
+      "www.google.com", "192.168.0.1,192.168.0.2", "");
+
+  quic_data_ = std::make_unique<MockQuicData>(version_);
+  quic_data_->AddConnect(SYNCHRONOUS, ERR_NETWORK_CHANGED);
+
+  // If a second QUIC candidate were attempted, it would fail with a brokenable
+  // error and mark the alternative service broken once TCP succeeds.
+  quic_data2_ = std::make_unique<MockQuicData>(version_);
+  quic_data2_->AddConnect(SYNCHRONOUS, ERR_QUIC_PROTOCOL_ERROR);
+
+  SSLSocketDataProvider ssl_data(ASYNC, OK);
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl_data);
+
+  base::HistogramTester histogram_tester;
+
+  HttpRequestInfo request_info;
+  request_info.method = "GET";
+  request_info.url = GURL("https://www.google.com");
+  job_factory_.set_use_real_jobs();
+  Initialize(request_info);
+
+  // Register TCP data on the dedicated TCP queue after Initialize() so a
+  // second QUIC attempt would consume `quic_data2_` instead of `tcp_data_`.
+  tcp_data_ = std::make_unique<SequencedSocketData>();
+  tcp_data_->set_connect_data(MockConnect(SYNCHRONOUS, OK));
+  session_deps_.socket_factory->AddTcpSocketDataProvider(tcp_data_.get());
+
+  url::SchemeHostPort server(request_info.url);
+  AlternativeService alternative_service(NextProto::kProtoQUIC, server.host(),
+                                         443);
+  SetAlternativeService(request_info, alternative_service);
+
+  request_ = job_controller_->Start(
+      request_delegate_.get(), nullptr, net_log_with_source_,
+      HttpStreamRequest::HTTP_STREAM, DEFAULT_PRIORITY);
+  EXPECT_NE(job_controller_->main_job(), nullptr);
+  EXPECT_NE(job_controller_->alternative_job(), nullptr);
+
+  EXPECT_NE(request_delegate_->WaitForHttpStream(), nullptr);
+  FastForwardBy(base::TimeDelta());
+  request_.reset();
+
+  VerifyBrokenAlternateProtocolMapping(request_info,
+                                       /*should_mark_broken=*/false);
+  histogram_tester.ExpectTotalCount("Net.AlternateServiceFailed", 0);
+  histogram_tester.ExpectUniqueSample(
+      "Net.QuicSession.AsyncDnsJob.AttemptsPerJob.JobFailed", 1, 1);
+  EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
+  DestroySession();
+}
+
+// Verifies that with AsyncDnsQuicJob enabled and multiple resolved addresses,
+// ERR_NETWORK_CHANGED on the first candidate aborts the QUIC job immediately
+// without trying subsequent candidates (which could overwrite the error and
+// mark the alternative service broken).
+TEST_F(HttpStreamFactoryJobControllerTest,
+       MainJobSucceedsAfterConnectionChangedWithAsyncDnsQuicJob) {
+  TestMainJobSucceedsAfterConnectionChangedWithAsyncDnsQuicJob(
+      /*async_quic_session=*/false);
+}
+
+TEST_F(
+    HttpStreamFactoryJobControllerTest,
+    MainJobSucceedsAfterConnectionChangedWithAsyncDnsQuicJobAsyncQuicSession) {
+  TestMainJobSucceedsAfterConnectionChangedWithAsyncDnsQuicJob(
+      /*async_quic_session=*/true);
 }
 
 // Verifies that if the alternative job fails due to a DNS failure,

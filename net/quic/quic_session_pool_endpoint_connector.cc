@@ -89,8 +89,12 @@ std::optional<int> QuicSessionPool::EndpointConnector::TryAdvance() {
       RecordAttemptTime("Success");
       return OK;
     }
-    // The attempt failed while starting. Continue with the next candidate.
+    // The attempt failed while starting. Stop if the error invalidates the
+    // job's remaining candidates; otherwise continue with the next candidate.
     RecordAttemptFailure(rv);
+    if (AsyncDnsJob::ShouldAbortOnNetworkError(rv)) {
+      return rv;
+    }
   }
 }
 
@@ -223,7 +227,7 @@ void QuicSessionPool::EndpointConnector::OnAttemptComplete(int rv) {
   attempt_in_flight_ = false;
   if (rv != OK) {
     RecordAttemptFailure(rv);
-    if (rv != ERR_ABORTED) {
+    if (rv != ERR_ABORTED && !AsyncDnsJob::ShouldAbortOnNetworkError(rv)) {
       std::optional<int> result = TryAdvance();
       if (result == ERR_IO_PENDING) {
         return;

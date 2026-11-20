@@ -59,9 +59,10 @@ namespace net {
 // The job acts on partial resolver results once the endpoints are crypto
 // ready. It tries to advance every connector that has no attempt in flight
 // again on later results, so a connector that ran out of untried candidates
-// can continue on endpoints that arrive later. A resolver error never changes
-// the outcome once a connector exists. It only decides when running out of
-// candidates becomes a failure.
+// can continue on endpoints that arrive later. A resolver error does not change
+// the outcome once a fresh attempt has started. It only decides when running
+// out of candidates becomes a failure. The exception is a resolver error that
+// ShouldAbortOnNetworkError() accepts, which fails the job right away.
 class QuicSessionPool::AsyncDnsJob
     : public QuicSessionPool::Job,
       public HostResolver::ServiceEndpointRequest::Delegate {
@@ -164,6 +165,13 @@ class QuicSessionPool::AsyncDnsJob
 
   ~AsyncDnsJob() override;
 
+  // Returns true when `rv`, reported by a connection attempt or by the
+  // resolver, means the network state has changed or gone down and
+  // `kAsyncDnsQuicJobAbortOnNetworkChange` is enabled. The job's resolved
+  // candidates are then out of date, so the job should fail immediately without
+  // attempting the remaining ones.
+  static bool ShouldAbortOnNetworkError(int rv);
+
   // QuicSessionPool::Job implementation.
   int Run(CompletionOnceCallback callback) override;
   void SetRequestExpectations(QuicSessionRequest* request) override;
@@ -233,12 +241,12 @@ class QuicSessionPool::AsyncDnsJob
   // signal.
   void OnSessionCreationDecided(int rv, const EndpointConnector& connector);
 
-  // Called by `connector` when it settled successfully or when it ran out of
-  // untried candidates. A connector settles successfully when its attempt
-  // succeeds or when it finds an existing session through IP pooling. The job
-  // then destroys the other connector together with its in-flight attempt.
-  // Running out of candidates fails the job only when the other connector has
-  // nothing in flight and DNS has finished.
+  // Called by `connector` when it settled successfully, hit an attempt error
+  // that aborts the job, or ran out of untried candidates. A connector settles
+  // successfully when its attempt succeeds or when it finds an existing session
+  // through IP pooling. The job then destroys the other connector together with
+  // its in-flight attempt. Running out of candidates fails the job only when
+  // the other connector has nothing in flight and DNS has finished.
   void OnConnectorComplete(int rv, EndpointConnector& connector);
 
   // Returns the name of the slot `connector` occupies. For logging.
@@ -301,6 +309,16 @@ class QuicSessionPool::AsyncDnsJob
   int DoResolveHost();
   int DoResolveHostComplete(int rv);
 
+  // Returns true when a connector for fresh DNS results has started at least
+  // one attempt.
+  bool HasFreshAttemptStarted() const;
+
+  // Returns true when the resolver's final result `rv` fails the job right
+  // away. An error does so unless a fresh attempt has already started and may
+  // still settle the job. An error that ShouldAbortOnNetworkError() accepts
+  // always does.
+  bool ShouldFailOnResolverError(int rv) const;
+
   // Tries IP pooling, promotes matching stale connectors, and then advances the
   // connectors. Returns the job result when the job settled, ERR_IO_PENDING
   // when an attempt is in flight, or std::nullopt when the job is waiting for
@@ -316,10 +334,9 @@ class QuicSessionPool::AsyncDnsJob
   // had, and std::nullopt when there is no such connector.
   std::optional<int> AdvanceConnector(EndpointConnector* connector);
 
-  // Advances both slots of `state`. Returns OK when a connector settled the
-  // job, in which case the other connector has been destroyed. Returns
-  // ERR_IO_PENDING while an attempt is in flight, and std::nullopt when
-  // nothing could be started.
+  // Advances both slots of `state`. Returns OK or a fatal attempt error when a
+  // connector settled the job, ERR_IO_PENDING while an attempt is in flight,
+  // and std::nullopt when nothing could be started.
   std::optional<int> AdvanceConnectors(ConnectionState& state);
 
   // Called when `connector` settled the job. Logs how it settled, destroys the

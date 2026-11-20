@@ -496,6 +496,11 @@ NET_EXPORT BASE_DECLARE_FEATURE_PARAM(
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(
     bool,
     kAsyncDnsQuicJobKeepHostResolverJobAliveForCache);
+// Whether QuicSessionPool::AsyncDnsJob fails immediately without attempting
+// remaining resolved candidates when a connection attempt fails with
+// ERR_NETWORK_CHANGED or ERR_INTERNET_DISCONNECTED.
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
+                                      kAsyncDnsQuicJobAbortOnNetworkChange);
 
 // Makes the QUIC slow timer delay configurable.
 // How long to wait before starting a second connection attempt

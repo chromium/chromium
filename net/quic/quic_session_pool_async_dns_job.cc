@@ -146,6 +146,12 @@ QuicSessionPool::AsyncDnsJob::AsyncDnsJob(
 
 QuicSessionPool::AsyncDnsJob::~AsyncDnsJob() = default;
 
+// static
+bool QuicSessionPool::AsyncDnsJob::ShouldAbortOnNetworkError(int rv) {
+  return (rv == ERR_NETWORK_CHANGED || rv == ERR_INTERNET_DISCONNECTED) &&
+         features::kAsyncDnsQuicJobAbortOnNetworkChange.Get();
+}
+
 int QuicSessionPool::AsyncDnsJob::Run(CompletionOnceCallback callback) {
   int rv = DoResolveHost();
   if (rv != ERR_IO_PENDING) {
@@ -532,9 +538,11 @@ void QuicSessionPool::AsyncDnsJob::OnAttemptFailed(
   // Failures before the signals fired are reported through the signals
   // themselves. A later failure is invisible to callers while the job keeps
   // trying other candidates, so report it separately. The failure that the
-  // session creation signal carried is not reported again. ERR_ABORTED is not
-  // reported because the connector stops instead of trying other candidates.
-  if (rv == ERR_ABORTED || !AllPromisedSignalsDelivered()) {
+  // session creation signal carried is not reported again. ERR_ABORTED and
+  // job-aborting errors are not reported because the connector or job stops
+  // instead of trying other candidates.
+  if (rv == ERR_ABORTED || ShouldAbortOnNetworkError(rv) ||
+      !AllPromisedSignalsDelivered()) {
     return;
   }
   if (connector.attempt_id().has_value() &&
@@ -637,6 +645,11 @@ void QuicSessionPool::AsyncDnsJob::OnConnectorComplete(
     return;
   }
 
+  if (ShouldAbortOnNetworkError(rv)) {
+    CompleteJob(rv);
+    return;
+  }
+
   // This connector ran out of candidates. Keep the job going while any other
   // connector still runs an attempt, and while DNS can still deliver more
   // candidates.
@@ -709,14 +722,10 @@ void QuicSessionPool::AsyncDnsJob::LogServiceEndpointRequestFinished(
       NetLogEventType::
           QUIC_SESSION_POOL_ASYNC_DNS_JOB_SERVICE_ENDPOINT_REQUEST_FINISHED,
       [&] {
-        const bool fresh_attempt_started =
-            (fresh_state_.primary_connector &&
-             fresh_state_.primary_connector->attempts_started() > 0) ||
-            (fresh_state_.secondary_connector &&
-             fresh_state_.secondary_connector->attempts_started() > 0);
         return base::DictValue()
             .Set("net_error", rv)
-            .Set("ignored_late_error", rv != OK && fresh_attempt_started);
+            .Set("ignored_late_error",
+                 rv != OK && !ShouldFailOnResolverError(rv));
       });
 }
 
@@ -1070,16 +1079,13 @@ int QuicSessionPool::AsyncDnsJob::DoResolveHostComplete(int rv) {
   resolution_finished_time_ = base::TimeTicks::Now();
   MaybeSetDnsResolutionEndTime();
 
-  // A resolver error fails the job immediately unless a fresh attempt is
-  // somehow already running. Stale attempts are speculative and should not
-  // override a hard DNS error, so we abort them here (consistent with
-  // TcpConnectJob).
-  const bool fresh_attempt_started =
-      (fresh_state_.primary_connector &&
-       fresh_state_.primary_connector->attempts_started() > 0) ||
-      (fresh_state_.secondary_connector &&
-       fresh_state_.secondary_connector->attempts_started() > 0);
-  if (rv != OK && !fresh_attempt_started) {
+  // A resolver error fails the job immediately unless a fresh attempt has
+  // already started. Stale attempts are speculative and should not override a
+  // hard DNS error, so we abort them here (consistent with TcpConnectJob). A
+  // network change or disconnect error fails the job even when a fresh attempt
+  // has started, because that attempt and its failure belong to the previous
+  // network state. Completing the job destroys the fresh connectors.
+  if (ShouldFailOnResolverError(rv)) {
     stale_state_.slow_timer.Stop();
     stale_state_.primary_connector.reset();
     stale_state_.secondary_connector.reset();
@@ -1088,6 +1094,18 @@ int QuicSessionPool::AsyncDnsJob::DoResolveHostComplete(int rv) {
 
   return ProcessServiceEndpointResults().value_or(
       rv != OK ? rv : ERR_DNS_NO_MATCHING_SUPPORTED_ALPN);
+}
+
+bool QuicSessionPool::AsyncDnsJob::HasFreshAttemptStarted() const {
+  return (fresh_state_.primary_connector &&
+          fresh_state_.primary_connector->attempts_started() > 0) ||
+         (fresh_state_.secondary_connector &&
+          fresh_state_.secondary_connector->attempts_started() > 0);
+}
+
+bool QuicSessionPool::AsyncDnsJob::ShouldFailOnResolverError(int rv) const {
+  return rv != OK &&
+         (ShouldAbortOnNetworkError(rv) || !HasFreshAttemptStarted());
 }
 
 void QuicSessionPool::AsyncDnsJob::MaybePromoteStaleConnectors() {
@@ -1339,6 +1357,9 @@ std::optional<int> QuicSessionPool::AsyncDnsJob::AdvanceConnectors(
     DestroyOtherConnector(*state.primary_connector);
     return OK;
   }
+  if (primary_rv.has_value() && *primary_rv != ERR_IO_PENDING) {
+    return primary_rv;
+  }
 
   // The primary connector never drops the secondary one, so the secondary
   // slot still holds what it held above.
@@ -1347,6 +1368,9 @@ std::optional<int> QuicSessionPool::AsyncDnsJob::AdvanceConnectors(
   if (secondary_rv == OK) {
     DestroyOtherConnector(*state.secondary_connector);
     return OK;
+  }
+  if (secondary_rv.has_value() && *secondary_rv != ERR_IO_PENDING) {
+    return secondary_rv;
   }
 
   if (primary_rv == ERR_IO_PENDING || secondary_rv == ERR_IO_PENDING) {
