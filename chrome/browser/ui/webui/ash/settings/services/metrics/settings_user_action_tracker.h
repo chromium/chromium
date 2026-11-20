@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/ash/settings/search/mojom/user_action_recorder.mojom.h"
@@ -14,6 +15,10 @@
 #include "components/prefs/pref_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+
+namespace metrics {
+class MetricsService;
+}  // namespace metrics
 
 namespace ash::settings {
 
@@ -25,7 +30,18 @@ class OsSettingsSections;
 // a per section tracker to record metrics in each section.
 class SettingsUserActionTracker : public mojom::UserActionRecorder {
  public:
-  SettingsUserActionTracker(Hierarchy* hierarchy,
+  // TODO(crbug.com/558489113): Revisit callback usage once `MetricsService`
+  // lifetime is resolved to inject `raw_ref`/`raw_ptr` directly.
+  // NOTE: The getter-callback pattern should be avoided if possible and is used
+  // here for `MetricsService` only as an exception (destroyed before
+  // `KeyedService`s). Do NOT apply this pattern to other dependencies without
+  // thoroughly investigating their lifetimes and alternatives first.
+  using MetricsServiceGetter =
+      base::RepeatingCallback<::metrics::MetricsService*()>;
+
+  // `metrics_service_getter` must be non-null.
+  SettingsUserActionTracker(MetricsServiceGetter metrics_service_getter,
+                            Hierarchy* hierarchy,
                             OsSettingsSections* sections,
                             PrefService* profile_pref_service);
   SettingsUserActionTracker(const SettingsUserActionTracker& other) = delete;
@@ -67,6 +83,7 @@ class SettingsUserActionTracker : public mojom::UserActionRecorder {
   void EndCurrentSession();
   void OnBindingDisconnected();
 
+  const MetricsServiceGetter metrics_service_getter_;
   raw_ptr<Hierarchy> hierarchy_;
   raw_ptr<OsSettingsSections> sections_;
   raw_ptr<PrefService> profile_pref_service_;

@@ -6,6 +6,8 @@
 
 #include "ash/constants/ash_login_pref_names.h"
 #include "ash/constants/ash_pref_names.h"
+#include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -55,6 +57,20 @@ namespace ash::settings {
 
 constexpr char kProfileName[] = "user@gmail.com";
 
+namespace {
+
+PerSessionSettingsUserActionTracker::MetricsServiceGetter
+GetMetricsServiceGetter() {
+  return base::BindRepeating([]() {
+    ::metrics::MetricsService* metrics_service =
+        TestingBrowserProcess::GetGlobal()->metrics_service();
+    CHECK(metrics_service);
+    return metrics_service;
+  });
+}
+
+}  // namespace
+
 class PerSessionSettingsUserActionTrackerTest : public testing::Test {
  protected:
   PerSessionSettingsUserActionTrackerTest() = default;
@@ -97,12 +113,14 @@ class PerSessionSettingsUserActionTrackerTest : public testing::Test {
         task_environment_.GetMainThreadTaskRunner());
 
     tracker_ = std::make_unique<PerSessionSettingsUserActionTracker>(
-        test_pref_service_);
+        GetMetricsServiceGetter(), test_pref_service_);
 
     tracker_metrics_provider_ = std::make_unique<OsSettingsMetricsProvider>();
   }
 
   void TearDown() override {
+    tracker_.reset();
+
     // The prefs have to be detached before the profile holding them dies.
     user_manager::UserManager::Get()->OnUserProfileWillBeDestroyed(account_id_);
 
@@ -347,8 +365,8 @@ TEST_F(PerSessionSettingsUserActionTrackerTest, TestUniqueChangedSettings) {
 
   // Create a new PerSessionSettingsUserActionTracker to imitate a newly opened
   // Settings page.
-  tracker_ =
-      std::make_unique<PerSessionSettingsUserActionTracker>(test_pref_service_);
+  tracker_ = std::make_unique<PerSessionSettingsUserActionTracker>(
+      GetMetricsServiceGetter(), test_pref_service_);
 
   // test that the set has been destructed and cleared appropriately
   expected_set = {};
@@ -372,8 +390,8 @@ TEST_F(PerSessionSettingsUserActionTrackerTest, TestUniqueChangedSettings) {
 
   // Create a new PerSessionSettingsUserActionTracker to imitate a newly opened
   // Settings page.
-  tracker_ =
-      std::make_unique<PerSessionSettingsUserActionTracker>(test_pref_service_);
+  tracker_ = std::make_unique<PerSessionSettingsUserActionTracker>(
+      GetMetricsServiceGetter(), test_pref_service_);
 
   // Flip the Do Not Disturb and WiFi toggles. Flip Do Not Disturb toggle again
   // in Settings, this is not a unique Setting that is changing so the number of
@@ -458,8 +476,8 @@ TEST_F(PerSessionSettingsUserActionTrackerTest,
 
   // Create a new PerSessionSettingsUserActionTracker to imitate a newly opened
   // Settings page.
-  tracker_ =
-      std::make_unique<PerSessionSettingsUserActionTracker>(test_pref_service_);
+  tracker_ = std::make_unique<PerSessionSettingsUserActionTracker>(
+      GetMetricsServiceGetter(), test_pref_service_);
 
   // test that the set has been destructed and cleared appropriately
   expected_set = {};
@@ -503,8 +521,8 @@ TEST_F(PerSessionSettingsUserActionTrackerTest,
 
   // Create a new PerSessionSettingsUserActionTracker to imitate a newly opened
   // Settings page.
-  tracker_ =
-      std::make_unique<PerSessionSettingsUserActionTracker>(test_pref_service_);
+  tracker_ = std::make_unique<PerSessionSettingsUserActionTracker>(
+      GetMetricsServiceGetter(), test_pref_service_);
 
   // test that the set has been destructed and cleared appropriately
   expected_set = {};
@@ -571,8 +589,8 @@ TEST_F(PerSessionSettingsUserActionTrackerTest,
 
   // Create a new PerSessionSettingsUserActionTracker to imitate a newly opened
   // Settings page.
-  tracker_ =
-      std::make_unique<PerSessionSettingsUserActionTracker>(test_pref_service_);
+  tracker_ = std::make_unique<PerSessionSettingsUserActionTracker>(
+      GetMetricsServiceGetter(), test_pref_service_);
 
   // Flip the Do Not Disturb and WiFi toggles. Flip Do Not Disturb toggle again
   // in Settings, this is not a unique Setting that is changing so the number of
@@ -814,8 +832,8 @@ TEST_F(PerSessionSettingsUserActionTrackerTest,
 
   // Create a new tracker, focus on page, wait for another 22 seconds to
   // pass.
-  tracker_ =
-      std::make_unique<PerSessionSettingsUserActionTracker>(test_pref_service_);
+  tracker_ = std::make_unique<PerSessionSettingsUserActionTracker>(
+      GetMetricsServiceGetter(), test_pref_service_);
   tracker_->RecordPageFocus();
   task_environment_.FastForwardBy(base::Seconds(22));
 
@@ -830,8 +848,8 @@ TEST_F(PerSessionSettingsUserActionTrackerTest,
 
   // Create a new tracker, focus on page, this time wait for 3 seconds to
   // pass.
-  tracker_ =
-      std::make_unique<PerSessionSettingsUserActionTracker>(test_pref_service_);
+  tracker_ = std::make_unique<PerSessionSettingsUserActionTracker>(
+      GetMetricsServiceGetter(), test_pref_service_);
   tracker_->RecordPageFocus();
   task_environment_.FastForwardBy(base::Seconds(3));
 
@@ -923,8 +941,8 @@ TEST_F(PerSessionSettingsUserActionTrackerTest,
 
   // Create a new PerSessionSettingsUserActionTracker to imitate a newly opened
   // Settings page.
-  tracker_ =
-      std::make_unique<PerSessionSettingsUserActionTracker>(test_pref_service_);
+  tracker_ = std::make_unique<PerSessionSettingsUserActionTracker>(
+      GetMetricsServiceGetter(), test_pref_service_);
 
   // Simulate that the user has revoked UMA consent, no data will be recorded
   // to UMA.
@@ -977,8 +995,8 @@ TEST_F(PerSessionSettingsUserActionTrackerTest,
 
   // Create a new PerSessionSettingsUserActionTracker to imitate a newly opened
   // Settings page.
-  tracker_ =
-      std::make_unique<PerSessionSettingsUserActionTracker>(test_pref_service_);
+  tracker_ = std::make_unique<PerSessionSettingsUserActionTracker>(
+      GetMetricsServiceGetter(), test_pref_service_);
 
   // Simulate that the user has re-granted UMA consent, no data will be recorded
   // to UMA because they have previously revoked their consent and have made a

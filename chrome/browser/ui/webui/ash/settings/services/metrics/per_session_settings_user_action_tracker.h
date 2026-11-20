@@ -9,9 +9,14 @@
 #include <set>
 
 #include "ash/webui/settings/public/constants/setting.mojom.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/prefs/pref_service.h"
+
+namespace metrics {
+class MetricsService;
+}  // namespace metrics
 
 namespace ash::settings {
 
@@ -21,10 +26,21 @@ namespace ash::settings {
 // should be created for that new session.
 class PerSessionSettingsUserActionTracker {
  public:
-  // The parameter must be specifically a per-user profile pref, as we will be
-  // retrieving and setting profile-specific prefs in this class which do not
-  // exist in local prefs.
-  explicit PerSessionSettingsUserActionTracker(
+  // TODO(crbug.com/558489113): Revisit callback usage once `MetricsService`
+  // lifetime is resolved to inject `raw_ref`/`raw_ptr` directly.
+  // NOTE: The getter-callback pattern should be avoided if possible and is used
+  // here for `MetricsService` only as an exception (destroyed before
+  // `KeyedService`s). Do NOT apply this pattern to other dependencies without
+  // thoroughly investigating their lifetimes and alternatives first.
+  using MetricsServiceGetter =
+      base::RepeatingCallback<::metrics::MetricsService*()>;
+
+  // `metrics_service_getter` must be non-null.
+  // `profile_pref_service` must be specifically a per-user profile pref, as we
+  // will be retrieving and setting profile-specific prefs in this class which
+  // do not exist in local prefs.
+  PerSessionSettingsUserActionTracker(
+      MetricsServiceGetter metrics_service_getter,
       PrefService* profile_pref_service);
   PerSessionSettingsUserActionTracker(
       const PerSessionSettingsUserActionTracker& other) = delete;
@@ -77,6 +93,8 @@ class PerSessionSettingsUserActionTracker {
   void UpdateSettingsPrefTotalUniqueChanged();
   void SetHasUserEverRevokedMetricsConsent();
   bool HasUserMetricsConsent();
+
+  const MetricsServiceGetter metrics_service_getter_;
 
   // Time at which the last setting change metric was recorded since the window
   // has been focused, or null if no setting change has been recorded since the

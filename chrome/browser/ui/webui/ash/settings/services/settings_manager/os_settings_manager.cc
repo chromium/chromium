@@ -4,9 +4,12 @@
 
 #include "chrome/browser/ui/webui/ash/settings/services/settings_manager/os_settings_manager.h"
 
+#include <utility>
+
 #include "ash/public/cpp/input_device_settings_controller.h"
 #include "ash/webui/common/backend/accelerator_fetcher.h"
 #include "ash/webui/common/backend/shortcut_input_provider.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/apps/app_notification_handler.h"
@@ -30,6 +33,7 @@ namespace ash::settings {
 OsSettingsManager::OsSettingsManager(
     PrefService* local_state,
     const ApplicationLocaleStorage* application_locale_storage,
+    MetricsServiceGetter metrics_service_getter,
     policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
     system::TimeZoneResolverManager* timezone_resolver_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -62,10 +66,11 @@ OsSettingsManager::OsSettingsManager(
                                                app_service_proxy,
                                                eche_app_manager)),
       hierarchy_(std::make_unique<Hierarchy>(sections_.get())),
-      settings_user_action_tracker_(
-          std::make_unique<SettingsUserActionTracker>(hierarchy_.get(),
-                                                      sections_.get(),
-                                                      profile->GetPrefs())),
+      settings_user_action_tracker_(std::make_unique<SettingsUserActionTracker>(
+          std::move(metrics_service_getter),
+          hierarchy_.get(),
+          sections_.get(),
+          profile->GetPrefs())),
       search_handler_(
           std::make_unique<SearchHandler>(search_tag_registry_.get(),
                                           sections_.get(),

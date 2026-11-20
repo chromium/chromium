@@ -6,11 +6,16 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 
 #include "ash/constants/ash_features.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
+#include "base/check.h"
 #include "base/command_line.h"
+#include "base/files/file_path.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_base.h"
+#include "base/metrics/user_metrics.h"
 #include "base/test/metrics/histogram_enum_reader.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs_factory.h"
@@ -45,6 +50,10 @@
 #include "chromeos/ash/experiences/arc/test/arc_util_test_support.h"
 #include "components/account_id/account_id.h"
 #include "components/account_id/account_id_literal.h"
+#include "components/metrics/metrics_service.h"
+#include "components/metrics/metrics_state_manager.h"
+#include "components/metrics/test/test_enabled_state_provider.h"
+#include "components/metrics/test/test_metrics_service_client.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/test/user_session_test_environment.h"
@@ -87,6 +96,18 @@ class OsSettingsManagerTest : public testing::Test {
     scoped_feature_list_.InitWithFeatures({arc::kPerAppLanguage}, {});
     TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(
         test_url_loader_factory_.GetSafeWeakWrapper());
+
+    // Needed for OsSettingsManager.
+    base::SetRecordActionTaskRunner(
+        task_environment_.GetMainThreadTaskRunner());
+    metrics_state_manager_ = metrics::MetricsStateManager::Create(
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        &enabled_state_provider_, std::wstring(), base::FilePath());
+    metrics_service_ = std::make_unique<metrics::MetricsService>(
+        metrics_state_manager_.get(), &metrics_service_client_,
+        TestingBrowserProcess::GetGlobal()->local_state());
+    TestingBrowserProcess::GetGlobal()->SetMetricsService(
+        metrics_service_.get());
 
     // Log in user to ensure ARC PlayStore can be enabled.
     auto* browser_process = TestingBrowserProcess::GetGlobal();
@@ -134,6 +155,13 @@ class OsSettingsManagerTest : public testing::Test {
         TestingBrowserProcess::GetGlobal()
             ->GetFeatures()
             ->application_locale_storage(),
+        /*metrics_service_getter=*/
+        base::BindRepeating([]() {
+          ::metrics::MetricsService* metrics_service =
+              TestingBrowserProcess::GetGlobal()->metrics_service();
+          CHECK(metrics_service);
+          return metrics_service;
+        }),
         TestingBrowserProcess::GetGlobal()
             ->platform_part()
             ->browser_policy_connector_ash(),
@@ -160,11 +188,19 @@ class OsSettingsManagerTest : public testing::Test {
     timezone_resolver_manager_.reset();
     SystemLocationProvider::DestroyForTesting();
     user_session_test_environment_.reset();
+    TestingBrowserProcess::GetGlobal()->SetMetricsService(nullptr);
+    metrics_service_.reset();
+    metrics_state_manager_.reset();
     TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(nullptr);
   }
 
   content::BrowserTaskEnvironment task_environment_;
   network::TestURLLoaderFactory test_url_loader_factory_;
+  metrics::TestEnabledStateProvider enabled_state_provider_{/*consent=*/false,
+                                                            /*enabled=*/false};
+  metrics::TestMetricsServiceClient metrics_service_client_;
+  std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager_;
+  std::unique_ptr<metrics::MetricsService> metrics_service_;
   TestingPrefServiceSimple pref_service_;
   // Declared before `user_session_test_environment_` so that it outlives the
   // profiles and their keyed services.

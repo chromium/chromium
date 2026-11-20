@@ -4,7 +4,11 @@
 
 #include "chrome/browser/ui/webui/ash/settings/services/metrics/settings_user_action_tracker.h"
 
+#include <utility>
+
 #include "ash/webui/settings/public/constants/setting.mojom.h"
+#include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/values.h"
 #include "chrome/browser/metrics/chrome_metrics_service_client.h"
@@ -107,16 +111,24 @@ class SettingsUserActionTrackerTest : public testing::Test {
     test_pref_service_ = testing_profile_->GetPrefs();
     SetupTestMetricsClient();
 
+    auto metrics_service_getter = base::BindRepeating([]() {
+      ::metrics::MetricsService* metrics_service =
+          TestingBrowserProcess::GetGlobal()->metrics_service();
+      CHECK(metrics_service);
+      return metrics_service;
+    });
     tracker_ = std::make_unique<SettingsUserActionTracker>(
-        fake_hierarchy_.get(), fake_sections_.get(), test_pref_service_);
+        metrics_service_getter, fake_hierarchy_.get(), fake_sections_.get(),
+        test_pref_service_);
     // Initialize per_session_tracker_ manually since BindInterface is never
     // called on tracker_.
     tracker_->per_session_tracker_ =
         std::make_unique<PerSessionSettingsUserActionTracker>(
-            testing_profile_->GetPrefs());
+            std::move(metrics_service_getter), testing_profile_->GetPrefs());
   }
 
   void TearDown() override {
+    tracker_.reset();
     TestingBrowserProcess::GetGlobal()->SetMetricsService(nullptr);
   }
 

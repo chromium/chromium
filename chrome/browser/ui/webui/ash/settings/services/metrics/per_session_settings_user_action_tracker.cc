@@ -4,11 +4,13 @@
 
 #include "chrome/browser/ui/webui/ash/settings/services/metrics/per_session_settings_user_action_tracker.h"
 
+#include <utility>
+
 #include "ash/constants/ash_login_pref_names.h"
 #include "ash/constants/ash_pref_names.h"
+#include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "components/metrics/metrics_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -44,10 +46,13 @@ void LogDurationMetric(const char* metric_name, base::TimeDelta duration) {
 }  // namespace
 
 PerSessionSettingsUserActionTracker::PerSessionSettingsUserActionTracker(
+    MetricsServiceGetter metrics_service_getter,
     PrefService* profile_pref_service)
-    : metric_start_time_(base::TimeTicks::Now()),
+    : metrics_service_getter_(std::move(metrics_service_getter)),
+      metric_start_time_(base::TimeTicks::Now()),
       window_last_active_timestamp_(base::TimeTicks::Now()),
       profile_pref_service_(profile_pref_service) {
+  CHECK(metrics_service_getter_);
   CHECK(profile_pref_service_, base::NotFatalUntil::M162);
 }
 
@@ -62,16 +67,14 @@ PerSessionSettingsUserActionTracker::~PerSessionSettingsUserActionTracker() {
 }
 
 bool PerSessionSettingsUserActionTracker::HasUserMetricsConsent() {
-  CHECK(g_browser_process, base::NotFatalUntil::M162);
-
-  metrics::MetricsService* metrics_service_ =
-      g_browser_process->metrics_service();
+  ::metrics::MetricsService* metrics_service = metrics_service_getter_.Run();
+  CHECK(metrics_service);
 
   // Metrics consent can be either per-device, ie. the profile that is the owner
   // of the device, or per-user. If no per-user consent is provided, we will use
   // the device settings.
-  if (metrics_service_->GetCurrentUserMetricsChoice().has_value()) {
-    return metrics_service_->GetCurrentUserMetricsChoice().value();
+  if (metrics_service->GetCurrentUserMetricsChoice().has_value()) {
+    return metrics_service->GetCurrentUserMetricsChoice().value();
   }
 
   // Return the device setting.

@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/os_settings_sections.h"
 #include "chrome/browser/ui/webui/ash/settings/search/hierarchy.h"
@@ -14,12 +15,16 @@
 namespace ash::settings {
 
 SettingsUserActionTracker::SettingsUserActionTracker(
+    MetricsServiceGetter metrics_service_getter,
     Hierarchy* hierarchy,
     OsSettingsSections* sections,
     PrefService* profile_pref_service)
-    : hierarchy_(hierarchy),
+    : metrics_service_getter_(std::move(metrics_service_getter)),
+      hierarchy_(hierarchy),
       sections_(sections),
-      profile_pref_service_(profile_pref_service) {}
+      profile_pref_service_(profile_pref_service) {
+  CHECK(metrics_service_getter_);
+}
 
 SettingsUserActionTracker::~SettingsUserActionTracker() = default;
 
@@ -34,7 +39,7 @@ void SettingsUserActionTracker::BindInterface(
 
   // New session started, so create a new per session tracker.
   per_session_tracker_ = std::make_unique<PerSessionSettingsUserActionTracker>(
-      profile_pref_service_);
+      metrics_service_getter_, profile_pref_service_);
 }
 
 void SettingsUserActionTracker::EndCurrentSession() {
