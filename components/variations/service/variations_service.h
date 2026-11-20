@@ -75,6 +75,10 @@ namespace variations {
 class DeviceVariationsRestrictionByPolicyApplicator;
 #endif
 
+// When enabled, VariationsService will retry failed HTTPS seed fetches over
+// HTTP.
+BASE_DECLARE_FEATURE(kVariationsHttpFallback);
+
 // When enabled, runtime mutable field trials from the periodically fetched
 // seeds will be applied to the current session.
 BASE_DECLARE_FEATURE(kVariationsRuntimeMutability);
