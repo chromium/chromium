@@ -1261,7 +1261,7 @@ targets.bundle(
         "cast_receiver_gtests",
     ],
     mixins = [
-        "tangorpro",
+        "panther_on_14",
     ],
 )
 

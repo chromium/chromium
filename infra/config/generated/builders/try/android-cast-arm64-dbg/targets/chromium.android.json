@@ -30,9 +30,9 @@
         },
         "swarming": {
           "dimensions": {
-            "device_os": "AP1A.240505.005",
+            "device_os": "AP2A.240705.004",
             "device_os_type": "userdebug",
-            "device_type": "tangorpro",
+            "device_type": "panther",
             "os": "Android"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -63,9 +63,9 @@
         },
         "swarming": {
           "dimensions": {
-            "device_os": "AP1A.240505.005",
+            "device_os": "AP2A.240705.004",
             "device_os_type": "userdebug",
-            "device_type": "tangorpro",
+            "device_type": "panther",
             "os": "Android"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -96,9 +96,9 @@
         },
         "swarming": {
           "dimensions": {
-            "device_os": "AP1A.240505.005",
+            "device_os": "AP2A.240705.004",
             "device_os_type": "userdebug",
-            "device_type": "tangorpro",
+            "device_type": "panther",
             "os": "Android"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -129,9 +129,9 @@
         },
         "swarming": {
           "dimensions": {
-            "device_os": "AP1A.240505.005",
+            "device_os": "AP2A.240705.004",
             "device_os_type": "userdebug",
-            "device_type": "tangorpro",
+            "device_type": "panther",
             "os": "Android"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -162,9 +162,9 @@
         },
         "swarming": {
           "dimensions": {
-            "device_os": "AP1A.240505.005",
+            "device_os": "AP2A.240705.004",
             "device_os_type": "userdebug",
-            "device_type": "tangorpro",
+            "device_type": "panther",
             "os": "Android"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -195,9 +195,9 @@
         },
         "swarming": {
           "dimensions": {
-            "device_os": "AP1A.240505.005",
+            "device_os": "AP2A.240705.004",
             "device_os_type": "userdebug",
-            "device_type": "tangorpro",
+            "device_type": "panther",
             "os": "Android"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
