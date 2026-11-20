@@ -4,9 +4,12 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
+#import "base/check_op.h"
 #import "base/memory/weak_ptr.h"
+#import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator+subclassing.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_utils.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 
@@ -17,6 +20,27 @@
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser {
   CHECK(browser);
+  if ((self = [super init])) {
+    _baseViewController = viewController;
+    _browser = browser->AsWeakPtr();
+  }
+  return self;
+}
+
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                     regularBrowserOfScene:(SceneState*)sceneState {
+  Browser* browser = GetRegularBrowserForScene(sceneState);
+  if ((self = [super init])) {
+    _baseViewController = viewController;
+    _browser = browser->AsWeakPtr();
+  }
+  return self;
+}
+
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                            regularBrowser:(Browser*)browser {
+  CHECK(browser);
+  CHECK_EQ(browser->type(), Browser::Type::kRegular);
   if ((self = [super init])) {
     _baseViewController = viewController;
     _browser = browser->AsWeakPtr();

@@ -588,6 +588,52 @@ class CheckNoFlakyUnitTest(unittest.TestCase):
         self.assertFalse('ios/path/foo_egtest.mm' in errors[0].message)
 
 
+class CheckChromeCoordinatorSubclassingHeaderNotImportedInHeadersTest(
+    unittest.TestCase
+):
+    """Test the _CheckChromeCoordinatorSubclassingHeaderNotImportedInHeaders
+    presubmit check."""
+
+    def testFindsImportsInHeadersOnly(self):
+        lines = [
+            '#import "ios/chrome/browser/shared/coordinator/chrome_coordinator/'
+            'chrome_coordinator+subclassing.h"',
+            '#import "ios/chrome/browser/shared/coordinator/chrome_coordinator/'
+            'chrome_coordinator.h"',
+            '// See chrome_coordinator+subclassing.h for details.',
+        ]
+        mock_input = PRESUBMIT_test_mocks.MockInputApi()
+        mock_input.files = [
+            PRESUBMIT_test_mocks.MockFile('ios/path/foo_coordinator.h', lines),
+            PRESUBMIT_test_mocks.MockFile('ios/path/foo_coordinator.mm', lines),
+        ]
+        mock_output = PRESUBMIT_test_mocks.MockOutputApi()
+        errors = PRESUBMIT._CheckChromeCoordinatorSubclassingHeaderNotImportedInHeaders(
+            mock_input, mock_output
+        )
+        self.assertEqual(len(errors), 1)
+        self.assertEqual('error', errors[0].type)
+        self.assertIn('ios/path/foo_coordinator.h:1', errors[0].message)
+        self.assertNotIn('ios/path/foo_coordinator.h:2', errors[0].message)
+        self.assertNotIn('ios/path/foo_coordinator.h:3', errors[0].message)
+        self.assertNotIn('foo_coordinator.mm', errors[0].message)
+
+    def testNoErrorsForImplementationFiles(self):
+        lines = [
+            '#import "ios/chrome/browser/shared/coordinator/chrome_coordinator/'
+            'chrome_coordinator+subclassing.h"',
+        ]
+        mock_input = PRESUBMIT_test_mocks.MockInputApi()
+        mock_input.files = [
+            PRESUBMIT_test_mocks.MockFile('ios/path/foo_coordinator.mm', lines),
+        ]
+        mock_output = PRESUBMIT_test_mocks.MockOutputApi()
+        errors = PRESUBMIT._CheckChromeCoordinatorSubclassingHeaderNotImportedInHeaders(
+            mock_input, mock_output
+        )
+        self.assertEqual(errors, [])
+
+
 class CheckSystemColorUsageTest(unittest.TestCase):
     """Test the _CheckUsageOfSystemColors presubmit check."""
 

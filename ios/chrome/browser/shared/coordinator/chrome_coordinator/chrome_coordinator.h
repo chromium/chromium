@@ -14,6 +14,8 @@ class ProfileIOS;
 // Base class for coordinators that manage a UI feature scoped to a Browser.
 // Subclasses must set up their UI and dependencies in `-start` and tear them
 // down in `-stop` (never in `-dealloc`).
+// Subclasses that require a regular Browser can use the additional initializers
+// in chrome_coordinator+subclassing.h.
 // See //ios/architecture/coordinators.md for details.
 NS_SWIFT_UI_ACTOR
 @interface ChromeCoordinator : NSObject

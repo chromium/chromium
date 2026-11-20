@@ -33,6 +33,8 @@ source_set("utils") {
   sources = [
     "browser_list_utils.h",
     "browser_list_utils.mm",
+    "browser_utils.h",
+    "browser_utils.mm",
   ]
 
   deps = [
@@ -48,10 +50,13 @@ source_set("unit_tests") {
   sources = [
     "browser_list_factory_unittest.mm",
     "browser_list_unittest.mm",
+    "browser_utils_unittest.mm",
   ]
   deps = [
     ":browser",
+    ":utils",
     "//base/test:test_support",
+    "//ios/chrome/browser/shared/coordinator/scene/test",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/model/web_state_list",

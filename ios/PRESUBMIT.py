@@ -23,6 +23,10 @@ BOXED_BOOL_PATTERN = r'@\((YES|NO)\)'
 USER_DEFAULTS_PATTERN = r'\[NSUserDefaults standardUserDefaults]'
 UMBRELLA_HEADER_PATTERN = r'#import\s+<([\w]+)\/(?!\1\.h)[^>]+>'
 UNITTEST_FILE_PATTERN = r'_unittests?\.(mm|cc)$'
+CHROME_COORDINATOR_SUBCLASSING_IMPORT_PATTERN = (
+    r'^\s*#\s*(import|include)\s+"ios/chrome/browser/shared/coordinator/'
+    r'chrome_coordinator/chrome_coordinator\+subclassing\.h"'
+)
 SYSTEM_COLORS_PATTERN = (
     r'\[UIColor (?!white|black|clear)[a-z][a-zA-Z]*Color\]|'
     r'UIColor\.(?!white|black|clear)[a-z][a-zA-Z]*Color'
@@ -671,6 +675,44 @@ def _CheckNoFlakyUnitTest(input_api, output_api):
     return [output_api.PresubmitError(error_message)]
 
 
+def _CheckChromeCoordinatorSubclassingHeaderNotImportedInHeaders(
+    input_api, output_api
+):
+    """Checks that chrome_coordinator+subclassing.h is only imported in .mm
+    files.
+
+    The header declares additional ChromeCoordinator designated initializers.
+    If it were imported in a header, every file importing that header would see
+    them, and every ChromeCoordinator subclass with its own designated
+    initializer would then fail to compile under -Wobjc-designated-initializers.
+    """
+    import_regex = input_api.re.compile(
+        CHROME_COORDINATOR_SUBCLASSING_IMPORT_PATTERN
+    )
+    file_filter = lambda f: f.LocalPath().endswith('.h')  # noqa: E731
+
+    errors = []
+    for f in input_api.AffectedSourceFiles(file_filter):
+        for line_num, line in f.ChangedContents():
+            if import_regex.search(line):
+                errors.append('%s:%s' % (f.LocalPath(), line_num))
+
+    if not errors:
+        return []
+    error_message = (
+        '\n'.join(
+            [
+                'chrome_coordinator+subclassing.h must only be imported in .mm '
+                'files, never in headers; see the comment in that header.'
+            ]
+            + errors
+        )
+        + '\n'
+    )
+
+    return [output_api.PresubmitError(error_message)]
+
+
 def _CheckUsageOfSystemColors(input_api, output_api):
     """Checks whether there are forbidden system color used in ios code.
 
@@ -1084,6 +1126,11 @@ def CheckChange(input_api, output_api):
     results.extend(_CheckOmniboxTextInEgtest(input_api, output_api))
     results.extend(_CheckUmbrellaHeaderUsage(input_api, output_api))
     results.extend(_CheckNoFlakyUnitTest(input_api, output_api))
+    results.extend(
+        _CheckChromeCoordinatorSubclassingHeaderNotImportedInHeaders(
+            input_api, output_api
+        )
+    )
     results.extend(_CheckUsageOfSystemColors(input_api, output_api))
     results.extend(_CheckLargeImagesets(input_api, output_api))
     results.extend(_CheckSvgHasUpdatedPng(input_api, output_api))

@@ -1029,12 +1029,10 @@ inline LayoutStateScenePassKey PassKey() {
     return;
   }
 
-  // Sign-in must be performed on the regular browser, even if the snackbar was
-  // presented while the incognito browser was current.
   _undoSignoutCoordinator = [[UndoSignoutCoordinator alloc]
-               initWithBrowser:_regularBrowser.get()
-                      identity:identity
-      presentingViewController:self.activeViewController];
+      initWithBaseViewController:self.activeViewController
+           regularBrowserOfScene:self.sceneState
+                        identity:identity];
   _undoSignoutCoordinator.delegate = self;
   [_undoSignoutCoordinator start];
 }

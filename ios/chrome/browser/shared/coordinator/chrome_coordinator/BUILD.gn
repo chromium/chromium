@@ -4,6 +4,7 @@
 
 source_set("chrome_coordinator") {
   sources = [
+    "chrome_coordinator+subclassing.h",
     "chrome_coordinator.h",
     "chrome_coordinator.mm",
   ]
@@ -12,6 +13,7 @@ source_set("chrome_coordinator") {
     "//base",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser:utils",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/commands",
   ]
@@ -23,5 +25,19 @@ source_set("animated_coordinator") {
     "animated_coordinator.mm",
   ]
   deps = [ ":chrome_coordinator" ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "chrome_coordinator_unittest.mm" ]
+  deps = [
+    ":chrome_coordinator",
+    "//ios/chrome/browser/shared/coordinator/scene/test",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/web/public/test",
+    "//testing/gtest",
+  ]
   frameworks = [ "UIKit.framework" ]
 }
