@@ -4856,6 +4856,12 @@ const FeatureEntry::Choice kPromptAPIToolUseChoices[] = {
      "AIPromptAPIToolUse,OnDeviceModelConversationBackend,"
      "AIApiFoundationalModel:model_version/v4"}};
 
+const FeatureEntry::Choice kPromptAPIThinkingModeChoices[] = {
+    {flags_ui::kGenericExperimentChoiceDefault, "", ""},
+    {flags_ui::kGenericExperimentChoiceEnabled, switches::kEnableFeatures,
+     "AIPromptAPIThinkingMode,OnDeviceModelConversationBackend,"
+     "AIApiFoundationalModel:model_version/v4"}};
+
 const FeatureEntry::Choice kGemma4Choices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
     {flags_ui::kGenericExperimentChoiceEnabled, switches::kEnableFeatures,
@@ -10318,6 +10324,11 @@ const FeatureEntry kFeatureEntries[] = {
     {"prompt-api-sampling-mode", flag_descriptions::kPromptAPISamplingModeName,
      flag_descriptions::kPromptAPISamplingModeDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(blink::features::kAIPromptAPIParams)},
+
+    {"prompt-api-thinking-mode", flag_descriptions::kPromptAPIThinkingModeName,
+     flag_descriptions::kPromptAPIThinkingModeDescription, kOsDesktop,
+     MULTI_VALUE_TYPE(kPromptAPIThinkingModeChoices),
+     flag_descriptions::kAIAPIsLinks},
 
     {"writer-api", flag_descriptions::kWriterAPIName,
      flag_descriptions::kWriterAPIDescription, kOsDesktop,

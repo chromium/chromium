@@ -8423,6 +8423,11 @@
     "expiry_milestone": 170
   },
   {
+    "name": "prompt-api-thinking-mode",
+    "owners": ["//chrome/browser/ai/OWNERS", "builtin-ai-team@google.com"],
+    "expiry_milestone": 170
+  },
+  {
     "name": "prompt-api-tool-use",
     "owners": ["//chrome/browser/ai/OWNERS", "builtin-ai-team@google.com"],
     "expiry_milestone": 170

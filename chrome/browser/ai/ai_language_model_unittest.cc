@@ -3314,11 +3314,61 @@ TEST_F(AILanguageModelTest, ThinkingModeRequiresFeature) {
   }
 }
 
+TEST_F(AILanguageModelTest, ThoughtOutputsRequireFeatureParam) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(blink::features::kAIPromptAPIThinkingMode);
+  EnsureModelIsReady();
+
+  // Hidden thinking effort is allowed when only the base feature is enabled.
+  auto hidden_options =
+      MakeThinkingOptions(ThinkingEffort::kLow, /*include_thoughts=*/false);
+  {
+    TestFuture<blink::mojom::ModelAvailabilityCheckResult> availability;
+    GetAIManagerInterface()->CanCreateLanguageModel(hidden_options.Clone(),
+                                                    availability.GetCallback());
+    EXPECT_EQ(availability.Get(),
+              blink::mojom::ModelAvailabilityCheckResult::kAvailable);
+  }
+  auto hidden_session = CreateSession(std::move(hidden_options));
+  {
+    AITestUtils::TestStreamingResponder responder;
+    hidden_session->Prompt(MakeInput("foo"), /*constraint=*/nullptr,
+                           /*thinking_effort=*/std::nullopt,
+                           responder.BindRemote());
+    EXPECT_TRUE(responder.WaitForCompletion());
+    EXPECT_THAT(responder.thoughts(), testing::IsEmpty());
+    EXPECT_THAT(responder.responses(), ElementsAre("UfooEM"));
+  }
+
+  // Requesting thought outputs is rejected unless `enable_thought_outputs` is
+  // explicitly enabled, regardless of whether a thinking effort is set.
+  for (ThinkingEffort effort : {ThinkingEffort::kLow, ThinkingEffort::kNone}) {
+    SCOPED_TRACE(testing::Message() << effort);
+    auto visible_options =
+        MakeThinkingOptions(effort, /*include_thoughts=*/true);
+    TestFuture<blink::mojom::ModelAvailabilityCheckResult> availability;
+    GetAIManagerInterface()->CanCreateLanguageModel(visible_options.Clone(),
+                                                    availability.GetCallback());
+    EXPECT_EQ(availability.Get(), blink::mojom::ModelAvailabilityCheckResult::
+                                      kUnavailableModelAdaptationNotAvailable);
+
+    TestCreateLanguageModelClient client;
+    GetAIManagerRemote()->CreateLanguageModel(client.BindNewPipeAndPassRemote(),
+                                              std::move(visible_options),
+                                              /*monitor=*/mojo::NullRemote());
+    auto result = client.result().Take();
+    ASSERT_FALSE(result.has_value());
+    EXPECT_EQ(result.error().error,
+              blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
+  }
+}
+
 class AILanguageModelThinkingModeTest : public AILanguageModelTest {
  public:
   AILanguageModelThinkingModeTest() {
-    thinking_mode_feature_list_.InitAndEnableFeature(
-        blink::features::kAIPromptAPIThinkingMode);
+    thinking_mode_feature_list_.InitAndEnableFeatureWithParameters(
+        blink::features::kAIPromptAPIThinkingMode,
+        {{"enable_thought_outputs", "true"}});
   }
 
  protected:
@@ -3400,7 +3450,8 @@ TEST_F(AILanguageModelThinkingModeTest, FeatureParamsSetBudgets) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       blink::features::kAIPromptAPIThinkingMode,
-      {{"thinking_effort_low_tokens", "3"},
+      {{"enable_thought_outputs", "true"},
+       {"thinking_effort_low_tokens", "3"},
        {"thinking_effort_medium_tokens", "6"},
        {"thinking_effort_high_tokens", "11"}});
   const std::pair<ThinkingEffort, const char*> kTestCases[] = {
@@ -3419,7 +3470,8 @@ TEST_F(AILanguageModelThinkingModeTest, ManifestThinkingPresets) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       blink::features::kAIPromptAPIThinkingMode,
-      {{"thinking_effort_low_tokens", "3"},
+      {{"enable_thought_outputs", "true"},
+       {"thinking_effort_low_tokens", "3"},
        {"thinking_effort_medium_tokens", "6"},
        {"thinking_effort_high_tokens", "11"}});
 
@@ -3510,7 +3562,8 @@ TEST_F(AILanguageModelThinkingModeTest, NonPositiveBudgetTurnsThinkingOff) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       blink::features::kAIPromptAPIThinkingMode,
-      {{"thinking_effort_low_tokens", "0"},
+      {{"enable_thought_outputs", "true"},
+       {"thinking_effort_low_tokens", "0"},
        {"thinking_effort_high_tokens", "-1"}});
   for (ThinkingEffort effort : {ThinkingEffort::kLow, ThinkingEffort::kHigh}) {
     SCOPED_TRACE(testing::Message() << effort);
@@ -3547,7 +3600,8 @@ TEST_F(AILanguageModelThinkingModeTest, PromptOverridesThinkingEffort) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       blink::features::kAIPromptAPIThinkingMode,
-      {{"thinking_effort_medium_tokens", "6"},
+      {{"enable_thought_outputs", "true"},
+       {"thinking_effort_medium_tokens", "6"},
        {"thinking_effort_high_tokens", "11"}});
   auto session = CreateSession(
       MakeThinkingOptions(ThinkingEffort::kMedium, /*include_thoughts=*/true));

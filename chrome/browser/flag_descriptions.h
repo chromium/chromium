@@ -5263,6 +5263,11 @@ inline constexpr char kPromptAPISamplingModeDescription[] =
     "When enabled, the model's creativity and predictability can be "
     "configured using high-level sampling modes.";
 
+inline constexpr char kPromptAPIThinkingModeName[] = "Prompt API Thinking Mode";
+inline constexpr char kPromptAPIThinkingModeDescription[] =
+    "Enables configuring thinking effort for the Prompt API to allow "
+    "reasoning before generating a response.";
+
 inline constexpr char kWriterAPIName[] = "Writer API";
 inline constexpr char kWriterAPIDescription[] =
     "Enables the Writer API, allowing you to write a piece of text with a "

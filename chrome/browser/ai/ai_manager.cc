@@ -279,6 +279,19 @@ bool UsesThinkingMode(
          HasThoughtType(options.expected_outputs);
 }
 
+// Returns whether streaming thought outputs to the page is enabled. Gated
+// behind `enable_thought_outputs` separately from hidden thinking effort.
+bool IsThoughtOutputsEnabled() {
+  // Keep `const` (not `constexpr`): `kAIPromptAPIThinkingMode` is `dllimport`
+  // on Windows component builds, so its address is not a constant expression.
+  const base::FeatureParam<bool> kEnableThoughtOutputs{
+      &blink::features::kAIPromptAPIThinkingMode, "enable_thought_outputs",
+      false};
+  return base::FeatureList::IsEnabled(
+             blink::features::kAIPromptAPIThinkingMode) &&
+         kEnableThoughtOutputs.Get();
+}
+
 on_device_model::Capabilities GetExpectedInputCapabilities(
     base::optional_ref<
         const std::vector<blink::mojom::AILanguageModelExpectedPtr>>
@@ -900,10 +913,12 @@ void AIManager::CanCreateLanguageModel(
       }
       input_capabilities.Put(on_device_model::CapabilityFlags::kToolUse);
     }
-    // Check if Thinking Mode is used without the feature flag.
-    if (UsesThinkingMode(*options) &&
-        !base::FeatureList::IsEnabled(
-            blink::features::kAIPromptAPIThinkingMode)) {
+    // Check if Thinking Mode or thought outputs are used without their flags.
+    if ((UsesThinkingMode(*options) &&
+         !base::FeatureList::IsEnabled(
+             blink::features::kAIPromptAPIThinkingMode)) ||
+        (HasThoughtType(options->expected_outputs) &&
+         !IsThoughtOutputsEnabled())) {
       std::move(callback).Run(blink::mojom::ModelAvailabilityCheckResult::
                                   kUnavailableModelAdaptationNotAvailable);
       return;
@@ -1103,10 +1118,12 @@ void AIManager::CreateLanguageModelInternal(
     receivers_.ReportBadMessage("Invalid output types");
     return;
   }
-  // Check if Thinking Mode is used without the feature flag.
-  if (UsesThinkingMode(*options) &&
-      !base::FeatureList::IsEnabled(
-          blink::features::kAIPromptAPIThinkingMode)) {
+  // Check if Thinking Mode or thought outputs are used without their flags.
+  if ((UsesThinkingMode(*options) &&
+       !base::FeatureList::IsEnabled(
+           blink::features::kAIPromptAPIThinkingMode)) ||
+      (HasThoughtType(options->expected_outputs) &&
+       !IsThoughtOutputsEnabled())) {
     mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient>
         client_remote(std::move(client));
     on_device_ai::SendClientRemoteError(
