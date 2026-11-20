@@ -1627,6 +1627,10 @@ public final class ProductionSupportedFlagList {
                 AwFeatures.WEBVIEW_PRESERVE_GOOGLE_ACCOUNT_MIRRORING,
                 "When enabled, preserves Google Account mirroring configuration when WebView"
                         + " adopts a new native WebContents (e.g., for popup windows)."),
+        Flag.baseFeature(
+                NetFeatures.ASSUME_QUIC_BROKEN_UNTIL_VERIFIED_ON_CURRENT_NETWORK,
+                "When enabled, assumes QUIC is broken until a QUIC handshake succeeds on"
+                        + " the current network."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
