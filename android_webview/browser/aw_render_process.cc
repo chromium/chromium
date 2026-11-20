@@ -171,6 +171,16 @@ void AwRenderProcess::RenderProcessExited(
   Cleanup();
 }
 
+void AwRenderProcess::RenderProcessHostDestroyed(RenderProcessHost* host) {
+  DCHECK(host == render_process_host_);
+
+  // An unused/spare or in-process RenderProcessHost can be destroyed without
+  // Cleanup() having deleted |this| in RenderProcessExited().
+  render_process_host_->RemoveObserver(this);
+  render_process_host_->RemoveUserData(kAwRenderProcessKey);
+  // |this| is now deleted.
+}
+
 mojom::Renderer* AwRenderProcess::GetRendererRemote() {
   if (!renderer_remote_) {
     render_process_host_->GetChannel()->GetRemoteAssociatedInterface(

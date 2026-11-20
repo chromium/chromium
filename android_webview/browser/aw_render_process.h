@@ -63,6 +63,8 @@ class AwRenderProcess : public content::RenderProcessHostObserver,
       content::RenderProcessHost* host,
       const content::ChildProcessTerminationInfo& info) override;
 
+  void RenderProcessHostDestroyed(content::RenderProcessHost* host) override;
+
   mojom::Renderer* GetRendererRemote();
 
   base::android::ScopedJavaGlobalRef<jobject> java_obj_;
