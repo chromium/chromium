@@ -596,6 +596,8 @@ chromium-metrics-reviews@google.com.
       summary="the Lens icon in the omnibox popup"/>
   <variant name="IPH_OmniboxEverywhereLensPromo"
       summary="the Lens search feature in Omnibox Everywhere"/>
+  <variant name="IPH_OnStartupSettingsNewLabel"
+      summary="the 'New' label on the On startup settings row"/>
   <variant name="IPH_PageInfo" summary="opening PageInfo"/>
   <variant name="IPH_PageInfoStoreInfo" summary="PageInfoStoreInfo feature"/>
   <variant name="IPH_PageSummaryPdfMenu" summary="the analyze pdf menu item"/>

@@ -32,8 +32,11 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -50,6 +53,8 @@ import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.Lifecycle;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
 import androidx.test.espresso.contrib.RecyclerViewActions;
@@ -109,6 +114,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safety_hub.SafetyHubFragment;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.search_engines.settings.SearchEngineSettings;
+import org.chromium.chrome.browser.settings.startup.OnStartupSettingsFragment;
 import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.subscription_eligibility.SubscriptionEligibilityService;
@@ -135,7 +141,12 @@ import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.browser_ui.accessibility.AccessibilitySettings;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.components.browser_ui.site_settings.SiteSettings;
+import org.chromium.components.browser_ui.styles.NewLabelUtils;
+import org.chromium.components.feature_engagement.EventConstants;
+import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.components.feature_engagement.FeatureProperties;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.feature_engagement.UiFormat;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -221,6 +232,9 @@ public class MainSettingsFragmentTest {
                 mSigninAndHistorySyncActivityLauncher);
         DeveloperSettings.setIsEnabledForTests(true);
         Intents.init();
+
+        // Keep render tests consistent by suppressing "new" labels.
+        TrackerFactory.setTrackerForTests(mTestTracker);
 
         when(mSigninAndHistorySyncActivityLauncher
                         .createBottomSheetSigninCoordinatorAndObserveAddAccountResult(
@@ -1417,6 +1431,98 @@ public class MainSettingsFragmentTest {
         histogramWatcher.assertExpected();
     }
 
+    @Test
+    @SmallTest
+    public void testOnStartupPreference_newLabel() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        when(mTestTracker.isInitialized()).thenReturn(true);
+
+        // Simulate the Feature Engagement Tracker declining to trigger the "New" label.
+        when(mTestTracker.shouldTriggerHelpUi(
+                        eq(FeatureConstants.ON_STARTUP_SETTINGS_NEW_LABEL),
+                        any(FeatureProperties.class)))
+                .thenReturn(false);
+        startSettings();
+
+        // Verify that the preference renders without the "New" label and does not call dismissed.
+        Preference onStartupPref =
+                assertSettingsExists(MainSettings.PREF_ON_STARTUP, OnStartupSettingsFragment.class);
+        String titleWithoutNewLabel = mMainSettings.getString(R.string.on_startup_title);
+        assertEquals(titleWithoutNewLabel, onStartupPref.getTitle().toString());
+        verify(mTestTracker, never()).dismissed(FeatureConstants.ON_STARTUP_SETTINGS_NEW_LABEL);
+
+        // Simulate the Feature Engagement Tracker triggering the inline promo "New" label on the
+        // initial visit and declining on the next resume cycle once the impression cap is reached.
+        mSettingsTestRule.finishActivity();
+        clearInvocations(mTestTracker);
+        when(mTestTracker.isInitialized()).thenReturn(true);
+        when(mTestTracker.shouldTriggerHelpUi(
+                        eq(FeatureConstants.ON_STARTUP_SETTINGS_NEW_LABEL),
+                        argThat(props -> props.getFormat() == UiFormat.INLINE_PROMO)))
+                .thenReturn(true, false);
+        startSettings();
+
+        // Verify that the "New" badge is appended, dismissed() is called immediately, and FET
+        // evaluation happens only once while the fragment stays started.
+        String titleWithNewLabel =
+                NewLabelUtils.withBadge(
+                                mMainSettings.getContext(),
+                                mMainSettings.getString(
+                                        R.string.prefs_new_label, titleWithoutNewLabel))
+                        .toString();
+        Preference clickablePref = mMainSettings.findPreference(MainSettings.PREF_ON_STARTUP);
+        assertEquals(titleWithNewLabel, clickablePref.getTitle().toString());
+        verify(mTestTracker).dismissed(FeatureConstants.ON_STARTUP_SETTINGS_NEW_LABEL);
+        verify(mTestTracker, times(1))
+                .shouldTriggerHelpUi(eq(FeatureConstants.ON_STARTUP_SETTINGS_NEW_LABEL), any());
+        verify(mTestTracker, never()).notifyEvent(EventConstants.SETTINGS_ON_STARTUP_OPENED);
+
+        // Simulate a minimize/resume cycle (onStop -> onStart) and verify FET is re-queried and
+        // clears the "New" badge once it stops triggering.
+        stopAndResumeMainSettings();
+        verify(mTestTracker, times(2))
+                .shouldTriggerHelpUi(eq(FeatureConstants.ON_STARTUP_SETTINGS_NEW_LABEL), any());
+        assertEquals(titleWithoutNewLabel, clickablePref.getTitle().toString());
+
+        // Re-enable FET triggering across a resume cycle, then navigate to
+        // OnStartupSettingsFragment in the detail pane (as Settings Search does) and verify the
+        // badge clears immediately.
+        when(mTestTracker.shouldTriggerHelpUi(
+                        eq(FeatureConstants.ON_STARTUP_SETTINGS_NEW_LABEL),
+                        argThat(props -> props.getFormat() == UiFormat.INLINE_PROMO)))
+                .thenReturn(true);
+        stopAndResumeMainSettings();
+        assertEquals(titleWithNewLabel, clickablePref.getTitle().toString());
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    FragmentManager fm = mMainSettings.getParentFragmentManager();
+                    fm.beginTransaction()
+                            .replace(R.id.preferences_detail, new OnStartupSettingsFragment())
+                            .addToBackStack(MainSettings.RESULT_BACKSTACK)
+                            .commit();
+                    fm.executePendingTransactions();
+                });
+        verify(mTestTracker).notifyEvent(EventConstants.SETTINGS_ON_STARTUP_OPENED);
+        assertEquals(titleWithoutNewLabel, clickablePref.getTitle().toString());
+
+        // Pop the detail fragment, resume with the badge active, click the preference row directly,
+        // and verify the used event fires once via OnStartupSettingsFragment#onStart and the badge
+        // clears in-place.
+        clearInvocations(mTestTracker);
+        when(mTestTracker.isInitialized()).thenReturn(true);
+        when(mTestTracker.shouldTriggerHelpUi(
+                        eq(FeatureConstants.ON_STARTUP_SETTINGS_NEW_LABEL),
+                        argThat(props -> props.getFormat() == UiFormat.INLINE_PROMO)))
+                .thenReturn(true);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mMainSettings.getParentFragmentManager().popBackStackImmediate());
+        stopAndResumeMainSettings();
+        assertEquals(titleWithNewLabel, clickablePref.getTitle().toString());
+        ThreadUtils.runOnUiThreadBlocking(clickablePref::performClick);
+        verify(mTestTracker).notifyEvent(EventConstants.SETTINGS_ON_STARTUP_OPENED);
+        assertEquals(titleWithoutNewLabel, clickablePref.getTitle().toString());
+    }
+
     private void startSettings() {
         mSettingsTestRule.startSettingsActivity();
         mMainSettings = mSettingsTestRule.getFragment();
@@ -1515,5 +1621,18 @@ public class MainSettingsFragmentTest {
     private boolean supportNotificationSettings() {
         return PackageManagerUtils.canResolveActivity(
                 new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS));
+    }
+
+    private void stopAndResumeMainSettings() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    FragmentManager fm = mMainSettings.getParentFragmentManager();
+                    fm.beginTransaction()
+                            .setMaxLifecycle(mMainSettings, Lifecycle.State.CREATED)
+                            .commitNow();
+                    fm.beginTransaction()
+                            .setMaxLifecycle(mMainSettings, Lifecycle.State.RESUMED)
+                            .commitNow();
+                });
     }
 }

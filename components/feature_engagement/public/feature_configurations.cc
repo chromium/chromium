@@ -891,6 +891,30 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
+  if (kIPHOnStartupSettingsNewLabel.name == feature->name) {
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = kAlwaysAvailable;
+
+    // This is a "New" label, we always want it to show and we don't want it to
+    // be blocked by or block any other IPH, or contribute to session rate.
+    config.session_rate = kNoRestrictions;
+    config.session_rate_impact.type = SessionRateImpact::Type::NONE;
+    config.blocked_by.type = BlockedBy::Type::NONE;
+    config.blocking.type = Blocking::Type::NONE;
+
+    // "New" label shows fewer than 6 times in its lifetime.
+    config.trigger = EventConfig(
+        "on_startup_settings_new_label_trigger", Comparator(LESS_THAN, 6),
+        /*window=*/k10YearsInDays, /*storage=*/k10YearsInDays);
+
+    // "New" label never shows once the On startup page has been opened.
+    config.used =
+        EventConfig("settings_on_startup_opened", Comparator(EQUAL, 0),
+                    /*window=*/k10YearsInDays, /*storage=*/k10YearsInDays);
+    return config;
+  }
+
   if (kIPH_BlueBubbleCooldownGroup.name == feature->name) {
     FeatureConfig config;
     config.valid = true;

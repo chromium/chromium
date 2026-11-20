@@ -775,6 +775,8 @@ should be able to be added at any place in this file.
   <variant name="_OmniboxEverywhereLensPromo"
       summary="In product help for the Lens search feature in Omnibox
                Everywhere."/>
+  <variant name="_OnStartupSettingsNewLabel"
+      summary="Enables the 'New' label for On startup settings."/>
   <variant name="_PageInfo" summary="In product help for opening PageInfo."/>
   <variant name="_PageInfoStoreInfo" summary="For PageInfoStoreInfo feature."/>
   <variant name="_PageSummaryPdfMenu"

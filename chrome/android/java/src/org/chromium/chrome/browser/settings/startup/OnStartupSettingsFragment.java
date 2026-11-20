@@ -26,6 +26,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.history.BrowsingHistoryBridge;
 import org.chromium.chrome.browser.multiwindow.SessionStartupPref;
 import org.chromium.chrome.browser.multiwindow.TabbedStartupCoordinator;
@@ -42,6 +43,7 @@ import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -162,6 +164,13 @@ public class OnStartupSettingsFragment extends ChromeBaseSettingsFragment {
                                 TabbedStartupCoordinator.getSessionStartupUrls(prefService));
                     }
                 });
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        TrackerFactory.getTrackerForProfile(getProfile())
+                .notifyEvent(EventConstants.SETTINGS_ON_STARTUP_OPENED);
     }
 
     @Override

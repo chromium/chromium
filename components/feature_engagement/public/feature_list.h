@@ -174,6 +174,8 @@ DEFINE_VARIATION_PARAM(kIPHNewTabPageThemeCustomizationMagicStackFeature,
                        "IPH_NewTabPageThemeCustomizationMagicStack");
 DEFINE_VARIATION_PARAM(kIPHNtpFuseboxAnimationFeature,
                        "IPH_NtpFuseboxAnimation");
+DEFINE_VARIATION_PARAM(kIPHOnStartupSettingsNewLabel,
+                       "IPH_OnStartupSettingsNewLabel");
 DEFINE_VARIATION_PARAM(kIPHPageInfoFeature, "IPH_PageInfo");
 DEFINE_VARIATION_PARAM(kIPHPageInfoStoreInfoFeature, "IPH_PageInfoStoreInfo");
 DEFINE_VARIATION_PARAM(kIPHPageZoomFeature, "IPH_PageZoom");
@@ -758,6 +760,7 @@ inline constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHNewTabPageThemeCustomizationFeature),
         VARIATION_ENTRY(kIPHNewTabPageThemeCustomizationMagicStackFeature),
         VARIATION_ENTRY(kIPHNtpFuseboxAnimationFeature),
+        VARIATION_ENTRY(kIPHOnStartupSettingsNewLabel),
         VARIATION_ENTRY(kIPHPageInfoFeature),
         VARIATION_ENTRY(kIPHPageInfoStoreInfoFeature),
         VARIATION_ENTRY(kIPHPageSummaryPdfMenuFeature),

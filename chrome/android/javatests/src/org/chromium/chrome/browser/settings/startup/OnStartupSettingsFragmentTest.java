@@ -50,6 +50,7 @@ import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.homepage.settings.HomepageSettings;
@@ -69,6 +70,8 @@ import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.widget.containment.ContainedLinearLayout;
+import org.chromium.components.feature_engagement.EventConstants;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.ui.listmenu.ListMenuButton;
@@ -779,6 +782,20 @@ public class OnStartupSettingsFragmentTest {
         } finally {
             actionTester.tearDown();
         }
+    }
+
+    @Test
+    @SmallTest
+    public void testOnStart_notifiesSettingsOnStartupOpenedEvent() {
+        // Register a mock Tracker before launching a fresh OnStartupSettingsFragment instance.
+        Tracker tracker = mock(Tracker.class);
+        TrackerFactory.setTrackerForTests(tracker);
+
+        // Launch a fresh settings activity so the fragment runs its full onStart() lifecycle.
+        startSettingsActivity();
+
+        // Verify that opening OnStartupSettingsFragment records the FET used event.
+        verify(tracker).notifyEvent(EventConstants.SETTINGS_ON_STARTUP_OPENED);
     }
 
     private void setupMockTabWindowManagerWithUrls(List<String> currentWindowTabUrls) {

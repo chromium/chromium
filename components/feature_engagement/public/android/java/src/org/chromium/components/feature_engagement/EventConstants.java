@@ -253,6 +253,9 @@ public final class EventConstants {
     /** Appearance settings page opened. */
     public static final String SETTINGS_APPEARANCE_OPENED = "settings_appearance_opened";
 
+    /** On startup settings page opened. */
+    public static final String SETTINGS_ON_STARTUP_OPENED = "settings_on_startup_opened";
+
     /** Screenshot events */
     public static final String SHARE_SCREENSHOT_SELECTED = "share_screenshot_clicked";
 

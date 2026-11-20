@@ -20,6 +20,8 @@ import android.os.Parcelable;
 import android.provider.Settings;
 import android.view.View;
 
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
@@ -55,6 +57,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
+import org.chromium.chrome.browser.settings.startup.OnStartupSettingsFragment;
 import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
@@ -76,8 +79,13 @@ import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
+import org.chromium.components.browser_ui.styles.NewLabelUtils;
 import org.chromium.components.browser_ui.util.CustomTabLauncher;
 import org.chromium.components.browser_ui.widget.containment.SectionIdProvider;
+import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.components.feature_engagement.FeatureProperties;
+import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.feature_engagement.UiFormat;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.signin.AccountManagerFacade;
@@ -150,6 +158,20 @@ public class MainSettings extends ChromeBaseSettingsFragment
     /** Section of each row once headers are removed (SettingsIaReorganization only). */
     private final Map<String, String> mSectionIdByKey = new HashMap<>();
 
+    private final FragmentManager.FragmentLifecycleCallbacks mDetailFragmentLifecycleCallbacks =
+            new FragmentManager.FragmentLifecycleCallbacks() {
+                @Override
+                public void onFragmentStarted(FragmentManager fm, Fragment f) {
+                    if (f instanceof OnStartupSettingsFragment && isAdded()) {
+                        boolean wasShowingNewLabel = Boolean.TRUE.equals(mShowOnStartupNewLabel);
+                        mShowOnStartupNewLabel = false;
+                        if (wasShowingNewLabel) {
+                            updateOnStartupPreference();
+                        }
+                    }
+                }
+            };
+
     private ManagedPreferenceDelegate mManagedPreferenceDelegate;
     private MonotonicObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
     // TODO(crbug.com/354927682): This should be removed when the snackbar issue is addressed.
@@ -172,6 +194,9 @@ public class MainSettings extends ChromeBaseSettingsFragment
 
     // Saved state of the ListView to restore the scroll offset.
     private @Nullable Parcelable mSavedListState;
+
+    private @Nullable Boolean mShowOnStartupNewLabel;
+    private boolean mWaitingForTrackerInit;
 
     // Avoids using large numbers of dependencies to simplify testing / mocking.
     private static boolean sSkipPreferencesForTesting;
@@ -215,6 +240,10 @@ public class MainSettings extends ChromeBaseSettingsFragment
         super.onCreate(savedInstanceState);
         mPageTitle.set(getString(R.string.settings));
         if (sSkipPreferencesForTesting) return;
+
+        getParentFragmentManager()
+                .registerFragmentLifecycleCallbacks(
+                        mDetailFragmentLifecycleCallbacks, /* recursive= */ false);
 
         SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(getProfile());
         assumeNonNull(signinManager);
@@ -273,6 +302,9 @@ public class MainSettings extends ChromeBaseSettingsFragment
         mCallbackController.destroy();
         if (sSkipPreferencesForTesting) return;
 
+        getParentFragmentManager()
+                .unregisterFragmentLifecycleCallbacks(mDetailFragmentLifecycleCallbacks);
+
         SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(getProfile());
         assumeNonNull(signinManager);
         if (signinManager.isSigninSupported(/* requireUpdatedPlayServices= */ false)) {
@@ -323,6 +355,8 @@ public class MainSettings extends ChromeBaseSettingsFragment
     public void onStop() {
         super.onStop();
         if (sSkipPreferencesForTesting) return;
+
+        mShowOnStartupNewLabel = null;
 
         HomepageManager.getInstance().removeListener(this);
 
@@ -703,11 +737,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
         updateAutofillPreferences();
         updateAddressBarPreference();
         updateAppearancePreference();
-        if (MultiWindowUtils.isOnStartupSettingsUiDesktopEnabled()) {
-            addPreferenceIfAbsent(PREF_ON_STARTUP);
-        } else {
-            removePreferenceIfPresent(PREF_ON_STARTUP);
-        }
+        updateOnStartupPreference();
         addPreferenceIfAbsent(PREF_TABS);
 
         updateHomepagePreference();
@@ -726,6 +756,59 @@ public class MainSettings extends ChromeBaseSettingsFragment
         }
 
         notifyPreferencesUpdated();
+    }
+
+    // Evaluates the "New" label once per onStart()-to-onStop() visibility cycle via Feature
+    // Engagement.
+    private void updateOnStartupPreference() {
+        if (!MultiWindowUtils.isOnStartupSettingsUiDesktopEnabled()) {
+            removePreferenceIfPresent(PREF_ON_STARTUP);
+            return;
+        }
+        Preference onStartupPref = addPreferenceIfAbsent(PREF_ON_STARTUP);
+        Context context = getContext();
+        String title = context.getString(R.string.on_startup_title);
+        if (mShowOnStartupNewLabel == null) {
+            Tracker tracker = TrackerFactory.getTrackerForProfile(getProfile());
+            if (tracker.isInitialized()) {
+                mShowOnStartupNewLabel =
+                        tracker.shouldTriggerHelpUi(
+                                FeatureConstants.ON_STARTUP_SETTINGS_NEW_LABEL,
+                                new FeatureProperties(UiFormat.INLINE_PROMO));
+                if (mShowOnStartupNewLabel) {
+                    tracker.dismissed(FeatureConstants.ON_STARTUP_SETTINGS_NEW_LABEL);
+                }
+            } else if (!mWaitingForTrackerInit) {
+                mWaitingForTrackerInit = true;
+                tracker.addOnInitializedCallback(
+                        mCallbackController.makeCancelable(
+                                success -> {
+                                    mWaitingForTrackerInit = false;
+                                    if (success
+                                            && isAdded()
+                                            && getLifecycle()
+                                                    .getCurrentState()
+                                                    .isAtLeast(Lifecycle.State.STARTED)) {
+                                        updateOnStartupPreference();
+                                    }
+                                }));
+            }
+        }
+        if (Boolean.TRUE.equals(mShowOnStartupNewLabel)) {
+            onStartupPref.setTitle(
+                    NewLabelUtils.withBadge(
+                            context, context.getString(R.string.prefs_new_label, title)));
+            onStartupPref.setOnPreferenceClickListener(
+                    preference -> {
+                        mShowOnStartupNewLabel = false;
+                        preference.setTitle(title);
+                        preference.setOnPreferenceClickListener(null);
+                        return false;
+                    });
+        } else {
+            onStartupPref.setTitle(title);
+            onStartupPref.setOnPreferenceClickListener(null);
+        }
     }
 
     private static boolean showDefaultBrowserSettings(Activity activity) {
