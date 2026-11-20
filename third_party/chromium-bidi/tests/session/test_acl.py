@@ -169,8 +169,6 @@ async def test_acl_default_command_allowed_for_context(websocket, context_id):
         {"method": "browser.getUserContexts", "params": {}},
         {"method": "goog:cdp.sendCommand", "params": {"method": "Browser.getVersion"}},
         {"method": "script.getRealms", "params": {}},
-        {"method": "session.subscribe", "params": {"events": ["log.entryAdded"]}},
-        {"method": "session.unsubscribe", "params": {"events": ["log.entryAdded"]}},
     ],
 )
 async def test_acl_unsupported_command_rejected(websocket, command):

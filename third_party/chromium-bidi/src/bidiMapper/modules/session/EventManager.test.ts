@@ -30,6 +30,7 @@ import {UserContextStorage} from '../browser/UserContextStorage.js';
 import type {BrowsingContextImpl} from '../context/BrowsingContextImpl.js';
 import {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 
+import {AclManager} from './AclManager.js';
 import {EventManager, EventManagerEvents} from './EventManager.js';
 
 const SOME_CONTEXT = 'SOME_CONTEXT';
@@ -54,8 +55,21 @@ const LOG_EVENT: ChromiumBidi.Event = {
   },
 };
 
+const CONTEXT_CREATED_EVENT = {
+  type: 'event',
+  method: ChromiumBidi.BrowsingContext.EventNames.ContextCreated,
+  params: {context: SOME_CONTEXT},
+} as unknown as ChromiumBidi.Event;
+
+const NAVIGATION_COMMITTED_EVENT = {
+  type: 'event',
+  method: ChromiumBidi.BrowsingContext.EventNames.NavigationCommitted,
+  params: {context: SOME_CONTEXT},
+} as unknown as ChromiumBidi.Event;
+
 describe('EventManager', () => {
   let eventManager: EventManager;
+  let aclManager: AclManager;
 
   beforeEach(() => {
     const browsingContextStorage = new BrowsingContextStorage();
@@ -75,7 +89,12 @@ describe('EventManager', () => {
     const userContextStorage = sinon.createStubInstance(UserContextStorage);
     userContextStorage.verifyUserContextIdList.resolves();
 
-    eventManager = new EventManager(browsingContextStorage, userContextStorage);
+    aclManager = new AclManager(browsingContextStorage);
+    eventManager = new EventManager(
+      browsingContextStorage,
+      userContextStorage,
+      aclManager,
+    );
   });
 
   describe('registerPromiseEvent', () => {
@@ -149,6 +168,127 @@ describe('EventManager', () => {
 
       sinon.assert.calledOnce(eventFactory);
       assert.lengthOf(emittedMessages, 2);
+    });
+  });
+
+  describe('in restricted sessions', () => {
+    let emittedEvents: string[];
+
+    beforeEach(() => {
+      aclManager.setEnabled(true);
+      emittedEvents = [];
+      eventManager.on(EventManagerEvents.Event, ({event}) => {
+        emittedEvents.push(event);
+      });
+    });
+
+    it('allows subscribing to modules and sends only events in the ACL', async () => {
+      aclManager.setAcl({
+        default: {
+          events: [ChromiumBidi.BrowsingContext.EventNames.NavigationCommitted],
+        },
+      });
+      await eventManager.subscribe(
+        [ChromiumBidi.BiDiModule.BrowsingContext],
+        [],
+        [],
+        SOME_CHANNEL,
+      );
+
+      eventManager.registerEvent(CONTEXT_CREATED_EVENT, SOME_CONTEXT);
+      eventManager.registerEvent(NAVIGATION_COMMITTED_EVENT, SOME_CONTEXT);
+
+      assert.deepEqual(emittedEvents, [
+        ChromiumBidi.BrowsingContext.EventNames.NavigationCommitted,
+      ]);
+    });
+
+    it('applies ACL changes to existing subscriptions', async () => {
+      await eventManager.subscribe(
+        [ChromiumBidi.BrowsingContext.EventNames.NavigationCommitted],
+        [],
+        [],
+        SOME_CHANNEL,
+      );
+
+      eventManager.registerEvent(NAVIGATION_COMMITTED_EVENT, SOME_CONTEXT);
+      assert.isEmpty(emittedEvents);
+
+      aclManager.setAcl({
+        perNavigable: {
+          [SOME_CONTEXT]: {
+            events: [
+              ChromiumBidi.BrowsingContext.EventNames.NavigationCommitted,
+            ],
+          },
+        },
+      });
+      eventManager.registerEvent(NAVIGATION_COMMITTED_EVENT, SOME_CONTEXT);
+      assert.deepEqual(emittedEvents, [
+        ChromiumBidi.BrowsingContext.EventNames.NavigationCommitted,
+      ]);
+    });
+
+    it('sends events without a browsing context only if the default ACL allows them', async () => {
+      const event = ChromiumBidi.BrowsingContext.EventNames.NavigationCommitted;
+      await eventManager.subscribe([event], [], [], SOME_CHANNEL);
+
+      aclManager.setAcl({perNavigable: {[SOME_CONTEXT]: {events: [event]}}});
+      eventManager.registerGlobalEvent(NAVIGATION_COMMITTED_EVENT);
+      assert.isEmpty(emittedEvents);
+
+      aclManager.setAcl({default: {events: [event]}});
+      eventManager.registerGlobalEvent(NAVIGATION_COMMITTED_EVENT);
+      assert.deepEqual(emittedEvents, [event]);
+    });
+
+    it('does not evaluate lazy events that the ACL withholds', async () => {
+      await eventManager.subscribe(
+        [ChromiumBidi.Log.EventNames.LogEntryAdded],
+        [],
+        [],
+        SOME_CHANNEL,
+      );
+      const eventFactory = sinon.spy((): Promise<Result<ChromiumBidi.Event>> =>
+        Promise.resolve({kind: 'success', value: LOG_EVENT}),
+      );
+
+      eventManager.registerPromiseEvent(
+        eventFactory,
+        SOME_CONTEXT,
+        ChromiumBidi.Log.EventNames.LogEntryAdded,
+      );
+
+      sinon.assert.notCalled(eventFactory);
+      assert.isEmpty(emittedEvents);
+    });
+
+    it('does not replay buffered events that the ACL withheld', async () => {
+      eventManager.registerEvent(LOG_EVENT, SOME_CONTEXT);
+      await eventManager.subscribe(
+        [ChromiumBidi.Log.EventNames.LogEntryAdded],
+        [],
+        [],
+        SOME_CHANNEL,
+      );
+      assert.isEmpty(emittedEvents);
+
+      aclManager.setAcl({
+        default: {events: [ChromiumBidi.Log.EventNames.LogEntryAdded]},
+      });
+      await eventManager.subscribe(
+        [ChromiumBidi.Log.EventNames.LogEntryAdded],
+        [],
+        [],
+        SOME_CHANNEL,
+      );
+      assert.isEmpty(emittedEvents);
+
+      // New events are sent once the ACL allows them, once per channel.
+      eventManager.registerEvent(LOG_EVENT, SOME_CONTEXT);
+      assert.deepEqual(emittedEvents, [
+        ChromiumBidi.Log.EventNames.LogEntryAdded,
+      ]);
     });
   });
 });

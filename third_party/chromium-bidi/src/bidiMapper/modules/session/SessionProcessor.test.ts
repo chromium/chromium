@@ -99,7 +99,7 @@ describe('SessionProcessor', () => {
       assert.notProperty(result.capabilities, 'goog:acl');
       assert.isTrue(aclManager.isEnabled());
       assert.deepEqual(aclManager.getAcl(), {
-        default: {commands: []},
+        default: {commands: [], events: []},
         perNavigable: {},
       });
       assert.isFalse(aclManager.isCommandAllowed('browsingContext.getTree'));
@@ -120,7 +120,7 @@ describe('SessionProcessor', () => {
       assert.notProperty(result.capabilities, 'goog:acl');
       assert.isTrue(aclManager.isEnabled());
       assert.deepEqual(aclManager.getAcl(), {
-        default: {commands: []},
+        default: {commands: [], events: []},
         perNavigable: {},
       });
       assert.isFalse(aclManager.isCommandAllowed('browsingContext.getTree'));

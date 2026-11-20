@@ -37,6 +37,7 @@ import {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 import {NetworkStorage} from '../network/NetworkStorage.js';
 import {PreloadScriptStorage} from '../script/PreloadScriptStorage.js';
 import {RealmStorage} from '../script/RealmStorage.js';
+import {AclManager} from '../session/AclManager.js';
 import {EventManager} from '../session/EventManager.js';
 import type {SpeculationProcessor} from '../speculation/SpeculationProcessor.js';
 
@@ -205,6 +206,7 @@ describe('CdpTargetManager', () => {
     const eventManager = new EventManager(
       browsingContextStorage,
       userContextStorage,
+      new AclManager(browsingContextStorage),
     );
     new CdpTargetManager(
       connection,

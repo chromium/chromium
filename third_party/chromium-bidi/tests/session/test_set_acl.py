@@ -56,9 +56,9 @@ async def test_set_acl_returns_acl_in_effect(websocket, context_id):
     # Nothing is refused, so there is no `denied`.
     assert result == {
         "acl": {
-            "default": {"commands": ["browsingContext.getTree"]},
+            "default": {"commands": ["browsingContext.getTree"], "events": []},
             "perNavigable": {
-                context_id: {"commands": ["browsingContext.navigate"]},
+                context_id: {"commands": ["browsingContext.navigate"], "events": []},
             },
         }
     }
@@ -67,9 +67,9 @@ async def test_set_acl_returns_acl_in_effect(websocket, context_id):
 @pytest.mark.asyncio
 async def test_set_acl_is_idempotent(websocket, context_id):
     acl = {
-        "default": {"commands": ["browsingContext.getTree"]},
+        "default": {"commands": ["browsingContext.getTree"], "events": []},
         "perNavigable": {
-            context_id: {"commands": ["browsingContext.navigate"]},
+            context_id: {"commands": ["browsingContext.navigate"], "events": []},
         },
     }
 
@@ -102,9 +102,9 @@ async def test_set_acl_grants_and_retracts_access(websocket):
     }
 
     acl = {
-        "default": {"commands": ["browsingContext.getTree"]},
+        "default": {"commands": ["browsingContext.getTree"], "events": []},
         "perNavigable": {
-            context_id: {"commands": ["browsingContext.navigate"]},
+            context_id: {"commands": ["browsingContext.navigate"], "events": []},
         },
     }
     assert await set_acl(websocket, {"acl": acl, "reason": REASON}) == {"acl": acl}
@@ -117,7 +117,7 @@ async def test_set_acl_grants_and_retracts_access(websocket):
     )
     assert result == {
         "acl": {
-            "default": {"commands": ["browsingContext.getTree"]},
+            "default": {"commands": ["browsingContext.getTree"], "events": []},
             "perNavigable": {},
         }
     }

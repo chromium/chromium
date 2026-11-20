@@ -136,6 +136,7 @@ export namespace GoogCdp {
 export namespace GoogSession {
   export type AclEntry = {
     commands?: [...string[]];
+    events?: [...string[]];
   };
 }
 export namespace GoogSession {

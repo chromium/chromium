@@ -31,6 +31,7 @@ import {OutgoingMessage} from '../../OutgoingMessage.js';
 import type {UserContextStorage} from '../browser/UserContextStorage.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 
+import type {AclManager} from './AclManager.js';
 import {assertSupportedEvent} from './events.js';
 import {
   difference,
@@ -120,7 +121,8 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
   /**
    * Maps `eventName` + `browsingContext` to  Map of goog:channel to last id.
    * Used to avoid sending duplicated events when user
-   * subscribes -> unsubscribes -> subscribes.
+   * subscribes -> unsubscribes -> subscribes, and to not replay events that the
+   * session ACL withheld.
    */
   #lastMessageSent = new Map<string, Map<string | null, number>>();
   #subscriptionManager: SubscriptionManager;
@@ -134,14 +136,17 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
   >;
 
   #userContextStorage: UserContextStorage;
+  #aclManager: AclManager;
 
   constructor(
     browsingContextStorage: BrowsingContextStorage,
     userContextStorage: UserContextStorage,
+    aclManager: AclManager,
   ) {
     super();
     this.#browsingContextStorage = browsingContextStorage;
     this.#userContextStorage = userContextStorage;
+    this.#aclManager = aclManager;
     this.#subscriptionManager = new SubscriptionManager(browsingContextStorage);
     this.#subscribeHooks = new DefaultMap(() => []);
   }
@@ -211,14 +216,7 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
     this.#bufferEvent(eventWrapper, eventName);
     // Send events to channels in the subscription priority.
     for (const googChannel of sortedGoogChannels) {
-      this.emit(EventManagerEvents.Event, {
-        message: OutgoingMessage.createFromPromise(
-          eventWrapper.event,
-          googChannel,
-        ),
-        event: eventName,
-      });
-      this.#markEventSent(eventWrapper, googChannel, eventName);
+      this.#sendEvent(eventWrapper, eventName, googChannel);
     }
   }
 
@@ -236,14 +234,7 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
     this.#bufferEvent(eventWrapper, eventName);
     // Send events to goog:channels in the subscription priority.
     for (const googChannel of sortedGoogChannels) {
-      this.emit(EventManagerEvents.Event, {
-        message: OutgoingMessage.createFromPromise(
-          eventWrapper.event,
-          googChannel,
-        ),
-        event: eventName,
-      });
-      this.#markEventSent(eventWrapper, googChannel, eventName);
+      this.#sendEvent(eventWrapper, eventName, googChannel);
     }
   }
 
@@ -314,14 +305,7 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
           googChannel,
         )) {
           // The order of the events is important.
-          this.emit(EventManagerEvents.Event, {
-            message: OutgoingMessage.createFromPromise(
-              eventWrapper.event,
-              googChannel,
-            ),
-            event: eventName,
-          });
-          this.#markEventSent(eventWrapper, googChannel, eventName);
+          this.#sendEvent(eventWrapper, eventName, googChannel);
         }
       }
     }
@@ -369,6 +353,30 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
 
       this.#eventBuffers.delete(bufferMapKey);
     }
+  }
+
+  /**
+   * Sends the event to `googChannel`, or silently skips it if the session ACL
+   * doesn't allow it. The ACL is checked right before sending, so ACL changes
+   * apply to existing subscriptions.
+   */
+  #sendEvent(
+    eventWrapper: EventWrapper,
+    eventName: ChromiumBidi.EventNames,
+    googChannel: GoogChannel,
+  ) {
+    if (this.#aclManager.isEventAllowed(eventName, eventWrapper.contextId)) {
+      this.emit(EventManagerEvents.Event, {
+        message: OutgoingMessage.createFromPromise(
+          eventWrapper.event,
+          googChannel,
+        ),
+        event: eventName,
+      });
+    }
+    // Mark skipped events as sent too, so a later ACL grant doesn't replay
+    // buffered events already withheld from this channel.
+    this.#markEventSent(eventWrapper, googChannel, eventName);
   }
 
   /**

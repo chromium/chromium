@@ -16,9 +16,9 @@
  */
 
 import {
+  ChromiumBidi,
   UnsupportedOperationException,
   type BrowsingContext,
-  type ChromiumBidi,
   type CommandData,
   type GoogSession,
 } from '../../../protocol/protocol.js';
@@ -136,20 +136,44 @@ export const SUPPORTED_ACL_COMMANDS: ReadonlySet<string> = new Set<string>(
   SUPPORTED_ACL_COMMAND_RULES.keys(),
 );
 
-/** Session commands that are always allowed without an ACL grant. */
+/**
+ * Session commands that are always allowed without an ACL grant. Clients can
+ * subscribe to any event, but get only the events the ACL allows.
+ */
 export const ACL_EXEMPT_COMMANDS: ReadonlySet<string> = new Set([
   // keep-sorted start
   'goog:session.setAcl',
   'session.end',
   'session.new',
   'session.status',
+  'session.subscribe',
+  'session.unsubscribe',
   // keep-sorted end
 ] satisfies readonly ChromiumBidi.Command['method'][]);
 
 /**
- * Manages session ACL configuration (global default and per top-level navigable)
- * and checks whether commands are allowed. ACL changes requested by the client
- * go through the embedder's handler, one at a time.
+ * Events that can appear in an ACL. Each event has to be reviewed for data
+ * leaks (e.g. URLs of other tabs, download file names, dialog text) before it's
+ * added.
+ */
+export const SUPPORTED_ACL_EVENTS: ReadonlySet<string> = new Set<string>([
+  // keep-sorted start
+  ChromiumBidi.BrowsingContext.EventNames.ContextCreated,
+  ChromiumBidi.BrowsingContext.EventNames.ContextDestroyed,
+  ChromiumBidi.BrowsingContext.EventNames.FragmentNavigated,
+  ChromiumBidi.BrowsingContext.EventNames.HistoryUpdated,
+  ChromiumBidi.BrowsingContext.EventNames.NavigationCommitted,
+  ChromiumBidi.BrowsingContext.EventNames.UserPromptClosed,
+  ChromiumBidi.BrowsingContext.EventNames.UserPromptOpened,
+  ChromiumBidi.Log.EventNames.LogEntryAdded,
+  // keep-sorted end
+]);
+
+/**
+ * Manages session ACL configuration (global default and per top-level navigable),
+ * and checks whether commands are allowed and events can be delivered. ACL
+ * changes requested by the client go through the embedder's handler, one at a
+ * time.
  */
 export class AclManager {
   readonly #browsingContextStorage: BrowsingContextStorage;
@@ -158,6 +182,8 @@ export class AclManager {
   #enabled = false;
   #defaultCommands = new Set<string>();
   #navigableCommands = new WeakMap<BrowsingContextImpl, Set<string>>();
+  #defaultEvents = new Set<string>();
+  #navigableEvents = new WeakMap<BrowsingContextImpl, Set<string>>();
 
   constructor(
     browsingContextStorage: BrowsingContextStorage,
@@ -205,8 +231,9 @@ export class AclManager {
   }
 
   /**
-   * Configures the session ACL. Unsupported commands, invalid entries, and
-   * unknown or non-top-level navigables are ignored (granting no access).
+   * Configures the session ACL. Unsupported commands and events, invalid
+   * entries, and unknown or non-top-level navigables are ignored (granting no
+   * access).
    *
    * @returns The actually saved ACL configuration.
    */
@@ -216,21 +243,24 @@ export class AclManager {
     const normalizedAcl = this.#normalizeAcl(acl);
     this.#defaultCommands = new Set(normalizedAcl.default?.commands);
     this.#navigableCommands = new WeakMap();
+    this.#defaultEvents = new Set(normalizedAcl.default?.events);
+    this.#navigableEvents = new WeakMap();
     for (const [contextId, entry] of Object.entries(
       normalizedAcl.perNavigable ?? {},
     )) {
       // `#normalizeAcl` keeps only known top-level navigables.
       const context = this.#browsingContextStorage.getContext(contextId);
       this.#navigableCommands.set(context, new Set(entry.commands));
+      this.#navigableEvents.set(context, new Set(entry.events));
     }
 
     return this.getAcl();
   }
 
   /**
-   * Returns `acl` without unsupported commands, invalid entries, and unknown
-   * or non-top-level navigables, i.e. what `setAcl` would store, without
-   * storing it.
+   * Returns `acl` without unsupported commands and events, invalid entries, and
+   * unknown or non-top-level navigables, i.e. what `setAcl` would store,
+   * without storing it.
    */
   #normalizeAcl(acl: unknown): AclConfig {
     const aclConfig = acl as AclConfig | null | undefined;
@@ -242,6 +272,7 @@ export class AclManager {
       if (context?.isTopLevelContext()) {
         perNavigable[contextId] = {
           commands: Array.from(this.#extractSupportedCommands(entry)),
+          events: Array.from(this.#extractSupportedEvents(entry)),
         };
       }
     }
@@ -250,6 +281,7 @@ export class AclManager {
         commands: Array.from(
           this.#extractSupportedCommands(aclConfig?.default),
         ),
+        events: Array.from(this.#extractSupportedEvents(aclConfig?.default)),
       },
       perNavigable,
     };
@@ -267,6 +299,18 @@ export class AclManager {
     return commands;
   }
 
+  #extractSupportedEvents(entry: AclEntry | undefined | null): Set<string> {
+    const events = new Set<string>();
+    if (Array.isArray(entry?.events)) {
+      for (const event of entry.events) {
+        if (SUPPORTED_ACL_EVENTS.has(event)) {
+          events.add(event);
+        }
+      }
+    }
+    return events;
+  }
+
   /**
    * Returns the current full ACL configuration (including `default` and
    * `perNavigable`).
@@ -275,11 +319,13 @@ export class AclManager {
     const entries: [BrowsingContext.BrowsingContext, AclEntry][] = [];
     for (const context of this.#browsingContextStorage.getTopLevelContexts()) {
       const commands = this.#navigableCommands.get(context);
-      if (commands !== undefined) {
+      const events = this.#navigableEvents.get(context);
+      if (commands !== undefined || events !== undefined) {
         entries.push([
           context.id,
           {
-            commands: Array.from(commands),
+            commands: Array.from(commands ?? []),
+            events: Array.from(events ?? []),
           },
         ]);
       }
@@ -288,6 +334,7 @@ export class AclManager {
     return {
       default: {
         commands: Array.from(this.#defaultCommands),
+        events: Array.from(this.#defaultEvents),
       },
       perNavigable: Object.fromEntries(entries),
     };
@@ -322,6 +369,38 @@ export class AclManager {
       }
     }
     return false;
+  }
+
+  /**
+   * Checks whether `eventName` can be delivered for `contextId`'s top-level
+   * navigable, or session-wide for events without a browsing context (`null`).
+   * Always returns `true` when ACL enforcement is disabled.
+   */
+  isEventAllowed(
+    eventName: string,
+    contextId: BrowsingContext.BrowsingContext | null,
+  ): boolean {
+    if (!this.#enabled) {
+      return true;
+    }
+    if (this.#defaultEvents.has(eventName)) {
+      return true;
+    }
+    if (contextId === null) {
+      // Only `default` covers events that don't belong to a navigable.
+      return false;
+    }
+    const topLevelContextId =
+      this.#browsingContextStorage.findTopLevelContextId(contextId);
+    if (topLevelContextId === null) {
+      return false;
+    }
+    const topLevelContext =
+      this.#browsingContextStorage.findContext(topLevelContextId);
+    if (topLevelContext === undefined) {
+      return false;
+    }
+    return this.#navigableEvents.get(topLevelContext)?.has(eventName) ?? false;
   }
 
   /** Throws if the ACL disallows `command` with the given unvalidated `params`. */

@@ -34,6 +34,7 @@ import {UserContextStorage} from '../browser/UserContextStorage.js';
 import type {CdpTarget} from '../cdp/CdpTarget.js';
 import type {BrowsingContextImpl} from '../context/BrowsingContextImpl.js';
 import {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
+import {AclManager} from '../session/AclManager.js';
 import {EventManager, EventManagerEvents} from '../session/EventManager.js';
 
 import {
@@ -92,7 +93,11 @@ describe('NetworkStorage', () => {
     const userContextStorage = new UserContextStorage(cdpClient);
     // We need to add it the storage to emit properly
     browsingContextStorage.addContext(browsingContext);
-    eventManager = new EventManager(browsingContextStorage, userContextStorage);
+    eventManager = new EventManager(
+      browsingContextStorage,
+      userContextStorage,
+      new AclManager(browsingContextStorage),
+    );
     processingQueue = new ProcessingQueue<OutgoingMessage>(
       async ({message}) => {
         if (message.type === 'event') {

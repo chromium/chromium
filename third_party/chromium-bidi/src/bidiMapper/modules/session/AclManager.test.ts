@@ -21,6 +21,7 @@ import {assert} from 'chai';
 import sinon from 'sinon';
 
 import {
+  ChromiumBidi,
   type GoogSession,
   UnsupportedOperationException,
 } from '../../../protocol/protocol.js';
@@ -32,6 +33,7 @@ import {
   ACL_EXEMPT_COMMANDS,
   AclManager,
   SUPPORTED_ACL_COMMANDS,
+  SUPPORTED_ACL_EVENTS,
   type UpdateAclHandler,
 } from './AclManager.js';
 
@@ -102,7 +104,7 @@ describe('AclManager', () => {
     aclManager.setEnabled(true);
     const saved = aclManager.setAcl({});
     assert.deepEqual(saved, {
-      default: {commands: []},
+      default: {commands: [], events: []},
       perNavigable: {},
     });
     assert.deepEqual(aclManager.getAcl(), saved);
@@ -128,6 +130,7 @@ describe('AclManager', () => {
     assert.deepEqual(saved, {
       default: {
         commands: ['browsingContext.getTree', 'browsingContext.create'],
+        events: [],
       },
       perNavigable: {},
     });
@@ -167,10 +170,12 @@ describe('AclManager', () => {
     assert.deepEqual(saved, {
       default: {
         commands: ['browsingContext.getTree'],
+        events: [],
       },
       perNavigable: {
         [TOP_LEVEL_CONTEXT_1]: {
           commands: ['browsingContext.navigate', 'input.performActions'],
+          events: [],
         },
       },
     });
@@ -286,13 +291,16 @@ describe('AclManager', () => {
     assert.deepEqual(saved, {
       default: {
         commands: ['browsingContext.getTree'],
+        events: [],
       },
       perNavigable: {
         [TOP_LEVEL_CONTEXT_1]: {
           commands: ['browsingContext.navigate'],
+          events: [],
         },
         [TOP_LEVEL_CONTEXT_2]: {
           commands: [],
+          events: [],
         },
       },
     });
@@ -341,10 +349,12 @@ describe('AclManager', () => {
     assert.deepEqual(updated, {
       default: {
         commands: ['browsingContext.create'],
+        events: [],
       },
       perNavigable: {
         [TOP_LEVEL_CONTEXT_2]: {
           commands: ['input.performActions'],
+          events: [],
         },
       },
     });
@@ -391,10 +401,12 @@ describe('AclManager', () => {
     assert.deepEqual(aclManager.getAcl(), {
       default: {
         commands: ['browsingContext.getTree'],
+        events: [],
       },
       perNavigable: {
         [TOP_LEVEL_CONTEXT_2]: {
           commands: ['input.performActions'],
+          events: [],
         },
       },
     });
@@ -417,10 +429,12 @@ describe('AclManager', () => {
     assert.deepEqual(saved, {
       default: {
         commands: allSupportedCommands,
+        events: [],
       },
       perNavigable: {
         [TOP_LEVEL_CONTEXT_1]: {
           commands: allSupportedCommands,
+          events: [],
         },
       },
     });
@@ -441,7 +455,7 @@ describe('AclManager', () => {
     ]) {
       const result = aclManager.setAcl(invalidAcl);
       const expected = {
-        default: {commands: []},
+        default: {commands: [], events: []},
         perNavigable: {},
       };
       assert.deepEqual(result, expected);
@@ -463,13 +477,16 @@ describe('AclManager', () => {
     assert.deepEqual(saved, {
       default: {
         commands: [],
+        events: [],
       },
       perNavigable: {
         [TOP_LEVEL_CONTEXT_1]: {
           commands: [],
+          events: [],
         },
         [TOP_LEVEL_CONTEXT_2]: {
           commands: [],
+          events: [],
         },
       },
     });
@@ -507,6 +524,8 @@ describe('AclManager', () => {
         'session.end',
         'session.new',
         'session.status',
+        'session.subscribe',
+        'session.unsubscribe',
       ];
       assert.sameMembers([...ACL_EXEMPT_COMMANDS], expectedExemptCommands);
       for (const command of expectedExemptCommands) {
@@ -525,8 +544,6 @@ describe('AclManager', () => {
         'network.addIntercept',
         'goog:cdp.sendCommand',
         'script.callFunction',
-        'session.subscribe',
-        'session.unsubscribe',
         'unknown.command',
       ]) {
         assert.throws(
@@ -825,14 +842,141 @@ describe('AclManager', () => {
     });
   });
 
+  describe('isEventAllowed', () => {
+    const NAVIGATION_COMMITTED =
+      ChromiumBidi.BrowsingContext.EventNames.NavigationCommitted;
+    const LOG_ENTRY_ADDED = ChromiumBidi.Log.EventNames.LogEntryAdded;
+
+    it('allows any event when disabled', () => {
+      aclManager.setAcl({});
+      assert.isTrue(
+        aclManager.isEventAllowed(
+          ChromiumBidi.BrowsingContext.EventNames.ContextCreated,
+          TOP_LEVEL_CONTEXT_1,
+        ),
+      );
+      assert.isTrue(
+        aclManager.isEventAllowed(
+          ChromiumBidi.Network.EventNames.BeforeRequestSent,
+          null,
+        ),
+      );
+    });
+
+    it('supports only the reviewed events', () => {
+      // Spelled out, so adding an event to the ACL needs a test update.
+      assert.sameMembers(
+        [...SUPPORTED_ACL_EVENTS],
+        [
+          ChromiumBidi.BrowsingContext.EventNames.ContextCreated,
+          ChromiumBidi.BrowsingContext.EventNames.ContextDestroyed,
+          ChromiumBidi.BrowsingContext.EventNames.FragmentNavigated,
+          ChromiumBidi.BrowsingContext.EventNames.HistoryUpdated,
+          ChromiumBidi.BrowsingContext.EventNames.NavigationCommitted,
+          ChromiumBidi.BrowsingContext.EventNames.UserPromptClosed,
+          ChromiumBidi.BrowsingContext.EventNames.UserPromptOpened,
+          ChromiumBidi.Log.EventNames.LogEntryAdded,
+        ],
+      );
+    });
+
+    it('allows default events for every navigable and without one', () => {
+      aclManager.setEnabled(true);
+      aclManager.setAcl({default: {events: [NAVIGATION_COMMITTED]}});
+
+      for (const contextId of [TOP_LEVEL_CONTEXT_1, CHILD_CONTEXT, null]) {
+        assert.isTrue(
+          aclManager.isEventAllowed(NAVIGATION_COMMITTED, contextId),
+        );
+        assert.isFalse(aclManager.isEventAllowed(LOG_ENTRY_ADDED, contextId));
+      }
+    });
+
+    it('allows perNavigable events only for that navigable and its children', () => {
+      aclManager.setEnabled(true);
+      aclManager.setAcl({
+        perNavigable: {[TOP_LEVEL_CONTEXT_1]: {events: [LOG_ENTRY_ADDED]}},
+      });
+
+      assert.isTrue(
+        aclManager.isEventAllowed(LOG_ENTRY_ADDED, TOP_LEVEL_CONTEXT_1),
+      );
+      assert.isTrue(
+        aclManager.isEventAllowed(LOG_ENTRY_ADDED, GRANDCHILD_CONTEXT),
+      );
+      assert.isFalse(
+        aclManager.isEventAllowed(LOG_ENTRY_ADDED, TOP_LEVEL_CONTEXT_2),
+      );
+      assert.isFalse(aclManager.isEventAllowed(LOG_ENTRY_ADDED, null));
+      assert.isFalse(
+        aclManager.isEventAllowed(LOG_ENTRY_ADDED, UNKNOWN_CONTEXT),
+      );
+      assert.deepEqual(aclManager.getAcl(), {
+        default: {commands: [], events: []},
+        perNavigable: {
+          [TOP_LEVEL_CONTEXT_1]: {commands: [], events: [LOG_ENTRY_ADDED]},
+        },
+      });
+    });
+
+    it('revokes events that a new ACL no longer contains', () => {
+      aclManager.setEnabled(true);
+      aclManager.setAcl({
+        default: {events: [NAVIGATION_COMMITTED]},
+        perNavigable: {[TOP_LEVEL_CONTEXT_1]: {events: [LOG_ENTRY_ADDED]}},
+      });
+      assert.isTrue(aclManager.isEventAllowed(NAVIGATION_COMMITTED, null));
+      assert.isTrue(
+        aclManager.isEventAllowed(LOG_ENTRY_ADDED, TOP_LEVEL_CONTEXT_1),
+      );
+
+      aclManager.setAcl({perNavigable: {[TOP_LEVEL_CONTEXT_2]: {}}});
+
+      assert.isFalse(aclManager.isEventAllowed(NAVIGATION_COMMITTED, null));
+      assert.isFalse(
+        aclManager.isEventAllowed(LOG_ENTRY_ADDED, TOP_LEVEL_CONTEXT_1),
+      );
+    });
+
+    it('ignores unsupported events', () => {
+      aclManager.setEnabled(true);
+      const saved = aclManager.setAcl({
+        default: {
+          events: [
+            NAVIGATION_COMMITTED,
+            ChromiumBidi.Network.EventNames.BeforeRequestSent,
+            'goog:cdp.Page.frameNavigated',
+          ],
+        },
+      });
+
+      assert.deepEqual(saved.default?.events, [NAVIGATION_COMMITTED]);
+      assert.isFalse(
+        aclManager.isEventAllowed(
+          ChromiumBidi.Network.EventNames.BeforeRequestSent,
+          TOP_LEVEL_CONTEXT_1,
+        ),
+      );
+      assert.isFalse(
+        aclManager.isEventAllowed(
+          'goog:cdp.Page.frameNavigated',
+          TOP_LEVEL_CONTEXT_1,
+        ),
+      );
+    });
+  });
+
   describe('updateAcl', () => {
     const GET_TREE_ACL = {
-      default: {commands: ['browsingContext.getTree']},
+      default: {commands: ['browsingContext.getTree'], events: []},
     };
     const NAVIGATE_ACL = {
-      default: {commands: ['browsingContext.getTree']},
+      default: {commands: ['browsingContext.getTree'], events: []},
       perNavigable: {
-        [TOP_LEVEL_CONTEXT_1]: {commands: ['browsingContext.navigate']},
+        [TOP_LEVEL_CONTEXT_1]: {
+          commands: ['browsingContext.navigate'],
+          events: [],
+        },
       },
     };
     const REASON = 'Fill in the checkout form.';
@@ -984,6 +1128,7 @@ describe('AclManager', () => {
         acl: {
           default: {
             commands: ['browsingContext.getTree', 'browsingContext.close'],
+            events: [],
           },
           perNavigable: {},
         },
@@ -1049,7 +1194,10 @@ describe('AclManager', () => {
       decision.resolve({acl: NAVIGATE_ACL});
 
       assert.deepEqual(await first, {acl: NAVIGATE_ACL});
-      const emptyAcl = {default: {commands: []}, perNavigable: {}};
+      const emptyAcl = {
+        default: {commands: [], events: []},
+        perNavigable: {},
+      };
       assert.deepEqual(await second, {acl: emptyAcl});
       sinon.assert.calledTwice(updateAclHandler);
       sinon.assert.calledWithExactly(

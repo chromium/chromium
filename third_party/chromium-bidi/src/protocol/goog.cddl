@@ -156,10 +156,11 @@ goog_cdp.EventParameters = {
 
 ; `goog:session` module: restricted sessions with an access control list (ACL).
 
-; Commands allowed for a navigable or for the whole session. Unsupported
-; commands grant nothing.
+; Commands allowed, and events delivered, for a navigable or for the whole
+; session. Unsupported commands and events grant nothing.
 goog_session.AclEntry = {
   ? commands: [* text],
+  ? events: [* text],
 }
 
 ; Session-wide default entry and entries per top-level navigable. Unknown or

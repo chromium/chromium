@@ -79,8 +79,17 @@ and returns the ACL now in effect. The command implements the proposal
 - The client sends the full desired ACL, not a diff, so the call is idempotent.
 - `reason` tells the user why the access is needed. It is untrusted
   client text.
-- Unsupported commands and unknown or non-top-level navigables are dropped.
-  The rest becomes the session ACL and is returned.
+- Unsupported commands and events, and unknown or non-top-level navigables,
+  are dropped. The rest becomes the session ACL and is returned.
+- `events` lists the events the session gets. Supported events are
+  `browsingContext.contextCreated`, `browsingContext.contextDestroyed`,
+  `browsingContext.fragmentNavigated`, `browsingContext.historyUpdated`,
+  `browsingContext.navigationCommitted`, `browsingContext.userPromptClosed`,
+  `browsingContext.userPromptOpened` and `log.entryAdded`. Events without a
+  navigable need a `default` grant.
+- `session.subscribe` and `session.unsubscribe` need no grant. Clients can
+  subscribe to any event, but get only the events the ACL allows when the event
+  is sent. Withheld events are not sent after a later grant.
 - If the browser refuses part of the request, the result lists the refused
   entries in `denied`, with an optional `reason`. Until the browser can decide
   on requests, every request is allowed as is.

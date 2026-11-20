@@ -260,10 +260,12 @@ export namespace GoogSession {
   export const AclEntrySchema: z.ZodLazy<
     z.ZodObject<{
       commands: z.ZodOptional<z.ZodArray<z.ZodString>>;
+      events: z.ZodOptional<z.ZodArray<z.ZodString>>;
     }>
   > = z.lazy(() =>
     z.object({
       commands: z.array(z.string()).optional(),
+      events: z.array(z.string()).optional(),
     }),
   );
 }
