@@ -9,6 +9,7 @@ import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
@@ -28,11 +29,13 @@ import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.PathPermission;
 import android.content.pm.ProviderInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.PatternMatcher;
 import android.os.Process;
 import android.text.TextUtils;
 
@@ -80,6 +83,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 /** Tests for {@link WebAppLaunchHandler}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -88,12 +92,17 @@ public class WebAppLaunchHandlerTest {
     // Activity#attach initializes mInitialCaller to a non-null ComponentCaller with uid 0.
     private static class TestActivity extends Activity {
         private final Map<Uri, Integer> mGrantedUriModes = new HashMap<>();
-        private int mExpectedPid = -1;
+        private final Map<Uri, Integer> mGrantedFullUriModes = new HashMap<>();
+        private @Nullable Integer mExpectedPid;
         private int mExpectedUid = -1;
         private @Nullable ComponentCaller mCaller;
 
         void setUriPermission(Uri uri, int grantedModeFlags) {
             mGrantedUriModes.put(uri, grantedModeFlags);
+        }
+
+        void setFullUriPermission(Uri uri, int grantedModeFlags) {
+            mGrantedFullUriModes.put(uri, grantedModeFlags);
         }
 
         void denyUriPermission(Uri uri) {
@@ -102,7 +111,10 @@ public class WebAppLaunchHandlerTest {
 
         @Override
         public int checkUriPermission(Uri uri, int pid, int uid, int modeFlags) {
-            if (mExpectedPid != -1 && pid != mExpectedPid) {
+            if (modeFlags == 0) {
+                return PackageManager.PERMISSION_DENIED;
+            }
+            if (mExpectedPid != null && pid != mExpectedPid) {
                 return PackageManager.PERMISSION_DENIED;
             }
             if (mExpectedUid != -1 && uid != mExpectedUid) {
@@ -115,6 +127,26 @@ public class WebAppLaunchHandlerTest {
             return (grantedModes & modeFlags) == modeFlags
                     ? PackageManager.PERMISSION_GRANTED
                     : PackageManager.PERMISSION_DENIED;
+        }
+
+        @Override
+        public int checkContentUriPermissionFull(Uri uri, int pid, int uid, int modeFlags) {
+            if (modeFlags == 0) {
+                return PackageManager.PERMISSION_DENIED;
+            }
+            if (mExpectedPid != null && pid != mExpectedPid) {
+                return PackageManager.PERMISSION_DENIED;
+            }
+            if (mExpectedUid != -1 && uid != mExpectedUid) {
+                return PackageManager.PERMISSION_DENIED;
+            }
+            Integer grantedFullModes = mGrantedFullUriModes.get(uri);
+            if (grantedFullModes != null) {
+                return (grantedFullModes & modeFlags) == modeFlags
+                        ? PackageManager.PERMISSION_GRANTED
+                        : PackageManager.PERMISSION_DENIED;
+            }
+            return checkUriPermission(uri, pid, uid, modeFlags);
         }
 
         @Override
@@ -163,10 +195,8 @@ public class WebAppLaunchHandlerTest {
                         new CurrentPageVerifier.VerificationState(
                                 "", "", CurrentPageVerifier.VerificationStatus.SUCCESS));
 
-        when(mCustomTabsConnectionMock.getClientUidForSession(eq(mSessionHolder)))
-                .thenReturn(12345);
-        when(mCustomTabsConnectionMock.getClientPidForSession(eq(mSessionHolder)))
-                .thenReturn(67890);
+        when(mCustomTabsConnectionMock.getClientUidForSession(any())).thenReturn(12345);
+        when(mCustomTabsConnectionMock.getClientPidForSession(any())).thenReturn(67890);
         when(mWebContentsMock.getLastCommittedUrl()).thenReturn(JUnitTestGURLs.INITIAL_URL);
         when(mTabProviderMock.getInitialTabCreationMode()).thenReturn(TabCreationMode.DEFAULT);
         when(mTabProviderMock.getSpeculatedUrl()).thenReturn(null);
@@ -1477,6 +1507,249 @@ public class WebAppLaunchHandlerTest {
         Assert.assertNotNull(canWrite);
         Assert.assertEquals(1, canWrite.length);
         Assert.assertTrue(canWrite[0]);
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.VANILLA_ICE_CREAM)
+    public void testCopyFilePermissions_ComponentCallerThrowsForBundleUri_ChecksFullPermission() {
+        Uri driveUri =
+                registerExternalProvider(
+                        "com.google.android.apps.docs.storage.legacy",
+                        /* providerUid= */ Process.myUid() + 500,
+                        /* exported= */ true,
+                        /* customizer= */ null);
+
+        // Case A: standard TWA launch without setShareIdentityEnabled (INVALID_UID caller);
+        // falls back to bound session UID/PID (12345 / 67890) and checkContentUriPermissionFull.
+        ComponentCaller callerMock = mock(ComponentCaller.class);
+        when(callerMock.getUid()).thenReturn(Process.INVALID_UID);
+        when(callerMock.checkContentUriPermission(eq(driveUri), anyInt()))
+                .thenThrow(
+                        new IllegalArgumentException("URI not in getData/EXTRA_STREAM/ClipData"));
+        mActivity.mCaller = callerMock;
+        mActivity.setFullUriPermission(driveUri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        mActivity.mExpectedUid = 12345;
+        mActivity.mExpectedPid = 67890;
+
+        Intent sourceIntent = new Intent();
+        sourceIntent.putExtra(CustomTabsIntent.EXTRA_SESSION, mock(IBinder.class));
+        sourceIntent.putExtra(
+                TrustedWebActivityIntentBuilder.EXTRA_FILE_HANDLING_DATA,
+                new FileHandlingData(Arrays.asList(driveUri)).toBundle());
+
+        Intent targetIntent = new Intent();
+        WebAppLaunchHandler.copyFilePermissions(mActivity, sourceIntent, targetIntent);
+        assertVerifiedSingleFile(targetIntent, driveUri, /* expectedCanWrite= */ false);
+
+        // Case B: caller opted into setShareIdentityEnabled (known callerUid) with unbound session
+        // UID (-1) while session PID stub still returns 67890; verifies callerUid is adopted and
+        // clientPid is overwritten to -1.
+        when(callerMock.getUid()).thenReturn(12345);
+        when(mCustomTabsConnectionMock.getClientUidForSession(any())).thenReturn(-1);
+        mActivity.mExpectedUid = 12345;
+        mActivity.mExpectedPid = -1;
+        mActivity.setFullUriPermission(
+                driveUri,
+                Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+
+        Intent targetIntentWithIdentity = new Intent();
+        WebAppLaunchHandler.copyFilePermissions(mActivity, sourceIntent, targetIntentWithIdentity);
+        assertVerifiedSingleFile(targetIntentWithIdentity, driveUri, /* expectedCanWrite= */ true);
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.VANILLA_ICE_CREAM)
+    public void testDoesCallerHavePermissionForUri_PostV_Checks() {
+        Uri uri =
+                registerExternalProvider(
+                        "com.example.public", Process.myUid() + 800, /* exported= */ true, null);
+
+        // Post-V returns checkContentUriPermissionFull result directly without provider fallback.
+        mActivity.setFullUriPermission(uri, /* grantedModeFlags= */ 0);
+        Assert.assertFalse(hasReadPerm(12345, uri));
+
+        mActivity.setFullUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+        // Mismatched callerUid vs session clientUid fails closed even if ComponentCaller grants.
+        ComponentCaller mismatchCaller = mock(ComponentCaller.class);
+        when(mismatchCaller.getUid()).thenReturn(99999);
+        when(mismatchCaller.checkContentUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION))
+                .thenReturn(PackageManager.PERMISSION_GRANTED);
+        Assert.assertFalse(
+                hasUriPerm(mismatchCaller, 12345, uri, Intent.FLAG_GRANT_READ_URI_PERMISSION));
+
+        // SecurityException from ComponentCaller (Chrome lacks access) fails closed immediately.
+        ComponentCaller securityExceptionCaller = mock(ComponentCaller.class);
+        when(securityExceptionCaller.getUid()).thenReturn(Process.INVALID_UID);
+        when(securityExceptionCaller.checkContentUriPermission(
+                        uri, Intent.FLAG_GRANT_READ_URI_PERMISSION))
+                .thenThrow(new SecurityException("Chrome lacks access"));
+        Assert.assertFalse(
+                hasUriPerm(
+                        securityExceptionCaller,
+                        12345,
+                        uri,
+                        Intent.FLAG_GRANT_READ_URI_PERMISSION));
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.TIRAMISU)
+    public void testCopyFilePermissions_PreV_ExportedProviderReadOnlyAllowed() {
+        Uri uri =
+                registerExternalProvider(
+                        "com.example.worldreadable",
+                        Process.myUid() + 500,
+                        /* exported= */ true,
+                        pi -> pi.writePermission = "com.example.WRITE_PERM");
+
+        Intent sourceIntent = new Intent();
+        sourceIntent.putExtra(CustomTabsIntent.EXTRA_SESSION, mock(IBinder.class));
+        sourceIntent.putExtra(
+                TrustedWebActivityIntentBuilder.EXTRA_FILE_HANDLING_DATA,
+                new FileHandlingData(Arrays.asList(uri)).toBundle());
+
+        Intent targetIntent = new Intent();
+        WebAppLaunchHandler.copyFilePermissions(mActivity, sourceIntent, targetIntent);
+        assertVerifiedSingleFile(targetIntent, uri, /* expectedCanWrite= */ false);
+
+        // Pinned to API 33 (TIRAMISU) to also exercise the pre-API 34 isIsolatedUid range fallback
+        // (both app-zygote 90000..98999 and isolated 99000..99999).
+        Assert.assertFalse(hasReadPerm(90001, uri));
+        Assert.assertFalse(hasReadPerm(99001, uri));
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    public void testDoesCallerHavePermissionForUri_PreV_ProviderAndBoundaryChecks() {
+        Uri publicUri =
+                registerExternalProvider(
+                        "com.example.public", Process.myUid() + 800, /* exported= */ true, null);
+        Assert.assertTrue(hasReadPerm(12345, publicUri));
+
+        // forceUriPermissions requires an explicit dynamic grant.
+        Uri mediaUri =
+                registerExternalProvider(
+                        "media",
+                        Process.myUid() + 600,
+                        /* exported= */ true,
+                        pi -> pi.forceUriPermissions = true);
+        Assert.assertFalse(hasReadPerm(12345, mediaUri));
+
+        // Non-exported provider: allowed for owner UID (12345), denied for other UIDs (54321).
+        Uri clientOwnedUri =
+                registerExternalProvider("com.twa.files", 12345, /* exported= */ false, null);
+        Assert.assertTrue(hasReadPerm(12345, clientOwnedUri));
+        Assert.assertFalse(hasReadPerm(54321, clientOwnedUri));
+
+        // Exported Chrome-owned provider is always blocked.
+        Uri chromeExportedUri =
+                registerExternalProvider(
+                        "com.chrome.exported", Process.myUid(), /* exported= */ true, null);
+        Assert.assertFalse(hasReadPerm(12345, chromeExportedUri));
+
+        // Any non-null pathPermissions array fails closed without a dynamic grant.
+        Uri pathPermUri =
+                registerExternalProvider(
+                        "com.example.pathperm",
+                        Process.myUid() + 700,
+                        /* exported= */ true,
+                        pi ->
+                                pi.pathPermissions =
+                                        new PathPermission[] {
+                                            new PathPermission(
+                                                    "/secret",
+                                                    PatternMatcher.PATTERN_PREFIX,
+                                                    "perm.R",
+                                                    "perm.W")
+                                        });
+        Assert.assertFalse(hasReadPerm(12345, pathPermUri));
+
+        // Non-null readPermission: denied until granted to (pid=67890, uid=12345).
+        Uri readPermUri =
+                registerExternalProvider(
+                        "com.example.readperm",
+                        Process.myUid() + 900,
+                        /* exported= */ true,
+                        pi -> pi.readPermission = "com.example.READ_PERM");
+        Assert.assertFalse(hasReadPerm(12345, readPermUri));
+        shadowOf(mActivity).grantPermissions(67890, 12345, "com.example.READ_PERM");
+        Assert.assertTrue(hasReadPerm(12345, readPermUri));
+
+        // URI, UID, and modeFlags boundary checks.
+        Uri crossUserAuthUri = Uri.parse("content://10@com.example.public/doc.txt");
+        Uri opaqueUri = Uri.fromParts("content", "//com.example.public/doc.txt", null);
+        mActivity.denyUriPermission(crossUserAuthUri);
+        mActivity.denyUriPermission(opaqueUri);
+
+        Assert.assertFalse(hasReadPerm(12345, null));
+        Assert.assertFalse(hasReadPerm(12345, Uri.parse("https://com.example.public/doc.txt")));
+        Assert.assertFalse(hasReadPerm(12345, Uri.parse("CONTENT://com.example.public/doc.txt")));
+        Assert.assertFalse(hasReadPerm(12345, crossUserAuthUri));
+        Assert.assertFalse(hasReadPerm(12345, opaqueUri));
+        Assert.assertFalse(hasReadPerm(10 * 100000 + 12345, publicUri));
+        Assert.assertFalse(hasReadPerm(99001, publicUri));
+        Assert.assertFalse(hasUriPerm(null, 12345, publicUri, /* modeFlags= */ 0));
+        Assert.assertFalse(
+                hasUriPerm(
+                        null,
+                        12345,
+                        publicUri,
+                        Intent.FLAG_GRANT_READ_URI_PERMISSION
+                                | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION));
+    }
+
+    private boolean hasUriPerm(
+            @Nullable ComponentCaller caller, int uid, @Nullable Uri uri, int modeFlags) {
+        return WebAppLaunchHandler.doesCallerHavePermissionForUri(
+                mActivity, caller, uid, /* clientPid= */ 67890, uri, modeFlags);
+    }
+
+    private boolean hasReadPerm(int uid, @Nullable Uri uri) {
+        return hasUriPerm(/* caller= */ null, uid, uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+    }
+
+    private static void assertVerifiedSingleFile(
+            Intent targetIntent, Uri expectedUri, boolean expectedCanWrite) {
+        Bundle bundle =
+                targetIntent.getBundleExtra(
+                        CustomTabIntentDataProvider.EXTRA_VERIFIED_FILE_HANDLING_DATA);
+        Assert.assertNotNull(bundle);
+        FileHandlingData result = FileHandlingData.fromBundle(bundle);
+        Assert.assertEquals(Arrays.asList(expectedUri), result.uris);
+        boolean[] canWrite =
+                targetIntent.getBooleanArrayExtra(
+                        CustomTabIntentDataProvider.EXTRA_VERIFIED_FILE_CAN_WRITE);
+        Assert.assertArrayEquals(new boolean[] {expectedCanWrite}, canWrite);
+    }
+
+    private Uri registerExternalProvider(
+            String authority,
+            int providerUid,
+            boolean exported,
+            @Nullable Consumer<ProviderInfo> customizer) {
+        PackageManager pm = ContextUtils.getApplicationContext().getPackageManager();
+        String packageName = "pkg." + authority;
+        PackageInfo packageInfo = new PackageInfo();
+        packageInfo.packageName = packageName;
+        ApplicationInfo appInfo = new ApplicationInfo();
+        appInfo.packageName = packageName;
+        appInfo.uid = providerUid;
+        packageInfo.applicationInfo = appInfo;
+
+        ProviderInfo providerInfo = new ProviderInfo();
+        providerInfo.packageName = packageName;
+        providerInfo.authority = authority;
+        providerInfo.applicationInfo = appInfo;
+        providerInfo.exported = exported;
+        if (customizer != null) {
+            customizer.accept(providerInfo);
+        }
+        packageInfo.providers = new ProviderInfo[] {providerInfo};
+        shadowOf(pm).installPackage(packageInfo);
+
+        Uri uri = Uri.parse("content://" + authority + "/doc.txt");
+        mActivity.denyUriPermission(uri);
+        return uri;
     }
 
     private static WebApkExtras createWebApkExtras(String packageName) {

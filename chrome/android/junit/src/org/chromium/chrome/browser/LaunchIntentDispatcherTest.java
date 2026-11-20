@@ -27,6 +27,7 @@ import android.app.ComponentCaller;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ProviderInfo;
 import android.net.Uri;
@@ -115,13 +116,28 @@ public class LaunchIntentDispatcherTest {
     private static class TestActivity extends Activity {
         // URI permission mode flags granted to the client (TEST_PID / TEST_UID).
         private final Map<Uri, Integer> mClientUriPermissions = new HashMap<>();
+        private final Map<Uri, Integer> mClientFullUriPermissions = new HashMap<>();
         private ComponentCaller mMockInitialCaller;
 
         @Override
         public int checkUriPermission(Uri uri, int pid, int uid, int modeFlags) {
-            boolean isClient = pid == TEST_PID && uid == TEST_UID;
-            int grantedFlags = isClient ? mClientUriPermissions.getOrDefault(uri, 0) : 0;
-            return (grantedFlags & modeFlags) == modeFlags
+            return checkPermissionMap(
+                    mClientUriPermissions, uri, pid == TEST_PID && uid == TEST_UID, modeFlags);
+        }
+
+        @Override
+        public int checkContentUriPermissionFull(Uri uri, int pid, int uid, int modeFlags) {
+            return checkPermissionMap(
+                    mClientFullUriPermissions,
+                    uri,
+                    (pid == TEST_PID || pid == -1) && uid == TEST_UID,
+                    modeFlags);
+        }
+
+        private static int checkPermissionMap(
+                Map<Uri, Integer> permissions, Uri uri, boolean isClient, int modeFlags) {
+            int grantedFlags = isClient ? permissions.getOrDefault(uri, 0) : 0;
+            return modeFlags != 0 && (grantedFlags & modeFlags) == modeFlags
                     ? PackageManager.PERMISSION_GRANTED
                     : PackageManager.PERMISSION_DENIED;
         }
@@ -166,6 +182,8 @@ public class LaunchIntentDispatcherTest {
         mActivity.setResult(Activity.RESULT_FIRST_USER);
 
         CustomTabsConnection.setInstanceForTesting(mCustomTabsConnection);
+        doReturn(-1).when(mCustomTabsConnection).getClientUidForSession(any());
+        doReturn(-1).when(mCustomTabsConnection).getClientPidForSession(any());
         SessionDataHolder.setInstanceForTesting(mSessionDataHolder);
         ChromeSharedPreferences.getInstance()
                 .removeKey(ChromePreferenceKeys.CUSTOM_TABS_ALWAYS_OPEN_IN_BROWSER);
@@ -481,6 +499,67 @@ public class LaunchIntentDispatcherTest {
                 launchedIntent.getBooleanArrayExtra(
                         CustomTabIntentDataProvider.EXTRA_VERIFIED_FILE_CAN_WRITE);
         org.junit.Assert.assertNull(canWrite);
+    }
+
+    @Test
+    public void testFileHandling_WorldReadableProviderWithoutGrantRecord_StashesData() {
+        Uri fileUri = Uri.parse("content://com.google.android.apps.docs.storage.legacy/doc.txt");
+        FileHandlingData fileHandlingData = new FileHandlingData(Arrays.asList(fileUri));
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://example.com"));
+        IBinder sessionBinder = mock(IBinder.class);
+        intent.putExtra(CustomTabsIntent.EXTRA_SESSION, sessionBinder);
+        intent.putExtra(
+                TrustedWebActivityIntentBuilder.EXTRA_FILE_HANDLING_DATA,
+                fileHandlingData.toBundle());
+
+        doReturn(null).when(mSessionDataHolder).getActiveHandlerForIntent(any());
+        mockSessionUid();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+            ComponentCaller mockCaller = mock(ComponentCaller.class);
+            doReturn(TEST_UID).when(mockCaller).getUid();
+            // ComponentCaller#checkContentUriPermission throws IllegalArgumentException for URIs
+            // passed inside EXTRA_FILE_HANDLING_DATA rather than getData/EXTRA_STREAM/ClipData.
+            when(mockCaller.checkContentUriPermission(eq(fileUri), anyInt()))
+                    .thenThrow(new IllegalArgumentException("URI not in getData/ClipData"));
+            mActivity.mMockInitialCaller = mockCaller;
+            mActivity.mClientFullUriPermissions.put(fileUri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        } else {
+            PackageManager pm = mActivity.getPackageManager();
+            PackageInfo packageInfo = new PackageInfo();
+            packageInfo.packageName = "com.google.android.apps.docs";
+            ApplicationInfo appInfo = new ApplicationInfo();
+            appInfo.packageName = packageInfo.packageName;
+            appInfo.uid = TEST_UID + 100;
+            packageInfo.applicationInfo = appInfo;
+
+            ProviderInfo providerInfo = new ProviderInfo();
+            providerInfo.packageName = packageInfo.packageName;
+            providerInfo.authority = "com.google.android.apps.docs.storage.legacy";
+            providerInfo.applicationInfo = appInfo;
+            providerInfo.exported = true;
+            providerInfo.writePermission = "com.google.android.apps.docs.WRITE";
+
+            packageInfo.providers = new ProviderInfo[] {providerInfo};
+            shadowOf(pm).installPackage(packageInfo);
+        }
+
+        int result = LaunchIntentDispatcher.dispatchToCustomTabActivity(mActivity, intent);
+        assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
+
+        Intent launchedIntent = shadowOf(mActivity).getNextStartedActivity();
+        Bundle stashedBundle =
+                launchedIntent.getBundleExtra(
+                        CustomTabIntentDataProvider.EXTRA_VERIFIED_FILE_HANDLING_DATA);
+        FileHandlingData stashedData = FileHandlingData.fromBundle(stashedBundle);
+        assertEquals(1, stashedData.uris.size());
+        assertEquals(fileUri, stashedData.uris.get(0));
+
+        boolean[] canWrite =
+                launchedIntent.getBooleanArrayExtra(
+                        CustomTabIntentDataProvider.EXTRA_VERIFIED_FILE_CAN_WRITE);
+        assertEquals(1, canWrite.length);
+        assertEquals(false, canWrite[0]);
     }
 
     @Test

@@ -19,12 +19,15 @@ import android.app.Activity;
 import android.app.ComponentCaller;
 import android.content.ActivityNotFoundException;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.pm.ProviderInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Process;
+import android.os.UserHandle;
 import android.text.TextUtils;
 
 import androidx.browser.customtabs.TrustedWebUtils;
@@ -74,6 +77,10 @@ import java.util.UUID;
 public class WebAppLaunchHandler {
     private static final String TAG = "WebAppLaunchHandler";
     private static final @ClientMode int DEFAULT_CLIENT_MODE = NAVIGATE_EXISTING;
+    // Pre-Android 14 UID constants matching AOSP android.os.UserHandle / android.os.Process.
+    private static final int PER_USER_RANGE = 100000;
+    private static final int FIRST_APP_ZYGOTE_ISOLATED_UID = 90000;
+    private static final int LAST_ISOLATED_UID = 99999;
     private final WebContents mWebContents;
     private final CustomTabActivityNavigationController mNavigationController;
     private final Verifier mVerifier;
@@ -555,20 +562,49 @@ public class WebAppLaunchHandler {
             @Nullable Object caller,
             int clientUid,
             int clientPid,
-            Uri uri,
+            @Nullable Uri uri,
             int requestedPermission) {
+        if (uri == null || !ContentResolver.SCHEME_CONTENT.equals(uri.getScheme())) {
+            return false;
+        }
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM && caller != null) {
             try {
                 ComponentCaller componentCaller = (ComponentCaller) caller;
-                if (componentCaller.getUid() == Process.myUid()) {
+                int callerUid = componentCaller.getUid();
+                if (callerUid == Process.myUid()) {
                     Log.d(
                             TAG,
                             "Caller is ourselves (trampoline launch). Falling back to UID check.");
                 } else {
+                    if (callerUid != Process.INVALID_UID) {
+                        if (clientUid != -1 && clientUid != callerUid) {
+                            Log.w(
+                                    TAG,
+                                    "Session UID (%d) does not match caller UID (%d).",
+                                    clientUid,
+                                    callerUid);
+                            return false;
+                        }
+                        // Update fallback identity in case checkContentUriPermission below throws
+                        // IllegalArgumentException (for custom Bundle URIs) and falls through to
+                        // checkContentUriPermissionFull; -1 is the UID-only sentinel when PID is
+                        // unknown.
+                        clientUid = callerUid;
+                        clientPid = -1;
+                    }
                     return componentCaller.checkContentUriPermission(uri, requestedPermission)
                             == PackageManager.PERMISSION_GRANTED;
                 }
+            } catch (SecurityException e) {
+                // Thrown when Chrome itself lacks access to the URI; deny immediately rather than
+                // falling back to a potentially different package/session UID.
+                Log.w(TAG, "Chrome lacks permission to check caller URI access.", e);
+                return false;
             } catch (Exception e) {
+                // ComponentCaller#checkContentUriPermission throws IllegalArgumentException when
+                // the URI was passed in a custom Bundle extra (such as EXTRA_FILE_HANDLING_DATA or
+                // EXTRA_SHARE_DATA) rather than Intent#getData, EXTRA_STREAM, or ClipData.
                 Log.w(
                         TAG,
                         "Failed to check caller's permission via ComponentCaller. Falling back.",
@@ -576,15 +612,84 @@ public class WebAppLaunchHandler {
             }
         }
 
-        if (clientUid != -1) {
+        if (clientUid >= 0) {
             try {
-                return activity.checkUriPermission(uri, clientPid, clientUid, requestedPermission)
-                        == PackageManager.PERMISSION_GRANTED;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+                    return activity.checkContentUriPermissionFull(
+                                    uri, clientPid, clientUid, requestedPermission)
+                            == PackageManager.PERMISSION_GRANTED;
+                }
+                if (activity.checkUriPermission(uri, clientPid, clientUid, requestedPermission)
+                        == PackageManager.PERMISSION_GRANTED) {
+                    return true;
+                }
+                return doesCallerHoldProviderPermission(
+                        activity, uri, clientPid, clientUid, requestedPermission);
             } catch (Exception e) {
                 Log.w(TAG, "Failed to check URI permission for UID: %d", clientUid, e);
             }
         }
         return false;
+    }
+
+    /**
+     * Pre-Android 15 fallback that checks whether the calling application inherently holds
+     * permission to access the URI's {@link android.content.ContentProvider} without requiring an
+     * explicit dynamic {@code UriPermission} grant record (for example, when the provider is
+     * exported with no {@code readPermission}, or when the caller owns the provider).
+     */
+    private static boolean doesCallerHoldProviderPermission(
+            Context context, Uri uri, int pid, int uid, int modeFlags) {
+        int accessModes =
+                modeFlags
+                        & (Intent.FLAG_GRANT_READ_URI_PERMISSION
+                                | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+        if (accessModes == 0 || (modeFlags & ~accessModes) != 0) {
+            return false;
+        }
+        if (!UserHandle.getUserHandleForUid(uid).equals(Process.myUserHandle())
+                || isIsolatedUid(uid)) {
+            return false;
+        }
+
+        String authority = uri.getAuthority();
+        // Reject missing authorities, cross-user authority prefixes (e.g. "10@authority", since
+        // resolveContentProvider only resolves providers in the current user), and crafted URIs
+        // whose authority changes when reparsed from string form (e.g. OpaqueUri).
+        if (TextUtils.isEmpty(authority)
+                || authority.indexOf('@') != -1
+                || !authority.equals(Uri.parse(uri.toString()).getAuthority())) {
+            return false;
+        }
+
+        ProviderInfo pi = context.getPackageManager().resolveContentProvider(authority, 0);
+        if (pi == null || pi.applicationInfo == null) return false;
+        if (pi.applicationInfo.uid == Process.myUid()) return false;
+        if (pi.applicationInfo.uid == uid) return true;
+        if (!pi.exported || pi.forceUriPermissions || pi.pathPermissions != null) {
+            return false;
+        }
+        if ((accessModes & Intent.FLAG_GRANT_READ_URI_PERMISSION) != 0
+                && pi.readPermission != null
+                && context.checkPermission(pi.readPermission, pid, uid)
+                        != PackageManager.PERMISSION_GRANTED) {
+            return false;
+        }
+        if ((accessModes & Intent.FLAG_GRANT_WRITE_URI_PERMISSION) != 0
+                && pi.writePermission != null
+                && context.checkPermission(pi.writePermission, pid, uid)
+                        != PackageManager.PERMISSION_GRANTED) {
+            return false;
+        }
+        return true;
+    }
+
+    private static boolean isIsolatedUid(int uid) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            return Process.isIsolatedUid(uid);
+        }
+        int appId = uid % PER_USER_RANGE;
+        return appId >= FIRST_APP_ZYGOTE_ISOLATED_UID && appId <= LAST_ISOLATED_UID;
     }
 
     /**
@@ -604,7 +709,7 @@ public class WebAppLaunchHandler {
             Activity activity,
             @Nullable Object caller,
             @Nullable SessionHolder session,
-            Uri uri,
+            @Nullable Uri uri,
             int requestedPermission) {
         int uid = -1;
         int pid = 0;
