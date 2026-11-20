@@ -406,6 +406,7 @@ public class ViewTransitionPixelTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisableIf.Device(DeviceFormFactor.AUTOMOTIVE) // https://crbug.com/588465568
     public void testDialog() throws Throwable {
         String url = "/chrome/test/data/android/view_transition_dialog.html";
         mActivityTestRule.startOnTestServerUrl(url);
