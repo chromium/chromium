@@ -290,5 +290,20 @@ describe('EventManager', () => {
         ChromiumBidi.Log.EventNames.LogEntryAdded,
       ]);
     });
+
+    it('does not buffer events before subscribing', async () => {
+      aclManager.setAcl({
+        default: {events: [ChromiumBidi.Log.EventNames.LogEntryAdded]},
+      });
+      eventManager.registerEvent(LOG_EVENT, SOME_CONTEXT);
+
+      await eventManager.subscribe(
+        [ChromiumBidi.Log.EventNames.LogEntryAdded],
+        [SOME_CONTEXT],
+        [],
+        SOME_CHANNEL,
+      );
+      assert.isEmpty(emittedEvents);
+    });
   });
 });

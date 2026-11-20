@@ -89,7 +89,7 @@ and returns the ACL now in effect. The command implements the proposal
   navigable need a `default` grant.
 - `session.subscribe` and `session.unsubscribe` need no grant. Clients can
   subscribe to any event, but get only the events the ACL allows when the event
-  is sent. Withheld events are not sent after a later grant.
+  is sent. Events are not buffered in restricted sessions (buffer size is 0).
 - If the browser refuses part of the request, the result lists the refused
   entries in `denied`, with an optional `reason`. Until the browser can decide
   on requests, every request is allowed as is.

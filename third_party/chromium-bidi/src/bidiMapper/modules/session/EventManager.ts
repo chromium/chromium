@@ -383,8 +383,9 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
    * If the event is buffer-able, put it in the buffer.
    */
   #bufferEvent(eventWrapper: EventWrapper, eventName: ChromiumBidi.EventNames) {
-    if (!eventBufferLength.has(eventName)) {
-      // Do nothing if the event is no buffer-able.
+    if (this.#aclManager.isEnabled() || !eventBufferLength.has(eventName)) {
+      // Do nothing in restricted sessions (buffer size is 0) or if the event
+      // is not buffer-able.
       return;
     }
     const bufferMapKey = EventManager.#getMapKey(

@@ -172,3 +172,49 @@ async def test_restricted_events_other_tab_events_not_sent(
             }
         ),
     ]
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("capabilities", [RESTRICTED_SESSION], indirect=True)
+@pytest.mark.parametrize("initial_acl", [NO_EVENTS_ACL], indirect=True)
+async def test_restricted_events_not_buffered_before_subscribe(
+    websocket, context_id, html, read_messages
+):
+    await execute_command(
+        websocket,
+        {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": html("<script>console.log('before grant')</script>"),
+                "wait": "complete",
+                "context": context_id,
+            },
+        },
+    )
+
+    await set_acl(
+        websocket,
+        {
+            "default": {"commands": COMMANDS},
+            "perNavigable": {context_id: {"events": ["log.entryAdded"]}},
+        },
+    )
+    await subscribe(websocket, ["log.entryAdded"])
+
+    await read_messages(0, check_no_other_messages=True)
+
+    command_id = await navigate(
+        websocket,
+        context_id,
+        html("<script>console.log('after subscribe')</script>"),
+    )
+    messages = await read_messages(2, check_no_other_messages=True)
+    assert messages == [
+        AnyExtending({"id": command_id, "type": "success"}),
+        AnyExtending(
+            {
+                "method": "log.entryAdded",
+                "params": {"text": "after subscribe"},
+            }
+        ),
+    ]
