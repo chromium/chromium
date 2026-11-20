@@ -760,3 +760,4 @@ crbug.com/427699033 [ iOS27 iPad ] TabGridTestCase/testIncognitoDragAndDropAtEdg
 crbug.com/588393258 PasswordManagerSearchTestCase/testPasswordsDeletionNavigation [ Pass Failure Crash ]
 crbug.com/584364590 GeminiAppSwitchingTestCase/testAppSwitchingAISummarizationFloatyNotInvoked [ Pass Failure Crash ]
 crbug.com/571459477 [ iPhone Simulator ] ReadingListTestCase/testDeleteEntries [ Pass Failure ]
+crbug.com/588447001 [ iOS26 iOS27 iPad Simulator ] SharedTabGroupsTestCase/testCloseLastTabInIncognito [ Pass Failure ]
