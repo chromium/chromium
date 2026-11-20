@@ -1330,6 +1330,7 @@ public class TabStateStoreUnitTest {
 
         mTabStateStore.onTabRegistered(tab);
 
+        verify(mModelTrackingOrchestrator).onTabRegistered(tab);
         verify(mModelTrackingOrchestrator, never()).saveTab(tab);
     }
 
@@ -1673,5 +1674,35 @@ public class TabStateStoreUnitTest {
         mTabStateStore.resumeSaveTabList(onSaveTabListRunnable);
 
         verify(onSaveTabListRunnable).run();
+    }
+
+    @Test
+    public void testSaveState_SavesActiveUntidyLoadingTabBeforeDrainDirtyTabs() {
+        mTabStateStore.onNativeLibraryReady();
+        when(mModelTrackingOrchestrator.isSynchronizerPresent(/* incognito= */ true))
+                .thenReturn(true);
+
+        MockTab regularActiveTab = (MockTab) createMockTabWithParentCollection(1, mProfile);
+        regularActiveTab.onLoadStarted(/* toDifferentDocument= */ true);
+        regularActiveTab.setGurlOverrideForTesting(new GURL("https://example.com"));
+        TabStateAttributesRegistry.createAttributesForTab(
+                regularActiveTab, TabStateStore.class, TabCreationState.LIVE_IN_FOREGROUND);
+        mRegularTabSupplier.set(regularActiveTab);
+
+        Profile incognitoProfile = mock(Profile.class);
+        when(incognitoProfile.isOffTheRecord()).thenReturn(true);
+        Tab incognitoActiveTab = createMockTabWithParentCollection(2, incognitoProfile);
+        TabStateAttributesRegistry.createAttributesForTab(
+                incognitoActiveTab, TabStateStore.class, TabCreationState.LIVE_IN_FOREGROUND);
+        mIncognitoTabSupplier.set(incognitoActiveTab);
+
+        mTabStateStore.saveState();
+
+        InOrder inOrder = inOrder(mScopedStorageBatch, mModelTrackingOrchestrator);
+        inOrder.verify(mModelTrackingOrchestrator).saveTab(regularActiveTab);
+        inOrder.verify(mModelTrackingOrchestrator).saveTab(incognitoActiveTab);
+        inOrder.verify(mModelTrackingOrchestrator).drainDirtyTabs(/* incognito= */ false);
+        inOrder.verify(mModelTrackingOrchestrator).drainDirtyTabs(/* incognito= */ true);
+        inOrder.verify(mScopedStorageBatch).close();
     }
 }

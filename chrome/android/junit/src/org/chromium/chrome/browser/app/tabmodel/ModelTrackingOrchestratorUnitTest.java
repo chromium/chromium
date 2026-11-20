@@ -36,6 +36,7 @@ import org.chromium.base.Token;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.app.tabmodel.ModelTrackingOrchestrator.CollectionKeyedFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -60,6 +61,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelType;
 import org.chromium.components.tabs.TabStripCollection;
 import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestGURLs;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -1208,6 +1210,170 @@ public class ModelTrackingOrchestratorUnitTest {
 
         verify(mRegularSynchronizer).flushPendingStructureSnapshot();
         verify(mIncognitoSynchronizer).flushPendingStructureSnapshot();
+    }
+
+    @Test
+    public void testUnpersistedTabs_TracksUnrestorableAndFlushesOnceWhenRestorable() {
+        createOrchestrator(/* hasCipherFactory= */ true, /* isAuthoritative= */ true);
+        MockTab emptyTab = createTab(1, mProfile, /* hasParentCollection= */ true);
+        MockTab contentTab = createTabWithUrl(2, new GURL("content://media/1"));
+        MockTab ntpTab = createTabWithUrl(3, JUnitTestGURLs.NTP_URL);
+        MockTab pinnedNtp = createTabWithUrl(4, JUnitTestGURLs.NTP_URL);
+        MockTab groupedNtp = createTabWithUrl(5, JUnitTestGURLs.NTP_URL);
+        MockTab directSaveTab = createTabWithUrl(6, JUnitTestGURLs.NTP_URL);
+        MockTab backNtp = createTabWithUrl(7, JUnitTestGURLs.NTP_URL);
+        backNtp.setCanGoBack(true);
+        MockTab forwardNtp = createTabWithUrl(8, JUnitTestGURLs.NTP_URL);
+        forwardNtp.setCanGoForward(true);
+        MockTab alreadyPinnedNtp = createTabWithUrl(9, JUnitTestGURLs.NTP_URL);
+        alreadyPinnedNtp.setIsPinned(true);
+        MockTab alreadyGroupedNtp = createTabWithUrl(10, JUnitTestGURLs.NTP_URL);
+        alreadyGroupedNtp.setTabGroupId(Token.createRandom());
+
+        for (MockTab t :
+                Arrays.asList(
+                        emptyTab,
+                        contentTab,
+                        ntpTab,
+                        pinnedNtp,
+                        groupedNtp,
+                        directSaveTab,
+                        backNtp,
+                        forwardNtp,
+                        alreadyPinnedNtp,
+                        alreadyGroupedNtp)) {
+            mOrchestrator.onTabRegistered(t);
+        }
+
+        // Already-restorable NTPs at registration were not queued even after navigating away.
+        for (MockTab t : Arrays.asList(backNtp, forwardNtp, alreadyPinnedNtp, alreadyGroupedNtp)) {
+            t.setGurlOverrideForTesting(JUnitTestGURLs.EXAMPLE_URL);
+        }
+        mOrchestrator.onDataLoaded(mRegularData, /* incognito= */ false);
+        mOrchestrator.drainDirtyTabs(/* incognito= */ false);
+        verify(mTabStateStorageService, never()).createBatch();
+        verify(mTabStateStorageService, never()).saveTabData(any());
+
+        // Direct saveTab() with restorable state evicts the tab from unpersisted tracking.
+        directSaveTab.setGurlOverrideForTesting(JUnitTestGURLs.EXAMPLE_URL);
+        mOrchestrator.saveTab(directSaveTab);
+        verify(mTabStateStorageService, times(1)).saveTabData(directSaveTab);
+        clearInvocations(mTabStateStorageService);
+        mOrchestrator.drainDirtyTabs(/* incognito= */ false);
+        verify(mTabStateStorageService, never()).createBatch();
+        verify(mTabStateStorageService, never()).saveTabData(any());
+
+        mOrchestrator.onRestoredForModel(/* incognito= */ false);
+        clearInvocations(mTabStateStorageService);
+
+        // Active tab change triggers saveStructureSnapshot -> drainDirtyTabs.
+        ntpTab.setGurlOverrideForTesting(JUnitTestGURLs.EXAMPLE_URL);
+        pinnedNtp.setIsPinned(true);
+        groupedNtp.setTabGroupId(Token.createRandom());
+        mRegularTabSupplier.set(ntpTab);
+
+        verify(mTabStateStorageService, times(1)).createBatch();
+        verify(mTabStateStorageService, times(1)).saveTabData(ntpTab);
+        verify(mTabStateStorageService, times(1)).saveTabData(pinnedNtp);
+        verify(mTabStateStorageService, times(1)).saveTabData(groupedNtp);
+        verify(mTabStateStorageService, times(3)).saveTabData(any());
+
+        // Subsequent drain and returning to NTP after a restorable save do not re-save or re-queue.
+        clearInvocations(mTabStateStorageService);
+        mOrchestrator.drainDirtyTabs(/* incognito= */ false);
+        verify(mTabStateStorageService, never()).createBatch();
+        verify(mTabStateStorageService, never()).saveTabData(any());
+
+        ntpTab.setGurlOverrideForTesting(JUnitTestGURLs.NTP_URL);
+        mOrchestrator.saveTab(ntpTab);
+        clearInvocations(mTabStateStorageService);
+        ntpTab.setGurlOverrideForTesting(JUnitTestGURLs.URL_1);
+        mOrchestrator.drainDirtyTabs(/* incognito= */ false);
+        verify(mTabStateStorageService, never()).createBatch();
+        verify(mTabStateStorageService, never()).saveTabData(any());
+    }
+
+    @Test
+    public void testUnpersistedTabs_DeferredAndEvictedStates() {
+        createOrchestrator(/* hasCipherFactory= */ true, /* isAuthoritative= */ true);
+        MockTab restoringTab = createTabWithUrl(1, JUnitTestGURLs.NTP_URL);
+        MockTab closingTab = createTabWithUrl(2, JUnitTestGURLs.NTP_URL);
+        MockTab removedTab = createTabWithUrl(3, JUnitTestGURLs.NTP_URL);
+        MockTab destroyedTab = createTabWithUrl(4, JUnitTestGURLs.NTP_URL);
+        boolean[] detachedHasParent = {false};
+        MockTab detachedTab =
+                new MockTab(5, mProfile) {
+                    @Override
+                    public boolean hasParentCollection() {
+                        return detachedHasParent[0];
+                    }
+
+                    @Override
+                    public boolean isInitialized() {
+                        return true;
+                    }
+                };
+        detachedTab.setGurlOverrideForTesting(JUnitTestGURLs.NTP_URL);
+        for (MockTab t :
+                Arrays.asList(restoringTab, closingTab, removedTab, destroyedTab, detachedTab)) {
+            mOrchestrator.onTabRegistered(t);
+        }
+
+        restoringTab.setIsBeingRestored(true);
+        closingTab.setClosing(true);
+        mOrchestrator.removeTab(removedTab);
+        for (MockTab t :
+                Arrays.asList(restoringTab, closingTab, removedTab, destroyedTab, detachedTab)) {
+            t.setGurlOverrideForTesting(JUnitTestGURLs.EXAMPLE_URL);
+        }
+        destroyedTab.destroy();
+
+        mOrchestrator.onDataLoaded(mRegularData, /* incognito= */ false);
+        mOrchestrator.drainDirtyTabs(/* incognito= */ false);
+        verify(mTabStateStorageService, never()).createBatch();
+        verify(mTabStateStorageService, never()).saveTabData(any());
+
+        // Clearing deferred states flushes only restoring, closing (undo), and newly attached tabs.
+        restoringTab.setIsBeingRestored(false);
+        closingTab.setClosing(false);
+        detachedHasParent[0] = true;
+        mOrchestrator.drainDirtyTabs(/* incognito= */ false);
+        verify(mTabStateStorageService).saveTabData(restoringTab);
+        verify(mTabStateStorageService).saveTabData(closingTab);
+        verify(mTabStateStorageService).saveTabData(detachedTab);
+        verify(mTabStateStorageService, never()).saveTabData(removedTab);
+        verify(mTabStateStorageService, never()).saveTabData(destroyedTab);
+
+        // destroy() clears unpersisted tabs.
+        clearInvocations(mTabStateStorageService);
+        MockTab tabBeforeDestroy = createTabWithUrl(6, JUnitTestGURLs.NTP_URL);
+        mOrchestrator.onTabRegistered(tabBeforeDestroy);
+        mOrchestrator.destroy();
+        tabBeforeDestroy.setGurlOverrideForTesting(JUnitTestGURLs.EXAMPLE_URL);
+        mOrchestrator.onDataLoaded(mRegularData, /* incognito= */ false);
+        mOrchestrator.drainDirtyTabs(/* incognito= */ false);
+        verify(mTabStateStorageService, never()).saveTabData(tabBeforeDestroy);
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.TAB_STATE_ATTRIBUTES_MARK_DIRTY_EAGERLY)
+    public void testUnpersistedTabs_FlagDisabled_DoesNotTrack() {
+        createOrchestrator(/* hasCipherFactory= */ true, /* isAuthoritative= */ true);
+        MockTab tab = createTabWithUrl(1, JUnitTestGURLs.NTP_URL);
+
+        mOrchestrator.onTabRegistered(tab);
+        tab.setGurlOverrideForTesting(JUnitTestGURLs.EXAMPLE_URL);
+        mOrchestrator.onDataLoaded(mRegularData, /* incognito= */ false);
+        mOrchestrator.drainDirtyTabs(/* incognito= */ false);
+
+        verify(mTabStateStorageService, never()).createBatch();
+        verify(mTabStateStorageService, never()).saveTabData(any());
+    }
+
+    private MockTab createTabWithUrl(int id, GURL url) {
+        MockTab tab = createTab(id, mProfile, /* hasParentCollection= */ true);
+        tab.setGurlOverrideForTesting(url);
+        return tab;
     }
 
     private MockTab createTab(int id, Profile profile, boolean hasParentCollection) {

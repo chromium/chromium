@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.app.tabmodel;
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.tab.TabStateStorageServiceFactory.createBatch;
 
+import android.util.ArraySet;
+
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
@@ -19,6 +21,7 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.CollectionStorageObserverFactory;
 import org.chromium.chrome.browser.tab.ScopedStorageBatch;
@@ -38,13 +41,17 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelType;
 import org.chromium.chrome.browser.tabmodel.TabPersistenceUtils;
+import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tabs.TabStripCollection;
+import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -149,6 +156,8 @@ public class ModelTrackingOrchestrator {
 
     private final Set<Tab> mRegularDirtyTabs = new HashSet<>();
     private final Set<Tab> mIncognitoDirtyTabs = new HashSet<>();
+    private final Set<Tab> mRegularUnpersistedTabs = new ArraySet<>();
+    private final Set<Tab> mIncognitoUnpersistedTabs = new ArraySet<>();
 
     private @Nullable StorageCollectionSynchronizer mIncognitoSynchronizer;
     private @Nullable StorageCollectionSynchronizer mRegularSynchronizer;
@@ -327,6 +336,8 @@ public class ModelTrackingOrchestrator {
 
         mRegularDirtyTabs.clear();
         mIncognitoDirtyTabs.clear();
+        mRegularUnpersistedTabs.clear();
+        mIncognitoUnpersistedTabs.clear();
 
         mRegularSynchronizerManager.reset();
         if (mIncognitoSynchronizerManager != null) mIncognitoSynchronizerManager.reset();
@@ -336,17 +347,57 @@ public class ModelTrackingOrchestrator {
         return incognito ? mIncognitoDirtyTabs : mRegularDirtyTabs;
     }
 
+    private Set<Tab> getUnpersistedTabs(boolean incognito) {
+        return incognito ? mIncognitoUnpersistedTabs : mRegularUnpersistedTabs;
+    }
+
     /**
-     * Removes the tab from tracking and any pending dirty tab sets.
+     * Returns whether {@code tab} has restorable state worth persisting.
+     *
+     * <p>A tab is restorable when it has a non-empty, non-{@code content://} URL and is either not
+     * an NTP, or is pinned, in a tab group, or has back/forward navigation history. Tabs that do
+     * not meet these criteria are kept clean by {@link TabStateAttributes} (or skipped on restore),
+     * so they are tracked as unpersisted until they become restorable.
+     */
+    private static boolean isTabRestorable(Tab tab) {
+        GURL url = tab.getUrl();
+        if (url.isEmpty() || UrlConstants.CONTENT_SCHEME.equals(url.getScheme())) {
+            return false;
+        }
+        return !UrlUtilities.isNtpUrl(url)
+                || tab.getIsPinned()
+                || tab.getTabGroupId() != null
+                || tab.canGoBack()
+                || tab.canGoForward();
+    }
+
+    /**
+     * Tracks tabs that are registered without restorable state so they can be flushed once they
+     * acquire a restorable URL.
+     *
+     * @param tab The newly registered tab.
+     */
+    void onTabRegistered(Tab tab) {
+        if (!ChromeFeatureList.sTabStateAttributesMarkDirtyEagerly.isEnabled()) return;
+        if (!isTabRestorable(tab)) {
+            getUnpersistedTabs(tab.isOffTheRecord()).add(tab);
+        }
+    }
+
+    /**
+     * Removes the tab from tracking and any pending dirty or unpersisted tab sets.
      *
      * @param tab The tab to remove.
      */
     void removeTab(Tab tab) {
-        getDirtyTabs(tab.isOffTheRecord()).remove(tab);
+        boolean incognito = tab.isOffTheRecord();
+        getDirtyTabs(incognito).remove(tab);
+        getUnpersistedTabs(incognito).remove(tab);
     }
 
     /**
-     * Drains and saves all pending dirty tabs for the specified model via {@link #saveTab(Tab)}.
+     * Drains and saves all pending dirty and newly restorable unpersisted tabs for the specified
+     * model via {@link #saveTab(Tab)}.
      *
      * @param incognito Whether to drain dirty tabs for the incognito model.
      */
@@ -354,13 +405,28 @@ public class ModelTrackingOrchestrator {
         if (!isSynchronizerPresent(incognito)) return;
 
         Set<Tab> dirtyTabs = getDirtyTabs(incognito);
-        if (dirtyTabs.isEmpty()) return;
+        Set<Tab> unpersistedTabs = getUnpersistedTabs(incognito);
+        if (dirtyTabs.isEmpty() && unpersistedTabs.isEmpty()) return;
 
         TabModel model = mTabModelSelector.getModel(incognito);
         Profile profile = model.getProfile();
         if (profile == null) return;
 
         List<Tab> tabsToSave = new ArrayList<>(dirtyTabs);
+        for (Iterator<Tab> it = unpersistedTabs.iterator(); it.hasNext(); ) {
+            Tab tab = it.next();
+            if (tab.isDestroyed()) {
+                it.remove();
+            } else if (!tab.isClosing()
+                    && !tab.isBeingRestored()
+                    && tab.hasParentCollection()
+                    && isTabRestorable(tab)
+                    && !dirtyTabs.contains(tab)) {
+                tabsToSave.add(tab);
+            }
+        }
+        if (tabsToSave.isEmpty()) return;
+
         try (ScopedStorageBatch ignored = createBatch(profile)) {
             for (Tab tab : tabsToSave) {
                 if (tab.isDestroyed() || tab.isClosing()) {
@@ -406,6 +472,9 @@ public class ModelTrackingOrchestrator {
         }
 
         dirtyTabs.remove(tab);
+        if (isTabRestorable(tab)) {
+            getUnpersistedTabs(incognito).remove(tab);
+        }
     }
 
     /**
@@ -722,6 +791,7 @@ public class ModelTrackingOrchestrator {
 
         public void reset() {
             getDirtyTabs(mIncognito).clear();
+            getUnpersistedTabs(mIncognito).clear();
             if (mIncognito) {
                 if (mIncognitoSynchronizer != null) {
                     mIncognitoSynchronizer.destroy();

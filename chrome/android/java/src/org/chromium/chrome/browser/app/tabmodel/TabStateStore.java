@@ -296,13 +296,13 @@ public class TabStateStore implements TabPersistentStore {
         assertInitialized();
 
         try (ScopedStorageBatch ignored = mTabStateStorageService.createBatch()) {
-            mModelTrackingManager.drainDirtyTabs(/* incognito= */ false);
-            mModelTrackingManager.drainDirtyTabs(/* incognito= */ true);
-
             saveTabIfNotClean(mTabModelSelector.getModel(false).getCurrentTabSupplier().get());
             if (mModelTrackingManager.isSynchronizerPresent(/* incognito= */ true)) {
                 saveTabIfNotClean(mTabModelSelector.getModel(true).getCurrentTabSupplier().get());
             }
+
+            mModelTrackingManager.drainDirtyTabs(/* incognito= */ false);
+            mModelTrackingManager.drainDirtyTabs(/* incognito= */ true);
 
             mModelTrackingManager.flushPendingStructureSnapshot(/* incognito= */ false);
             mModelTrackingManager.flushPendingStructureSnapshot(/* incognito= */ true);
@@ -639,12 +639,14 @@ public class TabStateStore implements TabPersistentStore {
 
     @VisibleForTesting
     void onTabRegistered(Tab tab) {
+        assertInitialized();
         boolean isTabOtr = tab.isOffTheRecord();
         assertOtrOperationSafe(isTabOtr);
 
         TabStateAttributes attributes =
                 TabStateAttributesRegistry.getAttributesFor(tab, TabStateStore.class);
         assumeNonNull(attributes);
+        mModelTrackingManager.onTabRegistered(tab);
         // Save every clean tab on registration if we are not authoritative, we are catching up.
         if (attributes.addObserver(mAttributesObserver) != DirtinessState.CLEAN
                 || !mIsAuthoritative) {
