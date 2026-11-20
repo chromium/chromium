@@ -4,6 +4,10 @@
 
 #import "chrome/browser/ui/views/omnibox/omnibox_popup_native_widget_mac.h"
 
+#import <objc/runtime.h>
+
+#include <algorithm>
+
 #include "components/remote_cocoa/common/native_widget_ns_window.mojom.h"
 #import "ui/base/cocoa/window_size_constants.h"
 #include "ui/views/widget/native_widget_mac.h"
@@ -22,6 +26,40 @@ bool IsGeometryAttribute(NSAccessibilityAttributeName attribute) {
 bool IsForwardedAttribute(NSAccessibilityAttributeName attribute) {
   return IsGeometryAttribute(attribute) ||
          [attribute isEqualToString:NSAccessibilityZoomButtonAttribute];
+}
+
+// Window menu actions that the borderless popup can't perform: Zoom, Minimize,
+// and the private AppKit actions of Window > Fill, Center, Move & Resize, Full
+// Screen Tile and, with Stage Manager, Remove Window from Set.
+bool IsWindowMenuAction(SEL action) {
+  static const SEL kActions[] = {
+    @selector(performZoom:),
+    @selector(performMiniaturize:),
+    sel_registerName("_zoomFill:"),
+    sel_registerName("_zoomCenter:"),
+    sel_registerName("_zoomLeft:"),
+    sel_registerName("_zoomRight:"),
+    sel_registerName("_zoomTop:"),
+    sel_registerName("_zoomBottom:"),
+    sel_registerName("_zoomTopLeft:"),
+    sel_registerName("_zoomTopRight:"),
+    sel_registerName("_zoomBottomLeft:"),
+    sel_registerName("_zoomBottomRight:"),
+    sel_registerName("_zoomLeftAndRight:"),
+    sel_registerName("_zoomRightAndLeft:"),
+    sel_registerName("_zoomTopAndBottom:"),
+    sel_registerName("_zoomBottomAndTop:"),
+    sel_registerName("_zoomQuarters:"),
+    sel_registerName("_zoomLeftThreeUp:"),
+    sel_registerName("_zoomRightThreeUp:"),
+    sel_registerName("_zoomTopThreeUp:"),
+    sel_registerName("_zoomBottomThreeUp:"),
+    sel_registerName("_zoomUntile:"),
+    sel_registerName("_tileLeft:"),
+    sel_registerName("_tileRight:"),
+    sel_registerName("_removeWindowFromStageManagerSet:"),
+  };
+  return std::ranges::contains(kActions, action);
 }
 
 class OmniboxPopupNativeWidgetMac : public views::NativeWidgetMac {
@@ -82,18 +120,45 @@ class OmniboxPopupNativeWidgetMac : public views::NativeWidgetMac {
   return target;
 }
 
-// AppKit sends the View > Full Screen menu action (e.g. Ctrl+Cmd+F) to the key
-// window, and the borderless popup can't go fullscreen.
-- (void)toggleFullScreen:(id)sender {
+// The window whose commands this popup dispatches: the browser window, or the
+// popup itself while it has no commandDispatchParent.
+- (NSWindow*)commandDispatchRoot {
   NSWindow<CommandDispatchingWindow>* target = self;
   while (target.commandDispatchParent) {
     target = target.commandDispatchParent;
   }
-  if (target == self) {
-    [super toggleFullScreen:sender];
-  } else {
+  return target;
+}
+
+// AppKit sends the View > Full Screen menu action (e.g. Ctrl+Cmd+F) to the key
+// window, and the borderless popup can't go fullscreen.
+- (void)toggleFullScreen:(id)sender {
+  if (NSWindow* target = self.commandDispatchRoot; target != self) {
     [target toggleFullScreen:sender];
+  } else {
+    [super toggleFullScreen:sender];
   }
+}
+
+// AppKit offers a Window menu action to each responder, starting at the key
+// window, and sends it to the first one that responds or has a supplemental
+// target. The borderless popup can't zoom, minimize or tile, so it declines
+// these actions and names the browser window as their target.
+- (BOOL)respondsToSelector:(SEL)aSelector {
+  if (IsWindowMenuAction(aSelector) && self.commandDispatchRoot != self) {
+    return NO;
+  }
+  return [super respondsToSelector:aSelector];
+}
+
+- (id)supplementalTargetForAction:(SEL)action sender:(id)sender {
+  if (IsWindowMenuAction(action)) {
+    NSWindow* target = self.commandDispatchRoot;
+    if (target != self && [target respondsToSelector:action]) {
+      return target;
+    }
+  }
+  return [super supplementalTargetForAction:action sender:sender];
 }
 
 #pragma clang diagnostic push

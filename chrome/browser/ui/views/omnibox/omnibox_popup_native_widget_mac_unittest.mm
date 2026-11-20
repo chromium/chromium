@@ -54,6 +54,17 @@ NSWindow* ToggleFullScreen(NSWindow* window) {
   return g_toggled_window;
 }
 
+// Makes `window` key and returns the window a Window menu action acts on.
+// AppKit sends a menu action with no target, so it searches the responder
+// chain, starting at the key window.
+NSWindow* WindowMenuActionTarget(NSWindow* window, SEL action) {
+  [window makeKeyWindow];
+  EXPECT_EQ(window, NSApp.keyWindow);
+  return base::apple::ObjCCast<NSWindow>([NSApp targetForAction:action
+                                                             to:nil
+                                                           from:nil]);
+}
+
 class OmniboxPopupNativeWidgetMacTest : public ChromeViewsTestBase {
  protected:
   std::unique_ptr<views::Widget> CreateWindowWidget() {
@@ -123,6 +134,97 @@ TEST_F(OmniboxPopupNativeWidgetMacTest,
   ASSERT_EQ(GetNSWindow(overlay.get()), popup_window.commandDispatchParent);
 
   EXPECT_EQ(GetNSWindow(browser.get()), ToggleFullScreen(popup_window));
+}
+
+// Window menu actions reach the popup while it is key. It can't zoom,
+// minimize or tile, so they act on the browser window. The actions starting
+// with an underscore are private AppKit actions sent by Window > Fill, Center,
+// Move & Resize, Full Screen Tile and Remove Window from Set.
+TEST_F(OmniboxPopupNativeWidgetMacTest, WindowActionsTargetBrowserWindow) {
+  std::unique_ptr<views::Widget> browser = CreateWindowWidget();
+  std::unique_ptr<views::Widget> popup =
+      CreateChildWidget(browser.get(), /*popup=*/true);
+  auto paint_as_active_lock = popup->LockPaintAsActive();
+  NativeWidgetMacNSWindow* popup_window = GetNSWindow(popup.get());
+  ASSERT_EQ(GetNSWindow(browser.get()), popup_window.commandDispatchParent);
+
+  NSArray<NSString*>* actions = @[
+    @"performZoom:",
+    @"performMiniaturize:",
+    @"_zoomFill:",
+    @"_zoomCenter:",
+    @"_zoomLeft:",
+    @"_zoomRight:",
+    @"_zoomTop:",
+    @"_zoomBottom:",
+    @"_zoomTopLeft:",
+    @"_zoomTopRight:",
+    @"_zoomBottomLeft:",
+    @"_zoomBottomRight:",
+    @"_zoomLeftAndRight:",
+    @"_zoomRightAndLeft:",
+    @"_zoomTopAndBottom:",
+    @"_zoomBottomAndTop:",
+    @"_zoomQuarters:",
+    @"_zoomLeftThreeUp:",
+    @"_zoomRightThreeUp:",
+    @"_zoomTopThreeUp:",
+    @"_zoomBottomThreeUp:",
+    @"_zoomUntile:",
+    @"_tileLeft:",
+    @"_tileRight:",
+    @"_removeWindowFromStageManagerSet:",
+  ];
+  for (NSString* action in actions) {
+    SCOPED_TRACE(action.UTF8String);
+    SEL selector = NSSelectorFromString(action);
+    // The private actions vary by macOS version.
+    if (![NSWindow instancesRespondToSelector:selector]) {
+      continue;
+    }
+    EXPECT_EQ(GetNSWindow(browser.get()),
+              WindowMenuActionTarget(popup_window, selector));
+  }
+}
+
+// Control for the test above: a popup with no commandDispatchParent has no
+// browser window to send window actions to, so it keeps them.
+TEST_F(OmniboxPopupNativeWidgetMacTest, PopupWithoutParentKeepsWindowActions) {
+  auto popup = std::make_unique<views::Widget>();
+  views::Widget::InitParams params =
+      CreateParams(views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+                   views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  params.bounds = gfx::Rect(110, 110, 200, 100);
+  params.native_widget = CreateOmniboxPopupNativeWidget(popup.get());
+  popup->Init(std::move(params));
+  popup->Show();
+  NativeWidgetMacNSWindow* popup_window = GetNSWindow(popup.get());
+  ASSERT_TRUE([popup_window isKindOfClass:[OmniboxPopupNSWindow class]]);
+  ASSERT_EQ(nil, popup_window.commandDispatchParent);
+
+  EXPECT_EQ(popup_window,
+            WindowMenuActionTarget(popup_window, @selector(performZoom:)));
+}
+
+// In immersive fullscreen, window actions follow the overlay's
+// commandDispatchParentOverride to the browser window, as Ctrl+Cmd+F does.
+TEST_F(OmniboxPopupNativeWidgetMacTest,
+       WindowActionsFollowCommandDispatchParentOverride) {
+  std::unique_ptr<views::Widget> browser = CreateWindowWidget();
+  // Stands in for AppKit's NSToolbarFullScreenWindow.
+  std::unique_ptr<views::Widget> toolbar_window = CreateWindowWidget();
+  std::unique_ptr<views::Widget> overlay =
+      CreateChildWidget(toolbar_window.get(), /*popup=*/false);
+  GetNSWindow(overlay.get()).commandDispatchParentOverride =
+      GetNSWindow(browser.get());
+  std::unique_ptr<views::Widget> popup =
+      CreateChildWidget(overlay.get(), /*popup=*/true);
+  auto paint_as_active_lock = popup->LockPaintAsActive();
+  NativeWidgetMacNSWindow* popup_window = GetNSWindow(popup.get());
+  ASSERT_EQ(GetNSWindow(overlay.get()), popup_window.commandDispatchParent);
+
+  EXPECT_EQ(GetNSWindow(browser.get()),
+            WindowMenuActionTarget(popup_window, @selector(performZoom:)));
 }
 
 // Detaches `child` from `parent`, gives it a frame whose top edge overlaps the
