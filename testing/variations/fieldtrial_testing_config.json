@@ -2367,6 +2367,9 @@
                     "enable_features": [
                         "AutofillEnableWalletDirectOffers",
                         "AutofillEnableWalletDirectOffersNotificationBubble"
+                    ],
+                    "disable_features": [
+                        "IPH_AutofillWalletDirectOffers"
                     ]
                 }
             ]
