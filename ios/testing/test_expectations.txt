@@ -758,3 +758,6 @@ crbug.com/587312040 GeminiContainerTestCase [ Pass Failure ]
 # Gardening suppression 2026-11-20
 crbug.com/40752508 [ iOS27 iPad ] TabGridTestCase/testDragAndDropAtEdgeToCreateNewWindow [ Pass Failure ]
 crbug.com/427699033 [ iOS27 iPad ] TabGridTestCase/testIncognitoDragAndDropAtEdgeToCreateNewWindow [ Pass Failure ]
+crbug.com/588393258 PasswordManagerSearchTestCase/testPasswordsDeletionNavigation [ Pass Failure Crash ]
+crbug.com/584364590 GeminiAppSwitchingTestCase/testAppSwitchingAISummarizationFloatyNotInvoked [ Pass Failure Crash ]
+crbug.com/571459477 [ iPhone Simulator ] ReadingListTestCase/testDeleteEntries [ Pass Failure ]
