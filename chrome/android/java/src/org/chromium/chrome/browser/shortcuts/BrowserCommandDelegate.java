@@ -117,6 +117,7 @@ public class BrowserCommandDelegate {
         }
 
         boolean isCurrentTabVisible = mIsCurrentTabVisibleSupplier.getAsBoolean();
+        boolean isFullscreen = isFullscreen();
 
         // LINT.IfChange(BrowserCommandDelegateCommands)
         switch (commandId) {
@@ -128,11 +129,11 @@ public class BrowserCommandDelegate {
 
             case ChromeCommandIds.SHOW_APP_MENU:
                 // ChromeTabModalPresenter disables the 3-dot menu button while a tab-modal dialog
-                // is showing.
-                return !isShowingTabModalDialog;
+                // is showing, and top browser controls are hidden in fullscreen.
+                return !isFullscreen && !isShowingTabModalDialog;
 
             case ChromeCommandIds.FEEDBACK:
-                return FeedbackPolicyManager.getInstance().isUserFeedbackAllowed();
+                return !isFullscreen && FeedbackPolicyManager.getInstance().isUserFeedbackAllowed();
 
             case ChromeCommandIds.NEW_INCOGNITO_WINDOW:
                 return mTabbedBrowserCommandsSupported
@@ -145,8 +146,10 @@ public class BrowserCommandDelegate {
             case ChromeCommandIds.CYCLE_TO_NEXT_TAB:
             case ChromeCommandIds.CYCLE_TO_PREV_TAB:
             case ChromeCommandIds.RESTORE_TAB:
-            case ChromeCommandIds.SHOW_BOOKMARK_BAR:
                 return mTabbedBrowserCommandsSupported;
+
+            case ChromeCommandIds.SHOW_BOOKMARK_BAR:
+                return !isFullscreen && mTabbedBrowserCommandsSupported;
 
             case ChromeCommandIds.NEW_WINDOW:
                 return mTabbedBrowserCommandsSupported
@@ -161,17 +164,7 @@ public class BrowserCommandDelegate {
             case ChromeCommandIds.SELECT_TAB_6:
             case ChromeCommandIds.SELECT_TAB_7:
             case ChromeCommandIds.SELECT_LAST_TAB:
-            case ChromeCommandIds.TOGGLE_MULTISELECT:
-            case ChromeCommandIds.OPEN_TAB_STRIP_CONTEXT_MENU:
-            case ChromeCommandIds.REORDER_TAB_STRIP_ITEM_LEFT:
-            case ChromeCommandIds.REORDER_TAB_STRIP_ITEM_RIGHT:
             case ChromeCommandIds.BOOKMARK_ALL_TABS:
-            case ChromeCommandIds.FOCUS_LOCATION:
-            case ChromeCommandIds.FOCUS_SEARCH:
-            case ChromeCommandIds.FOCUS_BOOKMARKS:
-            case ChromeCommandIds.FOCUS_NEXT_PANE:
-            case ChromeCommandIds.FOCUS_PREVIOUS_PANE:
-            case ChromeCommandIds.FOCUS_WEB_CONTENTS_PANE:
             case ChromeCommandIds.SHOW_BOOKMARK_MANAGER:
             case ChromeCommandIds.SHOW_DOWNLOADS:
             case ChromeCommandIds.CLEAR_BROWSING_DATA:
@@ -179,6 +172,18 @@ public class BrowserCommandDelegate {
             case ChromeCommandIds.CARET_BROWSING_TOGGLE:
             case ChromeCommandIds.TAB_SEARCH:
                 return isCurrentTabVisible && mTabbedBrowserCommandsSupported;
+
+            case ChromeCommandIds.TOGGLE_MULTISELECT:
+            case ChromeCommandIds.OPEN_TAB_STRIP_CONTEXT_MENU:
+            case ChromeCommandIds.REORDER_TAB_STRIP_ITEM_LEFT:
+            case ChromeCommandIds.REORDER_TAB_STRIP_ITEM_RIGHT:
+            case ChromeCommandIds.FOCUS_LOCATION:
+            case ChromeCommandIds.FOCUS_SEARCH:
+            case ChromeCommandIds.FOCUS_BOOKMARKS:
+            case ChromeCommandIds.FOCUS_NEXT_PANE:
+            case ChromeCommandIds.FOCUS_PREVIOUS_PANE:
+            case ChromeCommandIds.FOCUS_WEB_CONTENTS_PANE:
+                return !isFullscreen && isCurrentTabVisible && mTabbedBrowserCommandsSupported;
 
             case ChromeCommandIds.OPEN_FILE:
                 return isCurrentTabVisible
@@ -189,10 +194,15 @@ public class BrowserCommandDelegate {
             case ChromeCommandIds.FIND:
             case ChromeCommandIds.FIND_NEXT:
             case ChromeCommandIds.FIND_PREVIOUS:
-            case ChromeCommandIds.FOCUS_MENU_BAR:
                 // Tab-modal dialogs obscure the active tab (blocking print and find-in-page,
-                // matching Desktop BrowserCommandController) and disable the 3-dot menu button.
+                // matching Desktop BrowserCommandController).
                 return isCurrentTabVisible && !isShowingTabModalDialog;
+
+            case ChromeCommandIds.FOCUS_MENU_BAR:
+                return !isFullscreen && isCurrentTabVisible && !isShowingTabModalDialog;
+
+            case ChromeCommandIds.FOCUS_TOOLBAR:
+                return !isFullscreen && isCurrentTabVisible;
 
             case ChromeCommandIds.BACK:
             case ChromeCommandIds.FORWARD:
@@ -206,7 +216,6 @@ public class BrowserCommandDelegate {
             case ChromeCommandIds.ZOOM_PLUS:
             case ChromeCommandIds.ZOOM_NORMAL:
             case ChromeCommandIds.ZOOM_MINUS:
-            case ChromeCommandIds.FOCUS_TOOLBAR:
             case ChromeCommandIds.DEV_TOOLS:
             case ChromeCommandIds.DEV_TOOLS_CONSOLE:
             case ChromeCommandIds.DEV_TOOLS_INSPECT:

@@ -74,6 +74,7 @@ public class BrowserCommandDelegateUnitTest {
     @Mock private ModalDialogProperties.Controller mDialogController;
 
     private boolean mIsCurrentTabVisible = true;
+    private boolean mIsFullscreen;
     private ModalDialogManager mModalDialogManager;
     private PropertyModel mDialogModel;
     private BrowserCommandDelegate mTabbedDelegate;
@@ -100,7 +101,7 @@ public class BrowserCommandDelegateUnitTest {
         mTabbedDelegate =
                 new BrowserCommandDelegate(
                         () -> mIsCurrentTabVisible,
-                        /* isFullscreenSupplier= */ () -> false,
+                        () -> mIsFullscreen,
                         /* tabbedBrowserCommandsSupported= */ true,
                         () -> mTabModelSelector,
                         () -> mModalDialogManager,
@@ -108,7 +109,7 @@ public class BrowserCommandDelegateUnitTest {
         mCustomTabDelegate =
                 new BrowserCommandDelegate(
                         () -> mIsCurrentTabVisible,
-                        /* isFullscreenSupplier= */ () -> false,
+                        () -> mIsFullscreen,
                         /* tabbedBrowserCommandsSupported= */ false,
                         () -> mTabModelSelector,
                         () -> mModalDialogManager,
@@ -261,5 +262,29 @@ public class BrowserCommandDelegateUnitTest {
         for (int command : paneCommands) {
             assertFalse(mTabbedDelegate.isCommandEnabled(command));
         }
+    }
+
+    @Test
+    public void testFullscreen_DisablesTopChromeCommands_KeepsTabAndPageCommands() {
+        mIsFullscreen = true;
+
+        // One representative command per fullscreen-disabled category:
+        assertFalse(mTabbedDelegate.executeCommand(ChromeCommandIds.SHOW_APP_MENU));
+        assertFalse(mTabbedDelegate.isCommandEnabled(ChromeCommandIds.FEEDBACK));
+        assertFalse(mTabbedDelegate.isCommandEnabled(ChromeCommandIds.SHOW_BOOKMARK_BAR));
+        assertFalse(mTabbedDelegate.isCommandEnabled(ChromeCommandIds.FOCUS_LOCATION));
+        assertFalse(mTabbedDelegate.isCommandEnabled(ChromeCommandIds.FOCUS_MENU_BAR));
+        assertFalse(mTabbedDelegate.isCommandEnabled(ChromeCommandIds.FOCUS_TOOLBAR));
+        verify(mController, never()).onMenuOrKeyboardAction(anyInt(), anyBoolean());
+
+        // Representative window, tab, and page commands remain enabled:
+        assertTrue(mTabbedDelegate.isCommandEnabled(ChromeCommandIds.CLOSE_FIND_OR_STOP));
+        assertTrue(mTabbedDelegate.isCommandEnabled(ChromeCommandIds.NEW_TAB));
+        assertTrue(mTabbedDelegate.isCommandEnabled(ChromeCommandIds.TAB_SEARCH));
+        assertTrue(mTabbedDelegate.isCommandEnabled(ChromeCommandIds.FIND));
+
+        mIsFullscreen = false;
+        assertTrue(mTabbedDelegate.isCommandEnabled(ChromeCommandIds.SHOW_APP_MENU));
+        assertTrue(mTabbedDelegate.isCommandEnabled(ChromeCommandIds.FOCUS_LOCATION));
     }
 }
