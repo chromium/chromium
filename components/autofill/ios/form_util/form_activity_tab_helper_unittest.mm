@@ -610,6 +610,16 @@ class FormMutationTest : public base::test::WithFeatureOverride,
     return done && [collected boolValue];
   }
 
+  // Waits for a `form_changed` event and validates its parameters.
+  void ExpectFormChangedEvent() {
+    TestFormActivityObserver* block_observer = observer_.get();
+    ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
+      return block_observer->form_activity_info() != nullptr;
+    }));
+    ValidateParamsAfterFormChangedEvent(
+        observer_->form_activity_info()->form_activity);
+  }
+
   /**
    * Removes the specified HTML element from the DOM and returns the
    * corresponding form removal parameters.
@@ -1103,6 +1113,49 @@ TEST_P(FormMutationTest, AddForm) {
   }));
 
   ValidateParamsAfterFormChangedEvent(info->form_activity);
+}
+
+// Tests that adding a field to a registered form triggers `form_changed`, even
+// when an unregistered control is removed in the same batch.
+TEST_P(FormMutationTest, AddFieldToRegisteredForm) {
+  LoadHtmlForMutationTest(
+      @"<form id='form'><input><input id='hidden' type='hidden'></form>");
+
+  ExecuteJavaScript(@"document.getElementById('hidden').remove();"
+                    @"document.getElementById('form').appendChild("
+                    @"    document.createElement('input'));");
+
+  ExpectFormChangedEvent();
+}
+
+// Tests that moving a container holding a registered field into another form
+// triggers `form_changed`.
+TEST_P(FormMutationTest, MoveFieldIntoAnotherForm) {
+  LoadHtmlForMutationTest(@"<form id='form1'>"
+                           "<div id='row'><input></div>"
+                           "</form>"
+                           "<form id='form2'><input></form>");
+
+  ExecuteJavaScript(@"document.getElementById('form2').appendChild("
+                    @"    document.getElementById('row'));");
+
+  ExpectFormChangedEvent();
+}
+
+// Tests that adding a field to a container already cached as empty earlier
+// in the same debounce window still triggers `form_changed`.
+TEST_P(FormMutationTest, AddFieldToPreviouslyEmptyContainer) {
+  LoadHtmlForMutationTest(@"<form><input></form><div id='row'></div>");
+
+  ExecuteJavaScript(@"(async () => {"
+                    @"  const row = document.getElementById('row');"
+                    @"  row.appendChild(document.createElement('span'));"
+                    // Yields a microtask so the observer caches `row` as empty.
+                    @"  await null;"
+                    @"  row.appendChild(document.createElement('input'));"
+                    @"})();");
+
+  ExpectFormChangedEvent();
 }
 
 // Tests that mutations happening in separate event loop tasks before the

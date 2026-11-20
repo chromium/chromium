@@ -79,17 +79,24 @@ let pendingBatchElements: Element[] = [];
 let scannedEntryCount = 0;
 
 /**
- * Snapshot of the total number of form controls in the document.
+ * Whether `hasAddedFormControl()` detected an added form control in this
+ * debounce window. Used to skip mutation traversal once a control was
+ * added.
  */
-let formControlCount: number = -1;
+let formControlAdded = false;
 
 /**
- * Cache the live HTMLCollections.
- * WebCore automatically updates live collections's length when the DOM changes,
- * eliminating new JS HTMLCollection wrapper allocations and binding lookups on
- * subsequent calls.
+ * Whether each mutation target had descendant form controls when first seen in
+ * this debounce window.
  */
-let formControlCollections: Array<HTMLCollectionOf<Element>> = [];
+let targetHasFormControl = new WeakMap<Node, boolean>();
+
+/**
+ * Mutation targets without descendant form controls when first seen, held
+ * weakly so detached targets can be garbage-collected before the window ends.
+ * Separate from `targetHasFormControl` because `WeakMap` cannot be iterated.
+ */
+let emptyTargets: Array<WeakRef<ParentNode&Node>> = [];
 
 /**
  * The set of tag names that are considered form elements.
@@ -97,18 +104,17 @@ let formControlCollections: Array<HTMLCollectionOf<Element>> = [];
 const FORM_TAGS = new Set(['FORM', 'INPUT', 'SELECT', 'OPTION', 'TEXTAREA']);
 
 /**
- * Tag names used to compute live HTMLCollection form control counts.
+ * Tag names tracked as form controls by the optimized mutation observer.
  *
- * Unlike `FORM_TAGS`, 'OPTION' can be safely excluded because:
- * 1. <option> elements are only child items of <select> controls and are not
- *    independent autofillable form controls themselves. Any addition or
- *    removal of a select control is already captured by tracking <select>.
- * 2. Forms (e.g., country or date-of-birth dropdowns) can contain hundreds or
- *    thousands of <option> elements. Excluding them avoids expensive DOM
- *    subtree scanning and live HTMLCollection maintenance for large option
- *    lists.
+ * Excludes `'OPTION'` because `<option>` is only a child of `<select>`
+ * (already tracked) and large dropdown lists shouldn't trigger form changes.
  */
 const FORM_CONTROL_TAGS = ['FORM', 'INPUT', 'SELECT', 'TEXTAREA'];
+
+/**
+ * Selector matching the elements in `FORM_CONTROL_TAGS`.
+ */
+const FORM_CONTROL_SELECTOR = FORM_CONTROL_TAGS.join(',');
 
 /**
  * A message scheduled to be sent to host on the next runloop.
@@ -624,47 +630,104 @@ function processFormMutationsStandard(
 }
 
 /**
- * Lazily initializes the live HTMLCollection caches.
+ * Returns true if `node` has a descendant matching `FORM_CONTROL_SELECTOR`.
+ * Calls the prototype directly to avoid DOM clobbering.
  */
-function initializeFormControlCollections(): void {
-  if (formControlCollections.length === 0) {
-    formControlCollections =
-        FORM_CONTROL_TAGS.map(tag => document.getElementsByTagName(tag));
-  }
+function queryHasFormControl(node: Node): boolean {
+  const querySelector = node === document ? Document.prototype.querySelector :
+                                            Element.prototype.querySelector;
+  return querySelector.call(node, FORM_CONTROL_SELECTOR) !== null;
 }
 
 /**
- * Gets the total count of form elements using live HTMLCollections.
+ * Returns whether a connected node added by `mutations` is or contains a form
+ * control. Targets cached as empty are deferred to `hasControlInEmptyTarget()`.
  */
-function getFormControlCount(): number {
-  let total = 0;
-  for (const collection of formControlCollections) {
-    total += collection.length;
+function hasAddedFormControl(mutations: MutationRecord[]): boolean {
+  // Iterates backwards because updates typically append after removals;
+  // returning early avoids allocating `addedNodes`.
+  for (let m = mutations.length - 1; m >= 0; m--) {
+    const mutation = mutations[m]!;
+    const target = mutation.target as ParentNode & Node;
+    if (!target.isConnected) {
+      continue;
+    }
+
+    // Caches whether each target has form controls; targets without any skip
+    // their `addedNodes` and are rechecked at the end of the debounce window.
+    let hasFormControl = targetHasFormControl.get(target);
+    if (hasFormControl === undefined) {
+      // Mutations are already applied, so an empty target gained no form
+      // controls in this batch.
+      hasFormControl = queryHasFormControl(target);
+      targetHasFormControl.set(target, hasFormControl);
+      if (!hasFormControl) {
+        emptyTargets.push(new WeakRef(target));
+      }
+    }
+    if (!hasFormControl) {
+      continue;
+    }
+
+    // Checks whether an added node is or contains a form control.
+    for (const node of mutation.addedNodes) {
+      if (node.nodeType !== Node.ELEMENT_NODE || !node.isConnected) {
+        continue;
+      }
+      const element = node as Element;
+      if (FORM_CONTROL_TAGS.includes(element.tagName) ||
+          queryHasFormControl(element)) {
+        return true;
+      }
+    }
   }
-  return total;
+  return false;
+}
+
+/**
+ * Returns true if any target in `emptyTargets` now contains a form control
+ * (meaning one was added later in the debounce window).
+ */
+function hasControlInEmptyTarget(): boolean {
+  for (const ref of emptyTargets) {
+    const target = ref.deref();
+    if (target?.isConnected && queryHasFormControl(target)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
+ * Resets the state collected during a debounce window.
+ */
+function resetDebounceWindowState(): void {
+  pendingBatchElements = [];
+  scannedEntryCount = 0;
+  formControlAdded = false;
+  targetHasFormControl = new WeakMap();
+  emptyTargets = [];
 }
 
 /**
  * Processes form mutations using the diffing strategy.
  *
- * This strategy avoids iterating over `mutation.removedNodes` and
- * `mutation.addedNodes`, eliminating subtree crawls and preventing JavaScript
- * wrapper materializations for non-form elements. WebView creates a wrapper
- * around the DOM object when we access it, so we want to avoid it to reduce
- * allocation/deallocation churn in a tight loop.
+ * WebKit creates a JavaScript wrapper for each DOM node accessed from script,
+ * so this strategy minimizes node access to reduce allocation/deallocation
+ * churn in a tight loop. It never iterates over `mutation.removedNodes`,
+ * avoiding subtree crawls and wrapper materialization for removed elements,
+ * and limits reads of `mutation.addedNodes` (see `hasAddedFormControl()`).
  *
  * For removals: Instead of parsing removed nodes, we iterate over the active
  * form controls tracked in `document.__gCrElementMap` and verify if they are
  * still connected to the DOM via the lightweight `.isConnected` property.
  *
- * For additions: We calculate if any form control elements were added
- * using cached live HTMLCollections. If any additions are detected, send
- * a single generic form activity message.
- *
+ * For additions: each observer callback in the debounce window runs
+ * `hasAddedFormControl()` on its `addedNodes` until a form control is found,
+ * and `hasControlInEmptyTarget()` rechecks targets skipped as empty. If any are
+ * found, sends a single generic `form_changed` message.
  */
 function processFormMutationsOptimized(): void {
-  const newFormControlCount = getFormControlCount();
-
   const removedFormIDs: string[] = [];
   const removedFieldIDs: string[] = [];
   let removedFormControlCount = 0;
@@ -696,7 +759,7 @@ function processFormMutationsOptimized(): void {
       removedFieldIDs.push(idStr);
     }
 
-    // Mathematically align removedFormControlCount with getFormControlCount()
+    // Counts removed form controls, including those owned by a form.
     if (FORM_CONTROL_TAGS.includes(element.tagName)) {
       removedFormControlCount++;
     }
@@ -717,26 +780,18 @@ function processFormMutationsOptimized(): void {
     };
   }
 
-  // Process form changed
-
-  // Calculate if any form elements were added to avoid `addedNodes` subtree
-  // crawls. The formula is based on:
-  // newFormControlCount = formControlCount + addedFormControlCount -
-  // removedFormControlCount where:
-  //  `newFormControlCount` = form elements count after applying the mutations.
-  //  `formControlCount` = form elements count before applying the mutations.
-  //  `addedFormControlCount` = number of form elements added in this mutation
-  //  `removedFormControlCount` = number of form elements removed in this
-  //  mutation.
-  const addedFormControlCount =
-      (newFormControlCount - formControlCount) + removedFormControlCount;
-
-  // Handle the removed form control element case as a form changed
-  // mutation. Removed form control are elements that are not form nor
-  // unowned autofillable fields.
-  if (addedFormControlCount > 0 ||
-      removedFormControlCount >
-          (removedFormIDs.length + removedFieldIDs.length)) {
+  // Reports `form_changed` when the forms may have changed beyond what
+  // `form.removal` covers:
+  // - `formControlAdded`: an observer callback saw an added form control.
+  // - `hasUnreportedRemoval`: removed form controls outnumber the reported
+  //   forms and unowned fields (e.g. fields removed with a form, or a
+  //   registered control that is no longer autofillable).
+  // - `hasControlInEmptyTarget()`: a later callback added a control to a target
+  //   cached as empty by an earlier one, so its `addedNodes` were skipped.
+  //   Checked last since it queries the DOM.
+  const hasUnreportedRemoval =
+      removedFormControlCount > removedFormIDs.length + removedFieldIDs.length;
+  if (formControlAdded || hasUnreportedRemoval || hasControlInEmptyTarget()) {
     addedFormMessage = {
       'command': 'form.activity',
       'frameID': gCrWeb.getFrameId(),
@@ -750,9 +805,6 @@ function processFormMutationsOptimized(): void {
       'hasUserGesture': false,
     };
   }
-
-  // Update the count snapshot
-  formControlCount = newFormControlCount;
 
   // Send the messages
   const messagesToSend: object[] = [];
@@ -837,9 +889,7 @@ function cleanUpFormMutationTracking(): void {
     clearTimeout(mutationProcessTimeout);
     mutationProcessTimeout = null;
   }
-  pendingBatchElements = [];
-  scannedEntryCount = 0;
-  formControlCollections = [];
+  resetDebounceWindowState();
   lastFocusedElement = null;
 }
 
@@ -876,13 +926,13 @@ function trackFormMutations(delay: number): void {
 
   // Track form mutations.
   if (isAutofillTrackFormMutationsOptimizationEnabled()) {
-    initializeFormControlCollections();
-    formControlCount = getFormControlCount();
-
-    formMutationObserver = new MutationObserver(function() {
+    formMutationObserver = new MutationObserver(function(mutations) {
       // Keep observing during the delay so that elements registered meanwhile
       // are also retained until the batch is processed.
       retainNewTrackedElements();
+      if (!formControlAdded) {
+        formControlAdded = hasAddedFormControl(mutations);
+      }
       if (mutationProcessTimeout) {
         return;
       }
@@ -894,8 +944,7 @@ function trackFormMutations(delay: number): void {
           // Released only after processing, so that the removed elements can't
           // be garbage-collected (e.g. by an allocation in the processing)
           // before their removal is detected.
-          pendingBatchElements = [];
-          scannedEntryCount = 0;
+          resetDebounceWindowState();
         }
       }, delay);
     });
