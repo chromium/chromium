@@ -31,7 +31,6 @@ android_library("java") {
     "java/src/org/chromium/components/translate/TranslateMessage.java",
     "java/src/org/chromium/components/translate/TranslateMessageSecondaryMenu.java",
     "java/src/org/chromium/components/translate/TranslateMessageSecondaryMenuAdapter.java",
-    "java/src/org/chromium/components/translate/TranslateOptions.java",
   ]
   resources_package = "org.chromium.components.translate"
   deps = [
@@ -78,10 +77,8 @@ generate_jni("jni_headers") {
 
 robolectric_library("junit") {
   resources_package = "org.chromium.components.translate"
-  sources = [
-    "java/src/org/chromium/components/translate/TranslateMessageTest.java",
-    "java/src/org/chromium/components/translate/TranslateOptionsTest.java",
-  ]
+  sources =
+      [ "java/src/org/chromium/components/translate/TranslateMessageTest.java" ]
   deps = [
     ":java",
     ":java_resources",
