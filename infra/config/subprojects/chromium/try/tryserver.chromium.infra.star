@@ -51,15 +51,9 @@ try_.builder(
     name = "3pp-linux-arm64-packager",
     description_html = "Chromium 3PP packager for the Linux ARM64 platform.",
     executable = "recipe:chromium_3pp",
-    builderless = True,
+    builderless = False,
     cores = 8,
     os = os.LINUX_DEFAULT,
-    # The snap runtime downloads .debs from snapshot.ubuntu.com, which has no
-    # IPv6 address. The ssd:1 try bots are IPv6-only, so pin the IPv4 ssd:0
-    # bots.
-    # TODO(crbug.com/548320842): Move to IPv4 bots that survive the ssd:0 pool
-    # removal.
-    ssd = False,
     contact_team_email = "chrome-linux-engprod@google.com",
     # TODO(crbug.com/579508504): Uncomment once the builder is verified to work.
     # cq_settings = try_.cq_settings(
