@@ -115,17 +115,17 @@ TEST(WebSocketExtensionParserTest, InvalidPatterns) {
       "foo; bar=\"baz \"",    // space in quoted string
       "foo; bar baz",         // missing '='
       "foo; bar - baz",  // '-' instead of '=' (note: "foo; bar-baz" is valid).
-      "foo; bar=\r\nbaz",   // CRNL not followed by a space
-      "foo; bar=\r\n baz",  // CRNL followed by a space
-      "f\xFFpp",            // 8-bit character in extension name
-      "foo; b\xFFr=baz"     // 8-bit character in parameter name
-      "foo; bar=b\xFF"      // 8-bit character in parameter value
-      "foo; bar=\"b\xFF\""  // 8-bit character in quoted parameter value
-      "foo; bar=\"baz\\"    // ends with backslash
+      "foo; bar=\r\nbaz",    // CRNL not followed by a space
+      "foo; bar=\r\n baz",   // CRNL followed by a space
+      "f\xFFpp",             // 8-bit character in extension name
+      "foo; b\xFFr=baz",     // 8-bit character in parameter name
+      "foo; bar=b\xFF",      // 8-bit character in parameter value
+      "foo; bar=\"b\xFF\"",  // 8-bit character in quoted parameter value
+      "foo; bar=\"baz\\",    // ends with backslash
   };
 
   for (const auto* pattern : patterns) {
-    EXPECT_EQ(0U, ParseWebSocketExtensions(pattern).size());
+    EXPECT_EQ(0U, ParseWebSocketExtensions(pattern).size()) << pattern;
   }
 }
 
