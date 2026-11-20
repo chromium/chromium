@@ -26,7 +26,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.R;
+import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.widget.ButtonCompat;
 
