@@ -451,6 +451,7 @@ if (use_system_harfbuzz) {
       "src/src/hb-vector-draw.cc",
       "src/src/hb-vector-draw.hh",
       "src/src/hb-vector-internal.hh",
+      "src/src/hb-vector-paint-pdf-image.hh",
       "src/src/hb-vector-paint-pdf.cc",
       "src/src/hb-vector-paint-svg.cc",
       "src/src/hb-vector-paint.cc",
