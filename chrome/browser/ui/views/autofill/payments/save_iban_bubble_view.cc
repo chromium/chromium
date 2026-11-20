@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/autofill/payments/save_iban_bubble_view.h"
 
+#include "base/feature_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/autofill/payments/save_iban_ui.h"
@@ -74,12 +75,15 @@ void SaveIbanBubbleView::Hide() {
 
 void SaveIbanBubbleView::AddedToWidget() {
   ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
-  auto image_view =
-      std::make_unique<views::ImageView>(bundle.GetThemedLottieImageNamed(
-          base::FeatureList::IsEnabled(
-              features::kAutofillEnableWalletBrandingV2)
-              ? IDR_AUTOFILL_SAVE_IBAN_TO_WALLET_LOTTIE
-              : IDR_AUTOFILL_SAVE_IBAN_LOTTIE));
+  int lottie_resource_id = IDR_AUTOFILL_SAVE_IBAN_LOTTIE;
+  if (base::FeatureList::IsEnabled(features::kAutofillEnableWalletBrandingV2)) {
+    lottie_resource_id = base::FeatureList::IsEnabled(
+                             features::kAutofillEnableGradientGoogleLogos)
+                             ? IDR_AUTOFILL_SAVE_IBAN_TO_WALLET_GRADIENT_LOTTIE
+                             : IDR_AUTOFILL_SAVE_IBAN_TO_WALLET_LOTTIE;
+  }
+  auto image_view = std::make_unique<views::ImageView>(
+      bundle.GetThemedLottieImageNamed(lottie_resource_id));
   image_view->GetViewAccessibility().SetIsInvisible(true);
 
   GetBubbleFrameView()->SetHeaderView(std::move(image_view));

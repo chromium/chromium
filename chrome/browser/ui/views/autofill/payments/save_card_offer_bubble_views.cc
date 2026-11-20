@@ -170,10 +170,16 @@ void SaveCardOfferBubbleViews::AddedToWidget() {
     case PaymentsBubbleType::kUploadCardholderNameUpdate:
     case PaymentsBubbleType::kUploadInProgress:
     case PaymentsBubbleType::kUploadComplete:
-      lottie_resource_id = base::FeatureList::IsEnabled(
-                               features::kAutofillEnableWalletBrandingV2)
-                               ? IDR_AUTOFILL_SAVE_CARD_TO_WALLET_LOTTIE
-                               : IDR_AUTOFILL_SAVE_CARD_SECURE_LOTTIE;
+      if (base::FeatureList::IsEnabled(
+              features::kAutofillEnableWalletBrandingV2)) {
+        lottie_resource_id =
+            base::FeatureList::IsEnabled(
+                features::kAutofillEnableGradientGoogleLogos)
+                ? IDR_AUTOFILL_SAVE_CARD_TO_WALLET_GRADIENT_LOTTIE
+                : IDR_AUTOFILL_SAVE_CARD_TO_WALLET_LOTTIE;
+      } else {
+        lottie_resource_id = IDR_AUTOFILL_SAVE_CARD_SECURE_LOTTIE;
+      }
       break;
     case PaymentsBubbleType::kLocalCvcSave:
     case PaymentsBubbleType::kUploadCvcSave:
