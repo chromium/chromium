@@ -14,7 +14,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/time/time.h"
-#include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "net/base/address_list.h"
 #include "net/base/completion_once_callback.h"
@@ -167,8 +166,6 @@ class NET_EXPORT TCPClientSocket : public TransportClientSocket,
   int DoConnect();
   int DoConnectComplete(int result);
 
-  void OnConnectAttemptTimeout();
-
   // Calls the connect method of |socket_|. Used in tests, to ensure a socket
   // never connects.
   virtual int ConnectInternal(const IPEndPoint& endpoint);
@@ -191,12 +188,6 @@ class NET_EXPORT TCPClientSocket : public TransportClientSocket,
   // Emits histograms for the TCP connect attempt that just completed with
   // |result|.
   void EmitConnectAttemptHistograms(int result);
-
-  // Gets the timeout to use for the next TCP connect attempt. This is an
-  // experimentally controlled value based on the estimated transport round
-  // trip time. If no timeout is to be enforced, returns
-  // base::TimeDelta::Max().
-  base::TimeDelta GetConnectAttemptTimeout();
 
   std::unique_ptr<TCPSocket> socket_;
 
@@ -236,12 +227,6 @@ class NET_EXPORT TCPClientSocket : public TransportClientSocket,
 
   // The time when the latest connect attempt was started.
   std::optional<base::TimeTicks> start_connect_attempt_;
-
-  // The NetworkQualityEstimator for the context this socket is associated with.
-  // Can be nullptr.
-  raw_ptr<NetworkQualityEstimator> network_quality_estimator_;
-
-  base::OneShotTimer connect_attempt_timer_;
 
   handles::NetworkHandle network_;
 

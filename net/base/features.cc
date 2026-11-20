@@ -363,23 +363,6 @@ BASE_FEATURE(kShortLaxAllowUnsafeThreshold, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kSameSiteDefaultChecksMethodRigorously,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kTimeoutTcpConnectAttempt, base::FEATURE_DISABLED_BY_DEFAULT);
-
-extern const base::FeatureParam<double> kTimeoutTcpConnectAttemptRTTMultiplier(
-    &kTimeoutTcpConnectAttempt,
-    "TimeoutTcpConnectAttemptRTTMultiplier",
-    5.0);
-
-extern const base::FeatureParam<base::TimeDelta> kTimeoutTcpConnectAttemptMin(
-    &kTimeoutTcpConnectAttempt,
-    "TimeoutTcpConnectAttemptMin",
-    base::Seconds(8));
-
-extern const base::FeatureParam<base::TimeDelta> kTimeoutTcpConnectAttemptMax(
-    &kTimeoutTcpConnectAttempt,
-    "TimeoutTcpConnectAttemptMax",
-    base::Seconds(30));
-
 BASE_FEATURE(kCookieSameSiteConsidersRedirectChain,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

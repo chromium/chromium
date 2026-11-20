@@ -14,12 +14,10 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
-#include "net/base/features.h"
 #include "net/base/io_buffer.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "net/base/port_util.h"
-#include "net/nqe/network_quality_estimator.h"
 #include "net/socket/socket_performance_watcher.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
@@ -155,6 +153,8 @@ int TCPClientSocket::Connect(CompletionOnceCallback callback) {
   return rv;
 }
 
+// TODO(crbug.com/40146880): Remove unused `network_quality_estimator`
+// parameter.
 TCPClientSocket::TCPClientSocket(
     std::unique_ptr<TCPSocket> socket,
     const AddressList& addresses,
@@ -166,7 +166,6 @@ TCPClientSocket::TCPClientSocket(
       bind_address_(std::move(bind_address)),
       addresses_(addresses),
       current_address_index_(current_address_index),
-      network_quality_estimator_(network_quality_estimator),
       network_(network) {
   DCHECK(socket_);
   if (socket_->IsValid())
@@ -273,16 +272,6 @@ int TCPClientSocket::DoConnect() {
 
   start_connect_attempt_ = base::TimeTicks::Now();
 
-  // Start a timer to fail the connect attempt if it takes too long.
-  base::TimeDelta attempt_timeout = GetConnectAttemptTimeout();
-  if (!attempt_timeout.is_max()) {
-    DCHECK(!connect_attempt_timer_.IsRunning());
-    connect_attempt_timer_.Start(
-        FROM_HERE, attempt_timeout,
-        base::BindOnce(&TCPClientSocket::OnConnectAttemptTimeout,
-                       base::Unretained(this)));
-  }
-
   return ConnectInternal(endpoint);
 }
 
@@ -290,7 +279,6 @@ int TCPClientSocket::DoConnectComplete(int result) {
   if (start_connect_attempt_) {
     EmitConnectAttemptHistograms(result);
     start_connect_attempt_ = std::nullopt;
-    connect_attempt_timer_.Stop();
   }
 
   if (result == OK)
@@ -312,10 +300,6 @@ int TCPClientSocket::DoConnectComplete(int result) {
 
   // Otherwise there is nothing to fall back to, so give up.
   return result;
-}
-
-void TCPClientSocket::OnConnectAttemptTimeout() {
-  DidCompleteConnect(ERR_TIMED_OUT);
 }
 
 int TCPClientSocket::ConnectInternal(const IPEndPoint& endpoint) {
@@ -344,7 +328,6 @@ void TCPClientSocket::DoDisconnect() {
   if (start_connect_attempt_) {
     EmitConnectAttemptHistograms(ERR_ABORTED);
     start_connect_attempt_ = std::nullopt;
-    connect_attempt_timer_.Stop();
   }
 
   total_received_bytes_ = 0;
@@ -577,33 +560,6 @@ void TCPClientSocket::EmitConnectAttemptHistograms(int result) {
     DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES("Net.TcpConnectAttempt.Latency.Error",
                                           duration);
   }
-}
-
-base::TimeDelta TCPClientSocket::GetConnectAttemptTimeout() {
-  if (!base::FeatureList::IsEnabled(features::kTimeoutTcpConnectAttempt))
-    return base::TimeDelta::Max();
-
-  std::optional<base::TimeDelta> transport_rtt = std::nullopt;
-  if (network_quality_estimator_)
-    transport_rtt = network_quality_estimator_->GetTransportRTT();
-
-  base::TimeDelta min_timeout = features::kTimeoutTcpConnectAttemptMin.Get();
-  base::TimeDelta max_timeout = features::kTimeoutTcpConnectAttemptMax.Get();
-
-  if (!transport_rtt)
-    return max_timeout;
-
-  base::TimeDelta adaptive_timeout =
-      transport_rtt.value() *
-      features::kTimeoutTcpConnectAttemptRTTMultiplier.Get();
-
-  if (adaptive_timeout <= min_timeout)
-    return min_timeout;
-
-  if (adaptive_timeout >= max_timeout)
-    return max_timeout;
-
-  return adaptive_timeout;
 }
 
 }  // namespace net

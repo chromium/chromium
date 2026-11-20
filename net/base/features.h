@@ -374,28 +374,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kShortLaxAllowUnsafeThreshold);
 // This only has an effect if the cookie defaults to SameSite=Lax.
 NET_EXPORT BASE_DECLARE_FEATURE(kSameSiteDefaultChecksMethodRigorously);
 
-// Enables a timeout on individual TCP connect attempts, based on
-// the parameter values.
-NET_EXPORT BASE_DECLARE_FEATURE(kTimeoutTcpConnectAttempt);
-
-// FeatureParams associated with kTimeoutTcpConnectAttempt.
-
-// When there is an estimated RTT available, the experimental TCP connect
-// attempt timeout is calculated as:
-//
-//  clamp(kTimeoutTcpConnectAttemptMin,
-//        kTimeoutTcpConnectAttemptMax,
-//        <Estimated RTT> * kTimeoutTcpConnectAttemptRTTMultiplier);
-//
-// Otherwise the TCP connect attempt timeout is set to
-// kTimeoutTcpConnectAttemptMax.
-NET_EXPORT extern const base::FeatureParam<double>
-    kTimeoutTcpConnectAttemptRTTMultiplier;
-NET_EXPORT extern const base::FeatureParam<base::TimeDelta>
-    kTimeoutTcpConnectAttemptMin;
-NET_EXPORT extern const base::FeatureParam<base::TimeDelta>
-    kTimeoutTcpConnectAttemptMax;
-
 // When this feature is enabled, redirected requests will be considered
 // cross-site for the purpose of SameSite cookies if any redirect hop was
 // cross-site to the target URL, even if the original initiator of the
