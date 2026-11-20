@@ -4,9 +4,13 @@ rootWebArea
 ++++++genericContainer
 ++++++++staticText name='Label one'
 ++++++++++inlineTextBox name='Label one'
+++++++staticText name=' '
+++++++++inlineTextBox name=' '
 ++++++genericContainer
 ++++++++staticText name='Label two'
 ++++++++++inlineTextBox name='Label two'
+++++++staticText name=' '
+++++++++inlineTextBox name=' '
 ++++++video name='Label one Label two' restriction=disabled
 ++++++++genericContainer ignored invisible
 ++++++++++group ignored invisible
@@ -43,6 +47,8 @@ rootWebArea
 ++++++++++++menuItem ignored invisible
 ++++++++++++menuItem ignored invisible
 ++++++++++++menuItem ignored invisible
+++++++staticText name=' '
+++++++++inlineTextBox name=' '
 ++++++video description='Hover text' name='Product demo' descriptionFrom=title restriction=disabled
 ++++++++genericContainer ignored invisible
 ++++++++++group ignored invisible
@@ -79,6 +85,7 @@ rootWebArea
 ++++++++++++menuItem ignored invisible
 ++++++++++++menuItem ignored invisible
 ++++++++++++menuItem ignored invisible
+++++++staticText name=' '
 ++++++video name='Video title' nameFrom=title restriction=disabled
 ++++++++genericContainer ignored invisible
 ++++++++++group ignored invisible
@@ -115,6 +122,8 @@ rootWebArea
 ++++++++++++menuItem ignored invisible
 ++++++++++++menuItem ignored invisible
 ++++++++++++menuItem ignored invisible
+++++++staticText name=' '
+++++++++inlineTextBox name=' '
 ++++++video restriction=disabled
 ++++++++genericContainer ignored invisible
 ++++++++++group ignored invisible
@@ -151,6 +160,7 @@ rootWebArea
 ++++++++++++menuItem ignored invisible
 ++++++++++++menuItem ignored invisible
 ++++++++++++menuItem ignored invisible
+++++++staticText name=' '
 ++++++link name='Watch'
 ++++++++video restriction=disabled
 ++++++++++genericContainer ignored invisible
