@@ -411,25 +411,21 @@ std::string TestExtensionBuilder::CreateVerifiedContents() const {
   if (!base::JSONWriter::Write(*payload, &payload_value))
     return "";
 
-  std::string payload_b64;
-  base::Base64UrlEncode(
-      payload_value, base::Base64UrlEncodePolicy::OMIT_PADDING, &payload_b64);
+  std::string payload_b64 = base::Base64UrlEncode(
+      payload_value, base::Base64UrlEncodePolicy::OMIT_PADDING);
 
   auto signature =
       crypto::sign::Sign(crypto::sign::SignatureKind::RSA_PKCS1_SHA256,
                          crypto::test::FixedRsa2048PrivateKeyForTesting(),
                          base::as_byte_span("." + payload_b64));
 
-  std::string signature_b64;
-  base::Base64UrlEncode(base::as_byte_span(signature),
-                        base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &signature_b64);
-
   base::ListValue signatures = base::ListValue().Append(
       base::DictValue()
           .Set("header", base::DictValue().Set("kid", "webstore"))
           .Set("protected", "")
-          .Set("signature", signature_b64));
+          .Set("signature",
+               base::Base64UrlEncode(
+                   signature, base::Base64UrlEncodePolicy::OMIT_PADDING)));
   base::ListValue verified_contents = base::ListValue().Append(
       base::DictValue()
           .Set("description", "treehash per file")
@@ -471,12 +467,12 @@ TestExtensionBuilder::CreateVerifiedContentsPayload() const {
     std::string tree_hash =
         ContentHash::ComputeTreeHashForContent(resource.contents, block_size);
 
-    std::string tree_hash_b64;
-    base::Base64UrlEncode(tree_hash, base::Base64UrlEncodePolicy::OMIT_PADDING,
-                          &tree_hash_b64);
-
     files.Append(
-        base::DictValue().Set("path", path).Set("root_hash", tree_hash_b64));
+        base::DictValue()
+            .Set("path", path)
+            .Set("root_hash",
+                 base::Base64UrlEncode(
+                     tree_hash, base::Base64UrlEncodePolicy::OMIT_PADDING)));
   }
 
   base::DictValue result =
