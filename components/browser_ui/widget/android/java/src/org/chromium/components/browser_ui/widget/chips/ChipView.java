@@ -349,6 +349,10 @@ public class ChipView extends LinearLayout {
         getPrimaryTextView().setEnabled(enabled);
         mStartIcon.setEnabled(enabled);
         if (mSecondaryText != null) mSecondaryText.setEnabled(enabled);
+        if (mEndIconWrapper != null && mEndIcon != null) {
+            mEndIconWrapper.setEnabled(enabled);
+            mEndIcon.setEnabled(enabled);
+        }
     }
 
     /**
@@ -524,6 +528,10 @@ public class ChipView extends LinearLayout {
         layoutParams.setMarginEnd(mEndIconMarginEnd);
         layoutParams.gravity = Gravity.CENTER_VERTICAL;
         endIconWrapper.addView(endIcon, layoutParams);
+        endIconWrapper.setActivated(isActivated());
+        endIconWrapper.setSelected(isSelected());
+        endIconWrapper.setEnabled(isEnabled());
+        endIcon.setEnabled(isEnabled());
         addView(
                 endIconWrapper,
                 new LinearLayout.LayoutParams(

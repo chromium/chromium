@@ -295,6 +295,22 @@ public final class ChipViewTest {
     }
 
     @Test
+    public void endIcon_matchesChipStateWhenAdded() {
+        mChipView.setActivated(true);
+        mChipView.setSelected(true);
+        mChipView.setEnabled(false);
+
+        mChipView.addDropdownIcon();
+
+        ImageView endIcon = mChipView.findViewById(R.id.chip_view_end_icon);
+        View endIconWrapper = (View) endIcon.getParent();
+        assertTrue(endIcon.isActivated());
+        assertTrue(endIcon.isSelected());
+        assertFalse(endIcon.isEnabled());
+        assertFalse(endIconWrapper.isEnabled());
+    }
+
+    @Test
     public void setStartIconId() {
         ImageView startIcon = mChipView.findViewById(R.id.chip_view_start_icon);
         assertEquals(View.GONE, startIcon.getVisibility());
