@@ -6,9 +6,8 @@
 
 #import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/broadcaster/ui_bundled/chrome_broadcaster.h"
-#import "ios/chrome/browser/main_content/ui_bundled/main_content_ui.h"
+#import "ios/chrome/browser/main_content/ui_bundled/test/fake_main_content_ui.h"
 #import "ios/chrome/browser/main_content/ui_bundled/test/main_content_broadcast_test_util.h"
-#import "ios/chrome/browser/main_content/ui_bundled/test/test_main_content_ui_state.h"
 #import "ios/web/common/features.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -24,27 +23,10 @@ class MainContentUIBroadcastingUtilTest : public PlatformTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Test implementation of MainContentUI.
-@interface TestMainContentUI : NSObject <MainContentUI>
-@property(nonatomic, readonly) TestMainContentUIState* mainContentUIState;
-@end
-
-@implementation TestMainContentUI
-@synthesize mainContentUIState = _mainContentUIState;
-
-- (instancetype)init {
-  if ((self = [super init])) {
-    _mainContentUIState = [[TestMainContentUIState alloc] init];
-  }
-  return self;
-}
-
-@end
-
 // Tests that the MainContentUIBroadcastingUtil functions successfully start
 // and stop broadcasting main content properties.
 TEST_F(MainContentUIBroadcastingUtilTest, StartStop) {
-  TestMainContentUI* ui = [[TestMainContentUI alloc] init];
+  FakeMainContentUI* ui = [[FakeMainContentUI alloc] init];
   ChromeBroadcaster* broadcaster = [[ChromeBroadcaster alloc] init];
   VerifyMainContentUIBroadcast(ui.mainContentUIState, broadcaster, false);
   StartBroadcastingMainContentUI(ui, broadcaster);

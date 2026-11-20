@@ -6,6 +6,8 @@ source_set("test") {
   testonly = true
 
   sources = [
+    "fake_main_content_ui.h",
+    "fake_main_content_ui.mm",
     "main_content_broadcast_test_util.h",
     "main_content_broadcast_test_util.mm",
     "test_main_content_ui_observer.h",
@@ -14,9 +16,10 @@ source_set("test") {
     "test_main_content_ui_state.mm",
   ]
 
+  public_deps = [ "//ios/chrome/browser/main_content/ui_bundled:ui" ]
+
   deps = [
     "//ios/chrome/browser/broadcaster/ui_bundled",
-    "//ios/chrome/browser/main_content/ui_bundled:ui",
     "//ios/chrome/common/ui/util",
     "//testing/gtest",
   ]
