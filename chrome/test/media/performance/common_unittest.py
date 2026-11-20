@@ -28,6 +28,7 @@ class ReexportTest(unittest.TestCase):
             'REMOTE_URL',
             'LOCAL_HOST_IP',
             'WIN_REMOTE_TMP_DIR',
+            'CHROME_DISABLED_FEATURES',
             'FAIL_CODE',
             'METRICS',
             'VIDEOS',

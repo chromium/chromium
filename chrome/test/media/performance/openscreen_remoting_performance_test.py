@@ -47,6 +47,7 @@ CHROME_OPTIONS = [
     "--disable-dev-shm-usage",
     "--remote-allow-origins=*",
     "--autoplay-policy=no-user-gesture-required",
+    f"--disable-features={','.join(common.CHROME_DISABLED_FEATURES)}",
 ]
 
 ADB_PATH = '/opt/infra-android/tools/platform-tools/adb'

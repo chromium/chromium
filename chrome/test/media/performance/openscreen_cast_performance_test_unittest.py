@@ -200,6 +200,75 @@ class MainLoopContinuationTest(unittest.TestCase):
 
         self.assertEqual(len(ran_videos), 1)
 
+    def test_chrome_options_include_common_disabled_features(self):
+        seen_options = []
+
+        def fake_setup(_args, _cv, opts, codec_name, video_name):
+            seen_options.append((codec_name, list(opts)))
+            trace = f'/remote/{codec_name}_{video_name}_sender.perfetto-trace'
+            return cast_test.SenderSession(
+                mock.MagicMock(), mock.MagicMock(), '159.0.0.1', trace
+            )
+
+        fake_sender = mock.MagicMock()
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            results_path = os.path.join(tmp_dir, 'output.json')
+            reporter = test_results.TestReporter(output_path=results_path)
+            with (
+                mock.patch.object(common, 'RECORDINGS_DIR', f'{tmp_dir}/rec'),
+                mock.patch.object(common, 'TRACES_DIR', f'{tmp_dir}/traces'),
+                mock.patch.object(common, 'verify_receiver_connectivity'),
+                mock.patch.object(
+                    common, 'make_sender', return_value=fake_sender
+                ),
+                mock.patch.object(common, 'dump_remote_logs'),
+                mock.patch.object(common, 'teardown_recording_process'),
+                mock.patch.object(common, 'teardown_test_environment'),
+                mock.patch.object(common, 'cleanup_binaries'),
+                mock.patch.object(common, 'finalize_results'),
+                mock.patch.object(
+                    cast_test, 'should_run_vp9_tests', return_value=True
+                ),
+                mock.patch.object(
+                    cast_test, 'setup_test_environment', side_effect=fake_setup
+                ),
+                mock.patch.object(
+                    cast_test,
+                    'run_performance_test',
+                    return_value=mock.MagicMock(),
+                ),
+                mock.patch.object(
+                    cast_test.subprocess, 'run', return_value=completed()
+                ),
+                mock.patch.object(cast_test.time, 'sleep'),
+                mock.patch.object(
+                    cast_test.sys,
+                    'argv',
+                    [
+                        'openscreen_cast_performance_test.py',
+                        '--sender=127.0.0.1',
+                        '--sender-os=win',
+                        '--receiver=sink',
+                    ],
+                ),
+            ):
+                with reporter:
+                    cast_test._run_tests(reporter)
+
+        self.assertEqual(len(seen_options), 6)
+        for codec_name, opts in seen_options:
+            disable_flags = [
+                opt for opt in opts if opt.startswith('--disable-features=')
+            ]
+            self.assertEqual(len(disable_flags), 1, codec_name)
+            disabled = set(
+                disable_flags[0].removeprefix('--disable-features=').split(',')
+            )
+            self.assertTrue(
+                set(common.CHROME_DISABLED_FEATURES) <= disabled, codec_name
+            )
+            self.assertIn('CastStreamingHardwareHevc', disabled)
+
 
 if __name__ == '__main__':
     unittest.main()

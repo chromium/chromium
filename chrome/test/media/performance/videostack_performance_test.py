@@ -41,6 +41,7 @@ CHROME_OPTIONS = [
     "--disable-gpu-sandbox",
     # Launches Chrome in fullscreen mode to prevent scrollbar clipping.
     "--start-fullscreen",
+    f"--disable-features={','.join(common.CHROME_DISABLED_FEATURES)}",
 ]
 
 
