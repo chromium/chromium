@@ -222,6 +222,18 @@ TEST_F(OnDeviceTailModelServiceTest, NullModelUpdate) {
       std::nullopt);
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(IsExecutorReady());
+
+  // A later request must not load the removed model again.
+  base::test::TestFuture<Predictions> future;
+  service_->GetPredictionsForInput(
+      OnDeviceTailModelExecutor::ModelInput("faceb", "", 5),
+      future.GetCallback());
+  EXPECT_TRUE(future.Take().empty());
+  EXPECT_FALSE(IsExecutorReady());
+
+  // A new model delivery makes the model usable again.
+  UpdateAndLoadModel();
+  EXPECT_TRUE(IsExecutorReady());
 }
 
 TEST_F(OnDeviceTailModelServiceTest, MemoryPressureLevel) {

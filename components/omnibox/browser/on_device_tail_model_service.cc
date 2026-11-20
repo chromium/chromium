@@ -170,7 +170,7 @@ void OnDeviceTailModelService::OnModelUpdated(
   if (!model_info.has_value()) {
     model_task_runner_->PostTask(
         FROM_HERE,
-        base::BindOnce(&OnDeviceTailModelExecutor::Reset,
+        base::BindOnce(&OnDeviceTailModelExecutor::ClearModelFiles,
                        base::Unretained(tail_model_executor_.get())));
     return;
   }

@@ -72,6 +72,10 @@ class OnDeviceTailModelExecutor {
   // Resets the model executor.
   void Reset();
 
+  // Resets the model executor and forgets the model files, so that `Init()`
+  // fails until `SetModelFiles()` is called again.
+  void ClearModelFiles();
+
   // Returns at most `max_num_suggestions` suggestions and their probabilities,
   // with minimum probability `probability_threshold` for the given `prefix` and
   // `previous_query`. The given prefix will only be extended at most

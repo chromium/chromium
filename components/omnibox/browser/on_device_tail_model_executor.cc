@@ -444,6 +444,14 @@ void OnDeviceTailModelExecutor::Reset() {
   interpreter_ = nullptr;
 }
 
+void OnDeviceTailModelExecutor::ClearModelFiles() {
+  Reset();
+  model_filepath_.clear();
+  vocab_filepath_.clear();
+  badword_hashes_filepath_.clear();
+  bad_substrings_filepath_.clear();
+}
+
 bool OnDeviceTailModelExecutor::RunRnnStep(
     const OnDeviceTailTokenizer::TokenIds& rnn_step_cache_key,
     const OnDeviceTailTokenizer::TokenId& input_id,
