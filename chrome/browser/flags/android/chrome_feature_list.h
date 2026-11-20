@@ -341,6 +341,7 @@ BASE_DECLARE_FEATURE(kToolbarPhoneAnimationRefactor);
 BASE_DECLARE_FEATURE(kToolbarProgressBarRefactor);
 BASE_DECLARE_FEATURE(kToolbarSnapshotRefactor);
 BASE_DECLARE_FEATURE(kToolbarTabletResizeRefactor);
+BASE_DECLARE_FEATURE(kTopToolbarSceneLayerSkipUpdateOnProgress);
 BASE_DECLARE_FEATURE(kTouchToSearchCallout);
 BASE_DECLARE_FEATURE(kTrimMemoryBackgroundIsSevere);
 BASE_DECLARE_FEATURE(kTrustedWebActivityContactsDelegation);

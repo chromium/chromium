@@ -10,6 +10,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.input.OffsetTag;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneOverlayLayer;
 import org.chromium.components.browser_ui.widget.ClipDrawableProgressBar.DrawingInfo;
@@ -27,62 +28,85 @@ public class TopToolbarSceneLayer extends SceneOverlayLayer {
     private long mNativePtr;
 
     /** A means of accessing a {@link ResourceManager} for textures. */
-    private final Supplier<ResourceManager> mResourceManagerSupplier;
+    private final Supplier<? extends @Nullable ResourceManager> mResourceManagerSupplier;
 
-    /** A simple view binder that pushes the whole model to the view updater. */
+    private boolean mToolbarLayerDirty = true;
+    private boolean mProgressBarDirty = true;
+
+    /** Marks the corresponding layer dirty when a property in the model changes. */
+    static void onPropertyChanged(PropertyModel model, TopToolbarSceneLayer view, PropertyKey key) {
+        if (key == TopToolbarOverlayProperties.PROGRESS_BAR_INFO) {
+            view.mProgressBarDirty = true;
+        } else {
+            view.mToolbarLayerDirty = true;
+        }
+    }
+
+    /** A simple view binder that pushes dirty model properties to the view updater. */
     public static void bind(
             PropertyModel model, TopToolbarSceneLayer view, @Nullable PropertyKey key) {
+        assert key == null;
         view.pushProperties(model);
     }
 
     /**
      * @param resourceManagerSupplier Access to a {@link ResourceManager} for textures.
      */
-    TopToolbarSceneLayer(Supplier<ResourceManager> resourceManagerSupplier) {
+    TopToolbarSceneLayer(Supplier<? extends @Nullable ResourceManager> resourceManagerSupplier) {
         mResourceManagerSupplier = resourceManagerSupplier;
     }
 
-    /** Push all information about the texture to native at once. */
+    /** Push dirty information about the texture or progress bar to native. */
     private void pushProperties(PropertyModel model) {
-        if (mResourceManagerSupplier.get() == null) return;
-        TopToolbarSceneLayerJni.get()
-                .updateToolbarLayer(
-                        mNativePtr,
-                        mResourceManagerSupplier.get(),
-                        model.get(TopToolbarOverlayProperties.RESOURCE_ID),
-                        model.get(TopToolbarOverlayProperties.TOOLBAR_BACKGROUND_COLOR),
-                        model.get(TopToolbarOverlayProperties.URL_BAR_RESOURCE_ID),
-                        model.get(TopToolbarOverlayProperties.URL_BAR_COLOR),
-                        model.get(TopToolbarOverlayProperties.X_OFFSET),
-                        model.get(TopToolbarOverlayProperties.Y_OFFSET),
-                        model.get(TopToolbarOverlayProperties.LEGACY_CONTENT_OFFSET),
-                        model.get(TopToolbarOverlayProperties.SHOW_SHADOW),
-                        model.get(TopToolbarOverlayProperties.VISIBLE),
-                        model.get(TopToolbarOverlayProperties.ANONYMIZE),
-                        model.get(TopToolbarOverlayProperties.TOOLBAR_OFFSET_TAG));
+        ResourceManager resourceManager = mResourceManagerSupplier.get();
+        if (resourceManager == null) return;
 
-        DrawingInfo progressInfo = model.get(TopToolbarOverlayProperties.PROGRESS_BAR_INFO);
-        if (progressInfo == null) return;
+        boolean skipUnchanged =
+                ChromeFeatureList.sTopToolbarSceneLayerSkipUpdateOnProgress.isEnabled();
+        if (!skipUnchanged || mToolbarLayerDirty) {
+            mToolbarLayerDirty = false;
+            TopToolbarSceneLayerJni.get()
+                    .updateToolbarLayer(
+                            mNativePtr,
+                            resourceManager,
+                            model.get(TopToolbarOverlayProperties.RESOURCE_ID),
+                            model.get(TopToolbarOverlayProperties.TOOLBAR_BACKGROUND_COLOR),
+                            model.get(TopToolbarOverlayProperties.URL_BAR_RESOURCE_ID),
+                            model.get(TopToolbarOverlayProperties.URL_BAR_COLOR),
+                            model.get(TopToolbarOverlayProperties.X_OFFSET),
+                            model.get(TopToolbarOverlayProperties.Y_OFFSET),
+                            model.get(TopToolbarOverlayProperties.LEGACY_CONTENT_OFFSET),
+                            model.get(TopToolbarOverlayProperties.SHOW_SHADOW),
+                            model.get(TopToolbarOverlayProperties.VISIBLE),
+                            model.get(TopToolbarOverlayProperties.ANONYMIZE),
+                            model.get(TopToolbarOverlayProperties.TOOLBAR_OFFSET_TAG));
+        }
 
-        TopToolbarSceneLayerJni.get()
-                .updateProgressBar(
-                        mNativePtr,
-                        progressInfo.progressBarRect.left,
-                        progressInfo.progressBarRect.top,
-                        progressInfo.progressBarRect.width(),
-                        progressInfo.progressBarRect.height(),
-                        progressInfo.progressBarColor,
-                        progressInfo.progressBarBackgroundRect.left,
-                        progressInfo.progressBarBackgroundRect.top,
-                        progressInfo.progressBarBackgroundRect.width(),
-                        progressInfo.progressBarBackgroundRect.height(),
-                        progressInfo.progressBarBackgroundColor,
-                        progressInfo.progressBarStaticBackgroundRect.left,
-                        progressInfo.progressBarStaticBackgroundRect.width(),
-                        progressInfo.progressBarStaticBackgroundColor,
-                        progressInfo.cornerRadius,
-                        progressInfo.progressBarVisualUpdateAvailable,
-                        progressInfo.visible);
+        if (!skipUnchanged || mProgressBarDirty) {
+            mProgressBarDirty = false;
+            DrawingInfo progressInfo = model.get(TopToolbarOverlayProperties.PROGRESS_BAR_INFO);
+            if (progressInfo == null) return;
+
+            TopToolbarSceneLayerJni.get()
+                    .updateProgressBar(
+                            mNativePtr,
+                            progressInfo.progressBarRect.left,
+                            progressInfo.progressBarRect.top,
+                            progressInfo.progressBarRect.width(),
+                            progressInfo.progressBarRect.height(),
+                            progressInfo.progressBarColor,
+                            progressInfo.progressBarBackgroundRect.left,
+                            progressInfo.progressBarBackgroundRect.top,
+                            progressInfo.progressBarBackgroundRect.width(),
+                            progressInfo.progressBarBackgroundRect.height(),
+                            progressInfo.progressBarBackgroundColor,
+                            progressInfo.progressBarStaticBackgroundRect.left,
+                            progressInfo.progressBarStaticBackgroundRect.width(),
+                            progressInfo.progressBarStaticBackgroundColor,
+                            progressInfo.cornerRadius,
+                            progressInfo.progressBarVisualUpdateAvailable,
+                            progressInfo.visible);
+        }
     }
 
     @Override

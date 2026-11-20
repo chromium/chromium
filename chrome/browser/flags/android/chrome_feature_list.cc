@@ -549,6 +549,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kToolbarProgressBarRefactor,
     &kToolbarSnapshotRefactor,
     &kToolbarTabletResizeRefactor,
+    &kTopToolbarSceneLayerSkipUpdateOnProgress,
     &kTouchToSearchCallout,
     &kTrimMemoryBackgroundIsSevere,
     &kTrustedWebActivityContactsDelegation,
@@ -1016,6 +1017,7 @@ BASE_FEATURE(kToolbarPhoneAnimationRefactor, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kToolbarProgressBarRefactor, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kToolbarSnapshotRefactor, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kToolbarTabletResizeRefactor, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kTopToolbarSceneLayerSkipUpdateOnProgress, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kTouchToSearchCallout, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kTrimMemoryBackgroundIsSevere, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kTrustedWebActivityContactsDelegation, base::FEATURE_DISABLED_BY_DEFAULT);

@@ -535,6 +535,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/toolbar/top/ToolbarTabletUnitTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/top/TopToolbarCoordinatorUnitTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/top/TopToolbarOverlayMediatorTest.java",
+    "java/src/org/chromium/chrome/browser/toolbar/top/TopToolbarSceneLayerTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/top/VisibleUrlTextTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/top/tab_strip/TabStripTransitionCoordinatorUnitTest.java",
   ]

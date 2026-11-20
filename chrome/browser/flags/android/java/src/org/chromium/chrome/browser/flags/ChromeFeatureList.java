@@ -914,6 +914,8 @@ public abstract class ChromeFeatureList {
     public static final String TOOLBAR_SCROLL_ABLATION = "AndroidToolbarScrollAblation";
     public static final String TOOLBAR_SNAPSHOT_REFACTOR = "ToolbarSnapshotRefactor";
     public static final String TOOLBAR_TABLET_RESIZE_REFACTOR = "ToolbarTabletResizeRefactor";
+    public static final String TOP_TOOLBAR_SCENE_LAYER_SKIP_UPDATE_ON_PROGRESS =
+            "TopToolbarSceneLayerSkipUpdateOnProgress";
     public static final String TOUCH_TO_SEARCH_CALLOUT = "TouchToSearchCallout";
     public static final String TRIM_MEMORY_BACKGROUND_IS_SEVERE = "TrimMemoryBackgroundIsSevere";
     public static final String TRUSTED_VAULT_REFRESH_STALE_PRE_ENROLLMENT_KEY =
@@ -1931,6 +1933,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(TIPS_SELF_SERVICE, false);
     public static final MutableFlagWithSafeDefault sToolbarScrollAblation =
             newMutableFlagWithSafeDefault(TOOLBAR_SCROLL_ABLATION, false);
+    public static final MutableFlagWithSafeDefault sTopToolbarSceneLayerSkipUpdateOnProgress =
+            newMutableFlagWithSafeDefault(TOP_TOOLBAR_SCENE_LAYER_SKIP_UPDATE_ON_PROGRESS, false);
     public static final MutableFlagWithSafeDefault sTrimMemoryBackgroundIsSevere =
             newMutableFlagWithSafeDefault(TRIM_MEMORY_BACKGROUND_IS_SEVERE, false);
     public static final MutableFlagWithSafeDefault sTrustedVaultRefreshStalePreEnrollmentKey =
