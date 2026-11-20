@@ -13,6 +13,9 @@
 
 :host {
   --cr-tooltip-icon-fill-color: var(--cr-fallback-color-on-surface-subtle);
+  --drag-pan-icon-color: var(
+      --color-sys-on-surface-subtle,
+      var(--cr-fallback-color-on-surface-subtle));
   --icon-button-color-active: var(--google-grey-700);
   --icon-button-color: var(--google-grey-600);
   --icon-size: var(--most-visited-icon-size, 48px);
@@ -30,13 +33,10 @@
 }
 
 :host([is-dark_]) {
+  --drag-pan-icon-color: white;
   --icon-button-color-active: var(--google-grey-300);
   --icon-button-color: white;
   --tile-hover-color: rgba(255, 255, 255, .1);
-}
-
-:host([is-dark_]) .drag-pan-icon {
-  background-color: white;
 }
 
 #container {
@@ -188,6 +188,21 @@
 :host(:not([reordering_])) #showLess:hover,
 .force-hover {
   background-color: var(--tile-hover-color);
+}
+
+.drag-pan-icon {
+  -webkit-mask-image: url(chrome://resources/cr_components/most_visited/drag_pan.svg);
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: 100%;
+  background-color: var(--drag-pan-icon-color);
+  height: 24px;
+  inset-inline-start: 0;
+  margin: 4px 2px;
+  opacity: 0;
+  position: absolute;
+  top: 0;
+  width: 24px;
 }
 
 @media (forced-colors: active) {
@@ -358,23 +373,6 @@ cr-policy-indicator {
   background-color: var(--tile-hover-color);
   transition-property: none;
   z-index: 2;
-}
-
-.drag-pan-icon {
-  -webkit-mask-image: url(chrome://resources/cr_components/most_visited/drag_pan.svg);
-  -webkit-mask-position: center;
-  -webkit-mask-repeat: no-repeat;
-  -webkit-mask-size: 100%;
-  background-color: var(
-      --color-sys-on-surface-subtle,
-      var(--cr-fallback-color-on-surface-subtle));
-  height: 24px;
-  inset-inline-start: 0;
-  margin: 4px 2px;
-  opacity: 0;
-  position: absolute;
-  top: 0;
-  width: 24px;
 }
 
 :host-context(:not(.focus-outline-visible))
