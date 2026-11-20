@@ -20,6 +20,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/power_monitor_test.h"
+#include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -113,6 +114,21 @@ class TestLoggerObserver : public OptimizationGuideLogger::Observer {
  private:
   std::vector<std::string> messages_;
 };
+
+// Returns a callback that owns `session` and destroys it before running
+// `callback`, matching `AIManager` during initial input prefill.
+OnDeviceSession::SetInputCallback DestroySessionThen(
+    std::unique_ptr<OnDeviceSession> session,
+    OnDeviceSession::SetInputCallback callback) {
+  return base::BindOnce(
+      [](std::unique_ptr<OnDeviceSession> session,
+         OnDeviceSession::SetInputCallback callback,
+         base::expected<size_t, OnDeviceError> result) {
+        session.reset();
+        std::move(callback).Run(result);
+      },
+      std::move(session), std::move(callback));
+}
 
 }  // namespace
 
@@ -1304,6 +1320,117 @@ TEST_F(SessionImplTest, SetInputCallbackError) {
   base::test::TestFuture<base::expected<size_t, OnDeviceError>> future;
   session->SetInput(std::move(request), future.GetCallback());
   EXPECT_EQ(future.Get().error(), OnDeviceError::kInvalidRequest);
+}
+
+TEST_F(SessionImplTest, SetInputCallbackDestroysSession) {
+  Initialize();
+  auto session = CreateSession(SessionConfigParams{});
+  ASSERT_TRUE(session);
+  auto* raw_session = session.get();
+
+  base::test::TestFuture<base::expected<size_t, OnDeviceError>> future;
+  raw_session->SetInput(
+      MultimodalMessage(UserInputRequest("foo")),
+      DestroySessionThen(std::move(session), future.GetCallback()));
+  EXPECT_EQ(*future.Get(), std::string("ctx:foo").size());
+}
+
+TEST_F(SessionImplTest, SetInputCallbackDestroysSessionUsingServer) {
+  Initialize();
+  broker_.settings().service_disconnect_reason =
+      on_device_model::ServiceDisconnectReason::kGpuBlocked;
+  auto session = CreateSession(SessionConfigParams{});
+  ASSERT_TRUE(session);
+  auto* raw_session = session.get();
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return !static_cast<SessionImpl*>(raw_session)->ShouldUseOnDeviceModel();
+  }));
+
+  base::HistogramTester histogram_tester;
+  base::test::TestFuture<base::expected<size_t, OnDeviceError>> future;
+  raw_session->SetInput(
+      MultimodalMessage(UserInputRequest("foo")),
+      DestroySessionThen(std::move(session), future.GetCallback()));
+  EXPECT_FALSE(future.IsReady());
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceAddContextResult.Test",
+      SessionImpl::AddContextResult::kUsingServer, 1);
+  EXPECT_EQ(future.Get().error(), OnDeviceError::kCancelled);
+}
+
+TEST_F(SessionImplTest, SetInputCallbackDestroysSessionInvalidRequest) {
+  Initialize();
+  auto session = CreateSession(SessionConfigParams{});
+  ASSERT_TRUE(session);
+  auto* raw_session = session.get();
+
+  base::HistogramTester histogram_tester;
+  base::test::TestFuture<base::expected<size_t, OnDeviceError>> future;
+  raw_session->SetInput(
+      MultimodalMessage(proto::ExampleForTestingRequest()),
+      DestroySessionThen(std::move(session), future.GetCallback()));
+  EXPECT_FALSE(future.IsReady());
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceAddContextResult.Test",
+      SessionImpl::AddContextResult::kFailedConstructingInput, 1);
+  EXPECT_EQ(future.Get().error(), OnDeviceError::kInvalidRequest);
+}
+
+TEST_F(SessionImplTest, SetInputCallbackDestroysSessionEmptyInputContext) {
+  Initialize([]() {
+    proto::SolutionConfig config;
+    *config.mutable_feature() = SimpleComposeConfigForTesting();
+    config.mutable_feature()
+        ->mutable_input_config()
+        ->clear_input_context_substitutions();
+    return config;
+  }());
+
+  // Connected session (prefix-update branch with 0 pieces).
+  {
+    auto session = CreateSession(SessionConfigParams{});
+    ASSERT_TRUE(session);
+    auto* raw_session = session.get();
+    base::test::TestFuture<base::expected<size_t, OnDeviceError>> future;
+    raw_session->SetInput(
+        MultimodalMessage(PageUrlRequest("foo")),
+        DestroySessionThen(std::move(session), future.GetCallback()));
+    EXPECT_FALSE(future.IsReady());
+    EXPECT_EQ(*future.Get(), 0u);
+  }
+
+  // Reconnecting session (`GetOrCreateSession()` branch with 0 pieces).
+  {
+    auto session = CreateSession(SessionConfigParams{});
+    ASSERT_TRUE(session);
+    broker_.launcher().CrashService();
+    task_environment_.FastForwardBy(base::Milliseconds(1));
+    auto* raw_session = session.get();
+    base::test::TestFuture<base::expected<size_t, OnDeviceError>> future;
+    raw_session->SetInput(
+        MultimodalMessage(PageUrlRequest("foo")),
+        DestroySessionThen(std::move(session), future.GetCallback()));
+    EXPECT_FALSE(future.IsReady());
+    EXPECT_EQ(*future.Get(), 0u);
+  }
+}
+
+TEST_F(SessionImplTest, SetInputCallbackDestroysSessionServiceDisconnect) {
+  Initialize();
+  broker_.settings().set_append_delay(base::Seconds(10));
+  auto session = CreateSession(SessionConfigParams{});
+  ASSERT_TRUE(session);
+  auto* raw_session = session.get();
+
+  base::test::TestFuture<base::expected<size_t, OnDeviceError>> future;
+  raw_session->SetInput(
+      MultimodalMessage(UserInputRequest("foo")),
+      DestroySessionThen(std::move(session), future.GetCallback()));
+  task_environment_.FastForwardBy(base::Seconds(1));
+  ASSERT_FALSE(future.IsReady());
+
+  broker_.launcher().CrashService();
+  EXPECT_EQ(future.Get().error(), OnDeviceError::kGenericFailure);
 }
 
 TEST_F(SessionImplTest, TokenCounts) {

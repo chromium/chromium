@@ -16,6 +16,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
+#include "base/task/bind_post_task.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/token.h"
@@ -125,11 +126,14 @@ const TokenLimits& SessionImpl::GetTokenLimits() const {
 
 void SessionImpl::SetInput(MultimodalMessage request,
                            SetInputCallback callback) {
+  // `AddContextImpl()` may destroy `this` synchronously (e.g., via
+  // `on_device_execution_->Cancel()`, or if `BindPostTask` fails at shutdown).
+  const mojom::OnDeviceFeature feature = feature_;
   const auto result = AddContextImpl(std::move(request), std::move(callback));
   base::UmaHistogramEnumeration(
       base::StrCat(
           {"OptimizationGuide.ModelExecution.OnDeviceAddContextResult.",
-           GetVariantName(feature_)}),
+           GetVariantName(feature)}),
       result);
 }
 
@@ -142,8 +146,10 @@ SessionImpl::AddContextResult SessionImpl::AddContextImpl(
     MultimodalMessage request,
     SetInputCallback callback) {
   if (callback) {
-    callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-        std::move(callback), base::unexpected(OnDeviceError::kCancelled));
+    // Never run or destroy `callback` on this stack, as it may own `this`.
+    callback = base::BindPostTaskToCurrentDefault(
+        mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+            std::move(callback), base::unexpected(OnDeviceError::kCancelled)));
   }
   context_ = std::move(request);
   context_start_time_ = base::TimeTicks::Now();

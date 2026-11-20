@@ -93,6 +93,7 @@ class OnDeviceContext : public on_device_model::mojom::ContextClient {
 
  private:
   void Append(on_device_model::mojom::InputPtr input);
+  void OnDisconnect();
 
   // on_device_model::mojom::ContextClient:
   void OnComplete(uint32_t tokens_processed) override;

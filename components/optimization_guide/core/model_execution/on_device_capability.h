@@ -282,7 +282,8 @@ class OnDeviceSession {
   // for use in later prompt templates based on the request. Calling this will
   // cancel any ongoing executions and invoke their 'callback' methods with
   // the 'kCancelled' error. `callback` will be called with either the number
-  // of tokens processed from `request` or an error.
+  // of tokens processed from `request` or an error, and may safely destroy
+  // `this` session.
   using SetInputCallback =
       base::OnceCallback<void(base::expected<size_t, OnDeviceError>)>;
   virtual void SetInput(MultimodalMessage request,
