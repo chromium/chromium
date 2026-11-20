@@ -684,8 +684,6 @@ void WebUIPageActionControl::WebUIPageActionDelegate::
                      weak_factory_.GetWeakPtr()));
 
   if (anchored_message_widget_) {
-    // Don't steal focus when shown.
-    anchored_message_widget_->ShowInactive();
     anchored_message_->AnimateIn();
   } else {
     anchored_message_ = nullptr;

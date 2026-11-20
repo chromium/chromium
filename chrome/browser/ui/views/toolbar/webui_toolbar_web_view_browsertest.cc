@@ -198,8 +198,6 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/compositor/compositor.h"
-#include "ui/compositor/layer.h"
-#include "ui/compositor/layer_animator.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -210,6 +208,7 @@
 #include "ui/snapshot/snapshot.h"
 #include "ui/views/accessibility/ax_update_notifier.h"
 #include "ui/views/accessibility/ax_update_observer.h"
+#include "ui/views/animation/widget_fade_animator.h"
 #include "ui/views/bubble/bubble_anchor.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
@@ -5739,9 +5738,11 @@ IN_PROC_BROWSER_TEST_F(WebUIPageActionBrowserTest,
   ASSERT_TRUE(bubble->GetAnchor().GetIfElement());
   EXPECT_EQ(bubble->GetAnchor().GetIfElement()->identifier(),
             kTranslatePageActionElementId);
-  views::View* frame = bubble->GetBubbleFrameView();
-  ASSERT_TRUE(frame->layer());
-  EXPECT_EQ(frame->layer()->GetTargetOpacity(), 1.0f);
+  EXPECT_FALSE(bubble->GetBubbleFrameView()->layer());
+  EXPECT_TRUE(bubble->GetWidget()->IsVisible());
+  views::WidgetFadeAnimator* fade_animator =
+      bubble->fade_animator_for_testing();
+  ASSERT_TRUE(fade_animator);
 
   views::test::WidgetDestroyedWaiter destroyed_waiter(bubble->GetWidget());
   controller->HideAnchoredMessage(target_action_id);
@@ -5750,9 +5751,10 @@ IN_PROC_BROWSER_TEST_F(WebUIPageActionBrowserTest,
   ASSERT_EQ(control.GetAnchoredMessageForTesting(target_action_id), bubble);
   EXPECT_TRUE(bubble->is_closing());
   EXPECT_FALSE(bubble->GetWidget()->IsClosed());
-  EXPECT_EQ(frame->layer()->GetTargetOpacity(), 0.0f);
+  EXPECT_TRUE(fade_animator->IsFadingOut());
 
-  frame->layer()->GetAnimator()->StopAnimating();
+  gfx::AnimationContainerTestApi(fade_animator->container())
+      .IncrementTime(base::Milliseconds(150));
   destroyed_waiter.Wait();
   EXPECT_EQ(control.GetAnchoredMessageForTesting(target_action_id), nullptr);
 }

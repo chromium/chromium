@@ -12,6 +12,7 @@
 #include "base/test/gmock_expected_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -48,12 +49,11 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
-#include "ui/compositor/layer.h"
-#include "ui/compositor/layer_animator.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
+#include "ui/views/animation/widget_fade_animator.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/interaction/element_tracker_views.h"
@@ -1377,27 +1377,28 @@ class WebUIPageActionControlAnchoredMessageTest : public ChromeViewsTestBase {
     return control_->GetAnchoredMessageForTesting(action_id);
   }
 
-  ui::Layer* GetFrameLayer(AnchoredMessageBubbleView* bubble) {
-    return bubble->GetBubbleFrameView()->layer();
-  }
-
   class ExitAnimationWaiter {
    public:
     explicit ExitAnimationWaiter(AnchoredMessageBubbleView* bubble)
-        : frame_tracker_(bubble->GetBubbleFrameView()),
-          destroyed_waiter_(bubble->GetWidget()) {}
+        : bubble_tracker_(bubble), destroyed_waiter_(bubble->GetWidget()) {}
     ExitAnimationWaiter(const ExitAnimationWaiter&) = delete;
     ExitAnimationWaiter& operator=(const ExitAnimationWaiter&) = delete;
 
     void Wait() {
-      if (views::View* frame = frame_tracker_.view()) {
-        frame->layer()->GetAnimator()->StopAnimating();
+      if (views::View* view = bubble_tracker_.view()) {
+        auto* bubble = static_cast<AnchoredMessageBubbleView*>(view);
+        if (views::WidgetFadeAnimator* fade_animator =
+                bubble->fade_animator_for_testing();
+            fade_animator && fade_animator->IsFadingOut()) {
+          gfx::AnimationContainerTestApi(fade_animator->container())
+              .IncrementTime(base::Milliseconds(150));
+        }
       }
       destroyed_waiter_.Wait();
     }
 
    private:
-    views::ViewTracker frame_tracker_;
+    views::ViewTracker bubble_tracker_;
     views::test::WidgetDestroyedWaiter destroyed_waiter_;
   };
 
@@ -1424,8 +1425,11 @@ TEST_F(WebUIPageActionControlAnchoredMessageTest,
   ExitAnimationWaiter exit_waiter(bubble);
   ASSERT_TRUE(control_->IsAnchoredMessageShowing(kActionShowTranslate));
   EXPECT_EQ(bubble->GetAnchor().GetIfElement(), translate_element_.get());
-  ASSERT_TRUE(GetFrameLayer(bubble));
-  EXPECT_EQ(GetFrameLayer(bubble)->GetTargetOpacity(), 1.0f);
+  EXPECT_FALSE(bubble->GetBubbleFrameView()->layer());
+  views::WidgetFadeAnimator* fade_animator =
+      bubble->fade_animator_for_testing();
+  ASSERT_TRUE(fade_animator);
+  EXPECT_TRUE(fade_animator->IsFadingIn());
 
   controller_->HideAnchoredMessage(kActionShowTranslate);
 
@@ -1433,7 +1437,7 @@ TEST_F(WebUIPageActionControlAnchoredMessageTest,
   ASSERT_EQ(GetAnchoredMessage(kActionShowTranslate), bubble);
   EXPECT_TRUE(bubble->is_closing());
   EXPECT_FALSE(bubble->GetWidget()->IsClosed());
-  EXPECT_EQ(GetFrameLayer(bubble)->GetTargetOpacity(), 0.0f);
+  EXPECT_TRUE(fade_animator->IsFadingOut());
 
   exit_waiter.Wait();
   EXPECT_EQ(GetAnchoredMessage(kActionShowTranslate), nullptr);
@@ -1509,6 +1513,9 @@ TEST_F(WebUIPageActionControlAnchoredMessageTest,
        AnchoredMessageAnimatesOutWhenPageActionHidden) {
   AnchoredMessageBubbleView* bubble = ShowAnchoredMessage(kActionShowTranslate);
   ASSERT_TRUE(bubble);
+  views::WidgetFadeAnimator* fade_animator =
+      bubble->fade_animator_for_testing();
+  ASSERT_TRUE(fade_animator);
   ExitAnimationWaiter exit_waiter(bubble);
 
   controller_->Hide(kActionShowTranslate);
@@ -1518,7 +1525,7 @@ TEST_F(WebUIPageActionControlAnchoredMessageTest,
   EXPECT_EQ(controller_->GetActiveAnchoredMessage(), std::nullopt);
   EXPECT_TRUE(bubble->is_closing());
   EXPECT_FALSE(bubble->GetWidget()->IsClosed());
-  EXPECT_EQ(GetFrameLayer(bubble)->GetTargetOpacity(), 0.0f);
+  EXPECT_TRUE(fade_animator->IsFadingOut());
 
   exit_waiter.Wait();
   EXPECT_EQ(GetAnchoredMessage(kActionShowTranslate), nullptr);
@@ -1583,10 +1590,13 @@ TEST_F(WebUIPageActionControlAnchoredMessageTest,
   EXPECT_EQ(label->GetText(), u"Updated");
   EXPECT_FALSE(bubble->is_closing());
   EXPECT_TRUE(control_->IsAnchoredMessageShowing(kActionShowTranslate));
-  EXPECT_EQ(GetFrameLayer(bubble)->GetTargetOpacity(), 1.0f);
+  views::WidgetFadeAnimator* fade_animator =
+      bubble->fade_animator_for_testing();
+  ASSERT_TRUE(fade_animator);
+  EXPECT_FALSE(fade_animator->IsFadingOut());
 
-  GetFrameLayer(bubble)->GetAnimator()->StopAnimating();
   EXPECT_FALSE(bubble->GetWidget()->IsClosed());
+  EXPECT_TRUE(bubble->GetWidget()->IsVisible());
   EXPECT_TRUE(control_->IsAnchoredMessageShowing(kActionShowTranslate));
 }
 

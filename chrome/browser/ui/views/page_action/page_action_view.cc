@@ -809,8 +809,6 @@ void PageActionView::CreateAndShowAnchoredMessage(
     UpdateBackground();
     UpdateIconImage();
 
-    // Don't steal focus when shown
-    anchored_message_widget_->ShowInactive();
     anchored_message_->AnimateIn();
   } else {
     anchored_message_ = nullptr;

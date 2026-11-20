@@ -44,7 +44,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/layer_animator.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/test/test_event.h"
 #include "ui/gfx/animation/animation.h"
@@ -54,6 +53,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/actions/action_view_controller.h"
 #include "ui/views/animation/ink_drop.h"
+#include "ui/views/animation/widget_fade_animator.h"
 #include "ui/views/background.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/interaction/element_tracker_views.h"
@@ -975,19 +975,24 @@ TEST_F(PageActionViewTest, AnchoredMessageAnimation) {
 
   AnchoredMessageBubbleView* bubble = ShowTestAnchoredMessage();
   ASSERT_TRUE(bubble);
-  views::View* frame = bubble->GetBubbleFrameView();
-  ASSERT_TRUE(frame->layer());
-  EXPECT_EQ(frame->layer()->GetTargetOpacity(), 1.0f);
+  EXPECT_FALSE(bubble->GetBubbleFrameView()->layer());
+  views::WidgetFadeAnimator* fade_animator =
+      bubble->fade_animator_for_testing();
+  ASSERT_TRUE(fade_animator);
+  EXPECT_TRUE(fade_animator->IsFadingIn());
+  views::test::WidgetDestroyedWaiter destroyed_waiter(bubble->GetWidget());
 
   EXPECT_CALL(*model(), ShouldShowAnchoredMessage())
       .WillRepeatedly(Return(false));
   page_action_view()->OnPageActionModelChanged(*model());
 
-  EXPECT_EQ(frame->layer()->GetTargetOpacity(), 0.0f);
+  EXPECT_TRUE(fade_animator->IsFadingOut());
   EXPECT_FALSE(page_action_view()->IsAnchoredMessageVisible());
   EXPECT_EQ(page_action_view()->GetAnchoredMessageForTesting(), bubble);
 
-  frame->layer()->GetAnimator()->StopAnimating();
+  gfx::AnimationContainerTestApi(fade_animator->container())
+      .IncrementTime(base::Milliseconds(150));
+  destroyed_waiter.Wait();
   EXPECT_FALSE(page_action_view()->GetAnchoredMessageForTesting());
 }
 
@@ -997,7 +1002,9 @@ TEST_F(PageActionViewTest, AnchoredMessageAnimatesOutWhenPageActionHidden) {
 
   AnchoredMessageBubbleView* bubble = ShowTestAnchoredMessage();
   ASSERT_TRUE(bubble);
-  views::View* frame = bubble->GetBubbleFrameView();
+  views::WidgetFadeAnimator* fade_animator =
+      bubble->fade_animator_for_testing();
+  ASSERT_TRUE(fade_animator);
   views::Widget* bubble_widget = bubble->GetWidget();
   views::test::WidgetDestroyedWaiter destroyed_waiter(bubble_widget);
 
@@ -1008,9 +1015,10 @@ TEST_F(PageActionViewTest, AnchoredMessageAnimatesOutWhenPageActionHidden) {
 
   EXPECT_FALSE(page_action_view()->IsAnchoredMessageVisible());
   EXPECT_TRUE(bubble_widget->IsVisible());
-  EXPECT_EQ(frame->layer()->GetTargetOpacity(), 0.0f);
+  EXPECT_TRUE(fade_animator->IsFadingOut());
 
-  frame->layer()->GetAnimator()->StopAnimating();
+  gfx::AnimationContainerTestApi(fade_animator->container())
+      .IncrementTime(base::Milliseconds(150));
   destroyed_waiter.Wait();
 }
 

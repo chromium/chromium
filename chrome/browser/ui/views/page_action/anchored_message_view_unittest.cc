@@ -32,6 +32,7 @@
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/animation/widget_fade_animator.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/button.h"
@@ -44,6 +45,7 @@
 #include "ui/views/layout/animating_layout_manager.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/test/views_test_utils.h"
+#include "ui/views/test/widget_test.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
@@ -709,20 +711,30 @@ TEST_F(AnchoredMessageBubbleViewTest, AnimateOutClosesWidgetWhenEnded) {
   gfx::ScopedAnimationDurationScaleMode non_zero(
       gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
-  views::View* frame = bubble_view_->GetBubbleFrameView();
-  ASSERT_TRUE(frame->layer());
-  EXPECT_FALSE(frame->layer()->fills_bounds_opaquely());
+  // BubbleFrameView must not paint to a layer so native macOS window shadows
+  // compute from opaque frame pixels rather than a 0-opacity frame layer.
+  EXPECT_FALSE(bubble_view_->GetBubbleFrameView()->layer());
+
+  views::WidgetFadeAnimator* fade_animator =
+      bubble_view_->fade_animator_for_testing();
+  ASSERT_TRUE(fade_animator);
 
   bubble_view_->AnimateIn();
-  EXPECT_EQ(frame->layer()->GetTargetOpacity(), 1.0f);
-  frame->layer()->GetAnimator()->StopAnimating();
+  EXPECT_TRUE(fade_animator->IsFadingIn());
+  gfx::AnimationContainerTestApi(fade_animator->container())
+      .IncrementTime(base::Milliseconds(250));
+  EXPECT_FALSE(fade_animator->IsFadingIn());
 
   bubble_view_->AnimateOut();
   EXPECT_TRUE(bubble_view_->is_closing());
-  EXPECT_EQ(frame->layer()->GetTargetOpacity(), 0.0f);
+  EXPECT_TRUE(fade_animator->IsFadingOut());
   EXPECT_FALSE(bubble_widget_->IsClosed());
 
-  frame->layer()->GetAnimator()->StopAnimating();
+  views::test::WidgetDestroyedWaiter destroyed_waiter(bubble_widget_.get());
+  gfx::AnimationContainerTestApi(fade_animator->container())
+      .IncrementTime(base::Milliseconds(150));
+  bubble_view_ = nullptr;
+  destroyed_waiter.Wait();
   EXPECT_TRUE(bubble_widget_->IsClosed());
 }
 
@@ -730,14 +742,35 @@ TEST_F(AnchoredMessageBubbleViewTest, AnimateInCancelsAnimateOut) {
   gfx::ScopedAnimationDurationScaleMode non_zero(
       gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
-  views::View* frame = bubble_view_->GetBubbleFrameView();
+  views::WidgetFadeAnimator* fade_animator =
+      bubble_view_->fade_animator_for_testing();
+  ASSERT_TRUE(fade_animator);
+
   bubble_view_->AnimateOut();
+  EXPECT_TRUE(fade_animator->IsFadingOut());
   bubble_view_->AnimateIn();
   EXPECT_FALSE(bubble_view_->is_closing());
-  EXPECT_EQ(frame->layer()->GetTargetOpacity(), 1.0f);
-
-  frame->layer()->GetAnimator()->StopAnimating();
+  EXPECT_FALSE(fade_animator->IsFadingOut());
   EXPECT_FALSE(bubble_widget_->IsClosed());
+}
+
+TEST_F(AnchoredMessageBubbleViewTest,
+       AnimateInWhenAlreadyShownDoesNotRestartFade) {
+  gfx::ScopedAnimationDurationScaleMode non_zero(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  views::WidgetFadeAnimator* fade_animator =
+      bubble_view_->fade_animator_for_testing();
+  ASSERT_TRUE(fade_animator);
+
+  bubble_view_->AnimateIn();
+  EXPECT_TRUE(fade_animator->IsFadingIn());
+  gfx::AnimationContainerTestApi(fade_animator->container())
+      .IncrementTime(base::Milliseconds(250));
+  EXPECT_FALSE(fade_animator->IsFadingIn());
+
+  bubble_view_->AnimateIn();
+  EXPECT_FALSE(fade_animator->IsFadingIn());
 }
 
 TEST_F(AnchoredMessageBubbleViewTest, AnimateOutHoldsPositionWhenAnchorMoves) {
@@ -769,18 +802,28 @@ TEST_F(AnchoredMessageBubbleViewTest, AnimationsSlideWidget) {
       gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   auto render_mode = gfx::AnimationTestApi::SetRichAnimationRenderMode(
       gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED);
-  const gfx::Rect raised_bounds = bubble_widget_->GetWindowBoundsInScreen();
-  const gfx::Rect shown_bounds = raised_bounds + gfx::Vector2d(0, 16);
+  const gfx::Rect shown_bounds = bubble_widget_->GetWindowBoundsInScreen();
+  const gfx::Rect raised_bounds = shown_bounds + gfx::Vector2d(0, -16);
+  views::WidgetFadeAnimator* fade_animator =
+      bubble_view_->fade_animator_for_testing();
+  ASSERT_TRUE(fade_animator);
 
   bubble_view_->AnimateIn();
-  gfx::AnimationContainerTestApi(bubble_view_->container())
-      .IncrementTime(base::Milliseconds(250));
+  gfx::AnimationContainerTestApi test_api(fade_animator->container());
+  test_api.IncrementTime(base::Milliseconds(125));
+  EXPECT_LT(bubble_widget_->GetWindowBoundsInScreen().y(), shown_bounds.y());
+  EXPECT_GT(bubble_widget_->GetWindowBoundsInScreen().y(), raised_bounds.y());
+
+  test_api.IncrementTime(base::Milliseconds(125));
   EXPECT_EQ(bubble_widget_->GetWindowBoundsInScreen(), shown_bounds);
 
   bubble_view_->AnimateOut();
-  gfx::AnimationContainerTestApi(bubble_view_->container())
-      .IncrementTime(base::Milliseconds(150));
+  views::test::WidgetDestroyedWaiter destroyed_waiter(bubble_widget_.get());
+  test_api.IncrementTime(base::Milliseconds(150));
   EXPECT_EQ(bubble_widget_->GetWindowBoundsInScreen(), raised_bounds);
+  bubble_view_ = nullptr;
+  destroyed_waiter.Wait();
+  EXPECT_TRUE(bubble_widget_->IsClosed());
 }
 
 TEST_F(AnchoredMessageBubbleViewTest, AnimationsSnapWithoutRichAnimations) {
@@ -788,12 +831,12 @@ TEST_F(AnchoredMessageBubbleViewTest, AnimationsSnapWithoutRichAnimations) {
       gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   auto render_mode = gfx::AnimationTestApi::SetRichAnimationRenderMode(
       gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
-  const gfx::Rect shown_bounds =
-      bubble_widget_->GetWindowBoundsInScreen() + gfx::Vector2d(0, 16);
+  const gfx::Rect shown_bounds = bubble_widget_->GetWindowBoundsInScreen();
 
   bubble_view_->AnimateIn();
   EXPECT_EQ(bubble_widget_->GetWindowBoundsInScreen(), shown_bounds);
-  EXPECT_EQ(bubble_view_->GetBubbleFrameView()->layer()->opacity(), 1.0f);
+  EXPECT_FALSE(bubble_view_->fade_animator_for_testing()->IsFadingIn());
+  EXPECT_TRUE(bubble_widget_->IsVisible());
 
   bubble_view_->AnimateOut();
   EXPECT_TRUE(bubble_widget_->IsClosed());

@@ -12,6 +12,8 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/location.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -37,13 +39,14 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/outsets.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/animation_builder.h"
+#include "ui/views/animation/widget_fade_animator.h"
 #include "ui/views/border.h"
 #include "ui/views/bubble/bubble_border.h"
-#include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/md_text_button.h"
@@ -68,9 +71,14 @@ constexpr base::TimeDelta kAnchoredMessageAnimateInDuration =
     base::Milliseconds(250);
 constexpr base::TimeDelta kAnchoredMessageAnimateOutDuration =
     base::Milliseconds(150);
-constexpr int kAnchoredMessageAnimationYOffset = -16;
+constexpr int kAnchoredMessageAnimationSlideDistance = 16;
 constexpr gfx::Tween::Type kAnchoredMessageAnimationTween =
     gfx::Tween::ACCEL_45_DECEL_88;
+
+bool ShouldAnimate() {
+  return gfx::Animation::ShouldRenderRichAnimation() &&
+         !gfx::ScopedAnimationDurationScaleMode::is_zero();
+}
 
 }  // namespace
 
@@ -169,7 +177,6 @@ AnchoredMessageBubbleView::AnchoredMessageBubbleView(
                            views::BubbleBorder::Arrow::TOP_RIGHT,
                            views::BubbleBorder::DIALOG_SHADOW,
                            true),
-      AnimationDelegateViews(this),
       menu_model_(model.GetAnchoredMessageMenuModel()),
       delegate_(delegate) {
   set_close_on_deactivate(base::FeatureList::IsEnabled(
@@ -180,7 +187,6 @@ AnchoredMessageBubbleView::AnchoredMessageBubbleView(
   set_corner_radius(kAnchoredMessageHeight / 2);
   set_margins(gfx::Insets());
   set_highlight_button_when_shown(false);
-  slide_animation_.SetTweenType(kAnchoredMessageAnimationTween);
 
   animating_layout_ =
       SetLayoutManager(std::make_unique<views::AnimatingLayoutManager>());
@@ -280,6 +286,9 @@ AnchoredMessageBubbleView::AnchoredMessageBubbleView(
 
 void AnchoredMessageBubbleView::UpdateContent(
     const PageActionModelInterface& model) {
+  if (fade_animator_ && fade_animator_->IsFadingIn()) {
+    fade_animator_->CancelSlide(/*snap_to_target=*/false);
+  }
   const bool chip_has_icon = !model.GetAnchoredMessageIcon();
   // Ensure that the anchored message always has a chip showing - that is it has
   // an icon and/or non-empty text.
@@ -306,66 +315,98 @@ void AnchoredMessageBubbleView::UpdateContent(
 
 void AnchoredMessageBubbleView::AddedToWidget() {
   views::View::AddedToWidget();
-  // Fade the frame view so the border and shadow fade with the contents.
-  views::View* frame = GetBubbleFrameView();
-  frame->SetPaintToLayer();
-  frame->layer()->SetFillsBoundsOpaquely(false);
-  // Start hidden until AnimateIn().
-  frame->layer()->SetOpacity(0.0f);
+  // Animate at the widget level (rather than painting BubbleFrameView to a
+  // zero-opacity layer) so macOS WindowServer computes the native window
+  // shadow from fully opaque frame pixels on the first frame swap and fades
+  // the shadow smoothly with the bubble.
+  views::Widget* widget = GetWidget();
+  widget->SetVisibilityChangedAnimationsEnabled(false);
+  fade_animator_ = std::make_unique<views::WidgetFadeAnimator>(widget);
+  fade_animator_->set_fade_in_duration(kAnchoredMessageAnimateInDuration);
+  fade_animator_->set_fade_out_duration(kAnchoredMessageAnimateOutDuration);
+  fade_animator_->set_tween_type(kAnchoredMessageAnimationTween);
+  fade_animator_->set_show_type(
+      views::WidgetFadeAnimator::WidgetShowType::kShowInactive);
+  fade_complete_subscription_ =
+      fade_animator_->AddFadeCompleteCallback(base::BindRepeating(
+          [](base::WeakPtr<AnchoredMessageBubbleView> view,
+             views::WidgetFadeAnimator*,
+             views::WidgetFadeAnimator::FadeType fade_type) {
+            if (fade_type == views::WidgetFadeAnimator::FadeType::kFadeOut) {
+              base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+                  FROM_HERE,
+                  base::BindOnce(&AnchoredMessageBubbleView::CloseWidget,
+                                 view));
+            }
+          },
+          weak_factory_.GetWeakPtr()));
 }
 
 void AnchoredMessageBubbleView::AnimateIn() {
-  // Catch up with anchor moves ignored while animating out.
-  if (is_closing_) {
-    is_closing_ = false;
-    OnAnchorBoundsChanged();
+  views::Widget* widget = GetWidget();
+  if (!widget || widget->IsClosed()) {
+    return;
   }
 
-  const base::TimeDelta duration =
-      gfx::Animation::RichAnimationDuration(kAnchoredMessageAnimateInDuration);
-  slide_animation_.SetSlideDuration(duration);
-  slide_animation_.Show();
-  views::AnimationBuilder()
-      .SetPreemptionStrategy(
-          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
-      .Once()
-      .SetDuration(duration)
-      .SetOpacity(GetBubbleFrameView(), 1.0f, kAnchoredMessageAnimationTween);
+  // Reverse an in-progress AnimateOut() and catch up with any anchor moves
+  // ignored while closing.
+  if (is_closing_) {
+    is_closing_ = false;
+    has_animated_in_ = true;
+    if (fade_animator_) {
+      fade_animator_->CancelFadeOut();
+    }
+    if (!widget->IsVisible()) {
+      widget->SetOpacity(1.0f);
+      widget->ShowInactive();
+    }
+    OnAnchorBoundsChanged();
+    return;
+  }
+
+  if (has_animated_in_) {
+    return;
+  }
+  has_animated_in_ = true;
+
+  if (!ShouldAnimate() || !fade_animator_) {
+    widget->SetOpacity(1.0f);
+    if (!widget->IsVisible()) {
+      widget->ShowInactive();
+    }
+    return;
+  }
+
+  fade_animator_->FadeIn(kAnchoredMessageAnimationSlideDistance,
+                         views::WidgetFadeAnimator::SlideDirection::kDown);
 }
 
 void AnchoredMessageBubbleView::AnimateOut() {
   if (is_closing_) {
     return;
   }
-  closing_bounds_ = BubbleDialogDelegate::GetBubbleBounds();
   is_closing_ = true;
   if (menu_runner_ && menu_runner_->IsRunning()) {
     menu_runner_->Cancel();
   }
   menu_model_ = nullptr;
 
-  const base::TimeDelta duration =
-      gfx::Animation::RichAnimationDuration(kAnchoredMessageAnimateOutDuration);
-  if (duration.is_positive()) {
-    slide_animation_.SetSlideDuration(duration);
-    slide_animation_.Hide();
+  if (!ShouldAnimate() || !fade_animator_) {
+    CloseWidget();
+    return;
   }
-  views::AnimationBuilder()
-      .SetPreemptionStrategy(
-          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
-      .OnEnded(base::BindOnce(&AnchoredMessageBubbleView::CloseWidget,
-                              weak_factory_.GetWeakPtr()))
-      .Once()
-      .SetDuration(duration)
-      .SetOpacity(GetBubbleFrameView(), 0.0f, kAnchoredMessageAnimationTween);
-}
 
-void AnchoredMessageBubbleView::AnimationProgressed(
-    const gfx::Animation* animation) {
-  SizeToContents();
+  if (fade_animator_->IsFadingIn()) {
+    fade_animator_->CancelFadeIn();
+  }
+  fade_animator_->FadeOut(kAnchoredMessageAnimationSlideDistance,
+                          views::WidgetFadeAnimator::SlideDirection::kDown);
 }
 
 void AnchoredMessageBubbleView::CloseWidget() {
+  if (!is_closing_) {
+    return;
+  }
   views::Widget* widget = GetWidget();
   if (widget && !widget->IsClosed()) {
     widget->Close();
@@ -426,15 +467,16 @@ gfx::Rect AnchoredMessageBubbleView::GetAnchorRect() const {
   return anchor_rect;
 }
 
-gfx::Rect AnchoredMessageBubbleView::GetBubbleBounds() {
+void AnchoredMessageBubbleView::OnAnchorBoundsChanged() {
   // Hold position while animating out, since hiding the page action moves the
   // anchor.
-  gfx::Rect bounds =
-      is_closing_ ? closing_bounds_ : BubbleDialogDelegate::GetBubbleBounds();
-  bounds.Offset(
-      0, gfx::Tween::IntValueBetween(slide_animation_.GetCurrentValue(),
-                                     kAnchoredMessageAnimationYOffset, 0));
-  return bounds;
+  if (is_closing_) {
+    return;
+  }
+  if (fade_animator_ && fade_animator_->IsFadingIn()) {
+    fade_animator_->CancelSlide(/*snap_to_target=*/false);
+  }
+  BubbleDialogDelegate::OnAnchorBoundsChanged();
 }
 
 views::View* AnchoredMessageBubbleView::GetContentsView() {
@@ -454,6 +496,9 @@ AnchoredMessageBubbleView::~AnchoredMessageBubbleView() {
 }
 
 void AnchoredMessageBubbleView::OnExpandButtonPressed() {
+  if (fade_animator_ && fade_animator_->IsFadingIn()) {
+    fade_animator_->CancelSlide(/*snap_to_target=*/false);
+  }
   expanded_ = !expanded_;
   bottom_container_->SetVisible(expanded_);
   if (items_container_) {
