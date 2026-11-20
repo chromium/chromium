@@ -166,6 +166,19 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/on_device_translation/service/translate_kit_client.h:LoadTranslateKitResult) -->
 
+<!-- LINT.IfChange(TranslateKitModelUnloadReason) -->
+
+<enum name="TranslateKitModelUnloadReason">
+  <int value="0" label="Idle">
+    The translator was not used for the idle unload timeout.
+  </int>
+  <int value="1" label="MemoryPressure">
+    The process was under moderate or critical memory pressure.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//components/on_device_translation/service/translate_kit_client.h:TranslateKitModelUnloadReason) -->
+
 <!-- LINT.IfChange(WritingAssistanceMetricsOptionFormat) -->
 
 <enum name="WritingAssistanceMetricsOptionFormat">

@@ -33,6 +33,14 @@ extern const base::FeatureParam<base::TimeDelta>
 // created per browser context.
 extern const base::FeatureParam<size_t> kTranslationAPIMaxServiceCount;
 
+// How long a translator in the translation service can go without a
+// translation before the service unloads its TranslateKit model, and whether
+// moderate or critical memory pressure unloads all models immediately. The
+// model loads again on the next translation. 0 keeps the model loaded for as
+// long as the translator exists.
+extern const base::FeatureParam<base::TimeDelta>
+    kTranslationAPIModelIdleUnloadTimeout;
+
 // Enables automatic download of language packs for on-device translation.
 BASE_DECLARE_FEATURE(kAutoDownloadTranslateLanguagePacks);
 

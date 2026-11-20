@@ -545,6 +545,46 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="AI.Translation.ModelReloadSuccess" enum="BooleanSuccess"
+    expires_after="2027-11-15">
+  <owner>jaeone@google.com</owner>
+  <owner>chrome-chia-dev@google.com</owner>
+  <owner>src/chrome/browser/ai/OWNERS</owner>
+  <summary>
+    Records whether the translation service could load the TranslateKit model of
+    a translator again after it unloaded it, for idle time or memory pressure.
+    Logged on the first translation after each unload. A failure makes that
+    translation fail. See on_device_translation::TranslateKitClient.
+  </summary>
+</histogram>
+
+<histogram name="AI.Translation.ModelReloadTime" units="ms"
+    expires_after="2027-11-15">
+  <owner>jaeone@google.com</owner>
+  <owner>chrome-chia-dev@google.com</owner>
+  <owner>src/chrome/browser/ai/OWNERS</owner>
+  <summary>
+    Records how long the translation service took to load the TranslateKit model
+    of a translator again after it unloaded it, for idle time or memory
+    pressure. Logged on the first translation after each unload, only when the
+    load works. The translation waits for the load. See
+    on_device_translation::TranslateKitClient.
+  </summary>
+</histogram>
+
+<histogram name="AI.Translation.ModelUnloadReason"
+    enum="TranslateKitModelUnloadReason" expires_after="2027-11-15">
+  <owner>jaeone@google.com</owner>
+  <owner>chrome-chia-dev@google.com</owner>
+  <owner>src/chrome/browser/ai/OWNERS</owner>
+  <summary>
+    Records why the translation service unloaded the TranslateKit model of a
+    translator. The service keeps the translator of a language pair after a page
+    destroys it, so this also counts translators that no page holds. Logged once
+    for each model that unloads. See on_device_translation::TranslateKitClient.
+  </summary>
+</histogram>
+
 <histogram name="AI.{SessionType}.AvailabilityV2" enum="Availability"
     expires_after="2027-05-16">
   <owner>iahouma@google.com</owner>

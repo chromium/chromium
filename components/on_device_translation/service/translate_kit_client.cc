@@ -4,28 +4,38 @@
 
 #include "components/on_device_translation/service/translate_kit_client.h"
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
+#include <utility>
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/files/memory_mapped_file.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory_coordinator/memory_limit.h"
+#include "base/memory_coordinator/traits.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
 #include "components/on_device_translation/features.h"
 #include "components/on_device_translation/service/proto/translate_kit_api.pb.h"
 #include "components/on_device_translation/service/translate_kit_structs.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include <malloc.h>
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace on_device_translation {
 namespace {
@@ -36,6 +46,43 @@ constexpr std::string_view kModelFileOpenErrorMetricName =
     "Translate.OnDeviceTranslation.ModelFileOpenError";
 constexpr std::string_view kModelFileMmapSuccessMetricName =
     "Translate.OnDeviceTranslation.ModelFileMmapSuccess";
+
+constexpr std::string_view kModelUnloadReasonMetricName =
+    "AI.Translation.ModelUnloadReason";
+constexpr std::string_view kModelReloadSuccessMetricName =
+    "AI.Translation.ModelReloadSuccess";
+constexpr std::string_view kModelReloadTimeMetricName =
+    "AI.Translation.ModelReloadTime";
+
+constexpr std::string_view kMemoryConsumerName = "TranslateKitClient";
+
+constexpr base::MemoryConsumerTraits kMemoryConsumerTraits(
+    // Each loaded language pair holds tens of MB, and a page can load several
+    // pairs, so the total can reach hundreds of MB.
+    base::MemoryConsumerTraits::EstimatedMemoryUsage::kLarge,
+    // Deleting a TranslateKit translator frees its model.
+    base::MemoryConsumerTraits::ReleaseMemoryDataAccess::kNone,
+    // The model loads again from the same files.
+    base::MemoryConsumerTraits::InformationRetention::kLossless,
+    base::MemoryConsumerTraits::ExecutionType::kSynchronous,
+    // `OnReleaseMemory()` reads the memory limit, and unloads all models only
+    // under moderate or critical pressure.
+    base::MemoryConsumerTraits::SupportsMemoryLimit::kYes,
+    // The next translation loads the model from disk.
+    base::MemoryConsumerTraits::RecreateMemoryCost::kExpensive,
+    // Each notification unloads the models that were loaded since the last
+    // one.
+    base::MemoryConsumerTraits::IsStateful::kNo);
+
+// Returns the free pages of the system allocator to the OS. TranslateKit
+// allocates its model buffers with the system allocator, which on Android
+// keeps freed pages for a while. Called after models unload, when the service
+// is idle.
+void ReleaseFreeSystemHeapMemory() {
+#if BUILDFLAG(IS_ANDROID)
+  mallopt(M_PURGE, 0);
+#endif  // BUILDFLAG(IS_ANDROID)
+}
 
 // Logs UMA after an attempt to load the TranslateKit binary.
 void LogLoadTranslateKitResult(LoadTranslateKitResult result,
@@ -160,8 +207,15 @@ TranslateKitClient::TranslateKitClient(const base::FilePath& library_path,
           lib_.GetFunctionPointer("TranslatorTranslate"))),
       translate_kit_sentence_split_func_(
           reinterpret_cast<TranslateKitSplitSentencesFn>(
-              lib_.GetFunctionPointer("TranslateKitSplitSentences"))) {
+              lib_.GetFunctionPointer("TranslateKitSplitSentences"))),
+      model_idle_unload_timeout_(kTranslationAPIModelIdleUnloadTimeout.Get()) {
   LogLoadTranslateKitResult(CheckLoadTranslateKitResult(), lib_.GetError());
+  if (model_idle_unload_timeout_.is_positive()) {
+    memory_consumer_registration_.emplace(
+        kMemoryConsumerName, kMemoryConsumerTraits, this,
+        // `Get()` leaks the client, so it may outlive the registry.
+        base::MemoryConsumerRegistration::CheckUnregister::kDisabled);
+  }
 }
 
 LoadTranslateKitResult TranslateKitClient::CheckLoadTranslateKitResult() {
@@ -267,12 +321,16 @@ void TranslateKitClient::SetConfig(
 
 DISABLE_CFI_DLSYM
 TranslateKitClient::~TranslateKitClient() {
+  memory_consumer_registration_.reset();
+
+  // The translators delete their TranslateKit translators, which needs the
+  // kit, so delete them first.
+  translators_.clear();
   if (!maybe_kit_ptr_.has_value() || !*maybe_kit_ptr_) {
     return;
   }
   delete_tanslate_kit_fnc_(*maybe_kit_ptr_);
   maybe_kit_ptr_ = 0;
-  translators_.clear();
 }
 
 bool TranslateKitClient::CanTranslate(const std::string& source_lang,
@@ -311,49 +369,152 @@ TranslateKitClient::GetTranslator(const std::string& source_lang,
   return raw_translator_ptr;
 }
 
+void TranslateKitClient::UnloadAllTranslatorModels(
+    TranslateKitModelUnloadReason reason) {
+  bool unloaded = false;
+  for (auto& [key, translator] : translators_) {
+    auto* translator_impl = static_cast<TranslatorImpl*>(translator.get());
+    if (translator_impl->IsModelLoaded()) {
+      unloaded = true;
+      translator_impl->UnloadModel(reason);
+    }
+  }
+
+  // Purging walks the allocator, so skip it when nothing was freed.
+  if (unloaded) {
+    ReleaseFreeSystemHeapMemory();
+  }
+}
+
+size_t TranslateKitClient::GetLoadedTranslatorCountForTesting() const {
+  return std::ranges::count_if(translators_, [](const auto& entry) {
+    return static_cast<const TranslatorImpl*>(entry.second.get())
+        ->IsModelLoaded();
+  });
+}
+
+void TranslateKitClient::OnReleaseMemory() {
+  if (memory_limit() <= base::MemoryLimit::ModeratePressureThreshold()) {
+    UnloadAllTranslatorModels(TranslateKitModelUnloadReason::kMemoryPressure);
+  }
+}
+
+void TranslateKitClient::OnUpdateMemoryLimit() {}
+
+// static
 DISABLE_CFI_DLSYM
+std::uintptr_t TranslateKitClient::TranslatorImpl::CreateTranslateKitTranslator(
+    TranslateKitClient* client,
+    const std::string& source_lang,
+    const std::string& target_lang) {
+  CHECK(client->translate_kit_create_translator_func_);
+  return client->translate_kit_create_translator_func_(
+      *client->maybe_kit_ptr_,
+      TranslateKitLanguage(source_lang.c_str(), source_lang.length()),
+      TranslateKitLanguage(target_lang.c_str(), target_lang.length()));
+}
+
+// static
 std::unique_ptr<TranslateKitClient::TranslatorImpl>
 TranslateKitClient::TranslatorImpl::MaybeCreate(
     TranslateKitClient* client,
     const std::string& source_lang,
     const std::string& target_lang) {
-  CHECK(client->translate_kit_create_translator_func_);
-  std::uintptr_t translator_ptr = client->translate_kit_create_translator_func_(
-      *client->maybe_kit_ptr_,
-      TranslateKitLanguage(source_lang.c_str(), source_lang.length()),
-      TranslateKitLanguage(target_lang.c_str(), target_lang.length()));
+  std::uintptr_t translator_ptr =
+      CreateTranslateKitTranslator(client, source_lang, target_lang);
   if (!translator_ptr) {
     return nullptr;
   }
   return std::make_unique<TranslatorImpl>(base::PassKey<TranslatorImpl>(),
-                                          client, source_lang, translator_ptr);
+                                          client, source_lang, target_lang,
+                                          translator_ptr);
 }
 
 TranslateKitClient::TranslatorImpl::TranslatorImpl(
     base::PassKey<TranslatorImpl>,
     TranslateKitClient* client,
     const std::string& source_lang,
+    const std::string& target_lang,
     std::uintptr_t translator_ptr)
     : client_(client),
       source_lang_(source_lang),
-      translator_ptr_(translator_ptr) {}
+      target_lang_(target_lang),
+      translator_ptr_(translator_ptr) {
+  RestartIdleUnloadTimer();
+}
+
+TranslateKitClient::TranslatorImpl::~TranslatorImpl() {
+  DeleteTranslateKitTranslator();
+}
+
+void TranslateKitClient::TranslatorImpl::UnloadModel(
+    TranslateKitModelUnloadReason reason) {
+  if (translator_ptr_) {
+    base::UmaHistogramEnumeration(kModelUnloadReasonMetricName, reason);
+  }
+  DeleteTranslateKitTranslator();
+}
 
 DISABLE_CFI_DLSYM
-TranslateKitClient::TranslatorImpl::~TranslatorImpl() {
+void TranslateKitClient::TranslatorImpl::DeleteTranslateKitTranslator() {
+  idle_unload_timer_.Stop();
+  if (!translator_ptr_) {
+    return;
+  }
   CHECK(client_->delete_translator_fnc_);
-  client_->delete_translator_fnc_(translator_ptr_);
+  client_->delete_translator_fnc_(std::exchange(translator_ptr_, 0));
+}
+
+bool TranslateKitClient::TranslatorImpl::MaybeLoadModel() {
+  if (translator_ptr_) {
+    return true;
+  }
+  base::ElapsedTimer timer;
+  translator_ptr_ =
+      CreateTranslateKitTranslator(client_, source_lang_, target_lang_);
+  const bool success = translator_ptr_ != 0;
+  base::UmaHistogramBoolean(kModelReloadSuccessMetricName, success);
+  if (success) {
+    base::UmaHistogramMediumTimes(kModelReloadTimeMetricName, timer.Elapsed());
+  }
+  return success;
+}
+
+void TranslateKitClient::TranslatorImpl::RestartIdleUnloadTimer() {
+  if (!client_->model_idle_unload_timeout_.is_positive()) {
+    return;
+  }
+
+  // Unretained is safe because `this` owns the timer.
+  idle_unload_timer_.Start(
+      FROM_HERE, client_->model_idle_unload_timeout_,
+      base::BindOnce(&TranslatorImpl::OnIdleTimeout, base::Unretained(this)));
+}
+
+void TranslateKitClient::TranslatorImpl::OnIdleTimeout() {
+  UnloadModel(TranslateKitModelUnloadReason::kIdle);
+  ReleaseFreeSystemHeapMemory();
 }
 
 DISABLE_CFI_DLSYM
 std::optional<std::string> TranslateKitClient::TranslatorImpl::Translate(
     const std::string& text) {
   CHECK(client_->translator_translate_func_);
-  if (client_->translator_translate_func_(
-          translator_ptr_, TranslateKitInputText(text.c_str(), text.length()),
-          TranslateCallback, reinterpret_cast<uintptr_t>(&text))) {
-    return text;
+  if (!MaybeLoadModel()) {
+    return std::nullopt;
   }
-  return std::nullopt;
+  const bool translated = client_->translator_translate_func_(
+      translator_ptr_, TranslateKitInputText(text.c_str(), text.length()),
+      TranslateCallback, reinterpret_cast<uintptr_t>(&text));
+
+  // Count the idle time from the end of the call. One call can run longer
+  // than the timeout, and a timer that started before it would unload the
+  // model as soon as the call returns.
+  RestartIdleUnloadTimer();
+  if (!translated) {
+    return std::nullopt;
+  }
+  return text;
 }
 
 DISABLE_CFI_DLSYM

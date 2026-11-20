@@ -13,7 +13,10 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory_coordinator/memory_consumer.h"
 #include "base/scoped_native_library.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "base/types/expected.h"
 #include "base/types/pass_key.h"
 #include "components/on_device_translation/public/mojom/on_device_translation_service.mojom.h"
@@ -41,10 +44,30 @@ enum class LoadTranslateKitResult {
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ai/enums.xml:LoadTranslateKitResult)
 
+// Why the translation service unloaded the TranslateKit model of a translator.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(TranslateKitModelUnloadReason)
+enum class TranslateKitModelUnloadReason {
+  // The translator was not used for `kTranslationAPIModelIdleUnloadTimeout`.
+  kIdle = 0,
+  // The process was under moderate or critical memory pressure.
+  kMemoryPressure = 1,
+
+  kMaxValue = kMemoryPressure,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ai/enums.xml:TranslateKitModelUnloadReason)
+
 // The client that wraps the plain C-style interfaces between Chrome and the
 // TranslateKit. Changes to the interfaces must be backwards compatible and
 // reflected in the Google3-side definition.
-class TranslateKitClient {
+//
+// When `kTranslationAPIModelIdleUnloadTimeout` is positive, a `Translator`
+// unloads its TranslateKit model after being idle for that duration, and all
+// models unload under memory pressure. The model
+// loads again on the next Translate() call. All of this happens on the
+// sequence that uses the client, so an unload never runs during a translation.
+class TranslateKitClient : public base::MemoryConsumer {
  public:
   // Translator provides access to translation functionality.
   class Translator {
@@ -61,7 +84,7 @@ class TranslateKitClient {
 
   TranslateKitClient(const base::FilePath& library_path,
                      base::PassKey<TranslateKitClient>);
-  ~TranslateKitClient();
+  ~TranslateKitClient() override;
 
   // Not copyable.
   TranslateKitClient(const TranslateKitClient&) = delete;
@@ -80,6 +103,9 @@ class TranslateKitClient {
       const std::string& source_lang,
       const std::string& target_lang);
 
+  // Returns the number of translators that have a loaded model.
+  size_t GetLoadedTranslatorCountForTesting() const;
+
  private:
   // TranslatorImpl manages an instance of translator created by TranslateKit
   // library and provides access to its translation functionality.
@@ -93,6 +119,7 @@ class TranslateKitClient {
     TranslatorImpl(base::PassKey<TranslatorImpl>,
                    TranslateKitClient* client,
                    const std::string& source_lang,
+                   const std::string& target_lang,
                    std::uintptr_t translator_ptr);
     ~TranslatorImpl() override;
     // Not copyable.
@@ -102,14 +129,57 @@ class TranslateKitClient {
     std::optional<std::string> Translate(const std::string& text) override;
     std::vector<std::string> SplitSentences(const std::string& text) override;
 
+    // Returns true if the TranslateKit translator, and so its model, is
+    // loaded.
+    bool IsModelLoaded() const { return translator_ptr_ != 0; }
+
+    // Deletes the TranslateKit translator, which releases its model, and
+    // records `reason` if the model was loaded. The next Translate() call
+    // creates it again.
+    void UnloadModel(TranslateKitModelUnloadReason reason);
+
    private:
+    // Creates a TranslateKit translator. Returns 0 on failure.
+    static std::uintptr_t CreateTranslateKitTranslator(
+        TranslateKitClient* client,
+        const std::string& source_lang,
+        const std::string& target_lang);
+
+    // Creates the TranslateKit translator if it was unloaded, and records
+    // whether that worked and how long it took. Returns false if it fails.
+    bool MaybeLoadModel();
+
+    // Deletes the TranslateKit translator, if any.
+    void DeleteTranslateKitTranslator();
+
+    // Restarts the countdown to OnIdleTimeout(), if idle unload is enabled.
+    void RestartIdleUnloadTimer();
+
+    // Unloads the model and returns its freed memory to the OS.
+    void OnIdleTimeout();
+
     // Guaranteed to exist, as `client_` owns `this`.
     raw_ptr<TranslateKitClient> client_;
     const std::string source_lang_;
-    // A pointer to a Translator instance created by the TranslateKit.
+    const std::string target_lang_;
+
+    // A pointer to a Translator instance created by the TranslateKit, or 0
+    // while the model is unloaded.
     // It should only be instantiated and deleted by the TranslateKit library.
     std::uintptr_t translator_ptr_;
+
+    // Fires OnIdleTimeout() after the translator was not used for
+    // `client_->model_idle_unload_timeout_`.
+    base::OneShotTimer idle_unload_timer_;
   };
+
+  // Unloads the TranslateKit models of all translators for `reason`. Each
+  // translator loads its model again on its next Translate() call.
+  void UnloadAllTranslatorModels(TranslateKitModelUnloadReason reason);
+
+  // base::MemoryConsumer:
+  void OnReleaseMemory() override;
+  void OnUpdateMemoryLimit() override;
 
   static bool FileExists(const char* file_name,
                          size_t file_name_size,
@@ -199,6 +269,14 @@ class TranslateKitClient {
       0};
 
   mojo::Remote<mojom::FileOperationProxy> file_operation_proxy_;
+
+  // How long a translator stays loaded without a translation. Zero turns idle
+  // unload off.
+  const base::TimeDelta model_idle_unload_timeout_;
+
+  // Set when models unload under memory pressure. Declared last so that it
+  // unregisters before the translators go away.
+  std::optional<base::MemoryConsumerRegistration> memory_consumer_registration_;
 };
 
 }  // namespace on_device_translation
