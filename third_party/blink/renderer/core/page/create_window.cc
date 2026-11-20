@@ -314,6 +314,11 @@ WebWindowFeatures GetWindowFeaturesFromString(const String& feature_string,
 
 WebWindowFeatures GetWindowFeaturesFromAttribute(const String& feature_string,
                                                  LocalDOMWindow* dom_window) {
+  if (!feature_string.IsNull() &&
+      RuntimeEnabledFeatures::WindowOpenSplitTabEnabled(dom_window)) {
+    UseCounter::Count(dom_window,
+                      mojom::blink::WebFeature::kWindowFeaturesAttribute);
+  }
   return ParseWindowFeatures(feature_string, dom_window,
                              WindowFeaturesSource::kAttribute);
 }
@@ -392,6 +397,12 @@ Frame* CreateNewWindow(LocalFrame& opener_frame,
   if (features.always_on_top) {
     UseCounter::Count(opener_window,
                       mojom::blink::WebFeature::kWindowOpenAlwaysOnTop);
+  }
+  // Split tab requests can come from window.open() or from the
+  // "windowfeatures" content attribute.
+  if (features.is_split) {
+    UseCounter::Count(opener_window,
+                      mojom::blink::WebFeature::kSplitTabRequested);
   }
   const auto& picture_in_picture_window_options =
       request.GetPictureInPictureWindowOptions();

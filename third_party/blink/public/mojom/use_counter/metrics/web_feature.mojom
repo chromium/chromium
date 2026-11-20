@@ -5506,6 +5506,8 @@ enum WebFeature {
   kInteractiveContentMenuDescendant = 6155,
   kTextMenuDescendant = 6156,
   kMixedContentInSharedWorker = 6157,
+  kSplitTabRequested = 6158,
+  kWindowFeaturesAttribute = 6159,
 
   // Add new features immediately above this line. Don't change the existing
   // numbers of any item, and don't reuse removed slots. Also don't add extra

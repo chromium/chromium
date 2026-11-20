@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="author" href="mailto:masonf@chromium.org">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/nav-history-apis.html#concept-window-open-features-tokenize">
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<body>
+<script>
+// These must match the values in web_feature.mojom.
+const kSplitTabRequested = 6158;
+const kWindowFeaturesAttribute = 6159;
+
+// Use counters are per-document, so each test that needs a clean slate uses a
+// new iframe document.
+async function newDocument(t) {
+  const iframe = document.createElement('iframe');
+  iframe.srcdoc = '<!DOCTYPE html><body></body>';
+  const loaded = new Promise(resolve => iframe.onload = resolve);
+  document.body.appendChild(iframe);
+  await loaded;
+  t.add_cleanup(() => iframe.remove());
+  return iframe.contentDocument;
+}
+
+// Creates an element of `tagName` ("a" or "form") in `doc` with the given
+// `windowFeatures` attribute (or none, if null) and `target`, and activates it.
+function activate(doc, tagName, windowFeatures, target) {
+  const el = doc.createElement(tagName);
+  if (target) {
+    el.target = target;
+  }
+  if (tagName === 'form') {
+    el.action = 'about:blank';
+  } else {
+    el.href = 'about:blank';
+  }
+  if (windowFeatures !== null) {
+    el.setAttribute('windowfeatures', windowFeatures);
+  }
+  doc.body.appendChild(el);
+  if (tagName === 'form') {
+    el.submit();
+  } else {
+    el.click();
+  }
+  el.remove();
+}
+
+promise_test(async t => {
+  const doc = await newDocument(t);
+  const counted = feature => internals.isUseCounted(doc, feature);
+  assert_false(counted(kSplitTabRequested));
+  doc.defaultView.open('about:blank', '_blank', 'popup').close();
+  assert_false(counted(kSplitTabRequested),
+      'window.open() without split should not be counted');
+  doc.defaultView.open('about:blank', '_blank', 'split').close();
+  assert_true(counted(kSplitTabRequested));
+  assert_false(counted(kWindowFeaturesAttribute));
+}, 'A split request from window.open() is counted');
+
+for (const tagName of ['a', 'form']) {
+  promise_test(async t => {
+    const doc = await newDocument(t);
+    const counted = feature => internals.isUseCounted(doc, feature);
+    assert_false(counted(kSplitTabRequested));
+    activate(doc, tagName, 'split', /*target=*/null);
+    await t.step_wait(() => counted(kSplitTabRequested),
+        'windowfeatures=split should be counted as a split request');
+    assert_true(counted(kWindowFeaturesAttribute));
+  }, `A split request from <${tagName} windowfeatures> is counted`);
+}
+
+promise_test(async t => {
+  const doc = await newDocument(t);
+  const counted = feature => internals.isUseCounted(doc, feature);
+  assert_false(counted(kWindowFeaturesAttribute));
+  activate(doc, 'a', null, '_blank');
+  assert_false(counted(kWindowFeaturesAttribute),
+      'A link without windowfeatures should not be counted');
+  activate(doc, 'a', '', '_blank');
+  assert_true(counted(kWindowFeaturesAttribute));
+  assert_false(counted(kSplitTabRequested));
+}, 'Any use of the windowfeatures attribute is counted');
+</script>
