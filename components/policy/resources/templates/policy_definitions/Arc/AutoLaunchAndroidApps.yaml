@@ -13,8 +13,6 @@ features:
   can_be_recommended: false
   dynamic_refresh: true
   per_profile: true
-future_on:
-- chrome_os
 owners:
 - arc-commercial@google.com
 - fahadmansoor@google.com
@@ -22,5 +20,7 @@ schema:
   items:
     type: string
   type: array
+supported_on:
+- chrome_os:160-
 tags: []
 type: list
