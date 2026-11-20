@@ -129,12 +129,6 @@ class ChromeAutofillClient : public ContentAutofillClient {
   ChromeAutofillClient& operator=(const ChromeAutofillClient&) = delete;
   ~ChromeAutofillClient() override;
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
-  // Triggers the AtMemory promo bubble.
-  void ShowAutofillAtMemoryPromo();
-#endif
-
   // AutofillClient:
   base::WeakPtr<AutofillClient> GetWeakPtr() final;
   const base::i18n::LanguageTag& GetAppLocale() const final;
