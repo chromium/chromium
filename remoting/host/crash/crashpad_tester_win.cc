@@ -571,7 +571,7 @@ bool ValidateUploadUrlForCli(std::string_view url) {
               << kMaxCrashpadUploadUrlChars << " characters.\n";
     return false;
   }
-  if (!CrashpadWin::IsValidUploadUrlOverride(url)) {
+  if (!IsValidCrashpadUploadUrlOverride(url)) {
     std::cerr << "Invalid upload URL: " << url << '\n'
               << "Expected lowercase https://<host>[:port]/<path> (or "
                  "http://127.0.0.1[:port]/<path> / "

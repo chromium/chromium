@@ -5,6 +5,7 @@
 #include "remoting/base/crash/crashpad_database_manager.h"
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/files/file_util.h"
@@ -124,6 +125,69 @@ TEST_F(CrashpadDatabaseManagerTest, LogAndCleanupWithReports) {
 
 TEST_F(CrashpadDatabaseManagerTest, GetCrashpadDatabasePathIsNonEmpty) {
   EXPECT_FALSE(GetCrashpadDatabasePath().empty());
+}
+
+TEST_F(CrashpadDatabaseManagerTest, IsValidCrashpadUploadUrlOverride) {
+  constexpr std::string_view kValidUrls[] = {
+      "https://clients2.google.com/cr/staging_report",
+      "https://example.com:8443/upload?foo=1",
+      "https://my-host.corp.example.com/",
+      "http://127.0.0.1/cr/report",
+      "http://127.0.0.1:8080/cr/report",
+      "http://localhost:9000/cr/report",
+      "http://LocalHost/x",
+      "https://127.0.0.1:65535/cr/report",
+  };
+  for (std::string_view url : kValidUrls) {
+    EXPECT_TRUE(IsValidCrashpadUploadUrlOverride(url)) << url;
+  }
+
+  constexpr std::string_view kInvalidUrls[] = {
+      "",
+      "http://example.com/cr/report",
+      "http://127.0.0.1.example.com/x",
+      "http://localhost.example.com/x",
+      "http://127.0.0.1@example.com/x",
+      "http://127.0.0.2/x",
+      "HTTP://127.0.0.1/x",
+      "https://clients2.google.com",
+      "https://host?q=/x",
+      "https://host#/x",
+      "https://example.com:8443/upload?foo=1#frag",
+      "https://example.com/cr/report#frag",
+      "https://user:pass@clients2.google.com/cr/report",
+      "http://127.0.0.1:0/cr/report",
+      "http://127.0.0.1:+80/x",
+      "https://host:/x",
+      "http://127.0.0.1:99999/cr/report",
+      "https://[2001:db8::1]/cr/report",
+      "http://[::1]/cr/report",
+      "http://localhost./x",
+      "https://example.com./x",
+      "https://.example.com/cr/report",
+      "https://-example.com/cr/report",
+      "https://example-/x",
+      "https://example.com-/x",
+      "https://example-.com/x",
+      "https://sub.-example.com/x",
+      "https://exa..mple.com/cr/report",
+      "HTTPS://clients2.google.com/cr/report",
+      "ftp://127.0.0.1/cr/report",
+      "https://clients2.google.com/cr/report ",
+      "https://clients2.google.com/cr/\nreport",
+      "https://ex\xC3\xA4mple.com/cr/report",
+  };
+  for (std::string_view url : kInvalidUrls) {
+    EXPECT_FALSE(IsValidCrashpadUploadUrlOverride(url)) << url;
+  }
+
+  constexpr std::string_view kPrefix = "https://example.com/";
+  const std::string max_len_url =
+      std::string(kPrefix) +
+      std::string(kMaxCrashpadUploadUrlChars - kPrefix.size(), 'a');
+  EXPECT_EQ(max_len_url.size(), kMaxCrashpadUploadUrlChars);
+  EXPECT_TRUE(IsValidCrashpadUploadUrlOverride(max_len_url));
+  EXPECT_FALSE(IsValidCrashpadUploadUrlOverride(max_len_url + "a"));
 }
 
 TEST_F(CrashpadDatabaseManagerTest,

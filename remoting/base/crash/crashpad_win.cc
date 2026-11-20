@@ -25,8 +25,6 @@
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/win/access_control_list.h"
@@ -392,82 +390,6 @@ CrashpadWin& CrashpadWin::GetInstance() {
 }
 
 // static
-bool CrashpadWin::IsValidUploadUrlOverride(std::string_view url) {
-  // Enforces a strict subset of URLs accepted by both WinHttpCrackUrl (used by
-  // http_transport_win.cc) and crashpad::CrackURL(): lowercase http:// or
-  // https:// scheme, ASCII hostname or IPv4 address (IPv6 literals are not
-  // supported), optional numeric port, and a '/' resource path without a '#'
-  // fragment (CrashReportUploadThread appends query parameters to the end of
-  // the URL and http_transport_win.cc drops everything from '#' onward). Plain
-  // HTTP is restricted to 127.0.0.1 or localhost so minidumps cannot be sent in
-  // cleartext over a network.
-  if (url.empty() || url.find('#') != std::string_view::npos) {
-    return false;
-  }
-  for (unsigned char c : url) {
-    if (c <= 0x20 || c >= 0x7f) {
-      return false;
-    }
-  }
-
-  constexpr std::string_view kHttpsPrefix = "https://";
-  constexpr std::string_view kHttpPrefix = "http://";
-  bool is_http = false;
-  size_t scheme_len = 0;
-  if (base::StartsWith(url, kHttpsPrefix, base::CompareCase::SENSITIVE)) {
-    scheme_len = kHttpsPrefix.size();
-  } else if (base::StartsWith(url, kHttpPrefix, base::CompareCase::SENSITIVE)) {
-    is_http = true;
-    scheme_len = kHttpPrefix.size();
-  } else {
-    return false;
-  }
-
-  const size_t authority_end = url.find_first_of("/?", scheme_len);
-  if (authority_end == std::string_view::npos || url[authority_end] != '/') {
-    return false;
-  }
-
-  const std::string_view authority =
-      url.substr(scheme_len, authority_end - scheme_len);
-  if (authority.empty() || authority.find('@') != std::string_view::npos) {
-    return false;
-  }
-
-  std::string_view host = authority;
-  const size_t colon_pos = authority.find(':');
-  if (colon_pos != std::string_view::npos) {
-    host = authority.substr(0, colon_pos);
-    const std::string_view port_str = authority.substr(colon_pos + 1);
-    unsigned int port = 0;
-    if (port_str.empty() ||
-        !std::ranges::all_of(port_str,
-                             [](char c) { return base::IsAsciiDigit(c); }) ||
-        !base::StringToUint(port_str, &port) || port < 1 || port > 65535) {
-      return false;
-    }
-  }
-
-  if (host.empty() || host.front() == '.' || host.back() == '.' ||
-      host.front() == '-' || host.back() == '-' ||
-      host.find("..") != std::string_view::npos ||
-      host.find(".-") != std::string_view::npos ||
-      host.find("-.") != std::string_view::npos ||
-      !std::ranges::all_of(host, [](char c) {
-        return base::IsAsciiAlphaNumeric(c) || c == '.' || c == '-';
-      })) {
-    return false;
-  }
-
-  if (is_http && host != "127.0.0.1" &&
-      !base::EqualsCaseInsensitiveASCII(host, "localhost")) {
-    return false;
-  }
-
-  return true;
-}
-
-// static
 CrashpadWin::RegistryConfig CrashpadWin::ReadRegistryConfig() {
   RegistryConfig config;
   base::win::RegKey crashpad_reg_key;
@@ -503,7 +425,7 @@ CrashpadWin::RegistryConfig CrashpadWin::ReadRegistryConfig() {
       std::string upload_url;
       if (base::WideToUTF8(std::wstring_view(raw_url.data(), url_len),
                            &upload_url) &&
-          IsValidUploadUrlOverride(upload_url)) {
+          IsValidCrashpadUploadUrlOverride(upload_url)) {
         config.upload_url = std::move(upload_url);
       } else {
         LOG(ERROR) << "Ignoring invalid Crashpad UploadUrl in HKLM\\"

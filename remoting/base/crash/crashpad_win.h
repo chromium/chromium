@@ -5,8 +5,6 @@
 #ifndef REMOTING_BASE_CRASH_CRASHPAD_WIN_H_
 #define REMOTING_BASE_CRASH_CRASHPAD_WIN_H_
 
-#include <stddef.h>
-
 #include <memory>
 #include <optional>
 #include <string>
@@ -34,9 +32,6 @@ inline constexpr wchar_t kCrashpadRegistryKeyPath[] =
 #endif
 inline constexpr wchar_t kCrashpadUploadUrlValue[] = L"UploadUrl";
 inline constexpr wchar_t kCrashpadDisableRateLimitValue[] = L"DisableRateLimit";
-// Maximum length (excluding trailing NUL) of an UploadUrl override, matching
-// base::win::RegKey::ReadValue's 1024-wchar limit.
-inline constexpr size_t kMaxCrashpadUploadUrlChars = 1023;
 
 class CrashpadWin : CrashpadDatabaseManager::Logger {
  public:
@@ -54,12 +49,6 @@ class CrashpadWin : CrashpadDatabaseManager::Logger {
   bool CanUnprivilegedClientsConnect() const;
 
   static CrashpadWin& GetInstance();
-
-  // Validates a Crashpad upload URL override. Remote endpoints must use
-  // https://, while http:// is permitted only for IPv4/hostname loopback
-  // (127.0.0.1 or localhost) for local testing. URL userinfo (user:pass@),
-  // fragments (#), and IPv6 literals are not supported.
-  static bool IsValidUploadUrlOverride(std::string_view url);
 
   // Reads and validates optional admin-controlled Crashpad overrides from
   // HKLM\...\crashpad using the default registry view of the process

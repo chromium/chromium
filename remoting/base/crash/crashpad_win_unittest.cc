@@ -363,61 +363,6 @@ TEST(CrashpadWinTest, GrantLocalServiceAccessToHandlerPipe) {
   EXPECT_EQ(mapped_mask & kExpectedReadWrite, kExpectedReadWrite);
 }
 
-TEST(CrashpadWinTest, IsValidUploadUrlOverride) {
-  constexpr std::string_view kValidUrls[] = {
-      "https://clients2.google.com/cr/staging_report",
-      "https://example.com:8443/upload?foo=1",
-      "https://my-host.corp.example.com/",
-      "http://127.0.0.1/cr/report",
-      "http://127.0.0.1:8080/cr/report",
-      "http://localhost:9000/cr/report",
-      "http://LocalHost/x",
-      "https://127.0.0.1:65535/cr/report",
-  };
-  for (std::string_view url : kValidUrls) {
-    EXPECT_TRUE(CrashpadWin::IsValidUploadUrlOverride(url)) << url;
-  }
-
-  constexpr std::string_view kInvalidUrls[] = {
-      "",
-      "http://example.com/cr/report",
-      "http://127.0.0.1.example.com/x",
-      "http://localhost.example.com/x",
-      "http://127.0.0.1@example.com/x",
-      "http://127.0.0.2/x",
-      "HTTP://127.0.0.1/x",
-      "https://clients2.google.com",
-      "https://host?q=/x",
-      "https://host#/x",
-      "https://example.com:8443/upload?foo=1#frag",
-      "https://example.com/cr/report#frag",
-      "https://user:pass@clients2.google.com/cr/report",
-      "http://127.0.0.1:0/cr/report",
-      "http://127.0.0.1:+80/x",
-      "https://host:/x",
-      "http://127.0.0.1:99999/cr/report",
-      "https://[2001:db8::1]/cr/report",
-      "http://[::1]/cr/report",
-      "http://localhost./x",
-      "https://example.com./x",
-      "https://.example.com/cr/report",
-      "https://-example.com/cr/report",
-      "https://example-/x",
-      "https://example.com-/x",
-      "https://example-.com/x",
-      "https://sub.-example.com/x",
-      "https://exa..mple.com/cr/report",
-      "HTTPS://clients2.google.com/cr/report",
-      "ftp://127.0.0.1/cr/report",
-      "https://clients2.google.com/cr/report ",
-      "https://clients2.google.com/cr/\nreport",
-      "https://ex\xC3\xA4mple.com/cr/report",
-  };
-  for (std::string_view url : kInvalidUrls) {
-    EXPECT_FALSE(CrashpadWin::IsValidUploadUrlOverride(url)) << url;
-  }
-}
-
 TEST(CrashpadWinTest, ReadRegistryConfig) {
   registry_util::RegistryOverrideManager registry_override;
   ASSERT_NO_FATAL_FAILURE(
@@ -460,7 +405,7 @@ TEST(CrashpadWinTest, ReadRegistryConfig) {
   EXPECT_EQ(config.upload_url, "http://localhost:9000/cr/report");
 
   // Disallowed or malformed URLs are ignored (full URL matrix is covered by
-  // IsValidUploadUrlOverride).
+  // CrashpadDatabaseManagerTest.IsValidCrashpadUploadUrlOverride).
   const wchar_t* const kInvalidUrls[] = {
       L"",
       L"http://example.com/cr/report",
