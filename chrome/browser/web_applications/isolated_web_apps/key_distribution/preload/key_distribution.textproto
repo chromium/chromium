@@ -199,6 +199,11 @@ iwa_access_control {
     key: "fastb5gbwigsdvngfspsjt7nvlq2cur7ywysdizyxmoywcnxbplqaaic"
     value: {}
   }
+  # crbug.com/582225071
+  managed_allowlist {
+    key: "gneajtrm5bzsghnyyncuqxsc2zyg6xo72ju5kdjyw5qnztwqxjnqaaic"
+    value: {}
+  }
   managed_allowlist {
     key: "grhw2odotdqioi5nwwftz62kslybtoj5smahu2wkhds4kupuvuraaaic"
     value: {}
