@@ -39,6 +39,7 @@
 #include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
 #include "mojo/core/ipcz_driver/envelope.h"
+#include "mojo/core/ipcz_driver/mach_voucher_release_pool_mac.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/process_requirement.h"
@@ -56,6 +57,8 @@ namespace {
 BASE_FEATURE(kUseMachVouchers, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE_PARAM(bool, kSkipInvalidMachVouchers, &kUseMachVouchers, false);
+
+BASE_FEATURE_PARAM(bool, kUseMachVoucherReleasePool, &kUseMachVouchers, false);
 
 bool ShouldUseVouchers() {
   static bool enabled = base::FeatureList::IsEnabled(kUseMachVouchers);
@@ -291,6 +294,12 @@ class ChannelMac : public Channel,
                                     MACH_PORT_IMPORTANCE_RECEIVER, nullptr, 0);
       MACH_LOG_IF(ERROR, kr != KERN_SUCCESS, kr)
           << "mach_port_set_attributes MACH_PORT_IMPORTANCE_RECEIVER";
+
+      if (kUseMachVoucherReleasePool.Get()) {
+        voucher_release_pool_.emplace(io_task_runner_);
+        voucher_release_callback_ =
+            voucher_release_pool_->GetAcceptVoucherCallback();
+      }
     }
 
     base::CurrentThread::Get()->AddDestructionObserver(this);
@@ -331,6 +340,9 @@ class ChannelMac : public Channel,
       receive_port_.reset();
       send_port_.reset();
     }
+
+    voucher_release_callback_.Reset();
+    voucher_release_pool_.reset();
 
     // May destroy the |this| if it was the last reference.
     self_ = nullptr;
@@ -773,8 +785,8 @@ class ChannelMac : public Channel,
       // If kSkipInvalidMachVouchers is enabled, only create an Envelope when a
       // valid voucher is attached (not MACH_PORT_NULL or MACH_PORT_DEAD.)
       if (!kSkipInvalidMachVouchers.Get() || MACH_PORT_VALID(voucher.get())) {
-        envelope =
-            base::MakeRefCounted<ipcz_driver::Envelope>(std::move(voucher));
+        envelope = base::MakeRefCounted<ipcz_driver::Envelope>(
+            std::move(voucher), voucher_release_callback_);
       }
     }
 
@@ -1017,6 +1029,17 @@ class ChannelMac : public Channel,
   // Watch controller for |receive_port_|, calls OnMachMessageReceived() when
   // new messages are available.
   base::MessagePumpForIO::MachPortWatchController watch_controller_;
+
+  // Periodically releases the vouchers from closed Envelopes. If this is
+  // nullopt, vouchers are released immediately, which can cause congestion as
+  // `mach_port_deallocate` contends on a lock. Must be accessed on the IO
+  // sequence.
+  std::optional<ipcz_driver::MachVoucherReleasePool> voucher_release_pool_;
+
+  // Callback that passes a voucher to `voucher_release_pool_`. Can be invoked
+  // from any sequence.
+  base::RepeatingCallback<void(base::apple::ScopedMachSendRight)>
+      voucher_release_callback_;
 
   // Lock that protects the following members.
   base::Lock write_lock_;

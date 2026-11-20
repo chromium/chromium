@@ -56,6 +56,10 @@ source_set("impl_for_embedder") {
     "scoped_ipcz_handle.h",
   ]
 
+  if (mojo_use_apple_channel) {
+    public += [ "ipcz_driver/mach_voucher_release_pool_mac.h" ]
+  }
+
   sources = [
     "channel.cc",
     "configuration.cc",
@@ -85,6 +89,10 @@ source_set("impl_for_embedder") {
     "platform_handle_utils.cc",
     "scoped_ipcz_handle.cc",
   ]
+
+  if (mojo_use_apple_channel) {
+    sources += [ "ipcz_driver/mach_voucher_release_pool_mac.cc" ]
+  }
 
   public_deps = [
     "//base",
@@ -179,6 +187,10 @@ source_set("test_sources") {
   # Keep in sync with the condition guarding the broker sources above.
   if (is_posix && !is_apple && !is_android) {
     sources += [ "broker_unittest.cc" ]
+  }
+
+  if (mojo_use_apple_channel) {
+    sources += [ "ipcz_driver/mach_voucher_release_pool_mac_unittest.cc" ]
   }
 
   if (use_blink) {

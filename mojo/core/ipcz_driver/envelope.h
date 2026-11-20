@@ -11,6 +11,8 @@
 
 #if BUILDFLAG(MOJO_USE_APPLE_CHANNEL)
 #include "base/apple/scoped_mach_port.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #endif
 
 namespace mojo::core::ipcz_driver {
@@ -21,7 +23,10 @@ class MOJO_SYSTEM_IMPL_EXPORT Envelope : public Object<Envelope> {
  public:
   Envelope();
 #if BUILDFLAG(MOJO_USE_APPLE_CHANNEL)
-  explicit Envelope(base::apple::ScopedMachSendRight voucher);
+  explicit Envelope(
+      base::apple::ScopedMachSendRight voucher,
+      base::RepeatingCallback<void(base::apple::ScopedMachSendRight)>
+          release_voucher_callback = base::NullCallback());
 #endif
 
   static Type object_type() { return kEnvelope; }
@@ -36,6 +41,8 @@ class MOJO_SYSTEM_IMPL_EXPORT Envelope : public Object<Envelope> {
  private:
 #if BUILDFLAG(MOJO_USE_APPLE_CHANNEL)
   base::apple::ScopedMachSendRight voucher_;
+  base::RepeatingCallback<void(base::apple::ScopedMachSendRight)>
+      release_voucher_callback_;
 #endif
 };
 
