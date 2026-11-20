@@ -18,6 +18,7 @@ include_rules = [
   "+skia/ext",
   "+third_party/re2",
   "+third_party/dav1d",
+  "+third_party/dav2d",
   "+third_party/ffmpeg",
   "+third_party/flac",
   "+third_party/fuzztest",
