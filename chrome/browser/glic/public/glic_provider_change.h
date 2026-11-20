@@ -114,6 +114,7 @@ class GlicProviderKeyPasskeyProvider {
       Profile& profile);
   friend void OnLatchedProviderFreStatusChanged(Profile& profile);
   friend GlicProviderChange GetProviderSwitchNotice(Profile& profile);
+  friend void AcknowledgeProviderSwitchNotice(Profile& profile);
 };
 
 using GlicProviderKeyPassKey = GlicProviderKeyPasskeyProvider::PassKey;

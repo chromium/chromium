@@ -132,6 +132,21 @@ mojom::ErrorPanelType ErrorForPendingProviderChange(
   }
 }
 
+// The provider switch notice variant for `notice`, or nullopt if there's none.
+std::optional<mojom::ErrorPanelType> ErrorForProviderSwitchNotice(
+    GlicProviderChange notice) {
+  switch (notice) {
+    case GlicProviderChange::kGeminiToGeic:
+      return mojom::ErrorPanelType::kProviderSwitchNoticeGeminiToGeic;
+    case GlicProviderChange::kGeicToGemini:
+      return mojom::ErrorPanelType::kProviderSwitchNoticeGeicToGemini;
+    case GlicProviderChange::kGeicToOtherGeic:
+      return mojom::ErrorPanelType::kProviderSwitchNoticeGeicToOtherGeic;
+    case GlicProviderChange::kNone:
+      return std::nullopt;
+  }
+}
+
 std::optional<mojom::ErrorPanelType> ErrorForProfileReadyState(
     mojom::ProfileReadyState ready_state) {
   switch (ready_state) {
@@ -189,6 +204,9 @@ bool IsTransientError(mojom::ErrorPanelType error_type) {
     case mojom::ErrorPanelType::kPendingProviderChangeGeminiToGeic:
     case mojom::ErrorPanelType::kPendingProviderChangeGeicToGemini:
     case mojom::ErrorPanelType::kPendingProviderChangeGeicToOtherGeic:
+    case mojom::ErrorPanelType::kProviderSwitchNoticeGeminiToGeic:
+    case mojom::ErrorPanelType::kProviderSwitchNoticeGeicToGemini:
+    case mojom::ErrorPanelType::kProviderSwitchNoticeGeicToOtherGeic:
       return false;
   }
 }
@@ -214,6 +232,10 @@ const char* ErrorPanelTypeToHistogramSuffix(mojom::ErrorPanelType error_type) {
     case mojom::ErrorPanelType::kPendingProviderChangeGeicToGemini:
     case mojom::ErrorPanelType::kPendingProviderChangeGeicToOtherGeic:
       return "PendingProviderChange";
+    case mojom::ErrorPanelType::kProviderSwitchNoticeGeminiToGeic:
+    case mojom::ErrorPanelType::kProviderSwitchNoticeGeicToGemini:
+    case mojom::ErrorPanelType::kProviderSwitchNoticeGeicToOtherGeic:
+      return "ProviderSwitchNotice";
   }
 }
 
@@ -607,6 +629,18 @@ void GlicNoWebviewContentsManager::OverlayContentsManager::OnRelaunchClicked() {
   MaybeRelaunchForProviderChange(profile_);
 }
 
+void GlicNoWebviewContentsManager::OverlayContentsManager::
+    OnProviderSwitchNoticeContinueClicked() {
+  if (!owner_->host_ ||
+      owner_->host_->provider_switch_notice() == GlicProviderChange::kNone) {
+    return;
+  }
+  owner_->host_->AcknowledgeProviderSwitchNotice();
+  // The profile's ready state hasn't changed. Re-decide what to show now that
+  // the notice is gone: a profile error if there is one, else the client.
+  owner_->UpdateForProfileReadyState(/*is_initial=*/true);
+}
+
 GlicNoWebviewContentsManager::GlicNoWebviewContentsManager(
     Profile* profile,
     GlicEnabling* enabling,
@@ -737,9 +771,11 @@ void GlicNoWebviewContentsManager::AttachToHost(Host* host) {
     SetHostForGuest(*guest_contents(), host);
   }
 
-  // A pending provider change takes priority over an error set before the
-  // contents were attached, which describes the latched provider.
-  if (!MaybeSetPendingProviderChangeError() && error_reason_.has_value()) {
+  // A pending provider change or provider switch notice takes priority over an
+  // error set before the contents were attached, which describes the latched
+  // provider.
+  if (!MaybeSetPendingProviderChangeError() &&
+      !MaybeSetProviderSwitchNotice() && error_reason_.has_value()) {
     host_->ClientLoadErrorOccurred(*error_reason_);
   }
 
@@ -1253,6 +1289,7 @@ void GlicNoWebviewContentsManager::SetErrorState(
     return;
   }
   StopGuestBootstrap();
+  guest_main_page_loaded_.Set(false);
   guest_state_.Set(GuestState::kLoading);
   if (host_) {
     host_->ClientLoadErrorOccurred(reason);
@@ -1282,8 +1319,9 @@ void GlicNoWebviewContentsManager::ClearTransientErrorState() {
 
 void GlicNoWebviewContentsManager::UpdateForProfileReadyState(bool is_initial) {
   // A pending provider change takes priority over profile errors, since a
-  // relaunch replaces the provider they describe.
-  if (MaybeSetPendingProviderChangeError()) {
+  // relaunch replaces the provider they describe. The provider switch notice is
+  // shown before them too, until the user continues.
+  if (MaybeSetPendingProviderChangeError() || MaybeSetProviderSwitchNotice()) {
     return;
   }
   mojom::ProfileReadyState ready_state =
@@ -1293,9 +1331,10 @@ void GlicNoWebviewContentsManager::UpdateForProfileReadyState(bool is_initial) {
     SetErrorState(*error, ReasonForProfileReadyState(ready_state));
   } else if (is_initial || error_type_->has_value()) {
     // Transitioned back to ready while showing an error, or initially ready;
-    // ensure error state is cleared and load the guest.
-    ClearErrorState();
+    // ensure error state is cleared and load the guest. Reset the guest first,
+    // so a guest that finished loading behind the error isn't briefly shown.
     LoadGuest();
+    ClearErrorState();
   }
 }
 
@@ -1307,8 +1346,26 @@ bool GlicNoWebviewContentsManager::MaybeSetPendingProviderChangeError() {
   if (pending_change == GlicProviderChange::kNone) {
     return false;
   }
-  SetErrorState(ErrorForPendingProviderChange(pending_change),
-                ClientLoadErrorReason::kPendingProviderChange);
+  const mojom::ErrorPanelType error =
+      ErrorForPendingProviderChange(pending_change);
+  // Don't report the same relaunch panel again if it's already showing.
+  if (*error_type_ != error) {
+    SetErrorState(error, ClientLoadErrorReason::kPendingProviderChange);
+  }
+  return true;
+}
+
+bool GlicNoWebviewContentsManager::MaybeSetProviderSwitchNotice() {
+  const std::optional<mojom::ErrorPanelType> error =
+      host_ ? ErrorForProviderSwitchNotice(host_->provider_switch_notice())
+            : std::nullopt;
+  if (!error) {
+    return false;
+  }
+  // Don't report the same notice again if it's already showing.
+  if (*error_type_ != *error) {
+    SetErrorState(*error, ClientLoadErrorReason::kProviderSwitchNotice);
+  }
   return true;
 }
 

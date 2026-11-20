@@ -108,4 +108,16 @@ GlicProviderChange GetProviderSwitchNotice(Profile& profile) {
           GlicProviderKeyPasskeyProvider::GetPassKey()));
 }
 
+void AcknowledgeProviderSwitchNotice(Profile& profile) {
+  const GlicProviderLatch* latch = GlicProviderLatch::GetIfLatched(profile);
+  if (!latch) {
+    return;
+  }
+  profile.GetPrefs()->SetString(
+      prefs::kGlicProviderSwitchNoticeKnownProviderKey,
+      latch->GetSpec()
+          .GetProviderKey(GlicProviderKeyPasskeyProvider::GetPassKey())
+          .ToPrefString());
+}
+
 }  // namespace glic

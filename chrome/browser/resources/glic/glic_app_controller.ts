@@ -53,7 +53,10 @@ interface PageElementTypes {
   ineligibleAccountHelpButton: HTMLButtonElement;
   ineligibleAccountPanel: HTMLElement;
   relaunchRequiredPanel: HTMLElement;
+  relaunchHeadline: HTMLElement;
+  relaunchBody: HTMLElement;
   relaunchButton: HTMLButtonElement;
+  continueButton: HTMLButtonElement;
 }
 
 const $: PageElementTypes = new Proxy({}, {
@@ -65,6 +68,31 @@ const $: PageElementTypes = new Proxy({}, {
 type PanelId = 'loadingPanel'|'guestPanel'|'offlinePanel'|'errorPanel'|
     'unavailablePanel'|'ineligibleAccountPanel'|'disabledByAdminPanel'|
     'signInPanel'|'locationMismatchPanel'|'relaunchRequiredPanel';
+
+type ProviderChangeState =
+    WebUiState.kPendingProviderChangeGeminiToGeic|
+    WebUiState.kProviderSwitchNoticeGeicToGemini;
+
+interface ProviderChangePanel {
+  header: string;
+  body: string;
+  // Whether to show the continue button instead of the relaunch button.
+  showContinueButton: boolean;
+}
+
+const PROVIDER_CHANGE_PANELS:
+    Record<ProviderChangeState, ProviderChangePanel> = {
+      [WebUiState.kPendingProviderChangeGeminiToGeic]: {
+        header: 'relaunchRequiredGeminiToGeicNoticeHeader',
+        body: 'relaunchRequiredGeminiToGeicNotice',
+        showContinueButton: false,
+      },
+      [WebUiState.kProviderSwitchNoticeGeicToGemini]: {
+        header: 'providerSwitchNoticeGeicToGeminiHeader',
+        body: 'providerSwitchNoticeGeicToGemini',
+        showContinueButton: true,
+      },
+    };
 
 interface StateDescriptor {
   onEnter?: () => void;
@@ -135,6 +163,10 @@ export class GlicAppController implements WebviewDelegate {
   // change was pending. Fixed for the page's lifetime, and takes priority over
   // the profile ready state.
   private hasPendingProviderChange = false;
+  // Whether the instance that adopted this page has a provider switch to tell
+  // the user about. Cleared when the user continues, and takes priority over
+  // the profile ready state until then.
+  private hasProviderSwitchNotice = false;
 
   // Loading stage, affects metrics only.
   private loadingStage: LoadingStage = LoadingStage.NOT_LOADING;
@@ -220,6 +252,9 @@ export class GlicAppController implements WebviewDelegate {
     });
     $.relaunchButton.addEventListener('click', () => {
       this.browserProxy.pageHandler.relaunchForProviderChange();
+    });
+    $.continueButton.addEventListener('click', () => {
+      this.continueFromProviderSwitchNotice();
     });
     $.showError.addEventListener('click', () => {
       this.showPanel('guestPanel');
@@ -464,6 +499,7 @@ export class GlicAppController implements WebviewDelegate {
       case WebUiState.kLocationMismatch:
       case WebUiState.kIneligibleAccount:
       case WebUiState.kPendingProviderChangeGeminiToGeic:
+      case WebUiState.kProviderSwitchNoticeGeicToGemini:
         return true;
       default:
         assertNotReachedCase(state);
@@ -639,7 +675,20 @@ export class GlicAppController implements WebviewDelegate {
         onEnter:
             () => {
               this.destroyWebview();
-              this.showPanel('relaunchRequiredPanel');
+              this.showProviderChangePanel(
+                  WebUiState.kPendingProviderChangeGeminiToGeic);
+            },
+      },
+    ],
+    [
+      WebUiState.kProviderSwitchNoticeGeicToGemini,
+      {
+        clientLoadErrorReason: ClientLoadErrorReason.kProviderSwitchNotice,
+        onEnter:
+            () => {
+              this.destroyWebview();
+              this.showProviderChangePanel(
+                  WebUiState.kProviderSwitchNoticeGeicToGemini);
             },
       },
     ],
@@ -773,6 +822,10 @@ export class GlicAppController implements WebviewDelegate {
 
     if (this.hasPendingProviderChange) {
       this.setState(WebUiState.kPendingProviderChangeGeminiToGeic);
+      return;
+    }
+    if (this.hasProviderSwitchNotice) {
+      this.setState(WebUiState.kProviderSwitchNoticeGeicToGemini);
       return;
     }
 
@@ -1082,6 +1135,37 @@ export class GlicAppController implements WebviewDelegate {
     this.setState(WebUiState.kPendingProviderChangeGeminiToGeic);
   }
 
+  // Called when this page is adopted by an instance that has a provider switch
+  // to tell the user about.
+  showProviderSwitchNotice(): void {
+    this.hasProviderSwitchNotice = true;
+    this.setState(WebUiState.kProviderSwitchNoticeGeicToGemini);
+  }
+
+  // Called when the user continues from the provider switch notice. Loads the
+  // client.
+  private continueFromProviderSwitchNotice(): void {
+    // Ignore a repeated click while the panel is still showing.
+    if (!this.hasProviderSwitchNotice) {
+      return;
+    }
+    this.hasProviderSwitchNotice = false;
+    this.browserProxy.pageHandler.acknowledgeProviderSwitchNotice();
+    this.reload();
+  }
+
+  // Shows the relaunch panel, which is shared by the relaunch prompt and the
+  // provider switch notice. Sets the text and both buttons every time, since
+  // the panel is reused.
+  private showProviderChangePanel(state: ProviderChangeState): void {
+    const {header, body, showContinueButton} = PROVIDER_CHANGE_PANELS[state];
+    $.relaunchHeadline.textContent = loadTimeData.getString(header);
+    $.relaunchBody.textContent = loadTimeData.getString(body);
+    $.relaunchButton.hidden = showContinueButton;
+    $.continueButton.hidden = !showContinueButton;
+    this.showPanel('relaunchRequiredPanel');
+  }
+
   clientReadyStateChanged(ready: boolean): void {
     if (!ready) {
       return;
@@ -1168,8 +1252,9 @@ export class GlicAppController implements WebviewDelegate {
       this.profileReadyInitialState.resolve();
       return;
     }
-    // The relaunch panel takes priority over the profile ready state.
-    if (this.hasPendingProviderChange) {
+    // The relaunch panel and the provider switch notice take priority over the
+    // profile ready state.
+    if (this.hasPendingProviderChange || this.hasProviderSwitchNotice) {
       return;
     }
     switch (this.profileReadyState) {

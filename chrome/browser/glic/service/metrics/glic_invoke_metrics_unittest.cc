@@ -297,6 +297,7 @@ TEST(GlicInvokeMetricsTest, InvokeTerminatedHasClientLoadErrorReason) {
       {ClientLoadErrorReason::kClientLoadTimeoutNavigationNotCommitted, 24},
       {ClientLoadErrorReason::kClientLoadTimeoutBeforeOnload, 25},
       {ClientLoadErrorReason::kClientLoadTimeoutAfterOnload, 26},
+      {ClientLoadErrorReason::kProviderSwitchNotice, 27},
   };
   static_assert(std::size(kCases) ==
                 static_cast<size_t>(ClientLoadErrorReason::kMaxValue) + 1);

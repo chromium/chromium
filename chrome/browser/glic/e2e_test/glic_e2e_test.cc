@@ -503,7 +503,8 @@ void GlicE2ETest::WebUiStateChanged(glic::mojom::WebUiState state) {
     case glic::mojom::WebUiState::kIneligibleAccount:
     case glic::mojom::WebUiState::kOffline:
     case glic::mojom::WebUiState::kUnavailable:
-    case glic::mojom::WebUiState::kPendingProviderChangeGeminiToGeic: {
+    case glic::mojom::WebUiState::kPendingProviderChangeGeminiToGeic:
+    case glic::mojom::WebUiState::kProviderSwitchNoticeGeicToGemini: {
       FailEarly(base::StringPrintf("Glic WebUI entered error state: %d",
                                    static_cast<int>(state)));
       break;

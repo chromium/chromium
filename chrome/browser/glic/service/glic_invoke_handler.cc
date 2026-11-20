@@ -178,6 +178,8 @@ std::string_view ClientLoadErrorReasonToDiagnosticString(
       return "CLIENT_LOAD_TIMEOUT_BEFORE_ONLOAD";
     case ClientLoadErrorReason::kClientLoadTimeoutAfterOnload:
       return "CLIENT_LOAD_TIMEOUT_AFTER_ONLOAD";
+    case ClientLoadErrorReason::kProviderSwitchNotice:
+      return "PROVIDER_SWITCH_NOTICE";
   }
   NOTREACHED();
 }

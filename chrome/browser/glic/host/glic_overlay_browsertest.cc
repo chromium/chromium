@@ -36,6 +36,7 @@ class MockOverlayPageHandler : public mojom::GlicOverlayPageHandler {
   MOCK_METHOD(void, OnRetryClicked, (), (override));
   MOCK_METHOD(void, OnSignInClicked, (), (override));
   MOCK_METHOD(void, OnRelaunchClicked, (), (override));
+  MOCK_METHOD(void, OnProviderSwitchNoticeContinueClicked, (), (override));
   MOCK_METHOD(void, OnProfilePickerClicked, (), (override));
   MOCK_METHOD(void, OnIneligibleAccountHelpClicked, (), (override));
   MOCK_METHOD(void, OnLocationMismatchHelpClicked, (), (override));

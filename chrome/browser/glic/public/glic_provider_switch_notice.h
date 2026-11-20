@@ -58,6 +58,10 @@ void SwitchAssistantSelection(Profile& profile,
 // disabled.
 GlicProviderChange GetProviderSwitchNotice(Profile& profile);
 
+// Records the latched provider as known, so that the notice isn't shown again.
+// Call when the user acknowledges the notice.
+void AcknowledgeProviderSwitchNotice(Profile& profile);
+
 }  // namespace glic
 
 #endif  // CHROME_BROWSER_GLIC_PUBLIC_GLIC_PROVIDER_SWITCH_NOTICE_H_

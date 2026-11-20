@@ -14369,6 +14369,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Glic.Instance.WebUiStateChanged.ProviderSwitchNoticeGeicToGemini">
+  <owner>alexwchen@google.com</owner>
+  <owner>glic+metrics@google.com</owner>
+  <description>
+    The Glic instance WebUI is showing the notice that the provider was switched
+    from GEiC to Gemini.
+  </description>
+</action>
+
 <action name="Glic.Instance.WebUiStateChanged.Ready">
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>

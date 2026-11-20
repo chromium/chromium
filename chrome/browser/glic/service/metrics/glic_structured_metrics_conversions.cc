@@ -70,6 +70,8 @@ ToStructuredClientLoadErrorReason(ClientLoadErrorReason reason) {
       return Reason::CLIENT_LOAD_TIMEOUT_BEFORE_ONLOAD;
     case ClientLoadErrorReason::kClientLoadTimeoutAfterOnload:
       return Reason::CLIENT_LOAD_TIMEOUT_AFTER_ONLOAD;
+    case ClientLoadErrorReason::kProviderSwitchNotice:
+      return Reason::PROVIDER_SWITCH_NOTICE;
   }
 }
 // LINT.ThenChange(//chrome/browser/glic/glic_enums.h:ClientLoadErrorReason)

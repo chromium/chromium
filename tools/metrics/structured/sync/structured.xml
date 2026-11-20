@@ -3742,6 +3742,7 @@
     <variant value="24">CLIENT_LOAD_TIMEOUT_NAVIGATION_NOT_COMMITTED</variant>
     <variant value="25">CLIENT_LOAD_TIMEOUT_BEFORE_ONLOAD</variant>
     <variant value="26">CLIENT_LOAD_TIMEOUT_AFTER_ONLOAD</variant>
+    <variant value="27">PROVIDER_SWITCH_NOTICE</variant>
   </enum>
 
   <enum name="GlicEmbedderType">

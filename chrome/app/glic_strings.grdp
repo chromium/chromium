@@ -153,6 +153,27 @@
   <message name="IDS_GLIC_RELAUNCH_REQUIRED_GEIC_TO_OTHER_GEIC_BODY" desc="Body text on the notice shown in the Gemini Enterprise side panel when an administrator has changed the Gemini Enterprise configuration and Chrome must be relaunched to apply the change.">
     Your organization has updated policies and requires you to relaunch Chrome to continue using Gemini Enterprise in Chrome
   </message>
+  <message name="IDS_GLIC_PROVIDER_SWITCH_NOTICE_GEMINI_TO_GEIC_HEADER" desc="Headline on the notice shown in the Gemini side panel after an administrator configured Gemini Enterprise and Chrome switched to it." translateable="false">
+    You're now browsing with Gemini Enterprise
+  </message>
+  <message name="IDS_GLIC_PROVIDER_SWITCH_NOTICE_GEMINI_TO_GEIC_BODY" desc="Body text on the notice shown in the Gemini side panel after an administrator configured Gemini Enterprise and Chrome switched to it." translateable="false">
+    Your organization set up Gemini Enterprise in Chrome. Ask Gemini about anything as you browse, and get answers grounded in files and services across your organization.
+  </message>
+  <message name="IDS_GLIC_PROVIDER_SWITCH_NOTICE_GEIC_TO_GEMINI_HEADER" desc="Headline on the notice shown in the Gemini side panel after an administrator turned off Gemini Enterprise and Chrome switched to Gemini in Chrome." translateable="false">
+    Gemini Enterprise is no longer available
+  </message>
+  <message name="IDS_GLIC_PROVIDER_SWITCH_NOTICE_GEIC_TO_GEMINI_BODY" desc="Body text on the notice shown in the Gemini side panel after an administrator turned off Gemini Enterprise and Chrome switched to Gemini in Chrome." translateable="false">
+    Your organization turned off Gemini Enterprise in Chrome. You can continue using Gemini in Chrome, but it will no longer find or reference information managed by your organization. Your chat history may not carry over.
+  </message>
+  <message name="IDS_GLIC_PROVIDER_SWITCH_NOTICE_GEIC_TO_OTHER_GEIC_HEADER" desc="Headline on the notice shown in the Gemini side panel after an administrator changed the Gemini Enterprise configuration and Chrome applied it." translateable="false">
+    Gemini Enterprise was updated
+  </message>
+  <message name="IDS_GLIC_PROVIDER_SWITCH_NOTICE_GEIC_TO_OTHER_GEIC_BODY" desc="Body text on the notice shown in the Gemini side panel after an administrator changed the Gemini Enterprise configuration and Chrome applied it." translateable="false">
+    Your organization updated its policies for Gemini Enterprise in Chrome. Your chat history may not carry over.
+  </message>
+  <message name="IDS_GLIC_PROVIDER_SWITCH_NOTICE_ACTION_BUTTON" desc="Button label on the notice shown in the Gemini side panel after Chrome switched provider for the user. Dismisses the notice and loads the new provider." translateable="false">
+    Continue
+  </message>
 
   <message name="IDS_GLIC_MANAGED_BY_ORGANIZATION" desc="Text shown when the feature is managed by the organization but not disabled." formatter_data="android_java">
     Managed by your organization

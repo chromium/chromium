@@ -1492,6 +1492,11 @@ void GlicInstanceMetrics::OnWebUiStateChanged(mojom::WebUiState state) {
           "Glic.Instance.WebUiStateChanged.PendingProviderChangeGeminiToGeic"));
       LogEvent(GlicInstanceEvent::kWebUiStatePendingProviderChangeGeminiToGeic);
       break;
+    case mojom::WebUiState::kProviderSwitchNoticeGeicToGemini:
+      base::RecordAction(base::UserMetricsAction(
+          "Glic.Instance.WebUiStateChanged.ProviderSwitchNoticeGeicToGemini"));
+      LogEvent(GlicInstanceEvent::kWebUiStateProviderSwitchNoticeGeicToGemini);
+      break;
   }
 }
 

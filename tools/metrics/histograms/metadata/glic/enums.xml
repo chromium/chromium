@@ -749,6 +749,7 @@ chromium-metrics-reviews@google.com.
   <int value="59" label="WebUI State Guest Loaded"/>
   <int value="60" label="Input Focused"/>
   <int value="61" label="WebUI State Pending Provider Change Gemini To GEiC"/>
+  <int value="62" label="WebUI State Provider Switch Notice GEiC To Gemini"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/service/metrics/metrics_types.h:GlicInstanceEvent) -->
@@ -1907,6 +1908,8 @@ chromium-metrics-reviews@google.com.
   <int value="17"
       label="A pending Gemini to GEiC provider change needs a browser
              relaunch"/>
+  <int value="18"
+      label="The provider was switched from GEiC to Gemini for the user"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/host/glic_webui.mojom:WebUiState) -->

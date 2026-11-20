@@ -330,7 +330,8 @@ webview {
   margin: 0;
 }
 
-#relaunchRequiredPanel #relaunchButton {
+#relaunchRequiredPanel #relaunchButton,
+#relaunchRequiredPanel #continueButton {
   background-color: var(--relaunch-accent);
   border: none;
   color: var(--relaunch-button-text);

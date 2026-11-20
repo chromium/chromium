@@ -115,6 +115,8 @@ ClientLoadErrorReason ToClientLoadErrorReason(
       return ClientLoadErrorReason::kGuestProcessLaunchFailed;
     case mojom::ClientLoadErrorReason::kGuestProcessIntegrityFailure:
       return ClientLoadErrorReason::kGuestProcessIntegrityFailure;
+    case mojom::ClientLoadErrorReason::kProviderSwitchNotice:
+      return ClientLoadErrorReason::kProviderSwitchNotice;
   }
 }
 // LINT.ThenChange(//chrome/browser/glic/glic_enums.h:ClientLoadErrorReason)
@@ -142,6 +144,21 @@ GlicPageHandler::GlicPageHandler(
           GetContentsManagerForWebContents(webui_contents_))) {
     contents_manager->WebUIPageHandlerAdded(this);
   }
+  // Decided once per instance, when its host is created. GEiC requires
+  // NoWebview, so this WebUI only hosts Gemini-latched profiles and the only
+  // possible pending change is Gemini to GEiC. Sent before the panel and
+  // profile ready states, so a profile error the page reached before attaching
+  // (e.g. while warmed) isn't reported once the panel shows.
+  if (host_->pending_provider_change() != GlicProviderChange::kNone) {
+    CHECK_EQ(host_->pending_provider_change(),
+             GlicProviderChange::kGeminiToGeic);
+    page_->ShowPendingProviderChange();
+  } else if (host_->provider_switch_notice() != GlicProviderChange::kNone) {
+    // For the same reason, the only possible notice is GEiC to Gemini.
+    CHECK_EQ(host_->provider_switch_notice(),
+             GlicProviderChange::kGeicToGemini);
+    page_->ShowProviderSwitchNotice();
+  }
   subscriptions_.push_back(
       host_->instance().GetPanelState().AddObserverAndNotify(
           base::BindRepeating(&GlicPageHandler::PanelStateChanged,
@@ -151,15 +168,6 @@ GlicPageHandler::GlicPageHandler(
           base::BindRepeating(&GlicPageHandler::UpdateProfileReadyState,
                               base::Unretained(this))));
   UpdateProfileReadyState();
-
-  // Decided once per instance, when its host is created. GEiC requires
-  // NoWebview, so this WebUI only hosts Gemini-latched profiles and the only
-  // possible pending change is Gemini to GEiC.
-  if (host_->pending_provider_change() != GlicProviderChange::kNone) {
-    CHECK_EQ(host_->pending_provider_change(),
-             GlicProviderChange::kGeminiToGeic);
-    page_->ShowPendingProviderChange();
-  }
 }
 
 GlicPageHandler::~GlicPageHandler() {
@@ -421,6 +429,10 @@ void GlicPageHandler::SignInAndClosePanel() {
 
 void GlicPageHandler::RelaunchForProviderChange() {
   MaybeRelaunchForProviderChange(Profile::FromBrowserContext(browser_context_));
+}
+
+void GlicPageHandler::AcknowledgeProviderSwitchNotice() {
+  host().AcknowledgeProviderSwitchNotice();
 }
 
 void GlicPageHandler::ResizeWidget(const gfx::Size& size,

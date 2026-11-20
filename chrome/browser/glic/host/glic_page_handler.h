@@ -74,6 +74,7 @@ class GlicPageHandler : public glic::mojom::PageHandler, public Host::Observer {
   void OpenDisabledByAdminLinkAndClosePanel() override;
 
   void RelaunchForProviderChange() override;
+  void AcknowledgeProviderSwitchNotice() override;
 
   void OpenLinkInPopup(const GURL& url,
                        int32_t popup_width,

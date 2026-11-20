@@ -8,6 +8,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/scoped_observation.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -49,6 +50,22 @@ constexpr char kCanonicalPolicyUrl[] =
     "https://business.gemini.google/side-panel?configId=abc123";
 constexpr char kOtherPolicyUrl[] =
     "https://business.gemini.google/home/cid/xyz789";
+
+// Counts the client load errors reported by a host.
+class ClientLoadErrorCounter : public Host::Observer {
+ public:
+  explicit ClientLoadErrorCounter(Host& host) { observation_.Observe(&host); }
+
+  void ClientLoadErrorOccurred(ClientLoadErrorReason reason) override {
+    ++count_;
+  }
+
+  int count() const { return count_; }
+
+ private:
+  int count_ = 0;
+  base::ScopedObservation<Host, Host::Observer> observation_{this};
+};
 
 class GlicProviderChangeBrowserTestBase : public GlicBrowserTest {
  public:
@@ -307,6 +324,7 @@ IN_PROC_BROWSER_TEST_F(GlicProviderChangeFromGeminiBrowserTest,
   ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
   ASSERT_OK(WaitForOverlayErrorPanel(
       mojom::ErrorPanelType::kPendingProviderChangeGeminiToGeic, instance));
+  ClientLoadErrorCounter errors(instance->host());
 
   // Toggling GeminiSettings notifies ready state observers twice, ending in
   // kReady.
@@ -321,6 +339,8 @@ IN_PROC_BROWSER_TEST_F(GlicProviderChangeFromGeminiBrowserTest,
   ASSERT_EQ(mojom::ProfileReadyState::kReady, ready_state());
   EXPECT_OK(WaitForOverlayErrorPanel(
       mojom::ErrorPanelType::kPendingProviderChangeGeminiToGeic, instance));
+  // Not reported again.
+  EXPECT_EQ(errors.count(), 0);
 }
 
 // The relaunch panel takes priority over profile errors, since a relaunch

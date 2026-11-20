@@ -263,6 +263,18 @@ class Host : public GlicSharingManagerProvider {
     return pending_provider_change_;
   }
 
+  // The provider switch to tell the user about in this host, or `kNone`. Set
+  // when the host is created, unless a provider change is pending, and cleared
+  // once the user acknowledges it.
+  GlicProviderChange provider_switch_notice() const {
+    return provider_switch_notice_;
+  }
+
+  // Records that the user acknowledged the provider switch notice, so that
+  // it's no longer shown in this or later instances. No-op if this host has no
+  // notice.
+  void AcknowledgeProviderSwitchNotice();
+
   // Reload the web contents.
   void Reload();
 
@@ -551,6 +563,8 @@ class Host : public GlicSharingManagerProvider {
   raw_ptr<Profile> profile_;
 
   const GlicProviderChange pending_provider_change_;
+
+  GlicProviderChange provider_switch_notice_;
 
   // The instance that owns this host.
   raw_ptr<InstanceDelegate> instance_delegate_;

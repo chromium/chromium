@@ -141,6 +141,11 @@ interface Page {
   // the client, which may already be loaded if the page was warmed.
   ShowPendingProviderChange();
 
+  // Called when the page is adopted by an instance that has a provider switch
+  // to tell the user about. The page shows the provider switch notice instead
+  // of the client until the user continues.
+  ShowProviderSwitchNotice();
+
   // Notifies the page to adjust the zoom level of its hosted webview.
   Zoom(ZoomAction action);
 };
@@ -214,6 +219,10 @@ enum WebUiState {
   // the one latched for the profile. Only Gemini to GEiC is possible here:
   // GEiC profiles use the NoWebview overlay, not this WebUI.
   kPendingProviderChangeGeminiToGeic = 17,
+  // Provider switch notice is displayed; the provider was switched for the
+  // user since they last used Glic. Only GEiC to Gemini is possible here:
+  // GEiC profiles use the NoWebview overlay, not this WebUI.
+  kProviderSwitchNoticeGeicToGemini = 18,
 };
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:WebUiState)
@@ -257,6 +266,7 @@ enum ClientLoadErrorReason {
   [MinVersion=4] kGuestProcessOom = 20,
   [MinVersion=4] kGuestProcessLaunchFailed = 21,
   [MinVersion=4] kGuestProcessIntegrityFailure = 22,
+  [MinVersion=5] kProviderSwitchNotice = 23,
 };
 
 // The result of `PrepareForClient()`.
@@ -317,6 +327,10 @@ interface PageHandler {
   // Relaunches Chrome to apply a pending provider change, if one is still
   // pending.
   RelaunchForProviderChange();
+
+  // Records that the user acknowledged the provider switch notice, if this
+  // host has one; no-op otherwise. The page then loads the client itself.
+  AcknowledgeProviderSwitchNotice();
 
   // Resize the widget hosting the WebUI to the given size.
   // If `duration` is 0 or less, instantly resize, otherwise run an animation.

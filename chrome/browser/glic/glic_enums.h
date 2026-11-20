@@ -314,7 +314,11 @@ enum class ClientLoadErrorReason {
   // onload, before creating the web client.
   kClientLoadTimeoutAfterOnload = 26,
 
-  kMaxValue = kClientLoadTimeoutAfterOnload,
+  // The provider was switched for the user since they last used Glic, and the
+  // notice telling them about it is shown instead of the client.
+  kProviderSwitchNotice = 27,
+
+  kMaxValue = kProviderSwitchNotice,
 };
 // LINT.ThenChange(//tools/metrics/structured/sync/structured.xml,//chrome/browser/glic/host/glic_page_handler.cc:ToClientLoadErrorReason,//chrome/browser/glic/service/metrics/glic_structured_metrics_conversions.cc:ToStructuredClientLoadErrorReason,//chrome/browser/glic/service/glic_invoke_handler.cc:ClientLoadErrorReasonToDiagnosticString)
 

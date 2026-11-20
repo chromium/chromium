@@ -229,6 +229,12 @@ GlicUI::GlicUI(content::WebUI* web_ui)
        IDS_GLIC_RELAUNCH_REQUIRED_GEMINI_TO_GEIC_BODY},
       {"relaunchRequiredNoticeActionButton",
        IDS_GLIC_RELAUNCH_REQUIRED_ACTION_BUTTON},
+      {"providerSwitchNoticeGeicToGeminiHeader",
+       IDS_GLIC_PROVIDER_SWITCH_NOTICE_GEIC_TO_GEMINI_HEADER},
+      {"providerSwitchNoticeGeicToGemini",
+       IDS_GLIC_PROVIDER_SWITCH_NOTICE_GEIC_TO_GEMINI_BODY},
+      {"providerSwitchNoticeActionButton",
+       IDS_GLIC_PROVIDER_SWITCH_NOTICE_ACTION_BUTTON},
       {"getHelp", IDS_GLIC_GET_HELP},
   };
 

@@ -83,6 +83,18 @@ suite('GlicOverlayTest', () => {
         type: ErrorPanelType.kPendingProviderChangeGeicToOtherGeic,
         id: 'relaunchRequiredPanel',
       },
+      {
+        type: ErrorPanelType.kProviderSwitchNoticeGeminiToGeic,
+        id: 'relaunchRequiredPanel',
+      },
+      {
+        type: ErrorPanelType.kProviderSwitchNoticeGeicToGemini,
+        id: 'relaunchRequiredPanel',
+      },
+      {
+        type: ErrorPanelType.kProviderSwitchNoticeGeicToOtherGeic,
+        id: 'relaunchRequiredPanel',
+      },
       {type: ErrorPanelType.kLocationMismatch, id: 'locationMismatchPanel'},
     ];
 
@@ -158,6 +170,52 @@ suite('GlicOverlayTest', () => {
     }
   });
 
+  test('ShowProviderSwitchNoticeCopy', async () => {
+    const cases: Array<{type: ErrorPanelType, header: string, body: string}> =
+        [
+          {
+            type: ErrorPanelType.kProviderSwitchNoticeGeminiToGeic,
+            header: 'providerSwitchNoticeGeminiToGeicHeader',
+            body: 'providerSwitchNoticeGeminiToGeic',
+          },
+          {
+            type: ErrorPanelType.kProviderSwitchNoticeGeicToGemini,
+            header: 'providerSwitchNoticeGeicToGeminiHeader',
+            body: 'providerSwitchNoticeGeicToGemini',
+          },
+          {
+            type: ErrorPanelType.kProviderSwitchNoticeGeicToOtherGeic,
+            header: 'providerSwitchNoticeGeicToOtherGeicHeader',
+            body: 'providerSwitchNoticeGeicToOtherGeic',
+          },
+        ];
+
+    for (const {type, header, body} of cases) {
+      remote.setOverlayState({error: type});
+      await remote.$.flushForTesting();
+
+      assertFalse(getElement('relaunchRequiredPanel').hidden);
+      assertEquals(
+          loadTimeData.getString(header),
+          getElement('relaunchHeadline').textContent);
+      assertEquals(
+          loadTimeData.getString(body),
+          getElement('relaunchBody1').textContent);
+      assertFalse(getElement('relaunchBody1').hidden);
+      assertTrue(getElement('relaunchBody2').hidden);
+      assertTrue(getElement('relaunchBody3').hidden);
+      assertTrue(getElement('relaunchButton').hidden);
+      assertFalse(getElement('continueButton').hidden);
+    }
+
+    // The relaunch panel shows the relaunch button again.
+    remote.setOverlayState(
+        {error: ErrorPanelType.kPendingProviderChangeGeminiToGeic});
+    await remote.$.flushForTesting();
+    assertFalse(getElement('relaunchButton').hidden);
+    assertTrue(getElement('continueButton').hidden);
+  });
+
   test('ButtonClicksNotifyHandler', () => {
     const clickCases:
         Array<{id: string, method: keyof GlicOverlayPageHandlerRemote}> = [
@@ -165,6 +223,10 @@ suite('GlicOverlayTest', () => {
           {id: 'reload', method: 'onRetryClicked'},
           {id: 'signInButton', method: 'onSignInClicked'},
           {id: 'relaunchButton', method: 'onRelaunchClicked'},
+          {
+            id: 'continueButton',
+            method: 'onProviderSwitchNoticeContinueClicked',
+          },
           {id: 'profilePickerButton', method: 'onProfilePickerClicked'},
           {
             id: 'ineligibleAccountHelpButton',

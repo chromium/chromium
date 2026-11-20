@@ -20,18 +20,29 @@ import {getRequiredElement} from 'chrome://resources/js/util.js';
 import {browserProxyFactory, ErrorPanelType, LoadingStyle} from './glic_overlay.mojom-webui.js';
 import type {BrowserProxy, OverlayState} from './glic_overlay.mojom-webui.js';
 
-type RelaunchPanelType =
+type ProviderChangePanelType =
     ErrorPanelType.kPendingProviderChangeGeminiToGeic|
     ErrorPanelType.kPendingProviderChangeGeicToGemini|
-    ErrorPanelType.kPendingProviderChangeGeicToOtherGeic;
+    ErrorPanelType.kPendingProviderChangeGeicToOtherGeic|
+    ErrorPanelType.kProviderSwitchNoticeGeminiToGeic|
+    ErrorPanelType.kProviderSwitchNoticeGeicToGemini|
+    ErrorPanelType.kProviderSwitchNoticeGeicToOtherGeic;
 
-// Each body entry is shown as a separate paragraph. glic_overlay.html has
-// three paragraph elements (relaunchBody1-3), so a body has at most three.
-const RELAUNCH_COPY:
-    Record<RelaunchPanelType, {header: string, body: string[]}> = {
+interface ProviderChangePanel {
+  header: string;
+  // Each entry is shown as a separate paragraph. glic_overlay.html has three
+  // paragraph elements (relaunchBody1-3), so a body has at most three.
+  body: string[];
+  // Whether to show the continue button instead of the relaunch button.
+  showContinueButton: boolean;
+}
+
+const PROVIDER_CHANGE_PANELS:
+    Record<ProviderChangePanelType, ProviderChangePanel> = {
       [ErrorPanelType.kPendingProviderChangeGeminiToGeic]: {
         header: 'relaunchRequiredGeminiToGeicNoticeHeader',
         body: ['relaunchRequiredGeminiToGeicNotice'],
+        showContinueButton: false,
       },
       [ErrorPanelType.kPendingProviderChangeGeicToGemini]: {
         header: 'relaunchRequiredGeicToGeminiNoticeHeader',
@@ -40,10 +51,27 @@ const RELAUNCH_COPY:
           'relaunchRequiredGeicToGeminiNotice2',
           'relaunchRequiredGeicToGeminiNotice3',
         ],
+        showContinueButton: false,
       },
       [ErrorPanelType.kPendingProviderChangeGeicToOtherGeic]: {
         header: 'relaunchRequiredGeicToOtherGeicNoticeHeader',
         body: ['relaunchRequiredGeicToOtherGeicNotice'],
+        showContinueButton: false,
+      },
+      [ErrorPanelType.kProviderSwitchNoticeGeminiToGeic]: {
+        header: 'providerSwitchNoticeGeminiToGeicHeader',
+        body: ['providerSwitchNoticeGeminiToGeic'],
+        showContinueButton: true,
+      },
+      [ErrorPanelType.kProviderSwitchNoticeGeicToGemini]: {
+        header: 'providerSwitchNoticeGeicToGeminiHeader',
+        body: ['providerSwitchNoticeGeicToGemini'],
+        showContinueButton: true,
+      },
+      [ErrorPanelType.kProviderSwitchNoticeGeicToOtherGeic]: {
+        header: 'providerSwitchNoticeGeicToOtherGeicHeader',
+        body: ['providerSwitchNoticeGeicToOtherGeic'],
+        showContinueButton: true,
       },
     };
 
@@ -71,6 +99,7 @@ interface PageElementTypes {
   locationMismatchHelpButton: HTMLElement;
   disabledByAdminCloseButton: HTMLElement;
   relaunchButton: HTMLElement;
+  continueButton: HTMLElement;
 }
 
 const $: PageElementTypes = new Proxy({}, {
@@ -121,8 +150,8 @@ export class GlicOverlayElement extends HTMLElement {
     }
   }
 
-  private showRelaunch(type: RelaunchPanelType): void {
-    const {header, body} = RELAUNCH_COPY[type];
+  private showProviderChangePanel(type: ProviderChangePanelType): void {
+    const {header, body, showContinueButton} = PROVIDER_CHANGE_PANELS[type];
     $.relaunchHeadline.textContent = loadTimeData.getString(header);
     const paragraphs = [$.relaunchBody1, $.relaunchBody2, $.relaunchBody3];
     paragraphs.forEach((paragraph, i) => {
@@ -130,6 +159,8 @@ export class GlicOverlayElement extends HTMLElement {
       paragraph.textContent = key ? loadTimeData.getString(key) : '';
       paragraph.hidden = !key;
     });
+    $.relaunchButton.hidden = showContinueButton;
+    $.continueButton.hidden = !showContinueButton;
     $.relaunchRequiredPanel.hidden = false;
   }
 
@@ -166,7 +197,10 @@ export class GlicOverlayElement extends HTMLElement {
       case ErrorPanelType.kPendingProviderChangeGeminiToGeic:
       case ErrorPanelType.kPendingProviderChangeGeicToGemini:
       case ErrorPanelType.kPendingProviderChangeGeicToOtherGeic:
-        this.showRelaunch(errorType);
+      case ErrorPanelType.kProviderSwitchNoticeGeminiToGeic:
+      case ErrorPanelType.kProviderSwitchNoticeGeicToGemini:
+      case ErrorPanelType.kProviderSwitchNoticeGeicToOtherGeic:
+        this.showProviderChangePanel(errorType);
         break;
       default: {
         const _exhaustiveCheck: never = errorType;
@@ -233,6 +267,10 @@ export class GlicOverlayElement extends HTMLElement {
 
     $.relaunchButton.addEventListener('click', () => {
       this.browserProxy.handler.onRelaunchClicked();
+    });
+
+    $.continueButton.addEventListener('click', () => {
+      this.browserProxy.handler.onProviderSwitchNoticeContinueClicked();
     });
   }
 }

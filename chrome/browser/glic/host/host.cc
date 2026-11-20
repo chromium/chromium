@@ -33,6 +33,7 @@
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/glic_provider_spec.h"
+#include "chrome/browser/glic/public/glic_provider_switch_notice.h"
 #include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "chrome/browser/glic/service/glic_instance_coordinator_impl.h"
 #include "chrome/browser/profiles/profile.h"
@@ -119,6 +120,11 @@ Host::Host(Profile* profile,
            InstanceDelegate* instance_delegate)
     : profile_(profile),
       pending_provider_change_(GlicEnabling::GetPendingProviderChange(profile)),
+      // The relaunch prompt takes priority over the notice.
+      provider_switch_notice_(pending_provider_change_ ==
+                                      GlicProviderChange::kNone
+                                  ? GetProviderSwitchNotice(*profile)
+                                  : GlicProviderChange::kNone),
       instance_delegate_(instance_delegate),
       glic_instance_(glic_instance),
       sharing_manager_provider_(sharing_manager_provider) {
@@ -222,6 +228,14 @@ void Host::InvokeInternal(mojom::InvokeOptionsPtr options,
   } else {
     std::move(callback).Run();
   }
+}
+
+void Host::AcknowledgeProviderSwitchNotice() {
+  if (provider_switch_notice_ == GlicProviderChange::kNone) {
+    return;
+  }
+  provider_switch_notice_ = GlicProviderChange::kNone;
+  glic::AcknowledgeProviderSwitchNotice(*profile_);
 }
 
 void Host::Reload() {
@@ -880,6 +894,7 @@ bool Host::ComputeIsShowingNativeLoading() const {
     case mojom::WebUiState::kIneligibleAccount:
     case mojom::WebUiState::kGuestLoaded:
     case mojom::WebUiState::kPendingProviderChangeGeminiToGeic:
+    case mojom::WebUiState::kProviderSwitchNoticeGeicToGemini:
       return false;
   }
 }

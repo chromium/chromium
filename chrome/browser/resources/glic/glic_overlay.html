@@ -192,6 +192,7 @@
           </div>
         </div>
       </section>
+      <!-- TODO(crbug.com/582415970): Rename the relaunchRequired* and relaunch* IDs, since the provider switch notice also uses this panel. -->
       <section hidden class="dialog panel" id="relaunchRequiredPanel">
         <div class="container">
           <div class="header">
@@ -216,6 +217,9 @@
               <cr-button class="tonal-button"
                 id="relaunchButton"
                 role="button">$i18n{relaunchRequiredNoticeActionButton}</cr-button>
+              <cr-button class="tonal-button"
+                id="continueButton"
+                role="button" hidden>$i18n{providerSwitchNoticeActionButton}</cr-button>
             </div>
           </div>
         </div>
