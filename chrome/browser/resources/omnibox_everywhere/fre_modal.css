@@ -40,6 +40,14 @@ img {
   width: 100%;
 }
 
+@media (prefers-color-scheme: dark) {
+  .fre-card {
+    background-color: var(--color-sys-omnibox-container);
+    border: 1px solid
+        color-mix(in srgb, var(--color-sys-outline) 20%, transparent);
+  }
+}
+
 .close-button,
 .close-button * {
   -webkit-app-region: no-drag;

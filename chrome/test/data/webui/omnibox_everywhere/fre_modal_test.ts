@@ -124,6 +124,7 @@ suite('FreModalTest', () => {
     const rootStyle = document.documentElement.style;
     const darkTokens: Array<[string, string]> = [
       ['--color-new-tab-page-background', 'rgb(60, 60, 60)'],
+      ['--color-sys-omnibox-container', 'rgb(60, 60, 60)'],
       ['--color-sys-surface', 'rgb(31, 31, 31)'],
       ['--color-sys-surface-container-high', 'rgb(42, 42, 42)'],
       ['--color-sys-on-surface', 'rgb(227, 227, 227)'],
