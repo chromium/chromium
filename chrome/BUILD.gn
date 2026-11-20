@@ -643,6 +643,8 @@ if (is_win) {
         "--allow",
         "@executable_path/../Frameworks/$chrome_framework_name.framework/Versions/$chrome_framework_version/$chrome_framework_name",
         "--allow",
+        "/usr/lib/libc++abi.dylib",
+        "--allow",
         "/usr/lib/libSystem.B.dylib",
       ]
       deps = [ ":chrome_app" ]
@@ -989,6 +991,8 @@ if (is_win) {
           "--allow",
           "@executable_path/../../../../$chrome_framework_name",
           "--allow",
+          "/usr/lib/libc++abi.dylib",
+          "--allow",
           "/usr/lib/libSystem.B.dylib",
         ]
         deps = [ ":chrome_helper_app_${_helper_target}" ]
@@ -1105,6 +1109,8 @@ if (is_win) {
 
         # Do not --allow more libraries here without consulting with the
         # security team (security-dev@chromium.org).
+        "--allow",
+        "/usr/lib/libc++abi.dylib",
         "--allow",
         "/usr/lib/libsandbox.1.dylib",
         "--allow",

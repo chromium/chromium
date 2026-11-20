@@ -85,7 +85,10 @@ void ExpectAperitifInitializesFirst(const std::string& stderr_output,
   // libraries of Aperitif.
   // **Do not add more libraries to this set without talking to
   // security-dev@chromium.org!**
-  std::set<std::string> allowed_libraries({"/usr/lib/libSystem.B.dylib"});
+  std::set<std::string> allowed_libraries({
+      "/usr/lib/libSystem.B.dylib",
+      "/usr/lib/libc++abi.dylib",
+  });
 #if defined(COMPONENT_BUILD)
   allowed_libraries.insert(dir_exe_path.Append("libc++_chrome.dylib").value());
   allowed_libraries.insert(
@@ -93,7 +96,6 @@ void ExpectAperitifInitializesFirst(const std::string& stderr_output,
 #endif
 #if defined(ADDRESS_SANITIZER) || defined(UNDEFINED_SANITIZER) || \
     defined(THREAD_SANITIZER)
-  allowed_libraries.insert("/usr/lib/libc++abi.dylib");
   allowed_libraries.insert("/usr/lib/libc++.1.dylib");
 #endif
   base::FilePath canonical_exe_dir =

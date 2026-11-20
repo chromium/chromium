@@ -110,4 +110,27 @@
 // TODO(crbug.com/581374525): remove this suppression.
 #define _LIBCPP_DISABLE_UNUSED_STRUCT_WARNINGS
 
+// On Apple platforms, Chromium links against the system /usr/lib/libc++abi.dylib
+// (crbug.com/40625324), which only added __cxa_init_primary_exception in
+// macOS 15.0 / iOS 18.0 / tvOS 18.0 / watchOS 11.0. Because
+// _LIBCPP_HAS_VENDOR_AVAILABILITY_ANNOTATIONS is disabled for Chromium's custom
+// libc++, <__configuration/availability.h> otherwise assumes
+// __cxa_init_primary_exception is unconditionally available.
+#if defined(__cplusplus) &&                                             \
+    ((defined(__ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__) &&         \
+      __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ < 150000) ||        \
+     (defined(__ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__) &&        \
+      __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__ < 180000) ||       \
+     (defined(__ENVIRONMENT_TV_OS_VERSION_MIN_REQUIRED__) &&            \
+      __ENVIRONMENT_TV_OS_VERSION_MIN_REQUIRED__ < 180000) ||           \
+     (defined(__ENVIRONMENT_WATCH_OS_VERSION_MIN_REQUIRED__) &&         \
+      __ENVIRONMENT_WATCH_OS_VERSION_MIN_REQUIRED__ < 110000))
+#ifdef _LIBCPP___CONFIGURATION_AVAILABILITY_H
+#error "<__configuration/availability.h> included before <__config_site>"
+#endif
+#include <__configuration/availability.h>
+#undef _LIBCPP_AVAILABILITY_HAS_INIT_PRIMARY_EXCEPTION
+#define _LIBCPP_AVAILABILITY_HAS_INIT_PRIMARY_EXCEPTION 0
+#endif
+
 #endif // _LIBCPP_CONFIG_SITE

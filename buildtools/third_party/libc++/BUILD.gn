@@ -415,6 +415,12 @@ if (use_clang_modules && use_unified_system_module) {
   }
 }
 
+if (is_apple) {
+  config("libcxxabi") {
+    libs = [ "c++abi" ]
+  }
+}
+
 target(libcxx_target_type, "libc++") {
   # Most things that need to depend on libc++ should do so via the implicit
   # 'common_deps' dependency below.  Some targets that package libc++.so may
@@ -609,7 +615,13 @@ target(libcxx_target_type, "libc++") {
 
   if (!is_win) {
     defines += [ "LIBCXX_BUILDING_LIBCXXABI" ]
-    if (!export_libcxxabi_from_executables) {
+    if (is_apple) {
+      # On Apple platforms, link against the system libc++abi.dylib rather than
+      # building a hermetic copy so that ABI state (type_info, dynamic_cast,
+      # and exceptions) is shared with system frameworks and compiler-rt's
+      # dynamic UBSan runtime.
+      public_configs = [ ":libcxxabi" ]
+    } else if (!export_libcxxabi_from_executables) {
       deps += [ "//buildtools/third_party/libc++abi" ]
     }
   }
