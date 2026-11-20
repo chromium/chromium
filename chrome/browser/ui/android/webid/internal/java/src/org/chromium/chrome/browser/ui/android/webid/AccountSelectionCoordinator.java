@@ -279,6 +279,10 @@ public class AccountSelectionCoordinator
                 AccountSelectionProperties.ITEM_TYPE_SEPARATOR,
                 new LayoutViewBuilder<>(R.layout.account_selection_login_buttons_start_separator),
                 (_, _, _) -> {});
+        adapter.registerType(
+                AccountSelectionProperties.ITEM_TYPE_IDP,
+                new LayoutViewBuilder<>(R.layout.account_selection_active_mode_idp_item),
+                AccountSelectionViewBinder::bindIdpView);
         sheetItemListView.setAdapter(adapter);
 
         return contentView;

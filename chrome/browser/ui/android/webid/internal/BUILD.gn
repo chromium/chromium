@@ -91,6 +91,7 @@ android_resources("java_resources") {
     "java/res/layout/account_selection_active_mode_data_sharing_consent_container.xml",
     "java/res/layout/account_selection_active_mode_data_sharing_consent_item.xml",
     "java/res/layout/account_selection_active_mode_header_item.xml",
+    "java/res/layout/account_selection_active_mode_idp_item.xml",
     "java/res/layout/account_selection_active_mode_sheet.xml",
     "java/res/layout/account_selection_add_account_row_item.xml",
     "java/res/layout/account_selection_continue_button.xml",

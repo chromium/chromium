@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.D
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ErrorProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.HeaderType;
+import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.IdpProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.IdpSignInProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ItemProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.LoginButtonProperties;
@@ -479,6 +480,7 @@ class AccountSelectionMediator {
     private int getSheetType() {
         switch (mHeaderType) {
             case HeaderType.SIGN_IN:
+            case HeaderType.IDP_PICKER:
             case HeaderType.REQUEST_PERMISSION_MODAL:
                 return SheetType.ACCOUNT_SELECTION;
             case HeaderType.VERIFY:
@@ -508,6 +510,16 @@ class AccountSelectionMediator {
                 && (mHeaderType == HeaderType.REQUEST_PERMISSION_MODAL
                         || mHeaderType == HeaderType.VERIFY
                         || mHeaderType == HeaderType.VERIFY_AUTO_REAUTHN)) {
+            return;
+        }
+
+        if (mHeaderType == HeaderType.IDP_PICKER) {
+            for (IdentityProviderData identityProvider : identityProviders) {
+                mSheetAccountItems.add(
+                        new ListItem(
+                                AccountSelectionProperties.ITEM_TYPE_IDP,
+                                createIdpItem(identityProvider)));
+            }
             return;
         }
 
@@ -1023,6 +1035,25 @@ class AccountSelectionMediator {
         return true;
     }
 
+    // TODO(crbug.com/581411351): Make private once the account chooser opens the IDP picker.
+    @VisibleForTesting
+    boolean showIdpPicker() {
+        assert mRpMode == RpMode.ACTIVE;
+        assert assumeNonNull(mIdpDataListForShowAccounts).size() > 1;
+        mSelectedAccount = null;
+        mHeaderType = HeaderType.IDP_PICKER;
+        mIdpForDisplay = null;
+        if (!updateSheet(
+                Collections.emptyList(),
+                assertNonNull(mIdpDataListForShowAccounts),
+                /* areAccountsClickable= */ false)) {
+            return false;
+        }
+        setComponentShowTime(SystemClock.elapsedRealtime());
+        updateBackPressBehavior();
+        return true;
+    }
+
     private boolean showAccountsInternal(@Nullable List<Account> newAccounts) {
         // TODO(crbug.com/356665527): Handle multiple newly signed-in accounts.
         Account newlySignedInAccount =
@@ -1322,6 +1353,7 @@ class AccountSelectionMediator {
 
         mRegisteredObservers = true;
         if (mHeaderType == HeaderType.SIGN_IN
+                || mHeaderType == HeaderType.IDP_PICKER
                 || mHeaderType == HeaderType.VERIFY
                 || mHeaderType == HeaderType.VERIFY_AUTO_REAUTHN) {
             mDelegate.onAccountsDisplayed();
@@ -1554,6 +1586,14 @@ class AccountSelectionMediator {
                         identityProvider, this::onLoginToIdP, mRpMode, mIsShowingMultipleIdps);
         return new PropertyModel.Builder(LoginButtonProperties.ALL_KEYS)
                 .with(LoginButtonProperties.PROPERTIES, properties)
+                .build();
+    }
+
+    private PropertyModel createIdpItem(IdentityProviderData identityProvider) {
+        IdpProperties.Properties properties =
+                new IdpProperties.Properties(identityProvider, this::onLoginToIdP);
+        return new PropertyModel.Builder(IdpProperties.ALL_KEYS)
+                .with(IdpProperties.PROPERTIES, properties)
                 .build();
     }
 

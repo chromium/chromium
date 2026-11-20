@@ -14,6 +14,8 @@ import static org.junit.Assert.assertTrue;
 import static java.util.Arrays.asList;
 
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.ImageView;
@@ -25,17 +27,24 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.blink.mojom.RpContext;
 import org.chromium.blink.mojom.RpMode;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties;
+import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ButtonData;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.HeaderType;
+import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.IdpProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ItemProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.LoginButtonProperties;
+import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderData;
+import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerItemDecoration;
+import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.url.GURL;
 
 import java.util.Arrays;
 import java.util.List;
@@ -262,7 +271,8 @@ public class AccountSelectionButtonModeViewTest extends AccountSelectionJUnitTes
                         HeaderType.SIGN_IN,
                         HeaderType.SIGN_IN_TO_IDP_STATIC,
                         HeaderType.SIGN_IN_ERROR,
-                        HeaderType.LOADING);
+                        HeaderType.LOADING,
+                        HeaderType.IDP_PICKER);
         for (@HeaderType int headerType : headerTypesWithoutRpIcon) {
             mModel.set(
                     ItemProperties.HEADER,
@@ -478,6 +488,122 @@ public class AccountSelectionButtonModeViewTest extends AccountSelectionJUnitTes
                         .build());
         assertTrue(headerIcon.isShown());
         assertSame(previousDrawable, headerIcon.getDrawable());
+    }
+
+    @Test
+    public void testIdpPickerHeader() {
+        mModel.set(
+                ItemProperties.HEADER,
+                buildMultiIdpHeader()
+                        .with(HeaderProperties.TYPE, HeaderType.IDP_PICKER)
+                        .with(HeaderProperties.HEADER_ICON, null)
+                        .build());
+
+        TextView title = mContentView.findViewById(R.id.header_title);
+        TextView subtitle = mContentView.findViewById(R.id.header_subtitle);
+        assertEquals("Sign in to example.org", title.getText().toString());
+        assertEquals("Choose a provider to continue", subtitle.getText().toString());
+        assertTrue(subtitle.isShown());
+        ImageView headerIcon = mContentView.findViewById(R.id.header_icon);
+        assertTrue(headerIcon.isShown());
+        assertNotNull(headerIcon.getDrawable());
+    }
+
+    @Test
+    public void testIdpPickerItemsDisplayedAndClickable() {
+        ButtonData[] clicked = new ButtonData[1];
+        mSheetAccountItems.addAll(
+                asList(
+                        buildIdpItem(mIdpData, data -> clicked[0] = data),
+                        buildIdpItem(mIdpDataWithoutIcons, mIdpLoginCallback)));
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        RecyclerView itemsList = mContentView.findViewById(R.id.sheet_item_list);
+        assertEquals(2, itemsList.getAdapter().getItemCount());
+        assertEquals(
+                AccountSelectionProperties.ITEM_TYPE_IDP,
+                itemsList.getAdapter().getItemViewType(0));
+        assertEquals(
+                AccountSelectionProperties.ITEM_TYPE_IDP,
+                itemsList.getAdapter().getItemViewType(1));
+
+        View firstRow = itemsList.getChildAt(0);
+        ImageView firstStartIcon = firstRow.findViewById(R.id.start_icon);
+        TextView firstTitle = firstRow.findViewById(R.id.title);
+        ImageView firstEndIcon = firstRow.findViewById(R.id.end_icon);
+        assertTrue(firstStartIcon.isShown());
+        assertTrue(firstStartIcon.getDrawable() instanceof BitmapDrawable);
+        assertEquals(mIdpData.getIdpForDisplay(), firstTitle.getText().toString());
+        assertEquals(
+                mIdpData.getIdpForDisplay() + ", opens in a new tab",
+                firstTitle.getContentDescription().toString());
+        assertTrue(firstEndIcon.isShown());
+
+        View secondRow = itemsList.getChildAt(1);
+        ImageView secondStartIcon = secondRow.findViewById(R.id.start_icon);
+        TextView secondTitle = secondRow.findViewById(R.id.title);
+        assertTrue(secondStartIcon.isShown());
+        // Globe fallback drawable is set when no brand icon is present.
+        assertNotNull(secondStartIcon.getDrawable());
+        assertFalse(secondStartIcon.getDrawable() instanceof BitmapDrawable);
+        assertEquals(mIdpDataWithoutIcons.getIdpForDisplay(), secondTitle.getText().toString());
+
+        firstRow.performClick();
+        assertNotNull(clicked[0]);
+        assertNull(clicked[0].mAccount);
+        assertSame(mIdpData.getIdpMetadata(), clicked[0].mIdpMetadata);
+    }
+
+    @Test
+    public void testIdpPickerFallsBackToGlobeForInvalidBrandIcons() {
+        IdentityProviderData undersizedIconIdp =
+                createIdpDataWithBrandIcon(Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888));
+        IdentityProviderData nonSquareIconIdp =
+                createIdpDataWithBrandIcon(Bitmap.createBitmap(100, 50, Bitmap.Config.ARGB_8888));
+        mSheetAccountItems.addAll(
+                asList(
+                        buildIdpItem(undersizedIconIdp, mIdpLoginCallback),
+                        buildIdpItem(nonSquareIconIdp, mIdpLoginCallback)));
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        RecyclerView itemsList = mContentView.findViewById(R.id.sheet_item_list);
+        for (int i = 0; i < 2; i++) {
+            ImageView startIcon = itemsList.getChildAt(i).findViewById(R.id.start_icon);
+            assertNotNull(startIcon.getDrawable());
+            assertFalse(startIcon.getDrawable() instanceof BitmapDrawable);
+        }
+    }
+
+    private IdentityProviderData createIdpDataWithBrandIcon(Bitmap brandIcon) {
+        IdentityProviderMetadata metadata =
+                new IdentityProviderMetadata(
+                        Color.BLUE,
+                        Color.GREEN,
+                        brandIcon,
+                        mTestConfigUrl,
+                        mTestLoginUrl,
+                        GURL.emptyGURL(),
+                        GURL.emptyGURL(),
+                        GURL.emptyGURL(),
+                        /* showUseDifferentAccountButton= */ false);
+        return new IdentityProviderData(
+                mTestEtldPlusOne2,
+                metadata,
+                mIdpData.getClientMetadata(),
+                RpContext.SIGN_IN,
+                DEFAULT_DISCLOSURE_FIELDS,
+                /* hasLoginStatusMismatch= */ false);
+    }
+
+    private MVCListAdapter.ListItem buildIdpItem(
+            IdentityProviderData idpData, Callback<ButtonData> onClickListener) {
+        return new MVCListAdapter.ListItem(
+                AccountSelectionProperties.ITEM_TYPE_IDP,
+                new PropertyModel.Builder(IdpProperties.ALL_KEYS)
+                        .with(
+                                IdpProperties.PROPERTIES,
+                                new IdpProperties.Properties(idpData, onClickListener))
+                        .build());
     }
 
     private PropertyModel.Builder buildMultiIdpHeader() {

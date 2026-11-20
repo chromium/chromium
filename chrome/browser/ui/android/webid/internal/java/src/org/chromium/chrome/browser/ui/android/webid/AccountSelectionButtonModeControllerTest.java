@@ -33,6 +33,7 @@ import android.widget.TextView;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.robolectric.RuntimeEnvironment;
 
@@ -47,10 +48,13 @@ import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.B
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ContinueButtonProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.DataSharingConsentProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.HeaderType;
+import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.IdpProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ItemProperties;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderData;
 import org.chromium.chrome.browser.ui.android.webid.data.RelyingPartyData;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.components.ukm.UkmRecorderJni;
 import org.chromium.content.webid.IdentityRequestDialogDismissReason;
@@ -573,6 +577,136 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
 
         assertTrue(mMediator.wasDismissed());
         verify(mMockDelegate).onDismissed(IdentityRequestDialogDismissReason.OTHER);
+    }
+
+    @Test
+    public void testIdpPickerShowsIdpRowsThatLogIn() {
+        openIdpPickerFromAccountChooser();
+
+        PropertyModel idpPickerHeader = mModel.get(ItemProperties.HEADER);
+        assertTrue(idpPickerHeader.get(IS_SHOWING_MULTIPLE_IDPS));
+        assertTrue(idpPickerHeader.get(IS_MULTI_IDP_REQUEST));
+        assertNull(idpPickerHeader.get(IDP_FOR_DISPLAY));
+        assertNull(idpPickerHeader.get(HEADER_ICON));
+        assertFalse(mModel.get(ItemProperties.SPINNER_ENABLED));
+        assertFalse(containsItemOfType(mModel, ItemProperties.CONTINUE_BUTTON));
+        assertFalse(containsItemOfType(mModel, ItemProperties.ADD_ACCOUNT_BUTTON));
+
+        assertEquals(2, mSheetAccountItems.size());
+        assertEquals(AccountSelectionProperties.ITEM_TYPE_IDP, mSheetAccountItems.get(0).type);
+        assertEquals(
+                mIdpData,
+                mSheetAccountItems.get(0).model.get(IdpProperties.PROPERTIES).mIdentityProvider);
+        assertEquals(AccountSelectionProperties.ITEM_TYPE_IDP, mSheetAccountItems.get(1).type);
+        assertEquals(
+                mIdpData2,
+                mSheetAccountItems.get(1).model.get(IdpProperties.PROPERTIES).mIdentityProvider);
+
+        clickIdpRow(/* itemIndex= */ 0);
+        verify(mMockDelegate).onLoginToIdP(mTestConfigUrl, mTestLoginUrl);
+    }
+
+    @Test
+    public void testIdpPickerClickRowRespectsComponentShowTime() {
+        showMultiIdpAccountChooser(Arrays.asList(mAnaAccount, mDanAccount));
+        mMediator.setComponentShowTime(-1000);
+        assertTrue(mMediator.showIdpPicker());
+
+        // Without advancing past the show-time threshold after opening the picker, clicking an IDP
+        // row is ignored.
+        IdpProperties.Properties idpProps =
+                mSheetAccountItems.get(0).model.get(IdpProperties.PROPERTIES);
+        idpProps.mOnClickListener.onResult(
+                new ButtonData(/* account= */ null, idpProps.mIdentityProvider.getIdpMetadata()));
+
+        verify(mMockDelegate, never()).onLoginToIdP(any(), any());
+    }
+
+    @Test
+    public void testIdpPickerNotifiesOnAccountsDisplayedWhenFirstShown() {
+        when(mTab.isHidden()).thenReturn(true);
+        showMultiIdpAccountChooser(Arrays.asList(mAnaAccount, mDanAccount));
+        verify(mMockDelegate, never()).onAccountsDisplayed();
+
+        when(mTab.isHidden()).thenReturn(false);
+        assertTrue(mMediator.showIdpPicker());
+        verify(mMockDelegate).onAccountsDisplayed();
+    }
+
+    @Test
+    public void testIdpPickerDismissesWhenShowContentFails() {
+        showMultiIdpAccountChooser(Arrays.asList(mAnaAccount, mDanAccount));
+        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(false);
+
+        assertFalse(mMediator.showIdpPicker());
+        assertTrue(mMediator.wasDismissed());
+        verify(mMockDelegate).onDismissed(IdentityRequestDialogDismissReason.OTHER);
+    }
+
+    @Test
+    public void testIdpPickerClosedSheetTypeRecordsAccountSelection() {
+        openIdpPickerFromAccountChooser();
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Blink.FedCm.ClosedSheetType.Android", SheetType.ACCOUNT_SELECTION);
+        hideBottomSheet(BottomSheetController.StateChangeReason.CLOSE_BUTTON);
+
+        histogramWatcher.assertExpected();
+        verify(mMockDelegate).onDismissed(IdentityRequestDialogDismissReason.CLOSE_BUTTON);
+    }
+
+    @Test
+    public void testIdpPickerDismissedBySwipe() {
+        openIdpPickerFromAccountChooser();
+        hideBottomSheet(BottomSheetController.StateChangeReason.SWIPE);
+
+        assertTrue(mMediator.wasDismissed());
+        verify(mMockDelegate).onDismissed(IdentityRequestDialogDismissReason.SWIPE);
+    }
+
+    @Test
+    public void testIdpPickerDismissedByTapScrim() {
+        openIdpPickerFromAccountChooser();
+        hideBottomSheet(BottomSheetController.StateChangeReason.TAP_SCRIM);
+
+        assertTrue(mMediator.wasDismissed());
+        verify(mMockDelegate).onDismissed(IdentityRequestDialogDismissReason.TAP_SCRIM);
+    }
+
+    private void hideBottomSheet(@BottomSheetController.StateChangeReason int reason) {
+        when(mMockBottomSheetController.getCurrentSheetContent()).thenReturn(mBottomSheetContent);
+        ArgumentCaptor<BottomSheetObserver> observerCaptor =
+                ArgumentCaptor.forClass(BottomSheetObserver.class);
+        verify(mMockBottomSheetController).addObserver(observerCaptor.capture());
+        observerCaptor
+                .getValue()
+                .onSheetStateChanged(BottomSheetController.SheetState.HIDDEN, reason);
+    }
+
+    private void showMultiIdpAccountChooser(List<Account> accounts) {
+        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
+        mMediator.showAccounts(
+                new RelyingPartyData(
+                        mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null),
+                accounts,
+                Arrays.asList(mIdpData, mIdpData2),
+                /* newAccounts= */ Collections.emptyList());
+    }
+
+    private void openIdpPickerFromAccountChooser() {
+        showMultiIdpAccountChooser(Arrays.asList(mAnaAccount, mDanAccount));
+        assertTrue(mMediator.showIdpPicker());
+        assertEquals(HeaderType.IDP_PICKER, mModel.get(ItemProperties.HEADER).get(TYPE));
+    }
+
+    /** Clicks an IDP row on the IDP picker. */
+    private void clickIdpRow(int itemIndex) {
+        mMediator.setComponentShowTime(-1000);
+        IdpProperties.Properties idpProps =
+                mSheetAccountItems.get(itemIndex).model.get(IdpProperties.PROPERTIES);
+        idpProps.mOnClickListener.onResult(
+                new ButtonData(/* account= */ null, idpProps.mIdentityProvider.getIdpMetadata()));
     }
 
     /**

@@ -44,6 +44,7 @@ import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.C
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.DataSharingConsentProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ErrorProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties;
+import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.IdpProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.IdpSignInProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ItemProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.LoginButtonProperties;
@@ -360,6 +361,54 @@ class AccountSelectionViewBinder {
         } else {
             assert false : "Unhandled update to property:" + key;
         }
+    }
+
+    /**
+     * Called whenever an identity provider row is bound to the active-mode IDP picker view.
+     *
+     * @param model The model containing the data for the view.
+     * @param view The view to be bound.
+     * @param key The key of the property to be bound.
+     */
+    static void bindIdpView(PropertyModel model, View view, PropertyKey key) {
+        if (key != IdpProperties.PROPERTIES) {
+            assert false : "Unhandled update to property:" + key;
+            return;
+        }
+        IdpProperties.Properties properties = model.get(IdpProperties.PROPERTIES);
+        Context context = view.getContext();
+        IdentityProviderData identityProvider = properties.mIdentityProvider;
+        IdentityProviderMetadata idpMetadata = identityProvider.getIdpMetadata();
+        ImageView startIconView = view.findViewById(R.id.start_icon);
+        Bitmap brandIcon = idpMetadata.getBrandIconBitmap();
+        if (isValidBrandIcon(brandIcon, RpMode.ACTIVE, /* shouldCircleCrop= */ true)) {
+            Resources resources = view.getResources();
+            int iconSize =
+                    resources.getDimensionPixelSize(
+                            R.dimen.account_selection_active_mode_sheet_icon_size);
+            startIconView.setImageDrawable(
+                    createBitmapWithMaskableIconSafeZone(
+                            resources, assumeNonNull(brandIcon), iconSize));
+        } else {
+            startIconView.setImageDrawable(
+                    UiUtils.getTintedDrawable(
+                            context,
+                            R.drawable.ic_globe_24dp,
+                            R.color.default_icon_color_tint_list));
+        }
+
+        TextView subject = view.findViewById(R.id.title);
+        String idpForDisplay = identityProvider.getIdpForDisplay();
+        subject.setText(idpForDisplay);
+        subject.setContentDescription(
+                context.getString(
+                        R.string.account_selection_add_account_opens_in_new_tab, idpForDisplay));
+
+        view.setOnClickListener(
+                clickedView -> {
+                    properties.mOnClickListener.onResult(
+                            new ButtonData(/* account= */ null, idpMetadata));
+                });
     }
 
     static void setDefaultLoginImage(
@@ -1014,7 +1063,9 @@ class AccountSelectionViewBinder {
                     @HeaderProperties.HeaderType int headerType = model.get(HeaderProperties.TYPE);
                     boolean showFallbackIcon =
                             model.get(HeaderProperties.IS_SHOWING_MULTIPLE_IDPS)
-                                    && headerType == HeaderProperties.HeaderType.SIGN_IN;
+                                    && (headerType == HeaderProperties.HeaderType.SIGN_IN
+                                            || headerType
+                                                    == HeaderProperties.HeaderType.IDP_PICKER);
                     if (showFallbackIcon) {
                         headerIconView.setImageDrawable(
                                 UiUtils.getTintedDrawable(
@@ -1226,6 +1277,9 @@ class AccountSelectionViewBinder {
         if (rpMode == RpMode.PASSIVE) return "";
         if (isShowingMultipleIdps) {
             if (type == HeaderProperties.HeaderType.LOADING) return "";
+            if (type == HeaderProperties.HeaderType.IDP_PICKER) {
+                return resources.getString(R.string.account_selection_idp_picker_subtitle);
+            }
             assert type == HeaderProperties.HeaderType.SIGN_IN;
             return resources.getString(R.string.account_selection_multi_idp_sheet_subtitle);
         }

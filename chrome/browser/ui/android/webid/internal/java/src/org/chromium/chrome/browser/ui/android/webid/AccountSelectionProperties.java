@@ -41,6 +41,7 @@ class AccountSelectionProperties {
     public static final int ITEM_TYPE_ACCOUNT = 1;
     public static final int ITEM_TYPE_LOGIN = 2;
     public static final int ITEM_TYPE_SEPARATOR = 3;
+    public static final int ITEM_TYPE_IDP = 4;
 
     /**
      * The data needed for a button in the AccountSelection sheet. It may be a continue button for
@@ -96,7 +97,8 @@ class AccountSelectionProperties {
             HeaderType.SIGN_IN_TO_IDP_STATIC,
             HeaderType.SIGN_IN_ERROR,
             HeaderType.LOADING,
-            HeaderType.REQUEST_PERMISSION_MODAL
+            HeaderType.REQUEST_PERMISSION_MODAL,
+            HeaderType.IDP_PICKER
         })
         @Target(ElementType.TYPE_USE)
         @Retention(RetentionPolicy.SOURCE)
@@ -111,6 +113,7 @@ class AccountSelectionProperties {
             int SIGN_IN_ERROR = 5;
             int LOADING = 6;
             int REQUEST_PERMISSION_MODAL = 7;
+            int IDP_PICKER = 8;
         }
 
         static final ReadableObjectPropertyKey<@Nullable Runnable> CLOSE_ON_CLICK_LISTENER =
@@ -280,6 +283,27 @@ class AccountSelectionProperties {
         static final PropertyKey[] ALL_KEYS = {PROPERTIES};
 
         private LoginButtonProperties() {}
+    }
+
+    /** Properties for an identity provider entry in the active-mode IDP picker. */
+    static class IdpProperties {
+        static class Properties {
+            public final IdentityProviderData mIdentityProvider;
+            public final Callback<ButtonData> mOnClickListener;
+
+            Properties(
+                    IdentityProviderData identityProvider, Callback<ButtonData> onClickListener) {
+                mIdentityProvider = identityProvider;
+                mOnClickListener = onClickListener;
+            }
+        }
+
+        static final ReadableObjectPropertyKey<IdpProperties.Properties> PROPERTIES =
+                new ReadableObjectPropertyKey<>("properties");
+
+        static final PropertyKey[] ALL_KEYS = {PROPERTIES};
+
+        private IdpProperties() {}
     }
 
     /**
