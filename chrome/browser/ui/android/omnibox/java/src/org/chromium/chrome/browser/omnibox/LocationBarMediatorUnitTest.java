@@ -5566,6 +5566,24 @@ public class LocationBarMediatorUnitTest {
     }
 
     @Test
+    public void testOnUrlFocusChange_gainingFocus_fromDraftingNoFocus_pushesTextInDrafting() {
+        beginInput(new AutocompleteInput().setDisplayState(DisplayState.DRAFTING_NO_FOCUS));
+        AutocompleteInput input = mSessionState.getAutocompleteInput();
+        List<Integer> displayStates = new ArrayList<>();
+        doAnswer(
+                        invocation -> {
+                            displayStates.add(input.getDisplayState());
+                            return true;
+                        })
+                .when(mUrlCoordinator)
+                .setUrlBarData(any(), anyInt(), any());
+
+        mMediator.onUrlFocusChange(/* hasFocus= */ true);
+
+        assertEquals(List.of(DisplayState.DRAFTING), displayStates);
+    }
+
+    @Test
     public void testFocusAndSelectAllText_fromDraftingNoFocus_refocusesWithoutRestarting() {
         setupSession(DisplayState.DRAFTING_NO_FOCUS);
         stubSynchronousFocusOnRequest();
@@ -5621,6 +5639,70 @@ public class LocationBarMediatorUnitTest {
         mMediator.onTabChanged(null);
 
         assertDraftingNoFocusProperties();
+    }
+
+    @Test
+    public void testOnUrlChanged_activeSession_refreshesPageMetadata() {
+        AutocompleteInput input = mSessionState.getAutocompleteInput();
+        beginInput(input);
+        assertEquals(JUnitTestGURLs.BLUE_1, input.getPageUrl());
+
+        doReturn(JUnitTestGURLs.URL_2).when(mLocationBarDataProvider).getCurrentGurl();
+        doReturn("Two").when(mLocationBarDataProvider).getTitle();
+        doReturn(PageClassification.SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT)
+                .when(mLocationBarDataProvider)
+                .getPageClassification(anyBoolean());
+        mMediator.onUrlChanged(/* isTabChanging= */ false);
+
+        assertTrue(mSessionState.isSessionActive());
+        assertEquals(JUnitTestGURLs.URL_2, input.getPageUrl());
+        assertEquals("Two", input.getPageTitle());
+        assertEquals(
+                PageClassification.SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
+                input.getPageClassification());
+    }
+
+    @Test
+    public void testOnUrlChanged_afterLoadUrlFromInput_retainsPageMetadataUntilInputEnds() {
+        AutocompleteInput input = mSessionState.getAutocompleteInput();
+        beginInput(input);
+        mMediator.loadUrl(new OmniboxLoadUrlParams.Builder(TEST_URL, PageTransition.TYPED).build());
+
+        // The navigation is reported before the task that ends the input session has run.
+        doReturn(JUnitTestGURLs.URL_2).when(mLocationBarDataProvider).getCurrentGurl();
+        mMediator.onUrlChanged(/* isTabChanging= */ false);
+
+        assertTrue(mSessionState.isSessionActive());
+        assertEquals(JUnitTestGURLs.BLUE_1, input.getPageUrl());
+    }
+
+    @Test
+    public void testOnUrlChanged_loadUrlFromInputNotStarted_refreshesPageMetadata() {
+        doReturn(false).when(mNavigator).loadUrl(any());
+        AutocompleteInput input = mSessionState.getAutocompleteInput();
+        beginInput(input);
+        mMediator.loadUrl(new OmniboxLoadUrlParams.Builder(TEST_URL, PageTransition.TYPED).build());
+
+        doReturn(JUnitTestGURLs.URL_2).when(mLocationBarDataProvider).getCurrentGurl();
+        mMediator.onUrlChanged(/* isTabChanging= */ false);
+
+        assertEquals(JUnitTestGURLs.URL_2, input.getPageUrl());
+    }
+
+    @Test
+    public void testOnUrlChanged_newSessionAfterLoadUrlFromInput_refreshesPageMetadata() {
+        AutocompleteInput input = mSessionState.getAutocompleteInput();
+        beginInput(input);
+        mMediator.loadUrl(new OmniboxLoadUrlParams.Builder(TEST_URL, PageTransition.TYPED).build());
+
+        // The session is ended, and another one started, before the task posted by loadUrl() runs.
+        mMediator.endInput();
+        mMediator.beginInput(input);
+
+        doReturn(JUnitTestGURLs.URL_2).when(mLocationBarDataProvider).getCurrentGurl();
+        mMediator.onUrlChanged(/* isTabChanging= */ false);
+
+        assertEquals(JUnitTestGURLs.URL_2, input.getPageUrl());
     }
 
     @Test

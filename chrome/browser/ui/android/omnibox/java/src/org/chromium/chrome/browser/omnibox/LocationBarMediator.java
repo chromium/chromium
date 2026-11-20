@@ -297,6 +297,9 @@ public class LocationBarMediator
     private int mIndexInToolbar;
     private @Nullable View mDropdown;
     private boolean mIsReparenting;
+    // Whether a navigation started from the current input session is under way and that session
+    // has not been ended yet.
+    private boolean mIsLoadingUrlFromCurrentInput;
     private boolean mDeferredFocusCurrentTab;
     private VoiceRecognitionHandler mVoiceRecognitionHandler;
     private StatusCoordinator mStatusCoordinator;
@@ -760,17 +763,19 @@ public class LocationBarMediator
 
         if (!mUrlFocusedWithoutAnimations) handleUrlFocusAnimation(hasFocus);
 
-        if (hasFocus
-                && mCurrentInput != null
-                && displayStateEquals(DisplayState.DRAFTING_NO_FOCUS)) {
-            mCurrentInput.setSelection(TextSelection.SELECT_ALL);
-            pushUrlBarDataFromCurrentInput();
-        }
-
-        // DisplayState transition. Upgrade to at least DRAFTING because we have focus now.
         if (mCurrentInput != null && hasFocus) {
+            boolean wasDraftingNoFocus = displayStateEquals(DisplayState.DRAFTING_NO_FOCUS);
+            if (wasDraftingNoFocus) {
+                mCurrentInput.setSelection(TextSelection.SELECT_ALL);
+            }
+            // DisplayState transition. Upgrade to at least DRAFTING because we have focus now.
             if (mCurrentInput.getDisplayState() != DisplayState.SUGGESTIONS) {
                 mCurrentInput.setDisplayState(DisplayState.DRAFTING);
+            }
+            // Push after the transition: what the UrlBar shows and reports to Autofill services
+            // depends on the display state.
+            if (wasDraftingNoFocus) {
+                pushUrlBarDataFromCurrentInput();
             }
         }
 
@@ -1152,7 +1157,12 @@ public class LocationBarMediator
             // side is initialized
             assert mNativeInitialized : "Loading URL before native side initialized";
 
-            if (mNavigator.loadUrl(omniboxLoadUrlParams)) {
+            // The navigation may be reported through onUrlChanged() before the input session is
+            // ended by the task posted below.
+            mIsLoadingUrlFromCurrentInput = mCurrentInput != null;
+            if (!mNavigator.loadUrl(omniboxLoadUrlParams)) {
+                mIsLoadingUrlFromCurrentInput = false;
+            } else {
                 // Without the following postDelayedTask, focusCurrentTab runs on the critical path
                 // of navigation. The following code postpones running focusCurrentTab and
                 // prioritizes running navigation code.
@@ -2118,6 +2128,7 @@ public class LocationBarMediator
     private void endInputAndFocusCurrentTab() {
         try (TraceEvent traceEvent =
                 TraceEvent.scoped("LocationBarMediator.endInputAndFocusCurrentTab")) {
+            mIsLoadingUrlFromCurrentInput = false;
             assert mLocationBarDataProvider != null;
             if (!mLocationBarDataProvider.hasTab()) return;
 
@@ -3077,6 +3088,7 @@ public class LocationBarMediator
             if (displayStateEquals(DisplayState.DRAFTING_NO_FOCUS)) {
                 endInput();
             }
+            refreshPageMetadataOfCurrentInput();
             updateUrl();
         }
 
@@ -3087,6 +3099,19 @@ public class LocationBarMediator
 
         updateOmniboxPrerender();
         updateButtonVisibility();
+    }
+
+    /**
+     * Makes the current input session describe the page the tab shows now.
+     *
+     * <p>A session outlives navigations of its tab, and its page classification, URL and title are
+     * read for as long as it lasts, so they have to follow the tab. The one exception is a
+     * navigation started from the session itself: that session is about to end, and what it records
+     * when it ends belongs to the page it was used on, not to its destination.
+     */
+    private void refreshPageMetadataOfCurrentInput() {
+        if (mCurrentInput == null || mIsLoadingUrlFromCurrentInput) return;
+        FuseboxSessionState.applyPageMetadata(mCurrentInput, mLocationBarDataProvider);
     }
 
     @Override
@@ -3258,6 +3283,7 @@ public class LocationBarMediator
     @Override
     public void endInput() {
         mUrlFocusedWithoutAnimations = false;
+        mIsLoadingUrlFromCurrentInput = false;
         if (mAutocompleteCoordinator == null || mCurrentInput == null || mIsReparenting) return;
 
         FuseboxSessionState state = FuseboxSessionState.from(mLocationBarDataProvider);

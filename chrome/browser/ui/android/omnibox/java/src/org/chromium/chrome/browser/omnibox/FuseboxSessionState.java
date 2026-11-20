@@ -104,11 +104,11 @@ public class FuseboxSessionState implements UserData {
     /**
      * Apply the page classification, URL and title of the current page to the given input.
      *
-     * <p>Used when an input session is begun or activated. The metadata is then retained for the
-     * lifetime of the session, even if the tab navigates while the session is active. In
-     * particular, it must not be refreshed while a session is being torn down, as the current page
-     * may already be the navigation target and session end metrics must be attributed to the page
-     * the session was started on.
+     * <p>Used when an input session is begun or activated, and when the tab navigates while the
+     * session is active, so that the session keeps describing the page the tab shows. It must not
+     * be refreshed while a session is being torn down by a navigation started from that session:
+     * the current page may already be the navigation target, and session end metrics must be
+     * attributed to the page the session was used on.
      *
      * @param input The {@link AutocompleteInput} to update.
      * @param dataProvider The {@link LocationBarDataProvider} describing the current page.

@@ -1028,6 +1028,89 @@ public class UrlBarMediatorUnitTest {
                 ScrollType.SCROLL_TO_BEGINNING, mModel.get(UrlBarProperties.TEXT_STATE).scrollType);
     }
 
+    @Test
+    public void textForAutofillServices_draftingNoFocus_reportsSessionPageUrl() {
+        var session = new FuseboxSessionState();
+        var input = session.getAutocompleteInput();
+        input.setPageUrl(JUnitTestGURLs.URL_1);
+        doReturn(UrlBarData.forNonUrlText("query")).when(mDelegate).getUrlBarDataForCurrentInput();
+        mMediator.beginInput(session);
+        assertTextForAutofillServices("query");
+
+        input.setDisplayState(DisplayState.DRAFTING_NO_FOCUS);
+        mMediator.pushTextToModel(/* originChanged= */ false);
+
+        assertTextForAutofillServices(JUnitTestGURLs.URL_1.getSpec());
+    }
+
+    @Test
+    public void textForAutofillServices_draftingNoFocus_republishedForUnchangedText() {
+        var session = new FuseboxSessionState();
+        var input = session.getAutocompleteInput();
+        input.setPageUrl(JUnitTestGURLs.URL_1);
+        UrlBarData data = UrlBarData.forNonUrlText("query");
+        doReturn(data).when(mDelegate).getUrlBarDataForCurrentInput();
+        mMediator.beginInput(session);
+
+        // Same text, scroll type and selection as already shown.
+        input.setDisplayState(DisplayState.DRAFTING_NO_FOCUS);
+        mMediator.setUrlBarData(data, ScrollType.SCROLL_TO_BEGINNING, input.getSelection());
+
+        assertTextForAutofillServices(JUnitTestGURLs.URL_1.getSpec());
+    }
+
+    @Test
+    public void textForAutofillServices_republishedForUnchangedTextOfOtherUrl() {
+        mMediator.setUrlBarData(
+                UrlBarData.forUrlAndText(JUnitTestGURLs.URL_1, "text"),
+                ScrollType.SCROLL_TO_BEGINNING,
+                TextSelection.SELECT_ALL);
+        assertTextForAutofillServices(JUnitTestGURLs.URL_1.getSpec());
+
+        // Same text, scroll type and selection as already shown.
+        mMediator.setUrlBarData(
+                UrlBarData.forUrlAndText(JUnitTestGURLs.URL_2, "text"),
+                ScrollType.SCROLL_TO_BEGINNING,
+                TextSelection.SELECT_ALL);
+        assertTextForAutofillServices(JUnitTestGURLs.URL_2.getSpec());
+    }
+
+    @Test
+    public void textForAutofillServices_republishedForUnchangedTextWhenEditingResumes() {
+        var session = new FuseboxSessionState();
+        var input = session.getAutocompleteInput();
+        input.setPageUrl(JUnitTestGURLs.URL_1);
+        UrlBarData data = UrlBarData.forNonUrlText("query");
+        doReturn(data).when(mDelegate).getUrlBarDataForCurrentInput();
+        mMediator.beginInput(session);
+        input.setDisplayState(DisplayState.DRAFTING_NO_FOCUS);
+        mMediator.setUrlBarData(data, ScrollType.SCROLL_TO_BEGINNING, input.getSelection());
+        assertTextForAutofillServices(JUnitTestGURLs.URL_1.getSpec());
+
+        // Same text, scroll type and selection as already shown.
+        input.setDisplayState(DisplayState.DRAFTING);
+        mMediator.setUrlBarData(data, ScrollType.SCROLL_TO_BEGINNING, input.getSelection());
+
+        assertTextForAutofillServices("query");
+    }
+
+    @Test
+    public void textForAutofillServices_draftingNoFocus_emptyWithoutSessionPageUrl() {
+        var session = new FuseboxSessionState();
+        doReturn(UrlBarData.forNonUrlText("query")).when(mDelegate).getUrlBarDataForCurrentInput();
+        session.getAutocompleteInput().setDisplayState(DisplayState.DRAFTING_NO_FOCUS);
+
+        mMediator.beginInput(session);
+
+        assertTextForAutofillServices("");
+    }
+
+    private void assertTextForAutofillServices(String expected) {
+        assertEquals(
+                expected,
+                mModel.get(UrlBarProperties.TEXT_STATE).textForAutofillServices.toString());
+    }
+
     private static SpannableStringBuilder spannable(String text) {
         return new SpannableStringBuilder(text);
     }
