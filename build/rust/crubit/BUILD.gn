@@ -5,6 +5,7 @@
 import("//build/config/c++/c++.gni")
 import("//build/rust/rust_api_from_cpp.gni")
 import("//build/rust/rust_static_library.gni")
+import("//build/toolchain/toolchain.gni")
 import("//build_overrides/crubit.gni")
 
 # Public C++ APIs provided by Crubit.
@@ -214,6 +215,19 @@ if (enable_rust_api_from_cpp) {
           "${crubit_src_dir}/support/cc_std_impl/vector.rs",
           "${crubit_src_dir}/support/cc_std_impl/vector_partial_eq.rs",
         ]
+
+        # TODO(https://crbug.com/588019925): Unconditionally include these in
+        # the CL that rolls Crubit past the addition of `variant*.rs` (ToT
+        # Crubit is built only when `rust_force_head_revision` is true; pinned
+        # Crubit does not yet contain these files).
+        if (rust_force_head_revision) {
+          sources += [
+            "${crubit_src_dir}/support/cc_std_impl/variant.rs",
+            "${crubit_src_dir}/support/cc_std_impl/variant_coproduct.rs",
+            "${crubit_src_dir}/support/cc_std_impl/variant_enums.rs",
+            "${crubit_src_dir}/support/cc_std_impl/variant_internal.rs",
+          ]
+        }
         mod = "std"
       },
     ]
