@@ -695,6 +695,9 @@ export class OmniboxEverywhereAppElement extends
 
   private onDemoted_() {
     this.isExpanded_ = false;
+    if (this.showVoiceSearchOverlay_) {
+      this.onVoiceSearchOverlayClose_();
+    }
     // Clear active element focus on demotion so Blink's `FocusController`
     // does not auto-restore `<input>` focus when `web_contents()->Focus()`
     // runs on `WM_ACTIVATE(WA_CLICKACTIVE)` before `WM_LBUTTONDOWN`.
@@ -795,6 +798,9 @@ export class OmniboxEverywhereAppElement extends
   private async onVisibilitychange_() {
     if (document.visibilityState !== 'visible') {
       this.impressionRecordedForSession_ = false;
+      if (this.showVoiceSearchOverlay_) {
+        this.onVoiceSearchOverlayClose_();
+      }
       return;
     }
 

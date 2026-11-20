@@ -17,6 +17,7 @@ import type {ContextualEntrypointButtonElement} from 'chrome://resources/cr_comp
 import {HelpBubbleArrowPosition} from 'chrome://resources/cr_components/help_bubble/help_bubble.mojom-webui.js';
 import {browserProxyFactory, MostVisitedPageHandlerRemote} from 'chrome://resources/cr_components/most_visited/most_visited.mojom-webui.js';
 import type {SearchAnimatedGlowElement} from 'chrome://resources/cr_components/search/animated_glow.js';
+import {AudioProcessorService} from 'chrome://resources/cr_components/search/audio_processor.service.js';
 import {GlowAnimationState} from 'chrome://resources/cr_components/search/constants.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
@@ -2648,6 +2649,7 @@ suite('OmniboxEverywhereAppTest', () => {
         assertTrue(voiceSearch.classList.contains('permission-prompt-showing'));
         assertTrue(glow.classList.contains('permission-prompt-showing'));
         assertTrue(app.classList.contains('has-permission-prompt'));
+        assertFalse(glow.isListening);
         assertEquals(
             '200px',
             app.style.getPropertyValue('--voice-search-minimum-height'));
@@ -2670,6 +2672,7 @@ suite('OmniboxEverywhereAppTest', () => {
             voiceSearch.classList.contains('permission-prompt-showing'));
         assertFalse(glow.classList.contains('permission-prompt-showing'));
         assertFalse(app.classList.contains('has-permission-prompt'));
+        assertTrue(glow.isListening);
         assertEquals(
             '', app.style.getPropertyValue('--voice-search-minimum-height'));
         assertEquals(
@@ -2722,6 +2725,7 @@ suite('OmniboxEverywhereAppTest', () => {
         assertTrue(voiceSearch.classList.contains('permission-prompt-showing'));
         assertTrue(glow.classList.contains('permission-prompt-showing'));
         assertTrue(app.classList.contains('has-permission-prompt'));
+        assertFalse(glow.isListening);
         assertEquals(
             '200px',
             app.style.getPropertyValue('--voice-search-minimum-height'));
@@ -2744,6 +2748,7 @@ suite('OmniboxEverywhereAppTest', () => {
             voiceSearch.classList.contains('permission-prompt-showing'));
         assertFalse(glow.classList.contains('permission-prompt-showing'));
         assertFalse(app.classList.contains('has-permission-prompt'));
+        assertTrue(glow.isListening);
         assertEquals(
             '', app.style.getPropertyValue('--voice-search-minimum-height'));
         assertEquals(
@@ -3030,6 +3035,7 @@ suite('OmniboxEverywhereAppTest', () => {
         assertTrue(voiceSearch.classList.contains('permission-prompt-showing'));
         assertTrue(glow.classList.contains('permission-prompt-showing'));
         assertTrue(app.classList.contains('has-permission-prompt'));
+        assertFalse(glow.isListening);
         assertEquals(
             '120px',
             app.style.getPropertyValue('--voice-search-minimum-height'));
@@ -3052,6 +3058,7 @@ suite('OmniboxEverywhereAppTest', () => {
             voiceSearch.classList.contains('permission-prompt-showing'));
         assertFalse(glow.classList.contains('permission-prompt-showing'));
         assertFalse(app.classList.contains('has-permission-prompt'));
+        assertTrue(glow.isListening);
         assertEquals(
             '', app.style.getPropertyValue('--voice-search-minimum-height'));
         assertEquals(
@@ -5616,5 +5623,194 @@ suite('OmniboxEverywhereContextMenuTest', () => {
         await microtasksFinished();
 
         assertFalse(omnibox.isOverflowMenuOpen);
+      });
+
+  test('onDemoted closes active voice search overlay', async () => {
+    const omnibox = app.shadowRoot.querySelector('omnibox-everywhere-omnibox');
+    assertTrue(!!omnibox);
+    omnibox.fire('open-voice-search');
+    await microtasksFinished();
+    assertTrue(!!app.shadowRoot.querySelector('#voiceSearchDialog'));
+
+    testEverywherePage.onDemoted();
+    await testEverywherePage.$.flushForTesting();
+    await microtasksFinished();
+
+    assertEquals(null, app.shadowRoot.querySelector('#voiceSearchDialog'));
+    assertFalse(app.hasAttribute('show-voice-search-overlay_'));
+  });
+
+  test(
+      'visibilitychange to hidden closes active voice search overlay',
+      async () => {
+        const omnibox =
+            app.shadowRoot.querySelector('omnibox-everywhere-omnibox');
+        assertTrue(!!omnibox);
+        omnibox.fire('open-voice-search');
+        await microtasksFinished();
+        assertTrue(!!app.shadowRoot.querySelector('#voiceSearchDialog'));
+
+        const originalDescriptor = Object.getOwnPropertyDescriptor(
+            Document.prototype, 'visibilityState');
+        Object.defineProperty(
+            document, 'visibilityState', {configurable: true, value: 'hidden'});
+        try {
+          document.dispatchEvent(new Event('visibilitychange'));
+          await microtasksFinished();
+          assertEquals(
+              null, app.shadowRoot.querySelector('#voiceSearchDialog'));
+          assertFalse(app.hasAttribute('show-voice-search-overlay_'));
+        } finally {
+          if (originalDescriptor) {
+            Object.defineProperty(
+                Document.prototype, 'visibilityState', originalDescriptor);
+          } else {
+            delete (document as {visibilityState?: string}).visibilityState;
+          }
+        }
+      });
+
+  test(
+      'exiting inVoiceSearchMode resets LISTENING animationState', async () => {
+        const omnibox =
+            app.shadowRoot.querySelector('omnibox-everywhere-omnibox');
+        assertTrue(!!omnibox);
+        omnibox.inVoiceSearchMode = true;
+        omnibox.animationState = GlowAnimationState.LISTENING;
+        await microtasksFinished();
+
+        omnibox.inVoiceSearchMode = false;
+        await microtasksFinished();
+
+        assertEquals(GlowAnimationState.NONE, omnibox.animationState);
+      });
+
+  test(
+      'AudioProcessorService ignores concurrent startMonitoringLevels and ' +
+          'stops stream cancelled while getUserMedia is pending',
+      async () => {
+        const originalGetUserMedia =
+            navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices);
+        let getUserMediaCalls = 0;
+        let resolveStream: (stream: MediaStream) => void = () => {};
+        const pendingStream = new Promise<MediaStream>((resolve) => {
+          resolveStream = resolve;
+        });
+
+        navigator.mediaDevices.getUserMedia = () => {
+          getUserMediaCalls++;
+          return pendingStream;
+        };
+
+        let stoppedTracks = 0;
+        const fakeStream = {
+          getTracks: () => [{
+            stop: () => {
+              stoppedTracks++;
+            },
+          }],
+        } as unknown as MediaStream;
+
+        try {
+          const service = new AudioProcessorService();
+          const firstStart = service.startMonitoringLevels();
+          const secondStart = service.startMonitoringLevels();
+          assertEquals(1, getUserMediaCalls);
+          assertFalse(await secondStart);
+
+          await service.stopListening();
+          resolveStream(fakeStream);
+          assertFalse(await firstStart);
+          assertEquals(1, stoppedTracks);
+        } finally {
+          navigator.mediaDevices.getUserMedia = originalGetUserMedia;
+        }
+      });
+
+  test(
+      'AudioProcessorService resets listening on error and isolates stale ' +
+          'session on rapid restart',
+      async () => {
+        const originalGetUserMedia =
+            navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices);
+        const OriginalAudioContext = window.AudioContext;
+        let callIndex = 0;
+        let resolveStaleStream: (stream: MediaStream) => void = () => {};
+        const staleStreamPromise = new Promise<MediaStream>((resolve) => {
+          resolveStaleStream = resolve;
+        });
+
+        let staleStopped = 0;
+        const staleStream = {
+          getTracks: () => [{
+            stop: () => {
+              staleStopped++;
+            },
+          }],
+        } as unknown as MediaStream;
+
+        let activeStopped = 0;
+        const activeStream = {
+          getTracks: () => [{
+            stop: () => {
+              activeStopped++;
+            },
+          }],
+        } as unknown as MediaStream;
+
+        window.AudioContext =
+            (class {
+              state = 'running';
+              resume() {
+                return Promise.resolve();
+              }
+              close() {
+                return Promise.resolve();
+              }
+              createAnalyser() {
+                return {
+                  fftSize: 0,
+                  smoothingTimeConstant: 0,
+                  frequencyBinCount: 512,
+                };
+              }
+              createMediaStreamSource() {
+                return {connect: () => {}, disconnect: () => {}};
+              }
+            }) as unknown as typeof AudioContext;
+
+        navigator.mediaDevices.getUserMedia = () => {
+          callIndex++;
+          if (callIndex === 1) {
+            return Promise.reject(new Error('denied'));
+          }
+          if (callIndex === 2) {
+            return staleStreamPromise;
+          }
+          return Promise.resolve(activeStream);
+        };
+
+        try {
+          const service = new AudioProcessorService();
+          // Error resets isListening so a subsequent call can start.
+          assertFalse(await service.startMonitoringLevels());
+
+          // Rapid restart: stale session resolves after new session starts.
+          const staleStart = service.startMonitoringLevels();
+          await service.stopListening();
+          const activeStart = service.startMonitoringLevels();
+          assertTrue(await activeStart);
+
+          resolveStaleStream(staleStream);
+          assertFalse(await staleStart);
+          assertEquals(1, staleStopped);
+          assertEquals(0, activeStopped);
+
+          await service.stopListening();
+          assertEquals(1, activeStopped);
+        } finally {
+          navigator.mediaDevices.getUserMedia = originalGetUserMedia;
+          window.AudioContext = OriginalAudioContext;
+        }
       });
 });
