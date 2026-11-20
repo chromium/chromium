@@ -14,6 +14,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.Process;
 import android.os.UserManager;
 
 import androidx.annotation.VisibleForTesting;
@@ -728,7 +729,11 @@ public abstract class ChildConnectionAllocator {
                 serviceName = fallbackServiceName;
                 fallbackServiceName = null;
             }
-            String instanceName = INSTANCE_NAME_PREFIX + Integer.toString(mNextInstance);
+            String instanceName =
+                    INSTANCE_NAME_PREFIX
+                            + Integer.toString(Process.myPid())
+                            + "_"
+                            + Integer.toString(mNextInstance);
             mNextInstance++;
             ChildProcessConnection connection =
                     mConnectionFactory.createConnection(
