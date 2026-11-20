@@ -39,7 +39,7 @@ class CORE_EXPORT InlineItemSegment {
   DISALLOW_NEW();
 
  public:
-  InlineItemSegment(unsigned end_offset, unsigned segment_data)
+  InlineItemSegment(unsigned end_offset, uint32_t segment_data)
       : end_offset_(end_offset), segment_data_(segment_data) {}
   InlineItemSegment(const RunSegmenter::RunSegmenterRange& range);
   InlineItemSegment(unsigned end_offset, const InlineItem& item);
@@ -64,13 +64,13 @@ class CORE_EXPORT InlineItemSegment {
   static constexpr unsigned kSegmentDataBits =
       kScriptBits + kFontFallbackPriorityBits + kRenderOrientationBits;
 
-  static unsigned PackSegmentData(const RunSegmenter::RunSegmenterRange& range);
+  static uint32_t PackSegmentData(const RunSegmenter::RunSegmenterRange& range);
   static RunSegmenter::RunSegmenterRange
-  UnpackSegmentData(unsigned start_offset, unsigned end_offset, unsigned value);
+  UnpackSegmentData(unsigned start_offset, unsigned end_offset, uint32_t value);
 
  private:
   unsigned end_offset_;
-  unsigned segment_data_ : kSegmentDataBits;
+  uint32_t segment_data_ : kSegmentDataBits;
 
   friend class InlineItemSegments;
 };

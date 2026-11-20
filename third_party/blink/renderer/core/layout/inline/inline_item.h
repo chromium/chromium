@@ -7,6 +7,8 @@
 
 #include <unicode/ubidi.h>
 
+#include <utility>
+
 #include "base/check_op.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_item_segment.h"
@@ -87,7 +89,7 @@ class CORE_EXPORT InlineItem final : public GarbageCollected<InlineItem> {
     return TextType() == TextItemType::kForcedLineBreak;
   }
   void SetTextType(TextItemType text_type) {
-    text_type_ = static_cast<unsigned>(text_type);
+    text_type_ = std::to_underlying(text_type);
   }
   bool IsFloatingOrOutOfFlowPositioned() const {
     return Type() == kFloating || Type() == kOutOfFlowPositioned;
@@ -187,7 +189,7 @@ class CORE_EXPORT InlineItem final : public GarbageCollected<InlineItem> {
   }
 
   void SetStyleVariant(StyleVariant style_variant) {
-    style_variant_ = static_cast<unsigned>(style_variant);
+    style_variant_ = std::to_underlying(style_variant);
   }
   StyleVariant GetStyleVariant() const {
     return static_cast<StyleVariant>(style_variant_);
@@ -294,17 +296,17 @@ class CORE_EXPORT InlineItem final : public GarbageCollected<InlineItem> {
   wtf_size_t index_ = 0;
 
   InlineItemType type_;
-  unsigned text_type_ : 3 = static_cast<unsigned>(TextItemType::kNormal);
-  unsigned style_variant_ : 2 = static_cast<unsigned>(StyleVariant::kStandard);
-  unsigned end_collapse_type_ : 2 = CollapseType::kNotCollapsible;
-  unsigned bidi_level_ : 8 = UBIDI_LTR;  // UBiDiLevel is defined as uint8_t.
+  uint32_t text_type_ : 3 = std::to_underlying(TextItemType::kNormal);
+  uint32_t style_variant_ : 2 = std::to_underlying(StyleVariant::kStandard);
+  uint32_t end_collapse_type_ : 2 = CollapseType::kNotCollapsible;
+  uint32_t bidi_level_ : 8 = UBIDI_LTR;  // UBiDiLevel is defined as uint8_t.
   // |segment_data_| is valid only for |type_ == InlineItem::kText|.
-  unsigned segment_data_ : InlineItemSegment::kSegmentDataBits = 0;
-  unsigned is_empty_item_ : 1 = false;
-  unsigned is_block_level_ : 1 = false;
-  unsigned is_end_collapsible_newline_ : 1 = false;
-  unsigned is_generated_for_line_break_ : 1 = false;
-  unsigned is_unsafe_to_reuse_shape_result_ : 1 = false;
+  uint32_t segment_data_ : InlineItemSegment::kSegmentDataBits = 0;
+  uint32_t is_empty_item_ : 1 = false;
+  uint32_t is_block_level_ : 1 = false;
+  uint32_t is_end_collapsible_newline_ : 1 = false;
+  uint32_t is_generated_for_line_break_ : 1 = false;
+  uint32_t is_unsafe_to_reuse_shape_result_ : 1 = false;
   friend class InlineNode;
   friend class InlineNodeDataEditor;
 };

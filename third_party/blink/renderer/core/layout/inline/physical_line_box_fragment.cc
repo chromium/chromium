@@ -49,7 +49,7 @@ PhysicalLineBoxFragment::PhysicalLineBoxFragment(
       metrics_(builder->metrics_) {
   // A line box must have a metrics unless it's an empty line box.
   DCHECK(!metrics_.IsEmpty() || IsEmptyLineBox());
-  base_direction_ = static_cast<unsigned>(builder->base_direction_);
+  base_direction_ = std::to_underlying(builder->base_direction_);
   has_hanging_ = builder->hang_inline_size_ != 0;
   has_propagated_descendants_ = has_floating_descendants_for_paint_ ||
                                 HasOutOfFlowPositionedDescendants() ||

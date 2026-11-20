@@ -61,7 +61,7 @@ struct CORE_EXPORT InlineNodeData final : InlineItemsData {
 
  private:
   void SetBaseDirection(TextDirection direction) {
-    base_direction_ = static_cast<unsigned>(direction);
+    base_direction_ = std::to_underlying(direction);
   }
 
   friend class InlineItemsBuilderTest;

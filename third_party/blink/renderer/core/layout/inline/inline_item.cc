@@ -18,7 +18,7 @@ struct SameSizeAsInlineItem {
   UntracedMember<void*> members[2];
   unsigned integers[3];
   uint8_t bytes[1];
-  unsigned bit_fields : 32;
+  uint32_t bit_fields : 32;
 };
 
 ASSERT_SIZE(InlineItem, SameSizeAsInlineItem);

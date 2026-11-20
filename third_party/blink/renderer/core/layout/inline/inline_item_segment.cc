@@ -54,19 +54,19 @@ InlineItemSegment::InlineItemSegment(unsigned end_offset,
                                      const InlineItem& item)
     : end_offset_(end_offset), segment_data_(item.SegmentData()) {}
 
-unsigned InlineItemSegment::PackSegmentData(
+uint32_t InlineItemSegment::PackSegmentData(
     const RunSegmenter::RunSegmenterRange& range) {
   DCHECK(range.script == USCRIPT_INVALID_CODE ||
          static_cast<unsigned>(range.script) <= kScriptMask);
-  DCHECK_LE(static_cast<unsigned>(range.font_fallback_priority),
+  DCHECK_LE(std::to_underlying(range.font_fallback_priority),
             kFontFallbackPriorityMask);
   DCHECK_LE(std::to_underlying(range.render_orientation),
             kRenderOrientationMask);
 
-  unsigned value =
+  uint32_t value =
       range.script != USCRIPT_INVALID_CODE ? range.script : kScriptMask;
   value <<= kFontFallbackPriorityBits;
-  value |= static_cast<unsigned>(range.font_fallback_priority);
+  value |= std::to_underlying(range.font_fallback_priority);
   value <<= kRenderOrientationBits;
   value |= std::to_underlying(range.render_orientation);
   return value;
@@ -75,12 +75,12 @@ unsigned InlineItemSegment::PackSegmentData(
 RunSegmenter::RunSegmenterRange InlineItemSegment::UnpackSegmentData(
     unsigned start_offset,
     unsigned end_offset,
-    unsigned value) {
-  unsigned render_orientation = value & kRenderOrientationMask;
+    uint32_t value) {
+  uint32_t render_orientation = value & kRenderOrientationMask;
   value >>= kRenderOrientationBits;
-  unsigned font_fallback_priority = value & kFontFallbackPriorityMask;
+  uint32_t font_fallback_priority = value & kFontFallbackPriorityMask;
   value >>= kFontFallbackPriorityBits;
-  unsigned script = value & kScriptMask;
+  uint32_t script = value & kScriptMask;
   return RunSegmenter::RunSegmenterRange{
       start_offset, end_offset,
       script != kScriptMask ? static_cast<UScriptCode>(script)

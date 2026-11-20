@@ -156,7 +156,7 @@ class CORE_EXPORT InlineLayoutAlgorithm final
 
   // True if in quirks or limited-quirks mode, which require line-height quirks.
   // https://quirks.spec.whatwg.org/#the-line-height-calculation-quirk
-  unsigned quirks_mode_ : 1;
+  uint32_t quirks_mode_ : 1;
 
   // Is text-fit:grow or text-fit:shrink workable?
   bool apply_text_fit_ = false;

@@ -5,13 +5,15 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_FALLBACK_PRIORITY_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_FALLBACK_PRIORITY_H_
 
+#include <stdint.h>
+
 namespace blink {
 
 // http://unicode.org/reports/tr51/#Presentation_Style discusses the differences
 // between emoji in text and the emoji in emoji presentation. In that sense, the
 // EmojiEmoji wording is taken from there.  Also compare
 // http://unicode.org/Public/emoji/1.0/emoji-data.txt
-enum class FontFallbackPriority {
+enum class FontFallbackPriority : uint32_t {
   // For regular non-symbols text,
   // normal text fallback in FontFallbackIterator
   kText,

@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/layout/inline/fragment_item.h"
 
 #include <optional>
+#include <utility>
 
 #include "base/debug/dump_without_crashing.h"
 #include "third_party/blink/renderer/core/editing/bidi_adjustment.h"
@@ -56,11 +57,11 @@ FragmentItem::FragmentItem(const InlineItem& inline_item,
       rect_({PhysicalOffset(), size}),
       layout_object_(inline_item.GetLayoutObject()),
       const_type_(kText),
-      sub_type_(static_cast<unsigned>(inline_item.TextType())),
-      style_variant_(static_cast<unsigned>(inline_item.GetStyleVariant())),
+      sub_type_(std::to_underlying(inline_item.TextType())),
+      style_variant_(std::to_underlying(inline_item.GetStyleVariant())),
       is_hidden_due_to_layout_(is_hidden_due_to_layout),
-      text_direction_(static_cast<unsigned>(inline_item.Direction())),
-      ink_overflow_type_(static_cast<unsigned>(InkOverflow::Type::kNotSet)),
+      text_direction_(std::to_underlying(inline_item.Direction())),
+      ink_overflow_type_(std::to_underlying(InkOverflow::Type::kNotSet)),
       is_dirty_(false),
       is_last_for_node_(true) {
   static_assert(std::to_underlying(ItemType::kMaxValue) <
@@ -92,11 +93,11 @@ FragmentItem::FragmentItem(const LayoutObject& layout_object,
       rect_({PhysicalOffset(), size}),
       layout_object_(&layout_object),
       const_type_(kGeneratedText),
-      sub_type_(static_cast<unsigned>(text_type)),
-      style_variant_(static_cast<unsigned>(style_variant)),
+      sub_type_(std::to_underlying(text_type)),
+      style_variant_(std::to_underlying(style_variant)),
       is_hidden_due_to_layout_(is_hidden_due_to_layout),
-      text_direction_(static_cast<unsigned>(direction)),
-      ink_overflow_type_(static_cast<unsigned>(InkOverflow::Type::kNotSet)),
+      text_direction_(std::to_underlying(direction)),
+      ink_overflow_type_(std::to_underlying(InkOverflow::Type::kNotSet)),
       is_dirty_(false),
       is_last_for_node_(true) {
   DCHECK(layout_object_);
@@ -124,11 +125,11 @@ FragmentItem::FragmentItem(const PhysicalLineBoxFragment& line)
       rect_({PhysicalOffset(), line.Size()}),
       layout_object_(line.ContainerLayoutObject()),
       const_type_(kLine),
-      sub_type_(static_cast<unsigned>(line.GetLineBoxType())),
-      style_variant_(static_cast<unsigned>(line.GetStyleVariant())),
+      sub_type_(std::to_underlying(line.GetLineBoxType())),
+      style_variant_(std::to_underlying(line.GetStyleVariant())),
       is_hidden_due_to_layout_(line.IsHiddenDueToLayout()),
-      text_direction_(static_cast<unsigned>(line.BaseDirection())),
-      ink_overflow_type_(static_cast<unsigned>(InkOverflow::Type::kNotSet)),
+      text_direction_(std::to_underlying(line.BaseDirection())),
+      ink_overflow_type_(std::to_underlying(InkOverflow::Type::kNotSet)),
       is_dirty_(false),
       is_last_for_node_(true) {
   DCHECK(!IsFormattingContextRoot());
@@ -140,11 +141,11 @@ FragmentItem::FragmentItem(const PhysicalSize& size,
       rect_({PhysicalOffset(), size}),
       layout_object_(base_line.ContainerLayoutObject()),
       const_type_(kLine),
-      sub_type_(static_cast<unsigned>(FragmentItem::LineBoxType::kRubyLineBox)),
-      style_variant_(static_cast<unsigned>(base_line.GetStyleVariant())),
+      sub_type_(std::to_underlying(FragmentItem::LineBoxType::kRubyLineBox)),
+      style_variant_(std::to_underlying(base_line.GetStyleVariant())),
       is_hidden_due_to_layout_(false),
-      text_direction_(static_cast<unsigned>(base_line.BaseDirection())),
-      ink_overflow_type_(static_cast<unsigned>(InkOverflow::Type::kNotSet)),
+      text_direction_(std::to_underlying(base_line.BaseDirection())),
+      ink_overflow_type_(std::to_underlying(InkOverflow::Type::kNotSet)),
       is_dirty_(false),
       is_last_for_node_(true) {
   DCHECK(!IsFormattingContextRoot());
@@ -156,10 +157,10 @@ FragmentItem::FragmentItem(const PhysicalBoxFragment& box,
       rect_({PhysicalOffset(), box.Size()}),
       layout_object_(box.GetLayoutObject()),
       const_type_(kBox),
-      style_variant_(static_cast<unsigned>(box.GetStyleVariant())),
+      style_variant_(std::to_underlying(box.GetStyleVariant())),
       is_hidden_due_to_layout_(box.IsHiddenDueToLayout()),
-      text_direction_(static_cast<unsigned>(resolved_direction)),
-      ink_overflow_type_(static_cast<unsigned>(InkOverflow::Type::kNotSet)),
+      text_direction_(std::to_underlying(resolved_direction)),
+      ink_overflow_type_(std::to_underlying(InkOverflow::Type::kNotSet)),
       is_dirty_(false),
       is_last_for_node_(true) {
   DCHECK_EQ(IsFormattingContextRoot(), box.IsFormattingContextRoot());
@@ -235,7 +236,7 @@ FragmentItem::FragmentItem(const FragmentItem& source)
       text_direction_(source.text_direction_),
       has_over_annotation_(source.has_over_annotation_),
       has_under_annotation_(source.has_under_annotation_),
-      ink_overflow_type_(static_cast<unsigned>(InkOverflow::Type::kNotSet)),
+      ink_overflow_type_(std::to_underlying(InkOverflow::Type::kNotSet)),
       is_dirty_(source.is_dirty_),
       is_last_for_node_(source.is_last_for_node_) {
   switch (Type()) {
@@ -256,7 +257,7 @@ FragmentItem::FragmentItem(const FragmentItem& source)
   }
 
   if (source.IsInkOverflowComputed()) {
-    ink_overflow_type_ = static_cast<unsigned>(source.InkOverflowType());
+    ink_overflow_type_ = std::to_underlying(source.InkOverflowType());
     new (&ink_overflow_)
         InkOverflow(source.InkOverflowType(), source.ink_overflow_);
   }
@@ -990,7 +991,7 @@ PhysicalRect FragmentItem::LocalVisualRectFor(
 
 void FragmentItem::InvalidateInkOverflow() {
   ink_overflow_type_ =
-      static_cast<unsigned>(ink_overflow_.Invalidate(InkOverflowType()));
+      std::to_underlying(ink_overflow_.Invalidate(InkOverflowType()));
 }
 
 PhysicalRect FragmentItem::RecalcInkOverflowForCursor(
@@ -1047,7 +1048,7 @@ void FragmentItem::RecalcInkOverflow(const InlineCursor& cursor,
     if (paint_info.shape_result) {
       if (const TextFragmentRareData* svg_data = GetSvgFragmentData()) {
         ink_overflow_type_ =
-            static_cast<unsigned>(ink_overflow_.SetSvgTextInkOverflow(
+            std::to_underlying(ink_overflow_.SetSvgTextInkOverflow(
                 InkOverflowType(), cursor, paint_info, Style(), svg_data->rect,
                 SvgScalingFactor(), svg_data->length_adjust_scale,
                 BuildSvgTransformForBoundingBox(), self_and_contents_rect_out));
@@ -1057,16 +1058,15 @@ void FragmentItem::RecalcInkOverflow(const InlineCursor& cursor,
       // supported for SVG.
       InlinePaintContext::ScopedInlineItem scoped_inline_item(*this,
                                                               inline_context);
-      ink_overflow_type_ =
-          static_cast<unsigned>(ink_overflow_.SetTextInkOverflow(
-              InkOverflowType(), cursor, paint_info, Style(),
-              RectInContainerFragment(), inline_context,
-              self_and_contents_rect_out));
+      ink_overflow_type_ = std::to_underlying(ink_overflow_.SetTextInkOverflow(
+          InkOverflowType(), cursor, paint_info, Style(),
+          RectInContainerFragment(), inline_context,
+          self_and_contents_rect_out));
       return;
     }
 
     ink_overflow_type_ =
-        static_cast<unsigned>(ink_overflow_.Reset(InkOverflowType()));
+        std::to_underlying(ink_overflow_.Reset(InkOverflowType()));
     *self_and_contents_rect_out = LocalRect();
     return;
   }
@@ -1124,7 +1124,7 @@ void FragmentItem::RecalcInkOverflow(const InlineCursor& cursor,
           const PhysicalRect self_rect =
               UnionRect(LocalRect(), *first_line_overflow);
           *self_and_contents_rect_out = UnionRect(self_rect, contents_rect);
-          ink_overflow_type_ = static_cast<unsigned>(ink_overflow_.Set(
+          ink_overflow_type_ = std::to_underlying(ink_overflow_.Set(
               InkOverflowType(), self_rect, contents_rect, Size()));
           return;
         }
@@ -1133,7 +1133,7 @@ void FragmentItem::RecalcInkOverflow(const InlineCursor& cursor,
     // Line boxes without painted `::first-line` decorations don't have self
     // overflow. Compute content overflow only.
     *self_and_contents_rect_out = UnionRect(LocalRect(), contents_rect);
-    ink_overflow_type_ = static_cast<unsigned>(
+    ink_overflow_type_ = std::to_underlying(
         ink_overflow_.SetContents(InkOverflowType(), contents_rect, Size()));
     return;
   }
