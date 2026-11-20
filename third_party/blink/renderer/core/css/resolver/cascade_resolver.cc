@@ -19,9 +19,9 @@ void CascadeResolver::CycleNode::Trace(blink::Visitor* visitor) const {
 }
 
 bool CascadeResolver::AllowSubstitution(CSSVariableData* data) const {
-  if (data && data->IsAnimationTainted() && stack_.size()) {
+  if (data && data->IsAnimationTainted()) {
     const CSSProperty* property = CurrentProperty();
-    if (IsA<CustomProperty>(*property)) {
+    if (!property || IsA<CustomProperty>(*property)) {
       return true;
     }
     // Internal properties are always animation-affecting, but the

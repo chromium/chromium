@@ -260,3 +260,8 @@ Nested calc evaluation test
 {"input": [calc(calc(10px)),calc(calc(1em + 10px)),calc(calc(calc(10px)))]}
 {"results":["10px","15px","10px"]}
 
+Running test: testAnimation
+Test resolveValues for animation
+{"input": [--f(),var(--a)]}
+{"results":["0","0"]}
+

@@ -270,6 +270,10 @@
     async function testNestedCalc() {
       testRunner.log('Nested calc evaluation test');
       await testResolveValues('.inner', ["calc(calc(10px))", "calc(calc(1em + 10px))", "calc(calc(calc(10px)))"], "width");
+    },
+    async function testAnimation() {
+      testRunner.log('Test resolveValues for animation');
+      await testResolveValues('.animated', ["--f()", "var(--a)"], "opacity");
     }
   ]);
 });

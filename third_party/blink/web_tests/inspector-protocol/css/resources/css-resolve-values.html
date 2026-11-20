@@ -59,6 +59,18 @@
     width: 30px;
     height: 30px;
   }
+  .animated {
+    animation: a forwards;
+    opacity: --f();
+  }
+  @keyframes a {
+    to {
+      --a: 0
+    }
+  }
+  @function --f() {
+    result: var(--a);
+  }
 </style>
 
 <body>
@@ -66,4 +78,5 @@
     <div class="inner" data-foo="13px">test</div>
   </div>
   <div class="display-none">test</div>
+  <div class="animated">test</div>
 </body>
