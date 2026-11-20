@@ -38,7 +38,8 @@ source_set("unit_tests") {
   deps = [
     ":wm",
     "//base",
-    "//chrome/test:test_support",
+    "//chrome/browser/extensions:test_support",
+    "//chrome/test/base:testing_profile",
     "//chromeos/ash/experiences/extensions/common/api",
     "//components/crx_file",
     "//content/public/browser",

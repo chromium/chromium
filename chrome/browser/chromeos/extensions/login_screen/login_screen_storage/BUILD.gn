@@ -36,7 +36,6 @@ source_set("browser_tests") {
     "//base",
     "//chrome/browser/policy:extension_force_install_mixin",
     "//chrome/common:constants",
-    "//chrome/test:test_support",
     "//components/policy/core/browser",
     "//components/policy/core/common:test_support",
     "//content/test:test_support",
@@ -54,7 +53,7 @@ source_set("unit_tests") {
   deps = [
     ":login_screen_storage",
     "//base",
-    "//chrome/test:test_support",
+    "//chrome/browser/extensions:test_support",
     "//chromeos/ash/components/dbus/session_manager",
     "//extensions:test_support",
     "//extensions/common",

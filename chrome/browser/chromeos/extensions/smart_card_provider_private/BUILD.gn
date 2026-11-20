@@ -29,8 +29,15 @@ source_set("browser_tests") {
 
   deps = [
     ":smart_card_provider_private",
+    "//base/test:test_support",
     "//chrome/browser",
-    "//chrome/test:test_support",
+    "//chrome/browser/extensions:test_support",
+    "//chrome/test/base:ui_test_utils",
     "//chromeos/ash/experiences/extensions/common/api",
+    "//content/test:test_support",
+    "//extensions:test_support",
+    "//extensions/browser:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
   ]
 }

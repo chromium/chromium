@@ -35,7 +35,7 @@ source_set("browser_tests") {
     "//chrome/browser:browser_process",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/file_system_provider",
-    "//chrome/test:test_support",
+    "//chrome/browser/extensions:test_support",
     "//content/test:test_support",
     "//ui/message_center",
   ]

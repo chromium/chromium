@@ -57,7 +57,6 @@ source_set("unit_tests") {
     "//chrome/browser/ash/browser_delegate:impl",
     "//chrome/browser/renderer_context_menu:mock_test_support",
     "//chrome/browser/sharing",
-    "//chrome/test:test_support",
     "//chrome/test/base:browser_with_test_window_test",
     "//chromeos/ash/experiences/arc:arc_test_support",
     "//chromeos/ash/experiences/arc/intent_helper",

@@ -49,7 +49,6 @@ source_set("browser_tests") {
     "//chrome/browser/policy:extension_force_install_mixin",
     "//chrome/browser/profiles:profile",
     "//chrome/common:constants",
-    "//chrome/test:test_support",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/settings:test_support",
     "//chromeos/components/kiosk:test_support",

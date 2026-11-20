@@ -77,14 +77,16 @@ source_set("test_support") {
     "fake_api_guard_delegate.cc",
     "fake_api_guard_delegate.h",
   ]
-
+  public_deps = [ "//chrome/browser/extensions:test_support" ]
   deps = [
     ":common",
     "//base",
-    "//chrome/test:test_support",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/test/base:ui_test_utils",
     "//content/public/browser",
     "//extensions:test_support",
     "//net",
+    "//net:test_support",
     "//testing/gtest",
     "//third_party/abseil-cpp:absl",
   ]
@@ -149,7 +151,6 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser/extensions:test_support",
     "//chrome/common/chromeos/extensions",
-    "//chrome/test:test_support",
     "//chrome/test/base:browser_with_test_window_test",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/mojo_service_manager:test_support",
@@ -157,6 +158,7 @@ source_set("unit_tests") {
     "//components/sync_preferences:test_support",
     "//components/user_manager",
     "//content/public/browser",
+    "//extensions:test_support",
     "//extensions/common",
     "//testing/gtest",
   ]

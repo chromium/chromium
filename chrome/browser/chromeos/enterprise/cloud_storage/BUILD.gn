@@ -68,7 +68,6 @@ source_set("browser_tests") {
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/common:constants",
-    "//chrome/test:test_support",
     "//chromeos/ash/experiences/extensions/common/api",
     "//chromeos/constants",
     "//components/keyed_service/content",
@@ -78,6 +77,8 @@ source_set("browser_tests") {
     "//components/services/app_service",
     "//content/test:browsertest_support",
     "//content/test:test_support",
+    "//extensions:test_support",
+    "//extensions/browser:test_support",
     "//testing/gtest",
   ]
 }
