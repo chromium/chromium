@@ -5845,6 +5845,10 @@
       status: "stable",
     },
     {
+      name: "SvgImageDeferShutdown",
+      status: "stable",
+    },
+    {
       name: "SvgInlineRootPixelSnappingScaleAdjustment",
       status: "test",
     },

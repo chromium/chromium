@@ -62,6 +62,7 @@ class CORE_EXPORT SVGImageChromeClient final : public IsolatedSVGChromeClient {
       scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner);
 
   SVGImage* GetImage() const { return image_; }
+  void DetachImage();
 
   void SuspendAnimation();
   void ResumeAnimation();
@@ -86,7 +87,7 @@ class CORE_EXPORT SVGImageChromeClient final : public IsolatedSVGChromeClient {
   TimerBase& GetTimerForTesting() const { return animation_timer_->Value(); }
   void AnimationTimerFired(TimerBase*);
 
-  SVGImage* image_;
+  raw_ptr<SVGImage, kUnprotectedInRelease> image_;
   Member<DisallowNewWrapper<HeapTaskRunnerTimer<SVGImageChromeClient>>>
       animation_timer_;
   enum {
