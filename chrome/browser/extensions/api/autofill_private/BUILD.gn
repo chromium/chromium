@@ -31,6 +31,7 @@ source_set("autofill_private") {
     "//chrome/browser/search_engines",
     "//chrome/browser/sync",
     "//chrome/browser/ui/user_education",
+    "//chrome/browser/ui/webui/settings",
     "//chrome/common/extensions/api",
     "//components/autofill/content/browser",
     "//components/autofill/core/browser",

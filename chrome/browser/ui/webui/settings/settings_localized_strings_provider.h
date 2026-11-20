@@ -5,7 +5,9 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_SETTINGS_LOCALIZED_STRINGS_PROVIDER_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_SETTINGS_LOCALIZED_STRINGS_PROVIDER_H_
 
+#include <optional>
 #include <string>
+#include <string_view>
 
 #include "build/build_config.h"
 
@@ -24,6 +26,10 @@ namespace settings {
 void AddLocalizedStrings(content::WebUIDataSource* html_source,
                          Profile* profile,
                          content::WebContents* web_contents);
+
+// Returns the GRD resource ID for an Autofill localized string name (as exposed
+// to `loadTimeData` in Settings), or `std::nullopt` if `name` is not found.
+std::optional<int> GetAutofillLocalizedStringId(std::string_view name);
 
 void AddAutofillStringsForTesting(content::WebUIDataSource* html_source,
                                   Profile* profile,

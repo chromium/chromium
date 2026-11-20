@@ -5,6 +5,10 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_AUTOFILL_PRIVATE_AUTOFILL_PRIVATE_API_H_
 #define CHROME_BROWSER_EXTENSIONS_API_AUTOFILL_PRIVATE_AUTOFILL_PRIVATE_API_H_
 
+#include <optional>
+#include <string>
+
+#include "base/containers/span.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/one_time_tokens/core/browser/user_data_processing_consent_states.h"
 #include "components/prefs/pref_service.h"
@@ -489,10 +493,12 @@ class AutofillPrivateAddOrUpdateEntityInstanceFunction
 
  private:
   // Helper to initiate an asynchronous save request of a private pass
-  // `entity_instance` through the Wallet API. Returns true if the async request
-  // was started, false otherwise.
-  bool TrySavePrivatePassWithWalletAPI(
-      const autofill::EntityInstance& entity_instance);
+  // `entity_instance` through the Wallet API. Returns a `ResponseAction` if the
+  // async request was started or on failed validation, otherwise `std::nullopt`
+  // if the Wallet API is unavailable.
+  std::optional<ResponseAction> TrySavePrivatePassWithWalletAPI(
+      const autofill::EntityInstance& entity_instance,
+      base::span<const std::string> consent_string_names);
 
   // Callback for the WalletPassAccessManager::SaveWalletEntityInstance request
   // for private passes.

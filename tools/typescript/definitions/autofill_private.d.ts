@@ -312,6 +312,7 @@ declare global {
         storedInWallet?: boolean;
         isReadOnly?: boolean;
         contextToken?: string;
+        consentStringNames?: string[];
       }
 
       export interface EntityInstanceWithLabels {

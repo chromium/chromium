@@ -56,7 +56,9 @@
 #include "components/one_time_tokens/core/browser/user_data_processing_consent_states.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/strings/grit/components_branded_strings.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync/protocol/user_consent_types.pb.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/wallet/core/browser/network/wallet_http_client.h"
 #include "components/wallet/core/browser/walletable_permission_utils.h"
@@ -788,6 +790,11 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiSavePrivatePassToWalletTest,
       extensions::autofill_ai_util::EntityInstanceToPrivateApiEntityInstance(
           entity_instance, "en-US", /*entity_supports_wallet_storage=*/true);
   api_entity.stored_in_wallet = true;
+  // LINT.IfChange(WalletPrivatePassConsentStrings)
+  api_entity.consent_string_names =
+      std::vector<std::string>{"googleWalletTitle", "autofillAiManageYourInfo",
+                               "saveInfoToWalletSettingsAccountNotice"};
+  // LINT.ThenChange(//chrome/browser/resources/settings/autofill_page/autofill_ai_add_or_edit_dialog.ts:WalletPrivatePassConsentStrings)
 
   base::ListValue args;
   args.Append(api_entity.ToValue());
@@ -798,8 +805,9 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiSavePrivatePassToWalletTest,
   // to the Wallet API.
   consent_auditor::ConsentAuditor::SessionId session_id_consent;
   consent_auditor::ConsentAuditor::SessionId session_id_api;
+  sync_pb::UserConsentTypes::WalletPrivatePassConsent consent;
   EXPECT_CALL(consent_auditor(), RecordWalletPrivatePassConsent)
-      .WillOnce(SaveArg<1>(&session_id_consent));
+      .WillOnce(DoAll(SaveArg<1>(&session_id_consent), SaveArg<2>(&consent)));
   EXPECT_CALL(wallet_manager(), SaveWalletEntityInstance)
       .WillOnce(DoAll(SaveArg<1>(&session_id_api),
                       RunOnceCallback<2>(autofill::test::MaskEntityInstance(
@@ -818,6 +826,12 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiSavePrivatePassToWalletTest,
   autofill::EntityDataChangedWaiter(entity_data_manager).Wait();
 
   EXPECT_EQ(session_id_consent, session_id_api);
+  EXPECT_THAT(
+      consent.description_grd_ids(),
+      ElementsAre(IDS_AUTOFILL_GOOGLE_WALLET_TITLE,
+                  IDS_AUTOFILL_MANAGE_YOUR_INFO_LINK,
+                  IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_NEW));
+  EXPECT_EQ(consent.confirmation_grd_id(), IDS_SAVE);
   base::optional_ref<const EntityInstance> saved_entity =
       entity_data_manager->GetEntityInstance(entity_instance.guid());
   ASSERT_TRUE(saved_entity.has_value());
@@ -833,6 +847,8 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiSavePrivatePassToWalletTest,
       extensions::autofill_ai_util::EntityInstanceToPrivateApiEntityInstance(
           entity_instance, "en-US", /*entity_supports_wallet_storage=*/true);
   api_entity.stored_in_wallet = true;
+  api_entity.consent_string_names =
+      std::vector<std::string>{"saveInfoToWalletSettingsAccountNotice"};
 
   base::ListValue args;
   args.Append(api_entity.ToValue());
@@ -859,6 +875,64 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiSavePrivatePassToWalletTest,
 
   // The API should have saved the entity locally.
   EXPECT_EQ(saved_entity->record_type(), EntityInstance::RecordType::kLocal);
+}
+
+// Tests that saving a private pass to Wallet fails and does not fall back to a
+// local save when `consent_string_names` is empty.
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiSavePrivatePassToWalletTest,
+                       AddPassport_FailsWhenConsentStringNamesEmpty) {
+  EntityInstance entity_instance = autofill::test::GetPassportEntityInstance(
+      {.record_type = EntityInstance::RecordType::kServerWallet});
+  extensions::api::autofill_private::EntityInstance api_entity =
+      extensions::autofill_ai_util::EntityInstanceToPrivateApiEntityInstance(
+          entity_instance, "en-US", /*entity_supports_wallet_storage=*/true);
+  api_entity.stored_in_wallet = true;
+
+  EXPECT_CALL(consent_auditor(), RecordWalletPrivatePassConsent).Times(0);
+  EXPECT_CALL(wallet_manager(), SaveWalletEntityInstance).Times(0);
+
+  auto function = base::MakeRefCounted<
+      extensions::AutofillPrivateAddOrUpdateEntityInstanceFunction>();
+  function->SetRenderFrameHost(GetActiveWebContents()->GetPrimaryMainFrame());
+
+  EXPECT_FALSE(extensions::api_test_utils::RunFunctionAndReturnError(
+                   function.get(),
+                   base::ListValue().Append(api_entity.ToValue()), profile())
+                   .empty());
+  EXPECT_FALSE(autofill_client()
+                   ->GetEntityDataManager()
+                   ->GetEntityInstance(entity_instance.guid())
+                   .has_value());
+}
+
+// Tests that saving a private pass to Wallet fails and does not fall back to a
+// local save when `consent_string_names` contains an unknown string name.
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiSavePrivatePassToWalletTest,
+                       AddPassport_FailsWhenConsentStringNamesInvalid) {
+  EntityInstance entity_instance = autofill::test::GetPassportEntityInstance(
+      {.record_type = EntityInstance::RecordType::kServerWallet});
+  extensions::api::autofill_private::EntityInstance api_entity =
+      extensions::autofill_ai_util::EntityInstanceToPrivateApiEntityInstance(
+          entity_instance, "en-US", /*entity_supports_wallet_storage=*/true);
+  api_entity.stored_in_wallet = true;
+  api_entity.consent_string_names =
+      std::vector<std::string>{"unknownStringName"};
+
+  EXPECT_CALL(consent_auditor(), RecordWalletPrivatePassConsent).Times(0);
+  EXPECT_CALL(wallet_manager(), SaveWalletEntityInstance).Times(0);
+
+  auto function = base::MakeRefCounted<
+      extensions::AutofillPrivateAddOrUpdateEntityInstanceFunction>();
+  function->SetRenderFrameHost(GetActiveWebContents()->GetPrimaryMainFrame());
+
+  EXPECT_FALSE(extensions::api_test_utils::RunFunctionAndReturnError(
+                   function.get(),
+                   base::ListValue().Append(api_entity.ToValue()), profile())
+                   .empty());
+  EXPECT_FALSE(autofill_client()
+                   ->GetEntityDataManager()
+                   ->GetEntityInstance(entity_instance.guid())
+                   .has_value());
 }
 
 class AutofillPrivateApiPublicPassTest : public AutofillPrivateApiBrowserTest {

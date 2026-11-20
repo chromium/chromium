@@ -13,6 +13,7 @@
 #include <utility>
 
 #include "base/base64.h"
+#include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -34,6 +35,7 @@
 #include "chrome/browser/extensions/api/autofill_private/autofill_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
+#include "chrome/browser/ui/webui/settings/settings_localized_strings_provider.h"
 #include "chrome/common/extensions/api/autofill_private.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
@@ -1254,10 +1256,17 @@ AutofillPrivateAddOrUpdateEntityInstanceFunction::Run() {
   if (GetWalletPassType(entity_instance->type(),
                         entity_instance->record_type()) ==
       EntityInstance::WalletPassType::kPrivate) {
-    // If the request is successfully started, the callback will handle the
-    // response.
-    if (TrySavePrivatePassWithWalletAPI(*entity_instance)) {
-      return RespondLater();
+    base::span<const std::string> consent_string_names =
+        private_api_entity_instance.consent_string_names
+            ? base::span<const std::string>(
+                  *private_api_entity_instance.consent_string_names)
+            : base::span<const std::string>();
+    // If a Wallet save is possible, return the response action directly;
+    // otherwise fall back to a local save.
+    if (std::optional<ResponseAction> response =
+            TrySavePrivatePassWithWalletAPI(*entity_instance,
+                                            consent_string_names)) {
+      return std::move(*response);
     }
 
     SavePrivatePassLocallyAndNotifyAsFallback(*edm,
@@ -1291,15 +1300,18 @@ AutofillPrivateAddOrUpdateEntityInstanceFunction::Run() {
   return RespondNow(NoArguments());
 }
 
-bool AutofillPrivateAddOrUpdateEntityInstanceFunction::
-    TrySavePrivatePassWithWalletAPI(const EntityInstance& entity_instance) {
+std::optional<ExtensionFunction::ResponseAction>
+AutofillPrivateAddOrUpdateEntityInstanceFunction::
+    TrySavePrivatePassWithWalletAPI(
+        const EntityInstance& entity_instance,
+        base::span<const std::string> consent_string_names) {
   if (!base::FeatureList::IsEnabled(
           autofill::features::kAutofillAiWalletPrivatePasses)) {
-    return false;
+    return std::nullopt;
   }
 
   if (!autofill_client()) {
-    return false;
+    return std::nullopt;
   }
 
   if (autofill::WalletPassAccessManager* pass_manager =
@@ -1309,11 +1321,25 @@ bool AutofillPrivateAddOrUpdateEntityInstanceFunction::
     consent_auditor::ConsentAuditor::SessionId session_id;
     if (base::FeatureList::IsEnabled(
             wallet::features::kWalletApiPrivatePassesConsent)) {
-      // Sadly, the string IDs are hardcoded here, because the TypeScript code
-      // only has access to the strings themselves, not their IDs.
+      if (consent_string_names.empty()) {
+        return RespondNow(
+            Error(base::StrCat({"Add or update entity instance - ",
+                                kErrorAutofillAiInvalidData})));
+      }
+      std::vector<int> consent_string_ids;
+      consent_string_ids.reserve(consent_string_names.size());
+      for (const std::string& name : consent_string_names) {
+        std::optional<int> grd_id =
+            settings::GetAutofillLocalizedStringId(name);
+        if (!grd_id.has_value()) {
+          return RespondNow(
+              Error(base::StrCat({"Add or update entity instance - ",
+                                  kErrorAutofillAiInvalidData})));
+        }
+        consent_string_ids.push_back(*grd_id);
+      }
       session_id = autofill::RecordWalletPrivatePassConsent(
-          /*accepted_consent_string_ids=*/
-          {IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_NEW},
+          consent_string_ids,
           /*accept_button_string_id=*/IDS_SAVE,
           *autofill_client()->GetConsentAuditor(),
           *autofill_client()->GetIdentityManager());
@@ -1323,10 +1349,10 @@ bool AutofillPrivateAddOrUpdateEntityInstanceFunction::
         base::BindOnce(&AutofillPrivateAddOrUpdateEntityInstanceFunction::
                            OnSavePrivatePassToWalletFinished,
                        base::RetainedRef(this), entity_instance));
-    return true;
+    return RespondLater();
   }
 
-  return false;
+  return std::nullopt;
 }
 
 void AutofillPrivateAddOrUpdateEntityInstanceFunction::

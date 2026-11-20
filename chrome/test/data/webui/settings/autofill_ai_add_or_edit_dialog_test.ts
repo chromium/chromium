@@ -108,6 +108,11 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
     ];
     entityDataManager.setGetAllAttributeTypesForEntityTypeNameResponse(
         testAttributeTypes);
+    entityDataManager.setGetAccountInfoResponse({
+      email: 'test@example.com',
+      isSyncEnabledForAutofillProfiles: true,
+      isEligibleForAddressAccountStorage: true,
+    });
 
     dialog = document.createElement('settings-autofill-ai-add-or-edit-dialog');
   });
@@ -230,10 +235,13 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
           // and only when new entities.
           if (params.add && testEntityInstance.type.supportsWalletStorage) {
             if (params.enableWalletDisclosureNotice) {
-              expectedEntityInstance.storedInWallet =
-                  !!params.upsertPassDetails;
-              expectedEntityInstance.contextToken =
-                  params.upsertPassDetails?.contextToken;
+              if (params.upsertPassDetails) {
+                expectedEntityInstance.storedInWallet = true;
+                expectedEntityInstance.contextToken =
+                    params.upsertPassDetails.contextToken;
+              } else {
+                expectedEntityInstance.storedInWallet = false;
+              }
             } else {
               expectedEntityInstance.storedInWallet = true;
             }
@@ -659,6 +667,157 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
       assertFalse(
           img.srcset.includes('IDR_AUTOFILL_GOOGLE_WALLET_WITH_GRADIENT'));
     }
+  });
+
+  interface ConsentStringNamesParamsInterface {
+    // Whether `enableAutofillAiWalletPrivatePasses` is enabled.
+    enableAutofillAiWalletPrivatePasses: boolean;
+    // The pass type of the entity being added.
+    passType: chrome.autofillPrivate.EntityPassType;
+    // Whether the entity type supports Wallet storage.
+    supportsWalletStorage: boolean;
+    // The expected `consentStringNames` on the saved entity, or undefined if
+    // it should be left unset.
+    expectedConsentStringNames?: string[];
+    // The title of the test.
+    title: string;
+  }
+
+  const consentStringNamesParams: ConsentStringNamesParamsInterface[] = [
+    // Tests that saving a new private pass to Wallet records the settings
+    // account notice strings when `enableAutofillAiWalletPrivatePasses` is on.
+    {
+      enableAutofillAiWalletPrivatePasses: true,
+      passType: chrome.autofillPrivate.EntityPassType.PRIVATE_PASS,
+      supportsWalletStorage: true,
+      expectedConsentStringNames: [
+        'googleWalletTitle',
+        'autofillAiManageYourInfo',
+        'saveInfoToWalletSettingsAccountNotice',
+      ],
+      title: 'ConsentStringNames_NewPrivatePass_WalletPrivatePassesEnabled',
+    },
+    // Tests that saving a new private pass to Wallet records the legacy account
+    // notice strings when `enableAutofillAiWalletPrivatePasses` is off.
+    {
+      enableAutofillAiWalletPrivatePasses: false,
+      passType: chrome.autofillPrivate.EntityPassType.PRIVATE_PASS,
+      supportsWalletStorage: true,
+      expectedConsentStringNames: [
+        'googleWalletTitle',
+        'saveInfoToWalletAccountNotice',
+      ],
+      title: 'ConsentStringNames_NewPrivatePass_WalletPrivatePassesDisabled',
+    },
+    // Tests that saving a new public pass to Wallet omits `consentStringNames`
+    // because public passes use `contextToken` instead.
+    {
+      enableAutofillAiWalletPrivatePasses: true,
+      passType: chrome.autofillPrivate.EntityPassType.PUBLIC_PASS,
+      supportsWalletStorage: true,
+      title: 'ConsentStringNames_NewPublicPass',
+    },
+    // Tests that saving a local-only private pass omits `consentStringNames`.
+    {
+      enableAutofillAiWalletPrivatePasses: true,
+      passType: chrome.autofillPrivate.EntityPassType.PRIVATE_PASS,
+      supportsWalletStorage: false,
+      title: 'ConsentStringNames_LocalSave',
+    },
+  ];
+
+  consentStringNamesParams.forEach(
+      (params) => test(params.title, async function() {
+        loadTimeData.overrideValues({
+          enableAutofillAiWalletPrivatePasses:
+              params.enableAutofillAiWalletPrivatePasses,
+          enableWalletDisclosureNoticePublicPass: false,
+        });
+
+        // Recreate the dialog after overriding `loadTimeData` since
+        // `enableSavePrivatePassesToWallet_` is read on construction.
+        dialog =
+            document.createElement('settings-autofill-ai-add-or-edit-dialog');
+        const newEntity = structuredClone(testEntityInstance);
+        newEntity.guid = '';
+        newEntity.type.passType = params.passType;
+        newEntity.type.supportsWalletStorage = params.supportsWalletStorage;
+        dialog.entityInstance = newEntity;
+        document.body.appendChild(dialog);
+
+        await Promise.all([
+          entityDataManager.whenCalled('getAllAttributeTypesForEntityTypeName'),
+          entityDataManager.whenCalled(
+              'getRequiredAttributeTypesForEntityTypeName'),
+          entityDataManager.whenCalled('getAccountInfo'),
+        ]);
+        await microtasksFinished();
+
+        const footer = dialog.shadowRoot.querySelector<HTMLElement>('#footer');
+        assertTrue(!!footer);
+        assertFalse(footer.hidden);
+
+        const saveButton =
+            dialog.shadowRoot.querySelector<HTMLElement>('.action-button');
+        assertTrue(!!saveButton);
+        const dialogConfirmedPromise =
+            eventToPromise<CustomEvent<chrome.autofillPrivate.EntityInstance>>(
+                'autofill-ai-add-or-edit-done', dialog);
+        saveButton.click();
+
+        const dialogConfirmedEvent = await dialogConfirmedPromise;
+        await microtasksFinished();
+
+        assertEquals(
+            params.supportsWalletStorage,
+            dialogConfirmedEvent.detail.storedInWallet);
+        assertDeepEquals(
+            params.expectedConsentStringNames,
+            dialogConfirmedEvent.detail.consentStringNames);
+      }));
+
+  // Tests that a Wallet-eligible private pass falls back to a local save
+  // without `consentStringNames` when no account email is available.
+  test('PrivatePass_WithoutEmail_SavesLocally', async function() {
+    loadTimeData.overrideValues({
+      enableAutofillAiWalletPrivatePasses: true,
+    });
+    entityDataManager.setGetAccountInfoResponse(undefined);
+
+    dialog = document.createElement('settings-autofill-ai-add-or-edit-dialog');
+    const newEntity = structuredClone(testEntityInstance);
+    newEntity.guid = '';
+    newEntity.type.passType =
+        chrome.autofillPrivate.EntityPassType.PRIVATE_PASS;
+    newEntity.type.supportsWalletStorage = true;
+    dialog.entityInstance = newEntity;
+    document.body.appendChild(dialog);
+
+    await Promise.all([
+      entityDataManager.whenCalled('getAllAttributeTypesForEntityTypeName'),
+      entityDataManager.whenCalled(
+          'getRequiredAttributeTypesForEntityTypeName'),
+      entityDataManager.whenCalled('getAccountInfo'),
+    ]);
+    await microtasksFinished();
+
+    const footer = dialog.shadowRoot.querySelector<HTMLElement>('#footer');
+    assertTrue(!!footer);
+    assertTrue(footer.hidden);
+
+    const saveButton =
+        dialog.shadowRoot.querySelector<HTMLElement>('.action-button');
+    assertTrue(!!saveButton);
+    const dialogConfirmedPromise =
+        eventToPromise<CustomEvent<chrome.autofillPrivate.EntityInstance>>(
+            'autofill-ai-add-or-edit-done', dialog);
+    saveButton.click();
+
+    const dialogConfirmedEvent = await dialogConfirmedPromise;
+    await microtasksFinished();
+
+    assertFalse(dialogConfirmedEvent.detail.storedInWallet!);
+    assertEquals(undefined, dialogConfirmedEvent.detail.consentStringNames);
   });
 });
 

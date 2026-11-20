@@ -442,6 +442,9 @@ namespace autofillPrivate {
     boolean? isReadOnly;
     // The context token for upserting a pass to Google Wallet.
     DOMString? contextToken;
+    // The i18n string names of the Wallet notice shown to the user when saving
+    // a private pass to Google Wallet.
+    DOMString[]? consentStringNames;
   };
 
   // Contains the minimum amount of information needed to display an entity
