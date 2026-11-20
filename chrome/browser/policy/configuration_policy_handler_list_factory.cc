@@ -3561,6 +3561,17 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       std::to_underlying(
           extensions::IsolatedModeUserInstalledExtensionsSetting::kMaxValue),
       /*clamp=*/false));
+  handlers->AddHandler(std::make_unique<IntRangePolicyHandler>(
+      key::kIsolatedModeForceInstalledExtensionsSettings,
+      extensions::pref_names::kIsolatedModeForceInstalledExtensionsSettings,
+      /*min=*/
+      std::to_underlying(
+          extensions::IsolatedModeForceInstalledExtensionsSetting::
+              kAlwaysEnabled),
+      /*max=*/
+      std::to_underlying(
+          extensions::IsolatedModeForceInstalledExtensionsSetting::kMaxValue),
+      /*clamp=*/false));
   handlers->AddHandler(std::make_unique<ExtensionDeveloperModePolicyHandler>());
   handlers->AddHandler(
       std::make_unique<enterprise_reporting::ExtensionRequestPolicyHandler>());

@@ -148,6 +148,13 @@ inline constexpr char
 inline constexpr char kIsolatedModeUserInstalledExtensionsSettings[] =
     "extensions.isolated_mode_user_installed_extensions_settings";
 
+// Integer pref that specifies the behavior for force-installed extensions in
+// Enterprise Isolated Mode. Controlled by the
+// IsolatedModeForceInstalledExtensionsSettings policy. Values are defined by
+// the `IsolatedModeForceInstalledExtensionsSetting` enum.
+inline constexpr char kIsolatedModeForceInstalledExtensionsSettings[] =
+    "extensions.isolated_mode_force_installed_extensions_settings";
+
 // Properties in kExtensions dictionaries --------------------------------------
 
 // The time at which the extension was installed, used to record the time to

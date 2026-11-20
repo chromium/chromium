@@ -2368,6 +2368,10 @@ void ExtensionPrefs::RegisterProfilePrefs(
       pref_names::kIsolatedModeUserInstalledExtensionsSettings,
       std::to_underlying(
           IsolatedModeUserInstalledExtensionsSetting::kEnabledByDefault));
+  registry->RegisterIntegerPref(
+      pref_names::kIsolatedModeForceInstalledExtensionsSettings,
+      std::to_underlying(
+          IsolatedModeForceInstalledExtensionsSetting::kAlwaysEnabled));
 }
 
 template <class ExtensionIdContainer>

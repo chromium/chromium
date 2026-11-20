@@ -2702,6 +2702,7 @@ chromium-metrics-reviews@google.com.
   <int value="1497" label="IsolatedModeUserInstalledExtensionsSettings"/>
   <int value="1498" label="SystemTitleBarEnabled"/>
   <int value="1499" label="SearchFromDesktopEnabled"/>
+  <int value="1500" label="IsolatedModeForceInstalledExtensionsSettings"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

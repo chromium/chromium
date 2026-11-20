@@ -1498,6 +1498,7 @@ policies:
   1497: IsolatedModeUserInstalledExtensionsSettings
   1498: SystemTitleBarEnabled
   1499: SearchFromDesktopEnabled
+  1500: IsolatedModeForceInstalledExtensionsSettings
 
 atomic_groups:
   1: Homepage

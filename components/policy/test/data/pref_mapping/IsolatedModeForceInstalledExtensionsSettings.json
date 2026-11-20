@@ -1,0 +1,19 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos",
+      "desktop_android"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "extensions.isolated_mode_force_installed_extensions_settings",
+      "default_value": 0,
+      "values_to_test": [
+        0,
+        1
+      ]
+    }
+  }
+]

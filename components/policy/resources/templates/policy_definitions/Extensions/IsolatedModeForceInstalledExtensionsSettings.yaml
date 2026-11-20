@@ -1,0 +1,42 @@
+caption: Control force-installed extension behavior in Isolated Mode
+default: 0
+desc: |-
+  Specifies the behavior for force-installed extensions in Isolated Mode.
+
+  This applies to extensions configured via <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME">ExtensionInstallForcelist</ph> or with <ph name="INSTALLATION_MODE_FIELD">"installation_mode"</ph> set to <ph name="FORCE_INSTALLED_VALUE">"force_installed"</ph> in <ph name="EXTENSION_SETTINGS_POLICY_NAME">ExtensionSettings</ph>. Extensions configured with <ph name="INSTALLATION_MODE_FIELD">"installation_mode"</ph> set to <ph name="NORMAL_INSTALLED_VALUE">"normal_installed"</ph> are controlled by <ph name="ISOLATED_MODE_USER_INSTALLED_EXTENSIONS_SETTINGS_POLICY_NAME">IsolatedModeUserInstalledExtensionsSettings</ph>.
+
+  If set to 0 (always enabled) or left unset, force-installed extensions are always enabled in Isolated Mode and cannot be disabled by the user.
+
+  If set to 1 (enabled by default), force-installed extensions are enabled by default in Isolated Mode and can be disabled by the user. The user's choice takes precedence while the policy remains set to 1. Outside of Isolated Mode, the user still cannot disable force-installed extensions.
+
+  Extensions that set <ph name="INCOGNITO_MANIFEST_KEY">"incognito"</ph> to <ph name="INCOGNITO_NOT_ALLOWED_VALUE">"not_allowed"</ph> in their manifest cannot run in Isolated Mode regardless of this policy.
+
+  This policy only takes effect when <ph name="ISOLATED_MODE_SETTINGS_POLICY_NAME">IsolatedModeSettings</ph> is enabled.
+
+  This policy requires a <ph name="CHROME_ENTERPRISE_PREMIUM_NAME">Chrome Enterprise Premium</ph> license to take effect.
+example_value: 1
+features:
+  cloud_only: true
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- chrome.*
+- chrome_os
+- android
+items:
+- caption: Force-installed extensions are always enabled in Isolated Mode and cannot be disabled
+  name: AlwaysEnabled
+  value: 0
+- caption: Force-installed extensions are enabled by default in Isolated Mode and can be disabled
+  name: EnabledByDefault
+  value: 1
+owners:
+- janzarzycki@google.com
+- file://components/enterprise/isolated_mode/OWNERS
+schema:
+  enum:
+  - 0
+  - 1
+  type: integer
+tags: []
+type: int-enum

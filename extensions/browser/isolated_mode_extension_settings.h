@@ -19,6 +19,17 @@ enum class IsolatedModeUserInstalledExtensionsSetting {
   kMaxValue = kBlocked,
 };
 
+// Values for the `pref_names::kIsolatedModeForceInstalledExtensionsSettings`
+// preference and `IsolatedModeForceInstalledExtensionsSettings` policy.
+//
+// Please note that the integer values must match
+// IsolatedModeForceInstalledExtensionsSettings.yaml and must not be renumbered.
+enum class IsolatedModeForceInstalledExtensionsSetting {
+  kAlwaysEnabled = 0,
+  kEnabledByDefault = 1,
+  kMaxValue = kEnabledByDefault,
+};
+
 }  // namespace extensions
 
 #endif  // EXTENSIONS_BROWSER_ISOLATED_MODE_EXTENSION_SETTINGS_H_
