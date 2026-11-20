@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include "base/containers/flat_set.h"
+#include "base/i18n/language_tag.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_expected_support.h"
@@ -41,7 +42,9 @@ using i18n_model_definition::kLegacyHierarchyCountryCode;
 using ::testing::IsEmpty;
 using ::testing::Not;
 
-const char kLocale[] = "en-US";
+constexpr char kLocale[] = "en-US";
+constexpr base::i18n::LanguageTag kLocaleTag =
+    base::i18n::GetKnownLanguageTag(kLocale);
 
 class AutofillProfileComparatorTest : public testing::Test {
  public:
@@ -907,7 +910,7 @@ TEST_F(AutofillProfileComparatorTest,
   // values.
   EXPECT_FALSE(
       AutofillProfileComparator::ProfilesHaveDifferentSettingsVisibleValues(
-          existing_profile, existing_profile, kLocale));
+          existing_profile, existing_profile, kLocaleTag));
 
   // Test for most settings visible types that a change is correctly recognized.
   for (FieldType changed_type :
@@ -917,7 +920,7 @@ TEST_F(AutofillProfileComparatorTest,
     AutofillProfile new_profile = existing_profile;
     EXPECT_FALSE(
         AutofillProfileComparator::ProfilesHaveDifferentSettingsVisibleValues(
-            existing_profile, new_profile, kLocale));
+            existing_profile, new_profile, kLocaleTag));
 
     // Change one of the settings visible values and test that the function
     // returns true.
@@ -926,7 +929,7 @@ TEST_F(AutofillProfileComparatorTest,
         changed_type, existing_profile.GetRawInfo(changed_type) + u"_edited");
     EXPECT_TRUE(
         AutofillProfileComparator::ProfilesHaveDifferentSettingsVisibleValues(
-            existing_profile, new_profile, kLocale));
+            existing_profile, new_profile, kLocaleTag));
   }
 
   AutofillProfile new_profile = existing_profile;
@@ -937,7 +940,7 @@ TEST_F(AutofillProfileComparatorTest,
       NAME_FIRST, base::ToUpperASCII(existing_profile.GetRawInfo(NAME_FIRST)));
   EXPECT_FALSE(
       AutofillProfileComparator::ProfilesHaveDifferentSettingsVisibleValues(
-          existing_profile, new_profile, kLocale));
+          existing_profile, new_profile, kLocaleTag));
 }
 
 // Tests that JP profiles that differ only in the character set used for
@@ -970,7 +973,7 @@ TEST_F(AutofillProfileComparatorTest,
 
   EXPECT_FALSE(
       AutofillProfileComparator::ProfilesHaveDifferentSettingsVisibleValues(
-          existing_profile, new_profile, kLocale));
+          existing_profile, new_profile, kLocaleTag));
 }
 
 // Tests that settings-visible differences are detected when both profiles have
@@ -991,7 +994,7 @@ TEST_F(AutofillProfileComparatorTest,
   gb_profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"GB");
   EXPECT_TRUE(
       AutofillProfileComparator::ProfilesHaveDifferentSettingsVisibleValues(
-          at_profile, gb_profile, kLocale));
+          at_profile, gb_profile, kLocaleTag));
 }
 
 // Tests that settings-visible differences are detected when profiles have
@@ -1015,14 +1018,14 @@ TEST_F(AutofillProfileComparatorTest,
             at_profile.GetUserVisibleTypes());
   EXPECT_TRUE(
       AutofillProfileComparator::ProfilesHaveDifferentSettingsVisibleValues(
-          countryless_profile, at_profile, kLocale));
+          countryless_profile, at_profile, kLocaleTag));
 
   at_profile.SetRawInfo(EMAIL_ADDRESS, u"user@example.com");
   at_profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"+43 660 1234567");
   at_profile.SetRawInfo(COMPANY_NAME, u"Example GmbH");
   EXPECT_TRUE(
       AutofillProfileComparator::ProfilesHaveDifferentSettingsVisibleValues(
-          countryless_profile, at_profile, kLocale));
+          countryless_profile, at_profile, kLocaleTag));
 }
 
 // Tests that settings-visible differences are detected when profiles have
@@ -1046,7 +1049,7 @@ TEST_F(AutofillProfileComparatorTest,
             gb_profile.GetUserVisibleTypes());
   EXPECT_TRUE(
       AutofillProfileComparator::ProfilesHaveDifferentSettingsVisibleValues(
-          countryless_profile, gb_profile, kLocale));
+          countryless_profile, gb_profile, kLocaleTag));
 }
 
 TEST_F(AutofillProfileComparatorTest, GetProfileDifference) {
@@ -1073,7 +1076,7 @@ TEST_F(AutofillProfileComparatorTest, GetProfileDifference) {
   // There should be no difference in NAME_FULL type.
   EXPECT_TRUE(
       AutofillProfileComparator::GetProfileDifference(
-          existing_profile, second_existing_profile, {NAME_FULL}, kLocale)
+          existing_profile, second_existing_profile, {NAME_FULL}, kLocaleTag)
           .empty());
 
   // But there should be difference in ADDRESS_HOME_ZIP type.
@@ -1082,7 +1085,7 @@ TEST_F(AutofillProfileComparatorTest, GetProfileDifference) {
 
   EXPECT_EQ(AutofillProfileComparator::GetProfileDifference(
                 existing_profile, second_existing_profile, {ADDRESS_HOME_ZIP},
-                kLocale),
+                kLocaleTag),
             expected_difference);
 }
 
@@ -1129,7 +1132,7 @@ TEST_F(AutofillProfileComparatorTest, GetDifferentCountriesProfileDifference) {
   // There should be no difference in NAME_FULL type.
   EXPECT_THAT(
       AutofillProfileComparator::GetProfileDifference(
-          existing_profile, second_existing_profile, {NAME_FULL}, kLocale),
+          existing_profile, second_existing_profile, {NAME_FULL}, kLocaleTag),
       IsEmpty());
 
   // But there should be a difference in the ADDRESS_HOME_ZIP type.
@@ -1139,7 +1142,7 @@ TEST_F(AutofillProfileComparatorTest, GetDifferentCountriesProfileDifference) {
 
   EXPECT_EQ(AutofillProfileComparator::GetProfileDifference(
                 existing_profile, second_existing_profile,
-                {ALTERNATIVE_FULL_NAME}, kLocale),
+                {ALTERNATIVE_FULL_NAME}, kLocaleTag),
             expected_difference);
 }
 
@@ -1165,7 +1168,7 @@ TEST_F(AutofillProfileComparatorTest, GetSettingsVisibleProfileDifference) {
 
   // There should be no difference in the profiles.
   EXPECT_TRUE(AutofillProfileComparator::GetSettingsVisibleProfileDifference(
-                  existing_profile, second_existing_profile, kLocale)
+                  existing_profile, second_existing_profile, kLocaleTag)
                   .empty());
 
   // Change the zip code of the second profile and test the difference.
@@ -1173,7 +1176,7 @@ TEST_F(AutofillProfileComparatorTest, GetSettingsVisibleProfileDifference) {
   std::vector<ProfileValueDifference> expected_difference = {
       {ADDRESS_HOME_ZIP, u"zip", u"another_zip"}};
   EXPECT_EQ(AutofillProfileComparator::GetSettingsVisibleProfileDifference(
-                existing_profile, second_existing_profile, kLocale),
+                existing_profile, second_existing_profile, kLocaleTag),
             expected_difference);
 
   // Change a second value and check the expectations.
@@ -1182,7 +1185,7 @@ TEST_F(AutofillProfileComparatorTest, GetSettingsVisibleProfileDifference) {
       expected_difference.begin(),
       ProfileValueDifference{ADDRESS_HOME_CITY, u"city", u"another_city"});
   EXPECT_EQ(AutofillProfileComparator::GetSettingsVisibleProfileDifference(
-                existing_profile, second_existing_profile, kLocale),
+                existing_profile, second_existing_profile, kLocaleTag),
             expected_difference);
 }
 

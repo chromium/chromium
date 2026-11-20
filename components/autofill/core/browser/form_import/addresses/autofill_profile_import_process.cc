@@ -370,8 +370,7 @@ ProfileImportProcess::GetImportCandidates(
         // updates are applied silently.
         const bool raw_values_differ = AutofillProfileComparator::
             ProfilesHaveDifferentSettingsVisibleValues(
-                *candidate, merged_profile,
-                std::string(app_locale_.tag_string()));
+                *candidate, merged_profile, app_locale_);
         const bool has_setting_visible_change =
             raw_values_differ &&
             (!base::FeatureList::IsEnabled(
@@ -706,8 +705,7 @@ int ProfileImportProcess::CollectedEditedTypeHistograms() const {
   // Compute the number of edited settings-visible fields.
   std::vector<ProfileValueDifference> edit_difference =
       AutofillProfileComparator::GetSettingsVisibleProfileDifference(
-          *import_candidate_, *confirmed_import_candidate_,
-          std::string(app_locale_.tag_string()));
+          *import_candidate_, *confirmed_import_candidate_, app_locale_);
   // Log edited types.
   for (const ProfileValueDifference& difference : edit_difference) {
     autofill_metrics::LogProfileImportTypeEditedType(import_type(),
@@ -754,8 +752,7 @@ void ProfileImportProcess::LogConfirmableProfileUpdateMetrics(
   // Those are covered separately below.
   const std::vector<ProfileValueDifference> merge_difference =
       AutofillProfileComparator::GetSettingsVisibleProfileDifference(
-          import_candidate_.value(), merge_candidate_.value(),
-          std::string(app_locale_.tag_string()));
+          import_candidate_.value(), merge_candidate_.value(), app_locale_);
 
   for (const auto& difference : merge_difference) {
     autofill_metrics::LogProfileUpdateAffectedType(difference.type,
@@ -771,8 +768,7 @@ void ProfileImportProcess::LogHomeAndWorkSupersetMetrics() const {
   // Log the types that triggered the prompt.
   for (const ProfileValueDifference& difference :
        AutofillProfileComparator::GetSettingsVisibleProfileDifference(
-           import_candidate_.value(), merge_candidate_.value(),
-           std::string(app_locale_.tag_string()))) {
+           import_candidate_.value(), merge_candidate_.value(), app_locale_)) {
     autofill_metrics::LogHomeAndWorkSupersetAffectedType(difference.type);
   }
 }

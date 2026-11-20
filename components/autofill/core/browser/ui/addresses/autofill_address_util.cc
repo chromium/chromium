@@ -315,7 +315,7 @@ std::vector<ProfileValueDifference> GetProfileDifferenceForUi(
           first_profile, second_profile,
           {NAME_FULL, ALTERNATIVE_FULL_NAME, EMAIL_ADDRESS,
            PHONE_HOME_WHOLE_NUMBER},
-          std::string(app_locale.tag_string()));
+          app_locale);
 
   // ADDRESS_HOME_ADDRESS is handled separately.
   std::u16string first_address = GetEnvelopeStyleAddress(

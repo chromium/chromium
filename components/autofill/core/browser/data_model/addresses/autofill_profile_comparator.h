@@ -21,6 +21,10 @@
 #include "components/autofill/core/browser/data_model/addresses/phone_number.h"
 #include "components/autofill/core/browser/field_types.h"
 
+namespace base::i18n {
+class LanguageTag;
+}  // namespace base::i18n
+
 namespace autofill {
 
 struct ProfileValueDifference {
@@ -74,7 +78,7 @@ class AutofillProfileComparator {
   static bool ProfilesHaveDifferentSettingsVisibleValues(
       const AutofillProfile& p1,
       const AutofillProfile& p2,
-      const std::string& app_locale);
+      const base::i18n::LanguageTag& app_locale);
 
   // Get the difference in 'types' of two profiles. The difference is determined
   // with respect to the provided `app_locale`.
@@ -82,14 +86,15 @@ class AutofillProfileComparator {
       const AutofillProfile& first_profile,
       const AutofillProfile& second_profile,
       FieldTypeSet types,
-      const std::string& app_locale);
+      const base::i18n::LanguageTag& app_locale);
 
   // Get the difference of two profiles for settings-visible values.
   // The difference is determined with respect to the provided `app_locale`.
   static std::vector<ProfileValueDifference>
-  GetSettingsVisibleProfileDifference(const AutofillProfile& first_profile,
-                                      const AutofillProfile& second_profile,
-                                      const std::string& app_locale);
+  GetSettingsVisibleProfileDifference(
+      const AutofillProfile& first_profile,
+      const AutofillProfile& second_profile,
+      const base::i18n::LanguageTag& app_locale);
 
   // Merges the email addresses in `new_profile` and `old_profile`. Returns an
   // `EmailInfo` on success or `std::nullopt` if the merge fails.

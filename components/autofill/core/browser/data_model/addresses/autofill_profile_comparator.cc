@@ -17,6 +17,7 @@
 #include "base/check_op.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
+#include "base/i18n/language_tag.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/string_split.h"
@@ -63,14 +64,15 @@ AutofillProfileComparator::GetProfileDifference(
     const AutofillProfile& first_profile,
     const AutofillProfile& second_profile,
     FieldTypeSet types,
-    const std::string& app_locale) {
+    const base::i18n::LanguageTag& app_locale) {
   std::vector<ProfileValueDifference> difference;
   difference.reserve(types.size());
 
   for (auto type : types) {
-    const std::u16string& first_value = first_profile.GetInfo(type, app_locale);
+    const std::u16string& first_value =
+        first_profile.GetInfo(type, app_locale.tag_string());
     const std::u16string& second_value =
-        second_profile.GetInfo(type, app_locale);
+        second_profile.GetInfo(type, app_locale.tag_string());
     if (first_value != second_value) {
       difference.emplace_back(
           ProfileValueDifference{type, first_value, second_value});
@@ -83,7 +85,7 @@ std::vector<ProfileValueDifference>
 AutofillProfileComparator::GetSettingsVisibleProfileDifference(
     const AutofillProfile& first_profile,
     const AutofillProfile& second_profile,
-    const std::string& app_locale) {
+    const base::i18n::LanguageTag& app_locale) {
   FieldTypeSet types = first_profile.GetUserVisibleTypes();
   types.insert_all(second_profile.GetUserVisibleTypes());
   return GetProfileDifference(first_profile, second_profile, types, app_locale);
@@ -444,7 +446,7 @@ AutofillProfileComparator::NonMergeableSettingVisibleTypes(
 bool AutofillProfileComparator::ProfilesHaveDifferentSettingsVisibleValues(
     const AutofillProfile& p1,
     const AutofillProfile& p2,
-    const std::string& app_locale) {
+    const base::i18n::LanguageTag& app_locale) {
   FieldTypeSet visible_types = p1.GetUserVisibleTypes();
   visible_types.insert_all(p2.GetUserVisibleTypes());
   // Return true if at least one value corresponding to the settings visible
@@ -462,7 +464,8 @@ bool AutofillProfileComparator::ProfilesHaveDifferentSettingsVisibleValues(
              p2.GetNameInfo().GetValueForComparisonForType(type,
                                                            common_country_code);
     }
-    return p1.GetInfo(type, app_locale) != p2.GetInfo(type, app_locale);
+    return p1.GetInfo(type, app_locale.tag_string()) !=
+           p2.GetInfo(type, app_locale.tag_string());
   });
 }
 
