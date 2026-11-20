@@ -185,16 +185,16 @@ TEST(ProxySpecificationUtilTest, InvalidProxyUriToProxyServer) {
   const char* const tests[] = {
       "",
       "   ",
-      "dddf:",         // not a valid port
-      "dddd:d",        // not a valid port
-      "http://",       // not a valid host/port.
-      "direct://",     // direct is not a valid proxy server.
-      "http:/",        // ambiguous, but will fail because of bad port.
-      "http:",         // ambiguous, but will fail because of bad port.
-      "foopy.111",     // Interpreted as invalid IPv4 address.
-      "foo.test/"      // Paths disallowed.
-      "foo.test:123/"  // Paths disallowed.
-      "foo.test/foo"   // Paths disallowed.
+      "dddf:",          // not a valid port
+      "dddd:d",         // not a valid port
+      "http://",        // not a valid host/port.
+      "direct://",      // direct is not a valid proxy server.
+      "http:/",         // ambiguous, but will fail because of bad port.
+      "http:",          // ambiguous, but will fail because of bad port.
+      "foopy.111",      // Interpreted as invalid IPv4 address.
+      "foo.test/",      // Paths disallowed.
+      "foo.test:123/",  // Paths disallowed.
+      "foo.test/foo",   // Paths disallowed.
   };
 
   for (const char* test : tests) {

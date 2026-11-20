@@ -526,7 +526,7 @@ INSTANTIATE_TEST_SUITE_P(
                     // OWSes are trimmed.
                     " text/html   ",
                     "\ttext/html \t",
-                    "text/html ; charset=iso-8859-1"
+                    "text/html ; charset=iso-8859-1",
                     // Non-standard multiple type/subtype listing using a comma
                     // as a separator is accepted.
                     "text/html,text/plain",
