@@ -529,6 +529,11 @@
       { start: "2025-04-11", domain: "microsoft.com" },
     ]
   },
+  "roshan@chromium.org": {
+    affiliations: [
+      { start: "2026-09-28", domain: "Individual" },
+    ]
+  },
   "rsesek@chromium.org": {
     affiliations: [
       { start: "2024-09-04", domain: "Undisclosed" },
