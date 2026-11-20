@@ -7248,12 +7248,6 @@ void AXObject::UpdateChildrenIfNecessary() {
     return;
   }
 
-  // A loop up the stack is walking children_. Leave them dirty, so a later call
-  // rebuilds them.
-  if (children_guarded_) {
-    return;
-  }
-
   if (AXObjectCache().IsFrozen()) {
     // TODO(crbug.com/500793607): Investigate and convert to CHECK.
     DCHECK(!AXObjectCache().IsFrozen())
@@ -7439,14 +7433,10 @@ void AXObject::ClearChildren() {
       << this;
 #endif
 
-  // A loop up the stack is walking children_ to detach or remove them.
-  // Clearing them here would free the vector under that loop.
-  if (children_guarded_) {
-    return;
-  }
-
   // Detach included children from their parent (this).
-  for (const auto& child : GuardedCachedChildrenIncludingIgnored()) {
+  AXObjectVector children;
+  children.swap(children_);
+  for (const auto& child : children) {
     // Check parent first, as the child might be several levels down if there
     // are unincluded nodes in between, in which case the cached parent will
     // also be a descendant (unlike children_, parent_ does not skip levels).
@@ -7456,8 +7446,6 @@ void AXObject::ClearChildren() {
       child->DetachFromParentNoNotify();
     }
   }
-
-  children_.clear();
 
   // Detaching the children can remove |this|.
   if (IsDetached()) {

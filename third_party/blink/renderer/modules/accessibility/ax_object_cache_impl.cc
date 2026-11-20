@@ -1999,8 +1999,8 @@ void AXObjectCacheImpl::RemoveIncludedSubtree(AXObject* object,
 
   {
     base::AutoReset<bool> in_remove_subtree(&in_remove_subtree_, true);
-    for (const auto& ax_child :
-         object->GuardedCachedChildrenIncludingIgnored()) {
+    AXObject::AXObjectVector children(object->CachedChildrenIncludingIgnored());
+    for (const auto& ax_child : children) {
       RemoveIncludedSubtree(ax_child, /*remove_root=*/true);
     }
     // Removing the children can remove |object|.
@@ -2112,22 +2112,39 @@ void AXObjectCacheImpl::RemoveSubtreeInternal(
 
   // When removing children, use the cached children to avoid creating a child
   // just to destroy it.
-  for (AXObject* ax_included_child :
-       object->GuardedCachedChildrenIncludingIgnored()) {
-    if (ax_included_child->ParentObjectIfPresent() != object) {
-      continue;
+  if (ui::CanHaveInlineTextBoxChildren(object->RoleValue())) {
+    // Inline textboxes are leaves with no node of their own, so removing one
+    // cannot change |object|'s children. Walk them without a copy.
+    for (AXObject* child : object->CachedChildrenIncludingIgnored()) {
+      DCHECK(child->IsAXInlineTextBox());
+      if (child->ParentObjectIfPresent() == object) {
+        Remove(child, /* notify_parent */ false);
+      }
     }
-    if (ui::CanHaveInlineTextBoxChildren(object->RoleValue())) {
-      // Just remove child inline textboxes, don't use their node which is the
-      // same as that static text's parent and would cause an infinite loop.
-      Remove(ax_included_child, /* notify_parent */ false);
-    } else if (ax_included_child->GetNode()) {
-      DCHECK(ax_included_child->GetNode() != node);
-      RemoveSubtreeInternal(ax_included_child->GetNode(),
-                            /* remove_root */ true,
-                            /* notify_parent */ false, removing_subtree_axids);
-    } else {
-      RemoveIncludedSubtree(ax_included_child, /* remove_root */ true);
+  } else {
+    // Removing these children can clear or rebuild |object|'s children, so
+    // walk a copy. The DOM walk above already removed light-DOM children, so
+    // only copy the ones still parented by |object|.
+    AXObject::AXObjectVector children_to_remove;
+    for (AXObject* child : object->CachedChildrenIncludingIgnored()) {
+      if (child->ParentObjectIfPresent() == object) {
+        children_to_remove.push_back(child);
+      }
+    }
+    for (AXObject* ax_included_child : children_to_remove) {
+      // An earlier removal can detach or reparent a later child.
+      if (ax_included_child->ParentObjectIfPresent() != object) {
+        continue;
+      }
+      if (ax_included_child->GetNode()) {
+        DCHECK(ax_included_child->GetNode() != node);
+        RemoveSubtreeInternal(ax_included_child->GetNode(),
+                              /* remove_root */ true,
+                              /* notify_parent */ false,
+                              removing_subtree_axids);
+      } else {
+        RemoveIncludedSubtree(ax_included_child, /* remove_root */ true);
+      }
     }
   }
 
