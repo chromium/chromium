@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import sys
+
 import pytest
 from anys import ANY_DICT, ANY_STR
 from test_helpers import (
@@ -1072,6 +1074,10 @@ async def test_preloadScript_channel_respectContexts(
 
 
 @pytest.mark.asyncio
+@pytest.mark.skipif(
+    sys.platform == "darwin",
+    reason="TODO(crbug.com/588204757): Flaky on macOS.",
+)
 async def test_preloadScript_channel_rapid_messages_before_navigation(
     websocket, context_id, html, read_messages
 ):
