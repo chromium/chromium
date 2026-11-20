@@ -175,10 +175,10 @@ inline auto Unretained(raw_ref<T, Traits>&& o) {
 //
 //   class MyClass {
 //     public:
-//       DoSomething(HandlerClass* handler);
+//       void DoSomething(HandlerClass* handler);
 //     private:
-//       void MyClass::DoSomethingInternal(HandlerClass::Id id,
-//                                         HandlerClass* handler);
+//       void DoSomethingInternal(HandlerClass::Id id,
+//                                MayBeDangling<HandlerClass> handler);
 //
 //       std::unordered_map<HandlerClass::Id, HandlerClass*> handlers_;
 //       scoped_refptr<base::SequencedTaskRunner> runner_;
@@ -189,10 +189,10 @@ inline auto Unretained(raw_ref<T, Traits>&& o) {
 //          base::BindOnce(&MyClass::DoSomethingInternal,
 //                         base::Unretained(this),
 //                         handler->id(),
-//                         base::Unretained(handler)));
+//                         base::UnsafeDangling(handler)));
 //   }
 //   void MyClass::DoSomethingInternal(HandlerClass::Id id,
-//                                     HandlerClass* handler) {
+//                                     MayBeDangling<HandlerClass> handler) {
 //     base::AutoLock locker(lock_);
 //     if (handlers_.find(id) == std::end(handlers_)) return;
 //     // Now we can use `handler`.
