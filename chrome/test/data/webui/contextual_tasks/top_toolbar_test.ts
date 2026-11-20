@@ -59,6 +59,7 @@ suite('TopToolbarTest', () => {
     ToolbarBrowserProxyImpl.setInstance(toolbarProxy);
     loadTimeData.overrideValues({
       contextManagementInComposeboxEnabled: false,
+      contextualTasksDogfoodFeedbackEnabled: false,
       contextualTasksEnableSpatialModelToolbarLayout: false,
       contextualTasksEnableSpatialModelToolbarLayoutNewThreadInOverflow: false,
       contextualTasksUnboundedMenuEnabled: false,
@@ -1709,6 +1710,54 @@ suite('TopToolbarTest', () => {
       assertEquals(
           2,
           metrics.count('ContextualTasks.WebUI.AccountMenuButton.Shown', true));
+    });
+  });
+
+  suite('Dogfood feedback', () => {
+    async function createTopToolbar(dogfoodFeedbackEnabled: boolean) {
+      loadTimeData.overrideValues({
+        contextualTasksDogfoodFeedbackEnabled: dogfoodFeedbackEnabled,
+      });
+      document.body.innerHTML = window.trustedTypes!.emptyHTML;
+      topToolbar = document.createElement('top-toolbar');
+      document.body.appendChild(topToolbar);
+      await microtasksFinished();
+    }
+
+    test('hides dogfood feedback button when disabled', async () => {
+      await createTopToolbar(/*dogfoodFeedbackEnabled=*/ false);
+
+      assertEquals(
+          null, topToolbar.shadowRoot.querySelector('#dogfoodFeedbackButton'));
+    });
+
+    test('shows dogfood feedback button when enabled', async () => {
+      await createTopToolbar(/*dogfoodFeedbackEnabled=*/ true);
+
+      const button = topToolbar.shadowRoot.querySelector<CrIconButtonElement>(
+          '#dogfoodFeedbackButton');
+      assertTrue(!!button);
+      assertEquals('Submit Contextual Tasks Dogfood Feedback', button.title);
+      assertEquals(
+          'Submit Contextual Tasks Dogfood Feedback',
+          button.getAttribute('aria-label'));
+      // Placed first in the action buttons, so the other buttons keep their
+      // positions.
+      const actionButtons =
+          topToolbar.shadowRoot.querySelector('.top-toolbar-action-buttons');
+      assertTrue(!!actionButtons);
+      assertEquals(button, actionButtons.firstElementChild);
+    });
+
+    test('dogfood feedback button opens feedback form', async () => {
+      await createTopToolbar(/*dogfoodFeedbackEnabled=*/ true);
+
+      const button = topToolbar.shadowRoot.querySelector<CrIconButtonElement>(
+          '#dogfoodFeedbackButton');
+      assertTrue(!!button);
+      button.click();
+      await toolbarProxy.handler.whenCalled('openDogfoodFeedback');
+      assertEquals(1, toolbarProxy.handler.getCallCount('openDogfoodFeedback'));
     });
   });
 });

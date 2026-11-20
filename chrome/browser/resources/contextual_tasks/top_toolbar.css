@@ -201,6 +201,10 @@ cr-icon-button[hidden] {
   background-color: var(--cr-active-background-color);
 }
 
+#dogfoodFeedbackButton {
+  --cr-icon-image: url(//resources/cr_components/searchbox/icons/dogfood.svg);
+}
+
 .profile-indicator {
   --cr-button-height: 32px;
   align-items: center;
