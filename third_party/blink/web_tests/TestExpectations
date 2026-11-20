@@ -8598,3 +8598,8 @@ crbug.com/587966516 [ Linux ] external/wpt/webdriver/tests/classic/get_element_t
 # Gardener 2026-11-18
 crbug.com/587450751 [ Linux ] svg/custom/load-image-removed-in-onload.html [ Failure Pass ]
 crbug.com/587450751 [ Mac ] svg/custom/load-image-removed-in-onload.html [ Failure Pass ]
+
+# Gardener 2026-11-20
+crbug.com/566841082 [ Mac ] external/wpt/css/css-overflow/scrollbar-gutter-propagation-001.html [ Failure Pass ]
+crbug.com/569420237 [ Mac ] external/wpt/css/css-overflow/scrollbar-gutter-propagation-002.html [ Failure Pass ]
+crbug.com/566469808 [ Mac ] external/wpt/css/css-overflow/scrollbar-gutter-propagation-003.html [ Failure Pass ]
