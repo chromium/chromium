@@ -98,6 +98,13 @@ NavigateEvent::NavigateEvent(ExecutionContext* context,
   CHECK(!controller_ || controller_->signal() == signal_);
 }
 
+Element* NavigateEvent::sourceElement() const {
+  // The source element might be inside a shadow tree (including a user-agent
+  // shadow tree, e.g. the instance tree of an SVG <use> element). Retarget it
+  // so that shadow-internal nodes are never exposed to script.
+  return DynamicTo<Element>(Retarget(source_element_.Get()));
+}
+
 bool NavigateEvent::PerformSharedChecks(const String& function_name,
                                         ExceptionState& exception_state) {
   if (!DomWindow()) {
