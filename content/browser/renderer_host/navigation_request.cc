@@ -112,6 +112,7 @@
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_main_resource_handle.h"
+#include "content/browser/service_worker/service_worker_security_utils.h"
 #include "content/browser/site_info.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/storage_partition_impl.h"
@@ -3750,6 +3751,21 @@ NavigationRequest::CreatePolicyContainerForBlink() {
 
   return policy_container_builder_->CreatePolicyContainerForBlink();
 }
+
+base::WeakPtr<ServiceWorkerClient>
+NavigationRequest::GetCommittedServiceWorkerClient() const {
+  if (DidEncounterError() || !service_worker_handle_) {
+    return nullptr;
+  }
+  base::WeakPtr<ServiceWorkerClient> service_worker_client =
+      service_worker_handle_->service_worker_client();
+  if (!service_worker_client ||
+      !service_worker_client->is_response_committed()) {
+    return nullptr;
+  }
+  return service_worker_client;
+}
+
 scoped_refptr<PolicyContainerHost> NavigationRequest::GetPolicyContainerHost() {
   CHECK_GE(state_, READY_TO_COMMIT);
   // It is invalid calling this method after `TakePolicyContainerHost()`.
@@ -7166,6 +7182,12 @@ void NavigationRequest::InheritServiceWorkerControllerFromParentIfNeeded() {
   if (!parent_service_worker_client) {
     return;
   }
+  if (!service_worker_security_utils::
+          AreOriginsCompatibleForServiceWorkerClient(
+              parent->GetLastCommittedOrigin(),
+              parent_service_worker_client->key().origin())) {
+    return;
+  }
 
   // Do not inherit the parent's service worker controller if this frame is a
   // PDF content frame or has an opaque sandboxed origin. PDF content frames run
@@ -9844,11 +9866,11 @@ void NavigationRequest::DidCommitNavigation(
     frame_tree_node()->SetCollapsed(false);
   }
 
-  if (service_worker_handle_ &&
-      service_worker_handle_->service_worker_client()) {
+  if (base::WeakPtr<ServiceWorkerClient> service_worker_client =
+          GetCommittedServiceWorkerClient()) {
     // Notify the service worker navigation handle that the navigation finished
     // committing.
-    service_worker_handle_->service_worker_client()->OnEndNavigationCommit();
+    service_worker_client->OnEndNavigationCommit();
   }
 
   // TODO(crbug.com/40249865): consider using NavigationOrDocumentHandle

@@ -10,6 +10,7 @@
 #include "content/common/content_export.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace blink {
 class StorageKey;
@@ -31,6 +32,13 @@ CONTENT_EXPORT bool AllOriginsMatchAndCanAccessServiceWorkers(
     const std::vector<GURL>& urls);
 
 CONTENT_EXPORT bool IsWebSecurityDisabled();
+
+// Returns true if `origin1` and `origin2` are compatible for sharing or
+// inheriting a ServiceWorkerClient (either both origins are opaque, or they
+// are same-origin).
+CONTENT_EXPORT bool AreOriginsCompatibleForServiceWorkerClient(
+    const url::Origin& origin1,
+    const url::Origin& origin2);
 
 // Check origins etc. on setting URLs.
 CONTENT_EXPORT void CheckOnUpdateUrls(const GURL& url,
