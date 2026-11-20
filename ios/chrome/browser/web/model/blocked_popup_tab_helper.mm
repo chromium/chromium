@@ -11,10 +11,8 @@
 
 #import "base/apple/bundle_locations.h"
 #import "base/apple/foundation_util.h"
-#import "base/format_macros.h"
+#import "base/i18n/number_formatting.h"
 #import "base/memory/raw_ptr.h"
-#import "base/strings/stringprintf.h"
-#import "base/strings/utf_string_conversions.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"
 #import "components/infobars/core/confirm_infobar_delegate.h"
 #import "components/infobars/core/infobar.h"
@@ -74,9 +72,8 @@ class BlockPopupInfoBarDelegate : public ConfirmInfoBarDelegate {
   }
 
   std::u16string GetMessageText() const override {
-    return l10n_util::GetStringFUTF16(
-        IDS_IOS_POPUPS_BLOCKED_MOBILE,
-        base::UTF8ToUTF16(base::StringPrintf("%" PRIuS, popups_.size())));
+    return l10n_util::GetStringFUTF16(IDS_IOS_POPUPS_BLOCKED_MOBILE,
+                                      base::FormatNumber(popups_.size()));
   }
 
   std::u16string GetButtonLabel(InfoBarButton button) const override {

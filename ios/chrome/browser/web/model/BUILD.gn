@@ -29,6 +29,7 @@ source_set("model") {
     ":page_placeholder",
     ":tab_helper_delegates",
     "//base",
+    "//base:i18n",
     "//components/application_locale_storage",
     "//components/content_settings/core/browser",
     "//components/error_page/common",
@@ -433,6 +434,7 @@ source_set("unit_tests_internal") {
   deps = [
     ":web_internal",
     "//base",
+    "//base/i18n:language_tag",
     "//base/test:test_support",
     "//components/captive_portal/core",
     "//components/content_settings/core/browser",
@@ -479,6 +481,7 @@ source_set("unit_tests_internal") {
     "//ios/net",
     "//ios/web/common:features",
     "//ios/web/common:web_view_creation_util",
+    "//ios/web/public/navigation:referrer",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//net",
@@ -489,6 +492,7 @@ source_set("unit_tests_internal") {
     "//testing/gtest",
     "//third_party/ocmock",
     "//ui/base",
+    "//ui/base/l10n/test:test_support",
     "//url",
   ]
 }
