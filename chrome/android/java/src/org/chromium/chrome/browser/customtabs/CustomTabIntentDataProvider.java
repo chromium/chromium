@@ -814,6 +814,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
             builder.setAndroidBrowserHelperVersion(
                     IntentUtils.safeGetIntExtra(intent, EXTRA_ANDROID_BROWSER_HELPER_VERSION, 0));
             builder.setRequestedWindowFeatures(extractRequestedWindowFeatures(intent, uiType));
+            populateTimeoutExtras(builder, intent);
             int fedCmId = IntentUtils.safeGetIntExtra(intent, IntentHandler.EXTRA_FEDCM_ID, -1);
             if (fedCmId != -1) {
                 builder.setFedCmId(fedCmId);
@@ -871,6 +872,20 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
 
         if (dataHolder == null) {
             logCustomTabFeatures(intent, colorScheme);
+        }
+    }
+
+    static void populateTimeoutExtras(CustomTabIntentDataHolder.Builder builder, Intent intent) {
+        if (IntentUtils.safeHasExtra(
+                intent, CustomTabActivityTimeoutHandler.EXTRA_TIMEOUT_MINUTES)) {
+            builder.setTimeoutMinutes(
+                    IntentUtils.safeGetIntExtra(
+                            intent, CustomTabActivityTimeoutHandler.EXTRA_TIMEOUT_MINUTES, 0));
+        }
+        if (IntentUtils.safeGetParcelableExtra(
+                        intent, CustomTabActivityTimeoutHandler.EXTRA_TIMEOUT_PENDING_INTENT)
+                instanceof PendingIntent pi) {
+            builder.setTimeoutPendingIntent(pi);
         }
     }
 
@@ -2177,6 +2192,16 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     @Override
     public CustomTabIntentDataHolder getCustomTabIntentDataHolder() {
         return mDataHolder;
+    }
+
+    @Override
+    public @Nullable Integer getTimeoutMinutes() {
+        return mDataHolder.mTimeoutMinutes;
+    }
+
+    @Override
+    public @Nullable PendingIntent getTimeoutPendingIntent() {
+        return mDataHolder.mTimeoutPendingIntent;
     }
 
     @Override

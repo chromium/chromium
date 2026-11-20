@@ -14,6 +14,7 @@ import static org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider
 import static org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.getClientPackageNameFromSessionOrCallingActivity;
 import static org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.isTrustedCustomTab;
 
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
@@ -108,6 +109,7 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
                                 IntentHandler.EXTRA_INCOGNITO_CCT_CALLER_ID,
                                 IncognitoCctCallerId.OTHER_CHROME_FEATURES));
             }
+            CustomTabIntentDataProvider.populateTimeoutExtras(builder, intent);
 
             mDataHolder = builder.build();
         }
@@ -356,5 +358,15 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
     @Override
     public CustomTabIntentDataHolder getCustomTabIntentDataHolder() {
         return mDataHolder;
+    }
+
+    @Override
+    public @Nullable Integer getTimeoutMinutes() {
+        return mDataHolder.mTimeoutMinutes;
+    }
+
+    @Override
+    public @Nullable PendingIntent getTimeoutPendingIntent() {
+        return mDataHolder.mTimeoutPendingIntent;
     }
 }

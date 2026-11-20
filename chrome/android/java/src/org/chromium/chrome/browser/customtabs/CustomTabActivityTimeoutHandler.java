@@ -4,23 +4,24 @@
 
 package org.chromium.chrome.browser.customtabs;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.app.ActivityOptions;
 import android.app.PendingIntent;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.PowerManager;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ApplicationStatus;
-import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.SysUtils;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabsTimeoutOutcome.CustomTabsResetTimeoutOutcome;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
@@ -68,12 +69,14 @@ class CustomTabActivityTimeoutHandler {
     private boolean mIsLaunchingExternalActivity;
 
     CustomTabActivityTimeoutHandler(
-            Context context, Runnable finishActivityRunnable, Intent intent) {
-        mIsTimeoutEnabled = isTimeoutEnabled(intent);
+            Context context,
+            Runnable finishActivityRunnable,
+            BrowserServicesIntentDataProvider intentDataProvider) {
+        mIsTimeoutEnabled = isTimeoutEnabled(intentDataProvider);
 
         // Always set after mIsTimeoutEnabled
-        mTimeoutMinutes = getTimeoutMinutes(intent);
-        mEmbedderClosingIntent = getEmbedderClosingIntent(intent);
+        mTimeoutMinutes = getTimeoutMinutes(intentDataProvider);
+        mEmbedderClosingIntent = getEmbedderClosingIntent(intentDataProvider);
         mFinishActivityRunnable = finishActivityRunnable;
 
         if (mIsTimeoutEnabled && ChromeFeatureList.sCctEarlyInitPowerManager.isEnabled()) {
@@ -108,19 +111,16 @@ class CustomTabActivityTimeoutHandler {
         boolean isLockingScreenAction = powerManager != null && !powerManager.isInteractive();
 
         if (isLockingScreenAction) {
-            mLeaveTimestamp = -1;
             Log.d(TAG, "onStop: Locking screen, not starting timeout.");
             return;
         }
 
         if (mIsLaunchingExternalActivity) {
-            mLeaveTimestamp = -1;
             Log.d(TAG, "onStop: Intenting to new activity, not starting timeout.");
             return;
         }
 
         if (isActivityChangingConfigurations(context)) {
-            mLeaveTimestamp = -1;
             Log.d(TAG, "onStop: Changing configurations, not starting timeout.");
             return;
         }
@@ -221,10 +221,10 @@ class CustomTabActivityTimeoutHandler {
     }
 
     /** To be called from {@link Activity#onDestroy()}. */
-    void onDestroy() {
+    void onDestroy(Context context) {
         // If the activity is destroyed without the timeout being triggered, record it as a manual
         // close.
-        if (mIsTimeoutEnabled) {
+        if (mIsTimeoutEnabled && !isActivityChangingConfigurations(context)) {
             record(CustomTabsResetTimeoutOutcome.SESSION_CLOSED_MANUALLY);
         }
     }
@@ -236,12 +236,12 @@ class CustomTabActivityTimeoutHandler {
         mOutcomeRecorded = true;
     }
 
-    private boolean isTimeoutEnabled(Intent intent) {
-        return IntentUtils.safeHasExtra(intent, EXTRA_TIMEOUT_MINUTES)
+    private boolean isTimeoutEnabled(BrowserServicesIntentDataProvider intentDataProvider) {
+        return intentDataProvider.getTimeoutMinutes() != null
                 && ChromeFeatureList.sCctResetTimeoutAllowed.isEnabled();
     }
 
-    private int getTimeoutMinutes(Intent intent) {
+    private int getTimeoutMinutes(BrowserServicesIntentDataProvider intentDataProvider) {
         if (!mIsTimeoutEnabled) {
             return 0;
         }
@@ -257,17 +257,13 @@ class CustomTabActivityTimeoutHandler {
         // Otherwise, use the embedder value if it is set. The minimum timeout allowed for Chrome is
         // 30 minutes.
         return Math.max(
-                IntentUtils.safeGetIntExtra(intent, EXTRA_TIMEOUT_MINUTES, 0),
+                assumeNonNull(intentDataProvider.getTimeoutMinutes()),
                 ChromeFeatureList.sCctResetMinimumTimeoutMinutesAllowed.getValue());
     }
 
-    private @Nullable PendingIntent getEmbedderClosingIntent(Intent intent) {
-        if (mIsTimeoutEnabled
-                && IntentUtils.safeGetParcelableExtra(intent, EXTRA_TIMEOUT_PENDING_INTENT)
-                        instanceof PendingIntent pendingIntent) {
-            return pendingIntent;
-        }
-        return null;
+    private @Nullable PendingIntent getEmbedderClosingIntent(
+            BrowserServicesIntentDataProvider intentDataProvider) {
+        return mIsTimeoutEnabled ? intentDataProvider.getTimeoutPendingIntent() : null;
     }
 
     private static boolean isSkipConfigurationChangesEnabled() {

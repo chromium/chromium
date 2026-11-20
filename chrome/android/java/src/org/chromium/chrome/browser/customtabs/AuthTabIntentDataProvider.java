@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.customtabs;
 
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -117,6 +118,7 @@ public class AuthTabIntentDataProvider extends BrowserServicesIntentDataProvider
                     AuthTabColorProvider.getColorSchemeParams(
                             intent, CustomTabsIntent.COLOR_SCHEME_DARK));
             builder.setUrlToLoad(IntentHandler.getUrlFromIntent(intent));
+            CustomTabIntentDataProvider.populateTimeoutExtras(builder, intent);
 
             mDataHolder = builder.build();
         }
@@ -304,5 +306,15 @@ public class AuthTabIntentDataProvider extends BrowserServicesIntentDataProvider
     @Override
     public CustomTabIntentDataHolder getCustomTabIntentDataHolder() {
         return mDataHolder;
+    }
+
+    @Override
+    public @Nullable Integer getTimeoutMinutes() {
+        return mDataHolder.mTimeoutMinutes;
+    }
+
+    @Override
+    public @Nullable PendingIntent getTimeoutPendingIntent() {
+        return mDataHolder.mTimeoutPendingIntent;
     }
 }

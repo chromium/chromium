@@ -886,6 +886,19 @@ public abstract class BrowserServicesIntentDataProvider {
         return false;
     }
 
+    /** Returns the custom inactivity timeout in minutes, or null if not specified. */
+    public @Nullable Integer getTimeoutMinutes() {
+        return null;
+    }
+
+    /**
+     * Returns the {@link PendingIntent} sent when the inactivity timeout elapses, or null if not
+     * specified.
+     */
+    public @Nullable PendingIntent getTimeoutPendingIntent() {
+        return null;
+    }
+
     /** Returns the embedder-supplied tab identifier for tab resumption, or null if not set. */
     public @Nullable String getEmbedderTabId() {
         return null;

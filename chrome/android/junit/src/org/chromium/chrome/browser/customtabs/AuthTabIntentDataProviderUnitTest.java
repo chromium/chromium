@@ -16,6 +16,7 @@ import static org.junit.Assert.assertTrue;
 import static org.chromium.chrome.browser.customtabs.CustomTabsFeatureUsage.CUSTOM_TABS_FEATURE_USAGE_HISTOGRAM;
 
 import android.app.Activity;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -35,6 +36,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.GraphicsMode;
 
+import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -327,7 +329,16 @@ public class AuthTabIntentDataProviderUnitTest {
     }
 
     @Test
-    public void testReconstructFromSavedDataHolder_umaGating() {
+    public void testReconstructFromSavedDataHolder_timeoutAndUmaGating() {
+        PendingIntent timeoutPi =
+                PendingIntent.getBroadcast(
+                        mActivity,
+                        13,
+                        new Intent("auth_tab_timeout"),
+                        IntentUtils.getPendingIntentMutabilityFlag(true));
+        mIntent.putExtra(CustomTabActivityTimeoutHandler.EXTRA_TIMEOUT_MINUTES, 20);
+        mIntent.putExtra(CustomTabActivityTimeoutHandler.EXTRA_TIMEOUT_PENDING_INTENT, timeoutPi);
+
         int countBeforeLaunch =
                 RecordHistogram.getHistogramTotalCountForTesting(
                         CUSTOM_TABS_FEATURE_USAGE_HISTOGRAM);
@@ -342,6 +353,10 @@ public class AuthTabIntentDataProviderUnitTest {
 
         CustomTabIntentDataHolder holder = originalProvider.getCustomTabIntentDataHolder();
         assertNotNull(holder);
+        assertEquals(Integer.valueOf(20), originalProvider.getTimeoutMinutes());
+        assertEquals(timeoutPi, originalProvider.getTimeoutPendingIntent());
+        assertNull(originalProvider.getEmbedderTabId());
+        assertFalse(originalProvider.isRestoreTabRequested());
 
         Parcel parcel = Parcel.obtain();
         CustomTabIntentDataHolder restoredHolder;
@@ -357,7 +372,40 @@ public class AuthTabIntentDataProviderUnitTest {
                 HistogramWatcher.newBuilder()
                         .expectNoRecords(CUSTOM_TABS_FEATURE_USAGE_HISTOGRAM)
                         .build();
-        new AuthTabIntentDataProvider(new Intent(), mActivity, COLOR_SCHEME_DARK, restoredHolder);
+        AuthTabIntentDataProvider restoredProvider =
+                new AuthTabIntentDataProvider(
+                        new Intent(), mActivity, COLOR_SCHEME_DARK, restoredHolder);
         noUmaOnRestore.assertExpected();
+
+        assertEquals(Integer.valueOf(20), restoredProvider.getTimeoutMinutes());
+        assertEquals(timeoutPi, restoredProvider.getTimeoutPendingIntent());
+        assertNull(restoredProvider.getEmbedderTabId());
+        assertFalse(restoredProvider.isRestoreTabRequested());
+    }
+
+    @Test
+    public void testReconstructFromSavedDataHolder_nullTimeout() {
+        AuthTabIntentDataProvider originalProvider =
+                new AuthTabIntentDataProvider(mIntent, mActivity, COLOR_SCHEME_LIGHT);
+        CustomTabIntentDataHolder holder = originalProvider.getCustomTabIntentDataHolder();
+        assertNotNull(holder);
+        assertNull(originalProvider.getTimeoutMinutes());
+        assertNull(originalProvider.getTimeoutPendingIntent());
+
+        Parcel parcel = Parcel.obtain();
+        CustomTabIntentDataHolder restoredHolder;
+        try {
+            holder.writeToParcel(parcel, 0);
+            parcel.setDataPosition(0);
+            restoredHolder = CustomTabIntentDataHolder.CREATOR.createFromParcel(parcel);
+        } finally {
+            parcel.recycle();
+        }
+
+        AuthTabIntentDataProvider restoredProvider =
+                new AuthTabIntentDataProvider(
+                        new Intent(), mActivity, COLOR_SCHEME_LIGHT, restoredHolder);
+        assertNull(restoredProvider.getTimeoutMinutes());
+        assertNull(restoredProvider.getTimeoutPendingIntent());
     }
 }

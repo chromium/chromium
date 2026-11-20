@@ -117,6 +117,8 @@ public class CustomTabIntentDataHolder implements Parcelable {
     public final int mAndroidBrowserHelperVersion;
     public final @Nullable WindowFeatures mRequestedWindowFeatures;
     public final @Nullable Integer mIncognitoCctCallerId;
+    public final @Nullable Integer mTimeoutMinutes;
+    public final @Nullable PendingIntent mTimeoutPendingIntent;
     public @Nullable String mEmbedderTabId;
     public boolean mRestoreTab;
     public final @Nullable Integer mMaxResumptionTabs;
@@ -191,6 +193,8 @@ public class CustomTabIntentDataHolder implements Parcelable {
         mAndroidBrowserHelperVersion = builder.mAndroidBrowserHelperVersion;
         mRequestedWindowFeatures = builder.mRequestedWindowFeatures;
         mIncognitoCctCallerId = builder.mIncognitoCctCallerId;
+        mTimeoutMinutes = builder.mTimeoutMinutes;
+        mTimeoutPendingIntent = builder.mTimeoutPendingIntent;
         mEmbedderTabId = builder.mEmbedderTabId;
         mRestoreTab = builder.mRestoreTab;
         mMaxResumptionTabs = builder.mMaxResumptionTabs;
@@ -271,6 +275,8 @@ public class CustomTabIntentDataHolder implements Parcelable {
         mRequestedWindowFeatures =
                 windowFeaturesBundle != null ? new WindowFeatures(windowFeaturesBundle) : null;
         mIncognitoCctCallerId = (Integer) in.readValue(classLoader);
+        mTimeoutMinutes = readNullableInt(in);
+        mTimeoutPendingIntent = in.readTypedObject(PendingIntent.CREATOR);
         mEmbedderTabId = in.readString();
         mRestoreTab = in.readBoolean();
         mMaxResumptionTabs = readNullableInt(in);
@@ -352,6 +358,8 @@ public class CustomTabIntentDataHolder implements Parcelable {
         dest.writeBundle(
                 mRequestedWindowFeatures != null ? mRequestedWindowFeatures.toBundle() : null);
         dest.writeValue(mIncognitoCctCallerId);
+        writeNullableInt(dest, mTimeoutMinutes);
+        dest.writeTypedObject(mTimeoutPendingIntent, flags);
         dest.writeString(mEmbedderTabId);
         dest.writeBoolean(mRestoreTab);
         writeNullableInt(dest, mMaxResumptionTabs);
@@ -661,6 +669,8 @@ public class CustomTabIntentDataHolder implements Parcelable {
         private int mAndroidBrowserHelperVersion;
         private @Nullable WindowFeatures mRequestedWindowFeatures;
         private @Nullable Integer mIncognitoCctCallerId;
+        private @Nullable Integer mTimeoutMinutes;
+        private @Nullable PendingIntent mTimeoutPendingIntent;
         private @Nullable String mEmbedderTabId;
         private boolean mRestoreTab;
         private @Nullable Integer mMaxResumptionTabs;
@@ -1009,6 +1019,16 @@ public class CustomTabIntentDataHolder implements Parcelable {
 
         public Builder setIncognitoCctCallerId(@Nullable Integer incognitoCctCallerId) {
             mIncognitoCctCallerId = incognitoCctCallerId;
+            return this;
+        }
+
+        public Builder setTimeoutMinutes(@Nullable Integer timeoutMinutes) {
+            mTimeoutMinutes = timeoutMinutes;
+            return this;
+        }
+
+        public Builder setTimeoutPendingIntent(@Nullable PendingIntent timeoutPendingIntent) {
+            mTimeoutPendingIntent = timeoutPendingIntent;
             return this;
         }
 

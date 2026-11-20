@@ -156,7 +156,9 @@ public class CustomTabActivity extends BaseCustomTabActivity {
     public void performPreInflationStartup() {
         super.performPreInflationStartup();
         var savedInstanceState = getSavedInstanceState();
-        mTimeoutHandler = new CustomTabActivityTimeoutHandler(this, this::finish, getIntent());
+        var intentDataProvider = assertNonNull(getIntentDataProvider());
+        mTimeoutHandler =
+                new CustomTabActivityTimeoutHandler(this, this::finish, intentDataProvider);
 
         // If the activity is being recreated, #onEnterAnimationComplete() doesn't get called.
         // So, we need to manually set mIsEnterAnimationCompleted to true. See crbug.com/399194973.
@@ -165,7 +167,6 @@ public class CustomTabActivity extends BaseCustomTabActivity {
                 mIsEnterAnimationCompleted = true;
             }
         }
-        var intentDataProvider = assertNonNull(getIntentDataProvider());
         mOpenTimeRecorder =
                 new CustomTabsOpenTimeRecorder(
                         getLifecycleDispatcher(),
@@ -383,7 +384,7 @@ public class CustomTabActivity extends BaseCustomTabActivity {
             mPopupBoundsAdjuster.destroy();
             mPopupBoundsAdjuster = null;
         }
-        if (mTimeoutHandler != null) mTimeoutHandler.onDestroy();
+        if (mTimeoutHandler != null) mTimeoutHandler.onDestroy(this);
         super.onDestroyInternal();
     }
 

@@ -127,9 +127,17 @@ public class CustomTabIntentDataProviderTest {
 
     @Test
     public void testReconstructFromSavedDataHolder_newPersistedExtrasAndUmaGating() {
+        PendingIntent timeoutPi =
+                PendingIntent.getBroadcast(
+                        mContext,
+                        11,
+                        new Intent("cct_timeout"),
+                        IntentUtils.getPendingIntentMutabilityFlag(true));
         Intent intent = new CustomTabsIntent.Builder().build().intent;
         intent.setData(Uri.parse("https://www.example.com/regular"));
         setIsTrustedCustomTab(intent);
+        intent.putExtra(CustomTabActivityTimeoutHandler.EXTRA_TIMEOUT_MINUTES, 15);
+        intent.putExtra(CustomTabActivityTimeoutHandler.EXTRA_TIMEOUT_PENDING_INTENT, timeoutPi);
         intent.putExtra(CustomTabResumeManager.EXTRA_EMBEDDER_TAB_ID, "embedder-tab-123");
         intent.putExtra(CustomTabResumeManager.EXTRA_RESTORE_TAB, true);
         intent.putExtra(CustomTabResumeManager.EXTRA_MAX_RESUMPTION_TABS, 12);
@@ -151,6 +159,8 @@ public class CustomTabIntentDataProviderTest {
 
         CustomTabIntentDataHolder holder = originalProvider.getCustomTabIntentDataHolder();
         assertNotNull(holder);
+        assertEquals(Integer.valueOf(15), originalProvider.getTimeoutMinutes());
+        assertEquals(timeoutPi, originalProvider.getTimeoutPendingIntent());
         assertEquals("embedder-tab-123", originalProvider.getEmbedderTabId());
         assertTrue(originalProvider.isRestoreTabRequested());
         assertEquals(Integer.valueOf(12), originalProvider.getMaxResumptionTabs());
@@ -177,6 +187,8 @@ public class CustomTabIntentDataProviderTest {
                         new Intent(), mContext, COLOR_SCHEME_DARK, restoredHolder);
         noUmaOnRestore.assertExpected();
 
+        assertEquals(Integer.valueOf(15), restoredProvider.getTimeoutMinutes());
+        assertEquals(timeoutPi, restoredProvider.getTimeoutPendingIntent());
         assertEquals("embedder-tab-123", restoredProvider.getEmbedderTabId());
         assertTrue(restoredProvider.isRestoreTabRequested());
         assertEquals(Integer.valueOf(12), restoredProvider.getMaxResumptionTabs());
@@ -186,6 +198,8 @@ public class CustomTabIntentDataProviderTest {
 
         CustomTabIntentDataProvider defaultProvider =
                 new CustomTabIntentDataProvider(new Intent(), mContext, COLOR_SCHEME_LIGHT);
+        assertNull(defaultProvider.getTimeoutMinutes());
+        assertNull(defaultProvider.getTimeoutPendingIntent());
         assertNull(defaultProvider.getEmbedderTabId());
         assertFalse(defaultProvider.isRestoreTabRequested());
         assertNull(defaultProvider.getMaxResumptionTabs());
@@ -231,13 +245,21 @@ public class CustomTabIntentDataProviderTest {
     }
 
     @Test
-    public void testIncognitoReconstructFromSavedDataHolder_umaGating() {
+    public void testIncognitoReconstructFromSavedDataHolder_timeoutAndUmaGating() {
+        PendingIntent timeoutPi =
+                PendingIntent.getBroadcast(
+                        mContext,
+                        12,
+                        new Intent("incognito_timeout"),
+                        IntentUtils.getPendingIntentMutabilityFlag(true));
         Intent intent = new CustomTabsIntent.Builder().build().intent;
         intent.setData(Uri.parse("https://www.example.com/incognito"));
         IncognitoCustomTabIntentDataProvider.addIncognitoExtrasForChromeFeatures(
                 intent, BrowserServicesIntentDataProvider.IncognitoCctCallerId.READ_LATER);
         intent.setPackage(mContext.getPackageName());
         IntentUtils.addTrustedIntentExtras(intent);
+        intent.putExtra(CustomTabActivityTimeoutHandler.EXTRA_TIMEOUT_MINUTES, 25);
+        intent.putExtra(CustomTabActivityTimeoutHandler.EXTRA_TIMEOUT_PENDING_INTENT, timeoutPi);
         intent.putExtra(CustomTabResumeManager.EXTRA_EMBEDDER_TAB_ID, "incognito-tab-id");
         intent.putExtra(CustomTabResumeManager.EXTRA_RESTORE_TAB, true);
         intent.putExtra(CustomTabResumeManager.EXTRA_MAX_RESUMPTION_TABS, 5);
@@ -257,6 +279,8 @@ public class CustomTabIntentDataProviderTest {
 
         CustomTabIntentDataHolder holder = originalProvider.getCustomTabIntentDataHolder();
         assertNotNull(holder);
+        assertEquals(Integer.valueOf(25), originalProvider.getTimeoutMinutes());
+        assertEquals(timeoutPi, originalProvider.getTimeoutPendingIntent());
         assertNull(originalProvider.getEmbedderTabId());
         assertFalse(originalProvider.isRestoreTabRequested());
         assertNull(originalProvider.getMaxResumptionTabs());
@@ -281,6 +305,8 @@ public class CustomTabIntentDataProviderTest {
                         new Intent(), mContext, COLOR_SCHEME_DARK, restoredHolder);
         noUmaOnRestore.assertExpected();
 
+        assertEquals(Integer.valueOf(25), restoredProvider.getTimeoutMinutes());
+        assertEquals(timeoutPi, restoredProvider.getTimeoutPendingIntent());
         assertNull(restoredProvider.getEmbedderTabId());
         assertFalse(restoredProvider.isRestoreTabRequested());
         assertNull(restoredProvider.getMaxResumptionTabs());

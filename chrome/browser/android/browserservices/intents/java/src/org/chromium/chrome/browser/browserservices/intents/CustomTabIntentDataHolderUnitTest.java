@@ -151,6 +151,8 @@ public class CustomTabIntentDataHolderUnitTest {
         assertEquals(0, restored.mAndroidBrowserHelperVersion);
         assertNull(restored.mRequestedWindowFeatures);
         assertNull(restored.mIncognitoCctCallerId);
+        assertNull(restored.mTimeoutMinutes);
+        assertNull(restored.mTimeoutPendingIntent);
         assertNull(restored.mEmbedderTabId);
         assertFalse(restored.mRestoreTab);
         assertNull(restored.mMaxResumptionTabs);
@@ -213,6 +215,9 @@ public class CustomTabIntentDataHolderUnitTest {
         PendingIntent menuPi2 =
                 PendingIntent.getActivity(
                         context, 8, new Intent("menu_2"), PendingIntent.FLAG_IMMUTABLE);
+        PendingIntent timeoutPi =
+                PendingIntent.getBroadcast(
+                        context, 9, new Intent("timeout_action"), PendingIntent.FLAG_IMMUTABLE);
         CustomButtonParams shareButton =
                 CustomButtonParamsImpl.createShareButton(context, Color.BLACK);
         CustomButtonParams bottomBarButton =
@@ -332,6 +337,8 @@ public class CustomTabIntentDataHolderUnitTest {
                         .setAndroidBrowserHelperVersion(42)
                         .setRequestedWindowFeatures(new WindowFeatures(10, 20, 300, 400))
                         .setIncognitoCctCallerId(IncognitoCctCallerId.DOWNLOAD_HOME)
+                        .setTimeoutMinutes(15)
+                        .setTimeoutPendingIntent(timeoutPi)
                         .setEmbedderTabId("embedder-tab-42")
                         .setRestoreTab(true)
                         .setMaxResumptionTabs(30)
@@ -484,6 +491,8 @@ public class CustomTabIntentDataHolderUnitTest {
         assertEquals(
                 Integer.valueOf(IncognitoCctCallerId.DOWNLOAD_HOME),
                 restored.mIncognitoCctCallerId);
+        assertEquals(Integer.valueOf(15), restored.mTimeoutMinutes);
+        assertEquals(timeoutPi, restored.mTimeoutPendingIntent);
         assertEquals("embedder-tab-42", restored.mEmbedderTabId);
         assertTrue(restored.mRestoreTab);
         assertEquals(Integer.valueOf(30), restored.mMaxResumptionTabs);
@@ -495,6 +504,8 @@ public class CustomTabIntentDataHolderUnitTest {
     public void testParcelRoundTrip_explicitNullOptionalFields() {
         CustomTabIntentDataHolder original =
                 new CustomTabIntentDataHolder.Builder()
+                        .setTimeoutMinutes(null)
+                        .setTimeoutPendingIntent(null)
                         .setEmbedderTabId(null)
                         .setRestoreTab(false)
                         .setMaxResumptionTabs(null)
@@ -503,6 +514,8 @@ public class CustomTabIntentDataHolderUnitTest {
                         .build();
         CustomTabIntentDataHolder restored = roundTripThroughParcel(original);
 
+        assertNull(restored.mTimeoutMinutes);
+        assertNull(restored.mTimeoutPendingIntent);
         assertNull(restored.mEmbedderTabId);
         assertFalse(restored.mRestoreTab);
         assertNull(restored.mMaxResumptionTabs);
