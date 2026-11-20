@@ -492,7 +492,6 @@ fast/dom/Range/create-contextual-fragment-from-xhtml-document-range.xhtml
 fast/dom/shadow/remove-stylesheet-from-shadow-crash.html
 fast/dom/shadow/shadow-root-text-child.html
 fast/dom/StyleSheet/detached-style-pi.xhtml
-fast/dom/TreeWalker/previousNodeLastChildReject.html
 fast/dom/Window/alert-undefined.html
 fast/dom/Window/window-remove-event-listener.html
 fast/dom/viewport/viewport-scale-inert.html

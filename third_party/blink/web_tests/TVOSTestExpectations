@@ -5616,7 +5616,6 @@ crbug.com/554992299 [ tvOS26-simulator ] fast/dom/HTMLProgressElement/progress-e
 crbug.com/554992299 [ tvOS26-simulator ] fast/dom/HTMLScriptElement/module-script.html [ Skip Timeout ]
 crbug.com/554992299 [ tvOS26-simulator ] fast/dom/Range/create-contextual-fragment.html [ Failure ]
 crbug.com/554992299 [ tvOS26-simulator ] fast/dom/Range/getBoundingClientRect.html [ Skip Timeout ]
-crbug.com/554992299 [ tvOS26-simulator ] fast/dom/TreeWalker/previousSiblingLastChildSkip.html [ Skip Timeout ]
 crbug.com/554992299 [ tvOS26-simulator ] fast/dom/Window/btoa-pnglet.html [ Failure ]
 crbug.com/554992299 [ tvOS26-simulator ] fast/dom/Window/open-existing-pop-up-blocking.html [ Failure ]
 crbug.com/554992299 [ tvOS26-simulator ] fast/dom/Window/property-access-in-closure-after-navigation.html [ Skip Timeout ]
