@@ -48,6 +48,7 @@ class PasswordStatusCheckService
   }
   size_t weak_credential_count() const { return weak_credential_count_; }
   size_t reused_credential_count() const { return reused_credential_count_; }
+  size_t saved_credential_count() const { return saved_credential_count_; }
 
   bool is_password_check_running() const;
 

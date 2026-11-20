@@ -745,6 +745,37 @@ TEST_F(PasswordStatusCheckServiceBaseTest, IgnoredSavedPasswords) {
   ASSERT_EQ(1UL, service()->weak_credential_count());
 }
 
+TEST_F(PasswordStatusCheckServiceBaseTest,
+       DuplicateCredentialAcrossStoresCountedSeparately) {
+  PasswordForm form = MakeForm(kUsername1, kPassword, kOrigin1);
+  profile_store().AddLogin(password_manager::FromPasswordForm(form));
+  account_store().AddLogin(password_manager::FromPasswordForm(form));
+  ASSERT_FALSE(password_manager::GetAllLoginsSync(&profile_store()).empty());
+  ASSERT_FALSE(password_manager::GetAllLoginsSync(&account_store()).empty());
+
+  // Recompute saved credential count from SavedPasswordsPresenter, which
+  // merges identical profile and account store logins into a single
+  // CredentialUIEntry.
+  UpdateInsecureCredentials();
+  EXPECT_EQ(service()->saved_credential_count(), 2u);
+  EXPECT_FALSE(service()->no_passwords_saved());
+
+  // Removing the login from only one store should leave the other store's copy
+  // counted.
+  profile_store().RemoveLogin(FROM_HERE,
+                              password_manager::FromPasswordForm(form));
+  ASSERT_TRUE(password_manager::GetAllLoginsSync(&profile_store()).empty());
+  EXPECT_EQ(service()->saved_credential_count(), 1u);
+  EXPECT_FALSE(service()->no_passwords_saved());
+
+  // Removing the remaining copy brings the saved password count to zero.
+  account_store().RemoveLogin(FROM_HERE,
+                              password_manager::FromPasswordForm(form));
+  ASSERT_TRUE(password_manager::GetAllLoginsSync(&account_store()).empty());
+  EXPECT_EQ(service()->saved_credential_count(), 0u);
+  EXPECT_TRUE(service()->no_passwords_saved());
+}
+
 TEST_P(PasswordStatusCheckServiceParameterizedCardTest, PasswordCardState) {
   // Setup test based on parameters.
   profile().GetPrefs()->SetBoolean(

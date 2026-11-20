@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/safety_hub/password_status_check_service.h"
 
+#include <cstddef>
 #include <memory>
 #include <random>
 #include <vector>
@@ -33,6 +34,7 @@
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/ui/bulk_leak_check_service_adapter.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
+#include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/safety_check/features.h"
@@ -314,18 +316,19 @@ bool ShouldAddToCompromisedPasswords(
          issues.contains(InsecureType::kPhished);
 }
 
-// Returns saved password forms number
-int GetSavedPasswordsCount(
-    password_manager::SavedPasswordsPresenter* saved_passwords_presenter) {
+// Returns the total number of stored password credentials across stores.
+size_t GetSavedPasswordsCount(const password_manager::SavedPasswordsPresenter*
+                                  saved_passwords_presenter) {
   CHECK(saved_passwords_presenter);
-  const auto& credential_entries =
-      saved_passwords_presenter->GetSavedPasswords();
-  int saved_password_forms = 0;
-  // Each CredentialUIEntry may contain one or more password forms.
-  for (const auto& entry : credential_entries) {
-    saved_password_forms = saved_password_forms + entry.facets.size();
+  size_t saved_passwords = 0;
+  // Each `CredentialUIEntry` may correspond to multiple stored credentials
+  // across affiliated realms or stores (profile and account).
+  for (const auto& entry : saved_passwords_presenter->GetSavedPasswords()) {
+    saved_passwords +=
+        saved_passwords_presenter->GetCorrespondingStoredCredentials(entry)
+            .size();
   }
-  return saved_password_forms;
+  return saved_passwords;
 }
 
 }  // namespace
