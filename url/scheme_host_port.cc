@@ -123,6 +123,12 @@ bool IsValidInput(std::string_view scheme,
         return false;
       }
 
+      // Only file: URLs may have an empty host (e.g. "file:///etc/hosts"). As
+      // in GURL, an empty host is invalid for other schemes (e.g. "chrome://").
+      if (host.empty() && scheme != url::kFileScheme) {
+        return false;
+      }
+
       // Don't do an expensive canonicalization if the host is already
       // canonicalized.
       DCHECK(policy == SchemeHostPort::CHECK_CANONICALIZATION ||
@@ -228,11 +234,14 @@ GURL SchemeHostPort::GetURL() const {
   if (!IsValid())
     return GURL(std::move(serialized), parsed, false);
 
-  // SchemeHostPort does not have enough information to determine if an empty
-  // host is valid or not for the given scheme. Force re-parsing.
+  // An empty host is only valid for file: and non-standard schemes, for which
+  // GURL has its own parsing rules (e.g. "file://" becomes "file:///"). Force
+  // re-parsing.
   DCHECK(!scheme_.empty());
-  if (host_.empty())
+  if (host_.empty()) {
+    CHECK(scheme_ == kFileScheme || !IsStandardScheme(scheme_)) << scheme_;
     return GURL(serialized);
+  }
 
   // If the serialized string is passed to GURL for parsing, it will append an
   // empty path "/" for standard URLs but only if they are special. Add that
