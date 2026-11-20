@@ -31,6 +31,7 @@
 #include "base/task/current_thread.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "base/trace_event/memory_allocator_dump.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/process_memory_dump.h"
@@ -44,7 +45,6 @@
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/time/time.h"
 #endif
 
 namespace discardable_memory {
@@ -215,7 +215,7 @@ uint64_t GetDefaultMaxBytes() {
                   base::SysInfo::AmountOfTotalPhysicalMemory().InBytes() / 4);
 }
 
-const int kEnforceMemoryPolicyDelayMs = 1000;
+constexpr base::TimeDelta kEnforceMemoryPolicyDelay = base::Seconds(1);
 
 constexpr base::MemoryConsumerTraits kMemoryConsumerTraits(
     base::MemoryConsumerTraits::EstimatedMemoryUsage::kLarge,
@@ -666,8 +666,7 @@ void DiscardableSharedMemoryManager::ScheduleEnforceMemoryPolicy() {
   enforce_memory_policy_pending_ = true;
   DCHECK(enforce_memory_policy_task_runner_);
   enforce_memory_policy_task_runner_->PostDelayedTask(
-      FROM_HERE, enforce_memory_policy_callback_,
-      base::Milliseconds(kEnforceMemoryPolicyDelayMs));
+      FROM_HERE, enforce_memory_policy_callback_, kEnforceMemoryPolicyDelay);
 }
 
 void DiscardableSharedMemoryManager::InvalidateMojoThreadWeakPtrs(

@@ -24,7 +24,7 @@
 namespace discardable_memory {
 namespace {
 
-const int kTimeLimitMs = 2000;
+constexpr base::TimeDelta kTimeLimit = base::Seconds(2);
 const int kTimeCheckInterval = 8192;
 
 void NullTask() {}
@@ -65,7 +65,7 @@ TEST(DiscardableSharedMemoryHeapTest, SearchFreeLists) {
   std::vector<std::unique_ptr<base::ScopedClosureRunner>> spans;
 
   base::TimeTicks start = base::TimeTicks::Now();
-  base::TimeTicks end = start + base::Milliseconds(kTimeLimitMs);
+  base::TimeTicks end = start + kTimeLimit;
   base::TimeDelta accumulator;
   int count = 0;
   while (start < end) {
