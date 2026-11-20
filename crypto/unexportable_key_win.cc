@@ -9,7 +9,6 @@
 
 #include <array>
 #include <concepts>
-#include <functional>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -1073,10 +1072,11 @@ std::optional<AttestationStatement> ParseWebAuthnAttestationStatement(
   }
 
   ASSIGN_OR_RETURN(base::span certify_info, reader.Read(header.cbCertifyInfo));
-  ASSIGN_OR_RETURN(
-      std::vector tpmt_signature,
-      reader.Read(header.cbSignature)
-          .and_then(std::bind_front(ConvertRawToTpmtSignature, alg)));
+  ASSIGN_OR_RETURN(std::vector tpmt_signature,
+                   reader.Read(header.cbSignature)
+                       .and_then([alg](base::span<const uint8_t> raw_sig) {
+                         return ConvertRawToTpmtSignature(alg, raw_sig);
+                       }));
   ASSIGN_OR_RETURN(base::span tpm_public, reader.Read(header.cbTpmPublic));
 
   return AttestationStatement{
