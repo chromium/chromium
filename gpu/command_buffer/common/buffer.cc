@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <limits>
 #include <ostream>
 
 #include "base/atomic_sequence_num.h"
@@ -126,7 +127,9 @@ uint32_t Buffer::GetRemainingSize(uint32_t data_offset) const {
 
 int32_t GetNextBufferId() {
   // 0 is a reserved value.
-  return g_next_buffer_id.GetNext() + 1;
+  int32_t id = g_next_buffer_id.GetNext() + 1;
+  CHECK_NE(id, std::numeric_limits<int32_t>::max());
+  return id;
 }
 
 base::trace_event::MemoryAllocatorDumpGuid GetBufferGUIDForTracing(
