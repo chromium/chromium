@@ -2771,6 +2771,13 @@ void RecordListEndMetrics(const ListLevel& level,
   }
 }
 
+// Adds the character count of `level`'s last item, which ends at
+// `end_char_index`, to `level.item_char_counts`.
+void AddLastItemCharCount(ListLevel& level, size_t end_char_index) {
+  level.item_char_counts.push_back(end_char_index -
+                                   level.last_item_start_char_index);
+}
+
 // Ends all but the outermost `levels_to_keep` levels. All level removals must
 // go through here so that end metrics are recorded.
 void PopListLevels(std::vector<ListLevel>& levels,
@@ -2987,9 +2994,9 @@ void PdfAccessibilityTreeBuilderHeuristic::BuildPageTree() {
       previous_on_line_node = nullptr;
       current_heading_classifier = HeadingClassifier::kNone;
       if (!list_levels_.empty()) {
-        list_levels_.back().item_char_counts.push_back(
-            page_layout_.text_run_start_indices[text_run_index] -
-            list_levels_.back().last_item_start_char_index);
+        AddLastItemCharCount(
+            list_levels_.back(),
+            page_layout_.text_run_start_indices[text_run_index]);
         PopListLevels(list_levels_, /*levels_to_keep=*/0,
                       ListEndReason::kTable);
       }
@@ -3244,9 +3251,7 @@ void PdfAccessibilityTreeBuilderHeuristic::BuildPageTree() {
   }
 
   if (!list_levels_.empty()) {
-    list_levels_.back().item_char_counts.push_back(
-        page_layout_.chars.size() -
-        list_levels_.back().last_item_start_char_index);
+    AddLastItemCharCount(list_levels_.back(), page_layout_.chars.size());
     PopListLevels(list_levels_, /*levels_to_keep=*/0, ListEndReason::kPageEnd);
   }
 
@@ -3316,9 +3321,8 @@ PdfAccessibilityTreeBuilderHeuristic::CreateBlockLevelNode(
   if (features::IsPdfAccessibilityHeuristicEnhancementsEnabled()) {
     std::swap(levels, list_levels_);
     if (!levels.empty()) {
-      levels.back().item_char_counts.push_back(
-          page_layout_.text_run_start_indices[text_run_index] -
-          levels.back().last_item_start_char_index);
+      AddLastItemCharCount(levels.back(),
+                           page_layout_.text_run_start_indices[text_run_index]);
     }
   }
   // Set on each path that returns with an open list.

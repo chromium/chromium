@@ -259,6 +259,18 @@ void CheckParagraph(const ui::AXNode* node, std::string_view expected_text) {
             static_text->GetStringAttribute(ax::mojom::StringAttribute::kName));
 }
 
+void CheckListMarker(const ui::AXNode* marker,
+                     std::string_view expected_marker_name) {
+  ASSERT_NE(nullptr, marker);
+  EXPECT_EQ(ax::mojom::Role::kListMarker, marker->GetRole());
+  EXPECT_EQ("::marker",
+            marker->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag));
+  EXPECT_EQ(expected_marker_name,
+            marker->GetStringAttribute(ax::mojom::StringAttribute::kName));
+  EXPECT_EQ(0u, marker->GetChildCount());
+  EXPECT_FALSE(marker->data().relative_bounds.bounds.IsEmpty());
+}
+
 void CheckListItem(const ui::AXNode* item,
                    std::string_view expected_text,
                    std::string_view expected_marker_name = "• ") {
@@ -270,15 +282,7 @@ void CheckListItem(const ui::AXNode* item,
       item->GetBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject));
   ASSERT_EQ(2u, item->GetChildCount());
 
-  const ui::AXNode* marker = item->GetChildAtIndex(0u);
-  ASSERT_NE(nullptr, marker);
-  EXPECT_EQ(ax::mojom::Role::kListMarker, marker->GetRole());
-  EXPECT_EQ("::marker",
-            marker->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag));
-  EXPECT_EQ(expected_marker_name,
-            marker->GetStringAttribute(ax::mojom::StringAttribute::kName));
-  EXPECT_EQ(0u, marker->GetChildCount());
-  EXPECT_FALSE(marker->data().relative_bounds.bounds.IsEmpty());
+  CheckListMarker(item->GetChildAtIndex(0u), expected_marker_name);
 
   const ui::AXNode* item_static_text = item->GetChildAtIndex(1u);
   ASSERT_NE(nullptr, item_static_text);
@@ -310,14 +314,7 @@ const ui::AXNode* CheckListItemWithNestedList(
   }
 
   // The child count check above guarantees non-null children.
-  const ui::AXNode* marker = item->GetChildAtIndex(0u);
-  EXPECT_EQ(ax::mojom::Role::kListMarker, marker->GetRole());
-  EXPECT_EQ("::marker",
-            marker->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag));
-  EXPECT_EQ(expected_marker_name,
-            marker->GetStringAttribute(ax::mojom::StringAttribute::kName));
-  EXPECT_EQ(0u, marker->GetChildCount());
-  EXPECT_FALSE(marker->data().relative_bounds.bounds.IsEmpty());
+  CheckListMarker(item->GetChildAtIndex(0u), expected_marker_name);
 
   const ui::AXNode* item_static_text = item->GetChildAtIndex(1u);
   EXPECT_EQ(ax::mojom::Role::kStaticText, item_static_text->GetRole());
