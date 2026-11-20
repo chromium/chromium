@@ -163,15 +163,21 @@ const content::EvalJsResult ExecuteScriptRequestFullScreen(
   )");
 }
 
-const content::EvalJsResult VerifyFullscreen(extensions::WebViewGuest* guest) {
+// requestFullscreen() resolves asynchronously, so wait for the fullscreen
+// change if it hasn't happened yet.
+const content::EvalJsResult WaitForFullscreen(extensions::WebViewGuest* guest) {
   return content::EvalJs(guest->GetGuestMainFrame(), R"(
-    (function() {
+    new Promise(resolve => {
       if (document.fullscreenElement !== null) {
-        return 'SUCCESS';
-      } else {
-        return 'FAIL';
+        resolve('SUCCESS');
+        return;
       }
-    })();
+      document.addEventListener('fullscreenchange', () => {
+        resolve(document.fullscreenElement !== null ? 'SUCCESS' : 'FAIL');
+      }, {once: true});
+      document.addEventListener('fullscreenerror', () => resolve('FAIL'),
+                                {once: true});
+    });
   )");
 }
 // TODO(odejesush): Add tests for the rest of the Promise API methods.
@@ -550,7 +556,7 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, EnterFullScreenControlledFrame) {
   auto* web_view_guest = GetWebViewGuest(app_frame);
 
   EXPECT_EQ(kEvalSuccessStr, ExecuteScriptRequestFullScreen(app_frame));
-  EXPECT_EQ(kEvalSuccessStr, VerifyFullscreen(web_view_guest));
+  EXPECT_EQ(kEvalSuccessStr, WaitForFullscreen(web_view_guest));
 }
 
 IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, DisabledInDataIframe) {
