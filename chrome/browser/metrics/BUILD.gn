@@ -325,6 +325,7 @@ source_set("impl") {
     "//components/safe_browsing/core/common:features",
     "//components/services/paint_preview_compositor/public/mojom",
     "//components/signin/core/browser",
+    "//components/signin/public/browser",
     "//components/site_token_provider",
     "//components/startup_metric_utils",
     "//components/supervised_user/core/browser",

@@ -59,8 +59,6 @@ static_library("browser") {
     "signin_internals_util.h",
     "signin_metrics_service.cc",
     "signin_metrics_service.h",
-    "signin_status_metrics_provider_helpers.cc",
-    "signin_status_metrics_provider_helpers.h",
   ]
 
   public_deps = [
@@ -127,7 +125,6 @@ source_set("unit_tests") {
     "signin_error_controller_unittest.cc",
     "signin_header_helper_unittest.cc",
     "signin_metrics_service_unittest.cc",
-    "signin_status_metrics_provider_helpers_unittest.cc",
   ]
 
   deps = [
@@ -160,10 +157,7 @@ source_set("unit_tests") {
   ]
 
   if (is_chromeos) {
-    sources -= [
-      "account_investigator_unittest.cc",
-      "signin_status_metrics_provider_helpers_unittest.cc",
-    ]
+    sources -= [ "account_investigator_unittest.cc" ]
   }
 
   if (enable_dice_support) {

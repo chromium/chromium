@@ -9,7 +9,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/android/metrics/android_session_durations_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/signin/core/browser/signin_status_metrics_provider_helpers.h"
+#include "components/signin/public/browser/signin_status_metrics_provider_helpers.h"
 #include "components/sync/service/sync_session_durations_metrics_recorder.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().

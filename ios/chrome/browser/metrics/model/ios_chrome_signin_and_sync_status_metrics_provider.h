@@ -7,7 +7,7 @@
 
 #include "build/build_config.h"
 #include "components/metrics/metrics_provider.h"
-#include "components/signin/core/browser/signin_status_metrics_provider_helpers.h"
+#include "components/signin/public/browser/signin_status_metrics_provider_helpers.h"
 
 namespace metrics {
 class ChromeUserMetricsExtension;

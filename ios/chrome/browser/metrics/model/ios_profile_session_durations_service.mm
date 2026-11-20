@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/metrics/model/ios_profile_session_durations_service.h"
 
 #import "components/password_manager/core/browser/password_session_durations_metrics_recorder.h"
-#import "components/signin/core/browser/signin_status_metrics_provider_helpers.h"
+#import "components/signin/public/browser/signin_status_metrics_provider_helpers.h"
 #import "components/sync/service/sync_session_durations_metrics_recorder.h"
 #import "components/unified_consent/msbb_session_durations_metrics_recorder.h"
 

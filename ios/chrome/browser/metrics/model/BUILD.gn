@@ -150,6 +150,7 @@ source_set("model") {
     "//components/segmentation_platform/embedder/default_model",
     "//components/segmentation_platform/public",
     "//components/signin/core/browser",
+    "//components/signin/public/browser",
     "//components/supervised_user/core/browser",
     "//components/supervised_user/core/common",
     "//components/sync",

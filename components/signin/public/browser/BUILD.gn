@@ -8,11 +8,14 @@ if (is_android) {
 
 source_set("browser") {
   sources = [
+    "signin_status_metrics_provider_helpers.cc",
+    "signin_status_metrics_provider_helpers.h",
     "web_signin_tracker.cc",
     "web_signin_tracker.h",
   ]
 
   deps = [
+    "//base",
     "//components/signin/core/browser",
     "//components/signin/public/base",
     "//components/signin/public/base:signin_buildflags",
@@ -45,7 +48,10 @@ if (is_android) {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "web_signin_tracker_unittest.cc" ]
+  sources = [
+    "signin_status_metrics_provider_helpers_unittest.cc",
+    "web_signin_tracker_unittest.cc",
+  ]
 
   deps = [
     ":browser",
@@ -63,6 +69,7 @@ source_set("unit_tests") {
   ]
 
   if (is_chromeos) {
+    sources -= [ "signin_status_metrics_provider_helpers_unittest.cc" ]
     deps += [ "//components/account_manager_core:test_support" ]
   }
 

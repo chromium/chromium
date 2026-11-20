@@ -44,6 +44,7 @@ source_set("signin") {
     "//components/account_id",
     "//components/metrics",
     "//components/signin/core/browser",
+    "//components/signin/public/browser",
     "//ui/base",
     "//ui/base/interaction",
     "//url",
@@ -91,10 +92,7 @@ source_set("signin") {
       "signin_manager_android_factory.h",
       "signin_ui_delegate_impl_android.h",
     ]
-    public_deps += [
-      "//components/signin/public/base:signin_deep_link",
-      "//components/signin/public/browser",
-    ]
+    public_deps += [ "//components/signin/public/base:signin_deep_link" ]
     deps = [ "//chrome/android:jni_headers" ]
   }
 
