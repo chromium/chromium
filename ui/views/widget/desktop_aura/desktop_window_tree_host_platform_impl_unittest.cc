@@ -27,6 +27,10 @@
 #include "ui/views/widget/widget_delegate.h"
 
 #if BUILDFLAG(IS_LINUX)
+#include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
+#include "ui/platform_window/wm/wm_move_loop_handler.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_linux.h"
 #endif
 
@@ -453,6 +457,97 @@ TEST_F(DesktopWindowTreeHostPlatformImplTest,
   if (widget->GetNativeWindow()) {
     widget->GetNativeWindow()->RemovePreTargetHandler(&close_handler);
   }
+}
+
+namespace {
+
+// Replaces the platform window's move loop handler and runs `on_run_` instead
+// of a real move loop.
+class FakeWmMoveLoopHandler : public ui::WmMoveLoopHandler {
+ public:
+  explicit FakeWmMoveLoopHandler(ui::PlatformWindow* window)
+      : window_(window), original_(ui::GetWmMoveLoopHandler(*window)) {
+    ui::SetWmMoveLoopHandler(window_, this);
+  }
+  FakeWmMoveLoopHandler(const FakeWmMoveLoopHandler&) = delete;
+  FakeWmMoveLoopHandler& operator=(const FakeWmMoveLoopHandler&) = delete;
+  ~FakeWmMoveLoopHandler() override {
+    ui::SetWmMoveLoopHandler(window_, original_);
+  }
+
+  void set_on_run(base::OnceCallback<bool()> on_run) {
+    on_run_ = std::move(on_run);
+  }
+
+  // ui::WmMoveLoopHandler:
+  bool RunMoveLoop(const gfx::Vector2d& drag_offset) override {
+    return std::move(on_run_).Run();
+  }
+  void EndMoveLoop() override {}
+
+ private:
+  raw_ptr<ui::PlatformWindow> window_;
+  raw_ptr<ui::WmMoveLoopHandler> original_;
+  base::OnceCallback<bool()> on_run_;
+};
+
+}  // namespace
+
+// Verifies that a move loop clears the held mouse button state when the
+// platform consumes the release that ends it, unless capture was transferred
+// to another window during the loop (e.g. a tab drag attaching to another tab
+// strip with the button still held).
+TEST_F(DesktopWindowTreeHostPlatformImplTest,
+       RunMoveLoopClearsMouseButtonState) {
+  std::unique_ptr<Widget> widget =
+      CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
+  std::unique_ptr<Widget> target_widget =
+      CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
+  widget->Show();
+  target_widget->Show();
+  auto* host = static_cast<DesktopWindowTreeHostPlatform*>(
+      widget->GetNativeWindow()->GetHost());
+  FakeWmMoveLoopHandler move_loop_handler(host->platform_window());
+  auto* env = aura::Env::GetInstance();
+
+  auto run_move_loop = [&]() {
+    return widget->RunMoveLoop(gfx::Vector2d(), Widget::MoveLoopSource::kMouse,
+                               Widget::MoveLoopEscapeBehavior::kDontHide);
+  };
+
+  for (bool moved : {true, false}) {
+    // The loop ends without the release reaching aura.
+    env->set_mouse_button_flags(ui::EF_LEFT_MOUSE_BUTTON);
+    move_loop_handler.set_on_run(base::BindLambdaForTesting([&, moved]() {
+      EXPECT_TRUE(env->IsLeftMouseButtonDown());
+      EXPECT_TRUE(widget->GetNativeWindow()->HasCapture());
+      return moved;
+    }));
+    EXPECT_EQ(moved ? Widget::MoveLoopResult::kSuccessful
+                    : Widget::MoveLoopResult::kCanceled,
+              run_move_loop());
+    EXPECT_FALSE(env->IsMouseButtonDown());
+    EXPECT_FALSE(widget->GetNativeWindow()->HasCapture());
+
+    // Capture moves to another window while the loop runs.
+    env->set_mouse_button_flags(ui::EF_LEFT_MOUSE_BUTTON);
+    move_loop_handler.set_on_run(base::BindLambdaForTesting([&, moved]() {
+      base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindLambdaForTesting([&]() {
+            target_widget->GetNativeWindow()->SetCapture();
+            run_loop.Quit();
+          }));
+      run_loop.Run();
+      return moved;
+    }));
+    run_move_loop();
+    EXPECT_TRUE(env->IsLeftMouseButtonDown());
+    EXPECT_TRUE(target_widget->GetNativeWindow()->HasCapture());
+    target_widget->GetNativeWindow()->ReleaseCapture();
+  }
+
+  env->set_mouse_button_flags(ui::EF_NONE);
 }
 #endif  // BUILDFLAG(IS_LINUX)
 

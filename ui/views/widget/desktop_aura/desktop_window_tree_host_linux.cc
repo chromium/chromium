@@ -41,6 +41,8 @@
 #include "ui/platform_window/wm/wm_move_resize_handler.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/views_delegate.h"
+#include "ui/views/widget/desktop_aura/desktop_capture_client.h"
+#include "ui/views/widget/desktop_aura/window_event_filter_linux.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/frame_view_linux.h"
 #include "ui/views/window/frame_view_utils_linux.h"
@@ -50,8 +52,6 @@
 #if BUILDFLAG(USE_ATK)
 #include "ui/accessibility/platform/atk_util_auralinux.h"
 #endif
-
-#include "ui/views/widget/desktop_aura/window_event_filter_linux.h"
 
 namespace views {
 namespace {
@@ -394,6 +394,21 @@ Widget::MoveLoopResult DesktopWindowTreeHostLinux::RunMoveLoop(
 
   Widget::MoveLoopResult result = DesktopWindowTreeHostPlatform::RunMoveLoop(
       drag_offset, source, escape_behavior);
+
+  // The platform may consume the button release that ends the loop (e.g. when
+  // the X11 window manager performs the move), which would leave aura::Env
+  // reporting the button as held and suppress tooltips until the next click.
+  // Keep the state only if capture was transferred to another window during
+  // the loop, which happens when a tab drag attaches to another tab strip
+  // while the button is still held.
+  aura::Window* capture_window = DesktopCaptureClient::GetCaptureWindowGlobal();
+  const bool capture_transferred =
+      capture_window &&
+      (!weak_this || !GetContentWindow()->Contains(capture_window));
+  if (!capture_transferred) {
+    aura::Env::GetInstance()->set_mouse_button_flags(0);
+  }
+
   if (weak_this.get()) {
     GetContentWindow()->ReleaseCapture();
   }

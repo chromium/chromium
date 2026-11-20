@@ -45,6 +45,8 @@ source_set("x11") {
     "x11_window.h",
     "x11_window_manager.cc",
     "x11_window_manager.h",
+    "x11_wm_move_loop.cc",
+    "x11_wm_move_loop.h",
   ]
 
   deps = [
@@ -147,6 +149,7 @@ source_set("x11_unittests") {
     "x11_clipboard_ozone_unittest.cc",
     "x11_screen_ozone_unittest.cc",
     "x11_window_ozone_unittest.cc",
+    "x11_wm_move_loop_unittest.cc",
   ]
 
   deps = [
