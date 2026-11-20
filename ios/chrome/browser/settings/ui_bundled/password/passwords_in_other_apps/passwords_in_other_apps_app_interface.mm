@@ -22,6 +22,16 @@
   return swizzlePasswordAutoFillManagerBlock;
 }
 
++ (id)swizzleTurnOnCredentialProviderExtensionRequestWithResult:
+    (BOOL)appWasEnabledForAutoFill {
+  // The completion handler is called asynchronously to mirror the system API.
+  return ^(id helperClass, void (^completionHandler)(BOOL)) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+      completionHandler(appWasEnabledForAutoFill);
+    });
+  };
+}
+
 #pragma mark - Mocking and Expectations
 
 + (void)startFakeManagerWithAutoFillStatus:(BOOL)autoFillEnabled {

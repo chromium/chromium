@@ -18,6 +18,14 @@
 // should not be called directly.
 + (id)swizzlePasswordAutoFillStatusManagerWithFake;
 
+// Returns the block to use for swizzling the `ASSettingsHelper` request to turn
+// on the credential provider extension. The block skips the system prompt and
+// asynchronously calls the completion handler with `appWasEnabledForAutoFill`.
+// This block is only used for swizzling, which is why its type is opaque. It
+// should not be called directly.
++ (id)swizzleTurnOnCredentialProviderExtensionRequestWithResult:
+    (BOOL)appWasEnabledForAutoFill;
+
 #pragma mark - Mocking and Expectations
 
 // Mocks the scenario that the app has retrieved the current state of device

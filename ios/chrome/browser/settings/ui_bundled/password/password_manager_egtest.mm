@@ -2300,9 +2300,17 @@ TAG_SMOKE_TEST(PasswordManagerAddTestCase, testAddNewPasswordCredential);
       waitForUIElementToAppearWithMatcher:TurnOnPasswordsInOtherAppsButton()];
 }
 
-// Tests that the "Turn on AutoFill…" button becomes enabled when tapped, and
+// Tests that the "Turn on AutoFill…" button becomes disabled when tapped, and
 // gets re-enabled after a 10 seconds delay.
 - (void)testTapsOnTurnOnPasswordsInOtherAppsItem {
+  // Fakes the system prompt outcome so that the re-enabling delay starts right
+  // away instead of depending on the system's response time.
+  EarlGreyScopedBlockSwizzler turnOnRequestSwizzler(
+      @"ASSettingsHelper",
+      @"requestToTurnOnCredentialProviderExtensionWithCompletionHandler:",
+      [PasswordsInOtherAppsAppInterface
+          swizzleTurnOnCredentialProviderExtensionRequestWithResult:NO]);
+
   OpenPasswordManager();
   OpenSettingsSubmenu();
 
