@@ -126,28 +126,31 @@ PaintController::PaintController(bool record_debug_info,
 }
 
 PaintController::~PaintController() {
-  if (!persistent_data_) {
+  if (persistent_data_) {
+    // CommitNewDisplayItems() should have been called.
+    CHECK(!new_paint_artifact_);
+
+    for (const auto& client : clients_to_validate_) {
+      if (client->IsCacheable()) {
+        client->Validate();
+      }
+    }
+    for (auto& chunk : CurrentPaintChunks()) {
+      chunk.client_is_just_created = false;
+    }
+  } else {
     CHECK(clients_to_validate_.empty());
-    return;
-  }
-
-  // CommitNewDisplayItems() should have been called.
-  CHECK(!new_paint_artifact_);
-
-  for (const auto& client : clients_to_validate_) {
-    if (client->IsCacheable()) {
-      client->Validate();
+    if (new_paint_artifact_) {
+      new_paint_artifact_->clear();
     }
   }
-  for (auto& chunk : CurrentPaintChunks()) {
-    chunk.client_is_just_created = false;
-  }
 
-  // After the cycle scope, the old paint artifact should not be referenced by
+  // After the cycle scope, the old paint artifact (or the transient paint
+  // artifact when there is no persistent data) should not be referenced by
   // anyone and the backing store can be freed. This is especially helpful
-  // to reduce overhead of GC. See crbug.com/330072757.
+  // to reduce overhead of GC. See crbug.com/330072757 and crbug.com/587969368.
   if (old_paint_artifact_) {
-    CHECK_NE(old_paint_artifact_, &CurrentPaintArtifact());
+    CHECK(!persistent_data_ || old_paint_artifact_ != &CurrentPaintArtifact());
     old_paint_artifact_->clear();
   }
 }
@@ -841,6 +844,8 @@ const PaintArtifact& PaintController::CommitNewDisplayItems() {
     old_paint_artifact_ = persistent_data_->current_paint_artifact_.Get();
     persistent_data_->CommitNewDisplayItems(paint_artifact,
                                             std::move(new_subsequences_));
+  } else {
+    old_paint_artifact_ = &paint_artifact;
   }
 
 #if DCHECK_IS_ON()

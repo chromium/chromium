@@ -260,7 +260,9 @@ class PLATFORM_EXPORT PaintController {
   // Must be called when a painting is finished. If associated with persistent
   // data, updates the current paint artifact in the persistent data with the
   // new paintings. Returns the new paint artifact (which is mainly for
-  // transient (i.e. no persistent data) usages).
+  // transient (i.e. no persistent data) usages). Note that for transient
+  // usages, the returned PaintArtifact will be cleared when this
+  // PaintController is destructed.
   const PaintArtifact& CommitNewDisplayItems();
 
   bool IsCheckingUnderInvalidationForTesting() const;
@@ -408,9 +410,9 @@ class PLATFORM_EXPORT PaintController {
   PaintChunker paint_chunker_;
   HeapVector<Member<const DisplayItemClient>> clients_to_validate_;
 
-  // Saves the original persistent_data_->current_paint_artifact_ after calling
-  // CommitNewDisplayItems. The data will be cleared when this PaintController
-  // is destructed to reduce GC overhead.
+  // Saves the PaintArtifact to clear when this PaintController is destructed to
+  // reduce GC overhead: the original persistent_data_->current_paint_artifact_
+  // for persistent usages, or the committed PaintArtifact for transient usages.
   PaintArtifact* old_paint_artifact_ = nullptr;
 
   // A stack recording current frames' first paints.
