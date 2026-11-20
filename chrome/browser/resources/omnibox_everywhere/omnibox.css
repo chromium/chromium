@@ -87,9 +87,6 @@
   #inputWrapper {
     border: 1px solid ActiveBorder;
   }
-  #inputWrapper::after {
-    border: none;
-  }
 }
 
 :host([dropdown-is-visible]) {
@@ -120,6 +117,7 @@
   background-image: linear-gradient(
       var(--omnibox-inactive-hover-overlay, transparent),
       var(--omnibox-inactive-hover-overlay, transparent));
+  border: 1px solid transparent;
   border-radius: var(--cr-searchbox-border-radius);
   bottom: 0;
   box-shadow: 0 4px 20px 2px rgba(0, 0, 0, 0.25);
@@ -131,6 +129,8 @@
   top: 0;
   transition: background-color var(--loomnibox-animation-duration)
           var(--loomnibox-animation-easing),
+      border-color var(--loomnibox-animation-duration)
+          var(--loomnibox-animation-easing),
       border-radius var(--loomnibox-animation-duration)
           var(--loomnibox-animation-easing),
       inset-inline-end var(--loomnibox-animation-duration)
@@ -140,36 +140,18 @@
   z-index: -1;
 }
 
-#inputWrapper::after {
-  border: 1px solid transparent;
-  border-radius: var(--cr-searchbox-border-radius);
-  bottom: 0;
-  box-sizing: border-box;
-  content: '';
-  inset-inline-end: -7px;
-  inset-inline-start: -7px;
-  pointer-events: none;
-  position: absolute;
-  top: 0;
-  transition: border-color var(--loomnibox-animation-duration)
-          var(--loomnibox-animation-easing),
-      border-radius var(--loomnibox-animation-duration)
-          var(--loomnibox-animation-easing),
-      inset-inline-end var(--loomnibox-animation-duration)
-          var(--loomnibox-animation-easing),
-      inset-inline-start var(--loomnibox-animation-duration)
-          var(--loomnibox-animation-easing);
-  z-index: 2;
-}
-
 @media (prefers-color-scheme: dark) {
   :host(:not([dropdown-is-visible]):not([has-user-input])) {
     --color-searchbox-background: var(--color-sys-omnibox-container);
   }
 
-  #inputWrapper::after {
-    border-color: color-mix(
-        in srgb, var(--color-sys-outline) 25%, var(--color-sys-omnibox-container));
+  :host(:not([dropdown-is-visible]):not([has-user-input])) #inputContainer {
+    background: transparent;
+  }
+
+  :host(:not([dropdown-is-visible]):not([has-user-input]))
+      #inputWrapper::before {
+    border-color: color-mix(in srgb, var(--color-sys-outline) 20%, transparent);
   }
 
   :host(:not([dropdown-is-visible]):not([has-user-input])) #profileIcon {
@@ -434,10 +416,6 @@ cr-composebox-contextual-entrypoint-and-menu,
   background: transparent;
 }
 
-#inputWrapper:has(search-animated-glow[animation-state='dragging'])::after {
-  border-color: transparent;
-}
-
 :host([is-fusebox-enabled][is-dragging-file])
     cr-searchbox-input::part(searchbox-input),
 :host([is-fusebox-enabled][is-dragging-file])
@@ -559,8 +537,7 @@ cr-searchbox-input::part(icon),
   padding-top: 0;
 }
 
-:host(:not([dropdown-is-visible]):not([has-user-input])) #inputWrapper::before,
-:host(:not([dropdown-is-visible]):not([has-user-input])) #inputWrapper::after {
+:host(:not([dropdown-is-visible]):not([has-user-input])) #inputWrapper::before {
   inset-inline-end: 0;
   inset-inline-start: 0;
 }

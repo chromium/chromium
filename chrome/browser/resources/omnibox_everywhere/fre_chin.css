@@ -41,8 +41,7 @@
   .chin-container {
     background-color: var(--color-sys-omnibox-container);
     border: 1px solid
-        color-mix(in srgb, var(--color-sys-outline) 25%,
-            var(--color-sys-omnibox-container));
+        color-mix(in srgb, var(--color-sys-outline) 20%, transparent);
   }
 }
 

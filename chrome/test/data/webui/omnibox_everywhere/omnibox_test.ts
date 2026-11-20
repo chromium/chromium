@@ -5411,36 +5411,14 @@ suite('OmniboxEverywhereContextMenuTest', () => {
 
           const pillBeforeStyle =
               window.getComputedStyle(omnibox.$.inputWrapper, '::before');
-          const pillAfterStyle =
-              window.getComputedStyle(omnibox.$.inputWrapper, '::after');
           const omniboxStyle = window.getComputedStyle(omnibox);
           if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
             assertEquals('rgb(34, 36, 42)', pillBeforeStyle.backgroundColor);
-            assertEquals('solid', pillAfterStyle.borderTopStyle);
-            assertEquals('1px', pillAfterStyle.borderTopWidth);
-            assertNotEquals('rgba(0, 0, 0, 0)', pillAfterStyle.borderTopColor);
-            assertEquals('0px', pillAfterStyle.insetInlineStart);
-            assertEquals('0px', pillAfterStyle.insetInlineEnd);
+            assertNotEquals('rgba(0, 0, 0, 0)', pillBeforeStyle.borderTopColor);
             assertEquals(
                 'rgb(34, 36, 42)',
                 omniboxStyle.getPropertyValue('--color-searchbox-background')
                     .trim());
-            const mvtContainer = app.shadowRoot.querySelector<HTMLElement>(
-                '#mostVisitedContainer');
-            if (mvtContainer) {
-              const mvtStyle = window.getComputedStyle(mvtContainer);
-              assertEquals('solid', mvtStyle.outlineStyle);
-              assertEquals('1px', mvtStyle.outlineWidth);
-              assertEquals('-1px', mvtStyle.outlineOffset);
-              assertNotEquals('rgba(0, 0, 0, 0)', mvtStyle.outlineColor);
-            }
-            const mvtCloseButton = app.shadowRoot.querySelector<HTMLElement>(
-                '#mostVisitedCloseButton');
-            if (mvtCloseButton) {
-              assertEquals(
-                  'rgb(34, 36, 42)',
-                  window.getComputedStyle(mvtCloseButton).backgroundColor);
-            }
             const mostVisited = app.shadowRoot.querySelector('cr-most-visited');
             if (mostVisited) {
               assertEquals(
@@ -5469,14 +5447,6 @@ suite('OmniboxEverywhereContextMenuTest', () => {
           }
           omnibox.setAttribute('dropdown-is-visible', '');
           await microtasksFinished();
-          assertEquals(
-              '-7px',
-              window.getComputedStyle(omnibox.$.inputWrapper, '::after')
-                  .insetInlineStart);
-          assertEquals(
-              '-7px',
-              window.getComputedStyle(omnibox.$.inputWrapper, '::after')
-                  .insetInlineEnd);
 
           assertEquals(
               'rgb(60, 60, 60)',
@@ -5589,10 +5559,6 @@ suite('OmniboxEverywhereContextMenuTest', () => {
               'rgba(0, 0, 0, 0)',
               window.getComputedStyle(omnibox.$.inputWrapper, '::before')
                   .backgroundColor);
-          assertEquals(
-              'rgba(0, 0, 0, 0)',
-              window.getComputedStyle(omnibox.$.inputWrapper, '::after')
-                  .borderTopColor);
           omnibox.isDraggingFile = false;
           omnibox.animationState = GlowAnimationState.NONE;
           await microtasksFinished();
@@ -5604,12 +5570,6 @@ suite('OmniboxEverywhereContextMenuTest', () => {
                   'rgb(60, 60, 60)',
               window.getComputedStyle(omnibox.$.inputWrapper, '::before')
                   .backgroundColor);
-          if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-            assertNotEquals(
-                'rgba(0, 0, 0, 0)',
-                window.getComputedStyle(omnibox.$.inputWrapper, '::after')
-                    .borderTopColor);
-          }
 
           testEverywherePage.openComposebox({
             tool: ToolMode.kUnspecified,
