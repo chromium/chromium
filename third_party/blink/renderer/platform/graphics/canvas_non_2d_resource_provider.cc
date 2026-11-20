@@ -288,12 +288,10 @@ CanvasNon2DResourceProvider::NewOrRecycledResource() {
 
   if (!resource->IsInitialized()) {
     if (image_pool_->GetImageInfo().is_software) {
-      resource->InitializeSoftware(CreateWeakPtr(),
-                                   shared_image_interface_provider_);
+      resource->InitializeSoftware(shared_image_interface_provider_);
     } else {
-      resource->Initialize(CreateWeakPtr());
+      resource->Initialize();
     }
-    ++num_inflight_resources_;
   }
   DCHECK(resource->HasOneRef());
   return resource;

@@ -57,7 +57,6 @@ class WebGraphicsSharedImageInterfaceProvider;
 
 class PLATFORM_EXPORT CanvasNon2DResourceProvider
     : public CanvasMemoryDumpClient,
-      public CanvasResource::Client,
       public FlushForImageObserver,
       public WebGraphicsContext3DProviderWrapper::DestructionObserver,
       public viz::ContextLostObserver,
@@ -157,7 +156,6 @@ class PLATFORM_EXPORT CanvasNon2DResourceProvider
   // WebGraphicsContext3DProviderWrapper::DestructionObserver implementation.
   void OnContextDestroyed() override;
 
-  void OnDestroyResource() override { --num_inflight_resources_; }
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd) override;
   size_t GetSize() const override;
 
@@ -235,8 +233,6 @@ class PLATFORM_EXPORT CanvasNon2DResourceProvider
   // notified after the shared `WebGraphicsContext3DProviderWrapper` instance is
   // recreated.
   scoped_refptr<viz::RasterContextProvider> raster_context_provider_;
-
-  int num_inflight_resources_ = 0;
 
   base::WeakPtrFactory<CanvasNon2DResourceProvider> weak_ptr_factory_{this};
 };

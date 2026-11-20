@@ -70,12 +70,6 @@ enum class CanvasResourceProviderType {
 // Resource type for SharedImage
 class PLATFORM_EXPORT CanvasResource final : public gpu::ClientImage {
  public:
-  class Client {
-   public:
-    virtual ~Client() = default;
-    virtual void OnDestroyResource() = 0;
-  };
-
   using ReleaseCallback = base::OnceCallback<void(
       scoped_refptr<blink::CanvasResource> canvas_resource,
       const gpu::SyncToken& sync_token,
@@ -90,14 +84,12 @@ class PLATFORM_EXPORT CanvasResource final : public gpu::ClientImage {
       const gfx::ColorSpace& color_space,
       gpu::SharedImageUsageSet shared_image_usage_flags,
       bool is_software,
-      base::WeakPtr<Client>,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>);
 
-  void InitializeSoftware(base::WeakPtr<Client> client,
-                          base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>
+  void InitializeSoftware(base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>
                               shared_image_interface_provider);
-  void Initialize(base::WeakPtr<Client> client);
+  void Initialize();
   bool IsInitialized() const { return is_initialized_; }
 
   // Save (and wait on) this sync token on the context used by this resource for
@@ -153,7 +145,6 @@ class PLATFORM_EXPORT CanvasResource final : public gpu::ClientImage {
 
   // Accessed on any thread.
   bool is_initialized_ = false;
-  base::WeakPtr<Client> client_;
 };
 
 }  // namespace blink

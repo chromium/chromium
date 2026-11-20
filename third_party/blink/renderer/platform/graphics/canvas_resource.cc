@@ -81,14 +81,11 @@ CanvasResource::CanvasResource(
 }
 
 void CanvasResource::InitializeSoftware(
-    base::WeakPtr<Client> client,
     base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>
         shared_image_interface_provider) {
   DCHECK(GetSharedImage());
   DCHECK(!is_initialized_);
   DCHECK(shared_image_interface_provider);
-
-  client_ = std::move(client);
 
   // This class doesn't currently have a way of verifying the sync token for
   // software SharedImages at the time of vending it in VerifySyncToken(),
@@ -104,11 +101,9 @@ void CanvasResource::InitializeSoftware(
   is_initialized_ = true;
 }
 
-void CanvasResource::Initialize(base::WeakPtr<Client> client) {
+void CanvasResource::Initialize() {
   DCHECK(GetSharedImage());
   DCHECK(!is_initialized_);
-
-  client_ = std::move(client);
 
   // Wait for the mailbox to be ready to be used.
   WaitSyncToken(GetSharedImage()->creation_sync_token());
@@ -123,7 +118,6 @@ scoped_refptr<CanvasResource> CanvasResource::CreateForTesting(
     const gfx::ColorSpace& color_space,
     gpu::SharedImageUsageSet shared_image_usage_flags,
     bool is_software,
-    base::WeakPtr<Client> client,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>
         shared_image_interface_provider) {
@@ -140,9 +134,9 @@ scoped_refptr<CanvasResource> CanvasResource::CreateForTesting(
   auto canvas_resource = image_pool->GetImage();
   if (is_software) {
     canvas_resource->InitializeSoftware(
-        client, std::move(shared_image_interface_provider));
+        std::move(shared_image_interface_provider));
   } else {
-    canvas_resource->Initialize(client);
+    canvas_resource->Initialize();
   }
   return canvas_resource;
 }
@@ -157,19 +151,7 @@ SkImageInfo CanvasResource::CreateSkImageInfo() const {
                            color_space.ToSkColorSpace());
 }
 
-CanvasResource::~CanvasResource() {
-  if (is_cross_thread()) {
-    // Destroyed on wrong thread. This can happen when the thread of origin was
-    // torn down, in which case the GPU context owning any underlying resources
-    // no longer exists and it is not possible to do cleanup of any GPU
-    // context-associated state.
-    return;
-  }
-
-  if (client_) {
-    client_->OnDestroyResource();
-  }
-}
+CanvasResource::~CanvasResource() = default;
 
 void CanvasResource::UploadSoftwareRenderingResults(SkSurface* sk_surface) {
   // Copy the rendering results from `sk_surface` to the SharedImage backing

@@ -248,10 +248,6 @@ bool BaseRenderingContext2D::IsSingleBuffered() const {
                             gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE);
 }
 
-int BaseRenderingContext2D::NumInflightResourcesForTesting() const {
-  return num_inflight_resources_;
-}
-
 bool BaseRenderingContext2D::HasUnusedResourcesForTesting() const {
   return image_pool_ && image_pool_->GetPoolSizeForTesting() > 0;
 }
@@ -285,12 +281,10 @@ void BaseRenderingContext2D::ResetSharedImagePool() {
   if (!image_pool_) {
     return;
   }
-  resource_client_weak_ptr_factory_.InvalidateWeakPtrs();
   resource_recycler_.reset();
   image_pool_.reset();
   resource_.reset();
   is_accelerated_ = false;
-  num_inflight_resources_ = 0;
   must_preserve_content_on_copy_on_write_ = true;
   current_resource_has_write_access_ = false;
   is_cleared_ = false;
@@ -341,13 +335,10 @@ scoped_refptr<CanvasResource> BaseRenderingContext2D::NewOrRecycledResource() {
 
   if (!resource->IsInitialized()) {
     if (image_pool_->GetImageInfo().is_software) {
-      resource->InitializeSoftware(
-          resource_client_weak_ptr_factory_.GetWeakPtr(),
-          shared_image_interface_provider_);
+      resource->InitializeSoftware(shared_image_interface_provider_);
     } else {
-      resource->Initialize(resource_client_weak_ptr_factory_.GetWeakPtr());
+      resource->Initialize();
     }
-    ++num_inflight_resources_;
   }
   DCHECK(resource->HasOneRef());
   return resource;
