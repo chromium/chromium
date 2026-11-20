@@ -7071,8 +7071,7 @@ class LensOverlayControllerBrowserWithPixelsTest
             contextual_tasks::kContextualTasks,
             contextual_tasks::kContextualTasksSidePanel,
             contextual_tasks::kContextualTasksRearchitecture,
-            contextual_tasks::kContextualTasksSidePanelRearchitecture,
-            lens::features::kLensOverlayVisualSelectionUpdates});
+            contextual_tasks::kContextualTasksSidePanelRearchitecture});
   }
 
   bool IsNotEmptyAndNotTransparentBlack(SkBitmap bitmap) {

@@ -52,9 +52,6 @@ BASE_FEATURE(kLensOverlaySurvey, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kLensOverlaySidePanelOpenInNewTab,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kLensOverlayVisualSelectionUpdates,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kLensOverlayUpdatedClientContext,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -457,52 +454,6 @@ constexpr base::FeatureParam<base::TimeDelta> kSupportedLanguagesCacheTimeoutMs{
     base::Days(30)};
 constexpr base::FeatureParam<int> kRecentLanguagesAmount{
     &kLensOverlayTranslateLanguages, "recent-languages-amount", 5};
-
-
-constexpr base::FeatureParam<bool>
-    kLensOverlayVisualSelectionUpdatesEnableBorderGlow{
-        &kLensOverlayVisualSelectionUpdates, "enable-border-glow", true};
-
-constexpr base::FeatureParam<bool>
-    kLensOverlayVisualSelectionUpdatesEnableGradientRegionStroke{
-        &kLensOverlayVisualSelectionUpdates, "enable-gradient-region-stroke",
-        false};
-
-constexpr base::FeatureParam<bool>
-    kLensOverlayVisualSelectionUpdatesEnableWhiteRegionStroke{
-        &kLensOverlayVisualSelectionUpdates, "enable-white-region-stroke",
-        true};
-
-constexpr base::FeatureParam<bool>
-    kLensOverlayVisualSelectionUpdatesEnableRegionSelectedGlow{
-        &kLensOverlayVisualSelectionUpdates, "enable-region-selected-glow",
-        true};
-
-constexpr base::FeatureParam<bool>
-    kLensOverlayVisualSelectionUpdatesEnableGradientSuperG{
-        &kLensOverlayVisualSelectionUpdates, "enable-gradient-super-g", true};
-
-constexpr base::FeatureParam<bool>
-    kLensOverlayVisualSelectionUpdatesCsbThumbnail{
-        &kLensOverlayVisualSelectionUpdates, "enable-csb-thumbnail", true};
-
-constexpr base::FeatureParam<bool>
-    kLensOverlayVisualSelectionUpdatesEnableCsbMotionTweaks{
-        &kLensOverlayVisualSelectionUpdates, "enable-csb-motion-tweaks", true};
-
-constexpr base::FeatureParam<bool>
-    kLensOverlayVisualSelectionUpdatesThumbnailSizingTweaks{
-        &kLensOverlayVisualSelectionUpdates, "enable-thumbnail-sizing-tweaks",
-        true};
-
-constexpr base::FeatureParam<bool>
-    kLensOverlayVisualSelectionUpdatesHideCsbEllipsis{
-        &kLensOverlayVisualSelectionUpdates, "hide-csb-ellipsis", true};
-
-constexpr base::FeatureParam<bool>
-    kLensOverlayVisualSelectionUpdatesCloseButtonTweaks{
-        &kLensOverlayVisualSelectionUpdates, "enable-close-button-tweaks",
-        true};
 
 constexpr base::FeatureParam<std::string> kHomepageURLForLens{
     &kLensStandalone, "lens-homepage-url", "https://lens.google.com/v3/"};
@@ -1030,61 +981,6 @@ double GetUploadProgressBarShowHeuristic() {
 
 bool ShouldAutoFocusSearchbox() {
   return kAutoFocusSearchbox.Get();
-}
-
-bool IsLensOverlayVisualSelectionUpdatesEnabled() {
-  return base::FeatureList::IsEnabled(kLensOverlayVisualSelectionUpdates);
-}
-
-
-bool GetVisualSelectionUpdatesEnableBorderGlow() {
-  return IsLensOverlayVisualSelectionUpdatesEnabled() &&
-         kLensOverlayVisualSelectionUpdatesEnableBorderGlow.Get();
-}
-
-bool GetVisualSelectionUpdatesEnableGradientRegionStroke() {
-  return IsLensOverlayVisualSelectionUpdatesEnabled() &&
-         kLensOverlayVisualSelectionUpdatesEnableGradientRegionStroke.Get();
-}
-
-bool GetVisualSelectionUpdatesEnableWhiteRegionStroke() {
-  return IsLensOverlayVisualSelectionUpdatesEnabled() &&
-         kLensOverlayVisualSelectionUpdatesEnableWhiteRegionStroke.Get();
-}
-
-bool GetVisualSelectionUpdatesEnableRegionSelectedGlow() {
-  return IsLensOverlayVisualSelectionUpdatesEnabled() &&
-         kLensOverlayVisualSelectionUpdatesEnableRegionSelectedGlow.Get();
-}
-
-bool GetVisualSelectionUpdatesEnableGradientSuperG() {
-  return IsLensOverlayVisualSelectionUpdatesEnabled() &&
-         kLensOverlayVisualSelectionUpdatesEnableGradientSuperG.Get();
-}
-
-bool GetVisualSelectionUpdatesEnableCsbThumbnail() {
-  return IsLensOverlayVisualSelectionUpdatesEnabled() &&
-         kLensOverlayVisualSelectionUpdatesCsbThumbnail.Get();
-}
-
-bool GetVisualSelectionUpdatesEnableCsbMotionTweaks() {
-  return IsLensOverlayVisualSelectionUpdatesEnabled() &&
-         kLensOverlayVisualSelectionUpdatesEnableCsbMotionTweaks.Get();
-}
-
-bool GetVisualSelectionUpdatesEnableThumbnailSizingTweaks() {
-  return IsLensOverlayVisualSelectionUpdatesEnabled() &&
-         kLensOverlayVisualSelectionUpdatesThumbnailSizingTweaks.Get();
-}
-
-bool GetVisualSelectionUpdatesHideCsbEllipsis() {
-  return IsLensOverlayVisualSelectionUpdatesEnabled() &&
-         kLensOverlayVisualSelectionUpdatesHideCsbEllipsis.Get();
-}
-
-bool GetVisualSelectionUpdatesEnableCloseButtonTweaks() {
-  return IsLensOverlayVisualSelectionUpdatesEnabled() &&
-         kLensOverlayVisualSelectionUpdatesCloseButtonTweaks.Get();
 }
 
 bool UpdateViewportEachQueryEnabled() {

@@ -3348,11 +3348,6 @@ inline constexpr char kLensOverlayLatencyOptimizationsName[] =
 inline constexpr char kLensOverlayLatencyOptimizationsDescription[] =
     "Enables latency optimizations for the Lens overlay.";
 
-inline constexpr char kLensOverlayUpdatedVisualsName[] =
-    "Lens overlay updated visuals";
-inline constexpr char kLensOverlayUpdatedVisualsDescription[] =
-    "Enables updated visuals in the Lens selection overlay.";
-
 inline constexpr char kLensSearchAimM3Name[] =
     "Enables AIM in Lens side panel.";
 inline constexpr char kLensSearchAimM3Description[] =

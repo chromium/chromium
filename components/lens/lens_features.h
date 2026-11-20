@@ -66,10 +66,6 @@ BASE_DECLARE_FEATURE(kLensOverlaySurvey);
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensOverlaySidePanelOpenInNewTab);
 
-// Enables the Lens overlay visual selection updates.
-COMPONENT_EXPORT(LENS_FEATURES)
-BASE_DECLARE_FEATURE(kLensOverlayVisualSelectionUpdates);
-
 // Enables the Lens overlay updated client context.
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensOverlayUpdatedClientContext);
@@ -794,57 +790,6 @@ extern double GetUploadProgressBarShowHeuristic();
 // first opened.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool ShouldAutoFocusSearchbox();
-
-// Whether the visual selection updates are enabled. This is true if the
-// visual selection updates feature flag is enabled or if the omnibox
-// suggestions feature flag is enabled.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool IsLensOverlayVisualSelectionUpdatesEnabled();
-
-// Whether to enable the border glow for the visual selection updates. Enabling
-// this will disable the shimmer animation.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool GetVisualSelectionUpdatesEnableBorderGlow();
-
-// Whether to enable the gradient region stroke for the visual selection
-// updates.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool GetVisualSelectionUpdatesEnableGradientRegionStroke();
-
-// Whether to enable the white region stroke for the visual selection updates.
-// Note: `GetVisualSelectionUpdatesEnableGradientRegionStroke` takes precedence
-// over this flag. This flag will have no effect if the gradient region stroke
-// is enabled.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool GetVisualSelectionUpdatesEnableWhiteRegionStroke();
-
-// Whether to enable the region selected glow for the visual selection updates.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool GetVisualSelectionUpdatesEnableRegionSelectedGlow();
-
-// Whether to enable the gradient super G in the Lens searchbox.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool GetVisualSelectionUpdatesEnableGradientSuperG();
-
-// Whether to enable the thumbnail in the contextual searchbox.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool GetVisualSelectionUpdatesEnableCsbThumbnail();
-
-// Whether to enable the motion tweaks in the contextual searchbox.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool GetVisualSelectionUpdatesEnableCsbMotionTweaks();
-
-// Whether to enable thumbnail sizing tweaks for the visual selection updates.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool GetVisualSelectionUpdatesEnableThumbnailSizingTweaks();
-
-// Whether to hide the csb ellipsis for the visual selection updates.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool GetVisualSelectionUpdatesHideCsbEllipsis();
-
-// Whether to enable close button tweaks for the visual selection updates.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool GetVisualSelectionUpdatesEnableCloseButtonTweaks();
 
 // Whether to update the viewport on each contextual query.
 COMPONENT_EXPORT(LENS_FEATURES)

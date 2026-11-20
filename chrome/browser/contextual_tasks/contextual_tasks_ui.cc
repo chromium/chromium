@@ -618,15 +618,9 @@ base::DictValue ContextualTasksUI::GetContextualTasksLoadTimeData(
            contextual_tasks::IsContextualTasksSidePanelRearchitectureEnabled());
 
   dict.Set("isLensSearchbox", true);
-  dict.Set("forceHideEllipsis",
-           lens::features::GetVisualSelectionUpdatesHideCsbEllipsis());
-  dict.Set("enableCsbMotionTweaks",
-           lens::features::GetVisualSelectionUpdatesEnableCsbMotionTweaks());
-  dict.Set("enableVisualSelectionUpdates",
-           lens::features::IsLensOverlayVisualSelectionUpdatesEnabled());
-  dict.Set(
-      "enableThumbnailSizingTweaks",
-      lens::features::GetVisualSelectionUpdatesEnableThumbnailSizingTweaks());
+  dict.Set("forceHideEllipsis", true);
+  dict.Set("enableCsbMotionTweaks", true);
+  dict.Set("enableThumbnailSizingTweaks", true);
   dict.Set("composeboxSmartComposeEnabled",
            contextual_tasks::GetEnableContextualTasksSmartCompose());
   dict.Set("enableNativeZeroStateSuggestions",

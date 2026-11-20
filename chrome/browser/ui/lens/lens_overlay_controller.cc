@@ -1323,11 +1323,9 @@ void LensOverlayController::InitializeOverlayUI(
   bool is_side_panel_open = IsResultsSidePanelShowingOrWillOpen();
   page_->ShouldShowContextualSearchBox(
       !is_side_panel_open && lens_search_controller_->should_show_csb());
-  // If should show CSB, and the CSB viewport thumbnail is enabled, send it now.
-  if (lens::features::GetVisualSelectionUpdatesEnableCsbThumbnail()) {
-    lens_search_controller_->HandleThumbnailCreatedBitmap(
-        init_data.initial_screenshot_);
-  }
+  // Send the initial CSB viewport thumbnail.
+  lens_search_controller_->HandleThumbnailCreatedBitmap(
+      init_data.initial_screenshot_);
 
   // Send the initial document type to the overlay web UI.
   NotifyPageContentUpdated();

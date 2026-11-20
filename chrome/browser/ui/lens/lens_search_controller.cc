@@ -1254,8 +1254,7 @@ void LensSearchController::HandlePageContentUploadProgress(uint64_t position,
 
 void LensSearchController::HandleThumbnailCreatedBitmap(
     const SkBitmap& thumbnail) {
-  if (!lens::features::GetVisualSelectionUpdatesEnableCsbThumbnail() ||
-      thumbnail.drawsNothing() || !IsCurrentTabSameOrigin()) {
+  if (thumbnail.drawsNothing() || !IsCurrentTabSameOrigin()) {
     return;
   }
 

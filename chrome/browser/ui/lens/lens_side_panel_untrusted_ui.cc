@@ -88,9 +88,6 @@ LensSidePanelUntrustedUI::LensSidePanelUntrustedUI(content::WebUI* web_ui)
   html_source->AddString("resultsSearchURL",
                          lens::features::GetLensOverlayResultsSearchURL());
   html_source->AddBoolean(
-      "enableCloseButtonTweaks",
-      lens::features::GetVisualSelectionUpdatesEnableCloseButtonTweaks());
-  html_source->AddBoolean(
       "enableSummarizeSuggestionHint",
       lens::features::ShouldEnableSummarizeHintForContextualSuggest());
   html_source->AddBoolean("enableLensAimSuggestions",
@@ -215,25 +212,13 @@ LensSidePanelUntrustedUI::LensSidePanelUntrustedUI(content::WebUI* web_ui)
   html_source->AddLocalizedStrings(kLocalizedStrings);
   html_source->AddString(
       "searchboxDefaultIcon",
-      lens::features::GetVisualSelectionUpdatesEnableGradientSuperG()
-          ? "//resources/cr_components/searchbox/icons/google_g_gradient.svg"
-      : dark_mode
-          ? "//resources/cr_components/searchbox/icons/google_g_cr23.svg"
-          : "//resources/cr_components/searchbox/icons/google_g.svg");
+      "//resources/cr_components/searchbox/icons/google_g_gradient.svg");
   html_source->AddBoolean("reportMetrics", false);
   html_source->AddBoolean("isLensSearchbox", true);
-  html_source->AddBoolean(
-      "forceHideEllipsis",
-      lens::features::GetVisualSelectionUpdatesHideCsbEllipsis());
-  html_source->AddBoolean(
-      "enableCsbMotionTweaks",
-      lens::features::GetVisualSelectionUpdatesEnableCsbMotionTweaks());
-  html_source->AddBoolean(
-      "enableVisualSelectionUpdates",
-      lens::features::IsLensOverlayVisualSelectionUpdatesEnabled());
-  html_source->AddBoolean(
-      "enableThumbnailSizingTweaks",
-      lens::features::GetVisualSelectionUpdatesEnableThumbnailSizingTweaks());
+  html_source->AddBoolean("forceHideEllipsis", true);
+  html_source->AddBoolean("enableCsbMotionTweaks", true);
+  html_source->AddBoolean("enableVisualSelectionUpdates", true);
+  html_source->AddBoolean("enableThumbnailSizingTweaks", true);
   html_source->AddString(
       "searchboxComposePlaceholder",
       l10n_util::GetStringUTF8(IDS_LENS_COMPOSEBOX_HINT_TEXT));

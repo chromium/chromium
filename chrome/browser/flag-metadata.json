@@ -4282,11 +4282,6 @@
     "expiry_milestone": 145
   },
   {
-    "name": "enable-lens-overlay-updated-visuals",
-    "owners": [ "mercerd@google.com", "lens-chrome@google.com" ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "enable-lens-overlay-virtual-focus",
     "owners": [ "adamyao@google.com", "chrome-desktop-search@google.com" ],
     "expiry_milestone": 160

@@ -216,27 +216,17 @@ LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
   html_source->AddInteger(
       "recentLanguagesAmount",
       lens::features::GetLensOverlayTranslateRecentLanguagesAmount());
-  html_source->AddBoolean(
-      "enableBorderGlow",
-      lens::features::GetVisualSelectionUpdatesEnableBorderGlow());
-  html_source->AddBoolean(
-      "enableGradientRegionStroke",
-      lens::features::GetVisualSelectionUpdatesEnableGradientRegionStroke());
-  html_source->AddBoolean(
-      "enableWhiteRegionStroke",
-      lens::features::GetVisualSelectionUpdatesEnableWhiteRegionStroke());
-  html_source->AddBoolean(
-      "enableRegionSelectedGlow",
-      lens::features::GetVisualSelectionUpdatesEnableRegionSelectedGlow());
+  html_source->AddBoolean("enableBorderGlow", true);
+  html_source->AddBoolean("enableGradientRegionStroke", false);
+  html_source->AddBoolean("enableWhiteRegionStroke", true);
+  html_source->AddBoolean("enableRegionSelectedGlow", true);
   html_source->AddBoolean("autoFocusSearchbox",
                           lens::features::ShouldAutoFocusSearchbox());
   html_source->AddBoolean("cornerSlidersEnabled",
                           lens::features::AreLensOverlayCornerSlidersEnabled());
   html_source->AddInteger("sliderChangedTimeout",
                           lens::features::GetLensOverlaySliderChangedTimeout());
-  html_source->AddBoolean(
-      "enableCloseButtonTweaks",
-      lens::features::GetVisualSelectionUpdatesEnableCloseButtonTweaks());
+  html_source->AddBoolean("enableCloseButtonTweaks", true);
   html_source->AddBoolean(
       "enableSummarizeSuggestionHint",
       lens::features::ShouldEnableSummarizeHintForContextualSuggest());
@@ -289,23 +279,13 @@ LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
       Profile::FromWebUI(web_ui), {.is_lens = true}));
   html_source->AddString(
       "searchboxDefaultIcon",
-      lens::features::GetVisualSelectionUpdatesEnableGradientSuperG()
-          ? "//resources/cr_components/searchbox/icons/google_g_gradient.svg"
-          : "//resources/cr_components/searchbox/icons/google_g_cr23.svg");
-  html_source->AddBoolean(
-      "enableCsbMotionTweaks",
-      lens::features::GetVisualSelectionUpdatesEnableCsbMotionTweaks());
-  html_source->AddBoolean(
-      "enableVisualSelectionUpdates",
-      lens::features::IsLensOverlayVisualSelectionUpdatesEnabled());
+      "//resources/cr_components/searchbox/icons/google_g_gradient.svg");
+  html_source->AddBoolean("enableCsbMotionTweaks", true);
+  html_source->AddBoolean("enableVisualSelectionUpdates", true);
   html_source->AddBoolean("reportMetrics", false);
   html_source->AddBoolean("isLensSearchbox", true);
-  html_source->AddBoolean(
-      "forceHideEllipsis",
-      lens::features::GetVisualSelectionUpdatesHideCsbEllipsis());
-  html_source->AddBoolean(
-    "enableThumbnailSizingTweaks",
-    lens::features::GetVisualSelectionUpdatesEnableThumbnailSizingTweaks());
+  html_source->AddBoolean("forceHideEllipsis", true);
+  html_source->AddBoolean("enableThumbnailSizingTweaks", true);
 
   // Determine if the cursor tooltip should appear.
   Profile* profile = Profile::FromWebUI(web_ui);
