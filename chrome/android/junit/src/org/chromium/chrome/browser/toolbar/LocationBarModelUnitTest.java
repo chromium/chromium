@@ -295,15 +295,6 @@ public class LocationBarModelUnitTest {
     }
 
     @Test
-    public void testObserversNotified_ntpLoaded() {
-        mLocationBarModel.addObserver(mLocationBarDataObserver);
-        verify(mLocationBarDataObserver, never()).onNtpStartedLoading();
-
-        mLocationBarModel.notifyNtpStartedLoading();
-        verify(mLocationBarDataObserver).onNtpStartedLoading();
-    }
-
-    @Test
     public void testObserversNotified_setIsShowingTabSwitcher() {
         mLocationBarModel.initializeWithNative();
         mLocationBarModel.addObserver(mLocationBarDataObserver);

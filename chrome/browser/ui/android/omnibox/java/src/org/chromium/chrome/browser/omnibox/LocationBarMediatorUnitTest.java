@@ -926,12 +926,6 @@ public class LocationBarMediatorUnitTest {
     }
 
     @Test
-    public void testOnTabLoadingNtp() {
-        mMediator.onNtpStartedLoading();
-        verify(mLocationBarLayout).onNtpStartedLoading();
-    }
-
-    @Test
     public void testBeginInput_StandbyNoFocus() {
         var input = mSessionState.getAutocompleteInput();
         input.setAutocompleteState(AutocompleteState.STANDBY_NO_FOCUS);

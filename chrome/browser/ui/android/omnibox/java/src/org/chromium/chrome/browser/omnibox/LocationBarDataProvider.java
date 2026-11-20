@@ -61,8 +61,6 @@ public interface LocationBarDataProvider {
     interface Observer {
         default void onIncognitoStateChanged() {}
 
-        default void onNtpStartedLoading() {}
-
         /**
          * Notifies about a possible change of the value of {@link #getPrimaryColor()}, or {@link
          * #isUsingBrandColor()}.

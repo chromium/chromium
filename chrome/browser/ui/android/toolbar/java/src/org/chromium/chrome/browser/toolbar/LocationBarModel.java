@@ -465,12 +465,6 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
         return mNtpDelegate;
     }
 
-    void notifyNtpStartedLoading() {
-        for (LocationBarDataProvider.Observer observer : mLocationBarDataObservers) {
-            observer.onNtpStartedLoading();
-        }
-    }
-
     @Override
     public UrlBarData getUrlBarData() {
         // Part of scroll jank investigation http://crbug.com/41426407. Will remove TraceEvent after

@@ -219,9 +219,6 @@ public class StatusCoordinator implements LocationBarDataProvider.Observer {
 
     // LocationBarDataProvider.Observer implementation.
     @Override
-    public void onNtpStartedLoading() {}
-
-    @Override
     public void onSecurityStateChanged() {
         updateSecurityIcon();
         updateVerboseStatusVisibility();

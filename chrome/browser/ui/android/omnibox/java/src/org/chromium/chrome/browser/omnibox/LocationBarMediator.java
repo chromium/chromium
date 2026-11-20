@@ -3021,11 +3021,6 @@ public class LocationBarMediator
     }
 
     @Override
-    public void onNtpStartedLoading() {
-        mLocationBarLayout.onNtpStartedLoading();
-    }
-
-    @Override
     public void onPrimaryColorChanged() {
         // Compute |mBrandedColorScheme| first.
         updateBrandedColorScheme();

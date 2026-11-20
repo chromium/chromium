@@ -297,8 +297,6 @@ public class LocationBarLayout extends ConstraintLayout {
         // When we restore tabs, we focus the selected tab so the URL of the page shows.
     }
 
-    protected void onNtpStartedLoading() {}
-
     /**
      * Apply the X translation to the LocationBar buttons to match the NTP fakebox -> omnibox
      * transition.

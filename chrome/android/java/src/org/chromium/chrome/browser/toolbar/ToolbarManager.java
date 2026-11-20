@@ -3838,7 +3838,6 @@ public class ToolbarManager
             OmniboxStub omniboxStub = mLocationBar.getOmniboxStub();
             assert omniboxStub != null;
             ntp.setOmniboxStub(omniboxStub);
-            mLocationBarModel.notifyNtpStartedLoading();
         }
 
         checkIfNtpShowingWithNoPendingLoad();

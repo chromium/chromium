@@ -1295,7 +1295,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
         // LocationBarDataProvider.Observer implementation
         // Using the default empty onIncognitoStateChanged.
-        // Using the default empty onNtpStartedLoading.
 
         @Override
         public void onPrimaryColorChanged() {
