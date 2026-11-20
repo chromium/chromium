@@ -420,9 +420,6 @@ BASE_FEATURE(kPrefetchDevtoolsUserAgentOverride,
 BASE_FEATURE(kIgnoreDuplicateNavsOnlyWithUserGesture,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// A feature flag for the memory-backed code cache.
-BASE_FEATURE(kInMemoryCodeCache, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables the ability to use the updateIfOlderThanMs field in the trusted
 // bidding response to trigger a post-auction update if the group has been
 // updated more recently than updateIfOlderThanMs milliseconds, bypassing the

@@ -5022,16 +5022,6 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram name="SiteIsolatedCodeCache.JS.MemoryBackedCodeCachePotentialImpact"
-    units="Milliseconds" expires_after="2023-10-08">
-  <owner>yhirano@chromium.org</owner>
-  <owner>loading-dev@chromium.org</owner>
-  <summary>
-    The amount of time that could be saved if we had a memory-backed code cache.
-    Recorded when the code cache result gets available.
-  </summary>
-</histogram>
-
 <histogram name="SiteIsolatedCodeCache.JS.WebUI.Behaviour"
     enum="SiteIsolatedCodeCacheJSBehaviour" expires_after="2025-07-01">
   <owner>tluk@chromium.org</owner>

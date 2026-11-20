@@ -11,7 +11,6 @@
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
-#include "content/browser/code_cache/simple_lru_cache.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "net/base/io_buffer.h"
@@ -147,9 +146,6 @@ class CONTENT_EXPORT GeneratedCodeCache {
                               base::Time time,
                               base::OnceClosure callback);
 
-  // Clears the in-memory cache.
-  void ClearInMemoryCache();
-
   // Destroys the instance's backend and waits for all shutdown tasks to
   // complete. The callback is run when the backend is fully cleaned up.
   void ShutdownForTesting(base::OnceClosure callback);
@@ -259,10 +255,6 @@ class CONTENT_EXPORT GeneratedCodeCache {
   base::FilePath path_;
   int max_size_bytes_;
   CodeCacheType cache_type_;
-
-  // A hypothetical memory-backed code cache. Used to collect UMAs.
-  SimpleLruCache lru_cache_;
-  static constexpr int64_t kLruCacheCapacity = 50 * 1024 * 1024;
 
   base::WeakPtrFactory<GeneratedCodeCache> weak_ptr_factory_{this};
 };
