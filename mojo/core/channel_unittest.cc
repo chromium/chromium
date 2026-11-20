@@ -103,6 +103,10 @@ class MockChannelDelegate : public Channel::Delegate {
       base::RepeatingClosure on_message = {},
       base::RepeatingCallback<void(Channel::Error)> on_error = {})
       : on_message_(std::move(on_message)), on_error_(std::move(on_error)) {}
+  explicit MockChannelDelegate(bool is_ipcz_transport)
+      : is_ipcz_transport_(is_ipcz_transport) {}
+
+  bool IsIpczTransport() const override { return is_ipcz_transport_; }
 
   size_t GetReceivedPayloadSize() const { return payload_.size(); }
 
@@ -130,6 +134,7 @@ class MockChannelDelegate : public Channel::Delegate {
   }
 
  private:
+  const bool is_ipcz_transport_ = true;
   base::HeapArray<char> payload_;
   base::RepeatingClosure on_message_;
   base::RepeatingCallback<void(Channel::Error)> on_error_;
@@ -164,9 +169,8 @@ class ChannelWinOpenChannelsMetricsTest : public testing::Test {
                    scoped_refptr<base::SingleThreadTaskRunner> runner) {
     for (size_t i = 0; i < count; ++i) {
       PlatformChannel pipe;
-      channels_.push_back(
-          Channel::Create(nullptr, ConnectionParams(pipe.TakeLocalEndpoint()),
-                          Channel::HandlePolicy::kAcceptHandles, runner));
+      channels_.push_back(Channel::CreateForIpczDriver(
+          &delegate_, pipe.TakeLocalEndpoint(), runner));
       peers_.push_back(pipe.TakeRemoteEndpoint());
       channels_.back()->Start();
     }
@@ -196,6 +200,8 @@ class ChannelWinOpenChannelsMetricsTest : public testing::Test {
   const base::CurrentProcessType original_process_type_ =
       base::test::CurrentProcessForTest::GetType();
   base::test::SingleThreadTaskEnvironment task_environment_;
+  // Outlives the Channels, which notify it when they are destroyed.
+  MockChannelDelegate delegate_;
   base::Thread io_thread_{"Open channel metrics"};
   base::HistogramTester histograms_;
   std::vector<scoped_refptr<Channel>> channels_;
@@ -224,9 +230,8 @@ TEST_F(ChannelWinOpenChannelsMetricsTest, ReadFailureCountsUntilHandleCloses) {
     PlatformChannel pipe;
     endpoint = pipe.TakeLocalEndpoint();
   }
-  channels_.push_back(Channel::Create(
-      nullptr, ConnectionParams(std::move(endpoint)),
-      Channel::HandlePolicy::kAcceptHandles, io_thread_.task_runner()));
+  channels_.push_back(Channel::CreateForIpczDriver(
+      &delegate_, std::move(endpoint), io_thread_.task_runner()));
   channels_.back()->Start();
   FlushIO(io_thread_.task_runner());
   histograms_.ExpectUniqueSample(kPeakOpenChannelsHistogram, 1, 1);
@@ -306,6 +311,19 @@ Channel::MessagePtr CreateDefaultMessage(bool legacy_message) {
   return message;
 }
 
+std::vector<uint8_t> CreateDefaultPayload() {
+  std::vector<uint8_t> payload(100);
+  for (size_t i = 0; i < payload.size(); i++) {
+    payload[i] = static_cast<uint8_t>(i);
+  }
+  return payload;
+}
+
+void WriteDefaultMessage(Channel* channel) {
+  const std::vector<uint8_t> payload = CreateDefaultPayload();
+  channel->WriteNextIpczMessage(payload, {});
+}
+
 void TestMemoryEqual(const void* data1,
                      size_t data1_size,
                      const void* data2,
@@ -364,7 +382,7 @@ TEST(ChannelTest, NonLegacyMessageDeserialization) {
 TEST(ChannelTest, OnReadLegacyMessage) {
   Channel::MessagePtr message = CreateDefaultMessage(true /* legacy_message */);
 
-  MockChannelDelegate channel_delegate;
+  MockChannelDelegate channel_delegate(/*is_ipcz_transport=*/false);
   scoped_refptr<TestChannel> channel = new TestChannel(&channel_delegate);
   base::span<char> read_buffer = channel->GetReadBufferTest(100 * 1024);
   read_buffer.copy_prefix_from(message->data_span());
@@ -382,7 +400,7 @@ TEST(ChannelTest, OnReadNonLegacyMessage) {
   Channel::MessagePtr message =
       CreateDefaultMessage(false /* legacy_message */);
 
-  MockChannelDelegate channel_delegate;
+  MockChannelDelegate channel_delegate(/*is_ipcz_transport=*/false);
   scoped_refptr<TestChannel> channel = new TestChannel(&channel_delegate);
   base::span<char> read_buffer = channel->GetReadBufferTest(100 * 1024);
   read_buffer.copy_prefix_from(message->data_span());
@@ -392,6 +410,26 @@ TEST(ChannelTest, OnReadNonLegacyMessage) {
                                           &next_read_size_hint));
 
   TestMemoryEqual(message->payload(), message->payload_size(),
+                  channel_delegate.GetReceivedPayload(),
+                  channel_delegate.GetReceivedPayloadSize());
+}
+
+TEST(ChannelTest, OnReadMessage) {
+  const std::vector<uint8_t> payload = CreateDefaultPayload();
+
+  MockChannelDelegate channel_delegate;
+  scoped_refptr<TestChannel> channel = new TestChannel(&channel_delegate);
+  Channel::MessagePtr message = Channel::Message::CreateIpczMessage(
+      payload, {}, Channel::Message::MessageType::NORMAL,
+      channel->IncrementLastSentChannelSequenceNumber());
+  base::span<char> read_buffer = channel->GetReadBufferTest(100 * 1024);
+  read_buffer.copy_prefix_from(message->data_span());
+
+  size_t next_read_size_hint = 0;
+  EXPECT_TRUE(channel->OnReadCompleteTest(message->data_num_bytes(),
+                                          &next_read_size_hint));
+
+  TestMemoryEqual(payload.data(), payload.size(),
                   channel_delegate.GetReceivedPayload(),
                   channel_delegate.GetReceivedPayloadSize());
 }
@@ -407,14 +445,24 @@ class ChannelTestShutdownAndWriteDelegate : public Channel::Delegate {
       : quit_closure_(std::move(quit_closure)),
         client_channel_(std::move(client_channel)),
         client_thread_(std::move(client_thread)) {
-    channel_ = Channel::Create(this, ConnectionParams(std::move(endpoint)),
-                               Channel::HandlePolicy::kAcceptHandles,
-                               std::move(task_runner));
+    channel_ = Channel::CreateForIpczDriver(this, std::move(endpoint),
+                                            std::move(task_runner));
     channel_->Start();
   }
-  ~ChannelTestShutdownAndWriteDelegate() override { channel_->ShutDown(); }
+
+  ~ChannelTestShutdownAndWriteDelegate() override {
+    // The Channel may call into this delegate until it's destroyed, which
+    // happens asynchronously after shutdown.
+    base::RunLoop run_loop;
+    on_channel_destroyed_ = run_loop.QuitClosure();
+    channel_->ShutDown();
+    channel_.reset();
+    run_loop.Run();
+  }
 
   // Channel::Delegate implementation
+  bool IsIpczTransport() const override { return true; }
+
   void OnChannelMessage(
       const void* payload,
       size_t payload_size,
@@ -425,10 +473,9 @@ class ChannelTestShutdownAndWriteDelegate : public Channel::Delegate {
     // If |client_channel_| exists then close it and its thread.
     if (client_channel_) {
       // Write a fresh message, making our channel readable again.
-      Channel::MessagePtr message = CreateDefaultMessage(false);
       client_thread_->task_runner()->PostTask(
-          FROM_HERE,
-          base::BindOnce(&Channel::Write, client_channel_, std::move(message)));
+          FROM_HERE, base::BindOnce(&WriteDefaultMessage,
+                                    base::RetainedRef(client_channel_)));
 
       // Close the channel and wait for it to shutdown.
       client_channel_->ShutDown();
@@ -440,8 +487,7 @@ class ChannelTestShutdownAndWriteDelegate : public Channel::Delegate {
 
     // Write a message to the channel, to verify whether this triggers an
     // OnChannelError callback before all messages were read.
-    Channel::MessagePtr message = CreateDefaultMessage(false);
-    channel_->Write(std::move(message));
+    WriteDefaultMessage(channel_.get());
   }
 
   void OnChannelError(Channel::Error error) override {
@@ -449,7 +495,10 @@ class ChannelTestShutdownAndWriteDelegate : public Channel::Delegate {
     quit_closure_.Run();
   }
 
+  void OnChannelDestroyed() override { std::move(on_channel_destroyed_).Run(); }
+
   base::RepeatingClosure quit_closure_;
+  base::OnceClosure on_channel_destroyed_;
   int message_count_ = 0;
   scoped_refptr<Channel> channel_;
 
@@ -458,6 +507,7 @@ class ChannelTestShutdownAndWriteDelegate : public Channel::Delegate {
 };
 
 TEST(ChannelTest, PeerShutdownDuringRead) {
+  MockChannelDelegate client_delegate;
   base::test::SingleThreadTaskEnvironment task_environment(
       base::test::TaskEnvironment::MainThreadType::IO);
   PlatformChannel channel;
@@ -468,16 +518,15 @@ TEST(ChannelTest, PeerShutdownDuringRead) {
   client_thread->StartWithOptions(
       base::Thread::Options(base::MessagePumpType::IO, 0));
 
-  scoped_refptr<Channel> client_channel = Channel::Create(
-      nullptr, ConnectionParams(channel.TakeRemoteEndpoint()),
-      Channel::HandlePolicy::kAcceptHandles, client_thread->task_runner());
+  scoped_refptr<Channel> client_channel = Channel::CreateForIpczDriver(
+      &client_delegate, channel.TakeRemoteEndpoint(),
+      client_thread->task_runner());
   client_channel->Start();
 
   // On the "client" IO thread, create and write a message.
-  Channel::MessagePtr message = CreateDefaultMessage(false);
   client_thread->task_runner()->PostTask(
       FROM_HERE,
-      base::BindOnce(&Channel::Write, client_channel, std::move(message)));
+      base::BindOnce(&WriteDefaultMessage, base::RetainedRef(client_channel)));
 
   // Create a "server" Channel with the other end of the pipe, and process the
   // messages from it. The |server_delegate| will ShutDown the client end of
@@ -527,7 +576,7 @@ void ReleaseChannelOnOtherThread(scoped_refptr<Channel> channel) {
   thread.Stop();
 }
 
-class IpczChannelDelegate : public MockChannelDelegate {
+class DestructionMockChannelDelegate : public MockChannelDelegate {
  public:
   using MockChannelDelegate::MockChannelDelegate;
 
@@ -558,7 +607,7 @@ TEST_P(ChannelWinCompletionBackendTest, ShutdownCancelsCrossThreadWrite) {
                                            TestTimeouts::action_timeout());
   PlatformChannel platform_channel;
   base::test::TestFuture<void> channel_destroyed;
-  IpczChannelDelegate delegate(
+  DestructionMockChannelDelegate delegate(
       {}, base::BindLambdaForTesting([&](Channel::Error error) {
         // IOCP reports cancelled ipcz reads as disconnection.
         EXPECT_FALSE(GetParam());
@@ -578,10 +627,12 @@ TEST_P(ChannelWinCompletionBackendTest, ShutdownCancelsCrossThreadWrite) {
   ASSERT_TRUE(writer.Start());
   // Keep the peer open without reading so the large write remains pending.
   ASSERT_TRUE(writer.task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&Channel::Write, channel,
-                                Channel::Message::CreateMessage(
-                                    64 * 1024, 0,
-                                    Channel::Message::MessageType::NORMAL))));
+      FROM_HERE, base::BindOnce(
+                     [](scoped_refptr<Channel> channel) {
+                       channel->WriteNextIpczMessage(
+                           std::vector<uint8_t>(64 * 1024), {});
+                     },
+                     channel)));
   ASSERT_TRUE(WaitForChannelTasks(writer.task_runner()));
 
   channel->ShutDown();
@@ -601,9 +652,8 @@ TEST_P(ChannelWinCompletionBackendTest, PeerShutdownReportsError) {
         ++errors;
         disconnected.Quit();
       }));
-  scoped_refptr<Channel> channel = Channel::Create(
-      &delegate, ConnectionParams(platform_channel.TakeLocalEndpoint()),
-      Channel::HandlePolicy::kAcceptHandles,
+  scoped_refptr<Channel> channel = Channel::CreateForIpczDriver(
+      &delegate, platform_channel.TakeLocalEndpoint(),
       base::SingleThreadTaskRunner::GetCurrentDefault());
   channel->Start();
   ASSERT_TRUE(
@@ -629,27 +679,24 @@ TEST_P(ChannelWinCompletionBackendTest,
   scoped_refptr<Channel> receiver;
   MockChannelDelegate receiver_delegate(base::BindLambdaForTesting([&] {
     ++requests;
-    receiver->Write(CreateDefaultMessage(/*legacy_message=*/false));
+    WriteDefaultMessage(receiver.get());
   }));
   MockChannelDelegate sender_delegate(base::BindLambdaForTesting([&] {
     if (++responses == kNumRoundTrips) {
       exchanged.Quit();
     } else {
-      sender->Write(CreateDefaultMessage(/*legacy_message=*/false));
+      WriteDefaultMessage(sender.get());
     }
   }));
-  sender = Channel::Create(
-      &sender_delegate, ConnectionParams(platform_channel.TakeLocalEndpoint()),
-      Channel::HandlePolicy::kAcceptHandles,
+  sender = Channel::CreateForIpczDriver(
+      &sender_delegate, platform_channel.TakeLocalEndpoint(),
       base::SingleThreadTaskRunner::GetCurrentDefault());
-  receiver =
-      Channel::Create(&receiver_delegate,
-                      ConnectionParams(platform_channel.TakeRemoteEndpoint()),
-                      Channel::HandlePolicy::kAcceptHandles,
-                      base::SingleThreadTaskRunner::GetCurrentDefault());
+  receiver = Channel::CreateForIpczDriver(
+      &receiver_delegate, platform_channel.TakeRemoteEndpoint(),
+      base::SingleThreadTaskRunner::GetCurrentDefault());
   sender->Start();
   receiver->Start();
-  sender->Write(CreateDefaultMessage(/*legacy_message=*/false));
+  WriteDefaultMessage(sender.get());
   exchanged.Run();
   EXPECT_EQ(requests, kNumRoundTrips);
   EXPECT_EQ(responses, kNumRoundTrips);
@@ -659,6 +706,10 @@ TEST_P(ChannelWinCompletionBackendTest,
       WaitForChannelTasks(base::SingleThreadTaskRunner::GetCurrentDefault()));
   ASSERT_TRUE(base::test::RunUntil(
       [&] { return sender->HasOneRef() && receiver->HasOneRef(); }));
+  // Release the Channels before their delegates, which they notify on
+  // destruction.
+  sender.reset();
+  receiver.reset();
 }
 
 TEST_P(ChannelWinCompletionBackendTest,
@@ -671,9 +722,8 @@ TEST_P(ChannelWinCompletionBackendTest,
         EXPECT_EQ(error, Channel::Error::kDisconnected);
         disconnected.Quit();
       }));
-  scoped_refptr<Channel> channel = Channel::Create(
-      &delegate, ConnectionParams(platform_channel.TakeLocalEndpoint()),
-      Channel::HandlePolicy::kAcceptHandles,
+  scoped_refptr<Channel> channel = Channel::CreateForIpczDriver(
+      &delegate, platform_channel.TakeLocalEndpoint(),
       base::SingleThreadTaskRunner::GetCurrentDefault());
   channel->Start();
   disconnected.Run();
@@ -684,13 +734,13 @@ TEST_P(ChannelWinCompletionBackendTest,
 }
 
 TEST_P(ChannelWinCompletionBackendTest, ThreadTeardownRetainsUndeliveredIO) {
+  MockChannelDelegate delegate;
   PlatformChannel platform_channel;
   base::Thread thread("Channel shutdown");
   ASSERT_TRUE(thread.StartWithOptions(
       base::Thread::Options(base::MessagePumpType::IO, 0)));
-  scoped_refptr<Channel> channel = Channel::Create(
-      nullptr, ConnectionParams(platform_channel.TakeLocalEndpoint()),
-      Channel::HandlePolicy::kAcceptHandles, thread.task_runner());
+  scoped_refptr<Channel> channel = Channel::CreateForIpczDriver(
+      &delegate, platform_channel.TakeLocalEndpoint(), thread.task_runner());
   channel->Start();
   ASSERT_TRUE(WaitForChannelTasks(thread.task_runner()));
   thread.Stop();
@@ -713,11 +763,9 @@ TEST(ChannelTest, EventPumpCommunicatesWithCompletionPortPeer) {
                                            TestTimeouts::action_timeout());
   PlatformChannel platform_channel;
   MockChannelDelegate receiver_delegate;
-  scoped_refptr<Channel> receiver =
-      Channel::Create(&receiver_delegate,
-                      ConnectionParams(platform_channel.TakeLocalEndpoint()),
-                      Channel::HandlePolicy::kAcceptHandles,
-                      base::SingleThreadTaskRunner::GetCurrentDefault());
+  scoped_refptr<Channel> receiver = Channel::CreateForIpczDriver(
+      &receiver_delegate, platform_channel.TakeLocalEndpoint(),
+      base::SingleThreadTaskRunner::GetCurrentDefault());
   receiver->Start();
 
   base::RunLoop response_received;
@@ -726,20 +774,20 @@ TEST(ChannelTest, EventPumpCommunicatesWithCompletionPortPeer) {
   base::Thread sender_thread("Event channel");
   ASSERT_TRUE(sender_thread.StartWithOptions(
       base::Thread::Options(base::MessagePumpType::IO, 0)));
-  scoped_refptr<Channel> sender = Channel::Create(
-      &sender_delegate, ConnectionParams(platform_channel.TakeRemoteEndpoint()),
-      Channel::HandlePolicy::kAcceptHandles, sender_thread.task_runner());
+  scoped_refptr<Channel> sender = Channel::CreateForIpczDriver(
+      &sender_delegate, platform_channel.TakeRemoteEndpoint(),
+      sender_thread.task_runner());
   sender->Start();
-  auto expected_message = CreateDefaultMessage(/*legacy_message=*/false);
-  sender->Write(CreateDefaultMessage(/*legacy_message=*/false));
+  const std::vector<uint8_t> expected_payload = CreateDefaultPayload();
+  WriteDefaultMessage(sender.get());
   ASSERT_TRUE(base::test::RunUntil([&] {
     return receiver_delegate.GetReceivedPayloadSize() ==
-           expected_message->payload_size();
+           expected_payload.size();
   }));
-  TestMemoryEqual(expected_message->payload(), expected_message->payload_size(),
+  TestMemoryEqual(expected_payload.data(), expected_payload.size(),
                   receiver_delegate.GetReceivedPayload(),
                   receiver_delegate.GetReceivedPayloadSize());
-  receiver->Write(CreateDefaultMessage(/*legacy_message=*/false));
+  WriteDefaultMessage(receiver.get());
   response_received.Run();
 
   sender->ShutDown();
@@ -754,7 +802,7 @@ TEST(ChannelTest, EventPumpCommunicatesWithCompletionPortPeer) {
       [&] { return sender->HasOneRef() && receiver->HasOneRef(); }));
   wakeup.Stop();
   sender_thread.Stop();
-  TestMemoryEqual(expected_message->payload(), expected_message->payload_size(),
+  TestMemoryEqual(expected_payload.data(), expected_payload.size(),
                   sender_delegate.GetReceivedPayload(),
                   sender_delegate.GetReceivedPayloadSize());
 }
@@ -788,11 +836,10 @@ TEST(ChannelTest, EventPumpPartialRegistrationFailureReleasesWatch) {
         ++errors;
         registration_failed.Quit();
       }));
-  auto channel = Channel::Create(
-      &delegate, ConnectionParams(platform_channel.TakeLocalEndpoint()),
-      Channel::HandlePolicy::kAcceptHandles,
+  auto channel = Channel::CreateForIpczDriver(
+      &delegate, platform_channel.TakeLocalEndpoint(),
       base::SingleThreadTaskRunner::GetCurrentDefault());
-  channel->Write(CreateDefaultMessage(/*legacy_message=*/false));
+  WriteDefaultMessage(channel.get());
   channel->Start();
   registration_failed.Run();
   EXPECT_EQ(errors, 1);
@@ -819,7 +866,7 @@ TEST(ChannelTest, EventPumpShutdownRetiresCompletionsWithoutReportingErrors) {
   PlatformChannel platform_channel;
   base::test::TestFuture<void> channel_destroyed;
   // An ipcz channel retains its delegate during shutdown.
-  IpczChannelDelegate delegate(
+  DestructionMockChannelDelegate delegate(
       {}, base::BindLambdaForTesting([](Channel::Error error) {
         ADD_FAILURE() << "Shutdown completion reported error "
                       << static_cast<int>(error);
@@ -954,12 +1001,18 @@ TEST(ChannelTest, DeserializeMessage_NonZeroExtraHeaderSize) {
 
 class CountingChannelDelegate : public Channel::Delegate {
  public:
-  explicit CountingChannelDelegate(
-      base::OnceClosure on_final_message,
-      base::RepeatingClosure on_error = base::DoNothing())
-      : on_final_message_(std::move(on_final_message)),
-        on_error_(std::move(on_error)) {}
+  CountingChannelDelegate() = default;
   ~CountingChannelDelegate() override = default;
+
+  bool IsIpczTransport() const override { return true; }
+
+  void set_on_final_message(base::OnceClosure on_final_message) {
+    on_final_message_ = std::move(on_final_message);
+  }
+
+  void set_on_error(base::RepeatingClosure on_error) {
+    on_error_ = std::move(on_error);
+  }
 
   void OnChannelMessage(
       const void* payload,
@@ -988,12 +1041,14 @@ class CountingChannelDelegate : public Channel::Delegate {
 
  private:
   base::OnceClosure on_final_message_;
-  base::RepeatingClosure on_error_;
+  base::RepeatingClosure on_error_ = base::DoNothing();
 };
 
 TEST(ChannelTest, PeerStressTest) {
   constexpr size_t kLotsOfMessages = 1024;
 
+  CountingChannelDelegate delegate_a;
+  CountingChannelDelegate delegate_b;
   base::test::SingleThreadTaskEnvironment task_environment(
       base::test::TaskEnvironment::MainThreadType::IO);
   base::RunLoop run_loop;
@@ -1011,6 +1066,10 @@ TEST(ChannelTest, PeerStressTest) {
       },
       base::Unretained(&count_channels_received_final_message),
       run_loop.QuitClosure());
+  delegate_a.set_on_final_message(
+      quit_when_both_channels_received_final_message);
+  delegate_b.set_on_final_message(
+      quit_when_both_channels_received_final_message);
 
   // Create a second IO thread for the peer channel.
   base::Thread::Options thread_options;
@@ -1021,30 +1080,22 @@ TEST(ChannelTest, PeerStressTest) {
   // Create two channels that run on separate threads.
   PlatformChannel platform_channel;
 
-  CountingChannelDelegate delegate_a(
-      quit_when_both_channels_received_final_message);
-  scoped_refptr<Channel> channel_a = Channel::Create(
-      &delegate_a, ConnectionParams(platform_channel.TakeLocalEndpoint()),
-      Channel::HandlePolicy::kRejectHandles,
+  scoped_refptr<Channel> channel_a = Channel::CreateForIpczDriver(
+      &delegate_a, platform_channel.TakeLocalEndpoint(),
       base::SingleThreadTaskRunner::GetCurrentDefault());
 
-  CountingChannelDelegate delegate_b(
-      quit_when_both_channels_received_final_message);
-  scoped_refptr<Channel> channel_b = Channel::Create(
-      &delegate_b, ConnectionParams(platform_channel.TakeRemoteEndpoint()),
-      Channel::HandlePolicy::kRejectHandles, peer_thread.task_runner());
+  scoped_refptr<Channel> channel_b = Channel::CreateForIpczDriver(
+      &delegate_b, platform_channel.TakeRemoteEndpoint(),
+      peer_thread.task_runner());
 
   // Send a lot of messages, followed by a final terminating message.
   auto send_lots_of_messages = [](scoped_refptr<Channel> channel) {
     for (size_t i = 0; i < kLotsOfMessages; ++i) {
-      channel->Write(Channel::Message::CreateMessage(0, 0));
+      channel->WriteNextIpczMessage({}, {});
     }
   };
   auto send_final_message = [](scoped_refptr<Channel> channel) {
-    auto message = Channel::Message::CreateMessage(1, 0);
-    auto* payload = static_cast<char*>(message->mutable_payload());
-    payload[0] = '!';
-    channel->Write(std::move(message));
+    channel->WriteNextIpczMessage(base::byte_span_from_cstring("!"), {});
   };
 
   channel_a->Start();
@@ -1070,6 +1121,10 @@ TEST(ChannelTest, PeerStressTest) {
   // Run until quit_when_both_channels_received_final_message quits the loop.
   run_loop.Run();
 
+  // Check before ShutDown(), which can still report errors (e.g. ChannelWin's
+  // cancelled read) to the delegate.
+  EXPECT_EQ(0u, delegate_a.error_count_);
+
   channel_a->ShutDown();
   channel_b->ShutDown();
 
@@ -1079,11 +1134,6 @@ TEST(ChannelTest, PeerStressTest) {
 
   EXPECT_EQ(kLotsOfMessages * 3, delegate_a.message_count_);
   EXPECT_EQ(kLotsOfMessages * 3, delegate_b.message_count_);
-
-  // `channel_a` shuts down first, so its delegate definitely shouldn't observe
-  // an error. Note that `delegate_b` can correctly observe an error in this
-  // test for some Channel implementations, so we don't enforce expectations.
-  EXPECT_EQ(0u, delegate_a.error_count_);
 }
 
 class CallbackChannelDelegate : public Channel::Delegate {
@@ -1092,6 +1142,8 @@ class CallbackChannelDelegate : public Channel::Delegate {
 
   CallbackChannelDelegate(const CallbackChannelDelegate&) = delete;
   CallbackChannelDelegate& operator=(const CallbackChannelDelegate&) = delete;
+
+  bool IsIpczTransport() const override { return true; }
 
   void OnChannelMessage(
       const void* payload,
@@ -1123,22 +1175,19 @@ class CallbackChannelDelegate : public Channel::Delegate {
 };
 
 TEST(ChannelTest, MessageSizeTest) {
+  CallbackChannelDelegate receiver_delegate;
+  MockChannelDelegate sender_delegate;
   base::test::SingleThreadTaskEnvironment task_environment(
       base::test::TaskEnvironment::MainThreadType::IO);
   PlatformChannel platform_channel;
 
-  CallbackChannelDelegate receiver_delegate;
-  scoped_refptr<Channel> receiver =
-      Channel::Create(&receiver_delegate,
-                      ConnectionParams(platform_channel.TakeLocalEndpoint()),
-                      Channel::HandlePolicy::kAcceptHandles,
-                      base::SingleThreadTaskRunner::GetCurrentDefault());
+  scoped_refptr<Channel> receiver = Channel::CreateForIpczDriver(
+      &receiver_delegate, platform_channel.TakeLocalEndpoint(),
+      base::SingleThreadTaskRunner::GetCurrentDefault());
   receiver->Start();
 
-  MockChannelDelegate sender_delegate;
-  scoped_refptr<Channel> sender = Channel::Create(
-      &sender_delegate, ConnectionParams(platform_channel.TakeRemoteEndpoint()),
-      Channel::HandlePolicy::kAcceptHandles,
+  scoped_refptr<Channel> sender = Channel::CreateForIpczDriver(
+      &sender_delegate, platform_channel.TakeRemoteEndpoint(),
       base::SingleThreadTaskRunner::GetCurrentDefault());
   sender->Start();
 
@@ -1159,9 +1208,8 @@ TEST(ChannelTest, MessageSizeTest) {
           quit.Run();
         }));
 
-    auto message = Channel::Message::CreateMessage(i, 0);
-    UNSAFE_TODO(memset(message->mutable_payload(), 0xAB, i));
-    sender->Write(std::move(message));
+    const std::vector<uint8_t> payload(i, 0xAB);
+    sender->WriteNextIpczMessage(payload, {});
 
     loop.Run();
 
@@ -1206,16 +1254,14 @@ TEST(ChannelWinTest, IgnoresIOCompletionsItDidNotStart) {
   ASSERT_TRUE(other_endpoint.is_valid());
 
   CallbackChannelDelegate receiver_delegate;
-  scoped_refptr<Channel> receiver = Channel::Create(
-      &receiver_delegate, ConnectionParams(std::move(receiver_endpoint)),
-      Channel::HandlePolicy::kAcceptHandles,
+  scoped_refptr<Channel> receiver = Channel::CreateForIpczDriver(
+      &receiver_delegate, std::move(receiver_endpoint),
       base::SingleThreadTaskRunner::GetCurrentDefault());
   receiver->Start();
 
   MockChannelDelegate sender_delegate;
-  scoped_refptr<Channel> sender = Channel::Create(
-      &sender_delegate, ConnectionParams(platform_channel.TakeRemoteEndpoint()),
-      Channel::HandlePolicy::kAcceptHandles,
+  scoped_refptr<Channel> sender = Channel::CreateForIpczDriver(
+      &sender_delegate, platform_channel.TakeRemoteEndpoint(),
       base::SingleThreadTaskRunner::GetCurrentDefault());
   sender->Start();
 
@@ -1237,7 +1283,7 @@ TEST(ChannelWinTest, IgnoresIOCompletionsItDidNotStart) {
     got_error = true;
     loop.Quit();
   }));
-  sender->Write(Channel::Message::CreateMessage(0, 0));
+  sender->WriteNextIpczMessage({}, {});
   loop.Run();
   EXPECT_FALSE(got_error);
 
@@ -1260,9 +1306,8 @@ TEST(ChannelWinTest, IgnoresIOCompletionsAfterDestruction) {
   ASSERT_TRUE(other_endpoint.is_valid());
 
   CallbackChannelDelegate receiver_delegate;
-  scoped_refptr<Channel> receiver = Channel::Create(
-      &receiver_delegate, ConnectionParams(std::move(receiver_endpoint)),
-      Channel::HandlePolicy::kAcceptHandles,
+  scoped_refptr<Channel> receiver = Channel::CreateForIpczDriver(
+      &receiver_delegate, std::move(receiver_endpoint),
       base::SingleThreadTaskRunner::GetCurrentDefault());
   receiver->Start();
 
@@ -1274,22 +1319,20 @@ TEST(ChannelWinTest, IgnoresIOCompletionsAfterDestruction) {
   // and receive the completion instead.
   PlatformChannel second_platform_channel;
   CallbackChannelDelegate second_receiver_delegate;
-  scoped_refptr<Channel> second_receiver = Channel::Create(
-      &second_receiver_delegate,
-      ConnectionParams(second_platform_channel.TakeLocalEndpoint()),
-      Channel::HandlePolicy::kAcceptHandles,
+  scoped_refptr<Channel> second_receiver = Channel::CreateForIpczDriver(
+      &second_receiver_delegate, second_platform_channel.TakeLocalEndpoint(),
       base::SingleThreadTaskRunner::GetCurrentDefault());
   second_receiver->Start();
 
   MockChannelDelegate second_sender_delegate;
-  scoped_refptr<Channel> second_sender = Channel::Create(
-      &second_sender_delegate,
-      ConnectionParams(second_platform_channel.TakeRemoteEndpoint()),
-      Channel::HandlePolicy::kAcceptHandles,
+  scoped_refptr<Channel> second_sender = Channel::CreateForIpczDriver(
+      &second_sender_delegate, second_platform_channel.TakeRemoteEndpoint(),
       base::SingleThreadTaskRunner::GetCurrentDefault());
   second_sender->Start();
 
-  Channel::MessagePtr message = Channel::Message::CreateMessage(0, 0);
+  Channel::MessagePtr message = Channel::Message::CreateIpczMessage(
+      {}, {}, Channel::Message::MessageType::NORMAL,
+      second_sender->IncrementLastSentChannelSequenceNumber());
   base::RunLoop drain_loop;
   second_receiver_delegate.set_on_message(drain_loop.QuitClosure());
 
@@ -1333,6 +1376,8 @@ TEST(ChannelWinTest, IgnoresIOCompletionsAfterDestruction) {
 
 #if BUILDFLAG(IS_MAC)
 TEST(ChannelTest, SendToDeadMachPortName) {
+  CallbackChannelDelegate delegate_a;
+  MockChannelDelegate delegate_b;
   base::test::SingleThreadTaskEnvironment task_environment(
       base::test::TaskEnvironment::MainThreadType::IO);
 
@@ -1374,22 +1419,19 @@ TEST(ChannelTest, SendToDeadMachPortName) {
   base::apple::ScopedMachSendRight extra_send(send_name);
 
   // Channel A gets created with the Mach send right from |platform_channel|.
-  CallbackChannelDelegate delegate_a;
-  scoped_refptr<Channel> channel_a = Channel::Create(
-      &delegate_a, ConnectionParams(platform_channel.TakeLocalEndpoint()),
-      Channel::HandlePolicy::kAcceptHandles,
+  scoped_refptr<Channel> channel_a = Channel::CreateForIpczDriver(
+      &delegate_a, platform_channel.TakeLocalEndpoint(),
       base::SingleThreadTaskRunner::GetCurrentDefault());
   channel_a->Start();
 
   // Channel B gets the receive right.
-  MockChannelDelegate delegate_b;
-  scoped_refptr<Channel> channel_b = Channel::Create(
-      &delegate_b, ConnectionParams(platform_channel.TakeRemoteEndpoint()),
-      Channel::HandlePolicy::kAcceptHandles, peer_thread.task_runner());
+  scoped_refptr<Channel> channel_b = Channel::CreateForIpczDriver(
+      &delegate_b, platform_channel.TakeRemoteEndpoint(),
+      peer_thread.task_runner());
   channel_b->Start();
 
   // Ensure the channels have started and are talking.
-  channel_b->Write(Channel::Message::CreateMessage(0, 0));
+  channel_b->WriteNextIpczMessage({}, {});
 
   {
     base::RunLoop loop;
@@ -1400,8 +1442,8 @@ TEST(ChannelTest, SendToDeadMachPortName) {
   // Queue two messages from B to A. Two are required so that channel A does
   // not immediately process the dead-name notification when channel B shuts
   // down.
-  channel_b->Write(Channel::Message::CreateMessage(0, 0));
-  channel_b->Write(Channel::Message::CreateMessage(0, 0));
+  channel_b->WriteNextIpczMessage({}, {});
+  channel_b->WriteNextIpczMessage({}, {});
 
   // Turn Channel A's send right into a dead name.
   channel_b->ShutDown();
@@ -1416,7 +1458,7 @@ TEST(ChannelTest, SendToDeadMachPortName) {
   event.Wait();
 
   // Force a send-to-dead-name on Channel A.
-  channel_a->Write(Channel::Message::CreateMessage(0, 0));
+  channel_a->WriteNextIpczMessage({}, {});
 
   {
     base::RunLoop loop;
@@ -1447,17 +1489,22 @@ enum class RequirementResult { kMessageDispatched, kChannelError };
 RequirementResult RunPeerRequirementExchange(
     PlatformChannelEndpoint client_endpoint,
     PlatformChannelEndpoint server_endpoint) {
+  // The delegates are created before the task environment, because they are
+  // notified when the channels are destructed. That can be as late as when the
+  // task environment is shut down, since a channel with a peer process
+  // requirement is kept alive by its pending validation timeout task.
   CallbackChannelDelegate client_delegate;
-  scoped_refptr<Channel> client = Channel::Create(
-      &client_delegate, ConnectionParams(std::move(client_endpoint)),
-      Channel::HandlePolicy::kAcceptHandles,
+  CallbackChannelDelegate server_delegate;
+  base::test::SingleThreadTaskEnvironment task_environment(
+      base::test::TaskEnvironment::MainThreadType::IO);
+
+  scoped_refptr<Channel> client = Channel::CreateForIpczDriver(
+      &client_delegate, std::move(client_endpoint),
       base::SingleThreadTaskRunner::GetCurrentDefault());
   client->Start();
 
-  CallbackChannelDelegate server_delegate;
-  scoped_refptr<Channel> server = Channel::Create(
-      &server_delegate, ConnectionParams(std::move(server_endpoint)),
-      Channel::HandlePolicy::kAcceptHandles,
+  scoped_refptr<Channel> server = Channel::CreateForIpczDriver(
+      &server_delegate, std::move(server_endpoint),
       base::SingleThreadTaskRunner::GetCurrentDefault());
   server->Start();
 
@@ -1480,8 +1527,14 @@ RequirementResult RunPeerRequirementExchange(
     quit.Run();
   }));
 
-  server->Write(Channel::Message::CreateMessage(0, 0));
+  server->WriteNextIpczMessage({}, {});
   loop.Run();
+
+  // Clear the callbacks so peer disconnect during ShutDown() isn't recorded
+  // as a handshake failure.
+  client_delegate.set_on_message({});
+  client_delegate.set_on_error({});
+  server_delegate.set_on_error({});
 
   client->ShutDown();
   server->ShutDown();
@@ -1497,8 +1550,6 @@ RequirementResult RunPeerRequirementExchange(
 }  // namespace
 
 TEST(ChannelTest, PeerProcessRequirementMet) {
-  base::test::SingleThreadTaskEnvironment task_environment(
-      base::test::TaskEnvironment::MainThreadType::IO);
   PlatformChannel platform_channel;
 
   PlatformChannelEndpoint client_endpoint =
@@ -1512,8 +1563,6 @@ TEST(ChannelTest, PeerProcessRequirementMet) {
 }
 
 TEST(ChannelTest, PeerProcessRequirementUnmetOnSendRight) {
-  base::test::SingleThreadTaskEnvironment task_environment(
-      base::test::TaskEnvironment::MainThreadType::IO);
   PlatformChannel platform_channel;
 
   PlatformChannelEndpoint client_endpoint =
@@ -1527,8 +1576,6 @@ TEST(ChannelTest, PeerProcessRequirementUnmetOnSendRight) {
 }
 
 TEST(ChannelTest, PeerProcessRequirementUnmetOnReceiveRight) {
-  base::test::SingleThreadTaskEnvironment task_environment(
-      base::test::TaskEnvironment::MainThreadType::IO);
   PlatformChannel platform_channel;
 
   PlatformChannelEndpoint server_endpoint =
@@ -1546,8 +1593,6 @@ TEST(ChannelTest, PeerProcessRequirementUnmetOnReceiveRight) {
 // sender satisfies, the exchange succeeds. This is the symmetric accept path
 // to PeerProcessRequirementUnmetOnReceiveRight.
 TEST(ChannelTest, PeerProcessRequirementMetOnReceiveRight) {
-  base::test::SingleThreadTaskEnvironment task_environment(
-      base::test::TaskEnvironment::MainThreadType::IO);
   PlatformChannel platform_channel;
 
   PlatformChannelEndpoint server_endpoint =
@@ -1565,6 +1610,7 @@ TEST(ChannelTest, PeerProcessRequirementMetOnReceiveRight) {
 // name that stalls on purpose) must not hold the channel open indefinitely.
 // After kPeerValidationTimeout (see channel_mac.cc) the client fails closed.
 TEST(ChannelTest, PeerProcessRequirementTimesOutWhenPeerSilent) {
+  CallbackChannelDelegate client_delegate;
   base::test::SingleThreadTaskEnvironment task_environment(
       base::test::TaskEnvironment::MainThreadType::IO,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
@@ -1575,10 +1621,8 @@ TEST(ChannelTest, PeerProcessRequirementTimesOutWhenPeerSilent) {
   client_endpoint.set_peer_process_requirement(
       base::mac::ProcessRequirement::AlwaysMatchesForTesting());
 
-  CallbackChannelDelegate client_delegate;
-  scoped_refptr<Channel> client = Channel::Create(
-      &client_delegate, ConnectionParams(std::move(client_endpoint)),
-      Channel::HandlePolicy::kAcceptHandles,
+  scoped_refptr<Channel> client = Channel::CreateForIpczDriver(
+      &client_delegate, std::move(client_endpoint),
       base::SingleThreadTaskRunner::GetCurrentDefault());
   client->Start();
 
@@ -1604,6 +1648,8 @@ TEST(ChannelTest, PeerProcessRequirementTimesOutWhenPeerSilent) {
 #endif  // BUILDFLAG(IS_MAC)
 
 TEST(ChannelTest, ShutDownStress) {
+  CallbackChannelDelegate delegate_a;
+  MockChannelDelegate delegate_b;
   base::test::SingleThreadTaskEnvironment task_environment(
       base::test::TaskEnvironment::MainThreadType::IO);
 
@@ -1615,16 +1661,14 @@ TEST(ChannelTest, ShutDownStress) {
   // Create two channels, A and B, which run on different threads.
   PlatformChannel platform_channel;
 
-  CallbackChannelDelegate delegate_a;
-  scoped_refptr<Channel> channel_a = Channel::Create(
-      &delegate_a, ConnectionParams(platform_channel.TakeLocalEndpoint()),
-      Channel::HandlePolicy::kRejectHandles,
+  scoped_refptr<Channel> channel_a = Channel::CreateForIpczDriver(
+      &delegate_a, platform_channel.TakeLocalEndpoint(),
       task_environment.GetMainThreadTaskRunner());
   channel_a->Start();
 
-  scoped_refptr<Channel> channel_b = Channel::Create(
-      nullptr, ConnectionParams(platform_channel.TakeRemoteEndpoint()),
-      Channel::HandlePolicy::kRejectHandles, peer_thread.task_runner());
+  scoped_refptr<Channel> channel_b = Channel::CreateForIpczDriver(
+      &delegate_b, platform_channel.TakeRemoteEndpoint(),
+      peer_thread.task_runner());
   channel_b->Start();
 
   base::WaitableEvent go_event;
@@ -1633,7 +1677,7 @@ TEST(ChannelTest, ShutDownStress) {
   {
     base::RunLoop run_loop;
     delegate_a.set_on_message(run_loop.QuitClosure());
-    channel_b->Write(Channel::Message::CreateMessage(0, 0));
+    channel_b->WriteNextIpczMessage({}, {});
     run_loop.Run();
   }
 
@@ -1644,7 +1688,7 @@ TEST(ChannelTest, ShutDownStress) {
 
   // First, write some messages for Channel B.
   for (int i = 0; i < 500; ++i) {
-    channel_b->Write(Channel::Message::CreateMessage(0, 0));
+    channel_b->WriteNextIpczMessage({}, {});
   }
 
   // Then shut down channel B.
@@ -1657,7 +1701,7 @@ TEST(ChannelTest, ShutDownStress) {
   // during Channel B's shutdown, since Writes can happen across threads
   // without a PostTask.
   for (int i = 0; i < 1000; ++i) {
-    channel_b->Write(Channel::Message::CreateMessage(0, 0));
+    channel_b->WriteNextIpczMessage({}, {});
   }
 
   // Explicitly join the thread to wait for pending tasks, which may reference
@@ -1665,17 +1709,18 @@ TEST(ChannelTest, ShutDownStress) {
   peer_thread.Stop();
 }
 
-class CallbackIpczChannelDelegate : public Channel::Delegate {
+class MessageCallbackChannelDelegate : public Channel::Delegate {
  public:
   using OnMessageCallback =
       base::OnceCallback<void(const void* payload,
                               size_t payload_size,
                               scoped_refptr<ipcz_driver::Envelope> envelope)>;
-  CallbackIpczChannelDelegate() = default;
+  MessageCallbackChannelDelegate() = default;
 
-  CallbackIpczChannelDelegate(const CallbackChannelDelegate&) = delete;
-  CallbackIpczChannelDelegate& operator=(const CallbackChannelDelegate&) =
+  MessageCallbackChannelDelegate(const MessageCallbackChannelDelegate&) =
       delete;
+  MessageCallbackChannelDelegate& operator=(
+      const MessageCallbackChannelDelegate&) = delete;
 
   bool IsIpczTransport() const override { return true; }
 
@@ -1719,16 +1764,14 @@ TEST(ChannelTest, IpczHeaderCompatibilityTest) {
   // The delegate is created before the task environment, because it will be
   // notified when the channel is destructed, which happens when the task
   // environment is shut down.
-  CallbackIpczChannelDelegate receiver_delegate;
+  MessageCallbackChannelDelegate receiver_delegate;
   base::test::SingleThreadTaskEnvironment task_environment(
       base::test::TaskEnvironment::MainThreadType::IO);
   PlatformChannel platform_channel;
 
-  scoped_refptr<Channel> channel =
-      Channel::Create(&receiver_delegate,
-                      ConnectionParams(platform_channel.TakeRemoteEndpoint()),
-                      Channel::HandlePolicy::kAcceptHandles,
-                      base::SingleThreadTaskRunner::GetCurrentDefault());
+  scoped_refptr<Channel> channel = Channel::CreateForIpczDriver(
+      &receiver_delegate, platform_channel.TakeRemoteEndpoint(),
+      base::SingleThreadTaskRunner::GetCurrentDefault());
   channel->Start();
 
   // There can be a discrepancy between the header version in the sender and the
@@ -1812,16 +1855,14 @@ TEST(ChannelTest, TryDispatchMessageWithEnvelope) {
   // The delegate is created before the task environment, because it will be
   // notified when the channel is destructed, which happens when the task
   // environment is shut down.
-  CallbackIpczChannelDelegate receiver_delegate;
+  MessageCallbackChannelDelegate receiver_delegate;
   base::test::SingleThreadTaskEnvironment task_environment(
       base::test::TaskEnvironment::MainThreadType::IO);
   PlatformChannel platform_channel;
 
-  scoped_refptr<Channel> channel =
-      Channel::Create(&receiver_delegate,
-                      ConnectionParams(platform_channel.TakeRemoteEndpoint()),
-                      Channel::HandlePolicy::kAcceptHandles,
-                      base::SingleThreadTaskRunner::GetCurrentDefault());
+  scoped_refptr<Channel> channel = Channel::CreateForIpczDriver(
+      &receiver_delegate, platform_channel.TakeRemoteEndpoint(),
+      base::SingleThreadTaskRunner::GetCurrentDefault());
   channel->Start();
 
   {
@@ -1870,6 +1911,7 @@ TEST(ChannelTest, TryDispatchMessageWithEnvelope) {
 // the write immediately and report errors through different paths, so the
 // single-error expectation is only meaningful on Windows.
 TEST(ChannelTest, WriteBeforeStartOnDisconnectedChannelReportsSingleError) {
+  CountingChannelDelegate delegate;
   base::test::SingleThreadTaskEnvironment task_environment(
       base::test::TaskEnvironment::MainThreadType::IO);
   PlatformChannel platform_channel;
@@ -1880,13 +1922,12 @@ TEST(ChannelTest, WriteBeforeStartOnDisconnectedChannelReportsSingleError) {
   std::ignore = platform_channel.TakeRemoteEndpoint();
 
   base::RunLoop error_loop;
-  CountingChannelDelegate delegate(base::DoNothing(), error_loop.QuitClosure());
-  scoped_refptr<Channel> channel = Channel::Create(
-      &delegate, ConnectionParams(platform_channel.TakeLocalEndpoint()),
-      Channel::HandlePolicy::kRejectHandles,
+  delegate.set_on_error(error_loop.QuitClosure());
+  scoped_refptr<Channel> channel = Channel::CreateForIpczDriver(
+      &delegate, platform_channel.TakeLocalEndpoint(),
       base::SingleThreadTaskRunner::GetCurrentDefault());
 
-  channel->Write(CreateDefaultMessage(false));
+  WriteDefaultMessage(channel.get());
   channel->Start();
   error_loop.Run();
 
@@ -1895,7 +1936,7 @@ TEST(ChannelTest, WriteBeforeStartOnDisconnectedChannelReportsSingleError) {
   // against a second OnChannelError(); whether the message was dropped or
   // merely queued behind the failed one is not observable through the public
   // Channel interface.
-  channel->Write(CreateDefaultMessage(false));
+  WriteDefaultMessage(channel.get());
   channel->ShutDown();
 
   base::RunLoop shutdown_loop;
@@ -1911,18 +1952,17 @@ TEST(ChannelTest, WriteBeforeStartOnDisconnectedChannelReportsSingleError) {
 namespace {
 
 // Records the payload size and the number of handles of every message.
-class RecordingIpczChannelDelegate : public Channel::Delegate {
+class RecordingChannelDelegate : public Channel::Delegate {
  public:
   struct ReceivedMessage {
     size_t payload_size;
     size_t num_handles;
   };
 
-  RecordingIpczChannelDelegate() = default;
+  RecordingChannelDelegate() = default;
 
-  RecordingIpczChannelDelegate(const RecordingIpczChannelDelegate&) = delete;
-  RecordingIpczChannelDelegate& operator=(const RecordingIpczChannelDelegate&) =
-      delete;
+  RecordingChannelDelegate(const RecordingChannelDelegate&) = delete;
+  RecordingChannelDelegate& operator=(const RecordingChannelDelegate&) = delete;
 
   bool IsIpczTransport() const override { return true; }
 
@@ -1968,21 +2008,18 @@ TEST(ChannelTest, NoUpgradeOfferWithoutMultipleNotifiers) {
   // The delegates are created before the task environment, because they are
   // notified when the channels are destructed, which happens when the task
   // environment is shut down.
-  RecordingIpczChannelDelegate sender_delegate;
-  RecordingIpczChannelDelegate receiver_delegate;
+  RecordingChannelDelegate sender_delegate;
+  RecordingChannelDelegate receiver_delegate;
   base::test::SingleThreadTaskEnvironment task_environment(
       base::test::TaskEnvironment::MainThreadType::IO);
   PlatformChannel platform_channel;
 
-  scoped_refptr<Channel> sender = Channel::Create(
-      &sender_delegate, ConnectionParams(platform_channel.TakeLocalEndpoint()),
-      Channel::HandlePolicy::kAcceptHandles,
+  scoped_refptr<Channel> sender = Channel::CreateForIpczDriver(
+      &sender_delegate, platform_channel.TakeLocalEndpoint(),
       base::SingleThreadTaskRunner::GetCurrentDefault());
-  scoped_refptr<Channel> receiver =
-      Channel::Create(&receiver_delegate,
-                      ConnectionParams(platform_channel.TakeRemoteEndpoint()),
-                      Channel::HandlePolicy::kAcceptHandles,
-                      base::SingleThreadTaskRunner::GetCurrentDefault());
+  scoped_refptr<Channel> receiver = Channel::CreateForIpczDriver(
+      &receiver_delegate, platform_channel.TakeRemoteEndpoint(),
+      base::SingleThreadTaskRunner::GetCurrentDefault());
   sender->Start();
   receiver->Start();
 

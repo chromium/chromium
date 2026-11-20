@@ -43,12 +43,10 @@ class RunOnDestruction {
 class TestChannel : public core::Channel::Delegate {
  public:
   explicit TestChannel(PlatformChannelEndpoint endpoint)
-      : io_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
-        channel_(
-            core::Channel::Create(this,
-                                  core::ConnectionParams{std::move(endpoint)},
-                                  core::Channel::HandlePolicy::kRejectHandles,
-                                  io_task_runner_)) {
+      : channel_(core::Channel::CreateForIpczDriver(
+            this,
+            std::move(endpoint),
+            base::SingleThreadTaskRunner::GetCurrentDefault())) {
     channel_->Start();
   }
 
@@ -58,12 +56,13 @@ class TestChannel : public core::Channel::Delegate {
     CHECK(!stopped_);
     stopped_ = true;
 
-    // We pump the IO task queue after ShutDown() to ensure completion, as
-    // Channel implementions post a cleanup task there.
-    base::RunLoop shutdown_flush;
+    // The Channel may call into this delegate until it's destroyed, which
+    // happens asynchronously after ShutDown(), so wait for that.
+    base::RunLoop wait_for_destruction;
+    on_channel_destroyed_ = wait_for_destruction.QuitClosure();
     channel_->ShutDown();
-    io_task_runner_->PostTask(FROM_HERE, shutdown_flush.QuitClosure());
-    shutdown_flush.Run();
+    channel_.reset();
+    wait_for_destruction.Run();
   }
 
   void SendMessage(const std::string& message) {
@@ -77,11 +76,7 @@ class TestChannel : public core::Channel::Delegate {
   }
 
   // core::Channel::Delegate:
-  bool IsIpczTransport() const override {
-    // We use Channel in ipcz mode because it's simpler. Doesn't matter if
-    // MojoIpcz is actually enabled.
-    return true;
-  }
+  bool IsIpczTransport() const override { return true; }
 
   void OnChannelMessage(
       const void* payload,
@@ -95,9 +90,11 @@ class TestChannel : public core::Channel::Delegate {
 
   void OnChannelError(core::Channel::Error error) override {}
 
+  void OnChannelDestroyed() override { std::move(on_channel_destroyed_).Run(); }
+
  private:
-  const scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
-  const scoped_refptr<core::Channel> channel_;
+  scoped_refptr<core::Channel> channel_;
+  base::OnceClosure on_channel_destroyed_;
   base::RunLoop wait_for_message_;
   base::OnceClosure quit_{wait_for_message_.QuitClosure()};
   std::optional<std::string> received_message_;

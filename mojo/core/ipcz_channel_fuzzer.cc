@@ -11,34 +11,24 @@
 #include "base/numerics/byte_conversions.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_executor.h"
-#include "build/build_config.h"
 #include "mojo/core/channel.h"
-#include "mojo/core/connection_params.h"
 #include "mojo/core/fuzzing_utils.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "testing/libfuzzer/libfuzzer_base_wrappers.h"
-
-#if BUILDFLAG(IS_WIN)
-#include <windows.h>
-#endif
 
 DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN(base::span<const uint8_t> payload) {
   static base::NoDestructor<mojo::core::Environment> environment;
   mojo::PlatformChannel channel;
   mojo::core::FakeChannelDelegate receiver_delegate{/*is_ipcz_transport=*/true};
   using mojo::core::Channel;
-  auto receiver =
-      Channel::Create(&receiver_delegate,
-                      mojo::core::ConnectionParams(channel.TakeLocalEndpoint()),
-                      Channel::HandlePolicy::kRejectHandles,
-                      environment->main_thread_task_executor.task_runner());
+  auto receiver = Channel::CreateForIpczDriver(
+      &receiver_delegate, channel.TakeLocalEndpoint(),
+      environment->main_thread_task_executor.task_runner());
   receiver->Start();
 
   mojo::core::FakeChannelDelegate sender_delegate{/*is_ipcz_transport=*/true};
-  auto sender = Channel::Create(
-      &sender_delegate,
-      mojo::core::ConnectionParams(channel.TakeRemoteEndpoint()),
-      Channel::HandlePolicy::kRejectHandles,
+  auto sender = Channel::CreateForIpczDriver(
+      &sender_delegate, channel.TakeRemoteEndpoint(),
       environment->main_thread_task_executor.task_runner());
   sender->Start();
 
