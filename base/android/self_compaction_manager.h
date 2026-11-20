@@ -84,9 +84,8 @@ class BASE_EXPORT SelfCompactionManager {
     // this time and when we actually begin the compaction.
     const base::TimeTicks compaction_triggered_at_;
     // When the self compaction first started. This should generally be
-    // |compaction_triggered_at_ +
-    // kShouldFreezeSelfDelayAfterPreFreezeTasks.Get()|, but may be longer if
-    // the task was delayed.
+    // |compaction_triggered_at_ + kDelayAfterPreFreezeTasks|, but may be longer
+    // if the task was delayed.
     const base::TimeTicks compaction_started_at_;
     // We use std::optional here because:
     // - We record these incrementally.
@@ -101,28 +100,29 @@ class BASE_EXPORT SelfCompactionManager {
 
   class CompactionState {
    public:
+    // |metric_prefix| is prepended to the names of all histograms recorded for
+    // this compaction, e.g. "Memory.SelfCompact2.Renderer.".
     CompactionState(scoped_refptr<SequencedTaskRunner> task_runner,
                     base::TimeTicks triggered_at,
+                    std::string_view metric_prefix,
                     base::ByteSize max_bytes);
-    virtual ~CompactionState();
+    ~CompactionState();
 
-    virtual std::string GetMetricName(std::string_view name) const = 0;
+    std::string GetMetricName(std::string_view name) const;
     void MaybeReadProcMaps();
-    virtual scoped_refptr<CompactionMetric> MakeCompactionMetric(
-        base::TimeTicks started_at) const = 0;
-    virtual base::TimeDelta GetDelayAfterPreFreezeTasks() const = 0;
+    scoped_refptr<CompactionMetric> MakeCompactionMetric(
+        base::TimeTicks started_at) const;
 
     scoped_refptr<SequencedTaskRunner> task_runner_;
     std::vector<debug::MappedMemoryRegion> regions_;
     const base::TimeTicks triggered_at_;
+    const std::string metric_prefix_;
     const base::ByteSize max_bytes_;
   };
 
  private:
   friend class base::NoDestructor<SelfCompactionManager>;
   friend class PreFreezeBackgroundMemoryTrimmer;
-  friend class SelfCompactionState;
-  friend class RunningCompactionState;
   friend class PreFreezeSelfCompactionTest;
   friend class PreFreezeSelfCompactionTestWithParam;
   FRIEND_TEST_ALL_PREFIXES(PreFreezeSelfCompactionTestWithParam, Disabled);
@@ -153,8 +153,8 @@ class BASE_EXPORT SelfCompactionManager {
 
   // Compacts the memory for the process.
   static void CompactSelf(std::unique_ptr<CompactionState> state);
-  template <class State>
-  void OnTriggerCompact(scoped_refptr<SequencedTaskRunner> task_runner);
+  void OnTriggerCompact(scoped_refptr<SequencedTaskRunner> task_runner,
+                        std::string_view metric_prefix);
   void OnTriggerCompact(std::unique_ptr<CompactionState> state)
       EXCLUSIVE_LOCKS_REQUIRED(lock());
   static void OnTriggerRunningCompact(std::unique_ptr<CompactionState> state)
