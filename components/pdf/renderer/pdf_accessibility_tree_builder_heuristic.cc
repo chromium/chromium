@@ -1705,6 +1705,22 @@ const ListLevel* GetParentListLevel(base::span<const ListLevel> list_levels,
   return nullptr;
 }
 
+// Returns the last marker of the list that a marker at `run_x` would join. This
+// is the innermost list whose markers are in the same column as `run_x`.
+//
+// Returns std::nullopt if no list is in that column, or if that list is
+// unordered.
+base::optional_ref<const OrderedMarker> GetAlignedListMarker(
+    base::span<const ListLevel> list_levels,
+    float run_x) {
+  for (const ListLevel& list_level : std::views::reverse(list_levels)) {
+    if (std::abs(run_x - list_level.marker_x) <= kListIndentThreshold) {
+      return list_level.last_ordered_marker;
+    }
+  }
+  return std::nullopt;
+}
+
 // Returns the font size of the item text for a list marker of `form`. A
 // standalone marker's font size can differ from its item text's because some
 // authoring tools size bullets separately. For example, PowerPoint sizes
@@ -1792,20 +1808,90 @@ ListPlacement GetListPlacement(
           .level_index = target_level};
 }
 
-// Classifies `run_context` as an ordered list marker: 1-3 digits or a single
-// ASCII lowercase letter, followed by one of `kOrderedMarkerDelimiters` (e.g.
-// "1.", "12)", "a.") or wrapped in parentheses (e.g. "(1)", "(a)"). On a match,
-// returns `ordered_marker` set to the marker's type and value (the number, or
-// the letter's position in the alphabet), and form `kStandalone` if the marker
-// is alone in its run with item text in the next run on the same line, or
-// `kCombined` if whitespace and item text follow it in the same run.
-// Otherwise, returns form `kNone` with no `ordered_marker`, e.g. for years
-// ("2023.", "(2020)"), decimals ("1.5"), abbreviations ("e.g."), or a marker
-// with no item text after it.
-ListMarkerKind ClassifyOrderedMarker(const TextRunContext& run_context) {
+// Returns the ASCII lowercase letters at the start of `text`.
+std::string_view GetLeadingLowercaseLetters(std::string_view text) {
+  size_t end = 0;
+  while (end < text.size() && base::IsAsciiLower(text[end])) {
+    ++end;
+  }
+  return text.substr(0, end);
+}
+
+// Returns the ordered marker for lowercase `letters`: a Roman numeral, or the
+// first letter's position in the alphabet. The caller sets `parenthesized`.
+//
+// "i", "v" and "x" are both, so they follow the style of `list_marker`, the
+// last marker of the list they would join. Without a lettered or Roman list,
+// only "i" is a Roman numeral.
+OrderedMarker GetLetterMarker(
+    std::string_view letters,
+    base::optional_ref<const OrderedMarker> list_marker) {
+  const OrderedMarker letter_marker = {
+      .value = letters.front() - 'a' + 1,
+      .type = {.counter_style = OrderedMarkerType::CounterStyle::kLowerAlpha}};
+  const std::optional<int> roman_value = ParseRomanNumeral(letters);
+  if (!roman_value.has_value()) {
+    return letter_marker;
+  }
+
+  const OrderedMarker roman_marker = {
+      .value = *roman_value,
+      .type = {.counter_style = OrderedMarkerType::CounterStyle::kLowerRoman}};
+  // Letter markers are one letter, so longer numerals such as "iv" are Roman.
+  if (letters.size() > 1) {
+    return roman_marker;
+  }
+
+  // "i", "v" and "x" are the only single letters that are also supported Roman
+  // numerals.
+  CHECK(letters == "i" || letters == "v" || letters == "x");
+
+  // A lone "i", "v" or "x" takes the style of the lettered or Roman list it
+  // joins, e.g. "i" after "h" is a letter, and "v" after "iv" is Roman.
+  if (list_marker.has_value()) {
+    switch (list_marker->type.counter_style) {
+      case OrderedMarkerType::CounterStyle::kLowerRoman:
+        return roman_marker;
+      case OrderedMarkerType::CounterStyle::kLowerAlpha:
+        return letter_marker;
+      case OrderedMarkerType::CounterStyle::kDecimal:
+        break;
+    }
+  }
+  // Otherwise, the marker likely starts a new list. Lists usually start at
+  // their first item, which "i" is as a Roman numeral.
+  //
+  // "v" and "x" would start partway through either kind of list, so they're
+  // read as letters.
+  //
+  // TODO(crbug.com/525509231): Lists end at each page break, so the first item
+  // on a new page has no list to follow. If the guess above is wrong, e.g.
+  // letter "i" after "h" or Roman "v" after "iv", the next marker doesn't
+  // confirm a list and the item becomes a paragraph. Try the other style when
+  // the first one doesn't confirm a list.
+  return letters == "i" ? roman_marker : letter_marker;
+}
+
+// Classifies `run_context` as an ordered list marker: 1-3 digits, a single
+// ASCII lowercase letter, or a lowercase Roman numeral up to
+// `kMaxRomanNumeralValue`, followed by one of `kOrderedMarkerDelimiters` (e.g.
+// "1.", "12)", "a.", "iv.") or wrapped in parentheses (e.g. "(1)", "(a)",
+// "(iv)"). On a match, returns `ordered_marker` set to the marker's type and
+// value (the number, the letter's position in the alphabet, or the Roman
+// numeral's value), and form `kStandalone` if the marker is alone in its run
+// with item text in the next run on the same line, or `kCombined` if
+// whitespace and item text follow it in the same run. Otherwise, returns form
+// `kNone` with no `ordered_marker`, e.g. for years ("2023.", "(2020)"),
+// decimals ("1.5"), abbreviations ("e.g."), or a marker with no item text after
+// it.
+//
+// `list_marker` is the last marker of the list the run would join. See
+// `GetLetterMarker()` for how it settles "i", "v" and "x".
+ListMarkerKind ClassifyOrderedMarker(
+    const TextRunContext& run_context,
+    base::optional_ref<const OrderedMarker> list_marker) {
   const std::string text = GetTrimmedText(run_context.chars);
-  // TODO(crbug.com/525509231): Support uppercase and roman numeral markers
-  // (e.g. "B)", "iv.").
+  // TODO(crbug.com/525509231): Support uppercase markers (e.g. "B)").
   const bool is_parenthesized = text.starts_with('(');
   const size_t value_start = is_parenthesized ? 1 : 0;
   size_t i = value_start;
@@ -1816,20 +1902,25 @@ ListMarkerKind ClassifyOrderedMarker(const TextRunContext& run_context) {
   if (digit_count > kMaxOrderedMarkerDigits) {
     return {};
   }
-  OrderedMarkerType::CounterStyle counter_style;
-  int value;
+  OrderedMarker marker;
   if (digit_count > 0) {
-    if (!base::StringToInt(text.substr(value_start, digit_count), &value)) {
+    if (!base::StringToInt(text.substr(value_start, digit_count),
+                           &marker.value)) {
       return {};
     }
-    counter_style = OrderedMarkerType::CounterStyle::kDecimal;
+    marker.type.counter_style = OrderedMarkerType::CounterStyle::kDecimal;
   } else if (i < text.size() && base::IsAsciiLower(text[i])) {
-    counter_style = OrderedMarkerType::CounterStyle::kLowerAlpha;
-    value = text[i] - 'a' + 1;
-    ++i;
+    const std::string_view letters =
+        GetLeadingLowercaseLetters(std::string_view(text).substr(i));
+    marker = GetLetterMarker(letters, list_marker);
+    i += marker.type.counter_style ==
+                 OrderedMarkerType::CounterStyle::kLowerRoman
+             ? letters.size()
+             : 1;
   } else {
     return {};
   }
+  marker.type.parenthesized = is_parenthesized;
   // The marker ends at the first whitespace, or at the end of a standalone run.
   // This also rejects decimals such as "1.5".
   const size_t marker_size =
@@ -1840,23 +1931,19 @@ ListMarkerKind ClassifyOrderedMarker(const TextRunContext& run_context) {
           : !std::ranges::contains(kOrderedMarkerDelimiters, delimiter)) {
     return {};
   }
-  const OrderedMarkerType type = {.counter_style = counter_style,
-                                  .parenthesized = is_parenthesized};
   // A run containing only the marker is a standalone marker if the item text
   // follows in the next run on the same line.
   if (marker_size == text.size()) {
     if (!IsStandaloneMarkerFollowedByText(run_context)) {
       return {};
     }
-    return {.form = ListMarkerForm::kStandalone,
-            .ordered_marker = {{.value = value, .type = type}}};
+    return {.form = ListMarkerForm::kStandalone, .ordered_marker = marker};
   }
   // Otherwise, it is a combined run if item text follows the marker.
   if (!ContainsAlphanumeric(text.substr(marker_size))) {
     return {};
   }
-  return {.form = ListMarkerForm::kCombined,
-          .ordered_marker = {{.value = value, .type = type}}};
+  return {.form = ListMarkerForm::kCombined, .ordered_marker = marker};
 }
 
 // Returns whether `run_context` starts with an ordered marker of `level`'s
@@ -1864,7 +1951,8 @@ ListMarkerKind ClassifyOrderedMarker(const TextRunContext& run_context) {
 // such as "(2)" in a "1." item, may be wrapped item text.
 bool StartsWithOrderedMarkerOfLevelType(const TextRunContext& run_context,
                                         const ListLevel& level) {
-  const ListMarkerKind kind = ClassifyOrderedMarker(run_context);
+  const ListMarkerKind kind =
+      ClassifyOrderedMarker(run_context, level.last_ordered_marker);
   if (kind.form == ListMarkerForm::kNone) {
     return false;
   }
@@ -1948,15 +2036,19 @@ bool IsOrderedListStartConfirmed(
       continue;
     }
     const TextRunContext run_context = GetTextRunContext(layout, i);
-    const ListMarkerKind next_marker_kind = ClassifyOrderedMarker(run_context);
+    // Only a line in the marker's column joins its list, so an indented "(i)"
+    // under "(a)" is read as a Roman numeral, not the letter "i".
+    const bool is_aligned =
+        std::abs(run.bounds.x() - marker_x) <= kListIndentThreshold;
+    const ListMarkerKind next_marker_kind = ClassifyOrderedMarker(
+        run_context, is_aligned ? marker_kind.ordered_marker : std::nullopt);
     // Markers of another type (e.g. "(1)" sub-items in a "1." list) are
     // scanned past like item text.
     if (next_marker_kind.form != ListMarkerForm::kNone &&
         next_marker_kind.ordered_marker->type ==
             marker_kind.ordered_marker->type) {
-      if (std::abs(run.bounds.x() - marker_x) > kListIndentThreshold ||
-          next_marker_kind.ordered_marker->value !=
-              marker_kind.ordered_marker->value + 1) {
+      if (!is_aligned || next_marker_kind.ordered_marker->value !=
+                             marker_kind.ordered_marker->value + 1) {
         return false;
       }
       RecordOrderedListLookaheadLines(marker_run_index, lines_count,
@@ -2043,7 +2135,8 @@ ListMarkerKind ClassifyListMarker(
     }
   }
 
-  const ListMarkerKind ordered_kind = ClassifyOrderedMarker(run_context);
+  const ListMarkerKind ordered_kind = ClassifyOrderedMarker(
+      run_context, GetAlignedListMarker(list_levels, run_x));
   if (ordered_kind.form == ListMarkerForm::kNone) {
     return {};
   }
@@ -2560,16 +2653,22 @@ PageTables ComputePageTables(
 void RecordListStartReason(const ListMarkerKind& kind) {
   ListStartReason reason;
   if (kind.ordered_marker.has_value()) {
-    // New ordered lists start at 1 or "a", or above that when resuming
+    // New ordered lists start at 1, "a" or "i", or above that when resuming
     // numbering (e.g. on a new page); see `ClassifyListMarker()`.
     const bool starts_at_one = kind.ordered_marker->value == 1;
-    if (kind.ordered_marker->type.counter_style ==
-        OrderedMarkerType::CounterStyle::kLowerAlpha) {
-      reason = starts_at_one ? ListStartReason::kLowerAlphaStartsAtA
-                             : ListStartReason::kLowerAlphaStartsAboveA;
-    } else {
-      reason = starts_at_one ? ListStartReason::kDecimalStartsAtOne
-                             : ListStartReason::kDecimalStartsAboveOne;
+    switch (kind.ordered_marker->type.counter_style) {
+      case OrderedMarkerType::CounterStyle::kDecimal:
+        reason = starts_at_one ? ListStartReason::kDecimalStartsAtOne
+                               : ListStartReason::kDecimalStartsAboveOne;
+        break;
+      case OrderedMarkerType::CounterStyle::kLowerAlpha:
+        reason = starts_at_one ? ListStartReason::kLowerAlphaStartsAtA
+                               : ListStartReason::kLowerAlphaStartsAboveA;
+        break;
+      case OrderedMarkerType::CounterStyle::kLowerRoman:
+        reason = starts_at_one ? ListStartReason::kLowerRomanStartsAtI
+                               : ListStartReason::kLowerRomanStartsAboveI;
+        break;
     }
   } else if (kind.nested_only) {
     reason = ListStartReason::kNestedOnlyMarker;

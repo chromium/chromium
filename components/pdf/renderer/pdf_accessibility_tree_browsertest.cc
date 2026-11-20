@@ -7755,6 +7755,35 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicOrderedListLowerAlphaContinuesPastH) {
       ListStartReason::kLowerAlphaStartsAboveA, 1);
 }
 
+// A new list starting at "x." is lettered, since "x" would start partway
+// through a Roman numeral list.
+TEST_F(PdfAccessibilityTreeTest, HeuristicOrderedListLowerAlphaStartsAtX) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"x.", "Item X", "y.", "Item Y", "z.", "Item Z"},
+      {
+          gfx::RectF(30.0f, 20.0f, 20.0f, 12.0f),
+          gfx::RectF(55.0f, 20.0f, 60.0f, 12.0f),
+          gfx::RectF(30.0f, 35.0f, 20.0f, 12.0f),
+          gfx::RectF(55.0f, 35.0f, 60.0f, 12.0f),
+          gfx::RectF(30.0f, 50.0f, 20.0f, 12.0f),
+          gfx::RectF(55.0f, 50.0f, 60.0f, 12.0f),
+      });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
+
+  CheckOrderedList(page->GetChildAtIndex(0u), {"Item X", "Item Y", "Item Z"},
+                   {"x. ", "y. ", "z. "});
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.PdfHeuristics.ListStartReason",
+      ListStartReason::kLowerAlphaStartsAboveA, 1);
+}
+
 // A lone letter followed by a period (e.g. "v." in a case name) needs the next
 // letter to confirm a list, and abbreviations such as "e.g." aren't markers.
 TEST_F(PdfAccessibilityTreeTest,
@@ -7821,6 +7850,307 @@ TEST_F(PdfAccessibilityTreeTest,
 
   CheckOrderedList(page->GetChildAtIndex(0u),
                    {"See clausea) for details", "Second"}, {"1. ", "2. "});
+}
+
+TEST_F(PdfAccessibilityTreeTest, HeuristicOrderedListLowerRomanMarkers) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  const ui::AXNode* page =
+      SetUpUniformHeuristicPage({"i.", "Item i", "ii.", "Item ii", "iii.",
+                                 "Item iii", "iv.", "Item iv", "v.", "Item v"},
+                                {
+                                    gfx::RectF(30.0f, 20.0f, 20.0f, 12.0f),
+                                    gfx::RectF(55.0f, 20.0f, 60.0f, 12.0f),
+                                    gfx::RectF(30.0f, 35.0f, 20.0f, 12.0f),
+                                    gfx::RectF(55.0f, 35.0f, 60.0f, 12.0f),
+                                    gfx::RectF(30.0f, 50.0f, 20.0f, 12.0f),
+                                    gfx::RectF(55.0f, 50.0f, 60.0f, 12.0f),
+                                    gfx::RectF(30.0f, 65.0f, 20.0f, 12.0f),
+                                    gfx::RectF(55.0f, 65.0f, 60.0f, 12.0f),
+                                    gfx::RectF(30.0f, 80.0f, 20.0f, 12.0f),
+                                    gfx::RectF(55.0f, 80.0f, 60.0f, 12.0f),
+                                });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
+
+  CheckOrderedList(page->GetChildAtIndex(0u),
+                   {"Item i", "Item ii", "Item iii", "Item iv", "Item v"},
+                   {"i. ", "ii. ", "iii. ", "iv. ", "v. "});
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.PdfHeuristics.ListStartReason",
+      ListStartReason::kLowerRomanStartsAtI, 1);
+}
+
+TEST_F(PdfAccessibilityTreeTest,
+       HeuristicOrderedListParenthesizedLowerRomanMarkers) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"(i) First", "(ii) Second"}, {
+                                        gfx::RectF(30.0f, 40.0f, 90.0f, 12.0f),
+                                        gfx::RectF(30.0f, 57.0f, 110.0f, 12.0f),
+                                    });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
+
+  CheckOrderedList(page->GetChildAtIndex(0u), {"First", "Second"},
+                   {"(i) ", "(ii) "});
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.PdfHeuristics.ListStartReason",
+      ListStartReason::kLowerRomanStartsAtI, 1);
+}
+
+// Indented "(i)" items nest under "1." items, and "2." resumes the outer list.
+TEST_F(PdfAccessibilityTreeTest,
+       HeuristicOrderedListLowerRomanNestedInDecimal) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  const ui::AXNode* page =
+      SetUpUniformHeuristicPage({"1.", "Item 1", "(i)", "Subitem i", "(ii)",
+                                 "Subitem ii", "2.", "Item 2"},
+                                {
+                                    gfx::RectF(30.0f, 40.0f, 10.0f, 12.0f),
+                                    gfx::RectF(45.0f, 40.0f, 60.0f, 12.0f),
+                                    gfx::RectF(50.0f, 53.0f, 20.0f, 12.0f),
+                                    gfx::RectF(75.0f, 53.0f, 60.0f, 12.0f),
+                                    gfx::RectF(50.0f, 66.0f, 20.0f, 12.0f),
+                                    gfx::RectF(75.0f, 66.0f, 60.0f, 12.0f),
+                                    gfx::RectF(30.0f, 79.0f, 10.0f, 12.0f),
+                                    gfx::RectF(45.0f, 79.0f, 60.0f, 12.0f),
+                                });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
+
+  const ui::AXNode* top_list = page->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, top_list);
+  ASSERT_EQ(2u, top_list->GetChildCount());
+  const ui::AXNode* nested_list = CheckListItemWithNestedList(
+      top_list->GetChildAtIndex(0u), "Item 1", "1. ", "ol");
+  CheckOrderedList(nested_list, {"Subitem i", "Subitem ii"}, {"(i) ", "(ii) "});
+  CheckListItem(top_list->GetChildAtIndex(1u), "Item 2", "2. ");
+}
+
+// Indented "(i)" items nest under "(a)" items as Roman numerals, since they
+// don't line up with "(a)".
+TEST_F(PdfAccessibilityTreeTest,
+       HeuristicOrderedListLowerRomanNestedInLowerAlpha) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  const ui::AXNode* page =
+      SetUpUniformHeuristicPage({"(a)", "Item a", "(i)", "Subitem i", "(ii)",
+                                 "Subitem ii", "(b)", "Item b"},
+                                {
+                                    gfx::RectF(30.0f, 40.0f, 15.0f, 12.0f),
+                                    gfx::RectF(50.0f, 40.0f, 60.0f, 12.0f),
+                                    gfx::RectF(55.0f, 53.0f, 15.0f, 12.0f),
+                                    gfx::RectF(75.0f, 53.0f, 60.0f, 12.0f),
+                                    gfx::RectF(55.0f, 66.0f, 15.0f, 12.0f),
+                                    gfx::RectF(75.0f, 66.0f, 60.0f, 12.0f),
+                                    gfx::RectF(30.0f, 79.0f, 15.0f, 12.0f),
+                                    gfx::RectF(50.0f, 79.0f, 60.0f, 12.0f),
+                                });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
+
+  const ui::AXNode* top_list = page->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, top_list);
+  ASSERT_EQ(2u, top_list->GetChildCount());
+  const ui::AXNode* nested_list = CheckListItemWithNestedList(
+      top_list->GetChildAtIndex(0u), "Item a", "(a) ", "ol");
+  CheckOrderedList(nested_list, {"Subitem i", "Subitem ii"}, {"(i) ", "(ii) "});
+  CheckListItem(top_list->GetChildAtIndex(1u), "Item b", "(b) ");
+}
+
+// Indented "i." items nest under "h." as Roman numerals, and "i." in line with
+// "h." resumes the outer list as a letter.
+TEST_F(PdfAccessibilityTreeTest, HeuristicOrderedListLowerRomanNestedUnderH) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"h.", "Item H", "i.", "Subitem i", "ii.", "Subitem ii", "i.", "Item I"},
+      {
+          gfx::RectF(30.0f, 40.0f, 20.0f, 12.0f),
+          gfx::RectF(55.0f, 40.0f, 60.0f, 12.0f),
+          gfx::RectF(60.0f, 53.0f, 20.0f, 12.0f),
+          gfx::RectF(85.0f, 53.0f, 60.0f, 12.0f),
+          gfx::RectF(60.0f, 66.0f, 20.0f, 12.0f),
+          gfx::RectF(85.0f, 66.0f, 60.0f, 12.0f),
+          gfx::RectF(30.0f, 79.0f, 20.0f, 12.0f),
+          gfx::RectF(55.0f, 79.0f, 60.0f, 12.0f),
+      });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
+
+  const ui::AXNode* top_list = page->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, top_list);
+  ASSERT_EQ(2u, top_list->GetChildCount());
+  const ui::AXNode* nested_list = CheckListItemWithNestedList(
+      top_list->GetChildAtIndex(0u), "Item H", "h. ", "ol");
+  CheckOrderedList(nested_list, {"Subitem i", "Subitem ii"}, {"i. ", "ii. "});
+  CheckListItem(top_list->GetChildAtIndex(1u), "Item I", "i. ");
+}
+
+// "v." after "iv." is a Roman numeral, not a letter. A list may start above
+// "i".
+TEST_F(PdfAccessibilityTreeTest,
+       HeuristicOrderedListLowerRomanContinuesPastIV) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"iv.", "Item iv", "v.", "Item v", "vi.", "Item vi"},
+      {
+          gfx::RectF(30.0f, 20.0f, 20.0f, 12.0f),
+          gfx::RectF(55.0f, 20.0f, 60.0f, 12.0f),
+          gfx::RectF(30.0f, 35.0f, 20.0f, 12.0f),
+          gfx::RectF(55.0f, 35.0f, 60.0f, 12.0f),
+          gfx::RectF(30.0f, 50.0f, 20.0f, 12.0f),
+          gfx::RectF(55.0f, 50.0f, 60.0f, 12.0f),
+      });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
+
+  CheckOrderedList(page->GetChildAtIndex(0u), {"Item iv", "Item v", "Item vi"},
+                   {"iv. ", "v. ", "vi. "});
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.PdfHeuristics.ListStartReason",
+      ListStartReason::kLowerRomanStartsAboveI, 1);
+}
+
+// "x." after "ix." is a Roman numeral, not a letter, and numerals past ten
+// continue the list.
+TEST_F(PdfAccessibilityTreeTest,
+       HeuristicOrderedListLowerRomanContinuesPastIX) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  const ui::AXNode* page =
+      SetUpUniformHeuristicPage({"viii.", "Item viii", "ix.", "Item ix", "x.",
+                                 "Item x", "xi.", "Item xi"},
+                                {
+                                    gfx::RectF(30.0f, 20.0f, 20.0f, 12.0f),
+                                    gfx::RectF(55.0f, 20.0f, 60.0f, 12.0f),
+                                    gfx::RectF(30.0f, 33.0f, 20.0f, 12.0f),
+                                    gfx::RectF(55.0f, 33.0f, 60.0f, 12.0f),
+                                    gfx::RectF(30.0f, 46.0f, 20.0f, 12.0f),
+                                    gfx::RectF(55.0f, 46.0f, 60.0f, 12.0f),
+                                    gfx::RectF(30.0f, 59.0f, 20.0f, 12.0f),
+                                    gfx::RectF(55.0f, 59.0f, 60.0f, 12.0f),
+                                });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
+
+  CheckOrderedList(page->GetChildAtIndex(0u),
+                   {"Item viii", "Item ix", "Item x", "Item xi"},
+                   {"viii. ", "ix. ", "x. ", "xi. "});
+}
+
+// "v." after a lettered sublist follows the Roman list it lines up with, not
+// the innermost lettered list.
+TEST_F(PdfAccessibilityTreeTest,
+       HeuristicOrderedListLowerRomanWithLowerAlphaSublist) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"iv.", "Item iv", "a.", "Subitem A", "b.", "Subitem B", "v.", "Item v"},
+      {
+          gfx::RectF(30.0f, 40.0f, 20.0f, 12.0f),
+          gfx::RectF(55.0f, 40.0f, 60.0f, 12.0f),
+          gfx::RectF(60.0f, 53.0f, 20.0f, 12.0f),
+          gfx::RectF(85.0f, 53.0f, 60.0f, 12.0f),
+          gfx::RectF(60.0f, 66.0f, 20.0f, 12.0f),
+          gfx::RectF(85.0f, 66.0f, 60.0f, 12.0f),
+          gfx::RectF(30.0f, 79.0f, 20.0f, 12.0f),
+          gfx::RectF(55.0f, 79.0f, 60.0f, 12.0f),
+      });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
+
+  const ui::AXNode* top_list = page->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, top_list);
+  ASSERT_EQ(2u, top_list->GetChildCount());
+  const ui::AXNode* nested_list = CheckListItemWithNestedList(
+      top_list->GetChildAtIndex(0u), "Item iv", "iv. ", "ol");
+  CheckOrderedList(nested_list, {"Subitem A", "Subitem B"}, {"a. ", "b. "});
+  CheckListItem(top_list->GetChildAtIndex(1u), "Item v", "v. ");
+}
+
+// Non-standard numerals aren't markers, and a lone "vi." needs "vii." to
+// confirm a list.
+TEST_F(PdfAccessibilityTreeTest, HeuristicOrderedListLowerRomanNotList) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"iiii. Not a list", "vx. Not a list", "vi. Not a list"},
+      {
+          gfx::RectF(30.0f, 20.0f, 160.0f, 12.0f),
+          gfx::RectF(30.0f, 33.0f, 140.0f, 12.0f),
+          gfx::RectF(30.0f, 46.0f, 140.0f, 12.0f),
+      });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
+
+  CheckParagraph(page->GetChildAtIndex(0u),
+                 "iiii. Not a listvx. Not a listvi. Not a list");
+}
+
+// An out-of-sequence Roman numeral ends the item instead of being absorbed as
+// wrapped text, like "4." after "2.".
+TEST_F(PdfAccessibilityTreeTest,
+       HeuristicOrderedListLowerRomanOutOfSequenceEndsItem) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"i.", "Item i", "ii.", "Item ii", "iv.", "Item iv"},
+      {
+          gfx::RectF(30.0f, 20.0f, 20.0f, 12.0f),
+          gfx::RectF(55.0f, 20.0f, 60.0f, 12.0f),
+          gfx::RectF(30.0f, 33.0f, 20.0f, 12.0f),
+          gfx::RectF(55.0f, 33.0f, 60.0f, 12.0f),
+          gfx::RectF(30.0f, 46.0f, 20.0f, 12.0f),
+          gfx::RectF(55.0f, 46.0f, 60.0f, 12.0f),
+      });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(2u, page->GetChildCount());
+
+  CheckOrderedList(page->GetChildAtIndex(0u), {"Item i", "Item ii"},
+                   {"i. ", "ii. "});
+  CheckParagraph(page->GetChildAtIndex(1u), "iv.Item iv");
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.PdfHeuristics.ListEndReason",
+      ListEndReason::kOutOfSequenceMarker, 1);
 }
 
 TEST_F(PdfAccessibilityTreeTest, HeuristicOrderedListThreeDigitMarkers) {

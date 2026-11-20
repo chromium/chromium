@@ -47,6 +47,8 @@ struct OrderedMarkerType {
     kDecimal,
     // ASCII "a", "b", "c", ...
     kLowerAlpha,
+    // ASCII "i", "ii", "iii", ...
+    kLowerRoman,
   };
 
   friend bool operator==(const OrderedMarkerType&,
@@ -62,7 +64,8 @@ struct OrderedMarkerType {
 
 // An ordered list marker.
 struct OrderedMarker {
-  // The marker's position in its list, not its text, e.g. 2 for "2." or "b)".
+  // The marker's position in its list, not its text, e.g. 2 for "2.", "b)" or
+  // "ii.".
   int value = 0;
   OrderedMarkerType type;
 };

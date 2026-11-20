@@ -24286,6 +24286,10 @@ Called by update_net_error_codes.py.-->
   <int value="4" label="Ordered ASCII lowercase letter marker starting at a"/>
   <int value="5"
       label="Ordered ASCII lowercase letter marker starting above a"/>
+  <int value="6"
+      label="Ordered ASCII lowercase Roman numeral marker starting at i"/>
+  <int value="7"
+      label="Ordered ASCII lowercase Roman numeral marker starting above i"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/pdf/renderer/pdf_accessibility_metrics.h:PdfAccessibilityListStartReason) -->
