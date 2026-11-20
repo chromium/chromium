@@ -250,8 +250,6 @@ const char kHistogramFirstContentfulPaintUserInitiated[] =
 
 const char kHistogramCachedResourceLoadTimePrefix[] =
     "PageLoad.Experimental.PageTiming.CachedResourceLoadTime.";
-const char kHistogramCommitSentToFirstSubresourceLoadStart[] =
-    "PageLoad.Experimental.PageTiming.CommitSentToFirstSubresourceLoadStart";
 const char kHistogramNavigationToFirstSubresourceLoadStart[] =
     "PageLoad.Experimental.PageTiming.NavigationToFirstSubresourceLoadStart";
 const char kHistogramResourceLoadTimePrefix[] =
@@ -993,10 +991,6 @@ void UmaPageLoadMetricsObserver::OnLoadedResource(
   base::TimeTicks commit_sent_time =
       navigation_handle_timing_.navigation_commit_sent_time;
   if (!commit_sent_time.is_null()) {
-    PAGE_LOAD_HISTOGRAM(
-        internal::kHistogramCommitSentToFirstSubresourceLoadStart,
-        timing_info.request_start - commit_sent_time);
-
     auto track = GetTracingTrack("PageLoad: Timelines",
                                  "CommitSentToFirstSubresourceLoadStart");
     TRACE_EVENT_END("loading", track, timing_info.request_start);

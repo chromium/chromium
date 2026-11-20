@@ -74,7 +74,6 @@ extern const char kHistogramPageTimingForegroundDuration[];
 extern const char kHistogramPageTimingForegroundDurationNoCommit[];
 
 extern const char kHistogramCachedResourceLoadTimePrefix[];
-extern const char kHistogramCommitSentToFirstSubresourceLoadStart[];
 extern const char kHistogramNavigationToFirstSubresourceLoadStart[];
 extern const char kHistogramResourceLoadTimePrefix[];
 

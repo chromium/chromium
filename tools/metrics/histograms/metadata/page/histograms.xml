@@ -5310,20 +5310,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="PageLoad.Experimental.PageTiming.CommitSentToFirstSubresourceLoadStart"
-    units="ms" expires_after="2025-05-04">
-  <owner>cduvall@chromium.org</owner>
-  <owner>jam@chromium.org</owner>
-  <summary>
-    Measures the time from when the navigation commit was sent to the renderer
-    to the first subresource load start. Logged for every page load which has
-    subresources.
-
-    This metric has incomplete data. It was expired between 2023-02-12 and M121.
-  </summary>
-</histogram>
-
-<histogram
     name="PageLoad.Experimental.PageTiming.NavigationToFirstSubresourceLoadStart"
     units="ms" expires_after="2025-06-08">
   <owner>cduvall@chromium.org</owner>
