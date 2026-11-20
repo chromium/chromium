@@ -1296,6 +1296,15 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTestWithApps,
   EXPECT_EQ("No active web contents to capture", error);
 }
 
+// Verifies that tabs.getSelected() targeting a Chrome App window, whose
+// WindowController exposes no active tab, returns kNoSelectedTabError.
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTestWithApps,
+                       CannotGetSelectedTabInAppWindow) {
+  std::string error = RunFunctionTargetingAppWindow(
+      base::MakeRefCounted<TabsGetSelectedFunction>(), R"([$1])");
+  EXPECT_EQ(tabs_constants::kNoSelectedTabError, error);
+}
+
 // Crashes on Mac/Win only.  http://crbug.com/40514319
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_FilteredEvents DISABLED_FilteredEvents
@@ -6330,6 +6339,39 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, TabsUpdate_MuteWithoutExtension) {
   ASSERT_TRUE(muted_info->FindString("reason"));
   EXPECT_EQ("user", *muted_info->FindString("reason"));
   EXPECT_FALSE(muted_info->contains("extensionId"));
+}
+
+// Verifies that TabsGetSelectedFunction resolves the active WebContents of a
+// standalone WindowController that has no BrowserWindowInterface.
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
+                       TabsGetSelected_StandaloneWindowReturnsActiveTab) {
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(profile()));
+  sessions::SessionTabHelper::CreateForWebContents(web_contents.get(),
+                                                   base::NullCallback());
+  const SessionID standalone_window_id = SessionID::NewUnique();
+  sessions::SessionTabHelper::FromWebContents(web_contents.get())
+      ->SetWindowID(standalone_window_id);
+  const int tab_id = ExtensionTabUtil::GetTabId(web_contents.get());
+  ASSERT_NE(tab_id, api::tabs::TAB_ID_NONE);
+
+  TestStandaloneWindowController standalone_controller(
+      /*base_window=*/nullptr, profile(), standalone_window_id,
+      web_contents.get());
+
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("TabsGetSelectedStandaloneTest").Build();
+  auto function = base::MakeRefCounted<TabsGetSelectedFunction>();
+  function->set_extension(extension.get());
+  std::string args = base::StringPrintf("[%d]", standalone_window_id.id());
+  base::DictValue result = utils::ToDict(
+      utils::RunFunctionAndReturnSingleResult(function.get(), args, profile()));
+  EXPECT_EQ(tab_id, result.FindInt("id"));
+  EXPECT_EQ(standalone_window_id.id(), result.FindInt("windowId"));
+  EXPECT_EQ(0, result.FindInt("index"));
+  EXPECT_EQ(true, result.FindBool("active"));
+  EXPECT_EQ(true, result.FindBool("highlighted"));
 }
 
 }  // namespace extensions

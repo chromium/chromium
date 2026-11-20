@@ -359,8 +359,16 @@ api::tabs::Tab ExtensionTabUtil::CreateTabObject(
     const Extension* extension,
     TabListInterface* tab_list,
     int tab_index) {
-  if (!tab_list) {
-    GetTabListInterface(*contents, &tab_list, &tab_index);
+  if (!tab_list && !GetTabListInterface(*contents, &tab_list, &tab_index) &&
+      tab_index == -1) {
+    if (WindowController* window = GetWindowControllerOfTab(contents)) {
+      for (int i = 0; i < window->GetTabCount(); ++i) {
+        if (window->GetWebContentsAt(i) == contents) {
+          tab_index = i;
+          break;
+        }
+      }
+    }
   }
   api::tabs::Tab tab_object;
   tab_object.id = GetTabIdForExtensions(*contents);
@@ -1219,13 +1227,9 @@ bool ExtensionTabUtil::OpenOptionsPageFromWebContents(
     return false;
   }
   const bool open_in_tab = ShouldOpenInTab(extension);
-  BrowserWindowInterface* browser =
-      browser_window_util::GetBrowserForTabContents(*web_contents);
-  if (!browser) {
-    return false;
-  }
-  return WindowControllerFromBrowser(browser)->OpenOptionsPage(extension, *url,
-                                                               open_in_tab);
+  WindowController* controller = GetWindowControllerOfTab(web_contents);
+  return controller &&
+         controller->OpenOptionsPage(extension, *url, open_in_tab);
 }
 
 // static

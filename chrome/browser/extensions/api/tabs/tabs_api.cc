@@ -539,24 +539,22 @@ ExtensionFunction::ResponseAction TabsGetSelectedFunction::Run() {
     return RespondNow(Error(std::move(error)));
   }
 
-  BrowserWindowInterface* browser =
-      window_controller->GetBrowserWindowInterface();
-  if (!browser) {
-    return RespondNow(Error(ExtensionTabUtil::kNoCrashBrowserError));
-  }
-  TabListInterface* tab_list = ExtensionTabUtil::GetEditableTabList(*browser);
-  if (!tab_list) {
+  if (!ExtensionTabUtil::IsTabStripEditable(*window_controller->profile())) {
     return RespondNow(Error(ExtensionTabUtil::kTabStripNotEditableError));
   }
-  ::tabs::TabInterface* tab = tab_list->GetActiveTab();
-  if (!tab) {
+  content::WebContents* contents = window_controller->GetActiveTab();
+  if (!contents) {
     return RespondNow(Error(tabs_constants::kNoSelectedTabError));
   }
 
-  return RespondNow(
-      ArgumentList(tabs::Get::Results::Create(CreateTabObjectHelper(
-          tab->GetContents(), extension(), source_context_type(), browser,
-          tab_list->GetActiveIndex()))));
+  BrowserWindowInterface* browser =
+      window_controller->GetBrowserWindowInterface();
+  TabListInterface* tab_list =
+      browser ? TabListInterface::From(browser) : nullptr;
+  int active_index = tab_list ? tab_list->GetActiveIndex() : 0;
+  return RespondNow(ArgumentList(tabs::Get::Results::Create(
+      CreateTabObjectHelper(contents, extension(), source_context_type(),
+                            browser, active_index))));
 }
 
 ExtensionFunction::ResponseAction TabsGetAllInWindowFunction::Run() {

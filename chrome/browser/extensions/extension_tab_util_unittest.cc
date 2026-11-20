@@ -444,9 +444,29 @@ TEST_F(ChromeExtensionNavigationTest, PrepareURLForNavigationOnFeedback) {
 }
 
 // Verifies that ExtensionTabUtil::OpenOptionsPageFromWebContents returns false
-// when invoked from a standalone WebContents without a BrowserWindowInterface.
+// when invoked from an unregistered WebContents, and delegates to the owning
+// standalone WindowController when registered.
 TEST_F(ChromeExtensionNavigationTest,
        OpenOptionsPageFromWebContents_StandaloneWebContents) {
+  class RecordingStandaloneWindowController
+      : public TestStandaloneWindowController {
+   public:
+    using TestStandaloneWindowController::TestStandaloneWindowController;
+    bool OpenOptionsPage(const Extension* extension,
+                         const GURL& url,
+                         bool open_in_tab) override {
+      opened_url_ = url;
+      opened_in_tab_ = open_in_tab;
+      return true;
+    }
+    const GURL& opened_url() const { return opened_url_; }
+    bool opened_in_tab() const { return opened_in_tab_; }
+
+   private:
+    GURL opened_url_;
+    bool opened_in_tab_ = false;
+  };
+
   auto extension = ExtensionBuilder("options_ext")
                        .SetManifestKey("options_page", "options.html")
                        .Build();
@@ -456,6 +476,20 @@ TEST_F(ChromeExtensionNavigationTest,
 
   EXPECT_FALSE(ExtensionTabUtil::OpenOptionsPageFromWebContents(
       extension.get(), web_contents.get()));
+
+  sessions::SessionTabHelper::CreateForWebContents(web_contents.get(),
+                                                   base::NullCallback());
+  const SessionID window_id = SessionID::NewUnique();
+  sessions::SessionTabHelper::FromWebContents(web_contents.get())
+      ->SetWindowID(window_id);
+  RecordingStandaloneWindowController controller(
+      /*base_window=*/nullptr, profile(), window_id, web_contents.get());
+
+  EXPECT_TRUE(ExtensionTabUtil::OpenOptionsPageFromWebContents(
+      extension.get(), web_contents.get()));
+  EXPECT_EQ(OptionsPageInfo::GetOptionsPage(extension.get()),
+            controller.opened_url());
+  EXPECT_TRUE(controller.opened_in_tab());
 }
 
 // Verifies that ExtensionTabUtil::GetTabById resolves a WebContents hosted in a
@@ -500,6 +534,28 @@ TEST_F(ChromeExtensionNavigationTest,
   EXPECT_TRUE(tab_object.active);
   EXPECT_TRUE(tab_object.selected);
   EXPECT_TRUE(tab_object.highlighted);
+
+  // Without a WindowController, the 3-arg overload leaves index as -1.
+  EXPECT_EQ(-1,
+            ExtensionTabUtil::CreateTabObject(web_contents.get(),
+                                              {ExtensionTabUtil::kDontScrubTab,
+                                               ExtensionTabUtil::kDontScrubTab},
+                                              /*extension=*/nullptr)
+                .index);
+
+  // Once hosted in a standalone WindowController, the 3-arg overload resolves
+  // index to 0.
+  const SessionID window_id = SessionID::NewUnique();
+  sessions::SessionTabHelper::FromWebContents(web_contents.get())
+      ->SetWindowID(window_id);
+  TestStandaloneWindowController controller(
+      /*base_window=*/nullptr, profile(), window_id, web_contents.get());
+  EXPECT_EQ(
+      0, ExtensionTabUtil::CreateTabObject(
+             web_contents.get(),
+             {ExtensionTabUtil::kDontScrubTab, ExtensionTabUtil::kDontScrubTab},
+             /*extension=*/nullptr)
+             .index);
 }
 
 // Verifies that ExtensionTabUtil::GetWindowControllerOfTab falls back to
