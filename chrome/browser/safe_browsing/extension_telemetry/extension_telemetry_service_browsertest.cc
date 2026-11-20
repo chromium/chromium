@@ -1568,46 +1568,37 @@ class ExtensionTelemetryServiceIsolatedModeBrowserTest
 IN_PROC_BROWSER_TEST_P(ExtensionTelemetryServiceIsolatedModeBrowserTest,
                        CreatesServiceForIsolatedProfile) {
   SetSafeBrowsingState(prefs(), SafeBrowsingState::ENHANCED_PROTECTION);
-  Profile* isolated_profile = CreateIncognitoBrowser()->GetProfile();
-  ASSERT_TRUE(isolated_profile->IsEnterpriseIsolatedModeProfile());
-
-  ExtensionTelemetryService* isolated_service =
-      ExtensionTelemetryServiceFactory::GetForProfile(isolated_profile);
+  OpenIsolatedWindow();
 
   if (!IsIsolatedModeTelemetryEnabled()) {
-    EXPECT_EQ(isolated_service, nullptr);
+    EXPECT_EQ(isolated_service(), nullptr);
     return;
   }
-  ASSERT_NE(isolated_service, nullptr);
-  EXPECT_NE(isolated_service, telemetry_service());
+  ASSERT_NE(isolated_service(), nullptr);
+  EXPECT_NE(isolated_service(), telemetry_service());
 }
 
 IN_PROC_BROWSER_TEST_P(ExtensionTelemetryServiceIsolatedModeBrowserTest,
                        IsolatedServiceOnlyReportsToEnterprise) {
   SetSafeBrowsingState(prefs(), SafeBrowsingState::ENHANCED_PROTECTION);
-  Profile* isolated_profile = CreateIncognitoBrowser()->GetProfile();
-  ASSERT_TRUE(isolated_profile->IsEnterpriseIsolatedModeProfile());
-
-  ExtensionTelemetryService* isolated_service =
-      ExtensionTelemetryServiceFactory::GetForProfile(isolated_profile);
+  OpenIsolatedWindow();
 
   if (!IsIsolatedModeTelemetryEnabled()) {
-    EXPECT_EQ(isolated_service, nullptr);
+    EXPECT_EQ(isolated_service(), nullptr);
     return;
   }
-  ASSERT_NE(isolated_service, nullptr);
+  ASSERT_NE(isolated_service(), nullptr);
   // The regular profile has ESB enabled and, from `SetUpOnMainThread()`, the
   // reporting policy. The Isolated Mode profile inherits both through its
   // prefs, but its service only reports to the enterprise pipeline.
-  EXPECT_FALSE(IsEnabledForESB(*isolated_service));
-  EXPECT_TRUE(IsTelemetryServiceEnabledForEnterprise(*isolated_service));
+  EXPECT_FALSE(IsEnabledForESB(*isolated_service()));
+  EXPECT_TRUE(IsTelemetryServiceEnabledForEnterprise(*isolated_service()));
 }
 
 IN_PROC_BROWSER_TEST_P(ExtensionTelemetryServiceIsolatedModeBrowserTest,
                        GetForSignal) {
   Profile* regular_profile = browser()->GetProfile();
-  Profile* isolated_profile = CreateIncognitoBrowser()->GetProfile();
-  ASSERT_TRUE(isolated_profile->IsEnterpriseIsolatedModeProfile());
+  OpenIsolatedWindow();
   ExtensionTelemetryService* regular_service = telemetry_service();
 
   // Signals not involving the Isolated Mode profile are unchanged.
@@ -1621,23 +1612,21 @@ IN_PROC_BROWSER_TEST_P(ExtensionTelemetryServiceIsolatedModeBrowserTest,
   if (!IsIsolatedModeTelemetryEnabled()) {
     // Signals resolve from the caller, as before.
     EXPECT_EQ(ExtensionTelemetryService::GetForSignal(regular_profile,
-                                                      isolated_profile),
+                                                      isolated_profile()),
               regular_service);
-    EXPECT_EQ(ExtensionTelemetryService::GetForSignal(isolated_profile,
+    EXPECT_EQ(ExtensionTelemetryService::GetForSignal(isolated_profile(),
                                                       /*target=*/nullptr),
               nullptr);
     return;
   }
 
-  ExtensionTelemetryService* isolated_service =
-      ExtensionTelemetryServiceFactory::GetForProfile(isolated_profile);
-  ASSERT_NE(isolated_service, nullptr);
+  ASSERT_NE(isolated_service(), nullptr);
   EXPECT_EQ(ExtensionTelemetryService::GetForSignal(regular_profile,
-                                                    isolated_profile),
-            isolated_service);
-  EXPECT_EQ(ExtensionTelemetryService::GetForSignal(isolated_profile,
+                                                    isolated_profile()),
+            isolated_service());
+  EXPECT_EQ(ExtensionTelemetryService::GetForSignal(isolated_profile(),
                                                     /*target=*/nullptr),
-            isolated_service);
+            isolated_service());
 }
 
 IN_PROC_BROWSER_TEST_P(ExtensionTelemetryServiceIsolatedModeBrowserTest,
@@ -1645,8 +1634,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionTelemetryServiceIsolatedModeBrowserTest,
   SetSafeBrowsingState(prefs(), SafeBrowsingState::ENHANCED_PROTECTION);
   ASSERT_TRUE(StartEmbeddedTestServer());
   const extensions::ExtensionId extension_id = LoadTestExtension("spanning");
-  const int regular_tab_id =
-      extensions::ExtensionTabUtil::GetTabId(web_contents(browser()));
+  const int regular_tab_id = ActiveTabId(browser());
 
   UpdateTabFromExtension(extension_id, regular_tab_id,
                          embedded_test_server()->GetURL("/title1.html"));
@@ -1660,11 +1648,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionTelemetryServiceIsolatedModeBrowserTest,
   SetSafeBrowsingState(prefs(), SafeBrowsingState::ENHANCED_PROTECTION);
   ASSERT_TRUE(StartEmbeddedTestServer());
   const extensions::ExtensionId extension_id = LoadTestExtension("spanning");
-  BrowserWindowInterface* isolated_browser = CreateIncognitoBrowser();
-  Profile* isolated_profile = isolated_browser->GetProfile();
-  ASSERT_TRUE(isolated_profile->IsEnterpriseIsolatedModeProfile());
-  const int isolated_tab_id =
-      extensions::ExtensionTabUtil::GetTabId(web_contents(isolated_browser));
+  BrowserWindowInterface* isolated_browser = OpenIsolatedWindow();
+  const int isolated_tab_id = ActiveTabId(isolated_browser);
 
   UpdateTabFromExtension(extension_id, isolated_tab_id,
                          embedded_test_server()->GetURL("/title1.html"));
@@ -1675,10 +1660,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionTelemetryServiceIsolatedModeBrowserTest,
     EXPECT_TRUE(HasEsbSignals(*telemetry_service(), extension_id));
     return;
   }
-  ExtensionTelemetryService* isolated_service =
-      ExtensionTelemetryServiceFactory::GetForProfile(isolated_profile);
-  ASSERT_NE(isolated_service, nullptr);
-  EXPECT_TRUE(HasEnterpriseSignals(*isolated_service, extension_id));
+  ASSERT_NE(isolated_service(), nullptr);
+  EXPECT_TRUE(HasEnterpriseSignals(*isolated_service(), extension_id));
   EXPECT_FALSE(HasEnterpriseSignals(*telemetry_service(), extension_id));
   EXPECT_FALSE(HasEsbSignals(*telemetry_service(), extension_id));
 }
@@ -1698,8 +1681,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionTelemetryServiceIsolatedModeBrowserTest,
                        RoutesSpanningCookiesSignalForIsolatedStore) {
   SetSafeBrowsingState(prefs(), SafeBrowsingState::ENHANCED_PROTECTION);
   const extensions::ExtensionId extension_id = LoadTestExtension("spanning");
-  Profile* isolated_profile = CreateIncognitoBrowser()->GetProfile();
-  ASSERT_TRUE(isolated_profile->IsEnterpriseIsolatedModeProfile());
+  OpenIsolatedWindow();
 
   GetCookiesFromExtension(extension_id, "getAll", /*store_id=*/"1");
 
@@ -1709,10 +1691,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionTelemetryServiceIsolatedModeBrowserTest,
     EXPECT_TRUE(HasEsbSignals(*telemetry_service(), extension_id));
     return;
   }
-  ExtensionTelemetryService* isolated_service =
-      ExtensionTelemetryServiceFactory::GetForProfile(isolated_profile);
-  ASSERT_NE(isolated_service, nullptr);
-  EXPECT_TRUE(HasEnterpriseSignals(*isolated_service, extension_id));
+  ASSERT_NE(isolated_service(), nullptr);
+  EXPECT_TRUE(HasEnterpriseSignals(*isolated_service(), extension_id));
   EXPECT_FALSE(HasEnterpriseSignals(*telemetry_service(), extension_id));
   EXPECT_FALSE(HasEsbSignals(*telemetry_service(), extension_id));
 }
@@ -1732,8 +1712,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionTelemetryServiceIsolatedModeBrowserTest,
                        RoutesSpanningCookiesGetSignalForIsolatedStore) {
   SetSafeBrowsingState(prefs(), SafeBrowsingState::ENHANCED_PROTECTION);
   const extensions::ExtensionId extension_id = LoadTestExtension("spanning");
-  Profile* isolated_profile = CreateIncognitoBrowser()->GetProfile();
-  ASSERT_TRUE(isolated_profile->IsEnterpriseIsolatedModeProfile());
+  OpenIsolatedWindow();
 
   GetCookiesFromExtension(extension_id, "get", /*store_id=*/"1");
 
@@ -1743,10 +1722,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionTelemetryServiceIsolatedModeBrowserTest,
     EXPECT_TRUE(HasEsbSignals(*telemetry_service(), extension_id));
     return;
   }
-  ExtensionTelemetryService* isolated_service =
-      ExtensionTelemetryServiceFactory::GetForProfile(isolated_profile);
-  ASSERT_NE(isolated_service, nullptr);
-  EXPECT_TRUE(HasEnterpriseSignals(*isolated_service, extension_id));
+  ASSERT_NE(isolated_service(), nullptr);
+  EXPECT_TRUE(HasEnterpriseSignals(*isolated_service(), extension_id));
   EXPECT_FALSE(HasEnterpriseSignals(*telemetry_service(), extension_id));
   EXPECT_FALSE(HasEsbSignals(*telemetry_service(), extension_id));
 }
@@ -1788,9 +1765,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionTelemetryServiceIsolatedModeBrowserTest,
   ASSERT_TRUE(extension);
   const extensions::ExtensionId extension_id = extension->id();
 
-  BrowserWindowInterface* isolated_browser = CreateIncognitoBrowser();
-  Profile* isolated_profile = isolated_browser->GetProfile();
-  ASSERT_TRUE(isolated_profile->IsEnterpriseIsolatedModeProfile());
+  BrowserWindowInterface* isolated_browser = OpenIsolatedWindow();
 
   extensions::ResultCatcher result_catcher;
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -1807,11 +1782,9 @@ IN_PROC_BROWSER_TEST_P(ExtensionTelemetryServiceIsolatedModeBrowserTest,
     return;
   }
 
-  ExtensionTelemetryService* isolated_service =
-      ExtensionTelemetryServiceFactory::GetForProfile(isolated_profile);
-  ASSERT_NE(isolated_service, nullptr);
+  ASSERT_NE(isolated_service(), nullptr);
   ASSERT_TRUE(base::test::RunUntil(
-      [&] { return HasEnterpriseSignals(*isolated_service, extension_id); }));
+      [&] { return HasEnterpriseSignals(*isolated_service(), extension_id); }));
   EXPECT_FALSE(HasEnterpriseSignals(*telemetry_service(), extension_id));
 
   // DOM activity in a regular tab is reported by the regular profile's
