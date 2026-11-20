@@ -185,8 +185,17 @@ class DesktopNativeWidgetTopLevelHandler : public aura::WindowObserver,
     aura::Window* native_window =
         top_level_handler->top_level_widget_->GetNativeView();
     child_window->AddObserver(top_level_handler);
-    top_level_handler->top_level_widget_observation_.Observe(
-        top_level_handler->top_level_widget_);
+    // Observe `top_level_widget_` via `WidgetObserver` when enabled so pure
+    // screen moves (which do not change `native_window`'s local bounds) also
+    // realign `child_window_` back to (0, 0). Otherwise preserve the legacy
+    // `native_window` `WindowObserver` path.
+    if (base::FeatureList::IsEnabled(
+            views::features::kChildWindowRealignedOnWidgetMove)) {
+      top_level_handler->top_level_widget_observation_.Observe(
+          top_level_handler->top_level_widget_);
+    } else {
+      top_level_handler->native_window_observation_.Observe(native_window);
+    }
     top_level_handler->child_window_ = child_window;
     return native_window;
   }
@@ -198,10 +207,18 @@ class DesktopNativeWidgetTopLevelHandler : public aura::WindowObserver,
 
   // aura::WindowObserver overrides
   void OnWindowDestroying(aura::Window* window) override {
+    if (native_window_observation_.IsObservingSource(window)) {
+      native_window_observation_.Reset();
+      // If the widget is being destroyed by the OS then we should not try and
+      // destroy it again.
+      top_level_widget_ = nullptr;
+      return;
+    }
     window->RemoveObserver(this);
 
     if (top_level_widget_) {
       top_level_widget_observation_.Reset();
+      native_window_observation_.Reset();
       // When we receive a notification that the child of the window created
       // above is being destroyed we go ahead and initiate the destruction of
       // the corresponding widget.
@@ -220,6 +237,12 @@ class DesktopNativeWidgetTopLevelHandler : public aura::WindowObserver,
     // the Widget::SetBounds function.
     if (top_level_widget_ && window == child_window_) {
       top_level_widget_->SetBounds(window->GetBoundsInScreen());
+    } else if (top_level_widget_ &&
+               native_window_observation_.IsObservingSource(window)) {
+      // Only the origin is realigned: the widget's size is the child's size
+      // after a DIP/pixel round trip, so copying it back would feed rounding
+      // error into the child on fractional device scale factors.
+      child_window_->SetBounds(gfx::Rect(child_window_->bounds().size()));
     }
   }
 
@@ -251,6 +274,8 @@ class DesktopNativeWidgetTopLevelHandler : public aura::WindowObserver,
   raw_ptr<aura::Window> child_window_ = nullptr;
   base::ScopedObservation<Widget, WidgetObserver> top_level_widget_observation_{
       this};
+  base::ScopedObservation<aura::Window, aura::WindowObserver>
+      native_window_observation_{this};
 };
 
 class DesktopNativeWidgetAuraWindowParentingClient

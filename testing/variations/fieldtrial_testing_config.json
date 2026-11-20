@@ -6431,6 +6431,7 @@
                     "enable_features": [
                         "ApiContextualTasksPrivate",
                         "BackForwardCacheForComponentExtensionFrames",
+                        "ChildWindowRealignedOnWidgetMove",
                         "ContextualTasksRearchitecture",
                         "ContextualTasksSidePanelRearchitecture",
                         "ContextualTasksSingleTabMenuItem",
