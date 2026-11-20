@@ -8,6 +8,7 @@ import("//build/config/android/rules.gni")
 android_library("support_lib_glue_java") {
   sources = [
     "java/src/org/chromium/support_lib_glue/RequestMatcherBuilder.java",
+    "java/src/org/chromium/support_lib_glue/SupportLibDownloadHandlerAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibDropDataContentProviderAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibGoogleAccountsEventAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibHeaderInterceptorAdapter.java",
@@ -30,6 +31,7 @@ android_library("support_lib_glue_java") {
     "java/src/org/chromium/support_lib_glue/SupportLibStartUpResult.java",
     "java/src/org/chromium/support_lib_glue/SupportLibTracingControllerAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibWebContentAdapter.java",
+    "java/src/org/chromium/support_lib_glue/SupportLibWebDownloadAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibWebMessageAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibWebMessageCallbackAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibWebMessageListenerAdapter.java",

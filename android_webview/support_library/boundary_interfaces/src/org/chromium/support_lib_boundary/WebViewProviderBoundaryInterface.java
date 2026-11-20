@@ -135,4 +135,13 @@ public interface WebViewProviderBoundaryInterface {
             Consumer</* GoogleAccountsEvent */ InvocationHandler> consumer);
 
     void clearGoogleAccountsCallback();
+
+    /**
+     * Sets the handler for downloads started in this WebView. WebView passes each download to
+     * {@code downloadHandler} by calling {@code executor.execute()} on the WebView's UI thread.
+     */
+    void setDownloadHandler(
+            Executor executor, /* DownloadHandler */ InvocationHandler downloadHandler);
+
+    void clearDownloadHandler();
 }

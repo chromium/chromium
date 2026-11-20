@@ -1160,6 +1160,14 @@ chromium-metrics-reviews@google.com.
   <int value="246" label="WebGPU.getWGPUProcGetProcAddress"/>
   <int value="247" label="WebViewCompat.serializeState"/>
   <int value="248" label="WebViewCompat.restoreState"/>
+  <int value="249" label="WebViewCompat.setDownloadHandler"/>
+  <int value="250" label="WebViewCompat.clearDownloadHandler"/>
+  <int value="251" label="WebDownload.getUrl"/>
+  <int value="252" label="WebDownload.getMimeType"/>
+  <int value="253" label="WebDownload.getContentLength"/>
+  <int value="254" label="WebDownload.getSuggestedFilename"/>
+  <int value="255" label="WebDownload.saveTo"/>
+  <int value="256" label="WebDownload.cancel"/>
 <!-- LINT.ThenChange(/android_webview/support_library/java/src/org/chromium/support_lib_glue/SupportLibWebViewChromiumFactory.java:ApiCall) -->
 
 </enum>

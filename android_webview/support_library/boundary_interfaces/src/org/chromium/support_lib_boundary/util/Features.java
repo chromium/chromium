@@ -578,4 +578,15 @@ public class Features {
 
     // WebGPU.getWGPUProcGetProcAddress
     public static final String WEBGPU = "WEBGPU";
+
+    // WebViewCompat.setDownloadHandler
+    // WebViewCompat.clearDownloadHandler
+    // DownloadHandler.onDownloadRequested
+    // WebDownload.getUrl
+    // WebDownload.getMimeType
+    // WebDownload.getContentLength
+    // WebDownload.getSuggestedFilename
+    // WebDownload.saveTo
+    // WebDownload.cancel
+    public static final String DOWNLOAD_HANDLER = "DOWNLOAD_HANDLER";
 }

@@ -710,4 +710,40 @@ class SupportLibWebViewChromium implements WebViewProviderBoundaryInterface {
             sharedWebViewChromium.getAwContents().configureGoogleAccountMirroring("", null);
         }
     }
+
+    @Override
+    public void setDownloadHandler(
+            Executor executor, /* DownloadHandler */ InvocationHandler downloadHandler) {
+        ThreadUtils.checkUiThread();
+        if (executor == null || downloadHandler == null) {
+            throw new NullPointerException("Executor and DownloadHandler must not be null");
+        }
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.AndroidX.SET_DOWNLOAD_HANDLER")) {
+            recordApiCall(ApiCall.SET_DOWNLOAD_HANDLER);
+            SharedWebViewChromium sharedWebViewChromium = mSharedWebViewChromium.get();
+            if (sharedWebViewChromium == null) {
+                throw new IllegalStateException(
+                        "Support lib method called on WebView that no longer exists.");
+            }
+            AwContents awContents = sharedWebViewChromium.getAwContents();
+            awContents.setDownloadHandler(
+                    new SupportLibDownloadHandlerAdapter(awContents, executor, downloadHandler));
+        }
+    }
+
+    @Override
+    public void clearDownloadHandler() {
+        ThreadUtils.checkUiThread();
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.AndroidX.CLEAR_DOWNLOAD_HANDLER")) {
+            recordApiCall(ApiCall.CLEAR_DOWNLOAD_HANDLER);
+            SharedWebViewChromium sharedWebViewChromium = mSharedWebViewChromium.get();
+            if (sharedWebViewChromium == null) {
+                throw new IllegalStateException(
+                        "Support lib method called on WebView that no longer exists.");
+            }
+            sharedWebViewChromium.getAwContents().clearDownloadHandler();
+        }
+    }
 }
