@@ -567,6 +567,61 @@ TEST(PasswordManagerMetricsUtil, LogSaveWithTrustedVaultErrorOutcome) {
       "PasswordManager.SaveWithTrustedVaultError.Outcome", 8);
 }
 
+TEST(PasswordManagerMetricsUtil, LogSaveWithCustomPassphraseErrorOutcome) {
+  base::HistogramTester histogram_tester;
+
+  LogSaveWithCustomPassphraseErrorOutcome(
+      SaveWithTrustedVaultErrorOutcome::kSavedSuccessfully);
+  LogSaveWithCustomPassphraseErrorOutcome(
+      SaveWithTrustedVaultErrorOutcome::kMessageTimedOut);
+  LogSaveWithCustomPassphraseErrorOutcome(
+      SaveWithTrustedVaultErrorOutcome::kUserDismissedPrompt);
+  LogSaveWithCustomPassphraseErrorOutcome(
+      SaveWithTrustedVaultErrorOutcome::kDeviceLockCanceled);
+  LogSaveWithCustomPassphraseErrorOutcome(
+      SaveWithTrustedVaultErrorOutcome::kNewStoreError);
+  LogSaveWithCustomPassphraseErrorOutcome(
+      SaveWithTrustedVaultErrorOutcome::kNeverForThisSite);
+  LogSaveWithCustomPassphraseErrorOutcome(
+      SaveWithTrustedVaultErrorOutcome::kKeyRetrievalFailedOrCanceled);
+  LogSaveWithCustomPassphraseErrorOutcome(
+      SaveWithTrustedVaultErrorOutcome::kTabDestroyed);
+  LogSaveWithCustomPassphraseErrorOutcome(
+      SaveWithTrustedVaultErrorOutcome::kErrorResolutionAbandoned);
+
+  histogram_tester.ExpectBucketCount(
+      "PasswordManager.SaveWithCustomPassphraseError.Outcome",
+      SaveWithTrustedVaultErrorOutcome::kSavedSuccessfully, 1);
+  histogram_tester.ExpectBucketCount(
+      "PasswordManager.SaveWithCustomPassphraseError.Outcome",
+      SaveWithTrustedVaultErrorOutcome::kMessageTimedOut, 1);
+  histogram_tester.ExpectBucketCount(
+      "PasswordManager.SaveWithCustomPassphraseError.Outcome",
+      SaveWithTrustedVaultErrorOutcome::kUserDismissedPrompt, 1);
+  histogram_tester.ExpectBucketCount(
+      "PasswordManager.SaveWithCustomPassphraseError.Outcome",
+      SaveWithTrustedVaultErrorOutcome::kDeviceLockCanceled, 1);
+  histogram_tester.ExpectBucketCount(
+      "PasswordManager.SaveWithCustomPassphraseError.Outcome",
+      SaveWithTrustedVaultErrorOutcome::kNewStoreError, 1);
+  histogram_tester.ExpectBucketCount(
+      "PasswordManager.SaveWithCustomPassphraseError.Outcome",
+      SaveWithTrustedVaultErrorOutcome::kNeverForThisSite, 1);
+  histogram_tester.ExpectBucketCount(
+      "PasswordManager.SaveWithCustomPassphraseError.Outcome",
+      SaveWithTrustedVaultErrorOutcome::kKeyRetrievalFailedOrCanceled, 1);
+  histogram_tester.ExpectBucketCount(
+      "PasswordManager.SaveWithCustomPassphraseError.Outcome",
+      SaveWithTrustedVaultErrorOutcome::kTabDestroyed, 1);
+  histogram_tester.ExpectBucketCount(
+      "PasswordManager.SaveWithCustomPassphraseError.Outcome",
+      SaveWithTrustedVaultErrorOutcome::kErrorResolutionAbandoned, 1);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.SaveWithCustomPassphraseError.Outcome", 9);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.SaveWithTrustedVaultError.Outcome", 0);
+}
+
 }  // namespace
 
 }  // namespace password_manager::metrics_util

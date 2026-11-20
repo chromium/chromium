@@ -1502,17 +1502,15 @@ void ChromePasswordManagerClient::OpenPasswordDetailsBubble(
 
 void ChromePasswordManagerClient::StartTrustedVaultKeyRetrieval(
     trusted_vault::TrustedVaultUserActionTriggerForUMA trigger) {
-  if (IsOffTheRecord()) {
-    return;
+  if (BrowserWindowInterface* browser = GetRegularBrowserWindow()) {
+    OpenTabForSyncKeyRetrieval(browser, trigger);
   }
-  tabs::TabInterface* tab =
-      tabs::TabInterface::MaybeGetFromContents(web_contents());
-  BrowserWindowInterface* browser =
-      tab ? tab->GetBrowserWindowInterface() : nullptr;
-  if (!browser) {
-    return;
+}
+
+void ChromePasswordManagerClient::StartSyncPassphraseDecryption() {
+  if (BrowserWindowInterface* browser = GetRegularBrowserWindow()) {
+    ShowSyncPassphraseDialogAndDecryptData(*browser);
   }
-  OpenTabForSyncKeyRetrieval(browser, trigger);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -2385,6 +2383,16 @@ void ChromePasswordManagerClient::MaybeShowSavePasswordPrimingPromo(
       user_ed->MaybeShowFeaturePromo(std::move(params));
     }
   }
+}
+
+BrowserWindowInterface* ChromePasswordManagerClient::GetRegularBrowserWindow()
+    const {
+  if (IsOffTheRecord()) {
+    return nullptr;
+  }
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents());
+  return tab ? tab->GetBrowserWindowInterface() : nullptr;
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)

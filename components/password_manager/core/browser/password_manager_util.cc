@@ -12,6 +12,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -209,7 +210,8 @@ GetRecoverableErrorBlockingPasswordSavingOnDesktop(
   if (!form_manager) {
     return std::nullopt;
   }
-  bool has_trusted_vault_error = false;
+  bool has_recoverable_passphrase_error = false;
+  bool has_recoverable_trusted_vault_error = false;
   bool has_other_blocking_errors = false;
   // It might be that the credential is updated in both stores. In this case
   // `store_for_saving` will be the enum value with both bits set (the account
@@ -231,15 +233,36 @@ GetRecoverableErrorBlockingPasswordSavingOnDesktop(
       continue;
     }
     password_manager::ActionableError error = store->GetError();
-    if (error == password_manager::ActionableError::kTrustedVaultKeyNeeded) {
-      has_trusted_vault_error = true;
+    if (error == password_manager::ActionableError::kNeedsPassphrase &&
+        base::FeatureList::IsEnabled(
+            password_manager::features::
+                kPasswordSaveInContextPassphraseErrorResolution)) {
+      has_recoverable_passphrase_error = true;
+    } else if (error ==
+                   password_manager::ActionableError::kTrustedVaultKeyNeeded &&
+               base::FeatureList::IsEnabled(
+                   password_manager::features::
+                       kPasswordSaveInContextErrorResolution)) {
+      has_recoverable_trusted_vault_error = true;
     } else if (!IsAbleToSavePasswords(error)) {
       has_other_blocking_errors = true;
     }
   }
-  if (has_trusted_vault_error && !has_other_blocking_errors &&
-      base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordSaveInContextErrorResolution)) {
+  if (has_other_blocking_errors) {
+    return std::nullopt;
+  }
+  // In practice, `has_recoverable_passphrase_error` and
+  // `has_recoverable_trusted_vault_error` cannot both be true: on desktop, both
+  // `kProfileStore` and `kAccountStore` use `PasswordStoreBuiltInBackend`,
+  // observe the same `SyncService`, and map
+  // `SyncService::GetUserActionableError()` (which returns a single error, and
+  // Sync's Nigori encryption has a single mutually exclusive `PassphraseType`).
+  DCHECK(!(has_recoverable_passphrase_error &&
+           has_recoverable_trusted_vault_error));
+  if (has_recoverable_passphrase_error) {
+    return password_manager::ActionableError::kNeedsPassphrase;
+  }
+  if (has_recoverable_trusted_vault_error) {
     return password_manager::ActionableError::kTrustedVaultKeyNeeded;
   }
   return std::nullopt;

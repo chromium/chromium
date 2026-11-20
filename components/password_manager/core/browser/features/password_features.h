@@ -188,6 +188,10 @@ extern const base::FeatureParam<int>
     kPasswordSaveInContextErrorResolutionMinGmsVersion;
 #endif
 
+// When enabled, the user can resolve custom passphrase errors in context during
+// a password save flow. Only has an effect on desktop.
+BASE_DECLARE_FEATURE(kPasswordSaveInContextPassphraseErrorResolution);
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
 // Enables resolution of Trusted Vault encryption errors directly within the

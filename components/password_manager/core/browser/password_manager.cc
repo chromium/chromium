@@ -1694,6 +1694,11 @@ void PasswordManager::OnLoginSuccessful() {
       "PasswordManager.SavingBlockedByTrustedVaultErrorOnSuccessfulLogin",
       recoverable_error_blocking_saving ==
           ActionableError::kTrustedVaultKeyNeeded);
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  base::UmaHistogramBoolean(
+      "PasswordManager.SavingBlockedByPassphraseErrorOnSuccessfulLogin",
+      recoverable_error_blocking_saving == ActionableError::kNeedsPassphrase);
+#endif
   if (!submitted_manager->IsPasswordUpdate() && !able_to_save_passwords &&
       !able_to_save_passwords_after_fixing_recoverable_error) {
     return;

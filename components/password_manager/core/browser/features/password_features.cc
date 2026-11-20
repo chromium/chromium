@@ -184,6 +184,9 @@ const base::FeatureParam<int>
         kMinGmsVersionForInFlowZuulRecovery};
 #endif
 
+BASE_FEATURE(kPasswordSaveInContextPassphraseErrorResolution,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
 BASE_FEATURE(kPasswordSignInInContextErrorResolution,

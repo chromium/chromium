@@ -3894,6 +3894,28 @@ useful for Chirp alerts (go/crca-alerts). -->
   <token key="UserSyncingType" variants="UserSyncingType"/>
 </histogram>
 
+<histogram name="PasswordManager.SaveWithCustomPassphraseError.Outcome"
+    enum="PasswordManagerSaveWithTrustedVaultErrorOutcome"
+    expires_after="2027-08-31">
+  <owner>ammarmk@chromium.org</owner>
+  <owner>ylahodiuk@google.com</owner>
+  <owner>anki-team@google.com</owner>
+  <summary>
+    Records the outcome of the password save prompt on desktop when saving is
+    blocked by a custom passphrase error. Pre-recovery bubble dismissals are
+    recorded in PasswordManager.SaveUIDismissalReason.PassphraseRequiredError.
+    This histogram is recorded when clicking 'Continue' defers saving for error
+    resolution and that pending error-resolution save concludes (not recorded if
+    the error had already cleared before 'Continue' was clicked and the password
+    saved immediately). Reuses PasswordManagerSaveWithTrustedVaultErrorOutcome;
+    on the desktop custom-passphrase flow only the desktop-applicable buckets
+    (SavedSuccessfully, NeverForThisSite, TabDestroyed, and
+    ErrorResolutionAbandoned) can occur (Android-only buckets such as
+    MessageTimedOut, DeviceLockCanceled, and KeyRetrievalFailedOrCanceled are
+    never emitted).
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.SaveWithTrustedVaultError.Outcome"
     enum="PasswordManagerSaveWithTrustedVaultErrorOutcome"
     expires_after="2027-08-31">
@@ -3915,9 +3937,25 @@ useful for Chirp alerts (go/crca-alerts). -->
     if the flow continues.
 
     On desktop, pre-recovery bubble dismissals are recorded in
-    PasswordManager.SaveUIDismissalReason.TrustedVaultError, and this histogram
-    is recorded once per 'Continue' click when the pending error-resolution save
-    concludes.
+    PasswordManager.SaveUIDismissalReason.TrustedVaultError. This histogram is
+    recorded when clicking 'Continue' defers saving for error resolution and
+    that pending error-resolution save concludes (not recorded if the error had
+    already cleared before 'Continue' was clicked and the password saved
+    immediately).
+  </summary>
+</histogram>
+
+<histogram
+    name="PasswordManager.SavingBlockedByPassphraseErrorOnSuccessfulLogin"
+    enum="Boolean" expires_after="2027-05-01">
+  <owner>ammarmk@chromium.org</owner>
+  <owner>ylahodiuk@google.com</owner>
+  <owner>anki-team@google.com</owner>
+  <summary>
+    Records whether saving a password after a successful login is blocked by a
+    custom passphrase error. Recorded once per form submission on successful
+    login on desktop only. Can only record true when
+    PasswordSaveInContextPassphraseErrorResolution is enabled (false otherwise).
   </summary>
 </histogram>
 

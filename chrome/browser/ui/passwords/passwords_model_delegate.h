@@ -224,7 +224,8 @@ class PasswordsModelDelegate {
       const std::u16string& username,
       const password_manager::PasswordString& password) = 0;
 
-  // Starts the UI flow for resolving `error`.
+  // Starts the UI flow for resolving `error`. No-op if `error` has no
+  // resolution flow (including `password_manager::ActionableError::kNoError`).
   virtual void StartErrorResolutionFlow(
       password_manager::ActionableError error) = 0;
 

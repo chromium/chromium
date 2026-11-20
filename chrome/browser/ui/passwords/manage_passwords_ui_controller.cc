@@ -12,12 +12,14 @@
 #include "base/auto_reset.h"
 #include "base/check_deref.h"
 #include "base/containers/linear_find.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/notimplemented.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/timer/timer.h"
@@ -182,6 +184,30 @@ void MaybeShowPasswordManagerShortcutIPH(BrowserWindowInterface* browser) {
   }
   BrowserUserEducationInterface::From(browser)->MaybeShowFeaturePromo(
       feature_engagement::kIPHPasswordManagerShortcutFeature);
+}
+
+void MaybeLogErrorResolutionSaveOutcome(
+    std::optional<password_manager::ActionableError> pending_error,
+    SaveWithTrustedVaultErrorOutcome outcome) {
+  if (!pending_error) {
+    return;
+  }
+  switch (*pending_error) {
+    case password_manager::ActionableError::kTrustedVaultKeyNeeded:
+      password_manager::metrics_util::LogSaveWithTrustedVaultErrorOutcome(
+          outcome);
+      return;
+    case password_manager::ActionableError::kNeedsPassphrase:
+      password_manager::metrics_util::LogSaveWithCustomPassphraseErrorOutcome(
+          outcome);
+      return;
+    case password_manager::ActionableError::kNoError:
+    case password_manager::ActionableError::kInactionable:
+    case password_manager::ActionableError::kInactionableTemporaryError:
+    case password_manager::ActionableError::kSignInNeeded:
+    case password_manager::ActionableError::kKeychainError:
+      NOTREACHED();
+  }
 }
 
 std::optional<password_manager::BrowserSavePasswordProgressLogger>
@@ -1702,12 +1728,14 @@ void ManagePasswordsUIController::StartErrorResolutionFlow(
               trusted_vault::TrustedVaultUserActionTriggerForUMA::
                   kPasswordSavePrompt);
       break;
+    case password_manager::ActionableError::kNeedsPassphrase:
+      CHECK_DEREF(passwords_data_.client()).StartSyncPassphraseDecryption();
+      break;
     case password_manager::ActionableError::kNoError:
     case password_manager::ActionableError::kInactionable:
     case password_manager::ActionableError::kInactionableTemporaryError:
     case password_manager::ActionableError::kSignInNeeded:
     case password_manager::ActionableError::kKeychainError:
-    case password_manager::ActionableError::kNeedsPassphrase:
       // These error values do not have an in-context resolution flow; kept as
       // a defensive no-op.
       break;
@@ -1719,12 +1747,14 @@ void ManagePasswordsUIController::SavePasswordAfterErrorResolution(
     const password_manager::PasswordString& password) {
   UpdatePasswordFormUsernameAndPassword(username, password,
                                         passwords_data_.form_manager());
-  if (GetRecoverableErrorBlockingSaving().has_value()) {
+  const std::optional<password_manager::ActionableError> error =
+      GetRecoverableErrorBlockingSaving();
+  if (error.has_value()) {
     // Defer saving the password until the password store error is fixed.
     const syncer::SyncService* sync_service =
         passwords_data_.client()->GetSyncService();
     CHECK(sync_service);
-    save_password_after_error_resolution_ = true;
+    pending_auto_save_error_ = *error;
     account_id_for_error_resolution_ =
         sync_service->GetAccountInfo().account_id;
     return;
@@ -1738,7 +1768,7 @@ void ManagePasswordsUIController::SavePasswordAfterErrorResolution(
 }
 
 void ManagePasswordsUIController::CompleteSavePasswordAfterErrorResolution() {
-  if (save_password_after_error_resolution_ &&
+  if (pending_auto_save_error_.has_value() &&
       !IsAutoSaveAfterErrorResolutionValid()) {
     ResetAutoSaveAfterErrorResolution(
         SaveWithTrustedVaultErrorOutcome::kErrorResolutionAbandoned);
@@ -1748,19 +1778,23 @@ void ManagePasswordsUIController::CompleteSavePasswordAfterErrorResolution() {
     return;
   }
 
+  const std::optional<password_manager::ActionableError> pending_error =
+      pending_auto_save_error_;
   ResetAutoSaveAfterErrorResolution(std::nullopt);
   if (passwords_data_.form_manager()) {
     SavePendingPassword();
-    password_manager::metrics_util::LogSaveWithTrustedVaultErrorOutcome(
-        SaveWithTrustedVaultErrorOutcome::kSavedSuccessfully);
+    MaybeLogErrorResolutionSaveOutcome(
+        pending_error, SaveWithTrustedVaultErrorOutcome::kSavedSuccessfully);
     // `SavePendingPassword()` sets `bubble_status_` to
-    // `SHOWN_PENDING_ICON_UPDATE`.
-    // However, since the bubble was already closed when we started the error
-    // resolution flow, we must reset it to `NOT_SHOWN`.
+    // `SHOWN_PENDING_ICON_UPDATE`. Reset it to `NOT_SHOWN` because no bubble
+    // remains open after this save: either the bubble was already closed when
+    // starting the error resolution flow, or `UpdateBubbleAndIconVisibility()`
+    // closes it now on the immediate-save path.
     bubble_status_ = BubbleStatus::NOT_SHOWN;
     UpdateBubbleAndIconVisibility();
   } else {
-    password_manager::metrics_util::LogSaveWithTrustedVaultErrorOutcome(
+    MaybeLogErrorResolutionSaveOutcome(
+        pending_error,
         SaveWithTrustedVaultErrorOutcome::kErrorResolutionAbandoned);
   }
 }
@@ -1779,8 +1813,11 @@ void ManagePasswordsUIController::OnErrorStateChanged(
     password_manager::PasswordStoreInterface* store,
     password_manager::ActionableError new_state) {
   if (base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordSaveInContextErrorResolution)) {
-    if (save_password_after_error_resolution_ &&
+          password_manager::features::kPasswordSaveInContextErrorResolution) ||
+      base::FeatureList::IsEnabled(
+          password_manager::features::
+              kPasswordSaveInContextPassphraseErrorResolution)) {
+    if (pending_auto_save_error_.has_value() &&
         !IsAutoSaveAfterErrorResolutionValid()) {
       ResetAutoSaveAfterErrorResolution(
           SaveWithTrustedVaultErrorOutcome::kErrorResolutionAbandoned);
@@ -1794,7 +1831,7 @@ void ManagePasswordsUIController::OnErrorStateChanged(
       return;
     }
 
-    if (save_password_after_error_resolution_ &&
+    if (pending_auto_save_error_.has_value() &&
         new_state == password_manager::ActionableError::kNoError) {
       // Entering this block means the current `store` is used for saving the
       // pending credential and its state is `kNoError`. However, we also need
@@ -1839,7 +1876,7 @@ bool ManagePasswordsUIController::IsStoreUsedForSavingPendingCredentials(
 }
 
 bool ManagePasswordsUIController::IsAutoSaveAfterErrorResolutionValid() const {
-  if (!save_password_after_error_resolution_ ||
+  if (!pending_auto_save_error_.has_value() ||
       account_id_for_error_resolution_.empty()) {
     return false;
   }
@@ -1854,10 +1891,10 @@ bool ManagePasswordsUIController::IsAutoSaveAfterErrorResolutionValid() const {
 void ManagePasswordsUIController::ResetAutoSaveAfterErrorResolution(
     std::optional<SaveWithTrustedVaultErrorOutcome> outcome) {
   account_id_for_error_resolution_ = CoreAccountId();
-  if (std::exchange(save_password_after_error_resolution_, false) &&
-      outcome.has_value()) {
-    password_manager::metrics_util::LogSaveWithTrustedVaultErrorOutcome(
-        *outcome);
+  const std::optional<password_manager::ActionableError> pending_error =
+      std::exchange(pending_auto_save_error_, std::nullopt);
+  if (outcome.has_value()) {
+    MaybeLogErrorResolutionSaveOutcome(pending_error, *outcome);
   }
 }
 

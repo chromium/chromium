@@ -254,4 +254,6 @@ ActionableError PasswordManagerClient::GetActionableError() const {
 void PasswordManagerClient::StartTrustedVaultKeyRetrieval(
     trusted_vault::TrustedVaultUserActionTriggerForUMA /*trigger*/) {}
 
+void PasswordManagerClient::StartSyncPassphraseDecryption() {}
+
 }  // namespace password_manager

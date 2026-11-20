@@ -364,7 +364,9 @@ class ManagePasswordsUIController
 
   // Resets the state tracking automatic password saving after error resolution
   // and, if `outcome` is provided and an error-resolution save was pending,
-  // records `*outcome` to `PasswordManager.SaveWithTrustedVaultError.Outcome`.
+  // records `*outcome` to `PasswordManager.SaveWithTrustedVaultError.Outcome`
+  // or `PasswordManager.SaveWithCustomPassphraseError.Outcome` depending on
+  // the pending error.
   void ResetAutoSaveAfterErrorResolution(
       std::optional<
           password_manager::metrics_util::SaveWithTrustedVaultErrorOutcome>
@@ -487,9 +489,10 @@ class ManagePasswordsUIController
   bool user_action_ = false;
 
   // The current class observes changes in the password store's error state. If
-  // this bool is true, the pending password will be saved upon receiving a
+  // set, holds the blocking error for which automatic password saving was
+  // requested, and the pending password will be saved upon receiving a
   // notification that the blocking error state is resolved.
-  bool save_password_after_error_resolution_ = false;
+  std::optional<password_manager::ActionableError> pending_auto_save_error_;
 
   // The account for which error resolution was started. Used to verify that the
   // primary account hasn't changed before automatically saving the password

@@ -393,6 +393,10 @@ class PasswordManagerClient {
   virtual void StartTrustedVaultKeyRetrieval(
       trusted_vault::TrustedVaultUserActionTriggerForUMA trigger);
 
+  // Opens the UI allowing the user to enter their custom sync passphrase to
+  // decrypt synced data. The default implementation is a no-op.
+  virtual void StartSyncPassphraseDecryption();
+
   // Gets the affiliation service associated with this client.
   virtual affiliations::AffiliationService* GetAffiliationService() = 0;
 

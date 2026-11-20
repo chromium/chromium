@@ -78,6 +78,7 @@ class Profile;
 class AcknowledgeGroupedCredentialSheetController;
 class PasswordAccessoryController;
 #else
+class BrowserWindowInterface;
 class PasswordCrossDomainConfirmationPopupControllerImpl;
 #endif
 
@@ -350,6 +351,7 @@ class ChromePasswordManagerClient
       const password_manager::PasswordForm& form) override;
   void StartTrustedVaultKeyRetrieval(
       trusted_vault::TrustedVaultUserActionTriggerForUMA trigger) override;
+  void StartSyncPassphraseDecryption() override;
 #endif  // !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<
       password_manager::PasswordCrossDomainConfirmationPopupController>
@@ -516,6 +518,10 @@ class ChromePasswordManagerClient
       const autofill::password_generation::PasswordGenerationUIData& ui_data,
       bool is_manually_triggered);
   void MaybeShowSavePasswordPrimingPromo(const url::Origin& origin) override;
+
+  // Returns the tab's `BrowserWindowInterface` when not off-the-record, or
+  // `nullptr` in incognito or if the tab has no browser window.
+  BrowserWindowInterface* GetRegularBrowserWindow() const;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)

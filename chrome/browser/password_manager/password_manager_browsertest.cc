@@ -36,10 +36,13 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/login/login_handler.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
+#include "chrome/browser/ui/sync/sync_passphrase_dialog.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
@@ -4891,6 +4894,36 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
 
   histogram_tester.ExpectTotalCount("Sync.TrustedVaultKeyRetrievalTrigger", 0);
   EXPECT_EQ(1, incognito->GetTabStripModel()->count());
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
+                       StartSyncPassphraseDecryptionDelegatesToSyncUiUtil) {
+  ChromePasswordManagerClient* client =
+      ChromePasswordManagerClient::FromWebContents(WebContents());
+  ASSERT_NE(nullptr, client);
+  ASSERT_EQ(nullptr, BrowserElements::From(browser())->GetElement(
+                         kSyncPassphrasePasswordFieldId));
+
+  client->StartSyncPassphraseDecryption();
+
+  EXPECT_TRUE(base::test::RunUntil([this] {
+    return BrowserElements::From(browser())->GetElement(
+               kSyncPassphrasePasswordFieldId) != nullptr;
+  }));
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
+                       StartSyncPassphraseDecryptionInIncognitoIsNoOp) {
+  BrowserWindowInterface* incognito = CreateIncognitoBrowser();
+  ChromePasswordManagerClient* client =
+      ChromePasswordManagerClient::FromWebContents(
+          incognito->GetTabStripModel()->GetActiveWebContents());
+  ASSERT_NE(nullptr, client);
+
+  client->StartSyncPassphraseDecryption();
+
+  EXPECT_EQ(nullptr, BrowserElements::From(incognito)->GetElement(
+                         kSyncPassphrasePasswordFieldId));
 }
 
 }  // namespace

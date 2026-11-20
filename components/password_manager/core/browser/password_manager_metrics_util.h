@@ -412,7 +412,9 @@ enum class GenerationDialogChoice {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-// Metric: "PasswordManager.SaveWithTrustedVaultError.Outcome"
+// Metrics:
+// - "PasswordManager.SaveWithTrustedVaultError.Outcome"
+// - "PasswordManager.SaveWithCustomPassphraseError.Outcome"
 //
 // LINT.IfChange(SaveWithTrustedVaultErrorOutcome)
 enum class SaveWithTrustedVaultErrorOutcome {
@@ -714,6 +716,11 @@ void LogSaveUIDismissalReason(
 // Log the outcome of saving a password when saving is blocked by a trusted
 // vault error (logged on Android and Desktop).
 void LogSaveWithTrustedVaultErrorOutcome(
+    SaveWithTrustedVaultErrorOutcome outcome);
+
+// Log the outcome of saving a password when saving is blocked by a custom
+// passphrase error (logged on desktop).
+void LogSaveWithCustomPassphraseErrorOutcome(
     SaveWithTrustedVaultErrorOutcome outcome);
 
 // Log the |reason| a user dismissed the update password bubble.

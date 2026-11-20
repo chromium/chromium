@@ -1882,6 +1882,11 @@ TEST_F(ChromePasswordManagerClientTest,
           kPasswordManagerSettings);
   histogram_tester.ExpectTotalCount("Sync.TrustedVaultKeyRetrievalTrigger", 0);
 }
+
+TEST_F(ChromePasswordManagerClientTest,
+       StartSyncPassphraseDecryptionWithoutBrowserDoesNotCrash) {
+  GetClient()->StartSyncPassphraseDecryption();
+}
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
