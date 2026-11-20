@@ -10,6 +10,7 @@
 #include "base/callback_list.h"
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
+#include "chrome/browser/ui/page_action/page_action_observer.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
@@ -27,7 +28,8 @@ class ScopedCallToActionLock;
 // interactions. An instance of this class is created and owned by
 // `tabs::TabFeatures` and is associated with a specific tab.
 class LensOverlayHomeworkPageActionController
-    : public content::WebContentsObserver {
+    : public content::WebContentsObserver,
+      public page_actions::PageActionObserver {
  public:
   DECLARE_USER_DATA(LensOverlayHomeworkPageActionController);
 
@@ -58,6 +60,19 @@ class LensOverlayHomeworkPageActionController
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
 
+  // page_actions::PageActionObserver, observing the contextual cue:
+  void OnPageActionIconShown(
+      const page_actions::PageActionState& page_action) override;
+  void OnPageActionIconHidden(
+      const page_actions::PageActionState& page_action) override;
+
+  // Updates the chip if the ABA search journey cue started or stopped showing.
+  // The contextual cue's page action also hides and shows again when the tab
+  // is deactivated and reactivated, which doesn't change whether the cue is
+  // showing.
+  void OnContextualCueChanged();
+
+  void OnTabDidActivate(tabs::TabInterface* tab);
   void OnTabWillDetach(tabs::TabInterface* tab,
                        tabs::TabInterface::DetachReason reason);
   void OnTabWillDiscardContents(tabs::TabInterface* tab,
@@ -66,6 +81,11 @@ class LensOverlayHomeworkPageActionController
 
   // Determines whether the page action icon should be shown.
   bool ShouldShow();
+
+  // Returns whether the ABA search journey cue is showing on this tab. It
+  // offers to restore the user's search in the side panel, which this chip
+  // would duplicate.
+  bool IsSearchJourneyCueShowing() const;
 
   // Unowned reference to the profile associated with `tab_`.
   const raw_ref<Profile> profile_;
@@ -82,6 +102,11 @@ class LensOverlayHomeworkPageActionController
   ui::ScopedUnownedUserData<LensOverlayHomeworkPageActionController>
       scoped_unowned_user_data_;
 
+  // Whether the ABA search journey cue was showing when the contextual cue
+  // last changed.
+  bool search_journey_cue_showing_ = false;
+
+  base::CallbackListSubscription tab_did_activate_subscription_;
   base::CallbackListSubscription tab_will_discard_contents_subscription_;
   base::CallbackListSubscription tab_will_detach_subscription_;
 

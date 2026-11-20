@@ -765,6 +765,7 @@ if (!is_android) {
       "//components/contextual_search:test_support",
       "//components/contextual_tasks/public:feature_list",
       "//components/contextual_tasks/public:test_support",
+      "//components/lens:features",
       "//components/omnibox/browser:test_support",
       "//components/omnibox/common:features",
       "//components/optimization_guide/content/browser:page_context_eligibility",

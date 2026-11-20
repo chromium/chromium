@@ -29,6 +29,8 @@
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/search_journey_tracker.h"
 #include "chrome/browser/contextual_tasks/search_journey_tracker_factory.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
@@ -44,7 +46,9 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/lens/lens_features.h"
 #include "components/optimization_guide/proto/features/contextual_cueing.pb.h"
+#include "components/optimization_guide/proto/hints.pb.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
@@ -1008,6 +1012,237 @@ IN_PROC_BROWSER_TEST_F(SearchJourneyCueBrowserTest,
   EXPECT_TRUE(tracker()->GetActiveJourneysForTesting().empty());
   histogram_tester.ExpectUniqueSample("ContextualTasks.SearchJourney.EndReason",
                                       SearchJourneyEndReason::kRestored, 1);
+}
+
+// Tests that the Lens homework chip, which also offers to open the side panel,
+// doesn't show while the cue does.
+class SearchJourneyHomeworkChipBrowserTest
+    : public SearchJourneyCueBrowserTest {
+ public:
+  SearchJourneyHomeworkChipBrowserTest() {
+    homework_feature_list_.InitWithFeaturesAndParameters(
+        {{lens::features::kLensOverlay, {}},
+         {lens::features::kLensOverlayEduActionChip,
+          {{"max-shown-count", "3"}}}},
+        {});
+  }
+
+ protected:
+  // Makes `url` eligible for the homework chip.
+  void AllowHomeworkChip(const GURL& url) {
+    OptimizationGuideKeyedServiceFactory::GetForProfile(GetProfile())
+        ->AddHintWithMultipleOptimizationsForTesting(
+            url,
+            {optimization_guide::proto::LENS_OVERLAY_EDU_ACTION_CHIP_ALLOWLIST,
+             optimization_guide::proto::
+                 LENS_OVERLAY_EDU_ACTION_CHIP_BLOCKLIST});
+  }
+
+ private:
+  base::test::ScopedFeatureList homework_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SearchJourneyHomeworkChipBrowserTest,
+                       HidesHomeworkChipWhileCueShows) {
+  AllowHomeworkChip(GURL("https://example.com/doc"));
+  tabs::TabInterface* source_tab = StartJourney(CreatePromoParams());
+  ASSERT_TRUE(source_tab);
+  page_actions::PageActionController* page_action_controller =
+      page_actions::PageActionController::From(source_tab);
+  ASSERT_TRUE(page_action_controller);
+  page_actions::PageActionObserver cue_observer(kActionAnchoredContextualCue);
+  cue_observer.RegisterAsPageActionObserver(*page_action_controller);
+  page_actions::PageActionObserver homework_observer(
+      kActionLensOverlayHomework);
+  homework_observer.RegisterAsPageActionObserver(*page_action_controller);
+
+  // Returning to the source tab shows the cue's anchored message instead of
+  // the homework chip.
+  tab_list()->ActivateTab(source_tab->GetHandle());
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return cue_observer.GetCurrentPageActionState().anchored_message_showing;
+  }));
+  EXPECT_FALSE(homework_observer.GetCurrentPageActionState().showing);
+
+  // Simulate the anchored message collapsing to a suggestion chip; the
+  // homework chip must stay hidden.
+  contextual_cueing::ContextualCueingController* cueing_controller =
+      contextual_cueing::ContextualCueingController::From(source_tab);
+  page_action_controller->ShowSuggestionChip(kActionAnchoredContextualCue);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return cue_observer.GetCurrentPageActionState().chip_showing; }));
+  EXPECT_FALSE(
+      cue_observer.GetCurrentPageActionState().anchored_message_showing);
+  EXPECT_FALSE(homework_observer.GetCurrentPageActionState().showing);
+
+  // The homework chip shows again once the cue is gone, with its label.
+  cueing_controller->HideCue();
+  EXPECT_FALSE(cue_observer.GetCurrentPageActionState().showing);
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return homework_observer.GetCurrentPageActionState().chip_showing;
+  }));
+}
+
+IN_PROC_BROWSER_TEST_F(SearchJourneyHomeworkChipBrowserTest,
+                       HidesHomeworkChipWhileQuietCueShows) {
+  AllowHomeworkChip(GURL("https://example.com/doc"));
+  BlockLoudCues();
+  tabs::TabInterface* source_tab = StartJourney(CreatePromoParams());
+  ASSERT_TRUE(source_tab);
+  page_actions::PageActionController* page_action_controller =
+      page_actions::PageActionController::From(source_tab);
+  ASSERT_TRUE(page_action_controller);
+  page_actions::PageActionObserver cue_observer(kActionAnchoredContextualCue);
+  cue_observer.RegisterAsPageActionObserver(*page_action_controller);
+  page_actions::PageActionObserver homework_observer(
+      kActionLensOverlayHomework);
+  homework_observer.RegisterAsPageActionObserver(*page_action_controller);
+
+  tab_list()->ActivateTab(source_tab->GetHandle());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return cue_observer.GetCurrentPageActionState().showing; }));
+  EXPECT_FALSE(
+      cue_observer.GetCurrentPageActionState().anchored_message_showing);
+  EXPECT_FALSE(homework_observer.GetCurrentPageActionState().showing);
+
+  contextual_cueing::ContextualCueingController::From(source_tab)->HideCue();
+  EXPECT_FALSE(cue_observer.GetCurrentPageActionState().showing);
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return homework_observer.GetCurrentPageActionState().chip_showing;
+  }));
+}
+
+IN_PROC_BROWSER_TEST_F(SearchJourneyHomeworkChipBrowserTest,
+                       RestoresHomeworkChipWhenCueHiddenWhileTabInactive) {
+  AllowHomeworkChip(GURL("https://example.com/doc"));
+  tabs::TabInterface* source_tab = StartJourney(CreatePromoParams());
+  ASSERT_TRUE(source_tab);
+  tabs::TabInterface* search_tab = tab_list()->GetActiveTab();
+  page_actions::PageActionController* page_action_controller =
+      page_actions::PageActionController::From(source_tab);
+  ASSERT_TRUE(page_action_controller);
+  page_actions::PageActionObserver cue_observer(kActionAnchoredContextualCue);
+  cue_observer.RegisterAsPageActionObserver(*page_action_controller);
+  page_actions::PageActionObserver homework_observer(
+      kActionLensOverlayHomework);
+  homework_observer.RegisterAsPageActionObserver(*page_action_controller);
+
+  tab_list()->ActivateTab(source_tab->GetHandle());
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return cue_observer.GetCurrentPageActionState().anchored_message_showing;
+  }));
+  EXPECT_FALSE(homework_observer.GetCurrentPageActionState().showing);
+
+  // Switch away and hide the ABA cue while Tab A is inactive.
+  tab_list()->ActivateTab(search_tab->GetHandle());
+  contextual_cueing::ContextualCueingController::From(source_tab)->HideCue();
+
+  // Returning to Tab A should show the homework chip again.
+  tab_list()->ActivateTab(source_tab->GetHandle());
+  EXPECT_FALSE(cue_observer.GetCurrentPageActionState().showing);
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return homework_observer.GetCurrentPageActionState().chip_showing;
+  }));
+
+  // A subsequent ABA cue on Tab A should hide the homework chip again.
+  tab_list()->ActivateTab(search_tab->GetHandle());
+  const GURL second_search_url =
+      template_url_service()->GenerateSearchURLForDefaultSearchProvider(
+          u"second homework search query");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), second_search_url));
+  ASSERT_TRUE(tracker()->OnAimPromoParamsReceived(
+      sessions::SessionTabHelper::IdForTab(search_tab->GetContents()),
+      u"second homework search query", CreatePromoParams(),
+      {AimPromoQueryHint::kEduHomework}));
+
+  tab_list()->ActivateTab(source_tab->GetHandle());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return cue_observer.GetCurrentPageActionState().showing; }));
+  EXPECT_FALSE(homework_observer.GetCurrentPageActionState().showing);
+}
+
+namespace {
+
+// Minimal non-ABA cue target for verifying that non-ABA contextual cues do not
+// hide the Lens homework page action.
+class FakeNonAbaCueTarget : public contextual_cueing::CueTarget {
+ public:
+  contextual_cueing::CueTargetType GetType() const override {
+    return contextual_cueing::CueTargetType::kTestSource;
+  }
+  bool RequiresModelExecution() const override { return false; }
+  bool IsEligible() const override { return true; }
+  void CheckEligibility(base::WeakPtr<content::WebContents> web_contents,
+                        contextual_cueing::CueIntrusiveness intrusiveness,
+                        EligibilityCallback callback) override {
+    auto generator = base::BindOnce([](GenerateCallback generate_callback) {
+      optimization_guide::proto::ContextualCue cue;
+      cue.set_suggested_cuj("TestSource");
+      auto* msg = cue.mutable_anchored_message_cue();
+      msg->set_anchored_message_text("Other cue");
+      msg->set_action_text("Open");
+      std::move(generate_callback).Run(std::move(cue));
+    });
+    std::move(callback).Run(/*eligible=*/true, std::move(generator));
+  }
+  bool IsPageEligible(
+      const page_content_annotations::PageContentAnnotationsResult& result,
+      content::WebContents* active_web_contents) const override {
+    return false;
+  }
+  void OnAnchoredMessageClicked(contextual_cueing::CueActionData) override {}
+  void OnEditPrompt(contextual_cueing::CueActionData) override {}
+  ui::ImageModel GetAnchoredMessageIcon() const override {
+    return ui::ImageModel();
+  }
+  ui::ImageModel GetOmniboxChipIcon() const override {
+    return ui::ImageModel();
+  }
+  contextual_cueing::CueActionData CueActionDataFromResponse(
+      const optimization_guide::proto::ContextualCue& cue,
+      std::vector<tabs::TabHandle> tabs_to_show) const override {
+    return std::monostate();
+  }
+  optimization_guide::proto::ContextualCueingSurface GetSurface()
+      const override {
+    return optimization_guide::proto::CONTEXTUAL_CUEING_SURFACE_UNSPECIFIED;
+  }
+};
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(SearchJourneyHomeworkChipBrowserTest,
+                       DoesNotHideHomeworkChipWhileOtherCueShows) {
+  const GURL edu_url("https://example.com/doc");
+  AllowHomeworkChip(edu_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), edu_url));
+  tabs::TabInterface* tab = tab_list()->GetActiveTab();
+  ASSERT_TRUE(tab);
+  page_actions::PageActionController* page_action_controller =
+      page_actions::PageActionController::From(tab);
+  ASSERT_TRUE(page_action_controller);
+  page_actions::PageActionObserver cue_observer(kActionAnchoredContextualCue);
+  cue_observer.RegisterAsPageActionObserver(*page_action_controller);
+  page_actions::PageActionObserver homework_observer(
+      kActionLensOverlayHomework);
+  homework_observer.RegisterAsPageActionObserver(*page_action_controller);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return homework_observer.GetCurrentPageActionState().chip_showing;
+  }));
+
+  contextual_cueing::ContextualCueingController* cueing_controller =
+      contextual_cueing::ContextualCueingController::From(tab);
+  ASSERT_TRUE(cueing_controller);
+  cueing_controller->RegisterCueTarget(
+      contextual_cueing::CueTargetType::kTestSource,
+      std::make_unique<FakeNonAbaCueTarget>());
+  cueing_controller->EvaluateCueForTarget(
+      contextual_cueing::CueTargetType::kTestSource);
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return cue_observer.GetCurrentPageActionState().showing; }));
+  EXPECT_TRUE(homework_observer.GetCurrentPageActionState().showing);
+  EXPECT_TRUE(homework_observer.GetCurrentPageActionState().chip_showing);
 }
 
 class SearchJourneyTabFeatureDisabledBrowserTest : public InProcessBrowserTest {
