@@ -1118,6 +1118,10 @@ source_set("profiles_extra_parts_impl") {
     ]
   }
 
+  if (is_mac) {
+    deps += [ "//chrome/browser/browser_actuator/profile_registry" ]
+  }
+
   if (!is_android) {
     deps += [
       "//chrome/browser/password_manager/factories:startup_import_factory",

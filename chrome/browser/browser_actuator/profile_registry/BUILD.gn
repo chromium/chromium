@@ -8,13 +8,28 @@ source_set("profile_registry") {
   sources = [
     "profile_registry_keychain_store_mac.h",
     "profile_registry_keychain_store_mac.mm",
+    "profile_registry_service.cc",
+    "profile_registry_service.h",
+    "profile_registry_service_factory.cc",
+    "profile_registry_service_factory.h",
   ]
 
-  public_deps = [ "//chrome/common:version_header" ]
+  public_deps = [
+    "//chrome/browser/profiles:profile",
+    "//chrome/common:version_header",
+    "//components/keyed_service/core",
+  ]
 
   deps = [
     "//base",
+    "//chrome/browser:browser_process",
     "//chrome/browser/browser_actuator/local_actuation:names",
+    "//chrome/browser/profiles:profile_manager",
+    "//chrome/browser/profiles:profile_util",
+    "//chrome/common:constants",
+    "//components/browser_actuator/public:feature_list",
+    "//components/prefs",
+    "//content/public/browser",
     "//crypto",
   ]
 
@@ -27,12 +42,25 @@ source_set("profile_registry") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "profile_registry_keychain_store_mac_unittest.mm" ]
+  sources = [
+    "profile_registry_keychain_store_mac_unittest.mm",
+    "profile_registry_service_factory_unittest.cc",
+  ]
 
   deps = [
     ":profile_registry",
     "//base",
+    "//base/test:test_support",
     "//chrome/browser/browser_actuator/local_actuation:names",
+    "//chrome/browser/prefs",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles:profile_util",
+    "//chrome/common:constants",
+    "//chrome/test:test_support",
+    "//chrome/test/base:testing_browser_process",
+    "//components/browser_actuator/public:feature_list",
+    "//components/sync_preferences:test_support",
+    "//content/test:test_support",
     "//crypto:test_support",
     "//testing/gmock",
     "//testing/gtest",

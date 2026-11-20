@@ -9,6 +9,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "build/build_config.h"
 
 class GURL;
 
@@ -16,6 +17,9 @@ namespace browser_actuator {
 
 BASE_DECLARE_FEATURE(kBrowserActuator);
 BASE_DECLARE_FEATURE(kBrowserActuatorInternals);
+#if BUILDFLAG(IS_MAC)
+BASE_DECLARE_FEATURE(kBrowserActuatorProfileRegistry);
+#endif  // BUILDFLAG(IS_MAC)
 BASE_DECLARE_FEATURE(kEnableBrowserActuatorForGlicExperimentalTriggering);
 
 // Enables Chrome-initiated task ingress sessions.

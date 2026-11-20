@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/strings/strcat.h"
+#include "build/build_config.h"
 #include "net/base/url_util.h"
 #include "url/gurl.h"
 
@@ -29,6 +30,10 @@ const base::FeatureParam<std::string> kWatchSessionsPathParam{
 
 BASE_FEATURE(kBrowserActuator, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kBrowserActuatorInternals, base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_MAC)
+BASE_FEATURE(kBrowserActuatorProfileRegistry,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_MAC)
 BASE_FEATURE(kEnableBrowserActuatorForGlicExperimentalTriggering,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kBrowserActuatorTaskIngress, base::FEATURE_DISABLED_BY_DEFAULT);

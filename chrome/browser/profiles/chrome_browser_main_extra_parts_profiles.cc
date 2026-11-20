@@ -526,6 +526,10 @@
 #endif
 #endif
 
+#if BUILDFLAG(IS_MAC)
+#include "chrome/browser/browser_actuator/profile_registry/profile_registry_service_factory.h"
+#endif
+
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/win/jumplist_factory.h"
 #endif
@@ -852,6 +856,9 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
 #endif
   browser_actuator::BrowserActuatorServiceFactory::GetInstance();
+#if BUILDFLAG(IS_MAC)
+  browser_actuator::ProfileRegistryServiceFactory::GetInstance();
+#endif
   stream_transport::TransportServiceFactory::GetInstance();
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   browser_switcher::BrowserSwitcherServiceFactory::GetInstance();
