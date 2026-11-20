@@ -1317,6 +1317,15 @@ bool IsContextualTasksSingleTabMenuItemEnabled() {
   return base::FeatureList::IsEnabled(kContextualTasksSingleTabMenuItem);
 }
 
+// If enabled, the Contextual Tasks side panel toolbar and the tab picker show a
+// button that opens a form to file dogfood feedback.
+const base::FeatureParam<bool> kContextualTasksDogfoodFeedback{
+    &kContextualTasks, "ContextualTasks_DogfoodFeedback", false};
+
+bool IsContextualTasksDogfoodFeedbackEnabled() {
+  return kContextualTasksDogfoodFeedback.Get();
+}
+
 bool IsContextualTasksFormFactorSupported() {
 #if BUILDFLAG(IS_ANDROID)
   // Supported on desktop Android only; not supported on phones and tablets.

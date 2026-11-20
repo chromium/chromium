@@ -6236,4 +6236,61 @@ TEST_F(ContextualTasksUiServiceTest,
   run_loop.Run();
 }
 
+class ContextualTasksUiServiceDogfoodFeedbackTest
+    : public ContextualTasksUiServiceTest {
+ protected:
+  // Returns a service that uses `delegate`, so that tests can check what it is
+  // asked to open.
+  std::unique_ptr<ContextualTasksUiService> CreateService(
+      std::unique_ptr<ContextualTasksUiServiceDelegate> delegate) {
+    return std::make_unique<ContextualTasksUiService>(
+        profile_.get(), std::move(delegate), contextual_tasks_service_.get(),
+        identity_test_env_->identity_manager(), aim_eligibility_service_.get(),
+        std::make_unique<ContextualTasksEligibilityManager>(
+            profile_->GetPrefs(), identity_test_env_->identity_manager(),
+            aim_eligibility_service_.get()),
+        /*cookie_synchronizer=*/nullptr);
+  }
+};
+
+TEST_F(ContextualTasksUiServiceDogfoodFeedbackTest,
+       OpenDogfoodFeedbackUi_DisabledByDefault) {
+  // Fails the test if the form is opened.
+  auto service = CreateService(
+      std::make_unique<
+          testing::StrictMock<MockContextualTasksUiServiceDelegate>>());
+  NiceMock<MockBrowserWindowInterface> browser;
+
+  service->OpenDogfoodFeedbackUi(&browser, GURL("https://www.google.com"));
+}
+
+TEST_F(ContextualTasksUiServiceDogfoodFeedbackTest,
+       OpenDogfoodFeedbackUi_OpensFormWhenEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kContextualTasks, {{"ContextualTasks_DogfoodFeedback", "true"}});
+  auto delegate = std::make_unique<
+      testing::StrictMock<MockContextualTasksUiServiceDelegate>>();
+  auto* delegate_ptr = delegate.get();
+  auto service = CreateService(std::move(delegate));
+  NiceMock<MockBrowserWindowInterface> browser;
+  const GURL kPageUrl("https://www.google.com/search?udm=50");
+
+  EXPECT_CALL(*delegate_ptr, OpenDogfoodFeedbackUi(&browser, kPageUrl));
+  service->OpenDogfoodFeedbackUi(&browser, kPageUrl);
+}
+
+TEST_F(ContextualTasksUiServiceDogfoodFeedbackTest,
+       OpenDogfoodFeedbackUi_NoBrowser) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kContextualTasks, {{"ContextualTasks_DogfoodFeedback", "true"}});
+  // Fails the test if the form is opened.
+  auto service = CreateService(
+      std::make_unique<
+          testing::StrictMock<MockContextualTasksUiServiceDelegate>>());
+
+  service->OpenDogfoodFeedbackUi(nullptr, GURL("https://www.google.com"));
+}
+
 }  // namespace contextual_tasks

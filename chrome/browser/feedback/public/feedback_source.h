@@ -69,6 +69,7 @@ enum FeedbackSource {
   kFeedbackSourceOmnibox = 50,
   kFeedbackSourceReadingMode = 51,
   kFeedbackSourceOmniboxEverywhere = 52,
+  kFeedbackSourceContextualTasks = 53,
 
   // ATTENTION: Before making any changes or adding to feedback collection,
   // please ensure the teams that operationalize feedback are aware and

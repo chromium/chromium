@@ -3904,6 +3904,7 @@ shown properly on the user-facing crash UI.
   <int value="50" label="Omnibox"/>
   <int value="51" label="Reading Mode"/>
   <int value="52" label="Omnibox Everywhere"/>
+  <int value="53" label="Contextual Tasks"/>
 </enum>
 
 <!--LINT.ThenChange(//chrome/browser/feedback/public/feedback_source.h:FeedbackSource) -->

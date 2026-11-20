@@ -4537,6 +4537,13 @@ const FeatureEntry::FeatureVariation kContextualTaskContextVariations[] = {
     {" - Smart Tab Sharing: Toggle Off After Submit",
      kSmartTabSharingToggleOffAfterSubmit, nullptr}};
 
+const FeatureEntry::FeatureParam kContextualTasksDogfoodFeedback[] = {
+    {"ContextualTasks_DogfoodFeedback", "true"}};
+
+const FeatureEntry::FeatureVariation kContextualTasksVariations[] = {
+    {"- with Dogfood Feedback", kContextualTasksDogfoodFeedback, nullptr},
+};
+
 const FeatureEntry::FeatureParam kEphemeralBrandedEntryPointEnabled[] = {
     {"ContextualTasksEntryPoint", "toolbar-ephemeral-branded"}};
 const FeatureEntry::FeatureParam kEphemeralBrandedEntryPointWithRightDock[] = {
@@ -11934,7 +11941,9 @@ const FeatureEntry kFeatureEntries[] = {
      contextual_tasks::flag_descriptions::kContextualTasksName,
      contextual_tasks::flag_descriptions::kContextualTasksDescription,
      kOsDesktop | kOsAndroid,
-     FEATURE_VALUE_TYPE(contextual_tasks::kContextualTasks)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(contextual_tasks::kContextualTasks,
+                                    kContextualTasksVariations,
+                                    "ContextualTasks")},
 
     {"contextual-tasks-ephemeral-branded-entry-point",
      contextual_tasks::flag_descriptions::

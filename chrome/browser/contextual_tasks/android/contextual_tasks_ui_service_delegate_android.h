@@ -29,6 +29,8 @@ class ContextualTasksUiServiceDelegateAndroid
   // ContextualTasksUiServiceDelegate overrides:
   void OpenFeedbackUi(BrowserWindowInterface* browser,
                       const GURL& page_url) override;
+  void OpenDogfoodFeedbackUi(BrowserWindowInterface* browser,
+                             const GURL& page_url) override;
   void ShowUndoSnackbar(
       BrowserWindowInterface* browser_window_interface) override;
   void StartPlatformVoiceRecognition(

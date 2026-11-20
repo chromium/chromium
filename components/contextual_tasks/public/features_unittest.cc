@@ -331,4 +331,22 @@ TEST(FeaturesTest, ContextualTasksEntryPoints_DefaultsAndParams) {
   }
 }
 
+TEST(FeaturesTest, IsContextualTasksDogfoodFeedbackEnabled_DefaultDisabled) {
+  EXPECT_FALSE(IsContextualTasksDogfoodFeedbackEnabled());
+}
+
+TEST(FeaturesTest,
+     IsContextualTasksDogfoodFeedbackEnabled_FeatureEnabledWithoutParam) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndEnableFeature(kContextualTasks);
+  EXPECT_FALSE(IsContextualTasksDogfoodFeedbackEnabled());
+}
+
+TEST(FeaturesTest, IsContextualTasksDogfoodFeedbackEnabled_ParamEnabled) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndEnableFeatureWithParameters(
+      kContextualTasks, {{"ContextualTasks_DogfoodFeedback", "true"}});
+  EXPECT_TRUE(IsContextualTasksDogfoodFeedbackEnabled());
+}
+
 }  // namespace contextual_tasks
