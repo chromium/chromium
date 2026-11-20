@@ -48,6 +48,18 @@ component("types") {
   defines = [ "IS_ON_DEVICE_MODEL_CPP_IMPL" ]
 }
 
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "model_assets_unittest.cc" ]
+  deps = [
+    ":types",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+    "//third_party/dawn/src/dawn:proc",
+  ]
+}
+
 buildflag_header("buildflags") {
   header = "buildflags.h"
   flags = [

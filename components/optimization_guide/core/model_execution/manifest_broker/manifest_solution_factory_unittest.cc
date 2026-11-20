@@ -252,6 +252,58 @@ TEST_F(ManifestSolutionFactoryTest, ExecuteTestGpuMtpDrafterCacheFeature) {
   EXPECT_EQ(*response.value(), expected_response);
 }
 
+// Test that weight caches written by the CPU backend are invalidated before
+// they are used by the GPU backend, while the program cache is kept.
+TEST_F(ManifestSolutionFactoryTest, InvalidatesWeightCachesOnBackendChange) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {on_device_model::features::kOnDeviceModelGpuProgramCache,
+       on_device_model::features::kOnDeviceModelGpuWeightCache},
+      {});
+  ScenarioBuilder(fake_.component_state())
+      .AddBaseModel(
+          "gpu_model_A",
+          BaseModelRecipeArgs(
+              proto::BaseModelRecipe::BACKEND_TYPE_GPU,
+              proto::BaseModelRecipe::PERFORMANCE_HINT_FASTEST_INFERENCE,
+              /* supported_ranks= */ {},
+              /* max_tokens= */ 100),
+          FakeBaseModelAsset::Content{
+              .cache_weight = 1015,
+              .encoder_cache_weight = 1016,
+              .adapter_cache_weight = 1017,
+              .shader_cache_data = "0xcafebabe",
+              .weight_cache_fingerprint = GetWeightCacheFingerprint(
+                  proto::BaseModelRecipe::BACKEND_TYPE_CPU)},
+          "1.0.0.1")
+      .AddUnsafeSolution("test", "gpu_model_A")
+      .Finish();
+  fake_.Startup();
+  base::test::TestFuture<ModelBrokerClient::CreateSessionResult> session_future;
+  fake_.client().CreateSession(mojom::OnDeviceFeature::kTest,
+                               SessionConfigParams{},
+                               session_future.GetCallback());
+
+  auto session = session_future.Take();
+  ASSERT_TRUE(session);
+
+  proto::ExampleForTestingRequest request;
+  request.set_string_value("hello");
+
+  ResponseHolder response;
+  session->ExecuteModel(request, response.GetStreamingCallback());
+
+  EXPECT_TRUE(response.GetFinalStatus());
+
+  // The weight caches are truncated, so no cache weights are reported.
+  std::string expected_response =
+      ("Fastest inference"
+       "Shader cache data: 0xcafebabe"
+       "hello max:1024"
+       "TopK: 64, Temp: 1");
+  EXPECT_EQ(*response.value(), expected_response);
+}
+
 // Test that a simple feature can be executed successfully.
 TEST_F(ManifestSolutionFactoryTest, ExecuteTestFeatureWithHints) {
   ScenarioBuilder(fake_.component_state())

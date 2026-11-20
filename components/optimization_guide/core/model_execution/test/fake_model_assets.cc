@@ -4,6 +4,8 @@
 
 #include "components/optimization_guide/core/model_execution/test/fake_model_assets.h"
 
+#include <string_view>
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/no_destructor.h"
@@ -12,6 +14,7 @@
 #include "components/optimization_guide/core/model_execution/on_device_model_names.h"
 #include "components/optimization_guide/core/model_execution/test/feature_config_builder.h"
 #include "components/optimization_guide/proto/on_device_model_execution_config.pb.h"
+#include "services/on_device_model/public/cpp/model_assets.h"
 #include "services/on_device_model/public/cpp/test_support/fake_service.h"
 #include "third_party/dawn/include/dawn/dawn_proc.h"
 
@@ -62,45 +65,49 @@ FakeBaseModelAsset::~FakeBaseModelAsset() = default;
 void FakeBaseModelAsset::Write(Content&& content) {
   CHECK(base::WriteFile(temp_dir_.GetPath().Append(kWeightsFile),
                         base::NumberToString(content.weight)));
+
+  // Writes a cache along with its fingerprint so it isn't invalidated when the
+  // model assets are loaded.
+  auto write_cache = [this](const base::FilePath::CharType* file_name,
+                            std::string_view data,
+                            std::string_view fingerprint) {
+    base::FilePath path = temp_dir_.GetPath().Append(file_name);
+    CHECK(base::WriteFile(path, data));
+    CHECK(base::WriteFile(on_device_model::GetCacheFingerprintPath(path),
+                          fingerprint));
+  };
+
+  const std::string_view weight_fingerprint =
+      content.weight_cache_fingerprint ? content.weight_cache_fingerprint : "";
   if (content.cache_weight) {
-    CHECK(base::WriteFile(temp_dir_.GetPath().Append(kWeightCacheFile),
-                          base::NumberToString(content.cache_weight)));
+    write_cache(kWeightCacheFile, base::NumberToString(content.cache_weight),
+                weight_fingerprint);
   }
   if (content.encoder_cache_weight) {
-    CHECK(base::WriteFile(temp_dir_.GetPath().Append(kEncoderCacheFile),
-                          base::NumberToString(content.encoder_cache_weight)));
+    write_cache(kEncoderCacheFile,
+                base::NumberToString(content.encoder_cache_weight),
+                weight_fingerprint);
   }
   if (content.adapter_cache_weight) {
-    CHECK(base::WriteFile(temp_dir_.GetPath().Append(kAdapterCacheFile),
-                          base::NumberToString(content.adapter_cache_weight)));
+    write_cache(kAdapterCacheFile,
+                base::NumberToString(content.adapter_cache_weight),
+                weight_fingerprint);
   }
   if (content.mtp_drafter_cache_weight) {
-    CHECK(base::WriteFile(
-        temp_dir_.GetPath().Append(kMtpDrafterCacheFile),
-        base::NumberToString(content.mtp_drafter_cache_weight)));
+    write_cache(kMtpDrafterCacheFile,
+                base::NumberToString(content.mtp_drafter_cache_weight),
+                weight_fingerprint);
   }
+
+  const std::string_view dawn_version(
+      reinterpret_cast<const char*>(dawnProcGetVersion()), 20);
   if (content.shader_cache_data && content.shader_cache_data[0] != '\0') {
-    base::FilePath program_cache_path =
-        temp_dir_.GetPath().Append(kProgramCacheFile);
-    CHECK(base::WriteFile(program_cache_path,
-                          std::string(content.shader_cache_data)));
-    std::string current_version(
-        reinterpret_cast<const char*>(dawnProcGetVersion()), 20);
-    CHECK(base::WriteFile(
-        program_cache_path.AddExtension(FILE_PATH_LITERAL(".dawn_version")),
-        current_version));
+    write_cache(kProgramCacheFile, content.shader_cache_data, dawn_version);
   }
   if (content.mtp_drafter_shader_cache_data &&
       content.mtp_drafter_shader_cache_data[0] != '\0') {
-    base::FilePath mtp_program_cache_path =
-        temp_dir_.GetPath().Append(kMtpDrafterProgramCacheFile);
-    CHECK(base::WriteFile(mtp_program_cache_path,
-                          std::string(content.mtp_drafter_shader_cache_data)));
-    std::string current_version(
-        reinterpret_cast<const char*>(dawnProcGetVersion()), 20);
-    CHECK(base::WriteFile(
-        mtp_program_cache_path.AddExtension(FILE_PATH_LITERAL(".dawn_version")),
-        current_version));
+    write_cache(kMtpDrafterProgramCacheFile,
+                content.mtp_drafter_shader_cache_data, dawn_version);
   }
   CHECK(base::WriteFile(
       temp_dir_.GetPath().Append(kOnDeviceModelExecutionConfigFile),

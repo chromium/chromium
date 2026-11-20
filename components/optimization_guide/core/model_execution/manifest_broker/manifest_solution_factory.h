@@ -43,6 +43,13 @@ namespace optimization_guide {
 BASE_DECLARE_FEATURE(kOnDeviceModelIdleTimeout);
 extern const base::FeatureParam<base::TimeDelta> kOnDeviceModelIdleTimeoutParam;
 
+// Returns the fingerprint used to validate weight caches for a model recipe
+// with `backend_type`. Weight cache files are shared across backends, so this
+// makes sure a cache written by one backend is invalidated before another
+// backend uses it.
+const char* GetWeightCacheFingerprint(
+    proto::BaseModelRecipe::BackendType backend_type);
+
 class UsageTracker;
 
 class ManifestSolutionFactory {

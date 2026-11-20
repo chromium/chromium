@@ -5,8 +5,10 @@
 #include "components/optimization_guide/core/model_execution/manifest_broker/test/scenario_builder.h"
 
 #include <memory>
+#include <utility>
 
 #include "components/optimization_guide/core/model_execution/configs/manifest_builder.h"
+#include "components/optimization_guide/core/model_execution/manifest_broker/manifest_solution_factory.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/test/manifest_component_directory.h"
 #include "components/optimization_guide/core/model_execution/test/fake_model_assets.h"
 #include "components/optimization_guide/core/model_execution/test/feature_config_builder.h"
@@ -61,7 +63,14 @@ ScenarioBuilder& ScenarioBuilder::AddBaseModel(
     const FakeBaseModelAsset::Content& content,
     const std::string& version) {
   state_->UpdateBaseModel(name + "_key", [&]() {
-    auto base_model_asset = std::make_unique<FakeBaseModelAsset>(content);
+    FakeBaseModelAsset::Content asset_content = content;
+    if (!asset_content.weight_cache_fingerprint) {
+      // Match the recipe so the fake weight caches are used.
+      asset_content.weight_cache_fingerprint =
+          GetWeightCacheFingerprint(args.backend_type);
+    }
+    auto base_model_asset =
+        std::make_unique<FakeBaseModelAsset>(std::move(asset_content));
     base_model_asset->set_version(version);
     return base_model_asset;
   }());

@@ -33,6 +33,10 @@ class FakeBaseModelAsset {
     // purposes, otherwise non-aggregate initializer for struct is disallowed.
     const char* shader_cache_data = "";
     const char* mtp_drafter_shader_cache_data = "";
+    // Fingerprint written alongside the weight caches above. Must match the
+    // fingerprint of the model recipe for the caches to be used, see
+    // `GetWeightCacheFingerprint()`.
+    const char* weight_cache_fingerprint = nullptr;
   };
   FakeBaseModelAsset();
   explicit FakeBaseModelAsset(Content content);

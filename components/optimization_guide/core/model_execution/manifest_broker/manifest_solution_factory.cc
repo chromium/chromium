@@ -46,6 +46,15 @@ const base::FeatureParam<base::TimeDelta> kOnDeviceModelIdleTimeoutParam{
     &kOnDeviceModelIdleTimeout, "on_device_model_idle_timeout",
     base::Minutes(1)};
 
+// TODO(crbug.com/585215282): Remove backend weight-cache fingerprinting once
+// ML Drift validates a backend header and truncates open cache FDs on rebuild.
+const char* GetWeightCacheFingerprint(
+    proto::BaseModelRecipe::BackendType backend_type) {
+  // Keep in sync with `ConvertBackendType`, which falls back to GPU.
+  return backend_type == proto::BaseModelRecipe::BACKEND_TYPE_CPU ? "cpu"
+                                                                  : "gpu";
+}
+
 namespace {
 
 bool CheckCachesExistOnWorkerThread(
@@ -454,6 +463,11 @@ on_device_model::ModelAssetPaths ManifestSolutionFactory::GetModelAssetPaths(
   }
   paths.encoder_cache = paths.weights.DirName().Append(kEncoderCacheFile);
   paths.adapter_cache = paths.weights.DirName().Append(kAdapterCacheFile);
+  // The backend can change for the same weights (e.g. after the performance
+  // class is re-evaluated), so invalidate weight caches written by another
+  // backend.
+  paths.weight_cache_fingerprint =
+      GetWeightCacheFingerprint(recipe.backend_type());
   if (base::FeatureList::IsEnabled(
           on_device_model::features::kOnDeviceModelGpuProgramCache) &&
       recipe.backend_type() == proto::BaseModelRecipe::BACKEND_TYPE_GPU) {
@@ -925,6 +939,8 @@ void ManifestSolutionFactory::LoadPostProcessor(
   on_device_model::ModelAssetPaths paths;
   paths.weights = std::move(full_paths.weights);
   paths.cache = std::move(full_paths.cache);
+  paths.weight_cache_fingerprint =
+      std::move(full_paths.weight_cache_fingerprint);
 
   LogBaseModelInitialization(postprocessor_id, postprocessor_recipe,
                              base_models_.at(postprocessor_id));

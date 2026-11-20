@@ -93,6 +93,7 @@ if (use_blink || (is_ios && build_with_internal_optimization_guide)) {
       "//services/on_device_model/decision:unit_tests",
       "//services/on_device_model/fake",
       "//services/on_device_model/ml:ml_no_internal",
+      "//services/on_device_model/public/cpp:unit_tests",
       "//services/on_device_model/public/cpp/test_support",
       "//services/on_device_model/public/mojom",
       "//testing/gmock",
