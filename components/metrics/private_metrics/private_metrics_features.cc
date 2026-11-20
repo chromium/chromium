@@ -8,6 +8,4 @@ namespace metrics::private_metrics {
 
 BASE_FEATURE(kPrivateMetricsFeature, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kLomFeature, base::FEATURE_DISABLED_BY_DEFAULT);
-
 }  // namespace metrics::private_metrics
