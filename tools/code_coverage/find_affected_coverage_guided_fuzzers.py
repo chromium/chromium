@@ -11,6 +11,7 @@ import os
 import re
 import subprocess
 import sys
+import threading
 import time
 from typing import Dict, List, NamedTuple, Optional, Set, Tuple
 import urllib.error
@@ -26,6 +27,11 @@ chromium_src_dir = os.path.dirname(os.path.dirname(script_dir))
 COVERAGE_API_URL = 'https://analysis.chromium.org/coverage/p/chromium/file'
 MAX_FINDIT_API_RETRIES = 3
 FINDIT_API_TIMEOUT = 10.0
+# Cap concurrent Findit requests across all files so we don't overload it.
+MAX_CONCURRENT_FINDIT_REQUESTS = 32
+_findit_request_semaphore = threading.BoundedSemaphore(
+  MAX_CONCURRENT_FINDIT_REQUESTS
+)
 
 # Matches a unified diff hunk header: '@@ -start,count +start,count @@' for the
 # old and new file, with ',count' left out when it's 1, e.g. '@@ -12,3 +14 @@'.
@@ -266,11 +272,13 @@ def map_changed_lines_to_report_lines(
 def find_affected_fuzzers_for_file(
   file_path: str, out_dir: str, all_fuzzers: Set[str], revision: str
 ) -> Tuple[str, Set[str]]:
-  """Finds the fuzzers that may cover revision's changes in file_path.
+  """Finds fuzzers whose Findit coverage report covers at least one line
+  changed by revision in file_path.
 
-  Keeps the file's reverse-dep fuzzers only if Findit's aggregated coverage
-  shows at least one changed line was executed. Files with no coverage data
-  (such as new files) return no fuzzers.
+  Starts from reverse-dep fuzzers of file_path. Drops all of them if Findit's
+  aggregated report has no data for the file (e.g. a new file) or shows no
+  changed line executed; otherwise keeps each fuzzer whose own report at the
+  same commit covers a changed line.
 
   Args:
     file_path: Repo-relative path of the modified source file.
@@ -280,7 +288,8 @@ def find_affected_fuzzers_for_file(
 
   Returns:
     A (gn_path, fuzzers) pair: file_path as a source-absolute path (e.g.
-    '//base/foo.cc') and the GN labels of fuzzers that may cover its changes.
+    '//base/foo.cc') and the GN labels of the fuzzers that cover its changed
+    lines.
 
   Raises:
     subprocess.CalledProcessError: If git fails (for example, when the
@@ -326,15 +335,53 @@ def find_affected_fuzzers_for_file(
     sorted(report_lines),
     coverage_report.revision,
   )
-  if not report_lines & coverage_report.covered_lines.keys():
+  if not any(line in coverage_report.covered_lines for line in report_lines):
     logging.info(
       'No fuzzer covers the lines of %s changed by %s.', gn_path, revision
     )
     return gn_path, set()
 
-  # TODO(b/560236801): Filter candidate_fuzzers individually instead of keeping
-  # all of them when any fuzzer covers a changed line.
-  return gn_path, candidate_fuzzers
+  def covers_changed_lines(fuzzer: str) -> bool:
+    # Findit looks up coverage by executable name. For a FUZZ_TEST wrapper,
+    # that's the GN target name without '__generate' (see //testing/test.gni).
+    fuzzer_name = fuzzer.rsplit(':', 1)[-1].removesuffix('__generate')
+    # Request the same revision as the aggregated report so report_lines line
+    # numbers match.
+    fuzzer_coverage_report = get_findit_coverage(
+      gn_path, fuzzer_name, coverage_report.revision
+    )
+    if fuzzer_coverage_report is None:
+      return False
+    return any(
+      line in fuzzer_coverage_report.covered_lines for line in report_lines
+    )
+
+  logging.info(
+    'Fetching Findit coverage of %s for %d candidate fuzzers...',
+    gn_path,
+    len(candidate_fuzzers),
+  )
+
+  start_time = time.monotonic()
+  with concurrent.futures.ThreadPoolExecutor(
+    max_workers=MAX_CONCURRENT_FINDIT_REQUESTS
+  ) as executor:
+    futures = {
+      fuzzer: executor.submit(covers_changed_lines, fuzzer)
+      for fuzzer in candidate_fuzzers
+    }
+  covering_fuzzers = {
+    fuzzer for fuzzer, future in futures.items() if future.result()
+  }
+
+  logging.info(
+    'Fetched Findit coverage of %s for %d candidate fuzzers in %.1fs.',
+    gn_path,
+    len(candidate_fuzzers),
+    time.monotonic() - start_time,
+  )
+
+  return gn_path, covering_fuzzers
 
 
 def get_affected_fuzzers(
@@ -343,7 +390,7 @@ def get_affected_fuzzers(
   all_fuzzers: List[str],
   revision: str,
 ) -> Dict[str, Set[str]]:
-  """Maps modified files to the fuzzers they affect."""
+  """Maps each modified file to the fuzzers that cover its changed lines."""
   affected_map: Dict[str, Set[str]] = {}
   all_fuzzers_set = set(all_fuzzers)
 
@@ -380,17 +427,18 @@ def pick_fuzzers(
 def get_findit_coverage(
   file_path: str,
   fuzzer_name: str = 'any',
+  revision: Optional[str] = None,
 ) -> Optional[FinditCoverage]:
   """Fetches fuzzing coverage data for a file from the Findit Coverage API.
 
   Args:
-    file_path: Path of the source file
-    fuzzer_name: Name of the fuzzer whose coverage is requested, e.g.
-      'base_json_reader_fuzzer'. The default, 'any', returns the coverage
-      aggregated over all LibFuzzer/FUZZ_TEST fuzzers for the file_path.
+    file_path: Path of the source file.
+    fuzzer_name: Fuzzer name (e.g. 'base_json_reader_fuzzer'), or 'any' for
+      coverage aggregated across all LibFuzzer/FUZZ_TEST fuzzers.
+    revision: Commit of the coverage run to fetch, or None for the latest.
 
   Returns:
-    The latest collected fuzzing coverage of the file. Its covered_lines maps
+    The file's fuzzing coverage from the requested run. Its covered_lines maps
     only lines executed at least once to their hit counts (unexecuted and
     non-executable lines are omitted, so it is empty when the fuzzer doesn't
     cover the file). None if the coverage can't be fetched, e.g. because
@@ -407,14 +455,15 @@ def get_findit_coverage(
   )
 
   # Findit coverage API uses 'fuzz' for Libfuzzer and FUZZ_TEST coverage.
-  params = urllib.parse.urlencode(
-    {
-      'path': gn_path,
-      'platform': 'fuzz',
-      'test_suite_type': fuzzer_name,
-      'raw': 'true',
-    }
-  )
+  params_dict = {
+    'path': gn_path,
+    'platform': 'fuzz',
+    'test_suite_type': fuzzer_name,
+    'raw': 'true',
+  }
+  if revision:
+    params_dict['revision'] = revision
+  params = urllib.parse.urlencode(params_dict)
   url = f'{COVERAGE_API_URL}?{params}'
 
   req = urllib.request.Request(
@@ -424,8 +473,9 @@ def get_findit_coverage(
   for attempt in range(MAX_FINDIT_API_RETRIES):
     log_level = logging.WARNING
     try:
-      with urllib.request.urlopen(req, timeout=FINDIT_API_TIMEOUT) as resp:
-        response = json.loads(resp.read().decode('utf-8'))
+      with _findit_request_semaphore:
+        with urllib.request.urlopen(req, timeout=FINDIT_API_TIMEOUT) as resp:
+          response = json.loads(resp.read().decode('utf-8'))
       return parse_findit_response(response, gn_path)
     except urllib.error.HTTPError as e:
       # Retry on 429 (rate limit) and on 500, 502, 503 and 504 (transient

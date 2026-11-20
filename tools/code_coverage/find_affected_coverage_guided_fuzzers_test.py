@@ -3,6 +3,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import concurrent.futures
 import io
 import json
 import logging
@@ -11,6 +12,8 @@ import pathlib
 import subprocess
 import sys
 import tempfile
+import threading
+import time
 import unittest
 from unittest import mock
 import urllib.error
@@ -25,6 +28,8 @@ import find_affected_coverage_guided_fuzzers
 FINDIT_COVERED_LINES = {2: 7, 3: 7, 5: 7}
 # The commit of make_findit_response()'s report.
 REPORT_REVISION = 'a' * 40
+# An older report commit, for testing fuzzers absent from the latest run.
+OLD_REPORT_REVISION = 'b' * 40
 
 # Mock `git diff-tree` output keyed by the target revision. CL 'abc' changes
 # lines 1-3; REPORT_REVISION matches the CL's parent by default.
@@ -57,7 +62,7 @@ def read_output_json(out_dir):
   return json.loads(pathlib.Path(output_json_path(out_dir)).read_text())
 
 
-def make_findit_response(covered=True):
+def make_findit_response(covered=True, revision=REPORT_REVISION):
   count = 7 if covered else 0
   return {
     'data': {
@@ -69,7 +74,7 @@ def make_findit_response(covered=True):
         [5, {'line': '}', 'count': count}],
       ],
     },
-    'gitiles_commit': {'revision': REPORT_REVISION},
+    'gitiles_commit': {'revision': revision},
     'path': '//base/test.cc',
     'warning': None,
   }
@@ -129,14 +134,19 @@ class FindAffectedCoverageGuidedFuzzersTest(unittest.TestCase):
     return out_dir
 
   def _mock_findit(self, coverage_by_fuzzer):
-    """Mocks get_findit_coverage() using a map of fuzzer name (or 'any') to
-    raw API response.
+    """Patches get_findit_coverage() using coverage_by_fuzzer, a map from
+    test_suite_type ('any' or a fuzzer name) to its raw API response or None.
+    Returns the list of (file_path, fuzzer_name, revision) queried.
     """
     module = find_affected_coverage_guided_fuzzers
+    queries = []
 
-    def fake_get_findit_coverage(file_path, fuzzer_name='any'):
+    def fake_get_findit_coverage(file_path, fuzzer_name='any', revision=None):
+      queries.append((file_path, fuzzer_name, revision))
       response = coverage_by_fuzzer.get(fuzzer_name)
       if not response:
+        return None
+      if revision and revision != response['gitiles_commit']['revision']:
         return None
       return module.parse_findit_response(
         dict(response, path=file_path), file_path
@@ -146,7 +156,8 @@ class FindAffectedCoverageGuidedFuzzersTest(unittest.TestCase):
       module, 'get_findit_coverage', side_effect=fake_get_findit_coverage
     )
     self.addCleanup(patcher.stop)
-    return patcher.start()
+    patcher.start()
+    return queries
 
   def test_get_modified_files(self):
     self.mock_subprocess_run.return_value.stdout = (
@@ -210,7 +221,13 @@ class FindAffectedCoverageGuidedFuzzersTest(unittest.TestCase):
         '//file2.cc': '//fuzzer2:fuzzer2\n',
       }
     )
-    mock_findit = self._mock_findit({'any': make_findit_response()})
+    findit_queries = self._mock_findit(
+      {
+        'any': make_findit_response(),
+        'fuzzer1': make_findit_response(),
+        'fuzzer2': make_findit_response(),
+      }
+    )
 
     modified_files = ['file1.cc', 'file2.cc', 'file3.cc']
     all_fuzzers = [
@@ -242,9 +259,15 @@ class FindAffectedCoverageGuidedFuzzersTest(unittest.TestCase):
     }
     self.assertEqual(gn_refs_files, {'//file1.cc', '//file2.cc', '//file3.cc'})
     # '//file3.cc' has no candidate fuzzers, so no coverage is fetched for it.
-    self.assertEqual(
-      sorted(call.args for call in mock_findit.call_args_list),
-      [('//file1.cc',), ('//file2.cc',)],
+    self.assertCountEqual(
+      findit_queries,
+      [
+        ('//file1.cc', 'any', None),
+        ('//file1.cc', 'fuzzer1', REPORT_REVISION),
+        ('//file1.cc', 'fuzzer2', REPORT_REVISION),
+        ('//file2.cc', 'any', None),
+        ('//file2.cc', 'fuzzer2', REPORT_REVISION),
+      ],
     )
 
   def test_get_affected_fuzzers_with_exception(self):
@@ -261,7 +284,9 @@ class FindAffectedCoverageGuidedFuzzersTest(unittest.TestCase):
       return original_side_effect(command, **kwargs)
 
     self.mock_subprocess_run.side_effect = fake_subprocess_run
-    self._mock_findit({'any': make_findit_response()})
+    self._mock_findit(
+      {'any': make_findit_response(), 'fuzzer1': make_findit_response()}
+    )
 
     modified_files = ['file1.cc', 'file2.cc']
     all_fuzzers = ['//fuzzer1:fuzzer1']
@@ -296,7 +321,58 @@ class FindAffectedCoverageGuidedFuzzersTest(unittest.TestCase):
       gn_refs_mapping={'//file1.cc': '//fuzzer1:fuzzer1\n'},
       diff_tree_stdout=dict(DIFF_TREE_STDOUT, abc=b'@@ -4 +4 @@\n'),
     )
-    self._mock_findit({'any': make_findit_response()})
+    findit_queries = self._mock_findit({'any': make_findit_response()})
+    self.assertEqual(
+      find_affected_coverage_guided_fuzzers.find_affected_fuzzers_for_file(
+        'file1.cc', 'out/test', {'//fuzzer1:fuzzer1'}, 'abc'
+      ),
+      ('//file1.cc', set()),
+    )
+    # Only the aggregated coverage is fetched, not per-fuzzer coverage.
+    self.assertEqual(findit_queries, [('//file1.cc', 'any', None)])
+
+  def test_find_affected_fuzzers_for_file_keeps_only_covering_fuzzers(self):
+    # Findit looks up FUZZ_TEST coverage by wrapper executable name (without
+    # '__generate').
+    fuzz_test = '//base:base_unittests_Suite_Test_fuzzer__generate'
+    self._set_subprocess_run_side_effect(
+      gn_refs_mapping={
+        '//file1.cc': f'{fuzz_test}\n//fuzzer1:fuzzer1\n//fuzzer2:fuzzer2\n'
+      }
+    )
+    self._mock_findit(
+      {
+        'any': make_findit_response(),
+        'base_unittests_Suite_Test_fuzzer': make_findit_response(),
+        'fuzzer1': make_findit_response(),
+        # fuzzer2 only executes line 5, which the CL doesn't change.
+        'fuzzer2': dict(
+          make_findit_response(),
+          data={'line_to_data': [[5, {'line': '}', 'count': 7}]]},
+        ),
+      }
+    )
+    self.assertEqual(
+      find_affected_coverage_guided_fuzzers.find_affected_fuzzers_for_file(
+        'file1.cc',
+        'out/test',
+        {fuzz_test, '//fuzzer1:fuzzer1', '//fuzzer2:fuzzer2'},
+        'abc',
+      ),
+      ('//file1.cc', {fuzz_test, '//fuzzer1:fuzzer1'}),
+    )
+
+  def test_find_affected_fuzzers_for_file_ignores_stale_fuzzer_report(self):
+    # Ignore fuzzer1 if it only has a report at an older revision.
+    self._set_subprocess_run_side_effect(
+      gn_refs_mapping={'//file1.cc': '//fuzzer1:fuzzer1\n'}
+    )
+    self._mock_findit(
+      {
+        'any': make_findit_response(),
+        'fuzzer1': make_findit_response(revision=OLD_REPORT_REVISION),
+      }
+    )
     self.assertEqual(
       find_affected_coverage_guided_fuzzers.find_affected_fuzzers_for_file(
         'file1.cc', 'out/test', {'//fuzzer1:fuzzer1'}, 'abc'
@@ -316,7 +392,9 @@ class FindAffectedCoverageGuidedFuzzersTest(unittest.TestCase):
         REPORT_REVISION: b'@@ -1,3 +1,3 @@\n',
       },
     )
-    self._mock_findit({'any': make_findit_response()})
+    self._mock_findit(
+      {'any': make_findit_response(), 'fuzzer1': make_findit_response()}
+    )
     self.assertEqual(
       find_affected_coverage_guided_fuzzers.find_affected_fuzzers_for_file(
         'file1.cc', 'out/test', {'//fuzzer1:fuzzer1'}, 'abc'
@@ -334,14 +412,11 @@ class FindAffectedCoverageGuidedFuzzersTest(unittest.TestCase):
         REPORT_REVISION: b'@@ -0,0 +1 @@\n',
       },
     )
-    self._mock_findit(
-      {
-        'any': dict(
-          make_findit_response(),
-          data={'line_to_data': [[4, {'line': '  if (G())', 'count': 7}]]},
-        )
-      }
+    response = dict(
+      make_findit_response(),
+      data={'line_to_data': [[4, {'line': '  if (G())', 'count': 7}]]},
     )
+    self._mock_findit({'any': response, 'fuzzer1': response})
     self.assertEqual(
       find_affected_coverage_guided_fuzzers.find_affected_fuzzers_for_file(
         'file1.cc', 'out/test', {'//fuzzer1:fuzzer1'}, 'abc'
@@ -481,7 +556,12 @@ class FindAffectedCoverageGuidedFuzzersTest(unittest.TestCase):
       },
     )
     out_dir = self.make_out_dir()
-    self._mock_findit({'any': make_findit_response()})
+    self._mock_findit(
+      {
+        'any': make_findit_response(),
+        'fuzzer': make_findit_response(),
+      }
+    )
 
     with mock.patch('sys.argv', main_argv(out_dir)):
       self.assertEqual(find_affected_coverage_guided_fuzzers.main(), 0)
@@ -512,11 +592,17 @@ class FindAffectedCoverageGuidedFuzzersTest(unittest.TestCase):
       },
     )
     out_dir = self.make_out_dir()
-    # The changed lines are covered, so only --max-fuzzers drops a fuzzer.
-    self._mock_findit({'any': make_findit_response()})
+    self._mock_findit(
+      {
+        'any': make_findit_response(),
+        'fuzzer1': make_findit_response(),
+        'fuzzer2': make_findit_response(),
+      }
+    )
 
     with mock.patch('sys.argv', main_argv(out_dir, max_fuzzers=1)):
       self.assertEqual(find_affected_coverage_guided_fuzzers.main(), 0)
+    # Both fuzzers cover the changed lines meaning --max-fuzzers drops one.
     self.assertEqual(
       read_output_json(out_dir), {'fuzzers': ['//fuzzer1:fuzzer1']}
     )
@@ -530,7 +616,7 @@ class FindAffectedCoverageGuidedFuzzersTest(unittest.TestCase):
     mock_urlopen.return_value.__enter__.return_value = fake_response
 
     result = find_affected_coverage_guided_fuzzers.get_findit_coverage(
-      'base/test.cc', 'base_json_reader_fuzzer'
+      'base/test.cc', 'base_json_reader_fuzzer', REPORT_REVISION
     )
     self.assertEqual(result.covered_lines, FINDIT_COVERED_LINES)
     self.assertEqual(result.revision, REPORT_REVISION)
@@ -543,6 +629,7 @@ class FindAffectedCoverageGuidedFuzzersTest(unittest.TestCase):
         'platform': ['fuzz'],
         'test_suite_type': ['base_json_reader_fuzzer'],
         'raw': ['true'],
+        'revision': [REPORT_REVISION],
       },
     )
 
@@ -674,6 +761,44 @@ class FindAffectedCoverageGuidedFuzzersTest(unittest.TestCase):
     self.assertIsNone(result)
     self.assertEqual(mock_urlopen.call_count, 1)
     mock_sleep.assert_not_called()
+
+  @mock.patch('find_affected_coverage_guided_fuzzers.urllib.request.urlopen')
+  def test_get_findit_coverage_limits_concurrent_requests(self, mock_urlopen):
+    module = find_affected_coverage_guided_fuzzers
+    body = json.dumps(make_findit_response()).encode('utf-8')
+    lock = threading.Lock()
+    active_requests = 0
+    max_concurrent_requests = 0
+    # Require 2 concurrent requests to prove parallelism without exceeding 2.
+    barrier = threading.Barrier(2, timeout=10.0)
+
+    def fake_urlopen(req, timeout):
+      nonlocal active_requests, max_concurrent_requests
+      with lock:
+        active_requests += 1
+        max_concurrent_requests = max(max_concurrent_requests, active_requests)
+      try:
+        barrier.wait()
+        # Without the cap, the other requests start in the meantime.
+        time.sleep(0.05)
+      finally:
+        with lock:
+          active_requests -= 1
+      response = mock.MagicMock()
+      response.__enter__.return_value.read.return_value = body
+      return response
+
+    mock_urlopen.side_effect = fake_urlopen
+    with mock.patch.object(
+      module, '_findit_request_semaphore', threading.BoundedSemaphore(2)
+    ):
+      with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
+        results = list(
+          executor.map(module.get_findit_coverage, ['//base/test.cc'] * 4)
+        )
+
+    self.assertTrue(all(results))
+    self.assertEqual(max_concurrent_requests, 2)
 
 
 class GitHelpersTest(unittest.TestCase):
