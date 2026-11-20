@@ -2070,8 +2070,8 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
         // Store the information we need for later if we have fragmentation.
         flex_line.line_items_data.emplace_back(
             item.block_node, item.item_index, offset, item.alignment,
-            item.FlexedBorderBoxSize(), logical_margins.block_end,
-            fragment.BlockSize(), item.is_initial_block_size_indefinite,
+            item.FlexedBorderBoxSize(), logical_margins, fragment.BlockSize(),
+            item.is_initial_block_size_indefinite,
             item.is_used_flex_basis_indefinite,
             layout_result->HasDescendantThatDependsOnPercentageBlockSize());
       }
@@ -2576,8 +2576,8 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
     if (is_at_block_end) {
       // Only add the block-end margin if the item has reached the end of its
       // content. Then re-set it to avoid adding it more than once.
-      item_block_end += flex_item->margin_block_end;
-      flex_item->margin_block_end = LayoutUnit();
+      item_block_end += flex_item->margins.block_end;
+      flex_item->margins.block_end = LayoutUnit();
     } else {
       has_inflow_child_break_inside_line[flex_line_idx] = true;
     }
@@ -2670,7 +2670,7 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
     }
 
     intrinsic_block_size_ = std::max(item_block_end, intrinsic_block_size_);
-    container_builder_.AddResult(*layout_result, offset);
+    container_builder_.AddResult(*layout_result, offset, flex_item->margins);
     if (gap_accumulator && !row_completed_in_previous_fragmentainer) {
       LayoutUnit container_main_end =
           is_column_

@@ -23,7 +23,7 @@ struct FlexItemData {
                LogicalOffset offset,
                ItemPosition alignment,
                LayoutUnit main_axis_final_size,
-               LayoutUnit margin_block_end,
+               const BoxStrut& margins,
                LayoutUnit total_remaining_block_size,
                bool is_initial_block_size_indefinite,
                bool is_used_flex_basis_indefinite,
@@ -33,7 +33,7 @@ struct FlexItemData {
         offset(offset),
         alignment(alignment),
         main_axis_final_size(main_axis_final_size),
-        margin_block_end(margin_block_end),
+        margins(margins),
         total_remaining_block_size(total_remaining_block_size),
         is_initial_block_size_indefinite(is_initial_block_size_indefinite),
         is_used_flex_basis_indefinite(is_used_flex_basis_indefinite),
@@ -49,7 +49,7 @@ struct FlexItemData {
   LogicalOffset offset;
   ItemPosition alignment;
   LayoutUnit main_axis_final_size;
-  LayoutUnit margin_block_end;
+  BoxStrut margins;
   // This will originally be set to the total block size of the item before
   // fragmentation. It will then be reduced while performing fragmentation. If
   // it becomes negative, that means that the item expanded as a result of
