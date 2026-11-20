@@ -237,8 +237,7 @@ class GlobalFeatures {
 
 #if !BUILDFLAG(IS_ANDROID)
   // Null unless `autofill::features::kAutofillCustomFormControlScripts` is
-  // enabled and `--autofill-custom-form-control-scripts-dir` is set. Desktop
-  // only.
+  // enabled. Desktop only.
   autofill::CustomFormControlScriptIndex* custom_form_control_script_index() {
     return custom_form_control_script_index_.get();
   }

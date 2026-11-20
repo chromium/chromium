@@ -32,8 +32,9 @@ inline constexpr size_t kMaxCustomFormControlScriptSizeBytes = 64 * 1024;
 // Maps HTTP/HTTPS page URLs to custom form control scripts. There is one index
 // per browser process: in Chrome, it is owned by `GlobalFeatures`, which
 // creates it at startup if `features::kAutofillCustomFormControlScripts` is
-// enabled and `--autofill-custom-form-control-scripts-dir` is set. The entries
-// come from that local directory (see `InitializeFromDirectory()`).
+// enabled, and populates it via `InitializeFromDirectory()` from
+// `--autofill-custom-form-control-scripts-dir` if set, or from the Component
+// Updater installation directory once ready.
 //
 // The index isn't synchronized: it must be created and used on the same
 // sequence (the browser UI sequence).

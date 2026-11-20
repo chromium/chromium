@@ -67,6 +67,7 @@
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/component_updater/autofill_custom_form_control_scripts_component_installer.h"
 #include "chrome/browser/component_updater/dictation_connector_component_installer.h"
 #include "chrome/browser/component_updater/iwa_key_distribution_component_installer.h"
 #include "chrome/browser/component_updater/zxcvbn_data_component_installer.h"
@@ -188,6 +189,7 @@ void RegisterComponentsForUpdate() {
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
+  RegisterAutofillCustomFormControlScriptsComponent(cus);
   RegisterDictationConnectorComponent(cus);
   RegisterIwaKeyDistributionComponent(cus);
   RegisterZxcvbnDataComponent(cus);

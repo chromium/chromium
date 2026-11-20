@@ -282,18 +282,18 @@ void GlobalFeatures::Init() {
 
 void GlobalFeatures::PreMainMessageLoopRun() {
 #if !BUILDFLAG(IS_ANDROID)
-  // Custom form control scripts are only supported on desktop. For now, they
-  // only come from a local directory given by
-  // `--autofill-custom-form-control-scripts-dir` (also settable in
-  // chrome://flags), so there is no index without one.
+  // Custom form control scripts are only supported on desktop. Component
+  // Updater populates the index once ready;
+  // `--autofill-custom-form-control-scripts-dir` can also initialize it from a
+  // local directory.
   if (base::FeatureList::IsEnabled(
           autofill::features::kAutofillCustomFormControlScripts)) {
+    custom_form_control_script_index_ =
+        std::make_unique<autofill::CustomFormControlScriptIndex>();
     const base::FilePath directory =
         base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
             autofill::switches::kAutofillCustomFormControlScriptsDir);
     if (!directory.empty()) {
-      custom_form_control_script_index_ =
-          std::make_unique<autofill::CustomFormControlScriptIndex>();
       custom_form_control_script_index_->InitializeFromDirectory(directory);
     }
   }

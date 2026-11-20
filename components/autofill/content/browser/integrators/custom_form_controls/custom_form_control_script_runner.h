@@ -39,9 +39,8 @@ class CustomFormControlScriptIndex;
 //
 // One instance per tab, owned by `ChromeAutofillClient`, which creates it if
 // the browser has a `CustomFormControlScriptIndex` (i.e. if
-// `features::kAutofillCustomFormControlScripts` is enabled and a script
-// directory is set). The index is owned by `GlobalFeatures` and outlives all
-// tabs.
+// `features::kAutofillCustomFormControlScripts` is enabled). The index is owned
+// by `GlobalFeatures` and outlives all tabs.
 class CustomFormControlScriptRunner : public AutofillManager::Observer {
  public:
   // A custom form control that the script of the main frame's current
