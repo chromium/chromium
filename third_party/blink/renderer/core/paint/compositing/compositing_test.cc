@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/web_test_support.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -619,6 +620,104 @@ TEST_P(CompositingTest, CompositedOverlayScrollbarUnderNonFastBorderRadius) {
                   .PaintProperties()
                   ->VerticalScrollbarEffect());
   EXPECT_EQ(1u, CcLayersByName(RootCcLayer(), "Synthesized Clip").size());
+}
+
+TEST_P(CompositingTest,
+       DynamicBorderRadiusAcrossPaintContainmentWithNonOverlayScrollbar) {
+  USE_NON_OVERLAY_SCROLLBARS_OR_QUIT();
+  ScopedWebTestMode non_web_test(false);
+  InitializeWithHTML(*WebView()->MainFrameImpl()->GetFrame(), R"HTML(
+    <div id="outer" style="width: 150px; height: 150px; overflow: hidden">
+      <div style="contain: paint">
+        <div id="scroller" style="width: 100px; height: 100px;
+                                  overflow: scroll; will-change: transform">
+          <div style="height: 2000px">Content</div>
+        </div>
+      </div>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhases();
+
+  auto* scroller_box = To<LayoutBox>(GetLayoutObjectById("scroller"));
+  const auto scrollbar_id =
+      scroller_box->GetScrollableArea()->GetScrollbarElementId(
+          kVerticalScrollbar);
+  auto find_scrollbar_layer = [&]() -> const cc::Layer* {
+    for (const auto& layer : RootCcLayer()->children()) {
+      if (layer->element_id() == scrollbar_id) {
+        return layer.get();
+      }
+    }
+    return nullptr;
+  };
+
+  const cc::Layer* scrollbar_layer = find_scrollbar_layer();
+  ASSERT_TRUE(scrollbar_layer);
+  if (!scrollbar_layer->AppliesMaskFilterInfo()) {
+    return;
+  }
+
+  // Dynamically adding border-radius outside a paint containment boundary does
+  // not re-run PrePaint inside the isolated subtree, so PropertyTreeManager
+  // must still isolate the scrollbar into its own render surface.
+  GetElementById("outer")->setAttribute(
+      html_names::kStyleAttr,
+      AtomicString("width: 150px; height: 150px; overflow: hidden; "
+                   "border-radius: 10px"));
+  UpdateAllLifecyclePhases();
+
+  scrollbar_layer = find_scrollbar_layer();
+  ASSERT_TRUE(scrollbar_layer);
+  const auto& effect_tree = LayerTreeHost()->property_trees()->effect_tree();
+  const cc::EffectNode& scrollbar_effect =
+      effect_tree.Node(scrollbar_layer->effect_tree_index());
+  EXPECT_TRUE(scrollbar_effect.HasRenderSurface());
+  EXPECT_EQ(cc::RenderSurfaceReason::kRoundedCorner,
+            scrollbar_effect.render_surface_reason);
+  EXPECT_TRUE(scrollbar_effect.mask_filter_info.IsEmpty());
+  EXPECT_FALSE(
+      effect_tree.Node(scrollbar_effect.parent_id).mask_filter_info.IsEmpty());
+}
+
+TEST_P(CompositingTest, NonOverlayScrollbarUnderBackdropFilterAndBorderRadius) {
+  USE_NON_OVERLAY_SCROLLBARS_OR_QUIT();
+  ScopedWebTestMode non_web_test(false);
+  InitializeWithHTML(*WebView()->MainFrameImpl()->GetFrame(), R"HTML(
+    <div style="width: 200px; height: 200px; border-radius: 10px;
+                overflow: hidden">
+      <div style="backdrop-filter: blur(5px)">
+        <div id="scroller" style="width: 100px; height: 100px;
+                                  overflow: scroll; will-change: transform">
+          <div style="height: 2000px">Content</div>
+        </div>
+      </div>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhases();
+
+  auto* scroller_box = To<LayoutBox>(GetLayoutObjectById("scroller"));
+  const auto scrollbar_id =
+      scroller_box->GetScrollableArea()->GetScrollbarElementId(
+          kVerticalScrollbar);
+  const cc::Layer* scrollbar_layer = nullptr;
+  for (const auto& layer : RootCcLayer()->children()) {
+    if (layer->element_id() == scrollbar_id) {
+      scrollbar_layer = layer.get();
+      break;
+    }
+  }
+  ASSERT_TRUE(scrollbar_layer);
+  if (!scrollbar_layer->AppliesMaskFilterInfo()) {
+    return;
+  }
+
+  const auto& effect_tree = LayerTreeHost()->property_trees()->effect_tree();
+  const cc::EffectNode& scrollbar_effect =
+      effect_tree.Node(scrollbar_layer->effect_tree_index());
+  EXPECT_TRUE(scrollbar_effect.HasRenderSurface());
+  EXPECT_EQ(cc::RenderSurfaceReason::kRoundedCorner,
+            scrollbar_effect.render_surface_reason);
+  EXPECT_TRUE(scrollbar_effect.mask_filter_info.IsEmpty());
 }
 
 // https://crbug.com/1459318

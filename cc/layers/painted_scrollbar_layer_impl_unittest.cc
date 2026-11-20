@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include "base/test/gtest_util.h"
 #include "cc/resources/ui_resource_bitmap.h"
 #include "cc/test/layer_tree_impl_test_base.h"
 #include "components/viz/common/quads/draw_quad.h"
@@ -13,6 +14,8 @@
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/gfx/geometry/mask_filter_info.h"
+#include "ui/gfx/geometry/rrect_f.h"
 
 namespace cc {
 namespace {
@@ -479,6 +482,41 @@ TEST_F(PaintedScrollbarLayerImplFluentOverlayTest,
   // it shouldn't append a track quad.
   impl_->AppendQuads(scrollbar_layer_impl);
   EXPECT_TRUE(impl_->quad_list().empty());
+}
+
+TEST_F(PaintedScrollbarLayerImplFluentOverlayTest,
+       ThumbGeneratesMaskFilterInfo) {
+  PaintedScrollbarLayerImpl* scrollbar_layer_impl =
+      SetUpScrollbarLayerImpl(ScrollbarOrientation::kVertical,
+                              /*is_left_side_vertical_scrollbar=*/false,
+                              gfx::Rect(0, 0, 14, 100), /*thumb_thickness=*/6,
+                              /*minimum_thumb_length=*/30,
+                              /*is_overlay=*/true);
+  scrollbar_layer_impl->SetDrawsContent(true);
+  scrollbar_layer_impl->set_is_web_test(false);
+  CopyProperties(impl_->root_layer(), scrollbar_layer_impl);
+  impl_->CalcDrawProps(gfx::Size(500, 500));
+
+  const gfx::Rect thumb_quad_rect =
+      scrollbar_layer_impl->ComputeThumbQuadRect();
+  const gfx::RRectF expected_thumb_pill_rrect(gfx::RectF(thumb_quad_rect),
+                                              thumb_quad_rect.width());
+
+  impl_->AppendQuads(scrollbar_layer_impl);
+  ASSERT_EQ(1u, impl_->quad_list().size());
+  const viz::SolidColorDrawQuad* thumb_quad =
+      viz::SolidColorDrawQuad::MaterialCast(impl_->quad_list().ElementAt(0));
+  EXPECT_FALSE(thumb_quad->shared_quad_state->mask_filter_info.IsEmpty());
+  EXPECT_EQ(
+      thumb_quad->shared_quad_state->mask_filter_info.rounded_corner_bounds(),
+      expected_thumb_pill_rrect);
+
+  // If the layer already has a non-empty inherited mask_filter_info (which
+  // should not happen because PaintArtifactCompositor isolates the scrollbar
+  // into its own render pass), AppendThumbQuads CHECKs.
+  scrollbar_layer_impl->draw_properties().mask_filter_info =
+      gfx::MaskFilterInfo(gfx::RRectF(0, 0, 50, 50, 25));
+  EXPECT_CHECK_DEATH(impl_->AppendQuads(scrollbar_layer_impl));
 }
 
 }  // namespace

@@ -66,6 +66,7 @@ class FakeScrollbar : public Scrollbar {
   }
   void set_is_solid_color(bool b) { is_solid_color_ = b; }
   void set_is_overlay(bool b) { is_overlay_ = b; }
+  void set_is_web_test(bool b) { is_web_test_ = b; }
   void set_uses_nine_patch_thumb_resource(bool b) {
     uses_nine_patch_thumb_resource_ = b;
   }
@@ -101,6 +102,7 @@ class FakeScrollbar : public Scrollbar {
   bool is_left_side_vertical_scrollbar_ = false;
   bool is_solid_color_ = false;
   bool is_overlay_ = false;
+  bool is_web_test_ = true;
   bool uses_nine_patch_thumb_resource_ = false;
   bool uses_solid_color_thumb_ = false;
   bool uses_nine_patch_track_and_buttons_resource_ = false;

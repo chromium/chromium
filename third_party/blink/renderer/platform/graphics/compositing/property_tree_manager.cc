@@ -433,6 +433,8 @@ void PropertyTreeManager::SetCurrentEffectState(
     current_.may_be_2d_axis_misaligned_to_render_surface =
         EffectState::kAligned;
     current_.contained_by_non_render_surface_synthetic_rounded_clip = false;
+    current_.child_inherits_mask_filter_info =
+        !cc_effect_node.mask_filter_info.IsEmpty();
   } else {
     if (current_.may_be_2d_axis_misaligned_to_render_surface ==
             EffectState::kAligned &&
@@ -442,6 +444,8 @@ void PropertyTreeManager::SetCurrentEffectState(
     }
     current_.contained_by_non_render_surface_synthetic_rounded_clip |=
         (effect_type & CcEffectType::kSyntheticForNonTrivialClip);
+    current_.child_inherits_mask_filter_info |=
+        !cc_effect_node.mask_filter_info.IsEmpty();
   }
 }
 
@@ -828,7 +832,9 @@ void PropertyTreeManager::CloseCcEffect() {
 int PropertyTreeManager::SwitchToEffectNodeWithSynthesizedClip(
     const EffectPaintPropertyNode& next_effect,
     const ClipPaintPropertyNode& next_clip,
-    bool layer_draws_content) {
+    bool layer_draws_content,
+    bool layer_applies_mask_filter_info,
+    CompositorElementId layer_element_id) {
   // This function is expected to be invoked right before emitting each layer.
   // It keeps track of the nesting of clip and effects, output a composited
   // effect node whenever an effect is entered, or a non-trivial clip is
@@ -886,6 +892,64 @@ int PropertyTreeManager::SwitchToEffectNodeWithSynthesizedClip(
 
   if (layer_draws_content)
     pending_synthetic_mask_layers_.clear();
+
+  // A viz::SharedQuadState can only carry a single gfx::MaskFilterInfo. If a
+  // layer applies its own MaskFilterInfo when appending quads (such as a
+  // scrollbar with a rounded solid-color thumb) while also inheriting an
+  // ancestor EffectNode's mask_filter_info (such as a fast rounded-corner clip
+  // on an ancestor), we must composite the layer into its own render surface.
+  //
+  // Specifically, cc::draw_property_utils::GetMaskFilterInfoPair() returns an
+  // empty MaskFilterInfo for a layer (`for_render_surface=false`) only if the
+  // layer's own EffectNode has a render surface; otherwise it walks up the
+  // effect tree to the enclosing render target (checking mask_filter_info on
+  // the render target itself as well, e.g. for backdrop-filter +
+  // border-radius). Isolating the layer into its own render surface with an
+  // empty mask_filter_info leaves the layer's
+  // draw_properties().mask_filter_info empty (so it can apply its thumb mask
+  // filter inside its render pass) while applying the ancestor's
+  // mask_filter_info to this render surface in the parent render pass.
+  if (layer_draws_content && layer_applies_mask_filter_info &&
+      current_.child_inherits_mask_filter_info) {
+    cc::EffectNode& current_effect =
+        effect_tree_.MutableNode(current_.effect_id);
+    if (!(current_effect.HasRenderSurface() &&
+          !IsConditionalRenderSurfaceReason(
+              current_effect.render_surface_reason))) {
+      // If `current_effect` is already a dedicated EffectNode for this layer
+      // (e.g. an overlay scrollbar's opacity-animation
+      // EffectPaintPropertyNode), promote it to an unconditional render surface
+      // so animations still target the layer's effect node.
+      if (current_effect.mask_filter_info.IsEmpty() && layer_element_id &&
+          current_effect.element_id == layer_element_id) {
+        current_effect.render_surface_reason =
+            cc::RenderSurfaceReason::kRoundedCorner;
+        current_.contained_by_non_render_surface_synthetic_rounded_clip = false;
+        current_.child_inherits_mask_filter_info = false;
+        return current_.effect_id;
+      }
+
+      // Otherwise (e.g. a non-overlay scrollbar with no dedicated Blink effect
+      // node, sitting under a synthetic rounded-corner clip or shared ancestor
+      // effect), insert a leaf cc::EffectNode with a render surface to isolate
+      // only this layer without forcing a render surface on sibling layers.
+      cc::EffectNode& mask_filter_isolation = effect_tree_.MutableNode(
+          effect_tree_.Insert(cc::EffectNode(), current_.effect_id));
+      mask_filter_isolation.element_id =
+          (layer_element_id &&
+           !effect_tree_.FindNodeFromElementId(layer_element_id))
+              ? layer_element_id
+              : CompositorElementIdFromUniqueObjectId(NewUniqueObjectId());
+      mask_filter_isolation.clip_id = EnsureCompositorClipNode(next_clip);
+      mask_filter_isolation.transform_id =
+          EnsureCompositorTransformNode(*current_.transform);
+      mask_filter_isolation.render_surface_reason =
+          cc::RenderSurfaceReason::kRoundedCorner;
+      mask_filter_isolation.double_sided =
+          !current_.transform->IsBackfaceHidden();
+      return mask_filter_isolation.id;
+    }
+  }
 
   return current_.effect_id;
 }
@@ -1038,8 +1102,10 @@ int PropertyTreeManager::SynthesizeCcEffectsForClipsIfNeeded(
 
     // An effect node can't omit render surface if it has child with backdrop
     // effect, in order to define the scope of the backdrop.
+    DCHECK(effect_tree_.Node(current_.effect_id).mask_filter_info.IsEmpty());
     effect_tree_.MutableNode(current_.effect_id).render_surface_reason =
         cc::RenderSurfaceReason::kBackdropScope;
+    current_.child_inherits_mask_filter_info = false;
     should_realize_backdrop_effect = true;
     backdrop_effect_clip_id = EnsureCompositorClipNode(target_clip);
   } else {

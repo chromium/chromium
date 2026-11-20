@@ -59,6 +59,10 @@ bool PaintedScrollbarLayer::OpacityCanAnimateOnImplThread() const {
   return is_overlay_;
 }
 
+bool PaintedScrollbarLayer::AppliesMaskFilterInfo() const {
+  return uses_solid_color_thumb_ && !is_web_test_;
+}
+
 void PaintedScrollbarLayer::PushDirtyPropertiesTo(LayerImpl* layer,
                                                   uint8_t dirty_flag,
                                                   CommitState& commit_state) {

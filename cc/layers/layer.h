@@ -853,6 +853,10 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   // thread.
   virtual bool OpacityCanAnimateOnImplThread() const;
 
+  // Internal to property tree construction. Whether this layer applies its own
+  // MaskFilterInfo when appending quads on the compositor thread.
+  virtual bool AppliesMaskFilterInfo() const;
+
   // For layer tree mode only.
   // Internal to property tree construction. Set to true if this layer or any
   // layer below it in the tree has a CopyOutputRequest pending commit.

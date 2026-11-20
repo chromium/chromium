@@ -136,6 +136,7 @@ void PaintedScrollbarLayerImpl::AppendThumbQuads(
     // differences in calculation of anti-aliasing and rounding in different
     // platforms.
     if (!is_web_test() && IsFluentScrollbarEnabled()) {
+      CHECK(shared_quad_state->mask_filter_info.IsEmpty());
       const int rounded_corner_radius =
           orientation() == ScrollbarOrientation::kHorizontal
               ? thumb_quad_rect.height()

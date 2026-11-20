@@ -31,7 +31,7 @@ bool FakeScrollbar::IsSolidColor() const {
 bool FakeScrollbar::IsOverlay() const { return is_overlay_; }
 
 bool FakeScrollbar::IsRunningWebTest() const {
-  return true;
+  return is_web_test_;
 }
 
 bool FakeScrollbar::IsFluentOverlayScrollbarMinimalMode() const {

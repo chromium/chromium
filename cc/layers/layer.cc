@@ -821,6 +821,10 @@ bool Layer::OpacityCanAnimateOnImplThread() const {
   return false;
 }
 
+bool Layer::AppliesMaskFilterInfo() const {
+  return false;
+}
+
 void Layer::SetBlendMode(SkBlendMode blend_mode) {
   DCHECK(IsPropertyChangeAllowed());
   auto& inputs = EnsureLayerTreeInputs();

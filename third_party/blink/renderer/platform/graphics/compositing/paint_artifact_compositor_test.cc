@@ -18,10 +18,12 @@
 #include "cc/input/main_thread_scrolling_reason.h"
 #include "cc/layers/layer.h"
 #include "cc/layers/layer_impl.h"
+#include "cc/layers/painted_scrollbar_layer.h"
 #include "cc/test/fake_impl_task_runner_provider.h"
 #include "cc/test/fake_layer_tree_frame_sink.h"
 #include "cc/test/fake_layer_tree_host_delegate.h"
 #include "cc/test/fake_layer_tree_host_impl.h"
+#include "cc/test/fake_scrollbar.h"
 #include "cc/test/test_task_graph_runner.h"
 #include "cc/trees/clip_node.h"
 #include "cc/trees/effect_node.h"
@@ -5741,6 +5743,223 @@ TEST_P(PaintArtifactCompositorTest,
                   .Node(layer->effect_tree_index())
                   .render_surface_reason,
               cc::RenderSurfaceReason::kNone);
+  }
+}
+
+TEST_P(PaintArtifactCompositorTest,
+       ScrollbarApplyingMaskFilterUnderRoundedCornerClipGetsOwnRenderSurface) {
+  FloatRoundedRect rrect(gfx::RectF(50, 50, 300, 200), 10);
+  auto* c1 = CreateClip(c0(), t0(), rrect);
+
+  auto create_scrollbar_layer = [](bool uses_solid_color_thumb, bool is_overlay,
+                                   CompositorElementId element_id) {
+    auto scrollbar = base::MakeRefCounted<cc::FakeScrollbar>();
+    scrollbar->set_has_thumb(true);
+    scrollbar->set_uses_solid_color_thumb(uses_solid_color_thumb);
+    scrollbar->set_is_overlay(is_overlay);
+    scrollbar->set_is_web_test(false);
+    auto layer = cc::PaintedScrollbarLayer::Create(std::move(scrollbar));
+    layer->SetIsDrawable(true);
+    layer->SetBounds(gfx::Size(15, 200));
+    layer->SetElementId(element_id);
+    return layer;
+  };
+
+  const CompositorElementId scrollbar_element_id =
+      CompositorElementIdFromUniqueObjectId(
+          12345, CompositorElementIdNamespace::kVerticalScrollbar);
+
+  // Case 1: Non-overlay scrollbar that applies its own mask filter
+  // (uses_solid_color_thumb = true) under a rounded-corner clip with no
+  // dedicated Blink scrollbar effect node. The sibling content layer stays
+  // directly on the fast rounded-corner synthetic effect without a render
+  // surface, while the scrollbar layer is isolated into its own leaf render
+  // surface with an empty mask_filter_info.
+  {
+    auto scrollbar_layer = create_scrollbar_layer(
+        /*uses_solid_color_thumb=*/true, /*is_overlay=*/false,
+        scrollbar_element_id);
+    EXPECT_TRUE(scrollbar_layer->AppliesMaskFilterInfo());
+
+    TestPaintArtifact artifact;
+    artifact.Chunk(t0(), *c1, e0())
+        .RectDrawing(gfx::Rect(50, 50, 285, 200), Color::kWhite);
+    artifact.ForeignLayerChunk(scrollbar_layer, gfx::Point(335, 50))
+        .Properties(t0(), *c1, e0());
+    Update(artifact.Build());
+
+    ASSERT_EQ(2u, LayerCount());
+    const cc::Layer* content_layer = LayerAt(0);
+    const cc::Layer* composited_scrollbar = LayerAt(1);
+    EXPECT_EQ(scrollbar_layer.get(), composited_scrollbar);
+
+    const auto& effect_tree = GetPropertyTrees().effect_tree();
+    const cc::EffectNode& rounded_clip_effect =
+        effect_tree.Node(content_layer->effect_tree_index());
+    EXPECT_FALSE(rounded_clip_effect.mask_filter_info.IsEmpty());
+    EXPECT_FALSE(rounded_clip_effect.HasRenderSurface());
+
+    EXPECT_NE(composited_scrollbar->effect_tree_index(),
+              content_layer->effect_tree_index());
+    const cc::EffectNode& scrollbar_effect =
+        effect_tree.Node(composited_scrollbar->effect_tree_index());
+    EXPECT_EQ(rounded_clip_effect.id, scrollbar_effect.parent_id);
+    EXPECT_TRUE(scrollbar_effect.HasRenderSurface());
+    EXPECT_EQ(cc::RenderSurfaceReason::kRoundedCorner,
+              scrollbar_effect.render_surface_reason);
+    EXPECT_TRUE(scrollbar_effect.mask_filter_info.IsEmpty());
+    EXPECT_EQ(scrollbar_element_id, scrollbar_effect.element_id);
+  }
+
+  // Case 2: Overlay scrollbar with its own scrollbar effect node
+  // (kActiveOpacityAnimation) under a rounded-corner clip. Its existing effect
+  // node is upgraded to have an unconditional render surface so that overlay
+  // opacity animations still target the layer's effect node.
+  {
+    EffectPaintPropertyNode::State overlay_effect_state;
+    overlay_effect_state.local_transform_space = &t0();
+    overlay_effect_state.output_clip = c1;
+    overlay_effect_state.compositor_element_id = scrollbar_element_id;
+    overlay_effect_state.direct_compositing_reasons = {
+        CompositingReason::kActiveOpacityAnimation};
+    auto* overlay_effect =
+        EffectPaintPropertyNode::Create(e0(), std::move(overlay_effect_state));
+
+    auto scrollbar_layer = create_scrollbar_layer(
+        /*uses_solid_color_thumb=*/true, /*is_overlay=*/true,
+        scrollbar_element_id);
+
+    TestPaintArtifact artifact;
+    artifact.Chunk(t0(), *c1, e0())
+        .RectDrawing(gfx::Rect(50, 50, 300, 200), Color::kWhite);
+    artifact.ForeignLayerChunk(scrollbar_layer, gfx::Point(335, 50))
+        .Properties(t0(), *c1, *overlay_effect);
+    Update(artifact.Build());
+
+    ASSERT_EQ(2u, LayerCount());
+    const cc::Layer* content_layer = LayerAt(0);
+    const cc::Layer* composited_scrollbar = LayerAt(1);
+
+    const auto& effect_tree = GetPropertyTrees().effect_tree();
+    const cc::EffectNode& rounded_clip_effect =
+        effect_tree.Node(content_layer->effect_tree_index());
+    EXPECT_FALSE(rounded_clip_effect.mask_filter_info.IsEmpty());
+    EXPECT_FALSE(rounded_clip_effect.HasRenderSurface());
+
+    const cc::EffectNode& scrollbar_effect =
+        effect_tree.Node(composited_scrollbar->effect_tree_index());
+    EXPECT_EQ(rounded_clip_effect.id, scrollbar_effect.parent_id);
+    EXPECT_EQ(scrollbar_element_id, scrollbar_effect.element_id);
+    EXPECT_TRUE(scrollbar_effect.HasRenderSurface());
+    EXPECT_EQ(cc::RenderSurfaceReason::kRoundedCorner,
+              scrollbar_effect.render_surface_reason);
+    EXPECT_TRUE(scrollbar_effect.mask_filter_info.IsEmpty());
+  }
+
+  // Case 3: A scrollbar that does not apply its own mask filter
+  // (uses_solid_color_thumb = false) under a rounded-corner clip shares the
+  // rounded-corner effect node without creating an extra render surface.
+  {
+    auto scrollbar_layer = create_scrollbar_layer(
+        /*uses_solid_color_thumb=*/false, /*is_overlay=*/false,
+        scrollbar_element_id);
+    EXPECT_FALSE(scrollbar_layer->AppliesMaskFilterInfo());
+
+    TestPaintArtifact artifact;
+    artifact.Chunk(t0(), *c1, e0())
+        .RectDrawing(gfx::Rect(50, 50, 285, 200), Color::kWhite);
+    artifact.ForeignLayerChunk(scrollbar_layer, gfx::Point(335, 50))
+        .Properties(t0(), *c1, e0());
+    Update(artifact.Build());
+
+    ASSERT_EQ(2u, LayerCount());
+    const cc::Layer* content_layer = LayerAt(0);
+    const cc::Layer* composited_scrollbar = LayerAt(1);
+    EXPECT_EQ(content_layer->effect_tree_index(),
+              composited_scrollbar->effect_tree_index());
+    const cc::EffectNode& rounded_clip_effect =
+        GetPropertyTrees().effect_tree().Node(
+            composited_scrollbar->effect_tree_index());
+    EXPECT_FALSE(rounded_clip_effect.HasRenderSurface());
+  }
+
+  // Case 4: Non-overlay scrollbar under a backdrop-filter effect that is also
+  // clipped by a fast rounded-corner clip. PropertyTreeManager moves the
+  // backdrop-filter onto the synthetic rounded-corner clip effect (which has
+  // both a render surface and mask_filter_info) and emits a dummy child effect
+  // node without a render surface. Because cc::draw_property_utils::
+  // GetMaskFilterInfoPair() walks up to the enclosing render target and finds
+  // its mask_filter_info, the scrollbar layer must still get its own render
+  // surface.
+  {
+    CompositorFilterOperations backdrop_filter;
+    backdrop_filter.AppendBlurFilter(5);
+    auto* backdrop_effect =
+        CreateBackdropFilterEffect(e0(), t0(), c1, backdrop_filter);
+
+    auto scrollbar_layer = create_scrollbar_layer(
+        /*uses_solid_color_thumb=*/true, /*is_overlay=*/false,
+        scrollbar_element_id);
+
+    TestPaintArtifact artifact;
+    artifact.Chunk(t0(), *c1, *backdrop_effect)
+        .RectDrawing(gfx::Rect(50, 50, 285, 200), Color::kWhite);
+    artifact.ForeignLayerChunk(scrollbar_layer, gfx::Point(335, 50))
+        .Properties(t0(), *c1, *backdrop_effect);
+    Update(artifact.Build());
+
+    ASSERT_EQ(2u, LayerCount());
+    const cc::Layer* content_layer = LayerAt(0);
+    const cc::Layer* composited_scrollbar = LayerAt(1);
+    const auto& effect_tree = GetPropertyTrees().effect_tree();
+
+    const cc::EffectNode& dummy_effect =
+        effect_tree.Node(content_layer->effect_tree_index());
+    EXPECT_FALSE(dummy_effect.HasRenderSurface());
+    const cc::EffectNode& backdrop_clip_effect =
+        effect_tree.Node(dummy_effect.parent_id);
+    EXPECT_TRUE(backdrop_clip_effect.HasRenderSurface());
+    EXPECT_FALSE(backdrop_clip_effect.mask_filter_info.IsEmpty());
+
+    const cc::EffectNode& scrollbar_effect =
+        effect_tree.Node(composited_scrollbar->effect_tree_index());
+    EXPECT_EQ(dummy_effect.id, scrollbar_effect.parent_id);
+    EXPECT_TRUE(scrollbar_effect.HasRenderSurface());
+    EXPECT_EQ(cc::RenderSurfaceReason::kRoundedCorner,
+              scrollbar_effect.render_surface_reason);
+    EXPECT_TRUE(scrollbar_effect.mask_filter_info.IsEmpty());
+  }
+
+  // Case 5: Non-overlay scrollbar under an intermediate unconditional render
+  // surface with an empty mask_filter_info (e.g. a filter effect) inside a
+  // rounded-corner clip does not need an extra render surface.
+  {
+    CompositorFilterOperations filter;
+    filter.AppendBlurFilter(5);
+    auto* filter_effect = CreateFilterEffect(e0(), t0(), c1, filter);
+
+    auto scrollbar_layer = create_scrollbar_layer(
+        /*uses_solid_color_thumb=*/true, /*is_overlay=*/false,
+        scrollbar_element_id);
+
+    TestPaintArtifact artifact;
+    artifact.Chunk(t0(), *c1, *filter_effect)
+        .RectDrawing(gfx::Rect(50, 50, 285, 200), Color::kWhite);
+    artifact.ForeignLayerChunk(scrollbar_layer, gfx::Point(335, 50))
+        .Properties(t0(), *c1, *filter_effect);
+    Update(artifact.Build());
+
+    ASSERT_EQ(2u, LayerCount());
+    const cc::Layer* content_layer = LayerAt(0);
+    const cc::Layer* composited_scrollbar = LayerAt(1);
+    EXPECT_EQ(content_layer->effect_tree_index(),
+              composited_scrollbar->effect_tree_index());
+    const cc::EffectNode& cc_filter_effect =
+        GetPropertyTrees().effect_tree().Node(
+            composited_scrollbar->effect_tree_index());
+    EXPECT_EQ(cc::RenderSurfaceReason::kFilter,
+              cc_filter_effect.render_surface_reason);
+    EXPECT_TRUE(cc_filter_effect.mask_filter_info.IsEmpty());
   }
 }
 

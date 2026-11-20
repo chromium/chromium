@@ -37,6 +37,7 @@ class CC_EXPORT PaintedScrollbarLayer : public ScrollbarLayerBase {
   PaintedScrollbarLayer& operator=(const PaintedScrollbarLayer&) = delete;
 
   bool OpacityCanAnimateOnImplThread() const override;
+  bool AppliesMaskFilterInfo() const override;
   bool Update() override;
   void SetLayerTreeHost(LayerTreeHost* host) override;
 

@@ -142,10 +142,18 @@ class PropertyTreeManager {
   // clip". Upon exiting a synthesized clip, a mask layer will be appended,
   // which will be kDstIn blended on top of contents enclosed by the synthetic
   // effect, i.e. applying the clip as a mask.
+  //
+  // If |layer_applies_mask_filter_info| is true (e.g. a scrollbar layer that
+  // applies its own rounded-corner mask filter to its thumb quad) and the
+  // layer would inherit an ancestor mask_filter_info in the current render
+  // target, ensures the layer is isolated in its own render surface so both
+  // mask filters can be applied.
   int SwitchToEffectNodeWithSynthesizedClip(
       const EffectPaintPropertyNode& next_effect,
       const ClipPaintPropertyNode& next_clip,
-      bool layer_draws_content);
+      bool layer_draws_content,
+      bool layer_applies_mask_filter_info = false,
+      CompositorElementId layer_element_id = CompositorElementId());
   // Expected to be invoked after emitting the last layer. This will exit all
   // effects on the effect stack, generating clip mask layers for all the
   // unclosed synthesized clips.
@@ -287,6 +295,16 @@ class PropertyTreeManager {
     // self and the next render surface. This is used to force a render surface
     // for all ancestor synthetic rounded clips if a descendant is found.
     bool contained_by_non_render_surface_synthetic_rounded_clip;
+
+    // Whether a non-render-surface child of this effect would inherit a
+    // non-empty `mask_filter_info` in
+    // `cc::draw_property_utils::GetMaskFilterInfoPair()`. Unlike
+    // `contained_by_non_render_surface_synthetic_rounded_clip`, this remains
+    // true when a render surface itself carries `mask_filter_info` (e.g.
+    // backdrop-filter merged onto a fast rounded clip), because
+    // `GetMaskFilterInfoPair()` checks `mask_filter_info` before stopping at
+    // an ancestor render surface.
+    bool child_inherits_mask_filter_info;
 
     void Trace(Visitor* visitor) const {
       visitor->Trace(effect);
