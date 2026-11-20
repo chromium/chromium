@@ -971,10 +971,10 @@ TEST_F(NewTabPageRedesignViewControllerTest, TestUpdateADPBadgeWithErrorFound) {
   EXPECT_NSEQ(expected_normal_label, identity_disc.accessibilityLabel);
 }
 
-// Tests that `incognitoDisabled` propagates to the Quick Actions view
-// controller to hide only the incognito button.
+// Tests that `setIncognitoAllowed:` propagates to the Quick Actions view
+// controller to hide only the incognito button when disallowed.
 TEST_F(NewTabPageRedesignViewControllerTest,
-       TestIncognitoDisabledHidesQuickActionButton) {
+       TestIncognitoDisallowedHidesQuickActionButton) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{kNewTabPageRedesign, kAIMNTPEntrypointTablet},
@@ -992,25 +992,25 @@ TEST_F(NewTabPageRedesignViewControllerTest,
   EXPECT_FALSE(aim_button.hidden);
   EXPECT_FALSE(incognito_button.hidden);
 
-  view_controller_.incognitoDisabled = YES;
+  [view_controller_ setIncognitoAllowed:NO];
   EXPECT_FALSE(aim_button.hidden);
   EXPECT_TRUE(incognito_button.hidden);
 
-  view_controller_.incognitoDisabled = NO;
+  [view_controller_ setIncognitoAllowed:YES];
   EXPECT_FALSE(aim_button.hidden);
   EXPECT_FALSE(incognito_button.hidden);
 }
 
-// Tests that setting `incognitoDisabled` before `viewDidLoad` forwards to the
-// Quick Actions view controller on load.
+// Tests that calling `setIncognitoAllowed:NO` before `viewDidLoad` forwards to
+// the Quick Actions view controller on load.
 TEST_F(NewTabPageRedesignViewControllerTest,
-       TestIncognitoDisabledBeforeViewDidLoadHidesQuickActionButton) {
+       TestIncognitoDisallowedBeforeViewDidLoadHidesQuickActionButton) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{kNewTabPageRedesign, kAIMNTPEntrypointTablet},
       /*disabled_features=*/{kAimButtonRefactor});
 
-  view_controller_.incognitoDisabled = YES;
+  [view_controller_ setIncognitoAllowed:NO];
   [view_controller_ setAIMAllowed:YES];
   [view_controller_ loadViewIfNeeded];
 

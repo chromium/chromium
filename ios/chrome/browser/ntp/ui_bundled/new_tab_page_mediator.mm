@@ -514,6 +514,9 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
       [self.consumer setOmniboxInBottomPosition:_bottomOmniboxEnabled.value];
     }
   }
+  if (_consumer) {
+    [self updateIncognitoAvailability];
+  }
 }
 
 - (void)setScrollConsumer:(id<NewTabPageScrollConsumer>)scrollConsumer {
@@ -597,7 +600,6 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
 
   self.templateURLService->Load();
   [self updateModuleVisibilityForConsumer];
-  [self updateIncognitoAvailability];
   [self.headerConsumer
       setVoiceSearchIsEnabled:ios::provider::IsVoiceSearchEnabled()];
 
@@ -1005,9 +1007,12 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
       _prefService->GetBoolean(ntp_tiles::prefs::kMagicStackHomeModuleEnabled);
 }
 
-// Updates the consumer with whether incognito mode is disabled.
+// Updates the consumer with whether incognito mode is allowed.
 - (void)updateIncognitoAvailability {
-  self.consumer.incognitoDisabled = IsIncognitoModeDisabled(_prefService);
+  if (!_prefService) {
+    return;
+  }
+  [self.consumer setIncognitoAllowed:!IsIncognitoModeDisabled(_prefService)];
 }
 
 // Starts observing some prefs.

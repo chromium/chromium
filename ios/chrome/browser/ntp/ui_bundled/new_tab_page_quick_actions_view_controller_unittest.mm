@@ -34,9 +34,9 @@ class NewTabPageQuickActionsViewControllerTest : public PlatformTest {
 };
 
 // Tests that the incognito button is visible by default and hidden when
-// `incognitoDisabled` is set before or after loading the view.
+// `setIncognitoAllowed:NO` is called after loading the view.
 TEST_F(NewTabPageQuickActionsViewControllerTest,
-       HidesIncognitoButtonWhenIncognitoDisabled) {
+       HidesIncognitoButtonWhenIncognitoDisallowed) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{kAIMNTPEntrypointTablet},
@@ -56,17 +56,17 @@ TEST_F(NewTabPageQuickActionsViewControllerTest,
   EXPECT_FALSE(incognito_button.hidden);
 
   // Disabling incognito dynamically hides only the incognito button.
-  view_controller.incognitoDisabled = YES;
+  [view_controller setIncognitoAllowed:NO];
   EXPECT_FALSE(aim_button.hidden);
   EXPECT_TRUE(incognito_button.hidden);
 
   // Re-enabling incognito shows the button again.
-  view_controller.incognitoDisabled = NO;
+  [view_controller setIncognitoAllowed:YES];
   EXPECT_FALSE(aim_button.hidden);
   EXPECT_FALSE(incognito_button.hidden);
 }
 
-// Tests that setting `incognitoDisabled` before `viewDidLoad` keeps the
+// Tests that calling `setIncognitoAllowed:NO` before `viewDidLoad` keeps the
 // incognito button hidden in multi-chip `kAimButtonRefactor` arms as well.
 TEST_F(NewTabPageQuickActionsViewControllerTest,
        HidesIncognitoButtonBeforeViewLoadsInMultiChipArm) {
@@ -81,7 +81,7 @@ TEST_F(NewTabPageQuickActionsViewControllerTest,
 
   NewTabPageQuickActionsViewController* view_controller =
       CreateAndConfigureViewController();
-  view_controller.incognitoDisabled = YES;
+  [view_controller setIncognitoAllowed:NO];
   [view_controller setAIMImageGenerationAllowed:YES attachImagesAllowed:YES];
   [view_controller loadViewIfNeeded];
 
@@ -100,7 +100,7 @@ TEST_F(NewTabPageQuickActionsViewControllerTest,
   EXPECT_TRUE(incognito_button.hidden);
 }
 
-// Tests that dynamically toggling `incognitoDisabled` in Split Toolbar
+// Tests that dynamically toggling `setIncognitoAllowed:` in Split Toolbar
 // multi-chip mode updates visibility and stack distribution without Auto Layout
 // conflicts.
 TEST_F(NewTabPageQuickActionsViewControllerTest,
@@ -151,7 +151,7 @@ TEST_F(NewTabPageQuickActionsViewControllerTest,
   EXPECT_EQ(UIStackViewDistributionFill, stack_view.distribution);
   EXPECT_FALSE(incognito_button.hidden);
 
-  view_controller.incognitoDisabled = YES;
+  [view_controller setIncognitoAllowed:NO];
   [container layoutIfNeeded];
   EXPECT_TRUE(incognito_button.hidden);
   EXPECT_FALSE(aim_button.hidden);
@@ -159,7 +159,7 @@ TEST_F(NewTabPageQuickActionsViewControllerTest,
   EXPECT_EQ(UIStackViewDistributionFillEqually, stack_view.distribution);
   EXPECT_GT(aim_button.frame.size.width, 0.0);
 
-  view_controller.incognitoDisabled = NO;
+  [view_controller setIncognitoAllowed:YES];
   [container layoutIfNeeded];
   EXPECT_FALSE(incognito_button.hidden);
   EXPECT_EQ(UIStackViewDistributionFill, stack_view.distribution);

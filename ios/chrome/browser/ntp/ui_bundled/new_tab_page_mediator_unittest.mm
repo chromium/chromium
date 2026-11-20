@@ -675,36 +675,36 @@ TEST_F(NewTabPageMediatorTest, TestRestoreNTPScrollPosition) {
   EXPECT_OCMOCK_VERIFY(scroll_consumer);
 }
 
-// Tests that the consumer receives incognito availability updates on setup and
+// Tests that the consumer receives incognito availability updates when set and
 // when `kIncognitoModeAvailability` changes.
 TEST_F(NewTabPageMediatorTest, TestIncognitoAvailabilityPrefUpdates) {
   CreateMediator(/*with_aim_eligibility_service=*/false);
 
   id ntp_consumer = OCMProtocolMock(@protocol(NewTabPageConsumer));
+  OCMExpect([ntp_consumer setIncognitoAllowed:YES]);
   mediator_.consumer = ntp_consumer;
-
-  OCMExpect([ntp_consumer setIncognitoDisabled:NO]);
-  [mediator_ setUp];
   EXPECT_OCMOCK_VERIFY(ntp_consumer);
 
-  OCMExpect([ntp_consumer setIncognitoDisabled:YES]);
+  [mediator_ setUp];
+
+  OCMExpect([ntp_consumer setIncognitoAllowed:NO]);
   profile_->GetTestingPrefService()->SetSupervisedUserPref(
       policy::policy_prefs::kIncognitoModeAvailability,
       base::Value(static_cast<int>(IncognitoModePrefs::kDisabled)));
   EXPECT_OCMOCK_VERIFY(ntp_consumer);
 
-  OCMExpect([ntp_consumer setIncognitoDisabled:NO]);
+  OCMExpect([ntp_consumer setIncognitoAllowed:YES]);
   profile_->GetTestingPrefService()->RemoveSupervisedUserPref(
       policy::policy_prefs::kIncognitoModeAvailability);
   EXPECT_OCMOCK_VERIFY(ntp_consumer);
 
-  OCMExpect([ntp_consumer setIncognitoDisabled:NO]);
+  OCMExpect([ntp_consumer setIncognitoAllowed:YES]);
   profile_->GetTestingPrefService()->SetManagedPref(
       policy::policy_prefs::kIncognitoModeAvailability,
       base::Value(static_cast<int>(IncognitoModePrefs::kForced)));
   EXPECT_OCMOCK_VERIFY(ntp_consumer);
 
-  OCMExpect([ntp_consumer setIncognitoDisabled:YES]);
+  OCMExpect([ntp_consumer setIncognitoAllowed:NO]);
   profile_->GetTestingPrefService()->SetManagedPref(
       policy::policy_prefs::kIncognitoModeAvailability,
       base::Value(static_cast<int>(IncognitoModePrefs::kDisabled)));

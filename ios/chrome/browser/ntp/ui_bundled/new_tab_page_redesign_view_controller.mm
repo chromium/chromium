@@ -178,6 +178,7 @@ constexpr CGFloat kPadFormSheetMinHeight = 300.0;
   BOOL _isAIMAllowed;
   BOOL _aimImageGenerationAllowed;
   BOOL _aimAttachImagesAllowed;
+  BOOL _incognitoAllowed;
   BOOL _fuseboxEligible;
   BOOL _didNotifyLensBadgeDisplay;
   BOOL _lensButtonWithNewBadgeTapped;
@@ -197,6 +198,14 @@ constexpr CGFloat kPadFormSheetMinHeight = 300.0;
   NSString* _aimTitle;
   UIImage* _aimIcon;
   NSString* _aimAccessibilityLabel;
+}
+
+- (instancetype)init {
+  self = [super initWithNibName:nil bundle:nil];
+  if (self) {
+    _incognitoAllowed = YES;
+  }
+  return self;
 }
 
 - (void)viewDidLoad {
@@ -310,7 +319,7 @@ constexpr CGFloat kPadFormSheetMinHeight = 300.0;
         [[NewTabPageQuickActionsViewController alloc] init];
     _quickActionsViewController.layoutGuideCenter = self.layoutGuideCenter;
     _quickActionsViewController.NTPShortcutsHandler = self.NTPShortcutsHandler;
-    _quickActionsViewController.incognitoDisabled = self.incognitoDisabled;
+    [_quickActionsViewController setIncognitoAllowed:_incognitoAllowed];
 
     AimButtonRefactorArm arm = GetAimButtonRefactorArm();
     if (arm == AimButtonRefactorArm::kImageGenerationQuickAction ||
@@ -969,6 +978,14 @@ constexpr CGFloat kPadFormSheetMinHeight = 300.0;
           darkModeColorProvider:_animatedBackgroundDarkModeColorProvider];
 }
 
+- (void)setIncognitoAllowed:(BOOL)allowed {
+  if (_incognitoAllowed == allowed) {
+    return;
+  }
+  _incognitoAllowed = allowed;
+  [_quickActionsViewController setIncognitoAllowed:allowed];
+}
+
 #pragma mark - Setters
 
 - (void)setLayoutGuideCenter:(LayoutGuideCenter*)layoutGuideCenter {
@@ -1039,14 +1056,6 @@ constexpr CGFloat kPadFormSheetMinHeight = 300.0;
   if (_bottomSheetViewController) {
     _bottomSheetViewController.feedTopSectionVisible = feedTopSectionVisible;
   }
-}
-
-- (void)setIncognitoDisabled:(BOOL)incognitoDisabled {
-  if (_incognitoDisabled == incognitoDisabled) {
-    return;
-  }
-  _incognitoDisabled = incognitoDisabled;
-  _quickActionsViewController.incognitoDisabled = incognitoDisabled;
 }
 
 - (void)handleFeedTopSectionClosed {

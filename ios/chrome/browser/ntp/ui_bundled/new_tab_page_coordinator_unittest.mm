@@ -42,6 +42,7 @@
 #import "ios/chrome/browser/ntp/ui_bundled/incognito/incognito_view_controller.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_actions_delegate.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_component_factory.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_controller_delegate.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_coordinator+Testing.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
@@ -72,6 +73,7 @@
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/level_up_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
+#import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
@@ -88,6 +90,7 @@
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/public/fakebox_focuser.h"
 #import "ios/chrome/browser/url_loading/model/fake_url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
+#import "ios/chrome/test/app/uikit_test_util.h"
 #import "ios/chrome/test/fakes/fake_discover_feed_eligibility_handler.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/providers/discover_feed/test_discover_feed_service.h"
@@ -1057,9 +1060,15 @@ TEST_F(NewTabPageCoordinatorTest,
   [coordinator_ stop];
 }
 
-// Tests that `openIncognitoSearch` is ignored and `NTPViewController`'s
-// `incognitoDisabled` tracks policy updates.
+// Tests that `openIncognitoSearch` is ignored and the NTP quick action
+// incognito button is hidden when incognito mode is disabled, and both recover
+// once re-enabled.
 TEST_F(NewTabPageCoordinatorTest, OpenIncognitoSearchIgnoredWhenDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{kAIMNTPEntrypointTablet},
+      /*disabled_features=*/{kNewTabPageRedesign, kAimButtonRefactor});
+
   static_cast<TestProfileIOS*>(GetProfile())
       ->GetTestingPrefService()
       ->SetSupervisedUserPref(
@@ -1070,14 +1079,30 @@ TEST_F(NewTabPageCoordinatorTest, OpenIncognitoSearchIgnoredWhenDisabled) {
   [coordinator_ start];
   [coordinator_ didNavigateToNTPInWebState:active_web_state()];
 
-  EXPECT_TRUE(coordinator_.NTPViewController.incognitoDisabled);
+  UIButton* aim_button = chrome_test_util::FindViewById<UIButton>(
+      coordinator_.NTPViewController.view, kNTPAIMQuickActionIdentifier);
+  UIButton* incognito_button = chrome_test_util::FindViewById<UIButton>(
+      coordinator_.NTPViewController.view, kNTPIncognitoQuickActionIdentifier);
+  ASSERT_NE(nil, aim_button);
+  ASSERT_NE(nil, incognito_button);
+  EXPECT_FALSE(aim_button.hidden);
+  EXPECT_TRUE(incognito_button.hidden);
+
+  __block int open_new_tab_calls = 0;
+  __block OpenNewTabCommand* last_command = nil;
+  OCMStub([application_handler_mock_
+      openURLInNewTab:[OCMArg checkWithBlock:^BOOL(OpenNewTabCommand* command) {
+        open_new_tab_calls++;
+        last_command = command;
+        return YES;
+      }]]);
 
   base::UserActionTester user_action_tester;
-  OCMReject([application_handler_mock_ openURLInNewTab:[OCMArg any]]);
   id<NewTabPageShortcutsHandler> shortcuts_handler =
       static_cast<id<NewTabPageShortcutsHandler>>(coordinator_);
   [shortcuts_handler openIncognitoSearch];
 
+  EXPECT_EQ(0, open_new_tab_calls);
   histogram_tester_->ExpectTotalCount("IOS.NTP.Click", 0);
   histogram_tester_->ExpectTotalCount("IOS.Home.Click", 0);
   EXPECT_EQ(0,
@@ -1087,7 +1112,20 @@ TEST_F(NewTabPageCoordinatorTest, OpenIncognitoSearchIgnoredWhenDisabled) {
       ->GetTestingPrefService()
       ->RemoveSupervisedUserPref(
           policy::policy_prefs::kIncognitoModeAvailability);
-  EXPECT_FALSE(coordinator_.NTPViewController.incognitoDisabled);
+  EXPECT_FALSE(aim_button.hidden);
+  EXPECT_FALSE(incognito_button.hidden);
+
+  [shortcuts_handler openIncognitoSearch];
+
+  EXPECT_EQ(1, open_new_tab_calls);
+  EXPECT_TRUE(last_command.inIncognito);
+  EXPECT_TRUE(last_command.shouldFocusOmnibox);
+  histogram_tester_->ExpectBucketCount(
+      "IOS.NTP.Click", IOSHomeActionType::kQuickActionIncognito, 1);
+  histogram_tester_->ExpectBucketCount(
+      "IOS.Home.Click", IOSHomeActionType::kQuickActionIncognito, 1);
+  EXPECT_EQ(1,
+            user_action_tester.GetActionCount(kNTPIncognitoButtonTappedAction));
 
   [coordinator_ stop];
 }

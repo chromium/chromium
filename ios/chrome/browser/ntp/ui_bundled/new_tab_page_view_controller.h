@@ -98,10 +98,6 @@ typedef NS_ENUM(NSInteger, FeedLayoutUpdateType);
 // `YES` if the NTP is currently visible.
 @property(nonatomic, assign) BOOL NTPVisible;
 
-// Whether incognito is disabled (e.g. by enterprise policy or parental
-// controls).
-@property(nonatomic, assign) BOOL incognitoDisabled;
-
 // The layout guide center for referencing views.
 @property(nonatomic, weak) LayoutGuideCenter* layoutGuideCenter;
 

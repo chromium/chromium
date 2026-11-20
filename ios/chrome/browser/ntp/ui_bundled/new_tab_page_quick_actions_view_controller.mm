@@ -40,6 +40,8 @@ constexpr CGFloat kCompactButtonWidth = 80.0;
   BOOL _aimImageGenerationAllowed;
   // Whether attaching images to an AIM search query is allowed.
   BOOL _aimAttachImagesAllowed;
+  // Whether incognito mode is allowed.
+  BOOL _incognitoAllowed;
 
   // Width constraints for the compact buttons in Split Toolbar mode.
   NSLayoutConstraint* _aimImageGenerationButtonWidthConstraint;
@@ -52,6 +54,14 @@ constexpr CGFloat kCompactButtonWidth = 80.0;
   UIImage* _aimIcon;
   // The custom accessibility label for the AIM button.
   NSString* _aimAccessibilityLabel;
+}
+
+- (instancetype)init {
+  self = [super initWithNibName:nil bundle:nil];
+  if (self) {
+    _incognitoAllowed = YES;
+  }
+  return self;
 }
 
 #pragma mark - Public
@@ -81,6 +91,14 @@ constexpr CGFloat kCompactButtonWidth = 80.0;
   [self updateButtonVisibility];
 }
 
+- (void)setIncognitoAllowed:(BOOL)allowed {
+  if (_incognitoAllowed == allowed) {
+    return;
+  }
+  _incognitoAllowed = allowed;
+  [self updateButtonVisibility];
+}
+
 #pragma mark - Accessors & Mutators
 
 - (void)setLayoutGuideCenter:(LayoutGuideCenter*)layoutGuideCenter {
@@ -91,14 +109,6 @@ constexpr CGFloat kCompactButtonWidth = 80.0;
   if (_aimButton) {
     [_layoutGuideCenter referenceView:_aimButton underName:kNTPAIMButtonGuide];
   }
-}
-
-- (void)setIncognitoDisabled:(BOOL)incognitoDisabled {
-  if (_incognitoDisabled == incognitoDisabled) {
-    return;
-  }
-  _incognitoDisabled = incognitoDisabled;
-  [self updateButtonVisibility];
 }
 
 #pragma mark - UIViewController
@@ -247,12 +257,12 @@ constexpr CGFloat kCompactButtonWidth = 80.0;
 // Updates the visibility of the Quick Action buttons based on eligibility and
 // policy.
 - (void)updateButtonVisibility {
-  if (self.incognitoDisabled) {
+  if (!_incognitoAllowed) {
     // Deactivate the fixed width constraint before hiding so `UIStackView`'s
     // hiding constraint does not transiently conflict with it.
     _incognitoSearchButtonWidthConstraint.active = NO;
   }
-  _incognitoSearchButton.hidden = self.incognitoDisabled;
+  _incognitoSearchButton.hidden = !_incognitoAllowed;
 
   AimButtonRefactorArm arm = GetAimButtonRefactorArm();
   if (arm == AimButtonRefactorArm::kImageGenerationQuickAction) {

@@ -206,6 +206,8 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
   BOOL _aimImageGenerationAllowed;
   // Whether attaching images to an AIM search query is allowed.
   BOOL _aimAttachImagesAllowed;
+  // Whether incognito mode is allowed.
+  BOOL _incognitoAllowed;
   // Tracks whether the NTP was scrolled to the top before a size transition.
   BOOL _scrolledToTop;
   // Constraints for the feed top section promo.
@@ -240,6 +242,7 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
     _shiftTileStartTime = -1;
     _appearing = YES;
     _scrolledToTop = YES;
+    _incognitoAllowed = YES;
   }
   return self;
 }
@@ -257,7 +260,7 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
       [[NewTabPageQuickActionsViewController alloc] init];
   _quickActionsViewController.layoutGuideCenter = self.layoutGuideCenter;
   _quickActionsViewController.NTPShortcutsHandler = self.NTPShortcutsHandler;
-  _quickActionsViewController.incognitoDisabled = self.incognitoDisabled;
+  [_quickActionsViewController setIncognitoAllowed:_incognitoAllowed];
   [_quickActionsViewController setAIMTitle:_aimTitle
                                       icon:_aimIcon
                         accessibilityLabel:_aimAccessibilityLabel];
@@ -984,6 +987,15 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
       break;
   }
 }
+
+- (void)setIncognitoAllowed:(BOOL)allowed {
+  if (_incognitoAllowed == allowed) {
+    return;
+  }
+  _incognitoAllowed = allowed;
+  [_quickActionsViewController setIncognitoAllowed:allowed];
+}
+
 - (void)setOmniboxInBottomPosition:(BOOL)isBottomOmnibox {
   if (_isBottomOmnibox == isBottomOmnibox) {
     return;
@@ -1039,14 +1051,6 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
     [self updateFeedTopSectionHierarchy];
     [self updateNTPLayout];
   }
-}
-
-- (void)setIncognitoDisabled:(BOOL)incognitoDisabled {
-  if (_incognitoDisabled == incognitoDisabled) {
-    return;
-  }
-  _incognitoDisabled = incognitoDisabled;
-  _quickActionsViewController.incognitoDisabled = incognitoDisabled;
 }
 
 #pragma mark - UIScrollViewDelegate
