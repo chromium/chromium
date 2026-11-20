@@ -85,6 +85,8 @@ class ProfileOAuth2TokenServiceDelegateAndroid
   friend class OAuth2TokenServiceDelegateAndroidForTest;
 
   // ProfileOAuth2TokenServiceDelegate implementation:
+  void RevokeCredentialsInternal(const CoreAccountId& account_id) override;
+
   void RevokeAllCredentialsInternal(
       signin_metrics::SourceForRefreshTokenOperation source) override;
 

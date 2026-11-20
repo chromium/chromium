@@ -15,6 +15,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "components/signin/public/base/account_consistency_method.h"
@@ -353,6 +354,12 @@ void ProfileOAuth2TokenServiceDelegateAndroid::FireRefreshTokensLoaded() {
   set_load_credentials_state(
       signin::LoadCredentialsState::LOAD_CREDENTIALS_FINISHED_WITH_SUCCESS);
   ProfileOAuth2TokenServiceDelegate::FireRefreshTokensLoaded();
+}
+
+void ProfileOAuth2TokenServiceDelegateAndroid::RevokeCredentialsInternal(
+    const CoreAccountId& account_id) {
+  // Revoking credentials on Android is not allowed.
+  NOTREACHED(base::NotFatalUntil::M163);
 }
 
 void ProfileOAuth2TokenServiceDelegateAndroid::RevokeAllCredentialsInternal(
