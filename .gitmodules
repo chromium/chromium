@@ -200,6 +200,9 @@
 [submodule "third_party/ffmpeg"]
 	path = third_party/ffmpeg
 	url = https://chromium.googlesource.com/chromium/third_party/ffmpeg
+[submodule "third_party/dav2d/libdav2d"]
+	path = third_party/dav2d/libdav2d
+	url = https://chromium.googlesource.com/external/code.videolan.org/videolan/dav2d
 [submodule "third_party/flac"]
 	path = third_party/flac
 	url = https://chromium.googlesource.com/chromium/deps/flac

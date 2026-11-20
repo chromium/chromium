@@ -2157,6 +2157,9 @@ deps = {
   'src/third_party/dav1d/libdav1d':
     Var('chromium_git') + '/external/github.com/videolan/dav1d.git' + '@' + '4e3ab21fbbf84a4bd283ea27f96287fcd7c228c1',
 
+  'src/third_party/dav2d/libdav2d':
+    Var('chromium_git') + '/external/code.videolan.org/videolan/dav2d.git' + '@' + '5453e990e31cbb50eee06deb2da7876589d61c71',
+
   'src/third_party/dawn':
     Var('dawn_git') + '/dawn.git' + '@' +  Var('dawn_revision'),
 

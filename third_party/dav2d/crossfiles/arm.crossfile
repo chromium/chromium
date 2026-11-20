@@ -1,0 +1,15 @@
+[binaries]
+c = 'clang'
+ar = 'llvm-ar'
+
+# Copied from //third_party/ffmpeg's build_ffmpeg.py script. Does not use all
+# the cflags listed there since dav2d doesn't currently need such specificity.
+[built-in options]
+c_args = ['-march=armv7-a', '--target=arm-linux-gnueabihf', '--sysroot=@DIRNAME@/../../../build/linux/debian_bullseye_armhf-sysroot']
+c_link_args = ['--target=arm-linux-gnueabihf', '--sysroot=@DIRNAME@/../../../build/linux/debian_bullseye_armhf-sysroot', '-fuse-ld=lld']
+
+[host_machine]
+system = 'linux'
+cpu_family = 'arm'
+cpu = 'armv7-a'
+endian = 'little'

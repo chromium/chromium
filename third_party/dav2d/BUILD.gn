@@ -1,0 +1,272 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("dav2d_generated.gni")
+
+import("//build/config/compiler/compiler.gni")
+import("//build/config/sanitizers/sanitizers.gni")
+import("//third_party/nasm/nasm_assemble.gni")
+
+# MemorySanitizer can't handle assembly, https://crbug.com/928357.
+# dav2d only supports x86 assembly on 64-bit x64.
+enable_nasm = current_cpu == "x64" && !is_msan
+
+if (is_win) {
+  platform_config_root = "config/win/$current_cpu"
+} else if (is_msan) {
+  assert(current_cpu == "x64" && (is_linux || is_chromeos),
+         "Only Linux X64 MSAN is supported")
+  platform_config_root = "config/linux-noasm/$current_cpu"
+} else if (current_cpu == "loong64" || current_cpu == "mipsel" ||
+           current_cpu == "mips64el" || current_cpu == "ppc64") {
+  platform_config_root = "config/linux-noasm/generic"
+} else if (is_apple) {
+  if (current_cpu == "arm64e") {
+    platform_config_root = "config/apple/arm64"
+  } else {
+    platform_config_root = "config/apple/$current_cpu"
+  }
+} else {
+  platform_config_root = "config/linux/$current_cpu"
+}
+
+config("public_dav2d_config") {
+  # Don't let dav2d export any symbols. Otherwise the verify_order step on macOS
+  # can fail since these exports end up in the final Chromium binary.
+  defines = [ "DAV2D_API=" ]
+}
+
+config("dav2d_config") {
+  configs = [ ":public_dav2d_config" ]
+  include_dirs = [
+    "version",
+    "libdav2d",
+    "libdav2d/include",
+    "libdav2d/include/dav2d",
+    platform_config_root,
+  ]
+
+  # Disable internal dav2d logs in the official build to save storage.
+  if (is_official_build) {
+    defines = [ "CONFIG_LOG=0" ]
+  } else {
+    defines = [ "CONFIG_LOG=1" ]
+  }
+
+  if (!is_android && !is_apple && !is_win) {
+    defines += [
+      "HAVE_PTHREAD_GETAFFINITY_NP=1",
+      "HAVE_PTHREAD_SETAFFINITY_NP=1",
+    ]
+  }
+}
+
+dav2d_copts = [
+  "-D_FILE_OFFSET_BITS=64",
+  "-D_POSIX_C_SOURCE=200112L",
+]
+
+if (!is_win) {
+  dav2d_copts += [ "-std=c99" ]
+  if (is_apple) {
+    dav2d_copts += [ "-D_DARWIN_C_SOURCE" ]
+  }
+  if (is_linux || is_chromeos || is_android || current_os == "aix") {
+    if (!is_clang) {
+      dav2d_copts += [ "-D_GNU_SOURCE" ]
+    }
+  }
+}
+
+if (enable_nasm) {
+  nasm_assemble("dav2d_asm") {
+    sources = x86_asm_sources
+
+    inputs = [
+      "$platform_config_root/config.asm",
+      "libdav2d/src/ext/x86/x86inc.asm",
+
+      # This is added here in addition to sources as it is included from some
+      # other files. And in such case, we need to use inputs to teach GN that
+      # some actions depend on this file indirectly.
+      "libdav2d/src/x86/filmgrain_common.asm",
+    ]
+
+    include_dirs = [
+      "libdav2d/src/",
+      platform_config_root,
+    ]
+
+    nasm_flags = [
+      "-P",
+      rebase_path("$platform_config_root/config.asm", root_build_dir),
+    ]
+
+    # Necessary to ensure macOS symbols end up with a _ prefix.
+    if (is_apple) {
+      defines = [ "PREFIX" ]
+    }
+  }
+}
+
+source_set("dav2d_headers") {
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    ":dav2d_config",
+  ]
+
+  sources = c_headers
+  if (current_cpu == "x86" || current_cpu == "x64") {
+    sources += [ "libdav2d/src/x86/cpu.h" ]
+  } else if (current_cpu == "arm" || current_cpu == "arm64" ||
+             current_cpu == "arm64e") {
+    sources += [ "libdav2d/src/arm/cpu.h" ]
+  } else if (current_cpu == "riscv64") {
+    sources += [ "libdav2d/src/riscv/cpu.h" ]
+  }
+}
+
+static_library("dav2d_8bit") {
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    ":dav2d_config",
+  ]
+
+  sources = template_sources
+  if (current_cpu == "x86" || current_cpu == "x64") {
+    sources += x86_template_sources
+  } else if (current_cpu == "arm") {
+    sources += arm_template_sources
+  } else if (current_cpu == "arm64" || current_cpu == "arm64e") {
+    sources += arm_template_sources
+  }
+
+  cflags = dav2d_copts
+  cflags += [ "-DBITDEPTH=8" ]
+
+  deps = [ ":dav2d_headers" ]
+}
+
+static_library("dav2d_10bit") {
+  configs -= [
+    "//build/config/compiler:chromium_code",
+
+    # Disable coverage for the 10 bit version to avoid confusing the
+    # instrumentation about which version of the library is being run.
+    # dav2d_10bit was selected for this, as it's less used than dav2d_8bit,
+    # which still has coverage enabled. See crbug.com/1030350.
+    "//build/config/coverage:default_coverage",
+  ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    ":dav2d_config",
+  ]
+
+  sources = template_sources
+  if (current_cpu == "x86" || current_cpu == "x64") {
+    sources += x86_template_sources
+  } else if (current_cpu == "arm") {
+    sources += arm_template_sources
+  } else if (current_cpu == "arm64" || current_cpu == "arm64e") {
+    sources += arm_template_sources
+  }
+
+  cflags = dav2d_copts
+  cflags += [ "-DBITDEPTH=16" ]
+
+  deps = [ ":dav2d_headers" ]
+}
+
+# Separate targets so arch-specific cpu.c does not collide with src/cpu.c.
+if (current_cpu == "x64") {
+  static_library("dav2d_x86") {
+    sources = [ "libdav2d/src/x86/cpu.c" ]
+
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [
+      "//build/config/compiler:no_chromium_code",
+      ":dav2d_config",
+    ]
+    cflags = dav2d_copts
+
+    deps = [ ":dav2d_headers" ]
+  }
+} else if (current_cpu == "arm" || current_cpu == "arm64" ||
+           current_cpu == "arm64e") {
+  static_library("dav2d_arm") {
+    sources = [ "libdav2d/src/arm/cpu.c" ]
+
+    # These are not template based so should only be built once.
+    if (current_cpu == "arm") {
+      sources += arm32_asm_sources
+    } else if (current_cpu == "arm64" || current_cpu == "arm64e") {
+      sources += arm64_asm_sources
+    }
+
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [
+      "//build/config/compiler:no_chromium_code",
+      ":dav2d_config",
+    ]
+
+    # Necessary to ensure macOS symbols end up with a _ prefix.
+    if (is_apple) {
+      defines = [ "PREFIX" ]
+    }
+
+    cflags = dav2d_copts
+
+    deps = [ ":dav2d_headers" ]
+  }
+} else if (current_cpu == "riscv64") {
+  static_library("dav2d_riscv") {
+    sources = [ "config/linux/riscv64/cpu-renamed.c" ] + riscv64_asm_sources
+
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [
+      "//build/config/compiler:no_chromium_code",
+      ":dav2d_config",
+    ]
+
+    cflags = dav2d_copts
+
+    deps = [ ":dav2d_headers" ]
+  }
+}
+
+static_library("dav2d") {
+  sources = c_sources
+  if (is_win) {
+    sources += [ "libdav2d/src/win32/thread.c" ]
+  }
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    ":dav2d_config",
+  ]
+  cflags = dav2d_copts
+
+  deps = [
+    ":dav2d_10bit",
+    ":dav2d_8bit",
+    ":dav2d_headers",
+  ]
+
+  public_configs = [ ":public_dav2d_config" ]
+
+  if (current_cpu == "x64") {
+    deps += [ ":dav2d_x86" ]
+    if (enable_nasm) {
+      deps += [ ":dav2d_asm" ]
+    }
+  } else if (current_cpu == "arm" || current_cpu == "arm64" ||
+             current_cpu == "arm64e") {
+    deps += [ ":dav2d_arm" ]
+  } else if (current_cpu == "riscv64") {
+    deps += [ ":dav2d_riscv" ]
+  }
+}

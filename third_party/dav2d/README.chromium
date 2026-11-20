@@ -1,0 +1,42 @@
+Name: dav2d is an AV2 decoder :)
+Short Name: dav2d
+URL: https://code.videolan.org/videolan/dav2d
+Version: 0.0.1
+Revision: 5453e990e31cbb50eee06deb2da7876589d61c71
+Update Mechanism: Manual (https://crbug.com/576731818)
+License: BSD-2-Clause
+License File: LICENSE
+Security Critical: yes
+Shipped: yes
+CPEPrefix: cpe:/a:videolan:dav2d
+Source: https://code.videolan.org/videolan/dav2d
+
+Description:
+This contains the source to the dav2d video decoder; used for AV2 decoding in
+Chromium. The LICENSE file is copied from libdav2d/COPYING.
+
+Security Considerations:
+dav2d decodes untrusted AV2 video bitstreams from the internet and is written in
+C and assembly. To mitigate memory safety risks, decoding runs only inside
+sandboxed renderer processes, frame allocations are bounded by Chromium's
+canvas size limits, and the decoder and container parsers are exercised by
+fuzzers on ClusterFuzz.
+
+Local Modifications:
+None
+
+--[ UPDATING ] ------------------
+To update run "git pull" within the libdav2d directory to sync your local copy
+of the checkout to upstream. Then you need to update the configuration files
+and source listing.
+
+First have clang (//third_party/llvm-build/Release+Asserts/bin), clang-cl
+(https://chromium.googlesource.com/chromium/src/+/lkgr/docs/win_cross.md),
+and meson v0.55 or higher (https://github.com/mesonbuild/meson/releases) in
+your path. Then you can run ./generate_configs.py
+
+Next you should update the dav2d_generated.gni file, to do that run the
+./generate_source.py command.
+
+Hopefully all that works and then you can roll DEPS to the new revision with
+all the updated configuration files. If not, you'll need to debug the bots :(
