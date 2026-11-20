@@ -2625,6 +2625,61 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorWayfindingBrowserTest,
   histograms.ExpectTotalCount("Glic.Wayfinding.CueResult", 0);
 }
 
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorWayfindingBrowserTest,
+                       TabCloseIsReported) {
+  base::HistogramTester histograms;
+  tabs::TabInterface* tab = CreateAndActivateTab(GURL("about:blank"));
+  coordinator().Show(tab->GetBrowserWindowInterface(),
+                     mojom::InvocationSource::kWebContentsContextMenuPage);
+  ASSERT_OK(WaitForGlicOpen(tab));
+
+  GetTabListInterface()->CloseTab(tab->GetHandle());
+  base::RunLoop().RunUntilIdle();
+
+  histograms.ExpectUniqueSample("Glic.Wayfinding.CueResult",
+                                WayfindingCueResult::kWouldCue, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorWayfindingBrowserTest,
+                       TabCloseWithGlicStillShowingIsNotReported) {
+  tabs::TabInterface* tab0 = GetTabListInterface()->GetActiveTab();
+  tabs::TabInterface* tab1 = CreateAndActivateTab(GURL("about:blank"));
+  GetTabListInterface()->HighlightTabs(tab1->GetHandle(),
+                                       {tab0->GetHandle(), tab1->GetHandle()});
+  coordinator().Show(tab1->GetBrowserWindowInterface(),
+                     mojom::InvocationSource::kWebContentsContextMenuPage);
+  ASSERT_OK(WaitForGlicOpen(tab1));
+  base::HistogramTester histograms;
+
+  // Glic is shared with `tab0`, so it reshows there.
+  GetTabListInterface()->CloseTab(tab1->GetHandle());
+  ASSERT_OK(WaitForGlicOpen(tab0));
+  base::RunLoop().RunUntilIdle();
+
+  histograms.ExpectTotalCount("Glic.Wayfinding.CueResult", 0);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorWayfindingBrowserTest,
+                       BackgroundTabCloseIsNotReported) {
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  tabs::TabInterface* other_tab = CreateAndActivateTab(GURL("about:blank"));
+  GetTabListInterface()->ActivateTab(tab->GetHandle());
+  coordinator().Show(tab->GetBrowserWindowInterface(),
+                     mojom::InvocationSource::kWebContentsContextMenuPage);
+  ASSERT_OK(WaitForGlicOpen(tab));
+  GetTabListInterface()->ActivateTab(other_tab->GetHandle());
+  ASSERT_OK(WaitForSidePanelState(
+      tab, GlicSidePanelCoordinator::State::kBackgrounded));
+  base::RunLoop().RunUntilIdle();
+  base::HistogramTester histograms;
+
+  // Leaving was already counted at the tab switch.
+  GetTabListInterface()->CloseTab(tab->GetHandle());
+  base::RunLoop().RunUntilIdle();
+
+  histograms.ExpectTotalCount("Glic.Wayfinding.CueResult", 0);
+}
+
 class GlicInstanceCoordinatorWayfindingDisabledBrowserTest
     : public GlicInstanceCoordinatorBrowserTest {
  public:

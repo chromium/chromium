@@ -150,6 +150,8 @@ GlicInstanceCoordinatorImpl::GlicInstanceCoordinatorImpl(
       this, profile_, enabling);
   onboarding_tracker_ =
       std::make_unique<GlicOnboardingTracker>(profile_, enabling);
+  // Wayfinding is desktop only.
+#if !BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(features::kGlicAskGeminiWayfinding)) {
     wayfinding_controller_ = std::make_unique<GlicWayfindingController>(
         profile_->GetPrefs(),
@@ -157,6 +159,7 @@ GlicInstanceCoordinatorImpl::GlicInstanceCoordinatorImpl(
             ->GetTime(prefs::kGlicLastInvokedTime)
             .is_null());
   }
+#endif  // !BUILDFLAG(IS_ANDROID)
   metrics_.StartPeriodicMetricsRecording();
 }
 
@@ -293,6 +296,9 @@ void GlicInstanceCoordinatorImpl::OnFreOptInShown(ukm::SourceId source_id) {
 
 void GlicInstanceCoordinatorImpl::OnUserLeftPanel(
     BrowserWindowInterface& window) {
+  if (!wayfinding_controller_) {
+    return;
+  }
   // Glic may be reshown on the newly active tab, e.g. one it was already open
   // in or one opened from a link in the panel, so check after that happens.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(

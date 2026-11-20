@@ -1476,6 +1476,10 @@ void GlicInstanceImpl::OnBoundTabDestroyed(tabs::TabInterface* tab) {
   instance_metrics_.OnBoundTabDestroyed(tab, IsActiveEmbedder(key));
   OnEmbedderClosed(key);
   if (active_embedder_key_ == key) {
+    // Closing the tab Glic was showing in counts as leaving it.
+    if (BrowserWindowInterface* window = tab->GetBrowserWindowInterface()) {
+      OnUserLeftPanel(*window);
+    }
     host_.SetDelegate(&empty_embedder_delegate_);
     ClearActiveEmbedderAndNotifyVisibilityChange();
   }
