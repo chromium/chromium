@@ -35,6 +35,7 @@
 #include "components/actor/core/actor_features.h"
 #include "components/page_content_annotations/content/page_context_fetcher.h"
 #include "components/prefs/pref_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/skills/features.h"
@@ -336,6 +337,149 @@ TEST_F(GuestUtilMultiInstanceTest,
   EXPECT_EQ(GURL("https://www.example.com/"
                  "glic?authuser=existing@gmail.com&hl=en"),
             GetGuestURL(profile));
+}
+
+TEST_F(GuestUtilMultiInstanceTest, GetGuestURLAppliesStoredQueryParams) {
+  ScopedBrowserLocale scoped_locale("en");
+  TestingProfile* profile = CreateTestingProfile();
+
+  SetGuestUrlQueryParam(profile, "forced_rollout_stage", "dogfood");
+  SetGuestUrlQueryParam(profile, "custom_param", "test_val");
+  EXPECT_EQ(
+      "custom_param=test_val&forced_rollout_stage=dogfood",
+      ApplyGuestUrlQueryParams(profile, GURL("https://example.com")).query());
+
+  GURL url = GetGuestURL(profile);
+  std::string stage;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(url, "forced_rollout_stage", &stage));
+  EXPECT_EQ("dogfood", stage);
+  std::string custom;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(url, "custom_param", &custom));
+  EXPECT_EQ("test_val", custom);
+  std::string hl;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(url, "hl", &hl));
+  EXPECT_EQ("en", hl);
+
+  SetGuestUrlQueryParam(profile, "custom_param", std::nullopt);
+  EXPECT_EQ(
+      "forced_rollout_stage=dogfood",
+      ApplyGuestUrlQueryParams(profile, GURL("https://example.com")).query());
+
+  // Empty and reserved keys are ignored.
+  SetGuestUrlQueryParam(profile, "", "ignored");
+  SetGuestUrlQueryParam(profile, "hl", "fr");
+  SetGuestUrlQueryParam(profile, "authuser", "evil@example.com");
+  SetGuestUrlQueryParam(profile, "configId", "override");
+  SetGuestUrlQueryParam(profile, "location", "override");
+  SetGuestUrlQueryParam(profile, "idp", "override");
+  SetGuestUrlQueryParam(profile, "csesidx", "override");
+  EXPECT_EQ(
+      "forced_rollout_stage=dogfood",
+      ApplyGuestUrlQueryParams(profile, GURL("https://example.com")).query());
+
+  SetGuestUrlQueryParamsFromString(profile, "?a=1&b=2&hl=fr");
+  EXPECT_EQ(
+      "a=1&b=2",
+      ApplyGuestUrlQueryParams(profile, GURL("https://example.com")).query());
+
+  // Special-character escaping round-trips.
+  SetGuestUrlQueryParamsFromString(profile, "");
+  SetGuestUrlQueryParam(profile, "sp", "a b");
+  SetGuestUrlQueryParam(profile, "amp", "x&y=z");
+  SetGuestUrlQueryParam(profile, "pct", "100%+");
+  std::string serialized = std::string(
+      ApplyGuestUrlQueryParams(profile, GURL("https://example.com")).query());
+  SetGuestUrlQueryParamsFromString(profile, serialized);
+  GURL roundtrip_url = GetGuestURL(profile);
+  std::string val;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(roundtrip_url, "sp", &val));
+  EXPECT_EQ("a b", val);
+  EXPECT_TRUE(net::GetValueForKeyInQuery(roundtrip_url, "amp", &val));
+  EXPECT_EQ("x&y=z", val);
+  EXPECT_TRUE(net::GetValueForKeyInQuery(roundtrip_url, "pct", &val));
+  EXPECT_EQ("100%+", val);
+}
+
+TEST_F(GuestUtilMultiInstanceTest, GuestURLQueryParamsLimitsAndFeatureGate) {
+  ScopedBrowserLocale scoped_locale("en");
+  TestingProfile* profile = CreateTestingProfile();
+
+  // Keys or values exceeding 256 bytes are ignored.
+  const std::string long_str(257, 'a');
+  SetGuestUrlQueryParam(profile, long_str, "val");
+  SetGuestUrlQueryParam(profile, "key", long_str);
+  EXPECT_TRUE(ApplyGuestUrlQueryParams(profile, GURL("https://example.com"))
+                  .query()
+                  .empty());
+
+  // Up to 32 parameters are accepted; a 33rd new key is ignored, while
+  // updating an existing key still succeeds.
+  for (int i = 0; i < 32; ++i) {
+    SetGuestUrlQueryParam(profile, base::StringPrintf("k%d", i), "v");
+  }
+  SetGuestUrlQueryParam(profile, "k32", "overflow");
+  SetGuestUrlQueryParam(profile, "k0", "updated");
+  GURL url = GetGuestURL(profile);
+  std::string val;
+  EXPECT_FALSE(net::GetValueForKeyInQuery(url, "k32", &val));
+  EXPECT_TRUE(net::GetValueForKeyInQuery(url, "k0", &val));
+  EXPECT_EQ("updated", val);
+
+  // Disabling `features::kGlicGuestUrlQueryParams` suppresses applying and
+  // writing parameters.
+  {
+    base::test::ScopedFeatureList disabled_feature;
+    disabled_feature.InitAndDisableFeature(features::kGlicGuestUrlQueryParams);
+    EXPECT_FALSE(net::GetValueForKeyInQuery(GetGuestURL(profile), "k0", &val));
+    SetGuestUrlQueryParamsFromString(profile, "");
+  }
+  EXPECT_TRUE(net::GetValueForKeyInQuery(GetGuestURL(profile), "k0", &val));
+  EXPECT_EQ("updated", val);
+}
+
+TEST_F(GuestUtilMultiInstanceTest, GetGuestURLReplacesExistingQueryParam) {
+  ScopedBrowserLocale scoped_locale("en");
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      ::switches::kGlicGuestURL,
+      "https://www.example.com/glic?forced_rollout_stage=prod");
+
+  TestingProfile* profile = CreateTestingProfile();
+  SetGuestUrlQueryParam(profile, "forced_rollout_stage", "dogfood");
+
+  GURL url = GetGuestURL(profile);
+  std::string stage;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(url, "forced_rollout_stage", &stage));
+  EXPECT_EQ("dogfood", stage);
+}
+
+TEST_F(GuestUtilMultiInstanceTest, GeicEnabledAppliesStoredQueryParams) {
+  ScopedBrowserLocale scoped_locale("en");
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::kGeic,
+        {{features::kGeicGuestURL.name,
+          "https://business.gemini.google/side-panel"}}}},
+      {});
+
+  TestingProfile* profile = CreateTestingProfile();
+  {
+    ScopedDictPrefUpdate update(profile->GetPrefs(),
+                                prefs::kGlicGuestUrlQueryParams);
+    update->EnsureDict("www.example.com")->Set("consumer_only", "1");
+  }
+  SetGuestUrlQueryParam(profile, "forced_rollout_stage", "dogfood");
+
+  GURL url = GetGuestURL(profile);
+  std::string stage;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(url, "forced_rollout_stage", &stage));
+  EXPECT_EQ("dogfood", stage);
+  std::string consumer_only;
+  EXPECT_FALSE(
+      net::GetValueForKeyInQuery(url, "consumer_only", &consumer_only));
+  std::string hl;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(url, "hl", &hl));
+  EXPECT_EQ("en", hl);
 }
 
 // When features::kGeic is enabled with a GEiC guest URL, GetGuestURL loads the

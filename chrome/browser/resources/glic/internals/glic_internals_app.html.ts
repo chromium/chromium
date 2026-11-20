@@ -974,6 +974,15 @@ export function getHtml(this: GlicInternalsAppElement) {
           Invalid URL submitted: presets not updated
         </div>
         <cr-button @click="${this.onSavePresetsClick_}">Save</cr-button>
+        <label for="guestUrlQueryParamsInput">
+          Guest URL Query Params (e.g. param=abc&amp;foo=bar)
+        </label>
+        <input id="guestUrlQueryParamsInput"
+            .value="${this.data_.config.guestUrlQueryParams}"
+            @change="${this.onGuestUrlQueryParamsInputChange}">
+        <cr-button @click="${this.onSaveGuestUrlQueryParamsClick_}">
+          Save Query Params
+        </cr-button>
       </div>
     ` : html`
       <h3 id="loadingMsg">Loading...</h3>

@@ -21,6 +21,7 @@
 #include "chrome/browser/glic/glic_warming_checks.h"
 #include "chrome/browser/glic/host/glic_warming_scheduler.h"
 #include "chrome/browser/profiles/profile_observer.h"
+#include "components/prefs/pref_change_registrar.h"
 
 class Profile;
 namespace content {
@@ -184,9 +185,12 @@ class GlicWebContentsWarmingPool : public ProfileObserver {
   // ProfileObserver:
   void OnProfileWillBeDestroyed(Profile* profile) override;
 
+  void OnGuestUrlQueryParamsChanged();
+
   raw_ptr<Profile> profile_;
   raw_ptr<GlicEnabling> enabling_;
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
+  PrefChangeRegistrar pref_change_registrar_;
   std::unique_ptr<GlicWebContentsManager> warmed_container_;
 
   // Scheduler for delayed backfill warming.

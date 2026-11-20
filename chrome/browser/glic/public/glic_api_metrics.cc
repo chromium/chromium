@@ -222,6 +222,8 @@ std::string_view ToString(GlicHostApiRequestId request_id) {
       return "OnOptinRejected";
     case GlicHostApiRequestId::kOnUserInputHeldForOnboarding:
       return "OnUserInputHeldForOnboarding";
+    case GlicHostApiRequestId::kSetGuestUrlQueryParam:
+      return "SetGuestUrlQueryParam";
   }
   return "";
 }

@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/feature_list.h"
 #include "base/time/time.h"
@@ -66,6 +67,22 @@ GlicWebClientManager* GetWebClientManagerForWebContents(
 // Returns the URL/origin from where the guest web client will be loaded from.
 GURL GetGuestURL(content::BrowserContext* browser_context);
 url::Origin GetGuestOrigin(content::BrowserContext* browser_context);
+
+// Appends or replaces the stored guest URL query parameters for
+// `browser_context` on `url`.
+GURL ApplyGuestUrlQueryParams(content::BrowserContext* browser_context,
+                              GURL url);
+
+// Sets or removes (when `value` is nullopt) a query parameter to append to
+// future Glic/GEiC guest URL loads for `browser_context`.
+void SetGuestUrlQueryParam(content::BrowserContext* browser_context,
+                           std::string_view key,
+                           std::optional<std::string_view> value);
+
+// Parses `query_params` as a URL query string and replaces the stored guest URL
+// query parameters for `browser_context`.
+void SetGuestUrlQueryParamsFromString(content::BrowserContext* browser_context,
+                                      std::string_view query_params);
 std::string GetGlicAllowedOrigins();
 bool IsOriginAllowedGlicApi(const url::Origin& origin,
                             content::BrowserContext* browser_context);

@@ -264,6 +264,8 @@ extern const base::FeatureParam<bool> kGlicShowLoaderUntilMainPageOnload;
 
 BASE_DECLARE_FEATURE(kGlicClientDataStorage);
 
+BASE_DECLARE_FEATURE(kGlicGuestUrlQueryParams);
+
 BASE_DECLARE_FEATURE(kGlicShowNotTellTutorials);
 extern const base::FeatureParam<int> kGlicShowNotTellTutorialsArm;
 

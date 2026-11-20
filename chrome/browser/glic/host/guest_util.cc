@@ -19,6 +19,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "base/strings/escape.h"
 #include "base/strings/pattern.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -28,6 +29,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "base/version_info/version_info.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -75,6 +77,7 @@
 #include "components/optimization_guide/content/browser/page_context_eligibility.h"
 #include "components/origin_matcher/origin_matcher.h"
 #include "components/prefs/pref_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -141,13 +144,15 @@
 #if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
 #include "chrome/browser/enterprise/data_controls/data_controls_dialog_factory.h"
 #include "components/enterprise/data_controls/content/browser/last_replaced_clipboard_data.h"
+#endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
 
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENTERPRISE_DATA_CONTROLS) && BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/enterprise/data_controls/android_data_controls_dialog_factory.h"
-#else
+#endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(ENTERPRISE_DATA_CONTROLS) && !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/enterprise/data_controls/desktop_data_controls_dialog_factory.h"
 #endif  // BUILDFLAG(IS_ANDROID)
-#endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
 
 namespace glic {
 
@@ -473,9 +478,136 @@ GlicWebClientManager* GetWebClientManagerForWebContents(
   return nullptr;
 }
 
+namespace {
+
+constexpr size_t kMaxGuestUrlQueryParamsCount = 32;
+constexpr size_t kMaxGuestUrlQueryParamLength = 256;
+
+// Browser-managed query parameters that cannot be overridden by the web client:
+// `hl` (UI locale), `authuser` (signed-in account email), and `configId` /
+// `location` / `idp` / `csesidx` (Gemini Enterprise in Chrome routing and auth
+// parameters).
+bool IsReservedGuestUrlQueryParamKey(std::string_view key) {
+  return key == "hl" || key == "authuser" || key == "configId" ||
+         key == "location" || key == geic::kWorkforceProviderQueryParam ||
+         key == geic::kSessionIndexQueryParam;
+}
+
+bool IsValidGuestUrlQueryParamKey(std::string_view key) {
+  return !key.empty() && key.size() <= kMaxGuestUrlQueryParamLength &&
+         !IsReservedGuestUrlQueryParamKey(key) &&
+         base::IsStringUTF8AllowingNoncharacters(key);
+}
+
+bool IsValidGuestUrlQueryParam(std::string_view key, std::string_view value) {
+  return IsValidGuestUrlQueryParamKey(key) &&
+         value.size() <= kMaxGuestUrlQueryParamLength &&
+         base::IsStringUTF8AllowingNoncharacters(value);
+}
+
+// `net::QueryIterator` only exposes `GetUnescapedValue()`, not an unescaped key
+// getter, so keys are unescaped with the same rules to avoid double-escaping
+// when `net::AppendOrReplaceQueryParameter()` re-encodes them.
+std::string UnescapeQueryComponent(std::string_view input) {
+  return base::UnescapeURLComponent(
+      input, base::UnescapeRule::SPACES | base::UnescapeRule::PATH_SEPARATORS |
+                 base::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS |
+                 base::UnescapeRule::REPLACE_PLUS_WITH_SPACE);
+}
+
+}  // namespace
+
+GURL ApplyGuestUrlQueryParams(content::BrowserContext* browser_context,
+                              GURL url) {
+  if (!url.is_valid() ||
+      !base::FeatureList::IsEnabled(features::kGlicGuestUrlQueryParams)) {
+    return url;
+  }
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  const std::string guest_url_key =
+      GetGlicProviderSpec(profile).GetGuestUrlKey();
+  const base::DictValue* query_params =
+      profile->GetPrefs()
+          ->GetDict(prefs::kGlicGuestUrlQueryParams)
+          .FindDict(guest_url_key);
+  if (!query_params) {
+    return url;
+  }
+  for (const auto [key, value] : *query_params) {
+    if (value.is_string() && !IsReservedGuestUrlQueryParamKey(key)) {
+      url = net::AppendOrReplaceQueryParameter(url, key, value.GetString());
+    }
+  }
+  return url;
+}
+
 GURL GetGuestURL(content::BrowserContext* browser_context) {
   Profile* profile = Profile::FromBrowserContext(browser_context);
-  return GetGlicProviderSpec(profile).GetGuestUrl(profile);
+  return ApplyGuestUrlQueryParams(
+      browser_context, GetGlicProviderSpec(profile).GetGuestUrl(profile));
+}
+
+void SetGuestUrlQueryParam(content::BrowserContext* browser_context,
+                           std::string_view key,
+                           std::optional<std::string_view> value) {
+  if (!base::FeatureList::IsEnabled(features::kGlicGuestUrlQueryParams) ||
+      (value.has_value() ? !IsValidGuestUrlQueryParam(key, *value)
+                         : !IsValidGuestUrlQueryParamKey(key))) {
+    return;
+  }
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  const std::string guest_url_key =
+      GetGlicProviderSpec(profile).GetGuestUrlKey();
+  ScopedDictPrefUpdate update(profile->GetPrefs(),
+                              prefs::kGlicGuestUrlQueryParams);
+  base::DictValue* provider_dict = update->EnsureDict(guest_url_key);
+  if (value.has_value()) {
+    if (!provider_dict->contains(key) &&
+        provider_dict->size() >= kMaxGuestUrlQueryParamsCount) {
+      return;
+    }
+    provider_dict->Set(key, *value);
+  } else {
+    provider_dict->Remove(key);
+    if (provider_dict->empty()) {
+      update->Remove(guest_url_key);
+    }
+  }
+}
+
+void SetGuestUrlQueryParamsFromString(content::BrowserContext* browser_context,
+                                      std::string_view query_params) {
+  if (!base::FeatureList::IsEnabled(features::kGlicGuestUrlQueryParams)) {
+    return;
+  }
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  if (query_params.starts_with('?')) {
+    query_params.remove_prefix(1);
+  }
+  GURL::Replacements replacements;
+  replacements.SetQueryStr(query_params);
+  GURL url = GURL("https://example.com").ReplaceComponents(replacements);
+  base::DictValue dict;
+  for (net::QueryIterator it(url); !it.IsAtEnd(); it.Advance()) {
+    std::string key = UnescapeQueryComponent(it.GetKey());
+    const std::string& value = it.GetUnescapedValue();
+    if (!IsValidGuestUrlQueryParam(key, value)) {
+      continue;
+    }
+    if (!dict.contains(key) && dict.size() >= kMaxGuestUrlQueryParamsCount) {
+      continue;
+    }
+    dict.Set(key, value);
+  }
+  const std::string guest_url_key =
+      GetGlicProviderSpec(profile).GetGuestUrlKey();
+  ScopedDictPrefUpdate update(profile->GetPrefs(),
+                              prefs::kGlicGuestUrlQueryParams);
+  if (dict.empty()) {
+    update->Remove(guest_url_key);
+  } else {
+    update->Set(guest_url_key, std::move(dict));
+  }
 }
 
 base::TimeDelta GetMaxLoadingTime() {

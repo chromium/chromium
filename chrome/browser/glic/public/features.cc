@@ -386,6 +386,9 @@ const base::FeatureParam<bool> kGlicShowLoaderUntilMainPageOnload{
 // Default-enabled platforms: all (client data storage API for the Glic guest).
 BASE_FEATURE(kGlicClientDataStorage, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Default-enabled platforms: all (persisted guest URL query parameters).
+BASE_FEATURE(kGlicGuestUrlQueryParams, base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kGlicShowNotTellTutorials, base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<int> kGlicShowNotTellTutorialsArm{
     &kGlicShowNotTellTutorials, "tutorials_arm", 0};

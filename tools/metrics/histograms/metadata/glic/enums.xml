@@ -636,6 +636,7 @@ chromium-metrics-reviews@google.com.
   <int value="111" label="OnTooltipHidden"/>
   <int value="112" label="OnOptinRejected"/>
   <int value="113" label="OnUserInputHeldForOnboarding"/>
+  <int value="114" label="SetGuestUrlQueryParam"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/public/glic_api_metrics.h:GlicHostApiRequestId) -->

@@ -1570,6 +1570,13 @@ interface WebClientHandler {
   // pref write.
   ClearClientStorage() => ();
 
+  // Sets or clears (when `value` is null) a query parameter to append to
+  // future Glic/GEiC guest URL loads for the active provider on this profile.
+  // Reserved keys (`hl`, `authuser`, `configId`, `location`), keys/values
+  // exceeding 256 bytes, or writes beyond the 32-parameter cap are ignored as
+  // a no-op.
+  SetGuestUrlQueryParam(string key, string? value) => ();
+
   // Returns the list of target devices available for Send Tab to Self.
   [RuntimeFeature=glic.mojom.features.kGlicSendTabToSelf]
   GetSendTabToSelfDevices() => (array<SendTabToSelfDevice> devices);

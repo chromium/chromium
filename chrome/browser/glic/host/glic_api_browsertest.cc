@@ -6088,6 +6088,26 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testClientStorage) {
                    .contains(guest_url_key));
 }
 
+IN_PROC_BROWSER_TEST_P(GlicApiTest, testSetGuestUrlQueryParam) {
+  ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
+  GlicClientConnectionObserver connection_observer(instance);
+
+  // 1. Initial load: param is absent; set it to "dogfood".
+  ExecuteJsTest({.params = base::Value("set")});
+  ASSERT_OK(connection_observer.WaitForConnected());
+
+  // 2. Reload: guest URL should now include forced_rollout_stage=dogfood.
+  instance->host().Reload();
+  ASSERT_OK(connection_observer.WaitForDisconnected());
+  ExecuteJsTest({.params = base::Value("verify_and_clear")});
+  ASSERT_OK(connection_observer.WaitForConnected());
+
+  // 3. Reload again: param should be removed from the guest URL.
+  instance->host().Reload();
+  ASSERT_OK(connection_observer.WaitForDisconnected());
+  ExecuteJsTest({.params = base::Value("verify_cleared")});
+}
+
 // Runs each test against consumer Gemini, with and without NoWebview, and
 // against Gemini Enterprise in Chrome (GEiC).
 auto DefaultTestParamSet() {

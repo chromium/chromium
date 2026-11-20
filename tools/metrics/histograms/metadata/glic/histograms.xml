@@ -104,6 +104,7 @@ chromium-metrics-reviews@google.com.
   <variant name="SetClientStorageItem"/>
   <variant name="SetClosedCaptioningSetting"/>
   <variant name="SetContextAccessIndicator"/>
+  <variant name="SetGuestUrlQueryParam"/>
   <variant name="SetLocationPermissionState"/>
   <variant name="SetMaximumNumberOfPinnedTabs"/>
   <variant name="SetMicrophonePermissionState"/>

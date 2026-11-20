@@ -3126,6 +3126,23 @@ class ApiTests extends ApiTestFixtureBase {
     assertEquals(null, storage.getItem('k2'));
     assertEquals(null, storage.getItem('external_key'));
   }
+
+  async testSetGuestUrlQueryParam() {
+    assertDefined(this.host.setGuestUrlQueryParam);
+    const params = new URLSearchParams(window.location.search);
+
+    if (this.testParams === 'set') {
+      assertEquals(null, params.get('forced_rollout_stage'));
+      await this.host.setGuestUrlQueryParam('forced_rollout_stage', 'dogfood');
+    } else if (this.testParams === 'verify_and_clear') {
+      assertEquals('dogfood', params.get('forced_rollout_stage'));
+      await this.host.setGuestUrlQueryParam('forced_rollout_stage', null);
+    } else if (this.testParams === 'verify_cleared') {
+      assertEquals(null, params.get('forced_rollout_stage'));
+    } else {
+      assertTrue(false, 'Unexpected testParams');
+    }
+  }
 }
 
 class DaisyChainApiTests extends ApiTestFixtureBase {

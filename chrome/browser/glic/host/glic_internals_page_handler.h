@@ -65,6 +65,7 @@ class GlicInternalsPageHandler : public glic::mojom::InternalsPageHandler {
   void SetHotkeyGlobalScopeMigratedV2(bool migrated) override;
   void SetUiLocaleOverride(const std::string& locale,
                            SetUiLocaleOverrideCallback callback) override;
+  void SetGuestUrlQueryParams(const std::string& query_params) override;
 
  private:
   void OnInvokeSuccess(TriggerInvokeFromInternalsActionCallback callback,

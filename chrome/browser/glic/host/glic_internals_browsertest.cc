@@ -213,6 +213,41 @@ IN_PROC_BROWSER_TEST_F(GlicInternalsBrowserTest,
   EXPECT_EQ(true, content::EvalJs(contents, kWaitForInternalsLoaded));
 }
 
+IN_PROC_BROWSER_TEST_F(GlicInternalsBrowserTest, GuestUrlQueryParams) {
+  content::WebContents* contents =
+      chrome_test_utils::GetActiveWebContents(this);
+  ASSERT_TRUE(contents);
+
+  mojo::Remote<mojom::InternalsPageHandler> remote;
+  GlicInternalsPageHandler handler(contents,
+                                   remote.BindNewPipeAndPassReceiver());
+
+  // Initially empty.
+  {
+    base::test::TestFuture<mojom::InternalsDataPayloadPtr> future;
+    remote->GetInternalsDataPayload(future.GetCallback());
+    EXPECT_TRUE(future.Take()->config->guest_url_query_params.empty());
+  }
+
+  // Set query parameters.
+  remote->SetGuestUrlQueryParams("foo=bar&forced_rollout_stage=dogfood");
+  {
+    base::test::TestFuture<mojom::InternalsDataPayloadPtr> future;
+    remote->GetInternalsDataPayload(future.GetCallback());
+    auto payload = future.Take();
+    EXPECT_EQ(payload->config->guest_url_query_params,
+              "foo=bar&forced_rollout_stage=dogfood");
+  }
+
+  // Clear all params by setting empty string.
+  remote->SetGuestUrlQueryParams("");
+  {
+    base::test::TestFuture<mojom::InternalsDataPayloadPtr> future;
+    remote->GetInternalsDataPayload(future.GetCallback());
+    EXPECT_TRUE(future.Take()->config->guest_url_query_params.empty());
+  }
+}
+
 IN_PROC_BROWSER_TEST_F(GlicInternalsBrowserTest,
                        DiagnosticsMarkdownGeneratesFromDOM) {
   content::WebContents* contents =

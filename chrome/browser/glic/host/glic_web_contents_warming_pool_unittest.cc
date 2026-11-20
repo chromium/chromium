@@ -10,6 +10,7 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/glic/glic_warming_checks.h"
+#include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/test_support/fake_web_contents_manager.h"
@@ -1480,4 +1481,34 @@ TEST_F(GlicWebContentsWarmingPoolTest,
   histogram_tester.ExpectTotalCount("Glic.WarmingPool.TimeSinceCreatedAtMiss",
                                     1);
 }
+
+TEST_F(GlicWebContentsWarmingPoolTest,
+       GuestUrlQueryParamsChangedInvalidatesWarmedContainer) {
+  base::HistogramTester histogram_tester;
+  TestGlicWebContentsWarmingPool warming_pool(&profile_, enabling_.get(),
+                                              &web_contents_factory_);
+
+  // No-op when no container is warmed yet.
+  SetGuestUrlQueryParam(&profile_, "forced_rollout_stage", "prod");
+  EXPECT_FALSE(warming_pool.HasWarmedContainerForTesting());
+  EXPECT_FALSE(warming_pool.GetDelayTimerForTesting().IsRunning());
+
+  ASSERT_TRUE(warming_pool.MaybeStartWarming(GlicWarmingTrigger::kStartup));
+  EXPECT_TRUE(warming_pool.HasWarmedContainerForTesting());
+
+  // Invalidates warmed container and schedules refill without logging expiry.
+  SetGuestUrlQueryParam(&profile_, "forced_rollout_stage", "dogfood");
+  EXPECT_FALSE(warming_pool.HasWarmedContainerForTesting());
+  EXPECT_TRUE(warming_pool.GetDelayTimerForTesting().IsRunning());
+  histogram_tester.ExpectTotalCount("Glic.WarmingPool.WarmedContainerFate", 0);
+
+  // Under critical memory pressure, invalidates without scheduling a refill.
+  task_environment_.FastForwardBy(base::Seconds(20));
+  EXPECT_TRUE(warming_pool.HasWarmedContainerForTesting());
+  warming_pool.OnUpdateMemoryLimit(base::kCriticalMemoryPressureThreshold);
+  SetGuestUrlQueryParam(&profile_, "forced_rollout_stage", std::nullopt);
+  EXPECT_FALSE(warming_pool.HasWarmedContainerForTesting());
+  EXPECT_FALSE(warming_pool.GetDelayTimerForTesting().IsRunning());
+}
+
 }  // namespace glic

@@ -595,6 +595,17 @@ export class GlicInternalsAppElement extends CrLitElement {
         this.data_!.config.preprodGuestUrl, this.data_!.config.prodGuestUrl);
   }
 
+  protected onGuestUrlQueryParamsInputChange(e: Event) {
+    this.data_!.config.guestUrlQueryParams =
+        (e.target as HTMLInputElement).value;
+  }
+
+  protected onSaveGuestUrlQueryParamsClick_() {
+    this.browserProxy_.handler.setGuestUrlQueryParams(
+        this.data_!.config.guestUrlQueryParams);
+    this.fetchInternalsData_();
+  }
+
   protected onWebContinuityInputChange(e: Event) {
     this.data_!.config.webContinuityOriginatingHostUrl =
         (e.target as HTMLInputElement).value;

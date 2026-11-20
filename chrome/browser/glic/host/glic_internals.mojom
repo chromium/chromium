@@ -122,6 +122,10 @@ struct ConfigInfo {
 
   // Supported UI locales for the internals language selector.
   array<LocaleOption> available_ui_locales;
+
+  // Query parameters appended to future Glic/GEiC guest URL loads, formatted
+  // as a URL query string.
+  string guest_url_query_params;
 };
 
 struct TieredRolloutInfo {
@@ -329,6 +333,10 @@ interface InternalsPageHandler {
   // query parameter on the guest URL). Returns false if `locale` is not a
   // valid BCP-47 language tag.
   SetUiLocaleOverride(string locale) => (bool success);
+
+  // Replaces the stored query parameters appended to future Glic/GEiC guest URL
+  // loads for this profile, parsed from a URL query string.
+  SetGuestUrlQueryParams(string query_params);
 };
 
 // Factory for InternalsPageHandler used in chrome://glic/internals.

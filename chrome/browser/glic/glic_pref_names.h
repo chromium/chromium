@@ -248,6 +248,11 @@ inline constexpr char kGlicClientDataStorage[] = "glic.client_data_storage";
 inline constexpr char kGlicProviderSwitchNoticeKnownProviderKey[] =
     "glic.provider_switch_notice.known_provider_key";
 
+// Dict pref storing URL query parameters to append to future Glic and GEiC
+// guest URL loads for this profile. Each provider's parameters are a nested
+// dict at its guest URL key (`GlicProviderSpec::GetGuestUrlKey()`).
+inline constexpr char kGlicGuestUrlQueryParams[] =
+    "glic.guest_url_query_params";
 // Boolean pref that tracks if the Glic profile was previously ineligible.
 inline constexpr char kGlicPreviouslyNotAllowed[] =
     "glic.previously_not_allowed";

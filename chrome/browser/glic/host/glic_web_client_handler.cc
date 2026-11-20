@@ -1097,6 +1097,14 @@ class GlicWebClientHandler
     std::move(callback).Run();
   }
 
+  void SetGuestUrlQueryParam(const std::string& key,
+                             const std::optional<std::string>& value,
+                             SetGuestUrlQueryParamCallback callback) override {
+    LogApiRequest(GlicHostApiRequestId::kSetGuestUrlQueryParam);
+    glic::SetGuestUrlQueryParam(profile_, key, value);
+    std::move(callback).Run();
+  }
+
   void GetSendTabToSelfDevices(
       GetSendTabToSelfDevicesCallback callback) override {
     LogApiRequest(GlicHostApiRequestId::kGetSendTabToSelfDevices);

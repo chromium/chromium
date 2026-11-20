@@ -627,6 +627,9 @@ void GlicInternalsPageHandler::GetInternalsDataPayload(
         local_state->GetString(prefs::kGlicUiLocaleOverride);
   }
   config->available_ui_locales = BuildAvailableUiLocales();
+  config->guest_url_query_params = std::string(
+      ApplyGuestUrlQueryParams(browser_context_, GURL("https://example.com"))
+          .query());
 
   payload->show_error_allowed =
       profile->GetPrefs()->GetBoolean(prefs::kGlicShowErrorAllowed);
@@ -1157,6 +1160,11 @@ void GlicInternalsPageHandler::SetUiLocaleOverride(
   local_state->SetString(prefs::kGlicUiLocaleOverride,
                          google_locale.tag_string());
   std::move(callback).Run(true);
+}
+
+void GlicInternalsPageHandler::SetGuestUrlQueryParams(
+    const std::string& query_params) {
+  SetGuestUrlQueryParamsFromString(browser_context_, query_params);
 }
 
 }  // namespace glic

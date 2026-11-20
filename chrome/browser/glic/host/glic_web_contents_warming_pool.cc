@@ -11,6 +11,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/glic_no_webview_contents_manager.h"
 #include "chrome/browser/glic/host/glic_web_client_manager.h"
 #include "chrome/browser/glic/host/glic_web_contents_manager.h"
@@ -194,6 +195,12 @@ GlicWebContentsWarmingPool::GlicWebContentsWarmingPool(Profile* profile,
       metrics_(std::make_unique<Metrics>(profile)) {
   CHECK(enabling_);
   profile_observation_.Observe(profile_);
+  pref_change_registrar_.Init(profile_->GetPrefs());
+  pref_change_registrar_.Add(
+      prefs::kGlicGuestUrlQueryParams,
+      base::BindRepeating(
+          &GlicWebContentsWarmingPool::OnGuestUrlQueryParamsChanged,
+          base::Unretained(this)));
   if (base::FeatureList::IsEnabled(features::kGlicWebContentsWarming)) {
     expiry_delay_ = features::kGlicWebContentsWarmingPoolExpiryDelay.Get();
   }
@@ -240,12 +247,22 @@ bool GlicWebContentsWarmingPool::MaybeStartWarming(GlicWarmingTrigger trigger) {
 
 void GlicWebContentsWarmingPool::Shutdown() {
   profile_observation_.Reset();
+  pref_change_registrar_.RemoveAll();
   should_warm_when_memory_allows_ = false;
   Clear(ClearReason::kShutdown);
 }
 
 void GlicWebContentsWarmingPool::OnProfileWillBeDestroyed(Profile* profile) {
   Shutdown();
+}
+
+void GlicWebContentsWarmingPool::OnGuestUrlQueryParamsChanged() {
+  if (!warmed_container_) {
+    return;
+  }
+  warmed_container_.reset();
+  expiry_timer_.Stop();
+  EnsurePreloadDelayed(ContainerCreationReason::kRefill);
 }
 
 std::unique_ptr<GlicWebContentsManager>
