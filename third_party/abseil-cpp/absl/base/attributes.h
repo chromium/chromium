@@ -290,6 +290,9 @@
 // out of bounds or does other scary things with memory.
 // NOTE: GCC supports AddressSanitizer(asan) since 4.8.
 // https://gcc.gnu.org/gcc-4.8/changes.html
+// NOTE: When active on Clang/GCC, this macro expands to a C++11 `[[...]]`
+// attribute and must precede GNU `__attribute__((...))` macros such as
+// `ABSL_ATTRIBUTE_NOINLINE` on declarations.
 #if defined(ABSL_HAVE_ADDRESS_SANITIZER) && \
     ABSL_HAVE_ATTRIBUTE(no_sanitize_address)
 #if ABSL_HAVE_CPP_ATTRIBUTE(gnu::no_sanitize_address)
@@ -308,6 +311,8 @@
 // https://gcc.gnu.org/gcc-11/changes.html
 #if ABSL_HAVE_CPP_ATTRIBUTE(gnu::no_sanitize)
 #define ABSL_ATTRIBUTE_NO_SANITIZE_ADDRESS [[gnu::no_sanitize("hwaddress")]]
+#elif ABSL_HAVE_CPP_ATTRIBUTE(clang::no_sanitize)
+#define ABSL_ATTRIBUTE_NO_SANITIZE_ADDRESS [[clang::no_sanitize("hwaddress")]]
 #else
 #define ABSL_ATTRIBUTE_NO_SANITIZE_ADDRESS \
   __attribute__((no_sanitize("hwaddress")))

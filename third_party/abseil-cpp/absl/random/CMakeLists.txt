@@ -971,6 +971,7 @@ absl_cc_test(
     ${ABSL_DEFAULT_LINKOPTS}
   DEPS
     absl::random_internal_distribution_test_util
+    GTest::gmock
     GTest::gtest_main
 )
 
@@ -1035,6 +1036,7 @@ absl_cc_test(
   DEPS
     absl::core_headers
     absl::random_internal_distribution_test_util
+    GTest::gmock
     GTest::gtest_main
 )
 

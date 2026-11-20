@@ -99,9 +99,10 @@ struct HashtablezInfo : public profiling_internal::Sample<HashtablezInfo> {
   absl::Time create_time;
   uint32_t depth;
   // The SOO capacity for this table in elements (not bytes). Note that sampled
-  // tables are never SOO because we need to store the infoz handle on the heap.
-  // Tables that would be SOO if not sampled should have: soo_capacity > 0 &&
-  // size <= soo_capacity && max_reserve <= soo_capacity.
+  // tables are never SOO because we need to store the infoz handle on the heap,
+  // but tables that would be SOO if not sampled report `capacity ==
+  // soo_capacity` (and have `soo_capacity > 0 && size <= soo_capacity &&
+  // max_reserve <= soo_capacity`).
   uint16_t soo_capacity;
   void* stack[kMaxStackDepth];
   size_t inline_element_size;  // How big is the slot in bytes?

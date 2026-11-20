@@ -378,26 +378,6 @@ void CopyAlloc(AllocType& lhs, AllocType& rhs,
 template <typename AllocType>
 void CopyAlloc(AllocType&, AllocType&, std::false_type /* propagate_alloc */) {}
 
-template <class ContainerKey, class Hash, class Eq>
-struct RequireUsableKey {
-  template <class PassedKey, class... Args>
-  std::pair<
-      decltype(std::declval<const Hash&>()(std::declval<const PassedKey&>())),
-      decltype(std::declval<const Eq&>()(std::declval<const ContainerKey&>(),
-                                         std::declval<const PassedKey&>()))>*
-  operator()(const PassedKey&, const Args&...) const;
-};
-
-template <class E, class Policy, class Hash, class Eq, class... Ts>
-struct IsDecomposable : std::false_type {};
-
-template <class Policy, class Hash, class Eq, class... Ts>
-struct IsDecomposable<
-    std::void_t<decltype(Policy::apply(
-        RequireUsableKey<typename Policy::key_type, Hash, Eq>(),
-        std::declval<Ts>()...))>,
-    Policy, Hash, Eq, Ts...> : std::true_type {};
-
 template <typename T, template <typename...> class Template>
 struct is_instance_of : std::false_type {};
 template <template <typename...> class Template, typename... Args>
@@ -1384,7 +1364,9 @@ class CommonFields : public CommonFieldsGenerationInfo {
 
   ctrl_t* control() const {
     ABSL_SWISSTABLE_ASSERT(capacity() > 0);
-    ABSL_SWISSTABLE_IGNORE_UNINITIALIZED_RETURN(heap_or_soo_.control().get());
+    ctrl_t* ctrl = heap_or_soo_.control().get();
+    ABSL_SWISSTABLE_IGNORE_UNINITIALIZED(ABSL_ASSUME(ctrl != nullptr));
+    ABSL_SWISSTABLE_IGNORE_UNINITIALIZED_RETURN(ctrl);
   }
 
   void set_control(ctrl_t* c) { heap_or_soo_.control().set(c); }
@@ -1936,19 +1918,13 @@ class HashSetIteratorBase : private HashSetIteratorGenerationInfo {
       AssertSameContainer(ctrl_, b.ctrl_, slot_, b.slot_, generation_ptr(),
                           b.generation_ptr());
     }
-    return unchecked_equals(b);
+    return slot_ == b.slot_;
   }
 
-  // An equality check which skips ABSL Hardening iterator invalidation
-  // checks.
-  // Should be used when the lifetimes of the iterators are well-enough
-  // understood to prove that they cannot be invalid.
-  // Note: `b` is passed by reference because `HashSetIteratorBase` has an
-  // anonymous union member (`ctrl_`), which causes Clang to lower by-value
-  // copies as `memcpy` that affects compiler inlining decisions.
-  ABSL_ATTRIBUTE_ALWAYS_INLINE bool unchecked_equals(
-      const HashSetIteratorBase& b) const {
-    return slot_ == b.slot_;
+  // Returns true if this iterator is at the end sentinel, skipping hardening
+  // iterator invalidation checks when iterator lifetimes are known to be valid.
+  ABSL_ATTRIBUTE_ALWAYS_INLINE bool unchecked_is_end() const {
+    return slot_ == nullptr;
   }
 
   ctrl_t* control() const { return ctrl_; }
@@ -2318,11 +2294,15 @@ struct DtorPolicy {
 // other optimizations for tables with small keys.
 
 template <size_t kSizeOfSizeT = sizeof(size_t)>
-constexpr size_t MaxSizeAtMaxValidCapacity(size_t slot_size) {
+constexpr size_t MaxValidCapacity() {
   using SizeT = std::conditional_t<kSizeOfSizeT == 4, uint32_t, uint64_t>;
   // We shift right by 2 for a safe margin against overflow.
-  constexpr SizeT kMaxValidCapacity = ~SizeT{} >> 2;
-  return CapacityToGrowth(kMaxValidCapacity) / slot_size;
+  return ~SizeT{} >> 2;
+}
+
+template <size_t kSizeOfSizeT = sizeof(size_t)>
+constexpr size_t MaxSizeAtMaxValidCapacity(size_t slot_size) {
+  return CapacityToGrowth(MaxValidCapacity<kSizeOfSizeT>()) / slot_size;
 }
 
 constexpr size_t MaxStorableSize() {
@@ -2343,8 +2323,11 @@ constexpr size_t MaxValidSizeForKeySize(size_t key_size) {
 template <size_t kSizeOfSizeT = sizeof(size_t)>
 constexpr size_t MaxValidSizeForSlotSize(size_t slot_size) {
   if constexpr (kSizeOfSizeT == 8) {
-    // For small slot sizes we are limited by HashtableStackData::kSizeBitCount.
-    if (slot_size < size_t{1} << (64 - HashtableInlineData::kSizeBitCount)) {
+    // For small slot sizes we are limited by
+    // HashtableInlineData::kSizeBitCount.
+    constexpr size_t kMaxSlotSizeForMaxStorableSize =
+        CapacityToGrowth(MaxValidCapacity<kSizeOfSizeT>()) / MaxStorableSize();
+    if (ABSL_PREDICT_TRUE(slot_size <= kMaxSlotSizeForMaxStorableSize)) {
       return MaxStorableSize();
     }
   }
@@ -2701,6 +2684,16 @@ class raw_hash_set_base {
   // Asserts that the capacity is not a sentinel invalid value.
   void AssertNotDebugCapacity() const { common().AssertNotDebugCapacity(); }
 
+  ABSL_ATTRIBUTE_ALWAYS_INLINE HashSetIteratorBase
+  iterator_at_ptr(ctrl_t* ctrl, void* slot) ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return {ctrl, slot, common().generation_ptr()};
+  }
+  ABSL_ATTRIBUTE_ALWAYS_INLINE HashSetIteratorBase iterator_base_end()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    AssertNotDebugCapacity();
+    return HashSetIteratorBase(common().generation_ptr());
+  }
+
   template <bool kIsDefaultAlloc>
   ctrl_t* control() const {
     ctrl_t* ctrl = common().control();
@@ -2730,6 +2723,11 @@ class raw_hash_set_base {
     // the separate storage assumption in control().
     return common().slot_array(control<kIsDefaultAlloc>(), capacity);
   }
+  template <size_t kSlotSize, bool kIsDefaultAlloc>
+  ABSL_ATTRIBUTE_ALWAYS_INLINE auto* sized_slot_array(size_t capacity) const {
+    using SlotBytes = char[kSlotSize];
+    return static_cast<SlotBytes*>(slot_array<kIsDefaultAlloc>(capacity));
+  }
 
   // Prefetch the heap-allocated memory region to resolve potential TLB and
   // cache misses. This is intended to overlap with execution of calculating the
@@ -2739,6 +2737,12 @@ class raw_hash_set_base {
     ABSL_SWISSTABLE_ASSERT(!is_small());
 #if ABSL_HAVE_BUILTIN(__builtin_prefetch) || defined(__GNUC__)
     __builtin_prefetch(control<kIsDefaultAlloc>(), 0, 1);
+#endif
+  }
+
+  ABSL_ATTRIBUTE_ALWAYS_INLINE static void prefetch_slot(const void* slot) {
+#ifndef ABSL_HAVE_MEMORY_SANITIZER
+    absl::PrefetchToLocalCache(slot);
 #endif
   }
 
@@ -2800,13 +2804,11 @@ class raw_hash_set_base {
   }
   template <size_t kSlotSize, bool kIsDefaultAlloc>
   void erase_meta_only_large(const HashSetIteratorBase& it) {
-    using SlotBytes = char[kSlotSize];
     const size_t cap = common().capacity();
-    const auto* slot_ptr =
-        static_cast<const SlotBytes*>(slot_array<kIsDefaultAlloc>(cap));
+    const auto* slot_ptr = sized_slot_array<kSlotSize, kIsDefaultAlloc>(cap);
     // `it` can be non-iterable iterator, so we can't use it.control().
-    const size_t index =
-        static_cast<size_t>(static_cast<const SlotBytes*>(it.slot_) - slot_ptr);
+    const size_t index = static_cast<size_t>(
+        static_cast<decltype(slot_ptr)>(it.slot_) - slot_ptr);
     EraseMetaOnlyLarge(common(), index, kSlotSize);
   }
 
@@ -2851,6 +2853,46 @@ class raw_hash_set_base {
                                    absl::remove_cvref_t<SlotKey>>>;
   };
 
+  template <class SlotKey, class Hash, size_t kHasherOffset, class K>
+  ABSL_ATTRIBUTE_ALWAYS_INLINE size_t hash_of(const K& key) const {
+    using Params = HashParams<Hash, SlotKey>;
+    const Hash& hash_ref = *reinterpret_cast<const Hash*>(
+        reinterpret_cast<const char*>(this) + kHasherOffset);
+    return HashElement<Hash, Params::kIsAbsl, Params::kSeedShift>{
+        hash_ref, common().seed().seed()}(key);
+  }
+
+  template <class Key, size_t kSlotSize, bool kIsDefaultAlloc, class Hash,
+            size_t kHasherOffset, class Eq, size_t kEqOffset, class SlotEq>
+  HashSetIteratorBase find_large(Key key) {
+    prefetch_heap_block<kIsDefaultAlloc>();
+    const Eq& eq_ref = *reinterpret_cast<const Eq*>(
+        reinterpret_cast<const char*>(this) + kEqOffset);
+    const size_t hash =
+        hash_of<typename SlotEq::SlotKeyType, Hash, kHasherOffset>(key);
+    const size_t cap = common().capacity();
+    ABSL_ASSUME(cap > kMaxSmallCapacity);
+    auto seq = probe(ProbeCapacity{cap}, hash);
+    const h2_t h2 = H2(hash);
+    ctrl_t* ctrl = control<kIsDefaultAlloc>();
+    auto* slot_array = sized_slot_array<kSlotSize, kIsDefaultAlloc>(cap);
+    while (true) {
+      // Loading the group before slot prefetch decreases critical path latency.
+      Group g{ctrl + seq.offset()};
+      prefetch_slot(slot_array + seq.offset());
+      // Predict one iteration (common case for find-hit).
+      if (auto match = g.Match(h2); ABSL_PREDICT_TRUE(match)) {
+        do {
+          const size_t offset = seq.offset(*match);
+          if (ABSL_PREDICT_TRUE(SlotEq{}(eq_ref, slot_array + offset, key)))
+            return iterator_at_ptr(ctrl + offset, slot_array + offset);
+        } while (ABSL_PREDICT_FALSE(++match));
+      }
+      if (ABSL_PREDICT_TRUE(g.MaskEmpty())) return iterator_base_end();
+      seq.next();
+    }
+  }
+
   // `policy` is a runtime argument so that tables that differ only in other
   // policy functions share one instantiation.
   template <class Key, size_t kSlotSize, bool kIsDefaultAlloc, bool kSooEnabled,
@@ -2859,28 +2901,20 @@ class raw_hash_set_base {
   std::pair<void*, bool> find_or_prepare_insert_large(
       const PolicyFunctions& policy, Key key) {
     using SlotKeyType = typename SlotEq::SlotKeyType;
-    using Params = HashParams<Hash, SlotKeyType>;
 
     prefetch_heap_block<kIsDefaultAlloc>();
-    const Hash& hash_ref = *reinterpret_cast<const Hash*>(
-        reinterpret_cast<const char*>(this) + kHasherOffset);
     const Eq& eq_ref = *reinterpret_cast<const Eq*>(
         reinterpret_cast<const char*>(this) + kEqOffset);
-    const size_t hash = HashElement<Hash, Params::kIsAbsl, Params::kSeedShift>{
-        hash_ref, common().seed().seed()}(key);
+    const size_t hash = hash_of<SlotKeyType, Hash, kHasherOffset>(key);
     const size_t cap = capacity<sizeof(SlotKeyType), kSlotSize, kSooEnabled>();
     auto seq = probe(ProbeCapacity{cap}, hash);
     const h2_t h2 = H2(hash);
     const ctrl_t* ctrl = control<kIsDefaultAlloc>();
-    using SlotBytes = char[kSlotSize];
-    auto* slot_array =
-        static_cast<SlotBytes*>(this->slot_array<kIsDefaultAlloc>(cap));
+    auto* slot_array = sized_slot_array<kSlotSize, kIsDefaultAlloc>(cap);
     while (true) {
       // Loading the group before slot prefetch decreases critical path latency.
       Group g{ctrl + seq.offset()};
-#ifndef ABSL_HAVE_MEMORY_SANITIZER
-      absl::PrefetchToLocalCache(slot_array + seq.offset());
-#endif
+      prefetch_slot(slot_array + seq.offset());
       // Predict one iteration (common case for insert-hit).
       if (auto match = g.Match(h2); ABSL_PREDICT_TRUE(match)) {
         do {
@@ -2894,7 +2928,10 @@ class raw_hash_set_base {
         size_t target_group_offset = seq.offset();
         void* slot;
         if constexpr (SwisstableGenerationsEnabled()) {
-          using Hasher = typename Params::template HashKeyFor<Key>;
+          using Hasher =
+              typename HashParams<Hash, SlotKeyType>::template HashKeyFor<Key>;
+          const Hash& hash_ref = *reinterpret_cast<const Hash*>(
+              reinterpret_cast<const char*>(this) + kHasherOffset);
           Hasher hash_key{hash_ref, key};
           slot = PrepareInsertLargeGenerationsEnabled(
               common(), policy, hash, mask_empty, target_group_offset,
@@ -3136,6 +3173,8 @@ class raw_hash_set : public raw_hash_set_base {
 
    private:
     using Base::Base;
+    using Base::unchecked_is_end;
+    ABSL_ATTRIBUTE_ALWAYS_INLINE explicit iterator(const Base& b) : Base(b) {}
 
     // Dereferences the iterator without ABSL Hardening iterator invalidation
     // checks.
@@ -3182,9 +3221,8 @@ class raw_hash_set : public raw_hash_set_base {
     }
 
    private:
-    ABSL_ATTRIBUTE_ALWAYS_INLINE bool unchecked_equals(
-        const const_iterator& b) const {
-      return inner_.unchecked_equals(b.inner_);
+    ABSL_ATTRIBUTE_ALWAYS_INLINE bool unchecked_is_end() const {
+      return inner_.unchecked_is_end();
     }
     ABSL_ATTRIBUTE_ALWAYS_INLINE reference unchecked_deref() const {
       return inner_.unchecked_deref();
@@ -3435,8 +3473,7 @@ class raw_hash_set : public raw_hash_set_base {
     return it;
   }
   iterator end() ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    AssertNotDebugCapacity();
-    return iterator(common().generation_ptr());
+    return iterator(iterator_base_end());
   }
 
   const_iterator begin() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
@@ -3726,7 +3763,7 @@ class raw_hash_set : public raw_hash_set_base {
   template <class K = key_type>
   size_type erase(const_key_arg<K> key) {
     auto it = find(key);
-    if (it.unchecked_equals(end())) return 0;
+    if (it.unchecked_is_end()) return 0;
     erase(it);
     return 1;
   }
@@ -3798,7 +3835,7 @@ class raw_hash_set : public raw_hash_set_base {
         src.template erase_meta_only_small<SooEnabled(), sizeof(slot_type)>();
       return;
     }
-    for (auto it = src.begin(), e = src.end(); it != e;) {
+    for (auto it = src.begin(); !it.unchecked_is_end();) {
       auto next = std::next(it);
       if (insert_slot(it.slot()))
         src.template erase_meta_only_large<sizeof(slot_type),
@@ -3829,8 +3866,7 @@ class raw_hash_set : public raw_hash_set_base {
             std::enable_if_t<!std::is_same_v<K, iterator>, int> = 0>
   node_type extract(const_key_arg<K> key) {
     auto it = find(key);
-    return it.unchecked_equals(end()) ? node_type()
-                                      : extract(const_iterator{it});
+    return it.unchecked_is_end() ? node_type() : extract(const_iterator{it});
   }
 
   void swap(raw_hash_set& that) noexcept(
@@ -3916,25 +3952,21 @@ class raw_hash_set : public raw_hash_set_base {
 
   template <class K = key_type>
   bool contains(const_key_arg<K> key) const {
-    // Here neither the iterator returned by `find()` nor `end()` can be invalid
-    // outside of potential thread-safety issues.
-    // `find()`'s return value is constructed, used, and then destructed
-    // all in this context.
-    return !find(key).unchecked_equals(end());
+    return !find(key).unchecked_is_end();
   }
 
   template <class K = key_type>
   std::pair<iterator, iterator> equal_range(const_key_arg<K> key)
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
     auto it = find(key);
-    if (!it.unchecked_equals(end())) return {it, std::next(it)};
+    if (!it.unchecked_is_end()) return {it, std::next(it)};
     return {it, it};
   }
   template <class K = key_type>
   std::pair<const_iterator, const_iterator> equal_range(
       const_key_arg<K> key) const ABSL_ATTRIBUTE_LIFETIME_BOUND {
     auto it = find(key);
-    if (!it.unchecked_equals(end())) return {it, std::next(it)};
+    if (!it.unchecked_is_end()) return {it, std::next(it)};
     return {it, it};
   }
 
@@ -3951,7 +3983,7 @@ class raw_hash_set : public raw_hash_set_base {
     if (outer->capacity() > inner->capacity()) std::swap(outer, inner);
     for (const value_type& elem : *outer) {
       auto it = PolicyTraits::apply(FindElement{*inner}, elem);
-      if (unchecked_equals(it, inner->end())) return false;
+      if (unchecked_is_end(it)) return false;
       // Note: we used key_equal to check for key equality in FindElement, but
       // we may need to do an additional comparison using
       // value_type::operator==. E.g. the keys could be equal and the
@@ -4058,31 +4090,11 @@ class raw_hash_set : public raw_hash_set_base {
   template <class K>
   iterator find_large(absl::type_identity_t<K> key) {
     static_assert(std::is_same_v<K, FindLargeKey<K>>);
-    prefetch_heap_block();
-    const size_t hash = hash_of(key);
-    const size_t cap = common().capacity();
-    ABSL_ASSUME(cap > kMaxSmallCapacity);
-    auto seq = probe(ProbeCapacity{cap}, hash);
-    const h2_t h2 = H2(hash);
-    ctrl_t* ctrl = control();
-    slot_type* slot_array = this->slot_array(cap);
-    while (true) {
-      // Loading the group before slot prefetch decreases critical path latency.
-      Group g{ctrl + seq.offset()};
-#ifndef ABSL_HAVE_MEMORY_SANITIZER
-      absl::PrefetchToLocalCache(slot_array + seq.offset());
-#endif
-      // Predict one iteration (common case for find-hit).
-      if (auto match = g.Match(h2); ABSL_PREDICT_TRUE(match)) {
-        do {
-          const size_t offset = seq.offset(*match);
-          if (ABSL_PREDICT_TRUE(equal_to<K>(key, slot_array + offset)))
-            return iterator_at_ptr(ctrl + offset, slot_array + offset);
-        } while (ABSL_PREDICT_FALSE(++match));
-      }
-      if (ABSL_PREDICT_TRUE(g.MaskEmpty())) return end();
-      seq.next();
-    }
+    return iterator(
+        raw_hash_set_base::find_large<K, sizeof(slot_type), kIsDefaultAlloc,
+                                      hasher, HasherOffset(), key_equal,
+                                      EqOffset(),
+                                      typename PolicyTraits::SlotEq>(key));
   }
 
   // Returns true if the table needs to be sampled. This keeps track of whether
@@ -4157,8 +4169,7 @@ class raw_hash_set : public raw_hash_set_base {
   }
   template <class K>
   ABSL_ATTRIBUTE_ALWAYS_INLINE size_t hash_of(const K& key) const {
-    return HashElement<hasher, kIsAbslHash, kSeedShift>{
-        hash_ref(), common().seed().seed()}(key);
+    return raw_hash_set_base::hash_of<key_type, hasher, HasherOffset()>(key);
   }
   ABSL_ATTRIBUTE_ALWAYS_INLINE size_t hash_of(slot_type* slot) const {
     return PolicyTraits::apply(
@@ -4191,18 +4202,19 @@ class raw_hash_set : public raw_hash_set_base {
   // aren't allowed to do so.
   void swap_common(raw_hash_set& that) {
     using std::swap;
-    if (PolicyTraits::transfer_uses_memcpy()) {
+    if constexpr (!SooEnabled() || PolicyTraits::transfer_uses_memcpy()) {
       swap(common(), that.common());
-      return;
+    } else {
+      if (ABSL_PREDICT_FALSE(this == &that)) return;
+      CommonFields tmp = CommonFields(uninitialized_tag_t{});
+      const bool that_is_full_soo = that.is_full_soo();
+      move_common(that_is_full_soo, that.char_alloc_ref(), tmp,
+                  std::move(that.common()));
+      move_common(is_full_soo(), char_alloc_ref(), that.common(),
+                  std::move(common()));
+      move_common(that_is_full_soo, that.char_alloc_ref(), common(),
+                  std::move(tmp));
     }
-    CommonFields tmp = CommonFields(uninitialized_tag_t{});
-    const bool that_is_full_soo = that.is_full_soo();
-    move_common(that_is_full_soo, that.char_alloc_ref(), tmp,
-                std::move(that.common()));
-    move_common(is_full_soo(), char_alloc_ref(), that.common(),
-                std::move(common()));
-    move_common(that_is_full_soo, that.char_alloc_ref(), common(),
-                std::move(tmp));
   }
 
   // Only references `GetPolicyFunctions()` when generations are enabled, so
@@ -4216,10 +4228,15 @@ class raw_hash_set : public raw_hash_set_base {
 
   template <bool propagate_alloc>
   raw_hash_set& assign_impl(raw_hash_set&& that) {
-    // We don't bother checking for this/that aliasing. We just need to avoid
-    // breaking the invariants in that case.
+    // We don't bother checking for this/that aliasing unless move_common()
+    // could transfer the inline SOO slot that destructor_impl() just destroyed.
+    // Otherwise, we just need to avoid breaking the invariants in that case.
     destructor_impl();
-    move_common(that.is_full_soo(), that.char_alloc_ref(), common(),
+    bool that_is_full_soo = that.is_full_soo();
+    if constexpr (SooEnabled() && !PolicyTraits::transfer_uses_memcpy()) {
+      that_is_full_soo = that_is_full_soo && ABSL_PREDICT_TRUE(this != &that);
+    }
+    move_common(that_is_full_soo, that.char_alloc_ref(), common(),
                 std::move(that.common()));
     hash_ref() = that.hash_ref();
     eq_ref() = that.eq_ref();
@@ -4234,7 +4251,7 @@ class raw_hash_set : public raw_hash_set_base {
     const size_t size = that.size();
     if (size == 0) return *this;
     reserve(size);
-    for (iterator it = that.begin(); it != that.end(); ++it) {
+    for (iterator it = that.begin(); !it.unchecked_is_end(); ++it) {
       insert(std::move(PolicyTraits::element(it.slot())));
       that.destroy(it.slot());
     }
@@ -4390,8 +4407,10 @@ class raw_hash_set : public raw_hash_set_base {
       absl::type_identity_t<K> key) {
     static_assert(std::is_same_v<K, KeyParam<K>>);
     AssertOnFind<K>(key);
-    return is_small() ? find_or_prepare_insert_small<K>(key)
-                      : find_or_prepare_insert_large<FindLargeKey<K>>(key);
+    if (is_small()) return find_or_prepare_insert_small<K>(key);
+    auto res = find_or_prepare_insert_large<FindLargeKey<K>>(key);
+    ABSL_ASSUME(res.first != nullptr);
+    return res;
   }
 
   // Constructs the value in the space pointed by the iterator. This only works
@@ -4433,10 +4452,6 @@ class raw_hash_set : public raw_hash_set_base {
     }
     return {InsertIteratorControl(), slot, common().generation_ptr()};
   }
-  iterator iterator_at_ptr(ctrl_t* ctrl, void* slot)
-      ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return {ctrl, slot, common().generation_ptr()};
-  }
 
   // For use in raw_hash_map and friend functions.
   ABSL_ATTRIBUTE_ALWAYS_INLINE static decltype(auto) unchecked_deref(
@@ -4448,8 +4463,8 @@ class raw_hash_set : public raw_hash_set_base {
     return it.unchecked_deref();
   }
   template <class Iter>
-  ABSL_ATTRIBUTE_ALWAYS_INLINE static bool unchecked_equals(Iter a, Iter b) {
-    return a.unchecked_equals(b);
+  ABSL_ATTRIBUTE_ALWAYS_INLINE static bool unchecked_is_end(const Iter& it) {
+    return it.unchecked_is_end();
   }
 
  private:
@@ -4821,7 +4836,7 @@ struct HashtableDebugAccess<Set, std::void_t<typename Set::raw_hash_set>> {
     if (per_slot != ~size_t{}) {
       m += per_slot * c.size();
     } else {
-      for (auto it = c.begin(); it != c.end(); ++it) {
+      for (auto it = c.begin(); !it.unchecked_is_end(); ++it) {
         m += Traits::space_used(it.slot());
       }
     }

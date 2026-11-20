@@ -843,6 +843,15 @@ ABSL_ATTRIBUTE_ALWAYS_INLINE inline void InitializeThreeElementsControlBytes(
   // new_ctrl after 2nd store  =      EHNSEHNEEEE
 }
 
+size_t AllocatedCapacityForInfoz(const CommonFields& c) {
+  return c.capacity() - c.blocked_element_count();
+}
+
+ABSL_ATTRIBUTE_COLD ABSL_ATTRIBUTE_NOINLINE void ReportClearToInfoz(
+    CommonFields& c) {
+  c.infoz().RecordStorageChanged(0, AllocatedCapacityForInfoz(c));
+}
+
 // Clears the backing array and sets the common fields to the default values for
 // empty non-allocated tables. REQUIRES: c.capacity > policy.soo_capacity.
 void ClearBackingArrayNoReuse(CommonFields& c,
@@ -952,7 +961,9 @@ void ClearBackingArray(CommonFields& c,
     ResetCtrl(cap, ctrl, slot_array, policy.slot_size, blocked_element_count);
     ResetGrowthLeft(cap, blocked_element_count, c);
     ABSL_SWISSTABLE_ASSERT(c.blocked_element_count() == blocked_element_count);
-    c.infoz().RecordStorageChanged(0, c.capacity());
+    if (c.has_infoz()) {
+      ReportClearToInfoz(c);
+    }
   } else {
     ClearBackingArrayNoReuse(c, policy);
   }
@@ -995,6 +1006,11 @@ void Clear(CommonFields& c, const AllocPolicy& __restrict policy,
         destroy_slot(&c, SingleSlotAddress<kSooEnabled>(c));
       }
       DecrementSmallSize<kSooEnabled>(c);
+      if constexpr (!kSooEnabled) {
+        c.increment_generation();
+        SanitizerPoisonMemoryRegion(
+            SingleSlotAddress</*kSooEnabled=*/false>(c), policy.slot_size);
+      }
       c.infoz().RecordStorageChanged(0, cap);
     }
   } else {
@@ -1129,7 +1145,8 @@ size_t FindNewPositionsAndTransferSlots(
 ABSL_ATTRIBUTE_COLD ABSL_ATTRIBUTE_NOINLINE void ReportGrowthToInfozImpl(
     CommonFields& common, HashtablezInfoHandle infoz, size_t hash,
     size_t total_probe_length, size_t distance_from_desired) {
-  infoz.RecordStorageChanged(common.size() - 1, common.capacity());
+  infoz.RecordStorageChanged(common.size() - 1,
+                             AllocatedCapacityForInfoz(common));
   infoz.RecordRehash(total_probe_length);
   infoz.RecordInsertMiss(hash, distance_from_desired);
   common.set_has_infoz();
@@ -1201,30 +1218,25 @@ ABSL_ATTRIBUTE_COLD ABSL_ATTRIBUTE_NOINLINE void ReportGrowthToInfoz(
                           total_probe_length, distance_from_desired);
 }
 
-// Passed as `total_probe_length` to `ReportResizeToInfoz` when the resize must
-// not be reported as a rehash.
-constexpr size_t kNoRehash = ~size_t{};
-
 ABSL_ATTRIBUTE_COLD ABSL_ATTRIBUTE_NOINLINE void ReportResizeToInfoz(
     CommonFields& common, HashtablezInfoHandle infoz,
     size_t total_probe_length) {
-  infoz.RecordStorageChanged(common.size(), common.capacity());
-  if (total_probe_length != kNoRehash) {
-    infoz.RecordRehash(total_probe_length);
-  }
+  infoz.RecordStorageChanged(common.size(), AllocatedCapacityForInfoz(common));
+  infoz.RecordRehash(total_probe_length);
   common.set_has_infoz();
   common.set_infoz(infoz);
 }
 
 ABSL_ATTRIBUTE_COLD ABSL_ATTRIBUTE_NOINLINE void
-ReportResizeToInfozAndForceSample(
-    CommonFields& common, const AllocPolicy& __restrict policy,
-    size_t total_probe_length) {
-  HashtablezInfoHandle infoz = ForcedTrySample(policy);
-  infoz.RecordStorageChanged(common.size(), common.capacity());
-  infoz.RecordRehash(total_probe_length);
-  common.set_has_infoz();
-  common.set_infoz(infoz);
+ReportResizeToInfozAndForceSample(CommonFields& common,
+                                  const AllocPolicy& __restrict policy) {
+  ReportResizeToInfoz(common, ForcedTrySample(policy),
+                      /*total_probe_length=*/0);
+}
+
+ABSL_ATTRIBUTE_COLD ABSL_ATTRIBUTE_NOINLINE void ReportReserveToInfoz(
+    CommonFields& common, size_t new_size) {
+  common.infoz().RecordReservation(new_size);
 }
 
 struct BackingArrayPtrs {
@@ -1290,7 +1302,7 @@ void ResizeEmptyNonAllocatedTableImpl(
   ResetGrowthLeft(new_capacity, blocked_element_count, common);
 
   if (ABSL_PREDICT_FALSE(has_infoz)) {
-    ReportResizeToInfozAndForceSample(common, policy, 0);
+    ReportResizeToInfozAndForceSample(common, policy);
   }
 }
 
@@ -1391,9 +1403,7 @@ ABSL_ATTRIBUTE_NOINLINE void ResizeTableWithSeedChangeImpl(
   }
   ResetGrowthLeft(new_capacity, common.size(), common);
   if (ABSL_PREDICT_FALSE(has_infoz)) {
-    // Forced sampling of a full SOO table is not reported as a rehash.
-    ReportResizeToInfoz(common, infoz,
-                        force_sample_soo ? kNoRehash : total_probe_length);
+    ReportResizeToInfoz(common, infoz, total_probe_length);
   }
 }
 
@@ -2083,6 +2093,7 @@ void* PrepareInsertSmallNonSoo(CommonFields& common,
   ABSL_SWISSTABLE_ASSERT(!policy.alloc_policy->soo_enabled);
   const bool is_empty = common.empty_when_small();
   if (common.capacity() == 1 && is_empty) {
+    common.maybe_increment_generation_on_insert();
     IncrementSmallSizeNonSoo(common, *policy.alloc_policy);
     // Compute before `RecordInsertMissCold` to avoid reloading `control_`.
     void* res = common.single_non_soo_slot();
@@ -2292,7 +2303,9 @@ void ReserveEmptyNonAllocatedTableToFitNewSize(
       /*force_infoz=*/false);
   // This is after resize, to ensure that we have completed the allocation
   // and have potentially sampled the hashtable.
-  common.infoz().RecordReservation(new_size);
+  if (common.has_infoz()) {
+    ReportReserveToInfoz(common, new_size);
+  }
 }
 
 // Type erased version of raw_hash_set::reserve for tables that have an
@@ -2313,7 +2326,9 @@ ABSL_ATTRIBUTE_NOINLINE void ReserveAllocatedTable(
   // TODO(b/382423690): consider using GrowToNextCapacity, when applicable.
   ResizeTableWithSeedChangeImpl(common, policy, new_capacity,
                                 /*force_sample_soo=*/false);
-  common.infoz().RecordReservation(new_size);
+  if (common.has_infoz()) {
+    ReportReserveToInfoz(common, new_size);
+  }
 }
 
 // Grows a full SOO table to the next capacity and forces it to be sampled. SOO
@@ -2476,9 +2491,12 @@ void Rehash(CommonFields& common, const PolicyFunctions& __restrict policy,
       ResizeTableWithSeedChangeImpl(common, policy, new_capacity,
                                     /*force_sample_soo=*/false);
     }
-    // This is after resize, to ensure that we have completed the allocation
-    // and have potentially sampled the hashtable.
-    common.infoz().RecordReservation(n);
+  }
+  // This is after resize, to ensure that we have completed the allocation and
+  // have potentially sampled the hashtable. Also record when `new_capacity <=
+  // cap` so sampled SOO tables report leaving SOO capacity.
+  if (common.has_infoz()) {
+    ReportReserveToInfoz(common, n);
   }
 }
 
@@ -2575,6 +2593,9 @@ void ReserveTableToFitNewSize(CommonFields& common,
           ? cap
           : common.size() + common.GetGrowthLeftTotalSlow(cap);
   if (new_size <= max_size_before_growth) {
+    if (common.has_infoz()) {
+      ReportReserveToInfoz(common, new_size);
+    }
     return;
   }
   ReserveAllocatedTable(common, policy, new_size);

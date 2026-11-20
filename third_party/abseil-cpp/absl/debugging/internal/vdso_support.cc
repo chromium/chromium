@@ -181,6 +181,7 @@ long VDSOSupport::GetCPUViaSyscall(unsigned *cpu,  // NOLINT(runtime/int)
 }
 
 // Use fast __vdso_getcpu if available.
+ABSL_ATTRIBUTE_NO_SANITIZE_CFI
 long VDSOSupport::InitAndGetCPU(unsigned *cpu,  // NOLINT(runtime/int)
                                 void *x, void *y) {
   Init();

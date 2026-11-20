@@ -105,4 +105,41 @@ TEST(Attributes, NoSanitizeCfi) {
   EXPECT_EQ(NoSanitizeCfiCall([](int x) { return x + 1; }, 41), 42);
 }
 
+// Verifies compile-time appertainment when C++11 `[[...]]` sanitizer/cold
+// attributes are stacked together and before GNU `__attribute__((noinline))` on
+// class member functions and member function templates.
+class StackedNoSanitizeTarget {
+ public:
+  ABSL_ATTRIBUTE_NO_SANITIZE_ADDRESS ABSL_ATTRIBUTE_NO_SANITIZE_MEMORY int
+  AddressAndMemory(int value) const {
+    return value + 1;
+  }
+
+#if !defined(_MSC_VER) || defined(__clang__)
+  // On native MSVC under ASan, ABSL_ATTRIBUTE_NO_SANITIZE_ADDRESS expands to
+  // __declspec(no_sanitize_address) while ABSL_ATTRIBUTE_NOINLINE expands to
+  // [[msvc::noinline]], which cannot follow __declspec.
+  ABSL_ATTRIBUTE_NO_SANITIZE_ADDRESS ABSL_ATTRIBUTE_NOINLINE int
+  AddressAndNoInline(int value) const {
+    return value + 2;
+  }
+
+  template <typename T>
+  ABSL_ATTRIBUTE_COLD ABSL_ATTRIBUTE_NO_SANITIZE_ADDRESS ABSL_ATTRIBUTE_NOINLINE
+      T
+      ColdAddressAndNoInline(T value) const {
+    return value + 3;
+  }
+#endif
+};
+
+TEST(Attributes, StackedNoSanitizeMemberFunctions) {
+  StackedNoSanitizeTarget target;
+  EXPECT_EQ(target.AddressAndMemory(10), 11);
+#if !defined(_MSC_VER) || defined(__clang__)
+  EXPECT_EQ(target.AddressAndNoInline(20), 22);
+  EXPECT_EQ(target.ColdAddressAndNoInline(30), 33);
+#endif
+}
+
 }  // namespace

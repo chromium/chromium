@@ -318,6 +318,30 @@ DecomposeValue(F&& f, Arg&& arg) {
   return std::forward<F>(f)(key, std::forward<Arg>(arg));
 }
 
+// SFINAE probe checking that `PassedKey` can be hashed and compared against
+// `ContainerKey`.
+template <class ContainerKey, class Hash, class Eq>
+struct RequireUsableKey {
+  template <class PassedKey, class... Args>
+  std::pair<
+      decltype(std::declval<const Hash&>()(std::declval<const PassedKey&>())),
+      decltype(std::declval<const Eq&>()(std::declval<const ContainerKey&>(),
+                                         std::declval<const PassedKey&>()))>*
+  operator()(const PassedKey&, const Args&...) const;
+};
+
+// True if `Policy::apply` can extract a key from `Ts...` that satisfies
+// `RequireUsableKey<Policy::key_type, Hash, Eq>`.
+template <class E, class Policy, class Hash, class Eq, class... Ts>
+struct IsDecomposable : std::false_type {};
+
+template <class Policy, class Hash, class Eq, class... Ts>
+struct IsDecomposable<
+    std::void_t<decltype(Policy::apply(
+        RequireUsableKey<typename Policy::key_type, Hash, Eq>(),
+        std::declval<Ts>()...))>,
+    Policy, Hash, Eq, Ts...> : std::true_type {};
+
 // Helper functions for asan and msan.
 inline void SanitizerPoisonMemoryRegion(const void* m, size_t s) {
 #ifdef ABSL_HAVE_ADDRESS_SANITIZER

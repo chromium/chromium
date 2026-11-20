@@ -310,7 +310,7 @@ class raw_hash_map : public raw_hash_set<Policy, Params...> {
   template <class K = key_type, class P = Policy>
   MappedReference<P> at(const_key_arg<K> key) ABSL_ATTRIBUTE_LIFETIME_BOUND {
     auto it = this->find(key);
-    if (this->unchecked_equals(it, this->end())) {
+    if (this->unchecked_is_end(it)) {
       ThrowStdOutOfRange("absl::container_internal::raw_hash_map<>::at");
     }
     return Policy::value(&this->unchecked_deref(it));
@@ -320,7 +320,7 @@ class raw_hash_map : public raw_hash_set<Policy, Params...> {
   MappedConstReference<P> at(const_key_arg<K> key) const
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
     auto it = this->find(key);
-    if (this->unchecked_equals(it, this->end())) {
+    if (this->unchecked_is_end(it)) {
       ThrowStdOutOfRange("absl::container_internal::raw_hash_map<>::at");
     }
     return Policy::value(&this->unchecked_deref(it));
