@@ -24,15 +24,12 @@
 @property(nonatomic, weak) id<GeminiCameraDelegate> cameraHandler;
 @property(nonatomic, weak) id<GeminiConsentProviderDelegate>
     consentProviderHandler;
+@property(nonatomic, weak) id<GeminiCustomUIDelegate> customUIHandler;
 @property(nonatomic, weak) id<GeminiPageStateChangeDelegate>
     pageStateChangeHandler;
 @property(nonatomic, weak) id<GeminiSessionDelegate> sessionHandler;
 @property(nonatomic, weak) id<GeminiSuggestionDelegate> suggestionHandler;
 @property(nonatomic, weak) id<GeminiTabPickerDelegate> tabPickerHandler;
-
-// TODO(crbug.com/582724370): Remove optional when internal is implemented.
-@optional
-@property(nonatomic, weak) id<GeminiCustomUIDelegate> customUIHandler;
 
 @end
 

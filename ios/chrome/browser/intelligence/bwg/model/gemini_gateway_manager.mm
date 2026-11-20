@@ -77,11 +77,7 @@
   _gateway.consentProviderHandler = _consentProviderHandler;
 
   _customUIHandler = [[GeminiCustomUIHandler alloc] init];
-  // TODO(crbug.com/582724370): Remove the check when internal implements the
-  // property.
-  if ([_gateway respondsToSelector:@selector(setCustomUIHandler:)]) {
-    _gateway.customUIHandler = _customUIHandler;
-  }
+  _gateway.customUIHandler = _customUIHandler;
 
   if (gemini::IsFeatureAvailable(gemini::Feature::kImageRemix, profile)) {
     _cameraHandler =
