@@ -34,9 +34,20 @@ void InterestButtonPseudoElement::HandleButtonActivation() {
   CHECK(RuntimeEnabledFeatures::HTMLInterestForInterestButtonPseudoEnabled(
       GetDocument().GetExecutionContext()));
   Element& invoker = UltimateOriginatingElement();
+  auto* popover = DynamicTo<HTMLElement>(invoker.InterestForElement());
+  const bool popover_was_open = popover && popover->popoverOpen();
   invoker.ShowInterestNow();
-  // If the target popover is now open and implicitly anchored to the
-  // originating element, anchor it to this ::interest-button instead.
+  // If this activation opened the target popover, make sure it is anchored to
+  // this ::interest-button, even if it isn't hovered (e.g. for touch input).
+  // A popover that was already open keeps its existing anchor, to avoid
+  // moving it.
+  if (!popover_was_open) {
+    AnchorTargetPopoverToSelf();
+  }
+}
+
+void InterestButtonPseudoElement::AnchorTargetPopoverToSelf() {
+  Element& invoker = UltimateOriginatingElement();
   if (auto* popover = DynamicTo<HTMLElement>(invoker.InterestForElement());
       popover && popover->popoverOpen() &&
       popover->implicitAnchor() == &invoker &&

@@ -141,6 +141,7 @@
 #include "third_party/blink/renderer/core/dom/focusable.h"
 #include "third_party/blink/renderer/core/dom/geometry_utils.h"
 #include "third_party/blink/renderer/core/dom/indexed_pseudo_element.h"
+#include "third_party/blink/renderer/core/dom/interest_button_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/interest_invoker_target_data.h"
 #include "third_party/blink/renderer/core/dom/invalidate_node_list_caches_scope.h"
 #include "third_party/blink/renderer/core/dom/invoker_data.h"
@@ -2074,7 +2075,18 @@ bool Element::InterestGained(Element* target, InterestState state) {
                                 /*exception_state=*/nullptr,
                                 /*include_event_handler_text=*/true,
                                 &GetDocument())) {
+      const bool popover_was_open = popover->popoverOpen();
       popover->InvokePopover(*this, PopoverInvokedVia::kInterest);
+      // If this opened the popover, and interest was shown by hovering this
+      // element's ::interest-button, implicitly anchor the popover to the
+      // ::interest-button rather than to this element. A popover that was
+      // already open keeps its existing anchor, to avoid moving it.
+      if (auto* interest_button = DynamicTo<InterestButtonPseudoElement>(
+              GetPseudoElement(kPseudoIdInterestButton));
+          interest_button && !popover_was_open &&
+          interest_button->IsHovered()) {
+        interest_button->AnchorTargetPopoverToSelf();
+      }
     }
   }
   return true;

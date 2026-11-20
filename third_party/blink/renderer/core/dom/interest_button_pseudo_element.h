@@ -22,6 +22,11 @@ class InterestButtonPseudoElement : public PseudoElement {
 
   FocusableState SupportsFocus(UpdateBehavior update_behavior) const final;
 
+  // If the originating element's interest target is an open popover that is
+  // implicitly anchored to the originating element, anchor it to this
+  // ::interest-button instead.
+  void AnchorTargetPopoverToSelf();
+
  private:
   void HandleButtonActivation();
 };
