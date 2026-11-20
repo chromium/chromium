@@ -26,9 +26,11 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/win/taskbar_manager.h"
 #include "chrome/common/buildflags.h"
+#include "chrome/common/pref_names.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/omnibox/browser/vector_icons.h"
+#include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/browser_thread.h"
@@ -286,11 +288,14 @@ void PinInfoBarController::OnShouldOfferToPinResult(
   // * it's okay to pin to the taskbar
   // * this is a normal browser window
   // * the current profile is not an incognito, isolated mode, or guest profile
+  // * promotions are not disabled by policy
   const auto* profile = browser_->GetProfile();
+  const auto* local_state = g_browser_process->local_state();
   if (!should_offer_to_pin ||
       browser_->GetType() != BrowserWindowInterface::TYPE_NORMAL ||
       profile->IsPrimaryOTRProfileWithRegularParent() ||
-      profile->IsGuestSession()) {
+      profile->IsGuestSession() ||
+      (local_state && !local_state->GetBoolean(prefs::kPromotionsEnabled))) {
     std::move(done_callback).Run(false);
     return;
   }
