@@ -2,58 +2,48 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './settings_category_default_radio_group.js';
 import './chooser_exception_list.js';
-import './site_settings_shared.css.js';
+import './settings_category_default_radio_group.js';
 import '../settings_page/settings_subpage.js';
-import '../settings_shared.css.js';
 
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
+import {SettingsViewMixinLit} from '../settings_page/settings_view_mixin_lit.js';
+import {getCss as getSettingsSharedCss} from '../settings_shared_lit.css.js';
 
-import {ChooserType, ContentSettingsTypes} from './constants.js';
-import {getTemplate} from './smart_card_readers_page.html.js';
+import {getCss as getSiteSettingsSharedCss} from './site_settings_shared_lit.css.js';
+import {getHtml} from './smart_card_readers_page.html.js';
 
-const SettingsSmartCardReadersPageElementBase =
-    SettingsViewMixin(PolymerElement);
+const SmartCardReadersPageElementBase = SettingsViewMixinLit(CrLitElement);
 
-export class SettingsSmartCardReadersPageElement extends
-    SettingsSmartCardReadersPageElementBase {
+export class SmartCardReadersPageElement extends
+    SmartCardReadersPageElementBase {
   static get is() {
     return 'settings-smart-card-readers-page';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return [
+      getSettingsSharedCss(),
+      getSiteSettingsSharedCss(),
+    ];
   }
 
-  static get properties() {
-    return {
-      contentSettingsTypeEnum_: {
-        type: Object,
-        value: ContentSettingsTypes,
-      },
-
-      chooserTypeEnum_: {
-        type: Object,
-        value: ChooserType,
-      },
-    };
+  override render() {
+    return getHtml.bind(this)();
   }
 
-  // SettingsViewMixin implementation.
+  // SettingsViewMixinLit implementation.
   override focusBackButton() {
-    this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
+    this.shadowRoot.querySelector('settings-subpage')!.focusBackButton();
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    'settings-smart-card-readers-page': SettingsSmartCardReadersPageElement;
+    'settings-smart-card-readers-page': SmartCardReadersPageElement;
   }
 }
 
 customElements.define(
-    SettingsSmartCardReadersPageElement.is,
-    SettingsSmartCardReadersPageElement);
+    SmartCardReadersPageElement.is, SmartCardReadersPageElement);

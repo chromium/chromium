@@ -5,7 +5,7 @@
 // clang-format off
 import 'chrome://settings/lazy_load.js';
 
-import type {SettingsSmartCardReadersPageElement} from 'chrome://settings/lazy_load.js';
+import type {SmartCardReadersPageElement} from 'chrome://settings/lazy_load.js';
 import {ChooserType, ContentSettingsTypes, SiteSettingsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {loadTimeData, resetRouterForTesting} from 'chrome://settings/settings.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -14,7 +14,7 @@ import {TestSiteSettingsBrowserProxy} from './test_site_settings_browser_proxy.j
 
 // clang-format on
 suite('SmartCardReadersPageSettings', function() {
-  let testElement: SettingsSmartCardReadersPageElement;
+  let testElement: SmartCardReadersPageElement;
   let browserProxy: TestSiteSettingsBrowserProxy;
 
   suiteSetup(function() {
@@ -35,13 +35,13 @@ suite('SmartCardReadersPageSettings', function() {
   });
 
   test('CorrectTypesArePassed', function() {
-    const radioGroup = testElement.shadowRoot!.querySelector(
+    const radioGroup = testElement.shadowRoot.querySelector(
         'settings-category-default-radio-group');
     assertTrue(!!radioGroup);
     assertEquals(ContentSettingsTypes.SMART_CARD_READERS, radioGroup.category);
 
     const chooserExceptionList =
-        testElement.shadowRoot!.querySelector('chooser-exception-list');
+        testElement.shadowRoot.querySelector('chooser-exception-list');
     assertTrue(!!chooserExceptionList);
     assertEquals(
         ChooserType.SMART_CARD_READERS_DEVICES,

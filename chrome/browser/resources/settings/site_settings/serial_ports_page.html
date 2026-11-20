@@ -1,19 +1,21 @@
-<style include="settings-shared site-settings-shared"></style>
+<!-- #html_wrapper_imports_start
+import {ChooserType, ContentSettingsTypes} from './constants.js';
+#html_wrapper_imports_end -->
 <settings-subpage page-title="$i18n{siteSettingsSerialPorts}"
     learn-more-url="$i18n{chooserSerialOverviewUrl}"
-    route-path$="[[routePath]]">
+    route-path="${this.routePath}">
   <div class="content-settings-header secondary">
     $i18n{siteSettingsSerialPortsDescription}
   </div>
   <settings-category-default-radio-group
-      category="[[contentSettingsTypesEnum_.SERIAL_PORTS]]"
+      .category="${ContentSettingsTypes.SERIAL_PORTS}"
       ask-option-label="$i18n{siteSettingsSerialPortsAsk}"
       ask-option-icon="privacy:developer-board"
       block-option-label="$i18n{siteSettingsSerialPortsBlocked}"
       block-option-icon="privacy:developer-board-off">
   </settings-category-default-radio-group>
   <chooser-exception-list
-      category="[[contentSettingsTypesEnum_.SERIAL_PORTS]]"
-      chooser-type="[[chooserTypeEnum_.SERIAL_PORTS]]">
+      .category="${ContentSettingsTypes.SERIAL_PORTS}"
+      .chooserType="${ChooserType.SERIAL_PORTS}">
   </chooser-exception-list>
 </settings-subpage>

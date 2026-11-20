@@ -1,12 +1,13 @@
-<style include="settings-shared site-settings-shared"></style>
+<!-- #html_wrapper_imports_start
+import {ChooserType, ContentSettingsTypes} from './constants.js';
+#html_wrapper_imports_end -->
 <settings-subpage page-title="$i18n{siteSettingsSmartCardReaders}"
-    search-label="$i18n{siteSettingsAllSitesSearch}"
-    route-path$="[[routePath]]">
+    route-path="${this.routePath}">
   <div class="content-settings-header secondary">
     $i18n{siteSettingsSmartCardReadersDescription}
   </div>
   <settings-category-default-radio-group
-      category="[[contentSettingsTypeEnum_.SMART_CARD_READERS]]"
+      .category="${ContentSettingsTypes.SMART_CARD_READERS}"
       description=
           "$i18n{siteSettingsSmartCardReadersDefaultDescription}"
       ask-option-label=
@@ -16,7 +17,7 @@
       block-option-icon="privacy:smart-card-reader-off">
   </settings-category-default-radio-group>
   <chooser-exception-list
-      category="[[contentSettingsTypeEnum_.SMART_CARD_READERS]]"
-      chooser-type="[[chooserTypeEnum_.SMART_CARD_READERS_DEVICES]]">
+      .category="${ContentSettingsTypes.SMART_CARD_READERS}"
+      .chooserType="${ChooserType.SMART_CARD_READERS_DEVICES}">
   </chooser-exception-list>
 </settings-subpage>

@@ -350,7 +350,7 @@ export {SiteSettingsMixin} from './site_settings/site_settings_mixin.js';
 export {SiteSettingsMixinLit} from './site_settings/site_settings_mixin_lit.js';
 export {SettingsSiteSettingsPageElement} from './site_settings/site_settings_page.js';
 // <if expr="enable_smart_card">
-export {SettingsSmartCardReadersPageElement} from './site_settings/smart_card_readers_page.js';
+export {SmartCardReadersPageElement} from './site_settings/smart_card_readers_page.js';
 // </if>
 export {SoundPageElement} from './site_settings/sound_page.js';
 export {StorageAccessSiteListElement} from './site_settings/storage_access_site_list.js';
