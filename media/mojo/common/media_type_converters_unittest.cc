@@ -10,6 +10,7 @@
 #include <array>
 #include <memory>
 #include <variant>
+#include <vector>
 
 #include "base/containers/span.h"
 #include "media/base/audio_buffer.h"
@@ -45,6 +46,11 @@ void CompareAudioBuffers(SampleFormat sample_format,
   EXPECT_EQ(original.channel_layout(), result.channel_layout());
   EXPECT_EQ(original.end_of_stream(), result.end_of_stream());
 
+  if (IsBitstream(sample_format)) {
+    CompareBytes(original.bitstream_data(), result.bitstream_data());
+    return;
+  }
+
   // Compare bytes in buffer.
   const size_t bytes_per_channel =
       original.frame_count() * SampleFormatToBytesPerChannel(sample_format);
@@ -61,6 +67,10 @@ void CompareAudioBuffers(SampleFormat sample_format,
   CompareBytes(original.interleaved_data().first(interleaved_bytes),
                result.interleaved_data().first(interleaved_bytes));
 }
+
+constexpr ChannelLayout kDefaultChannelLayout = CHANNEL_LAYOUT_STEREO;
+constexpr int kDefaultChannelCount = 2;
+constexpr int kDefaultSampleRate = 48000;
 
 }  // namespace
 
@@ -266,11 +276,22 @@ TEST(MediaTypeConvertersTest, ConvertAudioBuffer_EOS) {
   // Original.
   scoped_refptr<AudioBuffer> buffer(AudioBuffer::CreateEOSBuffer());
 
-  // Convert to and back.
+  // Convert to mojom and verify we took the EOS early return (`timestamp`
+  // stays zero rather than `kNoTimestamp`).
   mojom::AudioBufferPtr ptr(mojom::AudioBuffer::From(*buffer));
-  scoped_refptr<AudioBuffer> result(ptr.To<scoped_refptr<AudioBuffer>>());
+  ASSERT_TRUE(ptr);
+  EXPECT_TRUE(ptr->end_of_stream);
+  EXPECT_EQ(ptr->timestamp, base::TimeDelta());
 
-  // Compare.
+  // Round-trip through Mojo wire serialization to validate default-initialized
+  // fields, then convert back.
+  std::vector<uint8_t> serialized = mojom::AudioBuffer::Serialize(&ptr);
+  mojom::AudioBufferPtr deserialized_ptr;
+  ASSERT_TRUE(mojom::AudioBuffer::Deserialize(serialized, &deserialized_ptr));
+
+  scoped_refptr<AudioBuffer> result(
+      deserialized_ptr.To<scoped_refptr<AudioBuffer>>());
+  ASSERT_TRUE(result);
   EXPECT_TRUE(result->end_of_stream());
 }
 
@@ -309,26 +330,60 @@ TEST(MediaTypeConvertersTest, ConvertAudioBuffer_FLOAT) {
 }
 
 TEST(MediaTypeConvertersTest, ConvertAudioBuffer_PlanarWithChannelPadding) {
-  constexpr ChannelLayout kChannelLayout = CHANNEL_LAYOUT_STEREO;
-  constexpr int kChannelCount = 2;
-  constexpr int kSampleRate = 48000;
   constexpr int kFrameCount = 3;
   constexpr size_t kPayloadSize =
-      kChannelCount * kFrameCount *
+      kDefaultChannelCount * kFrameCount *
       SampleFormatToBytesPerChannel(kSampleFormatPlanarF32);
   const base::TimeDelta start_time = base::Seconds(1000.0);
   scoped_refptr<AudioBuffer> buffer = MakeAudioBuffer<float>(
-      kSampleFormatPlanarF32, kChannelLayout, kChannelCount, kSampleRate, 0.0f,
-      1.0f, kFrameCount, start_time);
+      kSampleFormatPlanarF32, kDefaultChannelLayout, kDefaultChannelCount,
+      kDefaultSampleRate, 0.0f, 1.0f, kFrameCount, start_time);
 
   mojom::AudioBufferPtr ptr(mojom::AudioBuffer::From(*buffer));
 
-  // Planar channel allocations are aligned, so this payload uses padding in
-  // the serialized data between channel starts.
-  EXPECT_GT(ptr->data.size(), kPayloadSize);
+  // Planar channels are serialized compactly without inter-channel alignment
+  // padding.
+  EXPECT_EQ(ptr->data.size(), kPayloadSize);
 
   scoped_refptr<AudioBuffer> result(ptr.To<scoped_refptr<AudioBuffer>>());
   CompareAudioBuffers(kSampleFormatPlanarF32, *buffer, *result);
+}
+
+TEST(MediaTypeConvertersTest, ConvertAudioBuffer_Trimmed) {
+  // Trimming an AudioBuffer reduces its frame count, but its underlying memory
+  // allocation might remain larger. The serialization process must only copy
+  // the valid, trimmed data.
+  constexpr int kFrames = 100;
+  constexpr int kTrimFrames = 20;
+  scoped_refptr<AudioBuffer> buffer = MakeAudioBuffer<float>(
+      kSampleFormatPlanarF32, kDefaultChannelLayout, kDefaultChannelCount,
+      kDefaultSampleRate, 0.0f, 1.0f, kFrames, base::TimeDelta());
+  buffer->TrimEnd(kTrimFrames);
+
+  mojom::AudioBufferPtr ptr(mojom::AudioBuffer::From(*buffer));
+  EXPECT_EQ(ptr->frame_count, buffer->frame_count());
+  EXPECT_EQ(ptr->data.size(),
+            static_cast<size_t>(kDefaultChannelCount * buffer->frame_count()) *
+                sizeof(float));
+
+  scoped_refptr<AudioBuffer> result(ptr.To<scoped_refptr<AudioBuffer>>());
+  CompareAudioBuffers(kSampleFormatPlanarF32, *buffer, *result);
+}
+
+TEST(MediaTypeConvertersTest, ConvertAudioBuffer_Bitstream) {
+  constexpr int kFrameCount = 100;
+  const uint8_t kFakeBitstreamData[] = {0x0b, 0x77, 0x01, 0x02, 0x03, 0x04};
+
+  scoped_refptr<AudioBuffer> buffer = AudioBuffer::CopyBitstreamFrom(
+      kSampleFormatAc3, kDefaultChannelLayout, kDefaultChannelCount,
+      kDefaultSampleRate, kFrameCount, kFakeBitstreamData, base::Seconds(1.0));
+
+  mojom::AudioBufferPtr ptr(mojom::AudioBuffer::From(*buffer));
+  EXPECT_EQ(base::as_byte_span(ptr->data), base::span(kFakeBitstreamData));
+
+  scoped_refptr<AudioBuffer> result(ptr.To<scoped_refptr<AudioBuffer>>());
+  ASSERT_TRUE(result);
+  CompareAudioBuffers(kSampleFormatAc3, *buffer, *result);
 }
 
 TEST(MediaTypeConvertersTest, ConvertAudioBuffer_DISCRETE) {

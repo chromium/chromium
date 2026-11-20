@@ -31,20 +31,9 @@
 #include "media/base/media_export.h"
 #include "media/base/sample_format.h"
 
-namespace mojo {
-template <typename T, typename U>
-struct TypeConverter;
-template <typename T>
-class StructPtr;
-}  // namespace mojo
-
 namespace media {
 class AudioBufferMemoryPool;
 class AudioBus;
-
-namespace mojom {
-class AudioBuffer;
-}
 
 // An audio buffer that takes a copy of the data passed to it, holds it, and
 // copies it into an AudioBus when needed. Also supports an end of stream
@@ -344,11 +333,6 @@ class MEDIA_EXPORT AudioBuffer
 
  private:
   friend class base::RefCountedThreadSafe<AudioBuffer>;
-
-  // mojo::TypeConverter added as a friend so that AudioBuffer can be
-  // transferred across a mojo connection.
-  friend struct mojo::TypeConverter<mojo::StructPtr<mojom::AudioBuffer>,
-                                    AudioBuffer>;
 
   virtual ~AudioBuffer();
 
