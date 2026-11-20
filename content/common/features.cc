@@ -64,6 +64,12 @@ BASE_FEATURE(kAndroidDownloadableFontsMatching,
 // was skipped while the keyboard was hidden. Kill switch for b/500230096.
 BASE_FEATURE(kAndroidRestartInputAfterHiddenStateUpdate,
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Captures microphone audio in-process via AudioRecord and pipes it to
+// Android's SpeechRecognizer via EXTRA_AUDIO_SOURCE so foreground Chrome
+// retains microphone priority when other processes record concurrently.
+BASE_FEATURE(kAndroidSpeechRecognitionInProcessAudio,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN)

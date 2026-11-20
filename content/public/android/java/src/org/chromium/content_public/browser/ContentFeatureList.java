@@ -171,6 +171,21 @@ public class ContentFeatureList {
                     ContentInternalFeatures.EARLY_TOP_APP_FOR_SANDBOXED_RENDERER,
                     true);
 
+    private static final MutableFlagWithSafeDefault sAndroidSpeechRecognitionInProcessAudio =
+            new MutableFlagWithSafeDefault(
+                    ContentFeatureMap.getInstance(),
+                    ContentInternalFeatures.ANDROID_SPEECH_RECOGNITION_IN_PROCESS_AUDIO,
+                    true);
+
+    /**
+     * Checks "AndroidSpeechRecognitionInProcessAudio" feature flag, requiring at least Android SDK
+     * 33 (Tiramisu) where {@code RecognizerIntent.EXTRA_AUDIO_SOURCE} was introduced.
+     */
+    public static boolean isAndroidSpeechRecognitionInProcessAudioEnabled() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+                && sAndroidSpeechRecognitionInProcessAudio.isEnabled();
+    }
+
     public static final MutableFlagWithSafeDefault sSpareRendererProcessPriority =
             new MutableFlagWithSafeDefault(
                     ContentFeatureMap.getInstance(),
