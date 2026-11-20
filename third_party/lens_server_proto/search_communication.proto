@@ -113,6 +113,12 @@ message ClientToSearchMessage {
     // INPUT_TYPE_LENS_IMAGE for a Lens region crop and INPUT_TYPE_BROWSER_TAB
     // per attached tab).
     repeated omnibox.InputType input_types = 2;
+
+    // True if at least one attached context for the next turn was explicitly
+    // added by the user (e.g. via the tab picker or a Lens region crop), and
+    // false when only auto-attached context is present or no context is
+    // attached.
+    bool has_explicit_context = 3;
   }
 
   // Instructs Search Web to open the threads view (Thread History).
