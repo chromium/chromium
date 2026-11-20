@@ -113,11 +113,10 @@
  * via #inputWrapper margin-top 8px -> padding-top 6px) to center-align G with
  * the 32px match icons/thumbnails and 16px card inset below. */
 #inputWrapper::before {
-  background-color: var(--color-searchbox-background);
-  background-image: linear-gradient(
-      var(--omnibox-inactive-hover-overlay, transparent),
-      var(--omnibox-inactive-hover-overlay, transparent));
-  border: 1px solid transparent;
+  background: linear-gradient(
+          var(--omnibox-inactive-hover-overlay, transparent),
+          var(--omnibox-inactive-hover-overlay, transparent)),
+      var(--color-searchbox-background);
   border-radius: var(--cr-searchbox-border-radius);
   bottom: 0;
   box-shadow: 0 4px 20px 2px rgba(0, 0, 0, 0.25);
@@ -127,37 +126,13 @@
   pointer-events: none;
   position: absolute;
   top: 0;
-  transition: background-color var(--loomnibox-animation-duration)
-          var(--loomnibox-animation-easing),
-      border-color var(--loomnibox-animation-duration)
-          var(--loomnibox-animation-easing),
-      border-radius var(--loomnibox-animation-duration)
+  transition: border-radius var(--loomnibox-animation-duration)
           var(--loomnibox-animation-easing),
       inset-inline-end var(--loomnibox-animation-duration)
           var(--loomnibox-animation-easing),
       inset-inline-start var(--loomnibox-animation-duration)
           var(--loomnibox-animation-easing);
   z-index: -1;
-}
-
-@media (prefers-color-scheme: dark) {
-  :host(:not([dropdown-is-visible]):not([has-user-input])) {
-    --color-searchbox-background: var(--color-sys-omnibox-container);
-  }
-
-  :host(:not([dropdown-is-visible]):not([has-user-input])) #inputContainer {
-    background: transparent;
-  }
-
-  :host(:not([dropdown-is-visible]):not([has-user-input]))
-      #inputWrapper::before {
-    background-color: var(--color-sys-omnibox-container);
-    border-color: color-mix(in srgb, var(--color-sys-outline) 20%, transparent);
-  }
-
-  :host(:not([dropdown-is-visible]):not([has-user-input])) #profileIcon {
-    --enterprise-profile-background: var(--color-sys-surface-container-highest);
-  }
 }
 
 /* search-animated-glow uses 'border-radius: inherit', which would inherit 0px

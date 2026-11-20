@@ -37,14 +37,6 @@
   width: 100%;
 }
 
-@media (prefers-color-scheme: dark) {
-  .chin-container {
-    background-color: var(--color-sys-omnibox-container);
-    border: 1px solid
-        color-mix(in srgb, var(--color-sys-outline) 20%, transparent);
-  }
-}
-
 .left-section {
   align-items: center;
   display: flex;

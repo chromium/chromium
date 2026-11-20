@@ -60,9 +60,7 @@
 }
 
 :host([is-enterprise-profile]) #profileContainer {
-  background-color: var(
-      --enterprise-profile-background,
-      var(--color-sys-surface-container-high, #f2f2f2));
+  background-color: var(--color-sys-surface-container-high, #f2f2f2);
   border-radius: 20px;
   gap: 4px;
   height: 28px;

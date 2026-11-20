@@ -358,22 +358,6 @@ cr-most-visited:not([hide-title]) {
   display: none;
 }
 
-@media (prefers-color-scheme: dark) {
-  #mostVisitedContainer,
-  #mostVisitedCloseButton {
-    background-color: var(--color-sys-omnibox-container);
-  }
-
-  #mostVisitedContainer {
-    border: 1px solid
-        color-mix(in srgb, var(--color-sys-outline) 20%, transparent);
-  }
-
-  cr-most-visited {
-    --tile-background-color: var(--color-sys-surface-container-highest);
-  }
-}
-
 #content:has(omnibox-everywhere-omnibox[dropdown-is-visible]) #mostVisitedContainer,
 #content:has([has-user-input]) #mostVisitedContainer,
 #content:has([is-context-menu-open]) #mostVisitedContainer,

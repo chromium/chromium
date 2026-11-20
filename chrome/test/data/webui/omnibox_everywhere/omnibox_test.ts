@@ -5392,10 +5392,7 @@ suite('OmniboxEverywhereContextMenuTest', () => {
           ['--color-sys-on-surface-subtle', 'rgb(196, 199, 197)'],
           ['--color-sys-state-disabled', 'rgba(227, 227, 227, 0.38)'],
           ['--color-sys-neutral-outline', 'rgb(68, 71, 70)'],
-          ['--color-sys-omnibox-container', 'rgb(34, 36, 42)'],
-          ['--color-sys-outline', 'rgb(142, 145, 143)'],
           ['--color-sys-surface-container-high', 'rgb(42, 42, 42)'],
-          ['--color-sys-surface-container-highest', 'rgb(54, 56, 58)'],
           ['--color-sys-divider', 'rgb(68, 71, 70)'],
         ];
         darkTokens.forEach(([k, v]) => rootStyle.setProperty(k, v));
@@ -5409,58 +5406,19 @@ suite('OmniboxEverywhereContextMenuTest', () => {
           omnibox.setAttribute('is-dark', '');
           await microtasksFinished();
 
-          const pillBeforeStyle =
-              window.getComputedStyle(omnibox.$.inputWrapper, '::before');
-          const omniboxStyle = window.getComputedStyle(omnibox);
-          if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-            assertEquals('rgb(34, 36, 42)', pillBeforeStyle.backgroundColor);
-            assertNotEquals('rgba(0, 0, 0, 0)', pillBeforeStyle.borderTopColor);
-            assertEquals(
-                'rgb(34, 36, 42)',
-                omniboxStyle.getPropertyValue('--color-searchbox-background')
-                    .trim());
-            const mostVisited = app.shadowRoot.querySelector('cr-most-visited');
-            if (mostVisited) {
-              assertEquals(
-                  'rgb(54, 56, 58)',
-                  window.getComputedStyle(mostVisited)
-                      .getPropertyValue('--tile-background-color')
-                      .trim());
-            }
-            const profileIcon = omnibox.$.profileIcon;
-            const profileContainer = profileIcon?.$.profileContainer;
-            if (profileIcon && profileContainer) {
-              profileIcon.setAttribute('is-enterprise-profile', '');
-              await microtasksFinished();
-              assertEquals(
-                  'rgb(54, 56, 58)',
-                  window.getComputedStyle(profileContainer).backgroundColor);
-              omnibox.setAttribute('dropdown-is-visible', '');
-              await microtasksFinished();
-              assertEquals(
-                  'rgb(42, 42, 42)',
-                  window.getComputedStyle(profileContainer).backgroundColor);
-              omnibox.removeAttribute('dropdown-is-visible');
-              profileIcon.removeAttribute('is-enterprise-profile');
-              await microtasksFinished();
-            }
-          }
-          omnibox.setAttribute('dropdown-is-visible', '');
-          await microtasksFinished();
-
           assertEquals(
               'rgb(60, 60, 60)',
               window.getComputedStyle(omnibox.$.inputWrapper, '::before')
                   .backgroundColor);
           assertEquals(
+              'rgb(227, 227, 227)',
+              window.getComputedStyle(omnibox.$.input.inputElement).color);
+
+          const omniboxStyle = window.getComputedStyle(omnibox);
+          assertEquals(
               'rgb(60, 60, 60)',
               omniboxStyle.getPropertyValue('--color-searchbox-background')
                   .trim());
-          omnibox.removeAttribute('dropdown-is-visible');
-          await microtasksFinished();
-          assertEquals(
-              'rgb(227, 227, 227)',
-              window.getComputedStyle(omnibox.$.input.inputElement).color);
           assertEquals(
               'rgb(68, 71, 70)',
               omniboxStyle.getPropertyValue('--color-searchbox-border').trim());
