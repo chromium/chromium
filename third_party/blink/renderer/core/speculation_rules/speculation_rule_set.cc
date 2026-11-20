@@ -260,7 +260,8 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
       // Let parsedURL be the result of parsing urlString with baseURL.
       // If parsedURL is failure, then continue.
       KURL parsed_url(base_url_to_parse, url_string);
-      if (!parsed_url.IsValid() || !parsed_url.ProtocolIsInHttpFamily()) {
+      if (!parsed_url.IsValid() || !parsed_url.ProtocolIsInHttpFamily() ||
+          parsed_url.PotentiallyDanglingMarkup()) {
         continue;
       }
 

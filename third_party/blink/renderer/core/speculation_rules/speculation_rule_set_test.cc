@@ -2482,6 +2482,123 @@ TEST_F(DocumentRulesTest, LinkWithNonHttpHref) {
   EXPECT_THAT(candidates, HasURLs("https://foo.com/bar"));
 }
 
+// Tests that links with potentially dangling markup are silently ignored.
+TEST_F(DocumentRulesTest, LinkWithPotentiallyDanglingMarkup) {
+  auto* chrome_client = MakeGarbageCollected<ConsoleCapturingChromeClient>();
+  DummyPageHolder page_holder(/*initial_view_size=*/{}, chrome_client);
+  StubSpeculationHost speculation_host;
+  Document& document = page_holder.GetDocument();
+
+  auto* nl_link = AddAnchor(*document.body(), "https://foo.com/nl_lt?\n<");
+  auto* cr_link = AddAnchor(*document.body(), "https://foo.com/cr_lt?\r<");
+  auto* tab_link = AddAnchor(*document.body(), "https://foo.com/tab_lt?\t<");
+  auto* area_link =
+      AddAreaElement(*document.body(), "https://foo.com/area_lt?\n<");
+  ASSERT_TRUE(nl_link->HrefURL().PotentiallyDanglingMarkup());
+  ASSERT_TRUE(cr_link->HrefURL().PotentiallyDanglingMarkup());
+  ASSERT_TRUE(tab_link->HrefURL().PotentiallyDanglingMarkup());
+  ASSERT_TRUE(area_link->HrefURL().PotentiallyDanglingMarkup());
+
+  auto* ok_link = AddAnchor(*document.body(), "https://foo.com/ok");
+  auto* nl_only = AddAnchor(*document.body(), "https://foo.com/nl_only?\nb");
+  auto* lt_only = AddAnchor(*document.body(), "https://foo.com/lt_only?<b");
+  auto* enc_lt = AddAnchor(*document.body(), "https://foo.com/enc_lt?\n%3Cb");
+  ASSERT_FALSE(ok_link->HrefURL().PotentiallyDanglingMarkup());
+  ASSERT_FALSE(nl_only->HrefURL().PotentiallyDanglingMarkup());
+  ASSERT_FALSE(lt_only->HrefURL().PotentiallyDanglingMarkup());
+  ASSERT_FALSE(enc_lt->HrefURL().PotentiallyDanglingMarkup());
+
+  String speculation_script = R"({
+    "prefetch": [{"source": "document"}]
+  })";
+  PropagateRulesToStubSpeculationHost(page_holder, speculation_host,
+                                      speculation_script);
+  const auto& candidates = speculation_host.candidates();
+  EXPECT_THAT(
+      candidates,
+      HasURLs("https://foo.com/ok", "https://foo.com/nl_only?b",
+              "https://foo.com/lt_only?%3Cb", "https://foo.com/enc_lt?%3Cb"));
+  EXPECT_TRUE(chrome_client->ConsoleMessages().empty());
+
+  PropagateRulesToStubSpeculationHost(page_holder, speculation_host, [&]() {
+    ok_link->setHref("https://foo.com/ok?\n<");
+    nl_link->setHref("https://foo.com/restored");
+  });
+  EXPECT_THAT(
+      candidates,
+      HasURLs("https://foo.com/restored", "https://foo.com/nl_only?b",
+              "https://foo.com/lt_only?%3Cb", "https://foo.com/enc_lt?%3Cb"));
+
+  PropagateRulesToStubSpeculationHost(page_holder, speculation_host, [&]() {
+    nl_link->remove();
+    cr_link->remove();
+  });
+  EXPECT_THAT(candidates, HasURLs("https://foo.com/nl_only?b",
+                                  "https://foo.com/lt_only?%3Cb",
+                                  "https://foo.com/enc_lt?%3Cb"));
+}
+
+// Tests that non-immediate document rules do not enact dangling links on
+// interaction heuristics.
+TEST_F(DocumentRulesTest,
+       LinkWithPotentiallyDanglingMarkupNonImmediateHeuristics) {
+  DummyPageHolder page_holder;
+  StubSpeculationHost speculation_host;
+  Document& document = page_holder.GetDocument();
+
+  auto* link = AddAnchor(*document.body(), "https://foo.com/dangling?\n<");
+  ASSERT_TRUE(link->HrefURL().PotentiallyDanglingMarkup());
+
+  String speculation_script = R"({
+    "prefetch": [{"source": "document", "eagerness": "moderate"}]
+  })";
+  PropagateRulesToStubSpeculationHost(page_holder, speculation_host,
+                                      speculation_script);
+  EXPECT_TRUE(speculation_host.candidates().empty());
+
+  auto& rules = DocumentSpeculationRules::From(document);
+  EXPECT_TRUE(rules.sent_candidates().empty());
+  EXPECT_FALSE(rules.OnHoverHeuristic(
+      link->HrefURL(), mojom::blink::SpeculationEagerness::kModerate));
+  EXPECT_FALSE(rules.OnPointerDownHeuristic(link->HrefURL()));
+}
+
+// Tests that a tainted <base> URL suppresses both relative document-rule links
+// and relative list-rule URLs without emitting console warnings.
+TEST_F(DocumentRulesTest, BaseURLWithPotentiallyDanglingMarkup) {
+  auto* chrome_client = MakeGarbageCollected<ConsoleCapturingChromeClient>();
+  DummyPageHolder page_holder(/*initial_view_size=*/{}, chrome_client);
+  StubSpeculationHost speculation_host;
+  Document& document = page_holder.GetDocument();
+
+  auto* base = MakeGarbageCollected<HTMLBaseElement>(document);
+  base->setAttribute(html_names::kHrefAttr,
+                     AtomicString("https://foo.com/dir?\n<"));
+  document.head()->appendChild(base);
+
+  auto* link = AddAnchor(*document.body(), "page.html");
+  ASSERT_TRUE(link->HrefURL().PotentiallyDanglingMarkup());
+
+  String speculation_script = R"({
+    "prefetch": [
+      {"source": "document"},
+      {"urls": ["list-page.html"]}
+    ]
+  })";
+  PropagateRulesToStubSpeculationHost(page_holder, speculation_host,
+                                      speculation_script);
+  const auto& candidates = speculation_host.candidates();
+  EXPECT_TRUE(candidates.empty());
+  EXPECT_TRUE(chrome_client->ConsoleMessages().empty());
+
+  PropagateRulesToStubSpeculationHost(page_holder, speculation_host, [&]() {
+    base->setAttribute(html_names::kHrefAttr,
+                       AtomicString("https://foo.com/dir/"));
+  });
+  EXPECT_THAT(candidates, HasURLs("https://foo.com/dir/list-page.html",
+                                  "https://foo.com/dir/page.html"));
+}
+
 // Tests a couple of edge cases:
 // 1) Removing a link that doesn't match any rules
 // 2) Adding and removing a link before running microtasks (i.e. before calling

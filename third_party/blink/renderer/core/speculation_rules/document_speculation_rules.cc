@@ -994,7 +994,9 @@ void DocumentSpeculationRules::AddLinkBasedSpeculationCandidates(
             mojom::blink::SpeculationAction action,
             SpeculationRuleSet* rule_set,
             const HeapVector<Member<SpeculationRule>>& speculation_rules) {
-          if (!link->HrefURL().ProtocolIsInHttpFamily()) {
+          const KURL href_url = link->HrefURL();
+          if (!href_url.ProtocolIsInHttpFamily() ||
+              href_url.PotentiallyDanglingMarkup()) {
             return;
           }
 
@@ -1072,7 +1074,7 @@ void DocumentSpeculationRules::AddLinkBasedSpeculationCandidates(
 
             SpeculationCandidate* candidate =
                 MakeGarbageCollected<SpeculationCandidate>(
-                    link->HrefURL(), action, referrer.value(),
+                    href_url, action, referrer.value(),
                     rule->requires_anonymous_client_ip_when_cross_origin(),
                     target_hint, rule->eagerness(),
                     rule->no_vary_search_hint().Clone(), rule->injection_type(),
