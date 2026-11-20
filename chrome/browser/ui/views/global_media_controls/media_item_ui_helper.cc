@@ -11,7 +11,6 @@
 #include "chrome/browser/ui/global_media_controls/media_item_ui_metrics.h"
 #include "chrome/browser/ui/views/global_media_controls/cast_device_footer_view.h"
 #include "chrome/browser/ui/views/global_media_controls/cast_device_selector_view.h"
-#include "chrome/browser/ui/views/global_media_controls/media_dialog_view.h"
 #include "chrome/browser/ui/views/global_media_controls/media_item_ui_device_selector_view.h"
 #include "components/global_media_controls/public/constants.h"
 #include "components/global_media_controls/public/media_session_notification_item.h"
@@ -128,9 +127,6 @@ base::RepeatingClosure GetStopCastingCallback(
          media_router::MediaCastMode cast_mode) {
         router->TerminateRoute(route_id);
         MediaItemUIMetrics::RecordStopCastingMetrics(cast_mode);
-        if (cast_mode == media_router::MediaCastMode::TAB_MIRROR) {
-          MediaDialogView::HideDialog();
-        }
       },
       route_id,
       media_router::MediaRouterFactory::GetApiForBrowserContext(profile),

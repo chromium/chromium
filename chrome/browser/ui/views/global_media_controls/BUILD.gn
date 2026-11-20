@@ -28,6 +28,7 @@ source_set("global_media_controls") {
     "media_item_ui_device_selector_view.h",
     "media_item_ui_helper.h",
     "media_notification_device_entry_ui.h",
+    "media_session_route_observer.h",
     "media_toolbar_button_contextual_menu.h",
     "media_toolbar_button_view.h",
   ]
@@ -41,6 +42,7 @@ source_set("global_media_controls") {
     "//chrome/browser/ui/views/toolbar",
     "//components/global_media_controls",
     "//components/media_message_center",
+    "//components/media_router/browser",
     "//components/soda",
     "//components/soda:constants",
     "//content/public/browser",
@@ -61,6 +63,7 @@ source_set("impl") {
     "media_item_ui_device_selector_view.cc",
     "media_item_ui_helper.cc",
     "media_notification_device_entry_ui.cc",
+    "media_session_route_observer.cc",
     "media_toolbar_button_contextual_menu.cc",
     "media_toolbar_button_view.cc",
   ]

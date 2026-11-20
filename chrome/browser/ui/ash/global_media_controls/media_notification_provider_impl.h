@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_ASH_GLOBAL_MEDIA_CONTROLS_MEDIA_NOTIFICATION_PROVIDER_IMPL_H_
 #define CHROME_BROWSER_UI_ASH_GLOBAL_MEDIA_CONTROLS_MEDIA_NOTIFICATION_PROVIDER_IMPL_H_
 
-#include <map>
 #include <memory>
 #include <optional>
 #include <string>
@@ -23,6 +22,7 @@
 #include "components/media_message_center/notification_theme.h"
 
 class CastMediaNotificationProducerKeyedService;
+class MediaSessionRouteObserver;
 class Profile;
 
 namespace global_media_controls {
@@ -100,6 +100,7 @@ class ASH_EXPORT MediaNotificationProviderImpl
 
   // global_media_controls::MediaItemUIObserver:
   void OnMediaItemUISizeChanged() override;
+  void OnMediaItemUIDestroyed(const std::string& id) override;
 
   global_media_controls::MediaSessionItemProducer*
   media_session_item_producer_for_testing() {
@@ -116,39 +117,21 @@ class ASH_EXPORT MediaNotificationProviderImpl
   }
 
  private:
-  class RoutesObserver;
-
-  // A local media session item shown in the list view, and the ID of the
-  // Media Route that was associated with it when its footer was last built.
-  struct ShownSessionItem {
-    ShownSessionItem();
-    ShownSessionItem(const ShownSessionItem&);
-    ShownSessionItem& operator=(const ShownSessionItem&);
-    ~ShownSessionItem();
-
-    base::WeakPtr<media_message_center::MediaNotificationItem> item;
-    std::optional<std::string> route_id;
-  };
-
   Profile* GetProfile();
 
   global_media_controls::mojom::DeviceService* GetDeviceService(
       base::WeakPtr<media_message_center::MediaNotificationItem> item) const;
 
-  // Records which Media Route, if any, is associated with the local media
-  // session item `id`, so that route changes can refresh its footer.
-  void UpdateShownSessionItem(
-      const std::string& id,
-      base::WeakPtr<media_message_center::MediaNotificationItem> item);
-
   // Starts or stops observing Media Routes for the active profile.
   void StartObservingRoutes();
   void StopObservingRoutes();
 
-  // Refreshes shown local media session items whose associated Media Route
-  // was added or removed, so that the stop casting footer and the device
-  // selector match the current routes.
-  void OnRoutesUpdated();
+  // Refreshes the item `id` after its associated Media Route started or
+  // ended, so that the stop casting footer and the device selector match the
+  // current routes.
+  void OnSessionRouteChanged(
+      const std::string& id,
+      base::WeakPtr<media_message_center::MediaNotificationItem> item);
 
   // Stops observing routes if the list view is gone.
   void StopObservingRoutesIfNoListView();
@@ -165,13 +148,10 @@ class ASH_EXPORT MediaNotificationProviderImpl
 
   std::string show_devices_for_item_id_;
 
-  // Observes Media Routes while the list view is showing.
-  std::unique_ptr<RoutesObserver> routes_observer_;
-
-  // Local media session items shown in `media_item_ui_list_view_`, keyed by
-  // item ID. Declared before `media_session_item_producer_`, which hides its
+  // Tracks the Media Routes of items in `media_item_ui_list_view_` while it is
+  // showing. Declared before `media_session_item_producer_`, which hides its
   // items when it is destroyed.
-  std::map<std::string, ShownSessionItem> shown_session_items_;
+  std::unique_ptr<MediaSessionRouteObserver> route_observer_;
 
   std::unique_ptr<global_media_controls::MediaItemManager> item_manager_;
 

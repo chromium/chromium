@@ -512,19 +512,28 @@ TEST_F(MediaNotificationProviderImplTest,
   provider_->OnBubbleClosing();
 }
 
-// If the list view is destroyed without OnBubbleClosing(), the next route
-// update stops route observation.
+// If the list view is destroyed without OnBubbleClosing(), route observation
+// stops.
 TEST_F(MediaNotificationProviderImplTest,
        StopObservingRoutesWhenListViewDestroyed) {
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile_, nullptr);
+  sessions::SessionTabHelper::CreateForWebContents(web_contents.get(),
+                                                   base::NullCallback());
+  content::MediaSession::Get(web_contents.get());
+  int tab_id = sessions::SessionTabHelper::IdForTab(web_contents.get()).id();
+
+  std::vector<media_router::MediaRoute> current_routes{media_router::MediaRoute(
+      "route_123", media_router::MediaSource::ForTab(tab_id), "sink_1",
+      "Test Cast Route", true)};
   EXPECT_CALL(*media_router_, GetCurrentRoutes())
-      .WillRepeatedly(testing::Return(std::vector<media_router::MediaRoute>{}));
+      .WillRepeatedly(testing::ReturnPointee(&current_routes));
+  SimulateShowNotification(
+      content::MediaSession::GetRequestIdFromWebContents(web_contents.get()));
   auto notification_list_view = CreateNotificationListView();
   ASSERT_FALSE(media_router_->routes_observers().empty());
 
   notification_list_view.reset();
-  for (auto& observer : media_router_->routes_observers()) {
-    observer.OnRoutesUpdated({});
-  }
   // Route observation stops asynchronously.
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return media_router_->routes_observers().empty(); }));

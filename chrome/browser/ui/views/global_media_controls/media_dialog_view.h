@@ -27,6 +27,7 @@ class PrefChangeRegistrar;
 class RichHoverButton;
 class MediaDialogViewObserver;
 class MediaNotificationService;
+class MediaSessionRouteObserver;
 class Profile;
 
 namespace content {
@@ -188,6 +189,9 @@ class MediaDialogView : public views::BubbleDialogDelegateView,
       const std::string,
       raw_ptr<global_media_controls::MediaItemUIUpdatedView, CtnExperimental>>
       items_;
+
+  // Refreshes items in `items_` when their associated Media Route changes.
+  std::unique_ptr<MediaSessionRouteObserver> route_observer_;
 
   raw_ptr<views::View> live_caption_container_ = nullptr;
   raw_ptr<views::Label> live_caption_title_ = nullptr;

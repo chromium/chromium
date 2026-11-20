@@ -222,6 +222,76 @@ TEST_F(MediaDialogViewTest, TerminateSession) {
   EXPECT_TRUE(media_item_ui_updated_view()->GetDeviceSelectorForTesting());
 }
 
+// Stopping a Tab Mirroring session from the footer keeps the dialog open and
+// removes the footer once the route ends.
+TEST_F(MediaDialogViewTest, StopTabMirroringRefreshesItem) {
+  auto item = SimulateMediaSessionNotificationItem();
+  SimulateMediaRouteUpdate({CreateTabMirroringRoute()});
+
+  view()->ShowMediaItem(
+      content::MediaSession::GetRequestIdFromWebContents(web_contents())
+          .ToString(),
+      item->GetWeakPtr());
+  ASSERT_TRUE(media_item_ui_updated_view()->GetFooterForTesting());
+  EXPECT_FALSE(media_item_ui_updated_view()->GetDeviceSelectorForTesting());
+
+  EXPECT_CALL(*media_router(),
+              TerminateRoute(CreateTabMirroringRoute().media_route_id()));
+  views::Button* stop_casting_button = static_cast<views::Button*>(
+      media_item_ui_updated_view()->GetFooterForTesting()->children()[2]);
+  views::test::ButtonTestApi(stop_casting_button)
+      .NotifyClick(ui::MouseEvent(
+          ui::EventType::kMousePressed, gfx::Point(0, 0), gfx::Point(0, 0),
+          ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
+  EXPECT_TRUE(MediaDialogView::IsShowing());
+
+  // The Media Router removes the route and notifies its observers.
+  SimulateMediaRouteUpdate({});
+  ASSERT_FALSE(media_router()->routes_observers().empty());
+  for (auto& observer : media_router()->routes_observers()) {
+    observer.OnRoutesUpdated({});
+  }
+  EXPECT_FALSE(media_item_ui_updated_view()->GetFooterForTesting());
+  EXPECT_TRUE(media_item_ui_updated_view()->GetDeviceSelectorForTesting());
+}
+
+// Starting a Tab Mirroring session while the dialog is open adds the footer.
+TEST_F(MediaDialogViewTest, StartTabMirroringRefreshesItem) {
+  auto item = SimulateMediaSessionNotificationItem();
+  SimulateMediaRouteUpdate({});
+
+  view()->ShowMediaItem(
+      content::MediaSession::GetRequestIdFromWebContents(web_contents())
+          .ToString(),
+      item->GetWeakPtr());
+  EXPECT_FALSE(media_item_ui_updated_view()->GetFooterForTesting());
+
+  SimulateMediaRouteUpdate({CreateTabMirroringRoute()});
+  ASSERT_FALSE(media_router()->routes_observers().empty());
+  for (auto& observer : media_router()->routes_observers()) {
+    observer.OnRoutesUpdated({CreateTabMirroringRoute()});
+  }
+  EXPECT_TRUE(media_item_ui_updated_view()->GetFooterForTesting());
+  EXPECT_FALSE(media_item_ui_updated_view()->GetDeviceSelectorForTesting());
+}
+
+// Hiding the dialog stops observing routes, so a closing dialog is not
+// refreshed.
+TEST_F(MediaDialogViewTest, HideDialogStopsObservingRoutes) {
+  auto count_route_observers = [this]() {
+    size_t count = 0;
+    for (auto& observer : media_router()->routes_observers()) {
+      (void)observer;
+      ++count;
+    }
+    return count;
+  };
+  const size_t observer_count = count_route_observers();
+  ASSERT_GT(observer_count, 0u);
+  HideDialog();
+  EXPECT_EQ(observer_count - 1, count_route_observers());
+}
+
 // Regression test for crbug.com/468238180. The dialog reads and writes the
 // original profile's prefs, so it must observe that same profile.
 TEST_F(MediaDialogViewTest, LiveCaptionUpdatesInIncognito) {

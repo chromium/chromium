@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/views/controls/rich_hover_button.h"
 #include "chrome/browser/ui/views/global_media_controls/media_dialog_view_observer.h"
 #include "chrome/browser/ui/views/global_media_controls/media_item_ui_helper.h"
+#include "chrome/browser/ui/views/global_media_controls/media_session_route_observer.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/global_media_controls/public/constants.h"
 #include "components/global_media_controls/public/media_item_manager.h"
@@ -269,6 +270,7 @@ views::Widget* MediaDialogView::ShowDialog(
 void MediaDialogView::HideDialog() {
   if (IsShowing()) {
     instance_->service_->media_item_manager()->SetDialogDelegate(nullptr);
+    instance_->route_observer_.reset();
     speech::SodaInstaller::GetInstance()->RemoveObserver(instance_);
     instance_->GetWidget()->Close();
   }
@@ -300,6 +302,9 @@ global_media_controls::MediaItemUI* MediaDialogView::ShowMediaItem(
   view_ptr = view.get();
   items_[id] = view.get();
   active_sessions_view_->ShowUpdatedItem(id, std::move(view));
+  if (route_observer_) {
+    route_observer_->OnItemShown(id, item);
+  }
 
   view_ptr->AddObserver(this);
   UpdateBubbleSize();
@@ -308,6 +313,9 @@ global_media_controls::MediaItemUI* MediaDialogView::ShowMediaItem(
 }
 
 void MediaDialogView::HideMediaItem(const std::string& id) {
+  if (route_observer_) {
+    route_observer_->OnItemHidden(id);
+  }
   active_sessions_view_->HideUpdatedItem(id);
 
   if (active_sessions_view_->empty()) {
@@ -333,6 +341,9 @@ void MediaDialogView::RefreshMediaItem(
   items_[id]->UpdateDeviceSelectorView(
       BuildDeviceSelector(id, item, service_, service_, profile_, entry_point_,
                           media_color_theme_, show_devices));
+  if (route_observer_) {
+    route_observer_->OnItemShown(id, item);
+  }
 
   UpdateBubbleSize();
 }
@@ -521,6 +532,13 @@ MediaDialogView::MediaDialogView(
                           base::Unretained(this)));
 
   media_color_theme_ = GetMediaColorTheme();
+
+  // Refresh media session items when their Remote Playback or Tab Mirroring
+  // route starts or ends, so the stop casting footer matches the routes.
+  // Unretained is safe because `this` owns `route_observer_`.
+  route_observer_ = MediaSessionRouteObserver::Create(
+      profile_, base::BindRepeating(&MediaDialogView::RefreshMediaItem,
+                                    base::Unretained(this)));
 }
 
 MediaDialogView::~MediaDialogView() {
@@ -556,6 +574,7 @@ void MediaDialogView::WindowClosing() {
     service_->media_item_manager()->SetDialogDelegate(nullptr);
     speech::SodaInstaller::GetInstance()->RemoveObserver(this);
   }
+  route_observer_.reset();
 }
 
 void MediaDialogView::OnLiveCaptionButtonPressed() {
