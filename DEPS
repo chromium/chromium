@@ -3276,7 +3276,7 @@ deps = {
       ],
   },
 
-  'src/third_party/vulkan-deps': '{chromium_git}/vulkan-deps@b65df05e0af1d71177e0c56d6ccaf3e536ebe27d',
+  'src/third_party/vulkan-deps': '{chromium_git}/vulkan-deps@2fcd73a8d9edb4ff7daa5c1ba9a8a88aa630e336',
   'src/third_party/glslang/src': '{chromium_git}/external/github.com/KhronosGroup/glslang@5d525ee305af66b9e2434178358b9d7f789cfd6f',
   'src/third_party/spirv-cross/src': '{chromium_git}/external/github.com/KhronosGroup/SPIRV-Cross@b8fcf307f1f347089e3c46eb4451d27f32ebc8d3',
   'src/third_party/spirv-headers/src': '{chromium_git}/external/github.com/KhronosGroup/SPIRV-Headers@50184103b19027f5c7080060712d6a9470cf59ee',
