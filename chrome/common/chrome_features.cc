@@ -1543,6 +1543,19 @@ BASE_FEATURE(kIndigoComponent, base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<std::string> kIndigoComponentAttribute{
     &kIndigoComponent, "indigo_component_attribute", ""};
 
+// Umbrella feature for startup optimizations in //chrome enabled together with
+// InitialWebUI. Individual optimizations are controlled via default-true
+// boolean parameters on this feature.
+BASE_FEATURE(kInitialWebUIChromeOptimizations,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Defers creating `PageActionView` children inside `PageActionContainerView`
+// until an action becomes visible or is explicitly requested.
+BASE_FEATURE_PARAM(bool,
+                   kPageActionsLazyViewCreation,
+                   &kInitialWebUIChromeOptimizations,
+                   true);
+
 // If enabled, the initial WebUI skips spell check initialization on startup for
 // NTP.
 BASE_FEATURE(kInitialWebUIWithoutSpellCheckForNtp,

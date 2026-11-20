@@ -50,11 +50,18 @@ class PageActionContainerView : public views::View {
   // Sets the active PageActionController for each PageActionView.
   void SetController(PageActionController* controller);
 
-  // Gets the PageActionView associated with the given action id. Returns
-  // nullptr if not found.
+  // Returns the materialized `PageActionView` for `page_action_id`, or nullptr
+  // if not registered or not yet materialized. Does not trigger lazy view
+  // creation; `children()` likewise contains only materialized views.
   PageActionView* GetPageActionView(actions::ActionId page_action_id);
 
-  // Returns whether `page_action_id` has a visible `PageActionView`.
+  // Returns the `PageActionView` for `page_action_id`, materializing a pending
+  // view on demand if needed. Returns nullptr if `page_action_id` is not
+  // registered in this container.
+  PageActionView* EnsurePageActionView(actions::ActionId page_action_id);
+
+  // Returns whether `page_action_id` has a materialized, visible
+  // `PageActionView` without triggering lazy creation.
   bool IsPageActionVisible(actions::ActionId page_action_id) const;
 
   // Returns true if the first visible view inside this container is a chip.
@@ -67,6 +74,17 @@ class PageActionContainerView : public views::View {
   void ChildVisibilityChanged(views::View* child) override;
 
  private:
+  // Lightweight placeholder for a registered page action whose `PageActionView`
+  // has not been created yet. Observes the active `PageActionModel` and
+  // triggers materialization when the action first becomes visible.
+  class PendingPageAction;
+
+  // Converts a pending page action into a real `PageActionView`, attaches the
+  // active controller, and restores child ordering.
+  PageActionView* MaterializePageActionView(actions::ActionId action_id);
+
+  // Instantiates a `PageActionView`, adds it as a child, and registers its
+  // state-change callbacks and layout properties.
   PageActionView* CreatePageActionView(actions::ActionItem* action_item,
                                        const PageActionProperties& properties);
 
@@ -87,6 +105,7 @@ class PageActionContainerView : public views::View {
 
   PageActionViewParams view_params_;
 
+  std::map<actions::ActionId, PendingPageAction> pending_actions_;
   std::map<actions::ActionId, raw_ptr<PageActionView>> page_action_views_;
   std::map<actions::ActionId, size_t> page_action_view_initial_indices_;
 

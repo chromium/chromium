@@ -436,7 +436,8 @@ class PageActionModel : public PageActionModelInterface {
   // again during notification, we CHECK-fail.
   PropertySet notified_properties_;
 
-  base::ObserverList<PageActionModelObserver> observer_list_;
+  base::ObserverList<PageActionModelObserver> observer_list_{
+      base::ObserverListPolicy::EXISTING_ONLY};
 };
 
 class PageActionModelFactory {

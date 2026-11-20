@@ -535,7 +535,7 @@ void LocationBarView::Init() {
   if (base::FeatureList::IsEnabled(
           omnibox::kComposeboxPersistentAimButtonOmnibox)) {
     if (auto* ai_mode_page_action_view =
-            page_action_container_->GetPageActionView(kActionAiMode)) {
+            page_action_container_->EnsurePageActionView(kActionAiMode)) {
       ai_mode_page_action_view->SetFontList(omnibox_chip_font_list);
     }
   }

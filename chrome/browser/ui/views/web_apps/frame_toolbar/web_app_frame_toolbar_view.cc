@@ -297,7 +297,10 @@ WebAppFrameToolbarView::GetPageActionViewInterface(
   if (!provider.Contains(action_id)) {
     return nullptr;
   }
-  return right_container_->page_action_container()->GetPageActionView(
+  // TODO(crbug.com/584076024): Rename `GetPageActionViewInterface` (e.g. to
+  // `GetOrCreatePageActionViewInterface`) to reflect on-demand view creation
+  // and migrate visibility-only callers to a non-materializing query.
+  return right_container_->page_action_container()->EnsurePageActionView(
       action_id);
 }
 

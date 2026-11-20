@@ -21869,6 +21869,7 @@
                         "GtkCacheNavButtonIcons",
                         "GtkPrefetchNavButtonIcons",
                         "InitialWebUI",
+                        "InitialWebUIChromeOptimizations",
                         "InitialWebUISurfaceSync",
                         "InitialWebUIWithoutExtensions",
                         "InitialWebUIWithoutSpellCheckForNtp",
