@@ -7,15 +7,19 @@
 #include <memory>
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/devtools/chrome_devtools_manager_delegate.h"
+#include "chrome/browser/devtools/devtools_availability_checker.h"
 #include "chrome/browser/devtools/devtools_browser_context_manager.h"
+#include "chrome/browser/devtools/features.h"
 #include "chrome/browser/devtools/protocol/extensions.h"
 #include "chrome/browser/devtools/protocol/protocol.h"
 #include "chrome/browser/extensions/browser_window_util.h"
 #include "chrome/browser/extensions/extension_util.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/extensions/extension_action_view_model.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
@@ -55,6 +59,12 @@ bool CanAccessStorage(scoped_refptr<content::DevToolsAgentHost> host,
                       extensions::StorageAreaNamespace storage_area) {
   content::BrowserContext* context = host->GetBrowserContext();
   if (!context) {
+    return false;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          features::kDevToolsExtensionStorageInspectionCheck) &&
+      !IsInspectionAllowed(Profile::FromBrowserContext(context), &extension)) {
     return false;
   }
 

@@ -268,4 +268,9 @@ BASE_FEATURE(kDevToolsNetworkBackendLinking, base::FEATURE_DISABLED_BY_DEFAULT);
 // Whether the Natural Language Interface feature enabled.
 BASE_FEATURE(kDevToolsAiNaturalLanguageInterface,
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Kill-switch for checking DevTools availability policy before allowing access
+// to extension storage via CDP.
+BASE_FEATURE(kDevToolsExtensionStorageInspectionCheck,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace features
