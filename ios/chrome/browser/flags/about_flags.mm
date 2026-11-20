@@ -3099,6 +3099,11 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kEnableIosLiveActivityManagerName,
      flag_descriptions::kEnableIosLiveActivityManagerDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kIOSLiveActivityManager)},
+    {"actor-backgrounded-scene-rendering-mode",
+     flag_descriptions::kActorBackgroundedSceneRenderingModeName,
+     flag_descriptions::kActorBackgroundedSceneRenderingModeDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kActorBackgroundedSceneRenderingMode)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

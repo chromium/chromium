@@ -8,6 +8,7 @@
 #import "base/i18n/tag_converters.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
+#import "base/time/time.h"
 #import "components/application_locale_storage/application_locale_storage.h"
 #import "ios/chrome/app/background_task/features.h"
 #import "ios/chrome/browser/intelligence/actor/tools/utils/actor_tool_utils.h"
@@ -359,4 +360,149 @@ TEST_F(ActorFeaturesTest, IsPageStabilityEnabled_FeatureParamDisabled) {
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       kActorTools, {{kActorToolsPageStabilityParam, "false"}});
   EXPECT_FALSE(IsPageStabilityEnabled());
+}
+
+// Tests that `IsActorBackgroundedSceneRenderingModeEnabled()` is false by
+// default, even when `kActorTools` is enabled.
+TEST_F(ActorFeaturesTest, BackgroundedSceneRenderingModeDisabledByDefault) {
+  EXPECT_FALSE(IsActorBackgroundedSceneRenderingModeEnabled());
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kActorTools);
+  EXPECT_FALSE(IsActorBackgroundedSceneRenderingModeEnabled());
+}
+
+// Tests that `IsActorBackgroundedSceneRenderingModeEnabled()` returns false
+// when `kActorBackgroundedSceneRenderingMode` is enabled without `kActorTools`.
+TEST_F(ActorFeaturesTest, BackgroundedSceneRenderingModeRequiresActorTools) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({kActorBackgroundedSceneRenderingMode},
+                                       {kActorTools});
+  EXPECT_FALSE(IsActorBackgroundedSceneRenderingModeEnabled());
+}
+
+// Tests that `IsActorBackgroundedSceneRenderingModeEnabled()` returns true when
+// `kActorTools` and `kActorBackgroundedSceneRenderingMode` are enabled, even
+// when `kPageActionMenu`, `kGeminiActor`, and
+// `kEnableBackgroundContinuedProcessing` are disabled.
+TEST_F(ActorFeaturesTest,
+       BackgroundedSceneRenderingModeIgnoresProviderSpecificFlags) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kActorTools, kActorBackgroundedSceneRenderingMode},
+      {kPageActionMenu, kGeminiActor, kEnableBackgroundContinuedProcessing});
+  EXPECT_TRUE(IsActorBackgroundedSceneRenderingModeEnabled());
+}
+
+// Tests that the feature parameters of `kActorBackgroundedSceneRenderingMode`
+// use their expected defaults and parse configured overrides when enabled.
+TEST_F(ActorFeaturesTest, BackgroundedSceneRenderingModeParamsAreParsed) {
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeatures(
+        {kActorTools, kActorBackgroundedSceneRenderingMode}, {});
+
+    EXPECT_TRUE(IsActorBackgroundedSceneBackgroundRenderingEnabled());
+    EXPECT_TRUE(IsActorBackgroundedSceneCustomSnapshotEnabled());
+    EXPECT_EQ(base::Seconds(90),
+              GetActorBackgroundedSceneRenderingModeRefreshInterval());
+    EXPECT_FALSE(IsActorBackgroundedSceneRenderingModeActiveInForeground());
+    EXPECT_EQ("", GetActorBackgroundedSceneRenderingModeBlockedIOSVersions());
+  }
+
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeaturesAndParameters(
+        {{kActorTools, {}},
+         {kActorBackgroundedSceneRenderingMode,
+          {{"background_rendering_enabled", "false"},
+           {"custom_snapshot_enabled", "false"},
+           {"refresh_interval", "30s"},
+           {"active_in_foreground", "true"},
+           {"blocked_ios_versions", "27.0.1,27.1"}}}},
+        {});
+
+    EXPECT_FALSE(IsActorBackgroundedSceneBackgroundRenderingEnabled());
+    EXPECT_FALSE(IsActorBackgroundedSceneCustomSnapshotEnabled());
+    EXPECT_EQ(base::Seconds(30),
+              GetActorBackgroundedSceneRenderingModeRefreshInterval());
+    EXPECT_TRUE(IsActorBackgroundedSceneRenderingModeActiveInForeground());
+    EXPECT_EQ("27.0.1,27.1",
+              GetActorBackgroundedSceneRenderingModeBlockedIOSVersions());
+  }
+}
+
+// Tests that `kActorBackgroundedSceneBackgroundRenderingEnabledParam` and
+// `kActorBackgroundedSceneCustomSnapshotEnabledParam` can be disabled
+// independently.
+TEST_F(ActorFeaturesTest,
+       BackgroundedSceneRenderingModeSwitchesAreIndependent) {
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeaturesAndParameters(
+        {{kActorTools, {}},
+         {kActorBackgroundedSceneRenderingMode,
+          {{kActorBackgroundedSceneBackgroundRenderingEnabledParam, "false"}}}},
+        {});
+
+    EXPECT_FALSE(IsActorBackgroundedSceneBackgroundRenderingEnabled());
+    EXPECT_TRUE(IsActorBackgroundedSceneCustomSnapshotEnabled());
+  }
+
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeaturesAndParameters(
+        {{kActorTools, {}},
+         {kActorBackgroundedSceneRenderingMode,
+          {{kActorBackgroundedSceneCustomSnapshotEnabledParam, "false"}}}},
+        {});
+
+    EXPECT_TRUE(IsActorBackgroundedSceneBackgroundRenderingEnabled());
+    EXPECT_FALSE(IsActorBackgroundedSceneCustomSnapshotEnabled());
+  }
+}
+
+// Tests that all parameter getters of `kActorBackgroundedSceneRenderingMode`
+// return disabled/empty defaults when the feature is off or when `kActorTools`
+// is disabled.
+TEST_F(ActorFeaturesTest,
+       BackgroundedSceneRenderingModeParamGettersDisabledWhenFeatureOff) {
+  EXPECT_FALSE(IsActorBackgroundedSceneBackgroundRenderingEnabled());
+  EXPECT_FALSE(IsActorBackgroundedSceneCustomSnapshotEnabled());
+  EXPECT_EQ(base::TimeDelta(),
+            GetActorBackgroundedSceneRenderingModeRefreshInterval());
+  EXPECT_FALSE(IsActorBackgroundedSceneRenderingModeActiveInForeground());
+  EXPECT_EQ("", GetActorBackgroundedSceneRenderingModeBlockedIOSVersions());
+
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeaturesAndParameters(
+        {{kActorBackgroundedSceneRenderingMode,
+          {{"background_rendering_enabled", "true"},
+           {"custom_snapshot_enabled", "true"},
+           {"refresh_interval", "30s"},
+           {"active_in_foreground", "true"},
+           {"blocked_ios_versions", "27.0.1,27.1"}}}},
+        {kActorTools});
+
+    EXPECT_FALSE(IsActorBackgroundedSceneBackgroundRenderingEnabled());
+    EXPECT_FALSE(IsActorBackgroundedSceneCustomSnapshotEnabled());
+    EXPECT_EQ(base::TimeDelta(),
+              GetActorBackgroundedSceneRenderingModeRefreshInterval());
+    EXPECT_FALSE(IsActorBackgroundedSceneRenderingModeActiveInForeground());
+    EXPECT_EQ("", GetActorBackgroundedSceneRenderingModeBlockedIOSVersions());
+  }
+
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeatures(
+        {kActorTools}, {kActorBackgroundedSceneRenderingMode});
+
+    EXPECT_FALSE(IsActorBackgroundedSceneBackgroundRenderingEnabled());
+    EXPECT_FALSE(IsActorBackgroundedSceneCustomSnapshotEnabled());
+    EXPECT_EQ(base::TimeDelta(),
+              GetActorBackgroundedSceneRenderingModeRefreshInterval());
+    EXPECT_FALSE(IsActorBackgroundedSceneRenderingModeActiveInForeground());
+    EXPECT_EQ("", GetActorBackgroundedSceneRenderingModeBlockedIOSVersions());
+  }
 }

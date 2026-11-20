@@ -44,6 +44,12 @@ inline constexpr char kAIOmniboxAskPlaceholderDescription[] =
     "Enables the placeholder text to be 'Ask...' instead of 'Search...' when "
     "AI Omnibox is available.";
 
+inline constexpr char kActorBackgroundedSceneRenderingModeName[] =
+    "Actor Backgrounded Scene Rendering Mode";
+inline constexpr char kActorBackgroundedSceneRenderingModeDescription[] =
+    "When enabled, keeps tabs controlled by an actor task rendering while "
+    "backgrounded. Requires iOS Actor Tools (kActorTools) to be enabled.";
+
 inline constexpr char kActorServiceLoggingName[] = "ActorServiceLogging";
 inline constexpr char kActorServiceLoggingDescription[] =
     "Enables Actor logging, which is for debugging only.";

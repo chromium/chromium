@@ -43,6 +43,11 @@
     "expiry_milestone": 170
   },
   {
+    "name": "actor-backgrounded-scene-rendering-mode",
+    "owners": [ "nicolasmacbeth@google.com", "bling-alchemy-eng@google.com" ],
+    "expiry_milestone": 175
+  },
+  {
     "name": "actor-live-notification",
     "owners": [
       "bbetini@google.com",

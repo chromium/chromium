@@ -7,6 +7,7 @@
 #import <algorithm>
 #import <array>
 #import <optional>
+#import <string>
 #import <string_view>
 
 #import "base/check.h"
@@ -601,6 +602,86 @@ bool IsActorOriginGatingForExplicitNavigationEnabled() {
 bool IsActorOriginGatingForImplicitNavigationEnabled() {
   return IsActorOriginGatingEnabled() &&
          kActorOriginGatingImplicitFeatureParam.Get();
+}
+
+BASE_FEATURE(kActorBackgroundedSceneRenderingMode,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const char kActorBackgroundedSceneBackgroundRenderingEnabledParam[] =
+    "background_rendering_enabled";
+const char kActorBackgroundedSceneCustomSnapshotEnabledParam[] =
+    "custom_snapshot_enabled";
+const char kActorBackgroundedSceneRenderingModeRefreshIntervalParam[] =
+    "refresh_interval";
+const char kActorBackgroundedSceneRenderingModeActiveInForegroundParam[] =
+    "active_in_foreground";
+const char kActorBackgroundedSceneRenderingModeBlockedIOSVersionsParam[] =
+    "blocked_ios_versions";
+
+BASE_FEATURE_PARAM(bool,
+                   kActorBackgroundedSceneBackgroundRenderingEnabled,
+                   &kActorBackgroundedSceneRenderingMode,
+                   kActorBackgroundedSceneBackgroundRenderingEnabledParam,
+                   true);
+
+BASE_FEATURE_PARAM(bool,
+                   kActorBackgroundedSceneCustomSnapshotEnabled,
+                   &kActorBackgroundedSceneRenderingMode,
+                   kActorBackgroundedSceneCustomSnapshotEnabledParam,
+                   true);
+
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kActorBackgroundedSceneRenderingModeRefreshInterval,
+                   &kActorBackgroundedSceneRenderingMode,
+                   kActorBackgroundedSceneRenderingModeRefreshIntervalParam,
+                   base::Seconds(90));
+
+BASE_FEATURE_PARAM(bool,
+                   kActorBackgroundedSceneRenderingModeActiveInForeground,
+                   &kActorBackgroundedSceneRenderingMode,
+                   kActorBackgroundedSceneRenderingModeActiveInForegroundParam,
+                   false);
+
+BASE_FEATURE_PARAM(std::string,
+                   kActorBackgroundedSceneRenderingModeBlockedIOSVersions,
+                   &kActorBackgroundedSceneRenderingMode,
+                   kActorBackgroundedSceneRenderingModeBlockedIOSVersionsParam,
+                   "");
+
+bool IsActorBackgroundedSceneRenderingModeEnabled() {
+  return IsActorEnabled() &&
+         base::FeatureList::IsEnabled(kActorBackgroundedSceneRenderingMode);
+}
+
+bool IsActorBackgroundedSceneBackgroundRenderingEnabled() {
+  return IsActorBackgroundedSceneRenderingModeEnabled() &&
+         kActorBackgroundedSceneBackgroundRenderingEnabled.Get();
+}
+
+bool IsActorBackgroundedSceneCustomSnapshotEnabled() {
+  return IsActorBackgroundedSceneRenderingModeEnabled() &&
+         kActorBackgroundedSceneCustomSnapshotEnabled.Get();
+}
+
+base::TimeDelta GetActorBackgroundedSceneRenderingModeRefreshInterval() {
+  if (!IsActorBackgroundedSceneRenderingModeEnabled()) {
+    return base::TimeDelta();
+  }
+
+  return kActorBackgroundedSceneRenderingModeRefreshInterval.Get();
+}
+
+bool IsActorBackgroundedSceneRenderingModeActiveInForeground() {
+  return IsActorBackgroundedSceneRenderingModeEnabled() &&
+         kActorBackgroundedSceneRenderingModeActiveInForeground.Get();
+}
+
+std::string GetActorBackgroundedSceneRenderingModeBlockedIOSVersions() {
+  if (!IsActorBackgroundedSceneRenderingModeEnabled()) {
+    return "";
+  }
+
+  return kActorBackgroundedSceneRenderingModeBlockedIOSVersions.Get();
 }
 
 BASE_FEATURE(kModelBasedPageClassification, base::FEATURE_DISABLED_BY_DEFAULT);

@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_INTELLIGENCE_FEATURES_FEATURES_H_
 #define IOS_CHROME_BROWSER_INTELLIGENCE_FEATURES_FEATURES_H_
 
+#import <string>
+
 #import "base/feature_list.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 
@@ -282,6 +284,42 @@ bool IsActorSuppressDialogsEnabled();
 // geolocation) are automatically denied while actuating.
 inline constexpr char kActorSuppressDialogsPermissionsParam[] = "permissions";
 BASE_DECLARE_FEATURE_PARAM(bool, kActorSuppressDialogsPermissionsFeatureParam);
+
+// Feature flag for the backgrounded scene rendering mode of tabs controlled by
+// the actor.
+BASE_DECLARE_FEATURE(kActorBackgroundedSceneRenderingMode);
+
+// Returns whether the backgrounded scene rendering mode is enabled for the
+// actor.
+bool IsActorBackgroundedSceneRenderingModeEnabled();
+
+// Param names of `kActorBackgroundedSceneRenderingMode`.
+extern const char kActorBackgroundedSceneBackgroundRenderingEnabledParam[];
+extern const char kActorBackgroundedSceneCustomSnapshotEnabledParam[];
+extern const char kActorBackgroundedSceneRenderingModeRefreshIntervalParam[];
+extern const char kActorBackgroundedSceneRenderingModeActiveInForegroundParam[];
+extern const char kActorBackgroundedSceneRenderingModeBlockedIOSVersionsParam[];
+
+// Returns whether web views keep rendering while their scene is in the
+// background (killswitch enabled by default; does not affect custom
+// snapshots).
+bool IsActorBackgroundedSceneBackgroundRenderingEnabled();
+
+// Returns whether custom snapshots may be taken in the rendering mode
+// (killswitch enabled by default).
+bool IsActorBackgroundedSceneCustomSnapshotEnabled();
+
+// Returns the interval at which rendering is refreshed, or zero when the
+// feature is disabled.
+base::TimeDelta GetActorBackgroundedSceneRenderingModeRefreshInterval();
+
+// Returns whether rendering is also refreshed while the web view is in a
+// foreground scene.
+bool IsActorBackgroundedSceneRenderingModeActiveInForeground();
+
+// Returns the comma-separated list of exact iOS versions on which the rendering
+// mode does not run, or an empty string when the feature is disabled.
+std::string GetActorBackgroundedSceneRenderingModeBlockedIOSVersions();
 
 // Feature flag for Model based page classification experiment.
 BASE_DECLARE_FEATURE(kModelBasedPageClassification);
