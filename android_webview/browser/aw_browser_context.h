@@ -132,6 +132,10 @@ class AwBrowserContext : public content::BrowserContext,
       JNIEnv* env,
       const base::android::JavaRef<jobject>& io_thread_client);
 
+  // Returns the ServiceWorkerWebSettings BlockNetworkLoads value of this
+  // context, which also applies to shared workers. Called on the UI thread.
+  bool ShouldBlockServiceWorkerNetworkLoads();
+
   int AllowedPrerenderingCount() const;
   void SetAllowedPrerenderingCount(JNIEnv* env, int allowed_count);
   void ClearAllowedPrerenderingCount(JNIEnv* env);

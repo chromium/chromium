@@ -57,6 +57,11 @@ BASE_FEATURE(kWebViewBackgroundClassPreloading,
 // `kWebViewEarlyTracingInit` will take precedent.
 BASE_FEATURE(kWebViewBackgroundTracingInit, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, WebSocket connections are refused while the BlockNetworkLoads
+// setting is enabled. This is a kill switch, so it is enabled by default.
+BASE_FEATURE(kWebViewBlockNetworkLoadsForWebSockets,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables boosting the renderer main thread priority during navigation.
 BASE_FEATURE(kWebViewBoostRendererPriorityOnNavigation,
              base::FEATURE_DISABLED_BY_DEFAULT);

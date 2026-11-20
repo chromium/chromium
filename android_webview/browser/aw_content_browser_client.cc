@@ -1328,6 +1328,40 @@ void AwContentBrowserClient::WillCreateURLLoaderFactory(
   }
 }
 
+bool AwContentBrowserClient::WillInterceptWebSocket(
+    content::RenderFrameHost* frame,
+    content::BrowserContext* browser_context) {
+  // WebView only intercepts WebSocket connections to refuse them, so this
+  // returns true only when the BlockNetworkLoads setting applies.
+  if (!base::FeatureList::IsEnabled(
+          features::kWebViewBlockNetworkLoadsForWebSockets)) {
+    return false;
+  }
+  if (!frame) {
+    // Service workers and shared workers follow ServiceWorkerWebSettings, as
+    // they do for other network loads.
+    return static_cast<AwBrowserContext*>(browser_context)
+        ->ShouldBlockServiceWorkerNetworkLoads();
+  }
+  AwSettings* aw_settings = AwSettings::FromWebContents(
+      content::WebContents::FromRenderFrameHost(frame));
+  return aw_settings && aw_settings->GetBlockNetworkLoads();
+}
+
+void AwContentBrowserClient::CreateWebSocket(
+    content::RenderFrameHost* frame,
+    WebSocketFactory factory,
+    const GURL& url,
+    const net::SiteForCookies& site_for_cookies,
+    const std::optional<std::string>& user_agent,
+    mojo::PendingRemote<network::mojom::WebSocketHandshakeClient>
+        handshake_client,
+    content::ContentBrowserClient::WebSocketOptions options) {
+  // Only called when WillInterceptWebSocket() returned true, i.e. network
+  // loads are blocked. Don't run `factory`; dropping `handshake_client` makes
+  // the connection fail in the renderer.
+}
+
 content::ContentBrowserClient::WebSocketOptions
 AwContentBrowserClient::GetWebSocketOptions(content::RenderFrameHost* frame) {
   content::ContentBrowserClient::WebSocketOptions options_struct;

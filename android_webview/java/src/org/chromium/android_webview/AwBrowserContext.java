@@ -496,6 +496,13 @@ public class AwBrowserContext implements BrowserContextHandle {
     }
 
     @CalledByNative
+    private boolean shouldBlockServiceWorkerNetworkLoads() {
+        // Without a controller, no ServiceWorkerWebSettings apply, as for other loads.
+        return mServiceWorkerController != null
+                && mServiceWorkerController.getAwServiceWorkerSettings().getBlockNetworkLoads();
+    }
+
+    @CalledByNative
     private int getGeolocationPermission(@JniType("std::string") String origin) {
         // This will trigger a disk read if the geolocation permissions have not been read before.
         // See https://crbug.com/450091066.

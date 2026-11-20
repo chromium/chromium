@@ -932,6 +932,15 @@ AwBrowserContext::GetServiceWorkerIoThreadClientThreadSafe() {
   return nullptr;
 }
 
+bool AwBrowserContext::ShouldBlockServiceWorkerNetworkLoads() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (!obj_) {
+    return false;
+  }
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return Java_AwBrowserContext_shouldBlockServiceWorkerNetworkLoads(env, obj_);
+}
+
 // static
 base::FilePath AwBrowserContext::BuildStoragePath(
     const base::FilePath& relative_path) {

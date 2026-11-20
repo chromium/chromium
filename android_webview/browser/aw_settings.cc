@@ -154,6 +154,12 @@ AwSettings* AwSettings::FromWebContents(content::WebContents* web_contents) {
   return AwSettingsUserData::GetSettings(web_contents);
 }
 
+bool AwSettings::GetBlockNetworkLoads() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> scoped_obj = aw_settings_.get(env);
+  return scoped_obj && Java_AwSettings_getBlockNetworkLoads(env, scoped_obj);
+}
+
 bool AwSettings::GetAllowSniffingFileUrls() {
   JNIEnv* env = base::android::AttachCurrentThread();
   return Java_AwSettings_getAllowSniffingFileUrls(env);

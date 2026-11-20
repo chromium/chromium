@@ -130,6 +130,8 @@ class AwSettings : public content::WebContentsObserver {
 
   void PopulateWebPreferences(blink::web_pref::WebPreferences* web_prefs);
   bool GetAllowFileAccess();
+  // Reads WebSettings#getBlockNetworkLoads() from the Java peer.
+  bool GetBlockNetworkLoads();
   bool IsForceDarkApplied(JNIEnv* env,
                           const base::android::JavaRef<jobject>& obj);
   bool PrefersDarkFromTheme(JNIEnv* env,

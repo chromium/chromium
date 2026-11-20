@@ -26,6 +26,15 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer;
 import org.chromium.net.test.util.TestWebServer;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.InetAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.SocketTimeoutException;
+import java.nio.charset.StandardCharsets;
+import java.util.Locale;
+
 /**
  * Test service worker settings APIs.
  *
@@ -187,6 +196,89 @@ public class AwServiceWorkerSettingsTest extends AwParameterizedTest {
                 "The service worker should not make any network requests",
                 0,
                 mWebServer.getRequestCount(FETCH_URL));
+    }
+
+    private static final String WEB_SOCKET_INDEX_HTML =
+            """
+        <!DOCTYPE html>
+        <script>
+            state = '';
+            function setState(newState) {
+                console.log(newState);
+                state = newState;
+            }
+            navigator.serviceWorker.addEventListener('message',
+                event => setState(event.data.msg));
+            navigator.serviceWorker.register('sw.js')
+                .then(() => navigator.serviceWorker.ready)
+                .then(() => setState('sw_ready'))
+                .catch(() => setState('sw_registration_error'));
+            function connect(url) {
+                setState('connecting');
+                navigator.serviceWorker.ready.then(
+                    reg => reg.active.postMessage({url: url}));
+            }
+        </script>
+        """;
+
+    private static final String WEB_SOCKET_SW_JS =
+            """
+        self.addEventListener('message', event => {
+            const ws = new WebSocket(event.data.url);
+            ws.onerror = () => event.source.postMessage({msg: 'ws_error'});
+            ws.onopen = () => event.source.postMessage({msg: 'ws_open'});
+        });
+        """;
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "Preferences", "ServiceWorker"})
+    public void testBlockNetworkLoadsWithWebSocket() throws Throwable {
+        initAwServiceWorkerSettings();
+        final String fullIndexUrl = mWebServer.setResponse(INDEX_URL, WEB_SOCKET_INDEX_HTML, null);
+        mWebServer.setResponse(SW_URL, WEB_SOCKET_SW_JS, null);
+
+        // Install the service worker while network loads are allowed.
+        mAwServiceWorkerSettings.setBlockNetworkLoads(false);
+        loadPage(fullIndexUrl, "sw_ready");
+
+        try (ServerSocket serverSocket =
+                new ServerSocket(0, 10, InetAddress.getByAddress(new byte[] {127, 0, 0, 1}))) {
+            String connectJs =
+                    "connect('ws://127.0.0.1:" + serverSocket.getLocalPort() + "/');";
+
+            // Blocked: the WebSocket fails and no connection reaches the server.
+            mAwServiceWorkerSettings.setBlockNetworkLoads(true);
+            mActivityTestRule.executeJavaScriptAndWaitForResult(
+                    mAwContents, mContentsClient, connectJs);
+            AwActivityTestRule.pollInstrumentationThread(
+                    () -> "\"ws_error\"".equals(getStateFromJs()));
+            serverSocket.setSoTimeout(500);
+            Assert.assertThrows(
+                    "WebSocket connected while network loads are blocked",
+                    SocketTimeoutException.class,
+                    () -> serverSocket.accept().close());
+
+            // Unblocked: the WebSocket handshake reaches the server.
+            mAwServiceWorkerSettings.setBlockNetworkLoads(false);
+            mActivityTestRule.executeJavaScriptAndWaitForResult(
+                    mAwContents, mContentsClient, connectJs);
+            serverSocket.setSoTimeout((int) AwActivityTestRule.WAIT_TIMEOUT_MS);
+            try (Socket socket = serverSocket.accept()) {
+                BufferedReader reader =
+                        new BufferedReader(
+                                new InputStreamReader(
+                                        socket.getInputStream(), StandardCharsets.UTF_8));
+                boolean sawUpgrade = false;
+                String line;
+                while ((line = reader.readLine()) != null && !line.isEmpty()) {
+                    if (line.toLowerCase(Locale.US).startsWith("upgrade: websocket")) {
+                        sawUpgrade = true;
+                    }
+                }
+                Assert.assertTrue("Expected a WebSocket handshake request", sawUpgrade);
+            }
+        }
     }
 
     @Test

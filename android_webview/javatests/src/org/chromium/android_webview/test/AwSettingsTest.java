@@ -66,9 +66,17 @@ import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayUtil;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.net.InetAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -2706,6 +2714,144 @@ public class AwSettingsTest {
             */
         } finally {
             webServer.shutdown();
+        }
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "Preferences"})
+    public void testBlockNetworkLoadsWithWebSocket() throws Throwable {
+        doTestBlockNetworkLoadsWithWebSocket(/* fromDedicatedWorker= */ false);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "Preferences"})
+    public void testBlockNetworkLoadsWithWebSocketFromDedicatedWorker() throws Throwable {
+        doTestBlockNetworkLoadsWithWebSocket(/* fromDedicatedWorker= */ true);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "Preferences"})
+    @DisableFeatures(AwFeatures.WEBVIEW_BLOCK_NETWORK_LOADS_FOR_WEB_SOCKETS)
+    public void testBlockNetworkLoadsWithWebSocketKillSwitch() throws Throwable {
+        final TestAwContentsClient contentClient = new TestAwContentsClient();
+        final AwTestContainerView testContainer =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(contentClient);
+        final AwContents awContents = testContainer.getAwContents();
+        final AwSettings awSettings = mActivityTestRule.getAwSettingsOnUiThread(awContents);
+        awSettings.setJavaScriptEnabled(true);
+        awSettings.setBlockNetworkLoads(true);
+
+        try (ServerSocket serverSocket =
+                new ServerSocket(0, 10, InetAddress.getByAddress(new byte[] {127, 0, 0, 1}))) {
+            loadWebSocketPage(awContents, contentClient, serverSocket, false);
+            // With the kill switch off, the old behavior is kept and the handshake is sent.
+            assertWebSocketHandshakeReceived(serverSocket);
+        }
+    }
+
+    private void loadWebSocketPage(
+            AwContents awContents,
+            TestAwContentsClient contentClient,
+            ServerSocket serverSocket,
+            boolean fromDedicatedWorker)
+            throws Throwable {
+        String socketScript =
+                String.format(
+                        Locale.ROOT,
+                        """
+                        var ws = new WebSocket('ws://127.0.0.1:%d/');
+                        ws.onerror = () => report('ws_error');
+                        ws.onopen = () => report('ws_open');
+                        """,
+                        serverSocket.getLocalPort());
+        String pageHtml;
+        if (fromDedicatedWorker) {
+            pageHtml =
+                    String.format(
+                            Locale.ROOT,
+                            """
+                            <html><body>
+                            <script id="worker" type="text/js-worker">
+                            function report(r) { postMessage(r); }
+                            %s
+                            </script>
+                            <script>
+                            const src = document.getElementById('worker').textContent;
+                            const worker = new Worker(URL.createObjectURL(new Blob([src])));
+                            worker.onmessage = e => { document.title = e.data; };
+                            </script>
+                            </body></html>
+                            """,
+                            socketScript);
+        } else {
+            pageHtml =
+                    String.format(
+                            Locale.ROOT,
+                            """
+                            <html><body><script>
+                            function report(r) { document.title = r; }
+                            %s
+                            </script></body></html>
+                            """,
+                            socketScript);
+        }
+        mActivityTestRule.loadDataWithBaseUrlSync(
+                awContents,
+                contentClient.getOnPageFinishedHelper(),
+                pageHtml,
+                "text/html",
+                false,
+                "http://example.test/",
+                null);
+    }
+
+    private static void assertWebSocketHandshakeReceived(ServerSocket serverSocket)
+            throws Exception {
+        serverSocket.setSoTimeout((int) WAIT_TIMEOUT_MS);
+        try (Socket socket = serverSocket.accept()) {
+            BufferedReader reader =
+                    new BufferedReader(
+                            new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
+            boolean sawUpgrade = false;
+            String line;
+            while ((line = reader.readLine()) != null && !line.isEmpty()) {
+                if (line.toLowerCase(Locale.US).startsWith("upgrade: websocket")) {
+                    sawUpgrade = true;
+                }
+            }
+            Assert.assertTrue("Expected a WebSocket handshake request", sawUpgrade);
+        }
+    }
+
+    private void doTestBlockNetworkLoadsWithWebSocket(boolean fromDedicatedWorker)
+            throws Throwable {
+        final TestAwContentsClient contentClient = new TestAwContentsClient();
+        final AwTestContainerView testContainer =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(contentClient);
+        final AwContents awContents = testContainer.getAwContents();
+        final AwSettings awSettings = mActivityTestRule.getAwSettingsOnUiThread(awContents);
+        awSettings.setJavaScriptEnabled(true);
+
+        try (ServerSocket serverSocket =
+                new ServerSocket(0, 10, InetAddress.getByAddress(new byte[] {127, 0, 0, 1}))) {
+            // Blocked: the WebSocket fails and no connection reaches the server.
+            awSettings.setBlockNetworkLoads(true);
+            loadWebSocketPage(awContents, contentClient, serverSocket, fromDedicatedWorker);
+            AwActivityTestRule.pollInstrumentationThread(
+                    () -> "ws_error".equals(mActivityTestRule.getTitleOnUiThread(awContents)));
+            serverSocket.setSoTimeout(500);
+            Assert.assertThrows(
+                    "WebSocket connected while network loads are blocked",
+                    SocketTimeoutException.class,
+                    () -> serverSocket.accept().close());
+
+            // Unblocked: the WebSocket handshake reaches the server.
+            awSettings.setBlockNetworkLoads(false);
+            loadWebSocketPage(awContents, contentClient, serverSocket, fromDedicatedWorker);
+            assertWebSocketHandshakeReceived(serverSocket);
         }
     }
 

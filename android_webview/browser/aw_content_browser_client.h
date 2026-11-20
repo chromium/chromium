@@ -254,8 +254,20 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
       network::mojom::URLLoaderFactoryOverridePtr* factory_override,
       scoped_refptr<base::SequencedTaskRunner> navigation_response_task_runner,
       bool is_for_network_service) override;
+  bool WillInterceptWebSocket(
+      content::RenderFrameHost* frame,
+      content::BrowserContext* browser_context) override;
   content::ContentBrowserClient::WebSocketOptions GetWebSocketOptions(
       content::RenderFrameHost* frame) override;
+  void CreateWebSocket(
+      content::RenderFrameHost* frame,
+      WebSocketFactory factory,
+      const GURL& url,
+      const net::SiteForCookies& site_for_cookies,
+      const std::optional<std::string>& user_agent,
+      mojo::PendingRemote<network::mojom::WebSocketHandshakeClient>
+          handshake_client,
+      content::ContentBrowserClient::WebSocketOptions options) override;
   bool WillCreateRestrictedCookieManager(
       network::mojom::RestrictedCookieManagerRole role,
       content::BrowserContext* browser_context,

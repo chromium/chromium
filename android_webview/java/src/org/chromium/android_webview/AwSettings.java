@@ -582,6 +582,7 @@ public class AwSettings {
     }
 
     /** See {@link android.webkit.WebSettings#getBlockNetworkLoads}. */
+    @CalledByNative
     public boolean getBlockNetworkLoads() {
         synchronized (mAwSettingsLock) {
             return mBlockNetworkLoads;
