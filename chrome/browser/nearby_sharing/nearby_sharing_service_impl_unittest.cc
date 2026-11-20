@@ -3015,6 +3015,38 @@ TEST_P(NearbySharingServiceImplTest,
   service_->UnregisterReceiveSurface(&callback);
 }
 
+TEST_P(NearbySharingServiceImplTest, IncomingConnection_MissingShareTarget) {
+  SetUpAdvertisementDecoder(ValidV1EndpointInfo(),
+                            /*return_empty_advertisement=*/false,
+                            /*return_empty_device_name=*/true,
+                            /*expected_number_of_calls=*/1u);
+
+  SetConnectionType(net::NetworkChangeNotifier::CONNECTION_WIFI);
+  NiceMock<MockTransferUpdateCallback> callback;
+  base::RunLoop run_loop;
+  EXPECT_CALL(callback, OnTransferUpdate(testing::_, testing::_))
+      .WillOnce([&run_loop](const ShareTarget& share_target,
+                            TransferMetadata metadata) {
+        EXPECT_TRUE(metadata.is_final_status());
+        EXPECT_EQ(TransferMetadata::Status::kMissingShareTarget,
+                  metadata.status());
+        EXPECT_TRUE(share_target.is_incoming);
+        run_loop.Quit();
+      });
+
+  SetUpForegroundReceiveSurface(callback);
+  service_->OnIncomingConnectionAccepted(kEndpointId, ValidV1EndpointInfo(),
+                                         &connection_);
+  ProcessLatestPublicCertificateDecryption(/*expected_num_calls=*/1,
+                                           /*success=*/false);
+  run_loop.Run();
+
+  EXPECT_TRUE(connection_.IsClosed());
+
+  // To avoid UAF in OnIncomingTransferUpdate().
+  service_->UnregisterReceiveSurface(&callback);
+}
+
 TEST_P(NearbySharingServiceImplTest, IncomingConnection_TimedOut) {
   NiceMock<MockTransferUpdateCallback> callback;
   ShareTarget share_target = SetUpIncomingConnection(callback);

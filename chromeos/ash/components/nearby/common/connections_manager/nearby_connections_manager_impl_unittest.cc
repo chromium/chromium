@@ -2131,3 +2131,82 @@ TEST_F(NearbyConnectionsManagerImplTest,
       std::move(callback));
   run_loop.Run();
 }
+
+TEST_F(NearbyConnectionsManagerImplTest,
+       IgnoreDuplicateIncomingConnectionInitiatedAndAccepted) {
+  mojo::Remote<ConnectionLifecycleListener> connection_listener_remote;
+  testing::NiceMock<MockIncomingConnectionListener>
+      incoming_connection_listener;
+  StartAdvertising(connection_listener_remote, incoming_connection_listener);
+
+  mojo::Remote<PayloadListener> payload_listener_remote;
+  NearbyConnection* connection = OnIncomingConnection(
+      connection_listener_remote, incoming_connection_listener,
+      payload_listener_remote);
+  ASSERT_TRUE(connection);
+
+  // Replaying OnConnectionInitiated or OnConnectionAccepted for an already
+  // connected endpoint must be ignored rather than handing out the same
+  // NearbyConnection* a second time.
+  EXPECT_CALL(incoming_connection_listener,
+              OnIncomingConnectionInitiated(testing::_, testing::_))
+      .Times(0);
+  EXPECT_CALL(incoming_connection_listener,
+              OnIncomingConnectionAccepted(testing::_, testing::_, testing::_))
+      .Times(0);
+
+  const std::vector<uint8_t> remote_endpoint_info(
+      std::begin(kRemoteEndpointInfo), std::end(kRemoteEndpointInfo));
+  const std::vector<uint8_t> raw_authentication_token(
+      std::begin(kRawAuthenticationToken), std::end(kRawAuthenticationToken));
+  connection_listener_remote->OnConnectionInitiated(
+      kRemoteEndpointId,
+      ConnectionInfo::New(kAuthenticationToken, raw_authentication_token,
+                          remote_endpoint_info,
+                          /*is_incoming_connection=*/true));
+  connection_listener_remote->OnConnectionAccepted(kRemoteEndpointId);
+  connection_listener_remote.FlushForTesting();
+}
+
+TEST_F(NearbyConnectionsManagerImplTest,
+       IgnoreDuplicateOutgoingConnectionInitiatedAndAccepted) {
+  mojo::Remote<EndpointDiscoveryListener> discovery_listener_remote;
+  testing::NiceMock<MockDiscoveryListener> discovery_listener;
+  StartDiscovery(discovery_listener_remote, discovery_listener);
+
+  mojo::Remote<ConnectionLifecycleListener> connection_listener_remote;
+  mojo::Remote<PayloadListener> payload_listener_remote;
+  NearbyConnection* connection =
+      Connect(connection_listener_remote, payload_listener_remote,
+              ConnectionResponse::kAccepted);
+  ASSERT_TRUE(connection);
+
+  // Replaying OnConnectionInitiated or OnConnectionAccepted for an already
+  // connected outgoing endpoint must be ignored rather than disconnecting it.
+  EXPECT_CALL(nearby_connections_, AcceptConnection).Times(0);
+  EXPECT_CALL(nearby_connections_, DisconnectFromEndpoint).Times(0);
+
+  const std::vector<uint8_t> remote_endpoint_info(
+      std::begin(kRemoteEndpointInfo), std::end(kRemoteEndpointInfo));
+  const std::vector<uint8_t> raw_authentication_token(
+      std::begin(kRawAuthenticationToken), std::end(kRawAuthenticationToken));
+  connection_listener_remote->OnConnectionInitiated(
+      kRemoteEndpointId,
+      ConnectionInfo::New(kAuthenticationToken, raw_authentication_token,
+                          remote_endpoint_info,
+                          /*is_incoming_connection=*/false));
+  connection_listener_remote->OnConnectionAccepted(kRemoteEndpointId);
+  connection_listener_remote.FlushForTesting();
+
+  base::RunLoop stop_discovery_run_loop;
+  EXPECT_CALL(nearby_connections_, StopDiscovery)
+      .WillOnce([&stop_discovery_run_loop](
+                    const std::string& service_id,
+                    NearbyConnectionsMojom::StopDiscoveryCallback callback) {
+        EXPECT_EQ(kServiceId, service_id);
+        std::move(callback).Run(Status::kSuccess);
+        stop_discovery_run_loop.Quit();
+      });
+  nearby_connections_manager_->StopDiscovery();
+  stop_discovery_run_loop.Run();
+}

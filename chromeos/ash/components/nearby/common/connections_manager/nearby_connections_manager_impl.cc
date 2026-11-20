@@ -692,10 +692,17 @@ void NearbyConnectionsManagerImpl::OnConnectionInitiated(
     return;
   }
 
-  bool is_incoming_connection = info->is_incoming_connection;
-  const std::vector<uint8_t>& endpoint_info = info->endpoint_info;
   auto result = connection_info_map_.emplace(endpoint_id, std::move(info));
-  DCHECK(result.second);
+  if (!result.second) {
+    CD_LOG(WARNING, Feature::NEARBY_INFRA)
+        << __func__ << ": Duplicate OnConnectionInitiated for endpoint "
+        << endpoint_id << ", ignoring.";
+    return;
+  }
+
+  bool is_incoming_connection = result.first->second->is_incoming_connection;
+  const std::vector<uint8_t>& endpoint_info =
+      result.first->second->endpoint_info;
 
   mojo::PendingRemote<PayloadListener> payload_listener;
   payload_listeners_.Add(this,
@@ -722,6 +729,13 @@ void NearbyConnectionsManagerImpl::OnConnectionAccepted(
     const std::string& endpoint_id) {
   auto it = connection_info_map_.find(endpoint_id);
   if (it == connection_info_map_.end()) {
+    return;
+  }
+
+  if (connections_.contains(endpoint_id)) {
+    CD_LOG(WARNING, Feature::NEARBY_INFRA)
+        << __func__ << ": Duplicate OnConnectionAccepted for endpoint "
+        << endpoint_id << ", ignoring.";
     return;
   }
 

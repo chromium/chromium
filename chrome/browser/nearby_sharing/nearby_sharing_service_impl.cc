@@ -3482,10 +3482,6 @@ void NearbySharingServiceImpl::OnIncomingDecryptedCertificate(
     return;
   }
 
-  // Remove placeholder share target since we are creating the actual share
-  // target below.
-  incoming_share_target_info_map_.erase(placeholder_share_target.id);
-
   std::optional<ShareTarget> share_target = CreateShareTarget(
       endpoint_id, advertisement, std::move(certificate), /*is_incoming=*/true);
 
@@ -3518,6 +3514,10 @@ void NearbySharingServiceImpl::OnIncomingDecryptedCertificate(
       std::make_unique<TransferUpdateDecorator>(base::BindRepeating(
           &NearbySharingServiceImpl::OnIncomingTransferUpdate,
           weak_ptr_factory_.GetWeakPtr())));
+
+  // Remove placeholder share target after the actual share target has taken
+  // ownership of `connection` via its own `raw_ptr<NearbyConnection>`.
+  incoming_share_target_info_map_.erase(placeholder_share_target.id);
 
   connection->SetDisconnectionListener(
       base::BindOnce(&NearbySharingServiceImpl::UnregisterShareTarget,
