@@ -1316,7 +1316,6 @@ class EnclaveManager::StateMachine {
     kRenewingPIN,
     kWaitingForEnclaveTokenForUnregister,
     kUnregistering,
-    kSyncingWithSecurityDomain,
     kDownloadingAccountState,
     kStoringOpportunisticallyRetrievedKey,
   };
@@ -1471,10 +1470,6 @@ class EnclaveManager::StateMachine {
         DoUnregistering(std::move(event));
         break;
 
-      case State::kSyncingWithSecurityDomain:
-        DoSyncingWithSecurityDomain(std::move(event));
-        break;
-
       case State::kDownloadingAccountState:
         DoDownloadingAccountState(std::move(event));
         break;
@@ -1571,8 +1566,6 @@ class EnclaveManager::StateMachine {
         return "WaitingForEnclaveTokenForUnregister";
       case State::kUnregistering:
         return "Unregistering";
-      case State::kSyncingWithSecurityDomain:
-        return "kSyncingWithSecurityDomain";
       case State::kDownloadingAccountState:
         return "DownloadingAccountState";
       case State::kStoringOpportunisticallyRetrievedKey:
@@ -1828,6 +1821,10 @@ class EnclaveManager::StateMachine {
                  kDoNextActionFailedSetOrUpdatePinWhileUserNotRegistered);
         return;
       }
+      if (!action_->account_state) {
+        DownloadAccountState();
+        return;
+      }
 
       is_set_pin_ = !action_->set_pin.empty();
       is_pin_update_ = !action_->updated_pin.empty();
@@ -1840,6 +1837,10 @@ class EnclaveManager::StateMachine {
     if (action_->renew_pin) {
       if (!user_->registered()) {
         Stop(ActionOutcome::kDoNextActionFailedRenewPinWhileUserNotRegistered);
+        return;
+      }
+      if (!action_->account_state) {
+        DownloadAccountState();
         return;
       }
 
@@ -2226,34 +2227,9 @@ class EnclaveManager::StateMachine {
   }
 
   void SyncWithSecurityDomain() {
-    state_ = State::kSyncingWithSecurityDomain;
-    download_account_state_request_ =
-        manager_->trusted_vault_conn_
-            ->DownloadAuthenticationFactorsRegistrationState(
-                *primary_account_info_,
-                trusted_vault::SecurityDomainId::kPasskeys,
-                base::BindOnce(
-                    [](base::WeakPtr<EnclaveManager::StateMachine> machine,
-                       trusted_vault::
-                           DownloadAuthenticationFactorsRegistrationStateResult
-                               result) {
-                      if (!machine) {
-                        return;
-                      }
-                      machine->Process(std::move(result));
-                    },
-                    weak_ptr_factory_.GetWeakPtr()),
-                /*keep_alive_callback=*/base::DoNothing());
-  }
-
-  void DoSyncingWithSecurityDomain(Event event) {
-    CHECK(std::holds_alternative<
-          trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult>(
-        event));
-
-    const auto& result = std::get<
-        trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult>(
-        event);
+    CHECK(action_->account_state);
+    const trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult&
+        result = *action_->account_state;
     if (result.state ==
         trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult::
             State::kError) {
@@ -2290,8 +2266,7 @@ class EnclaveManager::StateMachine {
       // joining a PIN, which Chrome will do later during processing.
       if (result.gpm_pin_metadata->public_key) {
         FIDO_LOG(EVENT) << "GPM PIN public key updated";
-        action_->pin_public_key =
-            std::move(*result.gpm_pin_metadata->public_key);
+        action_->pin_public_key = *result.gpm_pin_metadata->public_key;
       }
       if (result.gpm_pin_metadata->usable_pin_metadata) {
         const auto& metadata = *result.gpm_pin_metadata->usable_pin_metadata;
