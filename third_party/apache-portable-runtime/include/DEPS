@@ -1,0 +1,4 @@
+include_rules = [
+  # Found through src/include.
+  "+arch/apr_private_common.h",
+]
