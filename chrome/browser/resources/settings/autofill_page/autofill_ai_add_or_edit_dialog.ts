@@ -565,6 +565,31 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
     // resolve their GRD IDs via `settings::GetAutofillLocalizedStringId()`.
     // LINT.IfChange(WalletPrivatePassConsentStrings)
     const walletTitle = i18n('googleWalletTitle');
+    // TODO(crbug.com/571821268): Remove the feature check when
+    // `kAutofillRegionalizedPrivatePassesUxRefine` is launched.
+    if (loadTimeData.getBoolean(
+            'isAutofillRegionalizedPrivatePassesUxRefineEnabled') &&
+        this.entityInstance.type.passType ===
+            chrome.autofillPrivate.EntityPassType.PRIVATE_PASS) {
+      const howInfoIsUsedLink = `<a target="_blank" href="${
+          this.walletManageYourInfoUrl_(this.entityInstance.type)}">${
+          i18n('autofillAiHowThisInfoIsUsedAcrossGoogle')}</a>`;
+      const notice = i18nAdvanced('saveInfoToWalletPrivatePassAccountNotice', {
+        substitutions: [walletTitle, howInfoIsUsedLink, this.userEmail_],
+        tags: ['a'],
+        attrs: ['href', 'target'],
+      });
+      // The Privacy Policy link is shown in a separate paragraph.
+      const privacyPolicyLink = `<a target="_blank" href="${
+          loadTimeData.getString('googlePrivacyPolicyUrl')}">${
+          i18n('autofillAiPrivacyPolicy')}</a>`;
+      return {
+        html: sanitizeInnerHtml(
+            `<div>${notice.toString()}</div><div>${privacyPolicyLink}</div>`),
+        stringNames,
+      };
+    }
+
     if (loadTimeData.getBoolean('enableAutofillAiWalletPrivatePasses')) {
       // Show footer only when it is a new entity and type supports Wallet
       // storage. This is sufficient because the entities stored in Wallet are

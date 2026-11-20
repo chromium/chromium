@@ -26,6 +26,9 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    loadTimeData.overrideValues({
+      isAutofillRegionalizedPrivatePassesUxRefineEnabled: false,
+    });
 
     entityDataManager = new TestEntityDataManagerProxy();
     EntityDataManagerProxyImpl.setInstance(entityDataManager);
@@ -476,6 +479,66 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
     assertTrue(footer.innerText.includes('Your info is saved to your device'));
   });
 
+  test('FooterShowsPrivatePassNoticeWhenUxRefineEnabled', async function() {
+    entityDataManager.setGetAccountInfoResponse({
+      email: 'test@example.com',
+      isSyncEnabledForAutofillProfiles: true,
+      isEligibleForAddressAccountStorage: true,
+    });
+
+    // A new private pass entity eligible for Wallet storage shows the private
+    // pass notice when the UX refine flag is on.
+    const newEntity = structuredClone(testEntityInstance);
+    newEntity.guid = '';
+    newEntity.type.typeName = 0;
+    newEntity.type.passType =
+        chrome.autofillPrivate.EntityPassType.PRIVATE_PASS;
+    dialog.entityInstance = newEntity;
+    loadTimeData.overrideValues({
+      isAutofillRegionalizedPrivatePassesUxRefineEnabled: true,
+      saveInfoToWalletPrivatePassAccountNotice:
+          'Save your info in $1. You can control $2 for $3.',
+      googleWalletTitle: 'Google Wallet',
+      autofillAiHowThisInfoIsUsedAcrossGoogle:
+          'how this info is used across Google',
+      autofillAiPrivacyPolicy: 'Privacy Policy',
+      managePrivatePassesUrl: 'https://support.google.com/wallet',
+      googlePrivacyPolicyUrl: 'https://policies.google.com/privacy',
+    });
+
+    document.body.appendChild(dialog);
+    await Promise.all([
+      entityDataManager.whenCalled('getAllAttributeTypesForEntityTypeName'),
+      entityDataManager.whenCalled(
+          'getRequiredAttributeTypesForEntityTypeName'),
+      entityDataManager.whenCalled('getAccountInfo'),
+    ]);
+    await microtasksFinished();
+
+    const footer = dialog.shadowRoot.querySelector<HTMLElement>('#footer');
+    assertTrue(!!footer);
+    assertFalse(footer.hidden);
+    assertTrue(footer.innerText.includes('Google Wallet'));
+    assertTrue(footer.innerText.includes('test@example.com'));
+    // The notice and the Privacy Policy link are separate paragraphs.
+    const paragraphs = footer.querySelectorAll<HTMLElement>(':scope > div');
+    assertEquals(2, paragraphs.length);
+    const noticeLinks = paragraphs[0]!.querySelectorAll<HTMLAnchorElement>('a');
+    assertEquals(1, noticeLinks.length);
+    assertEquals('https://support.google.com/wallet', noticeLinks[0]!.href);
+    assertEquals('_blank', noticeLinks[0]!.target);
+    assertEquals(
+        'how this info is used across Google', noticeLinks[0]!.textContent);
+    const privacyPolicyLinks =
+        paragraphs[1]!.querySelectorAll<HTMLAnchorElement>('a');
+    assertEquals(1, privacyPolicyLinks.length);
+    assertEquals(
+        'https://policies.google.com/privacy', privacyPolicyLinks[0]!.href);
+    assertEquals('_blank', privacyPolicyLinks[0]!.target);
+    assertEquals('Privacy Policy', privacyPolicyLinks[0]!.textContent);
+    assertEquals('Privacy Policy', paragraphs[1]!.textContent);
+  });
+
   test('AsyncSave_ShowsSpinnerAndDisablesButton', async function() {
     loadTimeData.overrideValues({enableAutofillAiWalletPrivatePasses: true});
 
@@ -672,6 +735,8 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
   interface ConsentStringNamesParamsInterface {
     // Whether `enableAutofillAiWalletPrivatePasses` is enabled.
     enableAutofillAiWalletPrivatePasses: boolean;
+    // Whether `isAutofillRegionalizedPrivatePassesUxRefineEnabled` is enabled.
+    isAutofillRegionalizedPrivatePassesUxRefineEnabled?: boolean;
     // The pass type of the entity being added.
     passType: chrome.autofillPrivate.EntityPassType;
     // Whether the entity type supports Wallet storage.
@@ -684,6 +749,22 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
   }
 
   const consentStringNamesParams: ConsentStringNamesParamsInterface[] = [
+    // Tests that saving a new private pass to Wallet records the private-pass
+    // notice and privacy policy strings when
+    // `isAutofillRegionalizedPrivatePassesUxRefineEnabled` is on.
+    {
+      enableAutofillAiWalletPrivatePasses: true,
+      isAutofillRegionalizedPrivatePassesUxRefineEnabled: true,
+      passType: chrome.autofillPrivate.EntityPassType.PRIVATE_PASS,
+      supportsWalletStorage: true,
+      expectedConsentStringNames: [
+        'googleWalletTitle',
+        'autofillAiHowThisInfoIsUsedAcrossGoogle',
+        'saveInfoToWalletPrivatePassAccountNotice',
+        'autofillAiPrivacyPolicy',
+      ],
+      title: 'ConsentStringNames_NewPrivatePass_UxRefineEnabled',
+    },
     // Tests that saving a new private pass to Wallet records the settings
     // account notice strings when `enableAutofillAiWalletPrivatePasses` is on.
     {
@@ -732,6 +813,8 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
           enableAutofillAiWalletPrivatePasses:
               params.enableAutofillAiWalletPrivatePasses,
           enableWalletDisclosureNoticePublicPass: false,
+          isAutofillRegionalizedPrivatePassesUxRefineEnabled:
+              !!params.isAutofillRegionalizedPrivatePassesUxRefineEnabled,
         });
 
         // Recreate the dialog after overriding `loadTimeData` since

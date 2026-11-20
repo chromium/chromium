@@ -791,9 +791,9 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiSavePrivatePassToWalletTest,
           entity_instance, "en-US", /*entity_supports_wallet_storage=*/true);
   api_entity.stored_in_wallet = true;
   // LINT.IfChange(WalletPrivatePassConsentStrings)
-  api_entity.consent_string_names =
-      std::vector<std::string>{"googleWalletTitle", "autofillAiManageYourInfo",
-                               "saveInfoToWalletSettingsAccountNotice"};
+  api_entity.consent_string_names = std::vector<std::string>{
+      "googleWalletTitle", "autofillAiHowThisInfoIsUsedAcrossGoogle",
+      "saveInfoToWalletPrivatePassAccountNotice", "autofillAiPrivacyPolicy"};
   // LINT.ThenChange(//chrome/browser/resources/settings/autofill_page/autofill_ai_add_or_edit_dialog.ts:WalletPrivatePassConsentStrings)
 
   base::ListValue args;
@@ -828,9 +828,11 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiSavePrivatePassToWalletTest,
   EXPECT_EQ(session_id_consent, session_id_api);
   EXPECT_THAT(
       consent.description_grd_ids(),
-      ElementsAre(IDS_AUTOFILL_GOOGLE_WALLET_TITLE,
-                  IDS_AUTOFILL_MANAGE_YOUR_INFO_LINK,
-                  IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_NEW));
+      ElementsAre(
+          IDS_AUTOFILL_GOOGLE_WALLET_TITLE,
+          IDS_AUTOFILL_HOW_THIS_INFO_IS_USED_ACROSS_GOOGLE_LINK,
+          IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_PRIVATE_PASS,
+          IDS_AUTOFILL_PRIVACY_POLICY_LINK));
   EXPECT_EQ(consent.confirmation_grd_id(), IDS_SAVE);
   base::optional_ref<const EntityInstance> saved_entity =
       entity_data_manager->GetEntityInstance(entity_instance.guid());
@@ -848,7 +850,7 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiSavePrivatePassToWalletTest,
           entity_instance, "en-US", /*entity_supports_wallet_storage=*/true);
   api_entity.stored_in_wallet = true;
   api_entity.consent_string_names =
-      std::vector<std::string>{"saveInfoToWalletSettingsAccountNotice"};
+      std::vector<std::string>{"saveInfoToWalletPrivatePassAccountNotice"};
 
   base::ListValue args;
   args.Append(api_entity.ToValue());

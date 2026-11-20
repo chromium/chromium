@@ -2012,6 +2012,11 @@ constexpr webui::LocalizedString kAutofillLocalizedStrings[] = {
      IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE},
     {"saveInfoToWalletSettingsAccountNotice",
      IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_NEW},
+    {"saveInfoToWalletPrivatePassAccountNotice",
+     IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_PRIVATE_PASS},
+    {"autofillAiHowThisInfoIsUsedAcrossGoogle",
+     IDS_AUTOFILL_HOW_THIS_INFO_IS_USED_ACROSS_GOOGLE_LINK},
+    {"autofillAiPrivacyPolicy", IDS_AUTOFILL_PRIVACY_POLICY_LINK},
     {"autofillAiSubpageSublabelLoggingManagedDisabled",
      IDS_SETTINGS_AUTOFILL_AI_ENTERPRISE_LOGGING_MANAGED_DISABLED},
     {"autofillPayOverTimeSettingsLabel", IDS_AUTOFILL_BNPL_SETTINGS_LABEL},
@@ -2093,6 +2098,7 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
   html_source->AddString("managePrivatePassesUrl",
                          chrome::kWalletPrivatePassHelpCenterURL);
   html_source->AddString("managePublicPassesUrl", chrome::kWalletPassesPageURL);
+  html_source->AddString("googlePrivacyPolicyUrl", chrome::kPrivacyPolicyURL);
   html_source->AddString("addressesAndPaymentMethodsLearnMoreURL",
                          chrome::kAddressesAndPaymentMethodsLearnMoreURL);
   html_source->AddString("cardBenefitsToggleLearnMoreUrl",
@@ -2229,6 +2235,10 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       "isAutofillAiWalletPassBranding2026Enabled",
       base::FeatureList::IsEnabled(
           autofill::features::kAutofillAiWalletPassBranding2026));
+  html_source->AddBoolean(
+      "isAutofillRegionalizedPrivatePassesUxRefineEnabled",
+      base::FeatureList::IsEnabled(
+          autofill::features::kAutofillRegionalizedPrivatePassesUxRefine));
   html_source->AddBoolean("isWalletServerStorageEnabled",
                           IsWalletServerStorageEnabled());
   html_source->AddBoolean("AutofillSettingsEnterprisePolicyEnabled",
