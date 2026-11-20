@@ -19,6 +19,10 @@
 #include "base/test/run_until.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "build/build_config.h"
+#include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/base/dragdrop/drop_target_event.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
+#include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/mojom/menu_source_type.mojom-shared.h"
 #include "ui/compositor/compositor.h"
 #include "ui/display/display.h"
@@ -1747,6 +1751,120 @@ TEST_F(MenuRunnerTest, DestroyAdapterDuringRebuildOfShowingMenuCrashes) {
 
   EXPECT_CHECK_DEATH_WITH(adapter->BuildMenu(raw_menu_view),
                           "Check failed: !is_building_");
+}
+
+namespace {
+
+// Mirrors BookmarkMenuController's ownership model for FOR_DROP menus: owns the
+// MenuRunner (and thus the MenuItemView tree) and destroys it synchronously in
+// both GetDropCallback (for_drop path) and OnMenuClosed.
+class SelfDeletingForDropDelegate : public TestMenuDelegate {
+ public:
+  void set_menu_runner(std::unique_ptr<MenuRunner> runner) {
+    runner_ = std::move(runner);
+  }
+  MenuRunner* menu_runner() { return runner_.get(); }
+  void set_submenu_tracker(ViewTracker* tracker) { submenu_tracker_ = tracker; }
+
+  ui::mojom::DragOperation GetDropOperation(MenuItemView* item,
+                                            const ui::DropTargetEvent& event,
+                                            DropPosition* position) override {
+    *position = DropPosition::kAfter;
+    return ui::mojom::DragOperation::kCopy;
+  }
+
+  views::View::DropCallback GetDropCallback(
+      MenuItemView* menu,
+      DropPosition position,
+      const ui::DropTargetEvent& event) override {
+    auto cb = TestMenuDelegate::GetDropCallback(menu, position, event);
+    runner_.reset();
+    if (submenu_tracker_) {
+      EXPECT_NE(nullptr, submenu_tracker_->view());
+    }
+    return cb;
+  }
+
+  void OnMenuClosed(MenuItemView* menu) override {
+    TestMenuDelegate::OnMenuClosed(menu);
+    runner_.reset();
+  }
+
+ private:
+  std::unique_ptr<MenuRunner> runner_;
+  raw_ptr<ViewTracker> submenu_tracker_ = nullptr;
+};
+
+}  // namespace
+
+TEST_F(MenuRunnerTest,
+       ForDropCancelDuringDragUpdatedActiveDescendantDefersDestruction) {
+  SelfDeletingForDropDelegate delegate;
+  auto root = std::make_unique<TestMenuItemView>(&delegate);
+  MenuItemView* item1 = root->AppendMenuItem(TestCommandIds::kItem1, u"One");
+
+  delegate.set_menu_runner(
+      std::make_unique<MenuRunner>(std::move(root), MenuRunner::FOR_DROP));
+  delegate.menu_runner()->RunMenuAt(owner(), /*button_controller=*/nullptr,
+                                    gfx::Rect(), MenuAnchorPosition::kTopLeft,
+                                    ui::mojom::MenuSourceType::kNone);
+
+  SubmenuView* submenu = item1->GetParentMenuItem()->GetSubmenu();
+  ViewTracker submenu_tracker(submenu);
+
+  bool active_descendant_fired = false;
+  submenu->GetViewAccessibility().set_accessibility_events_callback(
+      base::BindLambdaForTesting([&](const ui::AXPlatformNodeDelegate*,
+                                     const ax::mojom::Event event_type) {
+        if (event_type != ax::mojom::Event::kActiveDescendantChanged ||
+            active_descendant_fired) {
+          return;
+        }
+        active_descendant_fired = true;
+        MenuController::GetActiveInstance()->Cancel(
+            MenuController::ExitType::kAll);
+        EXPECT_NE(nullptr, submenu_tracker.view());
+      }));
+
+  ui::OSExchangeData drop_data;
+  const gfx::PointF location(item1->bounds().CenterPoint());
+  const ui::DropTargetEvent target_event(drop_data, location, location,
+                                         ui::DragDropTypes::DRAG_COPY);
+  EXPECT_EQ(ui::DragDropTypes::DRAG_NONE, submenu->OnDragUpdated(target_event));
+  EXPECT_TRUE(active_descendant_fired);
+  EXPECT_EQ(nullptr, submenu_tracker.view());
+}
+
+TEST_F(MenuRunnerTest,
+       ForDropReleaseInGetDropCallbackDefersDestructionUntilUnwind) {
+  SelfDeletingForDropDelegate delegate;
+  auto root = std::make_unique<TestMenuItemView>(&delegate);
+  MenuItemView* item1 = root->AppendMenuItem(TestCommandIds::kItem1, u"One");
+
+  delegate.set_menu_runner(
+      std::make_unique<MenuRunner>(std::move(root), MenuRunner::FOR_DROP));
+  delegate.menu_runner()->RunMenuAt(owner(), /*button_controller=*/nullptr,
+                                    gfx::Rect(), MenuAnchorPosition::kTopLeft,
+                                    ui::mojom::MenuSourceType::kNone);
+
+  SubmenuView* submenu = item1->GetParentMenuItem()->GetSubmenu();
+  ViewTracker submenu_tracker(submenu);
+  delegate.set_submenu_tracker(&submenu_tracker);
+
+  ui::OSExchangeData drop_data;
+  const gfx::PointF location(item1->bounds().CenterPoint());
+  const ui::DropTargetEvent target_event(drop_data, location, location,
+                                         ui::DragDropTypes::DRAG_COPY);
+  ASSERT_NE(ui::DragDropTypes::DRAG_NONE, submenu->OnDragUpdated(target_event));
+
+  auto drop_cb = submenu->GetDropCallback(target_event);
+  ASSERT_TRUE(drop_cb);
+  EXPECT_EQ(nullptr, submenu_tracker.view());
+
+  ui::mojom::DragOperation output_op = ui::mojom::DragOperation::kNone;
+  std::move(drop_cb).Run(target_event, output_op,
+                         /*drag_image_layer_owner=*/nullptr);
+  EXPECT_TRUE(delegate.is_drop_performed());
 }
 
 }  // namespace views::test
