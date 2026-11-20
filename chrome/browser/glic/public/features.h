@@ -12,6 +12,17 @@
 #include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
 
+// Don't add a flag here if it decides whether a feature is available for some
+// providers only. Instead:
+//   1. Declare the flag and its parameters in `provider_features.h`.
+//   2. Add a value for the feature to `glic::GlicFeature` in
+//      `glic_feature.h`.
+//   3. Handle the value in each provider's `SupportsFeature()` in
+//      `glic_provider_spec_impl.cc`, and cover it in
+//      `glic_provider_spec_impl_unittest.cc`.
+//   4. Gate production code on `GlicProviderSpec::SupportsFeature()` instead
+//      of `base::FeatureList::IsEnabled()`.
+
 namespace features {
 
 BASE_DECLARE_FEATURE(kGlicAndroidSidePanel);

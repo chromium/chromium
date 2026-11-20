@@ -201,6 +201,9 @@ class GeminiGlicProviderSpec final : public GlicProviderSpec {
   bool RequiresGeminiAccountEligibility() const override { return true; }
   bool UsesGeicSignIn() const override { return false; }
   bool SupportsFeature(GlicFeature feature) const override {
+    // If a new `GlicFeature` is gated by a feature flag, declare the flag in
+    // `provider_features.h` and check it here, so that any call site that
+    // requires a feature check goes through the spec.
     switch (feature) {
       case GlicFeature::kLive:
         // TODO(crbug.com/578498098): Return features::kGlicLiveMode once
@@ -390,6 +393,9 @@ class GeminiEnterpriseGlicProviderSpec final : public GlicProviderSpec,
   bool RequiresGeminiAccountEligibility() const override { return false; }
   bool UsesGeicSignIn() const override { return true; }
   bool SupportsFeature(GlicFeature feature) const override {
+    // If a new `GlicFeature` is gated by a feature flag, declare the flag in
+    // `provider_features.h` and check it here, so that any call site that
+    // requires a feature check goes through the spec.
     switch (feature) {
       case GlicFeature::kLive:
       case GlicFeature::kShareImage:

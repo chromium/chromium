@@ -10,6 +10,11 @@ namespace glic {
 // A Glic feature whose availability depends on the profile's Glic provider
 // (consumer Gemini or Gemini Enterprise). See
 // `GlicProviderSpec::SupportsFeature()`.
+//
+// When adding a value whose availability is gated by a feature flag, declare
+// the flag and its parameters in `provider_features.h` rather than in a
+// separate features file, so that any call site that requires a feature check
+// goes through `GlicProviderSpec`.
 enum class GlicFeature {
   // Gemini Live.
   kLive,
