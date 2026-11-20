@@ -2534,7 +2534,7 @@ TEST_F(ContextualTasksWebContentsUserDataTest,
   EXPECT_TRUE(context_state_messages.empty());
 
   // Mounting a Lens region crop emits CONTEXT_STATE_READY with
-  // INPUT_TYPE_LENS_IMAGE.
+  // INPUT_TYPE_LENS_IMAGE and `has_explicit_context = true`.
   user_data->OnLensThumbnailCreated("data:image/png;base64,crop_1");
   ASSERT_EQ(context_state_messages.size(), 1u);
   EXPECT_EQ(
@@ -2542,6 +2542,7 @@ TEST_F(ContextualTasksWebContentsUserDataTest,
       lens::ClientToSearchMessage::OnContextStateChanged::CONTEXT_STATE_READY);
   EXPECT_THAT(context_state_messages.back().input_types(),
               testing::ElementsAre(omnibox::INPUT_TYPE_LENS_IMAGE));
+  EXPECT_TRUE(context_state_messages.back().has_explicit_context());
 
   // Replacing the Lens crop URI in-place keeps serialized OnContextStateChanged
   // bytes identical, so no duplicate message is emitted.
@@ -2671,10 +2672,13 @@ TEST_F(ContextualTasksWebContentsUserDataTest,
       lens::ClientToSearchMessage::OnContextStateChanged::CONTEXT_STATE_READY);
   EXPECT_THAT(context_state_messages[0].input_types(),
               testing::ElementsAre(omnibox::INPUT_TYPE_BROWSER_TAB));
+  EXPECT_TRUE(context_state_messages[0].has_explicit_context());
   EXPECT_EQ(
       context_state_messages[1].context_state(),
       lens::ClientToSearchMessage::OnContextStateChanged::CONTEXT_STATE_NONE);
   EXPECT_THAT(context_state_messages[1].input_types(), testing::IsEmpty());
+  EXPECT_TRUE(context_state_messages[1].has_has_explicit_context());
+  EXPECT_FALSE(context_state_messages[1].has_explicit_context());
 }
 
 TEST_F(ContextualTasksWebContentsUserDataTest,
@@ -4327,5 +4331,315 @@ TEST_F(ContextualTasksWebContentsUserDataTest,
   user_data->ClearInputPlateState();
   EXPECT_FALSE(user_data->HasUnsubmittedQuery());
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(ContextualTasksWebContentsUserDataTest,
+       UpdateContextState_AutoAttachedTabSetsHasExplicitContextFalse) {
+  ui::UnownedUserDataHost unowned_user_data_host;
+  testing::NiceMock<MockBrowserWindowInterface> mock_browser_window;
+  ON_CALL(mock_browser_window, GetUnownedUserDataHost())
+      .WillByDefault(testing::ReturnRef(unowned_user_data_host));
+  testing::NiceMock<MockTabListInterface> mock_tab_list;
+  ui::ScopedUnownedUserData<TabListInterface> tab_list_registration(
+      unowned_user_data_host, mock_tab_list);
+  testing::NiceMock<MockContextualTasksPanelController> mock_panel_controller(
+      &mock_browser_window);
+  ON_CALL(mock_panel_controller, IsPanelOpenForContextualTask())
+      .WillByDefault(testing::Return(true));
+  ON_CALL(mock_panel_controller, GetActiveWebContents())
+      .WillByDefault(testing::Return(web_contents_.get()));
+  ON_CALL(mock_panel_controller, GetPanelWebContentsList())
+      .WillByDefault(testing::Return(
+          std::vector<content::WebContents*>{web_contents_.get()}));
+  webui::SetBrowserWindowInterface(web_contents_, &mock_browser_window);
+
+  content::WebContents* active_contents =
+      web_contents_factory_->CreateWebContents(profile_.get());
+  sessions::SessionTabHelper::CreateForWebContents(active_contents,
+                                                   base::NullCallback());
+  const GURL active_url("https://example.com/auto-tab");
+  content::WebContentsTester::For(active_contents)
+      ->NavigateAndCommit(active_url);
+  content::WebContentsTester::For(active_contents)->SetTitle(u"Auto Tab");
+
+  tabs::MockTabInterface mock_active_tab;
+  ON_CALL(mock_active_tab, GetContents())
+      .WillByDefault(testing::Return(active_contents));
+  ON_CALL(mock_active_tab, GetBrowserWindowInterface())
+      .WillByDefault(testing::Return(&mock_browser_window));
+  std::vector<tabs::TabInterface*> all_tabs = {&mock_active_tab};
+  ON_CALL(mock_tab_list, GetActiveTab())
+      .WillByDefault(testing::Return(&mock_active_tab));
+  ON_CALL(mock_tab_list, GetAllTabs())
+      .WillByDefault(testing::ReturnPointee(&all_tabs));
+
+  auto session_handle = std::make_unique<testing::NiceMock<
+      contextual_search::MockContextualSearchSessionHandle>>();
+  auto* mock_handle = session_handle.get();
+  ContextualSearchWebContentsHelper::GetOrCreateForWebContents(web_contents_)
+      ->SetTaskSession(std::nullopt, std::move(session_handle),
+                       /*input_state_model=*/nullptr);
+
+  auto* user_data =
+      ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
+          web_contents_);
+  ASSERT_NE(user_data, nullptr);
+
+  std::vector<lens::ClientToSearchMessage::OnContextStateChanged>
+      context_state_messages;
+  user_data->SetSearchMessageDispatcherForTesting(base::BindLambdaForTesting(
+      [&context_state_messages](const lens::ClientToSearchMessage& message) {
+        if (message.has_on_context_state_changed()) {
+          context_state_messages.push_back(message.on_context_state_changed());
+        }
+      }));
+
+  // 1. Auto-attaching the active tab on handshake emits a single
+  // `OnContextStateChanged` message with `CONTEXT_STATE_READY`,
+  // `INPUT_TYPE_BROWSER_TAB`, and `has_explicit_context = false` (with no
+  // transient `has_explicit_context = true` during `AddPendingDelayedTab`).
+  user_data->OnHandshakeComplete();
+  ASSERT_EQ(context_state_messages.size(), 1u);
+  EXPECT_EQ(
+      context_state_messages.back().context_state(),
+      lens::ClientToSearchMessage::OnContextStateChanged::CONTEXT_STATE_READY);
+  EXPECT_THAT(context_state_messages.back().input_types(),
+              testing::ElementsAre(omnibox::INPUT_TYPE_BROWSER_TAB));
+  EXPECT_TRUE(context_state_messages.back().has_has_explicit_context());
+  EXPECT_FALSE(context_state_messages.back().has_explicit_context());
+  EXPECT_FALSE(user_data->HasUnsubmittedQuery());
+
+  // 2. Mounting a Lens region crop alongside the auto-attached tab sets
+  // `has_explicit_context = true`, and removing the Lens crop transitions back
+  // to `has_explicit_context = false` while preserving `CONTEXT_STATE_READY`
+  // and `INPUT_TYPE_BROWSER_TAB`.
+  context_state_messages.clear();
+  user_data->OnLensThumbnailCreated("data:image/png;base64,crop");
+  ASSERT_EQ(context_state_messages.size(), 1u);
+  EXPECT_EQ(
+      context_state_messages.back().context_state(),
+      lens::ClientToSearchMessage::OnContextStateChanged::CONTEXT_STATE_READY);
+  EXPECT_THAT(context_state_messages.back().input_types(),
+              testing::ElementsAre(omnibox::INPUT_TYPE_LENS_IMAGE,
+                                   omnibox::INPUT_TYPE_BROWSER_TAB));
+  EXPECT_TRUE(context_state_messages.back().has_explicit_context());
+  EXPECT_TRUE(user_data->HasUnsubmittedQuery());
+
+  context_state_messages.clear();
+  user_data->RemoveLensCrop();
+  ASSERT_EQ(context_state_messages.size(), 1u);
+  EXPECT_EQ(
+      context_state_messages.back().context_state(),
+      lens::ClientToSearchMessage::OnContextStateChanged::CONTEXT_STATE_READY);
+  EXPECT_THAT(context_state_messages.back().input_types(),
+              testing::ElementsAre(omnibox::INPUT_TYPE_BROWSER_TAB));
+  EXPECT_TRUE(context_state_messages.back().has_has_explicit_context());
+  EXPECT_FALSE(context_state_messages.back().has_explicit_context());
+  EXPECT_FALSE(user_data->HasUnsubmittedQuery());
+
+  // 3. Attaching a manual tab sets `has_explicit_context = true`; if that
+  // manual upload fails, only the auto-attached tab remains valid, so
+  // `has_explicit_context` resets to `false`.
+  context_state_messages.clear();
+  const base::UnguessableToken manual_token = base::UnguessableToken::Create();
+  user_data->OnTabContextUploadStarted(manual_token);
+  mock_handle->GetUploadedContextTokensForTesting().push_back(manual_token);
+  mock_handle->AttachTabPendingUpload(manual_token, /*tab_id=*/99,
+                                      GURL("https://example.com/manual"),
+                                      "Manual");
+  ASSERT_EQ(context_state_messages.size(), 1u);
+  EXPECT_EQ(context_state_messages.back().context_state(),
+            lens::ClientToSearchMessage::OnContextStateChanged::
+                CONTEXT_STATE_UPLOADING);
+  EXPECT_THAT(context_state_messages.back().input_types(),
+              testing::ElementsAre(omnibox::INPUT_TYPE_BROWSER_TAB,
+                                   omnibox::INPUT_TYPE_BROWSER_TAB));
+  EXPECT_TRUE(context_state_messages.back().has_explicit_context());
+
+  context_state_messages.clear();
+  user_data->OnContextUploadStatusChanged(
+      manual_token, lens::MimeType::kAnnotatedPageContent,
+      contextual_search::ContextUploadStatus::kValidationFailed, std::nullopt);
+  ASSERT_EQ(context_state_messages.size(), 1u);
+  EXPECT_EQ(
+      context_state_messages.back().context_state(),
+      lens::ClientToSearchMessage::OnContextStateChanged::CONTEXT_STATE_READY);
+  EXPECT_THAT(context_state_messages.back().input_types(),
+              testing::ElementsAre(omnibox::INPUT_TYPE_BROWSER_TAB));
+  EXPECT_FALSE(context_state_messages.back().has_explicit_context());
+
+  // 4. Removing the remaining auto-attached tab transitions to
+  // `CONTEXT_STATE_NONE` with empty `input_types` and
+  // `has_explicit_context = false`.
+  mock_handle->RemoveUploadedContextToken(manual_token);
+  context_state_messages.clear();
+  user_data->RemoveImplicitTabContext();
+  ASSERT_EQ(context_state_messages.size(), 1u);
+  EXPECT_EQ(
+      context_state_messages.back().context_state(),
+      lens::ClientToSearchMessage::OnContextStateChanged::CONTEXT_STATE_NONE);
+  EXPECT_THAT(context_state_messages.back().input_types(), testing::IsEmpty());
+  EXPECT_TRUE(context_state_messages.back().has_has_explicit_context());
+  EXPECT_FALSE(context_state_messages.back().has_explicit_context());
+
+  user_data->SetSearchMessageDispatcherForTesting(base::NullCallback());
+  webui::SetBrowserWindowInterface(web_contents_, nullptr);
+}
+
+TEST_F(
+    ContextualTasksWebContentsUserDataTest,
+    UpdateContextState_ManualTabPromotionAndTabPickerSetsHasExplicitContextTrue) {
+  ui::UnownedUserDataHost unowned_user_data_host;
+  testing::NiceMock<MockBrowserWindowInterface> mock_browser_window;
+  ON_CALL(mock_browser_window, GetUnownedUserDataHost())
+      .WillByDefault(testing::ReturnRef(unowned_user_data_host));
+  testing::NiceMock<MockTabListInterface> mock_tab_list;
+  ui::ScopedUnownedUserData<TabListInterface> tab_list_registration(
+      unowned_user_data_host, mock_tab_list);
+  testing::NiceMock<MockContextualTasksPanelController> mock_panel_controller(
+      &mock_browser_window);
+  ON_CALL(mock_panel_controller, IsPanelOpenForContextualTask())
+      .WillByDefault(testing::Return(true));
+  ON_CALL(mock_panel_controller, GetActiveWebContents())
+      .WillByDefault(testing::Return(web_contents_.get()));
+  ON_CALL(mock_panel_controller, GetPanelWebContentsList())
+      .WillByDefault(testing::Return(
+          std::vector<content::WebContents*>{web_contents_.get()}));
+  webui::SetBrowserWindowInterface(web_contents_, &mock_browser_window);
+
+  content::WebContents* active_contents =
+      web_contents_factory_->CreateWebContents(profile_.get());
+  sessions::SessionTabHelper::CreateForWebContents(active_contents,
+                                                   base::NullCallback());
+  const GURL active_url("https://example.com/active");
+  content::WebContentsTester::For(active_contents)
+      ->NavigateAndCommit(active_url);
+  content::WebContentsTester::For(active_contents)->SetTitle(u"Active Tab");
+  const SessionID active_session_id =
+      sessions::SessionTabHelper::IdForTab(active_contents);
+
+  tabs::MockTabInterface mock_active_tab;
+  ON_CALL(mock_active_tab, GetContents())
+      .WillByDefault(testing::Return(active_contents));
+  ON_CALL(mock_active_tab, GetBrowserWindowInterface())
+      .WillByDefault(testing::Return(&mock_browser_window));
+  std::vector<tabs::TabInterface*> all_tabs = {&mock_active_tab};
+  ON_CALL(mock_tab_list, GetActiveTab())
+      .WillByDefault(testing::Return(&mock_active_tab));
+  ON_CALL(mock_tab_list, GetAllTabs())
+      .WillByDefault(testing::ReturnPointee(&all_tabs));
+
+  auto session_handle = std::make_unique<testing::NiceMock<
+      contextual_search::MockContextualSearchSessionHandle>>();
+  auto* mock_handle = session_handle.get();
+  ContextualSearchWebContentsHelper::GetOrCreateForWebContents(web_contents_)
+      ->SetTaskSession(std::nullopt, std::move(session_handle),
+                       /*input_state_model=*/nullptr);
+
+  auto* user_data =
+      ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
+          web_contents_);
+  ASSERT_NE(user_data, nullptr);
+
+  std::vector<lens::ClientToSearchMessage::OnContextStateChanged>
+      context_state_messages;
+  user_data->SetSearchMessageDispatcherForTesting(base::BindLambdaForTesting(
+      [&context_state_messages](const lens::ClientToSearchMessage& message) {
+        if (message.has_on_context_state_changed()) {
+          context_state_messages.push_back(message.on_context_state_changed());
+        }
+      }));
+
+  // 1. Start with the active tab auto-attached (`has_explicit_context =
+  // false`).
+  user_data->OnHandshakeComplete();
+  ASSERT_EQ(context_state_messages.size(), 1u);
+  EXPECT_EQ(
+      context_state_messages.back().context_state(),
+      lens::ClientToSearchMessage::OnContextStateChanged::CONTEXT_STATE_READY);
+  EXPECT_THAT(context_state_messages.back().input_types(),
+              testing::ElementsAre(omnibox::INPUT_TYPE_BROWSER_TAB));
+  EXPECT_FALSE(context_state_messages.back().has_explicit_context());
+
+  // 2. Promoting the auto-attached tab via `OnManualTabContextAdded` flips
+  // `has_explicit_context` to `true` immediately.
+  context_state_messages.clear();
+  user_data->OnManualTabContextAdded(active_url, active_session_id);
+  ASSERT_EQ(context_state_messages.size(), 1u);
+  EXPECT_EQ(
+      context_state_messages.back().context_state(),
+      lens::ClientToSearchMessage::OnContextStateChanged::CONTEXT_STATE_READY);
+  EXPECT_THAT(context_state_messages.back().input_types(),
+              testing::ElementsAre(omnibox::INPUT_TYPE_BROWSER_TAB));
+  EXPECT_TRUE(context_state_messages.back().has_explicit_context());
+  EXPECT_TRUE(user_data->HasUnsubmittedQuery());
+
+  // 3. Clearing files returns to `CONTEXT_STATE_NONE` with
+  // `has_explicit_context = false`.
+  context_state_messages.clear();
+  user_data->ClearFiles();
+  ASSERT_EQ(context_state_messages.size(), 1u);
+  EXPECT_EQ(
+      context_state_messages.back().context_state(),
+      lens::ClientToSearchMessage::OnContextStateChanged::CONTEXT_STATE_NONE);
+  EXPECT_THAT(context_state_messages.back().input_types(), testing::IsEmpty());
+  EXPECT_FALSE(context_state_messages.back().has_explicit_context());
+
+  // 4. Re-attach the auto-suggested tab (`has_explicit_context = false`), then
+  // run the tab-picker replacement flow (`OnManualTabContextAdded`, delete the
+  // delayed token, attach the uploading manual token, and complete the upload).
+  context_state_messages.clear();
+  user_data->UpdateImplicitTabContext();
+  ASSERT_EQ(context_state_messages.size(), 1u);
+  EXPECT_FALSE(context_state_messages.back().has_explicit_context());
+  ASSERT_EQ(user_data->GetSelectedTabs().size(), 1u);
+  const base::UnguessableToken delayed_token =
+      user_data->GetSelectedTabs()[0].context_token;
+
+  user_data->OnManualTabContextAdded(active_url, active_session_id);
+  user_data->OnTabContextRemoved(delayed_token);
+  mock_handle->DeleteTabContext(delayed_token);
+
+  context_state_messages.clear();
+  const base::UnguessableToken manual_token = base::UnguessableToken::Create();
+  user_data->OnTabContextUploadStarted(manual_token);
+  mock_handle->GetUploadedContextTokensForTesting().push_back(manual_token);
+  mock_handle->AttachTabPendingUpload(manual_token, active_session_id.id(),
+                                      active_url, "Active Tab");
+  ASSERT_EQ(context_state_messages.size(), 1u);
+  EXPECT_EQ(context_state_messages.back().context_state(),
+            lens::ClientToSearchMessage::OnContextStateChanged::
+                CONTEXT_STATE_UPLOADING);
+  EXPECT_THAT(context_state_messages.back().input_types(),
+              testing::ElementsAre(omnibox::INPUT_TYPE_BROWSER_TAB));
+  EXPECT_TRUE(context_state_messages.back().has_explicit_context());
+
+  context_state_messages.clear();
+  user_data->OnContextUploadStatusChanged(
+      manual_token, lens::MimeType::kAnnotatedPageContent,
+      contextual_search::ContextUploadStatus::kUploadSuccessful, std::nullopt);
+  ASSERT_EQ(context_state_messages.size(), 1u);
+  EXPECT_EQ(
+      context_state_messages.back().context_state(),
+      lens::ClientToSearchMessage::OnContextStateChanged::CONTEXT_STATE_READY);
+  EXPECT_THAT(context_state_messages.back().input_types(),
+              testing::ElementsAre(omnibox::INPUT_TYPE_BROWSER_TAB));
+  EXPECT_TRUE(context_state_messages.back().has_explicit_context());
+
+  // Removing the manual tab resets to `CONTEXT_STATE_NONE` with
+  // `has_explicit_context = false`.
+  context_state_messages.clear();
+  user_data->DeleteContext(manual_token);
+  ASSERT_EQ(context_state_messages.size(), 1u);
+  EXPECT_EQ(
+      context_state_messages.back().context_state(),
+      lens::ClientToSearchMessage::OnContextStateChanged::CONTEXT_STATE_NONE);
+  EXPECT_THAT(context_state_messages.back().input_types(), testing::IsEmpty());
+  EXPECT_FALSE(context_state_messages.back().has_explicit_context());
+
+  user_data->SetSearchMessageDispatcherForTesting(base::NullCallback());
+  webui::SetBrowserWindowInterface(web_contents_, nullptr);
+}
+#endif
 
 }  // namespace contextual_tasks

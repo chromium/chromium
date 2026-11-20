@@ -8,6 +8,7 @@
 #include <iterator>
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
@@ -239,15 +240,18 @@ bool IsCommittedResourceActive(
 }
 
 // Returns the serialized `OnContextStateChanged` message for the initial
-// `CONTEXT_STATE_NONE` state (with empty `input_types`). Pre-initializing
+// `CONTEXT_STATE_NONE` state (with empty `input_types` and
+// `has_explicit_context` set to false). Pre-initializing
 // `last_sent_context_state_serialized` to these bytes preserves the behavior of
 // not sending a redundant `CONTEXT_STATE_NONE` message on initial handshake
-// when no context was added (`set_context_state(CONTEXT_STATE_NONE)` serializes
-// to non-empty bytes under Protobuf Edition 2024 explicit presence).
+// when no context was added (`set_context_state(CONTEXT_STATE_NONE)` and
+// `set_has_explicit_context(false)` serialize to non-empty bytes under Protobuf
+// Edition 2024 explicit presence).
 std::string SerializeDefaultContextState() {
   lens::ClientToSearchMessage::OnContextStateChanged state_changed;
   state_changed.set_context_state(
       lens::ClientToSearchMessage::OnContextStateChanged::CONTEXT_STATE_NONE);
+  state_changed.set_has_explicit_context(false);
   return state_changed.SerializeAsString();
 }
 
@@ -1731,6 +1735,14 @@ bool ContextualTasksWebContentsUserData::MaybeRefreshTabContextSubscription(
 
 void ContextualTasksWebContentsUserData::OnTabContextUpdated(
     const contextual_search::TabContextState& /*state*/) {
+  // `AddPendingDelayedTab()` notifies tab context subscribers synchronously
+  // before returning the generated token to `implicit_tab_`. Defer the update
+  // until `UpdateImplicitTabContext()` records `implicit_tab_` and calls
+  // `UpdateContextLibraryInputState()` so `UpdateContextState()` does not
+  // classify the auto-attached tab as explicit context.
+  if (is_adding_implicit_tab_) {
+    return;
+  }
   UpdateContextLibraryInputState();
 }
 
@@ -1796,16 +1808,23 @@ void ContextualTasksWebContentsUserData::UpdateContextState() {
               CONTEXT_STATE_READY);
       break;
   }
+  // Treat a Lens region as explicitly added context.
+  bool has_explicit_context = page_state.is_lens_crop_mounted;
   if (page_state.is_lens_crop_mounted) {
     state_changed->add_input_types(omnibox::INPUT_TYPE_LENS_IMAGE);
   }
   if (CanShareTabsForCurrentPage()) {
     for (const auto& tab : GetSelectedTabs()) {
-      if (!failed_context_uploads_.contains(tab.context_token)) {
-        state_changed->add_input_types(omnibox::INPUT_TYPE_BROWSER_TAB);
+      if (failed_context_uploads_.contains(tab.context_token)) {
+        continue;
+      }
+      state_changed->add_input_types(omnibox::INPUT_TYPE_BROWSER_TAB);
+      if (!(implicit_tab_ && tab.context_token == implicit_tab_->token)) {
+        has_explicit_context = true;
       }
     }
   }
+  state_changed->set_has_explicit_context(has_explicit_context);
 
   std::string serialized;
   state_changed->SerializeToString(&serialized);
@@ -2511,11 +2530,14 @@ void ContextualTasksWebContentsUserData::UpdateImplicitTabContext() {
   const bool is_new_suggestion = (existing_it == selected_tabs.end()) ||
                                  (existing_it->url != last_committed_url);
   RecordTabIdMapping(tab_handle.raw_value(), session_id.id());
-  implicit_tab_ = ImplicitTab{
-      .token = session_handle->AddPendingDelayedTab(
-          session_id.id(), last_committed_url, tab_title),
-      .handle = tab_handle,
-  };
+  {
+    base::AutoReset<bool> adding_implicit_tab(&is_adding_implicit_tab_, true);
+    implicit_tab_ = ImplicitTab{
+        .token = session_handle->AddPendingDelayedTab(
+            session_id.id(), last_committed_url, tab_title),
+        .handle = tab_handle,
+    };
+  }
   if (is_new_suggestion) {
     contextual_tasks::RecordTabAddedMetric(
         active_tab, session_handle->GetMetricsRecorder(),
@@ -2556,6 +2578,7 @@ void ContextualTasksWebContentsUserData::OnManualTabContextAdded(
                t.tab_id == tab_session_id.id();
       })) {
     implicit_tab_.reset();
+    UpdateContextState();
   }
 }
 

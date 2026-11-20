@@ -474,6 +474,7 @@ class ContextualTasksWebContentsUserData
     tabs::TabHandle handle;
   };
   std::optional<ImplicitTab> implicit_tab_;
+  bool is_adding_implicit_tab_ = false;
   base::flat_set<GURL> dismissed_implicit_urls_;
   bool preserve_prestaged_context_ = false;
   bool has_unsubmitted_query_ = false;
