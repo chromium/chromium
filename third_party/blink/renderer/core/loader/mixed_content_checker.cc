@@ -50,6 +50,7 @@
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_worker_fetch_context.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/frame.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -671,6 +672,18 @@ bool MixedContentChecker::ShouldBlockFetch(
   return !allowed;
 }
 
+namespace {
+
+void CountSharedWorkerMixedContentUsage(
+    WorkerFetchContext& worker_fetch_context) {
+  if (auto* execution_context = worker_fetch_context.GetExecutionContext();
+      execution_context && execution_context->IsSharedWorkerGlobalScope()) {
+    worker_fetch_context.CountUsage(WebFeature::kMixedContentInSharedWorker);
+  }
+}
+
+}  // namespace
+
 // static
 bool MixedContentChecker::ShouldBlockFetchOnWorker(
     WorkerFetchContext& worker_fetch_context,
@@ -726,6 +739,7 @@ bool MixedContentChecker::ShouldBlockFetchOnWorker(
                                         InsecureContentOrigin::kCurrentFrame);
       worker_fetch_context.CountUsage(
           WebFeature::kMixedContentBlockableAllowed);
+      CountSharedWorkerMixedContentUsage(worker_fetch_context);
     }
   }
 
@@ -832,6 +846,10 @@ bool MixedContentChecker::IsWebSocketAllowed(
   bool allowed =
       IsWebSocketAllowedInWorker(worker_fetch_context, settings, url);
   allowed = worker_fetch_context.AllowRunningInsecureContent(allowed, url);
+
+  if (allowed && !IsWebSocketLNAAllowed(target_address_space, url)) {
+    CountSharedWorkerMixedContentUsage(worker_fetch_context);
+  }
 
   if (!allowed && IsWebSocketLNAAllowed(target_address_space, url)) {
     allowed = true;
