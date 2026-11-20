@@ -2016,10 +2016,11 @@ source_set("libmutter") {
   foreach(t, _meta_dbus_targets) {
     sources += get_target_outputs(t)
   }
-  deps += _meta_dbus_targets + [
-            ":meta_enum_types_c",
-            ":meta_private_enum_types_c",
-          ]
+  public_deps = _meta_dbus_targets
+  deps += [
+    ":meta_enum_types_c",
+    ":meta_private_enum_types_c",
+  ]
 }
 
 # Chromium's implementation of the zcr_ui_controls_v2 protocol, used by

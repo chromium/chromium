@@ -839,7 +839,7 @@ component("headless_shell_lib") {
 
   if (headless_use_embedded_resources) {
     defines += [ "HEADLESS_USE_EMBEDDED_RESOURCES" ]
-    deps += [
+    public_deps += [
       ":embedded_resource_pack_data",
       ":embedded_resource_pack_strings",
     ]

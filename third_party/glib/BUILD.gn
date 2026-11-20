@@ -897,13 +897,16 @@ shared_library("gio") {
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
 
-  deps = [
+  public_deps = [
     ":gdbus_daemon_generated",
+    ":xdp_dbus",
+  ]
+
+  deps = [
     ":gioenumtypes_c",
     ":glib",
     ":gmodule",
     ":gobject",
-    ":xdp_dbus",
     "//third_party/gvdb:gvdb_reader",
     "//third_party/zlib",
   ]
