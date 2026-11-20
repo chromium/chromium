@@ -1,9 +1,5 @@
 [
     {
-        "duration": "69.0",
-        "name": "jetstream2/JetStream2"
-    },
-    {
         "duration": "29.0",
         "name": "speedometer2/Speedometer2"
     }

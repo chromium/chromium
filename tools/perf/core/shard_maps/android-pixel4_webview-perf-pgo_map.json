@@ -20,7 +20,7 @@
                 "abridged": false
             },
             "blink_perf.layout": {
-                "end": 29,
+                "end": 28,
                 "abridged": false
             }
         }
@@ -28,7 +28,7 @@
     "1": {
         "benchmarks": {
             "blink_perf.layout": {
-                "begin": 29,
+                "begin": 28,
                 "abridged": false
             },
             "blink_perf.owp_storage": {
@@ -179,7 +179,7 @@
         "benchmarks": {
             "rendering.mobile": {
                 "begin": 18,
-                "end": 130,
+                "end": 129,
                 "abridged": false
             }
         }
@@ -187,8 +187,8 @@
     "6": {
         "benchmarks": {
             "rendering.mobile": {
-                "begin": 130,
-                "end": 233,
+                "begin": 129,
+                "end": 232,
                 "abridged": false
             }
         }
@@ -196,8 +196,8 @@
     "7": {
         "benchmarks": {
             "rendering.mobile": {
-                "begin": 233,
-                "end": 351,
+                "begin": 232,
+                "end": 349,
                 "abridged": false
             }
         }
@@ -205,20 +205,17 @@
     "8": {
         "benchmarks": {
             "rendering.mobile": {
-                "begin": 351,
+                "begin": 349,
                 "abridged": false
             },
             "rendering.mobile.notracing": {
-                "abridged": false
-            },
-            "speedometer3-future": {
                 "abridged": false
             },
             "startup.mobile": {
                 "abridged": false
             },
             "system_health.common_mobile": {
-                "end": 18,
+                "end": 21,
                 "abridged": false
             }
         },
@@ -241,7 +238,7 @@
     "9": {
         "benchmarks": {
             "system_health.common_mobile": {
-                "begin": 18,
+                "begin": 21,
                 "abridged": false
             },
             "system_health.memory_mobile": {
@@ -284,21 +281,21 @@
         }
     },
     "extra_infos": {
-        "num_stories": 1127,
+        "num_stories": 1128,
         "predicted_min_shard_time": 1800,
         "predicted_min_shard_index": 2,
         "predicted_max_shard_time": 2550,
         "predicted_max_shard_index": 3,
-        "shard #0": 2373.0,
-        "shard #1": 2324.0,
+        "shard #0": 2365.0,
+        "shard #1": 2352.0,
         "shard #2": 1800,
         "shard #3": 2550,
         "shard #4": 2425.0,
-        "shard #5": 2440.0,
-        "shard #6": 2426.0,
-        "shard #7": 2443.0,
-        "shard #8": 2430.0,
-        "shard #9": 2514.0,
+        "shard #5": 2422.0,
+        "shard #6": 2425.0,
+        "shard #7": 2410.0,
+        "shard #8": 2416.0,
+        "shard #9": 2491.0,
         "shard #10": 2349.0,
         "shard #11": 2427.0
     }

@@ -1,10 +1,6 @@
 {
     "0": {
         "crossbench": {
-            "blink-ai.crossbench": {
-                "crossbench_name": "blink-ai",
-                "arguments": []
-            },
             "blink-ai-v4.crossbench": {
                 "crossbench_name": "blink-ai",
                 "arguments": [
@@ -15,19 +11,13 @@
         "benchmarks": {}
     },
     "1": {
-        "benchmarks": {
-            "jetstream2": {
-                "abridged": false
+        "crossbench": {
+            "blink-ai.crossbench": {
+                "crossbench_name": "blink-ai",
+                "arguments": []
             }
         },
-        "crossbench": {
-            "jetstream2.crossbench": {
-                "crossbench_name": "jetstream_2",
-                "arguments": [
-                    "--enable-field-trials=benchmarking"
-                ]
-            }
-        }
+        "benchmarks": {}
     },
     "2": {
         "benchmarks": {
@@ -45,13 +35,13 @@
         }
     },
     "extra_infos": {
-        "num_stories": 6,
-        "predicted_min_shard_time": 118.0,
+        "num_stories": 4,
+        "predicted_min_shard_time": 89.0,
         "predicted_min_shard_index": 2,
         "predicted_max_shard_time": 300,
         "predicted_max_shard_index": 0,
         "shard #0": 300,
-        "shard #1": 249.0,
-        "shard #2": 118.0
+        "shard #1": 300,
+        "shard #2": 89.0
     }
 }

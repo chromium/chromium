@@ -224,7 +224,7 @@ class Speedometer3Future(Speedometer3):
   Shows the performance of upcoming V8 VM features.
   """
 
-  SCHEDULED = True
+  SCHEDULED = False
 
   @classmethod
   def Name(cls):

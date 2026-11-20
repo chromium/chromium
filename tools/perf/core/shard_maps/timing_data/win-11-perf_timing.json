@@ -1840,10 +1840,6 @@
         "name": "dummy_benchmark.stable_benchmark_1/dummy_page.html"
     },
     {
-        "duration": "65.0",
-        "name": "jetstream2/JetStream2"
-    },
-    {
         "duration": "9.0",
         "name": "media.desktop/mse.html?media=aac_audio.mp4"
     },
@@ -2138,10 +2134,6 @@
     {
         "duration": "16.0",
         "name": "rasterize_and_record_micro.top_25/file://static_top_25/youtube.html"
-    },
-    {
-        "duration": "28.0",
-        "name": "speedometer3-future/Speedometer3"
     },
     {
         "duration": "25.0",

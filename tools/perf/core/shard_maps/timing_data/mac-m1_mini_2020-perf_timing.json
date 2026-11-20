@@ -1848,14 +1848,6 @@
         "name": "dummy_benchmark.stable_benchmark_1/dummy_page.html"
     },
     {
-        "duration": "54.0",
-        "name": "jetstream2-no-field-trials/JetStream2"
-    },
-    {
-        "duration": "54.0",
-        "name": "jetstream2/JetStream2"
-    },
-    {
         "duration": "13.0",
         "name": "media.desktop/mse.html?media=aac_audio.mp4"
     },
@@ -3550,14 +3542,6 @@
     {
         "duration": "3.0",
         "name": "rendering.desktop/youtube_pinch_2018"
-    },
-    {
-        "duration": "23.0",
-        "name": "speedometer3-future/Speedometer3"
-    },
-    {
-        "duration": "22.0",
-        "name": "speedometer3-no-field-trials/Speedometer3"
     },
     {
         "duration": "36.0",

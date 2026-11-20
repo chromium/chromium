@@ -1,9 +1,5 @@
 [
     {
-        "duration": "107.0",
-        "name": "jetstream2/JetStream2"
-    },
-    {
         "duration": "23.0",
         "name": "rendering.mobile/accu_weather_mobile_pinch_2018"
     },

@@ -93,9 +93,6 @@
             },
             "dummy_benchmark.stable_benchmark_1": {
                 "abridged": false
-            },
-            "jetstream2": {
-                "abridged": false
             }
         },
         "executables": {

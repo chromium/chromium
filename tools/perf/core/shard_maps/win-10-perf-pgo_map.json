@@ -143,9 +143,6 @@
             "dummy_benchmark.stable_benchmark_1": {
                 "abridged": false
             },
-            "jetstream2": {
-                "abridged": false
-            },
             "media.desktop": {
                 "abridged": false
             },
@@ -216,9 +213,6 @@
                 "abridged": false
             },
             "rendering.desktop.notracing": {
-                "abridged": false
-            },
-            "speedometer3-future": {
                 "abridged": false
             },
             "system_health.common_desktop": {

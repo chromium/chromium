@@ -96,6 +96,8 @@ class JetStream22(_JetStream2Base):
 class JetStream2(_JetStream2Base):
   """Latest JetStream 2.x"""
 
+  SCHEDULED = False
+
   @classmethod
   def Name(cls):
     return 'jetstream2'

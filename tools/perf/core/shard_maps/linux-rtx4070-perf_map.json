@@ -1,15 +1,15 @@
 {
     "0": {
         "crossbench": {
-            "blink-ai.crossbench": {
-                "crossbench_name": "blink-ai",
-                "arguments": []
-            },
             "blink-ai-v4.crossbench": {
                 "crossbench_name": "blink-ai",
                 "arguments": [
                     "--model=v4"
                 ]
+            },
+            "blink-ai.crossbench": {
+                "crossbench_name": "blink-ai",
+                "arguments": []
             }
         },
         "benchmarks": {}

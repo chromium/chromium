@@ -1848,10 +1848,6 @@
         "name": "dummy_benchmark.stable_benchmark_1/dummy_page.html"
     },
     {
-        "duration": "91.0",
-        "name": "jetstream2/JetStream2"
-    },
-    {
         "duration": "14.0",
         "name": "media.desktop/mse.html?media=aac_audio.mp4"
     },
@@ -2150,10 +2146,6 @@
     {
         "duration": "332.0",
         "name": "rendering.desktop.notracing/motionmark_ramp_composite"
-    },
-    {
-        "duration": "37.0",
-        "name": "speedometer3-future/Speedometer3"
     },
     {
         "duration": "35.0",
