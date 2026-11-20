@@ -1173,6 +1173,7 @@
   E_CPONLY(kColorToolbarExtensionSeparatorDisabled) \
   E_CPONLY(kColorToolbarExtensionSeparatorEnabled) \
   E_CPONLY(kColorToolbarFeaturePromoHighlight) \
+  E_CPONLY(kColorToolbarFocusRing) \
   E_CPONLY(kColorToolbarGlicButtonBackgroundDefault) \
   E_CPONLY(kColorToolbarIconContainerBorder) \
   E_CPONLY(kColorToolbarInkDrop) \

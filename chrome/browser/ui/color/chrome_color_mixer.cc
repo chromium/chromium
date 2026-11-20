@@ -820,6 +820,9 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorToolbarFeaturePromoHighlight] =
       ui::PickGoogleColor(ui::kColorAccent, kColorToolbar,
                           color_utils::kMinimumVisibleContrastRatio);
+  mixer[kColorToolbarFocusRing] = ui::BlendForMinContrast(
+      ui::kColorFocusableBorderFocused, kColorToolbar, std::nullopt,
+      color_utils::kMinimumVisibleContrastRatio);
   mixer[kColorToolbarIconContainerBorder] = {kColorToolbarButtonBorder};
   mixer[kColorToolbarInkDrop] = ui::GetColorWithMaxContrast(kColorToolbar);
   mixer[kColorToolbarInkDropHover] =

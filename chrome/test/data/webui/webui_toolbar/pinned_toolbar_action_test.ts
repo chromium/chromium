@@ -503,7 +503,7 @@ suite('PinnedToolbarAction', function() {
 
           style = getComputedStyle(button);
           assertEquals('rgb(1, 2, 3)', style.color);
-          assertEquals('auto', style.forcedColorAdjust);
+          assertEquals('none', style.forcedColorAdjust);
           assertEquals('1', getComputedStyle(innerButton).opacity);
         } finally {
           rootStyle.removeProperty('--color-toolbar-button-icon');

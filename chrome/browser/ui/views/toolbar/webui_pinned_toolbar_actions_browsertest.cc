@@ -531,7 +531,7 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest,
   }));
   EXPECT_EQ(expected_rgb(kColorToolbarButtonIcon),
             EvalJsOnPinnedAction(mojom_action, kGetIconFillJs));
-  EXPECT_EQ("auto",
+  EXPECT_EQ("none",
             EvalJsOnPinnedAction(mojom_action, kGetIconForcedColorAdjustJs));
   EXPECT_EQ("1", EvalJsOnPinnedAction(mojom_action, kGetInnerBtnOpacityJs));
 }

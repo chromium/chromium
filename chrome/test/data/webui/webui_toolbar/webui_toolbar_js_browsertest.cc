@@ -17,6 +17,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/scoped_page_focus_override.h"
 #include "ui/gfx/switches.h"
+#include "ui/native_theme/mock_os_settings_provider.h"
 
 class WebUiToolbarJsTest : public WebUIMochaBrowserTest {
  public:
@@ -62,6 +63,28 @@ class WebUiToolbarReducedMotionJsTest : public WebUiToolbarJsTest {
     WebUiToolbarJsTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(switches::kForcePrefersReducedMotion);
   }
+};
+
+class WebUiToolbarNoForcedColorsJsTest : public WebUiToolbarJsTest {
+ public:
+  void SetUpOnMainThread() override {
+    WebUiToolbarJsTest::SetUpOnMainThread();
+    os_settings_provider_.SetForcedColorsActive(false);
+  }
+
+ private:
+  ui::MockOsSettingsProvider os_settings_provider_;
+};
+
+class WebUiToolbarForcedColorsJsTest : public WebUiToolbarJsTest {
+ public:
+  void SetUpOnMainThread() override {
+    WebUiToolbarJsTest::SetUpOnMainThread();
+    os_settings_provider_.SetForcedColorsActive(true);
+  }
+
+ private:
+  ui::MockOsSettingsProvider os_settings_provider_;
 };
 
 IN_PROC_BROWSER_TEST_F(WebUiToolbarNoReducedMotionJsTest, AppMenuButton) {
@@ -180,8 +203,14 @@ IN_PROC_BROWSER_TEST_F(WebUiToolbarReducedMotionJsTest, ToolbarButton) {
   RunTest("webui_toolbar/toolbar_button_test.js", "mocha.run();");
 }
 
-IN_PROC_BROWSER_TEST_F(WebUiToolbarJsTest, ToolbarChipButton) {
-  RunTest("webui_toolbar/toolbar_chip_button_test.js", "mocha.run();");
+IN_PROC_BROWSER_TEST_F(WebUiToolbarNoForcedColorsJsTest, ToolbarChipButton) {
+  RunTest("webui_toolbar/toolbar_chip_button_test.js",
+          "window.expectedForcedColors = false; mocha.run();");
+}
+
+IN_PROC_BROWSER_TEST_F(WebUiToolbarForcedColorsJsTest, ToolbarChipButton) {
+  RunTest("webui_toolbar/toolbar_chip_button_test.js",
+          "window.expectedForcedColors = true; mocha.run();");
 }
 
 IN_PROC_BROWSER_TEST_F(WebUiToolbarJsTest, ToolbarApp) {

@@ -4,7 +4,7 @@
 
 import 'chrome://webui-toolbar.top-chrome/lazy_load.js';
 
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 import type {ToolbarChipButtonElement} from 'chrome://webui-toolbar.top-chrome/lazy_load.js';
 
@@ -12,6 +12,7 @@ suite('ToolbarChipButtonTest', function() {
   let element: ToolbarChipButtonElement;
 
   setup(async function() {
+    document.body.className = '';
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     element = document.createElement('toolbar-chip-button');
     document.body.appendChild(element);
@@ -252,5 +253,126 @@ suite('ToolbarChipButtonTest', function() {
       assertEquals(buttonRadii.bottomLeft, radii.bottomLeft, pseudo);
       assertEquals(buttonRadii.bottomRight, radii.bottomRight, pseudo);
     }
+  });
+
+  test('PreservesForcedColorsBehavior', async function() {
+    assertEquals('none', window.getComputedStyle(element).forcedColorAdjust);
+    assertEquals(
+        'none', window.getComputedStyle(element.$.button).forcedColorAdjust);
+
+    element.toggleAttribute('disabled', true);
+    await microtasksFinished();
+    assertEquals('none', window.getComputedStyle(element).forcedColorAdjust);
+  });
+
+  test('PreservesCustomForegroundColorOnMenuOpen', async function() {
+    const forcedColors = window.matchMedia('(forced-colors: active)').matches;
+    const expectedForcedColors =
+        (window as {expectedForcedColors?: boolean}).expectedForcedColors;
+    assertEquals(expectedForcedColors, forcedColors);
+
+    element.style.setProperty('--color-toolbar-button-icon', 'rgb(1, 2, 3)');
+    element.style.setProperty(
+        '--color-toolbar-button-icon-pressed', 'rgb(7, 8, 9)');
+    element.style.setProperty('--color-toolbar-button-text', 'rgb(10, 11, 12)');
+    element.style.setProperty(
+        '--color-toolbar-button-icon-inactive', 'rgb(13, 14, 15)');
+    element.style.setProperty('--toolbar-chip-fg-color', 'rgb(20, 30, 40)');
+    element.toggleAttribute('is-menu-open', true);
+    await microtasksFinished();
+
+    assertEquals(
+        forcedColors ? 'rgb(7, 8, 9)' : 'rgb(20, 30, 40)',
+        window.getComputedStyle(element).color);
+    assertEquals(
+        forcedColors ? 'currentColor' : '',
+        window.getComputedStyle(element)
+            .getPropertyValue('--icon-from-table-color-override')
+            .trim());
+
+    element.style.removeProperty('--toolbar-chip-fg-color');
+    await microtasksFinished();
+    assertEquals(
+        forcedColors ? 'rgb(7, 8, 9)' : 'rgb(1, 2, 3)',
+        window.getComputedStyle(element).color);
+
+    element.toggleAttribute('has-label', true);
+    await microtasksFinished();
+    assertEquals(
+        forcedColors ? 'rgb(7, 8, 9)' : 'rgb(10, 11, 12)',
+        window.getComputedStyle(element).color);
+
+    element.toggleAttribute('is-menu-open', false);
+    document.body.classList.add('anchor-highlight');
+    await microtasksFinished();
+    assertEquals(
+        forcedColors ? 'rgb(7, 8, 9)' : 'rgb(10, 11, 12)',
+        window.getComputedStyle(element).color);
+
+    element.toggleAttribute('disabled', true);
+    await microtasksFinished();
+    assertEquals('rgb(13, 14, 15)', window.getComputedStyle(element).color);
+  });
+
+  test('FocusRingRemainsVisibleInForcedColors', async function() {
+    const forcedColors = window.matchMedia('(forced-colors: active)').matches;
+    element.style.setProperty('--cr-focus-outline-color', 'rgb(0, 100, 200)');
+    element.toggleAttribute('force-focus-ring', true);
+    await microtasksFinished();
+
+    const probe = document.createElement('div');
+    probe.style.forcedColorAdjust = 'none';
+    probe.style.color = 'ButtonText';
+    document.body.appendChild(probe);
+    const buttonTextColor = window.getComputedStyle(probe).color;
+    probe.remove();
+
+    let style = window.getComputedStyle(element.$.button);
+    if (forcedColors) {
+      assertEquals('none', style.boxShadow);
+      assertEquals('solid', style.outlineStyle);
+      assertEquals('2px', style.outlineWidth);
+      assertEquals('0px', style.outlineOffset);
+      assertNotEquals('rgba(0, 0, 0, 0)', style.outlineColor);
+      assertEquals(buttonTextColor, style.outlineColor);
+
+      element.style.setProperty(
+          '--color-toolbar-focus-ring', 'rgb(12, 34, 56)');
+      await microtasksFinished();
+      assertEquals(
+          'rgb(12, 34, 56)',
+          window.getComputedStyle(element.$.button).outlineColor);
+      element.style.removeProperty('--color-toolbar-focus-ring');
+      await microtasksFinished();
+    } else {
+      assertTrue(style.boxShadow.includes('rgb(0, 100, 200)'));
+      assertEquals('none', style.outlineStyle);
+
+      element.style.setProperty(
+          '--color-toolbar-focus-ring', 'rgb(12, 34, 56)');
+      await microtasksFinished();
+      assertTrue(window.getComputedStyle(element.$.button)
+                     .boxShadow.includes('rgb(12, 34, 56)'));
+      element.style.removeProperty('--color-toolbar-focus-ring');
+      await microtasksFinished();
+    }
+
+    element.toggleAttribute('outset-focus-ring', true);
+    await microtasksFinished();
+
+    style = window.getComputedStyle(element.$.button);
+    assertEquals('none', style.boxShadow);
+    assertEquals('solid', style.outlineStyle);
+    assertEquals('2px', style.outlineWidth);
+    assertEquals('2px', style.outlineOffset);
+    assertEquals(
+        forcedColors ? buttonTextColor : 'rgb(0, 100, 200)',
+        style.outlineColor);
+
+    element.style.setProperty('--color-toolbar-focus-ring', 'rgb(12, 34, 56)');
+    await microtasksFinished();
+    assertEquals(
+        'rgb(12, 34, 56)',
+        window.getComputedStyle(element.$.button).outlineColor);
   });
 });
