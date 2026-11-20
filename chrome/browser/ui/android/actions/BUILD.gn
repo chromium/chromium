@@ -75,6 +75,7 @@ android_library("java") {
 }
 
 android_library("tabswitcher_java") {
+  resources_package = "org.chromium.chrome.browser.ui.actions"
   sources = [ "java/src/org/chromium/chrome/browser/ui/actions/tabswitcher/TabSwitcherActionProvider.java" ]
 
   deps = [

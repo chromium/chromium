@@ -345,10 +345,12 @@ if (current_toolchain == default_toolchain) {
   }
 
   android_library("selection_java") {
+    resources_package = "org.chromium.components.embedder_support.selection"
     sources = [ "java/src/org/chromium/components/embedder_support/selection/DefaultSelectionDropdownMenuDelegate.java" ]
     deps = [
       "//build/android:build_java",
       "//content/public/android:content_java",
+      "//ui/android:ui_java_resources",
       "//ui/android:ui_no_recycler_view_java",
     ]
   }
