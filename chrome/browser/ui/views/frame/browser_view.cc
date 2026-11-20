@@ -3551,10 +3551,24 @@ bool BrowserView::CanActivate() const {
     return true;
   }
 
-  // If another browser is app modal, flash and activate the modal browser. This
-  // has to be done in a post task, otherwise if the user clicked on a window
-  // that doesn't have the modal dialog the windows keep trying to get the focus
-  // from each other on Windows. http://crbug.com/40256884.
+  // TODO(crbug.com/588525683): Evaluate allowing the host browser to be
+  // activated on other platforms.
+#if BUILDFLAG(IS_LINUX)
+  // On Linux the dialog is a window-modal child of the browser that hosts it,
+  // so activating only the dialog leaves that browser behind other windows.
+  // Keep the host activatable so that JavascriptAppModalEventBlockerAura can
+  // bring it to the front with the dialog. Input to the host is still blocked
+  // by the dialog's window modality.
+  if (browser_->tab_strip_model()->GetIndexOfWebContents(
+          queue->active_dialog()->web_contents()) != TabStripModel::kNoTab) {
+    return true;
+  }
+#endif
+
+  // If another browser is app modal, flash the modal browser and activate the
+  // dialog. This has to be done in a post task, otherwise if the user clicked
+  // on a window that doesn't have the modal dialog the windows keep trying to
+  // get the focus from each other on Windows. http://crbug.com/40256884.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&BrowserView::ActivateAppModalDialog,
                                 weak_ptr_factory_.GetWeakPtr()));
@@ -5905,7 +5919,8 @@ std::unique_ptr<content::EyeDropper> BrowserView::OpenEyeDropper(
 }
 
 void BrowserView::ActivateAppModalDialog() const {
-  // If another browser is app modal, flash and activate the modal browser.
+  // If another browser is app modal, flash the modal browser and activate the
+  // dialog.
   javascript_dialogs::AppModalDialogController* active_dialog =
       javascript_dialogs::AppModalDialogQueue::GetInstance()->active_dialog();
   if (!active_dialog) {
@@ -5915,9 +5930,10 @@ void BrowserView::ActivateAppModalDialog() const {
   BrowserWindowInterface* modal_browser =
       GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
           active_dialog->web_contents());
+  // Flash the frame, but this CanActivate() helper should not forcibly
+  // activate.
   if (modal_browser && (browser_.get() != modal_browser)) {
     modal_browser->GetWindow()->FlashFrame(true);
-    modal_browser->GetWindow()->Activate();
   }
 
   javascript_dialogs::AppModalDialogQueue::GetInstance()->ActivateModalDialog();

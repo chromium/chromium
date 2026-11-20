@@ -104,6 +104,8 @@
 #include "components/enterprise/connectors/core/connectors_prefs.h"
 #include "components/enterprise/data_controls/core/browser/test_utils.h"
 #include "components/enterprise/isolated_mode/isolated_mode_features.h"
+#include "components/javascript_dialogs/app_modal_dialog_controller.h"
+#include "components/javascript_dialogs/app_modal_dialog_view.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/core/common/policy_types.h"
@@ -914,6 +916,41 @@ IN_PROC_BROWSER_TEST_F(BrowserViewHostedAppTest, Layout) {
   EXPECT_EQ(top_inset, app_browser_view->GetFindBarBoundingBox().y());
 
   CloseBrowserSynchronously(app_browser);
+}
+
+// Tests that while an app-modal dialog is showing, other browsers cannot be
+// activated. On Linux, the browser that hosts the dialog can still be
+// activated, so that it can be brought to the front with the dialog.
+IN_PROC_BROWSER_TEST_F(BrowserViewTest, AppModalDialogHostCanActivate) {
+  BrowserWindowInterface* other_browser = CreateBrowser(profile());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("data:text/html,<script>window.onbeforeunload="
+                      "function(e){return 'foo'}</script>")));
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::PrepContentsForBeforeUnloadTest(contents);
+
+  // Reloading the page shows an app-modal "before reload" dialog.
+  chrome::Reload(browser(), ui::mojom::WindowOpenDisposition::kCurrentTab);
+  javascript_dialogs::AppModalDialogController* dialog =
+      ui_test_utils::WaitForAppModalDialog();
+  ASSERT_TRUE(dialog->view()->IsShowing());
+
+#if BUILDFLAG(IS_LINUX)
+  EXPECT_TRUE(browser_view()->CanActivate());
+#else
+  EXPECT_FALSE(browser_view()->CanActivate());
+#endif
+  EXPECT_FALSE(
+      BrowserView::GetBrowserViewForBrowser(other_browser)->CanActivate());
+
+  // Accepting the dialog reloads the page, which drops the user activation
+  // that the "before unload" dialog needs, so closing the browser at the end
+  // of the test does not show another dialog.
+  dialog->view()->AcceptAppModalDialog();
+  EXPECT_TRUE(content::WaitForLoadStop(contents));
+  EXPECT_TRUE(
+      BrowserView::GetBrowserViewForBrowser(other_browser)->CanActivate());
 }
 
 // Tests that a browser window is correctly associated to a WebContents that

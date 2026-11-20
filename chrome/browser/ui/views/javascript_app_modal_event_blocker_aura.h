@@ -33,6 +33,10 @@ class JavascriptAppModalEventBlockerAura : public ui::EventHandler {
   // Returns true if the propagation of events to |target| should be stopped.
   bool ShouldStopPropagationTo(ui::EventTarget* target);
 
+  // Bounces and activates the app modal dialog and the browser window that
+  // hosts it.
+  void ActivateModalDialog();
+
   // ui::EventHandler:
   void OnKeyEvent(ui::KeyEvent* event) override;
   void OnMouseEvent(ui::MouseEvent* event) override;

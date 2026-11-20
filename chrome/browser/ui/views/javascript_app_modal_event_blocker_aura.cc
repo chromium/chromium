@@ -7,6 +7,7 @@
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/events/event.h"
+#include "ui/views/widget/widget.h"
 #include "ui/wm/core/window_animations.h"
 #include "ui/wm/core/window_util.h"
 
@@ -62,6 +63,23 @@ bool JavascriptAppModalEventBlockerAura::ShouldStopPropagationTo(
   return browser_view && browser_view != browser_view_with_modal_dialog_;
 }
 
+void JavascriptAppModalEventBlockerAura::ActivateModalDialog() {
+  wm::AnimateWindow(modal_window_, wm::WINDOW_ANIMATION_TYPE_BOUNCE);
+
+  // The event blocker is only used on X11 and Wayland, where the dialog is a
+  // child of its browser window, so ask the window manager to activate that
+  // window too. Whether it then raises the window, switches to its workspace
+  // or only marks it as urgent is up to the window manager's focus stealing
+  // policy.
+  if (browser_view_with_modal_dialog_) {
+    browser_view_with_modal_dialog_->GetWidget()->Activate();
+  }
+  if (views::Widget* widget =
+          views::Widget::GetWidgetForNativeWindow(modal_window_)) {
+    widget->Activate();
+  }
+}
+
 void JavascriptAppModalEventBlockerAura::OnKeyEvent(ui::KeyEvent* event) {
   if (ShouldStopPropagationTo(event->target())) {
     event->StopPropagation();
@@ -72,7 +90,7 @@ void JavascriptAppModalEventBlockerAura::OnMouseEvent(ui::MouseEvent* event) {
   if (event->type() != ui::EventType::kMouseCaptureChanged &&
       ShouldStopPropagationTo(event->target())) {
     if (event->type() == ui::EventType::kMousePressed) {
-      wm::AnimateWindow(modal_window_, wm::WINDOW_ANIMATION_TYPE_BOUNCE);
+      ActivateModalDialog();
     }
     event->StopPropagation();
   }
@@ -88,7 +106,7 @@ void JavascriptAppModalEventBlockerAura::OnTouchEvent(ui::TouchEvent* event) {
   if (event->type() != ui::EventType::kTouchCancelled &&
       ShouldStopPropagationTo(event->target())) {
     if (event->type() == ui::EventType::kTouchPressed) {
-      wm::AnimateWindow(modal_window_, wm::WINDOW_ANIMATION_TYPE_BOUNCE);
+      ActivateModalDialog();
     }
     event->StopPropagation();
   }

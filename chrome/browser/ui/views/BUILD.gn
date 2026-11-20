@@ -804,6 +804,7 @@ if (use_aura) {
       "//chrome/browser/ui/views/frame:browser_view_header",
       "//ui/aura",
       "//ui/events",
+      "//ui/views",
       "//ui/wm",
     ]
   }
