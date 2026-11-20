@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/utils/web_state_keyboard_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
@@ -464,9 +465,7 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
   web::WebState* activeWebState =
       self.browser->GetWebStateList()->GetActiveWebState();
   CHECK(activeWebState);
-  if (activeWebState) {
-    [activeWebState->GetView() endEditing:NO];
-  }
+  DismissKeyboardForWebState(activeWebState);
 }
 
 // Verifies whether the bottom sheet view controller was successfully presented.

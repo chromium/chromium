@@ -40,7 +40,7 @@
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/shared/public/commands/browser_commands.h"
+#import "ios/chrome/browser/shared/model/utils/web_state_keyboard_util.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -591,11 +591,6 @@ void DataControlsTabHelper::SetSnackbarHandler(
   snackbar_handler_ = snackbar_handler;
 }
 
-void DataControlsTabHelper::SetBrowserHandler(
-    id<BrowserCommands> browser_handler) {
-  browser_handler_ = browser_handler;
-}
-
 void DataControlsTabHelper::DidFinishClipboardRead() {
   DataControlsPasteboardManager::GetInstance()
       ->RestorePlaceholderToGeneralPasteboardIfNeeded();
@@ -739,7 +734,7 @@ void DataControlsTabHelper::ShowPasteSpinner(const GURL& destination_url) {
   }
 
   // Dismiss the keyboard before showing the spinning overlay.
-  [browser_handler_ dismissSoftKeyboard];
+  DismissKeyboardForWebState(web_state_);
 
   OverlayRequestQueue* queue = OverlayRequestQueue::FromWebState(
       web_state_, OverlayModality::kWebContentArea);

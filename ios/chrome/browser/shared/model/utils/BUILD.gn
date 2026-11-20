@@ -39,6 +39,15 @@ source_set("web_state_deferred_executor") {
   ]
 }
 
+source_set("web_state_keyboard_util") {
+  sources = [
+    "web_state_keyboard_util.h",
+    "web_state_keyboard_util.mm",
+  ]
+  deps = [ "//ios/web/public" ]
+  frameworks = [ "UIKit.framework" ]
+}
+
 source_set("test_support") {
   testonly = true
   sources = [
@@ -70,11 +79,16 @@ rust_static_library("zip_ffi_glue") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "web_state_deferred_executor_unittest.mm" ]
+  sources = [
+    "web_state_deferred_executor_unittest.mm",
+    "web_state_keyboard_util_unittest.mm",
+  ]
   deps = [
     ":web_state_deferred_executor",
+    ":web_state_keyboard_util",
     "//base",
     "//base/test:test_support",
+    "//ios/chrome/test:test_support",
     "//ios/web/public",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",

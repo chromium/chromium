@@ -43,6 +43,7 @@ source_set("model") {
     "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/utils:web_state_keyboard_util",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/snackbar",
     "//ios/chrome/browser/shared/ui/util",

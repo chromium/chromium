@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/autofill/payments/ui/credit_card_suggestion_bottom_sheet_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/utils/web_state_keyboard_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -252,9 +253,7 @@ using PaymentsSuggestionBottomSheetExitReason::kUsePaymentsSuggestion;
   web::WebState* activeWebState =
       self.browser->GetWebStateList()->GetActiveWebState();
   CHECK(activeWebState);
-  if (activeWebState) {
-    [activeWebState->GetView() endEditing:NO];
-  }
+  DismissKeyboardForWebState(activeWebState);
 }
 
 // Returns the AutofillCommands handler.

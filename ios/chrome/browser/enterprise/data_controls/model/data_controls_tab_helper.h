@@ -24,7 +24,6 @@
 #import "url/gurl.h"
 
 @protocol SnackbarCommands;
-@protocol BrowserCommands;
 
 namespace enterprise_connectors {
 struct RequestHandlerResult;
@@ -95,9 +94,6 @@ class DataControlsTabHelper
 
   // Sets the snackbar handler.
   void SetSnackbarHandler(id<SnackbarCommands> snackbar_handler);
-
-  // Sets the browser handler.
-  void SetBrowserHandler(id<BrowserCommands> browser_handler);
 
   // Called after the clipboard has been read from.
   void DidFinishClipboardRead();
@@ -259,9 +255,6 @@ class DataControlsTabHelper
 
   // The snackbar command handler.
   __weak id<SnackbarCommands> snackbar_handler_ = nil;
-
-  // The browser command handler.
-  __weak id<BrowserCommands> browser_handler_ = nil;
 
   // The handler for pasteboard content analysis.
   std::unique_ptr<enterprise_connectors::PasteboardContentHandlerIOS>

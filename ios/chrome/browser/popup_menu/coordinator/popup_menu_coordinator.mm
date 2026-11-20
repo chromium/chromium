@@ -49,10 +49,10 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/utils/web_state_keyboard_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
 #import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
-#import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/cobalt_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -229,9 +229,8 @@ NSString* const kPreferredContentSizeKey = @"preferredContentSize";
                                     curve:UIViewAnimationCurveEaseInOut];
   }
 
-  id<BrowserCommands> callableDispatcher =
-      HandlerForProtocol(self.browser->GetCommandDispatcher(), BrowserCommands);
-  [callableDispatcher dismissSoftKeyboard];
+  DismissKeyboardForWebState(
+      self.browser->GetWebStateList()->GetActiveWebState());
 
   // Dismiss all snackbars.
   id<SnackbarCommands> snackbarHandler = HandlerForProtocol(
