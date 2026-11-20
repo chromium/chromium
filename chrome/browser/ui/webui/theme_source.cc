@@ -4,13 +4,23 @@
 
 #include "chrome/browser/ui/webui/theme_source.h"
 
-#include <algorithm>
-#include <string_view>
+#include <stddef.h>
+#include <stdint.h>
 
+#include <algorithm>
+#include <optional>
+#include <string>
+#include <string_view>
+#include <tuple>
+#include <utility>
+#include <vector>
+
+#include "base/containers/lru_cache.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -289,29 +299,52 @@ void ThemeSource::SendThemeImage(
   }
 }
 
-// static
-std::optional<std::string> ThemeSource::GenerateColorsCss(
-    const ui::ColorProvider& color_provider,
-    const GURL& url) {
-  auto get_bool_param = [&](std::string_view key) {
-    std::string value;
-    return net::GetValueForKeyInQuery(url, key, &value) &&
-           base::EqualsCaseInsensitiveASCII(value, "true");
-  };
+namespace {
 
-  const bool generate_rgb_vars = get_bool_param("generate_rgb_vars");
-  const bool shadow_host = get_bool_param("shadow_host");
+// The size of the cache of colors.css stylesheets used by
+// ThemeSource::GenerateColorsCss().
+constexpr size_t kColorsCssCacheSize = 8;
 
-  std::string sets_param;
-  if (!net::GetValueForKeyInQuery(url, "sets", &sets_param)) {
+// The parameters of a colors.css request. Together with a ColorProvider these
+// determine the contents of the generated stylesheet.
+struct ColorsCssParams {
+  // The unescaped value of the `sets` query parameter.
+  std::string sets;
+  bool shadow_host = false;
+  bool generate_rgb_vars = false;
+};
+
+// Parses the query parameters of the colors.css `url`. Returns std::nullopt if
+// the required `sets` parameter is missing.
+std::optional<ColorsCssParams> ParseColorsCssParams(const GURL& url) {
+  std::string sets;
+  if (!net::GetValueForKeyInQuery(url, "sets", &sets)) {
     LOG(ERROR)
         << "colors.css requires a 'sets' query parameter to specify the color "
            "id sets returned e.g chrome://theme/colors.css?sets=ui,chrome";
     return std::nullopt;
   }
 
+  auto get_bool_param = [&](std::string_view key) {
+    std::string value;
+    return net::GetValueForKeyInQuery(url, key, &value) &&
+           base::EqualsCaseInsensitiveASCII(value, "true");
+  };
+  return ColorsCssParams{
+      .sets = std::move(sets),
+      .shadow_host = get_bool_param("shadow_host"),
+      .generate_rgb_vars = get_bool_param("generate_rgb_vars"),
+  };
+}
+
+// Generates the colors.css stylesheet described by `params` from the colors of
+// `color_provider`. Returns std::nullopt if `params` requests an unknown color
+// id set.
+std::optional<std::string> GenerateColorsCssForParams(
+    const ui::ColorProvider& color_provider,
+    const ColorsCssParams& params) {
   std::vector<std::string_view> color_id_sets = base::SplitStringPiece(
-      sets_param, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+      params.sets, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
 
   if (features::IsColorIdCssStyleSheetOptimizationEnabled()) {
     // Define the logic for each set. This allows us to validate input before
@@ -361,7 +394,7 @@ std::optional<std::string> ThemeSource::GenerateColorsCss(
     std::string css_string;
     css_string.reserve(75000);
 
-    if (shadow_host) {
+    if (params.shadow_host) {
       css_string.append(":host{");
     } else {
       css_string.append("html:not(#z){");
@@ -385,7 +418,7 @@ std::optional<std::string> ThemeSource::GenerateColorsCss(
         ui::FastAppendCssHexColor(color, css_string);
         css_string.push_back(';');
 
-        if (generate_rgb_vars) {
+        if (params.generate_rgb_vars) {
           // Format: --var-name-rgb:R,G,B;
           css_string.append(var_name);
           css_string.append("-rgb:");
@@ -452,7 +485,7 @@ std::optional<std::string> ThemeSource::GenerateColorsCss(
 
   // Generate the CSS. Pre-calculate selector.
   std::string css_header;
-  if (shadow_host) {
+  if (params.shadow_host) {
     css_header = ":host{";
   } else {
     css_header = "html:not(#z){";
@@ -477,7 +510,7 @@ std::optional<std::string> ThemeSource::GenerateColorsCss(
       // Format: --var-name: #RRGGBBAA;
       base::StrAppend(&css_string, {var_name, ":", color_str, ";"});
 
-      if (generate_rgb_vars) {
+      if (params.generate_rgb_vars) {
         // Format: --var-name-rgb: R,G,B;
         const std::string rgb_str = color_utils::SkColorToRgbString(color);
         base::StrAppend(&css_string, {var_name, "-rgb:", rgb_str, ";"});
@@ -487,6 +520,46 @@ std::optional<std::string> ThemeSource::GenerateColorsCss(
 
   css_string.push_back('}');
   return css_string;
+}
+
+}  // namespace
+
+// static
+std::optional<std::string> ThemeSource::GenerateColorsCss(
+    const ui::ColorProvider& color_provider,
+    const GURL& url) {
+  std::optional<ColorsCssParams> params = ParseColorsCssParams(url);
+  if (!params) {
+    return std::nullopt;
+  }
+  if (!features::IsColorIdCssStyleSheetCacheEnabled()) {
+    return GenerateColorsCssForParams(color_provider, *params);
+  }
+
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  using CacheKey = std::pair<uint64_t, ColorsCssParams>;
+  struct CacheKeyCompare {
+    bool operator()(const CacheKey& lhs, const CacheKey& rhs) const {
+      auto as_tuple = [](const CacheKey& key) {
+        const auto& [sets, shadow_host, generate_rgb_vars] = key.second;
+        return std::tie(key.first, sets, shadow_host, generate_rgb_vars);
+      };
+      return as_tuple(lhs) < as_tuple(rhs);
+    }
+  };
+  static base::NoDestructor<
+      base::LRUCache<CacheKey, std::string, CacheKeyCompare>>
+      cache(kColorsCssCacheSize);
+  CacheKey key(color_provider.unique_id(), std::move(*params));
+  if (const auto it = cache->Get(key); it != cache->end()) {
+    return it->second;
+  }
+  std::optional<std::string> css =
+      GenerateColorsCssForParams(color_provider, key.second);
+  if (css) {
+    cache->Put(std::move(key), *css);
+  }
+  return css;
 }
 
 void ThemeSource::SendColorsCss(

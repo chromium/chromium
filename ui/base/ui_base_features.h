@@ -380,6 +380,11 @@ BASE_DECLARE_FEATURE(kRemoveEnsureRFHVisibilityConsistent);
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 BASE_DECLARE_FEATURE(kColorIdCssStyleSheetOptimization);
 
+// Caches generated ColorId CSS style sheets (chrome://theme/colors.css) so that
+// repeated requests for the same ColorProvider do not regenerate them.
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+BASE_DECLARE_FEATURE(kColorIdCssStyleSheetCache);
+
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 BASE_DECLARE_FEATURE(kOmitNativeFrameOnShadowlessMenus);
 
@@ -391,6 +396,8 @@ COMPONENT_EXPORT(UI_BASE_FEATURES)
 bool IsWebUIRoundedIconsEnabled();
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 bool IsColorIdCssStyleSheetOptimizationEnabled();
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+bool IsColorIdCssStyleSheetCacheEnabled();
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 bool IsThemeChangeOptimizationV2Enabled();
 

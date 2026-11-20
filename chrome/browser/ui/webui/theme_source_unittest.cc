@@ -37,7 +37,11 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
+#include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
+#include "ui/color/color_recipe.h"
+#include "ui/color/color_transform.h"
+#include "ui/gfx/color_palette.h"
 #include "url/gurl.h"
 
 class WebUISourcesTest : public testing::Test {
@@ -269,6 +273,28 @@ std::string GetData(ThemeSource& source,
       std::move(wc_getter));
 }
 
+// Defines `id` on a new mixer of `color_provider` such that `evaluation_count`
+// is incremented every time the color is requested from the provider.
+// ColorProvider does not memoize gfx::kPlaceholderColor results, so returning
+// it from the recipe results in one evaluation per generated stylesheet that
+// includes `id`.
+void AddEvaluationCountingColor(ui::ColorProvider& color_provider,
+                                ui::ColorId id,
+                                int* evaluation_count) {
+  color_provider.AddMixer()[id] = ui::ColorTransform(base::BindRepeating(
+      [](int* count, SkColor, const ui::ColorMixer&) {
+        ++(*count);
+        return gfx::kPlaceholderColor;
+      },
+      evaluation_count));
+}
+
+std::optional<std::string> GenerateColorsCss(
+    const ui::ColorProvider& color_provider,
+    std::string_view url) {
+  return ThemeSource::GenerateColorsCss(color_provider, GURL(url));
+}
+
 }  // namespace
 
 TEST_F(WebUISourcesTest, GenerateColorsCssInvalidOrMissingSets) {
@@ -362,6 +388,186 @@ TEST_F(WebUISourcesTest, GenerateColorsCssSelectorsRgbVarsAndTokens) {
     ASSERT_TRUE(no_rgb_css.has_value());
     EXPECT_THAT(*no_rgb_css, Not(HasSubstr("-rgb:")));
   }
+}
+
+// Tests that without the cache every request generates the stylesheet.
+TEST_F(WebUISourcesTest, GenerateColorsCssCacheDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kColorIdCssStyleSheetCache);
+
+  int generation_count = 0;
+  ui::ColorProvider color_provider;
+  AddEvaluationCountingColor(color_provider, ui::kColorAccent,
+                             &generation_count);
+
+  const std::optional<std::string> css =
+      GenerateColorsCss(color_provider, "chrome://theme/colors.css?sets=ui");
+  ASSERT_TRUE(css.has_value());
+  EXPECT_EQ(1, generation_count);
+  EXPECT_EQ(css, GenerateColorsCss(color_provider,
+                                   "chrome://theme/colors.css?sets=ui"));
+  EXPECT_EQ(2, generation_count);
+}
+
+// Tests that with the cache a stylesheet is only generated once for equivalent
+// requests on an unmodified ColorProvider.
+TEST_F(WebUISourcesTest, GenerateColorsCssCacheReusesStylesheets) {
+  base::test::ScopedFeatureList feature_list(
+      features::kColorIdCssStyleSheetCache);
+
+  int generation_count = 0;
+  ui::ColorProvider color_provider;
+  AddEvaluationCountingColor(color_provider, ui::kColorAccent,
+                             &generation_count);
+
+  const std::optional<std::string> css =
+      GenerateColorsCss(color_provider, "chrome://theme/colors.css?sets=ui");
+  ASSERT_TRUE(css.has_value());
+  EXPECT_EQ(1, generation_count);
+
+  // The same request, a request as issued by ColorChangeUpdater to refresh the
+  // stylesheet (escaped and with a `version` parameter) and requests that only
+  // differ in ways that do not affect the stylesheet are served from the
+  // cache.
+  EXPECT_EQ(css, GenerateColorsCss(color_provider,
+                                   "chrome://theme/colors.css?sets=ui"));
+  EXPECT_EQ(
+      css, GenerateColorsCss(color_provider,
+                             "chrome://theme/colors.css?sets=ui&version=1234"));
+  EXPECT_EQ(css,
+            GenerateColorsCss(color_provider,
+                              "chrome-untrusted://theme/colors.css?version=5&"
+                              "shadow_host=false&sets=ui"));
+  EXPECT_EQ(1, generation_count);
+
+  // Requests with different parameters result in different stylesheets.
+  const std::optional<std::string> shadow_host_css = GenerateColorsCss(
+      color_provider, "chrome://theme/colors.css?sets=ui&shadow_host=true");
+  ASSERT_TRUE(shadow_host_css.has_value());
+  EXPECT_NE(css, shadow_host_css);
+  EXPECT_EQ(2, generation_count);
+
+  const std::optional<std::string> rgb_vars_css = GenerateColorsCss(
+      color_provider,
+      "chrome://theme/colors.css?sets=ui&generate_rgb_vars=true");
+  ASSERT_TRUE(rgb_vars_css.has_value());
+  EXPECT_NE(css, rgb_vars_css);
+  EXPECT_EQ(3, generation_count);
+
+  const std::optional<std::string> ui_chrome_css = GenerateColorsCss(
+      color_provider, "chrome://theme/colors.css?sets=ui,chrome");
+  ASSERT_TRUE(ui_chrome_css.has_value());
+  EXPECT_NE(css, ui_chrome_css);
+  EXPECT_EQ(4, generation_count);
+
+  // As issued by ColorChangeUpdater for a "ui,chrome" stylesheet.
+  EXPECT_EQ(ui_chrome_css,
+            GenerateColorsCss(
+                color_provider,
+                "chrome://theme/colors.css?sets=ui%2Cchrome&version=1234"));
+
+  // All of the above remain cached.
+  EXPECT_EQ(css, GenerateColorsCss(color_provider,
+                                   "chrome://theme/colors.css?sets=ui"));
+  EXPECT_EQ(
+      shadow_host_css,
+      GenerateColorsCss(color_provider,
+                        "chrome://theme/colors.css?sets=ui&shadow_host=true"));
+  EXPECT_EQ(rgb_vars_css,
+            GenerateColorsCss(
+                color_provider,
+                "chrome://theme/colors.css?sets=ui&generate_rgb_vars=true"));
+  EXPECT_EQ(4, generation_count);
+
+  // Invalid requests fail regardless of the cache.
+  EXPECT_EQ(std::nullopt,
+            GenerateColorsCss(color_provider, "chrome://theme/colors.css"));
+  EXPECT_EQ(std::nullopt,
+            GenerateColorsCss(color_provider,
+                              "chrome://theme/colors.css?sets=ui,invalid"));
+  EXPECT_EQ(4, generation_count);
+}
+
+// Tests that cached stylesheets are only reused for the ColorProvider they were
+// generated for.
+TEST_F(WebUISourcesTest, GenerateColorsCssCacheIsPerColorProvider) {
+  base::test::ScopedFeatureList feature_list(
+      features::kColorIdCssStyleSheetCache);
+  constexpr char kUrl[] = "chrome://theme/colors.css?sets=ui";
+
+  ui::ColorProvider color_provider;
+  color_provider.AddMixer()[ui::kColorAccent] = {SK_ColorGREEN};
+  std::optional<std::string> css = GenerateColorsCss(color_provider, kUrl);
+  ASSERT_TRUE(css.has_value());
+  EXPECT_THAT(*css, HasSubstr("--color-accent:#00ff00ff;"));
+
+  ui::ColorProvider other_color_provider;
+  other_color_provider.AddMixer()[ui::kColorAccent] = {SK_ColorBLACK};
+  const std::optional<std::string> other_css =
+      GenerateColorsCss(other_color_provider, kUrl);
+  ASSERT_TRUE(other_css.has_value());
+  EXPECT_THAT(*other_css, HasSubstr("--color-accent:#000000ff;"));
+
+  // Both providers keep being served their own stylesheet.
+  EXPECT_EQ(css, GenerateColorsCss(color_provider, kUrl));
+  EXPECT_EQ(other_css, GenerateColorsCss(other_color_provider, kUrl));
+
+  // SetColorForTesting() changes the colors of a provider that is already in
+  // use, after which the stylesheet cached for it is no longer used.
+  color_provider.SetColorForTesting(ui::kColorAccent, SK_ColorWHITE);
+  css = GenerateColorsCss(color_provider, kUrl);
+  ASSERT_TRUE(css.has_value());
+  EXPECT_THAT(*css, HasSubstr("--color-accent:#ffffffff;"));
+  EXPECT_EQ(other_css, GenerateColorsCss(other_color_provider, kUrl));
+}
+
+// Tests that the stylesheet cached for a ColorProvider that has since been
+// destroyed is not reused for a new ColorProvider at the same address.
+TEST_F(WebUISourcesTest, GenerateColorsCssCacheNotReusedForNewColorProvider) {
+  base::test::ScopedFeatureList feature_list(
+      features::kColorIdCssStyleSheetCache);
+  constexpr char kUrl[] = "chrome://theme/colors.css?sets=ui";
+
+  std::optional<ui::ColorProvider> color_provider;
+  color_provider.emplace();
+  const ui::ColorProvider* const address = &color_provider.value();
+  color_provider->AddMixer()[ui::kColorAccent] = {SK_ColorGREEN};
+  std::optional<std::string> css = GenerateColorsCss(*color_provider, kUrl);
+  ASSERT_TRUE(css.has_value());
+  EXPECT_THAT(*css, HasSubstr("--color-accent:#00ff00ff;"));
+
+  // Destroys the provider and constructs a new one in its place.
+  color_provider.emplace();
+  ASSERT_EQ(address, &color_provider.value());
+  color_provider->AddMixer()[ui::kColorAccent] = {SK_ColorBLUE};
+  css = GenerateColorsCss(*color_provider, kUrl);
+  ASSERT_TRUE(css.has_value());
+  EXPECT_THAT(*css, HasSubstr("--color-accent:#0000ffff;"));
+}
+
+// Tests that the cache is bounded: stylesheets are evicted once many others
+// have been cached and are generated again when requested.
+TEST_F(WebUISourcesTest, GenerateColorsCssCacheIsBounded) {
+  base::test::ScopedFeatureList feature_list(
+      features::kColorIdCssStyleSheetCache);
+  constexpr char kUrl[] = "chrome://theme/colors.css?sets=ui";
+
+  int generation_count = 0;
+  ui::ColorProvider color_provider;
+  AddEvaluationCountingColor(color_provider, ui::kColorAccent,
+                             &generation_count);
+  ASSERT_TRUE(GenerateColorsCss(color_provider, kUrl).has_value());
+  ASSERT_TRUE(GenerateColorsCss(color_provider, kUrl).has_value());
+  EXPECT_EQ(1, generation_count);
+
+  // Cache stylesheets for many other providers.
+  for (int i = 0; i < 32; ++i) {
+    ui::ColorProvider other_color_provider;
+    ASSERT_TRUE(GenerateColorsCss(other_color_provider, kUrl).has_value());
+  }
+
+  ASSERT_TRUE(GenerateColorsCss(color_provider, kUrl).has_value());
+  EXPECT_EQ(2, generation_count);
 }
 
 TEST_F(WebUISourcesTest, ThemeSourceServesColorsCssAcrossSchemesAndThemes) {

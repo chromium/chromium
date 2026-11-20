@@ -34,6 +34,10 @@ class ThemeSource : public content::URLDataSource {
   //
   // Returns the generated CSS string on success, or std::nullopt if the URL is
   // invalid, e.g., missing or invalid `sets` parameter.
+  //
+  // If features::kColorIdCssStyleSheetCache is enabled, recently generated CSS
+  // strings are cached and reused for equivalent requests for the same
+  // `color_provider` (see ui::ColorProvider::unique_id()).
   static std::optional<std::string> GenerateColorsCss(
       const ui::ColorProvider& color_provider,
       const GURL& url);

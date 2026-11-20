@@ -545,6 +545,8 @@ BASE_FEATURE(kRemoveEnsureRFHVisibilityConsistent,
 BASE_FEATURE(kColorIdCssStyleSheetOptimization,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kColorIdCssStyleSheetCache, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kOmitNativeFrameOnShadowlessMenus,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -568,6 +570,10 @@ bool IsWebUIRoundedIconsEnabled() {
 
 bool IsColorIdCssStyleSheetOptimizationEnabled() {
   return base::FeatureList::IsEnabled(kColorIdCssStyleSheetOptimization);
+}
+
+bool IsColorIdCssStyleSheetCacheEnabled() {
+  return base::FeatureList::IsEnabled(kColorIdCssStyleSheetCache);
 }
 
 bool IsThemeChangeOptimizationV2Enabled() {
