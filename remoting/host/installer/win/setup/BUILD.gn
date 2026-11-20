@@ -105,6 +105,8 @@ source_set("setup_lib") {
     "registry_util.h",
     "registry_work_items.cc",
     "registry_work_items.h",
+    "secure_delete.cc",
+    "secure_delete.h",
     "service_util.cc",
     "service_util.h",
     "service_work_items.cc",
@@ -126,6 +128,7 @@ source_set("setup_lib") {
 
   deps = [
     "//remoting/host/win:core_resource",
+    "//remoting/host/win:file_security_util",
     "//remoting/host/win:remoting_lib_idl",
     "//remoting/host/win:security_descriptor",
   ]
@@ -157,6 +160,7 @@ source_set("unit_tests") {
     "installer_constants_unittest.cc",
     "registry_util_unittest.cc",
     "registry_work_items_unittest.cc",
+    "secure_delete_unittest.cc",
     "service_util_unittest.cc",
     "service_work_items_unittest.cc",
     "setup_runner_unittest.cc",
@@ -169,6 +173,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//remoting/base:test_support",
     "//remoting/host/win:core_resource",
+    "//remoting/host/win:file_security_util",
     "//remoting/host/win:remoting_lib_idl",
     "//remoting/host/win:security_descriptor",
     "//testing/gtest",
