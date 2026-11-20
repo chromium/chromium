@@ -87,12 +87,6 @@ class MockDesktopCapturerAndroidJni
 class DesktopCapturerAndroidTest : public testing::Test,
                                    public webrtc::DesktopCapturer::Callback {
  public:
-  DesktopCapturerAndroidTest() {
-    // Lazy frame copy is disabled by default while it is rolled out. Tests
-    // cover the lazy path unless they explicitly disable it.
-    feature_list_.InitAndEnableFeature(kDesktopCaptureAndroidLazyFrameCopy);
-  }
-
   void SetUp() override {
     env_ = base::android::AttachCurrentThread();
     auto jni_interface = std::make_unique<MockDesktopCapturerAndroidJni>();
@@ -136,8 +130,6 @@ class DesktopCapturerAndroidTest : public testing::Test,
   }
 
  protected:
-  base::test::ScopedFeatureList feature_list_;
-
   // Backing storage for a frame pushed to `capturer_`. The capturer may hold on
   // to a frame until it is consumed by `CaptureFrame()`, so the buffer and the
   // release flag must outlive the call to `OnRgbaFrameAvailable()`.
