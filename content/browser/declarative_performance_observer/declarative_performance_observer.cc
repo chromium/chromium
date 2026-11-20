@@ -380,6 +380,16 @@ void DeclarativePerformanceObserver::DidObservePerformanceEntries(
         if (!enabled_types_.Has(network::mojom::PerformanceEntryType::kMark)) {
           continue;
         }
+        // `performance.mark(name, {startTime})` accepts any non-negative
+        // finite `DOMHighResTimeStamp`, so values above `int64_t` max
+        // microseconds saturate `base::Milliseconds()` to `TimeDelta::Max()`.
+        // Skip saturated entries rather than calling `mojo::ReportBadMessage`
+        // because valid web content can produce them, and `InMillisecondsF()`
+        // would return `+/-inf` and hit `DUMP_WILL_BE_NOTREACHED` in
+        // `base::Value`.
+        if (mark.start_time.is_inf()) {
+          continue;
+        }
         if (include_user_timing_ &&
             !include_user_timing_->contains(mark.name)) {
           continue;
@@ -401,6 +411,10 @@ void DeclarativePerformanceObserver::DidObservePerformanceEntries(
         auto& lcp = entry->get_lcp();
         if (!enabled_types_.Has(network::mojom::PerformanceEntryType::
                                     kLargestContentfulPaint)) {
+          continue;
+        }
+        if (lcp->start_time.is_inf() || lcp->render_time.is_inf() ||
+            lcp->load_time.is_inf()) {
           continue;
         }
 

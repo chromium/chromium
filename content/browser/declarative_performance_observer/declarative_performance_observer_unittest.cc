@@ -13,6 +13,7 @@
 #include "base/containers/flat_set.h"
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "content/browser/declarative_performance_observer/declarative_performance_observer_coordinator.h"
 #include "content/browser/declarative_performance_observer/declarative_performance_observer_store.h"
@@ -34,6 +35,7 @@
 #include "content/test/storage_partition_test_helpers.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/base/net_errors.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/test/test_network_context.h"
@@ -602,6 +604,87 @@ TEST_F(DeclarativePerformanceObserverTest, RecordsPerformanceMarks) {
   ASSERT_TRUE(detail);
   ASSERT_TRUE(detail->is_dict());
   EXPECT_EQ(*(detail->GetDict().FindString("key")), "value");
+}
+
+// Verifies that entries whose `TimeDelta` timestamps saturated to
+// `TimeDelta::Max()` or `TimeDelta::Min()` (e.g. `performance.mark` with
+// `startTime` above `int64_t` max microseconds) are omitted without
+// reporting a bad Mojo message, while valid entries in the same batch are
+// preserved.
+TEST_F(DeclarativePerformanceObserverTest, SkipsEntriesWithSaturatedTimeDelta) {
+  const GURL kPageURL("https://example.com/index.html");
+
+  auto policy = network::mojom::DeclarativePerformanceObserverPolicy::New();
+  policy->reporting_endpoint = "telemetry";
+  policy->entry_types = {
+      network::mojom::PerformanceEntryType::kMark,
+      network::mojom::PerformanceEntryType::kLargestContentfulPaint};
+
+  MockNavigationHandle navigation_handle(kPageURL, main_rfh());
+  navigation_handle.set_has_committed(true);
+  navigation_handle.set_is_in_primary_main_frame(true);
+  ON_CALL(navigation_handle, GetDeclarativePerformanceObserverPolicy())
+      .WillByDefault(testing::Return(policy.get()));
+  CreateObserver(&navigation_handle);
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  mojo::Remote<blink::mojom::DeclarativePerformanceObserverHost>
+      observer_remote;
+  DeclarativePerformanceObserver::Bind(
+      main_rfh(), observer_remote.BindNewPipeAndPassReceiver());
+
+  std::vector<blink::mojom::DeclarativePerformanceEntryPtr> entries;
+  entries.push_back(blink::mojom::DeclarativePerformanceEntry::NewMark(
+      blink::mojom::DeclarativePerformanceMark::New(
+          "saturated_max_mark", base::Milliseconds(1e16), std::nullopt)));
+  entries.push_back(blink::mojom::DeclarativePerformanceEntry::NewMark(
+      blink::mojom::DeclarativePerformanceMark::New(
+          "saturated_min_mark", base::TimeDelta::Min(), std::nullopt)));
+  entries.push_back(blink::mojom::DeclarativePerformanceEntry::NewMark(
+      blink::mojom::DeclarativePerformanceMark::New(
+          "valid_mark", base::Milliseconds(120), std::nullopt)));
+  entries.push_back(blink::mojom::DeclarativePerformanceEntry::NewLcp(
+      blink::mojom::DeclarativeLargestContentfulPaint::New(
+          base::TimeDelta::Max(), 450, base::Milliseconds(150),
+          base::Milliseconds(120), "bad-start", "https://example.com/a.png",
+          "IMG")));
+  entries.push_back(blink::mojom::DeclarativePerformanceEntry::NewLcp(
+      blink::mojom::DeclarativeLargestContentfulPaint::New(
+          base::Milliseconds(150), 450, base::TimeDelta::Max(),
+          base::Milliseconds(120), "bad-render", "https://example.com/b.png",
+          "IMG")));
+  entries.push_back(blink::mojom::DeclarativePerformanceEntry::NewLcp(
+      blink::mojom::DeclarativeLargestContentfulPaint::New(
+          base::Milliseconds(150), 450, base::Milliseconds(150),
+          base::TimeDelta::Min(), "bad-load", "https://example.com/c.png",
+          "IMG")));
+  entries.push_back(blink::mojom::DeclarativePerformanceEntry::NewLcp(
+      blink::mojom::DeclarativeLargestContentfulPaint::New(
+          base::Milliseconds(150), 450, base::Milliseconds(150),
+          base::Milliseconds(120), "valid-hero", "https://example.com/hero.png",
+          "IMG")));
+
+  observer_remote->DidObservePerformanceEntries(std::move(entries));
+  observer_remote.FlushForTesting();
+  EXPECT_FALSE(bad_message_observer.got_bad_message());
+
+  DeclarativePerformanceObserver::DeleteForCurrentDocument(main_rfh());
+
+  ASSERT_EQ(network_context_.reports().size(), 1u);
+  const base::ListValue* report_entries =
+      network_context_.reports()[0].body.FindList("entries");
+  ASSERT_TRUE(report_entries);
+  ASSERT_EQ(report_entries->size(), 2u);
+
+  const base::DictValue& mark_entry = (*report_entries)[0].GetDict();
+  EXPECT_EQ(*mark_entry.FindString("entryType"), "mark");
+  EXPECT_EQ(*mark_entry.FindString("name"), "valid_mark");
+  EXPECT_EQ(mark_entry.FindDouble("startTime"), 120.0);
+
+  const base::DictValue& lcp_entry = (*report_entries)[1].GetDict();
+  EXPECT_EQ(*lcp_entry.FindString("entryType"), "largest-contentful-paint");
+  EXPECT_EQ(*lcp_entry.FindString("id"), "valid-hero");
+  EXPECT_EQ(lcp_entry.FindDouble("startTime"), 150.0);
 }
 
 TEST_F(DeclarativePerformanceObserverTest, RecordsLargestContentfulPaint) {
