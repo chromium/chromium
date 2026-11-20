@@ -4,25 +4,31 @@
 
 #include "components/device_signals/core/browser/user_permission_service_impl.h"
 
+#include <array>
+#include <memory>
 #include <optional>
+#include <set>
+#include <utility>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/device_signals/core/browser/mock_user_delegate.h"
 #include "components/device_signals/core/browser/pref_names.h"
-#include "components/device_signals/core/browser/user_context.h"
-#include "components/device_signals/core/browser/user_delegate.h"
+#include "components/device_signals/core/browser/user_permission_service.h"
 #include "components/device_signals/core/common/signals_features.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
-#include "components/prefs/pref_registry.h"
-#include "components/prefs/pref_service.h"
+#include "components/policy/core/common/policy_types.h"
 #include "components/prefs/testing_pref_service.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "components/device_signals/core/browser/user_context.h"
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/signin/public/base/signin_prefs.h"
@@ -153,9 +159,8 @@ class UserPermissionServiceImplTest : public testing::Test,
 
   bool is_new_ev_signals_unaffiliated_enabled() { return GetParam(); }
 
-  base::test::TaskEnvironment task_environment_;
-
   base::test::ScopedFeatureList scoped_feature_list_;
+
   TestManagementService management_service_;
   std::optional<ScopedManagementServiceOverrideForTesting> scoped_override_;
   raw_ptr<testing::StrictMock<MockUserDelegate>> mock_user_delegate_;
