@@ -3435,9 +3435,6 @@ void Document::Shutdown() {
   // Allowing script execution when the Document is shutting down can make it
   // easy to accidentally violate this condition.
 
-  if (num_canvases_ > 0)
-    UMA_HISTOGRAM_COUNTS_100("Blink.Canvas.NumCanvasesPerPage", num_canvases_);
-
   GetViewportData().Shutdown();
 
   View()->Dispose();

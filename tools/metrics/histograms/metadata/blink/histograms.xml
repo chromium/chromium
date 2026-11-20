@@ -384,15 +384,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.Canvas.NumCanvasesPerPage" units="canvases"
-    expires_after="2025-08-10">
-  <owner>aaronhk@chromium.org</owner>
-  <owner>fserb@chromium.org</owner>
-  <summary>
-    When a Document is shutdown, reports the number of canvases on that page.
-  </summary>
-</histogram>
-
 <histogram name="Blink.Canvas.RasterDuration{BlinkCanvasRasterDurationType}"
     units="microseconds" expires_after="2027-05-09">
   <owner>aaronhk@chromium.org</owner>
