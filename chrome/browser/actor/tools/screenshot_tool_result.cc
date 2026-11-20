@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -41,6 +42,10 @@ base::DictValue ScreenshotToolResult::ToDict() const {
       .Set("width", dimensions.width())
       .Set("height", dimensions.height())
       .Set("image_b64", base::Base64Encode(image_data));
+}
+
+std::optional<ToolResultImage> ScreenshotToolResult::GetImage() const {
+  return ToolResultImage{.data = image_data, .mime_type = mime_type};
 }
 
 std::unique_ptr<ToolResultData> ScreenshotToolResult::Clone() const {

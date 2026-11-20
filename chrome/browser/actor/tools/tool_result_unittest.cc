@@ -33,6 +33,10 @@ struct TestTabResult : public ToolResultData {
   }
 };
 
+TEST(ToolResultTest, DataHasNoImageByDefault) {
+  EXPECT_FALSE(TestTabResult().GetImage().has_value());
+}
+
 TEST(ToolResultTest, EmptySuccess) {
   ToolResult result = ToolResult::Success();
   EXPECT_TRUE(result.Ok());

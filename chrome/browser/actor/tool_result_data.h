@@ -5,15 +5,28 @@
 #ifndef CHROME_BROWSER_ACTOR_TOOL_RESULT_DATA_H_
 #define CHROME_BROWSER_ACTOR_TOOL_RESULT_DATA_H_
 
+#include <stdint.h>
+
 #include <concepts>
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 
+#include "base/memory/raw_span.h"
 #include "base/values.h"
 #include "components/actor/public/mojom/actor_types.mojom-shared.h"
 
 namespace actor {
+
+// Image returned by a tool.
+struct ToolResultImage {
+  // Encoded image bytes.
+  base::raw_span<const uint8_t> data;
+
+  // MIME type of `data`.
+  std::string_view mime_type;
+};
 
 // Base struct for tool result data.
 struct ToolResultData {
@@ -21,6 +34,10 @@ struct ToolResultData {
 
   // Converts this data to a dictionary.
   virtual base::DictValue ToDict() const = 0;
+
+  // Returns the image in this data, if any. The returned image points into
+  // this object and must not outlive it.
+  virtual std::optional<ToolResultImage> GetImage() const;
 
   // Clones this data.
   virtual std::unique_ptr<ToolResultData> Clone() const = 0;

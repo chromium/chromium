@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -33,6 +34,7 @@ struct ScreenshotToolResult : public ToolResultData {
 
   // ToolResultData:
   base::DictValue ToDict() const override;
+  std::optional<ToolResultImage> GetImage() const override;
   std::unique_ptr<ToolResultData> Clone() const override;
 
   // Encoded screenshot bytes.

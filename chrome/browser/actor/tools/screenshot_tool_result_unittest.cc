@@ -7,12 +7,14 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/base64.h"
 #include "base/values.h"
 #include "chrome/browser/actor/tool_result_data.h"
 #include "chrome/browser/actor/tools/tool_result.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -29,6 +31,16 @@ TEST(ScreenshotToolResultTest, ToDict) {
                 .Set("width", 800)
                 .Set("height", 600)
                 .Set("image_b64", base::Base64Encode(image_bytes)));
+}
+
+TEST(ScreenshotToolResultTest, GetImage) {
+  const std::vector<uint8_t> image_bytes = {0xFF, 0xD8, 0xFF, 0xD9};
+  ScreenshotToolResult result(image_bytes, "image/jpeg", gfx::Size(800, 600));
+
+  std::optional<ToolResultImage> image = result.GetImage();
+  ASSERT_TRUE(image.has_value());
+  EXPECT_THAT(image->data, testing::ElementsAreArray(image_bytes));
+  EXPECT_EQ(image->mime_type, "image/jpeg");
 }
 
 TEST(ScreenshotToolResultTest, Clone) {

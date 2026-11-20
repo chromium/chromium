@@ -12,6 +12,10 @@ namespace actor {
 
 ToolResultData::~ToolResultData() = default;
 
+std::optional<ToolResultImage> ToolResultData::GetImage() const {
+  return std::nullopt;
+}
+
 ToolError::ToolError(mojom::ActionResultCode code,
                      std::optional<std::string> message)
     : code(code),
