@@ -4633,7 +4633,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             }
 
             boolean existingGroupsPresent =
-                    createTabGroupMenuActionHandler().handleAddToGroupAction(currentTab);
+                    createTabGroupMenuActionHandler().handleAddToGroupAction(List.of(currentTab));
             if (id == R.id.add_to_group_menu_id) {
                 RecordUserAction.record(
                         existingGroupsPresent ? "MobileMenuAddToGroup" : "MobileMenuAddToNewGroup");
@@ -4661,7 +4661,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             }
 
             return createTabGroupMenuActionHandler()
-                    .handleAddToExistingGroupAction(currentTab, groupId, syncGroupId);
+                    .handleAddToExistingGroupAction(List.of(currentTab), groupId, syncGroupId);
         } else if (id == R.id.tab_group_open_group_menu_id
                 || id == R.id.tab_group_open_in_new_window_menu_id
                 || id == R.id.tab_group_delete_group_menu_id) {

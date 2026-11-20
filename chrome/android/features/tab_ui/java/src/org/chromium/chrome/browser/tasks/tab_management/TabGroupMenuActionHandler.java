@@ -91,44 +91,45 @@ public class TabGroupMenuActionHandler {
     }
 
     /**
-     * Handles the "Add to group" action for the given tab.
+     * Handles the "Add to group" action for the given tabs.
      *
-     * <p>If no tab groups exist, it creates a new group with the given tab.
+     * <p>If no tab groups exist, it creates a new group with the given tabs.
      *
      * <p>If tab groups exist, it shows a bottom sheet allowing the user to select an existing group
      * or create a new one.
      *
-     * @param tab The tab to be added to a group.
+     * @param tabs The tabs to be added to a group.
      * @return Whether existing groups were present and a bottom sheet was shown (true), or false if
-     *     no other groups were present and a new group was created directly.
+     *     no other groups were present and a new group was created directly (or {@code tabs} is
+     *     empty).
      */
-    public boolean handleAddToGroupAction(Tab tab) {
+    public boolean handleAddToGroupAction(List<Tab> tabs) {
+        if (tabs.isEmpty()) {
+            return false;
+        }
         GroupWindowChecker windowChecker =
                 new GroupWindowChecker(mContext, mTabGroupSyncService, mTabModel);
-        if (!windowChecker.hasOtherGroups(tab.getTabGroupId())) {
+        Token sharedGroupId = TabGroupUtils.findSingleTabGroupIfPresent(tabs);
+        if (!windowChecker.hasOtherGroups(sharedGroupId)) {
             TabGroupUtils.createNewGroupForTabs(
-                    List.of(tab),
-                    mTabModel,
-                    /* tabMovedCallback= */ null,
-                    this::onTabGroupCreation);
+                    tabs, mTabModel, /* tabMovedCallback= */ null, this::onTabGroupCreation);
             return false;
-        } else {
-            TabGroupListBottomSheetCoordinator tabGroupListBottomSheetCoordinator =
-                    mFactory.create(
-                            mContext,
-                            mProfile,
-                            this::onTabGroupCreation,
-                            /* tabMovedCallback= */ null,
-                            mTabModel,
-                            mBottomSheetController,
-                            /* supportsShowNewGroup= */ true,
-                            /* destroyOnHide= */ true,
-                            tab.getWindowAndroid(),
-                            mTabGroupUiActionHandler);
-            mTabGroupListBottomSheetCoordinatorSupplier.set(tabGroupListBottomSheetCoordinator);
-            tabGroupListBottomSheetCoordinator.showBottomSheet(List.of(tab));
-            return true;
         }
+        TabGroupListBottomSheetCoordinator tabGroupListBottomSheetCoordinator =
+                mFactory.create(
+                        mContext,
+                        mProfile,
+                        this::onTabGroupCreation,
+                        /* tabMovedCallback= */ null,
+                        mTabModel,
+                        mBottomSheetController,
+                        /* supportsShowNewGroup= */ true,
+                        /* destroyOnHide= */ true,
+                        tabs.get(0).getWindowAndroid(),
+                        mTabGroupUiActionHandler);
+        mTabGroupListBottomSheetCoordinatorSupplier.set(tabGroupListBottomSheetCoordinator);
+        tabGroupListBottomSheetCoordinator.showBottomSheet(tabs);
+        return true;
     }
 
     /**
@@ -142,15 +143,18 @@ public class TabGroupMenuActionHandler {
     }
 
     /**
-     * Handles the "Add to existing group" action for the given tab and group ID.
+     * Handles the "Add to existing group" action for the given tabs and group ID.
      *
-     * @param tab The tab to be added to an existing group.
+     * @param tabs The tabs to be added to an existing group.
      * @param groupId The target tab group ID.
      * @param syncGroupId The target sync group ID for remote groups.
      * @return Whether the action was handled.
      */
     public boolean handleAddToExistingGroupAction(
-            Tab tab, @Nullable Token groupId, @Nullable String syncGroupId) {
+            List<Tab> tabs, @Nullable Token groupId, @Nullable String syncGroupId) {
+        if (tabs.isEmpty()) {
+            return false;
+        }
         RecordUserAction.record("MobileMenuAddToExistingGroup");
         GroupWindowInfo destinationGroup =
                 TabGroupUiUtils.getGroupWindowInfo(
@@ -162,7 +166,7 @@ public class TabGroupMenuActionHandler {
 
         TabGroupUiUtils.addTabsToGroup(
                 mTabModel,
-                List.of(tab),
+                tabs,
                 destinationGroup,
                 mTabGroupSyncService,
                 mTabGroupUiActionHandler,
