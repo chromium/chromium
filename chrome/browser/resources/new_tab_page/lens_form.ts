@@ -18,7 +18,7 @@ const DIRECT_UPLOAD_FILE_ACTION: string = 'https://lens.google.com/v3/upload';
 const UPLOAD_FILE_ENTRYPOINT: string = 'cntpubb';
 
 /** Lens service endpoint for the Upload by URL action. */
-const UPLOAD_BY_URL_ACTION: string = 'https://lens.google.com/uploadbyurl';
+const UPLOAD_BY_URL_ACTION: string = 'https://lens.google.com/v3/upload';
 
 /** Entrypoint for the upload by url action. */
 const UPLOAD_URL_ENTRYPOINT: string = 'cntpubu';

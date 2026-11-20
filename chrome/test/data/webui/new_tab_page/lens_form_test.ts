@@ -348,6 +348,12 @@ suite('LensFormTest', () => {
     assertEquals(null, lastSubmit);
   });
 
+  test('url form action should target v3 upload endpoint', () => {
+    const action = new URL(lensForm.$.urlForm.action);
+    assertEquals('https://lens.google.com', action.origin);
+    assertEquals('/v3/upload', action.pathname);
+  });
+
   test('submit url should set entrypoint parameter', () => {
     // Arrange.
     const input =
