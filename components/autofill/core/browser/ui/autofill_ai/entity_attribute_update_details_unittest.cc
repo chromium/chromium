@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "base/i18n/language_tag.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
@@ -29,7 +30,7 @@ TEST(EntityAttributeUpdateDetailsTest, AttributeUnchanged) {
 
   ASSERT_THAT(
       EntityAttributeUpdateDetails::GetUpdatedAttributesDetails(
-          new_number, old_number, "en-US"),
+          new_number, old_number, base::i18n::GetKnownLanguageTag("en-US")),
       ElementsAre(
           EntityAttributeUpdateDetails(
               u"Name", u"Name", std::nullopt,
@@ -53,7 +54,7 @@ TEST(EntityAttributeUpdateDetailsTest, AttributeUpdated) {
 
   ASSERT_THAT(
       EntityAttributeUpdateDetails::GetUpdatedAttributesDetails(
-          new_ktn, old_ktn, "en-US"),
+          new_ktn, old_ktn, base::i18n::GetKnownLanguageTag("en-US")),
       ElementsAre(
           EntityAttributeUpdateDetails(
               u"Expiration date", u"Jan 1, 2030", u"Jan 1, 2025",
@@ -77,7 +78,7 @@ TEST(EntityAttributeUpdateDetailsTest, AttributeUpdatedRevampedUI) {
 
   ASSERT_THAT(
       EntityAttributeUpdateDetails::GetUpdatedAttributesDetails(
-          new_ktn, old_ktn, "en-US"),
+          new_ktn, old_ktn, base::i18n::GetKnownLanguageTag("en-US")),
       ElementsAre(EntityAttributeUpdateDetails(
                       u"Name", u"Name", std::nullopt,
                       EntityAttributeUpdateType::kNewEntityAttributeUnchanged),
@@ -97,7 +98,7 @@ TEST(EntityAttributeUpdateDetailsTest, AttributeAdded) {
 
   ASSERT_THAT(
       EntityAttributeUpdateDetails::GetUpdatedAttributesDetails(
-          new_number, old_number, "en-US"),
+          new_number, old_number, base::i18n::GetKnownLanguageTag("en-US")),
       ElementsAre(EntityAttributeUpdateDetails(
                       u"Name", u"Name", std::nullopt,
                       EntityAttributeUpdateType::kNewEntityAttributeUnchanged),
@@ -117,7 +118,7 @@ TEST(EntityAttributeUpdateDetailsTest, AttributeAddedFromEmptyString) {
 
   ASSERT_THAT(
       EntityAttributeUpdateDetails::GetUpdatedAttributesDetails(
-          new_number, old_number, "en-US"),
+          new_number, old_number, base::i18n::GetKnownLanguageTag("en-US")),
       ElementsAre(
           EntityAttributeUpdateDetails(
               u"Name", u"Name", std::nullopt,
@@ -139,7 +140,7 @@ TEST(EntityAttributeUpdateDetailsTest, AttributeRemoved) {
   // Only the attributes in the new entity are taken into account.
   ASSERT_THAT(
       EntityAttributeUpdateDetails::GetUpdatedAttributesDetails(
-          new_number, old_number, "en-US"),
+          new_number, old_number, base::i18n::GetKnownLanguageTag("en-US")),
       ElementsAre(EntityAttributeUpdateDetails(
                       u"Name", u"Name", std::nullopt,
                       EntityAttributeUpdateType::kNewEntityAttributeUnchanged),
@@ -163,7 +164,7 @@ TEST(EntityAttributeUpdateDetailsTest, MaskedAttributeMatchingSuffix) {
            .record_type = EntityInstance::RecordType::kServerWallet}));
 
   auto details = EntityAttributeUpdateDetails::GetUpdatedAttributesDetails(
-      new_entity, old_entity, "en-US");
+      new_entity, old_entity, base::i18n::GetKnownLanguageTag("en-US"));
 
   // Verify that comparing an unmasked new attribute against a masked old
   // attribute with a matching suffix results in unchanged.

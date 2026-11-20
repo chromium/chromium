@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/language_tag.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/optional_ref.h"
 #include "chrome/browser/ui/autofill/autofill_ai/autofill_ai_import_data_controller.h"
@@ -81,7 +82,7 @@ class AutofillAiImportDataControllerImpl
  protected:
   explicit AutofillAiImportDataControllerImpl(
       content::WebContents* web_contents,
-      const std::string& app_locale);
+      const base::i18n::LanguageTag& app_locale);
 
  private:
   friend class content::WebContentsUserData<AutofillAiImportDataControllerImpl>;
@@ -158,7 +159,7 @@ class AutofillAiImportDataControllerImpl
   void OpenUrlAndReopenBubbleOnReturn(const GURL& url);
 
   // The browser's locale when the object was instantiated.
-  const std::string app_locale_;
+  const base::i18n::LanguageTag app_locale_;
 
   // The type of bubble that is supposed to be shown and its associated state.
   std::variant<std::monostate, SaveUpdateState, LocalSaveNotificationState>

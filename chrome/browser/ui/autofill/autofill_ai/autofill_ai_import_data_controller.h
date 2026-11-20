@@ -18,6 +18,10 @@
 
 class GURL;
 
+namespace base::i18n {
+class LanguageTag;
+}  // namespace base::i18n
+
 namespace autofill {
 
 class EntityInstance;
@@ -35,7 +39,7 @@ class AutofillAiImportDataController {
 
   static AutofillAiImportDataController* GetOrCreate(
       content::WebContents* web_contents,
-      const std::string& app_locale);
+      const base::i18n::LanguageTag& app_locale);
 
   // Hides the Autofill AI import bubble if it is showing for `web_contents`.
   static void Hide(content::WebContents& web_contents);

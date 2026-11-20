@@ -9,6 +9,7 @@
 #include <ranges>
 
 #include "base/feature_list.h"
+#include "base/i18n/language_tag.h"
 #include "base/logging.h"
 #include "base/types/optional_ref.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
@@ -63,15 +64,15 @@ std::vector<EntityAttributeUpdateDetails>
 EntityAttributeUpdateDetails::GetUpdatedAttributesDetails(
     const EntityInstance& new_entity,
     base::optional_ref<const EntityInstance> old_entity,
-    const std::string& app_locale) {
+    const base::i18n::LanguageTag& app_locale) {
   std::vector<EntityAttributeUpdateDetails> details;
 
   auto get_attribute_value = [](const AttributeInstance& attribute,
-                                const std::string& app_locale) {
+                                const base::i18n::LanguageTag& app_locale) {
     if (std::optional<std::u16string> date = MaybeGetLocalizedDate(attribute)) {
       return *date;
     } else {
-      return attribute.GetCompleteInfo(app_locale);
+      return attribute.GetCompleteInfo(app_locale.tag_string());
     }
   };
 
@@ -93,9 +94,9 @@ EntityAttributeUpdateDetails::GetUpdatedAttributesDetails(
         // We compare their suffixes instead.
         if (old_entity_attribute->masked()) {
           std::u16string old_value =
-              old_entity_attribute->GetCompleteInfo(app_locale);
+              old_entity_attribute->GetCompleteInfo(app_locale.tag_string());
           std::u16string new_value =
-              new_entity_attribute.GetCompleteInfo(app_locale);
+              new_entity_attribute.GetCompleteInfo(app_locale.tag_string());
           size_t suffix_length = std::min(old_value.size(), new_value.size());
           return old_value.substr(old_value.size() - suffix_length) ==
                          new_value.substr(new_value.size() - suffix_length)
@@ -107,10 +108,10 @@ EntityAttributeUpdateDetails::GetUpdatedAttributesDetails(
                    new_entity_attribute.type().field_subtypes(),
                    [&](FieldType type) {
                      return old_entity_attribute->GetInfo(
-                                type, app_locale,
+                                type, app_locale.tag_string(),
                                 /*format_string=*/std::nullopt) ==
                             new_entity_attribute.GetInfo(
-                                type, app_locale,
+                                type, app_locale.tag_string(),
                                 /*format_string=*/std::nullopt);
                    })
                    ? EntityAttributeUpdateType::kNewEntityAttributeUnchanged

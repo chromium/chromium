@@ -12,6 +12,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/callback.h"
+#include "base/i18n/language_tag.h"
 #include "base/notimplemented.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -47,14 +48,14 @@ AutofillAiSaveUpdateEntityPromptController::
         EntityInstance entity_instance,
         std::optional<EntityInstance> old_entity_instance,
         LegalMessageLines public_passes_notice,
-        std::string app_locale,
+        const base::i18n::LanguageTag& app_locale,
         AutofillClient::EntityImportPromptResultCallback prompt_result_callback)
     : web_contents_(web_contents),
       prompt_view_(std::move(prompt_view)),
       entity_instance_(std::move(entity_instance)),
       old_entity_instance_(std::move(old_entity_instance)),
       public_passes_notice_(std::move(public_passes_notice)),
-      app_locale_(std::move(app_locale)),
+      app_locale_(app_locale),
       prompt_result_callback_(std::move(prompt_result_callback)),
       java_object_(Java_AutofillAiSaveUpdateEntityPromptController_create(
           base::android::AttachCurrentThread(),

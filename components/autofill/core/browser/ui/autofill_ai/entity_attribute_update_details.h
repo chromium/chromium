@@ -13,6 +13,10 @@
 #include "base/types/optional_ref.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 
+namespace base::i18n {
+class LanguageTag;
+}  // namespace base::i18n
+
 namespace autofill {
 
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.autofill.autofill_ai
@@ -54,7 +58,7 @@ class EntityAttributeUpdateDetails {
   static std::vector<EntityAttributeUpdateDetails> GetUpdatedAttributesDetails(
       const EntityInstance& new_entity,
       base::optional_ref<const EntityInstance> old_entity,
-      const std::string& app_locale);
+      const base::i18n::LanguageTag& app_locale);
 
   const std::u16string& attribute_name() const { return attribute_name_; }
   const std::u16string& attribute_value() const { return attribute_value_; }

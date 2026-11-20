@@ -68,7 +68,10 @@ if (!is_android) {
       "autofill_ai_import_data_controller_impl.cc",
       "autofill_ai_import_data_controller_impl.h",
     ]
-    public_deps = [ ":autofill_ai" ]
+    public_deps = [
+      ":autofill_ai",
+      "//base/i18n:language_tag",
+    ]
     deps = [
       ":autofill_ai_ui_utils_impl",
       "//chrome/app/theme:chrome_unscaled_resources",

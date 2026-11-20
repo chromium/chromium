@@ -10,6 +10,7 @@
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/language_tag.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/autofill/android/autofill_ai_save_update_entity_prompt_controller.h"
@@ -86,11 +87,11 @@ AutofillAiSaveUpdateEntityFlowManager::AutofillAiSaveUpdateEntityFlowManager(
     content::WebContents* web_contents,
     AutofillMessageController* autofill_message_controller,
     AutofillDialogController* autofill_dialog_controller,
-    std::string app_locale)
+    const base::i18n::LanguageTag& app_locale)
     : web_contents_(web_contents),
       autofill_message_controller_(CHECK_DEREF(autofill_message_controller)),
       autofill_dialog_controller_(CHECK_DEREF(autofill_dialog_controller)),
-      app_locale_(std::move(app_locale)) {}
+      app_locale_(app_locale) {}
 
 AutofillAiSaveUpdateEntityFlowManager::
     ~AutofillAiSaveUpdateEntityFlowManager() = default;

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/feature_list.h"
+#include "base/i18n/language_tag.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
@@ -68,7 +69,7 @@ std::u16string GetPrimaryAccountEmailFromProfile(Profile* profile) {
 
 AutofillAiImportDataControllerImpl::AutofillAiImportDataControllerImpl(
     content::WebContents* web_contents,
-    const std::string& app_locale)
+    const base::i18n::LanguageTag& app_locale)
     : AutofillBubbleControllerBase(
           web_contents,
           PageActionConfig{.action_id = kActionShowAddressesBubbleOrPage}),
@@ -82,7 +83,7 @@ AutofillAiImportDataControllerImpl::~AutofillAiImportDataControllerImpl() =
 // static
 AutofillAiImportDataController* AutofillAiImportDataController::GetOrCreate(
     content::WebContents* web_contents,
-    const std::string& app_locale) {
+    const base::i18n::LanguageTag& app_locale) {
   if (!web_contents) {
     return nullptr;
   }

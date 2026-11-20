@@ -84,10 +84,10 @@ source_set("autofill") {
     "virtual_card_utils.cc",
     "virtual_card_utils.h",
   ]
+  public_deps = [ "//base/i18n:language_tag" ]
   deps = [
     "//base",
     "//base:i18n",
-    "//base/i18n:language_tag",
     "//chrome/android:chrome_jni_headers",
     "//chrome/android/features/keyboard_accessory:jni_headers",
     "//chrome/app:generated_resources",

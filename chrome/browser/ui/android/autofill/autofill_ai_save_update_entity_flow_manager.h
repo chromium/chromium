@@ -7,9 +7,9 @@
 
 #include <memory>
 #include <optional>
-#include <string>
 
 #include "base/functional/callback.h"
+#include "base/i18n/language_tag.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/android/autofill/autofill_dialog_controller.h"
 #include "chrome/browser/ui/android/autofill/autofill_message_controller.h"
@@ -41,7 +41,7 @@ class AutofillAiSaveUpdateEntityFlowManager {
       content::WebContents* web_contents,
       AutofillMessageController* autofill_message_controller,
       AutofillDialogController* autofill_dialog_controller,
-      std::string app_locale);
+      const base::i18n::LanguageTag& app_locale);
   AutofillAiSaveUpdateEntityFlowManager(
       const AutofillAiSaveUpdateEntityFlowManager&) = delete;
   AutofillAiSaveUpdateEntityFlowManager& operator=(
@@ -84,7 +84,7 @@ class AutofillAiSaveUpdateEntityFlowManager {
   // or update prompt.
   AutofillClient::EntityImportPromptResultCallback prompt_result_callback_;
 
-  const std::string app_locale_;
+  const base::i18n::LanguageTag app_locale_;
 
   base::WeakPtrFactory<AutofillAiSaveUpdateEntityFlowManager> weak_ptr_factory_{
       this};

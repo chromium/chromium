@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/android/jni_android.h"
+#include "base/i18n/language_tag.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
@@ -94,7 +95,8 @@ class AutofillAiSaveUpdateEntityPromptControllerTest
     controller_ = std::make_unique<AutofillAiSaveUpdateEntityPromptController>(
         web_contents(), std::move(prompt_view), std::move(entity_instance),
         std::move(old_entity_instance), std::move(public_passes_notice),
-        "en-US", prompt_closed_callback_.Get());
+        base::i18n::GetKnownLanguageTag("en-US"),
+        prompt_closed_callback_.Get());
   }
 
   void SigninUser(const std::string& email,

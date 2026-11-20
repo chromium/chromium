@@ -9,6 +9,7 @@
 #include <string_view>
 
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/language_tag.h"
 #include "base/notreached.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -101,7 +102,7 @@ class AutofillAiImportDataControllerImplTest : public DialogBrowserTest {
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
     AutofillAiImportDataControllerImpl::CreateForWebContents(
-        web_contents, /*app_locale=*/"en-US");
+        web_contents, /*app_locale=*/base::i18n::GetKnownLanguageTag("en-US"));
     controller_ =
         AutofillAiImportDataControllerImpl::FromWebContents(web_contents);
     CHECK(controller_);

@@ -13,6 +13,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/callback.h"
+#include "base/i18n/language_tag.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
@@ -38,7 +39,7 @@ class AutofillAiSaveUpdateEntityPromptController {
       EntityInstance entity_instance,
       std::optional<EntityInstance> old_entity_instance,
       LegalMessageLines public_passes_notice,
-      std::string app_locale,
+      const base::i18n::LanguageTag& app_locale,
       AutofillClient::EntityImportPromptResultCallback prompt_result_callback);
   AutofillAiSaveUpdateEntityPromptController(
       const AutofillAiSaveUpdateEntityPromptController&) = delete;
@@ -81,7 +82,7 @@ class AutofillAiSaveUpdateEntityPromptController {
   const EntityInstance entity_instance_;
   const std::optional<EntityInstance> old_entity_instance_;
   const LegalMessageLines public_passes_notice_;
-  const std::string app_locale_;
+  const base::i18n::LanguageTag app_locale_;
   AutofillClient::EntityImportUIContext ui_context_;
   // If the user explicitly accepted/dismissed the entity.
   bool had_user_interaction_ = false;

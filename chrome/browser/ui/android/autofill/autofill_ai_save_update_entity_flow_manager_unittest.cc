@@ -7,6 +7,7 @@
 #include <optional>
 #include <string>
 
+#include "base/i18n/language_tag.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -47,7 +48,7 @@ class AutofillAiSaveUpdateEntityFlowManagerTest
             ChromeRenderViewHostTestHarness::profile());
     flow_manager_ = std::make_unique<AutofillAiSaveUpdateEntityFlowManager>(
         web_contents(), &autofill_message_controller_,
-        &autofill_dialog_controller_, "en-US");
+        &autofill_dialog_controller_, base::i18n::GetKnownLanguageTag("en-US"));
   }
 
   void TearDown() override {

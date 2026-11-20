@@ -64,6 +64,7 @@ static_library("autofill") {
 
   public_deps = [
     "//base",
+    "//base/i18n:language_tag",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
     "//components/autofill/content/browser",
@@ -80,7 +81,6 @@ static_library("autofill") {
     "//url",
   ]
   deps = [
-    "//base/i18n:language_tag",
     "//chrome/browser:browser_process",
     "//chrome/browser:global_features",
     "//chrome/browser/account_settings",
