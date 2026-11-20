@@ -216,17 +216,6 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
   </summary>
 </histogram>
 
-<histogram name="Settings.FirstPartySets.State" enum="FirstPartySetsState"
-    expires_after="2026-05-03">
-  <owner>alimariam@google.com</owner>
-  <owner>olesiamarukhno@google.com</owner>
-  <owner>sauski@google.com</owner>
-  <summary>
-    Records either the state of first party sets (FPS) or not relevant,
-    depending on the user's cookie settings. This is logged on startup.
-  </summary>
-</histogram>
-
 <histogram name="Settings.FragmentAttached"
     enum="AndroidSettingsFragmentHashes" expires_after="2027-04-25">
   <owner>dullweber@chromium.org</owner>

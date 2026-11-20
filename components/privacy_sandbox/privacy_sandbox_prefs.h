@@ -29,24 +29,6 @@ inline constexpr char kPrivacySandboxM1AdMeasurementEnabled[] =
 inline constexpr char kPrivacySandboxM1Restricted[] =
     "privacy_sandbox.m1.restricted";
 
-// RWS prefs
-
-// Boolean that indicates the user's RWS data access preference has been init,
-// so named because of the user intent it intends to represent. Currently there
-// is no distinction between RWS for data access, and RWS for other purposes, so
-// this init is applied to the "privacy_sandbox.first_party_sets_enabled" pref.
-// "first_party_sets" in the string name is kept for historic reasons to avoid
-// migration of a synced Pref.
-inline constexpr char
-    kPrivacySandboxRelatedWebsiteSetsDataAccessAllowedInitialized[] =
-        "privacy_sandbox.first_party_sets_data_access_allowed_initialized";
-
-// Boolean that indicates whether Related Website Sets is enabled.
-// "first_party_sets" in the string name is kept for historic reasons to avoid
-// migration of a synced Pref.
-inline constexpr char kPrivacySandboxRelatedWebsiteSetsEnabled[] =
-    "privacy_sandbox.first_party_sets_enabled";
-
 }  // namespace prefs
 
 namespace privacy_sandbox {

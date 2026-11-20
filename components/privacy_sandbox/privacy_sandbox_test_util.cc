@@ -239,9 +239,6 @@ void CheckOutput(
   }
 }
 
-MockPrivacySandboxObserver::MockPrivacySandboxObserver() = default;
-MockPrivacySandboxObserver::~MockPrivacySandboxObserver() = default;
-
 void RunTestCase(
     content::BrowserTaskEnvironment* task_environment,
     sync_preferences::TestingPrefServiceSyncable* testing_pref_service,

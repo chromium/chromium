@@ -626,7 +626,6 @@ if (!is_android) {
       "//chrome/browser/permissions/system",
       "//chrome/browser/plugins",
       "//chrome/browser/prefs",
-      "//chrome/browser/privacy_sandbox:test_support",
       "//chrome/browser/profile_resetter",
       "//chrome/browser/profile_resetter:fake_profile_resetter",
       "//chrome/browser/regional_capabilities",

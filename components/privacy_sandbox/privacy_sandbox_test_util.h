@@ -47,14 +47,6 @@ class PrivacySandboxSettingsTestPeer {
   raw_ptr<privacy_sandbox::PrivacySandboxSettingsImpl> pss_impl_;
 };
 
-class MockPrivacySandboxObserver
-    : public privacy_sandbox::PrivacySandboxSettings::Observer {
- public:
-  MockPrivacySandboxObserver();
-  ~MockPrivacySandboxObserver();
-  MOCK_METHOD1(OnRelatedWebsiteSetsEnabledChanged, void(bool));
-};
-
 // A declarative test case is a collection of key value pairs, which each define
 // some property of the test, such as the state of the profile, the input, or
 // expected output.

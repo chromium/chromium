@@ -603,7 +603,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &permissions::features::kPermissionDedicatedCpssSettingAndroid,
     &permissions::features::kPermissionsPromptSurvey,
     &privacy_sandbox::kPrivacySandboxAdPrivacyUxDeprecation,
-    &privacy_sandbox::kRelatedWebsiteSetsUi,
     &safe_browsing::kAutoRevokeSuspiciousNotification,
     &safe_browsing::kExtendedReportingRemovePrefDependency,
     &safe_browsing::kHashPrefixRealTimeLookups,

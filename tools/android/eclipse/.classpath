@@ -189,8 +189,6 @@ to the classpath for downstream development. See "additional_entries" below.
     <classpathentry kind="src" path="chrome/browser/privacy_guide/android/javatests/src"/>
     <classpathentry kind="src" path="chrome/browser/privacy_guide/android/junit/src"/>
     <classpathentry kind="src" path="chrome/browser/privacy/java/src"/>
-    <classpathentry kind="src" path="chrome/browser/privacy_sandbox/android/java/src"/>
-    <classpathentry kind="src" path="chrome/browser/privacy_sandbox/android/javatests/src"/>
     <classpathentry kind="src" path="chrome/browser/privacy/settings/java/src"/>
     <classpathentry kind="src" path="chrome/browser/profiles/android/java/src"/>
     <classpathentry kind="src" path="chrome/browser/safe_browsing/android/java/src"/>

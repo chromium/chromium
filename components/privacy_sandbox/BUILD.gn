@@ -13,7 +13,6 @@ static_library("privacy_sandbox_prefs") {
 
   deps = [
     ":features",
-    "//components/pref_registry",
     "//components/prefs",
   ]
 

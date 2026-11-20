@@ -21,9 +21,6 @@ class MockPrivacySandboxSettings
               IsEventReportingDestinationAttested,
               (const url::Origin&),
               (override, const));
-  MOCK_METHOD(void, AddObserver, (Observer*), (override));
-  MOCK_METHOD(void, RemoveObserver, (Observer*), (override));
-  MOCK_METHOD(bool, AreRelatedWebsiteSetsEnabled, (), (override, const));
 };
 
 }  // namespace privacy_sandbox_test_util

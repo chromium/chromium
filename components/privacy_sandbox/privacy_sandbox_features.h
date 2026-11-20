@@ -20,10 +20,6 @@ BASE_DECLARE_FEATURE(kEnforcePrivacySandboxAttestations);
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kDefaultAllowPrivacySandboxAttestations);
 
-// Enables showing RWS UI.
-COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
-BASE_DECLARE_FEATURE(kRelatedWebsiteSetsUi);
-
 // If true, the Ad Topics, Site Suggested Ads, and Ad Measurement API prefs are
 // set to false for users on startup. The UX to access these Ad Privacy settings
 // will be removed from all surfaces.

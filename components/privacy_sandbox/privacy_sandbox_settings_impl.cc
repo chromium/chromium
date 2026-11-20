@@ -13,7 +13,6 @@
 #include "base/json/values_util.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/observer_list.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -25,12 +24,10 @@
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/metrics/dwa/dwa_builders.h"
 #include "components/metrics/dwa/dwa_recorder.h"
-#include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
-#include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_features.h"
@@ -52,47 +49,19 @@ PrivacySandboxSettingsImpl::PrivacySandboxSettingsImpl(
   CHECK(pref_service_);
   CHECK(host_content_settings_map_);
   CHECK(cookie_settings_);
-
-  pref_change_registrar_.Init(pref_service_);
-  pref_change_registrar_.Add(
-      prefs::kPrivacySandboxRelatedWebsiteSetsEnabled,
-      base::BindRepeating(
-          &PrivacySandboxSettingsImpl::OnRelatedWebsiteSetsEnabledPrefChanged,
-          base::Unretained(this)));
 }
 
 PrivacySandboxSettingsImpl::~PrivacySandboxSettingsImpl() = default;
 
 void PrivacySandboxSettingsImpl::Shutdown() {
-  observers_.Clear();
   host_content_settings_map_ = nullptr;
   cookie_settings_.reset();
   pref_service_ = nullptr;
-  pref_change_registrar_.Reset();
 }
 
 bool PrivacySandboxSettingsImpl::IsEventReportingDestinationAttested(
     const url::Origin& destination_origin) const {
   return false;
-}
-
-void PrivacySandboxSettingsImpl::OnRelatedWebsiteSetsEnabledPrefChanged() {
-  for (auto& observer : observers_) {
-    observer.OnRelatedWebsiteSetsEnabledChanged(AreRelatedWebsiteSetsEnabled());
-  }
-}
-
-void PrivacySandboxSettingsImpl::AddObserver(Observer* observer) {
-  observers_.AddObserver(observer);
-}
-
-void PrivacySandboxSettingsImpl::RemoveObserver(Observer* observer) {
-  observers_.RemoveObserver(observer);
-}
-
-bool PrivacySandboxSettingsImpl::AreRelatedWebsiteSetsEnabled() const {
-  return pref_service_->GetBoolean(
-      prefs::kPrivacySandboxRelatedWebsiteSetsEnabled);
 }
 
 }  // namespace privacy_sandbox

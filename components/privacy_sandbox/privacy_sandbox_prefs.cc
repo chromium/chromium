@@ -4,8 +4,7 @@
 
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 
-#include "base/time/time.h"
-#include "components/pref_registry/pref_registry_syncable.h"
+#include "base/feature_list.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
@@ -18,13 +17,6 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kPrivacySandboxM1AdMeasurementEnabled,
                                 false);
   registry->RegisterBooleanPref(prefs::kPrivacySandboxM1Restricted, false);
-
-  registry->RegisterBooleanPref(
-      prefs::kPrivacySandboxRelatedWebsiteSetsDataAccessAllowedInitialized,
-      false);
-  registry->RegisterBooleanPref(
-      prefs::kPrivacySandboxRelatedWebsiteSetsEnabled, true,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 }
 
 void MaybeClearAdPrivacyPrefs(PrefService* prefs) {

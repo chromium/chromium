@@ -6,10 +6,8 @@
 #define COMPONENTS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_SETTINGS_IMPL_H_
 
 #include "base/memory/raw_ptr.h"
-#include "base/observer_list.h"
-#include "base/scoped_observation.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
-#include "components/prefs/pref_change_registrar.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 
 class HostContentSettingsMap;
@@ -44,19 +42,11 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings {
   bool IsEventReportingDestinationAttested(
       const url::Origin& destination_origin) const override;
 
-  void AddObserver(Observer* observer) override;
-  void RemoveObserver(Observer* observer) override;
-
-  bool AreRelatedWebsiteSetsEnabled() const override;
-
  private:
   friend class PrivacySandboxAttestations;
   // NOTE: Do not add any new friend classes for testing; tests that need
   // access to private functions / variables should go through this peer class.
   friend class privacy_sandbox_test_util::PrivacySandboxSettingsTestPeer;
-
-  // Called when the Related Website Sets enabled preference is changed.
-  void OnRelatedWebsiteSetsEnabledPrefChanged();
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -77,12 +67,9 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings {
     kMaxValue = kAttestationsFileNotPresent,
   };
 
-  base::ObserverList<Observer>::Unchecked observers_;
-
   raw_ptr<HostContentSettingsMap> host_content_settings_map_;
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
   raw_ptr<PrefService> pref_service_;
-  PrefChangeRegistrar pref_change_registrar_;
 };
 
 }  // namespace privacy_sandbox

@@ -18,7 +18,6 @@
 #include "components/language/core/browser/pref_names.h"
 #include "components/live_caption/pref_names.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
-#include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/spellcheck/browser/pref_names.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync_preferences/syncable_prefs_database.h"
@@ -229,7 +228,7 @@ enum {
   kPerformanceTracingEnabled = 100163,
   kPluginsAlwaysOpenPdfExternally = 100164,
   // kPrivacySandboxApisEnabled = 100165, (deprecated)
-  kPrivacySandboxRelatedWebsiteSetsEnabled = 100166,
+  // kPrivacySandboxRelatedWebsiteSetsEnabled = 100166, (deprecated)
   // kPrivacySandboxManuallyControlled = 100167, (deprecated)
   kPromptForDownload = 100168,
   kProtectedContentDefault = 100169,
@@ -1884,11 +1883,6 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
     {prefs::kPluginsAlwaysOpenPdfExternally,
      {syncable_prefs_ids::kPluginsAlwaysOpenPdfExternally, syncer::PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
-      sync_preferences::MergeBehavior::kNone,
-      sync_preferences::WriteBehavior::kWriteToBoth}},
-    {prefs::kPrivacySandboxRelatedWebsiteSetsEnabled,
-     {syncable_prefs_ids::kPrivacySandboxRelatedWebsiteSetsEnabled,
-      syncer::PREFERENCES, sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone,
       sync_preferences::WriteBehavior::kWriteToBoth}},
     {prefs::kPromptForDownload,

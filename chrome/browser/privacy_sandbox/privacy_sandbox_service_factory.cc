@@ -5,37 +5,9 @@
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 
 #include "base/no_destructor.h"
-#include "build/build_config.h"
-#include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_impl.h"
-#include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/profile_metrics/browser_profile_type.h"
-
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
-#endif
-
-namespace {
-
-profile_metrics::BrowserProfileType GetProfileType(Profile* profile) {
-#if BUILDFLAG(IS_CHROMEOS)
-  // Alias the "system" profiles which present as regular profiles for metrics
-  // purposes (e.g. signin screen), to system metrics profiles. This is done
-  // here as, due to dependency injection, the service itself does not hold a
-  // profile pointer.
-  // TODO (crbug.com/40270186) - Move to simply not creating the service for
-  // these types of profiles.
-  if (!ash::IsUserBrowserContext(profile)) {
-    return profile_metrics::BrowserProfileType::kSystem;
-  }
-#endif
-  return profile_metrics::GetBrowserProfileType(profile);
-}
-
-}  // namespace
 
 PrivacySandboxServiceFactory* PrivacySandboxServiceFactory::GetInstance() {
   static base::NoDestructor<PrivacySandboxServiceFactory> instance;
@@ -61,17 +33,11 @@ PrivacySandboxServiceFactory::PrivacySandboxServiceFactory()
               // TODO(crbug.com/41488885): Check if this service is needed for
               // Ash Internals.
               .WithAshInternals(ProfileSelection::kOwnInstance)
-              .Build()) {
-  DependsOn(PrivacySandboxSettingsFactory::GetInstance());
-  DependsOn(CookieSettingsFactory::GetInstance());
-}
+              .Build()) {}
 
 std::unique_ptr<KeyedService>
 PrivacySandboxServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  return std::make_unique<PrivacySandboxServiceImpl>(
-      PrivacySandboxSettingsFactory::GetForProfile(profile),
-      CookieSettingsFactory::GetForProfile(profile), profile->GetPrefs(),
-      GetProfileType(profile));
+  return std::make_unique<PrivacySandboxServiceImpl>(profile->GetPrefs());
 }

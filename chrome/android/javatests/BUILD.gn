@@ -155,8 +155,6 @@ android_library("chrome_test_java_helper") {
     "//chrome/browser/preloading/android:java",
     "//chrome/browser/printing/android:java",
     "//chrome/browser/privacy_guide/android:java",
-    "//chrome/browser/privacy_sandbox/android:java",
-    "//chrome/browser/privacy_sandbox/android:test_support_java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/profiles/android:test_support_java",
     "//chrome/browser/quick_delete:java",

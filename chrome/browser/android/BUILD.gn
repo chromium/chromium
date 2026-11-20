@@ -782,7 +782,6 @@ if (is_android) {
       "//chrome/browser/preloading/android:jni_headers",
       "//chrome/browser/privacy:jni_headers",
       "//chrome/browser/privacy:secure_dns_bridge",
-      "//chrome/browser/privacy_sandbox/android:jni_headers",
       "//chrome/browser/quick_delete:jni_headers",
       "//chrome/browser/readaloud/android:features",
       "//chrome/browser/readaloud/android:jni_headers",

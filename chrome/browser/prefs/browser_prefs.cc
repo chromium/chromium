@@ -1223,6 +1223,11 @@ inline constexpr char kSuggestedContentEnabled[] =
 
 // Deprecated 11/2026.
 inline constexpr char kPumaRcClientId[] = "private_metrics.puma.client_id.rc";
+inline constexpr char
+    kPrivacySandboxRelatedWebsiteSetsDataAccessAllowedInitialized[] =
+        "privacy_sandbox.first_party_sets_data_access_allowed_initialized";
+inline constexpr char kPrivacySandboxRelatedWebsiteSetsEnabled[] =
+    "privacy_sandbox.first_party_sets_enabled";
 
 // Register local state used only for migration (clearing or moving to a new
 // key).
@@ -1767,6 +1772,11 @@ void RegisterProfilePrefsForMigration(
   // Deprecated 11/2026.
   registry->RegisterBooleanPref(kPrefsThemesSearchEnginesAccountStorageEnabled,
                                 false);
+
+  // Deprecated 11/2026.
+  registry->RegisterBooleanPref(
+      kPrivacySandboxRelatedWebsiteSetsDataAccessAllowedInitialized, false);
+  registry->RegisterBooleanPref(kPrivacySandboxRelatedWebsiteSetsEnabled, true);
 }
 
 }  // namespace
@@ -3263,6 +3273,11 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 
   // Added 11/2026.
   profile_prefs->ClearPref(kPrefsThemesSearchEnginesAccountStorageEnabled);
+
+  // Added 11/2026.
+  profile_prefs->ClearPref(
+      kPrivacySandboxRelatedWebsiteSetsDataAccessAllowedInitialized);
+  profile_prefs->ClearPref(kPrivacySandboxRelatedWebsiteSetsEnabled);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

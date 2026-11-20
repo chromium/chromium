@@ -476,7 +476,6 @@ if (_is_default_toolchain) {
       "//chrome/browser/privacy:java",
       "//chrome/browser/privacy:privacy_settings_java",
       "//chrome/browser/privacy_guide/android:java",
-      "//chrome/browser/privacy_sandbox/android:java",
       "//chrome/browser/profiles/android:java",
       "//chrome/browser/quick_delete:java",
       "//chrome/browser/readaloud/android:features_java",

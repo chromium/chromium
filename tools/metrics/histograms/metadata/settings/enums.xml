@@ -177,12 +177,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/ui/safety_hub/disruptive_notification_permissions_manager.h:RevocationResult) -->
 
-<enum name="FirstPartySetsState">
-  <int value="0" label="Not Relevant"/>
-  <int value="1" label="Enabled"/>
-  <int value="2" label="Disabled"/>
-</enum>
-
 <enum name="HomeButtonStatus">
   <int value="0" label="POLICY_ON"/>
   <int value="1" label="POLICY_OFF"/>
