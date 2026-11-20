@@ -427,16 +427,6 @@ each histogram.
   </token>
 </histogram>
 
-<histogram name="PerformanceManager.TabRevisitTracker.TimeToClose2"
-    units="seconds" expires_after="2025-02-16">
-  <owner>anthonyvd@chromium.org</owner>
-  <owner>chrome-catan@google.com</owner>
-  <summary>
-    Logged everytime a background tab is closed. Records the time in seconds
-    that the tab has spent in the background since it was last active.
-  </summary>
-</histogram>
-
 <histogram name="PerformanceManager.TabRevisitTracker.TimeToRevisit2"
     units="seconds" expires_after="2025-04-20">
   <owner>anthonyvd@chromium.org</owner>

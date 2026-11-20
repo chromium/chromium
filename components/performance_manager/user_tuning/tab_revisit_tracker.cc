@@ -20,7 +20,7 @@ namespace {
 constexpr base::TimeDelta kMinTime = base::TimeDelta();
 constexpr base::TimeDelta kMaxTime = base::Hours(48);
 // Choosing a bucket spacing of 1.1 because it roughly matches the spacing of
-// the 200 buckets, capped at 48 hours close/revisit histograms.
+// the 200 buckets, capped at 48 hours revisit histogram.
 constexpr double kTimeBucketSpacing = 1.1;
 
 int64_t GetLinearCappedBucket(int64_t sample, int64_t max) {
@@ -88,20 +88,6 @@ void TabRevisitTracker::RecordRevisitHistograms(
   CHECK(state_bundle.last_active_time.has_value());
   base::UmaHistogramCustomCounts(
       /*name=*/kTimeToRevisitHistogramName,
-      /*sample=*/
-      (base::TimeTicks::Now() - state_bundle.last_active_time.value())
-          .InSeconds(),
-      /*min=*/kMinTime.InSeconds(),
-      /*exclusive_max=*/kMaxTime.InSeconds(),
-      /*buckets=*/200);
-}
-
-void TabRevisitTracker::RecordCloseHistograms(
-    const TabPageDecorator::TabHandle* tab_handle) {
-  TabRevisitTracker::StateBundle state_bundle = tab_states_[tab_handle];
-  CHECK(state_bundle.last_active_time.has_value());
-  base::UmaHistogramCustomCounts(
-      /*name=*/kTimeToCloseHistogramName,
       /*sample=*/
       (base::TimeTicks::Now() - state_bundle.last_active_time.value())
           .InSeconds(),
@@ -235,12 +221,6 @@ void TabRevisitTracker::OnBeforeTabRemoved(
   CHECK(live_state_data);
 
   live_state_data->RemoveObserver(this);
-
-  // Don't record the histograms if this is the active tab. We only care about
-  // background tabs being closed in that histogram.
-  if (!live_state_data->IsActiveTab()) {
-    RecordCloseHistograms(tab_handle);
-  }
 
   RecordStateChangeUkmAndUpdateStateBundle(
       tab_handle, CreateUpdatedStateBundle(tab_handle, State::kClosed));

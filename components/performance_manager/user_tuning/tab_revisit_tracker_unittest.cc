@@ -135,8 +135,6 @@ TEST_F(TabRevisitTrackerTest, StartsBackgroundedThenRevisited) {
   tester.ExpectBucketCount(TabRevisitTracker::kTimeToRevisitHistogramName,
                            base::Minutes(10).InSeconds(), 1);
 
-  tester.ExpectTotalCount(TabRevisitTracker::kTimeToCloseHistogramName, 0);
-
   ValidateEntry(/*entries_count=*/3, /*entry_id=*/2,
                 /*previous_state=*/kBackgroundState,
                 /*new_state=*/kActiveState,
@@ -145,7 +143,7 @@ TEST_F(TabRevisitTrackerTest, StartsBackgroundedThenRevisited) {
                 /*total_time_active=*/base::TimeDelta());
 }
 
-TEST_F(TabRevisitTrackerTest, CloseInBackgroundRecordsToCloseHistogram) {
+TEST_F(TabRevisitTrackerTest, CloseInBackground) {
   base::HistogramTester tester;
   MockSinglePageInSingleProcessGraph mock_graph(graph());
   mock_graph.page->SetUkmSourceId(kValidSourceId);
@@ -153,19 +151,15 @@ TEST_F(TabRevisitTrackerTest, CloseInBackgroundRecordsToCloseHistogram) {
   SetIsActiveTab(mock_graph.page.get(), false);
   mock_graph.page->SetType(PageType::kTab);
   tester.ExpectTotalCount(TabRevisitTracker::kTimeToRevisitHistogramName, 0);
-  tester.ExpectTotalCount(TabRevisitTracker::kTimeToCloseHistogramName, 0);
 
   AdvanceClock(base::Hours(1));
 
-  // Closing the tab while it's inactive should record to the close histogram
-  // but not the revisit one.
+  // Closing the tab while it's inactive should not record to the revisit
+  // histogram.
   mock_graph.frame.reset();
   mock_graph.page.reset();
 
   tester.ExpectTotalCount(TabRevisitTracker::kTimeToRevisitHistogramName, 0);
-
-  tester.ExpectUniqueSample(TabRevisitTracker::kTimeToCloseHistogramName,
-                            base::Hours(1).InSeconds(), 1);
 
   ValidateEntry(/*entries_count=*/1, /*entry_id=*/0,
                 /*previous_state=*/kBackgroundState,
@@ -175,7 +169,7 @@ TEST_F(TabRevisitTrackerTest, CloseInBackgroundRecordsToCloseHistogram) {
                 /*total_time_active=*/base::TimeDelta());
 }
 
-TEST_F(TabRevisitTrackerTest, CloseWhileActiveDoesntRecordClose) {
+TEST_F(TabRevisitTrackerTest, CloseWhileActive) {
   base::HistogramTester tester;
   MockSinglePageInSingleProcessGraph mock_graph(graph());
   mock_graph.page->SetUkmSourceId(kValidSourceId);
@@ -183,17 +177,15 @@ TEST_F(TabRevisitTrackerTest, CloseWhileActiveDoesntRecordClose) {
   SetIsActiveTab(mock_graph.page.get(), true);
   mock_graph.page->SetType(PageType::kTab);
   tester.ExpectTotalCount(TabRevisitTracker::kTimeToRevisitHistogramName, 0);
-  tester.ExpectTotalCount(TabRevisitTracker::kTimeToCloseHistogramName, 0);
 
   AdvanceClock(base::Hours(1));
 
-  // Closing the tab while it's active doesn't record either histogram, since
-  // they are only concerned about background tabs closing or becoming active.
+  // Closing the tab while it's active doesn't record the revisit histogram,
+  // since it is only concerned about background tabs becoming active.
   mock_graph.frame.reset();
   mock_graph.page.reset();
 
   tester.ExpectTotalCount(TabRevisitTracker::kTimeToRevisitHistogramName, 0);
-  tester.ExpectTotalCount(TabRevisitTracker::kTimeToCloseHistogramName, 0);
 
   ValidateEntry(/*entries_count=*/1, /*entry_id=*/0,
                 /*previous_state=*/kActiveState,

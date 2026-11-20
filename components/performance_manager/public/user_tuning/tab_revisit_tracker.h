@@ -26,8 +26,6 @@ class TabRevisitTracker : public TabPageObserver,
  public:
   static constexpr char kTimeToRevisitHistogramName[] =
       "PerformanceManager.TabRevisitTracker.TimeToRevisit2";
-  static constexpr char kTimeToCloseHistogramName[] =
-      "PerformanceManager.TabRevisitTracker.TimeToClose2";
   static constexpr int64_t kMaxNumRevisit = 20;
 
   TabRevisitTracker();
@@ -63,7 +61,6 @@ class TabRevisitTracker : public TabPageObserver,
   class UkmSourceIdReadyRecorder;
 
   void RecordRevisitHistograms(const TabPageDecorator::TabHandle* tab_handle);
-  void RecordCloseHistograms(const TabPageDecorator::TabHandle* tab_handle);
   void RecordStateChangeUkmAndUpdateStateBundle(
       const TabPageDecorator::TabHandle* tab_handle,
       StateBundle new_state_bundle);
