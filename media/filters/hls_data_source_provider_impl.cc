@@ -12,7 +12,9 @@
 #include "base/types/pass_key.h"
 #include "media/base/cross_origin_data_source.h"
 #include "media/formats/hls/types.h"
+#include "net/base/data_url.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
+#include "url/url_constants.h"
 
 namespace media {
 
@@ -95,6 +97,34 @@ void HlsDataSourceProviderImpl::ReadFromExistingStream(
   if (stream->RequiresInit()) {
     auto [new_uri, cache_mode, range_mode, encoding_mode] =
         stream->GetSegmentInfo();
+    if (new_uri.SchemeIs(url::kDataScheme)) {
+      // If the stream points to a data-schemed URL load it directly.
+      std::string mime_type, charset, data;
+      if (!net::DataURL::Parse(new_uri, &mime_type, &charset, &data) ||
+          data.empty()) {
+        std::move(callback).Run(
+            base::unexpected(HlsDemuxerStatus::Codes::kNetworkReadError));
+        return;
+      }
+      base::span<const uint8_t> bytes = base::as_byte_span(data);
+      if (range_mode == DataSource::RangeMode::kRangeRequest) {
+        stream->set_requires_range_request();
+        const size_t start = stream->read_position();
+        const size_t end = stream->max_read_position().value();
+        if (start >= end || end > bytes.size()) {
+          std::move(callback).Run(
+              base::unexpected(HlsDemuxerStatus::Codes::kNetworkReadError));
+          return;
+        }
+        bytes = bytes.subspan(start, end - start);
+      }
+      stream->LockStreamForWriting(bytes.size()).copy_from(bytes);
+      stream->UnlockStreamPostWrite(bytes.size(), true);
+      stream->SetPostRedirectUri(std::move(new_uri));
+      std::move(callback).Run(std::move(stream));
+      return;
+    }
+
     TRACE_EVENT_BEGIN("media", "HLS::CreateDataSource", GetTracingTrack(this),
                       "uri", new_uri);
     data_source_factory_->Create(
