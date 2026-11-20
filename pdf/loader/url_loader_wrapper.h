@@ -41,7 +41,7 @@ class URLLoaderWrapper {
 
   // If true, `start` contains the start of the byte range.
   // If false, response contains full document and `start` will be undefined.
-  virtual bool GetByteRangeStart(int* start) const = 0;
+  virtual bool GetByteRangeStart(uint64_t* start) const = 0;
 
   // Close connection.
   virtual void Close() = 0;

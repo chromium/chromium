@@ -4,7 +4,10 @@
 
 #include "pdf/loader/url_loader_wrapper_impl.h"
 
+#include <stdint.h>
+
 #include <array>
+#include <limits>
 #include <memory>
 #include <string>
 #include <utility>
@@ -33,6 +36,11 @@ using ::testing::NiceMock;
 
 constexpr char kOriginUrl[] = "http://example.com/";
 constexpr char kDocumentUrl[] = "http://example.com/embedder/index.html";
+
+// Initial value for GetByteRangeStart()'s out-parameter. A test that
+// expects a start of 0 then shows the accessor wrote that 0, rather than
+// leaving the variable as it found it.
+constexpr uint64_t kUnsetByteRangeStart = std::numeric_limits<uint64_t>::max();
 
 class FakeUrlLoaderClient : public UrlLoader::Client {
  public:
@@ -106,9 +114,9 @@ TEST_F(URLLoaderWrapperImplTest, GetByteRangeStartValidContentRange) {
   response.AddHttpHeaderField("Content-Range", "bytes 0-499/1234");
   auto wrapper = CreateWrapperWithResponse(response);
 
-  int start = -1;
+  uint64_t start = kUnsetByteRangeStart;
   EXPECT_TRUE(wrapper->GetByteRangeStart(&start));
-  EXPECT_EQ(0, start);
+  EXPECT_EQ(0u, start);
 }
 
 TEST_F(URLLoaderWrapperImplTest,
@@ -117,9 +125,9 @@ TEST_F(URLLoaderWrapperImplTest,
   response.AddHttpHeaderField("Content-Range", "bytes 100-499/1234");
   auto wrapper = CreateWrapperWithResponse(response);
 
-  int start = -1;
+  uint64_t start = kUnsetByteRangeStart;
   EXPECT_TRUE(wrapper->GetByteRangeStart(&start));
-  EXPECT_EQ(100, start);
+  EXPECT_EQ(100u, start);
 }
 
 TEST_F(URLLoaderWrapperImplTest, GetByteRangeStartValidContentRangeMaxUint32) {
@@ -127,9 +135,23 @@ TEST_F(URLLoaderWrapperImplTest, GetByteRangeStartValidContentRangeMaxUint32) {
   response.AddHttpHeaderField("Content-Range", "bytes 0-4294967295/4294967296");
   auto wrapper = CreateWrapperWithResponse(response);
 
-  int start = -1;
+  uint64_t start = kUnsetByteRangeStart;
   EXPECT_TRUE(wrapper->GetByteRangeStart(&start));
-  EXPECT_EQ(0, start);
+  EXPECT_EQ(0u, start);
+}
+
+TEST_F(URLLoaderWrapperImplTest, GetByteRangeStartValidContentRangeHighStart) {
+  blink::WebURLResponse response;
+  // A start at or above 2^31 is a valid uint32_t byte offset, and
+  // GetByteRangeFromStr() accepts it. It must be reported faithfully; it used
+  // to be returned through an int out-parameter, which made it negative.
+  response.AddHttpHeaderField("Content-Range",
+                              "bytes 4294901760-4294901761/4294967296");
+  auto wrapper = CreateWrapperWithResponse(response);
+
+  uint64_t start = kUnsetByteRangeStart;
+  EXPECT_TRUE(wrapper->GetByteRangeStart(&start));
+  EXPECT_EQ(4294901760u, start);
 }
 
 TEST_F(URLLoaderWrapperImplTest,
@@ -138,7 +160,7 @@ TEST_F(URLLoaderWrapperImplTest,
   response.AddHttpHeaderField("Content-Range", "bytes 0-499");
   auto wrapper = CreateWrapperWithResponse(response);
 
-  int start = -1;
+  uint64_t start = kUnsetByteRangeStart;
   EXPECT_FALSE(wrapper->GetByteRangeStart(&start));
 }
 
@@ -148,7 +170,7 @@ TEST_F(URLLoaderWrapperImplTest,
   response.AddHttpHeaderField("Content-Range", "bytes 0-499/*");
   auto wrapper = CreateWrapperWithResponse(response);
 
-  int start = -1;
+  uint64_t start = kUnsetByteRangeStart;
   EXPECT_FALSE(wrapper->GetByteRangeStart(&start));
 }
 
@@ -158,7 +180,7 @@ TEST_F(URLLoaderWrapperImplTest,
   response.AddHttpHeaderField("Content-Range", "bytes 500-499/1000");
   auto wrapper = CreateWrapperWithResponse(response);
 
-  int start = -1;
+  uint64_t start = kUnsetByteRangeStart;
   EXPECT_FALSE(wrapper->GetByteRangeStart(&start));
 }
 
@@ -167,7 +189,7 @@ TEST_F(URLLoaderWrapperImplTest, GetByteRangeStartInvalidContentRangeNonDigit) {
   response.AddHttpHeaderField("Content-Range", "bytes 0-49a/1000");
   auto wrapper = CreateWrapperWithResponse(response);
 
-  int start = -1;
+  uint64_t start = kUnsetByteRangeStart;
   EXPECT_FALSE(wrapper->GetByteRangeStart(&start));
 }
 
@@ -178,7 +200,7 @@ TEST_F(URLLoaderWrapperImplTest, GetByteRangeStartInvalidContentRangeOverflow) {
   auto wrapper = CreateWrapperWithResponse(response);
 
   // TODO(crbug.com/540801224): Support byte ranges > 4 GiB.
-  int start = -1;
+  uint64_t start = kUnsetByteRangeStart;
   EXPECT_FALSE(wrapper->GetByteRangeStart(&start));
 }
 
@@ -189,7 +211,7 @@ TEST_F(URLLoaderWrapperImplTest,
   auto wrapper = CreateWrapperWithResponse(response);
 
   // TODO(crbug.com/540801224): Support byte ranges > 4 GiB.
-  int start = -1;
+  uint64_t start = kUnsetByteRangeStart;
   EXPECT_FALSE(wrapper->GetByteRangeStart(&start));
 }
 
@@ -197,7 +219,7 @@ TEST_F(URLLoaderWrapperImplTest, GetByteRangeStartNoContentRange) {
   blink::WebURLResponse response;
   auto wrapper = CreateWrapperWithResponse(response);
 
-  int start = -1;
+  uint64_t start = kUnsetByteRangeStart;
   EXPECT_FALSE(wrapper->GetByteRangeStart(&start));
 }
 

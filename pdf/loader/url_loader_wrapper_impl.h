@@ -38,7 +38,7 @@ class URLLoaderWrapperImpl : public URLLoaderWrapper {
   std::string GetContentDisposition() const override;
   int GetStatusCode() const override;
   bool IsMultipart() const override;
-  bool GetByteRangeStart(int* start) const override;
+  bool GetByteRangeStart(uint64_t* start) const override;
   void Close() override;
   void OpenRange(const std::string& url,
                  const std::string& referrer_url,

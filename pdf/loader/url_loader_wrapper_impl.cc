@@ -135,10 +135,15 @@ bool URLLoaderWrapperImpl::IsMultipart() const {
   return is_multipart_;
 }
 
-bool URLLoaderWrapperImpl::GetByteRangeStart(int* start) const {
+bool URLLoaderWrapperImpl::GetByteRangeStart(uint64_t* start) const {
   DCHECK(start);
+  if (!byte_range_.IsValid()) {
+    // gfx::Range documents that start() must not be read when the range is
+    // invalid.
+    return false;
+  }
   *start = byte_range_.start();
-  return byte_range_.IsValid();
+  return true;
 }
 
 void URLLoaderWrapperImpl::Close() {

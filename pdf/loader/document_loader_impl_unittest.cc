@@ -160,9 +160,12 @@ class TestURLLoader : public URLLoaderWrapper {
 
   bool IsMultipart() const override { return data_->is_multipart(); }
 
-  bool GetByteRangeStart(int* start) const override {
+  bool GetByteRangeStart(uint64_t* start) const override {
+    if (!data_->byte_range().IsValid()) {
+      return false;
+    }
     *start = data_->byte_range().start();
-    return data_->byte_range().IsValid();
+    return true;
   }
 
   void Close() override { data_->set_closed(true); }

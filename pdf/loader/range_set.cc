@@ -5,6 +5,7 @@
 #include "pdf/loader/range_set.h"
 
 #include <algorithm>
+#include <limits>
 #include <sstream>
 #include <vector>
 
@@ -58,8 +59,8 @@ void RangeSet::Union(const gfx::Range& range) {
 
   --end;
 
-  int new_start = std::min<size_t>(start->start(), fixed_range.start());
-  int new_end = std::max(end->end(), fixed_range.end());
+  const size_t new_start = std::min(start->start(), fixed_range.start());
+  const size_t new_end = std::max(end->end(), fixed_range.end());
 
   ranges_.erase(start, ++end);
   ranges_.insert(gfx::Range(new_start, new_end));
@@ -74,6 +75,12 @@ void RangeSet::Union(const RangeSet& range_set) {
 }
 
 bool RangeSet::Contains(uint32_t point) const {
+  // gfx::Range is half-open with uint32_t bounds, so no non-empty range can
+  // start at the maximum point. Returning early also keeps `point + 1` below
+  // from wrapping to 0, which would make a reversed range.
+  if (point == std::numeric_limits<uint32_t>::max()) {
+    return false;
+  }
   return Contains(gfx::Range(point, point + 1));
 }
 

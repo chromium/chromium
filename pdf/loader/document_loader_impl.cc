@@ -16,6 +16,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/string_util.h"
 #include "net/http/http_content_disposition.h"
@@ -344,14 +345,17 @@ void DocumentLoaderImpl::DidOpenPartial(bool success) {
   // return the entire document even if it supports byte-range requests.
   // i.e. sniff response to
   // http://www.act.org/compass/sample/pdf/geometry.pdf
-  int start_pos = 0;
+  uint64_t start_pos = 0;
   if (loader_->GetByteRangeStart(&start_pos)) {
     if (start_pos % DataStream::kChunkSize != 0) {
       return ReadComplete();
     }
 
     DCHECK(chunk_.IsEmpty());
-    chunk_.SetIndex(chunk_stream_.GetChunkIndex(start_pos));
+    // The byte-range parser bounds `start_pos`, so neither narrowing below
+    // can trip; checked_cast states that instead of truncating silently.
+    chunk_.SetIndex(base::checked_cast<uint32_t>(
+        chunk_stream_.GetChunkIndex(base::checked_cast<size_t>(start_pos))));
   } else {
     SetPartialLoadingEnabled(false);
   }
@@ -378,12 +382,15 @@ void DocumentLoaderImpl::DidRead(int32_t result) {
     return ContinueDownload();
   }
   if (loader_->IsMultipart()) {
-    int start_pos = 0;
+    uint64_t start_pos = 0;
     if (!loader_->GetByteRangeStart(&start_pos))
       return ReadComplete();
 
     DCHECK(chunk_.IsEmpty());
-    chunk_.SetIndex(chunk_stream_.GetChunkIndex(start_pos));
+    // The byte-range parser bounds `start_pos`, so neither narrowing below
+    // can trip; checked_cast states that instead of truncating silently.
+    chunk_.SetIndex(base::checked_cast<uint32_t>(
+        chunk_stream_.GetChunkIndex(base::checked_cast<size_t>(start_pos))));
   }
   if (!SaveBuffer(result)) {
     return ReadMore();

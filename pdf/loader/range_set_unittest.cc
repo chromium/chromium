@@ -4,7 +4,12 @@
 
 #include "pdf/loader/range_set.h"
 
+#include <stdint.h>
+
+#include <limits>
+
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/range/range.h"
 
 namespace chrome_pdf {
 
@@ -298,6 +303,35 @@ TEST(RangeSetTest, OperationsOnEmptySet) {
   range_set.Subtract(gfx::Range(10, 20));
   range_set.Xor(gfx::Range(30, 40));
   range_set.Union(gfx::Range(10, 20));
+}
+
+TEST(RangeSetTest, ContainsMaximumPoint) {
+  constexpr uint32_t kMax = std::numeric_limits<uint32_t>::max();
+
+  RangeSet range_set;
+  EXPECT_FALSE(range_set.Contains(kMax));
+
+  range_set.Union(gfx::Range(10, 20));
+  EXPECT_FALSE(range_set.Contains(kMax));
+
+  // gfx::Range is half-open, so no range can contain the maximum point, but
+  // asking about it must not overflow.
+  range_set.Union(gfx::Range(kMax - 2, kMax));
+  EXPECT_TRUE(range_set.Contains(kMax - 2));
+  EXPECT_TRUE(range_set.Contains(kMax - 1));
+  EXPECT_FALSE(range_set.Contains(kMax));
+}
+
+TEST(RangeSetTest, UnionWithOffsetsAboveIntMax) {
+  constexpr uint32_t kMax = std::numeric_limits<uint32_t>::max();
+  constexpr uint32_t kAboveIntMax = 1u << 31;
+
+  RangeSet range_set;
+  range_set.Union(gfx::Range(kAboveIntMax, kAboveIntMax + 10));
+  range_set.Union(gfx::Range(kAboveIntMax + 5, kMax));
+
+  EXPECT_EQ(1u, range_set.Size());
+  EXPECT_EQ(gfx::Range(kAboveIntMax, kMax), range_set.First());
 }
 
 }  // namespace chrome_pdf
