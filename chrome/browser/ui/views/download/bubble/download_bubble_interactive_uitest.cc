@@ -4,12 +4,10 @@
 
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
-#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/branding_buildflags.h"
 #include "build/buildflag.h"
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
-#include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_browsertest_utils.h"
 #include "chrome/browser/download/download_core_service.h"
@@ -19,10 +17,8 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
-#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_contents_view.h"
-#include "chrome/browser/ui/views/download/bubble/download_dialog_view.h"
 #include "chrome/browser/ui/views/download/bubble/download_toolbar_ui_controller.h"
 #include "chrome/browser/ui/views/exclusive_access/exclusive_access_bubble_views.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -38,8 +34,6 @@
 #include "components/user_education/views/help_bubble_view.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/download_test_observer.h"
-#include "ui/base/interaction/element_tracker.h"
-#include "ui/views/view_utils.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -131,15 +125,6 @@ class DownloadBubbleInteractiveUiTest
                                ->IsActive();
         },
         DownloadToolbarUIController::From(browser()), active);
-  }
-
-  auto WaitForBubbleClosingComplete() {
-    return Check([this]() {
-      return base::test::RunUntil([this]() {
-        return DownloadToolbarUIController::From(browser())
-                   ->bubble_contents_for_testing() == nullptr;
-      });
-    });
   }
 
   auto DownloadBubblePromoIsActive(bool active, const base::Feature& feature) {
@@ -543,212 +528,6 @@ IN_PROC_BROWSER_TEST_F(DownloadBubbleInteractiveUiTest,
       // test browser (which causes a crash on Mac).
       Do(ChangeBubbleVisibility(false)), Do(ChangeButtonVisibility(false)),
       WaitForHide(kToolbarDownloadButtonElementId));
-}
-
-IN_PROC_BROWSER_TEST_F(DownloadBubbleInteractiveUiTest,
-                       CujDismissalSuppressedOnAutoCloseAndProgrammaticHide) {
-  if (!IsPartialViewEnabled()) {
-    GTEST_SKIP() << "Partial download bubble disabled by profile prefs.";
-  }
-
-  int dismissed_count = 0;
-  auto subscription =
-      ui::ElementTracker::GetElementTracker()->AddCustomEventCallback(
-          kDownloadBubbleDismissedEventId,
-          BrowserElements::From(browser())->GetContext(),
-          base::BindLambdaForTesting(
-              [&](ui::TrackedElement*) { ++dismissed_count; }));
-
-  // 1. Auto-close timer on the partial bubble must not emit dismissal.
-  RunTestSequence(Do(DownloadTestFile()),
-                  WaitForShow(kToolbarDownloadBubbleElementId),
-                  Check(DownloadBubbleIsShowingDetails(true)), Check([&]() {
-                    return DownloadToolbarUIController::From(browser())
-                        ->auto_close_bubble_timer_for_testing()
-                        ->IsRunning();
-                  }),
-                  Do([&]() {
-                    auto* timer = DownloadToolbarUIController::From(browser())
-                                      ->auto_close_bubble_timer_for_testing();
-                    timer->Stop();
-                    timer->user_task().Run();
-                  }),
-                  EnsureNotPresent(kToolbarDownloadBubbleElementId),
-                  WaitForBubbleClosingComplete(),
-                  Check(DownloadBubbleIsShowingDetails(false)),
-                  CheckResult([&]() { return dismissed_count; }, 0));
-
-  // 2. Programmatic HideDetails() on the full bubble must not emit dismissal.
-  RunTestSequence(
-      PressButton(kToolbarDownloadButtonElementId, InputType::kKeyboard),
-      WaitForShow(kToolbarDownloadBubbleElementId),
-      Check(DownloadBubbleIsShowingDetails(true)),
-      Do(ChangeBubbleVisibility(false)),
-      EnsureNotPresent(kToolbarDownloadBubbleElementId),
-      WaitForBubbleClosingComplete(),
-      Check(DownloadBubbleIsShowingDetails(false)),
-      Do(ChangeButtonVisibility(false)),
-      WaitForHide(kToolbarDownloadButtonElementId),
-      CheckResult([&]() { return dismissed_count; }, 0));
-
-  // 3. Escalating via ShowAllDownloads() to chrome://downloads must not emit
-  // dismissal.
-  auto get_dialog_view = [&]() {
-    auto* contents = DownloadToolbarUIController::From(browser())
-                         ->bubble_contents_for_testing();
-    return contents ? views::AsViewClass<DownloadDialogView>(
-                          contents->primary_view_for_testing())
-                    : nullptr;
-  };
-  RunTestSequence(
-      Do(ChangeButtonVisibility(true)),
-      WaitForShow(kToolbarDownloadButtonElementId),
-      PressButton(kToolbarDownloadButtonElementId, InputType::kKeyboard),
-      WaitForShow(kToolbarDownloadBubbleElementId),
-      Check(DownloadBubbleIsShowingDetails(true)),
-      Check([&]() { return get_dialog_view() != nullptr; }),
-      Do([&]() { get_dialog_view()->ShowAllDownloadsForTesting(); }),
-      EnsureNotPresent(kToolbarDownloadBubbleElementId),
-      WaitForBubbleClosingComplete(),
-      Check(DownloadBubbleIsShowingDetails(false)),
-      Do(ChangeButtonVisibility(false)),
-      WaitForHide(kToolbarDownloadButtonElementId),
-      CheckResult([&]() { return dismissed_count; }, 0));
-
-  // 4. Escalating via InvokeUI() while the full bubble is open must not emit
-  // dismissal.
-  RunTestSequence(
-      Do(ChangeButtonVisibility(true)),
-      WaitForShow(kToolbarDownloadButtonElementId),
-      PressButton(kToolbarDownloadButtonElementId, InputType::kKeyboard),
-      WaitForShow(kToolbarDownloadBubbleElementId),
-      Check(DownloadBubbleIsShowingDetails(true)),
-      Do([&]() { DownloadToolbarUIController::From(browser())->InvokeUI(); }),
-      EnsureNotPresent(kToolbarDownloadBubbleElementId),
-      WaitForBubbleClosingComplete(),
-      Check(DownloadBubbleIsShowingDetails(false)),
-      Do(ChangeButtonVisibility(false)),
-      WaitForHide(kToolbarDownloadButtonElementId),
-      CheckResult([&]() { return dismissed_count; }, 0));
-
-  // 5. Escalating via InvokeUI() while an interacted partial bubble is open
-  // closes the partial bubble and must not emit dismissal.
-  RunTestSequence(
-      Do([&]() {
-        DownloadToolbarUIController::From(browser())
-            ->bubble_controller()
-            ->SetLastPartialViewShownTimeForTesting(std::nullopt);
-      }),
-      Do(DownloadTestFile()), WaitForShow(kToolbarDownloadBubbleElementId),
-      Check(DownloadBubbleIsActive(false)), Do([&]() {
-        DownloadToolbarUIController::From(browser())->OnDialogInteracted();
-        DownloadToolbarUIController::From(browser())->InvokeUI();
-      }),
-      EnsureNotPresent(kToolbarDownloadBubbleElementId),
-      WaitForBubbleClosingComplete(),
-      Check(DownloadBubbleIsShowingDetails(false)),
-      Do(ChangeButtonVisibility(false)),
-      WaitForHide(kToolbarDownloadButtonElementId),
-      CheckResult([&]() { return dismissed_count; }, 0));
-}
-
-IN_PROC_BROWSER_TEST_F(DownloadBubbleInteractiveUiTest,
-                       CujDismissalEmittedOnlyOnQualifiedUserDismiss) {
-  if (!IsPartialViewEnabled()) {
-    GTEST_SKIP() << "Partial download bubble disabled by profile prefs.";
-  }
-
-  int dismissed_count = 0;
-  auto subscription =
-      ui::ElementTracker::GetElementTracker()->AddCustomEventCallback(
-          kDownloadBubbleDismissedEventId,
-          BrowserElements::From(browser())->GetContext(),
-          base::BindLambdaForTesting(
-              [&](ui::TrackedElement*) { ++dismissed_count; }));
-
-  // 1. Un-interacted partial bubble click-away does NOT emit.
-  RunTestSequence(Do([&]() { dismissed_count = 0; }), Do(DownloadTestFile()),
-                  WaitForShow(kToolbarDownloadBubbleElementId),
-                  MoveMouseTo(kBrowserViewElementId), ClickMouse(),
-                  EnsureNotPresent(kToolbarDownloadBubbleElementId),
-                  WaitForBubbleClosingComplete(),
-                  CheckResult([&]() { return dismissed_count; }, 0));
-
-  // 2. Partial bubble click-away AFTER OnDialogInteracted() DOES emit once.
-  // Clear the 15-second partial-view rate limit between back-to-back downloads.
-  RunTestSequence(
-      Do([&]() {
-        dismissed_count = 0;
-        DownloadToolbarUIController::From(browser())
-            ->bubble_controller()
-            ->SetLastPartialViewShownTimeForTesting(std::nullopt);
-      }),
-      Do(DownloadTestFile()), WaitForShow(kToolbarDownloadBubbleElementId),
-      Do([&]() {
-        DownloadToolbarUIController::From(browser())->OnDialogInteracted();
-      }),
-      MoveMouseTo(kBrowserViewElementId), ClickMouse(),
-      EnsureNotPresent(kToolbarDownloadBubbleElementId),
-      WaitForBubbleClosingComplete(),
-      CheckResult([&]() { return dismissed_count; }, 1));
-
-  // 3. Partial bubble Esc DOES emit once.
-  RunTestSequence(Do([&]() {
-                    dismissed_count = 0;
-                    DownloadToolbarUIController::From(browser())
-                        ->bubble_controller()
-                        ->SetLastPartialViewShownTimeForTesting(std::nullopt);
-                  }),
-                  Do(DownloadTestFile()),
-                  WaitForShow(kToolbarDownloadBubbleElementId),
-                  SendKeyPress(kBrowserViewElementId, ui::VKEY_ESCAPE),
-                  EnsureNotPresent(kToolbarDownloadBubbleElementId),
-                  WaitForBubbleClosingComplete(),
-                  CheckResult([&]() { return dismissed_count; }, 1));
-
-  // 4. Complete bubble user dismiss (click-away) DOES emit once.
-  RunTestSequence(
-      Do([&]() { dismissed_count = 0; }),
-      PressButton(kToolbarDownloadButtonElementId, InputType::kKeyboard),
-      WaitForShow(kToolbarDownloadBubbleElementId),
-      Check(DownloadBubbleIsActive(true)), MoveMouseTo(kBrowserViewElementId),
-      ClickMouse(), EnsureNotPresent(kToolbarDownloadBubbleElementId),
-      WaitForBubbleClosingComplete(), Do(ChangeButtonVisibility(false)),
-      WaitForHide(kToolbarDownloadButtonElementId),
-      CheckResult([&]() { return dismissed_count; }, 1));
-
-  // 5. Active complete bubble Esc emits once.
-  dismissed_count = 0;
-  RunTestSequence(
-      Do(ChangeButtonVisibility(true)),
-      WaitForShow(kToolbarDownloadButtonElementId),
-      PressButton(kToolbarDownloadButtonElementId, InputType::kKeyboard),
-      WaitForShow(kToolbarDownloadBubbleElementId),
-      Check(DownloadBubbleIsActive(true)),
-      SendKeyPress(kToolbarDownloadBubbleElementId, ui::VKEY_ESCAPE)
-          .SetMustRemainVisible(false),
-      WaitForHide(kToolbarDownloadBubbleElementId),
-      WaitForBubbleClosingComplete(),
-      CheckResult([&]() { return dismissed_count; }, 1));
-
-  // 6. Active complete bubble header Close ('X') button emits once.
-  static constexpr char kCloseButtonName[] = "DownloadBubbleCloseButton";
-  dismissed_count = 0;
-  RunTestSequence(
-      PressButton(kToolbarDownloadButtonElementId, InputType::kKeyboard),
-      WaitForShow(kToolbarDownloadBubbleElementId),
-      Check(DownloadBubbleIsActive(true)),
-      NameViewRelative(kToolbarDownloadBubbleElementId, kCloseButtonName,
-                       [](DownloadBubbleContentsView* contents) {
-                         return views::AsViewClass<DownloadDialogView>(
-                                    contents->primary_view_for_testing())
-                             ->GetInitiallyFocusedView();
-                       }),
-      PressButton(kCloseButtonName),
-      WaitForHide(kToolbarDownloadBubbleElementId),
-      WaitForBubbleClosingComplete(), Do(ChangeButtonVisibility(false)),
-      WaitForHide(kToolbarDownloadButtonElementId),
-      CheckResult([&]() { return dismissed_count; }, 1));
 }
 
 }  // namespace

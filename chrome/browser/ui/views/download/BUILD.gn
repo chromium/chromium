@@ -103,7 +103,6 @@ source_set("download") {
       "//components/safe_browsing/core/common:features",
       "//components/safe_browsing/core/common:safe_browsing_policy_handler",
       "//components/safe_browsing/core/common:safe_browsing_prefs",
-      "//components/tabs:public",
       "//ui/strings:ui_strings_grit",
     ]
     if (is_mac) {
@@ -190,16 +189,13 @@ source_set("interactive_ui_tests") {
       ":download",
       "//chrome/browser/download:test_support",
       "//chrome/browser/download/bubble",
-      "//chrome/browser/ui:browser_element_identifiers",
       "//chrome/browser/ui/exclusive_access:test_support",
-      "//chrome/browser/ui/interaction",
       "//chrome/browser/ui/views/exclusive_access",
       "//chrome/browser/ui/views/frame:browser_view_header",
       "//chrome/test:test_support",
       "//chrome/test/user_education",
       "//components/safe_browsing/core/common:safe_browsing_policy_handler",
       "//testing/gtest",
-      "//ui/base/interaction",
     ]
   }
 }

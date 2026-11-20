@@ -128,20 +128,9 @@ void DownloadDialogView::CloseBubble() {
 }
 
 void DownloadDialogView::ShowAllDownloads() {
-  BrowserWindowInterface* const browser = browser_;
-  if (navigation_handler_) {
-    // Close programmatically before focusing chrome://downloads so bubble
-    // deactivation is not recorded as a user dismissal. `CloseDialog()` may
-    // destroy `this`.
-    navigation_handler_->CloseDialog(views::Widget::ClosedReason::kUnspecified);
+  if (browser_) {
+    chrome::ShowDownloads(browser_);
   }
-  if (browser) {
-    chrome::ShowDownloads(browser);
-  }
-}
-
-void DownloadDialogView::ShowAllDownloadsForTesting() {
-  ShowAllDownloads();
 }
 
 void DownloadDialogView::AddHeader() {

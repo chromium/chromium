@@ -44,8 +44,6 @@ class DownloadDialogView : public DownloadBubblePrimaryView {
   // view to make it easier for the user to close the dialog.
   views::View* GetInitiallyFocusedView() override;
 
-  void ShowAllDownloadsForTesting();
-
  private:
   void CloseBubble();
   void ShowAllDownloads();

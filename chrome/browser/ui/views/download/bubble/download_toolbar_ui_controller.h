@@ -158,7 +158,7 @@ class DownloadToolbarUIController
    public:
     BubbleCloser(views::BubbleAnchor anchor,
                  views::Widget* bubble_widget,
-                 base::WeakPtr<DownloadToolbarUIController> controller);
+                 base::WeakPtr<DownloadDisplay> download_display);
 
     BubbleCloser(const BubbleCloser& other) = delete;
     BubbleCloser& operator=(const BubbleCloser& other) = delete;
@@ -172,7 +172,7 @@ class DownloadToolbarUIController
     void OnWidgetDestroyed(views::Widget* widget) override;
 
    private:
-    base::WeakPtr<DownloadToolbarUIController> controller_;
+    base::WeakPtr<DownloadDisplay> download_display_;
     std::unique_ptr<views::EventMonitor> event_monitor_;
     base::ScopedObservation<views::Widget, views::WidgetObserver>
         bubble_widget_observation_{this};
@@ -193,10 +193,6 @@ class DownloadToolbarUIController
   void OnBubbleAnchorAssembled(
       base::expected<views::BubbleAnchor, GetAnchorFailureReason> anchor);
 
-  // Returns true when the bubble closes via explicit user dismissal (Esc,
-  // close/cancel button, or click-away on a complete or interacted partial
-  // bubble) so `OnBubbleClosing()` emits `kDownloadBubbleDismissedEventId`.
-  bool ShouldEmitBubbleDismissedEvent() const;
   void OnBubbleClosing();
 
   // Show a security page with `content_id` content.
@@ -309,8 +305,6 @@ class DownloadToolbarUIController
   std::unique_ptr<ImmersiveRevealedLock> immersive_revealed_lock_;
 
   std::unique_ptr<BubbleCloser> bubble_closer_;
-
-  bool dialog_interacted_ = false;
 
   ui::ScopedUnownedUserData<DownloadToolbarUIController>
       scoped_unowned_user_data_;
