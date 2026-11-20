@@ -1464,11 +1464,6 @@ void ChromeBrowserMainPartsAsh::PostProfileInit(Profile* profile,
         base::BindOnce(ShillSetPropertyErrorCallback,
                        shill::kEnableRFC8925Property));
 
-    ash::ShillManagerClient::Get()->SetProperty(
-        shill::kUseLegacyDHCPCDProperty, base::Value(false), base::DoNothing(),
-        base::BindOnce(ShillSetPropertyErrorCallback,
-                       shill::kUseLegacyDHCPCDProperty));
-
     // TODO(b/585059642): Remove setting
     // kEnableSingleCACertVerificationPhase1Property once shill no longer uses
     // it.
