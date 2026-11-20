@@ -20,6 +20,19 @@ source_set("verify_custom_webkit") {
   deps = [ "//base" ]
 }
 
+source_set("screen_time_util") {
+  testonly = true
+  sources = [
+    "screen_time_util.h",
+    "screen_time_util.mm",
+  ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+  ]
+  frameworks = [ "ScreenTime.framework" ]
+}
+
 source_set("hardware_keyboard_support") {
   testonly = true
   sources = [

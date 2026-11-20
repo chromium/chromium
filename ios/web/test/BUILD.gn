@@ -61,6 +61,7 @@ source_set("test_support") {
     "//base",
     "//base/test:test_support",
     "//components/crash/core/common",
+    "//ios/testing:screen_time_util",
     "//ios/testing:verify_custom_webkit",
     "//ios/web:threads",
     "//ios/web/common:uikit",
@@ -79,8 +80,6 @@ source_set("test_support") {
     "//ui/base",
     "//ui/display",
   ]
-
-  frameworks = [ "ScreenTime.framework" ]
 
   sources = [
     "test_web_thread.cc",

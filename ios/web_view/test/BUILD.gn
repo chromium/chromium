@@ -37,9 +37,9 @@ source_set("inttests") {
   ]
 
   deps = [
+    ":run_all_inttests",
     ":test_support",
     "//base",
-    "//base/test:run_all_unittests",
     "//base/test:test_support",
     "//components/autofill/core/common",
     "//components/autofill/ios/form_util",
@@ -175,10 +175,31 @@ source_set("test_support") {
   ]
 }
 
+source_set("test_suite") {
+  testonly = true
+  sources = [
+    "web_view_test_suite.cc",
+    "web_view_test_suite.h",
+  ]
+  deps = [ "//ios/testing:screen_time_util" ]
+  public_deps = [ "//base/test:test_support" ]
+}
+
+source_set("run_all_inttests") {
+  testonly = true
+  sources = [ "run_all_inttests.cc" ]
+  deps = [
+    ":test_suite",
+    "//base",
+    "//base/test:test_support",
+  ]
+}
+
 source_set("run_all_unittests") {
   testonly = true
   sources = [ "run_all_unittests.cc" ]
   deps = [
+    ":test_suite",
     "//base",
     "//base/test:test_support",
     "//mojo/core/embedder",

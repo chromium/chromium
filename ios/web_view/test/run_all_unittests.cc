@@ -4,13 +4,14 @@
 
 #include "base/functional/bind.h"
 #include "base/test/launcher/unit_test_launcher.h"
-#include "base/test/test_suite.h"
+#include "ios/web_view/test/web_view_test_suite.h"
 #include "mojo/core/embedder/embedder.h"
 
 int main(int argc, char** argv) {
-  base::TestSuite test_suite(argc, argv);
+  ios_web_view::WebViewTestSuite test_suite(argc, argv);
   mojo::core::Init();
   return base::LaunchUnitTests(
       argc, argv,
-      base::BindOnce(&base::TestSuite::Run, base::Unretained(&test_suite)));
+      base::BindOnce(&ios_web_view::WebViewTestSuite::Run,
+                     base::Unretained(&test_suite)));
 }
