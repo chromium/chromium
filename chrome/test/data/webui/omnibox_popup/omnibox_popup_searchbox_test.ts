@@ -184,6 +184,15 @@ suite('OmniboxPopupSearchboxTest', function() {
     await microtasksFinished();
   });
 
+  // Like the Views omnibox's.
+  test('InputHasAccessibleNameAndPlaceholder', () => {
+    const input = searchbox.$.input.inputElement;
+    assertEquals('Address and search bar', input.getAttribute('aria-label'));
+    assertEquals(
+        'Press up or down arrow for auto completions. Type to autocomplete.',
+        input.getAttribute('aria-placeholder'));
+  });
+
   test('HandlesSetInputState', async () => {
     // Set the input state via Mojo.
     const testText = 'test input';
@@ -3218,6 +3227,52 @@ suite('OmniboxPopupSearchboxTest', function() {
    assertEquals(kAimHint, input.placeholder);
    assertTrue(input.matches(':placeholder-shown'));
    assertEquals(1, handler.getCallCount('requestAimHint'));
+ });
+
+ // Like in Views, the AIM hint and a keyword's placeholder are dim, unlike the
+ // default search engine placeholder.
+ test('AimHintAndKeywordPlaceholderAreDim', async () => {
+   searchbox.style.setProperty('--color-omnibox-text', 'rgb(1, 2, 3)');
+   searchbox.style.setProperty(
+       '--color-omnibox-foreground-disabled', 'rgb(4, 5, 6)');
+   const input = searchbox.$.input.inputElement;
+   const placeholderColor = () =>
+       getComputedStyle(input, '::placeholder').color;
+
+   callbackRouter.setDefaultSearchProvider(
+       '//resources/cr_components/searchbox/icons/google_g_gradient.svg',
+       PlaceholderType.kAskOrTypeUrl, 'Google');
+   searchbox.dropdownIsVisible = false;
+   testProxy.page.setAimButtonVisible(true);
+   await microtasksFinished();
+   searchbox.$.composeButton.focus();
+   await microtasksFinished();
+   await searchbox.$.input.updateComplete;
+   assertEquals('Ask Google or type a URL', input.placeholder);
+   assertEquals('rgb(1, 2, 3)', placeholderColor());
+
+   handler.setPromiseResolveFor<'requestAimHint'>(
+       'requestAimHint', {hint: kAimHint});
+   await focusEmptyInputWithAimButton();
+   assertEquals(kAimHint, input.placeholder);
+   assertEquals('rgb(4, 5, 6)', placeholderColor());
+
+   callbackRouter.setInputState(createDefaultOmniboxInputState({
+     sequenceNumber: 2,
+     userInputInProgress: true,
+     isFocused: true,
+     keywordModel: {
+       type: KeywordType.kInKeyword,
+       keyword: '@history',
+       displayText: 'Search History',
+       iconPath: '',
+       placeholder: 'Enter a word or two',
+     },
+   }));
+   await microtasksFinished();
+   await searchbox.$.input.updateComplete;
+   assertEquals('Enter a word or two', input.placeholder);
+   assertEquals('rgb(4, 5, 6)', placeholderColor());
  });
 
  test('AimHintOnlyRequestedForFocusedEmptyInput', async () => {

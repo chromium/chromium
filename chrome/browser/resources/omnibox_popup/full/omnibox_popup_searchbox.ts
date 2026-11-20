@@ -389,6 +389,11 @@ export class OmniboxPopupSearchboxElement extends
   private accessor aimHintText_: string = '';
   // The current focus session's request for `aimHintText_`, if any.
   private aimHintRequest_: Promise<{hint: string}>|null = null;
+  // The Views omnibox's accessible name and placeholder.
+  protected readonly inputAccessibleName_: string =
+      loadTimeData.getString('omniboxAccessibleName');
+  protected readonly inputAccessiblePlaceholder_: string =
+      loadTimeData.getString('omniboxAccessiblePlaceholder');
   protected accessor searchboxVoiceSearchEnabled_: boolean =
       loadTimeData.getBoolean('searchboxVoiceSearch');
   protected accessor searchboxLensSearchEnabled_: boolean =

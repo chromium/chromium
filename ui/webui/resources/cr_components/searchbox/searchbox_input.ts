@@ -90,6 +90,9 @@ export class SearchboxInputElement extends SearchboxInputElementBase {
           {type: Boolean, reflect: true, attribute: 'has-inline-selection'},
       placeholderText: {type: String},
       searchboxAriaDescription: {type: String},
+      searchboxAriaLabel: {type: String},
+      /** What screen readers read as the placeholder if there is none. */
+      searchboxAriaPlaceholder: {type: String},
       searchboxIcon: {type: String},
       selectedMatch: {type: Object},
       /**
@@ -122,6 +125,8 @@ export class SearchboxInputElement extends SearchboxInputElementBase {
   accessor hasInlineSelection_: boolean = false;
   accessor placeholderText: string|undefined = undefined;
   accessor searchboxAriaDescription: string = '';
+  accessor searchboxAriaLabel: string = '';
+  accessor searchboxAriaPlaceholder: string = '';
   accessor searchboxIcon: string = '';
   accessor selectedMatch: AutocompleteMatch|null = null;
   accessor pageUrl: string = '';

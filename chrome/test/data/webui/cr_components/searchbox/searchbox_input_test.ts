@@ -278,6 +278,28 @@ suite('SearchboxInputTest', () => {
     assertEquals('url', input.inputElement.inputMode);
   });
 
+  test('Accessible name and placeholder', async () => {
+    // By default, the input has neither.
+    input = await createInput();
+    assertFalse(input.inputElement.hasAttribute('aria-label'));
+    assertFalse(input.inputElement.hasAttribute('aria-placeholder'));
+
+    input.searchboxAriaLabel = 'Name';
+    input.searchboxAriaPlaceholder = 'Hint';
+    await input.updateComplete;
+    assertEquals('Name', input.inputElement.getAttribute('aria-label'));
+    assertEquals('Hint', input.inputElement.getAttribute('aria-placeholder'));
+
+    // Multi-line inputs have them too.
+    input = await createInput({
+      multiLineEnabled: true,
+      searchboxAriaLabel: 'Name',
+      searchboxAriaPlaceholder: 'Hint',
+    });
+    assertEquals('Name', input.inputElement.getAttribute('aria-label'));
+    assertEquals('Hint', input.inputElement.getAttribute('aria-placeholder'));
+  });
+
   test('Reports committed composition text unless blurred', async () => {
     input = await createInput();
     const updates: Array<{value: string, isComposing: boolean}> = [];

@@ -69,6 +69,7 @@ if (!is_android) {
       "//components/omnibox/browser:suggest_template_info_mojo_utils",
       "//components/omnibox/common:features",
       "//components/search_engines",
+      "//components/strings",
       "//components/user_education/common",
       "//components/user_education/webui",
       "//content/public/browser",

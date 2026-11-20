@@ -19,6 +19,8 @@ export function getHtml(this: OmniboxPopupSearchboxElement) {
       ?clip-selection-listbox="${this.unboundedSupported_}"
       placeholder-text="${this.computeInputPlaceholderText_()}"
       ?aim-hint="${this.shouldShowAimHint_()}"
+      searchbox-aria-label="${this.inputAccessibleName_}"
+      searchbox-aria-placeholder="${this.inputAccessiblePlaceholder_}"
       searchbox-aria-description="${this.searchboxAriaDescription}"
       searchbox-icon="${this.searchboxIcon_}"
       .selectedMatch="${this.computeSelectedMatchForInput_()}"
