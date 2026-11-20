@@ -1529,8 +1529,6 @@ static_library("browser") {
     "//third_party/libaddressinput:strings_grit",
     "//third_party/tflite",
     "//third_party/tflite:tflite_public_headers",
-    "//third_party/tflite_support",
-    "//third_party/tflite_support:tflite_support_proto",
     "//ui/base",
     "//ui/gfx/geometry",
     "//ui/gfx/range",
