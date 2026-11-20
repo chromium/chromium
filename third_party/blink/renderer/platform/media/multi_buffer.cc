@@ -192,7 +192,7 @@ MultiBuffer::~MultiBuffer() {
 }
 
 void MultiBuffer::AddReader(const BlockId& pos, Reader* reader) {
-  std::set<raw_ptr<Reader, SetExperimental>>* set_of_readers = &readers_[pos];
+  std::set<raw_ptr<Reader>>* set_of_readers = &readers_[pos];
   bool already_waited_for = !set_of_readers->empty();
   set_of_readers->insert(reader);
 

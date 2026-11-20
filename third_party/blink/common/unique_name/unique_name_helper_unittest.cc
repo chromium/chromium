@@ -152,7 +152,7 @@ class TestFrameAdapter : public UniqueNameHelper::FrameAdapter {
   }
 
   const raw_ptr<TestFrameAdapter> parent_;
-  std::vector<raw_ptr<TestFrameAdapter, VectorExperimental>> children_;
+  std::vector<raw_ptr<TestFrameAdapter>> children_;
   const int virtual_index_in_parent_;
   UniqueNameHelper unique_name_helper_;
   std::string legacy_name_;

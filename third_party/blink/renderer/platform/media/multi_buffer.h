@@ -367,8 +367,7 @@ class PLATFORM_EXPORT MultiBuffer {
   base::Lock data_lock_;
 
   // Keeps track of readers waiting for data.
-  base::flat_map<MultiBufferBlockId, std::set<raw_ptr<Reader, SetExperimental>>>
-      readers_;
+  base::flat_map<MultiBufferBlockId, std::set<raw_ptr<Reader>>> readers_;
 
   // Keeps track of writers by their position.
   // The writers are owned by this class.

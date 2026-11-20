@@ -82,8 +82,8 @@ class BLINK_MODULES_EXPORT AudioRendererMixer
   base::Lock lock_;
 
   // List of error callbacks used by this mixer.
-  base::flat_set<raw_ptr<AudioRendererMixerInput, CtnExperimental>>
-      error_callbacks_ GUARDED_BY(lock_);
+  base::flat_set<raw_ptr<AudioRendererMixerInput>> error_callbacks_
+      GUARDED_BY(lock_);
 
   // Maps input sample rate to the dedicated converter.
   using AudioConvertersMap =

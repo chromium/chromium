@@ -141,10 +141,9 @@ class MODULES_EXPORT WebRtcAudioDeviceImpl
   }
 
  private:
-  using CapturerList =
-      std::list<raw_ptr<ProcessedLocalAudioSource, CtnExperimental>>;
+  using CapturerList = std::list<raw_ptr<ProcessedLocalAudioSource>>;
   using PlayoutDataSinkList =
-      std::list<raw_ptr<blink::WebRtcPlayoutDataSource::Sink, CtnExperimental>>;
+      std::list<raw_ptr<blink::WebRtcPlayoutDataSource::Sink>>;
 
   class RenderBuffer;
 
