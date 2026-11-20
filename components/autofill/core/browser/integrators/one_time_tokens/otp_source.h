@@ -66,10 +66,6 @@ class OtpSource {
   // verdict).
   virtual void ClearVerifiedCacheForOrigin(const url::Origin& origin) = 0;
 
-  // Clears all cached verified OTPs across all origins (e.g. on form
-  // submission/removal or navigation).
-  virtual void ClearAllVerifiedCache() = 0;
-
   // Sets or clears the observer notified when candidates arrive. `observer` may
   // be null to unregister; if non-null, the source retains an unowned pointer
   // and `*observer` must outlive this `OtpSource` or unregister via

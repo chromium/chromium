@@ -47,7 +47,6 @@ class SmsOtpSource : public OtpSource {
       const OtpTarget& target) const override;
   void MarkConsumed(const OtpTokenIdentity& identity) override;
   void ClearVerifiedCacheForOrigin(const url::Origin& origin) override;
-  void ClearAllVerifiedCache() override;
   // `observer` may be null to unregister; if non-null, `SmsOtpSource` retains
   // an unowned pointer and `*observer` must outlive `this` or unregister via
   // `SetObserver(nullptr)` before destruction.

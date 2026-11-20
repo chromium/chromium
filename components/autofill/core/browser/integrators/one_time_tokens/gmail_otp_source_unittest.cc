@@ -557,7 +557,7 @@ TEST_F(GmailOtpSourceTest,
 }
 
 // -----------------------------------------------------------------------------
-// 8. `ClearVerifiedCacheForOrigin()` & `ClearAllVerifiedCache()`
+// 8. `ClearVerifiedCacheForOrigin()`
 // -----------------------------------------------------------------------------
 
 TEST_F(GmailOtpSourceTest, ClearVerifiedCacheForOrigin_SingleOrigin) {
@@ -614,37 +614,6 @@ TEST_F(GmailOtpSourceTest, ClearVerifiedCacheForOrigin_OpaqueOrigin) {
       source.GetAvailable(target_a),
       ElementsAre(IsGmailCandidate(target_a.origin, "111111", target_a.frame)));
   EXPECT_THAT(source.GetAvailable(opaque_target), IsEmpty());
-}
-
-TEST_F(GmailOtpSourceTest, ClearAllVerifiedCache_SingleOrigin) {
-  service_->SetCachedTokens({MakeToken("111111", "otp@a.test")});
-
-  GmailOtpSource source(client_);
-  const OtpTarget target = MakeTarget("https://a.test");
-  source.Start(target);
-  task_environment_.RunUntilIdle();
-  ASSERT_EQ(source.GetAvailable(target).size(), 1u);
-
-  source.ClearAllVerifiedCache();
-  EXPECT_THAT(source.GetAvailable(target), IsEmpty());
-  EXPECT_EQ(service_->num_callbacks(), 1u);
-}
-
-TEST_F(GmailOtpSourceTest, ClearAllVerifiedCache_TwoOrigins) {
-  service_->SetCachedTokens(
-      {MakeToken("111111", "otp@a.test"), MakeToken("222222", "otp@b.test")});
-
-  GmailOtpSource source(client_);
-  const OtpTarget target_a = MakeTarget("https://a.test");
-  const OtpTarget target_b = MakeTarget("https://b.test");
-  source.Start(target_a);
-  source.Start(target_b);
-  task_environment_.RunUntilIdle();
-
-  source.ClearAllVerifiedCache();
-  EXPECT_THAT(source.GetAvailable(target_a), IsEmpty());
-  EXPECT_THAT(source.GetAvailable(target_b), IsEmpty());
-  EXPECT_EQ(service_->num_callbacks(), 2u);
 }
 
 // -----------------------------------------------------------------------------

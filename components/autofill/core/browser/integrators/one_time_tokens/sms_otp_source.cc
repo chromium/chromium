@@ -110,14 +110,6 @@ void SmsOtpSource::ClearVerifiedCacheForOrigin(const url::Origin& origin) {
   // origin.
 }
 
-void SmsOtpSource::ClearAllVerifiedCache() {
-  // Intentional no-op: `newest_sms_token_` and `is_newest_sms_token_consumed_`
-  // act as a monotonic deduplication and consumption floor across
-  // `SmsOtpService` re-polls/replays. Clearing them on form removal or
-  // navigation would allow `SmsOtpService` to re-emit an already-consumed or
-  // outdated SMS token on the next `Start()`.
-}
-
 void SmsOtpSource::SetObserver(Observer* observer) {
   observer_ = observer;
 }

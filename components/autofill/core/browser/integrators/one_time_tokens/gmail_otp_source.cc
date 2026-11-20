@@ -181,10 +181,6 @@ void GmailOtpSource::ClearVerifiedCacheForOrigin(const url::Origin& origin) {
   verified_store_per_origin_.erase(origin);
 }
 
-void GmailOtpSource::ClearAllVerifiedCache() {
-  verified_store_per_origin_.clear();
-}
-
 void GmailOtpSource::SetObserver(Observer* observer) {
   observer_ = observer;
 }
