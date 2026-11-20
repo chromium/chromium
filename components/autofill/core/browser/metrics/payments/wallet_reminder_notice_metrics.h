@@ -50,7 +50,9 @@ enum class WalletReminderNoticeShowResult {
   kNotShownDueToVcnEnrollment = 5,
   // Not shown due to card or CVC save.
   kNotShownDueToCardOrCvcSave = 6,
-  kMaxValue = kNotShownDueToCardOrCvcSave,
+  // Not shown due to the cardholder name update.
+  kNotShownDueToCardholderNameUpdate = 7,
+  kMaxValue = kNotShownDueToCardholderNameUpdate,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:AutofillWalletReminderNoticeShowResult)
 

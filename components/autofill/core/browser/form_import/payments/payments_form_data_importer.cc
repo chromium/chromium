@@ -442,8 +442,12 @@ bool PaymentsFormDataImporter::ProcessExtractedCreditCard(
                                       is_credit_card_upstream_enabled) &&
       credit_card_save_manager_->AttemptToOfferCardholderNameUpdate(
           *extracted_credit_card)) {
-    // TODO(crbug.com/564568880): Log that the Wallet reminder notice was not
-    // shown because the cardholder name update was offered.
+    if (is_wallet_reminder_notice_eligible) {
+      autofill_metrics::LogWalletReminderNoticeShowResult(
+          autofill_metrics::WalletReminderNoticeShowResult::
+              kNotShownDueToCardholderNameUpdate,
+          WalletReminderNoticeManager::FlowType::kChromeDownstream);
+    }
     return true;
   }
 

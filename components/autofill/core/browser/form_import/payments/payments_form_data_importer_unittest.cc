@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/form_import/payments/payments_form_data_importer.h"
 
+#include <vector>
+
 #include "base/i18n/language_tag.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -2402,14 +2404,22 @@ TEST_F(PaymentsFormDataImporterTest,
                                   ukm_source_id());
 }
 
-// Sets the cardholder name update feature state. Inherited before
-// `PaymentsFormDataImporterTest` so the state is set before its TaskEnvironment
-// starts threads that read features, and reset after they are stopped.
+// Sets the cardholder name update feature state, and optionally enables the
+// Wallet reminder notice. Inherited before `PaymentsFormDataImporterTest` so
+// the state is set before its `TaskEnvironment` starts threads that read
+// features, and reset after they are stopped.
 class CardholderNameUpdateFeatureState {
  public:
-  explicit CardholderNameUpdateFeatureState(bool is_feature_enabled) {
-    scoped_feature_list_.InitWithFeatureState(
-        features::kAutofillEnableCardholderNameFixFlow, is_feature_enabled);
+  CardholderNameUpdateFeatureState(bool is_feature_enabled,
+                                   bool enable_wallet_reminder_notice) {
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+    (is_feature_enabled ? enabled_features : disabled_features)
+        .push_back(features::kAutofillEnableCardholderNameFixFlow);
+    if (enable_wallet_reminder_notice) {
+      enabled_features.push_back(features::kAutofillEnableWalletReminderNotice);
+    }
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
  private:
@@ -2421,8 +2431,10 @@ class PaymentsFormDataImporterCardholderNameUpdateTest
       public PaymentsFormDataImporterTest {
  public:
   explicit PaymentsFormDataImporterCardholderNameUpdateTest(
-      bool is_feature_enabled = true)
-      : CardholderNameUpdateFeatureState(is_feature_enabled) {}
+      bool is_feature_enabled = true,
+      bool enable_wallet_reminder_notice = false)
+      : CardholderNameUpdateFeatureState(is_feature_enabled,
+                                         enable_wallet_reminder_notice) {}
 
   void SetUp() override {
     PaymentsFormDataImporterTest::SetUp();
@@ -2479,6 +2491,15 @@ class PaymentsFormDataImporterCardholderNameUpdateFlagDisabledTest
   PaymentsFormDataImporterCardholderNameUpdateFlagDisabledTest()
       : PaymentsFormDataImporterCardholderNameUpdateTest(
             /*is_feature_enabled=*/false) {}
+};
+
+class PaymentsFormDataImporterCardholderNameUpdateWalletReminderNoticeTest
+    : public PaymentsFormDataImporterCardholderNameUpdateTest {
+ public:
+  PaymentsFormDataImporterCardholderNameUpdateWalletReminderNoticeTest()
+      : PaymentsFormDataImporterCardholderNameUpdateTest(
+            /*is_feature_enabled=*/true,
+            /*enable_wallet_reminder_notice=*/true) {}
 };
 
 // Tests that the cardholder name update is offered instead of card or CVC save
@@ -2821,6 +2842,23 @@ TEST_F(
       "Autofill.CardholderNameUpdateFlow.Eligibility",
       autofill_metrics::CardholderNameUpdateFlowEligibility::
           kInvalidOrMissingCvcExtractedFromForm,
+      1);
+}
+
+// Tests that the Wallet reminder notice show result logs that the notice was
+// preempted when the cardholder name update is offered.
+TEST_F(PaymentsFormDataImporterCardholderNameUpdateWalletReminderNoticeTest,
+       Metrics_WalletReminderNoticeShowResult_NotShownDueToNameUpdate) {
+  EXPECT_CALL(credit_card_save_manager(), AttemptToOfferCardholderNameUpdate)
+      .WillOnce(Return(true));
+  base::HistogramTester histogram_tester;
+
+  ProcessExtractedCreditCard();
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.WalletReminderNotice.ShowResult",
+      autofill_metrics::WalletReminderNoticeShowResult::
+          kNotShownDueToCardholderNameUpdate,
       1);
 }
 
