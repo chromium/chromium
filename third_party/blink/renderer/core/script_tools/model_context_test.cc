@@ -681,6 +681,7 @@ class ReentrantListener : public NativeEventListener {
   explicit ReentrantListener(ModelContext* model_context)
       : model_context_(model_context) {}
   void Invoke(ExecutionContext*, Event*) override {
+    ++invoke_count_;
     // Trigger HashMap modification by adding a new execution.
     model_context_->ExecuteTool(ToolInvocationToken(),
                                 ToolIdFor(model_context_, "echo"), "{}",
@@ -690,9 +691,11 @@ class ReentrantListener : public NativeEventListener {
     visitor->Trace(model_context_);
     NativeEventListener::Trace(visitor);
   }
+  int invoke_count() const { return invoke_count_; }
 
  private:
   Member<ModelContext> model_context_;
+  int invoke_count_ = 0;
 };
 
 TEST_F(ModelContextTest, CancelToolReentrancy) {
@@ -726,9 +729,9 @@ TEST_F(ModelContextTest, CancelToolReentrancy) {
 
   auto* model_context = ModelContextSupplement::modelContext(GetDocument());
 
-  model_context->addEventListener(
-      event_type_names::kToolcancel,
-      MakeGarbageCollected<ReentrantListener>(model_context), false);
+  auto* listener = MakeGarbageCollected<ReentrantListener>(model_context);
+  model_context->addEventListener(event_type_names::kToolcancel, listener,
+                                  false);
 
   base::RunLoop run_loop;
 
@@ -749,6 +752,7 @@ TEST_F(ModelContextTest, CancelToolReentrancy) {
   model_context->CancelTool(invocation_id);
 
   run_loop.Run();
+  EXPECT_EQ(listener->invoke_count(), 1);
 }
 
 TEST_F(ModelContextTest, CancelToolNonExistent) {
