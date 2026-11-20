@@ -2051,6 +2051,17 @@ source_set("ui_controls") {
          ]
 }
 
+# Installs a fatal-signal handler that prints a backtrace to stderr when
+# mutter crashes during tests.
+source_set("crash_backtrace") {
+  testonly = true
+
+  sources = [ "chromium/meta-crash-backtrace.c" ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+}
+
 # Replacements for libmutter functions whose upstream behavior makes tests
 # flaky. They are hooked in with -Wl,--wrap (see the executable("mutter")
 # target below), so that src/ can track a pristine upstream release.
@@ -2216,6 +2227,7 @@ executable("mutter") {
   deps = [
     ":clutter",
     ":compile_schemas",
+    ":crash_backtrace",
     ":libmutter",
     ":test_workarounds",
     ":ui_controls",
