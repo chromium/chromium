@@ -2270,7 +2270,7 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
   observer.Wait();
 }
 
-IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
+IN_PROC_BROWSER_TEST_P(AutoPictureInPictureDocumentPipBackendBrowserTest,
                        CachedBoundsUsedWhenPermissionPromtNotVisible) {
   // Load a page that registers for autopip and starts using camera/microphone.
   LoadCameraMicrophonePage(browser());
@@ -2286,10 +2286,9 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
   auto* pip_contents =
       PictureInPictureWindowManager::GetInstance()->GetChildWebContents();
   ASSERT_NE(nullptr, pip_contents);
-  auto* browser_view = BrowserView::GetBrowserViewForNativeWindow(
+  ExpectPipBackend(pip_contents);
+  auto* pip_widget = views::Widget::GetWidgetForNativeWindow(
       pip_contents->GetTopLevelNativeWindow());
-  ASSERT_TRUE(browser_view);
-  auto* pip_widget = browser_view->GetWidget();
   ASSERT_TRUE(pip_widget);
   views::test::WidgetVisibleWaiter(pip_widget).Wait();
 
@@ -2312,13 +2311,14 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
   auto* new_pip_contents =
       PictureInPictureWindowManager::GetInstance()->GetChildWebContents();
   ASSERT_NE(nullptr, new_pip_contents);
-  auto* new_pip_widget = BrowserView::GetBrowserViewForNativeWindow(
-                             new_pip_contents->GetTopLevelNativeWindow())
-                             ->GetWidget();
+  ExpectPipBackend(new_pip_contents);
+  auto* new_pip_widget = views::Widget::GetWidgetForNativeWindow(
+      new_pip_contents->GetTopLevelNativeWindow());
+  ASSERT_TRUE(new_pip_widget);
   EXPECT_EQ(moved_bounds, new_pip_widget->GetWindowBoundsInScreen());
 }
 
-IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
+IN_PROC_BROWSER_TEST_P(AutoPictureInPictureDocumentPipBackendBrowserTest,
                        CachedBoundsIgnoredWhenPermissionPromtIsVisible) {
   // Load a page that registers for autopip and starts using camera/microphone.
   LoadCameraMicrophonePage(browser());
@@ -2333,10 +2333,9 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
   auto* pip_contents =
       PictureInPictureWindowManager::GetInstance()->GetChildWebContents();
   ASSERT_NE(nullptr, pip_contents);
-  auto* browser_view = BrowserView::GetBrowserViewForNativeWindow(
+  ExpectPipBackend(pip_contents);
+  auto* pip_widget = views::Widget::GetWidgetForNativeWindow(
       pip_contents->GetTopLevelNativeWindow());
-  ASSERT_TRUE(browser_view);
-  auto* pip_widget = browser_view->GetWidget();
   ASSERT_TRUE(pip_widget);
   views::test::WidgetVisibleWaiter(pip_widget).Wait();
 
@@ -2359,9 +2358,10 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
   auto* new_pip_contents =
       PictureInPictureWindowManager::GetInstance()->GetChildWebContents();
   ASSERT_NE(nullptr, new_pip_contents);
-  auto* new_pip_widget = BrowserView::GetBrowserViewForNativeWindow(
-                             new_pip_contents->GetTopLevelNativeWindow())
-                             ->GetWidget();
+  ExpectPipBackend(new_pip_contents);
+  auto* new_pip_widget = views::Widget::GetWidgetForNativeWindow(
+      new_pip_contents->GetTopLevelNativeWindow());
+  ASSERT_TRUE(new_pip_widget);
   EXPECT_NE(moved_bounds, new_pip_widget->GetWindowBoundsInScreen());
   WidgetBoundsChangeWaiter(new_pip_widget,
                            WidgetBoundsChangeWaiter::Comparison::kIsEqual)

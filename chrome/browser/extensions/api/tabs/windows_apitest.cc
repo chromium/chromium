@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/common/chrome_features.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/buildflags/buildflags.h"
 #include "net/dns/mock_host_resolver.h"
@@ -18,7 +20,12 @@ static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class ExtensionApiWindowsTest : public extensions::ExtensionApiTest {
  public:
-  ExtensionApiWindowsTest() = default;
+  ExtensionApiWindowsTest() {
+    // TODO(crbug.com/562667474): Remove once https://crrev.com/c/8613592 lands
+    // standalone window support in WindowsUpdateFunction.
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kDocumentPipStandaloneWindow);
+  }
   ~ExtensionApiWindowsTest() override = default;
   ExtensionApiWindowsTest(const ExtensionApiWindowsTest&) = delete;
   ExtensionApiWindowsTest& operator=(const ExtensionApiWindowsTest&) = delete;
@@ -28,6 +35,9 @@ class ExtensionApiWindowsTest : public extensions::ExtensionApiTest {
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(StartEmbeddedTestServer());
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // TODO(https://crbug.com/449095632): Enable these tests.
