@@ -11,6 +11,7 @@
 #include "base/files/file_util.h"
 #include "base/memory/page_size.h"
 #include "base/process/process_handle.h"
+#include "base/rand_util.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -252,10 +253,10 @@ TEST(OSMetricsTest, GetMappedAndResidentPages) {
   std::set<size_t> pages;
   uint8_t* array = static_cast<uint8_t*>(addr);
   for (unsigned int i = 0; i < kPages / 2; ++i) {
-    int page = rand() % kPages;
-    int offset = rand() % kPageSize;
-    *static_cast<volatile uint8_t*>(
-        UNSAFE_TODO(array + page * kPageSize + offset)) = rand() % 256;
+    int page = base::RandGenerator(kPages);
+    int offset = base::RandGenerator(kPageSize);
+    *static_cast<volatile uint8_t*>(UNSAFE_TODO(
+        array + page * kPageSize + offset)) = base::RandGenerator(256);
     pages.insert(page);
   }
 

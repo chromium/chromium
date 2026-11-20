@@ -16,6 +16,7 @@
 #include "base/notreached.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/rand_util.h"
 #include "base/strings/string_view_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
@@ -233,10 +234,10 @@ void FakeNetworkNotificationClient::NetworkListChanged(
 }
 
 void CreateRandomPacket(std::vector<uint8_t>* packet) {
-  size_t size = kStunHeaderSize + rand() % 1000;
+  size_t size = kStunHeaderSize + base::RandIntInclusive(0, 999);
   packet->resize(size);
   for (size_t i = 0; i < size; i++) {
-    (*packet)[i] = rand() % 256;
+    (*packet)[i] = base::RandIntInclusive(0, 255);
   }
   // Always set the first bit to ensure that generated packet is not
   // valid STUN packet.
