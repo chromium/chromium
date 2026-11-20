@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "build/build_config.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
@@ -19,8 +20,14 @@ class GlicSelectionOverlayWebUIBrowserTest : public WebUIMochaBrowserTest {
   glic::GlicTestEnvironment glic_test_env_;
 };
 
+// TODO(crbug.com/588514845): Times out on Linux debug.
+#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
+#define MAYBE_GlicSelectionOverlay DISABLED_GlicSelectionOverlay
+#else
+#define MAYBE_GlicSelectionOverlay GlicSelectionOverlay
+#endif
 IN_PROC_BROWSER_TEST_F(GlicSelectionOverlayWebUIBrowserTest,
-                       GlicSelectionOverlay) {
+                       MAYBE_GlicSelectionOverlay) {
   RunTest("glic/selection_overlay/glic_selection_overlay_test.js",
           "mocha.run()");
 }
