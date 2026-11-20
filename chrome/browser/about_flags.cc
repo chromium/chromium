@@ -2605,31 +2605,25 @@ const FeatureEntry::FeatureVariation kAndroidAppIntegrationModuleVariations[] =
       kAndroidAppIntegrationModule_ForceCardShown_NonPixel, nullptr}};
 
 const FeatureEntry::FeatureParam kNewTabPageCustomizationV2_ShowColorPicker[] =
-    {{"show_color_picker", "true"},
-     {"show_promo", "true"},
-     {"show_tip_bottom_sheet", "true"}};
+    {{"show_color_picker", "true"}, {"show_promo", "true"}};
 
 const FeatureEntry::FeatureParam
     kNewTabPageCustomizationV2_DailyRefreshThresholdMs[] = {
         {"daily_refresh_threshold_ms", "20000"},
-        {"show_promo", "true"},
-        {"show_tip_bottom_sheet", "true"}};
+        {"show_promo", "true"}};
 
 const FeatureEntry::FeatureParam kNewTabPageCustomizationV2_ShowPromo[] = {
-    {"show_promo", "true"},
-    {"show_tip_bottom_sheet", "true"}};
+    {"show_promo", "true"}};
 const FeatureEntry::FeatureParam
     kNewTabPageCustomizationV2_ForceShowTipBottomSheet[] = {
         {"force_show_tip_bottom_sheet", "true"},
-        {"show_promo", "true"},
-        {"show_tip_bottom_sheet", "true"}};
+        {"show_promo", "true"}};
 
 const FeatureEntry::FeatureVariation kNewTabPageCustomizationV2Variations[] = {
     {"Show color picker", kNewTabPageCustomizationV2_ShowColorPicker, nullptr},
     {"Daily refresh after 20s",
      kNewTabPageCustomizationV2_DailyRefreshThresholdMs, nullptr},
-    {"Show promo and tip bottom sheet", kNewTabPageCustomizationV2_ShowPromo,
-     nullptr},
+    {"Show promo", kNewTabPageCustomizationV2_ShowPromo, nullptr},
     {"Force to show theme tip bottom sheet",
      kNewTabPageCustomizationV2_ForceShowTipBottomSheet, nullptr}};
 

@@ -67,8 +67,6 @@ public class TabGroupListBottomSheetTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(
-            ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2 + ":show_tip_bottom_sheet/false")
     @DisableFeatures({
         ChromeFeatureList.SUBMENUS_IN_APP_MENU,
         ChromeFeatureList.SUBMENUS_IN_APP_MENU_LFF

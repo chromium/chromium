@@ -2377,10 +2377,6 @@ public abstract class ChromeFeatureList {
                     newBooleanCachedFeatureParam(
                             NEW_TAB_PAGE_CUSTOMIZATION_V2, "force_show_tip_bottom_sheet", false);
 
-    public static final BooleanCachedFeatureParam sNewTabPageCustomizationV2ShowTipBottomSheet =
-            newBooleanCachedFeatureParam(
-                    NEW_TAB_PAGE_CUSTOMIZATION_V2, "show_tip_bottom_sheet", true);
-
     /** The time duration limit to refresh NTP's background. */
     public static final IntCachedFeatureParam sNewTabPageCustomizationV2DailyRefreshThresholdMs =
             newIntCachedFeatureParam(
@@ -2644,7 +2640,6 @@ public abstract class ChromeFeatureList {
                     sNewTabPageCustomizationV2DailyRefreshThresholdMs,
                     sNewTabPageCustomizationV2ForceShowTipBottomSheet,
                     sNewTabPageCustomizationV2ShowColorPicker,
-                    sNewTabPageCustomizationV2ShowTipBottomSheet,
                     sNotificationTrampolineImmediateJobDurationMs,
                     sNotificationTrampolineLongJobDurationMs,
                     sNotificationTrampolineNormalJobDurationMs,

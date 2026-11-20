@@ -71,7 +71,6 @@ android_library("java") {
     "//chrome/browser/ui/android/toolbar:java",
     "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/settings/android:java",
-    "//components/cached_flags:java",
     "//components/feature_engagement/public:public_java",
     "//components/regional_capabilities/android:java",
     "//components/saved_tab_groups/public:java",

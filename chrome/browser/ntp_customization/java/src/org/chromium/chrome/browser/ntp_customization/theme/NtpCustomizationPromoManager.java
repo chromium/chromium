@@ -87,9 +87,8 @@ public class NtpCustomizationPromoManager {
             return false;
         }
 
-        if (!ChromeFeatureList.sNewTabPageCustomizationV2ShowTipBottomSheet.getValue()
-                || (NtpCustomizationConfigManager.getInstance().getBackgroundType()
-                        != NtpBackgroundType.DEFAULT)) {
+        if (NtpCustomizationConfigManager.getInstance().getBackgroundType()
+                != NtpBackgroundType.DEFAULT) {
             return false;
         }
 
@@ -132,16 +131,15 @@ public class NtpCustomizationPromoManager {
             return false;
         }
 
-        if (ChromeFeatureList.sNewTabPageCustomizationV2ShowTipBottomSheet.getValue()) {
-            if (!NtpCustomizationUtils.isThemeTipBottomSheetShownFromSharedPreference()) {
-                return false;
-            }
-            long timestamp =
-                    NtpCustomizationUtils
-                            .getThemeTipBottomSheetShownTimestampFromSharedPreference();
-            if (timestamp > 0 && TimeUtils.currentTimeMillis() - timestamp < COOL_DOWN_PERIOD_MS) {
-                return false;
-            }
+        // The IPH follows up on the theme tip bottom sheet and shares its cool down period.
+        if (!NtpCustomizationUtils.isThemeTipBottomSheetShownFromSharedPreference()) {
+            return false;
+        }
+
+        long timestamp =
+                NtpCustomizationUtils.getThemeTipBottomSheetShownTimestampFromSharedPreference();
+        if (timestamp > 0 && TimeUtils.currentTimeMillis() - timestamp < COOL_DOWN_PERIOD_MS) {
+            return false;
         }
 
         return true;

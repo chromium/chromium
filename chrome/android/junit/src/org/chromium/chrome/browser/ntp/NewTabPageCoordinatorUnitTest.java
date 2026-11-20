@@ -2646,7 +2646,6 @@ public class NewTabPageCoordinatorUnitTest {
         createCoordinator(/* isLff= */ false);
         mEdgeToEdgeStateProvider = NtpCustomizationTestHelper.setupEdgeToEdge(mWindowAndroid);
         ChromeFeatureList.sNewTabPageCustomizationV2ForceShowTipBottomSheet.setForTesting(true);
-        ChromeFeatureList.sNewTabPageCustomizationV2ShowTipBottomSheet.setForTesting(true);
         NtpCustomizationPromoManager.setEnableForTesting(true);
         NtpCustomizationCoordinatorFactory factory = mock(NtpCustomizationCoordinatorFactory.class);
         NtpCustomizationCoordinatorFactory.setInstanceForTesting(factory);

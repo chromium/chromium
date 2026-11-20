@@ -10,7 +10,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -77,14 +76,11 @@ public class EducationalTipCardProviderSignalHandler {
                 inputContext.addEntry(
                         "support_customized_ntp_theme",
                         ProcessedValue.fromBoolean(actionDelegate.supportCustomizedNtpTheme()));
-                boolean isBottomSheetDisabled =
-                        !ChromeFeatureList.sNewTabPageCustomizationV2ShowTipBottomSheet.getValue();
-                boolean hasThemeTipBottomSheetBeenShown =
-                        NtpCustomizationUtils.isThemeTipBottomSheetShownFromSharedPreference();
                 inputContext.addEntry(
                         "has_theme_tip_bottom_sheet_been_shown",
                         ProcessedValue.fromBoolean(
-                                isBottomSheetDisabled || hasThemeTipBottomSheetBeenShown));
+                                NtpCustomizationUtils
+                                        .isThemeTipBottomSheetShownFromSharedPreference()));
                 return inputContext;
             case ModuleType.HISTORY_SYNC_PROMO:
                 inputContext.addEntry(
