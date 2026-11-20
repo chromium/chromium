@@ -13,6 +13,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.SystemClock;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
 import android.view.View;
@@ -751,6 +752,56 @@ public class OmniboxTestUtils {
         @Override
         public String buildDescription() {
             return "Suggestions shown";
+        }
+    }
+
+    /**
+     * Checks that the suggestions currently held by autocomplete were received for the given typed
+     * text, i.e. that the URL bar holds {@code typedText} and the text at the time the latest
+     * suggestions were received (including inline autocompletion) matches the URL bar's current
+     * text.
+     *
+     * <p>This is the same check {@code AutocompleteMediator#loadTypedOmniboxText} performs before
+     * acting on the default match, so it is a prerequisite for pressing Enter after typing. Without
+     * it, {@link SuggestionsShownCondition} alone is satisfied by zero-prefix suggestions that were
+     * already showing before the text was typed.
+     */
+    public static class SuggestionsReceivedForTextCondition extends UiThreadCondition {
+        private final LocationBarLayout mLocationBar;
+        private final UrlBar mUrlBar;
+        private final String mTypedText;
+
+        public SuggestionsReceivedForTextCondition(
+                LocationBarLayout locationBar, UrlBar urlBar, String typedText) {
+            mLocationBar = locationBar;
+            mUrlBar = urlBar;
+            mTypedText = typedText;
+        }
+
+        @Override
+        protected ConditionStatus checkWithSuppliers() {
+            AutocompleteCoordinator autocomplete = mLocationBar.getAutocompleteCoordinator();
+            if (autocomplete == null) {
+                return notFulfilled("autocomplete is null");
+            }
+            String textWithoutAutocomplete = mUrlBar.getTextWithoutAutocomplete();
+            if (!TextUtils.equals(textWithoutAutocomplete, mTypedText)) {
+                return notFulfilled("URL bar text is \"%s\"", textWithoutAutocomplete);
+            }
+            String received = autocomplete.getUrlTextAfterSuggestionsReceivedForTesting();
+            if (received == null) {
+                return notFulfilled("no suggestions received yet");
+            }
+            String current = mUrlBar.getTextWithAutocomplete();
+            return whether(
+                    received.trim().equals(current.trim()),
+                    "suggestions received for \"%s\"",
+                    received);
+        }
+
+        @Override
+        public String buildDescription() {
+            return "Suggestions received for typed text \"" + mTypedText + "\"";
         }
     }
 

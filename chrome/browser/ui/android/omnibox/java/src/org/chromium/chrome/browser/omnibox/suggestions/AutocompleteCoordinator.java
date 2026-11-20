@@ -717,6 +717,14 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
         return mMediator.getSuggestionModelListForTest();
     }
 
+    /**
+     * @return The URL bar text (including inline autocompletion) at the time the currently shown
+     *     suggestions were received, or null if no suggestions have been received this session.
+     */
+    public @Nullable String getUrlTextAfterSuggestionsReceivedForTesting() {
+        return mMediator.getUrlTextAfterSuggestionsReceivedForTesting();
+    }
+
     public @Nullable ModalDialogManager getModalDialogManagerForTest() {
         return mModalDialogManagerSupplier.get();
     }

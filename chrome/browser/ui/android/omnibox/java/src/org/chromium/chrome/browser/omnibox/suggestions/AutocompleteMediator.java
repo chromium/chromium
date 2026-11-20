@@ -348,6 +348,16 @@ class AutocompleteMediator
         return mDropdownViewInfoListBuilder;
     }
 
+    /**
+     * Returns the URL bar text (including inline autocompletion) at the time the most recent
+     * suggestions were received, or null if none have been received in this session. This is the
+     * text that {@link #loadTypedOmniboxText} compares against to decide whether the current
+     * suggestions apply to what the user typed.
+     */
+    @Nullable String getUrlTextAfterSuggestionsReceivedForTesting() {
+        return mUrlTextAfterSuggestionsReceived;
+    }
+
     public void destroy() {
         stopAutocomplete(AutocompleteStopReason.INTERACTION);
         endInput();
@@ -2013,6 +2023,7 @@ class AutocompleteMediator
 
         mDropdownViewInfoListManager.clear();
         mAutocompleteResult = null;
+        mUrlTextAfterSuggestionsReceived = null;
     }
 
     /**

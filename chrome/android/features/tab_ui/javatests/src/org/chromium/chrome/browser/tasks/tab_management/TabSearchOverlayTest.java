@@ -10,6 +10,7 @@ import static org.junit.Assert.assertTrue;
 
 import androidx.test.filters.MediumTest;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -18,11 +19,11 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.history.BrowsingHistoryBridge;
@@ -74,6 +75,20 @@ public class TabSearchOverlayTest {
         // Clear recently closed entries left by earlier tests in the batch, including tabs closed
         // by the auto-reset that runs before each test.
         TabRestoreServiceUtils.clearEntries(mCtaTestRule.getActivity().getTabModelSelector());
+    }
+
+    @After
+    public void tearDown() {
+        // The overlay lives in its own PopupWindow, which the auto-reset does not know about. If a
+        // test fails while the overlay is open, hide it so the rest of the batch is not failed by
+        // a second url_bar being on screen.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TabSearchOverlayCoordinator coordinator = getTabSearchOverlayCoordinator();
+                    if (coordinator != null && coordinator.isVisible()) {
+                        coordinator.hide(TabSearchDismissalReason.CLOSE_BUTTON);
+                    }
+                });
     }
 
     // --- Entry Point Tests ---
@@ -209,7 +224,6 @@ public class TabSearchOverlayTest {
 
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/585546142
     public void testOpenExistingTab_PressEnter_ReusesTab() {
         String url1 = mTestServer.getURL("/chrome/test/data/android/navigate/one.html");
         String url2 = mTestServer.getURL("/chrome/test/data/android/navigate/two.html");
@@ -229,7 +243,7 @@ public class TabSearchOverlayTest {
 
         TabSuggestionFacility suggestion =
                 tabSearchOverlay.findTabSuggestion(
-                        /* index= */ 0, /* title= */ "One", /* urlSubstring= */ null);
+                        /* index= */ null, /* title= */ "One", /* urlSubstring= */ null);
         mPage = suggestion.pressEnterToSelectTab();
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -547,13 +561,15 @@ public class TabSearchOverlayTest {
     private void assertOverlayNotVisible() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    TabbedRootUiCoordinator rootUiCoordinator =
-                            (TabbedRootUiCoordinator)
-                                    mCtaTestRule.getActivity().getRootUiCoordinatorForTesting();
-                    assertFalse(
-                            rootUiCoordinator
-                                    .getTabSearchOverlayCoordinatorForTesting()
-                                    .isVisible());
+                    TabSearchOverlayCoordinator coordinator = getTabSearchOverlayCoordinator();
+                    assertFalse(coordinator != null && coordinator.isVisible());
                 });
+    }
+
+    private @Nullable TabSearchOverlayCoordinator getTabSearchOverlayCoordinator() {
+        TabbedRootUiCoordinator rootUiCoordinator =
+                (TabbedRootUiCoordinator)
+                        mCtaTestRule.getActivity().getRootUiCoordinatorForTesting();
+        return rootUiCoordinator.getTabSearchOverlayCoordinatorForTesting();
     }
 }

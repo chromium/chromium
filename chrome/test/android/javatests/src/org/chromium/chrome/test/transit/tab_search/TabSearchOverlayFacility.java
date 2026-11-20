@@ -5,6 +5,7 @@
 package org.chromium.chrome.test.transit.tab_search;
 
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
+import static androidx.test.espresso.matcher.ViewMatchers.hasFocus;
 import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -15,6 +16,8 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertTrue;
 
+import static org.chromium.base.test.transit.Condition.whether;
+import static org.chromium.base.test.transit.SimpleConditions.uiThreadCondition;
 import static org.chromium.base.test.transit.ViewElement.unscopedOption;
 import static org.chromium.base.test.transit.ViewSpec.viewSpec;
 
@@ -40,8 +43,8 @@ import org.chromium.chrome.test.transit.page.BasePageStation;
 import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.OmniboxTestUtils.SuggestionsNotShownCondition;
+import org.chromium.chrome.test.util.OmniboxTestUtils.SuggestionsReceivedForTextCondition;
 import org.chromium.chrome.test.util.OmniboxTestUtils.SuggestionsShownCondition;
-import org.chromium.chrome.test.util.OmniboxTestUtils.UrlBarHasFocusCondition;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -79,15 +82,28 @@ public class TabSearchOverlayFacility<HostStationT extends CtaPageStation>
                         UrlBar.class,
                         withId(R.id.url_bar),
                         isDescendantOfA(withId(R.id.tab_search_overlay_panel)));
+        // The overlay's PopupWindow gains window focus asynchronously after it is shown; text
+        // typed before then has been observed to never produce suggestions.
+        declareEnterCondition(urlBarElement.matches(hasFocus()));
+        declareEnterCondition(
+                uiThreadCondition(
+                        "Search box window has focus",
+                        urlBarElement,
+                        urlBar -> whether(urlBar.hasWindowFocus())));
     }
 
-    /** Types the given query into the overlay's search box and waits for suggestions to appear. */
+    /**
+     * Types the given query into the overlay's search box and waits for the suggestions for that
+     * query to be received and shown.
+     */
     public void typeInSearchBox(String query) {
-        noopTo().waitFor(new UrlBarHasFocusCondition(urlBarElement.value()));
         urlBarElement
                 .typeTextTo(query)
                 .withPossiblyAlreadyFulfilled()
-                .waitFor(new SuggestionsShownCondition(locationBarElement.value()));
+                .waitFor(
+                        new SuggestionsShownCondition(locationBarElement.value()),
+                        new SuggestionsReceivedForTextCondition(
+                                locationBarElement.value(), urlBarElement.value(), query));
     }
 
     /** Checks that suggestions are currently shown. */
@@ -190,7 +206,6 @@ public class TabSearchOverlayFacility<HostStationT extends CtaPageStation>
          * destination station.
          */
         protected TripBuilder pressEnterTo() {
-            noopTo().waitFor(new UrlBarHasFocusCondition(urlBarElement.value()));
             return urlBarElement.performViewActionTo(ViewActions.pressKey(KeyEvent.KEYCODE_ENTER));
         }
     }
