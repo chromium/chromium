@@ -293,15 +293,15 @@ void Manifest::ValidateManifest(std::vector<InstallWarning>* warnings) const {
 
   const FeatureProvider* manifest_feature_provider =
       FeatureProvider::GetManifestFeatures();
-  for (const auto& map_entry : manifest_feature_provider->GetAllFeatures()) {
-    if (!value_.FindByDottedPath(map_entry.first)) {
+  for (const Feature* feature : manifest_feature_provider->GetAllFeatures()) {
+    if (!value_.FindByDottedPath(feature->name())) {
       continue;
     }
 
-    Feature::Availability result = map_entry.second->IsAvailableToManifest(
+    Feature::Availability result = feature->IsAvailableToManifest(
         hashed_id_, type_, location_, manifest_version_, kUnspecifiedContextId);
     if (!result.is_available()) {
-      warnings->emplace_back(result.message(), std::string(map_entry.first));
+      warnings->emplace_back(result.message(), std::string(feature->name()));
     }
   }
 

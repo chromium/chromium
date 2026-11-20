@@ -57,25 +57,32 @@ void ExtensionsClient::SetFeatureDelegatedAvailabilityCheckMap(
   availability_check_map_ = std::move(map);
 }
 
-std::unique_ptr<FeatureProvider> ExtensionsClient::CreateFeatureProvider(
+FeatureProvider ExtensionsClient::CreateFeatureProvider(
     const std::string& name) const {
-  auto feature_provider = std::make_unique<FeatureProvider>();
-  using ProviderMethod = void (ExtensionsAPIProvider::*)(FeatureProvider*);
+  using ProviderMethod = StaticFeatureTable (ExtensionsAPIProvider::*)() const;
   ProviderMethod method = nullptr;
   if (name == "api") {
-    method = &ExtensionsAPIProvider::AddAPIFeatures;
+    method = &ExtensionsAPIProvider::GetAPIFeatures;
   } else if (name == "manifest") {
-    method = &ExtensionsAPIProvider::AddManifestFeatures;
+    method = &ExtensionsAPIProvider::GetManifestFeatures;
   } else if (name == "permission") {
-    method = &ExtensionsAPIProvider::AddPermissionFeatures;
+    method = &ExtensionsAPIProvider::GetPermissionFeatures;
   } else if (name == "behavior") {
-    method = &ExtensionsAPIProvider::AddBehaviorFeatures;
+    method = &ExtensionsAPIProvider::GetBehaviorFeatures;
   } else {
     NOTREACHED();
   }
-  for (const auto& api_provider : api_providers_)
-    ((*api_provider).*method)(feature_provider.get());
 
+  // Size the provider once so that merging every layer allocates only once.
+  size_t count = 0;
+  for (const auto& api_provider : api_providers_) {
+    count += ((*api_provider).*method)().span().size();
+  }
+  FeatureProvider feature_provider;
+  feature_provider.ReserveStaticFeatures(count);
+  for (const auto& api_provider : api_providers_) {
+    feature_provider.AddStaticFeatures(((*api_provider).*method)().span());
+  }
   return feature_provider;
 }
 

@@ -16,7 +16,7 @@ import sys
 from code_util import Code
 import json_parse
 
-# The template for the header file of the generated FeatureProvider.
+# The template for the header file of the generated feature table.
 HEADER_FILE_TEMPLATE = """
 // Copyright %(year)s The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
@@ -30,17 +30,21 @@ HEADER_FILE_TEMPLATE = """
 #ifndef %(header_guard)s
 #define %(header_guard)s
 
-namespace extensions {
-class FeatureProvider;
+#include "extensions/common/features/feature_provider.h"
 
-void %(method_name)s(FeatureProvider* provider);
+namespace extensions {
+
+// Returns every feature declared by the files listed above, ordered by name.
+// The table is constant-initialized, so calling this neither allocates nor
+// runs any initializer.
+StaticFeatureTable %(method_name)s();
 
 }  // namespace extensions
 
 #endif  // %(header_guard)s
 """
 
-# The beginning of the .cc file for the generated FeatureProvider.
+# The beginning of the .cc file for the generated feature table.
 CC_FILE_BEGIN = """
 // Copyright %(year)s The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
@@ -54,12 +58,10 @@ CC_FILE_BEGIN = """
 #include "%(header_file_path)s"
 
 #include <array>
-#include <cstddef>
 #include <string_view>
 
-#include "base/containers/span.h"
 #include "extensions/common/features/complex_feature.h"
-#include "extensions/common/features/feature_provider.h"
+#include "extensions/common/features/feature.h"
 #include "extensions/common/features/manifest_feature.h"
 #include "extensions/common/features/permission_feature.h"
 #include "extensions/common/mojom/context_type.mojom.h"
@@ -67,12 +69,15 @@ CC_FILE_BEGIN = """
 #include "printing/buildflags/buildflags.h"
 
 namespace extensions {
-
-void %(method_name)s(FeatureProvider* provider) {
+namespace {
 """
 
-# The end of the .cc file for the generated FeatureProvider.
+# The end of the .cc file for the generated feature table.
 CC_FILE_END = """
+}  // namespace
+
+StaticFeatureTable %(method_name)s() {
+  return StaticFeatureTable(kFeatures);
 }
 
 }  // namespace extensions
@@ -1160,31 +1165,62 @@ class FeatureCompiler(object):
     self._FinalValidation()
 
   def Render(self):
-    """Returns the Code object for the body of the .cc file, which handles the
-    initialization of all features."""
-    c = Code()
-    c.Sblock()
-    c.Append(
-      'std::array<const Feature*, %d> static_features{};' % len(self._features)
-    )
-    c.Append('std::size_t static_feature_count = 0;')
-    for k in sorted(self._features.keys()):
-      c.Sblock('{')
-      feature = self._features[k]
+    """Returns the Code object for the body of the .cc file, which declares
+    every feature and collects them into a single name-ordered table."""
+
+    def buildflag_condition(feature):
       required_buildflags = feature.GetValue('required_buildflags')
-      if required_buildflags:
-        formatted_buildflags = [
-          'BUILDFLAG(%s)' % format(flag.upper()) for flag in required_buildflags
-        ]
-        c.Append('#if %s' % format(' && '.join(formatted_buildflags)))
-      c.Concat(feature.GetCode(self._feature_type))
-      c.Append('static_features[static_feature_count++] = &kFeature;')
-      if required_buildflags:
+      if not required_buildflags:
+        return None
+      return ' && '.join(
+        'BUILDFLAG(%s)' % flag.upper() for flag in required_buildflags
+      )
+
+    names = sorted(self._features.keys())
+    conditions = [buildflag_condition(self._features[k]) for k in names]
+    c = Code()
+    for index, name in enumerate(names):
+      condition = conditions[index]
+      if condition:
+        c.Append('#if %s' % condition)
+      c.Append('namespace f%d {' % index)
+      c.Concat(self._features[name].GetCode(self._feature_type))
+      c.Append('}  // namespace f%d' % index)
+      if condition:
         c.Append('#endif')
-      c.Eblock('}')
-    c.Append('provider->AddStaticFeatures(')
-    c.Append('    base::span(static_features).first(static_feature_count));')
-    c.Eblock()
+      c.Append()
+
+    def append_empty_table():
+      # std::to_array cannot deduce an empty table, and a zero-length C array
+      # is ill-formed, so an empty one has to be spelled out.
+      c.Append('constexpr std::array<const Feature*, 0> kFeatures = {};')
+
+    if not names:
+      append_empty_table()
+      return c
+
+    # Every feature being conditional means the whole table can compile away.
+    # Guard it, because the braced-init-list would otherwise be empty.
+    all_conditional = all(conditions)
+    if all_conditional:
+      distinct = list(dict.fromkeys(conditions))
+      c.Append(
+        '#if %s' % ' || '.join('(%s)' % condition for condition in distinct)
+      )
+
+    c.Append('constexpr auto kFeatures = std::to_array<const Feature*>({')
+    for index, condition in enumerate(conditions):
+      if condition:
+        c.Append('#if %s' % condition)
+      c.Append('    &f%d::kFeature,' % index)
+      if condition:
+        c.Append('#endif')
+    c.Append('});')
+
+    if all_conditional:
+      c.Append('#else')
+      append_empty_table()
+      c.Append('#endif')
     return c
 
   def Write(self):
@@ -1239,7 +1275,7 @@ if __name__ == '__main__':
   parser.add_argument(
     'method_name',
     type=str,
-    help='The name of the method to populate the provider',
+    help='The name of the generated accessor for the table',
   )
   parser.add_argument(
     'out_root',

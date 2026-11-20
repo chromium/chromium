@@ -51,7 +51,7 @@ generated_json_strings("generated_api_json_strings") {
 
 json_features("features_compiler_test") {
   feature_type = "APIFeature"
-  method_name = "CompilerTestAddFeaturesMethod"
+  method_name = "CompilerTestGetFeaturesMethod"
   sources = [
     "features_test.json",
     "features_test2.json",

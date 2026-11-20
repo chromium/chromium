@@ -9,10 +9,10 @@
 #include <string_view>
 
 namespace extensions {
-class FeatureProvider;
 class JSONFeatureProviderSource;
 class PermissionsInfo;
 class ManifestHandlerRegistry;
+class StaticFeatureTable;
 
 // A class to provide API-specific bits and bobs to the extensions system.
 // This allows for composition of multiple providers, so that we can easily
@@ -24,11 +24,13 @@ class ExtensionsAPIProvider {
   ExtensionsAPIProvider& operator=(const ExtensionsAPIProvider&) = delete;
   virtual ~ExtensionsAPIProvider() = default;
 
-  // Adds feature definitions to the given `provider` of the specified type.
-  virtual void AddAPIFeatures(FeatureProvider* provider) = 0;
-  virtual void AddManifestFeatures(FeatureProvider* provider) = 0;
-  virtual void AddPermissionFeatures(FeatureProvider* provider) = 0;
-  virtual void AddBehaviorFeatures(FeatureProvider* provider) = 0;
+  // Returns this layer's statically stored feature definitions of the
+  // specified type. ExtensionsClient merges the tables from every provider
+  // into a single FeatureProvider per type.
+  virtual StaticFeatureTable GetAPIFeatures() const = 0;
+  virtual StaticFeatureTable GetManifestFeatures() const = 0;
+  virtual StaticFeatureTable GetPermissionFeatures() const = 0;
+  virtual StaticFeatureTable GetBehaviorFeatures() const = 0;
 
   // Adds resources containing the JSON API definitions.
   virtual void AddAPIJSONSources(JSONFeatureProviderSource* json_source) = 0;

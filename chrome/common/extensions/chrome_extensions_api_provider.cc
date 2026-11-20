@@ -21,23 +21,21 @@ namespace extensions {
 ChromeExtensionsAPIProvider::ChromeExtensionsAPIProvider() = default;
 ChromeExtensionsAPIProvider::~ChromeExtensionsAPIProvider() = default;
 
-void ChromeExtensionsAPIProvider::AddAPIFeatures(FeatureProvider* provider) {
-  AddChromeAPIFeatures(provider);
+StaticFeatureTable ChromeExtensionsAPIProvider::GetAPIFeatures() const {
+  return GetChromeAPIFeatures();
 }
 
-void ChromeExtensionsAPIProvider::AddManifestFeatures(
-    FeatureProvider* provider) {
-  AddChromeManifestFeatures(provider);
+StaticFeatureTable ChromeExtensionsAPIProvider::GetManifestFeatures() const {
+  return GetChromeManifestFeatures();
 }
 
-void ChromeExtensionsAPIProvider::AddPermissionFeatures(
-    FeatureProvider* provider) {
-  AddChromePermissionFeatures(provider);
+StaticFeatureTable ChromeExtensionsAPIProvider::GetPermissionFeatures() const {
+  return GetChromePermissionFeatures();
 }
 
-void ChromeExtensionsAPIProvider::AddBehaviorFeatures(
-    FeatureProvider* provider) {
+StaticFeatureTable ChromeExtensionsAPIProvider::GetBehaviorFeatures() const {
   // Note: No chrome-specific behavior features.
+  return {};
 }
 
 void ChromeExtensionsAPIProvider::AddAPIJSONSources(

@@ -24,6 +24,7 @@
 #include "extensions/common/api/shared_module.h"
 #include "extensions/common/api/web_accessible_resources.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/common/features/feature.h"
 #include "extensions/common/features/feature_provider.h"
 #include "extensions/common/manifest_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -148,9 +149,11 @@ TEST(ExtensionSimpleOverridesTest,
       extensions::FeatureProvider::GetManifestFeatures();
   ASSERT_TRUE(manifest_features);
 
-  const extensions::FeatureMap& known_features =
-      manifest_features->GetAllFeatures();
+  extensions::FeatureSpan known_features = manifest_features->GetAllFeatures();
 
+  auto is_known = [manifest_features](std::string_view name) {
+    return manifest_features->GetFeature(name) != nullptr;
+  };
   std::vector<std::string> allowlisted_features =
       simple_overrides::GetAllowlistedManifestKeysForTesting();
 
@@ -160,8 +163,7 @@ TEST(ExtensionSimpleOverridesTest,
   // Verify that all disallowed features are recognized and that none are in
   // both the disallowed and allowed feature sets.
   for (const auto& feature : disallowed_features) {
-    EXPECT_TRUE(known_features.contains(feature))
-        << "Unknown feature: " << feature;
+    EXPECT_TRUE(is_known(feature)) << "Unknown feature: " << feature;
     EXPECT_FALSE(std::ranges::contains(allowlisted_features, feature))
         << "Feature in both allowed and disallowed: " << feature;
   }
@@ -169,15 +171,15 @@ TEST(ExtensionSimpleOverridesTest,
   // Verify that all allowed features are recognized and that none are in
   // both the disallowed and allowed feature sets.
   for (const auto& feature : allowlisted_features) {
-    EXPECT_TRUE(known_features.contains(feature))
-        << "Unknown feature: " << feature;
+    EXPECT_TRUE(is_known(feature)) << "Unknown feature: " << feature;
     EXPECT_FALSE(std::ranges::contains(disallowed_features, feature))
         << "Feature in both allowed and disallowed: " << feature;
   }
 
   // Verify that all known features are in either the allowed or disallowed
   // set.
-  for (const auto& [key, value] : known_features) {
+  for (const extensions::Feature* feature : known_features) {
+    const std::string_view key = feature->name();
     // Is this expectation failing for you?
     // Review the comment in simple_overrides.cc above the allowed feature
     // list and evaluate whether your new feature belongs in the allowed or

@@ -5,6 +5,7 @@
 #include "extensions/renderer/native_extension_bindings_system.h"
 
 #include <algorithm>
+#include <functional>
 #include <optional>
 #include <string_view>
 #include <utility>
@@ -295,8 +296,9 @@ v8::Local<v8::Object> CreateFullBinding(
     APIBindingsSystem* bindings_system,
     const FeatureProvider* api_feature_provider,
     std::string_view root_name) {
-  const FeatureMap& features = api_feature_provider->GetAllFeatures();
-  auto lower = features.lower_bound(root_name);
+  FeatureSpan features = api_feature_provider->GetAllFeatures();
+  auto lower = std::ranges::lower_bound(features, root_name, std::less<>(),
+                                        &Feature::name);
   CHECK(lower != features.end());
 
   // Some bindings have a prefixed name, like app.runtime, where 'app' and
@@ -305,8 +307,8 @@ v8::Local<v8::Object> CreateFullBinding(
   // either instantiate the 'app' binding fully (if the context has access), or
   // else use an empty object (so we can still instantiate 'app.runtime').
   v8::Local<v8::Object> root_binding;
-  if (lower->first == root_name) {
-    const Feature* feature = lower->second.get();
+  if ((*lower)->name() == root_name) {
+    const Feature* feature = *lower;
     if (script_context->IsAnyFeatureAvailableToContext(
             *feature, CheckAliasStatus::NOT_ALLOWED)) {
       // If this feature is an alias for a different API, use the other binding
@@ -348,24 +350,27 @@ v8::Local<v8::Object> CreateFullBinding(
   // On the upside, most APIs are not prefixed at all, and this loop is never
   // entered.
   for (auto iter = lower;
-       iter != features.end() && IsPrefixedAPI(iter->first, root_name);
+       iter != features.end() && IsPrefixedAPI((*iter)->name(), root_name);
        ++iter) {
-    if (iter->second->IsInternal())
+    const Feature* feature = *iter;
+    if (feature->IsInternal()) {
       continue;
+    }
 
-    if (IsPrefixedAPI(iter->first, last_binding_name)) {
+    if (IsPrefixedAPI(feature->name(), last_binding_name)) {
       // Instantiating |last_binding_name| must have already instantiated
-      // iter->first.
+      // this feature.
       continue;
     }
 
     // If this API has a parent feature (and isn't marked 'noparent'),
     // then this must be a function or event, so we should not register.
-    if (api_feature_provider->GetParent(*iter->second) != nullptr)
+    if (api_feature_provider->GetParent(*feature) != nullptr) {
       continue;
+    }
 
     std::string_view binding_name =
-        GetFirstDifferentAPIName(iter->first, root_name);
+        GetFirstDifferentAPIName(feature->name(), root_name);
 
     v8::Local<v8::Object> nested_binding =
         CreateFullBinding(context, script_context, bindings_system,

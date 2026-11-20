@@ -829,7 +829,10 @@ source_set("unit_tests") {
 
 if (enable_nocompile_tests) {
   nocompile_source_set("features_nocompile_tests") {
-    sources = [ "features/complex_feature_nocompile.nc" ]
+    sources = [
+      "features/complex_feature_nocompile.nc",
+      "features/static_feature_table_nocompile.nc",
+    ]
     deps = [ ":common" ]
   }
 }

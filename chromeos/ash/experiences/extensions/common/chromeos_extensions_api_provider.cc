@@ -23,24 +23,25 @@ namespace ash {
 ChromeOSExtensionsAPIProvider::ChromeOSExtensionsAPIProvider() = default;
 ChromeOSExtensionsAPIProvider::~ChromeOSExtensionsAPIProvider() = default;
 
-void ChromeOSExtensionsAPIProvider::AddAPIFeatures(
-    extensions::FeatureProvider* provider) {
-  AddChromeOSAPIFeatures(provider);
+extensions::StaticFeatureTable ChromeOSExtensionsAPIProvider::GetAPIFeatures()
+    const {
+  return extensions::GetChromeOSAPIFeatures();
 }
 
-void ChromeOSExtensionsAPIProvider::AddManifestFeatures(
-    extensions::FeatureProvider* provider) {
-  AddChromeOSManifestFeatures(provider);
+extensions::StaticFeatureTable
+ChromeOSExtensionsAPIProvider::GetManifestFeatures() const {
+  return extensions::GetChromeOSManifestFeatures();
 }
 
-void ChromeOSExtensionsAPIProvider::AddPermissionFeatures(
-    extensions::FeatureProvider* provider) {
-  AddChromeOSPermissionFeatures(provider);
+extensions::StaticFeatureTable
+ChromeOSExtensionsAPIProvider::GetPermissionFeatures() const {
+  return extensions::GetChromeOSPermissionFeatures();
 }
 
-void ChromeOSExtensionsAPIProvider::AddBehaviorFeatures(
-    extensions::FeatureProvider* provider) {
+extensions::StaticFeatureTable
+ChromeOSExtensionsAPIProvider::GetBehaviorFeatures() const {
   // Note: No chromeos-specific behavior features.
+  return {};
 }
 
 void ChromeOSExtensionsAPIProvider::AddAPIJSONSources(

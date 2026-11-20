@@ -142,7 +142,7 @@ FeatureCache::ExtensionFeatureData FeatureCache::CreateCacheEntry(
       (context_type == mojom::ContextType::kWebUi ||
        context_type == mojom::ContextType::kUntrustedWebUi);
   const GURL& url_to_use = should_use_url ? origin : empty_url;
-  for (const auto& [name, feature] : api_feature_provider->GetAllFeatures()) {
+  for (const Feature* feature : api_feature_provider->GetAllFeatures()) {
     // Exclude internal APIs.
     if (feature->IsInternal())
       continue;
@@ -155,8 +155,9 @@ FeatureCache::ExtensionFeatureData FeatureCache::CreateCacheEntry(
       continue;
 
     // Skip chrome.test if this isn't a test.
-    if (name == "test" && !base::CommandLine::ForCurrentProcess()->HasSwitch(
-                              ::switches::kTestType)) {
+    if (feature->name() == "test" &&
+        !base::CommandLine::ForCurrentProcess()->HasSwitch(
+            ::switches::kTestType)) {
       continue;
     }
 
@@ -168,18 +169,16 @@ FeatureCache::ExtensionFeatureData FeatureCache::CreateCacheEntry(
                   extension, context_type, url_to_use,
                   Feature::GetCurrentPlatform(), context_id, context_data)
               .is_available()) {
-        features.dev_mode_restricted_features.push_back(feature.get());
+        features.dev_mode_restricted_features.push_back(feature);
       }
       continue;
     }
 
-    features.available_features.push_back(feature.get());
+    features.available_features.push_back(feature);
   }
 
-  // `FeatureProvider::GetAllFeatures()` returns a `FeatureMap`
-  // (`base::flat_map`) keyed by `Feature::name`, so iterating over it in order
-  // guarantees that both vectors are strictly sorted by name with no
-  // duplicates.
+  // The provider returns features in name order with no duplicates, so
+  // iterating over them preserves both invariants for these vectors.
   DCHECK(std::ranges::adjacent_find(features.dev_mode_restricted_features,
                                     std::ranges::greater_equal{},
                                     &Feature::name) ==

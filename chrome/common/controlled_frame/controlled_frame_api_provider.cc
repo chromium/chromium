@@ -16,24 +16,27 @@ namespace controlled_frame {
 ControlledFrameAPIProvider::ControlledFrameAPIProvider() = default;
 ControlledFrameAPIProvider::~ControlledFrameAPIProvider() = default;
 
-void ControlledFrameAPIProvider::AddAPIFeatures(
-    extensions::FeatureProvider* provider) {
-  AddControlledFrameAPIFeatures(provider);
+extensions::StaticFeatureTable ControlledFrameAPIProvider::GetAPIFeatures()
+    const {
+  return extensions::GetControlledFrameAPIFeatures();
 }
 
-void ControlledFrameAPIProvider::AddManifestFeatures(
-    extensions::FeatureProvider* provider) {
+extensions::StaticFeatureTable ControlledFrameAPIProvider::GetManifestFeatures()
+    const {
   // No Controlled Frame specific manifest features.
+  return {};
 }
 
-void ControlledFrameAPIProvider::AddPermissionFeatures(
-    extensions::FeatureProvider* provider) {
+extensions::StaticFeatureTable
+ControlledFrameAPIProvider::GetPermissionFeatures() const {
   // No Controlled Frame specific permission features.
+  return {};
 }
 
-void ControlledFrameAPIProvider::AddBehaviorFeatures(
-    extensions::FeatureProvider* provider) {
+extensions::StaticFeatureTable ControlledFrameAPIProvider::GetBehaviorFeatures()
+    const {
   // No Controlled Frame specific manifest features.
+  return {};
 }
 
 void ControlledFrameAPIProvider::AddAPIJSONSources(

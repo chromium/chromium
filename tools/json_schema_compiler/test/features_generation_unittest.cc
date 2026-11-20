@@ -227,7 +227,7 @@ TEST(FeaturesGenerationTest, FeaturesTest) {
   ExtensionsClient::Get()->SetFeatureDelegatedAvailabilityCheckMap(
       std::move(map));
   FeatureProvider provider;
-  CompilerTestAddFeaturesMethod(&provider);
+  provider.AddStaticFeatures(CompilerTestGetFeaturesMethod().span());
 
   auto GetAsSimpleFeature = [&provider](const std::string& name) {
     const Feature* feature = provider.GetFeature(name);

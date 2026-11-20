@@ -20,24 +20,25 @@ namespace chrome_apps {
 ChromeAppsAPIProvider::ChromeAppsAPIProvider() = default;
 ChromeAppsAPIProvider::~ChromeAppsAPIProvider() = default;
 
-void ChromeAppsAPIProvider::AddAPIFeatures(
-    extensions::FeatureProvider* provider) {
-  AddChromeAppsAPIFeatures(provider);
+extensions::StaticFeatureTable ChromeAppsAPIProvider::GetAPIFeatures() const {
+  return extensions::GetChromeAppsAPIFeatures();
 }
 
-void ChromeAppsAPIProvider::AddManifestFeatures(
-    extensions::FeatureProvider* provider) {
+extensions::StaticFeatureTable ChromeAppsAPIProvider::GetManifestFeatures()
+    const {
   // No Chrome-apps-specific manifest features (yet).
+  return {};
 }
 
-void ChromeAppsAPIProvider::AddPermissionFeatures(
-    extensions::FeatureProvider* provider) {
-  AddChromeAppsPermissionFeatures(provider);
+extensions::StaticFeatureTable ChromeAppsAPIProvider::GetPermissionFeatures()
+    const {
+  return extensions::GetChromeAppsPermissionFeatures();
 }
 
-void ChromeAppsAPIProvider::AddBehaviorFeatures(
-    extensions::FeatureProvider* provider) {
+extensions::StaticFeatureTable ChromeAppsAPIProvider::GetBehaviorFeatures()
+    const {
   // No Chrome-apps-specific manifest features.
+  return {};
 }
 
 void ChromeAppsAPIProvider::AddAPIJSONSources(

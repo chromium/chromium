@@ -12,7 +12,6 @@
 #include "extensions/common/extensions_api_provider.h"
 
 namespace extensions {
-class FeatureProvider;
 class JSONFeatureProviderSource;
 class ManifestHandlerRegistry;
 class PermissionsInfo;
@@ -32,10 +31,10 @@ class ChromeOSSystemExtensionsAPIProvider
   ~ChromeOSSystemExtensionsAPIProvider() override;
 
   // ExtensionsAPIProvider:
-  void AddAPIFeatures(extensions::FeatureProvider* provider) override;
-  void AddManifestFeatures(extensions::FeatureProvider* provider) override;
-  void AddPermissionFeatures(extensions::FeatureProvider* provider) override;
-  void AddBehaviorFeatures(extensions::FeatureProvider* provider) override;
+  extensions::StaticFeatureTable GetAPIFeatures() const override;
+  extensions::StaticFeatureTable GetManifestFeatures() const override;
+  extensions::StaticFeatureTable GetPermissionFeatures() const override;
+  extensions::StaticFeatureTable GetBehaviorFeatures() const override;
   void AddAPIJSONSources(
       extensions::JSONFeatureProviderSource* json_source) override;
   bool IsAPISchemaGenerated(const std::string& name) override;

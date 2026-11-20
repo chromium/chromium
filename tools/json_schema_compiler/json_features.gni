@@ -2,11 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# Generates the FeatureProviders files for extension features files.
+# Generates static feature tables from extension feature JSON files.
 # The following variables are required:
 #   sources: The features.json files to use.
 #   feature_type: The type of the features to generate, e.g. APIFeature.
-#   method_name: The name of the method to generate, e.g. AddChromeAPIFeatures.
+#   method_name: The name of the function to generate, e.g.
+#       GetChromeAPIFeatures.
 #   deps/public_deps/visibility: normal meaning
 template("json_features") {
   assert(defined(invoker.sources),
@@ -70,16 +71,15 @@ template("json_features") {
     if (!defined(public_deps)) {
       public_deps = []
     }
-    public_deps += [ ":$action_name" ]
+    public_deps += [
+      ":$action_name",
+      "//extensions/common",
+    ]
 
-    # Append a dependency on the extensions system. Headers in this target
-    # are included by the feature compiler automatically.
+    # The generated implementation uses printing build flags.
     if (!defined(deps)) {
       deps = []
     }
-    deps += [
-      "//extensions/common",
-      "//printing/buildflags",
-    ]
+    deps += [ "//printing/buildflags" ]
   }
 }

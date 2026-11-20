@@ -22,21 +22,20 @@ namespace extensions {
 CoreExtensionsAPIProvider::CoreExtensionsAPIProvider() = default;
 CoreExtensionsAPIProvider::~CoreExtensionsAPIProvider() = default;
 
-void CoreExtensionsAPIProvider::AddAPIFeatures(FeatureProvider* provider) {
-  AddCoreAPIFeatures(provider);
+StaticFeatureTable CoreExtensionsAPIProvider::GetAPIFeatures() const {
+  return GetCoreAPIFeatures();
 }
 
-void CoreExtensionsAPIProvider::AddManifestFeatures(FeatureProvider* provider) {
-  AddCoreManifestFeatures(provider);
+StaticFeatureTable CoreExtensionsAPIProvider::GetManifestFeatures() const {
+  return GetCoreManifestFeatures();
 }
 
-void CoreExtensionsAPIProvider::AddPermissionFeatures(
-    FeatureProvider* provider) {
-  AddCorePermissionFeatures(provider);
+StaticFeatureTable CoreExtensionsAPIProvider::GetPermissionFeatures() const {
+  return GetCorePermissionFeatures();
 }
 
-void CoreExtensionsAPIProvider::AddBehaviorFeatures(FeatureProvider* provider) {
-  AddCoreBehaviorFeatures(provider);
+StaticFeatureTable CoreExtensionsAPIProvider::GetBehaviorFeatures() const {
+  return GetCoreBehaviorFeatures();
 }
 
 void CoreExtensionsAPIProvider::AddAPIJSONSources(

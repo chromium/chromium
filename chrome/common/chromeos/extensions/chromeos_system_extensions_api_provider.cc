@@ -29,24 +29,25 @@ ChromeOSSystemExtensionsAPIProvider::ChromeOSSystemExtensionsAPIProvider() =
 ChromeOSSystemExtensionsAPIProvider::~ChromeOSSystemExtensionsAPIProvider() =
     default;
 
-void ChromeOSSystemExtensionsAPIProvider::AddAPIFeatures(
-    extensions::FeatureProvider* provider) {
-  AddChromeOSSystemExtensionsAPIFeatures(provider);
+extensions::StaticFeatureTable
+ChromeOSSystemExtensionsAPIProvider::GetAPIFeatures() const {
+  return extensions::GetChromeOSSystemExtensionsAPIFeatures();
 }
 
-void ChromeOSSystemExtensionsAPIProvider::AddManifestFeatures(
-    extensions::FeatureProvider* provider) {
-  AddChromeOSSystemExtensionsManifestFeatures(provider);
+extensions::StaticFeatureTable
+ChromeOSSystemExtensionsAPIProvider::GetManifestFeatures() const {
+  return extensions::GetChromeOSSystemExtensionsManifestFeatures();
 }
 
-void ChromeOSSystemExtensionsAPIProvider::AddPermissionFeatures(
-    extensions::FeatureProvider* provider) {
-  AddChromeOSSystemExtensionsPermissionFeatures(provider);
+extensions::StaticFeatureTable
+ChromeOSSystemExtensionsAPIProvider::GetPermissionFeatures() const {
+  return extensions::GetChromeOSSystemExtensionsPermissionFeatures();
 }
 
-void ChromeOSSystemExtensionsAPIProvider::AddBehaviorFeatures(
-    extensions::FeatureProvider* provider) {
+extensions::StaticFeatureTable
+ChromeOSSystemExtensionsAPIProvider::GetBehaviorFeatures() const {
   // Note: No chromeOS-specific behavior features.
+  return {};
 }
 
 void ChromeOSSystemExtensionsAPIProvider::AddAPIJSONSources(

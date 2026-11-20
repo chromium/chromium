@@ -62,7 +62,7 @@ generated_types("generated_api_types") {
 
 json_features("api_features") {
   feature_type = "APIFeature"
-  method_name = "AddChromeOSAPIFeatures"
+  method_name = "GetChromeOSAPIFeatures"
   sources = [ "_api_features.json" ]
   inputs = [ "_api_features.override.json" ]
   visibility = [ ":extensions_features" ]
@@ -70,7 +70,7 @@ json_features("api_features") {
 
 json_features("permission_features") {
   feature_type = "PermissionFeature"
-  method_name = "AddChromeOSPermissionFeatures"
+  method_name = "GetChromeOSPermissionFeatures"
   sources = [ "_permission_features.json" ]
   inputs = [ "_permission_features.override.json" ]
   visibility = [ ":extensions_features" ]
@@ -78,7 +78,7 @@ json_features("permission_features") {
 
 json_features("manifest_features") {
   feature_type = "ManifestFeature"
-  method_name = "AddChromeOSManifestFeatures"
+  method_name = "GetChromeOSManifestFeatures"
   sources = [ "_manifest_features.json" ]
   inputs = [ "_manifest_features.override.json" ]
   visibility = [ ":extensions_features" ]

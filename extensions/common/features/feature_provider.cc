@@ -4,20 +4,15 @@
 
 #include "extensions/common/features/feature_provider.h"
 
+#include <algorithm>
 #include <functional>
-#include <map>
-#include <memory>
+#include <string>
 #include <string_view>
 
-#include "base/containers/map_util.h"
-#include "base/debug/alias.h"
-#include "base/functional/callback.h"
-#include "base/logging.h"
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/no_destructor.h"
-#include "base/strings/span_printf.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_split.h"
-#include "base/strings/string_util.h"
 #include "base/trace_event/trace_event.h"
 #include "extensions/common/extensions_client.h"
 #include "extensions/common/features/feature.h"
@@ -26,24 +21,6 @@ namespace extensions {
 
 namespace {
 
-// Writes |message| to the stack so that it shows up in the minidump, then
-// crashes the current process.
-//
-// The prefix "e::" is used so that the crash can be quickly located.
-//
-// This is provided in feature_util because for some reason features are prone
-// to mysterious crashes in named map lookups. For example see
-// crbug.com/40361738 and crbug.com/40407279.
-#define CRASH_WITH_MINIDUMP(message)                                  \
-  {                                                                   \
-    std::string message_copy(message);                                \
-    char minidump[BUFSIZ];                                            \
-    base::debug::Alias(&minidump);                                    \
-    base::SpanPrintf(minidump, "e::%s:%d:\"%s\"", __FILE__, __LINE__, \
-                     message_copy.c_str());                           \
-    LOG(FATAL) << message_copy;                                       \
-  }
-
 class FeatureProviderStatic {
  public:
   FeatureProviderStatic() {
@@ -51,28 +28,27 @@ class FeatureProviderStatic {
                  "extensions::FeatureProvider::FeatureProviderStatic");
 
     ExtensionsClient* client = ExtensionsClient::Get();
-    feature_providers_["api"] = client->CreateFeatureProvider("api");
-    feature_providers_["manifest"] = client->CreateFeatureProvider("manifest");
-    feature_providers_["permission"] =
-        client->CreateFeatureProvider("permission");
-    feature_providers_["behavior"] = client->CreateFeatureProvider("behavior");
+    api_ = client->CreateFeatureProvider("api");
+    manifest_ = client->CreateFeatureProvider("manifest");
+    permission_ = client->CreateFeatureProvider("permission");
+    behavior_ = client->CreateFeatureProvider("behavior");
   }
 
   FeatureProviderStatic(const FeatureProviderStatic&) = delete;
   FeatureProviderStatic& operator=(const FeatureProviderStatic&) = delete;
 
-  const FeatureProvider* GetFeatures(std::string_view name) const {
-    auto* provider = base::FindPtrOrNull(feature_providers_, name);
-    if (!provider) {
-      CRASH_WITH_MINIDUMP(
-          base::StrCat({"FeatureProvider \"", name, "\" not found"}));
-    }
-    return provider;
-  }
+  const FeatureProvider& api() const { return api_; }
+  const FeatureProvider& manifest() const { return manifest_; }
+  const FeatureProvider& permission() const { return permission_; }
+  const FeatureProvider& behavior() const { return behavior_; }
 
  private:
-  std::map<std::string, std::unique_ptr<FeatureProvider>, std::less<>>
-      feature_providers_;
+  // Held by value: there are exactly four, and they live for the life of the
+  // process.
+  FeatureProvider api_;
+  FeatureProvider manifest_;
+  FeatureProvider permission_;
+  FeatureProvider behavior_;
 };
 
 const FeatureProviderStatic& GetFeatureProviderStatic() {
@@ -80,10 +56,10 @@ const FeatureProviderStatic& GetFeatureProviderStatic() {
   return *instance;
 }
 
-const Feature* GetFeatureFromProviderByName(std::string_view provider_name,
-                                            std::string_view feature_name) {
-  const Feature* feature =
-      FeatureProvider::GetByName(provider_name)->GetFeature(feature_name);
+const Feature* GetFeatureFromProvider(const FeatureProvider& provider,
+                                      std::string_view provider_name,
+                                      std::string_view feature_name) {
+  const Feature* feature = provider.GetFeature(feature_name);
   // We should always refer to existing features, but we can't CHECK here
   // due to flaky JSONReader fails, see: crbug.com/40302033, crbug.com/41248827
   DCHECK(feature) << "Feature \"" << feature_name << "\" not found in "
@@ -94,67 +70,70 @@ const Feature* GetFeatureFromProviderByName(std::string_view provider_name,
 }  // namespace
 
 FeatureProvider::FeatureProvider() = default;
+FeatureProvider::FeatureProvider(FeatureProvider&&) = default;
+FeatureProvider& FeatureProvider::operator=(FeatureProvider&&) = default;
 FeatureProvider::~FeatureProvider() = default;
 
 // static
-const FeatureProvider* FeatureProvider::GetByName(std::string_view name) {
-  return GetFeatureProviderStatic().GetFeatures(name);
-}
-
-// static
 const FeatureProvider* FeatureProvider::GetAPIFeatures() {
-  return GetByName("api");
+  return &GetFeatureProviderStatic().api();
 }
 
 // static
 const FeatureProvider* FeatureProvider::GetManifestFeatures() {
-  return GetByName("manifest");
+  return &GetFeatureProviderStatic().manifest();
 }
 
 // static
 const FeatureProvider* FeatureProvider::GetPermissionFeatures() {
-  return GetByName("permission");
+  return &GetFeatureProviderStatic().permission();
 }
 
 // static
 const FeatureProvider* FeatureProvider::GetBehaviorFeatures() {
-  return GetByName("behavior");
+  return &GetFeatureProviderStatic().behavior();
 }
 
 // static
 const Feature* FeatureProvider::GetAPIFeature(std::string_view name) {
-  return GetFeatureFromProviderByName("api", name);
+  return GetFeatureFromProvider(GetFeatureProviderStatic().api(), "api", name);
 }
 
 // static
 const Feature* FeatureProvider::GetManifestFeature(std::string_view name) {
-  return GetFeatureFromProviderByName("manifest", name);
+  return GetFeatureFromProvider(GetFeatureProviderStatic().manifest(),
+                                "manifest", name);
 }
 
 // static
 const Feature* FeatureProvider::GetPermissionFeature(std::string_view name) {
-  return GetFeatureFromProviderByName("permission", name);
+  return GetFeatureFromProvider(GetFeatureProviderStatic().permission(),
+                                "permission", name);
 }
 
 // static
 const Feature* FeatureProvider::GetBehaviorFeature(std::string_view name) {
-  return GetFeatureFromProviderByName("behavior", name);
+  return GetFeatureFromProvider(GetFeatureProviderStatic().behavior(),
+                                "behavior", name);
 }
 
 const Feature* FeatureProvider::GetFeature(std::string_view name) const {
-  return base::FindPtrOrNull(features_, name);
+  auto it =
+      std::ranges::lower_bound(features_, name, std::less<>(), &Feature::name);
+  return it != features_.end() && (*it)->name() == name ? *it : nullptr;
 }
 
 const Feature* FeatureProvider::GetParent(const Feature& feature) const {
-  if (feature.no_parent())
+  if (feature.no_parent()) {
     return nullptr;
+  }
 
-  std::vector<std::string_view> split = base::SplitStringPiece(
-      feature.name(), ".", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-  if (split.size() < 2)
+  const std::string_view name = feature.name();
+  const size_t last_dot = name.rfind('.');
+  if (last_dot == std::string_view::npos) {
     return nullptr;
-  split.pop_back();
-  return GetFeature(base::JoinString(split, "."));
+  }
+  return GetFeature(name.substr(0, last_dot));
 }
 
 // Children of a given API are named starting with parent.name()+".", which
@@ -162,40 +141,62 @@ const Feature* FeatureProvider::GetParent(const Feature& feature) const {
 std::vector<const Feature*> FeatureProvider::GetChildren(
     const Feature& parent) const {
   std::string prefix = base::StrCat({parent.name(), "."});
-  const FeatureMap::const_iterator first_child = features_.lower_bound(prefix);
+  auto first_child = std::ranges::lower_bound(
+      features_, std::string_view(prefix), std::less<>(), &Feature::name);
 
   // All children have names before (parent.name() + ('.'+1)).
   ++prefix.back();
-  const FeatureMap::const_iterator after_children =
-      features_.lower_bound(prefix);
+  auto after_children = std::ranges::lower_bound(
+      features_, std::string_view(prefix), std::less<>(), &Feature::name);
 
   std::vector<const Feature*> result;
   result.reserve(std::distance(first_child, after_children));
-  for (FeatureMap::const_iterator it = first_child; it != after_children;
-       ++it) {
-    if (!it->second->no_parent())
-      result.push_back(it->second.get());
+  for (auto it = first_child; it != after_children; ++it) {
+    if (!(*it)->no_parent()) {
+      result.push_back(*it);
+    }
   }
   return result;
 }
 
-const FeatureMap& FeatureProvider::GetAllFeatures() const {
+FeatureSpan FeatureProvider::GetAllFeatures() const {
   return features_;
 }
 
-void FeatureProvider::AddStaticFeatures(
-    base::span<const Feature* const> features) {
-  features_.reserve(features_.size() + features.size());
+void FeatureProvider::ReserveStaticFeatures(size_t count) {
+  features_.reserve(features_.size() + count);
+}
 
-  for (const Feature* feature : features) {
-    CHECK(feature);
-    const std::string_view feature_name = feature->name();
-    const size_t previous_size = features_.size();
-    // Generated entries arrive sorted, making end() the optimal insertion
-    // hint; batches from other providers transparently fall back to lookup.
-    features_.emplace_hint(features_.end(), feature_name, feature);
-    CHECK_EQ(features_.size(), previous_size + 1u)
-        << "Duplicate feature registration: " << feature_name;
+void FeatureProvider::AddStaticFeatures(FeatureSpan features) {
+  for (size_t i = 0; i < features.size(); ++i) {
+    CHECK(features[i]);
+    if (i > 0) {
+      CHECK_LT(features[i - 1]->name(), features[i]->name())
+          << "Feature table is not strictly ordered by name";
+    }
+  }
+
+  // Merge from the back so that no temporary buffer is needed: the existing
+  // features shift toward the end of the grown vector while the new features
+  // are read directly from `features`.
+  size_t existing = features_.size();
+  size_t incoming = features.size();
+  features_.resize(existing + incoming);
+  size_t out = features_.size();
+  while (incoming > 0) {
+    const Feature* next = features[incoming - 1];
+    if (existing > 0) {
+      const Feature* current = features_[existing - 1];
+      CHECK_NE(current->name(), next->name())
+          << "Duplicate feature registration: " << next->name();
+      if (next->name() < current->name()) {
+        features_[--out] = current;
+        --existing;
+        continue;
+      }
+    }
+    features_[--out] = next;
+    --incoming;
   }
 }
 

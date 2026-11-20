@@ -222,7 +222,7 @@ source_set("unit_tests") {
 
 json_features("extension_features_unittest") {
   feature_type = "APIFeature"
-  method_name = "AddUnittestAPIFeatures"
+  method_name = "GetUnittestAPIFeatures"
   sources = [
     "//chrome/test/data/extensions/extension_api_unittest/api_features.json",
   ]

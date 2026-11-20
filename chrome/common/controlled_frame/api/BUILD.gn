@@ -51,7 +51,7 @@ generated_types("generated_api_types") {
 
 json_features("api_features") {
   feature_type = "APIFeature"
-  method_name = "AddControlledFrameAPIFeatures"
+  method_name = "GetControlledFrameAPIFeatures"
   sources = [ "_api_features.json" ]
   visibility = [ ":controlled_frame_features" ]
 }

@@ -147,11 +147,13 @@ ExtensionAPI::ExtensionAPI() = default;
 ExtensionAPI::~ExtensionAPI() = default;
 
 void ExtensionAPI::InitDefaultConfiguration() {
-  static const constexpr char* const names[] = {"api", "behavior", "manifest",
-                                                "permission"};
-  for (const char* const name : names) {
-    RegisterDependencyProvider(name, FeatureProvider::GetByName(name));
-  }
+  RegisterDependencyProvider("api", FeatureProvider::GetAPIFeatures());
+  RegisterDependencyProvider("behavior",
+                             FeatureProvider::GetBehaviorFeatures());
+  RegisterDependencyProvider("manifest",
+                             FeatureProvider::GetManifestFeatures());
+  RegisterDependencyProvider("permission",
+                             FeatureProvider::GetPermissionFeatures());
 
   default_configuration_initialized_ = true;
 }

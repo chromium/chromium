@@ -25,6 +25,7 @@
 #include "extensions/common/command.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_resource.h"
+#include "extensions/common/features/feature.h"
 #include "extensions/common/features/feature_provider.h"
 #include "extensions/common/file_util.h"
 #include "extensions/common/manifest.h"
@@ -442,9 +443,10 @@ TEST(ExtensionTest, IgnoredUnrecognizedKeysAreNotManifestFeatures) {
       extensions::FeatureProvider::GetManifestFeatures();
   ASSERT_TRUE(manifest_features);
 
-  for (const auto& [key, value] : manifest_features->GetAllFeatures()) {
-    EXPECT_FALSE(
-        std::ranges::contains(manifest_keys::kIgnoredUnrecognizedKeys, key));
+  for (const extensions::Feature* feature :
+       manifest_features->GetAllFeatures()) {
+    EXPECT_FALSE(std::ranges::contains(manifest_keys::kIgnoredUnrecognizedKeys,
+                                       feature->name()));
   }
 }
 

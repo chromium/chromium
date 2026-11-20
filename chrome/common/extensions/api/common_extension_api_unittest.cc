@@ -244,7 +244,7 @@ TEST(ExtensionAPITest, APIFeatures) {
   });
 
   FeatureProvider api_feature_provider;
-  AddUnittestAPIFeatures(&api_feature_provider);
+  api_feature_provider.AddStaticFeatures(GetUnittestAPIFeatures().span());
 
   for (size_t i = 0; i < std::size(test_data); ++i) {
     TestExtensionAPI api;
@@ -269,7 +269,7 @@ TEST(ExtensionAPITest, APIFeatures) {
 
 TEST(ExtensionAPITest, APIFeaturesAlias) {
   FeatureProvider api_feature_provider;
-  AddUnittestAPIFeatures(&api_feature_provider);
+  api_feature_provider.AddStaticFeatures(GetUnittestAPIFeatures().span());
 
   TestExtensionAPI api;
   api.RegisterDependencyProvider("api", &api_feature_provider);
@@ -385,7 +385,7 @@ TEST(ExtensionAPITest, IsAnyFeatureAvailableToContext) {
   });
 
   FeatureProvider api_feature_provider;
-  AddUnittestAPIFeatures(&api_feature_provider);
+  api_feature_provider.AddStaticFeatures(GetUnittestAPIFeatures().span());
 
   for (size_t i = 0; i < std::size(test_data); ++i) {
     TestExtensionAPI api;
@@ -443,7 +443,7 @@ TEST(ExtensionAPITest, SessionTypeFeature) {
        {"test6.foo", true, mojom::FeatureSessionType::kUnknown}});
 
   FeatureProvider api_feature_provider;
-  AddUnittestAPIFeatures(&api_feature_provider);
+  api_feature_provider.AddStaticFeatures(GetUnittestAPIFeatures().span());
 
   for (const auto& test : kTestData) {
     TestExtensionAPI api;
