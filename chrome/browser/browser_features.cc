@@ -91,11 +91,6 @@ BASE_FEATURE(kFlexOrgManagementDisclosure,
 BASE_FEATURE(kInitialExternalExtensions, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-#if !BUILDFLAG(IS_ANDROID)
-// Adds a "Snooze" action to mute notifications during screen sharing sessions.
-BASE_FEATURE(kMuteNotificationSnoozeAction, base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 // This feature enables monitoring of first-party network requests in order to
 // find possible violations. Example: A Chrome policy is set to disabled but the
 // network request controlled by that policy is observed.

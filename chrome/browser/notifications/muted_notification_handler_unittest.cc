@@ -9,8 +9,6 @@
 
 #include "base/functional/callback.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
-#include "chrome/browser/browser_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -29,17 +27,9 @@ class MockMutedNotificationHandlerDelegate
   MOCK_METHOD(void, OnAction, (MutedNotificationHandler::Action), (override));
 };
 
-class MutedNotificationHandlerTest : public testing::TestWithParam<bool> {
+class MutedNotificationHandlerTest : public testing::Test {
  public:
-  MutedNotificationHandlerTest() {
-    if (GetParam()) {
-      feature_list_.InitAndEnableFeature(
-          features::kMuteNotificationSnoozeAction);
-    } else {
-      feature_list_.InitAndDisableFeature(
-          features::kMuteNotificationSnoozeAction);
-    }
-  }
+  MutedNotificationHandlerTest() = default;
 
   ~MutedNotificationHandlerTest() override = default;
 
@@ -48,12 +38,11 @@ class MutedNotificationHandlerTest : public testing::TestWithParam<bool> {
   MutedNotificationHandler& handler() { return handler_; }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   MockMutedNotificationHandlerDelegate delegate_;
   MutedNotificationHandler handler_{&delegate_};
 };
 
-TEST_P(MutedNotificationHandlerTest, OnUserClose) {
+TEST_F(MutedNotificationHandlerTest, OnUserClose) {
   base::MockCallback<base::OnceClosure> callback;
   EXPECT_CALL(callback, Run());
   EXPECT_CALL(delegate(),
@@ -63,7 +52,7 @@ TEST_P(MutedNotificationHandlerTest, OnUserClose) {
                     callback.Get());
 }
 
-TEST_P(MutedNotificationHandlerTest, OnNonUserClose) {
+TEST_F(MutedNotificationHandlerTest, OnNonUserClose) {
   base::MockCallback<base::OnceClosure> callback;
   EXPECT_CALL(callback, Run());
   EXPECT_CALL(delegate(), OnAction).Times(0);
@@ -72,7 +61,7 @@ TEST_P(MutedNotificationHandlerTest, OnNonUserClose) {
                     callback.Get());
 }
 
-TEST_P(MutedNotificationHandlerTest, OnClickBody) {
+TEST_F(MutedNotificationHandlerTest, OnClickBody) {
   base::MockCallback<base::OnceClosure> callback;
   EXPECT_CALL(callback, Run());
   EXPECT_CALL(delegate(),
@@ -82,28 +71,12 @@ TEST_P(MutedNotificationHandlerTest, OnClickBody) {
       /*action_index=*/std::nullopt, /*reply=*/std::nullopt, callback.Get());
 }
 
-TEST_P(MutedNotificationHandlerTest, OnClickSnooze) {
-  if (!GetParam())
-    return;
-
-  base::MockCallback<base::OnceClosure> callback;
-  EXPECT_CALL(callback, Run());
-  EXPECT_CALL(delegate(),
-              OnAction(MutedNotificationHandler::Action::kSnoozeClick));
-  handler().OnClick(
-      /*profile=*/nullptr, GURL(), /*notification_id=*/std::string(),
-      /*action_index=*/0, /*reply=*/std::nullopt, callback.Get());
-}
-
-TEST_P(MutedNotificationHandlerTest, OnClickShow) {
+TEST_F(MutedNotificationHandlerTest, OnClickShow) {
   base::MockCallback<base::OnceClosure> callback;
   EXPECT_CALL(callback, Run());
   EXPECT_CALL(delegate(),
               OnAction(MutedNotificationHandler::Action::kShowClick));
   handler().OnClick(
       /*profile=*/nullptr, GURL(), /*notification_id=*/std::string(),
-      /*action_index=*/GetParam() ? 1 : 0, /*reply=*/std::nullopt,
-      callback.Get());
+      /*action_index=*/0, /*reply=*/std::nullopt, callback.Get());
 }
-
-INSTANTIATE_TEST_SUITE_P(, MutedNotificationHandlerTest, testing::Bool());

@@ -8513,13 +8513,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 
 #if !BUILDFLAG(IS_ANDROID)
-    {"mute-notification-snooze-action",
-     flag_descriptions::kMuteNotificationSnoozeActionName,
-     flag_descriptions::kMuteNotificationSnoozeActionDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kMuteNotificationSnoozeAction)},
-#endif  // !BUILDFLAG(IS_ANDROID)
-
-#if !BUILDFLAG(IS_ANDROID)
     {"notification-one-tap-unsubscribe-on-desktop",
      flag_descriptions::kNotificationOneTapUnsubscribeOnDesktopName,
      flag_descriptions::kNotificationOneTapUnsubscribeOnDesktopDescription,

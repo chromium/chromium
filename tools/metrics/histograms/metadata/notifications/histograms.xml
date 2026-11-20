@@ -457,30 +457,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Notifications.Blocker.ScreenCapture.SnoozedCount"
-    units="notifications" expires_after="2027-02-13">
-  <owner>knollr@chromium.org</owner>
-  <owner>peter@chromium.org</owner>
-  <summary>
-    The number of snoozed notifications that got prevented from showing up on
-    screen during a screen capture session. This means that the user clicked on
-    the &quot;Snooze&quot; action of a muted notification and continued to
-    receive notifications but we queued them without notifying the user at all.
-    Logged once after each screen capture session ends.
-
-    This metric was expired between August 2022 and January 2023, and may be
-    missing data until M111.
-
-    This metric may be logged at possibly inappropriate times, such as when
-    system profiles are being used. We expect that the number of &quot;0&quot;
-    samples is likely an overestimate because of this. This issue is tracked in
-    crbug.com/1385455.
-
-    This histogram was previously unused from 2023-07-09 to 2026-02-13, so data
-    might be missing.
-  </summary>
-</histogram>
-
 <histogram name="Notifications.Chime.Android.Events" enum="ChimeEvent"
     expires_after="never">
   <owner>dtrainor@chromium.org</owner>

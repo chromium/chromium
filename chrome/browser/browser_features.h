@@ -53,10 +53,6 @@ BASE_DECLARE_FEATURE(kFlexOrgManagementDisclosure);
 BASE_DECLARE_FEATURE(kInitialExternalExtensions);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-#if !BUILDFLAG(IS_ANDROID)
-BASE_DECLARE_FEATURE(kMuteNotificationSnoozeAction);
-#endif
-
 BASE_DECLARE_FEATURE(kNetworkAnnotationMonitoring);
 BASE_DECLARE_FEATURE(kNewTabPageTriggerForPrerender2);
 BASE_DECLARE_FEATURE(kNewTabPageTriggerForPrefetch);

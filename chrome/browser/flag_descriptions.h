@@ -6998,11 +6998,6 @@ inline constexpr char kMultistepFilterDescription[] =
     "browsing supported websites. Suggestions are based on recent "
     "browsing activity and filters are saved locally on the device.";
 
-inline constexpr char kMuteNotificationSnoozeActionName[] =
-    "Snooze action for mute notifications";
-inline constexpr char kMuteNotificationSnoozeActionDescription[] =
-    "Adds a Snooze action to mute notifications shown while sharing a screen.";
-
 inline constexpr char kNtpAlphaBackgroundCollectionsName[] =
     "NTP Alpha Background Collections";
 inline constexpr char kNtpAlphaBackgroundCollectionsDescription[] =

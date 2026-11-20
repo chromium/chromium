@@ -15,10 +15,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
-#include "chrome/browser/browser_features.h"
 #include "chrome/browser/notifications/notification_blocker.h"
 #include "chrome/browser/notifications/notification_display_queue.h"
 #include "chrome/browser/notifications/notification_platform_bridge_delegator.h"
@@ -308,52 +306,5 @@ class DesktopNotificationDisplayServiceImplTest
  private:
   raw_ptr<ScreenCaptureNotificationBlocker> screen_capture_blocker_ = nullptr;
 };
-
-TEST_F(DesktopNotificationDisplayServiceImplTest, SnoozeDuringScreenCapture) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kMuteNotificationSnoozeAction);
-
-  content::TestWebContentsFactory web_contents_factory;
-  content::WebContents* contents =
-      web_contents_factory.CreateWebContents(profile());
-  EXPECT_TRUE(GetDisplayedPlatformSync().empty());
-
-  // Start a screen capture session.
-  screen_capture_notification_blocker()->OnIsCapturingDisplayChanged(
-      contents, /*is_capturing_display=*/true);
-
-  // Displaying a notification should show the "Notifications Muted" generic
-  // notification instead of the real notification content.
-  std::string notification_id_1 = "id1";
-  DisplayNotification(notification_id_1);
-  EXPECT_EQ(1u, GetDisplayedPlatformSync().size());
-  EXPECT_EQ(1u, GetDisplayedPlatformSync().count(kMuteNotificationId));
-
-  // Emulate the user clicking on the "Snooze" action button.
-  base::RunLoop run_loop;
-  service().ProcessNotificationOperation(
-      NotificationOperation::kClick,
-      NotificationHandler::Type::NOTIFICATIONS_MUTED, /*origin=*/GURL(),
-      kMuteNotificationId, /*action_index=*/0, /*reply=*/std::nullopt,
-      /*by_user=*/true, /*is_suspicious=*/false,
-      base::BindOnce([](base::RunLoop* looper) { looper->Quit(); }, &run_loop));
-  run_loop.Run();
-
-  // Clicking "Snooze" should remove the "Notifications Muted" notification.
-  EXPECT_TRUE(GetDisplayedPlatformSync().empty());
-
-  // Showing another notification should not trigger any visible notification.
-  std::string notification_id_2 = "id2";
-  DisplayNotification(notification_id_2);
-  EXPECT_TRUE(GetDisplayedPlatformSync().empty());
-
-  // Stopping the screen sharing session should re-display all previously muted
-  // notifications.
-  screen_capture_notification_blocker()->OnIsCapturingDisplayChanged(
-      contents, /*is_capturing_display=*/false);
-  EXPECT_EQ(2u, GetDisplayedPlatformSync().size());
-  EXPECT_EQ(1u, GetDisplayedPlatformSync().count(notification_id_1));
-  EXPECT_EQ(1u, GetDisplayedPlatformSync().count(notification_id_2));
-}
 
 #endif  // !BUILDFLAG(IS_ANDROID)

@@ -26,8 +26,6 @@ class MutedNotificationHandler : public NotificationHandler {
     kBodyClick,
     // The user clicked on the "Show" action button.
     kShowClick,
-    // The user clicked on the "Snooze" action button.
-    kSnoozeClick,
   };
 
   // Delegate for handling muted notification actions.
