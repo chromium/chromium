@@ -799,12 +799,23 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
         if (referrer != null && !TextUtils.isEmpty(referrer.getUrl())) {
             loadUrlParams.setReferrer(referrer);
         }
+
+        // https://crbug.com/582927053 - If this is a redirect we don't want to kick this off as a
+        // new browser-initiated navigation as that will cause the URL to update to the target of
+        // the redirect. If the redirect were to get stuck as a pending navigation this would allow
+        // a malicious page to show an arbitrary URL over itself while it remains active
+        // indefinitely.
+        boolean isRendererInitiated =
+                params.isRendererInitiated()
+                        || (ExternalIntentsFeatures.MAKE_REDIRECTS_RENDERER_INITIATED.isEnabled()
+                                && params.isRedirect());
+
         // Ideally this navigation would be part of the navigation chain that triggered it and get,
         // the correct SameSite cookie behavior, but this is impractical as Tab clobbering is
         // frequently async and would require complex changes that are probably not worth doing for
         // fallback URLs. Instead, we treat the navigation as coming from an opaque Origin so that
         // SameSite cookies aren't mistakenly sent.
-        loadUrlParams.setIsRendererInitiated(params.isRendererInitiated());
+        loadUrlParams.setIsRendererInitiated(isRendererInitiated);
         loadUrlParams.setInitiatorOrigin(Origin.createOpaqueOrigin());
 
         // Loading URL will start a new navigation which cancels the current one

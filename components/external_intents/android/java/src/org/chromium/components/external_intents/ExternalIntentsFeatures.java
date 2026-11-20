@@ -27,6 +27,8 @@ public class ExternalIntentsFeatures {
     public static final String WEBAPK_SELF_OWNED_RENDERER_NAV_LAUNCH_NAME =
             "WebApkSelfOwnedRendererNavLaunch";
     public static final String EXTERNAL_INTENT_FILTER_NAME = "ExternalIntentFilter";
+    public static final String MAKE_REDIRECTS_RENDERER_INITIATED_NAME =
+            "MakeRedirectsRendererInitiated";
 
     public static final ExternalIntentsFeature EXTERNAL_NAVIGATION_DEBUG_LOGS =
             new ExternalIntentsFeature(0, EXTERNAL_NAVIGATION_DEBUG_LOGS_NAME);
@@ -39,6 +41,9 @@ public class ExternalIntentsFeatures {
 
     public static final ExternalIntentsFeature EXTERNAL_INTENT_FILTER =
             new ExternalIntentsFeature(3, EXTERNAL_INTENT_FILTER_NAME);
+
+    public static final ExternalIntentsFeature MAKE_REDIRECTS_RENDERER_INITIATED =
+            new ExternalIntentsFeature(4, MAKE_REDIRECTS_RENDERER_INITIATED_NAME);
 
     public static class ExternalIntentsFeature extends Features {
         private final int mOrdinal;

@@ -23,10 +23,9 @@ namespace {
 
 // Array of features exposed through the Java ExternalIntentsFeatures API.
 constexpr std::array kFeaturesExposedToJava = {
-    &kExternalNavigationDebugLogs,
-    &kDontClobberTabsWithChromeAppId,
-    &kWebApkSelfOwnedRendererNavLaunch,
-    &kExternalIntentFilter,
+    &kExternalNavigationDebugLogs,      &kDontClobberTabsWithChromeAppId,
+    &kWebApkSelfOwnedRendererNavLaunch, &kExternalIntentFilter,
+    &kMakeRedirectsRendererInitiated,
 };
 }  // namespace
 
@@ -35,6 +34,7 @@ constexpr std::array kFeaturesExposedToJava = {
 BASE_FEATURE(kExternalIntentFilter, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kExternalNavigationDebugLogs, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kDontClobberTabsWithChromeAppId, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kMakeRedirectsRendererInitiated, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kWebApkSelfOwnedRendererNavLaunch,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
