@@ -14,7 +14,7 @@
 #include "content/public/browser/browser_thread.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "chrome/android/chrome_jni_headers/HistoryDeletionBridge_jni.h"
+#include "chrome/browser/history/jni_headers/HistoryDeletionBridge_jni.h"
 
 using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;

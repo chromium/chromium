@@ -750,6 +750,7 @@ if (is_android) {
       "//chrome/browser/glic/android",
       "//chrome/browser/glic/android:jni_headers",
       "//chrome/browser/glic/browser_ui:impl",
+      "//chrome/browser/history:jni_headers",
       "//chrome/browser/keyboard_accessory/android",
       "//chrome/browser/keyboard_accessory/android:impl",
       "//chrome/browser/language/android:jni_headers",

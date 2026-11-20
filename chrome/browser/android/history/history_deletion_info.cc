@@ -11,7 +11,7 @@
 #include "components/history/core/browser/history_types.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "chrome/android/chrome_jni_headers/HistoryDeletionInfo_jni.h"
+#include "chrome/browser/history/jni_headers/HistoryDeletionInfo_jni.h"
 
 using base::android::ScopedJavaLocalRef;
 
