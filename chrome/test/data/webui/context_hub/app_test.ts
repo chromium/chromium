@@ -25,7 +25,7 @@ suite('ContextHubApp', () => {
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     resetUrlAndStorage();
-    loadTimeData.overrideValues({kAutoTodos: false});
+    loadTimeData.overrideValues({kAutoTodos: false, kLaunchpad: false});
     handler = TestMock.fromClass(PageHandlerRemote);
     handler.setResultFor(
         'getAllMemoryBankEntries', Promise.resolve({entries: []}));
@@ -37,6 +37,7 @@ suite('ContextHubApp', () => {
       firstPartyMetadata: {lastGenerationTime: null, hasError: false},
       thirdPartyMetadata: {lastGenerationTime: null, hasError: false},
     }));
+    handler.setResultFor('getTasks', Promise.resolve({tasks: []}));
     handler.setResultFor('getTodoFeedbacks', Promise.resolve({feedbacks: []}));
     const {instance} = browserProxyFactory.createForTest(handler);
     browserProxyFactory.setInstance(instance);
@@ -60,7 +61,7 @@ suite('ContextHubApp', () => {
   test(
       'hides launchpad and defaults to memory-banks when disabled',
       async () => {
-        loadTimeData.overrideValues({kAutoTodos: false});
+        loadTimeData.overrideValues({kAutoTodos: false, kLaunchpad: false});
         await createApp();
 
         assertNull(app.shadowRoot.querySelector('a[data-route="launchpad"]'));
@@ -70,7 +71,7 @@ suite('ContextHubApp', () => {
       });
 
   test('falls back to memory-banks when launchpad is disabled', async () => {
-    loadTimeData.overrideValues({kAutoTodos: false});
+    loadTimeData.overrideValues({kAutoTodos: false, kLaunchpad: false});
 
     window.location.hash = '#launchpad';
     await createApp();
@@ -93,17 +94,31 @@ suite('ContextHubApp', () => {
   });
 
   test('defaults to launchpad when enabled after disabled visit', async () => {
-    loadTimeData.overrideValues({kAutoTodos: false});
+    loadTimeData.overrideValues({kAutoTodos: false, kLaunchpad: false});
     await createApp();
     assertEquals('memory-banks', getSelector().selected);
     assertNull(localStorage.getItem('context_hub_current_view'));
     assertEquals('', window.location.hash);
 
-    loadTimeData.overrideValues({kAutoTodos: true});
+    loadTimeData.overrideValues({kAutoTodos: true, kLaunchpad: false});
     await createApp();
     assertTrue(!!app.shadowRoot.querySelector('a[data-route="launchpad"]'));
     assertEquals('launchpad', getSelector().selected);
     assertTrue(!!app.shadowRoot.querySelector('ai-taskbox'));
     assertNull(app.shadowRoot.querySelector('memory-banks'));
   });
+
+  test(
+      'shows launchpad and defaults to it when kLaunchpad alone is enabled',
+      async () => {
+        loadTimeData.overrideValues({kAutoTodos: false, kLaunchpad: true});
+        await createApp();
+
+        assertTrue(!!app.shadowRoot.querySelector('a[data-route="launchpad"]'));
+        assertEquals('launchpad', getSelector().selected);
+        assertTrue(!!app.shadowRoot.querySelector('ai-taskbox'));
+        assertNull(app.shadowRoot.querySelector('memory-banks'));
+        assertEquals(1, handler.getCallCount('getTasks'));
+        assertEquals(0, handler.getCallCount('getAutoTodos'));
+      });
 });

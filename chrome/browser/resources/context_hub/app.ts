@@ -34,6 +34,13 @@ const VALID_VIEWS: Set<ViewType> = new Set([
 ]);
 const STORAGE_KEY = 'context_hub_current_view';
 
+function isLaunchpadEnabled(): boolean {
+  return (loadTimeData.valueExists('kAutoTodos') &&
+          loadTimeData.getBoolean('kAutoTodos')) ||
+      (loadTimeData.valueExists('kLaunchpad') &&
+       loadTimeData.getBoolean('kLaunchpad'));
+}
+
 function normalizeView(view: string|null): ViewType|null {
   // Backwards compatibility for old view names.
   if (view === 'ai-taskbox') {
@@ -45,7 +52,7 @@ function normalizeView(view: string|null): ViewType|null {
   if (view === 'memory-bank-chat') {
     return 'memory-banks';
   }
-  if (view === 'launchpad' && !loadTimeData.getBoolean('kAutoTodos')) {
+  if (view === 'launchpad' && !isLaunchpadEnabled()) {
     return null;
   }
   if (view && VALID_VIEWS.has(view as ViewType)) {
@@ -64,7 +71,7 @@ function getInitialView(): ViewType {
   if (storedView) {
     return storedView;
   }
-  return loadTimeData.getBoolean('kAutoTodos') ? 'launchpad' : 'memory-banks';
+  return isLaunchpadEnabled() ? 'launchpad' : 'memory-banks';
 }
 
 export class ContextHubAppElement extends CrLitElement {
@@ -86,8 +93,7 @@ export class ContextHubAppElement extends CrLitElement {
     };
   }
 
-  protected readonly autoTodosEnabled_: boolean =
-      loadTimeData.getBoolean('kAutoTodos');
+  protected readonly launchpadEnabled_: boolean = isLaunchpadEnabled();
   protected accessor currentView_: ViewType = getInitialView();
 
   override connectedCallback() {

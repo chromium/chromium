@@ -17,7 +17,7 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {Time} from '//resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 
 import {AutoTodoStatus, browserProxyFactory} from '../context_hub.mojom-webui.js';
-import type {AutoTodoItem} from '../context_hub.mojom-webui.js';
+import type {AutoTodoItem, LaunchpadTask} from '../context_hub.mojom-webui.js';
 
 import {getCss} from './ai_taskbox.css.js';
 import {getHtml} from './ai_taskbox.html.js';
@@ -29,14 +29,32 @@ function convertMojoTimeToDate(mojoTime: Time): Date {
   return new Date(Number(unixEpochUs / 1000n));
 }
 
-function compareTodos(a: AutoTodoItem, b: AutoTodoItem): number {
+function firstPartyAutoTodosToLaunchpadTasks(items: AutoTodoItem[]):
+    LaunchpadTask[] {
+  const tasks: LaunchpadTask[] = [];
+  for (const item of items) {
+    if (item.data.firstParty) {
+      tasks.push({
+        id: item.id,
+        title: item.title,
+        description: item.description,
+        status: item.status,
+        score: item.score,
+        sourceReferences: item.data.firstParty.sourceReferences,
+        actionableUrl: item.data.firstParty.actionableUrl,
+      });
+    }
+  }
+  return tasks;
+}
+
+function compareTasks(a: LaunchpadTask, b: LaunchpadTask): number {
   return b.score - a.score || a.title.localeCompare(b.title);
 }
 
-function filterTodos(
-    todos: AutoTodoItem[], status: AutoTodoStatus): AutoTodoItem[] {
-  return todos.filter(todo => !!todo.data.firstParty && todo.status === status)
-      .sort(compareTodos);
+function filterTasks(
+    tasks: LaunchpadTask[], status: AutoTodoStatus): LaunchpadTask[] {
+  return tasks.filter(task => task.status === status).sort(compareTasks);
 }
 
 export class AiTaskboxElement extends CrLitElement {
@@ -69,11 +87,12 @@ export class AiTaskboxElement extends CrLitElement {
     };
   }
 
-  accessor todos: AutoTodoItem[]|null = null;
-  accessor completedTodos: AutoTodoItem[]|null = null;
-  accessor dismissedTodos: AutoTodoItem[]|null = null;
+  accessor todos: LaunchpadTask[]|null = null;
+  accessor completedTodos: LaunchpadTask[]|null = null;
+  accessor dismissedTodos: LaunchpadTask[]|null = null;
   protected accessor feedbacks_: Map<string, boolean> = new Map();
   protected accessor autoTodosEnabled_: boolean =
+      loadTimeData.valueExists('kAutoTodos') &&
       loadTimeData.getBoolean('kAutoTodos');
   protected accessor feedbackModeEnabled_: boolean = true;
 
@@ -84,24 +103,35 @@ export class AiTaskboxElement extends CrLitElement {
   protected accessor isDismissedExpanded_: boolean = false;
   protected accessor lastGmailGenerationTime_: Date|null = null;
 
+  protected readonly launchpadEnabled_: boolean =
+      loadTimeData.valueExists('kLaunchpad') &&
+      loadTimeData.getBoolean('kLaunchpad');
+  protected readonly clearAllTodosTooltip_: string =
+      'clears all todos and any context. regeneration after clearing may ' +
+      'result in previously dismissed/cleared todos';
+
   private listenerIds_: number[] = [];
   private updateTimerId_: number|null = null;
+  private launchpadRequestEpoch_: number = 0;
 
   override connectedCallback() {
     super.connectedCallback();
-    if (this.autoTodosEnabled_) {
+    if (this.launchpadEnabled_ || this.autoTodosEnabled_) {
       // Update the "Last updated" status every minute.
       this.updateTimerId_ =
           window.setInterval(() => this.requestUpdate(), 60000);
+    }
+    if (this.launchpadEnabled_) {
+      // TODO(b/586300169): Subscribe to Launchpad task and generation-state
+      // observer notifications on `callbackRouter` once wired.
+      this.fetchLaunchpadTasks_();
+    } else if (this.autoTodosEnabled_) {
       this.listenerIds_.push(
           browserProxyFactory.getInstance()
               .callbackRouter.onAutoTodosChanged.addListener(
                   (todos: AutoTodoItem[]) => {
-                    this.todos = filterTodos(todos, AutoTodoStatus.kActive);
-                    this.completedTodos =
-                        filterTodos(todos, AutoTodoStatus.kCompleted);
-                    this.dismissedTodos =
-                        filterTodos(todos, AutoTodoStatus.kDismissed);
+                    this.updateTasks_(
+                        firstPartyAutoTodosToLaunchpadTasks(todos));
                   }));
       this.listenerIds_.push(
           browserProxyFactory.getInstance()
@@ -116,6 +146,34 @@ export class AiTaskboxElement extends CrLitElement {
                 }
               }));
       this.fetchAutoTodos_();
+    }
+  }
+
+  private updateTasks_(tasks: LaunchpadTask[]) {
+    this.todos = filterTasks(tasks, AutoTodoStatus.kActive);
+    this.completedTodos = filterTasks(tasks, AutoTodoStatus.kCompleted);
+    this.dismissedTodos = filterTasks(tasks, AutoTodoStatus.kDismissed);
+  }
+
+  private async fetchLaunchpadTasks_() {
+    if (!this.isConnected) {
+      return;
+    }
+    const requestEpoch = ++this.launchpadRequestEpoch_;
+    try {
+      // TODO(b/586300169): Check in-flight generation state on load once
+      // exposed.
+      const {tasks} =
+          await browserProxyFactory.getInstance().handler.getTasks();
+      if (!this.isConnected || requestEpoch !== this.launchpadRequestEpoch_) {
+        return;
+      }
+      this.updateTasks_(tasks);
+    } catch (e) {
+      if (!this.isConnected || requestEpoch !== this.launchpadRequestEpoch_) {
+        return;
+      }
+      console.error('Failed to fetch Launchpad tasks:', e);
     }
   }
 
@@ -145,11 +203,7 @@ export class AiTaskboxElement extends CrLitElement {
       }
       this.feedbacks_ = feedbackMap;
 
-      this.todos = filterTodos(firstPartyTodos, AutoTodoStatus.kActive);
-      this.completedTodos =
-          filterTodos(firstPartyTodos, AutoTodoStatus.kCompleted);
-      this.dismissedTodos =
-          filterTodos(firstPartyTodos, AutoTodoStatus.kDismissed);
+      this.updateTasks_(firstPartyAutoTodosToLaunchpadTasks(firstPartyTodos));
     } catch (e) {
       console.error('Failed to fetch auto todos:', e);
     }
@@ -169,6 +223,10 @@ export class AiTaskboxElement extends CrLitElement {
 
   override disconnectedCallback() {
     super.disconnectedCallback();
+    if (this.launchpadEnabled_) {
+      this.launchpadRequestEpoch_++;
+      this.isGeneratingGmailTodos_ = false;
+    }
     if (this.updateTimerId_ !== null) {
       window.clearInterval(this.updateTimerId_);
       this.updateTimerId_ = null;
@@ -196,6 +254,10 @@ export class AiTaskboxElement extends CrLitElement {
   }
 
   protected async onGenerateGmailTodosClick_() {
+    if (this.launchpadEnabled_) {
+      await this.generateLaunchpadTasks_();
+      return;
+    }
     if (!this.autoTodosEnabled_ || this.isGeneratingGmailTodos_) {
       return;
     }
@@ -214,6 +276,38 @@ export class AiTaskboxElement extends CrLitElement {
       this.hasGmailGenerationError_ = true;
     } finally {
       this.isGeneratingGmailTodos_ = false;
+    }
+  }
+
+  private async generateLaunchpadTasks_() {
+    if (!this.isConnected || this.isGeneratingGmailTodos_) {
+      return;
+    }
+    const requestEpoch = ++this.launchpadRequestEpoch_;
+    this.isGeneratingGmailTodos_ = true;
+    this.hasGmailGenerationError_ = false;
+    try {
+      const {tasks} =
+          await browserProxyFactory.getInstance().handler.generateTasks();
+      if (!this.isConnected || requestEpoch !== this.launchpadRequestEpoch_) {
+        return;
+      }
+      this.hasGmailGenerationError_ = tasks === null;
+      if (tasks !== null) {
+        this.updateTasks_(tasks);
+        this.hasGeneratedGmail_ = true;
+        this.lastGmailGenerationTime_ = new Date();
+      }
+    } catch (e) {
+      if (!this.isConnected || requestEpoch !== this.launchpadRequestEpoch_) {
+        return;
+      }
+      console.error('Failed to generate Launchpad tasks:', e);
+      this.hasGmailGenerationError_ = true;
+    } finally {
+      if (this.isConnected && requestEpoch === this.launchpadRequestEpoch_) {
+        this.isGeneratingGmailTodos_ = false;
+      }
     }
   }
 
@@ -250,7 +344,8 @@ export class AiTaskboxElement extends CrLitElement {
   }
 
   protected async onClearWorkspaceTodosClick_() {
-    if (!this.autoTodosEnabled_ || this.isGeneratingGmailTodos_) {
+    if (this.launchpadEnabled_ || !this.autoTodosEnabled_ ||
+        this.isGeneratingGmailTodos_) {
       return;
     }
     this.shadowRoot?.querySelector<CrActionMenuElement>('#workspaceMenu')

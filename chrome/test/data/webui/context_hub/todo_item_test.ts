@@ -328,6 +328,49 @@ suite('TodoItem', () => {
 
         assertEquals(0, handler.getCallCount('runTodoTask'));
       });
+  test('hides run task button when kAutoTodos is disabled', async () => {
+    loadTimeData.overrideValues({kAutoTodos: false, can_act_on_web: true});
+    await createItem(
+        [createHistoryRef('https://example.com/a')], 'Book apartment tour');
+
+    assertNull(query('#runTaskButton'));
+  });
+
+  test('disable_feedback disables thumb buttons', async () => {
+    item = document.createElement('todo-item');
+    item.id = 'task-1';
+    item.heading = 'Review doc';
+    item.feedbackMode = true;
+    let feedbackChangedCount = 0;
+    item.addEventListener('feedback-changed', () => {
+      feedbackChangedCount++;
+    });
+    document.body.appendChild(item);
+    await microtasksFinished();
+
+    const thumbsUp = query<CrIconButtonElement>('#thumbsUp')!;
+    const thumbsDown = query<CrIconButtonElement>('#thumbsDown')!;
+
+    // Setting `disable_feedback` guards `onThumbClick_()` immediately, even
+    // before Lit flushes `disabled` onto `<cr-icon-button>`.
+    item.disable_feedback = true;
+    thumbsUp.click();
+    thumbsDown.click();
+    await microtasksFinished();
+
+    assertTrue(thumbsUp.disabled);
+    assertTrue(thumbsDown.disabled);
+    assertEquals('none', getComputedStyle(thumbsUp).pointerEvents);
+    assertEquals('none', getComputedStyle(thumbsDown).pointerEvents);
+
+    thumbsUp.click();
+    thumbsDown.click();
+    await microtasksFinished();
+
+    assertEquals(0, handler.getCallCount('setTodoFeedback'));
+    assertEquals(0, handler.getCallCount('deleteTodoFeedback'));
+    assertEquals(0, feedbackChangedCount);
+  });
 });
 
 suite('AiTaskbox', () => {

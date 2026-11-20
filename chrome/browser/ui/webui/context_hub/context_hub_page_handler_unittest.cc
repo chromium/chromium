@@ -4239,10 +4239,11 @@ TEST_F(ContextHubPageHandlerTest,
 TEST_F(ContextHubPageHandlerTest,
        OpenUrlsInTabGroup_FeaturesDisabled_ReportsBadMessage) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({},
-                                {browser::context_hub::mojom::kAutoTodos,
-                                 browser::context_hub::mojom::kTopics,
-                                 browser::context_hub::mojom::kSmartSearch});
+  feature_list.InitWithFeatures(
+      {},
+      {browser::context_hub::mojom::kAutoTodos, launchpad::features::kLaunchpad,
+       browser::context_hub::mojom::kTopics,
+       browser::context_hub::mojom::kSmartSearch});
 
   EXPECT_CALL(*mock_tab_provider_, OpenUrlsInTabGroup(_, _)).Times(0);
 
@@ -4252,17 +4253,18 @@ TEST_F(ContextHubPageHandlerTest,
                                base::DoNothing());
 
   EXPECT_EQ(
-      "OpenUrlsInTabGroup cannot be called without AutoTodos, Topics, or "
-      "SmartSearch enabled.",
+      "OpenUrlsInTabGroup cannot be called without AutoTodos, Launchpad, "
+      "Topics, or SmartSearch enabled.",
       bad_message_observer.WaitForBadMessage());
 }
 
 TEST_F(ContextHubPageHandlerTest,
        OpenUrlsInTabGroup_AutoTodosOnlyEnabled_Succeeds) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({browser::context_hub::mojom::kAutoTodos},
-                                {browser::context_hub::mojom::kTopics,
-                                 browser::context_hub::mojom::kSmartSearch});
+  feature_list.InitWithFeatures(
+      {browser::context_hub::mojom::kAutoTodos},
+      {launchpad::features::kLaunchpad, browser::context_hub::mojom::kTopics,
+       browser::context_hub::mojom::kSmartSearch});
 
   std::vector<GURL> opened_urls;
   EXPECT_CALL(*mock_tab_provider_, OpenUrlsInTabGroup("History Todo", _))
@@ -4273,6 +4275,29 @@ TEST_F(ContextHubPageHandlerTest,
 
   base::test::TestFuture<bool> future;
   handler_->OpenUrlsInTabGroup("History Todo", {GURL("https://example.com/a")},
+                               future.GetCallback());
+
+  EXPECT_TRUE(future.Get());
+  EXPECT_THAT(opened_urls, testing::ElementsAre(GURL("https://example.com/a")));
+}
+
+TEST_F(ContextHubPageHandlerTest,
+       OpenUrlsInTabGroup_LaunchpadOnlyEnabled_Succeeds) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({launchpad::features::kLaunchpad},
+                                {browser::context_hub::mojom::kAutoTodos,
+                                 browser::context_hub::mojom::kTopics,
+                                 browser::context_hub::mojom::kSmartSearch});
+
+  std::vector<GURL> opened_urls;
+  EXPECT_CALL(*mock_tab_provider_, OpenUrlsInTabGroup("History Task", _))
+      .WillOnce([&](const std::string&, base::span<const GURL> urls) {
+        opened_urls.assign(urls.begin(), urls.end());
+        return true;
+      });
+
+  base::test::TestFuture<bool> future;
+  handler_->OpenUrlsInTabGroup("History Task", {GURL("https://example.com/a")},
                                future.GetCallback());
 
   EXPECT_TRUE(future.Get());

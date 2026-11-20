@@ -177,6 +177,7 @@ source_set("context_hub") {
 
   deps = [
     "//chrome/browser/context_hub:features",
+    "//chrome/browser/launchpad",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/context_hub:resources",
     "//chrome/common",

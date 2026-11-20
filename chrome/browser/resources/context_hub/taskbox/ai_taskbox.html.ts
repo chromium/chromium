@@ -54,16 +54,19 @@ export function getHtml(this: AiTaskboxElement) {
           </span>
           <cr-icon-button id="refreshButton" iron-icon="cr:sync" title="Refresh"
               aria-label="Refresh Todos" ?disabled="${
-                  !this.autoTodosEnabled_ || this.isGeneratingGmailTodos_}"
+                  (!this.launchpadEnabled_ && !this.autoTodosEnabled_) ||
+                  this.isGeneratingGmailTodos_}"
               @click="${this.onGenerateGmailTodosClick_}">
           </cr-icon-button>
-          <cr-icon-button id="workspaceDropdownButton"
-              iron-icon="cr:arrow-drop-down"
-              title="Clears all todos and context" aria-label="Clear ALL Todos"
-              ?disabled="${
-                  !this.autoTodosEnabled_ || this.isGeneratingGmailTodos_}"
-              @click="${this.onWorkspaceMenuClick_}">
-          </cr-icon-button>
+          ${!this.launchpadEnabled_ ? html`
+            <cr-icon-button id="workspaceDropdownButton"
+                iron-icon="cr:arrow-drop-down"
+                title="Clears all todos and context"
+                aria-label="Clear ALL Todos" ?disabled="${
+                    !this.autoTodosEnabled_ || this.isGeneratingGmailTodos_}"
+                @click="${this.onWorkspaceMenuClick_}">
+            </cr-icon-button>
+          ` : ''}
         </div>
       </div>
 
@@ -72,13 +75,14 @@ export function getHtml(this: AiTaskboxElement) {
           ${repeat(this.todos, todo => todo.id, todo => html`
             <todo-item .id="${todo.id}" .heading="${todo.title}"
                 .description="${todo.description}" .status="${todo.status}"
-                .actionableUrl="${todo.data.firstParty?.actionableUrl || ''}"
-                .sourceReferences="${
-                    todo.data.firstParty?.sourceReferences || []}"
+                .actionableUrl="${todo.actionableUrl || ''}"
+                .sourceReferences="${todo.sourceReferences}"
                 .score="${todo.score}"
                 .liked="${this.feedbacks_.get(todo.id) ?? null}"
                 .feedbackMode="${this.feedbackModeEnabled_}"
-                .disable_state_mgmt="${this.isGeneratingGmailTodos_}">
+                .disable_state_mgmt="${
+                    this.launchpadEnabled_ || this.isGeneratingGmailTodos_}"
+                .disable_feedback="${this.launchpadEnabled_}">
             </todo-item>
           `)}
         ` : html`
@@ -122,14 +126,14 @@ export function getHtml(this: AiTaskboxElement) {
               ${repeat(this.completedTodos, todo => todo.id, todo => html`
                 <todo-item .id="${todo.id}" .heading="${todo.title}"
                     .description="${todo.description}" .status="${todo.status}"
-                    .actionableUrl="${
-                        todo.data.firstParty?.actionableUrl || ''}"
-                    .sourceReferences="${
-                        todo.data.firstParty?.sourceReferences || []}"
+                    .actionableUrl="${todo.actionableUrl || ''}"
+                    .sourceReferences="${todo.sourceReferences}"
                     .score="${todo.score}"
                     .liked="${this.feedbacks_.get(todo.id) ?? null}"
                     .feedbackMode="${this.feedbackModeEnabled_}"
-                    .disable_state_mgmt="${this.isGeneratingGmailTodos_}">
+                    .disable_state_mgmt="${this.launchpadEnabled_ ||
+                        this.isGeneratingGmailTodos_}"
+                    .disable_feedback="${this.launchpadEnabled_}">
                 </todo-item>
               `)}
             ` : ''}
@@ -157,14 +161,14 @@ export function getHtml(this: AiTaskboxElement) {
               ${repeat(this.dismissedTodos, todo => todo.id, todo => html`
                 <todo-item .id="${todo.id}" .heading="${todo.title}"
                     .description="${todo.description}" .status="${todo.status}"
-                    .actionableUrl="${
-                        todo.data.firstParty?.actionableUrl || ''}"
-                    .sourceReferences="${
-                        todo.data.firstParty?.sourceReferences || []}"
+                    .actionableUrl="${todo.actionableUrl || ''}"
+                    .sourceReferences="${todo.sourceReferences}"
                     .score="${todo.score}"
                     .liked="${this.feedbacks_.get(todo.id) ?? null}"
                     .feedbackMode="${this.feedbackModeEnabled_}"
-                    .disable_state_mgmt="${this.isGeneratingGmailTodos_}">
+                    .disable_state_mgmt="${this.launchpadEnabled_ ||
+                        this.isGeneratingGmailTodos_}"
+                    .disable_feedback="${this.launchpadEnabled_}">
                 </todo-item>
               `)}
             ` : ''}
@@ -173,13 +177,14 @@ export function getHtml(this: AiTaskboxElement) {
       </div>
     </section>
 
-    <cr-action-menu id="workspaceMenu">
-      <button class="dropdown-item"
-          title="clears all todos and any context. regeneration after clearing may result in previously dismissed/cleared todos"
-          @click="${this.onClearWorkspaceTodosClick_}">
-        Clear ALL Todos
-      </button>
-    </cr-action-menu>
+    ${!this.launchpadEnabled_ ? html`
+      <cr-action-menu id="workspaceMenu">
+        <button class="dropdown-item" title="${this.clearAllTodosTooltip_}"
+            @click="${this.onClearWorkspaceTodosClick_}">
+          Clear ALL Todos
+        </button>
+      </cr-action-menu>
+    ` : ''}
   </div>
 </main>`;
 }

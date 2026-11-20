@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/context_hub/features.h"
+#include "chrome/browser/launchpad/features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/context_hub/context_hub.mojom-features.h"
 #include "chrome/browser/ui/webui/context_hub/context_hub_page_handler.h"
@@ -58,6 +59,8 @@ ContextHubUI::ContextHubUI(content::WebUI* web_ui)
   source->AddBoolean(
       "kAutoTodos",
       base::FeatureList::IsEnabled(browser::context_hub::mojom::kAutoTodos));
+  source->AddBoolean("kLaunchpad", base::FeatureList::IsEnabled(
+                                       launchpad::features::kLaunchpad));
   bool can_act_on_web = false;
 #if !BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(features::kGlicActor) &&

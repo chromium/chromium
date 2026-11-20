@@ -27,6 +27,10 @@ IN_PROC_BROWSER_TEST_F(ContextHubBrowserTest, App) {
   RunTest("context_hub/app_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(ContextHubBrowserTest, AiTaskbox) {
+  RunTestWithoutTestLoader("context_hub/ai_taskbox_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(ContextHubBrowserTest, TodoItem) {
   RunTestWithoutTestLoader("context_hub/todo_item_test.js", "mocha.run()");
 }

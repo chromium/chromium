@@ -77,6 +77,7 @@ export class TodoItemElement extends CrLitElement {
       liked: {type: Boolean},
       feedbackMode: {type: Boolean},
       disable_state_mgmt: {type: Boolean},
+      disable_feedback: {type: Boolean},
       canActOnWeb_: {type: Boolean},
       isRunningTask_: {type: Boolean},
       references_: {type: Array},
@@ -93,7 +94,13 @@ export class TodoItemElement extends CrLitElement {
   accessor liked: boolean|null = null;
   accessor feedbackMode: boolean = false;
   accessor disable_state_mgmt: boolean = false;
+  // TODO(b/586300169): Support thumbs up/down feedback for Launchpad tasks.
+  accessor disable_feedback: boolean = false;
+  // TODO(b/586300169): Allow `canActOnWeb_` with `kLaunchpad` once
+  // `RunTodoTask` mojom `RuntimeFeature` gating is updated.
   protected accessor canActOnWeb_: boolean =
+      loadTimeData.valueExists('kAutoTodos') &&
+      loadTimeData.getBoolean('kAutoTodos') &&
       loadTimeData.valueExists('can_act_on_web') &&
       loadTimeData.getBoolean('can_act_on_web');
   protected accessor isRunningTask_: boolean = false;
@@ -134,6 +141,9 @@ export class TodoItemElement extends CrLitElement {
 
   private async onThumbClick_(e: Event, like: boolean) {
     e.stopPropagation();
+    if (this.disable_feedback) {
+      return;
+    }
     // If the thumb is already clicked, unselect it.
     if (this.liked === like) {
       this.liked = null;

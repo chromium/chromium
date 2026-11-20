@@ -73,11 +73,13 @@ export function getHtml(this: TodoItemElement) {
         <cr-icon-button class="no-overlap" id="thumbsUp"
             iron-icon="${this.getThumbsUpIcon_()}" title="Like"
             aria-pressed="${this.liked === true}"
+            ?disabled="${this.disable_feedback}"
             @click="${this.onThumbsUpClick_}">
         </cr-icon-button>
         <cr-icon-button class="no-overlap" id="thumbsDown"
             iron-icon="${this.getThumbsDownIcon_()}" title="Dislike"
             aria-pressed="${this.liked === false}"
+            ?disabled="${this.disable_feedback}"
             @click="${this.onThumbsDownClick_}">
         </cr-icon-button>
       </div>

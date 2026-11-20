@@ -49,6 +49,7 @@
 #include "chrome/browser/context_hub/topics/topics_feedback_exporter.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/launchpad/features.h"
 #include "chrome/browser/launchpad/launchpad_service.h"
 #include "chrome/browser/launchpad/launchpad_service_factory.h"
 #include "chrome/browser/launchpad/launchpad_task.h"
@@ -416,6 +417,8 @@ ContextHubPageHandler::ContextHubPageHandler(
       page_->OnFirstPartyAutoTodosGenerationStateChanged(true);
     }
   }
+  // TODO(b/586300169): Observe `LaunchpadService` and forward task and
+  // generation state updates to `page_`.
 #if !BUILDFLAG(IS_ANDROID)
   // Proactively prune stale clipboard staging directories (>1 hour old)
   // created during prior sessions so temporary user notes do not linger in
@@ -1268,12 +1271,13 @@ void ContextHubPageHandler::OpenUrlsInTabGroup(
     const std::vector<GURL>& urls,
     OpenUrlsInTabGroupCallback callback) {
   if (!base::FeatureList::IsEnabled(browser::context_hub::mojom::kAutoTodos) &&
+      !base::FeatureList::IsEnabled(launchpad::features::kLaunchpad) &&
       !base::FeatureList::IsEnabled(browser::context_hub::mojom::kTopics) &&
       !base::FeatureList::IsEnabled(
           browser::context_hub::mojom::kSmartSearch)) {
     receiver_.ReportBadMessage(
-        "OpenUrlsInTabGroup cannot be called without AutoTodos, Topics, or "
-        "SmartSearch enabled.");
+        "OpenUrlsInTabGroup cannot be called without AutoTodos, Launchpad, "
+        "Topics, or SmartSearch enabled.");
     return;
   }
 
