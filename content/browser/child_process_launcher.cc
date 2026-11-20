@@ -117,7 +117,8 @@ ChildProcessLauncher::ChildProcessLauncher(
     scoped_refptr<base::RefCountedData<base::ReadOnlySharedMemoryRegion>>
         tracing_config_memory_region,
     scoped_refptr<base::RefCountedData<base::UnsafeSharedMemoryRegion>>
-        tracing_output_memory_region)
+        tracing_output_memory_region,
+    base::ReadOnlySharedMemoryRegion renderer_process_security_state_region)
     : client_(client),
       starting_(true),
 #if defined(ADDRESS_SANITIZER) || defined(LEAK_SANITIZER) ||  \
@@ -146,7 +147,8 @@ ChildProcessLauncher::ChildProcessLauncher(
       std::move(mojo_invitation), process_error_callback, std::move(file_data),
       std::move(histogram_memory_region),
       std::move(tracing_config_memory_region),
-      std::move(tracing_output_memory_region));
+      std::move(tracing_output_memory_region),
+      std::move(renderer_process_security_state_region));
   helper_->StartLaunchOnClientThread();
 }
 

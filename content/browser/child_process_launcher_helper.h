@@ -139,7 +139,8 @@ class ChildProcessLauncherHelper
       scoped_refptr<base::RefCountedData<base::ReadOnlySharedMemoryRegion>>
           tracing_config_memory_region,
       scoped_refptr<base::RefCountedData<base::UnsafeSharedMemoryRegion>>
-          tracing_output_memory_region);
+          tracing_output_memory_region,
+      base::ReadOnlySharedMemoryRegion renderer_process_security_state_region);
 
   // The methods below are defined in the order they are called.
 
@@ -416,6 +417,11 @@ class ChildProcessLauncherHelper
   // asynchronously.
   scoped_refptr<base::RefCountedData<base::UnsafeSharedMemoryRegion>>
       tracing_output_memory_region_;
+
+  // Renderer process security state shared memory region passed to the child
+  // process during launch. Released once the child has its own handle. The
+  // browser retains the writable mapping.
+  base::ReadOnlySharedMemoryRegion renderer_process_security_state_region_;
 
   // Creation time of the helper, used for metrics.
   // TODO(crbug.com/40287847): Remove when parallel launching is finished.

@@ -183,6 +183,8 @@ class MockRenderProcessHost : public RenderProcessHost {
   void UnregisterRenderFrameHost(
       const GlobalRenderFrameHostId& render_frame_host_id,
       bool is_outermost_main_frame) override;
+  void GrantRendererProcessCapability(
+      blink::RendererProcessCapability capability) override;
   void IncrementWorkerRefCount() override;
   void DecrementWorkerRefCount() override;
   void IncrementPendingReuseRefCount() override;

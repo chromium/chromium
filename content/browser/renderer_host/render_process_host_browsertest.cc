@@ -71,6 +71,7 @@
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_browser_context.h"
 #include "content/shell/browser/shell_browser_main_parts.h"
+#include "content/shell/common/render_frame_test_helper.mojom.h"
 #include "content/test/content_browser_test_utils_internal.h"
 #include "content/test/storage_partition_test_helpers.h"
 #include "media/base/media_switches.h"
@@ -86,6 +87,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/renderer_process_security_state.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/features.h"
@@ -232,6 +234,17 @@ class RenderProcessHostTestBase : public ContentBrowserTest,
   }
 
  protected:
+  bool RendererHasCapability(RenderFrameHost* frame,
+                             blink::RendererProcessCapability capability) {
+    mojo::Remote<mojom::RenderFrameTestHelper> remote;
+    frame->GetRemoteInterfaces()->GetInterface(
+        remote.BindNewPipeAndPassReceiver());
+    base::test::TestFuture<bool> future;
+    remote->HasRendererProcessCapability(static_cast<uint32_t>(capability),
+                                         future.GetCallback());
+    return future.Get();
+  }
+
   void SetProcessExitCallback(RenderProcessHost* rph,
                               base::OnceClosure callback) {
     Observe(rph);
@@ -265,6 +278,76 @@ class RenderProcessHostTestBase : public ContentBrowserTest,
   int host_destructions_ = 0;
   base::OnceClosure process_exit_callback_;
 };
+
+IN_PROC_BROWSER_TEST_F(RenderProcessHostTestBase,
+                       RendererProcessCapabilityGrantsReachRenderer) {
+  ASSERT_TRUE(NavigateToURL(shell(), GURL("data:text/html,capabilities")));
+  RenderFrameHost* frame = shell()->web_contents()->GetPrimaryMainFrame();
+  RenderProcessHost* process = frame->GetProcess();
+
+  EXPECT_FALSE(RendererHasCapability(
+      frame, blink::RendererProcessCapability::kMojoJSAllowedForProcess));
+  process->GrantRendererProcessCapability(
+      blink::RendererProcessCapability::kMojoJSAllowedForProcess);
+  EXPECT_TRUE(RendererHasCapability(
+      frame, blink::RendererProcessCapability::kMojoJSAllowedForProcess));
+
+  EXPECT_FALSE(RendererHasCapability(
+      frame, blink::RendererProcessCapability::kMojoJSTestAllowedForProcess));
+  process->GrantRendererProcessCapability(
+      blink::RendererProcessCapability::kMojoJSTestAllowedForProcess);
+
+  EXPECT_TRUE(RendererHasCapability(
+      frame, blink::RendererProcessCapability::kMojoJSAllowedForProcess));
+  EXPECT_TRUE(RendererHasCapability(
+      frame, blink::RendererProcessCapability::kMojoJSTestAllowedForProcess));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    RenderProcessHostTestBase,
+    RendererProcessCapabilityGrantsPreservedBeforeInitAndAcrossRestart) {
+  RenderProcessHost* process =
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess();
+  ASSERT_FALSE(process->IsInitializedAndNotDead());
+
+  // Grant a capability before Init() has been called on `process`.
+  process->GrantRendererProcessCapability(
+      blink::RendererProcessCapability::kMojoJSAllowedForProcess);
+
+  ASSERT_TRUE(NavigateToURL(shell(), GURL("data:text/html,before_init_grant")));
+  RenderFrameHost* frame = shell()->web_contents()->GetPrimaryMainFrame();
+  ASSERT_EQ(process, frame->GetProcess());
+  EXPECT_TRUE(RendererHasCapability(
+      frame, blink::RendererProcessCapability::kMojoJSAllowedForProcess));
+  EXPECT_FALSE(RendererHasCapability(
+      frame, blink::RendererProcessCapability::kMojoJSTestAllowedForProcess));
+
+  // Terminate the renderer process, grant another capability while the host is
+  // dead, and re-initialize the same RenderProcessHost.
+  {
+    RenderProcessHostWatcher exit_observer(
+        process, RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+    process->Shutdown(0);
+    exit_observer.Wait();
+  }
+  ASSERT_FALSE(process->IsInitializedAndNotDead());
+
+  process->GrantRendererProcessCapability(
+      blink::RendererProcessCapability::kMojoJSTestAllowedForProcess);
+
+  TestNavigationObserver reload_observer(shell()->web_contents());
+  shell()->web_contents()->GetController().Reload(ReloadType::NORMAL,
+                                                  /*check_for_repost=*/false);
+  reload_observer.Wait();
+  ASSERT_TRUE(reload_observer.last_navigation_succeeded());
+
+  frame = shell()->web_contents()->GetPrimaryMainFrame();
+  ASSERT_EQ(process, frame->GetProcess());
+  EXPECT_TRUE(RendererHasCapability(
+      frame, blink::RendererProcessCapability::kMojoJSAllowedForProcess));
+  EXPECT_TRUE(RendererHasCapability(
+      frame, blink::RendererProcessCapability::kMojoJSTestAllowedForProcess));
+}
 
 // A ContentBrowserClient that can wait for calls to
 // `blink::mojom::KeepAliveHandle`.

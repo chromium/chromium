@@ -511,6 +511,11 @@ void MockRenderProcessHost::UnregisterRenderFrameHost(
   render_frame_host_id_set_.erase(render_frame_host_id);
 }
 
+void MockRenderProcessHost::GrantRendererProcessCapability(
+    blink::RendererProcessCapability) {
+  // MockRenderProcessHost does not launch a renderer or own security state.
+}
+
 void MockRenderProcessHost::ForEachRenderFrameHost(
     base::FunctionRef<void(RenderFrameHost*)> on_render_frame_host) {
   // TODO(crbug.com/40487508): Clean up MockRenderProcessHost usage and merge

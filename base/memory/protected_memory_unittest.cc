@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <climits>
+#include <tuple>
 #include <type_traits>
 
 #include "base/containers/span.h"
@@ -139,6 +140,29 @@ TEST(ProtectedMemoryDeathTest, FailsIfDefinedOutsideOfProtectMemoryRegion) {
 }
 
 #endif  // BUILDFLAG(PROTECTED_MEMORY_ENABLED)
+
+constinit subtle::OneShotProtectedPage<int> g_one_shot_protected_page;
+constinit subtle::OneShotProtectedPage<int> g_one_shot_protected_page_for_death;
+
+TEST(ProtectedMemoryTest, OneShotProtectedPageWriteOnceAndSeal) {
+  static const int kInit = [] {
+    EXPECT_EQ(g_one_shot_protected_page.value(), 0);
+    g_one_shot_protected_page.WriteOnceAndSealReadOnly(42);
+    return 0;
+  }();
+  std::ignore = kInit;
+  EXPECT_EQ(g_one_shot_protected_page.value(), 42);
+}
+
+TEST(ProtectedMemoryDeathTest, OneShotProtectedPageWriteAfterSealCrashes) {
+  static const int kInit = [] {
+    g_one_shot_protected_page_for_death.WriteOnceAndSealReadOnly(7);
+    return 0;
+  }();
+  std::ignore = kInit;
+  BASE_EXPECT_DEATH(
+      g_one_shot_protected_page_for_death.WriteOnceAndSealReadOnly(8), "");
+}
 
 }  // namespace
 }  // namespace base

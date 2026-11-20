@@ -80,6 +80,7 @@ enum class ChildBindingState;
 }  // namespace base
 
 namespace blink {
+enum class RendererProcessCapability : uint32_t;
 class StorageKey;
 }  // namespace blink
 
@@ -608,6 +609,13 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Listener,
   virtual void UnregisterRenderFrameHost(
       const GlobalRenderFrameHostId& render_frame_host_id,
       bool is_outermost_main_frame) = 0;
+
+  // Grants `capability` to this renderer process. Grants are monotonic for the
+  // lifetime of this RenderProcessHost (including across Init() and renderer
+  // restarts) and are written only by the browser; the renderer receives
+  // read-only state. Must only be called from trusted authorization paths.
+  virtual void GrantRendererProcessCapability(
+      blink::RendererProcessCapability capability) = 0;
 
   // "Worker ref count" is similar to "Keep alive ref count", but is specific to
   // workers since they do not have pre-defined timeouts. Also affected by

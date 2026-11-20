@@ -22,6 +22,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/discardable_memory_allocator.h"
 #include "base/memory/memory_pressure_listener.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/structured_shared_memory.h"
 #include "base/metrics/user_metrics_action.h"
@@ -132,7 +133,8 @@ class CONTENT_EXPORT RenderThreadImpl
   RenderThreadImpl(
       const InProcessChildThreadParams& params,
       int32_t client_id,
-      std::unique_ptr<blink::scheduler::WebThreadScheduler> scheduler);
+      std::unique_ptr<blink::scheduler::WebThreadScheduler> scheduler,
+      base::ReadOnlySharedMemoryRegion renderer_process_security_state);
 
   RenderThreadImpl(const RenderThreadImpl&) = delete;
   RenderThreadImpl& operator=(const RenderThreadImpl&) = delete;
@@ -378,9 +380,12 @@ class CONTENT_EXPORT RenderThreadImpl
 
   bool IsMainThread();
 
-  void Init();
+  void Init(
+      base::ReadOnlySharedMemoryRegion renderer_process_security_state = {});
   void InitializeCompositorThread();
-  void InitializeWebKit(mojo::BinderMap* binders);
+  void InitializeWebKit(
+      mojo::BinderMap* binders,
+      base::ReadOnlySharedMemoryRegion renderer_process_security_state);
 
   // mojom::Renderer:
   void CreateAgentSchedulingGroup(

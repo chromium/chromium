@@ -613,6 +613,11 @@ const char kGpuChannelRequestStartTimeTicks[] =
 // or instability.
 const char kRendererProcessLimit[]          = "renderer-process-limit";
 
+// Handle to a browser-owned read-only shared memory region containing
+// security-sensitive renderer process capabilities.
+const char kRendererProcessSecurityStateHandle[] =
+    "renderer-process-security-state-handle";
+
 // Causes the renderer process to display a dialog on launch. Passing this flag
 // also adds sandbox::policy::kNoSandbox on Windows non-official builds, since
 // that's needed to show a dialog.

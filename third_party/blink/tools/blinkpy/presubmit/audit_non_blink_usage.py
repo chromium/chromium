@@ -347,6 +347,7 @@ _CONFIG = [
             # State transition checking
             'base::StateTransitions',
             # Shared memory
+            'base::AtomicSharedMemory',
             'base::MappedReadOnlyRegion',
             'base::ReadOnlySharedMemoryMapping',
             'base::ReadOnlySharedMemoryRegion',
@@ -1028,6 +1029,7 @@ _CONFIG = [
             'base::ProtectedMemory',
             'base::ProtectedMemoryInitializer',
             'base::AutoWritableMemory',
+            'base::subtle::OneShotProtectedPage',
             # Allow Highway SIMD Library and the possible namespace aliases.
             'hwy::HWY_NAMESPACE.*',
             'hw::.+',

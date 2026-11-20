@@ -25,6 +25,7 @@
 #include "base/logging.h"
 #include "base/memory/discardable_memory_allocator.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/shared_memory_switch.h"
 #include "base/memory/structured_shared_memory.h"
 #include "base/message_loop/message_pump.h"
 #include "base/message_loop/message_pump_type.h"
@@ -433,7 +434,8 @@ RenderThreadImpl::DeprecatedGetMainTaskRunner() {
 RenderThreadImpl::RenderThreadImpl(
     const InProcessChildThreadParams& params,
     int32_t client_id,
-    std::unique_ptr<blink::scheduler::WebThreadScheduler> scheduler)
+    std::unique_ptr<blink::scheduler::WebThreadScheduler> scheduler,
+    base::ReadOnlySharedMemoryRegion renderer_process_security_state)
     : ChildThreadImpl(
           base::DoNothing(),
           Options::Builder()
@@ -445,7 +447,7 @@ RenderThreadImpl::RenderThreadImpl(
       main_thread_scheduler_(std::move(scheduler)),
       client_id_(client_id) {
   TRACE_EVENT0("startup", "RenderThreadImpl::Create");
-  Init();
+  Init(std::move(renderer_process_security_state));
 }
 
 namespace {
@@ -478,7 +480,8 @@ RenderThreadImpl::RenderThreadImpl(
   Init();
 }
 
-void RenderThreadImpl::Init() {
+void RenderThreadImpl::Init(
+    base::ReadOnlySharedMemoryRegion renderer_process_security_state) {
   TRACE_EVENT0("startup", "RenderThreadImpl::Init");
 
   SCOPED_UMA_HISTOGRAM_TIMER("Renderer.RenderThreadImpl.Init");
@@ -560,7 +563,7 @@ void RenderThreadImpl::Init() {
   // modify the definition of |ExposeRendererInterfacesToBrowser()| to ensure
   // security review coverage.
   mojo::BinderMap binders;
-  InitializeWebKit(&binders);
+  InitializeWebKit(&binders, std::move(renderer_process_security_state));
 
   vc_manager_ = std::make_unique<blink::WebVideoCaptureImplManager>();
 
@@ -813,11 +816,26 @@ void RenderThreadImpl::InitializeCompositorThread() {
       compositor_task_runner_.get());
 }
 
-void RenderThreadImpl::InitializeWebKit(mojo::BinderMap* binders) {
+void RenderThreadImpl::InitializeWebKit(
+    mojo::BinderMap* binders,
+    base::ReadOnlySharedMemoryRegion renderer_process_security_state) {
   DCHECK(!blink_platform_impl_);
 
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
+
+  if (!renderer_process_security_state.IsValid()) {
+    CHECK(
+        command_line.HasSwitch(switches::kRendererProcessSecurityStateHandle));
+    auto region_from_switch =
+        base::shared_memory::ReadOnlySharedMemoryRegionFrom(
+            command_line.GetSwitchValueASCII(
+                switches::kRendererProcessSecurityStateHandle));
+    CHECK(region_from_switch);
+    renderer_process_security_state = std::move(*region_from_switch);
+  }
+  blink::WebRuntimeFeatures::InitializeRendererProcessSecurityState(
+      std::move(renderer_process_security_state));
 
 #ifdef ENABLE_VTUNE_JIT_INTERFACE
   if (command_line.HasSwitch(switches::kEnableVtune))

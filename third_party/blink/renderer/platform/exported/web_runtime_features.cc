@@ -30,13 +30,28 @@
 
 #include "third_party/blink/public/platform/web_runtime_features.h"
 
+#include <utility>
+
 #include "base/feature_list.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/renderer_process_security_state.h"
 #include "third_party/blink/renderer/platform/graphics/scrollbar_theme_settings.h"
+#include "third_party/blink/renderer/platform/renderer_process_security_state.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_feature_checks.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
+
+void WebRuntimeFeatures::InitializeRendererProcessSecurityState(
+    base::ReadOnlySharedMemoryRegion region) {
+  RendererProcessSecurityState::Initialize(std::move(region));
+}
+
+bool WebRuntimeFeatures::HasRendererProcessCapabilityForTesting(
+    blink::RendererProcessCapability capability) {
+  return RendererProcessSecurityState::HasCapability(capability);
+}
 
 void WebRuntimeFeatures::InitializeMojoJSPermissions() {
   blink::InitializeMojoJSPermissions();

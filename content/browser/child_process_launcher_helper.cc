@@ -139,6 +139,23 @@ void PassStartupTracingConfigSharedMemoryHandle(
   TransferSharedMemorySwitchDescriptor(shared_memory_switch, files_to_register);
 }
 
+void PassRendererProcessSecurityStateSharedMemoryHandle(
+    const base::ReadOnlySharedMemoryRegion& read_only_memory_region,
+    base::CommandLine& command_line,
+    base::LaunchOptions* launch_options,
+    [[maybe_unused]] FileMappedForLaunch* files_to_register) {
+  if (!read_only_memory_region.IsValid()) {
+    return;
+  }
+
+  base::shared_memory::SharedMemorySwitch shared_memory_switch(
+      switches::kRendererProcessSecurityStateHandle, 'rpss',
+      kRendererProcessSecurityStateDescriptor);
+  shared_memory_switch.AddToLaunchParameters(read_only_memory_region,
+                                             &command_line, launch_options);
+  TransferSharedMemorySwitchDescriptor(shared_memory_switch, files_to_register);
+}
+
 void PassStartupTracingOutputSharedMemoryHandle(
     const base::UnsafeSharedMemoryRegion* trace_output_memory_region,
     base::CommandLine& command_line,
@@ -219,7 +236,8 @@ ChildProcessLauncherHelper::ChildProcessLauncherHelper(
     scoped_refptr<base::RefCountedData<base::ReadOnlySharedMemoryRegion>>
         tracing_config_memory_region,
     scoped_refptr<base::RefCountedData<base::UnsafeSharedMemoryRegion>>
-        tracing_output_memory_region)
+        tracing_output_memory_region,
+    base::ReadOnlySharedMemoryRegion renderer_process_security_state_region)
     : child_process_id_(child_process_id),
       client_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       command_line_(std::move(command_line)),
@@ -237,6 +255,8 @@ ChildProcessLauncherHelper::ChildProcessLauncherHelper(
       histogram_memory_region_(std::move(histogram_memory_region)),
       tracing_config_memory_region_(std::move(tracing_config_memory_region)),
       tracing_output_memory_region_(std::move(tracing_output_memory_region)),
+      renderer_process_security_state_region_(
+          std::move(renderer_process_security_state_region)),
       init_start_time_(base::TimeTicks::Now()) {
   if (!mojo::core::GetConfiguration().is_broker_process &&
       !command_line_->HasSwitch(switches::kDisableMojoBroker)) {
@@ -341,6 +361,9 @@ void ChildProcessLauncherHelper::LaunchOnLauncherThread() {
       tracing_output_memory_region_ ? &tracing_output_memory_region_->data
                                     : nullptr,
       *command_line(), options_ptr, files_to_register.get());
+  PassRendererProcessSecurityStateSharedMemoryHandle(
+      renderer_process_security_state_region_, *command_line(), options_ptr,
+      files_to_register.get());
   PassPseudonymizationSaltSharedMemoryHandle(*command_line(), options_ptr,
                                              files_to_register.get());
 
@@ -389,6 +412,14 @@ void ChildProcessLauncherHelper::PostLaunchOnLauncherThread(
 #endif
   if (mojo_channel_)
     mojo_channel_->RemoteProcessLaunchAttempted();
+
+  // The launch (synchronous or asynchronous) has finished, so the child holds
+  // its own handle to the security state. Elevated Windows processes instead
+  // duplicate the handle from this process after launch, so keep it for them.
+  if (!launch_elevated) {
+    renderer_process_security_state_region_ =
+        base::ReadOnlySharedMemoryRegion();
+  }
 
   if (process.process.IsValid()) {
     RecordHistogramsOnLauncherThread(base::TimeTicks::Now() -

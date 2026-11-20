@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/threading/thread.h"
 #include "content/common/content_export.h"
 #include "content/common/in_process_child_thread_params.h"
@@ -33,8 +34,10 @@ class InProcessRendererThread : public base::Thread {
     raw_ptr<InProcessRendererThread> outer_;
   };
 
-  InProcessRendererThread(const InProcessChildThreadParams& params,
-                          int32_t renderer_client_id);
+  InProcessRendererThread(
+      const InProcessChildThreadParams& params,
+      int32_t renderer_client_id,
+      base::ReadOnlySharedMemoryRegion renderer_process_security_state);
 
   InProcessRendererThread(const InProcessRendererThread&) = delete;
   InProcessRendererThread& operator=(const InProcessRendererThread&) = delete;
@@ -47,12 +50,14 @@ class InProcessRendererThread : public base::Thread {
  private:
   const InProcessChildThreadParams params_;
   const int32_t renderer_client_id_;
+  base::ReadOnlySharedMemoryRegion renderer_process_security_state_;
   std::unique_ptr<RenderProcess> render_process_;
 };
 
 CONTENT_EXPORT base::Thread* CreateInProcessRendererThread(
     const InProcessChildThreadParams& params,
-    int32_t renderer_client_id);
+    int32_t renderer_client_id,
+    base::ReadOnlySharedMemoryRegion renderer_process_security_state);
 
 }  // namespace content
 

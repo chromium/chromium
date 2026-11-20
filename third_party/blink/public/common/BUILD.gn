@@ -268,6 +268,7 @@ source_set("headers") {
     "permissions_policy/policy_helper_public.h",
     "permissions_policy/policy_value.h",
     "renderer_preferences/renderer_preferences.h",
+    "renderer_process_security_state.h",
     "responsiveness_metrics/user_interaction_latency.h",
     "safe_url_pattern.h",
     "scheduler/task_attribution_id.h",

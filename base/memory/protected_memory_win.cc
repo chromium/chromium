@@ -10,13 +10,13 @@
 
 #include "base/bits.h"
 #include "base/memory/page_size.h"
+#include "base/numerics/checked_math.h"
 #include "base/process/process_metrics.h"
 #include "base/synchronization/lock.h"
 #include "build/build_config.h"
 
 namespace base {
 
-#if BUILDFLAG(PROTECTED_MEMORY_ENABLED)
 namespace {
 
 // Note: A boolean flag is used instead of a generic protection flag in
@@ -33,6 +33,17 @@ bool SetMemory(void* start, void* end, bool write) {
 
 }  // namespace
 
+namespace subtle {
+
+bool SetMemoryReadOnly(void* start, size_t size) {
+  const uintptr_t end =
+      CheckAdd(reinterpret_cast<uintptr_t>(start), size).ValueOrDie();
+  return SetMemory(start, reinterpret_cast<void*>(end), /*write=*/false);
+}
+
+}  // namespace subtle
+
+#if BUILDFLAG(PROTECTED_MEMORY_ENABLED)
 namespace internal {
 void CheckMemoryReadOnly(const void* ptr) {
   const uintptr_t page_start =
@@ -48,10 +59,6 @@ void CheckMemoryReadOnly(const void* ptr) {
 
 bool AutoWritableMemoryBase::SetMemoryReadWrite(void* start, void* end) {
   return SetMemory(start, end, /*write=*/true);
-}
-
-bool AutoWritableMemoryBase::SetMemoryReadOnly(void* start, void* end) {
-  return SetMemory(start, end, /*write=*/false);
 }
 #endif  // BUILDFLAG(PROTECTED_MEMORY_ENABLED)
 

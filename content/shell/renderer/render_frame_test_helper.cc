@@ -7,7 +7,9 @@
 #include <utility>
 
 #include "content/public/renderer/render_frame.h"
+#include "third_party/blink/public/common/renderer_process_security_state.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_view.h"
@@ -31,6 +33,20 @@ void RenderFrameTestHelper::GetInitiatorStateToken(
     GetInitiatorStateTokenCallback callback) {
   std::move(callback).Run(
       render_frame()->GetWebFrame()->GetInitiatorStateToken());
+}
+
+void RenderFrameTestHelper::HasRendererProcessCapability(
+    uint32_t capability,
+    HasRendererProcessCapabilityCallback callback) {
+  blink::RendererProcessCapability typed_capability =
+      static_cast<blink::RendererProcessCapability>(capability);
+  if (!blink::IsValidRendererProcessCapability(typed_capability)) {
+    std::move(callback).Run(false);
+    return;
+  }
+  std::move(callback).Run(
+      blink::WebRuntimeFeatures::HasRendererProcessCapabilityForTesting(
+          typed_capability));
 }
 
 void RenderFrameTestHelper::OnDestruct() {

@@ -19,4 +19,9 @@ interface RenderFrameTestHelper {
   // Get the initiator state token for the RenderFrame's active document's
   // LocalDomWindow.
   GetInitiatorStateToken() => (blink.mojom.InitiatorStateToken token);
+
+  // Returns whether the renderer process has the capability represented by
+  // `capability`, a blink::RendererProcessCapability underlying value. Returns
+  // false if `capability` is not a valid RendererProcessCapability.
+  HasRendererProcessCapability(uint32 capability) => (bool has_capability);
 };

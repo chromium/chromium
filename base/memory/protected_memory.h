@@ -76,6 +76,7 @@
 
 #include <memory>
 #include <type_traits>
+#include <utility>
 
 #include "base/bits.h"
 #include "base/check.h"
@@ -116,28 +117,6 @@ __declspec(selectany) char __stop_protected_memory;
 #define DECLARE_PROTECTED_DATA constinit
 #define DEFINE_PROTECTED_DATA constinit __declspec(allocate("prot$mem"))
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)
-// This value is used to align the writers variable. That variable needs to be
-// aligned to ensure that the protected memory section starts on a page
-// boundary.
-#if (PA_BUILDFLAG(IS_ANDROID) && PA_BUILDFLAG(PA_ARCH_CPU_64_BITS)) || \
-    (PA_BUILDFLAG(IS_LINUX) && PA_BUILDFLAG(PA_ARCH_CPU_ARM64))
-// arm64 supports 4kb, 16kb, and 64kb pages. Set to the largest of 64kb as that
-// will guarantee the section is page aligned regardless of the choice.
-inline constexpr int kProtectedMemoryAlignment = 65536;
-#elif PA_BUILDFLAG(PA_ARCH_CPU_PPC64) || defined(ARCH_CPU_PPC64)
-// Modern ppc64 systems support 4kB (shift = 12) and 64kB (shift = 16) page
-// sizes. Set to the largest of 64kb as that will guarantee the section is page
-// aligned regardless of the choice.
-inline constexpr int kProtectedMemoryAlignment = 65536;
-#elif defined(_MIPS_ARCH_LOONGSON) || PA_BUILDFLAG(PA_ARCH_CPU_LOONGARCH64) || \
-    defined(ARCH_CPU_LOONGARCH64)
-// 16kb page size
-inline constexpr int kProtectedMemoryAlignment = 16384;
-#else
-// 4kb page size
-inline constexpr int kProtectedMemoryAlignment = 4096;
-#endif
-
 __asm__(".section protected_memory, \"a\"\n\t");
 __asm__(".section protected_memory_buffer, \"a\"\n\t");
 
@@ -172,6 +151,25 @@ extern char __stop_protected_memory __asm(
 #endif  // BUILDFLAG(PROTECTED_MEMORY_ENABLED)
 
 namespace base {
+
+#if (BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_64_BITS)) || \
+    (BUILDFLAG(IS_LINUX) && defined(ARCH_CPU_ARM64))
+// arm64 supports 4kb, 16kb, and 64kb pages. Set to the largest of 64kb as that
+// will guarantee the section is page aligned regardless of the choice.
+inline constexpr size_t kProtectedMemoryAlignment = 65536;
+#elif defined(ARCH_CPU_PPC64)
+// Modern ppc64 systems support 4kB (shift = 12) and 64kB (shift = 16) page
+// sizes. Set to the largest of 64kb as that will guarantee the section is page
+// aligned regardless of the choice.
+inline constexpr size_t kProtectedMemoryAlignment = 65536;
+#elif (BUILDFLAG(IS_APPLE) && defined(ARCH_CPU_64_BITS)) || \
+    defined(_MIPS_ARCH_LOONGSON) || defined(ARCH_CPU_LOONGARCH64)
+// 16kb page size
+inline constexpr size_t kProtectedMemoryAlignment = 16384;
+#else
+// 4kb page size
+inline constexpr size_t kProtectedMemoryAlignment = 4096;
+#endif
 
 template <typename T>
 class AutoWritableMemory;
@@ -260,6 +258,66 @@ class ProtectedMemory {
   internal::ProtectedDataHolder<T> data_;
 };
 
+namespace subtle {
+
+// Makes every page that intersects [`start`, `start` + `size`) read-only.
+// Protection is applied at page granularity, so bytes outside the requested
+// range that share a page with it are also made read-only; callers must ensure
+// those pages contain no data that needs to remain writable. CHECKs if `size`
+// is zero or the range overflows. Returns false if the OS call fails.
+BASE_EXPORT bool SetMemoryReadOnly(void* start, size_t size);
+
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+     BUILDFLAG(IS_ANDROID)) &&                        \
+    defined(ARCH_CPU_ARM_FAMILY)
+// ARM kernels may use 4kb, 16kb, or 64kb pages, including when running 32-bit
+// processes on a 64-bit kernel. Use the largest so the page is always aligned.
+inline constexpr size_t kOneShotProtectedPageAlignment = 65536;
+#else
+inline constexpr size_t kOneShotProtectedPageAlignment =
+    kProtectedMemoryAlignment;
+#endif
+static_assert(kOneShotProtectedPageAlignment >= kProtectedMemoryAlignment);
+
+// Places a trivially destructible value of type `T` on its own page-aligned,
+// page-sized memory region that can be sealed read-only after a one-shot write.
+//
+// Unlike `base::ProtectedMemory<T>`, which groups variables into a shared
+// linker section that is temporarily made writable via `AutoWritableMemory`,
+// `OneShotProtectedPage<T>` occupies a dedicated page so its protection state
+// is independent of other `ProtectedMemory` instances and never needs a code
+// path that makes the page writable again.
+//
+// Instances must have static storage duration (e.g. `constinit`).
+template <typename T>
+class alignas(kOneShotProtectedPageAlignment) OneShotProtectedPage {
+ public:
+  static_assert(std::is_trivially_destructible_v<T>);
+
+  consteval OneShotProtectedPage() = default;
+
+  OneShotProtectedPage(const OneShotProtectedPage&) = delete;
+  OneShotProtectedPage& operator=(const OneShotProtectedPage&) = delete;
+
+  const T& value() const LIFETIME_BOUND { return value_; }
+
+  // Writes `value` and permanently seals the page read-only. Any subsequent
+  // write attempt will fault.
+  void WriteOnceAndSealReadOnly(T value) {
+    const size_t page_size = GetPageSize();
+    CHECK_EQ(reinterpret_cast<uintptr_t>(this) % page_size, 0u);
+    CHECK_EQ(sizeof(*this) % kOneShotProtectedPageAlignment, 0u);
+    CHECK_EQ(sizeof(*this) % page_size, 0u);
+    value_ = std::move(value);
+    CHECK(SetMemoryReadOnly(this, sizeof(*this)));
+  }
+
+ private:
+  T value_{};
+};
+
+}  // namespace subtle
+
 #if BUILDFLAG(PROTECTED_MEMORY_ENABLED)
 namespace internal {
 // Checks that the byte at `ptr` is read-only.
@@ -300,8 +358,11 @@ class BASE_EXPORT AutoWritableMemoryBase {
   }
 
   static bool SetProtectedSectionReadOnly() {
-    return SetMemoryReadOnly(internal::kProtectedMemoryStart,
-                             internal::kProtectedMemoryEnd);
+    CHECK_GT(internal::kProtectedMemoryEnd, internal::kProtectedMemoryStart);
+    return subtle::SetMemoryReadOnly(
+        internal::kProtectedMemoryStart,
+        reinterpret_cast<uintptr_t>(internal::kProtectedMemoryEnd) -
+            reinterpret_cast<uintptr_t>(internal::kProtectedMemoryStart));
   }
 
   static bool IsSectionStartPageAligned() {
@@ -384,7 +445,6 @@ class BASE_EXPORT AutoWritableMemoryBase {
   // past the end of the region of memory having its memory protections
   // changed.
   static bool SetMemoryReadWrite(void* start, void* end);
-  static bool SetMemoryReadOnly(void* start, void* end);
 #endif  // BUILDFLAG(PROTECTED_MEMORY_ENABLED)
 };
 

@@ -120,6 +120,7 @@
 namespace base {
 class CommandLine;
 class PersistentMemoryAllocator;
+class ReadOnlySharedMemoryRegion;
 #if BUILDFLAG(IS_ANDROID)
 namespace android {
 enum class ChildBindingState;
@@ -182,7 +183,8 @@ struct GlobalRenderFrameHostId;
 
 typedef base::Thread* (*RendererMainThreadFactoryFunction)(
     const InProcessChildThreadParams& params,
-    int32_t renderer_client_id);
+    int32_t renderer_client_id,
+    base::ReadOnlySharedMemoryRegion renderer_process_security_state);
 
 // Implements a concrete RenderProcessHost for the browser process for talking
 // to actual renderer processes (as opposed to mocks).
@@ -327,6 +329,8 @@ class CONTENT_EXPORT RenderProcessHostImpl
   void UnregisterRenderFrameHost(
       const GlobalRenderFrameHostId& render_frame_host_id,
       bool is_outermost_main_frame) override;
+  void GrantRendererProcessCapability(
+      blink::RendererProcessCapability capability) override;
   void ForEachRenderFrameHost(
       base::FunctionRef<void(RenderFrameHost*)> on_render_frame_host) override;
   void IncrementWorkerRefCount() override;
@@ -1598,6 +1602,16 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // launcher/helper which runs, and is destroyed, asynchronously.
   scoped_refptr<base::RefCountedData<base::ReadOnlySharedMemoryRegion>>
       tracing_config_memory_region_;
+
+  // Capabilities monotonically granted to this RenderProcessHost. Used to
+  // initialize `renderer_process_security_state_` in `Init()`, preserving
+  // grants made before `Init()` or across renderer restarts.
+  uint32_t granted_renderer_process_capabilities_ = 0;
+
+  // Browser-owned writable state for the currently initialized renderer
+  // process. The renderer receives only a read-only handle to this region.
+  std::optional<base::AtomicSharedMemory<uint32_t>>
+      renderer_process_security_state_;
 
   // The tracing output memory region.  Ownership of the memory region is
   // allocated by the process host (this object) but ownership is shared with

@@ -209,6 +209,7 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/page/launching_process_state.h"
+#include "third_party/blink/public/common/renderer_process_security_state.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -1920,6 +1921,17 @@ bool RenderProcessHostImpl::Init() {
   if (IsInitializedAndNotDead())
     return true;
 
+  auto renderer_process_security_state =
+      blink::RendererProcessSecurityStateMemory::Create(
+          granted_renderer_process_capabilities_);
+  if (!renderer_process_security_state) {
+    return false;
+  }
+  base::ReadOnlySharedMemoryRegion read_only_renderer_process_security_state =
+      renderer_process_security_state->TakeReadOnlyRegion();
+  renderer_process_security_state_ =
+      std::move(*renderer_process_security_state);
+
 #if !BUILDFLAG(IS_ANDROID)
   bool is_initial_web_ui = false;
   // If `use_separate_process` is true, the initial WebUI has its own process
@@ -2094,7 +2106,8 @@ bool RenderProcessHostImpl::Init() {
     in_process_renderer_.reset(g_renderer_main_thread_factory(
         InProcessChildThreadParams(GetIOThreadTaskRunner({}),
                                    &mojo_invitation_),
-        base::checked_cast<int32_t>(id_.GetUnsafeValue())));
+        base::checked_cast<int32_t>(id_.GetUnsafeValue()),
+        std::move(read_only_renderer_process_security_state)));
 
     base::Thread::Options options;
 #if BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC)
@@ -2176,7 +2189,8 @@ bool RenderProcessHostImpl::Init() {
             PROCESS_TYPE_RENDERER)
             ? metrics_memory_region_
             : nullptr,
-        tracing_config_memory_region_, tracing_output_memory_region_);
+        tracing_config_memory_region_, tracing_output_memory_region_,
+        std::move(read_only_renderer_process_security_state));
     startup_timings_.init_start = child_process_launcher_->init_start_time();
 
     // Send initialization messages to the renderer, before any other messages
@@ -3178,6 +3192,17 @@ void RenderProcessHostImpl::UnregisterRenderFrameHost(
   if (is_outermost_main_frame) {
     CHECK_NE(outermost_main_frame_count_, 0u);
     --outermost_main_frame_count_;
+  }
+}
+
+void RenderProcessHostImpl::GrantRendererProcessCapability(
+    blink::RendererProcessCapability capability) {
+  CHECK(blink::IsValidRendererProcessCapability(capability));
+  const uint32_t mask = blink::RendererProcessCapabilityMask(capability);
+  granted_renderer_process_capabilities_ |= mask;
+  if (renderer_process_security_state_) {
+    renderer_process_security_state_->WritableRef().fetch_or(
+        mask, std::memory_order_release);
   }
 }
 
@@ -5788,6 +5813,7 @@ void RenderProcessHostImpl::ProcessDied(
   CHECK(!deleting_soon_, base::NotFatalUntil::M152);
 
   child_process_launcher_.reset();
+  renderer_process_security_state_.reset();
   is_dead_ = true;
   // Make sure no IPCs or mojo calls from the old process get dispatched after
   // it has died.

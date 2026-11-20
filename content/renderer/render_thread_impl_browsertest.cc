@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/base_switches.h"
@@ -54,6 +55,7 @@
 #include "gpu/config/gpu_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/renderer_process_security_state.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/platform/scheduler/test/web_mock_thread_scheduler.h"
@@ -129,6 +131,9 @@ class RenderThreadImplBrowserTest : public testing::Test,
     CHECK(!process_.get());
     process_ = std::make_unique<RenderProcess>();
     test_task_counter_ = base::MakeRefCounted<TestTaskCounter>();
+    renderer_process_security_state_ =
+        blink::RendererProcessSecurityStateMemory::Create(uint32_t{0});
+    ASSERT_TRUE(renderer_process_security_state_);
 
     // RenderThreadImpl expects the browser to pass these flags.
     base::CommandLine* cmd = base::CommandLine::ForCurrentProcess();
@@ -157,7 +162,8 @@ class RenderThreadImplBrowserTest : public testing::Test,
     thread_ = new RenderThreadImpl(
         InProcessChildThreadParams(io_task_runner,
                                    &process_host_->GetMojoInvitation().value()),
-        /*renderer_client_id=*/1, std::move(main_thread_scheduler));
+        /*client_id=*/1, std::move(main_thread_scheduler),
+        renderer_process_security_state_->TakeReadOnlyRegion());
     cmd->InitFromArgv(old_argv);
 
     run_loop_ = std::make_unique<base::RunLoop>();
@@ -232,6 +238,8 @@ class RenderThreadImplBrowserTest : public testing::Test,
   std::unique_ptr<ChildProcessHost> process_host_;
 
   std::unique_ptr<RenderProcess> process_;
+  std::optional<blink::RendererProcessSecurityStateMemory>
+      renderer_process_security_state_;
   raw_ptr<blink::scheduler::WebMockThreadScheduler> main_thread_scheduler_;
 
   // RenderThreadImpl doesn't currently support a proper shutdown sequence

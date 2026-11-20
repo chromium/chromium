@@ -4,6 +4,8 @@
 
 #include "content/renderer/in_process_renderer_thread.h"
 
+#include <utility>
+
 #include "base/message_loop/message_pump.h"
 #include "base/task/current_thread.h"
 #include "build/build_config.h"
@@ -23,11 +25,14 @@ namespace content {
 
 InProcessRendererThread::InProcessRendererThread(
     const InProcessChildThreadParams& params,
-    int32_t renderer_client_id)
+    int32_t renderer_client_id,
+    base::ReadOnlySharedMemoryRegion renderer_process_security_state)
     : Thread("Chrome_InProcRendererThread",
              std::make_unique<ThreadDelegate>(this)),
       params_(params),
-      renderer_client_id_(renderer_client_id) {}
+      renderer_client_id_(renderer_client_id),
+      renderer_process_security_state_(
+          std::move(renderer_process_security_state)) {}
 
 InProcessRendererThread::~InProcessRendererThread() {
   Stop();
@@ -50,8 +55,10 @@ void InProcessRendererThread::CleanUp() {
 
 base::Thread* CreateInProcessRendererThread(
     const InProcessChildThreadParams& params,
-    int32_t renderer_client_id) {
-  return new InProcessRendererThread(params, renderer_client_id);
+    int32_t renderer_client_id,
+    base::ReadOnlySharedMemoryRegion renderer_process_security_state) {
+  return new InProcessRendererThread(
+      params, renderer_client_id, std::move(renderer_process_security_state));
 }
 
 InProcessRendererThread::ThreadDelegate::ThreadDelegate(
@@ -99,7 +106,8 @@ void InProcessRendererThread::ThreadDelegate::BindToCurrentThread() {
   // and it's okay when we're running in multi-process mode because renderers
   // get killed by the OS. In-process mode is used for test and debug only.
   new RenderThreadImpl(outer_->params_, outer_->renderer_client_id_,
-                       std::move(main_thread_scheduler));
+                       std::move(main_thread_scheduler),
+                       std::move(outer_->renderer_process_security_state_));
 }
 
 }  // namespace content

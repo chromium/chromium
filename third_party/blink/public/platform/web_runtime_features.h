@@ -31,17 +31,37 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_RUNTIME_FEATURES_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_RUNTIME_FEATURES_H_
 
+#include <stdint.h>
+
 #include <string_view>
 
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_runtime_features_base.h"
 
+namespace base {
+class ReadOnlySharedMemoryRegion;
+}  // namespace base
+
 namespace blink {
+
+enum class RendererProcessCapability : uint32_t;
 
 // This class is used to enable runtime features of Blink.
 // Stable features are enabled by default.
 class BLINK_PLATFORM_EXPORT WebRuntimeFeatures : public WebRuntimeFeaturesBase {
  public:
+  // Initializes the process-wide renderer security state from a read-only
+  // duplicate of browser-owned shared memory. This must be called exactly once
+  // with a valid region before any capability queries. The mapping is retained
+  // for the lifetime of the process; invalid or repeated initialization
+  // CHECKs.
+  static void InitializeRendererProcessSecurityState(
+      base::ReadOnlySharedMemoryRegion region);
+
+  // Returns whether the renderer process has the given capability.
+  static bool HasRendererProcessCapabilityForTesting(
+      RendererProcessCapability capability);
+
   // MojoJS and related features are gated by protected memory, which needs to
   // be explicitly initialized before use.
   static void InitializeMojoJSPermissions();
