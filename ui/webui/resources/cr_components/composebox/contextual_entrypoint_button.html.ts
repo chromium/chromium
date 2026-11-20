@@ -8,85 +8,80 @@ import {GlifAnimationState} from './common.js';
 import type {ContextualEntrypointButtonElement} from './contextual_entrypoint_button.js';
 
 export function getHtml(this: ContextualEntrypointButtonElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
-  <div id="${this.getWrapperId_()}" class="${this.getWrapperCssClass_()}"
-      @pointerenter="${this.onEntrypointPointerenter_}">
-    ${this.showContextMenuDescription && !this.windowWidthBelowThreshold_ ? html`
-      <cr-button id="entrypoint"
-          class="ai-mode-button"
-          part="entrypoint-button"
-          @click="${this.onEntrypointClick_}"
+<div id="${this.getWrapperId_()}" class="${this.getWrapperCssClass_()}"
+    @pointerenter="${this.onEntrypointPointerenter_}">
+  ${this.showContextMenuDescription && !this.windowWidthBelowThreshold_ ?
+      html`
+    <cr-button id="entrypoint" class="ai-mode-button" part="entrypoint-button"
+        @click="${this.onEntrypointClick_}"
+        title="${this.getEntrypointAriaLabel_()}" noink
+        aria-label="${this.getEntrypointAriaLabel_()}">
+      <cr-icon id="entrypointIcon" icon="cr:add" slot="prefix-icon"
+          aria-hidden="true" @animationend="${this.onIconAnimationend_}">
+      </cr-icon>
+      <span id="description" aria-hidden="true"
+          @animationend="${this.onDescriptionAnimationend_}">
+        ${this.i18n('addContext')}
+      </span>
+      ${this.smartTabSharingActive ? html`
+        <cr-icon class="sts-active-coin" icon="composebox:screensaverAuto"
+            aria-hidden="true"
+            title="${this.i18n('stsMegaplusShareRelevantOpenTabs')}">
+        </cr-icon>
+      ` : html`
+        ${this.tabFaviconChipsToCoinsEnabled_ && this.getTabs_().length > 0 ?
+            html`
+          <composebox-favicon-group .tabs="${this.getTabs_()}"
+              .submittedTabIds="${this.getSubmittedTabIds_()}"
+              aria-hidden="true" title="${this.i18n('sharingTabsWithGoogle')}">
+          </composebox-favicon-group>
+        ` : ''}
+      `}
+    </cr-button>
+  ` : html`
+    ${this.smartTabSharingActive ||
+            (this.tabFaviconChipsToCoinsEnabled_ &&
+             this.getTabs_().length > 0) ?
+        html`
+      <cr-button id="entrypoint" class="ai-mode-button pill-button"
+          part="entrypoint-button" @click="${this.onEntrypointClick_}"
           title="${this.getEntrypointAriaLabel_()}" noink
           aria-label="${this.getEntrypointAriaLabel_()}">
         <cr-icon id="entrypointIcon" icon="cr:add" slot="prefix-icon"
-            aria-hidden="true"
-            @animationend="${this.onIconAnimationend_}"></cr-icon>
-        <span id="description"
-            aria-hidden="true"
-            @animationend="${this.onDescriptionAnimationend_}">
-          ${this.i18n('addContext')}
-        </span>
+            aria-hidden="true" @animationend="${this.onIconAnimationend_}">
+        </cr-icon>
         ${this.smartTabSharingActive ? html`
           <cr-icon class="sts-active-coin" icon="composebox:screensaverAuto"
               aria-hidden="true"
-              title="${this.i18n('stsMegaplusShareRelevantOpenTabs')}"></cr-icon>
+              title="${this.i18n('stsMegaplusShareRelevantOpenTabs')}">
+          </cr-icon>
         ` : html`
-          ${this.tabFaviconChipsToCoinsEnabled_ &&
-          this.getTabs_().length > 0 ? html`
-            <composebox-favicon-group .tabs="${this.getTabs_()}"
-                .submittedTabIds="${this.getSubmittedTabIds_()}"
-                aria-hidden="true"
-                title="${this.i18n('sharingTabsWithGoogle')}">
-            </composebox-favicon-group>
-          ` : ''}
+          <composebox-favicon-group .tabs="${this.getTabs_()}"
+              .submittedTabIds="${this.getSubmittedTabIds_()}"
+              aria-hidden="true" title="${this.i18n('sharingTabsWithGoogle')}">
+          </composebox-favicon-group>
         `}
       </cr-button>
     ` : html`
-      ${this.smartTabSharingActive ||
-          (this.tabFaviconChipsToCoinsEnabled_ &&
-           this.getTabs_().length > 0) ? html`
-        <cr-button id="entrypoint"
-            class="ai-mode-button pill-button"
-            part="entrypoint-button"
-            @click="${this.onEntrypointClick_}"
-            title="${this.getEntrypointAriaLabel_()}" noink
-            aria-label="${this.getEntrypointAriaLabel_()}">
-          <cr-icon id="entrypointIcon" icon="cr:add" slot="prefix-icon"
-              aria-hidden="true"
-              @animationend="${this.onIconAnimationend_}"></cr-icon>
-          ${this.smartTabSharingActive ? html`
-            <cr-icon class="sts-active-coin" icon="composebox:screensaverAuto"
-                aria-hidden="true"
-                title="${this.i18n('stsMegaplusShareRelevantOpenTabs')}"></cr-icon>
-          ` : html`
-            <composebox-favicon-group .tabs="${this.getTabs_()}"
-                .submittedTabIds="${this.getSubmittedTabIds_()}"
-                aria-hidden="true"
-                title="${this.i18n('sharingTabsWithGoogle')}">
-            </composebox-favicon-group>
-          `}
-        </cr-button>
-      ` : html`
-        <cr-icon-button id="entrypoint"
-            class="ai-mode-button"
-            part="context-menu-entrypoint-icon entrypoint-button"
-            iron-icon="cr:add"
-            @click="${this.onEntrypointClick_}"
-            title="${this.getEntrypointAriaLabel_()}" noink
-            aria-label="${this.getEntrypointAriaLabel_()}"
-            @animationend="${this.onIconAnimationend_}">
-        </cr-icon-button>
-      `}
+      <cr-icon-button id="entrypoint" class="ai-mode-button"
+          part="context-menu-entrypoint-icon entrypoint-button"
+          iron-icon="cr:add" @click="${this.onEntrypointClick_}"
+          title="${this.getEntrypointAriaLabel_()}" noink
+          aria-label="${this.getEntrypointAriaLabel_()}"
+          @animationend="${this.onIconAnimationend_}">
+      </cr-icon-button>
     `}
-    ${!this.energyEffectAnimationEnabled && !this.disableFallbackGlifAnimation && this.glifAnimationState !== GlifAnimationState.INELIGIBLE ? html`
-      <div class="aim-gradient-outer-blur aim-c"></div>
-      <div class="aim-gradient-solid aim-c"></div>
-      <div class="aim-background aim-c"
-          @animationend="${this.onAimBackgroundAnimationend_}">
-      </div>
-    ` : ''}
-  </div>
+  `}
+  ${!this.energyEffectAnimationEnabled && !this.disableFallbackGlifAnimation &&
+          this.glifAnimationState !== GlifAnimationState.INELIGIBLE ?
+      html`
+    <div class="aim-gradient-outer-blur aim-c"></div>
+    <div class="aim-gradient-solid aim-c"></div>
+    <div class="aim-background aim-c"
+        @animationend="${this.onAimBackgroundAnimationend_}">
+    </div>
+  ` : ''}
+</div>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

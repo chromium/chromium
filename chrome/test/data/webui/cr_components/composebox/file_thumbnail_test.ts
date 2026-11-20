@@ -46,7 +46,7 @@ suite('ComposeboxFileThumbnailTest', () => {
         fileThumbnailElement.shadowRoot.querySelector('#documentTitle');
     assertTrue(!!title);
     assertEquals(title.tagName, 'P');
-    assertEquals(title.textContent, fileThumbnailElement.file.name);
+    assertEquals(title.textContent.trim(), fileThumbnailElement.file.name);
 
     // Assert pdf icon is shown.
     const icon = fileThumbnailElement.shadowRoot.querySelector<CrIconElement>(
@@ -71,7 +71,7 @@ suite('ComposeboxFileThumbnailTest', () => {
         fileThumbnailElement.shadowRoot.querySelector('#documentTitle');
     assertTrue(!!title);
     assertEquals(title.tagName, 'P');
-    assertEquals(title.textContent, fileThumbnailElement.file.name);
+    assertEquals(title.textContent.trim(), fileThumbnailElement.file.name);
 
     // Assert document icon is shown.
     const icon = fileThumbnailElement.shadowRoot.querySelector<CrIconElement>(
@@ -96,7 +96,7 @@ suite('ComposeboxFileThumbnailTest', () => {
         fileThumbnailElement.shadowRoot.querySelector('#documentTitle');
     assertTrue(!!title);
     assertEquals(title.tagName, 'P');
-    assertEquals(title.textContent, fileThumbnailElement.file.name);
+    assertEquals(title.textContent.trim(), fileThumbnailElement.file.name);
 
     // Assert pdf icon is shown.
     const icon = fileThumbnailElement.shadowRoot.querySelector<CrIconElement>(
@@ -128,7 +128,7 @@ suite('ComposeboxFileThumbnailTest', () => {
         fileThumbnailElement.shadowRoot.querySelector('#documentTitle');
     assertTrue(!!title);
     assertEquals(title.tagName, 'P');
-    assertEquals(title.textContent, fileThumbnailElement.file.name);
+    assertEquals(title.textContent.trim(), fileThumbnailElement.file.name);
 
     // Assert auto-src image icon is shown.
     const icon =
@@ -221,7 +221,7 @@ suite('ComposeboxFileThumbnailTest', () => {
     assertTrue(!!documentTitle);
     assertEquals(
         'a_very_long_filename_example_for_bug_report.pdf',
-        documentTitle.textContent);
+        documentTitle.textContent.trim());
 
     // Tab.
     fileThumbnailElement.file =
@@ -462,7 +462,7 @@ function createThumbnailElement(isAndroid: boolean):
         const title =
             fileThumbnailElement.shadowRoot.querySelector('#documentTitle');
         assertTrue(!!title);
-        assertEquals(name, title.textContent);
+        assertEquals(name, title.textContent.trim());
       });
     });
 

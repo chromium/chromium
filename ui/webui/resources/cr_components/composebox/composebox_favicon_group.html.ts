@@ -8,16 +8,14 @@ import type {ComposeboxFaviconGroupElement} from './composebox_favicon_group.js'
 
 export function getHtml(this: ComposeboxFaviconGroupElement) {
   return html`
-    ${
-      this.visibleTabs_.map(
-          tab => html`
-      <div class="favicon-item ${this.isTabLoading_(tab) ? 'loading' : ''}"
-          style="--favicon-image: ${this.getFaviconUrl_(tab)}"></div>
-    `)}
-    ${
-      this.remainingCount_ > 0 ? html`
-      <div id="more-items">
-        +${this.remainingCount_}
-      </div>` :
-                                 ''}`;
+${this.visibleTabs_.map(tab => html`
+  <div class="favicon-item ${this.isTabLoading_(tab) ? 'loading' : ''}"
+      style="--favicon-image: ${this.getFaviconUrl_(tab)}">
+  </div>
+`)}
+${this.remainingCount_ > 0 ? html`
+  <div id="more-items">
+    +${this.remainingCount_}
+  </div>
+` : ''}`;
 }

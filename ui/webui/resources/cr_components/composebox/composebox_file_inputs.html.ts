@@ -7,29 +7,18 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {ComposeboxFileInputsElement} from './composebox_file_inputs.js';
 
 export function getHtml(this: ComposeboxFileInputsElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
-${this.disableFileInputs ? html`<slot></slot>` : html`
-  <div id="fileUploadWrapper"
-    @open-image-upload="${this.onOpenImageUpload_}"
-    @open-file-upload="${this.onOpenFileUpload_}">
+${this.disableFileInputs ? html`
+  <slot></slot>
+` : html`
+  <div id="fileUploadWrapper" @open-image-upload="${this.onOpenImageUpload_}"
+      @open-file-upload="${this.onOpenFileUpload_}">
     <slot></slot>
   </div>
-  <input type="file"
-      accept="${this.imageFileTypes_}"
-      id="imageInput"
-      @change="${this.onFileChange_}"
-      multiple
-      hidden>
-  </input>
-  <input type="file"
-      accept="${this.attachmentFileTypes_}"
-      id="fileInput"
-      @change="${this.onFileChange_}"
-      multiple
-      hidden>
-  </input>
+  <input type="file" accept="${this.imageFileTypes_}" id="imageInput"
+      @change="${this.onFileChange_}" multiple hidden>
+  <input type="file" accept="${this.attachmentFileTypes_}" id="fileInput"
+      @change="${this.onFileChange_}" multiple hidden>
 `}
 <!--_html_template_end_-->`;
-  // clang-format off
 }

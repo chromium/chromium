@@ -8,42 +8,36 @@ import {hasAllowedInputs} from './common.js';
 import type {ContextualEntrypointAndMenuElement} from './contextual_entrypoint_and_menu.js';
 
 export function getHtml(this: ContextualEntrypointAndMenuElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
-    ${hasAllowedInputs(this.inputState, this.usePecApi) ? html`
-      <cr-composebox-contextual-entrypoint-button id="entrypointButton"
-          exportparts="context-menu-entrypoint-icon, entrypoint-button"
-          .inputState="${this.inputState}"
-          .sharedTabs="${this.sharedTabs}"
-          .restoredTabs="${this.aimThreadRestoredTabs}"
-          .smartTabSharingActive="${this.smartTabSharingActive}"
-          @context-menu-entrypoint-click="${this.onContextMenuEntrypointClick_}"
-          @context-menu-entrypoint-hover="${this.onContextMenuEntrypointHover_}"
-          ?show-context-menu-description="${this.showContextMenuDescription}"
-          .glifAnimationState="${this.glifAnimationState}"
-          .energyEffectAnimationEnabled="${this.energyEffectAnimationEnabled}"
-          .disableFallbackGlifAnimation="${this.disableFallbackGlifAnimation}">
-      </cr-composebox-contextual-entrypoint-button>
-    ` : ''}
-    <cr-composebox-contextual-action-menu id="menu"
-        .fileNum="${this.fileNum}"
-        .nonTabFileNum="${this.nonTabFileNum}"
-        .isSidePanel="${this.isSidePanel}"
-        .selectedTabIds="${this.selectedTabIds}"
-        .aimThreadRestoredTabs="${this.aimThreadRestoredTabs}"
-        .tabSuggestions="${this.tabSuggestions}"
-        .recentTabId="${this.recentTabId}"
-        .inputState="${this.inputState}"
-        .smartTabSharingActive="${this.smartTabSharingActive}"
-        .smartTabSharingVisible="${this.smartTabSharingVisible}"
-        .contextManagementInComposeboxEnabled="${this.contextManagementInComposeboxEnabled}"
-        .contextMenuTooltipsEnabled="${
-            this.composeboxContextMenuTooltipsEnabled}"
-        .disableAutoReposition="${this.disableAutoReposition}"
-        .shareTabsFlyoutOpen="${this.shareTabsFlyoutOpen}"
-        .unboundedMenuEnabled="${this.unboundedMenuEnabled}"
-        @close="${this.onMenuClose_}">
-    </cr-composebox-contextual-action-menu>
-  <!--_html_template_end_-->`;
-  // clang-format on
+${hasAllowedInputs(this.inputState, this.usePecApi) ? html`
+  <cr-composebox-contextual-entrypoint-button id="entrypointButton"
+      exportparts="context-menu-entrypoint-icon, entrypoint-button"
+      .inputState="${this.inputState}" .sharedTabs="${this.sharedTabs}"
+      .restoredTabs="${this.aimThreadRestoredTabs}"
+      .smartTabSharingActive="${this.smartTabSharingActive}"
+      @context-menu-entrypoint-click="${this.onContextMenuEntrypointClick_}"
+      @context-menu-entrypoint-hover="${this.onContextMenuEntrypointHover_}"
+      ?show-context-menu-description="${this.showContextMenuDescription}"
+      .glifAnimationState="${this.glifAnimationState}"
+      .energyEffectAnimationEnabled="${this.energyEffectAnimationEnabled}"
+      .disableFallbackGlifAnimation="${this.disableFallbackGlifAnimation}">
+  </cr-composebox-contextual-entrypoint-button>
+` : ''}
+<cr-composebox-contextual-action-menu id="menu" .fileNum="${this.fileNum}"
+    .nonTabFileNum="${this.nonTabFileNum}" .isSidePanel="${this.isSidePanel}"
+    .selectedTabIds="${this.selectedTabIds}"
+    .aimThreadRestoredTabs="${this.aimThreadRestoredTabs}"
+    .tabSuggestions="${this.tabSuggestions}" .recentTabId="${this.recentTabId}"
+    .inputState="${this.inputState}"
+    .smartTabSharingActive="${this.smartTabSharingActive}"
+    .smartTabSharingVisible="${this.smartTabSharingVisible}"
+    .contextManagementInComposeboxEnabled="${
+        this.contextManagementInComposeboxEnabled}"
+    .contextMenuTooltipsEnabled="${this.composeboxContextMenuTooltipsEnabled}"
+    .disableAutoReposition="${this.disableAutoReposition}"
+    .shareTabsFlyoutOpen="${this.shareTabsFlyoutOpen}"
+    .unboundedMenuEnabled="${this.unboundedMenuEnabled}"
+    @close="${this.onMenuClose_}">
+</cr-composebox-contextual-action-menu>
+<!--_html_template_end_-->`;
 }

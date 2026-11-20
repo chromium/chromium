@@ -8,7 +8,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {ComposeboxMatchElement} from './composebox_match.js';
 
 export function getHtml(this: ComposeboxMatchElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <div class="container" aria-hidden="true" part="match-container">
   <div id="image" style="${this.imageStyle_()}"></div>
@@ -23,8 +22,9 @@ export function getHtml(this: ComposeboxMatchElement) {
     ` : ''}
   </div>
   <div id="textContainer" part="match-text-container">
-    <span id="primaryText" part="match-primary-text">${
-        this.match.suggestTemplate.primaryText.text}</span>
+    <span id="primaryText" part="match-primary-text">
+      ${this.match.suggestTemplate.primaryText.text}
+    </span>
     ${this.secondaryTextPlacement === 'below-primary-text' ? html`
       <span id="secondaryText" part="match-secondary-text">
         ${this.match.suggestTemplate.secondaryText?.text ?? ''}
@@ -32,18 +32,16 @@ export function getHtml(this: ComposeboxMatchElement) {
     ` : ''}
   </div>
   <cr-icon-button id="remove" class="action-icon icon-clear"
-    part="match-remove-button"
-    aria-label="${this.match.removeButtonA11yLabel}"
-    @click="${this.onRemoveButtonClick_}"
-    @mousedown="${this.onRemoveButtonMousedown_}"
-    title="${this.removeButtonTitle_}"
-    ?hidden="${!this.match.supportsDeletion}"
-    tabindex="2">
+      part="match-remove-button"
+      aria-label="${this.match.removeButtonA11yLabel}"
+      @click="${this.onRemoveButtonClick_}"
+      @mousedown="${this.onRemoveButtonMousedown_}"
+      title="${this.removeButtonTitle_}"
+      ?hidden="${!this.match.supportsDeletion}" tabindex="2">
   </cr-icon-button>
   ${this.getActionIconClass_() ? html`
     <div id="actionIcon" class="${this.getActionIconClass_()}"></div>
   ` : ''}
 </div>
-  <!--_html_template_end_-->`;
-  // clang-format on
+<!--_html_template_end_-->`;
 }
