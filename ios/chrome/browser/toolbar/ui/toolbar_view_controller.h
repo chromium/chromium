@@ -21,7 +21,6 @@
 @protocol SceneCommands;
 @class TabGroupIndicatorView;
 @class ToolbarButtonFactory;
-@protocol ToolbarButtonsMutator;
 @protocol ToolbarHeightDelegate;
 @protocol ToolbarMutator;
 
@@ -47,11 +46,6 @@
 
 // Mutator to handle toolbar actions.
 @property(nonatomic, weak) id<ToolbarMutator> mutator;
-
-// Mutator to handle the control buttons' actions.
-// TODO(crbug.com/585252907): Remove once the button actions move out of this
-// view controller.
-@property(nonatomic, weak) id<ToolbarButtonsMutator> buttonsMutator;
 
 // Factory used to create the buttons.
 @property(nonatomic, strong) ToolbarButtonFactory* buttonFactory;

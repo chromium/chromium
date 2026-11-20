@@ -45,7 +45,6 @@
 #import "ios/chrome/browser/toolbar/ui/buttons/toolbar_buttons_utils.h"
 #import "ios/chrome/browser/toolbar/ui/buttons/toolbar_element_with_background.h"
 #import "ios/chrome/browser/toolbar/ui/buttons/toolbar_tab_grid_badge_button.h"
-#import "ios/chrome/browser/toolbar/ui/toolbar_buttons_mutator.h"
 #import "ios/chrome/browser/toolbar/ui/toolbar_constants.h"
 #import "ios/chrome/browser/toolbar/ui/toolbar_height_delegate.h"
 #import "ios/chrome/browser/toolbar/ui/toolbar_mutator.h"
@@ -1764,7 +1763,6 @@ CGFloat ButtonAlphaForProgress(CGFloat progress) {
 // Creates the views.
 - (void)createView {
   CHECK(self.buttonFactory);
-  CHECK(self.buttonsMutator);
   _locationBarBackground = [self createLocationBarBackground];
   _locationBarContainer =
       [self createLocationBarContainerWithBackground:_locationBarBackground];
@@ -2297,7 +2295,7 @@ CGFloat ButtonAlphaForProgress(CGFloat progress) {
   }
   base::RecordAction(base::UserMetricsAction("MobileToolbarBack"));
 
-  [self.buttonsMutator goBack];
+  [self.mutator goBack];
 }
 
 // Handles forward button tap.
@@ -2307,7 +2305,7 @@ CGFloat ButtonAlphaForProgress(CGFloat progress) {
   }
   base::RecordAction(base::UserMetricsAction("MobileToolbarForward"));
 
-  [self.buttonsMutator goForward];
+  [self.mutator goForward];
 }
 
 // Handles reload button tap.
@@ -2316,7 +2314,7 @@ CGFloat ButtonAlphaForProgress(CGFloat progress) {
     base::RecordAction(base::UserMetricsAction("MobileToolbarReloadOnNTP"));
   }
   base::RecordAction(base::UserMetricsAction("MobileToolbarReload"));
-  [self.buttonsMutator reload];
+  [self.mutator reload];
 }
 
 // Handles stop button tap.
@@ -2325,7 +2323,7 @@ CGFloat ButtonAlphaForProgress(CGFloat progress) {
     base::RecordAction(base::UserMetricsAction("MobileToolbarStopOnNTP"));
   }
   base::RecordAction(base::UserMetricsAction("MobileToolbarStop"));
-  [self.buttonsMutator stop];
+  [self.mutator stop];
 }
 
 // Handles share button tap.
@@ -2344,12 +2342,12 @@ CGFloat ButtonAlphaForProgress(CGFloat progress) {
         base::UserMetricsAction("MobileToolbarShowAssistantOnNTP"));
   }
   base::RecordAction(base::UserMetricsAction("MobileToolbarShowAssistant"));
-  [self.buttonsMutator assistantButtonTapped];
+  [self.mutator assistantButtonTapped];
 }
 
 // Handles tools menu button tap.
 - (void)toolsMenuButtonTapped {
-  [self.buttonsMutator recordUserActionsForToolsMenuTapped];
+  [self.mutator recordUserActionsForToolsMenuTapped];
   [self.popupMenuHandler showToolsMenuPopup];
 }
 
