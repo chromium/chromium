@@ -62,6 +62,8 @@ class CONTENT_EXPORT CacheStorageBlobToDiskCache
   const blink::StorageKey& storage_key() const { return storage_key_; }
 
  private:
+  void MaybeFinishReading();
+  void DidTruncateEntry(int rv);
   void RunCallback(bool success);
 
   void OnDataPipeReadable(MojoResult result);

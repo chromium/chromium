@@ -73,6 +73,10 @@ void CacheStorageBlobToDiskCache::StreamBlobToCache(
 
 void CacheStorageBlobToDiskCache::OnComplete(int32_t status,
                                              uint64_t data_length) {
+  // Disconnect after the terminal `OnComplete()` notification so duplicate
+  // calls cannot overwrite completion state or re-enter `MaybeFinishReading()`
+  // while an asynchronous truncation write is in flight.
+  client_receiver_.reset();
   if (status != net::OK) {
     RunCallback(false /* success */);
     return;
@@ -83,7 +87,7 @@ void CacheStorageBlobToDiskCache::OnComplete(int32_t status,
   received_on_complete_ = true;
   expected_total_size_ = data_length;
   if (data_pipe_closed_) {
-    RunCallback(cache_entry_offset_ == expected_total_size_);
+    MaybeFinishReading();
   }
 }
 
@@ -101,6 +105,37 @@ void CacheStorageBlobToDiskCache::DidWriteDataToEntry(int expected_bytes,
   cache_entry_offset_ += rv;
 
   ReadFromBlob();
+}
+
+void CacheStorageBlobToDiskCache::MaybeFinishReading() {
+  if (cache_entry_offset_ != expected_total_size_) {
+    RunCallback(/*success=*/false);
+    return;
+  }
+
+  if (expected_total_size_ == 0 &&
+      entry_->GetDataSize(disk_cache_body_index_) != 0) {
+    // An empty blob never triggers a data pipe write, so explicitly truncate
+    // any pre-existing data in a reopened entry stream.
+    int rv = entry_->WriteData(
+        disk_cache_body_index_, /*offset=*/0, /*buf=*/nullptr, /*buf_len=*/0,
+        base::BindOnce(&CacheStorageBlobToDiskCache::DidTruncateEntry,
+                       weak_ptr_factory_.GetWeakPtr()),
+        /*truncate=*/true);
+    if (rv != net::ERR_IO_PENDING) {
+      DidTruncateEntry(rv);
+    }
+    return;
+  }
+
+  RunCallback(/*success=*/true);
+}
+
+void CacheStorageBlobToDiskCache::DidTruncateEntry(int rv) {
+  if (rv != net::OK) {
+    quota_manager_proxy_->OnClientWriteFailed(storage_key_);
+  }
+  RunCallback(/*success=*/rv == net::OK);
 }
 
 void CacheStorageBlobToDiskCache::RunCallback(bool success) {
@@ -130,7 +165,7 @@ void CacheStorageBlobToDiskCache::OnDataPipeReadable(MojoResult unused) {
     // Done reading, but only signal success if OnComplete has also been called.
     data_pipe_closed_ = true;
     if (received_on_complete_) {
-      RunCallback(cache_entry_offset_ == expected_total_size_);
+      MaybeFinishReading();
     }
     return;
   }
