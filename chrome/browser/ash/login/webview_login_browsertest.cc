@@ -2485,7 +2485,9 @@ class WebviewProxyAuthLoginTest : public WebviewLoginTest {
 
 // This tests that proxy authentication details supplied on the sign-in screen
 // when attempting to load gaia are used for the gaia page load, for device
-// policy fetches and for subsequent gaia page loads.
+// policy fetches, for subsequent gaia page loads, and for browser-process
+// post-auth token exchange (`OAuth2TokenInitializer` on SystemNetworkContext)
+// when completing sign-in.
 IN_PROC_BROWSER_TEST_F(WebviewProxyAuthLoginTest, ProxyAuthTransfer) {
   WaitForSigninScreen();
 
@@ -2534,6 +2536,23 @@ IN_PROC_BROWSER_TEST_F(WebviewProxyAuthLoginTest, ProxyAuthTransfer) {
   // Expect that we got back to the identifier page, as there are no known users
   // so the sign-in screen will not display user pods.
   ExpectIdentifierPage();
+
+  // Complete Gaia sign-in to verify browser-process post-auth requests on
+  // SystemNetworkContext (e.g. `OAuth2TokenInitializer` fetching tokens from
+  // `accounts.google.com` through `auth_proxy_server_`) also authenticate using
+  // the transferred `HttpAuthCache` entries without re-prompting.
+  SigninFrameJS().TypeIntoPath(FakeGaiaMixin::kFakeUserEmail,
+                               FakeGaiaMixin::kEmailPath);
+  test::OobeJS().ClickOnPath(kPrimaryButton);
+  WaitForGaiaPageBackButtonUpdate();
+  ExpectPasswordPage();
+
+  SigninFrameJS().TypeIntoPath(FakeGaiaMixin::kFakeUserPassword,
+                               FakeGaiaMixin::kPasswordPath);
+  test::OobeJS().ClickOnPath(kPrimaryButton);
+
+  test::WaitForPrimaryUserSessionStart();
+  EXPECT_TRUE(HttpAuthDialog::GetAllDialogsForTest().empty());
 }
 
 class WebviewChildLoginTest : public WebviewLoginTest {
