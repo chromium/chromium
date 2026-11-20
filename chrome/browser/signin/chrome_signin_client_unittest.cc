@@ -18,6 +18,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -30,6 +31,7 @@
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/supervised_user/core/browser/supervised_user_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -66,6 +68,16 @@ class ChromeSigninClientSignoutTest : public testing::Test {
     client_ = std::make_unique<MockChromeSigninClient>(profile);
   }
 
+  // Creates a profile whose primary account is supervised.
+  std::unique_ptr<TestingProfile> CreateSupervisedProfile() {
+    std::unique_ptr<TestingProfile> profile =
+        IdentityTestEnvironmentProfileAdaptor::
+            CreateProfileForIdentityTestEnvironment();
+    supervised_user::SupervisedUserTestEnvironment::EnableSupervisedAccount(
+        IdentityManagerFactory::GetForProfile(profile.get()));
+    return profile;
+  }
+
   void PreSignOut(signin_metrics::ProfileSignout source_metric) {
     client_->PreSignOut(
         base::BindOnce(&MockChromeSigninClient::SignOutCallback,
@@ -80,10 +92,8 @@ class ChromeSigninClientSignoutTest : public testing::Test {
 };
 
 TEST_F(ChromeSigninClientSignoutTest, ChildProfilePreSignoutWithForceSignin) {
-  TestingProfile::Builder builder;
-  builder.SetIsSupervisedProfile();
-  std::unique_ptr<TestingProfile> profile = builder.Build();
-  EXPECT_TRUE(profile->IsChild());
+  std::unique_ptr<TestingProfile> profile = CreateSupervisedProfile();
+  ASSERT_TRUE(profile->IsChild());
 
   CreateClient(profile.get());
 
@@ -136,10 +146,8 @@ TEST_F(ChromeSigninClientSignoutTest, ClearPrimaryAccountAllowed) {
 }
 
 TEST_F(ChromeSigninClientSignoutTest, ChildProfile) {
-  TestingProfile::Builder builder;
-  builder.SetIsSupervisedProfile();
-  std::unique_ptr<TestingProfile> profile = builder.Build();
-  EXPECT_TRUE(profile->IsChild());
+  std::unique_ptr<TestingProfile> profile = CreateSupervisedProfile();
+  ASSERT_TRUE(profile->IsChild());
 
   CreateClient(profile.get());
 #if BUILDFLAG(IS_ANDROID)
