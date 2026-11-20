@@ -4,7 +4,12 @@
 
 #include "components/sync/test/fake_sync_encryption_handler.h"
 
+#include <cstdint>
+#include <utility>
+#include <vector>
+
 #include "base/base64.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "components/sync/base/custom_passphrase_bootstrap_token.h"
 #include "components/sync/base/data_type.h"
@@ -60,6 +65,13 @@ void FakeSyncEncryptionHandler::RemoveObserver(Observer* observer) {
 void FakeSyncEncryptionHandler::SetEncryptionPassphrase(
     const std::string& passphrase) {
   // Do nothing.
+}
+
+void FakeSyncEncryptionHandler::SetTrustedVaultEncryptionPassphrase(
+    const std::vector<uint8_t>& key,
+    int version,
+    base::OnceCallback<void(bool)> done_cb) {
+  std::move(done_cb).Run(false);
 }
 
 void FakeSyncEncryptionHandler::SetDecryptionPassphrase(

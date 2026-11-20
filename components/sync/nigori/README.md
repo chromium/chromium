@@ -64,8 +64,9 @@ directory serves it.
     [`CrossUserSharingPublicPrivateKeyPair`](cross_user_sharing_public_private_key_pair.h)
     and [`CrossUserSharingPublicKey`](cross_user_sharing_public_key.h).
 *   Local changes: every change the client initiates (setting a custom
-    passphrase, initializing keystore Nigori, generating cross-user sharing
-    keys, migrating from the implicit passphrase) is a
+    passphrase, transitioning to a trusted vault passphrase, initializing
+    keystore Nigori, generating cross-user sharing keys, migrating from the
+    implicit passphrase) is a
     [`PendingLocalNigoriCommit`](pending_local_nigori_commit.h), which the
     bridge applies to `NigoriState` and commits in order.
 *   Syncing the `NIGORI` entity: Nigori has its own processor,

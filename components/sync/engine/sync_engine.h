@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SYNC_ENGINE_SYNC_ENGINE_H_
 #define COMPONENTS_SYNC_ENGINE_SYNC_ENGINE_H_
 
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <vector>
@@ -114,6 +115,17 @@ class SyncEngine : public DataTypeConfigurer {
   // - An explicit passphrase has already been set
   // - We have pending keys.
   virtual void SetEncryptionPassphrase(const std::string& passphrase) = 0;
+
+  // Asynchronously transitions from `KEYSTORE_PASSPHRASE` to
+  // `TRUSTED_VAULT_PASSPHRASE` using `key` and `version`. Invokes `done_cb`
+  // with `true` once committed, or `false` if ignored or superseded. Ignored if
+  // there are pending keys or if the current passphrase type is not
+  // `KEYSTORE_PASSPHRASE`. `key` must not be empty and `version` must be
+  // non-negative (`version >= 0`).
+  virtual void SetTrustedVaultEncryptionPassphrase(
+      const std::vector<uint8_t>& key,
+      int version,
+      base::OnceCallback<void(bool)> done_cb) = 0;
 
   // Use the provided decryption key to asynchronously attempt decryption. If
   // new encrypted keys arrive during the asynchronous call,

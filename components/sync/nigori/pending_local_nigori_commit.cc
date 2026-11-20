@@ -4,14 +4,21 @@
 
 #include "components/sync/nigori/pending_local_nigori_commit.h"
 
+#include <cstdint>
+#include <memory>
 #include <utility>
+#include <vector>
 
+#include "base/base64.h"
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "components/sync/base/custom_passphrase_bootstrap_token.h"
+#include "components/sync/base/passphrase_enums.h"
+#include "components/sync/base/time.h"
 #include "components/sync/model/crypto/key_derivation_params.h"
 #include "components/sync/model/crypto/nigori.h"
 #include "components/sync/nigori/cross_user_sharing_public_key.h"
@@ -117,6 +124,77 @@ class CustomPassphraseSetter : public PendingLocalNigoriCommit {
  private:
   const std::string passphrase_;
   const KeyDerivationParams key_derivation_params_;
+};
+
+class TrustedVaultPassphraseSetter : public PendingLocalNigoriCommit {
+ public:
+  TrustedVaultPassphraseSetter(const std::vector<uint8_t>& key,
+                               int version,
+                               base::OnceCallback<void(bool)> done_cb)
+      : key_(key), version_(version), done_cb_(std::move(done_cb)) {
+    CHECK(!key_.empty());
+    CHECK_GE(version_, 0);
+    CHECK(done_cb_);
+  }
+
+  TrustedVaultPassphraseSetter(const TrustedVaultPassphraseSetter&) = delete;
+  TrustedVaultPassphraseSetter& operator=(const TrustedVaultPassphraseSetter&) =
+      delete;
+
+  ~TrustedVaultPassphraseSetter() override = default;
+
+  bool TryApply(NigoriState& state) const override {
+    if (state.pending_keys.has_value()) {
+      return false;
+    }
+
+    switch (state.passphrase_type) {
+      case NigoriSpecifics::UNKNOWN:
+      case NigoriSpecifics::IMPLICIT_PASSPHRASE:
+      case NigoriSpecifics::CUSTOM_PASSPHRASE:
+      case NigoriSpecifics::FROZEN_IMPLICIT_PASSPHRASE:
+      case NigoriSpecifics::TRUSTED_VAULT_PASSPHRASE:
+        return false;
+      case NigoriSpecifics::KEYSTORE_PASSPHRASE:
+        break;
+    }
+
+    state.cryptographer->RotatePrimaryKeyByDerivation(
+        base::Base64Encode(key_), KeyDerivationParams::CreateForPbkdf2());
+    state.pending_keystore_decryptor_token.reset();
+    state.passphrase_type = NigoriSpecifics::TRUSTED_VAULT_PASSPHRASE;
+    state.custom_passphrase_time = base::Time();
+
+    state.trusted_vault_debug_info.set_migration_time(
+        TimeToProtoTime(creation_time_));
+    state.trusted_vault_debug_info.set_key_version(version_);
+
+    return true;
+  }
+
+  void OnSuccess(const NigoriState& state,
+                 SyncEncryptionHandlerObserverList& observer_list) override {
+    CHECK(!state.pending_keys.has_value());
+
+    observer_list.NotifyPassphraseTypeChanged(
+        PassphraseType::kTrustedVaultPassphrase,
+        /*passphrase_time=*/base::Time());
+    observer_list.NotifyCryptographerStateChanged(state.cryptographer.get(),
+                                                  /*has_pending_keys=*/false);
+    CHECK(done_cb_);
+    std::move(done_cb_).Run(true);
+  }
+
+  void OnFailure(SyncEncryptionHandlerObserverList& observer_list) override {
+    CHECK(done_cb_);
+    std::move(done_cb_).Run(false);
+  }
+
+ private:
+  const std::vector<uint8_t> key_;
+  const int version_;
+  base::OnceCallback<void(bool)> done_cb_;
+  const base::Time creation_time_ = base::Time::Now();
 };
 
 class KeystoreInitializer : public PendingLocalNigoriCommit {
@@ -271,6 +349,16 @@ std::unique_ptr<PendingLocalNigoriCommit>
 PendingLocalNigoriCommit::ForSetCustomPassphrase(
     const std::string& passphrase) {
   return std::make_unique<CustomPassphraseSetter>(passphrase);
+}
+
+// static
+std::unique_ptr<PendingLocalNigoriCommit>
+PendingLocalNigoriCommit::ForSetTrustedVaultPassphrase(
+    const std::vector<uint8_t>& key,
+    int version,
+    base::OnceCallback<void(bool)> done_cb) {
+  return std::make_unique<TrustedVaultPassphraseSetter>(key, version,
+                                                        std::move(done_cb));
 }
 
 // static

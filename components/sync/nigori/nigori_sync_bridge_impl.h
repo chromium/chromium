@@ -5,12 +5,14 @@
 #ifndef COMPONENTS_SYNC_NIGORI_NIGORI_SYNC_BRIDGE_IMPL_H_
 #define COMPONENTS_SYNC_NIGORI_NIGORI_SYNC_BRIDGE_IMPL_H_
 
+#include <cstdint>
 #include <list>
 #include <memory>
 #include <optional>
 #include <string>
 #include <vector>
 
+#include "base/functional/callback_forward.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "components/sync/engine/keystore_keys_handler.h"
@@ -61,6 +63,10 @@ class NigoriSyncBridgeImpl : public KeystoreKeysHandler,
   Cryptographer* GetCryptographer() override;
   PassphraseType GetPassphraseType() override;
   void SetEncryptionPassphrase(const std::string& passphrase) override;
+  void SetTrustedVaultEncryptionPassphrase(
+      const std::vector<uint8_t>& key,
+      int version,
+      base::OnceCallback<void(bool)> done_cb) override;
   void SetDecryptionPassphrase(const std::string& passphrase) override;
   void SetDecryptionBootstrapToken(
       const CustomPassphraseBootstrapToken& bootstrap_token) override;

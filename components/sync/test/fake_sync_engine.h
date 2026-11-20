@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SYNC_TEST_FAKE_SYNC_ENGINE_H_
 #define COMPONENTS_SYNC_TEST_FAKE_SYNC_ENGINE_H_
 
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>
@@ -89,6 +90,11 @@ class FakeSyncEngine final : public SyncEngine {
   void StartSyncingWithServer() override;
 
   void SetEncryptionPassphrase(const std::string& passphrase) override;
+
+  void SetTrustedVaultEncryptionPassphrase(
+      const std::vector<uint8_t>& key,
+      int version,
+      base::OnceCallback<void(bool)> done_cb) override;
 
   void SetDecryptionPassphrase(const std::string& passphrase) override;
 

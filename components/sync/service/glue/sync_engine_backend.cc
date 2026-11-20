@@ -4,12 +4,15 @@
 
 #include "components/sync/service/glue/sync_engine_backend.h"
 
+#include <cstdint>
 #include <utility>
+#include <vector>
 
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -382,6 +385,15 @@ void SyncEngineBackend::DoSetEncryptionPassphrase(
     const std::string& passphrase) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   sync_manager_->GetEncryptionHandler()->SetEncryptionPassphrase(passphrase);
+}
+
+void SyncEngineBackend::DoSetTrustedVaultEncryptionPassphrase(
+    const std::vector<uint8_t>& key,
+    int version,
+    base::OnceCallback<void(bool)> done_cb) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  sync_manager_->GetEncryptionHandler()->SetTrustedVaultEncryptionPassphrase(
+      key, version, std::move(done_cb));
 }
 
 void SyncEngineBackend::DoAddTrustedVaultDecryptionKeys(

@@ -4,9 +4,14 @@
 
 #include "components/sync/test/fake_sync_engine.h"
 
+#include <cstdint>
 #include <utility>
+#include <vector>
 
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/location.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/sync/base/custom_passphrase_bootstrap_token.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/engine/sync_engine_host.h"
@@ -93,6 +98,14 @@ void FakeSyncEngine::StartHandlingInvalidations() {
 }
 
 void FakeSyncEngine::SetEncryptionPassphrase(const std::string& passphrase) {}
+
+void FakeSyncEngine::SetTrustedVaultEncryptionPassphrase(
+    const std::vector<uint8_t>& key,
+    int version,
+    base::OnceCallback<void(bool)> done_cb) {
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(done_cb), true));
+}
 
 void FakeSyncEngine::SetDecryptionPassphrase(const std::string& passphrase) {}
 

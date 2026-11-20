@@ -5,10 +5,12 @@
 #ifndef COMPONENTS_SYNC_TEST_MOCK_SYNC_ENGINE_H_
 #define COMPONENTS_SYNC_TEST_MOCK_SYNC_ENGINE_H_
 
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/engine/sync_engine.h"
 #include "components/sync/engine/sync_status.h"
@@ -50,6 +52,12 @@ class MockSyncEngine : public SyncEngine {
   MOCK_METHOD(void, StartSyncingWithServer, (), (override));
   MOCK_METHOD(void, StartHandlingInvalidations, (), (override));
   MOCK_METHOD(void, SetEncryptionPassphrase, (const std::string&), (override));
+  MOCK_METHOD(void,
+              SetTrustedVaultEncryptionPassphrase,
+              (const std::vector<uint8_t>&,
+               int,
+               base::OnceCallback<void(bool)>),
+              (override));
   MOCK_METHOD(void, SetDecryptionPassphrase, (const std::string&), (override));
   MOCK_METHOD(void,
               SetDecryptionBootstrapToken,

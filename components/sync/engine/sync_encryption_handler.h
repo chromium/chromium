@@ -5,10 +5,12 @@
 #ifndef COMPONENTS_SYNC_ENGINE_SYNC_ENCRYPTION_HANDLER_H_
 #define COMPONENTS_SYNC_ENGINE_SYNC_ENCRYPTION_HANDLER_H_
 
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <vector>
 
+#include "base/functional/callback_forward.h"
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
 #include "components/sync/base/data_type.h"
@@ -119,6 +121,19 @@ class SyncEncryptionHandler {
   // set previously, we drop subsequent requests to set a passphrase.
   // `passphrase` shouldn't be empty.
   virtual void SetEncryptionPassphrase(const std::string& passphrase) = 0;
+
+  // Attempts to transition the Nigori state from `KEYSTORE_PASSPHRASE` to
+  // `TRUSTED_VAULT_PASSPHRASE` using `key` and `version`. Once committed,
+  // notifies observers via `OnPassphraseTypeChanged()` followed by
+  // `OnCryptographerStateChanged()`, and invokes `done_cb` with `true`. Ignored
+  // (invoking `done_cb` with `false`) if there are pending keys, if the current
+  // passphrase type is not `KEYSTORE_PASSPHRASE`, or if the pending commit is
+  // superseded. `key` must not be empty and `version` must be non-negative
+  // (`version >= 0`).
+  virtual void SetTrustedVaultEncryptionPassphrase(
+      const std::vector<uint8_t>& key,
+      int version,
+      base::OnceCallback<void(bool)> done_cb) = 0;
 
   // Provides a key for decrypting the user's existing sync data.
   // Notifies observers of the result of the operation via

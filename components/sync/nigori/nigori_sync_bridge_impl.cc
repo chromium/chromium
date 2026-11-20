@@ -4,10 +4,13 @@
 
 #include "components/sync/nigori/nigori_sync_bridge_impl.h"
 
+#include <cstdint>
 #include <utility>
+#include <vector>
 
 #include "base/base64.h"
 #include "base/containers/to_vector.h"
+#include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -438,6 +441,17 @@ void NigoriSyncBridgeImpl::SetEncryptionPassphrase(
 
   QueuePendingLocalCommit(
       PendingLocalNigoriCommit::ForSetCustomPassphrase(passphrase));
+}
+
+void NigoriSyncBridgeImpl::SetTrustedVaultEncryptionPassphrase(
+    const std::vector<uint8_t>& key,
+    int version,
+    base::OnceCallback<void(bool)> done_cb) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  QueuePendingLocalCommit(
+      PendingLocalNigoriCommit::ForSetTrustedVaultPassphrase(
+          key, version, std::move(done_cb)));
 }
 
 void NigoriSyncBridgeImpl::SetDecryptionPassphrase(

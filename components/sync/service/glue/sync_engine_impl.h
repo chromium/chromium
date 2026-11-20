@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SYNC_SERVICE_GLUE_SYNC_ENGINE_IMPL_H_
 #define COMPONENTS_SYNC_SERVICE_GLUE_SYNC_ENGINE_IMPL_H_
 
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <vector>
@@ -74,6 +75,10 @@ class SyncEngineImpl : public SyncEngine,
   void StartSyncingWithServer() override;
   void StartHandlingInvalidations() override;
   void SetEncryptionPassphrase(const std::string& passphrase) override;
+  void SetTrustedVaultEncryptionPassphrase(
+      const std::vector<uint8_t>& key,
+      int version,
+      base::OnceCallback<void(bool)> done_cb) override;
   void SetDecryptionPassphrase(const std::string& passphrase) override;
   void SetDecryptionBootstrapToken(
       const CustomPassphraseBootstrapToken& bootstrap_token) override;

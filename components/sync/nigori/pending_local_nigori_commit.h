@@ -5,9 +5,12 @@
 #ifndef COMPONENTS_SYNC_NIGORI_PENDING_LOCAL_NIGORI_COMMIT_H_
 #define COMPONENTS_SYNC_NIGORI_PENDING_LOCAL_NIGORI_COMMIT_H_
 
+#include <cstdint>
 #include <memory>
 #include <string>
+#include <vector>
 
+#include "base/functional/callback_forward.h"
 #include "components/sync/engine/sync_encryption_handler.h"
 
 namespace syncer {
@@ -21,6 +24,12 @@ class PendingLocalNigoriCommit {
  public:
   static std::unique_ptr<PendingLocalNigoriCommit> ForSetCustomPassphrase(
       const std::string& passphrase);
+
+  static std::unique_ptr<PendingLocalNigoriCommit> ForSetTrustedVaultPassphrase(
+      const std::vector<uint8_t>& key,
+      int version,
+      base::OnceCallback<void(bool)> done_cb);
+
   static std::unique_ptr<PendingLocalNigoriCommit> ForKeystoreInitialization();
 
   static std::unique_ptr<PendingLocalNigoriCommit>

@@ -4,12 +4,15 @@
 
 #include "components/sync/service/glue/sync_engine_impl.h"
 
+#include <cstdint>
 #include <utility>
+#include <vector>
 
 #include "base/base64.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -283,6 +286,18 @@ void SyncEngineImpl::SetEncryptionPassphrase(const std::string& passphrase) {
   sync_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&SyncEngineBackend::DoSetEncryptionPassphrase,
                                 backend_, passphrase));
+}
+
+void SyncEngineImpl::SetTrustedVaultEncryptionPassphrase(
+    const std::vector<uint8_t>& key,
+    int version,
+    base::OnceCallback<void(bool)> done_cb) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  sync_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&SyncEngineBackend::DoSetTrustedVaultEncryptionPassphrase,
+                     backend_, key, version,
+                     base::BindPostTaskToCurrentDefault(std::move(done_cb))));
 }
 
 void SyncEngineImpl::SetDecryptionPassphrase(const std::string& passphrase) {

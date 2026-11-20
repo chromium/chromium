@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SYNC_SERVICE_GLUE_SYNC_ENGINE_BACKEND_H_
 #define COMPONENTS_SYNC_SERVICE_GLUE_SYNC_ENGINE_BACKEND_H_
 
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>
@@ -129,6 +130,13 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
 
   // Called to set the passphrase for encryption.
   void DoSetEncryptionPassphrase(const std::string& passphrase);
+
+  // Called to transition encryption from `KEYSTORE_PASSPHRASE` to
+  // `TRUSTED_VAULT_PASSPHRASE` using `key` and `version`.
+  void DoSetTrustedVaultEncryptionPassphrase(
+      const std::vector<uint8_t>& key,
+      int version,
+      base::OnceCallback<void(bool)> done_cb);
 
   // Called to decrypt the pending keys using the `key` derived from
   // user-entered passphrase.
