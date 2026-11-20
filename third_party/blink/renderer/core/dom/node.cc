@@ -2023,6 +2023,12 @@ void Node::AttachLayoutTree(AttachContext& context) {
 }
 
 void Node::DetachLayoutTree(bool performing_reattach) {
+  DetachLayoutTree(performing_reattach,
+                   /*dom_children_already_detached=*/false);
+}
+
+void Node::DetachLayoutTree(bool performing_reattach,
+                            bool dom_children_already_detached) {
   DCHECK(GetDocument().Lifecycle().StateAllowsDetach() ||
          GetDocument().GetStyleEngine().InInterleavedStyleRecalc() ||
          GetDocument().GetStyleEngine().InScrollMarkersAttachment());
@@ -2032,7 +2038,8 @@ void Node::DetachLayoutTree(bool performing_reattach) {
   DocumentLifecycle::DetachScope will_detach(GetDocument().Lifecycle());
 
   if (auto* cache = GetDocument().ExistingAXObjectCache()) {
-    cache->RemoveSubtree(this);
+    cache->RemoveSubtree(this, /*remove_root=*/true, /*notify_parent=*/true,
+                         dom_children_already_detached);
   }
 
   if (performing_reattach) {

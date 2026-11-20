@@ -1500,7 +1500,8 @@ void ContainerNode::AttachLayoutTree(AttachContext& context) {
 void ContainerNode::DetachLayoutTree(bool performing_reattach) {
   for (Node* child = firstChild(); child; child = child->nextSibling())
     child->DetachLayoutTree(performing_reattach);
-  Node::DetachLayoutTree(performing_reattach);
+  Node::DetachLayoutTree(performing_reattach,
+                         /*dom_children_already_detached=*/true);
 }
 
 void ContainerNode::ChildrenChanged(const ChildrenChange& change) {

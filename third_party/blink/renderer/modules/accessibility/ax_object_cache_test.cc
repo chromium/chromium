@@ -520,6 +520,51 @@ TEST_F(AccessibilityTest, RegisteredIdAttributesAreRemovedOnDisconnection) {
   element_with_ax_object->remove();
 
   EXPECT_EQ(initial_count, relation_cache->registered_id_attributes_.size());
+
+  // Removing `id` and then removing the last element child recomputes the
+  // element's subtree attribute Bloom filter (`CouldHaveAttribute(kIdAttr)`
+  // becomes false). Deferred `kIdChanged` processing must still erase the
+  // previously registered id.
+  Element* parent_with_id_removed =
+      GetDocument().CreateRawElement(html_names::kDivTag);
+  parent_with_id_removed->setAttribute(html_names::kIdAttr,
+                                       AtomicString("bloom-cleared-update"));
+  Element* child1 = GetDocument().CreateRawElement(html_names::kSpanTag);
+  parent_with_id_removed->AppendChild(child1);
+  GetDocument().body()->AppendChild(parent_with_id_removed);
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  ASSERT_TRUE(relation_cache->registered_id_attributes_.Contains(
+      parent_with_id_removed->GetDomNodeId()));
+
+  parent_with_id_removed->removeAttribute(html_names::kIdAttr);
+  child1->remove();
+  ASSERT_FALSE(parent_with_id_removed->CouldHaveAttribute(html_names::kIdAttr));
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(relation_cache->registered_id_attributes_.Contains(
+      parent_with_id_removed->GetDomNodeId()));
+  parent_with_id_removed->remove();
+
+  // Similarly, if the element is disconnected after `removeAttribute("id")`
+  // and child removal cleared its Bloom filter before deferred updates run,
+  // `AXObjectCacheImpl::Remove(Node*)` must still erase its registered id.
+  Element* parent_disconnected =
+      GetDocument().CreateRawElement(html_names::kDivTag);
+  parent_disconnected->setAttribute(html_names::kIdAttr,
+                                    AtomicString("bloom-cleared-disconnect"));
+  Element* child2 = GetDocument().CreateRawElement(html_names::kSpanTag);
+  parent_disconnected->AppendChild(child2);
+  GetDocument().body()->AppendChild(parent_disconnected);
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  const DOMNodeId disconnected_id = parent_disconnected->GetDomNodeId();
+  ASSERT_TRUE(
+      relation_cache->registered_id_attributes_.Contains(disconnected_id));
+
+  parent_disconnected->removeAttribute(html_names::kIdAttr);
+  child2->remove();
+  ASSERT_FALSE(parent_disconnected->CouldHaveAttribute(html_names::kIdAttr));
+  parent_disconnected->remove();
+  EXPECT_FALSE(
+      relation_cache->registered_id_attributes_.Contains(disconnected_id));
 }
 
 TEST_F(AccessibilityTest, DetachedElementsDoNotRegisterIdAttributes) {
@@ -2954,6 +2999,59 @@ TEST_F(AccessibilityTest,
   // Removing the tracked element must still clean up its cached `AXObject`.
   tracked->remove();
   EXPECT_EQ(nullptr, cache.Get(tracked));
+}
+
+TEST_F(AccessibilityTest, DetachLayoutSubtreeRemovesCachedAXObjects) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="container">
+      <button id="visible_btn">Visible</button>
+      <div id="hidden_branch" style="display: none">
+        <span id="hidden_label">Hidden Label</span>
+      </div>
+      <input type="radio" name="grp" id="r1">
+    </div>
+    <button id="labelled_btn" aria-labelledby="hidden_label">Target</button>
+    <input type="radio" name="grp" id="r2">
+  )HTML");
+
+  AXObjectCacheImpl& cache = GetAXObjectCache();
+  Element* container = GetElementById("container");
+  Element* visible_btn = GetElementById("visible_btn");
+  Element* hidden_branch = GetElementById("hidden_branch");
+  Element* hidden_label = GetElementById("hidden_label");
+  Element* r1 = GetElementById("r1");
+  ASSERT_NE(nullptr, container);
+  ASSERT_NE(nullptr, visible_btn);
+  ASSERT_NE(nullptr, hidden_branch);
+  ASSERT_NE(nullptr, hidden_label);
+  ASSERT_NE(nullptr, r1);
+
+  ASSERT_NE(nullptr, GetAXObjectByElementId("container"));
+  ASSERT_NE(nullptr, GetAXObjectByElementId("visible_btn"));
+  ASSERT_NE(nullptr, GetAXObjectByElementId("hidden_label"));
+  ASSERT_NE(nullptr, GetAXObjectByElementId("r1"));
+  ASSERT_NE(nullptr, GetAXObjectByElementId("labelled_btn"));
+
+  // Detaching the layout subtree of `container` via `display: none` detaches
+  // light-DOM children in post-order (`dom_children_already_removed = true` for
+  // `container` itself, while `hidden_branch` has no ComputedStyle so it falls
+  // back to `dom_children_already_removed = false` to clean up `hidden_label`).
+  container->setAttribute(html_names::kStyleAttr,
+                          AtomicString("display: none"));
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+
+  EXPECT_EQ(nullptr, cache.Get(container));
+  EXPECT_EQ(nullptr, cache.Get(visible_btn));
+  EXPECT_EQ(nullptr, cache.Get(hidden_branch));
+  EXPECT_EQ(nullptr, cache.Get(hidden_label));
+  EXPECT_EQ(nullptr, cache.Get(r1));
+
+  // Subsequent AX tree finalization recreates any still-needed objects (such
+  // as `hidden_label` referenced by `aria-labelledby`) cleanly.
+  cache.UpdateAXForAllDocuments();
+  AXObject* labelled_btn = GetAXObjectByElementId("labelled_btn");
+  ASSERT_NE(nullptr, labelled_btn);
+  EXPECT_EQ("Hidden Label", labelled_btn->ComputedName());
 }
 
 }  // namespace blink

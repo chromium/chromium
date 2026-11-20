@@ -1713,8 +1713,8 @@ void AXObjectCacheImpl::Remove(AXObject* object, bool notify_parent) {
   if (object->IsAXInlineTextBox()) {
     Remove(object->ParentObject()->GetLayoutObject(),
            object->GetFragmentIndex().value(), notify_parent);
-  } else if (object->GetNode()) {
-    Remove(object->GetNode(), notify_parent);
+  } else if (Node* node = object->GetNode()) {
+    RemoveNodeWithAXID(node, object->AXObjectID(), notify_parent);
   } else if (object->GetLayoutObject()) {
     Remove(object->GetLayoutObject(), notify_parent);
   } else {
@@ -1722,8 +1722,7 @@ void AXObjectCacheImpl::Remove(AXObject* object, bool notify_parent) {
   }
 }
 
-void AXObjectCacheImpl::RemoveFromRadioButtonGroupCache(AXID ax_id) {
-  AXObject* obj = ObjectFromAXID(ax_id);
+void AXObjectCacheImpl::RemoveFromRadioButtonGroupCache(AXObject* obj) {
   if (!obj || obj->RoleValue() != ax::mojom::blink::Role::kRadioButton) {
     return;
   }
@@ -1736,6 +1735,7 @@ void AXObjectCacheImpl::RemoveFromRadioButtonGroupCache(AXID ax_id) {
   if (auto* radio_button = DynamicTo<HTMLInputElement>(obj->GetNode())) {
     if (RadioButtonGroup* cached_group =
             GetCachedRadioButtonGroup(radio_button)) {
+      const AXID ax_id = obj->AXObjectID();
       for (AXID peer_id : cached_group->members_) {
         if (peer_id != ax_id) {
           if (AXObject* peer = ObjectFromAXID(peer_id)) {
@@ -1784,7 +1784,9 @@ void AXObjectCacheImpl::Remove(AXID ax_id, bool notify_parent) {
   if (!obj)
     return;
 
-  RemoveFromRadioButtonGroupCache(ax_id);
+  if (obj->RoleValue() == ax::mojom::blink::Role::kRadioButton) {
+    RemoveFromRadioButtonGroupCache(obj);
+  }
 
 #if AX_FAIL_FAST_BUILD()
   if (obj->CachedIsIncludedInTree()) {
@@ -1913,6 +1915,14 @@ void AXObjectCacheImpl::Remove(Node* node) {
 
 void AXObjectCacheImpl::Remove(Node* node, bool notify_parent) {
   DCHECK(node);
+  RemoveNodeWithAXID(node, DOMNodeIds::ExistingIdForNode(node), notify_parent);
+}
+
+void AXObjectCacheImpl::RemoveNodeWithAXID(Node* node,
+                                           AXID axid,
+                                           bool notify_parent) {
+  DCHECK(node);
+  DCHECK_EQ(axid, static_cast<AXID>(DOMNodeIds::ExistingIdForNode(node)));
   LayoutObject* layout_object = node->GetLayoutObject();
   DCHECK(!layout_object || layout_object_mapping_.find(layout_object) ==
                                layout_object_mapping_.end())
@@ -1925,7 +1935,6 @@ void AXObjectCacheImpl::Remove(Node* node, bool notify_parent) {
 
   CHECK(lifecycle_.StateAllowsRemovingAXObjects()) << *this;
 
-  AXID axid = DOMNodeIds::ExistingIdForNode(node);
   if (!axid) {
     return;
   }
@@ -1933,7 +1942,7 @@ void AXObjectCacheImpl::Remove(Node* node, bool notify_parent) {
   // HTML ids belong to connected DOM elements, not their AXObjects. Elements
   // may be registered before an AXObject exists, and connected AXObjects can be
   // removed and recreated without removing their DOM elements.
-  if (!node->isConnected() && relation_cache_) {
+  if (!node->isConnected() && relation_cache_ && IsA<Element>(node)) {
     relation_cache_->RemoveRegisteredIdAttribute(axid);
   }
 
@@ -2025,25 +2034,33 @@ void AXObjectCacheImpl::RemoveAXObjectsInLayoutSubtree(
   }
 }
 
-void AXObjectCacheImpl::RemoveSubtree(const Node* node, bool remove_root) {
-  if (!node || !node->isConnected()) {
-    return;
-  }
-  RemoveSubtree(node, remove_root, /*notify_parent*/ true);
+void AXObjectCacheImpl::RemoveSubtree(const Node* node) {
+  RemoveSubtree(node, /*remove_root=*/true);
 }
 
-void AXObjectCacheImpl::RemoveSubtree(const Node* node) {
-  RemoveSubtree(node, /*remove_root*/ true);
+void AXObjectCacheImpl::RemoveSubtree(const Node* node, bool remove_root) {
+  RemoveSubtree(node, remove_root, /*notify_parent=*/true);
 }
 
 void AXObjectCacheImpl::RemoveSubtree(const Node* node,
                                       bool remove_root,
                                       bool notify_parent) {
+  RemoveSubtree(node, remove_root, notify_parent,
+                /*dom_children_already_removed=*/false);
+}
+
+void AXObjectCacheImpl::RemoveSubtree(const Node* node,
+                                      bool remove_root,
+                                      bool notify_parent,
+                                      bool dom_children_already_removed) {
+  if (!node || !node->isConnected()) {
+    return;
+  }
   {
     base::AutoReset<bool> in_remove_subtree(&in_remove_subtree_, true);
     HashSet<AXID> removing_subtree_axids;
     RemoveSubtreeInternal(node, remove_root, notify_parent,
-                          removing_subtree_axids);
+                          dom_children_already_removed, removing_subtree_axids);
   }
 
   if (!in_remove_subtree_ && relation_cache_ &&
@@ -2056,11 +2073,12 @@ void AXObjectCacheImpl::RemoveSubtreeInternal(
     const Node* node,
     bool remove_root,
     bool notify_parent,
+    bool dom_children_already_removed,
     HashSet<AXID>& removing_subtree_axids) {
   DCHECK(node);
   AXObject* object = Get(node);
   AXID ax_id = object ? object->AXObjectID() : 0;
-  if (ax_id && !removing_subtree_axids.insert(ax_id).is_new_entry) {
+  if (ax_id && removing_subtree_axids.Contains(ax_id)) {
     return;
   }
 
@@ -2099,11 +2117,27 @@ void AXObjectCacheImpl::RemoveSubtreeInternal(
     }
   }
 
-  // Remove children found through dom traversal.
-  for (Node* child_node = NodeTraversal::FirstChild(*node); child_node;
-       child_node = NodeTraversal::NextSibling(*child_node)) {
-    RemoveSubtreeInternal(child_node, /* remove_root */ true,
-                          /* notify_parent */ false, removing_subtree_axids);
+  if (!dom_children_already_removed) {
+    // Remove children found through dom traversal.
+    if (Node* first_child = NodeTraversal::FirstChild(*node)) {
+      if (ax_id) {
+        removing_subtree_axids.insert(ax_id);
+      }
+      for (Node* child_node = first_child; child_node;
+           child_node = NodeTraversal::NextSibling(*child_node)) {
+        RemoveSubtreeInternal(child_node, /*remove_root=*/true,
+                              /*notify_parent=*/false,
+                              /*dom_children_already_removed=*/false,
+                              removing_subtree_axids);
+      }
+    }
+  } else {
+#if AX_FAIL_FAST_BUILD()
+    for (Node* child_node = NodeTraversal::FirstChild(*node); child_node;
+         child_node = NodeTraversal::NextSibling(*child_node)) {
+      CHECK(!Get(child_node)) << Get(child_node) << " under " << node;
+    }
+#endif
   }
 
   if (!object) {
@@ -2138,9 +2172,13 @@ void AXObjectCacheImpl::RemoveSubtreeInternal(
       }
       if (ax_included_child->GetNode()) {
         DCHECK(ax_included_child->GetNode() != node);
+        if (ax_id) {
+          removing_subtree_axids.insert(ax_id);
+        }
         RemoveSubtreeInternal(ax_included_child->GetNode(),
-                              /* remove_root */ true,
-                              /* notify_parent */ false,
+                              /*remove_root=*/true,
+                              /*notify_parent=*/false,
+                              /*dom_children_already_removed=*/false,
                               removing_subtree_axids);
       } else {
         RemoveIncludedSubtree(ax_included_child, /* remove_root */ true);
@@ -2247,25 +2285,34 @@ void AXObjectCacheImpl::RemoveReferencesToAXID(AXID obj_id) {
   // time ProcessInvalidatedObjects() finishes, and having extra ids in those
   // sets is not harmful.
 
-  cached_bounding_boxes_.erase(obj_id);
-  ax_id_to_explicit_bounds_.erase(obj_id);
+  if (!cached_bounding_boxes_.empty()) {
+    cached_bounding_boxes_.erase(obj_id);
+  }
+  if (!ax_id_to_explicit_bounds_.empty()) {
+    ax_id_to_explicit_bounds_.erase(obj_id);
+  }
 
   if (IsDOMNodeID(obj_id)) {
     // Optimization: these maps only contain ids for AXObjects with a DOM node.
-    fixed_or_sticky_node_ids_.erase(obj_id);
+    if (!fixed_or_sticky_node_ids_.empty()) {
+      fixed_or_sticky_node_ids_.erase(obj_id);
+    }
     // Only objects with a DOM node can be in the relation cache.
     if (relation_cache_) {
       relation_cache_->RemoveAXID(obj_id);
     }
     // Allow the new AXObject for the same node to be serialized correctly.
-    nodes_with_pending_children_changed_.erase(obj_id);
+    if (!nodes_with_pending_children_changed_.empty()) {
+      nodes_with_pending_children_changed_.erase(obj_id);
+    }
   } else {
     // Non-DOM ids should never find their way into these maps.
     DCHECK(!fixed_or_sticky_node_ids_.Contains(obj_id));
     DCHECK(!nodes_with_pending_children_changed_.Contains(obj_id));
   }
 
-  if (GetAXMode().HasFilterFlags(ui::AXMode::kOnScreenOnly)) {
+  if (GetAXMode().HasFilterFlags(ui::AXMode::kOnScreenOnly) &&
+      !extra_off_screen_nodes_to_serialize_.empty()) {
     extra_off_screen_nodes_to_serialize_.erase(obj_id);
   }
 }

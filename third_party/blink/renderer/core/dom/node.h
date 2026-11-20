@@ -908,6 +908,8 @@ class CORE_EXPORT Node : public EventTarget {
   // and delete it.
   void DetachLayoutTree() { DetachLayoutTree(/*performing_reattach=*/false); }
   virtual void DetachLayoutTree(bool performing_reattach);
+  void DetachLayoutTree(bool performing_reattach,
+                        bool dom_children_already_detached);
 
   void ReattachLayoutTree(AttachContext&);
 

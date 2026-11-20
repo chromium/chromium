@@ -260,14 +260,19 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   // tree traversal is safe and there are no slot assignments pending.
   // To remove only included nodes, use RemoveIncludedSubtree(), which can be
   // called at any time.
-  // If |remove_root|, remove the root of the subtree, otherwise only
+  // If `remove_root`, remove the root of the subtree, otherwise only
   // descendants are removed.
-  // If |notify_parent|, call ChildrenChanged() on the parent.
-  // If |only_layout_objects|, will only remove nodes in the subtree that
-  // corresponded with an AXLayoutObject (useful for subtrees that lose layout).
+  // If `notify_parent`, call `ChildrenChanged()` on the parent.
+  // If `dom_children_already_removed` is true, skip the recursive DOM child
+  // traversal (for example, when `ContainerNode::DetachLayoutTree` has already
+  // detached all DOM children in post-order).
   void RemoveSubtree(const Node*) override;
   void RemoveSubtree(const Node*, bool remove_root) override;
   void RemoveSubtree(const Node*, bool remove_root, bool notify_parent);
+  void RemoveSubtree(const Node*,
+                     bool remove_root,
+                     bool notify_parent,
+                     bool dom_children_already_removed) override;
 
   // Remove the cached subtree of included AXObjects. If |remove_root| is false,
   // then only descendants will be removed. To remove unincluded AXObjects as
@@ -946,6 +951,7 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   // Helper to remove the object from the cache.
   // Most callers should be using Remove(AXObject) instead.
   void Remove(AXID, bool notify_parent);
+  void RemoveNodeWithAXID(Node* node, AXID axid, bool notify_parent);
   // Helper to clean up any references to the AXObject's AXID.
   void RemoveReferencesToAXID(AXID);
 
@@ -955,6 +961,7 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   void RemoveSubtreeInternal(const Node*,
                              bool remove_root,
                              bool notify_parent,
+                             bool dom_children_already_removed,
                              HashSet<AXID>& removing_subtree_axids);
 
   HeapMojoRemote<mojom::blink::RenderAccessibilityHost>&
@@ -1347,7 +1354,7 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   };
 
   RadioButtonGroup* GetCachedRadioButtonGroup(HTMLInputElement* radio_button);
-  void RemoveFromRadioButtonGroupCache(AXID id);
+  void RemoveFromRadioButtonGroupCache(AXObject* obj);
   RadioButtonGroup* ComputeAndCacheRadioButtonGroup(
       HTMLInputElement* radio_button,
       AXObject* ax_object);

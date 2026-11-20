@@ -115,6 +115,10 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
   virtual void Remove(Node*) = 0;
   virtual void RemoveSubtree(const Node*) = 0;
   virtual void RemoveSubtree(const Node*, bool remove_root) = 0;
+  virtual void RemoveSubtree(const Node*,
+                             bool remove_root,
+                             bool notify_parent,
+                             bool dom_children_already_removed) = 0;
   virtual void RemoveAXObjectsInLayoutSubtree(LayoutObject*) = 0;
   virtual void RemovePopup(Document*) = 0;
 
