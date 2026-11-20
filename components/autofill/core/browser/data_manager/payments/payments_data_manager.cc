@@ -2365,13 +2365,24 @@ void PaymentsDataManager::CacheIfLinkedBnplPaymentInstrument(
     return;
   }
 
+  // `IsBnplIssuerSupported` is already called to filter out any unknown
+  // issuer IDs that might be returned by the payment server. This ensures that
+  // only issuer IDs with a corresponding BnplIssuer::IssuerId enum value are
+  // processed, thus guaranteeing that `ConvertToBnplIssuerIdEnum` will not
+  // encounter an unknown value and hit the `NOTREACHED()`.
+  BnplIssuer::IssuerId issuer_id =
+      ConvertToBnplIssuerIdEnum(bnpl_issuer_details.issuer_id());
+
   // Ensures the server does not return any duplicate issuers. Should never
   // happen, but servers should never be trusted and responses must be handled
   // gracefully.
-  if (std::ranges::contains(
-          linked_bnpl_issuers_,
-          ConvertToBnplIssuerIdEnum(bnpl_issuer_details.issuer_id()),
-          &BnplIssuer::issuer_id)) {
+  if (std::ranges::contains(linked_bnpl_issuers_, issuer_id,
+                            &BnplIssuer::issuer_id)) {
+    return;
+  }
+
+  // Ensures the current app locale setting is supported by this BNPL issuer.
+  if (!BnplIssuer::IsAppLocaleSupportedByBnplIssuer(app_locale_, issuer_id)) {
     return;
   }
 
@@ -2420,15 +2431,9 @@ void PaymentsDataManager::CacheIfLinkedBnplPaymentInstrument(
     }
   }
 
-  // `IsBnplIssuerSupported` is already called to filter out any unknown
-  // issuer IDs that might be returned by the payment server. This ensures that
-  // only issuer IDs with a corresponding BnplIssuer::IssuerId enum value are
-  // processed, thus guaranteeing that `ConvertToBnplIssuerIdEnum` will not
-  // encounter an unknown value and hit the NOTREACHED().
-  linked_bnpl_issuers_.emplace_back(
-      payment_instrument.instrument_id(),
-      ConvertToBnplIssuerIdEnum(bnpl_issuer_details.issuer_id()),
-      std::move(eligible_price_ranges), std::move(action_required));
+  linked_bnpl_issuers_.emplace_back(payment_instrument.instrument_id(),
+                                    issuer_id, std::move(eligible_price_ranges),
+                                    std::move(action_required));
 }
 
 void PaymentsDataManager::CacheIfEwalletPaymentInstrument(
@@ -2488,12 +2493,24 @@ void PaymentsDataManager::CacheIfBnplPaymentInstrumentCreationOption(
     return;
   }
 
+  // `IsBnplIssuerSupported` is already called to filter out any unknown
+  // issuer IDs that might be returned by the payment server. This ensures that
+  // only issuer IDs with a corresponding BnplIssuer::IssuerId enum value are
+  // processed, thus guaranteeing that `ConvertToBnplIssuerIdEnum` will not
+  // encounter an unknown value and hit the `NOTREACHED()`.
+  BnplIssuer::IssuerId issuer_id =
+      ConvertToBnplIssuerIdEnum(bnpl_issuer.issuer_id());
+
   // Ensures the server does not return any duplicate issuers. Should never
   // happen, but servers should never be trusted and responses must be handled
   // gracefully.
-  if (std::ranges::contains(unlinked_bnpl_issuers_,
-                            ConvertToBnplIssuerIdEnum(bnpl_issuer.issuer_id()),
+  if (std::ranges::contains(unlinked_bnpl_issuers_, issuer_id,
                             &BnplIssuer::issuer_id)) {
+    return;
+  }
+
+  // Ensures the current app locale setting is supported by this BNPL issuer.
+  if (!BnplIssuer::IsAppLocaleSupportedByBnplIssuer(app_locale_, issuer_id)) {
     return;
   }
 
@@ -2514,14 +2531,8 @@ void PaymentsDataManager::CacheIfBnplPaymentInstrumentCreationOption(
     return;
   }
 
-  // `IsBnplIssuerSupported` is already called to filter out any unknown
-  // issuer IDs that might be returned by the payment server. This ensures that
-  // only issuer IDs with a corresponding BnplIssuer::IssuerId enum value are
-  // processed, thus guaranteeing that `ConvertToBnplIssuerIdEnum` will not
-  // encounter an unknown value and hit the NOTREACHED().
-  unlinked_bnpl_issuers_.emplace_back(
-      std::nullopt, ConvertToBnplIssuerIdEnum(bnpl_issuer.issuer_id()),
-      std::move(eligible_price_ranges));
+  unlinked_bnpl_issuers_.emplace_back(std::nullopt, issuer_id,
+                                      std::move(eligible_price_ranges));
 }
 
 // If `payment_instrument_creation_option` contains eWallet options, constructs

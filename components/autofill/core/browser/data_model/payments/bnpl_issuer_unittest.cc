@@ -6,10 +6,13 @@
 
 #include <string>
 
+#include "base/i18n/language_tag.h"
 #include "base/test/gtest_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/data_model/payments/payment_instrument.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/grit/components_scaled_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -251,6 +254,76 @@ TEST(BnplIssuerTest, GetBnplIssuerIconIds) {
       std::make_pair(
           BnplIssuer::LightModeImageId(IDR_AUTOFILL_KLARNA_UNLINKED),
           BnplIssuer::DarkModeImageId(IDR_AUTOFILL_KLARNA_UNLINKED_DARK)));
+}
+
+// Tests that `IsAppLocaleSupportedByBnplIssuer` returns whether a given app
+// locale is supported by the BNPL issuer when the internationalization feature
+// flags are enabled.
+TEST(BnplIssuerTest, IsAppLocaleSupportedByBnplIssuer) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {features::kAutofillEnableBnplAffirmInternationalization,
+       features::kAutofillEnableBnplKlarnaInternationalization},
+      /*disabled_features=*/{});
+
+  EXPECT_TRUE(BnplIssuer::IsAppLocaleSupportedByBnplIssuer(
+      base::i18n::GetKnownLanguageTag("en-US"),
+      BnplIssuer::IssuerId::kBnplAffirm));
+  EXPECT_TRUE(BnplIssuer::IsAppLocaleSupportedByBnplIssuer(
+      base::i18n::GetKnownLanguageTag("en-GB"),
+      BnplIssuer::IssuerId::kBnplAffirm));
+  EXPECT_TRUE(BnplIssuer::IsAppLocaleSupportedByBnplIssuer(
+      base::i18n::GetKnownLanguageTag("en-CA"),
+      BnplIssuer::IssuerId::kBnplAffirm));
+  EXPECT_FALSE(BnplIssuer::IsAppLocaleSupportedByBnplIssuer(
+      base::i18n::GetKnownLanguageTag("de-DE"),
+      BnplIssuer::IssuerId::kBnplAffirm));
+
+  EXPECT_TRUE(BnplIssuer::IsAppLocaleSupportedByBnplIssuer(
+      base::i18n::GetKnownLanguageTag("en-US"),
+      BnplIssuer::IssuerId::kBnplKlarna));
+  EXPECT_TRUE(BnplIssuer::IsAppLocaleSupportedByBnplIssuer(
+      base::i18n::GetKnownLanguageTag("en-GB"),
+      BnplIssuer::IssuerId::kBnplKlarna));
+  EXPECT_TRUE(BnplIssuer::IsAppLocaleSupportedByBnplIssuer(
+      base::i18n::GetKnownLanguageTag("en-CA"),
+      BnplIssuer::IssuerId::kBnplKlarna));
+  EXPECT_FALSE(BnplIssuer::IsAppLocaleSupportedByBnplIssuer(
+      base::i18n::GetKnownLanguageTag("de-DE"),
+      BnplIssuer::IssuerId::kBnplKlarna));
+
+  EXPECT_TRUE(BnplIssuer::IsAppLocaleSupportedByBnplIssuer(
+      base::i18n::GetKnownLanguageTag("en-US"),
+      BnplIssuer::IssuerId::kBnplZip));
+  EXPECT_FALSE(BnplIssuer::IsAppLocaleSupportedByBnplIssuer(
+      base::i18n::GetKnownLanguageTag("en-GB"),
+      BnplIssuer::IssuerId::kBnplZip));
+}
+
+// Tests that `IsAppLocaleSupportedByBnplIssuer` enforces `en-US` and rejects
+// unsupported locales when the internationalization feature flags are disabled.
+TEST(BnplIssuerTest,
+     IsAppLocaleSupportedByBnplIssuer_InternationalizationDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{}, /*disabled_features=*/{
+          features::kAutofillEnableBnplAffirmInternationalization,
+          features::kAutofillEnableBnplKlarnaInternationalization});
+
+  EXPECT_TRUE(BnplIssuer::IsAppLocaleSupportedByBnplIssuer(
+      base::i18n::GetKnownLanguageTag("en-US"),
+      BnplIssuer::IssuerId::kBnplAffirm));
+  EXPECT_FALSE(BnplIssuer::IsAppLocaleSupportedByBnplIssuer(
+      base::i18n::GetKnownLanguageTag("en-GB"),
+      BnplIssuer::IssuerId::kBnplAffirm));
+
+  EXPECT_TRUE(BnplIssuer::IsAppLocaleSupportedByBnplIssuer(
+      base::i18n::GetKnownLanguageTag("en-US"),
+      BnplIssuer::IssuerId::kBnplKlarna));
+  EXPECT_FALSE(BnplIssuer::IsAppLocaleSupportedByBnplIssuer(
+      base::i18n::GetKnownLanguageTag("en-GB"),
+      BnplIssuer::IssuerId::kBnplKlarna));
 }
 
 }  // namespace autofill

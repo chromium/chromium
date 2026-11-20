@@ -2993,6 +2993,33 @@ TEST_P(PaymentsDataManagerServerTest,
           DenseSet({PaymentInstrument::ActionRequired::kAcceptTos})));
 }
 
+// Tests that a linked BNPL issuer is not returned if the app locale is not
+// supported by the BNPL issuer.
+TEST_P(PaymentsDataManagerServerTest,
+       GetLinkedBnplIssuers_AppLocaleNotSupportedRejected) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {features::kAutofillEnableBuyNowPayLaterSyncing,
+       features::kAutofillEnableBnplAffirmInternationalization,
+       features::kAutofillEnableBnplKlarnaInternationalization},
+      /*disabled_features=*/{});
+
+  ASSERT_TRUE(GetServerDataTable()->SetPaymentInstruments(
+      {test::CreatePaymentInstrumentWithLinkedBnplIssuer(
+          /*instrument_id=*/1234L,
+          /*issuer_id=*/std::string(kBnplAffirmIssuerId), /*currency=*/"USD",
+          /*min_price_in_micros=*/5'000'000,
+          /*max_price_in_micros=*/35'000'000)}));
+
+  ResetPaymentsDataManager(UseSyncTransportMode(),
+                           base::i18n::GetKnownLanguageTag("es-US"), "US");
+  payments_data_manager().Refresh();
+  WaitForOnPaymentsDataChanged();
+
+  EXPECT_TRUE(payments_data_manager().GetLinkedBnplIssuers().empty());
+}
+
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 
@@ -4661,6 +4688,30 @@ TEST_P(PaymentsDataManagerServerTest,
   EXPECT_TRUE(payments_data_manager().GetUnlinkedBnplIssuers().empty());
 }
 
+// Tests that an unlinked BNPL issuer is not returned if the app locale is not
+// supported by the BNPL issuer.
+TEST_P(PaymentsDataManagerServerTest,
+       GetUnlinkedBnplIssuers_AppLocaleNotSupportedRejected) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {features::kAutofillEnableBuyNowPayLaterSyncing,
+       features::kAutofillEnableBnplAffirmInternationalization,
+       features::kAutofillEnableBnplKlarnaInternationalization},
+      /*disabled_features=*/{});
+
+  ASSERT_TRUE(GetServerDataTable()->SetPaymentInstrumentCreationOptions(
+      {test::CreatePaymentInstrumentCreationOptionWithBnplIssuer(
+          /*id=*/"test_id")}));
+
+  ResetPaymentsDataManager(UseSyncTransportMode(),
+                           base::i18n::GetKnownLanguageTag("es-US"), "US");
+  payments_data_manager().Refresh();
+  WaitForOnPaymentsDataChanged();
+
+  EXPECT_TRUE(payments_data_manager().GetUnlinkedBnplIssuers().empty());
+}
+
 // Tests that `GetBnplIssuers` returns all linked and unlinked buy-now-pay-later
 // issuers.
 TEST_P(PaymentsDataManagerServerTest, GetBnplIssuers) {
@@ -4672,6 +4723,82 @@ TEST_P(PaymentsDataManagerServerTest, GetBnplIssuers) {
 
   EXPECT_THAT(payments_data_manager().GetBnplIssuers(),
               UnorderedElementsAreArray({linked_issuer, unlinked_issuer}));
+}
+
+// Tests that `GetBnplIssuers` returns all linked and unlinked buy-now-pay-later
+// issuers with supported app locale when internationalization flags are
+// enabled.
+TEST_P(PaymentsDataManagerServerTest,
+       GetBnplIssuers_InternationalizationEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {features::kAutofillEnableBuyNowPayLaterSyncing,
+       features::kAutofillEnableBnplAffirmInternationalization,
+       features::kAutofillEnableBnplKlarnaInternationalization},
+      /*disabled_features=*/{});
+
+  // Add one linked issuer and one unlinked issuer.
+  ASSERT_TRUE(GetServerDataTable()->SetPaymentInstruments(
+      {test::CreatePaymentInstrumentWithLinkedBnplIssuer(
+          /*instrument_id=*/1234L,
+          /*issuer_id=*/std::string(kBnplAffirmIssuerId), /*currency=*/"USD",
+          /*min_price_in_micros=*/5'000'000,
+          /*max_price_in_micros=*/35'000'000)}));
+  ASSERT_TRUE(GetServerDataTable()->SetPaymentInstrumentCreationOptions(
+      {test::CreatePaymentInstrumentCreationOptionWithBnplIssuer(
+          /*id=*/"test_id")}));
+
+  ResetPaymentsDataManager(UseSyncTransportMode(),
+                           base::i18n::GetKnownLanguageTag("en-GB"), "US");
+  payments_data_manager().Refresh();
+  WaitForOnPaymentsDataChanged();
+
+  EXPECT_EQ(payments_data_manager().GetBnplIssuers().size(), 2U);
+}
+
+// Tests that `GetBnplIssuers` enforces the `en-US` app locale fallback and
+// rejects unsupported locales when the internationalization feature flags are
+// disabled.
+TEST_P(PaymentsDataManagerServerTest,
+       GetBnplIssuers_InternationalizationDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {features::kAutofillEnableBuyNowPayLaterSyncing},
+      /*disabled_features=*/
+      {features::kAutofillEnableBnplAffirmInternationalization,
+       features::kAutofillEnableBnplKlarnaInternationalization});
+
+  // Add one linked issuer and one unlinked issuer.
+  ASSERT_TRUE(GetServerDataTable()->SetPaymentInstruments(
+      {test::CreatePaymentInstrumentWithLinkedBnplIssuer(
+          /*instrument_id=*/1234L,
+          /*issuer_id=*/std::string(kBnplAffirmIssuerId), /*currency=*/"USD",
+          /*min_price_in_micros=*/5'000'000,
+          /*max_price_in_micros=*/35'000'000)}));
+  ASSERT_TRUE(GetServerDataTable()->SetPaymentInstrumentCreationOptions(
+      {test::CreatePaymentInstrumentCreationOptionWithBnplIssuer(
+          /*id=*/"test_id")}));
+
+  // Verify that non-'en-US' locales (e.g. 'en-GB') are rejected when
+  // internationalization flags are disabled.
+  ResetPaymentsDataManager(UseSyncTransportMode(),
+                           base::i18n::GetKnownLanguageTag("en-GB"), "US");
+  payments_data_manager().Refresh();
+  WaitForOnPaymentsDataChanged();
+
+  EXPECT_TRUE(payments_data_manager().GetBnplIssuers().empty());
+  EXPECT_TRUE(payments_data_manager().GetLinkedBnplIssuers().empty());
+  EXPECT_TRUE(payments_data_manager().GetUnlinkedBnplIssuers().empty());
+
+  // Verify that the fallback 'en-US' locale is accepted.
+  ResetPaymentsDataManager(UseSyncTransportMode(),
+                           base::i18n::GetKnownLanguageTag("en-US"), "US");
+  payments_data_manager().Refresh();
+  WaitForOnPaymentsDataChanged();
+
+  EXPECT_EQ(payments_data_manager().GetBnplIssuers().size(), 2U);
 }
 
 // Tests that Buy-now-pay-later issuer getters does not return any issuers if

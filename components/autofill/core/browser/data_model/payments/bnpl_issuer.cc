@@ -12,10 +12,14 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/fixed_flat_set.h"
+#include "base/feature_list.h"
+#include "base/i18n/language_tag.h"
 #include "base/notreached.h"
 #include "base/types/optional_ref.h"
 #include "components/autofill/core/browser/data_model/payments/payment_instrument.h"
 #include "components/autofill/core/browser/payments/constants.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/grit/components_scaled_resources.h"
 #include "components/strings/grit/components_strings.h"
@@ -40,6 +44,43 @@ BnplIssuer::EligiblePriceRange::~EligiblePriceRange() = default;
 
 bool BnplIssuer::EligiblePriceRange::operator==(
     const BnplIssuer::EligiblePriceRange&) const = default;
+
+// static
+bool BnplIssuer::IsAppLocaleSupportedByBnplIssuer(
+    const base::i18n::LanguageTag& app_locale,
+    BnplIssuer::IssuerId issuer_id) {
+  static constexpr auto kAffirmSupportedAppLocale =
+      base::MakeFixedFlatSet<base::i18n::LanguageTag>(
+          {base::i18n::GetKnownLanguageTag("en-US"),
+           base::i18n::GetKnownLanguageTag("en-GB"),
+           base::i18n::GetKnownLanguageTag("en-CA")});
+  static constexpr auto kKlarnaSupportedAppLocale =
+      base::MakeFixedFlatSet<base::i18n::LanguageTag>(
+          {base::i18n::GetKnownLanguageTag("en-US"),
+           base::i18n::GetKnownLanguageTag("en-GB"),
+           base::i18n::GetKnownLanguageTag("en-CA")});
+  static constexpr auto kZipSupportedAppLocale =
+      base::MakeFixedFlatSet<base::i18n::LanguageTag>(
+          {base::i18n::GetKnownLanguageTag("en-US")});
+
+  switch (issuer_id) {
+    case IssuerId::kBnplAffirm:
+      return base::FeatureList::IsEnabled(
+                 features::kAutofillEnableBnplAffirmInternationalization)
+                 ? kAffirmSupportedAppLocale.contains(app_locale)
+                 : app_locale == base::i18n::GetKnownLanguageTag("en-US");
+    case IssuerId::kBnplKlarna:
+      return base::FeatureList::IsEnabled(
+                 features::kAutofillEnableBnplKlarnaInternationalization)
+                 ? kKlarnaSupportedAppLocale.contains(app_locale)
+                 : app_locale == base::i18n::GetKnownLanguageTag("en-US");
+    case IssuerId::kBnplZip:
+      return kZipSupportedAppLocale.contains(app_locale);
+    case IssuerId::kBnplAfterpay:
+      // Afterpay is not supported yet.
+      NOTREACHED();
+  }
+}
 
 BnplIssuer::BnplIssuer() = default;
 
