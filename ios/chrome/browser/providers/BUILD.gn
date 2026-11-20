@@ -13,6 +13,7 @@ group("chromium_providers") {
     "//ios/chrome/browser/providers/app_utils:chromium_app_utils",
     "//ios/chrome/browser/providers/application_mode_fetcher:chromium_application_mode_fetcher",
     "//ios/chrome/browser/providers/backend_promo:chromium_backend_promo",
+    "//ios/chrome/browser/providers/backgrounded_scene_rendering:chromium_backgrounded_scene_rendering",
     "//ios/chrome/browser/providers/branded_images:chromium_branded_images",
     "//ios/chrome/browser/providers/bwg:chromium_gemini",
     "//ios/chrome/browser/providers/cobalt:chromium_cobalt",
