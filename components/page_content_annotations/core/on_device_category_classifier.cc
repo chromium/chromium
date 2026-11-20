@@ -15,7 +15,6 @@
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
 #include "components/page_content_annotations/core/category_classifier_model_handler.h"
 #include "components/page_content_annotations/core/page_content_annotation_type.h"
-#include "url/gurl.h"
 
 namespace page_content_annotations {
 
@@ -56,22 +55,13 @@ OnDeviceCategoryClassifier::OnDeviceCategoryClassifier(
 
 OnDeviceCategoryClassifier::~OnDeviceCategoryClassifier() = default;
 
-void OnDeviceCategoryClassifier::AddObserver(Observer* observer) {
-  observers_.AddObserver(observer);
-}
-
-void OnDeviceCategoryClassifier::RemoveObserver(Observer* observer) {
-  observers_.RemoveObserver(observer);
-}
-
-void OnDeviceCategoryClassifier::OnPageEmbeddingAvailable(
-    const GURL& url,
-    ukm::SourceId source_id,
+void OnDeviceCategoryClassifier::ClassifyTextEmbeddings(
     std::optional<passage_embeddings::Embedding> title_url_embedding,
-    std::vector<passage_embeddings::Embedding> passage_embeddings) {
+    std::vector<passage_embeddings::Embedding> passage_embeddings,
+    base::OnceCallback<void(std::vector<Category>)> callback) {
   if (!title_url_embedding.has_value()) {
     // Skip if the title-URL embedding is empty.
-    OnCategoryClassifiersCompleted(url, source_id, {});
+    std::move(callback).Run({});
     return;
   }
 
@@ -81,7 +71,7 @@ void OnDeviceCategoryClassifier::OnPageEmbeddingAvailable(
           category_classifier_model_handlers_.size(),
           base::BindOnce(
               &OnDeviceCategoryClassifier::OnCategoryClassifiersCompleted,
-              weak_ptr_factory_.GetWeakPtr(), url, source_id));
+              weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   for (const auto& [category_type, model_handler] :
        category_classifier_model_handlers_) {
     // Check if the model is compatible with the current embedder version.
@@ -113,8 +103,7 @@ void OnDeviceCategoryClassifier::EmbedderMetadataUpdated(
 }
 
 void OnDeviceCategoryClassifier::OnCategoryClassifiersCompleted(
-    const GURL& url,
-    ukm::SourceId source_id,
+    base::OnceCallback<void(std::vector<Category>)> callback,
     const std::vector<std::pair<CategoryType, std::optional<float>>>&
         classifier_outputs) {
   std::vector<Category> outputs;
@@ -125,9 +114,7 @@ void OnDeviceCategoryClassifier::OnCategoryClassifiersCompleted(
     }
   }
 
-  for (auto& observer : observers_) {
-    observer.OnCategoriesClassified(url, source_id, outputs);
-  }
+  std::move(callback).Run(std::move(outputs));
 }
 
 }  // namespace page_content_annotations

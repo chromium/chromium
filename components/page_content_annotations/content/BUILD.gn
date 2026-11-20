@@ -101,13 +101,15 @@ source_set("page_embeddings") {
     ":producer",
     "//base",
     "//components/keyed_service/core",
+    "//components/page_content_annotations/core",
     "//components/passage_embeddings/core",
     "//content/public/browser",
+    "//services/metrics/public/cpp:metrics_cpp",
+    "//url",
   ]
 
   deps = [
     "//components/optimization_guide/proto:optimization_guide_proto",
-    "//components/page_content_annotations/core",
     "//components/passage_embeddings/core:passage_embeddings_types",
     "//services/passage_embeddings/public/mojom",
   ]

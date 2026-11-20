@@ -5,7 +5,10 @@
 #include "chrome/browser/contextual_search/contextual_search_cue_tab_state.h"
 
 #include <memory>
+#include <utility>
+#include <vector>
 
+#include "base/callback_list.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/contextual_cueing/cue_target.h"
@@ -38,11 +41,18 @@ using ::page_content_annotations::PageContentAnnotationsResult;
 class FakePageCategoryClassifierBridge
     : public page_content_annotations::PageCategoryClassifierBridge {
  public:
-  void SetDemandActive(bool active) override { demand_active_ = active; }
-  bool demand_active() const { return demand_active_; }
+  base::CallbackListSubscription Subscribe(
+      ClassificationCallback callback) override {
+    return callbacks_.Add(std::move(callback));
+  }
+  bool demand_active() const { return !callbacks_.empty(); }
 
  private:
-  bool demand_active_ = false;
+  base::RepeatingCallbackList<void(
+      const GURL&,
+      ukm::SourceId,
+      const std::vector<page_content_annotations::Category>&)>
+      callbacks_;
 };
 
 class FakeCueTarget : public contextual_cueing::CueTarget {

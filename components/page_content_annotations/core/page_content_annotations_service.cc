@@ -197,7 +197,6 @@ PageContentAnnotationsService::PageContentAnnotationsService(
     on_device_category_classifier_ =
         std::make_unique<OnDeviceCategoryClassifier>(
             optimization_guide_model_provider, embedder_metadata_provider);
-    on_device_category_classifier_->AddObserver(this);
   }
 
   if (optimization_guide_decider_) {
@@ -209,11 +208,7 @@ PageContentAnnotationsService::PageContentAnnotationsService(
       PageContentAnnotationsValidator::MaybeCreateAndStartTimer(annotator_);
 }
 
-PageContentAnnotationsService::~PageContentAnnotationsService() {
-  if (on_device_category_classifier_) {
-    on_device_category_classifier_->RemoveObserver(this);
-  }
-}
+PageContentAnnotationsService::~PageContentAnnotationsService() = default;
 
 void PageContentAnnotationsService::Shutdown() {
   history_service_observation_.Reset();
@@ -955,6 +950,7 @@ void PageContentAnnotationsService::OnOptimizationGuideResponseReceived(
 void PageContentAnnotationsService::SetPageCategoryClassifierBridge(
     std::unique_ptr<PageCategoryClassifierBridge>
         page_category_classifier_bridge) {
+  category_classifier_bridge_subscription_.reset();
   page_category_classifier_bridge_ = std::move(page_category_classifier_bridge);
   UpdateCategoryClassifierBridgeDemand();
 }
@@ -967,7 +963,16 @@ void PageContentAnnotationsService::UpdateCategoryClassifierBridgeDemand() {
       AnnotationType::kCategoryClassifier);
   bool has_demand =
       it != page_content_annotations_observers_.end() && !it->second.empty();
-  page_category_classifier_bridge_->SetDemandActive(has_demand);
+  if (!has_demand) {
+    category_classifier_bridge_subscription_.reset();
+    return;
+  }
+  if (!category_classifier_bridge_subscription_) {
+    category_classifier_bridge_subscription_ =
+        page_category_classifier_bridge_->Subscribe(base::BindRepeating(
+            &PageContentAnnotationsService::OnCategoriesClassified,
+            weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 HistoryVisit::HistoryVisit() = default;

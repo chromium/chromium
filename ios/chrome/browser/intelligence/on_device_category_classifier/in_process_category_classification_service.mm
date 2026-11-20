@@ -53,26 +53,14 @@ InProcessCategoryClassificationService::InProcessCategoryClassificationService(
   category_classifier_ =
       std::make_unique<page_content_annotations::OnDeviceCategoryClassifier>(
           model_provider_, this);
-  // Note: `this` is passed to OnDeviceCategoryClassifier's constructor as
-  // `passage_embeddings::EmbedderMetadataProvider*`, not as an Observer.
-  // Explicitly calling AddObserver is required to register as an
-  // OnDeviceCategoryClassifier::Observer.
-  category_classifier_->AddObserver(this);
 }
 
 InProcessCategoryClassificationService::
-    ~InProcessCategoryClassificationService() {
-  if (category_classifier_) {
-    category_classifier_->RemoveObserver(this);
-  }
-}
+    ~InProcessCategoryClassificationService() = default;
 
 void InProcessCategoryClassificationService::Shutdown() {
   weak_ptr_factory_.InvalidateWeakPtrs();
-  if (category_classifier_) {
-    category_classifier_->RemoveObserver(this);
-    category_classifier_.reset();
-  }
+  category_classifier_.reset();
   model_loader_.Shutdown();
   model_provider_ = nullptr;
   embedder_wrapper_.Reset();
@@ -119,9 +107,12 @@ void InProcessCategoryClassificationService::ClassifyWithCachedEmbeddings(
   }
 
   if (category_classifier_) {
-    category_classifier_->OnPageEmbeddingAvailable(
-        url, source_id, cached_it->second.title_url_embedding,
-        cached_it->second.passage_embeddings);
+    category_classifier_->ClassifyTextEmbeddings(
+        cached_it->second.title_url_embedding,
+        cached_it->second.passage_embeddings,
+        base::BindOnce(
+            &InProcessCategoryClassificationService::OnCategoriesClassified,
+            weak_ptr_factory_.GetWeakPtr(), url));
   } else {
     request_tracker_.CompleteUrl(url, {});
   }
@@ -200,13 +191,12 @@ void InProcessCategoryClassificationService::ClassifyPageContext(
   embedder_wrapper_.GenerateEmbeddings(
       string_passages,
       base::BindOnce(&InProcessCategoryClassificationService::OnGotEmbeddings,
-                     weak_ptr_factory_.GetWeakPtr(), url, source_id,
+                     weak_ptr_factory_.GetWeakPtr(), url,
                      std::move(passage_types)));
 }
 
 void InProcessCategoryClassificationService::OnGotEmbeddings(
     const GURL& url,
-    ukm::SourceId source_id,
     std::vector<page_content_annotations::EmbeddingPassageType> passage_types,
     std::vector<passage_embeddings::mojom::PassageEmbeddingsResultPtr>
         results) {
@@ -241,15 +231,16 @@ void InProcessCategoryClassificationService::OnGotEmbeddings(
                .passage_embeddings = passage_embeddings,
            });
 
-  category_classifier_->OnPageEmbeddingAvailable(url, source_id,
-                                                 std::move(title_url_embedding),
-                                                 std::move(passage_embeddings));
+  category_classifier_->ClassifyTextEmbeddings(
+      std::move(title_url_embedding), std::move(passage_embeddings),
+      base::BindOnce(
+          &InProcessCategoryClassificationService::OnCategoriesClassified,
+          weak_ptr_factory_.GetWeakPtr(), url));
 }
 
 void InProcessCategoryClassificationService::OnCategoriesClassified(
     const GURL& url,
-    ukm::SourceId source_id,
-    const std::vector<page_content_annotations::Category>& categories) {
+    std::vector<page_content_annotations::Category> categories) {
   request_tracker_.CompleteUrl(url, categories);
 }
 

@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/cancelable_callback.h"
 #include "base/containers/hashing_lru_cache.h"
 #include "base/containers/lru_cache.h"
@@ -126,8 +127,7 @@ enum class PageContentAnnotationsType {
 class PageContentAnnotationsService
     : public KeyedService,
       public history::HistoryServiceObserver,
-      public ZeroSuggestCacheServiceInterface::Observer,
-      public OnDeviceCategoryClassifier::Observer {
+      public ZeroSuggestCacheServiceInterface::Observer {
  public:
   // Observer interface to listen for PageContentAnnotations for page loads.
   // Annotations will be sent for each page load for the registered annotation
@@ -235,14 +235,15 @@ class PageContentAnnotationsService
     return on_device_category_classifier_.get();
   }
 
-  // OnDeviceCategoryClassifier::Observer:
+  // Invoked when categories have been classified for `url`.
   void OnCategoriesClassified(const GURL& url,
                               ukm::SourceId source_id,
-                              const std::vector<Category>& categories) override;
+                              const std::vector<Category>& categories);
 
  private:
-  // Updates whether the category classifier bridge should be observing based on
-  // whether there are any registered kCategoryClassifier observers.
+  // Updates whether this service is subscribed to the category classifier
+  // bridge based on whether there are any registered kCategoryClassifier
+  // observers.
   void UpdateCategoryClassifierBridgeDemand();
 
   // Callback invoked when a single |visit| has been annotated.
@@ -282,11 +283,12 @@ class PageContentAnnotationsService
 
   std::unique_ptr<OnDeviceCategoryClassifier> on_device_category_classifier_;
 
-  // A bridge that allows page category classification. The functionality of the
-  // bridge is implemented at the 'content' level, while exposing demand
-  // activation control to this service.
+  // A bridge that coordinates page category classification at the 'content'
+  // layer while exposing a subscription interface to this service.
   std::unique_ptr<PageCategoryClassifierBridge>
       page_category_classifier_bridge_;
+  std::optional<base::CallbackListSubscription>
+      category_classifier_bridge_subscription_;
 
   // The annotator to use for requests to |BatchAnnotate| and |Annotate|. In
   // prod, this is simply |model_manager_.get()| but is set as a separate

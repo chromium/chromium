@@ -5,7 +5,10 @@
 #include "chrome/browser/contextual_cueing/contextual_cueing_controller.h"
 
 #include <memory>
+#include <utility>
+#include <vector>
 
+#include "base/callback_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/run_loop.h"
@@ -143,11 +146,18 @@ class TestInfoBarDelegate : public ConfirmInfoBarDelegate {
 class FakePageCategoryClassifierBridge
     : public page_content_annotations::PageCategoryClassifierBridge {
  public:
-  void SetDemandActive(bool active) override { demand_active_ = active; }
-  bool demand_active() const { return demand_active_; }
+  base::CallbackListSubscription Subscribe(
+      ClassificationCallback callback) override {
+    return callbacks_.Add(std::move(callback));
+  }
+  bool demand_active() const { return !callbacks_.empty(); }
 
  private:
-  bool demand_active_ = false;
+  base::RepeatingCallbackList<void(
+      const GURL&,
+      ukm::SourceId,
+      const std::vector<page_content_annotations::Category>&)>
+      callbacks_;
 };
 
 class ContextualCueingControllerBrowserTestBase : public SigninBrowserTestBase,

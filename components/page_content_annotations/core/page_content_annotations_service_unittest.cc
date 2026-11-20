@@ -150,9 +150,28 @@ class MockPageContentAnnotationsObserver
               (override));
 };
 
-class MockPageCategoryClassifierBridge : public PageCategoryClassifierBridge {
+class FakePageCategoryClassifierBridge : public PageCategoryClassifierBridge {
  public:
-  MOCK_METHOD(void, SetDemandActive, (bool), (override));
+  base::CallbackListSubscription Subscribe(
+      ClassificationCallback callback) override {
+    ++subscribe_count_;
+    return callbacks_.Add(std::move(callback));
+  }
+
+  void Notify(const GURL& url,
+              ukm::SourceId source_id,
+              const std::vector<Category>& categories) {
+    callbacks_.Notify(url, source_id, categories);
+  }
+
+  bool has_subscribers() const { return !callbacks_.empty(); }
+  int subscribe_count() const { return subscribe_count_; }
+
+ private:
+  base::RepeatingCallbackList<
+      void(const GURL&, ukm::SourceId, const std::vector<Category>&)>
+      callbacks_;
+  int subscribe_count_ = 0;
 };
 
 }  // namespace
@@ -478,6 +497,10 @@ TEST_F(PageContentAnnotationsServiceTest,
 }
 
 TEST_F(PageContentAnnotationsServiceTest, CategoryClassifierObserver) {
+  auto bridge = std::make_unique<FakePageCategoryClassifierBridge>();
+  FakePageCategoryClassifierBridge* bridge_ptr = bridge.get();
+  service_->SetPageCategoryClassifierBridge(std::move(bridge));
+
   MockPageContentAnnotationsObserver observer;
   service_->AddObserver(AnnotationType::kCategoryClassifier, &observer);
 
@@ -511,35 +534,39 @@ TEST_F(PageContentAnnotationsServiceTest, CategoryClassifierObserver) {
         EXPECT_EQ(results[1].score, 0.8f);
       });
 
-  service()->OnCategoriesClassified(url, /*source_id=*/0, categories);
+  bridge_ptr->Notify(url, /*source_id=*/0, categories);
 
   service_->RemoveObserver(AnnotationType::kCategoryClassifier, &observer);
 }
 
 TEST_F(PageContentAnnotationsServiceTest, CategoryClassifierBridgeDemand) {
-  auto bridge = std::make_unique<MockPageCategoryClassifierBridge>();
-  MockPageCategoryClassifierBridge* bridge_ptr = bridge.get();
+  auto bridge = std::make_unique<FakePageCategoryClassifierBridge>();
+  FakePageCategoryClassifierBridge* bridge_ptr = bridge.get();
 
-  EXPECT_CALL(*bridge_ptr, SetDemandActive(false));
   service_->SetPageCategoryClassifierBridge(std::move(bridge));
+  EXPECT_FALSE(bridge_ptr->has_subscribers());
+  EXPECT_EQ(bridge_ptr->subscribe_count(), 0);
 
   MockPageContentAnnotationsObserver observer1;
   MockPageContentAnnotationsObserver observer2;
 
-  EXPECT_CALL(*bridge_ptr, SetDemandActive(true));
   service_->AddObserver(AnnotationType::kCategoryClassifier, &observer1);
+  EXPECT_TRUE(bridge_ptr->has_subscribers());
+  EXPECT_EQ(bridge_ptr->subscribe_count(), 1);
 
-  // Adding a second observer updates demand (idempotent).
-  EXPECT_CALL(*bridge_ptr, SetDemandActive(true));
+  // Adding a second observer reuses the existing bridge subscription.
   service_->AddObserver(AnnotationType::kCategoryClassifier, &observer2);
+  EXPECT_TRUE(bridge_ptr->has_subscribers());
+  EXPECT_EQ(bridge_ptr->subscribe_count(), 1);
 
-  // Removing one observer keeps demand active as another observer exists.
-  EXPECT_CALL(*bridge_ptr, SetDemandActive(true));
+  // Removing one observer keeps the subscription active while another observer
+  // exists.
   service_->RemoveObserver(AnnotationType::kCategoryClassifier, &observer1);
+  EXPECT_TRUE(bridge_ptr->has_subscribers());
 
-  // Removing the last observer deactivates demand.
-  EXPECT_CALL(*bridge_ptr, SetDemandActive(false));
+  // Removing the last observer drops the bridge subscription.
   service_->RemoveObserver(AnnotationType::kCategoryClassifier, &observer2);
+  EXPECT_FALSE(bridge_ptr->has_subscribers());
 }
 
 }  // namespace page_content_annotations

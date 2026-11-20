@@ -297,8 +297,7 @@ TEST_F(InProcessCategoryClassificationServiceTest,
   results.push_back(CreateNormalizedResult(768, 0));
   results.push_back(CreateNormalizedResult(768, 1));
 
-  service_->OnGotEmbeddings(url, ukm::SourceId(), passage_types,
-                            std::move(results));
+  service_->OnGotEmbeddings(url, passage_types, std::move(results));
 
   std::optional<InProcessCategoryClassificationService::CachedEmbeddings>
       cached = service_->GetCachedEmbeddings(url);
@@ -307,7 +306,7 @@ TEST_F(InProcessCategoryClassificationServiceTest,
   EXPECT_EQ(cached->passage_embeddings.size(), 1u);
 
   // Calling ClassifyPageContext for the same URL hits the in-memory cache
-  // and invokes OnPageEmbeddingAvailable without re-queueing.
+  // and invokes ClassifyTextEmbeddings without re-queueing.
   base::test::TestFuture<const std::vector<page_content_annotations::Category>&>
       future;
   service_->ClassifyPageContext(url, "Title", "Some paragraph content.",
@@ -328,8 +327,7 @@ TEST_F(InProcessCategoryClassificationServiceTest,
   std::vector<passage_embeddings::mojom::PassageEmbeddingsResultPtr> results;
   results.push_back(CreateNormalizedResult(768, 0));
 
-  service_->OnGotEmbeddings(url, ukm::SourceId(), passage_types,
-                            std::move(results));
+  service_->OnGotEmbeddings(url, passage_types, std::move(results));
 
   std::optional<InProcessCategoryClassificationService::CachedEmbeddings>
       cached = service_->GetCachedEmbeddings(url);
@@ -360,8 +358,7 @@ TEST_F(InProcessCategoryClassificationServiceTest,
   results.push_back(CreateNormalizedResult(768, 0));
   results.push_back(CreateNormalizedResult(768, 1));
 
-  service_->OnGotEmbeddings(cached_url, ukm::SourceId(), passage_types,
-                            std::move(results));
+  service_->OnGotEmbeddings(cached_url, passage_types, std::move(results));
 
   EXPECT_TRUE(service_->HasCachedEmbeddings(cached_url));
 
@@ -385,8 +382,7 @@ TEST_F(InProcessCategoryClassificationServiceTest,
   results.push_back(CreateNormalizedResult(768, 0));
   results.push_back(CreateNormalizedResult(768, 1));
 
-  service_->OnGotEmbeddings(url, ukm::SourceId(), passage_types,
-                            std::move(results));
+  service_->OnGotEmbeddings(url, passage_types, std::move(results));
   EXPECT_TRUE(service_->HasCachedEmbeddings(url));
 
   service_->OnEmbedderDisconnectForTesting();
@@ -404,8 +400,7 @@ TEST_F(InProcessCategoryClassificationServiceTest, CacheClearedOnModelReload) {
   results.push_back(CreateNormalizedResult(768, 0));
   results.push_back(CreateNormalizedResult(768, 1));
 
-  service_->OnGotEmbeddings(url, ukm::SourceId(), passage_types,
-                            std::move(results));
+  service_->OnGotEmbeddings(url, passage_types, std::move(results));
   EXPECT_TRUE(service_->HasCachedEmbeddings(url));
 
   // Loading a new model clears stale cached embeddings from the old version.
