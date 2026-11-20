@@ -46,9 +46,6 @@ export function getRectsForSegments(segments: Segment[]): DOMRect[] {
   const rects: DOMRect[] = [];
   for (const {node, start} of segments) {
     const domNode = node.domNode();
-    if (!domNode) {
-      continue;
-    }
     const {node: finalNode, offset} = getTextNodeOffsets(domNode, start);
     const startOffset = start - offset;
     const range = document.createRange();

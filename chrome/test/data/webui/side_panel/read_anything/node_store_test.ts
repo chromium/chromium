@@ -203,18 +203,6 @@ suite('NodeStore', () => {
     assertFalse(nodeStore.areNodesAllHidden([readAloudNode]));
   });
 
-  test('hasAnyNode', () => {
-    const id1 = 216;
-    const id2 = 218;
-
-    assertFalse(nodeStore.hasAnyNode([]));
-
-    setDomNodes([id1, id2]);
-
-    assertTrue(nodeStore.hasAnyNode(getReadAloudNodes([id1, id2])));
-    assertTrue(nodeStore.hasAnyNode(getReadAloudNodes([id1])));
-  });
-
   test('addImageToFetch', () => {
     nodeStore.addImageToFetch(216);
     assertTrue(nodeStore.hasImagesToFetch());

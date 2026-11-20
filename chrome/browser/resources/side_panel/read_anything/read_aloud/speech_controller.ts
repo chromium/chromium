@@ -528,16 +528,11 @@ export class SpeechController {
       return false;
     }
 
-    // If node ids were returned but they don't exist in the Reading Mode panel,
-    // there's been a mismatch between Reading Mode and Read Aloud. In this
-    // case, we should move to the next Read Aloud node and attempt to continue
-    // playing. TODO: crbug.com/332694565 - This fallback should never be
-    // needed, but it is. Investigate root cause of Read Aloud / Reading Mode
-    // mismatch. Additionally, the TTS engine may not like attempts to speak
-    // whitespace, so move to the next utterance in that case.
+    // If all of the nodes are hidden, move to the next Read Aloud node and
+    // attempt to continue playing. Additionally, the TTS engine may not like
+    // attempts to speak whitespace, so move to the next utterance in that case.
     const nodes: ReadAloudNode[] = segments.map(segment => segment.node);
-    if (!this.nodeStore_.hasAnyNode(nodes) ||
-        this.nodeStore_.areNodesAllHidden(nodes)) {
+    if (this.nodeStore_.areNodesAllHidden(nodes)) {
       return this.skipCurrentPosition_(isInterrupted, isMovingBackward);
     }
 
@@ -1001,20 +996,15 @@ export class SpeechController {
     }
 
     const lastNode = lastPosition.node;
-    if (lastNode.domNode()) {
-      this.movePlaybackToNode_(lastNode, lastPosition.offset);
-      this.setState_(savedSpeechPlayingState);
-      this.wordBoundaries_.state = savedWordBoundaryState;
-      // Since we're setting the reading position after a content update when
-      // we're paused, redraw the highlight after moving the traversal state to
-      // the right spot above.
-      this.highlightCurrentGranularity_(
-          this.readAloudModel_.getCurrentTextSegments());
-      return true;
-    } else {
-      this.model_.setLastPosition(null);
-      return false;
-    }
+    this.movePlaybackToNode_(lastNode, lastPosition.offset);
+    this.setState_(savedSpeechPlayingState);
+    this.wordBoundaries_.state = savedWordBoundaryState;
+    // Since we're setting the reading position after a content update when
+    // we're paused, redraw the highlight after moving the traversal state to
+    // the right spot above.
+    this.highlightCurrentGranularity_(
+        this.readAloudModel_.getCurrentTextSegments());
+    return true;
   }
 
   private movePlaybackToNode_(node: ReadAloudNode, offset: number): void {
@@ -1083,15 +1073,8 @@ export class SpeechController {
     // node) - otherwise there won't be a match on the first run of
     // playFromSelection()
     const selectedDomNode = node.domNode();
-    if (!selectedDomNode) {
-      return undefined;
-    }
     return segments.find(segment => {
       const segmentDomNode = segment.node.domNode();
-      if (!segmentDomNode) {
-        return false;
-      }
-
       if (segment.node.equals(node)) {
         return (segment.start + segment.length > offset);
       }

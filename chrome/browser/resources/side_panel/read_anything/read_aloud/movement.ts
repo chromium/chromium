@@ -150,7 +150,7 @@ export abstract class Highlight {
       node: ReadAloudNode, start: number, length: number,
       skipNonWords: boolean) {
     const element = node.domNode() as HTMLElement;
-    if (!element || start < 0 || length <= 0) {
+    if (start < 0 || length <= 0) {
       return;
     }
 

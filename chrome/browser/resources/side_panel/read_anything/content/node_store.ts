@@ -253,10 +253,6 @@ export class NodeStore {
     this.metricsBrowserProxy_.updateWordsSeen(wordsSeen);
   }
 
-  hasAnyNode(nodes: ReadAloudNode[]): boolean {
-    return nodes.some(node => node && node.domNode() !== undefined);
-  }
-
   getDomNode(axNodeId: number): Node|undefined {
     return this.domNodeToAxNodeIdMap_.keyFrom(axNodeId);
   }
@@ -447,14 +443,14 @@ export class NodeStore {
 
   areNodesAllHidden(nodes: ReadAloudNode[]): boolean {
     return nodes.every(node => {
-      const domNode = node && node.domNode();
-      const id = domNode && this.getAxId(domNode);
+      const domNode = node.domNode();
+      const id = this.getAxId(domNode);
       if (id !== undefined && this.hiddenImageNodesIds_.has(id)) {
         return true;
       }
 
       // Handle hidden images for Readability or other non-AX-based methods.
-      if (isDistilledByReadability() && domNode) {
+      if (isDistilledByReadability()) {
         const element =
             (domNode instanceof Element) ? domNode : domNode.parentElement;
         return !!element && !element.checkVisibility();
