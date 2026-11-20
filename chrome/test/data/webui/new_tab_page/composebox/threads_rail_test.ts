@@ -430,4 +430,36 @@ suite('NewTabPageThreadsRailTest', () => {
         assertEquals(expandButton, threadsRailElement.shadowRoot.activeElement);
         assertTrue(threadsRailElement.hasAttribute('suppress-pointer-hover_'));
       });
+
+  test('focuses the item with the requested action', async () => {
+    await createThreadsRail({
+      items: [
+        {
+          iconSvg: '<svg></svg>',
+          name: 'New thread',
+          clientAction: LhsClientAction.FOCUS_REALBOX_AIM,
+        },
+        {
+          iconSvg: '<svg></svg>',
+          name: 'Open sidebar',
+          clientAction: LhsClientAction.EXPAND_RAIL,
+        },
+      ],
+    });
+
+    const newThreadButton =
+        threadsRailElement.shadowRoot.querySelector<HTMLElement>(
+            '[data-index="0"]')!;
+    const expandButton =
+        threadsRailElement.shadowRoot.querySelector<HTMLElement>(
+            '[data-index="1"]')!;
+
+    threadsRailElement.focusItemWithAction(LhsClientAction.FOCUS_REALBOX_AIM);
+    assertEquals(newThreadButton, threadsRailElement.shadowRoot.activeElement);
+
+    threadsRailElement.focusItemWithAction(LhsClientAction.EXPAND_RAIL);
+    await microtasksFinished();
+
+    assertEquals(expandButton, threadsRailElement.shadowRoot.activeElement);
+  });
 });

@@ -23,6 +23,15 @@ import {installMock, LAYOUT_TOLERANCE_PX} from './test_support.js';
 
 const EXPANDED_LHS_ORIGIN = 'https://www.google.com';
 const EXPANDED_LHS_URL = `${EXPANDED_LHS_ORIGIN}/search?nem=341`;
+const EXPAND_RAIL_CONFIG = {
+  items: [
+    {
+      iconSvg: '<svg></svg>',
+      name: 'Open sidebar',
+      clientAction: LhsClientAction.EXPAND_RAIL,
+    },
+  ],
+};
 
 suite('NewTabPageLeftHandSideTest', () => {
   let leftHandSide: LeftHandSideElement;
@@ -43,6 +52,16 @@ suite('NewTabPageLeftHandSideTest', () => {
     const ghostLoader = getGhostLoader();
     return !!ghostLoader &&
         getComputedStyle(ghostLoader).visibility === 'visible';
+  }
+
+  function getGhostLoaderShadowRoot(): ShadowRoot {
+    const ghostLoader = getGhostLoader();
+    assertTrue(!!ghostLoader);
+    const element =
+        ghostLoader.querySelector<HTMLElement>('ntp-lhs-ghost-loader');
+    assertTrue(!!element);
+    assertTrue(!!element.shadowRoot);
+    return element.shadowRoot;
   }
 
   function getExpandedIframeWindow(): Window {
@@ -733,6 +752,7 @@ suite('NewTabPageLeftHandSideTest', () => {
       'shows ghost loader and expands width before iframe is ready',
       async () => {
         await createLeftHandSide();
+        leftHandSide.style.height = '400px';
 
         const folded = leftHandSide.$.folded;
         assertTrue(folded.offsetWidth > 0 && folded.offsetWidth < 261);
@@ -761,22 +781,28 @@ suite('NewTabPageLeftHandSideTest', () => {
             ghostLoader.getAttribute('aria-label'));
         assertFalse(ghostLoader.hasAttribute('aria-hidden'));
         assertFalse(ghostLoader.inert);
-        assertTrue(!!ghostLoader.shadowRoot);
-        const placeholders = ghostLoader.shadowRoot.querySelectorAll(
+        const ghostLoaderShadowRoot = getGhostLoaderShadowRoot();
+        const ghostFooter =
+            ghostLoaderShadowRoot.querySelector<HTMLElement>('.ghost-footer');
+        assertTrue(!!ghostFooter);
+        assertNear(
+            leftHandSide.getBoundingClientRect().bottom,
+            ghostFooter.getBoundingClientRect().bottom, LAYOUT_TOLERANCE_PX);
+        const placeholders = ghostLoaderShadowRoot.querySelectorAll(
             '.ghost-logo, .ghost-actions, .ghost-threads, .ghost-footer');
         assertEquals(4, placeholders.length);
         for (const placeholder of placeholders) {
           assertEquals('true', placeholder.getAttribute('aria-hidden'));
         }
         const closeButton =
-            ghostLoader.shadowRoot.querySelector<HTMLElement>('#closeButton');
+            ghostLoaderShadowRoot.querySelector<HTMLElement>('#closeButton');
         assertTrue(!!closeButton);
         assertFalse(!!closeButton.closest('[aria-hidden]'));
         assertEquals(
             loadTimeData.getString('aimThreadsCloseSidebarLabel'),
             closeButton.getAttribute('aria-label'));
         const closeTooltip =
-            ghostLoader.shadowRoot.querySelector<CrTooltipElement>(
+            ghostLoaderShadowRoot.querySelector<CrTooltipElement>(
                 '#closeTooltip');
         assertTrue(!!closeTooltip);
         assertEquals('closeButton', closeTooltip.for);
@@ -813,10 +839,10 @@ suite('NewTabPageLeftHandSideTest', () => {
     const ghostLoader = getGhostLoader();
     assertTrue(!!ghostLoader);
     const closeButton =
-        ghostLoader.shadowRoot!.querySelector<HTMLElement>('#closeButton');
+        getGhostLoaderShadowRoot().querySelector<HTMLElement>('#closeButton');
     assertTrue(!!closeButton);
     const closeTooltip =
-        ghostLoader.shadowRoot!.querySelector<CrTooltipElement>(
+        getGhostLoaderShadowRoot().querySelector<CrTooltipElement>(
             '#closeTooltip');
     assertTrue(!!closeTooltip);
     assertEquals(TooltipPosition.LEFT, closeTooltip.position);
@@ -847,7 +873,8 @@ suite('NewTabPageLeftHandSideTest', () => {
         assertTrue(folded.inert);
         assertEquals('auto', getComputedStyle(ghostLoader).pointerEvents);
         const closeButton =
-            ghostLoader.shadowRoot!.querySelector<HTMLElement>('#closeButton');
+            getGhostLoaderShadowRoot().querySelector<HTMLElement>(
+                '#closeButton');
         assertTrue(!!closeButton);
 
         closeButton.click();
@@ -1698,5 +1725,126 @@ suite('NewTabPageLeftHandSideTest', () => {
         assertEquals(
             0,
             metrics.count('NewTabPage.ThreadsRail.GhostLoaderShownDuration'));
+      });
+
+  test(
+      'focuses labeled iframe on preloaded open and restores focus on close',
+      async () => {
+        loadTimeData.overrideValues({lhsRailConfig: EXPAND_RAIL_CONFIG});
+        await createLeftHandSide();
+
+        const folded = leftHandSide.$.folded;
+        const expandButton =
+            folded.shadowRoot.querySelector<HTMLElement>('[data-index="0"]')!;
+
+        // Silent hover preload and NTP_LHS_READY while collapsed must not steal
+        // focus.
+        folded.dispatchEvent(new PointerEvent('pointerenter'));
+        await microtasksFinished();
+        postLhsMessage({type: NtpLhsMessageType.NTP_LHS_READY, width: 261});
+        await microtasksFinished();
+        assertEquals(null, leftHandSide.shadowRoot.activeElement);
+
+        // Opening after preload moves focus into the expanded iframe container
+        // and exposes the history label via aria-label.
+        expandButton.focus();
+        expandButton.click();
+        await microtasksFinished();
+
+        const expanded = getExpandedIframe()!;
+        const iframe =
+            expanded.shadowRoot.querySelector<HTMLIFrameElement>('#iframe')!;
+        assertEquals(expanded, leftHandSide.shadowRoot.activeElement);
+        assertEquals(iframe, expanded.shadowRoot.activeElement);
+        assertEquals(
+            loadTimeData.getString('aimThreadsHistoryLabel'),
+            iframe.getAttribute('aria-label'));
+
+        // Closing via NTP_LHS_CLOSE returns focus to the Open sidebar button.
+        postLhsMessage({type: NtpLhsMessageType.NTP_LHS_CLOSE});
+        await microtasksFinished();
+        assertEquals(folded, leftHandSide.shadowRoot.activeElement);
+        assertEquals(expandButton, folded.shadowRoot.activeElement);
+      });
+
+  test(
+      'focuses ghost loader before ready and hands focus to iframe on ready',
+      async () => {
+        loadTimeData.overrideValues({lhsRailConfig: EXPAND_RAIL_CONFIG});
+        await createLeftHandSide();
+
+        const folded = leftHandSide.$.folded;
+        const expandButton =
+            folded.shadowRoot.querySelector<HTMLElement>('[data-index="0"]')!;
+        expandButton.focus();
+        expandButton.click();
+        await microtasksFinished();
+
+        // Focus lands on the ghost loader container itself rather than its
+        // close button so the close tooltip does not pop up immediately.
+        const ghostLoader = getGhostLoader()!;
+        assertEquals('-1', ghostLoader.getAttribute('tabindex'));
+        assertEquals('none', getComputedStyle(ghostLoader).outlineStyle);
+        assertEquals(ghostLoader, leftHandSide.shadowRoot.activeElement);
+
+        // Once NTP_LHS_READY arrives, focus transfers from the ghost loader to
+        // the expanded iframe.
+        postLhsMessage({type: NtpLhsMessageType.NTP_LHS_READY, width: 261});
+        await microtasksFinished();
+
+        const expanded = getExpandedIframe()!;
+        const iframe =
+            expanded.shadowRoot.querySelector<HTMLIFrameElement>('#iframe')!;
+        assertEquals(expanded, leftHandSide.shadowRoot.activeElement);
+        assertEquals(iframe, expanded.shadowRoot.activeElement);
+      });
+
+  test(
+      'does not steal external focus on NTP_LHS_READY or NTP_LHS_CLOSE',
+      async () => {
+        loadTimeData.overrideValues({lhsRailConfig: EXPAND_RAIL_CONFIG});
+        await createLeftHandSide();
+        const externalButton = document.createElement('button');
+        document.body.appendChild(externalButton);
+
+        await expandLeftHandSide();
+        assertEquals(getGhostLoader(), leftHandSide.shadowRoot.activeElement);
+
+        // User moves focus outside the rail while the iframe is still loading.
+        externalButton.focus();
+        assertEquals(externalButton, document.activeElement);
+        assertEquals(null, leftHandSide.shadowRoot.activeElement);
+
+        postLhsMessage({type: NtpLhsMessageType.NTP_LHS_READY, width: 261});
+        await microtasksFinished();
+        assertEquals(externalButton, document.activeElement);
+        assertEquals(null, leftHandSide.shadowRoot.activeElement);
+
+        postLhsMessage({type: NtpLhsMessageType.NTP_LHS_CLOSE});
+        await microtasksFinished();
+        assertEquals(externalButton, document.activeElement);
+        assertEquals(null, leftHandSide.shadowRoot.activeElement);
+      });
+
+  test(
+      'restores focus to Open sidebar when closing from ghost loader',
+      async () => {
+        loadTimeData.overrideValues({lhsRailConfig: EXPAND_RAIL_CONFIG});
+        await createLeftHandSide();
+
+        const folded = leftHandSide.$.folded;
+        const expandButton =
+            folded.shadowRoot.querySelector<HTMLElement>('[data-index="0"]')!;
+
+        await expandLeftHandSide();
+        const closeButton =
+            getGhostLoaderShadowRoot().querySelector<HTMLElement>(
+                '#closeButton')!;
+        closeButton.focus();
+        assertEquals(closeButton, getGhostLoaderShadowRoot().activeElement);
+        closeButton.click();
+        await microtasksFinished();
+        assertEquals(folded, leftHandSide.shadowRoot.activeElement);
+        assertEquals(expandButton, folded.shadowRoot.activeElement);
       });
 });

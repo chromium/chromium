@@ -135,6 +135,14 @@ export class ThreadsRailElement extends ThreadsRailElementBase {
     this.suppressPointerHover_ = false;
   }
 
+  focusItemWithAction(clientAction: LhsClientAction): void {
+    const index =
+        this.getItems_().findIndex(item => item.clientAction === clientAction);
+    this.shadowRoot
+        .querySelector<HTMLElement>(`#iconsContainer [data-index="${index}"]`)
+        ?.focus();
+  }
+
   protected getItems_(): LhsRailItem[] {
     return this.config_.items ?? [];
   }

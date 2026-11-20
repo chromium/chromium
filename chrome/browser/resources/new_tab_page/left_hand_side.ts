@@ -7,6 +7,7 @@ import './lhs_ghost_loader.js';
 
 import {COLOR_PROVIDER_CHANGED, ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import type {ThreadsRailElement} from 'chrome://resources/cr_components/composebox/threads_rail.js';
+import {LhsClientAction} from 'chrome://resources/cr_components/composebox/threads_rail.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -208,10 +209,9 @@ export class LeftHandSideElement extends CrLitElement {
   // The primary view, reflected as the `view_` attribute so that
   // left_hand_side.css can style each view. Derived in willUpdate().
   protected accessor view_: LhsView = LhsView.FOLDED;
-  // Accessible name of the ghost loader. Together with aria-busy, it keeps the
-  // LHS region in the a11y tree as busy while the expanded iframe loads,
-  // instead of the region silently going missing.
-  protected readonly ghostLoaderLabel_: string =
+  // Accessible name shared by the ghost loader region and the expanded LHS
+  // iframe.
+  protected readonly lhsLabel_: string =
       loadTimeData.getString('aimThreadsHistoryLabel');
   private eventTracker_: EventTracker = new EventTracker();
   // Width of the folded rail, measured once it has rendered.
@@ -228,6 +228,7 @@ export class LeftHandSideElement extends CrLitElement {
   private hasExpanded_: boolean = false;
   private ghostLoaderShownTime_: number|null = null;
   private lastHiddenTime_: number|null = null;
+  private hadFocusBeforeUpdate_: boolean = false;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -252,6 +253,7 @@ export class LeftHandSideElement extends CrLitElement {
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
     this.view_ = this.getVisibleView_();
+    this.hadFocusBeforeUpdate_ = this.shadowRoot.activeElement !== null;
   }
 
   override firstUpdated(changedProperties: PropertyValues<this>) {
@@ -284,6 +286,11 @@ export class LeftHandSideElement extends CrLitElement {
       this.setHostWidth_(
           this.isExpanded_ ? this.expandedWidth_ : this.collapsedWidth_);
     }
+    if (changedPrivateProperties.has('view_') &&
+        (changedPrivateProperties.get('view_') === LhsView.FOLDED ||
+         this.hadFocusBeforeUpdate_)) {
+      this.focusView_();
+    }
   }
 
   // Returns the primary view to show. Every view in getHtml() is inert unless
@@ -308,6 +315,22 @@ export class LeftHandSideElement extends CrLitElement {
   // interacts with the rail.
   private getExpandedIframe_(): IframeElement|null {
     return this.shadowRoot.querySelector<IframeElement>('#expanded');
+  }
+
+  private focusView_() {
+    switch (this.view_) {
+      case LhsView.FOLDED:
+        this.$.folded.focusItemWithAction(LhsClientAction.EXPAND_RAIL);
+        break;
+      case LhsView.GHOST_LOADER:
+        this.shadowRoot.querySelector<HTMLElement>('#ghostLoader')?.focus();
+        break;
+      case LhsView.EXPANDED:
+        this.getExpandedIframe_()?.focus();
+        break;
+      default:
+        break;
+    }
   }
 
   protected onFoldedPointerenter_() {

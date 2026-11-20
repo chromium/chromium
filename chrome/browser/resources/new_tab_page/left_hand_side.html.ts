@@ -17,16 +17,20 @@ export function getHtml(this: LeftHandSideElement) {
     @focusin="${this.onFoldedFocusin_}" @focusout="${this.onFoldedFocusout_}">
 </cr-threads-rail>
 ${this.isExpanded_ ? html`
-  <ntp-lhs-ghost-loader id="ghostLoader" role="region"
-      aria-label="${this.ghostLoaderLabel_}" aria-busy="true"
+  <!-- Setting tabindex="-1" on <ntp-lhs-ghost-loader> would remove its close
+       button from the tab order, so put it on a wrapper div instead. -->
+  <div id="ghostLoader" role="region" aria-label="${this.lhsLabel_}"
+      aria-busy="true" tabindex="-1"
       ?inert="${this.view_ !== LhsView.GHOST_LOADER}"
-      ?is-dark="${!!this.isDark}" style="width: ${this.expandedWidth_}px;"
-      @close-rail="${this.onGhostLoaderCloseRail_}">
-  </ntp-lhs-ghost-loader>
+      style="width: ${this.expandedWidth_}px;">
+    <ntp-lhs-ghost-loader ?is-dark="${!!this.isDark}"
+        @close-rail="${this.onGhostLoaderCloseRail_}">
+    </ntp-lhs-ghost-loader>
+  </div>
 ` : ''}
 ${this.preloadStartTime_ !== null ? html`
   <ntp-iframe id="expanded" class="${this.isExpandedReady_ ? 'ready' : ''}"
-      allow="clipboard-write; unbounded-element"
+      allow="clipboard-write; unbounded-element" .a11yLabel="${this.lhsLabel_}"
       style="width: ${this.expandedWidth_}px;" src="${this.expandedLhsUrl_}"
       ?hidden="${!this.isExpandedReady_}"
       ?inert="${this.view_ !== LhsView.EXPANDED}">

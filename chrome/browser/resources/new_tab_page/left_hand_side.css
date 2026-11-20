@@ -14,6 +14,7 @@
   background-color: var(--color-new-tab-page-threads-rail-background);
   display: grid;
   grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
   height: 100%;
   overflow: hidden;
   /* The element switches this between the folded rail's width and the
@@ -65,6 +66,14 @@
   /* Lets the user click the ghost loader's close button. */
   pointer-events: auto;
   visibility: visible;
+}
+
+#ghostLoader {
+  outline: none;
+}
+
+ntp-lhs-ghost-loader {
+  height: 100%;
 }
 
 @starting-style {

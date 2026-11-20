@@ -30,6 +30,9 @@ export class IframeElement extends CrLitElement {
 
   static override get properties() {
     return {
+      a11yLabel: {
+        type: String,
+      },
       allow: {
         reflect: true,
         type: String,
@@ -41,8 +44,14 @@ export class IframeElement extends CrLitElement {
     };
   }
 
+  accessor a11yLabel: string = '';
   accessor allow: string = '';
   accessor src: string = '';
+
+  override focus(options?: FocusOptions) {
+    assert(this.shadowRoot);
+    strictQuery(this.shadowRoot, '#iframe', HTMLIFrameElement).focus(options);
+  }
 
   // Sends message to iframe.
   postMessage(message: unknown) {

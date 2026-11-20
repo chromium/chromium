@@ -1,5 +1,6 @@
 <!-- #html_wrapper_imports_start
 import {nothing} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 #html_wrapper_imports_end -->
-<iframe id="iframe" allow="${this.allow || nothing}" .src="${this.getSrc_()}">
+<iframe id="iframe" allow="${this.allow || nothing}"
+    aria-label="${this.a11yLabel || nothing}" .src="${this.getSrc_()}">
 </iframe>
