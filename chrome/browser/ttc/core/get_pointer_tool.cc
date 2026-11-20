@@ -113,8 +113,9 @@ ToolDefinition GetPointerTool::GetDefinition() {
        "anything; answer from the page content or ask."});
   if (kTtcGetPointerUseSelection.Get()) {
     definition.description +=
-        " If the user is not pointing but has selected text on the page, it "
-        "returns the selection instead, in an image without a crosshair.";
+        " If the user is not pointing but has selected text or an image on "
+        "the page, it returns the selection instead, in an image without a "
+        "crosshair.";
   }
   // The tool takes no arguments, so its schema is left empty. Like
   // get_screenshot, the model speaks about what the tool returns.

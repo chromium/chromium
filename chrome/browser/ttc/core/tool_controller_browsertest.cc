@@ -3420,6 +3420,33 @@ class ToolControllerGetPointerSelectionBrowserTest
         kTtcGetPointer, {{"use_selection", "true"}});
   }
 
+ protected:
+  // Replaces the page's content with a paragraph, an image in a block of its
+  // own and another paragraph, and waits for the image to load. The page
+  // cannot be a data: URL, since get_pointer only answers on http(s) pages.
+  // The image is drawn here rather than loaded from a file, so that the test
+  // needs no test data, which Android would have to be given.
+  [[nodiscard]] bool ShowImageBetweenParagraphs() {
+    static constexpr char kHtml[] = R"html(
+        <p id="before">Before</p>
+        <div><img id="image" alt="Green box" width="120" height="80"></div>
+        <p id="after">After</p>
+    )html";
+    static constexpr char kScript[] = R"js(
+        document.body.innerHTML = $1;
+        const canvas = document.createElement('canvas');
+        canvas.width = 120;
+        canvas.height = 80;
+        const context = canvas.getContext('2d');
+        context.fillStyle = 'green';
+        context.fillRect(0, 0, canvas.width, canvas.height);
+        const image = document.getElementById('image');
+        image.src = canvas.toDataURL();
+        image.decode();
+    )js";
+    return content::ExecJs(web_contents(), content::JsReplace(kScript, kHtml));
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -3450,6 +3477,86 @@ IN_PROC_BROWSER_TEST_F(ToolControllerGetPointerSelectionBrowserTest,
   ASSERT_TRUE(response.visual_content());
   EXPECT_FALSE(
       gfx::JPEGCodec::Decode(response.visual_content()->image_data).isNull());
+}
+
+// A user who has dragged over an image, from the end of the text before it to
+// the start of the text after it, has selected the image and no text.
+IN_PROC_BROWSER_TEST_F(ToolControllerGetPointerSelectionBrowserTest,
+                       ShowsSelectedImageWhenNotPointing) {
+  SessionControllerImpl* controller = StartSessionAt(PageWithText());
+  ASSERT_TRUE(controller);
+  ASSERT_TRUE(ShowImageBetweenParagraphs());
+  ASSERT_TRUE(content::ExecJs(web_contents(), R"js(
+      const before = document.getElementById('before').firstChild;
+      const after = document.getElementById('after').firstChild;
+      getSelection().setBaseAndExtent(before, before.length, after, 0);
+  )js"));
+  // The machine's own pointer may be over the window, and so have been seen.
+  controller->pointer_tracker()->Clear();
+  base::test::TestFuture<ToolResponse> future;
+  CallGetPointer(*controller, future);
+  ToolResponse response = future.Take();
+  ASSERT_TRUE(response.Ok());
+
+  const base::DictValue& result = response.GetResult();
+  EXPECT_THAT(result.FindString("status"), testing::Pointee(std::string("ok")));
+  EXPECT_FALSE(result.contains("points"));
+  EXPECT_FALSE(result.FindStringByDottedPath("selection.text"));
+  const base::ListValue* nodes = result.FindListByDottedPath("selection.nodes");
+  ASSERT_TRUE(nodes);
+  ASSERT_EQ(nodes->size(), 1u);
+  const base::DictValue& node = nodes->front().GetDict();
+  EXPECT_THAT(node.FindString("type"), testing::Pointee(std::string("image")));
+  EXPECT_THAT(node.FindString("text"),
+              testing::Pointee(std::string("Green box")));
+  EXPECT_TRUE(result.FindDictByDottedPath("selection.bounds"));
+  ASSERT_TRUE(response.visual_content());
+  EXPECT_FALSE(
+      gfx::JPEGCodec::Decode(response.visual_content()->image_data).isNull());
+}
+
+// A selection of text and an image is reported as its text only. The image is
+// within the selection's bounds, and so in the picture.
+IN_PROC_BROWSER_TEST_F(ToolControllerGetPointerSelectionBrowserTest,
+                       ShowsSelectedTextAroundAnImage) {
+  SessionControllerImpl* controller = StartSessionAt(PageWithText());
+  ASSERT_TRUE(controller);
+  ASSERT_TRUE(ShowImageBetweenParagraphs());
+  ASSERT_TRUE(content::ExecJs(web_contents(), R"js(
+      const before = document.getElementById('before').firstChild;
+      const after = document.getElementById('after').firstChild;
+      getSelection().setBaseAndExtent(before, 0, after, after.length);
+  )js"));
+  // The machine's own pointer may be over the window, and so have been seen.
+  controller->pointer_tracker()->Clear();
+  base::test::TestFuture<ToolResponse> future;
+  CallGetPointer(*controller, future);
+  ToolResponse response = future.Take();
+  ASSERT_TRUE(response.Ok());
+
+  const base::DictValue& result = response.GetResult();
+  const std::string* text = result.FindStringByDottedPath("selection.text");
+  ASSERT_TRUE(text);
+  EXPECT_THAT(*text, testing::AllOf(testing::StartsWith("Before"),
+                                    testing::EndsWith("After")));
+  EXPECT_FALSE(result.FindListByDottedPath("selection.nodes"));
+  // From the first paragraph to the second, so taller than the image between
+  // them. How tall the image is in the viewport's DIPs depends on how the page
+  // is scaled: a phone scales this page down.
+  const double image_height =
+      content::EvalJs(
+          web_contents(),
+          content::JsReplace(
+              "document.getElementById('image').getBoundingClientRect().height"
+              " * window.devicePixelRatio * visualViewport.scale / $1",
+              web_contents()
+                  ->GetRenderWidgetHostView()
+                  ->GetDeviceScaleFactor()))
+          .ExtractDouble();
+  EXPECT_GT(image_height, 0);
+  EXPECT_GT(result.FindIntByDottedPath("selection.bounds.height").value_or(0),
+            image_height);
+  EXPECT_TRUE(response.visual_content());
 }
 
 IN_PROC_BROWSER_TEST_F(ToolControllerGetPointerSelectionBrowserTest,

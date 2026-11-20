@@ -43,15 +43,17 @@ struct PointerContext;
 // PaintOverCrossOriginFrames().
 //
 // If no location is in the viewport and kTtcGetPointerUseSelection is on, the
-// text the user has selected in the page's main document stands in for where
-// they point. The image then has no crosshair, and instead of "points" the
-// result has
+// user's selection in the page's main document is used instead. The image
+// then has no crosshair, and "points" is replaced by one of:
 //
+//   // The start of the selected text.
 //   "selection": {"text": "...", "bounds": {...}}
+//   // If only whitespace is selected: the first few images and other media
+//   // in the selection, each like "node" above but never with its identity.
+//   "selection": {"nodes": [{"type": "image", ...}], "bounds": {...}}
 //
-// with the start of the selected text and where the content it is in is in
-// the viewport. A selection that is not in the viewport, or is inside a text
-// field, does not count.
+// A selection outside the viewport, inside a text field, or with neither text
+// nor media is ignored.
 //
 // Otherwise, if no location is in the viewport, the result is
 // {"status": "no_active_pointer"}, without an image. If the screenshot in

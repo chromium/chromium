@@ -323,6 +323,116 @@ TEST_F(GetPointerResponseSelectionTest, SelectionOverSeveralNodes) {
               IsJson(R"({"x": 50, "y": 120, "width": 200, "height": 20})"));
 }
 
+// A selection with no text of its own, only line breaks or spaces, is of the
+// media in it: here the image between two paragraphs, as when the user drags
+// from the end of the first to the start of the second.
+TEST_F(GetPointerResponseSelectionTest, SelectionOfAnImage) {
+  PointerContext context = MakeContextWithSelection();
+  context.page_content.mutable_main_frame_data()
+      ->mutable_document_identifier()
+      ->set_serialized_token("main-document");
+  auto* root = context.page_content.mutable_root_node();
+  // Put the paragraph (60) before the image (57), and another below them.
+  root->mutable_children_nodes()->SwapElements(0, 1);
+  root->mutable_children_nodes(1)
+      ->mutable_content_attributes()
+      ->mutable_image_data()
+      ->set_image_caption("A red book");
+  auto* below = root->add_children_nodes()->mutable_content_attributes();
+  InitAttributes(below, optimization_guide::proto::CONTENT_ATTRIBUTE_TEXT,
+                 gfx::Rect(100, 900, 400, 40), 4);
+  below->set_common_ancestor_dom_node_id(64);
+  auto* selection = context.page_content.mutable_main_frame_data()
+                        ->mutable_frame_interaction_info()
+                        ->mutable_selection();
+  selection->set_end_node_id(64);
+  // With a no-break space, as an empty paragraph often has.
+  selection->set_selected_text("\n\u00A0\n");
+
+  const ToolResponse response =
+      BuildGetPointerResponse(context, {}, /*include_node_identity=*/false);
+  ASSERT_TRUE(response.Ok());
+  const base::DictValue* description =
+      response.GetResult().FindDict("selection");
+  ASSERT_TRUE(description);
+  // The paragraphs at the ends of the range are not part of what is selected.
+  EXPECT_THAT(*description, IsJson(R"({
+    "nodes": [{
+      "type": "image",
+      "label": "Book cover",
+      "text": "A red book",
+      "bounds": {"x": 400, "y": 200, "width": 200, "height": 200}
+    }],
+    "bounds": {"x": 400, "y": 200, "width": 200, "height": 200}
+  })"));
+  EXPECT_FALSE(response.GetResult().contains("points"));
+  EXPECT_TRUE(response.visual_content());
+
+  // The image's identity is not reported even when identities are asked for:
+  // the server only maps those of the elements pointed at for the model.
+  const ToolResponse with_identity =
+      BuildGetPointerResponse(context, {}, /*include_node_identity=*/true);
+  ASSERT_TRUE(with_identity.Ok());
+  const base::ListValue* nodes =
+      with_identity.GetResult().FindListByDottedPath("selection.nodes");
+  ASSERT_TRUE(nodes);
+  ASSERT_EQ(nodes->size(), 1u);
+  const base::DictValue& node = nodes->front().GetDict();
+  EXPECT_FALSE(node.contains("dom_node_id"));
+  EXPECT_FALSE(node.contains("document_id"));
+
+  // If text is selected as well, only the text is reported. The bounds are of
+  // everything in the range: the two paragraphs and the image.
+  selection->set_selected_text("brown\n\nfox");
+  const ToolResponse with_text =
+      BuildGetPointerResponse(context, {}, /*include_node_identity=*/false);
+  ASSERT_TRUE(with_text.Ok());
+  const base::DictValue* text_description =
+      with_text.GetResult().FindDict("selection");
+  ASSERT_TRUE(text_description);
+  EXPECT_THAT(*text_description, IsJson(R"({
+    "text": "brown\n\nfox",
+    "bounds": {"x": 50, "y": 50, "width": 550, "height": 420}
+  })"));
+}
+
+// Only the first few of many selected images are described. The bounds are of
+// them all.
+TEST_F(GetPointerResponseSelectionTest, SelectionOfManyImages) {
+  PointerContext context = MakeContextWithSelection();
+  // A row of six images of 20x20 DIP below the paragraph, in an element that
+  // the selection ends in.
+  auto* row = context.page_content.mutable_root_node()->add_children_nodes();
+  InitAttributes(row->mutable_content_attributes(),
+                 optimization_guide::proto::CONTENT_ATTRIBUTE_CONTAINER,
+                 gfx::Rect(100, 200, 400, 40), 4);
+  row->mutable_content_attributes()->set_common_ancestor_dom_node_id(61);
+  for (int i = 0; i < 6; ++i) {
+    auto* image = row->add_children_nodes()->mutable_content_attributes();
+    InitAttributes(image, optimization_guide::proto::CONTENT_ATTRIBUTE_IMAGE,
+                   gfx::Rect(100 + 50 * i, 200, 40, 40), 5 + i);
+    image->set_common_ancestor_dom_node_id(70 + i);
+  }
+  auto* selection = context.page_content.mutable_main_frame_data()
+                        ->mutable_frame_interaction_info()
+                        ->mutable_selection();
+  selection->set_end_node_id(61);
+  selection->set_selected_text(" ");
+
+  const ToolResponse response =
+      BuildGetPointerResponse(context, {}, /*include_node_identity=*/false);
+  ASSERT_TRUE(response.Ok());
+  const base::ListValue* nodes =
+      response.GetResult().FindListByDottedPath("selection.nodes");
+  ASSERT_TRUE(nodes);
+  EXPECT_EQ(nodes->size(), 5u);
+  const base::DictValue* bounds =
+      response.GetResult().FindDictByDottedPath("selection.bounds");
+  ASSERT_TRUE(bounds);
+  EXPECT_THAT(*bounds,
+              IsJson(R"({"x": 50, "y": 100, "width": 145, "height": 20})"));
+}
+
 TEST_F(GetPointerResponseSelectionTest, PointingWinsOverSelection) {
   const std::vector<Location> locations = {
       {.point = gfx::PointF(500, 300), .is_dwell = true}};
@@ -335,13 +445,19 @@ TEST_F(GetPointerResponseSelectionTest, PointingWinsOverSelection) {
 }
 
 // A selection that cannot be placed in the viewport does not count, e.g. one
-// inside a text field, whose text is not a node of the page content.
+// inside a text field, whose text is not a node of the page content. Nor does
+// one of neither text nor media.
 TEST_F(GetPointerResponseSelectionTest, SelectionThatCannotBeShown) {
   PointerContext no_text = MakeContextWithSelection();
   no_text.page_content.mutable_main_frame_data()
       ->mutable_frame_interaction_info()
       ->mutable_selection()
       ->clear_selected_text();
+  PointerContext only_whitespace = MakeContextWithSelection();
+  only_whitespace.page_content.mutable_main_frame_data()
+      ->mutable_frame_interaction_info()
+      ->mutable_selection()
+      ->set_selected_text("\n \u00A0");
   PointerContext unknown_node = MakeContextWithSelection();
   unknown_node.page_content.mutable_main_frame_data()
       ->mutable_frame_interaction_info()
@@ -372,7 +488,8 @@ TEST_F(GetPointerResponseSelectionTest, SelectionThatCannotBeShown) {
       ->mutable_visible_bounding_box()
       ->set_width(0);
   for (const PointerContext* context :
-       {&no_text, &unknown_node, &no_node_ids, &end_before_start, &offscreen}) {
+       {&no_text, &only_whitespace, &unknown_node, &no_node_ids,
+        &end_before_start, &offscreen}) {
     const ToolResponse response =
         BuildGetPointerResponse(*context, {}, /*include_node_identity=*/false);
     ASSERT_TRUE(response.Ok());

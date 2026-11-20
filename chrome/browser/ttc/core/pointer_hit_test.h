@@ -46,6 +46,14 @@ std::optional<base::DictValue> DescribeNodeAtPoint(
     const gfx::PointF& point,
     float scale_factor);
 
+// Describes `node` of `page_content` for the model. The description has the
+// "type", "label", "text" and "bounds" that DescribeNodeAtPoint() documents,
+// and never "dom_node_id" or "document_id". `scale_factor` must be positive.
+base::DictValue DescribeNode(
+    const optimization_guide::proto::ContentNode& node,
+    const optimization_guide::proto::AnnotatedPageContent& page_content,
+    float scale_factor);
+
 // Whether `node` is an iframe whose document has another origin than the main
 // document of `page_content`. The model is not given the content of such
 // frames, so neither what the pointer is on in one nor how one looks may reach

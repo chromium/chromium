@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_op.h"
 #include "base/containers/adapters.h"
 #include "base/strings/string_util.h"
 #include "components/optimization_guide/content/browser/page_content_proto_util.h"
@@ -194,6 +195,16 @@ std::optional<base::DictValue> DescribeNodeAtPoint(
   }
   description.Set("document_id",
                   target->document_identifier.serialized_token());
+  description.Merge(DescribeNode(node, page_content, scale_factor));
+  return description;
+}
+
+base::DictValue DescribeNode(const ContentNode& node,
+                             const AnnotatedPageContent& page_content,
+                             float scale_factor) {
+  CHECK_GT(scale_factor, 0.0f);
+  const ContentAttributes& attributes = node.content_attributes();
+  base::DictValue description;
   description.Set("type", TypeName(attributes));
   if (!attributes.label().empty()) {
     description.Set("label", attributes.label());
