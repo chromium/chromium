@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "third_party/blink/renderer/core/display_lock/display_lock_context.h"
 
 #include <memory>
@@ -24,6 +23,7 @@
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/range.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
+#include "third_party/blink/renderer/core/dom/slot_assignment_recalc_in_progress_scope.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/finder/text_finder.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
@@ -200,6 +200,15 @@ class DisplayLockContextTest : public testing::Test {
   }
   bool SubtreeHasTopLayerElement(DisplayLockContext* context) {
     return context->SubtreeHasTopLayerElement();
+  }
+  bool HasPendingTopLayerCheck(DisplayLockContext* context) {
+    return context->has_pending_top_layer_check_;
+  }
+  bool IsRegisteredForLifecycleNotifications(DisplayLockContext* context) {
+    return context->is_registered_for_lifecycle_notifications_;
+  }
+  void CallWillStartLifecycleUpdate(DisplayLockContext* context) {
+    context->WillStartLifecycleUpdate(*GetDocument().View());
   }
   DisplayLockUtilities::ScopedForcedUpdate GetScopedForcedUpdate(
       const Node* node,
@@ -4762,6 +4771,57 @@ TEST_F(DisplayLockContextTest,
 
   EXPECT_EQ(GetDocument().TopLayerElements().size(), 2u);
   EXPECT_FALSE(SubtreeHasTopLayerElement(locked->GetDisplayLockContext()));
+}
+
+TEST_F(DisplayLockContextTest,
+       WillStartLifecycleUpdatePreservesPendingTopLayerCheckWhenDeferred) {
+  ResizeAndFocus();
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
+    <div id="host">
+      <template shadowrootmode="open"><slot name="s"></slot></template>
+      <span id="child" slot="s"></span>
+    </div>
+    <div style="height: 10000px;"></div>
+    <div id="locked" style="content-visibility: auto">
+      <dialog id="dlg">modal</dialog>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* child = GetDocument().getElementById(AtomicString("child"));
+  auto* locked = GetDocument().getElementById(AtomicString("locked"));
+  auto* dlg =
+      To<HTMLDialogElement>(GetDocument().getElementById(AtomicString("dlg")));
+  auto* context = locked->GetDisplayLockContext();
+  ASSERT_TRUE(context);
+  EXPECT_FALSE(SubtreeHasTopLayerElement(context));
+
+  // Dirty slot assignment so opening `dlg` defers the top-layer check via
+  // DisplayLockDocumentState::ElementAddedToTopLayer ->
+  // ScheduleTopLayerCheck().
+  child->setAttribute(html_names::kSlotAttr, AtomicString("other"));
+  dlg->showModal(ASSERT_NO_EXCEPTION);
+  ASSERT_TRUE(HasPendingTopLayerCheck(context));
+  ASSERT_TRUE(IsRegisteredForLifecycleNotifications(context));
+
+  {
+    // If WillStartLifecycleUpdate() runs while flat-tree traversal is
+    // forbidden, DetermineIfSubtreeHasTopLayerElement() reschedules the check
+    // and WillStartLifecycleUpdate() must not clear
+    // has_pending_top_layer_check_.
+    SlotAssignmentRecalcInProgressScope::ForbidFlatTreeTraversal
+        forbid_flat_tree;
+    CallWillStartLifecycleUpdate(context);
+    EXPECT_TRUE(HasPendingTopLayerCheck(context));
+    EXPECT_TRUE(IsRegisteredForLifecycleNotifications(context));
+  }
+
+  // On the next lifecycle update (when flat-tree traversal is allowed), the
+  // deferred top-layer check must execute and mark `#locked` as having a
+  // top-layer descendant.
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(HasPendingTopLayerCheck(context));
+  EXPECT_TRUE(SubtreeHasTopLayerElement(context));
 }
 
 }  // namespace blink

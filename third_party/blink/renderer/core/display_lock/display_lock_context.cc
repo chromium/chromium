@@ -18,7 +18,6 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/element.h"
-#include "third_party/blink/renderer/core/dom/slot_assignment_engine.h"
 #include "third_party/blink/renderer/core/dom/slot_assignment_recalc_in_progress_scope.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
@@ -941,8 +940,8 @@ void DisplayLockContext::WillStartLifecycleUpdate(const LocalFrameView& view) {
   }
 
   if (has_pending_subtree_checks_ || has_pending_top_layer_check_) {
-    DetermineIfSubtreeHasTopLayerElement();
     has_pending_top_layer_check_ = false;
+    DetermineIfSubtreeHasTopLayerElement();
     update_registration = true;
   }
 
@@ -1177,33 +1176,30 @@ void DisplayLockContext::DetermineIfSubtreeHasTopLayerElement() {
     return;
   }
 
-  // FlatTreeTraversal::ParentElement() below can trigger a pending slot
-  // assignment recalc, which may mutate Document::TopLayerElements() (for
-  // example by detaching a newly unslotted top-layer element's layout tree and
-  // removing its ::backdrop, or by forcing a style recalc that inserts pending
-  // ::backdrop pseudo-elements and reallocates the vector backing). Resolve
-  // pending slot assignments up front before iterating over TopLayerElements().
-  document_->GetSlotAssignmentEngine().RecalcSlotAssignments();
-  // RecalcSlotAssignments() can synchronously dispatch blur/focusout events
-  // when clearing an input's suggested value in a canvas subtree
-  // (crbug.com/574469802), which may disconnect |element_|.
-  if (!ConnectedToView()) {
-    return;
-  }
-
   ClearHasTopLayerElement();
 
-  // Iterate up the ancestor chain from each top layer element.
+  // Iterate up the ancestor chain from each top layer element. Make a copy of
+  // TopLayerElements() since FlatTreeTraversal::ParentElement() can trigger a
+  // pending slot assignment recalc, which may mutate
+  // Document::TopLayerElements() during iteration.
   // Note that this walk is searching for just the |element_| associated with
   // this lock. The walk in DisplayLockDocumentState walks from top layer
   // elements all the way to the ancestors searching for display locks, so if we
   // have nested display locks that walk is more optimal.
-  for (auto top_layer_element : document_->TopLayerElements()) {
+  HeapVector<Member<Element>> top_layer_elements =
+      document_->TopLayerElements();
+  for (auto& top_layer_element : top_layer_elements) {
     auto* ancestor = top_layer_element.Get();
     do {
       if (ancestor == element_) {
-        NotifyHasTopLayerElement();
-        return;
+        // FlatTreeTraversal::ParentElement() may change the top layer elements,
+        // and since we're iterating a copy we need to check that the element is
+        // still in the top layer.
+        if (top_layer_element->IsInTopLayer()) {
+          NotifyHasTopLayerElement();
+          return;
+        }
+        break;
       }
     } while ((ancestor = FlatTreeTraversal::ParentElement(*ancestor)));
   }
