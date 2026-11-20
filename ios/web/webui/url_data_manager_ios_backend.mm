@@ -478,17 +478,16 @@ void GetMimeTypeOnUI(URLDataSourceIOSImpl* source,
 
 namespace {
 
-class ChromeProtocolHandler
-    : public net::URLRequestJobFactory::ProtocolHandler {
+class WebUIProtocolHandler : public net::URLRequestJobFactory::ProtocolHandler {
  public:
   // `is_incognito` should be set for incognito profiles.
-  ChromeProtocolHandler(BrowserState* browser_state, bool is_incognito)
+  WebUIProtocolHandler(BrowserState* browser_state, bool is_incognito)
       : browser_state_(browser_state), is_incognito_(is_incognito) {}
 
-  ChromeProtocolHandler(const ChromeProtocolHandler&) = delete;
-  ChromeProtocolHandler& operator=(const ChromeProtocolHandler&) = delete;
+  WebUIProtocolHandler(const WebUIProtocolHandler&) = delete;
+  WebUIProtocolHandler& operator=(const WebUIProtocolHandler&) = delete;
 
-  ~ChromeProtocolHandler() override {}
+  ~WebUIProtocolHandler() override {}
 
   std::unique_ptr<net::URLRequestJob> CreateJob(
       net::URLRequest* request) const override {
@@ -530,7 +529,7 @@ URLDataManagerIOSBackend::~URLDataManagerIOSBackend() {
 std::unique_ptr<net::URLRequestJobFactory::ProtocolHandler>
 URLDataManagerIOSBackend::CreateProtocolHandler(BrowserState* browser_state) {
   DCHECK(browser_state);
-  return std::make_unique<ChromeProtocolHandler>(
+  return std::make_unique<WebUIProtocolHandler>(
       browser_state, browser_state->IsOffTheRecord());
 }
 
