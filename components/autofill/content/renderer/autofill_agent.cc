@@ -629,6 +629,7 @@ void AutofillAgent::Reset() {
   last_queried_element_id_ = {};
   is_popup_possibly_visible_ = false;
   form_cache_.Reset();
+  button_titles_cache_.clear();
   is_dom_content_loaded_ = false;
   select_option_change_batch_timer_.clear();
   datalist_option_change_batch_timer_.Stop();

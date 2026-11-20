@@ -390,6 +390,24 @@ TEST_F(AutofillAgentTest, ButtonTitlesNotExtractedForFormlessFields) {
   WaitForFormsSeen();
 }
 
+// Tests that cached button titles from a previous document are cleared on
+// navigation.
+TEST_F(AutofillAgentTest, ButtonTitlesCacheClearedOnNavigation) {
+  EXPECT_CALL(autofill_driver(), FormsSeen);
+  LoadHTML(
+      R"(<body>
+         <form id="f1">
+           <input type="text" id="t1">
+           <input type="submit" value="Submit" id="b1">
+         </form>
+         </body>)");
+  WaitForFormsSeen();
+  ASSERT_THAT(*autofill_agent().button_titles_cache(), SizeIs(1));
+
+  LoadHTML(R"(<body></body>)");
+  EXPECT_THAT(*autofill_agent().button_titles_cache(), IsEmpty());
+}
+
 using AutofillAgentShadowDomTest = AutofillAgentTest;
 
 // Tests that unassociated form control elements in a Shadow DOM tree that do
