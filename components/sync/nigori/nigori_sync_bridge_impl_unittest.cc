@@ -2417,6 +2417,129 @@ TEST_F(NigoriSyncBridgeImplTest,
 }
 
 TEST_F(NigoriSyncBridgeImplTest,
+       ShouldPreserveNullTimestampsWhenRestoringCustomPassphraseNigori) {
+  const KeyParamsForTesting kKeyParams =
+      Pbkdf2PassphraseKeyParamsForTesting("password");
+  EntityData entity_data;
+  *entity_data.specifics.mutable_nigori() =
+      BuildCustomPassphraseNigoriSpecifics(kKeyParams);
+  entity_data.specifics.mutable_nigori()->clear_custom_passphrase_time();
+  entity_data.specifics.mutable_nigori()->clear_keystore_migration_time();
+
+  ASSERT_THAT(bridge()->MergeFullSyncData(std::move(entity_data)),
+              Eq(std::nullopt));
+  bridge()->SetDecryptionPassphrase(kKeyParams.password);
+
+  MimicRestartWithLocalData(nigori_local_data());
+  EXPECT_CALL(*observer(), OnPassphraseTypeChanged(
+                               PassphraseType::kCustomPassphrase, NullTime()));
+  bridge()->NotifyInitialStateToObservers();
+  EXPECT_THAT(bridge()->GetKeystoreMigrationTime(), NullTime());
+  EXPECT_THAT(bridge()->GetDataForDebugging(),
+              HasCustomPassphraseNigoriWithoutTime());
+}
+
+TEST_F(NigoriSyncBridgeImplTest,
+       ShouldIgnoreZeroOrUnsetCustomPassphraseTimeOnRemoteTransition) {
+  const KeyParamsForTesting kKeyParams =
+      Pbkdf2PassphraseKeyParamsForTesting("password");
+  std::unique_ptr<CryptographerImpl> temp_cryptographer =
+      CryptographerImpl::FromSingleKeyForTesting(kKeyParams.password,
+                                                 kKeyParams.derivation_params);
+
+  EntityData implicit_entity;
+  *implicit_entity.specifics.mutable_nigori() =
+      sync_pb::NigoriSpecifics::default_instance();
+  *implicit_entity.specifics.mutable_nigori()->mutable_encryption_keybag() =
+      temp_cryptographer->ExportEncryptedKeyBag();
+  implicit_entity.specifics.mutable_nigori()->set_encrypt_everything(true);
+
+  ASSERT_TRUE(bridge()->SetKeystoreKeys({kRawKeystoreKey}));
+  ASSERT_THAT(bridge()->MergeFullSyncData(std::move(implicit_entity)),
+              Eq(std::nullopt));
+  bridge()->SetDecryptionPassphrase(kKeyParams.password);
+  ASSERT_EQ(PassphraseType::kImplicitPassphrase, bridge()->GetPassphraseType());
+
+  // Simulate legacy local data persisted by older Chrome versions that wrote 0
+  // for unset timestamps.
+  sync_pb::NigoriLocalData legacy_local_data = nigori_local_data();
+  legacy_local_data.mutable_nigori_model()->set_custom_passphrase_time(0);
+  legacy_local_data.mutable_nigori_model()->set_keystore_migration_time(0);
+  MimicRestartWithLocalData(legacy_local_data);
+
+  // Mimic a remote transition to `CUSTOM_PASSPHRASE` without
+  // `custom_passphrase_time` set.
+  EntityData custom_entity;
+  sync_pb::NigoriSpecifics* custom_specifics =
+      custom_entity.specifics.mutable_nigori();
+  *custom_specifics->mutable_encryption_keybag() =
+      temp_cryptographer->ExportEncryptedKeyBag();
+  custom_specifics->set_passphrase_type(
+      sync_pb::NigoriSpecifics::CUSTOM_PASSPHRASE);
+  custom_specifics->set_encrypt_everything(true);
+  custom_specifics->set_keybag_is_frozen(true);
+  custom_specifics->set_custom_passphrase_key_derivation_method(
+      sync_pb::NigoriSpecifics::PBKDF2_HMAC_SHA1_1003);
+
+  EXPECT_CALL(*observer(), OnPassphraseTypeChanged(
+                               PassphraseType::kCustomPassphrase, NullTime()));
+  ASSERT_THAT(bridge()->ApplyIncrementalSyncChanges(std::move(custom_entity)),
+              Eq(std::nullopt));
+  EXPECT_THAT(bridge()->GetDataForDebugging(),
+              HasCustomPassphraseNigoriWithoutTime());
+  EXPECT_THAT(bridge()->GetKeystoreMigrationTime(), NullTime());
+  EXPECT_FALSE(nigori_local_data().nigori_model().has_custom_passphrase_time());
+  EXPECT_FALSE(
+      nigori_local_data().nigori_model().has_keystore_migration_time());
+}
+
+TEST_F(NigoriSyncBridgeImplTest,
+       ShouldTreatZeroRemoteTimestampsAsNullInUpdateLocalState) {
+  const KeyParamsForTesting kKeyParams =
+      Pbkdf2PassphraseKeyParamsForTesting("password");
+  EntityData entity_data;
+  *entity_data.specifics.mutable_nigori() =
+      BuildCustomPassphraseNigoriSpecifics(kKeyParams);
+  entity_data.specifics.mutable_nigori()->set_custom_passphrase_time(0);
+  entity_data.specifics.mutable_nigori()->set_keystore_migration_time(0);
+
+  EXPECT_CALL(*observer(), OnPassphraseTypeChanged(
+                               PassphraseType::kCustomPassphrase, NullTime()));
+  ASSERT_THAT(bridge()->MergeFullSyncData(std::move(entity_data)),
+              Eq(std::nullopt));
+  EXPECT_THAT(bridge()->GetKeystoreMigrationTime(), NullTime());
+  EXPECT_FALSE(nigori_local_data().nigori_model().has_custom_passphrase_time());
+  EXPECT_FALSE(
+      nigori_local_data().nigori_model().has_keystore_migration_time());
+}
+
+TEST_F(NigoriSyncBridgeImplTest,
+       ShouldClearTimestampsWhenOmittedInRemoteUpdate) {
+  ASSERT_TRUE(PerformInitialSyncWithSimpleKeystoreNigori());
+  ASSERT_THAT(bridge()->GetKeystoreMigrationTime(), Not(NullTime()));
+
+  const KeyParamsForTesting kKeystoreKeyParams =
+      KeystoreKeyParamsForTesting(kRawKeystoreKey);
+  const KeyParamsForTesting kCustomPassphraseKeyParams =
+      Pbkdf2PassphraseKeyParamsForTesting("password");
+  EntityData custom_entity;
+  *custom_entity.specifics.mutable_nigori() =
+      BuildCustomPassphraseNigoriSpecifics(kCustomPassphraseKeyParams,
+                                           kKeystoreKeyParams);
+  custom_entity.specifics.mutable_nigori()->clear_keystore_migration_time();
+  custom_entity.specifics.mutable_nigori()->clear_custom_passphrase_time();
+
+  EXPECT_CALL(*observer(), OnPassphraseTypeChanged(
+                               PassphraseType::kCustomPassphrase, NullTime()));
+  ASSERT_THAT(bridge()->ApplyIncrementalSyncChanges(std::move(custom_entity)),
+              Eq(std::nullopt));
+  EXPECT_THAT(bridge()->GetKeystoreMigrationTime(), NullTime());
+  EXPECT_FALSE(nigori_local_data().nigori_model().has_custom_passphrase_time());
+  EXPECT_FALSE(
+      nigori_local_data().nigori_model().has_keystore_migration_time());
+}
+
+TEST_F(NigoriSyncBridgeImplTest,
        ShouldNotMigrateFromImplicitPassphraseUponRestartWithPendingKeys) {
   base::test::ScopedFeatureList feature_list(
       kSyncMigrateFromImplicitPassphrase);

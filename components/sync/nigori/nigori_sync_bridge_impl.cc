@@ -692,14 +692,16 @@ std::optional<ModelError> NigoriSyncBridgeImpl::UpdateLocalState(
       UpdatePassphraseType(new_passphrase_type, &state_.passphrase_type);
   DCHECK_NE(state_.passphrase_type, NigoriSpecifics::UNKNOWN);
 
-  if (specifics.has_custom_passphrase_time()) {
-    state_.custom_passphrase_time =
-        ProtoTimeToTime(specifics.custom_passphrase_time());
-  }
-  if (specifics.has_keystore_migration_time()) {
-    state_.keystore_migration_time =
-        ProtoTimeToTime(specifics.keystore_migration_time());
-  }
+  // Treat 0 (Unix epoch) as unset, as older clients could persist and commit
+  // `base::Time::UnixEpoch()` (0) for unset timestamps.
+  state_.custom_passphrase_time =
+      specifics.custom_passphrase_time() != 0
+          ? ProtoTimeToTime(specifics.custom_passphrase_time())
+          : base::Time();
+  state_.keystore_migration_time =
+      specifics.keystore_migration_time() != 0
+          ? ProtoTimeToTime(specifics.keystore_migration_time())
+          : base::Time();
 
   state_.trusted_vault_debug_info = specifics.trusted_vault_debug_info();
 

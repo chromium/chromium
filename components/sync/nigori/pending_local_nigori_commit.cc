@@ -226,10 +226,7 @@ class ImplicitPassphraseMigrator : public PendingLocalNigoriCommit {
           KeyDerivationParams::CreateForPbkdf2();
       // Leave `custom_passphrase_time` unset rather than `base::Time::Now()`
       // because this is an automatic migration and the timestamp is surfaced in
-      // UI as when the user set their passphrase. Explicit assignment to
-      // `base::Time()` is needed because `NigoriState::CreateFromLocalProto()`
-      // converts unset proto fields (0) into `base::Time::UnixEpoch()`, which
-      // is non-null.
+      // UI as when the user set their passphrase.
       state.custom_passphrase_time = base::Time();
       state.keystore_migration_time = base::Time();
     } else {
@@ -240,8 +237,6 @@ class ImplicitPassphraseMigrator : public PendingLocalNigoriCommit {
           /*enforce_key_continuity=*/false));
       state.passphrase_type = NigoriSpecifics::KEYSTORE_PASSPHRASE;
       state.keystore_migration_time = base::Time::Now();
-      // Reset in case `NigoriState::CreateFromLocalProto()` populated
-      // `base::Time::UnixEpoch()` from an unset proto field.
       state.custom_passphrase_time = base::Time();
     }
 

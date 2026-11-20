@@ -143,10 +143,17 @@ NigoriState NigoriState::CreateFromLocalProto(
   }
 
   state.passphrase_type = proto.passphrase_type();
-  state.keystore_migration_time =
-      ProtoTimeToTime(proto.keystore_migration_time());
-  state.custom_passphrase_time =
-      ProtoTimeToTime(proto.custom_passphrase_time());
+  // Treat 0 (Unix epoch) as unset to also heal local protos persisted by older
+  // versions, which converted unset fields to `base::Time::UnixEpoch()` and
+  // wrote them back as 0.
+  if (proto.keystore_migration_time() != 0) {
+    state.keystore_migration_time =
+        ProtoTimeToTime(proto.keystore_migration_time());
+  }
+  if (proto.custom_passphrase_time() != 0) {
+    state.custom_passphrase_time =
+        ProtoTimeToTime(proto.custom_passphrase_time());
+  }
   if (proto.has_custom_passphrase_key_derivation_params()) {
     state.custom_passphrase_key_derivation_params =
         CustomPassphraseKeyDerivationParamsFromProto(

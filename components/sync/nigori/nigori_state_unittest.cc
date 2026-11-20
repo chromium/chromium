@@ -264,6 +264,50 @@ TEST(NigoriStateTest,
   EXPECT_TRUE(state.NeedsGenerateCrossUserSharingKeyPair());
 }
 
+TEST(NigoriStateTest, ShouldKeepUnsetTimestampsNullInCreateFromLocalProto) {
+  sync_pb::NigoriModel nigori_model;
+  ASSERT_FALSE(nigori_model.has_keystore_migration_time());
+  ASSERT_FALSE(nigori_model.has_custom_passphrase_time());
+
+  NigoriState state = NigoriState::CreateFromLocalProto(nigori_model);
+  EXPECT_TRUE(state.keystore_migration_time.is_null());
+  EXPECT_TRUE(state.custom_passphrase_time.is_null());
+
+  sync_pb::NigoriModel round_tripped = state.ToLocalProto();
+  EXPECT_FALSE(round_tripped.has_keystore_migration_time());
+  EXPECT_FALSE(round_tripped.has_custom_passphrase_time());
+}
+
+TEST(NigoriStateTest, ShouldTreatZeroTimestampsAsNullInCreateFromLocalProto) {
+  sync_pb::NigoriModel nigori_model;
+  nigori_model.set_keystore_migration_time(0);
+  nigori_model.set_custom_passphrase_time(0);
+
+  NigoriState state = NigoriState::CreateFromLocalProto(nigori_model);
+  EXPECT_TRUE(state.keystore_migration_time.is_null());
+  EXPECT_TRUE(state.custom_passphrase_time.is_null());
+
+  sync_pb::NigoriModel round_tripped = state.ToLocalProto();
+  EXPECT_FALSE(round_tripped.has_keystore_migration_time());
+  EXPECT_FALSE(round_tripped.has_custom_passphrase_time());
+}
+
+TEST(NigoriStateTest, ShouldPreserveNonZeroTimestampsInCreateFromLocalProto) {
+  const base::Time kKeystoreMigrationTime =
+      base::Time::FromMillisecondsSinceUnixEpoch(123456);
+  const base::Time kCustomPassphraseTime =
+      base::Time::FromMillisecondsSinceUnixEpoch(789012);
+
+  NigoriState original_state;
+  original_state.keystore_migration_time = kKeystoreMigrationTime;
+  original_state.custom_passphrase_time = kCustomPassphraseTime;
+
+  NigoriState restored_state =
+      NigoriState::CreateFromLocalProto(original_state.ToLocalProto());
+  EXPECT_EQ(restored_state.keystore_migration_time, kKeystoreMigrationTime);
+  EXPECT_EQ(restored_state.custom_passphrase_time, kCustomPassphraseTime);
+}
+
 }  // namespace
 
 }  // namespace syncer
