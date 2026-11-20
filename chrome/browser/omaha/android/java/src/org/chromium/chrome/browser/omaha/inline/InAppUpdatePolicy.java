@@ -278,8 +278,8 @@ public final class InAppUpdatePolicy {
     }
 
     /**
-     * Records that the user declined to download an update, whether by dismissing the discovery
-     * snackbar, cancelling Play's consent dialog, or cancelling an in-progress download.
+     * Records that the user declined to download an update, whether by dismissing a discovery
+     * prompt, cancelling Play's consent dialog, or cancelling an in-progress download.
      */
     public static void recordUpdateDeclined() {
         writeTimestamp(PREF_KEY_DISCOVERY_BACKOFF);

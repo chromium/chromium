@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.omaha.inline;
 
 import android.app.Activity;
 
-import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ActivityState;
@@ -22,16 +21,12 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
 
 /**
- * Controller managing the in-app update snackbars (both discovery and restart prompts), which
- * notify the user that an update is available or ready to install.
+ * Controller managing the in-app update restart snackbar, which notifies the user that a downloaded
+ * update is ready to install.
  */
 @NullMarked
 final class InAppUpdateSnackbarController implements SnackbarController {
     private static final String TAG = "InAppUpdateFlow";
-
-    @VisibleForTesting
-    static final String HISTOGRAM_DISCOVERY_SNACKBAR_EVENT =
-            "Android.InAppUpdate.DiscoverySnackbar.Event";
 
     @VisibleForTesting
     static final String HISTOGRAM_RESTART_SNACKBAR_EVENT =
@@ -39,8 +34,6 @@ final class InAppUpdateSnackbarController implements SnackbarController {
 
     private final Activity mActivity;
     private final SnackbarManager mSnackbarManager;
-    private final String mHistogramName;
-    private final Runnable mOnDecline;
     private final Runnable mOnAccept;
     private final @Nullable Runnable mOnDismiss;
     private boolean mIsDismissedOnTeardown;
@@ -48,44 +41,12 @@ final class InAppUpdateSnackbarController implements SnackbarController {
     private InAppUpdateSnackbarController(
             Activity activity,
             SnackbarManager snackbarManager,
-            String histogramName,
-            Runnable onDecline,
             Runnable onAccept,
             @Nullable Runnable onDismiss) {
         mActivity = activity;
         mSnackbarManager = snackbarManager;
-        mHistogramName = histogramName;
-        mOnDecline = onDecline;
         mOnAccept = onAccept;
         mOnDismiss = onDismiss;
-    }
-
-    /**
-     * Displays the discovery snackbar if the activity is active and the snackbar manager is ready.
-     *
-     * @param activity The host activity for string resources and lifecycle checks.
-     * @param snackbarManager The manager to display the snackbar on.
-     * @param onAccept Callback invoked when the user taps the action button ("Update").
-     * @param onDismiss Optional callback invoked when the snackbar is dismissed without action
-     *     (e.g. timeout, swipe, or activity stopped/finishing). Excludes explicit teardown via
-     *     {@link #dismiss()}.
-     * @return The active controller instance, or {@code null} if the snackbar was not shown.
-     */
-    static @Nullable InAppUpdateSnackbarController showDiscovery(
-            Activity activity,
-            SnackbarManager snackbarManager,
-            Runnable onAccept,
-            @Nullable Runnable onDismiss) {
-        return show(
-                activity,
-                snackbarManager,
-                R.string.in_app_update_discovery_title,
-                R.string.in_app_update_discovery_action,
-                Snackbar.UMA_IN_APP_UPDATE_DISCOVERY,
-                HISTOGRAM_DISCOVERY_SNACKBAR_EVENT,
-                InAppUpdatePolicy::recordUpdateDeclined,
-                onAccept,
-                onDismiss);
     }
 
     /**
@@ -104,38 +65,6 @@ final class InAppUpdateSnackbarController implements SnackbarController {
             SnackbarManager snackbarManager,
             Runnable onAccept,
             @Nullable Runnable onDismiss) {
-        return show(
-                activity,
-                snackbarManager,
-                R.string.in_app_update_restart_title,
-                R.string.in_app_update_restart_action,
-                Snackbar.UMA_IN_APP_UPDATE_RESTART,
-                HISTOGRAM_RESTART_SNACKBAR_EVENT,
-                InAppUpdatePolicy::recordRestartDeclined,
-                onAccept,
-                onDismiss);
-    }
-
-    /**
-     * Records that the discovery snackbar was not shown because other UI was on screen.
-     *
-     * @param reason One of the {@code SKIPPED_*} values of {@link InAppUpdateSnackbarEvent}.
-     */
-    static void recordDiscoverySkipped(@InAppUpdateSnackbarEvent int reason) {
-        RecordHistogram.recordEnumeratedHistogram(
-                HISTOGRAM_DISCOVERY_SNACKBAR_EVENT, reason, InAppUpdateSnackbarEvent.COUNT);
-    }
-
-    private static @Nullable InAppUpdateSnackbarController show(
-            Activity activity,
-            SnackbarManager snackbarManager,
-            @StringRes int titleResId,
-            @StringRes int actionResId,
-            int umaId,
-            String histogramName,
-            Runnable onDecline,
-            Runnable onAccept,
-            @Nullable Runnable onDismiss) {
         ThreadUtils.assertOnUiThread();
         if (activity.isFinishing()
                 || activity.isDestroyed()
@@ -146,20 +75,22 @@ final class InAppUpdateSnackbarController implements SnackbarController {
             return null;
         }
 
-        Log.i(TAG, "Showing in-app update snackbar for histogram: %s", histogramName);
+        Log.i(TAG, "Showing in-app update restart snackbar.");
         RecordHistogram.recordEnumeratedHistogram(
-                histogramName, InAppUpdateSnackbarEvent.IMPRESSION, InAppUpdateSnackbarEvent.COUNT);
+                HISTOGRAM_RESTART_SNACKBAR_EVENT,
+                InAppUpdateSnackbarEvent.IMPRESSION,
+                InAppUpdateSnackbarEvent.COUNT);
 
         InAppUpdateSnackbarController controller =
-                new InAppUpdateSnackbarController(
-                        activity, snackbarManager, histogramName, onDecline, onAccept, onDismiss);
+                new InAppUpdateSnackbarController(activity, snackbarManager, onAccept, onDismiss);
         Snackbar snackbar =
                 Snackbar.make(
-                        activity.getString(titleResId),
+                        activity.getString(R.string.in_app_update_restart_title),
                         controller,
                         Snackbar.TYPE_NOTIFICATION,
-                        umaId);
-        snackbar.setAction(activity.getString(actionResId), /* actionData= */ null);
+                        Snackbar.UMA_IN_APP_UPDATE_RESTART);
+        snackbar.setAction(
+                activity.getString(R.string.in_app_update_restart_action), /* actionData= */ null);
         snackbar.setDefaultLines(false);
         snackbar.setDuration(SnackbarManager.DEFAULT_SNACKBAR_DURATION_LONG_MS);
         snackbarManager.showSnackbar(snackbar);
@@ -171,9 +102,9 @@ final class InAppUpdateSnackbarController implements SnackbarController {
         if (mIsDismissedOnTeardown) {
             return;
         }
-        Log.i(TAG, "In-app update snackbar action tapped for histogram: %s", mHistogramName);
+        Log.i(TAG, "In-app update restart snackbar action tapped.");
         RecordHistogram.recordEnumeratedHistogram(
-                mHistogramName,
+                HISTOGRAM_RESTART_SNACKBAR_EVENT,
                 InAppUpdateSnackbarEvent.ACTION_TAPPED,
                 InAppUpdateSnackbarEvent.COUNT);
         mOnAccept.run();
@@ -185,12 +116,9 @@ final class InAppUpdateSnackbarController implements SnackbarController {
             return;
         }
         if (isActivityFinishingOrStopped()) {
-            Log.i(
-                    TAG,
-                    "In-app update snackbar dismissed by lifecycle for histogram: %s",
-                    mHistogramName);
+            Log.i(TAG, "In-app update restart snackbar dismissed by lifecycle.");
             RecordHistogram.recordEnumeratedHistogram(
-                    mHistogramName,
+                    HISTOGRAM_RESTART_SNACKBAR_EVENT,
                     InAppUpdateSnackbarEvent.DISMISSED_BY_LIFECYCLE,
                     InAppUpdateSnackbarEvent.COUNT);
             if (mOnDismiss != null) {
@@ -203,15 +131,12 @@ final class InAppUpdateSnackbarController implements SnackbarController {
         // foreground preemptions (e.g. REPLACED_BY_ACTION_SNACKBAR) cannot be distinguished from
         // user timeouts or swiping. Plumbing @DismissalReason into SnackbarController would allow
         // suppressing the decline backoff on preemption.
-        Log.i(
-                TAG,
-                "In-app update snackbar dismissed without action for histogram: %s",
-                mHistogramName);
+        Log.i(TAG, "In-app update restart snackbar dismissed without action.");
         RecordHistogram.recordEnumeratedHistogram(
-                mHistogramName,
+                HISTOGRAM_RESTART_SNACKBAR_EVENT,
                 InAppUpdateSnackbarEvent.DISMISSED_NO_ACTION,
                 InAppUpdateSnackbarEvent.COUNT);
-        mOnDecline.run();
+        InAppUpdatePolicy.recordRestartDeclined();
         if (mOnDismiss != null) {
             mOnDismiss.run();
         }

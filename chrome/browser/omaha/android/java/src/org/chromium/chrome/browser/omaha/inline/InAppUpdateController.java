@@ -29,9 +29,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
-import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -108,17 +105,6 @@ public class InAppUpdateController {
 
     @VisibleForTesting
     public static final String HISTOGRAM_APP_MENU_ACTION = "Android.InAppUpdate.AppMenu.Action";
-
-    @VisibleForTesting
-    static final String HISTOGRAM_DISCOVERY_STALENESS_DAYS =
-            "Android.InAppUpdate.Discovery.StalenessDays";
-
-    /**
-     * Exclusive upper bound for {@link #HISTOGRAM_DISCOVERY_STALENESS_DAYS}. Values of 0-90 days
-     * get their own bucket so that thresholds in the range being considered can be compared
-     * precisely; anything older is grouped into the overflow bucket.
-     */
-    @VisibleForTesting static final int MAX_DISCOVERY_STALENESS_DAYS = 91;
 
     @VisibleForTesting
     static final String PARAM_RESUME_COOLDOWN_MINUTES = "resume_cooldown_minutes";
@@ -226,20 +212,10 @@ public class InAppUpdateController {
     /** Host Activity context for Play Core IPC, dialogs, and lifecycle checks. */
     private final Activity mActivity;
 
-    /** Supplier for {@link SnackbarManager}, used when showing in-app update snackbars. */
-    private final Supplier<@Nullable SnackbarManager> mSnackbarManagerSupplier;
-
     /**
-     * Whether a startup promo was shown in this activity session. Supplies null until the startup
-     * promo flow has run.
+     * Supplier for {@link SnackbarManager}, used when showing the in-app update restart snackbar.
      */
-    private final Supplier<@Nullable Boolean> mPromoShownSupplier;
-
-    /** Supplier for the {@link BottomSheetController}, used to avoid showing over a sheet. */
-    private final Supplier<@Nullable BottomSheetController> mBottomSheetControllerSupplier;
-
-    /** Supplier for the {@link ModalDialogManager}, used to avoid showing behind a dialog. */
-    private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
+    private final Supplier<@Nullable SnackbarManager> mSnackbarManagerSupplier;
 
     /** Lazily created Play Core manager instance. */
     private @Nullable AppUpdateManager mAppUpdateManager;
@@ -250,9 +226,6 @@ public class InAppUpdateController {
      * prevent leaking the host Activity across configuration changes.
      */
     private @Nullable InstallStateUpdatedListener mInstallListener;
-
-    /** Active discovery snackbar controller. Non-null while the discovery snackbar is displayed. */
-    private @Nullable InAppUpdateSnackbarController mDiscoverySnackbarController;
 
     /** Active restart snackbar controller. Non-null while the restart snackbar is displayed. */
     private @Nullable InAppUpdateSnackbarController mRestartSnackbarController;
@@ -285,23 +258,11 @@ public class InAppUpdateController {
      * @param activity The host {@link Activity}.
      * @param snackbarManagerSupplier Supplier for the {@link SnackbarManager} to display UI
      *     prompts.
-     * @param promoShownSupplier Whether a startup promo was shown in this activity session, or null
-     *     if the startup promo flow has not run yet.
-     * @param bottomSheetControllerSupplier Supplier for the activity's {@link
-     *     BottomSheetController}.
-     * @param modalDialogManagerSupplier Supplier for the activity's {@link ModalDialogManager}.
      */
     public InAppUpdateController(
-            Activity activity,
-            Supplier<@Nullable SnackbarManager> snackbarManagerSupplier,
-            Supplier<@Nullable Boolean> promoShownSupplier,
-            Supplier<@Nullable BottomSheetController> bottomSheetControllerSupplier,
-            Supplier<ModalDialogManager> modalDialogManagerSupplier) {
+            Activity activity, Supplier<@Nullable SnackbarManager> snackbarManagerSupplier) {
         mActivity = activity;
         mSnackbarManagerSupplier = snackbarManagerSupplier;
-        mPromoShownSupplier = promoShownSupplier;
-        mBottomSheetControllerSupplier = bottomSheetControllerSupplier;
-        mModalDialogManagerSupplier = modalDialogManagerSupplier;
     }
 
     /**
@@ -316,10 +277,6 @@ public class InAppUpdateController {
         mIsDestroyed = true;
         mIsFlowStarting = false;
         unregisterInstallListener();
-        if (mDiscoverySnackbarController != null) {
-            mDiscoverySnackbarController.dismiss();
-            mDiscoverySnackbarController = null;
-        }
         if (mRestartSnackbarController != null) {
             mRestartSnackbarController.dismiss();
             mRestartSnackbarController = null;
@@ -365,19 +322,15 @@ public class InAppUpdateController {
      * Primary entry point invoked during deferred post-startup initialization.
      *
      * <p>Checks eligibility via {@link InAppUpdatePolicy#isEligible}, queries Google Play Core
-     * asynchronously for update availability, and reacts based on the returned install status:
+     * asynchronously for update status, and reacts based on the returned install status:
      *
      * <ul>
      *   <li>If downloading or pending: Registers an {@link InstallStateUpdatedListener} to resume
      *       monitoring progress.
-     *   <li>If already downloaded: Evaluates {@link InAppUpdatePolicy#isRestartPromptAllowed} and
-     *       displays the restart snackbar if allowed. Notice that discovery throttle is NOT checked
-     *       here; declining a download does not suppress restarting an already staged update.
-     *   <li>If an update is available: Verifies that {@link AppUpdateType#FLEXIBLE} is allowed by
-     *       Play Core, that discovery is not throttled via {@link
-     *       InAppUpdatePolicy#isDiscoveryPromptAllowed}, and that the update has been available
-     *       long enough via {@link InAppUpdatePolicy#isStalenessThresholdMet}, then displays the
-     *       discovery snackbar.
+     *   <li>If already downloaded: Starts {@link InAppUpdateRestartScheduler}, evaluates {@link
+     *       InAppUpdatePolicy#isRestartPromptAllowed}, and displays the restart snackbar if
+     *       allowed. Notice that discovery throttle is NOT checked here; declining a download does
+     *       not suppress restarting an already staged update.
      * </ul>
      */
     public void checkAndStartUpdateFlow() {
@@ -402,77 +355,7 @@ public class InAppUpdateController {
                             if (isDestroyedFinishingOrChangingConfigurations()) {
                                 return;
                             }
-                            int rawInstallStatus = appUpdateInfo.installStatus();
-                            InAppUpdatePolicy.setUpdateDownloaded(
-                                    rawInstallStatus == InstallStatus.DOWNLOADED);
-                            int rawAvailability = appUpdateInfo.updateAvailability();
-
-                            // Case 1: Download already in progress. Attach listener to observe
-                            // completion.
-                            if (rawInstallStatus == InstallStatus.DOWNLOADING
-                                    || rawInstallStatus == InstallStatus.PENDING) {
-                                Log.i(
-                                        TAG,
-                                        "checkAndStartUpdateFlow: Update downloading/pending ->"
-                                                + " registering listener.");
-                                registerInstallListener();
-                                return;
-                            }
-
-                            // Case 2: Update already downloaded and staged on disk. Check restart
-                            // throttle (asymmetric: discovery backoff does not suppress restart).
-                            if (rawInstallStatus == InstallStatus.DOWNLOADED) {
-                                InAppUpdateRestartScheduler.getInstance().start();
-                                if (InAppUpdatePolicy.isRestartPromptAllowed(mActivity)) {
-                                    showRestartSnackbar();
-                                }
-                                return;
-                            }
-
-                            // Case 3: Update available. Allow command-line force switch override
-                            // for local testing.
-                            int updateAvailability = rawAvailability;
-                            if (InAppUpdatePolicy.isForceUpdate()
-                                    && updateAvailability != UpdateAvailability.UPDATE_AVAILABLE) {
-                                updateAvailability = UpdateAvailability.UPDATE_AVAILABLE;
-                            }
-
-                            if (updateAvailability == UpdateAvailability.UPDATE_AVAILABLE) {
-                                // Strictly verify Flexible flow support: Chrome only supports
-                                // non-blocking background downloads.
-                                boolean flexAllowedByPlayCore =
-                                        appUpdateInfo.isUpdateTypeAllowed(
-                                                AppUpdateOptions.defaultOptions(
-                                                        AppUpdateType.FLEXIBLE));
-                                if (!flexAllowedByPlayCore && InAppUpdatePolicy.isForceUpdate()) {
-                                    Log.w(
-                                            TAG,
-                                            "Force update active: overriding Play Core flexible"
-                                                    + " check.");
-                                }
-                                boolean isFlexAllowed =
-                                        flexAllowedByPlayCore || InAppUpdatePolicy.isForceUpdate();
-                                if (isFlexAllowed) {
-                                    // Check discovery throttle: suppressed if user declined a
-                                    // recent prompt or if a recent download failed. Also skip
-                                    // updates younger than the staleness threshold, since Play
-                                    // auto-update usually installs those without a prompt.
-                                    if (InAppUpdatePolicy.isDiscoveryPromptAllowed(mActivity)
-                                            && InAppUpdatePolicy.isStalenessThresholdMet(
-                                                    appUpdateInfo.clientVersionStalenessDays())) {
-                                        Log.i(
-                                                TAG,
-                                                "checkAndStartUpdateFlow: Flexible update available"
-                                                        + " -> showing discovery snackbar.");
-                                        showDiscoverySnackbar(appUpdateInfo);
-                                    }
-                                } else {
-                                    Log.w(
-                                            TAG,
-                                            "checkAndStartUpdateFlow: Flexible update type not"
-                                                    + " allowed by Play Core.");
-                                }
-                            }
+                            handleInstallStatus(appUpdateInfo);
                         })
                 .addOnFailureListener(
                         mActivity,
@@ -485,110 +368,31 @@ public class InAppUpdateController {
                         });
     }
 
+    /**
+     * Persists the downloaded state and reacts to an in-progress or already-downloaded update by
+     * either registering the install listener or scheduling/prompting a restart.
+     */
+    private void handleInstallStatus(AppUpdateInfo appUpdateInfo) {
+        int installStatus = appUpdateInfo.installStatus();
+        InAppUpdatePolicy.setUpdateDownloaded(installStatus == InstallStatus.DOWNLOADED);
+
+        if (installStatus == InstallStatus.DOWNLOADING || installStatus == InstallStatus.PENDING) {
+            Log.i(TAG, "Update downloading/pending -> registering listener.");
+            registerInstallListener();
+        } else if (installStatus == InstallStatus.DOWNLOADED) {
+            // Restart prompt is evaluated asymmetrically: discovery backoff does not suppress
+            // restarting an already-staged update.
+            InAppUpdateRestartScheduler.getInstance().start();
+            if (InAppUpdatePolicy.isRestartPromptAllowed(mActivity)) {
+                showRestartSnackbar();
+            }
+        }
+    }
+
     /** Records the outcome of an update download operation to UMA. */
     private static void logDownloadResult(@DownloadResult int result) {
         RecordHistogram.recordEnumeratedHistogram(
                 HISTOGRAM_DOWNLOAD_RESULT, result, DownloadResult.COUNT);
-    }
-
-    /**
-     * Displays the discovery snackbar notifying the user that an update is available.
-     *
-     * <p>If the user accepts the snackbar action ("Update"), {@link #startFlow(AppUpdateInfo, int)}
-     * is invoked to launch the Play Core consent dialog. If dismissed without action, {@link
-     * InAppUpdateSnackbarController} internally records a discovery decline via {@link
-     * InAppUpdatePolicy#recordUpdateDeclined()}. Not shown while other UI is competing for
-     * attention; see {@link #getDiscoverySkipReason}.
-     *
-     * @param appUpdateInfo Current update metadata from Play Core.
-     */
-    private void showDiscoverySnackbar(AppUpdateInfo appUpdateInfo) {
-        // Guard against duplicate prompts, active restart prompts, and destroyed activity state.
-        if (mDiscoverySnackbarController != null
-                || mRestartSnackbarController != null
-                || isDestroyedFinishingOrChangingConfigurations()) {
-            return;
-        }
-
-        SnackbarManager snackbarManager = getSnackbarManager();
-        if (snackbarManager == null) {
-            return;
-        }
-
-        Integer skipReason = getDiscoverySkipReason();
-        if (skipReason != null) {
-            Log.i(TAG, "Skipping discovery snackbar (reason=%d).", skipReason);
-            InAppUpdateSnackbarController.recordDiscoverySkipped(skipReason);
-            return;
-        }
-
-        mDiscoverySnackbarController =
-                InAppUpdateSnackbarController.showDiscovery(
-                        mActivity,
-                        snackbarManager,
-                        () -> {
-                            // User clicked "Update": clear reference and trigger flexible flow.
-                            mDiscoverySnackbarController = null;
-                            startFlow(appUpdateInfo, AppUpdateType.FLEXIBLE);
-                        },
-                        () -> {
-                            // Snackbar dismissed (timeout or swipe): clear reference.
-                            mDiscoverySnackbarController = null;
-                        });
-        if (mDiscoverySnackbarController != null) {
-            recordDiscoveryStaleness(appUpdateInfo.clientVersionStalenessDays());
-        }
-    }
-
-    /**
-     * Returns why the discovery snackbar should yield to other UI, or null if it can be shown.
-     *
-     * <p>The discovery snackbar isn't urgent and is offered again on the next cold start, so it
-     * gives way to a startup promo and to any dialog or bottom sheet already on screen, where it
-     * would be easy to miss. A skip records no cooldown and no impression.
-     *
-     * <p>Another snackbar on screen is not a reason to skip: {@link SnackbarManager} queues this
-     * one behind it and starts its timeout once it becomes visible.
-     *
-     * @return An {@link InAppUpdateSnackbarEvent} {@code SKIPPED_*} value, or null.
-     */
-    private @InAppUpdateSnackbarEvent @Nullable Integer getDiscoverySkipReason() {
-        // The flag is null until the startup promo flow has run. Nothing orders that flow before
-        // this check, so in rare cases a promo can still appear after the snackbar is shown; if
-        // the snackbar then times out it counts as a decline and starts the discovery backoff.
-        // Treating null as "no promo" accepts that gap rather than delaying the snackbar.
-        if (Boolean.TRUE.equals(mPromoShownSupplier.get())) {
-            return InAppUpdateSnackbarEvent.SKIPPED_STARTUP_PROMO;
-        }
-        if (mModalDialogManagerSupplier.get().isShowing()) {
-            return InAppUpdateSnackbarEvent.SKIPPED_MODAL_DIALOG;
-        }
-        // Any state other than hidden counts, including PEEK and SCROLLING: the sheet occupies the
-        // bottom edge where the snackbar appears. isSheetOpen() isn't used because it excludes a
-        // peeking sheet. NONE means no sheet content has been requested yet.
-        BottomSheetController bottomSheetController = mBottomSheetControllerSupplier.get();
-        if (bottomSheetController != null) {
-            int sheetState = bottomSheetController.getSheetState();
-            if (sheetState != SheetState.NONE && sheetState != SheetState.HIDDEN) {
-                return InAppUpdateSnackbarEvent.SKIPPED_BOTTOM_SHEET;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Records how long the update had been available when the discovery snackbar was shown, which
-     * shows how many prompts a given {@code prompt_min_staleness_days} threshold would keep.
-     *
-     * <p>Nothing is recorded when Play does not report staleness. Comparing this histogram's total
-     * with the discovery snackbar impressions gives the share of prompts with unknown staleness.
-     */
-    private static void recordDiscoveryStaleness(@Nullable Integer stalenessDays) {
-        if (stalenessDays == null) {
-            return;
-        }
-        RecordHistogram.recordExactLinearHistogram(
-                HISTOGRAM_DISCOVERY_STALENESS_DAYS, stalenessDays, MAX_DISCOVERY_STALENESS_DAYS);
     }
 
     /**
@@ -616,11 +420,6 @@ public class InAppUpdateController {
         }
 
         Log.i(TAG, "Showing restart snackbar.");
-
-        if (mDiscoverySnackbarController != null) {
-            mDiscoverySnackbarController.dismiss();
-            mDiscoverySnackbarController = null;
-        }
 
         mRestartSnackbarController =
                 InAppUpdateSnackbarController.showRestart(
@@ -786,10 +585,6 @@ public class InAppUpdateController {
         return mInstallListener;
     }
 
-    @Nullable InAppUpdateSnackbarController getDiscoverySnackbarControllerForTesting() {
-        return mDiscoverySnackbarController;
-    }
-
     @Nullable InAppUpdateSnackbarController getRestartSnackbarControllerForTesting() {
         return mRestartSnackbarController;
     }
@@ -883,8 +678,8 @@ public class InAppUpdateController {
      *       {@link InstallStateUpdatedListener} is registered to catch download completion.
      * </ul>
      *
-     * <p>Note: Discovery prompts are deliberately not initiated here; they are restricted to
-     * deferred startup and manual menu invocation to prevent interrupting resuming users.
+     * <p>Note: New update flows are not initiated here; this only monitors in-progress downloads or
+     * prompts to restart already-downloaded updates.
      */
     public void onResume() {
         ThreadUtils.assertOnUiThread();
@@ -913,18 +708,7 @@ public class InAppUpdateController {
                             if (isDestroyedFinishingOrChangingConfigurations()) {
                                 return;
                             }
-                            int status = appUpdateInfo.installStatus();
-                            InAppUpdatePolicy.setUpdateDownloaded(
-                                    status == InstallStatus.DOWNLOADED);
-                            if (status == InstallStatus.DOWNLOADING
-                                    || status == InstallStatus.PENDING) {
-                                registerInstallListener();
-                            } else if (status == InstallStatus.DOWNLOADED) {
-                                InAppUpdateRestartScheduler.getInstance().start();
-                                if (InAppUpdatePolicy.isRestartPromptAllowed(mActivity)) {
-                                    showRestartSnackbar();
-                                }
-                            }
+                            handleInstallStatus(appUpdateInfo);
                         })
                 .addOnFailureListener(
                         mActivity,
@@ -944,10 +728,6 @@ public class InAppUpdateController {
     public void onMenuItemClicked(@Nullable Runnable fallback) {
         if (isDestroyedFinishingOrChangingConfigurations()) {
             return;
-        }
-        if (mDiscoverySnackbarController != null) {
-            mDiscoverySnackbarController.dismiss();
-            mDiscoverySnackbarController = null;
         }
         if (mIsFlowStarting) {
             Log.i(

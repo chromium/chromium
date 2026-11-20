@@ -2959,30 +2959,11 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records how many days the available update had been known to Google Play on
-    this device (AppUpdateInfo.clientVersionStalenessDays()) when the in-app
-    update Discovery Snackbar was shown in Chrome for Android. Recorded at the
-    same point as the Impression bucket of
-    Android.InAppUpdate.DiscoverySnackbar.Event. Not recorded when Play does not
-    report staleness, so the difference between the two totals is the number of
-    prompts with unknown staleness. Values of 91 days or more are recorded in
-    the overflow bucket.
-  </summary>
-</histogram>
-
-<histogram name="Android.InAppUpdate.DiscoverySnackbar.Event"
-    enum="InAppUpdateSnackbarEvent" expires_after="2027-03-10">
-  <owner>vakh@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records impressions and interactions with the in-app update Discovery
-    Snackbar in Chrome for Android, tracking whether the snackbar was shown,
-    tapped by the user to start a flexible download, dismissed without action,
-    or dismissed by lifecycle interruption. Note: Impression is recorded when
-    the snackbar is enqueued with SnackbarManager. The Skipped buckets record
-    that the snackbar was eligible but not shown because a startup promo had
-    been shown in this session or a modal dialog or bottom sheet was on screen;
-    a skip starts no cooldown, so the snackbar is offered again on the next cold
-    start.
+    this device (AppUpdateInfo.clientVersionStalenessDays()) when an in-app
+    update discovery prompt was shown in Chrome for Android. Recorded at the
+    same point as the discovery prompt impression, and not recorded when Play
+    does not report staleness. Values of 91 days or more are recorded in the
+    overflow bucket.
   </summary>
 </histogram>
 
@@ -3012,9 +2993,8 @@ chromium-metrics-reviews@google.com.
     background update finished downloading, tapped by the user to restart
     Chrome, dismissed without action, or dismissed by lifecycle interruption.
     Note: Impression is recorded when the snackbar is enqueued with
-    SnackbarManager. This histogram shares its enum with
-    Android.InAppUpdate.DiscoverySnackbar.Event. The Skipped values are recorded
-    only there and are always zero here.
+    SnackbarManager. The obsolete Skipped enum buckets belonged to the removed
+    discovery snackbar and are never recorded here.
   </summary>
 </histogram>
 

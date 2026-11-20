@@ -2064,13 +2064,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         }
         if (mInAppUpdateController == null
                 && ChromeFeatureList.isEnabled(ChromeFeatureList.IN_APP_UPDATE_FLOW)) {
-            mInAppUpdateController =
-                    new InAppUpdateController(
-                            mActivity,
-                            mSnackbarManagerSupplier,
-                            mPromoShownOneshotSupplier,
-                            this::getBottomSheetController,
-                            mModalDialogManagerSupplier);
+            mInAppUpdateController = new InAppUpdateController(mActivity, mSnackbarManagerSupplier);
         }
         return mInAppUpdateController;
     }

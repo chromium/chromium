@@ -12,7 +12,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
@@ -66,13 +65,11 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omaha.R;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.gms.ChromiumPlayServicesAvailability;
-import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 
 /**
  * Sociable module-level tests for the in-app update flow, testing {@link InAppUpdateController},
@@ -90,17 +87,12 @@ public class InAppUpdateControllerTest {
 
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private InAppUpdateRestartScheduler mMockRestartScheduler;
-    @Mock private BottomSheetController mBottomSheetController;
-    @Mock private ModalDialogManager mModalDialogManager;
     @Captor private ArgumentCaptor<Snackbar> mSnackbarCaptor;
     @Captor private ArgumentCaptor<OnSuccessListener<AppUpdateInfo>> mUpdateInfoSuccessCaptor;
 
     private ActivityController<Activity> mActivityController;
     private Activity mActivity;
     private FakeAppUpdateManager mFakeAppUpdateManager;
-
-    /** Value returned by the startup promo supplier; null means the promo flow hasn't run. */
-    private Boolean mPromoShown;
 
     @Before
     public void setUp() {
@@ -112,7 +104,6 @@ public class InAppUpdateControllerTest {
         ChromiumPlayServicesAvailability.setIsAvailableForTesting(true);
         InAppUpdatePolicy.setIsOfficialBuildForTesting(true);
         lenient().when(mSnackbarManager.canShowSnackbar()).thenReturn(true);
-        lenient().when(mBottomSheetController.getSheetState()).thenReturn(SheetState.HIDDEN);
 
         mFakeAppUpdateManager = new FakeAppUpdateManager(mActivity);
         InAppUpdateController.setAppUpdateManagerForTesting(mFakeAppUpdateManager);
@@ -134,20 +125,15 @@ public class InAppUpdateControllerTest {
     }
 
     private InAppUpdateController createController(Activity activity) {
-        return new InAppUpdateController(
-                activity,
-                () -> mSnackbarManager,
-                () -> mPromoShown,
-                () -> mBottomSheetController,
-                () -> mModalDialogManager);
+        return new InAppUpdateController(activity, () -> mSnackbarManager);
     }
 
     private void setupUpdateAvailable() {
         mFakeAppUpdateManager.setUpdateAvailable(999999, AppUpdateType.FLEXIBLE);
     }
 
-    private void setupUpdateDownloaded() {
-        mFakeAppUpdateManager.setUpdateAvailable(999999, AppUpdateType.FLEXIBLE);
+    private void setupUpdateDownloading() {
+        setupUpdateAvailable();
         AppUpdateInfo info = mFakeAppUpdateManager.getAppUpdateInfo().getResult();
         mFakeAppUpdateManager.startUpdateFlowForResult(
                 info,
@@ -156,14 +142,16 @@ public class InAppUpdateControllerTest {
                 InAppUpdateController.REQUEST_CODE_IN_APP_UPDATE);
         mFakeAppUpdateManager.userAcceptsUpdate();
         mFakeAppUpdateManager.downloadStarts();
+    }
+
+    private void setupUpdateDownloaded() {
+        setupUpdateDownloading();
         mFakeAppUpdateManager.downloadCompletes();
     }
 
-    private AppUpdateManager setMockManagerReporting(
-            @InstallStatus int installStatus, @UpdateAvailability int availability) {
+    private AppUpdateManager setMockManagerReporting(@InstallStatus int installStatus) {
         AppUpdateInfo mockInfo = mock(AppUpdateInfo.class);
         when(mockInfo.installStatus()).thenReturn(installStatus);
-        when(mockInfo.updateAvailability()).thenReturn(availability);
         AppUpdateManager mockManager = mock(AppUpdateManager.class);
         when(mockManager.getAppUpdateInfo()).thenReturn(Tasks.forResult(mockInfo));
         InAppUpdateController.setAppUpdateManagerForTesting(mockManager);
@@ -172,33 +160,125 @@ public class InAppUpdateControllerTest {
 
     private TaskCompletionSource<Void> setupDownloadedWithPendingCompleteUpdate() {
         TaskCompletionSource<Void> source = new TaskCompletionSource<>();
-        AppUpdateInfo mockInfo = mock(AppUpdateInfo.class);
-        when(mockInfo.installStatus()).thenReturn(InstallStatus.DOWNLOADED);
-        AppUpdateManager mockManager = mock(AppUpdateManager.class);
-        when(mockManager.getAppUpdateInfo()).thenReturn(Tasks.forResult(mockInfo));
+        AppUpdateManager mockManager = setMockManagerReporting(InstallStatus.DOWNLOADED);
         when(mockManager.completeUpdate()).thenReturn(source.getTask());
-        InAppUpdateController.setAppUpdateManagerForTesting(mockManager);
         return source;
     }
 
     private void startFlexibleDownload(InAppUpdateController controller) {
         setupUpdateAvailable();
-        controller.checkAndStartUpdateFlow();
+        controller.onMenuItemClicked(null);
         ShadowLooper.idleMainLooper();
-        verify(mSnackbarManager, atLeastOnce()).showSnackbar(mSnackbarCaptor.capture());
-        mSnackbarCaptor.getValue().getController().onAction(null);
         mFakeAppUpdateManager.userAcceptsUpdate();
         mFakeAppUpdateManager.downloadStarts();
     }
 
+    private void withConfigurationChangingActivity(Consumer<ConfigurationChangingActivity> test) {
+        ActivityController<ConfigurationChangingActivity> activityController =
+                Robolectric.buildActivity(ConfigurationChangingActivity.class).setup();
+        try {
+            ConfigurationChangingActivity activity = activityController.get();
+            ApplicationStatus.onStateChangeForTesting(activity, ActivityState.RESUMED);
+            test.accept(activity);
+        } finally {
+            activityController.destroy();
+        }
+    }
+
+    @FunctionalInterface
+    private interface StartFlowStub {
+        void configure(AppUpdateManager mockManager) throws Exception;
+    }
+
+    private void assertMenuStartFlowFailure(
+            StartFlowStub stub, @InAppUpdateController.DownloadResult int expectedResult)
+            throws Exception {
+        setupUpdateAvailable();
+        AppUpdateInfo info = mFakeAppUpdateManager.getAppUpdateInfo().getResult();
+
+        AppUpdateManager mockManager = mock(AppUpdateManager.class);
+        when(mockManager.getAppUpdateInfo()).thenReturn(Tasks.forResult(info));
+        stub.configure(mockManager);
+        InAppUpdateController.setAppUpdateManagerForTesting(mockManager);
+
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                InAppUpdateController.HISTOGRAM_APP_MENU_ACTION,
+                                InAppUpdateController.AppMenuAction.INTENT_FALLBACK)
+                        .expectIntRecord(
+                                InAppUpdateController.HISTOGRAM_DOWNLOAD_RESULT, expectedResult)
+                        .build();
+
+        AtomicBoolean fallbackCalled = new AtomicBoolean(false);
+        InAppUpdateController controller = createController();
+        controller.onMenuItemClicked(() -> fallbackCalled.set(true));
+        ShadowLooper.idleMainLooper();
+
+        watcher.assertExpected();
+        assertTrue(fallbackCalled.get());
+        assertNull(controller.getInstallListenerForTesting());
+        assertFalse(InAppUpdatePolicy.isDiscoveryPromptAllowed(mActivity));
+    }
+
+    private static class PendingAppUpdateInfoFixture {
+        final AppUpdateManager mMockManager;
+        final Task<AppUpdateInfo> mMockTask;
+        final ArgumentCaptor<OnCompleteListener<AppUpdateInfo>> mCompleteCaptor;
+
+        PendingAppUpdateInfoFixture(
+                AppUpdateManager mockManager,
+                Task<AppUpdateInfo> mockTask,
+                ArgumentCaptor<OnCompleteListener<AppUpdateInfo>> completeCaptor) {
+            mMockManager = mockManager;
+            mMockTask = mockTask;
+            mCompleteCaptor = completeCaptor;
+        }
+    }
+
+    private PendingAppUpdateInfoFixture setupPendingAppUpdateInfoQuery() {
+        AppUpdateManager mockManager = mock(AppUpdateManager.class);
+        @SuppressWarnings("unchecked")
+        Task<AppUpdateInfo> mockTask = mock(Task.class);
+        @SuppressWarnings("unchecked")
+        ArgumentCaptor<OnCompleteListener<AppUpdateInfo>> completeCaptor =
+                ArgumentCaptor.forClass(OnCompleteListener.class);
+        when(mockTask.addOnCompleteListener(completeCaptor.capture())).thenReturn(mockTask);
+        when(mockTask.addOnSuccessListener(any(Activity.class), mUpdateInfoSuccessCaptor.capture()))
+                .thenReturn(mockTask);
+        when(mockTask.addOnFailureListener(any(Activity.class), any())).thenReturn(mockTask);
+        when(mockManager.getAppUpdateInfo()).thenReturn(mockTask);
+        InAppUpdateController.setAppUpdateManagerForTesting(mockManager);
+        return new PendingAppUpdateInfoFixture(mockManager, mockTask, completeCaptor);
+    }
+
+    private void assertClearsDownloadedFlagWhenNotDownloaded(
+            Consumer<InAppUpdateController> trigger) {
+        int[] statuses = {
+            InstallStatus.UNKNOWN, InstallStatus.DOWNLOADING, InstallStatus.PENDING,
+        };
+        for (int installStatus : statuses) {
+            InAppUpdateController.resetResumeCooldownForTesting();
+            InAppUpdatePolicy.setUpdateDownloaded(true);
+            setMockManagerReporting(installStatus);
+
+            InAppUpdateController controller = createController();
+            trigger.accept(controller);
+            ShadowLooper.idleMainLooper();
+            assertFalse(
+                    "Flag should be cleared for installStatus=" + installStatus,
+                    InAppUpdatePolicy.isUpdateDownloaded());
+        }
+    }
+
     // =============================================================================================
-    // Journey 1: Discovery Prompt & Acceptance
+    // Journey 1: Startup Check & Guard Conditions
     // =============================================================================================
 
     @Test
     @DisableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
     public void testCheckAndStartUpdateFlow_featureDisabled_doesNothing() {
-        setupUpdateAvailable();
+        setupUpdateDownloaded();
 
         InAppUpdateController controller = createController();
         controller.checkAndStartUpdateFlow();
@@ -209,50 +289,30 @@ public class InAppUpdateControllerTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
-    public void testCheckAndStartUpdateFlow_availableShowsSnackbar() {
+    public void testCheckAndStartUpdateFlow_updateAvailable_doesNotShowSnackbarOrStartFlow() {
         setupUpdateAvailable();
-
-        // FakeAppUpdateManager reports no staleness by default, so only the impression is
-        // recorded and the staleness histogram stays empty.
-        var watcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord(
-                                InAppUpdateSnackbarController.HISTOGRAM_DISCOVERY_SNACKBAR_EVENT,
-                                InAppUpdateSnackbarEvent.IMPRESSION)
-                        .expectNoRecords(InAppUpdateController.HISTOGRAM_DISCOVERY_STALENESS_DAYS)
-                        .build();
+        mFakeAppUpdateManager.setClientVersionStalenessDays(5);
 
         InAppUpdateController controller = createController();
         controller.checkAndStartUpdateFlow();
         ShadowLooper.idleMainLooper();
 
-        watcher.assertExpected();
-
-        verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
-        Snackbar snackbar = mSnackbarCaptor.getValue();
-        assertEquals(
-                mActivity.getString(R.string.in_app_update_discovery_title),
-                snackbar.getTextForTesting());
-        assertEquals(
-                mActivity.getString(R.string.in_app_update_discovery_action),
-                snackbar.getActionText());
-        assertEquals(Snackbar.UMA_IN_APP_UPDATE_DISCOVERY, snackbar.getIdentifierForTesting());
-        assertEquals(SnackbarManager.DEFAULT_SNACKBAR_DURATION_LONG_MS, snackbar.getDuration());
-        assertTrue(InAppUpdatePolicy.isDiscoveryPromptAllowed(mActivity));
+        assertNull(mFakeAppUpdateManager.getTypeForUpdateInProgress());
+        verify(mSnackbarManager, never()).showSnackbar(any());
+        assertNull(controller.getInstallListenerForTesting());
+        assertNull(controller.getRestartSnackbarControllerForTesting());
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
     public void testCheckAndStartUpdateFlow_cannotShowSnackbar_doesNothing() {
         when(mSnackbarManager.canShowSnackbar()).thenReturn(false);
-        setupUpdateAvailable();
-        mFakeAppUpdateManager.setClientVersionStalenessDays(5);
+        setupUpdateDownloaded();
 
         var watcher =
                 HistogramWatcher.newBuilder()
                         .expectNoRecords(
-                                InAppUpdateSnackbarController.HISTOGRAM_DISCOVERY_SNACKBAR_EVENT)
-                        .expectNoRecords(InAppUpdateController.HISTOGRAM_DISCOVERY_STALENESS_DAYS)
+                                InAppUpdateSnackbarController.HISTOGRAM_RESTART_SNACKBAR_EVENT)
                         .build();
 
         InAppUpdateController controller = createController();
@@ -266,11 +326,9 @@ public class InAppUpdateControllerTest {
     @Test
     @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
     public void testCheckAndStartUpdateFlow_nullSnackbarManager_doesNothing() {
-        setupUpdateAvailable();
+        setupUpdateDownloaded();
 
-        InAppUpdateController controller =
-                new InAppUpdateController(
-                        mActivity, () -> null, () -> null, () -> null, () -> mModalDialogManager);
+        InAppUpdateController controller = new InAppUpdateController(mActivity, () -> null);
         controller.checkAndStartUpdateFlow();
         ShadowLooper.idleMainLooper();
 
@@ -280,7 +338,7 @@ public class InAppUpdateControllerTest {
     @Test
     @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
     public void testCheckAndStartUpdateFlow_activityDestroyed_doesNothing() {
-        setupUpdateAvailable();
+        setupUpdateDownloaded();
         mActivityController.destroy();
 
         InAppUpdateController controller = createController();
@@ -288,182 +346,10 @@ public class InAppUpdateControllerTest {
         ShadowLooper.idleMainLooper();
 
         verify(mSnackbarManager, never()).showSnackbar(any());
-        assertNull(mFakeAppUpdateManager.getTypeForUpdateInProgress());
     }
 
-    /**
-     * Runs the startup check and asserts that the discovery snackbar yielded to other UI. A skip
-     * records only the reason: no impression, no staleness sample and no cooldown, so the snackbar
-     * is offered again on the next cold start.
-     */
-    private void checkAndAssertDiscoverySkipped(@InAppUpdateSnackbarEvent int reason) {
-        setupUpdateAvailable();
-        mFakeAppUpdateManager.setClientVersionStalenessDays(5);
-        var watcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord(
-                                InAppUpdateSnackbarController.HISTOGRAM_DISCOVERY_SNACKBAR_EVENT,
-                                reason)
-                        .expectNoRecords(InAppUpdateController.HISTOGRAM_DISCOVERY_STALENESS_DAYS)
-                        .build();
-
-        InAppUpdateController controller = createController();
-        controller.checkAndStartUpdateFlow();
-        ShadowLooper.idleMainLooper();
-
-        watcher.assertExpected();
-        verify(mSnackbarManager, never()).showSnackbar(any());
-        assertNull(controller.getDiscoverySnackbarControllerForTesting());
-        assertTrue(InAppUpdatePolicy.isDiscoveryPromptAllowed(mActivity));
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
-    public void testCheckAndStartUpdateFlow_startupPromoShown_skipsDiscovery() {
-        mPromoShown = true;
-        checkAndAssertDiscoverySkipped(InAppUpdateSnackbarEvent.SKIPPED_STARTUP_PROMO);
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
-    public void testCheckAndStartUpdateFlow_modalDialogShowing_skipsDiscovery() {
-        when(mModalDialogManager.isShowing()).thenReturn(true);
-        checkAndAssertDiscoverySkipped(InAppUpdateSnackbarEvent.SKIPPED_MODAL_DIALOG);
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
-    public void testCheckAndStartUpdateFlow_bottomSheetPeeking_skipsDiscovery() {
-        when(mBottomSheetController.getSheetState()).thenReturn(SheetState.PEEK);
-        checkAndAssertDiscoverySkipped(InAppUpdateSnackbarEvent.SKIPPED_BOTTOM_SHEET);
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
-    public void testCheckAndStartUpdateFlow_severalReasons_recordsFirstOnly() {
-        // Only one bucket is recorded per skip so that the bucket total counts skipped prompts.
-        // The dialog and sheet stubs are lenient because those checks aren't reached once the
-        // promo check matches.
-        mPromoShown = true;
-        lenient().when(mModalDialogManager.isShowing()).thenReturn(true);
-        lenient().when(mBottomSheetController.getSheetState()).thenReturn(SheetState.FULL);
-        checkAndAssertDiscoverySkipped(InAppUpdateSnackbarEvent.SKIPPED_STARTUP_PROMO);
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
-    public void testCheckAndStartUpdateFlow_noPromoAndNoSheetContent_showsDiscovery() {
-        // A promo flow that ran without showing a promo, and a sheet that was never used (NONE),
-        // leave nothing on screen to compete with.
-        mPromoShown = false;
-        when(mBottomSheetController.getSheetState()).thenReturn(SheetState.NONE);
-        setupUpdateAvailable();
-        var watcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        InAppUpdateSnackbarController.HISTOGRAM_DISCOVERY_SNACKBAR_EVENT,
-                        InAppUpdateSnackbarEvent.IMPRESSION);
-
-        InAppUpdateController controller = createController();
-        controller.checkAndStartUpdateFlow();
-        ShadowLooper.idleMainLooper();
-
-        watcher.assertExpected();
-        verify(mSnackbarManager).showSnackbar(any());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
-    public void testCheckAndStartUpdateFlow_downloadedWithOtherUiShowing_showsRestart() {
-        // The guard covers only the discovery snackbar. The restart snackbar may be replaced by
-        // background install, so it keeps its existing behavior. The stubs are lenient because
-        // the restart path doesn't consult them.
-        mPromoShown = true;
-        lenient().when(mModalDialogManager.isShowing()).thenReturn(true);
-        lenient().when(mBottomSheetController.getSheetState()).thenReturn(SheetState.PEEK);
-        setupUpdateDownloaded();
-        var watcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        InAppUpdateSnackbarController.HISTOGRAM_RESTART_SNACKBAR_EVENT,
-                        InAppUpdateSnackbarEvent.IMPRESSION);
-
-        InAppUpdateController controller = createController();
-        controller.checkAndStartUpdateFlow();
-        ShadowLooper.idleMainLooper();
-
-        watcher.assertExpected();
-        assertNotNull(controller.getRestartSnackbarControllerForTesting());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
-    public void testCheckAndStartUpdateFlow_tapDiscoveryAction_startsFlexibleFlow() {
-        setupUpdateAvailable();
-
-        InAppUpdateController controller = createController();
-        controller.checkAndStartUpdateFlow();
-        ShadowLooper.idleMainLooper();
-
-        verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
-        Snackbar snackbar = mSnackbarCaptor.getValue();
-
-        var watcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord(
-                                InAppUpdateSnackbarController.HISTOGRAM_DISCOVERY_SNACKBAR_EVENT,
-                                InAppUpdateSnackbarEvent.ACTION_TAPPED)
-                        .expectIntRecord(
-                                InAppUpdateController.HISTOGRAM_DOWNLOAD_RESULT,
-                                InAppUpdateController.DownloadResult.FLOW_STARTED)
-                        .build();
-
-        snackbar.getController().onAction(null);
-        ShadowLooper.idleMainLooper();
-
-        watcher.assertExpected();
-        assertEquals(
-                Integer.valueOf(AppUpdateType.FLEXIBLE),
-                mFakeAppUpdateManager.getTypeForUpdateInProgress());
-    }
-
-    // The staleness threshold only gates the automatic discovery prompt. These tests use a 3-day
-    // threshold to check the controller wiring: the boundary, and that the restart prompt and the
-    // user-initiated app menu path are not gated. Threshold rules, including the unknown-staleness
-    // case, are covered in InAppUpdatePolicyTest.
-
-    @Test
-    @EnableFeatures(ENABLE_WITH_MIN_STALENESS_3_DAYS)
-    public void testCheckAndStartUpdateFlow_belowStalenessThreshold_doesNotShowSnackbar() {
-        setupUpdateAvailable();
-        mFakeAppUpdateManager.setClientVersionStalenessDays(2);
-
-        InAppUpdateController controller = createController();
-        controller.checkAndStartUpdateFlow();
-        ShadowLooper.idleMainLooper();
-
-        verify(mSnackbarManager, never()).showSnackbar(any());
-    }
-
-    @Test
-    @EnableFeatures(ENABLE_WITH_MIN_STALENESS_3_DAYS)
-    public void testCheckAndStartUpdateFlow_atStalenessThreshold_showsSnackbar() {
-        setupUpdateAvailable();
-        mFakeAppUpdateManager.setClientVersionStalenessDays(3);
-
-        var watcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        InAppUpdateSnackbarController.HISTOGRAM_DISCOVERY_SNACKBAR_EVENT,
-                        InAppUpdateSnackbarEvent.IMPRESSION);
-
-        InAppUpdateController controller = createController();
-        controller.checkAndStartUpdateFlow();
-        ShadowLooper.idleMainLooper();
-
-        watcher.assertExpected();
-        verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
-        assertEquals(
-                Snackbar.UMA_IN_APP_UPDATE_DISCOVERY,
-                mSnackbarCaptor.getValue().getIdentifierForTesting());
-    }
+    // The staleness threshold does not gate the restart prompt or the user-initiated app menu path.
+    // Threshold rules, including the unknown-staleness case, are covered in InAppUpdatePolicyTest.
 
     @Test
     @EnableFeatures(ENABLE_WITH_MIN_STALENESS_3_DAYS)
@@ -506,32 +392,6 @@ public class InAppUpdateControllerTest {
                 mFakeAppUpdateManager.getTypeForUpdateInProgress());
     }
 
-    // The staleness histogram is recorded alongside the discovery impression so the two totals
-    // can be compared. The case where Play reports no staleness is covered by
-    // testCheckAndStartUpdateFlow_availableShowsSnackbar.
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
-    public void testCheckAndStartUpdateFlow_showsSnackbar_recordsStalenessDays() {
-        setupUpdateAvailable();
-        mFakeAppUpdateManager.setClientVersionStalenessDays(5);
-
-        var watcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord(
-                                InAppUpdateSnackbarController.HISTOGRAM_DISCOVERY_SNACKBAR_EVENT,
-                                InAppUpdateSnackbarEvent.IMPRESSION)
-                        .expectIntRecord(
-                                InAppUpdateController.HISTOGRAM_DISCOVERY_STALENESS_DAYS, 5)
-                        .build();
-
-        InAppUpdateController controller = createController();
-        controller.checkAndStartUpdateFlow();
-        ShadowLooper.idleMainLooper();
-
-        watcher.assertExpected();
-    }
-
     // =============================================================================================
     // Journey 2: Background Download Progress & Results
     // =============================================================================================
@@ -539,19 +399,10 @@ public class InAppUpdateControllerTest {
     @Test
     @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
     public void testInstallListener_downloadSucceeded() {
-        setupUpdateAvailable();
         // Seed a restart backoff before starting to verify it gets cleared upon download
         // completion.
         InAppUpdatePolicy.recordRestartDeclined();
         assertFalse(InAppUpdatePolicy.isRestartPromptAllowed(mActivity));
-
-        InAppUpdateController controller = createController();
-        controller.checkAndStartUpdateFlow();
-        ShadowLooper.idleMainLooper();
-
-        verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
-        Snackbar snackbar = mSnackbarCaptor.getValue();
-        assertEquals(Snackbar.UMA_IN_APP_UPDATE_DISCOVERY, snackbar.getIdentifierForTesting());
 
         var watcher =
                 HistogramWatcher.newBuilder()
@@ -563,11 +414,8 @@ public class InAppUpdateControllerTest {
                                 InAppUpdateController.DownloadResult.SUCCEEDED)
                         .build();
 
-        snackbar.getController().onAction(null);
-        ShadowLooper.idleMainLooper();
-
-        mFakeAppUpdateManager.userAcceptsUpdate();
-        mFakeAppUpdateManager.downloadStarts();
+        InAppUpdateController controller = createController();
+        startFlexibleDownload(controller);
         mFakeAppUpdateManager.downloadCompletes();
         ShadowLooper.idleMainLooper();
 
@@ -577,25 +425,15 @@ public class InAppUpdateControllerTest {
 
         // Verify restart backoff is cleared and restart snackbar is displayed.
         assertTrue(InAppUpdatePolicy.isRestartPromptAllowed(mActivity));
-        ArgumentCaptor<Snackbar> allSnackbarsCaptor = ArgumentCaptor.forClass(Snackbar.class);
-        verify(mSnackbarManager, times(2)).showSnackbar(allSnackbarsCaptor.capture());
+        verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
         assertEquals(
                 Snackbar.UMA_IN_APP_UPDATE_RESTART,
-                allSnackbarsCaptor.getAllValues().get(1).getIdentifierForTesting());
+                mSnackbarCaptor.getValue().getIdentifierForTesting());
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
     public void testInstallListener_downloadFails() {
-        setupUpdateAvailable();
-
-        InAppUpdateController controller = createController();
-        controller.checkAndStartUpdateFlow();
-        ShadowLooper.idleMainLooper();
-
-        verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
-        Snackbar snackbar = mSnackbarCaptor.getValue();
-
         var watcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
@@ -606,11 +444,8 @@ public class InAppUpdateControllerTest {
                                 InAppUpdateController.DownloadResult.DOWNLOAD_FAILED)
                         .build();
 
-        snackbar.getController().onAction(null);
-        ShadowLooper.idleMainLooper();
-
-        mFakeAppUpdateManager.userAcceptsUpdate();
-        mFakeAppUpdateManager.downloadStarts();
+        InAppUpdateController controller = createController();
+        startFlexibleDownload(controller);
         InAppUpdatePolicy.setUpdateDownloaded(true);
         mFakeAppUpdateManager.downloadFails();
         ShadowLooper.idleMainLooper();
@@ -624,15 +459,6 @@ public class InAppUpdateControllerTest {
     @Test
     @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
     public void testInstallListener_downloadCanceled() {
-        setupUpdateAvailable();
-
-        InAppUpdateController controller = createController();
-        controller.checkAndStartUpdateFlow();
-        ShadowLooper.idleMainLooper();
-
-        verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
-        Snackbar snackbar = mSnackbarCaptor.getValue();
-
         var watcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
@@ -643,11 +469,8 @@ public class InAppUpdateControllerTest {
                                 InAppUpdateController.DownloadResult.DOWNLOAD_CANCELED)
                         .build();
 
-        snackbar.getController().onAction(null);
-        ShadowLooper.idleMainLooper();
-
-        mFakeAppUpdateManager.userAcceptsUpdate();
-        mFakeAppUpdateManager.downloadStarts();
+        InAppUpdateController controller = createController();
+        startFlexibleDownload(controller);
         InAppUpdatePolicy.setUpdateDownloaded(true);
         mFakeAppUpdateManager.userCancelsDownload();
         ShadowLooper.idleMainLooper();
@@ -664,13 +487,7 @@ public class InAppUpdateControllerTest {
         setupUpdateAvailable();
 
         InAppUpdateController controller = createController();
-        controller.checkAndStartUpdateFlow();
-        ShadowLooper.idleMainLooper();
-
-        verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
-        Snackbar snackbar = mSnackbarCaptor.getValue();
-        assertEquals(Snackbar.UMA_IN_APP_UPDATE_DISCOVERY, snackbar.getIdentifierForTesting());
-        snackbar.getController().onAction(null);
+        controller.onMenuItemClicked(null);
         ShadowLooper.idleMainLooper();
 
         assertNotNull(controller.getInstallListenerForTesting());
@@ -682,7 +499,7 @@ public class InAppUpdateControllerTest {
         mFakeAppUpdateManager.downloadCompletes();
         ShadowLooper.idleMainLooper();
 
-        verify(mSnackbarManager, times(1)).showSnackbar(any());
+        verify(mSnackbarManager, never()).showSnackbar(any());
     }
 
     @Test
@@ -691,11 +508,7 @@ public class InAppUpdateControllerTest {
         setupUpdateAvailable();
 
         InAppUpdateController controller = createController();
-        controller.checkAndStartUpdateFlow();
-        ShadowLooper.idleMainLooper();
-
-        verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
-        mSnackbarCaptor.getValue().getController().onAction(null);
+        controller.onMenuItemClicked(null);
         ShadowLooper.idleMainLooper();
 
         assertNotNull(controller.getInstallListenerForTesting());
@@ -731,11 +544,7 @@ public class InAppUpdateControllerTest {
         setupUpdateAvailable();
 
         InAppUpdateController controller = createController();
-        controller.checkAndStartUpdateFlow();
-        ShadowLooper.idleMainLooper();
-
-        verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
-        mSnackbarCaptor.getValue().getController().onAction(null);
+        controller.onMenuItemClicked(null);
         ShadowLooper.idleMainLooper();
 
         assertNotNull(controller.getInstallListenerForTesting());
@@ -755,73 +564,6 @@ public class InAppUpdateControllerTest {
         assertFalse(InAppUpdatePolicy.isDiscoveryPromptAllowed(mActivity));
     }
 
-    @Test
-    @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
-    public void testStartFlow_startReturnsFalse_recordsStartFailedAndBackoff() throws Exception {
-        AppUpdateManager mockManager = mock(AppUpdateManager.class);
-        AppUpdateInfo mockInfo = mock(AppUpdateInfo.class);
-        when(mockInfo.installStatus()).thenReturn(InstallStatus.UNKNOWN);
-        when(mockInfo.updateAvailability()).thenReturn(UpdateAvailability.UPDATE_AVAILABLE);
-        when(mockInfo.isUpdateTypeAllowed(any(AppUpdateOptions.class))).thenReturn(true);
-        when(mockManager.getAppUpdateInfo()).thenReturn(Tasks.forResult(mockInfo));
-        when(mockManager.startUpdateFlowForResult(any(), any(Activity.class), any(), anyInt()))
-                .thenReturn(false);
-        InAppUpdateController.setAppUpdateManagerForTesting(mockManager);
-
-        InAppUpdateController controller = createController();
-        controller.checkAndStartUpdateFlow();
-        ShadowLooper.idleMainLooper();
-
-        verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
-        Snackbar snackbar = mSnackbarCaptor.getValue();
-
-        var watcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        InAppUpdateController.HISTOGRAM_DOWNLOAD_RESULT,
-                        InAppUpdateController.DownloadResult.START_FAILED);
-
-        snackbar.getController().onAction(null);
-        ShadowLooper.idleMainLooper();
-
-        watcher.assertExpected();
-        assertNull(controller.getInstallListenerForTesting());
-        assertFalse(InAppUpdatePolicy.isDiscoveryPromptAllowed(mActivity));
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
-    public void testStartFlow_sendIntentException_recordsSendIntentFailedAndBackoff()
-            throws Exception {
-        AppUpdateManager mockManager = mock(AppUpdateManager.class);
-        AppUpdateInfo mockInfo = mock(AppUpdateInfo.class);
-        when(mockInfo.installStatus()).thenReturn(InstallStatus.UNKNOWN);
-        when(mockInfo.updateAvailability()).thenReturn(UpdateAvailability.UPDATE_AVAILABLE);
-        when(mockInfo.isUpdateTypeAllowed(any(AppUpdateOptions.class))).thenReturn(true);
-        when(mockManager.getAppUpdateInfo()).thenReturn(Tasks.forResult(mockInfo));
-        when(mockManager.startUpdateFlowForResult(any(), any(Activity.class), any(), anyInt()))
-                .thenThrow(new IntentSender.SendIntentException("test exception"));
-        InAppUpdateController.setAppUpdateManagerForTesting(mockManager);
-
-        InAppUpdateController controller = createController();
-        controller.checkAndStartUpdateFlow();
-        ShadowLooper.idleMainLooper();
-
-        verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
-        Snackbar snackbar = mSnackbarCaptor.getValue();
-
-        var watcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        InAppUpdateController.HISTOGRAM_DOWNLOAD_RESULT,
-                        InAppUpdateController.DownloadResult.SEND_INTENT_FAILED);
-
-        snackbar.getController().onAction(null);
-        ShadowLooper.idleMainLooper();
-
-        watcher.assertExpected();
-        assertNull(controller.getInstallListenerForTesting());
-        assertFalse(InAppUpdatePolicy.isDiscoveryPromptAllowed(mActivity));
-    }
-
     // =============================================================================================
     // Journey 3: Restart Prompt & App Relaunch
     // =============================================================================================
@@ -829,7 +571,7 @@ public class InAppUpdateControllerTest {
     @Test
     @DisableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
     public void testOnResume_featureDisabled_doesNothing() {
-        setupUpdateAvailable();
+        setupUpdateDownloaded();
 
         InAppUpdateController controller = createController();
         controller.onResume();
@@ -900,15 +642,7 @@ public class InAppUpdateControllerTest {
     @Test
     @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
     public void testOnResume_downloadingRegistersListenerAndCompletes() {
-        setupUpdateAvailable();
-        AppUpdateInfo info = mFakeAppUpdateManager.getAppUpdateInfo().getResult();
-        mFakeAppUpdateManager.startUpdateFlowForResult(
-                info,
-                mActivity,
-                AppUpdateOptions.defaultOptions(AppUpdateType.FLEXIBLE),
-                InAppUpdateController.REQUEST_CODE_IN_APP_UPDATE);
-        mFakeAppUpdateManager.userAcceptsUpdate();
-        mFakeAppUpdateManager.downloadStarts();
+        setupUpdateDownloading();
 
         InAppUpdateController controller = createController();
         assertNull(controller.getInstallListenerForTesting());
@@ -956,58 +690,9 @@ public class InAppUpdateControllerTest {
         assertTrue(mFakeAppUpdateManager.isInstallSplashScreenVisible());
     }
 
-    @Test
-    @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
-    public void testOnResume_downloaded_doesNotShowDuplicateSnackbar() {
-        setupUpdateDownloaded();
-
-        var watcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        InAppUpdateSnackbarController.HISTOGRAM_RESTART_SNACKBAR_EVENT,
-                        InAppUpdateSnackbarEvent.IMPRESSION);
-
-        InAppUpdateController controller = createController();
-        controller.onResume();
-        ShadowLooper.idleMainLooper();
-
-        watcher.assertExpected();
-        verify(mSnackbarManager, times(1)).showSnackbar(any());
-
-        // Subsequent onResume call should not show another restart snackbar.
-        controller.onResume();
-        ShadowLooper.idleMainLooper();
-
-        verify(mSnackbarManager, times(1)).showSnackbar(any());
-    }
-
     // =============================================================================================
     // Journey 4: Dismissals & Backoff Policies
     // =============================================================================================
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
-    public void testShowDiscoverySnackbar_dismissNoAction_recordsBackoff() {
-        setupUpdateAvailable();
-
-        InAppUpdateController controller = createController();
-        controller.checkAndStartUpdateFlow();
-        ShadowLooper.idleMainLooper();
-
-        verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
-        Snackbar snackbar = mSnackbarCaptor.getValue();
-
-        var watcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        InAppUpdateSnackbarController.HISTOGRAM_DISCOVERY_SNACKBAR_EVENT,
-                        InAppUpdateSnackbarEvent.DISMISSED_NO_ACTION);
-
-        // User allows snackbar to time out passively without action.
-        snackbar.getController().onDismissNoAction(null);
-        watcher.assertExpected();
-
-        // Passive timeout records backoff in InAppUpdatePolicy.
-        assertFalse(InAppUpdatePolicy.isDiscoveryPromptAllowed(mActivity));
-    }
 
     @Test
     @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
@@ -1037,10 +722,10 @@ public class InAppUpdateControllerTest {
     @Test
     @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
     public void testLifecycleInterruption_recordsLifecycleEventAndSkipsBackoff() {
-        setupUpdateAvailable();
+        setupUpdateDownloaded();
 
         InAppUpdateController controller = createController();
-        controller.checkAndStartUpdateFlow();
+        controller.onResume();
         ShadowLooper.idleMainLooper();
 
         verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
@@ -1051,84 +736,49 @@ public class InAppUpdateControllerTest {
 
         var watcher =
                 HistogramWatcher.newSingleRecordWatcher(
-                        InAppUpdateSnackbarController.HISTOGRAM_DISCOVERY_SNACKBAR_EVENT,
+                        InAppUpdateSnackbarController.HISTOGRAM_RESTART_SNACKBAR_EVENT,
                         InAppUpdateSnackbarEvent.DISMISSED_BY_LIFECYCLE);
 
         snackbar.getController().onDismissNoAction(null);
         watcher.assertExpected();
 
-        // Lifecycle dismissal must NOT record 24h backoff.
-        assertTrue(InAppUpdatePolicy.isDiscoveryPromptAllowed(mActivity));
+        // Lifecycle dismissal must NOT record restart backoff.
+        assertTrue(InAppUpdatePolicy.isRestartPromptAllowed(mActivity));
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
     public void testConfigurationChange_recordsLifecycleEventAndSkipsBackoff() {
-        ActivityController<ConfigurationChangingActivity> activityController =
-                Robolectric.buildActivity(ConfigurationChangingActivity.class).setup();
-        try {
-            ConfigurationChangingActivity activity = activityController.get();
-            ApplicationStatus.onStateChangeForTesting(activity, ActivityState.RESUMED);
-            setupUpdateAvailable();
+        withConfigurationChangingActivity(
+                activity -> {
+                    setupUpdateDownloaded();
 
-            InAppUpdateController controller = createController(activity);
-            controller.checkAndStartUpdateFlow();
-            ShadowLooper.idleMainLooper();
+                    InAppUpdateController controller = createController(activity);
+                    controller.onResume();
+                    ShadowLooper.idleMainLooper();
 
-            verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
-            Snackbar snackbar = mSnackbarCaptor.getValue();
+                    verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
+                    Snackbar snackbar = mSnackbarCaptor.getValue();
 
-            // Activity is undergoing a configuration change (e.g. screen rotation).
-            activity.setIsChangingConfigurations(true);
+                    // Activity is undergoing a configuration change (e.g. screen rotation).
+                    activity.setIsChangingConfigurations(true);
 
-            var watcher =
-                    HistogramWatcher.newSingleRecordWatcher(
-                            InAppUpdateSnackbarController.HISTOGRAM_DISCOVERY_SNACKBAR_EVENT,
-                            InAppUpdateSnackbarEvent.DISMISSED_BY_LIFECYCLE);
+                    var watcher =
+                            HistogramWatcher.newSingleRecordWatcher(
+                                    InAppUpdateSnackbarController.HISTOGRAM_RESTART_SNACKBAR_EVENT,
+                                    InAppUpdateSnackbarEvent.DISMISSED_BY_LIFECYCLE);
 
-            snackbar.getController().onDismissNoAction(null);
-            watcher.assertExpected();
+                    snackbar.getController().onDismissNoAction(null);
+                    watcher.assertExpected();
 
-            // Configuration change dismissal must NOT record 24h backoff.
-            assertTrue(InAppUpdatePolicy.isDiscoveryPromptAllowed(activity));
-        } finally {
-            activityController.destroy();
-        }
+                    // Configuration change dismissal must NOT record restart backoff.
+                    assertTrue(InAppUpdatePolicy.isRestartPromptAllowed(activity));
+                });
     }
 
     // =============================================================================================
     // Journey 5: Activity Teardown & Lifecycle Guards
     // =============================================================================================
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
-    public void testDestroy_dismissesActiveSnackbars() {
-        setupUpdateAvailable();
-
-        // Teardown dismissal suppresses dismissal telemetry (recording only the initial
-        // IMPRESSION).
-        var watcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        InAppUpdateSnackbarController.HISTOGRAM_DISCOVERY_SNACKBAR_EVENT,
-                        InAppUpdateSnackbarEvent.IMPRESSION);
-
-        InAppUpdateController controller = createController();
-        controller.checkAndStartUpdateFlow();
-        ShadowLooper.idleMainLooper();
-
-        verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
-        Snackbar snackbar = mSnackbarCaptor.getValue();
-
-        controller.destroy();
-        verify(mSnackbarManager).dismissSnackbars(any());
-
-        // Simulate SnackbarManager notifying controller of dismissal during teardown.
-        snackbar.getController().onDismissNoAction(/* actionData= */ null);
-
-        // Teardown dismissal suppresses decline backoff and telemetry.
-        assertTrue(InAppUpdatePolicy.isDiscoveryPromptAllowed(mActivity));
-        watcher.assertExpected();
-    }
 
     @Test
     @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
@@ -1173,15 +823,11 @@ public class InAppUpdateControllerTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
-    public void testDestroy_unregistersListenerAndDismissesSnackbars() {
+    public void testDestroy_unregistersListener() {
         setupUpdateAvailable();
 
         InAppUpdateController controller = createController();
-        controller.checkAndStartUpdateFlow();
-        ShadowLooper.idleMainLooper();
-
-        verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
-        mSnackbarCaptor.getValue().getController().onAction(null);
+        controller.onMenuItemClicked(null);
         ShadowLooper.idleMainLooper();
 
         assertNotNull(controller.getInstallListenerForTesting());
@@ -1197,10 +843,10 @@ public class InAppUpdateControllerTest {
     @Test
     @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
     public void testDestroy_suppressesLateActionTap() {
-        setupUpdateAvailable();
+        setupUpdateDownloaded();
 
         InAppUpdateController controller = createController();
-        controller.checkAndStartUpdateFlow();
+        controller.onResume();
         ShadowLooper.idleMainLooper();
 
         verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
@@ -1209,8 +855,7 @@ public class InAppUpdateControllerTest {
         var watcher =
                 HistogramWatcher.newBuilder()
                         .expectNoRecords(
-                                InAppUpdateSnackbarController.HISTOGRAM_DISCOVERY_SNACKBAR_EVENT)
-                        .expectNoRecords(InAppUpdateController.HISTOGRAM_DOWNLOAD_RESULT)
+                                InAppUpdateSnackbarController.HISTOGRAM_RESTART_SNACKBAR_EVENT)
                         .build();
 
         controller.destroy();
@@ -1218,7 +863,7 @@ public class InAppUpdateControllerTest {
         ShadowLooper.idleMainLooper();
 
         watcher.assertExpected();
-        assertNull(controller.getInstallListenerForTesting());
+        assertFalse(mFakeAppUpdateManager.isInstallSplashScreenVisible());
     }
 
     @Test
@@ -1250,7 +895,7 @@ public class InAppUpdateControllerTest {
     @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
     public void testCheckAndStartUpdateFlow_activityFinishing_doesNothing() {
         mActivity.finish();
-        setupUpdateAvailable();
+        setupUpdateDownloaded();
 
         InAppUpdateController controller = createController();
         controller.checkAndStartUpdateFlow();
@@ -1295,15 +940,7 @@ public class InAppUpdateControllerTest {
     @Test
     @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
     public void testOnMenuItemClicked_downloading_registersListener() {
-        setupUpdateAvailable();
-        AppUpdateInfo info = mFakeAppUpdateManager.getAppUpdateInfo().getResult();
-        mFakeAppUpdateManager.startUpdateFlowForResult(
-                info,
-                mActivity,
-                AppUpdateOptions.defaultOptions(AppUpdateType.FLEXIBLE),
-                InAppUpdateController.REQUEST_CODE_IN_APP_UPDATE);
-        mFakeAppUpdateManager.userAcceptsUpdate();
-        mFakeAppUpdateManager.downloadStarts();
+        setupUpdateDownloading();
 
         var watcher =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -1321,18 +958,7 @@ public class InAppUpdateControllerTest {
     @Test
     @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
     public void testOnMenuItemClicked_duplicateTapWhileFlowStarting_debounced() {
-        AppUpdateManager mockManager = mock(AppUpdateManager.class);
-        @SuppressWarnings("unchecked")
-        Task<AppUpdateInfo> mockTask = mock(Task.class);
-        @SuppressWarnings("unchecked")
-        ArgumentCaptor<OnCompleteListener<AppUpdateInfo>> completeCaptor =
-                ArgumentCaptor.forClass(OnCompleteListener.class);
-        when(mockTask.addOnCompleteListener(completeCaptor.capture())).thenReturn(mockTask);
-        when(mockTask.addOnSuccessListener(any(Activity.class), mUpdateInfoSuccessCaptor.capture()))
-                .thenReturn(mockTask);
-        when(mockTask.addOnFailureListener(any(Activity.class), any())).thenReturn(mockTask);
-        when(mockManager.getAppUpdateInfo()).thenReturn(mockTask);
-        InAppUpdateController.setAppUpdateManagerForTesting(mockManager);
+        PendingAppUpdateInfoFixture fixture = setupPendingAppUpdateInfoQuery();
 
         InAppUpdateController controller = createController();
 
@@ -1342,52 +968,42 @@ public class InAppUpdateControllerTest {
         // Second click while first is pending should be debounced without querying manager again.
         controller.onMenuItemClicked(null);
 
-        verify(mockManager, times(1)).getAppUpdateInfo();
+        verify(fixture.mMockManager, times(1)).getAppUpdateInfo();
 
         // Resolve the pending task and verify mIsFlowStarting resets so subsequent clicks proceed.
         AppUpdateInfo mockInfo = mock(AppUpdateInfo.class);
         when(mockInfo.installStatus()).thenReturn(InstallStatus.UNKNOWN);
         when(mockInfo.updateAvailability()).thenReturn(UpdateAvailability.UPDATE_NOT_AVAILABLE);
-        completeCaptor.getValue().onComplete(mockTask);
+        fixture.mCompleteCaptor.getValue().onComplete(fixture.mMockTask);
         mUpdateInfoSuccessCaptor.getValue().onSuccess(mockInfo);
         ShadowLooper.idleMainLooper();
 
         controller.onMenuItemClicked(null);
         ShadowLooper.idleMainLooper();
 
-        verify(mockManager, times(2)).getAppUpdateInfo();
+        verify(fixture.mMockManager, times(2)).getAppUpdateInfo();
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
     public void testOnMenuItemClicked_activityStoppedWhilePending_resetsFlowStartingOnCompletion() {
-        AppUpdateManager mockManager = mock(AppUpdateManager.class);
-        @SuppressWarnings("unchecked")
-        Task<AppUpdateInfo> mockTask = mock(Task.class);
-        @SuppressWarnings("unchecked")
-        ArgumentCaptor<OnCompleteListener<AppUpdateInfo>> completeCaptor =
-                ArgumentCaptor.forClass(OnCompleteListener.class);
-        when(mockTask.addOnCompleteListener(completeCaptor.capture())).thenReturn(mockTask);
-        when(mockTask.addOnSuccessListener(any(Activity.class), any())).thenReturn(mockTask);
-        when(mockTask.addOnFailureListener(any(Activity.class), any())).thenReturn(mockTask);
-        when(mockManager.getAppUpdateInfo()).thenReturn(mockTask);
-        InAppUpdateController.setAppUpdateManagerForTesting(mockManager);
+        PendingAppUpdateInfoFixture fixture = setupPendingAppUpdateInfoQuery();
 
         InAppUpdateController controller = createController();
 
         // First click begins flow and sets mIsFlowStarting = true.
         controller.onMenuItemClicked(null);
-        verify(mockManager, times(1)).getAppUpdateInfo();
+        verify(fixture.mMockManager, times(1)).getAppUpdateInfo();
 
         // While task is pending, Activity is stopped (user backgrounds Chrome).
         mActivityController.pause().stop();
 
         // Second click while activity is stopped or pending is debounced.
         controller.onMenuItemClicked(null);
-        verify(mockManager, times(1)).getAppUpdateInfo();
+        verify(fixture.mMockManager, times(1)).getAppUpdateInfo();
 
         // Task completes in the background (invoking the unscoped OnCompleteListener).
-        completeCaptor.getValue().onComplete(mockTask);
+        fixture.mCompleteCaptor.getValue().onComplete(fixture.mMockTask);
         ShadowLooper.idleMainLooper();
 
         // Activity is resumed.
@@ -1398,58 +1014,48 @@ public class InAppUpdateControllerTest {
         controller.onMenuItemClicked(null);
         ShadowLooper.idleMainLooper();
 
-        verify(mockManager, times(2)).getAppUpdateInfo();
+        verify(fixture.mMockManager, times(2)).getAppUpdateInfo();
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
     public void testOnResume_doesNotResetFlowStartingWhilePending() {
-        AppUpdateManager mockManager = mock(AppUpdateManager.class);
-        @SuppressWarnings("unchecked")
-        Task<AppUpdateInfo> mockTask = mock(Task.class);
-        @SuppressWarnings("unchecked")
-        ArgumentCaptor<OnCompleteListener<AppUpdateInfo>> completeCaptor =
-                ArgumentCaptor.forClass(OnCompleteListener.class);
-        when(mockTask.addOnCompleteListener(completeCaptor.capture())).thenReturn(mockTask);
-        when(mockTask.addOnSuccessListener(any(Activity.class), any())).thenReturn(mockTask);
-        when(mockTask.addOnFailureListener(any(Activity.class), any())).thenReturn(mockTask);
-        when(mockManager.getAppUpdateInfo()).thenReturn(mockTask);
-        InAppUpdateController.setAppUpdateManagerForTesting(mockManager);
+        PendingAppUpdateInfoFixture fixture = setupPendingAppUpdateInfoQuery();
 
         InAppUpdateController controller = createController();
 
         // First click begins flow and sets mIsFlowStarting = true.
         controller.onMenuItemClicked(null);
-        verify(mockManager, times(1)).getAppUpdateInfo();
+        verify(fixture.mMockManager, times(1)).getAppUpdateInfo();
 
         // Second click is debounced.
         controller.onMenuItemClicked(null);
-        verify(mockManager, times(1)).getAppUpdateInfo();
+        verify(fixture.mMockManager, times(1)).getAppUpdateInfo();
 
         // Background and foreground Activity without the task completing.
         mActivityController.pause().stop();
         mActivityController.restart().start().resume();
         controller.onResume();
         // onResume invokes getAppUpdateInfo() for resume check, but does NOT reset mIsFlowStarting.
-        verify(mockManager, times(2)).getAppUpdateInfo();
+        verify(fixture.mMockManager, times(2)).getAppUpdateInfo();
 
         // onResume does not reset mIsFlowStarting while task is pending; clicks remain debounced.
         controller.onMenuItemClicked(null);
-        verify(mockManager, times(2)).getAppUpdateInfo();
+        verify(fixture.mMockManager, times(2)).getAppUpdateInfo();
 
         // Complete the pending task to reset mIsFlowStarting to false.
-        completeCaptor.getValue().onComplete(mockTask);
+        fixture.mCompleteCaptor.getValue().onComplete(fixture.mMockTask);
         ShadowLooper.idleMainLooper();
 
         // After completion, mIsFlowStarting is reset to false, allowing subsequent clicks.
         controller.onMenuItemClicked(null);
-        verify(mockManager, times(3)).getAppUpdateInfo();
+        verify(fixture.mMockManager, times(3)).getAppUpdateInfo();
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
     public void testCheckAndStartUpdateFlow_activityFinishesBeforeCallback_doesNotShowSnackbar() {
-        setupUpdateAvailable();
+        setupUpdateDownloaded();
 
         InAppUpdateController controller = createController();
         controller.checkAndStartUpdateFlow();
@@ -1519,7 +1125,7 @@ public class InAppUpdateControllerTest {
     @Test
     @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
     public void testCheckAndStartUpdateFlow_destroyBeforeCallback_doesNotShowSnackbar() {
-        setupUpdateAvailable();
+        setupUpdateDownloaded();
 
         InAppUpdateController controller = createController();
         controller.checkAndStartUpdateFlow();
@@ -1550,13 +1156,9 @@ public class InAppUpdateControllerTest {
     @Test
     @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
     public void testOnResume_completeUpdateFailure_recordsFailureBackoff() {
-        AppUpdateManager mockManager = mock(AppUpdateManager.class);
-        AppUpdateInfo mockInfo = mock(AppUpdateInfo.class);
-        when(mockInfo.installStatus()).thenReturn(InstallStatus.DOWNLOADED);
-        when(mockManager.getAppUpdateInfo()).thenReturn(Tasks.forResult(mockInfo));
+        AppUpdateManager mockManager = setMockManagerReporting(InstallStatus.DOWNLOADED);
         when(mockManager.completeUpdate())
                 .thenReturn(Tasks.forException(new RuntimeException("Disk full")));
-        InAppUpdateController.setAppUpdateManagerForTesting(mockManager);
 
         InAppUpdateController controller = createController();
         controller.onResume();
@@ -1595,44 +1197,17 @@ public class InAppUpdateControllerTest {
     @Test
     @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
     public void testCheckAndStartUpdateFlow_activityChangingConfigurations_doesNothing() {
-        ActivityController<ConfigurationChangingActivity> activityController =
-                Robolectric.buildActivity(ConfigurationChangingActivity.class).setup();
-        try {
-            ConfigurationChangingActivity activity = activityController.get();
-            ApplicationStatus.onStateChangeForTesting(activity, ActivityState.RESUMED);
-            activity.setIsChangingConfigurations(true);
-            setupUpdateAvailable();
+        withConfigurationChangingActivity(
+                activity -> {
+                    activity.setIsChangingConfigurations(true);
+                    setupUpdateDownloaded();
 
-            InAppUpdateController controller = createController(activity);
-            controller.checkAndStartUpdateFlow();
-            ShadowLooper.idleMainLooper();
+                    InAppUpdateController controller = createController(activity);
+                    controller.checkAndStartUpdateFlow();
+                    ShadowLooper.idleMainLooper();
 
-            verify(mSnackbarManager, never()).showSnackbar(any());
-        } finally {
-            activityController.destroy();
-        }
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
-    public void
-            testOnResume_tapRestartAction_activityDestroyedBeforeAction_doesNotCompleteUpdate() {
-        setupUpdateDownloaded();
-
-        InAppUpdateController controller = createController();
-        controller.onResume();
-        ShadowLooper.idleMainLooper();
-
-        verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
-        Snackbar snackbar = mSnackbarCaptor.getValue();
-
-        // Destroy controller before action is triggered.
-        controller.destroy();
-
-        snackbar.getController().onAction(null);
-        ShadowLooper.idleMainLooper();
-
-        assertFalse(mFakeAppUpdateManager.isInstallSplashScreenVisible());
+                    verify(mSnackbarManager, never()).showSnackbar(any());
+                });
     }
 
     private static class ConfigurationChangingActivity extends Activity {
@@ -1650,75 +1225,36 @@ public class InAppUpdateControllerTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
-    public void testShowRestartSnackbar_dismissesActiveDiscoverySnackbar() {
-        setupUpdateAvailable();
-        InAppUpdateController controller = createController();
-        controller.checkAndStartUpdateFlow();
-        ShadowLooper.idleMainLooper();
-
-        assertNotNull(controller.getDiscoverySnackbarControllerForTesting());
-        assertNull(controller.getRestartSnackbarControllerForTesting());
-
-        // When the update transitions to downloaded, onResume triggers the restart prompt.
-        setupUpdateDownloaded();
-        controller.onResume();
-        ShadowLooper.idleMainLooper();
-
-        // The stale discovery snackbar should be dismissed on teardown (suppressing false decline)
-        // and the restart prompt should now be active.
-        assertNull(controller.getDiscoverySnackbarControllerForTesting());
-        assertNotNull(controller.getRestartSnackbarControllerForTesting());
-        assertTrue(InAppUpdatePolicy.isDiscoveryPromptAllowed(mActivity));
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
-    public void testShowDiscoverySnackbar_restartSnackbarActive_doesNotShowDiscovery() {
-        setupUpdateDownloaded();
-        InAppUpdateController controller = createController();
-        controller.onResume();
-        ShadowLooper.idleMainLooper();
-
-        assertNotNull(controller.getRestartSnackbarControllerForTesting());
-
-        // Calling checkAndStartUpdateFlow while restart snackbar is active must not show discovery.
-        controller.checkAndStartUpdateFlow();
-        ShadowLooper.idleMainLooper();
-
-        assertNull(controller.getDiscoverySnackbarControllerForTesting());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
     public void testOnResume_restartSnackbarActive_doesNotQueryAppUpdateInfo() {
-        AppUpdateManager mockManager = mock(AppUpdateManager.class);
-        AppUpdateInfo mockInfo = mock(AppUpdateInfo.class);
-        when(mockInfo.installStatus()).thenReturn(InstallStatus.DOWNLOADED);
-        when(mockManager.getAppUpdateInfo()).thenReturn(Tasks.forResult(mockInfo));
-        InAppUpdateController.setAppUpdateManagerForTesting(mockManager);
+        AppUpdateManager mockManager = setMockManagerReporting(InstallStatus.DOWNLOADED);
+
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        InAppUpdateSnackbarController.HISTOGRAM_RESTART_SNACKBAR_EVENT,
+                        InAppUpdateSnackbarEvent.IMPRESSION);
 
         InAppUpdateController controller = createController();
         controller.onResume();
         ShadowLooper.idleMainLooper();
 
+        watcher.assertExpected();
         assertNotNull(controller.getRestartSnackbarControllerForTesting());
+        verify(mSnackbarManager, times(1)).showSnackbar(any());
         verify(mockManager, times(1)).getAppUpdateInfo();
 
-        // Second onResume while restart prompt is active should return early without IPC.
+        // Second onResume while restart prompt is active should return early without IPC or
+        // showing a duplicate snackbar.
         controller.onResume();
         ShadowLooper.idleMainLooper();
 
+        verify(mSnackbarManager, times(1)).showSnackbar(any());
         verify(mockManager, times(1)).getAppUpdateInfo();
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
     public void testOnResume_throttledByCooldown_doesNotQueryAppUpdateInfo() {
-        AppUpdateManager mockManager = mock(AppUpdateManager.class);
-        AppUpdateInfo mockInfo = mock(AppUpdateInfo.class);
-        when(mockInfo.installStatus()).thenReturn(InstallStatus.UNKNOWN);
-        when(mockManager.getAppUpdateInfo()).thenReturn(Tasks.forResult(mockInfo));
-        InAppUpdateController.setAppUpdateManagerForTesting(mockManager);
+        AppUpdateManager mockManager = setMockManagerReporting(InstallStatus.UNKNOWN);
 
         InAppUpdateController controller = createController();
         controller.onResume();
@@ -1744,11 +1280,7 @@ public class InAppUpdateControllerTest {
     @Test
     @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
     public void testOnResume_cooldownPersistsAcrossInstancesAndResets() {
-        AppUpdateManager mockManager = mock(AppUpdateManager.class);
-        AppUpdateInfo mockInfo = mock(AppUpdateInfo.class);
-        when(mockInfo.installStatus()).thenReturn(InstallStatus.UNKNOWN);
-        when(mockManager.getAppUpdateInfo()).thenReturn(Tasks.forResult(mockInfo));
-        InAppUpdateController.setAppUpdateManagerForTesting(mockManager);
+        AppUpdateManager mockManager = setMockManagerReporting(InstallStatus.UNKNOWN);
 
         InAppUpdateController controller1 = createController();
         controller1.onResume();
@@ -1786,11 +1318,7 @@ public class InAppUpdateControllerTest {
     @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
     @CommandLineFlags.Add({InAppUpdatePolicy.FORCE_IN_APP_UPDATE})
     public void testOnResume_forceUpdate_bypassesCooldown() {
-        AppUpdateManager mockManager = mock(AppUpdateManager.class);
-        AppUpdateInfo mockInfo = mock(AppUpdateInfo.class);
-        when(mockInfo.installStatus()).thenReturn(InstallStatus.UNKNOWN);
-        when(mockManager.getAppUpdateInfo()).thenReturn(Tasks.forResult(mockInfo));
-        InAppUpdateController.setAppUpdateManagerForTesting(mockManager);
+        AppUpdateManager mockManager = setMockManagerReporting(InstallStatus.UNKNOWN);
 
         InAppUpdateController controller = createController();
         controller.onResume();
@@ -1808,25 +1336,19 @@ public class InAppUpdateControllerTest {
     @Test
     @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
     public void testOnMenuItemClicked_activityChangingConfigurations_doesNothing() {
-        ActivityController<ConfigurationChangingActivity> activityController =
-                Robolectric.buildActivity(ConfigurationChangingActivity.class).setup();
-        try {
-            ConfigurationChangingActivity activity = activityController.get();
-            ApplicationStatus.onStateChangeForTesting(activity, ActivityState.RESUMED);
-            activity.setIsChangingConfigurations(true);
+        withConfigurationChangingActivity(
+                activity -> {
+                    activity.setIsChangingConfigurations(true);
+                    setupUpdateAvailable();
 
-            setupUpdateAvailable();
+                    AtomicBoolean fallbackCalled = new AtomicBoolean(false);
+                    InAppUpdateController controller = createController(activity);
+                    controller.onMenuItemClicked(() -> fallbackCalled.set(true));
+                    ShadowLooper.idleMainLooper();
 
-            AtomicBoolean fallbackCalled = new AtomicBoolean(false);
-            InAppUpdateController controller = createController(activity);
-            controller.onMenuItemClicked(() -> fallbackCalled.set(true));
-            ShadowLooper.idleMainLooper();
-
-            assertFalse(fallbackCalled.get());
-            verify(mSnackbarManager, never()).showSnackbar(any());
-        } finally {
-            activityController.destroy();
-        }
+                    assertFalse(fallbackCalled.get());
+                    verify(mSnackbarManager, never()).showSnackbar(any());
+                });
     }
 
     @Test
@@ -1858,32 +1380,12 @@ public class InAppUpdateControllerTest {
     @Test
     @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
     public void testOnMenuItemClicked_flowStartFails_triggersFallback() throws Exception {
-        setupUpdateAvailable();
-        AppUpdateInfo info = mFakeAppUpdateManager.getAppUpdateInfo().getResult();
-
-        AppUpdateManager mockManager = mock(AppUpdateManager.class);
-        when(mockManager.getAppUpdateInfo()).thenReturn(Tasks.forResult(info));
-        when(mockManager.startUpdateFlowForResult(any(), any(Activity.class), any(), anyInt()))
-                .thenReturn(false);
-        InAppUpdateController.setAppUpdateManagerForTesting(mockManager);
-
-        var watcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord(
-                                InAppUpdateController.HISTOGRAM_APP_MENU_ACTION,
-                                InAppUpdateController.AppMenuAction.INTENT_FALLBACK)
-                        .expectIntRecord(
-                                InAppUpdateController.HISTOGRAM_DOWNLOAD_RESULT,
-                                InAppUpdateController.DownloadResult.START_FAILED)
-                        .build();
-
-        AtomicBoolean fallbackCalled = new AtomicBoolean(false);
-        InAppUpdateController controller = createController();
-        controller.onMenuItemClicked(() -> fallbackCalled.set(true));
-        ShadowLooper.idleMainLooper();
-
-        watcher.assertExpected();
-        assertTrue(fallbackCalled.get());
+        assertMenuStartFlowFailure(
+                mockManager ->
+                        when(mockManager.startUpdateFlowForResult(
+                                        any(), any(Activity.class), any(), anyInt()))
+                                .thenReturn(false),
+                InAppUpdateController.DownloadResult.START_FAILED);
     }
 
     @Test
@@ -1891,79 +1393,34 @@ public class InAppUpdateControllerTest {
     public void
             testOnMenuItemClicked_sendIntentException_recordsSendIntentFailedAndTriggersFallback()
                     throws Exception {
-        setupUpdateAvailable();
-        AppUpdateInfo info = mFakeAppUpdateManager.getAppUpdateInfo().getResult();
-
-        AppUpdateManager mockManager = mock(AppUpdateManager.class);
-        when(mockManager.getAppUpdateInfo()).thenReturn(Tasks.forResult(info));
-        doThrow(new IntentSender.SendIntentException("Intent failed"))
-                .when(mockManager)
-                .startUpdateFlowForResult(any(), any(Activity.class), any(), anyInt());
-        InAppUpdateController.setAppUpdateManagerForTesting(mockManager);
-
-        var watcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord(
-                                InAppUpdateController.HISTOGRAM_APP_MENU_ACTION,
-                                InAppUpdateController.AppMenuAction.INTENT_FALLBACK)
-                        .expectIntRecord(
-                                InAppUpdateController.HISTOGRAM_DOWNLOAD_RESULT,
-                                InAppUpdateController.DownloadResult.SEND_INTENT_FAILED)
-                        .build();
-
-        AtomicBoolean fallbackCalled = new AtomicBoolean(false);
-        InAppUpdateController controller = createController();
-        controller.onMenuItemClicked(() -> fallbackCalled.set(true));
-        ShadowLooper.idleMainLooper();
-
-        watcher.assertExpected();
-        assertTrue(fallbackCalled.get());
+        assertMenuStartFlowFailure(
+                mockManager ->
+                        doThrow(new IntentSender.SendIntentException("Intent failed"))
+                                .when(mockManager)
+                                .startUpdateFlowForResult(
+                                        any(), any(Activity.class), any(), anyInt()),
+                InAppUpdateController.DownloadResult.SEND_INTENT_FAILED);
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
     public void testOnMenuItemClicked_runtimeException_recordsStartExceptionAndTriggersFallback()
             throws Exception {
-        setupUpdateAvailable();
-        AppUpdateInfo info = mFakeAppUpdateManager.getAppUpdateInfo().getResult();
-
-        AppUpdateManager mockManager = mock(AppUpdateManager.class);
-        when(mockManager.getAppUpdateInfo()).thenReturn(Tasks.forResult(info));
-        doThrow(new RuntimeException("Crash"))
-                .when(mockManager)
-                .startUpdateFlowForResult(any(), any(Activity.class), any(), anyInt());
-        InAppUpdateController.setAppUpdateManagerForTesting(mockManager);
-
-        var watcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord(
-                                InAppUpdateController.HISTOGRAM_APP_MENU_ACTION,
-                                InAppUpdateController.AppMenuAction.INTENT_FALLBACK)
-                        .expectIntRecord(
-                                InAppUpdateController.HISTOGRAM_DOWNLOAD_RESULT,
-                                InAppUpdateController.DownloadResult.START_EXCEPTION)
-                        .build();
-
-        AtomicBoolean fallbackCalled = new AtomicBoolean(false);
-        InAppUpdateController controller = createController();
-        controller.onMenuItemClicked(() -> fallbackCalled.set(true));
-        ShadowLooper.idleMainLooper();
-
-        watcher.assertExpected();
-        assertTrue(fallbackCalled.get());
+        assertMenuStartFlowFailure(
+                mockManager ->
+                        doThrow(new RuntimeException("Crash"))
+                                .when(mockManager)
+                                .startUpdateFlowForResult(
+                                        any(), any(Activity.class), any(), anyInt()),
+                InAppUpdateController.DownloadResult.START_EXCEPTION);
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
     public void testOnMenuItemClicked_completeUpdateFails_triggersFallback() {
-        AppUpdateInfo mockInfo = mock(AppUpdateInfo.class);
-        when(mockInfo.installStatus()).thenReturn(InstallStatus.DOWNLOADED);
-
-        AppUpdateManager mockManager = mock(AppUpdateManager.class);
-        when(mockManager.getAppUpdateInfo()).thenReturn(Tasks.forResult(mockInfo));
+        AppUpdateManager mockManager = setMockManagerReporting(InstallStatus.DOWNLOADED);
         when(mockManager.completeUpdate())
                 .thenReturn(Tasks.forException(new RuntimeException("Complete failed")));
-        InAppUpdateController.setAppUpdateManagerForTesting(mockManager);
 
         var watcher =
                 HistogramWatcher.newBuilder()
@@ -1988,12 +1445,8 @@ public class InAppUpdateControllerTest {
     @Test
     @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
     public void testOnMenuItemClicked_downloadedWithActiveRestartSnackbar_dismissesSnackbar() {
-        AppUpdateManager mockManager = mock(AppUpdateManager.class);
-        AppUpdateInfo mockInfo = mock(AppUpdateInfo.class);
-        when(mockInfo.installStatus()).thenReturn(InstallStatus.DOWNLOADED);
-        when(mockManager.getAppUpdateInfo()).thenReturn(Tasks.forResult(mockInfo));
+        AppUpdateManager mockManager = setMockManagerReporting(InstallStatus.DOWNLOADED);
         when(mockManager.completeUpdate()).thenReturn(Tasks.forResult(null));
-        InAppUpdateController.setAppUpdateManagerForTesting(mockManager);
 
         InAppUpdateController controller = createController();
         controller.onResume();
@@ -2010,26 +1463,6 @@ public class InAppUpdateControllerTest {
         verify(mSnackbarManager).dismissSnackbars(eq(restartController));
         verify(mMockRestartScheduler).cancelTask();
         verify(mockManager).completeUpdate();
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
-    public void testOnMenuItemClicked_activeDiscoverySnackbar_dismissesDiscoverySnackbar() {
-        setupUpdateAvailable();
-
-        InAppUpdateController controller = createController();
-        controller.checkAndStartUpdateFlow();
-        ShadowLooper.idleMainLooper();
-
-        InAppUpdateSnackbarController discoveryController =
-                controller.getDiscoverySnackbarControllerForTesting();
-        assertNotNull(discoveryController);
-
-        controller.onMenuItemClicked(null);
-        ShadowLooper.idleMainLooper();
-
-        assertNull(controller.getDiscoverySnackbarControllerForTesting());
-        verify(mSnackbarManager).dismissSnackbars(eq(discoveryController));
     }
 
     @Test
@@ -2124,44 +1557,13 @@ public class InAppUpdateControllerTest {
     @Test
     @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
     public void testCheckAndStartUpdateFlow_clearsFlagWhenNotDownloaded() {
-        int[][] states = {
-            {InstallStatus.UNKNOWN, UpdateAvailability.UPDATE_NOT_AVAILABLE},
-            {InstallStatus.DOWNLOADING, UpdateAvailability.UPDATE_AVAILABLE},
-            {InstallStatus.PENDING, UpdateAvailability.UPDATE_AVAILABLE},
-        };
-        for (int[] state : states) {
-            InAppUpdatePolicy.setUpdateDownloaded(true);
-            setMockManagerReporting(state[0], state[1]);
-
-            InAppUpdateController controller = createController();
-            controller.checkAndStartUpdateFlow();
-            ShadowLooper.idleMainLooper();
-            assertFalse(
-                    "Flag should be cleared for installStatus=" + state[0],
-                    InAppUpdatePolicy.isUpdateDownloaded());
-        }
+        assertClearsDownloadedFlagWhenNotDownloaded(InAppUpdateController::checkAndStartUpdateFlow);
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
     public void testOnResume_clearsFlagWhenNotDownloaded() {
-        int[][] states = {
-            {InstallStatus.UNKNOWN, UpdateAvailability.UPDATE_NOT_AVAILABLE},
-            {InstallStatus.DOWNLOADING, UpdateAvailability.UPDATE_AVAILABLE},
-            {InstallStatus.PENDING, UpdateAvailability.UPDATE_AVAILABLE},
-        };
-        for (int[] state : states) {
-            InAppUpdateController.resetResumeCooldownForTesting();
-            InAppUpdatePolicy.setUpdateDownloaded(true);
-            setMockManagerReporting(state[0], state[1]);
-
-            InAppUpdateController controller = createController();
-            controller.onResume();
-            ShadowLooper.idleMainLooper();
-            assertFalse(
-                    "Flag should be cleared for installStatus=" + state[0],
-                    InAppUpdatePolicy.isUpdateDownloaded());
-        }
+        assertClearsDownloadedFlagWhenNotDownloaded(InAppUpdateController::onResume);
     }
 
     @Test

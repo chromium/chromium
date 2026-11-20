@@ -46,7 +46,6 @@ import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.variations.VariationsAssociatedData;
 import org.chromium.components.variations.VariationsAssociatedDataJni;
 import org.chromium.gms.ChromiumPlayServicesAvailability;
-import org.chromium.ui.modaldialog.ModalDialogManager;
 
 /** Unit tests for {@link UpdateMenuItemHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -56,12 +55,15 @@ public class UpdateMenuItemHelperTest {
     @Mock private VariationsAssociatedData.Natives mMockVariations;
     @Mock private PrefService mPrefService;
     @Mock private Profile mProfile;
-    @Mock private ModalDialogManager mModalDialogManager;
 
+    private ActivityController<Activity> mActivityController;
+    private Activity mActivity;
     private FakeAppUpdateManager mFakeAppUpdateManager;
 
     @Before
     public void setUp() {
+        mActivityController = Robolectric.buildActivity(Activity.class).setup();
+        mActivity = mActivityController.get();
         ChromiumPlayServicesAvailability.setIsAvailableForTesting(true);
         InAppUpdatePolicy.setIsOfficialBuildForTesting(true);
 
@@ -74,173 +76,119 @@ public class UpdateMenuItemHelperTest {
 
     @After
     public void tearDown() {
+        if (mActivityController != null && !mActivity.isDestroyed()) {
+            mActivityController.destroy();
+        }
         InAppUpdateController.setAppUpdateManagerForTesting(null);
     }
 
-    private InAppUpdateController createController(Activity activity) {
-        mFakeAppUpdateManager = new FakeAppUpdateManager(activity);
+    private InAppUpdateController createController() {
+        mFakeAppUpdateManager = new FakeAppUpdateManager(mActivity);
         mFakeAppUpdateManager.setUpdateAvailable(2);
         InAppUpdateController.setAppUpdateManagerForTesting(mFakeAppUpdateManager);
-        return new InAppUpdateController(
-                activity, () -> null, () -> null, () -> null, () -> mModalDialogManager);
+        return new InAppUpdateController(mActivity, () -> null);
+    }
+
+    private UpdateMenuItemHelper setAvailableUpdateStatus(String updateUrl) {
+        UpdateMenuItemHelper helper = UpdateMenuItemHelper.getInstance(mProfile);
+        UpdateStatus status = new UpdateStatus();
+        status.updateState = UpdateState.UPDATE_AVAILABLE;
+        status.latestVersion = "130.0.0.0";
+        status.updateUrl = updateUrl;
+        helper.setUpdateStatusForTesting(status);
+        return helper;
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
     public void testOnMenuItemClicked_nullStatus_doesNothing() {
-        ActivityController<Activity> activityController =
-                Robolectric.buildActivity(Activity.class).setup();
-        try {
-            Activity activity = activityController.get();
-            InAppUpdateController controller = createController(activity);
-            UpdateMenuItemHelper helper = UpdateMenuItemHelper.getInstance(mProfile);
-            helper.setUpdateStatusForTesting(null);
+        InAppUpdateController controller = createController();
+        UpdateMenuItemHelper helper = UpdateMenuItemHelper.getInstance(mProfile);
+        helper.setUpdateStatusForTesting(null);
 
-            helper.onMenuItemClicked(activity, controller);
+        helper.onMenuItemClicked(mActivity, controller);
 
-            verify(mPrefService, never())
-                    .setString(eq(Pref.LATEST_VERSION_WHEN_CLICKED_UPDATE_MENU_ITEM), any());
-        } finally {
-            activityController.destroy();
-        }
+        verify(mPrefService, never())
+                .setString(eq(Pref.LATEST_VERSION_WHEN_CLICKED_UPDATE_MENU_ITEM), any());
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
     public void testOnMenuItemClicked_eligible_delegatesToController() {
-        ActivityController<Activity> activityController =
-                Robolectric.buildActivity(Activity.class).setup();
-        try {
-            Activity activity = activityController.get();
-            InAppUpdateController controller = createController(activity);
+        InAppUpdateController controller = createController();
+        UpdateMenuItemHelper helper =
+                setAvailableUpdateStatus(
+                        "https://play.google.com/store/apps/details?id=com.android.chrome");
 
-            UpdateMenuItemHelper helper = UpdateMenuItemHelper.getInstance(mProfile);
-            UpdateStatus status = new UpdateStatus();
-            status.updateState = UpdateState.UPDATE_AVAILABLE;
-            status.latestVersion = "130.0.0.0";
-            status.updateUrl = "https://play.google.com/store/apps/details?id=com.android.chrome";
-            helper.setUpdateStatusForTesting(status);
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        InAppUpdateController.HISTOGRAM_APP_MENU_ACTION,
+                        InAppUpdateController.AppMenuAction.TRIGGER_DOWNLOAD);
 
-            var watcher =
-                    HistogramWatcher.newSingleRecordWatcher(
-                            InAppUpdateController.HISTOGRAM_APP_MENU_ACTION,
-                            InAppUpdateController.AppMenuAction.TRIGGER_DOWNLOAD);
+        helper.onMenuItemClicked(mActivity, controller);
+        ShadowLooper.idleMainLooper();
 
-            helper.onMenuItemClicked(activity, controller);
-            ShadowLooper.idleMainLooper();
-
-            watcher.assertExpected();
-            assertEquals(
-                    Integer.valueOf(AppUpdateType.FLEXIBLE),
-                    mFakeAppUpdateManager.getTypeForUpdateInProgress());
-            verify(mPrefService)
-                    .setString(
-                            eq(Pref.LATEST_VERSION_WHEN_CLICKED_UPDATE_MENU_ITEM), eq("130.0.0.0"));
-        } finally {
-            activityController.destroy();
-        }
+        watcher.assertExpected();
+        assertEquals(
+                Integer.valueOf(AppUpdateType.FLEXIBLE),
+                mFakeAppUpdateManager.getTypeForUpdateInProgress());
+        verify(mPrefService)
+                .setString(eq(Pref.LATEST_VERSION_WHEN_CLICKED_UPDATE_MENU_ITEM), eq("130.0.0.0"));
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
     public void testOnMenuItemClicked_nonChromeActivity_runsFallback() {
-        ActivityController<Activity> nonChromeController =
-                Robolectric.buildActivity(Activity.class).setup();
-        try {
-            Activity activity = nonChromeController.get();
-            UpdateMenuItemHelper helper = UpdateMenuItemHelper.getInstance(mProfile);
-            UpdateStatus status = new UpdateStatus();
-            status.updateState = UpdateState.UPDATE_AVAILABLE;
-            status.latestVersion = "130.0.0.0";
-            status.updateUrl = "https://play.google.com/store/apps/details?id=com.android.chrome";
-            helper.setUpdateStatusForTesting(status);
+        UpdateMenuItemHelper helper =
+                setAvailableUpdateStatus(
+                        "https://play.google.com/store/apps/details?id=com.android.chrome");
 
-            helper.onMenuItemClicked(activity);
-            ShadowLooper.idleMainLooper();
+        helper.onMenuItemClicked(mActivity);
+        ShadowLooper.idleMainLooper();
 
-            verify(mPrefService)
-                    .setString(
-                            eq(Pref.LATEST_VERSION_WHEN_CLICKED_UPDATE_MENU_ITEM), eq("130.0.0.0"));
-        } finally {
-            nonChromeController.destroy();
-        }
+        verify(mPrefService)
+                .setString(eq(Pref.LATEST_VERSION_WHEN_CLICKED_UPDATE_MENU_ITEM), eq("130.0.0.0"));
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
     public void testOnMenuItemClicked_emptyUpdateUrl_doesNotSetPrefOrUpdateState() {
-        ActivityController<Activity> nonChromeController =
-                Robolectric.buildActivity(Activity.class).setup();
-        try {
-            Activity activity = nonChromeController.get();
-            UpdateMenuItemHelper helper = UpdateMenuItemHelper.getInstance(mProfile);
-            UpdateStatus status = new UpdateStatus();
-            status.updateState = UpdateState.UPDATE_AVAILABLE;
-            status.latestVersion = "130.0.0.0";
-            status.updateUrl = "";
-            helper.setUpdateStatusForTesting(status);
+        UpdateMenuItemHelper helper = setAvailableUpdateStatus("");
 
-            helper.onMenuItemClicked(activity);
-            ShadowLooper.idleMainLooper();
+        helper.onMenuItemClicked(mActivity);
+        ShadowLooper.idleMainLooper();
 
-            verify(mPrefService, never())
-                    .setString(eq(Pref.LATEST_VERSION_WHEN_CLICKED_UPDATE_MENU_ITEM), any());
-        } finally {
-            nonChromeController.destroy();
-        }
+        verify(mPrefService, never())
+                .setString(eq(Pref.LATEST_VERSION_WHEN_CLICKED_UPDATE_MENU_ITEM), any());
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
     public void testOnMenuItemClicked_nullController_fallsBackToIntent() {
-        ActivityController<Activity> activityController =
-                Robolectric.buildActivity(Activity.class).setup();
-        try {
-            Activity activity = activityController.get();
+        UpdateMenuItemHelper helper =
+                setAvailableUpdateStatus(
+                        "https://play.google.com/store/apps/details?id=com.android.chrome");
 
-            UpdateMenuItemHelper helper = UpdateMenuItemHelper.getInstance(mProfile);
-            UpdateStatus status = new UpdateStatus();
-            status.updateState = UpdateState.UPDATE_AVAILABLE;
-            status.latestVersion = "130.0.0.0";
-            status.updateUrl = "https://play.google.com/store/apps/details?id=com.android.chrome";
-            helper.setUpdateStatusForTesting(status);
+        helper.onMenuItemClicked(mActivity, null);
+        ShadowLooper.idleMainLooper();
 
-            helper.onMenuItemClicked(activity, null);
-            ShadowLooper.idleMainLooper();
-
-            verify(mPrefService)
-                    .setString(
-                            eq(Pref.LATEST_VERSION_WHEN_CLICKED_UPDATE_MENU_ITEM), eq("130.0.0.0"));
-        } finally {
-            activityController.destroy();
-        }
+        verify(mPrefService)
+                .setString(eq(Pref.LATEST_VERSION_WHEN_CLICKED_UPDATE_MENU_ITEM), eq("130.0.0.0"));
     }
 
     @Test
     @DisableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
     public void testOnMenuItemClicked_featureDisabled_fallsBackToIntent() {
-        ActivityController<Activity> activityController =
-                Robolectric.buildActivity(Activity.class).setup();
-        try {
-            Activity activity = activityController.get();
-            InAppUpdateController controller = Mockito.mock(InAppUpdateController.class);
+        InAppUpdateController controller = Mockito.mock(InAppUpdateController.class);
+        UpdateMenuItemHelper helper =
+                setAvailableUpdateStatus(
+                        "https://play.google.com/store/apps/details?id=com.android.chrome");
 
-            UpdateMenuItemHelper helper = UpdateMenuItemHelper.getInstance(mProfile);
-            UpdateStatus status = new UpdateStatus();
-            status.updateState = UpdateState.UPDATE_AVAILABLE;
-            status.latestVersion = "130.0.0.0";
-            status.updateUrl = "https://play.google.com/store/apps/details?id=com.android.chrome";
-            helper.setUpdateStatusForTesting(status);
+        helper.onMenuItemClicked(mActivity, controller);
+        ShadowLooper.idleMainLooper();
 
-            helper.onMenuItemClicked(activity, controller);
-            ShadowLooper.idleMainLooper();
-
-            Mockito.verifyNoInteractions(controller);
-            verify(mPrefService)
-                    .setString(
-                            eq(Pref.LATEST_VERSION_WHEN_CLICKED_UPDATE_MENU_ITEM), eq("130.0.0.0"));
-        } finally {
-            activityController.destroy();
-        }
+        Mockito.verifyNoInteractions(controller);
+        verify(mPrefService)
+                .setString(eq(Pref.LATEST_VERSION_WHEN_CLICKED_UPDATE_MENU_ITEM), eq("130.0.0.0"));
     }
 }
