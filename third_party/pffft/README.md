@@ -1,7 +1,7 @@
 # Notes on PFFFT
 We strongly recommend to **read this file** before using PFFFT and to **always wrap** the original C library within a C++ wrapper.
 
-[Example of PFFFT wrapper](https://cs.chromium.org/chromium/src/third_party/webrtc/modules/audio_processing/utility/pffft_wrapper.h).
+[Example of PFFFT wrapper](https://cs.chromium.org/chromium/src/third_party/pffft/wrapper/pffft_wrapper.h).
 
 ## Scratch buffer
 The caller can optionally provide a scratch buffer. When not provided, VLA is used to provide a thread-safe option.

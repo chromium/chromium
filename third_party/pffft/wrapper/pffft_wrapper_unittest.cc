@@ -8,15 +8,15 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
-// #include "modules/audio_processing/utility/pffft_wrapper.h"
+#include "third_party/pffft/wrapper/pffft_wrapper.h"
 
 #include <algorithm>
 #include <cstdlib>
 #include <memory>
 #include <span>
 
-// #include "test/gmock.h"
-// #include "test/gtest.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/pffft/src/pffft.h"
 
 namespace webrtc {
@@ -118,7 +118,7 @@ TEST(PffftTest, CreateWrapperWithValidSize) {
   }
 }
 
-#if !defined(NDEBUG) && GTEST_HAS_DEATH_TEST && !defined(WEBRTC_ANDROID)
+#if !defined(NDEBUG) && GTEST_HAS_DEATH_TEST && !defined(__ANDROID__)
 
 class PffftInvalidSizeDeathTest : public ::testing::Test,
                                   public ::testing::WithParamInterface<size_t> {
@@ -158,10 +158,12 @@ INSTANTIATE_TEST_SUITE_P(PffftTest,
 
 #endif
 
-// TODO(https://crbug.com/webrtc/9577): Enable once SIMD is always enabled.
-TEST(PffftTest, DISABLED_CheckSimd) {
+// Scalar builds (see `common_config` in BUILD.gn) have no SIMD by design.
+#if !defined(PFFFT_SIMD_DISABLE)
+TEST(PffftTest, CheckSimd) {
   EXPECT_TRUE(Pffft::IsSimdEnabled());
 }
+#endif
 
 TEST(PffftTest, FftBitExactness) {
   for (int fft_size : kFftSizes) {

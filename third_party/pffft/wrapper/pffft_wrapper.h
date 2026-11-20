@@ -8,8 +8,8 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
-#ifndef MODULES_AUDIO_PROCESSING_UTILITY_PFFFT_WRAPPER_H_
-#define MODULES_AUDIO_PROCESSING_UTILITY_PFFFT_WRAPPER_H_
+#ifndef THIRD_PARTY_PFFFT_WRAPPER_PFFFT_WRAPPER_H_
+#define THIRD_PARTY_PFFFT_WRAPPER_PFFFT_WRAPPER_H_
 
 #include <cstddef>
 #include <memory>
@@ -91,4 +91,4 @@ class Pffft {
 
 }  // namespace webrtc
 
-#endif  // MODULES_AUDIO_PROCESSING_UTILITY_PFFFT_WRAPPER_H_
+#endif  // THIRD_PARTY_PFFFT_WRAPPER_PFFFT_WRAPPER_H_

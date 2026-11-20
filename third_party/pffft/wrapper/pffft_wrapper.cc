@@ -8,13 +8,13 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
-// #include "modules/audio_processing/utility/pffft_wrapper.h"
+#include "third_party/pffft/wrapper/pffft_wrapper.h"
 
+#include <cassert>
 #include <cstddef>
 #include <memory>
 #include <span>
 
-// #include "rtc_base/checks.h"
 #include "third_party/pffft/src/pffft.h"
 
 namespace webrtc {
@@ -54,8 +54,8 @@ Pffft::Pffft(size_t fft_size, FftType fft_type)
           fft_type == Pffft::FftType::kReal ? PFFFT_REAL : PFFFT_COMPLEX)),
       scratch_buffer_(
           AllocatePffftBuffer(GetBufferSize(fft_size_, fft_type_))) {
-  RTC_DCHECK(pffft_status_);
-  RTC_DCHECK(scratch_buffer_);
+  assert(pffft_status_);
+  assert(scratch_buffer_);
 }
 
 Pffft::~Pffft() {
@@ -98,9 +98,9 @@ std::unique_ptr<Pffft::FloatBuffer> Pffft::CreateBuffer() const {
 void Pffft::ForwardTransform(const FloatBuffer& in,
                              FloatBuffer* out,
                              bool ordered) {
-  RTC_DCHECK_EQ(in.size(), GetBufferSize(fft_size_, fft_type_));
-  RTC_DCHECK_EQ(in.size(), out->size());
-  RTC_DCHECK(scratch_buffer_);
+  assert(in.size() == GetBufferSize(fft_size_, fft_type_));
+  assert(in.size() == out->size());
+  assert(scratch_buffer_);
   if (ordered) {
     pffft_transform_ordered(pffft_status_, in.const_data(), out->data(),
                             scratch_buffer_, PFFFT_FORWARD);
@@ -113,9 +113,9 @@ void Pffft::ForwardTransform(const FloatBuffer& in,
 void Pffft::BackwardTransform(const FloatBuffer& in,
                               FloatBuffer* out,
                               bool ordered) {
-  RTC_DCHECK_EQ(in.size(), GetBufferSize(fft_size_, fft_type_));
-  RTC_DCHECK_EQ(in.size(), out->size());
-  RTC_DCHECK(scratch_buffer_);
+  assert(in.size() == GetBufferSize(fft_size_, fft_type_));
+  assert(in.size() == out->size());
+  assert(scratch_buffer_);
   if (ordered) {
     pffft_transform_ordered(pffft_status_, in.const_data(), out->data(),
                             scratch_buffer_, PFFFT_BACKWARD);
@@ -129,9 +129,9 @@ void Pffft::FrequencyDomainConvolve(const FloatBuffer& fft_x,
                                     const FloatBuffer& fft_y,
                                     FloatBuffer* out,
                                     float scaling) {
-  RTC_DCHECK_EQ(fft_x.size(), GetBufferSize(fft_size_, fft_type_));
-  RTC_DCHECK_EQ(fft_x.size(), fft_y.size());
-  RTC_DCHECK_EQ(fft_x.size(), out->size());
+  assert(fft_x.size() == GetBufferSize(fft_size_, fft_type_));
+  assert(fft_x.size() == fft_y.size());
+  assert(fft_x.size() == out->size());
   pffft_zconvolve_accumulate(pffft_status_, fft_x.const_data(),
                              fft_y.const_data(), out->data(), scaling);
 }

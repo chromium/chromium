@@ -16,6 +16,7 @@ PFFFT does 1D Fast Fourier Transforms, of single precision real and complex vect
 
 Note about the structure of //third_party/pffft:
 The imported third party code (with patches applied, see "Local Modifications") lives in //third_party/pffft/src/, whereas the fuzzer and unit test code lives in //third_party/pffft.
+The C++ wrapper in //third_party/pffft/wrapper/ is copied from WebRTC (modules/audio_processing/utility/pffft_wrapper.*, BSD license, The WebRTC project authors) so that Chromium and WebRTC can share it.
 
 Remarks on the C library and recommendations:
 - The C API is unsafe: input and output arrays are passed as pointers without size

@@ -32,6 +32,33 @@ static_library("pffft") {
   ]
 }
 
+# C++ wrapper shared by Chromium and WebRTC. It must depend only on the C++
+# standard library and :pffft, because standalone WebRTC has no //base.
+static_library("pffft_wrapper") {
+  configs += [ ":common_config" ]
+  sources = [
+    "wrapper/pffft_wrapper.cc",
+    "wrapper/pffft_wrapper.h",
+  ]
+  public_deps = [ ":pffft" ]
+}
+
+# Wrapper tests, linked into Chromium's pffft_unittest and into WebRTC's
+# audio_processing_unittests (through an rtc_cc_test shim in WebRTC).
+source_set("pffft_wrapper_unittests") {
+  testonly = true
+
+  # Exposes PFFFT_SIMD_DISABLE to the tests.
+  configs += [ ":common_config" ]
+  sources = [ "wrapper/pffft_wrapper_unittest.cc" ]
+  deps = [
+    ":pffft",
+    ":pffft_wrapper",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
 # Fuzzing.
 
 group("fuzzers") {
@@ -164,6 +191,7 @@ test("pffft_unittest") {
   deps = [
     ":fftpack",
     ":pffft",
+    ":pffft_wrapper_unittests",
     "//testing/gtest",
     "//testing/gtest:gtest_main",
   ]
