@@ -417,6 +417,14 @@ int64_t WindowTreeHostPlatform::OnStateUpdate(
   // expensive.
   window()->AllocateLocalSurfaceId();
   compositor()->SetLocalSurfaceIdFromParent(window()->GetLocalSurfaceId());
+  // The platform window waits for a frame with this LocalSurfaceId to be
+  // swapped before acknowledging the state change (e.g. xdg_surface
+  // ack_configure on Wayland). A state change that doesn't change the size
+  // (e.g. maximizing a window that already fills the work area) may not
+  // damage any layer, in which case viz would skip drawing and swapping the
+  // frame and the acknowledgement would be delayed until something else
+  // repaints. Force a minimal amount of damage to guarantee a swap.
+  compositor()->ScheduleMinimalDamageOnNextCommit();
 
   return window()->GetLocalSurfaceId().parent_sequence_number();
 }

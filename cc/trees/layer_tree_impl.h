@@ -544,6 +544,9 @@ class CC_EXPORT LayerTreeImpl {
   }
 
   void ForceRedrawNextActivation() { next_activation_forces_redraw_ = true; }
+  void ForceMinimalDamageNextActivation() {
+    next_activation_forces_minimal_damage_ = true;
+  }
 
   void set_ui_resource_request_queue(UIResourceRequestQueue queue);
 
@@ -986,6 +989,8 @@ class CC_EXPORT LayerTreeImpl {
   bool needs_surface_ranges_sync_ : 1 = false;
 
   bool next_activation_forces_redraw_ : 1 = false;
+
+  bool next_activation_forces_minimal_damage_ : 1 = false;
 
   bool handle_visibility_changed_ : 1 = false;
 

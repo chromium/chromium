@@ -3361,6 +3361,70 @@ class LayerTreeHostTestSetNeedsCommitWithForcedRedraw
 MULTI_THREAD_BLOCKNOTIFY_TEST_F(
     LayerTreeHostTestSetNeedsCommitWithForcedRedraw);
 
+// Verifies that SetNeedsCommitWithMinimalDamage() causes the frame drawn after
+// the next commit to have a 1x1 damage rect, even when no layer changed.
+class LayerTreeHostTestSetNeedsCommitWithMinimalDamage
+    : public LayerTreeHostTest {
+ public:
+  void SetupTree() override {
+    root_layer_ = FakePictureLayer::Create(&client_);
+    root_layer_->SetBounds(bounds_);
+    layer_tree_host()->SetRootLayer(root_layer_);
+    LayerTreeHostTest::SetupTree();
+    client_.set_bounds(root_layer_->bounds());
+  }
+
+  void BeginTest() override { PostSetNeedsCommitToMainThread(); }
+
+  void DidCommitAndDrawFrame() override {
+    switch (layer_tree_host()->SourceFrameNumber()) {
+      case 1:
+        // An empty commit, which should produce no damage.
+        layer_tree_host()->SetNeedsCommit();
+        break;
+      case 2:
+        // Another empty commit, which should produce minimal damage.
+        layer_tree_host()->SetNeedsCommitWithMinimalDamage();
+        break;
+    }
+  }
+
+  DrawResult PrepareToDrawOnThread(LayerTreeHostImpl* host_impl,
+                                   FrameData* frame_data,
+                                   DrawResult draw_result) override {
+    EXPECT_EQ(DrawResult::kSuccess, draw_result);
+    gfx::Rect root_damage_rect;
+    if (!frame_data->render_passes.empty()) {
+      root_damage_rect = frame_data->render_passes.back()->damage_rect;
+    }
+    switch (host_impl->active_tree()->source_frame_number()) {
+      case 0:
+        EXPECT_EQ(gfx::Rect(bounds_), root_damage_rect);
+        break;
+      case 1:
+        EXPECT_EQ(gfx::Rect(), root_damage_rect);
+        break;
+      case 2:
+        EXPECT_EQ(gfx::Rect(0, 0, 1, 1), root_damage_rect);
+        drew_minimal_damage_ = true;
+        EndTest();
+        break;
+    }
+    return draw_result;
+  }
+
+  void AfterTest() override { EXPECT_TRUE(drew_minimal_damage_); }
+
+ private:
+  const gfx::Size bounds_{50, 50};
+  bool drew_minimal_damage_ = false;
+  FakeContentLayerClient client_;
+  scoped_refptr<FakePictureLayer> root_layer_;
+};
+
+SINGLE_AND_MULTI_THREAD_TEST_F(
+    LayerTreeHostTestSetNeedsCommitWithMinimalDamage);
+
 // Tests that if a layer is not drawn because of some reason in the parent then
 // its damage is preserved until the next time it is drawn.
 class LayerTreeHostTestUndrawnLayersDamageLater : public LayerTreeHostTest {

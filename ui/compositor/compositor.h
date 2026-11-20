@@ -270,6 +270,16 @@ class COMPOSITOR_EXPORT Compositor
     host_->SetLocalSurfaceIdFromParent(local_surface_id_from_parent);
   }
 
+  // Ensures that the next commit produces a frame with non-empty damage, so
+  // that the frame is drawn and swapped even if no layer changed. Used when a
+  // caller waits for a frame with a new LocalSurfaceId to be presented.
+  void ScheduleMinimalDamageOnNextCommit() {
+    host_->SetNeedsCommitWithMinimalDamage();
+  }
+  bool next_commit_forces_minimal_damage_for_testing() const {
+    return host_->next_commit_forces_minimal_damage_for_testing();
+  }
+
   // Returns the size of the widget that is being drawn to in pixel coordinates.
   const gfx::Size& size() const { return size_; }
 

@@ -936,6 +936,12 @@ void LayerTreeHost::SetNeedsCommitWithForcedRedraw() {
   proxy_->SetNeedsCommit();
 }
 
+void LayerTreeHost::SetNeedsCommitWithMinimalDamage() {
+  DCHECK(IsMainThread());
+  pending_commit_state()->next_commit_forces_minimal_damage = true;
+  proxy_->SetNeedsCommit();
+}
+
 void LayerTreeHost::RequestMainFrameOnCompositorAnimation(
     PropertyChangeForcesCommitCriteria criteria,
     bool force_propagation) {

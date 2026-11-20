@@ -787,6 +787,9 @@ void LayerTreeImpl::PullPropertiesFrom(
 
   if (commit_state.next_commit_forces_redraw)
     ForceRedrawNextActivation();
+  if (commit_state.next_commit_forces_minimal_damage) {
+    ForceMinimalDamageNextActivation();
+  }
   if (commit_state.next_commit_forces_recalculate_raster_scales)
     ForceRecalculateRasterScales();
   AddPresentationCallbacks(
@@ -1043,6 +1046,10 @@ void LayerTreeImpl::PushPropertiesTo(LayerTreeImpl* target_tree) {
   if (next_activation_forces_redraw_) {
     target_tree->ForceRedrawNextActivation();
     next_activation_forces_redraw_ = false;
+  }
+  if (next_activation_forces_minimal_damage_) {
+    target_tree->ForceMinimalDamageNextActivation();
+    next_activation_forces_minimal_damage_ = false;
   }
 
   target_tree->PassSwapPromises(std::move(swap_promise_list_));
@@ -2120,6 +2127,12 @@ void LayerTreeImpl::DidBecomeActive() {
   if (next_activation_forces_redraw_) {
     host_impl_->SetViewportDamage(GetDeviceViewport());
     next_activation_forces_redraw_ = false;
+  }
+  if (next_activation_forces_minimal_damage_) {
+    const gfx::Rect viewport = GetDeviceViewport();
+    host_impl_->SetViewportDamage(gfx::IntersectRects(
+        viewport, gfx::Rect(viewport.origin(), gfx::Size(1, 1))));
+    next_activation_forces_minimal_damage_ = false;
   }
 
   // Always reset this flag on activation, as we would only have activated

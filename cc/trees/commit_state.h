@@ -130,6 +130,7 @@ struct CC_EXPORT CommitState {
   bool new_local_surface_id_request = false;
   bool next_commit_forces_recalculate_raster_scales = false;
   bool next_commit_forces_redraw = false;
+  bool next_commit_forces_minimal_damage = false;
   PropertyChangeForcesCommitCriteria property_change_forces_commit_criteria =
       PropertyChangeForcesCommitCriteria::kNone;
   BeginMainFrameTraceId trace_id{0};

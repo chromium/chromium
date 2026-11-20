@@ -437,6 +437,12 @@ class CC_EXPORT LayerTreeHost : public MutatorHostDelegate {
   // CompositorFrame.
   void SetNeedsCommitWithForcedRedraw();
 
+  // Requests a main frame and ensures that the CompositorFrame produced after
+  // the next activation has non-empty (but minimal) damage, so that it is
+  // drawn and swapped even if nothing visible changed. Unlike
+  // SetNeedsCommitWithForcedRedraw(), this does not stop deferring commits.
+  void SetNeedsCommitWithMinimalDamage();
+
   // Requests a main frame if a composited animation changes a draw property.
   void RequestMainFrameOnCompositorAnimation(
       PropertyChangeForcesCommitCriteria criteria,
@@ -685,6 +691,10 @@ class CC_EXPORT LayerTreeHost : public MutatorHostDelegate {
   // the state.
   bool new_local_surface_id_request_for_testing() const {
     return pending_commit_state()->new_local_surface_id_request;
+  }
+
+  bool next_commit_forces_minimal_damage_for_testing() const {
+    return pending_commit_state()->next_commit_forces_minimal_damage;
   }
 
   void SetDisplayColorSpaces(

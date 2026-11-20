@@ -10,6 +10,7 @@
 #include "ui/aura/test/aura_test_base.h"
 #include "ui/aura/window_tree_host_observer.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/compositor/compositor.h"
 #include "ui/platform_window/stub/stub_window.h"
 
 namespace aura {
@@ -175,6 +176,29 @@ TEST_F(WindowTreeHostPlatformTest, DeleteHostFromOnStateUpdate) {
   // This should not crash.
   EXPECT_EQ(-1, host_ptr->OnStateUpdate(old_state, new_state));
   EXPECT_EQ(nullptr, observer.host());
+}
+
+// Verifies that a window state change that doesn't change the size still
+// forces damage on the next commit, so that the frame carrying the new
+// LocalSurfaceId is swapped and the platform window can acknowledge the state
+// change (https://crbug.com/348675998).
+TEST_F(WindowTreeHostPlatformTest, StateChangeWithoutResizeForcesDamage) {
+  TestWindowTreeHost host;
+  host.InitHost();
+  host.Show();
+  ASSERT_TRUE(host.compositor()->IsVisible());
+
+  ui::PlatformWindowDelegate::State old_state;
+  old_state.bounds_dip = gfx::Rect(0, 0, 100, 100);
+  old_state.size_px = gfx::Size(100, 100);
+  ui::PlatformWindowDelegate::State new_state = old_state;
+  new_state.window_state = ui::PlatformWindowState::kMaximized;
+
+  EXPECT_FALSE(
+      host.compositor()->next_commit_forces_minimal_damage_for_testing());
+  EXPECT_NE(-1, host.OnStateUpdate(old_state, new_state));
+  EXPECT_TRUE(
+      host.compositor()->next_commit_forces_minimal_damage_for_testing());
 }
 
 }  // namespace
