@@ -825,3 +825,118 @@ IN_PROC_BROWSER_TEST_F(
                                              2);
       }));
 }
+
+// Closing the first tab in a split enters and stays in tab closing mode, and
+// does not shrink the override width by a full unsplit tab width when the
+// closed split tab was active.
+IN_PROC_BROWSER_TEST_F(HorizontalTabClosingHelperInteractiveUiTest,
+                       ClosingFirstTabInSplitEntersClosingMode) {
+  RunTestSequence(
+      WaitForShow(kNewTabButtonElementId), MoveMouseTo(kNewTabButtonElementId),
+      Do([this]() {
+        CreateConstrainedTabs(8);
+        TabStripModel* model = browser()->tab_strip_model();
+        model->ActivateTabAt(6);
+        model->AddToNewSplit(
+            {7}, split_tabs::SplitTabVisualData(),
+            split_tabs::SplitTabCreatedSource::kTabContextMenu);
+        LayoutAndFinishAnimations();
+      }),
+      Do([this]() {
+        TabStripModel* model = browser()->tab_strip_model();
+        auto* controller = GetController();
+        auto* helper = GetClosingHelper();
+        ASSERT_NE(helper, nullptr);
+
+        TabCollectionNode* unpinned = GetUnpinnedNode();
+        ASSERT_NE(unpinned, nullptr);
+        ASSERT_EQ(unpinned->children().size(), 7u);
+        ASSERT_EQ(unpinned->children()[6]->type(),
+                  TabCollectionNode::Type::SPLIT);
+        ASSERT_FALSE(unpinned->children()[6]->children().empty());
+
+        const int container_width = unpinned->view()->width();
+        const int split_tab_width =
+            unpinned->children()[6]->children()[0]->view()->width();
+        ASSERT_LT(split_tab_width, unpinned->children()[0]->view()->width());
+
+        // Close the first tab in the split (tab 6, which is active).
+        controller->CloseTab(model->GetTabAtIndex(6),
+                             CloseTabSource::kFromMouse);
+
+        EXPECT_TRUE(helper->in_tab_close());
+        EXPECT_TRUE(helper->override_available_width_for_tabs().has_value());
+        if (helper->override_available_width_for_tabs().has_value()) {
+          EXPECT_EQ(helper->override_available_width_for_tabs().value(),
+                    container_width - split_tab_width +
+                        TabStyle::Get()->GetTabOverlap());
+        }
+      }));
+}
+
+// Closing the second (trailingmost) tab in a trailing split when not
+// overflowing exits tab closing mode.
+IN_PROC_BROWSER_TEST_F(HorizontalTabClosingHelperInteractiveUiTest,
+                       ClosingSecondTabInTrailingSplitExitsClosingMode) {
+  RunTestSequence(
+      WaitForShow(kNewTabButtonElementId), MoveMouseTo(kNewTabButtonElementId),
+      Do([this]() {
+        CreateConstrainedTabs(8);
+        TabStripModel* model = browser()->tab_strip_model();
+        model->ActivateTabAt(6);
+        model->AddToNewSplit(
+            {7}, split_tabs::SplitTabVisualData(),
+            split_tabs::SplitTabCreatedSource::kTabContextMenu);
+        LayoutAndFinishAnimations();
+      }),
+      Do([this]() {
+        TabStripModel* model = browser()->tab_strip_model();
+        auto* controller = GetController();
+        auto* helper = GetClosingHelper();
+        ASSERT_NE(helper, nullptr);
+
+        // Close the trailingmost tab in the split.
+        controller->CloseTab(model->GetTabAtIndex(7),
+                             CloseTabSource::kFromMouse);
+
+        EXPECT_FALSE(helper->in_tab_close());
+        EXPECT_FALSE(helper->override_available_width_for_tabs().has_value());
+      }));
+}
+
+// Unsplitting a split without closing a tab exits tab closing mode.
+IN_PROC_BROWSER_TEST_F(HorizontalTabClosingHelperInteractiveUiTest,
+                       UnsplitWithoutClosingExitsClosingMode) {
+  RunTestSequence(
+      WaitForShow(kNewTabButtonElementId), MoveMouseTo(kNewTabButtonElementId),
+      Do([this]() {
+        CreateConstrainedTabs(10);
+        TabStripModel* model = browser()->tab_strip_model();
+        model->ActivateTabAt(2);
+        model->AddToNewSplit(
+            {3}, split_tabs::SplitTabVisualData(),
+            split_tabs::SplitTabCreatedSource::kTabContextMenu);
+        LayoutAndFinishAnimations();
+      }),
+      Do([this]() {
+        TabStripModel* model = browser()->tab_strip_model();
+        auto* controller = GetController();
+        auto* helper = GetClosingHelper();
+        ASSERT_NE(helper, nullptr);
+
+        // Close a non-split tab to enter closing mode.
+        controller->CloseTab(model->GetTabAtIndex(0),
+                             CloseTabSource::kFromMouse);
+        ASSERT_TRUE(helper->in_tab_close());
+        ASSERT_TRUE(helper->override_available_width_for_tabs().has_value());
+
+        // Standalone unsplit (not closing a tab) should exit closing mode.
+        std::optional<split_tabs::SplitTabId> split_id =
+            model->GetTabAtIndex(1)->GetSplit();
+        ASSERT_TRUE(split_id.has_value());
+        model->RemoveSplit(*split_id);
+
+        EXPECT_FALSE(helper->in_tab_close());
+        EXPECT_FALSE(helper->override_available_width_for_tabs().has_value());
+      }));
+}

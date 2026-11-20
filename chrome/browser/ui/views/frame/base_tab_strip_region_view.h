@@ -152,7 +152,8 @@ class BaseTabStripRegionView : public TabStripRegionView {
 
   void OnChildrenAdded(const tabs::TabCollectionNodes& handles);
   void OnChildrenRemoved();
-  void OnChildMoved(TabCollectionNode* moved_node);
+  void OnChildMoved(TabCollectionNode* moved_node,
+                    const TabCollectionNode* src_parent_node);
 
   gfx::Rect GetLinkDropBounds(const BrowserRootView::DropIndex& drop_index,
                               DropArrow::Direction* direction);

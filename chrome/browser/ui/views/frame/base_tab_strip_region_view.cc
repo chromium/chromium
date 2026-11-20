@@ -610,7 +610,9 @@ void BaseTabStripRegionView::OnChildrenRemoved() {
   tab_strip_view_->OnChildrenRemoved();
 }
 
-void BaseTabStripRegionView::OnChildMoved(TabCollectionNode* moved_node) {
+void BaseTabStripRegionView::OnChildMoved(
+    TabCollectionNode* moved_node,
+    const TabCollectionNode* src_parent_node) {
   hover_tab_selector_->CancelTabTransition();
   tab_strip_view_->OnChildMoved(moved_node);
 }

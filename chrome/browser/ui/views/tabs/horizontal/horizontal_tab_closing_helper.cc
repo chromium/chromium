@@ -44,8 +44,9 @@ std::optional<int> FindInactiveTabWidth(
       if (!other_tab_view->IsActive() && other_tab_view->width() > 0) {
         return other_tab_view->width();
       }
-    } else if (child->type() == TabCollectionNode::Type::SPLIT ||
-               child->type() == TabCollectionNode::Type::GROUP) {
+    } else if (child->type() == TabCollectionNode::Type::GROUP) {
+      // Only recurse into GROUP nodes; SPLIT nodes contain narrower split tabs
+      // whose width does not reflect the inactive unsplit tab width.
       if (auto width = FindInactiveTabWidth(*child, closing_tab_node)) {
         return width;
       }
@@ -106,6 +107,10 @@ HorizontalTabClosingHelper::HorizontalTabClosingHelper(
   on_child_moved_subscription_ =
       root_node_->RegisterOnChildMovedCallback(base::BindRepeating(
           &HorizontalTabClosingHelper::OnChildMoved, base::Unretained(this)));
+  on_tab_will_be_removed_subscription_ =
+      root_node_->RegisterOnTabWillBeRemovedCallback(
+          base::BindRepeating(&HorizontalTabClosingHelper::OnTabWillBeRemoved,
+                              base::Unretained(this)));
 }
 
 HorizontalTabClosingHelper::~HorizontalTabClosingHelper() = default;
@@ -155,6 +160,8 @@ void HorizontalTabClosingHelper::ExitTabClosingMode() {
 
   in_tab_close_ = false;
   override_available_width_for_tabs_.reset();
+  closing_split_handle_.reset();
+  closing_split_tab_handle_.reset();
   StopMouseWatcher();
   touch_resize_timer_.Stop();
   auto allow_animation = root_node_->GetController()->ScopedAnimateLayout();
@@ -216,12 +223,43 @@ void HorizontalTabClosingHelper::OnChildrenAdded(
   ExitTabClosingMode();
 }
 
-void HorizontalTabClosingHelper::OnChildMoved(TabCollectionNode* moved_node) {
+void HorizontalTabClosingHelper::OnChildMoved(
+    TabCollectionNode* moved_node,
+    const TabCollectionNode* src_parent_node) {
+  // Closing a tab in a split first unsplits its tabs into the parent
+  // collection before removing the closed tab. Keep tab closing mode active
+  // across that unsplit so OnChildWillBeRemoved() can lock the remaining tab
+  // widths.
+  if (closing_split_handle_.has_value() && src_parent_node &&
+      src_parent_node->GetHandle() == *closing_split_handle_) {
+    return;
+  }
   ExitTabClosingMode();
+}
+
+void HorizontalTabClosingHelper::OnTabWillBeRemoved(
+    const TabCollectionNode* tab_node) {
+  if (!in_tab_close_ || !tab_node) {
+    return;
+  }
+  if (const TabCollectionNode* parent_node =
+          root_node_->GetParentNodeForHandle(tab_node->GetHandle());
+      parent_node && parent_node->type() == TabCollectionNode::Type::SPLIT) {
+    closing_split_handle_ = parent_node->GetHandle();
+    closing_split_tab_handle_ = tab_node->GetHandle();
+  }
 }
 
 void HorizontalTabClosingHelper::OnChildWillBeRemoved(
     TabCollectionNode* child_node) {
+  const bool is_closing_split_tab =
+      closing_split_tab_handle_.has_value() &&
+      child_node->Contains(*closing_split_tab_handle_);
+  if (is_closing_split_tab) {
+    closing_split_handle_.reset();
+    closing_split_tab_handle_.reset();
+  }
+
   if (!in_tab_close_) {
     return;
   }
@@ -276,15 +314,16 @@ void HorizontalTabClosingHelper::OnChildWillBeRemoved(
 
   int size_delta = tab_view->width();
 
-  // When removing an active, non-pinned tab, the next active tab will be
-  // given the active width (unless it's pinned). So the width being
+  // When removing an active, non-pinned, non-split tab, the next active tab
+  // will be given the active width (unless it's pinned). So the width being
   // removed from the container is really the current width of whichever
   // inactive tab will be made active. Iterate forward to find the first
-  // unpinned tab that is visible.
-  if (tab_view->IsActive()) {
+  // unpinned non-split tab that is visible.
+  if (tab_view->IsActive() && !is_closing_split_tab) {
     if (TabCollectionNode* unpinned_node =
             root_node_->GetChildNodeOfType(TabCollectionNode::Type::UNPINNED)) {
-      if (auto width = FindInactiveTabWidth(*unpinned_node, tab_node)) {
+      if (auto width = FindInactiveTabWidth(*unpinned_node, tab_node);
+          width && *width < size_delta) {
         size_delta = *width;
       }
     }

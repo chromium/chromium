@@ -112,6 +112,12 @@ RootTabCollectionNode::RegisterOnChildMovedCallback(
 }
 
 base::CallbackListSubscription
+RootTabCollectionNode::RegisterOnTabWillBeRemovedCallback(
+    TabWillBeRemovedCallback callback) {
+  return on_tab_will_be_removed_callback_list_.Add(std::move(callback));
+}
+
+base::CallbackListSubscription
 RootTabCollectionNode::RegisterOnChildWillBeRemovedCallback(
     RootTabCollectionNode::ChildWillBeRemovedCallback callback) {
   return on_child_will_be_removed_callback_list_.Add(std::move(callback));
@@ -235,7 +241,7 @@ void RootTabCollectionNode::OnChildMoved(
 
   TabCollectionNode* final_moved_node = GetNodeForHandle(moved_node_handle);
   UpdateAccessibleTabIndices();
-  on_child_moved_callback_list_.Notify(final_moved_node);
+  on_child_moved_callback_list_.Notify(final_moved_node, src_parent_node);
 }
 
 void RootTabCollectionNode::OnTabStripModelChanged(
@@ -291,6 +297,9 @@ void RootTabCollectionNode::OnTabWillBeRemoved(tabs::TabHandle tab) {
     GetController()->GetDragHandler().OnTabWillBeRemoved(
         tab_interface->GetContents());
   }
+  TabCollectionNode* tab_node = GetNodeForHandle(tab);
+  CHECK(tab_node);
+  on_tab_will_be_removed_callback_list_.Notify(tab_node);
 }
 
 void RootTabCollectionNode::OnTabGroupChanged(const TabGroupChange& change) {
