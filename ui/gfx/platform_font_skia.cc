@@ -179,7 +179,14 @@ void PlatformFontSkia::EnsuresDefaultFontIsInitialized() {
     size_pixels = font_settings.size_pixels;
     style = font_settings.style;
     weight = static_cast<Font::Weight>(font_settings.weight);
-    params = linux_ui->GetDefaultFontRenderParams();
+    // Query the render params the same way as for every other font, so that
+    // Fontconfig settings apply to the default font too.
+    FontRenderParamsQuery query;
+    query.families.push_back(family);
+    query.pixel_size = size_pixels;
+    query.style = style;
+    query.weight = weight;
+    params = gfx::GetFontRenderParams(query, nullptr);
   } else
 #endif
       if (default_font_description_) {

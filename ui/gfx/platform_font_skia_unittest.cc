@@ -21,6 +21,9 @@
 #endif
 
 #if BUILDFLAG(IS_LINUX)
+#include <fontconfig/fontconfig.h>
+
+#include "ui/gfx/linux/fontconfig_util.h"
 #include "ui/linux/fake_linux_ui.h"
 #endif
 
@@ -73,18 +76,40 @@ class PlatformFontSkiaTest : public testing::Test {
   void SetUp() override {
     DCHECK_EQ(ui::LinuxUi::instance(), nullptr);
     old_linux_ui_ = ui::LinuxUi::SetInstance(&test_font_delegate_);
+    ClearFontRenderParamsCache();
+
+    // Use a fresh Fontconfig configuration with the test fonts, so that tests
+    // can add rules to it without affecting other tests.
+    override_config_ = FcConfigCreate();
+    CHECK(FcConfigParseAndLoad(override_config_, nullptr, FcTrue));
+    CHECK(FcConfigBuildFonts(override_config_));
+    original_config_ = GetGlobalFontConfig();
+    OverrideGlobalFontConfigForTesting(override_config_);
+
     PlatformFontSkia::ReloadDefaultFont();
   }
 
   void TearDown() override {
     DCHECK_EQ(&test_font_delegate_, ui::LinuxUi::instance());
+    OverrideGlobalFontConfigForTesting(original_config_);
+    FcConfigDestroy(override_config_.ExtractAsDangling());
+    ClearFontRenderParamsCache();
     ui::LinuxUi::SetInstance(old_linux_ui_);
     PlatformFontSkia::ReloadDefaultFont();
   }
 
  protected:
+  // Loads XML-formatted `data` into the current Fontconfig configuration.
+  bool LoadConfigDataIntoFontconfig(const std::string& data) {
+    return FcConfigParseAndLoadFromMemory(
+        override_config_, reinterpret_cast<const FcChar8*>(data.c_str()),
+        FcTrue);
+  }
+
   TestFontDelegate test_font_delegate_;
   raw_ptr<ui::LinuxUi> old_linux_ui_ = nullptr;
+  raw_ptr<FcConfig> override_config_ = nullptr;
+  raw_ptr<FcConfig> original_config_ = nullptr;
 };
 
 // Test that PlatformFontSkia's default constructor initializes the instance
@@ -124,6 +149,44 @@ TEST_F(PlatformFontSkiaTest, DefaultFont) {
   EXPECT_EQ(15, font2->GetFontSize());
   EXPECT_NE(font2->GetStyle() & Font::ITALIC, 0);
   EXPECT_EQ(gfx::Font::Weight::BOLD, font2->GetWeight());
+}
+
+// Test that Fontconfig has the final say over the default font's render
+// params, as it does for all other fonts.
+TEST_F(PlatformFontSkiaTest, DefaultFontUsesFontconfig) {
+  ASSERT_TRUE(LoadConfigDataIntoFontconfig(
+      "<?xml version=\"1.0\"?>\n"
+      "<!DOCTYPE fontconfig SYSTEM \"fonts.dtd\">\n"
+      "<fontconfig>\n"
+      "  <match target=\"font\">\n"
+      "    <edit name=\"antialias\" mode=\"assign\"><bool>false</bool></edit>\n"
+      "    <edit name=\"hinting\" mode=\"assign\"><bool>true</bool></edit>\n"
+      "    <edit name=\"hintstyle\" mode=\"assign\">"
+      "<const>hintfull</const></edit>\n"
+      "  </match>\n"
+      "</fontconfig>\n"));
+
+  // The toolkit reports antialiasing, but Fontconfig disables it.
+  FontRenderParams toolkit_params;
+  toolkit_params.antialiasing = true;
+  toolkit_params.hinting = FontRenderParams::HINTING_SLIGHT;
+  const ui::LinuxUi::FontSettings font_settings = {
+      .family = kTestFontName,
+      .size_pixels = 13,
+      .style = Font::NORMAL,
+      .weight = static_cast<int>(gfx::Font::Weight::NORMAL),
+  };
+  test_font_delegate_.SetFontSettings(font_settings, toolkit_params);
+
+  scoped_refptr<PlatformFontSkia> default_font(new PlatformFontSkia());
+  EXPECT_FALSE(default_font->GetFontRenderParams().antialiasing);
+  EXPECT_EQ(FontRenderParams::HINTING_FULL,
+            default_font->GetFontRenderParams().hinting);
+
+  // A font derived with a different size must get the same params.
+  Font derived =
+      Font(default_font.get()).Derive(1, Font::NORMAL, Font::Weight::NORMAL);
+  EXPECT_EQ(default_font->GetFontRenderParams(), derived.GetFontRenderParams());
 }
 #endif  // BUILDFLAG(IS_LINUX)
 
