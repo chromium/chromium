@@ -196,7 +196,7 @@ public class VerticalTabListCoordinator {
     private final VerticalPinnedTabListRecyclerView mPinnedTabsRecyclerView;
     private final ListObservable.ListObserver<Void> mPinnedTabsListObserver;
     private final TabModelSelector mTabModelSelector;
-    private final Profile mProfile;
+    private final Profile mOriginalProfile;
     private final WindowAndroid mWindowAndroid;
     private final ActivityResultTracker mActivityResultTracker;
     private final MultiInstanceManager mMultiInstanceManager;
@@ -369,7 +369,8 @@ public class VerticalTabListCoordinator {
      *
      * @param activity The host activity.
      * @param tabModelSelector The selector for accessing tab models.
-     * @param profile The current user profile.
+     * @param originalProfile The regular profile that owns this window's tabs. Incognito tabs are
+     *     still shown, and their incognito state comes from the tab model.
      * @param verticalTabsActionDelegate Delegate for performing actions on tabs.
      * @param windowAndroid The window hosting the UI.
      * @param activityResultTracker Tracker for activity results.
@@ -396,7 +397,7 @@ public class VerticalTabListCoordinator {
     public VerticalTabListCoordinator(
             Activity activity,
             TabModelSelector tabModelSelector,
-            Profile profile,
+            Profile originalProfile,
             VerticalTabsActionDelegate verticalTabsActionDelegate,
             WindowAndroid windowAndroid,
             ActivityResultTracker activityResultTracker,
@@ -421,7 +422,8 @@ public class VerticalTabListCoordinator {
         mVerticalTabsActiveSupplier = verticalTabsActiveSupplier;
         mVerticalTabsWidthSupplier = verticalTabsWidthSupplier;
         mTabModelSelector = tabModelSelector;
-        mProfile = profile;
+        assert !originalProfile.isOffTheRecord() : "Expecting a non-incognito profile.";
+        mOriginalProfile = originalProfile;
         mWindowAndroid = windowAndroid;
         mActivityResultTracker = activityResultTracker;
         mMultiInstanceManager = multiInstanceManager;
@@ -692,7 +694,7 @@ public class VerticalTabListCoordinator {
                         TabListEditorCoordinator.UNLIMITED_SELECTION,
                         /* onDragStateChangedListener */ CallbackUtils.emptyRunnable());
 
-        mMediator.initWithNative(profile.getOriginalProfile());
+        mMediator.initWithNative(originalProfile);
         mMediator.setupAccessibilityDelegate(mRecyclerView);
         mMediator.setOnLongPressTabItemEventListener(
                 (tabId, cardView) -> {
@@ -1247,12 +1249,12 @@ public class VerticalTabListCoordinator {
     }
 
     private boolean isIncognitoButtonVisible() {
-        if (mProfile.shutdownStarted() || IncognitoUtils.shouldOpenIncognitoAsWindow()) {
+        if (mOriginalProfile.shutdownStarted() || IncognitoUtils.shouldOpenIncognitoAsWindow()) {
             return false;
         }
         TabModel incognitoModel = mTabModelSelector.getModel(/* incognito= */ true);
         boolean hasIncognitoTabs = incognitoModel != null && incognitoModel.getCount() > 0;
-        return hasIncognitoTabs && IncognitoUtils.isIncognitoModeEnabled(mProfile);
+        return hasIncognitoTabs && IncognitoUtils.isIncognitoModeEnabled(mOriginalProfile);
     }
 
     private void updateIncognitoButtonVisibility() {
@@ -1462,7 +1464,7 @@ public class VerticalTabListCoordinator {
                         tabContentManager,
                         mTabModelSelector.getCurrentTabModelSupplier(),
                         TabFavicon::getBitmap);
-        mMultiThumbnailCardProvider.initWithNative(mProfile.getOriginalProfile());
+        mMultiThumbnailCardProvider.initWithNative(mOriginalProfile);
 
         mDragShadowView =
                 (StripDragShadowView)

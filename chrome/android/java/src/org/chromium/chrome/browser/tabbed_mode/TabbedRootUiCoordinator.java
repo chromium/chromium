@@ -2587,6 +2587,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         }
 
         if (VerticalTabUtils.isVerticalTabsEligible(mActivity)) {
+            // Read now, since the current profile can be an incognito one that is destroyed later.
+            Profile originalProfile = currentlySelectedProfile.getOriginalProfile();
             mVerticalTabsSideUiCoordinator =
                     new VerticalTabsSideUiCoordinator(
                             mActivity,
@@ -2596,7 +2598,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                                     new VerticalTabListCoordinator(
                                             mActivity,
                                             assumeNonNull(mTabModelSelectorSupplier.get()),
-                                            assumeNonNull(mProfileSupplier.get()),
+                                            originalProfile,
                                             mVerticalTabsActionDelegate,
                                             mWindowAndroid,
                                             mActivityResultTracker,
