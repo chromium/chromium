@@ -301,9 +301,7 @@ class CONTENT_EXPORT TextInputManager {
 
   // Returns true if |view| is currently the focused view. For popup widgets,
   // popups do not hold frame focus directly, so this check is performed
-  // against the focus state of the frame that created the popup. Views whose
-  // root is not the primary main frame's widget (e.g. pages in the
-  // back-forward cache, prerendering, or pending deletion) are never focused.
+  // against the focus state of the frame that created the popup.
   bool IsViewFocused(RenderWidgetHostViewBase* view) const;
 
   // Add and remove observers for notifications regarding updates in the

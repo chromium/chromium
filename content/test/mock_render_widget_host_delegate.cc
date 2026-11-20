@@ -91,11 +91,6 @@ TextInputManager* MockRenderWidgetHostDelegate::GetTextInputManager() {
   return &text_input_manager_;
 }
 
-bool MockRenderWidgetHostDelegate::IsWidgetForPrimaryMainFrame(
-    RenderWidgetHostImpl* render_widget_host) {
-  return true;
-}
-
 bool MockRenderWidgetHostDelegate::IsFullscreen() {
   return is_fullscreen_;
 }

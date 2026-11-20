@@ -84,8 +84,6 @@ class MockRenderWidgetHostDelegate
   RenderWidgetHostImpl* GetRenderWidgetHostWithPageFocus() override;
   void SendScreenRects() override;
   TextInputManager* GetTextInputManager() override;
-  bool IsWidgetForPrimaryMainFrame(
-      RenderWidgetHostImpl* render_widget_host) override;
   bool IsFullscreen() override;
   RenderViewHostDelegateView* GetDelegateView() override;
   VisibleTimeRequestTrigger& GetVisibleTimeRequestTrigger() override;
