@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <string>
+#include <utility>
 
 #include "base/feature_list.h"
 #include "base/files/file_enumerator.h"
@@ -97,9 +98,11 @@ OnDeviceTranslationController::CreateTranslatorError ToCreateTranslatorError(
 
 OnDeviceTranslationServiceController::PendingTask::PendingTask(
     std::set<LanguagePackKey> required_packs,
-    base::OnceClosure once_closure)
+    base::OnceClosure once_closure,
+    base::OnceCallback<void(CreateTranslatorError)> on_failure)
     : required_packs(std::move(required_packs)),
-      once_closure(std::move(once_closure)) {}
+      once_closure(std::move(once_closure)),
+      on_failure(std::move(on_failure)) {}
 
 OnDeviceTranslationServiceController::PendingTask::~PendingTask() = default;
 OnDeviceTranslationServiceController::PendingTask::PendingTask(PendingTask&&) =
@@ -180,17 +183,18 @@ void OnDeviceTranslationServiceController::CreateTranslator(
   LanguagePackRequirements language_pack_requirements =
       GetLanguagePackRequirements(*best_fit_source_language,
                                   *best_fit_target_language);
-  std::vector<LanguagePackKey> to_be_registered_packs =
-      language_pack_requirements.to_be_registered_packs;
-  if (!to_be_registered_packs.empty()) {
-    for (const auto& language_pack : to_be_registered_packs) {
-      RecordLanguagePairUma(
-          "Translate.OnDeviceTranslation.Download.LanguagePair",
-          GetSourceLanguageCode(language_pack),
-          GetTargetLanguageCode(language_pack));
-      // Register the language pack component.
-      installer_->InstallLanguagePack(language_pack);
-    }
+  for (const auto& language_pack :
+       language_pack_requirements.to_be_registered_packs) {
+    RecordLanguagePairUma("Translate.OnDeviceTranslation.Download.LanguagePair",
+                          GetSourceLanguageCode(language_pack),
+                          GetTargetLanguageCode(language_pack));
+  }
+  // Ask for every missing language pack, including the ones that were
+  // registered before, so that a download that failed earlier is retried and
+  // reports its outcome to this request.
+  for (const auto& language_pack :
+       language_pack_requirements.required_not_installed_packs) {
+    installer_->InstallLanguagePack(language_pack);
   }
 
   // Registers the TranslateKit component.
@@ -209,12 +213,18 @@ void OnDeviceTranslationServiceController::CreateTranslator(
           CreateTranslatorError::kExceedsPendingTaskCountLimitation));
       return;
     }
+    auto callbacks = base::SplitOnceCallback(std::move(callback));
     pending_tasks_.emplace_back(
         language_pack_requirements.required_packs,
         base::BindOnce(
             &OnDeviceTranslationServiceController::CreateTranslatorImpl,
             base::Unretained(this), *best_fit_source_language,
-            *best_fit_target_language, std::move(callback)));
+            *best_fit_target_language, std::move(callbacks.first)),
+        base::BindOnce(
+            [](CreateTranslatorCallback callback, CreateTranslatorError error) {
+              std::move(callback).Run(base::unexpected(error));
+            },
+            std::move(callbacks.second)));
     return;
   }
   CreateTranslatorImpl(*best_fit_source_language, *best_fit_target_language,
@@ -339,6 +349,51 @@ void OnDeviceTranslationServiceController::OnInstallationChanged() {
   MaybeRunPendingTasks();
 }
 
+void OnDeviceTranslationServiceController::OnLibraryInstallFailed(
+    InstallError error) {
+  if (installer_->IsInit()) {
+    return;
+  }
+  // Every pending task waits for the library, so none of them can complete.
+  RejectPendingTasks([](const PendingTask&) { return true; },
+                     error == InstallError::kNotEnoughDiskSpace
+                         ? CreateTranslatorError::kNotEnoughDiskSpace
+                         : CreateTranslatorError::kLibraryInstallFailed);
+}
+
+void OnDeviceTranslationServiceController::OnLanguagePackInstallFailed(
+    LanguagePackKey language_pack,
+    InstallError error) {
+  if (installer_->InstalledLanguagePacks().contains(language_pack)) {
+    return;
+  }
+  RejectPendingTasks(
+      [language_pack](const PendingTask& task) {
+        return task.required_packs.contains(language_pack);
+      },
+      error == InstallError::kNotEnoughDiskSpace
+          ? CreateTranslatorError::kNotEnoughDiskSpace
+          : CreateTranslatorError::kLanguagePackDownloadFailed);
+}
+
+void OnDeviceTranslationServiceController::RejectPendingTasks(
+    base::FunctionRef<bool(const PendingTask&)> predicate,
+    CreateTranslatorError error) {
+  std::vector<PendingTask> rejected_tasks;
+  std::vector<PendingTask> pending_tasks = std::exchange(pending_tasks_, {});
+  for (auto& task : pending_tasks) {
+    if (predicate(task)) {
+      rejected_tasks.push_back(std::move(task));
+    } else {
+      pending_tasks_.push_back(std::move(task));
+    }
+  }
+  // Run the callbacks last, because they may call back into this class.
+  for (auto& task : rejected_tasks) {
+    std::move(task.on_failure).Run(error);
+  }
+}
+
 void OnDeviceTranslationServiceController::MaybeRunPendingTasks() {
   if (pending_tasks_.empty()) {
     return;
@@ -347,7 +402,7 @@ void OnDeviceTranslationServiceController::MaybeRunPendingTasks() {
     return;
   }
   const auto installed_packs = installer_->InstalledLanguagePacks();
-  std::vector<PendingTask> pending_tasks = std::move(pending_tasks_);
+  std::vector<PendingTask> pending_tasks = std::exchange(pending_tasks_, {});
   for (auto& task : pending_tasks) {
     if (std::ranges::all_of(task.required_packs.begin(),
                             task.required_packs.end(),

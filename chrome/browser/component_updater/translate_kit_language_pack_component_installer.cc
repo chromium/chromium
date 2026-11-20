@@ -146,20 +146,26 @@ TranslateKitLanguagePackComponentInstallerPolicy::GetConfig() const {
 // static
 void TranslateKitLanguagePackComponentInstallerPolicy::UpdateComponentOnDemand(
     component_updater::ComponentUpdateService* cus,
-    LanguagePackKey language_pack_key) {
+    LanguagePackKey language_pack_key,
+    base::OnceCallback<void(update_client::Error)> callback) {
   auto language_pack_crx_id = crx_file::id_util::GenerateIdFromHash(
       on_device_translation::GetLanguagePackComponentConfig(language_pack_key)
           .public_key_sha);
   cus->GetOnDemandUpdater().OnDemandUpdate(
       language_pack_crx_id,
       component_updater::OnDemandUpdater::Priority::FOREGROUND,
-      base::BindOnce([](update_client::Error error) {
-        if (error != update_client::Error::NONE &&
-            error != update_client::Error::UPDATE_IN_PROGRESS) {
-          base::UmaHistogramEnumeration(
-              "ComponentUpdater.TranslateKit.LanguagePack.UpdateError", error);
-        }
-      }));
+      base::BindOnce(
+          [](base::OnceCallback<void(update_client::Error)> callback,
+             update_client::Error error) {
+            if (error != update_client::Error::NONE &&
+                error != update_client::Error::UPDATE_IN_PROGRESS) {
+              base::UmaHistogramEnumeration(
+                  "ComponentUpdater.TranslateKit.LanguagePack.UpdateError",
+                  error);
+            }
+            std::move(callback).Run(error);
+          },
+          std::move(callback)));
 }
 
 void RegisterTranslateKitLanguagePackComponent(

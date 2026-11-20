@@ -95,6 +95,18 @@ enum CreateTranslatorError {
 
   // The translator cannot be created, because a requested language is not supported.
   kNotSupportedLanguage = 11,
+
+  // The translator cannot be created, because the translation library failed
+  // to download or install.
+  kLibraryInstallFailed = 12,
+
+  // The translator cannot be created, because a language pack failed to
+  // download or install.
+  kLanguagePackDownloadFailed = 13,
+
+  // The translator cannot be created, because there is not enough free disk
+  // space to download the translation model.
+  kNotEnoughDiskSpace = 14,
 };
 
 // The result of TranslationManager's CreateTranslator IPC.

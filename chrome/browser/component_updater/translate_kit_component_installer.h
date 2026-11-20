@@ -35,8 +35,11 @@ class TranslateKitComponentInstallerPolicy : public ComponentInstallerPolicy {
   TranslateKitComponentInstallerPolicy& operator=(
       const TranslateKitComponentInstallerPolicy&) = delete;
 
-  // Requests to update the component.
-  static void UpdateComponentOnDemand(ComponentUpdateService* cus);
+  // Requests to update the component. `callback` runs with the result of the
+  // update request.
+  static void UpdateComponentOnDemand(
+      ComponentUpdateService* cus,
+      base::OnceCallback<void(update_client::Error)> callback);
 
   static const std::string GetExtensionId();
 

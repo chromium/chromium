@@ -290,6 +290,15 @@ blink::mojom::CreateTranslatorError GetBlinkCreateTranslateError(
         kExceedsPendingTaskCountLimitation:
       return blink::mojom::CreateTranslatorError::
           kExceedsPendingTaskCountLimitation;
+    case OnDeviceTranslationController::CreateTranslatorError::
+        kLibraryInstallFailed:
+      return blink::mojom::CreateTranslatorError::kLibraryInstallFailed;
+    case OnDeviceTranslationController::CreateTranslatorError::
+        kLanguagePackDownloadFailed:
+      return blink::mojom::CreateTranslatorError::kLanguagePackDownloadFailed;
+    case OnDeviceTranslationController::CreateTranslatorError::
+        kNotEnoughDiskSpace:
+      return blink::mojom::CreateTranslatorError::kNotEnoughDiskSpace;
   }
 }
 

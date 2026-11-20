@@ -195,5 +195,106 @@ TEST_F(OnDeviceTranslationServiceControllerTest,
       "Translate.OnDeviceTranslation.CreateFailed.LanguagePair", 0);
 }
 
+TEST_F(OnDeviceTranslationServiceControllerTest,
+       CreateTranslatorFailsWhenLibraryInstallFails) {
+  FakeOnDeviceTranslationService fake_service;
+  EXPECT_CALL(*mock_launcher_, Launch).Times(0);
+  fake_installer_->InstallLanguagePackNow(LanguagePackKey::kEn_Es);
+
+  base::test::TestFuture<base::expected<
+      mojo::PendingRemote<mojom::OnDeviceTranslator>, CreateTranslatorError>>
+      failed_future1;
+  base::test::TestFuture<base::expected<
+      mojo::PendingRemote<mojom::OnDeviceTranslator>, CreateTranslatorError>>
+      failed_future2;
+  service_controller_->CreateTranslator("en", "es",
+                                        failed_future1.GetCallback());
+  service_controller_->CreateTranslator("es", "en",
+                                        failed_future2.GetCallback());
+  EXPECT_FALSE(failed_future1.IsReady());
+
+  fake_installer_->FailLibraryInstallNow();
+  ASSERT_TRUE(failed_future1.IsReady());
+  EXPECT_EQ(failed_future1.Get().error(),
+            CreateTranslatorError::kLibraryInstallFailed);
+  ASSERT_TRUE(failed_future2.IsReady());
+  EXPECT_EQ(failed_future2.Get().error(),
+            CreateTranslatorError::kLibraryInstallFailed);
+
+  // A later CreateTranslator call retries the install and can succeed.
+  EXPECT_CALL(*mock_launcher_, Launch)
+      .WillOnce(testing::Return(
+          testing::ByMove(fake_service.BindNewPipeAndPassRemote())));
+  base::test::TestFuture<base::expected<
+      mojo::PendingRemote<mojom::OnDeviceTranslator>, CreateTranslatorError>>
+      retry_future;
+  service_controller_->CreateTranslator("en", "es", retry_future.GetCallback());
+  EXPECT_TRUE(retry_future.Get().has_value());
+}
+
+TEST_F(OnDeviceTranslationServiceControllerTest,
+       CreateTranslatorFailsWhenLanguagePackDownloadFails) {
+  fake_installer_->InitNow(base::DoNothing());
+
+  base::test::TestFuture<base::expected<
+      mojo::PendingRemote<mojom::OnDeviceTranslator>, CreateTranslatorError>>
+      en_es_future;
+  base::test::TestFuture<base::expected<
+      mojo::PendingRemote<mojom::OnDeviceTranslator>, CreateTranslatorError>>
+      fr_ja_future;
+  service_controller_->CreateTranslator("en", "es", en_es_future.GetCallback());
+  service_controller_->CreateTranslator("fr", "ja", fr_ja_future.GetCallback());
+
+  fake_installer_->FailLanguagePackInstallNow(LanguagePackKey::kEn_Es);
+  ASSERT_TRUE(en_es_future.IsReady());
+  EXPECT_EQ(en_es_future.Get().error(),
+            CreateTranslatorError::kLanguagePackDownloadFailed);
+  // The other request doesn't need the language pack that failed.
+  EXPECT_FALSE(fr_ja_future.IsReady());
+}
+
+TEST_F(OnDeviceTranslationServiceControllerTest,
+       CreateTranslatorRetriesFailedLanguagePack) {
+  FakeOnDeviceTranslationService fake_service;
+  fake_installer_->InitNow(base::DoNothing());
+
+  base::test::TestFuture<base::expected<
+      mojo::PendingRemote<mojom::OnDeviceTranslator>, CreateTranslatorError>>
+      failed_future;
+  service_controller_->CreateTranslator("en", "es",
+                                        failed_future.GetCallback());
+  fake_installer_->FailLanguagePackInstallNow(
+      LanguagePackKey::kEn_Es, InstallError::kNotEnoughDiskSpace);
+  ASSERT_TRUE(failed_future.IsReady());
+  EXPECT_EQ(failed_future.Get().error(),
+            CreateTranslatorError::kNotEnoughDiskSpace);
+  // The language pack stays registered.
+  EXPECT_THAT(fake_installer_->RegisteredLanguagePacks(),
+              UnorderedElementsAre(LanguagePackKey::kEn_Es));
+
+  // The next request asks for the registered language pack again.
+  EXPECT_CALL(*mock_launcher_, Launch)
+      .WillOnce(testing::Return(
+          testing::ByMove(fake_service.BindNewPipeAndPassRemote())));
+  base::test::TestFuture<base::expected<
+      mojo::PendingRemote<mojom::OnDeviceTranslator>, CreateTranslatorError>>
+      retry_future;
+  service_controller_->CreateTranslator("en", "es", retry_future.GetCallback());
+  EXPECT_TRUE(retry_future.Get().has_value());
+}
+
+TEST_F(OnDeviceTranslationServiceControllerTest,
+       LibraryInstallFailureIgnoredWhenLibraryIsInstalled) {
+  fake_installer_->InitNow(base::DoNothing());
+
+  base::test::TestFuture<base::expected<
+      mojo::PendingRemote<mojom::OnDeviceTranslator>, CreateTranslatorError>>
+      future;
+  // The language pack is still downloading.
+  service_controller_->CreateTranslator("en", "es", future.GetCallback());
+  fake_installer_->FailLibraryInstallNow();
+  EXPECT_FALSE(future.IsReady());
+}
+
 }  // namespace
 }  // namespace on_device_translation

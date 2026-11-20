@@ -58,10 +58,12 @@ class TranslateKitLanguagePackComponentInstallerPolicy
   std::string GetName() const override;
   update_client::InstallerAttributes GetInstallerAttributes() const override;
 
-  // Requests to update a given language pack component.
+  // Requests to update a given language pack component. `callback` runs with
+  // the result of the update request.
   static void UpdateComponentOnDemand(
       component_updater::ComponentUpdateService* cus,
-      on_device_translation::LanguagePackKey language_pack_key);
+      on_device_translation::LanguagePackKey language_pack_key,
+      base::OnceCallback<void(update_client::Error)> callback);
 
  private:
   const on_device_translation::LanguagePackComponentConfig& GetConfig() const;

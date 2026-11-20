@@ -9,6 +9,7 @@
 #include <set>
 #include <vector>
 
+#include "base/functional/function_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/no_destructor.h"
@@ -41,6 +42,9 @@ class OnDeviceTranslationController {
     kNotSupportedLanguage,
     kExceedsServiceCountLimitation,
     kExceedsPendingTaskCountLimitation,
+    kLibraryInstallFailed,
+    kLanguagePackDownloadFailed,
+    kNotEnoughDiskSpace,
   };
 
   enum class CanTranslateResult {
@@ -114,6 +118,9 @@ class OnDeviceTranslationServiceController
   void OnLanguagePackInstallationChanged(
       const LanguagePackKey lang_pack) override;
   void OnInstallationChanged() override;
+  void OnLibraryInstallFailed(InstallError error) override;
+  void OnLanguagePackInstallFailed(LanguagePackKey language_pack,
+                                   InstallError error) override;
 
  private:
   friend base::RefCounted<OnDeviceTranslationServiceController>;
@@ -123,7 +130,8 @@ class OnDeviceTranslationServiceController
   class PendingTask {
    public:
     PendingTask(std::set<LanguagePackKey> required_packs,
-                base::OnceClosure once_closure);
+                base::OnceClosure once_closure,
+                base::OnceCallback<void(CreateTranslatorError)> on_failure);
     ~PendingTask();
     PendingTask(const PendingTask&) = delete;
     PendingTask& operator=(const PendingTask&) = delete;
@@ -133,6 +141,8 @@ class OnDeviceTranslationServiceController
 
     std::set<LanguagePackKey> required_packs;
     base::OnceClosure once_closure;
+    // Rejects the task with an error when it can't complete.
+    base::OnceCallback<void(CreateTranslatorError)> on_failure;
   };
 
   // Checks if the translate service can do translation from `source_lang` to
@@ -154,6 +164,10 @@ class OnDeviceTranslationServiceController
   bool MaybeStartService();
 
   void MaybeRunPendingTasks();
+
+  // Rejects and removes the pending tasks for which `predicate` returns true.
+  void RejectPendingTasks(base::FunctionRef<bool(const PendingTask&)> predicate,
+                          CreateTranslatorError error);
 
   // Called when the service is idle and the idle timeout is reached.
   void OnServiceIdle();

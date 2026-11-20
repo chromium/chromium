@@ -6,9 +6,11 @@
 #define CHROME_BROWSER_ON_DEVICE_TRANSLATION_COMPONENT_UPDATER_LIBRARY_SOURCE_H_
 
 #include "base/files/file_path.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/on_device_translation/library_source.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/update_client/update_client_errors.h"
 
 class PrefService;
 
@@ -27,10 +29,15 @@ class ComponentUpdaterLibrarySource : public TranslateKitLibrarySource {
   void Install() override;
 
  private:
+  void UpdateOnDemand();
+  void OnUpdateFinished(update_client::Error error);
   void OnLibraryPathPrefChanged();
 
   PrefChangeRegistrar pref_change_registrar_;
+  // Whether an on-demand update that `Install()` started is in progress.
+  bool update_in_progress_ = false;
   SEQUENCE_CHECKER(sequence_checker_);
+  base::WeakPtrFactory<ComponentUpdaterLibrarySource> weak_ptr_factory_{this};
 };
 
 }  // namespace on_device_translation

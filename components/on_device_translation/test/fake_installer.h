@@ -37,6 +37,11 @@ class FakeOnDeviceTranslationInstaller : public OnDeviceTranslationInstaller {
   void InitNow(base::RepeatingClosure on_ready_callback);
   // Forces installation to happen right away.
   void InstallLanguagePackNow(LanguagePackKey language_pack);
+  // Makes the pending library install fail with `error`.
+  void FailLibraryInstallNow(InstallError error = InstallError::kFailed);
+  // Makes the pending download of `language_pack` fail with `error`.
+  void FailLanguagePackInstallNow(LanguagePackKey language_pack,
+                                  InstallError error = InstallError::kFailed);
 
  private:
   base::FilePath fake_install_dir_;

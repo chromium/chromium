@@ -188,17 +188,22 @@ TranslateKitComponentInstallerPolicy::GetInstallerAttributes() const {
 
 // static
 void TranslateKitComponentInstallerPolicy::UpdateComponentOnDemand(
-    ComponentUpdateService* cus) {
+    ComponentUpdateService* cus,
+    base::OnceCallback<void(update_client::Error)> callback) {
   auto crx_id = GetExtensionId();
   cus->GetOnDemandUpdater().OnDemandUpdate(
       crx_id, component_updater::OnDemandUpdater::Priority::FOREGROUND,
-      base::BindOnce([](update_client::Error error) {
-        if (error != update_client::Error::NONE &&
-            error != update_client::Error::UPDATE_IN_PROGRESS) {
-          base::UmaHistogramEnumeration(
-              "ComponentUpdater.TranslateKit.UpdateError", error);
-        }
-      }));
+      base::BindOnce(
+          [](base::OnceCallback<void(update_client::Error)> callback,
+             update_client::Error error) {
+            if (error != update_client::Error::NONE &&
+                error != update_client::Error::UPDATE_IN_PROGRESS) {
+              base::UmaHistogramEnumeration(
+                  "ComponentUpdater.TranslateKit.UpdateError", error);
+            }
+            std::move(callback).Run(error);
+          },
+          std::move(callback)));
 }
 // static
 const std::string TranslateKitComponentInstallerPolicy::GetExtensionId() {

@@ -18,6 +18,14 @@ class PrefService;
 
 namespace on_device_translation {
 
+// Why the TranslateKit library or a language pack could not be installed.
+enum class InstallError {
+  // The download or the install failed.
+  kFailed,
+  // There is not enough free disk space for the download.
+  kNotEnoughDiskSpace,
+};
+
 // This is a singleton interface, the actual instance should be obtained through
 // the `GetInstance` static method. The implementations of this class should
 // support the idea of registered language packs as well as installed language
@@ -45,6 +53,14 @@ class OnDeviceTranslationInstaller {
     // `progress` is an integer percentage from 0 to 100.
     virtual void OnLanguagePackProgress(const LanguagePackKey lang_pack,
                                         int progress) {}
+    // Called when an install of the TranslateKit library that `Init()`
+    // started failed. A later `Init()` call retries the install.
+    virtual void OnLibraryInstallFailed(InstallError error) {}
+    // Called when a download of a language pack that `InstallLanguagePack()`
+    // started failed. The language pack stays registered, and a later
+    // `InstallLanguagePack()` call retries the download.
+    virtual void OnLanguagePackInstallFailed(LanguagePackKey language_pack,
+                                             InstallError error) {}
   };
 
   // Returns the singleton instance that implements

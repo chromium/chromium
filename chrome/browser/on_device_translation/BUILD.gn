@@ -12,6 +12,8 @@ source_set("on_device_translation") {
     "../component_updater/translate_kit_component_installer.h",
     "../component_updater/translate_kit_language_pack_component_installer.cc",
     "../component_updater/translate_kit_language_pack_component_installer.h",
+    "component_update_util.cc",
+    "component_update_util.h",
     "component_updater_library_source.cc",
     "component_updater_library_source.h",
     "installer_impl.cc",

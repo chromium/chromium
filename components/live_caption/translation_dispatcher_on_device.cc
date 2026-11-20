@@ -68,6 +68,15 @@ OnDeviceTranslationErrorReason ToOnDeviceTranslationErrorReason(
     case Error::kExceedsPendingTaskCountLimitation:
       return OnDeviceTranslationErrorReason::
           kCreateTranslatorExceedsPendingTaskCountLimitation;
+    case Error::kLibraryInstallFailed:
+      return OnDeviceTranslationErrorReason::
+          kCreateTranslatorLibraryInstallFailed;
+    case Error::kLanguagePackDownloadFailed:
+      return OnDeviceTranslationErrorReason::
+          kCreateTranslatorLanguagePackDownloadFailed;
+    case Error::kNotEnoughDiskSpace:
+      return OnDeviceTranslationErrorReason::
+          kCreateTranslatorNotEnoughDiskSpace;
   }
   return OnDeviceTranslationErrorReason::kCreateTranslatorUnknownError;
 }

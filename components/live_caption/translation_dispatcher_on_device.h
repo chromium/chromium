@@ -38,7 +38,10 @@ enum class OnDeviceTranslationErrorReason {
   kCreateTranslatorExceedsPendingTaskCountLimitation = 11,
   kCreateTranslatorUnknownError = 12,
   kTranslationExecutionFailed = 13,
-  kMaxValue = kTranslationExecutionFailed,
+  kCreateTranslatorLibraryInstallFailed = 14,
+  kCreateTranslatorLanguagePackDownloadFailed = 15,
+  kCreateTranslatorNotEnoughDiskSpace = 16,
+  kMaxValue = kCreateTranslatorNotEnoughDiskSpace,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/accessibility/enums.xml:OnDeviceTranslationErrorReason)
 

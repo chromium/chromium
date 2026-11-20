@@ -4,6 +4,9 @@
 
 #include "chrome/browser/on_device_translation/installer_impl.h"
 
+#include <algorithm>
+#include <optional>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -18,6 +21,7 @@
 #include "base/strings/string_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/translate_kit_language_pack_component_installer.h"
+#include "chrome/browser/on_device_translation/component_update_util.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/crx_file/id_util.h"
@@ -50,6 +54,11 @@ base::FilePath GetFilePathFromGlobalPrefs(PrefService* prefs,
 }
 
 const char kTranslateKitPackagePaths[] = "translate-kit-packages";
+
+std::string GetLanguagePackComponentId(LanguagePackKey language_pack) {
+  return crx_file::id_util::GenerateIdFromHash(
+      GetLanguagePackComponentConfig(language_pack).public_key_sha);
+}
 
 std::optional<LanguagePackKey> FindLanguagePackKey(
     SupportedLanguage language1,
@@ -215,14 +224,31 @@ class OnDeviceTranslationInstallerImpl::Notifier {
   }
 
   void NotifyLanguagePackInstallationChanged(const std::string& pref_name) {
+    const LanguagePackKey language_pack = pref_name_to_lang_pack_[pref_name];
+    if (!pref_registrar_.prefs()->GetFilePath(pref_name).empty()) {
+      // Components registered at startup have no install callback, so stop
+      // progress tracking once the path pref becomes non-empty.
+      StopProgressTracking(language_pack);
+    }
     for (Observer& observer : observers_) {
-      observer.OnLanguagePackInstallationChanged(
-          pref_name_to_lang_pack_[pref_name]);
+      observer.OnLanguagePackInstallationChanged(language_pack);
     }
   }
   void NotifyInstallationChanged() {
     for (Observer& observer : observers_) {
       observer.OnInstallationChanged();
+    }
+  }
+  void NotifyLibraryInstallFailed(InstallError error) {
+    for (Observer& observer : observers_) {
+      observer.OnLibraryInstallFailed(error);
+    }
+  }
+  void NotifyLanguagePackInstallFailed(LanguagePackKey language_pack,
+                                       InstallError error) {
+    StopProgressTracking(language_pack);
+    for (Observer& observer : observers_) {
+      observer.OnLanguagePackInstallFailed(language_pack, error);
     }
   }
   void AddObserver(Observer* observer) { observers_.AddObserver(observer); }
@@ -353,24 +379,70 @@ void OnDeviceTranslationInstallerImpl::InstallLanguagePack(
   }
 
   // Calculate component IDs to track progress
-  base::flat_set<std::string> component_ids = {
-      crx_file::id_util::GenerateIdFromHash(
-          on_device_translation::GetLanguagePackComponentConfig(language_pack)
-              .public_key_sha)};
-  notifier_->StartProgressTracking(language_pack, component_ids);
+  const std::string component_id = GetLanguagePackComponentId(language_pack);
+
+  component_updater::ComponentUpdateService* cus =
+      g_browser_process->component_updater();
+  if (std::ranges::contains(cus->GetComponentIDs(), component_id)) {
+    // The component was registered before, for example at startup. If it
+    // isn't installed, ask for it now instead of waiting for the next periodic
+    // update check. If it is installed, nothing would stop the progress
+    // tracking, so don't start it.
+    if (!InstalledLanguagePacks().contains(language_pack)) {
+      notifier_->StartProgressTracking(language_pack, {component_id});
+      UpdateLanguagePackOnDemand(language_pack);
+    }
+    return;
+  }
+
+  if (language_pack_updates_in_progress_.contains(language_pack)) {
+    return;
+  }
 
   // Registers the TranslateKit language pack component.
+  notifier_->StartProgressTracking(language_pack, {component_id});
+  language_pack_updates_in_progress_.insert(language_pack);
   component_updater::RegisterTranslateKitLanguagePackComponent(
-      g_browser_process->component_updater(), g_browser_process->local_state(),
-      language_pack,
+      cus, g_browser_process->local_state(), language_pack,
       base::BindOnce(
-          &component_updater::TranslateKitLanguagePackComponentInstallerPolicy::
-              UpdateComponentOnDemand,
-          base::Unretained(g_browser_process->component_updater()),
-          language_pack),
+          [](base::WeakPtr<OnDeviceTranslationInstallerImpl> installer,
+             LanguagePackKey language_pack) {
+            if (installer) {
+              installer->language_pack_updates_in_progress_.erase(
+                  language_pack);
+              installer->UpdateLanguagePackOnDemand(language_pack);
+            }
+          },
+          weak_ptr_factory_.GetWeakPtr(), language_pack),
       base::BindRepeating(
           &OnDeviceTranslationInstallerImpl::Notifier::OnLanguagePackInstalled,
           notifier_->GetWeakPtr(), language_pack));
+}
+
+void OnDeviceTranslationInstallerImpl::UpdateLanguagePackOnDemand(
+    LanguagePackKey language_pack) {
+  if (!language_pack_updates_in_progress_.insert(language_pack).second) {
+    return;
+  }
+  component_updater::TranslateKitLanguagePackComponentInstallerPolicy::
+      UpdateComponentOnDemand(
+          g_browser_process->component_updater(), language_pack,
+          base::BindOnce(
+              &OnDeviceTranslationInstallerImpl::OnLanguagePackUpdateFinished,
+              weak_ptr_factory_.GetWeakPtr(), language_pack));
+}
+
+void OnDeviceTranslationInstallerImpl::OnLanguagePackUpdateFinished(
+    LanguagePackKey language_pack,
+    update_client::Error error) {
+  language_pack_updates_in_progress_.erase(language_pack);
+  std::optional<InstallError> install_error =
+      GetOnDemandUpdateError(g_browser_process->component_updater(),
+                             GetLanguagePackComponentId(language_pack), error,
+                             InstalledLanguagePacks().contains(language_pack));
+  if (install_error) {
+    notifier_->NotifyLanguagePackInstallFailed(language_pack, *install_error);
+  }
 }
 
 void OnDeviceTranslationInstallerImpl::UnInstallLanguagePack(
@@ -398,6 +470,16 @@ void OnDeviceTranslationInstallerImpl::OnLibraryChanged() {
     }
   }
   notifier_->NotifyInstallationChanged();
+}
+
+void OnDeviceTranslationInstallerImpl::OnLibraryInstallFailed(
+    InstallError error) {
+  if (IsInit()) {
+    return;
+  }
+  // The callbacks never run. The next `Init()` call retries the install.
+  on_ready_callbacks_.clear();
+  notifier_->NotifyLibraryInstallFailed(error);
 }
 
 }  // namespace on_device_translation

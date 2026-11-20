@@ -79,6 +79,24 @@ void FakeOnDeviceTranslationInstaller::InstallLanguagePackNow(
     observer.OnLanguagePackInstalled(language_pack);
   }
 }
+void FakeOnDeviceTranslationInstaller::FailLibraryInstallNow(
+    InstallError error) {
+  // Cancel the `InitNow()` task that `Init()` posted, because the install
+  // failed instead.
+  weak_ptr_factory_.InvalidateWeakPtrs();
+  for (Observer& observer : observers_) {
+    observer.OnLibraryInstallFailed(error);
+  }
+}
+void FakeOnDeviceTranslationInstaller::FailLanguagePackInstallNow(
+    LanguagePackKey language_pack,
+    InstallError error) {
+  // Cancel the `InstallLanguagePackNow()` tasks that are pending.
+  weak_ptr_factory_.InvalidateWeakPtrs();
+  for (Observer& observer : observers_) {
+    observer.OnLanguagePackInstallFailed(language_pack, error);
+  }
+}
 void FakeOnDeviceTranslationInstaller::UnInstallLanguagePack(
     LanguagePackKey language_pack) {
   registered_lang_packs_.erase(language_pack);

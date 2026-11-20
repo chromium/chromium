@@ -2185,6 +2185,9 @@ Unknown properties are collapsed to zero. -->
       label="CreateTranslator: Exceeded pending task count limitation"/>
   <int value="12" label="CreateTranslator: Unknown error"/>
   <int value="13" label="Translate RPC: Execution failed"/>
+  <int value="14" label="CreateTranslator: Library install failed"/>
+  <int value="15" label="CreateTranslator: Language pack download failed"/>
+  <int value="16" label="CreateTranslator: Not enough disk space"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/live_caption/translation_dispatcher_on_device.h:OnDeviceTranslationErrorReason) -->

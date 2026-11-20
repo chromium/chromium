@@ -9,6 +9,7 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
+#include "components/on_device_translation/installer.h"
 
 namespace on_device_translation {
 
@@ -25,6 +26,8 @@ class TranslateKitLibrarySource {
     // Called when the value of `GetLibraryPath()` changed, for example after
     // an install or an update.
     virtual void OnLibraryChanged() = 0;
+    // Called when an install that `Install()` started failed.
+    virtual void OnLibraryInstallFailed(InstallError error) = 0;
 
    protected:
     virtual ~Client() = default;
@@ -50,7 +53,9 @@ class TranslateKitLibrarySource {
   virtual base::FilePath GetLibraryPath() const = 0;
 
   // Starts installing the library if it isn't installed yet. The client gets
-  // `OnLibraryChanged()` when the library is ready.
+  // `OnLibraryChanged()` when the library is ready, or
+  // `OnLibraryInstallFailed()` if the install fails. Calling this again while
+  // an install is in progress doesn't start a second one.
   virtual void Install() = 0;
 
  protected:

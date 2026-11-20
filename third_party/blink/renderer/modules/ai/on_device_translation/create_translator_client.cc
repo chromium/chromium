@@ -46,6 +46,13 @@ String ConvertCreateTranslatorErrorToDebugString(CreateTranslatorError error) {
     case CreateTranslatorError::kNotSupportedLanguage:
       return "Unable to create translator for the given source and target "
              "language, because one or both languages are not supported.";
+    case CreateTranslatorError::kLibraryInstallFailed:
+      return "Failed to download or install the translation library.";
+    case CreateTranslatorError::kLanguagePackDownloadFailed:
+      return "Failed to download the language pack.";
+    case CreateTranslatorError::kNotEnoughDiskSpace:
+      return "There is not enough free disk space to download the translation "
+             "model.";
   }
 }
 

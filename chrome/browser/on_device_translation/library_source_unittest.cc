@@ -52,6 +52,11 @@ class FakeLibrarySource : public TranslateKitLibrarySource {
     client()->OnLibraryChanged();
   }
 
+  // Tells the client that the install failed.
+  void FailInstall(InstallError error) {
+    client()->OnLibraryInstallFailed(error);
+  }
+
   int install_count() const { return install_count_; }
 
  private:
@@ -67,6 +72,7 @@ class MockObserver : public OnDeviceTranslationInstaller::Observer {
               (LanguagePackKey),
               (override));
   MOCK_METHOD(void, OnInstallationChanged, (), (override));
+  MOCK_METHOD(void, OnLibraryInstallFailed, (InstallError), (override));
 };
 
 class TranslateKitLibrarySourceTest : public ::testing::Test {
@@ -116,6 +122,29 @@ TEST_F(TranslateKitLibrarySourceTest, InitWaitsForInstall) {
   EXPECT_CALL(observer, OnInstallationChanged());
   library_source_->FinishInstall(base::FilePath(kLibraryPath));
   EXPECT_TRUE(installer_->IsInit());
+  installer_->RemoveObserver(&observer);
+}
+
+TEST_F(TranslateKitLibrarySourceTest, InitDropsCallbacksWhenInstallFails) {
+  CreateInstaller();
+  MockObserver observer;
+  installer_->AddObserver(&observer);
+
+  base::MockCallback<base::RepeatingClosure> on_ready1;
+  EXPECT_CALL(on_ready1, Run()).Times(0);
+  installer_->Init(on_ready1.Get());
+  EXPECT_CALL(observer, OnLibraryInstallFailed(InstallError::kFailed));
+  library_source_->FailInstall(InstallError::kFailed);
+  EXPECT_FALSE(installer_->IsInit());
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  // The next `Init()` retries the install.
+  base::MockCallback<base::RepeatingClosure> on_ready2;
+  installer_->Init(on_ready2.Get());
+  EXPECT_EQ(library_source_->install_count(), 2);
+  EXPECT_CALL(on_ready2, Run());
+  EXPECT_CALL(observer, OnInstallationChanged());
+  library_source_->FinishInstall(base::FilePath(kLibraryPath));
   installer_->RemoveObserver(&observer);
 }
 
