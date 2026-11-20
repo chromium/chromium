@@ -4017,6 +4017,25 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.CardholderNameUpdateFlow.Eligibility"
+    enum="AutofillCardholderNameUpdateFlowEligibility"
+    expires_after="2027-04-30">
+  <owner>siyua@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records the eligibility of a form-extracted masked server card for the
+    cardholder name update flow, which offers to save the cardholder name
+    entered in a checkout form to a server card that has no cardholder name.
+    Logged when a submitted form is imported with a matched masked server card
+    and the card is excluded from the flow (e.g. the server card already has a
+    name, the extracted name or CVC is missing or invalid, virtual card
+    enrollment is offered for a card that would otherwise be eligible, or the
+    offer is blocked by the strike database), or when the
+    GetDetailsForUpdateCard preflight request completes. Not logged when credit
+    card upload is disabled or when the form is submitted on a Google domain.
+  </summary>
+</histogram>
+
 <histogram
     name="Autofill.CardholderNameUpdateFlow.GetDetailsForUpdateCardRequest.Latency.{Result}"
     units="ms" expires_after="2027-04-30">

@@ -8229,6 +8229,74 @@ TEST_F(CreditCardSaveManagerCardholderNameUpdateTest,
       1);
 }
 
+// Tests that `kEligible` is logged when the preflight request succeeds.
+TEST_F(CreditCardSaveManagerCardholderNameUpdateTest,
+       Metrics_Eligibility_Eligible) {
+  ExpectPreflightResult(PaymentsRpcResult::kSuccess);
+
+  base::HistogramTester histogram_tester;
+  credit_card_save_manager().AttemptToOfferCardholderNameUpdate(
+      test::GetMaskedServerCard());
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.CardholderNameUpdateFlow.Eligibility",
+      autofill_metrics::CardholderNameUpdateFlowEligibility::kEligible, 1);
+}
+
+// Tests that `kPreflightFailed` is logged when the preflight request fails.
+TEST_F(CreditCardSaveManagerCardholderNameUpdateTest,
+       Metrics_Eligibility_PreflightFailed) {
+  ExpectPreflightResult(PaymentsRpcResult::kTryAgainFailure);
+
+  base::HistogramTester histogram_tester;
+  credit_card_save_manager().AttemptToOfferCardholderNameUpdate(
+      test::GetMaskedServerCard());
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.CardholderNameUpdateFlow.Eligibility",
+      autofill_metrics::CardholderNameUpdateFlowEligibility::kPreflightFailed,
+      1);
+}
+
+// Tests that `kBlockedByStrikeDatabaseMaxStrikes` is logged when the card has
+// reached the max number of strikes.
+TEST_F(CreditCardSaveManagerCardholderNameUpdateTest,
+       Metrics_Eligibility_BlockedByStrikeDatabaseMaxStrikes) {
+  CreditCard server_card = test::GetMaskedServerCard();
+  CardholderNameFixFlowStrikeDatabase strike_db(&strike_database());
+  strike_db.AddStrikes(strike_db.GetMaxStrikesLimit(),
+                       base::NumberToString(server_card.instrument_id()));
+  task_environment_.FastForwardBy(
+      strike_db.GetRequiredDelaySinceLastStrike().value());
+
+  base::HistogramTester histogram_tester;
+  credit_card_save_manager().AttemptToOfferCardholderNameUpdate(server_card);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.CardholderNameUpdateFlow.Eligibility",
+      autofill_metrics::CardholderNameUpdateFlowEligibility::
+          kBlockedByStrikeDatabaseMaxStrikes,
+      1);
+}
+
+// Tests that `kBlockedByStrikeDatabaseRequiredDelayNotPassed` is logged when
+// the required delay since the last strike hasn't passed.
+TEST_F(CreditCardSaveManagerCardholderNameUpdateTest,
+       Metrics_Eligibility_BlockedByStrikeDatabaseRequiredDelayNotPassed) {
+  CreditCard server_card = test::GetMaskedServerCard();
+  CardholderNameFixFlowStrikeDatabase(&strike_database())
+      .AddStrike(base::NumberToString(server_card.instrument_id()));
+
+  base::HistogramTester histogram_tester;
+  credit_card_save_manager().AttemptToOfferCardholderNameUpdate(server_card);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.CardholderNameUpdateFlow.Eligibility",
+      autofill_metrics::CardholderNameUpdateFlowEligibility::
+          kBlockedByStrikeDatabaseRequiredDelayNotPassed,
+      1);
+}
+
 #else  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 // Tests that `AttemptToOfferCardholderNameUpdate` returns false and does not

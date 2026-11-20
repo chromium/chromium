@@ -171,6 +171,12 @@ class PaymentsFormDataImporter {
   bool ShouldOfferCardholderNameUpdate(const CreditCard& extracted_credit_card,
                                        bool is_credit_card_upstream_enabled);
 
+  // Returns the existing server card matched by `extracted_credit_card` if the
+  // cardholder name update flow applies to it, or nullptr otherwise.
+  const CreditCard* GetServerCardForCardholderNameUpdate(
+      const CreditCard& extracted_credit_card,
+      bool is_credit_card_upstream_enabled);
+
   // If the mandatory re-auth opt-in bubble can be shown for a credit card, this
   // function will start the flow and return true. Otherwise, it will return
   // false.

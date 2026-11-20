@@ -27,6 +27,7 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/metrics/payments/cardholder_name_update_flow_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/wallet_reminder_notice_metrics.h"
 #include "components/autofill/core/browser/payments/credit_card_save_manager.h"
 #include "components/autofill/core/browser/payments/iban_save_manager.h"
@@ -40,6 +41,35 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace autofill::payments {
+
+namespace {
+
+// Returns why the cardholder name of `existing_server_card` can't be updated
+// from `extracted_credit_card`, or nullopt if it can.
+std::optional<autofill_metrics::CardholderNameUpdateFlowEligibility>
+GetCardholderNameUpdateExclusionReason(const CreditCard& existing_server_card,
+                                       const CreditCard& extracted_credit_card,
+                                       std::string_view app_locale) {
+  using autofill_metrics::CardholderNameUpdateFlowEligibility;
+  if (existing_server_card.HasNameOnCard()) {
+    return CardholderNameUpdateFlowEligibility::kServerCardAlreadyHasName;
+  }
+  if (!extracted_credit_card.HasNameOnCard()) {
+    return CardholderNameUpdateFlowEligibility::kNoNameExtractedFromForm;
+  }
+  if (!IsValidNameOnCard(
+          extracted_credit_card.GetInfo(CREDIT_CARD_NAME_FULL, app_locale))) {
+    return CardholderNameUpdateFlowEligibility::kInvalidNameExtractedFromForm;
+  }
+  if (!IsValidCreditCardSecurityCode(extracted_credit_card.cvc(),
+                                     extracted_credit_card.network())) {
+    return CardholderNameUpdateFlowEligibility::
+        kInvalidOrMissingCvcExtractedFromForm;
+  }
+  return std::nullopt;
+}
+
+}  // namespace
 
 PaymentsFormDataImporter::PaymentsFormDataImporter(AutofillClient* client)
     : client_(CHECK_DEREF(client)),
@@ -387,6 +417,18 @@ bool PaymentsFormDataImporter::ProcessExtractedCreditCard(
               kNotShownDueToVcnEnrollment,
           WalletReminderNoticeManager::FlowType::kChromeDownstream);
     }
+    if (const CreditCard* existing_server_card =
+            GetServerCardForCardholderNameUpdate(
+                *extracted_credit_card, is_credit_card_upstream_enabled)) {
+      // Only count the cardholder name update as suppressed if it would
+      // otherwise have been offered.
+      autofill_metrics::LogCardholderNameUpdateFlowEligibility(
+          GetCardholderNameUpdateExclusionReason(
+              *existing_server_card, *extracted_credit_card,
+              client_->GetAppLocale().tag_string())
+              .value_or(autofill_metrics::CardholderNameUpdateFlowEligibility::
+                            kSuppressedByVcnEnrollment));
+    }
     virtual_card_enrollment_manager->InitVirtualCardEnroll(
         *extracted_credit_card, VirtualCardEnrollmentSource::kDownstream,
         base::BindOnce(
@@ -441,6 +483,25 @@ bool PaymentsFormDataImporter::ProcessExtractedCreditCard(
 bool PaymentsFormDataImporter::ShouldOfferCardholderNameUpdate(
     const CreditCard& extracted_credit_card,
     bool is_credit_card_upstream_enabled) {
+  const CreditCard* existing_server_card = GetServerCardForCardholderNameUpdate(
+      extracted_credit_card, is_credit_card_upstream_enabled);
+  if (!existing_server_card) {
+    return false;
+  }
+  if (std::optional<autofill_metrics::CardholderNameUpdateFlowEligibility>
+          exclusion_reason = GetCardholderNameUpdateExclusionReason(
+              *existing_server_card, extracted_credit_card,
+              client_->GetAppLocale().tag_string())) {
+    autofill_metrics::LogCardholderNameUpdateFlowEligibility(*exclusion_reason);
+    return false;
+  }
+  return true;
+}
+
+const CreditCard*
+PaymentsFormDataImporter::GetServerCardForCardholderNameUpdate(
+    const CreditCard& extracted_credit_card,
+    bool is_credit_card_upstream_enabled) {
   // A card with an updated expiration date doesn't match the existing server
   // card, so it isn't a masked server card here. The expiration date fix
   // (upload save) takes precedence in that case.
@@ -449,18 +510,10 @@ bool PaymentsFormDataImporter::ShouldOfferCardholderNameUpdate(
       !is_credit_card_upstream_enabled ||
       extracted_credit_card.record_type() !=
           CreditCard::RecordType::kMaskedServerCard) {
-    return false;
+    return nullptr;
   }
-
-  const CreditCard* existing_server_card =
-      payments_data_manager().GetCreditCardByInstrumentId(
-          extracted_credit_card.instrument_id());
-  return existing_server_card && !existing_server_card->HasNameOnCard() &&
-         extracted_credit_card.HasNameOnCard() &&
-         IsValidNameOnCard(extracted_credit_card.GetInfo(
-             CREDIT_CARD_NAME_FULL, client_->GetAppLocale().tag_string())) &&
-         IsValidCreditCardSecurityCode(extracted_credit_card.cvc(),
-                                       extracted_credit_card.network());
+  return payments_data_manager().GetCreditCardByInstrumentId(
+      extracted_credit_card.instrument_id());
 }
 
 bool PaymentsFormDataImporter::

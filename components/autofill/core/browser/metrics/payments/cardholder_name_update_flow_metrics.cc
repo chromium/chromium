@@ -11,6 +11,12 @@
 
 namespace autofill::autofill_metrics {
 
+void LogCardholderNameUpdateFlowEligibility(
+    CardholderNameUpdateFlowEligibility eligibility) {
+  base::UmaHistogramEnumeration("Autofill.CardholderNameUpdateFlow.Eligibility",
+                                eligibility);
+}
+
 void LogCardholderNameUpdateFlowPromptOffer(SaveCardPromptOffer offer) {
   base::UmaHistogramEnumeration("Autofill.CardholderNameUpdateFlow.PromptOffer",
                                 offer);

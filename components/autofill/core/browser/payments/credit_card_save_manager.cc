@@ -738,10 +738,16 @@ bool CreditCardSaveManager::AttemptToOfferCardholderNameUpdate(
     case CardholderNameFixFlowStrikeDatabase::kDoNotBlock:
       break;
     case CardholderNameFixFlowStrikeDatabase::kMaxStrikeLimitReached:
+      autofill_metrics::LogCardholderNameUpdateFlowEligibility(
+          autofill_metrics::CardholderNameUpdateFlowEligibility::
+              kBlockedByStrikeDatabaseMaxStrikes);
       autofill_metrics::LogCardholderNameUpdateFlowPromptOffer(
           SaveCardPromptOffer::kNotShownMaxStrikesReached);
       return false;
     case CardholderNameFixFlowStrikeDatabase::kRequiredDelayNotPassed:
+      autofill_metrics::LogCardholderNameUpdateFlowEligibility(
+          autofill_metrics::CardholderNameUpdateFlowEligibility::
+              kBlockedByStrikeDatabaseRequiredDelayNotPassed);
       autofill_metrics::LogCardholderNameUpdateFlowPromptOffer(
           SaveCardPromptOffer::kNotShownRequiredDelay);
       return false;
@@ -1022,8 +1028,13 @@ void CreditCardSaveManager::OnDidGetDetailsForUpdateCard(
   autofill_metrics::LogGetDetailsForUpdateCardRequestResultAndLatency(
       result, base::TimeTicks::Now() - request_timestamp);
   if (result != PaymentsRpcResult::kSuccess) {
+    autofill_metrics::LogCardholderNameUpdateFlowEligibility(
+        autofill_metrics::CardholderNameUpdateFlowEligibility::
+            kPreflightFailed);
     return;
   }
+  autofill_metrics::LogCardholderNameUpdateFlowEligibility(
+      autofill_metrics::CardholderNameUpdateFlowEligibility::kEligible);
 
   card_save_candidate_ = card;
   update_card_request_details_ = payments::UpdateCardRequestDetails();

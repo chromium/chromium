@@ -865,6 +865,24 @@ Called by update_autofill_enums.py.-->
   <int value="3" label="Closed without user interaction"/>
 </enum>
 
+<!-- LINT.IfChange(AutofillCardholderNameUpdateFlowEligibility) -->
+
+<enum name="AutofillCardholderNameUpdateFlowEligibility">
+  <int value="0" label="Eligible"/>
+  <int value="1" label="Server card already has cardholder name"/>
+  <int value="2" label="No cardholder name extracted from form"/>
+  <int value="3" label="Invalid cardholder name extracted from form"/>
+  <int value="4" label="Invalid or missing CVC extracted from form"/>
+  <int value="5" label="Suppressed by virtual card enrollment"/>
+  <int value="6" label="GetDetailsForUpdateCard request failed"/>
+  <int value="7" label="Blocked by strike database, max strikes reached"/>
+  <int value="8"
+      label="Blocked by strike database, required delay since last strike not
+             passed"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/autofill/core/browser/metrics/payments/cardholder_name_update_flow_metrics.h:CardholderNameUpdateFlowEligibility) -->
+
 <enum name="AutofillCardUnmaskAuthenticationSelectionDialogResult">
   <int value="0" label="Unspecified"/>
   <int value="1" label="User canceled before selecting a challenge option"/>
