@@ -31,8 +31,6 @@
 
 #include "third_party/blink/renderer/core/html/forms/text_field_input_type.h"
 
-#include "base/feature_list.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_focus_options.h"
 #include "third_party/blink/renderer/core/accessibility/scoped_blink_ax_event_intent.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
@@ -259,11 +257,7 @@ void TextFieldInputType::HandleKeydownEvent(KeyboardEvent& event) {
     return;
   }
   if (ChromeClient* chrome_client = GetChromeClient()) {
-    if (chrome_client->HandleKeyboardEventOnEditableElement(GetElement(),
-                                                            event)) {
-      event.SetDefaultHandled();
-      return;
-    }
+    chrome_client->HandleKeyboardEventOnTextField(GetElement(), event);
   }
 }
 

@@ -525,10 +525,8 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
   virtual void DidClearValueInTextField(HTMLFormControlElement&) {}
   virtual void DidUserChangeContentEditableContent(Element&) {}
   virtual void DidEndEditingOnTextField(HTMLInputElement&) {}
-  virtual bool HandleKeyboardEventOnEditableElement(HTMLElement&,
-                                                    KeyboardEvent&) {
-    return false;
-  }
+  virtual void HandleKeyboardEventOnTextField(HTMLInputElement&,
+                                              KeyboardEvent&) {}
   virtual void TextFieldDataListChanged(HTMLInputElement&) {}
 
   // Called when the selected option of a <select> control is changed as a

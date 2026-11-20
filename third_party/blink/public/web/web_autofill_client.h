@@ -59,11 +59,9 @@ class WebAutofillClient {
   // These methods are called when the users edits a text-field.
   virtual void TextFieldDidEndEditing(const WebInputElement&) {}
   virtual void TextFieldValueChanged(const WebFormControlElement&) {}
-  // Called when a keydown event is fired on a text-type <input>, a <textarea>,
-  // or a contenteditable.
-  virtual bool DidReceiveKeyDown(const WebElement&, const WebKeyboardEvent&) {
-    return false;
-  }
+  // Called when a keydown event is fired on a text-type <input>.
+  virtual void TextFieldDidReceiveKeyDown(const WebInputElement&,
+                                          const WebKeyboardEvent&) {}
   // Called when a text field is cleared either by simply deleting the text or
   // briefly cleared when the whole text is selected and replaced. The latter
   // would not be conveyed by `TextFieldValueChanged()` and some clients might

@@ -513,7 +513,6 @@ class CORE_EXPORT HTMLElement : public Element {
 
   TranslateAttributeMode GetTranslateAttributeMode() const;
 
-  void HandleKeydownEvent(KeyboardEvent&);
   void HandleKeypressEvent(KeyboardEvent&);
 
   void SetPopoverInvoker(Element* invoker, PopoverInvokedVia invoked_via);
