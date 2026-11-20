@@ -6,6 +6,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/dictation/dictation_interactive_browser_test_base.h"
 #include "chrome/browser/dictation/dictation_keyed_service.h"
 #include "chrome/browser/dictation/features.h"
@@ -797,8 +798,17 @@ IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
-                       AutoSessionEndDelayedShutdownOnAttachedStreamComplete) {
+// TODO(crbug.com/588514878): Consistently failing on Mac13 Tests in M156.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_AutoSessionEndDelayedShutdownOnAttachedStreamComplete \
+  DISABLED_AutoSessionEndDelayedShutdownOnAttachedStreamComplete
+#else
+#define MAYBE_AutoSessionEndDelayedShutdownOnAttachedStreamComplete \
+  AutoSessionEndDelayedShutdownOnAttachedStreamComplete
+#endif
+IN_PROC_BROWSER_TEST_P(
+    DictationSessionUiImplBrowserTest,
+    MAYBE_AutoSessionEndDelayedShutdownOnAttachedStreamComplete) {
   if (!GetParam()) {
     GTEST_SKIP() << "Auto session end only applies to this config.";
   }
