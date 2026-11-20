@@ -216,6 +216,12 @@ config("tflite_coreml_flags") {
   ]
 }
 
+flatbuffer("tflite_schema") {
+  sources = [ "src/tflite/converter/schema/schema.fbs" ]
+  args = [ "--gen-object-api" ]
+  visibility = [ ":*" ]
+}
+
 flatbuffer("mutable_schema_litert_tflite_path") {
   sources = [ "src/tflite/converter/schema/schema.fbs" ]
   flatc_out_dir = "src/tflite/schema/mutable"
@@ -412,6 +418,7 @@ source_set("litert_headers") {
 
   public_deps = [
     ":mutable_tflite_schema",
+    ":tflite_schema",
     "//third_party/abseil-cpp:absl",
     "//third_party/flatbuffers",
     "//third_party/zlib",
@@ -1145,7 +1152,6 @@ if (use_litert_tflite) {
       "src/tflite/converter/core/api/error_reporter.h",
       "src/tflite/converter/core/model_builder_base.h",
       "src/tflite/converter/experimental/remat/metadata_util.h",
-      "src/tflite/converter/schema/schema_generated.h",
       "src/tflite/converter/schema/schema_utils.h",
       "src/tflite/core/api/profiler.h",
       "src/tflite/core/async/async_kernel_internal.h",
@@ -1192,6 +1198,7 @@ if (use_litert_tflite) {
     # switching to use LiteRT.
     public_deps = [
       ":tflite_kernel_common_headers",
+      ":tflite_schema",
       "//third_party/tflite:buildflags",
     ]
     configs += [ ":tflite_flags" ]

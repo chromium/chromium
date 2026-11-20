@@ -33,7 +33,7 @@
 #include "services/webnn/webnn_utils.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/flatbuffers/src/include/flatbuffers/flatbuffers.h"
-#include "third_party/tflite/src/tensorflow/compiler/mlir/lite/schema/schema_generated.h"
+#include "third_party/tflite/src/tensorflow/lite/schema/schema_generated.h"
 
 #if BUILDFLAG(WEBNN_USE_LITERT)
 #include "third_party/litert/src/litert/cc/litert_options.h"

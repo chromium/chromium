@@ -406,6 +406,12 @@ if (!use_litert_tflite) {
     conditional_public_deps = [ ":tflite_c_api" ]
   }
 
+  flatbuffer("tflite_schema") {
+    sources = [ "src/tensorflow/compiler/mlir/lite/schema/schema.fbs" ]
+    args = [ "--gen-object-api" ]
+    visibility = [ ":*" ]
+  }
+
   flatbuffer("mutable_schema_tflite_path") {
     sources = [ "src/tensorflow/compiler/mlir/lite/schema/schema.fbs" ]
     flatc_out_dir = "src/tensorflow/lite/schema/mutable"
@@ -441,7 +447,6 @@ if (!use_litert_tflite) {
     public_configs = [ ":tflite_shim_config" ]
     public = [
       "shims/tensorflow/lite/types/fp16.h",
-      "src/tensorflow/compiler/mlir/lite/schema/schema_generated.h",
       "src/tensorflow/compiler/mlir/lite/schema/schema_utils.h",
       "src/tensorflow/lite/allocation.h",
       "src/tensorflow/lite/arena_planner.h",
@@ -468,6 +473,7 @@ if (!use_litert_tflite) {
       "src/tensorflow/lite/mutable_op_resolver.h",
       "src/tensorflow/lite/op_resolver.h",
       "src/tensorflow/lite/optional_debug_tools.h",
+      "src/tensorflow/lite/schema/schema_generated.h",
       "src/tensorflow/lite/signature_runner.h",
       "src/tensorflow/lite/stderr_reporter.h",
       "src/tensorflow/lite/string_type.h",
@@ -475,7 +481,10 @@ if (!use_litert_tflite) {
       "src/tensorflow/lite/util.h",
     ]
 
-    public_deps = [ "//third_party/fp16" ]
+    public_deps = [
+      ":tflite_schema",
+      "//third_party/fp16",
+    ]
 
     configs += [ ":tflite_flags" ]
   }
