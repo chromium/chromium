@@ -136,11 +136,13 @@ class BrowserTabStripController : public TabStripController,
   void OnTabGroupFocusChanged(
       std::optional<tab_groups::TabGroupId> new_focused_group_id,
       std::optional<tab_groups::TabGroupId> old_focused_group_id) override;
+  void OnTabGroupPromoted(const tab_groups::TabGroupId& group_id) override;
 
   // Updates the browser theme when focus mode is active for a tab group.
   // Only updates themes for permanent tab groups; non-group focus mode does not
-  // theme the browser. Triggered when tab group focus changes or when the color
-  // of the currently focused tab group changes.
+  // theme the browser. Triggered when tab group focus changes, when the color
+  // of the currently focused tab group changes, or when the focused ephemeral
+  // group is promoted to a permanent one.
   void UpdateFocusModeTheme(std::optional<tab_groups::TabGroupId> group_id);
 
   // Updates freezing votes when focus mode or tab membership changes.

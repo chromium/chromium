@@ -275,6 +275,20 @@ void RootTabCollectionNode::OnTabGroupFocusChanged(
   }
 }
 
+void RootTabCollectionNode::OnTabGroupPromoted(
+    const tab_groups::TabGroupId& group_id) {
+  if (tab_strip_model_->closing_all()) {
+    return;
+  }
+
+  // Ephemeral groups do not theme the browser, so the focused group needs its
+  // focus mode theme applied once it is promoted. The theme change also
+  // refreshes the group's views, which cache whether the group is ephemeral.
+  if (tab_strip_model_->GetFocusedGroup() == group_id) {
+    GetController()->UpdateFocusModeTheme(group_id);
+  }
+}
+
 void RootTabCollectionNode::NotifyTabSelectionChanged(
     const std::set<tabs::TabInterface*>& changed_tabs) {
   std::set<TabCollectionNode*> nodes_to_notify;

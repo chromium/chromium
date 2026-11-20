@@ -12,17 +12,20 @@
 #include "chrome/browser/ui/animation/browser_animation_controller.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/tab_group_attention_indicator.h"
 #include "chrome/browser/ui/tabs/tab_group_features.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
+#include "chrome/browser/ui/tabs/tab_group_theme.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/animations/focus_mode_animations.h"
 #include "chrome/browser/ui/views/frame/base_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/tabs/common/root_tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/common/tab_collection_animating_layout_manager.h"
@@ -42,7 +45,9 @@
 #include "chrome/browser/ui/views/test/vertical_tabs_browser_test_mixin.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/data_sharing/public/features.h"
+#include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "components/tab_groups/tab_group_visual_data.h"
 #include "components/tabs/public/tab_collection_types.h"
 #include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_interface.h"
@@ -51,6 +56,7 @@
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event_constants.h"
@@ -62,6 +68,7 @@
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
+#include "ui/views/background.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/focus/focus_search.h"
 #include "ui/views/view_utils.h"
@@ -843,6 +850,75 @@ IN_PROC_BROWSER_TEST_P(TabGroupViewTest,
     EXPECT_GT(group_view_b->GetPreferredSize(views::SizeBounds()).height(),
               b_unfocused_pref.height());
   }
+}
+
+// Promoting a focused ephemeral (non-group focus) group turns it into a regular
+// focused group without changing which group is focused. The Unfocus button
+// must switch from the neutral ephemeral colors to the group's color, and the
+// browser must take on the group's focus theme.
+IN_PROC_BROWSER_TEST_P(TabGroupViewTest,
+                       PromotingEphemeralGroupAppliesGroupColors) {
+  DisableFocusAnimations();
+  AppendTab();
+  AppendTab();
+  TabStripModel* const model = browser()->GetTabStripModel();
+  const tab_groups::TabGroupId group_id = model->EnterFocusMode({1, 2});
+  RunScheduledLayouts();
+  ASSERT_TRUE(model->IsEphemeralTabGroup(group_id));
+
+  TabGroupView* const group_view = GetTabGroupView(group_id);
+  ASSERT_NE(group_view, nullptr);
+  const TabGroupUnfocusButton* const unfocus_button =
+      group_view->unfocus_header();
+  ASSERT_TRUE(unfocus_button->GetVisible());
+  BrowserWidget* const browser_widget =
+      BrowserView::GetBrowserViewForBrowser(browser())->browser_widget();
+
+  // The color provider changes when the browser theme does, so these read it
+  // each time.
+  const auto button_color = [&]() {
+    return unfocus_button->GetBackground()->color().ResolveToSkColor(
+        unfocus_button->GetColorProvider());
+  };
+  const auto ephemeral_color = [&]() {
+    return unfocus_button->GetColorProvider()->GetColor(
+        unfocus_button->GetWidget()->ShouldPaintAsActive()
+            ? kColorTabGroupEphemeralHeaderBackgroundFrameActive
+            : kColorTabGroupEphemeralHeaderBackgroundFrameInactive);
+  };
+  const auto group_color = [&]() {
+    return unfocus_button->GetColorProvider()->GetColor(
+        GetTabGroupTabStripColorId(
+            model->group_model()->GetTabGroup(group_id)->visual_data()->color(),
+            unfocus_button->GetWidget()->ShouldPaintAsActive()));
+  };
+
+  // Ephemeral groups use neutral colors and do not theme the browser.
+  EXPECT_EQ(button_color(), ephemeral_color());
+  EXPECT_EQ(browser_widget->user_color_override(), std::nullopt);
+
+  model->PromoteEphemeralTabGroup(group_id);
+  RunScheduledLayouts();
+  ASSERT_FALSE(model->IsEphemeralTabGroup(group_id));
+  ASSERT_EQ(model->GetFocusedGroup(), group_id);
+  ASSERT_NE(group_color(), ephemeral_color());
+  EXPECT_NE(browser_widget->user_color_override(), std::nullopt);
+  // The theme change that refreshes the button can be delivered in a later
+  // task.
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return button_color() == group_color(); }));
+
+  // A later color change is applied to the now-regular group.
+  const tab_groups::TabGroupColorId new_color =
+      model->group_model()->GetTabGroup(group_id)->visual_data()->color() ==
+              tab_groups::TabGroupColorId::kRed
+          ? tab_groups::TabGroupColorId::kBlue
+          : tab_groups::TabGroupColorId::kRed;
+  model->ChangeTabGroupVisuals(
+      group_id, tab_groups::TabGroupVisualData(u"Promoted", new_color));
+  RunScheduledLayouts();
+  EXPECT_EQ(button_color(), group_color());
+  EXPECT_NE(browser_widget->user_color_override(), std::nullopt);
 }
 
 INSTANTIATE_TEST_SUITE_P(

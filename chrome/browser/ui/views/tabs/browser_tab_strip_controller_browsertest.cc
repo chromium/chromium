@@ -18,7 +18,10 @@
 #include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
+#include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "components/tab_groups/tab_group_visual_data.h"
+#include "components/tabs/public/tab_group.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event.h"
@@ -273,6 +276,21 @@ class BrowserTabStripControllerTestFocusedGroup
   }
   ~BrowserTabStripControllerTestFocusedGroup() override = default;
 
+ protected:
+  // Returns visuals for `group` with a new title and a different color.
+  tab_groups::TabGroupVisualData ChangedVisuals(
+      const tab_groups::TabGroupId& group) {
+    const tab_groups::TabGroupColorId current_color = tab_strip_model()
+                                                          ->group_model()
+                                                          ->GetTabGroup(group)
+                                                          ->visual_data()
+                                                          ->color();
+    return tab_groups::TabGroupVisualData(
+        u"Promoted", current_color == tab_groups::TabGroupColorId::kRed
+                         ? tab_groups::TabGroupColorId::kBlue
+                         : tab_groups::TabGroupColorId::kRed);
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -364,6 +382,61 @@ IN_PROC_BROWSER_TEST_F(BrowserTabStripControllerTestFocusedGroup,
   // Unset focused group.
   controller()->ExitFocusMode();
   EXPECT_EQ(widget->user_color_override(), std::nullopt);
+}
+
+// Promoting the focused ephemeral group turns it into a regular focused group
+// without a focus change, so the browser must start theming.
+IN_PROC_BROWSER_TEST_F(BrowserTabStripControllerTestFocusedGroup,
+                       PromotingEphemeralGroupUpdatesTheme) {
+  BrowserWidget* widget =
+      BrowserView::GetBrowserViewForBrowser(browser())->browser_widget();
+  controller()->CreateNewTab(NewTabTypes::kNewTabCommand);
+  EXPECT_EQ(tab_strip_model()->count(), 2);
+  const tab_groups::TabGroupId group =
+      tab_strip_model()->EnterFocusMode({0, 1});
+  EXPECT_EQ(widget->user_color_override(), std::nullopt);
+
+  tab_strip_model()->PromoteEphemeralTabGroup(group);
+  ASSERT_FALSE(tab_strip_model()->IsEphemeralTabGroup(group));
+  EXPECT_EQ(controller()->GetFocusedGroup(), group);
+  EXPECT_NE(widget->user_color_override(), std::nullopt);
+}
+
+// The promotion bubble applies the chosen title and color while the group is
+// still ephemeral, then promotes it. The browser must theme after that
+// sequence too.
+IN_PROC_BROWSER_TEST_F(BrowserTabStripControllerTestFocusedGroup,
+                       VisualsChangeBeforePromotionUpdatesTheme) {
+  BrowserWidget* widget =
+      BrowserView::GetBrowserViewForBrowser(browser())->browser_widget();
+  controller()->CreateNewTab(NewTabTypes::kNewTabCommand);
+  EXPECT_EQ(tab_strip_model()->count(), 2);
+  const tab_groups::TabGroupId group =
+      tab_strip_model()->EnterFocusMode({0, 1});
+
+  // The group is still ephemeral, so its visuals do not theme the browser.
+  tab_strip_model()->ChangeTabGroupVisuals(group, ChangedVisuals(group));
+  EXPECT_EQ(widget->user_color_override(), std::nullopt);
+
+  tab_strip_model()->PromoteEphemeralTabGroup(group);
+  ASSERT_FALSE(tab_strip_model()->IsEphemeralTabGroup(group));
+  EXPECT_NE(widget->user_color_override(), std::nullopt);
+}
+
+// Changing the visuals of a group after it was promoted themes the browser.
+IN_PROC_BROWSER_TEST_F(BrowserTabStripControllerTestFocusedGroup,
+                       VisualsChangeAfterPromotionUpdatesTheme) {
+  BrowserWidget* widget =
+      BrowserView::GetBrowserViewForBrowser(browser())->browser_widget();
+  controller()->CreateNewTab(NewTabTypes::kNewTabCommand);
+  EXPECT_EQ(tab_strip_model()->count(), 2);
+  const tab_groups::TabGroupId group =
+      tab_strip_model()->EnterFocusMode({0, 1});
+
+  tab_strip_model()->PromoteEphemeralTabGroup(group);
+  ASSERT_FALSE(tab_strip_model()->IsEphemeralTabGroup(group));
+  tab_strip_model()->ChangeTabGroupVisuals(group, ChangedVisuals(group));
+  EXPECT_NE(widget->user_color_override(), std::nullopt);
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserTabStripControllerTestFocusedGroup,

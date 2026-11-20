@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/weak_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
@@ -31,6 +32,8 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_editor_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/browser_widget.h"
+#include "chrome/browser/ui/views/tabs/groups/color_picker_view.h"
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/grit/generated_resources.h"
@@ -935,6 +938,50 @@ IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
   EXPECT_EQ(observer.title_at_promotion, u"Promoted Title");
   EXPECT_EQ(group_model()->GetTabGroup(ephemeral_group)->visual_data()->title(),
             u"Promoted Title");
+}
+
+// Ephemeral groups do not theme the browser, regular focused groups do.
+// Promotion keeps the group focused, so the browser must take on the group's
+// focus theme as soon as the group is promoted.
+IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
+                       EphemeralGroup_CreateAppliesFocusThemeToBrowser) {
+  BrowserWidget* const browser_widget =
+      BrowserView::GetBrowserViewForBrowser(browser())->browser_widget();
+  TabStripModel* const tab_strip_model = browser()->GetTabStripModel();
+  const tab_groups::TabGroupId ephemeral_group =
+      tab_strip_model->EnterFocusMode({0});
+  tab_strip_model->OpenTabGroupEditor(ephemeral_group);
+
+  views::Widget* const editor_bubble = WaitForAndGetEditorBubbleWidget();
+  ASSERT_NE(nullptr, editor_bubble);
+  base::WeakPtr<views::Widget> weak_widget = editor_bubble->GetWeakPtr();
+  EXPECT_EQ(browser_widget->user_color_override(), std::nullopt);
+
+  views::View* const contents_view = editor_bubble->widget_delegate()
+                                         ->AsBubbleDialogDelegate()
+                                         ->GetContentsView();
+  ASSERT_EQ(contents_view->children().size(), 4u);
+
+  ColorPickerView* const color_picker =
+      views::AsViewClass<ColorPickerView>(contents_view->children()[2]);
+  ASSERT_NE(nullptr, color_picker);
+  const int new_color_index = color_picker->GetSelectedElement() == 0 ? 1 : 0;
+  views::Button* const color_button =
+      color_picker->GetElementAtIndexForTesting(new_color_index);
+  ASSERT_NE(nullptr, color_button);
+  views::test::ButtonTestApi(color_button).NotifyDefaultMouseClick();
+
+  views::View* const button_row = contents_view->children()[3];
+  ASSERT_EQ(button_row->children().size(), 2u);
+  views::Button* const create_button =
+      views::Button::AsButton(button_row->children()[1]);
+  ASSERT_NE(nullptr, create_button);
+  views::test::ButtonTestApi(create_button).NotifyDefaultMouseClick();
+  EXPECT_TRUE(base::test::RunUntil([&]() { return !weak_widget; }));
+
+  ASSERT_FALSE(tab_strip_model->IsEphemeralTabGroup(ephemeral_group));
+  ASSERT_EQ(ephemeral_group, tab_strip_model->GetFocusedGroup());
+  EXPECT_NE(browser_widget->user_color_override(), std::nullopt);
 }
 
 IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,

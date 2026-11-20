@@ -799,6 +799,16 @@ void BrowserTabStripController::OnTabGroupFocusChanged(
   UpdateAllTabsFocusFreezing();
 }
 
+void BrowserTabStripController::OnTabGroupPromoted(
+    const tab_groups::TabGroupId& group_id) {
+  // Ephemeral groups do not theme the browser, so the focused group needs its
+  // focus mode theme applied once it is promoted. The theme change also
+  // refreshes the group's views, which cache whether the group is ephemeral.
+  if (model_->GetFocusedGroup() == group_id) {
+    UpdateFocusModeTheme(group_id);
+  }
+}
+
 void BrowserTabStripController::UpdateFocusModeTheme(
     std::optional<tab_groups::TabGroupId> group_id) {
   std::optional<SkColor> color;
