@@ -1372,6 +1372,7 @@ source_set("browser_tests") {
       ":safe_browsing",
       "//base",
       "//base/test:test_support",
+      "//chrome/browser/enterprise/connectors/reporting",
       "//chrome/browser/enterprise/connectors/test:test_support",
       "//chrome/browser/extensions",
       "//chrome/browser/extensions:test_support",
@@ -1384,7 +1385,10 @@ source_set("browser_tests") {
       "//components/enterprise/connectors/core",
       "//components/enterprise/isolated_mode",
       "//components/enterprise/isolated_mode:test_support",
+      "//components/keyed_service/content",
       "//components/omnibox/browser",
+      "//components/policy/core/common",
+      "//components/policy/core/common:test_support",
       "//components/safe_browsing/content/browser/web_ui",
       "//components/safe_browsing/core/common",
       "//components/safe_browsing/core/common:safe_browsing_prefs",
@@ -1397,7 +1401,9 @@ source_set("browser_tests") {
       "//extensions/common",
       "//extensions/common/api",
       "//net:test_support",
+      "//testing/gmock",
       "//testing/gtest",
+      "//url",
     ]
   }
 

@@ -1237,6 +1237,22 @@ TEST_F(ActivityLogIsolatedModeTelemetryTest,
   EXPECT_THAT(isolated_actions, testing::ElementsAre(action));
 }
 
+TEST_F(ActivityLogIsolatedModeTelemetryTest,
+       TelemetryDropsIsolatedModeActionWithoutIsolatedSubscribers) {
+  std::vector<scoped_refptr<Action>> regular_actions;
+  base::CallbackListSubscription regular_subscription =
+      AddTelemetrySubscriber(profile(), regular_actions);
+
+  scoped_refptr<Action> isolated_action = CreateDomAction();
+  isolated_action->set_isolated_mode(true);
+  activity_log()->LogAction(isolated_action);
+  scoped_refptr<Action> regular_action = CreateDomAction();
+  activity_log()->LogAction(regular_action);
+
+  // The regular subscriber only gets the regular action.
+  EXPECT_THAT(regular_actions, testing::ElementsAre(regular_action));
+}
+
 TEST_F(
     ActivityLogIsolatedModeTelemetryTest,
     TelemetryRoutesExecuteScriptOnUrlLessIsolatedModeTabToIsolatedSubscribers) {

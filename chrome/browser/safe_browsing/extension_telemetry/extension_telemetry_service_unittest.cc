@@ -6,6 +6,7 @@
 
 #include "base/callback_list.h"
 #include "base/command_line.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
@@ -16,6 +17,8 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
+#include "base/values.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/connectors/reporting/extension_telemetry_event_router_factory.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client.h"
@@ -2004,6 +2007,58 @@ TEST_F(ExtensionTelemetryServiceIsolatedModeTest, IsNeverEnabledForESB) {
   // Without a persister, the service can't touch the parent profile's
   // persisted ESB reports.
   EXPECT_FALSE(HasPersister());
+}
+
+TEST_F(ExtensionTelemetryServiceIsolatedModeTest,
+       KeepsParentProfilePersistedReports) {
+  // Simulate an ESB report persisted by the parent profile's service. The
+  // Isolated Mode profile shares the parent profile's path.
+  ASSERT_EQ(isolated_profile_->GetPath(), profile_.GetPath());
+  const base::FilePath persisted_report = profile_.GetPath()
+                                              .AppendASCII("CRXTelemetry")
+                                              .AppendASCII("CRXTelemetry_0");
+  ASSERT_TRUE(base::CreateDirectory(persisted_report.DirName()));
+  ASSERT_TRUE(base::WriteFile(persisted_report, "report"));
+  ASSERT_TRUE(IsEnhancedProtectionEnabled(*isolated_profile_->GetPrefs()));
+
+  // Turning the parent profile's ESB off would make a regular profile's
+  // service delete its persisted reports. The fixture's Isolated Mode service
+  // must not.
+  prefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, false);
+  ASSERT_FALSE(IsEnhancedProtectionEnabled(*isolated_profile_->GetPrefs()));
+  telemetry_service_->Shutdown();
+  telemetry_service_.reset();
+  // A service enabled for ESB would have posted
+  // `ExtensionTelemetryPersister::ClearPersistedFiles()` to its persister's
+  // thread pool sequence. With mock time, this runs the posted tasks without
+  // advancing the clock.
+  task_environment_.FastForwardBy(base::TimeDelta());
+
+  EXPECT_TRUE(base::PathExists(persisted_report));
+}
+
+TEST_F(ExtensionTelemetryServiceIsolatedModeTest,
+       KeepsParentProfileSearchHijackingData) {
+  // Simulate search hijacking data saved by the parent profile's service.
+  prefs()->SetDict(prefs::kExtensionTelemetrySearchHijackingSignalData,
+                   base::DictValue().Set(kExtensionId[0], base::DictValue()));
+  const base::DictValue search_hijacking_data =
+      prefs()
+          ->GetDict(prefs::kExtensionTelemetrySearchHijackingSignalData)
+          .Clone();
+  ASSERT_FALSE(search_hijacking_data.empty());
+
+  // Turning the parent profile's ESB off would make a regular profile's
+  // service clear its search hijacking data. The fixture's Isolated Mode
+  // service must not.
+  prefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, false);
+  ASSERT_FALSE(IsEnhancedProtectionEnabled(*isolated_profile_->GetPrefs()));
+  telemetry_service_->Shutdown();
+  telemetry_service_.reset();
+
+  EXPECT_EQ(
+      prefs()->GetDict(prefs::kExtensionTelemetrySearchHijackingSignalData),
+      search_hijacking_data);
 }
 
 TEST_F(ExtensionTelemetryServiceIsolatedModeTest,
