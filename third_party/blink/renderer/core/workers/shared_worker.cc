@@ -164,8 +164,13 @@ SharedWorker* SharedWorker::CreateImpl(
 
   if (!worker->CheckCanReadScriptURLForNoThrow(script_url) ||
       !worker->CheckAllowedByCSPForNoThrow(script_url)) {
-    // Return the unconnected worker. The port_ will be closed when remote_port
-    // goes out of scope after returning from this function.
+    // Return the unconnected worker and dispatch an error event asynchronously
+    // so script has a chance to register an event handler. The port_ will be
+    // closed when remote_port goes out of scope after returning from this
+    // function.
+    context->GetTaskRunner(TaskType::kInternalLoading)
+        ->PostTask(FROM_HERE, BindOnce(&SharedWorker::DispatchErrorEvent,
+                                       WrapPersistent(worker)));
     return worker;
   }
 
@@ -309,7 +314,7 @@ SharedWorker::ParsePermissionsPolicy(const KURL& script_url,
       GetExecutionContext()
           ->GetTaskRunner(TaskType::kInternalLoading)
           ->PostTask(FROM_HERE, BindOnce(&SharedWorker::DispatchErrorEvent,
-                                         WrapWeakPersistent(this)));
+                                         WrapPersistent(this)));
       return std::nullopt;
     }
   }

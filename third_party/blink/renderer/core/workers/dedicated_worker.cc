@@ -286,10 +286,14 @@ void DedicatedWorker::Start() {
 
   if (!CheckCanReadScriptURLForNoThrow(script_request_url_) ||
       !CheckAllowedByCSPForNoThrow(script_request_url_)) {
-    // The same as in OnScriptLoadStartFailed, reset factory_client_ and return.
-    // This leaves the worker in a state the same as if script loading failed.
-    factory_client_.reset();
-    context_proxy_->DidFailToFetchScript();
+    // Abort startup and asynchronously invoke OnScriptLoadStartFailed() so the
+    // caller has a chance to register an error event handler before the error
+    // event is dispatched and the proxy is terminated.
+    GetExecutionContext()
+        ->GetTaskRunner(TaskType::kInternalLoading)
+        ->PostTask(FROM_HERE,
+                   BindOnce(&DedicatedWorker::OnScriptLoadStartFailed,
+                            WrapPersistent(this)));
     return;
   }
 
@@ -379,9 +383,9 @@ void DedicatedWorker::OnWorkerHostCreated(
 
 void DedicatedWorker::OnScriptLoadStartFailed() {
   TRACE_EVENT("blink.worker", "DedicatedWorker::OnScriptLoadStartFailed");
-  // Specify empty source code here because scripts will be fetched on the
-  context_proxy_->DidFailToFetchScript();
   factory_client_.reset();
+  context_proxy_->DidFailToFetchScript();
+  context_proxy_->TerminateGlobalScope();
 }
 
 void DedicatedWorker::DispatchErrorEventForScriptFetchFailure() {

@@ -74,6 +74,8 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object_snapshot.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
@@ -1283,15 +1285,8 @@ class CountingEventListener final : public NativeEventListener {
 
 }  // namespace
 
-class DedicatedWorkerConstructorTest
-    : public PageTestBase,
-      public testing::WithParamInterface<bool> {
- public:
-  DedicatedWorkerConstructorTest() : scoped_feature_(IsFeatureEnabled()) {}
-
+class DedicatedWorkerConstructorTestBase : public PageTestBase {
  protected:
-  bool IsFeatureEnabled() { return GetParam(); }
-
   void SetUp() override {
     PageTestBase::SetUp(gfx::Size());
     Page::InsertOrdinaryPageForTesting(&GetPage());
@@ -1305,6 +1300,16 @@ class DedicatedWorkerConstructorTest
         MakeGarbageCollected<V8UnionTrustedScriptURLOrUSVString>(url),
         WorkerOptions::Create(), exception_state);
   }
+};
+
+class DedicatedWorkerConstructorTest
+    : public DedicatedWorkerConstructorTestBase,
+      public testing::WithParamInterface<bool> {
+ public:
+  DedicatedWorkerConstructorTest() : scoped_feature_(IsFeatureEnabled()) {}
+
+ protected:
+  bool IsFeatureEnabled() { return GetParam(); }
 
   bool IsCrossOriginBlockedUseCounted() {
     return GetDocument().IsUseCounted(
@@ -1475,6 +1480,170 @@ TEST_P(DedicatedWorkerConstructorTest, UnparsableScriptURLThrowsSyntaxError) {
             exception_state.CodeAs<DOMExceptionCode>());
   EXPECT_FALSE(worker);
   EXPECT_FALSE(IsCrossOriginBlockedUseCounted());
+}
+
+class DedicatedWorkerEarlyAbortTest
+    : public DedicatedWorkerConstructorTestBase {
+ protected:
+  void StartWorker(DedicatedWorker* worker) { worker->Start(); }
+};
+
+TEST_F(DedicatedWorkerEarlyAbortTest,
+       CrossOriginBlockedDoesNotFireSynchronousErrorAndDoesNotLeak) {
+  ScopedNoSynchronousThrowForCrossOriginBlockedWorkerForTest scoped_feature(
+      true);
+  ScopedTestingPlatformSupport<
+      FakeWebDedicatedWorkerHostFactoryClientPlatformSupport>
+      platform;
+
+  const int initial_proxy_count = ThreadedMessagingProxyBase::ProxyCount();
+  Persistent<CountingEventListener> counter =
+      MakeGarbageCollected<CountingEventListener>();
+  WeakPersistent<DedicatedWorker> weak_worker;
+  {
+    DedicatedWorker* worker = MakeGarbageCollected<DedicatedWorker>(
+        GetFrame().DomWindow(), KURL("https://cross-origin.test/worker.js"),
+        WorkerOptions::Create());
+    worker->UpdateStateIfNeeded();
+    worker->addEventListener(event_type_names::kError, counter.Get());
+    StartWorker(worker);
+    EXPECT_EQ(counter->count(), 0);
+    weak_worker = worker;
+  }
+
+  ThreadState::Current()->CollectAllGarbageForTesting();
+  EXPECT_TRUE(weak_worker);
+
+  test::RunPendingTasks();
+  EXPECT_EQ(counter->count(), 1);
+
+  ThreadState::Current()->CollectAllGarbageForTesting();
+  EXPECT_FALSE(weak_worker);
+  EXPECT_EQ(ThreadedMessagingProxyBase::ProxyCount(), initial_proxy_count);
+}
+
+TEST_F(DedicatedWorkerEarlyAbortTest,
+       CSPBlockedDoesNotFireSynchronousErrorEvent) {
+  ScopedTestingPlatformSupport<
+      FakeWebDedicatedWorkerHostFactoryClientPlatformSupport>
+      platform;
+
+  NavigateTo(KURL("https://example.test/"),
+             {{"Content-Security-Policy", "worker-src 'none'"}});
+
+  DedicatedWorker* worker = MakeGarbageCollected<DedicatedWorker>(
+      GetFrame().DomWindow(), KURL("https://example.test/worker.js"),
+      WorkerOptions::Create());
+  worker->UpdateStateIfNeeded();
+
+  auto* counter = MakeGarbageCollected<CountingEventListener>();
+  worker->addEventListener(event_type_names::kError, counter);
+
+  StartWorker(worker);
+  // No error event should be dispatched synchronously during Start().
+  EXPECT_EQ(counter->count(), 0);
+
+  test::RunPendingTasks();
+  EXPECT_EQ(counter->count(), 1);
+  EXPECT_FALSE(worker->HasPendingActivity());
+}
+
+TEST_F(DedicatedWorkerEarlyAbortTest,
+       CSPBlockedUnreferencedWorkerFiresErrorAndDoesNotLeak) {
+  ScopedTestingPlatformSupport<
+      FakeWebDedicatedWorkerHostFactoryClientPlatformSupport>
+      platform;
+
+  NavigateTo(KURL("https://example.test/"),
+             {{"Content-Security-Policy", "worker-src 'none'"}});
+
+  const int initial_proxy_count = ThreadedMessagingProxyBase::ProxyCount();
+  Persistent<CountingEventListener> counter =
+      MakeGarbageCollected<CountingEventListener>();
+  WeakPersistent<DedicatedWorker> weak_worker;
+  {
+    DummyExceptionStateForTesting exception_state;
+    DedicatedWorker* worker =
+        CreateWorker("https://example.test/worker.js", exception_state);
+    ASSERT_FALSE(exception_state.HadException());
+    ASSERT_TRUE(worker);
+    worker->addEventListener(event_type_names::kError, counter.Get());
+    weak_worker = worker;
+  }
+
+  // GC before the posted error task runs must not collect the worker before
+  // its error listener fires.
+  ThreadState::Current()->CollectAllGarbageForTesting();
+  EXPECT_TRUE(weak_worker);
+
+  test::RunPendingTasks();
+  EXPECT_EQ(counter->count(), 1);
+
+  // After the error event is dispatched, neither the DedicatedWorker nor its
+  // messaging proxy should leak until ContextDestroyed().
+  ThreadState::Current()->CollectAllGarbageForTesting();
+  EXPECT_FALSE(weak_worker);
+  EXPECT_EQ(ThreadedMessagingProxyBase::ProxyCount(), initial_proxy_count);
+}
+
+TEST_F(DedicatedWorkerEarlyAbortTest,
+       CSPBlockedTerminatedBeforeErrorTaskSuppressesErrorAndDoesNotLeak) {
+  ScopedTestingPlatformSupport<
+      FakeWebDedicatedWorkerHostFactoryClientPlatformSupport>
+      platform;
+
+  NavigateTo(KURL("https://example.test/"),
+             {{"Content-Security-Policy", "worker-src 'none'"}});
+
+  const int initial_proxy_count = ThreadedMessagingProxyBase::ProxyCount();
+  Persistent<CountingEventListener> counter =
+      MakeGarbageCollected<CountingEventListener>();
+  WeakPersistent<DedicatedWorker> weak_worker;
+  {
+    DummyExceptionStateForTesting exception_state;
+    DedicatedWorker* worker =
+        CreateWorker("https://example.test/worker.js", exception_state);
+    ASSERT_FALSE(exception_state.HadException());
+    ASSERT_TRUE(worker);
+    worker->addEventListener(event_type_names::kError, counter.Get());
+    worker->terminate();
+    weak_worker = worker;
+  }
+
+  test::RunPendingTasks();
+  EXPECT_EQ(counter->count(), 0);
+
+  ThreadState::Current()->CollectAllGarbageForTesting();
+  EXPECT_FALSE(weak_worker);
+  EXPECT_EQ(ThreadedMessagingProxyBase::ProxyCount(), initial_proxy_count);
+}
+
+TEST_F(DedicatedWorkerEarlyAbortTest,
+       OnScriptLoadStartFailedTerminatesProxyAndDoesNotLeak) {
+  ScopedTestingPlatformSupport<
+      FakeWebDedicatedWorkerHostFactoryClientPlatformSupport>
+      platform;
+
+  const int initial_proxy_count = ThreadedMessagingProxyBase::ProxyCount();
+  Persistent<CountingEventListener> counter =
+      MakeGarbageCollected<CountingEventListener>();
+  WeakPersistent<DedicatedWorker> weak_worker;
+  {
+    DummyExceptionStateForTesting exception_state;
+    DedicatedWorker* worker =
+        CreateWorker("https://example.test/worker.js", exception_state);
+    ASSERT_FALSE(exception_state.HadException());
+    ASSERT_TRUE(worker);
+    worker->addEventListener(event_type_names::kError, counter.Get());
+    worker->OnScriptLoadStartFailed();
+    EXPECT_EQ(counter->count(), 1);
+    EXPECT_FALSE(worker->HasPendingActivity());
+    weak_worker = worker;
+  }
+
+  ThreadState::Current()->CollectAllGarbageForTesting();
+  EXPECT_FALSE(weak_worker);
+  EXPECT_EQ(ThreadedMessagingProxyBase::ProxyCount(), initial_proxy_count);
 }
 
 namespace {

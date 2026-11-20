@@ -153,6 +153,7 @@ class CORE_EXPORT DedicatedWorker final
   void EmulateStartForTesting();
 
  private:
+  friend class DedicatedWorkerEarlyAbortTest;
   FRIEND_TEST_ALL_PREFIXES(DedicatedWorkerTest, TopLevelFrameSecurityOrigin);
 
   // Starts the worker.

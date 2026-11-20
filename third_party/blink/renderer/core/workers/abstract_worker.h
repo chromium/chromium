@@ -70,11 +70,11 @@ class CORE_EXPORT AbstractWorker
   static KURL ResolveURL(ExecutionContext*, const String& url, ExceptionState&);
 
   // Check whether the |script_url| is allowed by CSP.
-  // When kNoThrowForCSPBlockedWorker is disabled, this method is no-op and
+  // When kNoThrowForCSPBlockedWorker is disabled, this method is a no-op and
   // returns true. The CSP check is done in ResolveURL() instead.
-  // When kNoThrowForCSPBlockedWorker is enabled, if it is allowed, the
-  // function returns true. Otherwise, the function posts a task to dispatch
-  // an error event to the worker and returns false.
+  // When kNoThrowForCSPBlockedWorker is enabled, returns true if allowed, or
+  // records the use counter and returns false otherwise. Callers are
+  // responsible for aborting worker startup and scheduling an error event.
   bool CheckAllowedByCSPForNoThrow(const KURL& script_url);
 
   // Check whether the |script_url| is allowed by the same-origin check
@@ -82,9 +82,10 @@ class CORE_EXPORT AbstractWorker
   // When NoSynchronousThrowForCrossOriginBlockedWorker is disabled, this
   // method is a no-op and returns true. The check is done in ResolveURL()
   // instead.
-  // When NoSynchronousThrowForCrossOriginBlockedWorker is enabled, if the
-  // URL is allowed, the function returns true. Otherwise, the function posts
-  // a task to dispatch an error event to the worker and returns false.
+  // When NoSynchronousThrowForCrossOriginBlockedWorker is enabled, returns true
+  // if the URL is allowed, or records the use counter, logs a console error,
+  // and returns false otherwise. Callers are responsible for aborting worker
+  // startup and scheduling an error event.
   bool CheckCanReadScriptURLForNoThrow(const KURL& script_url);
 
   void DispatchErrorEvent();

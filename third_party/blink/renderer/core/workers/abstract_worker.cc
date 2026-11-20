@@ -30,7 +30,6 @@
 
 #include "third_party/blink/renderer/core/workers/abstract_worker.h"
 
-#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
@@ -42,7 +41,6 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
-#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
@@ -103,19 +101,6 @@ bool AbstractWorker::CheckAllowedByCSPForNoThrow(const KURL& script_url) {
     if (!csp->AllowWorkerContextFromSource(script_url)) {
       UseCounter::Count(GetExecutionContext(),
                         WebFeature::kCSPBlockedWorkerCreation);
-      // In the spec, CSP check is part of fetch and should result in network
-      // error and trigger error event asynchronously. See
-      // https://www.w3.org/TR/CSP3/#fetch-integration.
-      // Therefore, we dispatch an error event asynchronously.
-      // This function is called during worker creation, if we dispatch an error
-      // event immediately, the worker object has not been returned to the
-      // script yet for it to have a chance to register an event handler.
-      // Therefore, post a task to fire error event later so that the script
-      // have a chance to register an event handler.
-      GetExecutionContext()
-          ->GetTaskRunner(TaskType::kInternalLoading)
-          ->PostTask(FROM_HERE, BindOnce(&AbstractWorker::DispatchErrorEvent,
-                                         WrapWeakPersistent(this)));
       return false;
     }
   }
@@ -137,15 +122,6 @@ bool AbstractWorker::CheckCanReadScriptURLForNoThrow(const KURL& script_url) {
         StrCat({"Script at '", script_url.ElidedString(),
                 "' cannot be accessed from origin '",
                 execution_context->GetSecurityOrigin()->ToString(), "'."})));
-
-    // In the spec, worker script URL fetch is a part of fetch and should result
-    // in network error and trigger error event asynchronously after the worker
-    // construction. To avoid throwing error synchronously at construction, post
-    // a task to fire error event later so that the script have a chance to
-    // register an event handler.
-    execution_context->GetTaskRunner(TaskType::kInternalLoading)
-        ->PostTask(FROM_HERE, BindOnce(&AbstractWorker::DispatchErrorEvent,
-                                       WrapWeakPersistent(this)));
     return false;
   }
   return true;

@@ -40,6 +40,8 @@
 #include "third_party/blink/public/platform/web_policy_container.h"
 #include "third_party/blink/public/web/web_shared_worker.h"
 #include "third_party/blink/public/web/web_shared_worker_client.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_sharedworkeroptions_string.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_trustedscripturl_usvstring.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
@@ -55,7 +57,10 @@
 #include "third_party/blink/renderer/core/workers/shared_worker_global_scope.h"
 #include "third_party/blink/renderer/core/workers/shared_worker_thread.h"
 #include "third_party/blink/renderer/core/workers/worker_or_worklet_global_scope.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -260,6 +265,41 @@ TEST_F(SharedWorkerPermissionsPolicyTest,
             "to the worker script's origin.");
   test::RunPendingTasks();
   EXPECT_EQ(listener->ErrorCount(), 1);
+}
+
+TEST_F(SharedWorkerPermissionsPolicyTest,
+       DisallowedFeatureUnreferencedWorkerFiresErrorAndCanBeCollected) {
+  network::ParsedPermissionsPolicy header_policy = {
+      network::ParsedPermissionsPolicyDeclaration(
+          network::mojom::PermissionsPolicyFeature::kGeolocation)};
+  GetFrame().DomWindow()->GetSecurityContext().SetPermissionsPolicy(
+      network::PermissionsPolicy::CreateFromParentPolicy(
+          /*parent_policy=*/nullptr, header_policy, /*container_policy=*/{},
+          GetFrame().DomWindow()->GetSecurityOrigin()->ToUrlOrigin()));
+  ASSERT_FALSE(GetFrame().DomWindow()->IsFeatureEnabled(
+      network::mojom::PermissionsPolicyFeature::kGeolocation));
+
+  Persistent<ErrorEventListener> listener =
+      MakeGarbageCollected<ErrorEventListener>();
+  WeakPersistent<SharedWorker> weak_worker;
+  {
+    auto* worker = MakeGarbageCollected<SharedWorker>(GetFrame().DomWindow());
+    worker->UpdateStateIfNeeded();
+    worker->addEventListener(event_type_names::kError, listener.Get());
+    EXPECT_FALSE(ParsePermissionsPolicy(
+                     worker, KURL("https://example.com/w.js"), "geolocation")
+                     .has_value());
+    weak_worker = worker;
+  }
+
+  ThreadState::Current()->CollectAllGarbageForTesting();
+  EXPECT_TRUE(weak_worker);
+
+  test::RunPendingTasks();
+  EXPECT_EQ(listener->ErrorCount(), 1);
+
+  ThreadState::Current()->CollectAllGarbageForTesting();
+  EXPECT_FALSE(weak_worker);
 }
 
 namespace {
@@ -764,6 +804,80 @@ TEST_F(WebSharedWorkerMixedContentUseCounterTest,
   test::RunPendingTasks();
   host_.FlushForTesting();
   EXPECT_FALSE(host_.HasUsedFeature(WebFeature::kMixedContentInSharedWorker));
+}
+
+class SharedWorkerEarlyAbortTest : public PageTestBase {
+ public:
+  void SetUp() override {
+    PageTestBase::SetUp();
+    NavigateTo(KURL("https://example.test/"));
+  }
+
+  SharedWorker* CreateWorker(const String& url,
+                             ExceptionState& exception_state) {
+    return SharedWorker::Create(
+        GetFrame().DomWindow(),
+        MakeGarbageCollected<V8UnionTrustedScriptURLOrUSVString>(url),
+        MakeGarbageCollected<V8UnionSharedWorkerOptionsOrString>(
+            g_empty_string),
+        exception_state);
+  }
+};
+
+TEST_F(SharedWorkerEarlyAbortTest,
+       CSPBlockedUnreferencedWorkerFiresErrorAndCanBeCollected) {
+  NavigateTo(KURL("https://example.test/"),
+             {{"Content-Security-Policy", "worker-src 'none'"}});
+
+  Persistent<ErrorEventListener> listener =
+      MakeGarbageCollected<ErrorEventListener>();
+  WeakPersistent<SharedWorker> weak_worker;
+  {
+    DummyExceptionStateForTesting exception_state;
+    SharedWorker* worker =
+        CreateWorker("https://example.test/worker.js", exception_state);
+    ASSERT_FALSE(exception_state.HadException());
+    ASSERT_TRUE(worker);
+    worker->addEventListener(event_type_names::kError, listener.Get());
+    weak_worker = worker;
+  }
+
+  ThreadState::Current()->CollectAllGarbageForTesting();
+  EXPECT_TRUE(weak_worker);
+
+  test::RunPendingTasks();
+  EXPECT_EQ(listener->ErrorCount(), 1);
+
+  ThreadState::Current()->CollectAllGarbageForTesting();
+  EXPECT_FALSE(weak_worker);
+}
+
+TEST_F(SharedWorkerEarlyAbortTest,
+       CrossOriginBlockedUnreferencedWorkerFiresErrorAndCanBeCollected) {
+  ScopedNoSynchronousThrowForCrossOriginBlockedWorkerForTest scoped_feature(
+      true);
+
+  Persistent<ErrorEventListener> listener =
+      MakeGarbageCollected<ErrorEventListener>();
+  WeakPersistent<SharedWorker> weak_worker;
+  {
+    DummyExceptionStateForTesting exception_state;
+    SharedWorker* worker =
+        CreateWorker("https://cross-origin.test/worker.js", exception_state);
+    ASSERT_FALSE(exception_state.HadException());
+    ASSERT_TRUE(worker);
+    worker->addEventListener(event_type_names::kError, listener.Get());
+    weak_worker = worker;
+  }
+
+  ThreadState::Current()->CollectAllGarbageForTesting();
+  EXPECT_TRUE(weak_worker);
+
+  test::RunPendingTasks();
+  EXPECT_EQ(listener->ErrorCount(), 1);
+
+  ThreadState::Current()->CollectAllGarbageForTesting();
+  EXPECT_FALSE(weak_worker);
 }
 
 }  // namespace blink
