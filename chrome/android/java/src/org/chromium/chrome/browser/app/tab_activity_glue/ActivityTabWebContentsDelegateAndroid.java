@@ -51,6 +51,8 @@ import org.chromium.chrome.browser.policy.PolicyAuditor;
 import org.chromium.chrome.browser.policy.PolicyAuditor.AuditEvent;
 import org.chromium.chrome.browser.tab.InterceptNavigationDelegateTabHelper;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabAttributeKeys;
+import org.chromium.chrome.browser.tab.TabAttributes;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabUtils;
@@ -218,13 +220,14 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
 
     @Override
     public long getFullscreenTargetDisplay() {
-        if (ChromeFeatureList.isEnabled(
+        if (!ChromeFeatureList.isEnabled(
                 ChromeFeatureList.ENABLE_FULLSCREEN_TO_ANY_SCREEN_ANDROID)) {
-            if (mFullscreenManager != null) {
-                return mFullscreenManager.getFullscreenTargetDisplay();
-            }
+            return INVALID_DISPLAY;
         }
-        return INVALID_DISPLAY;
+        if (mTab.isDestroyed()) return INVALID_DISPLAY;
+        FullscreenOptions options =
+                TabAttributes.from(mTab).get(TabAttributeKeys.FULLSCREEN_OPTIONS);
+        return options != null ? options.displayId : INVALID_DISPLAY;
     }
 
     @Override

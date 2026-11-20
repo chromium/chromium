@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.app.tab_activity_glue;
 
+import static android.view.Display.INVALID_DISPLAY;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -52,6 +54,7 @@ import org.robolectric.shadow.api.Shadow;
 import org.robolectric.shadows.ShadowContextImpl;
 
 import org.chromium.base.Token;
+import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -65,9 +68,12 @@ import org.chromium.chrome.browser.customtabs.PopupCreator;
 import org.chromium.chrome.browser.customtabs.PopupCreatorFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
+import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabAttributeKeys;
+import org.chromium.chrome.browser.tab.TabAttributes;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
@@ -910,5 +916,54 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
         BrowserUiUtils.setIsAndroidAutoProjectedForTesting(false);
 
         assertFalse(mTabWebContentsDelegateAndroid.isPictureInPictureEnabled());
+    }
+
+    private static void setFullscreenOptionsAttribute(Tab tab, long displayId) {
+        TabAttributes.from(tab)
+                .set(
+                        TabAttributeKeys.FULLSCREEN_OPTIONS,
+                        new FullscreenOptions(
+                                /* showNavigationBar= */ false,
+                                /* showStatusBar= */ false,
+                                displayId));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ENABLE_FULLSCREEN_TO_ANY_SCREEN_ANDROID)
+    public void testGetFullscreenTargetDisplay_attributeSetOnOwnTab() {
+        doReturn(new UserDataHost()).when(mTab).getUserDataHost();
+        setFullscreenOptionsAttribute(mTab, TEST_DISPLAY_ID);
+
+        assertEquals(TEST_DISPLAY_ID, mTabWebContentsDelegateAndroid.getFullscreenTargetDisplay());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ENABLE_FULLSCREEN_TO_ANY_SCREEN_ANDROID)
+    public void testGetFullscreenTargetDisplay_attributeAbsent() {
+        doReturn(new UserDataHost()).when(mTab).getUserDataHost();
+
+        assertEquals(INVALID_DISPLAY, mTabWebContentsDelegateAndroid.getFullscreenTargetDisplay());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.ENABLE_FULLSCREEN_TO_ANY_SCREEN_ANDROID)
+    public void testGetFullscreenTargetDisplay_flagOff() {
+        doReturn(new UserDataHost()).when(mTab).getUserDataHost();
+        setFullscreenOptionsAttribute(mTab, TEST_DISPLAY_ID);
+
+        assertEquals(INVALID_DISPLAY, mTabWebContentsDelegateAndroid.getFullscreenTargetDisplay());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ENABLE_FULLSCREEN_TO_ANY_SCREEN_ANDROID)
+    public void testGetFullscreenTargetDisplay_tabDestroyed() {
+        UserDataHost host = new UserDataHost();
+        doReturn(host).when(mTab).getUserDataHost();
+        setFullscreenOptionsAttribute(mTab, TEST_DISPLAY_ID);
+        doReturn(true).when(mTab).isDestroyed();
+        // A destroyed tab's UserDataHost throws on access, so the delegate must not reach it.
+        host.destroy();
+
+        assertEquals(INVALID_DISPLAY, mTabWebContentsDelegateAndroid.getFullscreenTargetDisplay());
     }
 }

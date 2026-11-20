@@ -813,18 +813,6 @@ public abstract class FullscreenHtmlApiHandlerBase
         return value;
     }
 
-    @Override
-    public long getFullscreenTargetDisplay() {
-        if (mTabInFullscreen != null) {
-            TabAttributes attrs = TabAttributes.from(mTabInFullscreen);
-            FullscreenOptions options = attrs.get(TabAttributeKeys.FULLSCREEN_OPTIONS);
-            if (options != null) {
-                return options.displayId;
-            }
-        }
-        return INVALID_DISPLAY;
-    }
-
     /**
      * @return An observable supplier that determines whether the app is in persistent fullscreen
      *     mode.
