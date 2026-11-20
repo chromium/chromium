@@ -3097,6 +3097,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.Input.PointerDownProvenance"
+    enum="PointerDownProvenance" expires_after="2027-11-13">
+  <owner>fredmello@chromium.org</owner>
+  <owner>ckitagawa@chromium.org</owner>
+  <summary>
+    Whether a pointer-down (touch, stylus or mouse press) has an input device (a
+    non-negative device ID) and whether Android set its accessibility flag.
+    Recorded once per ACTION_DOWN delivered to the window of an activity derived
+    from ChromeBaseAppCompatActivity, such as the tabbed activity, custom tabs
+    and settings. Touches in other windows (some dialogs, popups, the soft
+    keyboard) are not recorded.
+
+    An event without a device was injected, for example by adb shell input.
+    Devices created in software and emulator touchscreens count as devices.
+    Android 12 and later set the flag on gestures that an accessibility service
+    makes (no device) and on touches that pass through one (device). Android 11
+    sets no flag, and touches made while an accessibility feature filters input
+    have no device there.
+  </summary>
+</histogram>
+
 <histogram name="Android.Input.TouchEvent.Action" enum="MotionEventAction"
     expires_after="2027-05-02">
   <owner>lizeb@google.com</owner>

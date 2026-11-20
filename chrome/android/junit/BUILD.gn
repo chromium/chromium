@@ -458,6 +458,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/KeyboardShortcutsUnitTest.java",
       "src/org/chromium/chrome/browser/LaunchIntentDispatcherTest.java",
       "src/org/chromium/chrome/browser/OmahaServiceStartDelayerTest.java",
+      "src/org/chromium/chrome/browser/PointerDownProvenanceRecorderUnitTest.java",
       "src/org/chromium/chrome/browser/ShortcutHelperTest.java",
       "src/org/chromium/chrome/browser/SwipeRefreshHandlerUnitTest.java",
       "src/org/chromium/chrome/browser/TabGroupUsageTrackerUnitTest.java",

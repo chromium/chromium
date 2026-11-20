@@ -16,6 +16,7 @@ import android.graphics.Insets;
 import android.os.Build;
 import android.util.DisplayMetrics;
 import android.view.Display;
+import android.view.MotionEvent;
 import android.view.WindowInsets;
 import android.view.WindowManager;
 import android.view.WindowMetrics;
@@ -27,10 +28,13 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.PointerDownProvenanceRecorder.PointerDownProvenance;
 import org.chromium.chrome.test.OverrideContextWrapperTestRule;
 import org.chromium.ui.display.DisplayUtil;
 
@@ -209,5 +213,27 @@ public class ChromeBaseAppCompatActivityUnitTest {
                 config.screenHeightDp);
         assertEquals(
                 "Smallest screen width should not have changed.", 0, config.smallestScreenWidthDp);
+    }
+
+    @Test
+    public void testDispatchTouchEvent_recordsPointerDownProvenance() {
+        ChromeBaseAppCompatActivity activity =
+                Robolectric.buildActivity(ChromeBaseAppCompatActivity.class).get();
+        // Activity.dispatchTouchEvent() needs the decor view to exist.
+        activity.getWindow().getDecorView();
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.Input.PointerDownProvenance", PointerDownProvenance.DEVICE);
+
+        activity.dispatchTouchEvent(
+                MotionEvent.obtain(
+                        /* downTime= */ 0,
+                        /* eventTime= */ 0,
+                        MotionEvent.ACTION_DOWN,
+                        /* x= */ 0f,
+                        /* y= */ 0f,
+                        /* metaState= */ 0));
+
+        watcher.assertExpected();
     }
 }
