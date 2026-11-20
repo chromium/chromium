@@ -29,10 +29,12 @@
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/events/lazy_event_dispatch_util.h"
 #include "extensions/browser/extension_function.h"
+#include "extensions/browser/extension_pref_names.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/service_worker/service_worker_task_queue.h"
+#include "extensions/browser/service_worker/service_worker_test_utils.h"
 #include "extensions/browser/service_worker/worker_id.h"
 #include "extensions/browser/test_event_router_observer.h"
 #include "extensions/browser/test_extensions_browser_client.h"
@@ -229,7 +231,7 @@ TEST_P(RuntimeOnExtensionLoadedEventTest, PreviousVersionHandling) {
   // string.
   RuntimeEventRouter::DispatchOnExtensionLoadedEvent(
       browser_context(), extension()->id(), reason,
-      /*previous_version=*/"1.0");
+      /*previous_version=*/"1.0", /*wait_for_lazy_context=*/false);
 
   // Verify the dispatched event payload.
   ASSERT_TRUE(
@@ -266,14 +268,16 @@ TEST_P(RuntimeOnExtensionLoadedEventTest,
 
   // With no listener registered, verify early return without dispatching.
   RuntimeEventRouter::DispatchOnExtensionLoadedEvent(
-      browser_context(), extension()->id(), reason, previous_version);
+      browser_context(), extension()->id(), reason, previous_version,
+      /*wait_for_lazy_context=*/false);
   EXPECT_FALSE(
       observer.events().contains(api::runtime::OnExtensionLoaded::kEventName));
 
   // Register a listener and verify that the event now dispatches.
   AddOnExtensionLoadedListener();
   RuntimeEventRouter::DispatchOnExtensionLoadedEvent(
-      browser_context(), extension()->id(), reason, previous_version);
+      browser_context(), extension()->id(), reason, previous_version,
+      /*wait_for_lazy_context=*/false);
   EXPECT_TRUE(
       observer.events().contains(api::runtime::OnExtensionLoaded::kEventName));
 }
@@ -296,7 +300,8 @@ TEST_P(RuntimeOnExtensionLoadedEventTest,
 
   // Attempt to dispatch for `reason`.
   RuntimeEventRouter::DispatchOnExtensionLoadedEvent(
-      browser_context(), extension()->id(), reason, previous_version);
+      browser_context(), extension()->id(), reason, previous_version,
+      /*wait_for_lazy_context=*/false);
 
   // Verify that the event was not dispatched because the extension is not
   // enabled.
@@ -349,8 +354,8 @@ class RuntimeAPIOnExtensionLoadedPrecedenceTest : public ApiUnitTest {
     // `RunPostedDispatchTasks()` relies on each `runtime.onExtensionLoaded`
     // dispatch reaching `EventRouter` synchronously from its posted task. That
     // holds only if the extension has no lazy background context, since
-    // `RuntimeEventRouter::DispatchOnExtensionLoadedEvent()` would otherwise
-    // queue `kInstall` and `kUpdate` on the `LazyContextTaskQueue`.
+    // `RuntimeEventRouter` otherwise queues the dispatches that callers send
+    // with `wait_for_lazy_context` set on the `LazyContextTaskQueue`.
     ASSERT_FALSE(BackgroundInfo::HasLazyContext(extension()));
 
     // Register the extension as enabled and add a lazy listener for
@@ -698,6 +703,117 @@ TEST_F(RuntimeAPIOnExtensionLoadedPrecedenceTest,
 
   // Verify that `runtime.onEnabled` was dispatched once.
   EXPECT_EQ(1, CountOnEnabledEvents(observer));
+}
+
+// Test fixture like `RuntimeAPIOnExtensionLoadedPrecedenceTest`, but for a
+// service worker extension, to verify when enable events wait for the
+// service worker to start.
+class RuntimeAPIEnableLazyContextTest
+    : public RuntimeAPIOnExtensionLoadedPrecedenceTest {
+ public:
+  void SetUp() override {
+    RuntimeAPIOnExtensionLoadedPrecedenceTest::SetUp();
+
+    // Replace the base fixture's extension, which has no lazy background
+    // context, with an enabled service worker extension.
+    set_extension(ExtensionBuilder("Service Worker Based Extension")
+                      .SetManifestVersion(3)
+                      .SetBackgroundContext(
+                          ExtensionBuilder::BackgroundContext::SERVICE_WORKER)
+                      .Build());
+    ExtensionRegistry::Get(browser_context())->AddEnabled(extension());
+  }
+
+ protected:
+  // Records that the extension's service worker has run since the extension
+  // was installed, as `ServiceWorkerTaskQueue` does after the worker starts.
+  void SetHasStartedServiceWorker() {
+    ExtensionPrefs::Get(browser_context())
+        ->UpdateExtensionPref(extension()->id(), kPrefHasStartedServiceWorker,
+                              base::Value(true));
+  }
+
+  // Adds lazy listeners for `runtime.onEnabled` and
+  // `runtime.onExtensionLoaded`, as the service worker registers them when it
+  // starts.
+  void AddEnableEventListeners() {
+    for (const char* event_name :
+         {api::runtime::OnEnabled::kEventName,
+          api::runtime::OnExtensionLoaded::kEventName}) {
+      EventRouter::Get(browser_context())
+          ->listeners()
+          .AddListener(EventListener::CreateLazyListener(
+              event_name, extension()->id(), browser_context(),
+              /*is_for_service_worker=*/false,
+              /*service_worker_scope=*/GURL(), /*filter=*/std::nullopt));
+    }
+  }
+
+  // Returns the `ServiceWorkerTaskQueue` for `browser_context()`.
+  ServiceWorkerTaskQueue* task_queue() {
+    return ServiceWorkerTaskQueue::Get(browser_context());
+  }
+};
+
+// Verifies that a plain enable of an extension whose service worker has
+// already run doesn't wait for the worker:
+// - No service worker start is requested.
+// - `runtime.onEnabled` reaches `EventRouter` in the task that the enable
+//   posted. `EventRouter` then drops it, because there's no listener.
+// - `runtime.onExtensionLoaded` isn't dispatched, because there's no listener.
+// The extension has no enable event listeners on purpose. With listeners,
+// `EventRouter` starts the worker to deliver the events even when nothing
+// waits, so the worker start count would be 1 whether or not the bug is
+// present. Without listeners, only a wait can start the worker, so a wait
+// makes the start count 1 and the test fails.
+TEST_F(RuntimeAPIEnableLazyContextTest,
+       PlainEnableDoesNotWakeDormantServiceWorker) {
+  // Set up a registered but stopped service worker that has already run once.
+  SetHasStartedServiceWorker();
+  task_queue()->SetRegisteredServiceWorkerInfoForTesting(
+      extension()->id(), extension()->version());
+
+  // Enable the extension, and activate it before the posted dispatches run.
+  // This test environment has no real worker registration, so the activation
+  // posts a check that finds none and registers the worker again. Activating
+  // after the enable lets the dispatches run while the worker still counts as
+  // registered, so a dispatch that waited would request a worker start.
+  service_worker_test_utils::TestServiceWorkerTaskQueueObserver worker_observer;
+  TestEventRouterObserver observer(EventRouter::Get(browser_context()));
+  NotifyEnabled();
+  task_queue()->ActivateExtension(extension());
+  RunPostedDispatchTasks();
+
+  EXPECT_EQ(0,
+            worker_observer.GetRequestedWorkerStartedCount(extension()->id()));
+  EXPECT_EQ(1, CountOnEnabledEvents(observer));
+  EXPECT_THAT(GetOnExtensionLoadedDetails(observer), testing::IsEmpty());
+}
+
+// Verifies that if the service worker is deactivated before it starts, the
+// enable events that wait for it are dropped. For example, this happens when
+// the extension is disabled again right after it's enabled.
+// `ServiceWorkerTaskQueue` then runs their queued tasks without a context.
+TEST_F(RuntimeAPIEnableLazyContextTest,
+       EnableQueuedEventsDroppedIfWorkerDeactivatedBeforeStart) {
+  // Activate the extension with a service worker that hasn't run since
+  // install. With no registered worker info, the queued tasks wait for the
+  // registration.
+  task_queue()->ActivateExtension(extension());
+
+  // Enable the extension, so that both enable events are queued until the
+  // worker is ready.
+  TestEventRouterObserver observer(EventRouter::Get(browser_context()));
+  NotifyEnabled();
+  RunPostedDispatchTasks();
+
+  // Add the listeners that the worker would register, then deactivate the
+  // extension before the worker starts.
+  AddEnableEventListeners();
+  task_queue()->DeactivateExtension(extension());
+
+  EXPECT_EQ(0, CountOnEnabledEvents(observer));
+  EXPECT_THAT(GetOnExtensionLoadedDetails(observer), testing::IsEmpty());
 }
 
 // A `TestExtensionsBrowserClient` that reports that the browser was updated

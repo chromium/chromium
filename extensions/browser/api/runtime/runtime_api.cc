@@ -37,6 +37,7 @@
 #include "extensions/browser/events/lazy_event_dispatch_util.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
 #include "extensions/browser/extension_host.h"
+#include "extensions/browser/extension_pref_names.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extensions_browser_client.h"
@@ -257,6 +258,20 @@ bool ExtensionContextMatchesFilter(
   return true;
 }
 
+// Returns true if `extension` is service worker-based and its worker hasn't
+// run since the extension was last installed or updated.
+bool ServiceWorkerHasNotRunSinceInstallOrUpdate(
+    content::BrowserContext* context,
+    const Extension& extension) {
+  if (!BackgroundInfo::IsServiceWorkerBased(&extension)) {
+    return false;
+  }
+  bool has_started = false;
+  ExtensionPrefs::Get(context)->ReadPrefAsBoolean(
+      extension.id(), kPrefHasStartedServiceWorker, &has_started);
+  return !has_started;
+}
+
 }  // namespace
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -431,18 +446,29 @@ void RuntimeAPI::OnExtensionEnabled(content::BrowserContext* browser_context,
   const bool installed_or_updated_while_not_enabled =
       pending_install_load_versions_.contains(extension->id());
 
+  // Installing or updating an extension clears its persisted event listeners
+  // (see `ExtensionPrefs::FinishExtensionInfoPrefs()`). So enable events
+  // must wait until the background context registers them again. Each term
+  // covers one case:
+  // - `installed_or_updated_while_not_enabled` covers an install or update
+  //   that is still pending. In this case only `runtime.onEnabled` waits,
+  //   because `runtime.onExtensionLoaded` with reason `kEnable` is skipped
+  //   (see below).
+  // - `ServiceWorkerHasNotRunSinceInstallOrUpdate()` covers service
+  //   workers, including when the pending install entry was cleared before
+  //   this enable.
+  const bool wait_for_lazy_context =
+      installed_or_updated_while_not_enabled ||
+      ServiceWorkerHasNotRunSinceInstallOrUpdate(browser_context_, *extension);
+
   // Dispatch `runtime.onEnabled` when the extension is re-enabled from a
   // disabled state, or re-added as enabled after it was blocklisted or
-  // blocked. Installing or updating the extension cleared its persisted
-  // event listeners (see `ExtensionPrefs::FinishExtensionInfoPrefs()`), so in
-  // that case wait for its background context to register them again.
+  // blocked.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&RuntimeEventRouter::DispatchOnEnabledEvent,
                      base::UnsafeDangling(static_cast<void*>(browser_context_)),
-                     extension->id(),
-                     /*wait_for_lazy_context=*/
-                     installed_or_updated_while_not_enabled));
+                     extension->id(), wait_for_lazy_context));
 
   // `kInstall` and `kUpdate` take precedence over `kEnable` (see
   // `RuntimeEventRouter::DispatchOnExtensionLoadedEvent()` in runtime_api.h),
@@ -458,7 +484,8 @@ void RuntimeAPI::OnExtensionEnabled(content::BrowserContext* browser_context,
       base::BindOnce(&RuntimeEventRouter::DispatchOnExtensionLoadedEvent,
                      base::UnsafeDangling(static_cast<void*>(browser_context_)),
                      extension->id(), api::runtime::OnLoadedReason::kEnable,
-                     /*previous_version=*/extension->version().GetString()));
+                     /*previous_version=*/extension->version().GetString(),
+                     wait_for_lazy_context));
 }
 
 void RuntimeAPI::OnExtensionReloaded(content::BrowserContext* browser_context,
@@ -478,7 +505,8 @@ void RuntimeAPI::OnExtensionReloaded(content::BrowserContext* browser_context,
       base::BindOnce(&RuntimeEventRouter::DispatchOnExtensionLoadedEvent,
                      base::UnsafeDangling(static_cast<void*>(browser_context_)),
                      extension->id(), api::runtime::OnLoadedReason::kReload,
-                     /*previous_version=*/std::nullopt));
+                     /*previous_version=*/std::nullopt,
+                     /*wait_for_lazy_context=*/false));
 }
 
 void RuntimeAPI::OnExtensionUninstalled(
@@ -798,7 +826,8 @@ void RuntimeEventRouter::DispatchOnExtensionLoadedEvent(
     MayBeDangling<void> context_id,
     const ExtensionId& extension_id,
     api::runtime::OnLoadedReason reason,
-    const std::optional<std::string>& previous_version) {
+    const std::optional<std::string>& previous_version,
+    bool wait_for_lazy_context) {
   if (!ExtensionsBrowserClient::Get()->IsValidContext(context_id.get())) {
     return;
   }
@@ -816,17 +845,15 @@ void RuntimeEventRouter::DispatchOnExtensionLoadedEvent(
     return;
   }
 
-  // On fresh install or update, the background script / service worker is
-  // woken up by `runtime.onInstalled` and may still be executing its top-level
-  // script to register event listeners. Wait until the background context is
-  // ready before checking `ExtensionHasEventListener`.
-  if ((reason == api::runtime::OnLoadedReason::kInstall ||
-       reason == api::runtime::OnLoadedReason::kUpdate) &&
+  // Wait until the background context is ready, so that listeners it registers
+  // while starting up are found below.
+  if (wait_for_lazy_context &&
       QueueUntilLazyContextIsReady(
           context, extension,
           base::BindOnce(&RuntimeEventRouter::DispatchOnExtensionLoadedEvent,
                          base::UnsafeDangling(context_id.get()), extension_id,
-                         reason, previous_version))) {
+                         reason, previous_version,
+                         /*wait_for_lazy_context=*/false))) {
     return;
   }
 
@@ -996,8 +1023,8 @@ void RuntimeAPI::MaybeDispatchInstallOrUpdateLoadedEvent(
           : std::nullopt;
 
   RuntimeEventRouter::DispatchOnExtensionLoadedEvent(
-      browser_context_.get(), extension_id, loaded_reason,
-      previous_version_str);
+      browser_context_.get(), extension_id, loaded_reason, previous_version_str,
+      /*wait_for_lazy_context=*/true);
 }
 
 void RuntimeAPI::MaybeDispatchStartupLoadedEvent(
@@ -1011,7 +1038,8 @@ void RuntimeAPI::MaybeDispatchStartupLoadedEvent(
 
   RuntimeEventRouter::DispatchOnExtensionLoadedEvent(
       browser_context_.get(), extension_id, reason,
-      /*previous_version=*/std::nullopt);
+      /*previous_version=*/std::nullopt,
+      /*wait_for_lazy_context=*/false);
 }
 
 ExtensionFunction::ResponseAction RuntimeGetBackgroundPageFunction::Run() {

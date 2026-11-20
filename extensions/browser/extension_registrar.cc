@@ -1394,6 +1394,9 @@ void ExtensionRegistrar::MaybeSpinUpLazyContext(const Extension* extension,
   // It's possible that the worker has been registered but hasn't fully run yet,
   // as in the case where a service worker may have been interrupted during it's
   // startup flow. In that case, start it to ensure that it runs at least once.
+  // `RuntimeAPI::OnExtensionEnabled()` relies on this startup. Its enable
+  // events wait for the worker when `kPrefHasStartedServiceWorker` is unset,
+  // and this startup means that waiting doesn't wake a dormant worker.
   bool needs_spinup_because_hasnt_started = false;
   if (BackgroundInfo::IsServiceWorkerBased(extension)) {
     bool has_started = false;

@@ -44,12 +44,14 @@
 #include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/blocklist_state.h"
 #include "extensions/browser/disable_reason.h"
+#include "extensions/browser/event_router.h"
 #include "extensions/browser/events/listener_registration_phase_map.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_host_registry.h"
+#include "extensions/browser/extension_pref_names.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
@@ -60,9 +62,12 @@
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/script_executor.h"
 #include "extensions/browser/service_worker/service_worker_test_utils.h"
+#include "extensions/browser/test_event_router_observer.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/browser/test_management_policy.h"
 #include "extensions/buildflags/buildflags.h"
+#include "extensions/common/api/runtime.h"
+#include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest.h"
@@ -71,6 +76,7 @@
 #include "extensions/test/test_extension_dir.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "partition_alloc/buildflags.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "url/url_constants.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -1866,6 +1872,46 @@ class RuntimeLifecycleEventsApiTest : public RuntimeApiTest {
         observation_{/*observer=*/this};
   };
 
+  // Disables the first extension that is installed while this observer exists,
+  // in the same task as its install, after the extension was added to the
+  // registry.
+  class DisableOnInstalledObserver : public ExtensionRegistryObserver {
+   public:
+    DisableOnInstalledObserver(ExtensionRegistry* registry,
+                               ExtensionRegistrar* registrar)
+        : registrar_(registrar) {
+      observation_.Observe(registry);
+    }
+    ~DisableOnInstalledObserver() override = default;
+
+    DisableOnInstalledObserver(const DisableOnInstalledObserver&) = delete;
+    DisableOnInstalledObserver& operator=(const DisableOnInstalledObserver&) =
+        delete;
+
+    // The id of the extension that was disabled, or empty if none was.
+    const ExtensionId& disabled_extension_id() const {
+      return disabled_extension_id_;
+    }
+
+    // `ExtensionRegistryObserver`:
+    void OnExtensionInstalled(content::BrowserContext* browser_context,
+                              const Extension* extension,
+                              bool is_update) override {
+      if (!disabled_extension_id_.empty()) {
+        return;
+      }
+      disabled_extension_id_ = extension->id();
+      registrar_->DisableExtension(disabled_extension_id_,
+                                   {disable_reason::DISABLE_USER_ACTION});
+    }
+
+   private:
+    const raw_ptr<ExtensionRegistrar> registrar_;
+    ExtensionId disabled_extension_id_;
+    base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+        observation_{/*observer=*/this};
+  };
+
   // Writes an extension with `version` to `dir` whose service worker sends a
   // test message for each event it receives:
   // - `chrome.runtime.onInstalled`: `"installed:<reason>:<previousVersion>"`
@@ -1953,27 +1999,21 @@ class RuntimeLifecycleEventsApiTest : public RuntimeApiTest {
   }
 
   // Verifies that the extension with `extension_id` didn't receive
-  // `chrome.runtime.onExtensionLoaded` with reason `"enable"` (that is, that
-  // `loaded_enable_failure_listener` isn't satisfied). Call this after the
-  // `"install"` or `"update"` event, which takes precedence over `"enable"`,
-  // was received.
+  // `chrome.runtime.onExtensionLoaded` with reason `"enable"`. Call this after
+  // the `"install"` or `"update"` event, which takes precedence over
+  // `"enable"`, was received.
   void ExpectNoOnExtensionLoadedEnableEvent(
       const ExtensionId& extension_id,
       const ExtensionTestMessageListener& loaded_enable_failure_listener) {
-    // A `"loaded:enable:<version>"` message would be sent after the
-    // `"loaded:install:"` or `"loaded:update:<version>"` message, so
-    // round-trip a script through the service worker before checking that it
-    // wasn't received.
-    // TODO(crbug.com/573173867): A `chrome.runtime.onExtensionLoaded` event
-    // with reason `"enable"` dispatched here would currently be dropped anyway,
-    // because installing or updating the extension (including an unpacked
-    // reload) cleared its persisted listeners, and unlike
-    // `chrome.runtime.onEnabled`, it doesn't wait for the background context.
-    // Once it does, this check will also catch a regression in the `"install"`
-    // and `"update"` precedence. Until then,
-    // `RuntimeAPIOnExtensionLoadedPrecedenceTest` in
-    // `extensions/browser/api/runtime/runtime_api_unittest.cc` covers how
-    // `RuntimeAPI` handles the install, update and enable notifications.
+    // A test can't wait for a message that should never arrive. So first
+    // round-trip a script through the service worker, and then check that
+    // `loaded_enable_failure_listener` wasn't satisfied. If a precedence
+    // regression dispatched `"enable"`, that event would also wait for the
+    // background context (installing or updating cleared
+    // `kPrefHasStartedServiceWorker`). So its message would most likely arrive
+    // before the script result. The order isn't strict, so
+    // `RuntimeAPIOnExtensionLoadedPrecedenceTest` in runtime_api_unittest.cc
+    // checks the precedence deterministically.
     EXPECT_EQ("done",
               ExecuteScriptInBackgroundPage(
                   extension_id, "chrome.test.sendScriptResult('done');"));
@@ -2528,6 +2568,122 @@ IN_PROC_BROWSER_TEST_F(
 
   ExpectNoOnExtensionLoadedEnableEvent(extension_id,
                                        loaded_enable_failure_listener);
+}
+
+// Test that when an extension is disabled right after it's installed, before
+// its service worker first runs, enabling it later:
+// - fires `chrome.runtime.onExtensionLoaded` with reason `"enable"` and
+//   `previousVersion` set to the extension's current version.
+// - fires `chrome.runtime.onEnabled`.
+IN_PROC_BROWSER_TEST_F(
+    RuntimeLifecycleEventsApiTest,
+    OnEnabledAndOnExtensionLoadedOnEnableAfterDisableBeforeWorkerRan) {
+  TestExtensionDir dir;
+  WriteLifecycleEventsTestExtension(dir, /*version=*/"1.0",
+                                    /*extra_manifest_keys=*/"");
+  base::FilePath crx = dir.Pack("v1.crx");
+  ASSERT_FALSE(crx.empty());
+
+  // Install the extension and disable it in the same task, right after the
+  // install adds it to the registry. The install clears the extension's
+  // persisted event listeners. It also posts two tasks that dispatch
+  // `chrome.runtime.onInstalled` and `chrome.runtime.onExtensionLoaded`, both
+  // with reason `"install"`. Disabling the extension before those two tasks run
+  // means that neither event reaches it, and that its service worker doesn't
+  // start.
+  service_worker_test_utils::TestServiceWorkerTaskQueueObserver worker_observer;
+  DisableOnInstalledObserver disable_on_installed(extension_registry(),
+                                                  extension_registrar());
+  InstallExtension(crx, /*expected_change=*/0);
+  const ExtensionId extension_id = disable_on_installed.disabled_extension_id();
+  ASSERT_TRUE(
+      extension_registry()->disabled_extensions().Contains(extension_id));
+
+  // Let the two tasks that the install posted run while the extension is
+  // disabled.
+  RunPostedTasks();
+
+  // Verify that the service worker isn't running and hasn't run since the
+  // install.
+  ASSERT_TRUE(ProcessManager::Get(profile())
+                  ->GetServiceWorkersForExtension(extension_id)
+                  .empty());
+  bool has_started_service_worker = false;
+  ExtensionPrefs::Get(profile())->ReadPrefAsBoolean(
+      extension_id, kPrefHasStartedServiceWorker, &has_started_service_worker);
+  ASSERT_FALSE(has_started_service_worker);
+
+  // Disabling the extension unregisters its service worker. Wait for that to
+  // finish, so that enabling the extension registers the worker again.
+  {
+    SCOPED_TRACE("Waiting for the service worker to be unregistered");
+    worker_observer.WaitForWorkerUnregistered(extension_id);
+  }
+
+  // Enable the extension and verify that the events are received.
+  ExtensionTestMessageListener enabled_listener("enabled");
+  ExtensionTestMessageListener loaded_listener("loaded:enable:1.0");
+  EnableExtension(extension_id);
+  {
+    SCOPED_TRACE("Waiting for enabled event message");
+    ASSERT_TRUE(enabled_listener.WaitUntilSatisfied());
+  }
+  {
+    SCOPED_TRACE("Waiting for enable extension loaded event message");
+    EXPECT_TRUE(loaded_listener.WaitUntilSatisfied());
+  }
+}
+
+// Test that enabling an extension whose service worker already ran since the
+// install doesn't wait for the worker to start. Both of these events are
+// dispatched in the tasks that the enable posts:
+// - `chrome.runtime.onEnabled`.
+// - `chrome.runtime.onExtensionLoaded` with reason `"enable"`.
+IN_PROC_BROWSER_TEST_F(RuntimeLifecycleEventsApiTest,
+                       OnEnableDoesNotWaitWhenWorkerAlreadyRan) {
+  TestExtensionDir dir;
+  const Extension* extension =
+      InstallLifecycleEventsTestExtension(dir, InstallType::kPacked);
+  ASSERT_TRUE(extension);
+  const ExtensionId extension_id = extension->id();
+  bool has_started_service_worker = false;
+  ASSERT_TRUE(ExtensionPrefs::Get(profile())->ReadPrefAsBoolean(
+      extension_id, kPrefHasStartedServiceWorker, &has_started_service_worker));
+  ASSERT_TRUE(has_started_service_worker);
+
+  // Disable the extension and wait for its service worker to be unregistered,
+  // so that enabling the extension registers the worker again.
+  service_worker_test_utils::TestServiceWorkerTaskQueueObserver worker_observer;
+  DisableExtension(extension_id);
+  {
+    SCOPED_TRACE("Waiting for the service worker to be unregistered");
+    worker_observer.WaitForWorkerUnregistered(extension_id);
+  }
+
+  // Enable the extension, and let the tasks that the enable posted run.
+  TestEventRouterObserver event_observer(EventRouter::Get(profile()));
+  ExtensionTestMessageListener enabled_listener("enabled");
+  ExtensionTestMessageListener loaded_listener("loaded:enable:1.0");
+  EnableExtension(extension_id);
+  RunPostedTasks();
+
+  // Verify that both events were dispatched in the tasks that the enable
+  // posted. If they had waited for the worker, they would still be queued
+  // here, because the worker starts asynchronously, after those tasks.
+  EXPECT_TRUE(
+      event_observer.events().contains(api::runtime::OnEnabled::kEventName));
+  EXPECT_TRUE(event_observer.events().contains(
+      api::runtime::OnExtensionLoaded::kEventName));
+
+  // Wait for the worker to receive both events.
+  {
+    SCOPED_TRACE("Waiting for enabled event message");
+    ASSERT_TRUE(enabled_listener.WaitUntilSatisfied());
+  }
+  {
+    SCOPED_TRACE("Waiting for enable extension loaded event message");
+    ASSERT_TRUE(loaded_listener.WaitUntilSatisfied());
+  }
 }
 
 // Test that when an extension is removed from the blocklist:

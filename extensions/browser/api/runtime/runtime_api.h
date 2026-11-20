@@ -274,11 +274,10 @@ class RuntimeEventRouter {
   // Dispatches the `runtime.onEnabled` event to the extension with
   // `extension_id` when it transitions from a disabled state to an enabled
   // state. If `wait_for_lazy_context` is true and the extension's background
-  // context isn't ready, the dispatch waits until it is, so listeners that the
-  // background context registers while starting up receive the event.
-  // `RuntimeAPI::OnExtensionEnabled()` sets `wait_for_lazy_context` only when
-  // the extension was installed or updated while disabled, because that clears
-  // its persisted event listeners.
+  // context isn't ready, the event is queued on the `LazyContextTaskQueue`,
+  // which starts an unstarted background context. So listeners that the
+  // background context registers while starting up receive the event. See
+  // `RuntimeAPI::OnExtensionEnabled()` for when callers set it.
   static void DispatchOnEnabledEvent(MayBeDangling<void> context_id,
                                      const ExtensionId& extension_id,
                                      bool wait_for_lazy_context);
@@ -294,11 +293,17 @@ class RuntimeEventRouter {
   // - `previous_version` is included in the event details only when `reason` is
   //   `kUpdate` (the version before the update) or `kEnable` (the extension's
   //   current version).
+  // - If `wait_for_lazy_context` is true and the extension's background
+  //   context isn't ready, the event is queued on the `LazyContextTaskQueue`,
+  //   which starts an unstarted background context. So listeners that the
+  //   background context registers while starting up receive the event. See
+  //   `RuntimeAPI::OnExtensionEnabled()` for when `kEnable` callers set it.
   static void DispatchOnExtensionLoadedEvent(
       MayBeDangling<void> context_id,
       const ExtensionId& extension_id,
       api::runtime::OnLoadedReason reason,
-      const std::optional<std::string>& previous_version);
+      const std::optional<std::string>& previous_version,
+      bool wait_for_lazy_context);
 
   // Dispatches the onUpdateAvailable event to the given extension.
   static void DispatchOnUpdateAvailableEvent(content::BrowserContext* context,
