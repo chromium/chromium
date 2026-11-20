@@ -1209,6 +1209,7 @@
       // Enables icon-only mode for capability elements.
       // https://issues.chromium.org/issues/514564817
       name: "CapabilityElementIconOnlyMode",
+      status: "experimental",
     },
     {
       // Considers the full previous code point (not one UTF-16 code unit) for
