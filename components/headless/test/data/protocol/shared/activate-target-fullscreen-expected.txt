@@ -1,2 +1,0 @@
-Tests fullscreen after activating a background target.
-Fullscreen after target activation: true

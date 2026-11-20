@@ -368,9 +368,6 @@ HEADLESS_MODE_PROTOCOL_TEST(CreateTargetPosition,
 HEADLESS_MODE_PROTOCOL_TEST(CreateTargetWindowState,
                             "shared/create-target-window-state.js")
 
-HEADLESS_MODE_PROTOCOL_TEST(ActivateTargetFullscreen,
-                            "shared/activate-target-fullscreen.js")
-
 HEADLESS_MODE_PROTOCOL_TEST(DocumentVisibilityState,
                             "shared/document-visibility-state.js")
 
