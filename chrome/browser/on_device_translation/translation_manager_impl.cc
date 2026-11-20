@@ -12,6 +12,7 @@
 #include "base/i18n/language_tag.h"
 #include "base/i18n/tag_converters.h"
 #include "base/metrics/histogram_functions.h"
+#include "build/build_config.h"
 #include "chrome/browser/on_device_translation/service_controller_manager_factory.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -135,6 +136,22 @@ base::AutoReset<TranslationManagerImpl*> TranslationManagerImpl::SetForTesting(
 }
 
 // static
+bool TranslationManagerImpl::IsBindingAllowed(bool requires_explicit_enable) {
+  if (!requires_explicit_enable) {
+    return true;
+  }
+  // Mirrors `copied_from_base_feature_if: "overridden"` of the TranslationAPI
+  // entry in
+  // third_party/blink/renderer/platform/runtime_enabled_features.json5. Blink
+  // checks `GetStateIfOverridden()` (not `IsFeatureOverridden()`), so a field
+  // trial group with `OVERRIDE_USE_DEFAULT` leaves the API off even though the
+  // base feature defaults to enabled.
+  return base::FeatureList::GetStateIfOverridden(
+             blink::features::kTranslationAPI)
+      .value_or(false);
+}
+
+// static
 void TranslationManagerImpl::Bind(
     RenderProcessHost* process_host,
     BrowserContext* browser_context,
@@ -142,6 +159,17 @@ void TranslationManagerImpl::Bind(
     const url::Origin& origin,
     component_updater::ComponentUpdateService* component_update_service,
     mojo::PendingReceiver<blink::mojom::TranslationManager> receiver) {
+  // TODO(crbug.com/364795294): Remove this check in the same CL that enables
+  // `TranslationAPI` by default on Android in
+  // `runtime_enabled_features.json5`.
+  if (!IsBindingAllowed(/*requires_explicit_enable=*/BUILDFLAG(IS_ANDROID))) {
+    // Drop the receiver. Only a renderer that was started with the Blink
+    // feature on the command line (for example with
+    // --enable-blink-features=TranslationAPI) sees the API here. Blink sets no
+    // disconnect handler on this interface, so its availability() and create()
+    // promises never settle. That is acceptable for a developer flag.
+    return;
+  }
   auto* manager = GetOrCreate(process_host, browser_context, context_user_data,
                               origin, component_update_service);
   CHECK(manager);

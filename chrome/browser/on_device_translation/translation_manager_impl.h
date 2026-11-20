@@ -62,6 +62,12 @@ class TranslationManagerImpl : public base::SupportsUserData::Data,
   static base::AutoReset<TranslationManagerImpl*> SetForTesting(
       TranslationManagerImpl* manager);
 
+  // Returns whether a renderer may bind the TranslationManager.
+  // `requires_explicit_enable` is true on platforms where Blink enables the
+  // TranslationAPI runtime feature only when `kTranslationAPI` is overridden to
+  // enabled. A field trial group that keeps the default state does not count.
+  static bool IsBindingAllowed(bool requires_explicit_enable);
+
   static void Bind(
       content::RenderProcessHost* process_host,
       content::BrowserContext* browser_context,

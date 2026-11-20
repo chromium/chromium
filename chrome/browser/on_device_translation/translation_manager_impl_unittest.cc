@@ -10,11 +10,14 @@
 #include <string>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/field_trial.h"
 #include "base/supports_user_data.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
 #include "chrome/browser/on_device_translation/service_controller_manager_factory.h"
@@ -34,6 +37,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/on_device_translation/translation_manager.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -158,6 +162,7 @@ class TranslationManagerImplTest : public testing::Test {
     process_host_.reset();
   }
 
+  base::test::ScopedFeatureList feature_list_{blink::features::kTranslationAPI};
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   std::unique_ptr<content::MockRenderProcessHost> process_host_;
@@ -254,6 +259,66 @@ TEST_F(TranslationManagerImplTest, DoesNotRecordErrorOnEarlyPolicyRejection) {
             blink::mojom::CreateTranslatorError::kDisallowedByPolicy);
   EXPECT_EQ(controller_manager_->create_translator_call_count(), 0);
   histogram_tester.ExpectTotalCount(kCreateTranslatorErrorHistogram, 0);
+}
+
+TEST(TranslationManagerImplBindingTest, BindingNotAllowedByDefault) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithEmptyFeatureAndFieldTrialLists();
+  EXPECT_FALSE(TranslationManagerImpl::IsBindingAllowed(
+      /*requires_explicit_enable=*/true));
+}
+
+TEST(TranslationManagerImplBindingTest, BindingAllowedWhenFeatureEnabled) {
+  base::test::ScopedFeatureList feature_list(blink::features::kTranslationAPI);
+  EXPECT_TRUE(TranslationManagerImpl::IsBindingAllowed(
+      /*requires_explicit_enable=*/true));
+}
+
+TEST(TranslationManagerImplBindingTest, BindingNotAllowedWhenFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(blink::features::kTranslationAPI);
+  EXPECT_FALSE(TranslationManagerImpl::IsBindingAllowed(
+      /*requires_explicit_enable=*/true));
+}
+
+TEST(TranslationManagerImplBindingTest,
+     BindingNotAllowedWhenFeatureUsesDefault) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithEmptyFeatureAndFieldTrialLists();
+
+  auto feature_list = std::make_unique<base::FeatureList>();
+  base::FieldTrial* trial =
+      base::FieldTrialList::CreateFieldTrial("TestTrial", "Default");
+  ASSERT_TRUE(trial);
+  feature_list->RegisterFieldTrialOverride(
+      blink::features::kTranslationAPI.name,
+      base::FeatureList::OVERRIDE_USE_DEFAULT, trial);
+  base::test::ScopedFeatureList trial_feature_list;
+  trial_feature_list.InitWithFeatureList(std::move(feature_list));
+
+  // Verify the gate rejects OVERRIDE_USE_DEFAULT even though the base feature
+  // defaults to enabled and has a field-trial override entry.
+  EXPECT_FALSE(TranslationManagerImpl::IsBindingAllowed(
+      /*requires_explicit_enable=*/true));
+  EXPECT_TRUE(base::FeatureList::IsEnabled(blink::features::kTranslationAPI));
+  EXPECT_TRUE(base::FeatureList::GetInstance()->IsFeatureOverridden(
+      blink::features::kTranslationAPI.name));
+}
+
+TEST(TranslationManagerImplBindingTest,
+     BindingAllowedWithoutExplicitEnableRequirement) {
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithEmptyFeatureAndFieldTrialLists();
+    EXPECT_TRUE(TranslationManagerImpl::IsBindingAllowed(
+        /*requires_explicit_enable=*/false));
+  }
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(blink::features::kTranslationAPI);
+    EXPECT_TRUE(TranslationManagerImpl::IsBindingAllowed(
+        /*requires_explicit_enable=*/false));
+  }
 }
 
 }  // namespace
