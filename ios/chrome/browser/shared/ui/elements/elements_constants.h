@@ -9,4 +9,7 @@
 
 extern NSString* const kActivityOverlayViewAccessibilityIdentifier;
 
+// Accessibility identifier of the vertical sidebar's separator.
+extern NSString* const kVerticalSidebarSeparatorIdentifier;
+
 #endif  // IOS_CHROME_BROWSER_SHARED_UI_ELEMENTS_ELEMENTS_CONSTANTS_H_

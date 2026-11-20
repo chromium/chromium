@@ -6,3 +6,5 @@
 
 NSString* const kActivityOverlayViewAccessibilityIdentifier =
     @"ActivityOverlayViewAccessibilityIdentifier";
+NSString* const kVerticalSidebarSeparatorIdentifier =
+    @"VerticalSidebarSeparatorIdentifier";
