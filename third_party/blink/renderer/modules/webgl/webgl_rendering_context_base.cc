@@ -2148,12 +2148,6 @@ WebGLRenderingContextBase::PaintRenderingResultsToSnapshot(
 
   if (Host()->LowLatencyEnabled() &&
       GetDrawingBuffer()->SupportsNoCopyExportForLowLatency()) {
-    // Given that we are in low-latency mode and directly writing to the
-    // SharedImage that we will export below, at this point we have successfully
-    // painted the canvas' contents by doing any necessary clearing in the above
-    // call.
-    copied_contents_are_stale_ = false;
-
     return GetDrawingBuffer()->ExportLowLatencyBitmap();
   }
 
@@ -2264,12 +2258,6 @@ WebGLRenderingContextBase::PaintRenderingResultsToResource(
 
   if (Host()->LowLatencyEnabled() &&
       GetDrawingBuffer()->SupportsNoCopyExportForLowLatency()) {
-
-    // Given that we are in low-latency mode and directly writing to the
-    // SharedImage that we will export below, at this point we have successfully
-    // painted the canvas' contents by doing any necessary clearing in the above
-    // call.
-    copied_contents_are_stale_ = false;
     return GetDrawingBuffer()->ExportLowLatencyCanvasResource();
   }
 
