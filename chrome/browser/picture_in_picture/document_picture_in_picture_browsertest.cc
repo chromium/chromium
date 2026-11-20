@@ -252,7 +252,7 @@ IN_PROC_BROWSER_TEST_F(DocumentPipExtensionFoundationBrowserTest,
       browser()->GetProfile());
   ASSERT_TRUE(result);
   const auto& window = result->GetDict();
-  EXPECT_EQ("popup", *window.FindString("type"));
+  EXPECT_EQ("normal", *window.FindString("type"));
   EXPECT_EQ(true, window.FindBool("alwaysOnTop"));
   const auto* tabs = window.FindList("tabs");
   ASSERT_TRUE(tabs);

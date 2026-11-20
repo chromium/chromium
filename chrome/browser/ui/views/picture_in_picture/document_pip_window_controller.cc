@@ -42,7 +42,11 @@ int DocumentPipWindowController::GetWindowId() const {
 }
 
 std::string DocumentPipWindowController::GetWindowTypeText() const {
-  return api::tabs::ToString(api::tabs::WindowType::kPopup);
+  // Match BrowserExtensionWindowController's WindowType for floating PiP
+  // windows during the standalone PiP rollout.
+  // TODO(https://crbug.com/438514981): Migrate Document PiP WindowType to
+  // kPopup in a separate follow-up change.
+  return api::tabs::ToString(api::tabs::WindowType::kNormal);
 }
 
 void DocumentPipWindowController::SetFullscreenMode(
@@ -100,13 +104,12 @@ base::ListValue DocumentPipWindowController::CreateTabList(
     mojom::ContextType context) const {
   base::ListValue tabs;
   if (content::WebContents* child = GetActiveTab()) {
-    auto tab = ExtensionTabUtil::CreateTabObject(
-        child, ExtensionTabUtil::GetScrubTabBehavior(extension, context, child),
-        extension, nullptr, 0);
-    tab.active = true;
-    tab.selected = true;
-    tab.highlighted = true;
-    tabs.Append(tab.ToValue());
+    tabs.Append(
+        ExtensionTabUtil::CreateTabObject(
+            child,
+            ExtensionTabUtil::GetScrubTabBehavior(extension, context, child),
+            extension, nullptr, 0)
+            .ToValue());
   }
   return tabs;
 }

@@ -477,7 +477,7 @@ TEST_F(DocumentPipHostTest, ExtensionWindowSerializationScrubsTabMetadata) {
   auto value = controller->CreateWindowValueForExtension(
       nullptr, WindowController::kDontPopulateTabs, context);
   EXPECT_EQ(controller->GetWindowId(), value.FindInt("id"));
-  EXPECT_EQ("popup", *value.FindString("type"));
+  EXPECT_EQ("normal", *value.FindString("type"));
   EXPECT_EQ("normal", *value.FindString("state"));
   EXPECT_EQ(false, value.FindBool("incognito"));
   EXPECT_EQ(true, value.FindBool("alwaysOnTop"));
@@ -532,10 +532,10 @@ TEST_F(DocumentPipHostTest, ExtensionWindowVisibilityAndOptionsWithoutBrowser) {
   using extensions::WindowController;
   EXPECT_TRUE(
       controller->MatchesFilter(WindowController::GetFilterFromWindowTypes(
-          {extensions::api::windows::WindowType::kPopup})));
+          {extensions::api::windows::WindowType::kNormal})));
   EXPECT_FALSE(
       controller->MatchesFilter(WindowController::GetFilterFromWindowTypes(
-          {extensions::api::windows::WindowType::kNormal})));
+          {extensions::api::windows::WindowType::kPopup})));
 }
 
 TEST_F(DocumentPipHostTest,
