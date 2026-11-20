@@ -26,6 +26,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -79,6 +80,8 @@
 #include "components/crash/core/common/crash_key.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -344,6 +347,11 @@ struct AppShimManager::AppState {
   // are open. This counter keep tracks of the number of outstanding
   // ScopedAppShimKeepAlive instances.
   int keep_alive_count = 0;
+
+  // Must be last so weak pointers are invalidated before `profiles` and
+  // `multi_profile_host` (and any pending mojo callbacks holding a
+  // `ScopedAppShimKeepAlive`) are destroyed.
+  base::WeakPtrFactory<AppState> weak_factory{this};
 };
 
 AppShimManager::ProfileState::ProfileState(
@@ -416,24 +424,30 @@ class ScopedAppShimKeepAlive {
 
  private:
   base::WeakPtr<AppShimManager> manager_;
-  const webapps::AppId app_id_;
+  base::WeakPtr<AppShimManager::AppState> app_state_;
 };
 
 ScopedAppShimKeepAlive::ScopedAppShimKeepAlive(AppShimManager* manager,
                                                const webapps::AppId& app_id)
-    : manager_(manager->weak_factory_.GetWeakPtr()), app_id_(app_id) {
-  auto app = manager_->apps_.find(app_id_);
+    : manager_(manager->weak_factory_.GetWeakPtr()) {
+  auto app = manager_->apps_.find(app_id);
   CHECK(app != manager_->apps_.end());
-  app->second->keep_alive_count++;
+  app_state_ = app->second->weak_factory.GetWeakPtr();
+  app_state_->keep_alive_count++;
 }
 
 ScopedAppShimKeepAlive::~ScopedAppShimKeepAlive() {
-  if (manager_) {
-    auto app = manager_->apps_.find(app_id_);
-    if (app != manager_->apps_.end()) {
-      CHECK_GT(app->second->keep_alive_count, 0);
-      app->second->keep_alive_count--;
-    }
+  if (manager_ && app_state_) {
+    // Post decrementing `keep_alive_count` and conditionally deleting
+    // `AppState` so that:
+    // 1. `AppState` / `AppShimHost` is never destroyed reentrantly from inside
+    //    a Mojo reply/error callback or `LaunchShimInBackgroundMode()`.
+    // 2. `keep_alive_count` stays > 0 until the cleanup task runs, avoiding a
+    //    transient window where `ShouldDeleteAppState()` is true while
+    //    `AppState` is still in `apps_`.
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&AppShimManager::ReleaseKeepAlive, manager_,
+                                  std::move(app_state_)));
   }
 }
 
@@ -1538,7 +1552,11 @@ void AppShimManager::OnShimProcessDisconnected(AppShimHost* host) {
   if (app_state->IsMultiProfile()) {
     CHECK_EQ(host, app_state->multi_profile_host.get(),
              base::NotFatalUntil::M161);
+    // Erase from `apps_` before destroying `AppState` in case dropping pending
+    // Mojo callbacks on `multi_profile_host` reentrantly mutates `apps_`.
+    auto app_state_to_delete = std::move(found_app->second);
     apps_.erase(found_app);
+    app_state_to_delete.reset();
     if (apps_.empty()) {
       MaybeTerminate();
     }
@@ -2191,6 +2209,25 @@ void AppShimManager::OnAppsDeactivatedForBrowserClose(
     std::vector<std::string> apps_to_deactivate) {
   for (const webapps::AppId& app_id : apps_to_deactivate) {
     OnAppDeactivated(profile, app_id);
+  }
+}
+
+void AppShimManager::ReleaseKeepAlive(base::WeakPtr<AppState> app_state) {
+  if (!app_state) {
+    return;
+  }
+  CHECK_GT(app_state->keep_alive_count, 0);
+  app_state->keep_alive_count--;
+  if (app_state->ShouldDeleteAppState()) {
+    auto found_app = apps_.find(app_state->app_id);
+    CHECK(found_app != apps_.end());
+    CHECK_EQ(found_app->second.get(), app_state.get());
+    auto app_state_to_delete = std::move(found_app->second);
+    apps_.erase(found_app);
+    app_state_to_delete.reset();
+    if (apps_.empty()) {
+      MaybeTerminate();
+    }
   }
 }
 

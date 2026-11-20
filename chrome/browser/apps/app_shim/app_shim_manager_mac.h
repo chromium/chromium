@@ -544,6 +544,11 @@ class AppShimManager
       Profile* profile,
       std::vector<std::string> apps_to_deactivate);
 
+  // Decrements `app_state`'s `keep_alive_count` and deletes the `AppState`
+  // (and terminates Chrome if appropriate) if `ShouldDeleteAppState()` becomes
+  // true. Posted asynchronously from `~ScopedAppShimKeepAlive()`.
+  void ReleaseKeepAlive(base::WeakPtr<AppState> app_state);
+
   std::unique_ptr<Delegate> delegate_;
 
   // Weak, reset during OnProfileManagerDestroying.

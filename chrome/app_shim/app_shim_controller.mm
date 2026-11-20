@@ -953,7 +953,25 @@ void AppShimController::RequestNotificationPermission(
         mac_notifications::mojom::RequestPermissionResult::kRequestFailed);
     return;
   }
-  notification_service_un()->RequestPermission(std::move(callback));
+  notification_service_un()->RequestPermission(base::BindOnce(
+      [](AppShimController* controller,
+         RequestNotificationPermissionCallback callback,
+         mac_notifications::mojom::RequestPermissionResult result) {
+        // Ensure any NotificationPermissionStatusChanged() IPC sent on `host_`
+        // is dispatched in the browser before the browser handles this reply
+        // and potentially tears down AppShimHost.
+        // TODO(crbug.com/587998896): Make AppShim and AppShimHost associated
+        // interfaces so cross-pipe ordering barriers like this are not needed.
+        if (controller->shim_receiver_.is_bound() &&
+            controller->host_.is_bound()) {
+          controller->shim_receiver_.PauseRemoteCallbacksUntilFlushCompletes(
+              controller->host_.FlushAsync());
+        }
+        std::move(callback).Run(result);
+      },
+      // Unretained is safe: `this` owns `notification_service_`, which owns
+      // this callback.
+      base::Unretained(this), std::move(callback)));
 }
 
 void AppShimController::SynchronizeNotificationPermissionStatus() {

@@ -772,9 +772,6 @@ void MacNotificationServiceUN::ReportRequestPermissionResult(
   LogUNNotificationRequestPermissionResult(result);
   std::vector<RequestPermissionCallback> callbacks = std::exchange(
       pending_permission_requests_, std::vector<RequestPermissionCallback>());
-  for (auto& callback : callbacks) {
-    std::move(callback).Run(result);
-  }
   switch (result) {
     using Result = mojom::RequestPermissionResult;
     case Result::kRequestFailed:
@@ -788,6 +785,9 @@ void MacNotificationServiceUN::ReportRequestPermissionResult(
     case Result::kPermissionPreviouslyDenied:
       OnGotAuthorizationStatus(UNAuthorizationStatusDenied);
       break;
+  }
+  for (auto& callback : callbacks) {
+    std::move(callback).Run(result);
   }
 }
 

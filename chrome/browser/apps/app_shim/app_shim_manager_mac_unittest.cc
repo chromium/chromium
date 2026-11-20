@@ -14,8 +14,13 @@
 
 #include "base/apple/scoped_cftyperef.h"
 #include "base/compiler_specific.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
+#include "base/location.h"
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
@@ -38,6 +43,8 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/prefs/testing_pref_service.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -592,6 +599,13 @@ class AppShimManagerTest : public testing::Test {
 
     AppShimRegistry::Get()->SetPrefServiceAndUserDataDirForTesting(
         nullptr, base::FilePath());
+  }
+
+  void FlushUIThreadTasks() {
+    base::RunLoop run_loop;
+    content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE,
+                                                 run_loop.QuitClosure());
+    run_loop.Run();
   }
 
   void DoShimLaunch(
@@ -2329,8 +2343,10 @@ TEST_F(AppShimManagerTest, RequestNotificationPermissionWithoutAppRunning) {
 
 TEST_F(AppShimManagerTest,
        RequestNotificationPermissionWithoutAppRunningAndBrowserClosing) {
+  using Result = mac_notifications::mojom::RequestPermissionResult;
   scoped_feature_list_.InitWithFeatures(
-      {features::kAppShimNotificationAttribution}, {});
+      {features::kAppShimNotificationAttribution},
+      {features::kAppShimNewCloseBehavior});
 
   // This app is installed for profile A throughout this test.
   AppShimRegistry::Get()->OnAppInstalledForProfile(kTestAppIdA,
@@ -2345,17 +2361,25 @@ TEST_F(AppShimManagerTest,
                            web_app::ShimLaunchMode::kBackground));
 
   // Trigger a notification permission request.
-  base::test::TestFuture<mac_notifications::mojom::RequestPermissionResult>
-      result;
+  base::test::TestFuture<Result> result;
   manager_->ShowNotificationPermissionRequest(kTestAppIdA,
                                               result.GetCallback());
 
   EXPECT_TRUE(host_aa_->test_app_shim_
                   ->request_notification_permission_callback_.Wait());
 
+  bool maybe_terminate_called = false;
+  EXPECT_CALL(*manager_, MaybeTerminate()).WillOnce([&] {
+    maybe_terminate_called = true;
+  });
+
   // Pretend the last browser for this app/profile was just closed, and the
-  // profile has been unloaded as a result of that.
+  // profile has been unloaded as a result of that. The pending permission
+  // request keeps the app shim alive until it resolves.
   manager_->OnAppDeactivated(&profile_a_, kTestAppIdA);
+  EXPECT_TRUE(host_aa_);
+  EXPECT_FALSE(maybe_terminate_called);
+
   EXPECT_CALL(*manager_, ProfileForPath(profile_path_a_))
       .WillRepeatedly(Return(nullptr));
   EXPECT_CALL(*delegate_, AppIsInstalled(nullptr, kTestAppIdA))
@@ -2365,11 +2389,184 @@ TEST_F(AppShimManagerTest,
   RegisterOnlyLaunch(bootstrap_aa_, nullptr);
 
   host_aa_->test_app_shim_->request_notification_permission_callback_.Take()
-      .Run(mac_notifications::mojom::RequestPermissionResult::
-               kPermissionPreviouslyDenied);
-  EXPECT_EQ(mac_notifications::mojom::RequestPermissionResult::
-                kPermissionPreviouslyDenied,
-            result.Get());
+      .Run(Result::kPermissionPreviouslyDenied);
+  EXPECT_EQ(Result::kPermissionPreviouslyDenied, result.Get());
+
+  // Completing the request releases the keep-alive, cleans up the
+  // AppState/AppShimHost, and preserves saved last-active profiles.
+  EXPECT_TRUE(base::test::RunUntil([&] { return !host_aa_; }));
+  EXPECT_TRUE(maybe_terminate_called);
+  EXPECT_EQ(std::set<base::FilePath>{profile_path_a_},
+            AppShimRegistry::Get()->GetLastActiveProfilesForApp(kTestAppIdA));
+}
+
+TEST_F(AppShimManagerTest,
+       RequestNotificationPermissionCleanedUpAfterWindowCloses) {
+  using Result = mac_notifications::mojom::RequestPermissionResult;
+  scoped_feature_list_.InitWithFeatures(
+      {features::kAppShimNotificationAttribution},
+      {features::kAppShimNewCloseBehavior});
+
+  static int dump_count = 0;
+  dump_count = 0;
+  base::debug::ResetDumpWithoutCrashingThrottlingForTesting();
+  base::debug::SetDumpWithoutCrashingFunction([] { ++dump_count; });
+  base::ScopedClosureRunner reset_dump_fn(base::BindOnce(
+      [] { base::debug::SetDumpWithoutCrashingFunction(nullptr); }));
+
+  AppShimRegistry::Get()->OnAppInstalledForProfile(kTestAppIdA,
+                                                   profile_path_a_);
+
+  manager_->SetHostForCreate(std::move(host_aa_unique_));
+  EXPECT_CALL(*delegate_, DoLaunchShim(&profile_a_, kTestAppIdA, _, _));
+  manager_->OnAppActivated(&profile_a_, kTestAppIdA);
+
+  manager_->SetHostForCreate(std::move(host_ab_unique_));
+  EXPECT_CALL(*delegate_, DoLaunchShim(&profile_a_, kTestAppIdB, _, _));
+  manager_->OnAppActivated(&profile_a_, kTestAppIdB);
+
+  // Start two concurrent OS permission requests for app A.
+  base::test::TestFuture<Result> result1;
+  manager_->ShowNotificationPermissionRequest(kTestAppIdA,
+                                              result1.GetCallback());
+  auto cb1 = host_aa_->test_app_shim_->request_notification_permission_callback_
+                 .Take();
+
+  base::test::TestFuture<Result> result2;
+  manager_->ShowNotificationPermissionRequest(kTestAppIdA,
+                                              result2.GetCallback());
+  auto cb2 = host_aa_->test_app_shim_->request_notification_permission_callback_
+                 .Take();
+
+  // Close app A while both prompts are pending; host must stay alive.
+  manager_->OnAppDeactivated(&profile_a_, kTestAppIdA);
+  EXPECT_TRUE(host_aa_);
+  EXPECT_EQ(dump_count, 0);
+
+  // Finishing only the first request must keep the host alive for the second.
+  std::move(cb1).Run(Result::kPermissionDenied);
+  EXPECT_EQ(Result::kPermissionDenied, result1.Get());
+  FlushUIThreadTasks();
+  EXPECT_TRUE(host_aa_);
+
+  // Resolve the second request, then deactivate app B *before* ReleaseKeepAlive
+  // runs: keep_alive_count stays > 0 until cleanup runs, so no dump occurs.
+  std::move(cb2).Run(Result::kPermissionDenied);
+  EXPECT_EQ(Result::kPermissionDenied, result2.Get());
+
+  bool maybe_terminate_called = false;
+  EXPECT_CALL(*manager_, MaybeTerminate()).WillOnce([&] {
+    maybe_terminate_called = true;
+  });
+  manager_->OnAppDeactivated(&profile_a_, kTestAppIdB);
+  EXPECT_FALSE(host_ab_);
+  EXPECT_TRUE(host_aa_);
+  EXPECT_FALSE(maybe_terminate_called);
+  EXPECT_EQ(dump_count, 0);
+
+  // ReleaseKeepAlive cleans up app A and calls MaybeTerminate() without
+  // clobbering last-active profiles.
+  EXPECT_TRUE(base::test::RunUntil([&] { return !host_aa_; }));
+  EXPECT_TRUE(maybe_terminate_called);
+  EXPECT_EQ(std::set<base::FilePath>{profile_path_a_},
+            AppShimRegistry::Get()->GetLastActiveProfilesForApp(kTestAppIdA));
+
+  // Subsequent deactivation of another app must not dump.
+  auto host_ab2 =
+      std::make_unique<TestHost>(profile_path_a_, kTestAppIdB, manager_.get());
+  manager_->SetHostForCreate(std::move(host_ab2));
+  EXPECT_CALL(*delegate_, DoLaunchShim(&profile_a_, kTestAppIdB, _, _));
+  manager_->OnAppActivated(&profile_a_, kTestAppIdB);
+  EXPECT_CALL(*manager_, MaybeTerminate()).Times(1);
+  manager_->OnAppDeactivated(&profile_a_, kTestAppIdB);
+  EXPECT_EQ(dump_count, 0);
+}
+
+TEST_F(AppShimManagerTest, RequestNotificationPermissionKeepAliveEdgeCases) {
+  using Result = mac_notifications::mojom::RequestPermissionResult;
+  scoped_feature_list_.InitWithFeatures(
+      {features::kAppShimNotificationAttribution},
+      {features::kAppShimNewCloseBehavior});
+
+  AppShimRegistry::Get()->OnAppInstalledForProfile(kTestAppIdA,
+                                                   profile_path_a_);
+  EXPECT_CALL(*delegate_, DoLaunchShim(&profile_a_, kTestAppIdA, _, _))
+      .Times(4);
+
+  int maybe_terminate_count = 0;
+  EXPECT_CALL(*manager_, MaybeTerminate()).Times(2).WillRepeatedly([&] {
+    ++maybe_terminate_count;
+  });
+
+  // 1. App reactivated before ReleaseKeepAlive runs stays alive, and subsequent
+  // deactivation deletes it (proving keep_alive_count actually decremented).
+  manager_->SetHostForCreate(std::move(host_aa_unique_));
+  manager_->OnAppActivated(&profile_a_, kTestAppIdA);
+  base::test::TestFuture<Result> result1;
+  manager_->ShowNotificationPermissionRequest(kTestAppIdA,
+                                              result1.GetCallback());
+  auto cb1 = host_aa_->test_app_shim_->request_notification_permission_callback_
+                 .Take();
+  manager_->OnAppDeactivated(&profile_a_, kTestAppIdA);
+  std::move(cb1).Run(Result::kPermissionGranted);
+  EXPECT_EQ(Result::kPermissionGranted, result1.Get());
+  EXPECT_TRUE(host_aa_);
+  manager_->OnAppActivated(&profile_a_, kTestAppIdA);
+  FlushUIThreadTasks();
+  EXPECT_TRUE(host_aa_);
+  EXPECT_EQ(maybe_terminate_count, 0);
+
+  manager_->OnAppDeactivated(&profile_a_, kTestAppIdA);
+  EXPECT_FALSE(host_aa_);
+  EXPECT_EQ(maybe_terminate_count, 1);
+
+  // 2. Shim disconnects and its dropped callback synchronously creates a new
+  // AppState before ~ScopedAppShimKeepAlive runs (must not hit CHECK_GT).
+  manager_->SetHostForCreate(std::move(host_ba_unique_));
+  manager_->OnAppActivated(&profile_a_, kTestAppIdA);
+  auto host_third_unique =
+      std::make_unique<TestHost>(base::FilePath(), kTestAppIdA, manager_.get());
+  base::WeakPtr<TestHost> host_third = host_third_unique->GetWeakPtr();
+  std::optional<Result> disconnect_result;
+  manager_->ShowNotificationPermissionRequest(
+      kTestAppIdA, base::BindLambdaForTesting([&](Result result) {
+        disconnect_result = result;
+        manager_->SetHostForCreate(std::move(host_third_unique));
+        manager_->OnAppActivated(&profile_a_, kTestAppIdA);
+      }));
+  EXPECT_TRUE(host_ba_->test_app_shim_
+                  ->request_notification_permission_callback_.Wait());
+
+  manager_->OnShimProcessDisconnected(host_ba_.get());
+  FlushUIThreadTasks();
+  EXPECT_FALSE(host_ba_);
+  EXPECT_EQ(Result::kRequestFailed, disconnect_result);
+  EXPECT_EQ(host_third.get(), manager_->FindHost(&profile_a_, kTestAppIdA));
+  EXPECT_EQ(maybe_terminate_count, 1);
+
+  // 3. Shim disconnects *after* ReleaseKeepAlive is posted and a new AppState
+  // is created before the posted task runs (covers !app_state in
+  // ReleaseKeepAlive).
+  base::test::TestFuture<Result> result3;
+  manager_->ShowNotificationPermissionRequest(kTestAppIdA,
+                                              result3.GetCallback());
+  host_third->test_app_shim_->request_notification_permission_callback_.Take()
+      .Run(Result::kPermissionGranted);
+  EXPECT_EQ(Result::kPermissionGranted, result3.Get());
+
+  manager_->OnShimProcessDisconnected(host_third.get());
+  EXPECT_FALSE(host_third);
+  EXPECT_EQ(maybe_terminate_count, 2);
+
+  auto host_fourth_unique =
+      std::make_unique<TestHost>(base::FilePath(), kTestAppIdA, manager_.get());
+  base::WeakPtr<TestHost> host_fourth = host_fourth_unique->GetWeakPtr();
+  manager_->SetHostForCreate(std::move(host_fourth_unique));
+  manager_->OnAppActivated(&profile_a_, kTestAppIdA);
+  FlushUIThreadTasks();
+  EXPECT_TRUE(host_fourth);
+  EXPECT_EQ(host_fourth.get(), manager_->FindHost(&profile_a_, kTestAppIdA));
+  EXPECT_EQ(maybe_terminate_count, 2);
 }
 
 TEST_F(AppShimManagerTest,

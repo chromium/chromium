@@ -2538,11 +2538,17 @@ TEST_F(MacNotificationServiceUNTest,
                                                                   nil])])
       .ignoringNonObjectArgs();
   base::test::TestFuture<mojom::RequestPermissionResult> permission_result;
-  service->RequestPermission(permission_result.GetCallback());
+  service->RequestPermission(
+      base::BindLambdaForTesting([&](mojom::RequestPermissionResult result) {
+        // Status change must be reported before the request callback is
+        // invoked.
+        EXPECT_TRUE(status.IsReady());
+        EXPECT_EQ(status.Take(), mojom::PermissionStatus::kGranted);
+        permission_result.SetValue(result);
+      }));
   EXPECT_EQ(status.Take(), mojom::PermissionStatus::kPromptPending);
   EXPECT_EQ(permission_result.Get(),
             mojom::RequestPermissionResult::kPermissionGranted);
-  EXPECT_EQ(status.Take(), mojom::PermissionStatus::kGranted);
   EXPECT_TRUE(open_system_settings_future_.Wait());
 }
 
