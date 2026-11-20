@@ -4589,6 +4589,11 @@ void LayerTreeHostImpl::ReleaseLayerTreeFrameSink() {
   // this assumption is violated, we may modify resources no longer considered
   // as exported while the display compositor is still making use of them,
   // leading to visual mistakes.
+  // The unbounded frame sink's frames use these resources too, so it can't be
+  // used anymore either. Dismissing it first releases its own exports.
+  if (unbounded_frame_sink_handler_) {
+    unbounded_frame_sink_handler_->DismissFrameSink();
+  }
   resource_provider_->ReleaseAllExportedResources(/*lose=*/true);
 
   // We don't know if the next LayerTreeFrameSink will support GPU

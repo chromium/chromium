@@ -13,8 +13,10 @@
 #include "cc/trees/layer_tree_frame_sink.h"
 #include "cc/trees/layer_tree_frame_sink_client.h"
 #include "components/viz/common/hit_test/hit_test_region_list.h"
+#include "components/viz/common/resources/resource_id.h"
 #include "components/viz/common/resources/returned_resource.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace viz {
@@ -64,6 +66,9 @@ class CC_EXPORT UnboundedFrameSinkHandler : public LayerTreeFrameSinkClient {
  private:
   const raw_ptr<LayerTreeHostImpl> host_impl_;
   std::unique_ptr<LayerTreeFrameSink> frame_sink_;
+  // Unreturned export counts for resources submitted through `frame_sink_`,
+  // tracked so dismissing or replacing it releases only this sink's references.
+  absl::flat_hash_map<viz::ResourceId, int> exported_resources_;
   viz::LocalSurfaceId local_surface_id_;
   viz::LocalSurfaceId last_submitted_local_surface_id_;
   // Size of the last submitted frame, which later frames under the same

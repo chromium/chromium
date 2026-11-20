@@ -128,6 +128,12 @@ class FakeLayerTreeFrameSink : public LayerTreeFrameSink {
 
   void ReturnResourcesHeldByParent();
 
+  // When false, resources held by the parent are only returned through an
+  // explicit ReturnResourcesHeldByParent() call, not on the next submit or on
+  // DetachFromClient(), like a sink whose Viz side never returns them.
+  void set_auto_return_resources(bool auto_return) {
+    auto_return_resources_ = auto_return;
+  }
   // A BeginFrame request usually comes with the frames that have been
   // presented. This allows a test to inform the compositor when a frame should
   // be considered as presented to the user.
@@ -143,6 +149,7 @@ class FakeLayerTreeFrameSink : public LayerTreeFrameSink {
   size_t num_sent_frames_ = 0;
   std::vector<viz::TransferableResource> resources_held_by_parent_;
   gfx::Rect last_swap_rect_;
+  bool auto_return_resources_ = true;
 
  private:
   void DidReceiveCompositorFrameAck();

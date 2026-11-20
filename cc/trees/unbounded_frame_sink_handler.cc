@@ -5,12 +5,15 @@
 #include "cc/trees/unbounded_frame_sink_handler.h"
 
 #include <utility>
+#include <vector>
 
 #include "cc/trees/layer_tree_host_impl.h"
 #include "components/viz/client/client_resource_provider.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/resources/returned_resource.h"
 #include "components/viz/common/resources/transferable_resource.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
+#include "ui/gfx/gpu_fence_handle.h"
 
 namespace cc {
 
@@ -27,11 +30,9 @@ UnboundedFrameSinkHandler::~UnboundedFrameSinkHandler() {
 void UnboundedFrameSinkHandler::SetFrameSink(
     std::unique_ptr<LayerTreeFrameSink> frame_sink,
     const viz::LocalSurfaceId& local_surface_id) {
+  DismissFrameSink();
   frame_sink_ = std::move(frame_sink);
   local_surface_id_ = local_surface_id;
-  last_submitted_local_surface_id_ = viz::LocalSurfaceId();
-  last_submitted_size_in_pixels_ = gfx::Size();
-  last_requested_size_in_pixels_ = gfx::Size();
   if (frame_sink_) {
     frame_sink_->BindToClient(this);
     frame_sink_->SetLocalSurfaceId(local_surface_id);
@@ -47,6 +48,21 @@ void UnboundedFrameSinkHandler::DismissFrameSink() {
   last_submitted_local_surface_id_ = viz::LocalSurfaceId();
   last_submitted_size_in_pixels_ = gfx::Size();
   last_requested_size_in_pixels_ = gfx::Size();
+
+  if (exported_resources_.empty()) {
+    return;
+  }
+  // Viz can't return resources to a detached sink, so release this sink's
+  // references as lost because Viz may still be using them.
+  std::vector<viz::ReturnedResource> lost_resources;
+  lost_resources.reserve(exported_resources_.size());
+  for (const auto& [id, count] : exported_resources_) {
+    lost_resources.emplace_back(id, gpu::SharedImageExportResult(),
+                                gfx::GpuFenceHandle(), count, /*lost=*/true);
+  }
+  exported_resources_.clear();
+  host_impl_->resource_provider()->ReceiveReturnsFromParent(
+      std::move(lost_resources));
 }
 
 void UnboundedFrameSinkHandler::SetLocalSurfaceId(
@@ -85,6 +101,13 @@ void UnboundedFrameSinkHandler::SubmitFrame(viz::CompositorFrame frame) {
     last_requested_size_in_pixels_ = requested_size_in_pixels;
     last_submitted_size_in_pixels_ = frame.size_in_pixels();
     last_submitted_local_surface_id_ = local_surface_id_;
+    // In TreesInViz, Viz returns unbounded resources directly to
+    // LayerContextImpl.
+    if (!host_impl_->settings().trees_in_viz_in_viz_process) {
+      for (const viz::TransferableResource& resource : frame.resource_list) {
+        ++exported_resources_[resource.id];
+      }
+    }
     frame_sink_->SubmitCompositorFrame(std::move(frame),
                                        /*hit_test_data_changed=*/false);
   } else {
@@ -93,7 +116,8 @@ void UnboundedFrameSinkHandler::SubmitFrame(viz::CompositorFrame frame) {
     std::vector<viz::ReturnedResource> returned_resources =
         viz::TransferableResource::ReturnResources(frame.resource_list);
     if (!returned_resources.empty()) {
-      ReclaimResources(std::move(returned_resources));
+      host_impl_->resource_provider()->ReceiveReturnsFromParent(
+          std::move(returned_resources));
     }
   }
 }
@@ -105,6 +129,18 @@ UnboundedFrameSinkHandler::BuildHitTestData() {
 
 void UnboundedFrameSinkHandler::ReclaimResources(
     std::vector<viz::ReturnedResource> resources) {
+  for (const viz::ReturnedResource& resource : resources) {
+    auto it = exported_resources_.find(resource.id);
+    if (it == exported_resources_.end()) {
+      // Exports aren't tracked in the Viz process (see SubmitFrame()).
+      continue;
+    }
+    CHECK_GE(it->second, resource.count);
+    it->second -= resource.count;
+    if (it->second == 0) {
+      exported_resources_.erase(it);
+    }
+  }
   host_impl_->resource_provider()->ReceiveReturnsFromParent(
       std::move(resources));
 }

@@ -16983,6 +16983,12 @@ TEST_P(UnboundedElementTest, HasDamageWithUnboundedElementOutsideViewport) {
 
 class UnboundedFrameDamageTest : public UnboundedElementTest {
  protected:
+  void TearDown() override {
+    // Releasing the host's frame sink destroys the unbounded sink too.
+    unbounded_sink_ = nullptr;
+    UnboundedElementTest::TearDown();
+  }
+
   static viz::LocalSurfaceId MakeId(uint32_t parent_seq) {
     return viz::LocalSurfaceId(
         parent_seq, 1, base::UnguessableToken::CreateForTesting(1u, 2u));
@@ -17001,6 +17007,7 @@ class UnboundedFrameDamageTest : public UnboundedElementTest {
   }
 
   void SetUnboundedSink(const viz::LocalSurfaceId& id) {
+    unbounded_sink_ = nullptr;
     auto sink = FakeLayerTreeFrameSink::CreateSoftware();
     unbounded_sink_ = sink.get();
     host_impl_->SetUnboundedFrameSink(std::move(sink), id);
@@ -17111,6 +17118,158 @@ TEST_P(UnboundedFrameDamageTest,
   EXPECT_EQ(gfx::Rect(0, 0, 50, 50), LastUnboundedRootPass().output_rect);
   EXPECT_EQ(gfx::Rect(), LastUnboundedRootPass().damage_rect);
   EXPECT_FALSE(LastUnboundedRootPass().has_damage_from_contributing_content);
+}
+
+TEST_P(UnboundedFrameDamageTest,
+       RepeatedShowDismissReleasesResourcePoolMemory) {
+  constexpr gfx::Size kSize(50, 50);
+  constexpr int kCycles = 3;
+
+  // Build the unbounded subtree on the sync tree so PictureLayerImpl accepts a
+  // RasterSource under both CommitToActiveTree and CommitToPendingTree.
+  EnsureSyncTree();
+  LayerTreeImpl* sync_tree = host_impl_->sync_tree();
+  auto* root = SetupRootLayer<LayerImpl>(sync_tree, gfx::Size(100, 100));
+  auto* unbounded = AddLayer<LayerImpl>(sync_tree);
+  unbounded->SetBounds(kSize);
+  unbounded->SetDrawsContent(true);
+  unbounded->SetHitTestOpaqueness(HitTestOpaqueness::kOpaque);
+  CopyProperties(root, unbounded);
+  CreateEffectNode(unbounded).render_surface_reason =
+      RenderSurfaceReason::kUnboundedElement;
+
+  auto* sync_picture_layer = AddLayer<FakePictureLayerImpl>(
+      sync_tree, FakeRasterSource::CreateFilled(kSize));
+  const int picture_layer_id = sync_picture_layer->id();
+  sync_picture_layer->SetBounds(kSize);
+  sync_picture_layer->SetDrawsContent(true);
+  CopyProperties(unbounded, sync_picture_layer);
+  UpdateDrawProperties(sync_tree);
+  if (!host_impl_->CommitsToActiveTree()) {
+    host_impl_->ActivateSyncTree();
+  }
+
+  auto* picture_layer = static_cast<FakePictureLayerImpl*>(
+      host_impl_->active_tree()->LayerById(picture_layer_id));
+  ASSERT_TRUE(picture_layer);
+
+  ResourcePool* pool = host_impl_->resource_pool();
+  ASSERT_TRUE(pool);
+
+  for (int i = 0; i < kCycles; ++i) {
+    auto sink = FakeLayerTreeFrameSink::CreateSoftware();
+    sink->set_auto_return_resources(false);
+    auto* sink_ptr = sink.get();
+    host_impl_->SetUnboundedFrameSink(std::move(sink), MakeId(i + 1));
+
+    if (picture_layer->num_tilings() == 0) {
+      picture_layer->AddTiling(gfx::AxisTransform2d(1.f, gfx::Vector2dF()))
+          ->set_resolution(HIGH_RESOLUTION);
+    } else {
+      picture_layer->tilings()->tiling_at(0)->set_resolution(HIGH_RESOLUTION);
+    }
+    picture_layer->CreateAllTiles();
+    host_impl_->tile_manager()->InitializeTilesWithResourcesForTesting(
+        picture_layer->HighResTiling()->AllTilesForTesting());
+    UpdateDrawProperties(host_impl_->active_tree());
+
+    DrawFrame();
+    ASSERT_TRUE(sink_ptr->last_sent_frame());
+    ASSERT_FALSE(sink_ptr->last_sent_frame()->resource_list.empty());
+    ASSERT_GT(pool->memory_usage_bytes(), 0u);
+
+    // Release the layer's tiles (moving them to ResourcePool's busy list) and
+    // dismiss the unbounded frame sink.
+    picture_layer->ReleaseResources();
+    sink_ptr = nullptr;
+    host_impl_->DismissUnboundedFrameSink();
+
+    // Nothing stays busy across cycles.
+    EXPECT_EQ(0u, pool->memory_usage_bytes()) << "cycle " << i;
+    EXPECT_EQ(0u, pool->GetBusyResourceCountForTesting()) << "cycle " << i;
+  }
+  EXPECT_EQ(0u, host_impl_->resource_provider()->num_resources_for_testing());
+}
+
+class SingleResourceLayer : public LayerImpl {
+ public:
+  static std::unique_ptr<SingleResourceLayer>
+  Create(LayerTreeImpl* tree_impl, int id, viz::ResourceId resource_id) {
+    return std::make_unique<SingleResourceLayer>(tree_impl, id, resource_id);
+  }
+
+  SingleResourceLayer(LayerTreeImpl* tree_impl,
+                      int id,
+                      viz::ResourceId resource_id)
+      : LayerImpl(tree_impl, id), resource_id_(resource_id) {}
+
+  void AppendQuads(const AppendQuadsContext& context,
+                   viz::CompositorRenderPass* render_pass,
+                   AppendQuadsData* append_quads_data) override {
+    viz::SharedQuadState* sqs = render_pass->CreateAndAppendSharedQuadState();
+    PopulateSharedQuadState(sqs, contents_opaque());
+    gfx::Rect rect(bounds());
+    render_pass->CreateAndAppendDrawQuad<viz::TileDrawQuad>()->SetNew(
+        sqs, rect, rect, /*needs_blending=*/false, resource_id_,
+        gfx::RectF(0, 0, 1, 1), /*nearest_neighbor=*/false,
+        /*force_anti_aliasing_off=*/false);
+  }
+
+ private:
+  viz::ResourceId resource_id_;
+};
+
+// Frame sink that records when it's destroyed.
+class DestructionObservingFrameSink : public FakeLayerTreeFrameSink {
+ public:
+  explicit DestructionObservingFrameSink(bool* destroyed)
+      : FakeLayerTreeFrameSink(nullptr, nullptr), destroyed_(destroyed) {
+    set_auto_return_resources(false);
+  }
+  ~DestructionObservingFrameSink() override { *destroyed_ = true; }
+
+ private:
+  raw_ptr<bool> destroyed_;
+};
+
+TEST_P(UnboundedFrameDamageTest, ReleaseMainFrameSinkDismissesUnboundedSink) {
+  AddUnboundedLayer(gfx::Size(50, 50));
+  bool sink_destroyed = false;
+  auto sink = std::make_unique<DestructionObservingFrameSink>(&sink_destroyed);
+  auto* sink_ptr = sink.get();
+  host_impl_->SetUnboundedFrameSink(std::move(sink), MakeId(1));
+
+  viz::ClientResourceProvider* provider = host_impl_->resource_provider();
+  std::optional<bool> release;
+  viz::ResourceId id = provider->ImportResource(
+      viz::TransferableResource::Make(
+          gpu::ClientSharedImage::CreateSoftwareForTesting(),
+          viz::TransferableResource::ResourceSource::kTest, gpu::SyncToken()),
+      base::BindOnce([](std::optional<bool>* release, const gpu::SyncToken&,
+                        bool lost) { *release = lost; },
+                     &release));
+
+  auto* resource_layer =
+      AddLayer<SingleResourceLayer>(host_impl_->active_tree(), id);
+  resource_layer->SetBounds(gfx::Size(10, 10));
+  resource_layer->SetDrawsContent(true);
+  CopyProperties(unbounded_layer_, resource_layer);
+  UpdateDrawProperties(host_impl_->active_tree());
+  DrawFrame();
+  ASSERT_TRUE(sink_ptr->last_sent_frame());
+  ASSERT_EQ(1u, sink_ptr->last_sent_frame()->resource_list.size());
+  sink_ptr = nullptr;
+
+  // Releasing the main frame sink releases every exported resource, so the
+  // unbounded frame sink, whose frames use them, is dismissed too.
+  host_impl_->ReleaseLayerTreeFrameSink();
+  EXPECT_TRUE(sink_destroyed);
+
+  // The resource is released once, as lost, when its owner removes it.
+  provider->RemoveImportedResource(id);
+  ASSERT_TRUE(release.has_value());
+  EXPECT_TRUE(*release);
+  EXPECT_EQ(0u, provider->num_resources_for_testing());
 }
 
 // A render surface inside an unbounded element (e.g. for a pressed button's
