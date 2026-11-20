@@ -9,7 +9,6 @@ import android.text.style.ClickableSpan;
 import android.widget.TextView;
 
 import androidx.test.filters.LargeTest;
-import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matchers;
 import org.junit.After;
@@ -28,6 +27,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.MockSafeBrowsingApiHandler;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
@@ -37,7 +37,9 @@ import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.ChromeTriggers;
 import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.chrome.test.transit.tabmodel.TabClosingCondition;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.browser_ui.modaldialog.ModalDialogView;
 import org.chromium.components.browser_ui.modaldialog.TabModalPresenter;
@@ -234,8 +236,9 @@ public final class SubresourceFilterTest {
                 "Never received tab created event", currentTabCreatedCallbackCount);
 
         // Close the tab to go back to the original tab where the dialog was shown.
-        ChromeTabUtils.closeCurrentTab(
-                InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
+        ChromeTabbedActivity activity = mActivityTestRule.getActivity();
+        ChromeTriggers.closeCurrentTabTo(activity)
+                .waitFor(new TabClosingCondition(activity::getCurrentTabModel));
 
         CriteriaHelper.pollUiThread(
                 () -> {

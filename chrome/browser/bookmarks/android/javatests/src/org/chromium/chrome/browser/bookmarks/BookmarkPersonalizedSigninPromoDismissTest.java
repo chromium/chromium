@@ -45,6 +45,8 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.sync.SyncTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.transit.ChromeTriggers;
+import org.chromium.chrome.test.transit.tabmodel.TabClosingCondition;
 import org.chromium.chrome.test.util.BookmarkTestRule;
 import org.chromium.chrome.test.util.BookmarkTestUtil;
 import org.chromium.chrome.test.util.ChromeTabUtils;
@@ -170,8 +172,8 @@ public class BookmarkPersonalizedSigninPromoDismissTest {
         if (mSyncTestRule.getActivity().isTablet()) {
             ChromeTabbedActivity chromeTabbedActivity =
                     (ChromeTabbedActivity) mSyncTestRule.getActivity();
-            ChromeTabUtils.closeCurrentTab(
-                    InstrumentationRegistry.getInstrumentation(), chromeTabbedActivity);
+            ChromeTriggers.closeCurrentTabTo(chromeTabbedActivity)
+                    .waitFor(new TabClosingCondition(chromeTabbedActivity::getCurrentTabModel));
             // Open a new tab so chrome://bookmarks can be re-loaded within the same test.
             ChromeTabUtils.fullyLoadUrlInNewTab(
                     InstrumentationRegistry.getInstrumentation(),

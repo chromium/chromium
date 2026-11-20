@@ -24,6 +24,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
@@ -31,6 +32,7 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.ChromeTriggers;
 import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.chrome.test.transit.tabmodel.TabClosingCondition;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.LocationSettingsTestUtil;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
@@ -263,8 +265,9 @@ public class PermissionUpdateMessageTest {
 
             // Ensure destroying the permission update message UI does not crash
             // when handling permissions.
-            ChromeTabUtils.closeCurrentTab(
-                    InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
+            ChromeTabbedActivity activity = mActivityTestRule.getActivity();
+            ChromeTriggers.closeCurrentTabTo(activity)
+                    .waitFor(new TabClosingCondition(activity::getCurrentTabModel));
             CriteriaHelper.pollUiThread(() -> webContents.isDestroyed());
 
             final int countTabs = switchContent ? 2 : 1;

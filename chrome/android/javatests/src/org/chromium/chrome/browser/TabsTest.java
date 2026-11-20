@@ -73,6 +73,7 @@ import org.chromium.chrome.test.transit.ChromeTriggers;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.chrome.test.transit.tabmodel.TabClosingCondition;
 import org.chromium.chrome.test.util.BottomBarTestUtils;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.javascript_dialogs.JavascriptTabModalDialog;
@@ -269,8 +270,9 @@ public class TabsTest {
                     Criteria.checkThat(title, Matchers.startsWith(expectedTitle));
                 });
 
-        ChromeTabUtils.closeCurrentTab(
-                InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
+        ChromeTabbedActivity activity = mActivityTestRule.getActivity();
+        ChromeTriggers.closeCurrentTabTo(activity)
+                .waitFor(new TabClosingCondition(activity::getCurrentTabModel));
         currentTabCount =
                 runOnUiThreadBlocking(
                         () -> {
@@ -328,8 +330,9 @@ public class TabsTest {
         assertWaitForKeyboardStatus(true);
 
         // Close current tab(the 1st tab).
-        ChromeTabUtils.closeCurrentTab(
-                InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
+        ChromeTabbedActivity activity = mActivityTestRule.getActivity();
+        ChromeTriggers.closeCurrentTabTo(activity)
+                .waitFor(new TabClosingCondition(activity::getCurrentTabModel));
         assertWaitForKeyboardStatus(false);
     }
 
@@ -475,8 +478,11 @@ public class TabsTest {
     @SmallTest
     @Feature({"Android-TabSwitcher"})
     public void testCloseTabDuringFling() {
-        mActivityTestRule.loadUrlInNewTab(
-                getUrl("/chrome/test/data/android/tabstest/text_page.html"));
+        WebPageStation page =
+                mActivityTestRule
+                        .startOnBlankPage()
+                        .openFakeLinkToWebPage(
+                                getUrl("/chrome/test/data/android/tabstest/text_page.html"));
         InstrumentationRegistry.getInstrumentation()
                 .runOnMainSync(
                         () -> {
@@ -496,8 +502,7 @@ public class TabsTest {
                                             /* isTouchpadEvent= */ false,
                                             /* targetViewport= */ true);
                         });
-        ChromeTabUtils.closeCurrentTab(
-                InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
+        page.closeCurrentTabFast(WebPageStation.newBuilder());
     }
 
     @Test

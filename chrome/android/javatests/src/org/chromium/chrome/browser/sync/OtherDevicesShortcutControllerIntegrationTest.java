@@ -11,7 +11,6 @@ import android.content.pm.ShortcutManager;
 import android.os.Build.VERSION_CODES;
 
 import androidx.test.filters.LargeTest;
-import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 
@@ -32,6 +31,7 @@ import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -43,6 +43,8 @@ import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBr
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfShareTargetActivity;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.transit.ChromeTriggers;
+import org.chromium.chrome.test.transit.tabmodel.TabClosingCondition;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -424,7 +426,8 @@ public class OtherDevicesShortcutControllerIntegrationTest {
                 });
 
         // Clean up: close the created "Recent Tabs" tab.
-        ChromeTabUtils.closeCurrentTab(
-                InstrumentationRegistry.getInstrumentation(), mSyncTestRule.getActivity());
+        ChromeTabbedActivity activity = mSyncTestRule.getActivity();
+        ChromeTriggers.closeCurrentTabTo(activity)
+                .waitFor(new TabClosingCondition(activity::getCurrentTabModel));
     }
 }

@@ -146,7 +146,24 @@ public class ChromeTriggers {
     @CheckReturnValue
     public static TripBuilder closeCurrentTabTo(
             Station<?> station, ChromeTabbedActivity activity, @TabClosingSource int source) {
-        return station.runOnUiThreadTo(
+        return closeCurrentTabTo(activity, source).withContext(station);
+    }
+
+    /**
+     * {@link #closeCurrentTabTo(Station)} for tests that don't hold a Station.
+     *
+     * <p>Wait for the close with {@code waitFor(new TabClosingCondition(...))}.
+     */
+    @CheckReturnValue
+    public static TripBuilder closeCurrentTabTo(ChromeTabbedActivity activity) {
+        return closeCurrentTabTo(activity, TabClosingSource.UNKNOWN);
+    }
+
+    /** {@link #closeCurrentTabTo(ChromeTabbedActivity)} with an explicit closing source. */
+    @CheckReturnValue
+    public static TripBuilder closeCurrentTabTo(
+            ChromeTabbedActivity activity, @TabClosingSource int source) {
+        return Triggers.runOnUiThreadTo(
                 () -> {
                     TabModel model = activity.getCurrentTabModel();
                     Tab tab = TabModelUtils.getCurrentTab(model);

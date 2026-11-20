@@ -10,7 +10,6 @@ import static org.junit.Assert.assertTrue;
 import android.net.Uri;
 
 import androidx.test.filters.LargeTest;
-import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.After;
 import org.junit.Before;
@@ -30,10 +29,11 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.ChromeTriggers;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.transit.ssl.AskBeforeHttpDialogFacility;
-import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.chrome.test.transit.tabmodel.TabClosingCondition;
 import org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtils;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.common.ContentSwitches;
@@ -195,8 +195,8 @@ public class AskBeforeHttpDialogTest {
         assertTrue(newTab.getTab().getUrl().getSpec().contains("p=first_mode"));
 
         // Close the new tab, which should bring us back to the original tab and resume the dialog.
-        ChromeTabUtils.closeCurrentTab(
-                InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
+        ChromeTriggers.closeCurrentTabTo(newTab)
+                .waitFor(new TabClosingCondition(newTab.tabModelElement));
 
         // Wait for the dialog to be shown again on the original tab.
         CriteriaHelper.pollUiThread(
@@ -291,8 +291,8 @@ public class AskBeforeHttpDialogTest {
         mStartStation.loadUrlTo(httpUrl).enterFacility(dialog);
 
         // Close the tab.
-        ChromeTabUtils.closeCurrentTab(
-                InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
+        ChromeTriggers.closeCurrentTabTo(mStartStation)
+                .waitFor(new TabClosingCondition(mStartStation.tabModelElement));
 
         histogramWatcher.assertExpected();
     }

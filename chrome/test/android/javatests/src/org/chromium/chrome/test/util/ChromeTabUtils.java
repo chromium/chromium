@@ -31,13 +31,10 @@ import org.chromium.chrome.browser.ntp.IncognitoNewTabPage;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabWebContentsObserver;
-import org.chromium.chrome.browser.tabmodel.TabClosingSource;
-import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
-import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.url_constants.UrlOverrideUtils;
 import org.chromium.chrome.test.transit.page.NativePageCondition;
 import org.chromium.chrome.test.transit.page.PageHitTestDataCondition;
@@ -46,7 +43,6 @@ import org.chromium.chrome.test.transit.page.PageLoadStoppedCondition;
 import org.chromium.chrome.test.transit.page.PageLoadedCondition;
 import org.chromium.chrome.test.transit.page.PageUrlCondition;
 import org.chromium.chrome.test.transit.tabmodel.TabAddedCondition;
-import org.chromium.chrome.test.transit.tabmodel.TabClosingCondition;
 import org.chromium.chrome.test.transit.tabmodel.TabSelectedCondition;
 import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -309,42 +305,6 @@ public class ChromeTabUtils {
                         return activity.getCurrentTabModel().getCount();
                     }
                 });
-    }
-
-    /**
-     * Closes the current tab through TabModelSelector.
-     *
-     * <p>Returns after the tab has been closed.
-     */
-    public static void closeCurrentTab(
-            final Instrumentation instrumentation, final ChromeActivity activity) {
-        closeCurrentTab(instrumentation, activity, TabClosingSource.UNKNOWN);
-    }
-
-    /**
-     * Closes the current tab through TabModelSelector with an explicit closing source.
-     *
-     * <p>Returns after the tab has been closed.
-     */
-    public static void closeCurrentTab(
-            final Instrumentation instrumentation,
-            final ChromeActivity activity,
-            @TabClosingSource int source) {
-        TabModel model = ThreadUtils.runOnUiThreadBlocking(activity::getCurrentTabModel);
-        Triggers.runOnUiThreadTo(
-                        () -> {
-                            Tab tab = TabModelUtils.getCurrentTab(model);
-                            if (tab == null) return;
-                            model.getTabRemover()
-                                    .closeTabs(
-                                            TabClosureParams.closeTab(tab)
-                                                    .allowUndo(false)
-                                                    .tabClosingSource(source)
-                                                    .build(),
-                                            /* allowDialog= */ false);
-                        })
-                .waitFor(new TabClosingCondition(() -> model));
-        instrumentation.waitForIdleSync();
     }
 
     /**

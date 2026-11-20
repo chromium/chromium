@@ -42,6 +42,8 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.partnercustomizations.TestPartnerBrowserCustomizationsProvider;
+import org.chromium.chrome.test.transit.ChromeTriggers;
+import org.chromium.chrome.test.transit.tabmodel.TabClosingCondition;
 import org.chromium.chrome.test.util.BottomBarTestUtils;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
@@ -180,14 +182,11 @@ public class PartnerHomepageIntegrationTest {
     @MediumTest
     @Feature({"Homepage"})
     public void testLastTabClosed() {
-        ChromeTabUtils.closeCurrentTab(
-                InstrumentationRegistry.getInstrumentation(),
-                (ChromeTabbedActivity) mActivityTestRule.getActivity(),
-                TabClosingSource.GRID_TAB_SWITCHER);
+        ChromeTabbedActivity activity = mActivityTestRule.getActivity();
+        ChromeTriggers.closeCurrentTabTo(activity, TabClosingSource.GRID_TAB_SWITCHER)
+                .waitFor(new TabClosingCondition(activity::getCurrentTabModel));
         Assert.assertTrue(
-                "Activity was not closed.",
-                mActivityTestRule.getActivity().isFinishing()
-                        || mActivityTestRule.getActivity().isDestroyed());
+                "Activity was not closed.", activity.isFinishing() || activity.isDestroyed());
     }
 
     /** Closing all tabs should finalize all tab closures and close Chrome on Tabbed mode. */

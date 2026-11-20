@@ -67,8 +67,9 @@ import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.ChromeTriggers;
+import org.chromium.chrome.test.transit.tabmodel.TabClosingCondition;
 import org.chromium.chrome.test.util.ActivityTestUtils;
-import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
@@ -657,7 +658,8 @@ public class EdgeToEdgeInstrumentationTest {
 
         // 3. Close the customized NTP tab directly (without entering the Tab Switcher Hub) so the
         // already-loaded viewport-fit=cover tab becomes active without an offset delta.
-        ChromeTabUtils.closeCurrentTab(InstrumentationRegistry.getInstrumentation(), mActivity);
+        ChromeTriggers.closeCurrentTabTo(mActivity)
+                .waitFor(new TabClosingCondition(mActivity::getCurrentTabModel));
         CriteriaHelper.pollUiThread(
                 () -> {
                     Criteria.checkThat(
