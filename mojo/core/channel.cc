@@ -928,12 +928,12 @@ class Channel::ReadBuffer {
   }
 
   // Ensures the ReadBuffer has enough contiguous space allocated to hold
-  // |num_bytes| more bytes; returns the address of the first available byte.
-  // If computing the new size overflows, returns nullptr.
-  char* Reserve(size_t num_bytes) {
+  // |num_bytes| more bytes, and returns that space. If computing the new size
+  // overflows, returns an empty span.
+  base::span<char> Reserve(size_t num_bytes) {
     const auto new_size = base::CheckAdd(num_bytes, size_);
     if (!new_size.IsValid()) {
-      return nullptr;
+      return {};
     }
     if (num_occupied_bytes_ + num_bytes > size_) {
       size_ = std::max(static_cast<size_t>(size_ * kGrowthFactor),
@@ -943,7 +943,7 @@ class Channel::ReadBuffer {
       data_ = std::move(new_data);
     }
 
-    return data_.subspan(num_occupied_bytes_).data();
+    return data_.subspan(num_occupied_bytes_, num_bytes);
   }
 
   // Marks the first |num_bytes| unoccupied bytes as occupied.
@@ -1060,15 +1060,12 @@ void Channel::WriteNextIpczMessage(
                                    IncrementLastSentChannelSequenceNumber()));
 }
 
-char* Channel::GetReadBuffer(size_t* buffer_capacity) {
+base::span<char> Channel::GetReadBuffer(size_t buffer_capacity) {
   DCHECK(read_buffer_);
-  size_t required_capacity = *buffer_capacity;
-  if (!required_capacity) {
-    required_capacity = kReadBufferSize;
+  if (!buffer_capacity) {
+    buffer_capacity = kReadBufferSize;
   }
-
-  *buffer_capacity = required_capacity;
-  return read_buffer_->Reserve(required_capacity);
+  return read_buffer_->Reserve(buffer_capacity);
 }
 
 bool Channel::OnReadComplete(size_t bytes_read, size_t* next_read_size_hint) {

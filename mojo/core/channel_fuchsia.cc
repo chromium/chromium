@@ -19,6 +19,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
+#include "base/containers/span.h"
 #include "base/files/scoped_file.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/functional/bind.h"
@@ -311,27 +312,24 @@ class ChannelFuchsia : public Channel,
     bool validation_error = false;
     bool read_error = false;
     size_t next_read_size = 0;
-    size_t buffer_capacity = 0;
     size_t total_bytes_read = 0;
     do {
-      buffer_capacity = next_read_size;
-      char* buffer = GetReadBuffer(&buffer_capacity);
-      // A null buffer means the size computation for the new buffer overflowed
-      // so mark the connection as broken and bail.
-      if (!buffer) {
+      base::span<char> buffer = GetReadBuffer(next_read_size);
+      // An empty buffer means the size computation for the new buffer
+      // overflowed so mark the connection as broken and bail.
+      if (buffer.empty()) {
         read_error = true;
         validation_error = true;
         break;
       }
-      DCHECK_GT(buffer_capacity, 0u);
 
       uint32_t bytes_read = 0;
       uint32_t handles_read = 0;
       zx_handle_t handles[ZX_CHANNEL_MAX_MSG_HANDLES] = {};
 
       zx_status_t read_result =
-          handle_.read(0, buffer, handles, buffer_capacity, std::size(handles),
-                       &bytes_read, &handles_read);
+          handle_.read(0, buffer.data(), handles, buffer.size(),
+                       std::size(handles), &bytes_read, &handles_read);
       if (read_result == ZX_OK) {
         for (size_t i = 0; i < handles_read; ++i) {
           incoming_handles_.emplace_back(UNSAFE_TODO(handles[i]));

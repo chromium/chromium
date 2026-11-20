@@ -16,6 +16,7 @@
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -29,8 +30,8 @@
 #include "base/time/time.h"
 #include "base/types/fixed_array.h"
 #include "build/build_config.h"
-#include "mojo/public/cpp/platform/socket_utils_posix.h"
 #include "mojo/core/configuration.h"
+#include "mojo/public/cpp/platform/socket_utils_posix.h"
 
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID))
 #include "mojo/core/channel_linux.h"
@@ -294,20 +295,19 @@ void ChannelPosix::OnFdReadable(int fd) {
   size_t total_bytes_read = 0;
   size_t bytes_read = 0;
   do {
-    buffer_capacity = next_read_size;
-    char* buffer = GetReadBuffer(&buffer_capacity);
-    // A null buffer means that computing the read size overflowed, which means
-    // we received a malformed message; bail.
-    if (!buffer) {
+    base::span<char> buffer = GetReadBuffer(next_read_size);
+    // An empty buffer means that computing the read size overflowed, which
+    // means we received a malformed message; bail.
+    if (buffer.empty()) {
       read_error = true;
       validation_error = true;
       break;
     }
-    DCHECK_GT(buffer_capacity, 0u);
+    buffer_capacity = buffer.size();
 
     std::vector<base::ScopedFD> incoming_fds;
-    ssize_t read_result =
-        SocketRecvmsg(socket_.get(), buffer, buffer_capacity, &incoming_fds);
+    ssize_t read_result = SocketRecvmsg(socket_.get(), buffer.data(),
+                                        buffer.size(), &incoming_fds);
     for (auto& incoming_fd : incoming_fds) {
       incoming_fds_.emplace_back(std::move(incoming_fd));
     }

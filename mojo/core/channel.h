@@ -497,14 +497,14 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
   Delegate* delegate() const { return delegate_; }
 
   // Called by the implementation when it wants somewhere to stick data.
-  // |*buffer_capacity| may be set by the caller to indicate the desired buffer
+  // `buffer_capacity` may be set by the caller to indicate the desired buffer
   // size. If 0, a sane default size will be used instead.
   //
-  // Returns the address of a buffer which can be written to, and indicates its
-  // actual capacity in |*buffer_capacity|.
+  // Returns a buffer of that size which can be written to, or an empty span if
+  // computing the size of the underlying allocation overflows.
   //
   // This should only be used with DispatchBufferPolicy::kManaged.
-  char* GetReadBuffer(size_t* buffer_capacity);
+  base::span<char> GetReadBuffer(size_t buffer_capacity);
 
   // Called by the implementation when new data is available in the read
   // buffer. Returns false to indicate an error. Upon success,

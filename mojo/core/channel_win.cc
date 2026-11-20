@@ -19,6 +19,7 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/containers/queue.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -561,19 +562,17 @@ class ChannelWin : public Channel,
   void ReadMore(size_t next_read_size_hint) {
     DCHECK(!pending_read_);
 
-    size_t buffer_capacity = next_read_size_hint;
-    char* buffer = GetReadBuffer(&buffer_capacity);
-    // A null buffer means the size computation for the buffer overflowed;
+    base::span<char> buffer = GetReadBuffer(next_read_size_hint);
+    // An empty buffer means the size computation for the buffer overflowed;
     // break the connection.
-    if (!buffer) {
+    if (buffer.empty()) {
       OnError(Error::kDisconnected);
       return;
     }
-    DCHECK_GT(buffer_capacity, 0u);
 
-    BOOL ok =
-        ::ReadFile(handle_.get(), buffer, static_cast<DWORD>(buffer_capacity),
-                   NULL, read_context_.GetOverlapped());
+    BOOL ok = ::ReadFile(handle_.get(), buffer.data(),
+                         static_cast<DWORD>(buffer.size()), NULL,
+                         read_context_.GetOverlapped());
     if (ok || GetLastError() == ERROR_IO_PENDING) {
       pending_read_ = this;
     } else {

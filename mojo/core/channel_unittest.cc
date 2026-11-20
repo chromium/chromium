@@ -67,7 +67,7 @@ class TestChannel : public Channel {
   TestChannel(Channel::Delegate* delegate)
       : Channel(delegate, Channel::HandlePolicy::kAcceptHandles) {}
 
-  char* GetReadBufferTest(size_t* buffer_capacity) {
+  base::span<char> GetReadBufferTest(size_t buffer_capacity) {
     return GetReadBuffer(buffer_capacity);
   }
 
@@ -362,16 +362,12 @@ TEST(ChannelTest, NonLegacyMessageDeserialization) {
 }
 
 TEST(ChannelTest, OnReadLegacyMessage) {
-  size_t buffer_size = 100 * 1024;
   Channel::MessagePtr message = CreateDefaultMessage(true /* legacy_message */);
 
   MockChannelDelegate channel_delegate;
   scoped_refptr<TestChannel> channel = new TestChannel(&channel_delegate);
-  char* read_buffer = channel->GetReadBufferTest(&buffer_size);
-  ASSERT_LT(message->data_num_bytes(),
-            buffer_size);  // Bad test. Increase buffer
-                           // size.
-  UNSAFE_TODO(memcpy(read_buffer, message->data(), message->data_num_bytes()));
+  base::span<char> read_buffer = channel->GetReadBufferTest(100 * 1024);
+  read_buffer.copy_prefix_from(message->data_span());
 
   size_t next_read_size_hint = 0;
   EXPECT_TRUE(channel->OnReadCompleteTest(message->data_num_bytes(),
@@ -383,17 +379,13 @@ TEST(ChannelTest, OnReadLegacyMessage) {
 }
 
 TEST(ChannelTest, OnReadNonLegacyMessage) {
-  size_t buffer_size = 100 * 1024;
   Channel::MessagePtr message =
       CreateDefaultMessage(false /* legacy_message */);
 
   MockChannelDelegate channel_delegate;
   scoped_refptr<TestChannel> channel = new TestChannel(&channel_delegate);
-  char* read_buffer = channel->GetReadBufferTest(&buffer_size);
-  ASSERT_LT(message->data_num_bytes(),
-            buffer_size);  // Bad test. Increase buffer
-                           // size.
-  UNSAFE_TODO(memcpy(read_buffer, message->data(), message->data_num_bytes()));
+  base::span<char> read_buffer = channel->GetReadBufferTest(100 * 1024);
+  read_buffer.copy_prefix_from(message->data_span());
 
   size_t next_read_size_hint = 0;
   EXPECT_TRUE(channel->OnReadCompleteTest(message->data_num_bytes(),
