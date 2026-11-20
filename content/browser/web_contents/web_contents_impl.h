@@ -504,7 +504,6 @@ class CONTENT_EXPORT WebContentsImpl
   int GetCrashedErrorCode() override;
   bool IsBeingDestroyed() override;
   bool IsPrivileged() override;
-  void BoostBackgroundExecution() override;
   void NotifyNavigationStateChanged(InvalidateTypes changed_flags) override;
   void OnAudioStateChanged() override;
   base::TimeTicks GetLastActiveTimeTicks() override;

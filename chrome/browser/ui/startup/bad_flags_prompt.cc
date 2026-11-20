@@ -32,7 +32,6 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/autofill/core/common/autofill_switches.h"
-#include "components/bidi_mapper/buildflags.h"
 #include "components/history_clusters/core/file_clustering_backend.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar_delegate.h"
@@ -73,10 +72,6 @@
 #include "components/actor/core/actor_switches.h"
 #include "components/tabs/public/tab_interface.h"
 #include "services/device/public/cpp/hid/hid_switches.h"
-#endif
-
-#if BUILDFLAG(ENABLE_BIDI_MAPPER)
-#include "components/bidi_mapper/host/features.h"
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -267,12 +262,6 @@ static const std::variant<const base::Feature*, const char*>
         // This feature is under development and currently has security
         // concerns.
         &blink::features::kPersistentWidgetAPI,
-
-#if BUILDFLAG(ENABLE_BIDI_MAPPER)
-        // This feature lets extensions automate the whole browser with the
-        // chrome.driver API.
-        &bidi_mapper::features::kChromeDriverExtensionApi,
-#endif
 };
 
 void ShowBadFlagsInfoBarHelper(

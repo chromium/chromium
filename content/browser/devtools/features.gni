@@ -6,3 +6,9 @@ import("//build/config/chrome_build.gni")
 
 # iOS and Fuchsia don't support DevTools front-end.
 enable_devtools_frontend = !is_ios && !is_fuchsia
+
+declare_args() {
+  # Bundles the ChromeDriver BiDi mapper JS implementation into the browser
+  # binary.
+  bundle_chrome_bidi_mapper = !is_android && !is_ios && !is_fuchsia
+}
