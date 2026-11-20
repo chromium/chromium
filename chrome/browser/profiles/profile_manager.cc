@@ -114,13 +114,6 @@
 #include "extensions/browser/extension_system.h"
 #endif
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"  // nogncheck
-#include "extensions/browser/extension_registry.h"
-#include "extensions/common/extension_set.h"
-#include "extensions/common/manifest.h"
-#endif
-
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
 #include "chrome/browser/sessions/app_session_service_factory.h"
 #include "chrome/browser/sessions/session_service_factory.h"
@@ -246,7 +239,7 @@ int64_t ComputeFilesSize(const base::FilePath& directory,
 }
 
 // Simple task to log the size of the current profile.
-void ProfileSizeTask(const base::FilePath& path, int enabled_app_count) {
+void ProfileSizeTask(const base::FilePath& path) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
   const int64_t kBytesInOneMB = 1024 * 1024;
@@ -294,40 +287,7 @@ void ProfileSizeTask(const base::FilePath& path, int enabled_app_count) {
   size = ComputeFilesSize(path, FILE_PATH_LITERAL("Extension*"));
   size_MB = static_cast<int>(size / kBytesInOneMB);
   UMA_HISTOGRAM_COUNTS_10000("Profile.ExtensionSize", size_MB);
-
-  // Count number of enabled apps in this profile, if we know.
-  if (enabled_app_count != -1)
-    UMA_HISTOGRAM_COUNTS_10000("Profile.AppCount", enabled_app_count);
 }
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-
-// Returns the number of installed (and enabled) apps, excluding any component
-// apps.
-size_t GetEnabledAppCount(Profile* profile) {
-  if (extensions::ChromeContentBrowserClientExtensionsPart::
-          AreExtensionsDisabledForProfile(profile)) {
-    return 0u;
-  }
-
-  extensions::ExtensionRegistry* registry =
-      extensions::ExtensionRegistry::Get(profile);
-  CHECK(registry, base::NotFatalUntil::M162);
-
-  size_t installed_apps = 0u;
-  const extensions::ExtensionSet& extensions = registry->enabled_extensions();
-  for (extensions::ExtensionSet::const_iterator iter = extensions.begin();
-       iter != extensions.end(); ++iter) {
-    if ((*iter)->is_app() &&
-        (*iter)->location() !=
-            extensions::mojom::ManifestLocation::kComponent) {
-      ++installed_apps;
-    }
-  }
-  return installed_apps;
-}
-
-#endif  // ENABLE_EXTENSIONS
 
 // Once a profile is initialized through LoadProfile this method is executed.
 // It will then run |client_callback| with the right profile.
@@ -1667,25 +1627,17 @@ void ProfileManager::DoFinalInitLogging(Profile* profile) {
     }
   }
 
-  // Skip the rest of this function in tests as the extension service might be
-  // uninitialized.
+  // Skip the rest of this function in tests.
   if (!do_final_services_init_) {
     return;
   }
-
-  // Count number of extensions in this profile.
-  int enabled_app_count = -1;
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  enabled_app_count = GetEnabledAppCount(profile);
-#endif
 
   // Log the profile size after a reasonable startup delay.
   base::ThreadPool::PostDelayedTask(
       FROM_HERE,
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-      base::BindOnce(&ProfileSizeTask, profile->GetPath(), enabled_app_count),
-      base::Seconds(112));
+      base::BindOnce(&ProfileSizeTask, profile->GetPath()), base::Seconds(112));
 }
 
 ProfileManager::ProfileInfo::ProfileInfo() {
