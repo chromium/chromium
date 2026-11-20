@@ -519,10 +519,11 @@ public abstract class FullscreenHtmlApiHandlerBase
         // or one it can't move to, so use the window's display rather than the requested one.
         long displayId = sameDisplay ? getCurrentDisplayId() : options.displayId;
         // A new request supersedes a different tab's pending one: clear that tab's attributes so
-        // they do not outlive its request. If that request still enters, enterFullscreen()
-        // records the display again.
+        // they do not outlive its request, and cancel its deferred enter if it has one. A
+        // superseded parked request can still enter; enterFullscreen() then records the display
+        // again.
         if (mTabPendingFullscreen != null && mTabPendingFullscreen != tab) {
-            clearFullscreenStartingPositionAndOptions(mTabPendingFullscreen);
+            clearFullscreenAttributes(mTabPendingFullscreen);
         }
         mTabPendingFullscreen = null;
         setFullscreenOptions(tab, options, displayId);
@@ -620,12 +621,17 @@ public abstract class FullscreenHtmlApiHandlerBase
                 new FullscreenOptions(options.showNavigationBar, options.showStatusBar, displayId));
     }
 
-    private void clearFullscreenStartingPositionAndOptions(@Nullable Tab tab) {
+    /**
+     * Clears the fullscreen state stored on {@code tab}: its start position, its display and its
+     * deferred enter, if any.
+     */
+    private void clearFullscreenAttributes(@Nullable Tab tab) {
         if (tab == null) return; // There is no Tab
         if (tab.isDestroyed()) return; // Tab is already destroyed and we cannot clear it
         TabAttributes attrs = TabAttributes.from(tab);
         attrs.clear(TabAttributeKeys.FULLSCREEN_START_POSITION);
         attrs.clear(TabAttributeKeys.FULLSCREEN_OPTIONS);
+        attrs.clear(TabAttributeKeys.ENTER_FULLSCREEN);
     }
 
     /**
@@ -643,7 +649,7 @@ public abstract class FullscreenHtmlApiHandlerBase
         if (startPosition != null) {
             TabAttributes.from(to).set(TabAttributeKeys.FULLSCREEN_START_POSITION, startPosition);
         }
-        clearFullscreenStartingPositionAndOptions(from);
+        clearFullscreenAttributes(from);
     }
 
     private void tryToMoveTaskTo(long displayId, Rect targetBounds) {
@@ -682,13 +688,12 @@ public abstract class FullscreenHtmlApiHandlerBase
     @Override
     public void onExitFullscreen(Tab tab) {
         if (tab != mTab && tab != mTabInFullscreen) {
-            // This handler is not tracking the tab, but its fullscreen display must not outlive
+            // This handler is not tracking the tab, but its fullscreen state must not outlive
             // the exit.
-            clearFullscreenStartingPositionAndOptions(tab);
+            clearFullscreenAttributes(tab);
             if (tab == mTabPendingFullscreen) mTabPendingFullscreen = null;
             return;
         }
-        setEnterFullscreenRunnable(tab, null);
         boolean wasInPersistentFullscreenMode = getPersistentFullscreenMode();
         exitPersistentFullscreenMode();
         if (wasInPersistentFullscreenMode || mNotifyOnNextExit) {
@@ -734,7 +739,8 @@ public abstract class FullscreenHtmlApiHandlerBase
         }
     }
 
-    private void setEnterFullscreenRunnable(Tab tab, @Nullable Runnable runnable) {
+    private void setEnterFullscreenRunnable(@Nullable Tab tab, @Nullable Runnable runnable) {
+        if (tab == null || tab.isDestroyed()) return;
         TabAttributes attrs = TabAttributes.from(tab);
         if (runnable == null) {
             attrs.clear(TabAttributeKeys.ENTER_FULLSCREEN);
@@ -811,10 +817,10 @@ public abstract class FullscreenHtmlApiHandlerBase
         // Return to the original starting position and bounds if the fullscreen was opening on
         // another display.
         returnFromTargetScreenIfNeeded();
-        // Clearing all display parameters
-        clearFullscreenStartingPositionAndOptions(mTabInFullscreen);
-        clearFullscreenStartingPositionAndOptions(mTab);
-        clearFullscreenStartingPositionAndOptions(mTabPendingFullscreen);
+        // Clearing all per-tab fullscreen state
+        clearFullscreenAttributes(mTabInFullscreen);
+        clearFullscreenAttributes(mTab);
+        clearFullscreenAttributes(mTabPendingFullscreen);
         mTabPendingFullscreen = null;
 
         // Exit window edge to edge fullscreen mode only if element fullscreen mode was triggered
@@ -869,7 +875,7 @@ public abstract class FullscreenHtmlApiHandlerBase
         Pair<Long, @Nullable Rect> homeAttrs =
                 TabAttributes.from(mTabInFullscreen)
                         .get(TabAttributeKeys.FULLSCREEN_START_POSITION);
-        clearFullscreenStartingPositionAndOptions(mTabInFullscreen);
+        clearFullscreenAttributes(mTabInFullscreen);
 
         if (homeAttrs != null) {
             // Exiting fullscreen requires window to be focused. When exiting fullscreen as the

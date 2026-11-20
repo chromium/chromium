@@ -1191,6 +1191,102 @@ public class FullscreenHtmlApiHandlerCompatUnitTest {
                 getStoredFullscreenOptions(otherTab));
     }
 
+    /** Puts mTab in the state where a request is deferred until the tab is interactable. */
+    private void setUpTabForDeferredFullscreen() {
+        setUpTabForEnteredFullscreen();
+        doReturn(false).when(mTab).isUserInteractable();
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    public void testOnExitFullscreen_untrackedTab_clearsEnterFullscreenRunnable() {
+        setUpTabForEnteredFullscreen();
+        FullscreenManager.Observer observer = Mockito.mock(FullscreenManager.Observer.class);
+        mFullscreenHtmlApiHandlerCompat.addObserver(observer);
+        Tab otherTab = createTabThatCanEnterFullscreen();
+        doReturn(false).when(otherTab).isUserInteractable();
+        mFullscreenHtmlApiHandlerCompat.onEnterFullscreen(
+                otherTab, new FullscreenOptions(false, false, INVALID_DISPLAY));
+
+        mFullscreenHtmlApiHandlerCompat.onExitFullscreen(otherTab);
+        doReturn(true).when(otherTab).isUserInteractable();
+        mFullscreenHtmlApiHandlerCompat.onTabInteractable(otherTab);
+
+        assertFalse(mFullscreenHtmlApiHandlerCompat.getPersistentFullscreenMode());
+        verify(observer, never()).onEnterFullscreen(any(), any());
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    public void testOnExitFullscreen_destroyedTab_doesNotCrash() {
+        setUpTabForEnteredFullscreen();
+        Tab destroyedTab = Mockito.mock(Tab.class);
+        UserDataHost host = new UserDataHost();
+        doReturn(host).when(destroyedTab).getUserDataHost();
+        doReturn(true).when(destroyedTab).isDestroyed();
+        host.destroy();
+
+        mFullscreenHtmlApiHandlerCompat.onExitFullscreen(destroyedTab);
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    public void testExitPersistentFullscreenMode_clearsDeferredRunnable() {
+        setUpTabForDeferredFullscreen();
+        FullscreenManager.Observer observer = Mockito.mock(FullscreenManager.Observer.class);
+        mFullscreenHtmlApiHandlerCompat.addObserver(observer);
+        mFullscreenHtmlApiHandlerCompat.onEnterFullscreen(
+                mTab, new FullscreenOptions(false, false, INVALID_DISPLAY));
+
+        mFullscreenHtmlApiHandlerCompat.exitPersistentFullscreenMode();
+        doReturn(true).when(mTab).isUserInteractable();
+        mFullscreenHtmlApiHandlerCompat.onTabInteractable(mTab);
+
+        assertFalse(mFullscreenHtmlApiHandlerCompat.getPersistentFullscreenMode());
+        verify(observer, never()).onEnterFullscreen(any(), any());
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    public void testExitPersistentFullscreenMode_clearsBackgroundPendingTabRunnable() {
+        setUpTabForEnteredFullscreen();
+        mFullscreenHtmlApiHandlerCompat.onEnterFullscreen(
+                mTab, new FullscreenOptions(false, false, INVALID_DISPLAY));
+        FullscreenManager.Observer observer = Mockito.mock(FullscreenManager.Observer.class);
+        mFullscreenHtmlApiHandlerCompat.addObserver(observer);
+        Tab otherTab = createTabThatCanEnterFullscreen();
+        doReturn(false).when(otherTab).isUserInteractable();
+        mFullscreenHtmlApiHandlerCompat.onEnterFullscreen(
+                otherTab, new FullscreenOptions(true, false, INVALID_DISPLAY));
+
+        mFullscreenHtmlApiHandlerCompat.exitPersistentFullscreenMode();
+        doReturn(true).when(otherTab).isUserInteractable();
+        mFullscreenHtmlApiHandlerCompat.onTabInteractable(otherTab);
+
+        assertFalse(mFullscreenHtmlApiHandlerCompat.getPersistentFullscreenMode());
+        verify(observer, never()).onEnterFullscreen(any(), any());
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    public void testOnEnterFullscreen_supersededDeferredTab_clearsPriorRunnable() {
+        setUpTabForDeferredFullscreen();
+        FullscreenManager.Observer observer = Mockito.mock(FullscreenManager.Observer.class);
+        mFullscreenHtmlApiHandlerCompat.addObserver(observer);
+        mFullscreenHtmlApiHandlerCompat.onEnterFullscreen(
+                mTab, new FullscreenOptions(false, false, INVALID_DISPLAY));
+        Tab otherTab = createTabThatCanEnterFullscreen();
+        doReturn(false).when(otherTab).isUserInteractable();
+        mFullscreenHtmlApiHandlerCompat.onEnterFullscreen(
+                otherTab, new FullscreenOptions(true, false, INVALID_DISPLAY));
+
+        doReturn(true).when(mTab).isUserInteractable();
+        mFullscreenHtmlApiHandlerCompat.onTabInteractable(mTab);
+
+        assertFalse(mFullscreenHtmlApiHandlerCompat.getPersistentFullscreenMode());
+        verify(observer, never()).onEnterFullscreen(eq(mTab), any());
+    }
+
     private FullscreenManagerDelegate enterFullscreenAndSetMockDelegate() {
         doReturn(mWebContents).when(mTab).getWebContents();
         doReturn(mContentView).when(mTab).getContentView();
