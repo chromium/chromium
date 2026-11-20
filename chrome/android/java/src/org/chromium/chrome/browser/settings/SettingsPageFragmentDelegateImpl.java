@@ -549,14 +549,16 @@ public class SettingsPageFragmentDelegateImpl
         if (mSettingsHostFragment != null) {
             boolean isUrlNavEnabled = ChromeFeatureList.sSettingsInTabUrlNav.isEnabled();
             // Because the SettingsHostFragment is identified by mFragmentTag (derived from Tab ID),
-            // a new SettingsPage instantiated for the same Tab will adopt this fragment. If the
-            // Tab's current native page is a SettingsPage, it means this Tab has already
-            // transitioned to a new SettingsPage instance that has adopted our fragment. This can
-            // happen during url navigation after a chrome session has been restored (e.g.,
-            // navigating to a previous page in the Chrome navigation stack). In that case, do not
-            // destroy the shared host fragment or clear its callbacks.
+            // a new SettingsPage instantiated for the same Tab will adopt this fragment, replacing
+            // our navigation delegate with its own. This can happen during url navigation after a
+            // chrome session has been restored (e.g., navigating to a previous page in the Chrome
+            // navigation stack). In that case, do not destroy the shared host fragment or clear its
+            // callbacks. Do not ask the Tab for its native page instead: while this page is being
+            // frozen, the Tab still reports it. https://crbug.com/581444921
             boolean isAdoptedByNewPage =
-                    isUrlNavEnabled && mTab.getNativePage() instanceof SettingsPage;
+                    isUrlNavEnabled
+                            && mSettingsHostFragment.getSettingsNavigation()
+                                    != mSettingsNavigationDelegate;
             if (keepHostFragment) {
                 mSettingsHostFragment.setSaveInstanceStateCallback(
                         outState -> outState.putAll(savedStateSnapshot));

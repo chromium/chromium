@@ -15,6 +15,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -72,6 +73,7 @@ import org.chromium.chrome.browser.settings.search.SettingsSearchCoordinator;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.settings.search.PreferenceParser;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
@@ -180,6 +182,7 @@ public class SettingsPageFragmentDelegateImplTest {
     private ViewGroup mContainerView;
     private FrameLayout mFragmentView;
     private SettingsPageFragmentDelegateImpl mDelegate;
+    private SettingsNavigation mHostSettingsNavigation;
 
     @Before
     public void setUp() {
@@ -209,6 +212,16 @@ public class SettingsPageFragmentDelegateImplTest {
         when(mMockSettingsHostFragment.getContainmentHelper()).thenReturn(mockContainmentHelper);
         when(mMockSettingsHostFragment.containsChild(mMultiColumnSettings)).thenReturn(true);
         when(mMockSettingsHostFragment.getMultiColumnSettings()).thenReturn(mMultiColumnSettings);
+        // Let the mock host remember its navigation, which tells who it is bound to.
+        doAnswer(
+                        invocation -> {
+                            mHostSettingsNavigation = invocation.getArgument(0);
+                            return null;
+                        })
+                .when(mMockSettingsHostFragment)
+                .setSettingsNavigation(any());
+        when(mMockSettingsHostFragment.getSettingsNavigation())
+                .thenAnswer(invocation -> mHostSettingsNavigation);
         when(mTab.getId()).thenReturn(TAB_ID);
 
         mDelegate =
@@ -959,6 +972,30 @@ public class SettingsPageFragmentDelegateImplTest {
 
         mDelegate.destroySettings();
         verify(mMockSettingsHostFragment).setSaveInstanceStateCallback(null);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV)
+    public void testDestroySettings_HostAdoptedByNewPage_KeepsHostFragment() {
+        mDelegate.initSettings(mContainerView, "", mPadAdjusterGenerator);
+
+        // A new page for the same tab finds the host by its tag and binds to it.
+        var newDelegate =
+                new SettingsPageFragmentDelegateImpl(
+                        mActivity,
+                        mProfile,
+                        mWindowAndroid,
+                        mActivityResultTracker,
+                        mSnackbarManager,
+                        mBottomSheetController,
+                        mModalDialogManager,
+                        mTab);
+        newDelegate.initSettings(new FrameLayout(mActivity), "", mPadAdjusterGenerator);
+
+        mDelegate.destroySettings();
+
+        verify(mMockSettingsHostFragment, never()).setSaveInstanceStateCallback(null);
+        verify(mFragmentTransaction, never()).remove(any());
     }
 
     @Test

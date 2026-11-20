@@ -1149,6 +1149,44 @@ public class SettingsPageTest {
     }
 
     /**
+     * Regression test for https://crbug.com/581444921: freezing a hidden settings tab removes its
+     * host fragment, so that showing the tab again starts from a new one.
+     */
+    @Test
+    @MediumTest
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
+    public void testFreezeHiddenSettingsTabRemovesHostFragment_urlNav() {
+        FeatureOverrides.enable(ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV);
+        mActivityTestRule.loadUrl("chrome-native://settings/");
+        int settingsTabIndex = getCurrentTabIndex();
+        waitForView(withText(R.string.search_engine_settings));
+        Tab settingsTab = mActivityTestRule.getActivityTab();
+        SettingsHostFragment hostFragment =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> SettingsHostFragment.get(mActivityTestRule.getActivity()));
+        assertNotNull(hostFragment);
+
+        // Hide the settings tab, then freeze it as NativePageAssassin does.
+        mActivityTestRule.loadUrlInNewTab("about:blank");
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    settingsTab.freezeNativePage();
+                    assertTrue(settingsTab.getNativePage().isFrozen());
+                    mActivityTestRule
+                            .getActivity()
+                            .getSupportFragmentManager()
+                            .executePendingTransactions();
+                    assertFalse(
+                            "The frozen page's host fragment should be removed.",
+                            hostFragment.isAdded());
+                });
+
+        // Showing the tab again unfreezes it into a new page.
+        ChromeTriggers.selectTabProgrammatically(mActivityTestRule.getActivity(), settingsTabIndex);
+        waitForView(withText(R.string.search_engine_settings));
+    }
+
+    /**
      * Regression test for https://crbug.com/549509308.
      *
      * <p>TODO(crbug.com/521895796): Remove once SettingsInTabUrlNav is enabled by default, in favor
