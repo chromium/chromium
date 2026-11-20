@@ -41,6 +41,7 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
@@ -1062,13 +1063,10 @@ C2PAManifestStatus JPEGImageDecoder::GetC2PAManifestStatus() const {
   if (jumbf_data->size() < kC2PAOffset + sizeof(kC2PASig)) {
     return C2PAManifestStatus::kNotDetected;
   }
-  const uint8_t* jumbf_bytes = jumbf_data->bytes();
-  if (UNSAFE_TODO(memcmp(jumbf_bytes + kSBOffset, kSBSig, sizeof(kSBSig))) !=
-          0 ||
-      UNSAFE_TODO(memcmp(jumbf_bytes + kDBOffset, kDBSig, sizeof(kDBSig))) !=
-          0 ||
-      UNSAFE_TODO(
-          memcmp(jumbf_bytes + kC2PAOffset, kC2PASig, sizeof(kC2PASig))) != 0) {
+  const auto jumbf_bytes = skia::as_byte_span(*jumbf_data);
+  if (jumbf_bytes.subspan<kSBOffset, sizeof(kSBSig)>() != kSBSig ||
+      jumbf_bytes.subspan<kDBOffset, sizeof(kDBSig)>() != kDBSig ||
+      jumbf_bytes.subspan<kC2PAOffset, sizeof(kC2PASig)>() != kC2PASig) {
     return C2PAManifestStatus::kNotDetected;
   }
 
