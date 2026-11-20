@@ -1,0 +1,12 @@
+Tests that SVGSVGElement.getElementById() and SVGGraphicsElement.getBBox() are side-effect-free.
+Expression `svgEl.getElementById('svg-path')`
+has side effect: false, expected: false
+Expression `svgPath.getBBox()`
+has side effect: false, expected: false
+Expression `svgEl.pauseAnimations()`
+has side effect: true, expected: true
+Expression `svgPath.getCTM()`
+has side effect: true, expected: true
+Expression `svgEl.getElementById({ toString() { window.pwned = 1; return 'svg-path'; } })`
+has side effect: true, expected: true
+

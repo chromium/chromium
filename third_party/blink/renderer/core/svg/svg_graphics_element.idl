@@ -34,7 +34,7 @@
 interface SVGGraphicsElement : SVGElement {
     [Measure] readonly attribute SVGAnimatedTransformList transform;
 
-    [ImplementedAs=getBBoxFromJavascript] SVGRect getBBox();
+    [Affects=Nothing, ImplementedAs=getBBoxFromJavascript] SVGRect getBBox();
     SVGMatrix getCTM();
     SVGMatrix getScreenCTM();
 
