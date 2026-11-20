@@ -841,7 +841,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDevice {
   std::vector<GattConnectionCallback> create_gatt_connection_callbacks_;
 
   // BluetoothGattConnection objects keeping the GATT connection alive.
-  std::set<raw_ptr<BluetoothGattConnection, SetExperimental>> gatt_connections_;
+  std::set<raw_ptr<BluetoothGattConnection>> gatt_connections_;
 
   GattServiceMap gatt_services_;
   bool gatt_services_discovery_complete_;

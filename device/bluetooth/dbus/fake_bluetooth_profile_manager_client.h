@@ -58,9 +58,8 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothProfileManagerClient
   // registered for it; maintained by RegisterProfileServiceProvider() and
   // UnregisterProfileServiceProvicer() called by the constructor and
   // destructor of FakeBluetoothProfileServiceProvider.
-  typedef std::map<
-      dbus::ObjectPath,
-      raw_ptr<FakeBluetoothProfileServiceProvider, CtnExperimental>>
+  typedef std::map<dbus::ObjectPath,
+                   raw_ptr<FakeBluetoothProfileServiceProvider>>
       ServiceProviderMap;
   ServiceProviderMap service_provider_map_;
 

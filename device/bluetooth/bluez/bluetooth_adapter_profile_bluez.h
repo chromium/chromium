@@ -97,8 +97,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterProfileBlueZ
 
   // List of delegates which this profile is multiplexing to.
   std::map<std::string,
-           raw_ptr<bluez::BluetoothProfileServiceProvider::Delegate,
-                   CtnExperimental>>
+           raw_ptr<bluez::BluetoothProfileServiceProvider::Delegate>>
       delegates_;
 
   // The UUID that this profile represents.

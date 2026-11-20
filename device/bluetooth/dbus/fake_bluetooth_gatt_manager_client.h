@@ -98,15 +98,14 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothGattManagerClient
   // service providers. The fake GATT manager stores references to all
   // instances created so that they can be obtained by tests.
   using ApplicationMap = std::map<dbus::ObjectPath, ApplicationProvider>;
-  using ServiceMap = std::map<
-      dbus::ObjectPath,
-      raw_ptr<FakeBluetoothGattServiceServiceProvider, CtnExperimental>>;
-  using CharacteristicMap = std::map<
-      dbus::ObjectPath,
-      raw_ptr<FakeBluetoothGattCharacteristicServiceProvider, CtnExperimental>>;
-  using DescriptorMap = std::map<
-      dbus::ObjectPath,
-      raw_ptr<FakeBluetoothGattDescriptorServiceProvider, CtnExperimental>>;
+  using ServiceMap = std::map<dbus::ObjectPath,
+                              raw_ptr<FakeBluetoothGattServiceServiceProvider>>;
+  using CharacteristicMap =
+      std::map<dbus::ObjectPath,
+               raw_ptr<FakeBluetoothGattCharacteristicServiceProvider>>;
+  using DescriptorMap =
+      std::map<dbus::ObjectPath,
+               raw_ptr<FakeBluetoothGattDescriptorServiceProvider>>;
 
   // Return a pointer to the Application provider that corresponds to the object
   // path |object_path| if it exists.
