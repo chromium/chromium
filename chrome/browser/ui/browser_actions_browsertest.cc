@@ -271,4 +271,17 @@ IN_PROC_BROWSER_TEST_F(BrowserActionsBrowserTest, MenuActionsKeepMnemonicText) {
             GetCleanText(manage_extensions_title));
 }
 
+IN_PROC_BROWSER_TEST_F(BrowserActionsBrowserTest,
+                       SplitSynonymsLocalizedDelimiters) {
+  // Amharic (Ethiopic comma U+1363) and Burmese (Myanmar comma U+104A).
+  EXPECT_EQ(BrowserActions::SplitSynonymsForTesting(u"ታሪክ፣ የአሰሳ ታሪክ፣ "),
+            (std::vector<std::u16string>{u"ታሪክ", u"የአሰሳ ታሪክ"}));
+  EXPECT_EQ(
+      BrowserActions::SplitSynonymsForTesting(u"မှတ်တမ်း၊ ရှာဖွေမှု မှတ်တမ်း"),
+      (std::vector<std::u16string>{u"မှတ်တမ်း", u"ရှာဖွေမှု မှတ်တမ်း"}));
+  // ASCII, Arabic, ideographic, and fullwidth commas remain supported.
+  EXPECT_EQ(BrowserActions::SplitSynonymsForTesting(u"a, b، c、 d， e"),
+            (std::vector<std::u16string>{u"a", u"b", u"c", u"d", u"e"}));
+}
+
 }  // namespace chrome

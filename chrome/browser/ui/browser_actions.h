@@ -5,6 +5,10 @@
 #ifndef CHROME_BROWSER_UI_BROWSER_ACTIONS_H_
 #define CHROME_BROWSER_UI_BROWSER_ACTIONS_H_
 
+#include <string>
+#include <string_view>
+#include <vector>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
@@ -37,6 +41,9 @@ class BrowserActions {
   void set_root_action_item_for_testing(actions::ActionItem* item) {
     root_action_item_ = item;
   }
+
+  static std::vector<std::u16string> SplitSynonymsForTesting(
+      std::u16string_view synonyms);
 
  private:
   // Helper functions to initialize actions grouped roughly by their type.

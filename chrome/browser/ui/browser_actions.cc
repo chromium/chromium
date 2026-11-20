@@ -310,13 +310,15 @@ ui::Accelerator GetAcceleratorForCommandId(int command_id) {
   return ui::Accelerator();
 }
 
-// Splits the comma-separated synonym list stored in the string resource
-// `message_id` into individual search terms. Translators may delimit the list
-// with the Arabic ('،'), ideographic ('、') or fullwidth ('，') comma instead
-// of ',', so split on all of them.
+// Translators may separate terms with localized commas instead of ',' (Arabic
+// '،', ideographic '、', fullwidth '，', Amharic '፣', Burmese '၊').
+std::vector<std::u16string> SplitSynonyms(std::u16string_view synonyms) {
+  return base::SplitString(synonyms, u",،、，፣၊", base::TRIM_WHITESPACE,
+                           base::SPLIT_WANT_NONEMPTY);
+}
+
 std::vector<std::u16string> GetSynonymsForAction(int message_id) {
-  return base::SplitString(l10n_util::GetStringUTF16(message_id), u",،、，",
-                           base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  return SplitSynonyms(l10n_util::GetStringUTF16(message_id));
 }
 
 void MaybeLogSafetyHubNotificationClicked(
@@ -421,6 +423,12 @@ DEFINE_USER_DATA(BrowserActions);
 // static
 BrowserActions* BrowserActions::From(BrowserWindowInterface* browser) {
   return Get(browser->GetUnownedUserDataHost());
+}
+
+// static
+std::vector<std::u16string> BrowserActions::SplitSynonymsForTesting(
+    std::u16string_view synonyms) {
+  return SplitSynonyms(synonyms);
 }
 
 // static
