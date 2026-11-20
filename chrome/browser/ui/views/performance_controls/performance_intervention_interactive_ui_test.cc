@@ -735,7 +735,9 @@ IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
       BrowserWindow::FromBrowser(first_browser);
   BrowserWindow* const second_browser_window =
       BrowserWindow::FromBrowser(second_browser);
+  ui_test_utils::BrowserActivationWaiter second_browser_waiter(second_browser);
   second_browser_window->Activate();
+  second_browser_waiter.WaitForActivation();
   ASSERT_TRUE(second_browser_window->IsActive());
   ASSERT_FALSE(first_browser_window->IsActive());
 
