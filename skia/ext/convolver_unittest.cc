@@ -255,7 +255,7 @@ void VerifySIMD(unsigned int source_width,
   unsigned char* src_ptr = static_cast<unsigned char*>(source.getPixels());
   for (int y = 0; y < source.height(); y++) {
     for (unsigned int x = 0; x < source.rowBytes(); x++)
-      UNSAFE_TODO(src_ptr[x]) = base::RandIntInclusive(0, 254);
+      UNSAFE_TODO(src_ptr[x]) = rand() % 255;
     UNSAFE_TODO(src_ptr += source.rowBytes());
   }
 
