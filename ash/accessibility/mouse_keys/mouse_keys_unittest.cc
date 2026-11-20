@@ -127,13 +127,11 @@ class MouseKeysTest : public AshTestBase {
     return GetBubbleView()->GetMouseDragIconForTesting()->GetVisible();
   }
 
-  const std::vector<ui::KeyEvent>& CheckForKeyEvents() {
-    base::RunLoop().RunUntilIdle();
+  const std::vector<ui::KeyEvent>& CheckForKeyEvents() const {
     return event_capturer_.key_events();
   }
 
-  const std::vector<ui::MouseEvent>& CheckForMouseEvents() {
-    base::RunLoop().RunUntilIdle();
+  const std::vector<ui::MouseEvent>& CheckForMouseEvents() const {
     return event_capturer_.mouse_events();
   }
 
@@ -232,12 +230,10 @@ class MouseKeysTest : public AshTestBase {
 
   void PressKey(ui::KeyboardCode key_code, int flags = 0) {
     GetEventGenerator()->PressKey(key_code, flags);
-    base::RunLoop().RunUntilIdle();
   }
 
   void ReleaseKey(ui::KeyboardCode key_code, int flags = 0) {
     GetEventGenerator()->ReleaseKey(key_code, flags);
-    base::RunLoop().RunUntilIdle();
   }
 
   void PressAndReleaseKey(ui::KeyboardCode key_code) {
