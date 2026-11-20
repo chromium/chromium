@@ -24,8 +24,6 @@ public class ChromiumPlatformOnlyTestSupport implements TestSupport {
         switch (protocol) {
             case QUIC:
                 throw new IllegalArgumentException("QUIC is not supported");
-            case HTTP2:
-                throw new IllegalArgumentException("HTTP2 is not supported");
             case HTTP1:
                 return new HttpTestServer();
             default:

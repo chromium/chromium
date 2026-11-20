@@ -21,27 +21,37 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.net.CronetEngine;
 import org.chromium.net.ExperimentalCronetEngine;
-import org.chromium.net.Http2TestServer;
 import org.chromium.net.UrlRequest;
+import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.net.test.EmbeddedTestServer.ServerHTTPSSetting;
+import org.chromium.net.test.ServerCertificate;
 
 /**
  * HTTP Tests.
  *
  * <p>This test doesn't explicitly depend on any testing infrastructure that requires JNI'ing into
  * native test-only code, it is used to verify that the production libcroneet.so works as expected.
+ * The server runs out of process, in net_test_support_apk.
  */
 @DoNotBatch(reason = "This test needs to load a different .so than other tests.")
 @RunWith(AndroidJUnit4.class)
 public class HttpTest {
+    private EmbeddedTestServer mServer;
+
     @Before
     public void setUp() throws Exception {
         ContextUtils.initApplicationContext(ApplicationProvider.getApplicationContext());
-        Http2TestServer.startHttp2TestServer(ApplicationProvider.getApplicationContext());
+        mServer = new EmbeddedTestServer();
+        mServer.initializeNative(
+                ApplicationProvider.getApplicationContext(), ServerHTTPSSetting.USE_HTTPS_HTTP2);
+        mServer.addDefaultHandlers("");
+        mServer.setSSLConfig(ServerCertificate.CERT_OK);
+        assertThat(mServer.start()).isTrue();
     }
 
     @After
     public void tearDown() throws Exception {
-        Http2TestServer.shutdownHttp2TestServer();
+        if (mServer != null) mServer.stopAndDestroyServer();
     }
 
     @Test
@@ -53,14 +63,13 @@ public class HttpTest {
         // libcronet_test.so as we wish to only test the prod shared library.
         CronetEngine engine = builder.build();
         SmokeTestRequestCallback callback = new SmokeTestRequestCallback();
+        String url = mServer.getURL("/echo");
         UrlRequest.Builder requestBuilder =
-                engine.newUrlRequestBuilder(
-                        Http2TestServer.getEchoMethodUrl(), callback, callback.getExecutor());
+                engine.newUrlRequestBuilder(url, callback, callback.getExecutor());
         requestBuilder.build().start();
         callback.blockForDone();
 
-        CronetSmokeTestRule.assertSuccessfulNonEmptyResponse(
-                callback, Http2TestServer.getEchoMethodUrl());
+        CronetSmokeTestRule.assertSuccessfulNonEmptyResponse(callback, url);
         assertThat(callback.getResponseInfo()).hasNegotiatedProtocolThat().isEqualTo("h2");
     }
 }

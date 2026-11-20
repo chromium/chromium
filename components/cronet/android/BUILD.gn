@@ -1983,7 +1983,6 @@ instrumentation_test_apk(
            "//third_party/android_sdk:android_test_mock_java",
            "//third_party/google-truth:google_truth_java",
            "//third_party/junit",
-           "//third_party/netty4:netty_all_java",
          ] + cronet_tests_androidx_common_srcs
 
   if (!is_java_debug) {
@@ -2020,7 +2019,6 @@ instrumentation_test_apk(
            "//third_party/google-truth:google_truth_java",
            "//third_party/jni_zero:jni_zero_java",
            "//third_party/junit",
-           "//third_party/netty4:netty_all_java",
          ] + cronet_tests_androidx_common_srcs
 
   if (!is_java_debug) {
@@ -2045,7 +2043,7 @@ cronet_instrumentation_test_apk("cronet_smoketests_apk") {
   apk_name = "CronetSmokeTestInstrumentation"
   android_manifest = "test/javatests/AndroidManifest.xml"
   shared_libraries = [ ":cronet" ]
-  loadable_modules = [ "$root_out_dir/libnetty-tcnative.so" ]
+  additional_apks = [ "//net/android:net_test_support_apk" ]
 
   # Make sure not to depend on :cronet so we don't accidentally load it in the
   # tests, this is especially tricky because we manipulate a global state in the
@@ -2065,11 +2063,10 @@ cronet_instrumentation_test_apk("cronet_smoketests_apk") {
            ":cronet_test_apk_resources",
            "//base:base_java",
            "//base:base_java_test_support",
+           "//net/android:net_java_test_support",
            "//third_party/android_sdk:android_test_mock_java",
            "//third_party/google-truth:google_truth_java",
            "//third_party/junit",
-           "//third_party/netty-tcnative:netty-tcnative-so",
-           "//third_party/netty4:netty_all_java",
          ] + cronet_tests_androidx_common_srcs
   data = [ "//net/data/ssl/" ]
   proguard_enabled = true

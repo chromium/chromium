@@ -4,121 +4,96 @@
 
 package org.chromium.net.smoke;
 
-import static io.netty.handler.codec.http.HttpResponseStatus.OK;
-import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
-
-import android.os.ConditionVariable;
-
-import io.netty.bootstrap.ServerBootstrap;
-import io.netty.buffer.Unpooled;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelFutureListener;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelPipeline;
-import io.netty.channel.EventLoopGroup;
-import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.codec.http.DefaultFullHttpResponse;
-import io.netty.handler.codec.http.FullHttpResponse;
-import io.netty.handler.codec.http.HttpRequestDecoder;
-import io.netty.handler.codec.http.HttpResponseEncoder;
-import io.netty.handler.logging.LogLevel;
-import io.netty.handler.logging.LoggingHandler;
-import io.netty.util.CharsetUtil;
-
 import org.chromium.base.Log;
 
-/** A simple HTTP server for testing. */
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.nio.charset.StandardCharsets;
+
+/** A simple HTTP/1.1 server for testing. It answers every request with "Hello!". */
 public class HttpTestServer implements TestSupport.TestServer {
     private static final String TAG = HttpTestServer.class.getSimpleName();
-    private static final String HOST = "127.0.0.1";
-    private static final int PORT = 8080;
+    // Connections are served one at a time, so a client that connects and never sends a request
+    // (a preconnect, for example) is dropped after this long instead of blocking the next one.
+    private static final int READ_TIMEOUT_MS = 5000;
+    private static final byte[] RESPONSE =
+            ("HTTP/1.1 200 OK\r\n"
+                            + "Content-Length: 6\r\n"
+                            + "Connection: close\r\n"
+                            + "\r\n"
+                            + "Hello!")
+                    .getBytes(StandardCharsets.US_ASCII);
 
-    private Channel mServerChannel;
-    private final ConditionVariable mStartBlock = new ConditionVariable();
-    private final ConditionVariable mShutdownBlock = new ConditionVariable();
+    private ServerSocket mServerSocket;
+    private volatile Socket mClientSocket;
+    private Thread mServerThread;
 
     @Override
     public boolean start() {
-        new Thread(
-                        new Runnable() {
-                            @Override
-                            public void run() {
-                                try {
-                                    HttpTestServer.this.run();
-                                } catch (Exception e) {
-                                    Log.e(TAG, "Unable to start HttpTestServer", e);
-                                }
-                            }
-                        })
-                .start();
-        // Return false if the server cannot start within 5 seconds.
-        return mStartBlock.block(5000);
+        ServerSocket serverSocket;
+        try {
+            serverSocket = new ServerSocket(0);
+        } catch (IOException e) {
+            Log.e(TAG, "Unable to start HttpTestServer", e);
+            return false;
+        }
+        mServerSocket = serverSocket;
+        mServerThread = new Thread(() -> serve(serverSocket));
+        mServerThread.start();
+        return true;
     }
 
     @Override
     public void shutdown() {
-        if (mServerChannel != null) {
-            mServerChannel.close();
-            boolean success = mShutdownBlock.block(10000);
-            if (!success) {
-                Log.e(TAG, "Unable to shutdown the server. Is it already dead?");
-            }
-            mServerChannel = null;
+        if (mServerSocket == null) return;
+        try {
+            mServerSocket.close();
+            Socket clientSocket = mClientSocket;
+            if (clientSocket != null) clientSocket.close();
+            mServerThread.join();
+        } catch (IOException | InterruptedException e) {
+            Log.e(TAG, "Unable to shutdown the server", e);
         }
+        mServerSocket = null;
+        mServerThread = null;
     }
 
     @Override
     public String getSuccessURL() {
-        return getServerUrl() + "/success";
+        return "http://127.0.0.1:" + mServerSocket.getLocalPort() + "/success";
     }
 
-    private String getServerUrl() {
-        return "http://" + HOST + ":" + PORT;
-    }
-
-    private void run() throws Exception {
-        EventLoopGroup bossGroup = new NioEventLoopGroup(1);
-        EventLoopGroup workerGroup = new NioEventLoopGroup(4);
-        try {
-            ServerBootstrap b = new ServerBootstrap();
-            b.group(bossGroup, workerGroup)
-                    .channel(NioServerSocketChannel.class)
-                    .handler(new LoggingHandler(LogLevel.INFO))
-                    .childHandler(
-                            new ChannelInitializer<SocketChannel>() {
-                                @Override
-                                public void initChannel(SocketChannel ch) throws Exception {
-                                    ChannelPipeline p = ch.pipeline();
-                                    p.addLast(new HttpRequestDecoder());
-                                    p.addLast(new HttpResponseEncoder());
-                                    p.addLast(new TestServerHandler());
-                                }
-                            });
-
-            // Start listening fo incoming connections.
-            mServerChannel = b.bind(PORT).sync().channel();
-            mStartBlock.open();
-            // Block until the channel is closed.
-            mServerChannel.closeFuture().sync();
-            mShutdownBlock.open();
-            Log.i(TAG, "HttpServer stopped");
-        } finally {
-            workerGroup.shutdownGracefully();
-            bossGroup.shutdownGracefully();
+    private void serve(ServerSocket serverSocket) {
+        while (true) {
+            try (Socket socket = serverSocket.accept()) {
+                mClientSocket = socket;
+                socket.setSoTimeout(READ_TIMEOUT_MS);
+                respond(socket);
+            } catch (IOException e) {
+                if (serverSocket.isClosed()) return;
+                Log.e(TAG, "Unable to answer a request", e);
+            } finally {
+                mClientSocket = null;
+            }
         }
     }
 
-    private static class TestServerHandler extends SimpleChannelInboundHandler {
-        @Override
-        protected void channelRead0(ChannelHandlerContext ctx, Object msg) throws Exception {
-            FullHttpResponse response =
-                    new DefaultFullHttpResponse(
-                            HTTP_1_1, OK, Unpooled.copiedBuffer("Hello!", CharsetUtil.UTF_8));
-            ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
+    private static void respond(Socket socket) throws IOException {
+        BufferedReader reader =
+                new BufferedReader(
+                        new InputStreamReader(socket.getInputStream(), StandardCharsets.US_ASCII));
+        // The smoke tests only send GET requests, so the request ends with the empty line after
+        // the headers.
+        String line = reader.readLine();
+        while (line != null && !line.isEmpty()) {
+            line = reader.readLine();
         }
+        OutputStream output = socket.getOutputStream();
+        output.write(RESPONSE);
+        output.flush();
     }
 }

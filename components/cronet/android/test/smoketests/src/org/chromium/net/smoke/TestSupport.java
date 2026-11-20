@@ -19,7 +19,6 @@ import java.io.File;
 public interface TestSupport {
     enum Protocol {
         HTTP1,
-        HTTP2,
         QUIC,
     }
 

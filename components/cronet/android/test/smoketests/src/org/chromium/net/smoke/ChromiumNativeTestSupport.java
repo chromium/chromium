@@ -8,27 +8,16 @@ import android.content.Context;
 
 import org.json.JSONObject;
 
-import org.chromium.base.Log;
 import org.chromium.net.CronetTestUtil;
 import org.chromium.net.ExperimentalCronetEngine;
 import org.chromium.net.impl.CronetLibraryLoader;
 
-/** Provides support for tests that depend on QUIC and HTTP2 servers. */
+/** Provides support for tests that depend on a QUIC server. */
 class ChromiumNativeTestSupport extends ChromiumPlatformOnlyTestSupport {
-    private static final String TAG = ChromiumNativeTestSupport.class.getSimpleName();
-
     @Override
     public TestServer createTestServer(Context context, Protocol protocol) {
-        switch (protocol) {
-            case QUIC:
-                return new QuicTestServer(context);
-            case HTTP2:
-                return new Http2TestServer(context);
-            case HTTP1:
-                return super.createTestServer(context, protocol);
-            default:
-                throw new RuntimeException("Unknown server protocol: " + protocol);
-        }
+        if (protocol == Protocol.QUIC) return new QuicTestServer(context);
+        return super.createTestServer(context, protocol);
     }
 
     @Override
@@ -74,38 +63,6 @@ class ChromiumNativeTestSupport extends ChromiumPlatformOnlyTestSupport {
         @Override
         public String getSuccessURL() {
             return org.chromium.net.QuicTestServer.getServerURL() + "/simple.txt";
-        }
-    }
-
-    private static class Http2TestServer implements TestServer {
-        private final Context mContext;
-
-        Http2TestServer(Context context) {
-            mContext = context;
-        }
-
-        @Override
-        public boolean start() {
-            try {
-                return org.chromium.net.Http2TestServer.startHttp2TestServer(mContext);
-            } catch (Exception e) {
-                Log.e(TAG, "Exception during Http2TestServer start", e);
-                return false;
-            }
-        }
-
-        @Override
-        public void shutdown() {
-            try {
-                org.chromium.net.Http2TestServer.shutdownHttp2TestServer();
-            } catch (Exception e) {
-                Log.e(TAG, "Exception during Http2TestServer shutdown", e);
-            }
-        }
-
-        @Override
-        public String getSuccessURL() {
-            return org.chromium.net.Http2TestServer.getEchoMethodUrl();
         }
     }
 }
