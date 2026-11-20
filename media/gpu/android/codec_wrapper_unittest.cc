@@ -6,17 +6,20 @@
 
 #include <memory>
 
+#include "base/android/scoped_java_ref.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "media/base/android/media_codec_bridge.h"
 #include "media/base/android/media_format_color_space.h"
+#include "media/base/android/mock_android_overlay.h"
 #include "media/base/android/mock_media_codec_bridge.h"
 #include "media/base/encryption_scheme.h"
 #include "media/base/subsample_entry.h"
@@ -28,6 +31,7 @@ using testing::DoAll;
 using testing::Invoke;
 using testing::NiceMock;
 using testing::Return;
+using testing::ReturnRef;
 using testing::SetArgPointee;
 using testing::SetArgReferee;
 
@@ -72,7 +76,8 @@ class CodecWrapperTest : public testing::Test {
   }
 
   // So that we can get the thread's task runner.
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   raw_ptr<NiceMock<MockMediaCodecBridge>> codec_;
   std::unique_ptr<CodecWrapper> wrapper_;
@@ -444,6 +449,78 @@ TEST_F(CodecWrapperTest, CodecOutputsIgnoreZeroSize) {
   ASSERT_EQ(codec_buffer->visible_size(), kNewSize);
   ASSERT_EQ(codec_buffer->media_format_visible_rect(), gfx::Rect(kNewSize));
   ASSERT_EQ(codec_buffer->media_format_output_size(), kNewSize);
+}
+
+TEST_F(CodecWrapperTest, RecordsSubVsyncReleaseHistogramsForTextureOwner) {
+  base::HistogramTester histogram_tester;
+
+  auto codec_buffer1 = DequeueCodecOutputBuffer();
+  auto codec_buffer2 = DequeueCodecOutputBuffer();
+  auto codec_buffer3 = DequeueCodecOutputBuffer();
+
+  // No surface-mode or release-interval samples are emitted until the first
+  // output buffer is actually rendered.
+  histogram_tester.ExpectTotalCount("Media.CodecWrapper.IsOverlayBacked", 0);
+
+  ASSERT_TRUE(codec_buffer1->ReleaseToSurface());
+  histogram_tester.ExpectUniqueSample("Media.CodecWrapper.IsOverlayBacked",
+                                      false, 1);
+
+  task_environment_.FastForwardBy(base::Milliseconds(16));
+  ASSERT_TRUE(codec_buffer2->ReleaseToSurface());
+  task_environment_.FastForwardBy(base::Milliseconds(3));
+  ASSERT_TRUE(codec_buffer3->ReleaseToSurface());
+
+  // Rendering additional buffers on the same surface does not re-emit
+  // IsOverlayBacked.
+  histogram_tester.ExpectUniqueSample("Media.CodecWrapper.IsOverlayBacked",
+                                      false, 1);
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Media.CodecOutputBuffer.SubVsyncRelease.TextureOwner"),
+              base::BucketsAre(base::Bucket(false, 1), base::Bucket(true, 1)));
+  histogram_tester.ExpectTimeBucketCount(
+      "Media.CodecOutputBuffer.ReleaseInterval.TextureOwner",
+      base::Milliseconds(16), 1);
+  histogram_tester.ExpectTimeBucketCount(
+      "Media.CodecOutputBuffer.ReleaseInterval.TextureOwner",
+      base::Milliseconds(3), 1);
+  histogram_tester.ExpectTotalCount(
+      "Media.CodecOutputBuffer.ReleaseInterval.TextureOwner", 2);
+}
+
+TEST_F(CodecWrapperTest, RecordsSubVsyncReleaseHistogramsForOverlay) {
+  base::HistogramTester histogram_tester;
+
+  base::android::ScopedJavaLocalRef<jobject> fake_surface;
+  auto overlay = std::make_unique<MockAndroidOverlay>();
+  ON_CALL(*overlay, GetJavaSurface()).WillByDefault(ReturnRef(fake_surface));
+  auto overlay_bundle =
+      base::MakeRefCounted<CodecSurfaceBundle>(std::move(overlay));
+  EXPECT_CALL(*codec_, SetSurface(_)).Times(2).WillRepeatedly(Return(true));
+  ASSERT_TRUE(wrapper_->SetSurface(overlay_bundle));
+
+  // Transient SetSurface() calls that have not rendered a frame do not emit
+  // IsOverlayBacked samples.
+  histogram_tester.ExpectTotalCount("Media.CodecWrapper.IsOverlayBacked", 0);
+
+  auto codec_buffer1 = DequeueCodecOutputBuffer();
+  auto codec_buffer2 = DequeueCodecOutputBuffer();
+
+  ASSERT_TRUE(codec_buffer1->ReleaseToSurface());
+  task_environment_.FastForwardBy(base::Milliseconds(2));
+  ASSERT_TRUE(codec_buffer2->ReleaseToSurface());
+
+  // Detaching the overlay at teardown (without rendering to the fallback
+  // bundle) must not emit a spurious `false` sample.
+  ASSERT_TRUE(wrapper_->SetSurface(base::MakeRefCounted<CodecSurfaceBundle>()));
+
+  histogram_tester.ExpectUniqueSample("Media.CodecWrapper.IsOverlayBacked",
+                                      true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Media.CodecOutputBuffer.SubVsyncRelease.Overlay", true, 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Media.CodecOutputBuffer.ReleaseInterval.Overlay", base::Milliseconds(2),
+      1);
 }
 
 }  // namespace media
