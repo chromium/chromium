@@ -204,6 +204,17 @@ public class AdaptiveUiProperties {
             BACK_PRESS_HANDLER = new WritableObjectPropertyKey<>();
 
     /**
+     * Whether to disable accidental gesture dismissal. On bottom sheets, disables velocity-assisted
+     * swipe dismissal ({@code BottomSheetContent#swipeToDismissEnabled()}); tapping the scrim and
+     * dragging past the close threshold still close non-peeking sheets. On modal dialogs, disables
+     * outside-touch dismissal ({@code ModalDialogProperties#CANCEL_ON_TOUCH_OUTSIDE}). Back press
+     * still closes the entry unless {@link #BACK_PRESS_HANDLER} consumes it. Defaults to {@code
+     * false}.
+     */
+    public static final WritableBooleanPropertyKey GESTURE_DISMISSAL_DISABLED =
+            new WritableBooleanPropertyKey();
+
+    /**
      * Optional custom body {@link View} (such as inputs or lists) shown below the description. The
      * view supplies its own padding: neither container adds side padding, and the sheet adds no
      * space above it, or between it and the primary button when that follows directly. A footer or
@@ -346,6 +357,7 @@ public class AdaptiveUiProperties {
                 SHOW_SHEET_HANDLEBAR,
                 FOOTER_MESSAGE,
                 BACK_PRESS_HANDLER,
+                GESTURE_DISMISSAL_DISABLED,
                 CUSTOM_VIEW,
                 CUSTOM_VIEW_SCROLLS_ITSELF,
                 PRIMARY_BUTTON_TEXT,

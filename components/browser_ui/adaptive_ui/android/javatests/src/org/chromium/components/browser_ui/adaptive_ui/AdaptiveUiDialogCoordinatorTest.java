@@ -167,6 +167,10 @@ public class AdaptiveUiDialogCoordinatorTest {
                 "BUTTON_TAP_PROTECTION_PERIOD_MS must be bound live by the binder",
                 AdaptiveUiDialogViewBinder.COORDINATOR_HANDLED_KEYS.contains(
                         AdaptiveUiProperties.BUTTON_TAP_PROTECTION_PERIOD_MS));
+        assertFalse(
+                "GESTURE_DISMISSAL_DISABLED must be bound live by the binder",
+                AdaptiveUiDialogViewBinder.COORDINATOR_HANDLED_KEYS.contains(
+                        AdaptiveUiProperties.GESTURE_DISMISSAL_DISABLED));
     }
 
     @Test
@@ -328,6 +332,50 @@ public class AdaptiveUiDialogCoordinatorTest {
         assertTrue(dialogModel.get(ModalDialogProperties.NEGATIVE_BUTTON_DISABLED));
         model.set(AdaptiveUiProperties.SECONDARY_BUTTON_DISABLED, false);
         assertFalse(dialogModel.get(ModalDialogProperties.NEGATIVE_BUTTON_DISABLED));
+    }
+
+    @Test
+    public void testGestureDismissalDisabled_MapsToCancelOnTouchOutsideAndUpdatesLive() {
+        PropertyModel model = newModelBuilder().build();
+        PropertyModel dialogModel = createCoordinator(model).getDialogModel();
+        assertTrue(dialogModel.get(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE));
+
+        model.set(AdaptiveUiProperties.GESTURE_DISMISSAL_DISABLED, true);
+        assertFalse(dialogModel.get(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE));
+
+        model.set(AdaptiveUiProperties.GESTURE_DISMISSAL_DISABLED, false);
+        assertTrue(dialogModel.get(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE));
+
+        PropertyModel disabledModel =
+                newModelBuilder()
+                        .with(AdaptiveUiProperties.GESTURE_DISMISSAL_DISABLED, true)
+                        .build();
+        PropertyModel disabledDialogModel = createCoordinator(disabledModel).getDialogModel();
+        assertTrue(
+                disabledDialogModel
+                        .getAllSetProperties()
+                        .contains(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE));
+        assertFalse(disabledDialogModel.get(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE));
+    }
+
+    @Test
+    public void testGestureDismissalDisabled_CombinedBackOrOutsideCauseReportsBackPress() {
+        PropertyModel model = newModelBuilder().build();
+        AdaptiveUiDialogCoordinator coordinator = createCoordinator(model, AdaptiveUiScope.WINDOW);
+        coordinator.onDismiss(
+                coordinator.getDialogModel(), DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE);
+        assertEquals(List.of(DismissReason.TOUCH_OUTSIDE), mDialogDismissals);
+        mDialogDismissals.clear();
+
+        // With outside touch off, the combined cause can only come from Back or Esc.
+        PropertyModel disabledModel = newModelBuilder().build();
+        AdaptiveUiDialogCoordinator disabledCoordinator =
+                createCoordinator(disabledModel, AdaptiveUiScope.WINDOW);
+        disabledModel.set(AdaptiveUiProperties.GESTURE_DISMISSAL_DISABLED, true);
+        disabledCoordinator.onDismiss(
+                disabledCoordinator.getDialogModel(),
+                DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE);
+        assertEquals(List.of(DismissReason.BACK_PRESS), mDialogDismissals);
     }
 
     @Test

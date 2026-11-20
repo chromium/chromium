@@ -140,6 +140,10 @@ final class AdaptiveUiDialogViewBinder {
             dialogModel.set(
                     ModalDialogProperties.BUTTON_TAP_PROTECTION_PERIOD_MS,
                     model.get(AdaptiveUiProperties.BUTTON_TAP_PROTECTION_PERIOD_MS));
+        } else if (key == AdaptiveUiProperties.GESTURE_DISMISSAL_DISABLED) {
+            dialogModel.set(
+                    ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE,
+                    !model.get(AdaptiveUiProperties.GESTURE_DISMISSAL_DISABLED));
         } else {
             assert COORDINATOR_HANDLED_KEYS.contains(key)
                     : "Unhandled AdaptiveUiProperties key in AdaptiveUiDialogViewBinder: " + key;

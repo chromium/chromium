@@ -231,6 +231,7 @@ public class AdaptiveUiSheetCoordinatorTest {
                         AdaptiveUiProperties.SHOW_SHEET_HANDLEBAR,
                         AdaptiveUiProperties.BACK_PRESS_HANDLER,
                         AdaptiveUiProperties.CUSTOM_VIEW_SCROLLS_ITSELF,
+                        AdaptiveUiProperties.GESTURE_DISMISSAL_DISABLED,
                         AdaptiveUiProperties.ON_PRIMARY_BUTTON_CLICKED,
                         AdaptiveUiProperties.ON_SECONDARY_BUTTON_CLICKED,
                         AdaptiveUiProperties.PRIMARY_BUTTON_KEEPS_OPEN,
@@ -1681,6 +1682,29 @@ public class AdaptiveUiSheetCoordinatorTest {
         PropertyModel handlebarModel =
                 newModelBuilder().with(AdaptiveUiProperties.SHOW_SHEET_HANDLEBAR, true).build();
         assertTrue(createContent(handlebarModel).showHandlebar());
+    }
+
+    @Test
+    public void testGestureDismissalDisabled_ControlsSwipeToDismissEnabledAndUpdatesLive() {
+        PropertyModel model = newModelBuilder().build();
+        AdaptiveUiSheetCoordinator content = createContent(model);
+        assertTrue(content.swipeToDismissEnabled());
+
+        model.set(AdaptiveUiProperties.GESTURE_DISMISSAL_DISABLED, true);
+        assertFalse(content.swipeToDismissEnabled());
+
+        model.set(AdaptiveUiProperties.GESTURE_DISMISSAL_DISABLED, false);
+        assertTrue(content.swipeToDismissEnabled());
+
+        PropertyModel disabledModel =
+                newModelBuilder()
+                        .with(AdaptiveUiProperties.GESTURE_DISMISSAL_DISABLED, true)
+                        .build();
+        AdaptiveUiSheetCoordinator disabledContent = createContent(disabledModel);
+        assertFalse(disabledContent.swipeToDismissEnabled());
+
+        disabledContent.onBackPressed();
+        assertEquals(List.of(DismissReason.BACK_PRESS), mSheetDismissals);
     }
 
     @Test

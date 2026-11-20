@@ -294,7 +294,7 @@ final class AdaptiveUiSheetCoordinator
 
     @Override
     public boolean swipeToDismissEnabled() {
-        return true;
+        return !mModel.get(AdaptiveUiProperties.GESTURE_DISMISSAL_DISABLED);
     }
 
     @Override

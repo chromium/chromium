@@ -38,7 +38,8 @@ import java.util.Set;
  * AdaptiveUiProperties#ON_SECONDARY_BUTTON_CLICKED}, {@link
  * AdaptiveUiProperties#PRIMARY_BUTTON_KEEPS_OPEN}, {@link
  * AdaptiveUiProperties#SECONDARY_BUTTON_BEHAVIOR}, {@link
- * AdaptiveUiProperties#BUTTON_TAP_PROTECTION_PERIOD_MS}, and {@link
+ * AdaptiveUiProperties#BUTTON_TAP_PROTECTION_PERIOD_MS}, {@link
+ * AdaptiveUiProperties#GESTURE_DISMISSAL_DISABLED}, and {@link
  * AdaptiveUiProperties#BACK_PRESS_HANDLER}) are read directly by {@link
  * AdaptiveUiSheetCoordinator}. The lifecycle callbacks ({@link AdaptiveUiProperties#ON_SHOWN} and
  * {@link AdaptiveUiProperties#ON_DISMISSED}) are run by {@link AdaptiveUiControllerImpl}. {@link
@@ -66,6 +67,7 @@ final class AdaptiveUiSheetViewBinder {
                     AdaptiveUiProperties.SHOW_SHEET_HANDLEBAR,
                     AdaptiveUiProperties.BACK_PRESS_HANDLER,
                     AdaptiveUiProperties.CUSTOM_VIEW_SCROLLS_ITSELF,
+                    AdaptiveUiProperties.GESTURE_DISMISSAL_DISABLED,
                     AdaptiveUiProperties.ON_PRIMARY_BUTTON_CLICKED,
                     AdaptiveUiProperties.ON_SECONDARY_BUTTON_CLICKED,
                     AdaptiveUiProperties.PRIMARY_BUTTON_KEEPS_OPEN,

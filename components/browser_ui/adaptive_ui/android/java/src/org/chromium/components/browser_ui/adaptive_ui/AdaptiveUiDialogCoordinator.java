@@ -214,6 +214,13 @@ final class AdaptiveUiDialogCoordinator
                 mRequestedDismissReason != null
                         ? mRequestedDismissReason
                         : fromDialogDismissalCause(dismissalCause);
+        // AppModalPresenter reports Back, Esc and outside touch as one cause. With outside touch
+        // off, it can only be Back or Esc.
+        if (mRequestedDismissReason == null
+                && dismissalCause == DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE
+                && !mDialogModel.get(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE)) {
+            reason = DismissReason.BACK_PRESS;
+        }
         destroy();
         mOnDismissed.onResult(reason);
     }
@@ -256,10 +263,15 @@ final class AdaptiveUiDialogCoordinator
                 !TextUtils.isEmpty(model.get(AdaptiveUiProperties.PRIMARY_BUTTON_TEXT));
         boolean hasDrawnSecondary = drawsSecondaryButton(model);
 
+        // Initialize CANCEL_ON_TOUCH_OUTSIDE here so an unset GESTURE_DISMISSAL_DISABLED key
+        // defaults to true (AppModalPresenter and TabModalPresenter default to false when unset);
+        // live updates bind via AdaptiveUiDialogViewBinder.
         PropertyModel.Builder builder =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(ModalDialogProperties.CONTROLLER, this)
-                        .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
+                        .with(
+                                ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE,
+                                !model.get(AdaptiveUiProperties.GESTURE_DISMISSAL_DISABLED))
                         .with(
                                 ModalDialogProperties.BUTTON_STYLES,
                                 computeButtonStyles(hasPrimary, hasDrawnSecondary))
