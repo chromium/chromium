@@ -7,8 +7,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/auto_reset.h"
-#include "base/bits.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notimplemented.h"
@@ -27,7 +25,6 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_gl_utils.h"
 #include "gpu/command_buffer/service/shared_image/skia_gl_image_representation.h"
 #include "gpu/command_buffer/service/skia_utils.h"
-#include "gpu/config/gpu_finch_features.h"
 #include "gpu/vulkan/vma_wrapper.h"
 #include "gpu/vulkan/vulkan_command_buffer.h"
 #include "gpu/vulkan/vulkan_command_pool.h"
@@ -105,38 +102,38 @@ class ScopedDedicatedMemoryObject {
 
 }  // namespace
 
-bool ExternalVkImageBacking::UseSeparateGLTexture(
-    SharedContextState* context_state,
-    viz::SharedImageFormat format) {
+// static
+bool ExternalVkImageBacking::CanImportIntoGL(SharedContextState* context_state,
+                                             viz::SharedImageFormat format) {
   if (!context_state->support_vulkan_external_object()) {
-    return true;
+    return false;
   }
 
   if (format != viz::SinglePlaneFormat::kBGRA_8888) {
-    return false;
+    return true;
   }
 
   auto* gl_context = context_state->real_context();
   const auto* version_info = gl_context->GetVersionInfo();
   const auto& ext = gl_context->GetCurrentGL()->Driver->ext;
   if (!ext.b_GL_EXT_texture_format_BGRA8888) {
-    return true;
+    return false;
   }
 
   if (!version_info->is_angle) {
-    return false;
+    return true;
   }
 
   // If ANGLE is using vulkan, there is no problem for importing BGRA8888
   // textures.
   if (version_info->is_angle_vulkan) {
-    return false;
+    return true;
   }
 
   // ANGLE claims GL_EXT_texture_format_BGRA8888, but glTexStorageMem2DEXT
   // doesn't work correctly.
-  // TODO(crbug.com/angleproject/4831): fix ANGLE and return false.
-  return true;
+  // TODO(crbug.com/40644739): fix ANGLE and return true.
+  return false;
 }
 
 namespace {
@@ -182,20 +179,11 @@ std::unique_ptr<ExternalVkImageBacking> ExternalVkImageBacking::Create(
   auto format = si_info.format;
   auto usage = si_info.usage;
 
-  bool use_separate_gl_texture =
-      ExternalVkImageBacking::UseSeparateGLTexture(context_state.get(), format);
-  // The separate GL texture path keeps an independent GL texture in sync with
-  // the VkImage by copying pixels on access. WebGPU interop requires a single
-  // allocation aliased into both APIs, and ExternalVkImageBackingFactory
-  // already refuses formats that would end up here, so this is unreachable
-  // unless a caller bypasses IsSupported(). Fail rather than silently handing
-  // back a backing that cannot keep its two copies coherent. This must happen
-  // before any VulkanImage is allocated, since those must be explicitly
-  // destroyed.
-  if (enable_webgpu_on_vk_via_gl_interop && use_separate_gl_texture) {
-    DLOG(ERROR) << "Separate GL texture is not supported with WebGPU interop";
-    return nullptr;
-  }
+  // WebGPU-on-Vulkan-via-GL interop requires aliasing a single external
+  // VkImage into GL. ExternalVkImageBackingFactory::IsSupported() already
+  // rejects formats where CanImportIntoGL() is false.
+  CHECK(!enable_webgpu_on_vk_via_gl_interop ||
+        CanImportIntoGL(context_state.get(), format));
 
   bool is_external = context_state->support_vulkan_external_object();
   auto* device_queue = context_state->vk_context_provider()->GetDeviceQueue();
@@ -273,7 +261,7 @@ std::unique_ptr<ExternalVkImageBacking> ExternalVkImageBacking::Create(
   auto backing = std::make_unique<ExternalVkImageBacking>(
       base::PassKey<ExternalVkImageBacking>(), mailbox, si_info, estimated_size,
       std::move(context_state), std::move(textures), command_pool,
-      use_separate_gl_texture, enable_webgpu_on_vk_via_gl_interop);
+      enable_webgpu_on_vk_via_gl_interop);
 
   if (!pixel_data.empty()) {
     auto image_info = backing->AsSkImageInfo();
@@ -289,7 +277,6 @@ std::unique_ptr<ExternalVkImageBacking> ExternalVkImageBacking::Create(
 
     // Mark the backing as cleared.
     backing->SetCleared();
-    backing->latest_content_ = kInVkImage;
   }
 
   return backing;
@@ -351,13 +338,9 @@ std::unique_ptr<ExternalVkImageBacking> ExternalVkImageBacking::CreateFromGMB(
   auto backing = std::make_unique<ExternalVkImageBacking>(
       base::PassKey<ExternalVkImageBacking>(), mailbox, si_info, estimated_size,
       std::move(context_state), std::move(textures), command_pool,
-      /*use_separate_gl_texture=*/false, enable_webgpu_on_vk_via_gl_interop,
-      std::move(pixmap), std::move(buffer_usage));
+      enable_webgpu_on_vk_via_gl_interop, std::move(pixmap),
+      std::move(buffer_usage));
   backing->SetCleared();
-  // The imported buffer's content is in the VkImage. Without recording that,
-  // UpdateContent() sees no content bits set at all and copies nothing, so a
-  // GL read of a separate GL texture would observe uninitialized storage.
-  backing->latest_content_ = kInVkImage;
   return backing;
 }
 
@@ -406,7 +389,6 @@ ExternalVkImageBacking::ExternalVkImageBacking(
     scoped_refptr<SharedContextState> context_state,
     std::vector<TextureHolderVk> vk_textures,
     VulkanCommandPool* command_pool,
-    bool use_separate_gl_texture,
     bool enable_webgpu_on_vk_via_gl_interop,
     scoped_refptr<gfx::NativePixmap> pixmap,
     std::optional<gfx::BufferUsage> buffer_usage)
@@ -418,7 +400,6 @@ ExternalVkImageBacking::ExternalVkImageBacking(
       context_state_(std::move(context_state)),
       vk_textures_(std::move(vk_textures)),
       command_pool_(command_pool),
-      use_separate_gl_texture_(use_separate_gl_texture),
       enable_webgpu_on_vk_via_gl_interop_(enable_webgpu_on_vk_via_gl_interop),
       pixmap_(std::move(pixmap)) {}
 
@@ -490,17 +471,6 @@ bool ExternalVkImageBacking::BeginAccess(
     DLOG(ERROR) << "Unable to begin read or write access because another "
                    "conflicting access is in progress";
     return false;
-  }
-
-  if (readonly && !reads_in_progress_) {
-    if (!is_updating_content_) {
-      UpdateContent(kInVkImage);
-    }
-    if (!gl_textures_.empty() && !is_updating_content_) {
-      UpdateContent(kInGLTexture);
-    }
-  } else if (!readonly && !is_updating_content_) {
-    UpdateContent(is_gl ? kInGLTexture : kInVkImage);
   }
 
   if (gl_reads_in_progress_ && need_synchronization()) {
@@ -626,11 +596,6 @@ void ExternalVkImageBacking::EndAccess(bool readonly,
   EndAccessInternal(readonly, std::move(external_semaphore));
   if (!readonly) {
     wait_for_gl_finish_ = is_gl;
-    if (use_separate_gl_texture()) {
-      latest_content_ = is_gl ? kInGLTexture : kInVkImage;
-    } else {
-      latest_content_ = kInVkImage;
-    }
   }
 
   if (gl_reads_in_progress_ && need_synchronization()) {
@@ -666,9 +631,8 @@ bool ExternalVkImageBacking::CheckSupportForAccessStream(
     SharedImageAccessStream stream,
     viz::SharedImageFormat format,
     const AccessParams& params) {
-  if (base::FeatureList::IsEnabled(features::kUseDynamicBackingAllocations) &&
-      params.context_state &&
-      UseSeparateGLTexture(params.context_state.get(), format)) {
+  if (params.context_state &&
+      !CanImportIntoGL(params.context_state.get(), format)) {
     if (stream == SharedImageAccessStream::kGL) {
       return false;
     }
@@ -703,17 +667,7 @@ bool ExternalVkImageBacking::UploadFromMemory(
     return false;
   }
 
-  latest_content_ = kInVkImage;
   wait_for_gl_finish_ = false;
-
-  // Also upload to GL texture if there is a separate one.
-  if (use_separate_gl_texture() && !gl_textures_.empty()) {
-    if (!UploadToGLTexture(pixmaps)) {
-      return false;
-    }
-    latest_content_ |= kInGLTexture;
-  }
-
   return true;
 }
 
@@ -848,6 +802,8 @@ bool ExternalVkImageBacking::ProduceGLTextureInternal(bool is_passthrough) {
 
 bool ExternalVkImageBacking::CreateGLTexture(bool is_passthrough,
                                              size_t plane_index) {
+  CHECK(CanImportIntoGL(context_state(), format()));
+
   gl::GLApi* api = gl::g_current_gl_context;
 
   auto& vk_texture = vk_textures_[plane_index];
@@ -857,41 +813,37 @@ bool ExternalVkImageBacking::CreateGLTexture(bool is_passthrough,
   auto gl_texture = base::MakeRefCounted<GLTextureHolder>(
       format(), plane_index, size(), is_passthrough, nullptr);
 
-  std::optional<ScopedDedicatedMemoryObject> memory_object;
-  if (!use_separate_gl_texture()) {
-    GrVkImageInfo image_info = vk_texture.GetGrVkImageInfo();
+  GrVkImageInfo image_info = vk_texture.GetGrVkImageInfo();
 
 #if BUILDFLAG(IS_POSIX)
-    auto memory_fd = vulkan_image->GetMemoryFd();
-    if (!memory_fd.is_valid()) {
-      return false;
-    }
-    memory_object.emplace(api);
-    api->glImportMemoryFdEXTFn(memory_object->id(), image_info.fAlloc.fSize,
-                               GL_HANDLE_TYPE_OPAQUE_FD_EXT,
-                               memory_fd.release());
+  auto memory_fd = vulkan_image->GetMemoryFd();
+  if (!memory_fd.is_valid()) {
+    return false;
+  }
+  ScopedDedicatedMemoryObject memory_object(api);
+  api->glImportMemoryFdEXTFn(memory_object.id(), image_info.fAlloc.fSize,
+                             GL_HANDLE_TYPE_OPAQUE_FD_EXT, memory_fd.release());
 #elif BUILDFLAG(IS_WIN)
-    auto memory_handle = vulkan_image->GetMemoryHandle();
-    if (!memory_handle.is_valid()) {
-      return false;
-    }
-    memory_object.emplace(api);
-    api->glImportMemoryWin32HandleEXTFn(
-        memory_object->id(), image_info.fAlloc.fSize,
-        GL_HANDLE_TYPE_OPAQUE_WIN32_EXT, memory_handle.Take());
+  auto memory_handle = vulkan_image->GetMemoryHandle();
+  if (!memory_handle.is_valid()) {
+    return false;
+  }
+  ScopedDedicatedMemoryObject memory_object(api);
+  api->glImportMemoryWin32HandleEXTFn(
+      memory_object.id(), image_info.fAlloc.fSize,
+      GL_HANDLE_TYPE_OPAQUE_WIN32_EXT, memory_handle.Take());
 #elif BUILDFLAG(IS_FUCHSIA)
-    zx::vmo vmo = vulkan_image->GetMemoryZirconHandle();
-    if (!vmo) {
-      return false;
-    }
-    memory_object.emplace(api);
-    api->glImportMemoryZirconHandleANGLEFn(
-        memory_object->id(), image_info.fAlloc.fSize,
-        GL_HANDLE_TYPE_ZIRCON_VMO_ANGLE, vmo.release());
+  zx::vmo vmo = vulkan_image->GetMemoryZirconHandle();
+  if (!vmo) {
+    return false;
+  }
+  ScopedDedicatedMemoryObject memory_object(api);
+  api->glImportMemoryZirconHandleANGLEFn(
+      memory_object.id(), image_info.fAlloc.fSize,
+      GL_HANDLE_TYPE_ZIRCON_VMO_ANGLE, vmo.release());
 #else
 #error Unsupported OS
 #endif
-  }
 
   GLFormatDesc format_desc =
       context_state()->GetGLFormatCaps().ToGLFormatDesc(format(), plane_index);
@@ -905,37 +857,22 @@ bool ExternalVkImageBacking::CreateGLTexture(bool is_passthrough,
   api->glTexParameteriFn(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
   api->glTexParameteriFn(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-  if (use_separate_gl_texture()) {
-    DCHECK(!memory_object);
-    if (IsTexStorage2DAvailable()) {
-      api->glTexStorage2DEXTFn(GL_TEXTURE_2D, 1,
-                               format_desc.storage_internal_format,
-                               plane_size.width(), plane_size.height());
-    } else {
-      api->glTexImage2DFn(GL_TEXTURE_2D, 0, format_desc.image_internal_format,
-                          plane_size.width(), plane_size.height(), 0,
-                          format_desc.data_format, format_desc.data_type,
-                          nullptr);
-    }
+  // If ANGLE_memory_object_flags is supported, use that to communicate the
+  // exact create and usage flags the image was created with.
+  //
+  // Currently, no extension structs are appended to VkImageCreateInfo::pNext
+  // when creating the image, so communicate that information to ANGLE. This
+  // makes sure that ANGLE recreates the VkImage identically to Chromium.
+  DCHECK_NE(vulkan_image->usage(), 0u);
+  if (UseMinimalUsageFlags(context_state())) {
+    api->glTexStorageMemFlags2DANGLEFn(
+        GL_TEXTURE_2D, 1, format_desc.storage_internal_format,
+        plane_size.width(), plane_size.height(), memory_object.id(), 0,
+        vulkan_image->flags(), vulkan_image->usage(), nullptr);
   } else {
-    DCHECK(memory_object);
-    // If ANGLE_memory_object_flags is supported, use that to communicate the
-    // exact create and usage flags the image was created with.
-    //
-    // Currently, no extension structs are appended to VkImageCreateInfo::pNext
-    // when creating the image, so communicate that information to ANGLE.  This
-    // makes sure that ANGLE recreates the VkImage identically to Chromium.
-    DCHECK_NE(vulkan_image->usage(), 0u);
-    if (UseMinimalUsageFlags(context_state())) {
-      api->glTexStorageMemFlags2DANGLEFn(
-          GL_TEXTURE_2D, 1, format_desc.storage_internal_format,
-          plane_size.width(), plane_size.height(), memory_object->id(), 0,
-          vulkan_image->flags(), vulkan_image->usage(), nullptr);
-    } else {
-      api->glTexStorageMem2DEXTFn(
-          GL_TEXTURE_2D, 1, format_desc.storage_internal_format,
-          plane_size.width(), plane_size.height(), memory_object->id(), 0);
-    }
+    api->glTexStorageMem2DEXTFn(
+        GL_TEXTURE_2D, 1, format_desc.storage_internal_format,
+        plane_size.width(), plane_size.height(), memory_object.id(), 0);
   }
 
   if (is_passthrough) {
@@ -966,9 +903,7 @@ bool ExternalVkImageBacking::CreateGLTexture(bool is_passthrough,
 std::unique_ptr<GLTextureImageRepresentation>
 ExternalVkImageBacking::ProduceGLTexture(SharedImageManager* manager,
                                          MemoryTypeTracker* tracker) {
-  CHECK(
-      !(base::FeatureList::IsEnabled(features::kUseDynamicBackingAllocations) &&
-        use_separate_gl_texture()));
+  CHECK(CanImportIntoGL(context_state(), format()));
   if (gl_textures_.empty()) {
     if (!ProduceGLTextureInternal(/*is_passthrough=*/false)) {
       return nullptr;
@@ -991,9 +926,7 @@ std::unique_ptr<GLTexturePassthroughImageRepresentation>
 ExternalVkImageBacking::ProduceGLTexturePassthrough(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker) {
-  CHECK(
-      !(base::FeatureList::IsEnabled(features::kUseDynamicBackingAllocations) &&
-        use_separate_gl_texture()));
+  CHECK(CanImportIntoGL(context_state(), format()));
   if (gl_textures_.empty()) {
     if (!ProduceGLTextureInternal(/*is_passthrough=*/true)) {
       return nullptr;
@@ -1041,128 +974,6 @@ ExternalVkImageBacking::ProduceOverlay(SharedImageManager* manager,
                                        MemoryTypeTracker* tracker) {
   return std::make_unique<ExternalVkImageOverlayImageRepresentation>(
       manager, this, tracker);
-}
-
-void ExternalVkImageBacking::UpdateContent(uint32_t content_flags) {
-  // This flag is used in order to avoid infinite recursion for cases when
-  // ::BeginAccess() will call UpdateContent(kInGLTexture) which would call
-  // ::CopyPixelsFromVkImageToGLTexture, which now will call ReadbackToMemory,
-  // which will call ::BeginAccess() again.
-  base::AutoReset<bool> auto_reset(&is_updating_content_, true);
-  // Only support one backing for now.
-  DCHECK(content_flags == kInVkImage || content_flags == kInGLTexture);
-
-  // There is no need to update content when there is only one texture.
-  if (!use_separate_gl_texture())
-    return;
-
-  if ((latest_content_ & content_flags) == content_flags)
-    return;
-
-  // Only mark the destination as holding valid content if the copy actually
-  // succeeded. Setting the bit unconditionally permanently masks a failed sync,
-  // because the early-out at the top of this function short-circuits every
-  // subsequent call, and leaves readers sampling uninitialized VkDeviceMemory
-  // or GL texture storage.
-  if (content_flags == kInVkImage) {
-    if ((latest_content_ & kInGLTexture)) {
-      if (CopyPixelsFromGLTextureToVkImage()) {
-        latest_content_ |= kInVkImage;
-      }
-    }
-  } else if (content_flags == kInGLTexture) {
-    if (latest_content_ & kInVkImage) {
-      if (CopyPixelsFromVkImageToGLTexture()) {
-        latest_content_ |= kInGLTexture;
-      }
-    }
-  }
-}
-
-std::pair<std::vector<ExternalVkImageBacking::MapPlaneData>, size_t>
-ExternalVkImageBacking::GetMapPlaneData() const {
-  std::vector<MapPlaneData> data;
-  size_t total_data_bytes = 0;
-  size_t num_planes = vk_textures_.size();
-  for (size_t plane = 0; plane < num_planes; ++plane) {
-    data.push_back({AsSkImageInfo(plane), total_data_bytes});
-
-    // Ensure that the start of the next plane is 4 byte aligned. For all
-    // multi-planar formats the max texel block size is 4 bytes so this will
-    // always satisfy the next planes alignment requirement.
-    size_t plane_bytes = base::bits::AlignUp<size_t>(
-        data.back().image_info.computeMinByteSize(), 4u);
-
-    total_data_bytes += plane_bytes;
-  }
-
-  return {data, total_data_bytes};
-}
-
-bool ExternalVkImageBacking::CopyPixelsFromGLTextureToVkImage() {
-  DCHECK(use_separate_gl_texture());
-  DCHECK_EQ(vk_textures_.size(), gl_textures_.size());
-
-  if (!MakeGLContextCurrent()) {
-    return false;
-  }
-
-  auto [plane_data, total_data_bytes] = GetMapPlaneData();
-  std::vector<uint8_t> cpu_buffer(total_data_bytes);
-
-  std::vector<SkPixmap> pixmaps;
-  for (size_t plane = 0; plane < vk_textures_.size(); ++plane) {
-    auto& sk_image_info = plane_data[plane].image_info;
-    uint8_t* memory = base::span(cpu_buffer)
-                          .subspan(plane_data[plane].offset,
-                                   sk_image_info.computeMinByteSize())
-                          .data();
-    pixmaps.emplace_back(sk_image_info, memory, sk_image_info.minRowBytes());
-
-    if (!gl_textures_[plane]->ReadbackToMemory(pixmaps.back())) {
-      DLOG(ERROR) << "GL readback failed";
-      return false;
-    }
-  }
-
-  if (!UploadToVkImage(pixmaps)) {
-    DLOG(ERROR) << "UploadToVkImage failed";
-    return false;
-  }
-  return true;
-}
-
-bool ExternalVkImageBacking::CopyPixelsFromVkImageToGLTexture() {
-  DCHECK(use_separate_gl_texture());
-  DCHECK_EQ(vk_textures_.size(), gl_textures_.size());
-
-  if (!MakeGLContextCurrent()) {
-    return false;
-  }
-
-  auto [plane_data, total_data_bytes] = GetMapPlaneData();
-  std::vector<uint8_t> cpu_buffer(total_data_bytes);
-
-  std::vector<SkPixmap> pixmaps;
-  for (size_t plane = 0; plane < vk_textures_.size(); ++plane) {
-    auto& sk_image_info = plane_data[plane].image_info;
-    uint8_t* memory = base::span(cpu_buffer)
-                          .subspan(plane_data[plane].offset,
-                                   sk_image_info.computeMinByteSize())
-                          .data();
-    pixmaps.emplace_back(sk_image_info, memory, sk_image_info.minRowBytes());
-  }
-
-  if (!ReadbackToMemory(pixmaps)) {
-    DLOG(ERROR) << "ReadbackToMemory failed";
-    return false;
-  }
-
-  if (!UploadToGLTexture(pixmaps)) {
-    DLOG(ERROR) << "UploadToGLTexture failed";
-    return false;
-  }
-  return true;
 }
 
 bool ExternalVkImageBacking::UploadToVkImage(
@@ -1274,25 +1085,6 @@ bool ExternalVkImageBacking::ReadbackToMemory(
   // GPU work is done.
   ReturnPendingSemaphoresWithFenceHelper(std::move(external_semaphores));
   return success;
-}
-
-bool ExternalVkImageBacking::UploadToGLTexture(
-    const std::vector<SkPixmap>& pixmaps) {
-  DCHECK(use_separate_gl_texture());
-  DCHECK_EQ(gl_textures_.size(), pixmaps.size());
-
-  // Make sure a gl context is current, since textures are shared between all gl
-  // contexts, we don't care which gl context is current.
-  if (!MakeGLContextCurrent()) {
-    return false;
-  }
-
-  for (size_t i = 0; i < gl_textures_.size(); ++i) {
-    if (!gl_textures_[i]->UploadFromMemory(pixmaps[i])) {
-      return false;
-    }
-  }
-  return true;
 }
 
 bool ExternalVkImageBacking::BeginAccessInternal(

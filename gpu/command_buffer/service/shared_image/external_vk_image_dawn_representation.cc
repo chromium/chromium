@@ -104,8 +104,7 @@ wgpu::Texture ExternalVkImageDawnImageRepresentation::BeginAccess(
   dawn::native::vulkan::ExternalImageDescriptorOpaqueFD descriptor = {};
   descriptor.cTextureDescriptor =
       reinterpret_cast<WGPUTextureDescriptor*>(&texture_descriptor);
-  descriptor.isInitialized =
-      IsCleared() && backing_impl()->HasLatestContentInVkImage();
+  descriptor.isInitialized = IsCleared();
   descriptor.allocationSize = backing_impl()->image()->device_size();
   descriptor.memoryTypeIndex = backing_impl()->image()->memory_type_index();
   descriptor.memoryFD = dup(memory_fd_.get());

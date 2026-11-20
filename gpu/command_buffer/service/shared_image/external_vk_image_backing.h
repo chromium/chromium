@@ -63,8 +63,12 @@ class GPU_GLES2_EXPORT ExternalVkImageBacking final
       SurfaceHandle surface_handle,
       gfx::BufferUsage buffer_usage);
 
-  static bool UseSeparateGLTexture(SharedContextState* context_state,
-                                   viz::SharedImageFormat format);
+  // Returns true if the VkImage for `format` can be imported directly into GL
+  // via GL_EXT_memory_object. When false, this backing cannot serve GL access
+  // directly and CompoundImageBacking dynamically allocates a separate GL
+  // backing on demand.
+  static bool CanImportIntoGL(SharedContextState* context_state,
+                              viz::SharedImageFormat format);
 
   static bool CheckSupportForAccessStream(SharedImageAccessStream stream,
                                           viz::SharedImageFormat format,
@@ -78,7 +82,6 @@ class GPU_GLES2_EXPORT ExternalVkImageBacking final
       scoped_refptr<SharedContextState> context_state,
       std::vector<TextureHolderVk> vk_textures,
       VulkanCommandPool* command_pool,
-      bool use_separate_gl_texture,
       bool enable_webgpu_on_vk_via_gl_interop,
       scoped_refptr<gfx::NativePixmap> pixmap = nullptr,
       std::optional<gfx::BufferUsage> buffer_usage = std::nullopt);
@@ -105,12 +108,8 @@ class GPU_GLES2_EXPORT ExternalVkImageBacking final
   ExternalSemaphorePool* external_semaphore_pool() {
     return context_state()->external_semaphore_pool();
   }
-  bool use_separate_gl_texture() const { return use_separate_gl_texture_; }
   bool enable_webgpu_on_vk_via_gl_interop() const {
     return enable_webgpu_on_vk_via_gl_interop_;
-  }
-  bool HasLatestContentInVkImage() const {
-    return (latest_content_ & kInVkImage) != 0;
   }
 
   bool need_synchronization() const {
@@ -120,7 +119,7 @@ class GPU_GLES2_EXPORT ExternalVkImageBacking final
     }
 
     if (HasGLES2ReadOrWriteUsage(usage())) {
-      return !use_separate_gl_texture() && !gl_textures_.empty();
+      return !gl_textures_.empty();
     }
 
     if (usage().HasAny(SHARED_IMAGE_USAGE_RASTER_READ |
@@ -185,7 +184,6 @@ class GPU_GLES2_EXPORT ExternalVkImageBacking final
       std::vector<ExternalSemaphore> semaphores);
 
  protected:
-  void UpdateContent(uint32_t content_flags);
   bool BeginAccessInternal(bool readonly,
                            std::vector<ExternalSemaphore>* external_semaphores);
   void EndAccessInternal(bool readonly, ExternalSemaphore external_semaphore);
@@ -213,12 +211,6 @@ class GPU_GLES2_EXPORT ExternalVkImageBacking final
       MemoryTypeTracker* tracker) override;
 
  private:
-  // Holds format + offset information for Vulkan mapped memory.
-  struct MapPlaneData {
-    SkImageInfo image_info;
-    size_t offset = 0;
-  };
-
   // Makes GL context current if not already. Will return false if MakeCurrent()
   // failed.
   bool MakeGLContextCurrent();
@@ -228,20 +220,11 @@ class GPU_GLES2_EXPORT ExternalVkImageBacking final
   bool CreateGLTexture(bool is_passthrough, size_t plane_index);
 
   bool UploadToVkImage(const std::vector<SkPixmap>& pixmap);
-  bool UploadToGLTexture(const std::vector<SkPixmap>& pixmaps);
-
-  // Return format+offset per plane along with total data bytes required when
-  // mapping VkImage.
-  std::pair<std::vector<MapPlaneData>, size_t> GetMapPlaneData() const;
-
-  [[nodiscard]] bool CopyPixelsFromGLTextureToVkImage();
-  [[nodiscard]] bool CopyPixelsFromVkImageToGLTexture();
 
   scoped_refptr<SharedContextState> context_state_;
   std::vector<TextureHolderVk> vk_textures_;
 
   const raw_ptr<VulkanCommandPool, DanglingUntriaged> command_pool_;
-  const bool use_separate_gl_texture_;
   const bool enable_webgpu_on_vk_via_gl_interop_;
 
   ExternalSemaphore write_semaphore_;
@@ -249,17 +232,10 @@ class GPU_GLES2_EXPORT ExternalVkImageBacking final
 
   bool is_write_in_progress_ = false;
   uint32_t reads_in_progress_ = 0;
-  bool is_updating_content_ = false;
   uint32_t gl_reads_in_progress_ = 0;
   bool wait_for_gl_finish_ = false;
 
   std::vector<scoped_refptr<GLTextureHolder>> gl_textures_;
-
-  enum LatestContent {
-    kInVkImage = 1 << 0,
-    kInGLTexture = 1 << 1,
-  };
-  uint32_t latest_content_ = 0;
 
   // Semaphores pending for returning to ExternalSemaphorePool.
   // When the backing is accessed by the vulkan device for GrContext, they can
