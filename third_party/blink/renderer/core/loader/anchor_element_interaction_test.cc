@@ -267,6 +267,37 @@ TEST_F(AnchorElementInteractionTest, InvalidHref) {
   EXPECT_EQ(hosts_[0]->calls_.size(), 0u);
 }
 
+TEST_F(AnchorElementInteractionTest, PotentiallyDanglingMarkup) {
+  String source("https://example.com/p1");
+  SimRequest main_resource(source, "text/html");
+  LoadURL(source);
+  main_resource.Complete(R"HTML(
+    <a href='https://anchor1.example/?
+<'>
+      <div style='padding: 0px; width: 400px; height: 400px;'></div>
+    </a>
+  )HTML");
+
+  auto task_runner = base::MakeRefCounted<scheduler::FakeTaskRunner>();
+  GetDocument().GetAnchorElementInteractionTracker()->SetTaskRunnerForTesting(
+      task_runner, task_runner->GetMockTickClock());
+
+  gfx::PointF coordinates(100, 100);
+  WebMouseEvent move_event(WebInputEvent::Type::kMouseMove, coordinates,
+                           coordinates, WebPointerProperties::Button::kNoButton,
+                           0, WebInputEvent::kNoModifiers,
+                           WebInputEvent::GetStaticTimeStampForTests());
+  GetDocument().GetFrame()->GetEventHandler().HandleMouseMoveEvent(
+      move_event, Vector<WebMouseEvent>(), Vector<WebMouseEvent>());
+  task_runner->AdvanceTimeAndRun(GetLongerThanModerateHoverDwellTime());
+
+  SendMouseDownEvent();
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_EQ(hosts_.size(), 1u);
+  EXPECT_TRUE(hosts_[0]->calls_.empty());
+}
+
 TEST_F(AnchorElementInteractionTest, RightClick) {
   String source("https://example.com/p1");
   SimRequest main_resource(source, "text/html");
@@ -1815,6 +1846,66 @@ TEST_F(AnchorElementInteractionViewportHeuristicsTest,
 
   ASSERT_EQ(hosts_.size(), 1u);
   EXPECT_EQ(hosts_[0]->calls_.size(), 0u);
+}
+
+TEST_F(AnchorElementInteractionViewportHeuristicsTest,
+       PotentiallyDanglingMarkupAloneIgnored) {
+  ScopedSyntheticMouseHoverOverInactivePageForTest
+      disable_synthetic_mouse_hover_over_inactive_page(false);
+
+  String body = R"HTML(
+    <body style="margin: 0px">
+      <div style="height: 200px"></div>
+      <a href="https://example.com/foo?
+<"
+         style="height: 100px; display: block;">link</a>
+      <div style="height: 300px"></div>
+    </body>
+  )HTML";
+  RunBasicTestFixture({.main_resource_body = body,
+                       .pointer_down_location = gfx::PointF(100, 180),
+                       .scroll_delta = -100});
+
+  ASSERT_EQ(hosts_.size(), 1u);
+  EXPECT_THAT(hosts_[0]->calls_, testing::IsEmpty());
+}
+
+TEST_F(AnchorElementInteractionViewportHeuristicsTest,
+       PotentiallyDanglingMarkupMutatedDuringModerateDelay) {
+  ScopedSyntheticMouseHoverOverInactivePageForTest
+      disable_synthetic_mouse_hover_over_inactive_page(false);
+
+  String source("https://example.com/");
+  SimRequest main_resource(source, "text/html");
+  LoadURL(source);
+  main_resource.Complete(R"HTML(
+    <body style="margin: 0px">
+      <div style="height: 200px"></div>
+      <a id="target" href="https://example.com/foo"
+         style="height: 100px; display: block;">link</a>
+      <div style="height: 300px"></div>
+    </body>
+  )HTML");
+
+  GetDocument().GetAnchorElementInteractionTracker()->SetTaskRunnerForTesting(
+      task_environment().GetMainThreadTaskRunner(),
+      task_environment().GetMockTickClock());
+
+  Compositor().BeginFrame();
+  task_environment().FastForwardBy(base::Milliseconds(10));
+  DispatchPointerDownAndVerticalScroll(gfx::PointF(100, 180), -100);
+  ProcessPositionUpdates();
+
+  Element* anchor = GetDocument().getElementById(AtomicString("target"));
+  ASSERT_TRUE(anchor);
+  anchor->setAttribute(html_names::kHrefAttr,
+                       AtomicString("https://example.com/foo?\n<"));
+
+  task_environment().FastForwardBy(EnoughWaitTimeForAllViewportHeuristics());
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_EQ(hosts_.size(), 1u);
+  EXPECT_TRUE(std::ranges::none_of(hosts_[0]->calls_, IsModerateViewportCall));
 }
 
 }  // namespace

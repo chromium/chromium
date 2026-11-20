@@ -611,7 +611,7 @@ AnchorElementInteractionTracker::FirstAnchorElementIncludingSelf(Node* node) {
 KURL AnchorElementInteractionTracker::GetHrefEligibleForPreloading(
     const HTMLAnchorElementBase& anchor) {
   KURL url = anchor.Href();
-  if (!url.ProtocolIsInHttpFamily()) {
+  if (!url.ProtocolIsInHttpFamily() || url.PotentiallyDanglingMarkup()) {
     return KURL();
   }
   if (base::FeatureList::IsEnabled(
@@ -780,7 +780,10 @@ void AnchorElementInteractionTracker::ModerateViewportHeuristicTimerFired(
     return;
   }
 
-  const KURL& url = largest_anchor_element_in_viewport_->Url();
+  KURL url = GetHrefEligibleForPreloading(*largest_anchor_element_in_viewport_);
+  if (url.IsEmpty()) {
+    return;
+  }
   // The matching moderate candidate is enacted via DocumentSpeculationRules,
   // and only when configured to enact (mirrors
   // PreloadingDecider::OnModerateViewportHeuristicTriggered).

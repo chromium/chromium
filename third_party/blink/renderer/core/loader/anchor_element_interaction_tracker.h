@@ -128,7 +128,9 @@ class BLINK_EXPORT AnchorElementInteractionTracker
  private:
   HTMLAnchorElementBase* FirstAnchorElementIncludingSelf(Node* node);
 
-  // Gets the `anchor's` href attribute if it is part of the HTTP family.
+  // Gets the anchor's href attribute if it is eligible for preloading (HTTP
+  // family, not potentially dangling markup, and not a same-page fragment when
+  // disabled).
   KURL GetHrefEligibleForPreloading(const HTMLAnchorElementBase& anchor);
   void ModerateViewportHeuristicTimerFired(TimerBase*);
   void EagerViewportHeuristicTimerFired(TimerBase*);
