@@ -109,11 +109,28 @@ class FakeMacNotificationProviderFactory
         on_disconnect_(std::move(on_disconnect)) {}
   ~FakeMacNotificationProviderFactory() override = default;
 
+  enum class LaunchBehavior {
+    kNormal,
+    // Simulates an AppShim host tearing down the provider pipe before
+    // `BindNotificationService` is handled (e.g. broken bundle / process
+    // creation failure).
+    kDisconnectProviderImmediately,
+    // Simulates `DummyMacNotificationProvider` dropping `service` and
+    // `handler` inside `BindNotificationService` (e.g. no profile for
+    // background launch).
+    kDropServiceOnBind,
+  };
+
   // MacNotificationProviderFactory:
   mojo::Remote<mac_notifications::mojom::MacNotificationProvider>
   LaunchProvider() override {
+    ++launch_count_;
     mojo::Remote<mac_notifications::mojom::MacNotificationProvider> remote;
-    provider_receiver_.Bind(remote.BindNewPipeAndPassReceiver());
+    auto pending_receiver = remote.BindNewPipeAndPassReceiver();
+    if (launch_behavior_ == LaunchBehavior::kDisconnectProviderImmediately) {
+      return remote;
+    }
+    provider_receiver_.Bind(std::move(pending_receiver));
     provider_receiver_.set_disconnect_handler(
         base::BindOnce(&FakeMacNotificationProviderFactory::Disconnect,
                        base::Unretained(this)));
@@ -127,8 +144,15 @@ class FakeMacNotificationProviderFactory
       mojo::PendingRemote<
           mac_notifications::mojom::MacNotificationActionHandler> handler)
       override {
+    if (launch_behavior_ == LaunchBehavior::kDropServiceOnBind) {
+      return;
+    }
     service_receiver_.Bind(std::move(service));
     handler_remote_.Bind(std::move(handler));
+  }
+
+  void set_launch_behavior(LaunchBehavior behavior) {
+    launch_behavior_ = behavior;
   }
 
   MockNotificationService& service() { return mock_service_; }
@@ -150,8 +174,11 @@ class FakeMacNotificationProviderFactory
   }
 
   bool is_service_connected() { return service_receiver_.is_bound(); }
+  int launch_count() const { return launch_count_; }
 
  private:
+  LaunchBehavior launch_behavior_ = LaunchBehavior::kNormal;
+  int launch_count_ = 0;
   base::RepeatingClosure on_disconnect_;
   mojo::Receiver<mac_notifications::mojom::MacNotificationProvider>
       provider_receiver_{this};
@@ -619,11 +646,11 @@ TEST_F(NotificationDispatcherMojoTest,
   DisplayNotificationSync();
   EXPECT_TRUE(provider_factory_->is_service_connected());
 
-  // Simulate a service (such as a background AppShim) that repeatedly times out
-  // after 120 seconds (> 10s reset threshold) without ever responding to
-  // OkayToTerminateService(). The restart delay should double on each attempt
-  // (500ms, 1s, 2s, ..., 256s) rather than resetting to 500ms, and stay capped
-  // at 256s.
+  // Simulate an unresponsive alert notification service process that repeatedly
+  // times out after 120 seconds (> 10s reset threshold) without ever responding
+  // to OkayToTerminateService(). The restart delay should double on each
+  // attempt (500ms, 1s, 2s, ..., 256s) rather than resetting to 500ms, and stay
+  // capped at 256s.
   MockNotificationService::OkayToTerminateServiceCallback unanswered_callback;
   for (base::TimeDelta expected_delay = base::Milliseconds(500);
        expected_delay <= base::Seconds(256); expected_delay *= 2) {
@@ -723,36 +750,6 @@ class NotificationDispatcherMojoAppShimTest
     EXPECT_TRUE(app_shim_factory_->is_service_connected());
   }
 
-  // Simulates an app shim that never responds and keeps timing out, until the
-  // dispatcher stops scheduling automatic restarts. Returns the number of
-  // automatic restarts that happened.
-  int SimulateNeverRespondingAppShim() {
-    constexpr int kMaxAttempts = 50;
-    int restart_count = 0;
-    std::vector<MockNotificationService::OkayToTerminateServiceCallback>
-        unanswered_callbacks;
-    EXPECT_CALL(app_shim_service(), OkayToTerminateService)
-        .WillRepeatedly(
-            [&](MockNotificationService::OkayToTerminateServiceCallback cb) {
-              unanswered_callbacks.push_back(std::move(cb));
-            });
-    for (int attempt = 0; attempt < kMaxAttempts; ++attempt) {
-      task_environment_.FastForwardBy(base::Seconds(120));
-      app_shim_factory_->Disconnect();
-      unanswered_callbacks.clear();
-      EXPECT_FALSE(app_shim_factory_->is_service_connected());
-
-      task_environment_.FastForwardBy(base::Hours(1));
-      if (!app_shim_factory_->is_service_connected()) {
-        break;
-      }
-      ++restart_count;
-    }
-    testing::Mock::VerifyAndClearExpectations(&app_shim_service());
-    EXPECT_LT(restart_count, kMaxAttempts);
-    return restart_count;
-  }
-
   void ExpectCloseNotificationReachesAppShim() {
     base::test::TestFuture<void> close_future;
     EXPECT_CALL(app_shim_service(), CloseNotification)
@@ -787,19 +784,26 @@ TEST_F(NotificationDispatcherMojoAppShimTest, DidActivateNotification) {
                                 /*expected_bucket_count=*/1);
 }
 
-TEST_F(NotificationDispatcherMojoAppShimTest, StopsRetryingAfterMaximumDelay) {
+TEST_F(NotificationDispatcherMojoAppShimTest,
+       DoesNotAutoRestartOnUnexpectedDisconnect) {
   DisplayAppShimNotificationSync();
+  const int launches_before_disconnect = app_shim_factory_->launch_count();
 
-  // The dispatcher should retry at least once but eventually stop scheduling
-  // automatic restarts.
-  EXPECT_GT(SimulateNeverRespondingAppShim(), 0);
+  EXPECT_CALL(app_shim_service(), OkayToTerminateService).Times(0);
+  app_shim_factory_->Disconnect();
   EXPECT_FALSE(app_shim_factory_->is_service_connected());
+
+  task_environment_.FastForwardBy(base::Hours(1));
+  EXPECT_FALSE(app_shim_factory_->is_service_connected());
+  EXPECT_EQ(app_shim_factory_->launch_count(), launches_before_disconnect);
 }
 
 TEST_F(NotificationDispatcherMojoAppShimTest,
-       GetDisplayedNotificationsRelaunchesAfterGivingUp) {
+       GetDisplayedNotificationsRelaunchesAfterUnexpectedDisconnect) {
   DisplayAppShimNotificationSync();
-  SimulateNeverRespondingAppShim();
+  app_shim_factory_->Disconnect();
+  task_environment_.FastForwardBy(base::Hours(1));
+  EXPECT_FALSE(app_shim_factory_->is_service_connected());
 
   // Notifications may still be on screen, so querying them should relaunch the
   // app shim rather than reporting that nothing is displayed.
@@ -820,18 +824,68 @@ TEST_F(NotificationDispatcherMojoAppShimTest,
   testing::Mock::VerifyAndClearExpectations(&app_shim_service());
 
   // If the app shim still does not respond, the result must not be used to
-  // synchronize notifications.
+  // synchronize notifications, and no automatic restart should be scheduled.
+  const int launches_after_relaunch = app_shim_factory_->launch_count();
   app_shim_factory_->Disconnect();
   unanswered_callback.Reset();
   auto [notification_ids, supports_synchronization] = get_future.Take();
   EXPECT_TRUE(notification_ids.empty());
   EXPECT_FALSE(supports_synchronization);
+
+  task_environment_.FastForwardBy(base::Hours(1));
+  EXPECT_FALSE(app_shim_factory_->is_service_connected());
+  EXPECT_EQ(app_shim_factory_->launch_count(), launches_after_relaunch);
+
+  // A single unanswered reconnect failure (e.g., racing with a dying app shim
+  // host) allows one retry, while a second consecutive failure transitions to
+  // `kUnknown` so a broken shim stops relaunching (while still reporting
+  // `supports_synchronization = false` so persisted notifications are not
+  // purged).
+  EXPECT_CALL(app_shim_service(), GetDisplayedNotifications)
+      .WillOnce(
+          [&](mac_notifications::mojom::ProfileIdentifierPtr,
+              const std::optional<GURL>&,
+              MockNotificationService::GetDisplayedNotificationsCallback cb) {
+            unanswered_callback = std::move(cb);
+            app_shim_factory_->Disconnect();
+          });
+  base::test::TestFuture<std::set<std::string>, bool> second_get_future;
+  app_shim_dispatcher_->GetDisplayedNotificationsForProfileId(
+      kProfileId, /*incognito=*/false, second_get_future.GetCallback());
+  auto [second_ids, second_supports_sync] = second_get_future.Take();
+  unanswered_callback.Reset();
+  EXPECT_TRUE(second_ids.empty());
+  EXPECT_FALSE(second_supports_sync);
+  const int launches_after_second_failure = app_shim_factory_->launch_count();
+  EXPECT_EQ(launches_after_second_failure, launches_after_relaunch + 1);
+  testing::Mock::VerifyAndClearExpectations(&app_shim_service());
+
+  EXPECT_CALL(app_shim_service(), CloseNotification).Times(0);
+  app_shim_dispatcher_->CloseNotificationWithId(
+      {kNotificationId, kProfileId, /*incognito=*/false});
+  EXPECT_FALSE(app_shim_factory_->is_service_connected());
+  EXPECT_EQ(app_shim_factory_->launch_count(), launches_after_second_failure);
+
+  base::test::TestFuture<std::set<std::string>, bool> third_get_future;
+  app_shim_dispatcher_->GetDisplayedNotificationsForProfileId(
+      kProfileId, /*incognito=*/false, third_get_future.GetCallback());
+  auto [third_ids, third_supports_sync] = third_get_future.Take();
+  EXPECT_TRUE(third_ids.empty());
+  EXPECT_FALSE(third_supports_sync);
+  EXPECT_EQ(app_shim_factory_->launch_count(), launches_after_second_failure);
+
+  // A subsequent DisplayNotification still relaunches on demand.
+  DisplayAppShimNotificationSync();
+  EXPECT_EQ(app_shim_factory_->launch_count(),
+            launches_after_second_failure + 1);
 }
 
 TEST_F(NotificationDispatcherMojoAppShimTest,
-       CloseNotificationRelaunchesAfterGivingUp) {
+       CloseNotificationRelaunchesAfterUnexpectedDisconnect) {
   DisplayAppShimNotificationSync();
-  SimulateNeverRespondingAppShim();
+  app_shim_factory_->Disconnect();
+  task_environment_.FastForwardBy(base::Hours(1));
+  EXPECT_FALSE(app_shim_factory_->is_service_connected());
 
   EmulateAppShimOkayToTerminate(/*can_terminate=*/true);
   ExpectCloseNotificationReachesAppShim();
@@ -841,6 +895,7 @@ TEST_F(NotificationDispatcherMojoAppShimTest,
 
   // Now that the app shim reported it has no notifications left, queries should
   // be answered without relaunching it.
+  const int launches_before_query = app_shim_factory_->launch_count();
   base::test::TestFuture<std::set<std::string>, bool> get_future;
   app_shim_dispatcher_->GetDisplayedNotificationsForProfileId(
       kProfileId, /*incognito=*/false, get_future.GetCallback());
@@ -848,18 +903,123 @@ TEST_F(NotificationDispatcherMojoAppShimTest,
   EXPECT_TRUE(notification_ids.empty());
   EXPECT_TRUE(supports_synchronization);
   EXPECT_FALSE(app_shim_factory_->is_service_connected());
+  EXPECT_EQ(app_shim_factory_->launch_count(), launches_before_query);
 }
 
 TEST_F(NotificationDispatcherMojoAppShimTest,
-       DisplayNotificationRelaunchesAfterGivingUp) {
+       DisplayNotificationRelaunchesAfterUnexpectedDisconnect) {
   DisplayAppShimNotificationSync();
-  SimulateNeverRespondingAppShim();
+  app_shim_factory_->Disconnect();
+  task_environment_.FastForwardBy(base::Hours(1));
+  EXPECT_FALSE(app_shim_factory_->is_service_connected());
 
   DisplayAppShimNotificationSync();
   EmulateAppShimOkayToTerminate(/*can_terminate=*/false);
   ExpectCloseNotificationReachesAppShim();
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(app_shim_factory_->is_service_connected());
+}
+
+TEST_F(NotificationDispatcherMojoAppShimTest,
+       FailedDisplayWithoutResponseDoesNotTriggerFutureRelaunches) {
+  MockNotificationService::DisplayNotificationCallback saved_callback;
+  EXPECT_CALL(app_shim_service(), DisplayNotification)
+      .WillOnce(
+          [&](mac_notifications::mojom::NotificationPtr,
+              MockNotificationService::DisplayNotificationCallback callback) {
+            saved_callback = std::move(callback);
+            app_shim_factory_->DisconnectServiceOnly();
+          });
+
+  base::test::TestFuture<mac_notifications::mojom::DisplayNotificationResult>
+      result_future;
+  app_shim_dispatcher_->DisplayNotification(
+      NotificationHandler::Type::WEB_PERSISTENT, profile_, CreateNotification(),
+      result_future.GetCallback());
+  EXPECT_EQ(
+      result_future.Get(),
+      mac_notifications::mojom::DisplayNotificationResult::kConnectionFailed);
+  saved_callback.Reset();
+
+  const int launches_after_failure = app_shim_factory_->launch_count();
+  task_environment_.FastForwardBy(base::Hours(1));
+  EXPECT_FALSE(app_shim_factory_->is_service_connected());
+  EXPECT_EQ(app_shim_factory_->launch_count(), launches_after_failure);
+
+  // Because the connection never responded (and no prior notifications were
+  // tracked), Close and GetDisplayed must not relaunch the app shim.
+  EXPECT_CALL(app_shim_service(), CloseNotification).Times(0);
+  app_shim_dispatcher_->CloseNotificationWithId(
+      {kNotificationId, kProfileId, /*incognito=*/false});
+  EXPECT_FALSE(app_shim_factory_->is_service_connected());
+  EXPECT_EQ(app_shim_factory_->launch_count(), launches_after_failure);
+
+  base::test::TestFuture<std::set<std::string>, bool> get_future;
+  app_shim_dispatcher_->GetDisplayedNotificationsForProfileId(
+      kProfileId, /*incognito=*/false, get_future.GetCallback());
+  auto [notification_ids, supports_synchronization] = get_future.Take();
+  EXPECT_TRUE(notification_ids.empty());
+  EXPECT_TRUE(supports_synchronization);
+  EXPECT_FALSE(app_shim_factory_->is_service_connected());
+  EXPECT_EQ(app_shim_factory_->launch_count(), launches_after_failure);
+}
+
+TEST_F(NotificationDispatcherMojoAppShimTest,
+       FailedStartupWithoutResponseDoesNotRetryOrSynchronize) {
+  for (auto behavior : {FakeMacNotificationProviderFactory::LaunchBehavior::
+                            kDisconnectProviderImmediately,
+                        FakeMacNotificationProviderFactory::LaunchBehavior::
+                            kDropServiceOnBind}) {
+    auto provider_factory =
+        std::make_unique<FakeMacNotificationProviderFactory>(
+            base::DoNothing(), mac_notifications::NotificationStyle::kAppShim);
+    FakeMacNotificationProviderFactory* factory_ptr = provider_factory.get();
+    factory_ptr->set_launch_behavior(behavior);
+
+    auto dispatcher = std::make_unique<NotificationDispatcherMojo>(
+        std::move(provider_factory));
+    base::test::TestFuture<mac_notifications::mojom::DisplayNotificationResult>
+        display_future;
+    dispatcher->DisplayNotification(NotificationHandler::Type::WEB_PERSISTENT,
+                                    profile_, CreateNotification(),
+                                    display_future.GetCallback());
+    EXPECT_EQ(
+        display_future.Get(),
+        mac_notifications::mojom::DisplayNotificationResult::kConnectionFailed);
+    EXPECT_EQ(factory_ptr->launch_count(), 1);
+
+    task_environment_.FastForwardBy(base::Hours(1));
+    EXPECT_EQ(factory_ptr->launch_count(), 1);
+
+    // Close and GetDisplayed must not relaunch a dispatcher that never
+    // connected, and GetDisplayed must report `supports_synchronization =
+    // false` so callers do not purge persisted pre-restart notifications.
+    dispatcher->CloseNotificationWithId(
+        {kNotificationId, kProfileId, /*incognito=*/false});
+    EXPECT_EQ(factory_ptr->launch_count(), 1);
+
+    base::test::TestFuture<std::set<std::string>, bool> get_future;
+    dispatcher->GetDisplayedNotificationsForProfileIdAndOrigin(
+        kProfileId, /*incognito=*/false, GURL("https://example.com"),
+        get_future.GetCallback());
+    auto [notification_ids, supports_synchronization] = get_future.Take();
+    EXPECT_TRUE(notification_ids.empty());
+    EXPECT_FALSE(supports_synchronization);
+    EXPECT_EQ(factory_ptr->launch_count(), 1);
+
+    // A subsequent DisplayNotification still attempts to launch on demand.
+    factory_ptr->set_launch_behavior(
+        FakeMacNotificationProviderFactory::LaunchBehavior::kNormal);
+    base::test::TestFuture<mac_notifications::mojom::DisplayNotificationResult>
+        retry_future;
+    EXPECT_CALL(factory_ptr->service(), DisplayNotification);
+    dispatcher->DisplayNotification(NotificationHandler::Type::WEB_PERSISTENT,
+                                    profile_, CreateNotification(),
+                                    retry_future.GetCallback());
+    EXPECT_EQ(retry_future.Get(),
+              mac_notifications::mojom::DisplayNotificationResult::kSuccess);
+    EXPECT_EQ(factory_ptr->launch_count(), 2);
+  }
 }
 
 TEST_F(NotificationDispatcherMojoAppShimTest,

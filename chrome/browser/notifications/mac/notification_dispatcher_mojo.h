@@ -75,6 +75,26 @@ class NotificationDispatcherMojo
     kUnexpected
   };
 
+  enum class DisplayedNotificationsState {
+    // No connection has confirmed zero displayed notifications, and we should
+    // not speculatively relaunch (either startup failed before first response,
+    // or consecutive reconnect attempts failed). `GetDisplayed*` reports
+    // `supports_synchronization = false` so persisted notifications are not
+    // purged.
+    kUnknown,
+    // Chrome confirmed (via `OkayToTerminateService` or
+    // `CloseAllNotifications`) that no notifications are displayed.
+    kConfirmedEmpty,
+    // A service that had responded went away without confirming zero
+    // notifications left (e.g. crash, timeout, or user quit). Relaunch on
+    // demand for Close/GetDisplayed.
+    kMayHaveNotifications,
+    // Same as `kMayHaveNotifications`, after one unanswered unexpected
+    // disconnect (absorbs races with a dying app shim host). A second
+    // consecutive unanswered disconnect transitions to `kUnknown`.
+    kMayHaveNotificationsAfterFailedReconnect,
+  };
+
   void CheckIfServiceCanBeTerminated();
   void OnServiceCanBeTerminated(base::OnceClosure disconnect_closure,
                                 bool can_terminate);
@@ -106,11 +126,8 @@ class NotificationDispatcherMojo
   std::optional<base::TimeTicks> service_first_response_time_;
   base::OneShotTimer service_restart_timer_;
   base::TimeDelta next_service_restart_timer_delay_;
-  // True if the service went away without telling us that it has no displayed
-  // notifications left (e.g. it crashed, timed out, or the user quit the app
-  // shim). In that case notifications may still be on screen, so the service
-  // gets relaunched on demand to query or close them.
-  bool may_have_displayed_notifications_ = false;
+  DisplayedNotificationsState displayed_notifications_state_ =
+      DisplayedNotificationsState::kUnknown;
   base::WeakPtrFactory<NotificationDispatcherMojo> weak_factory_{this};
 };
 
