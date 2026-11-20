@@ -138,6 +138,7 @@ public class TabUnitTest {
     @Mock private AutofillProvider mAutofillProvider;
     @Mock private Profile mProfile;
     @Mock private WindowAndroid mWindowAndroid;
+    @Mock private WindowAndroid mWindowWithoutActivity;
     @Mock private TabObserver mObserver;
     @Mock private NativePage mNativePage;
     @Mock private TabDelegateFactory mDelegateFactory;
@@ -2335,5 +2336,50 @@ public class TabUnitTest {
         RedirectHandlerTabHelper.updateIntentInTab(
                 mTab, /* intent= */ null, /* isCustomTab= */ false);
         assertFalse(handler.wasTaskStartedByExternalIntent());
+    }
+
+    @Test
+    public void testReattachAfterDetachWithNullDelegateFactoryNotifiesObservers() {
+        doReturn(new WeakReference<>(mActivity)).when(mWindowAndroid).getContext();
+        setUpTabWithWebContents();
+        assertFalse(mTab.isDetachedFromActivity());
+        clearInvocations(mObserver);
+
+        // Detach (as ReparentingTask#detach() does).
+        when(mWebContents.getTopLevelNativeWindow()).thenReturn(null);
+        mTab.updateAttachment(/* window= */ null, /* tabDelegateFactory= */ null);
+        assertTrue(mTab.isDetachedFromActivity());
+        verify(mObserver).onActivityAttachmentChanged(mTab, /* window= */ null);
+
+        // Re-attach to the same window with a null TabDelegateFactory (as
+        // ReparentingTask#finishAsNoOp() does when starting the new activity fails).
+        when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindowAndroid);
+        mTab.updateAttachment(mWindowAndroid, /* tabDelegateFactory= */ null);
+        assertFalse(mTab.isDetachedFromActivity());
+        verify(mObserver).onActivityAttachmentChanged(mTab, mWindowAndroid);
+    }
+
+    @Test
+    public void testAttachWithNullDelegateFactoryWithoutRegainingActivityDoesNotNotify() {
+        doReturn(new WeakReference<>(mActivity)).when(mWindowAndroid).getContext();
+        setUpTabWithWebContents();
+        clearInvocations(mObserver);
+
+        // A window-only swap on an attached tab.
+        mTab.updateAttachment(mWindowAndroid, /* tabDelegateFactory= */ null);
+
+        // A detached tab given a window that has no activity stays detached.
+        when(mWebContents.getTopLevelNativeWindow()).thenReturn(null);
+        mTab.updateAttachment(/* window= */ null, /* tabDelegateFactory= */ null);
+        doReturn(new WeakReference<>(ContextUtils.getApplicationContext()))
+                .when(mWindowWithoutActivity)
+                .getContext();
+        doReturn(ObservableSuppliers.alwaysFalse())
+                .when(mWindowWithoutActivity)
+                .getOcclusionSupplier();
+        mTab.updateAttachment(mWindowWithoutActivity, /* tabDelegateFactory= */ null);
+        assertTrue(mTab.isDetachedFromActivity());
+
+        verify(mObserver, never()).onActivityAttachmentChanged(eq(mTab), notNull());
     }
 }
