@@ -11,6 +11,8 @@
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
 #include "base/profiler/unwinder.h"
+#include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "v8/include/v8-unwinder.h"
 
 namespace v8 {
@@ -85,11 +87,16 @@ class V8Unwinder : public base::Unwinder {
   // V8 on the last call to CopyCodePages().
   size_t required_code_ranges_capacity_ = 0;
 
+  // Guards `modules_`. UpdateModules() runs on the sampling thread, while
+  // CanUnwindFrom() may run concurrently on the unwinding worker sequence for a
+  // previously captured sample.
+  mutable base::Lock modules_lock_;
+
   // Records the currently active V8 modules, ordered by their extents in
   // memory.
   std::set<raw_ptr<const base::ModuleCache::Module, SetExperimental>,
            ModuleCompare>
-      modules_;
+      modules_ GUARDED_BY(modules_lock_);
 };
 
 #endif  // CHROME_RENDERER_V8_UNWINDER_H_

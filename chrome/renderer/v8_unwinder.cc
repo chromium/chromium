@@ -145,14 +145,18 @@ V8Unwinder::V8Unwinder(v8::Isolate* isolate)
 V8Unwinder::~V8Unwinder() = default;
 
 void V8Unwinder::InitializeModules() {
-  // This function must be called only once.
-  DCHECK(modules_.empty());
-
   // Add a module for the embedded code range.
   std::vector<std::unique_ptr<const base::ModuleCache::Module>> new_module;
   new_module.push_back(
       std::make_unique<V8Module>(embedded_code_range_, V8Module::kEmbedded));
-  modules_.insert(new_module.front().get());
+  {
+    base::AutoLock lock(modules_lock_);
+    // This function must be called only once.
+    DCHECK(modules_.empty());
+    modules_.insert(new_module.front().get());
+  }
+  // ModuleCache has its own synchronization, so this doesn't need to run under
+  // `modules_lock_`.
   module_cache()->UpdateNonNativeModules({}, std::move(new_module));
 }
 
@@ -179,6 +183,10 @@ void V8Unwinder::OnStackCapture(base::UnwinderStateCapture* capture_state) {
 void V8Unwinder::UpdateModules(base::UnwinderStateCapture* capture_state) {
   MemoryRanges* code_ranges = static_cast<MemoryRanges*>(capture_state);
   MemoryRangeModuleCompare less_than;
+
+  // UpdateModules() runs on the sampling thread, while CanUnwindFrom() may be
+  // reading `modules_` concurrently on the unwinding worker sequence.
+  base::ReleasableAutoLock lock(&modules_lock_);
 
   const auto is_embedded_code_range_module =
       [this](const base::ModuleCache::Module* module) {
@@ -238,6 +246,11 @@ void V8Unwinder::UpdateModules(base::UnwinderStateCapture* capture_state) {
     }
   }
 
+  // ModuleCache has its own synchronization, so this doesn't need to run under
+  // `modules_lock_`. Modules in `modules_` remain valid after the lock is
+  // released: `new_modules` keeps the new ones alive until ModuleCache takes
+  // ownership of them, and ModuleCache never destroys defunct modules.
+  lock.Release();
   module_cache()->UpdateNonNativeModules(defunct_modules,
                                          std::move(new_modules));
 }
@@ -246,6 +259,7 @@ bool V8Unwinder::CanUnwindFrom(const base::Frame& current_frame) const {
   const base::ModuleCache::Module* module = current_frame.module;
   if (!module)
     return false;
+  base::AutoLock lock(modules_lock_);
   const auto loc = modules_.find(module);
   DCHECK(loc == modules_.end() || *loc == module);
   return loc != modules_.end();

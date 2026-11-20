@@ -4,6 +4,7 @@
 
 #include "chrome/renderer/v8_unwinder.h"
 
+#include <atomic>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -14,6 +15,7 @@
 #include "base/profiler/module_cache.h"
 #include "base/profiler/stack_sampling_profiler_test_util.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
@@ -559,6 +561,62 @@ TEST(V8UnwinderTest, CanUnwindFrom_NullModule) {
   unwinder.UpdateModules(capture_state.get());
 
   EXPECT_FALSE(unwinder.CanUnwindFrom({20, nullptr}));
+}
+
+// Checks that CanUnwindFrom() can safely run concurrently with UpdateModules().
+// The StackSampler invokes UpdateModules() on the sampling thread while
+// CanUnwindFrom() runs on the unwinding worker sequence for a prior sample.
+TEST(V8UnwinderTest, CanUnwindFrom_ConcurrentWithUpdateModules) {
+  ScopedV8Environment v8_environment;
+  UpdateModulesTestUnwinder unwinder(v8_environment.isolate());
+  base::ModuleCache module_cache;
+
+  unwinder.Initialize(&module_cache);
+
+  const v8::MemoryRange embedded_code_range =
+      GetEmbeddedCodeRange(v8_environment.isolate());
+  const std::vector<v8::MemoryRange> code_pages = {
+      {reinterpret_cast<void*>(1), 10}, embedded_code_range};
+  // Adds and removes a module at address 100 relative to `code_pages`, so that
+  // each UpdateModules() call below mutates the unwinder's module set.
+  const std::vector<v8::MemoryRange> code_pages_with_extra_module = {
+      {reinterpret_cast<void*>(1), 10},
+      {reinterpret_cast<void*>(100), 10},
+      embedded_code_range};
+
+  unwinder.SetCodePages(code_pages);
+  auto capture_state = unwinder.CreateUnwinderStateCapture();
+  unwinder.OnStackCapture(capture_state.get());
+  unwinder.UpdateModules(capture_state.get());
+
+  // The module at address 1 is retained across all updates below, so `module`
+  // remains valid for the duration of the test.
+  const base::ModuleCache::Module* module = module_cache.GetModuleForAddress(1);
+  ASSERT_NE(nullptr, module);
+
+  std::atomic<bool> done = false;
+  base::WaitableEvent reader_started;
+  base::WaitableEvent reader_finished;
+  base::ThreadPool::PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&] {
+        reader_started.Signal();
+        while (!done.load(std::memory_order_relaxed)) {
+          EXPECT_TRUE(unwinder.CanUnwindFrom({1, module}));
+        }
+        reader_finished.Signal();
+      }));
+  reader_started.Wait();
+
+  for (int i = 0; i < 1000; ++i) {
+    unwinder.SetCodePages(i % 2 == 0 ? code_pages_with_extra_module
+                                     : code_pages);
+    capture_state = unwinder.CreateUnwinderStateCapture();
+    unwinder.OnStackCapture(capture_state.get());
+    unwinder.UpdateModules(capture_state.get());
+  }
+
+  done.store(true, std::memory_order_relaxed);
+  reader_finished.Wait();
 }
 
 // TODO(crbug.com/429395665): the test consistently fails on Mac, fix and
