@@ -906,16 +906,13 @@ class ApiTests extends ApiTestFixtureBase {
     const capabilities: Set<HostCapability> =
         await this.host.getHostCapabilities();
     const expectedCapabilities: HostCapability[] = this.testParams ?? [];
-    assertTrue(
-        expectedCapabilities.every(
-            (expected: HostCapability) => capabilities.has(expected)),
-        `Expect each of ${
-            this.capabilitiesToString(expectedCapabilities)} is in ${
-            this.capabilitiesToString(Array.from(capabilities))}`);
+    assertEquals(
+        this.capabilitiesToString(Array.from(capabilities)),
+        this.capabilitiesToString(expectedCapabilities));
   }
 
   private capabilitiesToString(capabilities: HostCapability[]): string {
-    return `[${capabilities.map(this.capabilityToString).join(',')}]`;
+    return `[${capabilities.map(this.capabilityToString).sort().join(',')}]`;
   }
 
   private capabilityToString(capability: HostCapability): string {

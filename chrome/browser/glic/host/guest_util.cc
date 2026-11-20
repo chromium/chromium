@@ -57,6 +57,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/actor/core/actor_features.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/google/core/common/google_util.h"
@@ -955,6 +956,9 @@ void PopulateGlobalClientInitialState(mojom::WebClientInitialState* state,
           features::kGlicActorAutofillOneTimePassword)) {
     state->host_capabilities.push_back(
         mojom::HostCapability::kAttemptOtpFilling);
+  }
+  if (base::FeatureList::IsEnabled(actor::kActorExecuteJsTool)) {
+    state->host_capabilities.push_back(mojom::HostCapability::kExecuteJs);
   }
   if (GetGlicProviderSpec(profile).SupportsFeature(
           GlicFeature::kDynamicChromeTools)) {

@@ -2517,6 +2517,9 @@ enum HostCapability {
   kNoWebview = 19,
   // Indicates that the host supports Send Tab to Self APIs.
   kSendTabToSelf = 20,
+  // Indicates that the host supports isolated-world JavaScript execution for
+  // browser actuation.
+  kExecuteJs = 21,
 };
 
 // @generate glic_api

@@ -548,6 +548,9 @@ export enum HostCapability {
   NO_WEBVIEW = 19,
   // Indicates that the host supports Send Tab to Self APIs.
   SEND_TAB_TO_SELF = 20,
+  // Indicates that the host supports isolated-world JavaScript execution for
+  // browser actuation.
+  EXECUTE_JS = 21,
 }
 
 // Lists capabilities that the glic web client may support.

@@ -53,6 +53,7 @@
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_api_metrics.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_feature.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
@@ -86,6 +87,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/actor/core/actor_features.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/favicon/core/favicon_driver.h"
@@ -251,6 +253,7 @@ struct TestParams {
   bool no_webview = false;
   bool skills_v2 = false;
   bool enable_embedded_pdf_bytes_extraction = false;
+  bool enable_execute_js = false;
   bool enable_ssr = false;
   // Latches the profile to Gemini Enterprise in Chrome (GEiC) instead of
   // consumer Gemini, with the mock client as the GE guest. GEiC requires
@@ -310,6 +313,9 @@ class WithTestParams : public testing::WithParamInterface<TestParams> {
     }
     if (info.param.enable_embedded_pdf_bytes_extraction) {
       result.push_back("EnableEmbeddedPdfBytesExtraction");
+    }
+    if (info.param.enable_execute_js) {
+      result.push_back("EnableExecuteJs");
     }
     if (info.param.enable_ssr) {
       result.push_back("EnableSsr");
@@ -3465,6 +3471,8 @@ class GlicGetHostCapabilityApiTest : public GlicApiBrowserTest,
       enabled_features.push_back(
           {features::kAutoOpenGlicForPdf,
            {{"AutoOpenGlicForPdfWithOnboarding", "true"}}});
+    } else {
+      disabled_features.push_back(features::kAutoOpenGlicForPdf);
     }
 
     if (GetParam().skills_v2) {
@@ -3479,6 +3487,12 @@ class GlicGetHostCapabilityApiTest : public GlicApiBrowserTest,
     } else {
       disabled_features.push_back(
           page_content_annotations::kGlicEmbeddedPdfBytesExtraction);
+    }
+
+    if (GetParam().enable_execute_js) {
+      enabled_features.push_back({actor::kActorExecuteJsTool, {}});
+    } else {
+      disabled_features.push_back(actor::kActorExecuteJsTool);
     }
 
     features_.InitWithFeaturesAndParameters(enabled_features,
@@ -3511,21 +3525,45 @@ IN_PROC_BROWSER_TEST_P(GlicGetHostCapabilityApiTest, testGetHostCapabilities) {
         std::to_underlying(mojom::HostCapability::kEmbeddedPdfBytesExtraction));
   }
 #endif
-  if (GetParam().trust_first_onboarding_arm2) {
+  expected_capabilities.Append(
+      std::to_underlying(mojom::HostCapability::kMultiInstance));
+  if (base::FeatureList::IsEnabled(features::kGlicNoWebUiLoader)) {
     expected_capabilities.Append(
-        std::to_underlying(mojom::HostCapability::kTrustFirstOnboardingArm2));
-    service()->enabling().SetCompletedFre(prefs::FreStatus::kNotStarted);
+        std::to_underlying(mojom::HostCapability::kNoWebUiLoader));
+  }
+  if (service()->IsNoWebviewEnabled()) {
+    expected_capabilities.Append(
+        std::to_underlying(mojom::HostCapability::kNoWebview));
+  }
+  // GEiC requires NoWebview, even without `features::kGlicNoWebview`.
+  if (IsGeic()) {
+    EXPECT_TRUE(service()->IsNoWebviewEnabled());
+  }
+  if (base::FeatureList::IsEnabled(features::kGlicPasteEligibilityCheck)) {
+    expected_capabilities.Append(
+        std::to_underlying(mojom::HostCapability::kEnforcesPasteEligibility));
+  }
+  if (base::FeatureList::IsEnabled(features::kGlicWebDragAndDropFileUpload)) {
+    expected_capabilities.Append(
+        std::to_underlying(mojom::HostCapability::kImgWebDragDrop));
   }
   if (GetParam().auto_open_pdf) {
     expected_capabilities.Append(
         std::to_underlying(mojom::HostCapability::kPdfZeroState));
   }
-  if (GetParam().skills_v2) {
+  if (base::FeatureList::IsEnabled(features::kGlicInvoke)) {
     expected_capabilities.Append(
-        std::to_underlying(mojom::HostCapability::kSkillsV2));
+        std::to_underlying(mojom::HostCapability::kInvoke));
   }
-  expected_capabilities.Append(
-      std::to_underlying(mojom::HostCapability::kInvoke));
+  if (GetParam().trust_first_onboarding_arm2) {
+    expected_capabilities.Append(
+        std::to_underlying(mojom::HostCapability::kTrustFirstOnboardingArm2));
+    service()->enabling().SetCompletedFre(prefs::FreStatus::kNotStarted);
+  }
+  if (GlicEnabling::IsShareImageEnabledForProfile(GetProfile())) {
+    expected_capabilities.Append(std::to_underlying(
+        mojom::HostCapability::kShareAdditionalImageContext));
+  }
   if (!base::FeatureList::IsEnabled(features::kGlicLiveMode)) {
     expected_capabilities.Append(
         std::to_underlying(mojom::HostCapability::kNoLiveMode));
@@ -3539,21 +3577,27 @@ IN_PROC_BROWSER_TEST_P(GlicGetHostCapabilityApiTest, testGetHostCapabilities) {
     expected_capabilities.Append(
         std::to_underlying(mojom::HostCapability::kAttemptOtpFilling));
   }
-  if (base::FeatureList::IsEnabled(features::kGlicWebDragAndDropFileUpload)) {
+  if (GetParam().enable_execute_js) {
     expected_capabilities.Append(
-        std::to_underlying(mojom::HostCapability::kImgWebDragDrop));
+        std::to_underlying(mojom::HostCapability::kExecuteJs));
   }
-  if (base::FeatureList::IsEnabled(features::kGlicDynamicChromeTools)) {
+  if (service()->provider_spec().SupportsFeature(
+          GlicFeature::kDynamicChromeTools)) {
     expected_capabilities.Append(
         std::to_underlying(mojom::HostCapability::kChromeTools));
   }
-  if (service()->IsNoWebviewEnabled()) {
+  if (GetParam().skills_v2) {
     expected_capabilities.Append(
-        std::to_underlying(mojom::HostCapability::kNoWebview));
+        std::to_underlying(mojom::HostCapability::kSkillsV2));
   }
-  // GEiC requires NoWebview, even without `features::kGlicNoWebview`.
-  if (IsGeic()) {
-    EXPECT_TRUE(service()->IsNoWebviewEnabled());
+  if (base::FeatureList::IsEnabled(mojom::features::kGlicSendTabToSelf)) {
+    expected_capabilities.Append(
+        std::to_underlying(mojom::HostCapability::kSendTabToSelf));
+  }
+  if (base::FeatureList::IsEnabled(
+          mojom::features::kGlicAppendModelQualityClientId)) {
+    expected_capabilities.Append(
+        std::to_underlying(mojom::HostCapability::kGetModelQualityClientId));
   }
 
   ASSERT_OK(OpenGlicForActiveTab());
@@ -5922,6 +5966,7 @@ INSTANTIATE_TEST_SUITE_P(
                                .auto_open_pdf = true},
                     TestParams{.skills_v2 = true},
                     TestParams{.enable_embedded_pdf_bytes_extraction = true},
+                    TestParams{.enable_execute_js = true},
                     TestParams{.no_webview = true},
                     TestParams{.geic = true}),
     &WithTestParams::PrintTestVariant);

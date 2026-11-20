@@ -31,6 +31,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/actor/core/actor_features.h"
 #include "components/page_content_annotations/content/page_context_fetcher.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -548,6 +549,32 @@ TEST_F(GuestUtilMultiInstanceTest,
 
   EXPECT_THAT(state->host_capabilities,
               Contains(mojom::HostCapability::kSendTabToSelf));
+}
+
+TEST_F(GuestUtilMultiInstanceTest,
+       PopulateGlobalClientInitialState_ExecuteJsDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(actor::kActorExecuteJsTool);
+
+  TestingProfile* profile = CreateTestingProfile();
+  auto state = mojom::WebClientInitialState::New();
+  PopulateGlobalClientInitialState(state.get(), profile);
+
+  EXPECT_THAT(state->host_capabilities,
+              Not(Contains(mojom::HostCapability::kExecuteJs)));
+}
+
+TEST_F(GuestUtilMultiInstanceTest,
+       PopulateGlobalClientInitialState_ExecuteJsEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(actor::kActorExecuteJsTool);
+
+  TestingProfile* profile = CreateTestingProfile();
+  auto state = mojom::WebClientInitialState::New();
+  PopulateGlobalClientInitialState(state.get(), profile);
+
+  EXPECT_THAT(state->host_capabilities,
+              Contains(mojom::HostCapability::kExecuteJs));
 }
 
 TEST_F(GuestUtilTest, IsOriginAllowedGlicApiWildcardMatching) {
