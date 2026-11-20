@@ -9247,3 +9247,6 @@ crbug.com/587966203 [ Debug Linux ] external/wpt/signed-exchange/reporting/sxg-r
 crbug.com/587966203 [ Debug Linux ] virtual/split-http-cache/external/wpt/signed-exchange/reporting/sxg-reporting-navigation-cert_parse_error-downgraded.tentative.html [ Failure Pass ]
 crbug.com/587966203 [ Debug Linux ] virtual/split-http-cache/external/wpt/signed-exchange/reporting/sxg-reporting-navigation-mi_error.tentative.html [ Failure Pass ]
 crbug.com/587966203 [ Debug Linux ] virtual/split-http-cache/external/wpt/signed-exchange/reporting/sxg-reporting-navigation-ok-no-referrer.tentative.html [ Failure Pass ]
+
+# Gardener 2026-10-19
+crbug.com/570886829 [ Mac ] external/wpt/css/css-contain/contain-size-flexbox-002.html [ Failure Pass ]
