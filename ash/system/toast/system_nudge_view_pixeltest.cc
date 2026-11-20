@@ -147,7 +147,7 @@ TEST_P(SystemNudgeViewPixelTest, TitleAndLeadingImage) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("screenshot"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 2 : 2,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 3 : 3,
       GetContentsView()));
 }
 
@@ -169,7 +169,7 @@ TEST_P(SystemNudgeViewPixelTest, TitleAndLeadingImageWithButtons) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("screenshot"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 2 : 2,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 3 : 3,
       GetContentsView()));
 }
 

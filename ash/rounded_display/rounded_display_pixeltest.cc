@@ -87,7 +87,7 @@ TEST_P(RoundedDisplayPixelTest, AlwaysOnTopMaskTextures) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "always_on_top_rounded_display_mask_textures",
-      /*revision_number=*/7, Shell::GetPrimaryRootWindow()));
+      /*revision_number=*/8, Shell::GetPrimaryRootWindow()));
 }
 
 INSTANTIATE_TEST_SUITE_P(

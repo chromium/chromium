@@ -184,7 +184,7 @@ TEST_F(NetworkFeatureTilePixelTest, Ethernet) {
   ASSERT_TRUE(tile_view);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "check_tile_view",
-      /*revision_number=*/3, tile_view));
+      /*revision_number=*/4, tile_view));
 }
 
 TEST_F(NetworkFeatureTilePixelTest, Wifi) {

@@ -185,7 +185,7 @@ TEST_P(MahiErrorStatusViewPixelTest, QuestionAnswerView) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName(ErrorStatusToString(response_status_)),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 9 : 1,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 10 : 2,
       mahi_contents_view->GetViewByID(mahi_constants::ViewId::kScrollView)));
 }
 

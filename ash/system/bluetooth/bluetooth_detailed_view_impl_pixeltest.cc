@@ -136,7 +136,7 @@ TEST_P(BluetoothDetailedViewImplPixelTest, Basics) {
   // Compare pixels.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("check_view"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 12 : 1,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 13 : 2,
       detailed_view));
 }
 

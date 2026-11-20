@@ -75,7 +75,7 @@ TEST_P(NotificationCenterTrayPixelTest,
   // Check the UI of the notification center tray on the secondary display.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnSecondaryScreen(
       GenerateScreenshotName("check_view"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 3 : 0,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 4 : 1,
       tray));
 }
 

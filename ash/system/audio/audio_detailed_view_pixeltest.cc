@@ -85,7 +85,7 @@ TEST_P(AudioDetailedViewPixelTest, Basics) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("qs_audio_detailed_view"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 18 : 1,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 19 : 2,
       detailed_view));
 }
 
@@ -129,7 +129,7 @@ TEST_P(AudioDetailedViewPixelTest, ShowNoiseCancellationButton) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("qs_audio_detailed_view"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 10 : 1,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 11 : 2,
       detailed_view));
 }
 

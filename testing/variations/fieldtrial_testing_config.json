@@ -10510,27 +10510,6 @@
             ]
         }
     ],
-    "GlowUp": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20260821",
-                    "enable_features": [
-                        "RoundedIcons",
-                        "TabStripDeclutter",
-                        "ToolbarGlowUp",
-                        "WebuiRefresh2026"
-                    ]
-                }
-            ]
-        }
-    ],
     "GooglePayViaAndroidIntents": [
         {
             "platforms": [

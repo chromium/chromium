@@ -100,7 +100,7 @@ TEST_F(SnapGroupPixelTest, SnapGroupDividerBasic) {
   // Verify the snap group divider UI components on default state.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "snap_group_divider_default_state",
-      /*revision_number=*/1, divider_widget, w1_widget, w2_widget));
+      /*revision_number=*/2, divider_widget, w1_widget, w2_widget));
 
   // Move the mouse to the position that is a off the center(divider handler
   // view).
@@ -111,7 +111,7 @@ TEST_F(SnapGroupPixelTest, SnapGroupDividerBasic) {
   // Verify the snap group divider UI components on mouse hover.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "snap_group_divider_hover_state",
-      /*revision_number=*/1, divider_widget, w1_widget, w2_widget));
+      /*revision_number=*/2, divider_widget, w1_widget, w2_widget));
 }
 
 // Visual regression test partial split screen layout.
@@ -140,7 +140,7 @@ TEST_F(SnapGroupPixelTest, PartialSplit) {
   // layout.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "snap_group_partial_split",
-      /*revision_number=*/1, divider_widget, w1_widget, w2_widget));
+      /*revision_number=*/2, divider_widget, w1_widget, w2_widget));
 }
 
 // Visual regression test for `OverviewGroupItem`.
@@ -273,7 +273,7 @@ TEST_F(SnapGroupPixelTest, SnapGroupDividerBasicInPortrait) {
   // mode.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "snap_group_divider_default_state_in_portrait",
-      /*revision_number=*/1, divider_widget, w1_widget, w2_widget));
+      /*revision_number=*/2, divider_widget, w1_widget, w2_widget));
 
   // Move the mouse to the position that is a off the center(divider handler
   // view).
@@ -285,7 +285,7 @@ TEST_F(SnapGroupPixelTest, SnapGroupDividerBasicInPortrait) {
   // mode.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "snap_group_divider_hover_state_in_portrait",
-      /*revision_number=*/1, divider_widget, w1_widget, w2_widget));
+      /*revision_number=*/2, divider_widget, w1_widget, w2_widget));
 }
 
 // Visual regression test for `OverviewGroupItem` in portrait mode.

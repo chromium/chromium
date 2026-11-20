@@ -191,7 +191,7 @@ TEST_P(AppListViewPixelRTLTest, AnswerCardSearchResult) {
   UseFixedPlaceholderTextAndHideCursor(test_helper->GetSearchBoxView());
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("bubble_launcher_answer_card_search_results"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 23 : 4,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 24 : 5,
       GetAppListTestHelper()->GetBubbleView(),
       GetPrimaryShelf()->navigation_widget()));
 }
@@ -214,7 +214,7 @@ TEST_P(AppListViewPixelRTLTest, URLSearchResult) {
   UseFixedPlaceholderTextAndHideCursor(test_helper->GetSearchBoxView());
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("bubble_launcher_url_search_results"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 22 : 4,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 23 : 5,
       GetAppListTestHelper()->GetBubbleView(),
       GetPrimaryShelf()->navigation_widget()));
 }
@@ -237,7 +237,7 @@ TEST_P(AppListViewPixelRTLTest, KeyboardShortcutSearchResult) {
   UseFixedPlaceholderTextAndHideCursor(test_helper->GetSearchBoxView());
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("bubble_launcher_ks_search_results"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 10 : 2,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 11 : 3,
       GetAppListTestHelper()->GetBubbleView()));
 }
 
@@ -388,7 +388,7 @@ TEST_P(AppListViewTabletPixelTest, SearchBoxViewActive) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("search_box_view_active"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 12 : 2,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 13 : 3,
       search_box_view));
 }
 
