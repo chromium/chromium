@@ -17,9 +17,6 @@ tast.secagentd.FileEvents.user_credential
 # b/555605549
 tast.camera.CCAUISmoke.fake_vcd
 
-# b/580937362
-tast.hwsec.CrossVersionChromeLogin.ti50_r120
-
 # b/576091588
 tast.bruschetta.CopyPaste.x11_to_x11
 
