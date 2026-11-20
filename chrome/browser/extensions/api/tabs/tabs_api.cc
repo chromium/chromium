@@ -181,6 +181,19 @@ bool MatchesBool(const std::optional<bool>& boolean, bool value) {
   return !boolean || *boolean == value;
 }
 
+// Sets the audio muted state of `contents` on behalf of `extension`. The tabs
+// API is also exposed to some WebUI pages, in which case `extension` is null
+// and the change is attributed to the user. Returns false if the mute state
+// could not be updated.
+bool SetTabAudioMutedForCaller(content::WebContents& contents,
+                               bool mute,
+                               const Extension* extension) {
+  return SetTabAudioMuted(
+      &contents, mute,
+      extension ? TabMutedReason::kExtension : TabMutedReason::kAudioIndicator,
+      extension ? extension->id() : std::string());
+}
+
 bool GetTabHandleById(int tab_id,
                       content::BrowserContext& context,
                       bool include_incognito,
@@ -1452,6 +1465,42 @@ ExtensionFunction::ResponseAction TabsUpdateFunction::Run() {
     return RespondNow(Error(tabs_constants::kNotAllowedForDevToolsError));
   }
 
+  // Picture-in-Picture windows host a single tab that is always active,
+  // highlighted, unpinned, and never discarded. Also check
+  // `GetPictureInPictureOptions()` because a closing Document PiP window clears
+  // `PictureInPictureWindowManager`'s child pointer while async page unload is
+  // still in flight and the tab remains reachable by ID.
+  if (PictureInPictureWindowManager::IsChildWebContents(contents) ||
+      contents->GetPictureInPictureOptions().has_value()) {
+    // Validate all properties before applying any update so that a rejected
+    // call does not perform a partial update. Requests matching the tab's
+    // fixed state are no-ops.
+    const tabs::Update::Params::UpdateProperties& update_properties =
+        params->update_properties;
+    if (update_properties.url || update_properties.opener_tab_id ||
+        update_properties.pinned.value_or(false) ||
+        !update_properties.auto_discardable.value_or(true)) {
+      return RespondNow(
+          Error(tabs_constants::kNotAllowedForPictureInPictureError));
+    }
+    if (!update_properties.highlighted.value_or(true)) {
+      return RespondNow(
+          Error(tabs_constants::kCannotUnhighlightPictureInPictureTabError));
+    }
+    if (update_properties.muted &&
+        !SetTabAudioMutedForCaller(*contents, *update_properties.muted,
+                                   extension())) {
+      return RespondNow(Error(ErrorUtils::FormatErrorMessage(
+          kCannotUpdateMuteCaptured, base::NumberToString(tab_id))));
+    }
+    if (!has_callback()) {
+      return RespondNow(NoArguments());
+    }
+    return RespondNow(ArgumentList(tabs::Update::Results::Create(
+        CreateTabObjectHelper(contents, extension(), source_context_type(),
+                              nullptr, tab_index))));
+  }
+
   // GetTabById may return a null window for prerender tabs.
   if (!window || !ExtensionTabUtil::BrowserSupportsTabs(
                      window->GetBrowserWindowInterface())) {
@@ -1480,8 +1529,8 @@ ExtensionFunction::ResponseAction TabsUpdateFunction::Run() {
   }
 
   if (params->update_properties.muted &&
-      !SetTabAudioMuted(contents, *params->update_properties.muted,
-                        TabMutedReason::kExtension, extension()->id())) {
+      !SetTabAudioMutedForCaller(*contents, *params->update_properties.muted,
+                                 extension())) {
     return RespondNow(Error(ErrorUtils::FormatErrorMessage(
         kCannotUpdateMuteCaptured, base::NumberToString(tab_id))));
   }

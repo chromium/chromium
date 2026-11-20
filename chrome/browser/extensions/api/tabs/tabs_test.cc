@@ -11,6 +11,7 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 #include "base/feature_list.h"
 #include "base/files/scoped_temp_dir.h"
@@ -6180,6 +6181,155 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
   std::string error =
       utils::RunFunctionAndReturnError(function.get(), args, profile());
   EXPECT_EQ(tabs_constants::kNotAllowedForPictureInPictureError, error);
+}
+
+// Verifies that TabsUpdateFunction supports muting/unmuting a
+// Picture-in-Picture child WebContents hosted in a standalone WindowController,
+// treats updates matching the tab's fixed state as no-ops, and rejects all
+// other property updates without partially applying the request, including
+// while the Picture-in-Picture window is being torn down.
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, TabsUpdate_PictureInPictureWindow) {
+  content::WebContents::CreateParams create_params(profile());
+  create_params.picture_in_picture_options =
+      blink::mojom::PictureInPictureWindowOptions();
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContents::Create(create_params);
+  sessions::SessionTabHelper::CreateForWebContents(web_contents.get(),
+                                                   base::NullCallback());
+  const SessionID standalone_window_id = SessionID::NewUnique();
+  sessions::SessionTabHelper::FromWebContents(web_contents.get())
+      ->SetWindowID(standalone_window_id);
+  const int tab_id = ExtensionTabUtil::GetTabId(web_contents.get());
+  ASSERT_NE(tab_id, api::tabs::TAB_ID_NONE);
+
+  PictureInPictureWindowManager::GetInstance()->EnterDocumentPictureInPicture(
+      GetActiveWebContents(), web_contents.get());
+  ASSERT_TRUE(
+      PictureInPictureWindowManager::IsChildWebContents(web_contents.get()));
+
+  TestStandaloneWindowController standalone_controller(
+      /*base_window=*/nullptr, profile(), standalone_window_id,
+      web_contents.get());
+
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("TabsUpdatePiPTest").Build();
+  auto run_update = [&](const Extension* caller,
+                        const std::string& update_properties) {
+    auto function = base::MakeRefCounted<TabsUpdateFunction>();
+    function->set_extension(caller);
+    return utils::ToDict(utils::RunFunctionAndReturnSingleResult(
+        function.get(),
+        base::StringPrintf("[%d, %s]", tab_id, update_properties.c_str()),
+        profile()));
+  };
+  auto run_update_expect_error = [&](const std::string& update_properties) {
+    auto function = base::MakeRefCounted<TabsUpdateFunction>();
+    function->set_extension(extension.get());
+    return utils::RunFunctionAndReturnError(
+        function.get(),
+        base::StringPrintf("[%d, %s]", tab_id, update_properties.c_str()),
+        profile());
+  };
+
+  {
+    base::DictValue result = run_update(extension.get(), R"({"muted": true})");
+    EXPECT_TRUE(web_contents->IsAudioMuted());
+    EXPECT_EQ(tab_id, result.FindInt("id"));
+    EXPECT_EQ(0, result.FindInt("index"));
+    const base::DictValue* muted_info = result.FindDict("mutedInfo");
+    ASSERT_TRUE(muted_info);
+    EXPECT_EQ(true, muted_info->FindBool("muted"));
+    ASSERT_TRUE(muted_info->FindString("reason"));
+    EXPECT_EQ("extension", *muted_info->FindString("reason"));
+    ASSERT_TRUE(muted_info->FindString("extensionId"));
+    EXPECT_EQ(extension->id(), *muted_info->FindString("extensionId"));
+  }
+  {
+    base::DictValue result = run_update(extension.get(), R"({"muted": false})");
+    EXPECT_FALSE(web_contents->IsAudioMuted());
+    const base::DictValue* muted_info = result.FindDict("mutedInfo");
+    ASSERT_TRUE(muted_info);
+    EXPECT_EQ(false, muted_info->FindBool("muted"));
+  }
+  {
+    // The tabs API is also exposed to some WebUI pages, where there is no
+    // extension and the change is attributed to the user.
+    base::DictValue result = run_update(nullptr, R"({"muted": true})");
+    EXPECT_TRUE(web_contents->IsAudioMuted());
+    const base::DictValue* muted_info = result.FindDict("mutedInfo");
+    ASSERT_TRUE(muted_info);
+    EXPECT_EQ(true, muted_info->FindBool("muted"));
+    ASSERT_TRUE(muted_info->FindString("reason"));
+    EXPECT_EQ("user", *muted_info->FindString("reason"));
+    EXPECT_FALSE(muted_info->contains("extensionId"));
+  }
+  {
+    // Updates matching the tab's fixed state are no-ops.
+    base::DictValue result =
+        run_update(extension.get(),
+                   R"({"active": true, "selected": true, "highlighted": true,
+            "pinned": false, "autoDiscardable": true})");
+    EXPECT_EQ(tab_id, result.FindInt("id"));
+    EXPECT_TRUE(web_contents->IsAudioMuted());
+  }
+
+  // Each rejected property is combined with a mute change to verify that a
+  // rejected call does not perform a partial update.
+  const int opener_tab_id = ExtensionTabUtil::GetTabId(GetActiveWebContents());
+  const std::vector<std::pair<std::string, const char*>> kRejectedProperties = {
+      {R"("url": "https://example.com/")",
+       tabs_constants::kNotAllowedForPictureInPictureError},
+      {R"("pinned": true)",
+       tabs_constants::kNotAllowedForPictureInPictureError},
+      {base::StringPrintf(R"("openerTabId": %d)", opener_tab_id),
+       tabs_constants::kNotAllowedForPictureInPictureError},
+      {R"("autoDiscardable": false)",
+       tabs_constants::kNotAllowedForPictureInPictureError},
+      {R"("highlighted": false)",
+       tabs_constants::kCannotUnhighlightPictureInPictureTabError},
+  };
+  for (const auto& [properties, expected_error] : kRejectedProperties) {
+    SCOPED_TRACE(properties);
+    EXPECT_EQ(expected_error,
+              run_update_expect_error(base::StringPrintf(
+                  R"({%s, "muted": false})", properties.c_str())));
+    EXPECT_TRUE(web_contents->IsAudioMuted());
+  }
+
+  // Simulate async page unload during Document PiP teardown, where
+  // `PictureInPictureWindowManager` has already cleared its child pointer while
+  // the tab remains reachable by ID.
+  PictureInPictureWindowManager::GetInstance()->ExitPictureInPicture();
+  ASSERT_FALSE(
+      PictureInPictureWindowManager::IsChildWebContents(web_contents.get()));
+  EXPECT_EQ(tabs_constants::kNotAllowedForPictureInPictureError,
+            run_update_expect_error(
+                R"({"url": "https://example.com/", "muted": false})"));
+  EXPECT_TRUE(web_contents->IsAudioMuted());
+  run_update(extension.get(), R"({"muted": false})");
+  EXPECT_FALSE(web_contents->IsAudioMuted());
+}
+
+// Verifies that muting a regular tab through TabsUpdateFunction without an
+// extension (e.g. from WebUI) attributes the change to the user.
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, TabsUpdate_MuteWithoutExtension) {
+  content::WebContents* web_contents = GetActiveWebContents();
+  const int tab_id = ExtensionTabUtil::GetTabId(web_contents);
+  ASSERT_NE(tab_id, api::tabs::TAB_ID_NONE);
+
+  auto function = base::MakeRefCounted<TabsUpdateFunction>();
+  function->set_extension(nullptr);
+  base::DictValue result =
+      utils::ToDict(utils::RunFunctionAndReturnSingleResult(
+          function.get(),
+          base::StringPrintf(R"([%d, {"muted": true}])", tab_id), profile()));
+  EXPECT_TRUE(web_contents->IsAudioMuted());
+  const base::DictValue* muted_info = result.FindDict("mutedInfo");
+  ASSERT_TRUE(muted_info);
+  EXPECT_EQ(true, muted_info->FindBool("muted"));
+  ASSERT_TRUE(muted_info->FindString("reason"));
+  EXPECT_EQ("user", *muted_info->FindString("reason"));
+  EXPECT_FALSE(muted_info->contains("extensionId"));
 }
 
 }  // namespace extensions
