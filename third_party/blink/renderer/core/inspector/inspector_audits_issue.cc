@@ -806,6 +806,15 @@ ElementAccessibilityIssueReasonToProtocol(
     case ElementAccessibilityIssueReason::kInteractiveContentSummaryDescendant:
       return protocol::Audits::ElementAccessibilityIssueReasonEnum::
           InteractiveContentSummaryDescendant;
+    case ElementAccessibilityIssueReason::kAnchorMenuDescendant:
+      return protocol::Audits::ElementAccessibilityIssueReasonEnum::
+          AnchorMenuDescendant;
+    case ElementAccessibilityIssueReason::kInteractiveContentMenuDescendant:
+      return protocol::Audits::ElementAccessibilityIssueReasonEnum::
+          InteractiveContentMenuDescendant;
+    case ElementAccessibilityIssueReason::kTextMenuDescendant:
+      return protocol::Audits::ElementAccessibilityIssueReasonEnum::
+          TextMenuDescendant;
     case ElementAccessibilityIssueReason::kValidChild:
       NOTREACHED();
   }

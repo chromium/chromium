@@ -817,6 +817,7 @@ blink_core_tests_html = [
   "media/video_auto_fullscreen_test.cc",
   "media/video_filling_viewport_test.cc",
   "media/video_wake_lock_test.cc",
+  "menu_mutation_observer_test.cc",
   "parser/atomic_html_token_test.cc",
   "parser/background_html_scanner_test.cc",
   "parser/literal_buffer_test.cc",

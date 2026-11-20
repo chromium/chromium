@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/html_hr_element.h"
 #include "third_party/blink/renderer/core/html/html_menu_bar_element.h"
 #include "third_party/blink/renderer/core/html/html_menu_item_element_base.h"
@@ -103,6 +104,7 @@ void HTMLMenuOwnerElement::UpdateViolationModeForMenuHierarchy() {
 void HTMLMenuOwnerElement::IncreaseContentModelViolationCount() {
   ++total_violations_in_tree_;
   if (total_violations_in_tree_ == 1) {
+    UseCounter::Count(GetDocument(), WebFeature::kMenuBadContentModel);
     ScheduleViolationModeUpdate();
   }
 }

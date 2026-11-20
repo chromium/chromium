@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_mutation_observer_init.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/mutation_record.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/select_mutation_observer.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/html/html_menu_owner_element.h"
@@ -115,9 +116,37 @@ void MenuMutationObserver::AddDescendantDisallowedErrorToNode(
     return;
   }
   visited_nodes.insert(&node);
-  if (CheckForIssue(node, disconnected_root, disconnected_parent) !=
-      ElementAccessibilityIssueReason::kValidChild) {
+  const ElementAccessibilityIssueReason issue_reason =
+      CheckForIssue(node, disconnected_root, disconnected_parent);
+  if (issue_reason != ElementAccessibilityIssueReason::kValidChild) {
     menu_owner_->IncreaseContentModelViolationCount();
+    AuditsIssue::ReportElementAccessibilityIssue(
+        &menu_owner_->GetDocument(), node.GetDomNodeId(), issue_reason,
+        /* has_disallowed_attributes = */
+        SelectMutationObserver::HasTabIndexAttribute(node) ||
+            SelectMutationObserver::IsContenteditable(node));
+    RecordIssueByType(issue_reason);
+  }
+}
+
+void MenuMutationObserver::RecordIssueByType(
+    ElementAccessibilityIssueReason issue_reason) {
+  switch (issue_reason) {
+    case ElementAccessibilityIssueReason::kAnchorMenuDescendant:
+      UseCounter::Count(menu_owner_->GetDocument(),
+                        WebFeature::kAnchorMenuDescendant);
+      break;
+    case ElementAccessibilityIssueReason::kInteractiveContentMenuDescendant:
+      UseCounter::Count(menu_owner_->GetDocument(),
+                        WebFeature::kInteractiveContentMenuDescendant);
+      break;
+    case ElementAccessibilityIssueReason::kTextMenuDescendant:
+      UseCounter::Count(menu_owner_->GetDocument(),
+                        WebFeature::kTextMenuDescendant);
+      break;
+    default:
+      NOTREACHED() << "Non-menu issue_reason "
+                   << static_cast<int>(issue_reason);
   }
 }
 
@@ -129,19 +158,14 @@ ElementAccessibilityIssueReason MenuMutationObserver::CheckForIssue(
     return ElementAccessibilityIssueReason::kValidChild;
   }
 
-  // TODO(crbug.com/513637242): Return a menu-specific issue reason instead of
-  // kDisallowedSelectChild.
-  const ElementAccessibilityIssueReason kPlaceholderIssue =
-      ElementAccessibilityIssueReason::kDisallowedSelectChild;
-
   if (IsA<HTMLAnchorElement>(descendant)) {
     // This is extra strict. SelectMutationObserver::IsInteractiveElement
     // returns true only if the anchor tag has an href attribute, so this check
     // ensures <a>Blah</a> is also considered invalid.
-    return kPlaceholderIssue;
+    return ElementAccessibilityIssueReason::kAnchorMenuDescendant;
   }
   if (SelectMutationObserver::IsInteractiveElement(descendant)) {
-    return kPlaceholderIssue;
+    return ElementAccessibilityIssueReason::kInteractiveContentMenuDescendant;
   }
 
   DCHECK(!!disconnected_root == !!disconnected_parent)
@@ -166,7 +190,7 @@ ElementAccessibilityIssueReason MenuMutationObserver::CheckForIssue(
           return ElementAccessibilityIssueReason::kValidChild;
         }
         if (IsA<HTMLMenuOwnerElement>(*ancestor)) {
-          return kPlaceholderIssue;
+          return ElementAccessibilityIssueReason::kTextMenuDescendant;
         }
       }
     }

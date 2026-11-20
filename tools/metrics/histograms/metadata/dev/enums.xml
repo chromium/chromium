@@ -1354,6 +1354,10 @@ Called by update_protocol_commands_enum.py.-->
   <int value="116" label="GenericIssue::ManualTextPolicyControlledFeatureInfo"/>
   <int value="117" label="GenericIssue::GeolocationPromptWithoutUserGesture"/>
   <int value="118" label="CorsIssue::InvalidLocalNetworkAccess"/>
+  <int value="119" label="ElementAccessibilityIssue::AnchorMenuDescendant"/>
+  <int value="120"
+      label="ElementAccessibilityIssue::InteractiveContentMenuDescendant"/>
+  <int value="121" label="ElementAccessibilityIssue::TextMenuDescendant"/>
 </enum>
 
 <enum name="DevToolsIssuesPanelIssueExpanded">

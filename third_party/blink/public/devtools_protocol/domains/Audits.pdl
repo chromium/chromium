@@ -637,8 +637,11 @@ experimental domain Audits
       InteractiveContentOptionChild
       InteractiveContentLegendChild
       InteractiveContentSummaryDescendant
+      AnchorMenuDescendant
+      InteractiveContentMenuDescendant
+      TextMenuDescendant
 
-  # This issue warns about errors in the select or summary element content model.
+  # This issue warns about errors in the select, summary, or menu element content model.
   type ElementAccessibilityIssueDetails extends object
     properties
       DOM.BackendNodeId nodeId

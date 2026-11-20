@@ -34,6 +34,7 @@ class MenuMutationObserver : public MutationObserver::Delegate {
       HeapHashSet<Member<Node>>& visited_nodes,
       const Node* disconnected_root = nullptr,
       const Node* disconnected_parent = nullptr);
+  void RecordIssueByType(ElementAccessibilityIssueReason issue_reason);
   ElementAccessibilityIssueReason CheckForIssue(
       const Node& descendant,
       const Node* disconnected_root,

@@ -1,0 +1,62 @@
+Verifies that menu accessibility issues are created when the content model is not followed.
+Inspector issue: {
+    issue : {
+        code : ElementAccessibilityIssue
+        details : {
+            elementAccessibilityIssueDetails : {
+                elementAccessibilityIssueReason : AnchorMenuDescendant
+                hasDisallowedAttributes : false
+                nodeId : <number>
+            }
+        }
+    }
+}
+Inspector issue: {
+    issue : {
+        code : ElementAccessibilityIssue
+        details : {
+            elementAccessibilityIssueDetails : {
+                elementAccessibilityIssueReason : TextMenuDescendant
+                hasDisallowedAttributes : false
+                nodeId : <number>
+            }
+        }
+    }
+}
+Inspector issue: {
+    issue : {
+        code : ElementAccessibilityIssue
+        details : {
+            elementAccessibilityIssueDetails : {
+                elementAccessibilityIssueReason : InteractiveContentMenuDescendant
+                hasDisallowedAttributes : false
+                nodeId : <number>
+            }
+        }
+    }
+}
+Inspector issue: {
+    issue : {
+        code : ElementAccessibilityIssue
+        details : {
+            elementAccessibilityIssueDetails : {
+                elementAccessibilityIssueReason : InteractiveContentMenuDescendant
+                hasDisallowedAttributes : true
+                nodeId : <number>
+            }
+        }
+    }
+}
+Inspector issue: {
+    issue : {
+        code : ElementAccessibilityIssue
+        details : {
+            elementAccessibilityIssueDetails : {
+                elementAccessibilityIssueReason : TextMenuDescendant
+                hasDisallowedAttributes : false
+                nodeId : <number>
+            }
+        }
+    }
+}
+

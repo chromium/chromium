@@ -69,6 +69,9 @@ enum class ElementAccessibilityIssueReason {
   kInteractiveContentOptionChild,
   kInteractiveContentLegendChild,
   kInteractiveContentSummaryDescendant,
+  kAnchorMenuDescendant,
+  kInteractiveContentMenuDescendant,
+  kTextMenuDescendant,
   kValidChild,
 };
 

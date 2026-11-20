@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Disallowed menu element descendants</title>
+  </head>
+  <body>
+    <!-- Valid menu: no issues. -->
+    <menubar>
+      <menuitem>File</menuitem>
+      <fieldset checkable="single">
+        <legend>Legend text</legend>
+        <menuitem>Option</menuitem>
+      </fieldset>
+    </menubar>
+
+    <!-- <a> element. This produces two entries: AnchorMenuDescendant for the
+         <a>, and TextMenuDescendant for the "Link" text inside it. -->
+    <menubar>
+      <a>Link</a>
+    </menubar>
+
+    <!-- Interactive content. -->
+    <menulist>
+      <input>
+    </menulist>
+
+    <!-- Element with tabindex. -->
+    <menulist>
+      <div tabindex="0"></div>
+    </menulist>
+
+    <!-- Text outside of <menuitem> or <legend>. -->
+    <menubar>
+      Stray text
+    </menubar>
+  </body>
+</html>

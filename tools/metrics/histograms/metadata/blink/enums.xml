@@ -6938,6 +6938,10 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="6150" label="PerformanceGetEntriesWithoutType"/>
   <int value="6151" label="PerformanceGetEntriesWithType"/>
   <int value="6152" label="AudioWorkletGlobalScopePerformance"/>
+  <int value="6153" label="MenuBadContentModel"/>
+  <int value="6154" label="AnchorMenuDescendant"/>
+  <int value="6155" label="InteractiveContentMenuDescendant"/>
+  <int value="6156" label="TextMenuDescendant"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
