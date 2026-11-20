@@ -1546,6 +1546,31 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram
+    name="Autofill.AddressProfileImportCountryMatchesExplicitlyObserved.{CountryFallbackSource}"
+    enum="BooleanMatched" expires_after="2027-12-12">
+  <owner>taminob@chromium.org</owner>
+  <owner>jihadghanna@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Upon extraction of a valid address profile candidate where both a valid
+    country was explicitly observed in the form and a region code could be
+    inferred from a submitted international phone number, logs whether the
+    country from {CountryFallbackSource} matches the explicitly observed
+    country.
+
+    This metric is temporary and can be removed when the rollout of feature
+    `AutofillComplementCountryUsingPhoneNumber` is complete.
+  </summary>
+  <token key="CountryFallbackSource">
+    <variant name="PhoneNumberRegionCode"
+        summary="the submitted international phone number's region code"/>
+    <variant name="VariationsServiceCountry"
+        summary="the VariationsService latest country (only emitted when
+                 non-empty)"/>
+  </token>
+</histogram>
+
 <histogram name="Autofill.AddressProfileImportCountrySource"
     enum="AutofillAddressProfileImportCountrySource" expires_after="2027-12-12">
   <owner>taminob@chromium.org</owner>

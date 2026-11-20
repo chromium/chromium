@@ -11,6 +11,7 @@
 #include <string_view>
 #include <vector>
 
+#include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_import/addresses/autofill_profile_import_process.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
@@ -175,6 +176,15 @@ void LogAddressFormImportRequirementMetric(
 // Logs the source of the country of a profile.
 void LogAddressFormImportCountrySource(
     const ProfileImportMetadata& profile_import_metadata);
+
+// Logs whether `phone_number_country` and `variations_service_country` match
+// `explicitly_observed_country`.
+// TODO(crbug.com/509874545): Remove temporary metric once
+// `kAutofillComplementCountryUsingPhoneNumber` is launched.
+void LogAddressFormImportCountryMatchesExplicitlyObserved(
+    const AddressCountryCode& explicitly_observed_country,
+    const AddressCountryCode& phone_number_country,
+    const GeoIpCountryCode& variations_service_country);
 
 // Validates the profile import requirements and emits all the results.
 // Additionally, logs country-specific field requirement metrics.

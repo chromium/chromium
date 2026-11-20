@@ -18,6 +18,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
+#include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_cleaner.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile_comparator.h"
@@ -214,6 +216,25 @@ void LogAddressFormImportCountrySource(
     const ProfileImportMetadata& profile_import_metadata) {
   base::UmaHistogramEnumeration("Autofill.AddressProfileImportCountrySource",
                                 profile_import_metadata.country_source);
+}
+
+void LogAddressFormImportCountryMatchesExplicitlyObserved(
+    const AddressCountryCode& explicitly_observed_country,
+    const AddressCountryCode& phone_number_country,
+    const GeoIpCountryCode& variations_service_country) {
+  if (explicitly_observed_country->empty() || phone_number_country->empty() ||
+      variations_service_country->empty()) {
+    return;
+  }
+  base::UmaHistogramBoolean(
+      "Autofill.AddressProfileImportCountryMatchesExplicitlyObserved."
+      "PhoneNumberRegionCode",
+      phone_number_country == explicitly_observed_country);
+  base::UmaHistogramBoolean(
+      "Autofill.AddressProfileImportCountryMatchesExplicitlyObserved."
+      "VariationsServiceCountry",
+      base::EqualsCaseInsensitiveASCII(variations_service_country.value(),
+                                       explicitly_observed_country.value()));
 }
 
 void LogAddressFormImportRequirementMetric(const AutofillProfile& profile) {

@@ -646,6 +646,20 @@ AddressFormDataImporter::ExtractAddressProfileFromSection(
   autofill_metrics::LogZipCodeSeparatorMetric(
       candidate_profile.GetRawInfo(ADDRESS_HOME_ZIP));
   autofill_metrics::LogAddressFormImportCountrySource(import_metadata);
+  // TODO(crbug.com/509874545): Remove temporary metric once
+  // `kAutofillComplementCountryUsingPhoneNumber` is launched.
+  if (import_metadata.country_source ==
+      ProfileCountrySource::kExplicitlyObserved) {
+    if (std::optional<std::u16string> phone_region_code =
+            PhoneNumber::PhoneCombineHelper::FromObservedValues(
+                observed_field_values)
+                .GetRegionCode()) {
+      autofill_metrics::LogAddressFormImportCountryMatchesExplicitlyObserved(
+          candidate_profile.GetAddressCountryCode(),
+          AddressCountryCode(base::UTF16ToUTF8(*phone_region_code)),
+          client_->GetVariationConfigCountryCode());
+    }
+  }
 
   // At this stage, the saving of the profile can only be omitted by the
   // incognito mode but the import is not triggered if the browser is in the

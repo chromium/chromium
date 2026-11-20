@@ -1882,5 +1882,107 @@ TEST_F(AddressFormDataImporterTest,
   EXPECT_TRUE(profiles.empty());
 }
 
+// Tests that matching/mismatching phone region and VariationsService countries
+// are logged when an explicit country and international phone are observed.
+TEST_F(AddressFormDataImporterTest,
+       CountryMatchesExplicitlyObserved_InternationalPhoneAndExplicitCountry) {
+  constexpr std::string_view kPhoneHistogram =
+      "Autofill.AddressProfileImportCountryMatchesExplicitlyObserved."
+      "PhoneNumberRegionCode";
+  constexpr std::string_view kVariationsHistogram =
+      "Autofill.AddressProfileImportCountryMatchesExplicitlyObserved."
+      "VariationsServiceCountry";
+
+  // Phone ("MX") matches explicit country ("MX"); Variations ("DE") does not.
+  autofill_client().SetVariationConfigCountryCode(GeoIpCountryCode("DE"));
+  {
+    base::HistogramTester tester;
+    TypeValuePairs pairs =
+        GetDefaultProfileTypeValuePairsWithOverriddenCountry("MX");
+    ASSERT_EQ(test_api(GetAddressFormDataImporter())
+                  .ExtractAddressProfiles(
+                      *ConstructFormStructureFromTypeValuePairs(pairs))
+                  .size(),
+              1u);
+    tester.ExpectUniqueSample(kPhoneHistogram, true, 1);
+    tester.ExpectUniqueSample(kVariationsHistogram, false, 1);
+  }
+
+  // Phone ("MX") does not match explicit country ("DE"); Variations ("DE")
+  // matches.
+  {
+    base::HistogramTester tester;
+    TypeValuePairs pairs =
+        GetDefaultProfileTypeValuePairsWithOverriddenCountry("DE");
+    SetValueForType(pairs, PHONE_HOME_WHOLE_NUMBER, kDefaultPhoneMexico);
+    ASSERT_EQ(test_api(GetAddressFormDataImporter())
+                  .ExtractAddressProfiles(
+                      *ConstructFormStructureFromTypeValuePairs(pairs))
+                  .size(),
+              1u);
+    tester.ExpectUniqueSample(kPhoneHistogram, false, 1);
+    tester.ExpectUniqueSample(kVariationsHistogram, true, 1);
+  }
+}
+
+// Tests that country match metrics are omitted when no international phone
+// region, no explicit country, or no VariationsService country is present.
+TEST_F(AddressFormDataImporterTest,
+       CountryMatchesExplicitlyObserved_MissingInputs) {
+  constexpr std::string_view kPhoneHistogram =
+      "Autofill.AddressProfileImportCountryMatchesExplicitlyObserved."
+      "PhoneNumberRegionCode";
+  constexpr std::string_view kVariationsHistogram =
+      "Autofill.AddressProfileImportCountryMatchesExplicitlyObserved."
+      "VariationsServiceCountry";
+
+  // National phone number ("01578 7912345") has no inferable region code:
+  // neither variant is emitted even when VariationsService country is set.
+  autofill_client().SetVariationConfigCountryCode(GeoIpCountryCode("DE"));
+  {
+    base::HistogramTester tester;
+    TypeValuePairs pairs =
+        GetDefaultProfileTypeValuePairsWithOverriddenCountry("DE");
+    SetValueForType(pairs, PHONE_HOME_WHOLE_NUMBER, "01578 7912345");
+    ASSERT_EQ(test_api(GetAddressFormDataImporter())
+                  .ExtractAddressProfiles(
+                      *ConstructFormStructureFromTypeValuePairs(pairs))
+                  .size(),
+              1u);
+    tester.ExpectTotalCount(kPhoneHistogram, 0);
+    tester.ExpectTotalCount(kVariationsHistogram, 0);
+  }
+
+  // Missing explicit country: neither variant is emitted.
+  {
+    base::HistogramTester tester;
+    TypeValuePairs pairs =
+        GetDefaultProfileTypeValuePairsWithOverriddenCountry("");
+    SetValueForType(pairs, PHONE_HOME_WHOLE_NUMBER, kDefaultPhoneMexico);
+    ASSERT_EQ(test_api(GetAddressFormDataImporter())
+                  .ExtractAddressProfiles(
+                      *ConstructFormStructureFromTypeValuePairs(pairs))
+                  .size(),
+              1u);
+    tester.ExpectTotalCount(kPhoneHistogram, 0);
+    tester.ExpectTotalCount(kVariationsHistogram, 0);
+  }
+
+  // Empty VariationsService country: neither variant is emitted.
+  autofill_client().SetVariationConfigCountryCode(GeoIpCountryCode(""));
+  {
+    base::HistogramTester tester;
+    TypeValuePairs pairs =
+        GetDefaultProfileTypeValuePairsWithOverriddenCountry("DE");
+    ASSERT_EQ(test_api(GetAddressFormDataImporter())
+                  .ExtractAddressProfiles(
+                      *ConstructFormStructureFromTypeValuePairs(pairs))
+                  .size(),
+              1u);
+    tester.ExpectTotalCount(kPhoneHistogram, 0);
+    tester.ExpectTotalCount(kVariationsHistogram, 0);
+  }
+}
+
 }  // namespace
 }  // namespace autofill
