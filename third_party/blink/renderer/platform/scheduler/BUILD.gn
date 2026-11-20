@@ -36,7 +36,6 @@ blink_platform_sources("scheduler") {
     "common/process_time_override_coordinator.h",
     "common/scheduler_helper.cc",
     "common/scheduler_helper.h",
-    "common/scheduling_lifecycle_state.cc",
     "common/simple_main_thread_scheduler.cc",
     "common/simple_main_thread_scheduler.h",
     "common/single_thread_idle_task_runner.cc",

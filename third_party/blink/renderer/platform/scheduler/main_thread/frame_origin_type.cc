@@ -9,19 +9,6 @@
 namespace blink {
 namespace scheduler {
 
-FrameOriginType GetFrameOriginType(FrameScheduler* scheduler) {
-  DCHECK(scheduler);
-
-  if (scheduler->GetFrameType() == FrameScheduler::FrameType::kMainFrame)
-    return FrameOriginType::kMainFrame;
-
-  if (scheduler->IsCrossOriginToNearestMainFrame()) {
-    return FrameOriginType::kCrossOriginToMainFrame;
-  } else {
-    return FrameOriginType::kSameOriginToMainFrame;
-  }
-}
-
 perfetto::StaticString FrameOriginTypeToString(FrameOriginType origin) {
   switch (origin) {
     case FrameOriginType::kMainFrame:

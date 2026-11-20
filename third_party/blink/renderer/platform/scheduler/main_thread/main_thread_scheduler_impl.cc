@@ -2374,14 +2374,6 @@ MainThreadSchedulerImpl::CreateWebAgentGroupScheduler() {
   return std::make_unique<WebAgentGroupScheduler>(CreateAgentGroupScheduler());
 }
 
-void MainThreadSchedulerImpl::RemoveAgentGroupScheduler(
-    AgentGroupSchedulerImpl* agent_group_scheduler) {
-  DCHECK(main_thread_only().agent_group_schedulers);
-  DCHECK(main_thread_only().agent_group_schedulers->Contains(
-      agent_group_scheduler));
-  main_thread_only().agent_group_schedulers->erase(agent_group_scheduler);
-}
-
 AgentGroupScheduler* MainThreadSchedulerImpl::GetCurrentAgentGroupScheduler() {
   helper_.CheckOnValidThread();
   return current_agent_group_scheduler_;

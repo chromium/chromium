@@ -25,8 +25,6 @@ enum class SchedulingLifecycleState {
   kMaxValue = kStopped,
 };
 
-const char* SchedulingLifecycleStateToString(SchedulingLifecycleState state);
-
 }  // namespace scheduler
 }  // namespace blink
 

@@ -8,8 +8,6 @@
 #include "third_party/perfetto/include/perfetto/tracing/string_helpers.h"
 
 namespace blink {
-class FrameScheduler;
-
 namespace scheduler {
 
 // This enum is used for a histogram (RendererSchedulerFrameOriginType)
@@ -20,8 +18,6 @@ enum class FrameOriginType {
   kCrossOriginToMainFrame = 2,
   kMaxValue = kCrossOriginToMainFrame,
 };
-
-FrameOriginType GetFrameOriginType(FrameScheduler* frame_scheduler);
 
 perfetto::StaticString FrameOriginTypeToString(FrameOriginType origin);
 
