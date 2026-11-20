@@ -10,9 +10,9 @@ import '../internal/icons.html.js';
 
 import '../settings_page/settings_section.js';
 
+import type {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {AiPageActions} from '../ai_page/constants.js';
@@ -27,7 +27,7 @@ import {getHtml} from './glic_page.html.js';
 
 export interface SettingsGlicPageElement {
   $: {
-    glicLinkRow: HTMLElement,
+    glicLinkRow: CrLinkRowElement,
     learnMoreLabel: HTMLAnchorElement,
   };
 }
@@ -48,23 +48,8 @@ export class SettingsGlicPageElement extends SettingsGlicPageElementBase {
     return getHtml.bind(this)();
   }
 
-  static override get properties() {
-    return {
-      startIcon_: {type: String},
-    };
-  }
-
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
-  // <if expr="not _google_chrome">
-  protected accessor startIcon_: string = 'settings20:lightbulb-2';
-  // </if>
-  // <if expr="_google_chrome">
-  protected accessor startIcon_: string =
-      loadTimeData.getBoolean('glicAssetsV2Enabled') ?
-      'settings-internal:sparkv2' :
-      'settings-internal:spark';
-  // </if>
 
   protected onGlicPageClick_() {
     Router.getInstance().navigateTo(routes.GEMINI);

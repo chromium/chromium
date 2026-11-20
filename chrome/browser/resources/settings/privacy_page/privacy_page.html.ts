@@ -4,6 +4,8 @@
 
 import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
+import {routes} from '../route.js';
+
 import type {SettingsPrivacyPageElement} from './privacy_page.js';
 
 export function getHtml(this: SettingsPrivacyPageElement) {
@@ -19,34 +21,36 @@ export function getHtml(this: SettingsPrivacyPageElement) {
         @close="${this.onPrivacyGuideDialogClose_}">
     </settings-privacy-guide-dialog>
   ` : ''}
-  <cr-link-row id="clearBrowsingData" start-icon="cr:delete"
+  <cr-link-row id="clearBrowsingData"
+      start-icon="${routes.CLEAR_BROWSER_DATA.getIcon()}"
       label="$i18n{clearBrowsingData}"
       sub-label="$i18n{clearBrowsingDataDescription}"
       @click="${this.onClearBrowsingDataClick_}">
   </cr-link-row>
   ${this.isPrivacyGuideAvailable ? html`
     <cr-link-row id="privacyGuideLinkRow" class="hr"
-        start-icon="privacy20:signpost" label="$i18n{privacyGuideLabel}"
-        sub-label="$i18n{privacyGuideSublabel}"
+        start-icon="${routes.PRIVACY_GUIDE.getIcon()}"
+        label="$i18n{privacyGuideLabel}" sub-label="$i18n{privacyGuideSublabel}"
         @click="${this.onPrivacyGuideClick_}"
         role-description="$i18n{subpageArrowRoleDescription}">
     </cr-link-row>
   ` : ''}
-  <cr-link-row id="thirdPartyCookiesLinkRow" start-icon="privacy:cookie"
-      class="hr" label="${this.getThirdPartyCookiesLabel_()}"
+  <cr-link-row id="thirdPartyCookiesLinkRow"
+      start-icon="${routes.COOKIES.getIcon()}" class="hr"
+      label="${this.getThirdPartyCookiesLabel_()}"
       sub-label="${this.getThirdPartyCookiesSublabel_()}"
       @click="${this.onCookiesClick_}"
       role-description="$i18n{subpageArrowRoleDescription}">
   </cr-link-row>
-  <cr-link-row id="securityLinkRow" start-icon="privacy:lock" class="hr"
-      label="$i18n{securityPageTitle}"
+  <cr-link-row id="securityLinkRow" start-icon="${routes.SECURITY.getIcon()}"
+      class="hr" label="$i18n{securityPageTitle}"
       sub-label="$i18n{securityPageDescription}"
       @click="${this.onSecurityPageClick_}"
       role-description="$i18n{subpageArrowRoleDescription}">
   </cr-link-row>
-  <cr-link-row id="siteSettingsLinkRow" start-icon="privacy:page-info"
-      class="hr" label="$i18n{siteSettings}"
-      sub-label="$i18n{siteSettingsSublabel}"
+  <cr-link-row id="siteSettingsLinkRow"
+      start-icon="${routes.SITE_SETTINGS.getIcon()}" class="hr"
+      label="$i18n{siteSettings}" sub-label="$i18n{siteSettingsSublabel}"
       @click="${this.onSiteSettingsLinkRowClick_}"
       role-description="$i18n{subpageArrowRoleDescription}">
   </cr-link-row>

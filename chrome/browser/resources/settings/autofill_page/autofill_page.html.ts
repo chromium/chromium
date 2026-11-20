@@ -4,6 +4,8 @@
 
 import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
+import {routes} from '../route.js';
+
 import type {SettingsAutofillPageElement} from './autofill_page.js';
 
 export function getHtml(this: SettingsAutofillPageElement) {
@@ -64,7 +66,9 @@ export function getHtml(this: SettingsAutofillPageElement) {
       </cr-link-row>
       <hr>
       <div id="suggestionsFromGeminiSubLabel" class="secondary">
-        <cr-icon icon="${this.spark_}" aria-hidden="true"></cr-icon>
+        <cr-icon icon="${routes.SUGGESTIONS_FROM_GEMINI.getIcon()}"
+            aria-hidden="true">
+        </cr-icon>
         $i18n{autofillPersonalContextSettingsSummary}
       </div>
     </div>

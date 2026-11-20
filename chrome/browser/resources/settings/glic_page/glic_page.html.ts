@@ -4,14 +4,15 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
+import {routes} from '../route.js';
+
 import type {SettingsGlicPageElement} from './glic_page.js';
 
 export function getHtml(this: SettingsGlicPageElement) {
   return html`<!--_html_template_start_-->
 <settings-section page-title="$i18n{glicSectionTitle}">
   <div>
-    <!-- TODO(crbug.com/393445109) Placeholder for final icons. -->
-    <cr-link-row id="glicLinkRow" start-icon="${this.startIcon_}"
+    <cr-link-row id="glicLinkRow" start-icon="${routes.GEMINI.getIcon()}"
         label="$i18n{glicRowLabel}" @click="${this.onGlicPageClick_}">
 
       <div slot="sub-label">

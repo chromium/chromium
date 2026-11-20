@@ -41,6 +41,20 @@ suite('GlicPage', function() {
       assertEquals(
           routes.GEMINI.path, Router.getInstance().getCurrentRoute().path);
     });
+
+    test('GlicRowIcon', () => {
+      const row = page.$.glicLinkRow;
+      // <if expr="_google_chrome">
+      assertEquals(
+          loadTimeData.getBoolean('glicAssetsV2Enabled') ?
+              'settings-internal:sparkv2' :
+              'settings-internal:spark',
+          row.startIcon);
+      // </if>
+      // <if expr="not _google_chrome">
+      assertEquals('settings20:lightbulb-2', row.startIcon);
+      // </if>
+    });
   });
 
   suite('HeaderLearnMoreEnabled', () => {

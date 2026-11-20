@@ -136,6 +136,20 @@ suite('PrivacyPage', function() {
     page.$.securityLinkRow.click();
     assertEquals(routes.SECURITY, Router.getInstance().getCurrentRoute());
   });
+
+  test('rowIcons', function() {
+    const expectedIcons: Array<[string, string]> = [
+      ['#clearBrowsingData', 'cr:delete'],
+      ['#thirdPartyCookiesLinkRow', 'privacy:cookie'],
+      ['#securityLinkRow', 'privacy:lock'],
+      ['#siteSettingsLinkRow', 'privacy:page-info'],
+    ];
+    for (const [selector, icon] of expectedIcons) {
+      const row = page.shadowRoot.querySelector<CrLinkRowElement>(selector);
+      assertTrue(!!row, selector);
+      assertEquals(icon, row.startIcon, selector);
+    }
+  });
 });
 
 
@@ -285,6 +299,13 @@ suite('PrivacyGuideRow', function() {
     assertFalse(
         isChildVisible(page, '#privacyGuideLinkRow'),
         'privacyGuideLinkRow is visible');
+  });
+
+  test('privacyGuideRowIcon', function() {
+    const row =
+        page.shadowRoot.querySelector<CrLinkRowElement>('#privacyGuideLinkRow');
+    assertTrue(!!row);
+    assertEquals('privacy20:signpost', row.startIcon);
   });
 
   test('privacyGuideRowVisibleSupervisedAccount', async function() {

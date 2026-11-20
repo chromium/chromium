@@ -78,7 +78,6 @@ export class SettingsAutofillPageV2Element extends
       isShoppingEnabled_: {type: Boolean},
       isOffersAndLoyaltyCardsEnabled_: {type: Boolean},
       showSuggestionsFromGeminiSettings_: {type: Boolean},
-      spark_: {type: String},
     };
   }
 
@@ -95,15 +94,6 @@ export class SettingsAutofillPageV2Element extends
       loadTimeData.getBoolean('offersAndLoyaltyCardsSettingsEnabled');
   protected accessor showSuggestionsFromGeminiSettings_: boolean =
       loadTimeData.getBoolean('showSuggestionsFromGeminiSettings');
-  // <if expr="not _google_chrome">
-  protected accessor spark_: string = 'settings20:lightbulb';
-  // </if>
-  // <if expr="_google_chrome">
-  protected accessor spark_: string =
-      loadTimeData.getBoolean('glicAssetsV2Enabled') ?
-      'settings-internal:sparkv2' :
-      'settings-internal:spark';
-  // </if>
 
   private creditCardCount_?: number;
   private ibanCount_?: number;

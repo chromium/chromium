@@ -4,6 +4,8 @@
 
 import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
+import {routes} from '../route.js';
+
 import type {SettingsAutofillPageV2Element} from './autofill_page_v2.js';
 
 export function getHtml(this: SettingsAutofillPageV2Element) {
@@ -18,21 +20,23 @@ export function getHtml(this: SettingsAutofillPageV2Element) {
   </cr-link-row>
   <cr-link-row id="paymentManagerButton" label="$i18n{paymentsTitle}"
       sub-label="$i18n{paymentsSublabel}" @click="${this.onPaymentsClick_}"
-      start-icon="settings20:credit-card">
+      start-icon="${routes.PAYMENTS.getIcon()}">
     <span slot="icon-label">${this.paymentsCount_}</span>
   </cr-link-row>
   <cr-link-row id="addressesManagerButton" label="$i18n{addresses}"
-      sub-label="$i18n{contactInfoSublabel}" start-icon="settings20:location-on"
+      sub-label="$i18n{contactInfoSublabel}"
+      start-icon="${routes.CONTACT_INFO.getIcon()}"
       @click="${this.onContactInfoClick_}">
     <span slot="icon-label">${this.contactInfoCount_}</span>
   </cr-link-row>
   <cr-link-row id="identityManagerButton" label="$i18n{identityDocsCardTitle}"
-      sub-label="$i18n{identityDocsSublabel}" start-icon="settings20:id-card"
+      sub-label="$i18n{identityDocsSublabel}"
+      start-icon="${routes.IDENTITY_DOCS.getIcon()}"
       @click="${this.onIdentityDocsClick_}">
     <span slot="icon-label">${this.identityDocsCount_}</span>
   </cr-link-row>
   <cr-link-row id="travelManagerButton" label="$i18n{travelCardTitle}"
-      sub-label="$i18n{travelSublabel}" start-icon="settings20:travel"
+      sub-label="$i18n{travelSublabel}" start-icon="${routes.TRAVEL.getIcon()}"
       @click="${this.onTravelClick_}">
     <span slot="icon-label">${this.travelCount_}</span>
   </cr-link-row>
@@ -40,14 +44,15 @@ export function getHtml(this: SettingsAutofillPageV2Element) {
     <cr-link-row id="offersAndLoyaltyCardsManagerButton"
         label="$i18n{offersAndLoyaltyCardsCardTitle}"
         sub-label="$i18n{offersAndLoyaltyCardsSublabel}"
-        start-icon="settings20:loyalty-programs"
+        start-icon="${routes.OFFERS_AND_LOYALTY_CARDS.getIcon()}"
         @click="${this.onOffersAndLoyaltyCardsClick_}">
       <span slot="icon-label">${this.offersAndLoyaltyCardsCount_}</span>
     </cr-link-row>
   ` : ''}
   ${this.isShoppingEnabled_ ? html`
     <cr-link-row id="shoppingManagerButton" label="$i18n{shoppingCardTitle}"
-        sub-label="$i18n{shoppingSublabel}" start-icon="settings20:shopping-bag"
+        sub-label="$i18n{shoppingSublabel}"
+        start-icon="${routes.SHOPPING.getIcon()}"
         @click="${this.onShoppingClick_}">
       <span slot="icon-label">${this.shoppingCount_}</span>
     </cr-link-row>
@@ -56,7 +61,7 @@ export function getHtml(this: SettingsAutofillPageV2Element) {
     <cr-link-row id="suggestionsFromGeminiLinkRow"
         label="$i18n{autofillPersonalContextSettingsTitle}"
         sub-label="$i18n{autofillPersonalContextSettingsSummary}"
-        start-icon="${this.spark_}"
+        start-icon="${routes.SUGGESTIONS_FROM_GEMINI.getIcon()}"
         @click="${this.onSuggestionsFromGeminiClick_}">
     </cr-link-row>
   ` : ''}
