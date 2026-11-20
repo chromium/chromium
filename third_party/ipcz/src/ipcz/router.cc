@@ -22,7 +22,6 @@
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 #include "third_party/abseil-cpp/absl/synchronization/mutex.h"
 #include "util/multi_mutex_lock.h"
-#include "util/safe_math.h"
 
 namespace ipcz {
 

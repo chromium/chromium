@@ -5,8 +5,8 @@
 #include "ipcz/block_allocator_pool.h"
 
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 #include "third_party/abseil-cpp/absl/synchronization/mutex.h"
-#include "util/safe_math.h"
 
 namespace ipcz {
 
@@ -84,8 +84,8 @@ Fragment BlockAllocatorPool::Allocate() {
       }
 
       FragmentDescriptor descriptor(
-          entry->buffer_id, checked_cast<uint32_t>(offset),
-          checked_cast<uint32_t>(allocator.block_size()));
+          entry->buffer_id, base::checked_cast<uint32_t>(offset),
+          base::checked_cast<uint32_t>(allocator.block_size()));
       return Fragment::FromDescriptorUnsafe(descriptor, block);
     }
 

@@ -6,10 +6,10 @@
 
 #include <cstdint>
 
+#include "base/numerics/clamped_math.h"
 #include "ipcz/driver_memory_mapping.h"
 #include "ipcz/fragment_descriptor.h"
 #include "third_party/abseil-cpp/absl/base/macros.h"
-#include "util/safe_math.h"
 
 namespace ipcz {
 
@@ -20,7 +20,7 @@ Fragment Fragment::MappedFromDescriptor(const FragmentDescriptor& descriptor,
     return {};
   }
 
-  const uint32_t end = SaturatedAdd(descriptor.offset(), descriptor.size());
+  const uint32_t end = base::ClampAdd(descriptor.offset(), descriptor.size());
   if (end > mapping.bytes().size()) {
     return {};
   }

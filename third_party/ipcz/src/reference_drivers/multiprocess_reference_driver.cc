@@ -13,6 +13,7 @@
 
 #include "base/containers/span.h"
 #include "base/no_destructor.h"
+#include "base/numerics/safe_conversions.h"
 #include "ipcz/ipcz.h"
 #include "reference_drivers/file_descriptor.h"
 #include "reference_drivers/memfd_memory.h"
@@ -22,7 +23,6 @@
 #include "reference_drivers/wrapped_file_descriptor.h"
 #include "third_party/abseil-cpp/absl/synchronization/mutex.h"
 #include "util/ref_counted.h"
-#include "util/safe_math.h"
 
 namespace ipcz::reference_drivers {
 
@@ -240,7 +240,7 @@ class MultiprocessReferenceDriverImpl : public IpczDriver {
 
       case Object::kMemory: {
         auto memory = MultiprocessMemory::TakeFromObject(object);
-        header.memory_size = checked_cast<uint32_t>(memory->size());
+        header.memory_size = base::checked_cast<uint32_t>(memory->size());
         handles[0] = WrappedFileDescriptor::Create(memory->TakeDescriptor());
         break;
       }

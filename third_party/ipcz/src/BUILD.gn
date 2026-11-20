@@ -307,7 +307,6 @@ source_set("tests_sources") {
     "remote_portal_test.cc",
     "trap_test.cc",
     "util/ref_counted_test.cc",
-    "util/safe_math_test.cc",
   ]
 
   if (enable_multiprocess_tests) {

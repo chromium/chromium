@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 #include "ipcz/driver_memory.h"
 #include "ipcz/driver_transport.h"
 #include "ipcz/ipcz.h"
@@ -56,7 +57,8 @@ class NodeConnectorForBrokerToNonBroker : public NodeConnector {
     connect.v0()->broker_name = broker_name_;
     connect.v0()->receiver_name = new_remote_node_name_;
     connect.v0()->protocol_version = msg::kProtocolVersion;
-    connect.v0()->num_initial_portals = checked_cast<uint32_t>(num_portals());
+    connect.v0()->num_initial_portals =
+        base::checked_cast<uint32_t>(num_portals());
     connect.v0()->buffer = connect.AppendDriverObject(
         link_memory_allocation_.memory.TakeDriverObject());
     connect.v0()->padding = 0;
@@ -111,7 +113,8 @@ class NodeConnectorForNonBrokerToBroker : public NodeConnector {
     ABSL_ASSERT(node_->type() == Node::Type::kNormal);
     msg::ConnectFromNonBrokerToBroker connect;
     connect.v0()->protocol_version = msg::kProtocolVersion;
-    connect.v0()->num_initial_portals = checked_cast<uint32_t>(num_portals());
+    connect.v0()->num_initial_portals =
+        base::checked_cast<uint32_t>(num_portals());
     connect.v1()->features = node_->features().Serialize(connect);
     return IPCZ_RESULT_OK == transport_->Transmit(connect);
   }
@@ -185,7 +188,8 @@ class NodeConnectorForReferrer : public NodeConnector {
     }
 
     broker_link_->ReferNonBroker(
-        std::move(transport_for_broker_), checked_cast<uint32_t>(num_portals()),
+        std::move(transport_for_broker_),
+        base::checked_cast<uint32_t>(num_portals()),
         [connector = WrapRefCounted(this), broker = broker_link_](
             Ref<NodeLink> link_to_referred_node,
             uint32_t remote_num_initial_portals) {
@@ -226,7 +230,8 @@ class NodeConnectorForReferredNonBroker : public NodeConnector {
     ABSL_ASSERT(node_->type() == Node::Type::kNormal);
     msg::ConnectToReferredBroker connect;
     connect.v0()->protocol_version = msg::kProtocolVersion;
-    connect.v0()->num_initial_portals = checked_cast<uint32_t>(num_portals());
+    connect.v0()->num_initial_portals =
+        base::checked_cast<uint32_t>(num_portals());
     connect.v1()->features = node_->features().Serialize(connect);
     return IPCZ_RESULT_OK == transport_->Transmit(connect);
   }
@@ -450,7 +455,8 @@ class NodeConnectorForBrokerToBroker : public NodeConnector {
     msg::ConnectFromBrokerToBroker connect;
     connect.v0()->name = local_name_;
     connect.v0()->protocol_version = msg::kProtocolVersion;
-    connect.v0()->num_initial_portals = checked_cast<uint32_t>(num_portals());
+    connect.v0()->num_initial_portals =
+        base::checked_cast<uint32_t>(num_portals());
     connect.v0()->buffer = connect.AppendDriverObject(
         link_memory_allocation_.memory.TakeDriverObject());
     connect.v0()->padding = 0;

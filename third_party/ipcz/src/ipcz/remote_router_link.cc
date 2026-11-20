@@ -9,6 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 #include "ipcz/application_object.h"
 #include "ipcz/box.h"
 #include "ipcz/node_link.h"
@@ -17,7 +18,6 @@
 #include "ipcz/parcel.h"
 #include "ipcz/remote_router_link.h"
 #include "ipcz/router.h"
-#include "util/safe_math.h"
 
 namespace ipcz {
 
@@ -205,7 +205,7 @@ void RemoteRouterLink::AcceptParcel(std::unique_ptr<Parcel> parcel) {
   uint32_t num_subparcels;
   if (parcel->subparcel_index() == 0) {
     // The total subparcel count includes this (the main) parcel.
-    num_subparcels = checked_cast<uint32_t>(subparcels.size()) + 1;
+    num_subparcels = base::checked_cast<uint32_t>(subparcels.size()) + 1;
 
     // Send the other subparcels separately before sending this main one. All
     // will be collected on the receiving end and reconstituted into a single

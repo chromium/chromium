@@ -11,10 +11,10 @@
 #include <thread>
 
 #include "base/compiler_specific.h"
+#include "base/numerics/safe_conversions.h"
 #include "ipcz/block_allocator.h"
 #include "ipcz/ipcz.h"
 #include "third_party/abseil-cpp/absl/base/macros.h"
-#include "util/safe_math.h"
 
 namespace ipcz {
 
@@ -67,7 +67,7 @@ BlockAllocator::BlockAllocator(absl::Span<uint8_t> region, uint32_t block_size)
   // BlockHeader uses a signed 16-bit index to reference other blocks, and block
   // 0 must be able to reference any block; so the total number of blocks must
   // not exceed the max value of an int16_t.
-  num_blocks_ = checked_cast<int16_t>(region.size() / block_size);
+  num_blocks_ = base::checked_cast<int16_t>(region.size() / block_size);
   ABSL_ASSERT(num_blocks_ > 0);
 }
 

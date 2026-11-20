@@ -12,7 +12,6 @@
 #include "ipcz/trap_event_dispatcher.h"
 #include "third_party/abseil-cpp/absl/base/macros.h"
 #include "util/ref_counted.h"
-#include "util/safe_math.h"
 
 namespace ipcz {
 

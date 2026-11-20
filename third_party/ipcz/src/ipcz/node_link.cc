@@ -14,6 +14,7 @@
 #include <utility>
 
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 #include "ipcz/box.h"
 #include "ipcz/fragment_ref.h"
 #include "ipcz/ipcz.h"
@@ -32,7 +33,6 @@
 #include "ipcz/sublink_id.h"
 #include "third_party/abseil-cpp/absl/base/macros.h"
 #include "util/ref_counted.h"
-#include "util/safe_math.h"
 
 namespace ipcz {
 
@@ -257,7 +257,7 @@ void NodeLink::AcceptBypassLink(
 }
 
 void NodeLink::RequestMemory(size_t size, RequestMemoryCallback callback) {
-  const uint32_t size32 = checked_cast<uint32_t>(size);
+  const uint32_t size32 = base::checked_cast<uint32_t>(size);
   {
     absl::MutexLock lock(&mutex_);
     pending_memory_requests_[size32].push_back(std::move(callback));

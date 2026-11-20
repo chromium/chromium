@@ -9,6 +9,8 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/numerics/checked_math.h"
+#include "base/numerics/safe_conversions.h"
 #include "ipcz/driver_object.h"
 #include "ipcz/driver_transport.h"
 #include "ipcz/ipcz.h"
@@ -17,7 +19,6 @@
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 #include "third_party/abseil-cpp/absl/types/span.h"
-#include "util/safe_math.h"
 
 namespace ipcz {
 
@@ -203,15 +204,17 @@ uint32_t Message::AllocateGenericArray(size_t element_size,
     return 0;
   }
   size_t offset = Align(data_.size());
-  size_t num_bytes = Align(CheckAdd(sizeof(internal::ArrayHeader),
-                                    CheckMul(element_size, num_elements)));
+  size_t num_bytes =
+      Align(base::CheckAdd(sizeof(internal::ArrayHeader),
+                           base::CheckMul(element_size, num_elements))
+                .ValueOrDie());
 
   ABSL_ASSERT(inlined_data_);
-  inlined_data_->resize(CheckAdd(offset, num_bytes));
+  inlined_data_->resize(base::CheckAdd(offset, num_bytes).ValueOrDie());
   data_ = absl::MakeSpan(*inlined_data_);
   auto& header = *reinterpret_cast<internal::ArrayHeader*>(&data_[offset]);
-  header.num_bytes = checked_cast<uint32_t>(num_bytes);
-  header.num_elements = checked_cast<uint32_t>(num_elements);
+  header.num_bytes = base::checked_cast<uint32_t>(num_bytes);
+  header.num_elements = base::checked_cast<uint32_t>(num_elements);
   return offset;
 }
 
@@ -220,7 +223,7 @@ uint32_t Message::AppendDriverObject(DriverObject object) {
     return internal::kInvalidDriverObjectIndex;
   }
 
-  const uint32_t index = checked_cast<uint32_t>(driver_objects_.size());
+  const uint32_t index = base::checked_cast<uint32_t>(driver_objects_.size());
   driver_objects_.push_back(std::move(object));
   return index;
 }
@@ -228,8 +231,9 @@ uint32_t Message::AppendDriverObject(DriverObject object) {
 internal::DriverObjectArrayData Message::AppendDriverObjects(
     absl::Span<DriverObject> objects) {
   const internal::DriverObjectArrayData data = {
-      .first_object_index = checked_cast<uint32_t>(driver_objects_.size()),
-      .num_objects = checked_cast<uint32_t>(objects.size()),
+      .first_object_index =
+          base::checked_cast<uint32_t>(driver_objects_.size()),
+      .num_objects = base::checked_cast<uint32_t>(objects.size()),
   };
   driver_objects_.reserve(driver_objects_.size() + objects.size());
   for (auto& object : objects) {

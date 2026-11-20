@@ -16,12 +16,12 @@
 
 #include "base/base_switches.h"
 #include "base/compiler_specific.h"
+#include "base/numerics/safe_conversions.h"
 #include "reference_drivers/handle_eintr.h"
 #include "test/multinode_test.h"
 #include "third_party/abseil-cpp/absl/base/macros.h"
 #include "third_party/abseil-cpp/absl/strings/numbers.h"
 #include "third_party/abseil-cpp/absl/strings/str_cat.h"
-#include "util/safe_math.h"
 
 namespace ipcz::test {
 
@@ -62,7 +62,7 @@ int GetMaxFds() {
   struct rlimit num_files;
   int result = getrlimit(RLIMIT_NOFILE, &num_files);
   ABSL_ASSERT(result == 0);
-  return checked_cast<int>(num_files.rlim_cur);
+  return base::checked_cast<int>(num_files.rlim_cur);
 }
 
 }  // namespace

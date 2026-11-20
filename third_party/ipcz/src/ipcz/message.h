@@ -10,6 +10,7 @@
 #include <cstdint>
 #include <optional>
 
+#include "base/numerics/checked_math.h"
 #include "ipcz/driver_object.h"
 #include "ipcz/driver_transport.h"
 #include "ipcz/ipcz.h"
@@ -17,7 +18,6 @@
 #include "third_party/abseil-cpp/absl/base/macros.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 #include "third_party/abseil-cpp/absl/types/span.h"
-#include "util/safe_math.h"
 
 namespace ipcz {
 
@@ -329,19 +329,21 @@ class IPCZ_ALIGN(8) Message {
 
     // NOTE: Any offset plugged into this method must be validated ahead of
     // time.
-    ABSL_ASSERT(CheckAdd(offset, sizeof(internal::ArrayHeader)) <=
-                data_.size());
+    ABSL_ASSERT(
+        base::CheckAdd(offset, sizeof(internal::ArrayHeader)).ValueOrDie() <=
+        data_.size());
     auto& header = *reinterpret_cast<internal::ArrayHeader*>(
         data_.subspan(offset, sizeof(internal::ArrayHeader)).data());
 
     // The ArrayHeader itself must also have been validated already to ensure
     // that the span of array contents will not exceed the bounds of `data_`.
     ABSL_ASSERT(
-        CheckAdd(CheckAdd(offset, sizeof(internal::ArrayHeader)),
-                 CheckMul(sizeof(ElementType), size_t{header.num_elements})) <=
-        data_.size());
-    ABSL_ASSERT(CheckMul(sizeof(ElementType), size_t{header.num_elements}) <=
-                header.num_bytes);
+        base::CheckAdd(offset, sizeof(internal::ArrayHeader),
+                       base::CheckMul(sizeof(ElementType), header.num_elements))
+            .ValueOrDie() <= data_.size());
+    ABSL_ASSERT(
+        base::CheckMul(sizeof(ElementType), header.num_elements).ValueOrDie() <=
+        header.num_bytes);
     auto sub = data_.subspan(offset + sizeof(internal::ArrayHeader),
                              sizeof(ElementType) * header.num_elements);
     return absl::MakeSpan(reinterpret_cast<ElementType*>(sub.data()),
@@ -354,7 +356,8 @@ class IPCZ_ALIGN(8) Message {
   T& GetValueAt(size_t data_offset) {
     // NOTE: Any offset plugged into this method must be validated ahead of
     // time.
-    ABSL_ASSERT(CheckAdd(data_offset, sizeof(T)) <= data_.size());
+    ABSL_ASSERT(base::CheckAdd(data_offset, sizeof(T)).ValueOrDie() <=
+                data_.size());
     return *reinterpret_cast<T*>(&data_[data_offset]);
   }
 
@@ -370,7 +373,8 @@ class IPCZ_ALIGN(8) Message {
   T& GetParamValueAt(size_t param_offset) {
     // NOTE: Any offset plugged into this method must be validated ahead of
     // time.
-    ABSL_ASSERT(CheckAdd(param_offset, sizeof(T)) <= params_data_view().size());
+    ABSL_ASSERT(base::CheckAdd(param_offset, sizeof(T)).ValueOrDie() <=
+                params_data_view().size());
     return GetValueAt<T>(header().size + param_offset);
   }
 

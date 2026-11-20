@@ -131,7 +131,7 @@ stable C interfaces, which was called 'standalone' mode. In order to support
 standalone mode, `//base` was not allowed as a dependency. The standalone mode
 is no longer supported by ipcz. In particular, currently using `//base` is
 allowed, but a few of its polyfills are still referenced in code (like
-`safe_math.h`) until they are factored out.
+`ref_counted.h`) until they are factored out.
 
 ## Design
 Some extensive coverage of ipcz design details can be found
