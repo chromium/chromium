@@ -6,25 +6,37 @@
 
 #include "base/android/android_info.h"
 #include "base/android/device_info.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "chrome/browser/android/tab_android.h"
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
+#include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
+#include "chrome/browser/enterprise/connectors/test/fake_content_analysis_delegate.h"
 #include "chrome/browser/glic/host/context/glic_sharing_utils.h"
 #include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/test_support/glic_api_test.h"
+#include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
+#include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/enterprise/buildflags/buildflags.h"
+#include "components/enterprise/connectors/core/features.h"
 #include "components/page_content_annotations/content/page_context_fetcher_metrics.h"
+#include "components/policy/core/common/cloud/dm_token.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_frame_host.h"
@@ -263,6 +275,150 @@ IN_PROC_BROWSER_TEST_F(GlicAndroidMojoBrowserTest,
   tab_android->SetPdfNativePageForTesting("", "");
 }
 #endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
+
+class GlicAndroidPdfContentAnalysisBrowserTest : public GlicBrowserTest {
+ public:
+  using FakeDelegate = enterprise_connectors::test::FakeContentAnalysisDelegate;
+
+  GlicAndroidPdfContentAnalysisBrowserTest() {
+    feature_list_.InitAndEnableFeature(
+        enterprise_connectors::kEnableFileAttachedEnterpriseScanOnClank);
+  }
+
+  void SetUpOnMainThread() override {
+    GlicBrowserTest::SetUpOnMainThread();
+    enterprise_connectors::ContentAnalysisDelegate::DisableUIForTesting();
+    FakeDelegate::ResetStaticDialogFlagsAndTotalRequestsCount();
+    FakeDelegate::SetResponseDelay(base::Milliseconds(0));
+    policy::SetDMTokenForTesting(
+        policy::DMToken::CreateValidToken("fake-dm-token"));
+    enterprise_connectors::test::SetAnalysisConnector(
+        GetProfile()->GetPrefs(), enterprise_connectors::FILE_ATTACHED,
+        R"({
+          "service_provider": "google",
+          "enable": [
+            {
+              "url_list": ["*"],
+              "tags": ["dlp"]
+            }
+          ],
+          "block_until_verdict": 1,
+          "minimum_data_size": 1
+        })");
+  }
+
+  void TearDownOnMainThread() override {
+    enterprise_connectors::test::ClearAnalysisConnector(
+        GetProfile()->GetPrefs(), enterprise_connectors::FILE_ATTACHED);
+    enterprise_connectors::ContentAnalysisDelegate::EnableUIAfterTesting();
+    enterprise_connectors::ContentAnalysisDelegate::ResetFactoryForTesting();
+    FakeDelegate::SetResponseDelay(base::Milliseconds(0));
+    FakeDelegate::ResetStaticDialogFlagsAndTotalRequestsCount();
+    policy::SetDMTokenForTesting(policy::DMToken::CreateEmptyToken());
+    GlicBrowserTest::TearDownOnMainThread();
+  }
+
+ protected:
+  void SetScanResponse(
+      enterprise_connectors::ContentAnalysisResponse response) {
+    enterprise_connectors::ContentAnalysisDelegate::SetFactoryForTesting(
+        base::BindRepeating(&FakeDelegate::Create, base::DoNothing(),
+                            base::BindLambdaForTesting(
+                                [this, response](const std::string& contents,
+                                                 const base::FilePath& path) {
+                                  scanned_path_ = path;
+                                  return response;
+                                }),
+                            "fake-dm-token"));
+  }
+
+  base::FilePath scanned_path_;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests that FILE_ATTACHED content analysis scans PDF bytes extracted from an
+// Android PDF tab via a temporary file, omitting `pdf_document_data` on a
+// BLOCK verdict while keeping sibling context fields, and keeping
+// `pdf_document_data` on an ALLOW verdict.
+IN_PROC_BROWSER_TEST_F(GlicAndroidPdfContentAnalysisBrowserTest,
+                       BlockAndAllowVerdicts) {
+  if (base::android::android_info::sdk_int() <
+      base::android::android_info::SDK_VERSION_V) {
+    GTEST_SKIP() << "Android inline PDF requires Android V+.";
+  }
+
+  static constexpr char kPdfContent[] =
+      "%PDF-1.4\n1 0 obj <<>> endobj\ntrailer <<>>\n%%EOF\n";
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath pdf_path = temp_dir.GetPath().AppendASCII("test.pdf");
+  ASSERT_TRUE(base::WriteFile(pdf_path, kPdfContent));
+
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  ASSERT_TRUE(tab);
+  GURL file_url = net::FilePathToFileURL(pdf_path);
+  GURL pdf_url(
+      "chrome-native://pdf/link?url=" +
+      base::EscapeQueryParamValue(file_url.spec(), /*use_plus=*/false));
+  TabAndroid* tab_android = TabAndroid::FromTabInterface(tab);
+  ASSERT_TRUE(tab_android);
+  tab_android->SetPdfNativePageForTesting(pdf_url.spec(), pdf_path.value());
+  ASSERT_TRUE(content::NavigateToURL(tab->GetContents(), pdf_url));
+  ASSERT_TRUE(tab_android->IsPdf());
+  base::ScopedClosureRunner clear_pdf(base::BindOnce(
+      [](TabAndroid* tab_android) {
+        tab_android->SetPdfNativePageForTesting("", "");
+      },
+      tab_android));
+
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
+  ASSERT_TRUE(WaitForGlicClient(instance).has_value());
+  instance->GetSharingManagerInternal().PinTabs({tab->GetHandle()});
+
+  auto options = mojom::TabContextOptions::New();
+  options->inner_text = true;
+  options->inner_text_bytes_limit = 1000;
+  options->pdf_data = true;
+  options->pdf_size_limit = 100000;
+
+  // 1. A BLOCK verdict omits only the PDF bytes and deletes the temp file.
+  SetScanResponse(FakeDelegate::DlpResponse(
+      enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS,
+      "block-rule",
+      enterprise_connectors::ContentAnalysisResponse::Result::TriggeredRule::
+          BLOCK));
+  {
+    base::test::TestFuture<GlicGetContextResult> future;
+    instance->GetSharingManagerInternal().GetContextFromTab(
+        tab->GetHandle(), *options, future.GetCallback());
+    GlicGetContextResult result = future.Take();
+    ASSERT_TRUE(result.has_value());
+    ASSERT_TRUE(result.value()->is_tab_context());
+    const auto& tab_context = result.value()->get_tab_context();
+    EXPECT_FALSE(tab_context->pdf_document_data);
+    EXPECT_TRUE(tab_context->web_page_data);
+  }
+  ASSERT_FALSE(scanned_path_.empty());
+  EXPECT_TRUE(base::test::RunUntil(
+      [this]() { return !base::PathExists(scanned_path_); }));
+
+  // 2. An ALLOW verdict preserves the PDF bytes.
+  SetScanResponse(FakeDelegate::SuccessfulResponse({"dlp"}));
+  {
+    base::test::TestFuture<GlicGetContextResult> future;
+    instance->GetSharingManagerInternal().GetContextFromTab(
+        tab->GetHandle(), *options, future.GetCallback());
+    GlicGetContextResult result = future.Take();
+    ASSERT_TRUE(result.has_value());
+    ASSERT_TRUE(result.value()->is_tab_context());
+    const auto& tab_context = result.value()->get_tab_context();
+    ASSERT_TRUE(tab_context->pdf_document_data);
+    EXPECT_TRUE(tab_context->pdf_document_data->pdf_data.has_value());
+  }
+}
 
 // Tests that Mojo pipe stays resilient when device screen orientation changes.
 IN_PROC_BROWSER_TEST_F(GlicAndroidMojoBrowserTest,

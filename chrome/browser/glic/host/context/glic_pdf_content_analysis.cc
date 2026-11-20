@@ -12,12 +12,13 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "build/build_config.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/page_content_annotations/content/page_context_fetcher.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/page.h"
 
-#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS) || BUILDFLAG(IS_ANDROID)
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -33,11 +34,16 @@
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
-#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS) || BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/feature_list.h"
+#include "components/enterprise/connectors/core/features.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace glic {
 
-#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS) || BUILDFLAG(IS_ANDROID)
 namespace {
 
 bool IsShowingPage(const base::WeakPtr<tabs::TabInterface>& tab,
@@ -73,6 +79,15 @@ content::WebContents* GetGlicGuestWebContents(
 // connector, or nullopt if no scan is needed.
 std::optional<enterprise_connectors::ContentAnalysisDelegate::Data>
 GetPdfScanData(const base::WeakPtr<tabs::TabInterface>& tab) {
+#if BUILDFLAG(IS_ANDROID)
+  // OnFileAttachedEnterpriseConnector is marked `future_on` on Android while
+  // Clank upload scanning rolls out behind this flag alongside FileSelectHelper
+  // and drag-and-drop.
+  if (!base::FeatureList::IsEnabled(
+          enterprise_connectors::kEnableFileAttachedEnterpriseScanOnClank)) {
+    return std::nullopt;
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
   Profile* profile =
       Profile::FromBrowserContext(tab->GetContents()->GetBrowserContext());
   enterprise_connectors::ContentAnalysisDelegate::Data data;
@@ -165,7 +180,7 @@ void StartPdfContentAnalysis(
 }
 
 }  // namespace
-#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS) || BUILDFLAG(IS_ANDROID)
 
 void MaybeScanPdfForFileAttached(
     base::WeakPtr<tabs::TabInterface> tab,
@@ -173,7 +188,7 @@ void MaybeScanPdfForFileAttached(
     std::unique_ptr<page_content_annotations::FetchPageContextResult>
         page_context,
     PdfContentAnalysisCallback callback) {
-#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS) || BUILDFLAG(IS_ANDROID)
   // Glic requests PDF bytes exclusively; only those are scanned and shared.
   auto* pdf_bytes =
       page_context->pdf_result
@@ -192,7 +207,7 @@ void MaybeScanPdfForFileAttached(
       return;
     }
   }
-#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS) || BUILDFLAG(IS_ANDROID)
   std::move(callback).Run(std::move(page_context));
 }
 

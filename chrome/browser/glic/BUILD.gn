@@ -1426,15 +1426,18 @@ source_set("browser_tests") {
     ]
     deps += [
       "//chrome/app:generated_resources",
+      "//chrome/browser/enterprise/connectors/test:test_support",
       "//chrome/browser/glic/android",
       "//chrome/browser/glic/browser_ui",
       "//chrome/browser/glic/browser_ui:impl",
+      "//chrome/browser/policy:test_support",
       "//chrome/browser/ui/side_panel",
       "//chrome/browser/ui/side_panel/android",
       "//chrome/test:test_support_ui_android",
       "//chrome/test/data/webui/glic:generate_test_files",
       "//components/messages/android:test_support",
       "//components/page_content_annotations/content:metrics",
+      "//components/policy/core/common",
       "//ui/android",
       "//ui/base",
     ]
