@@ -10,10 +10,13 @@
 #import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/fullscreen/coordinator/fullscreen_mediator.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
+#import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/fullscreen_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
+#import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/tab_test_util.h"
 #import "ios/testing/earl_grey/earl_grey_app.h"
@@ -109,6 +112,21 @@ constexpr NSTimeInterval kTouchTimeout = 10.0;
     return NO;
   }
   return fullscreenController->IsScrolledToBottomForTesting();
+}
+
++ (CGFloat)secondaryToolbarTopInWindow {
+  Browser* browser = chrome_test_util::GetCurrentBrowser();
+  if (!browser) {
+    return 0.0;
+  }
+  UIView* secondaryToolbar = [LayoutGuideCenterForBrowser(browser)
+      referencedViewUnderName:kSecondaryToolbarGuide];
+  if (!secondaryToolbar || !secondaryToolbar.window) {
+    return 0.0;
+  }
+  return [secondaryToolbar convertRect:secondaryToolbar.bounds
+                                toView:secondaryToolbar.window]
+      .origin.y;
 }
 
 + (id<GREYAction>)dragWithoutDecelerationInDirection:(GREYDirection)direction

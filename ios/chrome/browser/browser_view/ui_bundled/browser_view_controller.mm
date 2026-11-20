@@ -3165,13 +3165,9 @@ bool IsFullscreenNextIAEnabled() {
                                           curve:(UIViewAnimationCurve)curve {
   CHECK(ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET);
   _isSecondaryToolbarAboveKeyboard = (keyboardHeight > 0);
-  CGFloat keyboardAttachedOffset =
-      keyboardHeight +
-      self.toolbarCoordinator.keyboardAttachedBottomOmniboxHeight;
   CGFloat baseHeight = [self secondaryToolbarHeightWithInset];
-  CGFloat offsetRequired = isCollapsed
-                               ? keyboardAttachedOffset
-                               : MAX(keyboardAttachedOffset, baseHeight);
+  CGFloat offsetRequired =
+      isCollapsed ? keyboardHeight : MAX(keyboardHeight, baseHeight);
 
   // No need to start an animation when the offset is already set.
   BOOL alreadyInPosition =

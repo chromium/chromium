@@ -25,6 +25,9 @@
 #import "ios/chrome/browser/autofill/form_input_accessory/ui/form_suggestion_label.h"
 #import "ios/chrome/browser/autofill/form_input_accessory/ui/form_suggestion_view.h"
 #import "ios/chrome/browser/autofill/model/features.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/toolbar/legacy/ui_bundled/public/toolbar_utils.h"
+#import "ios/chrome/browser/toolbar/ui/toolbar_constants.h"
 #import "ios/chrome/common/ui/elements/form_input_accessory_view.h"
 #import "ios/chrome/common/ui/elements/form_input_accessory_view_text_data.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -129,6 +132,69 @@ FormSuggestion* PasskeyFormSuggestion(NSString* username,
       fieldByFieldFillingTypeUsed:autofill::FieldType::EMPTY_TYPE
                    requiresReauth:YES
        acceptanceA11yAnnouncement:nil];
+}
+
+// Returns the height constraint constant of `_omniboxTypingShield` inside
+// `accessory_view`.
+CGFloat OmniboxTypingShieldHeightConstant(UIView* accessory_view) {
+  UIView* shield = chrome_test_util::FindViewById(
+      accessory_view,
+      kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID);
+  if (!shield) {
+    ADD_FAILURE() << "Missing omnibox typing shield subview.";
+    return -1.0;
+  }
+  for (NSLayoutConstraint* constraint in shield.constraints) {
+    if (constraint.firstItem == shield &&
+        constraint.firstAttribute == NSLayoutAttributeHeight &&
+        constraint.secondItem == nil) {
+      return constraint.constant;
+    }
+  }
+  ADD_FAILURE() << "Missing height constraint on omnibox typing shield.";
+  return -1.0;
+}
+
+// Updates `controller`'s size-class traits and omnibox position, then returns
+// the resulting omnibox typing shield height constraint constant.
+CGFloat TypingShieldHeightForTraits(
+    FormInputAccessoryViewController* controller,
+    UIUserInterfaceSizeClass horizontal,
+    UIUserInterfaceSizeClass vertical,
+    BOOL is_bottom_omnibox,
+    UIContentSizeCategory content_size_category = UIContentSizeCategoryLarge) {
+  controller.traitOverrides.preferredContentSizeCategory =
+      content_size_category;
+  controller.traitOverrides.horizontalSizeClass = horizontal;
+  controller.traitOverrides.verticalSizeClass = vertical;
+  [controller newOmniboxPositionIsBottom:is_bottom_omnibox];
+  return OmniboxTypingShieldHeightConstant(controller.view);
+}
+
+// Creates a `FormInputAccessoryViewController` attached to
+// `navigation_delegate` so `FormInputAccessoryView` initializes its full view
+// hierarchy (including the omnibox typing shield).
+FormInputAccessoryViewController* CreateControllerWithNavigationDelegate(
+    id<FormInputAccessoryViewDelegate> navigation_delegate) {
+  FormInputAccessoryViewController* controller =
+      [[FormInputAccessoryViewController alloc]
+          initWithFormInputAccessoryViewControllerDelegate:nil];
+  controller.brandingViewController = [[BrandingViewController alloc] init];
+  controller.navigationDelegate = navigation_delegate;
+  [controller loadView];
+  return controller;
+}
+
+// Creates a mock `FormInputAccessoryViewDelegate` that returns stubbed text
+// data.
+id<FormInputAccessoryViewDelegate> CreateNavigationDelegateMock() {
+  id<FormInputAccessoryViewDelegate> delegate_mock =
+      OCMProtocolMock(@protocol(FormInputAccessoryViewDelegate));
+  FormInputAccessoryViewTextData* text_data_mock =
+      OCMClassMock([FormInputAccessoryViewTextData class]);
+  OCMStub([delegate_mock textDataforFormInputAccessoryView:[OCMArg any]])
+      .andReturn(text_data_mock);
+  return delegate_mock;
 }
 
 }  // namespace
@@ -726,4 +792,102 @@ TEST_F(FormInputAccessoryViewControllerTest,
       kFetchingAmbientDataStepDuration, 1);
   histogram_tester.ExpectTotalCount(kFetchingAmbientDataShownToRemovedHistogram,
                                     2);
+}
+
+// Tests that the omnibox typing shield height matches `ToolbarCollapsedHeight`
+// in split toolbar mode and is zero otherwise when `kChromeNextIa` is disabled.
+TEST_F(FormInputAccessoryViewControllerTest, OmniboxTypingShieldHeight_Legacy) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kChromeNextIa);
+
+  id<FormInputAccessoryViewDelegate> delegate_mock =
+      CreateNavigationDelegateMock();
+  FormInputAccessoryViewController* controller =
+      CreateControllerWithNavigationDelegate(delegate_mock);
+
+  // Portrait (Compact x Regular) with bottom omnibox.
+  EXPECT_EQ(
+      TypingShieldHeightForTraits(controller, UIUserInterfaceSizeClassCompact,
+                                  UIUserInterfaceSizeClassRegular,
+                                  /*is_bottom_omnibox=*/YES),
+      ToolbarCollapsedHeight(UIContentSizeCategoryLarge));
+
+  // Portrait with top omnibox has no typing shield.
+  EXPECT_EQ(
+      TypingShieldHeightForTraits(controller, UIUserInterfaceSizeClassCompact,
+                                  UIUserInterfaceSizeClassRegular,
+                                  /*is_bottom_omnibox=*/NO),
+      0.0);
+
+  // Landscape has no typing shield when `kChromeNextIa` is disabled.
+  EXPECT_EQ(
+      TypingShieldHeightForTraits(controller, UIUserInterfaceSizeClassCompact,
+                                  UIUserInterfaceSizeClassCompact,
+                                  /*is_bottom_omnibox=*/YES),
+      0.0);
+}
+
+// Tests that the omnibox typing shield includes the Next IA keyboard-attached
+// padding in portrait and landscape when `kChromeNextIa` is enabled.
+TEST_F(FormInputAccessoryViewControllerTest,
+       OmniboxTypingShieldHeight_ChromeNextIa) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kChromeNextIa);
+
+  id<FormInputAccessoryViewDelegate> delegate_mock =
+      CreateNavigationDelegateMock();
+  FormInputAccessoryViewController* controller =
+      CreateControllerWithNavigationDelegate(delegate_mock);
+
+  // Unspecified size classes should not produce a non-zero typing shield.
+  EXPECT_EQ(TypingShieldHeightForTraits(controller,
+                                        UIUserInterfaceSizeClassUnspecified,
+                                        UIUserInterfaceSizeClassUnspecified,
+                                        /*is_bottom_omnibox=*/YES),
+            0.0);
+
+  // Portrait (Compact x Regular): collapsed height + portrait padding.
+  EXPECT_EQ(
+      TypingShieldHeightForTraits(controller, UIUserInterfaceSizeClassCompact,
+                                  UIUserInterfaceSizeClassRegular,
+                                  /*is_bottom_omnibox=*/YES),
+      ToolbarCollapsedHeight(UIContentSizeCategoryLarge) +
+          kKeyboardAttachedOmniboxBottomPadding);
+
+  // Portrait with larger Dynamic Type scales with `ToolbarCollapsedHeight`.
+  EXPECT_EQ(
+      TypingShieldHeightForTraits(controller, UIUserInterfaceSizeClassCompact,
+                                  UIUserInterfaceSizeClassRegular,
+                                  /*is_bottom_omnibox=*/YES,
+                                  UIContentSizeCategoryAccessibilityExtraLarge),
+      ToolbarCollapsedHeight(UIContentSizeCategoryAccessibilityExtraLarge) +
+          kKeyboardAttachedOmniboxBottomPadding);
+
+  // Landscape (Compact x Compact): full landscape height.
+  EXPECT_EQ(
+      TypingShieldHeightForTraits(controller, UIUserInterfaceSizeClassCompact,
+                                  UIUserInterfaceSizeClassCompact,
+                                  /*is_bottom_omnibox=*/YES),
+      kKeyboardAttachedOmniboxBottomPaddingLandscape);
+
+  // Landscape on larger phones (Regular x Compact): full landscape height.
+  EXPECT_EQ(
+      TypingShieldHeightForTraits(controller, UIUserInterfaceSizeClassRegular,
+                                  UIUserInterfaceSizeClassCompact,
+                                  /*is_bottom_omnibox=*/YES),
+      kKeyboardAttachedOmniboxBottomPaddingLandscape);
+
+  // Regular x Regular (tablet): no typing shield.
+  EXPECT_EQ(
+      TypingShieldHeightForTraits(controller, UIUserInterfaceSizeClassRegular,
+                                  UIUserInterfaceSizeClassRegular,
+                                  /*is_bottom_omnibox=*/YES),
+      0.0);
+
+  // Top omnibox in portrait: no typing shield.
+  EXPECT_EQ(
+      TypingShieldHeightForTraits(controller, UIUserInterfaceSizeClassCompact,
+                                  UIUserInterfaceSizeClassRegular,
+                                  /*is_bottom_omnibox=*/NO),
+      0.0);
 }

@@ -31,6 +31,7 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/public/toolbar_utils.h"
+#import "ios/chrome/browser/toolbar/ui/toolbar_constants.h"
 #import "ios/chrome/common/ui/elements/form_input_accessory_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -169,6 +170,30 @@ bool ContainsFetchingAmbientDataSuggestion(
     }
   }
   return false;
+}
+
+// Returns the height of the transparent omnibox typing shield reserved at the
+// top of `FormInputAccessoryView` so the keyboard frame (and WebKit's
+// `visualViewport`) accounts for the collapsed bottom omnibox.
+CGFloat OmniboxTypingShieldHeight(bool is_bottom_omnibox,
+                                  UITraitCollection* trait_collection) {
+  if (!is_bottom_omnibox) {
+    return 0.0;
+  }
+  if (IsSplitToolbarMode(trait_collection)) {
+    CGFloat height =
+        ToolbarCollapsedHeight(trait_collection.preferredContentSizeCategory);
+    if (IsChromeNextIaEnabled()) {
+      height += kKeyboardAttachedOmniboxBottomPadding;
+    }
+    return height;
+  }
+  if (IsChromeNextIaEnabled() && IsIPhoneLandscape(trait_collection)) {
+    // In landscape, split toolbar mode is off, so this constant already
+    // accounts for the full collapsed bottom omnibox height above the keyboard.
+    return kKeyboardAttachedOmniboxBottomPaddingLandscape;
+  }
+  return 0.0;
 }
 
 }  // namespace
@@ -796,14 +821,9 @@ UIImage* GetManualFillSymbol(id<UITraitEnvironment> trait_environment) {
   if (!self.formInputAccessoryView) {
     return;
   }
-  const BOOL shouldShowTypingShield =
-      _isBottomOmnibox && IsSplitToolbarMode(self.traitCollection);
-  const CGFloat typingShieldHeight =
-      shouldShowTypingShield
-          ? ToolbarCollapsedHeight(
-                self.traitCollection.preferredContentSizeCategory)
-          : 0.0;
-  [self.formInputAccessoryView setOmniboxTypingShieldHeight:typingShieldHeight];
+  [self.formInputAccessoryView
+      setOmniboxTypingShieldHeight:OmniboxTypingShieldHeight(
+                                       _isBottomOmnibox, self.traitCollection)];
 }
 
 // Moves the main view down by a certain offset (negative offsets move the view

@@ -27,6 +27,10 @@ typedef NS_ENUM(NSInteger, GREYDirection);
 // Returns whether the active web view is scrolled to the bottom.
 + (BOOL)isScrolledToBottom;
 
+// Returns the y-origin of the secondary toolbar in window coordinates, or 0 if
+// unavailable.
++ (CGFloat)secondaryToolbarTopInWindow;
+
 // Returns an action that drags in `direction` for `amount` points and holds
 // stationary before release to eliminate `UIScrollView` deceleration momentum.
 + (id<GREYAction>)dragWithoutDecelerationInDirection:(GREYDirection)direction

@@ -7,6 +7,7 @@ include_rules = [
   # extracted from autofill/model
   "+ios/chrome/browser/autofill/model/features.h",
   "+ios/chrome/browser/toolbar/legacy/ui_bundled/public",
+  "+ios/chrome/browser/toolbar/ui/toolbar_constants.h",
 ]
 
 # TODO(crbug.com/468036457): Remove these once a public subdirectory is

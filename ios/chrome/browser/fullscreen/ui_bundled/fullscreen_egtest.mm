@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import <algorithm>
+#import <cmath>
+#import <optional>
+
 #import "base/apple/foundation_util.h"
 #import "base/functional/bind.h"
 #import "base/ios/ios_util.h"
@@ -47,6 +51,10 @@ const int kPageHeightEM = 400;
 
 // Tolerance for width increase check.
 const CGFloat kViewportFitCoverTolerance = 5.0;
+
+// Rounding tolerance (in points) when comparing `window.visualViewport` bounds
+// against the secondary toolbar frame in window coordinates.
+constexpr CGFloat kVisualViewportToolbarTolerance = 2.0;
 
 // Identifier for Find in Page Done button in iOS's system Find Navigator.
 constexpr char kFindInPageDoneButtonID[] = "find.doneButton";
@@ -1158,6 +1166,84 @@ std::unique_ptr<net::test_server::HttpResponse> NotFoundResponse() {
   [ChromeEarlGrey evaluateJavaScriptForSideEffect:
                       @"document.getElementById('target').blur()"];
   [ChromeEarlGrey waitForKeyboardToDisappear];
+}
+
+// Tests that when the keyboard is open with the bottom omnibox enabled,
+// `window.visualViewport` does not extend behind the collapsed bottom address
+// bar above the keyboard.
+- (void)testVisualViewportAboveKeyboardBottomOmnibox {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Bottom omnibox is only available on iPhone.");
+  }
+
+  BOOL originalBottomOmnibox = [ChromeEarlGrey
+      localStateBooleanPref:omnibox::kIsOmniboxInBottomPosition];
+  [ChromeEarlGrey setBoolValue:YES
+             forLocalStatePref:omnibox::kIsOmniboxInBottomPosition];
+
+  @try {
+    _responses["/visual-viewport"] =
+        "<!DOCTYPE html>"
+        "<html>"
+        "<head>"
+        "  <meta name='viewport' content='width=device-width, "
+        "initial-scale=1.0'>"
+        "</head>"
+        "<body style='margin:0; padding:16px;'>"
+        "  <input id='target' type='text' style='width:100%; height:44px; "
+        "font-size:16px;'>"
+        "</body>"
+        "</html>";
+
+    GURL URL = self.testServer->GetURL("/visual-viewport");
+    [ChromeEarlGrey loadURL:URL];
+    [ChromeEarlGrey waitForWebStateZoomScale:1.0];
+
+    CGFloat initialToolbarTop =
+        [FullscreenAppInterface secondaryToolbarTopInWindow];
+    GREYAssertTrue(initialToolbarTop > 0.0,
+                   @"Secondary toolbar should be laid out.");
+
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+        performAction:chrome_test_util::TapWebElementWithId("target")];
+    [ChromeEarlGrey waitForKeyboardToAppear];
+
+    // Wait for the collapsed bottom toolbar to move above the keyboard and for
+    // `window.visualViewport` to align with the top edge of the toolbar.
+    __block CGFloat lastVisualViewportBottom = 0.0;
+    __block CGFloat lastToolbarTop = 0.0;
+    ConditionBlock visualViewportAlignedWithToolbar = ^{
+      CGFloat toolbarTop = [FullscreenAppInterface secondaryToolbarTopInWindow];
+      if (toolbarTop <= 0.0 || toolbarTop >= initialToolbarTop) {
+        return NO;
+      }
+      UIEdgeInsets safeArea = [FullscreenAppInterface currentWindowSafeArea];
+      UIEdgeInsets insets = [FullscreenAppInterface currentViewportInsets];
+      CGFloat viewportTop = std::max(safeArea.top, insets.top);
+      std::optional<double> visualViewportHeight =
+          [ChromeEarlGrey evaluateJavaScript:@"window.visualViewport.height"]
+              .GetIfDouble();
+      if (!visualViewportHeight || *visualViewportHeight <= 0.0) {
+        return NO;
+      }
+      lastVisualViewportBottom = viewportTop + *visualViewportHeight;
+      lastToolbarTop = toolbarTop;
+      return std::abs(lastVisualViewportBottom - lastToolbarTop) <=
+             kVisualViewportToolbarTolerance;
+    };
+    GREYAssert(
+        WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout,
+                                    visualViewportAlignedWithToolbar),
+        @"visualViewport bottom (%.1f) does not align with secondary toolbar "
+        @"top (%.1f).",
+        lastVisualViewportBottom, lastToolbarTop);
+  } @finally {
+    [ChromeEarlGrey evaluateJavaScriptForSideEffect:
+                        @"document.getElementById('target')?.blur()"];
+    [ChromeEarlGrey waitForKeyboardToDisappear];
+    [ChromeEarlGrey setBoolValue:originalBottomOmnibox
+               forLocalStatePref:omnibox::kIsOmniboxInBottomPosition];
+  }
 }
 
 // Verifies that after `history.pushState()` with a hash and reloading by

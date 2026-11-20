@@ -1235,18 +1235,6 @@ inline LayoutStateToolbarPassKey PassKey() {
   _steadyStateOmniboxPosition = toolbarType;
 }
 
-- (CGFloat)keyboardAttachedBottomOmniboxHeight {
-  if (IsChromeNextIaEnabled()) {
-    if (self.browser->GetSceneState().layoutState.appBarPosition ==
-        AppBarPosition::kBottom) {
-      return kKeyboardAttachedOmniboxBottomPadding;
-    } else {
-      return kKeyboardAttachedOmniboxBottomPaddingLandscape;
-    }
-  }
-  return 0;
-}
-
 #pragma mark - ToolbarMediatorDelegate
 
 - (void)toolbarMediatorDidTapAssistantInIncognito:(ToolbarMediator*)mediator {
