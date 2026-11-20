@@ -9,6 +9,7 @@
 
 #include <cstdlib>
 
+#include "base/rand_util.h"
 #include "base/time/time.h"
 #include "media/base/data_buffer.h"
 #include "media/base/timestamp_constants.h"
@@ -35,12 +36,12 @@ class SeekableBufferTest : public testing::Test {
 
     // Create random test data samples.
     for (size_t i = 0; i < kDataSize; i++) {
-      data_[i] = static_cast<char>(rand());
+      data_[i] = static_cast<char>(base::RandIntInclusive(0, RAND_MAX));
     }
   }
 
   size_t GetRandomNumber(size_t maximum) {
-    return static_cast<size_t>(rand() % (maximum + 1));
+    return static_cast<size_t>(base::RandGenerator(maximum + 1));
   }
 
   SeekableBuffer buffer_;

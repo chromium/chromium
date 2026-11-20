@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/compiler_specific.h"
+#include "base/rand_util.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_ARM_FAMILY) && \
@@ -110,11 +111,11 @@ size_t MT21BlockWriter::GetPos() {
 // of being either 0 or 1. This means that the probability of the first N bits
 // being 0 is 1/(2^N).
 int GeometricRandomNum() {
-  uint32_t uniform_random_num = rand();
+  uint32_t uniform_random_num = base::RandIntInclusive(0, RAND_MAX);
   int ret = __builtin_clz(uniform_random_num);
   // The above algorithm only generates positive numbers according to a
   // geometric distribution, but we really want both positive and negative.
-  if (rand() & 1) {
+  if (base::RandBool()) {
     return -1 * ret;
   } else {
     return ret;
@@ -196,7 +197,7 @@ void GenerateRandomSubblock(MT21BlockWriter& writer,
                             uint8_t* golden_subblock,
                             int width) {
   constexpr int k = 1;
-  uint8_t top_right = (rand() & 0x7F) + 0x7F;
+  uint8_t top_right = base::RandIntInclusive(0, 0x7F) + 0x7F;
 
   golden_subblock[width - 1] = top_right;
 
