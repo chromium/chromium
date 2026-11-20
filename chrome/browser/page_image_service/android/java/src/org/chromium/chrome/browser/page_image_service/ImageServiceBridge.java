@@ -21,6 +21,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.page_image_service.ImageServiceMetrics.SalientImageUrlFetchResult;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.image_fetcher.ImageFetcher;
+import org.chromium.net.NetworkTrafficAnnotationTag;
 import org.chromium.page_image_service.mojom.ClientId;
 import org.chromium.url.GURL;
 
@@ -39,22 +40,26 @@ public class ImageServiceBridge {
     private final Map<GURL, GURL> mSalientImageUrlCache = new HashMap<>();
     private final CallbackController mCallbackController = new CallbackController();
     private final ImageFetcher mImageFetcher;
+    private final NetworkTrafficAnnotationTag mTrafficAnnotation;
 
     private @Nullable JniUniquePtr<NativeImageServiceBridge> mNativeImageServiceBridge;
 
     /**
      * @param clientId The ImageService client the salient image url is being fetched for.
      * @param imageFetcherClientName The string name of the ImageFetcher client.
+     * @param trafficAnnotation Describes the caller's image request.
      * @param profile Used to acquire dependencies in native.
      * @param imageFetcher The fetcher to fetch the image.
      */
     public ImageServiceBridge(
             @ClientId.EnumType int clientId,
             String imageFetcherClientName,
+            NetworkTrafficAnnotationTag trafficAnnotation,
             Profile profile,
             ImageFetcher imageFetcher) {
         mClientId = clientId;
         mImageFetcherClientName = imageFetcherClientName;
+        mTrafficAnnotation = trafficAnnotation;
         mNativeImageServiceBridge = ImageServiceBridgeJni.get().init(profile);
         mImageFetcher = imageFetcher;
     }
@@ -100,6 +105,7 @@ public class ImageServiceBridge {
                                     ImageFetcher.Params.create(
                                             imageUrl,
                                             mImageFetcherClientName,
+                                            mTrafficAnnotation,
                                             imageSize,
                                             imageSize),
                                     callback);

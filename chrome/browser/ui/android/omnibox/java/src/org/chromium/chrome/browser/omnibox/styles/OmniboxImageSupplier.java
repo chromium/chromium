@@ -39,6 +39,7 @@ import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.image_fetcher.ImageFetcherConfig;
 import org.chromium.components.image_fetcher.ImageFetcherFactory;
 import org.chromium.components.omnibox.AutocompleteMatch;
+import org.chromium.net.NetworkTrafficAnnotationTag;
 import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
@@ -52,6 +53,35 @@ import java.util.Map;
 /** Image fetching mechanism for Omnibox and Suggestions. */
 @NullMarked
 public class OmniboxImageSupplier {
+    private static final NetworkTrafficAnnotationTag TRAFFIC_ANNOTATION =
+            NetworkTrafficAnnotationTag.createComplete(
+                    "omnibox_suggestion_android_images",
+                    """
+                    semantics {
+                        sender: "Address bar suggestion images"
+                        description:
+                            "Downloads images shown alongside search suggestions in the "
+                            "address bar."
+                        trigger:
+                            "A search suggestion with an image URL is displayed and the image "
+                            "is not cached."
+                        data:
+                            "The image URL supplied with a search suggestion, including any "
+                            "path and query parameters. The URL may identify the suggestion."
+                        destination: WEBSITE
+                        user_data { type: SENSITIVE_URL }
+                        internal { contacts { owners: "chrome/browser/ui/android/omnibox/OWNERS" } }
+                        last_reviewed: "2026-11-17"
+                    }
+                    policy {
+                        cookies_allowed: NO
+                        setting:
+                            "Users can turn off search suggestions in Chrome settings. "
+                            "Previously obtained suggestions may still have images."
+                        chrome_policy { SearchSuggestEnabled { SearchSuggestEnabled: false } }
+                    }
+                    """);
+
     private static final String TAG = "OmniboxImageSupplier";
     private static final int MAX_IMAGE_CACHE_SIZE = 500 * ConversionUtils.BYTES_PER_KILOBYTE;
 
@@ -344,7 +374,8 @@ public class OmniboxImageSupplier {
         mPendingImageRequests.put(url, callbacks);
 
         ImageFetcher.Params params =
-                ImageFetcher.Params.create(url, ImageFetcher.OMNIBOX_UMA_CLIENT_NAME);
+                ImageFetcher.Params.create(
+                        url, ImageFetcher.OMNIBOX_UMA_CLIENT_NAME, TRAFFIC_ANNOTATION);
 
         mImageFetcher.fetchImage(
                 params,

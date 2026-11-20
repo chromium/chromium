@@ -33,6 +33,7 @@ import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.image_fetcher.ImageFetcherConfig;
 import org.chromium.components.image_fetcher.ImageFetcherFactory;
+import org.chromium.net.NetworkTrafficAnnotationTag;
 
 import java.util.List;
 
@@ -42,6 +43,44 @@ import java.util.List;
  */
 @NullMarked
 public class PriceDropNotifier {
+    private static final NetworkTrafficAnnotationTag TRAFFIC_ANNOTATION =
+            NetworkTrafficAnnotationTag.createComplete(
+                    "price_drop_notification_android_images",
+                    """
+                    semantics {
+                        sender: "Price drop notifications"
+                        description:
+                            "Downloads the product image shown in a price drop notification."
+                        trigger:
+                            "A price tracking notification is received and passes shopping "
+                            "eligibility and notification-permission checks."
+                        data:
+                            "The product image URL from the notification payload, including "
+                            "any path and query parameters."
+                        destination: GOOGLE_OWNED_SERVICE
+                        user_data { type: SENSITIVE_URL }
+                        internal { contacts { owners: "chrome/browser/commerce/OWNERS" } }
+                        last_reviewed: "2026-11-17"
+                    }
+                    policy {
+                        cookies_allowed: NO
+                        setting:
+                            "Users can disable Chrome notifications or the price tracking "
+                            "notification channel in Android settings. Shopping eligibility "
+                            "requires sign-in, bookmark synchronization and URL-keyed "
+                            "anonymized data collection before fetching the image."
+                        chrome_policy { ShoppingListEnabled { ShoppingListEnabled: false } }
+                        chrome_policy { BrowserSignin { BrowserSignin: 0 } }
+                        chrome_policy { UrlKeyedAnonymizedDataCollectionEnabled { UrlKeyedAnonymizedDataCollectionEnabled: false } }
+                        chrome_policy { SyncDisabled { SyncDisabled: true } }
+                        chrome_policy {
+                            SyncTypesListDisabled {
+                                SyncTypesListDisabled: { entries: "bookmarks" }
+                            }
+                        }
+                    }
+                    """);
+
     private static final String TAG = "PriceTrackNotif";
 
     /**
@@ -165,7 +204,9 @@ public class PriceDropNotifier {
 
         ImageFetcher.Params params =
                 ImageFetcher.Params.create(
-                        notificationData.iconUrl, ImageFetcher.PRICE_DROP_NOTIFICATION);
+                        notificationData.iconUrl,
+                        ImageFetcher.PRICE_DROP_NOTIFICATION,
+                        TRAFFIC_ANNOTATION);
         getImageFetcher()
                 .fetchImage(
                         params,

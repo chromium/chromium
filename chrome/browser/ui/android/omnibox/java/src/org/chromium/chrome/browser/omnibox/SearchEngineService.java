@@ -51,6 +51,7 @@ import org.chromium.components.search_engines.StarterPackId;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
+import org.chromium.net.NetworkTrafficAnnotationTag;
 import org.chromium.url.GURL;
 
 import java.util.Objects;
@@ -61,6 +62,42 @@ import java.util.Objects;
  */
 @NullMarked
 public class SearchEngineService implements Destroyable, TemplateUrlServiceObserver {
+    @VisibleForTesting
+    static final NetworkTrafficAnnotationTag TRAFFIC_ANNOTATION =
+            NetworkTrafficAnnotationTag.createComplete(
+                    "omnibox_search_engine_android_icon",
+                    """
+                    semantics {
+                        sender: "Search engine button"
+                        description:
+                            "Downloads the icon for a third-party search engine's AI Mode "
+                            "button in the address bar."
+                        trigger:
+                            "An eligible search-engine button configuration is received and "
+                            "specifies an icon URL. Google uses a bundled icon instead."
+                        data:
+                            "The icon URL from the search-engine button configuration. No "
+                            "search query is sent by this image request."
+                        destination: OTHER
+                        destination_other:
+                            "The icon server specified by the search-engine button "
+                            "configuration."
+                        user_data { type: NONE }
+                        internal { contacts { owners: "chrome/browser/ui/android/omnibox/OWNERS" } }
+                        last_reviewed: "2026-11-17"
+                    }
+                    policy {
+                        cookies_allowed: NO
+                        setting:
+                            "Users can change their default search engine in Chrome settings. "
+                            "The icon is fetched only when the third-party AI Mode button is "
+                            "eligible. There is no separate setting for downloading its icon."
+                        chrome_policy { AIModeSettings { AIModeSettings: 1 } }
+                        chrome_policy { ThirdPartyAiChatSettings { ThirdPartyAiChatSettings: 1 } }
+                        chrome_policy { DefaultSearchProviderEnabled { DefaultSearchProviderEnabled: false } }
+                    }
+                    """);
+
     private static final int MAX_IMAGE_CACHE_SIZE_BYTES = 4096;
     private static final String TAG = "DSEService";
     private static final ProfileKeyedMap<SearchEngineService> sProfileMap =
@@ -235,6 +272,7 @@ public class SearchEngineService implements Destroyable, TemplateUrlServiceObser
                 ImageFetcher.Params.create(
                         faviconUrl,
                         ImageFetcher.OMNIBOX_UMA_CLIENT_NAME,
+                        TRAFFIC_ANNOTATION,
                         mSearchEngineLogoTargetSizePixels,
                         mSearchEngineLogoTargetSizePixels);
         mImageFetcher.fetchImage(

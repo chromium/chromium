@@ -570,7 +570,11 @@ public class SearchEngineServiceUnitTest {
                         .getDimensionPixelSize(R.dimen.omnibox_search_engine_logo_composed_size);
         var expectedParams =
                 ImageFetcher.Params.create(
-                        faviconUrl, ImageFetcher.OMNIBOX_UMA_CLIENT_NAME, iconSizePx, iconSizePx);
+                        faviconUrl,
+                        ImageFetcher.OMNIBOX_UMA_CLIENT_NAME,
+                        SearchEngineService.TRAFFIC_ANNOTATION,
+                        iconSizePx,
+                        iconSizePx);
         verify(mImageFetcher).fetchImage(eq(expectedParams), mImageFetcherCallbackCaptor.capture());
         mImageFetcherCallbackCaptor.getValue().onResult(mBitmap);
         assertEquals(

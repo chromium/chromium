@@ -113,6 +113,7 @@ import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.image_fetcher.ImageFetcherConfig;
 import org.chromium.components.image_fetcher.ImageFetcherFactory;
 import org.chromium.components.search_engines.TemplateUrlService;
+import org.chromium.net.NetworkTrafficAnnotationTag;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.edge_to_edge.EdgeToEdgeStateProvider;
 import org.chromium.ui.util.ColorUtils;
@@ -132,6 +133,37 @@ import java.util.concurrent.Executor;
 @NullMarked
 @JNINamespace("ntp_customization")
 public class NtpCustomizationUtils {
+    private static final NetworkTrafficAnnotationTag TRAFFIC_ANNOTATION =
+            NetworkTrafficAnnotationTag.createComplete(
+                    "ntp_theme_android_images",
+                    """
+                    semantics {
+                        sender: "New Tab page themes"
+                        description:
+                            "Downloads previews and background images from theme collections "
+                            "for the Android New Tab page."
+                        trigger:
+                            "A theme collection is displayed, a background is selected or "
+                            "refreshed, or a theme is restored through synchronization or "
+                            "cross-device setup."
+                        data:
+                            "The selected or previewed background image URL, including any "
+                            "path and query parameters."
+                        destination: GOOGLE_OWNED_SERVICE
+                        user_data { type: NONE }
+                        internal { contacts { owners: "chrome/browser/ntp_customization/OWNERS" } }
+                        last_reviewed: "2026-11-17"
+                    }
+                    policy {
+                        cookies_allowed: NO
+                        setting:
+                            "Users can select the default New Tab page background. Browsing "
+                            "theme collections still downloads previews. The "
+                            "custom-background policy takes effect after restarting Chrome on "
+                            "Android."
+                        chrome_policy { NTPCustomBackgroundEnabled { NTPCustomBackgroundEnabled: false } }
+                    }
+                    """);
 
     // LINT.IfChange(NtpBackgroundType)
     @IntDef({
@@ -1302,7 +1334,9 @@ public class NtpCustomizationUtils {
             ImageFetcher imageFetcher, GURL imageUrl, Callback<@Nullable Bitmap> callback) {
         ImageFetcher.Params params =
                 ImageFetcher.Params.create(
-                        imageUrl, ImageFetcher.NTP_CUSTOMIZATION_THEME_COLLECTION_NAME);
+                        imageUrl,
+                        ImageFetcher.NTP_CUSTOMIZATION_THEME_COLLECTION_NAME,
+                        TRAFFIC_ANNOTATION);
         imageFetcher.fetchImage(params, callback);
     }
 

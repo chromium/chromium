@@ -12,6 +12,8 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
+import static org.chromium.net.NetworkTrafficAnnotationTag.TRAFFIC_ANNOTATION_FOR_TESTS;
+
 import android.graphics.Bitmap;
 
 import org.junit.Assert;
@@ -77,14 +79,17 @@ public class NetworkImageFetcherTest {
                 .when(mBridge)
                 .fetchGif(
                         anyInt(),
-                        eq(ImageFetcher.Params.create(URL, UMA_CLIENT_NAME)),
+                        eq(
+                                ImageFetcher.Params.create(
+                                        URL, UMA_CLIENT_NAME, TRAFFIC_ANNOTATION_FOR_TESTS)),
                         gifCallbackCaptor.capture());
     }
 
     @Test
     public void test_fetchImage() {
         ImageFetcher.Params params =
-                ImageFetcher.Params.create(URL, UMA_CLIENT_NAME, WIDTH_PX, HEIGHT_PX);
+                ImageFetcher.Params.create(
+                        URL, UMA_CLIENT_NAME, TRAFFIC_ANNOTATION_FOR_TESTS, WIDTH_PX, HEIGHT_PX);
         mImageFetcher.fetchImage(params, mBitmapCallback);
         verify(mBitmapCallback).onResult(mBitmap);
         verify(mBridge).fetchImage(eq(ImageFetcherConfig.NETWORK_ONLY), eq(params), any());
@@ -93,7 +98,8 @@ public class NetworkImageFetcherTest {
 
     @Test
     public void test_fetchGif() {
-        ImageFetcher.Params params = ImageFetcher.Params.create(URL, UMA_CLIENT_NAME);
+        ImageFetcher.Params params =
+                ImageFetcher.Params.create(URL, UMA_CLIENT_NAME, TRAFFIC_ANNOTATION_FOR_TESTS);
         mImageFetcher.fetchGif(params, mGifCallback);
         verify(mGifCallback).onResult(mGifFetchResult);
         verify(mBridge).fetchGif(ImageFetcherConfig.NETWORK_ONLY, params, mGifCallback);

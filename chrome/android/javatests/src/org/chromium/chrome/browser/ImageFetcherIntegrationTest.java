@@ -7,6 +7,8 @@ package org.chromium.chrome.browser;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import static org.chromium.net.NetworkTrafficAnnotationTag.TRAFFIC_ANNOTATION_FOR_TESTS;
+
 import android.graphics.Bitmap;
 import android.graphics.Color;
 
@@ -72,10 +74,15 @@ public class ImageFetcherIntegrationTest {
                         ImageFetcher.Params params =
                                 shouldResize
                                         ? ImageFetcher.Params.create(
-                                                url, "random", desiredWidth, desiredHeight)
+                                                url,
+                                                "random",
+                                                TRAFFIC_ANNOTATION_FOR_TESTS,
+                                                desiredWidth,
+                                                desiredHeight)
                                         : ImageFetcher.Params.createNoResizing(
                                                 new GURL(url),
                                                 "random",
+                                                TRAFFIC_ANNOTATION_FOR_TESTS,
                                                 desiredWidth,
                                                 desiredHeight);
                         ImageFetcher imageFetcher =
@@ -88,6 +95,31 @@ public class ImageFetcherIntegrationTest {
                 });
         callbackWaiter.waitForOnly();
         return callbackWaiter.mBitmap;
+    }
+
+    @Test
+    @MediumTest
+    public void testLegacyParamsFetchImage() throws Exception {
+        String url =
+                sTestServerRule
+                        .getServer()
+                        .getURL("/chrome/test/data/android/image_fetcher/icon.ico");
+        TestImageFetcherCallback callbackWaiter = new TestImageFetcherCallback();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ImageFetcher imageFetcher =
+                            ImageFetcherFactory.createImageFetcher(
+                                    ImageFetcherConfig.NETWORK_ONLY,
+                                    ProfileManager.getLastUsedRegularProfile().getProfileKey());
+                    imageFetcher.fetchImage(
+                            ImageFetcher.Params.create(
+                                    url, ImageFetcher.DATA_SHARING_UMA_CLIENT_NAME, 32, 32),
+                            callbackWaiter);
+                });
+        callbackWaiter.waitForOnly();
+        assertNotNull(callbackWaiter.mBitmap);
+        assertEquals(32, callbackWaiter.mBitmap.getWidth());
+        assertEquals(32, callbackWaiter.mBitmap.getHeight());
     }
 
     /**

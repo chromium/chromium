@@ -265,7 +265,8 @@ public class LogoContainerViewBinderUnitTest {
                         eq(
                                 ImageFetcher.Params.createFromTrustedSource(
                                         ANIMATED_LOGO_URL,
-                                        ImageFetcher.NTP_ANIMATED_LOGO_UMA_CLIENT_NAME)),
+                                        ImageFetcher.NTP_ANIMATED_LOGO_UMA_CLIENT_NAME,
+                                        LogoMediator.TRAFFIC_ANNOTATION)),
                         any());
     }
 

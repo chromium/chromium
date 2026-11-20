@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.image_fetcher.ImageFetcher;
+import org.chromium.net.NetworkTrafficAnnotationTag;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.HashSet;
@@ -42,6 +43,33 @@ import java.util.Set;
  */
 @NullMarked
 public class PriceChangeModuleMediator implements TabModelSelectorObserver {
+    private static final NetworkTrafficAnnotationTag TRAFFIC_ANNOTATION =
+            NetworkTrafficAnnotationTag.createComplete(
+                    "price_change_module_android_images",
+                    """
+                    semantics {
+                        sender: "Price change module"
+                        description: "Downloads product images for the price change module."
+                        trigger:
+                            "The module displays price changes for tabs and needs a product "
+                            "image that is not cached."
+                        data:
+                            "The product image URL associated with a tab, including any path "
+                            "and query parameters."
+                        destination: GOOGLE_OWNED_SERVICE
+                        user_data { type: SENSITIVE_URL }
+                        internal { contacts { owners: "chrome/browser/commerce/OWNERS" } }
+                        last_reviewed: "2026-11-17"
+                    }
+                    policy {
+                        cookies_allowed: NO
+                        setting:
+                            "Users can turn off tracking prices on tabs. The module requires "
+                            "a signed-in profile and URL-keyed anonymized data collection."
+                        chrome_policy { BrowserSignin { BrowserSignin: 0 } }
+                        chrome_policy { UrlKeyedAnonymizedDataCollectionEnabled { UrlKeyedAnonymizedDataCollectionEnabled: false } }
+                    }
+                    """);
 
     private final Context mContext;
     private final ShoppingPersistedTabDataService mShoppingPersistedTabDataService;
@@ -188,7 +216,8 @@ public class PriceChangeModuleMediator implements TabModelSelectorObserver {
                     ImageFetcher.Params params =
                             ImageFetcher.Params.create(
                                     assumeNonNull(data.getProductImageUrl()),
-                                    ImageFetcher.PRICE_CHANGE_MODULE_NAME);
+                                    ImageFetcher.PRICE_CHANGE_MODULE_NAME,
+                                    TRAFFIC_ANNOTATION);
                     mImageFetcher.fetchImage(
                             params,
                             image -> {

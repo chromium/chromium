@@ -27,6 +27,7 @@ import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
+import org.chromium.net.NetworkTrafficAnnotationTag;
 import org.chromium.page_image_service.mojom.ClientId;
 import org.chromium.url.GURL;
 
@@ -35,6 +36,46 @@ import java.util.Iterator;
 /** Class which encapsulates fetching images for bookmarks. */
 @NullMarked
 public class BookmarkImageFetcher {
+    private static final NetworkTrafficAnnotationTag TRAFFIC_ANNOTATION =
+            NetworkTrafficAnnotationTag.createComplete(
+                    "bookmark_android_images",
+                    """
+                    semantics {
+                        sender: "Bookmark images"
+                        description:
+                            "Downloads representative images to illustrate bookmarks and "
+                            "bookmark folders."
+                        trigger:
+                            "The bookmarks interface requests a preview that is not cached. "
+                            "The URL comes from shopping bookmark metadata or Page Image "
+                            "Service."
+                        data:
+                            "The image URL associated with a bookmarked page, including any "
+                            "path and query parameters."
+                        destination: OTHER
+                        destination_other:
+                            "The image server named by bookmark metadata or Page Image "
+                            "Service."
+                        user_data { type: SENSITIVE_URL }
+                        internal { contacts { owners: "chrome/browser/bookmarks/OWNERS" } }
+                        last_reviewed: "2026-11-17"
+                    }
+                    policy {
+                        cookies_allowed: NO
+                        setting:
+                            "Users can turn off bookmark synchronization in Chrome settings. "
+                            "Page Image Service checks bookmark Sync consent before looking up "
+                            "new image URLs. Images from existing bookmark metadata or cached "
+                            "URLs may still be downloaded when displaying bookmarks."
+                        chrome_policy { SyncDisabled { SyncDisabled: true } }
+                        chrome_policy {
+                            SyncTypesListDisabled {
+                                SyncTypesListDisabled: { entries: "bookmarks" }
+                            }
+                        }
+                    }
+                    """);
+
     private final Profile mProfile;
     private final Context mContext;
     private final BookmarkModel mBookmarkModel;
@@ -67,6 +108,7 @@ public class BookmarkImageFetcher {
                 new ImageServiceBridge(
                         ClientId.BOOKMARKS,
                         ImageFetcher.POWER_BOOKMARKS_CLIENT_NAME,
+                        TRAFFIC_ANNOTATION,
                         profile.getOriginalProfile(),
                         imageFetcher),
                 new FaviconHelper(),
@@ -206,6 +248,7 @@ public class BookmarkImageFetcher {
                         ImageFetcher.Params.create(
                                 leadImageUrl,
                                 ImageFetcher.POWER_BOOKMARKS_CLIENT_NAME,
+                                TRAFFIC_ANNOTATION,
                                 imageSize,
                                 imageSize),
                         imageCallback);

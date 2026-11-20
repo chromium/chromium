@@ -194,6 +194,15 @@ after discussions on the right group.
       <annotation id="device_trust_key_rotation"/>
     </sender>
     <sender name="Recently Added">
+      <annotation id="autofill_android_images"/>
+      <annotation id="bookmark_android_images"/>
+      <annotation id="ntp_animated_logo_android"/>
+      <annotation id="ntp_theme_android_images"/>
+      <annotation id="omnibox_search_engine_android_icon"/>
+      <annotation id="omnibox_suggestion_android_images"/>
+      <annotation id="price_change_module_android_images"/>
+      <annotation id="price_drop_notification_android_images"/>
+      <annotation id="shared_password_android_avatars"/>
       <annotation id="fast_pair_image_decoder"/>
       <annotation id="download_bubble_retry_download"/>
       <annotation id="quick_answers_loader"/>

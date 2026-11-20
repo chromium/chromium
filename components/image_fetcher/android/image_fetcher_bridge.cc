@@ -42,7 +42,9 @@ namespace {
 const base::FilePath::CharType kPathPostfix[] =
     FILE_PATH_LITERAL("image_data_storage");
 
-// TODO(wylieb): Allow java clients to map to a traffic_annotation here.
+// Retained for downstream Java callers that do not yet pass annotations.
+// Its eventual removal also requires removing this file from
+// tools/traffic_annotation/safe_list.txt.
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("cached_image_fetcher", R"(
         semantics {
@@ -62,6 +64,14 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
           "This feature allows many different Chrome features to fetch/cache "
           "images and thus there is no Chrome-wide policy to disable it."
       })");
+
+net::NetworkTrafficAnnotationTag GetTrafficAnnotation(int32_t annotation_hash) {
+  // Java Params uses -1 for the deprecated overload without an annotation.
+  return annotation_hash == -1
+             ? kTrafficAnnotation
+             : net::NetworkTrafficAnnotationTag::FromJavaAnnotation(
+                   annotation_hash);
+}
 
 data_decoder::DataDecoder* GetDataDecoder() {
   static base::NoDestructor<data_decoder::DataDecoder> data_decoder;
@@ -98,6 +108,7 @@ void ImageFetcherBridge::FetchImageData(
     const int32_t j_image_fetcher_config,
     const JavaRef<jstring>& j_url,
     const JavaRef<jstring>& j_client_name,
+    const int32_t j_traffic_annotation_hash,
     const int32_t j_expiration_interval_mins,
     const bool j_is_trusted_source,
     const JavaRef<jobject>& j_callback) {
@@ -108,7 +119,8 @@ void ImageFetcherBridge::FetchImageData(
   std::string client_name =
       base::android::ConvertJavaStringToUTF8(j_client_name);
 
-  image_fetcher::ImageFetcherParams params(kTrafficAnnotation, client_name);
+  image_fetcher::ImageFetcherParams params(
+      GetTrafficAnnotation(j_traffic_annotation_hash), client_name);
   if (j_expiration_interval_mins > 0) {
     params.set_hold_for_expiration_interval(
         base::Minutes(j_expiration_interval_mins));
@@ -144,6 +156,7 @@ void ImageFetcherBridge::FetchImage(
     const int32_t j_image_fetcher_config,
     const JavaRef<jstring>& j_url,
     const JavaRef<jstring>& j_client_name,
+    const int32_t j_traffic_annotation_hash,
     const int32_t j_frame_width,
     const int32_t j_frame_height,
     const int32_t j_expiration_interval_mins,
@@ -155,7 +168,8 @@ void ImageFetcherBridge::FetchImage(
   std::string client_name =
       base::android::ConvertJavaStringToUTF8(j_client_name);
 
-  ImageFetcherParams params(kTrafficAnnotation, client_name);
+  ImageFetcherParams params(GetTrafficAnnotation(j_traffic_annotation_hash),
+                            client_name);
   params.set_frame_size(gfx::Size(j_frame_width, j_frame_height));
   if (j_expiration_interval_mins > 0) {
     params.set_hold_for_expiration_interval(
@@ -231,12 +245,14 @@ static void JNI_ImageFetcherBridge_FetchImageData(
     const int32_t j_image_fetcher_config,
     const JavaRef<jstring>& j_url,
     const JavaRef<jstring>& j_client_name,
+    const int32_t j_traffic_annotation_hash,
     const int32_t j_expiration_interval_mins,
     const jboolean j_is_trusted_source,
     const JavaRef<jobject>& j_callback) {
   ImageFetcherBridge::FetchImageData(
       j_env, j_simple_factory_key, j_image_fetcher_config, j_url, j_client_name,
-      j_expiration_interval_mins, j_is_trusted_source, j_callback);
+      j_traffic_annotation_hash, j_expiration_interval_mins,
+      j_is_trusted_source, j_callback);
 }
 
 // static
@@ -246,13 +262,15 @@ static void JNI_ImageFetcherBridge_FetchImage(
     const int32_t j_image_fetcher_config,
     const JavaRef<jstring>& j_url,
     const JavaRef<jstring>& j_client_name,
+    const int32_t j_traffic_annotation_hash,
     const int32_t j_frame_width,
     const int32_t j_frame_height,
     const int32_t j_expiration_interval_mins,
     const JavaRef<jobject>& j_callback) {
   ImageFetcherBridge::FetchImage(
       j_env, j_simple_factory_key, j_image_fetcher_config, j_url, j_client_name,
-      j_frame_width, j_frame_height, j_expiration_interval_mins, j_callback);
+      j_traffic_annotation_hash, j_frame_width, j_frame_height,
+      j_expiration_interval_mins, j_callback);
 }
 
 // static

@@ -62,6 +62,7 @@ import org.chromium.components.favicon.LargeIconBridge.LargeIconCallback;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
+import org.chromium.net.NetworkTrafficAnnotationTag;
 import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -79,6 +80,48 @@ import java.util.Set;
  */
 @NullMarked
 class TouchToFillPasswordManagerMediator {
+    private static final NetworkTrafficAnnotationTag TRAFFIC_ANNOTATION =
+            NetworkTrafficAnnotationTag.createComplete(
+                    "shared_password_android_avatars",
+                    """
+                    semantics {
+                        sender: "Shared password notification"
+                        description:
+                            "Downloads sender profile images for the notification about "
+                            "received passwords in the password-selection sheet."
+                        trigger:
+                            "The password-selection sheet displays received credentials whose "
+                            "sharing notification has not yet been shown."
+                        data:
+                            "Sender profile image URLs stored with the received credentials. "
+                            "Passwords and usernames are not sent by this image request."
+                        destination: GOOGLE_OWNED_SERVICE
+                        user_data { type: SENSITIVE_URL }
+                        internal { contacts { owners: "chrome/browser/touch_to_fill/password_manager/android/OWNERS" } }
+                        last_reviewed: "2026-11-17"
+                    }
+                    policy {
+                        cookies_allowed: NO
+                        setting:
+                            "There is no separate password-sharing or avatar setting. Users "
+                            "can stop receiving new shared passwords by turning off password "
+                            "synchronization or signing out. Avatar requests can still use "
+                            "credentials received previously."
+                        chrome_policy { SyncDisabled { SyncDisabled: true } }
+                        chrome_policy {
+                            SyncTypesListDisabled {
+                                SyncTypesListDisabled: { entries: "passwords" }
+                            }
+                        }
+                        chrome_policy {
+                            PasswordSharingEnabled {
+                                policy_options { mode: MANDATORY }
+                                PasswordSharingEnabled: false
+                            }
+                        }
+                    }
+                    """);
+
     static final String UMA_TOUCH_TO_FILL_DISMISSAL_REASON =
             "PasswordManager.TouchToFill.DismissalReason";
     static final String UMA_TOUCH_TO_FILL_CREDENTIAL_INDEX =
@@ -530,7 +573,9 @@ class TouchToFillPasswordManagerMediator {
             for (GURL url : mUrls) {
                 mImageFetcher.fetchImage(
                         ImageFetcher.Params.create(
-                                url, ImageFetcher.PASSWORD_BOTTOM_SHEET_CLIENT_NAME),
+                                url,
+                                ImageFetcher.PASSWORD_BOTTOM_SHEET_CLIENT_NAME,
+                                TRAFFIC_ANNOTATION),
                         this::onImageFetched);
             }
         }

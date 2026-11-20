@@ -7,10 +7,14 @@ package org.chromium.components.image_fetcher;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
+
+import static org.chromium.net.NetworkTrafficAnnotationTag.TRAFFIC_ANNOTATION_FOR_TESTS;
 
 import android.graphics.Bitmap;
 
@@ -25,6 +29,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.net.NetworkTrafficAnnotationTag;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -80,6 +85,47 @@ public class ImageFetcherTest {
     }
 
     @Test
+    public void testParamsAnnotationEquality() {
+        NetworkTrafficAnnotationTag first = Mockito.mock(NetworkTrafficAnnotationTag.class);
+        NetworkTrafficAnnotationTag same = Mockito.mock(NetworkTrafficAnnotationTag.class);
+        NetworkTrafficAnnotationTag different = Mockito.mock(NetworkTrafficAnnotationTag.class);
+        Mockito.when(first.getHashCode()).thenReturn(123);
+        Mockito.when(same.getHashCode()).thenReturn(123);
+        Mockito.when(different.getHashCode()).thenReturn(456);
+        ImageFetcher.Params params = ImageFetcher.Params.create(URL, CLIENT_NAME, first);
+        ImageFetcher.Params equivalent = ImageFetcher.Params.create(URL, CLIENT_NAME, same);
+        assertEquals(params, equivalent);
+        assertEquals(params.hashCode(), equivalent.hashCode());
+        assertNotEquals(params, ImageFetcher.Params.create(URL, CLIENT_NAME, different));
+    }
+
+    @Test
+    public void testLegacyParams() {
+        ImageFetcher.Params params =
+                ImageFetcher.Params.create(URL.getSpec(), CLIENT_NAME, WIDTH_PX, HEIGHT_PX);
+        assertNull(params.trafficAnnotation);
+        assertEquals(URL.getSpec(), params.url);
+        assertEquals(CLIENT_NAME, params.clientName);
+        assertEquals(WIDTH_PX, params.width);
+        assertEquals(HEIGHT_PX, params.height);
+        assertTrue(params.shouldResize);
+        assertEquals(0, params.expirationIntervalMinutes);
+        assertFalse(params.isTrustedSource);
+
+        ImageFetcher.Params equivalent =
+                ImageFetcher.Params.create(URL.getSpec(), CLIENT_NAME, WIDTH_PX, HEIGHT_PX);
+        assertEquals(params, equivalent);
+        assertEquals(params.hashCode(), equivalent.hashCode());
+        ImageFetcher.Params annotated =
+                ImageFetcher.Params.create(
+                        URL, CLIENT_NAME, TRAFFIC_ANNOTATION_FOR_TESTS, WIDTH_PX, HEIGHT_PX);
+        assertNotEquals(params, annotated);
+        assertNotEquals(annotated, params);
+        assertFalse(
+                ImageFetcher.Params.create(URL.getSpec(), CLIENT_NAME, 0, HEIGHT_PX).shouldResize);
+    }
+
+    @Test
     public void testResize() {
         Bitmap result = ImageFetcher.resizeImage(mBitmap, WIDTH_PX / 2, HEIGHT_PX / 2);
         assertNotEquals(result, mBitmap);
@@ -108,19 +154,27 @@ public class ImageFetcherTest {
 
     @Test
     public void testFetchImageNoDimensionsAlias() {
-        mImageFetcher.fetchImage(ImageFetcher.Params.create(URL, CLIENT_NAME), result -> {});
+        mImageFetcher.fetchImage(
+                ImageFetcher.Params.create(URL, CLIENT_NAME, TRAFFIC_ANNOTATION_FOR_TESTS),
+                result -> {});
 
         // No arguments should alias to 0, 0.
         verify(mImageFetcher)
-                .fetchImage(eq(ImageFetcher.Params.create(URL, CLIENT_NAME, 0, 0)), any());
+                .fetchImage(
+                        eq(
+                                ImageFetcher.Params.create(
+                                        URL, CLIENT_NAME, TRAFFIC_ANNOTATION_FOR_TESTS, 0, 0)),
+                        any());
     }
 
     @Test
     public void testCreateParams() {
         // Verifies params without size specified.
-        ImageFetcher.Params params = ImageFetcher.Params.create(URL, CLIENT_NAME);
+        ImageFetcher.Params params =
+                ImageFetcher.Params.create(URL, CLIENT_NAME, TRAFFIC_ANNOTATION_FOR_TESTS);
         assertEquals(URL.getSpec(), params.url);
         assertEquals(CLIENT_NAME, params.clientName);
+        assertSame(TRAFFIC_ANNOTATION_FOR_TESTS, params.trafficAnnotation);
         assertEquals(0, params.width);
         assertEquals(0, params.height);
         assertFalse(params.shouldResize);
@@ -128,9 +182,12 @@ public class ImageFetcherTest {
         assertFalse(params.isTrustedSource);
 
         // Verifies params with trusted source specified.
-        params = ImageFetcher.Params.createFromTrustedSource(URL, CLIENT_NAME);
+        params =
+                ImageFetcher.Params.createFromTrustedSource(
+                        URL, CLIENT_NAME, TRAFFIC_ANNOTATION_FOR_TESTS);
         assertEquals(URL.getSpec(), params.url);
         assertEquals(CLIENT_NAME, params.clientName);
+        assertSame(TRAFFIC_ANNOTATION_FOR_TESTS, params.trafficAnnotation);
         assertEquals(0, params.width);
         assertEquals(0, params.height);
         assertFalse(params.shouldResize);
@@ -138,9 +195,12 @@ public class ImageFetcherTest {
         assertTrue(params.isTrustedSource);
 
         // Verifies params with size.
-        params = ImageFetcher.Params.create(URL, CLIENT_NAME, WIDTH_PX, HEIGHT_PX);
+        params =
+                ImageFetcher.Params.create(
+                        URL, CLIENT_NAME, TRAFFIC_ANNOTATION_FOR_TESTS, WIDTH_PX, HEIGHT_PX);
         assertEquals(URL.getSpec(), params.url);
         assertEquals(CLIENT_NAME, params.clientName);
+        assertSame(TRAFFIC_ANNOTATION_FOR_TESTS, params.trafficAnnotation);
         assertEquals(WIDTH_PX, params.width);
         assertEquals(HEIGHT_PX, params.height);
         assertTrue(params.shouldResize);
@@ -153,9 +213,15 @@ public class ImageFetcherTest {
         // Verifies params with expiration interval.
         ImageFetcher.Params params =
                 ImageFetcher.Params.createWithExpirationInterval(
-                        URL, CLIENT_NAME, WIDTH_PX, HEIGHT_PX, EXPIRATION_INTERVAL);
+                        URL,
+                        CLIENT_NAME,
+                        TRAFFIC_ANNOTATION_FOR_TESTS,
+                        WIDTH_PX,
+                        HEIGHT_PX,
+                        EXPIRATION_INTERVAL);
         assertEquals(URL.getSpec(), params.url);
         assertEquals(CLIENT_NAME, params.clientName);
+        assertSame(TRAFFIC_ANNOTATION_FOR_TESTS, params.trafficAnnotation);
         assertEquals(WIDTH_PX, params.width);
         assertEquals(HEIGHT_PX, params.height);
         assertTrue(params.shouldResize);
@@ -166,18 +232,23 @@ public class ImageFetcherTest {
     @Test
     public void testCreateParamsNoResize() {
         ImageFetcher.Params params =
-                ImageFetcher.Params.createNoResizing(URL, CLIENT_NAME, WIDTH_PX, HEIGHT_PX);
+                ImageFetcher.Params.createNoResizing(
+                        URL, CLIENT_NAME, TRAFFIC_ANNOTATION_FOR_TESTS, WIDTH_PX, HEIGHT_PX);
         assertEquals(URL.getSpec(), params.url);
         assertEquals(CLIENT_NAME, params.clientName);
+        assertSame(TRAFFIC_ANNOTATION_FOR_TESTS, params.trafficAnnotation);
         assertEquals(WIDTH_PX, params.width);
         assertEquals(HEIGHT_PX, params.height);
         assertFalse(params.shouldResize);
         assertEquals(0, params.expirationIntervalMinutes);
         assertFalse(params.isTrustedSource);
 
-        params = ImageFetcher.Params.createNoResizing(URL, CLIENT_NAME, 0, 0);
+        params =
+                ImageFetcher.Params.createNoResizing(
+                        URL, CLIENT_NAME, TRAFFIC_ANNOTATION_FOR_TESTS, 0, 0);
         assertEquals(URL.getSpec(), params.url);
         assertEquals(CLIENT_NAME, params.clientName);
+        assertSame(TRAFFIC_ANNOTATION_FOR_TESTS, params.trafficAnnotation);
         assertEquals(0, params.width);
         assertEquals(0, params.height);
         assertFalse(params.shouldResize);
@@ -188,14 +259,18 @@ public class ImageFetcherTest {
     @Test
     public void testParamsEqual() {
         // Different URLs.
-        ImageFetcher.Params params1 = ImageFetcher.Params.create(URL, CLIENT_NAME);
-        ImageFetcher.Params params2 = ImageFetcher.Params.create(URL_2, CLIENT_NAME);
+        ImageFetcher.Params params1 =
+                ImageFetcher.Params.create(URL, CLIENT_NAME, TRAFFIC_ANNOTATION_FOR_TESTS);
+        ImageFetcher.Params params2 =
+                ImageFetcher.Params.create(URL_2, CLIENT_NAME, TRAFFIC_ANNOTATION_FOR_TESTS);
         assertFalse(params1.equals(params2));
         assertFalse(params2.equals(params1));
         assertNotEquals(params1.hashCode(), params2.hashCode());
 
         // Different width and height.
-        params2 = ImageFetcher.Params.create(URL, CLIENT_NAME, WIDTH_PX, HEIGHT_PX);
+        params2 =
+                ImageFetcher.Params.create(
+                        URL, CLIENT_NAME, TRAFFIC_ANNOTATION_FOR_TESTS, WIDTH_PX, HEIGHT_PX);
         assertFalse(params1.equals(params2));
         assertFalse(params2.equals(params1));
         assertNotEquals(params1.hashCode(), params2.hashCode());
@@ -203,25 +278,36 @@ public class ImageFetcherTest {
         // Different expiration intervals.
         params1 =
                 ImageFetcher.Params.createWithExpirationInterval(
-                        URL, CLIENT_NAME, WIDTH_PX, HEIGHT_PX, EXPIRATION_INTERVAL);
+                        URL,
+                        CLIENT_NAME,
+                        TRAFFIC_ANNOTATION_FOR_TESTS,
+                        WIDTH_PX,
+                        HEIGHT_PX,
+                        EXPIRATION_INTERVAL);
         assertFalse(params1.equals(params2));
         assertFalse(params2.equals(params1));
         assertNotEquals(params1.hashCode(), params2.hashCode());
 
         // Difference in whether bitmap is resized (vs size being used to select frame in .ico).
-        params2 = ImageFetcher.Params.createNoResizing(URL, CLIENT_NAME, WIDTH_PX, HEIGHT_PX);
+        params2 =
+                ImageFetcher.Params.createNoResizing(
+                        URL, CLIENT_NAME, TRAFFIC_ANNOTATION_FOR_TESTS, WIDTH_PX, HEIGHT_PX);
         assertFalse(params1.equals(params2));
         assertFalse(params2.equals(params1));
 
         // Same parameters comparison.
-        params1 = ImageFetcher.Params.createNoResizing(URL, CLIENT_NAME, WIDTH_PX, HEIGHT_PX);
+        params1 =
+                ImageFetcher.Params.createNoResizing(
+                        URL, CLIENT_NAME, TRAFFIC_ANNOTATION_FOR_TESTS, WIDTH_PX, HEIGHT_PX);
         assertTrue(params1.equals(params2));
         assertTrue(params2.equals(params1));
         assertEquals(params1.hashCode(), params2.hashCode());
 
         // Difference in isTrustedSource.
-        params1 = ImageFetcher.Params.create(URL, CLIENT_NAME);
-        params2 = ImageFetcher.Params.createFromTrustedSource(URL, CLIENT_NAME);
+        params1 = ImageFetcher.Params.create(URL, CLIENT_NAME, TRAFFIC_ANNOTATION_FOR_TESTS);
+        params2 =
+                ImageFetcher.Params.createFromTrustedSource(
+                        URL, CLIENT_NAME, TRAFFIC_ANNOTATION_FOR_TESTS);
         assertFalse(params1.equals(params2));
         assertFalse(params2.equals(params1));
         assertNotEquals(params1.hashCode(), params2.hashCode());

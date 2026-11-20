@@ -37,6 +37,7 @@ import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.net.NetworkTrafficAnnotationTag;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.util.ColorUtils;
@@ -49,6 +50,36 @@ import java.nio.ByteBuffer;
 /** Mediator used to fetch and load logo image for Start surface and NTP. */
 @NullMarked
 public class LogoMediator implements TemplateUrlServiceObserver {
+    @VisibleForTesting
+    static final NetworkTrafficAnnotationTag TRAFFIC_ANNOTATION =
+            NetworkTrafficAnnotationTag.createComplete(
+                    "ntp_animated_logo_android",
+                    """
+                    semantics {
+                        sender: "Animated search logo"
+                        description:
+                            "Downloads the animation for the search-provider logo displayed "
+                            "on Android."
+                        trigger:
+                            "The user clicks a logo with an animation URL, and the animation "
+                            "is not cached."
+                        data: "The animation URL provided by the search provider."
+                        destination: OTHER
+                        destination_other:
+                            "The animation server specified by the current search provider."
+                        user_data { type: NONE }
+                        internal { contacts { owners: "chrome/browser/ui/android/logo/OWNERS" } }
+                        last_reviewed: "2026-11-17"
+                    }
+                    policy {
+                        cookies_allowed: NO
+                        setting:
+                            "The user can avoid playing the animation or choose another "
+                            "search engine in Chrome settings."
+                        chrome_policy { DefaultSearchProviderEnabled { DefaultSearchProviderEnabled: false } }
+                    }
+                    """);
+
     // UMA enum constants. CTA means the "click-to-action" icon.
     private static final String LOGO_SHOWN_UMA_NAME = "NewTabPage.LogoShown";
     private static final String LOGO_SHOWN_FROM_CACHE_UMA_NAME = "NewTabPage.LogoShown.FromCache";
@@ -412,7 +443,9 @@ public class LogoMediator implements TemplateUrlServiceObserver {
 
         mImageFetcher.fetchGif(
                 ImageFetcher.Params.createFromTrustedSource(
-                        mAnimatedLogoUrl, ImageFetcher.NTP_ANIMATED_LOGO_UMA_CLIENT_NAME),
+                        mAnimatedLogoUrl,
+                        ImageFetcher.NTP_ANIMATED_LOGO_UMA_CLIENT_NAME,
+                        TRAFFIC_ANNOTATION),
                 (ImageDataFetchResult animatedLogoImageFetchResult) -> {
                     if (mLogoBridge == null || animatedLogoImageFetchResult.imageData == null) {
                         return;

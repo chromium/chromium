@@ -30,6 +30,7 @@ import org.chromium.components.image_fetcher.ImageFetchResult;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.image_fetcher.ImageFetcherConfig;
 import org.chromium.components.image_fetcher.ImageFetcherFactory;
+import org.chromium.net.NetworkTrafficAnnotationTag;
 import org.chromium.url.GURL;
 
 import java.util.HashMap;
@@ -39,6 +40,42 @@ import java.util.function.Function;
 /** Fetches, and caches credit card art images. */
 @NullMarked
 public class AutofillImageFetcher {
+    private static final NetworkTrafficAnnotationTag TRAFFIC_ANNOTATION =
+            NetworkTrafficAnnotationTag.createComplete(
+                    "autofill_android_images",
+                    """
+                    semantics {
+                        sender: "Autofill images"
+                        description:
+                            "Downloads artwork for stored payment methods and loyalty cards "
+                            "on Android. The images are hosted on Google static-content servers."
+                        trigger:
+                            "Autofill data is loaded or refreshed and artwork is missing; a "
+                            "failed download may be retried."
+                        data:
+                            "The artwork URL from Autofill data, including image sizing "
+                            "parameters. No payment credentials are sent."
+                        destination: GOOGLE_OWNED_SERVICE
+                        user_data { type: NONE }
+                        internal { contacts { owners: "chrome/browser/autofill/OWNERS" } }
+                        last_reviewed: "2026-11-17"
+                    }
+                    policy {
+                        cookies_allowed: NO
+                        setting:
+                            "Users manage their payment methods, loyalty cards and "
+                            "synchronization in Chrome settings. Artwork for stored data can "
+                            "be fetched when that data is refreshed."
+                        chrome_policy {
+                            AutofillCreditCardEnabled {
+                                policy_options { mode: MANDATORY }
+                                AutofillCreditCardEnabled: false
+                            }
+                        }
+                        deprecated_policies: "AutofillCreditCardEnabled"
+                    }
+                    """);
+
     /** Observer interface for image fetching events. */
     public interface Observer {
         /**
@@ -234,7 +271,9 @@ public class AutofillImageFetcher {
 
         ImageFetcher.Params params =
                 ImageFetcher.Params.create(
-                        resolvedUrl, ImageFetcher.AUTOFILL_IMAGE_FETCHER_UMA_CLIENT_NAME);
+                        resolvedUrl,
+                        ImageFetcher.AUTOFILL_IMAGE_FETCHER_UMA_CLIENT_NAME,
+                        TRAFFIC_ANNOTATION);
         mImageFetcher.fetchImageWithRequestMetadata(params, onImageFetched);
     }
 

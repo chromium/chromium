@@ -12,6 +12,8 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 
+import static org.chromium.net.NetworkTrafficAnnotationTag.TRAFFIC_ANNOTATION_FOR_TESTS;
+
 import android.graphics.Bitmap;
 
 import org.junit.After;
@@ -110,7 +112,8 @@ public class InMemoryCachedImageFetcherTest {
     public void testFetchImageCachesFirstCall() {
         answerFetch(mBitmap, false);
         ImageFetcher.Params params =
-                ImageFetcher.Params.create(URL, UMA_CLIENT_NAME, WIDTH_PX, HEIGHT_PX);
+                ImageFetcher.Params.create(
+                        URL, UMA_CLIENT_NAME, TRAFFIC_ANNOTATION_FOR_TESTS, WIDTH_PX, HEIGHT_PX);
         mInMemoryCachedImageFetcher.fetchImage(params, mCallback);
 
         ArgumentCaptor<Bitmap> resultCaptor = ArgumentCaptor.forClass(Bitmap.class);
@@ -135,7 +138,12 @@ public class InMemoryCachedImageFetcherTest {
 
             // No exception should be thrown here when bitmap cache is null.
             ImageFetcher.Params params =
-                    ImageFetcher.Params.create(URL, UMA_CLIENT_NAME, WIDTH_PX, HEIGHT_PX);
+                    ImageFetcher.Params.create(
+                            URL,
+                            UMA_CLIENT_NAME,
+                            TRAFFIC_ANNOTATION_FOR_TESTS,
+                            WIDTH_PX,
+                            HEIGHT_PX);
             mInMemoryCachedImageFetcher.fetchImage(params, (Bitmap bitmap) -> {});
         } catch (Exception e) {
             throw new AssertionError(
@@ -145,7 +153,8 @@ public class InMemoryCachedImageFetcherTest {
 
     @Test
     public void testFetchGif() {
-        ImageFetcher.Params params = ImageFetcher.Params.create(URL, UMA_CLIENT_NAME);
+        ImageFetcher.Params params =
+                ImageFetcher.Params.create(URL, UMA_CLIENT_NAME, TRAFFIC_ANNOTATION_FOR_TESTS);
         mInMemoryCachedImageFetcher.fetchGif(params, (ImageDataFetchResult gifFetchResult) -> {});
         verify(mMockImageFetcher).fetchGif(eq(params), any());
     }
@@ -169,9 +178,11 @@ public class InMemoryCachedImageFetcherTest {
         // Check that calling methods after destroy throw AssertionErrors.
         mExpectedException.expect(AssertionError.class);
         mExpectedException.expectMessage("fetchGif called after destroy");
-        mInMemoryCachedImageFetcher.fetchGif(ImageFetcher.Params.create("", ""), null);
+        mInMemoryCachedImageFetcher.fetchGif(
+                ImageFetcher.Params.create("", "", TRAFFIC_ANNOTATION_FOR_TESTS), null);
         mExpectedException.expectMessage("fetchImage called after destroy");
-        mInMemoryCachedImageFetcher.fetchImage(ImageFetcher.Params.create("", "", 100, 100), null);
+        mInMemoryCachedImageFetcher.fetchImage(
+                ImageFetcher.Params.create("", "", TRAFFIC_ANNOTATION_FOR_TESTS, 100, 100), null);
         mExpectedException.expectMessage("clear called after destroy");
         mInMemoryCachedImageFetcher.clear();
     }

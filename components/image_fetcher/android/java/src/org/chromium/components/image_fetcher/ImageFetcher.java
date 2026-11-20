@@ -12,6 +12,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.net.NetworkTrafficAnnotationTag;
 import org.chromium.url.GURL;
 
 /**
@@ -51,22 +52,29 @@ public abstract class ImageFetcher {
         /**
          * Creates image fetcher parameters. The image will not be resized.
          *
-         * @see {@link #Params(String, String, int, int, boolean, int, boolean)}.
+         * @see {@link #Params(String, String, NetworkTrafficAnnotationTag, int, int, boolean, int,
+         *     boolean)}.
          */
-        public static Params create(final GURL url, String clientName) {
-            return create(url.getSpec(), clientName);
+        public static Params create(
+                final GURL url, String clientName, NetworkTrafficAnnotationTag trafficAnnotation) {
+            return create(url.getSpec(), clientName, trafficAnnotation);
         }
 
         /**
          * Creates image fetcher parameters. The image will not be resized.
          *
-         * @see {@link #Params(String, String, int, int, boolean, int, boolean)}.
+         * @see {@link #Params(String, String, NetworkTrafficAnnotationTag, int, int, boolean, int,
+         *     boolean)}.
          */
         @Deprecated
-        public static Params create(final String url, String clientName) {
+        public static Params create(
+                final String url,
+                String clientName,
+                NetworkTrafficAnnotationTag trafficAnnotation) {
             return new Params(
                     url,
                     clientName,
+                    trafficAnnotation,
                     /* width= */ 0,
                     /* height= */ 0,
                     /* shouldResize= */ false,
@@ -78,23 +86,30 @@ public abstract class ImageFetcher {
          * Creates image fetcher parameters for an image loaded from a trusted source. The image
          * will not be resized.
          *
-         * @see {@link #Params(String, String, int, int, boolean, int, boolean)}.
+         * @see {@link #Params(String, String, NetworkTrafficAnnotationTag, int, int, boolean, int,
+         *     boolean)}.
          */
-        public static Params createFromTrustedSource(final GURL url, String clientName) {
-            return createFromTrustedSource(url.getSpec(), clientName);
+        public static Params createFromTrustedSource(
+                final GURL url, String clientName, NetworkTrafficAnnotationTag trafficAnnotation) {
+            return createFromTrustedSource(url.getSpec(), clientName, trafficAnnotation);
         }
 
         /**
          * Creates image fetcher parameters for an image loaded from a trusted source. The image
          * will not be resized.
          *
-         * @see {@link #Params(String, String, int, int, boolean, int, boolean)}.
+         * @see {@link #Params(String, String, NetworkTrafficAnnotationTag, int, int, boolean, int,
+         *     boolean)}.
          */
         @Deprecated
-        public static Params createFromTrustedSource(final String url, String clientName) {
+        public static Params createFromTrustedSource(
+                final String url,
+                String clientName,
+                NetworkTrafficAnnotationTag trafficAnnotation) {
             return new Params(
                     url,
                     clientName,
+                    trafficAnnotation,
                     /* width= */ 0,
                     /* height= */ 0,
                     /* shouldResize= */ false,
@@ -105,23 +120,55 @@ public abstract class ImageFetcher {
         /**
          * Creates image fetcher parameters with image size specified.
          *
-         * @see {@link #Params(String, String, int, int, boolean, int, boolean)}.
+         * @see {@link #Params(String, String, NetworkTrafficAnnotationTag, int, int, boolean, int,
+         *     boolean)}.
          */
-        public static Params create(final GURL url, String clientName, int width, int height) {
-            return create(url.getSpec(), clientName, width, height);
+        public static Params create(
+                final GURL url,
+                String clientName,
+                NetworkTrafficAnnotationTag trafficAnnotation,
+                int width,
+                int height) {
+            return create(url.getSpec(), clientName, trafficAnnotation, width, height);
+        }
+
+        /**
+         * Creates parameters using the legacy native traffic annotation.
+         *
+         * @deprecated Pass a traffic annotation describing the caller's request instead.
+         */
+        // Retained for the downstream data-sharing caller until it passes an annotation.
+        @Deprecated
+        public static Params create(final String url, String clientName, int width, int height) {
+            return new Params(
+                    url,
+                    clientName,
+                    /* trafficAnnotation= */ null,
+                    width,
+                    height,
+                    /* shouldResize= */ width > 0 && height > 0,
+                    INVALID_EXPIRATION_INTERVAL,
+                    /* isTrustedSource= */ false);
         }
 
         /**
          * Creates image fetcher parameters with image size specified.
          *
-         * @see {@link #Params(String, String, int, int, boolean, int, boolean)}.
+         * @see {@link #Params(String, String, NetworkTrafficAnnotationTag, int, int, boolean, int,
+         *     boolean)}.
          */
         @Deprecated
-        public static Params create(final String url, String clientName, int width, int height) {
+        public static Params create(
+                final String url,
+                String clientName,
+                NetworkTrafficAnnotationTag trafficAnnotation,
+                int width,
+                int height) {
             boolean shouldResize = (width > 0 && height > 0);
             return new Params(
                     url,
                     clientName,
+                    trafficAnnotation,
                     width,
                     height,
                     shouldResize,
@@ -132,13 +179,19 @@ public abstract class ImageFetcher {
         /**
          * Creates image fetcher parameters with image size specified.
          *
-         * @see {@link #Params(String, String, int, int, boolean, int, boolean)}.
+         * @see {@link #Params(String, String, NetworkTrafficAnnotationTag, int, int, boolean, int,
+         *     boolean)}.
          */
         public static Params createNoResizing(
-                final GURL url, String clientName, int width, int height) {
+                final GURL url,
+                String clientName,
+                NetworkTrafficAnnotationTag trafficAnnotation,
+                int width,
+                int height) {
             return new Params(
                     url.getSpec(),
                     clientName,
+                    trafficAnnotation,
                     width,
                     height,
                     /* shouldResize= */ false,
@@ -150,11 +203,13 @@ public abstract class ImageFetcher {
          * Only used in rare cases. Creates image fetcher parameters that keeps the cache file for a
          * certain period of time.
          *
-         * @see {@link #Params(String, String, int, int, boolean, int, boolean)}.
+         * @see {@link #Params(String, String, NetworkTrafficAnnotationTag, int, int, boolean, int,
+         *     boolean)}.
          */
         public static Params createWithExpirationInterval(
                 final GURL url,
                 String clientName,
+                NetworkTrafficAnnotationTag trafficAnnotation,
                 int width,
                 int height,
                 int expirationIntervalMinutes) {
@@ -164,6 +219,7 @@ public abstract class ImageFetcher {
             return new Params(
                     url.getSpec(),
                     clientName,
+                    trafficAnnotation,
                     width,
                     height,
                     shouldResize,
@@ -176,19 +232,22 @@ public abstract class ImageFetcher {
          *
          * @param url URL to fetch the image from.
          * @param clientName Name of the cached image fetcher client to report UMA metrics for.
+         * @param trafficAnnotation Describes the request, or null to use the legacy native
+         *     annotation.
          * @param width The bitmap's desired width (in pixels). For a multi-resolution image such as
-         *         an .ico, the desired width affects which .ico frame is selected.
+         *     an .ico, the desired width affects which .ico frame is selected.
          * @param height The bitmap's desired height (in pixels). For a multi-resolution image such
-         *         as an .ico, the desired height affects which .ico frame is selected.
+         *     as an .ico, the desired height affects which .ico frame is selected.
          * @param shouldResize Whether the downloaded bitmaps should be resized to `width` and
-         *         `height`.
+         *     `height`.
          * @param expirationIntervalMinutes Specified in rare cases. The length of time in minutes
-         *         to keep the cache file on disk. Any value <= 0 will be ignored.
+         *     to keep the cache file on disk. Any value <= 0 will be ignored.
          * @param isTrustedSource Whether the image is being loaded from a trusted source.
          */
         private Params(
                 String url,
                 String clientName,
+                @Nullable NetworkTrafficAnnotationTag trafficAnnotation,
                 int width,
                 int height,
                 boolean shouldResize,
@@ -199,11 +258,17 @@ public abstract class ImageFetcher {
 
             this.url = url;
             this.clientName = clientName;
+            this.trafficAnnotation = trafficAnnotation;
             this.width = width;
             this.height = height;
             this.shouldResize = shouldResize;
             this.expirationIntervalMinutes = expirationIntervalMinutes;
             this.isTrustedSource = isTrustedSource;
+        }
+
+        /** Returns -1 for the legacy native annotation; annotation hashes are nonnegative. */
+        int getTrafficAnnotationHash() {
+            return trafficAnnotation == null ? -1 : trafficAnnotation.getHashCode();
         }
 
         @Override
@@ -214,6 +279,7 @@ public abstract class ImageFetcher {
             ImageFetcher.Params otherParams = (ImageFetcher.Params) other;
             return url.equals(otherParams.url)
                     && clientName.equals(otherParams.clientName)
+                    && getTrafficAnnotationHash() == otherParams.getTrafficAnnotationHash()
                     && width == otherParams.width
                     && height == otherParams.height
                     && shouldResize == otherParams.shouldResize
@@ -225,6 +291,7 @@ public abstract class ImageFetcher {
         public int hashCode() {
             int result = (url != null) ? url.hashCode() : 0;
             result = 31 * result + ((clientName != null) ? clientName.hashCode() : 0);
+            result = 31 * result + getTrafficAnnotationHash();
             result = 31 * result + width;
             result = 31 * result + height;
             result = 2 * result + (shouldResize ? 1 : 0);
@@ -240,22 +307,22 @@ public abstract class ImageFetcher {
         public final String clientName;
 
         /**
-         * Has an effect if either:
-         * - `url` refers to a multi-resolution image such as .ico.
-         * OR
-         * - `shouldResize` == true.
+         * Describes the feature that requested the image; null for legacy callers. Not used for
+         * cache identity.
+         */
+        public final @Nullable NetworkTrafficAnnotationTag trafficAnnotation;
+
+        /**
+         * Has an effect if either: - `url` refers to a multi-resolution image such as .ico. OR -
+         * `shouldResize` == true.
          *
-         * If `url` refers to a multi-resolution image, `width` and `height` affect which frame of
-         * the multi-resolution image is returned in callback.
-         * Example:
-         * `url`: image.ico (contains 16x16 and 32x32 frames)
-         * `width`: 31
-         * `height`: 31
-         * `shouldResize`: false
-         * 32x32 frame from image.ico will be returned.
+         * <p>If `url` refers to a multi-resolution image, `width` and `height` affect which frame
+         * of the multi-resolution image is returned in callback. Example: `url`: image.ico
+         * (contains 16x16 and 32x32 frames) `width`: 31 `height`: 31 `shouldResize`: false 32x32
+         * frame from image.ico will be returned.
          *
-         * If `shouldResize` == true, the selected frame of the downloaded bitmap will be resized to
-         * `width` and `height`.
+         * <p>If `shouldResize` == true, the selected frame of the downloaded bitmap will be resized
+         * to `width` and `height`.
          */
         public final int width;
 
