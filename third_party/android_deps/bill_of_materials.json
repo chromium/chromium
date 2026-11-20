@@ -227,7 +227,7 @@
     {
         "name": "runtime-annotation-android",
         "group": "androidx.compose.runtime",
-        "version": "1.13.0-rc01"
+        "version": "1.14.0-alpha01"
     },
     {
         "name": "runtime-retain",
@@ -692,7 +692,7 @@
     {
         "name": "lifecycle-common-jvm",
         "group": "androidx.lifecycle",
-        "version": "2.12.0-alpha05"
+        "version": "2.12.0-alpha06"
     },
     {
         "name": "lifecycle-livedata",
@@ -727,7 +727,7 @@
     {
         "name": "lifecycle-runtime-android",
         "group": "androidx.lifecycle",
-        "version": "2.12.0-alpha05"
+        "version": "2.12.0-alpha06"
     },
     {
         "name": "lifecycle-runtime-compose",
@@ -747,7 +747,7 @@
     {
         "name": "lifecycle-runtime-ktx-android",
         "group": "androidx.lifecycle",
-        "version": "2.12.0-alpha05"
+        "version": "2.12.0-alpha06"
     },
     {
         "name": "lifecycle-service",
@@ -762,7 +762,7 @@
     {
         "name": "lifecycle-viewmodel-android",
         "group": "androidx.lifecycle",
-        "version": "2.12.0-alpha05"
+        "version": "2.12.0-alpha06"
     },
     {
         "name": "lifecycle-viewmodel-compose",
@@ -1422,7 +1422,7 @@
     {
         "name": "play-services-basement",
         "group": "com.google.android.gms",
-        "version": "18.12.0"
+        "version": "18.12.1"
     },
     {
         "name": "play-services-cast",
