@@ -21,6 +21,8 @@
 namespace blink {
 
 class ComputedStyle;
+template <typename T>
+class GapDataList;
 class PhysicalBoxFragment;
 
 // This bitmask indicates whether an intersection is blocked due to the presence
@@ -218,6 +220,9 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
 
   wtf_size_t MainGapCount() const { return main_gaps_.size(); }
   wtf_size_t CrossGapCount() const { return cross_gaps_.size(); }
+  wtf_size_t GapCount(GridTrackSizingDirection direction) const {
+    return IsMainDirection(direction) ? MainGapCount() : CrossGapCount();
+  }
 
   // Returns whether the gap at `gap_index` in `direction` can be painted.
   // `gap_index` is an index into this fragment's gaps. Spanner main gaps and
@@ -306,6 +311,13 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
     return !IsMainDirection(direction) && CrossGapsHaveOwners();
   }
 
+  // Advances `owner_index` to the flex line or grid lane that owns
+  // `cross_gap_index`. Call with cross gap indices in increasing order.
+  // `MainGapCount()` identifies the trailing grid lane or the flex
+  // content-end sentinel.
+  void AdvanceCrossGapOwnerCursor(wtf_size_t cross_gap_index,
+                                  wtf_size_t& owner_index) const;
+
   const Vector<MainGap>& GetMainGaps() const { return main_gaps_; }
 
   const Vector<CrossGap>& GetCrossGaps() const { return cross_gaps_; }
@@ -371,18 +383,20 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
                          RuleVisibilityItems cross_rule_visibility,
                          const Vector<GapIntersection>& intersections) const;
 
+  // Resolves the cross-direction rule widths by geometric gap index.
+  Vector<int> ResolveCrossDecorationWidths(
+      GridTrackSizingDirection cross_direction,
+      const GapDataList<int>& cross_rule_widths) const;
+
   // Returns the cross-direction decoration width at the given intersection,
   // used by `overlap-join` to determine how far the decoration should extend.
-  // Cap intersections have no crossing decoration, so they return 0.
-  // `is_cap_intersection` indicates whether the intersection is a cap (at a
-  // container edge or a dangling interior endpoint with no visible crossing
-  // decoration; https://github.com/w3c/csswg-drafts/issues/13697).
+  // Must not be called for cap intersections, which have no crossing
+  // decoration (https://github.com/w3c/csswg-drafts/issues/13697).
   LayoutUnit GetCrossDecorationWidthForIntersection(
       wtf_size_t gap_index,
       wtf_size_t intersection_index,
       bool is_main_gap,
       const Vector<GapIntersection>& intersections,
-      bool is_cap_intersection,
       const Vector<int>& cross_decoration_widths) const;
 
   // Returns the base width used to resolve percentage inset values at the
@@ -597,6 +611,22 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
   virtual std::optional<LayoutUnit> CrossGapSizeAtMainGapIntersection(
       wtf_size_t main_gap_index,
       const GapIntersection& intersection) const {
+    return std::nullopt;
+  }
+
+  virtual Vector<int> ResolveCrossDecorationWidthsForDirection(
+      GridTrackSizingDirection cross_direction,
+      const GapDataList<int>& cross_rule_widths) const;
+
+  // Returns the widest cross decoration at the main gap intersection at
+  // `intersection_index`, or `std::nullopt` if the intersection's cross
+  // decoration width comes from `cross_decoration_widths` by index. For an
+  // overlap window, the result covers the whole window.
+  virtual std::optional<LayoutUnit> CrossDecorationWidthAtMainGapIntersection(
+      wtf_size_t main_gap_index,
+      wtf_size_t intersection_index,
+      const Vector<GapIntersection>& intersections,
+      const Vector<int>& cross_decoration_widths) const {
     return std::nullopt;
   }
 

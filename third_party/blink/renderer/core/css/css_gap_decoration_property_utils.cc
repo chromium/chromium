@@ -175,19 +175,6 @@ CSSGapDecorationUtils::GetExpandedGapDataList(
   return expanded_values;
 }
 
-Vector<int> CSSGapDecorationUtils::GetExpandedWidths(
-    const GapDataList<int>& gap_data_list,
-    wtf_size_t gap_count) {
-  GapDataListValueAccessor<int> accessor(gap_data_list.GetGapDataList(),
-                                         gap_count);
-  Vector<int> result;
-  result.ReserveInitialCapacity(gap_count);
-  for (wtf_size_t index = 0; index < gap_count; ++index) {
-    result.push_back(accessor.ValueAt(index));
-  }
-  return result;
-}
-
 RuleBreak CSSGapDecorationUtils::ResolveRuleBreakValue(
     const ComputedStyle& style,
     GridTrackSizingDirection direction,

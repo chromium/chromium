@@ -58,13 +58,23 @@ struct GapEndpointContext {
     // The crossing decoration's width determines how far each endpoint
     // extends.
     if (has_overlap_join) {
+      if (!ComputedStyle::BorderStyleIsVisible(
+              is_column_gap ? style.RowRuleStyle() : style.ColumnRuleStyle())) {
+        single_cross_decoration_width = LayoutUnit();
+        return;
+      }
+
       const GapDataList<int>& cross_rule_widths =
           is_column_gap ? style.RowRuleWidth() : style.ColumnRuleWidth();
-      const wtf_size_t cross_gap_count =
-          is_main ? gap_geometry.GetCrossGaps().size()
-                  : gap_geometry.GetMainGaps().size();
-      cross_decoration_widths = CSSGapDecorationUtils::GetExpandedWidths(
-          cross_rule_widths, cross_gap_count);
+      // When all crossing rules share one width, store it directly instead of
+      // building a per-gap width list and looking up each intersection's gap.
+      if (cross_rule_widths.HasSingleValue()) {
+        single_cross_decoration_width =
+            LayoutUnit(cross_rule_widths.GetSingleValue());
+      } else {
+        cross_decoration_widths = gap_geometry.ResolveCrossDecorationWidths(
+            cross_direction, cross_rule_widths);
+      }
     }
   }
 
@@ -76,6 +86,7 @@ struct GapEndpointContext {
   RuleVisibilityItems rule_visibility;
   RuleVisibilityItems cross_rule_visibility;
   bool has_overlap_join;
+  std::optional<LayoutUnit> single_cross_decoration_width;
   Vector<int> cross_decoration_widths;
 };
 
@@ -106,16 +117,6 @@ LayoutUnit ComputeEndpointOffset(const GapEndpointContext& context,
       context.track_direction, gap_index, intersection_index, context.is_main,
       intersections);
 
-  // For `overlap-join`, determine the cross-direction decoration width at
-  // each intersection. Cap intersections have no cross decoration.
-  LayoutUnit cross_decoration_width;
-  if (context.has_overlap_join) {
-    cross_decoration_width =
-        gap_geometry.GetCrossDecorationWidthForIntersection(
-            gap_index, intersection_index, context.is_main, intersections,
-            is_cap_intersection, context.cross_decoration_widths);
-  }
-
   // When `overlap-join` is active, determine whether there is a cross-direction
   // joining decoration at the intersection. When true, the inset extends to
   // meet the cross decoration; otherwise it is 0.
@@ -123,6 +124,18 @@ LayoutUnit ComputeEndpointOffset(const GapEndpointContext& context,
   // at the container boundary or at dangling interior endpoints).
   const bool has_joining_decoration =
       context.has_overlap_join && !is_cap_intersection;
+
+  // For `overlap-join`, determine the cross-direction decoration width at
+  // each intersection. Cap intersections have no cross decoration.
+  LayoutUnit cross_decoration_width;
+  if (has_joining_decoration) {
+    cross_decoration_width =
+        context.single_cross_decoration_width
+            ? *context.single_cross_decoration_width
+            : gap_geometry.GetCrossDecorationWidthForIntersection(
+                  gap_index, intersection_index, context.is_main, intersections,
+                  context.cross_decoration_widths);
+  }
 
   // Inset values are used to offset the end points of gap decorations.
   // Percentage values are resolved against the `*inset_width` of the
@@ -428,25 +441,6 @@ void AdjustIntersectionIndexPair(GridTrackSizingDirection track_direction,
   }
 }
 
-// Advances `owner_index` to the owner of cross gap `cross_gap_index`. The owner
-// is the flex line for flex, or the lane for grid-lanes. Cross gaps are painted
-// in order, so the owner index should only move forward. If no `MainGap` claims
-// the cross gap, `owner_index == main_gaps.size()` identifies the trailing lane
-// for grid-lanes and the content-end sentinel for flex.
-void AdvanceCrossGapOwnerCursor(const GapGeometry& gap_geometry,
-                                wtf_size_t cross_gap_index,
-                                wtf_size_t& owner_index) {
-  const Vector<MainGap>& main_gaps = gap_geometry.GetMainGaps();
-  while (owner_index < main_gaps.size()) {
-    const MainGap& main_gap = main_gaps[owner_index];
-    if (main_gap.HasCrossGapsBefore() &&
-        cross_gap_index <= main_gap.GetCrossGapBeforeEnd()) {
-      return;
-    }
-    ++owner_index;
-  }
-}
-
 struct GapDecoration {
   Color color;
   EBorderStyle style;
@@ -492,8 +486,8 @@ struct GapDecorationValueResolver {
     // gap's intersections, and for flex to resolve its stitched index across
     // fragments.
     if (cross_gap_owner_index) {
-      AdvanceCrossGapOwnerCursor(gap_geometry, gap_index,
-                                 *cross_gap_owner_index);
+      gap_geometry.AdvanceCrossGapOwnerCursor(gap_index,
+                                              *cross_gap_owner_index);
     }
     // `stitched_gap_index` is this gap's index in the full container's
     // geometric paint order.

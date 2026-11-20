@@ -246,6 +246,21 @@ class CORE_EXPORT GridLanesGapGeometry final : public GapGeometry {
       GapSegmentStateCursor& cursor,
       Vector<GapIntersection>& intersections) const override;
 
+  // Resolves cross-direction rule widths by geometric gap index, resetting
+  // stacking-axis sequences per lane and skipping artificial cross gaps.
+  Vector<int> ResolveCrossDecorationWidthsForDirection(
+      GridTrackSizingDirection cross_direction,
+      const GapDataList<int>& cross_rule_widths) const override;
+
+  // Returns the widest decoration among the cross gaps of both adjacent lanes
+  // that fall within the intersection, or within its whole overlap window.
+  // Artificial cross gaps have no decoration.
+  std::optional<LayoutUnit> CrossDecorationWidthAtMainGapIntersection(
+      wtf_size_t main_gap_index,
+      wtf_size_t intersection_index,
+      const Vector<GapIntersection>& intersections,
+      const Vector<int>& cross_decoration_widths) const override;
+
   // `around` retains placement openings.
   GridLanesEmptyOpenings empty_openings_;
 

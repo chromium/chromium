@@ -61,12 +61,6 @@ class CORE_EXPORT CSSGapDecorationUtils {
   static typename GapDataList<T>::GapDataVector GetExpandedGapDataList(
       const GapDataList<T>& gap_data_list);
 
-  // Expands a GapDataList<int> (rule widths) into a Vector<int> of exactly
-  // `gap_count` values, fully resolving all repeaters (including auto
-  // repeaters) based on the known number of gaps.
-  static Vector<int> GetExpandedWidths(const GapDataList<int>& gap_data_list,
-                                       wtf_size_t gap_count);
-
   static CSSValueList* GetExpandedCSSValueListForGapData(
       const CSSValueList& list,
       const StyleResolverState& state);

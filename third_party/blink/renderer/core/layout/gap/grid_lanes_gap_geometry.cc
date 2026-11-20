@@ -6,6 +6,8 @@
 
 #include <algorithm>
 
+#include "third_party/blink/renderer/core/style/gap_data_list.h"
+
 namespace blink {
 
 namespace {
@@ -440,6 +442,114 @@ void GridLanesGapGeometry::GenerateMainIntersectionList(
   if (needs_item_occupancy) {
     MarkEmptySides(gap_index, intersections);
   }
+}
+
+Vector<int> GridLanesGapGeometry::ResolveCrossDecorationWidthsForDirection(
+    GridTrackSizingDirection cross_direction,
+    const GapDataList<int>& cross_rule_widths) const {
+  // Build one width entry per stored gap in `cross_direction` so intersection
+  // lookups can index directly by geometric gap index.
+  const wtf_size_t cross_gap_count = GapCount(cross_direction);
+  const wtf_size_t gap_slot_count = PaintableGapCount(cross_direction);
+
+  Vector<int> widths;
+  widths.ReserveInitialCapacity(cross_gap_count);
+  GapDataListValueAccessor<int> width_accessor(
+      cross_rule_widths.GetGapDataList(), gap_slot_count);
+  const bool gaps_are_owned = AreGapsOwned(cross_direction);
+  wtf_size_t owner_index = 0;
+  wtf_size_t paint_order_gap_index = 0;
+  for (wtf_size_t i = 0; i < cross_gap_count; ++i) {
+    // Artificial cross gaps sit inside `cross_gaps_` by offset, but they never
+    // paint or consume a slot from the width list.
+    if (!IsPaintableGap(cross_direction, i)) {
+      widths.push_back(0);
+      continue;
+    }
+    if (gaps_are_owned) {
+      AdvanceCrossGapOwnerCursor(i, owner_index);
+    }
+    // Map gap `i` to its lane-local (or reversed) slot and update the slot
+    // count so `repeat(auto, ...)` resolves against that lane's gutter count.
+    const DecorationValueAssignment assignment =
+        DecorationValueAssignmentForGap(
+            cross_direction, i, paint_order_gap_index++, gap_slot_count,
+            gaps_are_owned ? std::optional(owner_index) : std::nullopt);
+    width_accessor.SetGapSlotCount(assignment.gap_count);
+    widths.push_back(width_accessor.ValueAt(assignment.value_index));
+  }
+  return widths;
+}
+
+std::optional<LayoutUnit>
+GridLanesGapGeometry::CrossDecorationWidthAtMainGapIntersection(
+    wtf_size_t main_gap_index,
+    wtf_size_t intersection_index,
+    const Vector<GapIntersection>& intersections,
+    const Vector<int>& cross_decoration_widths) const {
+  // A `MainGap` intersection stores only a stacking-axis offset, not the
+  // `CrossGap` indices that produced it. For a single gutter, search that
+  // exact offset; for an overlap window, search from the opening gutter center
+  // to the closing gutter center so all gutters in the window are checked.
+  const GapIntersection& intersection = intersections[intersection_index];
+  LayoutUnit min_offset = intersection.GetOffset();
+  LayoutUnit max_offset = min_offset;
+  if (intersection.HasOverlapState()) {
+    CHECK_GT(intersection_index, 0u);
+    const wtf_size_t opening_index = intersection.IsOverlapWindowOpen()
+                                         ? intersection_index
+                                         : intersection_index - 1;
+    CHECK_LT(opening_index + 1, intersections.size());
+    const GapIntersection& open_intersection = intersections[opening_index];
+    const GapIntersection& close_intersection =
+        intersections[opening_index + 1];
+    CHECK(open_intersection.IsOverlapWindowOpen());
+    CHECK(close_intersection.IsOverlapWindowClose());
+    min_offset = open_intersection.GetOffset();
+    max_offset = close_intersection.GetOffset();
+  }
+
+  // Both `GapIntersection` and `CrossGap` store gutter center offsets, and each
+  // lane's `CrossGap` slice is sorted by offset. Binary-search each adjacent
+  // lane's slice to jump to `min_offset`, then take the widest non-artificial
+  // crossing rule through `max_offset` so the main-gap rule reaches the
+  // farthest crossing rule edge when adjacent lanes have different widths.
+  const GridTrackSizingDirection cross_direction =
+      OppositeDirection(GetMainDirection());
+  const CrossGaps& cross_gaps = GetCrossGaps();
+  auto offset_of = [cross_direction](const CrossGap& gap) {
+    return gap.GetGapOffset(cross_direction);
+  };
+  int max_width = 0;
+  auto update_max_width = [&](wtf_size_t start, wtf_size_t inclusive_end) {
+    CHECK_LE(start, inclusive_end);
+    const base::span<const CrossGap> lane_gaps =
+        base::span(cross_gaps).subspan(start, inclusive_end - start + 1);
+    const auto first =
+        std::ranges::lower_bound(lane_gaps, min_offset, {}, offset_of);
+    for (wtf_size_t index = start + CheckedDistance(lane_gaps.begin(), first);
+         index <= inclusive_end; ++index) {
+      const CrossGap& gap = cross_gaps[index];
+      if (offset_of(gap) > max_offset) {
+        break;
+      }
+      if (!gap.IsArtificial()) {
+        max_width = std::max(max_width, cross_decoration_widths[index]);
+      }
+    }
+  };
+
+  // Check the lanes on both sides of `main_gap`.
+  const MainGap& main_gap = MainGapAt(main_gap_index);
+  if (main_gap.HasCrossGapsBefore()) {
+    update_max_width(main_gap.GetCrossGapBeforeStart(),
+                     main_gap.GetCrossGapBeforeEnd());
+  }
+  if (main_gap.HasCrossGapsAfter()) {
+    update_max_width(main_gap.GetCrossGapAfterStart(),
+                     main_gap.GetCrossGapAfterEnd());
+  }
+  return LayoutUnit(max_width);
 }
 
 LayoutUnit GridLanesGapGeometry::GridAxisOffsetForLaneBoundary(

@@ -188,6 +188,19 @@ GapGeometry::DecorationValueAssignmentForGap(
           gap_slot_count};
 }
 
+void GapGeometry::AdvanceCrossGapOwnerCursor(wtf_size_t cross_gap_index,
+                                             wtf_size_t& owner_index) const {
+  const wtf_size_t main_gap_count = MainGapCount();
+  while (owner_index < main_gap_count) {
+    const MainGap& main_gap = main_gaps_[owner_index];
+    if (main_gap.HasCrossGapsBefore() &&
+        cross_gap_index <= main_gap.GetCrossGapBeforeEnd()) {
+      return;
+    }
+    ++owner_index;
+  }
+}
+
 GapGeometry::GapIndexRange GapGeometry::CrossGapRangeForOwner(
     wtf_size_t owner_index) const {
   if (main_gaps_.empty()) {
@@ -648,27 +661,58 @@ bool GapGeometry::IsCapIntersection(
              cross_rule_visibility, *this, intersections);
 }
 
+Vector<int> GapGeometry::ResolveCrossDecorationWidths(
+    GridTrackSizingDirection cross_direction,
+    const GapDataList<int>& cross_rule_widths) const {
+  Vector<int> widths = ResolveCrossDecorationWidthsForDirection(
+      cross_direction, cross_rule_widths);
+  CHECK_EQ(widths.size(), GapCount(cross_direction));
+  return widths;
+}
+
+Vector<int> GapGeometry::ResolveCrossDecorationWidthsForDirection(
+    GridTrackSizingDirection cross_direction,
+    const GapDataList<int>& cross_rule_widths) const {
+  // TODO(javiercon): Resolve multi-value widths using `IsPaintableGap`,
+  // `DecorationValueAssignmentForGap`, and fragmentation stitching for all
+  // containers (reversals, spanner main gaps, and fragmented row gaps), remove
+  // the `GridLanesGapGeometry` override, and add WPT coverage.
+  const wtf_size_t cross_gap_count = GapCount(cross_direction);
+  GapDataListValueAccessor<int> accessor(cross_rule_widths.GetGapDataList(),
+                                         cross_gap_count);
+  Vector<int> widths;
+  widths.ReserveInitialCapacity(cross_gap_count);
+  for (wtf_size_t index = 0; index < cross_gap_count; ++index) {
+    widths.push_back(accessor.ValueAt(index));
+  }
+  return widths;
+}
+
 LayoutUnit GapGeometry::GetCrossDecorationWidthForIntersection(
     wtf_size_t gap_index,
     wtf_size_t intersection_index,
     bool is_main_gap,
     const Vector<GapIntersection>& intersections,
-    bool is_cap_intersection,
     const Vector<int>& cross_decoration_widths) const {
-  if (is_cap_intersection) {
-    return LayoutUnit();
-  }
+  CHECK(!IsIntersectionAtContainerEdge(gap_index, intersection_index,
+                                       intersections.size(), is_main_gap,
+                                       intersections));
+  CHECK(!IsSpannerBoundaryIntersection(intersection_index, is_main_gap));
+  CHECK(!intersections[intersection_index].IsArtificial());
 
-  const GapIntersection& intersection = intersections[intersection_index];
-
-  if (GetContainerType() == ContainerType::kGridLanes && is_main_gap) {
-    // TODO(javiercon): Support main-gap `overlap-join` for grid-lanes.
-    return LayoutUnit();
+  if (is_main_gap) {
+    if (const std::optional<LayoutUnit> cross_decoration_width =
+            CrossDecorationWidthAtMainGapIntersection(
+                gap_index, intersection_index, intersections,
+                cross_decoration_widths)) {
+      return *cross_decoration_width;
+    }
   }
 
   // For flex cross gaps, the intersection carries the associated main gap
   // index directly, since cross gaps don't map 1:1 to main gaps by position.
   // Grid-lanes `CrossGap` interior points likewise carry a `main_gap_index`.
+  const GapIntersection& intersection = intersections[intersection_index];
   if (intersection.HasMainGapIndex()) {
     CHECK(GetContainerType() == ContainerType::kGridLanes ||
           GetContainerType() == ContainerType::kFlex);
@@ -677,6 +721,7 @@ LayoutUnit GapGeometry::GetCrossDecorationWidthForIntersection(
 
   // For grid and multicol, junction intersection `i` corresponds to cross gap
   // `i - 1`.
+  CHECK_GT(intersection_index, 0u);
   return LayoutUnit(cross_decoration_widths[intersection_index - 1]);
 }
 
