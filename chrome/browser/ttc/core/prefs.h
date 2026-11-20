@@ -23,6 +23,15 @@ inline constexpr char kTtcCaptionsEnabled[] = "ttc.captions_enabled";
 inline constexpr char kTtcMicrophoneChimeEnabled[] =
     "ttc.microphone_chime_enabled";
 
+// String. The keyboard shortcut that starts or ends a TTC session, in the
+// format of ui::Command::StringToAccelerator(), e.g. "Alt+Shift+K". Empty if
+// the user cleared it.
+inline constexpr char kTtcKeyboardShortcut[] = "ttc.keyboard_shortcut";
+
+// String. The keyboard shortcut that TTC listens to while it is held down, in
+// the same format as kTtcKeyboardShortcut. Empty if the user cleared it.
+inline constexpr char kTtcHoldToSpeakShortcut[] = "ttc.hold_to_speak_shortcut";
+
 }  // namespace prefs
 
 // Registers TTC's profile prefs.

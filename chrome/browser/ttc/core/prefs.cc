@@ -12,6 +12,9 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kTtcFreCompleted, false);
   registry->RegisterBooleanPref(prefs::kTtcCaptionsEnabled, false);
   registry->RegisterBooleanPref(prefs::kTtcMicrophoneChimeEnabled, true);
+  registry->RegisterStringPref(prefs::kTtcKeyboardShortcut, "Alt+Shift+K");
+  registry->RegisterStringPref(prefs::kTtcHoldToSpeakShortcut,
+                               "Alt+Shift+Space");
 }
 
 }  // namespace ttc
