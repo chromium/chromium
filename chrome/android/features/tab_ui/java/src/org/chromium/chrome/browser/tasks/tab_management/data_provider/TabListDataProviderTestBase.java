@@ -168,7 +168,13 @@ abstract class TabListDataProviderTestBase {
                 .thenAnswer(
                         invocation -> {
                             int tabId = invocation.getArgument(0);
-                            return mMultiSelectedTabIds.contains(tabId);
+                            // Only tabs in this model can be multi-selected in it.
+                            for (Tab tab : tabs) {
+                                if (tab.getId() == tabId) {
+                                    return mMultiSelectedTabIds.contains(tabId);
+                                }
+                            }
+                            return false;
                         });
     }
 

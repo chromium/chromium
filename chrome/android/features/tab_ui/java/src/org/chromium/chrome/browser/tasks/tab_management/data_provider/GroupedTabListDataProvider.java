@@ -320,7 +320,7 @@ public class GroupedTabListDataProvider extends TabListDataProvider {
                 isGroupCollapsed(model, tabGroupId)
                         ? 1
                         : 1 + model.getTabCountForGroup(TabGroupId.fromRawToken(tabGroupId));
-        moveItemsAt(index, count);
+        moveItemsAt(model, index, count);
     }
 
     /** Updates the existing {@link TabGroupItem} in {@link #mItems} and notifies observers. */

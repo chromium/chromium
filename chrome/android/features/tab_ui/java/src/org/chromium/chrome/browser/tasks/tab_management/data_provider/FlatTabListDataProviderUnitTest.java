@@ -1141,6 +1141,63 @@ public class FlatTabListDataProviderUnitTest extends TabListDataProviderTestBase
     }
 
     // ============================================================================================
+    // Multiple Models: Tab Events
+    // ============================================================================================
+
+    @Test
+    public void testMultipleModels_AddTabWhileFirstModelLoading_InsertsTab() {
+        mModelTabs.add(mTab1);
+        mOtherModelTabs.add(mTab2);
+        when(mTabModel.isTabStateInitialized()).thenReturn(false);
+        setUpSortedProvider(mTabModel, mOtherTabModel);
+        assertItems(item(TAB2_ID));
+
+        addTabToOtherModel(mTab3);
+
+        verify(mObserver).onItemsInserted(List.of(item(TAB3_ID)), /* after= */ null);
+        assertItems(item(TAB3_ID), item(TAB2_ID));
+    }
+
+    @Test
+    public void testMultipleModels_PinInSecondModelWhileFirstLoading_UpdatesItem() {
+        mModelTabs.add(mTab1);
+        mOtherModelTabs.add(mTab2);
+        when(mTabModel.isTabStateInitialized()).thenReturn(false);
+        setUpSortedProvider(mTabModel, mOtherTabModel);
+
+        mTab2.setIsPinned(true);
+        mTabModelObserver.didChangePinState(mTab2);
+
+        verify(mObserver).onItemUpdated(pinned(TAB2_ID), PayloadType.PIN_STATE);
+        assertItems(pinned(TAB2_ID));
+    }
+
+    @Test
+    public void testMultipleModels_MultiSelectInSecondModelWhileFirstLoading_UpdatesItem() {
+        mModelTabs.add(mTab1);
+        mOtherModelTabs.add(mTab2);
+        when(mTabModel.isTabStateInitialized()).thenReturn(false);
+        setUpSortedProvider(mTabModel, mOtherTabModel);
+
+        setMultiSelectedTabs(TAB2_ID);
+
+        verify(mObserver).onItemUpdated(multiSelected(TAB2_ID), PayloadType.MULTI_SELECTION);
+        assertItems(multiSelected(TAB2_ID));
+    }
+
+    @Test
+    public void testMultipleModels_RebuildReadsMultiSelectFromTabsOwnModel() {
+        // Both models are loaded; only the second holds TAB2_ID, and it has it multi-selected.
+        mModelTabs.add(mTab1);
+        mOtherModelTabs.add(mTab2);
+        mMultiSelectedTabIds.add(TAB2_ID);
+
+        setUpSortedProvider(mTabModel, mOtherTabModel);
+
+        assertItems(multiSelected(TAB2_ID), item(TAB1_ID));
+    }
+
+    // ============================================================================================
     // Test Helpers
     // ============================================================================================
 

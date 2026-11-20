@@ -221,12 +221,11 @@ public abstract class TabListDataProvider {
      * @return A new {@link TabItem} representing {@code tab}.
      */
     protected TabItem createTabItem(@Nullable Tab selectedTab, Tab tab) {
-        TabModel model = getTabModelIfTabStateInitialized();
         return new TabItem(
                 tab.getId(),
                 tab.equals(selectedTab),
                 tab.getIsPinned(),
-                model != null && model.isTabMultiSelected(tab.getId()));
+                isTabMultiSelected(tab.getId()));
     }
 
     /**
@@ -242,7 +241,8 @@ public abstract class TabListDataProvider {
         @TabId int tabId = tab.getId();
         if (indexOfTabId(tabId) != TabList.INVALID_TAB_INDEX) return;
 
-        TabModel model = getTabModelIfTabStateInitialized();
+        // Ignore tabs that aren't in a loaded model, such as tabs a model is still restoring.
+        TabModel model = getTabModelForTab(tab);
         if (model == null) return;
 
         insertItem(model, createTabItem(getSelectedTab(), tab));
@@ -297,7 +297,10 @@ public abstract class TabListDataProvider {
         // Ignore tabs moving out of scope; dedicated lifecycle events handle removal.
         if (!shouldShowTab(tab)) return;
 
-        moveItemsAt(indexOfTabId(tab.getId()), /* count= */ 1);
+        TabModel model = getTabModelForTab(tab);
+        if (model == null) return;
+
+        moveItemsAt(model, indexOfTabId(tab.getId()), /* count= */ 1);
     }
 
     /**
@@ -353,7 +356,7 @@ public abstract class TabListDataProvider {
      * @param tab The {@link Tab} whose pin state changed.
      */
     protected void updatePinState(Tab tab) {
-        if (getTabModelIfTabStateInitialized() == null) return;
+        if (getTabModelForTab(tab) == null) return;
 
         // Remove if the pin change filtered the tab out.
         if (!shouldShowTab(tab)) {
@@ -383,12 +386,9 @@ public abstract class TabListDataProvider {
      * multi-selected tabs changes in {@link TabModel}.
      */
     protected void updateMultiSelection() {
-        TabModel model = getTabModelIfTabStateInitialized();
-        if (model == null) return;
-
         for (int i = 0; i < mItems.size(); i++) {
             if (mItems.get(i) instanceof TabItem tabItem) {
-                boolean isMultiSelected = model.isTabMultiSelected(tabItem.getTabId());
+                boolean isMultiSelected = isTabMultiSelected(tabItem.getTabId());
                 if (tabItem.isMultiSelected() != isMultiSelected) {
                     updateItemAt(
                             i,
@@ -473,16 +473,14 @@ public abstract class TabListDataProvider {
      * their updated {@link TabModel} position and notifies observers via {@link
      * TabListDataObserver#onItemsMoved}.
      *
+     * @param model The loaded {@link TabModel} that holds the moved items.
      * @param startIndex The starting index in {@link #mItems}.
      * @param count The number of contiguous items to move.
      */
-    protected void moveItemsAt(int startIndex, int count) {
+    protected void moveItemsAt(TabModel model, int startIndex, int count) {
         if (count <= 0 || !isValidIndex(startIndex) || startIndex + count > mItems.size()) {
             return;
         }
-
-        TabModel model = getTabModelIfTabStateInitialized();
-        if (model == null) return;
 
         TabListItem targetItem = mItems.get(startIndex);
         List<TabListItem> subList = mItems.subList(startIndex, startIndex + count);
@@ -666,6 +664,31 @@ public abstract class TabListDataProvider {
             model.removeTabGroupObserver(mTabGroupObserver);
         }
         mAttachedTabModels.remove(model);
+    }
+
+    /** Returns the loaded model that holds a tab with {@code tabId}, or null if none does. */
+    private @Nullable TabModel getTabModelForTabId(@TabId int tabId) {
+        for (TabModel model : mAttachedTabModels) {
+            if (model.isTabStateInitialized() && model.getTabById(tabId) != null) return model;
+        }
+        return null;
+    }
+
+    /**
+     * Returns the loaded model that holds {@code tab}, or null if none does.
+     *
+     * @param tab The {@link Tab} to find the model for.
+     */
+    private @Nullable TabModel getTabModelForTab(Tab tab) {
+        return getTabModelForTabId(tab.getId());
+    }
+
+    /** Returns whether the loaded model that holds {@code tabId} has it multi-selected. */
+    private boolean isTabMultiSelected(@TabId int tabId) {
+        // TODO(crbug.com/587126481): A model reports its own current tab as multi-selected, so a
+        // background model's current tab counts too. Settle this with the highlight model.
+        TabModel model = getTabModelForTabId(tabId);
+        return model != null && model.isTabMultiSelected(tabId);
     }
 
     /** Returns whether {@code models} holds the attached models, in any order. */
