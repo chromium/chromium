@@ -15,8 +15,11 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "components/os_crypt/async/browser/key_provider.h"
+#include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/os_crypt/async/browser/test_key_provider.h"
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/os_crypt/async/common/encryptor.h"
@@ -336,6 +339,132 @@ TEST_F(PrefHashCalculatorEncryptedTest, ValidateEncryptedHash) {
       PrefHashCalculator::INVALID_ENCRYPTED,
       calculator_.ValidateEncryptedHash(path, null_value_ptr, valid_hash_base64,
                                         test_encryptor_.get()));
+
+  // Empty stored hash: malformed, treated as tampering.
+  EXPECT_EQ(PrefHashCalculator::INVALID_ENCRYPTED,
+            calculator_.ValidateEncryptedHash(path, &value_int, "",
+                                              test_encryptor_.get()));
+}
+
+// Simulates the OS encryption key being rotated or recreated: the stored hash
+// can not be decrypted, which is reported separately from a hash mismatch
+// (https://crbug.com/575543754).
+TEST_F(PrefHashCalculatorEncryptedTest, ValidateEncryptedHashUndecryptable) {
+  base::Value value("value");
+  const std::string path = "p.key_loss";
+  std::optional<std::string> encrypted_hash =
+      calculator_.CalculateEncryptedHash(path, &value, test_encryptor_.get());
+  ASSERT_TRUE(encrypted_hash.has_value());
+
+  // Same key name, different key.
+  scoped_refptr<os_crypt_async::TestEncryptor> rotated_encryptor =
+      os_crypt_async::GetTestEncryptorForTesting();
+  EXPECT_EQ(PrefHashCalculator::UNDECRYPTABLE_ENCRYPTED,
+            calculator_.ValidateEncryptedHash(path, &value, *encrypted_hash,
+                                              rotated_encryptor.get()));
+
+  // No keys at all.
+  scoped_refptr<os_crypt_async::TestEncryptor> empty_encryptor =
+      os_crypt_async::GetTestEncryptorWithoutKeysForTesting();
+  EXPECT_EQ(PrefHashCalculator::UNDECRYPTABLE_ENCRYPTED,
+            calculator_.ValidateEncryptedHash(path, &value, *encrypted_hash,
+                                              empty_encryptor.get()));
+
+  // Ciphertext with a corrupted authentication tag.
+  std::optional<std::vector<uint8_t>> corrupted =
+      base::Base64Decode(*encrypted_hash);
+  ASSERT_TRUE(corrupted.has_value());
+  corrupted->back() ^= 1;
+  EXPECT_EQ(
+      PrefHashCalculator::UNDECRYPTABLE_ENCRYPTED,
+      calculator_.ValidateEncryptedHash(
+          path, &value, base::Base64Encode(*corrupted), test_encryptor_.get()));
+
+  EXPECT_TRUE(PrefHashCalculator::IsKeyLoss(
+      PrefHashCalculator::UNDECRYPTABLE_ENCRYPTED));
+  EXPECT_TRUE(
+      PrefHashCalculator::IsKeyLoss(PrefHashCalculator::UNAVAILABLE_ENCRYPTED));
+  EXPECT_FALSE(
+      PrefHashCalculator::IsKeyLoss(PrefHashCalculator::INVALID_ENCRYPTED));
+  EXPECT_FALSE(
+      PrefHashCalculator::IsKeyLoss(PrefHashCalculator::WEAK_HASH_ENCRYPTED));
+  EXPECT_FALSE(
+      PrefHashCalculator::IsKeyLoss(PrefHashCalculator::VALID_ENCRYPTED));
+}
+
+// Decrypted data that is not the size of a hash can only come from decrypting
+// with the wrong key (for unauthenticated ciphers) and is not a mismatch.
+TEST_F(PrefHashCalculatorEncryptedTest,
+       ValidateEncryptedHashDecryptsToWrongSize) {
+  base::Value value("value");
+  std::optional<std::vector<uint8_t>> ciphertext =
+      test_encryptor_->EncryptString("not a sha256 digest");
+  ASSERT_TRUE(ciphertext.has_value());
+  EXPECT_EQ(PrefHashCalculator::UNDECRYPTABLE_ENCRYPTED,
+            calculator_.ValidateEncryptedHash("p.size", &value,
+                                              base::Base64Encode(*ciphertext),
+                                              test_encryptor_.get()));
+}
+
+namespace {
+
+// A key provider whose key is temporarily unavailable, like the default key
+// when running with a non-default user data directory on macOS.
+class UnavailableKeyProvider : public os_crypt_async::KeyProvider {
+ public:
+  explicit UnavailableKeyProvider(std::string tag) : tag_(std::move(tag)) {}
+
+ private:
+  // os_crypt_async::KeyProvider:
+  void GetKey(KeyCallback callback) override {
+    std::move(callback).Run(
+        tag_, base::unexpected(KeyError::kTemporarilyUnavailable));
+  }
+  bool UseForEncryption() override { return false; }
+
+  const std::string tag_;
+};
+
+using ProviderList =
+    std::vector<std::pair<os_crypt_async::OSCryptAsync::Precedence,
+                          std::unique_ptr<os_crypt_async::KeyProvider>>>;
+
+scoped_refptr<os_crypt_async::Encryptor> GetEncryptor(ProviderList providers) {
+  os_crypt_async::OSCryptAsync os_crypt(std::move(providers));
+  base::test::TestFuture<scoped_refptr<os_crypt_async::Encryptor>> future;
+  os_crypt.GetInstance(future.GetCallback());
+  return future.Take();
+}
+
+}  // namespace
+
+TEST_F(PrefHashCalculatorEncryptedTest, ValidateEncryptedHashUnavailable) {
+  base::test::TaskEnvironment task_environment;
+  base::Value value("value");
+  const std::string path = "p.unavailable";
+
+  ProviderList providers;
+  providers.emplace_back(/*precedence=*/10u,
+                         std::make_unique<os_crypt_async::TestKeyProvider>(
+                             "v10", /*use_for_encryption=*/true));
+  scoped_refptr<os_crypt_async::Encryptor> v10_encryptor =
+      GetEncryptor(std::move(providers));
+  std::optional<std::string> encrypted_hash =
+      calculator_.CalculateEncryptedHash(path, &value, v10_encryptor.get());
+  ASSERT_TRUE(encrypted_hash.has_value());
+
+  // "v10" is now unavailable and "v11" is used for encryption.
+  providers.clear();
+  providers.emplace_back(/*precedence=*/10u,
+                         std::make_unique<UnavailableKeyProvider>("v10"));
+  providers.emplace_back(/*precedence=*/15u,
+                         std::make_unique<os_crypt_async::TestKeyProvider>(
+                             "v11", /*use_for_encryption=*/true));
+  scoped_refptr<os_crypt_async::Encryptor> v11_encryptor =
+      GetEncryptor(std::move(providers));
+  EXPECT_EQ(PrefHashCalculator::UNAVAILABLE_ENCRYPTED,
+            calculator_.ValidateEncryptedHash(path, &value, *encrypted_hash,
+                                              v11_encryptor.get()));
 }
 
 TEST_F(PrefHashCalculatorEncryptedTest, EncryptedHashValuesAreStable) {

@@ -589,6 +589,8 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Match"/>
   <int value="1" label="Mismatch"/>
   <int value="2" label="Missing"/>
+  <int value="3" label="Undecryptable"/>
+  <int value="4" label="Unavailable"/>
 </enum>
 
 <!-- LINT.ThenChange(//services/preferences/tracked/pref_hash_store_impl.cc:SuperEncryptedHashResult) -->

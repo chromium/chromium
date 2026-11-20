@@ -32,7 +32,14 @@ using ValueState =
 constexpr char kSuperAuthenticatorCalculatedHistogram[] =
     "Settings.TrackedPreferences.SuperAuthenticatorCalculated";
 constexpr char kSuperEncryptedHashResultHistogram[] =
-    "Settings.TrackedPreferenceSuperEncryptedHashResult2";
+    "Settings.TrackedPreferenceSuperEncryptedHashResult3";
+constexpr char kKeyLossUndecryptableHistogram[] =
+    "Settings.TrackedPreferences.EncryptedHashKeyLoss.Undecryptable";
+
+// Values of the SuperEncryptedHashResult enum.
+constexpr int kSuperEncryptedHashMatch = 0;
+constexpr int kSuperEncryptedHashMismatch = 1;
+constexpr int kSuperEncryptedHashUndecryptable = 3;
 
 // Helper to get derived key for encrypted hashes; this is a replicate of the
 // function in the .cc file.
@@ -882,12 +889,49 @@ class PrefHashStoreImplEncryptedTest : public testing::Test {
     }
   }
 
+  void StoreInitialHashes() {
+    base::Value value("existing value");
+    base::DictValue split_value;
+    split_value.Set("key", "existing split value");
+    auto transaction = BeginTransaction(/*with_encryptor=*/true);
+    transaction->StoreEncryptedHash("existing.pref", &value);
+    transaction->StoreSplitEncryptedHash("existing.split", &split_value);
+    transaction->StoreHmac("legacy.pref", &value);
+  }
+
+  void ExpectUnknownValuesState(
+      ValueState expected_state,
+      int expected_sample,
+      scoped_refptr<const os_crypt_async::Encryptor> encryptor) {
+    base::HistogramTester histogram_tester;
+    base::Value value("new value");
+    base::DictValue split_value;
+    split_value.Set("key", "new split value");
+    std::vector<std::string> invalid_keys;
+    auto transaction =
+        hash_store_.BeginTransaction(&dictionary_contents_, encryptor);
+    // Beginning a transaction alone must not emit the histogram.
+    histogram_tester.ExpectTotalCount(kSuperEncryptedHashResultHistogram, 0);
+    transaction->RecordSuperEncryptedHashResult();
+    EXPECT_TRUE(transaction->IsSuperHmacValid());
+    EXPECT_EQ(expected_state, transaction->CheckValue("new.pref", &value));
+    EXPECT_EQ(expected_state, transaction->CheckSplitValue(
+                                  "new.split", &split_value, &invalid_keys));
+    EXPECT_TRUE(invalid_keys.empty());
+    histogram_tester.ExpectUniqueSample(kSuperEncryptedHashResultHistogram,
+                                        expected_sample, 1);
+  }
+
   const base::DictValue* GetCurrentDictionaryContents() {
     return dictionary_contents_.GetContents();
   }
 
   PrefHashStoreImpl hash_store_;
   scoped_refptr<os_crypt_async::Encryptor> test_encryptor_;
+  // An encryptor with the same key name as `test_encryptor_` but a different
+  // key, simulating an OS key that was rotated or recreated.
+  scoped_refptr<os_crypt_async::Encryptor> rotated_encryptor_ =
+      os_crypt_async::GetTestEncryptorForTesting();
   base::DictValue pref_store_contents_;
   DictionaryHashStoreContents dictionary_contents_;
 };
@@ -902,39 +946,17 @@ class PrefHashStoreImplSuperEncryptedHashTest
   }
 
  protected:
-  void StoreInitialHashes() {
-    base::Value value("existing value");
-    base::DictValue split_value;
-    split_value.Set("key", "existing split value");
-    auto transaction = BeginTransaction(/*with_encryptor=*/true);
-    transaction->StoreEncryptedHash("existing.pref", &value);
-    transaction->StoreSplitEncryptedHash("existing.split", &split_value);
-    transaction->StoreHmac("legacy.pref", &value);
-  }
+  using PrefHashStoreImplEncryptedTest::ExpectUnknownValuesState;
 
   void ExpectUnknownValuesState(ValueState expected_state) {
-    constexpr int kMatch = 0;
-    constexpr int kMismatch = 1;
-    base::HistogramTester histogram_tester;
-    base::Value value("new value");
-    base::DictValue split_value;
-    split_value.Set("key", "new split value");
-    std::vector<std::string> invalid_keys;
-    auto transaction = BeginTransaction(/*with_encryptor=*/true);
-    // Beginning a transaction alone must not emit the histogram.
-    histogram_tester.ExpectTotalCount(kSuperEncryptedHashResultHistogram, 0);
-    transaction->RecordSuperEncryptedHashResult();
-    EXPECT_TRUE(transaction->IsSuperHmacValid());
-    EXPECT_EQ(expected_state, transaction->CheckValue("new.pref", &value));
-    EXPECT_EQ(expected_state, transaction->CheckSplitValue(
-                                  "new.split", &split_value, &invalid_keys));
-    EXPECT_TRUE(invalid_keys.empty());
-    const int expected_sample =
-        expected_state == ValueState::TRUSTED_UNKNOWN_VALUE ? kMatch
-                                                            : kMismatch;
-    histogram_tester.ExpectUniqueSample(kSuperEncryptedHashResultHistogram,
-                                        expected_sample, 1);
+    ExpectUnknownValuesState(expected_state,
+                             expected_state == ValueState::TRUSTED_UNKNOWN_VALUE
+                                 ? kSuperEncryptedHashMatch
+                                 : kSuperEncryptedHashMismatch,
+                             test_encryptor_);
   }
+
+  bool IsLegacyFallbackDisallowed() const { return GetParam(); }
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -960,8 +982,13 @@ TEST_P(PrefHashStoreImplSuperEncryptedHashTest, RejectsChangedEncryptedHashes) {
   ExpectUnknownValuesState(ValueState::UNTRUSTED_UNKNOWN_VALUE);
 }
 
+// A super encrypted hash that fails authenticated decryption can not be
+// distinguished from one encrypted with a key that is no longer current, so it
+// is treated as missing rather than as a mismatch. This is no weaker than the
+// super encrypted hash being deleted: the legacy super HMAC is only trusted
+// when the legacy fallback is allowed (https://crbug.com/575543754).
 TEST_P(PrefHashStoreImplSuperEncryptedHashTest,
-       RejectsCorruptedSuperEncryptedHash) {
+       UndecryptableSuperEncryptedHashTreatedAsMissing) {
   StoreInitialHashes();
   auto encrypted_hash =
       base::Base64Decode(dictionary_contents_.GetSuperEncryptedHash());
@@ -970,7 +997,183 @@ TEST_P(PrefHashStoreImplSuperEncryptedHashTest,
   encrypted_hash->back() ^= 1;
   dictionary_contents_.SetSuperEncryptedHash(
       base::Base64Encode(*encrypted_hash));
-  ExpectUnknownValuesState(ValueState::UNTRUSTED_UNKNOWN_VALUE);
+  ExpectUnknownValuesState(IsLegacyFallbackDisallowed()
+                               ? ValueState::UNTRUSTED_UNKNOWN_VALUE
+                               : ValueState::TRUSTED_UNKNOWN_VALUE,
+                           kSuperEncryptedHashUndecryptable, test_encryptor_);
+}
+
+TEST_F(PrefHashStoreImplEncryptedTest,
+       UndecryptableSuperEncryptedHashRejectedWithKillSwitch) {
+  base::test::ScopedFeatureList kill_switch;
+  kill_switch.InitAndDisableFeature(
+      tracked::kTreatUndecryptableEncryptedHashAsMissing);
+  StoreInitialHashes();
+  auto encrypted_hash =
+      base::Base64Decode(dictionary_contents_.GetSuperEncryptedHash());
+  ASSERT_TRUE(encrypted_hash);
+  ASSERT_FALSE(encrypted_hash->empty());
+  encrypted_hash->back() ^= 1;
+  dictionary_contents_.SetSuperEncryptedHash(
+      base::Base64Encode(*encrypted_hash));
+  ExpectUnknownValuesState(ValueState::UNTRUSTED_UNKNOWN_VALUE,
+                           kSuperEncryptedHashUndecryptable, test_encryptor_);
+}
+
+// Simulates the OS encryption key being recreated, e.g. after the macOS login
+// keychain was reset (https://crbug.com/575543754).
+TEST_P(PrefHashStoreImplSuperEncryptedHashTest,
+       SuperEncryptedHashWithRotatedKey) {
+  StoreInitialHashes();
+  ExpectUnknownValuesState(
+      IsLegacyFallbackDisallowed() ? ValueState::UNTRUSTED_UNKNOWN_VALUE
+                                   : ValueState::TRUSTED_UNKNOWN_VALUE,
+      kSuperEncryptedHashUndecryptable, rotated_encryptor_);
+}
+
+TEST_P(PrefHashStoreImplSuperEncryptedHashTest, AtomicPrefWithRotatedKey) {
+  const std::string kPath = "atomic.pref";
+  base::Value value("value");
+  base::Value tampered_value("tampered value");
+  {
+    auto transaction = BeginTransaction(/*with_encryptor=*/true);
+    transaction->StoreHmac(kPath, &value);
+    transaction->StoreEncryptedHash(kPath, &value);
+  }
+
+  base::HistogramTester histogram_tester;
+  auto transaction =
+      hash_store_.BeginTransaction(&dictionary_contents_, rotated_encryptor_);
+  if (IsLegacyFallbackDisallowed()) {
+    // Without the legacy fallback there is nothing left to trust the value.
+    EXPECT_EQ(ValueState::UNTRUSTED_UNKNOWN_VALUE,
+              transaction->CheckValue(kPath, &value, /*reporting_id=*/3));
+    EXPECT_EQ(ValueState::UNTRUSTED_UNKNOWN_VALUE,
+              transaction->CheckValue(kPath, &tampered_value));
+  } else {
+    // The legacy HMAC is used, exactly as if the encrypted hash was missing.
+    EXPECT_EQ(ValueState::UNCHANGED_VIA_HMAC_FALLBACK,
+              transaction->CheckValue(kPath, &value, /*reporting_id=*/3));
+    EXPECT_EQ(ValueState::CHANGED_VIA_HMAC_FALLBACK,
+              transaction->CheckValue(kPath, &tampered_value));
+  }
+  histogram_tester.ExpectUniqueSample(kKeyLossUndecryptableHistogram, 3, 1);
+}
+
+TEST_F(PrefHashStoreImplEncryptedTest, AtomicPrefWithRotatedKeyAndKillSwitch) {
+  base::test::ScopedFeatureList kill_switch;
+  kill_switch.InitAndDisableFeature(
+      tracked::kTreatUndecryptableEncryptedHashAsMissing);
+  const std::string kPath = "atomic.pref";
+  base::Value value("value");
+  {
+    auto transaction = BeginTransaction(/*with_encryptor=*/true);
+    transaction->StoreHmac(kPath, &value);
+    transaction->StoreEncryptedHash(kPath, &value);
+  }
+
+  auto transaction =
+      hash_store_.BeginTransaction(&dictionary_contents_, rotated_encryptor_);
+  EXPECT_EQ(ValueState::CHANGED_ENCRYPTED,
+            transaction->CheckValue(kPath, &value));
+}
+
+// A value that does not match an encrypted hash that can be decrypted is still
+// reported as changed, regardless of the legacy HMAC.
+TEST_F(PrefHashStoreImplEncryptedTest, AtomicPrefDecryptableMismatchIsChanged) {
+  const std::string kPath = "atomic.pref";
+  base::Value value("value");
+  base::Value tampered_value("tampered value");
+  {
+    auto transaction = BeginTransaction(/*with_encryptor=*/true);
+    transaction->StoreEncryptedHash(kPath, &value);
+    transaction->StoreHmac(kPath, &tampered_value);
+  }
+
+  auto transaction = BeginTransaction(/*with_encryptor=*/true);
+  EXPECT_EQ(ValueState::CHANGED_ENCRYPTED,
+            transaction->CheckValue(kPath, &tampered_value));
+}
+
+TEST_P(PrefHashStoreImplSuperEncryptedHashTest, SplitPrefWithRotatedKey) {
+  const std::string kPath = "split.pref";
+  base::DictValue split_value;
+  split_value.Set("a", "value a");
+  split_value.Set("b", "value b");
+  {
+    auto transaction = BeginTransaction(/*with_encryptor=*/true);
+    transaction->StoreSplitHmac(kPath, &split_value);
+    transaction->StoreSplitEncryptedHash(kPath, &split_value);
+  }
+
+  base::HistogramTester histogram_tester;
+  auto transaction =
+      hash_store_.BeginTransaction(&dictionary_contents_, rotated_encryptor_);
+  std::vector<std::string> invalid_keys;
+  const ValueState state = transaction->CheckSplitValue(
+      kPath, &split_value, &invalid_keys, /*reporting_id=*/5);
+  EXPECT_EQ(IsLegacyFallbackDisallowed()
+                ? ValueState::UNTRUSTED_UNKNOWN_VALUE
+                : ValueState::UNCHANGED_VIA_HMAC_FALLBACK,
+            state);
+  EXPECT_TRUE(invalid_keys.empty());
+  histogram_tester.ExpectUniqueSample(kKeyLossUndecryptableHistogram, 5, 2);
+}
+
+TEST_P(PrefHashStoreImplSuperEncryptedHashTest,
+       SplitPrefWithRotatedKeyDetectsTamperedEntry) {
+  const std::string kPath = "split.pref";
+  base::DictValue split_value;
+  split_value.Set("a", "value a");
+  split_value.Set("b", "value b");
+  {
+    auto transaction = BeginTransaction(/*with_encryptor=*/true);
+    transaction->StoreSplitHmac(kPath, &split_value);
+    transaction->StoreSplitEncryptedHash(kPath, &split_value);
+  }
+
+  split_value.Set("b", "tampered value b");
+  auto transaction =
+      hash_store_.BeginTransaction(&dictionary_contents_, rotated_encryptor_);
+  std::vector<std::string> invalid_keys;
+  const ValueState state =
+      transaction->CheckSplitValue(kPath, &split_value, &invalid_keys);
+  if (IsLegacyFallbackDisallowed()) {
+    EXPECT_EQ(ValueState::UNTRUSTED_UNKNOWN_VALUE, state);
+    EXPECT_TRUE(invalid_keys.empty());
+  } else {
+    EXPECT_EQ(ValueState::CHANGED_VIA_HMAC_FALLBACK, state);
+    EXPECT_EQ(std::vector<std::string>({"b"}), invalid_keys);
+  }
+}
+
+// If any entry of a split preference can be decrypted, the key is not lost, so
+// entries that can not be decrypted are not downgraded to the legacy HMAC.
+TEST_F(PrefHashStoreImplEncryptedTest,
+       SplitPrefWithPartiallyUndecryptableEntries) {
+  const std::string kPath = "split.pref";
+  base::DictValue split_value;
+  split_value.Set("a", "value a");
+  split_value.Set("b", "value b");
+  {
+    auto transaction = BeginTransaction(/*with_encryptor=*/true);
+    transaction->StoreSplitHmac(kPath, &split_value);
+    transaction->StoreSplitEncryptedHash(kPath, &split_value);
+  }
+  // Re-encrypt the hash for "b" only with the rotated key.
+  const base::Value* value_b = split_value.Find("b");
+  ASSERT_TRUE(value_b);
+  dictionary_contents_.SetSplitPrefAuthenticator(
+      GetSplitEncKeyBase(kPath), "b",
+      hash_store_.ComputeEncryptedHash(kPath + ".b", value_b,
+                                       rotated_encryptor_.get()));
+
+  auto transaction =
+      hash_store_.BeginTransaction(&dictionary_contents_, rotated_encryptor_);
+  std::vector<std::string> invalid_keys;
+  EXPECT_EQ(ValueState::CHANGED_ENCRYPTED,
+            transaction->CheckSplitValue(kPath, &split_value, &invalid_keys));
+  EXPECT_EQ(std::vector<std::string>({"a"}), invalid_keys);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

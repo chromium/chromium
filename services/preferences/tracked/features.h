@@ -26,6 +26,14 @@ BASE_DECLARE_FEATURE(kRejectWeakCiphertext);
 // legacy MACs, preventing downgrade attacks.
 BASE_DECLARE_FEATURE(kDisallowLegacyPrefMacFallback);
 
+// When enabled, an encrypted hash that can not be decrypted because its key is
+// unavailable or has changed (e.g. the OS key was recreated) is treated as if
+// it were missing, rather than as a changed value. This allows the legacy HMAC
+// fallback (if not disallowed by kDisallowLegacyPrefMacFallback) to validate
+// the value and re-stamp the encrypted hash with the current key, instead of
+// resetting the preference. Kill switch for https://crbug.com/575543754.
+BASE_DECLARE_FEATURE(kTreatUndecryptableEncryptedHashAsMissing);
+
 }  // namespace tracked
 
 #endif  // SERVICES_PREFERENCES_TRACKED_FEATURES_H_

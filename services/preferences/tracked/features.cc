@@ -24,4 +24,8 @@ BASE_FEATURE(kRejectWeakCiphertext, base::FEATURE_ENABLED_BY_DEFAULT);
 // validation with os_crypt.
 BASE_FEATURE(kDisallowLegacyPrefMacFallback, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Treats encrypted hashes that can not be decrypted (key loss) as missing.
+BASE_FEATURE(kTreatUndecryptableEncryptedHashAsMissing,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace tracked

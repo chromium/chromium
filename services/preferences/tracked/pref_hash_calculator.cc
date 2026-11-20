@@ -134,6 +134,11 @@ PrefHashCalculator::ValidationResult PrefHashCalculator::ValidateHmac(
   return ValidateHmac(path, ValueAsString(value), digest_string);
 }
 
+// static
+bool PrefHashCalculator::IsKeyLoss(ValidationResult result) {
+  return result == UNDECRYPTABLE_ENCRYPTED || result == UNAVAILABLE_ENCRYPTED;
+}
+
 PrefHashCalculator::ValidationResult PrefHashCalculator::ValidateHmac(
     const std::string& path,
     const base::DictValue* dict,
@@ -199,7 +204,9 @@ PrefHashCalculator::ValidationResult PrefHashCalculator::ValidateEncryptedHash(
 
   std::optional<std::vector<uint8_t>> encrypted_hash =
       base::Base64Decode(stored_encrypted_hash_base64);
-  if (!encrypted_hash) {
+  if (!encrypted_hash || encrypted_hash->empty()) {
+    // Malformed authenticators are never produced by Chrome and are treated as
+    // tampering.
     return INVALID_ENCRYPTED;
   }
 
@@ -207,7 +214,21 @@ PrefHashCalculator::ValidationResult PrefHashCalculator::ValidateEncryptedHash(
   std::optional<std::string> decrypted_hash =
       encryptor->DecryptData(*encrypted_hash, &flags);
   if (!decrypted_hash) {
-    return INVALID_ENCRYPTED;
+    // Decryption failing means that the key used to encrypt the hash is not
+    // available (e.g. a key provider intentionally reports it as unavailable)
+    // or is not the current key (e.g. the OS key was rotated or recreated).
+    // Without the key the stored hash can not be compared to the value, so this
+    // is reported separately from a hash mismatch.
+    return flags.temporarily_unavailable ? UNAVAILABLE_ENCRYPTED
+                                         : UNDECRYPTABLE_ENCRYPTED;
+  }
+  // Encrypted hashes always wrap a raw SHA-256 digest. Decrypting with the
+  // wrong key using a cipher without authentication (e.g. AES-128-CBC, used on
+  // macOS and Linux) can occasionally pass the padding check and yield garbage,
+  // which will almost never be exactly the size of a digest. Treat that as a
+  // decryption failure rather than a mismatch.
+  if (decrypted_hash->size() != crypto::hash::kSha256Size) {
+    return UNDECRYPTABLE_ENCRYPTED;
   }
 #if BUILDFLAG(IS_WIN)
   if (base::FeatureList::IsEnabled(tracked::kRejectWeakCiphertext) &&

@@ -1362,6 +1362,28 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram name="Settings.TrackedPreferences.EncryptedHashKeyLoss.{Reason}"
+    enum="TrackedPreference" expires_after="2027-11-10">
+  <owner>zackhan@chromium.org</owner>
+  <owner>wfh@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    The id of a tracked preference whose encrypted hash could not be decrypted
+    during validation at load, because {Reason}. This indicates loss or rotation
+    of the OS encryption key rather than tampering of the value. Emitted once
+    per affected preference (or split preference entry) per profile load. See
+    https://crbug.com/575543754.
+  </summary>
+  <token key="Reason">
+    <variant name="Unavailable"
+        summary="the key it was encrypted with is (possibly temporarily)
+                 unavailable"/>
+    <variant name="Undecryptable"
+        summary="it could not be decrypted with the current key, e.g. the OS
+                 key was recreated"/>
+  </token>
+</histogram>
+
 <histogram name="Settings.TrackedPreferences.NewValueSerialized"
     enum="TrackedPreference" expires_after="2027-08-28">
   <owner>svend@chromium.org</owner>
@@ -1413,8 +1435,8 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram name="Settings.TrackedPreferenceSuperEncryptedHashResult2"
-    enum="SuperEncryptedHashResult" expires_after="2027-04-01">
+<histogram name="Settings.TrackedPreferenceSuperEncryptedHashResult3"
+    enum="SuperEncryptedHashResult" expires_after="2027-11-19">
   <owner>zackhan@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1422,7 +1444,10 @@ useful for Chirp alerts (go/crca-alerts). -->
     (Secure Preferences) pref store. Emitted once per profile load, when the OS
     encryptor becomes available and the deferred validation runs. Not emitted
     for pref stores that do not use a SuperEncryptedHash (e.g. the unprotected
-    Preferences file or the Windows registry).
+    Preferences file or the Windows registry). Undecryptable and Unavailable
+    indicate that the SuperEncryptedHash could not be decrypted because the OS
+    encryption key changed or is unavailable; these were previously reported as
+    Mismatch in Settings.TrackedPreferenceSuperEncryptedHashResult2.
   </summary>
 </histogram>
 

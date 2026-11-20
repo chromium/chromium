@@ -19,9 +19,27 @@ class PrefHashCalculator {
     INVALID_HMAC,
     VALID_HMAC,
     VALID_ENCRYPTED,
+    // The encrypted hash was decrypted but does not match the value, or it is
+    // malformed. This is treated as tampering.
     INVALID_ENCRYPTED,
     WEAK_HASH_ENCRYPTED,
+    // The encrypted hash could not be decrypted with the current key, e.g.
+    // because the OS key was rotated or recreated. This indicates key loss
+    // rather than tampering of the value.
+    UNDECRYPTABLE_ENCRYPTED,
+    // The key that the encrypted hash was encrypted with is unavailable, as
+    // reported by os_crypt. This usually means the user hasn't unlocked the
+    // keychain yet or there was a transient OS error, but it is also used for
+    // keys that are intentionally unavailable (e.g. the default key when
+    // running with a non-default user data directory on macOS). This
+    // indicates key loss rather than tampering of the value.
+    UNAVAILABLE_ENCRYPTED,
   };
+
+  // Returns true if `result` indicates that an encrypted hash could not be
+  // decrypted because its key is unavailable or has changed, as opposed to the
+  // value having been tampered with.
+  static bool IsKeyLoss(ValidationResult result);
 
   // Constructs a PrefHashCalculator using |seed_|, |device_id_|.
   // The same parameters must be used in order to
