@@ -5,6 +5,8 @@
 #include "components/soda/soda_installer_impl_chromeos.h"
 
 #include <algorithm>
+#include <string>
+#include <vector>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
@@ -386,6 +388,77 @@ TEST_F(SodaInstallerImplChromeOSTest, GetLanguageDlcNameForLocale) {
   EXPECT_FALSE(
       GetInstance()->GetLanguageDlcNameForLocale(kUsEnglishLocale).empty());
   EXPECT_FALSE(GetInstance()->GetLanguageDlcNameForLocale("zh-TW").empty());
+}
+
+// Pins the DLC each locale installs today, including es-ES installing the
+// es-US pack.
+TEST_F(SodaInstallerImplChromeOSTest, DefaultLanguageDlcNames) {
+  EXPECT_EQ(GetInstance()->GetLanguageDlcNameForLocale("en-US"),
+            "libsoda-model-en-us-df24d2");
+  EXPECT_EQ(GetInstance()->GetLanguageDlcNameForLocale("en-GB"),
+            "libsoda-model-en-gb-df24d2");
+  EXPECT_EQ(GetInstance()->GetLanguageDlcNameForLocale("es-ES"),
+            "libsoda-model-es-us-df24d2");
+  EXPECT_EQ(GetInstance()->GetLanguageDlcNameForLocale("es-US"),
+            "libsoda-model-es-us-df24d2");
+  EXPECT_EQ(GetInstance()->GetLanguageDlcNameForLocale("zh-TW"),
+            "libsoda-model-zh-tw-df24d2");
+  EXPECT_EQ(GetInstance()->GetLanguageDlcNameForLocale("cmn-Hant-TW"),
+            "libsoda-model-zh-tw-df24d2");
+  EXPECT_EQ(GetInstance()->GetLanguageDlcNameForLocale("zh-CN"),
+            "libsoda-model-zh-cn-df24d2");
+}
+
+// Pins the Conch DLC names, including the fr-CH id's capital C, which doesn't
+// match the libsoda-model-fr-ch-cnch24d3 package.
+TEST_F(SodaInstallerImplChromeOSTest, ConchLanguageDlcNames) {
+  base::test::ScopedFeatureList scoped_feature_list_internal;
+  scoped_feature_list_internal.InitAndEnableFeature(
+      ::speech::kFeatureManagementCrosSodaConchLanguages);
+
+  EXPECT_EQ(GetInstance()->GetLanguageDlcNameForLocale("en-US"),
+            "libsoda-model-en-us-cnch24d3");
+  EXPECT_EQ(GetInstance()->GetLanguageDlcNameForLocale("es-ES"),
+            "libsoda-model-es-es-cnch24d3");
+  EXPECT_EQ(GetInstance()->GetLanguageDlcNameForLocale("fr-CH"),
+            "libsoda-model-fr-Ch-cnch24d3");
+  EXPECT_EQ(GetInstance()->GetLanguageDlcNameForLocale("da-DK"),
+            "libsoda-model-da-dk-cnch24d3");
+  // Chinese has no Conch pack and keeps the default one.
+  EXPECT_EQ(GetInstance()->GetLanguageDlcNameForLocale("zh-TW"),
+            "libsoda-model-zh-tw-df24d2");
+}
+
+// Every available language must map to a language pack DLC, with and without
+// the Conch languages.
+TEST_F(SodaInstallerImplChromeOSTest, AvailableLanguagesHaveDlcs) {
+  for (const bool conch : {false, true}) {
+    SCOPED_TRACE(conch);
+    base::test::ScopedFeatureList scoped_feature_list_internal;
+    scoped_feature_list_internal.InitWithFeatureState(
+        ::speech::kFeatureManagementCrosSodaConchLanguages, conch);
+    for (const std::string& language : GetInstance()->GetAvailableLanguages()) {
+      EXPECT_THAT(GetInstance()->GetLanguageDlcNameForLocale(language),
+                  ::testing::StartsWith("libsoda-model-"))
+          << language;
+    }
+  }
+}
+
+// Pins which available languages speech::GetLanguageCode() can't resolve:
+// only languages with a desktop component config have a LanguageCode there,
+// so callers that go through it treat the regional variants as unsupported.
+TEST_F(SodaInstallerImplChromeOSTest, AvailableLanguagesWithoutLanguageCode) {
+  std::vector<std::string> unresolved;
+  for (const std::string& language : GetInstance()->GetAvailableLanguages()) {
+    if (GetLanguageCode(language) == LanguageCode::kNone) {
+      unresolved.push_back(language);
+    }
+  }
+  EXPECT_THAT(unresolved,
+              ::testing::IsSupersetOf({"en-GB", "de-AT", "es-US", "fr-CA"}));
+  EXPECT_THAT(unresolved, ::testing::Not(::testing::Contains("en-US")));
+  EXPECT_THAT(unresolved, ::testing::Not(::testing::Contains("cmn-Hant-TW")));
 }
 
 TEST_F(SodaInstallerImplChromeOSTest, LanguagePackForTesting) {

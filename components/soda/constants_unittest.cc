@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -94,6 +95,48 @@ TEST_F(SodaConstantsTest, GetLatestSodaDirectoryFallsBackToHighestVersion) {
       CreateSodaVersion("1.2.12", /*with_binary=*/false);
 
   EXPECT_EQ(GetLatestSodaDirectory(), v1_2_12);
+}
+
+// The tests below pin how locales resolve to language packs today, so that
+// changes to the resolution show up as test diffs.
+
+TEST(SodaLanguageResolutionTest, MaybeMapToChineseLocale) {
+  EXPECT_EQ(MaybeMapToChineseLocale("zh-TW"), "cmn-Hant-TW");
+  EXPECT_EQ(MaybeMapToChineseLocale("ZH-cn"), "cmn-Hans-CN");
+  EXPECT_EQ(MaybeMapToChineseLocale("cmn-hant-tw"), "cmn-Hant-TW");
+  // Everything else passes through unchanged, including bare languages.
+  EXPECT_EQ(MaybeMapToChineseLocale("zh"), "zh");
+  EXPECT_EQ(MaybeMapToChineseLocale("es"), "es");
+  EXPECT_EQ(MaybeMapToChineseLocale("en-GB"), "en-GB");
+}
+
+TEST(SodaLanguageResolutionTest, GetLanguageCode) {
+  EXPECT_EQ(GetLanguageCode("en-US"), LanguageCode::kEnUs);
+  EXPECT_EQ(GetLanguageCode("en-us"), LanguageCode::kEnUs);
+  EXPECT_EQ(GetLanguageCode("es-ES"), LanguageCode::kEsEs);
+  EXPECT_EQ(GetLanguageCode("zh-TW"), LanguageCode::kZhTw);
+  EXPECT_EQ(GetLanguageCode("cmn-Hans-CN"), LanguageCode::kZhCn);
+  // Only locales with their own component config resolve. Bare languages and
+  // other regional variants don't.
+  EXPECT_EQ(GetLanguageCode("es"), LanguageCode::kNone);
+  EXPECT_EQ(GetLanguageCode("de"), LanguageCode::kNone);
+  EXPECT_EQ(GetLanguageCode("en-GB"), LanguageCode::kNone);
+  EXPECT_EQ(GetLanguageCode("fr-CA"), LanguageCode::kNone);
+}
+
+TEST(SodaLanguageResolutionTest, MatchingLanguageSubtag) {
+  const auto code = [](std::string_view language) {
+    const std::optional<SodaLanguagePackComponentConfig> config =
+        GetLanguageComponentConfigMatchingLanguageSubtag(language);
+    return config ? config->language_code : LanguageCode::kNone;
+  };
+  EXPECT_EQ(code("es"), LanguageCode::kEsEs);
+  EXPECT_EQ(code("es-MX"), LanguageCode::kEsEs);
+  EXPECT_EQ(code("en-GB"), LanguageCode::kEnUs);
+  EXPECT_EQ(code("fr-CA"), LanguageCode::kFrFr);
+  EXPECT_EQ(code("zh-TW"), LanguageCode::kZhTw);
+  EXPECT_EQ(code("zh-CN"), LanguageCode::kZhCn);
+  EXPECT_EQ(code("xx"), LanguageCode::kNone);
 }
 
 }  // namespace

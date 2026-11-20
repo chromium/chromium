@@ -188,6 +188,20 @@ TEST_F(ProjectorSodaInstallationControllerTest, InstallSoda) {
   speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting(en_us());
 }
 
+// Pins which language string Projector hands to SodaInstaller: Chinese
+// locales are canonicalized, but a bare language like "es" is passed through
+// without a region.
+TEST_F(ProjectorSodaInstallationControllerTest, InstallSodaLanguageName) {
+  PrefService& local_state =
+      CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state());
+
+  EXPECT_CALL(*soda_installer(), InstallLanguage("es", testing::_));
+  soda_installation_controller()->InstallSoda(local_state, "es");
+
+  EXPECT_CALL(*soda_installer(), InstallLanguage("cmn-Hant-TW", testing::_));
+  soda_installation_controller()->InstallSoda(local_state, "zh-TW");
+}
+
 TEST_F(ProjectorSodaInstallationControllerTest, OnSodaInstallProgress) {
   EXPECT_CALL(app_client(), OnSodaInstallProgress(50));
   speech::SodaInstaller::GetInstance()->NotifySodaProgressForTesting(50);
