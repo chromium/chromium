@@ -522,18 +522,17 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
             type: SENSITIVE_URL
             type: WEB_CONTENT
           }
-          last_reviewed: "2026-07-10"
+          last_reviewed: "2026-11-12"
         }
         policy {
           cookies_allowed: NO
           setting:
-            "This feature cannot be disabled directly by a settings toggle. "
-            "It is enabled for users who have 'Make searches and browsing "
-            "better' enabled in Chrome settings."
+            "This feature is gated by an explicit user opt-in dialog ('Listen "
+            "to this page with AI playback and voices')."
           chrome_policy {
-            UrlKeyedAnonymizedDataCollectionEnabled {
+            ListenToThisPageEnabled {
               policy_options {mode: MANDATORY}
-              UrlKeyedAnonymizedDataCollectionEnabled: false
+              ListenToThisPageEnabled: false
             }
           }
         })");
@@ -563,18 +562,17 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
           user_data {
             type: WEB_CONTENT
           }
-          last_reviewed: "2026-07-10"
+          last_reviewed: "2026-11-12"
         }
         policy {
           cookies_allowed: NO
           setting:
-            "This feature cannot be disabled directly by a settings toggle. "
-            "It is enabled for users who have 'Make searches and browsing "
-            "better' enabled in Chrome settings."
+            "This feature is gated by an explicit user opt-in dialog ('Listen "
+            "to this page with AI playback and voices')."
           chrome_policy {
-            UrlKeyedAnonymizedDataCollectionEnabled {
+            ListenToThisPageEnabled {
               policy_options {mode: MANDATORY}
-              UrlKeyedAnonymizedDataCollectionEnabled: false
+              ListenToThisPageEnabled: false
             }
           }
         })");
