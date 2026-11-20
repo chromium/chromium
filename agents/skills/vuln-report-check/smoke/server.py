@@ -20,7 +20,6 @@ import sys
 import tempfile
 import time
 import urllib.error
-import urllib.parse
 import urllib.request
 
 from checks import common
@@ -34,59 +33,13 @@ SMOKE_TIMEOUT_SECONDS = 17
 PROBE_TIMEOUT_SECONDS = 2
 # Only the end of the server's error output is read, to keep messages short.
 STDERR_TAIL_BYTES = 4096
-# Pages always tried, even when no HTML file is attached.
-FALLBACK_ENTRY_PATHS = ('poc.html', 'index.html')
-HTML_SUFFIXES = ('.html', '.htm')
-# When several HTML files are attached, the first name in this list wins.
-HTML_ENTRY_PRIORITY = (
-    'poc.html',
-    'poc.htm',
-    'index.html',
-    'index.htm',
-    'exploit.html',
-    'repro.html',
-    'test.html',
-    'crash.html',
-    'main.html',
+# The only pages automated reproduction opens, in the order it tries them
+# (`docs/security/security-for-agents.md`). Other attached pages are never
+# opened, so they are not tried either.
+ENTRY_URLS = tuple(
+    f'http://localhost:{REQUIRED_PORT}/{name}'
+    for name in ('poc.html', 'index.html')
 )
-
-
-def select_entry_urls(
-    attachment_paths: Sequence[str], port: int = REQUIRED_PORT
-) -> list[str]:
-    """Returns the page URLs to request from the server.
-
-    The order copies how Chrome's automated reproduction system picks the
-    page to open: a preferred attached HTML file first, then `poc.html` and
-    `index.html`. Each name appears only once.
-
-    Args:
-        attachment_paths: Paths of the attached files.
-        port: Port the server should listen on.
-
-    Returns:
-        Full `http://localhost` URLs, best guess first.
-    """
-    html_names = [
-        os.path.basename(path)
-        for path in attachment_paths
-        if os.path.basename(path).lower().endswith(HTML_SUFFIXES)
-    ]
-    candidates: list[str] = []
-    if html_names:
-        by_lower = {name.lower(): name for name in html_names}
-        preferred = next(
-            (by_lower[p] for p in HTML_ENTRY_PRIORITY if p in by_lower),
-            html_names[0],
-        )
-        candidates.append(preferred)
-    for fallback in FALLBACK_ENTRY_PATHS:
-        if fallback not in candidates:
-            candidates.append(fallback)
-    return [
-        f'http://localhost:{port}/{urllib.parse.quote(name)}'
-        for name in candidates
-    ]
 
 
 def _probe_html(url: str, timeout: float) -> tuple[bool, str]:
@@ -180,7 +133,6 @@ def run_smoke(
                 axis=common.AXIS_REPRO,
             )
 
-    urls = select_entry_urls(attachment_paths, port=REQUIRED_PORT)
     with tempfile.TemporaryDirectory() as work, tempfile.TemporaryFile() as err:
         # Copy the server and attachments into the temp folder, skipping
         # files over the size limit.
@@ -222,7 +174,7 @@ def run_smoke(
                     )
 
                 diagnostics: list[str] = []
-                for url in urls:
+                for url in ENTRY_URLS:
                     # Never wait past the overall deadline, but always give
                     # each request at least 0.1 seconds.
                     per_call = min(
@@ -267,7 +219,7 @@ def run_smoke(
                     ' Content-Type: text/html).',
                     fix=(
                         'Serve HTTP 200 with header Content-Type: text/html at'
-                        ' /poc.html, /index.html, or an attached .html page.'
+                        ' /poc.html or /index.html.'
                     ),
                     axis=common.AXIS_REPRO,
                 )
@@ -276,7 +228,7 @@ def run_smoke(
                 'py.server_contract',
                 common.FAIL,
                 f'Smoke test: no answer on port {REQUIRED_PORT}'
-                f' ({", ".join(urls)}) within {timeout:g}s.',
+                f' ({", ".join(ENTRY_URLS)}) within {timeout:g}s.',
                 fix=f'Listen on port {REQUIRED_PORT} over plain HTTP.',
                 axis=common.AXIS_REPRO,
             )

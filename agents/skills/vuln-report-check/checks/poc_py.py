@@ -29,8 +29,9 @@ ORDER = 50
 REQUIRED_NAME = 'server.py'
 REQUIRED_PORT = 8000
 TARGET_PYTHON = (3, 11)
-FALLBACK_ENTRY_NAMES = ('poc.html', 'index.html')
-HTML_ENTRY_SUFFIXES = ('.html', '.htm')
+# The only page names the server may serve as the entry page, matching
+# `docs/security/security-for-agents.md`.
+ENTRY_PAGE_NAMES = ('poc.html', 'index.html')
 HTML_SUFFIXES = ('.html', '.htm', '.xhtml', '.svg', '.js', '.mjs', '.xml')
 
 CHECK_ORDER = (
@@ -627,11 +628,11 @@ def check_server_contract(
 ) -> common.Check:
     """Checks that the server works the way the test system starts it.
 
-    Chrome's test system starts `server.py` with no arguments and opens a page
-    from it on port 8000. Checks the port and that some HTML entry page is
-    served. Scripts that read arguments get "needs judgment" for the agent to
-    settle. By default only reads the code; `--smoke` really starts the
-    server to confirm.
+    Chrome's test system starts `server.py` with no arguments and opens
+    `/poc.html` or `/index.html` from it on port 8000. Checks the port and
+    that one of those pages is served. Scripts that read arguments get "needs
+    judgment" for the agent to settle. By default only reads the code;
+    `--smoke` really starts the server to confirm.
 
     Args:
       poc: The parsed server script.
@@ -666,42 +667,40 @@ def check_server_contract(
         )
     literals = [s for _, s in _string_literals(tree)]
     lower_literals = [s.lower() for s in literals]
-    # Any of these is a sign that an entry page will be served: an attached
-    # HTML file, a written poc.html/index.html, those names in the code, or
-    # HTML text built inside the script.
-    has_html_attachment = any(
-        name.lower().endswith(HTML_ENTRY_SUFFIXES) for name in poc.attachments
-    )
-    writes_fallback_html = any(
-        os.path.basename(path).lower() in FALLBACK_ENTRY_NAMES
-        and bool(set(mode) & set('wax'))
-        for _, path, mode in _opened_files(tree)
-    )
-    serves_entry_literal = _contains_any_substring(
-        literals, FALLBACK_ENTRY_NAMES
+    # Automated reproduction opens only /poc.html or /index.html. The page is
+    # there if it is attached or written under one of those names, or if the
+    # code names one of them (a page built by the script).
+    serves_entry_page = (
+        any(name in ENTRY_PAGE_NAMES for name in poc.attachments)
+        or any(
+            os.path.basename(path).lower() in ENTRY_PAGE_NAMES
+            and bool(set(mode) & set('wax'))
+            for _, path, mode in _opened_files(tree)
+        )
+        or _contains_any_substring(literals, ENTRY_PAGE_NAMES)
     )
     serves_dynamic_html = _contains_any_substring(
         lower_literals, ('text/html', '<!doctype', '<html', '<script', '<body')
     )
-    serves_directory = 'SimpleHTTPRequestHandler' in poc.source
-    if (
-        not has_html_attachment
-        and not writes_fallback_html
-        and not serves_entry_literal
-        and not serves_dynamic_html
-    ):
-        problems.append(
-            'no .html/.htm page is attached and the script never serves /poc.html'
-            ' or /index.html'
-        )
-    elif (
-        not has_html_attachment
-        and not writes_fallback_html
-        and not serves_entry_literal
-        and not serves_directory
-    ):
+    if not serves_entry_page and serves_dynamic_html:
         hints.append(
             'confirm GET /poc.html or /index.html returns HTTP 200 text/html'
+        )
+    elif not serves_entry_page:
+        # Other pages (`exploit.html`, `poc.htm`) are never opened, so name
+        # them to make the rename obvious.
+        other_pages = [
+            name
+            for name in poc.attachments
+            if name.lower().endswith(('.html', '.htm'))
+        ]
+        problems.append(
+            'no poc.html or index.html is attached or served'
+            + (
+                f' (attached pages: {common.excerpt(", ".join(other_pages))})'
+                if other_pages
+                else ''
+            )
         )
     if 'ssl' in poc.source:
         hints.append(
@@ -714,8 +713,7 @@ def check_server_contract(
             '; '.join(problems) + '.',
             fix=(
                 f'Listen on port {REQUIRED_PORT} with no required arguments and'
-                ' serve HTTP 200 text/html at /poc.html, /index.html, or an'
-                ' attached .html file.'
+                ' serve HTTP 200 text/html at /poc.html or /index.html.'
             ),
             axis=common.AXIS_REPRO,
         )

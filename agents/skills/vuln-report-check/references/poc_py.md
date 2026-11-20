@@ -2,19 +2,21 @@
 
 Automated reproduction copies `server.py`, every other attachment, and a `gen`
 link to the build into one folder, then runs `python3 server.py` (Python 3.11,
-no arguments), waits up to 17 s, then requests the attached `.html` page,
-`/poc.html`, or `/index.html` on `http://localhost:8000` and needs HTTP `200`
-with `text/html`.
+no arguments), waits up to 17 s, then requests `/poc.html` or `/index.html` on
+`http://localhost:8000` and needs HTTP `200` with `text/html`. No other page
+name is opened, so the entry page must be attached, or generated, under one of
+those two names.
 
 ## Settling `unknown`
 
 ### `py.server_contract`
 
-Confirm that `GET` on the entry page over plain HTTP on the stated port returns
-`200` with `text/html`. A directory listing on `/` does not count. Scripts that
-read arguments (`sys.argv`, `argparse`) stay `unknown`: `pass` only if the
-server runs with no arguments (optional arguments that fall back to port 8000
-are fine); required arguments `fail`. Prefer offering `--smoke` over guessing.
+Confirm that `GET /poc.html` or `GET /index.html` over plain HTTP on the stated
+port returns `200` with `text/html`. Any other path, including a directory
+listing on `/`, does not count. Scripts that read arguments (`sys.argv`,
+`argparse`) stay `unknown`: `pass` only if the server runs with no arguments
+(optional arguments that fall back to port 8000 are fine); required arguments
+`fail`. Prefer offering `--smoke` over guessing.
 
 ### `supported_apis`
 

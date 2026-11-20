@@ -39,15 +39,15 @@ Rules worth knowing:
 
 ## Attachment names
 
-| Purpose                    | Name                                                      |
-| -------------------------- | --------------------------------------------------------- |
-| HTML entry                 | `poc.html` or `index.html` (any `.html` with `server.py`) |
-| d8 entry                   | `poc.js`                                                  |
-| HTTP server                | `server.py`                                               |
-| Reproduction aid           | `patch.diff`                                              |
-| Proposed fix (triage only) | Any `.diff` / `.patch` with whole-word `fix`              |
-| VRP flag proof             | `vrp-flag.json` + `poc-asan.html`                         |
-| Anything else              | Flat descriptive names; no archives, no folders           |
+| Purpose                    | Name                                               |
+| -------------------------- | -------------------------------------------------- |
+| HTML entry                 | `poc.html` or `index.html` (also with `server.py`) |
+| d8 entry                   | `poc.js`                                           |
+| HTTP server                | `server.py`                                        |
+| Reproduction aid           | `patch.diff`                                       |
+| Proposed fix (triage only) | Any `.diff` / `.patch` with whole-word `fix`       |
+| VRP flag proof             | `vrp-flag.json` + `poc-asan.html`                  |
+| Anything else              | Flat descriptive names; no archives, no folders    |
 
 ## Manual environments
 

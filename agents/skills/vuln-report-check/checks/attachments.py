@@ -256,7 +256,12 @@ def _run_check(submission: common.Submission) -> list[common.Check]:
         # content, not rival PoCs. A missing or unattached entry is reported
         # once, by `config.entry`.
         server = config.values['server']
-        entry = server['file'] if server is not None else config.values['poc']
+        poc = config.values['poc']
+        # With a server, Chrome still opens only `/poc.html` or
+        # `/index.html`, so a page named in "poc" must use one of those names.
+        if server is not None and poc in names and poc not in CANONICAL_ENTRIES:
+            return _entry_checks(poc)
+        entry = server['file'] if server is not None else poc
         if entry is None or entry not in names:
             return [
                 common.Check(
