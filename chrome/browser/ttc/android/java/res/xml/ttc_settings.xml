@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:title="@string/ttc_settings_title">
+
+    <org.chromium.components.browser_ui.settings.ChromeBasePreferenceCategory
+        android:key="ttc_general_section"
+        android:title="@string/ttc_settings_general_header" />
+
+    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
+        android:key="ttc_microphone_chime"
+        android:title="@string/ttc_settings_microphone_chime"
+        android:summary="@string/ttc_settings_microphone_chime_summary" />
+
+    <org.chromium.components.browser_ui.settings.ChromeBasePreferenceCategory
+        android:key="ttc_section"
+        android:title="@string/ttc_settings_title" />
+
+    <org.chromium.components.browser_ui.settings.TextMessagePreference
+        android:key="ttc_description"
+        android:summary="@string/ttc_settings_description" />
+
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:fragment="org.chromium.chrome.browser.toolbar.adaptive.settings.AdaptiveToolbarSettingsFragment"
+        android:key="ttc_pin_to_toolbar"
+        android:title="@string/ttc_settings_pin_to_toolbar"
+        android:summary="@string/ttc_settings_pin_to_toolbar_summary" />
+
+    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
+        android:key="ttc_captions"
+        android:title="@string/ttc_settings_captions"
+        android:summary="@string/ttc_settings_captions_summary" />
+</PreferenceScreen>

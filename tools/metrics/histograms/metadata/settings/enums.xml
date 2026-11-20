@@ -122,6 +122,7 @@ chromium-metrics-reviews@google.com.
   <int value="894297033" label="SingleCategorySettings"/>
   <int value="895945357" label="AutofillPersonalContextFragment"/>
   <int value="903277107" label="(Obsolete) FledgeBlockedSitesFragment"/>
+  <int value="1009121030" label="TtcSettings"/>
   <int value="1015549581" label="AlwaysTranslateListFragment"/>
   <int value="1068718433" label="RecentSearchesFragment"/>
   <int value="1118292269" label="(Obsolete) HomeModulesConfigSettings"/>

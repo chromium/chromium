@@ -8286,6 +8286,36 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_TTC_FRE_DIALOG_ALLOW" desc="Label of the button in the TTC first run dialog that gives consent." translateable="false">
         Allow
       </message>
+      <message name="IDS_TTC_SETTINGS_TITLE" desc="Title of the TTC settings page, of the row in the main settings menu that opens it, and of the TTC section header on that page." translateable="false">
+        TTC
+      </message>
+      <message name="IDS_TTC_SETTINGS_DESCRIPTION" desc="Placeholder description of TTC, shown under the TTC section header on the TTC settings page." translateable="false">
+        Placeholder
+      </message>
+      <message name="IDS_TTC_SETTINGS_GENERAL_HEADER" desc="Header of the section of the TTC settings page with settings that apply to all of TTC." translateable="false">
+        General
+      </message>
+      <message name="IDS_TTC_SETTINGS_MICROPHONE_CHIME" desc="Title of the switch on the TTC settings page that turns the microphone chime on or off." translateable="false">
+        Microphone chime
+      </message>
+      <message name="IDS_TTC_SETTINGS_MICROPHONE_CHIME_SUMMARY" desc="Summary of the microphone chime switch on the TTC settings page." translateable="false">
+        Play a sound when the microphone turns on and off
+      </message>
+      <message name="IDS_TTC_SETTINGS_PIN_TO_TOOLBAR" desc="Title of the row on the TTC settings page that opens the toolbar shortcut settings, where TTC can be pinned to the toolbar." translateable="false">
+        Pin in toolbar
+      </message>
+      <message name="IDS_TTC_SETTINGS_PIN_TO_TOOLBAR_SUMMARY" desc="Summary of the row on the TTC settings page that opens the toolbar shortcut settings, while TTC isn't pinned to the toolbar." translateable="false">
+        Quickly use it whenever you need it
+      </message>
+      <message name="IDS_TTC_SETTINGS_PIN_TO_TOOLBAR_PINNED_SUMMARY" desc="Summary of the row on the TTC settings page that opens the toolbar shortcut settings, while TTC is pinned to the toolbar." translateable="false">
+        Pinned
+      </message>
+      <message name="IDS_TTC_SETTINGS_CAPTIONS" desc="Title of the switch on the TTC settings page that turns captions of the conversation on or off." translateable="false">
+        Captions
+      </message>
+      <message name="IDS_TTC_SETTINGS_CAPTIONS_SUMMARY" desc="Summary of the captions switch on the TTC settings page." translateable="false">
+        Show closed captions when using TTC
+      </message>
 
       <!-- Immersive Playback Confirmation strings -->
       <message name="IDS_IMMERSIVE_PLAYBACK_CONFIRMATION_MESSAGE" desc="Message in the snackbar asking the user if they want to view the video in immersive mode.">

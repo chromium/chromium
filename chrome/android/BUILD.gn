@@ -533,6 +533,7 @@ if (_is_default_toolchain) {
       "//chrome/browser/translate/android:java",
       "//chrome/browser/ttc/android:entry_point_java",
       "//chrome/browser/ttc/android:java",
+      "//chrome/browser/ttc/android:settings_java",
       "//chrome/browser/ui/android/actions:java",
       "//chrome/browser/ui/android/actions:tabswitcher_java",
       "//chrome/browser/ui/android/ai_overlay_dialog:java",
