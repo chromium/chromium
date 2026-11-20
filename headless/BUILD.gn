@@ -815,6 +815,8 @@ component("headless_shell_lib") {
   }
 
   public_deps = [
+    ":embedded_resource_pack_data",
+    ":embedded_resource_pack_strings",
     ":headless_browser",
     ":headless_renderer",
     ":headless_utility",
