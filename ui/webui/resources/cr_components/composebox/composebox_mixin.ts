@@ -389,7 +389,6 @@ export const ComposeboxEmbedderMixin =
         private pendingTabSuggestionNeedsRefresh_: boolean = false;
         accessor transcript: string = '';
         private fuseboxChipHint_: string|null = null;
-        private selectAllOnStateUpdate_: boolean = false;
         showTypedSuggest: boolean =
             loadTimeData.getBoolean('composeboxShowTypedSuggest');
         // Tracks the latest query sent for autocompletion. Used to filter out
@@ -1767,8 +1766,6 @@ export const ComposeboxEmbedderMixin =
             smartTabSharingActive: false,
             // </if>
           };
-          this.selectAllOnStateUpdate_ =
-              action?.queryActionOverride === QueryActionOverride.kPaste;
           this.state = fuseboxActionState;
 
           if (action?.preselectedInputSource) {
@@ -1819,8 +1816,6 @@ export const ComposeboxEmbedderMixin =
         }
 
         async updateState(state: Partial<ComposeboxState>) {
-          const selectAll = this.selectAllOnStateUpdate_;
-          this.selectAllOnStateUpdate_ = false;
           if (!this.inputState) {
             // Block submission across the `getInputState()` await when the
             // state carries delayed tabs; their own guards start only below.
@@ -1917,14 +1912,6 @@ export const ComposeboxEmbedderMixin =
                 model, /*isSetByAim=*/ false);
           }
           this.updateInputPlaceholder();
-
-          await this.updateComplete;
-          if (selectAll && state === this.state) {
-            await this.getInputElement().updateComplete;
-            if (state === this.state) {
-              this.getInputElement().selectAll();
-            }
-          }
         }
 
         async onContextMenuClosed() {

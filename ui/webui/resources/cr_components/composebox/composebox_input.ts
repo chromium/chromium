@@ -752,18 +752,6 @@ export class ComposeboxInputElement extends I18nMixinLit
     return (input as HTMLTextAreaElement).selectionEnd ??
         (this.input ? this.input.length : 0);
   }
-
-  selectAll() {
-    const input = this.shadowRoot.querySelector<HTMLElement>('#input')!;
-    if (this.composeboxSkillsEnabled) {
-      selectContents(input, this.shadowRoot);
-    } else {
-      (input as HTMLTextAreaElement).select();
-    }
-    if (!this.disableCaretColorAnimation) {
-      this.updateCaret_();
-    }
-  }
 }
 
 function getCaretCharacterOffsetWithin(
@@ -785,26 +773,17 @@ function getCaretCharacterOffsetWithin(
 }
 
 /**
- * Selects the contents of `element`, or places the caret at the end of it if
- * `collapseToEnd` is true.
+ * Places the caret at the end of `element`.
  */
-function selectContents(
-    element: HTMLElement, shadowRoot?: ShadowRoot|null,
-    collapseToEnd: boolean = false) {
+function setCaretToEnd(element: HTMLElement, shadowRoot?: ShadowRoot|null) {
   const sel = shadowRoot?.getSelection() ?? window.getSelection();
   if (sel) {
     const range = document.createRange();
     range.selectNodeContents(element);
-    if (collapseToEnd) {
-      range.collapse(false);
-    }
+    range.collapse(false);
     sel.removeAllRanges();
     sel.addRange(range);
   }
-}
-
-function setCaretToEnd(element: HTMLElement, shadowRoot?: ShadowRoot|null) {
-  selectContents(element, shadowRoot, /* collapseToEnd= */ true);
 }
 
 function getTargetSpan(

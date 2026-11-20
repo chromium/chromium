@@ -2586,19 +2586,18 @@ suite('ComposeboxMixinTest', () => {
     await element.handleFuseboxAction(createFuseboxActionRequest(
         {queryActionOverride: QueryActionOverride.kHint}, 'action hint'));
     await microtasksFinished();
-    await element.updateComplete;
     assertFalse(isInputFocused());
 
-    // Paste actions prefill the input, so it is focused to let the user edit
-    // the pasted text right away.
+    // Paste actions prefill the input, so it is focused with the caret at the
+    // end rather than highlighting the text.
     await element.handleFuseboxAction(createFuseboxActionRequest(
         {queryActionOverride: QueryActionOverride.kPaste}, 'pasted text'));
     await microtasksFinished();
-    await element.updateComplete;
     assertTrue(isInputFocused());
     assertEquals('pasted text', element.state!.text);
     const inputElement = inputComponent.inputElement as HTMLTextAreaElement;
-    assertEquals(0, inputElement.selectionStart);
+    assertEquals('pasted text', inputElement.value);
+    assertEquals('pasted text'.length, inputElement.selectionStart);
     assertEquals('pasted text'.length, inputElement.selectionEnd);
   });
 
