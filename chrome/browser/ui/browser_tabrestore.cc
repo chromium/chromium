@@ -122,15 +122,14 @@ void LoadRestoredTabIfVisible(BrowserWindowInterface* browser,
   DCHECK_EQ(browser->tab_strip_model()->GetActiveWebContents(), web_contents);
   // A layout should already have been performed to determine the contents size.
   // The contents size should not be empty, unless the browser size and restored
-  // size are also empty.
+  // size are also empty. The WebContents size isn't compared to it because the
+  // WebContents can be smaller, e.g. when the NTP footer is shown below it.
   // WebUI browser's content size is not available until the WebUI page is
   // loaded.
   if (!webui_browser::IsWebUIBrowserEnabled()) {
     DCHECK(!BrowserWindow::FromBrowser(browser)->GetContentsSize().IsEmpty() ||
            (browser->GetWindow()->GetBounds().IsEmpty() &&
             browser->GetWindow()->GetRestoredBounds().IsEmpty()));
-    DCHECK_EQ(web_contents->GetSize(),
-              BrowserWindow::FromBrowser(browser)->GetContentsSize());
   }
 
   web_contents->GetController().LoadIfNecessary();

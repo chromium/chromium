@@ -11,13 +11,16 @@
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_tabrestore.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_container_view.h"
+#include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/views/new_tab_footer/footer_web_view.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
@@ -27,6 +30,8 @@
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
+#include "components/sessions/core/serialized_navigation_entry.h"
+#include "components/sessions/core/serialized_user_agent_override.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -36,6 +41,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/views/test/views_test_utils.h"
 #include "url/gurl.h"
 
 namespace {
@@ -220,6 +226,47 @@ IN_PROC_BROWSER_TEST_F(FooterControllerExtensionTest, MetricsRecorded) {
 
 IN_PROC_BROWSER_TEST_F(FooterControllerExtensionTest, ShownTimeRecorded) {
   TestShownTimeRecorded();
+}
+
+// Restoring an active tab that shows the footer into a browser window that has
+// not been shown yet must size the WebContents to the area above the footer
+// (crbug.com/585689488).
+class FooterControllerRestoreTest : public FooterControllerExtensionTest,
+                                    public testing::WithParamInterface<bool> {};
+
+INSTANTIATE_TEST_SUITE_P(, FooterControllerRestoreTest, testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(FooterControllerRestoreTest,
+                       RestoreActiveTabToNewWindow) {
+  auto extension = LoadNtpExtension();
+
+  BrowserWindowInterface* restored_browser = CreateBrowserWindow(
+      BrowserWindowCreateParams(*profile(), /*from_user_gesture=*/true));
+  new_tab_footer::NewTabFooterController::From(restored_browser)
+      ->SkipErrorPageCheckForTesting(true);
+
+  sessions::SerializedNavigationEntry navigation_entry;
+  navigation_entry.set_index(0);
+  navigation_entry.set_virtual_url(extension->url());
+
+  content::WebContents* web_contents = chrome::AddRestoredTab(
+      restored_browser, {navigation_entry}, /*tab_index=*/0,
+      /*selected_navigation=*/0, /*extension_app_id=*/std::string(),
+      /*group=*/std::nullopt, /*select=*/true, /*pin=*/false,
+      /*last_active_time_ticks=*/base::TimeTicks::Now(),
+      /*last_active_time=*/base::Time::Now(),
+      /*storage_namespace=*/nullptr,
+      /*user_agent_override=*/sessions::SerializedUserAgentOverride(),
+      /*extra_data=*/std::map<std::string, std::string>(),
+      /*from_session_restore=*/GetParam(), /*is_active_browser=*/true);
+
+  restored_browser->GetWindow()->Show();
+  ContentsContainerView* container =
+      BrowserView::GetBrowserViewForBrowser(restored_browser)
+          ->GetActiveContentsContainerView();
+  views::test::RunScheduledLayout(container);
+  ASSERT_TRUE(container->new_tab_footer_view()->GetVisible());
+  EXPECT_EQ(container->contents_view()->size(), web_contents->GetSize());
 }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)

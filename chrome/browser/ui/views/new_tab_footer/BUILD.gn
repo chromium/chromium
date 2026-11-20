@@ -46,12 +46,16 @@ source_set("browser_tests") {
     ":new_tab_footer",
     "//base/test:test_support",
     "//chrome/browser/search_engines",
+    "//chrome/browser/ui:browser_tabrestore",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/browser/ui/views/frame:contents_container_view",
+    "//chrome/browser/ui/views/frame:contents_web_view",
     "//chrome/test:test_support",
     "//chrome/test/base:chrome_test_utils",
+    "//components/sessions",
+    "//ui/views:test_support",
   ]
 }
 
