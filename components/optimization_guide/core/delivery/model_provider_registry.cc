@@ -190,6 +190,17 @@ void ModelProviderRegistry::UpdateModelImmediatelyForTesting(
   NotifyObserversOfNewModel(optimization_target, it->second);
 }
 
+void ModelProviderRegistry::OverrideTargetModelForTesting(
+    proto::OptimizationTarget optimization_target,
+    std::optional<ModelInfo> model_info) {
+  if (model_info) {
+    UpdateModelImmediatelyForTesting(optimization_target,  // IN-TEST
+                                     std::move(*model_info));
+  } else {
+    RemoveModel(optimization_target);
+  }
+}
+
 // static
 void ModelProviderRegistry::RecordLifecycleState(
     proto::OptimizationTarget optimization_target,

@@ -262,7 +262,7 @@ class OptimizationGuideKeyedService
   // testing purposes only.
   void OverrideTargetModelForTesting(
       optimization_guide::proto::OptimizationTarget optimization_target,
-      std::optional<optimization_guide::ModelInfo> model_info);
+      std::optional<optimization_guide::ModelInfo> model_info) override;
 
   void SetModelQualityLogsUploaderServiceForTesting(
       std::unique_ptr<optimization_guide::ModelQualityLogsUploaderService>

@@ -60,6 +60,9 @@ class PredictionModelComponentUpdateListener
   void SetModelDownloadSchedulingParams(
       proto::OptimizationTarget optimization_target,
       const download::SchedulingParams& params) override;
+  void OverrideTargetModelForTesting(
+      proto::OptimizationTarget optimization_target,
+      std::optional<ModelInfo> model_info) override;
 
   // Called by the component installer policy when a component is ready.
   void MaybeUpdateModel(proto::OptimizationTarget target,

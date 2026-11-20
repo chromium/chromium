@@ -104,7 +104,7 @@ class PredictionManager : public PredictionModelDownloadObserver,
   // testing purposes only.
   void OverrideTargetModelForTesting(
       proto::OptimizationTarget optimization_target,
-      std::optional<ModelInfo> model_info);
+      std::optional<ModelInfo> model_info) override;
 
   // PredictionModelDownloadObserver:
   void OnModelReady(const base::FilePath& base_model_dir,

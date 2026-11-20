@@ -49,6 +49,12 @@ class OptimizationGuideModelProvider {
       proto::OptimizationTarget optimization_target,
       const download::SchedulingParams& params) {}
 
+  // Overrides the model file sent to observers of `optimization_target`.
+  // For testing purposes only.
+  virtual void OverrideTargetModelForTesting(
+      proto::OptimizationTarget optimization_target,
+      std::optional<ModelInfo> model_info) {}
+
  protected:
   OptimizationGuideModelProvider() = default;
   virtual ~OptimizationGuideModelProvider() = default;

@@ -716,12 +716,8 @@ void PredictionManager::OverrideTargetModelForTesting(
     proto::OptimizationTarget optimization_target,
     std::optional<ModelInfo> model_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (model_info) {
-    registry_.UpdateModelImmediatelyForTesting(  // IN-TEST
-        optimization_target, std::move(*model_info));
-  } else {
-    registry_.RemoveModel(optimization_target);
-  }
+  registry_.OverrideTargetModelForTesting(  // IN-TEST
+      optimization_target, std::move(model_info));
 }
 
 void PredictionManager::SetUrlLoaderFactoryForTesting(

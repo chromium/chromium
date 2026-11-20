@@ -77,6 +77,9 @@ class ModelProviderRegistry final : public OptimizationGuideModelProvider {
   void RemoveObserverForOptimizationTargetModel(
       proto::OptimizationTarget optimization_target,
       OptimizationTargetModelObserver* observer) override;
+  void OverrideTargetModelForTesting(
+      proto::OptimizationTarget optimization_target,
+      std::optional<ModelInfo> model_info) override;
 
   bool HasRegistrations() { return !model_registration_info_map_.empty(); }
   bool IsRegistered(proto::OptimizationTarget target) {

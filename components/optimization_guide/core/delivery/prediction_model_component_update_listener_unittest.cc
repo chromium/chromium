@@ -744,4 +744,70 @@ TEST_F(PredictionModelComponentUpdateListenerTest,
   listener_->RemoveObserverForOptimizationTargetModel(target2, &observer2);
 }
 
+TEST_F(PredictionModelComponentUpdateListenerTest,
+       OverrideTargetModelForTesting) {
+  proto::OptimizationTarget target =
+      proto::OPTIMIZATION_TARGET_GEOLOCATION_PERMISSION_PREDICTIONS;
+  FakeOptimizationTargetModelObserver observer;
+  listener_->AddObserverForOptimizationTargetModel(target, std::nullopt,
+                                                   nullptr, &observer);
+  EXPECT_EQ(observer.call_count(), 0);
+
+  ModelInfo override_model;
+  override_model.version = 42;
+  override_model.model_file_path =
+      temp_dir_.GetPath().Append(FILE_PATH_LITERAL("override_model.tflite"));
+  listener_->OverrideTargetModelForTesting(target, override_model);
+
+  EXPECT_EQ(observer.call_count(), 1);
+  EXPECT_EQ(observer.last_target(), target);
+  ASSERT_TRUE(observer.last_model_info());
+  EXPECT_EQ(observer.last_model_info()->version, 42);
+  EXPECT_EQ(observer.last_model_info()->model_file_path,
+            override_model.model_file_path);
+  ASSERT_TRUE(listener_->GetModelForTesting(target));
+  EXPECT_EQ(listener_->GetModelForTesting(target)->version, 42);
+
+  // Overriding with std::nullopt removes the model.
+  listener_->OverrideTargetModelForTesting(target, std::nullopt);
+  EXPECT_EQ(observer.call_count(), 2);
+  EXPECT_EQ(observer.last_model_info(), nullptr);
+  EXPECT_EQ(listener_->GetModelForTesting(target), nullptr);
+
+  listener_->RemoveObserverForOptimizationTargetModel(target, &observer);
+}
+
+TEST_F(PredictionModelComponentUpdateListenerTest,
+       OverrideTargetModelForTestingForwardsNonMigratedTarget) {
+  // OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD is not in the enabled targets list.
+  proto::OptimizationTarget target =
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD;
+  FakeOptimizationTargetModelObserver observer;
+  listener_->AddObserverForOptimizationTargetModel(target, std::nullopt,
+                                                   nullptr, &observer);
+  EXPECT_EQ(observer.call_count(), 0);
+
+  ModelInfo override_model;
+  override_model.version = 99;
+  override_model.model_file_path =
+      temp_dir_.GetPath().Append(FILE_PATH_LITERAL("fallback_model.tflite"));
+  listener_->OverrideTargetModelForTesting(target, override_model);
+
+  EXPECT_EQ(observer.call_count(), 1);
+  EXPECT_EQ(observer.last_target(), target);
+  ASSERT_TRUE(observer.last_model_info());
+  EXPECT_EQ(observer.last_model_info()->version, 99);
+  EXPECT_EQ(listener_->GetModelForTesting(target), nullptr);
+  ASSERT_TRUE(fallback_provider_.GetModel(target));
+  EXPECT_EQ(fallback_provider_.GetModel(target)->version, 99);
+
+  // Overriding with std::nullopt removes the model from fallback_provider_.
+  listener_->OverrideTargetModelForTesting(target, std::nullopt);
+  EXPECT_EQ(observer.call_count(), 2);
+  EXPECT_EQ(observer.last_model_info(), nullptr);
+  EXPECT_EQ(fallback_provider_.GetModel(target), nullptr);
+
+  listener_->RemoveObserverForOptimizationTargetModel(target, &observer);
+}
+
 }  // namespace optimization_guide

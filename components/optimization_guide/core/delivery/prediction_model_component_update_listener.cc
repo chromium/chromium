@@ -179,4 +179,19 @@ PredictionModelComponentUpdateListener::GetModelForTesting(  // IN-TEST
   return registry_.GetModel(target);
 }
 
+void PredictionModelComponentUpdateListener::
+    OverrideTargetModelForTesting(  // IN-TEST
+        proto::OptimizationTarget optimization_target,
+        std::optional<ModelInfo> model_info) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!IsMigrated(optimization_target)) {
+    fallback_provider_->OverrideTargetModelForTesting(  // IN-TEST
+        optimization_target, std::move(model_info));
+    return;
+  }
+  component_info_map_.erase(optimization_target);
+  registry_.OverrideTargetModelForTesting(  // IN-TEST
+      optimization_target, std::move(model_info));
+}
+
 }  // namespace optimization_guide
