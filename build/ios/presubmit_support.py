@@ -14,6 +14,8 @@ from . import update_bundle_filelist
 # included in the presubmit error.
 _MAX_BUNDLE_DATA_ERROR_LINES = 20
 
+_DEFAULT_TEST_EXPECTATIONS_FILE_NAMES = ('test_expectations.txt',)
+
 
 def CheckBundleData(input_api, output_api, base, globroot='//'):
     filelist = input_api.os_path.join(
@@ -210,3 +212,114 @@ def CheckDiscourageCheckDeref(input_api, output_api, path_filter=None):
             'Affected lines:\n' + '\n'.join(problems)
         )
     ]
+
+
+def CheckTestExpectations(
+    input_api, output_api, file_names=_DEFAULT_TEST_EXPECTATIONS_FILE_NAMES
+):
+    """Checks syntax and bug format for lines in `file_names`."""
+    results = []
+    target_names = set(file_names)
+    affected_files = [
+        f
+        for f in input_api.AffectedFiles(include_deletes=False)
+        if input_api.os_path.basename(f.LocalPath()) in target_names
+    ]
+    if not affected_files:
+        return results
+
+    # fmt: off
+    pattern = input_api.re.compile(
+        r'^(?:([^\s\[]\S*)\s+)?'  # Group 1 (optional in regex): Bug link
+        r'(?:\[([^\]]+)\]\s+)?'   # Group 2 (optional): [Tags] block
+        r'(\S+)\s+'               # Group 3 (required): TestClass[/Method]
+        r'\[([^\]]+)\]'           # Group 4 (required): [Expectations] block
+        r'(?:\s*#.*)?$'           # Optional trailing comment (# ...)
+    )
+    # fmt: on
+    bug_pattern = input_api.re.compile(
+        r'^(?:https?://)?crbug\.com/[a-zA-Z0-9_.-]+(?:/[a-zA-Z0-9_.-]+)*$'
+    )
+    valid_expectations = {'failure', 'pass', 'skip', 'crash'}
+    # "Other" category tags use AND matching, so an expectation containing
+    # both tags of one of these pairs can never apply.
+    mutually_exclusive_tag_pairs = (
+        ('chrome', 'chromium'),
+        ('simulator', 'device'),
+        ('debug', 'release'),
+    )
+
+    for f in affected_files:
+        for line_num, line in f.ChangedContents():
+            trimmed = line.strip()
+            if not trimmed or trimmed.startswith('#'):
+                continue
+
+            match = pattern.match(trimmed)
+            if not match:
+                results.append(
+                    output_api.PresubmitError(
+                        f'{f.LocalPath()}:{line_num}: Line does not respect '
+                        f'prescribed syntax:\n  {trimmed}\n'
+                        'Expected format: crbug.com/BUG [ [Tags] ] '
+                        'TestClassName[/TestMethodName] [ [Expectations] ]'
+                    )
+                )
+                continue
+
+            bug_str = match.group(1)
+            if not bug_str or not bug_pattern.match(bug_str):
+                results.append(
+                    output_api.PresubmitError(
+                        f'{f.LocalPath()}:{line_num}: Missing or invalid bug '
+                        f'field:\n  {trimmed}\n'
+                        'The bug field must be of the form crbug.com/BUG.'
+                    )
+                )
+
+            tags = {tag.lower() for tag in (match.group(2) or '').split()}
+            for tag_a, tag_b in mutually_exclusive_tag_pairs:
+                if tag_a in tags and tag_b in tags:
+                    results.append(
+                        output_api.PresubmitError(
+                            f'{f.LocalPath()}:{line_num}: Mutually exclusive '
+                            f"tags '{tag_a}' and '{tag_b}' in line:\n"
+                            f'  {trimmed}\n'
+                            '"Other" category tags use AND matching, so this '
+                            'expectation can never match any configuration.'
+                        )
+                    )
+
+            test_id = match.group(3)
+            if '*' in test_id:
+                results.append(
+                    output_api.PresubmitError(
+                        f"{f.LocalPath()}:{line_num}: Wildcards ('*') are not "
+                        f'supported in test names:\n  {trimmed}\n'
+                        'For class-level expectations, specify just the class '
+                        'name without wildcards (e.g., TestClassName).'
+                    )
+                )
+
+            expectations_str = match.group(4)
+            exps = expectations_str.split() if expectations_str else []
+            if not exps:
+                results.append(
+                    output_api.PresubmitError(
+                        f'{f.LocalPath()}:{line_num}: Missing expectations in '
+                        f'line:\n  {trimmed}'
+                    )
+                )
+            else:
+                for exp in exps:
+                    if exp.lower() not in valid_expectations:
+                        results.append(
+                            output_api.PresubmitError(
+                                f'{f.LocalPath()}:{line_num}: Invalid '
+                                f"expectation '{exp}' in line:\n  {trimmed}\n"
+                                'Valid expectations are Failure, Pass, Skip, '
+                                'Crash.'
+                            )
+                        )
+
+    return results
