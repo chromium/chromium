@@ -17,6 +17,7 @@
 #include "base/memory_coordinator/traits.h"
 #include "base/memory_coordinator/utils.h"
 #include "base/numerics/checked_math.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/process/memory.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/waitable_event.h"
@@ -283,6 +284,10 @@ ClientDiscardableSharedMemoryManager::AllocateLockedDiscardableMemory(
   const size_t pages_to_allocate = std::max(allocation_pages, pages);
   const size_t allocation_size_in_bytes =
       base::CheckMul(pages_to_allocate, base::GetPageSize()).ValueOrDie();
+  // The browser process can't be asked for more than uint32_t bytes.
+  if (!base::IsValueInRangeForNumericType<uint32_t>(allocation_size_in_bytes)) {
+    return nullptr;
+  }
 
   size_t slack = 0;
   // When searching the free lists, allow a slack between required size and
@@ -599,7 +604,7 @@ void ClientDiscardableSharedMemoryManager::AllocateOnIO(
     base::ScopedClosureRunner closure_runner) {
   (*manager_mojo_)
       ->AllocateLockedDiscardableSharedMemory(
-          static_cast<uint32_t>(size), id,
+          base::checked_cast<uint32_t>(size), id,
           base::BindOnce(
               &ClientDiscardableSharedMemoryManager::AllocateCompletedOnIO,
               base::Unretained(this), region, std::move(closure_runner)));

@@ -14,6 +14,7 @@
 #include "base/memory/page_size.h"
 #include "base/memory_coordinator/test_memory_consumer_registry.h"
 #include "base/memory_coordinator/utils.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
@@ -52,6 +53,8 @@ class TestClientDiscardableSharedMemoryManager
 
   std::unique_ptr<base::DiscardableSharedMemory>
   AllocateLockedDiscardableSharedMemory(size_t size, int32_t id) override {
+    // Like the real IPC, only sizes that fit in a uint32_t can be requested.
+    EXPECT_TRUE(base::IsValueInRangeForNumericType<uint32_t>(size));
     auto shared_memory = std::make_unique<base::DiscardableSharedMemory>();
     if (!shared_memory->CreateAndMap(size)) {
       return nullptr;
@@ -464,6 +467,19 @@ TEST_F(ClientDiscardableSharedMemoryManagerTest, HugeAllocationFails) {
     EXPECT_EQ(client->GetAllocatedSize(), base::ByteSize(0));
   }
 }
+
+#if defined(ARCH_CPU_64_BITS)
+// Verifies that allocations larger than the browser process can be asked for
+// fail instead of being truncated.
+TEST_F(ClientDiscardableSharedMemoryManagerTest, AllocationAboveIpcLimitFails) {
+  auto client =
+      base::MakeRefCounted<TestClientDiscardableSharedMemoryManager>();
+
+  auto mem = client->AllocateLockedDiscardableMemory(base::GiB(4) + page_size_);
+  EXPECT_FALSE(mem);
+  EXPECT_EQ(client->GetAllocatedSize(), base::ByteSize(0));
+}
+#endif  // defined(ARCH_CPU_64_BITS)
 
 TEST_F(ClientDiscardableSharedMemoryManagerTest, ByteSizeApi) {
   auto client =
