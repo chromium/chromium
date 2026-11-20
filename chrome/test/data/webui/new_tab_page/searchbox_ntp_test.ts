@@ -398,6 +398,62 @@ suite('SearchboxTest', () => {
     assertFalse(await areMatchesShowing());
   });
 
+  test(
+      'lazily measures initialInputScrollHeight without mutating input',
+      async () => {
+        realbox = await createAndAppendRealbox({
+          multiLineEnabled: true,
+          ntpRealboxNextEnabled: true,
+        });
+        assertEquals(0, realbox.initialInputScrollHeight);
+
+        const matches = [createSearchMatch(), createUrlMatch()];
+        // Open zero-prefix suggestions first so `.dropdownContainer` is
+        // expanded when lazy measurement runs.
+        testProxy.callbackRouterRemote.autocompleteResultChanged(
+            createAutocompleteResult({
+              queryId: realbox.activeQueryId,
+              input: '',
+              matches: matches,
+            }));
+        assertTrue(await areMatchesShowing());
+        assertEquals(0, realbox.initialInputScrollHeight);
+
+        const inputEl = realbox.$.input.inputElement;
+        const multiLineText = 'hello\nworld';
+        inputEl.value = multiLineText;
+        inputEl.setSelectionRange(2, 7, 'backward');
+        inputEl.dispatchEvent(new InputEvent('input'));
+
+        testProxy.callbackRouterRemote.autocompleteResultChanged(
+            createAutocompleteResult({
+              queryId: realbox.activeQueryId,
+              input: multiLineText,
+              matches: matches,
+            }));
+
+        assertFalse(await areMatchesShowing());
+        assertEquals(multiLineText, inputEl.value);
+        assertEquals(2, inputEl.selectionStart);
+        assertEquals(7, inputEl.selectionEnd);
+        assertEquals('backward', inputEl.selectionDirection);
+        assertTrue(realbox.initialInputScrollHeight > 0);
+        assertTrue(
+            realbox.initialInputScrollHeight < realbox.$.input.scrollHeight);
+
+        // Starting from the now-closed dropdown, a single-line 2-match result
+        // must still open.
+        inputEl.value = 'hello';
+        inputEl.dispatchEvent(new InputEvent('input'));
+        testProxy.callbackRouterRemote.autocompleteResultChanged(
+            createAutocompleteResult({
+              queryId: realbox.activeQueryId,
+              input: 'hello',
+              matches: matches,
+            }));
+        assertTrue(await areMatchesShowing());
+      });
+
   //============================================================================
   // Test Responsiveness Metrics
   //============================================================================

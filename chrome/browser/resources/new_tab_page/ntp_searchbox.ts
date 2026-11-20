@@ -388,7 +388,6 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
     if (performance.getEntriesByName('realbox-creation-start').length > 0) {
       performance.measure('realbox-creation', 'realbox-creation-start');
     }
-    this.initialInputScrollHeight = this.$.input.scrollHeight;
 
     if (this.cyclingPlaceholders) {
       waitForLazyRender().then(async () => {
@@ -911,9 +910,24 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
   }
 
   private shouldSuppressDropdownForMultiline_(numMatches: number): boolean {
-    const inputHasWrapped = this.initialInputScrollHeight > 0 &&
-        this.$.input.scrollHeight > this.initialInputScrollHeight;
-    return inputHasWrapped || numMatches === 1;
+    if (numMatches === 1) {
+      return true;
+    }
+    if (this.initialInputScrollHeight === 0) {
+      // Measure the single-line height with the dropdown hidden and without
+      // mutating `.value`, selection, or undo history.
+      const inputEl = this.$.input.inputElement;
+      const dropdownContainer =
+          this.shadowRoot.querySelector<HTMLElement>('.dropdownContainer')!;
+      dropdownContainer.hidden = true;
+      inputEl.setAttribute('rows', '1');
+      inputEl.style.fieldSizing = 'fixed';
+      this.initialInputScrollHeight = this.$.input.scrollHeight;
+      inputEl.style.fieldSizing = '';
+      inputEl.removeAttribute('rows');
+      dropdownContainer.hidden = false;
+    }
+    return this.$.input.scrollHeight > this.initialInputScrollHeight;
   }
 
   private calculateShowComposeButton_(): boolean {
