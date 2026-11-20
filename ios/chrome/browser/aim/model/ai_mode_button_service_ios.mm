@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_utils.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
@@ -54,27 +55,6 @@ constexpr std::string_view kIconSourceHistogram =
 
 void RecordIconSource(AIModeButtonServiceIOS::IconSource source) {
   base::UmaHistogramEnumeration(kIconSourceHistogram, source);
-}
-
-// Returns the point size for the AIM button icon.
-// TODO(crbug.com/581353733) Migrate this helper to a public, shared, UI-layer
-// header in `ios/chrome/browser/ntp/`.
-CGFloat GetAimButtonIconPointSize() {
-  switch (GetAimButtonRefactorArm()) {
-    case AimButtonRefactorArm::kNoChips:
-      // No AIM Button should be surfaced in this arm.
-    case AimButtonRefactorArm::kFocusComposeboxAimQuickAction:
-    case AimButtonRefactorArm::kImageGenerationQuickAction:
-    case AimButtonRefactorArm::kAttachImageQuickAction:
-    case AimButtonRefactorArm::kGenerateAndAttachQuickActions:
-    case AimButtonRefactorArm::kDisabled:
-      return IsNewTabPageUICleanupEnabled()
-                 ? kQuickActionsSymbolPointSizeUICleanup
-                 : kQuickActionsSymbolPointSize;
-    case AimButtonRefactorArm::kAimAsModule:
-    case AimButtonRefactorArm::kAimAsMvt:
-      return kMostVisitedAimIconSize;
-  }
 }
 
 }  // namespace

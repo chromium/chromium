@@ -9,6 +9,7 @@ include_rules = [
   "+ios/chrome/browser/image_fetcher/model",
   "+ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h",
   "+ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h",
+  "+ios/chrome/browser/ntp/ui_bundled/new_tab_page_utils.h",
   "+ios/chrome/browser/signin/model/identity_manager_factory.h",
   "+ios/chrome/browser/url_loading/model",
   "+third_party/omnibox_proto",

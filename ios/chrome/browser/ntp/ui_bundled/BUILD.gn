@@ -625,6 +625,7 @@ source_set("utils") {
     ":theme",
     "//components/lens:lens_url_utils",
     "//components/search_engines",
+    "//ios/chrome/browser/content_suggestions/most_visited_tiles/public",
     "//ios/chrome/browser/content_suggestions/most_visited_tiles/ui",
     "//ios/chrome/browser/first_run/public:utils",
     "//ios/chrome/common/ui/colors",

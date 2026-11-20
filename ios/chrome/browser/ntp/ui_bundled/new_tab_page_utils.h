@@ -49,4 +49,7 @@ CGFloat MostVisitedContainerHeight(
 /// Returns the height for the NTP Quick Actions button row.
 CGFloat QuickActionsHeight();
 
+/// Returns the point size for the AIM button icon.
+CGFloat GetAimButtonIconPointSize();
+
 #endif  // IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_UTILS_H_

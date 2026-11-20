@@ -28,6 +28,7 @@ source_set("aim_button_service") {
     "//ios/chrome/browser/image_fetcher/model",
     "//ios/chrome/browser/ntp/ui_bundled:constants",
     "//ios/chrome/browser/ntp/ui_bundled:feature_flags",
+    "//ios/chrome/browser/ntp/ui_bundled:utils",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",

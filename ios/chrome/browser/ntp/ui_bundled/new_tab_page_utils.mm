@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_utils.h"
 
+#import "ios/chrome/browser/content_suggestions/most_visited_tiles/public/most_visited_tiles_constants.h"
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_tiles_collection_view.h"
 #import "ios/chrome/browser/first_run/public/first_run_util.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
@@ -124,4 +125,22 @@ CGFloat MostVisitedContainerHeight(
 CGFloat QuickActionsHeight() {
   return IsNewTabPageUICleanupEnabled() ? kQuickActionsHeightUICleanup
                                         : kQuickActionsHeight;
+}
+
+CGFloat GetAimButtonIconPointSize() {
+  switch (GetAimButtonRefactorArm()) {
+    case AimButtonRefactorArm::kNoChips:
+      // No AIM Button should be surfaced in this arm.
+    case AimButtonRefactorArm::kFocusComposeboxAimQuickAction:
+    case AimButtonRefactorArm::kImageGenerationQuickAction:
+    case AimButtonRefactorArm::kAttachImageQuickAction:
+    case AimButtonRefactorArm::kGenerateAndAttachQuickActions:
+    case AimButtonRefactorArm::kDisabled:
+      return IsNewTabPageUICleanupEnabled()
+                 ? kQuickActionsSymbolPointSizeUICleanup
+                 : kQuickActionsSymbolPointSize;
+    case AimButtonRefactorArm::kAimAsModule:
+    case AimButtonRefactorArm::kAimAsMvt:
+      return kMostVisitedAimIconSize;
+  }
 }
