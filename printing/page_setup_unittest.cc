@@ -4,11 +4,11 @@
 
 #include "printing/page_setup.h"
 
-#include <stdlib.h>
 #include <time.h>
 
 #include <algorithm>
 
+#include "base/test/insecure_random_generator.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace printing {
@@ -16,24 +16,28 @@ namespace printing {
 TEST(PageSetupTest, Random) {
   time_t seed = time(NULL);
   int kMax = 10;
-  srand(static_cast<unsigned>(seed));
+  base::test::InsecureRandomGenerator rng;
+  rng.ReseedForTesting(static_cast<uint64_t>(seed));
+  auto random_int = [&rng, kMax] {
+    return static_cast<int>(rng.RandUint32() % kMax);
+  };
 
   // Margins.
   PageMargins margins;
-  margins.header = rand() % kMax;
-  margins.footer = rand() % kMax;
-  margins.left = rand() % kMax;
-  margins.top = rand() % kMax;
-  margins.right = rand() % kMax;
-  margins.bottom = rand() % kMax;
-  int kTextHeight = rand() % kMax;
+  margins.header = random_int();
+  margins.footer = random_int();
+  margins.left = random_int();
+  margins.top = random_int();
+  margins.right = random_int();
+  margins.bottom = random_int();
+  int kTextHeight = random_int();
 
   // Page description.
-  gfx::Size page_size(100 + rand() % kMax, 200 + rand() % kMax);
-  gfx::Rect printable_area(rand() % kMax, rand() % kMax, 0, 0);
-  printable_area.set_width(page_size.width() - (rand() % kMax) -
+  gfx::Size page_size(100 + random_int(), 200 + random_int());
+  gfx::Rect printable_area(random_int(), random_int(), 0, 0);
+  printable_area.set_width(page_size.width() - (random_int()) -
                            printable_area.x());
-  printable_area.set_height(page_size.height() - (rand() % kMax) -
+  printable_area.set_height(page_size.height() - (random_int()) -
                             printable_area.y());
 
   // Make the calculations.
