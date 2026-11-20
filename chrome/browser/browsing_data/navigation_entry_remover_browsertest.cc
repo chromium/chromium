@@ -5,7 +5,6 @@
 #include "chrome/browser/browsing_data/navigation_entry_remover.h"
 
 #include "base/files/file_path.h"
-#include "build/build_config.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -72,7 +71,8 @@ class NavigationEntryRemoverTest : public InProcessBrowserTest {
     ui_test_utils::BrowserCreatedObserver browser_created_observer;
     ui_test_utils::NavigateToURLWithDisposition(
         browser, urls[0], ui::mojom::WindowOpenDisposition::kNewWindow,
-        ui_test_utils::BROWSER_TEST_WAIT_FOR_BROWSER);
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_BROWSER |
+            ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
     BrowserWindowInterface* new_browser = browser_created_observer.Wait();
     ui_test_utils::WaitUntilBrowserBecomeActive(new_browser);
     AddNavigations(new_browser, {urls.begin() + 1, urls.end()});
@@ -330,19 +330,15 @@ IN_PROC_BROWSER_TEST_F(NavigationEntryRemoverTest, RecentTabDeletion) {
   ExpectDeleteLastSessionCalled(2);
 }
 
-// TODO(crbug.com/40283363): flaky on windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_RecentTabWindowDeletion DISABLED_RecentTabWindowDeletion
-#else
-#define MAYBE_RecentTabWindowDeletion RecentTabWindowDeletion
-#endif
-IN_PROC_BROWSER_TEST_F(NavigationEntryRemoverTest,
-                       MAYBE_RecentTabWindowDeletion) {
+IN_PROC_BROWSER_TEST_F(NavigationEntryRemoverTest, RecentTabWindowDeletion) {
   // Create a new browser with three tabs and close it.
   BrowserWindowInterface* new_browser = AddBrowser(browser(), {url_a_});
   AddTab(new_browser, {url_b_, url_c_});
   AddTab(new_browser, {url_d_});
+  ui_test_utils::BrowserDestroyedObserver browser_destroyed_observer(
+      new_browser);
   chrome::CloseWindow(new_browser);
+  browser_destroyed_observer.Wait();
 
   sessions::TabRestoreService* tab_service =
       TabRestoreServiceFactory::GetForProfile(profile());
