@@ -624,11 +624,11 @@
 
 # Composer's class initializer doesn't do anything but create an EMPTY object. Marking the
 # initializers as having no side effects can help encourage shrinkers to merge/devirtualize Composer
-# with ComposerImpl.
+# with GapComposer.
 -assumenosideeffects public class androidx.compose.runtime.Composer {
     void <clinit>();
 }
--assumenosideeffects public class androidx.compose.runtime.ComposerImpl {
+-assumenosideeffects public class androidx.compose.runtime.GapComposer {
     void <clinit>();
 }
 
