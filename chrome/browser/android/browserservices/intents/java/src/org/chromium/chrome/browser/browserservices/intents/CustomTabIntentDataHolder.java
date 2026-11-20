@@ -117,6 +117,7 @@ public class CustomTabIntentDataHolder implements Parcelable {
     public final int mAndroidBrowserHelperVersion;
     public final @Nullable WindowFeatures mRequestedWindowFeatures;
     public final @Nullable Integer mIncognitoCctCallerId;
+    public final @Nullable Integer mFedCmId;
 
     private CustomTabIntentDataHolder(Builder builder) {
         mSessionHolder = builder.mSessionHolder;
@@ -186,6 +187,7 @@ public class CustomTabIntentDataHolder implements Parcelable {
         mAndroidBrowserHelperVersion = builder.mAndroidBrowserHelperVersion;
         mRequestedWindowFeatures = builder.mRequestedWindowFeatures;
         mIncognitoCctCallerId = builder.mIncognitoCctCallerId;
+        mFedCmId = builder.mFedCmId;
     }
 
     private CustomTabIntentDataHolder(Parcel in) {
@@ -261,6 +263,7 @@ public class CustomTabIntentDataHolder implements Parcelable {
         mRequestedWindowFeatures =
                 windowFeaturesBundle != null ? new WindowFeatures(windowFeaturesBundle) : null;
         mIncognitoCctCallerId = (Integer) in.readValue(classLoader);
+        mFedCmId = readNullableInt(in);
     }
 
     @Override
@@ -337,6 +340,7 @@ public class CustomTabIntentDataHolder implements Parcelable {
         dest.writeBundle(
                 mRequestedWindowFeatures != null ? mRequestedWindowFeatures.toBundle() : null);
         dest.writeValue(mIncognitoCctCallerId);
+        writeNullableInt(dest, mFedCmId);
     }
 
     @Override
@@ -533,6 +537,20 @@ public class CustomTabIntentDataHolder implements Parcelable {
         return Collections.unmodifiableList(actions);
     }
 
+    private static void writeNullableInt(Parcel dest, @Nullable Integer value) {
+        if (value == null) {
+            dest.writeBoolean(false);
+        } else {
+            dest.writeBoolean(true);
+            dest.writeInt(value);
+        }
+    }
+
+    private static @Nullable Integer readNullableInt(Parcel in) {
+        if (!in.readBoolean()) return null;
+        return in.readInt();
+    }
+
     public static final class Builder {
         private @Nullable SessionHolder mSessionHolder;
         private @Nullable String mClientPackageName;
@@ -607,6 +625,7 @@ public class CustomTabIntentDataHolder implements Parcelable {
         private int mAndroidBrowserHelperVersion;
         private @Nullable WindowFeatures mRequestedWindowFeatures;
         private @Nullable Integer mIncognitoCctCallerId;
+        private @Nullable Integer mFedCmId;
 
         public Builder setSessionHolder(@Nullable SessionHolder sessionHolder) {
             mSessionHolder = sessionHolder;
@@ -950,6 +969,11 @@ public class CustomTabIntentDataHolder implements Parcelable {
 
         public Builder setIncognitoCctCallerId(@Nullable Integer incognitoCctCallerId) {
             mIncognitoCctCallerId = incognitoCctCallerId;
+            return this;
+        }
+
+        public Builder setFedCmId(@Nullable Integer fedCmId) {
+            mFedCmId = fedCmId;
             return this;
         }
 

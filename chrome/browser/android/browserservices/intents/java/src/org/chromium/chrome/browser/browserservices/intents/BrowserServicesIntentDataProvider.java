@@ -880,4 +880,14 @@ public abstract class BrowserServicesIntentDataProvider {
     public @Nullable CustomTabIntentDataHolder getCustomTabIntentDataHolder() {
         return null;
     }
+
+    /** Returns whether a translucent background color was specified in the intent. */
+    public boolean hasTranslucentBackgroundColor() {
+        return false;
+    }
+
+    /** Returns the FedCM request identifier associated with the intent, or null if not set. */
+    public @Nullable Integer getFedCmId() {
+        return null;
+    }
 }

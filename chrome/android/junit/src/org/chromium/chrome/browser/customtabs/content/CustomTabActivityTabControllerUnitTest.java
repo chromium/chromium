@@ -168,7 +168,7 @@ public class CustomTabActivityTabControllerUnitTest {
     @Test
     public void setsBackgroundColorOnContentChanged_IfRestoredTabViewIsNull() {
         // prepareTabBackground() only runs for trusted CCTs with a non-transparent initial color.
-        when(env.connection.isFirstParty(any())).thenReturn(true);
+        when(env.intentDataProvider.isTrustedIntent()).thenReturn(true);
         when(env.colorProvider.getInitialBackgroundColor()).thenReturn(Color.RED);
 
         // A restored tab whose NativePage is still frozen has no View yet; initialization must not
@@ -195,6 +195,39 @@ public class CustomTabActivityTabControllerUnitTest {
         assertTrue(view.getBackground() instanceof ColorDrawable);
         assertEquals(Color.RED, ((ColorDrawable) view.getBackground()).getColor());
         verify(savedTab, times(2)).removeObserver(any());
+    }
+
+    @Test
+    public void setsInitialBackgroundColor_WhenIntentDataProviderIsTrusted() {
+        assertNull(env.mIntent.getExtras());
+        when(env.intentDataProvider.isTrustedIntent()).thenReturn(true);
+        when(env.colorProvider.getInitialBackgroundColor()).thenReturn(Color.BLUE);
+
+        mTabController.setUpInitialTab(null);
+        mTabController.finishNativeInitialization();
+
+        Tab tab = env.tabProvider.getTab();
+        assertNotNull(tab);
+        View tabView = tab.getView();
+        assertNotNull(tabView);
+        assertTrue(tabView.getBackground() instanceof ColorDrawable);
+        assertEquals(Color.BLUE, ((ColorDrawable) tabView.getBackground()).getColor());
+    }
+
+    @Test
+    public void doesNotSetInitialBackgroundColor_WhenIntentDataProviderIsUntrusted() {
+        when(env.connection.isFirstParty(any())).thenReturn(true);
+        when(env.intentDataProvider.isTrustedIntent()).thenReturn(false);
+        when(env.colorProvider.getInitialBackgroundColor()).thenReturn(Color.BLUE);
+
+        mTabController.setUpInitialTab(null);
+        mTabController.finishNativeInitialization();
+
+        Tab tab = env.tabProvider.getTab();
+        assertNotNull(tab);
+        View tabView = tab.getView();
+        assertNotNull(tabView);
+        assertNull(tabView.getBackground());
     }
 
     @Test

@@ -117,7 +117,9 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
         assert mDataHolder.mCloseButtonIcon == null;
         mCloseButtonIcon = TintedDrawable.constructTintedDrawable(context, R.drawable.btn_close);
 
-        logFeatureUsage(intent);
+        if (dataHolder == null) {
+            logFeatureUsage(intent);
+        }
     }
 
     private static @CustomTabsUiType int getUiType(Intent intent) {

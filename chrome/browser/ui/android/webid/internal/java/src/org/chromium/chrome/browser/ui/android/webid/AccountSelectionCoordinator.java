@@ -38,7 +38,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
-import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
@@ -689,11 +689,11 @@ public class AccountSelectionCoordinator
     private int getFedCmId() {
         // This should be called on the object corresponding to the CCT.
         Activity activity = mWindowAndroid.getActivity().get();
-        if (!(activity instanceof ChromeActivity)) {
+        if (!(activity instanceof BaseCustomTabActivity customTabActivity)) {
             return -1;
         }
-        ChromeActivity chromeActivity = (ChromeActivity) activity;
-        return IntentUtils.safeGetIntExtra(
-                chromeActivity.getIntent(), IntentHandler.EXTRA_FEDCM_ID, -1);
+        var intentDataProvider = customTabActivity.getIntentDataProvider();
+        Integer fedCmId = intentDataProvider != null ? intentDataProvider.getFedCmId() : null;
+        return fedCmId != null ? fedCmId : -1;
     }
 }

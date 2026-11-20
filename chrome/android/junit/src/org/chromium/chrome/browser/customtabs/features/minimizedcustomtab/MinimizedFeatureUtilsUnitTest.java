@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.customtabs.features.minimizedcustomtab;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
@@ -16,7 +15,6 @@ import static org.chromium.chrome.browser.flags.ActivityType.WEBAPP;
 
 import android.app.AppOpsManager;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 
@@ -31,7 +29,6 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.SysUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
@@ -48,7 +45,6 @@ public class MinimizedFeatureUtilsUnitTest {
     @Mock private PackageManager mPackageManager;
     @Mock private AppOpsManager mAppOpsManager;
     @Mock private BrowserServicesIntentDataProvider mIntentDataProvider;
-    @Mock private Intent mIntent;
 
     private final ApplicationInfo mApplicationInfo = new ApplicationInfo();
 
@@ -107,10 +103,12 @@ public class MinimizedFeatureUtilsUnitTest {
     @Test
     public void testShouldEnableMinimizedCustomTabs() {
         // True for regular Custom Tabs
-        when(mIntentDataProvider.getIntent()).thenReturn(mIntent);
-        when(mIntent.getIntExtra(eq(IntentHandler.EXTRA_FEDCM_ID), anyInt())).thenReturn(-1);
+        when(mIntentDataProvider.getFedCmId()).thenReturn(null);
         when(mIntentDataProvider.getActivityType()).thenReturn(CUSTOM_TAB);
         assertTrue(MinimizedFeatureUtils.shouldEnableMinimizedCustomTabs(mIntentDataProvider));
+        when(mIntentDataProvider.isTrustedIntent()).thenReturn(true);
+        assertTrue(MinimizedFeatureUtils.shouldEnableMinimizedCustomTabs(mIntentDataProvider));
+        when(mIntentDataProvider.isTrustedIntent()).thenReturn(false);
 
         // False if has target network
         when(mIntentDataProvider.hasTargetNetwork()).thenReturn(true);
@@ -124,13 +122,18 @@ public class MinimizedFeatureUtilsUnitTest {
         // False for Webapps
         when(mIntentDataProvider.getActivityType()).thenReturn(WEBAPP);
         assertFalse(MinimizedFeatureUtils.shouldEnableMinimizedCustomTabs(mIntentDataProvider));
+
         // False for FedCM
         when(mIntentDataProvider.getActivityType()).thenReturn(CUSTOM_TAB);
         when(mIntentDataProvider.isTrustedIntent()).thenReturn(true);
-        when(mIntent.getIntExtra(eq(IntentHandler.EXTRA_FEDCM_ID), anyInt())).thenReturn(100);
+        when(mIntentDataProvider.getFedCmId()).thenReturn(100);
         assertFalse(MinimizedFeatureUtils.shouldEnableMinimizedCustomTabs(mIntentDataProvider));
+        when(mIntentDataProvider.getFedCmId()).thenReturn(-1);
+        assertTrue(MinimizedFeatureUtils.shouldEnableMinimizedCustomTabs(mIntentDataProvider));
+        when(mIntentDataProvider.getFedCmId()).thenReturn(null);
+        assertTrue(MinimizedFeatureUtils.shouldEnableMinimizedCustomTabs(mIntentDataProvider));
+
         // False for AuthTab
-        when(mIntent.getIntExtra(eq(IntentHandler.EXTRA_FEDCM_ID), anyInt())).thenReturn(-1);
         when(mIntentDataProvider.isTrustedIntent()).thenReturn(false);
         when(mIntentDataProvider.isAuthTab()).thenReturn(true);
         assertFalse(MinimizedFeatureUtils.shouldEnableMinimizedCustomTabs(mIntentDataProvider));

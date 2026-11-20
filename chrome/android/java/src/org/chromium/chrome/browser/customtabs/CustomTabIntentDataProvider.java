@@ -493,6 +493,11 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     }
 
     @Override
+    public boolean hasTranslucentBackgroundColor() {
+        return mDataHolder.mTranslucentBackgroundColor != null;
+    }
+
+    @Override
     public @ColorInt int getTranslucentBackgroundColor(Context context) {
         int defValue = SemanticColorUtils.getDefaultBgColor(context);
         int bg =
@@ -809,6 +814,10 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
             builder.setAndroidBrowserHelperVersion(
                     IntentUtils.safeGetIntExtra(intent, EXTRA_ANDROID_BROWSER_HELPER_VERSION, 0));
             builder.setRequestedWindowFeatures(extractRequestedWindowFeatures(intent, uiType));
+            int fedCmId = IntentUtils.safeGetIntExtra(intent, IntentHandler.EXTRA_FEDCM_ID, -1);
+            if (fedCmId != -1) {
+                builder.setFedCmId(fedCmId);
+            }
 
             mDataHolder = builder.build();
         }
@@ -836,7 +845,9 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         maybeAddOpenInBrowserOption(context, oibState);
         maybeAddShareOption(context);
 
-        logCustomTabFeatures(intent, colorScheme);
+        if (dataHolder == null) {
+            logCustomTabFeatures(intent, colorScheme);
+        }
     }
 
     /** Returns the toolbar corner radius in px. */
@@ -2142,5 +2153,10 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     @Override
     public CustomTabIntentDataHolder getCustomTabIntentDataHolder() {
         return mDataHolder;
+    }
+
+    @Override
+    public @Nullable Integer getFedCmId() {
+        return mDataHolder.mFedCmId;
     }
 }

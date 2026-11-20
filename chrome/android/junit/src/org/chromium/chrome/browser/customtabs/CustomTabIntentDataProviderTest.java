@@ -70,10 +70,12 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.IntentUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
@@ -121,6 +123,102 @@ public class CustomTabIntentDataProviderTest {
                 new ContextThemeWrapper(
                         ApplicationProvider.getApplicationContext(),
                         R.style.Theme_BrowserUI_DayNight);
+    }
+
+    @Test
+    public void testReconstructFromSavedDataHolder_newPersistedExtrasAndUmaGating() {
+        Intent intent = new CustomTabsIntent.Builder().build().intent;
+        intent.setData(Uri.parse("https://www.example.com/regular"));
+        setIsTrustedCustomTab(intent);
+        intent.putExtra(IntentHandler.EXTRA_FEDCM_ID, 77);
+        intent.putExtra(CustomTabIntentDataProvider.EXTRA_TRANSLUCENT_BACKGROUND, 0x99112233);
+
+        int countBeforeLaunch =
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        CustomTabsFeatureUsage.CUSTOM_TABS_FEATURE_USAGE_HISTOGRAM);
+        CustomTabIntentDataProvider originalProvider =
+                new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_DARK);
+        int countAfterLaunch =
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        CustomTabsFeatureUsage.CUSTOM_TABS_FEATURE_USAGE_HISTOGRAM);
+        assertTrue(
+                "Expected CustomTabs.FeatureUsage samples on initial launch",
+                countAfterLaunch > countBeforeLaunch);
+
+        CustomTabIntentDataHolder holder = originalProvider.getCustomTabIntentDataHolder();
+        assertNotNull(holder);
+        assertEquals(Integer.valueOf(77), originalProvider.getFedCmId());
+        assertTrue(originalProvider.hasTranslucentBackgroundColor());
+
+        Parcel parcel = Parcel.obtain();
+        CustomTabIntentDataHolder restoredHolder;
+        try {
+            holder.writeToParcel(parcel, 0);
+            parcel.setDataPosition(0);
+            restoredHolder = CustomTabIntentDataHolder.CREATOR.createFromParcel(parcel);
+        } finally {
+            parcel.recycle();
+        }
+
+        HistogramWatcher noUmaOnRestore =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(CustomTabsFeatureUsage.CUSTOM_TABS_FEATURE_USAGE_HISTOGRAM)
+                        .build();
+        CustomTabIntentDataProvider restoredProvider =
+                new CustomTabIntentDataProvider(
+                        new Intent(), mContext, COLOR_SCHEME_DARK, restoredHolder);
+        noUmaOnRestore.assertExpected();
+
+        assertEquals(Integer.valueOf(77), restoredProvider.getFedCmId());
+        assertTrue(restoredProvider.hasTranslucentBackgroundColor());
+
+        CustomTabIntentDataProvider defaultProvider =
+                new CustomTabIntentDataProvider(new Intent(), mContext, COLOR_SCHEME_LIGHT);
+        assertNull(defaultProvider.getFedCmId());
+        assertFalse(defaultProvider.hasTranslucentBackgroundColor());
+    }
+
+    @Test
+    public void testIncognitoReconstructFromSavedDataHolder_umaGating() {
+        Intent intent = new CustomTabsIntent.Builder().build().intent;
+        intent.setData(Uri.parse("https://www.example.com/incognito"));
+        IncognitoCustomTabIntentDataProvider.addIncognitoExtrasForChromeFeatures(
+                intent, BrowserServicesIntentDataProvider.IncognitoCctCallerId.READ_LATER);
+        intent.setPackage(mContext.getPackageName());
+        IntentUtils.addTrustedIntentExtras(intent);
+
+        int countBeforeLaunch =
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        CustomTabsFeatureUsage.CUSTOM_TABS_FEATURE_USAGE_HISTOGRAM);
+        IncognitoCustomTabIntentDataProvider originalProvider =
+                new IncognitoCustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_DARK);
+        int countAfterLaunch =
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        CustomTabsFeatureUsage.CUSTOM_TABS_FEATURE_USAGE_HISTOGRAM);
+        assertTrue(
+                "Expected CustomTabs.FeatureUsage samples on initial incognito launch",
+                countAfterLaunch > countBeforeLaunch);
+
+        CustomTabIntentDataHolder holder = originalProvider.getCustomTabIntentDataHolder();
+        assertNotNull(holder);
+
+        Parcel parcel = Parcel.obtain();
+        CustomTabIntentDataHolder restoredHolder;
+        try {
+            holder.writeToParcel(parcel, 0);
+            parcel.setDataPosition(0);
+            restoredHolder = CustomTabIntentDataHolder.CREATOR.createFromParcel(parcel);
+        } finally {
+            parcel.recycle();
+        }
+
+        HistogramWatcher noUmaOnRestore =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(CustomTabsFeatureUsage.CUSTOM_TABS_FEATURE_USAGE_HISTOGRAM)
+                        .build();
+        new IncognitoCustomTabIntentDataProvider(
+                new Intent(), mContext, COLOR_SCHEME_DARK, restoredHolder);
+        noUmaOnRestore.assertExpected();
     }
 
     @Test

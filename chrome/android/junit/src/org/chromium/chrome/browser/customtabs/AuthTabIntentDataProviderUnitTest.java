@@ -35,6 +35,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.GraphicsMode;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
@@ -323,5 +324,40 @@ public class AuthTabIntentDataProviderUnitTest {
         assertEquals(
                 originalProvider.getColorProvider().getToolbarColor(),
                 restoredLight.getColorProvider().getToolbarColor());
+    }
+
+    @Test
+    public void testReconstructFromSavedDataHolder_umaGating() {
+        int countBeforeLaunch =
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        CUSTOM_TABS_FEATURE_USAGE_HISTOGRAM);
+        AuthTabIntentDataProvider originalProvider =
+                new AuthTabIntentDataProvider(mIntent, mActivity, COLOR_SCHEME_DARK);
+        int countAfterLaunch =
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        CUSTOM_TABS_FEATURE_USAGE_HISTOGRAM);
+        assertTrue(
+                "Expected CustomTabs.FeatureUsage samples on initial AuthTab launch",
+                countAfterLaunch > countBeforeLaunch);
+
+        CustomTabIntentDataHolder holder = originalProvider.getCustomTabIntentDataHolder();
+        assertNotNull(holder);
+
+        Parcel parcel = Parcel.obtain();
+        CustomTabIntentDataHolder restoredHolder;
+        try {
+            holder.writeToParcel(parcel, 0);
+            parcel.setDataPosition(0);
+            restoredHolder = CustomTabIntentDataHolder.CREATOR.createFromParcel(parcel);
+        } finally {
+            parcel.recycle();
+        }
+
+        HistogramWatcher noUmaOnRestore =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(CUSTOM_TABS_FEATURE_USAGE_HISTOGRAM)
+                        .build();
+        new AuthTabIntentDataProvider(new Intent(), mActivity, COLOR_SCHEME_DARK, restoredHolder);
+        noUmaOnRestore.assertExpected();
     }
 }

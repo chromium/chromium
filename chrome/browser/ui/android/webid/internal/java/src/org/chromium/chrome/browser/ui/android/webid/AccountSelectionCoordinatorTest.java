@@ -14,13 +14,16 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 
 import org.junit.Before;
@@ -38,6 +41,9 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.blink.mojom.RpContext;
 import org.chromium.blink.mojom.RpMode;
+import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.HeaderType;
@@ -49,6 +55,7 @@ import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadat
 import org.chromium.chrome.browser.ui.android.webid.data.RelyingPartyData;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
@@ -78,8 +85,22 @@ public class AccountSelectionCoordinatorTest {
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private AccountSelectionComponent.Delegate mMockDelegate;
 
+    private static class TestCustomTabActivity extends CustomTabActivity {
+        private BrowserServicesIntentDataProvider mIntentDataProvider;
+
+        void setIntentDataProviderForTesting(BrowserServicesIntentDataProvider provider) {
+            mIntentDataProvider = provider;
+        }
+
+        @Override
+        public BrowserServicesIntentDataProvider getIntentDataProvider() {
+            return mIntentDataProvider;
+        }
+    }
+
     private final RelyingPartyData mRpData =
             new RelyingPartyData("rp.example", /* iframeForDisplay= */ "", /* rpIcon= */ null);
+    private Activity mActivity;
     private IdentityProviderMetadata mIdpMetadata;
     private IdentityProviderData mIdpData;
     private Account mNewAccount;
@@ -87,9 +108,9 @@ public class AccountSelectionCoordinatorTest {
 
     @Before
     public void setUp() {
-        Activity activity = Robolectric.buildActivity(TestActivity.class).setup().get();
-        when(mWindowAndroid.getContext()).thenReturn(new WeakReference<Context>(activity));
-        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<Activity>(activity));
+        mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
+        when(mWindowAndroid.getContext()).thenReturn(new WeakReference<Context>(mActivity));
+        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<Activity>(mActivity));
         when(mWindowAndroid.getModalDialogManager()).thenReturn(mModalDialogManager);
         when(mBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
 
@@ -259,6 +280,46 @@ public class AccountSelectionCoordinatorTest {
         verify(mMockDelegate, never()).onDismissed(anyInt());
         assertEquals(HeaderType.SIGN_IN, mCoordinator.getMediator().getHeaderType());
         verify(mBottomSheetController).requestShowContent(any(), eq(true));
+    }
+
+    @Test
+    @DisableFeatures({
+        ContentFeatures.FED_CM_NATIVE_ID_PS,
+        ChromeFeatureList.CCT_DONT_OVERRIDE_INTENT_MIME_TYPE
+    })
+    public void testPopupCctAssociatesWithOpenerViaIntentDataProviderWithoutIntentExtra() {
+        WebContents rpWebContents = mock(WebContents.class);
+        when(mMockDelegate.getWebContents()).thenReturn(rpWebContents);
+
+        mCoordinator.showModalDialog(new GURL("https://idp.example/login"));
+        Intent launchedIntent = shadowOf(mActivity).getNextStartedActivity();
+        int fedCmId = launchedIntent.getIntExtra(IntentHandler.EXTRA_FEDCM_ID, -1);
+        assertTrue(fedCmId != -1);
+
+        TestCustomTabActivity popupCctActivity =
+                Robolectric.buildActivity(TestCustomTabActivity.class, new Intent()).get();
+        BrowserServicesIntentDataProvider intentDataProvider =
+                mock(BrowserServicesIntentDataProvider.class);
+        when(intentDataProvider.getFedCmId()).thenReturn(fedCmId);
+        popupCctActivity.setIntentDataProviderForTesting(intentDataProvider);
+
+        WindowAndroid popupWindowAndroid = mock(WindowAndroid.class);
+        when(popupWindowAndroid.getContext()).thenReturn(new WeakReference<Context>(mActivity));
+        when(popupWindowAndroid.getActivity())
+                .thenReturn(new WeakReference<Activity>(popupCctActivity));
+        when(popupWindowAndroid.getModalDialogManager()).thenReturn(mModalDialogManager);
+
+        AccountSelectionCoordinator popupCoordinator =
+                new AccountSelectionCoordinator(
+                        mTab,
+                        popupWindowAndroid,
+                        mBottomSheetController,
+                        RpMode.ACTIVE,
+                        /* canShowUi= */ true,
+                        mock(AccountSelectionComponent.Delegate.class));
+
+        verify(mMockDelegate).setPopupComponent(popupCoordinator);
+        assertSame(rpWebContents, popupCoordinator.getRpWebContents());
     }
 
     /** Shows the passive mode sheet for a new account and continues with it. */

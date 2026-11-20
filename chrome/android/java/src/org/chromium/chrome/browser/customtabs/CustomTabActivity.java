@@ -224,23 +224,25 @@ public class CustomTabActivity extends BaseCustomTabActivity {
         // branch and leave the compositor view hidden indefinitely for navigations that
         // never emit FCP.
         int bg = intentDataProvider.getTranslucentBackgroundColor(this);
-        if (CustomTabIntentDataProvider.hasTranslucentBackgroundColor(getIntent())
+        if (intentDataProvider.hasTranslucentBackgroundColor()
                 && bg != SemanticColorUtils.getDefaultBgColor(this)) {
-            setContentVisibility(false);
             getWindow().setBackgroundDrawable(new ColorDrawable(bg));
-            PageLoadMetrics.addObserver(
-                    new PageLoadMetrics.Observer() {
-                        @Override
-                        public void onFirstContentfulPaint(
-                                WebContents webContents,
-                                long navigationId,
-                                long navigationStartMicros,
-                                long firstContentfulPaintMs) {
-                            setContentVisibility(true);
-                            PageLoadMetrics.removeObserver(this);
-                        }
-                    },
-                    true);
+            if (getSavedInstanceState() == null) {
+                setContentVisibility(false);
+                PageLoadMetrics.addObserver(
+                        new PageLoadMetrics.Observer() {
+                            @Override
+                            public void onFirstContentfulPaint(
+                                    WebContents webContents,
+                                    long navigationId,
+                                    long navigationStartMicros,
+                                    long firstContentfulPaintMs) {
+                                setContentVisibility(true);
+                                PageLoadMetrics.removeObserver(this);
+                            }
+                        },
+                        true);
+            }
         }
     }
 

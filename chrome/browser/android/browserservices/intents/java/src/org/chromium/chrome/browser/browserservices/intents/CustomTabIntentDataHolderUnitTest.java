@@ -151,6 +151,7 @@ public class CustomTabIntentDataHolderUnitTest {
         assertEquals(0, restored.mAndroidBrowserHelperVersion);
         assertNull(restored.mRequestedWindowFeatures);
         assertNull(restored.mIncognitoCctCallerId);
+        assertNull(restored.mFedCmId);
         assertSame(
                 restored.mLightColorSchemeParams,
                 restored.getColorSchemeParams(CustomTabsIntent.COLOR_SCHEME_LIGHT));
@@ -327,6 +328,7 @@ public class CustomTabIntentDataHolderUnitTest {
                         .setAndroidBrowserHelperVersion(42)
                         .setRequestedWindowFeatures(new WindowFeatures(10, 20, 300, 400))
                         .setIncognitoCctCallerId(IncognitoCctCallerId.DOWNLOAD_HOME)
+                        .setFedCmId(77)
                         .build();
 
         CustomTabIntentDataHolder restored = roundTripThroughParcel(original);
@@ -474,6 +476,16 @@ public class CustomTabIntentDataHolderUnitTest {
         assertEquals(
                 Integer.valueOf(IncognitoCctCallerId.DOWNLOAD_HOME),
                 restored.mIncognitoCctCallerId);
+        assertEquals(Integer.valueOf(77), restored.mFedCmId);
+    }
+
+    @Test
+    public void testParcelRoundTrip_explicitNullOptionalFields() {
+        CustomTabIntentDataHolder original =
+                new CustomTabIntentDataHolder.Builder().setFedCmId(null).build();
+        CustomTabIntentDataHolder restored = roundTripThroughParcel(original);
+
+        assertNull(restored.mFedCmId);
     }
 
     @Test

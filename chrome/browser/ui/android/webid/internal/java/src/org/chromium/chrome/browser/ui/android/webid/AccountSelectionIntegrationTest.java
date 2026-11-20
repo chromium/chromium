@@ -54,7 +54,6 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.blink.mojom.RpContext;
 import org.chromium.blink.mojom.RpMode;
-import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -376,10 +375,10 @@ public class AccountSelectionIntegrationTest extends AccountSelectionIntegration
                 () -> {
                     Criteria.checkThat(activity.getActivityTab(), Matchers.notNullValue());
                     Criteria.checkThat(activity.getActivityTab().getUrl(), is(TEST_URL));
-                    Criteria.checkThat(activity.getIntent(), Matchers.notNullValue());
+                    Criteria.checkThat(activity.getIntentDataProvider(), Matchers.notNullValue());
                     Criteria.checkThat(
-                            activity.getIntent().getIntExtra(IntentHandler.EXTRA_FEDCM_ID, -1),
-                            Matchers.not(-1));
+                            activity.getIntentDataProvider().getFedCmId(),
+                            Matchers.allOf(Matchers.notNullValue(), Matchers.not(-1)));
                 });
 
         ApplicationTestUtils.waitForActivityWithClass(

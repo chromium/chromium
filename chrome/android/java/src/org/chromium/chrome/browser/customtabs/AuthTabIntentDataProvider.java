@@ -129,7 +129,9 @@ public class AuthTabIntentDataProvider extends BrowserServicesIntentDataProvider
                         ? new TintedDrawable(context, mDataHolder.mCloseButtonIcon)
                         : TintedDrawable.constructTintedDrawable(context, R.drawable.btn_close);
 
-        logFeatureUsage(intent, colorScheme);
+        if (dataHolder == null) {
+            logFeatureUsage(intent, colorScheme);
+        }
     }
 
     @Override

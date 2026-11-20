@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.customtabs.features.minimizedcustomtab;
 
-import static org.chromium.build.NullUtil.assertNonNull;
-
 import android.app.AppOpsManager;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -14,12 +12,10 @@ import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.text.TextUtils;
 
-import org.chromium.base.IntentUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.SysUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
 import org.chromium.chrome.browser.flags.ActivityType;
@@ -125,11 +121,8 @@ public class MinimizedFeatureUtils {
 
         boolean isFedCmIntent =
                 intentDataProvider.isTrustedIntent()
-                        && IntentUtils.safeGetIntExtra(
-                                        assertNonNull(intentDataProvider.getIntent()),
-                                        IntentHandler.EXTRA_FEDCM_ID,
-                                        -1)
-                                != -1;
+                        && intentDataProvider.getFedCmId() != null
+                        && intentDataProvider.getFedCmId() != -1;
         if (isFedCmIntent) return false;
 
         boolean isAuthTab = intentDataProvider.isAuthTab();
