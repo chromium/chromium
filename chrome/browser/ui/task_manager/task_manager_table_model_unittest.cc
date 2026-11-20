@@ -8,10 +8,12 @@
 #include <string_view>
 #include <vector>
 
+#include "base/i18n/language_tag.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/l10n/test/scoped_application_locale.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/image/image_skia.h"
@@ -83,6 +85,36 @@ TEST_F(TaskManagerTableModelTest, FormatListToString) {
   tasks.push_back(u"task3");
   EXPECT_TRUE(ContainsSubstringsInOrder(
       TaskManagerTableModel::FormatListToString(tasks), tasks));
+}
+
+// Tests that `FormatListToString()` joins the items with the conjunction list
+// pattern of the current locale.
+TEST_F(TaskManagerTableModelTest, FormatListToStringAcrossLocales) {
+  const std::vector<std::u16string> tasks = {u"task1", u"task2", u"task3"};
+  {
+    ui::test::ScopedApplicationLocale scoped_locale(
+        base::i18n::GetKnownLanguageTag("en-US"));
+    EXPECT_EQ(TaskManagerTableModel::FormatListToString(tasks),
+              u"task1, task2, and task3");
+  }
+  {
+    ui::test::ScopedApplicationLocale scoped_locale(
+        base::i18n::GetKnownLanguageTag("fr"));
+    EXPECT_EQ(TaskManagerTableModel::FormatListToString(tasks),
+              u"task1, task2 et task3");
+  }
+  {
+    ui::test::ScopedApplicationLocale scoped_locale(
+        base::i18n::GetKnownLanguageTag("zh-CN"));
+    EXPECT_EQ(TaskManagerTableModel::FormatListToString(tasks),
+              u"task1、task2和task3");
+  }
+  {
+    ui::test::ScopedApplicationLocale scoped_locale(
+        base::i18n::GetKnownLanguageTag("ar"));
+    EXPECT_EQ(TaskManagerTableModel::FormatListToString(tasks),
+              u"task1 وtask2 وtask3");
+  }
 }
 
 TEST_F(TaskManagerTableModelTest, RasterizeThemedIconRecolorsIllegibleIcon) {

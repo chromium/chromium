@@ -14,13 +14,13 @@
 #include "base/byte_size.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/i18n/icubridge/icu_bridge.h"
+#include "base/i18n/icubridge/list_formatter.h"
 #include "base/i18n/message_formatter.h"
 #include "base/i18n/number_formatting.h"
 #include "base/i18n/rtl.h"
 #include "base/i18n/string_search.h"
 #include "base/i18n/time_formatting.h"
-#include "base/i18n/unicodestring.h"
-#include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/process/process_handle.h"
 #include "base/strings/string_number_conversions.h"
@@ -42,8 +42,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/common/result_codes.h"
-#include "third_party/icu/source/common/unicode/utypes.h"
-#include "third_party/icu/source/i18n/unicode/listformatter.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/table_model_observer.h"
@@ -822,26 +820,9 @@ std::u16string TaskManagerTableModel::GetAXNameForRow(
 
 std::u16string TaskManagerTableModel::FormatListToString(
     base::span<const std::u16string> items) {
-  if (items.empty()) {
-    return std::u16string();
-  }
-
-  std::vector<icu::UnicodeString> strings;
-  strings.reserve(items.size());
-  for (const auto& item : items) {
-    strings.emplace_back(item.data(), item.size());
-  }
-
-  UErrorCode status = U_ZERO_ERROR;
-  const auto formatter =
-      base::WrapUnique(icu::ListFormatter::createInstance(status));
-  CHECK(U_SUCCESS(status));
-
-  icu::UnicodeString formatted;
-  formatter->format(strings.data(), strings.size(), formatted, status);
-  CHECK(U_SUCCESS(status));
-
-  return base::i18n::UnicodeStringToString16(formatted);
+  return base::i18n::IcuBridge::GetInstance()
+      .list_formatter()
+      ->FormatStandardList(items);
 }
 
 void TaskManagerTableModel::GetRowsGroupRange(size_t row_index,
