@@ -20,4 +20,17 @@ message ToolDeclaration {
 
   // JSON Schema specifying the arguments accepted by the tool.
   string parameters_json_schema = 3;
+
+  // How the server should resolve an argument before sending a tool call to
+  // the client.
+  enum ArgumentResolution {
+    ARGUMENT_RESOLUTION_UNSPECIFIED = 0;
+
+    // Converts a synthetic node ID into a {document_id, dom_node_id} object.
+    ARGUMENT_RESOLUTION_DOM_NODE = 1;
+  }
+
+  // Maps parameter names in `parameters_json_schema` to the resolution the
+  // server must perform before sending a tool call to the client.
+  map<string, ArgumentResolution> resolved_arguments = 4;
 }

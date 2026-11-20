@@ -2,16 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-edition = "2023";
+edition = "2024";
 
 package optimization_guide.proto;
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.optimization_guide.features.proto";
 
 import "components/optimization_guide/proto/features/common_quality_data.proto";
 import "components/optimization_guide/proto/features/wire/tool_declaration.proto";
 import "components/optimization_guide/proto/common_types.proto";
 
-option optimize_for = LITE_RUNTIME;
-option java_package = "org.chromium.components.optimization_guide.features.proto";
+import option "google/protobuf/cpp_features.proto";
+
+option features.(pb.cpp).string_type = STRING;
+option features.(pb.cpp).enum_name_uses_string_view = false;
 option objc_class_prefix = "TTC";
 
 // Audio codec format specification.
@@ -58,9 +63,11 @@ message TtcServerFrame {
     // TODO(crbug.com/578715754): interrupted and turn_complete are deprecated in favor
     // of ModelTurnStateUpdate below. Remove once client is updated.
     InterruptionNotice interrupted = 6 [deprecated = true];
+
     TurnComplete turn_complete = 7 [deprecated = true];
 
     JournalEvent journal_event = 9;
+
     ModelTurnStateUpdate model_turn_state_update = 10;
     UserTurnStateUpdate user_turn_state_update = 11;
 
