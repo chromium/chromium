@@ -9,10 +9,6 @@ import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.G
 import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.GoogleBottomBarVariantLayoutType.NO_VARIANT;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.GoogleBottomBarVariantLayoutType.SINGLE_DECKER;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.GoogleBottomBarVariantLayoutType.SINGLE_DECKER_WITH_RIGHT_BUTTONS;
-import static org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.GoogleBottomBarButtonEvent.SEARCHBOX_HOME;
-import static org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.GoogleBottomBarButtonEvent.SEARCHBOX_LENS;
-import static org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.GoogleBottomBarButtonEvent.SEARCHBOX_SEARCH;
-import static org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.GoogleBottomBarButtonEvent.SEARCHBOX_VOICE_SEARCH;
 
 import android.app.Activity;
 import android.content.Context;
@@ -112,22 +108,18 @@ public class GoogleBottomBarViewCreator {
         searchboxView
                 .findViewById(R.id.google_bottom_bar_searchbox_super_g_button)
                 .setOnClickListener(v -> mActionsHandler.onSearchboxHomeTap());
-        GoogleBottomBarLogger.logButtonShown(SEARCHBOX_HOME);
 
         searchboxView
                 .findViewById(R.id.google_bottom_bar_searchbox_hint_text_view)
                 .setOnClickListener(v -> mActionsHandler.onSearchboxHintTextTap());
-        GoogleBottomBarLogger.logButtonShown(SEARCHBOX_SEARCH);
 
         searchboxView
                 .findViewById(R.id.google_bottom_bar_searchbox_mic_button)
                 .setOnClickListener(v -> mActionsHandler.onSearchboxMicTap());
-        GoogleBottomBarLogger.logButtonShown(SEARCHBOX_VOICE_SEARCH);
 
         searchboxView
                 .findViewById(R.id.google_bottom_bar_searchbox_lens_button)
                 .setOnClickListener(v -> mActionsHandler.onSearchboxLensTap(v));
-        GoogleBottomBarLogger.logButtonShown(SEARCHBOX_LENS);
 
         return searchboxView;
     }
@@ -207,16 +199,6 @@ public class GoogleBottomBarViewCreator {
             return false;
         }
         return updateButton(button, buttonConfig, /* isFirstTimeShown= */ false);
-    }
-
-    void logButtons() {
-        for (ButtonConfig buttonConfig : mConfig.getButtonList()) {
-            View button = mRootView.findViewById(buttonConfig.getId());
-            if (button != null) {
-                int buttonEvent = GoogleBottomBarLogger.getGoogleBottomBarButtonEvent(buttonConfig);
-                GoogleBottomBarLogger.logButtonShown(buttonEvent);
-            }
-        }
     }
 
     private @Nullable ButtonConfig findButtonConfig(@ButtonId int buttonId) {

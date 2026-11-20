@@ -499,10 +499,6 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
     public void onFinishNativeInitialization() {
         super.onFinishNativeInitialization();
 
-        mGoogleBottomBarCoordinator = getGoogleBottomBarCoordinator();
-        if (mGoogleBottomBarCoordinator != null) {
-            mGoogleBottomBarCoordinator.onFinishNativeInitialization();
-        }
         new OneShotCallback<>(
                 mProfileSupplier,
                 mCallbackController.makeCancelable(

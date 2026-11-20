@@ -42,8 +42,6 @@ public class GoogleBottomBarCoordinator {
     private final Context mContext;
     private final GoogleBottomBarViewCreator mGoogleBottomBarViewCreator;
 
-    private boolean mHasNativeInitializationFinished;
-
     /**
      * Constructor.
      *
@@ -109,30 +107,12 @@ public class GoogleBottomBarCoordinator {
     }
 
     /**
-     * Indicates the completion of native initialization processes.
-     *
-     * <p>This method is called when the native components necessary for the operation of Google
-     * Bottom Bar View have finished their initialization.
-     */
-    public void onFinishNativeInitialization() {
-        // TODO(b/345129005): Clean this stuff up.
-        if (!mHasNativeInitializationFinished) {
-            mHasNativeInitializationFinished = true;
-            mGoogleBottomBarViewCreator.logButtons();
-        }
-    }
-
-    /**
      * Stores default search engine information.
      *
      * @param originalProfile The profile to check for default search engine information.
      */
     public void initDefaultSearchEngine(Profile originalProfile) {
         BottomBarConfigCreator.initDefaultSearchEngine(originalProfile);
-    }
-
-    GoogleBottomBarViewCreator getGoogleBottomBarViewCreatorForTesting() {
-        return mGoogleBottomBarViewCreator;
     }
 
     private BottomBarConfig getBottomBarConfig(

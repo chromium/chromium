@@ -7,25 +7,19 @@ package org.chromium.chrome.browser.ui.google_bottom_bar;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.sCctGoogleBottomBarVariantLayoutsGoogleDseCheckEnabled;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.IS_CHROME_DEFAULT_SEARCH_ENGINE_GOOGLE;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonId.CUSTOM;
-import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonId.HOME;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonId.PIH_BASIC;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonId.SAVE;
-import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonId.SEARCH;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonId.SHARE;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfigCreator.CUSTOM_BUTTON_PARAM_ID_TO_BUTTON_ID_MAP;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.BOTTOM_BAR_CREATED_HISTOGRAM;
-import static org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.BUTTON_SHOWN_HISTOGRAM;
 
 import android.app.Activity;
-import android.app.PendingIntent;
-import android.graphics.drawable.Drawable;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
@@ -48,8 +42,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonId;
-import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.GoogleBottomBarButtonEvent;
 import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.GoogleBottomBarCreatedEvent;
 import org.chromium.chrome.browser.ui.google_bottom_bar.proto.IntentParams.GoogleBottomBarIntentParams;
 import org.chromium.chrome.browser.ui.google_bottom_bar.proto.IntentParams.GoogleBottomBarIntentParams.VariantLayoutType;
@@ -58,16 +50,12 @@ import org.chromium.ui.base.TestActivity;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
 
 /** Unit tests for {@link GoogleBottomBarCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class GoogleBottomBarCoordinatorTest {
-
-    private static final Map<Integer, Integer> BUTTON_ID_TO_CUSTOM_BUTTON_ID_MAP =
-            Map.of(SAVE, 100, SHARE, 101, PIH_BASIC, 103, CUSTOM, 105, SEARCH, 106, HOME, 107);
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -133,50 +121,6 @@ public class GoogleBottomBarCoordinatorTest {
                 createGoogleBottomBarCoordinator(
                         List.of(PIH_BASIC, PIH_BASIC, SHARE, SAVE), new ArrayList<>());
         mGoogleBottomBarCoordinator.createGoogleBottomBarView();
-
-        histogramWatcher.assertExpected();
-        histogramWatcher.close();
-    }
-
-    @Test
-    public void testLogButtons_beforeOnNativeInitialization_logsUnknownButton() {
-        HistogramWatcher histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecords(
-                                BUTTON_SHOWN_HISTOGRAM,
-                                GoogleBottomBarButtonEvent.UNKNOWN,
-                                GoogleBottomBarButtonEvent.SHARE_CHROME,
-                                GoogleBottomBarButtonEvent.SAVE_DISABLED)
-                        .build();
-        mGoogleBottomBarCoordinator =
-                createGoogleBottomBarCoordinator(
-                        List.of(PIH_BASIC, PIH_BASIC, SHARE, SAVE), new ArrayList<>());
-        mGoogleBottomBarCoordinator.createGoogleBottomBarView();
-
-        mGoogleBottomBarCoordinator.getGoogleBottomBarViewCreatorForTesting().logButtons();
-
-        histogramWatcher.assertExpected();
-        histogramWatcher.close();
-    }
-
-    @Test
-    public void
-            testOnFinishNativeInitialization_pageInsightsSupplierIsNotPresent_logsPageInsightsEmbedder() {
-        HistogramWatcher histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecords(
-                                BUTTON_SHOWN_HISTOGRAM,
-                                GoogleBottomBarButtonEvent.PIH_EMBEDDER,
-                                GoogleBottomBarButtonEvent.SHARE_CHROME,
-                                GoogleBottomBarButtonEvent.SAVE_DISABLED)
-                        .build();
-        mGoogleBottomBarCoordinator =
-                createGoogleBottomBarCoordinator(
-                        List.of(PIH_BASIC, PIH_BASIC, SHARE, SAVE),
-                        List.of(getMockCustomButtonParams(PIH_BASIC)));
-        mGoogleBottomBarCoordinator.createGoogleBottomBarView();
-
-        mGoogleBottomBarCoordinator.onFinishNativeInitialization();
 
         histogramWatcher.assertExpected();
         histogramWatcher.close();
@@ -374,19 +318,5 @@ public class GoogleBottomBarCoordinatorTest {
                 mShareDelegateSupplier,
                 googleBottomBarIntentParams,
                 customButtonParamsList);
-    }
-
-    private CustomButtonParams getMockCustomButtonParams(@ButtonId int buttonId) {
-        CustomButtonParams customButtonParams = mock(CustomButtonParams.class);
-        Drawable drawable = mock(Drawable.class);
-        when(drawable.mutate()).thenReturn(drawable);
-
-        when(customButtonParams.getId())
-                .thenReturn(BUTTON_ID_TO_CUSTOM_BUTTON_ID_MAP.get(buttonId));
-        when(customButtonParams.getIcon(mActivity)).thenReturn(drawable);
-        when(customButtonParams.getDescription()).thenReturn("Description");
-        when(customButtonParams.getPendingIntent()).thenReturn(mock(PendingIntent.class));
-
-        return customButtonParams;
     }
 }
