@@ -143,7 +143,7 @@ public class NtpBackgroundDataThemeCollection extends NtpBackgroundDataImageBase
     }
 
     @Override
-    public boolean hasSameAppearance(@Nullable NtpBackgroundDataBase other) {
+    public boolean isIdentical(@Nullable NtpBackgroundDataBase other) {
         // Two backgrounds look the same only if they are the same theme and show the same image
         // with the same color. With daily refresh, one collection shows different images over
         // time, and those look different.

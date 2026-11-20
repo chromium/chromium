@@ -155,14 +155,14 @@ public class NtpBackgroundDataThemeCollectionUnitTest {
         // The device the image came from is not part of the theme identity.
         assertEquals(data1, dataFromDesktop);
         assertEquals(data1.hashCode(), dataFromDesktop.hashCode());
-        assertTrue(data1.hasSameAppearance(dataFromDesktop));
+        assertTrue(data1.isIdentical(dataFromDesktop));
 
-        // hasSameAppearance() additionally requires primaryColor to match.
-        assertTrue(data1.hasSameAppearance(data2));
-        assertTrue(data1.hasSameAppearance(data4));
-        assertFalse(data1.hasSameAppearance(data3));
-        assertFalse(data1.hasSameAppearance(dataNullColor));
-        assertFalse(data1.hasSameAppearance(dataOtherCollection));
+        // isIdentical() additionally requires primaryColor to match.
+        assertTrue(data1.isIdentical(data2));
+        assertTrue(data1.isIdentical(data4));
+        assertFalse(data1.isIdentical(data3));
+        assertFalse(data1.isIdentical(dataNullColor));
+        assertFalse(data1.isIdentical(dataOtherCollection));
 
         // isBitmapSaved should not affect equality.
         data1.setIsBitmapSaved(/* isBitmapSaved= */ true);
@@ -208,8 +208,8 @@ public class NtpBackgroundDataThemeCollectionUnitTest {
                 noColor.isSameThemeAcrossDevices(
                         new NtpBackgroundDataBase(PlatformType.ANDROID, "default")));
 
-        // Unlike isSameThemeAcrossDevices(), hasSameAppearance() is strict about null.
-        assertFalse(red.hasSameAppearance(noColor));
+        // Unlike isSameThemeAcrossDevices(), isIdentical() is strict about null.
+        assertFalse(red.isIdentical(noColor));
     }
 
     @Test
@@ -234,7 +234,7 @@ public class NtpBackgroundDataThemeCollectionUnitTest {
     }
 
     @Test
-    public void testHasSameAppearance_dailyRefresh() {
+    public void testIsIdentical_dailyRefresh() {
         NtpBackgroundDataThemeCollection red =
                 createThemeCollection(
                         createDailyRefreshInfo(JUnitTestGURLs.URL_1, TEST_COLLECTION_ID),
@@ -242,19 +242,19 @@ public class NtpBackgroundDataThemeCollectionUnitTest {
 
         // Another image of the collection looks different.
         assertFalse(
-                red.hasSameAppearance(
+                red.isIdentical(
                         createThemeCollection(
                                 createDailyRefreshInfo(JUnitTestGURLs.URL_2, TEST_COLLECTION_ID),
                                 Color.RED)));
         // The same image with another color looks different.
         assertFalse(
-                red.hasSameAppearance(
+                red.isIdentical(
                         createThemeCollection(
                                 createDailyRefreshInfo(JUnitTestGURLs.URL_1, TEST_COLLECTION_ID),
                                 Color.BLUE)));
         // The same image with the same color looks the same.
         assertTrue(
-                red.hasSameAppearance(
+                red.isIdentical(
                         createThemeCollection(
                                 createDailyRefreshInfo(JUnitTestGURLs.URL_1, TEST_COLLECTION_ID),
                                 Color.RED)));

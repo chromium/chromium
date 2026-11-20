@@ -517,7 +517,7 @@ public class NtpThemeSyncHistoryCoordinator {
      * @return True if the activity should be recreated, false otherwise.
      */
     private boolean shouldRecreateActivity(NtpBackgroundDataBase backgroundData) {
-        return !backgroundData.hasSameAppearance(mInitiallySelectedNtpBackgroundData);
+        return !backgroundData.isIdentical(mInitiallySelectedNtpBackgroundData);
     }
 
     /** Cleans up resources and references when the coordinator is destroyed. */

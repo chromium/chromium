@@ -1653,8 +1653,7 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
                 && themeToApply.getPlatformType() == PlatformType.ANDROID
                 && ((themeToApply instanceof NtpBackgroundDataImageBase imageBase
                                 && imageBase.getBitmap() == null)
-                        || themeToApply.hasSameAppearance(
-                                configManager.getSyncedNtpBackgroundData()))) {
+                        || themeToApply.isIdentical(configManager.getSyncedNtpBackgroundData()))) {
             // Promoting a staged incoming Android theme (or an un-downloaded Android image):
             // maybeApplyBackgroundUpdateFromDeviceSync checks for mismatch, promotes
             // mSyncedNtpBackgroundData with shouldNotifyThemeSyncObserver=false (avoiding echoing

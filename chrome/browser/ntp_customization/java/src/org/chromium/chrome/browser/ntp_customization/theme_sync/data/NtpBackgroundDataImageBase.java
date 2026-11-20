@@ -35,7 +35,7 @@ public abstract class NtpBackgroundDataImageBase extends NtpBackgroundDataBase {
     // The primary seed color of this background. NtpBackgroundDataThemeCollection#equals leaves it
     // out, so that a theme collection entry keeps its identity when the color is lazily computed
     // or updated from sync, whereas NtpBackgroundDataUploadImage#equals compares it. Use
-    // #hasSameAppearance to tell whether the color has changed.
+    // #isIdentical to tell whether the color has changed.
     private @Nullable @ColorInt Integer mPrimaryColor;
 
     /**

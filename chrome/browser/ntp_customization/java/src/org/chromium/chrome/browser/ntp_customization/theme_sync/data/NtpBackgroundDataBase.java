@@ -32,18 +32,18 @@ import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBa
  *       colors. This decides whether the bitmap and the image file of one fit the other. Two theme
  *       collection backgrounds with the same image URL show the same image, even if they are
  *       different themes.
- *   <li>{@link #hasSameAppearance}: they look the same right now. This decides whether applying a
- *       theme changes what the user sees.
+ *   <li>{@link #isIdentical}: they are the same theme and show the same image and color right now.
+ *       This decides whether applying a theme changes what the user sees.
  * </ul>
  *
- * <p>What each one compares on top of the background type. The ...AcrossDevices and ...Appearance
+ * <p>What each one compares on top of the background type. The ...AcrossDevices and isIdentical
  * columns list what the method compares in addition to {@link #equals}. The hasSameImage column
  * lists everything it compares. "Setting" is whether daily refresh is enabled, "color" is the
  * primary color, and "+ daily refresh" is the background above with daily refresh enabled:
  *
  * <pre>
- * Background       | equals                     | ...AcrossDevices   | hasSameImage | ...Appearance
- * -----------------+----------------------------+--------------------+--------------+--------------
+ * Background       | equals                     | ...AcrossDevices   | hasSameImage | isIdentical
+ * -----------------+----------------------------+--------------------+--------------+------------
  * Default          | nothing                    | nothing            | not an image | nothing
  * Chrome color     | setting, color ID          | nothing            | not an image | nothing
  *  + daily refresh | setting                    | nothing            | not an image | color ID
@@ -150,11 +150,11 @@ public class NtpBackgroundDataBase {
     }
 
     /**
-     * Returns whether {@code other} is the same theme and looks the same right now (see the class
-     * comment). Callers use it to decide whether applying a theme changes what the user sees, e.g.
-     * whether to recreate the activity.
+     * Returns whether {@code other} is the same theme and shows the same image and color (see the
+     * class comment). Callers use it to decide whether applying a theme changes what the user sees,
+     * e.g. whether to recreate the activity.
      */
-    public boolean hasSameAppearance(@Nullable NtpBackgroundDataBase other) {
+    public boolean isIdentical(@Nullable NtpBackgroundDataBase other) {
         return equals(other);
     }
 
