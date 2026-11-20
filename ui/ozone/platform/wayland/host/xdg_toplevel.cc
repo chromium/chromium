@@ -14,6 +14,7 @@
 #include "base/bit_cast.h"
 #include "base/logging.h"
 #include "base/notimplemented.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/hit_test.h"
@@ -164,13 +165,16 @@ void XdgToplevel::SetTitle(const std::u16string& title) {
   // upon calling xdg_toplevel_set_title(), which results in a fatal Wayland
   // communication error and termination of the process.  4096 bytes is the
   // limit for the size of the entire message; here we set 4000 as the maximum
-  // length of the string so it would fit the message with some margin.
-  const size_t kMaxLengh = 4000;
-  auto short_title = base::UTF16ToUTF8(title);
-  if (short_title.size() > kMaxLengh) {
-    short_title.resize(kMaxLengh);
+  // length of the string so it would fit the message with some margin.  The
+  // string is truncated at a character boundary because compositors may reject
+  // titles that are not valid UTF-8.
+  constexpr size_t kMaxLength = 4000;
+  std::string utf8_title = base::UTF16ToUTF8(title);
+  if (utf8_title.size() > kMaxLength) {
+    utf8_title.resize(
+        base::TruncateUTF8ToByteSize(utf8_title, kMaxLength).size());
   }
-  xdg_toplevel_set_title(xdg_toplevel_.get(), short_title.c_str());
+  xdg_toplevel_set_title(xdg_toplevel_.get(), utf8_title.c_str());
 }
 
 void XdgToplevel::SetWindowGeometry(const gfx::Rect& bounds) {

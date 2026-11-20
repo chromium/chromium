@@ -23,6 +23,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/nix/xdg_util.h"
 #include "base/run_loop.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
@@ -517,6 +518,21 @@ TEST_P(WaylandWindowTest, SetTitle) {
     auto* surface = server->GetObject<wl::MockSurface>(id);
     ASSERT_TRUE(surface);
     EXPECT_EQ("hello", surface->xdg_surface()->xdg_toplevel()->title());
+  });
+}
+
+// Long titles are truncated, and the truncation must not split a multi-byte
+// UTF-8 sequence, since compositors reject titles that are not valid UTF-8.
+TEST_P(WaylandWindowTest, SetLongTitleTruncatesAtCharacterBoundary) {
+  // 3999 ASCII bytes followed by U+1EBF, which is 3 bytes in UTF-8 and
+  // straddles the 4000-byte limit.
+  window_->SetTitle(std::u16string(3999, u'a') + u"\u1EBF");
+  PostToServerAndWait([id = surface_id_](wl::TestWaylandServerThread* server) {
+    auto* surface = server->GetObject<wl::MockSurface>(id);
+    ASSERT_TRUE(surface);
+    const std::string& title = surface->xdg_surface()->xdg_toplevel()->title();
+    EXPECT_TRUE(base::IsStringUTF8(title));
+    EXPECT_EQ(std::string(3999, 'a'), title);
   });
 }
 
