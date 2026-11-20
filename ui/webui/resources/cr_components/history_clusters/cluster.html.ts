@@ -12,8 +12,7 @@ export function getHtml(this: ClusterElement) {
     @open-all-visits="${this.onOpenAllVisits_}"
     @hide-all-visits="${this.onHideAllVisits_}"
     @remove-all-visits="${this.onRemoveAllVisits_}"
-    @hide-visit="${this.onHideVisit_}"
-    @remove-visit="${this.onRemoveVisit_}">
+    @hide-visit="${this.onHideVisit_}" @remove-visit="${this.onRemoveVisit_}">
   <div class="label-row">
     <span id="label" class="truncate"></span>
     <img is="cr-auto-img" auto-src="${this.imageUrl_}">
@@ -23,21 +22,23 @@ export function getHtml(this: ClusterElement) {
       <cluster-menu></cluster-menu>
     </div>
   </div>
-  ${this.visits_().map(item => html`<url-visit .visit="${item}"
-      .query="${this.query}"
-      .fromPersistence="${this.cluster!.fromPersistence}">
-    </url-visit>`)}
+  ${this.visits_().map(item => html`
+    <url-visit .visit="${item}" .query="${this.query}"
+        .fromPersistence="${this.cluster!.fromPersistence}">
+    </url-visit>
+  `)}
   <div id="related-searches-divider" ?hidden="${this.hideRelatedSearches_()}">
   </div>
   <horizontal-carousel id="related-searches"
-      ?hidden="${this.hideRelatedSearches_()}"
-      role="list" aria-label="${this.i18n('relatedSearchesHeader')}"
+      ?hidden="${this.hideRelatedSearches_()}" role="list"
+      aria-label="${this.i18n('relatedSearchesHeader')}"
       @related-search-clicked="${this.onRelatedSearchClicked_}"
       @pointerdown="${this.onHorizontalCarouselPointerdown_}"
       ?in-side-panel="${this.inSidePanel}">
-    ${this.relatedSearches_.map((item, index) => html`<search-query
-        .searchQuery="${item}" .index="${index}" role="listitem">
-      </search-query>`)}
+    ${this.relatedSearches_.map((item, index) => html`
+      <search-query .searchQuery="${item}" .index="${index}" role="listitem">
+      </search-query>
+    `)}
   </horizontal-carousel>
 </div>`;
 }

@@ -17,14 +17,15 @@ export function getHtml(this: UrlVisitElement) {
     <div id="page-info">
       <div id="title-and-annotations">
         <span id="title" class="truncate"></span>
-        ${
-      this.computeAnnotations_().map(
-          item => html`<span class="annotation">${item}</span>`)}
+        ${this.computeAnnotations_().map(item => html`
+          <span class="annotation">${item}</span>
+        `)}
       </div>
       <span id="url" class="truncate"
           title="${this.inSidePanel_ && this.visit ?
               this.visit.urlForDisplay :
-              nothing}"></span>
+              nothing}">
+      </span>
       <span id="debug-info" ?hidden="${!this.computeDebugInfo_()}">
         ${this.computeDebugInfo_()}
       </span>
@@ -34,7 +35,8 @@ export function getHtml(this: UrlVisitElement) {
     <cr-icon-button class="hide-visit-icon"
         title="${this.i18n('hideFromCluster')}"
         @click="${this.onHideSelfButtonClick_}"
-        ?hidden="${!this.fromPersistence}"></cr-icon-button>
+        ?hidden="${!this.fromPersistence}">
+    </cr-icon-button>
     <cr-icon-button id="actionMenuButton" class="icon-more-vert"
         title="${this.i18n('actionMenuDescription')}" aria-haspopup="menu"
         @click="${this.onActionMenuButtonClick_}"
@@ -43,15 +45,14 @@ export function getHtml(this: UrlVisitElement) {
   </div>
 </div>
 
-${
-      this.renderActionMenu_ ? html`
-    <cr-action-menu auto-close-on-focusout
-        role-description="${this.i18n('actionMenuDescription')}">
-      <button id="removeSelfButton" class="dropdown-item"
-          ?hidden="${!this.allowDeletingHistory_}"
-          @click="${this.onRemoveSelfButtonClick_}">
-        ${this.i18n('removeFromHistory')}
-      </button>
-    </cr-action-menu>` :
-                               ''}`;
+${this.renderActionMenu_ ? html`
+  <cr-action-menu auto-close-on-focusout
+      role-description="${this.i18n('actionMenuDescription')}">
+    <button id="removeSelfButton" class="dropdown-item"
+        ?hidden="${!this.allowDeletingHistory_}"
+        @click="${this.onRemoveSelfButtonClick_}">
+      ${this.i18n('removeFromHistory')}
+    </button>
+  </cr-action-menu>
+` : ''}`;
 }

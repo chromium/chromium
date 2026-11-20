@@ -9,7 +9,6 @@ import {KeywordType} from '//resources/mojo/components/omnibox/browser/searchbox
 import type {SearchboxMatchElement} from './searchbox_match.js';
 
 export function getHtml(this: SearchboxMatchElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <div class="container">
   <div class="aria-hidden-container" aria-hidden="true">
@@ -19,16 +18,17 @@ export function getHtml(this: SearchboxMatchElement) {
       <span id="tail-suggest-prefix" ?hidden="${!this.tailSuggestPrefix_}">
         <span id="prefix">${this.tailSuggestPrefix_}</span>
         <!-- This is equivalent to AutocompleteMatch::kEllipsis which is
-            prepended to the match content in other surfaces-->
+             prepended to the match content in other surfaces-->
         <span id="ellipsis">...&nbsp;</span>
       </span>
       <!-- When a thumbnail is in the searchbox all results should have an
-          ellipsis prepended to the suggestion. -->
+           ellipsis prepended to the suggestion. -->
       <span id="ellipsis" ?hidden="${!this.showEllipsis}">...&nbsp;</span>
       <span id="suggestion">
         <span id="primaryText" .innerHTML="${this.primaryTextHtml_}"></span>
-        <span id="separator"
-            class="suggest-hint-text">${this.separatorText_}</span>
+        <span id="separator" class="suggest-hint-text"><!--
+          -->${this.separatorText_}<!--
+        --></span>
         <span id="secondaryText" .innerHTML="${this.secondaryTextHtml_}"
             ?has-icon="${!!this.match.descriptionIconPath}"
             style="--description-icon: url(${
@@ -40,8 +40,7 @@ export function getHtml(this: SearchboxMatchElement) {
 
   ${this.match.keywordModel?.type === KeywordType.kChip ? html`
     <div id="actions-focus-border">
-      <cr-searchbox-action id="keyword"
-          class="${this.getKeywordCssClass_()}"
+      <cr-searchbox-action id="keyword" class="${this.getKeywordCssClass_()}"
           hint="${this.match.keywordModel.chipHint}"
           icon-path="//resources/images/icon_search.svg"
           aria-label="${this.match.keywordModel.chipA11y}"
@@ -54,13 +53,10 @@ export function getHtml(this: SearchboxMatchElement) {
     ${this.match.actions.map((item, index) => html`
       <div id="actions-focus-border">
         <cr-searchbox-action id="action"
-            class="${this.getActionCssClass_(index)}"
-            hint="${item.hint}"
+            class="${this.getActionCssClass_(index)}" hint="${item.hint}"
             suggestion-contents="${item.suggestionContents}"
-            icon-path="${item.iconPath}"
-            aria-label="${item.a11yLabel}"
-            action-index="${index}"
-            @execute-action="${this.onExecuteAction_}"
+            icon-path="${item.iconPath}" aria-label="${item.a11yLabel}"
+            action-index="${index}" @execute-action="${this.onExecuteAction_}"
             tabindex="${this.virtualFocusEnabled ? -1 : 2}">
         </cr-searchbox-action>
       </div>
@@ -77,9 +73,9 @@ export function getHtml(this: SearchboxMatchElement) {
   </cr-icon-button>
   ${this.getActionIconClass_() ? html`
     <div id="actionIcon" class="${this.getActionIconClass_()}"
-        aria-hidden="true"></div>
+        aria-hidden="true">
+    </div>
   ` : ''}
 </div>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

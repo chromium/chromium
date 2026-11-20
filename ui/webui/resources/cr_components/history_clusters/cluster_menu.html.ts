@@ -13,22 +13,22 @@ export function getHtml(this: ClusterMenuElement) {
     @click="${this.onActionMenuButtonClick_}">
 </cr-icon-button>
 
-${
-      this.renderActionMenu_ ? html`<cr-action-menu auto-close-on-focusout
-          role-description="${this.i18n('actionMenuDescription')}">
-  <button id="openAllButton" class="dropdown-item"
-      @click="${this.onOpenAllButtonClick_}">
-    ${this.i18n('openAllInTabGroup')}
-  </button>
-  <button id="hideAllButton" class="dropdown-item"
-      @click="${this.onHideAllButtonClick_}">
-    ${this.i18n('hideAllVisits')}
-  </button>
-  <button id="removeAllButton" class="dropdown-item"
-      @click="${this.onRemoveAllButtonClick_}"
-      ?hidden="${!this.allowDeletingHistory_}">
-    ${this.i18n('removeAllFromHistory')}
-  </button>
-</cr-action-menu>` :
-                               ''}`;
+${this.renderActionMenu_ ? html`
+  <cr-action-menu auto-close-on-focusout
+      role-description="${this.i18n('actionMenuDescription')}">
+    <button id="openAllButton" class="dropdown-item"
+        @click="${this.onOpenAllButtonClick_}">
+      ${this.i18n('openAllInTabGroup')}
+    </button>
+    <button id="hideAllButton" class="dropdown-item"
+        @click="${this.onHideAllButtonClick_}">
+      ${this.i18n('hideAllVisits')}
+    </button>
+    <button id="removeAllButton" class="dropdown-item"
+        @click="${this.onRemoveAllButtonClick_}"
+        ?hidden="${!this.allowDeletingHistory_}">
+      ${this.i18n('removeAllFromHistory')}
+    </button>
+  </cr-action-menu>
+` : ''}`;
 }

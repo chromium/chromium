@@ -8,7 +8,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {SearchboxThumbnailElement} from './searchbox_thumbnail.js';
 
 export function getHtml(this: SearchboxThumbnailElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <div id="container" aria-hidden="true">
   <img id="image" src="${resolveSchemeRelativeUrl(this.thumbnailUrl)}">
@@ -21,5 +20,4 @@ export function getHtml(this: SearchboxThumbnailElement) {
   </div>
 </div>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

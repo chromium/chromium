@@ -7,43 +7,38 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {SearchboxDropdownElement} from './searchbox_dropdown.js';
 
 export function getHtml(this: SearchboxDropdownElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <div id="content" part="dropdown-content">
-${this.sideTypes_().map(sideType => html`
-  <div class="${this.sideTypeClass_(sideType)}">
-    ${this.groupIdsForSideType_(sideType).map(groupId => html`
-      ${this.hasHeaderForGroup_(groupId) ? html`
-        <!-- Header cannot be tabbed into but gets focus when clicked. This
-            stops the dropdown from losing focus and closing as a result. -->
-        <h3 class="header" data-id="${groupId}" tabindex="-1"
-            id="hg_${groupId}"
-            @mousedown="${this.onHeaderMousedown_}">
+  ${this.sideTypes_().map(sideType => html`
+    <div class="${this.sideTypeClass_(sideType)}">
+      ${this.groupIdsForSideType_(sideType).map(groupId => html`
+        ${this.hasHeaderForGroup_(groupId) ? html`
+          <!-- Header cannot be tabbed into but gets focus when clicked. This
+               stops the dropdown from losing focus and closing as a result. -->
+          <h3 class="header" data-id="${groupId}" tabindex="-1"
+              id="hg_${groupId}" @mousedown="${this.onHeaderMousedown_}">
             <span class="text">${this.headerForGroup_(groupId)}</span>
-        </h3>
-      ` : ''}
-      <div class="matches ${this.renderTypeClassForGroup_(groupId)}">
-      ${this.matchesForGroup_(groupId).map(match => html`
-        <cr-searchbox-match
-            id="match-${this.matchIndex_(match)}"
-            .selection="${this.selection}"
-            .virtualFocusEnabled="${this.virtualFocusEnabled}"
-            tabindex="${this.virtualFocusEnabled ? -1 : 0}"
-            role="option"
-            aria-describedby="${this.getAriaDescribedByForGroup_(groupId)}"
-            .match="${match}" match-index="${this.matchIndex_(match)}"
-            .resultSequenceId="${this.result!.sequenceId}"
-            side-type="${sideType}"
-            ?selected="${this.isSelected_(match)}"
-            ?show-thumbnail="${this.showThumbnail}"
-            ?duplicate-description="${this.hasDuplicateDescription_(match)}">
-        </cr-searchbox-match>
+          </h3>
+        ` : ''}
+        <div class="matches ${this.renderTypeClassForGroup_(groupId)}">
+          ${this.matchesForGroup_(groupId).map(match => html`
+            <cr-searchbox-match id="match-${this.matchIndex_(match)}"
+                .selection="${this.selection}"
+                .virtualFocusEnabled="${this.virtualFocusEnabled}"
+                tabindex="${this.virtualFocusEnabled ? -1 : 0}" role="option"
+                aria-describedby="${this.getAriaDescribedByForGroup_(groupId)}"
+                .match="${match}" match-index="${this.matchIndex_(match)}"
+                .resultSequenceId="${this.result!.sequenceId}"
+                side-type="${sideType}" ?selected="${this.isSelected_(match)}"
+                ?show-thumbnail="${this.showThumbnail}"
+                ?duplicate-description="${
+                    this.hasDuplicateDescription_(match)}">
+            </cr-searchbox-match>
+          `)}
+        </div>
       `)}
-      </div>
-    `)}
-  </div>
-`)}
+    </div>
+  `)}
 </div>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

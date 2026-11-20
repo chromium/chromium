@@ -8,14 +8,9 @@ import type {RecordingWaveElement} from './recording_wave.js';
 import {BAR_GAP} from './recording_wave.js';
 
 export function getHtml(this: RecordingWaveElement) {
-  //clang-format off
   return html`<!--_html_template_start_-->
-    <div class="wave-wrapper">
-      <div
-        id="barsContainer"
-        style="gap: ${BAR_GAP}px">
-      </div>
-    </div>
-  <!--_html_template_end_-->`;
-  //clang-format on
+<div class="wave-wrapper">
+  <div id="barsContainer" style="gap: ${BAR_GAP}px"></div>
+</div>
+<!--_html_template_end_-->`;
 }

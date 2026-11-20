@@ -21,55 +21,53 @@ export function getHtml(this: AudioWaveElement) {
    *    for varying blurs and positioning for nuanced diffused glow.
    * Use section: applies the mask to the image.
    */
-  //clang-format off
   return html`<!--_html_template_start_-->
-    <div id="eclipseSvgWrapper" class="eclipse-svg-wrapper">
-      <svg id="eclipseSvg" class="eclipse-svg" width="100%" height="100%">
-        <defs>
-          <linearGradient id="fadeEnds" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stop-color="black" />
-            <stop offset="13%" stop-color="white" />
-            <stop offset="87%" stop-color="white" />
-            <stop offset="100%" stop-color="black" />
-          </linearGradient>
+<div id="eclipseSvgWrapper" class="eclipse-svg-wrapper">
+  <svg id="eclipseSvg" class="eclipse-svg" width="100%" height="100%">
+    <defs>
+      <linearGradient id="fadeEnds" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="black"></stop>
+        <stop offset="13%" stop-color="white"></stop>
+        <stop offset="87%" stop-color="white"></stop>
+        <stop offset="100%" stop-color="black"></stop>
+      </linearGradient>
 
-          <filter id="lowerBlur" x="-20%" y="0%" width="140%" height="400%">
-            <feGaussianBlur in="SourceGraphic" stdDeviation="15" />
-          </filter>
+      <filter id="lowerBlur" x="-20%" y="0%" width="140%" height="400%">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="15"></feGaussianBlur>
+      </filter>
 
-          <clipPath id="clipPath">
-            <path id="clipPathShape" />
-          </clipPath>
+      <clipPath id="clipPath">
+        <path id="clipPathShape"></path>
+      </clipPath>
 
-          <path id="thinPath" />
-          <path id="lowerGlowPath" />
+      <path id="thinPath"></path>
+      <path id="lowerGlowPath"></path>
 
-          <mask id="mask">
-            <use href="#thinPath" fill="url(#fadeEnds)" />
-            <g clip-path="url(#clipPath)" filter="url(#lowerBlur)">
-              <use href="#lowerGlowPath"
-                   fill="white" opacity=".35" transform="scale(1, 1.5)" />
-              <use href="#lowerGlowPath"
-                   fill="white" opacity="0.0875" transform="scale(1, 4.125)" />
-              <use href="#lowerGlowPath"
-                   fill="white" opacity="0.0525" transform="scale(1, 6)" />
-            </g>
-          </mask>
-        </defs>
-
-        <use href="#lowerGlowPath" class="eclipse-solid-fill" />
-        <g mask="url(#mask)">
-          <g class="blurred-rects-outer">
-            <image
-                href="${resolveSchemeRelativeUrl(blurredRectUrl)}"
-                id="blurredRects"
-                class="blurred-rects"
-                transform="scale(10)"
-            />
-          </g>
+      <mask id="mask">
+        <use href="#thinPath" fill="url(#fadeEnds)"></use>
+        <g clip-path="url(#clipPath)" filter="url(#lowerBlur)">
+          <use href="#lowerGlowPath" fill="white" opacity=".35"
+              transform="scale(1, 1.5)">
+          </use>
+          <use href="#lowerGlowPath" fill="white" opacity="0.0875"
+              transform="scale(1, 4.125)">
+          </use>
+          <use href="#lowerGlowPath" fill="white" opacity="0.0525"
+              transform="scale(1, 6)">
+          </use>
         </g>
-      </svg>
-    </div>
-  <!--_html_template_end_-->`;
-  //clang-format on
+      </mask>
+    </defs>
+
+    <use href="#lowerGlowPath" class="eclipse-solid-fill"></use>
+    <g mask="url(#mask)">
+      <g class="blurred-rects-outer">
+        <image href="${resolveSchemeRelativeUrl(blurredRectUrl)}"
+            id="blurredRects" class="blurred-rects" transform="scale(10)">
+        </image>
+      </g>
+    </g>
+  </svg>
+</div>
+<!--_html_template_end_-->`;
 }

@@ -8,7 +8,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {SearchboxIconElement} from './searchbox_icon.js';
 
 export function getHtml(this: SearchboxIconElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <div id="container" aria-hidden="true"
     style="--container-bg-color:${this.getContainerBgColor_()};">
@@ -20,12 +19,10 @@ export function getHtml(this: SearchboxIconElement) {
     <div id="icon" style="-webkit-mask-image: ${this.maskImage};"
         ?hidden="${this.showFaviconImage_}">
     </div>
-    <div id="faviconImageContainer"
-        ?hidden="${!this.showFaviconImage_}">
+    <div id="faviconImageContainer" ?hidden="${!this.showFaviconImage_}">
       <img id="faviconImage" alt=""
           src="${resolveSchemeRelativeUrl(this.faviconImage_)}"
-          srcset="${this.faviconImageSrcSet_}"
-          @load="${this.onFaviconLoad_}"
+          srcset="${this.faviconImageSrcSet_}" @load="${this.onFaviconLoad_}"
           @error="${this.onFaviconError_}">
     </div>
   </div>
@@ -38,5 +35,4 @@ export function getHtml(this: SearchboxIconElement) {
   ` : ''}
 </div>
 <!--_html_template_end_-->`;
-  // clang-format on
 }
