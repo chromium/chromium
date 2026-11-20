@@ -89,6 +89,155 @@ class PathMappingsTest(unittest.TestCase):
     gen_dir = self._build_path_map()
     self._assert_output(gen_dir, 'trusted_only_mappings_expected.json')
 
+  def testMojoManifests(self):
+    self._out_folder = tempfile.mkdtemp(dir=_CWD)
+    out_rel = os.path.relpath(self._out_folder, _CWD).replace('\\', '/')
+
+    shared_manifest = os.path.join(self._out_folder, 'shared_mojo.json')
+    with open(shared_manifest, 'w', encoding='utf-8') as f:
+      json.dump(
+        {
+          'entries': [
+            {
+              'base_dir': f'{out_rel}/ui/webui/resources/tsc/mojo',
+              'dts_dir': f'{out_rel}/ui/webui/resources/tsc/mojo',
+              'files': ['url/mojom/url.mojom-webui.js'],
+            }
+          ]
+        },
+        f,
+      )
+
+    custom_manifest = os.path.join(self._out_folder, 'custom_mojo.json')
+    with open(custom_manifest, 'w', encoding='utf-8') as f:
+      json.dump(
+        {
+          'entries': [
+            {
+              'base_dir': (
+                f'{out_rel}/chrome/browser/ui/webui/foo/'
+                'mojo_bindings_webui_minified'
+              ),
+              'dts_dir': (
+                f'{out_rel}/chrome/browser/ui/webui/foo/mojo_bindings_webui_tsc'
+              ),
+              'url_prefix': 'chrome/browser/ui/webui/foo',
+              'files': ['foo.mojom-webui.js'],
+            }
+          ]
+        },
+        f,
+      )
+
+    plain_ts_manifest = os.path.join(self._out_folder, 'plain_ts.json')
+    with open(plain_ts_manifest, 'w', encoding='utf-8') as f:
+      json.dump(
+        {
+          'base_dir': f'{out_rel}/components/bar/tsc',
+          'files': ['bar.js'],
+        },
+        f,
+      )
+
+    gen_dir = os.path.join(
+      self._out_folder, 'tools', 'typescript', 'tests', 'test_mappings'
+    )
+    path_mappings.main(
+      [
+        '--root_gen_dir',
+        os.path.relpath(self._out_folder, gen_dir),
+        '--root_src_dir',
+        os.path.relpath(os.path.join(_HERE_DIR, 'tests'), gen_dir),
+        '--gen_dir',
+        os.path.relpath(gen_dir, _CWD),
+        '--raw_deps',
+        '//ui/webui/resources/mojo:build_ts',
+        '--manifest_files',
+        shared_manifest,
+        custom_manifest,
+        plain_ts_manifest,
+        # Passing a duplicate identical manifest entry should be deduplicated.
+        shared_manifest,
+        '--webui_context_type',
+        'trusted_only',
+        '--output_suffix',
+        'test_mappings',
+        '--pretty_print',
+      ]
+    )
+
+    output_file = os.path.join(gen_dir, 'path_mappings_test_mappings.json')
+    with open(output_file, 'r', encoding='utf-8') as f:
+      actual = json.load(f)
+
+    self.assertEqual(
+      ['./../../../../ui/webui/resources/tsc/mojo/*'],
+      actual['chrome://resources/mojo/*'],
+    )
+    self.assertNotIn('//resources/mojo/*', actual)
+    self.assertEqual(
+      [
+        './../../../../ui/webui/resources/tsc/mojo/'
+        'url/mojom/url.mojom-webui.d.ts'
+      ],
+      actual['url/mojom/url.mojom-webui.js'],
+    )
+    self.assertEqual(
+      [
+        './../../../../chrome/browser/ui/webui/foo/mojo_bindings_webui_tsc/'
+        'foo.mojom-webui.d.ts'
+      ],
+      actual['chrome/browser/ui/webui/foo/foo.mojom-webui.js'],
+    )
+    self.assertEqual(
+      ['./../../../../components/bar/tsc/bar.d.ts'],
+      actual['bar.js'],
+    )
+
+  def testConflictingManifestMappingsFails(self):
+    self._out_folder = tempfile.mkdtemp(dir=_CWD)
+    out_rel = os.path.relpath(self._out_folder, _CWD).replace('\\', '/')
+
+    manifest_1 = os.path.join(self._out_folder, 'manifest_1.json')
+    with open(manifest_1, 'w', encoding='utf-8') as f:
+      json.dump(
+        {
+          'base_dir': f'{out_rel}/components/foo/tsc',
+          'files': ['shared_name.js'],
+        },
+        f,
+      )
+
+    manifest_2 = os.path.join(self._out_folder, 'manifest_2.json')
+    with open(manifest_2, 'w', encoding='utf-8') as f:
+      json.dump(
+        {
+          'base_dir': f'{out_rel}/components/bar/tsc',
+          'files': ['shared_name.js'],
+        },
+        f,
+      )
+
+    gen_dir = os.path.join(
+      self._out_folder, 'tools', 'typescript', 'tests', 'test_mappings'
+    )
+    with self.assertRaisesRegex(AssertionError, 'Conflicting path mappings'):
+      path_mappings.main(
+        [
+          '--root_gen_dir',
+          os.path.relpath(self._out_folder, gen_dir),
+          '--root_src_dir',
+          os.path.relpath(os.path.join(_HERE_DIR, 'tests'), gen_dir),
+          '--gen_dir',
+          os.path.relpath(gen_dir, _CWD),
+          '--manifest_files',
+          manifest_1,
+          manifest_2,
+          '--output_suffix',
+          'test_mappings',
+        ]
+      )
+
 
 if __name__ == '__main__':
   unittest.main()

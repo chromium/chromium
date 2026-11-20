@@ -21,12 +21,22 @@ template("webui_ts_library") {
                          ])
 
   ts_library_target = target_name
-  if (defined(invoker.deps)) {
+  assert(defined(invoker.manifest_files) == defined(invoker.manifest_deps),
+         "manifest_files and manifest_deps must always be specified together.")
+  has_path_mappings = defined(invoker.deps) || defined(invoker.manifest_files)
+  if (has_path_mappings) {
     path_mappings_target = "${target_name}_mappings"
     path_mappings_filename = "path_mappings_${path_mappings_target}.json"
 
     webui_path_mappings(path_mappings_target) {
-      ts_deps = invoker.deps
+      forward_variables_from(invoker,
+                             [
+                               "manifest_deps",
+                               "manifest_files",
+                             ])
+      if (defined(invoker.deps)) {
+        ts_deps = invoker.deps
+      }
       visibility = [ ":$ts_library_target" ]
     }
   }
@@ -40,6 +50,8 @@ template("webui_ts_library") {
     deps = [ "//tools/typescript/definitions:build_ts" ]
     if (defined(invoker.deps)) {
       deps += invoker.deps
+    }
+    if (has_path_mappings) {
       extra_deps += [ ":$path_mappings_target" ]
       path_mappings_file = "$target_gen_dir/$path_mappings_filename"
     }

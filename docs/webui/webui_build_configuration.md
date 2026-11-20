@@ -272,6 +272,14 @@ in path_mappings.py (e.g. //ui/webui/resources/ deps).
 #### **Arguments**
 ```
 ts_deps: List of ts_library() dependencies to generate path mappings for.
+manifest_files: Optional parameter. List of manifest files (e.g. from
+                generate_mojo_manifest() or ts_library() targets) whose listed
+                .js files should be mapped to their corresponding .d.ts files
+                using the `dts_dir` (or `base_dir`) and optional `url_prefix`
+                recorded in each manifest. Must be specified together with
+                `manifest_deps`.
+manifest_deps: Optional parameter. Targets generating |manifest_files|. Must be
+               specified together with `manifest_files`.
 webui_context_type: What import scheme(s) should be mapped for the UI. Options:
                     'trusted': Maps chrome:// and scheme-relative imports.
                                Default value.
@@ -294,6 +302,8 @@ webui_ts_library uses all the same arguments as ts_library, in addition to
 the following:
 ```
 webui_context_type: See |webui_context_type| in webui_path_mappings().
+manifest_files: See |manifest_files| in webui_path_mappings(). Optional.
+manifest_deps: See |manifest_deps| in webui_path_mappings(). Optional.
 ```
 
 ### **eslint_ts**

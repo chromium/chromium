@@ -1,0 +1,59 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+
+# Mojo targets whose TypeScript bindings are compiled into
+# //ui/webui/resources/mojo:build_ts and served from chrome://resources/mojo/.
+shared_mojo_targets = [
+  "//components/ntp_tiles:mojo_bindings",
+  "//components/omnibox/browser:mojo_bindings",
+  "//components/omnibox/composebox:mojo_bindings",
+  "//mojo/public/mojom/base:base",
+  "//mojo/public/mojom/base:protobuf_support",
+  "//skia/public/mojom:mojom",
+  "//ui/base/dragdrop/mojom:mojom",
+  "//ui/base/mojom:mojom",
+  "//ui/base/mojom:ui_base_types",
+  "//ui/gfx/geometry/mojom:mojom",
+  "//ui/gfx/image/mojom:mojom",
+  "//ui/gfx/range/mojom:mojom",
+  "//ui/webui/resources/js/tracked_element:mojo_bindings",
+  "//url/mojom:url_mojom_gurl",
+  "//url/mojom:url_mojom_origin",
+]
+
+if (!is_ios) {
+  shared_mojo_targets += [
+    "//components/omnibox/browser:fusebox_action_mojo_bindings",
+    "//components/omnibox/browser:suggest_template_info_mojo_bindings",
+  ]
+}
+
+if (is_chromeos) {
+  shared_mojo_targets += [
+    "//chromeos/ash/components/multidevice/mojom:mojom",
+    "//chromeos/ash/services/auth_factor_config/public/mojom:mojom",
+    "//chromeos/ash/services/bluetooth_config/public/mojom:mojom",
+    "//chromeos/ash/services/cellular_setup/public/mojom:mojom",
+    "//chromeos/ash/services/connectivity/public/mojom:mojom",
+    "//chromeos/ash/services/device_sync/public/mojom:mojom",
+    "//chromeos/ash/services/hotspot_config/public/mojom:mojom",
+    "//chromeos/ash/services/multidevice_setup/public/mojom:mojom",
+    "//chromeos/ash/services/nearby/public/mojom:nearby_share_settings",
+    "//chromeos/components/in_session_auth/mojom:mojom",
+    "//chromeos/services/network_config/public/mojom:mojom",
+    "//chromeos/services/network_config/public/mojom:network_types",
+    "//chromeos/services/network_health/public/mojom:mojom",
+    "//chromeos/services/network_health/public/mojom:types",
+    "//services/network/public/mojom:mojom_ip_address",
+    "//ui/base/accelerators/mojom:mojom",
+    "//ui/events/mojom:mojom",
+    "//ui/latency/mojom:mojom",
+  ]
+}
+
+if ((!is_android && !is_ios) || is_desktop_android) {
+  shared_mojo_targets += [ "//components/user_education/webui:mojo_bindings" ]
+}

@@ -5,6 +5,12 @@
 import("//third_party/node/node.gni")
 
 template("webui_path_mappings") {
+  assert(!defined(invoker.deps),
+         "Use 'ts_deps' or 'manifest_deps' instead of 'deps' in " +
+             "webui_path_mappings().")
+  assert(defined(invoker.manifest_files) == defined(invoker.manifest_deps),
+         "manifest_files and manifest_deps must always be specified together.")
+
   node(target_name) {
     script = "//tools/typescript/path_mappings.py"
 
@@ -15,6 +21,11 @@ template("webui_path_mappings") {
                              "testonly",
                              "visibility",
                            ])
+
+    deps = []
+    if (defined(invoker.manifest_deps)) {
+      deps += invoker.manifest_deps
+    }
 
     inputs = [
       "//tools/typescript/path_mappings.py",
@@ -33,15 +44,42 @@ template("webui_path_mappings") {
       target_name,
     ]
 
+    has_shared_mojo_dep = false
     if (defined(ts_deps)) {
       args += [ "--raw_deps" ]
       foreach(_dep, ts_deps) {
         # Pass all dependency names to the script, because they are needed to
         # automatically infer path mappings. Normalize their form, because
         # |ts_deps| can hold relative paths.
-        args +=
-            [ get_label_info(_dep, "dir") + ":" + get_label_info(_dep, "name") ]
+        normalized_dep =
+            get_label_info(_dep, "dir") + ":" + get_label_info(_dep, "name")
+        args += [ normalized_dep ]
+        if (normalized_dep == "//ui/webui/resources/mojo:build_ts") {
+          has_shared_mojo_dep = true
+        }
       }
+    }
+
+    manifest_files = []
+    if (has_shared_mojo_dep) {
+      # Shared Mojo files are mapped twice: once via the `//resources/mojo/*`
+      # wildcard in `path_mappings.py` for UIs importing them from
+      # `//resources/mojo/` (or `chrome://resources/mojo/`), and once via their
+      # repository-relative paths from `mojo_manifest.json` for UIs and Mojo
+      # targets using `REPO_PATHS`.
+      deps += [ "//ui/webui/resources/mojo:mojo_manifest" ]
+      manifest_files +=
+          [ "$root_gen_dir/ui/webui/resources/mojo/mojo_manifest.json" ]
+    }
+
+    if (defined(invoker.manifest_files)) {
+      manifest_files += invoker.manifest_files
+    }
+
+    if (manifest_files != []) {
+      inputs += manifest_files
+      args +=
+          [ "--manifest_files" ] + rebase_path(manifest_files, root_build_dir)
     }
 
     # The |platform| flag is used to limit some logic to certain platforms, like
