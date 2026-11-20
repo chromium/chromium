@@ -22,7 +22,7 @@ BASE_FEATURE(kPredictionModelComponentDelivery,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<std::string> kPredictionModelTargets{
-    &kPredictionModelComponentDelivery, "targets", "20"};
+    &kPredictionModelComponentDelivery, "targets", "9,20"};
 
 PredictionModelComponentConfig::PredictionModelComponentConfig(
     std::string name,
