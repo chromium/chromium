@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_op.h"
 #include "base/json/json_reader.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -264,12 +265,16 @@ void NetworkRequestManager::DownloadUrl(
                                         content_type);
   }
 
+  // `WillSendWebIdNetworkRequest()` reads `resource_request->destination`,
+  // while `DidReceiveWebIdNetworkResponse()` uses `destination_`.
+  CHECK_EQ(resource_request->destination, destination_);
+
   // Prepare DevTools instrumentation for the request upfront.
   auto request_id = base::UnguessableToken::Create();
   devtools_instrumentation::MaybeAssignResourceRequestId(
       frame_tree_node_id_, request_id.ToString(), *resource_request);
   if (resource_request->devtools_request_id.has_value()) {
-    devtools_instrumentation::WillSendFedCmNetworkRequest(
+    devtools_instrumentation::WillSendWebIdNetworkRequest(
         frame_tree_node_id_, *resource_request, post_data);
   }
 
@@ -282,8 +287,9 @@ void NetworkRequestManager::DownloadUrl(
     if (resource_request->devtools_request_id.has_value()) {
       // Notify the dev tools that the request is blocked with network error:
       // `net::ERR_NETWORK_ACCESS_REVOKED`.
-      devtools_instrumentation::DidReceiveFedCmNetworkResponse(
-          frame_tree_node_id_, request_id.ToString(), resource_request->url,
+      devtools_instrumentation::DidReceiveWebIdNetworkResponse(
+          frame_tree_node_id_, request_id.ToString(), destination_,
+          resource_request->url,
           /*response_head=*/nullptr, /*response_body=*/"",
           network::URLLoaderCompletionStatus(net::ERR_NETWORK_ACCESS_REVOKED));
     }
@@ -368,9 +374,10 @@ void NetworkRequestManager::OnDownloadedUrl(
     auto completion_status = status.value_or(
         network::URLLoaderCompletionStatus(url_loader->NetError()));
 
-    devtools_instrumentation::DidReceiveFedCmNetworkResponse(
-        frame_tree_node_id_, request_id.ToString(), url_loader->GetFinalURL(),
-        response_info, response_body_str, completion_status);
+    devtools_instrumentation::DidReceiveWebIdNetworkResponse(
+        frame_tree_node_id_, request_id.ToString(), destination_,
+        url_loader->GetFinalURL(), response_info, response_body_str,
+        completion_status);
 
     // Remove the entry from the map
     urlloader_devtools_request_id_map_.erase(it);

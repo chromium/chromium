@@ -21,3 +21,6 @@ Unknown resource type in fetch filter: 'Preflight'
 --- Running test: [FedCM] ---
 Unknown resource type in fetch filter: 'FedCM'
 
+--- Running test: [EmailVerification] ---
+Unknown resource type in fetch filter: 'EmailVerification'
+

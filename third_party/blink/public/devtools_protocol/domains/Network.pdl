@@ -32,6 +32,7 @@ domain Network
       CSPViolationReport
       Preflight
       FedCM
+      EmailVerification
       Other
 
   # Unique loader identifier.
@@ -546,6 +547,7 @@ domain Network
         SignedExchange
         preflight
         FedCM
+        EmailVerification
         other
       # Initiator JavaScript stack trace, set for Script only.
       # Requires the Debugger domain to be enabled.

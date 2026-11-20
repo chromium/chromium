@@ -3818,12 +3818,14 @@ void NetworkHandler::BodyDataReceived(const String& request_id,
   received_body_data_[request_id] = {body, is_base64_encoded};
 }
 
-void NetworkHandler::FedCmRequestWillBeSent(
+void NetworkHandler::WebIdRequestWillBeSent(
     const std::string& request_id,
     const std::string& loader_id,
     const network::ResourceRequest& request,
     const std::optional<std::string>& request_body,
     const GURL& initiator_url,
+    const char* initiator_type,
+    const char* resource_type,
     const std::optional<base::UnguessableToken>& frame_token,
     base::TimeTicks timestamp) {
   std::vector<base::expected<std::vector<uint8_t>, std::string>>
@@ -3835,11 +3837,11 @@ void NetworkHandler::FedCmRequestWillBeSent(
   std::optional<std::string> frame_token_str =
       frame_token.has_value() ? std::make_optional(frame_token->ToString())
                               : std::nullopt;
-  RequestWillBeSent(
-      request_id, loader_id, request, initiator_url,
-      Network::Initiator::TypeEnum::FedCM, Network::ResourceTypeEnum::FedCM,
-      std::move(frame_token_str), timestamp, /*redirect_info=*/std::nullopt,
-      /*initiator_devtools_request_id=*/"", std::move(request_body_bytes));
+  RequestWillBeSent(request_id, loader_id, request, initiator_url,
+                    initiator_type, resource_type, std::move(frame_token_str),
+                    timestamp, /*redirect_info=*/std::nullopt,
+                    /*initiator_devtools_request_id=*/"",
+                    std::move(request_body_bytes));
 }
 
 void NetworkHandler::ProcessDurableMessageOrGetLocalData(

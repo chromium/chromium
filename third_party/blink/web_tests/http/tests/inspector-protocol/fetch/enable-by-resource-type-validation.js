@@ -3,13 +3,14 @@
         `Test Fetch.enable input validation for unsupported resource types.`);
 
     const testCases = [
-        'TextTrack',
-        'Prefetch',
-        'WebSocket',
-        'Manifest',
-        'SignedExchange',
-        'Preflight',
-        'FedCM',
+      'TextTrack',
+      'Prefetch',
+      'WebSocket',
+      'Manifest',
+      'SignedExchange',
+      'Preflight',
+      'FedCM',
+      'EmailVerification',
     ];
 
     for (const testCase of testCases) {

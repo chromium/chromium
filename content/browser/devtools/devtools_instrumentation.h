@@ -33,6 +33,7 @@
 #include "services/network/public/cpp/http_request_headers_update_params.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/cookie_manager.mojom-forward.h"
+#include "services/network/public/mojom/fetch_api.mojom-forward.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
@@ -575,14 +576,16 @@ void WillShowFedCmDialog(RenderFrameHost& render_frame_host, bool* intercept);
 void DidShowFedCmDialog(RenderFrameHost& render_frame_host);
 void DidCloseFedCmDialog(RenderFrameHost& render_frame_host);
 
-// Fires Network Handler to capture FedCM request and response events.
-void WillSendFedCmNetworkRequest(
+// Fires Network Handler to capture WebID (FedCM and Email Verification)
+// request and response events.
+void WillSendWebIdNetworkRequest(
     FrameTreeNodeId frame_tree_node_id,
     const network::ResourceRequest& request,
     const std::optional<std::string>& request_body = std::nullopt);
-void DidReceiveFedCmNetworkResponse(
+void DidReceiveWebIdNetworkResponse(
     FrameTreeNodeId frame_tree_node_id,
     const std::string& devtools_request_id,
+    network::mojom::RequestDestination destination,
     const GURL& url,
     const network::mojom::URLResponseHead* response_head,
     const std::string& response_body,

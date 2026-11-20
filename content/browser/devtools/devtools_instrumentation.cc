@@ -66,8 +66,10 @@
 #include "net/ssl/ssl_info.h"
 #include "services/network/public/cpp/devtools_observer_util.h"
 #include "services/network/public/cpp/headers_matcher.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/url_loader_factory_builder.h"
 #include "services/network/public/mojom/devtools_observer.mojom.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
@@ -757,6 +759,30 @@ void UpdateChildFrameTrees(FrameTreeNode* ftn, bool update_target_info) {
   if (auto* agent_host = WebContentsDevToolsAgentHost::GetFor(
           WebContentsImpl::FromFrameTreeNode(ftn))) {
     agent_host->UpdateChildFrameTrees(update_target_info);
+  }
+}
+
+const char* WebIdDestinationToResourceType(
+    network::mojom::RequestDestination destination) {
+  switch (destination) {
+    case network::mojom::RequestDestination::kWebIdentity:
+      return protocol::Network::ResourceTypeEnum::FedCM;
+    case network::mojom::RequestDestination::kEmailVerification:
+      return protocol::Network::ResourceTypeEnum::EmailVerification;
+    default:
+      NOTREACHED();
+  }
+}
+
+const char* WebIdDestinationToInitiatorType(
+    network::mojom::RequestDestination destination) {
+  switch (destination) {
+    case network::mojom::RequestDestination::kWebIdentity:
+      return protocol::Network::Initiator::TypeEnum::FedCM;
+    case network::mojom::RequestDestination::kEmailVerification:
+      return protocol::Network::Initiator::TypeEnum::EmailVerification;
+    default:
+      NOTREACHED();
   }
 }
 
@@ -3099,7 +3125,7 @@ void DidCloseFedCmDialog(RenderFrameHost& render_frame_host) {
   DispatchToAgents(ftn, &protocol::FedCmHandler::DidCloseDialog);
 }
 
-void WillSendFedCmNetworkRequest(
+void WillSendWebIdNetworkRequest(
     FrameTreeNodeId frame_tree_node_id,
     const network::ResourceRequest& request,
     const std::optional<std::string>& request_body) {
@@ -3124,16 +3150,19 @@ void WillSendFedCmNetworkRequest(
     initiator_url = request.request_initiator->GetURL();
   }
 
-  DispatchToAgents(frame_tree_node_id,
-                   &protocol::NetworkHandler::FedCmRequestWillBeSent,
+  DispatchToAgents(ftn, &protocol::NetworkHandler::WebIdRequestWillBeSent,
                    request.devtools_request_id.value(),
                    loader_id.value().ToString(), request, request_body,
-                   initiator_url, frame_token, base::TimeTicks::Now());
+                   initiator_url,
+                   WebIdDestinationToInitiatorType(request.destination),
+                   WebIdDestinationToResourceType(request.destination),
+                   frame_token, base::TimeTicks::Now());
 }
 
-void DidReceiveFedCmNetworkResponse(
+void DidReceiveWebIdNetworkResponse(
     FrameTreeNodeId frame_tree_node_id,
     const std::string& devtools_request_id,
+    network::mojom::RequestDestination destination,
     const GURL& url,
     const network::mojom::URLResponseHead* response_head,
     const std::string& response_body,
@@ -3151,6 +3180,8 @@ void DidReceiveFedCmNetworkResponse(
     return;
   }
 
+  const char* resource_type = WebIdDestinationToResourceType(destination);
+
   if (response_head) {
     network::mojom::URLResponseHeadDevToolsInfoPtr head_info =
         network::ExtractDevToolsInfo(*response_head);
@@ -3158,23 +3189,19 @@ void DidReceiveFedCmNetworkResponse(
     std::optional<base::UnguessableToken> frame_token =
         ftn->current_frame_host()->devtools_frame_token();
 
-    DispatchToAgents(frame_tree_node_id,
-                     &protocol::NetworkHandler::ResponseReceived,
+    DispatchToAgents(ftn, &protocol::NetworkHandler::ResponseReceived,
                      devtools_request_id, loader_id.value().ToString(), url,
-                     protocol::Network::ResourceTypeEnum::FedCM, *head_info,
-                     frame_token.value().ToString());
+                     resource_type, *head_info, frame_token.value().ToString());
   }
 
   if (status.error_code == net::OK) {
-    DispatchToAgents(frame_tree_node_id,
-                     &protocol::NetworkHandler::BodyDataReceived,
+    DispatchToAgents(ftn, &protocol::NetworkHandler::BodyDataReceived,
                      devtools_request_id, response_body,
                      /*is_base64_encoded=*/false);
   }
 
-  DispatchToAgents(
-      frame_tree_node_id, &protocol::NetworkHandler::LoadingComplete,
-      devtools_request_id, protocol::Network::ResourceTypeEnum::FedCM, status);
+  DispatchToAgents(ftn, &protocol::NetworkHandler::LoadingComplete,
+                   devtools_request_id, resource_type, status);
 }
 
 void OnFencedFrameReportRequestSent(
