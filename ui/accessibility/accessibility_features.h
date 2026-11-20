@@ -246,6 +246,12 @@ AX_BASE_EXPORT bool IsAccessibilityAndroidMathEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityAndroidBackgroundThread);
 AX_BASE_EXPORT bool IsAccessibilityAndroidBackgroundThreadEnabled();
 
+// Propagates and consumes explicit selection endpoint offset types
+// (`ax::mojom::OffsetType::kText` vs `kChild`) on Android instead of inferring
+// them from `AXNodePosition::IsTextPositionAnchor()`.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilitySelectionOffsetTypes);
+AX_BASE_EXPORT bool IsAccessibilitySelectionOffsetTypesEnabled();
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Controls the new native C++ implementation for Read Aloud,

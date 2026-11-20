@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_selection.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder_stream.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_tree_id.h"
 
@@ -180,8 +181,10 @@ bool BlinkAXTreeSource::GetTreeData(ui::AXTreeData* tree_data) const {
     tree_data->sel_focus_affinity = focus_affinity;
 #if BUILDFLAG(IS_ANDROID)
     // Only Android consumes selection offset types for now.
-    tree_data->sel_anchor_offset_type = anchor_offset_type;
-    tree_data->sel_focus_offset_type = focus_offset_type;
+    if (::features::IsAccessibilitySelectionOffsetTypesEnabled()) {
+      tree_data->sel_anchor_offset_type = anchor_offset_type;
+      tree_data->sel_focus_offset_type = focus_offset_type;
+    }
 #endif  // BUILDFLAG(IS_ANDROID)
   }
 

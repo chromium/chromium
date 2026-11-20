@@ -5365,6 +5365,12 @@ inline constexpr char
         "populated "
         "using the Android supplemental description API.";
 
+inline constexpr char kAccessibilitySelectionOffsetTypesName[] =
+    "Accessibility Selection Offset Types";
+inline constexpr char kAccessibilitySelectionOffsetTypesDescription[] =
+    "Propagates and consumes explicit text vs. child selection endpoint offset "
+    "types on Android.";
+
 inline constexpr char kAccessibilitySequentialFocusName[] =
     "Accessibility Sequential Focus Navigation";
 inline constexpr char kAccessibilitySequentialFocusDescription[] =

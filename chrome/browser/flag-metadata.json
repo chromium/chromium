@@ -3453,6 +3453,15 @@
     "expiry_milestone": 150
   },
   {
+    "name": "enable-accessibility-selection-offset-types",
+    "owners": [
+      "rhalavati@chromium.org",
+      "kavyamehta@google.com",
+      "//ui/accessibility/OWNERS"
+    ],
+    "expiry_milestone": 170
+  },
+  {
     "name": "enable-accessibility-sequential-focus",
     "owners": [ "jocelyntran@google.com", "//ui/accessibility/OWNERS" ],
     "expiry_milestone": 155

@@ -276,6 +276,13 @@ bool IsAccessibilityAndroidBackgroundThreadEnabled() {
              ::features::kAccessibilityAndroidBackgroundThread);
 }
 
+BASE_FEATURE(kAccessibilitySelectionOffsetTypes,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsAccessibilitySelectionOffsetTypesEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kAccessibilitySelectionOffsetTypes);
+}
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 bool IsReadAloudNativeEnabled() {

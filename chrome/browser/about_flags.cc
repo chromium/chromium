@@ -6422,6 +6422,11 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(
          features::kAccessibilityRequestScopedContentChangedEvents)},
+    {"enable-accessibility-selection-offset-types",
+     flag_descriptions::kAccessibilitySelectionOffsetTypesName,
+     flag_descriptions::kAccessibilitySelectionOffsetTypesDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kAccessibilitySelectionOffsetTypes)},
     {"enable-accessibility-sequential-focus",
      flag_descriptions::kAccessibilitySequentialFocusName,
      flag_descriptions::kAccessibilitySequentialFocusDescription, kOsAndroid,

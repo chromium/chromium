@@ -15078,6 +15078,7 @@ from previous Chrome versions.
   <int value="12016364" label="OmniboxBubbleUrlSuggestions:enabled"/>
   <int value="12423208" label="ImprovedSettingsUIOnDesktop:enabled"/>
   <int value="13976438" label="ReduceTransferSizeUpdatedIPC:disabled"/>
+  <int value="14378964" label="AccessibilitySelectionOffsetTypes:enabled"/>
   <int value="14744795" label="OmniboxDebounceKeyboardVisibility:disabled"/>
   <int value="14817184" label="FilesSearchV2:enabled"/>
   <int value="15614295" label="Portals:enabled"/>
@@ -19962,6 +19963,7 @@ from previous Chrome versions.
   <int value="1454527518" label="ArcNativeBridgeExperiment:enabled"/>
   <int value="1454656852" label="ResponsiveToolbar:enabled"/>
   <int value="1455200894" label="GlicActorUiMagicCursorChip:disabled"/>
+  <int value="1455546205" label="AccessibilitySelectionOffsetTypes:disabled"/>
   <int value="1455708250" label="AutofillEnableVerveCardSupport:disabled"/>
   <int value="1455753326" label="EnableNearbyBleV2GattServer:disabled"/>
   <int value="1455881930" label="V8VmFuture:enabled"/>

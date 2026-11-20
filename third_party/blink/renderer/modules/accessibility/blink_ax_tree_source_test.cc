@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
@@ -15,27 +16,36 @@
 #include "third_party/blink/renderer/modules/accessibility/ax_object-inl.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 #include "third_party/blink/renderer/modules/accessibility/testing/accessibility_selection_test.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_tree_data.h"
 
 namespace blink {
 
 namespace {
 
-// `BlinkAXTreeSource` only populates the selection offset types on Android.
+// `BlinkAXTreeSource` only populates the selection offset types on Android when
+// `kAccessibilitySelectionOffsetTypes` is enabled.
 std::optional<ax::mojom::OffsetType> ExpectedOffsetType(
     ax::mojom::OffsetType offset_type) {
 #if BUILDFLAG(IS_ANDROID)
-  return offset_type;
-#else
-  return std::nullopt;
+  if (::features::IsAccessibilitySelectionOffsetTypesEnabled()) {
+    return offset_type;
+  }
 #endif  // BUILDFLAG(IS_ANDROID)
+  return std::nullopt;
 }
 
 }  // namespace
 
-class BlinkAXTreeSourceTest : public AccessibilitySelectionTest {
+class BlinkAXTreeSourceTest : public AccessibilitySelectionTest,
+                              public ::testing::WithParamInterface<bool> {
  protected:
-  BlinkAXTreeSourceTest() = default;
+  BlinkAXTreeSourceTest() {
+#if BUILDFLAG(IS_ANDROID)
+    scoped_feature_list_.InitWithFeatureState(
+        ::features::kAccessibilitySelectionOffsetTypes, GetParam());
+#endif  // BUILDFLAG(IS_ANDROID)
+  }
 
   void GetSelectionFromTreeSource(ui::AXTreeData* tree_data) {
     BlinkAXTreeSource* tree_source =
@@ -44,9 +54,14 @@ class BlinkAXTreeSourceTest : public AccessibilitySelectionTest {
     tree_source->GetTreeData(tree_data);
     tree_source->Thaw();
   }
+
+ private:
+#if BUILDFLAG(IS_ANDROID)
+  base::test::ScopedFeatureList scoped_feature_list_;
+#endif  // BUILDFLAG(IS_ANDROID)
 };
 
-TEST_F(BlinkAXTreeSourceTest, FocusNotAtomicTextField_ValidSelection) {
+TEST_P(BlinkAXTreeSourceTest, FocusNotAtomicTextField_ValidSelection) {
   SetBodyInnerHTML(R"HTML(
     <div id="content" tabindex="0">
       <p id="p1">Hello</p>
@@ -93,7 +108,7 @@ TEST_F(BlinkAXTreeSourceTest, FocusNotAtomicTextField_ValidSelection) {
   EXPECT_FALSE(tree_data.sel_is_backward);
 }
 
-TEST_F(BlinkAXTreeSourceTest,
+TEST_P(BlinkAXTreeSourceTest,
        FocusAtomicTextField_InvalidDocumentSelection_ValidTextFieldSelection) {
   SetBodyInnerHTML(R"HTML(
     <input id="input" value="Hello World">
@@ -136,7 +151,7 @@ TEST_F(BlinkAXTreeSourceTest,
             ExpectedOffsetType(ax::mojom::OffsetType::kText));
 }
 
-TEST_F(BlinkAXTreeSourceTest,
+TEST_P(BlinkAXTreeSourceTest,
        FocusAtomicTextField_ValidDocumentSelectionWithinTextField) {
   SetBodyInnerHTML(R"HTML(
     <input id="input" value="Hello World">
@@ -175,7 +190,7 @@ TEST_F(BlinkAXTreeSourceTest,
             ExpectedOffsetType(ax::mojom::OffsetType::kText));
 }
 
-TEST_F(BlinkAXTreeSourceTest,
+TEST_P(BlinkAXTreeSourceTest,
        FocusAtomicTextField_ValidDocumentSelectionOutsideTextField) {
   SetBodyInnerHTML(R"HTML(
     <div id="content">Hello World</div>
@@ -244,7 +259,7 @@ TEST_F(BlinkAXTreeSourceTest,
             ExpectedOffsetType(ax::mojom::OffsetType::kText));
 }
 
-TEST_F(BlinkAXTreeSourceTest,
+TEST_P(BlinkAXTreeSourceTest,
        FocusAtomicTextField_OutOfSyncDOMSelection_GracefulFallback) {
   // Use a simple textarea. The exact content does not matter, only that
   // we can get it out of sync by mutating the shadow DOM directly.
@@ -283,7 +298,7 @@ TEST_F(BlinkAXTreeSourceTest,
   EXPECT_EQ(tree_data.sel_focus_offset_type, std::nullopt);
 }
 
-TEST_F(BlinkAXTreeSourceTest, TreePositionSelectionAroundImage) {
+TEST_P(BlinkAXTreeSourceTest, TreePositionSelectionAroundImage) {
   SetBodyInnerHTML(
       R"HTML(<div id="content" tabindex="0"><p id="p1">Hello</p><img id="img" alt="photo"><p id="p2">World</p></div>)HTML");
 
@@ -317,7 +332,7 @@ TEST_F(BlinkAXTreeSourceTest, TreePositionSelectionAroundImage) {
   EXPECT_EQ(tree_data.sel_focus_offset, tree_data.sel_anchor_offset + 1);
 }
 
-TEST_F(BlinkAXTreeSourceTest, MixedOffsetTypeSelection) {
+TEST_P(BlinkAXTreeSourceTest, MixedOffsetTypeSelection) {
   SetBodyInnerHTML(
       R"HTML(<div id="content" tabindex="0"><p id="p1">Hello</p><img id="img" alt="photo"><p id="p2">World</p></div>)HTML");
 
@@ -354,5 +369,11 @@ TEST_F(BlinkAXTreeSourceTest, MixedOffsetTypeSelection) {
             ExpectedOffsetType(ax::mojom::OffsetType::kText));
   EXPECT_EQ(tree_data.sel_focus_offset, 2);
 }
+
+#if BUILDFLAG(IS_ANDROID)
+INSTANTIATE_TEST_SUITE_P(All, BlinkAXTreeSourceTest, ::testing::Bool());
+#else
+INSTANTIATE_TEST_SUITE_P(All, BlinkAXTreeSourceTest, ::testing::Values(false));
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace blink
