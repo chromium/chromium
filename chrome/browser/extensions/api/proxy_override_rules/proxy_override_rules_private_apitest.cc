@@ -43,13 +43,30 @@
 #include "extensions/test/test_extension_dir.h"
 #include "services/network/test/test_url_loader_factory.h"
 
-#if !BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/net/profile_network_context_service.h"
+#include "chrome/browser/net/profile_network_context_service_factory.h"
+#include "chromeos/ash/components/dbus/shill/shill_profile_client.h"
+#include "chromeos/ash/components/dbus/shill/shill_service_client.h"
+#include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/components/network/network_profile_handler.h"
+#include "chromeos/ash/components/network/network_state.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
+#include "components/onc/onc_pref_names.h"
+#include "content/public/test/browser_test_utils.h"
+#include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/http_request.h"
+#include "net/test/embedded_test_server/http_response.h"
+#include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
+#else
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #include "components/policy/proto/device_management_backend.pb.h"
-#endif  // !BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace extensions {
 namespace {
@@ -903,5 +920,173 @@ IN_PROC_BROWSER_TEST_F(
   ExpectUnrelatedExtensionPrefIntact();
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_CHROMEOS)
+class ProxyOverrideRulesPrivateOncPacApiTest
+    : public ProxyOverrideRulesPrivateApiTest {
+ protected:
+  static constexpr char kPorHost[] = "por-destination.com";
+  static constexpr char kPacHost[] = "pac-destination.com";
+  static constexpr char kDirectHost[] = "direct-destination.com";
+
+  void SetUpOnMainThread() override {
+    ProxyOverrideRulesPrivateApiTest::SetUpOnMainThread();
+    host_resolver()->AddRule(kPorHost, "127.0.0.1");
+    host_resolver()->AddRule(kPacHost, "127.0.0.1");
+    host_resolver()->AddRule(kDirectHost, "127.0.0.1");
+    embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+        [](const net::test_server::EmbeddedTestServer* server,
+           const net::test_server::HttpRequest& request)
+            -> std::unique_ptr<net::test_server::HttpResponse> {
+          if (request.relative_url != "/proxy.pac") {
+            return nullptr;
+          }
+          auto response =
+              std::make_unique<net::test_server::BasicHttpResponse>();
+          response->set_code(net::HTTP_OK);
+          response->set_content_type("application/x-ns-proxy-autoconfig");
+          response->set_content(base::StringPrintf(
+              R"(
+                function FindProxyForURL(url, host) {
+                  if (host === "%s") {
+                    return "PROXY %s";
+                  }
+                  return "DIRECT";
+                }
+              )",
+              kPacHost, server->host_port_pair().ToString().c_str()));
+          return response;
+        },
+        embedded_test_server()));
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+};
+
+// Verifies that extension-configured ProxyOverrideRules work alongside a
+// per-network PAC script configured via the OpenNetworkConfiguration policy.
+IN_PROC_BROWSER_TEST_F(ProxyOverrideRulesPrivateOncPacApiTest,
+                       ProxyOverrideRules_WithOncPac) {
+  constexpr int kUnreachablePort = 12345;
+
+  // Set up a connected Wi-Fi network in the user's Shill profile.
+  constexpr char kUserProfilePath[] = "user_profile";
+  constexpr char kWifiServicePath[] = "stub_wifi";
+  constexpr char kWifiGuid[] = "{wifi_guid}";
+  constexpr char kWifiSsid[] = "wifi0";
+
+  const std::string user_hash =
+      ash::ProfileHelper::GetUserIdHashFromProfile(profile());
+  ash::ShillProfileClient::TestInterface* profile_test =
+      ash::ShillProfileClient::Get()->GetTestInterface();
+  ash::ShillServiceClient::TestInterface* service_test =
+      ash::ShillServiceClient::Get()->GetTestInterface();
+  profile_test->AddProfile(kUserProfilePath, user_hash);
+  service_test->ClearServices();
+  service_test->AddService(kWifiServicePath, kWifiGuid, kWifiSsid,
+                           shill::kTypeWifi, shill::kStateOnline,
+                           /*visible=*/true);
+  service_test->SetServiceProperty(kWifiServicePath, shill::kProfileProperty,
+                                   base::Value(kUserProfilePath));
+  profile_test->AddService(kUserProfilePath, kWifiServicePath);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    const ash::NetworkState* default_network =
+        ash::NetworkHandler::Get()->network_state_handler()->DefaultNetwork();
+    return default_network && default_network->guid() == kWifiGuid &&
+           default_network->profile_path() == kUserProfilePath &&
+           ash::NetworkHandler::Get()
+                   ->network_profile_handler()
+                   ->GetProfileForPath(kUserProfilePath) != nullptr;
+  }));
+
+  content::WebContents* web_contents = GetActiveWebContents();
+  const GURL por_url(base::StringPrintf("http://%s:%d/simple.html", kPorHost,
+                                        kUnreachablePort));
+  const GURL pac_url(base::StringPrintf("http://%s:%d/simple.html", kPacHost,
+                                        kUnreachablePort));
+  const GURL direct_url(base::StringPrintf("http://%s:%d/simple.html",
+                                           kDirectHost, kUnreachablePort));
+
+  // Before any proxy configuration is applied, direct connections to the
+  // unreachable port fail.
+  EXPECT_FALSE(content::NavigateToURL(web_contents, por_url));
+  EXPECT_FALSE(content::NavigateToURL(web_contents, pac_url));
+
+  // Apply an OpenNetworkConfiguration user policy configuring a PAC URL on the
+  // Wi-Fi network.
+  const std::string onc_policy = base::StringPrintf(
+      R"({
+        "NetworkConfigurations": [{
+          "GUID": "%s",
+          "Name": "%s",
+          "ProxySettings": {
+            "Type": "PAC",
+            "PAC": "%s"
+          },
+          "Type": "WiFi",
+          "WiFi": {
+            "AutoConnect": true,
+            "HiddenSSID": false,
+            "SSID": "%s",
+            "Security": "None"
+          }
+        }]
+      })",
+      kWifiGuid, kWifiSsid,
+      embedded_test_server()->GetURL("/proxy.pac").spec().c_str(), kWifiSsid);
+  policy::PolicyMap policies;
+  policies.Set(policy::key::kOpenNetworkConfiguration,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD, base::Value(onc_policy), nullptr);
+  provider_.UpdateChromePolicy(policies);
+  ProfileNetworkContextService* network_context_service =
+      ProfileNetworkContextServiceFactory::GetForContext(profile());
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return !profile()
+                ->GetPrefs()
+                ->GetList(::onc::prefs::kOpenNetworkConfiguration)
+                .empty() &&
+           network_context_service->IsProxyConfigured() == true;
+  }));
+  network_context_service->FlushProxyConfigMonitorForTesting();
+
+  // Once the ONC PAC policy is applied, `kPacHost` routes through the proxy and
+  // succeeds, while `kPorHost` falls back to DIRECT and fails.
+  EXPECT_TRUE(content::NavigateToURL(web_contents, pac_url));
+  EXPECT_FALSE(content::NavigateToURL(web_contents, por_url));
+
+  // Configure ProxyOverrideRules via the extension to route `kPorHost` through
+  // the test server proxy.
+  const std::string test_js = base::StringPrintf(
+      R"(
+        chrome.test.runTests([
+          function setPorRule() {
+            const rule = {
+              DestinationMatchers: ["%s"],
+              ProxyList: ["PROXY %s"]
+            };
+            chrome.proxyOverrideRulesPrivate.rules.set({value: [rule]}, () => {
+              chrome.test.assertNoLastError();
+              chrome.test.succeed();
+            });
+          }
+        ]);
+      )",
+      kPorHost, embedded_test_server()->host_port_pair().ToString().c_str());
+  RunTest(test_js);
+  network_context_service->FlushProxyConfigMonitorForTesting();
+
+  // 1. Traffic matching the extension's ProxyOverrideRules is routed through
+  //    the proxy.
+  EXPECT_TRUE(content::NavigateToURL(web_contents, por_url));
+
+  // 2. Traffic not matching ProxyOverrideRules still falls back to the
+  //    per-network ONC PAC script, which routes `kPacHost` through the proxy.
+  EXPECT_TRUE(content::NavigateToURL(web_contents, pac_url));
+
+  // 3. Traffic matching neither ProxyOverrideRules nor the PAC script's proxy
+  //    rule uses DIRECT and fails on the unreachable port.
+  EXPECT_FALSE(content::NavigateToURL(web_contents, direct_url));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace extensions

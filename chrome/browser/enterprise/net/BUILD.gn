@@ -15,13 +15,26 @@ source_set("platform_browser_tests") {
 
   deps = [
     "//base",
+    "//base/test:test_support",
     "//chrome/browser/enterprise/test:test_support",
+    "//chrome/browser/net",
+    "//chrome/browser/profiles:profile",
     "//chrome/test/base:chrome_test_utils",
     "//components/enterprise/net/core",
+    "//components/prefs",
     "//components/proxy_config",
     "//content/test:test_support",
     "//testing/gmock",
   ]
+
+  if (is_chromeos) {
+    deps += [
+      "//chrome/browser/ash/profiles",
+      "//chromeos/ash/components/dbus/shill",
+      "//chromeos/ash/components/network",
+      "//components/onc",
+    ]
+  }
 
   # Enterprise Proxy dynamic routing is currently not supported on ChromeOS.
   if (!is_chromeos) {
@@ -37,10 +50,7 @@ source_set("platform_browser_tests") {
     ]
 
     deps += [
-      "//base/test:test_support",
       "//chrome/browser/enterprise",
-      "//chrome/browser/net",
-      "//chrome/browser/profiles:profile",
       "//chrome/browser/signin",
       "//components/enterprise/browser/identifiers",
       "//components/enterprise/net/content",
@@ -51,7 +61,6 @@ source_set("platform_browser_tests") {
       "//components/policy/core/browser",
       "//components/policy/core/common",
       "//components/policy/core/common:test_support",
-      "//components/prefs",
       "//components/signin/public/base",
       "//components/signin/public/identity_manager",
       "//components/signin/public/identity_manager:test_support",
