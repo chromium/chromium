@@ -66,6 +66,28 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="WebAuthentication.Ambient.BubbleShownDuration.{CloseReason}"
+    units="ms" expires_after="2027-05-01">
+  <owner>kenrb@chromium.org</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Records how long the Ambient sign-in bubble was on screen, from when it was
+    first shown for a request until {CloseReason}. Recorded at most once per
+    request in which the bubble was shown.
+  </summary>
+  <token key="CloseReason">
+    <variant name="CredentialSelected"
+        summary="the user selected a credential"/>
+    <variant name="Dismissed"
+        summary="the user dismissed the bubble without selecting a credential"/>
+    <variant name="RequestEnded"
+        summary="the request ended without the user selecting a credential or
+                 dismissing the bubble, for example because the page
+                 navigated away, its tab was closed, the page aborted the
+                 request, or its renderer crashed"/>
+  </token>
+</histogram>
+
 <histogram name="WebAuthentication.Ambient.ChipOnlyOutcome"
     enum="AmbientChipOnlyOutcome" expires_after="2027-05-01">
   <owner>kenrb@chromium.org</owner>

@@ -10,8 +10,10 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/run_until.h"
 #include "base/time/time.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -733,6 +735,91 @@ TEST_F(AmbientSigninControllerTest,
       "WebAuthentication.Ambient.BubbleResolution.InitiallyShown", 3);
   histograms.ExpectTotalCount(
       "WebAuthentication.Ambient.CredentialSelectionMethod", 2);
+}
+
+constexpr char kShownDurationPrefix[] =
+    "WebAuthentication.Ambient.BubbleShownDuration.";
+
+TEST_F(AmbientSigninControllerTest, BubbleShownDurationWhenCredentialSelected) {
+  base::HistogramTester histograms;
+  base::MockRepeatingClosure passkey_callback;
+  auto model = CreatePasskeyModel(main_rfh(), passkey_callback.Get());
+  controller()->Show(model.get());
+  prompt_factory_->WaitForPermissionBubble();
+  current_ambient_request()->OnBubbleShown();
+  task_environment()->FastForwardBy(base::Seconds(3));
+
+  base::RunLoop loop;
+  permission_controller()->SetFinishedNotificationForTesting(
+      loop.QuitClosure());
+  EXPECT_CALL(passkey_callback, Run()).WillOnce([&model]() {
+    model->OnRequestComplete();
+  });
+  permission_request_manager()->Accept(std::monostate());
+  loop.Run();
+
+  histograms.ExpectUniqueTimeSample(
+      base::StrCat({kShownDurationPrefix, "CredentialSelected"}),
+      base::Seconds(3), 1);
+  histograms.ExpectTotalCount(
+      base::StrCat({kShownDurationPrefix, "RequestEnded"}), 0);
+}
+
+TEST_F(AmbientSigninControllerTest, BubbleShownDurationWhenDismissed) {
+  base::HistogramTester histograms;
+  auto model = CreatePasskeyModel(main_rfh());
+  controller()->Show(model.get());
+  prompt_factory_->WaitForPermissionBubble();
+  current_ambient_request()->OnBubbleShown();
+  task_environment()->FastForwardBy(base::Seconds(4));
+  current_ambient_request()->OnBubbleDismissed();
+
+  // The request ending later doesn't record another duration, since the bubble
+  // is no longer shown.
+  task_environment()->FastForwardBy(base::Seconds(10));
+  CompleteRequestAndWait(model.get());
+
+  histograms.ExpectUniqueTimeSample(
+      base::StrCat({kShownDurationPrefix, "Dismissed"}), base::Seconds(4), 1);
+  histograms.ExpectTotalCount(
+      base::StrCat({kShownDurationPrefix, "RequestEnded"}), 0);
+}
+
+// The request ending while the bubble is shown, e.g. because the page aborted
+// it or the renderer crashed.
+TEST_F(AmbientSigninControllerTest, BubbleShownDurationWhenRequestEnds) {
+  base::HistogramTester histograms;
+  auto model = CreatePasskeyModel(main_rfh());
+  controller()->Show(model.get());
+  prompt_factory_->WaitForPermissionBubble();
+  current_ambient_request()->OnBubbleShown();
+  task_environment()->FastForwardBy(base::Seconds(5));
+
+  CompleteRequestAndWait(model.get());
+
+  histograms.ExpectUniqueTimeSample(
+      base::StrCat({kShownDurationPrefix, "RequestEnded"}), base::Seconds(5),
+      1);
+}
+
+TEST_F(AmbientSigninControllerTest,
+       BubbleShownDurationWhenRequestEndsByNavigatingAway) {
+  base::HistogramTester histograms;
+  auto model = CreatePasskeyModel(main_rfh());
+  controller()->Show(model.get());
+  prompt_factory_->WaitForPermissionBubble();
+  current_ambient_request()->OnBubbleShown();
+  task_environment()->FastForwardBy(base::Seconds(6));
+
+  NavigateAndCommit(GURL("https://other.test"));
+  // The previous document is torn down asynchronously after the navigation
+  // commits, which is when the duration is recorded.
+  const std::string request_ended =
+      base::StrCat({kShownDurationPrefix, "RequestEnded"});
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return !histograms.GetAllSamples(request_ended).empty(); }));
+
+  histograms.ExpectUniqueTimeSample(request_ended, base::Seconds(6), 1);
 }
 
 TEST_F(AmbientSigninControllerTest, UkmMetricsForOutcomesAndInteractions) {

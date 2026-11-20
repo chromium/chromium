@@ -7,6 +7,7 @@
 
 #include <cstddef>
 
+#include "base/time/time.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace webauthn::metrics {
@@ -179,6 +180,23 @@ void RecordAmbientChipOnlyOutcome(ukm::SourceId source_id,
                                   AmbientChipOnlyOutcome outcome);
 void RecordAmbientUkmBubbleOutcome(ukm::SourceId source_id,
                                    AmbientUkmBubbleOutcome outcome);
+
+// Why the Ambient bubble stopped being shown. Selects which
+// WebAuthentication.Ambient.BubbleShownDuration.* histogram is recorded. Not
+// persisted to logs.
+enum class AmbientBubbleCloseReason {
+  // The request ended while the bubble was open, without the user selecting a
+  // credential or dismissing the bubble. For example, the page navigated away,
+  // its tab was closed, the page aborted the request, or the renderer crashed.
+  kRequestEnded,
+  // The user dismissed the bubble without selecting a credential.
+  kDismissed,
+  // The user selected a credential.
+  kCredentialSelected,
+};
+
+void RecordAmbientBubbleShownDuration(AmbientBubbleCloseReason reason,
+                                      base::TimeDelta duration);
 
 }  // namespace webauthn::metrics
 

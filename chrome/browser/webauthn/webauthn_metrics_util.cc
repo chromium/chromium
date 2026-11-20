@@ -4,8 +4,11 @@
 
 #include "chrome/browser/webauthn/webauthn_metrics_util.h"
 
+#include <string_view>
+
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/strcat.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 
@@ -150,6 +153,25 @@ void RecordAmbientUkmBubbleOutcome(ukm::SourceId source_id,
         .SetBubbleOutcome(static_cast<int64_t>(outcome))
         .Record(ukm::UkmRecorder::Get());
   }
+}
+
+void RecordAmbientBubbleShownDuration(AmbientBubbleCloseReason reason,
+                                      base::TimeDelta duration) {
+  std::string_view suffix;
+  switch (reason) {
+    case AmbientBubbleCloseReason::kRequestEnded:
+      suffix = "RequestEnded";
+      break;
+    case AmbientBubbleCloseReason::kDismissed:
+      suffix = "Dismissed";
+      break;
+    case AmbientBubbleCloseReason::kCredentialSelected:
+      suffix = "CredentialSelected";
+      break;
+  }
+  base::UmaHistogramLongTimes100(
+      base::StrCat({"WebAuthentication.Ambient.BubbleShownDuration.", suffix}),
+      duration);
 }
 
 }  // namespace webauthn::metrics

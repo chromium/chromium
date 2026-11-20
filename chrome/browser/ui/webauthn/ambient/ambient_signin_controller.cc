@@ -257,6 +257,8 @@ void AmbientSigninController::OnMechanismSelected(size_t index,
   }
   credential_selected_ = true;
   selected_from_expanded_list_ = from_expanded_list;
+  RecordBubbleShownDuration(
+      webauthn::metrics::AmbientBubbleCloseReason::kCredentialSelected);
   FinalizeRequestMetrics();
   // Reset any dismissal count and cooldown for the site.
   SetPromptData(GetTopLevelUrl(render_frame_host()),
@@ -271,6 +273,7 @@ void AmbientSigninController::OnBubbleShown() {
     return;
   }
   bubble_shown_ = true;
+  bubble_shown_time_ = base::TimeTicks::Now();
   webauthn::metrics::RecordAmbientBubbleCredentialCount(
       credential_indices_.size());
 }
@@ -280,6 +283,8 @@ void AmbientSigninController::OnBubbleDismissed() {
     OnBubbleShown();
   }
   bubble_dismissed_ = true;
+  RecordBubbleShownDuration(
+      webauthn::metrics::AmbientBubbleCloseReason::kDismissed);
   const GURL top_level_url = GetTopLevelUrl(render_frame_host());
   content::BrowserContext* browser_context =
       render_frame_host().GetBrowserContext();
@@ -342,6 +347,12 @@ void AmbientSigninController::FinalizeRequestMetrics() {
 
 void AmbientSigninController::Close() {
   FinalizeRequestMetrics();
+  // If the bubble is still being timed, the request ended without the user
+  // selecting a credential or dismissing the bubble. For example, the page
+  // navigated away, its tab was closed, the page aborted the request, or the
+  // renderer crashed.
+  RecordBubbleShownDuration(
+      webauthn::metrics::AmbientBubbleCloseReason::kRequestEnded);
   if (auto* permission_controller =
           AmbientLoginPermissionController::GetForPage(
               render_frame_host().GetPage())) {
@@ -350,6 +361,16 @@ void AmbientSigninController::Close() {
     // it can remain open.
     permission_controller->Reset();
   }
+}
+
+void AmbientSigninController::RecordBubbleShownDuration(
+    webauthn::metrics::AmbientBubbleCloseReason reason) {
+  if (!bubble_shown_time_) {
+    return;
+  }
+  webauthn::metrics::RecordAmbientBubbleShownDuration(
+      reason, base::TimeTicks::Now() -
+                  *std::exchange(bubble_shown_time_, std::nullopt));
 }
 
 void AmbientSigninController::OnStartOver() {

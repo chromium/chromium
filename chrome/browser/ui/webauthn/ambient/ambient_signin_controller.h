@@ -5,11 +5,14 @@
 #ifndef CHROME_BROWSER_UI_WEBAUTHN_AMBIENT_AMBIENT_SIGNIN_CONTROLLER_H_
 #define CHROME_BROWSER_UI_WEBAUTHN_AMBIENT_AMBIENT_SIGNIN_CONTROLLER_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
+#include "chrome/browser/webauthn/webauthn_metrics_util.h"
 #include "content/public/browser/document_user_data.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
@@ -54,6 +57,11 @@ class AmbientSigninController
   void FinalizeRequestMetrics();
   void Close();
 
+  // Records how long the bubble has been shown, if it is being timed, and
+  // stops timing it.
+  void RecordBubbleShownDuration(
+      webauthn::metrics::AmbientBubbleCloseReason reason);
+
   // AuthenticatorRequestDialogModel::Observer
   void OnStartOver() override;
   void OnRequestComplete() override;
@@ -71,6 +79,9 @@ class AmbientSigninController
   bool bubble_dismissed_ = false;
   bool credential_selected_ = false;
   bool selected_from_expanded_list_ = false;
+  // When the bubble was first shown for the current request. Reset once the
+  // shown duration has been recorded.
+  std::optional<base::TimeTicks> bubble_shown_time_;
 
   base::WeakPtrFactory<AmbientSigninController> weak_ptr_factory_{this};
 };
