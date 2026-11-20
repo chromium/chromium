@@ -834,6 +834,7 @@ if (!is_android) {
         ":test_support",
         "//chrome/browser/autofill",
         "//chrome/browser/enterprise",
+        "//chrome/browser/prefs",
         "//chrome/browser/profiles:profile",
         "//chrome/browser/search_engines",
         "//chrome/browser/sync",

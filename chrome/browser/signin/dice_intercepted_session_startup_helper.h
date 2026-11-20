@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "base/cancelable_callback.h"
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -35,6 +35,7 @@ class IdentityManager;
 enum class SetAccountsInCookieResult;
 }
 
+class BrowserWindowInterface;
 class GoogleServiceAuthError;
 class Profile;
 
@@ -81,8 +82,10 @@ class DiceInterceptedSessionStartupHelper
   DiceInterceptedSessionStartupHelper& operator=(
       const DiceInterceptedSessionStartupHelper&) = delete;
 
-  // Start up the session. Can only be called once.
-  void Startup(base::OnceClosure callback);
+  // Start up the session. Can only be called once. `callback` is invoked once
+  // the tab movement has completed with the browser window that was created or
+  // reused, or nullptr if browser creation failed.
+  void Startup(base::OnceCallback<void(BrowserWindowInterface*)> callback);
 
   // Resolves the destination URL to open in the destination browser (new or
   // existing profile) when moving the intercepted tab.
@@ -142,7 +145,7 @@ class DiceInterceptedSessionStartupHelper
   base::WeakPtr<content::WebContents> web_contents_;
   bool use_multilogin_;
   CoreAccountId account_id_;
-  base::OnceClosure callback_;
+  base::OnceCallback<void(BrowserWindowInterface*)> callback_;
   bool reconcile_error_encountered_ = false;
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>

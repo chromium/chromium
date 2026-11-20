@@ -22,6 +22,7 @@
 #include "chrome/browser/signin/chrome_signin_client_test_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/signin/core/browser/account_reconcilor.h"
@@ -175,14 +176,15 @@ TEST_F(DiceInterceptedSessionStartupHelperTest,
   AccountInfo initiator_info = identity_test_env()->MakePrimaryAccountAvailable(
       "alice@example.com", signin::ConsentLevel::kSignin);
 
-  base::test::TestFuture<void> future;
+  base::test::TestFuture<BrowserWindowInterface*> future;
 
   auto helper = std::make_unique<DiceInterceptedSessionStartupHelper>(
       profile(), /*is_new_profile=*/true, initiator_info.GetAccountId(),
       /*tab_to_move=*/nullptr);
 
   helper->Startup(future.GetCallback());
-  EXPECT_TRUE(future.Wait());
+  ASSERT_TRUE(future.Wait());
+  EXPECT_EQ(future.Get(), nullptr);
 
   ASSERT_TRUE(last_multilogin_request_.has_value());
   std::optional<std::string> auth_header =
@@ -211,14 +213,15 @@ TEST_F(DiceInterceptedSessionStartupHelperTest,
   AccountInfo secondary_info2 =
       identity_test_env()->MakeAccountAvailable("charlie@example.com");
 
-  base::test::TestFuture<void> future;
+  base::test::TestFuture<BrowserWindowInterface*> future;
 
   auto helper = std::make_unique<DiceInterceptedSessionStartupHelper>(
       profile(), /*is_new_profile=*/true, initiator_info.GetAccountId(),
       /*tab_to_move=*/nullptr);
 
   helper->Startup(future.GetCallback());
-  EXPECT_TRUE(future.Wait());
+  ASSERT_TRUE(future.Wait());
+  EXPECT_EQ(future.Get(), nullptr);
 
   ASSERT_TRUE(last_multilogin_request_.has_value());
   std::optional<std::string> auth_header =
@@ -268,14 +271,15 @@ TEST_F(DiceInterceptedSessionStartupHelperTest,
       "alice@example.com", signin::ConsentLevel::kSignin);
   identity_test_env()->MakeAccountAvailable("bob@example.com");
 
-  base::test::TestFuture<void> future;
+  base::test::TestFuture<BrowserWindowInterface*> future;
 
   auto helper = std::make_unique<DiceInterceptedSessionStartupHelper>(
       profile(), /*is_new_profile=*/true, initiator_info.GetAccountId(),
       /*tab_to_move=*/nullptr);
 
   helper->Startup(future.GetCallback());
-  EXPECT_TRUE(future.Wait());
+  ASSERT_TRUE(future.Wait());
+  EXPECT_EQ(future.Get(), nullptr);
 
   histogram_tester.ExpectUniqueSample(
       kDiceLinkedAccountsNewProfileOAuthMultiLoginResult,
@@ -295,14 +299,15 @@ TEST_F(DiceInterceptedSessionStartupHelperTest,
       "alice@example.com", signin::ConsentLevel::kSignin);
   identity_test_env()->MakeAccountAvailable("bob@example.com");
 
-  base::test::TestFuture<void> future;
+  base::test::TestFuture<BrowserWindowInterface*> future;
 
   auto helper = std::make_unique<DiceInterceptedSessionStartupHelper>(
       profile(), /*is_new_profile=*/true, initiator_info.GetAccountId(),
       /*tab_to_move=*/nullptr);
 
   helper->Startup(future.GetCallback());
-  EXPECT_TRUE(future.Wait());
+  ASSERT_TRUE(future.Wait());
+  EXPECT_EQ(future.Get(), nullptr);
 
   histogram_tester.ExpectUniqueSample(
       kDiceLinkedAccountsNewProfileOAuthMultiLoginResult,
@@ -322,14 +327,15 @@ TEST_F(DiceInterceptedSessionStartupHelperTest,
       "alice@example.com", signin::ConsentLevel::kSignin);
   identity_test_env()->MakeAccountAvailable("bob@example.com");
 
-  base::test::TestFuture<void> future;
+  base::test::TestFuture<BrowserWindowInterface*> future;
 
   auto helper = std::make_unique<DiceInterceptedSessionStartupHelper>(
       profile(), /*is_new_profile=*/true, initiator_info.GetAccountId(),
       /*tab_to_move=*/nullptr);
 
   helper->Startup(future.GetCallback());
-  EXPECT_TRUE(future.Wait());
+  ASSERT_TRUE(future.Wait());
+  EXPECT_EQ(future.Get(), nullptr);
 
   histogram_tester.ExpectUniqueSample(
       kDiceLinkedAccountsNewProfileOAuthMultiLoginResult,
@@ -357,7 +363,11 @@ TEST_F(DiceInterceptedSessionStartupHelperTest,
       /*tab_to_move=*/nullptr);
 
   // Like `DiceWebSigninInterceptor`, delete the helper once the tab has moved.
-  helper->Startup(base::BindLambdaForTesting([&helper]() { helper.reset(); }));
+  helper->Startup(
+      base::BindLambdaForTesting([&helper](BrowserWindowInterface* browser) {
+        EXPECT_EQ(browser, nullptr);
+        helper.reset();
+      }));
 
   // Let the multilogin request start, without reaching the timeout.
   task_environment()->FastForwardBy(base::Seconds(1));
@@ -397,7 +407,7 @@ TEST_F(DiceInterceptedSessionStartupHelperTest,
   AccountInfo initiator_info = identity_test_env()->MakePrimaryAccountAvailable(
       "alice@example.com", signin::ConsentLevel::kSignin);
 
-  base::test::TestFuture<void> future;
+  base::test::TestFuture<BrowserWindowInterface*> future;
 
   auto helper = std::make_unique<DiceInterceptedSessionStartupHelper>(
       profile(), /*is_new_profile=*/true, initiator_info.GetAccountId(),
@@ -405,7 +415,8 @@ TEST_F(DiceInterceptedSessionStartupHelperTest,
 
   helper->Startup(future.GetCallback());
   task_environment()->FastForwardBy(base::Seconds(12));
-  EXPECT_TRUE(future.IsReady());
+  ASSERT_TRUE(future.IsReady());
+  EXPECT_EQ(future.Get(), nullptr);
 
   histogram_tester.ExpectTotalCount(
       kDiceLinkedAccountsNewProfileOAuthMultiLoginResult, 0);
@@ -420,7 +431,7 @@ TEST_F(DiceInterceptedSessionStartupHelperTest,
   AccountInfo secondary_info =
       identity_test_env()->MakeAccountAvailable("bob@example.com");
 
-  base::test::TestFuture<void> future;
+  base::test::TestFuture<BrowserWindowInterface*> future;
 
   auto helper = std::make_unique<DiceInterceptedSessionStartupHelper>(
       profile(), /*is_new_profile=*/false, initiator_info.GetAccountId(),
@@ -433,7 +444,8 @@ TEST_F(DiceInterceptedSessionStartupHelperTest,
       {{std::string(initiator_info.GetEmail()), initiator_info.GetGaiaId()},
        {std::string(secondary_info.GetEmail()), secondary_info.GetGaiaId()}});
 
-  EXPECT_TRUE(future.Wait());
+  ASSERT_TRUE(future.Wait());
+  EXPECT_EQ(future.Get(), nullptr);
 
   EXPECT_FALSE(last_multilogin_request_.has_value());
 
@@ -451,7 +463,7 @@ TEST_F(DiceInterceptedSessionStartupHelperTest,
       "alice@example.com", signin::ConsentLevel::kSignin);
   identity_test_env()->MakeAccountAvailable("bob@example.com");
 
-  base::test::TestFuture<void> future;
+  base::test::TestFuture<BrowserWindowInterface*> future;
 
   auto helper = std::make_unique<DiceInterceptedSessionStartupHelper>(
       profile(), /*is_new_profile=*/false, initiator_info.GetAccountId(),
@@ -461,7 +473,8 @@ TEST_F(DiceInterceptedSessionStartupHelperTest,
   // timeout fires.
   helper->Startup(future.GetCallback());
   task_environment()->FastForwardBy(base::Seconds(12));
-  EXPECT_TRUE(future.IsReady());
+  ASSERT_TRUE(future.IsReady());
+  EXPECT_EQ(future.Get(), nullptr);
 
   histogram_tester.ExpectTotalCount(
       kDiceLinkedAccountsNewProfileOAuthMultiLoginResult, 0);

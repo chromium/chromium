@@ -18,8 +18,10 @@
 #include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/account_reconcilor_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/common/webui_url_constants.h"
@@ -130,14 +132,18 @@ DiceInterceptedSessionStartupHelper::DiceInterceptedSessionStartupHelper(
     : profile_(profile),
       use_multilogin_(is_new_profile),
       account_id_(account_id) {
-  if (tab_to_move)
+  if (tab_to_move) {
+    CHECK_NE(Profile::FromBrowserContext(tab_to_move->GetBrowserContext()),
+             profile);
     web_contents_ = tab_to_move->GetWeakPtr();
+  }
 }
 
 DiceInterceptedSessionStartupHelper::~DiceInterceptedSessionStartupHelper() =
     default;
 
-void DiceInterceptedSessionStartupHelper::Startup(base::OnceClosure callback) {
+void DiceInterceptedSessionStartupHelper::Startup(
+    base::OnceCallback<void(BrowserWindowInterface*)> callback) {
   callback_ = std::move(callback);
 
   // Wait until the account is set in cookies of the newly created profile
@@ -322,19 +328,27 @@ void DiceInterceptedSessionStartupHelper::PerformMoveTab() {
   reconcilor_lock_.reset();
 
   GURL url_to_open = chrome::ChromeUINewTabURLAsGURL();
-  // If the intercepted web contents is still alive, close it now.
   if (web_contents_) {
     url_to_open = GetDestinationURLForInterceptedTab(
         web_contents_->GetLastCommittedURL());
-    web_contents_->Close();
   }
 
-  // Open a new browser.
+  // Open a new browser before closing the intercepted web contents so that
+  // closing the last tab of the last open browser window does not trigger
+  // browser shutdown before the new browser window is created.
   NavigateParams params(profile_, url_to_open,
                         ui::PAGE_TRANSITION_AUTO_BOOKMARK);
   Navigate(&params);
+  base::WeakPtr<BrowserWindowInterface> browser =
+      params.browser ? params.browser->GetWeakPtr() : nullptr;
+
+  // If a browser was opened and the intercepted web contents is still alive,
+  // close it now.
+  if (browser && web_contents_) {
+    web_contents_->Close();
+  }
 
   if (callback_) {
-    std::move(callback_).Run();
+    std::move(callback_).Run(browser.get());
   }
 }

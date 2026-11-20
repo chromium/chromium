@@ -53,6 +53,7 @@ class PrefRegistrySyncable;
 }
 
 class AccountInfo;
+class BrowserWindowInterface;
 class DiceSignedInProfileCreator;
 class DiceInterceptedSessionStartupHelper;
 class Profile;
@@ -387,8 +388,10 @@ class DiceWebSigninInterceptor : public KeyedService,
                                          SigninInterceptionResult create);
 
   // Called when the new browser is created after interception. Passed as
-  // callback to `session_startup_helper_`.
-  void OnNewBrowserCreated(bool is_new_profile);
+  // callback to `session_startup_helper_`. `browser` may be nullptr if
+  // creating a browser window for the profile failed.
+  void OnNewBrowserCreated(bool is_new_profile,
+                           BrowserWindowInterface* browser);
 
   // Returns a 8-bit hash of the email that can be persisted.
   static std::string GetPersistentEmailHash(std::string_view email);

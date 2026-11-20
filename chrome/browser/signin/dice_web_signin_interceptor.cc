@@ -56,7 +56,6 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/profiles/profile_colors_util.h"
@@ -1938,7 +1937,9 @@ void DiceWebSigninInterceptor::OnEnterpriseProfileCreationResult(
   }
 }
 
-void DiceWebSigninInterceptor::OnNewBrowserCreated(bool is_new_profile) {
+void DiceWebSigninInterceptor::OnNewBrowserCreated(
+    bool is_new_profile,
+    BrowserWindowInterface* browser) {
   CHECK(state_->interception_bubble_handle_, base::NotFatalUntil::M162);
   state_->interception_bubble_handle_.reset();  // Close the bubble now.
   state_->session_startup_helper_.reset();
@@ -1947,9 +1948,12 @@ void DiceWebSigninInterceptor::OnNewBrowserCreated(bool is_new_profile) {
     return;
   }
 
-  BrowserWindowInterface* browser =
-      ProfileBrowserCollection::GetForProfile(profile_)->GetLastActiveBrowser();
-  CHECK(browser, base::NotFatalUntil::M162);
+  if (!browser) {
+    // A browser window may not have been created if browser creation was
+    // disallowed for `profile_` (e.g. if the browser process or profile is
+    // shutting down).
+    return;
+  }
   delegate_->ShowFirstRunExperienceInNewProfile(browser, state_->account_id_,
                                                 *state_->interception_type_);
 }

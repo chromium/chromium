@@ -5,6 +5,7 @@
 #include "chrome/browser/enterprise/signin/managed_profile_creation_controller.h"
 
 #include "base/check_is_test.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
@@ -413,9 +414,9 @@ void ManagedProfileCreationController::OnNewSignedInProfileCreated(
 
   startup_helper_ = std::make_unique<DiceInterceptedSessionStartupHelper>(
       new_profile, is_new_profile, account_info_.GetAccountId(), nullptr);
-  startup_helper_->Startup(
+  startup_helper_->Startup(base::IgnoreArgs<BrowserWindowInterface*>(
       base::BindOnce(&ManagedProfileCreationController::OnNewBrowserCreated,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr())));
 }
 
 void ManagedProfileCreationController::OnNewBrowserCreated() {

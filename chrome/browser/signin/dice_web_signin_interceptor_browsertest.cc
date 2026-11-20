@@ -24,11 +24,16 @@
 #include "chrome/browser/enterprise/signin/profile_management_disclaimer_service.h"
 #include "chrome/browser/enterprise/signin/profile_management_disclaimer_service_factory.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
+#include "chrome/browser/lifetime/browser_shutdown.h"
+#include "chrome/browser/prefs/incognito_mode_prefs.h"
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_init_params.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
+#include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/signin/account_preview_data_service_factory.h"
@@ -46,6 +51,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
 #include "chrome/browser/ui/hats/survey_config.h"
@@ -67,6 +73,7 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/metrics/profile_metrics_service.h"
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
@@ -2343,6 +2350,123 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
   EXPECT_EQ(new_interceptor_delegate->fre_account_id(),
             account_info.GetAccountId());
   EXPECT_EQ(source_interceptor_delegate->fre_browser(), nullptr);
+}
+
+// Regression test for crbug.com/582965050: when the intercepted tab is the
+// only tab in the only open browser window, moving the tab to the target
+// profile must open the new browser window before closing the intercepted tab
+// so that closing the old browser window does not trigger browser shutdown.
+IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
+                       InterceptionSingleTabInLastBrowserDoesNotStartShutdown) {
+  // Keep the source profile alive when its only browser window closes so that
+  // SigninBrowserTestBase can tear down its
+  // IdentityTestEnvironmentProfileAdaptor cleanly. Note that
+  // ScopedProfileKeepAlive does not register a KeepAliveOrigin::BROWSER in
+  // KeepAliveRegistry.
+  auto source_profile_keep_alive = ScopedProfileKeepAlive::TryAcquire(
+      GetProfile(), ProfileKeepAliveOrigin::kAppWindow);
+  ASSERT_TRUE(source_profile_keep_alive);
+
+  // Navigate the existing single tab instead of opening a second tab so that
+  // closing the intercepted tab closes the source browser window.
+  GURL intercepted_url = embedded_test_server()->GetURL("/defaultresponse");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), intercepted_url));
+  ASSERT_EQ(browser()->GetTabStripModel()->count(), 1);
+  ASSERT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
+  content::WebContents* web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  base::WeakPtr<content::WebContents> weak_web_contents =
+      web_contents->GetWeakPtr();
+
+  // Create a second profile with the account already in its cookie jar so
+  // `DiceInterceptedSessionStartupHelper` moves the tab immediately.
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  Profile& new_profile = profiles::testing::CreateProfileSync(
+      profile_manager, profile_manager->GenerateNextProfileDirectoryPath());
+  signin::IdentityManager* new_identity_manager =
+      IdentityManagerFactory::GetForProfile(&new_profile);
+  AccountInfo account_info =
+      signin::MakeAccountAvailable(new_identity_manager, "bob@example.com");
+  signin::SetCookieAccounts(
+      new_identity_manager, test_url_loader_factory(),
+      {{std::string(account_info.GetEmail()), account_info.GetGaiaId()}});
+
+  base::test::TestFuture<BrowserWindowInterface*> future;
+  DiceInterceptedSessionStartupHelper helper(
+      &new_profile, /*is_new_profile=*/true, account_info.GetAccountId(),
+      web_contents);
+  helper.Startup(future.GetCallback());
+  BrowserWindowInterface* added_browser = future.Get();
+
+  EXPECT_FALSE(browser_shutdown::HasShutdownStarted());
+  EXPECT_FALSE(g_browser_process->IsShuttingDown());
+  ASSERT_TRUE(added_browser);
+  EXPECT_EQ(added_browser->GetProfile(), &new_profile);
+  EXPECT_EQ(added_browser->GetTabStripModel()
+                ->GetActiveWebContents()
+                ->GetVisibleURL(),
+            intercepted_url);
+  EXPECT_FALSE(weak_web_contents);
+}
+
+// Regression test for crbug.com/582965050: if creating a browser window for the
+// new profile fails (for example, because browser window creation is disallowed
+// for the profile or during shutdown when PerformMoveTab() runs
+// asynchronously), OnNewBrowserCreated() must not crash and the intercepted tab
+// in the source browser must remain open.
+IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
+                       InterceptionNewProfileWhenBrowserCreationDisallowed) {
+  GURL intercepted_url = embedded_test_server()->GetURL("/defaultresponse");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), intercepted_url));
+  ASSERT_EQ(browser()->GetTabStripModel()->count(), 1);
+  ASSERT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
+  content::WebContents* web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  base::WeakPtr<content::WebContents> weak_web_contents =
+      web_contents->GetWeakPtr();
+
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  Profile& new_profile = profiles::testing::CreateProfileSync(
+      profile_manager, profile_manager->GenerateNextProfileDirectoryPath());
+  signin::IdentityManager* new_identity_manager =
+      IdentityManagerFactory::GetForProfile(&new_profile);
+  AccountInfo account_info =
+      signin::MakeAccountAvailable(new_identity_manager, "bob@example.com");
+  signin::SetCookieAccounts(
+      new_identity_manager, test_url_loader_factory(),
+      {{std::string(account_info.GetEmail()), account_info.GetGaiaId()}});
+
+  // Disallow opening a normal browser window for `new_profile` before
+  // `PerformMoveTab()` runs so that `Navigate(&params)` cannot create a
+  // browser window.
+  IncognitoModePrefs::SetAvailability(
+      new_profile.GetPrefs(), policy::IncognitoModeAvailability::kForced);
+
+  auto bubble_handle = std::make_unique<FakeBubbleHandle>();
+  base::WeakPtr<FakeBubbleHandle> weak_bubble_handle =
+      bubble_handle->AsWeakPtr();
+  FakeDiceWebSigninInterceptorDelegate* new_interceptor_delegate =
+      GetInterceptorDelegate(&new_profile);
+
+  DiceWebSigninInterceptorFactory::GetForProfile(&new_profile)
+      ->CreateBrowserAfterSigninInterception(
+          account_info.GetAccountId(), web_contents, std::move(bubble_handle),
+          /*is_new_profile=*/true,
+          WebSigninInterceptor::SigninInterceptionType::kMultiUser);
+
+  // Wait for `OnNewBrowserCreated()` to run and close the interception bubble
+  // without crashing.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return weak_bubble_handle.WasInvalidated(); }));
+
+  EXPECT_FALSE(browser_shutdown::HasShutdownStarted());
+  EXPECT_FALSE(g_browser_process->IsShuttingDown());
+  EXPECT_EQ(ProfileBrowserCollection::GetForProfile(&new_profile)
+                ->GetLastActiveBrowser(),
+            nullptr);
+  EXPECT_EQ(new_interceptor_delegate->fre_browser(), nullptr);
+  EXPECT_TRUE(weak_web_contents);
+  EXPECT_EQ(browser()->GetTabStripModel()->count(), 1);
 }
 
 // Tests the complete interception flow including profile and browser creation.
