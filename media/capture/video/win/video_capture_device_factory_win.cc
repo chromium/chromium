@@ -392,7 +392,8 @@ class VideoCaptureDeviceFactoryWin::ComThreadData
       GetDevicesInfoCallback result_callback,
       std::vector<VideoCaptureDeviceInfo> devices_info);
 
-  absl::flat_hash_set<raw_ptr<IAsyncOperation<DeviceInformationCollection*>>>
+  absl::flat_hash_set<
+      raw_ptr<IAsyncOperation<DeviceInformationCollection*>, CtnExperimental>>
       async_ops_;
   base::WeakPtr<VideoCaptureDeviceFactoryWin> device_factory_;
   scoped_refptr<base::SingleThreadTaskRunner> com_thread_runner_;
