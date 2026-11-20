@@ -75,8 +75,8 @@ id<GREYMatcher> CheckPasswordButton() {
 
 - (void)testPasswordBreachIsPresented {
   [PasswordBreachAppInterface showPasswordBreachWithCheckButton:NO];
-  [[EarlGrey selectElementWithMatcher:PasswordBreachMatcher()]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:PasswordBreachMatcher()];
 }
 
 // Tests that the "Check passwords" button redirects to the Password Checkup
@@ -87,18 +87,17 @@ id<GREYMatcher> CheckPasswordButton() {
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
 
   [PasswordBreachAppInterface showPasswordBreachWithCheckButton:YES];
-  [[EarlGrey selectElementWithMatcher:PasswordBreachMatcher()]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:PasswordBreachMatcher()];
 
   // Mock successful auth for opening the Password Checkup homepage.
   [ReauthenticationAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kSuccess];
 
-  [[EarlGrey selectElementWithMatcher:CheckPasswordButton()]
-      performAction:grey_tap()];
+  [ChromeEarlGrey waitForAndTapButton:CheckPasswordButton()];
 
-  [[EarlGrey selectElementWithMatcher:PasswordCheckupHomepageMatcher()]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      PasswordCheckupHomepageMatcher()];
 
   GREYAssertNil(
       [MetricsAppInterface
@@ -116,18 +115,17 @@ id<GREYMatcher> CheckPasswordButton() {
 // when the user is signed out.
 - (void)testPasswordBreachRedirectsToPasswordManager {
   [PasswordBreachAppInterface showPasswordBreachWithCheckButton:YES];
-  [[EarlGrey selectElementWithMatcher:PasswordBreachMatcher()]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:PasswordBreachMatcher()];
 
   // Mock successful auth for opening the Password Manager.
   [ReauthenticationAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kSuccess];
 
-  [[EarlGrey selectElementWithMatcher:CheckPasswordButton()]
-      performAction:grey_tap()];
+  [ChromeEarlGrey waitForAndTapButton:CheckPasswordButton()];
 
-  [[EarlGrey selectElementWithMatcher:PasswordManagerMatcher()]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:PasswordManagerMatcher()];
 
   GREYAssertNil(
       [MetricsAppInterface
