@@ -83,9 +83,6 @@ void HistoryClustersServiceTaskUpdateClusters::OnGotAnnotatedVisitsToCluster(
       "History.Clusters.Backend.UpdateClusters."
       "GetAnnotatedVisitsToClusterLatency",
       elapsed_time);
-  base::UmaHistogramCounts1000(
-      "History.Clusters.Backend.UpdateClusters.Counts.NumVisitsToCluster",
-      static_cast<int>(annotated_visits.size()));
 
   if (weak_history_clusters_service_->ShouldNotifyDebugMessage()) {
     weak_history_clusters_service_->NotifyDebugMessage(base::StringPrintf(
@@ -122,12 +119,6 @@ void HistoryClustersServiceTaskUpdateClusters::OnGotModelClusters(
   base::UmaHistogramTimes(
       "History.Clusters.Backend.UpdateClusters.ComputeClustersLatency",
       elapsed_time);
-  base::UmaHistogramCounts1000(
-      "History.Clusters.Backend.UpdateClusters.Counts.NumClustersReplaced",
-      static_cast<int>(old_cluster_ids.size()));
-  base::UmaHistogramCounts1000(
-      "History.Clusters.Backend.UpdateClusters.Counts.NumClustersReturned",
-      static_cast<int>(clusters.size()));
 
   if (weak_history_clusters_service_->ShouldNotifyDebugMessage()) {
     weak_history_clusters_service_->NotifyDebugMessage(base::StringPrintf(
