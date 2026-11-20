@@ -57,21 +57,6 @@ suite('AutofillPageIndex', function() {
         type: chrome.settingsPrivate.PrefType.BOOLEAN,
         value: true,
       },
-      {
-        key: 'autofill.at_memory.double_ctrl_trigger_enabled',
-        type: chrome.settingsPrivate.PrefType.BOOLEAN,
-        value: false,
-      },
-      {
-        key: 'autofill.at_memory.shortcut',
-        type: chrome.settingsPrivate.PrefType.STRING,
-        value: '',
-      },
-      {
-        key: 'autofill.personal_context.find_and_fill_with_gemini_settings',
-        type: chrome.settingsPrivate.PrefType.NUMBER,
-        value: ModelExecutionEnterprisePolicyValue.ALLOW,
-      },
     ]);
     PrefsBrowserProxy.setInstance(prefsBrowserProxy);
     PrefService.resetInstanceForTesting();
