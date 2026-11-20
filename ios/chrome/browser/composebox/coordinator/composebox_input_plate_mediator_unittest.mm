@@ -33,6 +33,7 @@
 #import "components/lens/lens_overlay_mime_type.h"
 #import "components/omnibox/browser/mock_aim_eligibility_service.h"
 #import "components/omnibox/browser/omnibox_prefs.h"
+#import "components/omnibox/common/composebox_features.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #import "components/prefs/testing_pref_service.h"
 #import "components/search_engines/search_engines_test_environment.h"
@@ -507,6 +508,110 @@ class ComposeboxInputPlateMediatorTest : public PlatformTest {
         });
   }
 
+  // Outcome of `RemoveSubmittedTabAndSendAIMFollowup()`.
+  struct SubmittedTabRemovalResult {
+    // Whether the tab was removed from the input items.
+    bool removed_from_ui = false;
+    // Whether the session marked the tab as deselected.
+    bool deselected_in_session = false;
+    // Whether the session still tracks the tab as submitted context.
+    bool persisted_in_session = false;
+    // Whether the follow-up created a Client to AIM request.
+    bool follow_up_sent = false;
+    // The removed contexts of the follow-up's Client to AIM request.
+    std::vector<lens::LensOverlayRequestId> removed_contexts;
+  };
+
+  // Creates a Co-browse mediator whose session already submitted the active
+  // tab, with `request_id`, in a previous query. Then removes the tab from
+  // Shared tabs, sends a follow-up, and returns the outcome.
+  SubmittedTabRemovalResult RemoveSubmittedTabAndSendAIMFollowup(
+      const lens::LensOverlayRequestId& request_id) {
+    SetAIMEligible(true);
+    SetDSEGoogle(true);
+    ForwardSearchboxConfig();
+    web::FakeWebState* active_web_state =
+        static_cast<web::FakeWebState*>(web_state_list_->GetActiveWebState());
+    PrepareForAutoAttachment(active_web_state);
+    const SessionID tab_session_id =
+        active_web_state->GetUniqueIdentifier().ToSessionID();
+
+    auto mock_session = std::make_unique<
+        testing::NiceMock<TestContextualSearchSessionHandle>>();
+    TestContextualSearchSessionHandle* raw_mock_session = mock_session.get();
+    testing::NiceMock<contextual_search::MockContextualSearchContextController>
+        mock_controller;
+    ON_CALL(*raw_mock_session, GetController())
+        .WillByDefault(testing::Return(&mock_controller));
+
+    // Simulates the upload of the tab, submitted in a previous query.
+    const base::UnguessableToken server_token =
+        base::UnguessableToken::Create();
+    contextual_search::FileInfo file_info;
+    file_info.file_token = server_token;
+    file_info.mime_type = lens::MimeType::kAnnotatedPageContent;
+    file_info.tab_session_id = tab_session_id;
+    file_info.tab_url = GURL(kExtractablePageURL);
+    file_info.tab_title = "Example";
+    file_info.request_id = request_id;
+    ON_CALL(mock_controller, GetFileInfo(server_token))
+        .WillByDefault(testing::Return(&file_info));
+    raw_mock_session->SetPersistedTabs(
+        {{tab_session_id, {server_token, request_id}}});
+
+    ComposeboxInputPlateMediator* mediator =
+        CreateMediator(std::move(mock_session), ComposeboxEntrypoint::kCobrowse,
+                       ComposeboxMode::kAIM);
+    TestComposeboxInputPlateConsumer* consumer =
+        [[TestComposeboxInputPlateConsumer alloc] init];
+    mediator.consumer = consumer;
+    FakeComposeboxURLLoader* url_loader =
+        [[FakeComposeboxURLLoader alloc] init];
+    mediator.URLLoader = url_loader;
+    base::ScopedClosureRunner disconnect_runner(base::BindOnce(^{
+      [mediator disconnect];
+    }));
+
+    // Hands the submitted tab over to the Co-browse mediator so that it shows
+    // in Shared tabs, as `AssistantAIMCoordinator` does with the tabs attached
+    // to the query that opened Co-browse.
+    ComposeboxInputItem* submitted_tab = [[ComposeboxInputItem alloc]
+        initWithComposeboxInputItemType:ComposeboxInputItemType::
+                                            kComposeboxInputItemTypeTab
+                                 source:ComposeboxInputItemSource::kCurrentTab];
+    submitted_tab.title = @"Example";
+    submitted_tab.tabURL = GURL(kExtractablePageURL);
+    submitted_tab.webStateID = active_web_state->GetUniqueIdentifier();
+    submitted_tab.serverToken = server_token;
+    submitted_tab.state = ComposeboxInputItemState::kLoaded;
+    ComposeboxFocusParams* focus_params = [[ComposeboxFocusParams alloc]
+        initWithEntrypoint:ComposeboxEntrypoint::kCobrowse];
+    focus_params.attachedTabItems = @[ submitted_tab ];
+    [mediator applyFocusParams:focus_params];
+    EXPECT_EQ(consumer.items.count, 1U);
+
+    [mediator removeSharedTabWithInputItemIdentifier:submitted_tab.identifier];
+
+    SubmittedTabRemovalResult result;
+    result.removed_from_ui = consumer.items.count == 0;
+    result.deselected_in_session =
+        raw_mock_session->deselected_tabs_urls().contains(tab_session_id);
+    result.persisted_in_session =
+        raw_mock_session->GetPersistedTabs().contains(tab_session_id);
+
+    EXPECT_CALL(mock_controller, CreateClientToAimRequest(testing::_))
+        .WillOnce(
+            [&result](const std::unique_ptr<
+                      contextual_search::ContextualSearchContextController::
+                          CreateClientToAimRequestInfo>& info) {
+              result.follow_up_sent = true;
+              result.removed_contexts = info->removed_contexts;
+              return lens::ClientToAimMessage();
+            });
+    [mediator sendAIMFollowup:@"followup query"];
+    return result;
+  }
+
   // Returns whether the `index`-th `PageContextWrapper` recorded by
   // `StubPageContextExtraction()` is still alive.
   bool IsPageContextWrapperAlive(size_t index) const {
@@ -648,6 +753,10 @@ class ComposeboxInputPlateMediatorTest : public PlatformTest {
   void EnableInputPlateFeatures(InputPlateFeatures features) {
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
+
+    // Matches the Co-browse field trial config, which enables tab deselection
+    // so that removed submitted tabs are reported to AIM.
+    enabled_features.push_back(omnibox::kContextManagementInComposebox);
 
     if (features.aimNudge) {
       enabled_features.push_back(kComposeboxAIMNudge);
@@ -3681,6 +3790,48 @@ TEST_F(ComposeboxInputPlateMediatorTest,
   EXPECT_EQ(consumer.items.count, 0U);
   EXPECT_TRUE([mediator
       isWebStateIDRemovedByUser:active_web_state->GetUniqueIdentifier()]);
+}
+
+// Tests that removing a submitted Co-browse tab from Shared tabs deselects it
+// in the session, so that the next follow-up reports it in `removed_contexts`
+// for AIM to drop it from the conversation context. Relies on
+// `omnibox::kContextManagementInComposebox`, enabled by the fixture.
+TEST_F(ComposeboxInputPlateMediatorTest,
+       RemovingSubmittedSharedTabReportsRemovedContextInNextFollowup) {
+  lens::LensOverlayRequestId request_id;
+  request_id.set_uuid(12345);
+
+  SubmittedTabRemovalResult result =
+      RemoveSubmittedTabAndSendAIMFollowup(request_id);
+
+  EXPECT_TRUE(result.removed_from_ui);
+  EXPECT_TRUE(result.deselected_in_session);
+  EXPECT_FALSE(result.persisted_in_session);
+  ASSERT_TRUE(result.follow_up_sent);
+  ASSERT_EQ(result.removed_contexts.size(), 1U);
+  EXPECT_EQ(result.removed_contexts[0].uuid(), request_id.uuid());
+}
+
+// Tests that when `omnibox::kContextManagementInComposebox` is disabled,
+// removing a submitted Co-browse tab only hides it from Shared tabs: the
+// session keeps it as submitted context, and the next follow-up doesn't report
+// it in `removed_contexts`. This test fails if the feature is enabled, which
+// guards that the feature override is effective.
+TEST_F(ComposeboxInputPlateMediatorTest,
+       RemovingSubmittedSharedTabWithoutContextManagementKeepsContext) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(omnibox::kContextManagementInComposebox);
+  lens::LensOverlayRequestId request_id;
+  request_id.set_uuid(12345);
+
+  SubmittedTabRemovalResult result =
+      RemoveSubmittedTabAndSendAIMFollowup(request_id);
+
+  EXPECT_TRUE(result.removed_from_ui);
+  EXPECT_FALSE(result.deselected_in_session);
+  EXPECT_TRUE(result.persisted_in_session);
+  ASSERT_TRUE(result.follow_up_sent);
+  EXPECT_TRUE(result.removed_contexts.empty());
 }
 
 // Fixture for tests that depend on timers, using mock time.

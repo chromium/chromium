@@ -13,6 +13,7 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/omnibox/browser/aim_eligibility_service_features.h"
+#import "components/omnibox/common/composebox_features.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_constants.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_constants.h"
 #import "ios/chrome/browser/composebox/eg_tests/composebox_app_interface.h"
@@ -214,6 +215,7 @@ void RemoveAttachmentWithTitle(NSString* title) {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
   config.features_enabled.push_back(kAssistantContainer);
   config.features_enabled.push_back(kAimCobrowse);
+  config.features_enabled.push_back(omnibox::kContextManagementInComposebox);
   // Only rely on local conditions for AIM eligibility, so disable the
   // server-side checks.
   config.features_disabled.push_back(omnibox::kAimServerEligibilityEnabled);
@@ -1192,6 +1194,7 @@ void RemoveAttachmentWithTitle(NSString* title) {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
   config.features_enabled.push_back(kAssistantContainer);
   config.features_enabled.push_back(kAimCobrowse);
+  config.features_enabled.push_back(omnibox::kContextManagementInComposebox);
   // Only rely on local conditions for AIM eligibility, so disable the
   // server-side checks.
   config.features_disabled.push_back(omnibox::kAimServerEligibilityEnabled);

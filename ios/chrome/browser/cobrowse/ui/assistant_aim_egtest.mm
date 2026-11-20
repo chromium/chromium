@@ -10,6 +10,7 @@
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
 #import "components/omnibox/browser/aim_eligibility_service_features.h"
+#import "components/omnibox/common/composebox_features.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_constants.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_detent.h"
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_ui_constants.h"
@@ -342,6 +343,7 @@ void RemoveSharedTab(NSString* title) {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
   config.features_enabled.push_back(kAimCobrowse);
   config.features_enabled.push_back(kAssistantContainer);
+  config.features_enabled.push_back(omnibox::kContextManagementInComposebox);
   config.features_disabled.push_back(omnibox::kAimServerEligibilityEnabled);
 
   if ([self isRunningTest:@selector(testMinimizedStateWhenFlagEnabled)]) {
