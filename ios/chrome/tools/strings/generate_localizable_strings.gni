@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/compiled_action.gni")
-
 # Help template to define a data_bundle with localized strings for use by
 # the iOS system from packed locale.pak files.
 #
@@ -80,28 +78,15 @@ template("generate_localizable_strings") {
                      rebase_path(target_gen_dir, root_build_dir),
                    ] + invoker.packed_locales
 
-  if (host_os == "mac") {
-    compiled_action("${_target_name}_generate") {
-      forward_variables_from(invoker, [ "testonly" ])
+  action("${_target_name}_generate") {
+    forward_variables_from(invoker, [ "testonly" ])
 
-      visibility = _bundle_targets
-      deps = invoker.deps
-      tool = "//ios/chrome/tools/strings:generate_localizable_strings"
-      inputs = _generate_inputs
-      outputs = _generate_outputs
-      args = _generate_args
-    }
-  } else {
-    action("${_target_name}_generate") {
-      forward_variables_from(invoker, [ "testonly" ])
-
-      visibility = _bundle_targets
-      deps = invoker.deps
-      script = "//ios/chrome/tools/strings/ios_strings_tool.py"
-      inputs = _generate_inputs + [ "//tools/grit/grit/format/data_pack.py" ]
-      outputs = _generate_outputs
-      args = [ "generate_localizable_strings" ] + _generate_args
-    }
+    visibility = _bundle_targets
+    deps = invoker.deps
+    script = "//ios/chrome/tools/strings/ios_strings_tool.py"
+    inputs = _generate_inputs + [ "//tools/grit/grit/format/data_pack.py" ]
+    outputs = _generate_outputs
+    args = [ "generate_localizable_strings" ] + _generate_args
   }
 
   group(_target_name) {

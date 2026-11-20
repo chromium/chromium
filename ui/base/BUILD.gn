@@ -34,21 +34,11 @@ if (is_android) {
 
 build_ime = !is_ios
 
-# As part of building Chrome on iOS, it is necessary to run a tool on
-# the host to load datapack and generate output in a format defined
-# by the platform (this is to support notifications).
-#
-# Introduce a standalone target that can build on both 'host' and 'target'
-# toolchains that just builds the support to load datapacks. The dependencies
-# should be kept minimal to not have to build too many targets with multiple
-# toolchains.
-#
-# Any other target should depend on //ui/base instead, except when needed to
+# Targets should depend on //ui/base instead, except when needed to
 # avoid circular dependencies.
 component("ui_data_pack") {
   visibility = [
     ":base",
-    "//ios/chrome/tools/strings:generate_localizable_strings",
     "//third_party/blink/renderer/core",
     "//third_party/blink/renderer/platform",
     "//ui/gfx:*",

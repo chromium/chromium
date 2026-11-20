@@ -2,9 +2,9 @@
 # Copyright 2026 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Host string generation utilities for iOS builds on non-macOS hosts.
+"""Host string generation utilities for iOS builds.
 
-Provides pure-Python equivalents of the Objective-C++ host tools
+Provides a shared cross-platform implementation of
 `generate_localizable_strings` and `substitute_strings_identifier` using
 Chromium's `grit.format.data_pack` and standard library `plistlib`.
 """
