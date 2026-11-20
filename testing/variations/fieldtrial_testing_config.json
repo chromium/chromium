@@ -7717,7 +7717,10 @@
             ],
             "experiments": [
                 {
-                    "name": "Disabled",
+                    "name": "DisablePersist_AssumeQuicBroken",
+                    "enable_features": [
+                        "AssumeQuicBrokenUntilVerifiedOnCurrentNetwork"
+                    ],
                     "disable_features": [
                         "PersistBrokenAlternativeServices"
                     ]
