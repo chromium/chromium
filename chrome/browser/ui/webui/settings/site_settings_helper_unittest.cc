@@ -134,6 +134,21 @@ class SiteSettingsHelperTest : public testing::Test {
         ContentSettingsPattern::Wildcard(), kContentType, setting);
   }
 
+  // Dismisses `type` prompts for `origin` in `profile` until the origin is
+  // placed under embargo.
+  void EmbargoOrigin(Profile* profile,
+                     const GURL& origin,
+                     ContentSettingsType type) {
+    auto* auto_blocker =
+        permissions::PermissionsClient::Get()->GetPermissionDecisionAutoBlocker(
+            profile);
+    for (int i = 0; i < 3; ++i) {
+      auto_blocker->RecordDismissAndEmbargo(
+          origin, type, /*dismissed_prompt_was_quiet=*/false);
+    }
+    ASSERT_TRUE(auto_blocker->IsEmbargoed(origin, type));
+  }
+
   static base::Time GetReferenceTime() {
     base::Time time;
     EXPECT_TRUE(base::Time::FromString("Sat, 1 Sep 2018 11:00:00", &time));
@@ -449,6 +464,47 @@ TEST_F(SiteSettingsHelperTest, ExceptionListFedCmEmbargo) {
   EXPECT_EQ(kOriginToEmbargo, *primary_pattern);
 }
 
+TEST_F(SiteSettingsHelperTest, ExceptionListFedCmEmbargoWithExplicitSetting) {
+  TestingProfile profile;
+  HostContentSettingsMap* map =
+      HostContentSettingsMapFactory::GetForProfile(&profile);
+  constexpr ContentSettingsType kFedCmType =
+      ContentSettingsType::FEDERATED_IDENTITY_API;
+
+  constexpr char kOriginToEmbargo[] = "https://www.embargoed.co.uk:443";
+  EmbargoOrigin(&profile, GURL(kOriginToEmbargo), kFedCmType);
+
+  // FedCM checks the embargo even when the content setting is ALLOW, so an
+  // explicit ALLOW rule must not hide the embargo.
+  map->SetContentSettingCustomScope(
+      ContentSettingsPattern::FromString("https://[*.]embargoed.co.uk"),
+      ContentSettingsPattern::Wildcard(), kFedCmType, CONTENT_SETTING_ALLOW);
+  {
+    base::ListValue exceptions;
+    GetExceptionsForContentType(kFedCmType, &profile, /*web_ui=*/nullptr,
+                                /*incognito=*/false, &exceptions);
+    ASSERT_EQ(2U, exceptions.size());
+    EXPECT_TRUE(std::ranges::any_of(exceptions, [&](const base::Value& value) {
+      const base::DictValue& dict = value.GetDict();
+      return dict.FindBool(kIsEmbargoed).value_or(false) &&
+             *dict.FindString(kOrigin) == kOriginToEmbargo;
+    }));
+  }
+
+  // An explicit BLOCK rule does take precedence over the embargo.
+  map->SetContentSettingCustomScope(
+      ContentSettingsPattern::FromString("https://[*.]embargoed.co.uk"),
+      ContentSettingsPattern::Wildcard(), kFedCmType, CONTENT_SETTING_BLOCK);
+  {
+    base::ListValue exceptions;
+    GetExceptionsForContentType(kFedCmType, &profile, /*web_ui=*/nullptr,
+                                /*incognito=*/false, &exceptions);
+    ASSERT_EQ(1U, exceptions.size());
+    EXPECT_FALSE(
+        exceptions[0].GetDict().FindBool(kIsEmbargoed).value_or(false));
+  }
+}
+
 TEST_F(SiteSettingsHelperTest, ExceptionListIgnoresWebUIAllowlist) {
   TestingProfile profile;
   auto* allowlist = WebUIAllowlist::GetOrCreate(&profile);
@@ -554,6 +610,191 @@ TEST_F(SiteSettingsHelperTest, CheckExceptionOrder) {
   VerifySetting(exceptions, i++, star_google_com, star_google_com,
                 CONTENT_SETTING_ALLOW);
   VerifySetting(exceptions, i++, http_star, "http://*", CONTENT_SETTING_BLOCK);
+}
+
+TEST_F(SiteSettingsHelperTest, ExceptionWithExplicitSettingAndEmbargo) {
+  TestingProfile profile;
+  HostContentSettingsMap* map =
+      HostContentSettingsMapFactory::GetForProfile(&profile);
+
+  constexpr char kOriginPattern[] = "https://www.example.com:443";
+  const GURL origin(kOriginPattern);
+  EmbargoOrigin(&profile, origin, kContentType);
+
+  // Granting an explicit permission for the same origin should take precedence
+  // over the embargo entry in GetExceptionsForContentType.
+  map->SetContentSettingDefaultScope(origin, origin, kContentType,
+                                     CONTENT_SETTING_ALLOW);
+
+  base::ListValue exceptions;
+  GetExceptionsForContentType(kContentType, &profile,
+                              /*web_ui=*/nullptr,
+                              /*incognito=*/false, &exceptions);
+
+  ASSERT_EQ(1u, exceptions.size());
+  VerifySetting(exceptions, 0, kOriginPattern, kOriginPattern,
+                CONTENT_SETTING_ALLOW);
+  EXPECT_FALSE(exceptions[0].GetDict().FindBool(kIsEmbargoed).value_or(true));
+}
+
+TEST_F(SiteSettingsHelperTest, ExceptionWithWildcardSettingAndEmbargo) {
+  TestingProfile profile;
+  HostContentSettingsMap* map =
+      HostContentSettingsMapFactory::GetForProfile(&profile);
+
+  const GURL origin("https://www.example.com");
+  EmbargoOrigin(&profile, origin, kContentType);
+
+  // A wildcard exception matching the embargoed origin takes precedence over
+  // the embargo, so no separate embargo entry should be listed.
+  constexpr char kWildcardPattern[] = "https://[*.]example.com";
+  AddSetting(map, kWildcardPattern, CONTENT_SETTING_ALLOW);
+
+  base::ListValue exceptions;
+  GetExceptionsForContentType(kContentType, &profile,
+                              /*web_ui=*/nullptr,
+                              /*incognito=*/false, &exceptions);
+
+  ASSERT_EQ(1u, exceptions.size());
+  const base::DictValue& dict = exceptions[0].GetDict();
+  EXPECT_EQ(kWildcardPattern, *dict.FindString("origin"));
+  EXPECT_EQ(content_settings::ContentSettingToString(CONTENT_SETTING_ALLOW),
+            *dict.FindString(kSetting));
+  EXPECT_FALSE(dict.FindBool(kIsEmbargoed).value_or(true));
+}
+
+TEST_F(SiteSettingsHelperTest, ExceptionWithPolicySettingAndEmbargo) {
+  TestingProfile profile;
+  HostContentSettingsMap* map =
+      HostContentSettingsMapFactory::GetForProfile(&profile);
+
+  constexpr char kOriginPattern[] = "https://www.example.com:443";
+  const GURL origin(kOriginPattern);
+  EmbargoOrigin(&profile, origin, kContentType);
+
+  // A policy exception (a different provider than the embargo data) also
+  // takes precedence over the embargo.
+  auto policy_provider = std::make_unique<content_settings::MockProvider>();
+  policy_provider->SetWebsiteSetting(
+      ContentSettingsPattern::FromString(kOriginPattern),
+      ContentSettingsPattern::Wildcard(), kContentType,
+      base::Value(CONTENT_SETTING_ALLOW), /*constraints=*/{});
+  policy_provider->set_read_only(true);
+  content_settings::TestUtils::OverrideProvider(map, std::move(policy_provider),
+                                                ProviderType::kPolicyProvider);
+
+  base::ListValue exceptions;
+  GetExceptionsForContentType(kContentType, &profile,
+                              /*web_ui=*/nullptr,
+                              /*incognito=*/false, &exceptions);
+
+  ASSERT_EQ(1u, exceptions.size());
+  const base::DictValue& dict = exceptions[0].GetDict();
+  EXPECT_EQ(kOriginPattern, *dict.FindString("origin"));
+  EXPECT_EQ(content_settings::ContentSettingToString(CONTENT_SETTING_ALLOW),
+            *dict.FindString(kSetting));
+  EXPECT_FALSE(dict.FindBool(kIsEmbargoed).value_or(true));
+}
+
+TEST_F(SiteSettingsHelperTest, IncognitoEmbargoWithInheritedAllowSetting) {
+  TestingProfile profile;
+  HostContentSettingsMap* map =
+      HostContentSettingsMapFactory::GetForProfile(&profile);
+
+  constexpr char kOriginPattern[] = "https://www.example.com:443";
+  const GURL origin(kOriginPattern);
+  map->SetContentSettingDefaultScope(origin, origin, kContentType,
+                                     CONTENT_SETTING_ALLOW);
+
+  // In incognito, the inherited ALLOW is downgraded to ASK, so the origin can
+  // be prompted and embargoed there.
+  TestingProfile* incognito_profile =
+      TestingProfile::Builder().BuildIncognito(&profile);
+  EmbargoOrigin(incognito_profile, origin, kContentType);
+
+  base::ListValue exceptions;
+  GetExceptionsForContentType(kContentType, incognito_profile,
+                              /*web_ui=*/nullptr,
+                              /*incognito=*/true, &exceptions);
+
+  ASSERT_EQ(1u, exceptions.size());
+  VerifySetting(exceptions, 0, kOriginPattern, kOriginPattern,
+                CONTENT_SETTING_BLOCK);
+  EXPECT_TRUE(exceptions[0].GetDict().FindBool(kIsEmbargoed).value_or(false));
+}
+
+TEST_F(SiteSettingsHelperTest, EmbargoWithPerEmbedderStorageAccessSetting) {
+  TestingProfile profile;
+  HostContentSettingsMap* map =
+      HostContentSettingsMapFactory::GetForProfile(&profile);
+  constexpr ContentSettingsType kStorageAccessType =
+      ContentSettingsType::STORAGE_ACCESS;
+
+  constexpr char kOriginPattern[] = "https://www.example.com:443";
+  const GURL origin(kOriginPattern);
+  EmbargoOrigin(&profile, origin, kStorageAccessType);
+
+  // A rule scoped to one embedding site (which also matches the origin as its
+  // own embedder) must not hide the origin-wide embargo.
+  map->SetContentSettingCustomScope(
+      ContentSettingsPattern::FromString(kOriginPattern),
+      ContentSettingsPattern::FromString("https://[*.]example.com"),
+      kStorageAccessType, CONTENT_SETTING_ALLOW);
+
+  base::ListValue exceptions;
+  GetExceptionsForContentType(kStorageAccessType, &profile,
+                              /*web_ui=*/nullptr,
+                              /*incognito=*/false, &exceptions);
+
+  // Both the per-embedder ALLOW rule and the embargo are listed.
+  ASSERT_EQ(2u, exceptions.size());
+  EXPECT_TRUE(std::ranges::any_of(exceptions, [](const base::Value& value) {
+    return value.GetDict().FindBool(kIsEmbargoed).value_or(false);
+  }));
+}
+
+TEST_F(SiteSettingsHelperTest, EmbargoWithDefaultBlockSetting) {
+  TestingProfile profile;
+  HostContentSettingsMap* map =
+      HostContentSettingsMapFactory::GetForProfile(&profile);
+
+  constexpr char kOriginPattern[] = "https://www.example.com:443";
+  const GURL origin(kOriginPattern);
+  EmbargoOrigin(&profile, origin, kContentType);
+
+  // A global default (wildcard, wildcard) is not an explicit exception, so the
+  // embargo is still listed.
+  map->SetDefaultContentSetting(kContentType, CONTENT_SETTING_BLOCK);
+
+  base::ListValue exceptions;
+  GetExceptionsForContentType(kContentType, &profile,
+                              /*web_ui=*/nullptr,
+                              /*incognito=*/false, &exceptions);
+
+  ASSERT_EQ(1u, exceptions.size());
+  VerifySetting(exceptions, 0, kOriginPattern, kOriginPattern,
+                CONTENT_SETTING_BLOCK);
+  EXPECT_TRUE(exceptions[0].GetDict().FindBool(kIsEmbargoed).value_or(false));
+}
+
+TEST_F(SiteSettingsHelperTest, EmbargoWithDefaultAllowSetting) {
+  TestingProfile profile;
+  HostContentSettingsMap* map =
+      HostContentSettingsMapFactory::GetForProfile(&profile);
+
+  constexpr char kOriginPattern[] = "https://www.example.com:443";
+  const GURL origin(kOriginPattern);
+  EmbargoOrigin(&profile, origin, kContentType);
+
+  // A global default ALLOW (e.g. set by policy) means the embargo is never
+  // consulted for this permission, so the embargo is not listed.
+  map->SetDefaultContentSetting(kContentType, CONTENT_SETTING_ALLOW);
+
+  base::ListValue exceptions;
+  GetExceptionsForContentType(kContentType, &profile,
+                              /*web_ui=*/nullptr,
+                              /*incognito=*/false, &exceptions);
+  EXPECT_TRUE(exceptions.empty());
 }
 
 // Tests the following content setting sources: Chrome default, user-set global
