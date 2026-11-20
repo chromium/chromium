@@ -5,6 +5,7 @@
 #include "chrome/browser/glic/browser_ui/activity_list_bubble/glic_activity_list_bubble_controller.h"
 
 #include <algorithm>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -544,29 +545,18 @@ GlicActivityListBubbleController::RegisterBubbleDestroyedCallback(
 }
 
 void GlicActivityListBubbleController::OnTaskRowClicked(actor::TaskId task_id) {
+  // Close the bubble before activating tabs/windows so synchronous focus or
+  // active-tab notifications see the bubble as closed instead of rebuilding it.
+  CloseBubble();
   Profile* profile = browser_->GetProfile();
   actor::ui::ActorUiStateManager* manager =
       actor::ui::ActorUiStateManager::Get(profile);
-  if (auto last_tab_opt = manager->GetLastActedOnTab(task_id);
-      last_tab_opt && *last_tab_opt) {
-    tabs::TabInterface* last_tab = *last_tab_opt;
-    TabListInterface::From(last_tab->GetBrowserWindowInterface())
-        ->ActivateTab(last_tab->GetHandle());
-    // Activate the window that the tab is in as it may not be the current one.
-    if (auto* window = last_tab->GetBrowserWindowInterface()->GetWindow()) {
-      window->Activate();
-    }
-    if (auto* glic_service =
-            glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile)) {
-      glic_service->ShowUI(browser_,
-                           glic::mojom::InvocationSource::kActorTaskIcon);
-      if (auto* instance = glic_service->GetInstanceForTab(last_tab)) {
-        instance->NotifyActorTaskListRowClicked(task_id.value());
-      }
-    }
-  }
-  // Regardless of tab navigation, process the row and close the bubble when
-  // done.
+  auto last_tab_opt =
+      manager ? manager->GetLastActedOnTab(task_id) : std::nullopt;
+
+  // Mark the task seen before activating tabs so synchronous OnActiveTabChanged
+  // handlers compute the post-click state in one pass, and process the row
+  // regardless of tab navigation.
   if (base::FeatureList::IsEnabled(features::kGlicActivityHub)) {
     if (auto* activity_manager = glic::GlicActivityManager::Get(profile)) {
       activity_manager->MarkActivitySeen(task_id);
@@ -575,27 +565,52 @@ void GlicActivityListBubbleController::OnTaskRowClicked(actor::TaskId task_id) {
                  glic::LegacyGlicActivityManager::Get(profile)) {
     activity_manager->ProcessRowInTaskListBubble(task_id);
   }
-  CloseBubble();
+
+  if (last_tab_opt && *last_tab_opt) {
+    tabs::TabInterface* last_tab = *last_tab_opt;
+    if (BrowserWindowInterface* target_browser =
+            last_tab->GetBrowserWindowInterface()) {
+      if (auto* tab_list = TabListInterface::From(target_browser)) {
+        tab_list->ActivateTab(last_tab->GetHandle());
+      }
+      // Activate the window that the tab is in as it may not be the current
+      // one.
+      if (auto* window = target_browser->GetWindow()) {
+        window->Activate();
+      }
+      if (auto* glic_service =
+              glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile)) {
+        glic_service->ShowUI(target_browser,
+                             glic::mojom::InvocationSource::kActorTaskIcon);
+        if (auto* instance = glic_service->GetInstanceForTab(last_tab)) {
+          instance->NotifyActorTaskListRowClicked(task_id.value());
+        }
+      }
+    }
+  }
+
   actor::ui::LogTaskListBubbleRowClicked();
 }
 
 void GlicActivityListBubbleController::OnConversationRowClicked(
     const std::string& conversation_id) {
+  // Copy before closing the bubble in case destroying row views/models
+  // invalidates the referenced string, and close before activating/invoking so
+  // synchronous OnActiveTabChanged notifications see the bubble as closed.
+  const std::string conv_id = conversation_id;
+  CloseBubble();
   Profile* profile = browser_->GetProfile();
   if (auto* glic_service = GlicKeyedService::Get(profile)) {
-    GlicActivityKey key{GlicActivityType::kConversationResponse,
-                        conversation_id};
+    GlicActivityKey key{GlicActivityType::kConversationResponse, conv_id};
     glic_service->activity_manager().MarkActivitySeen(key);
-    glic_service->instance_coordinator().ActivateTabWithConversation(
-        conversation_id);
+    glic_service->instance_coordinator().ActivateTabWithConversation(conv_id);
     Target target;
-    target.conversation = ConversationId(conversation_id);
+    target.conversation = ConversationId(conv_id);
     target.surface = LastActiveOrNew{browser_};
     GlicInvokeOptions options(std::move(target),
                               mojom::InvocationSource::kActivityListBubble);
     glic_service->Invoke(std::move(options));
   }
-  CloseBubble();
 }
 
 GlicActivityListBubbleControllerDelegate*

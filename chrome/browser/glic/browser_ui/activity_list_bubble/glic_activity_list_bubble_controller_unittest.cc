@@ -7,12 +7,16 @@
 #include <memory>
 #include <string>
 
+#include "base/functional/callback_helpers.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/actor/actor_keyed_service_fake.h"
+#include "chrome/browser/actor/actor_surface_registry.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/glic/browser_ui/activity_list_bubble/glic_activity_list_bubble.h"
 #include "chrome/browser/glic/browser_ui/activity_list_bubble/glic_activity_row_view_model.h"
@@ -22,14 +26,19 @@
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/service/glic_activity_manager.h"
+#include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "chrome/browser/glic/public/service/legacy_glic_activity_manager.h"
 #include "chrome/browser/glic/service/glic_activity_manager_impl.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/glic/test_support/mock_glic_keyed_service.h"
+#include "chrome/browser/tab_list/mock_tab_list_interface.h"
+#include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/views/controls/rich_hover_button.h"
+#include "chrome/common/actor/action_result.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -37,9 +46,12 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/tabs/public/mock_tab_interface.h"
+#include "components/tabs/public/tab_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 #include "ui/views/bubble/bubble_anchor.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -880,6 +892,208 @@ TEST_F(GlicActivityListBubbleControllerActivityHubTest,
   GlicActivityKey key{GlicActivityType::kConversationResponse, "conv_test_123"};
   auto it = manager->activities().find(key);
   ASSERT_NE(it, manager->activities().end());
+  EXPECT_TRUE(it->second.has_been_seen);
+}
+
+TEST_F(GlicActivityListBubbleControllerTest,
+       OnTaskRowClicked_ClosesBubbleBeforeCrossWindowActivation) {
+  ui::UnownedUserDataHost other_user_data_host;
+  testing::NiceMock<MockBrowserWindowInterface> other_browser;
+  ON_CALL(other_browser, GetUnownedUserDataHost)
+      .WillByDefault(testing::ReturnRef(other_user_data_host));
+  ON_CALL(other_browser, GetProfile()).WillByDefault(testing::Return(profile_));
+
+  testing::NiceMock<MockTabListInterface> other_tab_list;
+  ui::ScopedUnownedUserData<TabListInterface> other_tab_list_registration(
+      other_user_data_host, other_tab_list);
+
+  tabs::MockTabInterface other_tab;
+  ON_CALL(other_tab, GetProfile()).WillByDefault(testing::Return(profile_));
+  ON_CALL(other_tab, GetBrowserWindowInterface())
+      .WillByDefault(testing::Return(&other_browser));
+
+  auto* fake_actor_service = static_cast<actor::ActorKeyedServiceFake*>(
+      actor::ActorKeyedService::Get(profile_));
+  fake_actor_service->GetSurfaceRegistry().OnTabCreated(other_tab);
+  actor::TaskId task_id;
+  base::ScopedClosureRunner cleanup_actor_state(
+      base::BindLambdaForTesting([&]() {
+        if (!task_id.is_null() && fake_actor_service->GetTask(task_id)) {
+          fake_actor_service->StopTaskForTesting(
+              task_id, actor::ActorTask::StoppedReason::kTaskComplete);
+        }
+        fake_actor_service->GetSurfaceRegistry().OnTabWillBeDestroyed(
+            other_tab.GetHandle());
+      }));
+
+  task_id = fake_actor_service->CreateTaskForTesting();
+  base::test::TestFuture<actor::mojom::ActionResultPtr> add_tab_future;
+  fake_actor_service->GetTask(task_id)->AddTab(other_tab.GetHandle(),
+                                               /*stop_task_on_detach=*/true,
+                                               add_tab_future.GetCallback());
+  ASSERT_TRUE(actor::IsOk(*add_tab_future.Get()));
+
+  fake_actor_service->PauseTaskForTesting(task_id, /*from_actor=*/true);
+  mock_glic_keyed_service_->legacy_activity_manager().UpdateTaskIconComponents(
+      task_id);
+
+  controller_->ShowBubble();
+  ASSERT_TRUE(test_delegate_->IsActivityListBubbleShowing());
+
+  EXPECT_CALL(*mock_glic_keyed_service_,
+              ShowUI(browser_window_interface_.get(), testing::_))
+      .Times(0);
+  {
+    testing::InSequence seq;
+    EXPECT_CALL(other_tab_list, ActivateTab(other_tab.GetHandle()))
+        .WillOnce([this, task_id](tabs::TabHandle) {
+          EXPECT_FALSE(test_delegate_->IsActivityListBubbleShowing());
+          const auto& bubble_rows =
+              mock_glic_keyed_service_->legacy_activity_manager()
+                  .actor_task_list_bubble_rows();
+          auto it = bubble_rows.find(task_id);
+          EXPECT_NE(it, bubble_rows.end());
+          if (it != bubble_rows.end()) {
+            EXPECT_FALSE(it->second);
+          }
+        });
+    EXPECT_CALL(*mock_glic_keyed_service_,
+                ShowUI(&other_browser, mojom::InvocationSource::kActorTaskIcon))
+        .WillOnce([this](BrowserWindowInterface*, mojom::InvocationSource) {
+          EXPECT_FALSE(test_delegate_->IsActivityListBubbleShowing());
+        });
+  }
+
+  controller_->OnTaskRowClicked(task_id);
+}
+
+TEST_F(GlicActivityListBubbleControllerActivityHubTest,
+       OnTaskRowClicked_NullBrowserWindow_ClosesBubbleAndMarksTaskSeen) {
+  tabs::MockTabInterface detached_tab;
+  ON_CALL(detached_tab, GetProfile()).WillByDefault(testing::Return(profile_));
+  ON_CALL(detached_tab, GetBrowserWindowInterface())
+      .WillByDefault(testing::Return(nullptr));
+
+  auto* fake_actor_service = static_cast<actor::ActorKeyedServiceFake*>(
+      actor::ActorKeyedService::Get(profile_));
+  fake_actor_service->GetSurfaceRegistry().OnTabCreated(detached_tab);
+  actor::TaskId task_id;
+  base::ScopedClosureRunner cleanup_actor_state(
+      base::BindLambdaForTesting([&]() {
+        if (!task_id.is_null() && fake_actor_service->GetTask(task_id)) {
+          fake_actor_service->StopTaskForTesting(
+              task_id, actor::ActorTask::StoppedReason::kTaskComplete);
+        }
+        fake_actor_service->GetSurfaceRegistry().OnTabWillBeDestroyed(
+            detached_tab.GetHandle());
+      }));
+
+  task_id = fake_actor_service->CreateTaskForTesting();
+  base::test::TestFuture<actor::mojom::ActionResultPtr> add_tab_future;
+  fake_actor_service->GetTask(task_id)->AddTab(detached_tab.GetHandle(),
+                                               /*stop_task_on_detach=*/true,
+                                               add_tab_future.GetCallback());
+  ASSERT_TRUE(actor::IsOk(*add_tab_future.Get()));
+
+  fake_actor_service->PauseTaskForTesting(task_id, /*from_actor=*/true);
+  GlicActivityManagerImpl& manager =
+      mock_glic_keyed_service_->activity_manager_impl();
+  manager.OnTabAddedToTask(task_id);
+
+  controller_->ShowBubble();
+  ASSERT_TRUE(test_delegate_->IsActivityListBubbleShowing());
+
+  EXPECT_CALL(*mock_glic_keyed_service_, ShowUI(testing::_, testing::_))
+      .Times(0);
+
+  controller_->OnTaskRowClicked(task_id);
+
+  EXPECT_FALSE(test_delegate_->IsActivityListBubbleShowing());
+  const GlicActivityKey key{GlicActivityType::kActorTask,
+                            base::NumberToString(task_id.value())};
+  auto it = manager.activities().find(key);
+  ASSERT_NE(it, manager.activities().end());
+  EXPECT_TRUE(it->second.has_been_seen);
+}
+
+TEST_F(GlicActivityListBubbleControllerActivityHubTest,
+       OnConversationRowClicked_ClosesBubbleBeforeActivationAndCopiesId) {
+  GlicActivityManagerImpl& manager =
+      mock_glic_keyed_service_->activity_manager_impl();
+
+  constexpr char kConversationId[] = "conv_lifetime_test";
+  manager.OnConversationActivityStateChanged(
+      kConversationId, {.state = GlicActivityState::kCompleted,
+                        .title = "Lifetime Topic",
+                        .preview_snippet = "Ready"});
+
+  class ClearingConversationDelegate : public TestGlicSplitButtonDelegate {
+   public:
+    ClearingConversationDelegate(views::View* anchor_view,
+                                 GlicActivityListBubbleController* controller,
+                                 std::string conversation_id)
+        : TestGlicSplitButtonDelegate(anchor_view, controller),
+          owned_conversation_id_(
+              std::make_unique<std::string>(std::move(conversation_id))) {}
+
+    void CloseActivityListBubble() override {
+      TestGlicSplitButtonDelegate::CloseActivityListBubble();
+      owned_conversation_id_.reset();
+    }
+
+    const std::string& conversation_id() const {
+      return *owned_conversation_id_;
+    }
+
+   private:
+    std::unique_ptr<std::string> owned_conversation_id_;
+  };
+
+  ClearingConversationDelegate clearing_delegate(
+      anchor_widget_->GetContentsView(), controller_, kConversationId);
+  ON_CALL(*mock_glic_split_button_controller_, GetActiveDelegate())
+      .WillByDefault(testing::Return(&clearing_delegate));
+  base::ScopedClosureRunner restore_delegate(base::BindLambdaForTesting([&]() {
+    ON_CALL(*mock_glic_split_button_controller_, GetActiveDelegate())
+        .WillByDefault(testing::Return(test_delegate_.get()));
+  }));
+
+  controller_->ShowBubble();
+  ASSERT_TRUE(clearing_delegate.IsActivityListBubbleShowing());
+
+  const GlicActivityKey key{GlicActivityType::kConversationResponse,
+                            kConversationId};
+  {
+    testing::InSequence seq;
+    EXPECT_CALL(mock_glic_keyed_service_->mock_coordinator(),
+                ActivateTabWithConversation(testing::_))
+        .WillOnce([&](const std::string& conversation_id) {
+          EXPECT_FALSE(clearing_delegate.IsActivityListBubbleShowing());
+          EXPECT_EQ(kConversationId, conversation_id);
+          auto it = manager.activities().find(key);
+          EXPECT_NE(it, manager.activities().end());
+          if (it != manager.activities().end()) {
+            EXPECT_TRUE(it->second.has_been_seen);
+          }
+          return GlicInstanceCoordinator::ActivateTabResult::kSuccess;
+        });
+    EXPECT_CALL(*mock_glic_keyed_service_, Invoke(testing::_))
+        .WillOnce([&](GlicInvokeOptions options) -> GlicInvocationHandle {
+          EXPECT_FALSE(clearing_delegate.IsActivityListBubbleShowing());
+          const auto* conversation =
+              std::get_if<ConversationId>(&options.target.conversation);
+          EXPECT_NE(conversation, nullptr);
+          if (conversation) {
+            EXPECT_EQ(kConversationId, conversation->conversation_id);
+          }
+          return nullptr;
+        });
+  }
+
+  controller_->OnConversationRowClicked(clearing_delegate.conversation_id());
+
+  auto it = manager.activities().find(key);
+  ASSERT_NE(it, manager.activities().end());
   EXPECT_TRUE(it->second.has_been_seen);
 }
 
