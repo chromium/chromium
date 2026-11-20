@@ -1747,13 +1747,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//ios/chrome/browser/intelligence/actor/tools/model/ios_page_stability_metrics.h:IOSPageStabilityOutcome) -->
 
-<enum name="IOSParcelTrackingOptInStatus">
-  <int value="0" label="Never Track"/>
-  <int value="1" label="Always Track"/>
-  <int value="2" label="Ask To Track"/>
-  <int value="3" label="Status Not Set"/>
-</enum>
-
 <enum name="IOSPermissionEvent">
   <int value="0" label="Camera permission disabled"/>
   <int value="1" label="Camera permission enabled"/>
