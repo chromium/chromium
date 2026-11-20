@@ -928,9 +928,11 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
   // --- Test PHISHING verdict ---
   {
     base::RunLoop run_loop;
+    bool is_phishing_verdict = false;
     PasswordProtectionRequest::OtpPhishingVerdictCallback callback =
-        base::BindLambdaForTesting([&](OtpPhishingVerdict verdict) {
-          EXPECT_EQ(verdict, OtpPhishingVerdict::kPhishing);
+        base::BindLambdaForTesting([&](bool verdict) {
+          EXPECT_TRUE(verdict);
+          is_phishing_verdict = verdict;
           run_loop.Quit();
         });
 
@@ -953,14 +955,17 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
                                 std::move(phishing_response));
 
     run_loop.Run();
+    EXPECT_TRUE(is_phishing_verdict);
   }
 
   // --- Test SAFE verdict ---
   {
     base::RunLoop run_loop;
+    bool is_phishing_verdict = true;  // Start with opposite value
     PasswordProtectionRequest::OtpPhishingVerdictCallback callback =
-        base::BindLambdaForTesting([&](OtpPhishingVerdict verdict) {
-          EXPECT_EQ(verdict, OtpPhishingVerdict::kNotPhishing);
+        base::BindLambdaForTesting([&](bool verdict) {
+          EXPECT_FALSE(verdict);
+          is_phishing_verdict = verdict;
           run_loop.Quit();
         });
 
@@ -981,6 +986,7 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
                                 std::move(safe_response));
 
     run_loop.Run();
+    EXPECT_FALSE(is_phishing_verdict);
   }
 }
 

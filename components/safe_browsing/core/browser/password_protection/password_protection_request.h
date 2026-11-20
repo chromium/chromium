@@ -37,9 +37,6 @@ class PasswordProtectionServiceBase;
 
 using password_manager::metrics_util::PasswordType;
 
-// kCheckFailed: the request ended without a verdict.
-enum class OtpPhishingVerdict { kNotPhishing, kPhishing, kCheckFailed };
-
 // A request for checking if an unfamiliar login form or a password reuse event
 // is safe. PasswordProtectionRequest objects are owned by
 // PasswordProtectionServiceBase indicated by |password_protection_service_|.
@@ -63,8 +60,7 @@ class PasswordProtectionRequest
     : public CancelableRequest,
       public base::RefCountedDeleteOnSequence<PasswordProtectionRequest> {
  public:
-  using OtpPhishingVerdictCallback =
-      base::OnceCallback<void(OtpPhishingVerdict)>;
+  using OtpPhishingVerdictCallback = base::OnceCallback<void(bool)>;
 
   // Not copyable or movable
   PasswordProtectionRequest(const PasswordProtectionRequest&) = delete;

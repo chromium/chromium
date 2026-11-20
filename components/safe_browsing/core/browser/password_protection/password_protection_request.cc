@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/functional/bind.h"
-#include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
@@ -468,34 +467,23 @@ void PasswordProtectionRequest::Finish(
     }
   }
 
-  base::OnceClosure run_otp_callback;
-  // A CSD allowlist match means the site is trusted. On cancellation, the tab
-  // or the service is going away, so nobody waits for the verdict.
-  if (otp_phishing_verdict_callback_ && outcome != RequestOutcome::CANCELED) {
+  // A CSD allowlist match means the site is trusted. Other outcomes without a
+  // response are not reported: a bool cannot tell a failed check from phishing.
+  if (otp_phishing_verdict_callback_ &&
+      (response || outcome == RequestOutcome::MATCHED_ALLOWLIST)) {
     bool is_phishing =
         response &&
         (response->verdict_type() == LoginReputationClientResponse::PHISHING ||
          response->verdict_type() ==
              LoginReputationClientResponse::LOW_REPUTATION);
-    OtpPhishingVerdict verdict = OtpPhishingVerdict::kCheckFailed;
-    if (is_phishing) {
-      verdict = OtpPhishingVerdict::kPhishing;
-    } else if ((response && response->verdict_type() ==
-                                LoginReputationClientResponse::SAFE) ||
-               outcome == RequestOutcome::MATCHED_ALLOWLIST) {
-      verdict = OtpPhishingVerdict::kNotPhishing;
-    }
-    run_otp_callback =
-        base::BindOnce(std::move(*otp_phishing_verdict_callback_), verdict);
+    OtpPhishingVerdictCallback callback =
+        std::move(*otp_phishing_verdict_callback_);
     otp_phishing_verdict_callback_.reset();
+    std::move(callback).Run(is_phishing);
   }
 
   password_protection_service_->RequestFinished(this, outcome,
                                                 std::move(response));
-  // Run last: RequestFinished() caches the verdict and may delete `this`.
-  if (run_otp_callback) {
-    std::move(run_otp_callback).Run();
-  }
 }
 
 void PasswordProtectionRequest::Cancel(bool timed_out) {

@@ -149,7 +149,7 @@ void PasswordProtectionService::MaybeStartOtpPhishingRequest(
     const GURL& main_frame_url,
     PasswordProtectionRequest::OtpPhishingVerdictCallback callback) {
   if (!database_manager()->IsDatabaseReady()) {
-    std::move(callback).Run(OtpPhishingVerdict::kCheckFailed);
+    std::move(callback).Run(false);
     return;
   }
   database_manager()->CheckUrlForHighConfidenceAllowlist(
@@ -169,7 +169,7 @@ void PasswordProtectionService::OnOtpHighConfidenceAllowlistCheckCompleted(
         SafeBrowsingDatabaseManager::HighConfidenceAllowlistCheckLoggingDetails>
         logging_details) {
   if (did_match_allowlist) {
-    std::move(callback).Run(OtpPhishingVerdict::kNotPhishing);
+    std::move(callback).Run(false);
     return;
   }
 
@@ -188,7 +188,7 @@ void PasswordProtectionService::OnOtpHighConfidenceAllowlistCheckCompleted(
             main_frame_url, reused_password_account_type),
         reused_password_account_type);
     // If ping is not sent, we should run the callback immediately.
-    std::move(callback).Run(OtpPhishingVerdict::kNotPhishing);
+    std::move(callback).Run(false);
     return;
   }
 
