@@ -735,9 +735,22 @@ void HTMLTextAreaElement::DidChangeIsInCanvasSubtree(
   TextControlElement::DidChangeIsInCanvasSubtree(propagation_behavior);
   if (IsInCanvasSubtree()) {
     // Hide suggested values when under canvas, to prevent leaking this
-    // information to javascript.
-    SetSuggestedValue(String());
+    // information to javascript. Clearing the value mutates the user-agent
+    // shadow tree, which is not allowed during slot assignment recalc, so it
+    // is cleared later in the document lifecycle, before paint.
+    ScheduleClearSuggestedValueForCanvas();
   }
+}
+
+bool HTMLTextAreaElement::ClearSuggestedValueForCanvas() {
+  // SetSuggestedValue(String()) also resets the autofill state, so it is
+  // needed even without a suggested value.
+  if (SuggestedValue().IsNull() &&
+      GetAutofillState() == WebAutofillState::kNotFilled) {
+    return false;
+  }
+  SetSuggestedValue(String());
+  return true;
 }
 
 String HTMLTextAreaElement::validationMessage() const {

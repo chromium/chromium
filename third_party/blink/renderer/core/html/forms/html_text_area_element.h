@@ -175,6 +175,7 @@ class CORE_EXPORT HTMLTextAreaElement final : public TextControlElement {
   bool TooShort(const String*, NeedsToCheckDirtyFlag) const;
 
   void DidChangeIsInCanvasSubtree(CanvasSubtreePropagation) final;
+  bool ClearSuggestedValueForCanvas() final;
 
   unsigned rows_;
   unsigned cols_;

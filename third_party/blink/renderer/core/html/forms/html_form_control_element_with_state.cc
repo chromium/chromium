@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element_with_state.h"
 
 #include "base/no_destructor.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -176,6 +177,24 @@ HTMLFormControlElementWithState::HTMLFormControlElementWithState(
     : HTMLFormControlElement(tag_name, doc) {}
 
 HTMLFormControlElementWithState::~HTMLFormControlElementWithState() = default;
+
+void HTMLFormControlElementWithState::DidMoveToNewDocument(
+    Document& old_document) {
+  HTMLFormControlElement::DidMoveToNewDocument(old_document);
+  old_document.UnscheduleClearSuggestedValueForCanvas(*this);
+  if (IsInCanvasSubtree()) {
+    ScheduleClearSuggestedValueForCanvas();
+  }
+}
+
+void HTMLFormControlElementWithState::ScheduleClearSuggestedValueForCanvas() {
+  GetDocument().ScheduleClearSuggestedValueForCanvas(*this);
+}
+
+bool HTMLFormControlElementWithState::
+    RunScheduledClearSuggestedValueForCanvas() {
+  return IsInCanvasSubtree() && ClearSuggestedValueForCanvas();
+}
 
 bool HTMLFormControlElementWithState::ShouldAutocomplete() const {
   if (!Form())
