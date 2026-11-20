@@ -14,9 +14,12 @@
 namespace enterprise_auth {
 
 // Class that provides authentication functionalities from Extensible Enterprise
-// SSO. This class does not support origin filtering because call to a platform
-// API is required to know if a URL is supported. This class relies on the
-// SSO extensions installed on the device.
+// SSO. This class relies on the SSO extensions installed on the device. When
+// both `kPingSso` and `kExtensibleEnterpriseSsoOriginsFiltering` are enabled,
+// origin filtering is supported and the origins are derived from the `URLs`
+// entry of the installed `com.apple.extensiblesso` MDM payload; otherwise a
+// platform API call is required to know if a URL is supported, so every request
+// is passed to `GetData()`.
 class ExtensibleEnterpriseSSOProvider : public PlatformAuthProvider {
  public:
   struct Metrics {

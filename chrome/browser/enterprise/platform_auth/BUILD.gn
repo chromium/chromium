@@ -137,6 +137,7 @@ if (!is_android) {
     if (is_mac) {
       sources += [
         "extensible_enterprise_sso_okta_browsertest.mm",
+        "extensible_enterprise_sso_origin_filtering_browsertest.mm",
         "extensible_enterprise_sso_provider_mac_browsertest.mm",
         "scoped_cf_prefs_observer_override.cc",
         "scoped_cf_prefs_observer_override.h",

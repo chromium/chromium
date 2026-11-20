@@ -6,20 +6,30 @@
 
 #import <Foundation/Foundation.h>
 
+#import <memory>
+#import <optional>
 #import <string>
 #import <utility>
 #import <vector>
 
+#import "base/check.h"
+#import "base/containers/flat_set.h"
+#import "base/feature_list.h"
+#import "base/functional/bind.h"
 #import "base/functional/callback.h"
+#import "base/location.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/strcat.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/bind_post_task.h"
+#import "base/task/sequenced_task_runner.h"
 #import "base/values.h"
 #import "chrome/browser/browser_process.h"
 #import "chrome/browser/enterprise/platform_auth/extensible_enterprise_sso_entra.h"
 #import "chrome/browser/enterprise/platform_auth/extensible_enterprise_sso_metadata.h"
 #import "chrome/browser/enterprise/platform_auth/extensible_enterprise_sso_policy_handler.h"
+#import "chrome/browser/enterprise/platform_auth/extensible_enterprise_sso_prefs_handler.h"
+#import "chrome/browser/enterprise/platform_auth/platform_auth_features.h"
 #import "chrome/common/pref_names.h"
 #import "components/policy/core/common/policy_logger.h"
 #import "components/prefs/pref_service.h"
@@ -30,6 +40,7 @@
 #import "net/http/http_util.h"
 #import "net/url_request/url_request.h"
 #import "url/gurl.h"
+#import "url/origin.h"
 
 namespace enterprise_auth {
 
@@ -97,13 +108,33 @@ ExtensibleEnterpriseSSOProvider::ExtensibleEnterpriseSSOProvider() = default;
 ExtensibleEnterpriseSSOProvider::~ExtensibleEnterpriseSSOProvider() = default;
 
 bool ExtensibleEnterpriseSSOProvider::SupportsOriginFiltering() {
-  return false;
+  return base::FeatureList::IsEnabled(kPingSso) &&
+         base::FeatureList::IsEnabled(kExtensibleEnterpriseSsoOriginsFiltering);
 }
 
 void ExtensibleEnterpriseSSOProvider::FetchOrigins(
     FetchOriginsCallback on_fetch_complete) {
-  // Origin filtering is not supported.
-  NOTREACHED();
+  CHECK(SupportsOriginFiltering());
+
+  std::vector<url::Origin> origins;
+  const std::optional<ExtensibleEnterpriseSSOPrefsHandler::Config>
+      current_mdm_config =
+          ExtensibleEnterpriseSSOPrefsHandler::GetCurrentConfig();
+  if (current_mdm_config.has_value() && current_mdm_config->urls.has_value()) {
+    const std::vector<GURL>& urls = *current_mdm_config->urls;
+    origins.reserve(urls.size());
+    for (const GURL& url : urls) {
+      CHECK(url.is_valid());
+      origins.push_back(url::Origin::Create(url));
+    }
+  }
+
+  // De-duplicate origins by constructing a `flat_set`.
+  auto origins_ptr = std::make_unique<std::vector<url::Origin>>(
+      base::flat_set<url::Origin>(std::move(origins)).extract());
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(on_fetch_complete), std::move(origins_ptr)));
 }
 
 void ExtensibleEnterpriseSSOProvider::GetData(

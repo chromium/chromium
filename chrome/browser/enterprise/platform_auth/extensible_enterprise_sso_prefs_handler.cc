@@ -119,6 +119,7 @@ class CFPreferencesObserverImpl final : public CFPreferencesObserver {
   }
 
   base::OnceCallback<RawConfig()> GetReadConfigCallback() override {
+    // TODO(b/578820756): Check keys with `CFPreferencesAppValueIsForced`.
     return base::BindOnce([]() {
       auto extension_id = ScopedPropList(CFPreferencesCopyAppValue(
           kExtensionIdentifierKey, kExtensibleSsoPrefName));

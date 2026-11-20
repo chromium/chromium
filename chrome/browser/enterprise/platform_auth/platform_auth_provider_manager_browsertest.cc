@@ -28,7 +28,7 @@
 #include <vector>
 
 #include "base/apple/scoped_cftyperef.h"
-#include "base/memory/raw_ref.h"
+#include "base/containers/flat_set.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
@@ -39,6 +39,8 @@
 #include "components/policy/core/common/management/management_service.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "content/public/test/test_utils.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 #endif  // BUILDFLAG(IS_MAC)
 
 using ::testing::_;
@@ -266,6 +268,14 @@ IN_PROC_BROWSER_TEST_F(PlatformAuthManagerBrowserTest, ConcurrentNavigations) {
 namespace {
 
 constexpr char kSsoUrl[] = "https://idp.example/sso";
+// Same origin as `kSsoUrl` with a different path.
+constexpr char kSsoUrlOtherPath[] = "https://idp.example/other/path";
+// Same host as `kSsoUrl` with a different port, hence a different origin.
+constexpr char kSsoUrlOtherPort[] = "https://idp.example:8443/sso";
+// Same host as `kSsoUrl` with a different scheme, hence a different origin.
+constexpr char kSsoUrlOtherScheme[] = "http://idp.example/sso";
+constexpr char kSecondIdpUrl[] = "https://second-idp.example/sso";
+constexpr char kUnrelatedUrl[] = "https://unrelated.example/page";
 constexpr char kUnknownId[] = "UNKNOWN_ID";
 
 using RawConfig = CFPreferencesObserver::RawConfig;
@@ -277,38 +287,6 @@ struct MdmConfig {
   std::string extension_id;
   std::string team_id;
   std::optional<std::vector<std::string>> urls;
-};
-
-ScopedPropList StringsToPropList(const std::vector<std::string>& values) {
-  base::apple::ScopedCFTypeRef<CFMutableArrayRef> array(
-      CFArrayCreateMutable(kCFAllocatorDefault, 0, &kCFTypeArrayCallBacks));
-  for (const std::string& value : values) {
-    CFArrayAppendValue(array.get(), base::SysUTF8ToCFStringRef(value).get());
-  }
-  return array;
-}
-
-// Serves the MDM config held by the test fixture instead of reading it from
-// the OS.
-class FakeCFPreferencesObserver : public CFPreferencesObserver {
- public:
-  FakeCFPreferencesObserver(base::RepeatingClosure& on_update,
-                            base::RepeatingCallback<RawConfig()> read_config)
-      : on_update_(on_update), read_config_(std::move(read_config)) {}
-
-  void Subscribe(base::RepeatingClosure on_update) override {
-    *on_update_ = std::move(on_update);
-  }
-
-  void Unsubscribe() override { on_update_->Reset(); }
-
-  base::OnceCallback<RawConfig()> GetReadConfigCallback() override {
-    return read_config_;
-  }
-
- private:
-  const raw_ref<base::RepeatingClosure> on_update_;
-  const base::RepeatingCallback<RawConfig()> read_config_;
 };
 
 }  // namespace
@@ -362,6 +340,14 @@ class PlatformAuthManagerMdmConfigBrowserTest : public PlatformBrowserTest {
 
   bool IsManagerEnabled() const {
     return PlatformAuthProviderManager::GetInstance().IsEnabled();
+  }
+
+  bool IsManagerEnabledFor(const char* url) const {
+    return PlatformAuthProviderManager::GetInstance().IsEnabledFor(GURL(url));
+  }
+
+  const base::flat_set<url::Origin>& GetManagerOrigins() const {
+    return PlatformAuthProviderManager::GetInstance().GetOriginsForTesting();
   }
 
   std::optional<MdmConfig> mdm_config_;
@@ -437,7 +423,8 @@ IN_PROC_BROWSER_TEST_F(PlatformAuthManagerMdmConfigBrowserTest,
   EXPECT_TRUE(IsManagerEnabled());
 }
 
-// Tests that the manager is enabled for an Okta config without a `URLs` entry.
+// Tests that the manager is enabled for an Okta config without a `URLs` entry,
+// but with no origins, so that navigations don't trigger SSO.
 IN_PROC_BROWSER_TEST_F(PlatformAuthManagerMdmConfigBrowserTest,
                        EnabledForOktaConfigWithoutUrls) {
   mdm_config_ = MdmConfig{.extension_id = kOktaSsoExtensionId,
@@ -446,6 +433,8 @@ IN_PROC_BROWSER_TEST_F(PlatformAuthManagerMdmConfigBrowserTest,
   UpdateConfigAndWait();
 
   EXPECT_TRUE(IsManagerEnabled());
+  EXPECT_TRUE(GetManagerOrigins().empty());
+  EXPECT_FALSE(IsManagerEnabledFor(kSsoUrl));
 }
 
 // Tests that the manager gets disabled when the config is removed.
@@ -464,7 +453,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAuthManagerMdmConfigBrowserTest,
 }
 
 // Tests that the manager stays enabled when the URLs are removed from the
-// config.
+// config, but clears the origins so that navigations no longer trigger SSO.
 IN_PROC_BROWSER_TEST_F(PlatformAuthManagerMdmConfigBrowserTest,
                        StaysEnabledWhenUrlsRemoved) {
   mdm_config_ = MdmConfig{.extension_id = kPingSsoExtensionId,
@@ -477,6 +466,66 @@ IN_PROC_BROWSER_TEST_F(PlatformAuthManagerMdmConfigBrowserTest,
   UpdateConfigAndWait();
 
   EXPECT_TRUE(IsManagerEnabled());
+  EXPECT_TRUE(GetManagerOrigins().empty());
+  EXPECT_FALSE(IsManagerEnabledFor(kSsoUrl));
+}
+
+// Tests that the manager filters requests by the origins of the config's URLs.
+IN_PROC_BROWSER_TEST_F(PlatformAuthManagerMdmConfigBrowserTest,
+                       OriginsMatchConfigUrls) {
+  mdm_config_ = MdmConfig{.extension_id = kPingSsoExtensionId,
+                          .team_id = kPingSsoTeamId,
+                          .urls = std::vector<std::string>{
+                              kSsoUrl, kSsoUrlOtherPath, kSsoUrlOtherPort}};
+  UpdateConfigAndWait();
+  ASSERT_TRUE(IsManagerEnabled());
+
+  EXPECT_EQ(GetManagerOrigins(),
+            base::flat_set<url::Origin>(
+                {url::Origin::Create(GURL(kSsoUrl)),
+                 url::Origin::Create(GURL(kSsoUrlOtherPort))}));
+
+  EXPECT_TRUE(IsManagerEnabledFor(kSsoUrl));
+  EXPECT_TRUE(IsManagerEnabledFor(kSsoUrlOtherPath));
+  EXPECT_TRUE(IsManagerEnabledFor(kSsoUrlOtherPort));
+  EXPECT_FALSE(IsManagerEnabledFor(kSsoUrlOtherScheme));
+  EXPECT_FALSE(IsManagerEnabledFor(kUnrelatedUrl));
+}
+
+// Tests that the origins are updated when the config's URLs change.
+IN_PROC_BROWSER_TEST_F(PlatformAuthManagerMdmConfigBrowserTest,
+                       OriginsUpdatedWhenUrlsChange) {
+  mdm_config_ = MdmConfig{.extension_id = kPingSsoExtensionId,
+                          .team_id = kPingSsoTeamId,
+                          .urls = std::vector<std::string>{kSsoUrl}};
+  UpdateConfigAndWait();
+  ASSERT_TRUE(IsManagerEnabledFor(kSsoUrl));
+  ASSERT_FALSE(IsManagerEnabledFor(kSecondIdpUrl));
+
+  mdm_config_->urls = std::vector<std::string>{kSecondIdpUrl};
+  UpdateConfigAndWait();
+
+  EXPECT_EQ(
+      GetManagerOrigins(),
+      base::flat_set<url::Origin>({url::Origin::Create(GURL(kSecondIdpUrl))}));
+  EXPECT_FALSE(IsManagerEnabledFor(kSsoUrl));
+  EXPECT_TRUE(IsManagerEnabledFor(kSecondIdpUrl));
+}
+
+// Tests that the origins are cleared when the config is removed.
+IN_PROC_BROWSER_TEST_F(PlatformAuthManagerMdmConfigBrowserTest,
+                       OriginsClearedWhenConfigRemoved) {
+  mdm_config_ = MdmConfig{.extension_id = kPingSsoExtensionId,
+                          .team_id = kPingSsoTeamId,
+                          .urls = std::vector<std::string>{kSsoUrl}};
+  UpdateConfigAndWait();
+  ASSERT_FALSE(GetManagerOrigins().empty());
+
+  mdm_config_.reset();
+  UpdateConfigAndWait();
+
+  EXPECT_TRUE(GetManagerOrigins().empty());
+  EXPECT_FALSE(IsManagerEnabledFor(kSsoUrl));
 }
 
 // Serves a valid config from the start, so it is read when the browser-owned
@@ -495,6 +544,8 @@ class PlatformAuthManagerMdmConfigAtStartupBrowserTest
 IN_PROC_BROWSER_TEST_F(PlatformAuthManagerMdmConfigAtStartupBrowserTest,
                        EnabledForConfigAtStartup) {
   EXPECT_TRUE(IsManagerEnabled());
+  EXPECT_EQ(GetManagerOrigins(),
+            base::flat_set<url::Origin>({url::Origin::Create(GURL(kSsoUrl))}));
 }
 
 class PlatformAuthManagerMdmConfigPingSsoDisabledBrowserTest
@@ -519,6 +570,49 @@ IN_PROC_BROWSER_TEST_F(PlatformAuthManagerMdmConfigPingSsoDisabledBrowserTest,
   UpdateConfigAndWait();
 
   EXPECT_TRUE(IsManagerEnabled());
+}
+
+// Tests that, while `kPingSso` is disabled, the manager doesn't filter requests
+// by origin even if the config has URLs.
+IN_PROC_BROWSER_TEST_F(PlatformAuthManagerMdmConfigPingSsoDisabledBrowserTest,
+                       NoOriginFiltering) {
+  mdm_config_ = MdmConfig{.extension_id = kPingSsoExtensionId,
+                          .team_id = kPingSsoTeamId,
+                          .urls = std::vector<std::string>{kSsoUrl}};
+  UpdateConfigAndWait();
+
+  EXPECT_TRUE(GetManagerOrigins().empty());
+  EXPECT_TRUE(IsManagerEnabledFor(kSsoUrl));
+  EXPECT_TRUE(IsManagerEnabledFor(kUnrelatedUrl));
+}
+
+class PlatformAuthManagerMdmConfigOriginFilteringDisabledBrowserTest
+    : public PlatformAuthManagerMdmConfigBrowserTest {
+ protected:
+  PlatformAuthManagerMdmConfigOriginFilteringDisabledBrowserTest() {
+    disabled_feature_list_.InitAndDisableFeature(
+        kExtensibleEnterpriseSsoOriginsFiltering);
+  }
+
+  base::test::ScopedFeatureList disabled_feature_list_;
+};
+
+// Tests that, while `kExtensibleEnterpriseSsoOriginsFiltering` is disabled, the
+// manager still requires a config but doesn't filter requests by origin.
+IN_PROC_BROWSER_TEST_F(
+    PlatformAuthManagerMdmConfigOriginFilteringDisabledBrowserTest,
+    NoOriginFiltering) {
+  EXPECT_FALSE(IsManagerEnabled());
+
+  mdm_config_ = MdmConfig{.extension_id = kPingSsoExtensionId,
+                          .team_id = kPingSsoTeamId,
+                          .urls = std::vector<std::string>{kSsoUrl}};
+  UpdateConfigAndWait();
+
+  EXPECT_TRUE(IsManagerEnabled());
+  EXPECT_TRUE(GetManagerOrigins().empty());
+  EXPECT_TRUE(IsManagerEnabledFor(kSsoUrl));
+  EXPECT_TRUE(IsManagerEnabledFor(kUnrelatedUrl));
 }
 #endif  // BUILDFLAG(IS_MAC)
 
