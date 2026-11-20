@@ -69,9 +69,12 @@ enum class WebAppWindowMode { kBrowserTab, kAppWindow };
 class WebAppNotificationRecoveryControllerBrowserTestBase
     : public WebAppBrowserTestBase {
  public:
+  // TODO(crbug.com/587766956): Support WebUILocationBar in these tests and
+  // remove this override.
   WebAppNotificationRecoveryControllerBrowserTestBase()
-      : WebAppBrowserTestBase({features::kAppShimNotificationAttribution}, {}) {
-  }
+      : WebAppBrowserTestBase(
+            {features::kAppShimNotificationAttribution},
+            {features::kWebUILocationBar, features::kWebUIToolbar}) {}
 
   void SetUpOnMainThread() override {
     WebAppBrowserTestBase::SetUpOnMainThread();
