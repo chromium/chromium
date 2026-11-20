@@ -723,7 +723,7 @@ void ProfileImportProcess::LogUkmMetrics(
       ukm_recorder, ukm_source_id_, import_type_, user_decision_,
       import_metadata_, num_edited_fields,
       UserAccepted() ? confirmed_import_candidate_ : import_candidate_,
-      existing_profiles, app_locale_.tag_string());
+      existing_profiles, app_locale_);
 }
 
 void ProfileImportProcess::LogNewProfileMetrics(
@@ -731,7 +731,7 @@ void ProfileImportProcess::LogNewProfileMetrics(
   autofill_metrics::LogNewProfileImportDecision(
       user_decision_, import_metadata_, existing_profiles,
       UserAccepted() ? *confirmed_import_candidate_ : *import_candidate_,
-      app_locale_.tag_string());
+      app_locale_);
   if (UserAccepted()) {
     autofill_metrics::LogNewProfileStorageLocation(
         *confirmed_import_candidate_);
@@ -743,7 +743,7 @@ void ProfileImportProcess::LogConfirmableProfileUpdateMetrics(
   autofill_metrics::LogProfileUpdateImportDecision(
       user_decision_, existing_profiles,
       UserAccepted() ? *confirmed_import_candidate_ : *import_candidate_,
-      app_locale_.tag_string());
+      app_locale_);
 
   DCHECK(merge_candidate_.has_value() && import_candidate_.has_value());
   // For all update prompts, log the field types and total number of fields

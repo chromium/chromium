@@ -19,6 +19,10 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
+namespace base::i18n {
+class LanguageTag;
+}
+
 namespace autofill::autofill_metrics {
 
 // These values are persisted to UMA logs. Entries should not be renumbered
@@ -167,7 +171,7 @@ void LogAddressProfileImportUkm(
     size_t num_edited_fields,
     std::optional<AutofillProfile> import_candidate,
     const std::vector<const AutofillProfile*>& existing_profiles,
-    std::string_view app_locale);
+    const base::i18n::LanguageTag& app_locale);
 
 // Logs the status of an address import requirement defined by type.
 void LogAddressFormImportRequirementMetric(
@@ -214,7 +218,7 @@ void LogNewProfileImportDecision(
     const ProfileImportMetadata& profile_import_metadata,
     const std::vector<const AutofillProfile*>& existing_profiles,
     const AutofillProfile& import_candidate,
-    std::string_view app_locale);
+    const base::i18n::LanguageTag& app_locale);
 
 // Logs the user decision for importing a new profile created as a merge of
 // `kAccountNameEmail` with either `kAccountHome` or `kAccountWork` profile.
@@ -228,7 +232,7 @@ void LogProfileUpdateImportDecision(
     AutofillClient::AddressPromptUserDecision decision,
     const std::vector<const AutofillProfile*>& existing_profiles,
     const AutofillProfile& import_candidate,
-    std::string_view app_locale);
+    const base::i18n::LanguageTag& app_locale);
 
 // Logs the user decision for saving a name email profile superset.
 void LogNameEmailSupersetImportDecision(

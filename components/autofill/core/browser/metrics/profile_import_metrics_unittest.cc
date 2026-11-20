@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/metrics/profile_import_metrics.h"
 
+#include "base/i18n/language_tag.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/form_import/addresses/autofill_profile_import_process.h"
@@ -583,7 +584,7 @@ TEST_F(AutofillProfileImportMetricsTest,
   base::HistogramTester histogram_tester;
   LogNewProfileImportDecision(kExpectedDecision, ProfileImportMetadata(),
                               /*existing_profiles=*/{}, import_candidate,
-                              "en-US");
+                              base::i18n::GetKnownLanguageTag("en-US"));
   histogram_tester.ExpectUniqueSample(
       "Autofill.ProfileImport.NewProfileDecision2.Aggregate", kExpectedDecision,
       1);
@@ -603,7 +604,8 @@ TEST_F(AutofillProfileImportMetricsTest,
   AutofillProfile import_candidate = test::GetFullProfile();
   base::HistogramTester histogram_tester;
   LogNewProfileImportDecision(kExpectedDecision, ProfileImportMetadata(),
-                              {&existing_profile}, import_candidate, "en-US");
+                              {&existing_profile}, import_candidate,
+                              base::i18n::GetKnownLanguageTag("en-US"));
   histogram_tester.ExpectUniqueSample(
       "Autofill.ProfileImport.NewProfileDecision2.Aggregate", kExpectedDecision,
       1);
@@ -648,7 +650,7 @@ TEST_F(AutofillProfileImportMetricsTest,
   base::HistogramTester histogram_tester;
   LogNewProfileImportDecision(kExpectedDecision, metadata,
                               /*existing_profiles=*/{}, import_candidate,
-                              "en-US");
+                              base::i18n::GetKnownLanguageTag("en-US"));
   histogram_tester.ExpectUniqueSample(
       "Autofill.ProfileImport.SplitZipFields.NewProfileDecision",
       kExpectedDecision, 1);

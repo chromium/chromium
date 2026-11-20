@@ -15,6 +15,7 @@
 
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/char_iterator.h"
+#include "base/i18n/language_tag.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
@@ -184,7 +185,7 @@ void LogAddressProfileImportUkm(
     size_t num_edited_fields,
     std::optional<AutofillProfile> import_candidate,
     const std::vector<const AutofillProfile*>& existing_profiles,
-    std::string_view app_locale) {
+    const base::i18n::LanguageTag& app_locale) {
   ukm::builders::Autofill2_AddressProfileImport builder(source_id);
   builder
       .SetAutocompleteUnrecognizedImport(
@@ -201,7 +202,7 @@ void LogAddressProfileImportUkm(
     builder.SetDuplicationRank(GetDuplicationRank(
         AddressDataCleaner::CalculateMinimalIncompatibleProfileWithTypeSets(
             *import_candidate, existing_profiles,
-            AutofillProfileComparator(app_locale))));
+            AutofillProfileComparator(app_locale.tag_string()))));
   }
   builder.Record(ukm_recorder);
 }
@@ -320,7 +321,7 @@ void LogNewProfileImportDecision(
     const ProfileImportMetadata& profile_import_metadata,
     const std::vector<const AutofillProfile*>& existing_profiles,
     const AutofillProfile& import_candidate,
-    std::string_view app_locale) {
+    const base::i18n::LanguageTag& app_locale) {
   constexpr std::string_view kNameBase =
       "Autofill.ProfileImport.NewProfileDecision2.";
   base::UmaHistogramEnumeration(base::StrCat({kNameBase, "Aggregate"}),
@@ -336,7 +337,7 @@ void LogNewProfileImportDecision(
     int duplication_rank = GetDuplicationRank(
         AddressDataCleaner::CalculateMinimalIncompatibleProfileWithTypeSets(
             import_candidate, existing_profiles,
-            AutofillProfileComparator(app_locale)));
+            AutofillProfileComparator(app_locale.tag_string())));
     if (duplication_rank == 1) {
       base::UmaHistogramEnumeration(
           base::StrCat({kNameBase, "UserHasQuasiDuplicateProfile"}), decision);
@@ -364,7 +365,7 @@ void LogProfileUpdateImportDecision(
     AutofillClient::AddressPromptUserDecision decision,
     const std::vector<const AutofillProfile*>& existing_profiles,
     const AutofillProfile& import_candidate,
-    std::string_view app_locale) {
+    const base::i18n::LanguageTag& app_locale) {
   constexpr std::string_view kNameBase =
       "Autofill.ProfileImport.UpdateProfileDecision2.";
   base::UmaHistogramEnumeration(base::StrCat({kNameBase, "Aggregate"}),
@@ -373,7 +374,7 @@ void LogProfileUpdateImportDecision(
   int duplication_rank = GetDuplicationRank(
       AddressDataCleaner::CalculateMinimalIncompatibleProfileWithTypeSets(
           import_candidate, existing_profiles,
-          AutofillProfileComparator(app_locale)));
+          AutofillProfileComparator(app_locale.tag_string())));
   if (duplication_rank == 1) {
     base::UmaHistogramEnumeration(
         base::StrCat({kNameBase, "UserHasQuasiDuplicateProfile"}), decision);
