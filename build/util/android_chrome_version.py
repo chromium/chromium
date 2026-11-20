@@ -89,6 +89,9 @@ _APKS = {
         ('CHROME', 'CHROME', '32'),
         # 32-bit Chrome with a 64-bit placeholder library.
         ('CHROME_32_64', 'CHROME', '32_64'),
+        # Obsolete Chrome Modern version code being used for Chrome 32_64
+        # OpenBeta.
+        ('CHROME_32_64_BETA', 'CHROME_MODERN', '32_64'),
         ('CHROME_MODERN', 'CHROME_MODERN', '32'),
         ('MONOCHROME', 'MONOCHROME', '32'),
         ('TRICHROME', 'TRICHROME', '32'),

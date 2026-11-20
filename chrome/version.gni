@@ -57,6 +57,8 @@ if (target_os == "android") {
     # For a 32-bit Chrome that contains a 64-bit placeholder library.
     _version_dictionary_template +=
         "chrome_32_64_version_code = \"@CHROME_32_64_VERSION_CODE@\" "
+    _version_dictionary_template +=
+        "chrome_32_64_beta_version_code = \"@CHROME_32_64_BETA_VERSION_CODE@\" "
   }
 
   # Generate hybrid configurations for target_cpu's that can run in hybrid
@@ -192,6 +194,7 @@ if (is_mac) {
                            "chrome_desktop_beta_version_code",
                            "chrome_32_version_code",
                            "chrome_32_64_version_code",
+                           "chrome_32_64_beta_version_code",
                            "monochrome_version_code",
                            "monochrome_32_version_code",
                            "monochrome_32_64_version_code",
@@ -281,6 +284,13 @@ if (is_android && current_toolchain == default_toolchain) {
     ]
   }
 
+  if (defined(chrome_32_64_version_code)) {
+    lines_to_write += [
+      "Chrome3264: $chrome_32_64_version_code",
+      "Chrome3264OpenBeta: $chrome_32_64_beta_version_code",
+    ]
+  }
+
   if (android_64bit_target_cpu && defined(android_app_secondary_abi)) {
     lines_to_write += [
       "Monochrome32: $monochrome_32_version_code",
@@ -357,6 +367,9 @@ if (is_android) {
       chrome_version_code = chrome_high_beta_version_code
     } else {
       chrome_version_code = chrome_beta_version_code
+    }
+    if (defined(chrome_32_64_beta_version_code)) {
+      chrome_32_64_version_code = chrome_32_64_beta_version_code
     }
   } else if (defined(chrome_desktop_version_code)) {
     chrome_version_code = chrome_desktop_version_code
