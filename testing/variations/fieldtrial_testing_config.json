@@ -7537,8 +7537,7 @@
                     },
                     "enable_features": [
                         "Dictation",
-                        "IPH_Dictation",
-                        "IPH_DictationHotkey"
+                        "IPH_Dictation"
                     ]
                 }
             ]
