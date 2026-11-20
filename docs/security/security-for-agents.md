@@ -300,7 +300,10 @@ Chromium:
 * Bugs that require an attacker to have created or dropped files onto the system
   in advance
 * Bugs that require physical access of any kind
-* Architectural weaknesses or missing layers of hardening / mitigation
+* Reports that only point out an architectural weakness or a missing layer of
+  hardening / mitigation, without showing a concrete bug. If a report shows a
+  real bug that web content can trigger (for example, memory corruption), it is
+  not a non-bug just because the suggested fix is extra hardening.
 * Attacks on Linux that require control of a process with an X11 connection,
   such as a compromised GPU process, and act through the X server (e.g. via
   XSETTINGS). See the [X11 threat model](x11-threat-model.md).
@@ -326,7 +329,9 @@ Chromium:
   and remove this broad temporary directory access from the GPU process.
 
 These are not security bugs, regardless of how easy they are to trigger. Under
-no circumstances is something matching an entry in this list a security bug.
+no circumstances is something matching an entry in this list a security bug. A
+report matches an entry only when the entry describes the bug itself, not just
+the suggested fix or one detail of the report.
 
 ## Reporting Bugs
 
