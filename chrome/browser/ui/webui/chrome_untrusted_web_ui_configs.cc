@@ -7,8 +7,13 @@
 #include "build/android_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/common/buildflags.h"
+#include "components/bidi_mapper/buildflags.h"
 #include "content/public/browser/webui_config_map.h"
 #include "printing/buildflags/buildflags.h"
+
+#if BUILDFLAG(ENABLE_BIDI_MAPPER)
+#include "components/bidi_mapper/host/bidi_mapper_ui.h"
+#endif  // BUILDFLAG(ENABLE_BIDI_MAPPER)
 
 #if defined(TOOLKIT_VIEWS)
 #include "chrome/browser/ui/webui/data_sharing/data_sharing_ui.h"
@@ -62,10 +67,10 @@ void RegisterChromeUntrustedWebUIConfigs() {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if defined(TOOLKIT_VIEWS) || BUILDFLAG(ENABLE_PRINT_PREVIEW) || \
-    BUILDFLAG(IS_ANDROID)
+    BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_BIDI_MAPPER)
   auto& map = content::WebUIConfigMap::GetInstance();
 #endif  // defined(TOOLKIT_VIEWS) || BUILDFLAG(ENABLE_PRINT_PREVIEW) ||
-        // BUILDFLAG(IS_ANDROID)
+        // BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_BIDI_MAPPER)
 
 #if defined(TOOLKIT_VIEWS)
   map.AddUntrustedWebUIConfig(
@@ -93,6 +98,11 @@ void RegisterChromeUntrustedWebUIConfigs() {
   map.AddUntrustedWebUIConfig(
       std::make_unique<printing::PrintPreviewUIUntrustedConfig>());
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
+
+#if BUILDFLAG(ENABLE_BIDI_MAPPER)
+  map.AddUntrustedWebUIConfig(
+      std::make_unique<bidi_mapper::BidiMapperUIConfig>());
+#endif  // BUILDFLAG(ENABLE_BIDI_MAPPER)
 
 #if BUILDFLAG(IS_ANDROID)
   map.AddUntrustedWebUIConfig(

@@ -7,6 +7,7 @@ import("//build/config/cast.gni")
 import("//build/config/chrome_build.gni")
 import("//build/config/features.gni")
 import("//build/config/ui.gni")
+import("//components/bidi_mapper/buildflags.gni")
 import("//components/compose/features.gni")
 import("//components/enterprise/buildflags/buildflags.gni")
 import("//components/guest_contents/common/buildflags.gni")
@@ -974,6 +975,10 @@ test("components_unittests") {
     ]
   }
 
+  if (enable_bidi_mapper) {
+    deps += [ "//components/bidi_mapper/host:unit_tests" ]
+  }
+
   if (enable_on_device_translation) {
     deps += [
       "//components/on_device_translation:unit_tests",
@@ -1346,6 +1351,10 @@ if (use_blink) {
         "//testing/gmock",
         "//testing/gtest",
       ]
+    }
+
+    if (enable_bidi_mapper) {
+      deps += [ "//components/bidi_mapper/host:browser_tests" ]
     }
 
     if (enable_printing) {

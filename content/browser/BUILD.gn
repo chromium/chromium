@@ -2192,6 +2192,8 @@ source_set("browser") {
     "wake_lock/wake_lock_service_impl.h",
     "web_contents/aura/gesture_nav_simple.cc",
     "web_contents/aura/gesture_nav_simple.h",
+    "web_contents/background_execution_booster.cc",
+    "web_contents/background_execution_booster.h",
     "web_contents/file_chooser_impl.cc",
     "web_contents/file_chooser_impl.h",
     "web_contents/java_script_dialog_commit_deferring_condition.cc",

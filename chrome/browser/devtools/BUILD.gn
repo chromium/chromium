@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/ui.gni")
+import("//components/bidi_mapper/buildflags.gni")
 import("//components/enterprise/buildflags/buildflags.gni")
 import("//content/browser/devtools/features.gni")
 import("//extensions/buildflags/buildflags.gni")
@@ -879,6 +880,14 @@ if (!is_android) {
       "//content/test:test_support",
       "//testing/gtest",
     ]
+
+    if (enable_bidi_mapper) {
+      sources += [ "bidi_mapper_host_browsertest.cc" ]
+      deps += [
+        "//components/bidi_mapper/host",
+        "//components/bidi_mapper/host:features",
+      ]
+    }
 
     if (enable_pdf && enable_printing && !is_chromeos) {
       sources += [ "protocol/devtools_printtopdf_browsertest.cc" ]

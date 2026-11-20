@@ -103,7 +103,9 @@
 #include "chrome/test/base/chrome_test_path_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/bidi_mapper/buildflags.h"
 #include "components/infobars/content/content_infobar_manager.h"
+#include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
@@ -138,6 +140,10 @@
 #include "ui/views/controls/webview/webview.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
+
+#if BUILDFLAG(ENABLE_BIDI_MAPPER)
+#include "components/bidi_mapper/host/features.h"
+#endif
 
 #if !BUILDFLAG(IS_CHROMEOS)
 #include "base/check.h"
@@ -4278,6 +4284,61 @@ INSTANTIATE_TEST_SUITE_P(
           [](unsigned char c) { return !absl::ascii_isalnum(c); }, '_');
       return name;
     });
+
+#if BUILDFLAG(ENABLE_BIDI_MAPPER)
+// Verifies that a security warning is displayed when the
+// ChromeDriverExtensionApi feature is enabled.
+class StartupBrowserCreatorChromeDriverExtensionApiTest
+    : public InProcessBrowserTest {
+ public:
+  StartupBrowserCreatorChromeDriverExtensionApiTest() {
+    feature_list_.InitAndEnableFeature(
+        bidi_mapper::features::kChromeDriverExtensionApi);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// The trybots set the kNoSandbox flag when running browser tests with the
+// address sanitizer enabled. The warning is displayed for that flag then, as
+// it is displayed for a single flag only.
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_CheckInfobar DISABLED_CheckInfobar
+#else
+#define MAYBE_CheckInfobar CheckInfobar
+#endif
+IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorChromeDriverExtensionApiTest,
+                       MAYBE_CheckInfobar) {
+  // The infobars are not shown in the browser that the test starts with, see
+  // AddInfoBarsIfNecessary(). Launch another one the way the browser does at
+  // startup. The feature is read from the process, not from `command_line`.
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  StartupBrowserCreatorImpl launch(base::FilePath(), command_line,
+                                   chrome::startup::IsFirstRun::kNo);
+  launch.Launch(browser()->GetProfile(), chrome::startup::IsProcessStartup::kNo,
+                /*restore_tabbed_browser=*/true);
+  BrowserWindowInterface* new_browser = browser_created_observer.Wait();
+  ASSERT_TRUE(new_browser);
+
+  infobars::ContentInfoBarManager* infobar_manager =
+      infobars::ContentInfoBarManager::FromWebContents(
+          new_browser->GetTabStripModel()->GetActiveWebContents());
+  ASSERT_TRUE(infobar_manager);
+  const auto& infobar_list = infobar_manager->infobars();
+  auto infobar = std::ranges::find(
+      infobar_list, infobars::InfoBarDelegate::BAD_FLAGS_INFOBAR_DELEGATE,
+      &infobars::InfoBar::GetIdentifier);
+  ASSERT_NE(infobar, infobar_list.end());
+  ConfirmInfoBarDelegate* delegate =
+      (*infobar)->delegate()->AsConfirmInfoBarDelegate();
+  ASSERT_TRUE(delegate);
+  EXPECT_THAT(base::UTF16ToUTF8(delegate->GetMessageText()),
+              testing::HasSubstr(
+                  bidi_mapper::features::kChromeDriverExtensionApi.name));
+}
+#endif  // BUILDFLAG(ENABLE_BIDI_MAPPER)
 
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 

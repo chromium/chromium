@@ -6,6 +6,7 @@ import("//build/buildflag_header.gni")
 import("//build/config/chrome_build.gni")
 import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
+import("//components/bidi_mapper/buildflags.gni")
 import("//components/signin/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//rlz/buildflags/buildflags.gni")
@@ -162,6 +163,7 @@ source_set("impl") {
     "//chrome/common:constants",
     "//chrome/common:non_code_constants",
     "//components/autofill/core/common",
+    "//components/bidi_mapper:buildflags",
     "//components/history_clusters/core",
     "//components/infobars/content",
     "//components/infobars/core",
@@ -192,6 +194,10 @@ source_set("impl") {
     "//url",
   ]
   public_deps = [ "//ui/base/unowned_user_data" ]
+
+  if (enable_bidi_mapper) {
+    deps += [ "//components/bidi_mapper/host:features" ]
+  }
 
   if (!is_android) {
     sources += [
@@ -530,6 +536,7 @@ if (!is_android) {
       "//chrome/common:version_header",
       "//chrome/test:test_support",
       "//chrome/test/base:chrome_test_path_utils",
+      "//components/bidi_mapper:buildflags",
       "//components/infobars/content",
       "//components/infobars/core",
       "//components/keep_alive_registry",
@@ -559,6 +566,9 @@ if (!is_android) {
       "//ui/views/controls/webview",
       "//url",
     ]
+    if (enable_bidi_mapper) {
+      deps += [ "//components/bidi_mapper/host:features" ]
+    }
     if (use_ozone) {
       deps += [ "//ui/ozone" ]
     }

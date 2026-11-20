@@ -64,6 +64,7 @@ include_rules = [
   "+components/background_sync",
   "+components/background_task_scheduler",
   "+components/base32",
+  "+components/bidi_mapper",
   "+components/blocked_content",
   "+components/bookmarks/browser",
   "+components/bookmarks/common",
