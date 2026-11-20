@@ -3327,6 +3327,40 @@ recorded in the same way, even if they fit the naming pattern. -->
   </token>
 </histogram>
 
+<histogram name="Accessibility.ReadAnything.AiPlayback.FeedbackSentiment"
+    enum="ReadAnythingAiPlaybackFeedbackSentiment" expires_after="2027-06-01">
+  <owner>srdzzz@google.com</owner>
+  <owner>read-aloud-tiger-team@google.com</owner>
+  <owner>komo-eng@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records the overall user sentiment rating (Positive or Negative) submitted
+    for AI Playback in Reading Mode or Android Read Aloud, once per accepted
+    submission. A submission is accepted, and recorded here, only if it targets
+    the active Overview playback's WebContents after an overview script has
+    loaded, the UserFeedbackAllowed policy permits feedback, and the playback is
+    under its per-playback report cap; otherwise it is dropped and nothing is
+    recorded. The None bucket is never recorded.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.ReadAnything.AiPlayback.NegativeFeedbackReason"
+    enum="ReadAnythingAiPlaybackNegativeFeedbackReason"
+    expires_after="2027-06-01">
+  <owner>srdzzz@google.com</owner>
+  <owner>read-aloud-tiger-team@google.com</owner>
+  <owner>komo-eng@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records each distinct negative feedback reason the user selected when
+    submitting a thumbs-down rating for AI Playback in Reading Mode or Android
+    Read Aloud, under the same acceptance conditions as
+    Accessibility.ReadAnything.AiPlayback.FeedbackSentiment. Recorded only for
+    negative sentiment; reasons are de-duplicated, so a submission contributes
+    at most one sample per reason (at most 6 samples).
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.ReadAnything.AudioStartTime.{Result}" units="ms"
     expires_after="2027-04-11">
   <owner>kristislee@google.com</owner>

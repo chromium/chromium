@@ -8,7 +8,9 @@
 #include <optional>
 #include <utility>
 
+#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
@@ -28,11 +30,16 @@
 #include "chrome/browser/readaloud/read_aloud_service_factory.h"
 #include "chrome/browser/readaloud/read_aloud_voice_catalog.h"
 #include "chrome/browser/reader_mode/reader_mode_service_factory.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/readaloud/read_aloud_constants.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/feedback/feedback_constants.h"
+#include "components/feedback/feedback_uploader.h"
+#include "components/feedback/proto/extension.pb.h"
 #include "components/media_router/browser/test/mock_media_router.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/features/read_aloud_generate_text.pb.h"
+#include "components/prefs/pref_service.h"
 #include "components/web_distiller/core/distiller_page.h"
 #include "components/web_distiller/core/fake_distiller_page.h"
 #include "components/web_distiller/core/proto/distilled_article.pb.h"
@@ -51,6 +58,7 @@
 #include "media/mojo/mojom/audio_output_stream.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -464,6 +472,42 @@ class FakePagePlayer : public content::MediaSessionPlayerObserver {
   int resume_count_ = 0;
 };
 
+class FakeFeedbackUploader : public feedback::FeedbackUploader {
+ public:
+  FakeFeedbackUploader()
+      : feedback::FeedbackUploader(
+            /*is_off_the_record=*/false,
+            /*state_path=*/{},
+            base::BindOnce(
+                []() -> scoped_refptr<network::SharedURLLoaderFactory> {
+                  return nullptr;
+                })) {}
+
+  const std::vector<userfeedback::ExtensionSubmit>& reports() const {
+    return reports_;
+  }
+  const userfeedback::ExtensionSubmit* last_report() const {
+    return reports_.empty() ? nullptr : &reports_.back();
+  }
+
+  // feedback::FeedbackUploader:
+  void QueueReport(std::unique_ptr<std::string> data,
+                   bool has_email,
+                   int product_id) override {
+    ASSERT_NE(data, nullptr);
+    userfeedback::ExtensionSubmit report;
+    ASSERT_TRUE(report.ParseFromString(*data));
+    reports_.push_back(std::move(report));
+  }
+  base::WeakPtr<FeedbackUploader> AsWeakPtr() override {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  std::vector<userfeedback::ExtensionSubmit> reports_;
+  base::WeakPtrFactory<FakeFeedbackUploader> weak_ptr_factory_{this};
+};
+
 }  // namespace
 
 class ReadAloudServiceTest : public ChromeRenderViewHostTestHarness {
@@ -493,7 +537,15 @@ class ReadAloudServiceTest : public ChromeRenderViewHostTestHarness {
                       &ReadAloudServiceTest::BindAudioStreamFactory,
                       base::Unretained(test)),
                   base::BindRepeating(&ReadAloudServiceTest::GetMediaSession,
-                                      base::Unretained(test)));
+                                      base::Unretained(test)),
+                  base::BindRepeating(
+                      [](ReadAloudServiceTest* test)
+                          -> feedback::FeedbackUploader* {
+                        return test->return_null_uploader_
+                                   ? nullptr
+                                   : &test->fake_uploader_;
+                      },
+                      base::Unretained(test)));
             },
             this));
   }
@@ -629,12 +681,12 @@ class ReadAloudServiceTest : public ChromeRenderViewHostTestHarness {
     return response;
   }
 
-  // Starts a kOverview session whose mocked MES call returns `response`.
-  // Returns the distiller delegate used to deliver the article.
+  // Starts a kOverview session on `url` whose mocked MES call returns
+  // `response`. Returns the distiller delegate used to deliver the article.
   web_distiller::ViewRequestDelegate* StartOverviewSession(
       const optimization_guide::proto::ReadAloudGenerateTextResponse& response =
-          OneTurnOverviewResponse()) {
-    const GURL url("https://www.example.com/article");
+          OneTurnOverviewResponse(),
+      const GURL& url = GURL("https://www.example.com/article")) {
     NavigateAndCommit(url);
     SetFakeController(std::make_unique<FakePlaybackController>());
 
@@ -667,6 +719,32 @@ class ReadAloudServiceTest : public ChromeRenderViewHostTestHarness {
     return view_delegate;
   }
 
+  const userfeedback::ExtensionSubmit* last_report() const {
+    return fake_uploader_.last_report();
+  }
+  size_t report_count() const { return fake_uploader_.reports().size(); }
+
+  std::string GetLastReportAiMetadata(std::string_view key) const {
+    const userfeedback::ExtensionSubmit* report = last_report();
+    if (!report) {
+      return "";
+    }
+    for (const userfeedback::ProductSpecificData& entry :
+         report->web_data().product_specific_data()) {
+      if (entry.key() == key) {
+        return entry.value();
+      }
+    }
+    return "";
+  }
+
+  void RunOverviewSession(
+      const GURL& url = GURL("https://www.example.com/article")) {
+    web_distiller::ViewRequestDelegate* delegate =
+        StartOverviewSession(OneTurnOverviewResponse(), url);
+    DeliverDistilledArticle(delegate);
+  }
+
   // Delivers a single-page distilled article, which in kOverview mode
   // triggers overview generation.
   void DeliverDistilledArticle(web_distiller::ViewRequestDelegate* delegate) {
@@ -684,10 +762,14 @@ class ReadAloudServiceTest : public ChromeRenderViewHostTestHarness {
     fake_controller()->FlushForTesting();
   }
 
+  void set_return_null_uploader(bool value) { return_null_uploader_ = value; }
+
  private:
   std::unique_ptr<FakePlaybackController> fake_controller_;
   FakeAudioStreamFactory fake_audio_stream_factory_;
   std::unique_ptr<content::MockMediaSession> mock_media_session_;
+  FakeFeedbackUploader fake_uploader_;
+  bool return_null_uploader_ = false;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -3448,4 +3530,217 @@ TEST_F(ReadAloudServiceTest, OnWordBoundaryReachedRejectsStartAfterEnd) {
             "ReadAloudService: word boundary start exceeds end");
 }
 
+TEST_F(ReadAloudServiceTest, SendFeedbackPositiveFastPath) {
+  base::HistogramTester histograms;
+  RunOverviewSession();
+
+  EXPECT_TRUE(service()->SendAiPlaybackFeedback(
+      web_contents(),
+      ReadAloudService::AiPlaybackFeedbackSurface::kDesktopReadingMode,
+      ReadAloudService::FeedbackType::kPositive, /*reasons=*/{}));
+
+  histograms.ExpectUniqueSample(
+      "Accessibility.ReadAnything.AiPlayback.FeedbackSentiment",
+      ReadAloudService::FeedbackType::kPositive, 1);
+  histograms.ExpectTotalCount(
+      "Accessibility.ReadAnything.AiPlayback.NegativeFeedbackReason", 0);
+  ASSERT_NE(last_report(), nullptr);
+  EXPECT_EQ(last_report()->bucket(), "ReadingModeAiPlayback");
+  EXPECT_EQ(last_report()->web_data().url(), "");
+  EXPECT_EQ(last_report()->common_data().user_email(), "");
+  EXPECT_EQ(last_report()->common_data().description(), "");
+  EXPECT_EQ(last_report()->product_id(), feedback::kChromeBrowserProductId);
+  EXPECT_EQ(GetLastReportAiMetadata("surface"), "desktop-reading-mode");
+  EXPECT_EQ(GetLastReportAiMetadata("sentiment"), "positive");
+  EXPECT_EQ(GetLastReportAiMetadata("reasons"), "");
+}
+
+TEST_F(ReadAloudServiceTest, SendFeedbackNegativeWithReasons) {
+  base::HistogramTester histograms;
+  RunOverviewSession(
+      GURL("https://user:secret@www.example.com/article?utm=1#top"));
+
+  // Pausing or reaching end of stream keeps the overview active for rating.
+  service()->Pause();
+  service()->OnPlaybackStateChanged(
+      read_aloud::mojom::PlaybackState::kEndOfStream);
+  EXPECT_TRUE(service()->SendAiPlaybackFeedback(
+      web_contents(),
+      ReadAloudService::AiPlaybackFeedbackSurface::kAndroidReadAloud,
+      ReadAloudService::FeedbackType::kNegative,
+      {ReadAloudService::NegativeFeedbackReason::kNotFactuallyCorrect,
+       ReadAloudService::NegativeFeedbackReason::kBadVoice,
+       ReadAloudService::NegativeFeedbackReason::kOther}));
+
+  histograms.ExpectUniqueSample(
+      "Accessibility.ReadAnything.AiPlayback.FeedbackSentiment",
+      ReadAloudService::FeedbackType::kNegative, 1);
+  EXPECT_THAT(
+      histograms.GetAllSamples(
+          "Accessibility.ReadAnything.AiPlayback.NegativeFeedbackReason"),
+      base::BucketsAre(
+          base::Bucket(
+              ReadAloudService::NegativeFeedbackReason::kNotFactuallyCorrect,
+              1),
+          base::Bucket(ReadAloudService::NegativeFeedbackReason::kBadVoice, 1),
+          base::Bucket(ReadAloudService::NegativeFeedbackReason::kOther, 1)));
+  ASSERT_NE(last_report(), nullptr);
+  EXPECT_EQ(last_report()->bucket(), "ReadAloudAiPlayback");
+  EXPECT_EQ(last_report()->web_data().url(), "https://www.example.com/article");
+  EXPECT_EQ(last_report()->common_data().user_email(), "");
+  EXPECT_EQ(GetLastReportAiMetadata("surface"), "android-read-aloud");
+  EXPECT_EQ(GetLastReportAiMetadata("sentiment"), "negative");
+  EXPECT_EQ(GetLastReportAiMetadata("reasons"),
+            "not-factually-correct,bad-voice,other");
+}
+
+TEST_F(ReadAloudServiceTest, SendFeedbackDeduplicatesReasons) {
+  base::HistogramTester histograms;
+  RunOverviewSession();
+
+  std::vector<ReadAloudService::NegativeFeedbackReason> reasons(
+      10, ReadAloudService::NegativeFeedbackReason::kTechnicalIssue);
+  reasons.push_back(ReadAloudService::NegativeFeedbackReason::kBadVoice);
+  EXPECT_TRUE(service()->SendAiPlaybackFeedback(
+      web_contents(),
+      ReadAloudService::AiPlaybackFeedbackSurface::kDesktopReadingMode,
+      ReadAloudService::FeedbackType::kNegative, reasons));
+
+  EXPECT_THAT(
+      histograms.GetAllSamples(
+          "Accessibility.ReadAnything.AiPlayback.NegativeFeedbackReason"),
+      base::BucketsAre(
+          base::Bucket(ReadAloudService::NegativeFeedbackReason::kBadVoice, 1),
+          base::Bucket(
+              ReadAloudService::NegativeFeedbackReason::kTechnicalIssue, 1)));
+  ASSERT_EQ(report_count(), 1u);
+  EXPECT_EQ(GetLastReportAiMetadata("reasons"), "bad-voice,technical-issue");
+
+  EXPECT_TRUE(service()->SendAiPlaybackFeedback(
+      web_contents(),
+      ReadAloudService::AiPlaybackFeedbackSurface::kDesktopReadingMode,
+      ReadAloudService::FeedbackType::kPositive,
+      {ReadAloudService::NegativeFeedbackReason::kOther}));
+  EXPECT_EQ(report_count(), 2u);
+  histograms.ExpectTotalCount(
+      "Accessibility.ReadAnything.AiPlayback.NegativeFeedbackReason", 2);
+  EXPECT_EQ(GetLastReportAiMetadata("sentiment"), "positive");
+  EXPECT_EQ(GetLastReportAiMetadata("reasons"), "");
+}
+
+TEST_F(ReadAloudServiceTest, SendFeedbackCapsReportsPerPlayback) {
+  base::HistogramTester histograms;
+  RunOverviewSession();
+
+  // Null uploader drops without recording UMA or consuming cap.
+  set_return_null_uploader(true);
+  EXPECT_FALSE(service()->SendAiPlaybackFeedback(
+      web_contents(),
+      ReadAloudService::AiPlaybackFeedbackSurface::kDesktopReadingMode,
+      ReadAloudService::FeedbackType::kPositive, /*reasons=*/{}));
+  set_return_null_uploader(false);
+  histograms.ExpectTotalCount(
+      "Accessibility.ReadAnything.AiPlayback.FeedbackSentiment", 0);
+
+  for (int i = 0; i < ReadAloudService::kMaxFeedbackReportsPerPlayback + 5;
+       ++i) {
+    const bool accepted = service()->SendAiPlaybackFeedback(
+        web_contents(),
+        ReadAloudService::AiPlaybackFeedbackSurface::kDesktopReadingMode,
+        ReadAloudService::FeedbackType::kPositive, /*reasons=*/{});
+    EXPECT_EQ(accepted, i < ReadAloudService::kMaxFeedbackReportsPerPlayback);
+  }
+  const size_t kCap = ReadAloudService::kMaxFeedbackReportsPerPlayback;
+  EXPECT_EQ(report_count(), kCap);
+  histograms.ExpectUniqueSample(
+      "Accessibility.ReadAnything.AiPlayback.FeedbackSentiment",
+      ReadAloudService::FeedbackType::kPositive,
+      ReadAloudService::kMaxFeedbackReportsPerPlayback);
+
+  service()->Stop();
+  RunOverviewSession();
+  EXPECT_TRUE(service()->SendAiPlaybackFeedback(
+      web_contents(),
+      ReadAloudService::AiPlaybackFeedbackSurface::kDesktopReadingMode,
+      ReadAloudService::FeedbackType::kPositive, /*reasons=*/{}));
+  EXPECT_EQ(report_count(), kCap + 1);
+}
+
+TEST_F(ReadAloudServiceTest, SendFeedbackHonorsUserFeedbackAllowedPolicy) {
+  base::HistogramTester histograms;
+  RunOverviewSession();
+  profile()->GetPrefs()->SetBoolean(prefs::kUserFeedbackAllowed, false);
+
+  EXPECT_FALSE(service()->SendAiPlaybackFeedback(
+      web_contents(),
+      ReadAloudService::AiPlaybackFeedbackSurface::kAndroidReadAloud,
+      ReadAloudService::FeedbackType::kPositive, /*reasons=*/{}));
+
+  histograms.ExpectTotalCount(
+      "Accessibility.ReadAnything.AiPlayback.FeedbackSentiment", 0);
+  EXPECT_EQ(last_report(), nullptr);
+
+  profile()->GetPrefs()->SetBoolean(prefs::kUserFeedbackAllowed, true);
+  EXPECT_TRUE(service()->SendAiPlaybackFeedback(
+      web_contents(),
+      ReadAloudService::AiPlaybackFeedbackSurface::kAndroidReadAloud,
+      ReadAloudService::FeedbackType::kPositive, /*reasons=*/{}));
+  EXPECT_NE(last_report(), nullptr);
+}
+
+TEST_F(ReadAloudServiceTest, SendFeedbackDropsUngatedSubmissions) {
+  base::HistogramTester histograms;
+  constexpr ReadAloudService::AiPlaybackFeedbackSurface kSurface =
+      ReadAloudService::AiPlaybackFeedbackSurface::kDesktopReadingMode;
+
+  // Null WebContents or no active playback.
+  EXPECT_FALSE(service()->SendAiPlaybackFeedback(
+      nullptr, kSurface, ReadAloudService::FeedbackType::kPositive,
+      /*reasons=*/{}));
+  EXPECT_FALSE(service()->SendAiPlaybackFeedback(
+      web_contents(), kSurface, ReadAloudService::FeedbackType::kPositive,
+      /*reasons=*/{}));
+
+  // Overview initialized, but script not yet loaded.
+  web_distiller::ViewRequestDelegate* delegate = StartOverviewSession();
+  EXPECT_FALSE(service()->SendAiPlaybackFeedback(
+      web_contents(), kSurface, ReadAloudService::FeedbackType::kNegative,
+      {ReadAloudService::NegativeFeedbackReason::kTechnicalIssue}));
+
+  DeliverDistilledArticle(delegate);
+
+  // Missing or out-of-range sentiment.
+  EXPECT_FALSE(service()->SendAiPlaybackFeedback(
+      web_contents(), kSurface, ReadAloudService::FeedbackType::kNone,
+      /*reasons=*/{}));
+  EXPECT_FALSE(service()->SendAiPlaybackFeedback(
+      web_contents(), kSurface, static_cast<ReadAloudService::FeedbackType>(99),
+      /*reasons=*/{}));
+
+  // Different tab's WebContents.
+  std::unique_ptr<content::WebContents> other_contents =
+      CreateTestWebContents();
+  EXPECT_FALSE(service()->SendAiPlaybackFeedback(
+      other_contents.get(), kSurface, ReadAloudService::FeedbackType::kPositive,
+      /*reasons=*/{}));
+
+  // Classic playback mode.
+  service()->SetPlaybackMode(ReadAloudService::PlaybackMode::kClassic);
+  EXPECT_FALSE(service()->SendAiPlaybackFeedback(
+      web_contents(), kSurface, ReadAloudService::FeedbackType::kPositive,
+      /*reasons=*/{}));
+  service()->SetPlaybackMode(ReadAloudService::PlaybackMode::kOverview);
+
+  // Stopped playback.
+  service()->Stop();
+  EXPECT_FALSE(service()->SendAiPlaybackFeedback(
+      web_contents(), kSurface, ReadAloudService::FeedbackType::kPositive,
+      /*reasons=*/{}));
+
+  histograms.ExpectTotalCount(
+      "Accessibility.ReadAnything.AiPlayback.FeedbackSentiment", 0);
+  histograms.ExpectTotalCount(
+      "Accessibility.ReadAnything.AiPlayback.NegativeFeedbackReason", 0);
+  EXPECT_EQ(last_report(), nullptr);
+}
 }  // namespace readaloud

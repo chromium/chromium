@@ -9,13 +9,20 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/enum_set.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
+#include "base/json/json_writer.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/unguessable_token.h"
+#include "base/values.h"
+#include "chrome/browser/feedback/feedback_uploader_chrome.h"
+#include "chrome/browser/feedback/feedback_uploader_factory_chrome.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -26,17 +33,24 @@
 #include "chrome/browser/readaloud/read_aloud_voice_catalog.h"
 #include "chrome/browser/readaloud/voice_preview_controller.h"
 #include "chrome/browser/reader_mode/reader_mode_service_factory.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/readaloud/read_aloud_constants.h"
+#include "components/feedback/feedback_constants.h"
+#include "components/feedback/feedback_data.h"
+#include "components/feedback/feedback_uploader.h"
+#include "components/prefs/pref_service.h"
 #include "components/url_formatter/elide_url.h"
 #include "components/web_distiller/content/browser/distiller_page_web_contents.h"
 #include "components/web_distiller/core/distiller_page.h"
 #include "components/web_distiller/core/url_utils.h"
 #include "components/web_distiller/core/web_distiller_service.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "media/base/audio_parameters.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/message.h"
+#include "url/gurl.h"
 
 namespace readaloud {
 namespace {
@@ -78,6 +92,61 @@ constexpr char kStandardPlaybackOutcomeHistogram[] =
     "ReadAloud.StandardPlayback.Outcome";
 constexpr char kStandardPlaybackTimeToFirstAudioHistogram[] =
     "ReadAloud.StandardPlayback.TimeToFirstAudio";
+constexpr char kFeedbackSentimentHistogram[] =
+    "Accessibility.ReadAnything.AiPlayback.FeedbackSentiment";
+constexpr char kNegativeFeedbackReasonHistogram[] =
+    "Accessibility.ReadAnything.AiPlayback.NegativeFeedbackReason";
+
+std::string_view FeedbackTypeToString(ReadAloudService::FeedbackType type) {
+  switch (type) {
+    case ReadAloudService::FeedbackType::kPositive:
+      return "positive";
+    case ReadAloudService::FeedbackType::kNegative:
+      return "negative";
+    case ReadAloudService::FeedbackType::kNone:
+      break;
+  }
+  NOTREACHED();
+}
+
+std::string_view NegativeFeedbackReasonToString(
+    ReadAloudService::NegativeFeedbackReason reason) {
+  switch (reason) {
+    case ReadAloudService::NegativeFeedbackReason::kNotFactuallyCorrect:
+      return "not-factually-correct";
+    case ReadAloudService::NegativeFeedbackReason::kBadVoice:
+      return "bad-voice";
+    case ReadAloudService::NegativeFeedbackReason::kNotEngaging:
+      return "not-engaging";
+    case ReadAloudService::NegativeFeedbackReason::kOffensiveContent:
+      return "offensive-content";
+    case ReadAloudService::NegativeFeedbackReason::kTechnicalIssue:
+      return "technical-issue";
+    case ReadAloudService::NegativeFeedbackReason::kOther:
+      return "other";
+  }
+  NOTREACHED();
+}
+
+struct AiPlaybackFeedbackSurfaceInfo {
+  std::string_view bucket;
+  std::string_view surface_name;
+  // Approved in Clank's PDD; off on Desktop until its PDD/notice land.
+  bool sends_page_url;
+};
+
+AiPlaybackFeedbackSurfaceInfo GetAiPlaybackFeedbackSurfaceInfo(
+    ReadAloudService::AiPlaybackFeedbackSurface surface) {
+  switch (surface) {
+    case ReadAloudService::AiPlaybackFeedbackSurface::kDesktopReadingMode:
+      return {"ReadingModeAiPlayback", "desktop-reading-mode",
+              /*sends_page_url=*/false};
+    case ReadAloudService::AiPlaybackFeedbackSurface::kAndroidReadAloud:
+      return {"ReadAloudAiPlayback", "android-read-aloud",
+              /*sends_page_url=*/true};
+  }
+  NOTREACHED();
+}
 
 }  // namespace
 
@@ -85,10 +154,12 @@ ReadAloudService::ReadAloudService(
     Profile* profile,
     PlaybackControllerBinder controller_binder,
     ReadAloudAudioBroker::AudioStreamFactoryBinder factory_binder,
-    ReadAloudPlaybackSession::MediaSessionGetter media_session_getter)
+    ReadAloudPlaybackSession::MediaSessionGetter media_session_getter,
+    FeedbackUploaderGetter feedback_uploader_getter)
     : profile_(profile),
       controller_binder_(controller_binder),
       media_session_getter_(std::move(media_session_getter)),
+      feedback_uploader_getter_(std::move(feedback_uploader_getter)),
       audio_broker_(std::make_unique<ReadAloudAudioBroker>(factory_binder)),
       speech_synthesis_broker_(std::make_unique<SpeechSynthesisBroker>()),
       overview_generation_broker_(std::make_unique<OverviewGenerationBroker>()),
@@ -187,6 +258,7 @@ void ReadAloudService::ResetPlayback() {
     overview_generation_broker_->InvalidatePendingRequests();
   }
   overview_script_loaded_ = false;
+  ai_playback_feedback_reports_ = 0;
   distillation_start_time_ = base::TimeTicks();
   overview_generation_start_time_ = base::TimeTicks();
   article_title_.clear();
@@ -283,7 +355,86 @@ void ReadAloudService::SetPlaybackMode(PlaybackMode mode) {
   playback_mode_ = mode;
 }
 void ReadAloudService::SetHighlightingEnabled(bool enabled) {}
+
 void ReadAloudService::SendFeedback(FeedbackType feedback_type) {}
+
+bool ReadAloudService::SendAiPlaybackFeedback(
+    content::WebContents* web_contents,
+    AiPlaybackFeedbackSurface surface,
+    FeedbackType feedback_type,
+    const std::vector<NegativeFeedbackReason>& reasons) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  const bool is_valid_feedback_type =
+      feedback_type == FeedbackType::kPositive ||
+      feedback_type == FeedbackType::kNegative;
+  if (!web_contents || web_contents != this->web_contents() ||
+      playback_mode_ != PlaybackMode::kOverview || !overview_script_loaded_ ||
+      !is_valid_feedback_type || !profile_ || profile_->IsOffTheRecord() ||
+      web_contents->GetBrowserContext() != profile_ ||
+      ai_playback_feedback_reports_ >= kMaxFeedbackReportsPerPlayback) {
+    return false;
+  }
+  PrefService* prefs = profile_->GetPrefs();
+  if (!prefs || !prefs->GetBoolean(prefs::kUserFeedbackAllowed)) {
+    return false;
+  }
+  feedback::FeedbackUploader* uploader =
+      feedback_uploader_getter_
+          ? feedback_uploader_getter_.Run()
+          : feedback::FeedbackUploaderFactoryChrome::GetForBrowserContext(
+                profile_);
+  if (!uploader) {
+    return false;
+  }
+  ++ai_playback_feedback_reports_;
+
+  const AiPlaybackFeedbackSurfaceInfo surface_info =
+      GetAiPlaybackFeedbackSurfaceInfo(surface);
+
+  base::UmaHistogramEnumeration(kFeedbackSentimentHistogram, feedback_type);
+  using NegativeFeedbackReasons =
+      base::EnumSet<NegativeFeedbackReason,
+                    NegativeFeedbackReason::kNotFactuallyCorrect,
+                    NegativeFeedbackReason::kMaxValue>;
+  NegativeFeedbackReasons distinct_reasons;
+  if (feedback_type == FeedbackType::kNegative) {
+    for (NegativeFeedbackReason reason : reasons) {
+      if (static_cast<int>(reason) >= 0 &&
+          reason <= NegativeFeedbackReason::kMaxValue) {
+        distinct_reasons.Put(reason);
+      }
+    }
+  }
+  std::vector<std::string_view> reason_names;
+  reason_names.reserve(distinct_reasons.size());
+  for (NegativeFeedbackReason reason : distinct_reasons) {
+    base::UmaHistogramEnumeration(kNegativeFeedbackReasonHistogram, reason);
+    reason_names.push_back(NegativeFeedbackReasonToString(reason));
+  }
+
+  base::DictValue ai_metadata;
+  ai_metadata.Set("surface", surface_info.surface_name);
+  ai_metadata.Set("sentiment", FeedbackTypeToString(feedback_type));
+  if (!reason_names.empty()) {
+    ai_metadata.Set("reasons", base::JoinString(reason_names, ","));
+  }
+
+  auto feedback_data = base::MakeRefCounted<feedback::FeedbackData>(
+      uploader->AsWeakPtr(), /*tracing_manager=*/nullptr);
+  feedback_data->set_product_id(feedback::kChromeBrowserProductId);
+  feedback_data->set_category_tag(std::string(surface_info.bucket));
+  if (surface_info.sends_page_url) {
+    if (GURL page_url = OverviewGenerationBroker::SanitizePageUrl(
+            web_contents->GetLastCommittedURL());
+        !page_url.is_empty()) {
+      feedback_data->set_page_url(page_url.spec());
+    }
+  }
+  feedback_data->set_ai_metadata(base::WriteJson(ai_metadata).value_or("{}"));
+  feedback_data->OnFeedbackPageDataComplete();
+  return true;
+}
+
 void ReadAloudService::CheckReadability(const GURL& url) {
   if (delegate_) {
     bool is_readable = web_distiller::url_utils::IsUrlDistillable(url);

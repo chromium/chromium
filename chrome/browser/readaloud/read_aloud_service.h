@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -30,6 +31,10 @@ namespace content {
 class RenderFrameHost;
 class WebContents;
 }
+
+namespace feedback {
+class FeedbackUploader;
+}  // namespace feedback
 
 class Profile;
 
@@ -72,6 +77,9 @@ class ReadAloudService
     kOverview = 2,
   };
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(ReadAnythingAiPlaybackFeedbackSentiment)
   enum class FeedbackType {
     // No feedback provided.
     kNone = 0,
@@ -79,6 +87,31 @@ class ReadAloudService
     kPositive = 1,
     // Negative feedback (e.g. thumbs down).
     kNegative = 2,
+    kMaxValue = kNegative,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/accessibility/enums.xml:ReadAnythingAiPlaybackFeedbackSentiment)
+
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(ReadAnythingAiPlaybackNegativeFeedbackReason)
+  enum class NegativeFeedbackReason {
+    kNotFactuallyCorrect = 0,
+    kBadVoice = 1,
+    kNotEngaging = 2,
+    kOffensiveContent = 3,
+    kTechnicalIssue = 4,
+    kOther = 5,
+    kMaxValue = kOther,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/accessibility/enums.xml:ReadAnythingAiPlaybackNegativeFeedbackReason)
+
+  static constexpr int kMaxFeedbackReportsPerPlayback = 20;
+
+  // Browser-side UI surface; selects the Listnr bucket and URL policy. Never
+  // populate from IPC.
+  enum class AiPlaybackFeedbackSurface {
+    kDesktopReadingMode,
+    kAndroidReadAloud,
   };
 
   // Outcome of overview generation and processing in ReadAloudService.
@@ -165,11 +198,15 @@ class ReadAloudService
       mojo::PendingRemote<
           read_aloud::mojom::ReadAloudPlaybackControllerClient>)>;
 
+  using FeedbackUploaderGetter =
+      base::RepeatingCallback<feedback::FeedbackUploader*()>;
+
   explicit ReadAloudService(
       Profile* profile,
       PlaybackControllerBinder controller_binder = {},
       ReadAloudAudioBroker::AudioStreamFactoryBinder factory_binder = {},
-      ReadAloudPlaybackSession::MediaSessionGetter media_session_getter = {});
+      ReadAloudPlaybackSession::MediaSessionGetter media_session_getter = {},
+      FeedbackUploaderGetter feedback_uploader_getter = {});
 
   ReadAloudService(const ReadAloudService&) = delete;
   ReadAloudService& operator=(const ReadAloudService&) = delete;
@@ -225,8 +262,22 @@ class ReadAloudService
   // Enables or disables synchronized word highlighting in the UI.
   void SetHighlightingEnabled(bool enabled);
 
-  // Submits user feedback (e.g., thumbs up/down) for logging.
+  // Legacy Android no-op; remove once `ReadAloudBridge` uses
+  // `SendAiPlaybackFeedback()`.
   void SendFeedback(FeedbackType feedback_type);
+
+  // Records AI Playback feedback UMA and queues a `FeedbackUploader` report
+  // when `web_contents` matches the active Overview playback with a loaded
+  // overview script, policy allows feedback, an uploader is available, and the
+  // playback is under cap. Returns `true` if accepted and queued, or `false` if
+  // dropped. Only `FeedbackType::kPositive` and `FeedbackType::kNegative` are
+  // accepted; `reasons` are deduplicated for negative feedback and ignored for
+  // positive feedback.
+  bool SendAiPlaybackFeedback(
+      content::WebContents* web_contents,
+      AiPlaybackFeedbackSurface surface,
+      FeedbackType feedback_type,
+      const std::vector<NegativeFeedbackReason>& reasons);
 
   // Initiates an asynchronous check to determine if the URL is readable.
   void CheckReadability(const GURL& url);
@@ -324,6 +375,7 @@ class ReadAloudService
   raw_ptr<Profile> profile_;
   PlaybackControllerBinder controller_binder_;
   ReadAloudPlaybackSession::MediaSessionGetter media_session_getter_;
+  FeedbackUploaderGetter feedback_uploader_getter_;
   std::unique_ptr<ReadAloudAudioBroker> audio_broker_;
   std::unique_ptr<web_distiller::ViewerHandle> viewer_handle_;
   std::unique_ptr<Delegate> delegate_;
@@ -366,6 +418,7 @@ class ReadAloudService
   bool waiting_for_first_audio_ = false;
   bool first_audio_emitted_ = false;
 
+  int ai_playback_feedback_reports_ = 0;
   base::WeakPtrFactory<ReadAloudService> weak_factory_{this};
 };
 

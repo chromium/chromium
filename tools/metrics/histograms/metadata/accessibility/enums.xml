@@ -2192,6 +2192,29 @@ Unknown properties are collapsed to zero. -->
 
 <!-- LINT.ThenChange(//components/live_caption/translation_dispatcher_on_device.h:OnDeviceTranslationErrorReason) -->
 
+<!-- LINT.IfChange(ReadAnythingAiPlaybackFeedbackSentiment) -->
+
+<enum name="ReadAnythingAiPlaybackFeedbackSentiment">
+  <int value="0" label="None"/>
+  <int value="1" label="Positive"/>
+  <int value="2" label="Negative"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/readaloud/read_aloud_service.h:ReadAnythingAiPlaybackFeedbackSentiment) -->
+
+<!-- LINT.IfChange(ReadAnythingAiPlaybackNegativeFeedbackReason) -->
+
+<enum name="ReadAnythingAiPlaybackNegativeFeedbackReason">
+  <int value="0" label="Not factually correct"/>
+  <int value="1" label="Didn't like the voice"/>
+  <int value="2" label="Not engaging enough"/>
+  <int value="3" label="Offensive content"/>
+  <int value="4" label="Technical issue"/>
+  <int value="5" label="Other"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/readaloud/read_aloud_service.h:ReadAnythingAiPlaybackNegativeFeedbackReason) -->
+
 <!-- LINT.IfChange(ReadAnythingColor) -->
 
 <enum name="ReadAnythingColor">

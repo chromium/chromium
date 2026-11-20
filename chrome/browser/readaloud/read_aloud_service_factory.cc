@@ -8,6 +8,7 @@
 
 #include "base/no_destructor.h"
 #include "build/build_config.h"
+#include "chrome/browser/feedback/feedback_uploader_factory_chrome.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/readaloud/read_aloud_service.h"
@@ -66,6 +67,7 @@ ReadAloudServiceFactory::ReadAloudServiceFactory()
               .WithAshInternals(ProfileSelection::kNone)
               .Build()) {
   DependsOn(reader_mode::ReaderModeServiceFactory::GetInstance());
+  DependsOn(feedback::FeedbackUploaderFactoryChrome::GetInstance());
   DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
 }
 
