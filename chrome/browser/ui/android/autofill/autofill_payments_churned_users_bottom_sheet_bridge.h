@@ -9,7 +9,8 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/callback.h"
-#include "components/autofill/core/browser/ui/payments/payments_churned_users_ui_delegate.h"
+#include "components/autofill/core/browser/ui/payments/payments_churned_users_treatment_arm.h"
+#include "components/autofill/core/browser/ui/payments/payments_ui_closed_reasons.h"
 
 namespace ui {
 class WindowAndroid;

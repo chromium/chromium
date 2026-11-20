@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "components/autofill/core/browser/ui/payments/payments_churned_users_treatment_arm.h"
 #include "components/autofill/core/browser/ui/payments/payments_churned_users_ui_delegate.h"
 #include "components/messages/android/message_enums.h"
 #include "components/signin/public/identity_manager/account_info.h"

@@ -7,7 +7,7 @@
 
 #include "base/functional/callback.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
-#include "components/autofill/core/browser/ui/payments/payments_churned_users_ui_delegate.h"
+#include "components/autofill/core/browser/ui/payments/payments_churned_users_treatment_arm.h"
 #include "components/autofill/core/browser/ui/payments/payments_ui_closed_reasons.h"
 #include "components/autofill/core/browser/ui/payments/save_payment_method_and_virtual_card_enroll_confirmation_ui_params.h"
 #include "components/signin/public/identity_manager/account_info.h"

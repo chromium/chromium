@@ -218,6 +218,7 @@ java_cpp_enum("autofill_core_browser_java_enums") {
     "../core/browser/suggestions/suggestion.h",
     "../core/browser/suggestions/suggestion_type.h",
     "../core/browser/ui/autofill_image_fetcher_base.h",
+    "../core/browser/ui/payments/payments_churned_users_treatment_arm.h",
     "../core/browser/ui/payments/payments_ui_closed_reasons.h",
   ]
 }
