@@ -148,8 +148,8 @@ TEST_F(TranslateKitLanguagePackComponentTest,
             on_device_translation::GetLanguagePackComponentConfig(
                 on_device_translation::LanguagePackKey::kEn_Fr)),
         true);
-    RegisterTranslateKitLanguagePackComponentsForUpdate(service.get(),
-                                                        pref_service());
+    RegisterTranslateKitLanguagePackComponentsForUpdate(
+        service.get(), pref_service(), /*resume_unfinished_downloads=*/true);
     histogram_tester.ExpectTotalCount(
         "Translate.OnDeviceTranslation.InstalledLanguagePackCount", 0);
   }
@@ -166,12 +166,44 @@ TEST_F(TranslateKitLanguagePackComponentTest,
             on_device_translation::GetLanguagePackComponentConfig(
                 on_device_translation::LanguagePackKey::kEn_Ja)),
         install_dir().AppendASCII("en_ja"));
-    RegisterTranslateKitLanguagePackComponentsForUpdate(service.get(),
-                                                        pref_service());
+    RegisterTranslateKitLanguagePackComponentsForUpdate(
+        service.get(), pref_service(), /*resume_unfinished_downloads=*/true);
     env().RunUntilIdle();
     histogram_tester.ExpectUniqueSample(
         "Translate.OnDeviceTranslation.InstalledLanguagePackCount", 2, 1);
   }
+}
+
+TEST_F(TranslateKitLanguagePackComponentTest,
+       RegisterComponentsForUpdateSkipsUnfinishedDownloads) {
+  auto service = std::make_unique<MockComponentUpdateService>();
+  EXPECT_CALL(*service, GetComponentIDs()).Times(testing::AnyNumber());
+  EXPECT_CALL(*service, RegisterComponent(_)).WillOnce(testing::Return(true));
+
+  const auto& en_fr_config =
+      on_device_translation::GetLanguagePackComponentConfig(
+          on_device_translation::LanguagePackKey::kEn_Fr);
+  const auto& en_es_config =
+      on_device_translation::GetLanguagePackComponentConfig(
+          on_device_translation::LanguagePackKey::kEn_Es);
+
+  // `en_fr` has no installed path yet, while `en_es` is already on disk.
+  pref_service()->SetBoolean(
+      on_device_translation::GetRegisteredFlagPrefName(en_fr_config), true);
+  pref_service()->SetBoolean(
+      on_device_translation::GetRegisteredFlagPrefName(en_es_config), true);
+  pref_service()->SetFilePath(
+      on_device_translation::GetComponentPathPrefName(en_es_config),
+      install_dir().AppendASCII("en_es"));
+
+  RegisterTranslateKitLanguagePackComponentsForUpdate(
+      service.get(), pref_service(), /*resume_unfinished_downloads=*/false);
+  env().RunUntilIdle();
+
+  EXPECT_FALSE(pref_service()->GetBoolean(
+      on_device_translation::GetRegisteredFlagPrefName(en_fr_config)));
+  EXPECT_TRUE(pref_service()->GetBoolean(
+      on_device_translation::GetRegisteredFlagPrefName(en_es_config)));
 }
 
 TEST_F(TranslateKitLanguagePackComponentTest,

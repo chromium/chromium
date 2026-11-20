@@ -80,9 +80,14 @@ void RegisterTranslateKitLanguagePackComponent(
     base::OnceClosure registered_callback,
     base::RepeatingClosure on_ready_callback);
 
+// Registers previously requested language packs with `cus` so installed packs
+// receive updates. When `resume_unfinished_downloads` is false, any pack whose
+// registration flag is set without an installed path has its flag cleared
+// instead of resuming a download at startup.
 void RegisterTranslateKitLanguagePackComponentsForUpdate(
     ComponentUpdateService* cus,
-    PrefService* pref_service);
+    PrefService* pref_service,
+    bool resume_unfinished_downloads);
 
 void RegisterTranslateKitLanguagePackComponentsForAutoDownload(
     ComponentUpdateService* cus,

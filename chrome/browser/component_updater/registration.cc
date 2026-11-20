@@ -212,7 +212,8 @@ void RegisterComponentsForUpdate() {
                                 /*registered_callback=*/base::OnceClosure(),
                                 /*on_ready_callback=*/base::DoNothing());
   RegisterTranslateKitLanguagePackComponentsForUpdate(
-      cus, g_browser_process->local_state());
+      cus, g_browser_process->local_state(),
+      /*resume_unfinished_downloads=*/!BUILDFLAG(IS_ANDROID));
   RegisterTranslateKitLanguagePackComponentsForAutoDownload(
       cus, g_browser_process->local_state());
 #endif  // BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)

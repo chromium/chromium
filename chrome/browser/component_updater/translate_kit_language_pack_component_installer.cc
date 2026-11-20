@@ -198,22 +198,33 @@ void RegisterTranslateKitLanguagePackComponent(
 
 void RegisterTranslateKitLanguagePackComponentsForUpdate(
     ComponentUpdateService* cus,
-    PrefService* pref_service) {
+    PrefService* pref_service,
+    bool resume_unfinished_downloads) {
   int installed_pack_count = 0;
   for (const auto& [language_pack_key, config] :
        on_device_translation::kLanguagePackComponentConfigMap) {
-    if (!pref_service
+    const bool installed =
+        !pref_service
              ->GetFilePath(
                  on_device_translation::GetComponentPathPrefName(*config))
-             .empty()) {
+             .empty();
+    if (installed) {
       ++installed_pack_count;
     }
-    if (pref_service->GetBoolean(
+    if (!pref_service->GetBoolean(
             on_device_translation::GetRegisteredFlagPrefName(*config))) {
-      RegisterTranslateKitLanguagePackComponent(
-          cus, pref_service, language_pack_key, base::OnceClosure(),
-          base::RepeatingClosure());
+      continue;
     }
+    if (!installed && !resume_unfinished_downloads) {
+      // No request waits for this pack and no download check runs here. The
+      // next `create()` registers it again.
+      pref_service->SetBoolean(
+          on_device_translation::GetRegisteredFlagPrefName(*config), false);
+      continue;
+    }
+    RegisterTranslateKitLanguagePackComponent(
+        cus, pref_service, language_pack_key, base::OnceClosure(),
+        base::RepeatingClosure());
   }
   if (installed_pack_count > 0) {
     base::UmaHistogramExactLinear(
