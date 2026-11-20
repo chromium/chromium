@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import <memory>
+
 #import "base/ios/block_types.h"
 #import "ios/chrome/browser/authentication/ui_bundled/change_profile_continuation_provider.h"
 
@@ -18,6 +20,7 @@ class ChromeAccountManagerService;
 class PrefService;
 namespace signin {
 class AccountPreviewDataService;
+class AccountSwitchingPromoLogger;
 class IdentityManager;
 }  // namespace signin
 namespace signin_metrics {
@@ -59,6 +62,9 @@ class SyncService;
 // May be `nullptr`.
 // - `localPrefService` application local pref.
 // - `prefService` user pref. `syncService` sync service.
+// - `accountSwitchingPromoLogger` logger for the account switching promo
+// events. Required if and only if `accessPoint` is
+// `signin_metrics::AccessPoint::kAccountSwitchingPromo`.
 - (instancetype)
         initWithAccountManagerService:
             (ChromeAccountManagerService*)accountManagerService
@@ -70,6 +76,9 @@ class SyncService;
                      localPrefService:(PrefService*)localPrefService
                           prefService:(PrefService*)prefService
                           syncService:(syncer::SyncService*)syncService
+          accountSwitchingPromoLogger:
+              (std::unique_ptr<signin::AccountSwitchingPromoLogger>)
+                  accountSwitchingPromoLogger
                      selectedIdentity:(id<SystemIdentity>)selectedIdentity
                           accessPoint:(signin_metrics::AccessPoint)accessPoint
                           promoAction:(signin_metrics::PromoAction)promoAction
@@ -88,7 +97,8 @@ class SyncService;
 - (void)startSignInWithAuthenticationFlow:
     (AuthenticationFlow*)authenticationFlow;
 
-// Signs out the user if needed.
+// Cancels the sign-in screen, verifying preconditions, and invokes
+// `completion`.
 - (void)cancelSignInScreenWithCompletion:(ProceduralBlock)completion;
 
 // User attempted to sign-in by either add an account or by tapping on sing-in

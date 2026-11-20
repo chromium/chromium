@@ -4,10 +4,18 @@
 
 #import "ios/chrome/browser/authentication/fullscreen_signin_screen/coordinator/fullscreen_signin_screen_coordinator.h"
 
+#import <memory>
 #import <utility>
 
+#import "base/check.h"
+#import "base/check_op.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/feature_engagement/public/tracker.h"
+#import "components/prefs/pref_service.h"
+#import "components/signin/public/base/signin_metrics.h"
+#import "components/signin/public/browser/account_switching_promo_logger.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/authentication/fullscreen_signin_screen/coordinator/fullscreen_signin_screen_mediator.h"
 #import "ios/chrome/browser/authentication/fullscreen_signin_screen/coordinator/fullscreen_signin_screen_mediator_delegate.h"
 #import "ios/chrome/browser/authentication/fullscreen_signin_screen/ui/fullscreen_signin_screen_consumer.h"
@@ -18,6 +26,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_context_style.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/first_run/public/first_run_constants.h"
 #import "ios/chrome/browser/first_run/public/first_run_screen_delegate.h"
 #import "ios/chrome/browser/first_run/public/first_run_util.h"
@@ -35,6 +44,7 @@
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/constants.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 
@@ -98,6 +108,9 @@
   if (self) {
     CHECK_EQ(browser->type(), Browser::Type::kRegular);
     CHECK(changeProfileContinuationProvider);
+    CHECK_EQ(
+        contextStyle == SigninContextStyle::kAccountSwitchingPromo,
+        accessPoint == signin_metrics::AccessPoint::kAccountSwitchingPromo);
     _baseNavigationController = navigationController;
     _delegate = delegate;
     _UMAReportingUserChoice = kDefaultMetricsReportingCheckboxValue;
@@ -146,6 +159,19 @@
   syncer::SyncService* syncService = SyncServiceFactory::GetForProfile(profile);
   metrics::ProfileMetricsService* profileMetricsService =
       IOSProfileMetricsServiceFactory::GetForProfile(profile);
+  std::unique_ptr<signin::AccountSwitchingPromoLogger>
+      accountSwitchingPromoLogger;
+  if (_contextStyle == SigninContextStyle::kAccountSwitchingPromo) {
+    feature_engagement::Tracker* tracker =
+        feature_engagement::TrackerFactory::GetForProfile(profile);
+    CHECK(tracker);
+    CHECK(prefService);
+    accountSwitchingPromoLogger =
+        std::make_unique<signin::AccountSwitchingPromoLogger>(
+            *tracker, *prefService,
+            self.authenticationService->GetPrimaryIdentity().gaiaId,
+            self.identity.gaiaId);
+  }
   self.mediator = [[FullscreenSigninScreenMediator alloc]
           initWithAccountManagerService:self.accountManagerService
                   authenticationService:self.authenticationService
@@ -154,6 +180,7 @@
                        localPrefService:localPrefService
                             prefService:prefService
                             syncService:syncService
+            accountSwitchingPromoLogger:std::move(accountSwitchingPromoLogger)
                        selectedIdentity:self.identity
                             accessPoint:_accessPoint
                             promoAction:_promoAction
@@ -192,9 +219,15 @@
 
 #pragma mark - UIAdaptivePresentationControllerDelegate
 
+- (BOOL)presentationControllerShouldDismiss:
+    (UIPresentationController*)presentationController {
+  return !self.mediator.ignoreDismissGesture && !self.mediator.signinInProgress;
+}
+
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
   CHECK(!self.mediator.ignoreDismissGesture);
+  CHECK(!self.mediator.signinInProgress);
   // Cancel the sign-in flow.
   __weak __typeof(self) weakSelf = self;
   [self.mediator cancelSignInScreenWithCompletion:^{

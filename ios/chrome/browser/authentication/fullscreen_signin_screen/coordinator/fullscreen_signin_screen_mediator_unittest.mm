@@ -7,22 +7,28 @@
 #import <UIKit/UIKit.h>
 
 #import <memory>
+#import <utility>
 
 #import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/run_until.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/time/time.h"
+#import "base/values.h"
+#import "components/feature_engagement/test/mock_tracker.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/core/browser/test_account_preview_data_service.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/signin/public/base/signin_switches.h"
+#import "components/signin/public/browser/account_switching_promo_logger.h"
 #import "components/sync/base/data_type.h"
 #import "components/sync/protocol/sync_enums.pb.h"
 #import "components/sync/test/test_sync_service.h"
 #import "google_apis/gaia/gaia_id.h"
+#import "ios/chrome/browser/authentication/fullscreen_signin_screen/coordinator/fullscreen_signin_screen_mediator_delegate.h"
 #import "ios/chrome/browser/authentication/fullscreen_signin_screen/ui/fullscreen_signin_screen_consumer.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_delegate.h"
@@ -32,22 +38,27 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/test_sync_service_utils.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "testing/gmock/include/gmock/gmock.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 #import "ui/base/l10n/l10n_util.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 using AccountPreviewPreference =
     signin::AccountPreviewDataService::AccountPreviewPreference;
@@ -66,6 +77,7 @@ using AccountPreviewPreference =
 @property(nonatomic, copy) NSString* subtitleOverride;
 @property(nonatomic, copy) NSString* subtitleOverrideWhenContentLoadingStopped;
 @property(nonatomic, copy) NSString* selectedEmail;
+@property(nonatomic, strong) UIImage* selectedHeaderAvatar;
 @property(nonatomic, copy) NSString* selectedEmailWhenContentLoadingStopped;
 @property(nonatomic, assign) BOOL contentLoading;
 @property(nonatomic, assign) BOOL wasContentLoading;
@@ -80,6 +92,7 @@ using AccountPreviewPreference =
                        headerAvatar:(UIImage*)headerAvatar
                             managed:(BOOL)managed {
   self.selectedEmail = email;
+  self.selectedHeaderAvatar = headerAvatar;
 }
 
 - (void)noIdentityAvailable {
@@ -124,6 +137,7 @@ NSString* ExpectedDefaultSubtitleOverride() {
 
 class FullscreenSigninScreenMediatorTest : public PlatformTest {
  protected:
+  // PlatformTest:
   void SetUp() override {
     PlatformTest::SetUp();
     TestProfileIOS::Builder builder;
@@ -170,6 +184,15 @@ class FullscreenSigninScreenMediatorTest : public PlatformTest {
     metrics::ProfileMetricsService* profile_metrics_service =
         IOSProfileMetricsServiceFactory::GetForProfile(profile_.get());
 
+    std::unique_ptr<signin::AccountSwitchingPromoLogger>
+        account_switching_promo_logger;
+    if (access_point == signin_metrics::AccessPoint::kAccountSwitchingPromo) {
+      account_switching_promo_logger =
+          std::make_unique<signin::AccountSwitchingPromoLogger>(
+              mock_tracker_, *profile_->GetPrefs(),
+              authentication_service->GetPrimaryIdentity().gaiaId,
+              selected_identity.gaiaId);
+    }
     mediator_ = [[FullscreenSigninScreenMediator alloc]
             initWithAccountManagerService:account_manager_service
                     authenticationService:authentication_service
@@ -179,6 +202,8 @@ class FullscreenSigninScreenMediatorTest : public PlatformTest {
                                               ->GetLocalState()
                               prefService:profile_->GetPrefs()
                               syncService:sync_service
+              accountSwitchingPromoLogger:std::move(
+                                              account_switching_promo_logger)
                          selectedIdentity:selected_identity
                               accessPoint:access_point
                               promoAction:signin_metrics::PromoAction::
@@ -224,6 +249,7 @@ class FullscreenSigninScreenMediatorTest : public PlatformTest {
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestProfileManagerIOS profile_manager_;
   raw_ptr<TestProfileIOS> profile_ = nullptr;
+  testing::NiceMock<feature_engagement::test::MockTracker> mock_tracker_;
   signin::TestAccountPreviewDataService account_preview_data_service_;
   FakeSystemIdentity* default_identity_ = [FakeSystemIdentity fakeIdentity1];
   FakeSystemIdentity* preferred_identity_ = [FakeSystemIdentity fakeIdentity2];
@@ -676,6 +702,191 @@ TEST_F(FullscreenSigninScreenMediatorTest,
 
   EXPECT_NSEQ(default_identity_, mediator.selectedIdentity);
   EXPECT_EQ(nil, consumer_.subtitleOverride);
+  EXPECT_EQ(nil, consumer_.selectedHeaderAvatar);
+}
+
+// Tests that the account switching promo configures `subtitleOverride`,
+// `headerAvatar`, and `titleOverride` for the target identity.
+TEST_F(FullscreenSigninScreenMediatorTest,
+       AccountSwitchingPromoConfiguresConsumer) {
+  base::test::ScopedFeatureList feature_list(
+      switches::kEnableAccountPreviewSwitchingAccount);
+  // Sign in, and simulate `preferred_identity_` being the account preferred on
+  // another phone device.
+  AuthenticationServiceFactory::GetForProfile(profile_.get())
+      ->SignIn(default_identity_, signin_metrics::AccessPoint::kStartPage);
+  account_preview_data_service_.SetPreferredAccountForSwitching(
+      CreatePreference(preferred_identity_.gaiaId));
+
+  // Present the account switching promo for `preferred_identity_`.
+  FullscreenSigninScreenMediator* mediator = CreateMediatorWithConsumer(
+      signin_metrics::AccessPoint::kAccountSwitchingPromo, preferred_identity_);
+
+  EXPECT_NSEQ(preferred_identity_, mediator.selectedIdentity);
+  EXPECT_NSEQ(preferred_identity_.userEmail, consumer_.selectedEmail);
+  EXPECT_NE(nil, consumer_.selectedHeaderAvatar);
+  EXPECT_EQ(nil, consumer_.titleOverride);
+  EXPECT_NSEQ(l10n_util::GetNSStringF(
+                  IDS_IOS_ACCOUNT_SWITCHING_PROMO_SUBTITLE,
+                  base::SysNSStringToUTF16(preferred_identity_.userEmail)),
+              consumer_.subtitleOverride);
+  [mediator disconnect];
+
+  // Simulate the preferred account being used on a desktop device instead.
+  AccountPreviewPreference desktop_preference =
+      CreatePreference(preferred_identity_.gaiaId);
+  desktop_preference.other_device_info.form_factor =
+      sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_DESKTOP;
+  account_preview_data_service_.SetPreferredAccountForSwitching(
+      desktop_preference);
+  consumer_ = [[FakeFullscreenSigninScreenConsumer alloc] init];
+
+  // Present a new promo and verify the device-type title override.
+  mediator = CreateMediatorWithConsumer(
+      signin_metrics::AccessPoint::kAccountSwitchingPromo, preferred_identity_);
+  EXPECT_NSEQ(l10n_util::GetNSString(
+                  IDS_IOS_ACCOUNT_SWITCHING_PROMO_TITLE_FOR_DEVICE_TYPE),
+              consumer_.titleOverride);
+  [mediator disconnect];
+}
+
+// Tests that the account switching promo is displayed as an optional sign-in
+// when sign-in is forced by enterprise policy, as the user is already signed
+// in.
+TEST_F(FullscreenSigninScreenMediatorTest,
+       AccountSwitchingPromoSigninAvailableWhenSigninForcedByPolicy) {
+  base::test::ScopedFeatureList feature_list(
+      switches::kEnableAccountPreviewSwitchingAccount);
+  // Force sign-in by policy, sign in, and set a preferred switching account.
+  GetApplicationContext()->GetLocalState()->SetInteger(
+      prefs::kBrowserSigninPolicy,
+      static_cast<int>(BrowserSigninMode::kForced));
+  AuthenticationServiceFactory::GetForProfile(profile_.get())
+      ->SignIn(default_identity_, signin_metrics::AccessPoint::kStartPage);
+  account_preview_data_service_.SetPreferredAccountForSwitching(
+      CreatePreference(preferred_identity_.gaiaId));
+
+  // Present the account switching promo for `preferred_identity_`.
+  FullscreenSigninScreenMediator* mediator = CreateMediatorWithConsumer(
+      signin_metrics::AccessPoint::kAccountSwitchingPromo, preferred_identity_);
+
+  EXPECT_EQ(SigninScreenConsumerSigninStatusAvailable, consumer_.signinStatus);
+  [mediator disconnect];
+}
+
+// Tests that the account switching promo requests dismissal when the target
+// identity is removed from the device or the primary account changes.
+TEST_F(FullscreenSigninScreenMediatorTest,
+       AccountSwitchingPromoDismissesOnIdentityInvalidation) {
+  base::test::ScopedFeatureList feature_list(
+      switches::kEnableAccountPreviewSwitchingAccount);
+  AuthenticationService* auth_service =
+      AuthenticationServiceFactory::GetForProfile(profile_.get());
+  // Sign in and present the account switching promo for `preferred_identity_`.
+  auth_service->SignIn(default_identity_,
+                       signin_metrics::AccessPoint::kStartPage);
+  account_preview_data_service_.SetPreferredAccountForSwitching(
+      CreatePreference(preferred_identity_.gaiaId));
+
+  FullscreenSigninScreenMediator* mediator = CreateMediatorWithConsumer(
+      signin_metrics::AccessPoint::kAccountSwitchingPromo, preferred_identity_);
+  id delegate =
+      OCMStrictProtocolMock(@protocol(FullscreenSigninScreenMediatorDelegate));
+  mediator.delegate = delegate;
+
+  OCMExpect(
+      [delegate fullscreenSigninScreenMediatorWantsToBeDismissed:mediator]);
+  // Simulate the target identity being removed from the device by another
+  // application.
+  GetSystemIdentityManager()->ForgetIdentityFromOtherApplication(
+      preferred_identity_);
+  EXPECT_OCMOCK_VERIFY(delegate);
+  [mediator disconnect];
+
+  // Add the target identity back and present a new promo.
+  GetSystemIdentityManager()->AddIdentity(preferred_identity_);
+  consumer_ = [[FakeFullscreenSigninScreenConsumer alloc] init];
+  mediator = CreateMediatorWithConsumer(
+      signin_metrics::AccessPoint::kAccountSwitchingPromo, preferred_identity_);
+  delegate =
+      OCMStrictProtocolMock(@protocol(FullscreenSigninScreenMediatorDelegate));
+  mediator.delegate = delegate;
+
+  OCMExpect(
+      [delegate fullscreenSigninScreenMediatorWantsToBeDismissed:mediator]);
+  // Simulate the primary account being signed out in the background.
+  auth_service->SignOut(signin_metrics::ProfileSignout::kTest);
+  EXPECT_OCMOCK_VERIFY(delegate);
+  [mediator disconnect];
+
+  // Sign in again and present a new promo.
+  auth_service->SignIn(default_identity_,
+                       signin_metrics::AccessPoint::kStartPage);
+  consumer_ = [[FakeFullscreenSigninScreenConsumer alloc] init];
+  mediator = CreateMediatorWithConsumer(
+      signin_metrics::AccessPoint::kAccountSwitchingPromo, preferred_identity_);
+  delegate =
+      OCMStrictProtocolMock(@protocol(FullscreenSigninScreenMediatorDelegate));
+  mediator.delegate = delegate;
+
+  OCMExpect(
+      [delegate fullscreenSigninScreenMediatorWantsToBeDismissed:mediator]);
+  // Simulate an enterprise policy restricting accounts to the primary account's
+  // email, which makes the target identity disallowed.
+  GetApplicationContext()->GetLocalState()->SetList(
+      prefs::kRestrictAccountsToPatterns,
+      base::ListValue().Append(
+          base::SysNSStringToUTF8(default_identity_.userEmail)));
+  EXPECT_OCMOCK_VERIFY(delegate);
+  [mediator disconnect];
+}
+
+// Tests that disconnecting the mediator while `AuthenticationFlow` is in
+// progress interrupts the flow and safely ignores its late completion.
+TEST_F(FullscreenSigninScreenMediatorTest,
+       DisconnectInterruptsAuthenticationFlow) {
+  base::test::ScopedFeatureList feature_list(
+      switches::kEnableAccountPreviewSwitchingAccount);
+  AuthenticationServiceFactory::GetForProfile(profile_.get())
+      ->SignIn(default_identity_, signin_metrics::AccessPoint::kStartPage);
+  account_preview_data_service_.SetPreferredAccountForSwitching(
+      CreatePreference(preferred_identity_.gaiaId));
+
+  FullscreenSigninScreenMediator* mediator = CreateMediatorWithConsumer(
+      signin_metrics::AccessPoint::kAccountSwitchingPromo, preferred_identity_);
+
+  AuthenticationFlow* authentication_flow_mock =
+      OCMStrictClassMock([AuthenticationFlow class]);
+  __block id<AuthenticationFlowDelegate> authentication_flow_delegate = nil;
+  OCMExpect([authentication_flow_mock
+      setDelegate:[OCMArg checkWithBlock:^BOOL(
+                              id<AuthenticationFlowDelegate> value) {
+        authentication_flow_delegate = value;
+        return value == static_cast<id>(mediator);
+      }]]);
+  OCMExpect([authentication_flow_mock startSignIn]);
+  // Simulate the user accepting the promo, which starts the sign-in flow.
+  [mediator startSignInWithAuthenticationFlow:authentication_flow_mock];
+  EXPECT_TRUE(mediator.signinInProgress);
+
+  OCMExpect([authentication_flow_mock interrupt]);
+  // Simulate the screen being torn down while sign-in is in progress.
+  [mediator disconnect];
+  mediator_ = nil;
+  EXPECT_FALSE(mediator.signinInProgress);
+  EXPECT_OCMOCK_VERIFY(static_cast<id>(authentication_flow_mock));
+
+  __block bool completion_called = false;
+  // Simulate the interrupted `AuthenticationFlow` completing late.
+  [authentication_flow_delegate
+      authenticationFlowDidSignInInSameProfileWithIdentity:nil
+                                         cancelationReason:
+                                             signin_ui::CancelationReason::
+                                                 kUserCanceled
+                                                completion:^{
+                                                  completion_called = true;
+                                                }];
+  EXPECT_TRUE(completion_called);
 }
 
 // Tests that `SignedInWithDefaultAccount` is recorded when signing in with the

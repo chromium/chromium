@@ -4,16 +4,25 @@
 
 #import "ios/chrome/browser/authentication/fullscreen_signin_screen/coordinator/fullscreen_signin_screen_mediator.h"
 
+#import <UIKit/UIKit.h>
+
 #import <algorithm>
+#import <memory>
 #import <optional>
+#import <utility>
 
 #import "base/cancelable_callback.h"
+#import "base/check.h"
+#import "base/check_op.h"
 #import "base/containers/flat_set.h"
 #import "base/feature_list.h"
 #import "base/functional/bind.h"
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "base/not_fatal_until.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "components/metrics/metrics_pref_names.h"
 #import "components/metrics/metrics_reporting_choice_service.h"
@@ -22,9 +31,14 @@
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/base/signin_switches.h"
+#import "components/signin/public/browser/account_switching_promo_logger.h"
+#import "components/signin/public/identity_manager/account_info.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
+#import "components/sync/protocol/sync_enums.pb.h"
 #import "components/sync/service/sync_service.h"
 #import "components/web_resource/web_resource_pref_names.h"
+#import "google_apis/gaia/core_account_id.h"
 #import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/authentication/fullscreen_signin_screen/coordinator/fullscreen_signin_screen_mediator_delegate.h"
 #import "ios/chrome/browser/authentication/fullscreen_signin_screen/ui/fullscreen_signin_screen_consumer.h"
@@ -47,6 +61,8 @@
 #import "ios/chrome/browser/signin/model/constants.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/sync/model/enterprise_utils.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
 // Represents the state of the screen relevant to the First Run.
@@ -60,6 +76,8 @@ enum class SigninScreenState {
   // number of overlapping enums and avoid branching on access points in
   // `SigninScreenState`.
   kFullscreenSigninPromo,
+  // The screen is shown as the account switching promo.
+  kAccountSwitchingPromo,
   // The screen is part of deeplink flow.
   kDeeplink,
   // The screen is not part of any of the previous flow.
@@ -100,6 +118,12 @@ enum class SigninScreenState {
   raw_ptr<signin::IdentityManager> _identityManager;
   // Account preview data service to retrieve account preference.
   raw_ptr<signin::AccountPreviewDataService> _accountPreviewDataService;
+  // Logger for the account switching promo events. Only set when
+  // `_screenState` is `SigninScreenState::kAccountSwitchingPromo`.
+  std::unique_ptr<signin::AccountSwitchingPromoLogger>
+      _accountSwitchingPromoLogger;
+  // Active authentication flow while sign-in is in progress.
+  AuthenticationFlow* _authenticationFlow;
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityManagerObserver;
   // State of the sign-in screen.
@@ -113,6 +137,11 @@ enum class SigninScreenState {
   // metrics.
   base::flat_set<GaiaId> _addedGaiaIDs;
   ChangeProfileContinuationProvider _changeProfileContinuationProvider;
+
+  // Initial primary and target Gaia IDs when presenting the account switching
+  // promo.
+  GaiaId _initialPrimaryGaiaId;
+  GaiaId _initialTargetGaiaId;
 
   // Observer for auth service status changes.
   std::unique_ptr<AuthenticationServiceObserverBridge>
@@ -136,6 +165,9 @@ enum class SigninScreenState {
                      localPrefService:(PrefService*)localPrefService
                           prefService:(PrefService*)prefService
                           syncService:(syncer::SyncService*)syncService
+          accountSwitchingPromoLogger:
+              (std::unique_ptr<signin::AccountSwitchingPromoLogger>)
+                  accountSwitchingPromoLogger
                      selectedIdentity:(id<SystemIdentity>)selectedIdentity
                           accessPoint:(signin_metrics::AccessPoint)accessPoint
                           promoAction:(signin_metrics::PromoAction)promoAction
@@ -185,13 +217,36 @@ enum class SigninScreenState {
     } else if (accessPoint ==
                signin_metrics::AccessPoint::kFullscreenSigninPromo) {
       _screenState = SigninScreenState::kFullscreenSigninPromo;
+    } else if (accessPoint ==
+               signin_metrics::AccessPoint::kAccountSwitchingPromo) {
+      _screenState = SigninScreenState::kAccountSwitchingPromo;
     } else {
       _screenState = SigninScreenState::kOther;
+    }
+
+    if (_screenState == SigninScreenState::kAccountSwitchingPromo) {
+      CHECK(base::FeatureList::IsEnabled(
+          switches::kEnableAccountPreviewSwitchingAccount));
+      CHECK(accountSwitchingPromoLogger);
+      CHECK(selectedIdentity);
+      id<SystemIdentity> primaryIdentity =
+          authenticationService->GetPrimaryIdentity();
+      CHECK(primaryIdentity);
+      _accountSwitchingPromoLogger = std::move(accountSwitchingPromoLogger);
+      _initialPrimaryGaiaId = primaryIdentity.gaiaId;
+      _initialTargetGaiaId = selectedIdentity.gaiaId;
+      CHECK(!_initialPrimaryGaiaId.empty());
+      CHECK(!_initialTargetGaiaId.empty());
+      CHECK_NE(_initialPrimaryGaiaId, _initialTargetGaiaId);
+      _accountSwitchingPromoLogger->LogPromoTriggered();
+    } else {
+      CHECK(!accountSwitchingPromoLogger);
     }
 
     switch (_screenState) {
       case SigninScreenState::kDeeplink:
       case SigninScreenState::kFullscreenSigninPromo:
+      case SigninScreenState::kAccountSwitchingPromo:
       case SigninScreenState::kOther:
         _logger = [[UserSigninLogger alloc]
               initWithAccessPoint:accessPoint
@@ -221,6 +276,8 @@ enum class SigninScreenState {
   CHECK(!_authenticationService);
   CHECK(!_identityManager);
   CHECK(!_accountPreviewDataService);
+  CHECK(!_accountSwitchingPromoLogger, base::NotFatalUntil::M170);
+  CHECK(!_authenticationFlow);
   CHECK(_preferredAccountCallback.IsCancelled());
   CHECK(!self.localPrefService);
   CHECK(!self.prefService);
@@ -228,6 +285,11 @@ enum class SigninScreenState {
 }
 
 - (void)disconnect {
+  // `-disconnect` is called for all outcomes when the coordinator stops.
+  // Accepted and explicitly dismissed outcomes have already been recorded. Any
+  // other dismissal (including when the promo is dismissed due to the scene
+  // being closed or opening a URL from another app) is counted as ignored.
+  _accountSwitchingPromoLogger.reset();
   if (!_preferredAccountCallback.IsCancelled()) {
     [self stopWaitingForPreferredAccount];
   }
@@ -243,36 +305,44 @@ enum class SigninScreenState {
   self.prefService = nullptr;
   self.syncService = nullptr;
   _identityManagerObserver.reset();
+  self.signinInProgress = NO;
+  [_authenticationFlow interrupt];
+  _authenticationFlow = nil;
 }
 
 - (void)startSignInWithAuthenticationFlow:
     (AuthenticationFlow*)authenticationFlow {
   CHECK(!self.signinInProgress);
+  CHECK(!_authenticationFlow);
   // The UI is disabled while waiting for the preferred account.
   CHECK(_preferredAccountCallback.IsCancelled());
   self.signinInProgress = YES;
+  _authenticationFlow = authenticationFlow;
   [self userAttemptedToSignin];
   RecordMetricsReportingDefaultState();
 
   // The sign-in screen should not be displayed if the user is already
-  // signed-in for non-deeplink flows.
-  CHECK(_screenState == SigninScreenState::kDeeplink ||
+  // signed-in, unless the flow explicitly allows an already signed-in user.
+  CHECK([self allowsAlreadySignedIn] ||
         !_authenticationService->HasPrimaryIdentity());
   [self.consumer setUIEnabled:NO];
-  authenticationFlow.delegate = self;
-  [authenticationFlow startSignIn];
+  _authenticationFlow.delegate = self;
+  [_authenticationFlow startSignIn];
 }
 
 - (void)cancelSignInScreenWithCompletion:(ProceduralBlock)completion {
   // The sign-in screen should not be displayed if the user is already
-  // signed-in for non-deeplink flows.
-  CHECK(_screenState == SigninScreenState::kDeeplink ||
+  // signed-in, unless the flow explicitly allows an already signed-in user.
+  CHECK([self allowsAlreadySignedIn] ||
         !_authenticationService->HasPrimaryIdentity());
   // TODO(crbug.com/583675466): Use a more appropriate histogram instead of
   // `AccountConsistencyPromoAction`.
   signin_metrics::RecordConsistencyPromoUserAction(
       signin_metrics::AccountConsistencyPromoAction::DISMISSED_BUTTON,
       _accessPoint);
+  if (_accountSwitchingPromoLogger) {
+    _accountSwitchingPromoLogger->LogExplicitlyDismissed();
+  }
   if (completion) {
     completion();
   }
@@ -325,7 +395,13 @@ enum class SigninScreenState {
     case AuthenticationService::ServiceStatus::SigninForcedByPolicy:
       self.attemptStatus = first_run::SignInAttemptStatus::NOT_ATTEMPTED;
       signinForcedOrAvailable = YES;
-      _consumer.signinStatus = SigninScreenConsumerSigninStatusForced;
+      // The user is already signed in during the account switching promo and
+      // switching accounts is optional, so the promo must not be displayed as
+      // a forced sign-in.
+      _consumer.signinStatus =
+          _screenState == SigninScreenState::kAccountSwitchingPromo
+              ? SigninScreenConsumerSigninStatusAvailable
+              : SigninScreenConsumerSigninStatusForced;
       break;
     case AuthenticationService::ServiceStatus::SigninAllowed:
       self.attemptStatus = first_run::SignInAttemptStatus::NOT_ATTEMPTED;
@@ -353,6 +429,7 @@ enum class SigninScreenState {
   switch (_screenState) {
     case SigninScreenState::kDeeplink:
     case SigninScreenState::kFullscreenSigninPromo:
+    case SigninScreenState::kAccountSwitchingPromo:
     case SigninScreenState::kOther:
     case SigninScreenState::kFirstRunAsOtherScreen:
       self.consumer.screenIntent = SigninScreenConsumerScreenIntentSigninOnly;
@@ -367,6 +444,29 @@ enum class SigninScreenState {
       break;
   }
 
+  if (_screenState == SigninScreenState::kAccountSwitchingPromo) {
+    CHECK(_selectedIdentity);
+    CHECK(_selectedIdentity.userEmail.length, base::NotFatalUntil::M170);
+    std::optional<signin::AccountPreviewDataService::AccountPreviewPreference>
+        preference =
+            _accountPreviewDataService
+                ? _accountPreviewDataService->GetPreferredAccountForSwitching()
+                : std::nullopt;
+    bool isOnComputer =
+        preference.has_value() &&
+        preference->other_device_info.form_factor ==
+            sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_DESKTOP;
+    _consumer.titleOverride =
+        isOnComputer
+            ? l10n_util::GetNSString(
+                  IDS_IOS_ACCOUNT_SWITCHING_PROMO_TITLE_FOR_DEVICE_TYPE)
+            : nil;
+    _consumer.subtitleOverride = l10n_util::GetNSStringF(
+        IDS_IOS_ACCOUNT_SWITCHING_PROMO_SUBTITLE,
+        base::SysNSStringToUTF16(_selectedIdentity.userEmail));
+    [self updateConsumerIdentity];
+    return;
+  }
   if (_screenState == SigninScreenState::kDeeplink) {
     DCHECK(_selectedIdentity);
     _consumer.targetIdentityEmail = _selectedIdentity.userEmail;
@@ -388,6 +488,9 @@ enum class SigninScreenState {
 }
 
 - (void)setSelectedIdentity:(id<SystemIdentity>)selectedIdentity {
+  // The account switching promo displays the offered target account and does
+  // not allow changing the selected identity.
+  CHECK_NE(_screenState, SigninScreenState::kAccountSwitchingPromo);
   if ([_selectedIdentity isEqual:selectedIdentity]) {
     return;
   }
@@ -409,6 +512,18 @@ enum class SigninScreenState {
                                                   completion:(ProceduralBlock)
                                                                  completion {
   CHECK(completion);
+  _authenticationFlow = nil;
+  if (!_identityManager) {
+    // The mediator was already disconnected.
+    completion();
+    return;
+  }
+  if (_screenState == SigninScreenState::kAccountSwitchingPromo &&
+      cancelationReason == signin_ui::CancelationReason::kNotCanceled) {
+    CHECK(identity);
+    CHECK_EQ(identity.gaiaId, _initialTargetGaiaId);
+    _accountSwitchingPromoLogger->LogAccepted();
+  }
   self.signinInProgress = NO;
   [self.consumer setUIEnabled:YES];
   switch (cancelationReason) {
@@ -447,19 +562,50 @@ enum class SigninScreenState {
       break;
   }
   completion();
+  // If the account switch failed or was canceled after the primary or target
+  // identity became invalid (e.g. removed mid-flow or sign-in disabled),
+  // dismiss the promo instead of leaving it interactive in an inconsistent
+  // state. Also dismiss it when the user chose "Use another account" on the
+  // age mismatch prompt, since the target identity cannot be changed in this
+  // promo.
+  if (_screenState == SigninScreenState::kAccountSwitchingPromo &&
+      _authenticationService &&
+      cancelationReason != signin_ui::CancelationReason::kNotCanceled) {
+    id<SystemIdentity> primaryIdentity =
+        _authenticationService->GetPrimaryIdentity();
+    if (cancelationReason ==
+            signin_ui::CancelationReason::kAgeMismatchCanceled ||
+        !_authenticationService->SigninEnabled() || !primaryIdentity ||
+        primaryIdentity.gaiaId != _initialPrimaryGaiaId ||
+        ![self selectedIdentityIsValid]) {
+      [self.consumer setUIEnabled:NO];
+      [self.delegate fullscreenSigninScreenMediatorWantsToBeDismissed:self];
+    }
+  }
 }
 
 - (void)authenticationFlowWillSwitchProfileWithReadyCompletion:
     (ReadyForProfileSwitchingCompletion)readyCompletion {
+  _authenticationFlow = nil;
   // `Signin.AccountConsistencyPromoAction` is intentionally not recorded here:
   // switching to an existing managed profile is not necessarily a sign-in, and
   // `AccountConsistencyPromoAction` has no profile-switch bucket (the switch
   // itself is recorded in `Signin.IOSChangeProfileReason` by
   // `AuthenticationFlow`).
+  // The account switching promo only switches between personal accounts in the
+  // personal profile, so a profile switch must never occur.
+  CHECK_NE(_screenState, SigninScreenState::kAccountSwitchingPromo);
   std::move(readyCompletion).Run(_changeProfileContinuationProvider.Run());
 }
 
 #pragma mark - Private
+
+// Returns `YES` if the current flow is allowed when the user is already signed
+// in.
+- (BOOL)allowsAlreadySignedIn {
+  return _screenState == SigninScreenState::kDeeplink ||
+         _screenState == SigninScreenState::kAccountSwitchingPromo;
+}
 
 // Synchronously selects the preferred account if one exists and is enabled for
 // the current screen, or the default identity on the device. Returns the
@@ -587,6 +733,11 @@ enum class SigninScreenState {
 - (bool)selectedIdentityIsValid {
   if (self.selectedIdentity) {
     GaiaId gaia(self.selectedIdentity.gaiaId);
+    if (_screenState == SigninScreenState::kAccountSwitchingPromo &&
+        !_identityManager->HasAccountWithRefreshToken(
+            CoreAccountId::FromGaiaId(gaia))) {
+      return false;
+    }
     return std::ranges::contains(
         _identityManager->GetAccountsOnDevice(), gaia,
         [](const AccountInfo& info) { return info.GetGaiaId(); });
@@ -605,12 +756,19 @@ enum class SigninScreenState {
     UIImage* avatar =
         GetApplicationContext()->GetIdentityAvatarProvider()->GetIdentityAvatar(
             selectedIdentity, IdentityAvatarSize::Regular);
+    UIImage* headerAvatar =
+        _screenState == SigninScreenState::kAccountSwitchingPromo
+            ? GetApplicationContext()
+                  ->GetIdentityAvatarProvider()
+                  ->GetIdentityAvatar(selectedIdentity,
+                                      IdentityAvatarSize::Large)
+            : nil;
 
     [self.consumer setSelectedIdentityUserName:selectedIdentity.userFullName
                                          email:selectedIdentity.userEmail
                                      givenName:selectedIdentity.userGivenName
                                         avatar:avatar
-                                  headerAvatar:nil
+                                  headerAvatar:headerAvatar
                                        managed:[self isIdentityKnownToBeManaged:
                                                          selectedIdentity]];
   }
@@ -652,7 +810,27 @@ enum class SigninScreenState {
 
 #pragma mark -  IdentityManagerObserving
 
+- (void)batchOfRefreshTokenStateChangesDidEnd {
+  if (_screenState != SigninScreenState::kAccountSwitchingPromo ||
+      self.signinInProgress) {
+    return;
+  }
+  CoreAccountInfo primaryAccount =
+      _identityManager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  if (primaryAccount.gaia != _initialPrimaryGaiaId) {
+    // Handled by `primaryAccountDidChange:`.
+    return;
+  }
+  if (![self selectedIdentityIsValid]) {
+    [self.delegate fullscreenSigninScreenMediatorWantsToBeDismissed:self];
+  }
+}
+
 - (void)accountsOnDeviceDidChange {
+  if (_screenState == SigninScreenState::kAccountSwitchingPromo) {
+    // Handled by `batchOfRefreshTokenStateChangesDidEnd`.
+    return;
+  }
   if (![self selectedIdentityIsValid]) {
     [self selectDefaultOrPreferredAccount];
     if (!self.selectedIdentity && !_preferredAccountCallback.IsCancelled()) {
@@ -674,6 +852,12 @@ enum class SigninScreenState {
   }
   CoreAccountInfo primaryAccount =
       _identityManager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  if (_screenState == SigninScreenState::kAccountSwitchingPromo) {
+    if (primaryAccount.gaia != _initialPrimaryGaiaId) {
+      [self.delegate fullscreenSigninScreenMediatorWantsToBeDismissed:self];
+    }
+    return;
+  }
   if (!primaryAccount.IsEmpty()) {
     // Signed in from a different surface, dismiss the current dialog.
     [self.delegate fullscreenSigninScreenMediatorWantsToBeDismissed:self];
