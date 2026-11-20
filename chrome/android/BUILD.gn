@@ -1140,7 +1140,6 @@ if (_is_default_toolchain) {
       "junit:chrome_junit_tests_org.chromium.chrome.browser.contextmenu",
       "junit:chrome_junit_tests_org.chromium.chrome.browser.contextualsearch",
       "junit:chrome_junit_tests_org.chromium.chrome.browser.customtabs",
-      "junit:chrome_junit_tests_org.chromium.chrome.browser.data_sharing",
       "junit:chrome_junit_tests_org.chromium.chrome.browser.download",
       "junit:chrome_junit_tests_org.chromium.chrome.browser.dragdrop",
       "junit:chrome_junit_tests_org.chromium.chrome.browser.feed",
