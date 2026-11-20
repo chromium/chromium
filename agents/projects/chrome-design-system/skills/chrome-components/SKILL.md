@@ -9,9 +9,13 @@ Chrome components are the basic building blocks that make up the Chrome UI.
 
 ## Component map
 
-The component map ([components.md](./references/components.md)) lists all
-supported Chrome Design System components, each mapped to equivalent components
-across all Chrome platforms.
+There is one component map per platform, each listing the supported Chrome
+Design System components mapped to their equivalents in code:
+
+- Desktop ([components_desktop.md](./references/components_desktop.md)): Figma,
+  C++ Views, and WebUI.
+- Clank ([components_clank.md](./references/components_clank.md)): Figma and
+  Android.
 
 For example, to find what a Figma `Checkbox` maps to in WebUI, find `Checkbox`
 under the **Figma Component** column and then in that row, see the value under
@@ -22,9 +26,9 @@ the **WebUI** column (`<cr-checkbox>`).
 Each component has its own spec file that contains detailed specifications about
 the component.
 
-To find a component spec, find the component in the
-[component map](./references/components.md) and then follow the link to that
-component's spec. Alternatively, find the component by its name in the
+To find a component spec, find the component in the component map for its
+platform and then follow the link to that component's spec. Alternatively, find
+the component by its name in the
 [./references/component-specs/](./references/component-specs/) directory.
 
 ## Generating a component spec
