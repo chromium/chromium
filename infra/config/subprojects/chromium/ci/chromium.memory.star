@@ -1441,9 +1441,10 @@ ci.builder(
                 ),
             ),
             "components_unittests": targets.mixin(
-                # TODO(crbug.com/41491387): With a single shard seems to hit time limit.
+                # TODO(crbug.com/41491387): Hits 60m time limit on Broadwell
+                # GCE bots with <= 4 shards.
                 swarming = targets.swarming(
-                    shards = 4,
+                    shards = 8,
                 ),
             ),
             "content_browsertests": targets.mixin(
