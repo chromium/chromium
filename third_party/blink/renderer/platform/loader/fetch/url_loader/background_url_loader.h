@@ -75,6 +75,7 @@ class BLINK_PLATFORM_EXPORT BackgroundURLLoader : public URLLoader {
                           std::unique_ptr<ResourceLoadInfoNotifierWrapper>
                               resource_load_info_notifier_wrapper,
                           CodeCacheHost* code_cache_host,
+                          bool should_fetch_code_cache,
                           URLLoaderClient* client) override;
 
   void Freeze(LoaderFreezeMode mode) override;

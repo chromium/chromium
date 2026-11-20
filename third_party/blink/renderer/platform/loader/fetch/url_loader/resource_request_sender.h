@@ -103,6 +103,10 @@ class BLINK_PLATFORM_EXPORT ResourceRequestSender {
   //
   // You need to pass a non-null |loading_task_runner| to specify task queue to
   // execute loading tasks on.
+  //
+  // If |should_fetch_code_cache| is false, no code cache (neither from the
+  // isolated code cache via |code_cache_host| nor from the WebUI bundled code
+  // cache) is fetched, and |code_cache_host| must be null.
   virtual int SendAsync(
       std::unique_ptr<network::ResourceRequest> request,
       scoped_refptr<base::SequencedTaskRunner> loading_task_runner,
@@ -115,6 +119,7 @@ class BLINK_PLATFORM_EXPORT ResourceRequestSender {
       std::unique_ptr<ResourceLoadInfoNotifierWrapper>
           resource_load_info_notifier_wrapper,
       CodeCacheHost* code_cache_host,
+      bool should_fetch_code_cache,
       base::OnceCallback<void(mojom::blink::RendererEvictionReason)>
           evict_from_bfcache_callback,
       base::RepeatingCallback<void(size_t)>

@@ -117,12 +117,13 @@ class PrefetchedSignedExchangeManager::PrefetchedSignedExchangeLoader
       std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
           resource_load_info_notifier_wrapper,
       CodeCacheHost* code_cache_host,
+      bool should_fetch_code_cache,
       URLLoaderClient* client) override {
     if (url_loader_) {
       url_loader_->LoadAsynchronously(
           std::move(request), std::move(top_frame_origin), no_mime_sniffing,
           std::move(resource_load_info_notifier_wrapper), code_cache_host,
-          client);
+          should_fetch_code_cache, client);
       return;
     }
     // It is safe to use Unretained(client), because |client| is a
@@ -136,18 +137,18 @@ class PrefetchedSignedExchangeManager::PrefetchedSignedExchangeLoader
            std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
                resource_load_info_notifier_wrapper,
            base::WeakPtr<CodeCacheHost> code_cache_host,
-           URLLoaderClient* client) {
+           bool should_fetch_code_cache, URLLoaderClient* client) {
           if (self) {
             self->LoadAsynchronously(
                 std::move(request), top_frame_origin, no_mime_sniffing,
                 std::move(resource_load_info_notifier_wrapper),
-                code_cache_host.get(), client);
+                code_cache_host.get(), should_fetch_code_cache, client);
           }
         },
         GetWeakPtr(), std::move(request), std::move(top_frame_origin),
         no_mime_sniffing, std::move(resource_load_info_notifier_wrapper),
         code_cache_host ? code_cache_host->GetWeakPtr() : nullptr,
-        Unretained(client)));
+        should_fetch_code_cache, Unretained(client)));
   }
   void Freeze(LoaderFreezeMode value) override {
     if (url_loader_) {

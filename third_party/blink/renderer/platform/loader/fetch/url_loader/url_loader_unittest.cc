@@ -7,6 +7,7 @@
 #include <stdint.h>
 #include <string.h>
 
+#include <optional>
 #include <string_view>
 #include <utility>
 #include <variant>
@@ -107,6 +108,7 @@ class MockResourceRequestSender : public ResourceRequestSender {
       std::unique_ptr<ResourceLoadInfoNotifierWrapper>
           resource_load_info_notifier_wrapper,
       CodeCacheHost* code_cache_host,
+      bool should_fetch_code_cache,
       base::OnceCallback<void(mojom::blink::RendererEvictionReason)>
           evict_from_bfcache_callback,
       base::RepeatingCallback<void(size_t)>
@@ -116,6 +118,7 @@ class MockResourceRequestSender : public ResourceRequestSender {
       EXPECT_TRUE(loader_options & network::mojom::kURLLoadOptionSynchronous);
     }
     resource_request_client_ = std::move(resource_request_client);
+    saw_should_fetch_code_cache_ = should_fetch_code_cache;
     return 1;
   }
 
@@ -132,6 +135,10 @@ class MockResourceRequestSender : public ResourceRequestSender {
 
   bool canceled() { return canceled_; }
 
+  bool saw_should_fetch_code_cache() const {
+    return saw_should_fetch_code_cache_.value();
+  }
+
   void Freeze(LoaderFreezeMode mode) override { freeze_mode_ = mode; }
   LoaderFreezeMode freeze_mode() const { return freeze_mode_; }
 
@@ -142,6 +149,7 @@ class MockResourceRequestSender : public ResourceRequestSender {
  private:
   scoped_refptr<ResourceRequestClient> resource_request_client_;
   bool canceled_ = false;
+  std::optional<bool> saw_should_fetch_code_cache_;
   LoaderFreezeMode freeze_mode_ = LoaderFreezeMode::kNone;
   SyncLoadResponse sync_load_response_;
 };
@@ -331,7 +339,7 @@ class URLLoaderTest : public testing::Test {
 
   ~URLLoaderTest() override = default;
 
-  void DoStartAsyncRequest() {
+  void DoStartAsyncRequest(bool should_fetch_code_cache = true) {
     auto request = std::make_unique<network::ResourceRequest>();
     request->url = GURL(kTestURL);
     request->destination = network::mojom::RequestDestination::kEmpty;
@@ -341,7 +349,7 @@ class URLLoaderTest : public testing::Test {
         /*no_mime_sniffing=*/false,
         std::make_unique<ResourceLoadInfoNotifierWrapper>(
             /*resource_load_info_notifier=*/nullptr),
-        /*code_cache_host=*/nullptr, client());
+        /*code_cache_host=*/nullptr, should_fetch_code_cache, client());
     ASSERT_TRUE(resource_request_client());
   }
 
@@ -425,6 +433,16 @@ class URLLoaderTest : public testing::Test {
 
 TEST_F(URLLoaderTest, Success) {
   DoStartAsyncRequest();
+  EXPECT_TRUE(sender()->saw_should_fetch_code_cache());
+  DoReceiveResponse();
+  DoCompleteRequest();
+  EXPECT_FALSE(sender()->canceled());
+  EXPECT_TRUE(client()->did_receive_response_body());
+}
+
+TEST_F(URLLoaderTest, ShouldFetchCodeCacheFalseForwardedToSender) {
+  DoStartAsyncRequest(/*should_fetch_code_cache=*/false);
+  EXPECT_FALSE(sender()->saw_should_fetch_code_cache());
   DoReceiveResponse();
   DoCompleteRequest();
   EXPECT_FALSE(sender()->canceled());

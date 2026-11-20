@@ -191,7 +191,6 @@ class PLATFORM_EXPORT ResourceLoader final
   void DidReceiveDataImpl(
       std::variant<SegmentedBuffer, base::span<const char>> data);
 
-  bool ShouldFetchCodeCache();
   void StartFetch();
 
   void Release(ResourceLoadScheduler::ReleaseOption,

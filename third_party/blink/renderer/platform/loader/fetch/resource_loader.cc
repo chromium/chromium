@@ -1368,18 +1368,19 @@ void ResourceLoader::RequestAsynchronously() {
   bool no_mime_sniffing = resource_->GetResourceRequest().GetRequestContext() ==
                           blink::mojom::blink::RequestContextType::FETCH;
 
-  // Don't pass a CodeCacheHost when DownloadToBlob is true. The detailed
-  // decision logic for whether or not to fetch code cache from the isolated
-  // code cache is implemented in ResourceRequestSender::CodeCacheFetcher. We
-  // only check the DownloadToBlob flag here, which ResourceRequestSender cannot
-  // know.
-  loader_->LoadAsynchronously(std::move(network_resource_request_),
-                              Context().GetTopFrameOrigin(), no_mime_sniffing,
-                              Context().CreateResourceLoadInfoNotifierWrapper(),
-                              !resource_->GetResourceRequest().DownloadToBlob()
-                                  ? fetcher_->GetCodeCacheHost()
-                                  : nullptr,
-                              this);
+  const bool should_fetch_code_cache = resource_->ShouldFetchCodeCache();
+
+  // Unless the resource opts out (e.g. for DownloadToBlob, which
+  // ResourceRequestSender cannot know), the detailed decision logic for whether
+  // to fetch from the isolated code cache or the WebUI bundled code cache is
+  // implemented in CodeCacheFetcher::TryCreateAndStart(). Also omit
+  // CodeCacheHost when `should_fetch_code_cache` is false to avoid lazily
+  // binding it.
+  loader_->LoadAsynchronously(
+      std::move(network_resource_request_), Context().GetTopFrameOrigin(),
+      no_mime_sniffing, Context().CreateResourceLoadInfoNotifierWrapper(),
+      should_fetch_code_cache ? fetcher_->GetCodeCacheHost() : nullptr,
+      should_fetch_code_cache, this);
 }
 
 void ResourceLoader::Dispose() {

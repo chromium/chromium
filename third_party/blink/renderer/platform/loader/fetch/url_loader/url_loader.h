@@ -114,6 +114,8 @@ class BLINK_PLATFORM_EXPORT URLLoader {
   // Load the request asynchronously, sending notifications to the given
   // client.  The client will receive no further notifications if the
   // loader is disposed before it completes its work.
+  // If `should_fetch_code_cache` is false, code cache fetching (both isolated
+  // and WebUI bundled) is skipped, and `code_cache_host` must be null.
   virtual void LoadAsynchronously(
       std::unique_ptr<network::ResourceRequest> request,
       scoped_refptr<const SecurityOrigin> top_frame_origin,
@@ -121,6 +123,7 @@ class BLINK_PLATFORM_EXPORT URLLoader {
       std::unique_ptr<ResourceLoadInfoNotifierWrapper>
           resource_load_info_notifier_wrapper,
       CodeCacheHost* code_cache_host,
+      bool should_fetch_code_cache,
       URLLoaderClient* client);
 
   // Freezes the loader. See blink/renderer/platform/loader/README.md for the

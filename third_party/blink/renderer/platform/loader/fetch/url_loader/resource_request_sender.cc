@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/containers/to_vector.h"
 #include "base/debug/alias.h"
@@ -230,6 +231,7 @@ int ResourceRequestSender::SendAsync(
     std::unique_ptr<ResourceLoadInfoNotifierWrapper>
         resource_load_info_notifier_wrapper,
     CodeCacheHost* code_cache_host,
+    bool should_fetch_code_cache,
     base::OnceCallback<void(mojom::blink::RendererEvictionReason)>
         evict_from_bfcache_callback,
     base::RepeatingCallback<void(size_t)>
@@ -266,10 +268,14 @@ int ResourceRequestSender::SendAsync(
     }
   }
 #endif
-  code_cache_fetcher_ = CodeCacheFetcher::TryCreateAndStart(
-      *request, code_cache_host, loading_task_runner_,
-      blink::BindOnce(&ResourceRequestSender::DidReceiveCachedCode,
-                      weak_factory_.GetWeakPtr()));
+  if (should_fetch_code_cache) {
+    code_cache_fetcher_ = CodeCacheFetcher::TryCreateAndStart(
+        *request, code_cache_host, loading_task_runner_,
+        blink::BindOnce(&ResourceRequestSender::DidReceiveCachedCode,
+                        weak_factory_.GetWeakPtr()));
+  } else {
+    CHECK_EQ(code_cache_host, nullptr);
+  }
   used_code_cache_fetcher_ = !!code_cache_fetcher_;
 
   // Compute a unique request_id for this renderer process.

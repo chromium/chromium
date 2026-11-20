@@ -4,10 +4,13 @@
 
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr.h"
+#include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "mojo/public/c/system/data_pipe.h"
@@ -24,9 +27,12 @@
 #include "third_party/blink/public/platform/web_url_request_extra_data.h"
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_response.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/loader/fetch/code_cache_host.h"
 #include "third_party/blink/renderer/platform/loader/fetch/detachable_use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/raw_resource.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_scheduler.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
@@ -109,10 +115,14 @@ class ResourceLoaderTest : public testing::Test {
 
   ResourceFetcher* MakeResourceFetcher(
       TestResourceFetcherProperties* properties,
-      FetchContext* context) {
+      FetchContext* context,
+      ResourceFetcher::LoaderFactory* loader_factory = nullptr) {
+    if (!loader_factory) {
+      loader_factory = MakeGarbageCollected<NoopLoaderFactory>();
+    }
     ResourceFetcherInit init(properties->MakeDetachable(), context,
                              CreateTaskRunner(), CreateTaskRunner(),
-                             MakeGarbageCollected<NoopLoaderFactory>(),
+                             loader_factory,
                              context_lifecycle_notifier_.Notifier(),
                              /*back_forward_cache_loader_helper=*/nullptr);
     use_counter_ = MakeGarbageCollected<testing::StrictMock<MockUseCounter>>();
@@ -520,6 +530,154 @@ TEST_F(ResourceLoaderTest, CrossOriginRedirect_NoAuthorization) {
   KURL new_url("https://b.test");
   ASSERT_TRUE(WillFollowRedirect(loader, new_url));
   ::testing::Mock::VerifyAndClear(UseCounter());
+}
+
+namespace {
+
+// A CodeCacheHost that is never used; tests only compare its address.
+class FakeCodeCacheHost final : public CodeCacheHost {
+ public:
+  mojo_base::BigBuffer FetchInlineScriptCacheSync(
+      const ParkableString&) override {
+    NOTREACHED();
+  }
+  base::WeakPtr<CodeCacheHost> GetWeakPtr() override { NOTREACHED(); }
+  mojom::blink::CodeCacheHost* get() override { NOTREACHED(); }
+  mojom::blink::CodeCacheHost& operator*() override { NOTREACHED(); }
+  mojom::blink::CodeCacheHost* operator->() override { NOTREACHED(); }
+};
+
+// Records the code cache arguments that ResourceLoader passes to
+// URLLoader::LoadAsynchronously().
+class CodeCacheRecordingLoaderFactory final
+    : public ResourceFetcher::LoaderFactory {
+ public:
+  std::unique_ptr<URLLoader> CreateURLLoader(
+      const network::ResourceRequest& request,
+      const ResourceLoaderOptions& options,
+      scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
+      scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
+      BackForwardCacheLoaderHelper* back_forward_cache_loader_helper,
+      const std::optional<base::UnguessableToken>&
+          service_worker_race_network_request_token,
+      bool is_from_origin_dirty_style_sheet) override {
+    return std::make_unique<RecordingURLLoader>(this);
+  }
+  CodeCacheHost* GetCodeCacheHost() override { return code_cache_host_.get(); }
+
+  bool load_started() const { return load_started_; }
+  CodeCacheHost* passed_code_cache_host() const {
+    return passed_code_cache_host_;
+  }
+  bool passed_should_fetch_code_cache() const {
+    return passed_should_fetch_code_cache_;
+  }
+
+ private:
+  class RecordingURLLoader final : public URLLoader {
+   public:
+    explicit RecordingURLLoader(CodeCacheRecordingLoaderFactory* factory)
+        : factory_(factory) {}
+
+    void LoadAsynchronously(
+        std::unique_ptr<network::ResourceRequest> request,
+        scoped_refptr<const SecurityOrigin> top_frame_origin,
+        bool no_mime_sniffing,
+        std::unique_ptr<ResourceLoadInfoNotifierWrapper>
+            resource_load_info_notifier_wrapper,
+        CodeCacheHost* code_cache_host,
+        bool should_fetch_code_cache,
+        URLLoaderClient* client) override {
+      factory_->load_started_ = true;
+      factory_->passed_code_cache_host_ = code_cache_host;
+      factory_->passed_should_fetch_code_cache_ = should_fetch_code_cache;
+    }
+
+   private:
+    Persistent<CodeCacheRecordingLoaderFactory> factory_;
+  };
+
+  // CodeCacheHost must not live on the Oilpan heap, so keep it out of line.
+  std::unique_ptr<FakeCodeCacheHost> code_cache_host_ =
+      std::make_unique<FakeCodeCacheHost>();
+  bool load_started_ = false;
+  raw_ptr<CodeCacheHost> passed_code_cache_host_ = nullptr;
+  bool passed_should_fetch_code_cache_ = false;
+};
+
+// A resource that opts out of code cache fetching.
+class NoCodeCacheResource final : public Resource {
+ public:
+  NoCodeCacheResource(const ResourceRequest& request,
+                      const ResourceLoaderOptions& options)
+      : Resource(request, ResourceType::kMock, options) {}
+
+  bool ShouldFetchCodeCache() const override { return false; }
+};
+
+class NoCodeCacheResourceFactory final : public NonTextResourceFactory {
+ public:
+  NoCodeCacheResourceFactory() : NonTextResourceFactory(ResourceType::kMock) {}
+
+  Resource* Create(const ResourceRequest& request,
+                   const ResourceLoaderOptions& options) const override {
+    return MakeGarbageCollected<NoCodeCacheResource>(request, options);
+  }
+};
+
+}  // namespace
+
+TEST_F(ResourceLoaderTest, PassesCodeCacheHostByDefault) {
+  auto* loader_factory =
+      MakeGarbageCollected<CodeCacheRecordingLoaderFactory>();
+  auto* fetcher = MakeResourceFetcher(
+      MakeGarbageCollected<TestResourceFetcherProperties>(),
+      MakeGarbageCollected<MockFetchContext>(), loader_factory);
+
+  ResourceRequest request(KURL("https://www.example.com/"));
+  request.SetRequestContext(mojom::blink::RequestContextType::FETCH);
+  FetchParameters params = FetchParameters::CreateForTest(std::move(request));
+  RawResource::Fetch(params, fetcher, nullptr);
+
+  ASSERT_TRUE(loader_factory->load_started());
+  EXPECT_EQ(loader_factory->passed_code_cache_host(),
+            loader_factory->GetCodeCacheHost());
+  EXPECT_TRUE(loader_factory->passed_should_fetch_code_cache());
+}
+
+TEST_F(ResourceLoaderTest, SkipsCodeCacheWhenResourceOptsOut) {
+  auto* loader_factory =
+      MakeGarbageCollected<CodeCacheRecordingLoaderFactory>();
+  auto* fetcher = MakeResourceFetcher(
+      MakeGarbageCollected<TestResourceFetcherProperties>(),
+      MakeGarbageCollected<MockFetchContext>(), loader_factory);
+
+  ResourceRequest request(KURL("https://www.example.com/"));
+  request.SetRequestContext(mojom::blink::RequestContextType::SUBRESOURCE);
+  FetchParameters params = FetchParameters::CreateForTest(std::move(request));
+  fetcher->RequestResource(params, NoCodeCacheResourceFactory(), nullptr);
+
+  ASSERT_TRUE(loader_factory->load_started());
+  EXPECT_FALSE(loader_factory->passed_code_cache_host());
+  EXPECT_FALSE(loader_factory->passed_should_fetch_code_cache());
+}
+
+TEST_F(ResourceLoaderTest, SkipsCodeCacheWhenDownloadToBlob) {
+  auto* loader_factory =
+      MakeGarbageCollected<CodeCacheRecordingLoaderFactory>();
+  auto* fetcher = MakeResourceFetcher(
+      MakeGarbageCollected<TestResourceFetcherProperties>(),
+      MakeGarbageCollected<MockFetchContext>(), loader_factory);
+
+  ResourceRequest request(KURL("https://www.example.com/"));
+  request.SetRequestContext(mojom::blink::RequestContextType::XML_HTTP_REQUEST);
+  request.SetDownloadToBlob(true);
+  FetchParameters params = FetchParameters::CreateForTest(std::move(request));
+  RawResource::Fetch(params, fetcher, nullptr);
+
+  ASSERT_TRUE(loader_factory->load_started());
+  EXPECT_FALSE(loader_factory->passed_code_cache_host());
+  EXPECT_FALSE(loader_factory->passed_should_fetch_code_cache());
 }
 
 class ResourceLoaderSubresourceFilterCnameAliasTest

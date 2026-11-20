@@ -106,6 +106,7 @@ class FakeURLLoader final : public URLLoader {
       std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
           resource_load_info_notifier_wrapper,
       CodeCacheHost* code_cache_host,
+      bool should_fetch_code_cache,
       URLLoaderClient* client) override {
     const std::string url = request->url.spec();
     if (url == kNotFoundScriptURL) {

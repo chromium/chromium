@@ -150,6 +150,7 @@ class NoopLoaderFactory final : public ResourceFetcher::LoaderFactory {
         std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
             resource_load_info_notifier_wrapper,
         CodeCacheHost* code_cache_host,
+        bool should_fetch_code_cache,
         URLLoaderClient*) override {}
     void Freeze(LoaderFreezeMode) override {}
     void DidChangePriority(WebURLRequest::Priority, int) override {
@@ -1100,6 +1101,7 @@ class DummyLoaderFactory final : public ResourceFetcher::LoaderFactory {
         std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
             resource_load_info_notifier_wrapper,
         CodeCacheHost* code_cache_host,
+        bool should_fetch_code_cache,
         URLLoaderClient* client) override {
       factory_->load_started_ = true;
     }

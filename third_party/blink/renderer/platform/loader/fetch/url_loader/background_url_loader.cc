@@ -9,6 +9,7 @@
 #include <variant>
 
 #include "base/byte_size.h"
+#include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/numerics/safe_conversions.h"
@@ -211,6 +212,7 @@ class BackgroundURLLoader::Context
              std::unique_ptr<ResourceLoadInfoNotifierWrapper>
                  resource_load_info_notifier_wrapper,
              bool should_use_code_cache_host,
+             bool should_fetch_code_cache,
              URLLoaderClient* client) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
     url_ = KURL(request->url);
@@ -225,7 +227,7 @@ class BackgroundURLLoader::Context
             top_frame_origin ? top_frame_origin->ToUrlOrigin() : url::Origin(),
             no_mime_sniffing, cors_exempt_header_list_,
             std::move(resource_load_info_notifier_wrapper),
-            should_use_code_cache_host,
+            should_use_code_cache_host, should_fetch_code_cache,
             std::move(background_response_processor_factory_)));
   }
 
@@ -346,6 +348,7 @@ class BackgroundURLLoader::Context
                          std::unique_ptr<ResourceLoadInfoNotifierWrapper>
                              resource_load_info_notifier_wrapper,
                          bool should_use_code_cache_host,
+                         bool should_fetch_code_cache,
                          std::unique_ptr<BackgroundResponseProcessorFactory>
                              background_response_processor_factory) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(background_sequence_checker_);
@@ -400,6 +403,7 @@ class BackgroundURLLoader::Context
             ? &background_code_cache_host_->GetCodeCacheHost(
                   background_task_runner_)
             : nullptr,
+        should_fetch_code_cache,
         base::BindOnce(&Context::EvictFromBackForwardCacheOnBackground, this),
         base::BindRepeating(
             &Context::DidBufferLoadWhileInBackForwardCacheOnBackground, this));
@@ -727,12 +731,16 @@ void BackgroundURLLoader::LoadAsynchronously(
     std::unique_ptr<ResourceLoadInfoNotifierWrapper>
         resource_load_info_notifier_wrapper,
     CodeCacheHost* code_cache_host,
+    bool should_fetch_code_cache,
     URLLoaderClient* client) {
+  if (!should_fetch_code_cache) {
+    CHECK_EQ(code_cache_host, nullptr);
+  }
   bool should_use_code_cache_host = !!code_cache_host;
   context_->Start(std::move(request), std::move(top_frame_origin),
                   no_mime_sniffing,
                   std::move(resource_load_info_notifier_wrapper),
-                  should_use_code_cache_host, client);
+                  should_use_code_cache_host, should_fetch_code_cache, client);
 }
 
 void BackgroundURLLoader::Freeze(LoaderFreezeMode mode) {

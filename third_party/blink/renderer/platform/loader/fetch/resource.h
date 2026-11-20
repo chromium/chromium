@@ -282,6 +282,14 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
   size_t DecodedSize() const { return decoded_size_; }
   size_t OverheadSize() const { return overhead_size_; }
   virtual size_t CodeCacheSize() const { return 0; }
+  // Called by ResourceLoader when starting an asynchronous network request.
+  // Returning false skips both the isolated code cache fetch and the WebUI
+  // bundled code cache fetch for the request. By default, skips code cache for
+  // DownloadToBlob requests (which network::ResourceRequest does not carry).
+  // Subclasses overriding this should also check the base implementation.
+  virtual bool ShouldFetchCodeCache() const {
+    return !GetResourceRequest().DownloadToBlob();
+  }
 
   bool IsLoaded() const { return status_ > ResourceStatus::kPending; }
 

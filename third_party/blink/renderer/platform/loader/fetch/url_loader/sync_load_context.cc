@@ -149,7 +149,7 @@ void SyncLoadContext::StartAsyncWithWaitableEvent(
       std::move(request), task_runner_, traffic_annotation, loader_options,
       cors_exempt_header_list, base::WrapRefCounted(this), url_loader_factory_,
       std::move(throttles), std::move(resource_load_info_notifier_wrapper),
-      /*code_cache_host=*/nullptr,
+      /*code_cache_host=*/nullptr, /*should_fetch_code_cache=*/false,
       /*evict_from_bfcache_callback=*/
       base::OnceCallback<void(mojom::blink::RendererEvictionReason)>(),
       /*did_buffer_load_while_in_bfcache_callback=*/

@@ -345,7 +345,8 @@ class ResourceRequestSenderTestBase : public testing::Test,
 
   void StartAsync(std::unique_ptr<network::ResourceRequest> request,
                   scoped_refptr<ResourceRequestClient> client,
-                  CodeCacheHost* code_cache_host = nullptr) {
+                  CodeCacheHost* code_cache_host = nullptr,
+                  bool should_fetch_code_cache = true) {
     sender()->SendAsync(
         std::move(request), scheduler::GetSingleThreadTaskRunnerForTesting(),
         TRAFFIC_ANNOTATION_FOR_TESTS, false,
@@ -354,7 +355,7 @@ class ResourceRequestSenderTestBase : public testing::Test,
         std::vector<std::unique_ptr<URLLoaderThrottle>>(),
         std::make_unique<ResourceLoadInfoNotifierWrapper>(
             /*resource_load_info_notifier=*/nullptr),
-        code_cache_host,
+        code_cache_host, should_fetch_code_cache,
         /*evict_from_bfcache_callback=*/
         base::OnceCallback<void(mojom::blink::RendererEvictionReason)>(),
         /*did_buffer_load_while_in_bfcache_callback=*/
@@ -2333,6 +2334,7 @@ class TestingPlatformForWebUIBundledCodeCache : public TestingPlatformSupport {
   // TestingPlatformSupport:
   scoped_refptr<base::RefCountedMemory> GetDataResourceBytes(
       int resource_id) override {
+    ++get_data_resource_bytes_count_;
     return resource_data_;
   }
   std::optional<int> GetWebUIBundledCodeCacheResourceId(
@@ -2346,10 +2348,14 @@ class TestingPlatformForWebUIBundledCodeCache : public TestingPlatformSupport {
     webui_bundled_code_cache_url_ = webui_bundled_code_cache_url;
   }
   void reset_resource_data() { resource_data_ = nullptr; }
+  int get_data_resource_bytes_count() const {
+    return get_data_resource_bytes_count_;
+  }
 
  private:
   GURL webui_bundled_code_cache_url_;
   scoped_refptr<base::RefCountedMemory> resource_data_;
+  int get_data_resource_bytes_count_ = 0;
 };
 
 // Fixture to test the WebUI bundled code cache feature.
@@ -2374,7 +2380,9 @@ class WebUIBundledCodeCacheResourceRequestSenderTest
   }
 
   // Loads a resource and checks the status of the code cache.
-  void LoadResourceAndCheck(const GURL& resource_url, bool expect_code_cache) {
+  void LoadResourceAndCheck(const GURL& resource_url,
+                            bool expect_code_cache,
+                            bool should_fetch_code_cache = true) {
     scoped_refptr<MockRequestClient> mock_client =
         base::MakeRefCounted<MockRequestClient>();
 
@@ -2382,7 +2390,8 @@ class WebUIBundledCodeCacheResourceRequestSenderTest
     request->url = resource_url;
     request->destination = network::mojom::RequestDestination::kScript;
 
-    StartAsync(std::move(request), mock_client);
+    StartAsync(std::move(request), mock_client, /*code_cache_host=*/nullptr,
+               should_fetch_code_cache);
     EXPECT_EQ(1u, loader_and_clients_.size());
     mojo::Remote<network::mojom::URLLoaderClient> client(
         std::move(loader_and_clients_[0].second));
@@ -2464,6 +2473,22 @@ TEST_F(WebUIBundledCodeCacheResourceRequestSenderTest,
   histogram_tester.ExpectUniqueSample(
       "Blink.ResourceRequest.WebUIBundledCodeCacheFetcher.DidReceiveCachedCode",
       false, 1);
+}
+
+TEST_F(WebUIBundledCodeCacheResourceRequestSenderTest,
+       ShouldFetchCodeCacheFalseSkipsWebUIBundledCodeCacheFetch) {
+  base::HistogramTester histogram_tester;
+
+  const GURL test_url("chrome://example/script.js");
+  platform_->set_webui_bundled_code_cache_url(test_url);
+  EXPECT_TRUE(platform_->GetWebUIBundledCodeCacheResourceId(test_url));
+
+  LoadResourceAndCheck(test_url, /*expect_code_cache=*/false,
+                       /*should_fetch_code_cache=*/false);
+  EXPECT_EQ(0, platform_->get_data_resource_bytes_count());
+  histogram_tester.ExpectTotalCount(
+      "Blink.ResourceRequest.WebUIBundledCodeCacheFetcher.DidReceiveCachedCode",
+      0);
 }
 
 }  // namespace

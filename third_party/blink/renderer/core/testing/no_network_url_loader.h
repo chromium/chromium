@@ -46,6 +46,7 @@ class NoNetworkURLLoader : public URLLoader {
       std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
           resource_load_info_notifier_wrapper,
       CodeCacheHost* code_cache_host,
+      bool should_fetch_code_cache,
       URLLoaderClient* client) override {
     // We simply never call back, simulating load times that are larger
     // than the test runtime.
