@@ -121,6 +121,8 @@ static_library("codec_utils") {
 
 static_library("perfetto_tracing") {
   sources = [
+    "perfetto_trace_config.cc",
+    "perfetto_trace_config.h",
     "perfetto_tracing.cc",
     "perfetto_tracing.h",
   ]
@@ -537,6 +539,7 @@ source_set("unit_tests") {
     "leaky_bucket_unittest.cc",
     "local_session_policies_provider_unittest.cc",
     "oauth_token_getter_proxy_unittest.cc",
+    "perfetto_trace_config_unittest.cc",
     "perfetto_tracing_unittest.cc",
     "port_range_unittest.cc",
     "protobuf_http_client_unittest.cc",

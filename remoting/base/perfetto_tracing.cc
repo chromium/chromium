@@ -23,9 +23,9 @@
 #include "base/tracing/perfetto_platform.h"
 #include "third_party/perfetto/include/perfetto/tracing/tracing.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
-#include "third_party/perfetto/protos/perfetto/trace/track_event/process_descriptor.gen.h"  // nogncheck
-#include "third_party/perfetto/protos/perfetto/trace/track_event/thread_descriptor.gen.h"  // nogncheck
-#include "third_party/perfetto/protos/perfetto/trace/track_event/track_descriptor.gen.h"  // nogncheck
+#include "third_party/perfetto/protos/perfetto/trace/track_event/process_descriptor.gen.h"
+#include "third_party/perfetto/protos/perfetto/trace/track_event/thread_descriptor.gen.h"
+#include "third_party/perfetto/protos/perfetto/trace/track_event/track_descriptor.gen.h"
 #include "third_party/webrtc_overrides/init_webrtc.h"
 
 namespace remoting {
