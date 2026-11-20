@@ -120,6 +120,17 @@ enum ErrorCode {
   // The connection was closed because the host software was upgraded.
   SOFTWARE_UPGRADED = 69;
 
+  // Curtain mode is required, but the target user already has a local
+  // graphical session, which can't be curtained. The client can reconnect
+  // with the `Terminate-Local-Session` session option to have the host
+  // terminate that session and create a remote one instead.
+  LOCAL_SESSION_RUNNING = 70;
+
+  // Curtain mode is required, but the session the host would attach to can't
+  // be curtained and the host is not able to replace it. Retrying with
+  // `Terminate-Local-Session` does not help.
+  UNCURTAINED_SESSION = 71;
+
   reserved 2, 6 to 7, 11, 12, 15, 17, 19 to 25, 28 to 39, 41, 51 to 59, 61;
 
   // [400, 699] are reserved for internal errors.

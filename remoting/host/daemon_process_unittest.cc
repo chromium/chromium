@@ -138,6 +138,9 @@ mojom::DesktopSessionOptionsPtr CreateSessionOptions() {
   auto options = mojom::DesktopSessionOptions::New();
   options->screen_resolution = ScreenResolution();
   options->curtain_required = false;
+#if BUILDFLAG(IS_LINUX)
+  options->terminate_local_session = false;
+#endif  // BUILDFLAG(IS_LINUX)
   return options;
 }
 

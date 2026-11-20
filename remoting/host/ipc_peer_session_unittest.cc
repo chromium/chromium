@@ -16,6 +16,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "build/build_config.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -613,9 +614,59 @@ TEST_F(IpcPeerSessionTest,
   ASSERT_TRUE(received_options);
   EXPECT_EQ(received_options->client_id, "client_id_123@domain.com");
   EXPECT_TRUE(received_options->curtain_required);
+#if BUILDFLAG(IS_LINUX)
+  EXPECT_FALSE(received_options->terminate_local_session);
+#endif  // BUILDFLAG(IS_LINUX)
   EXPECT_EQ(received_options->screen_resolution.dimensions().width(), 1600);
   EXPECT_EQ(received_options->screen_resolution.dimensions().height(), 900);
 }
+
+#if BUILDFLAG(IS_LINUX)
+TEST_F(IpcPeerSessionTest,
+       RequestDesktopSessionPropagatesTerminateLocalSession) {
+  mojo::PendingRemote<mojom::PeerSession> remote;
+  MockPeerSessionReceiver receiver;
+  receiver.Bind(remote.InitWithNewPipeAndPassReceiver());
+
+  base::test::TestFuture<mojo::PendingReceiver<mojom::DesktopSession>,
+                         mojo::PendingRemote<mojom::DesktopSessionEvents>,
+                         mojom::DesktopSessionOptionsPtr>
+      session_requested_future;
+  auto session = std::make_unique<IpcPeerSession>(
+      std::move(remote), session_requested_future.GetRepeatingCallback(),
+      std::make_unique<FakeIceConfigFetcher>(protocol::IceConfig()),
+      base::NullCallback());
+
+  base::test::TestFuture<void> start_future;
+  receiver.set_start_closure(start_future.GetCallback());
+
+  SessionOptions session_options;
+  session_options.terminate_local_session = true;
+
+  MockEventHandler event_handler;
+  session->Start(&event_handler, "client_id_123@domain.com/channel",
+                 DesktopEnvironmentOptions(), SessionPolicies(),
+                 session_options);
+  EXPECT_TRUE(start_future.Wait());
+
+  ASSERT_TRUE(receiver.desktop_session_requester_remote().is_bound());
+
+  mojo::PendingRemote<mojom::DesktopSession> control_remote;
+  mojo::PendingReceiver<mojom::DesktopSession> control_receiver =
+      control_remote.InitWithNewPipeAndPassReceiver();
+  mojo::PendingRemote<mojom::DesktopSessionEvents> events_remote;
+  mojo::PendingReceiver<mojom::DesktopSessionEvents> events_receiver =
+      events_remote.InitWithNewPipeAndPassReceiver();
+  receiver.desktop_session_requester_remote()->RequestDesktopSession(
+      std::move(control_receiver), std::move(events_remote),
+      ScreenResolution());
+
+  auto [received_control_receiver, received_events_remote, received_options] =
+      session_requested_future.Take();
+  ASSERT_TRUE(received_options);
+  EXPECT_TRUE(received_options->terminate_local_session);
+}
+#endif  // BUILDFLAG(IS_LINUX)
 
 TEST_F(IpcPeerSessionTest, RequestDesktopSessionRejectsDuplicateRequests) {
   mojo::PendingRemote<mojom::PeerSession> remote;

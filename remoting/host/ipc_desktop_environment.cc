@@ -277,6 +277,11 @@ void IpcDesktopEnvironmentFactory::Core::ConnectTerminal(
   mojom::DesktopSessionOptionsPtr options = mojom::DesktopSessionOptions::New();
   options->screen_resolution = resolution;
   options->curtain_required = is_curtained;
+#if BUILDFLAG(IS_LINUX)
+  // On Linux this only runs in `peer_connection`; the trusted `network`
+  // process overwrites `terminate_local_session` in `IpcPeerSession::Start()`.
+  options->terminate_local_session = false;
+#endif  // BUILDFLAG(IS_LINUX)
   options->required_username = required_username_;
   options->client_id = client_id;
 

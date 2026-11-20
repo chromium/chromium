@@ -62,8 +62,10 @@ enum class ErrorCode {
   NETWORK_FAILURE = 28,
   OPERATION_TIMEOUT = 29,
   SOFTWARE_UPGRADED = 30,
+  LOCAL_SESSION_RUNNING = 31,
+  UNCURTAINED_SESSION = 32,
 
-  kMaxValue = SOFTWARE_UPGRADED,
+  kMaxValue = UNCURTAINED_SESSION,
 };
 
 bool ParseErrorCode(const std::string& name, ErrorCode* result);

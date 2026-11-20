@@ -28,6 +28,9 @@ TEST(SessionOptionsTest, ParseAllSupportedFields) {
 #if BUILDFLAG(IS_WIN)
   dict.Set(kSessionOptionAllowDxgiCapturer, "TRUE");
 #endif  // BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_LINUX)
+  dict.Set(kSessionOptionTerminateLocalSession, "true");
+#endif  // BUILDFLAG(IS_LINUX)
 
   SessionOptions options = SessionOptions::Parse(dict);
   EXPECT_EQ(options.detect_updated_region, true);
@@ -43,6 +46,9 @@ TEST(SessionOptionsTest, ParseAllSupportedFields) {
 #if BUILDFLAG(IS_WIN)
   EXPECT_EQ(options.allow_dxgi_capturer, true);
 #endif  // BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_LINUX)
+  EXPECT_EQ(options.terminate_local_session, true);
+#endif  // BUILDFLAG(IS_LINUX)
 }
 
 TEST(SessionOptionsTest, ParseIgnoresUnsupportedField) {
@@ -77,6 +83,9 @@ TEST(SessionOptionsTest, IgnoreNonApplicableOsKeys) {
 #if !BUILDFLAG(IS_WIN)
   dict.Set("Allow-Dxgi-Capturer", "true");
 #endif  // !BUILDFLAG(IS_WIN)
+#if !BUILDFLAG(IS_LINUX)
+  dict.Set("Terminate-Local-Session", "true");
+#endif  // !BUILDFLAG(IS_LINUX)
 
   SessionOptions options = SessionOptions::Parse(dict);
   EXPECT_EQ(options.detect_updated_region, true);

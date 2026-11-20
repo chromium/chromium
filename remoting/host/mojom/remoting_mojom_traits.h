@@ -1052,6 +1052,13 @@ class StructTraits<remoting::mojom::SessionOptionsDataView,
     return options.enable_privacy_overlay;
   }
 
+#if BUILDFLAG(IS_LINUX)
+  static std::optional<bool> terminate_local_session(
+      const ::remoting::SessionOptions& options) {
+    return options.terminate_local_session;
+  }
+#endif  // BUILDFLAG(IS_LINUX)
+
   static bool Read(remoting::mojom::SessionOptionsDataView data_view,
                    ::remoting::SessionOptions* out_options);
 };

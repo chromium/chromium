@@ -42,6 +42,8 @@ enum ProtocolErrorCode {
   kNetworkFailure = 28,
   kOperationTimeout = 29,
   kSoftwareUpgraded = 30,
+  kLocalSessionRunning = 31,
+  kUncurtainedSession = 32,
 };
 
 // This struct mirrors remoting::SourceLocation.
@@ -217,6 +219,12 @@ struct SessionOptions {
   // Whether to enable the local privacy overlay during a remote session.
   // A null value means the option is unset and uses the default value (false).
   bool? enable_privacy_overlay;
+
+  // Whether to terminate existing local graphical session(s) on Linux when
+  // Curtain Mode is required.
+  // A null value means the option is unset and uses the default value (false).
+  [EnableIf=is_linux]
+  bool? terminate_local_session;
 };
 // LINT.ThenChange(//remoting/base/session_options.h:SessionOptions)
 

@@ -94,6 +94,15 @@ struct SessionOptions {
   // (false).
   // Corresponding option key: Enable-Privacy-Overlay-Alpha
   std::optional<bool> enable_privacy_overlay;
+
+#if BUILDFLAG(IS_LINUX)
+  // Whether to terminate existing local graphical session(s) on Linux when
+  // Curtain Mode is required.
+  // A nullopt value means the option is unset and uses the default value
+  // (false).
+  // Corresponding option key: Terminate-Local-Session
+  std::optional<bool> terminate_local_session;
+#endif  // BUILDFLAG(IS_LINUX)
 };
 // LINT.ThenChange(//remoting/host/mojom/common.mojom:SessionOptions)
 

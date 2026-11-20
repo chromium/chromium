@@ -667,6 +667,9 @@ bool mojo::StructTraits<remoting::mojom::SessionOptionsDataView,
   out_options->av1_active_map = data_view.av1_active_map();
   out_options->av1_encoder_speed = data_view.av1_encoder_speed();
   out_options->enable_privacy_overlay = data_view.enable_privacy_overlay();
+#if BUILDFLAG(IS_LINUX)
+  out_options->terminate_local_session = data_view.terminate_local_session();
+#endif  // BUILDFLAG(IS_LINUX)
   return true;
 }
 
@@ -762,6 +765,10 @@ mojo::EnumTraits<remoting::mojom::ProtocolErrorCode,
       return remoting::mojom::ProtocolErrorCode::kOperationTimeout;
     case ::remoting::ErrorCode::SOFTWARE_UPGRADED:
       return remoting::mojom::ProtocolErrorCode::kSoftwareUpgraded;
+    case ::remoting::ErrorCode::LOCAL_SESSION_RUNNING:
+      return remoting::mojom::ProtocolErrorCode::kLocalSessionRunning;
+    case ::remoting::ErrorCode::UNCURTAINED_SESSION:
+      return remoting::mojom::ProtocolErrorCode::kUncurtainedSession;
   }
 
   NOTREACHED();
@@ -834,6 +841,10 @@ mojo::EnumTraits<remoting::mojom::ProtocolErrorCode, ::remoting::ErrorCode>::
       return ::remoting::ErrorCode::OPERATION_TIMEOUT;
     case remoting::mojom::ProtocolErrorCode::kSoftwareUpgraded:
       return ::remoting::ErrorCode::SOFTWARE_UPGRADED;
+    case remoting::mojom::ProtocolErrorCode::kLocalSessionRunning:
+      return ::remoting::ErrorCode::LOCAL_SESSION_RUNNING;
+    case remoting::mojom::ProtocolErrorCode::kUncurtainedSession:
+      return ::remoting::ErrorCode::UNCURTAINED_SESSION;
   }
 
   NOTREACHED();

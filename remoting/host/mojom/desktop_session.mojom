@@ -268,6 +268,12 @@ struct DesktopSessionOptions {
   // this is set; `gdm-managed` sessions are always remote and curtained.
   bool curtain_required;
 
+  // Whether to terminate existing local graphical session(s) on Linux when
+  // `curtain_required` is true. Set only by the trusted `network` process from
+  // the authenticated client's `SessionOptions` (`Terminate-Local-Session`).
+  [EnableIf=is_linux]
+  bool terminate_local_session;
+
   // If non-empty, the login user of the desktop session must match `username`.
   string required_username;
 

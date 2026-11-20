@@ -71,6 +71,10 @@ static constexpr auto kBoolFieldsMap =
         {kSessionOptionAv1ActiveMap, &SessionOptions::av1_active_map},
         {kSessionOptionEnablePrivacyOverlay,
          &SessionOptions::enable_privacy_overlay},
+#if BUILDFLAG(IS_LINUX)
+        {kSessionOptionTerminateLocalSession,
+         &SessionOptions::terminate_local_session},
+#endif  // BUILDFLAG(IS_LINUX)
     });
 
 static constexpr auto kIntFieldsMap =

@@ -63,6 +63,8 @@ ExtendedStartCrdSessionResultCode ToExtendedStartCrdSessionResultCode(
     case ErrorCode::LOGIN_SCREEN_NOT_SUPPORTED:
     // This error is only reported on Linux.
     case ErrorCode::SOFTWARE_UPGRADED:
+    case ErrorCode::LOCAL_SESSION_RUNNING:
+    case ErrorCode::UNCURTAINED_SESSION:
       return ExtendedStartCrdSessionResultCode::kFailureUnknownError;
     case ErrorCode::REAUTHZ_POLICY_CHECK_FAILED:
       return ExtendedStartCrdSessionResultCode::

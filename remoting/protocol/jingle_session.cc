@@ -403,6 +403,8 @@ void JingleSession::Close(protocol::ErrorCode error,
         reason = SessionTerminate::Reason::kExpired;
         break;
       case ErrorCode::HOST_CONFIGURATION_ERROR:
+      case ErrorCode::LOCAL_SESSION_RUNNING:
+      case ErrorCode::UNCURTAINED_SESSION:
         reason = SessionTerminate::Reason::kFailedApplication;
         break;
       default:

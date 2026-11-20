@@ -26,6 +26,10 @@ inline constexpr char kSessionOptionAv1ActiveMap[] = "Av1-Active-Map";
 inline constexpr char kSessionOptionAv1EncoderSpeed[] = "Av1-Encoder-Speed";
 inline constexpr char kSessionOptionEnablePrivacyOverlay[] =
     "Enable-Privacy-Overlay-Alpha";
+#if BUILDFLAG(IS_LINUX)
+inline constexpr char kSessionOptionTerminateLocalSession[] =
+    "Terminate-Local-Session";
+#endif  // BUILDFLAG(IS_LINUX)
 
 }  // namespace remoting
 

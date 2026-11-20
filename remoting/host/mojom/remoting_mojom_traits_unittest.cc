@@ -11,6 +11,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "build/build_config.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "remoting/base/buildflags.h"
 #include "remoting/base/errors.h"
@@ -302,7 +303,10 @@ INSTANTIATE_TEST_SUITE_P(
                     ErrorCode::INVALID_STATE,
                     ErrorCode::INVALID_ARGUMENT,
                     ErrorCode::NETWORK_FAILURE,
-                    ErrorCode::OPERATION_TIMEOUT));
+                    ErrorCode::OPERATION_TIMEOUT,
+                    ErrorCode::SOFTWARE_UPGRADED,
+                    ErrorCode::LOCAL_SESSION_RUNNING,
+                    ErrorCode::UNCURTAINED_SESSION));
 
 }  // namespace
 
@@ -918,6 +922,9 @@ TEST(RemotingMojomTraitsTest, SessionOptionsRoundTrip) {
   input.av1_active_map = false;
   input.av1_encoder_speed = 6;
   input.enable_privacy_overlay = true;
+#if BUILDFLAG(IS_LINUX)
+  input.terminate_local_session = true;
+#endif  // BUILDFLAG(IS_LINUX)
 
   SessionOptions output;
   ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::SessionOptions>(

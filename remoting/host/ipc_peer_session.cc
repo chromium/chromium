@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
+#include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "remoting/protocol/errors.h"
@@ -62,6 +63,10 @@ void IpcPeerSession::Start(
                            /*resource=*/nullptr);
   desktop_session_options_->curtain_required =
       desktop_environment_options.enable_curtaining();
+#if BUILDFLAG(IS_LINUX)
+  desktop_session_options_->terminate_local_session =
+      session_options.terminate_local_session.value_or(false);
+#endif  // BUILDFLAG(IS_LINUX)
 
   DCHECK(!desktop_session_requester_receiver_.is_bound());
   mojo::PendingRemote<mojom::DesktopSessionRequester>

@@ -45,6 +45,8 @@ const NameMapElement<ErrorCode> kErrorCodeNames[] = {
     {ErrorCode::NETWORK_FAILURE, "NETWORK_FAILURE"},
     {ErrorCode::OPERATION_TIMEOUT, "OPERATION_TIMEOUT"},
     {ErrorCode::SOFTWARE_UPGRADED, "SOFTWARE_UPGRADED"},
+    {ErrorCode::LOCAL_SESSION_RUNNING, "LOCAL_SESSION_RUNNING"},
+    {ErrorCode::UNCURTAINED_SESSION, "UNCURTAINED_SESSION"},
 };
 
 }  // namespace
@@ -121,6 +123,10 @@ proto::ErrorCode ErrorCodeToProtoEnum(ErrorCode error) {
       return proto::ErrorCode::OPERATION_TIMEOUT;
     case ErrorCode::SOFTWARE_UPGRADED:
       return proto::ErrorCode::SOFTWARE_UPGRADED;
+    case ErrorCode::LOCAL_SESSION_RUNNING:
+      return proto::ErrorCode::LOCAL_SESSION_RUNNING;
+    case ErrorCode::UNCURTAINED_SESSION:
+      return proto::ErrorCode::UNCURTAINED_SESSION;
   }
 }
 

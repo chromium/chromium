@@ -19,6 +19,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/base/errors.h"
 #include "remoting/base/local_session_policies_provider.h"
@@ -288,6 +289,10 @@ TEST_F(ClientSessionTest, ForwardHostSessionOptionsAllFields) {
   attachment.host_config->settings[kSessionOptionAv1ActiveMap] = "1";
   attachment.host_config->settings[kSessionOptionAv1EncoderSpeed] = "4";
   attachment.host_config->settings[kSessionOptionEnablePrivacyOverlay] = "true";
+#if BUILDFLAG(IS_LINUX)
+  attachment.host_config->settings[kSessionOptionTerminateLocalSession] =
+      "true";
+#endif  // BUILDFLAG(IS_LINUX)
   session->SetAttachment(0, attachment);
 
   CreateClientSession(std::move(session));
@@ -306,6 +311,9 @@ TEST_F(ClientSessionTest, ForwardHostSessionOptionsAllFields) {
   EXPECT_EQ(options.av1_active_map, true);
   EXPECT_EQ(options.av1_encoder_speed, 4);
   EXPECT_EQ(options.enable_privacy_overlay, true);
+#if BUILDFLAG(IS_LINUX)
+  EXPECT_EQ(options.terminate_local_session, true);
+#endif  // BUILDFLAG(IS_LINUX)
   EXPECT_TRUE(desktop_options.enable_privacy_overlay());
 }
 
