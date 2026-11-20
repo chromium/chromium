@@ -58,11 +58,19 @@ message ContextualCueingRequest {
 
   // The Chrome platform that the request is from.
   ChromePlatform chrome_platform = 6 [features = { field_presence: EXPLICIT }];
+
+  // The client capabilities for the request.
+  ContextualCueingClientCapabilities client_capabilities = 7 [features = { field_presence: EXPLICIT }];
 }
 
 message ContextualCueingHistory {
   // The user journey the shown cue was for.
   string cuj = 1 [features = { field_presence: EXPLICIT }];
+}
+
+message ContextualCueingClientCapabilities {
+  // Whether the client supports multitab cues.
+  bool supports_multitab = 1 [features = { field_presence: EXPLICIT }];
 }
 
 // Next ID: 5

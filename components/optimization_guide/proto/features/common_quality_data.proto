@@ -2510,7 +2510,7 @@ enum AnnotatedPageContentMode {
 // When adding new types, please also update AIPageContentAttributeType in
 // third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.
 // See crrev.com/c/6072788 for an example.
-// Next ID: 31
+// Next ID: 32
 enum ContentAttributeType {
   // Unknown is not a valid attribute type and should never be used by the
   // client. You can consider discarding ContentNodes with this attribute type.
@@ -2565,6 +2565,9 @@ enum ContentAttributeType {
 
   // MathML formulas.
   CONTENT_ATTRIBUTE_MATH = 30;
+
+  // Labels, captions, and legends (e.g. <legend>, <caption>, <label>).
+  CONTENT_ATTRIBUTE_LABEL = 31;
 
   reserved 12, 13, 14, 15, 16, 17, 18, 19;
 }
