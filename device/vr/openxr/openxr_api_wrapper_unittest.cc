@@ -17,6 +17,7 @@
 #include "base/path_service.h"
 #include "base/scoped_environment_variable_override.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "device/vr/openxr/exit_xr_present_reason.h"
 #include "device/vr/openxr/linux/openxr_platform_helper_linux.h"
 #include "device/vr/openxr/openxr_extension_helper.h"
@@ -164,6 +165,15 @@ TEST_F(OpenXrApiWrapperTest, SessionEndsWhenExited) {
   EXPECT_FALSE(openxr_->IsInitialized());
   EXPECT_EQ(ended_reason_, ExitXrPresentReason::kOpenXrUninitialize);
   EXPECT_EQ(resumed_count_, 0);
+}
+
+TEST_F(OpenXrApiWrapperTest, XrTimeToTimeTicks) {
+  // The mock runtime's XrTime is CLOCK_MONOTONIC in nanoseconds, which is what
+  // base::TimeTicks counts on Linux.
+  const XrTime time = 12'345'678'901;
+  EXPECT_EQ(
+      OpenXrApiWrapper::XrTimeToTimeTicks(instance_, *extension_helper_, time),
+      base::TimeTicks() + base::Nanoseconds(time));
 }
 
 }  // namespace device

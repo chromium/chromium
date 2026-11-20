@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_xr_interaction_mode.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_xr_light_probe_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_xr_reflection_format.h"
+#include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/modules/xr/average_timer.h"
@@ -175,6 +176,11 @@ class XRSession final : public EventTarget,
   bool isSystemKeyboardSupported() const;
 
   uint16_t maxRenderLayers() const { return device_config_->max_render_layers; }
+
+  // The predictedDisplayTime of this session's current XRFrame.
+  DOMHighResTimeStamp PredictedDisplayTime() const {
+    return predicted_display_time_;
+  }
 
   XRSpace* viewerSpace() const;
 
@@ -669,6 +675,8 @@ class XRSession final : public EventTarget,
   // Promises from updateTargetFrameRate that wait for the device.
   HeapHashSet<Member<ScriptPromiseResolver<IDLUndefined>>>
       update_target_frame_rate_promises_;
+
+  DOMHighResTimeStamp predicted_display_time_ = 0;
 
   HeapMojoReceiver<device::mojom::blink::XRSessionClient, XRSession>
       client_receiver_;

@@ -19,6 +19,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
+#include "build/build_config.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "device/vr/openxr/openxr_extension_helper.h"
 #include "device/vr/openxr/openxr_graphics_binding.h"
@@ -133,6 +134,35 @@ std::vector<XrEnvironmentBlendMode> OpenXrApiWrapper::GetSupportedBlendModes(
   }
 
   return environment_blend_modes;
+}
+
+// static
+std::optional<base::TimeTicks> OpenXrApiWrapper::XrTimeToTimeTicks(
+    XrInstance instance,
+    const OpenXrExtensionHelper& extension_helper,
+    XrTime time) {
+  const OpenXrExtensionMethods& methods = extension_helper.ExtensionMethods();
+#if BUILDFLAG(IS_WIN)
+  // FromQPCValue() needs TimeTicks to count the performance counter.
+  LARGE_INTEGER counter;
+  if (!base::TimeTicks::IsHighResolution() ||
+      !methods.xrConvertTimeToWin32PerformanceCounterKHR ||
+      XR_FAILED(methods.xrConvertTimeToWin32PerformanceCounterKHR(
+          instance, time, &counter))) {
+    return std::nullopt;
+  }
+  return base::TimeTicks::FromQPCValue(counter.QuadPart);
+#else
+  // base::TimeTicks counts CLOCK_MONOTONIC, which is the clock
+  // XR_KHR_convert_timespec_time converts to.
+  timespec time_spec;
+  if (!methods.xrConvertTimeToTimespecTimeKHR ||
+      XR_FAILED(
+          methods.xrConvertTimeToTimespecTimeKHR(instance, time, &time_spec))) {
+    return std::nullopt;
+  }
+  return base::TimeTicks() + base::TimeDelta::FromTimeSpec(time_spec);
+#endif
 }
 
 OpenXrApiWrapper::OpenXrApiWrapper() = default;

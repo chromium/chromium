@@ -21,7 +21,7 @@ void OpenXrPlatformHelper::GetRequiredExtensions(
 
 // static
 std::vector<const char*> OpenXrPlatformHelper::GetOptionalExtensions() {
-  return {};
+  return {XR_KHR_CONVERT_TIMESPEC_TIME_EXTENSION_NAME};
 }
 
 }  // namespace device

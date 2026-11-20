@@ -181,6 +181,9 @@ OpenXrExtensionHelper::OpenXrExtensionHelper(
 
 #if BUILDFLAG(IS_WIN)
   OPENXR_LOAD_FN(xrConvertWin32PerformanceCounterToTimeKHR);
+  OPENXR_LOAD_FN(xrConvertTimeToWin32PerformanceCounterKHR);
+#else
+  OPENXR_LOAD_FN(xrConvertTimeToTimespecTimeKHR);
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

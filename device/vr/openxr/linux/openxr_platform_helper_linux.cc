@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "device/vr/openxr/linux/openxr_graphics_binding_vulkan.h"
 #include "device/vr/openxr/openxr_api_wrapper.h"
+#include "device/vr/openxr/openxr_platform.h"
 #include "device/vr/public/mojom/isolated_xr_service.mojom.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 
@@ -23,7 +24,7 @@ void OpenXrPlatformHelper::GetRequiredExtensions(
 
 // static
 std::vector<const char*> OpenXrPlatformHelper::GetOptionalExtensions() {
-  return {};
+  return {XR_KHR_CONVERT_TIMESPEC_TIME_EXTENSION_NAME};
 }
 
 OpenXrPlatformHelperLinux::OpenXrPlatformHelperLinux() = default;

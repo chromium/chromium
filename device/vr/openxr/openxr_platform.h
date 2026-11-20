@@ -21,7 +21,9 @@
 #elif BUILDFLAG(IS_ANDROID)
 #include <EGL/egl.h>
 #include <jni.h>
+#include <time.h>
 #elif BUILDFLAG(IS_LINUX)
+#include <time.h>
 #include <vulkan/vulkan_core.h>
 #endif
 

@@ -92,6 +92,9 @@ struct OpenXrExtensionMethods {
 #if BUILDFLAG(IS_WIN)
   // Time
   OPENXR_DECLARE_FN(xrConvertWin32PerformanceCounterToTimeKHR);
+  OPENXR_DECLARE_FN(xrConvertTimeToWin32PerformanceCounterKHR);
+#else
+  OPENXR_DECLARE_FN(xrConvertTimeToTimespecTimeKHR);
 #endif
 
   // While these extensions don't need to be gated to a particular platform,

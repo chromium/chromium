@@ -9,6 +9,7 @@
     RuntimeEnabled=WebXR
 ] interface XRFrame {
   [SameObject] readonly attribute XRSession session;
+  [RuntimeEnabled=WebXRSpecParity] readonly attribute DOMHighResTimeStamp predictedDisplayTime;
 
   [RuntimeEnabled=WebXR]
   readonly attribute XRAnchorSet trackedAnchors;

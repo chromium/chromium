@@ -13169,6 +13169,7 @@ interface XRFrame
     attribute @@toStringTag
     getter detectedMeshes
     getter detectedPlanes
+    getter predictedDisplayTime
     getter session
     getter trackedAnchors
     method constructor

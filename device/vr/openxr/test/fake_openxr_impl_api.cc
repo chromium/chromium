@@ -8,6 +8,7 @@
 
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
+#include "base/time/time.h"
 #include "device/vr/openxr/openxr_util.h"
 #include "device/vr/openxr/test/openxr_mock_helper.h"
 #include "device/vr/openxr/test/openxr_test_helper.h"
@@ -119,6 +120,21 @@ XrResult XRAPI_PTR xrBeginSession(XrSession session,
 
   return XR_SUCCESS;
 }
+
+#if !BUILDFLAG(IS_WIN)
+XrResult XRAPI_PTR xrConvertTimeToTimespecTimeKHR(XrInstance instance,
+                                                  XrTime time,
+                                                  timespec* timespec_time) {
+  DVLOG(2) << __FUNCTION__;
+  RETURN_IF_XR_FAILED(GetTestHelper().ValidateInstance(instance));
+  RETURN_IF(timespec_time == nullptr, XR_ERROR_VALIDATION_FAILURE,
+            "timespec_time is nullptr");
+  // The mock runtime's XrTime counts nanoseconds of CLOCK_MONOTONIC.
+  timespec_time->tv_sec = time / base::Time::kNanosecondsPerSecond;
+  timespec_time->tv_nsec = time % base::Time::kNanosecondsPerSecond;
+  return XR_SUCCESS;
+}
+#endif
 
 XrResult XRAPI_PTR xrCreateAction(XrActionSet action_set,
                                   const XrActionCreateInfo* create_info,
@@ -1575,6 +1591,9 @@ XrResult XRAPI_PTR xrGetInstanceProcAddr(XrInstance instance,
   TRY_LOAD_METHOD(xrAttachSessionActionSets);
   TRY_LOAD_METHOD(xrBeginFrame);
   TRY_LOAD_METHOD(xrBeginSession);
+#if !BUILDFLAG(IS_WIN)
+  TRY_LOAD_METHOD(xrConvertTimeToTimespecTimeKHR);
+#endif
   TRY_LOAD_METHOD(xrCreateAction);
   TRY_LOAD_METHOD(xrCreateActionSet);
   TRY_LOAD_METHOD(xrCreateActionSpace);

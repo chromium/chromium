@@ -811,6 +811,8 @@ mojom::XRFrameDataPtr OpenXrRenderLoop::GetNextFrameData() {
   const XrTime frame_time = openxr_->GetPredictedDisplayTime();
 
   frame_data->time_delta = base::Nanoseconds(frame_time);
+  frame_data->predicted_display_time = OpenXrApiWrapper::XrTimeToTimeTicks(
+      instance_, *extension_helper_, frame_time);
   frame_data->render_info->views = openxr_->GetViews();
 
   // Unless we are fully synchronized/visible we shouldn't report input state.

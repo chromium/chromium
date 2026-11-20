@@ -62,7 +62,9 @@ constexpr char XRFrame::kInactiveFrame[];
 constexpr char XRFrame::kNonAnimationFrame[];
 
 XRFrame::XRFrame(XRSession* session, bool is_animation_frame)
-    : session_(session), is_animation_frame_(is_animation_frame) {}
+    : session_(session),
+      is_animation_frame_(is_animation_frame),
+      predicted_display_time_(session->PredictedDisplayTime()) {}
 
 XRViewerPose* XRFrame::getViewerPose(XRReferenceSpace* reference_space,
                                      ExceptionState& exception_state) {

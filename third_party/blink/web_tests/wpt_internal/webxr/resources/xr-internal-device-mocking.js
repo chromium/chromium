@@ -173,3 +173,25 @@ MockRuntime.prototype._injectAdditionalFrameData = function(options,
     frameData.frameRate = this.frame_rate_;
   }
 };
+
+// Makes the device report a predicted display time with every frame, starting
+// at |startMicroseconds| (in base::TimeTicks units) and advancing by
+// |stepMicroseconds| per frame.
+MockRuntime.prototype.setPredictedDisplayTimes = function(startMicroseconds,
+                                                          stepMicroseconds) {
+  this.next_predicted_display_time_ = BigInt(startMicroseconds);
+  this.predicted_display_time_step_ = BigInt(stepMicroseconds);
+};
+
+MockRuntime.prototype._injectAdditionalFrameData_prePredictedDisplayTime =
+    MockRuntime.prototype._injectAdditionalFrameData;
+MockRuntime.prototype._injectAdditionalFrameData = function(options,
+                                                            frameData) {
+  this._injectAdditionalFrameData_prePredictedDisplayTime(options, frameData);
+  if (this.next_predicted_display_time_ !== undefined) {
+    frameData.predictedDisplayTime = {
+      internalValue: this.next_predicted_display_time_,
+    };
+    this.next_predicted_display_time_ += this.predicted_display_time_step_;
+  }
+};

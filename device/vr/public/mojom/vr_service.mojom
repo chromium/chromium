@@ -941,6 +941,8 @@ struct XRFrameData {
   XRRenderInfo render_info;
   // Time delta from an unspecified origin.
   mojo_base.mojom.TimeDelta time_delta;
+  // When the device expects this frame to be displayed, if it knows.
+  mojo_base.mojom.TimeTicks? predicted_display_time;
   // The buffer_shared_image is used for sending imagery data back and forth
   // across the process boundary.
   gpu.mojom.ExportedSharedImage? buffer_shared_image;

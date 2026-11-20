@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>let additionalChromiumResources = ["resources/xr-internal-device-mocking.js"];</script>
+<script src="/webxr/resources/webxr_util.js"></script>
+<script src="/webxr/resources/webxr_test_constants.js"></script>
+
+<script>
+// The WebXR Test API cannot report display times, so this test drives the
+// chromium mock directly.
+
+// Resolves with the animation frame time and XRFrame of the next frame.
+function nextFrame(session) {
+  return new Promise(resolve => session.requestAnimationFrame(
+      (time, frame) => resolve({time, frame})));
+}
+
+xr_session_promise_test(
+    'predictedDisplayTime is the animation frame time for inline sessions',
+    async (session) => {
+      const {time, frame} = await nextFrame(session);
+      assert_equals(frame.predictedDisplayTime, time);
+    }, TRACKED_IMMERSIVE_DEVICE, 'inline');
+
+xr_session_promise_test(
+    'predictedDisplayTime is the animation frame time when the device does ' +
+        'not know when frames are displayed',
+    async (session) => {
+      const {time, frame} = await nextFrame(session);
+      assert_equals(frame.predictedDisplayTime, time);
+    }, TRACKED_IMMERSIVE_DEVICE, 'immersive-vr');
+
+xr_promise_test('predictedDisplayTime follows the device', async (t, gl) => {
+  const controller = await navigator.xr.test.simulateDeviceConnection(
+      TRACKED_IMMERSIVE_DEVICE);
+  // TimeTicks count from boot, so start far beyond any uptime, which is after
+  // the time origin. 50ms apart.
+  const stepMs = 50;
+  controller.setPredictedDisplayTimes(1e15, stepMs * 1000);
+  await gl.makeXRCompatible();
+  const session = await new Promise((resolve, reject) => {
+    navigator.xr.test.simulateUserActivation(() => {
+      navigator.xr.requestSession('immersive-vr').then(resolve, reject);
+    });
+  });
+  t.add_cleanup(() => session.end().catch(() => {}));
+  session.updateRenderState({baseLayer: new XRWebGLLayer(session, gl)});
+
+  const first = await nextFrame(session);
+  const second = await nextFrame(session);
+  const elapsed = second.frame.predictedDisplayTime -
+      first.frame.predictedDisplayTime;
+  // Frames may be skipped, so allow any whole number of steps. Timestamps are
+  // coarsened, so allow a little slack.
+  const steps = Math.round(elapsed / stepMs);
+  assert_greater_than_equal(steps, 1);
+  assert_approx_equals(elapsed, steps * stepMs, 0.2);
+  assert_not_equals(first.frame.predictedDisplayTime, first.time);
+}, {}, 'webgl');
+
+xr_promise_test(
+    'predictedDisplayTime is clamped to the animation frame time when earlier',
+    async (t, gl) => {
+      const controller = await navigator.xr.test.simulateDeviceConnection(
+          TRACKED_IMMERSIVE_DEVICE);
+      // 1ms after boot is before the page's time origin, so it converts to a
+      // timestamp earlier than the animation frame time.
+      controller.setPredictedDisplayTimes(1000, 1000);
+      await gl.makeXRCompatible();
+      const session = await new Promise((resolve, reject) => {
+        navigator.xr.test.simulateUserActivation(() => {
+          navigator.xr.requestSession('immersive-vr').then(resolve, reject);
+        });
+      });
+      t.add_cleanup(() => session.end().catch(() => {}));
+      session.updateRenderState({baseLayer: new XRWebGLLayer(session, gl)});
+
+      const {time, frame} = await nextFrame(session);
+      assert_greater_than(time, 0);
+      assert_equals(frame.predictedDisplayTime, time);
+    }, {}, 'webgl');
+</script>

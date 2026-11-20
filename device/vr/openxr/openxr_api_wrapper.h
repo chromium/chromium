@@ -13,6 +13,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "device/vr/openxr/exit_xr_present_reason.h"
 #include "device/vr/openxr/fb/openxr_frame_rate_handler_fb.h"
 #include "device/vr/openxr/openxr_anchor_manager.h"
@@ -84,6 +85,13 @@ class OpenXrApiWrapper {
   static std::vector<XrEnvironmentBlendMode> GetSupportedBlendModes(
       XrInstance instance,
       XrSystemId system);
+
+  // Converts |time| to base::TimeTicks. Returns nullopt if the runtime cannot
+  // convert its time to the clock that base::TimeTicks uses.
+  DEVICE_VR_EXPORT static std::optional<base::TimeTicks> XrTimeToTimeTicks(
+      XrInstance instance,
+      const OpenXrExtensionHelper& extension_helper,
+      XrTime time);
 
   bool UpdateAndGetSessionEnded();
 

@@ -37,6 +37,8 @@
 #include "third_party/blink/renderer/core/probe/async_task_context.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observer.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observer_entry.h"
+#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/xr/vr_service_type_converters.h"
 #include "third_party/blink/renderer/modules/xr/xr_anchor_set.h"
@@ -2023,6 +2025,23 @@ void XRSession::UpdatePresentationFrameState(
   // Don't process any outstanding frames once the session is ended.
   if (ended_)
     return;
+
+  // Immersive frames are displayed later than the animation frame time, when
+  // the device knows when.
+  predicted_display_time_ = timestamp;
+  if (immersive() && frame_data && frame_data->predicted_display_time) {
+    DOMHighResTimeStamp display_time =
+        DOMWindowPerformance::performance(
+            *To<LocalDOMWindow>(xr_->GetExecutionContext()))
+            ->MonotonicTimeToDOMHighResTimeStamp(
+                *frame_data->predicted_display_time);
+    if (display_time < timestamp) {
+      DVLOG(1) << __func__ << ": predicted_display_time (" << display_time
+               << ") earlier than timestamp (" << timestamp << "), clamping";
+    } else {
+      predicted_display_time_ = display_time;
+    }
+  }
 
   // If there are pending render state changes, apply them now, as they may
   // update the depthNear/Far used by the views.
