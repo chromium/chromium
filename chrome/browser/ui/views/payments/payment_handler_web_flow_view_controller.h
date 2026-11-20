@@ -234,6 +234,7 @@ class PaymentHandlerWebFlowViewController
       blink::mojom::MediaStreamRequestResult result,
       std::unique_ptr<content::MediaStreamUI> ui);
   void SetHeaderColorsAndOriginLabelText();
+  std::optional<SkColor> GetLocationIconThemeBackgroundColor() const;
 
   LocationIconView* location_icon_view();
   PermissionDashboardView* permission_dashboard_view();

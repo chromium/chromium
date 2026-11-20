@@ -138,6 +138,7 @@ void PaymentAppLoadingView::OnThemeChanged() {
   // appearance with the web flow view when no explicit theme color is set by
   // the payment handler.
   SetHeaderColors(header_view_, origin_label_, progress_bar_, close_button_,
+                  /*location_icon_view=*/nullptr,
                   /*theme_color=*/std::nullopt);
 }
 

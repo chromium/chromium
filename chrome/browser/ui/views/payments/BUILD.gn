@@ -206,6 +206,7 @@ source_set("browser_tests") {
     "//chrome/browser/autofill",
     "//chrome/browser/payments",
     "//chrome/browser/permissions",
+    "//chrome/browser/themes",
     "//chrome/browser/ui:browser_commands",
     "//chrome/browser/ui:browser_window_header",
     "//chrome/browser/ui/tabs/alert:tab_alert",
