@@ -3308,6 +3308,69 @@ public class AutocompleteMediatorUnitTest {
     }
 
     @Test
+    public void loadPastedText_httpsUrl_loadsUrl() {
+        mMediator.beginInput(createSession(AutocompleteRequestType.SEARCH));
+        doReturn(createExactUrlMatch(JUnitTestGURLs.BLUE_1))
+                .when(mAutocompleteController)
+                .classify(any());
+
+        mMediator.loadPastedText("pasted text", TEST_EVENT_TIME, NavigationTarget.CURRENT_TAB);
+
+        verifyLoadUrl(JUnitTestGURLs.BLUE_1);
+    }
+
+    @Test
+    public void loadPastedText_searchMatch_loadsUrl() {
+        mMediator.beginInput(createSession(AutocompleteRequestType.SEARCH));
+        doReturn(createSearchSuggestMatch()).when(mAutocompleteController).classify(any());
+
+        mMediator.loadPastedText("pasted text", TEST_EVENT_TIME, NavigationTarget.CURRENT_TAB);
+
+        verifyLoadUrl(JUnitTestGURLs.SEARCH_URL);
+    }
+
+    @Test
+    public void loadPastedText_nonHttpUrl_staysInOmnibox() {
+        mMediator.beginInput(createSession(AutocompleteRequestType.SEARCH));
+        for (GURL url : List.of(JUnitTestGURLs.CHROME_ABOUT, JUnitTestGURLs.ABOUT_BLANK)) {
+            doReturn(createExactUrlMatch(url)).when(mAutocompleteController).classify(any());
+
+            mMediator.loadPastedText("pasted text", TEST_EVENT_TIME, NavigationTarget.CURRENT_TAB);
+        }
+
+        verify(mAutocompleteDelegate, never()).loadUrl(any());
+    }
+
+    @Test
+    public void loadPastedText_searchMatchWithNonHttpUrl_staysInOmnibox() {
+        mMediator.beginInput(createSession(AutocompleteRequestType.SEARCH));
+        AutocompleteMatch match =
+                AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_OTHER_ENGINE)
+                        .setDisplayText(SAMPLE_QUERY)
+                        .setIsSearch(/* isSearch= */ true)
+                        .setAllowedToBeDefaultMatch(/* allowedToBeDefaultMatch= */ true)
+                        .setUrl(JUnitTestGURLs.CHROME_ABOUT)
+                        .build();
+        doReturn(match).when(mAutocompleteController).classify(any());
+
+        mMediator.loadPastedText("pasted text", TEST_EVENT_TIME, NavigationTarget.CURRENT_TAB);
+
+        verify(mAutocompleteDelegate, never()).loadUrl(any());
+    }
+
+    @Test
+    public void loadPastedText_invalidUrl_staysInOmnibox() {
+        mMediator.beginInput(createSession(AutocompleteRequestType.SEARCH));
+        doReturn(createExactUrlMatch(GURL.emptyGURL()))
+                .when(mAutocompleteController)
+                .classify(any());
+
+        mMediator.loadPastedText("pasted text", TEST_EVENT_TIME, NavigationTarget.CURRENT_TAB);
+
+        verify(mAutocompleteDelegate, never()).loadUrl(any());
+    }
+
+    @Test
     public void loadUrlForOmniboxMatch_extensionMatch_dispatchesToExtensionUi() {
         ExtensionUi.setBackendForTesting(mExtensionUiBackend);
         ResettersForTesting.register(() -> ExtensionUi.setBackendForTesting(null));

@@ -77,6 +77,7 @@ import org.chromium.chrome.browser.ui.side_ui.SideUiObserver;
 import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.metrics.OmniboxEventProtosIntDef.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteInput.AutocompleteState;
@@ -1575,6 +1576,10 @@ class AutocompleteMediator
     /**
      * Navigate using the pasted omnibox text, disabling inline autocompletion.
      *
+     * <p>The text is only loaded when {@link #canLoadPastedMatchWithoutReview} permits its
+     * destination. Otherwise it is treated as a regular paste: it stays in the Omnibox and
+     * suggestions are requested for it.
+     *
      * @param text The pasted text to load.
      * @param eventTime The timestamp when the navigation was triggered (e.g., uptimeMillis).
      * @param target The target destination for the navigation (current tab, new tab, new window).
@@ -1595,6 +1600,12 @@ class AutocompleteMediator
             AutocompleteMatch suggestionMatch =
                     mAutocomplete != null ? mAutocomplete.classify(text) : null;
             if (suggestionMatch == null) return;
+            if (!canLoadPastedMatchWithoutReview(suggestionMatch)) {
+                // classify() replaced the autocomplete results. Request suggestions for the pasted
+                // text, as a regular paste does.
+                onInputChanged();
+                return;
+            }
             loadUrlForOmniboxMatch(
                     0,
                     suggestionMatch,
@@ -1604,6 +1615,23 @@ class AutocompleteMediator
                     openInNewWindow,
                     openInBackground);
         }
+    }
+
+    /**
+     * Returns whether a match classified from pasted text may be loaded before the user has seen
+     * the text in the Omnibox.
+     *
+     * <p>Typed input is visible while it is being committed, pasted text is not. Loading it right
+     * away is therefore limited to valid HTTP(S) destinations, i.e. the ones any web link can lead
+     * to. The destination URL decides, not the type of the match: a search is loaded because its
+     * results page is an HTTP(S) URL. Anything else has to be committed from the Omnibox
+     * explicitly.
+     *
+     * @param match The match classified from the pasted text.
+     */
+    private static boolean canLoadPastedMatchWithoutReview(AutocompleteMatch match) {
+        GURL url = match.getUrl();
+        return url.isValid() && UrlUtilities.isHttpOrHttps(url);
     }
 
     /**
