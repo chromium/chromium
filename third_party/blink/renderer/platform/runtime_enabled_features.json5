@@ -1311,6 +1311,12 @@
       status: "experimental",
     },
     {
+      // Kill switch for deciding breaks between Latin-1 characters in 16-bit
+      // text without ICU in CharacterBreakIterator.
+      name: "CharacterBreakIteratorFastPath",
+      status: "stable",
+    },
+    {
       name: "CheckableInputTypeLayoutInline",
       status: "stable",
     },

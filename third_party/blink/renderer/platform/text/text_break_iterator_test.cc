@@ -102,20 +102,45 @@ TEST_F(TextBreakIteratorTest, PooledBreakIterator) {
 }
 
 TEST_F(TextBreakIteratorTest, PooledCharacterBreakIterator) {
-  String str16(u"a");
-  ASSERT_FALSE(str16.Is8Bit());
+  // No ICU iterator is needed for Latin-1 text.
+  String latin1_16(u"ab");
+  ASSERT_FALSE(latin1_16.Is8Bit());
+  CharacterBreakIterator latin1_it(latin1_16);
+  EXPECT_EQ(1, latin1_it.Next());
+  EXPECT_FALSE(latin1_it.iterator_);
+
+  String str8("a\r\nb");
+  ASSERT_TRUE(str8.Is8Bit());
+  CharacterBreakIterator it8(str8);
+  EXPECT_EQ(1, it8.Next());
+  EXPECT_EQ(3, it8.Next());
+  EXPECT_FALSE(it8.iterator_);
+
+  {
+    // Without the fast path, 16-bit text always uses the ICU iterator.
+    ScopedCharacterBreakIteratorFastPathForTest scoped_feature(false);
+    CharacterBreakIterator icu_it(latin1_16);
+    EXPECT_EQ(1, icu_it.Next());
+    EXPECT_TRUE(icu_it.iterator_);
+  }
+
+  String str16(u"e\u0300");
   CharacterBreakIterator it1(str16);
+  EXPECT_EQ(2, it1.Next());
+  ASSERT_TRUE(it1.iterator_);
 
   // Get another and release. It should be a different instance than `it1`.
   TextBreakIterator* ptr2;
   {
     CharacterBreakIterator it2(str16);
+    EXPECT_EQ(2, it2.Next());
     EXPECT_NE(it2.iterator_.get(), it1.iterator_.get());
     ptr2 = it2.iterator_.get();
   }
 
   // Because `it2` is released, `it3` should be the same instance as `it2`.
   CharacterBreakIterator it3(str16);
+  EXPECT_EQ(2, it3.Next());
   EXPECT_EQ(it3.iterator_.get(), ptr2);
 }
 
