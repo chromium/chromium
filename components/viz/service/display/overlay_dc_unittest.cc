@@ -2846,7 +2846,6 @@ TEST_P(OverlayProcessorWinSurfacePlaneTest, UseDCompSurfaceWithVideo) {
     pass_list.push_back(std::move(pass));
 
     OverlayCandidateList dc_layer_list;
-    SurfaceDamageRectList surface_damage_rect_list;
     damage_rect_ = gfx::Rect(1, 1, 10, 10);
 
     // Full damage on the first frame.
@@ -2892,7 +2891,6 @@ TEST_P(OverlayProcessorWinSurfacePlaneTest, UseDCompSurfaceWithVideo) {
 
     AggregatedRenderPassList pass_list;
     pass_list.push_back(std::move(pass));
-    SurfaceDamageRectList surface_damage_rect_list;
 
     damage_rect_ = gfx::Rect(1, 1, 10, 10);
 
@@ -2942,7 +2940,6 @@ TEST_P(OverlayProcessorWinSurfacePlaneTest, FrameHasDelegatedInk) {
     damage_rect_ = gfx::Rect(1, 1, 10, 10);
     AggregatedRenderPassList pass_list;
     pass_list.push_back(std::move(pass));
-    SurfaceDamageRectList surface_damage_rect_list = {gfx::Rect(1, 1, 10, 10)};
 
     EXPECT_FALSE(pass_list[0]->needs_synchronous_dcomp_commit);
     ProcessForOverlays(&pass_list, SurfaceDamageRectList(), &dc_layer_list);
@@ -2957,7 +2954,6 @@ TEST_P(OverlayProcessorWinSurfacePlaneTest, FrameHasDelegatedInk) {
   damage_rect_ = gfx::Rect(1, 1, 10, 10);
   AggregatedRenderPassList pass_list;
   pass_list.push_back(std::move(pass));
-  SurfaceDamageRectList surface_damage_rect_list = {gfx::Rect(1, 1, 10, 10)};
 
   EXPECT_FALSE(pass_list[0]->needs_synchronous_dcomp_commit);
   ProcessForOverlays(&pass_list, SurfaceDamageRectList(), &dc_layer_list);
@@ -2981,7 +2977,6 @@ TEST_P(OverlayProcessorWinSurfacePlaneTest, DelegatedInkSurfaceHysteresis) {
     damage_rect_ = gfx::Rect(1, 1, 10, 10);
     AggregatedRenderPassList pass_list;
     pass_list.push_back(std::move(pass));
-    SurfaceDamageRectList surface_damage_rect_list = {gfx::Rect(1, 1, 10, 10)};
 
     EXPECT_FALSE(pass_list[0]->needs_synchronous_dcomp_commit);
     ProcessForOverlays(&pass_list, SurfaceDamageRectList(), &dc_layer_list);

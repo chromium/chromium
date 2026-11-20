@@ -284,7 +284,7 @@ void ChromeRequireCTDelegate::AddFilters(
     // Parse the pattern just to the hostname, ignoring all other portions of
     // the URL.
     url::Parsed parsed;
-    std::string ignored_scheme = url_formatter::SegmentURL(pattern, &parsed);
+    url_formatter::SegmentURL(pattern, &parsed);
     if (parsed.host.is_empty())
       continue;  // If there is no host to match, can't apply the filter.
 

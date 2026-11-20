@@ -197,7 +197,7 @@ TEST(UpdateClientUtils, RemoveUnsecureUrls) {
 }
 
 TEST(UpdateClientUtils, GetArchitecture) {
-  const std::string arch = GetArchitecture();
+  [[maybe_unused]] const std::string arch = GetArchitecture();
 
 #if BUILDFLAG(IS_WIN)
   EXPECT_TRUE(arch == kArchIntel || arch == kArchAmd64 || arch == kArchArm64)

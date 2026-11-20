@@ -121,7 +121,6 @@ base::FilePath GenerateFilename(const std::u16string& title,
                        url_formatter::kFormatUrlOmitTrivialSubdomains |
                        url_formatter::kFormatUrlOmitHTTPS,
                    base::UnescapeRule::SPACES, nullptr, nullptr, nullptr)) {
-    std::string url_path;
     if (!url.SchemeIs(url::kDataScheme)) {
       name_with_proper_ext = net::GenerateFileName(
           url, std::string(), std::string(), std::string(), contents_mime_type,
@@ -157,7 +156,9 @@ bool TruncateFilename(base::FilePath* path, size_t limit) {
 
   base::FilePath dir(path->DirName());
   base::FilePath::StringType ext(basename.Extension());
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN)
   base::FilePath::StringType name(basename.RemoveExtension().value());
+#endif
 
   // Impossible to satisfy the limit.
   if (limit < kTruncatedNameLengthLowerbound + ext.size())

@@ -564,7 +564,7 @@ TEST_F(ContextualTasksServiceImplTest, RemoveThreadFromTask) {
 
   // Calling remove again should be a no-op and not crash.
   service_->RemoveThreadFromTask(task.GetTaskId(), type, server_id);
-  std::vector<ContextualTask> tasks_after_second_remove = GetTasks();
+  GetTasks();
   ASSERT_EQ(0u, tasks_after_remove.size());
   service_->RemoveObserver(&observer_);
 }

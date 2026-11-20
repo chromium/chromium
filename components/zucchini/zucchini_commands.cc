@@ -161,8 +161,6 @@ zucchini::status::Code MainSuffixArray(MainParams params) {
 
   zucchini::ImageIndex image_index(input.region());
   zucchini::EncodedView view_raw(image_index);
-  std::vector<zucchini::offset_t> sa_raw =
-      zucchini::MakeSuffixArray<zucchini::InducedSuffixSort>(view_raw,
-                                                             size_t(256));
+  zucchini::MakeSuffixArray<zucchini::InducedSuffixSort>(view_raw, size_t(256));
   return kStatusSuccess;
 }

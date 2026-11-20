@@ -152,10 +152,6 @@ void EphemeralHomeModuleBackend::ExecuteModelWithInput(
     if (filled_positions.contains(card_result.position)) {
       continue;
     }
-    std::string label = card->card_name();
-    if (card_result.result_label) {
-      label = *card_result.result_label;
-    }
     result[home_modules_card_registry_->get_label_index(
         *card_result.result_label)] =
         EphemeralHomeModuleRankToScore(card_result.position);

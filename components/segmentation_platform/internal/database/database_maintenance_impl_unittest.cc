@@ -67,15 +67,6 @@ struct SignalData {
 
 }  // namespace
 
-std::set<DatabaseMaintenanceImpl::SignalIdentifier> GetSignalIds(
-    std::vector<SignalData> signal_datas) {
-  std::set<DatabaseMaintenanceImpl::SignalIdentifier> signal_ids;
-  for (auto& sd : signal_datas)
-    signal_ids.emplace(sd.name_hash, sd.signal_type);
-
-  return signal_ids;
-}
-
 std::vector<CleanupItem> GetCleanupItems(std::vector<SignalData> signal_datas) {
   std::vector<CleanupItem> cleanup_items;
   for (auto& sd : signal_datas) {
@@ -167,8 +158,6 @@ class DatabaseMaintenanceImplTest : public testing::Test {
 
     // Prepare test setup.
     AddFeatures(signal_datas);
-    std::set<DatabaseMaintenanceImpl::SignalIdentifier> signal_ids =
-        GetSignalIds(signal_datas);
     std::vector<CleanupItem> cleanup_items = GetCleanupItems(signal_datas);
 
     // Ensure we return the correct signals.

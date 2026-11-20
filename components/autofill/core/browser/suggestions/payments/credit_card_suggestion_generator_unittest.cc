@@ -241,8 +241,12 @@ Suggestion GenerateVirtualCardSuggestionFromCreditCardSuggestion(
     FieldType field_type = UNKNOWN_TYPE) {
   Suggestion virtual_card_suggestion = suggestion;
   virtual_card_suggestion.type = SuggestionType::kVirtualCreditCardEntry;
+
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
   const std::u16string& virtual_card_label = l10n_util::GetStringUTF16(
       IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE);
+#endif
+
 #if BUILDFLAG(IS_IOS)
   virtual_card_suggestion.minor_texts = {};
   virtual_card_suggestion.minor_texts.emplace_back(
@@ -5046,7 +5050,7 @@ TEST_P(DownstreamCardAwarenessIphTest, WithExternallySavedCard) {
 
   FormBundle form_bundle =
       GetFormWithTypes({.fields = {{.role = CREDIT_CARD_NUMBER}}});
-  const std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
+  GetSuggestionsForCreditCards(
       form_bundle.form, *form_bundle.form_structure, form_bundle.trigger_field,
       *form_bundle.trigger_autofill_field, autofill_client(),
       /*four_digit_combinations_in_dom=*/{},
@@ -5072,7 +5076,7 @@ TEST_P(DownstreamCardAwarenessIphTest, WithNeverUsedCard) {
 
   FormBundle form_bundle =
       GetFormWithTypes({.fields = {{.role = CREDIT_CARD_NUMBER}}});
-  const std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
+  GetSuggestionsForCreditCards(
       form_bundle.form, *form_bundle.form_structure, form_bundle.trigger_field,
       *form_bundle.trigger_autofill_field, autofill_client(),
       /*four_digit_combinations_in_dom=*/{},
