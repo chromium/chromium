@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/reporting/usage_telemetry_periodic_collector_base.h"
+#include "chromeos/ash/components/metrics_reporting/usage_telemetry_periodic_collector_base.h"
 
 #include <memory>
 #include <optional>

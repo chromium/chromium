@@ -4,13 +4,13 @@
 
 #include "chrome/browser/chromeos/reporting/websites/website_usage_telemetry_periodic_collector_ash.h"
 
-#include "chrome/browser/chromeos/reporting/metric_default_utils.h"
-#include "chrome/browser/chromeos/reporting/metric_reporting_prefs.h"
-#include "chrome/browser/chromeos/reporting/usage_telemetry_periodic_collector_base.h"
 #include "chromeos/ash/components/login/session/session_termination_manager.h"
+#include "chromeos/ash/components/metrics_reporting/metric_default_utils.h"
 #include "chromeos/ash/components/metrics_reporting/metric_report_queue.h"
+#include "chromeos/ash/components/metrics_reporting/metric_reporting_prefs.h"
 #include "chromeos/ash/components/metrics_reporting/reporting_settings.h"
 #include "chromeos/ash/components/metrics_reporting/sampler.h"
+#include "chromeos/ash/components/metrics_reporting/usage_telemetry_periodic_collector_base.h"
 
 namespace reporting {
 

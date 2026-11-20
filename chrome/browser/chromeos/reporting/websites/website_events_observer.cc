@@ -8,9 +8,9 @@
 
 #include "base/sequence_checker.h"
 #include "chrome/browser/apps/app_service/metrics/website_metrics.h"
-#include "chrome/browser/chromeos/reporting/metric_reporting_prefs.h"
 #include "chrome/browser/chromeos/reporting/websites/website_metrics_retriever_interface.h"
 #include "chromeos/ash/components/metrics_reporting/metric_event_observer.h"
+#include "chromeos/ash/components/metrics_reporting/metric_reporting_prefs.h"
 #include "chromeos/ash/components/metrics_reporting/reporting_settings.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "content/public/browser/render_process_host.h"

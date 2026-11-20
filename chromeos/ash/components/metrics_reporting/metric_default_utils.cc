@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/reporting/metric_default_utils.h"
+#include "chromeos/ash/components/metrics_reporting/metric_default_utils.h"
 
 #include "base/feature_list.h"
 #include "base/time/time.h"

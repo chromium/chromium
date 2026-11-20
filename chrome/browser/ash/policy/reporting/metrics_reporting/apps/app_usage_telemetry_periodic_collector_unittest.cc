@@ -9,12 +9,12 @@
 
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/metric_reporting_prefs.h"
-#include "chrome/browser/chromeos/reporting/metric_default_utils.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "chromeos/ash/components/metrics_reporting/fakes/fake_metric_report_queue.h"
 #include "chromeos/ash/components/metrics_reporting/fakes/fake_reporting_settings.h"
 #include "chromeos/ash/components/metrics_reporting/fakes/fake_sampler.h"
+#include "chromeos/ash/components/metrics_reporting/metric_default_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

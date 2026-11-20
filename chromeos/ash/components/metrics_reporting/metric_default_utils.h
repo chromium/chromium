@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_REPORTING_METRIC_DEFAULT_UTILS_H_
-#define CHROME_BROWSER_CHROMEOS_REPORTING_METRIC_DEFAULT_UTILS_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_METRICS_REPORTING_METRIC_DEFAULT_UTILS_H_
+#define CHROMEOS_ASH_COMPONENTS_METRICS_REPORTING_METRIC_DEFAULT_UTILS_H_
 
+#include "base/component_export.h"
 #include "base/time/time.h"
 
 namespace reporting::metrics {
@@ -145,18 +146,22 @@ inline constexpr bool kHeartbeatTelemetryDefaultValue = false;
 inline constexpr bool kKioskVisionTelemetryDefaultValue = false;
 
 // Returns the default report upload frequency for the current environment.
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_METRICS_REPORTING)
 const base::TimeDelta GetDefaultReportUploadFrequency();
 
 // Returns the default event checking rate for KioskHeartbeats and the current
 // environment.
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_METRICS_REPORTING)
 const base::TimeDelta GetDefaultKioskHeartbeatUploadFrequency();
 
 // Returns the default metric collection rate for the current environment.
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_METRICS_REPORTING)
 const base::TimeDelta GetDefaultCollectionRate(base::TimeDelta default_rate);
 
 // Returns the default event checking rate for the current environment.
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_METRICS_REPORTING)
 const base::TimeDelta GetDefaultEventCheckingRate(base::TimeDelta default_rate);
 
 }  // namespace reporting::metrics
 
-#endif  // CHROME_BROWSER_CHROMEOS_REPORTING_METRIC_DEFAULT_UTILS_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_METRICS_REPORTING_METRIC_DEFAULT_UTILS_H_

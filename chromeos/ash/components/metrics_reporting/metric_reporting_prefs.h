@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_REPORTING_METRIC_REPORTING_PREFS_H_
-#define CHROME_BROWSER_CHROMEOS_REPORTING_METRIC_REPORTING_PREFS_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_METRICS_REPORTING_METRIC_REPORTING_PREFS_H_
+#define CHROMEOS_ASH_COMPONENTS_METRICS_REPORTING_METRIC_REPORTING_PREFS_H_
 
 #include <string>
 
+#include "base/component_export.h"
 #include "chromeos/ash/components/metrics_reporting/reporting_settings.h"
 #include "url/gurl.h"
 
@@ -41,14 +42,16 @@ inline constexpr char kWebsiteUsage[] = "reporting.website_usage";
 // Website telemetry types tracked by the `ReportWebsiteTelemetry` policy.
 inline constexpr char kWebsiteTelemetryUsageType[] = "usage";
 
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_METRICS_REPORTING)
 void RegisterProfilePrefs(::user_prefs::PrefRegistrySyncable* registry);
 
 // Retrieves the corresponding website metric reporting policy and returns true
 // if the specified website URL is supported and matches any of the patterns in
 // the retrieved allowlist. False otherwise.
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_METRICS_REPORTING)
 bool IsWebsiteUrlAllowlisted(const GURL& url,
                              const ReportingSettings* reporting_settings,
                              const std::string& policy_setting);
 }  // namespace reporting
 
-#endif  // CHROME_BROWSER_CHROMEOS_REPORTING_METRIC_REPORTING_PREFS_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_METRICS_REPORTING_METRIC_REPORTING_PREFS_H_

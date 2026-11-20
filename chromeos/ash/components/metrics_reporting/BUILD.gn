@@ -15,6 +15,8 @@ component("metrics_reporting") {
     "event_driven_telemetry_collector_pool.h",
     "manual_collector.cc",
     "manual_collector.h",
+    "metric_default_utils.cc",
+    "metric_default_utils.h",
     "metric_event_observer.h",
     "metric_event_observer_manager.cc",
     "metric_event_observer_manager.h",
@@ -24,6 +26,8 @@ component("metrics_reporting") {
     "metric_report_queue.h",
     "metric_reporting_controller.cc",
     "metric_reporting_controller.h",
+    "metric_reporting_prefs.cc",
+    "metric_reporting_prefs.h",
     "one_shot_collector.cc",
     "one_shot_collector.h",
     "periodic_collector.cc",
@@ -32,6 +36,8 @@ component("metrics_reporting") {
     "periodic_event_collector.h",
     "reporting_settings.h",
     "sampler.h",
+    "usage_telemetry_periodic_collector_base.cc",
+    "usage_telemetry_periodic_collector_base.h",
   ]
 
   public_deps = [
@@ -39,9 +45,14 @@ component("metrics_reporting") {
     "//components/reporting/client:report_queue",
     "//components/reporting/proto:metric_data_proto",
     "//components/reporting/proto:record_constants",
+    "//url",
   ]
 
-  deps = [ "//components/reporting/util:status" ]
+  deps = [
+    "//components/content_settings/core/common",
+    "//components/pref_registry",
+    "//components/reporting/util:status",
+  ]
 }
 
 source_set("unit_tests") {
@@ -53,15 +64,18 @@ source_set("unit_tests") {
     "metric_rate_controller_unittest.cc",
     "metric_report_queue_unittest.cc",
     "metric_reporting_controller_unittest.cc",
+    "metric_reporting_prefs_unittest.cc",
     "one_shot_collector_unittest.cc",
     "periodic_collector_unittest.cc",
     "periodic_event_collector_unittest.cc",
+    "usage_telemetry_periodic_collector_base_unittest.cc",
   ]
   deps = [
     ":metrics_reporting",
     "//base",
     "//base/test:test_support",
     "//chromeos/ash/components/metrics_reporting/fakes:test_support",
+    "//components/content_settings/core/common",
     "//components/reporting/client:report_queue",
     "//components/reporting/client:test_support",
     "//components/reporting/proto:metric_data_proto",
@@ -69,5 +83,6 @@ source_set("unit_tests") {
     "//components/reporting/util:status",
     "//testing/gmock",
     "//testing/gtest",
+    "//url",
   ]
 }

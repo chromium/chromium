@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/reporting/metric_reporting_prefs.h"
+#include "chromeos/ash/components/metrics_reporting/metric_reporting_prefs.h"
 
 #include "base/values.h"
 #include "chromeos/ash/components/metrics_reporting/fakes/fake_reporting_settings.h"

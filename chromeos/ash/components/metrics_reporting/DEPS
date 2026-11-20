@@ -1,4 +1,5 @@
 include_rules = [
+  "+components/content_settings/core/common",
   "+components/reporting/client",
   "+components/reporting/proto",
   "+components/reporting/util",

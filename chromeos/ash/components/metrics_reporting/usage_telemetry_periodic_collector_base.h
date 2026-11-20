@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_REPORTING_USAGE_TELEMETRY_PERIODIC_COLLECTOR_BASE_H_
-#define CHROME_BROWSER_CHROMEOS_REPORTING_USAGE_TELEMETRY_PERIODIC_COLLECTOR_BASE_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_METRICS_REPORTING_USAGE_TELEMETRY_PERIODIC_COLLECTOR_BASE_H_
+#define CHROMEOS_ASH_COMPONENTS_METRICS_REPORTING_USAGE_TELEMETRY_PERIODIC_COLLECTOR_BASE_H_
 
 #include <memory>
 #include <optional>
 #include <string>
 
+#include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/metrics_reporting/collector_base.h"
@@ -26,7 +27,8 @@ namespace reporting {
 // but only control the collection rate based on the specified policy setting.
 // This can also be used to prevent data staleness because usage observers do
 // not associate telemetry data with a timestamp today.
-class UsageTelemetryPeriodicCollectorBase : public CollectorBase {
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_METRICS_REPORTING)
+    UsageTelemetryPeriodicCollectorBase : public CollectorBase {
  public:
   UsageTelemetryPeriodicCollectorBase(Sampler* sampler,
                                       MetricReportQueue* metric_report_queue,
@@ -57,4 +59,4 @@ class UsageTelemetryPeriodicCollectorBase : public CollectorBase {
 
 }  // namespace reporting
 
-#endif  // CHROME_BROWSER_CHROMEOS_REPORTING_USAGE_TELEMETRY_PERIODIC_COLLECTOR_BASE_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_METRICS_REPORTING_USAGE_TELEMETRY_PERIODIC_COLLECTOR_BASE_H_
