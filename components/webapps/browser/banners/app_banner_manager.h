@@ -155,13 +155,17 @@ class AppBannerManager final : public content::WebContentsObserver {
         WebappInstallSource install_source,
         const InstallBannerConfig& config) = 0;
 
-    // Called when the pipeline is complete - data can be saved, but pending
-    // operations should stop.
+    // Called when the pipeline is complete or restarts - data can be saved, but
+    // pending operations should stop.
     virtual void InvalidateWeakPtrsForThisNavigation() = 0;
 
     // Called when the page state needs to be reset as a new navigation has
     // begun.
     virtual void ResetCurrentPageData() = 0;
+
+    // Called when the pipeline restarts on the same page or the page changes.
+    // The delegate must drop all data of the previous pipeline run.
+    virtual void ResetCurrentPipelineData() = 0;
 
     // Called when the the installable web app check is done and the status
     // changed.
@@ -380,6 +384,10 @@ class AppBannerManager final : public content::WebContentsObserver {
   void PerformInstallableWebAppCheck();
 
   void ResetCurrentPageData();
+
+  // Drops all data of the previous pipeline run, so that a restarted pipeline
+  // does not use stale data. Called on navigation and on a recheck.
+  void ResetCurrentPipelineData();
 
   // Resets the bindings for the AppBannerManager.
   void ResetBindings();

@@ -171,7 +171,6 @@ void AppBannerManagerAndroid::OnAppDetailsRetrieved(
     return;
   }
   current_native_request_id_ = std::nullopt;
-  native_java_app_data_.Reset(japp_data);
   GURL primary_icon_url = GURL(icon_url);
 
   if (app_package.empty()) {
@@ -186,9 +185,10 @@ void AppBannerManagerAndroid::OnAppDetailsRetrieved(
       WebappsIconUtils::GetIdealHomescreenIconSizeInPx(),
       WebappsIconUtils::GetMinimumHomescreenIconSizeInPx(),
       /* maximum_icon_size_in_px= */ std::numeric_limits<int>::max(),
-      base::BindOnce(&AppBannerManagerAndroid::OnNativeAppIconFetched,
-                     GetAndroidWeakPtr(), std::move(app_package),
-                     std::move(app_title), primary_icon_url));
+      base::BindOnce(
+          &AppBannerManagerAndroid::OnNativeAppIconFetched, GetAndroidWeakPtr(),
+          base::android::ScopedJavaGlobalRef<jobject>(japp_data),
+          std::move(app_package), std::move(app_title), primary_icon_url));
   if (!icon_download_initiated) {
     std::move(native_check_callback_storage_)
         .Run(base::unexpected(InstallableStatusCode::CANNOT_DOWNLOAD_ICON));
@@ -427,7 +427,9 @@ AppBannerManager::ShowBannerUiResult AppBannerManagerAndroid::ShowBannerUi(
   }
 }
 
-void AppBannerManagerAndroid::ResetCurrentPageData() {
+void AppBannerManagerAndroid::ResetCurrentPageData() {}
+
+void AppBannerManagerAndroid::ResetCurrentPipelineData() {
   current_native_request_id_ = std::nullopt;
   ambient_badge_manager_.reset();
   native_check_callback_storage_.Reset();
@@ -638,10 +640,12 @@ AppBannerManagerAndroid::GetNativeAppFetchRequestConfig(
   return QueryNativeAppConfig(validated_url.spec(), id, referrer);
 }
 
-void AppBannerManagerAndroid::OnNativeAppIconFetched(std::string app_package,
-                                                     std::u16string app_title,
-                                                     GURL primary_icon_url,
-                                                     const SkBitmap& bitmap) {
+void AppBannerManagerAndroid::OnNativeAppIconFetched(
+    base::android::ScopedJavaGlobalRef<jobject> japp_data,
+    std::string app_package,
+    std::u16string app_title,
+    GURL primary_icon_url,
+    const SkBitmap& bitmap) {
   if (!native_check_callback_storage_) {
     return;
   }
@@ -658,6 +662,9 @@ void AppBannerManagerAndroid::OnNativeAppIconFetched(std::string app_package,
     return;
   }
 
+  // Store the Java app data only on success, so that it is set only when the
+  // pipeline is in native app mode.
+  native_java_app_data_ = std::move(japp_data);
   std::move(native_check_callback_storage_)
       .Run(base::ok(NativeAppBannerData(
           std::move(app_package), std::move(app_title),

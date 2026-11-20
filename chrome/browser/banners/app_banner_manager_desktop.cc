@@ -146,6 +146,8 @@ void AppBannerManagerDesktop::InvalidateWeakPtrsForThisNavigation() {
 
 void AppBannerManagerDesktop::ResetCurrentPageData() {}
 
+void AppBannerManagerDesktop::ResetCurrentPipelineData() {}
+
 void AppBannerManagerDesktop::InstallableWebAppStatusUpdate() {}
 
 bool AppBannerManagerDesktop::IsSupportedNonWebAppPlatform(

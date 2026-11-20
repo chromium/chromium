@@ -95,6 +95,7 @@ class AppBannerManagerDesktop : public AppBannerManager::Delegate,
   void MaybeShowAmbientBadge(const InstallBannerConfig& config) override;
   void InvalidateWeakPtrsForThisNavigation() override;
   void ResetCurrentPageData() override;
+  void ResetCurrentPipelineData() override;
   void OnMlInstallPrediction(std::string result_label) override;
   AppBannerManager::ShowBannerUiResult ShowBannerUi(
       WebappInstallSource install_source,

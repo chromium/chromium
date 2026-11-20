@@ -193,6 +193,7 @@ class AppBannerManagerAndroid : public AppBannerManager::Delegate {
       const InstallBannerConfig& config) override;
   void InvalidateWeakPtrsForThisNavigation() override;
   void ResetCurrentPageData() override;
+  void ResetCurrentPipelineData() override;
   void InstallableWebAppStatusUpdate() override;
 
   // Use as a callback to notify |this| after an install event such as a dialog
@@ -238,11 +239,13 @@ class AppBannerManagerAndroid : public AppBannerManager::Delegate {
 
   // Called when the download of a native app's icon is complete, as native
   // banners use an icon provided from the Play Store rather than the web
-  // manifest.
-  void OnNativeAppIconFetched(std::string app_package,
-                              std::u16string app_title,
-                              GURL primary_icon_url,
-                              const SkBitmap& bitmap);
+  // manifest. `japp_data` is stored only if the icon is valid.
+  void OnNativeAppIconFetched(
+      base::android::ScopedJavaGlobalRef<jobject> japp_data,
+      std::string app_package,
+      std::u16string app_title,
+      GURL primary_icon_url,
+      const SkBitmap& bitmap);
 
   std::unique_ptr<AppBannerManager> app_banner_manager_;
 

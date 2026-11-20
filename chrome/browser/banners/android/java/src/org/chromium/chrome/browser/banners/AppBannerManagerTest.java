@@ -77,6 +77,7 @@ import org.chromium.components.webapps.bottomsheet.PwaInstallBottomSheetView;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
+import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -118,6 +119,10 @@ public class AppBannerManagerTest {
 
     private static final String NATIVE_ICON_PATH = "/chrome/test/data/banners/launcher-icon-4x.png";
 
+    private static final String BAD_NATIVE_ICON_PATH = "/chrome/test/data/banners/bad_icon.png";
+
+    private static final String WEB_APP_MANIFEST = "/chrome/test/data/banners/manifest.json";
+
     private static final String NATIVE_APP_TITLE = "Mock app title";
 
     private static final String NATIVE_APP_INSTALL_TEXT = "Install this";
@@ -141,6 +146,7 @@ public class AppBannerManagerTest {
         private int mNumRetrieved;
         private Intent mInstallIntent;
         private String mReferrer;
+        private String mIconPath = NATIVE_ICON_PATH;
 
         @Override
         public void getAppDetailsAsynchronously(
@@ -153,7 +159,7 @@ public class AppBannerManagerTest {
             mAppData = new AppData(url, packageName);
             mAppData.setPackageInfo(
                     NATIVE_APP_TITLE,
-                    mTestServer.getURL(NATIVE_ICON_PATH),
+                    mTestServer.getURL(mIconPath),
                     4.5f,
                     NATIVE_APP_INSTALL_TEXT,
                     null,
@@ -402,6 +408,49 @@ public class AppBannerManagerTest {
                             activity.getModalDialogManager().getCurrentDialogForTest();
                     model.get(ModalDialogProperties.CONTROLLER).onClick(model, buttonType);
                 });
+    }
+
+    /**
+     * Loads a page with a Play app manifest, then changes the manifest link of the same page to a
+     * web app manifest. This restarts the banner pipeline on the loaded page. The web app run must
+     * not use the native app data of the first run (b/586955348).
+     */
+    private void changeManifestFromNativeAppToWebApp(int expectedNativeRunState) throws Exception {
+        ChromeActivityTestRule<? extends ChromeActivity> rule =
+                mTabbedActivityTestRule.getActivityTestRule();
+        rule.loadUrlInNewTab(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
+        navigateToUrlAndWaitForBannerManager(
+                rule,
+                WebappTestPage.getTestUrlWithManifest(mTestServer, NATIVE_APP_MANIFEST_WITH_ID));
+        waitUntilAppDetailsRetrieved(rule, 1);
+        Tab tab = rule.getActivityTab();
+        waitForAppBannerPipelineStatus(tab, expectedNativeRunState);
+        checkPromotabilityStatus(rule, false);
+
+        JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                tab.getWebContents(), "changeManifestUrl('" + WEB_APP_MANIFEST + "')");
+
+        // Wait until the web app run gets the reply to beforeinstallprompt. The reply makes the
+        // ambient badge params, which crashed when stale native app data was used.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    AppBannerManager manager = getAppBannerManager(tab.getWebContents());
+                    Criteria.checkThat(
+                            AppBannerManager.isProbablyPromotable(tab.getWebContents()),
+                            Matchers.is(true));
+                    Criteria.checkThat(
+                            manager.getPipelineStatusForTesting(),
+                            Matchers.is(AppBannerManagerState.PENDING_PROMPT));
+                    Criteria.checkThat(manager.isRunningForTesting(), Matchers.is(false));
+                });
+        // The reply made a new ambient badge manager, so `MaybeShowAmbientBadge()` ran.
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        Assert.assertNotEquals(
+                                AmbientBadgeState.INACTIVE,
+                                getAppBannerManager(tab.getWebContents())
+                                        .getBadgeStatusForTesting()));
+        Assert.assertEquals(1, mDetailsDelegate.mNumRetrieved);
     }
 
     @Test
@@ -679,6 +728,22 @@ public class AppBannerManagerTest {
 
         Assert.assertEquals(
                 0, RecordHistogram.getHistogramTotalCountForTesting(INSTALL_PATH_HISTOGRAM_NAME));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AppBanners"})
+    public void testManifestChangeFromNativeAppToWebApp() throws Exception {
+        changeManifestFromNativeAppToWebApp(AppBannerManagerState.PENDING_PROMPT);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AppBanners"})
+    public void testManifestChangeFromNativeAppWithBadIconToWebApp() throws Exception {
+        // The native app check fails because the Play app icon is not valid.
+        mDetailsDelegate.mIconPath = BAD_NATIVE_ICON_PATH;
+        changeManifestFromNativeAppToWebApp(AppBannerManagerState.COMPLETE);
     }
 
     @Test
