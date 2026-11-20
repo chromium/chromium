@@ -30,6 +30,8 @@
 #include "third_party/blink/renderer/core/dom/events/event_dispatcher.h"
 #include "third_party/blink/renderer/core/dom/events/event_path.h"
 #include "third_party/blink/renderer/core/event_interface_names.h"
+#include "third_party/blink/renderer/core/frame/dom_window.h"
+#include "third_party/blink/renderer/core/input/input_device_capabilities.h"
 
 namespace blink {
 
@@ -56,7 +58,14 @@ FocusEvent::FocusEvent(const AtomicString& type,
               base::TimeTicks::Now(),
               view,
               detail,
-              source_capabilities),
+              // InputDeviceCapabilities objects are owned per DOMWindow.
+              // Always expose the object owned by the window the event is
+              // dispatched in, so that an object from another realm is never
+              // leaked through sourceCapabilities.
+              (source_capabilities && view)
+                  ? view->GetInputDeviceCapabilities()->FiresTouchEvents(
+                        source_capabilities->firesTouchEvents())
+                  : nullptr),
       related_target_(related_target) {}
 
 FocusEvent::FocusEvent(const AtomicString& type,
