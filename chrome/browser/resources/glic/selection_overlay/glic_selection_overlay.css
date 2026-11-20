@@ -174,8 +174,8 @@
   visibility: hidden;
 }
 
-/* With a selection and the side panel closed, clicks dismiss the overlay
- * instead of drawing a region, so show the normal cursor. */
+/* With a selection and the side panel closed, another region can't be drawn,
+ * so show the normal cursor. */
 :host([has-selection]:not([side-panel-open])) #selectionOverlay {
   cursor: default;
 }

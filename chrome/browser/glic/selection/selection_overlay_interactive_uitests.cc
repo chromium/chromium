@@ -2475,6 +2475,56 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithPrompt,
                         "el.shadowRoot.querySelector('#promptInput')"));
 }
 
+// With the prompt box enabled, clicking or dragging on the scrim does not
+// dismiss the overlay; the close button still dismisses it.
+IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithPrompt,
+                       ScrimClickAndDragDoNotDismissOverlay) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
+  const DeepQuery kOverlay = {"selection-overlay-app",
+                              "glic-selection-overlay"};
+  const DeepQuery kRenderer = {"selection-overlay-app",
+                               "glic-selection-overlay",
+                               "post-selection-renderer"};
+  const DeepQuery kCloseButton = {"selection-overlay-app",
+                                  "glic-selection-overlay",
+                                  "post-selection-renderer", ".close-button"};
+
+  RunTestSequence(
+      LoadPageAndWaitForPaint(kActiveTab), Do([this]() {
+        ShowWithSelection(selection::InteractionOptions::New(
+            /*hide_handles=*/false, /*skip_intro_animation=*/true));
+      }),
+      WaitForShow(OverlayBaseController::kOverlayId),
+      InstrumentNonTabWebView(kOverlayWebContentsId,
+                              OverlayBaseController::kOverlayId),
+      WaitForJsResultAt(
+          kOverlayWebContentsId, kOverlay,
+          "el => el.isScreenshotRendered && el.selectionOverlayRect.width > 0 "
+          "&& el.selectionOverlayRect.height > 0 && el.showFloatingPrompt"),
+      WaitForJsResultAt(kOverlayWebContentsId, kRenderer,
+                        "el => el.hasSelection()"),
+      MoveMouseTo(OverlayBaseController::kOverlayId,
+                  GetPointWithOffset(300, 300)),
+      ClickMouse(),
+      CheckJsResultAt(kOverlayWebContentsId, kOverlay,
+                      "el => el.showFloatingPrompt"),
+      CheckJsResultAt(kOverlayWebContentsId, kRenderer,
+                      "el => el.selectedRegions.length === 1"),
+      CheckResult([this]() { return GetController()->state(); },
+                  OverlayBaseController::State::kOverlay),
+      DragMouseTo(OverlayBaseController::kOverlayId,
+                  GetPointWithOffset(400, 400)),
+      CheckJsResultAt(kOverlayWebContentsId, kOverlay,
+                      "el => el.showFloatingPrompt"),
+      CheckJsResultAt(kOverlayWebContentsId, kRenderer,
+                      "el => el.selectedRegions.length === 1"),
+      CheckResult([this]() { return GetController()->state(); },
+                  OverlayBaseController::State::kOverlay),
+      MoveMouseTo(kOverlayWebContentsId, kCloseButton), ClickMouse(),
+      WaitForHide(OverlayBaseController::kOverlayId));
+}
+
 IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithPrompt,
                        CornerSliderRetainsFocusOnSliderChange) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);

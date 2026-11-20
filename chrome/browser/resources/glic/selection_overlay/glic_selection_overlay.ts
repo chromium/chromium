@@ -757,8 +757,10 @@ export class GlicSelectionOverlayElement extends
   protected override handleGestureEnd() {
     if (!this.canSelectRegion_() &&
         this.draggingRespondent === DragFeature.NONE) {
-      (this.baseHandler as SelectionOverlayBaseHandlerImpl)
-          .dismissOverlay(DismissOverlayReason.kBackgroundClick);
+      if (!this.enableSelectionOverlayPromptBox) {
+        (this.baseHandler as SelectionOverlayBaseHandlerImpl)
+            .dismissOverlay(DismissOverlayReason.kBackgroundClick);
+      }
       return;
     }
 
@@ -782,14 +784,9 @@ export class GlicSelectionOverlayElement extends
         break;
       case GestureState.STARTING:
         if (this.draggingRespondent === DragFeature.NONE) {
-          // With the prompt box, a click doesn't select an area around it. A
-          // left click closes the overlay once there is a region; otherwise it
-          // does nothing.
+          // With the prompt box, a click doesn't select an area around it or
+          // dismiss the overlay.
           if (this.enableSelectionOverlayPromptBox) {
-            if (this.hasSelection_() && !this.isRightButtonGesture_) {
-              (this.baseHandler as SelectionOverlayBaseHandlerImpl)
-                  .dismissOverlay(DismissOverlayReason.kBackgroundClick);
-            }
             break;
           }
           this.baseHandler.activeRegionId = '';

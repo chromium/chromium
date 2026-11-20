@@ -52,6 +52,7 @@ suite('GlicSelectionOverlay', () => {
   // Input before the screenshot is shown is ignored, so a click can't draw a
   // region or, as here, dismiss the overlay.
   test('IgnoresClicksUntilScreenshotIsRendered', async () => {
+    overlay.enableSelectionOverlayPromptBox = false;
     overlay.activeRegionId = REGION_ID;
     await overlay.updateComplete;
     function click() {
@@ -402,14 +403,25 @@ suite('GlicSelectionOverlayClick', () => {
     assertEquals(0, handler.getCallCount('dismissOverlay'));
   });
 
-  test('ClickWithRegionDismisses', async () => {
+  test('ClickWithRegionDoesNotDismiss', async () => {
     await showOverlay(/*enablePromptBox=*/ true);
     await setRegion(REGION_ID);
+    assertTrue(overlay.showFloatingPrompt);
 
     await click(0.8, 0.8);
 
     assertEquals(0, handler.getCallCount('adjustRegion'));
-    assertEquals(1, handler.getCallCount('dismissOverlay'));
+    assertEquals(0, handler.getCallCount('dismissOverlay'));
+    assertTrue(overlay.showFloatingPrompt);
+
+    page.setSidePanelOpen(true);
+    await page.$.flushForTesting();
+    await overlay.updateComplete;
+    await click(0.8, 0.8);
+
+    assertEquals(0, handler.getCallCount('adjustRegion'));
+    assertEquals(0, handler.getCallCount('dismissOverlay'));
+    assertTrue(overlay.showFloatingPrompt);
   });
 
   test('LeftDragReplacesRegion', async () => {
@@ -477,15 +489,37 @@ suite('GlicSelectionOverlayClick', () => {
     assertTrue(event.defaultPrevented);
   });
 
-  test('DragWithRegionAndSidePanelClosedDismisses', async () => {
+  test('DragWithRegionAndSidePanelClosedDoesNotDismiss', async () => {
     await showOverlay(/*enablePromptBox=*/ true);
     await setRegion(REGION_ID);
 
     await drag(0.5, 0.5, 0.7, 0.7);
 
     assertEquals(0, handler.getCallCount('adjustRegion'));
+    assertEquals(0, handler.getCallCount('dismissOverlay'));
+    assertTrue(overlay.showFloatingPrompt);
+  });
+
+  test('ClickWithRegionWithoutPromptBoxDismisses', async () => {
+    await showOverlay(/*enablePromptBox=*/ false);
+    await setRegion(REGION_ID);
+
+    await click(0.8, 0.8);
+
+    assertEquals(0, handler.getCallCount('adjustRegion'));
     assertEquals(1, handler.getCallCount('dismissOverlay'));
   });
+
+  test(
+      'DragWithRegionAndSidePanelClosedWithoutPromptBoxDismisses', async () => {
+        await showOverlay(/*enablePromptBox=*/ false);
+        await setRegion(REGION_ID);
+
+        await drag(0.5, 0.5, 0.7, 0.7);
+
+        assertEquals(0, handler.getCallCount('adjustRegion'));
+        assertEquals(1, handler.getCallCount('dismissOverlay'));
+      });
 
   test('CursorDefaultWithRegionAndSidePanelClosed', async () => {
     await showOverlay(/*enablePromptBox=*/ true);
