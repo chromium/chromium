@@ -1,1 +1,4 @@
 file://chrome/android/OWNERS
+
+per-file profile_attributes_storage_android.*=samarchehade@google.com
+per-file java/src/org/chromium/chrome/browser/profiles/*ProfileAttributes*=samarchehade@google.com
