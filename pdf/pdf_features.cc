@@ -21,6 +21,9 @@ bool g_is_oopif_pdf_policy_enabled = true;
 // viewer.
 BASE_FEATURE(kPdfBrotliDecode, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables Fontations as the font backend for PDFium.
+BASE_FEATURE(kPdfEnableFontations, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // "Incremental loading" refers to loading the PDF as it arrives.
 // TODO(crbug.com/40123601): Remove this once incremental loading is fixed.
 BASE_FEATURE(kPdfIncrementalLoading, base::FEATURE_DISABLED_BY_DEFAULT);

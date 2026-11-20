@@ -21782,6 +21782,7 @@ from previous Chrome versions.
       label="AutofillEnableBuyNowPayLaterSyncingForKlarna:enabled"/>
   <int value="1996051411" label="DeprecateAltBasedSixPack:enabled"/>
   <int value="1996125159" label="AutoplayMutedVideos:enabled"/>
+  <int value="1996141095" label="PdfEnableFontations:disabled"/>
   <int value="1997047666" label="NTPSnippetsIncreasedVisibility:disabled"/>
   <int value="1997086324"
       label="GetUserMediaDeferredDeviceSettingsSelection:enabled"/>
@@ -22228,6 +22229,7 @@ from previous Chrome versions.
   <int value="2129929643" label="enable-use-zoom-for-dsf"/>
   <int value="2130107768" label="AIProofreadingAPI:disabled"/>
   <int value="2130479056" label="CCTResizableSideSheet:disabled"/>
+  <int value="2131536277" label="PdfEnableFontations:enabled"/>
   <int value="2132018256" label="ThumbnailPlaceholder:disabled"/>
   <int value="2132335798" label="EcheSWA:disabled"/>
   <int value="2132373345" label="MacImeLiveConversionFix:disabled"/>

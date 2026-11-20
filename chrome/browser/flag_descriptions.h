@@ -8359,6 +8359,12 @@ inline constexpr char kPdfBrotliDecodeName[] = "PDF Brotli Decode";
 inline constexpr char kPdfBrotliDecodeDescription[] =
     "Enables support for the experimental PDF 2.0 /BrotliDecode filter.";
 
+inline constexpr char kPdfEnableFontationsName[] = "Use Fontations in PDFs";
+inline constexpr char kPdfEnableFontationsDescription[] =
+    "Use Fontations as the PDF font backend, skipping portions of FreeType, "
+    "or skipping FreeType altogether when combined with "
+    "#pdf-use-skia-renderer.";
+
 inline constexpr char kPdfInk2Name[] = "PDF Ink Signatures";
 inline constexpr char kPdfInk2Description[] =
     "Enables the ability to annotate PDFs using a new ink library.";

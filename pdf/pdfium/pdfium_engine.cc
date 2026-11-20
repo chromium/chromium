@@ -1006,7 +1006,10 @@ void InitializeSDK(bool enable_v8,
   config.m_v8EmbedderSlot = gin::kEmbedderPDFium;
   config.m_RendererType =
       use_skia ? FPDF_RENDERERTYPE_SKIA : FPDF_RENDERERTYPE_AGG;
-  config.m_FontLibraryType = FPDF_FONTBACKENDTYPE_FREETYPE;
+  config.m_FontLibraryType =
+      base::FeatureList::IsEnabled(features::kPdfEnableFontations)
+          ? FPDF_FONTBACKENDTYPE_FONTATIONS
+          : FPDF_FONTBACKENDTYPE_FREETYPE;
   config.m_BrotliEnabled =
       base::FeatureList::IsEnabled(features::kPdfBrotliDecode);
 

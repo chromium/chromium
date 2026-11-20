@@ -160,7 +160,10 @@ void PDFiumTestBase::InitializePDFiumSDK() {
   config.m_pPlatform = nullptr;
   config.m_RendererType =
       GetParam() ? FPDF_RENDERERTYPE_SKIA : FPDF_RENDERERTYPE_AGG;
-  config.m_FontLibraryType = FPDF_FONTBACKENDTYPE_FREETYPE;
+  config.m_FontLibraryType =
+      base::FeatureList::IsEnabled(features::kPdfEnableFontations)
+          ? FPDF_FONTBACKENDTYPE_FONTATIONS
+          : FPDF_FONTBACKENDTYPE_FREETYPE;
   config.m_BrotliEnabled =
       base::FeatureList::IsEnabled(features::kPdfBrotliDecode);
 
