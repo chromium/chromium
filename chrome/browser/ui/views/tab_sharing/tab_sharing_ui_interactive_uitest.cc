@@ -4,6 +4,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -124,8 +125,15 @@ IN_PROC_BROWSER_TEST_F(TabSharingMultiContentsViewTest,
       SelectTab(kTabStripElementId, 2), WaitForHide(kContentsCaptureBorder));
 }
 
+// TODO(crbug.com/588176944): Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ReverseSplitWhileContentsSharing \
+  DISABLED_ReverseSplitWhileContentsSharing
+#else
+#define MAYBE_ReverseSplitWhileContentsSharing ReverseSplitWhileContentsSharing
+#endif
 IN_PROC_BROWSER_TEST_F(TabSharingMultiContentsViewTest,
-                       ReverseSplitWhileContentsSharing) {
+                       MAYBE_ReverseSplitWhileContentsSharing) {
   RunTestSequence(
       InstrumentTab(kNewTab), AddInstrumentedTab(kSecondTab, GetTestUrl()),
       SelectTab(kTabStripElementId, 0), EnterSplitView(0, 1), ShareTab(0),
