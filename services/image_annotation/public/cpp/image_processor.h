@@ -8,6 +8,7 @@
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -51,6 +52,8 @@ class ImageProcessor : public mojom::ImageProcessor {
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
 
   mojo::ReceiverSet<mojom::ImageProcessor> receivers_;
+
+  base::WeakPtrFactory<ImageProcessor> weak_factory_{this};
 
   FRIEND_TEST_ALL_PREFIXES(ImageProcessorTest, ImageContent);
 };
