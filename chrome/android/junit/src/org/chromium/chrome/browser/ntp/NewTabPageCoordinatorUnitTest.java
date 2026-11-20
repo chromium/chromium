@@ -1194,7 +1194,9 @@ public class NewTabPageCoordinatorUnitTest {
                 mActivity.getString(R.string.ntp_action_chip_add_image_accessibility),
                 optionalButton.getContentDescription());
         TextView optionalButtonText = mNewTabPageLayout.findViewById(R.id.optional_button_text);
-        assertEquals(mActivity.getString(R.string.add), optionalButtonText.getText().toString());
+        assertEquals(
+                mActivity.getString(R.string.omnibox_navattach_add_images),
+                optionalButtonText.getText().toString());
 
         // Clicking doesn't enter image generation mode.
         optionalButton.performClick();
