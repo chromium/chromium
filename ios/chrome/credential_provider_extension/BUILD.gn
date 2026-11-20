@@ -67,22 +67,48 @@ source_set("credential_provider") {
   ]
 }
 
+action("generate_localized_strings") {
+  visibility = [ ":*" ]
+  script = "generate_localized_strings.py"
+  sources = [ "strings/ios_credential_provider_extension_strings.grd" ]
+  outputs = [
+    "$target_gen_dir/credential_provider_extension_localize_strings_config.plist",
+    "$target_gen_dir/generated_localized_strings.h",
+    "$target_gen_dir/generated_localized_strings.mm",
+  ]
+  args = [
+    "--grd",
+    rebase_path(sources[0], root_build_dir),
+    "--plist-out",
+    rebase_path(outputs[0], root_build_dir),
+    "--header-out",
+    rebase_path(outputs[1], root_build_dir),
+    "--source-out",
+    rebase_path(outputs[2], root_build_dir),
+  ]
+}
+
 generate_localizable_strings("system_strings") {
   visibility = [ "//ios/chrome/credential_provider_extension/*" ]
   _packed_resources_target = ":packed_resources"
-  config_file = "credential_provider_extension_localize_strings_config.plist"
+  config_file = "$target_gen_dir/credential_provider_extension_localize_strings_config.plist"
   datapack_dir = get_label_info(_packed_resources_target, "target_gen_dir")
   packed_locales = locales_as_apple_outputs
   output_filenames = [ "Localizable.strings" ]
-  deps = [ _packed_resources_target ]
+  deps = [
+    ":generate_localized_strings",
+    _packed_resources_target,
+  ]
 }
 
 source_set("generated_strings") {
   sources = [
-    "generated_localized_strings.h",
-    "generated_localized_strings.mm",
+    "$target_gen_dir/generated_localized_strings.h",
+    "$target_gen_dir/generated_localized_strings.mm",
   ]
+  public_deps = [ ":generate_localized_strings" ]
   deps = [ ":system_strings" ]
+  frameworks = [ "Foundation.framework" ]
 }
 
 source_set("unit_tests") {
