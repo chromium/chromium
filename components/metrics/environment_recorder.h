@@ -38,9 +38,6 @@ class EnvironmentRecorder {
   // Returns true iff a system profile was successfully read.
   bool LoadEnvironmentFromPrefs(SystemProfileProto* system_profile);
 
-  // Deletes system profile data from prefs.
-  void ClearEnvironmentFromPrefs();
-
   // Stores the buildtime of the current binary and version in prefs.
   void SetBuildtimeAndVersion(int64_t buildtime, const std::string& version);
 

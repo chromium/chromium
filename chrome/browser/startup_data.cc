@@ -15,6 +15,7 @@
 #include "chrome/browser/metrics/chrome_feature_list_creator.h"
 #include "chrome/browser/prefs/profile_pref_store_manager.h"
 #include "chrome/common/channel_info.h"
+#include "components/metrics/content/gpu_metrics_provider.h"
 #include "components/metrics/cpu_metrics_provider.h"
 #include "components/metrics/delegating_provider.h"
 #include "components/metrics/early_metrics_guard.h"
@@ -109,7 +110,8 @@ void StartupData::RecordCoreSystemProfile() {
     // phase, you can check
     // `metrics::EarlyMetricsGuard::IsEarlyMetricsRecordingActive()` in your
     // ProvideSystemProfileMetrics() implementation to safely early-return.
-    metrics::EarlyMetricsGuard guard;
+    metrics::EarlyMetricsGuard guard(
+        chrome_feature_list_creator()->local_state());
     base::ScopedDisallowBlocking disallow_blocking;
 
     metrics::DelegatingProvider delegating_provider;
@@ -137,6 +139,9 @@ void StartupData::RecordCoreSystemProfile() {
     // Register InstallDateProvider.
     register_early_provider(std::make_unique<metrics::InstallDateProvider>(
         chrome_feature_list_creator()->local_state()));
+
+    // Register GPUMetricsProvider.
+    register_early_provider(std::make_unique<metrics::GPUMetricsProvider>());
 
     delegating_provider.ProvideSystemProfileMetricsWithLogCreationTime(
         base::TimeTicks(), &system_profile);

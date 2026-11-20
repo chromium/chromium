@@ -1176,6 +1176,71 @@ TEST_P(MetricsServiceTestWithStartupVisibility, InitialStabilityLogAfterCrash) {
                                      StabilityEventType::kBrowserCrash, 1);
 }
 
+TEST_F(MetricsServiceTest, InitialStabilityLogAfterCrash_NoSavedEnvironment) {
+  PrefService* local_state = GetLocalState();
+  EnableMetricsReporting();
+
+  // Write a beacon file indicating that Chrome exited uncleanly.
+  const base::FilePath beacon_file_path =
+      user_data_dir_path().Append(kCleanExitBeaconFilename);
+  ASSERT_TRUE(base::WriteFile(
+      beacon_file_path, CleanExitBeacon::CreateBeaconFileContentsForTesting(
+                            /*exited_cleanly=*/false, /*crash_streak=*/1)));
+
+  TestMetricsServiceClient client;
+  client.set_version_string("5.0.322.0-64-devel");
+
+  // Note: We intentionally do NOT save a system profile to prefs.
+  EnvironmentRecorder(local_state)
+      .SetBuildtimeAndVersion(MetricsLog::GetBuildTime(), "4.0.321.0-64-devel");
+
+  TestMetricsService service(GetMetricsStateManager(), &client, local_state);
+  service.InitializeMetricsRecordingState();
+
+  MetricsLogStore* test_log_store = service.LogStoreForTest();
+  // Since no saved environment was found, no initial stability log should be
+  // generated.
+  EXPECT_FALSE(test_log_store->has_unsent_logs());
+}
+
+TEST_F(MetricsServiceTest, InitialStabilityLogAfterCrash_VersionMismatch) {
+  PrefService* local_state = GetLocalState();
+  EnableMetricsReporting();
+
+  // Write a beacon file indicating that Chrome exited uncleanly.
+  const base::FilePath beacon_file_path =
+      user_data_dir_path().Append(kCleanExitBeaconFilename);
+  ASSERT_TRUE(base::WriteFile(
+      beacon_file_path, CleanExitBeacon::CreateBeaconFileContentsForTesting(
+                            /*exited_cleanly=*/false, /*crash_streak=*/1)));
+
+  TestMetricsServiceClient client;
+
+  // 1. Save a system profile corresponding to an older version (V1).
+  client.set_version_string("3.0.320.0-64-devel");
+  TestMetricsLog log("0a94430b-18e5-43c8-a657-580f7e855ce1", 1, &client);
+  DelegatingProvider delegating_provider;
+  TestMetricsService::RecordCurrentEnvironmentHelper(&log, local_state,
+                                                     &delegating_provider);
+
+  // 2. But the last run of the browser was actually on V2. It crashed before
+  // it could save a new system profile.
+  EnvironmentRecorder(local_state)
+      .SetBuildtimeAndVersion(MetricsLog::GetBuildTime(), "4.0.321.0-64-devel");
+
+  // 3. Now we are launching V3.
+  client.set_version_string("5.0.322.0-64-devel");
+
+  TestMetricsService service(GetMetricsStateManager(), &client, local_state);
+  service.InitializeMetricsRecordingState();
+
+  MetricsLogStore* test_log_store = service.LogStoreForTest();
+  // Since the saved system profile's version (V1) does not match the version
+  // of the previous session (V2), it should abort generating the log to avoid
+  // misattribution.
+  EXPECT_FALSE(test_log_store->has_unsent_logs());
+}
+
 #if BUILDFLAG(IS_WIN)
 TEST_F(MetricsServiceTest, SystemCrashRecordedAfterInitialization) {
   EnableMetricsReporting();

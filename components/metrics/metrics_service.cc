@@ -945,17 +945,6 @@ void MetricsService::InitializeMetricsState() {
     ClearSavedStabilityMetrics();
   }
 
-  // If the version changed, the system profile is obsolete and needs to be
-  // cleared. This is to avoid the stability data misattribution that could
-  // occur if the current version crashed before saving its own system profile.
-  // Note however this clearing occurs only after preparing the initial
-  // stability log, an operation that requires the previous version's system
-  // profile. At this point, stability metrics pertaining to the previous
-  // version have been cleared.
-  if (version_changed) {
-    recorder.ClearEnvironmentFromPrefs();
-  }
-
   // Update session ID.
   ++session_id_;
   local_state_->SetInteger(prefs::kMetricsSessionID, session_id_);
@@ -1421,8 +1410,21 @@ bool MetricsService::PrepareInitialStabilityLog(
   // Do not call OnDidCreateMetricsLog here because the stability log describes
   // stats from the _previous_ session.
 
-  if (!initial_stability_log->LoadSavedEnvironmentFromPrefs(local_state_))
+  if (!initial_stability_log->LoadSavedEnvironmentFromPrefs(local_state_)) {
     return false;
+  }
+
+  // Note: The saved system profile's version is compared against the version
+  // of the previous session. This is NOT equivalent to checking if the version
+  // changed between the previous and current session.
+  // If they do not match, it means the previous session crashed before it could
+  // save its own system profile, and the saved profile is from an even older
+  // version. Do not generate a stability log in this case to avoid attributing
+  // the previous session's crash to the wrong version.
+  if (initial_stability_log->uma_proto()->system_profile().app_version() !=
+      prefs_previous_version) {
+    return false;
+  }
 
   initial_stability_log->RecordPreviousSessionData(&delegating_provider_,
                                                    local_state_);
