@@ -4619,4 +4619,85 @@ TEST_P(WebSocketQuicStreamAdapterTest, WriteAndFinInPendingWriteCallback) {
       [&] { return !session_->connection()->connected(); }));
 }
 
+// Verifies that when QuicSpdyStream::WriteHeaders() synchronously closes the
+// QUIC stream due to a socket write error, OnClose() is deferred until after
+// WriteHeaders() returns rather than re-entering the delegate synchronously.
+TEST_P(WebSocketQuicStreamAdapterTest,
+       WriteHeadersSyncSocketErrorDefersOnClose) {
+  mock_quic_data_.AddWrite(SYNCHRONOUS,
+                           ConstructSettingsPacket(/*packet_number=*/1));
+  // Fail the headers packet write synchronously inside WriteHeaders().
+  mock_quic_data_.AddWrite(SYNCHRONOUS, ERR_CONNECTION_REFUSED);
+
+  Initialize();
+
+  QuicChromiumClientSession::Handle* session_handle = GetQuicSessionHandle();
+  ASSERT_TRUE(session_handle);
+
+  std::unique_ptr<WebSocketQuicStreamAdapter> adapter;
+  bool on_close_called = false;
+  EXPECT_CALL(mock_delegate_, OnClose(IsError(ERR_QUIC_PROTOCOL_ERROR)))
+      .WillOnce([&] {
+        adapter.reset();
+        on_close_called = true;
+      });
+
+  TestWebSocketQuicStreamAdapterCompletionCallback creation_callback;
+  adapter = session_handle->CreateWebSocketQuicStreamAdapter(
+      &mock_delegate_, creation_callback.callback(),
+      TRAFFIC_ANNOTATION_FOR_TESTS);
+  ASSERT_TRUE(adapter);
+
+  adapter->WriteHeaders(RequestHeaders(), false);
+  // OnClose() must not run synchronously while WriteHeaders() is on the stack.
+  EXPECT_FALSE(on_close_called);
+  EXPECT_TRUE(adapter);
+
+  ASSERT_TRUE(base::test::RunUntil([&] { return on_close_called; }));
+  EXPECT_FALSE(adapter);
+}
+
+// Verifies that when SetPriority() triggers a synchronous socket write error on
+// the HTTP/3 control stream, OnClose() is deferred and a subsequent
+// WriteHeaders() call handles the cleared stream safely.
+TEST_P(WebSocketQuicStreamAdapterTest,
+       SetPrioritySyncSocketErrorDefersOnClose) {
+  mock_quic_data_.AddWrite(SYNCHRONOUS,
+                           ConstructSettingsPacket(/*packet_number=*/1));
+  // Fail the PRIORITY_UPDATE packet write synchronously inside SetPriority().
+  mock_quic_data_.AddWrite(SYNCHRONOUS, ERR_CONNECTION_REFUSED);
+
+  Initialize();
+
+  QuicChromiumClientSession::Handle* session_handle = GetQuicSessionHandle();
+  ASSERT_TRUE(session_handle);
+
+  std::unique_ptr<WebSocketQuicStreamAdapter> adapter;
+  bool on_close_called = false;
+  EXPECT_CALL(mock_delegate_, OnClose(IsError(ERR_QUIC_PROTOCOL_ERROR)))
+      .WillOnce([&] {
+        adapter.reset();
+        on_close_called = true;
+      });
+
+  TestWebSocketQuicStreamAdapterCompletionCallback creation_callback;
+  adapter = session_handle->CreateWebSocketQuicStreamAdapter(
+      &mock_delegate_, creation_callback.callback(),
+      TRAFFIC_ANNOTATION_FOR_TESTS);
+  ASSERT_TRUE(adapter);
+
+  adapter->SetPriority(quic::QuicStreamPriority(
+      quic::HttpStreamPriority{ConvertRequestPriorityToQuicPriority(MEDIUM)}));
+  EXPECT_FALSE(on_close_called);
+  ASSERT_TRUE(adapter);
+
+  // Stream was cleared by the synchronous close; WriteHeaders() returns 0
+  // without dereferencing a null stream pointer.
+  EXPECT_EQ(0u, adapter->WriteHeaders(RequestHeaders(), false));
+  EXPECT_FALSE(on_close_called);
+
+  ASSERT_TRUE(base::test::RunUntil([&] { return on_close_called; }));
+  EXPECT_FALSE(adapter);
+}
+
 }  // namespace net::test

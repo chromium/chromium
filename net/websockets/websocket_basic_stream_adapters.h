@@ -285,9 +285,10 @@ class NET_EXPORT_PRIVATE WebSocketQuicStreamAdapter
   int read_length_ = 0u;
   int write_length_ = 0u;
 
-  // Set when we're in a read or write context because |read_callback_| and
-  // |write_callback_| can end up deleting |this|, therefore if this is set
-  // then the callback should be deferred.
+  // Set when we're in a stream operation context (Read, Write, WriteHeaders,
+  // or SetPriority) because callbacks or Delegate::OnClose() can end up
+  // deleting |this|, therefore if this is set then OnClose() should be
+  // deferred.
   bool in_callback_disallowed_scope_ = false;
 
   CompletionOnceCallback read_callback_;

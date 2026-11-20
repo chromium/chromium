@@ -142,16 +142,15 @@ int WebSocketHttp3HandshakeStream::SendRequest(
 
   connect_delegate_->OnStartOpeningHandshake(std::move(request));
 
-  callback_ = std::move(callback);
-
   std::unique_ptr<WebSocketQuicStreamAdapter> stream_adapter =
       session_->CreateWebSocketQuicStreamAdapter(
           this,
           base::BindOnce(
               &WebSocketHttp3HandshakeStream::ReceiveAdapterAndStartRequest,
-              base::Unretained(this)),
+              weak_ptr_factory_.GetWeakPtr()),
           NetworkTrafficAnnotationTag(request_info_->traffic_annotation));
   if (!stream_adapter) {
+    callback_ = std::move(callback);
     return ERR_IO_PENDING;
   }
   ReceiveAdapterAndStartRequest(std::move(stream_adapter));
@@ -388,6 +387,9 @@ void WebSocketHttp3HandshakeStream::ReceiveAdapterAndStartRequest(
   ApplyPriorityToStream();
   // WriteHeaders returns synchronously.
   stream_adapter_->WriteHeaders(std::move(http3_request_headers_), false);
+  if (callback_) {
+    OnHeadersSent();
+  }
 }
 
 int WebSocketHttp3HandshakeStream::ValidateResponse() {

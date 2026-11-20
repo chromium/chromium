@@ -8,6 +8,7 @@
 #include <ostream>
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
@@ -368,12 +369,17 @@ WebSocketQuicStreamAdapter::~WebSocketQuicStreamAdapter() {
 size_t WebSocketQuicStreamAdapter::WriteHeaders(
     quiche::HttpHeaderBlock header_block,
     bool fin) {
+  base::AutoReset disallow_callback(&in_callback_disallowed_scope_, true);
+  if (!websocket_quic_spdy_stream_) {
+    return 0;
+  }
   return websocket_quic_spdy_stream_->WriteHeaders(std::move(header_block), fin,
                                                    nullptr);
 }
 
 void WebSocketQuicStreamAdapter::SetPriority(
     const quic::QuicStreamPriority& priority) {
+  base::AutoReset disallow_callback(&in_callback_disallowed_scope_, true);
   if (websocket_quic_spdy_stream_) {
     websocket_quic_spdy_stream_->SetPriority(priority);
   }
@@ -561,8 +567,8 @@ void WebSocketQuicStreamAdapter::OnClose(int status) {
       weak_factory_.GetWeakPtr();
 
   if (in_callback_disallowed_scope_) {
-    // We don't want to call the delegate while we're in Write or Read, simply
-    // re-queue to handle delegate tear-down later.
+    // We don't want to call the delegate while we're in a stream operation,
+    // simply re-queue to handle delegate tear-down later.
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&WebSocketQuicStreamAdapter::OnClose,
                                   std::move(weak_this), status));
