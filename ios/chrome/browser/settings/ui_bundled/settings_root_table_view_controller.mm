@@ -60,7 +60,6 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
 @implementation SettingsRootTableViewController
 
 @synthesize sceneHandler = _sceneHandler;
-@synthesize browserHandler = _browserHandler;
 @synthesize settingsHandler = _settingsHandler;
 @synthesize snackbarHandler = _snackbarHandler;
 
@@ -139,7 +138,6 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
 - (void)configureHandlersForRootViewController:
     (id<SettingsRootViewControlling>)controller {
   controller.sceneHandler = self.sceneHandler;
-  controller.browserHandler = self.browserHandler;
   controller.settingsHandler = self.settingsHandler;
   controller.snackbarHandler = self.snackbarHandler;
 }

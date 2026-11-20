@@ -43,7 +43,6 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
-#import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
@@ -616,7 +615,6 @@ typedef NS_ENUM(NSUInteger, AccountMenuReauthAction) {
     (id<SettingsRootViewControlling>)controller {
   CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
   controller.sceneHandler = HandlerForProtocol(dispatcher, SceneCommands);
-  controller.browserHandler = HandlerForProtocol(dispatcher, BrowserCommands);
   controller.settingsHandler = HandlerForProtocol(dispatcher, SettingsCommands);
   controller.snackbarHandler = HandlerForProtocol(dispatcher, SnackbarCommands);
 }

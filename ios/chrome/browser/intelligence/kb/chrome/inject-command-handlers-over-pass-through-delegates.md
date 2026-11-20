@@ -22,9 +22,9 @@ Specifically:
    signal child coordinator dismissal, completion, or teardown (e.g.,
    `<Feature>CoordinatorDelegate`) when an equivalent command method exists or
    can be routed via a command protocol (such as `SceneCommands`,
-   `BrowserCommands`, `PageInfoCommands`, or `QuickDeleteCommands`). Restrict
-   coordinator delegates strictly to requesting teardown or returning modal
-   results to parent coordinators when no standard command protocol applies.
+   `PageInfoCommands`, or `QuickDeleteCommands`). Restrict coordinator delegates
+   strictly to requesting teardown or returning modal results to parent
+   coordinators when no standard command protocol applies.
 2. Coordinators should invoke UI commands directly via
    `HandlerForProtocol(self.browser->GetCommandDispatcher(), CommandProtocol)`
    rather than defining relay delegates. Child coordinators are never handed

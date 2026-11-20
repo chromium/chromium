@@ -13,7 +13,6 @@ source_set("commands") {
     "autofill_commands.h",
     "bookmarks_commands.h",
     "bring_android_tabs_commands.h",
-    "browser_commands.h",
     "browser_coordinator_commands.h",
     "cobalt_commands.h",
     "collaboration_group_commands.h",

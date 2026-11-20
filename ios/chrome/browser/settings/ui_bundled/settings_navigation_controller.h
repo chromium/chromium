@@ -13,7 +13,6 @@
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 
 class Browser;
-@protocol BrowserCommands;
 enum class DefaultBrowserSettingsPageSource;
 @protocol SettingsRootViewControlling;
 @protocol SnackbarCommands;

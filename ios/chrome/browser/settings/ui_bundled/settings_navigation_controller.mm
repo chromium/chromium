@@ -65,7 +65,6 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/picture_in_picture_commands.h"
 #import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
@@ -89,7 +88,6 @@ namespace {
 void ConfigureHandlers(id<SettingsRootViewControlling> controller,
                        CommandDispatcher* dispatcher) {
   controller.sceneHandler = HandlerForProtocol(dispatcher, SceneCommands);
-  controller.browserHandler = HandlerForProtocol(dispatcher, BrowserCommands);
   controller.settingsHandler = HandlerForProtocol(dispatcher, SettingsCommands);
   controller.snackbarHandler = HandlerForProtocol(dispatcher, SnackbarCommands);
 }

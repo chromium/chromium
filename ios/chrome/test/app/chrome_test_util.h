@@ -6,7 +6,6 @@
 #define IOS_CHROME_TEST_APP_CHROME_TEST_UTIL_H_
 
 #import "base/ios/block_types.h"
-#import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 
 class Browser;
@@ -56,7 +55,6 @@ UIViewController* GetActiveViewController();
 
 // Returns the dispatcher for the active Browser.
 id<SceneCommands,
-   BrowserCommands,
    BrowserCoordinatorCommands,
    UnitConversionCommands,
    CountryCodePickerCommands,

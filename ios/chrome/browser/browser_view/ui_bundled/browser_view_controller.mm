@@ -2554,15 +2554,6 @@ bool IsFullscreenNextIAEnabled() {
                                                     completion:completion];
 }
 
-#pragma mark - BrowserCommands
-
-- (void)dismissSoftKeyboard {
-  DCHECK(self.visibilityState !=
-             BrowserViewVisibilityState::kNotInViewHierarchy ||
-         self.dismissingModal);
-  [self.viewForCurrentWebState endEditing:NO];
-}
-
 #pragma mark - TabConsumer (Public)
 
 - (void)resetTab {

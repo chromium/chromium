@@ -16,7 +16,6 @@
 @protocol AdaptiveToolbarMenusProvider;
 @class AdaptiveToolbarViewController;
 @protocol AdaptiveToolbarViewControllerDelegate;
-@protocol BrowserCommands;
 @protocol BrowserCoordinatorCommands;
 @class LayoutGuideCenter;
 @protocol PopupMenuCommands;

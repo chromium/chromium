@@ -18,7 +18,6 @@
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_credit_card_table_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
@@ -58,8 +57,6 @@
 
   CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
   _viewController.sceneHandler = HandlerForProtocol(dispatcher, SceneCommands);
-  _viewController.browserHandler =
-      HandlerForProtocol(dispatcher, BrowserCommands);
   _viewController.settingsHandler =
       HandlerForProtocol(dispatcher, SettingsCommands);
   _viewController.snackbarHandler =
@@ -112,8 +109,6 @@
           personalDataManager:personalDataManager];
   CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
   editController.sceneHandler = HandlerForProtocol(dispatcher, SceneCommands);
-  editController.browserHandler =
-      HandlerForProtocol(dispatcher, BrowserCommands);
   editController.settingsHandler =
       HandlerForProtocol(dispatcher, SettingsCommands);
   editController.snackbarHandler =

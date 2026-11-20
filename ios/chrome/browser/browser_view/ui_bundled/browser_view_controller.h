@@ -21,7 +21,6 @@
 #import "ios/chrome/browser/omnibox/ui/popup/omnibox_popup_presenter.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/lens_overlay_state_notifier.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/shared/ui/util/ui_view_controller_with_display_tracing.h"
 #import "ios/chrome/browser/toolbar/ui/toolbar_height_delegate.h"
 #import "ios/chrome/browser/web/model/web_state_container_view_provider.h"
@@ -84,8 +83,7 @@ struct BrowserViewControllerDependencies {
 // The top-level view controller for the browser UI. Manages other controllers
 // which implement the interface.
 @interface BrowserViewController
-    : UIViewControllerWithDisplayTracing <BrowserCommands,
-                                          BrowserLayoutConsumer,
+    : UIViewControllerWithDisplayTracing <BrowserLayoutConsumer,
                                           ContextualSheetPresenter,
                                           IncognitoReauthConsumer,
                                           LensPresentationDelegate,

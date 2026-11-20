@@ -7,7 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-@protocol BrowserCommands;
 @protocol SceneCommands;
 @protocol SettingsCommands;
 @protocol SnackbarCommands;
@@ -16,9 +15,6 @@
 @protocol SettingsRootViewControlling
 
 @property(nonatomic, weak) id<SceneCommands> sceneHandler;
-
-// BrowserCommands handler.
-@property(nonatomic, weak) id<BrowserCommands> browserHandler;
 
 // SettingsCommands handler.
 @property(nonatomic, weak) id<SettingsCommands> settingsHandler;

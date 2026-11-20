@@ -36,7 +36,6 @@
 #import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/password_manager_reauthentication_delegate.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
@@ -285,8 +284,6 @@ enum class YourSavedInfoDataCategory {
   CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
   profileController.sceneHandler =
       HandlerForProtocol(dispatcher, SceneCommands);
-  profileController.browserHandler =
-      HandlerForProtocol(dispatcher, BrowserCommands);
   profileController.settingsHandler =
       HandlerForProtocol(dispatcher, SettingsCommands);
   profileController.snackbarHandler =

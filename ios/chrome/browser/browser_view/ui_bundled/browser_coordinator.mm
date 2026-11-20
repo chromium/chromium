@@ -917,9 +917,6 @@ constexpr CGFloat kSnackbarFloatingBottomMargin = 10.0;
   [self.contextMenuProvider stop];
   self.contextMenuProvider = nil;
 
-  // TODO(crbug.com/40256480): Remove when BVC will no longer handle commands.
-  [self.dispatcher stopDispatchingToTarget:_viewController];
-
   // Stop layout coordinator first to follow the reverse order of start calls.
   [_browserLayoutCoordinator stop];
   _browserLayoutCoordinator = nil;
@@ -1176,8 +1173,6 @@ constexpr CGFloat kSnackbarFloatingBottomMargin = 10.0;
   _NTPCoordinator.baseViewController = viewController;
   _bubblePresenterCoordinator.baseViewController = viewController;
 
-  [_dispatcher startDispatchingToTarget:viewController
-                            forProtocol:@protocol(BrowserCommands)];
   viewController.layoutState = self.browser->GetSceneState().layoutState;
   viewController.lensOverlayStateNotifier =
       self.browser->GetSceneState().lensOverlayStateNotifier;

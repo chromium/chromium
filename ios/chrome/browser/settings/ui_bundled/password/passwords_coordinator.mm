@@ -52,7 +52,6 @@
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
@@ -195,8 +194,6 @@ constexpr NSInteger kLevelUpPasswordCheckupWalkthroughTotalPages = 3;
   CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
   passwordsViewController.sceneHandler =
       HandlerForProtocol(dispatcher, SceneCommands);
-  passwordsViewController.browserHandler =
-      HandlerForProtocol(dispatcher, BrowserCommands);
   passwordsViewController.settingsHandler =
       HandlerForProtocol(dispatcher, SettingsCommands);
   passwordsViewController.snackbarHandler =

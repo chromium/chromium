@@ -510,7 +510,7 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
   [self onSettingsDismissed];
 }
 
-- (id<SceneCommands, BrowserCommands>)handlerForSettings {
+- (id<SceneCommands>)handlerForSettings {
   NOTREACHED();
 }
 

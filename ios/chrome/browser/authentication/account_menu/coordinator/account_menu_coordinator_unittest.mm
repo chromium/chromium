@@ -21,7 +21,6 @@
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
-#import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
@@ -103,8 +102,6 @@ class AccountMenuCoordinatorTest : public PlatformTest {
         OCMStrictProtocolMock(@protocol(HelpCommands));
     mock_settings_commands_handler_ =
         OCMStrictProtocolMock(@protocol(SettingsCommands));
-    mock_browser_commands_handler_ =
-        OCMStrictProtocolMock(@protocol(BrowserCommands));
     mock_browser_coordinator_commands_handler_ =
         OCMStrictProtocolMock(@protocol(BrowserCoordinatorCommands));
     CommandDispatcher* dispatcher = browser->GetCommandDispatcher();
@@ -116,8 +113,6 @@ class AccountMenuCoordinatorTest : public PlatformTest {
                              forProtocol:@protocol(HelpCommands)];
     [dispatcher startDispatchingToTarget:mock_settings_commands_handler_
                              forProtocol:@protocol(SettingsCommands)];
-    [dispatcher startDispatchingToTarget:mock_browser_commands_handler_
-                             forProtocol:@protocol(BrowserCommands)];
     [dispatcher
         startDispatchingToTarget:mock_browser_coordinator_commands_handler_
                      forProtocol:@protocol(BrowserCoordinatorCommands)];
@@ -169,7 +164,6 @@ class AccountMenuCoordinatorTest : public PlatformTest {
     EXPECT_OCMOCK_VERIFY((id)mediator_);
     EXPECT_OCMOCK_VERIFY((id)view_controller_);
     EXPECT_OCMOCK_VERIFY((id)mock_scene_handler_);
-    EXPECT_OCMOCK_VERIFY((id)mock_browser_commands_handler_);
     EXPECT_OCMOCK_VERIFY((id)mock_browser_coordinator_commands_handler_);
     EXPECT_OCMOCK_VERIFY((id)mock_settings_commands_handler_);
     EXPECT_OCMOCK_VERIFY((id)mock_snackbar_commands_handler_);
@@ -190,7 +184,6 @@ class AccountMenuCoordinatorTest : public PlatformTest {
   id<SnackbarCommands> mock_snackbar_commands_handler_;
   id<HelpCommands> mock_help_commands_handler_;
   id<SettingsCommands> mock_settings_commands_handler_;
-  id<BrowserCommands> mock_browser_commands_handler_;
   FakeSceneState* scene_state_;
   id<BrowserCoordinatorCommands> mock_browser_coordinator_commands_handler_;
   AccountMenuViewController* view_controller_;

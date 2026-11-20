@@ -18,7 +18,6 @@
 #import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/password_manager_reauthentication_delegate.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
-#import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
@@ -62,11 +61,6 @@ class AutofillAndPasswordsCoordinatorTest : public PlatformTest {
     [browser_->GetCommandDispatcher()
         startDispatchingToTarget:mock_scene_commands_
                      forProtocol:@protocol(SceneCommands)];
-
-    mock_browser_commands_ = OCMProtocolMock(@protocol(BrowserCommands));
-    [browser_->GetCommandDispatcher()
-        startDispatchingToTarget:mock_browser_commands_
-                     forProtocol:@protocol(BrowserCommands)];
 
     mock_settings_commands_ = OCMProtocolMock(@protocol(SettingsCommands));
     [browser_->GetCommandDispatcher()
@@ -131,7 +125,6 @@ class AutofillAndPasswordsCoordinatorTest : public PlatformTest {
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   id<SceneCommands> mock_scene_commands_;
-  id<BrowserCommands> mock_browser_commands_;
   id<SettingsCommands> mock_settings_commands_;
   id<SnackbarCommands> mock_snackbar_commands_;
   ScopedKeyWindow scoped_window_;

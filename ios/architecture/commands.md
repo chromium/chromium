@@ -428,7 +428,7 @@ ______________________________________________________________________
   ```objectivec
   // Correct:
   @property(nonatomic, weak) id<PageInfoCommands> pageInfoHandler;
-  @property(nonatomic, weak) id<BrowserCommands> browserHandler;
+  @property(nonatomic, weak) id<SnackbarCommands> snackbarHandler;
 
   // Incorrect:
   @property(nonatomic, weak) id<PageInfoCommands> pageInfoCommandsHandler;
@@ -458,13 +458,13 @@ handler for each command protocol an object requires:
 ```objectivec
 // Correct:
 @property(nonatomic, weak) id<PageInfoCommands> pageInfoHandler;
-@property(nonatomic, weak) id<BrowserCommands> browserHandler;
+@property(nonatomic, weak) id<SnackbarCommands> snackbarHandler;
 
 // Incorrect (combining protocols in a single handler):
-@property(nonatomic, weak) id<PageInfoCommands, BrowserCommands> handler;
+@property(nonatomic, weak) id<PageInfoCommands, SnackbarCommands> handler;
 
 // Incorrect (inheriting from another command protocol):
-@protocol PageInfoCommands <BrowserCommands>
+@protocol PageInfoCommands <SnackbarCommands>
 @end
 ```
 
