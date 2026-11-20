@@ -62,7 +62,7 @@ TEST(NamesMapTest, Set) {
            "foo",
            "foo ",
            "foo,",
-           "foo ,"
+           "foo ,",
            // Plus invalid
            ":,foo",
            ":bar,foo",
