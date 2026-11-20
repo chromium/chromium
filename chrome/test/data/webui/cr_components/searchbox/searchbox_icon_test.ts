@@ -76,7 +76,39 @@ suite('CrComponentsSearchboxIconTest', () => {
           createSuggestTemplateInfo({typeIconBadge: BadgeType.kDot}),
     });
     await microtasksFinished();
-    assertTrue(!!icon.shadowRoot.querySelector('#badge.dot'));
+    const badge = icon.shadowRoot.querySelector('#badge.dot');
+    assertTrue(!!badge);
+
+    const dotSizePx = 6;
+    const defaultInsetPx = 6;
+    const customIconSize = '20px';
+    const customInsetPx = 5;
+    const subpixelTolerancePx = 0.5;
+    for (const [iconSize, inset] of [
+             [null, defaultInsetPx],
+             [customIconSize, customInsetPx],
+    ] as const) {
+      if (iconSize) {
+        icon.style.setProperty(
+            '--cr-searchbox-results-search-icon-size', iconSize);
+      }
+      const badgeRect = badge.getBoundingClientRect();
+      const containerRect = icon.$.container.getBoundingClientRect();
+      assertTrue(
+          Math.abs(badgeRect.width - dotSizePx) < subpixelTolerancePx,
+          `width: ${badgeRect.width}`);
+      assertTrue(
+          Math.abs(badgeRect.height - dotSizePx) < subpixelTolerancePx,
+          `height: ${badgeRect.height}`);
+      assertTrue(
+          Math.abs(badgeRect.top - (containerRect.top + inset)) <
+              subpixelTolerancePx,
+          `top: ${badgeRect.top} vs ${containerRect.top + inset}`);
+      assertTrue(
+          Math.abs(badgeRect.right - (containerRect.right - inset)) <
+              subpixelTolerancePx,
+          `right: ${badgeRect.right} vs ${containerRect.right - inset}`);
+    }
 
     // The searchbox input icon never shows a badge.
     icon.inSearchbox = true;

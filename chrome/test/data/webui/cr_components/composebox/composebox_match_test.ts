@@ -381,18 +381,41 @@ suite('ComposeboxMatch', () => {
     assertTrue(!!badge);
     assertTrue(!!icon);
 
-    // The badge stays in the top-right corner of the icon when an embedder
-    // makes the icon container wider than the icon.
-    matchElement.$.iconContainer.style.width = '32px';
-    const badgeRect = badge.getBoundingClientRect();
-    const iconRect = icon.getBoundingClientRect();
-    // Allow sub-pixel rounding under fractional device scale factors.
-    assertTrue(
-        Math.abs(badgeRect.top - iconRect.top) < 0.5,
-        `top: ${badgeRect.top} vs ${iconRect.top}`);
-    assertTrue(
-        Math.abs(badgeRect.right - iconRect.right) < 0.5,
-        `right: ${badgeRect.right} vs ${iconRect.right}`);
+    // The badge stays anchored outside the top-right corner of the icon
+    // when an embedder changes container width or icon size.
+    const dotSizePx = 6;
+    const defaultOutsetPx = 1;
+    const customIconSize = '16px';
+    const customOutsetPx = 2;
+    const wideContainerWidth = '32px';
+    const subpixelTolerancePx = 0.5;
+    matchElement.$.iconContainer.style.width = wideContainerWidth;
+    for (const [iconSize, outset] of [
+             [null, defaultOutsetPx],
+             [customIconSize, customOutsetPx],
+    ] as const) {
+      if (iconSize) {
+        matchElement.style.setProperty(
+            '--cr-composebox-match-icon-size', iconSize);
+      }
+      const badgeRect = badge.getBoundingClientRect();
+      const iconRect = icon.getBoundingClientRect();
+      // Allow sub-pixel rounding under fractional device scale factors.
+      assertTrue(
+          Math.abs(badgeRect.width - dotSizePx) < subpixelTolerancePx,
+          `width: ${badgeRect.width}`);
+      assertTrue(
+          Math.abs(badgeRect.height - dotSizePx) < subpixelTolerancePx,
+          `height: ${badgeRect.height}`);
+      assertTrue(
+          Math.abs(badgeRect.top - (iconRect.top - outset)) <
+              subpixelTolerancePx,
+          `top: ${badgeRect.top} vs ${iconRect.top - outset}`);
+      assertTrue(
+          Math.abs(badgeRect.right - (iconRect.right + outset)) <
+              subpixelTolerancePx,
+          `right: ${badgeRect.right} vs ${iconRect.right + outset}`);
+    }
   });
 
   test(

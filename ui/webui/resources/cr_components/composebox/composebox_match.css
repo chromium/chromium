@@ -125,22 +125,26 @@
   width: var(--cr-composebox-match-icon-size, 20px);
 }
 
-/* A badge in the top-right corner of the icon. It is anchored to the icon
-   because embedders change the padding and width of the icon container. */
+/* Anchors badges to the icon because embedders change the padding and width
+   of the icon container. */
 :host([base-layout='text']) #badge {
-  inset-inline-end: anchor(end);
   position: absolute;
   position-anchor: --match-icon;
-  top: anchor(top);
 }
 
-/* The dot uses the URL color so that it follows dark mode and themes. */
+/* The 6x6 dot places its inner edge 1/4 of the icon size from center so its
+   gap from the glyph stays consistent at both 20px (-1px) and 16px (-2px).
+   The dot uses the URL color so that it follows dark mode and themes. */
 :host([base-layout='text']) #badge.dot {
   -webkit-mask-image: url(chrome://resources/cr_components/searchbox/icons/dot.svg);
   -webkit-mask-size: contain;
   background-color: var(--color-searchbox-results-url);
-  height: 4px;
-  width: 4px;
+  height: 6px;
+  inset-inline-end: calc(
+      anchor(end) + var(--cr-composebox-match-icon-size, 20px) / 4 - 6px);
+  top: calc(
+      anchor(top) + var(--cr-composebox-match-icon-size, 20px) / 4 - 6px);
+  width: 6px;
 }
 
 :host([base-layout='text']:is(:focus-visible, [selected])) #badge.dot {
