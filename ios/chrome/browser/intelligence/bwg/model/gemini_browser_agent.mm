@@ -31,12 +31,9 @@
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller_observer.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/scoped_fullscreen_disabler.h"
-#import "ios/chrome/browser/intelligence/actor/model/actor_service.h"
-#import "ios/chrome/browser/intelligence/actor/model/actor_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_container_mediator.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_session_metrics_manager.h"
-#import "ios/chrome/browser/intelligence/bwg/model/gemini_actuation_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_camera_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_capabilities_manager.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_capabilities_manager_factory.h"
@@ -1172,16 +1169,6 @@ void GeminiBrowserAgent::OnViewStateChanged(
     ResetFullscreenDisabler();
   } else if (view_state == ios::provider::GeminiViewState::kHidden) {
     ResetFullscreenDisabler();
-
-    // TODO(crbug.com/517583120): Remove when the temporary actuation prototype
-    // is cleaned up.
-    if (IsGeminiActorEnabled()) {
-      if (actor::ActorService* actor_service =
-              actor::ActorServiceFactory::GetForProfile(
-                  browser_->GetProfile())) {
-        actor_service->StopAllTasks();
-      }
-    }
   }
 }
 
@@ -1369,15 +1356,6 @@ void GeminiBrowserAgent::DismissFloaty() {
 
   CHECK(gemini_container_mediator_, base::NotFatalUntil::M155);
   [gemini_container_mediator_ onFloatyDismiss];
-
-  // TODO(crbug.com/517583120): Remove when the temporary actuation prototype is
-  // cleaned up.
-  if (IsGeminiActorEnabled()) {
-    if (actor::ActorService* actor_service =
-            actor::ActorServiceFactory::GetForProfile(browser_->GetProfile())) {
-      actor_service->StopAllTasks();
-    }
-  }
 
   [session_metrics_manager_
       sessionDismissedWithViewState:last_shown_view_state_];

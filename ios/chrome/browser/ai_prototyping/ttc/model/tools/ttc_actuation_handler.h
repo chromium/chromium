@@ -90,6 +90,9 @@ class TtcActuationHandler {
   void StopTask(actor::ActorTaskStoppedReason reason =
                     actor::ActorTaskStoppedReason::kTaskComplete);
 
+  // Returns the ID of the active Actor task owned by this handler, if any.
+  actor::ActorTaskId task_id_for_testing() const { return task_id_; }
+
  private:
   // Lazily creates `task_id_` in `actor_service_` and attaches
   // `intervention_delegate_` if no task is currently active. Returns `true` if

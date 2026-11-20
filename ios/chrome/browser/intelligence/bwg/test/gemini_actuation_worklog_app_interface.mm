@@ -4,8 +4,11 @@
 
 #import "ios/chrome/browser/intelligence/bwg/test/gemini_actuation_worklog_app_interface.h"
 
+#import <vector>
+
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
+#import "base/no_destructor.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/test/ios/wait_util.h"
@@ -24,6 +27,16 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
+
+namespace {
+
+// Returns the list of task IDs created by this app interface.
+std::vector<actor::ActorTaskId>& GetCreatedTaskIds() {
+  static base::NoDestructor<std::vector<actor::ActorTaskId>> task_ids;
+  return *task_ids;
+}
+
+}  // namespace
 
 @implementation GeminiActuationWorklogAppInterface
 
@@ -62,8 +75,11 @@
 
   if (actor::ActorService* service =
           actor::ActorServiceFactory::GetForProfile(profile)) {
-    service->StopAllTasks();
+    for (actor::ActorTaskId task_id : GetCreatedTaskIds()) {
+      service->StopTask(task_id, actor::ActorTaskStoppedReason::kStoppedByUser);
+    }
   }
+  GetCreatedTaskIds().clear();
 }
 
 + (void)stopObservingWorklogTask {
@@ -117,6 +133,7 @@
       actor::TaskSourceInfo(actor::TaskSourceInfo::Client::kTest,
                             /*id=*/std::nullopt),
       /*allow_incognito_web_states=*/false);
+  GetCreatedTaskIds().push_back(taskID);
 
   GeminiActuationWorklogTestHelper* worklogHelper =
       [GeminiActuationWorklogAppInterface sharedWorklogHelper];

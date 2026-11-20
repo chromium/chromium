@@ -306,7 +306,8 @@ TEST_F(TtcActuationHandlerTest,
 
   // Stops the handler's task externally and creates an unrelated active task so
   // `GetActiveTaskState()` remains non-null.
-  actor_service->StopAllTasks();
+  actor_service->StopTask(handler->task_id_for_testing(),
+                          actor::ActorTaskStoppedReason::kStoppedByUser);
   actor::ActorTaskId other_task_id = actor_service->CreateTask(
       "Other Task",
       actor::TaskSourceInfo(actor::TaskSourceInfo::Client::kGlic,
@@ -323,7 +324,8 @@ TEST_F(TtcActuationHandlerTest,
   EXPECT_TRUE(second_future.Get().Ok());
 
   handler->Disconnect();
-  actor_service->StopAllTasks();
+  actor_service->StopTask(other_task_id,
+                          actor::ActorTaskStoppedReason::kStoppedByUser);
 }
 
 // Tests that stopping the task externally in `ActorService` while an actuation
@@ -340,7 +342,8 @@ TEST_F(TtcActuationHandlerTest, TestExternalStopCancelsActiveActuation) {
   handler->DispatchActuationRequest(request_result.value(), GetActiveWebState(),
                                     browser_.get(), future.GetCallback());
 
-  actor_service->StopAllTasks();
+  actor_service->StopTask(handler->task_id_for_testing(),
+                          actor::ActorTaskStoppedReason::kStoppedByUser);
 
   const ttc::ToolResponse& response = future.Get();
   ASSERT_FALSE(response.Ok());

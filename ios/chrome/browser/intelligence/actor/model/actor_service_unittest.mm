@@ -1314,22 +1314,6 @@ TEST_F(ActorServiceTest, TaskScopedObserverAddedAfterStopReceivesStop) {
   EXPECT_FALSE(HasTask(service, task_id));
 }
 
-// Tests that `StopAllTasks` only stops the tasks active when it is called.
-TEST_F(ActorServiceTest, StopAllTasksDoesNotStopTasksCreatedAfter) {
-  ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
-  ASSERT_NE(nullptr, service);
-
-  ActorTaskId stopped_task_id = CreateTask(service);
-  service->StopAllTasks();
-  ActorTaskId new_task_id = CreateTask(service);
-
-  // `StopAllTasks` enqueues its stops in a single turn, so a stray stop of the
-  // new task would have run by the time the first task is gone.
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return !HasTask(service, stopped_task_id); }));
-  EXPECT_TRUE(HasTask(service, new_task_id));
-}
-
 // Tests that actions enqueued after a stop are rejected with `kTaskWentAway`.
 TEST_F(ActorServiceTest, PerformActionsAfterStopTaskRepliesTaskWentAway) {
   ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
@@ -1649,28 +1633,6 @@ TEST_F(ActorServiceTest, ShutdownDropsPendingLifecycleNotifications) {
 
   EXPECT_EQ(0, observer.startedCount);
   EXPECT_EQ(0, observer.stoppedCount);
-}
-
-// Tests that stopping all tasks posts one lifecycle stop per task, none of
-// which is delivered synchronously.
-TEST_F(ActorServiceTest, StopAllTasksPostsOneStopPerTask) {
-  ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
-  ASSERT_NE(nullptr, service);
-
-  FakeActorTaskLifecycleObserver* observer =
-      [[FakeActorTaskLifecycleObserver alloc] init];
-  service->AddTaskLifecycleObserver(observer);
-  CreateTask(service, "First Task");
-  ActorTaskId last_task_id = CreateTask(service, "Second Task");
-  FlushCurrentSequence();
-
-  service->StopAllTasks();
-  EXPECT_EQ(0, observer.stoppedCount);
-  FlushCurrentSequence();
-  EXPECT_EQ(2, observer.stoppedCount);
-  EXPECT_EQ(last_task_id, observer.lastTaskID);
-
-  service->RemoveTaskLifecycleObserver(observer);
 }
 
 // Test that `GetWeakTaskBackgroundWorkers()` returns one weak pointer per
@@ -2303,7 +2265,8 @@ TEST_F(ActorServiceTest, StopTaskOnStoppedTaskIsNoOp) {
   };
   ASSERT_TRUE(service->AddTaskUpdatesObserver(first_task_id, observer));
 
-  service->StopAllTasks();
+  service->StopTask(first_task_id, ActorTaskStoppedReason::kStoppedByUser);
+  service->StopTask(second_task_id, ActorTaskStoppedReason::kStoppedByUser);
   RunAlreadyPostedTasks();
   EXPECT_EQ(std::nullopt, service->GetActiveTaskState());
 

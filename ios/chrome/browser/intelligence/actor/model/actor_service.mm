@@ -264,15 +264,6 @@ void ActorService::StopTask(ActorTaskId task_id,
   EnqueueCommand(&ActorService::DoStopTask, task_id, reason);
 }
 
-// TODO(crbug.com/517583120): Remove when the temporary actuation prototype is
-// cleaned up.
-void ActorService::StopAllTasks() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (const auto& [task_id, task] : active_tasks_) {
-    StopTask(task_id, ActorTaskStoppedReason::kStoppedByUser);
-  }
-}
-
 bool ActorService::AddTaskUpdatesObserver(
     ActorTaskId task_id,
     id<ActorTaskUpdatesObserver> observer) {

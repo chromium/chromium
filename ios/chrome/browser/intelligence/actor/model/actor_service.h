@@ -56,9 +56,8 @@ struct TaskSourceInfo;
 // from anywhere on the service's sequence, including from observer and
 // delegate callbacks:
 // - Commands (`PerformActions`, `PauseTask`, `ResumeTask`, `InterruptTask`,
-//   `StopTask`, `StopAllTasks`) are enqueued and return immediately. They run
-//   in call order, each as its own task, so task logic never runs on the
-//   caller's stack.
+//   `StopTask`) are enqueued and return immediately. They run in call order,
+//   each as its own task, so task logic never runs on the caller's stack.
 // - Task setup (`CreateTask`, `AddControlledWebState`) applies immediately, so
 //   that the task is usable as soon as the call returns.
 // - Replies and notifications are posted, in the order of the effects that
@@ -155,12 +154,6 @@ class ActorService : public KeyedService {
   // until the command runs. A stop still queued at `Shutdown()` never runs: the
   // task is then destroyed without `ActorTask::Stop()` nor a stop notification.
   void StopTask(ActorTaskId task_id, ActorTaskStoppedReason reason);
-
-  // TODO(crbug.com/517583120): Remove when the temporary actuation prototype is
-  // cleaned up.
-  // Enqueues a stop of the tasks that are active when this is called. Tasks
-  // created afterwards are not stopped.
-  void StopAllTasks();
 
   // Returns the aggregated journal for this service.
   AggregatedJournal* GetJournal() {

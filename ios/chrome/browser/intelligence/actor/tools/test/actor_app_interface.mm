@@ -4,7 +4,10 @@
 
 #import "ios/chrome/browser/intelligence/actor/tools/test/actor_app_interface.h"
 
+#import <vector>
+
 #import "base/functional/bind.h"
+#import "base/no_destructor.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
@@ -45,6 +48,12 @@ namespace {
 constexpr base::TimeDelta kApcFetchingTimeout = base::Seconds(10);
 
 constexpr autofill::FormRendererId kSimulatedFormRendererId(12345);
+
+// Returns the list of task IDs created by this app interface.
+std::vector<actor::ActorTaskId>& GetCreatedTaskIds() {
+  static base::NoDestructor<std::vector<actor::ActorTaskId>> task_ids;
+  return *task_ids;
+}
 
 // Returns the intervention delegate for tests. Retained statically because
 // both `ActorTask` and `ActorTaskFormFillingHandler` hold a weak reference
@@ -120,6 +129,7 @@ autofill::AutofillDriverIOS* GetMainFrameAutofillDriver() {
       actor::TaskSourceInfo(actor::TaskSourceInfo::Client::kTest,
                             /*id=*/std::nullopt),
       /*allow_incognito_web_states=*/false);
+  GetCreatedTaskIds().push_back(task_id);
   service->SetTaskInterventionDelegate(task_id, GetTestInterventionDelegate());
 
   std::vector<optimization_guide::proto::Action> actions = {action};
@@ -172,6 +182,7 @@ autofill::AutofillDriverIOS* GetMainFrameAutofillDriver() {
       actor::TaskSourceInfo(actor::TaskSourceInfo::Client::kTest,
                             /*id=*/std::nullopt),
       /*allow_incognito_web_states=*/false);
+  GetCreatedTaskIds().push_back(task_id);
   service->SetTaskInterventionDelegate(task_id, GetTestInterventionDelegate());
 
   std::vector<optimization_guide::proto::Action> actions;
@@ -366,8 +377,11 @@ autofill::AutofillDriverIOS* GetMainFrameAutofillDriver() {
   }
   if (actor::ActorService* service =
           actor::ActorServiceFactory::GetForProfile(profile)) {
-    service->StopAllTasks();
+    for (actor::ActorTaskId task_id : GetCreatedTaskIds()) {
+      service->StopTask(task_id, actor::ActorTaskStoppedReason::kStoppedByUser);
+    }
   }
+  GetCreatedTaskIds().clear();
 }
 
 + (int32_t)currentWindowID {
