@@ -6945,6 +6945,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="6157" label="MixedContentInSharedWorker"/>
   <int value="6158" label="SplitTabRequested"/>
   <int value="6159" label="WindowFeaturesAttribute"/>
+  <int value="6160" label="LanguageModel_Create_ThinkingEffort"/>
+  <int value="6161" label="LanguageModel_Prompt_ThinkingEffort"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

@@ -3736,4 +3736,53 @@ TEST_F(AILanguageModelThinkingModeTest, ThoughtsCountTowardMaxOutputTokens) {
   }
 }
 
+TEST_F(AILanguageModelThinkingModeTest, ThinkingEffortTelemetry) {
+  fake_broker_->settings().set_execute_result({"hi"});
+  base::HistogramTester histogram_tester;
+
+  // Default session: `Prompt()` records `kNone`; `Append()` and rejected
+  // prompts record nothing.
+  auto default_session = CreateSession();
+  Prompt(*default_session, MakeInput("foo"));
+  Append(*default_session, MakeInput("bar"));
+  {
+    AITestUtils::TestStreamingResponder rejected_responder;
+    default_session->Prompt(MakeInput(std::string(kTestMaxTokens + 1, 'a')),
+                            /*constraint=*/nullptr, ThinkingEffort::kLow,
+                            rejected_responder.BindRemote());
+    EXPECT_FALSE(rejected_responder.WaitForCompletion());
+    EXPECT_EQ(rejected_responder.error_status(),
+              blink::mojom::ModelStreamingResponseStatus::kErrorInputTooLarge);
+  }
+
+  // Session created with `kMedium`: `Prompt()` without override records
+  // `kMedium`, overrides record the overridden effort, `Fork()` preserves
+  // `kMedium`, and context overflow replay does not double count.
+  auto thinking_session = CreateSession(
+      MakeThinkingOptions(ThinkingEffort::kMedium, /*include_thoughts=*/false));
+  Prompt(*thinking_session, MakeInput("foo"));
+  PromptAndGetThoughts(*thinking_session, ThinkingEffort::kHigh);
+  PromptAndGetThoughts(*thinking_session, ThinkingEffort::kNone);
+  auto cloned_session = Fork(*thinking_session);
+  Prompt(*cloned_session, MakeInput("baz"));
+
+  AITestUtils::TestStreamingResponder overflow_responder;
+  thinking_session->Prompt(MakeInput(std::string(kTestMaxTokens - 20, 'a')),
+                           /*constraint=*/nullptr, ThinkingEffort::kLow,
+                           overflow_responder.BindRemote());
+  overflow_responder.WaitForContextOverflow();
+  EXPECT_TRUE(overflow_responder.WaitForCompletion());
+
+  histogram_tester.ExpectBucketCount("AI.Session.LanguageModel.ThinkingEffort",
+                                     ThinkingEffort::kNone, 2);
+  histogram_tester.ExpectBucketCount("AI.Session.LanguageModel.ThinkingEffort",
+                                     ThinkingEffort::kLow, 1);
+  histogram_tester.ExpectBucketCount("AI.Session.LanguageModel.ThinkingEffort",
+                                     ThinkingEffort::kMedium, 2);
+  histogram_tester.ExpectBucketCount("AI.Session.LanguageModel.ThinkingEffort",
+                                     ThinkingEffort::kHigh, 1);
+  histogram_tester.ExpectTotalCount("AI.Session.LanguageModel.ThinkingEffort",
+                                    6);
+}
+
 }  // namespace

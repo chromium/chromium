@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "base/notreached.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -34,7 +35,9 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_language_model_message_value.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_language_model_prompt.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_languagemodelmessagecontentsequence_string.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
@@ -1005,6 +1008,115 @@ TEST_F(LanguageModelTest, WarnsOnceWhenThinkingUsesNonBalancedSampling) {
     ASSERT_TRUE(session);
     EXPECT_EQ(count_thinking_warnings(), 3u);
   }
+
+  scope.GetExecutionContext()->GetBrowserInterfaceBroker().SetBinderForTesting(
+      mojom::blink::AIManager::Name_, {});
+}
+
+TEST_F(LanguageModelTest, ThinkingEffortUseCounterAndMetrics) {
+  ScopedAIPromptAPIForTest scoped_prompt_api(true);
+  ScopedAIPromptAPIThinkingModeForTest scoped_thinking(true);
+  V8TestingScope scope;
+  ScriptState* script_state = scope.GetScriptState();
+  Document& document = scope.GetDocument();
+  MockAIManager mock_ai_manager;
+  scope.GetExecutionContext()->GetBrowserInterfaceBroker().SetBinderForTesting(
+      mojom::blink::AIManager::Name_,
+      BindRepeating(&MockAIManager::Bind, Unretained(&mock_ai_manager)));
+  base::HistogramTester histogram_tester;
+
+  auto TakeUseCounted = [&](WebFeature feature) {
+    bool is_counted = document.IsUseCounted(feature);
+    document.ClearUseCounterForTesting(feature);
+    return is_counted;
+  };
+  auto AwaitFulfilled = [&](auto promise) {
+    ScriptPromiseTester tester(script_state, std::move(promise));
+    tester.WaitUntilSettled();
+    EXPECT_TRUE(tester.IsFulfilled());
+  };
+
+  // Omitted `thinkingEffort` records neither UMA nor UseCounters.
+  AwaitFulfilled(LanguageModel::availability(
+      script_state, LanguageModelCreateCoreOptions::Create(),
+      ASSERT_NO_EXCEPTION));
+  AwaitFulfilled(LanguageModel::create(
+      script_state, LanguageModelCreateOptions::Create(), ASSERT_NO_EXCEPTION));
+  EXPECT_FALSE(
+      TakeUseCounted(WebFeature::kLanguageModel_Create_ThinkingEffort));
+  EXPECT_FALSE(
+      TakeUseCounted(WebFeature::kLanguageModel_Prompt_ThinkingEffort));
+
+  // `availability({ thinkingEffort })` records UMA only, not UseCounters.
+  auto* avail_options = LanguageModelCreateCoreOptions::Create();
+  avail_options->setThinkingEffort(V8LanguageModelThinkingEffort::Enum::kLow);
+  AwaitFulfilled(LanguageModel::availability(script_state, avail_options,
+                                             ASSERT_NO_EXCEPTION));
+  EXPECT_FALSE(
+      TakeUseCounted(WebFeature::kLanguageModel_Create_ThinkingEffort));
+  EXPECT_FALSE(
+      TakeUseCounted(WebFeature::kLanguageModel_Prompt_ThinkingEffort));
+  histogram_tester.ExpectUniqueSample(
+      "AI.LanguageModel.APIUsage.availability.ThinkingEffort",
+      mojom::blink::AILanguageModelThinkingEffort::kLow, 1);
+
+  // `create({ thinkingEffort })` records both UMA and the create UseCounter,
+  // including explicit `"none"`.
+  for (auto effort : {V8LanguageModelThinkingEffort::Enum::kNone,
+                      V8LanguageModelThinkingEffort::Enum::kHigh}) {
+    auto* create_options = LanguageModelCreateOptions::Create();
+    create_options->setThinkingEffort(effort);
+    AwaitFulfilled(LanguageModel::create(script_state, create_options,
+                                         ASSERT_NO_EXCEPTION));
+    EXPECT_TRUE(
+        TakeUseCounted(WebFeature::kLanguageModel_Create_ThinkingEffort));
+    EXPECT_FALSE(
+        TakeUseCounted(WebFeature::kLanguageModel_Prompt_ThinkingEffort));
+  }
+  histogram_tester.ExpectBucketCount(
+      "AI.LanguageModel.APIUsage.create.ThinkingEffort",
+      mojom::blink::AILanguageModelThinkingEffort::kNone, 1);
+  histogram_tester.ExpectBucketCount(
+      "AI.LanguageModel.APIUsage.create.ThinkingEffort",
+      mojom::blink::AILanguageModelThinkingEffort::kHigh, 1);
+  histogram_tester.ExpectTotalCount(
+      "AI.LanguageModel.APIUsage.create.ThinkingEffort", 2);
+
+  // `prompt()` and `promptStreaming()` count only the prompt UseCounter when
+  // `thinkingEffort` is set.
+  LanguageModel* session = CreateLanguageModel(scope.GetExecutionContext());
+  AwaitFulfilled(session->prompt(script_state, CreateStringPrompt("hi"),
+                                 LanguageModelPromptOptions::Create(),
+                                 ASSERT_NO_EXCEPTION));
+  EXPECT_FALSE(
+      TakeUseCounted(WebFeature::kLanguageModel_Prompt_ThinkingEffort));
+
+  auto* prompt_options = LanguageModelPromptOptions::Create();
+  prompt_options->setThinkingEffort(
+      V8LanguageModelThinkingEffort::Enum::kMedium);
+  AwaitFulfilled(session->prompt(script_state, CreateStringPrompt("hi"),
+                                 prompt_options, ASSERT_NO_EXCEPTION));
+  EXPECT_TRUE(TakeUseCounted(WebFeature::kLanguageModel_Prompt_ThinkingEffort));
+  EXPECT_FALSE(
+      TakeUseCounted(WebFeature::kLanguageModel_Create_ThinkingEffort));
+
+  EXPECT_TRUE(session->promptStreaming(script_state, CreateStringPrompt("hi"),
+                                       LanguageModelPromptOptions::Create(),
+                                       ASSERT_NO_EXCEPTION));
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return mock_remote_->call_count_ == 3; }));
+  EXPECT_FALSE(
+      TakeUseCounted(WebFeature::kLanguageModel_Prompt_ThinkingEffort));
+
+  auto* stream_options = LanguageModelPromptOptions::Create();
+  stream_options->setThinkingEffort(V8LanguageModelThinkingEffort::Enum::kLow);
+  EXPECT_TRUE(session->promptStreaming(script_state, CreateStringPrompt("hi"),
+                                       stream_options, ASSERT_NO_EXCEPTION));
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return mock_remote_->call_count_ == 4; }));
+  EXPECT_TRUE(TakeUseCounted(WebFeature::kLanguageModel_Prompt_ThinkingEffort));
+  EXPECT_FALSE(
+      TakeUseCounted(WebFeature::kLanguageModel_Create_ThinkingEffort));
 
   scope.GetExecutionContext()->GetBrowserInterfaceBroker().SetBinderForTesting(
       mojom::blink::AIManager::Name_, {});

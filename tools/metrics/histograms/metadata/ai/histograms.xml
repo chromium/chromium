@@ -172,6 +172,21 @@ chromium-metrics-reviews@google.com.
   <token key="LanguageModelFunctionName" variants="LanguageModelFunctionName"/>
 </histogram>
 
+<histogram
+    name="AI.LanguageModel.APIUsage.{LanguageModelFunctionName}.ThinkingEffort"
+    enum="AILanguageModelThinkingEffort" expires_after="2027-09-20">
+  <owner>iahouma@google.com</owner>
+  <owner>ohjerry@google.com</owner>
+  <owner>chrome-chia-dev@google.com</owner>
+  <owner>src/chrome/browser/ai/OWNERS</owner>
+  <summary>
+    Records the `thinkingEffort` option passed to `LanguageModel.create()` or
+    `LanguageModel.availability()`. Recorded only when `thinkingEffort` is
+    explicitly specified.
+  </summary>
+  <token key="LanguageModelFunctionName" variants="LanguageModelFunctionName"/>
+</histogram>
+
 <histogram name="AI.LanguageModel.APIUsage.{LanguageModelFunctionName}.TopK"
     units="tokens" expires_after="2027-03-16">
   <owner>iahouma@google.com</owner>
@@ -352,6 +367,19 @@ chromium-metrics-reviews@google.com.
   <summary>
     Whether tokenization succeeded for the Gemma semantic embedder. Recorded
     when tokenization completes.
+  </summary>
+</histogram>
+
+<histogram name="AI.Session.LanguageModel.ThinkingEffort"
+    enum="AILanguageModelThinkingEffort" expires_after="2027-09-20">
+  <owner>iahouma@google.com</owner>
+  <owner>ohjerry@google.com</owner>
+  <owner>chrome-chia-dev@google.com</owner>
+  <owner>src/chrome/browser/ai/OWNERS</owner>
+  <summary>
+    Records the effective thinking effort tier (from per prompt options or the
+    session default) each time a `LanguageModel` session starts generating a
+    prompt response (not recorded for `append()` calls).
   </summary>
 </histogram>
 

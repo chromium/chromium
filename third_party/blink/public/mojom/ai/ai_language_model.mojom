@@ -27,12 +27,16 @@ struct AILanguageModelSamplingParams {
 
 // Categorical thinking effort levels for reasoning control.
 // See LanguageModelThinkingEffort in IDL.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(AILanguageModelThinkingEffort)
 enum AILanguageModelThinkingEffort {
   kNone = 0,
   kLow = 1,
   kMedium = 2,
   kHigh = 3,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/ai/enums.xml:AILanguageModelThinkingEffort)
 
 // This struct contains the information describing the default and max
 // sampling params for session creation.

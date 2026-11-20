@@ -40,6 +40,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/ai/ai_language_model.mojom:AILanguageModelSamplingMode) -->
 
+<!-- LINT.IfChange(AILanguageModelThinkingEffort) -->
+
+<enum name="AILanguageModelThinkingEffort">
+  <int value="0" label="None"/>
+  <int value="1" label="Low"/>
+  <int value="2" label="Medium"/>
+  <int value="3" label="High"/>
+</enum>
+
+<!-- LINT.ThenChange(//third_party/blink/public/mojom/ai/ai_language_model.mojom:AILanguageModelThinkingEffort) -->
+
 <!-- LINT.IfChange(AIModelStreamingResponseStatus) -->
 
 <enum name="AIModelStreamingResponseStatus">

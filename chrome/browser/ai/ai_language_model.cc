@@ -445,6 +445,8 @@ class AILanguageModel::PromptState
         base::BindOnce(&PromptState::OnDisconnect, base::Unretained(this)));
 
     if (mode_ == Mode::kAppendAndGenerate) {
+      base::UmaHistogramEnumeration("AI.Session.LanguageModel.ThinkingEffort",
+                                    thinking_effort_);
       const uint32_t thinking_token_budget = ResolveThinkingBudget(
           thinking_effort_,
           std::min(available_context_tokens, max_output_tokens_), model_client);

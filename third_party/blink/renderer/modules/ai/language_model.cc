@@ -178,6 +178,11 @@ void LogCreateOptionMetrics(
         base::StrCat({prefix, ".SamplingMode"}),
         ConvertSamplingModeToMojo(create_options.samplingMode()));
   }
+  if (create_options.hasThinkingEffort()) {
+    base::UmaHistogramEnumeration(
+        base::StrCat({prefix, ".ThinkingEffort"}),
+        ConvertThinkingEffortToMojo(create_options.thinkingEffort()));
+  }
   // Logs metrics for a list of expected inputs or outputs.
   auto log_expected_metrics =
       [&](const std::string& expected_type,
@@ -573,6 +578,10 @@ ScriptPromise<LanguageModel> LanguageModel::create(
     UseCounter::Count(execution_context,
                       WebFeature::kLanguageModel_Create_TopK);
   }
+  if (options->hasThinkingEffort()) {
+    UseCounter::Count(execution_context,
+                      WebFeature::kLanguageModel_Create_ThinkingEffort);
+  }
   HeapMojoRemote<mojom::blink::AIManager>& ai_manager_remote =
       AIInterfaceProxy::GetAIManagerRemote(execution_context);
   if (!ai_manager_remote.is_connected()) {
@@ -860,6 +869,10 @@ void LanguageModel::ExecutePrompt(
   if (constraint) {
     UseCounter::Count(execution_context,
                       WebFeature::kLanguageModel_Prompt_ResponseConstraint);
+  }
+  if (thinking_effort.has_value()) {
+    UseCounter::Count(execution_context,
+                      WebFeature::kLanguageModel_Prompt_ThinkingEffort);
   }
   if (!language_model_remote_) {
     if (std::holds_alternative<ScriptPromiseResolverBase*>(
