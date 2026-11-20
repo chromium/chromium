@@ -4,16 +4,16 @@
 
 #include "third_party/blink/renderer/platform/image-decoders/webp/webp_image_decoder.h"
 
-#include <string.h>
-
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
+#include "skia/ext/skia_utils_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
@@ -121,8 +121,9 @@ bool IsSimpleLossyWebPImage(const sk_sp<const SkData>& blob) {
     return false;
   }
   DCHECK(blob->bytes());
-  return !UNSAFE_TODO(memcmp(blob->bytes(), "RIFF", 4)) &&
-         !UNSAFE_TODO(memcmp(blob->bytes() + 8UL, "WEBPVP8 ", 8));
+  const auto bytes = skia::as_byte_span(*blob);
+  return bytes.first<4>() == base::byte_span_from_cstring("RIFF") &&
+         bytes.subspan<8, 8>() == base::byte_span_from_cstring("WEBPVP8 ");
 }
 
 // This method parses |blob|'s header and emits a UMA with the file format, as
