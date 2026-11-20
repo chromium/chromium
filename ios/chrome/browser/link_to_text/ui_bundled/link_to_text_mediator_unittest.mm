@@ -4,6 +4,10 @@
 
 #import "ios/chrome/browser/link_to_text/ui_bundled/link_to_text_mediator.h"
 
+#import <memory>
+#import <optional>
+#import <utility>
+
 #import "base/memory/raw_ptr.h"
 #import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
@@ -11,6 +15,7 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/time/time.h"
+#import "base/types/optional_util.h"
 #import "base/values.h"
 #import "components/shared_highlighting/core/common/shared_highlighting_metrics.h"
 #import "components/shared_highlighting/core/common/text_fragment.h"
@@ -68,17 +73,19 @@ class FakeJSFeature : public LinkToTextJavaScriptFeature {
       web::WebState* web_state,
       base::OnceCallback<void(LinkToTextResponse*)> callback) override {
     std::move(callback).Run([LinkToTextResponse
-        linkToTextResponseWithValue:response_
+        linkToTextResponseWithValue:base::OptionalToPtr(response_)
                            webState:web_state
                             latency:latency_]);
   }
 
   void set_latency(base::TimeDelta latency) { latency_ = latency; }
-  void set_response(base::Value* response) { response_ = response; }
+  void set_response(std::optional<base::Value> response) {
+    response_ = std::move(response);
+  }
 
  private:
   base::TimeDelta latency_;
-  raw_ptr<base::Value, DanglingUntriaged> response_;
+  std::optional<base::Value> response_;
 };
 
 }  // namespace
@@ -136,8 +143,9 @@ class LinkToTextMediatorTest : public PlatformTest {
     mediator_.activityServiceHandler = mocked_activity_service_commands_;
   }
 
-  void SetLinkToTextResponse(base::Value* value, CGFloat zoom_scale) {
-    fake_js_feature_.set_response(value);
+  void SetLinkToTextResponse(std::optional<base::Value> value,
+                             CGFloat zoom_scale) {
+    fake_js_feature_.set_response(std::move(value));
 
     fake_scroll_view_.contentInset =
         UIEdgeInsetsMake(kFakeTopInset, kFakeLeftInset, 0, 0);
@@ -149,9 +157,8 @@ class LinkToTextMediatorTest : public PlatformTest {
     web_state_->SetView(fake_view_);
   }
 
-  std::unique_ptr<base::Value> CreateSuccessResponse(
-      const std::string& selected_text,
-      CGRect selection_rect) {
+  base::Value CreateSuccessResponse(const std::string& selected_text,
+                                    CGRect selection_rect) {
     base::DictValue rect_value;
     rect_value.Set("x", selection_rect.origin.x);
     rect_value.Set("y", selection_rect.origin.y);
@@ -164,18 +171,17 @@ class LinkToTextMediatorTest : public PlatformTest {
     response_value.Set("fragment", TextFragment(kTestTextFragment).ToValue());
     response_value.Set("selectedText", selected_text);
     response_value.Set("selectionRect", std::move(rect_value));
-    return std::make_unique<base::Value>(std::move(response_value));
+    return base::Value(std::move(response_value));
   }
 
   void SetCanonicalUrl(base::Value* value, const std::string& canonical_url) {
     value->GetDict().Set("canonicalUrl", canonical_url);
   }
 
-  std::unique_ptr<base::Value> CreateErrorResponse(
-      LinkGenerationOutcome outcome) {
+  base::Value CreateErrorResponse(LinkGenerationOutcome outcome) {
     base::DictValue response_value;
     response_value.Set("status", static_cast<double>(outcome));
-    return std::make_unique<base::Value>(std::move(response_value));
+    return base::Value(std::move(response_value));
   }
 
   void ValidateLinkGeneratedSuccessUkm() {
@@ -234,9 +240,8 @@ TEST_F(LinkToTextMediatorTest, HandleLinkToTextSelectionTriggersCommandNoZoom) {
   CGRect selection_rect = CGRectMake(100, 150, 250, 250);
   CGRect expected_client_rect = CGRectMake(150, 250, 250 + kCaretWidth, 250);
 
-  std::unique_ptr<base::Value> fake_response =
-      CreateSuccessResponse(kTestQuote, selection_rect);
-  SetLinkToTextResponse(fake_response.get(), zoom);
+  SetLinkToTextResponse(CreateSuccessResponse(kTestQuote, selection_rect),
+                        zoom);
 
   __block BOOL callback_invoked = NO;
 
@@ -280,9 +285,8 @@ TEST_F(LinkToTextMediatorTest,
   CGRect selection_rect = CGRectMake(100, 150, 250, 250);
   CGRect expected_client_rect = CGRectMake(200, 325, 375 + kCaretWidth, 375);
 
-  std::unique_ptr<base::Value> fake_response =
-      CreateSuccessResponse(kTestQuote, selection_rect);
-  SetLinkToTextResponse(fake_response.get(), zoom);
+  SetLinkToTextResponse(CreateSuccessResponse(kTestQuote, selection_rect),
+                        zoom);
 
   __block BOOL callback_invoked = NO;
 
@@ -321,9 +325,9 @@ TEST_F(LinkToTextMediatorTest,
 TEST_F(LinkToTextMediatorTest, LinkGenerationError) {
   base::HistogramTester histogram_tester;
 
-  std::unique_ptr<base::Value> error_response =
-      CreateErrorResponse(LinkGenerationOutcome::kInvalidSelection);
-  SetLinkToTextResponse(error_response.get(), /*zoom=*/1.0);
+  SetLinkToTextResponse(
+      CreateErrorResponse(LinkGenerationOutcome::kInvalidSelection),
+      /*zoom=*/1.0);
 
   __block BOOL callback_invoked = NO;
   [[[mocked_alert_delegate_ expect] andDo:^(NSInvocation*) {
@@ -356,8 +360,7 @@ TEST_F(LinkToTextMediatorTest, LinkGenerationError) {
 TEST_F(LinkToTextMediatorTest, EmptyResponseLinkGenerationError) {
   base::HistogramTester histogram_tester;
 
-  std::unique_ptr<base::Value> empty_response = std::make_unique<base::Value>();
-  SetLinkToTextResponse(empty_response.get(), /*zoom=*/1.0);
+  SetLinkToTextResponse(base::Value(), /*zoom=*/1.0);
 
   __block BOOL callback_invoked = NO;
   [[[mocked_alert_delegate_ expect] andDo:^(NSInvocation*) {
@@ -390,10 +393,9 @@ TEST_F(LinkToTextMediatorTest, EmptyResponseLinkGenerationError) {
 TEST_F(LinkToTextMediatorTest, BadResponseLinkGenerationError) {
   base::HistogramTester histogram_tester;
 
-  std::unique_ptr<base::Value> malformed_response =
-      std::make_unique<base::Value>(base::Value::Type::DICT);
-  malformed_response->GetDict().Set("somethingElse", "abc");
-  SetLinkToTextResponse(malformed_response.get(), /*zoom=*/1.0);
+  base::Value malformed_response(base::Value::Type::DICT);
+  malformed_response.GetDict().Set("somethingElse", "abc");
+  SetLinkToTextResponse(std::move(malformed_response), /*zoom=*/1.0);
 
   __block BOOL callback_invoked = NO;
   [[[mocked_alert_delegate_ expect] andDo:^(NSInvocation*) {
@@ -426,9 +428,7 @@ TEST_F(LinkToTextMediatorTest, BadResponseLinkGenerationError) {
 TEST_F(LinkToTextMediatorTest, StringResponseLinkGenerationError) {
   base::HistogramTester histogram_tester;
 
-  std::unique_ptr<base::Value> string_response =
-      std::make_unique<base::Value>("someValue");
-  SetLinkToTextResponse(string_response.get(), /*zoom=*/1.0);
+  SetLinkToTextResponse(base::Value("someValue"), /*zoom=*/1.0);
 
   __block BOOL callback_invoked = NO;
   [[[mocked_alert_delegate_ expect] andDo:^(NSInvocation*) {
@@ -461,9 +461,8 @@ TEST_F(LinkToTextMediatorTest, StringResponseLinkGenerationError) {
 TEST_F(LinkToTextMediatorTest, LinkGenerationSuccessButNoPayload) {
   base::HistogramTester histogram_tester;
 
-  std::unique_ptr<base::Value> success_response =
-      CreateErrorResponse(LinkGenerationOutcome::kSuccess);
-  SetLinkToTextResponse(success_response.get(), /*zoom=*/1.0);
+  SetLinkToTextResponse(CreateErrorResponse(LinkGenerationOutcome::kSuccess),
+                        /*zoom=*/1.0);
 
   __block BOOL callback_invoked = NO;
   [[[mocked_alert_delegate_ expect] andDo:^(NSInvocation*) {
@@ -496,7 +495,7 @@ TEST_F(LinkToTextMediatorTest, LinkGenerationSuccessButNoPayload) {
 TEST_F(LinkToTextMediatorTest, LinkGenerationTimeout) {
   base::HistogramTester histogram_tester;
 
-  SetLinkToTextResponse(nullptr, /*zoom=*/0);
+  SetLinkToTextResponse(std::nullopt, /*zoom=*/0);
   fake_js_feature_.set_latency(link_to_text::kLinkGenerationTimeout +
                                base::Milliseconds(10));
 
@@ -532,11 +531,10 @@ TEST_F(LinkToTextMediatorTest, WithHttpsAndCanonicalUrl) {
   CGFloat zoom = 1;
   CGRect selection_rect = CGRectMake(100, 150, 250, 250);
 
-  std::unique_ptr<base::Value> fake_response =
-      CreateSuccessResponse(kTestQuote, selection_rect);
+  base::Value fake_response = CreateSuccessResponse(kTestQuote, selection_rect);
   std::string canonical_url = "https://www.example.com/";
-  SetCanonicalUrl(fake_response.get(), canonical_url);
-  SetLinkToTextResponse(fake_response.get(), zoom);
+  SetCanonicalUrl(&fake_response, canonical_url);
+  SetLinkToTextResponse(std::move(fake_response), zoom);
 
   __block BOOL callback_invoked = NO;
 
@@ -570,11 +568,10 @@ TEST_F(LinkToTextMediatorTest, NotHttpsAndCanonicalUrl) {
   GURL new_base_url("http://chromium.org");
   web_state_->SetCurrentURL(new_base_url);
 
-  std::unique_ptr<base::Value> fake_response =
-      CreateSuccessResponse(kTestQuote, selection_rect);
+  base::Value fake_response = CreateSuccessResponse(kTestQuote, selection_rect);
   std::string canonical_url = "https://www.example.com/";
-  SetCanonicalUrl(fake_response.get(), canonical_url);
-  SetLinkToTextResponse(fake_response.get(), zoom);
+  SetCanonicalUrl(&fake_response, canonical_url);
+  SetLinkToTextResponse(std::move(fake_response), zoom);
 
   __block BOOL callback_invoked = NO;
 
