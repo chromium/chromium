@@ -8,6 +8,7 @@
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/update_client/update_client_errors.h"
 
 namespace optimization_guide {
 
@@ -103,8 +104,9 @@ void OverrideManifestAssetManagerDelegate::RequestUpdate(
     bool is_background) {
   if (asset_manager_) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&AssetManager::OnUpdateRequestComplete,
-                                  asset_manager_, public_key_hex));
+        FROM_HERE,
+        base::BindOnce(&AssetManager::OnUpdateRequestComplete, asset_manager_,
+                       public_key_hex, update_client::Error::NONE));
   }
 }
 

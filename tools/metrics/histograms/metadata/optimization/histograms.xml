@@ -1481,6 +1481,26 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="OptimizationGuide.ModelExecution.OnDeviceModelOnDemandUpdateResult.{BaseModel}"
+    enum="UpdateClientErrors" expires_after="2027-04-18">
+  <owner>zekunjiang@google.com</owner>
+  <owner>wittman@chromium.org</owner>
+  <summary>
+    Records the update_client::Error reported asynchronously to the
+    OnDemandUpdater::OnDemandUpdate() completion callback (or by delegate
+    pre-checks before calling OnDemandUpdate()) for {BaseModel}. Recorded when
+    an on-demand update request initiated by ManifestAssetManager finishes or is
+    rejected pre-flight (e.g. NONE, UPDATE_IN_PROGRESS, UPDATE_DISABLED, or
+    RETRY_LATER). Note that NONE only indicates that the update task completed
+    without a pre-flight or update-check error; per-component download, unpack,
+    or install failures during the task still report NONE here and are recorded
+    in OnDeviceModelUpdateAttemptOutcome.{BaseModel} instead. Requests that are
+    superseded or invalidated before completion are not recorded.
+  </summary>
+  <token key="BaseModel" variants="BaseModel"/>
+</histogram>
+
+<histogram
     name="OptimizationGuide.ModelExecution.OnDeviceModelPerformanceClass"
     enum="OnDeviceModelPerformanceClass" expires_after="2027-04-14">
   <owner>cduvall@chromium.org</owner>

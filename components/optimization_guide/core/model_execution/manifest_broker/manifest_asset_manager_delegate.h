@@ -69,7 +69,8 @@ class ManifestAssetManagerDelegate : public ManifestMonitorDelegate {
     // `OnAssetReady()` if it installed the asset. Not called if a later
     // `RequestUpdate()`, `RegisterOnDemandComponent()`, or `Uninstall()` for
     // the same key supersedes it.
-    virtual void OnUpdateRequestComplete(const std::string& public_key) = 0;
+    virtual void OnUpdateRequestComplete(const std::string& public_key,
+                                         update_client::Error error) = 0;
 
     // Called when the network connection transitions between metered and
     // unmetered, or reconnects to an unmetered network after being offline.

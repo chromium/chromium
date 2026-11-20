@@ -122,14 +122,17 @@ class TestManifestAssetManagerComponentState::DelegateImpl final
     }
     VLOG(2) << "RequestUpdate " << public_key_hex;
     Registration& registration = state_->registrations_[public_key_hex];
-    if (state_->is_connection_metered_) {
+    if (state_->is_connection_metered_ || state_->on_demand_update_error_) {
       registration.has_foreground_update_requested = false;
       registration.has_background_update_requested = false;
       if (state_->manager_) {
+        update_client::Error error = state_->is_connection_metered_
+                                         ? update_client::Error::UPDATE_DISABLED
+                                         : *state_->on_demand_update_error_;
         base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE, base::BindOnce(&ManifestAssetManagerDelegate::
                                           AssetManager::OnUpdateRequestComplete,
-                                      state_->manager_, public_key_hex));
+                                      state_->manager_, public_key_hex, error));
       }
       return;
     }
@@ -356,7 +359,8 @@ void TestManifestAssetManagerComponentState::MaybeCompleteDownload(
         FROM_HERE,
         base::BindOnce(&ManifestAssetManagerDelegate::AssetManager::
                            OnUpdateRequestComplete,
-                       manager_, inst_it->second.target.public_key_hex));
+                       manager_, inst_it->second.target.public_key_hex,
+                       update_client::Error::NONE));
   }
 }
 
@@ -437,7 +441,8 @@ void TestManifestAssetManagerComponentState::SimulateDownloadFailed(
   if (!manager_) {
     return;
   }
-  manager_->OnUpdateRequestComplete(public_key);
+  manager_->OnUpdateRequestComplete(public_key,
+                                    update_client::Error::UPDATE_CANCELED);
 }
 
 void TestManifestAssetManagerComponentState::SetConnectionMetered(
@@ -521,6 +526,14 @@ void TestManifestAssetManagerComponentState::SendUpdateEvent(
     int error_code) {
   if (manager_) {
     manager_->OnAssetUpdateEvent(public_key, state, error_category, error_code);
+  }
+}
+
+void TestManifestAssetManagerComponentState::SendUpdateRequestComplete(
+    const std::string& public_key,
+    update_client::Error error) {
+  if (manager_) {
+    manager_->OnUpdateRequestComplete(public_key, error);
   }
 }
 

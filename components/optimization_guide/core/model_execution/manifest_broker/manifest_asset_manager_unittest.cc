@@ -2378,6 +2378,8 @@ TEST_F(ManifestAssetManagerTest,
         static_cast<int>(update_client::CrxDownloaderError::DISK_FULL));
     component_state_.SendUpdateEvent(ignored_public_key,
                                      update_client::ComponentState::kUpdated);
+    component_state_.SendUpdateRequestComplete(
+        ignored_public_key, update_client::Error::UPDATE_DISABLED);
   }
 
   // Transition `uninstalling_asset` to `ComponentState::kUninstalling` and hold
@@ -2392,11 +2394,18 @@ TEST_F(ManifestAssetManagerTest,
       static_cast<int>(update_client::CrxDownloaderError::DISK_FULL));
   component_state_.SendUpdateEvent(uninstalling_asset.public_key,
                                    update_client::ComponentState::kUpdated);
+  component_state_.SendUpdateRequestComplete(
+      uninstalling_asset.public_key, update_client::Error::UPDATE_DISABLED);
 
   EXPECT_TRUE(histogram_tester
                   .GetTotalCountsForPrefix(
                       "OptimizationGuide.ModelExecution.OnDeviceModelUpdate")
                   .empty());
+  EXPECT_TRUE(
+      histogram_tester
+          .GetTotalCountsForPrefix(
+              "OptimizationGuide.ModelExecution.OnDeviceModelOnDemandUpdate")
+          .empty());
 }
 
 TEST_F(ManifestAssetManagerTest, RecordsRegistrationMode) {
@@ -2470,6 +2479,45 @@ TEST_F(ManifestAssetManagerTest, RecordsRegistrationMode) {
     histogram_tester.ExpectUniqueSample(
         "OptimizationGuide.ModelExecution.OnDeviceModelRegistrationMode.Gemma4",
         ManifestAssetManager::RegistrationMode::kForegroundOnDemand, 1);
+  }
+}
+
+TEST_F(ManifestAssetManagerTest, RecordsOnDemandUpdateResults) {
+  DummyAsset base_asset =
+      DummyAsset::For("prompt_api").WithAssetId("nano_v3_gpu_component");
+
+  component_state_.SetDownloadScenario(
+      TestManifestAssetManagerComponentState::DownloadScenario::kOffline);
+  component_state_.SetOnDemandUpdateError(
+      update_client::Error::UPDATE_DISABLED);
+
+  base::HistogramTester startup_histograms;
+  UpdateManifest(DummyManifest().Add(base_asset));
+  Startup();
+  manifest_broker_state_->SetUseCaseRequested(base_asset.use_case, true);
+  EXPECT_TRUE(
+      component_state_.WaitForRegistration(base_asset.ToInstallTarget()));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return startup_histograms.GetBucketCount(
+               "OptimizationGuide.ModelExecution."
+               "OnDeviceModelOnDemandUpdateResult.V3NanoGpu",
+               update_client::Error::UPDATE_DISABLED) == 1;
+  }));
+
+  startup_histograms.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution."
+      "OnDeviceModelOnDemandUpdateResult.V3NanoGpu",
+      update_client::Error::UPDATE_DISABLED, 1);
+
+  base::HistogramTester histogram_tester;
+  for (update_client::Error error :
+       {update_client::Error::NONE, update_client::Error::UPDATE_IN_PROGRESS,
+        update_client::Error::RETRY_LATER}) {
+    component_state_.SendUpdateRequestComplete(base_asset.public_key, error);
+    histogram_tester.ExpectBucketCount(
+        "OptimizationGuide.ModelExecution."
+        "OnDeviceModelOnDemandUpdateResult.V3NanoGpu",
+        error, 1);
   }
 }
 

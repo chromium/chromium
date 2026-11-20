@@ -72,7 +72,7 @@ class MockAssetManager : public AssetManager {
               (override));
   MOCK_METHOD(void,
               OnUpdateRequestComplete,
-              (const std::string& public_key),
+              (const std::string& public_key, update_client::Error error),
               (override));
   MOCK_METHOD(void, OnMeteredConnectionChanged, (), (override));
   MOCK_METHOD(void,
@@ -169,8 +169,11 @@ TEST_F(OptimizationGuideOnDeviceModelInstallerTest,
   // 1. An invalid hex key completes asynchronously via `OnUpdateComplete()`.
   {
     base::RunLoop run_loop;
-    EXPECT_CALL(asset_manager, OnUpdateRequestComplete("invalid_public_key"))
-        .WillOnce([&](const std::string&) { run_loop.Quit(); });
+    EXPECT_CALL(asset_manager,
+                OnUpdateRequestComplete("invalid_public_key",
+                                        update_client::Error::INVALID_ARGUMENT))
+        .WillOnce(
+            [&](const std::string&, update_client::Error) { run_loop.Quit(); });
     delegate->RequestUpdate("invalid_public_key", /*is_background=*/false);
     run_loop.Run();
   }
@@ -179,8 +182,11 @@ TEST_F(OptimizationGuideOnDeviceModelInstallerTest,
   // completes asynchronously via `OnUpdateComplete()`.
   {
     base::RunLoop run_loop;
-    EXPECT_CALL(asset_manager, OnUpdateRequestComplete(kValidPublicKeyHex))
-        .WillOnce([&](const std::string&) { run_loop.Quit(); });
+    EXPECT_CALL(asset_manager,
+                OnUpdateRequestComplete(kValidPublicKeyHex,
+                                        update_client::Error::SERVICE_ERROR))
+        .WillOnce(
+            [&](const std::string&, update_client::Error) { run_loop.Quit(); });
     delegate->RequestUpdate(kValidPublicKeyHex, /*is_background=*/false);
     run_loop.Run();
   }
@@ -302,13 +308,17 @@ TEST_F(OptimizationGuideOnDeviceModelInstallerTest,
   const std::string crx_id =
       *optimization_guide::GetCrxIdFromPublicKeyHex(kValidPublicKeyHex);
 
-  // 1. Background `UPDATE_DISABLED` and foreground `NONE` both notify
-  // `OnUpdateRequestComplete`.
+  // 1. Background and foreground on-demand results forward the exact
+  // `update_client::Error` to `OnUpdateRequestComplete`.
   for (auto [is_background, priority, error] : {
            std::tuple{true, OnDemandUpdater::Priority::BACKGROUND,
                       update_client::Error::UPDATE_DISABLED},
            std::tuple{false, OnDemandUpdater::Priority::FOREGROUND,
                       update_client::Error::NONE},
+           std::tuple{false, OnDemandUpdater::Priority::FOREGROUND,
+                      update_client::Error::UPDATE_IN_PROGRESS},
+           std::tuple{false, OnDemandUpdater::Priority::FOREGROUND,
+                      update_client::Error::RETRY_LATER},
        }) {
     base::RunLoop run_loop;
     EXPECT_CALL(on_demand_updater, OnDemandUpdate(crx_id, priority, _))
@@ -317,8 +327,10 @@ TEST_F(OptimizationGuideOnDeviceModelInstallerTest,
           base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
               FROM_HERE, base::BindOnce(std::move(callback), error));
         });
-    EXPECT_CALL(asset_manager, OnUpdateRequestComplete(kValidPublicKeyHex))
-        .WillOnce([&](const std::string&) { run_loop.Quit(); });
+    EXPECT_CALL(asset_manager,
+                OnUpdateRequestComplete(kValidPublicKeyHex, error))
+        .WillOnce(
+            [&](const std::string&, update_client::Error) { run_loop.Quit(); });
     delegate->RequestUpdate(kValidPublicKeyHex, is_background);
     run_loop.Run();
   }
@@ -343,10 +355,12 @@ TEST_F(OptimizationGuideOnDeviceModelInstallerTest,
   delegate->RequestUpdate(kValidPublicKeyHex, /*is_background=*/false);
   delegate->RequestUpdate(kValidPublicKeyHex, /*is_background=*/false);
 
-  EXPECT_CALL(asset_manager, OnUpdateRequestComplete(_)).Times(0);
+  EXPECT_CALL(asset_manager, OnUpdateRequestComplete(_, _)).Times(0);
   std::move(first_callback).Run(update_client::Error::UPDATE_CANCELED);
 
-  EXPECT_CALL(asset_manager, OnUpdateRequestComplete(kValidPublicKeyHex))
+  EXPECT_CALL(asset_manager,
+              OnUpdateRequestComplete(kValidPublicKeyHex,
+                                      update_client::Error::UPDATE_CANCELED))
       .Times(1);
   std::move(second_callback).Run(update_client::Error::UPDATE_CANCELED);
 
@@ -354,7 +368,7 @@ TEST_F(OptimizationGuideOnDeviceModelInstallerTest,
   EXPECT_CALL(*cus_ptr, UnregisterComponent(crx_id)).WillOnce(Return(true));
   delegate->Uninstall(kValidPublicKeyHex);
 
-  EXPECT_CALL(asset_manager, OnUpdateRequestComplete(_)).Times(0);
+  EXPECT_CALL(asset_manager, OnUpdateRequestComplete(_, _)).Times(0);
   std::move(third_callback).Run(update_client::Error::NONE);
 }
 

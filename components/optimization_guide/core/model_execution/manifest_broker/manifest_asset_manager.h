@@ -41,6 +41,7 @@
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/manifest.pb.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/update_client/update_client_errors.h"
 
 class PrefService;
 
@@ -158,7 +159,8 @@ class ManifestAssetManager : public UsageTracker::Observer,
   void InstallerRegistered(const std::string& public_key,
                            const std::string& version,
                            bool is_already_installed) override;
-  void OnUpdateRequestComplete(const std::string& public_key) override;
+  void OnUpdateRequestComplete(const std::string& public_key,
+                               update_client::Error error) override;
   void OnMeteredConnectionChanged() override;
   void OnAssetUpdateEvent(const std::string& public_key,
                           update_client::ComponentState state,

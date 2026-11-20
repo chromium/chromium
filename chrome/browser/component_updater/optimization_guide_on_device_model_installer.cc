@@ -669,7 +669,7 @@ class OnDemandUpdateTracker {
     }
     // `ComponentInstaller::Install()` posts `ComponentReady()` (`OnAssetReady`)
     // to the UI thread before running its install completion callback.
-    asset_manager_->OnUpdateRequestComplete(public_key_hex);
+    asset_manager_->OnUpdateRequestComplete(public_key_hex, error);
   }
 
   base::WeakPtr<AssetManager> asset_manager_;

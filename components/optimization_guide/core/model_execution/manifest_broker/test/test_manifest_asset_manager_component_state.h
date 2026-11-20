@@ -126,6 +126,12 @@ class TestManifestAssetManagerComponentState final {
   // Indicates how downloads should behave.
   void SetDownloadScenario(DownloadScenario scenario);
 
+  // If set, `RequestUpdate()` immediately posts `OnUpdateRequestComplete` with
+  // `error` instead of completing the download.
+  void SetOnDemandUpdateError(std::optional<update_client::Error> error) {
+    on_demand_update_error_ = error;
+  }
+
   // Methods for making components installable.
   // These will also cause installations to complete based on the download
   // scenario and active registrations.
@@ -195,6 +201,9 @@ class TestManifestAssetManagerComponentState final {
                            update_client::ErrorCategory::kNone,
                        int error_code = 0);
 
+  void SendUpdateRequestComplete(const std::string& public_key,
+                                 update_client::Error error);
+
   bool WaitForDownloadObserver() const {
     return base::test::RunUntil(
         [&]() { return component_update_service_.HasObserver(); });
@@ -212,6 +221,7 @@ class TestManifestAssetManagerComponentState final {
 
   // The simulated network behavior.
   DownloadScenario download_scenario_ = DownloadScenario::kHealthy;
+  std::optional<update_client::Error> on_demand_update_error_;
   // The contents we are pretending that server has available for download.
   absl::flat_hash_map<InstallTarget, InstallableComponent>
       installable_components_;

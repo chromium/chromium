@@ -1150,8 +1150,20 @@ void ManifestAssetManager::OnAssetReady(const std::string& public_key,
 }
 
 void ManifestAssetManager::OnUpdateRequestComplete(
-    const std::string& public_key) {
+    const std::string& public_key,
+    update_client::Error error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  const ComponentContext* context = ledger_.GetContext(public_key);
+  if (!context || context->state() == ComponentState::kNotRegistered ||
+      context->state() == ComponentState::kUninstalling ||
+      !IsBaseModelAsset(factory_->manifest(), context->asset_id())) {
+    return;
+  }
+  base::UmaHistogramEnumeration(
+      base::StrCat({"OptimizationGuide.ModelExecution."
+                    "OnDeviceModelOnDemandUpdateResult.",
+                    ConvertComponentKeyToUmaModelName(context->asset_id())}),
+      error);
 }
 
 void ManifestAssetManager::OnMeteredConnectionChanged() {
