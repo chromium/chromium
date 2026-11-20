@@ -6776,28 +6776,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.MojoVideoDecoder.InitialPlaybackErrorCodecCounter"
-    units="instances" expires_after="2021-10-25">
-  <owner>eugene@chromium.org</owner>
-  <owner>liberato@chromium.org</owner>
-  <summary>
-    Total number of instances of MojoVideoDecoder used by a page (i.e. render
-    frame) when an instance of MojoVideoDecoder encountered a decoding error or
-    a crash during the first 150 frames of a video stream.
-  </summary>
-</histogram>
-
-<histogram name="Media.MojoVideoDecoder.InitialPlaybackSuccessCodecCounter"
-    units="instances" expires_after="2021-10-25">
-  <owner>eugene@chromium.org</owner>
-  <owner>liberato@chromium.org</owner>
-  <summary>
-    Total number of instances of MojoVideoDecoder used by a page (i.e. render
-    frame) when an instance of MojoVideoDecoder successfuly decode the first 150
-    frames of a video stream.
-  </summary>
-</histogram>
-
 <histogram name="Media.MojoVideoEncodeAccelerator.InputStorageType"
     enum="VideoFrameStorageType" expires_after="2024-05-26">
   <owner>hiroh@chromium.org</owner>
