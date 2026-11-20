@@ -1898,7 +1898,7 @@
   {
     "name": "cct-always-open-in-browser",
     "owners": [ "eisinger@google.com", "chrome-connective-tissue@google.com" ],
-    "expiry_milestone": 160
+    "expiry_milestone": 170
   },
   {
     "name": "cct-close-logging",

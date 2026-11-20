@@ -4243,6 +4243,22 @@
             ]
         }
     ],
+    "CCTAlwaysOpenInBrowser": [
+        {
+            "platforms": [
+                "android",
+                "android_desktop"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CCTAlwaysOpenInBrowser"
+                    ]
+                }
+            ]
+        }
+    ],
     "CCTGoogleBottomBar": [
         {
             "platforms": [

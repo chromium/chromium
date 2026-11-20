@@ -17,6 +17,7 @@ import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.build.BuildConfig;
 import org.chromium.components.cached_flags.CachedFeatureParam;
 import org.chromium.components.cached_flags.CachedFlag;
 
@@ -200,6 +201,8 @@ public class ChromeFeatureListUnitTest {
                 ChromeFeatureList.sCctAlwaysOpenInBrowser,
                 ChromeFeatureList.sAllCachedFlags.get(
                         ChromeFeatureList.CCT_ALWAYS_OPEN_IN_BROWSER));
-        assertFalse(ChromeFeatureList.sCctAlwaysOpenInBrowser.getDefaultValue());
+        assertEquals(
+                !BuildConfig.IS_CHROME_BRANDED,
+                ChromeFeatureList.sCctAlwaysOpenInBrowser.getDefaultValue());
     }
 }

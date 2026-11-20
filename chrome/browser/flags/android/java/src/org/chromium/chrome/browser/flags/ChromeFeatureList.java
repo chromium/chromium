@@ -1133,7 +1133,10 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sCacheIsMultiInstanceApi31Enabled =
             newCachedFlag(CACHE_IS_MULTI_INSTANCE_API_31_ENABLED, true);
     public static final CachedFlag sCctAlwaysOpenInBrowser =
-            newCachedFlag(CCT_ALWAYS_OPEN_IN_BROWSER, false);
+            newCachedFlag(
+                    CCT_ALWAYS_OPEN_IN_BROWSER,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sCctAutoTranslate = newCachedFlag(CCT_AUTO_TRANSLATE, true);
     public static final CachedFlag sCctBlockTouchesDuringEnterAnimation =
             newCachedFlag(CCT_BLOCK_TOUCHES_DURING_ENTER_ANIMATION, true);
