@@ -35,7 +35,7 @@ class ChromeOtpPhishGuardDelegate : public OtpPhishGuardDelegate {
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   void OnSafeBrowsingCheckComplete(const GURL& main_frame_url,
                                    VerdictCallback callback,
-                                   bool is_malicious);
+                                   OneTimeTokensPhishGuardVerdict verdict);
 #endif
 
   const raw_ref<content::WebContents> web_contents_;

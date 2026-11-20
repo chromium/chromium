@@ -102,7 +102,7 @@ class OtpFillingSafeBrowsingCheckerClientTest : public testing::Test {
 };
 
 // Test that when both URLs are safe synchronously, the callback is run with
-// false (not malicious).
+// `kNotPhishing`.
 TEST_F(OtpFillingSafeBrowsingCheckerClientTest, BothUrlsSafeSynchronously) {
   base::HistogramTester histogram_tester;
   EXPECT_CALL(*database_manager_, CheckBrowseUrl(main_frame_url_, _, _, _))
@@ -110,12 +110,12 @@ TEST_F(OtpFillingSafeBrowsingCheckerClientTest, BothUrlsSafeSynchronously) {
   EXPECT_CALL(*database_manager_, CheckBrowseUrl(frame_to_fill_url_, _, _, _))
       .WillOnce(Return(true));
 
-  base::test::TestFuture<bool> future;
+  base::test::TestFuture<OneTimeTokensPhishGuardVerdict> future;
   auto checker_client = OtpFillingSafeBrowsingCheckerClient::CreateAndCheck(
       database_manager_, /*v5_get_hash_protocol_manager=*/nullptr, kCheckDelay,
       {main_frame_url_, frame_to_fill_url_}, future.GetCallback());
 
-  EXPECT_FALSE(future.Get());
+  EXPECT_EQ(future.Get(), OneTimeTokensPhishGuardVerdict::kNotPhishing);
   histogram_tester.ExpectUniqueSample(
       "Autofill.OtpFilling.SafeBrowsingCheckResult",
       OtpFillingSafeBrowsingCheckerClient::CheckResult::kSafe, 2);
@@ -128,12 +128,12 @@ TEST_F(OtpFillingSafeBrowsingCheckerClientTest, IdenticalUrlsCheckedOnlyOnce) {
   EXPECT_CALL(*database_manager_, CheckBrowseUrl(main_frame_url_, _, _, _))
       .WillOnce(Return(true));
 
-  base::test::TestFuture<bool> future;
+  base::test::TestFuture<OneTimeTokensPhishGuardVerdict> future;
   auto checker_client = OtpFillingSafeBrowsingCheckerClient::CreateAndCheck(
       database_manager_, /*v5_get_hash_protocol_manager=*/nullptr, kCheckDelay,
       {main_frame_url_, main_frame_url_}, future.GetCallback());
 
-  EXPECT_FALSE(future.Get());
+  EXPECT_EQ(future.Get(), OneTimeTokensPhishGuardVerdict::kNotPhishing);
   histogram_tester.ExpectUniqueSample(
       "Autofill.OtpFilling.SafeBrowsingCheckResult",
       OtpFillingSafeBrowsingCheckerClient::CheckResult::kSafe, 1);
@@ -151,7 +151,7 @@ TEST_F(OtpFillingSafeBrowsingCheckerClientTest, FirstUrlUnsafeAsynchronously) {
   EXPECT_CALL(*database_manager_, CheckBrowseUrl(frame_to_fill_url_, _, _, _))
       .Times(0);
 
-  base::test::TestFuture<bool> future;
+  base::test::TestFuture<OneTimeTokensPhishGuardVerdict> future;
   auto checker_client = OtpFillingSafeBrowsingCheckerClient::CreateAndCheck(
       database_manager_, /*v5_get_hash_protocol_manager=*/nullptr, kCheckDelay,
       {main_frame_url_, frame_to_fill_url_}, future.GetCallback());
@@ -161,8 +161,9 @@ TEST_F(OtpFillingSafeBrowsingCheckerClientTest, FirstUrlUnsafeAsynchronously) {
   sb_client->OnCheckBrowseUrlResult(
       main_frame_url_,
       safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_PHISHING);
+  EXPECT_FALSE(future.IsReady());
 
-  EXPECT_TRUE(future.Get());
+  EXPECT_EQ(future.Get(), OneTimeTokensPhishGuardVerdict::kPhishing);
   histogram_tester.ExpectUniqueSample(
       "Autofill.OtpFilling.SafeBrowsingCheckResult",
       OtpFillingSafeBrowsingCheckerClient::CheckResult::kUnsafe, 1);
@@ -180,7 +181,7 @@ TEST_F(OtpFillingSafeBrowsingCheckerClientTest,
   EXPECT_CALL(*database_manager_, CheckBrowseUrl(frame_to_fill_url_, _, _, _))
       .WillOnce(Return(true));
 
-  base::test::TestFuture<bool> future;
+  base::test::TestFuture<OneTimeTokensPhishGuardVerdict> future;
   auto checker_client = OtpFillingSafeBrowsingCheckerClient::CreateAndCheck(
       database_manager_, /*v5_get_hash_protocol_manager=*/nullptr, kCheckDelay,
       {main_frame_url_, frame_to_fill_url_}, future.GetCallback());
@@ -190,14 +191,13 @@ TEST_F(OtpFillingSafeBrowsingCheckerClientTest,
   sb_client->OnCheckBrowseUrlResult(
       main_frame_url_, safe_browsing::SBThreatType::SB_THREAT_TYPE_SAFE);
 
-  EXPECT_FALSE(future.Get());
+  EXPECT_EQ(future.Get(), OneTimeTokensPhishGuardVerdict::kNotPhishing);
   histogram_tester.ExpectUniqueSample(
       "Autofill.OtpFilling.SafeBrowsingCheckResult",
       OtpFillingSafeBrowsingCheckerClient::CheckResult::kSafe, 2);
 }
 
-// Test that when a check times out, it cancels the check and reports true
-// (malicious/unsafe).
+// Test that a check timeout cancels the check and reports `kCheckFailed`.
 TEST_F(OtpFillingSafeBrowsingCheckerClientTest, FirstUrlTimeout) {
   base::HistogramTester histogram_tester;
   safe_browsing::SafeBrowsingDatabaseManager::Client* sb_client = nullptr;
@@ -205,7 +205,7 @@ TEST_F(OtpFillingSafeBrowsingCheckerClientTest, FirstUrlTimeout) {
       .WillOnce(DoAll(SaveArg<2>(&sb_client), Return(false)));
   EXPECT_CALL(*database_manager_, CancelCheck);
 
-  base::test::TestFuture<bool> future;
+  base::test::TestFuture<OneTimeTokensPhishGuardVerdict> future;
   auto checker_client = OtpFillingSafeBrowsingCheckerClient::CreateAndCheck(
       database_manager_, /*v5_get_hash_protocol_manager=*/nullptr, kCheckDelay,
       {main_frame_url_, frame_to_fill_url_}, future.GetCallback());
@@ -213,14 +213,14 @@ TEST_F(OtpFillingSafeBrowsingCheckerClientTest, FirstUrlTimeout) {
   // Advance clock right by the delay to trigger timeout.
   task_environment_.FastForwardBy(kCheckDelay);
 
-  EXPECT_TRUE(future.Get());
+  EXPECT_EQ(future.Get(), OneTimeTokensPhishGuardVerdict::kCheckFailed);
   histogram_tester.ExpectUniqueSample(
       "Autofill.OtpFilling.SafeBrowsingCheckResult",
       OtpFillingSafeBrowsingCheckerClient::CheckResult::kTimeout, 1);
 }
 
 // Test that when first is safe, but second times out, it cancels check and
-// reports true (malicious/unsafe).
+// reports `kCheckFailed`.
 TEST_F(OtpFillingSafeBrowsingCheckerClientTest, SecondUrlTimeout) {
   base::HistogramTester histogram_tester;
   safe_browsing::SafeBrowsingDatabaseManager::Client* sb_client = nullptr;
@@ -233,7 +233,7 @@ TEST_F(OtpFillingSafeBrowsingCheckerClientTest, SecondUrlTimeout) {
 
   EXPECT_CALL(*database_manager_, CancelCheck);
 
-  base::test::TestFuture<bool> future;
+  base::test::TestFuture<OneTimeTokensPhishGuardVerdict> future;
   auto checker_client = OtpFillingSafeBrowsingCheckerClient::CreateAndCheck(
       database_manager_, /*v5_get_hash_protocol_manager=*/nullptr, kCheckDelay,
       {main_frame_url_, frame_to_fill_url_}, future.GetCallback());
@@ -247,7 +247,7 @@ TEST_F(OtpFillingSafeBrowsingCheckerClientTest, SecondUrlTimeout) {
   // timeout on second check.
   task_environment_.FastForwardBy(kCheckDelay);
 
-  EXPECT_TRUE(future.Get());
+  EXPECT_EQ(future.Get(), OneTimeTokensPhishGuardVerdict::kCheckFailed);
   histogram_tester.ExpectBucketCount(
       "Autofill.OtpFilling.SafeBrowsingCheckResult",
       OtpFillingSafeBrowsingCheckerClient::CheckResult::kSafe, 1);
@@ -271,7 +271,7 @@ TEST_F(OtpFillingSafeBrowsingCheckerClientTest, GetV5GetHashProtocolManager) {
   EXPECT_CALL(*v5_db_manager, CheckBrowseUrl(frame_to_fill_url_, _, _, _))
       .WillOnce(Return(true));
 
-  base::test::TestFuture<bool> future;
+  base::test::TestFuture<OneTimeTokensPhishGuardVerdict> future;
   auto checker_client = OtpFillingSafeBrowsingCheckerClient::CreateAndCheck(
       v5_db_manager, v5_protocol_manager.GetWeakPtr(), kCheckDelay,
       {main_frame_url_, frame_to_fill_url_}, future.GetCallback());
@@ -279,7 +279,7 @@ TEST_F(OtpFillingSafeBrowsingCheckerClientTest, GetV5GetHashProtocolManager) {
   EXPECT_EQ(checker_client->GetV5GetHashProtocolManager().get(),
             &v5_protocol_manager);
 
-  EXPECT_FALSE(future.Get());
+  EXPECT_EQ(future.Get(), OneTimeTokensPhishGuardVerdict::kNotPhishing);
 
   EXPECT_EQ(v5_db_manager->v5_manager_from_client().get(),
             &v5_protocol_manager);
