@@ -52,3 +52,8 @@ IN_PROC_BROWSER_TEST_F(AshCommonCrElementsFocusTest, CrToolbarSearchField) {
   RunTest("chromeos/ash_common/cr_elements/cr_toolbar_search_field_test.js",
           "mocha.run()");
 }
+
+IN_PROC_BROWSER_TEST_F(AshCommonCrElementsFocusTest, IronList) {
+  RunTest("chromeos/ash_common/cr_elements/iron_list_focus_test.js",
+          "mocha.run()");
+}

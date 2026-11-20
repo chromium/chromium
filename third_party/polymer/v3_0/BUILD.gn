@@ -11,17 +11,11 @@ import("//ui/webui/webui_features.gni")
 
 assert(!is_android && !is_ios)
 
-js_files = [
-  "iron-a11y-keys-behavior/iron-a11y-keys-behavior.js",
-  "iron-list/iron-list.js",
-  "iron-resizable-behavior/iron-resizable-behavior.js",
-  "iron-scroll-target-behavior/iron-scroll-target-behavior.js",
-]
-
 if (is_chromeos) {
-  js_files += [
+  js_files = [
     "iron-a11y-announcer/iron-a11y-announcer.js",
     "iron-a11y-keys/iron-a11y-keys.js",
+    "iron-a11y-keys-behavior/iron-a11y-keys-behavior.js",
     "iron-behaviors/iron-control-state.js",
     "iron-collapse/iron-collapse.js",
     "iron-dropdown/iron-dropdown.js",
@@ -30,6 +24,7 @@ if (is_chromeos) {
     "iron-fit-behavior/iron-fit-behavior.js",
     "iron-icon/iron-icon.js",
     "iron-iconset-svg/iron-iconset-svg.js",
+    "iron-list/iron-list.js",
     "iron-location/iron-location.js",
     "iron-location/iron-query-params.js",
     "iron-media-query/iron-media-query.js",
@@ -41,6 +36,8 @@ if (is_chromeos) {
     "iron-overlay-behavior/iron-scroll-manager.js",
     "iron-pages/iron-pages.js",
     "iron-range-behavior/iron-range-behavior.js",
+    "iron-resizable-behavior/iron-resizable-behavior.js",
+    "iron-scroll-target-behavior/iron-scroll-target-behavior.js",
     "iron-scroll-threshold/iron-scroll-threshold.js",
     "iron-selector/iron-multi-selectable.js",
     "iron-selector/iron-selectable.js",
@@ -64,7 +61,7 @@ if (is_chromeos) {
   ]
 }
 
-if (optimize_webui) {
+if (optimize_webui && is_chromeos) {
   minify_js("build_min_js") {
     in_files = js_files
     in_folder = "./components-chromium/"
@@ -78,12 +75,14 @@ generate_grd("build_grdp") {
   input_files = [ "polymer/polymer_bundled.min.js" ]
   input_files_base_dir = rebase_path("./components-chromium/", "//")
 
-  if (optimize_webui) {
-    deps = [ ":build_min_js" ]
-    manifest_files = filter_include(get_target_outputs(":build_min_js"),
-                                    [ "*_manifest.json" ])
-  } else {
-    input_files += js_files
+  if (is_chromeos) {
+    if (optimize_webui) {
+      deps = [ ":build_min_js" ]
+      manifest_files = filter_include(get_target_outputs(":build_min_js"),
+                                      [ "*_manifest.json" ])
+    } else {
+      input_files += js_files
+    }
   }
   resource_path_prefix = "polymer/v3_0"
 }
@@ -144,11 +143,6 @@ ts_library("library") {
   tsconfig_base = "tsconfig_base.json"
   composite = true
   definitions = [
-    "components-chromium/iron-a11y-keys-behavior/iron-a11y-keys-behavior.d.ts",
-    "components-chromium/iron-behaviors/iron-control-state.d.ts",
-    "components-chromium/iron-list/iron-list.d.ts",
-    "components-chromium/iron-resizable-behavior/iron-resizable-behavior.d.ts",
-    "components-chromium/iron-scroll-target-behavior/iron-scroll-target-behavior.d.ts",
     "components-chromium/polymer/interfaces.d.ts",
     "components-chromium/polymer/lib/elements/array-selector.d.ts",
     "components-chromium/polymer/lib/elements/custom-style.d.ts",
@@ -204,6 +198,8 @@ ts_library("library") {
     definitions += [
       "components-chromium/iron-a11y-announcer/iron-a11y-announcer.d.ts",
       "components-chromium/iron-a11y-keys/iron-a11y-keys.d.ts",
+      "components-chromium/iron-a11y-keys-behavior/iron-a11y-keys-behavior.d.ts",
+      "components-chromium/iron-behaviors/iron-control-state.d.ts",
       "components-chromium/iron-collapse/iron-collapse.d.ts",
       "components-chromium/iron-dropdown/iron-dropdown.d.ts",
       "components-chromium/iron-dropdown/iron-dropdown-scroll-manager.d.ts",
@@ -211,6 +207,7 @@ ts_library("library") {
       "components-chromium/iron-flex-layout/iron-flex-layout-classes.d.ts",
       "components-chromium/iron-icon/iron-icon.d.ts",
       "components-chromium/iron-iconset-svg/iron-iconset-svg.d.ts",
+      "components-chromium/iron-list/iron-list.d.ts",
       "components-chromium/iron-location/iron-location.d.ts",
       "components-chromium/iron-location/iron-query-params.d.ts",
       "components-chromium/iron-media-query/iron-media-query.d.ts",
@@ -222,6 +219,8 @@ ts_library("library") {
       "components-chromium/iron-overlay-behavior/iron-scroll-manager.d.ts",
       "components-chromium/iron-pages/iron-pages.d.ts",
       "components-chromium/iron-range-behavior/iron-range-behavior.d.ts",
+      "components-chromium/iron-resizable-behavior/iron-resizable-behavior.d.ts",
+      "components-chromium/iron-scroll-target-behavior/iron-scroll-target-behavior.d.ts",
       "components-chromium/iron-scroll-threshold/iron-scroll-threshold.d.ts",
       "components-chromium/iron-selector/iron-multi-selectable.d.ts",
       "components-chromium/iron-selector/iron-selectable.d.ts",
